@@ -26,19 +26,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 //  Includes
 ////////////////////////////////////////////////////////////////////////////////
-#include    "hooker.h"
-#include    "copyprotect.h"
-#include    "force_nocd.h"
-#include    "gamememory.h"
-#include    "asciistring.h"
-#include    "gamememoryinit.h"
-#include    "gamedebug.h"
-#include    <windows.h>
-#include    <stdarg.h>
-#include	<stdio.h>
+#include "hooker.h"
+#include "copyprotect.h"
+#include "force_nocd.h"
+#include "gamememory.h"
+#include "asciistring.h"
+#include "gamememoryinit.h"
+#include "gamedebug.h"
+#include "main.h"
+#include <windows.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 void Setup_Hooks()
 {
+    //
+    // Hook WinMain
+    //
+    Hook_StdCall_Function((Make_StdCall_Ptr<int, HINSTANCE, HINSTANCE, LPSTR, int>(0x00401700)), Main_Func);
+
 	//
 	// Code that checks the launcher is running, launcher does CD check.
 	//

@@ -100,11 +100,14 @@ set(HOOKER_SRC src/hooker/dllmain.cpp src/hooker/hooker.cpp)
 set(GAMEENGINE_SRC
     src/game/copyprotect.cpp
     src/game/force_nocd.cpp
-    src/game/common/system/gamedebug.cpp
+    src/game/main.cpp
+    src/game/common/version.cpp
     src/game/common/system/asciistring.cpp
-    src/game/common/system/unicodestring.cpp
+    src/game/common/system/gamedebug.cpp
     src/game/common/system/gamememory.cpp
     src/game/common/system/gamememoryinit.cpp
+    src/game/common/system/subsysteminterface.cpp
+    src/game/common/system/unicodestring.cpp
     src/w3d/lib/critsection.cpp
 )
 

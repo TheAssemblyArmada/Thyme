@@ -10,7 +10,8 @@
 //
 //  Contributors:: 
 //
-//   Description:: 
+//   Description:: Custom memory manager designed to limit OS calls to allocate
+//                 heap memory.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,6 +26,15 @@
 #include "gamememoryinit.h"
 #include "critsection.h"
 #include "gamedebug.h"
+
+//////////
+// Globals
+//////////
+SimpleCriticalSectionClass* MemoryPoolCriticalSection = nullptr;
+SimpleCriticalSectionClass* DmaCriticalSection = nullptr;
+
+bool ThePreMainInitFlag = false;
+bool TheMainInitFlag = false;
 
 ////////////////////////
 // MemoryPoolSingleBlock

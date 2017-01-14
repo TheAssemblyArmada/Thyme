@@ -10,7 +10,8 @@
 //
 //  Contributors:: 
 //
-//   Description:: 
+//   Description:: Custom memory manager designed to limit OS calls to allocate
+//                 heap memory.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -108,14 +109,14 @@ class DynamicMemoryAllocator;
 class SimpleCriticalSectionClass;
 
 // Allocated a critical section in WinMain, hooked to original currently.
-#define MemoryPoolCriticalSection (Make_Global<SimpleCriticalSectionClass*>(0x00A2A29C))
-#define DmaCriticalSection (Make_Global<SimpleCriticalSectionClass*>(0x00A2A298))
+extern SimpleCriticalSectionClass* MemoryPoolCriticalSection;
+extern SimpleCriticalSectionClass* DmaCriticalSection;
 
 #define TheMemoryPoolFactory (Make_Global<MemoryPoolFactory*>(0x00A29B94))
 #define TheDynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator*>(0x00A29B98))
 #define TheLinkChecker (Make_Global<int>(0x00A29B9C))
-#define ThePreMainInitFlag (Make_Global<char>(0x00A29B90))
-#define TheMainInitFlag (Make_Global<char>(0x00A29B91))
+extern bool ThePreMainInitFlag;
+extern bool TheMainInitFlag;
 
 void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();

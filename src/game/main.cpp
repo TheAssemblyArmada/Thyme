@@ -205,10 +205,10 @@ void Create_Window()
     sinfo.dwFlags = 0;
     GetStartupInfoA(&sinfo);
 
-    if ( sinfo.dwFlags & 1 ) {
+    if ( sinfo.dwFlags & STARTF_USESHOWWINDOW ) {
         show_cmd = sinfo.wShowWindow;
     } else {
-        show_cmd = 0xA;
+        show_cmd = SW_SHOWDEFAULT;
     }
 
     SplashImage = LoadImageA(app_hinstance, "Install_Final.bmp", 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);

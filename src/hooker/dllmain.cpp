@@ -48,11 +48,8 @@ void Setup_Hooks()
 	//
 	// Code that checks the launcher is running, launcher does CD check.
 	//
-    Hook_Function((Make_Function_Ptr<bool>(0x004122F0)), CopyProtect::isLauncherRunning);
-    Hook_Function((Make_Function_Ptr<bool>(0x00412330)), CopyProtect::notifyLauncher);
     Hook_Function((Make_Function_Ptr<void, unsigned int, int>(0x00412420)), CopyProtect::checkForMessage);
     Hook_Function((Make_Function_Ptr<bool>(0x00412450)), CopyProtect::validate);
-    Hook_Function((Make_Function_Ptr<void*>(0x004124B0)), CopyProtect::shutdown);
 
     //
     // Returns true for any CD checks
@@ -67,24 +64,12 @@ void Setup_Hooks()
     Hook_Function((Make_Function_Ptr<void, void *>(0x004144D0)), New_Delete);
     Hook_Function((Make_Function_Ptr<void, void *>(0x004144F0)), New_Array_Delete);
     Hook_Function((Make_Function_Ptr<MemoryPool *, const char *, int>(0x00414B30)), Create_Named_Pool);
-
-    Hook_Function((Make_Function_Ptr<void>(0x00414510)), Init_Memory_Manager);
     
     //
     // Replace pool functions
     //
     Hook_Method((Make_Method_Ptr<void *, MemoryPool>(0x00413C10)), &MemoryPool::Allocate_Block);
     Hook_Method((Make_Method_Ptr<void, MemoryPool, void *>(0x00413C40)), &MemoryPool::Free_Block);
-    
-    //
-    // Test some memory functions
-    //
-    Hook_Function((Make_Function_Ptr<void, char const *, int&, int&>(0x00500620)), User_Memory_Adjust_Pool_Size);
-    Hook_Function((Make_Function_Ptr<void, int *, const PoolInitRec **>(0x00500600)), User_Memory_Get_DMA_Params);
-    Hook_Function((Make_Function_Ptr<void>(0x00500690)), User_Memory_Init_Pools);
-    //hookAsJump(0x00500620, User_Memory_Adjust_Pool_Size);
-    //hookAsJump(0x00500600, User_Memory_Get_DMA_Params);
-    //hookAsJump(0x00500690, User_Memory_Init_Pools);
 
     //
     // Replace DMA functions
@@ -93,26 +78,17 @@ void Setup_Hooks()
     Hook_Method((Make_Method_Ptr<void *, DynamicMemoryAllocator, int>(0x00413FE0)), &DynamicMemoryAllocator::Allocate_Bytes);
     Hook_Method((Make_Method_Ptr<void, DynamicMemoryAllocator, void *>(0x00414010)), &DynamicMemoryAllocator::Free_Bytes);
     Hook_Method((Make_Method_Ptr<int, DynamicMemoryAllocator, int>(0x00414140)), &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
-    //hookAsJump(0x00413EE0, DynamicMemoryAllocator::Allocate_Bytes_No_Zero);
-    //hookAsJump(0x00413FE0, DynamicMemoryAllocator::Allocate_Bytes);
-    //hookAsJump(0x00414010, DynamicMemoryAllocator::Free_Bytes);
-    //hookAsJump(0x00414140, DynamicMemoryAllocator::Get_Actual_Allocation_Size);
     
     //
     // Replace MemoryPoolFactory functions
     //
-    //MemoryPool *(MemoryPoolFactory::*const makemempool)(char const*, int, int, int) = static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool);
     Hook_Method((Make_Method_Ptr<MemoryPool *, MemoryPoolFactory, char const *, int, int, int>(0x00414180)), static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
-    //hookAsJump(0x00414180, makemempool);
     
     //
     // Replace AsciiString
     //
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
     Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, char const *, char const *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    //void (AsciiString::*const asciiset)(char const*) = static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set);
-    //hookAsJump(0x0040D640, asciiset);
-    //hookAsJump(0x00415290, AsciiString::Ensure_Unique_Buffer_Of_Size);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

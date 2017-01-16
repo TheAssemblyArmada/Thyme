@@ -300,7 +300,8 @@ void Create_Window()
 // This will eventually be replaced by a standard int main(int arc, char *argv[]) function
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    DEBUG_LOG("Running thyme main function\n");
+    DEBUG_INIT(DEBUG_LOG_TO_FILE);
+
 #ifdef COMPILER_MSVC
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
@@ -351,6 +352,8 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     UnicodeStringCriticalSection = nullptr;
     DmaCriticalSection = nullptr;
     MemoryPoolCriticalSection = nullptr;
+
+    DEBUG_STOP();
 
     return 0;
 }

@@ -40,10 +40,10 @@ class SubsystemInterface
         SubsystemInterface() : SubsystemName() {}
 
         virtual ~SubsystemInterface() {}
-        virtual void Init() {}
+        virtual void Init() = 0;
         virtual void PostProcessLoad() {}
-        virtual void Reset() {}
-        virtual void Update() {}
+        virtual void Reset() = 0;
+        virtual void Update() = 0;
         virtual void Draw() {}
 
         void Set_Name(AsciiString name);    // Needs confirming.
@@ -55,7 +55,7 @@ class SubsystemInterface
 class SubsystemInterfaceList
 {
     public:
-        SubsystemInterfaceList();
+        SubsystemInterfaceList() : Subsystems(), MoreSubsystems() {}
 
         void Init_Subsystem(SubsystemInterface *sys, char const *path1, char const *path2, char const *dirpath, Xfer *xfer, AsciiString sys_name);
         void Post_Process_Load_All();

@@ -23,8 +23,53 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "subsysteminterface.h"
-
+////////////
+// Interface
+////////////
 void SubsystemInterface::Set_Name(AsciiString name)
 {
     SubsystemName = name;
+}
+
+/////////////////
+// Interface List
+/////////////////
+void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, char const *path1, char const *path2, char const *dirpath, Xfer *xfer, AsciiString sys_name)
+{
+    // TODO, requires INI
+}
+
+void SubsystemInterfaceList::Post_Process_Load_All()
+{
+    for (
+        std::vector<SubsystemInterface*>::iterator it = Subsystems.begin();
+        it != Subsystems.end();
+        ++it
+    ) {
+        (*it)->PostProcessLoad();
+    }
+}
+
+void SubsystemInterfaceList::Reset_All()
+{
+    for (
+        std::vector<SubsystemInterface*>::iterator it = Subsystems.begin();
+        it != Subsystems.end();
+        ++it
+    ) {
+        (*it)->Reset();
+    }
+}
+
+void SubsystemInterfaceList::Shutdown_All()
+{
+    for (
+        std::vector<SubsystemInterface*>::iterator it = Subsystems.end();
+        it != Subsystems.begin();
+        --it
+    ) {
+        (*it)->~SubsystemInterface();
+    }
+
+    Subsystems.erase(Subsystems.begin(), Subsystems.end());
 }

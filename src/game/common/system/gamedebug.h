@@ -39,7 +39,7 @@ extern "C" {
 #define DEBUG_LOG(message, ...)		        Debug_Log(message, ##__VA_ARGS__)
 #define DEBUG_INIT(flags)		            Debug_Init(flags)
 #define DEBUG_STOP()		                Debug_Shutdown()
-#define DEBUG_ASSERT_PRINT(exp, msg, ...)   if (!(exp)) { Debug_Log(msg, ##__VA_ARGS__); }
+#define DEBUG_ASSERT_PRINT(exp, msg, ...)   if (!(exp)) { Debug_Log("%s %S" msg, __FILE__, __LINE__, ##__VA_ARGS__); }
 #define RELEASE_ASSERT(exp)                 ((void)0)
 #define THROW_ASSERT(exp, except)           if (!(exp)) { Debug_Log("Oops, thyme is throwing an exception.\n"); throw except; }
 

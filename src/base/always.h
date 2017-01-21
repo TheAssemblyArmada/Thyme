@@ -181,8 +181,6 @@
     #define strdup(s)			_strdup(s)
     #define strcasecmp(a,b)		_stricmp(a,b)
     #define strncasecmp(a,b,c)	_strnicmp(a,b,c)
-    #define unlink(x)			_unlink(x)
-    #define close(x)			_close(x)
 #endif
 
 // Moved most stdio stuff to rawfile.cpp as its only used there.

@@ -30,6 +30,8 @@ endif()
 # Go lean and mean on windows.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
+    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
 # Prevent lib prefix when built with MinGW to target windows and move to own dir.
@@ -37,7 +39,7 @@ if(MINGW)
     set(CMAKE_SHARED_LIBRARY_PREFIX "")
     set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=gnu++0x")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=gnu++0x -mabi=ms")
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_definitions(-DGAME_DEBUG_LOG)
@@ -90,6 +92,7 @@ target_link_libraries(launchthyme)
 set(GAMEENGINE_INCLUDES
     src/base
     src/game
+    src/game/client
     src/game/common
     src/game/common/system
     src/w3d/lib
@@ -101,11 +104,16 @@ set(GAMEENGINE_SRC
     src/game/copyprotect.cpp
     src/game/force_nocd.cpp
     src/game/main.cpp
+    src/game/client/gametext.cpp
     src/game/common/version.cpp
     src/game/common/system/asciistring.cpp
+    src/game/common/system/file.cpp
     src/game/common/system/gamedebug.cpp
     src/game/common/system/gamememory.cpp
     src/game/common/system/gamememoryinit.cpp
+    src/game/common/system/localfile.cpp
+    src/game/common/system/platformfile.cpp
+    src/game/common/system/ramfile.cpp
     src/game/common/system/subsysteminterface.cpp
     src/game/common/system/unicodestring.cpp
     src/w3d/lib/critsection.cpp

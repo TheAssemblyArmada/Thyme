@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: PLATFORMFILE.H
+//          File:: RTSUTILS.H
 //
-//        Author:: OmniBlade
+//        Author:: CCHyper
 //
-//  Contributors:: 
+//  Contributors:: OmniBlade
 //
-//   Description:: Class for plafrom specific file IO.
+//   Description:: 
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,14 +25,26 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _PLATFORMFILE_H_
-#define _PLATFORMFILE_H_
+#ifndef _RTSUTILS_H_
+#define _RTSUTILS_H_
 
-#include "localfile.h"
+namespace rts {
 
-class PlatformFile : public LocalFile
+// Less than comparator for STL containers.
+// Use only for string classes.
+template<typename T>
+struct less_than_nocase
 {
-    IMPLEMENT_POOL(PlatformFile);
+    typedef T first_argument_type;
+    typedef T second_argument_type;
+    typedef bool result_type;
+
+    constexpr bool operator()(const T &left, const T &right) const
+    {
+        return (left.Compare_No_Case(right) < 0);
+    }
 };
 
-#endif // _PLATFORMFILE_H_
+} // namespace rts
+
+#endif // _RTSUTILS_H_

@@ -49,6 +49,7 @@ class File : MemoryPoolObject
             TRUNCATE = 0x10,
             TEXT = 0x20,
             BINARY = 0x40,
+            STREAMING = 0x100,    // This is educated guess?
         };
 
         File();

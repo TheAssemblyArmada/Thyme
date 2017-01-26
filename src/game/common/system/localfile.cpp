@@ -297,10 +297,18 @@ bool LocalFile::Scan_String(AsciiString &string)
 void *LocalFile::Read_All_And_Close()
 {
     int size = Size();
-    uint8_t *data = new uint8_t[size];
+    uint8_t *data;
 
-    Read(data, size);
-    Close();
+    if ( size > 0 ) {
+        data = new uint8_t[size];
+
+        Read(data, size);
+        Close();
+    } else {
+        // Calling function responsible for delete so just alloc
+        // 1 byte and return if no data.
+        data = new uint8_t[1];
+    }
 
     return data;
 }

@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: RAMFILE.H
+//          File:: STREAMINGARCHIVEFILE.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: RAM file IO.
+//   Description:: Archived file IO.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,18 +25,19 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _RAMFILE_H_
-#define _RAMFILE_H_
+#ifndef _STREAMINGARCHIVEFILE_H_
+#define _STREAMINGARCHIVEFILE_H_
 
-#include "file.h"
+#include "ramfile.h"
+#include "gamememory.h"
 
-class RAMFile : public File
+class StreamingArchiveFile : public RAMFile
 {
-    IMPLEMENT_POOL(RAMFile);
+    IMPLEMENT_POOL(StreamingArchiveFile);
 
     public:
-        RAMFile();
-        virtual ~RAMFile();
+        StreamingArchiveFile();
+        virtual ~StreamingArchiveFile();
 
         virtual bool Open(char const *filename, int mode);
         virtual void Close();
@@ -55,9 +56,10 @@ class RAMFile : public File
         virtual bool Copy_To_File(File *file);
 
     protected:
-        char *Data;
-        int Pos;
-        int Size;
+        File *ArchiveFile;
+        int FileStart;
+        int FileSize;
+        int FilePos;
 };
 
-#endif // _RAMFILE_H_
+#endif // _STREAMINGARCHIVEFILE_H_

@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: PLATFORMFILE.CPP
+//          File:: LOCALFILESYSTEM.CPP
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Class for plafrom specific file IO.
+//   Description:: Interface for local file system implementations.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -21,6 +21,4 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "platformfile.h"
-
-INITIALISE_POOL(PlatformFile);
+#include "localfilesystem.h"

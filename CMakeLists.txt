@@ -106,14 +106,17 @@ set(GAMEENGINE_SRC
     src/game/main.cpp
     src/game/client/gametext.cpp
     src/game/common/version.cpp
+    src/game/common/system/archivefile.cpp
     src/game/common/system/asciistring.cpp
     src/game/common/system/file.cpp
     src/game/common/system/gamedebug.cpp
     src/game/common/system/gamememory.cpp
     src/game/common/system/gamememoryinit.cpp
     src/game/common/system/localfile.cpp
-    src/game/common/system/platformfile.cpp
+    src/game/common/system/localfilesystem.cpp
+    src/game/common/system/oslocalfile.cpp
     src/game/common/system/ramfile.cpp
+    src/game/common/system/streamingarchivefile.cpp
     src/game/common/system/subsysteminterface.cpp
     src/game/common/system/unicodestring.cpp
     src/w3d/lib/critsection.cpp

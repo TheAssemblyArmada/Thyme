@@ -81,4 +81,41 @@ T MAX(T minval, T maxval)
     return maxval < minval ? minval : maxval;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+///
+/// <!-- Clamp() -->
+///
+/// \brief
+///     Returns the maximum of 'minval' and 'maxval'.
+///
+/// \param
+///     original    The original value to clamp.
+///
+/// \param
+///     minval      The lowest value to compare.
+///
+/// \param
+///     maxval      The largest value to compare.
+///
+/// \return
+///     value       The largest of the values passed as arguments.
+///
+/// \warning
+///     None
+///
+////////////////////////////////////////////////////////////////////////////////
+template<class T>
+T Clamp(T original, T minval, T maxval)
+{
+    if ( original < minval ) {
+        return minval;
+    }
+
+    if ( original > maxval ) {
+        return maxval;
+    }
+
+    return original;
+};
+
 #endif // _MINMAX_H_

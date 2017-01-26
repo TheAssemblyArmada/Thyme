@@ -36,12 +36,16 @@ RAMFile::RAMFile() :
 
 RAMFile::~RAMFile()
 {
+    if ( Data != nullptr ) {
+        delete[] Data;
+    }
 
+    File::Close();
 }
 
 bool RAMFile::Open(char const *filename, int mode)
 {
-    return false; //TODO
+    return false; //TODO, needs FileSystem.
 }
 
 void RAMFile::Close()
@@ -96,7 +100,7 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
             return -1;
     }
 
-    // Don't seek to ourside the file.
+    // Don't seek to outside the file.
     Pos = MAX(0, MIN(Pos, Size));
 
     return Pos;
@@ -104,27 +108,172 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
 
 void RAMFile::Next_Line(char *dst, int bytes)
 {
+    int i = 0;
 
+    // Copy data until newline.
+    for ( ; Pos < Size; ++Pos ) {
+        char tmp = Data[Pos];
+
+        if ( tmp == '\n' ) {
+            break;
+        }
+
+        if ( dst != nullptr && i < bytes - 1 ) {
+            dst[i++] = tmp;
+        }
+    }
+
+    // If we broke on newline, increment past it.
+    if ( Pos < Size ) {
+        // Copy newline to destination if not full?
+        if ( dst != nullptr &&  i < bytes ) {
+            dst[i++] = Data[Pos];
+        }
+
+        ++Pos;
+    }
+
+    // If we have a data pointer to copy to, make sure its null terminiated
+    if ( dst != nullptr ) {
+        if ( i >= bytes ) {
+            dst[bytes] = '\0';
+        } else {
+            dst[i] = '\0';
+        }
+    }
+
+    // Make sure our position is still within data.
+    Pos = MIN(Pos, Size);
 }
 
 bool RAMFile::Scan_Int(int &integer)
 {
+    char tmp;
+    AsciiString number;
 
+    integer = 0;
+
+    if ( Pos >= Size ) {
+        Pos = Size;
+
+        return false;
+    }
+
+    // Find first digit or '-' symbol.
+    do {
+        tmp = Data[Pos];
+
+        if ( isdigit(tmp) || tmp == '-' ) {
+            break;
+        }
+
+    } while ( ++Pos < Size );
+
+    if ( Pos >= Size ) {
+        Pos = Size;
+
+        return false;
+    }
+
+    for ( tmp = Data[Pos]; Pos < Size && isdigit(tmp); tmp = Data[++Pos] ) {
+        number.Concat(tmp);
+    }
+
+    integer = atoi(number.Str());
+
+    return true;
 }
 
 bool RAMFile::Scan_Real(float &real)
 {
+    char tmp;
+    AsciiString number;
 
+    real = 0.0f;
+
+    if ( Pos >= Size ) {
+        Pos = Size;
+
+        return false;
+    }
+
+    // Find first digit, '-' or '.' symbol.
+    do {
+        tmp = Data[Pos];
+
+        if ( isdigit(tmp) || tmp == '-' || tmp == '.') {
+            break;
+        }
+
+    } while ( ++Pos < Size );
+
+    // Check we are still in bounds
+    if ( Pos >= Size ) {
+        Pos = Size;
+
+        return false;
+    }
+
+    bool have_point = false;
+
+    for ( tmp = Data[Pos]; Pos < Size && (isdigit(tmp) || ( tmp == '.' && !have_point)); tmp = Data[++Pos] ) {
+        number.Concat(tmp);
+
+        if ( tmp == '.' ) {
+            have_point = true;
+        }
+    }
+
+    real = atof(number.Str());
+
+    return true;
 }
 
 bool RAMFile::Scan_String(AsciiString &string)
 {
+    char tmp;
+    string.Clear();
 
+    // Find first none space.
+    for ( ; Pos < Size; ++Pos ) {
+        if ( !isspace(Data[Pos]) ) {
+            break;
+        }
+    }
+
+    // Check we are still in bounds
+    if ( Pos >= Size ) {
+        Pos = Size;
+
+        return false;
+    }
+
+    // Read into AsciiString
+    for ( ; Pos < Size; ++Pos ) {
+        if ( isspace(Data[Pos]) ) {
+            break;
+        }
+
+        string.Concat(Data[Pos]);
+    }
+
+    return true;
 }
 
 void *RAMFile::Read_All_And_Close()
 {
+    char *data;
 
+    if ( Data != nullptr ) {
+        data = Data;
+        Data = nullptr;
+        Close();
+    } else {
+        // Valid pointer return seems expected.
+        data = new char[1];
+    }
+
+    return data;
 }
 
 bool RAMFile::Open(File *file)
@@ -135,7 +284,7 @@ bool RAMFile::Open(File *file)
 
     if ( File::Open(file->Get_File_Name().Str(), file->Get_File_Mode()) ) {
         Size = file->Size();
-        Data = new uint8_t[Size];
+        Data = new char[Size];
 
         if ( Data != nullptr ) {
             // Read the entire file into our buffer.
@@ -169,7 +318,7 @@ bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, in
         }
 
         Size = size;
-        Data = new uint8_t[size];
+        Data = new char[size];
 
         if ( file->Seek(pos, START) == pos ) {
             if ( file->Read(Data, Size) == size ) {
@@ -181,4 +330,9 @@ bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, in
     }
 
     return false;
+}
+
+bool RAMFile::Copy_To_File(File *file)
+{
+    return file != nullptr && file->Write(Data, Size) == Size;
 }

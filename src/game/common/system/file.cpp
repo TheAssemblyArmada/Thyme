@@ -81,7 +81,7 @@ void File::Close()
     Access = false;
 
     if ( DeleteOnClose ) {
-        deleteInstance(this);
+        Delete_Instance(this);
     }
 }
 

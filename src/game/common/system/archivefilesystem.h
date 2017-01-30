@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: OSLOCALFILE.H
+//          File:: ARCHIVEFILESYSTEM.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Class for plafrom specific file IO.
+//   Description:: Interface for local file system implementations.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,14 +25,17 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _OSLOCALFILE_H_
-#define _OSLOCALFILE_H_
+#ifndef _ARCHIVEFILESYSTEM_H_
+#define _ARCHIVEFILESYSTEM_H_
 
-#include "localfile.h"
+#include "subsysteminterface.h"
+#include "hooker.h"
 
-class OSLocalFile : public LocalFile
+#define TheArchiveFileSystem (Make_Global<ArchiveFileSystem*>(0x00A2BA00))
+
+class ArchiveFileSystem : public SubsystemInterface 
 {
-    IMPLEMENT_POOL(OSLocalFile);
+    
 };
 
-#endif // _OSLOCALFILE_H_
+#endif // _ARCHIVEFILESYSTEM_H_

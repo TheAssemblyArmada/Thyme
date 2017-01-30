@@ -1,6 +1,8 @@
 #include "archivefile.h"
+#include "file.h"
 
 ArchiveFile::ArchiveFile() :
+    BackingFile(nullptr),
     ArchiveInfo()
 {
 
@@ -39,4 +41,63 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(AsciiString const &filenam
     }
 
     return &file_it->second;
+}
+
+void ArchiveFile::Add_File(AsciiString const &filepath, ArchivedFileInfo const *info)
+{
+    AsciiString path = filepath;
+    AsciiString token;
+    DetailedArchiveDirectoryInfo *dirp = &ArchiveInfo;
+
+
+    // Lower case for matching and get first item of the path.
+    path.To_Lower();
+
+    for ( path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/") ) {
+        // If an element of the path doesn't have a directory node, add it.
+        if ( dirp->DirInfo.find(token) == dirp->DirInfo.end() ) {
+            dirp->DirInfo[token].Name = token;
+        }
+
+        dirp = &dirp->DirInfo[token];
+    }
+
+    dirp->FileInfo[info->Name] = *info;
+}
+
+void ArchiveFile::Attach_File(File *file)
+{
+    if ( BackingFile != nullptr ) {
+        BackingFile->Close();
+        BackingFile = nullptr;
+    }
+
+    BackingFile = file;
+}
+
+void ArchiveFile::Get_File_List_From_Dir(AsciiString const &a1, AsciiString const &filepath, AsciiString const &a3, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5)
+{
+    AsciiString path = filepath;
+    AsciiString token;
+    DetailedArchiveDirectoryInfo *dirp = &ArchiveInfo;
+
+
+    // Lower case for matching and get first item of the path.
+    path.To_Lower();
+
+    for ( path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/") ) {
+        // If an element of the path doesn't have a node for our next directory, return.
+        if ( dirp->DirInfo.find(token) == dirp->DirInfo.end() ) {
+            return;
+        }
+
+        dirp = &dirp->DirInfo[token];
+    }
+
+    Get_File_List_From_Dir(dirp, filepath, a3, filelist, a5);
+}
+
+void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &filepath, AsciiString const &a3, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5)
+{
+    //TODO
 }

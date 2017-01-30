@@ -4,13 +4,14 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: LOCALFILESYSTEM.H
+//          File:: FILESYSTEM.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Interface for local file system implementations.
+//   Description:: Filesystem abstraction merging local and archive file
+//                 handling.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,29 +26,36 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _LOCALFILESYSTEM_H_
-#define _LOCALFILESYSTEM_H_
+#ifndef _FILESYSTEM_H_
+#define _FILESYSTEM_H_
 
 #include "subsysteminterface.h"
 #include "rtsutils.h"
-#include "hooker.h"
 #include <set>
+#include <map>
 
-struct FileInfo;
 class File;
 
-#define TheLocalFileSystem (Make_Global<LocalFileSystem*>(0x00A2BE60))
+#define TheFileSystem (Make_Global<LocalFileSystem*>(0x00A2B670))
 
-class LocalFileSystem : public SubsystemInterface
+class FileSystem : public SubsystemInterface
 {
     public:
-        virtual ~LocalFileSystem() {}
+        FileSystem();
+        virtual ~FileSystem();
 
-        virtual File *Open_File(char const *filename, int mode) = 0;
-        virtual bool Does_File_Exist(char const *filename) = 0;
-        virtual void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs) = 0;
-        virtual bool Get_File_Info(AsciiString const &filename, FileInfo *info) = 0;
-        virtual bool Create_Directory(AsciiString) = 0;
+        // SubsystemInterface implementations
+        virtual void Init();
+        virtual void Reset();
+        virtual void Update();
+
+        // Filesystem
+        File *Open(char const *filename, int mode);
+        bool Does_File_Exist(char const *filename);
+        void Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
+
+    private:
+        std::map<unsigned int, bool> AvailableFiles;
 };
 
-#endif
+#endif // _FILESYSTEM_H_

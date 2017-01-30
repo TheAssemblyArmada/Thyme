@@ -29,7 +29,9 @@
 #define _ARCHIVEFILE_H_
 
 #include "asciistring.h"
+#include "rtsutils.h"
 #include <map>
+#include <set>
 
 struct FileInfo;
 class File;
@@ -38,7 +40,7 @@ class StreamingArchiveFile;
 struct ArchivedFileInfo
 {
     AsciiString Name;
-    AsciiString unk2;
+    AsciiString Path;
     int Position;
     int Size;
 };
@@ -65,9 +67,14 @@ class ArchiveFile
         virtual void Close() = 0;
 
         ArchivedFileInfo *Get_Archived_File_Info(AsciiString const &filename);
+        void Add_File(AsciiString const &filename, ArchivedFileInfo const *info);
+        void Attach_File(File *file);
+        void Get_File_List_From_Dir(AsciiString const &a1, AsciiString const &filepath, AsciiString const &a3, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
 
     private:
-        File *ArchiveName;
+        void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &filepath, AsciiString const &a3, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
+
+        File *BackingFile;
         DetailedArchiveDirectoryInfo ArchiveInfo;
 };
 

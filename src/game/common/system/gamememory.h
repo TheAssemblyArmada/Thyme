@@ -32,6 +32,7 @@
 #include "always.h"
 #include "gamedebug.h"
 #include "hooker.h"         //Remove once all hooks implemented
+#include <cstdlib>
 #include <stdexcept>
 
 void *New_New(size_t bytes);
@@ -40,6 +41,7 @@ void New_Delete(void *ptr);
 void New_Array_Delete(void *ptr);
 
 // Use GlobalAlloc as the raw allocator on windows to avoid CRT issues.
+// Needed until runs standalone.
 #ifdef PLATFORM_WINDOWS
 inline void *Raw_Allocate(int bytes)
 {
@@ -300,6 +302,9 @@ class MemoryPoolObject
         // use macros below to generated them.
 };
 
+// Use within a class declaration on a none virtual MemoryPoolObject
+// based class to implement required functions. "classname" must match
+// the name of the class in which it is used.
 #define IMPLEMENT_POOL(classname) \
     private: \
         static MemoryPool *The##classname##Pool; \
@@ -328,16 +333,20 @@ class MemoryPoolObject
             return Get_Class_Pool()->Free_Block(ptr); \
         }
 
+// Use in the implementation file (normally .cpp) to initialised the
+// memory pool static variables.
 #define INITIALISE_POOL(classname) \
     MemoryPool *classname::The##classname##Pool = nullptr; \
     bool classname::PoolInit = false;
 
 // Delete a MemoryPoolObject instance.
-inline void deleteInstance(MemoryPoolObject *ptr)
+inline void Delete_Instance(MemoryPoolObject *ptr)
 {
-    MemoryPool *pool = ptr->Get_Object_Pool();
-    ptr->~MemoryPoolObject();
-    pool->Free_Block(ptr);
+    if ( ptr != nullptr ) {
+        MemoryPool *pool = ptr->Get_Object_Pool();
+        ptr->~MemoryPoolObject();
+        pool->Free_Block(ptr);
+    }
 }
 
 //

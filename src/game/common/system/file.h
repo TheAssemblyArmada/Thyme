@@ -31,7 +31,15 @@
 #include "asciistring.h"
 #include "gamememory.h"
 
-class File : MemoryPoolObject
+struct FileInfo
+{
+    int FileSizeHigh;
+    int FileSizeLow;
+    int WriteTimeHigh;
+    int WriteTimeLow;
+};
+
+class File : public MemoryPoolObject
 {
     public:
         enum SeekMode {
@@ -49,7 +57,7 @@ class File : MemoryPoolObject
             TRUNCATE = 0x10,
             TEXT = 0x20,
             BINARY = 0x40,
-            STREAMING = 0x100,    // This is educated guess?
+            STREAMING = 0x100,
         };
 
         File();
@@ -70,6 +78,7 @@ class File : MemoryPoolObject
 
         AsciiString &Get_File_Name() { return FileName; }
         int Get_File_Mode() { return OpenMode; }
+        void Set_Del_On_Close(bool del) { DeleteOnClose = del;  }
 
     protected:
         AsciiString FileName;

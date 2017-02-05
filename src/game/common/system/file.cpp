@@ -45,24 +45,28 @@ bool File::Open(char const *filename, int mode)
 
     FileName = filename;
 
-    if ( (mode & 0x102) == 0x102 ) {
+    // Write and streaming mutually exclusive.
+    if ( (mode & (WRITE | STREAMING)) == (WRITE | STREAMING) ) {
         return false;
     }
 
-    if ( (mode & 0x60) == 0x60 ) {
+    // Text and binary modes are mutually exclusive.
+    if ( (mode & (TEXT | BINARY)) == (TEXT | BINARY) ) {
         return false;
     }
 
-    if ( (mode & 3) == 0 ) {
-        OpenMode = mode | 1;
+    // If read/write mode not specified assume read.
+    if ( (mode & (READ | WRITE)) == 0 ) {
+        OpenMode = mode | READ;
     }
 
-    if ( (mode & 5) == 0 ) {
-        OpenMode |= 0x10;
+    if ( (mode & (READ | APPEND)) == 0 ) {
+        OpenMode |= TRUNCATE;
     }
 
-    if ( (mode & 0x60) == 0 ) {
-        OpenMode |= 0x40;
+    // If neither text nor binary specified, assume binary.
+    if ( (mode & (TEXT | BINARY)) == 0 ) {
+        OpenMode |= BINARY;
     }
 
     Access = true;
@@ -92,12 +96,12 @@ bool File::Print(char const *format, ...)
 
     va_start(va, format);
 
-    if ( OpenMode & 0x20 ) {
+    if ( (OpenMode & TEXT) != 0 ) {
         // Format our message to be written out
-        int length = vsnprintf(buffer, 10240, format, va);
+        int length = vsnprintf(buffer, sizeof(buffer), format, va);
 
         // Only write if we didn't truncate due to buffer overrun.
-        if ( length < 10240 ) {
+        if ( length < sizeof(buffer) ) {
             return Write(buffer, length) == length;
         }
     }

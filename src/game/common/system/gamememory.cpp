@@ -26,6 +26,7 @@
 #include "gamememoryinit.h"
 #include "critsection.h"
 #include "gamedebug.h"
+#include "minmax.h"
 
 //////////
 // Globals
@@ -308,16 +309,20 @@ void *MemoryPool::Allocate_Block_No_Zero()
     ++UsedBlocksInPool;
 
     //TODO convert to MAX()
-    if ( PeakUsedBlocksInPool < UsedBlocksInPool ) {
-        PeakUsedBlocksInPool = UsedBlocksInPool;
-    }
+    //if ( PeakUsedBlocksInPool < UsedBlocksInPool ) {
+    //    PeakUsedBlocksInPool = UsedBlocksInPool;
+    //}
+
+    PeakUsedBlocksInPool = MAX(PeakUsedBlocksInPool, UsedBlocksInPool);
 
     return block->Get_User_Data();
 }
 
 void *MemoryPool::Allocate_Block()
 {
+    DEBUG_LOG("Allocating block from pool %s.\n", PoolName);
     void *block = Allocate_Block_No_Zero();
+    DEBUG_LOG("Zeroing allocated block.\n");
     memset(block, 0, AllocationSize);
 
     return block;
@@ -452,7 +457,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(char const *name, int size, in
     // Count and overflow should never end up as 0 from adjustment.
     //
     THROW_ASSERT(count > 0 && overflow > 0, std::bad_alloc());
-
+    
     pool = new MemoryPool;
     pool->Init(this, name, size, count, overflow);
     pool->Add_To_List(&FirstPoolInFactory);

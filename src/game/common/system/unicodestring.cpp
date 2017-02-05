@@ -30,6 +30,11 @@
 #include "asciistring.h"
 #include "critsection.h"
 #include "gamedebug.h"
+#include <stdio.h>
+
+#ifndef vsnwprintf
+#define vsnwprintf _vsnwprintf
+#endif
 
 UnicodeString const UnicodeString::EmptyString(nullptr);
 

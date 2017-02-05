@@ -34,7 +34,7 @@
 class Win32LocalFileSystem : public LocalFileSystem
 {
     public:
-        Win32LocalFileSystem() {}
+        Win32LocalFileSystem() { DEBUG_LOG("Creating Win32LocalFileSystem.\n"); }
         virtual ~Win32LocalFileSystem() {}
 
         // Subsystem interface implementations.

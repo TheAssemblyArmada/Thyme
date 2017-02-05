@@ -27,13 +27,16 @@
 //  Includes
 ////////////////////////////////////////////////////////////////////////////////
 #include "hooker.h"
+#include "archivefile.h"
+#include "asciistring.h"
 #include "copyprotect.h"
 #include "force_nocd.h"
 #include "gamememory.h"
-#include "asciistring.h"
 #include "gamememoryinit.h"
 #include "gamedebug.h"
 #include "main.h"
+#include "win32gameengine.h"
+#include "win32localfilesystem.h"
 #include <windows.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -89,6 +92,11 @@ void Setup_Hooks()
     //
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
     Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, char const *, char const *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
+
+    //
+    // Replace FileSystem
+    //
+    //Hook_Function(Make_Function_Ptr<LocalFileSystem*>(0x007420F0), Win32GameEngine::Create_Local_Filesystem);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

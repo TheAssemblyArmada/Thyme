@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "streamingarchivefile.h"
+#include "filesystem.h"
 #include "minmax.h"
 
 INITIALISE_POOL(StreamingArchiveFile);
@@ -42,8 +43,13 @@ StreamingArchiveFile::~StreamingArchiveFile()
 
 bool StreamingArchiveFile::Open(char const *filename, int mode)
 {
-    //TODO Requires FileSystem
-    return false;
+    File *basefile = TheFileSystem->Open(filename, mode);
+
+    if ( basefile == nullptr ) {
+        return false;
+    }
+
+    return Open(basefile);
 }
 
 void StreamingArchiveFile::Close()
@@ -77,8 +83,6 @@ int StreamingArchiveFile::Write(void *src, int bytes)
 
 int StreamingArchiveFile::Seek(int offset, File::SeekMode mode)
 {
-    int ret;
-
     switch ( mode ) {
         case START:
             FilePos = Clamp(offset, 0, FileSize);

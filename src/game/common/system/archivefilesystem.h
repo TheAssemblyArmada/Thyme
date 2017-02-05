@@ -31,11 +31,22 @@
 #include "subsysteminterface.h"
 #include "hooker.h"
 
+class File;
+class ArchiveFile;
+
 #define TheArchiveFileSystem (Make_Global<ArchiveFileSystem*>(0x00A2BA00))
 
 class ArchiveFileSystem : public SubsystemInterface 
 {
-    
+    public:
+        virtual ArchiveFile *Open_Archive_File(char const *filename) = 0;
+        virtual void Close_Archive_File(char const *filename) = 0;
+        virtual void Close_All_Archives() = 0;
+        virtual File *Open_File(char const *filename, int mode);
+        virtual void Close_All_Files() = 0;
+        virtual bool Does_File_Exist(char const *filename);
+        virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs) = 0;
+        virtual void Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &dir, bool unk);
 };
 
 #endif // _ARCHIVEFILESYSTEM_H_

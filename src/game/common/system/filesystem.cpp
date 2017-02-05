@@ -23,6 +23,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "filesystem.h"
+#include "localfilesystem.h"
+#include "archivefilesystem.h"
 
 FileSystem::FileSystem() :
     AvailableFiles()
@@ -37,26 +39,43 @@ FileSystem::~FileSystem()
 
 void FileSystem::Init()
 {
+    TheLocalFileSystem->Init();
+    TheArchiveFileSystem->Init();
 }
 
 void FileSystem::Reset()
 {
+    TheLocalFileSystem->Reset();
+    TheArchiveFileSystem->Reset();
 }
 
 void FileSystem::Update()
 {
+    TheLocalFileSystem->Update();
+    TheArchiveFileSystem->Update();
 }
 
 File *FileSystem::Open(char const *filename, int mode)
 {
-    return nullptr;
+    File *file = nullptr;
+
+    if ( TheLocalFileSystem != nullptr ) {
+        file = TheLocalFileSystem->Open_File(filename, mode);
+    }
+
+    if ( file == nullptr && TheArchiveFileSystem != nullptr ) {
+        file = TheArchiveFileSystem->Open_File(filename, mode);
+    }
+
+    return file;
 }
 
 bool FileSystem::Does_File_Exist(char const *filename)
 {
-    return false;
+    return Call_Method<bool, FileSystem, char const*>(0x00446610, this, filename);
 }
 
-void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5)
+void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
 {
+    Call_Method<void, FileSystem, AsciiString const &, AsciiString const &, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &, bool>(0x00446770, this, dir, filter, filelist, search_subdirs);
 }

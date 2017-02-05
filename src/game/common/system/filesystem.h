@@ -36,7 +36,7 @@
 
 class File;
 
-#define TheFileSystem (Make_Global<LocalFileSystem*>(0x00A2B670))
+#define TheFileSystem (Make_Global<FileSystem*>(0x00A2B670))
 
 class FileSystem : public SubsystemInterface
 {

@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "ramfile.h"
+#include "filesystem.h"
 #include "minmax.h"
 
 INITIALISE_POOL(RAMFile);
@@ -45,7 +46,17 @@ RAMFile::~RAMFile()
 
 bool RAMFile::Open(char const *filename, int mode)
 {
-    return false; //TODO, needs FileSystem.
+    DEBUG_LOG("Opening RAMFile %s with mode %08X.\n", filename, mode);
+    File *basefile = TheFileSystem->Open(filename, mode);
+
+    if ( basefile == nullptr ) {
+        return false;
+    }
+
+    bool retval = Open(basefile);
+    basefile->Close();
+
+    return retval;
 }
 
 void RAMFile::Close()
@@ -59,6 +70,7 @@ void RAMFile::Close()
 
 int RAMFile::Read(void *dst, int bytes)
 {
+    DEBUG_LOG("Reading %d bytes with RAMFile.\n");
     if ( dst == nullptr ) {
         return -1;
     }
@@ -101,7 +113,7 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
     }
 
     // Don't seek to outside the file.
-    Pos = MAX(0, MIN(Pos, Size));
+    Pos = Clamp(Pos, 0, Size); // MAX(0, MIN(Pos, Size));
 
     return Pos;
 }
@@ -231,7 +243,6 @@ bool RAMFile::Scan_Real(float &real)
 
 bool RAMFile::Scan_String(AsciiString &string)
 {
-    char tmp;
     string.Clear();
 
     // Find first none space.
@@ -278,6 +289,7 @@ void *RAMFile::Read_All_And_Close()
 
 bool RAMFile::Open(File *file)
 {
+    DEBUG_LOG("Opening RAMFile from %s file pointer.\n", file->Get_File_Name().Str());
     if ( file == nullptr ) {
         return false;
     }
@@ -289,6 +301,7 @@ bool RAMFile::Open(File *file)
         if ( Data != nullptr ) {
             // Read the entire file into our buffer.
             Size = file->Read(Data, Size);
+            DEBUG_LOG("Loaded %d bytes out of %d\n.", Size, file->Size());
 
             // If we didn't read any data into our buffer, abort.
             if ( Size >= 0 ) {
@@ -307,6 +320,7 @@ bool RAMFile::Open(File *file)
 
 bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, int size)
 {
+    DEBUG_LOG("Opening from archive %s.\n", file->Get_File_Name().Str());
     if ( file == nullptr ) {
         return false;
     }

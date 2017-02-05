@@ -143,7 +143,7 @@ PCHAR *CommandLineToArgvA(PCHAR CmdLine, int* _argc)
 #endif
 
 //
-// Set the working directory to bethe location of the exe. Game currently
+// Set the working directory to be the location of the exe. Game currently
 // relies on this for some file open operations.
 //
 inline void Set_Working_Directory(void)

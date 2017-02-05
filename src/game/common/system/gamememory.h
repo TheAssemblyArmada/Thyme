@@ -315,8 +315,7 @@ class MemoryPoolObject
                 PoolInit = true; \
                 The##classname##Pool = TheMemoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
             } \
-            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() < sizeof(classname), "Pool %s too small for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
-            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() > sizeof(classname), "Pool %s too large for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
+            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
             return The##classname##Pool; \
         } \
     public: \
@@ -326,6 +325,7 @@ class MemoryPoolObject
         } \
         void *operator new(size_t size) \
         { \
+            DEBUG_LOG("Allocating from %s.\n", "The"#classname"Pool"); \
             return Get_Class_Pool()->Allocate_Block(); \
         } \
         void operator delete(void *ptr) \

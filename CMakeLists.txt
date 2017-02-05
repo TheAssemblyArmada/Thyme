@@ -95,6 +95,7 @@ set(GAMEENGINE_INCLUDES
     src/game/client
     src/game/common
     src/game/common/system
+    src/platform
     src/w3d/lib
 )
 
@@ -105,6 +106,7 @@ set(GAMEENGINE_SRC
     src/game/force_nocd.cpp
     src/game/main.cpp
     src/game/client/gametext.cpp
+    src/game/common/gameengine.cpp
     src/game/common/version.cpp
     src/game/common/system/archivefile.cpp
     src/game/common/system/archivefilesystem.cpp
@@ -120,22 +122,11 @@ set(GAMEENGINE_SRC
     src/game/common/system/streamingarchivefile.cpp
     src/game/common/system/subsysteminterface.cpp
     src/game/common/system/unicodestring.cpp
+    src/platform/win32gameengine.cpp
+    src/platform/win32localfile.cpp
+    src/platform/win32localfilesystem.cpp
     src/w3d/lib/critsection.cpp
 )
-
-# Platform specific sources and includes here.
-if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    set(GAMEENGINE_INCLUDES
-        ${GAMEENGINE_INCLUDES}
-        src/platform
-    )
-
-    set(GAMEENGINE_SRC
-        ${GAMEENGINE_SRC}
-        src/platform/win32localfile.cpp
-        src/platform/win32localfilesystem.cpp
-    )
-endif()
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
 target_include_directories(thyme BEFORE PUBLIC src/hooker ${GAMEENGINE_INCLUDES})

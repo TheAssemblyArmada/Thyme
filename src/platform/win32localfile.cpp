@@ -61,6 +61,8 @@ Win32LocalFile::~Win32LocalFile()
 
 bool Win32LocalFile::Open(char const *filename, int mode)
 {
+    DEBUG_LOG("Opening Win32LocalFile %s with mode %08X.\n", filename, mode);
+
     if ( !File::Open(filename, mode) ) {
         return false;
     }
@@ -112,11 +114,13 @@ bool Win32LocalFile::Open(char const *filename, int mode)
 
 int Win32LocalFile::Read(void *dst, int bytes)
 {
+    DEBUG_LOG("Reading %d bytes from Win32LocalFile %s.\n", bytes, FileName.Str());
     if ( !Access ) {
         return -1;
     }
 
     if ( dst != nullptr ) {
+        
         return read(FileHandle, dst, bytes);
     } else {
         lseek(FileHandle, bytes, CURRENT);
@@ -127,6 +131,7 @@ int Win32LocalFile::Read(void *dst, int bytes)
 
 int Win32LocalFile::Write(void *src, int bytes)
 {
+    DEBUG_LOG("Writing %d bytes to Win32LocalFile %s.\n", bytes, FileName.Str());
     if ( !Access || src == nullptr ) {
         return -1;
     }
@@ -136,6 +141,7 @@ int Win32LocalFile::Write(void *src, int bytes)
 
 int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 {
+    DEBUG_LOG("Seeking to %d in Win32LocalFile %s.\n", offset, FileName.Str());
     switch ( mode ) {
         case START:
         case CURRENT:
@@ -150,6 +156,8 @@ int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 
 void Win32LocalFile::Next_Line(char *dst, int bytes)
 {
+    DEBUG_LOG("Seeking getting next line from Win32LocalFile %s.\n", FileName.Str());
+
     int i;
 
     for ( i = 0; i < bytes - 1; ++i ) {
@@ -172,6 +180,7 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
 
 bool Win32LocalFile::Scan_Int(int &integer)
 {
+    DEBUG_LOG("Scanning Int from Win32LocalFile %s.\n", FileName.Str());
     char tmp;
     AsciiString number;
 
@@ -212,6 +221,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
 
 bool Win32LocalFile::Scan_Real(float &real)
 {
+    DEBUG_LOG("Scanning Real from Win32LocalFile %s.\n", FileName.Str());
     char tmp;
     AsciiString number;
 
@@ -258,6 +268,7 @@ bool Win32LocalFile::Scan_Real(float &real)
 
 bool Win32LocalFile::Scan_String(AsciiString &string)
 {
+    DEBUG_LOG("Scanning String from Win32LocalFile %s.\n", FileName.Str());
     char tmp;
     string.Clear();
 

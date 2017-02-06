@@ -28,9 +28,16 @@
 #ifndef _GAMEENGINE_H_
 #define _GAMEENGINE_H_
 
-class GameEngine
-{
+#include "subsysteminterface.h"
 
+class GameEngine : public SubsystemInterface
+{
+    public:
+        
+    private:
+        int MaxFPS;
+        bool Quitting;
+        bool Active;
 };
 
 #endif // _GAMEENGINE_H_

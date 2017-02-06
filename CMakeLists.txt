@@ -83,6 +83,16 @@ execute_process(
 )
 add_definitions(-DTHYME_COMMIT_SHA1_SHORT="${THYME_COMMIT_SHA1_SHORT}")
 
+# Define commit count.
+execute_process(
+    COMMAND git rev-list HEAD --count
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE THYME_COMMIT_COUNT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+add_definitions(-DTHYME_COMMIT_COUNT=${THYME_COMMIT_COUNT})
+
 # Build and link the launcher.
 set(LAUNCHER_SRC launcher/launcher.cpp launcher/resource.rc)
 add_executable(launchthyme ${LAUNCHER_SRC})

@@ -10,7 +10,7 @@
 //
 //  Contributors:: 
 //
-//   Description:: Interface for the game engine implementation.
+//   Description:: Implementation of the GameEngine interface.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -35,8 +35,8 @@ class Win32GameEngine : public GameEngine
 {
     public:
         //TODO
-
-        static LocalFileSystem *Create_Local_Filesystem();
+    private:
+        unsigned int PreviousErrorMode;
 };
 
 #endif // _WIN32GAMEENGINE_H_

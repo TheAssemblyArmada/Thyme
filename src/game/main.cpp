@@ -334,7 +334,7 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
         0,
         1,
         0,
-        0,
+        THYME_COMMIT_COUNT,
         THYME_BRANCH,
         THYME_COMMIT_SHA1_SHORT,
         __TIME__,

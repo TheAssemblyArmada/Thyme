@@ -96,7 +96,6 @@ void Setup_Hooks()
     //
     // Replace FileSystem
     //
-    //Hook_Function(Make_Function_Ptr<LocalFileSystem*>(0x007420F0), Win32GameEngine::Create_Local_Filesystem);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

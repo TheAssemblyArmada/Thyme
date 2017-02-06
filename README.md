@@ -51,6 +51,12 @@ Below is a list of similar projects and their respective original games:
 
 There is also the [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
 
+## Contributing
+
+If you are interested in contributing to Thyme, you will need some knowledge of C++
+as a minimum requirement. Join the developer chat listed below for more information on
+what else you will need.
+
 ## Contact
 
 You can discuss development of this project on freenode in the #thyme channel.

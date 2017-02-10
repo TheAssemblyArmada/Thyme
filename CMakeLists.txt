@@ -118,6 +118,7 @@ set(GAMEENGINE_SRC
     src/game/client/gametext.cpp
     src/game/common/gameengine.cpp
     src/game/common/version.cpp
+    src/game/common/ini/ini.cpp
     src/game/common/system/archivefile.cpp
     src/game/common/system/archivefilesystem.cpp
     src/game/common/system/asciistring.cpp
@@ -132,6 +133,7 @@ set(GAMEENGINE_SRC
     src/game/common/system/streamingarchivefile.cpp
     src/game/common/system/subsysteminterface.cpp
     src/game/common/system/unicodestring.cpp
+    src/game/common/system/xfer.cpp
     src/platform/win32gameengine.cpp
     src/platform/win32localfile.cpp
     src/platform/win32localfilesystem.cpp

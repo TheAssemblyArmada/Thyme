@@ -301,7 +301,6 @@ void Create_Window()
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
-
 #ifdef COMPILER_MSVC
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.

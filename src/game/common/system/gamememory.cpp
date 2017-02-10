@@ -51,11 +51,11 @@ void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_blob, Me
 
 void MemoryPoolSingleBlock::Remove_Block_From_List(MemoryPoolSingleBlock **list_head)
 {
-    DEBUG_ASSERT_PRINT(OwningBlob == nullptr, "This function should only be used on raw blocks");
+    ASSERT_PRINT(OwningBlob == nullptr, "This function should only be used on raw blocks");
 
     // Do we have previous? If not, we are the head?
     if ( PrevBlock != nullptr ) {
-        DEBUG_ASSERT_PRINT(this != *list_head, "Bad list linkage");
+        ASSERT_PRINT(this != *list_head, "Bad list linkage");
         PrevBlock->NextBlock = NextBlock;
     } else {
         *list_head = NextBlock;
@@ -82,7 +82,7 @@ MemoryPoolSingleBlock *MemoryPoolSingleBlock::Recover_Block_From_User_Data(void 
     if ( data != nullptr ) {
         return reinterpret_cast<MemoryPoolSingleBlock *>(static_cast<char *>(data) - sizeof(MemoryPoolSingleBlock));
     } else {
-        DEBUG_ASSERT_PRINT(false, "null data");
+        ASSERT_PRINT(false, "null data");
 
         return nullptr;
     }
@@ -120,7 +120,7 @@ MemoryPoolBlob::~MemoryPoolBlob()
 
 void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
 {
-    DEBUG_ASSERT_PRINT(BlockData == nullptr, "Init called on blob with none null data for pool %s\n", owning_pool->PoolName);
+    ASSERT_PRINT(BlockData == nullptr, "Init called on blob with none null data for pool %s\n", owning_pool->PoolName);
 
     OwningPool = owning_pool;
     TotalBlocksInBlob = count;
@@ -185,8 +185,8 @@ void MemoryPoolBlob::Remove_Blob_From_List(MemoryPoolBlob **head, MemoryPoolBlob
 
 MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 {
-    //DEBUG_ASSERT_PRINT(UsedBlocksInBlob < TotalBlocksInBlob, "Trying to allocate when all blocks allocated in blob for pool %s\n", OwningPool->PoolName);
-    //DEBUG_ASSERT_PRINT(FirstFreeBlock != nullptr, "Trying to allocated block from blob with null FirstFreeBlock for pool %s\n", OwningPool->PoolName);
+    //ASSERT_PRINT(UsedBlocksInBlob < TotalBlocksInBlob, "Trying to allocate when all blocks allocated in blob for pool %s\n", OwningPool->PoolName);
+    //ASSERT_PRINT(FirstFreeBlock != nullptr, "Trying to allocated block from blob with null FirstFreeBlock for pool %s\n", OwningPool->PoolName);
     MemoryPoolSingleBlock *block = FirstFreeBlock;
     FirstFreeBlock = block->NextBlock;
     ++UsedBlocksInBlob;
@@ -258,7 +258,7 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
     blob->Init_Blob(this, count);
     blob->Add_Blob_To_List(&FirstBlob, &LastBlob);
 
-    DEBUG_ASSERT_PRINT(FirstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
+    ASSERT_PRINT(FirstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
 
     FirstBlobWithFreeBlocks = blob;
     TotalBlocksInPool += count;
@@ -268,7 +268,7 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
 
 int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 {
-    DEBUG_ASSERT_PRINT(blob->OwningPool == this, "Blob does not belong to this pool");
+    ASSERT_PRINT(blob->OwningPool == this, "Blob does not belong to this pool");
 
     blob->Remove_Blob_From_List(&FirstBlob, &LastBlob);
 
@@ -338,7 +338,7 @@ void MemoryPool::Free_Block(void *block)
     MemoryPoolSingleBlock *mp_block = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
     MemoryPoolBlob *mp_blob = mp_block->OwningBlob;
 
-    DEBUG_ASSERT_PRINT(mp_blob != nullptr && mp_blob->OwningPool == this, "Block is not part of this pool");
+    ASSERT_PRINT(mp_blob != nullptr && mp_blob->OwningPool == this, "Block is not part of this pool");
 
     mp_blob->Free_Single_Block(mp_block);
 
@@ -446,7 +446,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(char const *name, int size, in
     MemoryPool *pool = Find_Memory_Pool(name);
 
     if ( pool != nullptr) {
-        DEBUG_ASSERT_PRINT(pool->AllocationSize == size, "Pool size mismatch");
+        ASSERT_PRINT(pool->AllocationSize == size, "Pool size mismatch");
 
         return pool;
     }
@@ -474,7 +474,7 @@ void MemoryPoolFactory::Destroy_Memory_Pool(MemoryPool *pool)
         return;
     }
 
-    DEBUG_ASSERT_PRINT(pool->UsedBlocksInPool == 0, "Destroying none empty pool.");
+    ASSERT_PRINT(pool->UsedBlocksInPool == 0, "Destroying none empty pool.");
 
     pool->Remove_From_List(&FirstPoolInFactory);
     delete pool;
@@ -577,7 +577,7 @@ void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, Pool
 
 DynamicMemoryAllocator::~DynamicMemoryAllocator()
 {
-    DEBUG_ASSERT_PRINT(UsedBlocksInDma, "Destroying none empty DMA.");
+    ASSERT_PRINT(UsedBlocksInDma, "Destroying none empty DMA.");
 
     for ( int i = 0; i < PoolCount; ++i ) {
         Factory->Destroy_Memory_Pool(Pools[i]);

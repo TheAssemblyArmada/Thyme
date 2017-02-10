@@ -315,7 +315,7 @@ class MemoryPoolObject
                 PoolInit = true; \
                 The##classname##Pool = TheMemoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
             } \
-            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
+            ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
             return The##classname##Pool; \
         } \
     public: \

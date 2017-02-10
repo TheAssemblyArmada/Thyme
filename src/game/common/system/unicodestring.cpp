@@ -76,7 +76,7 @@ void UnicodeString::Validate()
 
 wchar_t *UnicodeString::Peek() const
 {
-    DEBUG_ASSERT_PRINT(Data != nullptr, "null string ptr");
+    ASSERT_PRINT(Data != nullptr, "null string ptr");
 
     //
     // Actual string data is stored immediately after the UnicodeStringData header.
@@ -180,7 +180,7 @@ wchar_t const *UnicodeString::Str()
 
 wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
 {
-    DEBUG_ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
+    ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
 
     //
     // 

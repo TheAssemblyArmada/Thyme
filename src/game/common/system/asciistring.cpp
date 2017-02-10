@@ -69,7 +69,7 @@ void AsciiString::Validate()
 
 char *AsciiString::Peek() const
 {
-    DEBUG_ASSERT_PRINT(Data != nullptr, "null string ptr");
+    ASSERT_PRINT(Data != nullptr, "null string ptr");
     
     return Data->Peek();
 }
@@ -143,7 +143,7 @@ int AsciiString::Get_Length() const
 {
     if ( Data != nullptr ) {
         int len = strlen(Str());
-        DEBUG_ASSERT_PRINT(len > 0, "length of string is less than or equal to 0.");
+        ASSERT_PRINT(len > 0, "length of string is less than or equal to 0.");
         
         return len;
     }
@@ -153,8 +153,8 @@ int AsciiString::Get_Length() const
 
 char AsciiString::Get_Char(int index) const
 {
-    DEBUG_ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
-    DEBUG_ASSERT_PRINT(strlen(Peek()) > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
+    ASSERT_PRINT(strlen(Peek()) > 0, "strlen returned less than or equal to 0 in getCharAt.");
     
     return Peek()[index];
 }
@@ -172,7 +172,7 @@ const char *AsciiString::Str() const
 
 char *AsciiString::Get_Buffer_For_Read(int len)
 {
-    DEBUG_ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
+    ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
     
     //
     // Generate buffer sufficient to read requested size into.

@@ -92,6 +92,7 @@ void Setup_Hooks()
     //
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
     Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, char const *, char const *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040FB40)), &AsciiString::Concat);
 
     //
     // Replace FileSystem

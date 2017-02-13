@@ -34,6 +34,7 @@
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamedebug.h"
+#include "ini.h"
 #include "main.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -92,11 +93,15 @@ void Setup_Hooks()
     //
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
     Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, char const *, char const *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040FB40)), &AsciiString::Concat);
+    Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040FB40)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
 
     //
     // Replace FileSystem
     //
+    Hook_Method((Make_Method_Ptr<void, INI>(0x0041A8B0)), &INI::Read_Line);
+    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
+    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
+    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

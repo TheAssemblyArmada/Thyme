@@ -51,7 +51,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    THROW_ASSERT(r != nullptr, std::bad_alloc());
+    ASSERT_THROW(r != nullptr, std::bad_alloc());
 
     return r;
 }
@@ -64,7 +64,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    THROW_ASSERT(r != nullptr, std::bad_alloc());
+    ASSERT_THROW(r != nullptr, std::bad_alloc());
 
     return r;
 }
@@ -81,7 +81,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    THROW_ASSERT(r != nullptr, std::bad_alloc());
+    ASSERT_THROW(r != nullptr, std::bad_alloc());
 
     return r;
 }
@@ -94,7 +94,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    THROW_ASSERT(r != nullptr, std::bad_alloc());
+    ASSERT_THROW(r != nullptr, std::bad_alloc());
 
     return r;
 }

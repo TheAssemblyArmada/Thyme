@@ -23,7 +23,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "ini.h"
 #include "file.h"
+#include "filesystem.h"
 #include "gamedebug.h"
+#include "xfer.h"
+#include <cctype>
 
 // Parsing tables, remove hook when table can be populated correctly
 // Can use Make_Function_Ptr for unimplemented.
@@ -95,12 +98,27 @@ BlockParse TheTypeTable[] =
     { nullptr, nullptr }
 };
 #else
-#define TheTypeTable (Make_Global<BlockParse*>(0x0093B670))
+#define TheTypeTable (Make_Global<BlockParse>(0x0093B670))
 #endif
+
+
+// Helper function for Load
+inline iniblockparse_t Find_Block_Parse(char const *token)
+{
+    // Iterate over the TypeTable to identify correct parsing function.
+    for ( BlockParse *block = &TheTypeTable; block->Token != nullptr; ++block ) {
+        if ( strcmp(block->Token, token) == 0 ) {
+            DEBUG_LOG("Find_Block succeeded comparing %s to %s.\n", block->Token, token);
+            return block->ParseFunc;
+        }
+    }
+
+    return nullptr;
+}
 
 void MultiIniFieldParse::Add(FieldParse *field_parse, unsigned int extra_offset)
 {
-    THROW_ASSERT(Count < MAX_MULTI_FIELDS, 0xDEAD0001);
+    ASSERT_THROW(Count < MAX_MULTI_FIELDS, 0xDEAD0001);
 
     FieldParsers[Count] = field_parse;
     ExtraOffsets[Count] = extra_offset;
@@ -128,18 +146,83 @@ INI::~INI()
 
 void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
 {
+    Call_Function<void>(0x004A1E40); // setFPMode()
+    SXfer = xfer;
+    Prep_File(filename, type);
+
+    while ( !EndOfFile ) {
+        Read_Line();
+        
+        // Original seems to make an unused AsciiString from the
+        // parsed block, possible leftover from debug code?
+        //AsciiString block(CurrentBlock);
+
+        char *token = crt_strtok(CurrentBlock, Seps);
+        
+        if ( token != nullptr ) {
+            iniblockparse_t parser = Find_Block_Parse(token);
+
+            ASSERT_THROW_PRINT(
+                parser != nullptr,
+                0xDEAD0006,
+                "[LINE: %d - FILE: '%s'] Unknown block '%s'\n",
+                LineNumber,
+                FileName.Str(),
+                token
+            );
+
+            DEBUG_LOG("Calling found block parser.\n");
+            parser(this);
+            DEBUG_LOG("Parser called successfully.\n");
+        }
+    }
+
+    Unprep_File();
 }
 
 void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type, Xfer *xfer)
 {
+    // TODO
+    // Calls FileSystem::Get_File_List_From_Dir
+    // Passes around a std::list, all calls to FileSystem::Get_File_List_From_Dir need to
+    // be implemented at once due to ABI issues.
+    Call_Method<void, INI, AsciiString, bool, INILoadType, Xfer*>(0x0041A1C0, this, dir, search_subdirs,type, xfer);
 }
 
 void INI::Prep_File(AsciiString filename, INILoadType type)
 {
+    ASSERT_THROW_PRINT(
+        BackingFile == nullptr,
+        0xDEAD0006,
+        "Cannot open file %s, file already open.\n",
+        filename.Str()
+    );
+
+    BackingFile = TheFileSystem->Open(filename.Str(), File::READ);
+
+    ASSERT_THROW_PRINT(
+        BackingFile != nullptr,
+        0xDEAD0006,
+        "Could not open file %s.\n",
+        filename.Str()
+    );
+
+    FileName = filename;
+    LoadType = type;
 }
 
 void INI::Unprep_File()
 {
+    DEBUG_LOG("Unprepping %s.\n", BackingFile->Get_File_Name().Str());
+    BackingFile->Close();
+    BackingFile = nullptr;
+    BufferReadPos = 0;
+    BufferData = 0;
+    FileName = "None";
+    LoadType = INI_LOAD_INVALID;
+    LineNumber = 0;
+    EndOfFile = false;
+    SXfer = nullptr;
 }
 
 void INI::Init_From_INI(void *what, FieldParse *parse_table)
@@ -154,9 +237,11 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
 {
     bool done = false;
 
+    ASSERT_THROW_PRINT(what != nullptr, 0xDEAD0006, "Init_From_INI - Invalid parameters supplied.\n");
+
     while ( !done ) {
         Read_Line();
-        char *token = strtok(CurrentBlock, Seps);
+        char *token = crt_strtok(CurrentBlock, Seps);
 
         if ( token == nullptr ) {
             break;
@@ -165,15 +250,16 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
         if ( strcasecmp(token, EndToken) == 0 ) {
             done = true;
         } else {
-            iniparsefunc_t parsefunc;
+            inifieldparse_t parsefunc;
             int offset;
             void const *data;
             int exoffset = 0;
 
             // Find an appropriate parser function from the parse table
             for ( int i = 0; ; ++i ) {
-                ASSERT_PRINT(
+                ASSERT_THROW_PRINT(
                     i < parse_table_list.Count,
+                    0xDEAD0006,
                     "[LINE: %d - FILE: '%s'] Unknown field '%s' in block '%s'\n",
                     LineNumber,
                     FileName.Str(),
@@ -193,8 +279,9 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
             parsefunc(this, what, static_cast<char*>(what) + offset + exoffset, data);
         }
 
-        ASSERT_PRINT(
+        ASSERT_THROW_PRINT(
             done && !EndOfFile,
+            0xDEAD0006,
             "Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
             CurrentBlock,
             FileName.Str(),
@@ -211,7 +298,152 @@ void INI::Init_From_INI_Multi_Proc(void *what, void(*proc)(MultiIniFieldParse *)
     Init_From_INI_Multi(what, p);
 }
 
-bool INI::Read_Line()
+void INI::Read_Line()
 {
+    ASSERT_PRINT(BackingFile != nullptr, "Read_Line file pointer is nullptr.\n");
+    
+    if ( EndOfFile ) {
+        CurrentBlock[0] = '\0';
+    } else {
+        // Read into our current block buffer.
+        char *cb;
+        for ( cb = CurrentBlock; cb != &BlockEnd; ++cb ) {
+            // If the buffer is empty, refill it.
+            if ( BufferReadPos == BufferData ) {
+                BufferReadPos = 0;
+                BufferData = BackingFile->Read(Buffer, sizeof(Buffer));
+
+                if ( BufferData == 0 ) {
+                    EndOfFile = true;
+
+                    break;
+                }
+            }
+
+            *cb = Buffer[BufferReadPos++];
+
+            // Reached end of line
+            if ( *cb == '\n' ) {
+                break;
+            }
+
+            // Handle comment marker and none printing chars
+            if ( *cb == ';' ) {
+                *cb = '\0';
+            } else if ( *cb > '\0' && *cb < ' ' ) {
+                *cb = ' ';
+            }
+        }
+
+        // Null terminate the buffer
+        *cb = '\0';
+        ++LineNumber;
+    }
+
+    // If we have a transfer object assigned, do the transfer.
+    if ( SXfer != nullptr ) {
+        SXfer->xferImplementation(CurrentBlock, strlen(CurrentBlock));
+    }
+}
+
+int INI::Scan_Science(char const *token)
+{
+    //return TheScienceStore->Friend_Lookup_Science(token);
+    return Call_Method<int, INI, char const*>(0x0041D740, this, token);
+}
+
+float INI::Scan_PercentToReal(char const *token)
+{
+    float value;
+
+    ASSERT_THROW(sscanf(token, "%f", &value) == 1, 0xDEAD0006);
+
+    return value / 100.0f;
+}
+
+float INI::Scan_Real(char const *token)
+{
+    float value;
+
+    ASSERT_THROW(sscanf(token, "%f", &value) == 1, 0xDEAD0006);
+
+    return value;
+}
+
+uint32_t INI::Scan_UnsignedInt(char const *token)
+{
+    uint32_t value;
+
+    ASSERT_THROW(sscanf(token, "%u", &value) == 1, 0xDEAD0006);
+
+    return value;
+}
+
+int32_t INI::Scan_Int(char const *token)
+{
+    int32_t value;
+
+    ASSERT_THROW(sscanf(token, "%d", &value) == 1, 0xDEAD0006);
+
+    return value;
+}
+
+bool INI::Scan_Bool(char const *token)
+{
+    if ( strcasecmp(token, "yes") == 0 ) {
+        return true;
+    } else {
+        ASSERT_THROW_PRINT(
+            strcasecmp(token, "no") == 0,
+            0xDEAD0006,
+            "Invalid bool token %s, expected yes or no\n",
+            token
+        );
+    }
+
     return false;
+}
+
+int INI::Scan_IndexList(char const *token, char const *const *list)
+{
+    ASSERT_THROW_PRINT(
+        list != nullptr && *list != nullptr,
+        0xDEAD0006,
+        "Error, invalid list provided for Scan_IndexList\n"
+    );
+
+    int list_count = 0;
+
+    while ( strcasecmp(list[list_count], token) != 0  ) {
+        ASSERT_THROW_PRINT(
+            list[++list_count] != nullptr,
+            0xDEAD0006,
+            "Token %s not found in list\n",
+            token
+        );
+    }
+
+    return list_count;
+}
+
+int INI::Scan_LookupList(char const *token, LookupListRec const *list)
+{
+    ASSERT_THROW_PRINT(
+        list != nullptr && list->Name != nullptr,
+        0xDEAD0006,
+        "Error, invalid list provided for Scan_LookupList\n"
+    );
+
+    int list_count = 0;
+
+    while ( strcasecmp(list[list_count].Name, token) != 0 ) {
+        ASSERT_THROW_PRINT(
+            list[++list_count].Name != nullptr,
+            0xDEAD0006,
+            "Token %s not found in list\n",
+            token
+        );
+    }
+
+    return list[list_count].Value;
 }

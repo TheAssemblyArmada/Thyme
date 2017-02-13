@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "main.h"
 #include "hooker.h"
+#include "hookcrt.h"
 #include "critsection.h"
 #include "gamememory.h"
 #include "unicodestring.h"
@@ -301,11 +302,10 @@ void Create_Window()
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
-#ifdef COMPILER_MSVC
+
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
-    _set_se_translator(Exception_Handler_Ptr);
-#endif
+    crt_set_se_translator(Exception_Handler_Ptr);
 
     // Assign some critical sections for code sensitive to threaded calls.
     UnicodeStringCriticalSection = &critSec1;
@@ -330,14 +330,14 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     // Use of some of the version strings to use the git commit and branch stuff.
     TheVersion = new Version;
     TheVersion->Set_Version(
-        0,
-        1,
-        0,
-        THYME_COMMIT_COUNT,
-        THYME_BRANCH,
-        THYME_COMMIT_SHA1_SHORT,
-        __TIME__,
-        __DATE__
+        1,                          // Major
+        0,                          // Minor
+        4,                          // Patch
+        THYME_COMMIT_COUNT,         // Internal build number
+        THYME_BRANCH,               // Git branch, was "location" in original build system
+        THYME_COMMIT_SHA1_SHORT,    // Git commit, was "user" in original build system
+        __TIME__,                   // Build time
+        __DATE__                    // Build date
     );
 
     DEBUG_LOG("About to run Game_Main\n");

@@ -301,7 +301,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
     }
 
     if ( FirstBlobWithFreeBlocks == nullptr ) {
-        THROW_ASSERT(OverflowAllocationCount != 0, std::bad_alloc());
+        ASSERT_THROW(OverflowAllocationCount != 0, std::bad_alloc());
         Create_Blob(OverflowAllocationCount);
     }
 
@@ -320,9 +320,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
 
 void *MemoryPool::Allocate_Block()
 {
-    DEBUG_LOG("Allocating block from pool %s.\n", PoolName);
     void *block = Allocate_Block_No_Zero();
-    DEBUG_LOG("Zeroing allocated block.\n");
     memset(block, 0, AllocationSize);
 
     return block;
@@ -456,7 +454,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(char const *name, int size, in
     //
     // Count and overflow should never end up as 0 from adjustment.
     //
-    THROW_ASSERT(count > 0 && overflow > 0, std::bad_alloc());
+    ASSERT_THROW(count > 0 && overflow > 0, std::bad_alloc());
     
     pool = new MemoryPool;
     pool->Init(this, name, size, count, overflow);

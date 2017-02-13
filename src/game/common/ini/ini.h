@@ -30,10 +30,14 @@
 
 #include "asciistring.h"
 #include "gamedebug.h"
+#include "hookcrt.h"
+#include "hooker.h"
 
 class File;
 class Xfer;
 class INI;
+
+#define SXfer (Make_Global<Xfer*>(0x00A2A6B8))
 
 enum INILoadType
 {
@@ -43,18 +47,25 @@ enum INILoadType
 };
 
 // Function pointer type for the field parser functions
-typedef void(*iniparsefunc_t)(INI *, void *, void *, void const *);
+typedef void(*inifieldparse_t)(INI *, void *, void *, void const *);
+typedef void(__cdecl *iniblockparse_t)(INI *);
+
+struct LookupListRec
+{
+    char const *Name;
+    int Value;
+};
 
 struct BlockParse
 {
     char const *Token;
-    iniparsefunc_t ParseFunc;
+    iniblockparse_t ParseFunc;
 };
 
 struct FieldParse
 {
     char const *Token;
-    iniparsefunc_t ParseFunc;
+    inifieldparse_t ParseFunc;
     void const *UserData;
     int Offset;
 };
@@ -75,6 +86,12 @@ struct MultiIniFieldParse
 class INI
 {
     public:
+        enum
+        {
+            MAX_LINE_LENGTH = 1028,
+            MAX_BUFFER_SIZE = 8192,
+        };
+
         INI();
         ~INI();
 
@@ -88,7 +105,7 @@ class INI
         void Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_list);
         void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *));
 
-        bool Read_Line();
+        void Read_Line();
 
         char *Get_Next_Token_Or_Null(char const *seps = nullptr);
         char *Get_Next_Token(char const *seps = nullptr);
@@ -96,15 +113,24 @@ class INI
         AsciiString Get_Next_Ascii_String();
         AsciiString Get_Filename() { return FileName; }
 
+        int Scan_Science(char const *token);
+        float Scan_PercentToReal(char const *token);
+        float Scan_Real(char const *token);
+        uint32_t Scan_UnsignedInt(char const *token);
+        int32_t Scan_Int(char const *token);
+        bool Scan_Bool(char const *token);
+        int Scan_IndexList(char const *token, char const* const* list);
+        int Scan_LookupList(char const *token, LookupListRec const *list);
+
     private:
         File *BackingFile;
-        char Buffer[8192];
+        char Buffer[MAX_BUFFER_SIZE];
         int BufferReadPos;
         int BufferData;
         AsciiString FileName;
         INILoadType LoadType;
         int LineNumber;
-        char CurrentBlock[1028];
+        char CurrentBlock[MAX_LINE_LENGTH];
         char BlockEnd;
         char const *Seps;
         char const *SepsPercent;
@@ -113,19 +139,20 @@ class INI
         char const *EndToken;
         bool EndOfFile;
 
-        static Xfer *SXfer;
+        //static Xfer *SXfer;
 };
 
 // Functions for inlining, neater than including in class declaration
 inline char *INI::Get_Next_Token_Or_Null(char const *seps)
 {
-    return strtok(0, seps != nullptr ? seps : Seps);
+    return crt_strtok(0, seps != nullptr ? seps : Seps);
 }
 
 inline char *INI::Get_Next_Token(char const *seps)
 {
-    char *ret = strtok(0, seps != nullptr ? seps : Seps);
-    ASSERT_PRINT(ret != nullptr, "Expected further tokens\n");
+    DEBUG_LOG("INI Getting next token from file %s.\n", FileName.Str());
+    char *ret = crt_strtok(0, seps != nullptr ? seps : Seps);
+    ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
 
     return ret;
 }
@@ -166,7 +193,7 @@ inline AsciiString INI::Get_Next_Ascii_String()
 }
 
 // Helper function for Init_From_INI_Multi
-inline iniparsefunc_t Find_Field_Parse(FieldParse *table, char const *token, int &offset, void const *&data)
+inline inifieldparse_t Find_Field_Parse(FieldParse *table, char const *token, int &offset, void const *&data)
 {
     FieldParse *tblptr = table;
 

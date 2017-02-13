@@ -104,6 +104,7 @@ set(GAMEENGINE_INCLUDES
     src/game
     src/game/client
     src/game/common
+    src/game/common/ini
     src/game/common/system
     src/platform
     src/w3d/lib

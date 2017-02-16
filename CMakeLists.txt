@@ -118,6 +118,7 @@ set(GAMEENGINE_SRC
     src/game/main.cpp
     src/game/client/gametext.cpp
     src/game/common/gameengine.cpp
+    src/game/common/globaldata.cpp
     src/game/common/version.cpp
     src/game/common/ini/ini.cpp
     src/game/common/system/archivefile.cpp

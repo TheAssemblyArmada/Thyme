@@ -108,7 +108,6 @@ inline iniblockparse_t Find_Block_Parse(char const *token)
     // Iterate over the TypeTable to identify correct parsing function.
     for ( BlockParse *block = &TheTypeTable; block->Token != nullptr; ++block ) {
         if ( strcmp(block->Token, token) == 0 ) {
-            DEBUG_LOG("Find_Block succeeded comparing %s to %s.\n", block->Token, token);
             return block->ParseFunc;
         }
     }

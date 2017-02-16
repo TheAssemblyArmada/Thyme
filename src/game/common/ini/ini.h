@@ -150,7 +150,6 @@ inline char *INI::Get_Next_Token_Or_Null(char const *seps)
 
 inline char *INI::Get_Next_Token(char const *seps)
 {
-    DEBUG_LOG("INI Getting next token from file %s.\n", FileName.Str());
     char *ret = crt_strtok(0, seps != nullptr ? seps : Seps);
     ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
 

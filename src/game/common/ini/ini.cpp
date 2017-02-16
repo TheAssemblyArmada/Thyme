@@ -116,6 +116,34 @@ inline iniblockparse_t Find_Block_Parse(char const *token)
     return nullptr;
 }
 
+// Helper function for Init_From_INI_Multi
+inline inifieldparse_t Find_Field_Parse(FieldParse *table, char const *token, int &offset, void const *&data)
+{
+    FieldParse *tblptr;
+
+    // Search the list for a matching FieldParse struct.
+    for ( tblptr = table; tblptr->Token != nullptr; ++tblptr ) {
+        // If found, return the data and associated function.
+        if ( strcmp(tblptr->Token, token) == 0 ) {
+            offset = tblptr->Offset;
+            data = tblptr->UserData;
+
+            return tblptr->ParseFunc;
+        }
+    }
+
+    // Didn't find matching token, but null token entry has a function
+    if ( tblptr->ParseFunc != nullptr ) {
+        offset = tblptr->Offset;
+        data = token;
+
+        return tblptr->ParseFunc;
+    }
+
+    // Didn't find anything, sad times.
+    return nullptr;
+}
+
 void MultiIniFieldParse::Add(FieldParse *field_parse, unsigned int extra_offset)
 {
     ASSERT_THROW(Count < MAX_MULTI_FIELDS, 0xDEAD0001);
@@ -171,9 +199,7 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
                 token
             );
 
-            DEBUG_LOG("Calling found block parser.\n");
             parser(this);
-            DEBUG_LOG("Parser called successfully.\n");
         }
     }
 
@@ -213,7 +239,6 @@ void INI::Prep_File(AsciiString filename, INILoadType type)
 
 void INI::Unprep_File()
 {
-    DEBUG_LOG("Unprepping %s.\n", BackingFile->Get_File_Name().Str());
     BackingFile->Close();
     BackingFile = nullptr;
     BufferReadPos = 0;
@@ -240,11 +265,21 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
     ASSERT_THROW_PRINT(what != nullptr, 0xDEAD0006, "Init_From_INI - Invalid parameters supplied.\n");
 
     while ( !done ) {
+        ASSERT_THROW_PRINT(
+            !EndOfFile,
+            0xDEAD0006,
+            "Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
+            CurrentBlock,
+            FileName.Str(),
+            EndToken
+        );
+
         Read_Line();
+
         char *token = crt_strtok(CurrentBlock, Seps);
 
         if ( token == nullptr ) {
-            break;
+            continue;
         }
 
         if ( strcasecmp(token, EndToken) == 0 ) {
@@ -278,15 +313,6 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
 
             parsefunc(this, what, static_cast<char*>(what) + offset + exoffset, data);
         }
-
-        ASSERT_THROW_PRINT(
-            done && !EndOfFile,
-            0xDEAD0006,
-            "Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
-            CurrentBlock,
-            FileName.Str(),
-            EndToken
-        );
     }
 }
 

@@ -96,11 +96,12 @@ void Setup_Hooks()
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040FB40)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
 
     //
-    // Replace FileSystem
+    // Replace INI
     //
     Hook_Method((Make_Method_Ptr<void, INI>(0x0041A8B0)), &INI::Read_Line);
     Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
+    Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
 }
 

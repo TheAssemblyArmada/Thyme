@@ -192,41 +192,4 @@ inline AsciiString INI::Get_Next_Ascii_String()
     return next;
 }
 
-// Helper function for Init_From_INI_Multi
-inline inifieldparse_t Find_Field_Parse(FieldParse *table, char const *token, int &offset, void const *&data)
-{
-    FieldParse *tblptr = table;
-
-    if ( table->Token != nullptr ) {
-        while ( strcmp(table->Token, token) != 0 ) {
-            // Get token from next table in list.
-            ++tblptr;
-            table->Token = tblptr->Token;
-
-            if ( table->Token == nullptr ) {
-                if ( tblptr->ParseFunc == nullptr ) {
-                    return nullptr;
-                } else {
-                    offset = tblptr->Offset;
-                    data = token;
-                    
-                    return tblptr->ParseFunc;
-                }
-            }
-        }
-
-        offset = tblptr->Offset;
-        data = tblptr->UserData;
-    } else {
-        if ( tblptr->Token != nullptr || tblptr->ParseFunc == nullptr ) {
-            return nullptr;
-        }
-
-        offset = tblptr->Offset;
-        data = token;
-    }
-
-    return tblptr->ParseFunc;
-}
-
 #endif // _INI_H_

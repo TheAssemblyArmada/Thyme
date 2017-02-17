@@ -24,7 +24,13 @@
 #include "gamedebug.h"
 #include "critsection.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+#ifdef PLATFORM_WINDOWS
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
 
 #ifdef GAME_DEBUG_LOG
 int DebugFlags;
@@ -45,15 +51,24 @@ void Debug_Init(int flags)
 
     DebugFlags = flags;
 #ifdef PLATFORM_WINDOWS
-    GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
+    char *tmp = getenv("USERPROFILE");
+
+    if ( tmp != NULL ) {
+        strcpy(dirbuf, tmp);
+        strcat(dirbuf, "\\Documents\\Command and Conquer Generals Zero Hour Data");
+        mkdir(dirbuf);
+        strcat(dirbuf, "\\");
+    } else {
+        GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
+
+        // Get the path to the executable minus the actual filename.
+        for ( char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i ) {
+            *i = '\0';
+        }
+    }
 #else
 
 #endif
-
-    // Get the path to the executable minus the actual filename.
-    for ( char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i ) {
-        *i = '\0';
-    }
 
     //char const *prefix = gAppPrefix;      //todo
     char const *prefix = "";

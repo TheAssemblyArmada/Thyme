@@ -100,9 +100,22 @@ void Setup_Hooks()
     //
     Hook_Method((Make_Method_Ptr<void, INI>(0x0041A8B0)), &INI::Read_Line);
     Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
+    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
+    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D950)), &INI::Get_Next_Sub_Token);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
     Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
+    // Field parsing functions
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ADA0)), &INI::Parse_Bool);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041A980)), &INI::Parse_Byte);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AAB0)), &INI::Parse_Int);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AB20)), &INI::Parse_Unsigned);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AB90)), &INI::Parse_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AC00)), &INI::Parse_Positive_None_Zero_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041BA50)), &INI::Parse_Percent_To_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ACA0)), &INI::Parse_Angle_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AD20)), &INI::Parse_Angular_Velocity_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AF20)), &INI::Parse_AsciiString);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

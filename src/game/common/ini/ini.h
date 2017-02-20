@@ -39,6 +39,9 @@ class INI;
 
 #define SXfer (Make_Global<Xfer*>(0x00A2A6B8))
 
+extern const float _SECONDS_PER_LOGICFRAME_REAL_74;
+extern const float _ANGLE_MULTIPLIER;
+
 enum INILoadType
 {
     INI_LOAD_INVALID          = 0,
@@ -85,6 +88,7 @@ struct MultiIniFieldParse
 
 class INI
 {
+    friend void Setup_Hooks(); //Enables hooking functions we have as private
     public:
         enum
         {
@@ -98,14 +102,9 @@ class INI
         void Load(AsciiString filename, INILoadType type, Xfer *xfer);
         void Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type, Xfer *xfer);
 
-        void Prep_File(AsciiString filename, INILoadType type);
-        void Unprep_File();
-
         void Init_From_INI(void *what, FieldParse *parse_table);
         void Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_list);
         void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *));
-
-        void Read_Line();
 
         char *Get_Next_Token_Or_Null(char const *seps = nullptr);
         char *Get_Next_Token(char const *seps = nullptr);
@@ -113,16 +112,47 @@ class INI
         AsciiString Get_Next_Ascii_String();
         AsciiString Get_Filename() { return FileName; }
 
-        int Scan_Science(char const *token);
-        float Scan_PercentToReal(char const *token);
-        float Scan_Real(char const *token);
-        uint32_t Scan_UnsignedInt(char const *token);
-        int32_t Scan_Int(char const *token);
-        bool Scan_Bool(char const *token);
-        int Scan_IndexList(char const *token, char const* const* list);
-        int Scan_LookupList(char const *token, LookupListRec const *list);
+        // Scan functions
+        static int Scan_Science(char const *token);
+        static float Scan_PercentToReal(char const *token);
+        static float Scan_Real(char const *token);
+        static uint32_t Scan_UnsignedInt(char const *token);
+        static int32_t Scan_Int(char const *token);
+        static bool Scan_Bool(char const *token);
+        static int Scan_IndexList(char const *token, char const* const* list);
+        static int Scan_LookupList(char const *token, LookupListRec const *list);
+
+        // Field parsing functions
+        static void Parse_Bool(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Byte(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Int(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Unsigned(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Percent_To_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_AsciiString(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Coord2D(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Coord3D(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Index_List(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Duration_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Duration_Int(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Veclocity_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Acceleration_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data);
+        
+        // Block parsing functions
 
     private:
+        void Read_Line();
+        void Prep_File(AsciiString filename, INILoadType type);
+        void Unprep_File();
+
         File *BackingFile;
         char Buffer[MAX_BUFFER_SIZE];
         int BufferReadPos;

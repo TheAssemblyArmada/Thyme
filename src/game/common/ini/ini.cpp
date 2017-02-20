@@ -22,11 +22,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "ini.h"
+#include "color.h"
+#include "coord.h"
 #include "file.h"
 #include "filesystem.h"
 #include "gamedebug.h"
+#include "minmax.h"
 #include "xfer.h"
 #include <cctype>
+#include <math.h>
+
+const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
+const float _ANGLE_MULTIPLIER = 0.0174532925f;
+const float _DURATION_MULT = 0.029999999f;
 
 // Parsing tables, remove hook when table can be populated correctly
 // Can use Make_Function_Ptr for unimplemented.
@@ -374,7 +382,7 @@ void INI::Read_Line()
 int INI::Scan_Science(char const *token)
 {
     //return TheScienceStore->Friend_Lookup_Science(token);
-    return Call_Method<int, INI, char const*>(0x0041D740, this, token);
+    return Call_Function<int, char const*>(0x0041D740, token); // INI::scanScience
 }
 
 float INI::Scan_PercentToReal(char const *token)
@@ -383,7 +391,7 @@ float INI::Scan_PercentToReal(char const *token)
 
     ASSERT_THROW(sscanf(token, "%f", &value) == 1, 0xDEAD0006);
 
-    return value / 100.0f;
+    return (float)(value / 100.0f);
 }
 
 float INI::Scan_Real(char const *token)
@@ -392,7 +400,7 @@ float INI::Scan_Real(char const *token)
 
     ASSERT_THROW(sscanf(token, "%f", &value) == 1, 0xDEAD0006);
 
-    return value;
+    return (float)value;
 }
 
 uint32_t INI::Scan_UnsignedInt(char const *token)
@@ -471,4 +479,192 @@ int INI::Scan_LookupList(char const *token, LookupListRec const *list)
     }
 
     return list[list_count].Value;
+}
+
+// Field parsing functions.
+void INI::Parse_Bool(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<bool*>(store) = Scan_Bool(ini->Get_Next_Token());
+}
+
+void INI::Parse_Byte(INI *ini, void *formal, void *store, void const *user_data)
+{
+    int tmp = Scan_Int(ini->Get_Next_Token());
+
+    ASSERT_THROW_PRINT(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.\n");
+
+    *static_cast<uint8_t*>(store) = tmp;
+}
+
+void INI::Parse_Int(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<int32_t*>(store) = Scan_Int(ini->Get_Next_Token());
+}
+
+void INI::Parse_Unsigned(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<uint32_t*>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
+}
+
+void INI::Parse_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token());
+}
+
+void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    float tmp = Scan_Real(ini->Get_Next_Token());
+
+    ASSERT_THROW_PRINT(tmp >= 0.0f, 0xDEAD0006, "Value parsed outside range of a positive none zero float.\n");
+
+    *static_cast<float*>(store) = tmp;
+}
+
+void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token(ini->SepsPercent));
+}
+
+void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _ANGLE_MULTIPLIER;
+}
+
+void INI::Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * (_SECONDS_PER_LOGICFRAME_REAL_74 * _ANGLE_MULTIPLIER);
+}
+
+void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<AsciiString*>(store) = ini->Get_Next_Ascii_String();
+}
+
+void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)
+{
+    Call_Function<void, INI*, void*, void*, void const*>(0x0041B1B0, ini, formal, store, user_data);
+//ABI compatibility issues.
+#if 0
+    std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
+
+    for ( char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
+        vec->push_back(AsciiString(i));
+    }
+#endif
+}
+
+void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data)
+{
+    int colors[3];
+    char const *names[3] = { "R", "G", "B" };
+    RGBColor *rgb = static_cast<RGBColor*>(store);
+
+    for ( int i = 0; i < 3; ++i ) {
+        char *token = ini->Get_Next_Sub_Token(names[i]);
+        colors[i] = Clamp(Scan_Int(token), 0, 255);
+    }
+
+    rgb->red = colors[0] / 255.0f;
+    rgb->green = colors[1] / 255.0f;
+    rgb->blue = colors[2] / 255.0f;
+}
+
+void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
+{
+    int colors[4];
+    char const *names[4] = { "R", "G", "B", "A" };
+    RGBAColorInt *rgba = static_cast<RGBAColorInt*>(store);
+
+    for ( int i = 0; i < 4; ++i ) {
+        char *token = ini->Get_Next_Token_Or_Null(ini->SepsColon);
+
+        if ( token != nullptr ) {
+            ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);
+
+            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->SepsColon)), 0, 255);
+        } else {
+            ASSERT_THROW_PRINT(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
+            colors[i] = 255;
+        }
+    }
+
+    rgba->red = colors[0];
+    rgba->green = colors[1];
+    rgba->blue = colors[2];
+    rgba->alpha = colors[3];
+}
+
+void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
+{
+    int colors[4];
+    char const *names[4] = { "R", "G", "B", "A" };
+    uint32_t *rgba = static_cast<uint32_t*>(store);
+
+    for ( int i = 0; i < 4; ++i ) {
+        char *token = ini->Get_Next_Token_Or_Null(ini->SepsColon);
+
+        if ( token != nullptr ) {
+            ASSERT_THROW(strcasecmp(token, names[i]) == 0, 0xDEAD0006);
+
+            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->SepsColon)), 0, 255);
+        } else {
+            ASSERT_THROW(i == 4, 0xDEAD006);
+            colors[i] = 255;
+        }
+    }
+
+    *rgba = Make_Color(colors[0], colors[1], colors[2], colors[3]);
+}
+
+void INI::Parse_Coord2D(INI *ini, void *formal, void *store, void const *user_data)
+{
+    Coord2D *coord = static_cast<Coord2D*>(store);
+
+    coord->x = Scan_Real(ini->Get_Next_Sub_Token("X"));
+    coord->y = Scan_Real(ini->Get_Next_Sub_Token("Y"));
+}
+
+void INI::Parse_Coord3D(INI *ini, void *formal, void *store, void const *user_data)
+{
+    Coord3D *coord = static_cast<Coord3D*>(store);
+
+    coord->x = Scan_Real(ini->Get_Next_Sub_Token("X"));
+    coord->y = Scan_Real(ini->Get_Next_Sub_Token("Y"));
+    coord->z = Scan_Real(ini->Get_Next_Sub_Token("Z"));
+}
+
+void INI::Parse_Index_List(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<int*>(store) = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
+}
+
+void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = _DURATION_MULT * Scan_Real(ini->Get_Next_Token());
+}
+
+void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<uint32_t*>(store) = ceilf(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
+}
+
+void INI::Parse_Veclocity_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _SECONDS_PER_LOGICFRAME_REAL_74;
+}
+
+void INI::Parse_Acceleration_Real(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _SECONDS_PER_LOGICFRAME_REAL_74 * _SECONDS_PER_LOGICFRAME_REAL_74;
+}
+
+void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data)
+{
+    uint32_t i = reinterpret_cast<uintptr_t>(user_data);
+
+    if ( Scan_Bool(ini->Get_Next_Token()) ) {
+        *static_cast<int32_t*>(store) |= i;
+    } else {
+        *static_cast<int32_t*>(store) &= ~i;
+    }
 }

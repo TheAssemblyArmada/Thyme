@@ -98,7 +98,6 @@ void Setup_Hooks()
     //
     // Replace INI
     //
-    Hook_Method((Make_Method_Ptr<void, INI>(0x0041A8B0)), &INI::Read_Line);
     Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
     Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
     Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D950)), &INI::Get_Next_Sub_Token);
@@ -116,6 +115,15 @@ void Setup_Hooks()
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ACA0)), &INI::Parse_Angle_Real);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AD20)), &INI::Parse_Angular_Velocity_Real);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AF20)), &INI::Parse_AsciiString);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041BDD0)), &INI::Parse_RGB_Color);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C100)), &INI::Parse_Color_Int);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C530)), &INI::Parse_Coord2D);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C2C0)), &INI::Parse_Coord3D);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041D140)), &INI::Parse_Index_List);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DB50)), &INI::Parse_Duration_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DBD0)), &INI::Parse_Duration_Int);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DD10)), &INI::Parse_Velocity_Real);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DD90)), &INI::Parse_Acceleration_Real);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

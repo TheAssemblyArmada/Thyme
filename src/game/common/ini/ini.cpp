@@ -604,11 +604,11 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_
         char *token = ini->Get_Next_Token_Or_Null(ini->SepsColon);
 
         if ( token != nullptr ) {
-            ASSERT_THROW(strcasecmp(token, names[i]) == 0, 0xDEAD0006);
+            ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);
 
             colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->SepsColon)), 0, 255);
         } else {
-            ASSERT_THROW(i == 4, 0xDEAD006);
+            ASSERT_THROW_PRINT(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
             colors[i] = 255;
         }
     }
@@ -648,7 +648,7 @@ void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, void const *us
     *static_cast<uint32_t*>(store) = ceilf(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
 }
 
-void INI::Parse_Veclocity_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _SECONDS_PER_LOGICFRAME_REAL_74;
 }

@@ -51,7 +51,7 @@ enum INILoadType
 
 // Function pointer type for the field parser functions
 typedef void(*inifieldparse_t)(INI *, void *, void *, void const *);
-typedef void(__cdecl *iniblockparse_t)(INI *);
+typedef void(*iniblockparse_t)(INI *);
 
 struct LookupListRec
 {
@@ -142,7 +142,7 @@ class INI
         static void Parse_Index_List(INI *ini, void *formal, void *store, void const *user_data);
         static void Parse_Duration_Real(INI *ini, void *formal, void *store, void const *user_data);
         static void Parse_Duration_Int(INI *ini, void *formal, void *store, void const *user_data);
-        static void Parse_Veclocity_Real(INI *ini, void *formal, void *store, void const *user_data);
+        static void Parse_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data);
         static void Parse_Acceleration_Real(INI *ini, void *formal, void *store, void const *user_data);
         static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data);
         

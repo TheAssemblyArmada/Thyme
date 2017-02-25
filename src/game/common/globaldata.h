@@ -34,6 +34,7 @@
 #include "coord.h"
 
 class INI;
+class WeaponBonusSet;
 
 // These two enums need moving when we work out where they should go.
 enum TimeOfDayType
@@ -278,6 +279,40 @@ class GlobalData : public SubsystemInterface
         float AllowedHeightVariationForBuildings;
         float MinLowEnergyProductionSpeed;
         float MaxLowEnergyProductionSpeed;
+        float LowEnergyPenaltyModifier;
+        float MultipleFactory;
+        float RefundPercent;
+        float CommandCenterHealRange;
+        float CommandCenterHealAmmount;
+        int32_t MaxLineBuildObjects;
+        int32_t MaxTunnelCapacity;
+        float HorizontalScrollSpeedFactor;
+        float VerticalScrollSpeedFactor;
+        float ScrollAmountCutoff;
+        float CameraAdjustSpeed;
+        bool EnforceMaxCameraHeight;
+        bool BuildMapCache; // Not 100% sure, needs confirming
+        //char pad[2]
+        AsciiString WeaponBonus;
+        AsciiString UnkAsciiString;
+        int32_t MaxParticleCount;
+        int32_t MaxFieldParticleCount;
+        WeaponBonusSet *WeaponBonusSetPtr;
+        float UnkFloat5;
+        float VeteranHealthBonus;
+        float EliteHealthBonus;
+        float HeroicHealthBonus;
+        float DefaultStructureRubbleHeight;
+        AsciiString ShellMapName;
+        bool ShellMapOn;
+        bool PlayIntro;
+        bool AfterIntro;
+        bool UnkBool15;
+        bool UnkBool16;
+        bool UnkBool17;
+        //char pad[2]
+        float KeyboardScrollFactor;
+        float KeyboardDefaultScrollFactor;
         //TODO
         GlobalData *Next;
 };

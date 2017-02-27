@@ -12,7 +12,11 @@ features and porting to platforms unsupported by the original.
 This project currently supports building on Visual Studio or MinGW-w64. 
 Use CMake to generate a solution outside of the src directory. For example,
 when using the CMake GUI and the source is at C:\path\to\thyme set the build
-path to C:\path\to\thyme\build.
+path to C:\path\to\thyme\build. Note that although you can use MingGW-w64 to
+build thyme, the dll built by it will not work correctly as the GCC ABI does not
+match that used in the the original binary. Once clang can build with exceptions
+for Windows, it should be possible to use that with MinGW-w64 to get the correct
+ABI. This limitation will not apply once the re-implementation is complete.
 
 ## Running
 
@@ -30,7 +34,7 @@ restriction will not apply.
 
 Native support for Linux and macOS is planned for the future, but because of how
 the project is developed, a native binary will not be possible for some time.
-In the mean time, **using Wine** on Linux and macOS, should be possible but
+In the mean time, using Wine on Linux and macOS, should be possible but
 is currently untested.
 
 ## Licence
@@ -55,7 +59,7 @@ There is also the [Wikipedia page for open source games](https://en.wikipedia.or
 
 If you are interested in contributing to Thyme, you will need some knowledge of C++
 as a minimum requirement. Join the developer chat listed below for more information on
-what else you will need.
+what else you will need such as the idc file for the current map of the binary.
 
 ## Contact
 

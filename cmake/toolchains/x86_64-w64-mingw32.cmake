@@ -2,6 +2,7 @@
 #
 # Typical usage:
 #    *) install cross compiler: `sudo apt-get install mingw-w64 g++-mingw-w64`
+#    *) mkdir build
 #    *) cd build
 #    *) cmake -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/x86_64-w64-mingw32.cmake ..
 
@@ -14,8 +15,8 @@ set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
 set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
 
 # target environment on the build host system
-#   set 1st to dir with the cross compiler's C/C++ headers/libs
-set(CMAKE_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
+# set 1st to dir with the cross compiler's C/C++ headers/libs
+set(CMAKE_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX} /usr/${TOOLCHAIN_PREFIX}/sys-root/mingw)
 
 # modify default behavior of FIND_XXX() commands to
 # search for headers/libs in the target environment and

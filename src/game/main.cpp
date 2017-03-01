@@ -342,6 +342,7 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 
     DEBUG_LOG("About to run Game_Main\n");
     Game_Main(argc, argv);
+    DEBUG_LOG("Game shutting down.\n");
 
     delete TheVersion;
     TheVersion = nullptr;

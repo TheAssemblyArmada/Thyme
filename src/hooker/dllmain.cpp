@@ -115,6 +115,7 @@ void Setup_Hooks()
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ACA0)), &INI::Parse_Angle_Real);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AD20)), &INI::Parse_Angular_Velocity_Real);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AF20)), &INI::Parse_AsciiString);
+    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041B1B0)), &INI::Parse_AsciiString_Vector_Append);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041BDD0)), &INI::Parse_RGB_Color);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C100)), &INI::Parse_Color_Int);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C530)), &INI::Parse_Coord2D);

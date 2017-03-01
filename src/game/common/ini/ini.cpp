@@ -543,15 +543,12 @@ void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *use
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)
 {
-    Call_Function<void, INI*, void*, void*, void const*>(0x0041B1B0, ini, formal, store, user_data);
-//ABI compatibility issues.
-#if 0
+    DEBUG_LOG("Appending Vector for ini %s.\n", ini->FileName.Str());
     std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
 
     for ( char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
         vec->push_back(AsciiString(i));
     }
-#endif
 }
 
 void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data)

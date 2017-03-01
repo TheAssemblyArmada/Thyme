@@ -52,46 +52,56 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DGAME_DEBUG_LOG")
 endif()
 
+# Locate git binary to provide information to the build environment
+find_package(Git)
 
-# Define current git branch.
-execute_process(
-    COMMAND git rev-parse --abbrev-ref HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE THYME_BRANCH
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-)
-add_definitions(-DTHYME_BRANCH="${THYME_BRANCH}")
+if(GIT_FOUND)
+    # Define current git branch.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE THYME_BRANCH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    add_definitions(-DTHYME_BRANCH="${THYME_BRANCH}")
 
-# Define commit hash.
-execute_process(
-    COMMAND git rev-parse HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE THYME_COMMIT_SHA1
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-)
-add_definitions(-DTHYME_COMMIT_SHA1="${THYME_COMMIT_SHA1}")
+    # Define commit hash.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE THYME_COMMIT_SHA1
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    add_definitions(-DTHYME_COMMIT_SHA1="${THYME_COMMIT_SHA1}")
 
-# Define short commit hash.
-execute_process(
-    COMMAND git rev-parse --short HEAD
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE THYME_COMMIT_SHA1_SHORT
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-)
-add_definitions(-DTHYME_COMMIT_SHA1_SHORT="${THYME_COMMIT_SHA1_SHORT}")
+    # Define short commit hash.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE THYME_COMMIT_SHA1_SHORT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="${THYME_COMMIT_SHA1_SHORT}")
 
-# Define commit count.
-execute_process(
-    COMMAND git rev-list HEAD --count
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE THYME_COMMIT_COUNT
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-)
-add_definitions(-DTHYME_COMMIT_COUNT=${THYME_COMMIT_COUNT})
+    # Define commit count.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-list HEAD --count
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE THYME_COMMIT_COUNT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    add_definitions(-DTHYME_COMMIT_COUNT=${THYME_COMMIT_COUNT})
+
+else()
+    add_definitions(-DTHYME_BRANCH="NOGITBRANCH")
+    add_definitions(-DTHYME_COMMIT_SHA1="NOGITHASH")
+    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="NOGITHASH")
+    add_definitions(-DTHYME_COMMIT_COUNT=0)
+endif()
 
 # Build and link the launcher.
 set(LAUNCHER_SRC launcher/launcher.cpp launcher/resource.rc)

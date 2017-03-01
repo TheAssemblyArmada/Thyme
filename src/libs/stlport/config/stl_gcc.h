@@ -7,7 +7,7 @@
 # define _STLP_USE_GLIBC
 #endif
 
-#   define _STLP_NO_MEMBER_TEMPLATE_KEYWORD
+//#   define _STLP_NO_MEMBER_TEMPLATE_KEYWORD
 
 # if defined(__FreeBSD__) || defined (__hpux) || defined(__amigaos__)
 #  define _STLP_NO_WCHAR_T
@@ -250,7 +250,7 @@ typedef unsigned int wint_t;
 
 # if (__GNUC__ >= 3)
 
-#  define _STLP_NATIVE_INCLUDE_PATH ../g++-v3
+#  define _STLP_NATIVE_INCLUDE_PATH ../c++
 #  define _STLP_NATIVE_OLD_STREAMS_INCLUDE_PATH ../g++-v3/backward
 
 # elif (__GNUC_MINOR__ < 8)

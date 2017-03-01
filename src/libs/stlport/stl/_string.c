@@ -514,6 +514,9 @@ _STLP_END_NAMESPACE
 # include <stl/_range_errors.h>  
 _STLP_BEGIN_NAMESPACE
 
+void _STLP_DECLSPEC _STLP_CALL __stl_throw_length_error(const char* __msg);
+void _STLP_DECLSPEC _STLP_CALL __stl_throw_out_of_range(const char* __msg);
+
 // _String_base methods
 template <class _Tp, class _Alloc> void _String_base<_Tp,_Alloc>::_M_throw_length_error() const {
     __stl_throw_length_error("basic_string");

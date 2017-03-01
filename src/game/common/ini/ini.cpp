@@ -30,6 +30,7 @@
 #include "minmax.h"
 #include "xfer.h"
 #include <cctype>
+#include <cstdio>
 #include <math.h>
 
 const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;

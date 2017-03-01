@@ -24,6 +24,7 @@
 #include    <windows.h>
 #include    <string>
 #include    <stdio.h>
+#include    <string.h>
 
 // Use WinMain and don't make a console window.
 #pragma comment(linker, "/subsystem:windows /ENTRY:WinMainCRTStartup")

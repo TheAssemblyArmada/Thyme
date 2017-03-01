@@ -143,6 +143,6 @@ set(GAMEENGINE_SRC
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
-target_include_directories(thyme BEFORE PUBLIC src/hooker ${GAMEENGINE_INCLUDES})
+target_include_directories(thyme BEFORE PUBLIC src/libs/stlport src/hooker ${GAMEENGINE_INCLUDES})
 
 target_link_libraries(thyme)

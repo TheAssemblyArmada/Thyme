@@ -543,7 +543,7 @@ void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *use
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)
 {
-    DEBUG_LOG("Appending Vector for ini %s.\n", ini->FileName.Str());
+    //DEBUG_LOG("Appending Vector for ini %s.\n", ini->FileName.Str());
     std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
 
     for ( char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {

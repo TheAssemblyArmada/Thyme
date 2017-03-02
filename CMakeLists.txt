@@ -154,6 +154,11 @@ set(GAMEENGINE_SRC
     src/w3d/lib/critsection.cpp
 )
 
+# Disable optimisations on the hooking code.
+if(MSVC)
+set_source_files_properties(src/game/common/system/gamememory.cpp PROPERTIES COMPILE_FLAGS -Od)
+endif()
+
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
 target_include_directories(thyme BEFORE PUBLIC src/libs/stlport src/hooker ${GAMEENGINE_INCLUDES})
 

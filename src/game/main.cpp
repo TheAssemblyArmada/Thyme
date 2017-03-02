@@ -302,7 +302,7 @@ void Create_Window()
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
-
+    DEBUG_LOG("Running main().\n");
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
     crt_set_se_translator(Exception_Handler_Ptr);
@@ -313,6 +313,7 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     MemoryPoolCriticalSection = &critSec3;
 
     // Set working directory to the exe directory.
+    DEBUG_LOG("Setting working directory.\n");
     Set_Working_Directory();
 
     // Check command line for -win
@@ -323,11 +324,14 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     Check_Windowed(argc, argv);
 
     // Create the window
+    DEBUG_LOG("Creating Window.\n");
     Create_Window();
 
+    DEBUG_LOG("Initialising memory manager.\n");
     Init_Memory_Manager();
 
     // Use of some of the version strings to use the git commit and branch stuff.
+    DEBUG_LOG("Initialising Version manager.\n");
     TheVersion = new Version;
     TheVersion->Set_Version(
         1,                          // Major

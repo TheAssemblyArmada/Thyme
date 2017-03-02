@@ -344,7 +344,7 @@ void UnicodeString::Format_VA(wchar_t const *format, char *args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
-    RELEASE_ASSERT(vsnwprintf(buf, sizeof(buf), format, args) > 0);
+    ASSERT_THROW_PRINT(vsnwprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -353,7 +353,7 @@ void UnicodeString::Format_VA(UnicodeString &format, char *args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
-    RELEASE_ASSERT(vsnwprintf(buf, sizeof(buf), format.Str(), args) > 0);
+    ASSERT_THROW_PRINT(vsnwprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

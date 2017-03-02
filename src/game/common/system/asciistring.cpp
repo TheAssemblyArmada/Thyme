@@ -352,7 +352,7 @@ void AsciiString::Format_VA(char const *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    RELEASE_ASSERT(vsnprintf(buf, sizeof(buf), format, args) > 0);
+    ASSERT_THROW_PRINT(vsnprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -361,8 +361,8 @@ void AsciiString::Format_VA(AsciiString &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    RELEASE_ASSERT(vsnprintf(buf, sizeof(buf), format.Str(), args) > 0);
-    
+    ASSERT_THROW_PRINT(vsnprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+
     Set(buf);
 }
 

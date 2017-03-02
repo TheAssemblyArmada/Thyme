@@ -61,6 +61,13 @@ void Setup_Hooks()
     Hook_Function((Make_Function_Ptr<bool>(0x004469C0)), IsFirstCDPresent);
     
     //
+    // Replace memory intialisation
+    //
+    Hook_Function((Make_Function_Ptr<void>(0x00414510)), Init_Memory_Manager);
+    Hook_Function((Make_Function_Ptr<void>(0x004148C0)), Init_Memory_Manager_Pre_Main);
+
+
+    //
     // Replace memory allocation operators
     //
     Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414450)), New_New);

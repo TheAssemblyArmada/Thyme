@@ -715,6 +715,7 @@ void Init_Memory_Manager()
     PoolInitRec const *params;
 
     if ( TheMemoryPoolFactory == nullptr ) {
+        DEBUG_LOG("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
         TheMemoryPoolFactory = new MemoryPoolFactory;
         TheMemoryPoolFactory->Init();
@@ -754,7 +755,7 @@ void Init_Memory_Manager_Pre_Main()
 
     if ( TheMemoryPoolFactory == nullptr ) {
         DEBUG_INIT(DEBUG_LOG_TO_FILE);
-        DEBUG_LOG("Memory Manager initialised prior to WinMain\n");
+        DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         TheMemoryPoolFactory = new MemoryPoolFactory;

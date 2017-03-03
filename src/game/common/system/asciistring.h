@@ -32,7 +32,7 @@
 //  Includes
 ////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
-#include "gamememory.h"
+#include "memdynalloc.h"
 
 class UnicodeString;
 

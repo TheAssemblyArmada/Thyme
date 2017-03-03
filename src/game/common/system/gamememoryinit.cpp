@@ -24,6 +24,7 @@
 #include "gamememoryinit.h"
 #include "minmax.h"
 #include "gamedebug.h"
+#include "rawalloc.h"
 #include <cstdio>
 
 static PoolInitRec const UserDMAParameters[7] = {

@@ -26,6 +26,7 @@
 #include "hookcrt.h"
 #include "critsection.h"
 #include "gamememory.h"
+#include "mempool.h"
 #include "unicodestring.h"
 #include "version.h"
 #include "gamedebug.h"

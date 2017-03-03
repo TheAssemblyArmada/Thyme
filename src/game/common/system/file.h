@@ -30,6 +30,7 @@
 
 #include "asciistring.h"
 #include "gamememory.h"
+#include "mempoolobj.h"
 
 struct FileInfo
 {

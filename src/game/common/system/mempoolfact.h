@@ -4,7 +4,7 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: GAMEMEMORY.H
+//          File:: MEMPOOLFACT.H
 //
 //        Author:: OmniBlade
 //
@@ -26,35 +26,43 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _GAMEMEMORY_H_
-#define _GAMEMEMORY_H_
+#ifndef _MEMPOOLFACT_H_
+#define _MEMPOOLFACT_H_
 
-#include "always.h"
-#include "gamedebug.h"
 #include "rawalloc.h"
-#include "hooker.h"         //Remove once all hooks implemented
-
-void *New_New(size_t bytes);
-void *New_Array_New(size_t bytes);
-void New_Delete(void *ptr);
-void New_Array_Delete(void *ptr);
 
 struct PoolInitRec;
-
-class MemoryPoolFactory;
-class MemoryPoolBlob;
-class MemoryPoolSingleBlock;
 class MemoryPool;
 class DynamicMemoryAllocator;
-class SimpleCriticalSectionClass;
 
-#define TheLinkChecker (Make_Global<int>(0x00A29B9C))
-extern bool ThePreMainInitFlag;
-extern bool TheMainInitFlag;
+#define TheMemoryPoolFactory (Make_Global<MemoryPoolFactory*>(0x00A29B94))
 
-void Init_Memory_Manager();
-void Init_Memory_Manager_Pre_Main();
-void Shutdown_Memory_Manager();
-MemoryPool *Create_Named_Pool(char const *name, int size);
+class MemoryPoolFactory
+{
+public:
+    MemoryPoolFactory() : FirstPoolInFactory(nullptr), FirstDmaInFactory(nullptr) {}
+    ~MemoryPoolFactory();
+    void Init() {}
+    MemoryPool *Create_Memory_Pool(PoolInitRec const *params);
+    MemoryPool *Create_Memory_Pool(char const *name, int size, int count, int overflow);
+    MemoryPool *Find_Memory_Pool(char const *name);
+    void Destroy_Memory_Pool(MemoryPool *pool);
+    DynamicMemoryAllocator *Create_Dynamic_Memory_Allocator(int subpools, PoolInitRec const *const params);
+    void Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator *allocator);
+    void Reset();
 
-#endif // _GAMEMEMORY_H_
+    void *operator new(size_t size) throw()
+    {
+        return Raw_Allocate_No_Zero(size);
+    }
+
+    void operator delete(void *obj)
+    {
+        Raw_Free(obj);
+    }
+private:
+    MemoryPool *FirstPoolInFactory;
+    DynamicMemoryAllocator *FirstDmaInFactory;
+};
+
+#endif

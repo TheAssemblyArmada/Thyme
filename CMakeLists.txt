@@ -143,6 +143,10 @@ set(GAMEENGINE_SRC
     src/game/common/system/gamememoryinit.cpp
     src/game/common/system/localfile.cpp
     src/game/common/system/localfilesystem.cpp
+    src/game/common/system/memblob.cpp
+    src/game/common/system/memdynalloc.cpp
+    src/game/common/system/mempool.cpp
+    src/game/common/system/mempoolfact.cpp
     src/game/common/system/ramfile.cpp
     src/game/common/system/streamingarchivefile.cpp
     src/game/common/system/subsysteminterface.cpp
@@ -153,11 +157,6 @@ set(GAMEENGINE_SRC
     src/platform/win32localfilesystem.cpp
     src/w3d/lib/critsection.cpp
 )
-
-# Disable optimisations on the hooking code.
-if(MSVC)
-set_source_files_properties(src/game/common/system/gamememory.cpp PROPERTIES COMPILE_FLAGS -Od)
-endif()
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
 target_include_directories(thyme BEFORE PUBLIC src/libs/stlport src/hooker ${GAMEENGINE_INCLUDES})

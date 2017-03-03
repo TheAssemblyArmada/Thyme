@@ -49,8 +49,4 @@ void User_Memory_Adjust_Pool_Size(char const *name, int &initial_alloc, int &ove
 void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params);
 void User_Memory_Init_Pools();
 
-inline int Round_Up_4(int number) { return (number + 3) & (~3); }
-inline int Round_Up_8(int number) { return (number + 7) & (~7); }
-inline int Round_Up_Word_Size(int number) { return (number + sizeof(void*) - 1) & (~(sizeof(void*) - 1)); }
-
 #endif // _GAMEMEMORYINIT_H_

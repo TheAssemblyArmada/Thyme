@@ -80,14 +80,14 @@
  * link with third-part libraries compiled with different standard library implementation.
  */
 // #  define _STLP_USE_OWN_NAMESPACE 1
-// #  define _STLP_NO_OWN_NAMESPACE  1
+//#  define _STLP_NO_OWN_NAMESPACE  1
 
 
 /* 
  * Uncomment _STLP_USE_NEWALLOC to force allocator<T> to use plain "new"
  * instead of STLport optimized node allocator engine.
  */
-// #define   _STLP_USE_NEWALLOC   1
+#define   _STLP_USE_NEWALLOC   1
 
 /* 
  * Uncomment _STLP_USE_MALLOC to force allocator<T> to use plain "malloc" 

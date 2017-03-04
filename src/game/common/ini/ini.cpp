@@ -107,7 +107,7 @@ BlockParse TheTypeTable[] =
     { nullptr, nullptr }
 };
 #else
-#define TheTypeTable (Make_Global<BlockParse>(0x0093B670))
+#define TheTypeTable (Make_Pointer<BlockParse>(0x0093B670))
 #endif
 
 
@@ -115,7 +115,7 @@ BlockParse TheTypeTable[] =
 inline iniblockparse_t Find_Block_Parse(char const *token)
 {
     // Iterate over the TypeTable to identify correct parsing function.
-    for ( BlockParse *block = &TheTypeTable; block->Token != nullptr; ++block ) {
+    for ( BlockParse *block = TheTypeTable; block->Token != nullptr; ++block ) {
         if ( strcmp(block->Token, token) == 0 ) {
             return block->ParseFunc;
         }

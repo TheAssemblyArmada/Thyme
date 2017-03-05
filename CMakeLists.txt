@@ -105,60 +105,8 @@ else()
     add_definitions(-DTHYME_COMMIT_COUNT=0)
 endif()
 
-# Build and link the launcher.
-set(LAUNCHER_SRC launcher/launcher.cpp launcher/resource.rc)
-add_executable(launchthyme ${LAUNCHER_SRC})
-target_link_libraries(launchthyme)
+# Build the launcher
+add_subdirectory(launcher)
 
-# Build and link the DLL.
-set(GAMEENGINE_INCLUDES
-    src/base
-    src/game
-    src/game/client
-    src/game/common
-    src/game/common/ini
-    src/game/common/system
-    src/platform
-    src/w3d/lib
-)
-
-set(HOOKER_SRC src/hooker/dllmain.cpp src/hooker/hooker.cpp)
-
-set(GAMEENGINE_SRC
-    src/game/copyprotect.cpp
-    src/game/force_nocd.cpp
-    src/game/main.cpp
-    src/game/client/gametext.cpp
-    src/game/common/gameengine.cpp
-    src/game/common/globaldata.cpp
-    src/game/common/version.cpp
-    src/game/common/ini/ini.cpp
-    src/game/common/system/archivefile.cpp
-    src/game/common/system/archivefilesystem.cpp
-    src/game/common/system/asciistring.cpp
-    src/game/common/system/file.cpp
-    src/game/common/system/filesystem.cpp
-    src/game/common/system/gamedebug.cpp
-    src/game/common/system/gamememory.cpp
-    src/game/common/system/gamememoryinit.cpp
-    src/game/common/system/localfile.cpp
-    src/game/common/system/localfilesystem.cpp
-    src/game/common/system/memblob.cpp
-    src/game/common/system/memdynalloc.cpp
-    src/game/common/system/mempool.cpp
-    src/game/common/system/mempoolfact.cpp
-    src/game/common/system/ramfile.cpp
-    src/game/common/system/streamingarchivefile.cpp
-    src/game/common/system/subsysteminterface.cpp
-    src/game/common/system/unicodestring.cpp
-    src/game/common/system/xfer.cpp
-    src/platform/win32gameengine.cpp
-    src/platform/win32localfile.cpp
-    src/platform/win32localfilesystem.cpp
-    src/w3d/lib/critsection.cpp
-)
-
-add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
-target_include_directories(thyme BEFORE PUBLIC src/libs/stlport src/hooker ${GAMEENGINE_INCLUDES})
-
-target_link_libraries(thyme)
+# Build Thyme
+add_subdirectory(src)

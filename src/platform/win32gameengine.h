@@ -29,14 +29,35 @@
 #define _WIN32GAMEENGINE_H_
 
 #include "gameengine.h"
-#include "win32localfilesystem.h"
 
 class Win32GameEngine : public GameEngine
 {
-    public:
-        //TODO
-    private:
-        unsigned int PreviousErrorMode;
+public:
+    Win32GameEngine();
+    virtual ~Win32GameEngine();
+
+    // SubsystemInterface implementations
+    virtual void Init() { GameEngine::Init(); }
+    virtual void Reset() { GameEngine::Reset(); }
+    virtual void Update() { GameEngine::Update(); }
+
+    // GameEngine interface
+    virtual void Service_Windows_OS();
+    virtual LocalFileSystem *Create_Local_File_System();
+    virtual ArchiveFileSystem *Create_Archive_File_System();
+    virtual GameLogic *Create_Game_Logic();
+    virtual GameClient *Create_Game_Client();
+    virtual ModuleFactory *Create_Module_Factory();
+    virtual ThingFactory *Create_Thing_Factory();
+    virtual FunctionLexicon *Create_Function_Lexicon();
+    virtual Radar *Create_Radar();
+    virtual WebBrowser *Create_Web_Browser();
+    virtual ParticleSystemManager *Create_Particle_System_Manager();
+    virtual AudioManager *Create_Audio_Manager();
+    virtual Network *Create_Network();
+
+private:
+    unsigned int PreviousErrorMode;
 };
 
 #endif // _WIN32GAMEENGINE_H_

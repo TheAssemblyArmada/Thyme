@@ -22,3 +22,87 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "gameengine.h"
+
+#ifdef PLATFORM_WINDOWS
+#include <timeapi.h>
+#endif
+
+GameEngine::GameEngine() :
+    MaxFPS(0),
+    Quitting(false),
+    Active(false)
+{
+#ifdef PLATFORM_WINDOWS
+    timeBeginPeriod(1);
+#endif
+}
+
+GameEngine::~GameEngine()
+{
+    //TODO
+
+#ifdef PLATFORM_WINDOWS
+    timeEndPeriod(1);
+#endif
+}
+
+void GameEngine::Reset()
+{
+}
+
+void GameEngine::Update()
+{
+}
+
+void GameEngine::Init(int argc, char ** argv)
+{
+}
+
+void GameEngine::Execute()
+{
+}
+
+void GameEngine::Set_FPS_Limit(int limit)
+{
+}
+
+int GameEngine::Get_FPS_Limit()
+{
+    return 0;
+}
+
+void GameEngine::Set_Quitting(bool quitting)
+{
+}
+
+void GameEngine::Get_Quitting()
+{
+}
+
+bool GameEngine::Is_Multiplayer_Session()
+{
+    return false;
+}
+
+void GameEngine::Service_Windows_OS()
+{
+}
+
+bool GameEngine::Get_Is_Active()
+{
+    return false;
+}
+
+void GameEngine::Set_Is_Active()
+{
+}
+
+FileSystem *GameEngine::Create_File_System()
+{
+    return nullptr;
+}
+
+MessageStream *GameEngine::Create_Message_Stream()
+{
+    return nullptr;
+}

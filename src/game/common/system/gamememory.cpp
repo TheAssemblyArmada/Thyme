@@ -136,24 +136,24 @@ void *New_New(size_t bytes)
 {
     ++TheLinkChecker;
     Init_Memory_Manager_Pre_Main();
+
     return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void *operator new(size_t bytes)
 {
-    return New_New(bytes);
-}
-
-void *New_Array_New(size_t bytes)
-{
     ++TheLinkChecker;
     Init_Memory_Manager_Pre_Main();
+
     return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void *operator new[](size_t bytes)
 {
-    return New_Array_New(bytes);
+    ++TheLinkChecker;
+    Init_Memory_Manager_Pre_Main();
+
+    return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void New_Delete(void *ptr)
@@ -165,11 +165,6 @@ void New_Delete(void *ptr)
 
 void operator delete(void *ptr)
 {
-    New_Delete(ptr);
-}
-
-void New_Array_Delete(void *ptr)
-{
     ++TheLinkChecker;
     Init_Memory_Manager_Pre_Main();
     TheDynamicMemoryAllocator->Free_Bytes(ptr);
@@ -177,5 +172,7 @@ void New_Array_Delete(void *ptr)
 
 void operator delete[](void *ptr)
 {
-    New_Array_Delete(ptr);
+    ++TheLinkChecker;
+    Init_Memory_Manager_Pre_Main();
+    TheDynamicMemoryAllocator->Free_Bytes(ptr);
 }

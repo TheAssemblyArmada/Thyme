@@ -70,10 +70,10 @@ void Setup_Hooks()
     //
     // Replace memory allocation operators
     //
-    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414450)), New_New);
-    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414490)), New_Array_New);
-    Hook_Function((Make_Function_Ptr<void, void *>(0x004144D0)), New_Delete);
-    Hook_Function((Make_Function_Ptr<void, void *>(0x004144F0)), New_Array_Delete);
+    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414450)), New_New);    // operator new
+    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414490)), New_New);    // operator new[]
+    Hook_Function((Make_Function_Ptr<void, void *>(0x004144D0)), New_Delete);   // operator delete
+    Hook_Function((Make_Function_Ptr<void, void *>(0x004144F0)), New_Delete);   // operator delete[]
     Hook_Function((Make_Function_Ptr<MemoryPool *, const char *, int>(0x00414B30)), Create_Named_Pool);
     
     //

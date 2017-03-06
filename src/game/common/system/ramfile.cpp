@@ -87,7 +87,7 @@ int RAMFile::Read(void *dst, int bytes)
     return data_read;
 }
 
-int RAMFile::Write(void *src, int bytes)
+int RAMFile::Write(void const *src, int bytes)
 {
     // No writing to RAM files.
     return - 1;

@@ -96,6 +96,11 @@ void Setup_Hooks()
     Hook_Method((Make_Method_Ptr<MemoryPool *, MemoryPoolFactory, char const *, int, int, int>(0x00414180)), static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
     
     //
+    // Replace File functions
+    //
+    Hook_Method((Make_Method_Ptr<LocalFileSystem*, Win32GameEngine>(0x007420F0)), &Win32GameEngine::Create_Local_File_System_NV);
+
+    //
     // Replace AsciiString
     //
     Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));

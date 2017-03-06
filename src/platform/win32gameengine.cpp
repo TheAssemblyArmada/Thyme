@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "win32gameengine.h"
+#include "win32localfilesystem.h"
 
 Win32GameEngine::Win32GameEngine()
 {
@@ -37,7 +38,7 @@ void Win32GameEngine::Service_Windows_OS()
 
 LocalFileSystem *Win32GameEngine::Create_Local_File_System()
 {
-    return nullptr;
+    return new Win32LocalFileSystem;
 }
 
 ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System()
@@ -93,4 +94,10 @@ AudioManager *Win32GameEngine::Create_Audio_Manager()
 Network *Win32GameEngine::Create_Network()
 {
     return nullptr;
+}
+
+// Temp clone to hook the function
+LocalFileSystem *Win32GameEngine::Create_Local_File_System_NV()
+{
+    return new Win32LocalFileSystem;
 }

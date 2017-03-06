@@ -56,20 +56,23 @@ bool File::Open(char const *filename, int mode)
         return false;
     }
 
+    int open_mode = mode;
+
     // If read/write mode not specified assume read.
     if ( (mode & (READ | WRITE)) == 0 ) {
-        OpenMode = mode | READ;
+        open_mode = mode | READ;
     }
 
     if ( (mode & (READ | APPEND)) == 0 ) {
-        OpenMode |= TRUNCATE;
+        open_mode |= TRUNCATE;
     }
 
     // If neither text nor binary specified, assume binary.
     if ( (mode & (TEXT | BINARY)) == 0 ) {
-        OpenMode |= BINARY;
+        open_mode |= BINARY;
     }
 
+    OpenMode = open_mode;
     Access = true;
 
     return true;

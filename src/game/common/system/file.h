@@ -67,7 +67,7 @@ class File : public MemoryPoolObject
         virtual bool Open(char const *filename, int mode);
         virtual void Close();
         virtual int Read(void *dst, int bytes) = 0;
-        virtual int Write(void *src, int bytes) = 0;
+        virtual int Write(void const *src, int bytes) = 0;
         virtual int Seek(int offset, File::SeekMode mode) = 0;
         virtual void Next_Line(char *dst, int bytes) = 0;
         virtual bool Scan_Int(int &integer) = 0;
@@ -79,7 +79,7 @@ class File : public MemoryPoolObject
 
         AsciiString &Get_File_Name() { return FileName; }
         int Get_File_Mode() { return OpenMode; }
-        void Set_Del_On_Close(bool del) { DeleteOnClose = del;  }
+        void Set_Del_On_Close(bool del) { DeleteOnClose = del; }
 
     protected:
         AsciiString FileName;

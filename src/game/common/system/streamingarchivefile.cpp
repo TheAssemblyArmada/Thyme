@@ -76,7 +76,7 @@ int StreamingArchiveFile::Read(void *dst, int bytes)
     return bytes;
 }
 
-int StreamingArchiveFile::Write(void *src, int bytes)
+int StreamingArchiveFile::Write(void const *src, int bytes)
 {
     return -1;
 }

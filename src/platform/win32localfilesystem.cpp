@@ -35,8 +35,6 @@
 
 File *Win32LocalFileSystem::Open_File(char const *filename, int mode)
 {
-    DEBUG_LOG("Attempting to open local file %s.\n", filename);
-
     if ( strlen(filename) <= 0 ) {
         return nullptr;
     }
@@ -62,7 +60,6 @@ File *Win32LocalFileSystem::Open_File(char const *filename, int mode)
         }
     }
 
-    DEBUG_LOG("Win32LocalFile instance allocated, opening %s.\n", filename);
     // Try and open the file, if not, delete instance and return null.
     if ( file->Open(filename, mode) ) {
         file->Set_Del_On_Close(true);
@@ -76,16 +73,11 @@ File *Win32LocalFileSystem::Open_File(char const *filename, int mode)
 
 bool Win32LocalFileSystem::Does_File_Exist(char const *filename)
 {
-    DEBUG_LOG("Checking File %s Exists\n", filename);
     return access(filename, 0) == 0;
 }
 
 void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
 {
-    DEBUG_LOG("Getting file list for %s%s.\n", dirpath.Str(), filter.Str());
-
-    Call_Method<void, Win32LocalFileSystem, AsciiString const &, AsciiString const &, AsciiString const &, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &, bool>(0x00777800, this, subdir, dirpath, filter, filelist, search_subdirs);
-#if 0
     AsciiString search_path = dirpath;
     search_path += subdir;
     search_path += filter;
@@ -106,7 +98,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
                 filepath += data.cFileName;
                 filelist.insert(filepath);
             }
-        } while ( FindNextFileA(hndl, &data) != 0 );
+        } while ( FindNextFileA(hndl, &data) );
     }
 
     FindClose(hndl);
@@ -145,12 +137,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
 #else
     //TODO Some combo of dirent and fnmatch to get same functionality for posix?
 #endif
-#endif
 }
 
 bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *info)
 {
-    DEBUG_LOG("Getting info for %s.\n", filename.Str());
     //TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATA data;
@@ -175,8 +165,6 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
 
 bool Win32LocalFileSystem::Create_Directory(AsciiString dir_path)
 {
-    DEBUG_LOG("Creating directory %s.\n", dir_path.Str());
-
     if ( dir_path.Is_Empty() || dir_path.Get_Length() > PATH_MAX ) {
         return false;
     }

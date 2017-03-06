@@ -44,12 +44,6 @@
 
 INITIALISE_POOL(Win32LocalFile);
 
-#define crt_open (Make_Global<int (__cdecl *const)(char const *, int, ...)>(0x00939330))
-#define crt_close (Make_Global<int (__cdecl *const)(int)>(0x00939334))
-#define crt_read (Make_Global<int (__cdecl *const)(int, void *, unsigned int)>(0x009392F0))
-#define crt_write (Make_Global<int (__cdecl *const)(int, void *, unsigned int)>(0x009392E8))
-#define crt_lseek (Make_Global<int (__cdecl *const)(int, int, int)>(0x009392EC))
-
 Win32LocalFile::Win32LocalFile() :
     FileHandle(INVALID_HANDLE)
 {
@@ -59,7 +53,7 @@ Win32LocalFile::Win32LocalFile() :
 Win32LocalFile::~Win32LocalFile()
 {
     if ( FileHandle != INVALID_HANDLE ) {
-        crt_close(FileHandle);
+        close(FileHandle);
         FileHandle = -1;
         --TotalOpen;
     }
@@ -69,8 +63,6 @@ Win32LocalFile::~Win32LocalFile()
 
 bool Win32LocalFile::Open(char const *filename, int mode)
 {
-    DEBUG_LOG("Opening Win32LocalFile %s with mode %08X.\n", filename, mode);
-
     if ( !File::Open(filename, mode) ) {
         return false;
     }
@@ -103,7 +95,7 @@ bool Win32LocalFile::Open(char const *filename, int mode)
         openmode |= O_WRONLY | O_CREAT;
     }
 
-    FileHandle = crt_open(filename, openmode, S_IREAD | S_IWRITE);
+    FileHandle = open(filename, openmode, S_IREAD | S_IWRITE);
 
     if ( FileHandle == -1 ) {
         return false;
@@ -122,34 +114,32 @@ bool Win32LocalFile::Open(char const *filename, int mode)
 
 int Win32LocalFile::Read(void *dst, int bytes)
 {
-    DEBUG_LOG("Reading %d bytes from Win32LocalFile %s.\n", bytes, FileName.Str());
-    if ( !Access ) {
+   if ( !Access ) {
         return -1;
     }
 
     if ( dst != nullptr ) {
         
-        return crt_read(FileHandle, dst, bytes);
+        return read(FileHandle, dst, bytes);
     } else {
-        crt_lseek(FileHandle, bytes, CURRENT);
+        lseek(FileHandle, bytes, CURRENT);
     }
 
     return bytes;
 }
 
-int Win32LocalFile::Write(void *src, int bytes)
+int Win32LocalFile::Write(void const *src, int bytes)
 {
-    DEBUG_LOG("Writing %d bytes to Win32LocalFile %s.\n", bytes, FileName.Str());
     if ( !Access || src == nullptr ) {
         return -1;
     }
 
-    return crt_write(FileHandle, src, bytes);
+    return write(FileHandle, src, bytes);
 }
 
 int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 {
-    DEBUG_LOG("Seeking to %d in Win32LocalFile %s.\n", offset, FileName.Str());
+    //DEBUG_LOG("Seeking to %d in Win32LocalFile %s.\n", offset, FileName.Str());
     switch ( mode ) {
         case START:
         case CURRENT:
@@ -159,7 +149,7 @@ int Win32LocalFile::Seek(int offset, File::SeekMode mode)
             return -1;
     }
 
-    return crt_lseek(FileHandle, offset, mode);
+    return lseek(FileHandle, offset, mode);
 }
 
 void Win32LocalFile::Next_Line(char *dst, int bytes)
@@ -170,7 +160,7 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
 
     for ( i = 0; i < bytes - 1; ++i ) {
         char tmp;
-        int ret = crt_read(FileHandle, &tmp, sizeof(tmp));
+        int ret = read(FileHandle, &tmp, sizeof(tmp));
 
         if ( ret <= 0 || tmp == '\n' ) {
             break;
@@ -196,7 +186,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
 
     // Loop to find the first numeric character.
     do {
-        if ( crt_read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
             return false;
         }
     } while ( !isdigit(tmp) && tmp != '-' );
@@ -215,7 +205,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
             if ( bytes ) {
-                crt_lseek(FileHandle, -1, CURRENT);
+                lseek(FileHandle, -1, CURRENT);
             }
 
             break;
@@ -237,7 +227,7 @@ bool Win32LocalFile::Scan_Real(float &real)
 
     // Loop to find the first numeric character.
     do {
-        if ( crt_read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
             return false;
         }
     } while ( !isdigit(tmp) && tmp != '-' && tmp != '.' );
@@ -252,7 +242,7 @@ bool Win32LocalFile::Scan_Real(float &real)
             have_point = true;
         }
 
-        int bytes = crt_read(FileHandle, &tmp, sizeof(tmp));
+        int bytes = read(FileHandle, &tmp, sizeof(tmp));
 
         if ( bytes == 0 ) {
             break;
@@ -262,7 +252,7 @@ bool Win32LocalFile::Scan_Real(float &real)
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
             if ( bytes ) {
-                crt_lseek(FileHandle, -1, CURRENT);
+                lseek(FileHandle, -1, CURRENT);
             }
 
             break;
@@ -282,7 +272,7 @@ bool Win32LocalFile::Scan_String(AsciiString &string)
 
     // Loop to find the none space character.
     do {
-        if ( crt_read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
             return false;
         }
     } while ( isspace(tmp) );
@@ -290,7 +280,7 @@ bool Win32LocalFile::Scan_String(AsciiString &string)
     while ( true ) {
         string.Concat(tmp);
 
-        int bytes = crt_read(FileHandle, &tmp, sizeof(tmp));
+        int bytes = read(FileHandle, &tmp, sizeof(tmp));
 
         if ( bytes == 0 ) {
             break;
@@ -300,7 +290,7 @@ bool Win32LocalFile::Scan_String(AsciiString &string)
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
             if ( bytes ) {
-                crt_lseek(FileHandle, -1, CURRENT);
+                lseek(FileHandle, -1, CURRENT);
             }
 
             break;

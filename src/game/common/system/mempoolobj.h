@@ -69,7 +69,6 @@ public:
         } \
         void *operator new(size_t size) \
         { \
-            DEBUG_LOG("Allocating from %s.\n", "The"#classname"Pool"); \
             return Get_Class_Pool()->Allocate_Block(); \
         } \
         void operator delete(void *ptr) \

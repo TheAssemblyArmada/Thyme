@@ -42,7 +42,7 @@ class StreamingArchiveFile : public RAMFile
         virtual bool Open(char const *filename, int mode);
         virtual void Close();
         virtual int Read(void *dst, int bytes);
-        virtual int Write(void *src, int bytes);
+        virtual int Write(void const *src, int bytes);
         virtual int Seek(int offset, File::SeekMode mode);
         virtual void Next_Line(char *dst, int bytes);
         virtual bool Scan_Int(int &integer);

@@ -24,7 +24,7 @@
 #include "gameengine.h"
 
 #ifdef PLATFORM_WINDOWS
-#include <timeapi.h>
+#include <mmsystem.h>
 #endif
 
 GameEngine::GameEngine() :

@@ -100,7 +100,7 @@ class AsciiString
         // Concat should probably be private and += used as the preferred interface.
         void Concat(char c);
         void Concat(char const *s);
-        void Concat(AsciiString const &string) { Concat(string.Peek()); }
+        void Concat(AsciiString const &string) { Concat(string.Str()); }
 
         void Trim();
         void To_Lower();
@@ -111,11 +111,11 @@ class AsciiString
         
         // Compare funcs should probably be private and operators should be friends and the
         // preferred interface.
-        int Compare(char const *s) const { return strcmp(Peek(), s); }
-        int Compare(AsciiString const &string) const { return strcmp(Peek(), string.Peek()); }
+        int Compare(char const *s) const { return strcmp(Str(), s); }
+        int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
 
-        int Compare_No_Case(char const *s) const { return stricmp(Peek(), s); }
-        int Compare_No_Case(AsciiString const &string) const { return stricmp(Peek(), string.Peek()); }
+        int Compare_No_Case(char const *s) const { return stricmp(Str(), s); }
+        int Compare_No_Case(AsciiString const &string) const { return stricmp(Str(), string.Str()); }
         
         // I assume these do this, though have no examples in binaries.
         char *Find(char c) { return strchr(Peek(), c); }

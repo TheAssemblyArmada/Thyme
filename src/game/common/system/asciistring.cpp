@@ -154,7 +154,7 @@ int AsciiString::Get_Length() const
 char AsciiString::Get_Char(int index) const
 {
     ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
-    ASSERT_PRINT(strlen(Peek()) > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    ASSERT_PRINT(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
     
     return Peek()[index];
 }

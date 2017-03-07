@@ -31,13 +31,14 @@
 #include "always.h"
 #include "file.h"
 
-#define TotalOpen (Make_Global<int>(0x00A3E31C))
-
 class LocalFile : public File
 {
-    public:
-        virtual void *Read_All_And_Close();
-        virtual File *Convert_To_RAM();
+public:
+    virtual void *Read_All_And_Close();
+    virtual File *Convert_To_RAM();
+
+protected:
+    static int TotalOpen;
 };
 
 #endif // _LOCALFILE_H_

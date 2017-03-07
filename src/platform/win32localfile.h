@@ -34,27 +34,32 @@
 class Win32LocalFile : public LocalFile
 {
     IMPLEMENT_POOL(Win32LocalFile);
+    friend class Win32LocalFileSystem;
 
-    public:
-        enum
-        {
-            INVALID_HANDLE = -1
-        };
+public:
+    enum
+    {
+        INVALID_HANDLE = -1
+    };
 
-        Win32LocalFile();
-        virtual ~Win32LocalFile();
+private:
+    // Only the factory class, Win32LocalFileSystem can create file instances.
+    Win32LocalFile();
 
-        virtual bool Open(char const *filename, int mode);
-        virtual int Read(void *dst, int bytes);
-        virtual int Write(void const *src, int bytes);
-        virtual int Seek(int offset, File::SeekMode mode);
-        virtual void Next_Line(char *dst, int bytes);
-        virtual bool Scan_Int(int &integer);
-        virtual bool Scan_Real(float &real);
-        virtual bool Scan_String(AsciiString &string);
+public:
+    virtual ~Win32LocalFile();
 
-    private:
-        int FileHandle;
+    virtual bool Open(char const *filename, int mode);
+    virtual int Read(void *dst, int bytes);
+    virtual int Write(void const *src, int bytes);
+    virtual int Seek(int offset, File::SeekMode mode);
+    virtual void Next_Line(char *dst, int bytes);
+    virtual bool Scan_Int(int &integer);
+    virtual bool Scan_Real(float &real);
+    virtual bool Scan_String(AsciiString &string);
+
+private:
+    int FileHandle;
 };
 
 #endif // _WIN32LOCALFILE_H_

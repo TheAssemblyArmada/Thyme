@@ -98,9 +98,9 @@ void ArchiveFile::Attach_File(File *file)
     BackingFile = file;
 }
 
-void ArchiveFile::Get_File_List_From_Dir(AsciiString const &a1, AsciiString const &filepath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
+void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
 {
-    AsciiString path = filepath;
+    AsciiString path = dirpath;
     AsciiString token;
     DetailedArchiveDirectoryInfo *dirp = &ArchiveInfo;
 
@@ -118,12 +118,35 @@ void ArchiveFile::Get_File_List_From_Dir(AsciiString const &a1, AsciiString cons
         dirp = &dirp->DirInfo[token];
     }
 
-    Get_File_List_From_Dir(dirp, filepath, filter, filelist, search_subdir);
+    Get_File_List_From_Dir(dirp, dirpath, filter, filelist, search_subdir);
 }
 
-void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &filepath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
+void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
 {
-    //TODO
+    // Add the files from any subdirectories, recursive call.
+    for ( auto it = dir_info->DirInfo.begin(); it != dir_info->DirInfo.end(); ++it ) {
+        AsciiString path = dirpath;
+
+        if ( !path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/") ) {
+            path += "/";
+        }
+
+        path += it->second.Name;
+        Get_File_List_From_Dir(&(it->second), path, filter, filelist, search_subdir);
+    }
+
+    for ( auto it = dir_info->FileInfo.begin(); it != dir_info->FileInfo.end(); ++it ) {
+        if ( Search_String_Matches(it->second.Name, filter) ) {
+            AsciiString path = dirpath;
+
+            if ( !path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/") ) {
+                path += "/";
+            }
+            
+            path += it->second.Name;
+            filelist.insert(path);
+        }
+    }
 }
 
 // Helper funtion to check if a string matches the search string.

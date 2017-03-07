@@ -54,28 +54,28 @@ struct DetailedArchiveDirectoryInfo
 
 class ArchiveFile
 {
-    public:
-        ArchiveFile();
-        virtual ~ArchiveFile() {}
+public:
+    ArchiveFile();
+    virtual ~ArchiveFile() {}
 
-        virtual bool Get_File_Info(AsciiString const &name, FileInfo *info) = 0;
-        virtual StreamingArchiveFile *Open_File(char const *filename, int mode) = 0;
-        virtual void Close_All_Files() = 0;
-        virtual AsciiString Get_Name() = 0;
-        virtual AsciiString Get_Path() = 0;
-        virtual void Set_Search_Priority(int priority) = 0;
-        virtual void Close() = 0;
+    virtual bool Get_File_Info(AsciiString const &name, FileInfo *info) = 0;
+    virtual StreamingArchiveFile *Open_File(char const *filename, int mode) = 0;
+    virtual void Close_All_Files() = 0;
+    virtual AsciiString Get_Name() = 0;
+    virtual AsciiString Get_Path() = 0;
+    virtual void Set_Search_Priority(int priority) = 0;
+    virtual void Close() = 0;
 
-        ArchivedFileInfo *Get_Archived_File_Info(AsciiString const &filename);
-        void Add_File(AsciiString const &filename, ArchivedFileInfo const *info);
-        void Attach_File(File *file);
-        void Get_File_List_From_Dir(AsciiString const &a1, AsciiString const &filepath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
+    ArchivedFileInfo *Get_Archived_File_Info(AsciiString const &filename);
+    void Add_File(AsciiString const &filename, ArchivedFileInfo const *info);
+    void Attach_File(File *file);
+    void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
 
-    private:
-        void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &filepath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
+private:
+    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
 
-        File *BackingFile;
-        DetailedArchiveDirectoryInfo ArchiveInfo;
+    File *BackingFile;
+    DetailedArchiveDirectoryInfo ArchiveInfo;
 };
 
 bool Search_String_Matches(AsciiString string, AsciiString search);

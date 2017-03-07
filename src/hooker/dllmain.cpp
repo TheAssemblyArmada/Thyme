@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "hooker.h"
 #include "archivefile.h"
+#include "archivefilesystem.h"
 #include "asciistring.h"
 #include "copyprotect.h"
 #include "force_nocd.h"
@@ -99,6 +100,7 @@ void Setup_Hooks()
     // Replace File functions
     //
     Hook_Method((Make_Method_Ptr<LocalFileSystem*, Win32GameEngine>(0x007420F0)), &Win32GameEngine::Create_Local_File_System_NV);
+    Hook_Method((Make_Method_Ptr<void, ArchiveFileSystem, AsciiString const &, AsciiString const &, AsciiString const &, std::set<AsciiString, rts::less_than_nocase<AsciiString> >&, bool>(0x0048F410)), &ArchiveFileSystem::Get_File_List_From_Dir);
 
     //
     // Replace AsciiString

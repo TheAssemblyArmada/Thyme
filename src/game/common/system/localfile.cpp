@@ -24,6 +24,8 @@
 #include "localfile.h"
 #include "ramfile.h"
 
+int LocalFile::TotalOpen = 0;
+
 void *LocalFile::Read_All_And_Close()
 {
     int size = Size();

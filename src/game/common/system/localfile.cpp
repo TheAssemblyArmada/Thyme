@@ -10,7 +10,7 @@
 //
 //  Contributors:: 
 //
-//   Description:: Cross platform class for file IO.
+//   Description:: Interface for local file IO.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 

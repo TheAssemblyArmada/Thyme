@@ -35,7 +35,6 @@
 
 struct FileInfo;
 class File;
-class StreamingArchiveFile;
 
 struct ArchivedFileInfo
 {
@@ -48,8 +47,8 @@ struct ArchivedFileInfo
 struct DetailedArchiveDirectoryInfo
 {
     AsciiString Name;
-    std::map<AsciiString, DetailedArchiveDirectoryInfo> DirInfo;
-    std::map<AsciiString, ArchivedFileInfo> FileInfo;
+    mutable std::map<AsciiString, DetailedArchiveDirectoryInfo> Directories;    // Mutable to use operator[] in const functions
+    std::map<AsciiString, ArchivedFileInfo> Files;
 };
 
 class ArchiveFile
@@ -59,7 +58,7 @@ public:
     virtual ~ArchiveFile() {}
 
     virtual bool Get_File_Info(AsciiString const &name, FileInfo *info) = 0;
-    virtual StreamingArchiveFile *Open_File(char const *filename, int mode) = 0;
+    virtual File *Open_File(char const *filename, int mode) = 0;
     virtual void Close_All_Files() = 0;
     virtual AsciiString Get_Name() = 0;
     virtual AsciiString Get_Path() = 0;
@@ -69,10 +68,10 @@ public:
     ArchivedFileInfo *Get_Archived_File_Info(AsciiString const &filename);
     void Add_File(AsciiString const &filename, ArchivedFileInfo const *info);
     void Attach_File(File *file);
-    void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
+    void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const;
 
 private:
-    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir);
+    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const;
 
     File *BackingFile;
     DetailedArchiveDirectoryInfo ArchiveInfo;

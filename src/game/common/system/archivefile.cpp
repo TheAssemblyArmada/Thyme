@@ -45,21 +45,19 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(AsciiString const &filenam
     // checks the remaining path does not contain one to catch directories in path
     // that do.
     while ( strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr ) {
-        auto dir_it = dirp->DirInfo.find(token);
-
-        if ( dir_it == dirp->DirInfo.end() ) {
+        if ( dirp->Directories.find(token) == dirp->Directories.end() ) {
             return nullptr;
         }
         
-        dirp = &dir_it->second;
+        dirp = &dirp->Directories[token];
         path.Next_Token(&token, "\\/");
     }
 
     // Assuming we didn't run out of directories to try, find the file
     // in the reached directory.
-    auto file_it = dirp->FileInfo.find(token);
+    auto file_it = dirp->Files.find(token);
 
-    if ( file_it == dirp->FileInfo.end() ) {
+    if ( file_it == dirp->Files.end() ) {
         return nullptr;
     }
 
@@ -78,14 +76,14 @@ void ArchiveFile::Add_File(AsciiString const &filepath, ArchivedFileInfo const *
 
     for ( path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/") ) {
         // If an element of the path doesn't have a directory node, add it.
-        if ( dirp->DirInfo.find(token) == dirp->DirInfo.end() ) {
-            dirp->DirInfo[token].Name = token;
+        if ( dirp->Directories.find(token) == dirp->Directories.end() ) {
+            dirp->Directories[token].Name = token;
         }
 
-        dirp = &dirp->DirInfo[token];
+        dirp = &dirp->Directories[token];
     }
 
-    dirp->FileInfo[info->Name] = *info;
+    dirp->Files[info->Name] = *info;
 }
 
 void ArchiveFile::Attach_File(File *file)
@@ -98,11 +96,11 @@ void ArchiveFile::Attach_File(File *file)
     BackingFile = file;
 }
 
-void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
+void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const
 {
     AsciiString path = dirpath;
     AsciiString token;
-    DetailedArchiveDirectoryInfo *dirp = &ArchiveInfo;
+    DetailedArchiveDirectoryInfo const *dirp = &ArchiveInfo;
 
 
     // Lower case for matching and get first item of the path.
@@ -111,20 +109,20 @@ void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString 
     // Go to the last InfoNode in the path to extract file contents from.
     for ( path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/") ) {
         // If an element of the path doesn't have a node for our next directory, return.
-        if ( dirp->DirInfo.find(token) == dirp->DirInfo.end() ) {
+        if ( dirp->Directories.find(token) == dirp->Directories.end() ) {
             return;
         }
 
-        dirp = &dirp->DirInfo[token];
+        dirp = &dirp->Directories[token];
     }
 
     Get_File_List_From_Dir(dirp, dirpath, filter, filelist, search_subdir);
 }
 
-void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir)
+void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const
 {
     // Add the files from any subdirectories, recursive call.
-    for ( auto it = dir_info->DirInfo.begin(); it != dir_info->DirInfo.end(); ++it ) {
+    for ( auto it = dir_info->Directories.begin(); it != dir_info->Directories.end(); ++it ) {
         AsciiString path = dirpath;
 
         if ( !path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/") ) {
@@ -136,7 +134,7 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
     }
 
     // Add all the files that match the search pattern.
-    for ( auto it = dir_info->FileInfo.begin(); it != dir_info->FileInfo.end(); ++it ) {
+    for ( auto it = dir_info->Files.begin(); it != dir_info->Files.end(); ++it ) {
         if ( Search_String_Matches(it->second.Name, filter) ) {
             AsciiString path = dirpath;
 

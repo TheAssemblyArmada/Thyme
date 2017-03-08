@@ -129,10 +129,10 @@ class AsciiString
 
         bool Next_Token(AsciiString *tok, char const *seps);
 
-        bool Is_None() { return Data != nullptr && stricmp(Peek(), "None") == 0; }
-        bool Is_Empty() { return Get_Length() <= 0; }
-        bool Is_Not_Empty() { return !Is_Empty(); }
-        bool Is_Not_None() { return !Is_None(); }
+        bool Is_None() const { return Data != nullptr && stricmp(Peek(), "None") == 0; }
+        bool Is_Empty() const { return Get_Length() <= 0; }
+        bool Is_Not_Empty() const { return !Is_Empty(); }
+        bool Is_Not_None() const { return !Is_None(); }
 
     #ifdef GAME_DEBUG
         void Debug_Ignore_Leaks();

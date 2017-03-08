@@ -135,6 +135,7 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
         Get_File_List_From_Dir(&(it->second), path, filter, filelist, search_subdir);
     }
 
+    // Add all the files that match the search pattern.
     for ( auto it = dir_info->FileInfo.begin(); it != dir_info->FileInfo.end(); ++it ) {
         if ( Search_String_Matches(it->second.Name, filter) ) {
             AsciiString path = dirpath;

@@ -79,17 +79,17 @@ bool ArchiveFileSystem::Does_File_Exist(char const *filename)
     return true;
 }
 
-void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &dir, bool overwrite)
+void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &archive_path, bool overwrite)
 {
     std::set<AsciiString, rts::less_than_nocase<AsciiString>> file_list;
     
     // Retrieve a list of files in the archive
-    file->Get_File_List_From_Dir(AsciiString(), dir, "*", file_list, true);
+    file->Get_File_List_From_Dir("", "", "*", file_list, true);
 
     for ( auto it = file_list.begin(); it != file_list.end(); ++it ) {
         AsciiString path = *it;
         AsciiString token;
-        AsciiString fullname;
+        //AsciiString fullname;
         ArchivedDirectoryInfo *dirp = &ArchiveDirInfo;
 
         // Lower case for matching.
@@ -105,12 +105,12 @@ void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString 
             }
 
             dirp = &dirp->Directories[token];
-            fullname += token;
-            fullname += "/";
+            //fullname += token;
+            //fullname += "/";
         }
 
         if ( dirp->Files.find(token) == dirp->Files.end() || overwrite ) {
-            dirp->Files[token] = fullname;
+            dirp->Files[token] = archive_path;
         }
     }
 }
@@ -173,4 +173,6 @@ void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiS
 
 void ArchiveFileSystem::Load_Mods()
 {
+    //TODO needs GlobalData members to implement
+    Call_Method<void, ArchiveFileSystem>(0x0048EBD0, this);
 }

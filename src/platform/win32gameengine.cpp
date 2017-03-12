@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "win32gameengine.h"
+#include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
 Win32GameEngine::Win32GameEngine()
@@ -43,7 +44,7 @@ LocalFileSystem *Win32GameEngine::Create_Local_File_System()
 
 ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System()
 {
-    return nullptr;
+    return new Win32BIGFileSystem;
 }
 
 GameLogic *Win32GameEngine::Create_Game_Logic()
@@ -100,4 +101,9 @@ Network *Win32GameEngine::Create_Network()
 LocalFileSystem *Win32GameEngine::Create_Local_File_System_NV()
 {
     return new Win32LocalFileSystem;
+}
+
+ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System_NV()
+{
+    return new Win32BIGFileSystem;
 }

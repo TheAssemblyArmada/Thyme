@@ -66,6 +66,7 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(AsciiString const &filenam
 
 void ArchiveFile::Add_File(AsciiString const &filepath, ArchivedFileInfo const *info)
 {
+    //DEBUG_LOG("Adding '%s' to interal archive for '%s'.\n", filepath.Str(), info->ArchiveName.Str());
     AsciiString path = filepath;
     AsciiString token;
     DetailedArchiveDirectoryInfo *dirp = &ArchiveInfo;
@@ -74,16 +75,18 @@ void ArchiveFile::Add_File(AsciiString const &filepath, ArchivedFileInfo const *
     // Lower case for matching and get first item of the path.
     path.To_Lower();
 
-    for ( path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/") ) {
+    for ( path.Next_Token(&token, "\\/"); !token.Is_Empty(); path.Next_Token(&token, "\\/") ) {
         // If an element of the path doesn't have a directory node, add it.
+        //DEBUG_LOG("Searching for path element '%s'.\n", token.Str());
         if ( dirp->Directories.find(token) == dirp->Directories.end() ) {
+            //DEBUG_LOG("Adding path element '%s'.\n", token.Str());
             dirp->Directories[token].Name = token;
         }
 
         dirp = &dirp->Directories[token];
     }
 
-    dirp->Files[info->Name] = *info;
+    dirp->Files[info->FileName] = *info;
 }
 
 void ArchiveFile::Attach_File(File *file)
@@ -135,14 +138,14 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
 
     // Add all the files that match the search pattern.
     for ( auto it = dir_info->Files.begin(); it != dir_info->Files.end(); ++it ) {
-        if ( Search_String_Matches(it->second.Name, filter) ) {
+        if ( Search_String_Matches(it->second.FileName, filter) ) {
             AsciiString path = dirpath;
 
             if ( !path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/") ) {
                 path += "/";
             }
             
-            path += it->second.Name;
+            path += it->second.FileName;
             filelist.insert(path);
         }
     }

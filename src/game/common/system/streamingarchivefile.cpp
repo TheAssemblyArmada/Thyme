@@ -155,8 +155,3 @@ bool StreamingArchiveFile::Open_From_Archive(File *file, AsciiString const &name
 
     return false;
 }
-
-bool StreamingArchiveFile::Copy_To_File(File *file)
-{
-    return false;
-}

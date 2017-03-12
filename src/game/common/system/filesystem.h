@@ -30,11 +30,10 @@
 #define _FILESYSTEM_H_
 
 #include "subsysteminterface.h"
+#include "file.h"
 #include "rtsutils.h"
 #include <set>
 #include <map>
-
-class File;
 
 #define TheFileSystem (Make_Global<FileSystem*>(0x00A2B670))
 

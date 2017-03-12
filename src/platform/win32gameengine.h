@@ -57,6 +57,7 @@ public:
     virtual Network *Create_Network();
 
     LocalFileSystem *Create_Local_File_System_NV();
+    ArchiveFileSystem *Create_Archive_File_System_NV();
 private:
     unsigned int PreviousErrorMode;
 };

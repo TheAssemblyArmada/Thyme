@@ -80,6 +80,9 @@ public:
     virtual int Size();
     virtual int Position();
 
+    virtual void *Read_All_And_Close() = 0;
+    virtual File *Convert_To_RAM() = 0;
+
     AsciiString &Get_File_Name() { return FileName; }
     int Get_File_Mode() { return OpenMode; }
     void Set_Del_On_Close(bool del) { DeleteOnClose = del; }

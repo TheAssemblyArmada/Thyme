@@ -29,6 +29,7 @@
 #define _ARCHIVEFILE_H_
 
 #include "asciistring.h"
+#include "file.h"
 #include "rtsutils.h"
 #include <map>
 #include <set>
@@ -38,8 +39,8 @@ class File;
 
 struct ArchivedFileInfo
 {
-    AsciiString Name;
-    AsciiString Path;
+    AsciiString FileName;
+    AsciiString ArchiveName;
     int Position;
     int Size;
 };
@@ -70,7 +71,7 @@ public:
     void Attach_File(File *file);
     void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const;
 
-private:
+protected:
     void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdir) const;
 
     File *BackingFile;

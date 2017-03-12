@@ -66,7 +66,7 @@ public:
     void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs);
     void Load_Mods();
 
-private:
+protected:
     std::map<AsciiString, ArchiveFile*> ArchiveFiles;
     ArchivedDirectoryInfo ArchiveDirInfo;
 };

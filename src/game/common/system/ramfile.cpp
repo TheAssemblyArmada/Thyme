@@ -40,13 +40,10 @@ RAMFile::~RAMFile()
     if ( Data != nullptr ) {
         delete[] Data;
     }
-
-    File::Close();
 }
 
 bool RAMFile::Open(char const *filename, int mode)
 {
-    DEBUG_LOG("Opening RAMFile %s with mode %08X.\n", filename, mode);
     File *basefile = TheFileSystem->Open(filename, mode);
 
     if ( basefile == nullptr ) {
@@ -63,6 +60,7 @@ void RAMFile::Close()
 {
     if ( Data != nullptr ) {
         delete[] Data;
+        Data = nullptr;
     }
 
     File::Close();
@@ -70,21 +68,20 @@ void RAMFile::Close()
 
 int RAMFile::Read(void *dst, int bytes)
 {
-    DEBUG_LOG("Reading %d bytes with RAMFile.\n");
     if ( dst == nullptr ) {
         return -1;
     }
 
     // Clip the amount to read to be within the data remaining.
-    int data_read = MIN(bytes, Size - Pos);
+    bytes = MIN(bytes, Size - Pos);
 
-    if ( data_read > 0 ) {
-        memcpy(dst, Data + Pos, data_read);
+    if ( bytes > 0 ) {
+        memcpy(dst, Data + Pos, bytes);
     }
 
-    Pos += data_read;
+    Pos += bytes;
 
-    return data_read;
+    return bytes;
 }
 
 int RAMFile::Write(void const *src, int bytes)
@@ -289,7 +286,6 @@ void *RAMFile::Read_All_And_Close()
 
 bool RAMFile::Open(File *file)
 {
-    DEBUG_LOG("Opening RAMFile from %s file pointer.\n", file->Get_File_Name().Str());
     if ( file == nullptr ) {
         return false;
     }
@@ -301,8 +297,7 @@ bool RAMFile::Open(File *file)
         if ( Data != nullptr ) {
             // Read the entire file into our buffer.
             Size = file->Read(Data, Size);
-            DEBUG_LOG("Loaded %d bytes out of %d\n.", Size, file->Size());
-
+            
             // If we didn't read any data into our buffer, abort.
             if ( Size >= 0 ) {
                 Pos = 0;
@@ -320,7 +315,6 @@ bool RAMFile::Open(File *file)
 
 bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, int size)
 {
-    DEBUG_LOG("Opening from archive %s.\n", file->Get_File_Name().Str());
     if ( file == nullptr ) {
         return false;
     }

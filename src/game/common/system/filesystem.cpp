@@ -64,7 +64,7 @@ File *FileSystem::Open(char const *filename, int mode)
     }
 
     if ( file == nullptr && TheArchiveFileSystem != nullptr ) {
-        file = TheArchiveFileSystem->Open_File(filename, mode);
+        file = TheArchiveFileSystem->Open_File(filename, 0);
     }
 
     return file;

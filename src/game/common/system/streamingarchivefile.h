@@ -53,7 +53,7 @@ class StreamingArchiveFile : public RAMFile
         virtual RAMFile *Convert_To_RAM() { return this; }
         virtual bool Open(File *file);
         virtual bool Open_From_Archive(File *file, AsciiString const &name, int pos, int size);
-        virtual bool Copy_To_File(File *file);
+        virtual bool Copy_To_File(File *file) { return false; }
 
     protected:
         File *ArchiveFile;

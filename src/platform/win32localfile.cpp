@@ -139,7 +139,6 @@ int Win32LocalFile::Write(void const *src, int bytes)
 
 int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 {
-    //DEBUG_LOG("Seeking to %d in Win32LocalFile %s.\n", offset, FileName.Str());
     switch ( mode ) {
         case START:
         case CURRENT:

@@ -26,6 +26,7 @@ set(GAMEENGINE_SRC
     game/client/gametext.cpp
     game/common/gameengine.cpp
     game/common/globaldata.cpp
+    game/common/namekeygenerator.cpp
     game/common/version.cpp
     game/common/ini/ini.cpp
     game/common/system/archivefile.cpp

@@ -293,8 +293,8 @@ class GlobalData : public SubsystemInterface
         bool EnforceMaxCameraHeight;
         bool BuildMapCache; // Not 100% sure, needs confirming
         //char pad[2]
-        AsciiString WeaponBonus;
-        AsciiString UnkAsciiString;
+        AsciiString InitialFile; // Not 100% sure, needs confirming
+        AsciiString PendingFile; // Not 100% sure, needs confirming
         int32_t MaxParticleCount;
         int32_t MaxFieldParticleCount;
         WeaponBonusSet *WeaponBonusSetPtr;
@@ -306,13 +306,22 @@ class GlobalData : public SubsystemInterface
         AsciiString ShellMapName;
         bool ShellMapOn;
         bool PlayIntro;
-        bool AfterIntro;
         bool UnkBool15;
+        bool AfterIntro;
         bool UnkBool16;
         bool UnkBool17;
         //char pad[2]
         float KeyboardScrollFactor;
         float KeyboardDefaultScrollFactor;
+        float MusicVolumeFactor;  // Not 100% sure, needs confirming
+        float SFXVolumeFactor;  // Not 100% sure, needs confirming
+        float VoiceVolumeFactor;  // Not 100% sure, needs confirming
+        bool Sound3D;  // Not 100% sure, needs confirming
+        bool AnimateWindows;
+        bool SetMinVertextBufferSize;  // Not 100% sure, needs confirming
+        //char pad[1]
+        uint32_t IniCRC;
+        uint32_t GameCRC;
         //TODO
         GlobalData *Next;
 };

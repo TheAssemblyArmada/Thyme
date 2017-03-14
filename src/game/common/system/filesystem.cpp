@@ -23,8 +23,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "filesystem.h"
-#include "localfilesystem.h"
 #include "archivefilesystem.h"
+#include "localfilesystem.h"
+#include "namekeygenerator.h"
 
 FileSystem::FileSystem() :
     AvailableFiles()
@@ -72,10 +73,33 @@ File *FileSystem::Open(char const *filename, int mode)
 
 bool FileSystem::Does_File_Exist(char const *filename)
 {
-    return Call_Method<bool, FileSystem, char const*>(0x00446610, this, filename);
+    NameKeyType name_id = TheNameKeyGenerator->Name_To_Lower_Case_Key(filename);
+
+    auto it = AvailableFiles.find(name_id);
+
+    if ( it == AvailableFiles.end() ) {
+        return it->second;
+    }
+
+    if ( TheLocalFileSystem->Does_File_Exist(filename) ) {
+        AvailableFiles[name_id] = true;
+
+        return true;
+    }
+
+    if ( TheArchiveFileSystem->Does_File_Exist(filename) ) {
+        AvailableFiles[name_id] = true;
+
+        return true;
+    }
+
+    AvailableFiles[name_id] = false;
+
+    return false;
 }
 
 void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
 {
-    Call_Method<void, FileSystem, AsciiString const &, AsciiString const &, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &, bool>(0x00446770, this, dir, filter, filelist, search_subdirs);
+    TheLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
+    TheArchiveFileSystem->Get_File_List_From_Dir("", "", filter, filelist, search_subdirs);
 }

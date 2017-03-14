@@ -43,111 +43,112 @@ class AsciiString
 
     friend class UnicodeString;
 
-    public:
-        enum {
-            MAX_FORMAT_BUF_LEN = 2048,
-            MAX_LEN = 32767,
-        };
+public:
+    enum {
+        MAX_FORMAT_BUF_LEN = 2048,
+        MAX_LEN = 32767,
+    };
 
-        struct AsciiStringData
+    struct AsciiStringData
+    {
+    #ifdef GAME_DEBUG_STRUCTS
+        char *DebugPtr;
+    #endif // GAME_DEBUG_STRUCTS
+
+        uint16_t RefCount;
+        uint16_t NumCharsAllocated;
+
+        char *Peek()
         {
-        #ifdef GAME_DEBUG_STRUCTS
-            char *DebugPtr;
-        #endif // GAME_DEBUG_STRUCTS
+            // Actual string data is stored immediately after the AsciiStringData header.
+            return reinterpret_cast<char *>(&this[1]);
+        }
+    };
 
-            uint16_t RefCount;
-            uint16_t NumCharsAllocated;
+    AsciiString();
+    AsciiString(char const *s);
+    AsciiString(AsciiString const &string);
+    //AsciiString(UnicodeString const &stringSrc);
+    ~AsciiString() { Release_Buffer(); }
 
-            char *Peek()
-            {
-                // Actual string data is stored immediately after the AsciiStringData header.
-                return reinterpret_cast<char *>(&this[1]);
-            }
-        };
+    AsciiString &operator=(char *s) { Set(s); return *this; }
+    AsciiString &operator=(char const *s) { Set(s); return *this; }
+    AsciiString &operator=(AsciiString const &stringSrc) { Set(stringSrc); return *this; }
+    //AsciiString &operator=(UnicodeString const &stringSrc);
 
-        AsciiString();
-        AsciiString(char const *s);
-        AsciiString(AsciiString const &string);
-        //AsciiString(UnicodeString const &stringSrc);
-        ~AsciiString() { Release_Buffer(); }
+    AsciiString &operator+=(char s) { Concat(s); return *this; }
+    AsciiString &operator+=(char const *s) { Concat(s); return *this; }
+    AsciiString &operator+=(AsciiString const &stringSrc) { Concat(stringSrc); return *this; }
+    //AsciiString &operator+=(UnicodeString const &stringSrc);
 
-        AsciiString &operator=(char *s) { Set(s); return *this; }
-        AsciiString &operator=(char const *s) { Set(s); return *this; }
-        AsciiString &operator=(AsciiString const &stringSrc) { Set(stringSrc); return *this; }
-        //AsciiString &operator=(UnicodeString const &stringSrc);
+    void Validate();
+    char *Peek() const;
+    void Release_Buffer();
+    void Free_Bytes() { TheDynamicMemoryAllocator->Free_Bytes(Data); }
+    int Get_Length() const;
 
-        AsciiString &operator+=(char s) { Concat(s); return *this; }
-        AsciiString &operator+=(char const *s) { Concat(s); return *this; }
-        AsciiString &operator+=(AsciiString const &stringSrc) { Concat(stringSrc); return *this; }
-        //AsciiString &operator+=(UnicodeString const &stringSrc);
+    void Clear() { Release_Buffer(); }
+    char Get_Char(int index) const;
+    char const *Str() const;
+    char *Get_Buffer_For_Read(int len);
+    // These two should probably be private with the = operator being the preferred interface?
+    void Set(char const *s);
+    void Set(AsciiString const &string);
 
-        void Validate();
-        char *Peek() const;
-        void Release_Buffer();
-        void Free_Bytes() { TheDynamicMemoryAllocator->Free_Bytes(Data); }
-        int Get_Length() const;
+    void Translate(UnicodeString const &stringSrc);
 
-        void Clear() { Release_Buffer(); }
-        char Get_Char(int index) const;
-        char const *Str() const;
-        char *Get_Buffer_For_Read(int len);
-        // These two should probably be private with the = operator being the preferred interface?
-        void Set(char const *s);
-        void Set(AsciiString const &string);
+    // Concat should probably be private and += used as the preferred interface.
+    void Concat(char c);
+    void Concat(char const *s);
+    void Concat(AsciiString const &string) { Concat(string.Str()); }
 
-        void Translate(UnicodeString const &stringSrc);
+    void Trim();
+    void To_Lower();
+    void Remove_Last_Char();
 
-        // Concat should probably be private and += used as the preferred interface.
-        void Concat(char c);
-        void Concat(char const *s);
-        void Concat(AsciiString const &string) { Concat(string.Str()); }
-
-        void Trim();
-        void To_Lower();
-        void Remove_Last_Char();
-
-        void Format(char const *format, ...);
-        void Format(AsciiString format, ...);
+    void Format(char const *format, ...);
+    void Format(AsciiString format, ...);
         
-        // Compare funcs should probably be private and operators should be friends and the
-        // preferred interface.
-        int Compare(char const *s) const { return strcmp(Str(), s); }
-        int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
+    // Compare funcs should probably be private and operators should be friends and the
+    // preferred interface.
+    int Compare(char const *s) const { return strcmp(Str(), s); }
+    int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
 
-        int Compare_No_Case(char const *s) const { return stricmp(Str(), s); }
-        int Compare_No_Case(AsciiString const &string) const { return stricmp(Str(), string.Str()); }
+    int Compare_No_Case(char const *s) const { return stricmp(Str(), s); }
+    int Compare_No_Case(AsciiString const &string) const { return stricmp(Str(), string.Str()); }
         
-        // I assume these do this, though have no examples in binaries.
-        char *Find(char c) { return strchr(Peek(), c); }
-        char *Reverse_Find(char c) { return strrchr(Peek(), c); }
+    // I assume these do this, though have no examples in binaries.
+    char *Find(char c) { return strchr(Peek(), c); }
+    char *Reverse_Find(char c) { return strrchr(Peek(), c); }
 
-        bool Starts_With(char const *p);
-        bool Ends_With(char const *p);
+    bool Starts_With(char const *p);
+    bool Ends_With(char const *p);
 
-        bool Starts_With_No_Case(char const *p) const;
-        bool Ends_With_No_Case(char const *p) const;
+    bool Starts_With_No_Case(char const *p) const;
+    bool Ends_With_No_Case(char const *p) const;
 
-        bool Next_Token(AsciiString *tok, char const *seps);
+    bool Next_Token(AsciiString *tok, char const *seps);
 
-        bool Is_None() const { return Data != nullptr && stricmp(Peek(), "None") == 0; }
-        bool Is_Empty() const { return Get_Length() <= 0; }
-        bool Is_Not_Empty() const { return !Is_Empty(); }
-        bool Is_Not_None() const { return !Is_None(); }
+    bool Is_None() const { return Data != nullptr && stricmp(Peek(), "None") == 0; }
+    bool Is_Empty() const { return Get_Length() <= 0; }
+    bool Is_Not_Empty() const { return !Is_Empty(); }
+    bool Is_Not_None() const { return !Is_None(); }
 
-    #ifdef GAME_DEBUG
-        void Debug_Ignore_Leaks();
-    #endif // GAME_DEBUG
+#ifdef GAME_DEBUG
+    void Debug_Ignore_Leaks();
+#endif // GAME_DEBUG
+public:
+    static AsciiString const EmptyString;
 
-    private:
-        //Probably supposed to be private
-        void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, char const *str_to_copy = nullptr, char const *str_to_cat = nullptr);
 
-        void Format_VA(char const *format, va_list args);
-        void Format_VA(AsciiString &format, va_list args);
+private:
+    //Probably supposed to be private
+    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, char const *str_to_copy = nullptr, char const *str_to_cat = nullptr);
 
-        static AsciiString const EmptyString;
+    void Format_VA(char const *format, va_list args);
+    void Format_VA(AsciiString &format, va_list args);
 
-        AsciiStringData *Data;
+    AsciiStringData *Data;
 };
 
 inline bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }

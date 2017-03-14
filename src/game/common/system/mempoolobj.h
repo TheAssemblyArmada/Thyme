@@ -76,6 +76,38 @@ public:
             return Get_Class_Pool()->Free_Block(ptr); \
         }
 
+// Use within a class declaration on a none virtual MemoryPoolObject
+// based class to implement required functions. "classname" must match
+// the name of the class in which it is used, "poolname" should match a 
+// gamememoryinit.cpp entry.
+#define IMPLEMENT_NAMED_POOL(classname, poolname) \
+    private: \
+        static MemoryPool *The##classname##Pool; \
+        static bool PoolInit; \
+        static MemoryPool *Get_Class_Pool() \
+        { \
+            if ( !PoolInit ) { \
+                PoolInit = true; \
+                The##classname##Pool = TheMemoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
+            } \
+            ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
+            return The##classname##Pool; \
+        } \
+    public: \
+        virtual MemoryPool *Get_Object_Pool() \
+        { \
+            return Get_Class_Pool(); \
+        } \
+        void *operator new(size_t size) \
+        { \
+            return Get_Class_Pool()->Allocate_Block(); \
+        } \
+        void operator delete(void *ptr) \
+        { \
+            return Get_Class_Pool()->Free_Block(ptr); \
+        }
+
+
 // Use in the implementation file (normally .cpp) to initialised the
 // memory pool static variables.
 #define INITIALISE_POOL(classname) \

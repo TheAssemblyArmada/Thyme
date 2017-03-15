@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: COORD.H
+//          File:: GAMEMESSAGELIST.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Coordinate objects.
+//   Description:: Message list handling.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,51 +25,31 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _COORD_H_
-#define _COORD_H_
+#ifndef _GAMEMESSAGELIST_H_
+#define _GAMEMESSAGELIST_H_
 
-#include <cstdint>
-#include <math.h>
+#include "subsysteminterface.h"
+#include "gamemessage.h"
 
-class Coord2D
-{
-    public:
-        float x;
-        float y;
-
-        float Length() { return (float)sqrtf(x * x + y * y); }
-};
-
-class Coord3D
-{
-    public:
-        float x;
-        float y;
-        float z;
-
-        float Length() { return (float)sqrtf(x * x + y * y + z * z); }
-};
-
-class ICoord2D
-{
-    public:
-        int32_t x;
-        int32_t y;
-};
-
-class ICoord3D
-{
-    public:
-        int32_t x;
-        int32_t y;
-        int32_t z;
-};
-
-class IRegion2D
+class GameMessageList : public SubsystemInterface
 {
 public:
-    ICoord2D lo;
-    ICoord2D hi;
+    GameMessageList() : FirstMessage(nullptr), LastMessage(nullptr) {}
+
+    // SubsystemInterface implementations
+    virtual ~GameMessageList() {}
+    virtual void Init() {}
+    virtual void Reset() {}
+    virtual void Update() {}
+    
+    virtual void Append_Message(GameMessage *msg);
+    virtual void Insert_Message(GameMessage *msg, GameMessage *at);
+    virtual void Remove_Message(GameMessage *msg);
+    virtual bool Contains_Message_Of_Type(MessageType type);
+
+protected:
+    GameMessage *FirstMessage;
+    GameMessage *LastMessage;
 };
 
-#endif // _COORD_H_
+#endif

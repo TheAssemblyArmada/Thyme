@@ -25,8 +25,6 @@
 #include "gamedebug.h"
 
 // Initialise object pool resources for Bucket class
-INITIALISE_POOL(Bucket);
-
 NameKeyGenerator::NameKeyGenerator() :
     NextID(NAMEKEY_INVALID)
 {

@@ -25,8 +25,6 @@
 #include "filesystem.h"
 #include "minmax.h"
 
-INITIALISE_POOL(StreamingArchiveFile);
-
 StreamingArchiveFile::StreamingArchiveFile() :
     ArchiveFile(nullptr),
     FileStart(0),

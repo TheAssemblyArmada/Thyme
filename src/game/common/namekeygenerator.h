@@ -88,7 +88,7 @@ private:
 
 private:
     Bucket *Sockets[SOCKET_COUNT];
-    int32_t NextID;
+    NameKeyType NextID;
 };
 
 #endif

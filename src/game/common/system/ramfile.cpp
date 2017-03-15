@@ -25,8 +25,6 @@
 #include "filesystem.h"
 #include "minmax.h"
 
-INITIALISE_POOL(RAMFile);
-
 RAMFile::RAMFile() :
     Data(nullptr),
     Pos(0),

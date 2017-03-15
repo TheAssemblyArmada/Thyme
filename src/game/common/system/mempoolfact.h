@@ -30,6 +30,7 @@
 #define _MEMPOOLFACT_H_
 
 #include "rawalloc.h"
+#include "hooker.h"
 
 struct PoolInitRec;
 class MemoryPool;

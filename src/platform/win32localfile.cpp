@@ -42,8 +42,6 @@
 #include <unistd.h>
 #endif
 
-INITIALISE_POOL(Win32LocalFile);
-
 Win32LocalFile::Win32LocalFile() :
     FileHandle(INVALID_HANDLE)
 {

@@ -114,8 +114,8 @@ public:
     int Compare(char const *s) const { return strcmp(Str(), s); }
     int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
 
-    int Compare_No_Case(char const *s) const { return stricmp(Str(), s); }
-    int Compare_No_Case(AsciiString const &string) const { return stricmp(Str(), string.Str()); }
+    int Compare_No_Case(char const *s) const { return strcasecmp(Str(), s); }
+    int Compare_No_Case(AsciiString const &string) const { return strcasecmp(Str(), string.Str()); }
         
     // I assume these do this, though have no examples in binaries.
     char *Find(char c) { return strchr(Peek(), c); }
@@ -129,7 +129,7 @@ public:
 
     bool Next_Token(AsciiString *tok, char const *seps);
 
-    bool Is_None() const { return Data != nullptr && stricmp(Peek(), "None") == 0; }
+    bool Is_None() const { return Data != nullptr && strcasecmp(Peek(), "None") == 0; }
     bool Is_Empty() const { return Get_Length() <= 0; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }

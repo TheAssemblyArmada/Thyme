@@ -28,6 +28,8 @@
 #ifndef _RTSUTILS_H_
 #define _RTSUTILS_H_
 
+#include "endiantype.h"
+
 namespace rts {
 
 // Less than comparator for STL containers.
@@ -43,6 +45,16 @@ struct less_than_nocase
     {
         return (left.Compare_No_Case(right) < 0);
     }
+};
+
+template <int a, int b, int c, int d>
+struct FourCC
+{
+#ifdef SYSTEM_LITTLE_ENDIAN
+    static const uint32_t value = (((((d << 8) | c) << 8) | b) << 8) | a;
+#else
+    static const uint32_t value = (((((a << 8) | b) << 8) | c) << 8) | d;
+#endif
 };
 
 } // namespace rts

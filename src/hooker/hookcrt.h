@@ -36,4 +36,7 @@
 // and Thyme.
 #define crt_strtok (Make_Global<char *(__cdecl *const)(char *, const char*)>(0x00939424))
 #define crt_set_se_translator (Make_Global<void (__cdecl *const)(void (__cdecl *)(unsigned int, struct _EXCEPTION_POINTERS *))>(0x009393A0))
+
+// Define additional unimplemented functions that are used in more than one location
+#define Get_Registry_Language (Make_Global<AsciiString (__cdecl *const)()>(0x00498E40))
 #endif // _HOOK_CRT_H_

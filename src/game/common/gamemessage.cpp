@@ -29,7 +29,7 @@ GameMessage::GameMessage(MessageType type) :
     Prev(nullptr),
     List(nullptr),
     Type(MSG_INVALID),
-    PlayerIndex(0),  //ThePlayerList->m_playerCount + 0x24
+    PlayerIndex(0),  //ThePlayerList->m_local->m_playerIndex
     ArgCount(0),
     ArgList(nullptr),
     ArgTail(nullptr)

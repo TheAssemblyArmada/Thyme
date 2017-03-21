@@ -36,6 +36,7 @@
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamedebug.h"
+#include "gametext.h"
 #include "ini.h"
 #include "main.h"
 #include "namekeygenerator.h"
@@ -150,6 +151,9 @@ void Setup_Hooks()
     Hook_Method((Make_Method_Ptr<AsciiString, NameKeyGenerator, NameKeyType>(0x0047B2F0)), &NameKeyGenerator::Key_To_Name);
     Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B360)), &NameKeyGenerator::Name_To_Key);
     Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B500)), &NameKeyGenerator::Name_To_Lower_Case_Key);
+
+    // Replace GameTextManager
+    GameTextManager::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

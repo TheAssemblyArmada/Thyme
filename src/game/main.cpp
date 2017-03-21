@@ -53,7 +53,6 @@ SimpleCriticalSectionClass critSec3;
 #define CreatingWindow (Make_Global<bool>(0x00A27B1C))
 #define SplashImage (Make_Global<HGDIOBJ>(0x00A27B20))
 #define ApplicationHInstance (Make_Global<HINSTANCE>(0x00A27B04))
-#define ApplicationHWnd (Make_Global<HWND>(0x00A27B08))
 
 //
 // Callable functions yet to be implemented

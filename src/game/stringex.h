@@ -4,14 +4,14 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: HOOKCRT.H
+//          File:: STRINGEX.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Hooks for CRT functions to ensure Thyme calls the same verions
-//                 as the original exe for functions that maintain state.
+//   Description:: Some extra string manipulation functions not present in
+//                 standard CRTs
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -26,17 +26,37 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _HOOK_CRT_H_
-#define _HOOK_CRT_H_
+#ifndef _STRINGEX_H_
+#define _STRINGEX_H_
 
-#include "hooker.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// Define references to msvcrt functions in the original binary that maintain state
-// Only important if calls relying on state are made by both the original binary
-// and Thyme.
-#define crt_strtok (Make_Global<char *(__cdecl *const)(char *, const char*)>(0x00939424))
-#define crt_set_se_translator (Make_Global<void (__cdecl *const)(void (__cdecl *)(unsigned int, struct _EXCEPTION_POINTERS *))>(0x009393A0))
+inline char16_t *strcpy16(char16_t *dst, char16_t const *src)
+{
+    char16_t *tmp = dst;
+    while ( (*tmp++ = *src++) );
 
-// Define additional unimplemented functions that are used in more than one location
-#define Get_Registry_Language (Make_Function_Ptr<AsciiString>(0x00498E40))
-#endif // _HOOK_CRT_H_
+    return dst;
+}
+
+inline size_t strlen16(char16_t const *str)
+{
+    if ( !str ) {
+        return 0;
+    }
+
+    size_t len = 0;
+    while ( str[len] ) {
+        ++len;
+    }
+
+    return len;
+}
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif

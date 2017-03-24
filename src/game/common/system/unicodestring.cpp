@@ -30,13 +30,14 @@
 #include "asciistring.h"
 #include "critsection.h"
 #include "gamedebug.h"
+#include "stringex.h"
 #include <stdio.h>
 
-#ifndef vsnwprintf
-#define vsnwprintf _vsnwprintf
-#endif
+//#ifndef vsnwprintf
+//#define vsnwprintf _vsnwprintf
+//#endif
 
-UnicodeString const UnicodeString::EmptyString(nullptr);
+UnicodeString const UnicodeString::EmptyString;
 
 UnicodeString::UnicodeString() :
     Data(nullptr)
@@ -53,6 +54,20 @@ UnicodeString::UnicodeString(wchar_t const *s) :
             Ensure_Unique_Buffer_Of_Size(len + 1, false, s, nullptr);
         }
     }
+}
+
+UnicodeString::UnicodeString(char16_t const *s) :
+    Data(nullptr)
+{
+    if ( s != nullptr ) {
+        size_t len = strlen16(s);
+
+        if ( len > 0 ) {
+            Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
+        }
+    }
+
+    Char16_To_WChar(Peek(), s);
 }
 
 UnicodeString::UnicodeString(UnicodeString const &string) :
@@ -185,7 +200,7 @@ wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
     //
     // 
     //
-    Ensure_Unique_Buffer_Of_Size(len + 1, 0, 0, 0);
+    Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
 
     return Peek();
 }
@@ -201,6 +216,17 @@ void UnicodeString::Set(wchar_t const *s)
             Release_Buffer();
         }
     }
+}
+
+void UnicodeString::Set(char16_t const *s)
+{
+    size_t len;
+
+    if ( s && (len = strlen16(s) + 1, len != 1) ) {
+        Ensure_Unique_Buffer_Of_Size(len, false, nullptr, nullptr);
+    }
+
+    Char16_To_WChar(Peek(), s);
 }
 
 void UnicodeString::Set(UnicodeString const &string)
@@ -344,7 +370,7 @@ void UnicodeString::Format_VA(wchar_t const *format, char *args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vsnwprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
+    ASSERT_THROW_PRINT(vswprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -353,7 +379,7 @@ void UnicodeString::Format_VA(UnicodeString &format, char *args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vsnwprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+    ASSERT_THROW_PRINT(vswprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -392,4 +418,16 @@ bool UnicodeString::Next_Token(UnicodeString *tok, UnicodeString delims)
     }
 
     return false;
+}
+
+// Naive copy of char16_t to wchar_t assuming only BMP characters
+wchar_t *UnicodeString::Char16_To_WChar(wchar_t *dst, char16_t const *src)
+{
+    wchar_t *tmp = dst;
+
+    while ( (*tmp++ = *src++) != 0 ) {
+
+    }
+
+    return dst;
 }

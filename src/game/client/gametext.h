@@ -83,9 +83,9 @@ class GameTextInterface : public SubsystemInterface
 public:
     virtual ~GameTextInterface() {}
 
-    virtual UnicodeString Fetch(AsciiString args, bool *success) = 0;
     virtual UnicodeString Fetch(const char *args, bool *success) = 0;
-    virtual std::vector<AsciiString> Get_Strings_With_Prefix(AsciiString label) = 0;
+    virtual UnicodeString Fetch(AsciiString args, bool *success) = 0;
+    virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label) = 0;
     virtual void Init_Map_String_File(AsciiString const &filename) = 0;
     virtual void Deinit() = 0;
 };
@@ -100,20 +100,21 @@ public:
     virtual void Reset();
     virtual void Update() {}
 
-    virtual UnicodeString Fetch(AsciiString args, bool *success = nullptr);
     virtual UnicodeString Fetch(const char *args, bool *success = nullptr);
-    virtual std::vector<AsciiString> Get_Strings_With_Prefix(AsciiString label);
+    virtual UnicodeString Fetch(AsciiString args, bool *success = nullptr);
+    virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label);
     virtual void Init_Map_String_File(AsciiString const &filename);
     virtual void Deinit();
 
     static int Compare_LUT(void const *a, void const *b);
+    static GameTextInterface *Create_Game_Text_Interface();
 
     static void Hook_Me();
 private:
     void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len);
-    void Translate_Copy(wchar_t *out, char *in);
+    void Translate_Copy(char16_t *out, char *in);
     void Remove_Leading_And_Trailing(char *buffer);
-    void Strip_Spaces(wchar_t *buffer);
+    void Strip_Spaces(char16_t *buffer);
     void Reverse_Word(char *start, char *end);
     char Read_Char(File* file);
     bool Read_Line(char *buffer, int length, File *file);
@@ -129,7 +130,7 @@ private:
     char m_bufferIn[10240];
     char m_bufferOut[10240];
     char m_bufferEx[10240];
-    wchar_t m_translateBuffer[20480];
+    char16_t m_translateBuffer[20480];
     StringInfo *m_stringInfo;
     StringLookUp *m_stringLUT;
     bool m_initialized;
@@ -147,8 +148,12 @@ private:
 
 inline void GameTextManager::Hook_Me()
 {
-    Hook_Method((Make_Method_Ptr<void, GameTextManager, wchar_t*, char*>(0x00418C40)), &Translate_Copy);
-    Hook_Method((Make_Method_Ptr<void, GameTextManager, File*, char*, char*, char*, int>(0x00418A70)), &Read_To_End_Of_Quote);
+    //Hook_Method((Make_Method_Ptr<void, GameTextManager, char16_t*, char*>(0x00418C40)), &Translate_Copy);
+    //Hook_Method((Make_Method_Ptr<void, GameTextManager, File*, char*, char*, char*, int>(0x00418A70)), &Read_To_End_Of_Quote);
+    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*>(0x00418EE0)), &Parse_CSF_File);
+    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*, int&>(0x00418D80)), &Get_String_Count);
+    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*>(0x00419220)), &Parse_String_File);
+    Hook_Function((Make_Function_Ptr<GameTextInterface*>(0x00418320)), &Create_Game_Text_Interface);
     Hook_Function((Make_Function_Ptr<int, void const *, void const *>(0x0041A020)), &Compare_LUT);
 }
 

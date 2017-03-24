@@ -112,12 +112,11 @@ bool Win32LocalFile::Open(char const *filename, int mode)
 
 int Win32LocalFile::Read(void *dst, int bytes)
 {
-   if ( !Access ) {
+    if ( !Access ) {
         return -1;
     }
 
     if ( dst != nullptr ) {
-        
         return read(FileHandle, dst, bytes);
     } else {
         lseek(FileHandle, bytes, CURRENT);

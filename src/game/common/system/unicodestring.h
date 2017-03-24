@@ -41,103 +41,100 @@ class AsciiString;
 
 class UnicodeString
 {
-    public:
-        friend class AsciiString;
+public:
+    friend class AsciiString;
         
-        enum {
-            MAX_FORMAT_BUF_LEN = 2048,
-            MAX_LEN = 32767,
-        };
+    enum {
+        MAX_FORMAT_BUF_LEN = 2048,
+        MAX_LEN = 32767,
+    };
 
-        struct UnicodeStringData
+    struct UnicodeStringData
+    {
+    #ifdef GAME_DEBUG_STRUCTS
+        wchar_t *DebugPtr;
+    #endif // GAME_DEBUG_STRUCTS
+
+        unsigned short RefCount;
+        unsigned short NumCharsAllocated;
+
+        wchar_t *Peek()
         {
+            // Actual string data is stored immediately after the UnicodeStringData header.
+            return reinterpret_cast<wchar_t*>(&this[1]);
+        }
 
-            // 
-        #ifdef GAME_DEBUG_STRUCTS
-            wchar_t *DebugPtr;
-        #endif // GAME_DEBUG_STRUCTS
+    };
 
-            // 
-            unsigned short RefCount;
+    UnicodeString();
+    UnicodeString(wchar_t const *s);
+    UnicodeString(char16_t const *s);
+    UnicodeString(UnicodeString const &string);
+    //UnicodeString(AsciiString const &string);
+    ~UnicodeString();
 
-            // 
-            unsigned short NumCharsAllocated;
+    UnicodeString &operator=(wchar_t const *s) { Set(s); return *this; }
+    UnicodeString &operator=(char16_t const *s) { Set(s); return *this; }
+    UnicodeString &operator=(UnicodeString const &string) { Set(string); return *this; }
+    //UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
-            // 
-            wchar_t *Peek()
-            {
-                // Actual string data is stored immediately after the UnicodeStringData header.
-                return reinterpret_cast<wchar_t*>(&this[1]);
-            }
+    UnicodeString &operator+=(wchar_t s);
+    UnicodeString &operator+=(wchar_t const *s);
+    UnicodeString &operator+=(UnicodeString const &string);
+    //UnicodeString &operator+=(AsciiString const &string);
 
-        };
+    //TODO
+    //wchar_t *operator[](int index) const { return Data->Peek()[index]; }
 
-        UnicodeString();
-        UnicodeString(wchar_t const *s);
-        UnicodeString(UnicodeString const &string);
-        //UnicodeString(AsciiString const &string);
-        ~UnicodeString();
+    void Validate();
+    wchar_t *Peek() const;
+    void Release_Buffer();
+    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, wchar_t const *str_to_cpy = nullptr, wchar_t const *str_to_cat = nullptr);
+    size_t Get_Length() const;
+    void Clear();
+    wchar_t Get_Char(int) const;
+    wchar_t const *Str();
+    wchar_t *Get_Buffer_For_Read(int len);
+    void Set(wchar_t const *s);
+    void Set(char16_t const *s);
+    void Set(UnicodeString const &string);
 
-        UnicodeString &operator=(wchar_t *s) { Set(s); return *this; }
-        UnicodeString &operator=(wchar_t const *s) { Set(s); return *this; }
-        UnicodeString &operator=(UnicodeString const &string);
-        //UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
+    void Translate(AsciiString const &string);
 
-        UnicodeString &operator+=(wchar_t s);
-        UnicodeString &operator+=(wchar_t const *s);
-        UnicodeString &operator+=(UnicodeString const &string);
-        //UnicodeString &operator+=(AsciiString const &string);
+    void Concat(wchar_t c);
+    void Concat(wchar_t *s);
+    void Concat(UnicodeString const &string) { Concat(string.Peek()); }
 
-        //TODO
-        //wchar_t *operator[](int index) const { return Data->Peek()[index]; }
+    void Trim();
+    void To_Lower();
+    void Remove_Last_Char();
 
-        void Validate();
-        wchar_t *Peek() const;
-        void Release_Buffer();
-        void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, wchar_t const *str_to_cpy = nullptr, wchar_t const *str_to_cat = nullptr);
-        size_t Get_Length() const;
-        void Clear();
-        wchar_t Get_Char(int) const;
-        wchar_t const *Str();
-        wchar_t *Get_Buffer_For_Read(int len);
-        void Set(wchar_t const *s);
-        void Set(UnicodeString const &string);
+    void Format(wchar_t const *format, ...);
+    void Format(UnicodeString format, ...);
+    void Format_VA(wchar_t const *format, char *args);
+    void Format_VA(UnicodeString &format, char *args);
 
-        void Translate(AsciiString const &string);
+    int Compare(wchar_t const *s) const { return wcscmp(Peek(), s); };
+    int Compare(UnicodeString const &string) const { return wcscmp(Peek(), string.Peek()); };
 
-        void Concat(wchar_t c);
-        void Concat(wchar_t *s);
-        void Concat(UnicodeString const &string) { Concat(string.Peek()); }
+    int Compare_No_Case(wchar_t const *s) const { return wcscasecmp(Peek(), s); };
+    int Compare_No_Case(UnicodeString const &string) const { return wcscasecmp(Peek(), string.Peek()); };
 
-        void Trim();
-        void To_Lower();
-        void Remove_Last_Char();
+    bool Next_Token(UnicodeString *tok, UnicodeString delims);
 
-        void Format(wchar_t const *format, ...);
-        void Format(UnicodeString format, ...);
-        void Format_VA(wchar_t const *format, char *args);
-        void Format_VA(UnicodeString &format, char *args);
+    bool Is_None() { return Data != nullptr && wcscasecmp(Peek(), L"None") == 0; }
+    bool Is_Empty() { return Data == nullptr || *Data->Peek() == L'\0'; }
+    bool Is_Not_Empty() { return !Is_Empty(); }
+    bool Is_Not_None() { return !Is_None(); }
 
-        int Compare(wchar_t const *s) const { return wcscmp(Peek(), s); };
-        int Compare(UnicodeString const &string) const { return wcscmp(Peek(), string.Peek()); };
+private:
+    static wchar_t *Char16_To_WChar(wchar_t *dst, char16_t const *src);
 
-        int Compare_No_Case(wchar_t const *s) const { return wcscasecmp(Peek(), s); };
-        int Compare_No_Case(UnicodeString const &string) const { return wcscasecmp(Peek(), string.Peek()); };
+    // 
+    static UnicodeString const EmptyString;
 
-        bool Next_Token(UnicodeString *tok, UnicodeString delims);
-
-        bool Is_None() { return Data != nullptr && wcscasecmp(Peek(), L"None") == 0; }
-        bool Is_Empty() { return Data == nullptr || *Data->Peek() == L'\0'; }
-        bool Is_Not_Empty() { return !Is_Empty(); }
-        bool Is_Not_None() { return !Is_None(); }
-
-    private:
-
-        // 
-        static UnicodeString const EmptyString;
-
-        // 
-        UnicodeStringData *Data;
+    // 
+    UnicodeStringData *Data;
 };
 
 inline bool operator==(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) == 0; }

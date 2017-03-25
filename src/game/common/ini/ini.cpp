@@ -523,7 +523,7 @@ void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, voi
 
 void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token(ini->SepsPercent));
+    *static_cast<float*>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->SepsPercent));
 }
 
 void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data)

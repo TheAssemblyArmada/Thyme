@@ -148,9 +148,7 @@ void Setup_Hooks()
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DD90)), &INI::Parse_Acceleration_Real);
 
     // Replace NameKeyGenerator
-    Hook_Method((Make_Method_Ptr<AsciiString, NameKeyGenerator, NameKeyType>(0x0047B2F0)), &NameKeyGenerator::Key_To_Name);
-    Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B360)), &NameKeyGenerator::Name_To_Key);
-    Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B500)), &NameKeyGenerator::Name_To_Lower_Case_Key);
+    NameKeyGenerator::Hook_Me();
 
     // Replace GameTextManager
     GameTextManager::Hook_Me();

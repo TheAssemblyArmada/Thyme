@@ -26,9 +26,9 @@
 
 // Initialise object pool resources for Bucket class
 NameKeyGenerator::NameKeyGenerator() :
-    NextID(NAMEKEY_INVALID)
+    m_nextID(NAMEKEY_INVALID)
 {
-    memset(Sockets, 0, sizeof(Sockets));
+    memset(m_sockets, 0, sizeof(m_sockets));
 }
 
 NameKeyGenerator::~NameKeyGenerator()
@@ -40,14 +40,14 @@ void NameKeyGenerator::Init()
 {
     Free_Sockets();
 
-    NextID = (NameKeyType)1;
+    m_nextID = (NameKeyType)1;
 }
 
 void NameKeyGenerator::Reset()
 {
     Free_Sockets();
 
-    NextID = (NameKeyType)1;
+    m_nextID = (NameKeyType)1;
 }
 
 AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
@@ -56,14 +56,14 @@ AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
     Bucket *bucket;
 
     for ( int i = 0; i < SOCKET_COUNT; ++i ) {
-        bucket = Sockets[i];
+        bucket = m_sockets[i];
 
         while ( bucket != nullptr ) {
-            if ( bucket->Key == key ) {
-                return bucket->NameString;
+            if ( bucket->m_key == key ) {
+                return bucket->m_nameString;
             }
 
-            bucket = bucket->NextInSocket;
+            bucket = bucket->m_nextInSocket;
         }
     }
 
@@ -84,23 +84,23 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(char const *name)
 
     Bucket *bucket;
 
-    for ( bucket = Sockets[socket_hash]; bucket != nullptr; bucket = bucket->NextInSocket ) {
-        if ( strcasecmp(bucket->NameString.Str(), name) == 0 ) {
-            return bucket->Key;
+    for ( bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket ) {
+        if ( strcasecmp(bucket->m_nameString.Str(), name) == 0 ) {
+            return bucket->m_key;
         }
     }
 
     bucket = new Bucket;
-    bucket->Key = (NameKeyType)NextID++;
-    bucket->NameString = name;
-    bucket->NextInSocket = Sockets[socket_hash];
-    Sockets[socket_hash] = bucket;
+    bucket->m_key = (NameKeyType)m_nextID++;
+    bucket->m_nameString = name;
+    bucket->m_nextInSocket = m_sockets[socket_hash];
+    m_sockets[socket_hash] = bucket;
 
     // Debug info suggests there is some kind of count here to check the longest
     // linked list of buckets and log if its too large and the socket count might
     // need increasing.
 
-    return bucket->Key;
+    return bucket->m_key;
 }
 
 NameKeyType NameKeyGenerator::Name_To_Key(char const *name)
@@ -117,23 +117,23 @@ NameKeyType NameKeyGenerator::Name_To_Key(char const *name)
 
     Bucket *bucket;
 
-    for ( bucket = Sockets[socket_hash]; bucket != nullptr; bucket = bucket->NextInSocket ) {
-        if ( strcmp(bucket->NameString.Str(), name) == 0 ) {
-            return bucket->Key;
+    for ( bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket ) {
+        if ( strcmp(bucket->m_nameString.Str(), name) == 0 ) {
+            return bucket->m_key;
         }
     }
 
     bucket = new Bucket;
-    bucket->Key = (NameKeyType)NextID++;
-    bucket->NameString = name;
-    bucket->NextInSocket = Sockets[socket_hash];
-    Sockets[socket_hash] = bucket;
+    bucket->m_key = (NameKeyType)m_nextID++;
+    bucket->m_nameString = name;
+    bucket->m_nextInSocket = m_sockets[socket_hash];
+    m_sockets[socket_hash] = bucket;
 
     // Debug info suggests there is some kind of count here to check the longest
     // linked list of buckets and log if its too large and the socket count might
     // need increasing.
 
-    return bucket->Key;
+    return bucket->m_key;
 }
 
 void NameKeyGenerator::Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata)
@@ -146,17 +146,17 @@ void NameKeyGenerator::Free_Sockets()
     // Go over sockets and free them.
     for ( int i = 0; i < SOCKET_COUNT; ++i ) {
         // Delete linked list of entries under given key.
-        if ( Sockets[i] != nullptr ) {
-            Bucket *bucket = Sockets[i];
+        if ( m_sockets[i] != nullptr ) {
+            Bucket *bucket = m_sockets[i];
             Bucket *next;
 
             do {
-                next = bucket->NextInSocket;
+                next = bucket->m_nextInSocket;
                 Delete_Instance(bucket);
                 bucket = next;
             } while ( next != nullptr );
         }
 
-        Sockets[i] = nullptr;
+        m_sockets[i] = nullptr;
     }
 }

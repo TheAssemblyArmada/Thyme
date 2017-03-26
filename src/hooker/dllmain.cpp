@@ -119,33 +119,7 @@ void Setup_Hooks()
     //
     // Replace INI
     //
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D950)), &INI::Get_Next_Sub_Token);
-    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
-    Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
-    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
-    // Field parsing functions
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ADA0)), &INI::Parse_Bool);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041A980)), &INI::Parse_Byte);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AAB0)), &INI::Parse_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AB20)), &INI::Parse_Unsigned);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AB90)), &INI::Parse_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AC00)), &INI::Parse_Positive_None_Zero_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041BA50)), &INI::Parse_Percent_To_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ACA0)), &INI::Parse_Angle_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AD20)), &INI::Parse_Angular_Velocity_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041AF20)), &INI::Parse_AsciiString);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041B1B0)), &INI::Parse_AsciiString_Vector_Append);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041BDD0)), &INI::Parse_RGB_Color);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C100)), &INI::Parse_Color_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C530)), &INI::Parse_Coord2D);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041C2C0)), &INI::Parse_Coord3D);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041D140)), &INI::Parse_Index_List);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DB50)), &INI::Parse_Duration_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DBD0)), &INI::Parse_Duration_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DD10)), &INI::Parse_Velocity_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041DD90)), &INI::Parse_Acceleration_Real);
+    INI::Hook_Me();
 
     // Replace NameKeyGenerator
     NameKeyGenerator::Hook_Me();

@@ -115,9 +115,9 @@ BlockParse TheTypeTable[] =
 inline iniblockparse_t Find_Block_Parse(char const *token)
 {
     // Iterate over the TypeTable to identify correct parsing function.
-    for ( BlockParse *block = TheTypeTable; block->Token != nullptr; ++block ) {
-        if ( strcmp(block->Token, token) == 0 ) {
-            return block->ParseFunc;
+    for ( BlockParse *block = TheTypeTable; block->token != nullptr; ++block ) {
+        if ( strcmp(block->token, token) == 0 ) {
+            return block->parse_func;
         }
     }
 
@@ -130,49 +130,40 @@ inline inifieldparse_t Find_Field_Parse(FieldParse *table, char const *token, in
     FieldParse *tblptr;
 
     // Search the list for a matching FieldParse struct.
-    for ( tblptr = table; tblptr->Token != nullptr; ++tblptr ) {
+    for ( tblptr = table; tblptr->token != nullptr; ++tblptr ) {
         // If found, return the data and associated function.
-        if ( strcmp(tblptr->Token, token) == 0 ) {
-            offset = tblptr->Offset;
-            data = tblptr->UserData;
+        if ( strcmp(tblptr->token, token) == 0 ) {
+            offset = tblptr->offset;
+            data = tblptr->user_data;
 
-            return tblptr->ParseFunc;
+            return tblptr->parse_func;
         }
     }
 
     // Didn't find matching token, but null token entry has a function
-    if ( tblptr->ParseFunc != nullptr ) {
-        offset = tblptr->Offset;
+    if ( tblptr->parse_func != nullptr ) {
+        offset = tblptr->offset;
         data = token;
 
-        return tblptr->ParseFunc;
+        return tblptr->parse_func;
     }
 
     // Didn't find anything, sad times.
     return nullptr;
 }
 
-void MultiIniFieldParse::Add(FieldParse *field_parse, unsigned int extra_offset)
-{
-    ASSERT_THROW(Count < MAX_MULTI_FIELDS, 0xDEAD0001);
-
-    FieldParsers[Count] = field_parse;
-    ExtraOffsets[Count] = extra_offset;
-    ++Count;
-}
-
 INI::INI() :
-    BackingFile(nullptr),
-    BufferReadPos(0),
-    BufferData(0),
-    FileName("None"),
-    LoadType(INI_LOAD_INVALID),
-    Seps(" \n\r\t="),
-    SepsPercent(" \n\r\t=%%"),
-    SepsColon(" \n\r\t=:"),
-    SepsQuote(" \"\n="),
-    EndToken("END"),
-    EndOfFile(false)
+    m_backingFile(nullptr),
+    m_bufferReadPos(0),
+    m_bufferData(0),
+    m_fileName("None"),
+    m_loadType(INI_LOAD_INVALID),
+    m_seps(" \n\r\t="),
+    m_sepsPercent(" \n\r\t=%%"),
+    m_sepsColon(" \n\r\t=:"),
+    m_sepsQuote(" \"\n="),
+    m_endToken("END"),
+    m_endOfFile(false)
 {
 }
 
@@ -186,14 +177,14 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
     SXfer = xfer;
     Prep_File(filename, type);
 
-    while ( !EndOfFile ) {
+    while ( !m_endOfFile ) {
         Read_Line();
         
         // Original seems to make an unused AsciiString from the
         // parsed block, possible leftover from debug code?
-        //AsciiString block(CurrentBlock);
+        //AsciiString block(m_currentBlock);
 
-        char *token = crt_strtok(CurrentBlock, Seps);
+        char *token = crt_strtok(m_currentBlock, m_seps);
         
         if ( token != nullptr ) {
             iniblockparse_t parser = Find_Block_Parse(token);
@@ -202,8 +193,8 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
                 parser != nullptr,
                 0xDEAD0006,
                 "[LINE: %d - FILE: '%s'] Unknown block '%s'\n",
-                LineNumber,
-                FileName.Str(),
+                m_lineNumber,
+                m_fileName.Str(),
                 token
             );
 
@@ -226,35 +217,35 @@ void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type,
 void INI::Prep_File(AsciiString filename, INILoadType type)
 {
     ASSERT_THROW_PRINT(
-        BackingFile == nullptr,
+        m_backingFile == nullptr,
         0xDEAD0006,
         "Cannot open file %s, file already open.\n",
         filename.Str()
     );
 
-    BackingFile = TheFileSystem->Open(filename.Str(), File::READ);
+    m_backingFile = TheFileSystem->Open(filename.Str(), File::READ);
 
     ASSERT_THROW_PRINT(
-        BackingFile != nullptr,
+        m_backingFile != nullptr,
         0xDEAD0006,
         "Could not open file %s.\n",
         filename.Str()
     );
 
-    FileName = filename;
-    LoadType = type;
+    m_fileName = filename;
+    m_loadType = type;
 }
 
 void INI::Unprep_File()
 {
-    BackingFile->Close();
-    BackingFile = nullptr;
-    BufferReadPos = 0;
-    BufferData = 0;
-    FileName = "None";
-    LoadType = INI_LOAD_INVALID;
-    LineNumber = 0;
-    EndOfFile = false;
+    m_backingFile->Close();
+    m_backingFile = nullptr;
+    m_bufferReadPos = 0;
+    m_bufferData = 0;
+    m_fileName = "None";
+    m_loadType = INI_LOAD_INVALID;
+    m_lineNumber = 0;
+    m_endOfFile = false;
     SXfer = nullptr;
 }
 
@@ -274,23 +265,23 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
 
     while ( !done ) {
         ASSERT_THROW_PRINT(
-            !EndOfFile,
+            !m_endOfFile,
             0xDEAD0006,
             "Error parsing block '%s', in INI file '%s'.  Missing '%s' token\n",
-            CurrentBlock,
-            FileName.Str(),
-            EndToken
+            m_currentBlock,
+            m_fileName.Str(),
+            m_endToken
         );
 
         Read_Line();
 
-        char *token = crt_strtok(CurrentBlock, Seps);
+        char *token = crt_strtok(m_currentBlock, m_seps);
 
         if ( token == nullptr ) {
             continue;
         }
 
-        if ( strcasecmp(token, EndToken) == 0 ) {
+        if ( strcasecmp(token, m_endToken) == 0 ) {
             done = true;
         } else {
             inifieldparse_t parsefunc;
@@ -301,19 +292,19 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
             // Find an appropriate parser function from the parse table
             for ( int i = 0; ; ++i ) {
                 ASSERT_THROW_PRINT(
-                    i < parse_table_list.Count,
+                    i < parse_table_list.count,
                     0xDEAD0006,
                     "[LINE: %d - FILE: '%s'] Unknown field '%s' in block '%s'\n",
-                    LineNumber,
-                    FileName.Str(),
+                    m_lineNumber,
+                    m_fileName.Str(),
                     token,
-                    CurrentBlock
+                    m_currentBlock
                 );
 
-                parsefunc = Find_Field_Parse(parse_table_list.FieldParsers[i], token, offset, data);
+                parsefunc = Find_Field_Parse(parse_table_list.field_parsers[i], token, offset, data);
                 
                 if ( parsefunc != nullptr ) {
-                    exoffset = parse_table_list.ExtraOffsets[i];
+                    exoffset = parse_table_list.extra_offsets[i];
 
                     break;
                 }
@@ -334,27 +325,27 @@ void INI::Init_From_INI_Multi_Proc(void *what, void(*proc)(MultiIniFieldParse *)
 
 void INI::Read_Line()
 {
-    ASSERT_PRINT(BackingFile != nullptr, "Read_Line file pointer is nullptr.\n");
+    ASSERT_PRINT(m_backingFile != nullptr, "Read_Line file pointer is nullptr.\n");
     
-    if ( EndOfFile ) {
-        CurrentBlock[0] = '\0';
+    if ( m_endOfFile ) {
+        m_currentBlock[0] = '\0';
     } else {
         // Read into our current block buffer.
         char *cb;
-        for ( cb = CurrentBlock; cb != &BlockEnd; ++cb ) {
+        for ( cb = m_currentBlock; cb != &m_blockEnd; ++cb ) {
             // If the buffer is empty, refill it.
-            if ( BufferReadPos == BufferData ) {
-                BufferReadPos = 0;
-                BufferData = BackingFile->Read(Buffer, sizeof(Buffer));
+            if ( m_bufferReadPos == m_bufferData ) {
+                m_bufferReadPos = 0;
+                m_bufferData = m_backingFile->Read(m_buffer, sizeof(m_buffer));
 
-                if ( BufferData == 0 ) {
-                    EndOfFile = true;
+                if ( m_bufferData == 0 ) {
+                    m_endOfFile = true;
 
                     break;
                 }
             }
 
-            *cb = Buffer[BufferReadPos++];
+            *cb = m_buffer[m_bufferReadPos++];
 
             // Reached end of line
             if ( *cb == '\n' ) {
@@ -371,12 +362,12 @@ void INI::Read_Line()
 
         // Null terminate the buffer
         *cb = '\0';
-        ++LineNumber;
+        ++m_lineNumber;
     }
 
     // If we have a transfer object assigned, do the transfer.
     if ( SXfer != nullptr ) {
-        SXfer->xferImplementation(CurrentBlock, strlen(CurrentBlock));
+        SXfer->xferImplementation(m_currentBlock, strlen(m_currentBlock));
     }
 }
 
@@ -463,23 +454,23 @@ int INI::Scan_IndexList(char const *token, char const *const *list)
 int INI::Scan_LookupList(char const *token, LookupListRec const *list)
 {
     ASSERT_THROW_PRINT(
-        list != nullptr && list->Name != nullptr,
+        list != nullptr && list->name != nullptr,
         0xDEAD0006,
         "Error, invalid list provided for Scan_LookupList\n"
     );
 
     int list_count = 0;
 
-    while ( strcasecmp(list[list_count].Name, token) != 0 ) {
+    while ( strcasecmp(list[list_count].name, token) != 0 ) {
         ASSERT_THROW_PRINT(
-            list[++list_count].Name != nullptr,
+            list[++list_count].name != nullptr,
             0xDEAD0006,
             "Token %s not found in list\n",
             token
         );
     }
 
-    return list[list_count].Value;
+    return list[list_count].value;
 }
 
 // Field parsing functions.
@@ -523,7 +514,7 @@ void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, voi
 
 void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *static_cast<float*>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->SepsPercent));
+    *static_cast<float*>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->m_sepsPercent));
 }
 
 void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data)
@@ -543,7 +534,7 @@ void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *use
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)
 {
-    //DEBUG_LOG("Appending Vector for ini %s.\n", ini->FileName.Str());
+    //DEBUG_LOG("Appending Vector for ini %s.\n", ini->m_fileName.Str());
     std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
 
     for ( char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
@@ -574,12 +565,12 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *
     RGBAColorInt *rgba = static_cast<RGBAColorInt*>(store);
 
     for ( int i = 0; i < 4; ++i ) {
-        char *token = ini->Get_Next_Token_Or_Null(ini->SepsColon);
+        char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if ( token != nullptr ) {
             ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);
 
-            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->SepsColon)), 0, 255);
+            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
             ASSERT_THROW_PRINT(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
             colors[i] = 255;
@@ -599,12 +590,12 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_
     uint32_t *rgba = static_cast<uint32_t*>(store);
 
     for ( int i = 0; i < 4; ++i ) {
-        char *token = ini->Get_Next_Token_Or_Null(ini->SepsColon);
+        char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if ( token != nullptr ) {
             ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);
 
-            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->SepsColon)), 0, 255);
+            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
             ASSERT_THROW_PRINT(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
             colors[i] = 255;

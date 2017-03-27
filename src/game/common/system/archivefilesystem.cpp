@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "archivefilesystem.h"
 #include "archivefile.h"
+#include "globaldata.h"
 
 ArchiveFileSystem::ArchiveFileSystem()
 {
@@ -79,6 +80,8 @@ bool ArchiveFileSystem::Does_File_Exist(char const *filename)
     return true;
 }
 
+// Loads an archive file into the virtual directory tree. The over write option allows it to use this archive to
+// replace the backing for a file name if it already has an entry in the tree.
 void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &archive_path, bool overwrite)
 {
     std::set<AsciiString, rts::less_than_nocase<AsciiString>> file_list;
@@ -132,6 +135,7 @@ bool ArchiveFileSystem::Get_File_Info(AsciiString const &name, FileInfo *info)
     return ArchiveFiles[archive]->Get_File_Info(name, info);
 }
 
+// Returns the filname of the archive file containing the passed in file name. 
 AsciiString ArchiveFileSystem::Get_Archive_Filename_For_File(AsciiString const &filename)
 {
     AsciiString path = filename;
@@ -163,7 +167,8 @@ AsciiString ArchiveFileSystem::Get_Archive_Filename_For_File(AsciiString const &
     return dirp->Files[token];
 }
 
-void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>>& filelist, bool search_subdirs)
+// Populates a std::set of file paths based on the passed in filter and path to examine.
+void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs)
 {
     // Get files from all archive files.
     for ( auto it = ArchiveFiles.begin(); it != ArchiveFiles.end(); ++it ) {
@@ -171,8 +176,23 @@ void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiS
     }
 }
 
+// Load mods based on two path options set in the global data fields m_userModFile and 
+// m_userModDirectory. These options are parsed from the -mod command line option.
+// See GlobalData.h
 void ArchiveFileSystem::Load_Mods()
 {
-    //TODO needs GlobalData members to implement
-    Call_Method<void, ArchiveFileSystem>(0x0048EBD0, this);
+    if ( !TheWriteableGlobalData->m_userModFile.Is_Empty() ) {
+        DEBUG_LOG("Loading mod file '%s'.\n", TheWriteableGlobalData->m_userModFile.Str());
+        ArchiveFile *file = Open_Archive_File(TheWriteableGlobalData->m_userModFile.Str());
+
+        if ( file != nullptr ) {
+            Load_Into_Dir_Tree(file, TheWriteableGlobalData->m_userModFile, true);
+            ArchiveFiles[TheWriteableGlobalData->m_userModFile] = file;
+        }
+    }
+
+    if ( !TheWriteableGlobalData->m_userModDirectory.Is_Empty() ) {
+        DEBUG_LOG("Loading mod files from '%s'.\n", TheWriteableGlobalData->m_userModDirectory.Str());
+        Load_Archives_From_Dir(TheWriteableGlobalData->m_userModDirectory, "*.big", true);
+    }
 }

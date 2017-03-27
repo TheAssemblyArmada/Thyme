@@ -13,6 +13,7 @@ set(GAMEENGINE_INCLUDES
     game/common
     game/common/ini
     game/common/system
+	game/common/rts
     platform
     w3d/lib
 )
@@ -50,6 +51,7 @@ set(GAMEENGINE_SRC
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
+	game/common/rts/money.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
     platform/win32gameengine.cpp

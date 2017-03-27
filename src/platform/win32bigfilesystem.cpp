@@ -28,7 +28,10 @@
 #include "file.h"
 #include "localfilesystem.h"
 #include "hooker.h"
+#include "rtsutils.h"
 #include "win32bigfile.h"
+
+using rts::FourCC;
 
 #define GetStringFromGeneralsRegistry(x,y,z) Call_Function<void, AsciiString, AsciiString, AsciiString const &>(0x004988A0, x, y, z)
 
@@ -52,8 +55,7 @@ void Win32BIGFileSystem::Init()
 
 ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
 {
-    static const char _bigfileid[5] = "BIGF";
-    char idbuff[5];
+    uint32_t idbuff;
 
     File *file = TheLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
@@ -68,10 +70,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
     }
 
     // Read and check Big file FourCC, make sure we opened the right thing.
-    file->Read(idbuff, sizeof(idbuff) - 1);
-    idbuff[sizeof(idbuff) - 1] = 0;
+    file->Read(&idbuff, sizeof(idbuff));
 
-    if ( strcmp(_bigfileid, idbuff) != 0 ) {
+    if ( idbuff != FourCC<'B', 'I', 'G', 'F'>::value ) {
         DEBUG_LOG("Opened file '%s' does not have correct Big File FourCC, closing.\n", filename);
         file->Close();
 

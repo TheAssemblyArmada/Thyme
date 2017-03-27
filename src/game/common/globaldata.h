@@ -111,8 +111,8 @@ public:
     AsciiString m_moveHintName;
     bool m_useTrees;
     bool m_unkBool1;
-    bool m_unkBool2;
-    bool m_unkBool3;
+    bool m_extraAnimations;
+    bool m_useHeatEffects;
     bool m_useFPSLimit;
     bool m_dumpAssetUsage;
     //char pad[2]
@@ -135,7 +135,7 @@ public:
     bool m_useHalfHeightMap;
     bool m_drawEntireTerrain;
     TerrainLOD m_terrainLOD;
-    bool m_unkBool4;
+    bool m_dynamicLOD;
     bool m_unkBool5;
     //char pad[2]
     int32_t m_terrainLODTargetTimeMS;
@@ -175,7 +175,7 @@ public:
     float m_vertexWaterAttenuationB[4];
     float m_vertexWaterAttenuationC[4];
     float m_vertexWaterAttenuationRange[4];
-    float m_unkFloat1;
+    float m_downWindAngle;
     float m_skyBoxPositionZ;
     bool m_drawSkyBox;    // init code suggests this might be an int, old BOOL typedef?
     //char pad[3]
@@ -223,7 +223,9 @@ public:
     bool m_forceModelsFollowWeather;
     TerrainLighting m_terrainPlaneLighting[TIME_OF_DAY_COUNT][3];
     TerrainLighting m_terrainObjectLighting[TIME_OF_DAY_COUNT][3];
-    TerrainLighting m_unkTerrainLighting[3];
+    RGBColor m_terrainAmbient[3];
+    RGBColor m_terrainDiffuse[3];
+    Coord3D m_terrainLightPos[3];
     float m_unkFloat2;
     float m_infantryLightMorningScale;
     float m_infantryLightAfternoonScale;
@@ -267,7 +269,7 @@ public:
     bool m_displayDebug;  // not 100% sure and needs confirming
     bool m_winCursors;
     bool m_unkBool9;
-    bool m_unkBool10;
+    bool m_benchMark;
     bool m_unkBool11;
     //char pad[2]
     int32_t m_fixedSeed;
@@ -335,7 +337,7 @@ public:
     AsciiString m_shellMapName;
     bool m_shellMapOn;
     bool m_playIntro;
-    bool m_unkBool15;
+    bool m_playSizzle;
     bool m_afterIntro;
     bool m_unkBool16;
     bool m_unkBool17;
@@ -345,7 +347,7 @@ public:
     float m_musicVolumeFactor;  // not 100% sure, needs confirming
     float m_SFXVolumeFactor;  // not 100% sure, needs confirming
     float m_voiceVolumeFactor;  // not 100% sure, needs confirming
-    bool m_sound3D;  // not 100% sure, needs confirming
+    bool m_sound3DPref;  // not 100% sure, needs confirming
     bool m_animateWindows;
     bool m_setMinVertextBufferSize;  // not 100% sure, needs confirming
     //char pad[1]
@@ -361,8 +363,8 @@ public:
     //char pad[3]
     float m_cameraAudibleRadius;
     float m_groupMoveClickToGatherAreaFactor;
-    int32_t m_unkInt19;     // could be float
-    bool m_unkBool19;
+    int32_t m_antiAliasBoxValue;     // could be float
+    bool m_languageFilter;
     bool m_unkBool20;
     bool m_unkBool21;
     bool m_saveCameraInReplays;

@@ -47,6 +47,7 @@ set(GAMEENGINE_SRC
     game/common/system/mempool.cpp
     game/common/system/mempoolfact.cpp
     game/common/system/ramfile.cpp
+    game/common/system/snapshot.cpp
     game/common/system/streamingarchivefile.cpp
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp

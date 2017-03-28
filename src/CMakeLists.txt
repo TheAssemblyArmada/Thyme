@@ -52,7 +52,10 @@ set(GAMEENGINE_SRC
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
-	game/common/rts/money.cpp
+	game/common/rts/handicap.cpp
+    game/common/rts/money.cpp
+    game/common/rts/player.cpp
+    game/common/rts/playerlist.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
     platform/win32gameengine.cpp

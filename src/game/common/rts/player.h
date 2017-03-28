@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: SNAPSHOT.H
+//          File:: PLAYER.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: TODO
+//   Description:: Object fr tracking information relating to a player.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,24 +25,26 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _SNAPSHOT_H_
-#define _SNAPSHOT_H_
+#ifndef _PLAYER_H_
+#define _PLAYER_H_
 
-class Xfer;
+#include "snapshot.h"
+#include "handicap.h"
+#include "unicodestring.h"
 
-enum SnapshotCode
-{
-    SNAPSHOT_NONE = 0,
-    SNAPSHOT_OK = 1,
-    NUM_SNAPSHOT_CODES,
-};
-
-class SnapShot
+//TODO this is just a skeleton to support other objects at the moment.
+class Player : public SnapShot
 {
 public:
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Load_Post_Process() = 0;
+    int Get_Player_Index() { return m_playerIndex; }
+
+public:
+    int unk1;
+    int unk2;
+    Handicap m_handicap;
+    int unk3;
+    int unk4;
+    int m_playerIndex;
 };
 
 #endif

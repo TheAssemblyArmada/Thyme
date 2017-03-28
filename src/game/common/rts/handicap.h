@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: SNAPSHOT.H
+//          File:: HANDICAP.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: TODO
+//   Description:: TODO.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,24 +25,38 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _SNAPSHOT_H_
-#define _SNAPSHOT_H_
+#ifndef _HANDICAP_H_
+#define _HANDICAP_H_
 
-class Xfer;
+class Dict;
+class ThingTemplate;
 
-enum SnapshotCode
-{
-    SNAPSHOT_NONE = 0,
-    SNAPSHOT_OK = 1,
-    NUM_SNAPSHOT_CODES,
-};
-
-class SnapShot
+class Handicap
 {
 public:
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Load_Post_Process() = 0;
+    enum HandicapType
+    {
+        BUILDCOST = 0,
+        BUILDTIME,
+        HANDICAP_TYPE_COUNT,
+    };
+
+    enum ThingType
+    {
+        NONE = 0,
+        GENERIC,
+        POLYGON,
+    };
+
+    Handicap();
+
+    void Init();
+    void Read_From_Dict(Dict const *dict);
+    ThingType Get_Best_Thing_Type(ThingTemplate const *thing);
+    float Get_Handicap(HandicapType ht, ThingTemplate const *thing);
+
+private:
+    float m_handicaps[HANDICAP_TYPE_COUNT][POLYGON];
 };
 
 #endif

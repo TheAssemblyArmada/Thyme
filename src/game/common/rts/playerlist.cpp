@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: SNAPSHOT.H
+//          File:: PLAYERLIST.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: TODO
+//   Description:: Contains a list of players in the game.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -21,28 +21,4 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
-#pragma once
-#endif // _MSC_VER
-
-#ifndef _SNAPSHOT_H_
-#define _SNAPSHOT_H_
-
-class Xfer;
-
-enum SnapshotCode
-{
-    SNAPSHOT_NONE = 0,
-    SNAPSHOT_OK = 1,
-    NUM_SNAPSHOT_CODES,
-};
-
-class SnapShot
-{
-public:
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Load_Post_Process() = 0;
-};
-
-#endif
+#include "playerlist.h"

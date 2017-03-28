@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: SNAPSHOT.H
+//          File:: PLAYERLIST.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: TODO
+//   Description:: Contains a list of players in the game.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,24 +25,40 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _SNAPSHOT_H_
-#define _SNAPSHOT_H_
+#ifndef _PLAYERLIST_H_
+#define _PLAYERLIST_H_
 
-class Xfer;
+#include "subsysteminterface.h"
+#include "snapshot.h"
+#include "player.h"
 
-enum SnapshotCode
-{
-    SNAPSHOT_NONE = 0,
-    SNAPSHOT_OK = 1,
-    NUM_SNAPSHOT_CODES,
-};
+#define ThePlayerList (Make_Global<PlayerList*>(0x00A2B688))
 
-class SnapShot
+class PlayerList : public SubsystemInterface, public SnapShot
 {
 public:
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Load_Post_Process() = 0;
+    PlayerList();
+    virtual ~PlayerList();
+
+    // SubsystemInterface interface
+    virtual void Init();
+    virtual void Reset();
+    virtual void Update();
+
+    virtual void New_Game();
+    virtual void New_Map();
+
+    // SnapShot interface
+    virtual SnapshotCode CRC_Snapshot(Xfer *xfer);
+    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer);
+    virtual SnapshotCode Load_Post_Process();
+
+    // TODO implementations and none virtual functions.
+    Player *Get_Local_Player() { return m_local; }
+private:
+    Player *m_local;
+    int m_playerCount;
+    Player *m_players;
 };
 
 #endif

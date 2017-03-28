@@ -35,12 +35,12 @@
 AsciiString const AsciiString::EmptyString(nullptr);
 
 AsciiString::AsciiString() :
-    Data(nullptr)
+    m_data(nullptr)
 {
 }
 
 AsciiString::AsciiString(char const *s) :
-    Data(nullptr)
+    m_data(nullptr)
 {
     if ( s != nullptr ) {
         int len = (int)strlen(s);
@@ -51,13 +51,13 @@ AsciiString::AsciiString(char const *s) :
 }
 
 AsciiString::AsciiString(AsciiString const &string) :
-    Data(string.Data)
+    m_data(string.m_data)
 {
-    if ( Data != nullptr ) {
+    if ( m_data != nullptr ) {
     #ifdef COMPILER_MSVC
-        InterlockedIncrement16((volatile short*)&string.Data->RefCount);
+        InterlockedIncrement16((volatile short*)&string.m_data->ref_count);
     #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-        __sync_add_and_fetch(&string.Data->RefCount, 1);
+        __sync_add_and_fetch(&string.m_data->ref_count, 1);
     #endif
     }
 }
@@ -69,31 +69,31 @@ void AsciiString::Validate()
 
 char *AsciiString::Peek() const
 {
-    ASSERT_PRINT(Data != nullptr, "null string ptr");
+    ASSERT_PRINT(m_data != nullptr, "null string ptr");
     
-    return Data->Peek();
+    return m_data->Peek();
 }
 
 
 void AsciiString::Release_Buffer()
 {
-    if ( Data != nullptr ) {
+    if ( m_data != nullptr ) {
     #ifdef COMPILER_MSVC
-        InterlockedDecrement16((volatile short*)&Data->RefCount);
+        InterlockedDecrement16((volatile short*)&m_data->ref_count);
     #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-        __sync_sub_and_fetch(&Data->RefCount, 1);
+        __sync_sub_and_fetch(&m_data->ref_count, 1);
     #endif
-        if ( Data->RefCount == 0 ) {
-            Free_Bytes();
+        if ( m_data->ref_count == 0 ) {
+            TheDynamicMemoryAllocator->Free_Bytes(m_data);
         }
         
-        Data = nullptr;
+        m_data = nullptr;
     }
 }
 
 void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, char const *str_to_cpy, char const *str_to_cat)
 {
-    if ( Data != nullptr && Data->RefCount == 1 && Data->NumCharsAllocated >= chars_needed ) {
+    if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
         if ( str_to_cpy != nullptr ) {
             strcpy(Peek(), str_to_cpy);
         }
@@ -113,14 +113,14 @@ void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data,
         int size = TheDynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
         AsciiStringData *new_data = reinterpret_cast<AsciiStringData *>(TheDynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
         
-        new_data->RefCount = 1;
-        new_data->NumCharsAllocated = size - sizeof(AsciiStringData);
-        //new_data->NumCharsAllocated = numCharsNeeded;
+        new_data->ref_count = 1;
+        new_data->num_chars_allocated = size - sizeof(AsciiStringData);
+        //new_data->num_chars_allocated = numCharsNeeded;
     #ifdef GAME_DEBUG_STRUCTS
-        new_data->DebugPtr = new_data->Peek();
+        new_data->debug_ptr = new_data->Peek();
     #endif
 
-        if ( Data != nullptr && keep_data ) {
+        if ( m_data != nullptr && keep_data ) {
             strcpy(new_data->Peek(), Peek());
         } else {
             *new_data->Peek() = '\0';
@@ -135,13 +135,13 @@ void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data,
         }
 
         Release_Buffer();
-        Data = new_data;
+        m_data = new_data;
     }
 }
 
 int AsciiString::Get_Length() const
 {
-    if ( Data != nullptr ) {
+    if ( m_data != nullptr ) {
         int len = strlen(Str());
         ASSERT_PRINT(len > 0, "length of string is less than or equal to 0.");
         
@@ -163,7 +163,7 @@ const char *AsciiString::Str() const
 {
     static char const TheNullChr[4] = "";
 
-    if ( Data != nullptr ) {
+    if ( m_data != nullptr ) {
         return Peek();
     }
     
@@ -184,7 +184,7 @@ char *AsciiString::Get_Buffer_For_Read(int len)
 
 void AsciiString::Set(char const *s)
 {
-    if ( Data != nullptr || s != Data->Peek() ) {
+    if ( m_data != nullptr || s != m_data->Peek() ) {
         size_t len;
         
         if ( s && (len = strlen(s) + 1, len != 1) ) {
@@ -199,13 +199,13 @@ void AsciiString::Set(AsciiString const &string)
 {
     if ( &string != this ) {
         Release_Buffer();
-        Data = string.Data;
+        m_data = string.m_data;
         
-        if ( string.Data != nullptr ) {
+        if ( string.m_data != nullptr ) {
         #ifdef COMPILER_MSVC
-            InterlockedIncrement16((volatile short*)&string.Data->RefCount);
+            InterlockedIncrement16((volatile short*)&string.m_data->ref_count);
         #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-            __sync_add_and_fetch(&string.Data->RefCount, 1);
+            __sync_add_and_fetch(&string.m_data->ref_count, 1);
         #endif
         }
     }
@@ -219,7 +219,7 @@ void AsciiString::Translate(UnicodeString const &string)
 
     for ( int i = 0; i < str_len; ++i ) {
         //This is a debug assert from the look of it.
-        /*if ( v4 < 8 || (!stringSrc.Data ? (v6 = 0) : (v5 = stringSrc.Peek(), v6 = wcslen(v5)), v3 >= v6) )
+        /*if ( v4 < 8 || (!stringSrc.m_data ? (v6 = 0) : (v5 = stringSrc.Peek(), v6 = wcslen(v5)), v3 >= v6) )
         {
             if ( `UnicodeString::Get_Char'::`14'::allowCrash )
             {
@@ -230,7 +230,7 @@ void AsciiString::Translate(UnicodeString const &string)
         }*/
         wchar_t c;
 
-        if ( string.Data != nullptr ) {
+        if ( string.m_data != nullptr ) {
             c = string.Get_Char(i);
         } else {
             c = L'\0';
@@ -258,7 +258,7 @@ void AsciiString::Concat(char const *s)
     int len = strlen(s);
 
     if ( len > 0 ) {
-        if ( Data != nullptr ) {
+        if ( m_data != nullptr ) {
             Ensure_Unique_Buffer_Of_Size(strlen(Peek()) + len + 1, true, 0, s);
         } else {
             Set(s);
@@ -269,7 +269,7 @@ void AsciiString::Concat(char const *s)
 void AsciiString::Trim()
 {
     // No string, no Trim.
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -288,7 +288,7 @@ void AsciiString::Trim()
     }
 
     // Oops, Set call broke the string.
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -305,7 +305,7 @@ void AsciiString::To_Lower()
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -320,7 +320,7 @@ void AsciiString::To_Lower()
 
 void AsciiString::Remove_Last_Char()
 {
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -372,7 +372,7 @@ bool AsciiString::Starts_With(char const *p)
         return true;
     }
     
-    int thislen = Data != nullptr ? strlen(Peek()) : 0;
+    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {
@@ -388,7 +388,7 @@ bool AsciiString::Ends_With(char const *p)
         return true;
     }
     
-    int thislen = Data != nullptr ? strlen(Peek()) : 0;
+    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {
@@ -404,7 +404,7 @@ bool AsciiString::Starts_With_No_Case(char const *p) const
         return true;
     }
     
-    int thislen = Data != nullptr ? strlen(Peek()) : 0;
+    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {
@@ -420,7 +420,7 @@ bool AsciiString::Ends_With_No_Case(char const *p) const
         return true;
     }
     
-    int thislen = Data != nullptr ? strlen(Peek()) : 0;
+    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {
@@ -432,7 +432,7 @@ bool AsciiString::Ends_With_No_Case(char const *p) const
 
 bool AsciiString::Next_Token(AsciiString *tok, char const *delims)
 {
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return false;
     }
     

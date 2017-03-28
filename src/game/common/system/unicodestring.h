@@ -21,9 +21,9 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef COMPILER_MSVC
+#ifdef _MSC_VER
 #pragma once
-#endif // COMPILER_MSVC
+#endif // _MSC_VER
 
 #ifndef _UNICODESTRING_H_
 #define _UNICODESTRING_H_
@@ -52,16 +52,17 @@ public:
     struct UnicodeStringData
     {
     #ifdef GAME_DEBUG_STRUCTS
-        wchar_t *DebugPtr;
+        wchar_t *debug_ptr;
     #endif // GAME_DEBUG_STRUCTS
 
-        unsigned short RefCount;
-        unsigned short NumCharsAllocated;
+        uint16_t ref_count;
+        uint16_t num_chars_allocated;
 
         wchar_t *Peek()
         {
             // Actual string data is stored immediately after the UnicodeStringData header.
-            return reinterpret_cast<wchar_t*>(&this[1]);
+            // wchar_a to avoid strict aliasing issues on gcc/clang
+            return reinterpret_cast<wchar_a*>(&this[1]);
         }
 
     };
@@ -78,22 +79,22 @@ public:
     UnicodeString &operator=(UnicodeString const &string) { Set(string); return *this; }
     //UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
-    UnicodeString &operator+=(wchar_t s);
-    UnicodeString &operator+=(wchar_t const *s);
-    UnicodeString &operator+=(UnicodeString const &string);
+    UnicodeString &operator+=(wchar_t s) { Concat(s); return *this; }
+    UnicodeString &operator+=(wchar_t const *s) { Concat(s); return *this; }
+    UnicodeString &operator+=(UnicodeString const &s) { Concat(s); return *this; }
     //UnicodeString &operator+=(AsciiString const &string);
 
     //TODO
-    //wchar_t *operator[](int index) const { return Data->Peek()[index]; }
+    //wchar_t *operator[](int index) const { return m_data->Peek()[index]; }
 
     void Validate();
     wchar_t *Peek() const;
     void Release_Buffer();
     void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, wchar_t const *str_to_cpy = nullptr, wchar_t const *str_to_cat = nullptr);
-    size_t Get_Length() const;
+    int Get_Length() const;
     void Clear();
     wchar_t Get_Char(int) const;
-    wchar_t const *Str();
+    wchar_t const *Str() const;
     wchar_t *Get_Buffer_For_Read(int len);
     void Set(wchar_t const *s);
     void Set(char16_t const *s);
@@ -103,7 +104,7 @@ public:
 
     void Concat(wchar_t c);
     void Concat(wchar_t *s);
-    void Concat(UnicodeString const &string) { Concat(string.Peek()); }
+    void Concat(UnicodeString const &string) { Concat(string.Str()); }
 
     void Trim();
     void To_Lower();
@@ -114,16 +115,16 @@ public:
     void Format_VA(wchar_t const *format, char *args);
     void Format_VA(UnicodeString &format, char *args);
 
-    int Compare(wchar_t const *s) const { return wcscmp(Peek(), s); };
-    int Compare(UnicodeString const &string) const { return wcscmp(Peek(), string.Peek()); };
+    int Compare(wchar_t const *s) const { return wcscmp(Str(), s); };
+    int Compare(UnicodeString const &string) const { return wcscmp(Str(), string.Str()); };
 
-    int Compare_No_Case(wchar_t const *s) const { return wcscasecmp(Peek(), s); };
-    int Compare_No_Case(UnicodeString const &string) const { return wcscasecmp(Peek(), string.Peek()); };
+    int Compare_No_Case(wchar_t const *s) const { return wcscasecmp(Str(), s); };
+    int Compare_No_Case(UnicodeString const &string) const { return wcscasecmp(Str(), string.Str()); };
 
     bool Next_Token(UnicodeString *tok, UnicodeString delims);
 
-    bool Is_None() { return Data != nullptr && wcscasecmp(Peek(), L"None") == 0; }
-    bool Is_Empty() { return Data == nullptr || *Data->Peek() == L'\0'; }
+    bool Is_None() { return m_data != nullptr && wcscasecmp(Peek(), L"None") == 0; }
+    bool Is_Empty() { return Get_Length() <= 0; }
     bool Is_Not_Empty() { return !Is_Empty(); }
     bool Is_Not_None() { return !Is_None(); }
 
@@ -134,7 +135,7 @@ private:
     static UnicodeString const EmptyString;
 
     // 
-    UnicodeStringData *Data;
+    UnicodeStringData *m_data;
 };
 
 inline bool operator==(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) == 0; }

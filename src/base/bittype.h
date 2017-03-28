@@ -48,6 +48,7 @@
     typedef double __attribute__((__may_alias__)) double_a;
     typedef int64_t __attribute__((__may_alias__)) int64_a;
     typedef uint64_t __attribute__((__may_alias__)) uint64_a;
+    typedef wchar_t __attribute__((__may_alias__)) wchar_a;
 #else   
     // MSVC doesn't currently enforce strict aliasing.
     typedef float float_a;
@@ -56,6 +57,7 @@
     typedef double double_a;
     typedef int64_t int64_a;
     typedef uint64_t uint64_a;
+    typedef wchar_t wchar_a;
 #endif
     
 #endif //_BITTYPE_H_

@@ -40,12 +40,12 @@
 UnicodeString const UnicodeString::EmptyString;
 
 UnicodeString::UnicodeString() :
-    Data(nullptr)
+    m_data(nullptr)
 {
 }
 
 UnicodeString::UnicodeString(wchar_t const *s) :
-    Data(nullptr)
+    m_data(nullptr)
 {
     if ( s != nullptr ) {
         size_t len = wcslen(s);
@@ -57,7 +57,7 @@ UnicodeString::UnicodeString(wchar_t const *s) :
 }
 
 UnicodeString::UnicodeString(char16_t const *s) :
-    Data(nullptr)
+    m_data(nullptr)
 {
     if ( s != nullptr ) {
         size_t len = strlen16(s);
@@ -71,12 +71,12 @@ UnicodeString::UnicodeString(char16_t const *s) :
 }
 
 UnicodeString::UnicodeString(UnicodeString const &string) :
-    Data(string.Data)
+    m_data(string.m_data)
 {
     ScopedCriticalSectionClass cs(UnicodeStringCriticalSection);
 
-    if ( Data != nullptr ) {
-        ++Data->RefCount;
+    if ( m_data != nullptr ) {
+        ++m_data->ref_count;
     }
 }
 
@@ -91,30 +91,30 @@ void UnicodeString::Validate()
 
 wchar_t *UnicodeString::Peek() const
 {
-    ASSERT_PRINT(Data != nullptr, "null string ptr");
+    ASSERT_PRINT(m_data != nullptr, "null string ptr");
 
     //
     // Actual string data is stored immediately after the UnicodeStringData header.
     //
-    return Data->Peek();
+    return m_data->Peek();
 }
 
 void UnicodeString::Release_Buffer()
 {
     ScopedCriticalSectionClass cs(UnicodeStringCriticalSection);
 
-    if ( Data != nullptr ) {
-        if ( --Data->RefCount == 0 ) {
-            TheDynamicMemoryAllocator->Free_Bytes(Data);
+    if ( m_data != nullptr ) {
+        if ( --m_data->ref_count == 0 ) {
+            TheDynamicMemoryAllocator->Free_Bytes(m_data);
         }
 
-        Data = nullptr;
+        m_data = nullptr;
     }
 }
 
 void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, wchar_t const *str_to_cpy, wchar_t const *str_to_cat)
 {
-    if ( Data != nullptr && Data->RefCount == 1 && Data->NumCharsAllocated >= chars_needed ) {
+    if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
         if ( str_to_cpy != nullptr ) {
             wcscpy(Peek(), str_to_cpy);
         }
@@ -134,13 +134,13 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_dat
         int size = TheDynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(wchar_t) * chars_needed + sizeof(UnicodeStringData));
         UnicodeStringData *new_data = reinterpret_cast<UnicodeStringData *>(TheDynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
 
-        new_data->RefCount = 1;
-        new_data->NumCharsAllocated = (size - sizeof(UnicodeStringData)) / sizeof(wchar_t);
+        new_data->ref_count = 1;
+        new_data->num_chars_allocated = (size - sizeof(UnicodeStringData)) / sizeof(wchar_t);
     #ifdef GAME_DEBUG_STRUCTS
-        new_data->DebugPtr = new_data->Peek();
+        new_data->debug_ptr = new_data->Peek();
     #endif
 
-        if ( Data != nullptr && keep_data ) {
+        if ( m_data != nullptr && keep_data ) {
             wcscpy(new_data->Peek(), Peek());
         } else {
             *new_data->Peek() = L'\0';
@@ -155,14 +155,14 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_dat
         }
 
         Release_Buffer();
-        Data = new_data;
+        m_data = new_data;
     }
 }
 
-size_t UnicodeString::Get_Length() const
+int UnicodeString::Get_Length() const
 {
-    if ( Data != nullptr ) {
-        return wcslen(Data->Peek());
+    if ( m_data != nullptr ) {
+        return wcslen(m_data->Peek());
     }
 
     return 0;
@@ -175,18 +175,18 @@ void UnicodeString::Clear()
 
 wchar_t UnicodeString::Get_Char(int index) const
 {
-    if ( Data != nullptr ) {
-        return Data->Peek()[index];
+    if ( m_data != nullptr ) {
+        return m_data->Peek()[index];
     }
 
     return L'\0';
 }
 
-wchar_t const *UnicodeString::Str()
+wchar_t const *UnicodeString::Str() const
 {
     static wchar_t const *TheNullChr = L"";
 
-    if ( Data != nullptr ) {
+    if ( m_data != nullptr ) {
         return Peek();
     }
 
@@ -207,7 +207,7 @@ wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
 
 void UnicodeString::Set(wchar_t const *s)
 {
-    if ( Data != nullptr || s != Data->Peek() ) {
+    if ( m_data != nullptr || s != m_data->Peek() ) {
         size_t len;
 
         if ( s && (len = wcslen(s) + 1, len != 1) ) {
@@ -235,10 +235,10 @@ void UnicodeString::Set(UnicodeString const &string)
 
     if ( &string != this ) {
         Release_Buffer();
-        Data = string.Data;
+        m_data = string.m_data;
 
-        if ( string.Data != nullptr ) {
-            ++Data->RefCount;
+        if ( string.m_data != nullptr ) {
+            ++m_data->ref_count;
         }
     }
 }
@@ -252,7 +252,7 @@ void UnicodeString::Translate(AsciiString const &string)
     for ( int i = 0; i < str_len; ++i ) {
         wchar_t c;
 
-        if ( string.Data != nullptr ) {
+        if ( string.m_data != nullptr ) {
             c = string.Get_Char(i);
         } else {
             c = L'\0';
@@ -276,7 +276,7 @@ void UnicodeString::Concat(wchar_t *s)
     size_t len = wcslen(s);
 
     if ( len > 0 ) {
-        if ( Data != nullptr ) {
+        if ( m_data != nullptr ) {
             Ensure_Unique_Buffer_Of_Size(wcslen(Peek()) + len + 1, true, 0, s);
         } else {
             Set(s);
@@ -287,7 +287,7 @@ void UnicodeString::Concat(wchar_t *s)
 void UnicodeString::Trim()
 {
     // No string, no Trim.
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -306,7 +306,7 @@ void UnicodeString::Trim()
     }
 
     // Oops, Set call broke the string.
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -323,7 +323,7 @@ void UnicodeString::To_Lower()
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -338,7 +338,7 @@ void UnicodeString::To_Lower()
 
 void UnicodeString::Remove_Last_Char()
 {
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return;
     }
 
@@ -386,7 +386,7 @@ void UnicodeString::Format_VA(UnicodeString &format, char *args)
 
 bool UnicodeString::Next_Token(UnicodeString *tok, UnicodeString delims)
 {
-    if ( Data == nullptr ) {
+    if ( m_data == nullptr ) {
         return false;
     }
 

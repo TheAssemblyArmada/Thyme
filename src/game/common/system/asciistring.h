@@ -52,11 +52,11 @@ public:
     struct AsciiStringData
     {
     #ifdef GAME_DEBUG_STRUCTS
-        char *DebugPtr;
+        char *debug_ptr;
     #endif // GAME_DEBUG_STRUCTS
 
-        uint16_t RefCount;
-        uint16_t NumCharsAllocated;
+        uint16_t ref_count;
+        uint16_t num_chars_allocated;
 
         char *Peek()
         {
@@ -78,13 +78,12 @@ public:
 
     AsciiString &operator+=(char s) { Concat(s); return *this; }
     AsciiString &operator+=(char const *s) { Concat(s); return *this; }
-    AsciiString &operator+=(AsciiString const &stringSrc) { Concat(stringSrc); return *this; }
+    AsciiString &operator+=(AsciiString const &s) { Concat(s); return *this; }
     //AsciiString &operator+=(UnicodeString const &stringSrc);
 
     void Validate();
     char *Peek() const;
     void Release_Buffer();
-    void Free_Bytes() { TheDynamicMemoryAllocator->Free_Bytes(Data); }
     int Get_Length() const;
 
     void Clear() { Release_Buffer(); }
@@ -129,7 +128,7 @@ public:
 
     bool Next_Token(AsciiString *tok, char const *seps);
 
-    bool Is_None() const { return Data != nullptr && strcasecmp(Peek(), "None") == 0; }
+    bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
     bool Is_Empty() const { return Get_Length() <= 0; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
@@ -148,7 +147,7 @@ private:
     void Format_VA(char const *format, va_list args);
     void Format_VA(AsciiString &format, va_list args);
 
-    AsciiStringData *Data;
+    AsciiStringData *m_data;
 };
 
 inline bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }

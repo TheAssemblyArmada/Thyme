@@ -321,9 +321,9 @@ class GameMessageArgument : public MemoryPoolObject
     IMPLEMENT_POOL(GameMessageArgument);
 
 public:
-    GameMessageArgument *Next;
-    ArgumentType Data;
-    ArgumentDataType Type;
+    GameMessageArgument *m_next;
+    ArgumentType m_data;
+    ArgumentDataType m_type;
 };
 
 class GameMessage : public MemoryPoolObject
@@ -353,15 +353,15 @@ public:
     void Append_Wide_Char_Arg(wchar_t arg);
 
 private:
-    GameMessage *Next;
-    GameMessage *Prev;
-    GameMessageList *List;
-    MessageType Type;
-    int PlayerIndex;
-    int8_t ArgCount;
+    GameMessage *m_next;
+    GameMessage *m_prev;
+    GameMessageList *m_list;
+    MessageType m_type;
+    int m_playerIndex;
+    int8_t m_argCount;
     // 3 bytes padding
-    GameMessageArgument *ArgList;
-    GameMessageArgument *ArgTail;
+    GameMessageArgument *m_argList;
+    GameMessageArgument *m_argTail;
 };
 
 #endif

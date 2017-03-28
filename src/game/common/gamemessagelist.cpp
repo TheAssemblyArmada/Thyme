@@ -25,62 +25,62 @@
 
 void GameMessageList::Append_Message(GameMessage *msg)
 {
-    if ( LastMessage != nullptr ) {
-        LastMessage->Next = msg;
-        msg->Prev = LastMessage;
-        LastMessage = msg;
+    if ( m_lastMessage != nullptr ) {
+        m_lastMessage->m_next = msg;
+        msg->m_prev = m_lastMessage;
+        m_lastMessage = msg;
     } else {
-        FirstMessage = msg;
-        msg->Prev = nullptr;
-        LastMessage = msg;
+        m_firstMessage = msg;
+        msg->m_prev = nullptr;
+        m_lastMessage = msg;
     }
 
-    msg->List = this;
+    msg->m_list = this;
 }
 
 void GameMessageList::Insert_Message(GameMessage *msg, GameMessage *at)
 {
-    msg->Next = at->Next;
-    msg->Prev = at;
+    msg->m_next = at->m_next;
+    msg->m_prev = at;
 
-    if ( at->Next ) {
-        at->Next->Prev = msg;
-        at->Next = msg;
+    if ( at->m_next ) {
+        at->m_next->m_prev = msg;
+        at->m_next = msg;
     } else {
-        LastMessage = msg;
-        at->Next = msg;
+        m_lastMessage = msg;
+        at->m_next = msg;
     }
 
-    msg->List = this;
+    msg->m_list = this;
 }
 
 void GameMessageList::Remove_Message(GameMessage *msg)
 {
-    if ( msg->Next ) {
-        msg->Next->Prev = msg->Prev;
+    if ( msg->m_next ) {
+        msg->m_next->m_prev = msg->m_prev;
     } else {
-        LastMessage = msg->Prev;
+        m_lastMessage = msg->m_prev;
     }
 
-    if ( msg->Prev ) {
-        msg->Prev->Next = msg->Next;
+    if ( msg->m_prev ) {
+        msg->m_prev->m_next = msg->m_next;
     } else {
-        FirstMessage = msg->Next;
+        m_firstMessage = msg->m_next;
     }
 
-    msg->List = nullptr;
+    msg->m_list = nullptr;
 }
 
 bool GameMessageList::Contains_Message_Of_Type(MessageType type)
 {
-    GameMessage *msg = FirstMessage;
+    GameMessage *msg = m_firstMessage;
 
     while ( msg != nullptr ) {
-        if ( msg->Type == type ) {
+        if ( msg->m_type == type ) {
             return true;
         }
 
-        msg = msg->Next;
+        msg = msg->m_next;
     }
 
     return false;

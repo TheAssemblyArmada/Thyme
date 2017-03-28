@@ -34,7 +34,7 @@
 class GameMessageList : public SubsystemInterface
 {
 public:
-    GameMessageList() : FirstMessage(nullptr), LastMessage(nullptr) {}
+    GameMessageList() : m_firstMessage(nullptr), m_lastMessage(nullptr) {}
 
     // SubsystemInterface implementations
     virtual ~GameMessageList() {}
@@ -48,8 +48,8 @@ public:
     virtual bool Contains_Message_Of_Type(MessageType type);
 
 protected:
-    GameMessage *FirstMessage;
-    GameMessage *LastMessage;
+    GameMessage *m_firstMessage;
+    GameMessage *m_lastMessage;
 };
 
 #endif

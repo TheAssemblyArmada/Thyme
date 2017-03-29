@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "gamemessagelist.h"
+#include "gamemessage.h"
 
 void GameMessageList::Append_Message(GameMessage *msg)
 {
@@ -72,6 +73,69 @@ void GameMessageList::Remove_Message(GameMessage *msg)
 }
 
 bool GameMessageList::Contains_Message_Of_Type(MessageType type)
+{
+    GameMessage *msg = m_firstMessage;
+
+    while ( msg != nullptr ) {
+        if ( msg->m_type == type ) {
+            return true;
+        }
+
+        msg = msg->m_next;
+    }
+
+    return false;
+}
+
+void GameMessageList::Append_Message_Nv(GameMessage *msg)
+{
+    if ( m_lastMessage != nullptr ) {
+        m_lastMessage->m_next = msg;
+        msg->m_prev = m_lastMessage;
+        m_lastMessage = msg;
+    } else {
+        m_firstMessage = msg;
+        msg->m_prev = nullptr;
+        m_lastMessage = msg;
+    }
+
+    msg->m_list = this;
+}
+
+void GameMessageList::Insert_Message_Nv(GameMessage *msg, GameMessage *at)
+{
+    msg->m_next = at->m_next;
+    msg->m_prev = at;
+
+    if ( at->m_next ) {
+        at->m_next->m_prev = msg;
+        at->m_next = msg;
+    } else {
+        m_lastMessage = msg;
+        at->m_next = msg;
+    }
+
+    msg->m_list = this;
+}
+
+void GameMessageList::Remove_Message_Nv(GameMessage *msg)
+{
+    if ( msg->m_next ) {
+        msg->m_next->m_prev = msg->m_prev;
+    } else {
+        m_lastMessage = msg->m_prev;
+    }
+
+    if ( msg->m_prev ) {
+        msg->m_prev->m_next = msg->m_next;
+    } else {
+        m_firstMessage = msg->m_next;
+    }
+
+    msg->m_list = nullptr;
+}
+
+bool GameMessageList::Contains_Message_Of_Type_Nv(MessageType type)
 {
     GameMessage *msg = m_firstMessage;
 

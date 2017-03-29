@@ -352,6 +352,8 @@ public:
     void Append_Time_Stamp_Arg(unsigned int arg);
     void Append_Wide_Char_Arg(wchar_t arg);
 
+    GameMessage *Get_Next() { return m_next; }
+    GameMessage *Get_Prev() { return m_prev; }
 private:
     GameMessage *m_next;
     GameMessage *m_prev;

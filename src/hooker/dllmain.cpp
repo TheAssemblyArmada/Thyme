@@ -32,6 +32,7 @@
 #include "archivefilesystem.h"
 #include "asciistring.h"
 #include "copyprotect.h"
+#include "commandlist.h"
 #include "force_nocd.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
@@ -126,6 +127,10 @@ void Setup_Hooks()
 
     // Replace GameTextManager
     GameTextManager::Hook_Me();
+
+    // Replace CommandList
+    GameMessageList::Hook_Me();
+    CommandList::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

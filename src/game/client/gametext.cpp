@@ -335,7 +335,6 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 // Get the count of strings in a str file.
 bool GameTextManager::Get_String_Count(char const *filename, int &count)
 {
-    DEBUG_LOG("Getting string count.\n");
     File *file = TheFileSystem->Open(filename, File::TEXT | File::READ);
     count = 0;
 
@@ -357,8 +356,7 @@ bool GameTextManager::Get_String_Count(char const *filename, int &count)
     }
 
     count += 500;
-    DEBUG_LOG("Got string count of %d.\n", count);
-
+    
     file->Close();
 
     return true;

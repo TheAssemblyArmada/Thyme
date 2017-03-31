@@ -65,9 +65,9 @@ UnicodeString::UnicodeString(char16_t const *s) :
         if ( len > 0 ) {
             Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
         }
-    }
 
-    Char16_To_WChar(Peek(), s);
+        Char16_To_WChar(Peek(), s);
+    }
 }
 
 UnicodeString::UnicodeString(UnicodeString const &string) :
@@ -224,9 +224,9 @@ void UnicodeString::Set(char16_t const *s)
 
     if ( s && (len = strlen16(s) + 1, len != 1) ) {
         Ensure_Unique_Buffer_Of_Size(len, false, nullptr, nullptr);
-    }
 
-    Char16_To_WChar(Peek(), s);
+        Char16_To_WChar(Peek(), s);
+    }
 }
 
 void UnicodeString::Set(UnicodeString const &string)

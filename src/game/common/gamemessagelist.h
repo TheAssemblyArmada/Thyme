@@ -29,9 +29,7 @@
 #define _GAMEMESSAGELIST_H_
 
 #include "subsysteminterface.h"
-
-class GameMessage;
-enum MessageType;
+#include "gamemessage.h"
 
 class GameMessageList : public SubsystemInterface
 {

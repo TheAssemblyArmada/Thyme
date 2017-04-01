@@ -1,16 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME --                                 //
+//                               --  THYME  --                                //
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Project Name:: Thyme
 //
-//          File:: FORCE_NOCD.H
+//          File:: CRC.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Stub functions to remove launcher and cd check requirement.
+//   Description:: Class for generating Cyclic Redundancy Checks.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -21,10 +21,29 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "force_nocd.h"
+#ifdef _MSC_VER
+#pragma once
+#endif // _MSC_VER
 
+#ifndef _CRC_H_
+#define _CRC_H_
 
-bool IsFirstCDPresent()
+#include "bittype.h"
+
+class CRC
 {
-    return true;
-}
+public:
+    CRC() : m_crc(0) {}
+    void Compute_CRC(void const *data, int bytes);
+    uint32_t Get_CRC() { return m_crc; }
+
+    static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);
+    static uint32_t String(char const *string, uint32_t crc);
+private:
+    void Add_CRC(uint8_t byte);
+
+    static uint32_t m_table[256];
+    uint32_t m_crc;
+};
+
+#endif // _CRC_H_

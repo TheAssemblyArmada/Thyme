@@ -41,6 +41,7 @@
 #include "ini.h"
 #include "main.h"
 #include "namekeygenerator.h"
+#include "randomvalue.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include <windows.h>
@@ -131,6 +132,9 @@ void Setup_Hooks()
     // Replace CommandList
     GameMessageList::Hook_Me();
     CommandList::Hook_Me();
+
+    // Replace RNG
+    RandomValue::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -34,6 +34,7 @@
 #include "subsysteminterface.h"
 #include "unicodestring.h"
 
+// This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
 enum LanguageID : int32_t
 {
     LANGUAGE_ID_US = 0,
@@ -151,11 +152,6 @@ private:
 
 inline void GameTextManager::Hook_Me()
 {
-    //Hook_Method((Make_Method_Ptr<void, GameTextManager, char16_t*, char*>(0x00418C40)), &Translate_Copy);
-    //Hook_Method((Make_Method_Ptr<void, GameTextManager, File*, char*, char*, char*, int>(0x00418A70)), &Read_To_End_Of_Quote);
-    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*>(0x00418EE0)), &Parse_CSF_File);
-    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*, int&>(0x00418D80)), &Get_String_Count);
-    //Hook_Method((Make_Method_Ptr<bool, GameTextManager, char const*>(0x00419220)), &Parse_String_File);
     Hook_Function((Make_Function_Ptr<GameTextInterface*>(0x00418320)), &Create_Game_Text_Interface);
     Hook_Function((Make_Function_Ptr<int, void const *, void const *>(0x0041A020)), &Compare_LUT);
 }

@@ -39,22 +39,34 @@
 
 class FileSystem : public SubsystemInterface
 {
-    public:
-        FileSystem();
-        virtual ~FileSystem();
+public:
+    FileSystem();
+    virtual ~FileSystem();
 
-        // SubsystemInterface implementations
-        virtual void Init();
-        virtual void Reset();
-        virtual void Update();
+    // SubsystemInterface implementations
+    virtual void Init();
+    virtual void Reset();
+    virtual void Update();
 
-        // Filesystem
-        File *Open(char const *filename, int mode);
-        bool Does_File_Exist(char const *filename);
-        void Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
+    // Filesystem
+    File *Open(char const *filename, int mode);
+    bool Does_File_Exist(char const *filename);
+    void Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
 
-    private:
-        std::map<unsigned int, bool> AvailableFiles;
+    static bool Create_Dir(AsciiString name);
+    static bool Are_Music_Files_On_CD();
+    static bool Load_Music_Files_From_CD();
+    static void Unload_Music_Files_From_CD();
+
+    static void Hook_Me();
+private:
+    std::map<unsigned int, bool> m_availableFiles;
 };
+
+inline void FileSystem::Hook_Me()
+{
+    Hook_Function((Make_Function_Ptr<bool>(0x004469C0)), Are_Music_Files_On_CD);
+
+}
 
 #endif // _FILESYSTEM_H_

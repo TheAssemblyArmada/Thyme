@@ -28,7 +28,7 @@
 #include "namekeygenerator.h"
 
 FileSystem::FileSystem() :
-    AvailableFiles()
+    m_availableFiles()
 {
 
 }
@@ -75,25 +75,25 @@ bool FileSystem::Does_File_Exist(char const *filename)
 {
     NameKeyType name_id = TheNameKeyGenerator->Name_To_Lower_Case_Key(filename);
 
-    auto it = AvailableFiles.find(name_id);
+    auto it = m_availableFiles.find(name_id);
 
-    if ( it == AvailableFiles.end() ) {
+    if ( it == m_availableFiles.end() ) {
         return it->second;
     }
 
     if ( TheLocalFileSystem->Does_File_Exist(filename) ) {
-        AvailableFiles[name_id] = true;
+        m_availableFiles[name_id] = true;
 
         return true;
     }
 
     if ( TheArchiveFileSystem->Does_File_Exist(filename) ) {
-        AvailableFiles[name_id] = true;
+        m_availableFiles[name_id] = true;
 
         return true;
     }
 
-    AvailableFiles[name_id] = false;
+    m_availableFiles[name_id] = false;
 
     return false;
 }
@@ -102,4 +102,31 @@ void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString cons
 {
     TheLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
     TheArchiveFileSystem->Get_File_List_From_Dir("", "", filter, filelist, search_subdirs);
+}
+
+bool FileSystem::Create_Dir(AsciiString name)
+{
+    if ( TheLocalFileSystem == nullptr ) {
+        return false;
+    }
+
+    return TheLocalFileSystem->Create_Directory(name);
+}
+
+bool FileSystem::Are_Music_Files_On_CD()
+{
+    // TODO do we want to implement correct CD handling given most new copies will be digital download?
+    // Mac version just returns true here.
+    return true;
+}
+
+bool FileSystem::Load_Music_Files_From_CD()
+{
+    // TODO needs CDManager
+    return false;
+}
+
+void FileSystem::Unload_Music_Files_From_CD()
+{
+    //TODO Needs audio interface.
 }

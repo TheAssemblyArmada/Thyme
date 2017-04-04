@@ -73,30 +73,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #if !defined(ARRAY_SIZE)
-#define	ARRAY_SIZE(x) int(sizeof(x) / sizeof(x[0]))
+#define	ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 #endif // !ARRAY_SIZE
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  OFFSET_OF
-//    In order to determine the offset of an element of a structure, use the
-//    following macro as shown:
-//
-//    Example usage:
-//        typedef struct _ABC {
-//            sint32    A;
-//            sint32    B;
-//            sint16    C;
-//        } ABC, * PTR_ABC
-//    
-//        OFFSET_OF(struct _ABC, C)
-//
-////////////////////////////////////////////////////////////////////////////////
-#if !defined(OFFSET_OF)
-#define  OFFSET_OF(typ, id) (unsigned int)&(((typ*)0)->id)
-#endif // !OFFSET_OF
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -117,22 +95,6 @@
 #define SIZE_OF(typ,id) sizeof(((typ*)0)->id)
 #endif // !SIZE_OF
 
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  PURE_VIRTUAL
-//    The PURE_VIRTUAL macro evaluates to the "= 0" suffix of a pure virtual
-//    function definition when creating abstract classes.
-//
-//    Example usage:
-//         virtual bool MyFunction(void) const PURE_VIRTUAL;
-//
-////////////////////////////////////////////////////////////////////////////////
-#if !defined(PURE_VIRTUAL)
-#define		PURE_VIRTUAL	= 0	//NULL
-#endif // !PURE_VIRTUAL
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  ALIGN_OF
@@ -151,35 +113,6 @@
         #define ALIGN_OF(type) ((size_t)OFFSET_OF(struct{ char c; type m; }, m))
     #endif // COMPILER_METROWERKS
 #endif // !ALIGN_OF
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  SAFE_DELETE
-//    Safely delete an object and set the pointer to NULL.
-//
-//    Example usage:
-//        SAFE_DELETE(MyPtr);
-//
-////////////////////////////////////////////////////////////////////////////////
-#if !defined(SAFE_DELETE)
-    #define SAFE_DELETE(ptr) if( (ptr) != NULL ) delete (ptr); (ptr) = NULL;
-#endif // !SAFE_DELETE
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  SAFE_DELETE_ARRAY
-//    Safely delete an array and set the pointer to NULL.
-//
-//    Example usage:
-//        SAFE_DELETE_ARRAY(MyArray);
-//
-////////////////////////////////////////////////////////////////////////////////
-#if !defined(SAFE_DELETE_ARRAY)
-    #define SAFE_DELETE_ARRAY(ptr) if( (ptr) != NULL ) delete [] (ptr); (ptr) = NULL;
-#endif // !SAFE_DELETE_ARRAY
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //

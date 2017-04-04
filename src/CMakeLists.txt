@@ -25,6 +25,7 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/main.cpp
     game/client/gametext.cpp
+    game/common/commandline.cpp
     game/common/commandlist.cpp
     game/common/crc.cpp
     game/common/gameengine.cpp

@@ -32,6 +32,7 @@
 #include "archivefilesystem.h"
 #include "asciistring.h"
 #include "copyprotect.h"
+#include "commandline.h"
 #include "commandlist.h"
 #include "force_nocd.h"
 #include "gamememory.h"
@@ -135,6 +136,9 @@ void Setup_Hooks()
 
     // Replace RNG
     RandomValue::Hook_Me();
+
+    // Replace Command Line parser
+    CommandLine::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

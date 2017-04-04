@@ -27,6 +27,7 @@
 #include "hookcrt.h"
 #include <fcntl.h>
 #include <cstdlib>
+#include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS

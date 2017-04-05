@@ -28,7 +28,9 @@
 #ifndef _MONEY_H_
 #define _MONEY_H_
 
-class Money //: public SnapShot
+#include "snapshot.h"
+
+class Money : public SnapShot
 {
 public:
     Money() : m_money(0), m_playerIndex(0) {}

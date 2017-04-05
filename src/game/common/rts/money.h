@@ -36,6 +36,10 @@ public:
     Money() : m_money(0), m_playerIndex(0) {}
     virtual ~Money() {}
 
+    // SnapShot interface
+    virtual void CRC_Snapshot(Xfer *xfer) {}
+    virtual void Xfer_Snapshot(Xfer *xfer);
+    virtual void Load_Post_Process() {}
 protected:
     unsigned int m_money;
     int m_playerIndex;

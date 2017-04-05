@@ -40,9 +40,9 @@ enum SnapshotCode
 class SnapShot
 {
 public:
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer) = 0;
-    virtual SnapshotCode Load_Post_Process() = 0;
+    virtual void CRC_Snapshot(Xfer *xfer) = 0;
+    virtual void Xfer_Snapshot(Xfer *xfer) = 0;
+    virtual void Load_Post_Process() = 0;
 };
 
 #endif

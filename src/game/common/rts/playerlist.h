@@ -49,9 +49,9 @@ public:
     virtual void New_Map();
 
     // SnapShot interface
-    virtual SnapshotCode CRC_Snapshot(Xfer *xfer);
-    virtual SnapshotCode Xfer_Snapshot(Xfer *xfer);
-    virtual SnapshotCode Load_Post_Process();
+    virtual void CRC_Snapshot(Xfer *xfer);
+    virtual void Xfer_Snapshot(Xfer *xfer);
+    virtual void Load_Post_Process();
 
     // TODO implementations and none virtual functions.
     Player *Get_Local_Player() { return m_local; }

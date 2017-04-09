@@ -56,16 +56,21 @@ set(GAMEENGINE_SRC
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
-	game/common/rts/handicap.cpp
+    game/common/rts/handicap.cpp
     game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
+    platform/w3dfilesystem.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     w3d/lib/critsection.cpp
+    w3d/lib/ffactory.cpp
+    w3d/lib/fileclass.cpp
+    w3d/lib/bufffileclass.cpp
+    w3d/lib/rawfileclass.cpp
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})

@@ -38,7 +38,12 @@
 //    #undef lseek
 //#endif
 
+//#ifdef off_t
+//    #undef off_t
+//#endif
+
 //#define lseek _lseeki64
+//typedef __int64 off_t;
 #else
 #include <unistd.h>
 #endif

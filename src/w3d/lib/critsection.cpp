@@ -81,9 +81,6 @@ void CriticalSectionClass::Lock()
     pthread_mutex_lock(&Handle);
 #endif // PLATFORM_WINDOWS
 
-    //
-    // 
-    //
     ++Locked;
 }
 
@@ -104,9 +101,6 @@ void CriticalSectionClass::Unlock()
     pthread_mutex_unlock(&Handle);
 #endif // PLATFORM_WINDOWS
 
-    //
-    // 
-    //
     --Locked;
 }
 

@@ -43,6 +43,7 @@
 #include "main.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "w3dfilesystem.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include <windows.h>
@@ -139,6 +140,9 @@ void Setup_Hooks()
 
     // Replace Command Line parser
     CommandLine::Hook_Me();
+
+    // Replace W3D file system
+    W3DFileSystem::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

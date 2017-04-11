@@ -48,6 +48,11 @@ public:
 
     virtual FileClass *Get_File(char const *filename);
     virtual void Return_File(FileClass *file);
+
+    FileClass *Get_File_NV(char const *filename);
+    void Return_File_NV(FileClass *file);
+
+    static void Hook_Me();
 };
 
 class GameFileClass : public FileClass
@@ -76,5 +81,11 @@ private:
     char m_filePath[PATH_MAX];
     char m_filename[PATH_MAX];
 };
+
+inline void W3DFileSystem::Hook_Me()
+{
+    Hook_Method(Make_Method_Ptr<FileClass*, W3DFileSystem, char const*>(0x00763880), &Get_File_NV);
+    Hook_Method(Make_Method_Ptr<void, W3DFileSystem, FileClass*>(0x00815370), &Return_File_NV);
+}
 
 #endif // _W3DFILESYSTEM_H_

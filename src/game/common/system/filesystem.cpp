@@ -77,7 +77,7 @@ bool FileSystem::Does_File_Exist(char const *filename)
 
     auto it = m_availableFiles.find(name_id);
 
-    if ( it == m_availableFiles.end() ) {
+    if ( it != m_availableFiles.end() ) {
         return it->second;
     }
 

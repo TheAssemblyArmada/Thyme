@@ -51,6 +51,18 @@ void W3DFileSystem::Return_File(FileClass *file)
     }
 }
 
+FileClass *W3DFileSystem::Get_File_NV(char const *filename)
+{
+    return new GameFileClass(filename);
+}
+
+void W3DFileSystem::Return_File_NV(FileClass *file)
+{
+    if ( file != nullptr ) {
+        delete file;
+    }
+}
+
 GameFileClass::GameFileClass(char const *filename) :
     m_theFile(nullptr),
     m_fileExists(false)

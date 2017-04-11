@@ -31,6 +31,7 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
+#include "chunkio.h"
 #include "copyprotect.h"
 #include "commandline.h"
 #include "commandlist.h"
@@ -143,6 +144,10 @@ void Setup_Hooks()
 
     // Replace W3D file system
     W3DFileSystem::Hook_Me();
+
+    //Replace ChunkIO system
+    ChunkSaveClass::Hook_Me();
+    ChunkLoadClass::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -107,10 +107,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
     if ( search_subdirs ) {
         AsciiString sub_path = dirpath;
         sub_path += subdir;
-        sub_path += filter;
+        sub_path += "*.";
 
         hndl = FindFirstFileA(sub_path.Str(), &data);
-
+        
         if ( hndl != INVALID_HANDLE_VALUE ) {
             // Loop over all files in the directory, ignoring other directories
             do {
@@ -118,9 +118,11 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
                     && strcmp(data.cFileName, ".") != 0
                     && strcmp(data.cFileName, "..") != 0
                 ) {
-                    AsciiString filepath = dirpath;
+                    AsciiString filepath;
                     filepath += subdir;
                     filepath += data.cFileName;
+                    filepath += '\\';
+                    
                     Get_File_List_From_Dir(
                         filepath,
                         dirpath,

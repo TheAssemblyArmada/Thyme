@@ -56,7 +56,24 @@ private:
     FileFactoryClass *m_factory;
 };
 
+class RawFileFactoryClass
+{
+public:
+    FileClass *Get_File(char const *filename);
+    void Return_File(FileClass *file);
+
+    static void Hook_Me();
+};
+
+inline void RawFileFactoryClass::Hook_Me()
+{
+
+}
+
+#define TheWritingFileFactory (Make_Global<RawFileFactoryClass*>(0x00A1EEB8))
+//extern RawFileFactoryClass *TheWritingFileFactory;
+
 #define TheFileFactory (Make_Global<FileFactoryClass*>(0x008A99EC))
-//FileFactoryClass *TheFileFactory;
+//extern FileFactoryClass *TheFileFactory;
 
 #endif

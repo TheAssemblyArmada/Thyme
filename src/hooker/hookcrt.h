@@ -35,6 +35,8 @@
 // Only important if calls relying on state are made by both the original binary
 // and Thyme.
 #define crt_strtok (Make_Global<char *(__cdecl *const)(char *, const char*)>(0x00939424))
+#define crt_free (Make_Global<void (__cdecl *const)(void *)>(0x00939364))
+#define crt_malloc (Make_Global<void *(__cdecl *const)(size_t)>(0x0093932C))
 #define crt_set_se_translator (Make_Global<void (__cdecl *const)(void (__cdecl *)(unsigned int, struct _EXCEPTION_POINTERS *))>(0x009393A0))
 
 // Define additional unimplemented functions that are used in more than one location

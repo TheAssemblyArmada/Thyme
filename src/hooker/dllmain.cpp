@@ -44,6 +44,7 @@
 #include "main.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "targa.h"
 #include "w3dfilesystem.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -148,6 +149,9 @@ void Setup_Hooks()
     //Replace ChunkIO system
     ChunkSaveClass::Hook_Me();
     ChunkLoadClass::Hook_Me();
+
+    // Replace Targa
+    TargaImage::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

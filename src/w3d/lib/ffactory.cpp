@@ -24,6 +24,8 @@
 #include "ffactory.h"
 #include "bufffileclass.h"
 
+RawFileFactoryClass defaultWritingFileFactory;
+//RawFileFactoryClass *TheWritingFileFactory = &defaultWritingFileFactory;
 //FileFactoryClass *TheFileFactory = nullptr;
 
 auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, char const *filename) :
@@ -35,4 +37,14 @@ auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, char const *filename) :
     if ( m_file == nullptr ) {
         m_file = new BufferedFileClass;
     }
+}
+
+FileClass *RawFileFactoryClass::Get_File(char const *filename)
+{
+    return new BufferedFileClass(filename);
+}
+
+void RawFileFactoryClass::Return_File(FileClass *file)
+{
+    delete file;
 }

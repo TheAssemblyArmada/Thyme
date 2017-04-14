@@ -72,6 +72,7 @@ set(GAMEENGINE_SRC
     w3d/lib/fileclass.cpp
     w3d/lib/bufffileclass.cpp
     w3d/lib/rawfileclass.cpp
+    w3d/lib/targa.cpp
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})

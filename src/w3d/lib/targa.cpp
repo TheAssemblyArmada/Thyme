@@ -27,40 +27,40 @@
 #include "gamedebug.h"
 
 TargaImage::TargaImage() :
-    TGAFile(nullptr),
-    Access(0),
-    Flags(0),
-    Image(nullptr),
-    Palette(nullptr)
+    m_TGAFile(nullptr),
+    m_access(0),
+    m_flags(0),
+    m_image(nullptr),
+    m_palette(nullptr)
 {
-    memset(&Header, 0, sizeof(Header));
-    memset(&Extension, 0, sizeof(Extension));
+    memset(&m_header, 0, sizeof(m_header));
+    memset(&m_extension, 0, sizeof(m_extension));
 }
 
 TargaImage::~TargaImage()
 {
     Close();
 
-    if ( Palette != nullptr && Flags & 2 ) {
-        crt_free(Palette);
-        Palette = nullptr;
+    if ( m_palette != nullptr && m_flags & 2 ) {
+        crt_free(m_palette);
+        m_palette = nullptr;
     }
 
-    if ( Image != nullptr && Flags & 1 ) {
-        crt_free(Image);
-        Image = nullptr;
+    if ( m_image != nullptr && m_flags & 1 ) {
+        crt_free(m_image);
+        m_image = nullptr;
     }
 }
 
 int TargaImage::Open(char const *name, int mode)
 {
-    if ( Is_File_Open() && Access == mode ) {
+    if ( Is_File_Open() && m_access == mode ) {
         return 0;
     }
 
     Close();
-    Flags &= ~8;
-    Access = mode;
+    m_flags &= ~8;
+    m_access = mode;
 
     TGA2Footer footer;
 
@@ -85,16 +85,16 @@ int TargaImage::Open(char const *name, int mode)
             if ( strncasecmp(footer.signature, "TRUEVISION-XFILE", sizeof(footer.signature))
                 && footer.extension != 0
             ) {
-                Flags |= 8;
+                m_flags |= 8;
             }
 
             footer.extension = le32toh(footer.extension);
 
             // If we can't seek to the extension offset or we can't read enough data,
             // not a TGA file.
-            if ( (Flags & 8) != 0
+            if ( (m_flags & 8) != 0
                 && (File_Seek(footer.extension, FileSeekType::FS_SEEK_START) != -1
-                || File_Read(&Extension, sizeof(Extension) != sizeof(Extension)))
+                || File_Read(&m_extension, sizeof(m_extension) != sizeof(m_extension)))
             ) {
                 Close();
 
@@ -106,20 +106,20 @@ int TargaImage::Open(char const *name, int mode)
             }
 
             // Convert endian if needed.
-            Extension_To_Host(Extension);
+            Extension_To_Host(m_extension);
 
             // If file is shorter than header then its not a TGA.
-            if ( File_Read(&Header, sizeof(Header)) != sizeof(Header) ) {
+            if ( File_Read(&m_header, sizeof(m_header)) != sizeof(m_header) ) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
             }
 
             // Convert endian if needed.
-            Header_To_Host(Header);
+            Header_To_Host(m_header);
 
             // If file seek past ID fails, then not a TGA.
-            if ( Header.IDLength != 0 && File_Seek(Header.IDLength, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
+            if ( m_header.id_length != 0 && File_Seek(m_header.id_length, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
@@ -142,16 +142,16 @@ int TargaImage::Open(char const *name, int mode)
             }
 
             // If file is shorter than header then its not a TGA.
-            if ( File_Read(&Header, sizeof(Header)) != sizeof(Header) ) {
+            if ( File_Read(&m_header, sizeof(m_header)) != sizeof(m_header) ) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
             }
 
-            Header_To_Host(Header);
+            Header_To_Host(m_header);
 
             // If file seek past ID fails, then not a TGA.
-            if ( Header.IDLength != 0 && File_Seek(Header.IDLength, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
+            if ( m_header.id_length != 0 && File_Seek(m_header.id_length, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
@@ -167,9 +167,9 @@ int TargaImage::Open(char const *name, int mode)
 
 void TargaImage::Close()
 {
-    if ( TGAFile != nullptr ) {
-        TGAFile->Close();
-        TheFileFactory->Return_File(TGAFile);
+    if ( m_TGAFile != nullptr ) {
+        m_TGAFile->Close();
+        TheFileFactory->Return_File(m_TGAFile);
         Clear_File();
     }
 }
@@ -180,51 +180,51 @@ int TargaImage::Load(char const *name, int flags, bool invert_image)
         return TGA_RET_UNABLE_TO_LOAD;
     }
 
-    if ( (flags & TGA_FLAG_PAL_ALLOC) != 0 && Header.ColorMapType == 1 ) {
-        if ( Palette != nullptr && (Flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
-            crt_free(Palette);
-            Palette = nullptr;
-            Flags &= ~TGA_FLAG_PAL_ALLOC;
+    if ( (flags & TGA_FLAG_PAL_ALLOC) != 0 && m_header.cmap_type == 1 ) {
+        if ( m_palette != nullptr && (m_flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
+            crt_free(m_palette);
+            m_palette = nullptr;
+            m_flags &= ~TGA_FLAG_PAL_ALLOC;
         }
 
-        if ( Palette == nullptr && (Flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
-            if ( (Header.CMapLength * (Header.CMapDepth / 8)) > 0 ) {
-                Palette = (char *)crt_malloc(Header.CMapLength * (Header.CMapDepth / 8));
+        if ( m_palette == nullptr && (m_flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
+            if ( (m_header.cmap_length * (m_header.cmap_depth / 8)) > 0 ) {
+                m_palette = (char *)crt_malloc(m_header.cmap_length * (m_header.cmap_depth / 8));
             }
 
-            if ( Palette == nullptr ) {
+            if ( m_palette == nullptr ) {
                 Close();
 
                 return TGA_RET_OUT_OF_MEMORY;
             }
 
-            Flags |= 2;
+            m_flags |= 2;
         }
     }
 
     if ( (flags & TGA_FLAG_IMAGE_ALLOC) != 0 ) {
-        if ( Image != nullptr && (Flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
-            crt_free(Image);
-            Image = nullptr;
-            Flags &= ~TGA_FLAG_IMAGE_ALLOC;
+        if ( m_image != nullptr && (m_flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
+            crt_free(m_image);
+            m_image = nullptr;
+            m_flags &= ~TGA_FLAG_IMAGE_ALLOC;
         }
 
-        if ( Image == nullptr && (Flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
-            if ( (Header.Width * Header.Height * ((Header.PixelDepth + 7) / 8)) > 0 ) {
-                Image = (char*)crt_malloc(Header.Width * Header.Height * ((Header.PixelDepth + 7) / 8));
+        if ( m_image == nullptr && (m_flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
+            if ( (m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8)) > 0 ) {
+                m_image = (char*)crt_malloc(m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8));
             }
 
-            if ( Image == nullptr ) {
+            if ( m_image == nullptr ) {
                 Close();
 
                 return TGA_RET_OUT_OF_MEMORY;
             }
 
-            Flags |= 1;
+            m_flags |= 1;
         }
     }
 
-    int ret = Load(name, Palette, Image, invert_image);
+    int ret = Load(name, m_palette, m_image, invert_image);
     Close();
 
     return ret;
@@ -236,21 +236,21 @@ int TargaImage::Load(char const *name, char *palette, char *image, bool invert_i
         return TGA_RET_UNABLE_TO_LOAD;
     }
 
-    if ( Header.ColorMapType == 1 ) {
-        int pixel_bytes = Header.CMapDepth / 8;
+    if ( m_header.cmap_type == 1 ) {
+        int pixel_bytes = m_header.cmap_depth / 8;
 
-        if ( palette != nullptr && Header.CMapLength > 0 ) {
+        if ( palette != nullptr && m_header.cmap_length > 0 ) {
             int read_bytes = File_Read(
-                &palette[pixel_bytes * Header.CMapStart],
-                pixel_bytes * Header.CMapLength
+                &palette[pixel_bytes * m_header.cmap_start],
+                pixel_bytes * m_header.cmap_length
             );
 
-            if ( read_bytes != pixel_bytes * Header.CMapLength ) {
+            if ( read_bytes != pixel_bytes * m_header.cmap_length ) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
             }
-        } else if ( File_Seek(pixel_bytes * Header.CMapLength, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
+        } else if ( File_Seek(pixel_bytes * m_header.cmap_length, FileSeekType::FS_SEEK_CURRENT) == -1 ) {
             Close();
 
             return TGA_RET_NOT_TGA;
@@ -258,9 +258,9 @@ int TargaImage::Load(char const *name, char *palette, char *image, bool invert_i
     }
 
     if ( image != nullptr ) {
-        int total_bytes = Header.Width * Header.Height * ((Header.PixelDepth + 7) / 8);
+        int total_bytes = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
 
-        switch ( Header.ImageType ) {
+        switch ( m_header.image_type ) {
             case TGA_TYPE_MAPPED:
             case TGA_TYPE_COLOR:
             case TGA_TYPE_GREY:
@@ -289,16 +289,16 @@ int TargaImage::Load(char const *name, char *palette, char *image, bool invert_i
             Invert_Image();
         }
 
-        if ( (Header.ImageDescriptor & 0x10) != 0 ) {
+        if ( (m_header.image_descriptor & 0x10) != 0 ) {
             DEBUG_LOG("Flipping X.\n");
             X_Flip();
-            Header.ImageDescriptor &= ~0x10;
+            m_header.image_descriptor &= ~0x10;
         }
 
-        if ( (Header.ImageDescriptor & 0x20) != 0 ) {
+        if ( (m_header.image_descriptor & 0x20) != 0 ) {
             DEBUG_LOG("Flipping Y.\n");
             Y_Flip();
-            Header.ImageDescriptor &= ~0x20;
+            m_header.image_descriptor &= ~0x20;
         }
     }
     Close();
@@ -312,15 +312,15 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
         return TGA_RET_UNABLE_TO_LOAD;
     }
 
-    Header.IDLength = 0;
+    m_header.id_length = 0;
 
     // Flag can force compression even if its not currently set.
     if ( (flags & TGA_FLAG_COMPRESS) != 0 ) {
-        switch ( Header.ImageType ) {
+        switch ( m_header.image_type ) {
             case TGA_TYPE_MAPPED:
             case TGA_TYPE_COLOR:
             case TGA_TYPE_GREY:
-                Header.ImageType += 8;  // Convert to RLE type then fall through
+                m_header.image_type += 8;  // Convert to RLE type then fall through
             case TGA_TYPE_RLE_MAPPED:
             case TGA_TYPE_RLE_COLOR:
             case TGA_TYPE_RLE_GREY:
@@ -331,7 +331,7 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
         }
     }
 
-    if ( File_Write(&Header, sizeof(Header)) != sizeof(Header) ) {
+    if ( File_Write(&m_header, sizeof(m_header)) != sizeof(m_header) ) {
         Close();
 
         return TGA_RET_UNABLE_TO_SAVE;
@@ -339,11 +339,11 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
 
     // Write palette if we have one.
     if ( (flags & TGA_FLAG_PAL_ALLOC) != 0 ) {
-        if ( Palette != nullptr && Header.CMapLength > 0 ) {
-            int pal_depth = Header.CMapDepth / 8;
-            int pal_size = pal_depth * Header.CMapLength;
+        if ( m_palette != nullptr && m_header.cmap_length > 0 ) {
+            int pal_depth = m_header.cmap_depth / 8;
+            int pal_size = pal_depth * m_header.cmap_length;
 
-            if ( File_Write(&Palette[pal_depth * Header.CMapStart], pal_size) != pal_size ) {
+            if ( File_Write(&m_palette[pal_depth * m_header.cmap_start], pal_size) != pal_size ) {
                 Close();
 
                 return TGA_RET_UNABLE_TO_SAVE;
@@ -352,10 +352,10 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
     }
 
     // Write the image, flipping if color and flipping back afterward, compressing if required
-    if ( (flags & TGA_FLAG_IMAGE_ALLOC) != 0  && Image != nullptr ) {
+    if ( (flags & TGA_FLAG_IMAGE_ALLOC) != 0  && m_image != nullptr ) {
         bool inverted = false;
         
-        if ( Header.ImageType == TGA_TYPE_COLOR || Header.ImageType == TGA_TYPE_RLE_COLOR ) {
+        if ( m_header.image_type == TGA_TYPE_COLOR || m_header.image_type == TGA_TYPE_RLE_COLOR ) {
             Invert_Image();
             inverted = true;
         }
@@ -363,9 +363,9 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
         if ( (flags & TGA_FLAG_COMPRESS) != 0 ) {
             Encode_Image();
         } else {
-            int img_size = Header.Width * Header.Height * ((Header.PixelDepth + 7) / 8);
+            int img_size = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
 
-            if ( File_Write(Image, img_size) != img_size ) {
+            if ( File_Write(m_image, img_size) != img_size ) {
                 Close();
 
                 return TGA_RET_UNABLE_TO_SAVE;
@@ -381,13 +381,13 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
 
     // Write the extension if required, if not just write the footer.
     if ( add_extension ) {
-        Extension.ExtSize = sizeof(Extension);
-        strncpy(Extension.SoftID, "Thyme Game Engine", sizeof(Extension.SoftID));
-        Extension.SoftVer.Number = 1;
-        Extension.SoftVer.Letter = '\0';
+        m_extension.ext_size = sizeof(m_extension);
+        strncpy(m_extension.software_id, "Thyme Game Engine", sizeof(m_extension.software_id));
+        m_extension.software_vers.number = 1;
+        m_extension.software_vers.letter = '\0';
         footer.extension = File_Seek(0, FileSeekType::FS_SEEK_CURRENT);
 
-        if ( footer.extension == -1 || File_Write(&Extension, sizeof(Extension)) != sizeof(Extension)) {
+        if ( footer.extension == -1 || File_Write(&m_extension, sizeof(m_extension)) != sizeof(m_extension)) {
             Close();
 
             return TGA_RET_UNABLE_TO_SAVE;
@@ -413,20 +413,20 @@ int TargaImage::Save(char const *name, int flags, bool add_extension)
 
 void TargaImage::X_Flip()
 {
-    int pixel_size = (Header.PixelDepth + 7) / 8;
+    int pixel_size = (m_header.pixel_depth + 7) / 8;
 
     // Must have at least one row of pixels.
-    if ( Header.Height <= 0 ) {
+    if ( m_header.height <= 0 ) {
         return;
     }
 
     // Iterate over the image and move bytes from start of a row to the
     // end and vice versa, keeping the order of bytes within the pixel.
-    for ( int y = 0; y < Header.Height; ++y ) {
-        char *startp = &Image[y * Header.Width * pixel_size];
-        char *endp = &startp[pixel_size * (Header.Width - 1)];
+    for ( int y = 0; y < m_header.height; ++y ) {
+        char *startp = &m_image[y * m_header.width * pixel_size];
+        char *endp = &startp[pixel_size * (m_header.width - 1)];
 
-        for ( int x = 0; x < (Header.Width / 2); ++x ) {
+        for ( int x = 0; x < (m_header.width / 2); ++x ) {
             if ( pixel_size > 0 ) {
                 char *modp = endp;
                 ptrdiff_t diff = startp - endp;
@@ -447,20 +447,20 @@ void TargaImage::X_Flip()
 
 void TargaImage::Y_Flip()
 {
-    int pixel_size = (Header.PixelDepth + 7) / 8;
+    int pixel_size = (m_header.pixel_depth + 7) / 8;
 
     // Height must be a multiple of 2 to be flippable.
-    if ( (Header.Height % 2) != 0 ) {
+    if ( (m_header.height % 2) != 0 ) {
         return;
     }
 
-    for ( int y = 0; y < (Header.Height / 2); ++y ) {
+    for ( int y = 0; y < (m_header.height / 2); ++y ) {
         // Set pointers to the start and end rows.
-        char *startp = &Image[Header.Width * pixel_size * y];
-        char *endp = &Image[Header.Width * pixel_size * (Header.Height - 1)] - (Header.Width * pixel_size * y);
+        char *startp = &m_image[m_header.width * pixel_size * y];
+        char *endp = &m_image[m_header.width * pixel_size * (m_header.height - 1)] - (m_header.width * pixel_size * y);
 
         // Iterate over the rows, swapping bytes between them.
-        for ( int x = 0; x < (pixel_size * Header.Width); ++x ) {
+        for ( int x = 0; x < (pixel_size * m_header.width); ++x ) {
             char tmp = startp[x];
             startp[x] = endp[x];
             endp[x] = tmp;
@@ -470,38 +470,37 @@ void TargaImage::Y_Flip()
 
 char *TargaImage::Set_Image(char *buffer)
 {
-    if ( Image != nullptr && (Flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
-        crt_free(Image);
-        Image = nullptr;
-        Flags &= ~TGA_FLAG_IMAGE_ALLOC;
+    if ( m_image != nullptr && (m_flags & TGA_FLAG_IMAGE_ALLOC) == 0 ) {
+        crt_free(m_image);
+        m_image = nullptr;
+        m_flags &= ~TGA_FLAG_IMAGE_ALLOC;
     }
 
-    char *old_image = Image;
-    Image = buffer;
+    char *old_image = m_image;
+    m_image = buffer;
 
     return old_image;
 }
 
 char *TargaImage::Set_Palette(char *buffer)
 {
-    if ( Palette != nullptr && (Flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
-        crt_free(Palette);
-        Palette = nullptr;
-        Flags &= ~TGA_FLAG_PAL_ALLOC;
+    if ( m_palette != nullptr && (m_flags & TGA_FLAG_PAL_ALLOC) == 0 ) {
+        crt_free(m_palette);
+        m_palette = nullptr;
+        m_flags &= ~TGA_FLAG_PAL_ALLOC;
     }
 
-    char *old_pal = Palette;
-    Palette = buffer;
+    char *old_pal = m_palette;
+    m_palette = buffer;
 
     return old_pal; return nullptr;
 }
 
 int TargaImage::Decode_Image()
 {
-    DEBUG_LOG("Decoding RLE encoded image data.\n");
-    int pixel_bytes = (Header.PixelDepth + 7) / 8;
-    int pixel_count = Header.Width * Header.Height;
-    char *putp = Image;
+    int pixel_bytes = (m_header.pixel_depth + 7) / 8;
+    int pixel_count = m_header.width * m_header.height;
+    char *putp = m_image;
 
     while ( pixel_count ) {
         uint8_t count;
@@ -547,15 +546,15 @@ int TargaImage::Encode_Image()
 
 void TargaImage::Invert_Image()
 {
-    int pixel_bytes = (Header.PixelDepth + 7) / 8;
-    int pixel_count = Header.Width * Header.Height;
+    int pixel_bytes = (m_header.pixel_depth + 7) / 8;
+    int pixel_count = m_header.width * m_header.height;
 
     if ( pixel_bytes <= 2 ) {
         return;
     }
 
     int half_pixel = pixel_bytes / 2;
-    char *curr_pixel = Image;
+    char *curr_pixel = m_image;
 
     while ( pixel_count-- ) {
         for ( int i = 0; i < half_pixel; ++i ) {
@@ -570,20 +569,20 @@ void TargaImage::Invert_Image()
 
 void TargaImage::Clear_File()
 {
-    TGAFile = nullptr;
+    m_TGAFile = nullptr;
 }
 
 bool TargaImage::Is_File_Open()
 {
-    return TGAFile != nullptr;
+    return m_TGAFile != nullptr;
 }
 
 bool TargaImage::File_Open_Read(char const *name)
 {
-    TGAFile = TheFileFactory->Get_File(name);
+    m_TGAFile = TheFileFactory->Get_File(name);
 
-    if ( TGAFile != nullptr && TGAFile->Is_Available() ) {
-        return TGAFile->Open(FM_READ);
+    if ( m_TGAFile != nullptr && m_TGAFile->Is_Available() ) {
+        return m_TGAFile->Open(FM_READ);
     }
 
     return false;
@@ -591,10 +590,10 @@ bool TargaImage::File_Open_Read(char const *name)
 
 bool TargaImage::File_Open_Write(char const *name)
 {
-    TGAFile = TheWritingFileFactory->Get_File(name);
+    m_TGAFile = TheWritingFileFactory->Get_File(name);
 
-    if ( TGAFile != nullptr && TGAFile->Is_Available() ) {
-        return TGAFile->Open(FM_WRITE);
+    if ( m_TGAFile != nullptr && m_TGAFile->Is_Available() ) {
+        return m_TGAFile->Open(FM_WRITE);
     }
 
     return false;
@@ -602,10 +601,10 @@ bool TargaImage::File_Open_Write(char const *name)
 
 bool TargaImage::File_Open_ReadWrite(char const *name)
 {
-    TGAFile = TheWritingFileFactory->Get_File(name);
+    m_TGAFile = TheWritingFileFactory->Get_File(name);
 
-    if ( TGAFile != nullptr && TGAFile->Is_Available() ) {
-        return TGAFile->Open(FM_READ_WRITE);
+    if ( m_TGAFile != nullptr && m_TGAFile->Is_Available() ) {
+        return m_TGAFile->Open(FM_READ_WRITE);
     }
 
     return false;

@@ -39,74 +39,71 @@
 #pragma pack(push, 1)
 struct TGAHeader
 {
-    int8_t IDLength;
-    int8_t ColorMapType;
-    int8_t ImageType;
-    int16_t CMapStart;
-    int16_t CMapLength;
-    int8_t CMapDepth;
-    int16_t XOffset;
-    int16_t YOffset;
-    int16_t Width;
-    int16_t Height;
-    int8_t PixelDepth;
-    int8_t ImageDescriptor;
+    int8_t id_length;
+    int8_t cmap_type;
+    int8_t image_type;
+    int16_t cmap_start;
+    int16_t cmap_length;
+    int8_t cmap_depth;
+    int16_t x_offset;
+    int16_t y_offset;
+    int16_t width;
+    int16_t height;
+    int8_t pixel_depth;
+    int8_t image_descriptor;
 };
 
-struct TGAHandle
-{
-    int32_t fh;
-    int32_t mode;
-    TGAHeader *header;
-};
+//struct TGAHandle
+//{
+//    int32_t fh;
+//    int32_t mode;
+//    TGAHeader *header;
+//};
 
 struct TGA2DateStamp
 {
-    int16_t Month;
-    int16_t Day;
-    int16_t Year;
+    int16_t month;
+    int16_t day;
+    int16_t year;
 };
 
 struct TGA2TimeStamp
 {
-    int16_t Hour;
-    int16_t Minute;
-    int16_t Second;
+    int16_t hour;
+    int16_t minute;
+    int16_t second;
 };
 
 struct TGA2SoftVer
 {
-    int16_t Number;
-    char Letter;
+    int16_t number;
+    char letter;
 };
 
 struct TGA2Ratio
 {
-    // Numerator
-    int16_t Numer;
-
-    // Denominator
-    int16_t Denom;
+    int16_t numerator;
+    int16_t denominator;
 };
 
 struct TGA2Extension
 {
-    int16_t ExtSize;
-    char AuthName[41];
-    char AuthComment[324];
-    TGA2DateStamp Date;
-    TGA2TimeStamp Time;
-    char JobName[41];
-    TGA2TimeStamp JobTime;
-    char SoftID[41];
-    TGA2SoftVer SoftVer;
-    int32_t KeyColor;
-    TGA2Ratio Aspect;
-    TGA2Ratio Gamma;
-    int32_t ColorCor;
-    int32_t PostStamp;
-    int32_t ScanLine;
-    int8_t Attributes;
+    int16_t ext_size;
+    char auth_name[41];
+    char auth_comment[324];
+    TGA2DateStamp date;
+    TGA2TimeStamp time;
+    char job_name[41];
+    TGA2TimeStamp job_time;
+    char software_id[41];
+    TGA2SoftVer software_vers;
+    int32_t key_color;
+    TGA2Ratio aspect;
+    TGA2Ratio gamma;
+    int32_t color_cor;
+    int32_t post_stamp;
+    int32_t scan_line;
+    int8_t attributes;
 };
 
 struct TGA2Footer
@@ -164,115 +161,119 @@ public:
     int Open(char const *name, int mode);
     void Close();
     int Load(char const *name, int flags, bool invert_image);
-    int Load(char const *name, char* palette, char* image, bool invert_image);
     int Save(char const *name, int flags, bool add_extension);
-    void X_Flip();
-    void Y_Flip();
     char *Set_Image(char *buffer);
-    char *Get_Image() { return Image; }
+    char *Get_Image() { return m_image; }
     char *Set_Palette(char *buffer);
-    char *Get_Palette() { return Palette; }
-    bool Is_Compressed() { return Header.ImageType > 8; }
-    TGA2Extension *Get_Extension() { return Flags & 8 ? &Extension : nullptr; }
+    char *Get_Palette() { return m_palette; }
+    bool Is_Compressed() { return m_header.image_type > 8; }
+    TGA2Extension *Get_Extension() { return m_flags & 8 ? &m_extension : nullptr; }
+    void Clear_File();
+    bool Is_File_Open();
+
+    static int Targa_Error_Handler(int load_err, const char *filename);
+
+    static void Hook_Me();
+private:
+    int Load(char const *name, char* palette, char* image, bool invert_image);
     int Decode_Image();
     int Encode_Image();
     void Invert_Image();
-    void Clear_File();
-    bool Is_File_Open();
+    void X_Flip();
+    void Y_Flip();
+    bool File_Open_Read(char const *name);
+    bool File_Open_Write(char const *name);
+    bool File_Open_ReadWrite(char const *name);
+    int File_Seek(int pos, int dir) { return m_TGAFile->Seek(pos, dir); }
+    int File_Read(void* buffer, int size) { return m_TGAFile->Read(buffer, size); }
+    int File_Write(void* buffer, int size) { return m_TGAFile->Write(buffer, size); }
 
     static void Header_To_Host(TGAHeader &header);
     static void Header_To_File(TGAHeader &header);
     static void Extension_To_Host(TGA2Extension &header);
     static void Extension_To_File(TGA2Extension &header);
-    static int Targa_Error_Handler(int load_err, const char *filename);
 
-    static void Hook_Me();
-private:
-    bool File_Open_Read(char const *name);
-    bool File_Open_Write(char const *name);
-    bool File_Open_ReadWrite(char const *name);
-    int File_Seek(int pos, int dir) { return TGAFile->Seek(pos, dir); }
-    int File_Read(void* buffer, int size) { return TGAFile->Read(buffer, size); }
-    int File_Write(void* buffer, int size) { return TGAFile->Write(buffer, size); }
-
-    TGAHeader Header;
-    FileClass *TGAFile;
-    int Access;
-    int Flags;
-    char *Image;
-    char *Palette;
-    TGA2Extension Extension;
+    TGAHeader m_header;
+    FileClass *m_TGAFile;
+    int m_access;
+    int m_flags;
+    char *m_image;
+    char *m_palette;
+    TGA2Extension m_extension;
 };
 
 inline void TargaImage::Hook_Me()
 {
     Hook_Method(Make_Method_Ptr<int, TargaImage, char const*, int, bool>(0x008A43F0), &Load);
+    Hook_Method(Make_Method_Ptr<int, TargaImage, char const*, int>(0x008A3E60), &Open);
+    Hook_Method(Make_Method_Ptr<char*, TargaImage, char*>(0x008A45F0), &Set_Palette);
+    Hook_Function(Make_Function_Ptr<int, int, char const*>(0x008A4780), &Targa_Error_Handler);
 }
 
 inline void TargaImage::Header_To_Host(TGAHeader &header)
 {
-    header.CMapStart = le16toh(header.CMapStart);
-    header.CMapLength = le16toh(header.CMapLength);
-    header.XOffset = le16toh(header.XOffset);
-    header.YOffset = le16toh(header.YOffset);
-    header.Width = le16toh(header.Width);
-    header.Height = le16toh(header.Height);
+    header.cmap_start = le16toh(header.cmap_start);
+    header.cmap_length = le16toh(header.cmap_length);
+    header.x_offset = le16toh(header.x_offset);
+    header.y_offset = le16toh(header.y_offset);
+    header.width = le16toh(header.width);
+    header.height = le16toh(header.height);
 }
 
 inline void TargaImage::Header_To_File(TGAHeader &header)
 {
-    header.CMapStart = htole16(header.CMapStart);
-    header.CMapLength = htole16(header.CMapLength);
-    header.XOffset = htole16(header.XOffset);
-    header.YOffset = htole16(header.YOffset);
-    header.Width = htole16(header.Width);
-    header.Height = htole16(header.Height);
+    header.cmap_start = htole16(header.cmap_start);
+    header.cmap_length = htole16(header.cmap_length);
+    header.x_offset = htole16(header.x_offset);
+    header.y_offset = htole16(header.y_offset);
+    header.width = htole16(header.width);
+    header.height = htole16(header.height);
 }
 
 inline void TargaImage::Extension_To_Host(TGA2Extension &extension)
 {
-    extension.ExtSize = le16toh(extension.ExtSize);
-    extension.Date.Day = le16toh(extension.Date.Day);
-    extension.Date.Month = le16toh(extension.Date.Month);
-    extension.Date.Year = le16toh(extension.Date.Year);
-    extension.Time.Hour = le16toh(extension.Time.Hour);
-    extension.Time.Minute = le16toh(extension.Time.Minute);
-    extension.Time.Second = le16toh(extension.Time.Second);
-    extension.JobTime.Hour = le16toh(extension.JobTime.Hour);
-    extension.JobTime.Minute = le16toh(extension.JobTime.Minute);
-    extension.JobTime.Second = le16toh(extension.JobTime.Second);
-    extension.SoftVer.Number = le16toh(extension.SoftVer.Number);
-    extension.KeyColor = le32toh(extension.KeyColor);
-    extension.Aspect.Numer = le16toh(extension.Aspect.Numer);
-    extension.Aspect.Denom = le16toh(extension.Aspect.Denom);
-    extension.Gamma.Numer = le16toh(extension.Gamma.Numer);
-    extension.Gamma.Denom = le16toh(extension.Gamma.Denom);
-    extension.ColorCor = le32toh(extension.ColorCor);
-    extension.PostStamp = le32toh(extension.PostStamp);
-    extension.ScanLine = le32toh(extension.ScanLine);
+    extension.ext_size = le16toh(extension.ext_size);
+    extension.date.day = le16toh(extension.date.day);
+    extension.date.month = le16toh(extension.date.month);
+    extension.date.year = le16toh(extension.date.year);
+    extension.time.hour = le16toh(extension.time.hour);
+    extension.time.minute = le16toh(extension.time.minute);
+    extension.time.second = le16toh(extension.time.second);
+    extension.job_time.hour = le16toh(extension.job_time.hour);
+    extension.job_time.minute = le16toh(extension.job_time.minute);
+    extension.job_time.second = le16toh(extension.job_time.second);
+    extension.software_vers.number = le16toh(extension.software_vers.number);
+    extension.key_color = le32toh(extension.key_color);
+    extension.aspect.numerator = le16toh(extension.aspect.numerator);
+    extension.aspect.denominator = le16toh(extension.aspect.denominator);
+    extension.gamma.numerator = le16toh(extension.gamma.numerator);
+    extension.gamma.denominator = le16toh(extension.gamma.denominator);
+    extension.color_cor = le32toh(extension.color_cor);
+    extension.post_stamp = le32toh(extension.post_stamp);
+    extension.scan_line = le32toh(extension.scan_line);
 }
 
 inline void TargaImage::Extension_To_File(TGA2Extension &extension)
 {
-    extension.ExtSize = htole16(extension.ExtSize);
-    extension.Date.Day = htole16(extension.Date.Day);
-    extension.Date.Month = htole16(extension.Date.Month);
-    extension.Date.Year = htole16(extension.Date.Year);
-    extension.Time.Hour = htole16(extension.Time.Hour);
-    extension.Time.Minute = htole16(extension.Time.Minute);
-    extension.Time.Second = htole16(extension.Time.Second);
-    extension.JobTime.Hour = htole16(extension.JobTime.Hour);
-    extension.JobTime.Minute = htole16(extension.JobTime.Minute);
-    extension.JobTime.Second = htole16(extension.JobTime.Second);
-    extension.SoftVer.Number = htole16(extension.SoftVer.Number);
-    extension.KeyColor = htole32(extension.KeyColor);
-    extension.Aspect.Numer = htole16(extension.Aspect.Numer);
-    extension.Aspect.Denom = htole16(extension.Aspect.Denom);
-    extension.Gamma.Numer = htole16(extension.Gamma.Numer);
-    extension.Gamma.Denom = htole16(extension.Gamma.Denom);
-    extension.ColorCor = htole32(extension.ColorCor);
-    extension.PostStamp = htole32(extension.PostStamp);
-    extension.ScanLine = htole32(extension.ScanLine);
+    extension.ext_size = htole16(extension.ext_size);
+    extension.date.day = htole16(extension.date.day);
+    extension.date.month = htole16(extension.date.month);
+    extension.date.year = htole16(extension.date.year);
+    extension.time.hour = htole16(extension.time.hour);
+    extension.time.minute = htole16(extension.time.minute);
+    extension.time.second = htole16(extension.time.second);
+    extension.job_time.hour = htole16(extension.job_time.hour);
+    extension.job_time.minute = htole16(extension.job_time.minute);
+    extension.job_time.second = htole16(extension.job_time.second);
+    extension.software_vers.number = htole16(extension.software_vers.number);
+    extension.key_color = htole32(extension.key_color);
+    extension.aspect.numerator = htole16(extension.aspect.numerator);
+    extension.aspect.denominator = htole16(extension.aspect.denominator);
+    extension.gamma.numerator = htole16(extension.gamma.numerator);
+    extension.gamma.denominator = htole16(extension.gamma.denominator);
+    extension.color_cor = htole32(extension.color_cor);
+    extension.post_stamp = htole32(extension.post_stamp);
+    extension.scan_line = htole32(extension.scan_line);
 }
 
 #endif // _TARGA_H_

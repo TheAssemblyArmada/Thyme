@@ -73,7 +73,7 @@ inline void RawFileFactoryClass::Hook_Me()
 #define TheWritingFileFactory (Make_Global<RawFileFactoryClass*>(0x00A1EEB8))
 //extern RawFileFactoryClass *TheWritingFileFactory;
 
-#define TheFileFactory (Make_Global<FileFactoryClass*>(0x008A99EC))
+#define TheFileFactory (Make_Global<FileFactoryClass*>(0x00A1EEB0))
 //extern FileFactoryClass *TheFileFactory;
 
 #endif

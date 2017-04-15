@@ -290,13 +290,11 @@ int TargaImage::Load(char const *name, char *palette, char *image, bool invert_i
         }
 
         if ( (m_header.image_descriptor & 0x10) != 0 ) {
-            DEBUG_LOG("Flipping X.\n");
             X_Flip();
             m_header.image_descriptor &= ~0x10;
         }
 
         if ( (m_header.image_descriptor & 0x20) != 0 ) {
-            DEBUG_LOG("Flipping Y.\n");
             Y_Flip();
             m_header.image_descriptor &= ~0x20;
         }

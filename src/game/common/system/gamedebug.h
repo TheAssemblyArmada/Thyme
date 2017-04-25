@@ -40,6 +40,7 @@ extern "C" {
 #define DEBUG_LINE_LOG(message, ...)		Debug_Log("%s %d " message, __FILE__, __LINE__, ##__VA_ARGS__)
 #define DEBUG_INIT(flags)		            Debug_Init(flags)
 #define DEBUG_STOP()		                Debug_Shutdown()
+#define DEBUG_ASSERT(exp)                   if (!(exp)) { Debug_Log("%s %d Assert failed", __FILE__, __LINE__); }
 #define ASSERT_PRINT(exp, msg, ...)         if (!(exp)) { Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__); }
 #define DEBUG_ASSERT_PRINT(exp, msg, ...)   if (!(exp)) { Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__); }
 #define ASSERT_THROW(exp, except)           if (!(exp)) { Debug_Log("Oops, thyme is throwing an exception.\n"); throw except; }
@@ -71,6 +72,7 @@ void Debug_Set_Flags(int flags);
 #define DEBUG_LINE_LOG(message, ...)		((void)0)
 #define DEBUG_INIT(flags)		            ((void)0)
 #define DEBUG_STOP()                        ((void)0)
+#define DEBUG_ASSERT()                      ((void)0)
 #define ASSERT_PRINT(exp, msg, ...)         if (!(exp)) { }
 #define DEBUG_ASSERT_PRINT(exp, msg, ...)   ((void)0)
 #define ASSERT_THROW(exp, except)           if (!(exp)) { throw except; }

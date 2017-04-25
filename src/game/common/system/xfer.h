@@ -29,29 +29,73 @@
 #define _XFER_H_
 
 #include "asciistring.h"
+#include "bitflags.h"
+#include "color.h"
+#include "coord.h"
+#include "snapshot.h"
+#include "unicodestring.h"
 #include <list>
 #include <vector>
 
-class SnapShot;
-class UnicodeString;
-class Coord3D;
-class ICoord3D;
-class Region3D;
-class IRegion3D;
-class Coord2D;
-class ICoord2D;
-class Region2D;
-class IRegion2D;
-class RGBColor;
-class RGBAColorInt;
-class RGBAColorReal;
-class ObjectID;
-class RealRange;
-class DrawableID;
-class ScienceType;
-class KindOf;
-template <int bits> struct BitFlags;
+struct RealRange
+{
+    float lo;
+    float hi;
+};
+
 class Matrix3D;
+
+typedef int ObjectID;
+typedef int DrawableID;
+
+enum ScienceType
+{
+    SCIENCE_INVALID = -1,
+    SCIENCE_BOGUS = 0,
+};
+
+// KindOfType actually has 116 entries in ZH, these need confirming and rest working out.
+enum KindOfType
+{
+    KINDOF_FIRST = 0x0,
+    KINDOF_OBSTACLE = 0x0,
+    KINDOF_SELECTABLE = 0x1,
+    KINDOF_IMMOBILE = 0x2,
+    KINDOF_CAN_ATTACK = 0x3,
+    KINDOF_STICK_TO_TERRAIN_SLOPE = 0x4,
+    KINDOF_CAN_CAST_REFLECTIONS = 0x5,
+    KINDOF_SHRUBBERY = 0x6,
+    KINDOF_STRUCTURE = 0x7,
+    KINDOF_INFANTRY = 0x8,
+    KINDOF_VEHICLE = 0x9,
+    KINDOF_CRUSHER = 0xA,
+    KINDOF_OVERLAPPABLE = 0xB,
+    KINDOF_CRUSHABLE = 0xC,
+    KINDOF_DOZER = 0xD,
+    KINDOF_COMMANDCENTER = 0xE,
+    KINDOF_LINEBUILD = 0xF,
+    KINDOF_SALVAGER = 0x10,
+    KINDOF_TRANSPORT = 0x11,
+    KINDOF_BRIDGE = 0x12,
+    KINDOF_BRIDGE_TOWER = 0x13,
+    KINDOF_PROJECTILE = 0x14,
+    KINDOF_PRELOAD = 0x15,
+    KINDOF_NO_GARRISON = 0x16,
+    KINDOF_WAVEGUIDE = 0x17,
+    KINDOF_WAVE_EFFECT = 0x18,
+    KINDOF_NO_COLLIDE = 0x19,
+    KINDOF_REPAIR_PAD = 0x1A,
+    KINDOF_HEAL_PAD = 0x1B,
+    KINDOF_CAN_STEALTH = 0x1C,
+    KINDOF_CAN_DETECT_STEALTH = 0x1D,
+    KINDOF_STEALTH_GARRISON = 0x1E,
+    KINDOF_CASH_GENERATOR = 0x1F,
+    KINDOF_AIRFIELD = 0x20,
+    KINDOF_FAKE_CONTAINER = 0x21,
+    KINDOF_DRAWABLE_ONLY = 0x22,
+    KINDOF_REBUILD_HOLE = 0x23,
+    KINDOF_COUNT = 0x24,
+};
 
 enum XferType
 {
@@ -63,66 +107,66 @@ enum XferType
 
 class Xfer
 {
-    public:
-        Xfer();
-        virtual ~Xfer();
+public:
+    Xfer() : m_options(0), m_type(XFER_INVALID), m_name() {}
+    virtual ~Xfer() {}
 
-        virtual XferType Get_Mode() { return Type; }
-        virtual void Set_Options(unsigned int options) { Options |= options; }
-        virtual void Clear_Options(unsigned int options) { Options &= ~options; }
-        virtual unsigned int Get_Options(void) { return Options; }
+    virtual XferType Get_Mode() { return m_type; }
+    virtual void Set_Options(unsigned int options) { m_options |= options; }
+    virtual void Clear_Options(unsigned int options) { m_options &= ~options; }
+    virtual unsigned int Get_Options(void) { return m_options; }
 
-        virtual void Open(AsciiString filename) = 0;
-        virtual void Close() = 0;
-        virtual int Begin_Block() = 0;
-        virtual int End_Block() = 0;
-        virtual int Skip(int offset) = 0;
+    virtual void Open(AsciiString filename) = 0;
+    virtual void Close() = 0;
+    virtual int Begin_Block() = 0;
+    virtual int End_Block() = 0;
+    virtual int Skip(int offset) = 0;
 
-        virtual void xferSnapshot(SnapShot *thing) = 0;
-        virtual void xferVersion(uint8_t *thing, uint8_t check);
-        virtual void xferByte(int8_t thing);
-        virtual void xferUnsignedByte(uint8_t thing);
-        virtual void xferBool(bool thing);
-        virtual void xferInt(int32_t thing);
-        virtual void xferInt64(int64_t thing);
-        virtual void xferUnsignedInt(uint32_t thing);
-        virtual void xferShort(int16_t thing);
-        virtual void xferUnsignedShort(uint16_t thing);
-        virtual void xferReal(float thing);
-        virtual void xferMarkerLabel(AsciiString thing);
-        virtual void xferAsciiString(AsciiString *thing);
-        virtual void xferUnicodeString(UnicodeString *thing);
-        virtual void xferCoord3D(Coord3D *thing);
-        virtual void xferICoord3D(ICoord3D *thing);
-        virtual void xferRegion3D(Region3D *thing);
-        virtual void xferIRegion3D(IRegion3D *thing);
-        virtual void xferCoord2D(Coord2D *thing);
-        virtual void xferICoord2D(ICoord2D *thing);
-        virtual void xferRegion2D(Region2D *thing);
-        virtual void xferIRegion2d(IRegion2D *thing);
-        virtual void xferRealRange(RealRange *thing);
-        virtual void xferColor(int32_t thing);
-        virtual void xferRGBColor(RGBColor *thing);
-        virtual void xferRGBAColorReal(RGBAColorReal *thing);
-        virtual void xferRGBAColorInt(RGBAColorInt *thing);
-        virtual void xferObjectID(ObjectID *thing);
-        virtual void xferDrawableID(DrawableID *thing);
-        virtual void xferSTLObjectIDVector(std::vector<ObjectID> *thing);
-        virtual void xferSTLObjectIDList(std::list<ObjectID> *thing);
-        virtual void xferSTLIntList(std::list<int32_t> *thing);
-        virtual void xferScienceType(ScienceType *thing);
-        virtual void xferScienceVec(std::vector<ScienceType> *thing);
-        virtual void xferKindOf(KindOf *thing);
-        virtual void xferUpgradeMask(BitFlags<128> *thing);
-        virtual void xferUser(void *thing);
-        virtual void xferMatrix3D(Matrix3D *thing);
-        virtual void xferMapName(AsciiString *thing);
-        virtual void xferImplementation(void *thing, int size) = 0;
+    virtual void xferSnapshot(SnapShot *thing) = 0;
+    virtual void xferVersion(uint8_t *thing, uint8_t check);
+    virtual void xferByte(int8_t *thing);
+    virtual void xferUnsignedByte(uint8_t *thing);
+    virtual void xferBool(bool *thing);
+    virtual void xferInt(int32_t *thing);
+    virtual void xferInt64(int64_t *thing);
+    virtual void xferUnsignedInt(uint32_t *thing);
+    virtual void xferShort(int16_t *thing);
+    virtual void xferUnsignedShort(uint16_t *thing);
+    virtual void xferReal(float *thing);
+    virtual void xferMarkerLabel(AsciiString thing);
+    virtual void xferAsciiString(AsciiString *thing);
+    virtual void xferUnicodeString(UnicodeString *thing);
+    virtual void xferCoord3D(Coord3D *thing);
+    virtual void xferICoord3D(ICoord3D *thing);
+    virtual void xferRegion3D(Region3D *thing);
+    virtual void xferIRegion3D(IRegion3D *thing);
+    virtual void xferCoord2D(Coord2D *thing);
+    virtual void xferICoord2D(ICoord2D *thing);
+    virtual void xferRegion2D(Region2D *thing);
+    virtual void xferIRegion2D(IRegion2D *thing);
+    virtual void xferRealRange(RealRange *thing);
+    virtual void xferColor(int32_t thing);
+    virtual void xferRGBColor(RGBColor *thing);
+    virtual void xferRGBAColorReal(RGBAColorReal *thing);
+    virtual void xferRGBAColorInt(RGBAColorInt *thing);
+    virtual void xferObjectID(ObjectID *thing);
+    virtual void xferDrawableID(DrawableID *thing);
+    virtual void xferSTLObjectIDVector(std::vector<ObjectID> *thing);
+    virtual void xferSTLObjectIDList(std::list<ObjectID> *thing);
+    virtual void xferSTLIntList(std::list<int32_t> *thing);
+    virtual void xferScienceType(ScienceType *thing);
+    virtual void xferScienceVec(std::vector<ScienceType> *thing);
+    virtual void xferKindOf(KindOfType *thing);
+    virtual void xferUpgradeMask(BitFlags<128> *thing);
+    virtual void xferUser(void *thing, int size);
+    virtual void xferMatrix3D(Matrix3D *thing);
+    virtual void xferMapName(AsciiString *thing);
+    virtual void xferImplementation(void *thing, int size) = 0;
 
-    protected:
-        unsigned int Options;
-        XferType Type;
-        AsciiString Name;
+protected:
+    unsigned int m_options;
+    XferType m_type;
+    AsciiString m_name;
 };
 
 #endif

@@ -13,9 +13,10 @@ set(GAMEENGINE_INCLUDES
     game/common
     game/common/ini
     game/common/system
-	game/common/rts
+    game/common/rts
     platform
     w3d/lib
+    w3d/math
 )
 
 set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp)
@@ -25,6 +26,7 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/main.cpp
     game/client/gametext.cpp
+    game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp
     game/common/crc.cpp
@@ -73,6 +75,11 @@ set(GAMEENGINE_SRC
     w3d/lib/bufffileclass.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/targa.cpp
+    w3d/math/gamemath.cpp
+    w3d/math/matrix3.cpp
+    w3d/math/matrix3d.cpp
+    w3d/math/matrix4.cpp
+    w3d/math/quaternion.cpp
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})

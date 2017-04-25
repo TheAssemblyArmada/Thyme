@@ -4,13 +4,13 @@
 //
 //  Project Name:: Thyme
 //
-//          File:: COORD.H
+//          File:: BITFLAGS.H
 //
 //        Author:: OmniBlade
 //
 //  Contributors:: 
 //
-//   Description:: Coordinate objects.
+//   Description:: Wrapper around std::bitsets.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 
@@ -25,72 +25,23 @@
 #pragma once
 #endif // _MSC_VER
 
-#ifndef _COORD_H_
-#define _COORD_H_
+#ifndef _BITFLAGS_H_
+#define _BITFLAGS_H_
 
-#include <cstdint>
-#include <math.h>
+#include <bitset>
 
-class Coord2D
-{
-    public:
-        float x;
-        float y;
-
-        float Length() { return (float)sqrtf(x * x + y * y); }
-};
-
-class Coord3D
-{
-    public:
-        float x;
-        float y;
-        float z;
-
-        float Length() { return (float)sqrtf(x * x + y * y + z * z); }
-};
-
-class ICoord2D
-{
-    public:
-        int32_t x;
-        int32_t y;
-};
-
-class ICoord3D
-{
-    public:
-        int32_t x;
-        int32_t y;
-        int32_t z;
-};
-
-class Region2D
+template <int bits>
+class BitFlags
 {
 public:
-    Coord2D lo;
-    Coord2D hi;
+    BitFlags() {}
+
+    bool operator==(BitFlags &that) const { return m_bits == that.m_bits; }
+    bool operator!=(BitFlags &that) const { return m_bits != that.m_bits; }
+
+    static char *s_bitNamesList[];
+private:
+    std::bitset<bits> m_bits;
 };
 
-class IRegion2D
-{
-public:
-    ICoord2D lo;
-    ICoord2D hi;
-};
-
-class Region3D
-{
-public:
-    Coord3D lo;
-    Coord3D hi;
-};
-
-class IRegion3D
-{
-public:
-    ICoord3D lo;
-    ICoord3D hi;
-};
-
-#endif // _COORD_H_
+#endif // _BITFLAGS_H_

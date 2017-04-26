@@ -72,7 +72,7 @@ void Debug_Set_Flags(int flags);
 #define DEBUG_LINE_LOG(message, ...)		((void)0)
 #define DEBUG_INIT(flags)		            ((void)0)
 #define DEBUG_STOP()                        ((void)0)
-#define DEBUG_ASSERT()                      ((void)0)
+#define DEBUG_ASSERT(exp)                   ((void)0)
 #define ASSERT_PRINT(exp, msg, ...)         if (!(exp)) { }
 #define DEBUG_ASSERT_PRINT(exp, msg, ...)   ((void)0)
 #define ASSERT_THROW(exp, except)           if (!(exp)) { throw except; }

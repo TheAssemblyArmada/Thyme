@@ -32,6 +32,7 @@
 #include "bitflags.h"
 #include "color.h"
 #include "coord.h"
+#include "kindof.h"
 #include "snapshot.h"
 #include "unicodestring.h"
 #include <list>
@@ -52,49 +53,6 @@ enum ScienceType
 {
     SCIENCE_INVALID = -1,
     SCIENCE_BOGUS = 0,
-};
-
-// KindOfType actually has 116 entries in ZH, these need confirming and rest working out.
-enum KindOfType
-{
-    KINDOF_FIRST = 0x0,
-    KINDOF_OBSTACLE = 0x0,
-    KINDOF_SELECTABLE = 0x1,
-    KINDOF_IMMOBILE = 0x2,
-    KINDOF_CAN_ATTACK = 0x3,
-    KINDOF_STICK_TO_TERRAIN_SLOPE = 0x4,
-    KINDOF_CAN_CAST_REFLECTIONS = 0x5,
-    KINDOF_SHRUBBERY = 0x6,
-    KINDOF_STRUCTURE = 0x7,
-    KINDOF_INFANTRY = 0x8,
-    KINDOF_VEHICLE = 0x9,
-    KINDOF_CRUSHER = 0xA,
-    KINDOF_OVERLAPPABLE = 0xB,
-    KINDOF_CRUSHABLE = 0xC,
-    KINDOF_DOZER = 0xD,
-    KINDOF_COMMANDCENTER = 0xE,
-    KINDOF_LINEBUILD = 0xF,
-    KINDOF_SALVAGER = 0x10,
-    KINDOF_TRANSPORT = 0x11,
-    KINDOF_BRIDGE = 0x12,
-    KINDOF_BRIDGE_TOWER = 0x13,
-    KINDOF_PROJECTILE = 0x14,
-    KINDOF_PRELOAD = 0x15,
-    KINDOF_NO_GARRISON = 0x16,
-    KINDOF_WAVEGUIDE = 0x17,
-    KINDOF_WAVE_EFFECT = 0x18,
-    KINDOF_NO_COLLIDE = 0x19,
-    KINDOF_REPAIR_PAD = 0x1A,
-    KINDOF_HEAL_PAD = 0x1B,
-    KINDOF_CAN_STEALTH = 0x1C,
-    KINDOF_CAN_DETECT_STEALTH = 0x1D,
-    KINDOF_STEALTH_GARRISON = 0x1E,
-    KINDOF_CASH_GENERATOR = 0x1F,
-    KINDOF_AIRFIELD = 0x20,
-    KINDOF_FAKE_CONTAINER = 0x21,
-    KINDOF_DRAWABLE_ONLY = 0x22,
-    KINDOF_REBUILD_HOLE = 0x23,
-    KINDOF_COUNT = 0x24,
 };
 
 enum XferType
@@ -169,4 +127,4 @@ protected:
     AsciiString m_name;
 };
 
-#endif
+#endif // _XFER_H_

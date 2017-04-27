@@ -46,6 +46,7 @@ set(GAMEENGINE_SRC
     game/common/system/gamedebug.cpp
     game/common/system/gamememory.cpp
     game/common/system/gamememoryinit.cpp
+    game/common/system/kindof.cpp
     game/common/system/localfile.cpp
     game/common/system/localfilesystem.cpp
     game/common/system/memblob.cpp

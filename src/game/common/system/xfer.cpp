@@ -29,10 +29,7 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));
 
-    if ( *thing > check ) {
-        check = 13;
-        //Throw some exception here.
-    }
+    ASSERT_THROW_PRINT(*thing > check, 0xD, "Xfer version %d greater than expected, %d.\n", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -193,7 +190,7 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
     uint8_t ver = 1;
     xferVersion(&ver, 1);
 
-    uint16_t count = (uint16_t)thing->capacity();
+    uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
 
     if ( Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC ) {
@@ -201,8 +198,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        ASSERT_PRINT(Get_Mode() == XFER_LOAD, "Xfer mode unknown.\n");
-        ASSERT_PRINT(thing->empty(), "Trying to xfer load to none empty vector.\n");
+        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        ASSERT_THROW_PRINT(thing->size(), 0xF, "Trying to xfer load to none empty vector.\n");
 
         ObjectID val;
 
@@ -226,8 +223,8 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        ASSERT_PRINT(Get_Mode() == XFER_LOAD, "Xfer mode unknown.\n");
-        ASSERT_PRINT(thing->size() == 0, "Trying to xfer load to none empty vector.\n");
+        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        ASSERT_THROW_PRINT(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
 
         ObjectID val;
 
@@ -255,8 +252,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
             xferInt(&(*it));
         }
     } else {
-        ASSERT_PRINT(Get_Mode() == XFER_LOAD, "Xfer mode unknown.\n");
-        ASSERT_PRINT(thing->size() == 0, "Trying to xfer load to none empty vector.\n");
+        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        ASSERT_THROW_PRINT(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
 
         int32_t val;
 
@@ -279,6 +276,41 @@ void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 
 void Xfer::xferKindOf(KindOfType *thing)
 {
+    uint8_t ver = 1;
+    xferVersion(&ver, 1);
+
+    AsciiString kind;
+    char const *kindc;
+
+    switch ( Get_Mode() ) {
+        case XFER_SAVE:
+            if ( *thing >= KINDOF_FIRST || *thing < KINDOF_COUNT ) {
+                kind = BitFlags<KINDOF_COUNT>::s_bitNamesList[*thing];
+            }
+
+            xferAsciiString(&kind);
+
+            break;
+        case XFER_LOAD:
+            xferAsciiString(&kind);
+            kindc = kind.Str();
+
+            for ( int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i ) {
+                if ( strcasecmp(kindc, BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0 ) {
+                    *thing = (KindOfType)i;
+                    break;
+                }
+            }
+
+            break;
+        case XFER_CRC:
+            xferImplementation(thing, sizeof(*thing));
+            break;
+        default:
+            ASSERT_THROW_PRINT(false, 0x8, "Xfer mode unknown.\n");
+            break;
+    }
+
     // TODO, needs KindOf
 }
 
@@ -310,6 +342,5 @@ void Xfer::xferMatrix3D(Matrix3D *thing)
 
 void Xfer::xferMapName(AsciiString *thing)
 {
+    // TODO needs some GameState functions.
 }
-
-

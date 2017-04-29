@@ -310,8 +310,6 @@ void Xfer::xferKindOf(KindOfType *thing)
             ASSERT_THROW_PRINT(false, 0x8, "Xfer mode unknown.\n");
             break;
     }
-
-    // TODO, needs KindOf
 }
 
 void Xfer::xferUpgradeMask(BitFlags<128> *thing)

@@ -33,6 +33,7 @@
 #include "color.h"
 #include "coord.h"
 #include "kindof.h"
+#include "matrix3d.h"
 #include "snapshot.h"
 #include "unicodestring.h"
 #include <list>
@@ -43,8 +44,6 @@ struct RealRange
     float lo;
     float hi;
 };
-
-class Matrix3D;
 
 typedef int ObjectID;
 typedef int DrawableID;

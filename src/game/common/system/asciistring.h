@@ -137,7 +137,7 @@ public:
     void Debug_Ignore_Leaks();
 #endif // GAME_DEBUG
 public:
-    static AsciiString const EmptyString;
+    static AsciiString const s_emptyString;
 
 
 private:

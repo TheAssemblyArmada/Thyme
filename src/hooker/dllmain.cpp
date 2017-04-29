@@ -35,6 +35,7 @@
 #include "copyprotect.h"
 #include "commandline.h"
 #include "commandlist.h"
+#include "filetransfer.h"
 #include "force_nocd.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
@@ -152,6 +153,9 @@ void Setup_Hooks()
 
     // Replace Targa
     TargaImage::Hook_Me();
+
+    // Some file transfer related functions
+    FileTransfer::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

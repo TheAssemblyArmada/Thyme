@@ -67,7 +67,7 @@ AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
         }
     }
 
-    return AsciiString::EmptyString;
+    return AsciiString::s_emptyString;
 }
 
 NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(char const *name)

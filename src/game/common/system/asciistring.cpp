@@ -32,7 +32,7 @@
 #include <cctype>
 #include <cstdio>
 
-AsciiString const AsciiString::EmptyString(nullptr);
+AsciiString const AsciiString::s_emptyString(nullptr);
 
 AsciiString::AsciiString() :
     m_data(nullptr)

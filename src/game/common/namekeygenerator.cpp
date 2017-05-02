@@ -160,3 +160,12 @@ void NameKeyGenerator::Free_Sockets()
         m_sockets[i] = nullptr;
     }
 }
+
+NameKeyType StaticNameKey::Key()
+{
+    if ( m_key == NAMEKEY_INVALID && TheNameKeyGenerator != nullptr ) {
+        m_key = TheNameKeyGenerator->Name_To_Key(m_name);
+    }
+
+    return m_key;
+}

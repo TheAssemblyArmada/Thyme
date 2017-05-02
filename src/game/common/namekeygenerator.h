@@ -92,6 +92,21 @@ private:
     NameKeyType m_nextID;
 };
 
+class StaticNameKey
+{
+public:
+    StaticNameKey(char const *name) : m_key(NAMEKEY_INVALID), m_name(name) {}
+
+    operator NameKeyType() { return Key(); }
+
+    NameKeyType Key();
+    char const *Name() { return m_name; }
+
+private:
+    NameKeyType m_key;
+    char const *m_name;
+};
+
 inline void NameKeyGenerator::Hook_Me()
 {
     Hook_Method((Make_Method_Ptr<AsciiString, NameKeyGenerator, NameKeyType>(0x0047B2F0)), &NameKeyGenerator::Key_To_Name);

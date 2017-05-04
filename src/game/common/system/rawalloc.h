@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _RAWALLOC_H_
-#define _RAWALLOC_H_
+#ifndef RAWALLOC_H
+#define RAWALLOC_H
 
 #include "always.h"
 #include "gamedebug.h"
@@ -98,4 +96,4 @@ inline int Round_Up_4(int number) { return (number + 3) & (~3); }   // For 4byte
 inline int Round_Up_8(int number) { return (number + 7) & (~7); }   // For 8bytes alignment
 inline int Round_Up_Word_Size(int number) { return (number + sizeof(void*) - 1) & (~(sizeof(void*) - 1)); } // For machine wordsize alignment
 
-#endif // _RAWALLOC_H_
+#endif // _RAWALLOC_H

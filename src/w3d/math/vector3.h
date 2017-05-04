@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _VECTOR3_H_
-#define _VECTOR3_H_
+#ifndef VECTOR3_H
+#define VECTOR3_H
 
 #include "always.h"
 #include "gamemath.h"

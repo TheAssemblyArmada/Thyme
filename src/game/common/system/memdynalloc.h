@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MEMDYNALLOC_H_
-#define _MEMDYNALLOC_H_
+#ifndef MEMDYNALLOC_H
+#define MEMDYNALLOC_H
 
 #include "rawalloc.h"
 #include "hooker.h"

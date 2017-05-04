@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _TARGA_H_
-#define _TARGA_H_
+#ifndef TARGA_H
+#define TARGA_H
 
 #include "always.h"
 #include "endiantype.h"
@@ -276,4 +274,4 @@ inline void TargaImage::Extension_To_File(TGA2Extension &extension)
     extension.scan_line = htole32(extension.scan_line);
 }
 
-#endif // _TARGA_H_
+#endif // _TARGA_H

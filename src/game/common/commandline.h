@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _COMMANDLINE_H_
-#define _COMMANDLINE_H_
+#ifndef COMMANDLINE_H
+#define COMMANDLINE_H
 
 #include "always.h"
 #include "hooker.h"
@@ -42,4 +40,4 @@ inline void Hook_Me()
 
 } // namespace CommandLine
 
-#endif // _COMMANDLINE_H_
+#endif // _COMMANDLINE_H

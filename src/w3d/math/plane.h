@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _PLANE_H_
-#define _PLANE_H_
+#ifndef PLANE_H
+#define PLANE_H
 
 #include "vector3.h"
 #include "sphere.h"

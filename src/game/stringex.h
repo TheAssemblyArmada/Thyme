@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _STRINGEX_H_
-#define _STRINGEX_H_
+#ifndef STRINGEX_H
+#define STRINGEX_H
 
 #include <string.h>
 

@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _WIN32BIGFILESYSTEM_H_
-#define _WIN32BIGFILESYSTEM_H_
+#ifndef WIN32BIGFILESYSTEM_H
+#define WIN32BIGFILESYSTEM_H
 
 #include "archivefilesystem.h"
 

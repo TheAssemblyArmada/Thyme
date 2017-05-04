@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FILETRANSFER_H_
-#define _FILETRANSFER_H_
+#ifndef FILETRANSFER_H
+#define FILETRANSFER_H
 
 #include "asciistring.h"
 #include "hooker.h"
@@ -58,4 +56,4 @@ inline void Hook_Me()
 
 }
 
-#endif // _FILETRANSFER_H_
+#endif // _FILETRANSFER_H

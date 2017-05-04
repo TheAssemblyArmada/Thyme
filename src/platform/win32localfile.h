@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _WIN32LOCALFILE_H_
-#define _WIN32LOCALFILE_H_
+#ifndef WIN32LOCALFILE_H
+#define WIN32LOCALFILE_H
 
 #include "localfile.h"
 
@@ -62,4 +60,4 @@ private:
     int FileHandle;
 };
 
-#endif // _WIN32LOCALFILE_H_
+#endif // _WIN32LOCALFILE_H

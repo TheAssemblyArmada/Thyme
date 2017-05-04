@@ -25,12 +25,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _HOOK_SUPPORT_H_
-#define _HOOK_SUPPORT_H_
+#ifndef HOOK_SUPPORT_H
+#define HOOK_SUPPORT_H
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,4 +181,4 @@ __declspec(dllexport) void StopHooking();
 #define REF_DEF(type, name, client) type & name = client;
 #define REF_ARR_DEF(type, name, size, client) RefArrayHelper<type, size> & name = client;
 
-#endif // _HOOK_SUPPORT_H_
+#endif // _HOOK_SUPPORT_H

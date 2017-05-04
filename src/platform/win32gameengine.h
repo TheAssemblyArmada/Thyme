@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _WIN32GAMEENGINE_H_
-#define _WIN32GAMEENGINE_H_
+#ifndef WIN32GAMEENGINE_H
+#define WIN32GAMEENGINE_H
 
 #include "gameengine.h"
 
@@ -62,4 +60,4 @@ private:
     unsigned int PreviousErrorMode;
 };
 
-#endif // _WIN32GAMEENGINE_H_
+#endif // _WIN32GAMEENGINE_H

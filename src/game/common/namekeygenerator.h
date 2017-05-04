@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _NAMEKEYGENERATOR_H_
-#define _NAMEKEYGENERATOR_H_
+#ifndef NAMEKEYGENERATOR_H
+#define NAMEKEYGENERATOR_H
 
 #include "asciistring.h"
 #include "bittype.h"

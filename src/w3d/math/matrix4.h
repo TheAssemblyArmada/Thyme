@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MATRIX4_H_
-#define _MATRIX4_H_
+#ifndef MATRIX4_H
+#define MATRIX4_H
 
 #include "vector4.h"
 #include "vector3.h"

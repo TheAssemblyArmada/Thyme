@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEMEMORY_H_
-#define _GAMEMEMORY_H_
+#ifndef GAMEMEMORY_H
+#define GAMEMEMORY_H
 
 #include "always.h"
 #include "gamedebug.h"
@@ -57,4 +55,4 @@ void Init_Memory_Manager_Pre_Main();
 void Shutdown_Memory_Manager();
 MemoryPool *Create_Named_Pool(char const *name, int size);
 
-#endif // _GAMEMEMORY_H_
+#endif // _GAMEMEMORY_H

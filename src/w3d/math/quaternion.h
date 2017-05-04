@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _QUATERNION_H_
-#define _QUATERNION_H_
+#ifndef QUATERNION_H
+#define QUATERNION_H
 
 #include "vector3.h"
 
@@ -165,4 +163,4 @@ Quaternion Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, S
 void Fast_Slerp(Quaternion &result, const Quaternion &a, const Quaternion &b, float t);
 Matrix3 Build_Matrix3(const Quaternion &quat);
 
-#endif // _QUATERNION_H_
+#endif // _QUATERNION_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FILECLASS_H_
-#define _FILECLASS_H_
+#ifndef FILECLASS_H
+#define FILECLASS_H
 
 #include	"always.h"
 
@@ -68,4 +66,4 @@ public:
     virtual int Get_File_Handle();
 };
 
-#endif // _FILECLASS_H_
+#endif // _FILECLASS_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _BASE_ALWAYS_H_
-#define _BASE_ALWAYS_H_
+#ifndef BASE_ALWAYS_H
+#define BASE_ALWAYS_H
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +111,7 @@
         #if !defined(__stdcall)
             #define __stdcall
         #endif
-        #ifndef __forceinline
+        #if !defined(__forceinline)
             #define __forceinline inline
         #endif
         #define __noinline

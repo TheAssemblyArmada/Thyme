@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MAPUTIL_H_
-#define _MAPUTIL_H_
+#ifndef MAPUTIL_H
+#define MAPUTIL_H
 
 #include "asciistring.h"
 #include "coord.h"

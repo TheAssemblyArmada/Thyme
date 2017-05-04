@@ -25,8 +25,8 @@
 #pragma once
 #endif // COMPILER_MSVC
 
-#ifndef _MINMAX_H_
-#define _MINMAX_H_
+#ifndef MINMAX_H
+#define MINMAX_H
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -118,4 +118,4 @@ T Clamp(T original, T minval, T maxval)
     return original;
 };
 
-#endif // _MINMAX_H_
+#endif // _MINMAX_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _HANDICAP_H_
-#define _HANDICAP_H_
+#ifndef HANDICAP_H
+#define HANDICAP_H
 
 class Dict;
 class ThingTemplate;

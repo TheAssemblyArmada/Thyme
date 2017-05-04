@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _HOOK_CRT_H_
-#define _HOOK_CRT_H_
+#ifndef HOOK_CRT_H
+#define HOOK_CRT_H
 
 #include "hooker.h"
 
@@ -41,4 +39,4 @@
 
 // Define additional unimplemented functions that are used in more than one location
 #define Get_Registry_Language (Make_Function_Ptr<AsciiString>(0x00498E40))
-#endif // _HOOK_CRT_H_
+#endif // _HOOK_CRT_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _RAMFILE_H_
-#define _RAMFILE_H_
+#ifndef RAMFILE_H
+#define RAMFILE_H
 
 #include "file.h"
 
@@ -60,4 +58,4 @@ class RAMFile : public File
         int Size;
 };
 
-#endif // _RAMFILE_H_
+#endif // _RAMFILE_H

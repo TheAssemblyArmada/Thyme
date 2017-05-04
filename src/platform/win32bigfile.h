@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _WIN32BIGFILE_H_
-#define _WIN32BIGFILE_H_
+#ifndef WIN32BIGFILE_H
+#define WIN32BIGFILE_H
 
 #include "archivefile.h"
 
@@ -49,4 +47,4 @@ private:
     AsciiString FilePath;
 };
 
-#endif // _WIN32BIGFILE_H_
+#endif // _WIN32BIGFILE_H

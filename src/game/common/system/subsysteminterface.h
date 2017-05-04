@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _SUBSYSTEMINTERFACE_H_
-#define _SUBSYSTEMINTERFACE_H_
+#ifndef SUBSYSTEMINTERFACE_H
+#define SUBSYSTEMINTERFACE_H
 
 #include "asciistring.h"
 #include <vector>

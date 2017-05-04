@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEMESSAGELIST_H_
-#define _GAMEMESSAGELIST_H_
+#ifndef GAMEMESSAGELIST_H
+#define GAMEMESSAGELIST_H
 
 #include "subsysteminterface.h"
 #include "gamemessage.h"

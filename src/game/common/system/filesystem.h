@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FILESYSTEM_H_
-#define _FILESYSTEM_H_
+#ifndef FILESYSTEM_H
+#define FILESYSTEM_H
 
 #include "subsysteminterface.h"
 #include "file.h"
@@ -69,4 +67,4 @@ inline void FileSystem::Hook_Me()
 
 }
 
-#endif // _FILESYSTEM_H_
+#endif // _FILESYSTEM_H

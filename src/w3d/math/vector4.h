@@ -25,8 +25,8 @@
 #pragma once
 #endif
 
-#ifndef _VECTOR4_H_
-#define _VECTOR4_H_
+#ifndef VECTOR4_H
+#define VECTOR4_H
 
 #include    "always.h"
 #include    "gamemath.h"

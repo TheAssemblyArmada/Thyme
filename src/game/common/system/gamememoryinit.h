@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEMEMORYINIT_H_
-#define _GAMEMEMORYINIT_H_
+#ifndef GAMEMEMORYINIT_H
+#define GAMEMEMORYINIT_H
 
 #include "always.h"
 
@@ -49,4 +47,4 @@ void User_Memory_Adjust_Pool_Size(char const *name, int &initial_alloc, int &ove
 void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params);
 void User_Memory_Init_Pools();
 
-#endif // _GAMEMEMORYINIT_H_
+#endif // GAMEMEMORYINIT_H

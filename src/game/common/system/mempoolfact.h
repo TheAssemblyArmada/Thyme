@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MEMPOOLFACT_H_
-#define _MEMPOOLFACT_H_
+#ifndef MEMPOOLFACT_H
+#define MEMPOOLFACT_H
 
 #include "rawalloc.h"
 #include "hooker.h"

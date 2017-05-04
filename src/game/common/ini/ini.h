@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _INI_H_
-#define _INI_H_
+#ifndef INI_H
+#define INI_H
 
 #include "asciistring.h"
 #include "gamedebug.h"
@@ -265,4 +263,4 @@ inline AsciiString INI::Get_Next_Ascii_String()
     return next;
 }
 
-#endif // _INI_H_
+#endif // _INI_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _ARCHIVEFILESYSTEM_H_
-#define _ARCHIVEFILESYSTEM_H_
+#ifndef ARCHIVEFILESYSTEM_H
+#define ARCHIVEFILESYSTEM_H
 
 #include "subsysteminterface.h"
 #include "hooker.h"
@@ -71,4 +69,4 @@ protected:
     ArchivedDirectoryInfo ArchiveDirInfo;
 };
 
-#endif // _ARCHIVEFILESYSTEM_H_
+#endif // _ARCHIVEFILESYSTEM_H

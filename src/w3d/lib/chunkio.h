@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _CHUNKIO_H_
-#define _CHUNKIO_H_
+#ifndef CHUNKIO_H
+#define CHUNKIO_H
 
 #include "always.h"
 #include "hooker.h"
@@ -231,4 +229,4 @@ inline void ChunkLoadClass::Hook_Me()
     Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass, void*, unsigned int>(0x008A1480), &Read);
 }
 
-#endif // _CHUNKIO_H_
+#endif // _CHUNKIO_H

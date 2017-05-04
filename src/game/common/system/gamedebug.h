@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEDEBUG_H_
-#define _GAMEDEBUG_H_
+#ifndef GAMEDEBUG_H
+#define GAMEDEBUG_H
 
 #include "always.h"
 
@@ -84,4 +82,4 @@ void Debug_Set_Flags(int flags);
 } // extern "C"
 #endif
 
-#endif // _GAMEDEBUG_H_
+#endif // _GAMEDEBUG_H

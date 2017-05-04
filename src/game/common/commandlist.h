@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _COMMANDLIST_H_
-#define _COMMANDLIST_H_
+#ifndef COMMANDLIST_H
+#define COMMANDLIST_H
 
 #include "gamemessagelist.h"
 

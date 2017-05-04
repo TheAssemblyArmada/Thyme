@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _KINDOF_H_
-#define _KINDOF_H_
+#ifndef KINDOF_H
+#define KINDOF_H
 
 #include "always.h"
 

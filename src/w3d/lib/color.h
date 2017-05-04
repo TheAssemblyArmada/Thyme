@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _COLOR_H_
-#define _COLOR_H_
+#ifndef COLOR_H
+#define COLOR_H
 
 #include <cstdint>
 
@@ -62,4 +60,4 @@ class RGBAColorInt
         uint32_t alpha;
 };
 
-#endif // _COLOR_H_
+#endif // _COLOR_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _LOCALFILE_H_
-#define _LOCALFILE_H_
+#ifndef LOCALFILE_H
+#define LOCALFILE_H
 
 #include "always.h"
 #include "file.h"
@@ -41,4 +39,4 @@ protected:
     static int TotalOpen;
 };
 
-#endif // _LOCALFILE_H_
+#endif // _LOCALFILE_H

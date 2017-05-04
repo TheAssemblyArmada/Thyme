@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FFACTORY_H_
-#define _FFACTORY_H_
+#ifndef FFACTORY_H
+#define FFACTORY_H
 
 #include "fileclass.h"
 #include "hooker.h"

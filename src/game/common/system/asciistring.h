@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _ASCIISTRING_H_
-#define _ASCIISTRING_H_
+#ifndef ASCIISTRING_H
+#define ASCIISTRING_H
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Includes
@@ -167,4 +165,4 @@ inline bool operator>(AsciiString const &left, AsciiString const &right) { retur
 inline bool operator>(AsciiString const &left, char const *right) { return left.Compare(right) < 0; }
 inline bool operator>(char const *left, AsciiString const &right) { return right.Compare(left) >= 0; }
 
-#endif // _ASCIISTRING_H_
+#endif // _ASCIISTRING_H

@@ -25,12 +25,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _BASE_COMPILER_H_
-#define _BASE_COMPILER_H_
+#ifndef BASE_COMPILER_H
+#define BASE_COMPILER_H
 
 /*
  * Currently supported defines include:
@@ -407,4 +405,4 @@
 
 #endif // COMPILER_NO_EXCEPTIONS / COMPILER_NO_UNWIND
 
-#endif // _BASE_COMPILER_H_
+#endif // _BASE_COMPILER_H

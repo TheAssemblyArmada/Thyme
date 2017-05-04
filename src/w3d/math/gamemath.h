@@ -26,8 +26,8 @@
 #pragma once
 #endif
 
-#ifndef _GAMEMATH_H_
-#define _GAMEMATH_H_
+#ifndef GAMEMATH_H
+#define GAMEMATH_H
 
 #include "always.h"
 #include "gamedebug.h"

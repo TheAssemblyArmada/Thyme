@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEMESSAGE_H_
-#define _GAMEMESSAGE_H_
+#ifndef GAMEMESSAGE_H
+#define GAMEMESSAGE_H
 
 #include "mempoolobj.h"
 #include "coord.h"

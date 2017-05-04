@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MEMBLOCK_H_
-#define _MEMBLOCK_H_
+#ifndef MEMBLOCK_H
+#define MEMBLOCK_H
 
 #include "gamedebug.h"
 #include "rawalloc.h"
@@ -110,4 +108,4 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(M
     return block;
 }
 
-#endif // _MEMBLOCK_H_
+#endif // _MEMBLOCK_H

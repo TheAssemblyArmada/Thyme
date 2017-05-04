@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMEENGINE_H_
-#define _GAMEENGINE_H_
+#ifndef GAMEENGINE_H
+#define GAMEENGINE_H
 
 #include "subsysteminterface.h"
 
@@ -88,4 +86,4 @@ protected:
     bool Active;
 };
 
-#endif // _GAMEENGINE_H_
+#endif // _GAMEENGINE_H

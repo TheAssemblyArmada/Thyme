@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FILE_H_
-#define _FILE_H_
+#ifndef FILE_H
+#define FILE_H
 
 #include "asciistring.h"
 #include "gamememory.h"
@@ -95,4 +93,4 @@ protected:
     bool DeleteOnClose;
 };
 
-#endif // _FILE_H_
+#endif // _FILE_H

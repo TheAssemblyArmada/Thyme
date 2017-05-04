@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _COPYPROTECT_H_
-#define _COPYPROTECT_H_
+#ifndef COPYPROTECT_H
+#define COPYPROTECT_H
 
 class CopyProtect {
     public:
@@ -42,4 +40,4 @@ class CopyProtect {
 };
 
 
-#endif // _COPYPROTECT_H_
+#endif // COPYPROTECT_H

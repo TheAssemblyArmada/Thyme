@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _CRITSECTION_H_
-#define _CRITSECTION_H_
+#ifndef CRITSECTION_H
+#define CRITSECTION_H
 
 #include "always.h"
 #include "gamedebug.h"
@@ -313,4 +311,4 @@ private:
     long Flag;
 };
 
-#endif // _CRITSECTION_H_
+#endif // _CRITSECTION_H

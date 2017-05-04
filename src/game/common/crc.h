@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _CRC_H_
-#define _CRC_H_
+#ifndef CRC_H
+#define CRC_H
 
 #include "bittype.h"
 
@@ -46,4 +44,4 @@ private:
     uint32_t m_crc;
 };
 
-#endif // _CRC_H_
+#endif // _CRC_H

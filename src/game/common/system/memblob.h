@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MEMBLOB_H_
-#define _MEMBLOB_H_
+#ifndef MEMBLOB_H
+#define MEMBLOB_H
 
 #include "rawalloc.h"
 #include "memblock.h"

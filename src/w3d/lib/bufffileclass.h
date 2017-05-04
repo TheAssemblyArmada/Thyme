@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _BUFFFILECLASS_H_
-#define _BUFFFILECLASS_H_
+#ifndef BUFFFILECLASS_H
+#define BUFFFILECLASS_H
 
 #include	"rawfileclass.h"
 
@@ -56,4 +54,4 @@ private:
     static int DesiredBufferSize;
 };
 
-#endif // _BUFFFILECLASS_H_
+#endif // _BUFFFILECLASS_H

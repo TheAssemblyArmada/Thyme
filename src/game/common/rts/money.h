@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MONEY_H_
-#define _MONEY_H_
+#ifndef MONEY_H
+#define MONEY_H
 
 #include "snapshot.h"
 

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _ARCHIVEFILE_H_
-#define _ARCHIVEFILE_H_
+#ifndef ARCHIVEFILE_H
+#define ARCHIVEFILE_H
 
 #include "asciistring.h"
 #include "file.h"
@@ -80,4 +78,4 @@ protected:
 
 bool Search_String_Matches(AsciiString string, AsciiString search);
 
-#endif // _ARCHIVEFILE_H_
+#endif // _ARCHIVEFILE_H

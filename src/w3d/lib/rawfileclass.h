@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _RAWFILECLASS_H_
-#define _RAWFILECLASS_H_
+#ifndef RAWFILECLASS_H
+#define RAWFILECLASS_H
 
 #include	"fileclass.h"
 
@@ -74,4 +72,4 @@ protected:
     bool m_isAllocated;
 };
 
-#endif // _RAWFILECLASS_H_
+#endif // _RAWFILECLASS_H

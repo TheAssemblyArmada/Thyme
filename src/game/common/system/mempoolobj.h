@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _MEMPOOLOBJ_H_
-#define _MEMPOOLOBJ_H_
+#ifndef MEMPOOLOBJ_H
+#define MEMPOOLOBJ_H
 
 #include "gamedebug.h"
 #include "mempool.h"

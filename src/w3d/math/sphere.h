@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _SPHERE_H_
-#define _SPHERE_H_
+#ifndef SPHERE_H
+#define SPHERE_H
 
 #include "gamemath.h"
 #include "matrix3d.h"

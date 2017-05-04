@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _PLAYERLIST_H_
-#define _PLAYERLIST_H_
+#ifndef PLAYERLIST_H
+#define PLAYERLIST_H
 
 #include "subsysteminterface.h"
 #include "snapshot.h"

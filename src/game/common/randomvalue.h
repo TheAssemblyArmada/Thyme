@@ -22,12 +22,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _RANDOMVALUE_H_
-#define _RANDOMVALUE_H_
+#ifndef RANDOMVALUE_H
+#define RANDOMVALUE_H
 
 #include "bittype.h"
 #include "hooker.h"
@@ -116,4 +114,4 @@ inline void Hook_Me()
 
 } // namespace RandomValue
 
-#endif // _RANDOMVALUE_H_
+#endif // _RANDOMVALUE_H

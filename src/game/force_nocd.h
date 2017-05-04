@@ -21,13 +21,11 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _FORCE_NOCD_H_
-#define _FORCE_NOCD_H_
+#ifndef FORCE_NOCD_H
+#define FORCE_NOCD_H
 
 bool IsFirstCDPresent();        //0x004469C0
 
-#endif // _FORCE_NOCD_H_
+#endif // _FORCE_NOCD_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _SNAPSHOT_H_
-#define _SNAPSHOT_H_
+#ifndef SNAPSHOT_H
+#define SNAPSHOT_H
 
 class Xfer;
 

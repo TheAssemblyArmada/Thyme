@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _W3DFILESYSTEM_H_
-#define _W3DFILESYSTEM_H_
+#ifndef W3DFILESYSTEM_H
+#define W3DFILESYSTEM_H
 
 #include "ffactory.h"
 #include "file.h"
@@ -88,4 +86,4 @@ inline void W3DFileSystem::Hook_Me()
     Hook_Method(Make_Method_Ptr<void, W3DFileSystem, FileClass*>(0x00815370), &Return_File_NV);
 }
 
-#endif // _W3DFILESYSTEM_H_
+#endif // _W3DFILESYSTEM_H

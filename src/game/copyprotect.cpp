@@ -21,7 +21,7 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include    "copyprotect.h"
+#include "copyprotect.h"
 
 bool CopyProtect::isLauncherRunning()
 {

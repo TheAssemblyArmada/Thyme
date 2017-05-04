@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _BITFLAGS_H_
-#define _BITFLAGS_H_
+#ifndef BITFLAGS_H
+#define BITFLAGS_H
 
 #include <bitset>
 
@@ -44,4 +42,4 @@ private:
     std::bitset<bits> m_bits;
 };
 
-#endif // _BITFLAGS_H_
+#endif // _BITFLAGS_H

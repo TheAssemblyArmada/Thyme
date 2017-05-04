@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _RTSUTILS_H_
-#define _RTSUTILS_H_
+#ifndef RTSUTILS_H
+#define RTSUTILS_H
 
 #include "endiantype.h"
 
@@ -59,4 +57,4 @@ struct FourCC
 
 } // namespace rts
 
-#endif // _RTSUTILS_H_
+#endif // _RTSUTILS_H

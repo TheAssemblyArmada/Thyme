@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GAMETEXT_H_
-#define _GAMETEXT_H_
+#ifndef GAMETEXT_H
+#define GAMETEXT_H
 
 #include "asciistring.h"
 #include "file.h"
@@ -156,4 +154,4 @@ inline void GameTextManager::Hook_Me()
     Hook_Function((Make_Function_Ptr<int, void const *, void const *>(0x0041A020)), &Compare_LUT);
 }
 
-#endif // _GAMETEXT_H_
+#endif // _GAMETEXT_H

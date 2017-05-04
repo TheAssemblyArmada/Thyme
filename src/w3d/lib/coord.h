@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _COORD_H_
-#define _COORD_H_
+#ifndef COORD_H
+#define COORD_H
 
 #include <cstdint>
 #include <math.h>
@@ -93,4 +91,4 @@ public:
     ICoord3D hi;
 };
 
-#endif // _COORD_H_
+#endif // _COORD_H

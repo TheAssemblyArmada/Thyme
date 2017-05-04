@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _LOCALFILESYSTEM_H_
-#define _LOCALFILESYSTEM_H_
+#ifndef LOCALFILESYSTEM_H
+#define LOCALFILESYSTEM_H
 
 #include "subsysteminterface.h"
 #include "rtsutils.h"

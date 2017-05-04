@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _GLOBALDATA_H_
-#define _GLOBALDATA_H_
+#ifndef GLOBALDATA_H
+#define GLOBALDATA_H
 
 #include "subsysteminterface.h"
 #include "asciistring.h"

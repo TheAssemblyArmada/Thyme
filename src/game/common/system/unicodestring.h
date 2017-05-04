@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _UNICODESTRING_H_
-#define _UNICODESTRING_H_
+#ifndef UNICODESTRING_H
+#define UNICODESTRING_H
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -154,4 +152,4 @@ inline bool operator>(UnicodeString const &left, UnicodeString const &right) { r
 inline bool operator>(UnicodeString const &left, wchar_t const *right) { return left.Compare(right) > 0; }
 inline bool operator>(wchar_t const *left, UnicodeString const &right) { return right.Compare(left) > 0; }
 
-#endif // _UNICODESTRING_H_
+#endif // _UNICODESTRING_H

@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _XFER_H_
-#define _XFER_H_
+#ifndef XFER_H
+#define XFER_H
 
 #include "asciistring.h"
 #include "bitflags.h"
@@ -126,4 +124,4 @@ protected:
     AsciiString m_name;
 };
 
-#endif // _XFER_H_
+#endif // _XFER_H

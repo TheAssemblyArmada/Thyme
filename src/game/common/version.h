@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _VERSION_H_
-#define _VERSION_H_
+#ifndef VERSION_H
+#define VERSION_H
 
 #include "asciistring.h"
 #include "unicodestring.h"
@@ -75,4 +73,4 @@ class Version
         bool UseFullVersion;
 };
 
-#endif // _VERSION_H_
+#endif // _VERSION_H

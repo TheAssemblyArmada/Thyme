@@ -25,12 +25,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _BASE_PLATFORM_H_
-#define _BASE_PLATFORM_H_
+#ifndef BASE_PLATFORM_H
+#define BASE_PLATFORM_H
 
 /*-----------------------------------------------------------------------------
  * Currently supported platform indentification defines include:
@@ -510,4 +508,4 @@
 #endif
 
 
-#endif // _BASE_PLATFORM_H_
+#endif // _BASE_PLATFORM_H

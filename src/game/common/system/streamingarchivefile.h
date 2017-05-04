@@ -21,12 +21,10 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif // _MSC_VER
 
-#ifndef _STREAMINGARCHIVEFILE_H_
-#define _STREAMINGARCHIVEFILE_H_
+#ifndef STREAMINGARCHIVEFILE_H
+#define STREAMINGARCHIVEFILE_H
 
 #include "ramfile.h"
 #include "gamememory.h"
@@ -62,4 +60,4 @@ class StreamingArchiveFile : public RAMFile
         int FilePos;
 };
 
-#endif // _STREAMINGARCHIVEFILE_H_
+#endif // _STREAMINGARCHIVEFILE_H

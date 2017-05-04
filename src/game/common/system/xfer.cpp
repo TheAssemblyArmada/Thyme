@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "xfer.h"
+#include "gamestate.h"
 #include "hooker.h"
 #include "matrix3d.h"
 
@@ -340,5 +341,13 @@ void Xfer::xferMatrix3D(Matrix3D *thing)
 
 void Xfer::xferMapName(AsciiString *thing)
 {
-    // TODO needs some GameState functions.
+    AsciiString map;
+
+    if ( Get_Mode() == XFER_SAVE ) {
+        map = TheGameState->Real_To_Portable_Map_Path(*thing);
+        xferAsciiString(&map);
+    } else if ( Get_Mode() == XFER_LOAD ) {
+        xferAsciiString(&map);
+        *thing = TheGameState->Portable_To_Real_Map_Path(map);
+    }
 }

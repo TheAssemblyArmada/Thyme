@@ -103,6 +103,7 @@ public:
 
     void Trim();
     void To_Lower();
+    void Fix_Path();
     void Remove_Last_Char();
 
     void Format(char const *format, ...);

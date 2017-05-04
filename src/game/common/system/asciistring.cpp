@@ -318,6 +318,29 @@ void AsciiString::To_Lower()
     Set(buf);
 }
 
+// Sanitize the path to use all forward slashes for cross platform
+// compat. Ideally we call this immediately on reading a path from the OS
+// or config file and everything else assumes it, but until we control all
+// path inputs, we need to do this everywhere paths are compared.
+void AsciiString::Fix_Path()
+{
+    char buf[MAX_FORMAT_BUF_LEN];
+
+    if ( m_data == nullptr ) {
+        return;
+    }
+
+    strcpy(buf, Peek());
+
+    for ( char *c = buf; *c != '\0'; ++c ) {
+        if ( *c == '\\' ) {
+            *c = '/';
+        }
+    }
+
+    Set(buf);
+}
+
 void AsciiString::Remove_Last_Char()
 {
     if ( m_data == nullptr ) {

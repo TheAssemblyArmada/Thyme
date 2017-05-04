@@ -26,6 +26,7 @@ set(GAMEENGINE_SRC
     game/copyprotect.cpp
     game/force_nocd.cpp
     game/main.cpp
+    game/maputil.cpp
     game/client/gametext.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
@@ -47,6 +48,7 @@ set(GAMEENGINE_SRC
     game/common/system/gamedebug.cpp
     game/common/system/gamememory.cpp
     game/common/system/gamememoryinit.cpp
+    game/common/system/gamestate.cpp
     game/common/system/kindof.cpp
     game/common/system/localfile.cpp
     game/common/system/localfilesystem.cpp

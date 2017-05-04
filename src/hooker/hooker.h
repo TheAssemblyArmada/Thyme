@@ -175,8 +175,8 @@ void Hook_Method(T(__thiscall *in)(C *, Types...), T(C:: *out)(Types...))
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 }
 
-void StartHooking();
-void StopHooking();
+__declspec(dllexport) void StartHooking();
+__declspec(dllexport) void StopHooking();
 
 #define REF_DECL(type, name) type & name
 #define REF_ARR_DECL(type, name, size) RefArrayHelper<type, size> & name

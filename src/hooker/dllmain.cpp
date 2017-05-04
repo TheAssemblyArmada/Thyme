@@ -40,6 +40,7 @@
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamedebug.h"
+#include "gamestate.h"
 #include "gametext.h"
 #include "ini.h"
 #include "main.h"
@@ -156,6 +157,8 @@ void Setup_Hooks()
 
     // Some file transfer related functions
     FileTransfer::Hook_Me();
+
+    GameState::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

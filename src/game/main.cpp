@@ -27,6 +27,7 @@
 #include "critsection.h"
 #include "gamememory.h"
 #include "mempool.h"
+#include "minmax.h"
 #include "unicodestring.h"
 #include "version.h"
 #include "gamedebug.h"
@@ -53,6 +54,13 @@ SimpleCriticalSectionClass critSec3;
 #define CreatingWindow (Make_Global<bool>(0x00A27B1C))
 #define SplashImage (Make_Global<HGDIOBJ>(0x00A27B20))
 #define ApplicationHInstance (Make_Global<HINSTANCE>(0x00A27B04))
+
+//
+// New globals for extra features
+//
+int const c_invalidPos = -1000000;
+int g_xPos = c_invalidPos;
+int g_yPos = c_invalidPos;
 
 //
 // Callable functions yet to be implemented
@@ -182,15 +190,31 @@ inline void Set_Working_Directory(void)
 
 //
 // Check the command line for the -win parameter. We need to know it
-// earlier than the full command line parse.
+// earlier than the full command line parse. Also parses any arguments
+// for the position of the window.
 //
 void Check_Windowed(int argc, char *argv[])
 {
+    RECT Res;
+    GetWindowRect(GetDesktopWindow(), &Res);
+
     for ( int i = 0; i < argc && i < 20; ++i ) {
         DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
 
         if ( strcasecmp(argv[i], "-win") == 0 ) {
             GameIsWindowed = true;
+        }
+
+        if ( strcasecmp(argv[i], "-xpos") == 0 ) {
+            ++i;
+            g_xPos = atoi(argv[i]);
+            g_xPos = Clamp(g_xPos, 0, (int)(Res.right - 800));    // Prevent negative values
+        }
+
+        if ( strcasecmp(argv[i], "-ypos") == 0 ) {
+            ++i;
+            g_yPos = atoi(argv[i]);
+            g_yPos = Clamp(g_yPos, 0, (int)(Res.bottom - 600));    // Prevent negative values
         }
     }
 }
@@ -255,6 +279,14 @@ void Create_Window()
     // 0x90080008
     // WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST
 
+    if ( g_xPos == c_invalidPos ) {
+        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - 400;
+    }
+
+    if ( g_yPos == c_invalidPos ) {
+        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - 300;
+    }
+
     HWND app_hwnd = CreateWindowExA(
         0,
         "Game Window",
@@ -262,8 +294,8 @@ void Create_Window()
         is_windowed ?
             WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED :
             WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST,
-        GetSystemMetrics(SM_CXSCREEN) / 2 - 400,
-        GetSystemMetrics(SM_CYSCREEN) / 2 - 300,
+        g_xPos,
+        g_yPos,
         Rect.right - Rect.left,
         Rect.bottom - Rect.top,
         0,

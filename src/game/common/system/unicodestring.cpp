@@ -271,7 +271,7 @@ void UnicodeString::Concat(wchar_t c)
     Concat(str);
 }
 
-void UnicodeString::Concat(wchar_t *s)
+void UnicodeString::Concat(wchar_t const *s)
 {
     size_t len = wcslen(s);
 

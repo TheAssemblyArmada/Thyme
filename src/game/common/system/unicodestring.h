@@ -101,7 +101,7 @@ public:
     void Translate(AsciiString const &string);
 
     void Concat(wchar_t c);
-    void Concat(wchar_t *s);
+    void Concat(wchar_t const *s);
     void Concat(UnicodeString const &string) { Concat(string.Str()); }
 
     void Trim();

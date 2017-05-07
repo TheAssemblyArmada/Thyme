@@ -31,7 +31,6 @@
 #include "unicodestring.h"
 #include "version.h"
 #include "gamedebug.h"
-#include <exception>
 
 //
 // Some Critical Sections to dole out to the functions that can use them.
@@ -290,7 +289,7 @@ void Create_Window()
     HWND app_hwnd = CreateWindowExA(
         0,
         "Game Window",
-        "Command and Conquer Generals Zero Hour Thyme",
+        "Thyme RTS Engine",
         is_windowed ?
             WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED :
             WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST,

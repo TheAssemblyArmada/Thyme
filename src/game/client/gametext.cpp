@@ -755,7 +755,8 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     AsciiString ntitle;
-    UnicodeString wtitle = Fetch("GUI:Command&ConquerGenerals");
+    UnicodeString wtitle = L"Thyme - ";
+    wtitle += Fetch("GUI:Command&ConquerGenerals");
     
     ntitle.Translate(wtitle);
 

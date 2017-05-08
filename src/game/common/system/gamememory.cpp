@@ -64,7 +64,7 @@ void Init_Memory_Manager()
     // 
     TheLinkChecker = 0;
 
-    DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", TheLinkChecker);
+    //DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", TheLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -78,7 +78,7 @@ void Init_Memory_Manager()
         exit(-1);
     }
 
-    DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", TheLinkChecker);
+    //DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", TheLinkChecker);
 
     TheMainInitFlag = true;
 }
@@ -89,8 +89,8 @@ void Init_Memory_Manager_Pre_Main()
     PoolInitRec const *params;
 
     if ( TheMemoryPoolFactory == nullptr ) {
-        DEBUG_INIT(DEBUG_LOG_TO_FILE);
-        DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
+        //DEBUG_INIT(DEBUG_LOG_TO_FILE);
+        //DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         TheMemoryPoolFactory = new MemoryPoolFactory;

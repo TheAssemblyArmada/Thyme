@@ -670,7 +670,7 @@ void User_Memory_Adjust_Pool_Size(char const *name, int &initial_alloc, int &ove
 
 void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params)
 {
-    DEBUG_LOG("Retrieving user DynamicMemoryAllocator parameters.\n");
+    //DEBUG_LOG("Retrieving user DynamicMemoryAllocator parameters.\n");
 
     *count = 7; //Array size UserDMAParameters
     *params = UserDMAParameters;
@@ -678,7 +678,7 @@ void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params)
 
 void User_Memory_Init_Pools()
 {
-    DEBUG_LOG("Initialising user memory pools.\n");
+    //DEBUG_LOG("Initialising user memory pools.\n");
 
     char path[PATH_MAX];
     char pool_name[256];

@@ -60,6 +60,7 @@ SimpleCriticalSectionClass critSec3;
 int const c_invalidPos = -1000000;
 int g_xPos = c_invalidPos;
 int g_yPos = c_invalidPos;
+bool g_noBorder = false;
 
 //
 // Callable functions yet to be implemented
@@ -198,10 +199,14 @@ void Check_Windowed(int argc, char *argv[])
     GetWindowRect(GetDesktopWindow(), &Res);
 
     for ( int i = 0; i < argc && i < 20; ++i ) {
-        DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
+        //DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
 
         if ( strcasecmp(argv[i], "-win") == 0 ) {
             GameIsWindowed = true;
+        }
+
+        if ( strcasecmp(argv[i], "-noBorder") == 0 ) {
+            g_noBorder = true;
         }
 
         if ( strcasecmp(argv[i], "-xpos") == 0 ) {
@@ -256,19 +261,17 @@ void Create_Window()
     Rect.left = 0;
     Rect.top = 0;
 
-    DEBUG_LOG(
-        "Setting up window style of %08x\n", is_windowed ?
-        WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED :
-        WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST
-    );
+    uint32_t style = WS_POPUP | WS_VISIBLE | WS_EX_LAYERED;
 
-    AdjustWindowRect(
-        &Rect,
-        is_windowed ?
-            WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED :
-            WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST,
-        0
-    );
+    if ( is_windowed && !g_noBorder ) {
+        style |= WS_BORDER | WS_EX_LAYOUTRTL;
+    } else {
+        style |= WS_EX_TOPMOST;
+    }
+
+    //DEBUG_LOG("Setting up window style of %08x\n", style);
+
+    AdjustWindowRect(&Rect, style, 0);
 
     CreatingWindow = true;
 
@@ -290,9 +293,7 @@ void Create_Window()
         0,
         "Game Window",
         "Thyme RTS Engine",
-        is_windowed ?
-            WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED :
-            WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST,
+        style,
         g_xPos,
         g_yPos,
         Rect.right - Rect.left,
@@ -333,10 +334,13 @@ void Create_Window()
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
-    DEBUG_LOG("Running main().\n");
+    //DEBUG_LOG("Running main().\n");
+
+#ifdef PLATFORM_WINDOWS
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
     crt_set_se_translator(Exception_Handler_Ptr);
+#endif
 
     // Assign some critical sections for code sensitive to threaded calls.
     UnicodeStringCriticalSection = &critSec1;
@@ -344,7 +348,7 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     MemoryPoolCriticalSection = &critSec3;
 
     // Set working directory to the exe directory.
-    DEBUG_LOG("Setting working directory.\n");
+    //DEBUG_LOG("Setting working directory.\n");
     Set_Working_Directory();
 
     // Check command line for -win
@@ -355,18 +359,18 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     Check_Windowed(argc, argv);
 
     // Create the window
-    DEBUG_LOG("Creating Window.\n");
+    //DEBUG_LOG("Creating Window.\n");
     Create_Window();
 
-    DEBUG_LOG("Initialising memory manager.\n");
+    //DEBUG_LOG("Initialising memory manager.\n");
     Init_Memory_Manager();
 
     // Use of some of the version strings to use the git commit and branch stuff.
-    DEBUG_LOG("Initialising Version manager.\n");
+    //DEBUG_LOG("Initialising Version manager.\n");
     TheVersion = new Version;
     TheVersion->Set_Version(
-        1,                          // Major
-        4,                          // Minor
+        0,                          // Major
+        1,                          // Minor
         0,                          // Patch
         THYME_COMMIT_COUNT,         // Internal build number
         THYME_BRANCH,               // Git branch, was "location" in original build system
@@ -374,6 +378,14 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
         __TIME__,                   // Build time
         __DATE__                    // Build date
     );
+
+    // Make pretty log header for debug logging builds.
+    DEBUG_LOG("================================================================================\n");
+    DEBUG_LOG("Thyme Version: %s\n", TheVersion->Get_Ascii_Version().Str());
+    DEBUG_LOG("Build date: %s\n", TheVersion->Get_Ascii_Build_Time().Str());
+    DEBUG_LOG("Build branch: %s\n", TheVersion->Get_Ascii_Branch().Str());
+    DEBUG_LOG("Build commit: %s\n", TheVersion->Get_Ascii_Commit_Hash().Str());
+    DEBUG_LOG("================================================================================\n");
 
     DEBUG_LOG("About to run Game_Main\n");
     Game_Main(argc, argv);

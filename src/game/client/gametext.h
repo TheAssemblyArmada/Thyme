@@ -85,8 +85,8 @@ class GameTextInterface : public SubsystemInterface
 public:
     virtual ~GameTextInterface() {}
 
-    virtual UnicodeString Fetch(const char *args, bool *success) = 0;
-    virtual UnicodeString Fetch(AsciiString args, bool *success) = 0;
+    virtual UnicodeString Fetch(const char *args, bool *success = nullptr) = 0;
+    virtual UnicodeString Fetch(AsciiString args, bool *success = nullptr) = 0;
     virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label) = 0;
     virtual void Init_Map_String_File(AsciiString const &filename) = 0;
     virtual void Deinit() = 0;
@@ -147,6 +147,8 @@ private:
     int m_mapTextCount;
     std::vector<AsciiString> m_stringVector;
 };
+
+#define TheGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
 
 inline void GameTextManager::Hook_Me()
 {

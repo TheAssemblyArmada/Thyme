@@ -187,6 +187,13 @@
     #endif
  
 
+// Clang
+#elif defined(__clang__)
+#define COMPILER_CLANG
+#define COMPILER_VERSION __clang__
+#define COMPILER_NAME "Clang"
+
+
 // GCC (a.k.a. GNUC)
 #elif defined(__GNUC__) // GCC compilers exist for many platforms.
     #define COMPILER_GNUC
@@ -238,13 +245,6 @@
     #define COMPILER_WATCOM
     #define COMPILER_VERSION __WATCOMC__
     #define COMPILER_NAME "Watcom C++"
-
-
-// Clang
-#elif defined(__clang__)
-    #define COMPILER_CLANG
-    #define COMPILER_VERSION __clang__
-    #define COMPILER_NAME "Clang"
 
 
  // Kai C++

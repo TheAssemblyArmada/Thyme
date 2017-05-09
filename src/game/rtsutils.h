@@ -30,6 +30,20 @@
 
 namespace rts {
 
+// memset, but for patterns larger than a byte.
+template<typename T>
+void tmemset(void *dst, T value, size_t size)
+{
+    size_t i;
+    for ( i = 0; i < (size & (~(sizeof(value) - 1))); i += 8 ) {
+        memcpy(((char*)dest) + i, &value, sizeof(value));
+    }
+
+    for ( ; i < size; i++ ) {
+        ((char*)dest)[i] = ((char*)&value)[i & (sizeof(value) - 1)];
+    }
+}
+
 // Less than comparator for STL containers.
 // Use only for string classes.
 template<typename T>

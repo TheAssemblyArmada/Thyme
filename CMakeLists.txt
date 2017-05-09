@@ -3,6 +3,11 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
+if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    message(STATUS "No build type selected, default to Debug")
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 if(MSVC)
     set(MSVC_INCREMENTAL_DEFAULT ON)
 endif()

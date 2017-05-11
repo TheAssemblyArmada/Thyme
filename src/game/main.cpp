@@ -25,6 +25,7 @@
 #include "hooker.h"
 #include "hookcrt.h"
 #include "critsection.h"
+#include "gamemain.h"
 #include "gamememory.h"
 #include "mempool.h"
 #include "minmax.h"
@@ -61,11 +62,6 @@ int const c_invalidPos = -1000000;
 int g_xPos = c_invalidPos;
 int g_yPos = c_invalidPos;
 bool g_noBorder = false;
-
-//
-// Callable functions yet to be implemented
-//
-#define Game_Main(x, y) Call_Function<void, int, char**>(0x00413840, x, y)
 
 #ifdef PLATFORM_WINDOWS
 // Taken from http://alter.org.ua/docs/win/args/

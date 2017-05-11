@@ -27,6 +27,8 @@
 #include <mmsystem.h>
 #endif
 
+//GameEngine *g_theGameEngine = nullptr;
+
 GameEngine::GameEngine() :
     MaxFPS(0),
     Quitting(false),

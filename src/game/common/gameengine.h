@@ -27,6 +27,7 @@
 #define GAMEENGINE_H
 
 #include "subsysteminterface.h"
+#include "hooker.h"
 
 class ArchiveFileSystem;
 class AudioManager;
@@ -85,5 +86,8 @@ protected:
     bool Quitting;
     bool Active;
 };
+
+#define g_theGameEngine Make_Global<GameEngine*>(0x00A29B80)
+//extern GameEngine *g_theGameEngine;
 
 #endif // _GAMEENGINE_H

@@ -36,11 +36,11 @@ void tmemset(void *dst, T value, size_t size)
 {
     size_t i;
     for ( i = 0; i < (size & (~(sizeof(value) - 1))); i += 8 ) {
-        memcpy(((char*)dest) + i, &value, sizeof(value));
+        memcpy(((char*)dst) + i, &value, sizeof(value));
     }
 
     for ( ; i < size; i++ ) {
-        ((char*)dest)[i] = ((char*)&value)[i & (sizeof(value) - 1)];
+        ((char*)dst)[i] = ((char*)&value)[i & (sizeof(value) - 1)];
     }
 }
 

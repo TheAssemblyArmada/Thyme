@@ -70,9 +70,10 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
     }
 
     // Read and check Big file FourCC, make sure we opened the right thing.
+    // BIGF is used in Generals games, BIG4 is used in BFME games.
     file->Read(&idbuff, sizeof(idbuff));
 
-    if ( idbuff != FourCC<'B', 'I', 'G', 'F'>::value ) {
+    if ( idbuff != FourCC<'B', 'I', 'G', 'F'>::value && idbuff != FourCC<'B', 'I', 'G', '4'>::value ) {
         DEBUG_LOG("Opened file '%s' does not have correct Big File FourCC, closing.\n", filename);
         file->Close();
 

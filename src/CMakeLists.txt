@@ -1,5 +1,12 @@
 # Add platform libraries needed for the build
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    find_package(DirectX)
+    
+    if(DirectX_D3D8_INCLUDE_FOUND)
+        message("Located Direct3D8 headers.")
+        set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
+    endif()
+    
     set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm)
 else()
     #No other platforms yet.
@@ -18,6 +25,7 @@ set(GAMEENGINE_INCLUDES
     platform
     w3d/lib
     w3d/math
+    w3d/renderer
 )
 
 set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp)
@@ -85,9 +93,10 @@ set(GAMEENGINE_SRC
     w3d/math/matrix3d.cpp
     w3d/math/matrix4.cpp
     w3d/math/quaternion.cpp
+    w3d/renderer/dx8wrapper.cpp
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
-target_include_directories(thyme BEFORE PUBLIC libs/stlport hooker ${GAMEENGINE_INCLUDES})
+target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
 
 target_link_libraries(thyme ${PLATFORM_LIBS})

@@ -27,6 +27,7 @@
 #define SUBSYSTEMINTERFACE_H
 
 #include "asciistring.h"
+#include "hooker.h"
 #include <vector>
 
 class Xfer;
@@ -34,7 +35,7 @@ class Xfer;
 class SubsystemInterface
 {
     public:
-        SubsystemInterface() : SubsystemName() {}
+        SubsystemInterface() : m_subsystemName() {}
 
         virtual ~SubsystemInterface() {}
         virtual void Init() = 0;
@@ -46,22 +47,25 @@ class SubsystemInterface
         void Set_Name(AsciiString name);    // Needs confirming.
 
     private:
-        AsciiString SubsystemName;     // Needs confirming.
+        AsciiString m_subsystemName;     // Needs confirming.
 };
 
 class SubsystemInterfaceList
 {
     public:
-        SubsystemInterfaceList() : Subsystems(), MoreSubsystems() {}
+        SubsystemInterfaceList() : m_subsystems(), m_unksubsystems() {}
 
-        void Init_Subsystem(SubsystemInterface *sys, char const *path1, char const *path2, char const *dirpath, Xfer *xfer, AsciiString sys_name);
+        void Init_Subsystem(SubsystemInterface *sys, char const *default_ini_path, char const *ini_path, char const *dir_path, Xfer *xfer, AsciiString sys_name);
         void Post_Process_Load_All();
         void Reset_All();
         void Shutdown_All();
 
     private:
-        std::vector<SubsystemInterface *> Subsystems;
-        std::vector<SubsystemInterface *> MoreSubsystems;   // Needs confirming.
+        std::vector<SubsystemInterface *> m_subsystems;
+        std::vector<SubsystemInterface *> m_unksubsystems;   // Needs confirming.
 };
+
+#define g_theSubsystemList (Make_Global<SubsystemInterfaceList*>(0x00A29B84))
+//extern SubsystemInterfaceList *g_theSubsystemList;
 
 #endif // _SUBSYSTEMINTERFACEH_

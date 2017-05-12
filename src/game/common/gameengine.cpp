@@ -22,6 +22,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "gameengine.h"
+#include "commandlist.h"
+#include "filesystem.h"
+#include "ini.h"
+#include "namekeygenerator.h"
+#include "randomvalue.h"
+#include "subsysteminterface.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
@@ -56,8 +62,18 @@ void GameEngine::Update()
 {
 }
 
-void GameEngine::Init(int argc, char ** argv)
+void GameEngine::Init(int argc, char **argv)
 {
+    INI ini;
+
+    g_theSubsystemList = new SubsystemInterfaceList;
+    Init_Random();
+    g_theFileSystem = Create_File_System();
+    g_theNameKeyGenerator = new NameKeyGenerator;
+    g_theNameKeyGenerator->Init();
+    g_theCommandList = new CommandList;
+    g_theCommandList->Init();
+    //TODO this is a WIP
 }
 
 void GameEngine::Execute()

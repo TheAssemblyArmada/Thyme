@@ -33,9 +33,9 @@
 #include <map>
 
 // Part of some static class?
-#define g_waypoints Make_Global<WaypointMap*>(0x00945AD4)
-#define g_keyInitialCameraPosition Make_Global<StaticNameKey>(0x00A3A880)
-#define TheMapCache Make_Global<MapCache*>(0x00A2B974)
+#define g_waypoints (Make_Global<WaypointMap*>(0x00945AD4))
+#define g_keyInitialCameraPosition (Make_Global<StaticNameKey>(0x00A3A880))
+#define TheMapCache (Make_Global<MapCache*>(0x00A2B974))
 
 class WaypointMap : public std::map<AsciiString, Coord3D>
 {

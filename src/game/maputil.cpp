@@ -36,7 +36,7 @@ void WaypointMap::Update()
 {
     if ( g_waypoints != nullptr ) {
         clear();
-        AsciiString key_name = TheNameKeyGenerator->Key_To_Name(g_keyInitialCameraPosition);
+        AsciiString key_name = g_theNameKeyGenerator->Key_To_Name(g_keyInitialCameraPosition);
         auto it = g_waypoints->find(key_name);
 
         if ( it != g_waypoints->end() ) {

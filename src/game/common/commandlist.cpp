@@ -24,6 +24,8 @@
 #include "commandlist.h"
 #include "gamemessage.h"
 
+//CommandList *g_theCommandList = nullptr;
+
 void CommandList::Destroy_All_Messages()
 {
     GameMessage *next = nullptr;

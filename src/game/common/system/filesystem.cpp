@@ -73,7 +73,7 @@ File *FileSystem::Open(char const *filename, int mode)
 
 bool FileSystem::Does_File_Exist(char const *filename)
 {
-    NameKeyType name_id = TheNameKeyGenerator->Name_To_Lower_Case_Key(filename);
+    NameKeyType name_id = g_theNameKeyGenerator->Name_To_Lower_Case_Key(filename);
 
     auto it = m_availableFiles.find(name_id);
 

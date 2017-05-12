@@ -43,6 +43,9 @@ private:
     void Append_Message_List(GameMessage *list);
 };
 
+#define g_theCommandList (Make_Global<CommandList *>(0x00A29B78))
+//extern CommandList *g_theCommandList;
+
 inline void CommandList::Hook_Me()
 {
     // This one actually replaces Reset as it is just inlined Destroy_All_Messages

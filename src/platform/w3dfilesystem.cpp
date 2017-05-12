@@ -158,7 +158,7 @@ char const *GameFileClass::Set_Name(char const *filename)
         } 
     }
 
-    m_fileExists = TheFileSystem->Does_File_Exist(m_filePath);
+    m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
 
     if ( !m_fileExists ) {
         switch ( file_type ) {
@@ -176,7 +176,7 @@ char const *GameFileClass::Set_Name(char const *filename)
                 break;
         }
 
-        m_fileExists = TheFileSystem->Does_File_Exist(m_filePath);
+        m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
     if ( !m_fileExists ) {
@@ -191,7 +191,7 @@ char const *GameFileClass::Set_Name(char const *filename)
                 break;
         }
 
-        m_fileExists = TheFileSystem->Does_File_Exist(m_filePath);
+        m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
     if ( !m_fileExists && TheWriteableGlobalData != nullptr ) {
@@ -209,7 +209,7 @@ char const *GameFileClass::Set_Name(char const *filename)
                 break;
         }
 
-        m_fileExists = TheFileSystem->Does_File_Exist(m_filePath);
+        m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
     if ( !m_fileExists && TheWriteableGlobalData != nullptr ) {
@@ -224,7 +224,7 @@ char const *GameFileClass::Set_Name(char const *filename)
                 break;
         }
 
-        m_fileExists = TheFileSystem->Does_File_Exist(m_filePath);
+        m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
     return m_filename;
@@ -267,7 +267,7 @@ bool GameFileClass::Open(int rights)
         return false;
     }
 
-    m_theFile = TheFileSystem->Open(m_filePath, File::READ | File::BINARY);
+    m_theFile = g_theFileSystem->Open(m_filePath, File::READ | File::BINARY);
 
     return m_theFile != nullptr;
 }

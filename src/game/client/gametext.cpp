@@ -335,7 +335,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 // Get the count of strings in a str file.
 bool GameTextManager::Get_String_Count(char const *filename, int &count)
 {
-    File *file = TheFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
     count = 0;
 
     if ( file == nullptr ) {
@@ -367,7 +367,7 @@ bool GameTextManager::Get_CSF_Info(char const *filename)
 {
     static_assert(sizeof(CSFHeader) == 24, "CSFHeader struct not expected size.");
     CSFHeader header;
-    File *file = TheFileSystem->Open(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
 
     if ( file == nullptr || file->Read(&header, sizeof(header)) != sizeof(header) || header.id != FourCC<' ', 'F', 'S', 'C'>::value ) {
         return false;
@@ -390,7 +390,7 @@ bool GameTextManager::Get_CSF_Info(char const *filename)
 bool GameTextManager::Parse_String_File(char const *filename)
 {
     DEBUG_LOG("Parsing string file '%s'.\n", filename);
-    File *file = TheFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
 
     if ( file == nullptr ) {
         return false;
@@ -478,7 +478,7 @@ bool GameTextManager::Parse_CSF_File(char const *filename)
 {
     DEBUG_LOG("Parsing CSF file '%s'.\n", filename);
     CSFHeader header;
-    File *file = TheFileSystem->Open(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
 
     if ( file == nullptr || file->Read(&header, sizeof(header)) != sizeof(header) ) {
         return false;
@@ -581,7 +581,7 @@ bool GameTextManager::Parse_CSF_File(char const *filename)
 bool GameTextManager::Parse_Map_String_File(char const *filename)
 {
     DEBUG_LOG("Parsing map string file '%s'.\n", filename);
-    File *file = TheFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
 
     if ( file == nullptr ) {
         return false;

@@ -41,7 +41,7 @@ StreamingArchiveFile::~StreamingArchiveFile()
 
 bool StreamingArchiveFile::Open(char const *filename, int mode)
 {
-    File *basefile = TheFileSystem->Open(filename, mode);
+    File *basefile = g_theFileSystem->Open(filename, mode);
 
     if ( basefile == nullptr ) {
         return false;

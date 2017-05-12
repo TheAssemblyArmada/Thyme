@@ -24,7 +24,8 @@
 #include "namekeygenerator.h"
 #include "gamedebug.h"
 
-// Initialise object pool resources for Bucket class
+//NameKeyGenerator *g_theNameKeyGenerator = nullptr;
+
 NameKeyGenerator::NameKeyGenerator() :
     m_nextID(NAMEKEY_INVALID)
 {
@@ -138,7 +139,7 @@ NameKeyType NameKeyGenerator::Name_To_Key(char const *name)
 
 void NameKeyGenerator::Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata)
 {
-    *static_cast<NameKeyType*>(store) = TheNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
+    *static_cast<NameKeyType*>(store) = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
 }
 
 void NameKeyGenerator::Free_Sockets()
@@ -163,8 +164,8 @@ void NameKeyGenerator::Free_Sockets()
 
 NameKeyType StaticNameKey::Key()
 {
-    if ( m_key == NAMEKEY_INVALID && TheNameKeyGenerator != nullptr ) {
-        m_key = TheNameKeyGenerator->Name_To_Key(m_name);
+    if ( m_key == NAMEKEY_INVALID && g_theNameKeyGenerator != nullptr ) {
+        m_key = g_theNameKeyGenerator->Name_To_Key(m_name);
     }
 
     return m_key;

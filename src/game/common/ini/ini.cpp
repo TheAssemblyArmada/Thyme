@@ -223,7 +223,7 @@ void INI::Prep_File(AsciiString filename, INILoadType type)
         filename.Str()
     );
 
-    m_backingFile = TheFileSystem->Open(filename.Str(), File::READ);
+    m_backingFile = g_theFileSystem->Open(filename.Str(), File::READ);
 
     ASSERT_THROW_PRINT(
         m_backingFile != nullptr,

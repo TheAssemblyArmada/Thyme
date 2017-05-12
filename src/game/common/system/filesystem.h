@@ -33,7 +33,7 @@
 #include <set>
 #include <map>
 
-#define TheFileSystem (Make_Global<FileSystem*>(0x00A2B670))
+#define g_theFileSystem (Make_Global<FileSystem*>(0x00A2B670))
 
 class FileSystem : public SubsystemInterface
 {

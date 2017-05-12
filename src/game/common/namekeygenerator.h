@@ -34,8 +34,6 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
-#define TheNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
-
 enum NameKeyType : int32_t
 {
     NAMEKEY_INVALID = 0,
@@ -104,6 +102,9 @@ private:
     NameKeyType m_key;
     char const *m_name;
 };
+
+#define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
+//extern NameKeyGenerator *g_theNameKeyGenerator;
 
 inline void NameKeyGenerator::Hook_Me()
 {

@@ -22,54 +22,63 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "subsysteminterface.h"
+#include "ini.h"
+#include "xfer.h"
+
+//SubsystemInterfaceList *g_theSubsystemList = nullptr;
 
 ////////////
 // Interface
 ////////////
 void SubsystemInterface::Set_Name(AsciiString name)
 {
-    SubsystemName = name;
+    m_subsystemName = name;
 }
 
 /////////////////
 // Interface List
 /////////////////
-void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, char const *path1, char const *path2, char const *dirpath, Xfer *xfer, AsciiString sys_name)
+void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, char const *default_ini_path, char const *ini_path, char const *dir_path, Xfer *xfer, AsciiString sys_name)
 {
-    // TODO, requires INI
+    INI ini;
+
+    sys->Set_Name(sys_name);
+    sys->Init();
+
+    if ( default_ini_path != nullptr ) {
+        ini.Load(default_ini_path, INI_LOAD_OVERWRITE, xfer);
+    }
+
+    if ( ini_path != nullptr ) {
+        ini.Load(ini_path, INI_LOAD_OVERWRITE, xfer);
+    }
+
+    if ( dir_path != nullptr ) {
+        ini.Load_Directory(dir_path, true, INI_LOAD_OVERWRITE, xfer);
+    }
+
+    m_subsystems.push_back(sys);
 }
 
 void SubsystemInterfaceList::Post_Process_Load_All()
 {
-    for (
-        std::vector<SubsystemInterface*>::iterator it = Subsystems.begin();
-        it != Subsystems.end();
-        ++it
-    ) {
+    for ( auto it = m_subsystems.begin(); it != m_subsystems.end(); ++it ) {
         (*it)->PostProcessLoad();
     }
 }
 
 void SubsystemInterfaceList::Reset_All()
 {
-    for (
-        std::vector<SubsystemInterface*>::iterator it = Subsystems.begin();
-        it != Subsystems.end();
-        ++it
-    ) {
+    for ( auto it = m_subsystems.begin(); it != m_subsystems.end(); ++it ) {
         (*it)->Reset();
     }
 }
 
 void SubsystemInterfaceList::Shutdown_All()
 {
-    for (
-        std::vector<SubsystemInterface*>::iterator it = Subsystems.end();
-        it != Subsystems.begin();
-        --it
-    ) {
+    for ( auto it = m_subsystems.end(); it != m_subsystems.begin(); --it ) {
         (*it)->~SubsystemInterface();
     }
 
-    Subsystems.erase(Subsystems.begin(), Subsystems.end());
+    m_subsystems.erase(m_subsystems.begin(), m_subsystems.end());
 }

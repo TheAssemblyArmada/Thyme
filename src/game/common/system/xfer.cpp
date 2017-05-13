@@ -26,6 +26,11 @@
 #include "hooker.h"
 #include "matrix3d.h"
 
+void Xfer::Open(AsciiString filename)
+{
+    m_filename = filename;
+}
+
 void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));

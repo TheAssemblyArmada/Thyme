@@ -71,6 +71,7 @@ set(GAMEENGINE_SRC
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
+    game/common/system/xfercrc.cpp
     game/common/rts/handicap.cpp
     game/common/rts/money.cpp
     game/common/rts/player.cpp

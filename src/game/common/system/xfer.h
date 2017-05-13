@@ -63,7 +63,7 @@ enum XferType
 class Xfer
 {
 public:
-    Xfer() : m_options(0), m_type(XFER_INVALID), m_name() {}
+    Xfer() : m_options(0), m_type(XFER_INVALID), m_filename() {}
     virtual ~Xfer() {}
 
     virtual XferType Get_Mode() { return m_type; }
@@ -71,11 +71,11 @@ public:
     virtual void Clear_Options(unsigned int options) { m_options &= ~options; }
     virtual unsigned int Get_Options(void) { return m_options; }
 
-    virtual void Open(AsciiString filename) = 0;
+    virtual void Open(AsciiString filename);
     virtual void Close() = 0;
     virtual int Begin_Block() = 0;
-    virtual int End_Block() = 0;
-    virtual int Skip(int offset) = 0;
+    virtual void End_Block() = 0;
+    virtual void Skip(int offset) = 0;
 
     virtual void xferSnapshot(SnapShot *thing) = 0;
     virtual void xferVersion(uint8_t *thing, uint8_t check);
@@ -121,7 +121,7 @@ public:
 protected:
     unsigned int m_options;
     XferType m_type;
-    AsciiString m_name;
+    AsciiString m_filename;
 };
 
 #endif // _XFER_H

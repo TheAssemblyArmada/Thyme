@@ -40,32 +40,32 @@ FileSystem::~FileSystem()
 
 void FileSystem::Init()
 {
-    TheLocalFileSystem->Init();
-    TheArchiveFileSystem->Init();
+    g_theLocalFileSystem->Init();
+    g_theArchiveFileSystem->Init();
 }
 
 void FileSystem::Reset()
 {
-    TheLocalFileSystem->Reset();
-    TheArchiveFileSystem->Reset();
+    g_theLocalFileSystem->Reset();
+    g_theArchiveFileSystem->Reset();
 }
 
 void FileSystem::Update()
 {
-    TheLocalFileSystem->Update();
-    TheArchiveFileSystem->Update();
+    g_theLocalFileSystem->Update();
+    g_theArchiveFileSystem->Update();
 }
 
 File *FileSystem::Open(char const *filename, int mode)
 {
     File *file = nullptr;
 
-    if ( TheLocalFileSystem != nullptr ) {
-        file = TheLocalFileSystem->Open_File(filename, mode);
+    if ( g_theLocalFileSystem != nullptr ) {
+        file = g_theLocalFileSystem->Open_File(filename, mode);
     }
 
-    if ( file == nullptr && TheArchiveFileSystem != nullptr ) {
-        file = TheArchiveFileSystem->Open_File(filename, 0);
+    if ( file == nullptr && g_theArchiveFileSystem != nullptr ) {
+        file = g_theArchiveFileSystem->Open_File(filename, 0);
     }
 
     return file;
@@ -81,13 +81,13 @@ bool FileSystem::Does_File_Exist(char const *filename)
         return it->second;
     }
 
-    if ( TheLocalFileSystem->Does_File_Exist(filename) ) {
+    if ( g_theLocalFileSystem->Does_File_Exist(filename) ) {
         m_availableFiles[name_id] = true;
 
         return true;
     }
 
-    if ( TheArchiveFileSystem->Does_File_Exist(filename) ) {
+    if ( g_theArchiveFileSystem->Does_File_Exist(filename) ) {
         m_availableFiles[name_id] = true;
 
         return true;
@@ -100,17 +100,17 @@ bool FileSystem::Does_File_Exist(char const *filename)
 
 void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
 {
-    TheLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
-    TheArchiveFileSystem->Get_File_List_From_Dir("", "", filter, filelist, search_subdirs);
+    g_theLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
+    g_theArchiveFileSystem->Get_File_List_From_Dir("", "", filter, filelist, search_subdirs);
 }
 
 bool FileSystem::Create_Dir(AsciiString name)
 {
-    if ( TheLocalFileSystem == nullptr ) {
+    if ( g_theLocalFileSystem == nullptr ) {
         return false;
     }
 
-    return TheLocalFileSystem->Create_Directory(name);
+    return g_theLocalFileSystem->Create_Directory(name);
 }
 
 bool FileSystem::Are_Music_Files_On_CD()

@@ -48,6 +48,7 @@
 #include "randomvalue.h"
 #include "targa.h"
 #include "w3dfilesystem.h"
+#include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include <windows.h>
@@ -159,6 +160,8 @@ void Setup_Hooks()
     FileTransfer::Hook_Me();
 
     GameState::Hook_Me();
+
+    //WeaponBonusSet::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

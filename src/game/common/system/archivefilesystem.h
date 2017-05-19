@@ -36,7 +36,7 @@ class File;
 class ArchiveFile;
 struct FileInfo;
 
-#define TheArchiveFileSystem (Make_Global<ArchiveFileSystem*>(0x00A2BA00))
+#define g_theArchiveFileSystem (Make_Global<ArchiveFileSystem*>(0x00A2BA00))
 
 struct ArchivedDirectoryInfo
 {

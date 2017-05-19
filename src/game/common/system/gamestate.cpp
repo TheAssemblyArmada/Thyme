@@ -49,7 +49,7 @@ void GameState::Xfer_Snapshot(Xfer *xfer)
 
 AsciiString GameState::Get_Save_Dir()
 {
-    AsciiString ret = TheWriteableGlobalData->m_userDataDirectory;
+    AsciiString ret = g_theWriteableGlobalData->m_userDataDirectory;
     ret += "Save/";
 
     return ret;

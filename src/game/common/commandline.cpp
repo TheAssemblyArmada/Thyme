@@ -29,7 +29,7 @@
 #include <cstring>
 #include <sys/stat.h>
 
-typedef int(*cmdparse_t)(char const **, int);
+typedef int(*cmdparse_t)(char **, int);
 
 struct CmdParseStruct
 {
@@ -37,28 +37,28 @@ struct CmdParseStruct
     cmdparse_t handler;
 };
 
-int Parse_Win(char const **argv, int argc)
+int Parse_Win(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_windowed = true;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_windowed = true;
     }
 
     return 1;
 }
 
-int Parse_Full_Screen(char const **argv, int argc)
+int Parse_Full_Screen(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_windowed = false;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_windowed = false;
     }
 
     return 1;
 }
 
-int Parse_Full_Version(char const **argv, int argc)
+int Parse_Full_Version(char **argv, int argc)
 {
-    if ( TheVersion != nullptr && argc > 1 ) {
-        TheVersion->Set_Use_Full_Version(atoi(argv[1]) != 0);
+    if ( g_theVersion != nullptr && argc > 1 ) {
+        g_theVersion->Set_Use_Full_Version(atoi(argv[1]) != 0);
 
         return 2;
     }
@@ -66,10 +66,10 @@ int Parse_Full_Version(char const **argv, int argc)
     return 1;
 }
 
-int Parse_XRes(char const **argv, int argc)
+int Parse_XRes(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr && argc > 1 ) {
-        TheWriteableGlobalData->m_xResolution = atoi(argv[1]);
+    if ( g_theWriteableGlobalData != nullptr && argc > 1 ) {
+        g_theWriteableGlobalData->m_xResolution = atoi(argv[1]);
 
         return 2;
     }
@@ -77,10 +77,10 @@ int Parse_XRes(char const **argv, int argc)
     return 1;
 }
 
-int Parse_YRes(char const **argv, int argc)
+int Parse_YRes(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr && argc > 1 ) {
-        TheWriteableGlobalData->m_yResolution = atoi(argv[1]);
+    if ( g_theWriteableGlobalData != nullptr && argc > 1 ) {
+        g_theWriteableGlobalData->m_yResolution = atoi(argv[1]);
 
         return 2;
     }
@@ -88,60 +88,60 @@ int Parse_YRes(char const **argv, int argc)
     return 1;
 }
 
-int Parse_Script_Debug(char const **argv, int argc)
+int Parse_Script_Debug(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_scriptDebug = true;
-        TheWriteableGlobalData->m_winCursors = true;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_scriptDebug = true;
+        g_theWriteableGlobalData->m_winCursors = true;
     }
 
     return 1;
 }
 
-int Parse_Particle_Edit(char const **argv, int argc)
+int Parse_Particle_Edit(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_particleEdit = true;
-        TheWriteableGlobalData->m_winCursors = true;
-        TheWriteableGlobalData->m_windowed = true;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_particleEdit = true;
+        g_theWriteableGlobalData->m_winCursors = true;
+        g_theWriteableGlobalData->m_windowed = true;
     }
 
     return 1;
 }
 
-int Parse_No_Shell_Map(char const **argv, int argc)
+int Parse_No_Shell_Map(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_shellMapOn = false;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_shellMapOn = false;
     }
 
     return 1;
 }
 
-int Parse_No_Shaders(char const **argv, int argc)
+int Parse_No_Shaders(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_chipsetType = 1;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_chipsetType = 1;
     }
 
     return 1;
 }
 
-int Parse_Quick_Start(char const **argv, int argc)
+int Parse_Quick_Start(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr ) {
-        TheWriteableGlobalData->m_playSizzle = false;
-        TheWriteableGlobalData->m_shellMapOn = false;
-        TheWriteableGlobalData->m_animateWindows = false;
+    if ( g_theWriteableGlobalData != nullptr ) {
+        g_theWriteableGlobalData->m_playSizzle = false;
+        g_theWriteableGlobalData->m_shellMapOn = false;
+        g_theWriteableGlobalData->m_animateWindows = false;
     }
 
     return 1;
 }
 
-int Parse_Play_Stats(char const **argv, int argc)
+int Parse_Play_Stats(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr && argc > 1 ) {
-        TheWriteableGlobalData->m_playerStats = atoi(argv[1]);
+    if ( g_theWriteableGlobalData != nullptr && argc > 1 ) {
+        g_theWriteableGlobalData->m_playerStats = atoi(argv[1]);
 
         return 2;
     }
@@ -149,18 +149,18 @@ int Parse_Play_Stats(char const **argv, int argc)
     return 1;
 }
 
-int Parse_Mod(char const **argv, int argc)
+int Parse_Mod(char **argv, int argc)
 {
-    if ( TheWriteableGlobalData != nullptr && argc > 1 ) {
+    if ( g_theWriteableGlobalData != nullptr && argc > 1 ) {
         AsciiString path = argv[1];
 
         // If its not an absolute path, make it relative to user data dir.
         if ( !strchr(path.Str(), ':') && !path.Starts_With("/") && !path.Starts_With("\\") ) {
-            path.Format("%s%s", TheWriteableGlobalData->m_userDataDirectory.Str(), argv[1]);
+            path.Format("%s%s", g_theWriteableGlobalData->m_userDataDirectory.Str(), argv[1]);
         }
 
         // Check if it exists
-        if ( TheLocalFileSystem->Does_File_Exist(path.Str()) ) {
+        if ( g_theLocalFileSystem->Does_File_Exist(path.Str()) ) {
             struct stat st;
 
             // Check if its a directory or file and handle accordingly
@@ -170,9 +170,9 @@ int Parse_Mod(char const **argv, int argc)
                         path.Concat("/");
                     }
 
-                    TheWriteableGlobalData->m_userModDirectory = path;
+                    g_theWriteableGlobalData->m_userModDirectory = path;
                 } else {
-                    TheWriteableGlobalData->m_userModFile = path;
+                    g_theWriteableGlobalData->m_userModFile = path;
                 }
             }
         }
@@ -184,7 +184,7 @@ int Parse_Mod(char const **argv, int argc)
 }
 
 // Parses the command line passed to the executable via argc and argv.
-void Parse_Command_Line(int argc, char const **argv)
+void Parse_Command_Line(int argc, char *argv[])
 {
     // Arguments we support and the functions to parse them.
     CmdParseStruct _params[] = {
@@ -226,5 +226,5 @@ void Parse_Command_Line(int argc, char const **argv)
     }
 
     // Loads any mod big files that were specified on the command line.
-    TheArchiveFileSystem->Load_Mods();
+    g_theArchiveFileSystem->Load_Mods();
 }

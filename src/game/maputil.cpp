@@ -65,7 +65,7 @@ void WaypointMap::Update()
 
 AsciiString MapCache::Get_User_Map_Dir()
 {
-    AsciiString dir = TheWriteableGlobalData->m_userDataDirectory;
+    AsciiString dir = g_theWriteableGlobalData->m_userDataDirectory;
     dir += Get_Map_Dir();
 
     return dir;

@@ -194,15 +194,15 @@ char const *GameFileClass::Set_Name(char const *filename)
         m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
-    if ( !m_fileExists && TheWriteableGlobalData != nullptr ) {
+    if ( !m_fileExists && g_theWriteableGlobalData != nullptr ) {
         switch ( file_type ) {
             case GAME_FILE_W3D:
-                snprintf(m_filePath, sizeof(m_filePath), "%sW3D/", TheWriteableGlobalData->m_userDataDirectory.Str());
+                snprintf(m_filePath, sizeof(m_filePath), "%sW3D/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             case GAME_FILE_TGA:
             case GAME_FILE_DDS: //Fallthrough
-                snprintf(m_filePath, sizeof(m_filePath), "%sTextures/", TheWriteableGlobalData->m_userDataDirectory.Str());
+                snprintf(m_filePath, sizeof(m_filePath), "%sTextures/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             default:
@@ -212,12 +212,12 @@ char const *GameFileClass::Set_Name(char const *filename)
         m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
-    if ( !m_fileExists && TheWriteableGlobalData != nullptr ) {
+    if ( !m_fileExists && g_theWriteableGlobalData != nullptr ) {
         switch ( file_type ) {
             case GAME_FILE_TGA:
             //TODO Allow DDS for map previews as well at some point?
             //case GAME_FILE_DDS: //Fallthrough
-                snprintf(m_filePath, sizeof(m_filePath), "%sMapPreviews/", TheWriteableGlobalData->m_userDataDirectory.Str());
+                snprintf(m_filePath, sizeof(m_filePath), "%sMapPreviews/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             default:

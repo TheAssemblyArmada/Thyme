@@ -56,7 +56,7 @@ public:
     virtual void Update();
 
     // GameEngine interface
-    virtual void Init(int argc, char **argv);
+    virtual void Init(int argc, char *argv[]);
     virtual void Execute();
     virtual void Set_FPS_Limit(int limit);
     virtual int Get_FPS_Limit();

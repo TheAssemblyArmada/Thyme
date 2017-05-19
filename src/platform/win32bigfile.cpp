@@ -34,7 +34,7 @@ bool Win32BIGFile::Get_File_Info(AsciiString const &name, FileInfo *info)
         return false;
     }
 
-    TheLocalFileSystem->Get_File_Info(BackingFile->Get_File_Name(), info);
+    g_theLocalFileSystem->Get_File_Info(BackingFile->Get_File_Name(), info);
     info->FileSizeHigh = 0;
     info->FileSizeLow = arch_info->Size;
 
@@ -67,7 +67,7 @@ File *Win32BIGFile::Open_File(char const *filename, int mode)
     }
 
     if ( (mode & File::WRITE) != 0 ) {
-        File *localfile = TheLocalFileSystem->Open_File(filename, mode);
+        File *localfile = g_theLocalFileSystem->Open_File(filename, mode);
 
         if ( localfile != nullptr ) {
             file->Copy_To_File(localfile);

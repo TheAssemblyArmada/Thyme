@@ -40,7 +40,7 @@ Version::Version() :
 }
 
 void Version::Set_Version(
-    int maj, int min, int build, int local_build, 
+    int32_t maj, int32_t min, int32_t build, int32_t local_build, 
     AsciiString location, AsciiString user, AsciiString time, AsciiString date ) 
 {
     m_major = maj;

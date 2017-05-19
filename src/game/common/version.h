@@ -29,7 +29,7 @@
 #include "asciistring.h"
 #include "unicodestring.h"
 
-#define TheVersion (Make_Global<Version *>(0x00A29BA0))
+#define g_theVersion (Make_Global<Version *>(0x00A29BA0))
 
 class Version
 {
@@ -37,12 +37,12 @@ class Version
         Version();
 
         void Set_Version(
-            int maj, int min, int build, int local_build, 
+            int32_t maj, int32_t min, int32_t build, int32_t local_build, 
             AsciiString location, AsciiString user, AsciiString time, AsciiString date);
         
-        int Get_Version_Number() { return m_minor | (m_major << 16); }
-        int Get_Build_Number() { return m_buildNum; }
-        int Get_Local_Build_Number() { return m_localBuildNum; }
+        int32_t Get_Version_Number() { return m_minor | (m_major << 16); }
+        int32_t Get_Build_Number() { return m_buildNum; }
+        int32_t Get_Local_Build_Number() { return m_localBuildNum; }
 
         AsciiString Get_Ascii_Version();
         AsciiString Get_Ascii_Branch() { return m_branch; }
@@ -62,10 +62,10 @@ class Version
         bool Using_Full_Version() { return m_useFullVersion; }
 
     private:
-        int m_major;
-        int m_minor;
-        int m_buildNum;
-        int m_localBuildNum;
+        int32_t m_major;
+        int32_t m_minor;
+        int32_t m_buildNum;
+        int32_t m_localBuildNum;
         AsciiString m_branch;       // Was Location in orignal
         AsciiString m_commitHash;   // Was User in original
         AsciiString m_buildTime;

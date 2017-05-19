@@ -363,8 +363,8 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 
     // Use of some of the version strings to use the git commit and branch stuff.
     //DEBUG_LOG("Initialising Version manager.\n");
-    TheVersion = new Version;
-    TheVersion->Set_Version(
+    g_theVersion = new Version;
+    g_theVersion->Set_Version(
         0,                          // Major
         1,                          // Minor
         0,                          // Patch
@@ -377,18 +377,18 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 
     // Make pretty log header for debug logging builds.
     DEBUG_LOG("================================================================================\n");
-    DEBUG_LOG("Thyme Version: %s\n", TheVersion->Get_Ascii_Version().Str());
-    DEBUG_LOG("Build date: %s\n", TheVersion->Get_Ascii_Build_Time().Str());
-    DEBUG_LOG("Build branch: %s\n", TheVersion->Get_Ascii_Branch().Str());
-    DEBUG_LOG("Build commit: %s\n", TheVersion->Get_Ascii_Commit_Hash().Str());
+    DEBUG_LOG("Thyme Version: %s\n", g_theVersion->Get_Ascii_Version().Str());
+    DEBUG_LOG("Build date: %s\n", g_theVersion->Get_Ascii_Build_Time().Str());
+    DEBUG_LOG("Build branch: %s\n", g_theVersion->Get_Ascii_Branch().Str());
+    DEBUG_LOG("Build commit: %s\n", g_theVersion->Get_Ascii_Commit_Hash().Str());
     DEBUG_LOG("================================================================================\n");
 
     DEBUG_LOG("About to run Game_Main\n");
     Game_Main(argc, argv);
     DEBUG_LOG("Game shutting down.\n");
 
-    delete TheVersion;
-    TheVersion = nullptr;
+    delete g_theVersion;
+    g_theVersion = nullptr;
 
     Shutdown_Memory_Manager();
 

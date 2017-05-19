@@ -30,12 +30,13 @@
 #include "asciistring.h"
 #include "color.h"
 #include "coord.h"
+#include "ini.h"
 #include "money.h"
-
-#define TheWriteableGlobalData (Make_Global<GlobalData*>(0x00A2A2A4))
 
 class INI;
 class WeaponBonusSet;
+
+#define LIGHT_COUNT 3
 
 // These four enums need moving when we work out where they should go.
 enum TimeOfDayType
@@ -97,6 +98,8 @@ public:
     virtual void Init() {}
     virtual void Reset();
     virtual void Update() {}
+
+    bool Set_Time_Of_Day(TimeOfDayType time);
 
     static void Parse_Game_Data_Definitions(INI *ini);
 
@@ -219,11 +222,11 @@ public:
     bool m_hideGarrisonFlags;
     bool m_forceModelsFollowTimeOfDay;
     bool m_forceModelsFollowWeather;
-    TerrainLighting m_terrainPlaneLighting[TIME_OF_DAY_COUNT][3];
-    TerrainLighting m_terrainObjectLighting[TIME_OF_DAY_COUNT][3];
-    RGBColor m_terrainAmbient[3];
-    RGBColor m_terrainDiffuse[3];
-    Coord3D m_terrainLightPos[3];
+    TerrainLighting m_terrainPlaneLighting[TIME_OF_DAY_COUNT][LIGHT_COUNT];
+    TerrainLighting m_terrainObjectLighting[TIME_OF_DAY_COUNT][LIGHT_COUNT];
+    RGBColor m_terrainAmbient[LIGHT_COUNT];
+    RGBColor m_terrainDiffuse[LIGHT_COUNT];
+    Coord3D m_terrainLightPos[LIGHT_COUNT];
     float m_unkFloat2;
     float m_infantryLightMorningScale;
     float m_infantryLightAfternoonScale;
@@ -397,9 +400,10 @@ public:
     bool m_updateTGAtoDDS;
     //char pad[3]
     int32_t m_doubleClickTime;
-    int32_t m_shroudColor;
-    float m_unkFloat6;
-    float m_unkFloat7;
+    //int32_t m_shroudColor;
+    //float m_unkFloat6;
+    //float m_unkFloat7;
+    RGBColor m_shroudColor;
     uint8_t m_clearAlpha;
     uint8_t m_fogAlpha;
     uint8_t m_shroudAlpha;
@@ -423,6 +427,13 @@ public:
     AsciiString m_userModFile;
     AsciiString m_userDataDirectory;
     GlobalData *m_next;
+
+private:
+    static FieldParse s_fieldParseTable[337];
+    static GlobalData *s_theOriginal;
 };
+
+#define g_theWriteableGlobalData (Make_Global<GlobalData*>(0x00A2A2A4))
+//extern GlobalData *g_theWriteableGlobalData;
 
 #endif

@@ -22,12 +22,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "gameengine.h"
+#include "archivefilesystem.h"
+#include "commandline.h"
 #include "commandlist.h"
 #include "filesystem.h"
+#include "globaldata.h"
 #include "ini.h"
+#include "localfilesystem.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "subsysteminterface.h"
+#include "xfercrc.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
@@ -62,7 +67,7 @@ void GameEngine::Update()
 {
 }
 
-void GameEngine::Init(int argc, char **argv)
+void GameEngine::Init(int argc, char *argv[])
 {
     INI ini;
 
@@ -73,6 +78,27 @@ void GameEngine::Init(int argc, char **argv)
     g_theNameKeyGenerator->Init();
     g_theCommandList = new CommandList;
     g_theCommandList->Init();
+
+    XferCRC xfer;
+    xfer.Open("lightCRC");
+
+    g_theLocalFileSystem = Create_Local_File_System();
+    g_theSubsystemList->Init_Subsystem(g_theLocalFileSystem, nullptr, nullptr, nullptr, &xfer, "TheLocalFileSystem");
+    g_theArchiveFileSystem = Create_Archive_File_System();
+    g_theSubsystemList->Init_Subsystem(g_theArchiveFileSystem, nullptr, nullptr, nullptr, &xfer, "TheArchiveFileSystem");
+    
+    g_theWriteableGlobalData = new GlobalData;
+    g_theSubsystemList->Init_Subsystem(
+        g_theWriteableGlobalData,
+        "Data/INI/Default/GameData.ini",
+        "Data/INI/GameData.ini",
+        nullptr,
+        &xfer,
+        "TheWriteableGlobalData"
+    );
+
+    Parse_Command_Line(argc, argv);
+
     //TODO this is a WIP
 }
 

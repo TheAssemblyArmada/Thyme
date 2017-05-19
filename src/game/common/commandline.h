@@ -29,13 +29,13 @@
 #include "always.h"
 #include "hooker.h"
 
-void Parse_Command_Line(int argc, char const **argv);
+void Parse_Command_Line(int argc, char *argv[]);
 
 namespace CommandLine {
 
 inline void Hook_Me()
 {
-    Hook_Function((Make_Function_Ptr<void, int, char const**>(0x004F8150)), &Parse_Command_Line);
+    Hook_Function((Make_Function_Ptr<void, int, char **>(0x004F8150)), &Parse_Command_Line);
 }
 
 } // namespace CommandLine

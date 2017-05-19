@@ -181,18 +181,18 @@ void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiS
 // See GlobalData.h
 void ArchiveFileSystem::Load_Mods()
 {
-    if ( !TheWriteableGlobalData->m_userModFile.Is_Empty() ) {
-        DEBUG_LOG("Loading mod file '%s'.\n", TheWriteableGlobalData->m_userModFile.Str());
-        ArchiveFile *file = Open_Archive_File(TheWriteableGlobalData->m_userModFile.Str());
+    if ( !g_theWriteableGlobalData->m_userModFile.Is_Empty() ) {
+        DEBUG_LOG("Loading mod file '%s'.\n", g_theWriteableGlobalData->m_userModFile.Str());
+        ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile.Str());
 
         if ( file != nullptr ) {
-            Load_Into_Dir_Tree(file, TheWriteableGlobalData->m_userModFile, true);
-            ArchiveFiles[TheWriteableGlobalData->m_userModFile] = file;
+            Load_Into_Dir_Tree(file, g_theWriteableGlobalData->m_userModFile, true);
+            ArchiveFiles[g_theWriteableGlobalData->m_userModFile] = file;
         }
     }
 
-    if ( !TheWriteableGlobalData->m_userModDirectory.Is_Empty() ) {
-        DEBUG_LOG("Loading mod files from '%s'.\n", TheWriteableGlobalData->m_userModDirectory.Str());
-        Load_Archives_From_Dir(TheWriteableGlobalData->m_userModDirectory, "*.big", true);
+    if ( !g_theWriteableGlobalData->m_userModDirectory.Is_Empty() ) {
+        DEBUG_LOG("Loading mod files from '%s'.\n", g_theWriteableGlobalData->m_userModDirectory.Str());
+        Load_Archives_From_Dir(g_theWriteableGlobalData->m_userModDirectory, "*.big", true);
     }
 }

@@ -34,7 +34,7 @@
 struct FileInfo;
 class File;
 
-#define TheLocalFileSystem (Make_Global<LocalFileSystem*>(0x00A2BE60))
+#define g_theLocalFileSystem (Make_Global<LocalFileSystem*>(0x00A2BE60))
 
 class LocalFileSystem : public SubsystemInterface
 {

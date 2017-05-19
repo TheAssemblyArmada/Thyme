@@ -21,6 +21,7 @@ set(GAMEENGINE_INCLUDES
     game/common/ini
     game/common/system
     game/common/rts
+    game/logic/object
     game/network
     platform
     w3d/lib
@@ -76,6 +77,7 @@ set(GAMEENGINE_SRC
     game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
+    game/logic/object/weapon.cpp
     game/network/filetransfer.cpp
     platform/w3dfilesystem.cpp
     platform/win32bigfile.cpp

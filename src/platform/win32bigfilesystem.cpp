@@ -38,7 +38,7 @@ using rts::FourCC;
 void Win32BIGFileSystem::Init()
 {
     DEBUG_LOG("Initialising BIG file system.\n");
-    if ( TheLocalFileSystem != nullptr ) {
+    if ( g_theLocalFileSystem != nullptr ) {
         Load_Archives_From_Dir("", "*.big", false);
 
         AsciiString gen_path;
@@ -57,7 +57,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
 {
     uint32_t idbuff;
 
-    File *file = TheLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
+    File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
     
     AsciiString fullname = filename;
@@ -184,7 +184,7 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(AsciiString dir, AsciiString fil
 {
     std::set<AsciiString, rts::less_than_nocase<AsciiString>> file_list;
 
-    TheLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
+    g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 
     for ( auto it = file_list.begin(); it != file_list.end(); ++it ) {
         ArchiveFile *arch = Open_Archive_File((*it).Str());

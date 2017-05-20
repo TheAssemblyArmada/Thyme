@@ -161,7 +161,7 @@ void Setup_Hooks()
 
     GameState::Hook_Me();
 
-    //WeaponBonusSet::Hook_Me();
+    WeaponBonusSet::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

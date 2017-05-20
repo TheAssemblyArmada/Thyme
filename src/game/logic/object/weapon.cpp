@@ -66,11 +66,10 @@ const char *TheWeaponBonusFieldNames[] = {
 
 void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data)
 {
-    DEBUG_LOG("Parsing weapon bonus set.\n");
-    WeaponBonusSet *wbs = static_cast<WeaponBonusSet*>(store);
+    // We get passed a pointer to the global object plus an offsets so its a pointer to
+    // the weapon bonus set pointer in the global object.
+    WeaponBonusSet *wbs = *static_cast<WeaponBonusSet**>(store);
     int set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
     int field = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames);
-    DEBUG_LOG("Parsing weapon bonus set set %d, field %d.\n", set, field);
     wbs->m_bonus[set].field[field] = INI::Scan_PercentToReal(ini->Get_Next_Token());
-    DEBUG_LOG("Retrieved float %f.\n", wbs->m_bonus[set].field[field]);
 }

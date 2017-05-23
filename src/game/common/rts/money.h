@@ -28,6 +28,8 @@
 
 #include "snapshot.h"
 
+class INI;
+
 class Money : public SnapShot
 {
 public:
@@ -38,6 +40,8 @@ public:
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process() {}
+
+    static void Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data);
 protected:
     unsigned int m_money;
     int m_playerIndex;

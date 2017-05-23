@@ -22,7 +22,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "money.h"
+#include "ini.h"
 
-void Money::Xfer_Snapshot(Xfer * xfer)
+void Money::Xfer_Snapshot(Xfer *xfer)
 {
+}
+
+void Money::Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data)
+{
+    INI::Parse_Unsigned(ini, formal, &(static_cast<Money*>(store)->m_money), user_data);
 }

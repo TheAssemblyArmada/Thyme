@@ -48,6 +48,7 @@ set(GAMEENGINE_SRC
     game/common/globaldata.cpp
     game/common/namekeygenerator.cpp
     game/common/randomvalue.cpp
+    game/common/userpreferences.cpp
     game/common/version.cpp
     game/common/ini/ini.cpp
     game/common/system/archivefile.cpp

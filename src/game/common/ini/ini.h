@@ -42,9 +42,10 @@ extern const float _ANGLE_MULTIPLIER;
 
 enum INILoadType
 {
-    INI_LOAD_INVALID          = 0,
-    INI_LOAD_OVERWRITE        = 1,
-    INI_LOAD_CREATE_OVERRIDES = 2,
+    INI_LOAD_INVALID,
+    INI_LOAD_OVERWRITE,
+    INI_LOAD_CREATE_OVERRIDES,
+    INI_LOAD_UNK,
 };
 
 // Function pointer type for the field parser functions
@@ -116,6 +117,7 @@ public:
     char *Get_Next_Sub_Token(char const *expected);
     AsciiString Get_Next_Ascii_String();
     AsciiString Get_Filename() { return m_fileName; }
+    INILoadType Get_Load_Type() { return m_loadType; }
 
     // Scan functions
     static int Scan_Science(char const *token);

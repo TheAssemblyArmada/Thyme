@@ -36,7 +36,6 @@ const int CRC_BUFFER_SIZE = 0x10000;
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
 // controlled.
-#if 0
 FieldParse GlobalData::s_fieldParseTable[337] =
 {
     { "Windowed", &INI::Parse_Bool, nullptr, 32 },//
@@ -60,7 +59,8 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "StretchTerrain", &INI::Parse_Bool, nullptr, 61 },//
     { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, 62 },//
     { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, 63 },//
-    { "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
+    //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
+    { "TerrainLOD", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9C6D18), 64 },//
     { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, 72 },//
     { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, 79 },//
     { "UseWaterPlane", &INI::Parse_Bool, nullptr, 80 },//
@@ -159,8 +159,10 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, 456 },//
     { "HistoricDamageLimit", &INI::Parse_Duration_Int, nullptr, 472 },//
     { "MaxTerrainTracks", &INI::Parse_Int, nullptr, 476 },//
-    { "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
-    { "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
+    //{ "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
+    //{ "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
+    { "TimeOfDay", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9E6028), 516 },//
+    { "Weather", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9E6040), 520 },//
     { "MakeTrackMarks", &INI::Parse_Bool, nullptr, 524 },//
     { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, 525 },//
     { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, 526 },//
@@ -313,7 +315,8 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "EnforceMaxCameraHeight", &INI::Parse_Bool, nullptr, 2024 },//
     { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, 2080 },//
     { "KeyboardDefaultScrollSpeedFactor", &INI::Parse_Real, nullptr, 2084 },//
-    { "MovementPenaltyDamageState", &INI::Parse_Index_List, &TheBodyDamageTypeNames, 2112 },//
+    //{ "MovementPenaltyDamageState", &INI::Parse_Index_List, &TheBodyDamageTypeNames, 2112 },//
+    { "MovementPenaltyDamageState", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9C6D04), 2112 },//
     { "HealthBonus_Veteran", &INI::Parse_Percent_To_Real, nullptr, 2052 },//
     { "HealthBonus_Elite", &INI::Parse_Percent_To_Real, nullptr, 2056 },//
     { "HealthBonus_Heroic", &INI::Parse_Percent_To_Real, nullptr, 2060 },//
@@ -352,9 +355,9 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "BaseRegenHealthPercentPerSecond", &INI::Parse_Percent_To_Real, nullptr, 2196 },//
     { "BaseRegenDelay", &INI::Parse_Duration_Int, nullptr, 2200 },//
     { "SpecialPowerViewObject", &INI::Parse_AsciiString, nullptr, 2208 },//
-    { "StandardPublicBone", &INI::Parse_AsciiStringVectorAppend, nullptr, 2212 },//
+    { "StandardPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, 2212 },//
     { "ShowMetrics", &INI::Parse_Bool, nullptr, 2232 },//
-    { "DefaultStartingCash", &Money::parseMoneyAmount, nullptr, 2236 },//
+    { "DefaultStartingCash", &Money::Parse_Money_Amount, nullptr, 2236 },//
     { "ShroudColor", &INI::Parse_RGB_Color, nullptr, 2280 },//
     { "ClearAlpha", &INI::Parse_Byte, nullptr, 2292 },//
     { "FogAlpha", &INI::Parse_Byte, nullptr, 2293 },//
@@ -377,8 +380,6 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "PlayStats", &INI::Parse_Int, nullptr, 2336 },
     { nullptr, nullptr, nullptr, 0 }
 };
-
-#endif
 
 GlobalData::GlobalData()
 {
@@ -812,4 +813,20 @@ bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
     }
 
     return true;
+}
+
+void GlobalData::Parse_Game_Data_Definitions(INI *ini)
+{
+    if ( g_theWriteableGlobalData == nullptr ) {
+        g_theWriteableGlobalData = new GlobalData;
+    } else if ( ini->Get_Load_Type() != INI_LOAD_UNK 
+        && ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES ) {
+        GlobalData *tmp = new GlobalData;
+        tmp->m_next = g_theWriteableGlobalData;
+        g_theWriteableGlobalData = tmp;
+    }
+
+    ini->Init_From_INI(g_theWriteableGlobalData, s_fieldParseTable);
+
+    // TODO OptionPreferences
 }

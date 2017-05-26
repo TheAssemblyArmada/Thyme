@@ -42,6 +42,7 @@
 #include "gamedebug.h"
 #include "gamestate.h"
 #include "gametext.h"
+#include "globaldata.h"
 #include "ini.h"
 #include "main.h"
 #include "namekeygenerator.h"
@@ -162,6 +163,8 @@ void Setup_Hooks()
     GameState::Hook_Me();
 
     WeaponBonusSet::Hook_Me();
+
+    GlobalData::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -25,6 +25,7 @@
 #include "crc.h"
 #include "filesystem.h"
 #include "endiantype.h"
+#include "optionpreferences.h"
 #include "rtsutils.h"
 #include "version.h"
 #include "weapon.h"
@@ -817,6 +818,8 @@ bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
 
 void GlobalData::Parse_Game_Data_Definitions(INI *ini)
 {
+    DEBUG_LOG("Parsing Global Data from '%s'.\n", ini->Get_Filename().Str());
+
     if ( g_theWriteableGlobalData == nullptr ) {
         g_theWriteableGlobalData = new GlobalData;
     } else if ( ini->Get_Load_Type() != INI_LOAD_UNK 
@@ -827,6 +830,34 @@ void GlobalData::Parse_Game_Data_Definitions(INI *ini)
     }
 
     ini->Init_From_INI(g_theWriteableGlobalData, s_fieldParseTable);
+    
+    OptionPreferences opts;
+    g_theWriteableGlobalData->m_alternateMouseEnabled = opts.Get_Alternate_Mouse_Mode_Enabled();
+    g_theWriteableGlobalData->m_retaliationModeEnabled = opts.Get_Retaliation_Mode_Enabled();
+    g_theWriteableGlobalData->m_doubleClickAttackMovesEnabled = opts.Get_Double_Click_Attack_Move_Enabled();
+    g_theWriteableGlobalData->m_keyboardScrollFactor = opts.Get_Scroll_Factor();
+    g_theWriteableGlobalData->m_lanIPAddress = opts.Get_LAN_IPAddress();
+    g_theWriteableGlobalData->m_sendDelay = opts.Get_Send_Delay();
+    g_theWriteableGlobalData->m_firewallBehaviour = opts.Get_Firewall_Behavior();
+    g_theWriteableGlobalData->m_firewallPortAllocationDelta = opts.Get_Firewall_Port_Allocation_Delta();
+    g_theWriteableGlobalData->m_firewallPortOverrides = opts.Get_Firewall_Port_Override();
+    g_theWriteableGlobalData->m_saveCameraInReplays = opts.Save_Camera_In_Replays();
+    g_theWriteableGlobalData->m_useCameraInReplays = opts.Use_Camera_In_Replays();
+    int gamma = opts.Get_Gamma_Value();
 
-    // TODO OptionPreferences
+    if ( gamma >= 50 ) {
+        if ( gamma > 50 ) {
+            g_theWriteableGlobalData->m_gammaValue = ((gamma - 50) / 50.0f) + 1.0f;
+        }
+    } else if ( gamma <= 0 ) {
+        g_theWriteableGlobalData->m_gammaValue = 0.6f;
+    } else {
+        g_theWriteableGlobalData->m_gammaValue = (((50 - gamma) * 0.4f) / -50.0f) + 1.0f;
+    }
+
+    int x;
+    int y;
+    opts.Get_Resolution(&x, &y);
+    g_theWriteableGlobalData->m_xResolution = x;
+    g_theWriteableGlobalData->m_yResolution = y;
 }

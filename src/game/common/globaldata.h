@@ -102,7 +102,7 @@ public:
     bool Set_Time_Of_Day(TimeOfDayType time);
 
     static void Parse_Game_Data_Definitions(INI *ini);
-
+    static void Hook_Me();
     // Looks like members are likely public or there would have been a lot of
     // getters/setters.
     // pad indicates where padding will be added to keep 4 byte alignment
@@ -432,6 +432,11 @@ private:
     static FieldParse s_fieldParseTable[337];
     static GlobalData *s_theOriginal;
 };
+
+inline void GlobalData::Hook_Me()
+{
+    Hook_Function(Make_Function_Ptr<void, INI*>(0x00418090), Parse_Game_Data_Definitions);
+}
 
 #define g_theWriteableGlobalData (Make_Global<GlobalData*>(0x00A2A2A4))
 //extern GlobalData *g_theWriteableGlobalData;

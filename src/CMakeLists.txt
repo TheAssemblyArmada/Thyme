@@ -37,6 +37,7 @@ set(GAMEENGINE_SRC
     game/main.cpp
     game/maputil.cpp
     game/client/gametext.cpp
+    game/client/optionpreferences.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

@@ -395,7 +395,7 @@ GlobalData::GlobalData()
     m_playerStats = -1;
     m_setMinVertextBufferSize = false;
     m_useTrees = false;
-    m_unkBool1 = true;
+    m_useTreeSway = true;
     m_extraAnimations = false;
     m_useHeatEffects = true;
     m_useFPSLimit = false;
@@ -418,7 +418,7 @@ GlobalData::GlobalData()
     m_terrainLOD = TERRAIN_LOD_AUTOMATIC;
     m_terrainLODTargetTimeMS = 0;
     m_dynamicLOD = true;
-    m_unkBool5 = true;
+    m_useStaticLODLevels = true;
     m_rightMouseAlwaysScrolls = false;
     m_useWaterPlane = false;
     m_useCloudPlane = false;
@@ -477,9 +477,9 @@ GlobalData::GlobalData()
     m_levelGainAnimZRise = 0.0f;
     m_getHealedAnimTime = 0.0f;
     m_getHealedAnimZRise = 0.0f;
-    m_unkInt2 = 100;
-    m_unkInt3 = 25;
-    m_unkInt4 = 300000;
+    m_maxTankTrackEdges = 100;
+    m_maxTankTrackOpaqueEdges = 25;
+    m_maxTankTrackFadeDelay = 300000;
     m_timeOfDay = TIME_OF_DAY_AFTERNOON;
     m_weather = WEATHER_NORMAL;
     m_makeTrackMarks = false;

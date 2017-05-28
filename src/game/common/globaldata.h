@@ -111,7 +111,7 @@ public:
     AsciiString m_mapName;
     AsciiString m_moveHintName;
     bool m_useTrees;
-    bool m_unkBool1;
+    bool m_useTreeSway;
     bool m_extraAnimations;
     bool m_useHeatEffects;
     bool m_useFPSLimit;
@@ -137,7 +137,7 @@ public:
     bool m_drawEntireTerrain;
     TerrainLOD m_terrainLOD;
     bool m_dynamicLOD;
-    bool m_unkBool5;
+    bool m_useStaticLODLevels;  // Controls if LOD levels are loaded from GameLOD.ini
     //char pad[2]
     int32_t m_terrainLODTargetTimeMS;
     bool m_alternateMouseEnabled;
@@ -207,9 +207,9 @@ public:
     float m_containerPipScaleFactor;
     uint32_t m_historicDamageLimit;
     int32_t m_maxTerrainTracks;
-    int32_t m_unkInt2;
-    int32_t m_unkInt3;
-    int32_t m_unkInt4;
+    int32_t m_maxTankTrackEdges;
+    int32_t m_maxTankTrackOpaqueEdges;
+    int32_t m_maxTankTrackFadeDelay;
     AsciiString m_levelGainAnimName;
     float m_levelGainAnimTime;
     float m_levelGainAnimZRise;
@@ -271,7 +271,7 @@ public:
     bool m_winCursors;
     bool m_unkBool9;
     bool m_benchMark;
-    bool m_unkBool11;
+    bool m_writeBenchMarkFile;
     //char pad[2]
     int32_t m_fixedSeed;
     float m_particleScale;

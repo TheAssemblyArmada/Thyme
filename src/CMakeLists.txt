@@ -43,6 +43,7 @@ set(GAMEENGINE_SRC
     game/common/commandlist.cpp
     game/common/crc.cpp
     game/common/gameengine.cpp
+    game/common/gamelod.cpp
     game/common/gamemain.cpp
     game/common/gamemessage.cpp
     game/common/gamemessagelist.cpp

@@ -21,7 +21,9 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
+#include "always.h"
 #include "optionpreferences.h"
+#include "gamelod.h"
 #include "globaldata.h"
 #include "hooker.h"
 #include "minmax.h"
@@ -126,14 +128,24 @@ bool OptionPreferences::Use_Camera_In_Replays()
 
 int OptionPreferences::Get_Ideal_Static_Game_Detail()
 {
-    // TODO needs GameLODManager
-    return Call_Method<int, OptionPreferences>(0x00464160, this);
+    auto it = find("IdealStaticGameLOD");
+
+    if ( it == end() ) {
+        return STATLOD_INVALID;
+    }
+
+    return g_theGameLODManager->Get_Static_LOD_Index(it->second);
 }
 
 int OptionPreferences::Get_Static_Game_Detail()
 {
-    // TODO needs GameLODManager
-    return Call_Method<int, OptionPreferences>(0x00464260, this);
+    auto it = find("StaticGameLOD");
+
+    if ( it == end() ) {
+        return g_theGameLODManager->Get_Static_LOD_Level();
+    }
+
+    return g_theGameLODManager->Get_Static_LOD_Index(it->second);
 }
 
 AsciiString OptionPreferences::Get_Preferred_3D_Provider()

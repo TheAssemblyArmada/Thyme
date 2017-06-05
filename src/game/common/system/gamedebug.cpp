@@ -234,7 +234,7 @@ void Debug_Crash(const char *format, ...)
     //}
 }
 
-int Debug_Crash_Box(const char *buffer, bool log_result)
+int Debug_Crash_Box(const char *buffer, int log_result)
 {
     return 0;
 }

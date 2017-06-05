@@ -59,7 +59,7 @@ char *Get_Tick_String(void);
 void Log_Output(const char *buffer);
 void Remove_Unprintable(char *buffer);
 void Debug_Crash(const char *format, ...);
-int Debug_Crash_Box(const char *buffer, bool log_result);
+int Debug_Crash_Box(const char *buffer, int log_result);
 void Debug_Shutdown(void);
 int Debug_Get_Flags(void);
 void Debug_Set_Flags(int flags);

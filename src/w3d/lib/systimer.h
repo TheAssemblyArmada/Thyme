@@ -75,7 +75,7 @@ inline int SysTimeClass::Time_Func()
 #endif
 }
 
-#define g_theSysTimer (MakeGlobal<SysTimeClass>(0x00A66B30))
+#define g_theSysTimer (Make_Global<SysTimeClass>(0x00A66B30))
 //extern SysTimeClass g_theSysTimer;
 
 #endif // SYSTIMER_H

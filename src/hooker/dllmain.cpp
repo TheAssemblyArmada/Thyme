@@ -53,6 +53,7 @@
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
+#include "wwstring.h"
 #include <windows.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -168,6 +169,8 @@ void Setup_Hooks()
     GlobalData::Hook_Me();
 
     ThreadClass::Hook_Me();
+
+    StringClass::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

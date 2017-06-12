@@ -208,11 +208,32 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
 
 void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type, Xfer *xfer)
 {
-    // TODO
-    // Calls FileSystem::Get_File_List_From_Dir
-    // Passes around a std::list, all calls to FileSystem::Get_File_List_From_Dir need to
-    // be implemented at once due to ABI issues.
-    Call_Method<void, INI, AsciiString, bool, INILoadType, Xfer*>(0x0041A1C0, this, dir, search_subdirs,type, xfer);
+    ASSERT_THROW(!dir.Is_Empty(), 0xDEAD0006);
+
+    std::set<AsciiString, rts::less_than_nocase<AsciiString> > files;
+    dir += '/';
+
+    g_theFileSystem->Get_File_List_From_Dir(dir, "*.ini", files, true);
+
+    // Load everything from the top level directory first.
+    for ( auto it = files.begin(); it != files.end(); ++it ) {
+        // Create path string with initial dir stripped off.
+        AsciiString path_check = &it->Str()[strlen(dir.Str())];
+        
+        if ( strchr(path_check.Str(), '\\') == nullptr && strchr(path_check.Str(), '/') == nullptr ) {
+            Load(*it, type, xfer);
+        }
+    }
+
+    // Now process everything from sub directories.
+    for ( auto it = files.begin(); it != files.end(); ++it ) {
+        // Create path string with initial dir stripped off.
+        AsciiString path_check = &it->Str()[dir.Get_Length()];
+        
+        if ( strchr(path_check.Str(), '\\') != nullptr && strchr(path_check.Str(), '/') != nullptr ) {
+            Load(*it, type, xfer);
+        }
+    }
 }
 
 void INI::Prep_File(AsciiString filename, INILoadType type)

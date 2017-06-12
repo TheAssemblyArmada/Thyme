@@ -190,7 +190,8 @@ inline void INI::Hook_Me()
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
     Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
-    
+    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, bool, INILoadType, Xfer*>(0x0041A1C0)), &INI::Load_Directory);
+
     // Field parsing functions
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041ADA0)), &INI::Parse_Bool);
     Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x0041A980)), &INI::Parse_Byte);

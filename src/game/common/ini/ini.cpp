@@ -27,6 +27,7 @@
 #include "file.h"
 #include "filesystem.h"
 #include "gamedebug.h"
+#include "gamelod.h"
 #include "minmax.h"
 #include "xfer.h"
 #include <cctype>
@@ -97,10 +98,10 @@ BlockParse TheTypeTable[] =
     { "Weapon", &INI::parseWeaponTemplateDefinition },
     { "WebpageURL", &INI::parseWebpageURL },
     { "HeaderTemplate", &INI::parseHeaderTemplateDefinition },
-    { "StaticGameLOD", &INI::parseStaticGameLODDefinition },
-    { "DynamicGameLOD", &INI::parseDynamicGameLODDefinition },
-    { "LODPreset", &INI::parseLODPreset },
-    { "BenchProfile", &INI::parseBenchProfile },
+    { "StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definitions },
+    { "DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definitions },
+    { "LODPreset", &GameLODManager::Parse_LOD_Preset },
+    { "BenchProfile", &GameLODManager::Parse_Bench_Profiles },
     { "ReallyLowMHz", &parseReallyLowMHz },
     { "ScriptAction", &ScriptEngine::parseScriptAction },
     { "ScriptCondition", &ScriptEngine::parseScriptCondition },
@@ -395,18 +396,18 @@ float INI::Scan_Real(char const *token)
     return (float)value;
 }
 
-uint32_t INI::Scan_UnsignedInt(char const *token)
+unsigned int INI::Scan_UnsignedInt(char const *token)
 {
-    uint32_t value;
+    unsigned int value;
 
     ASSERT_THROW(sscanf(token, "%u", &value) == 1, 0xDEAD0006);
 
     return value;
 }
 
-int32_t INI::Scan_Int(char const *token)
+int INI::Scan_Int(char const *token)
 {
-    int32_t value;
+    int value;
 
     ASSERT_THROW(sscanf(token, "%d", &value) == 1, 0xDEAD0006);
 
@@ -490,12 +491,12 @@ void INI::Parse_Byte(INI *ini, void *formal, void *store, void const *user_data)
 
 void INI::Parse_Int(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *static_cast<int32_t*>(store) = Scan_Int(ini->Get_Next_Token());
+    *static_cast<int*>(store) = Scan_Int(ini->Get_Next_Token());
 }
 
 void INI::Parse_Unsigned(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *static_cast<uint32_t*>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
+    *static_cast<unsigned int*>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
 }
 
 void INI::Parse_Real(INI *ini, void *formal, void *store, void const *user_data)

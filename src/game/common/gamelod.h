@@ -26,8 +26,10 @@
 #ifndef GAMELOD_H
 #define GAMELOD_H
 
+#include "always.h"
 #include "asciistring.h"
 #include "hooker.h"
+#include "ini.h"
 
 enum DynamicGameLODLevel : int32_t
 {
@@ -141,11 +143,21 @@ public:
     int Get_Recommended_Texture_Reduction();
     bool Did_Mem_Pass() { return m_didMemPass; }
 
+    static void Parse_Static_LOD_Definitions(INI *ini);
+    static void Parse_Dynamic_LOD_Definitions(INI *ini);
+    static void Parse_LOD_Preset(INI *ini);
+    static void Parse_Bench_Profiles(INI *ini);
 private:
+    enum
+    {
+        MAX_PRESETS = 32,
+        MAX_PROFILES = 16,
+    };
+
     StaticGameLOD m_staticLOD[STATLOD_COUNT];
     DynamicGameLOD m_dynamicLOD[DYNLOD_COUNT];
-    LODPreset m_LODPresets[STATLOD_COUNT - 1][32];
-    BenchProfile m_benchProfiles[16];
+    LODPreset m_LODPresets[STATLOD_COUNT - 1][MAX_PRESETS];
+    BenchProfile m_benchProfiles[MAX_PROFILES];
     StaticGameLODLevel m_staticLODLevel;
     DynamicGameLODLevel m_dynamicLODLevel;
     int m_unkInt1;
@@ -171,6 +183,9 @@ private:
     float m_overallScore;
     int m_textureReductionFactor;
     int m_reallyLowMHz;
+
+    static const char *s_cpuNames[];
+    static const char *s_videoNames[];
 };
 
 #define g_theGameLODManager (Make_Global<GameLODManager*>(0x00A2B924))

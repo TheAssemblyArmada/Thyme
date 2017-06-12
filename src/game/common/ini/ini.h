@@ -123,8 +123,8 @@ public:
     static int Scan_Science(char const *token);
     static float Scan_PercentToReal(char const *token);
     static float Scan_Real(char const *token);
-    static uint32_t Scan_UnsignedInt(char const *token);
-    static int32_t Scan_Int(char const *token);
+    static unsigned int Scan_UnsignedInt(char const *token);
+    static int Scan_Int(char const *token);
     static bool Scan_Bool(char const *token);
     static int Scan_IndexList(char const *token, char const* const* list);
     static int Scan_LookupList(char const *token, LookupListRec const *list);
@@ -154,7 +154,6 @@ public:
     static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data);
         
     // Block parsing functions
-
 
     // Hooking function
     static void Hook_Me();

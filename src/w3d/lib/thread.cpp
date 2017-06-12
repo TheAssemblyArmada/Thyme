@@ -222,9 +222,9 @@ uintptr_t ThreadClass::Get_Current_Thread_ID()
 {
 #ifdef PLATFORM_WINDOWS
     return GetCurrentThreadId();
-#elif PLATFORM_LINUX
+#elif defined PLATFORM_LINUX
     return syscall(SYS_gettid);
-#elif PLATFORM_APPLE || PLATFORM_BSD
+#elif defined PLATFORM_APPLE || defined PLATFORM_BSD
     return pthread_getthreadid_np();
 #else
     #error Check platform documentation for appropriate function for integral thread id.

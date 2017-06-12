@@ -389,7 +389,7 @@ void AsciiString::Format_VA(AsciiString &format, va_list args)
     Set(buf);
 }
 
-bool AsciiString::Starts_With(char const *p)
+bool AsciiString::Starts_With(char const *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -405,7 +405,7 @@ bool AsciiString::Starts_With(char const *p)
     return strncmp(Peek(), p, thatlen) == 0;
 }
 
-bool AsciiString::Ends_With(char const *p)
+bool AsciiString::Ends_With(char const *p) const
 {
     if ( *p == '\0' ) {
         return true;

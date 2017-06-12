@@ -119,8 +119,8 @@ public:
     char *Find(char c) { return strchr(Peek(), c); }
     char *Reverse_Find(char c) { return strrchr(Peek(), c); }
 
-    bool Starts_With(char const *p);
-    bool Ends_With(char const *p);
+    bool Starts_With(char const *p) const;
+    bool Ends_With(char const *p) const;
 
     bool Starts_With_No_Case(char const *p) const;
     bool Ends_With_No_Case(char const *p) const;

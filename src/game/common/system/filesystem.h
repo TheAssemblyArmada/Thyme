@@ -64,7 +64,7 @@ private:
 inline void FileSystem::Hook_Me()
 {
     Hook_Function((Make_Function_Ptr<bool>(0x004469C0)), Are_Music_Files_On_CD);
-
+    Hook_Method(Make_Method_Ptr<void, FileSystem, AsciiString const&, AsciiString const&, std::set<AsciiString, rts::less_than_nocase<AsciiString>>&, bool>(0x00446770), &Get_File_List_From_Dir);
 }
 
 #endif // _FILESYSTEM_H

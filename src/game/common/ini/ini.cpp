@@ -28,89 +28,85 @@
 #include "filesystem.h"
 #include "gamedebug.h"
 #include "gamelod.h"
+#include "globaldata.h"
 #include "minmax.h"
 #include "xfer.h"
 #include <cctype>
 #include <cstdio>
-#include <math.h>
+#include <cmath>
 
 const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
 const float _ANGLE_MULTIPLIER = 0.0174532925f;
 const float _DURATION_MULT = 0.029999999f;
 
-// Parsing tables, remove hook when table can be populated correctly
-// Can use Make_Function_Ptr for unimplemented.
-#if 0
+// Replace original function addresses as thyme implementations are written.
 BlockParse TheTypeTable[] =
 {
-    { "AIData", &INI::parseAIDataDefinition },
-    { "Animation", &INI::parseAnim2DDefinition },
-    { "Armor", &INI::parseArmorDefinition },
-    { "AudioEvent", &INI::parseAudioEventDefinition },
-    { "AudioSettings", &INI::parseAudioSettingsDefinition },
-    { "Bridge", &INI::parseTerrainBridgeDefinition },
-    { "Campaign", &INI::parseCampaignDefinition },
-    { "ChallengeGenerals", &INI::parseChallengeModeDefinition },
-    { "CommandButton", &INI::parseCommandButtonDefinition },
-    { "CommandMap", &INI::parseMetaMapDefinition },
-    { "CommandSet", &INI::parseCommandSetDefinition },
-    { "ControlBarScheme", &INI::parseControlBarSchemeDefinition },
-    { "ControlBarResizer", &INI::parseControlBarResizerDefinition },
-    { "CrateData", &INI::parseCrateTemplateDefinition },
-    { "Credits", &INI::parseCredits },
-    { "WindowTransition", &INI::parseWindowTransitions },
-    { "DamageFX", &INI::parseDamageFXDefinition },
-    { "DialogEvent", &INI::parseDialogDefinition },
-    { "DrawGroupInfo", &INI::parseDrawGroupNumberDefinition },
-    { "EvaEvent", &INI::parseEvaEvent },
-    { "FXList", &INI::parseFXListDefinition },
-    { "GameData", &INI::parseGameDataDefinition },
-    { "InGameUI", &INI::parseInGameUIDefinition },
-    { "Locomotor", &INI::parseLocomotorTemplateDefinition },
-    { "Language", &INI::parseLanguageDefinition },
-    { "MapCache", &INI::parseMapCacheDefinition },
-    { "MapData", &INI::parseMapDataDefinition },
-    { "MappedImage", &INI::parseMappedImageDefinition },
-    { "MiscAudio", &INI::parseMiscAudio },
-    { "Mouse", &INI::parseMouseDefinition },
-    { "MouseCursor", &INI::parseMouseCursorDefinition },
-    { "MultiplayerColor", &INI::parseMultiplayerColorDefinition },
-    { "MultiplayerStartingMoneyChoice", &INI::parseMultiplayerStartingMoneyChoiceDefinition },
-    { "OnlineChatColors", &INI::parseOnlineChatColorDefinition },
-    { "MultiplayerSettings", &INI::parseMultiplayerSettingsDefinition },
-    { "MusicTrack", &INI::parseMusicTrackDefinition },
-    { "Object", &INI::parseObjectDefinition },
-    { "ObjectCreationList", &INI::parseObjectCreationListDefinition },
-    { "ObjectReskin", &INI::parseObjectReskinDefinition },
-    { "ParticleSystem", &INI::parseParticleSystemDefinition },
-    { "PlayerTemplate", &INI::parsePlayerTemplateDefinition },
-    { "Road", &INI::parseTerrainRoadDefinition },
-    { "Science", &INI::parseScienceDefinition },
-    { "Rank", &INI::parseRankDefinition },
-    { "SpecialPower", &INI::parseSpecialPowerDefinition },
-    { "ShellMenuScheme", &INI::parseShellMenuSchemeDefinition },
-    { "Terrain", &INI::parseTerrainDefinition },
-    { "Upgrade", &INI::parseUpgradeDefinition },
-    { "Video", &INI::parseVideoDefinition },
-    { "WaterSet", &INI::parseWaterSettingDefinition },
-    { "WaterTransparency", &INI::parseWaterTransparencyDefinition },
-    { "Weather", &INI::parseWeatherDefinition },
-    { "Weapon", &INI::parseWeaponTemplateDefinition },
-    { "WebpageURL", &INI::parseWebpageURL },
-    { "HeaderTemplate", &INI::parseHeaderTemplateDefinition },
+    { "AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/ },
+    { "Animation", (iniblockparse_t)(0x00518DB0)/*&INI::parseAnim2DDefinition*/ },
+    { "Armor", (iniblockparse_t)(0x004B60A0)/*&INI::parseArmorDefinition*/ },
+    { "AudioEvent", (iniblockparse_t)(0x0044ED70)/*&INI::parseAudioEventDefinition*/ },
+    { "AudioSettings", (iniblockparse_t)(0x00406FF0)/*&INI::parseAudioSettingsDefinition*/ },
+    { "Bridge", (iniblockparse_t)(0x00518C70)/*&INI::parseTerrainBridgeDefinition*/ },
+    { "Campaign", (iniblockparse_t)(0x00517490)/*&INI::parseCampaignDefinition*/ },
+    { "ChallengeGenerals", (iniblockparse_t)(0x005170B0)/*&INI::parseChallengeModeDefinition*/ },
+    { "CommandButton", (iniblockparse_t)(0x00516CE0)/*&INI::parseCommandButtonDefinition*/ },
+    { "CommandMap", (iniblockparse_t)(0x00498480)/*&INI::parseMetaMapDefinition*/ },
+    { "CommandSet", (iniblockparse_t)(0x00516CD0)/*&INI::parseCommandSetDefinition*/ },
+    { "ControlBarScheme", (iniblockparse_t)(0x00516BA0)/*&INI::parseControlBarSchemeDefinition*/ },
+    { "ControlBarResizer", (iniblockparse_t)(0x0062D610)/*&INI::parseControlBarResizerDefinition*/ },
+    { "CrateData", (iniblockparse_t)(0x00516B90)/*&INI::parseCrateTemplateDefinition*/ },
+    { "Credits", (iniblockparse_t)(0x00515A20)/*&INI::parseCredits*/ },
+    { "WindowTransition", (iniblockparse_t)(0x005145F0)/*&INI::parseWindowTransitions*/ },
+    { "DamageFX", (iniblockparse_t)(0x005145E0)/*&INI::parseDamageFXDefinition*/ },
+    { "DialogEvent", (iniblockparse_t)(0x0044EFE0)/*&INI::parseDialogDefinition*/ },
+    { "DrawGroupInfo", (iniblockparse_t)(0x005145B0)/*&INI::parseDrawGroupNumberDefinition*/ },
+    { "EvaEvent", (iniblockparse_t)(0x00512BE0)/*&INI::parseEvaEvent*/ },
+    { "FXList", (iniblockparse_t)(0x004CC260)/*&INI::parseFXListDefinition*/ },
+    //{ "GameData", (iniblockparse_t)(0x00512BD0)/*&INI::parseGameDataDefinition*/ },
+    { "GameData", &GlobalData::Parse_Game_Data_Definitions },
+    { "InGameUI", (iniblockparse_t)(0x00508440)/*&INI::parseInGameUIDefinition*/ },
+    { "Locomotor", (iniblockparse_t)(0x004B8A70)/*&INI::parseLocomotorTemplateDefinition*/ },
+    { "Language", (iniblockparse_t)(0x00420360)/*&INI::parseLanguageDefinition*/ },
+    { "MapCache", (iniblockparse_t)(0x00506760)/*&INI::parseMapCacheDefinition*/ },
+    { "MapData", (iniblockparse_t)(0x0062D610)/*&INI::parseMapDataDefinition*/ },
+    { "MappedImage", (iniblockparse_t)(0x00506510)/*&INI::parseMappedImageDefinition*/ },
+    { "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
+    { "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },
+    { "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
+    { "MultiplayerColor", (iniblockparse_t)(0x00504B10)/*&INI::parseMultiplayerColorDefinition*/ },
+    { "MultiplayerStartingMoneyChoice", (iniblockparse_t)(0x00504C80)/*&INI::parseMultiplayerStartingMoneyChoiceDefinition*/ },
+    { "OnlineChatColors", (iniblockparse_t)(0x00504D10)/*&INI::parseOnlineChatColorDefinition*/ },
+    { "MultiplayerSettings", (iniblockparse_t)(0x00504A90)/*&INI::parseMultiplayerSettingsDefinition*/ },
+    { "MusicTrack", (iniblockparse_t)(0x0044EAF0)/*&INI::parseMusicTrackDefinition*/ },
+    { "Object", (iniblockparse_t)(0x005048E0)/*&INI::parseObjectDefinition*/ },
+    { "ObjectCreationList", (iniblockparse_t)(0x004C1570)/*&INI::parseObjectCreationListDefinition*/ },
+    { "ObjectReskin", (iniblockparse_t)(0x00504990)/*&INI::parseObjectReskinDefinition*/ },
+    { "ParticleSystem", (iniblockparse_t)(0x005047E0)/*&INI::parseParticleSystemDefinition*/ },
+    { "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
+    { "Road", (iniblockparse_t)(0x005046A0)/*&INI::parseTerrainRoadDefinition*/ },
+    { "Science", (iniblockparse_t)(0x00488EA0)/*&INI::parseScienceDefinition*/ },
+    { "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
+    { "SpecialPower", (iniblockparse_t)(0x00504690)/*&INI::parseSpecialPowerDefinition*/ },
+    { "ShellMenuScheme", (iniblockparse_t)(0x00503CE0)/*&INI::parseShellMenuSchemeDefinition*/ },
+    { "Terrain", (iniblockparse_t)(0x00503BB0)/*&INI::parseTerrainDefinition*/ },
+    { "Upgrade", (iniblockparse_t)(0x00503BA0)/*&INI::parseUpgradeDefinition*/ },
+    { "Video", (iniblockparse_t)(0x005039D0)/*&INI::parseVideoDefinition*/ },
+    { "WaterSet", (iniblockparse_t)(0x00503240)/*&INI::parseWaterSettingDefinition*/ },
+    { "WaterTransparency", (iniblockparse_t)(0x00503390)/*&INI::parseWaterTransparencyDefinition*/ },
+    { "Weather", (iniblockparse_t)(0x00502DF0)/*&INI::parseWeatherDefinition*/ },
+    { "Weapon", (iniblockparse_t)(0x00502B30)/*&INI::parseWeaponTemplateDefinition*/ },
+    { "WebpageURL", (iniblockparse_t)(0x005028F0)/*&INI::parseWebpageURL*/ },
+    { "HeaderTemplate", (iniblockparse_t)(0x00501E50)/*&INI::parseHeaderTemplateDefinition*/ },
     { "StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definitions },
     { "DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definitions },
     { "LODPreset", &GameLODManager::Parse_LOD_Preset },
     { "BenchProfile", &GameLODManager::Parse_Bench_Profiles },
-    { "ReallyLowMHz", &parseReallyLowMHz },
-    { "ScriptAction", &ScriptEngine::parseScriptAction },
-    { "ScriptCondition", &ScriptEngine::parseScriptCondition },
+    { "ReallyLowMHz", &GameLODManager::Parse_Low_MHz },
+    { "ScriptAction", (iniblockparse_t)(0x004221C0)/*&ScriptEngine::parseScriptAction*/ },
+    { "ScriptCondition", (iniblockparse_t)(0x00422680)/*&ScriptEngine::parseScriptCondition*/ },
     { nullptr, nullptr }
 };
-#else
-#define TheTypeTable (Make_Pointer<BlockParse>(0x0093B670))
-#endif
-
 
 // Helper function for Load
 inline iniblockparse_t Find_Block_Parse(char const *token)

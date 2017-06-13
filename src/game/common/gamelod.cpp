@@ -558,3 +558,13 @@ void GameLODManager::Parse_Bench_Profiles(INI *ini)
         }
     }
 }
+
+void GameLODManager::Parse_Low_MHz(INI * ini)
+{
+    int mhz;
+    INI::Parse_Int(ini, nullptr, &mhz, nullptr);
+
+    if ( g_theGameLODManager != nullptr ) {
+        g_theGameLODManager->m_reallyLowMHz = mhz;
+    }
+}

@@ -147,6 +147,7 @@ public:
     static void Parse_Dynamic_LOD_Definitions(INI *ini);
     static void Parse_LOD_Preset(INI *ini);
     static void Parse_Bench_Profiles(INI *ini);
+    static void Parse_Low_MHz(INI *ini);
 private:
     enum
     {

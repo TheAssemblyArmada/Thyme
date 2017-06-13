@@ -23,13 +23,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "gamelod.h"
 #include "globaldata.h"
+#include "optionpreferences.h"
+#include <cstdio>
 
 // TODO when all references to original are reimplemented.
 //GameLODManager *g_theGameLODManager = nullptr;
 
 // TODO remove when function has been reimplemented.
 #define Test_Minimum_Requirements(chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score) \
-    Call_Function<void, ChipsetType, CPUType, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
+    Call_Function<void, ChipsetType*, CPUType*, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
 
 const char *g_staticGameLODNames[STATLOD_COUNT] = { "Low", "Medium", "High", "Custom" };
 
@@ -141,6 +143,106 @@ GameLODManager::GameLODManager() :
 
 void GameLODManager::Init()
 {
+    INI ini;
+    ini.Load("Data/INI/GameLOD.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/GameLODPresets.ini", INI_LOAD_OVERWRITE, nullptr);
+    Refresh_Custom_Static_LOD();
+
+    OptionPreferences opts;
+    StaticGameLODLevel static_detail = (StaticGameLODLevel)opts.Get_Static_Game_Detail();
+    m_idealStaticGameDetail = (StaticGameLODLevel)opts.Get_Ideal_Static_Game_Detail();
+
+    Test_Minimum_Requirements(
+        nullptr,
+        &m_cpuType,
+        &m_cpuMHz,
+        &m_physicalMem,
+        nullptr,
+        nullptr,
+        nullptr
+    );
+
+    // If physical memory is greater that 256MiB the test passes. Note that the test currently uses
+    // GlobalMemoryStatus and only stores the result in a 32bit int so this test can fail on
+    // modern machines.
+    if ( (float)m_physicalMem / 2.684E8f >= 0.94f ) {
+        m_didMemPass = true;
+    }
+
+    
+#if GAME_ALLOW_BENCHMARK
+    // This section benchmarks the system to try and work out the best lod level to use against
+    // some existing presets. Mac version does not have the benchmark code and does not
+    // bother doing this.
+    if ( (m_idealStaticGameDetail == STATLOD_INVALID && m_cpuType == CPU_UNKNOWN)
+        || g_theWriteableGlobalData->m_writeBenchMarkFile ) {
+        Test_Minimum_Requirements(
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr,
+            &m_integerScore,
+            &m_floatingPointScore,
+            &m_memoryScore
+        );
+
+        if ( g_theWriteableGlobalData->m_writeBenchMarkFile ) {
+            FILE *bmfile = fopen("Benchmark.txt", "w");
+
+            // Print a benchmark entry to the file we just opened.
+            if ( bmfile != nullptr ) {
+                fprintf(
+                    bmfile,
+                    "BenchProfile = %s %d %f %f %f",
+                    s_cpuNames[m_cpuType],
+                    m_cpuMHz,
+                    m_integerScore,
+                    m_floatingPointScore,
+                    m_memoryScore
+                );
+
+                fclose(bmfile);
+            }
+        }
+
+        m_overallScore = m_integerScore + m_floatingPointScore;
+
+        for ( int i = 0; i < m_benchProfileCount; ++i ) {
+            if ( m_integerScore / m_benchProfiles[i].integer_score >= 0.94f
+                && m_floatingPointScore / m_benchProfiles[i].floating_point_score >= 0.94f
+                && m_memoryScore / m_benchProfiles[i].memory_score >= 0.94f ) {
+                // TODO
+            }
+        }
+    }
+#endif
+
+    if ( static_detail == STATLOD_CUSTOM ) {
+        g_theWriteableGlobalData->m_textureReductionFactor = opts.Get_Texture_Reduction();
+        g_theWriteableGlobalData->m_shadowVolumes = opts.Get_3DShadows_Enabled();
+        g_theWriteableGlobalData->m_shadowDecals = opts.Get_2DShadows_Enabled();
+        g_theWriteableGlobalData->m_useBehindBuildingMarker = opts.Get_Building_Occlusion_Enabled();
+        g_theWriteableGlobalData->m_maxParticleCount = opts.Get_Particle_Cap();
+        g_theWriteableGlobalData->m_dynamicLOD = opts.Get_Dynamic_LOD_Enabled();
+        g_theWriteableGlobalData->m_useFPSLimit = opts.Get_FPSLimit_Enabled();
+        g_theWriteableGlobalData->m_useLightMap = opts.Get_Lightmap_Enabled();
+        g_theWriteableGlobalData->m_useCloudMap = opts.Get_Cloud_Shadows_Enabled();
+        g_theWriteableGlobalData->m_showSoftWaterEdge = opts.Get_Smooth_Water_Enabled();
+        g_theWriteableGlobalData->m_useHeatEffects = opts.Get_Use_Heat_Effects();
+        g_theWriteableGlobalData->m_extraAnimationsDisabled = opts.Get_Extra_Animations_Disabled();
+        g_theWriteableGlobalData->m_useTreeSway = !g_theWriteableGlobalData->m_extraAnimationsDisabled;
+        g_theWriteableGlobalData->m_useTrees = opts.Get_Trees_Enabled();
+    }
+
+    if ( g_theWriteableGlobalData->m_useStaticLODLevels ) {
+        if ( static_detail != STATLOD_INVALID
+            && (static_detail == STATLOD_CUSTOM || m_staticLODLevel != static_detail) ) {
+            Apply_Static_LOD_Level(static_detail);
+            m_staticLODLevel = static_detail;
+        }
+    } else {
+        m_staticLODLevel = STATLOD_CUSTOM;
+    }
 }
 
 void GameLODManager::Refresh_Custom_Static_LOD()
@@ -154,8 +256,8 @@ void GameLODManager::Refresh_Custom_Static_LOD()
     m_staticLOD[STATLOD_CUSTOM].max_tank_track_edges = g_theWriteableGlobalData->m_maxTankTrackEdges;
     m_staticLOD[STATLOD_CUSTOM].max_tank_track_opaque_edges = g_theWriteableGlobalData->m_maxTankTrackOpaqueEdges;
     m_staticLOD[STATLOD_CUSTOM].max_tank_track_fade_delay = g_theWriteableGlobalData->m_maxTankTrackFadeDelay;
-    m_staticLOD[STATLOD_CUSTOM].use_buildup_scaffolds = !g_theWriteableGlobalData->m_extraAnimations;
-    m_staticLOD[STATLOD_CUSTOM].use_tree_sway = !g_theWriteableGlobalData->m_extraAnimations;
+    m_staticLOD[STATLOD_CUSTOM].use_buildup_scaffolds = !g_theWriteableGlobalData->m_extraAnimationsDisabled;
+    m_staticLOD[STATLOD_CUSTOM].use_tree_sway = !g_theWriteableGlobalData->m_extraAnimationsDisabled;
     m_staticLOD[STATLOD_CUSTOM].use_heat_effects = g_theWriteableGlobalData->m_useHeatEffects;
     m_staticLOD[STATLOD_CUSTOM].texture_reduction_factor = g_theWriteableGlobalData->m_textureReductionFactor;
     m_staticLOD[STATLOD_CUSTOM].use_fps_limit = g_theWriteableGlobalData->m_useFPSLimit;

@@ -233,7 +233,7 @@ bool OptionPreferences::Get_Extra_Animations_Disabled()
     auto it = find("ExtraAnimations");
 
     if ( it == end() ) {
-        return g_theWriteableGlobalData->m_extraAnimations;
+        return g_theWriteableGlobalData->m_extraAnimationsDisabled;
     }
 
     return strcasecmp(it->second.Str(), "yes") == 0;

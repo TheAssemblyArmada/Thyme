@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
 #include "optionpreferences.h"
-#include "gamelod.h"
 #include "globaldata.h"
 #include "hooker.h"
 #include "minmax.h"

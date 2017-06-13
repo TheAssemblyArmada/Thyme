@@ -59,10 +59,26 @@ enum CPUType : int32_t
     CPU_K7,
 };
 
-enum ChipsetType : int32_t
+enum GPUType : int32_t
 {
-    CHIPSET_INVALID= -1,
-    CHIPSET_UNKNOWN,
+    GPU_INVALID= -1,
+    GPU_UNKNOWN,
+    GPU_V2,
+    GPU_V3,
+    GPU_V4,
+    GPU_V5,
+    GPU_TNT,
+    GPU_TNT2,
+    GPU_GF2,
+    GPU_R100,
+    GPU_PS11,
+    GPU_GF3,
+    GPU_GF4,
+    GPU_PS14,
+    GPU_R200,
+    GPU_PS20,
+    GPU_R300,
+    GPU_COUNT,
 };
 
 struct StaticGameLOD
@@ -106,7 +122,7 @@ struct LODPreset
     CPUType cpu_type;
     int mhz;
     float score;    // Not actually sure what this is, some kind of benchmark score?
-    int video_type;
+    GPUType video_type;
     int video_mem;
 };
 
@@ -174,7 +190,7 @@ private:
     int m_staticLODPresetCount[STATLOD_COUNT - 1];
     int m_benchProfileCount;
     StaticGameLODLevel m_idealStaticGameDetail;
-    ChipsetType m_chipsetType;
+    GPUType m_gpuType;
     CPUType m_cpuType;
     int m_physicalMem;
     int m_cpuMHz;

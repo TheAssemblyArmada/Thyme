@@ -31,7 +31,7 @@
 
 // TODO remove when function has been reimplemented.
 #define Test_Minimum_Requirements(chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score) \
-    Call_Function<void, ChipsetType*, CPUType*, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
+    Call_Function<void, GPUType*, CPUType*, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
 
 const char *g_staticGameLODNames[STATLOD_COUNT] = { "Low", "Medium", "High", "Custom" };
 
@@ -73,7 +73,7 @@ GameLODManager::GameLODManager() :
     m_didMemPass(0),
     m_benchProfileCount(0),
     m_idealStaticGameDetail(STATLOD_INVALID),
-    m_chipsetType((ChipsetType)16),
+    m_gpuType(GPU_COUNT),
     m_cpuType(CPU_UNKNOWN),
     m_physicalMem(0),
     m_cpuMHz(0),
@@ -123,7 +123,7 @@ GameLODManager::GameLODManager() :
             m_LODPresets[i][j].cpu_type = CPU_UNKNOWN;
             m_LODPresets[i][j].mhz = 1;
             m_LODPresets[i][j].score = 1.0f;
-            m_LODPresets[i][j].video_type = CHIPSET_UNKNOWN;
+            m_LODPresets[i][j].video_type = GPU_UNKNOWN;
             m_LODPresets[i][j].video_mem = 1;
         }
     }
@@ -289,7 +289,47 @@ const char *GameLODManager::Get_Static_LOD_Name(StaticGameLODLevel level)
 
 StaticGameLODLevel GameLODManager::Find_Static_LOD_Level()
 {
-    return StaticGameLODLevel();
+    if ( m_idealStaticGameDetail != STATLOD_INVALID ) {
+        return m_idealStaticGameDetail;
+    }
+
+    Test_Minimum_Requirements(
+        &m_gpuType,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr
+    );
+
+    if ( m_gpuType == GPU_UNKNOWN ) {
+        m_gpuType = GPU_TNT2;
+    }
+
+    for ( int i = STATLOD_HIGH; i >= STATLOD_LOW; --i ) {
+        for ( int j = 0; j < m_staticLODPresetCount[j]; ++j ) {
+            if ( m_cpuType == m_LODPresets[i][j].cpu_type ) {
+                if ( (double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94
+                    && m_gpuType >= m_LODPresets[i][j].video_type 
+                    && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94 ) {
+                    m_idealStaticGameDetail = (StaticGameLODLevel)i;
+                    break;
+                }
+            }
+        }
+
+        if ( m_idealStaticGameDetail >= i ) {
+            break;
+        }
+    }
+
+    OptionPreferences opts;
+    opts.Set_Ideal_Static_Game_Detail(m_idealStaticGameDetail);
+    opts.Set_Static_Game_Detail(m_idealStaticGameDetail);
+    opts.Write();
+
+    return m_idealStaticGameDetail;
 }
 
 bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)

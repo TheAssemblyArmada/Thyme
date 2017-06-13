@@ -28,6 +28,7 @@
 
 #include "userpreferences.h"
 #include "asciistring.h"
+#include "gamelod.h"
 
 class OptionPreferences : public UserPreferences
 {
@@ -46,6 +47,8 @@ public:
     bool Use_Camera_In_Replays();
     int Get_Ideal_Static_Game_Detail();
     int Get_Static_Game_Detail();
+    void Set_Ideal_Static_Game_Detail(int level) { (*this)["IdealStaticGameLOD"] = g_staticGameLODNames[level]; }
+    void Set_Static_Game_Detail(int level) { (*this)["StaticGameLOD"] = g_staticGameLODNames[level]; }
     AsciiString Get_Preferred_3D_Provider();
     AsciiString Get_Speaker_Type();
     float Get_Sound_Volume();

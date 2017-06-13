@@ -396,7 +396,7 @@ GlobalData::GlobalData()
     m_setMinVertextBufferSize = false;
     m_useTrees = false;
     m_useTreeSway = true;
-    m_extraAnimations = false;
+    m_extraAnimationsDisabled = false;
     m_useHeatEffects = true;
     m_useFPSLimit = false;
     m_dumpAssetUsage = false;

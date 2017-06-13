@@ -112,7 +112,7 @@ public:
     AsciiString m_moveHintName;
     bool m_useTrees;
     bool m_useTreeSway;
-    bool m_extraAnimations;
+    bool m_extraAnimationsDisabled;
     bool m_useHeatEffects;
     bool m_useFPSLimit;
     bool m_dumpAssetUsage;

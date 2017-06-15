@@ -38,6 +38,7 @@ set(GAMEENGINE_SRC
     game/maputil.cpp
     game/client/gametext.cpp
     game/client/optionpreferences.cpp
+    game/client/water.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp
@@ -62,6 +63,7 @@ set(GAMEENGINE_SRC
     game/common/system/gamememory.cpp
     game/common/system/gamememoryinit.cpp
     game/common/system/gamestate.cpp
+    game/common/system/gametype.cpp
     game/common/system/kindof.cpp
     game/common/system/localfile.cpp
     game/common/system/localfilesystem.cpp

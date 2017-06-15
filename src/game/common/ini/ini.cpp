@@ -30,6 +30,7 @@
 #include "gamelod.h"
 #include "globaldata.h"
 #include "minmax.h"
+#include "water.h"
 #include "xfer.h"
 #include <cctype>
 #include <cstdio>
@@ -92,7 +93,7 @@ BlockParse TheTypeTable[] =
     { "Terrain", (iniblockparse_t)(0x00503BB0)/*&INI::parseTerrainDefinition*/ },
     { "Upgrade", (iniblockparse_t)(0x00503BA0)/*&INI::parseUpgradeDefinition*/ },
     { "Video", (iniblockparse_t)(0x005039D0)/*&INI::parseVideoDefinition*/ },
-    { "WaterSet", (iniblockparse_t)(0x00503240)/*&INI::parseWaterSettingDefinition*/ },
+    { "WaterSet", &WaterSetting::Parse_Water_Setting },
     { "WaterTransparency", (iniblockparse_t)(0x00503390)/*&INI::parseWaterTransparencyDefinition*/ },
     { "Weather", (iniblockparse_t)(0x00502DF0)/*&INI::parseWeatherDefinition*/ },
     { "Weapon", (iniblockparse_t)(0x00502B30)/*&INI::parseWeaponTemplateDefinition*/ },

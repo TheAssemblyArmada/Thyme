@@ -30,6 +30,7 @@
 #include "asciistring.h"
 #include "color.h"
 #include "coord.h"
+#include "gametype.h"
 #include "ini.h"
 #include "money.h"
 
@@ -38,25 +39,7 @@ class WeaponBonusSet;
 
 #define LIGHT_COUNT 3
 
-// These four enums need moving when we work out where they should go.
-enum TimeOfDayType
-{
-    TIME_OF_DAY_INVALID = 0,
-    TIME_OF_DAY_FIRST = 1,
-    TIME_OF_DAY_MORNING = 1,
-    TIME_OF_DAY_AFTERNOON = 2,
-    TIME_OF_DAY_EVENING = 3,
-    TIME_OF_DAY_NIGHT = 4,
-    TIME_OF_DAY_COUNT,
-};
-
-enum WeatherType
-{
-    WEATHER_NORMAL = 0,
-    WEATHER_SNOWY,
-    WEATHER_COUNT,
-};
-
+// These enums need moving when we work out where they should go.
 enum TerrainLOD
 {
     TERRAIN_LOD_INVALID = 0,

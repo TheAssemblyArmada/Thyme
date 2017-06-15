@@ -33,13 +33,11 @@
 #define Test_Minimum_Requirements(chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score) \
     Call_Function<void, GPUType*, CPUType*, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
 
-const char *g_staticGameLODNames[STATLOD_COUNT] = { "Low", "Medium", "High", "Custom" };
-
-const char *g_dynamicGameLODNames[STATLOD_COUNT] = { "Low", "Medium", "High", "VeryHigh" };
-
+// The names and number of strings here correlates to the enums in gamelod.h
+const char *g_staticGameLODNames[] = { "Low", "Medium", "High", "Custom" };
+const char *g_dynamicGameLODNames[] = { "Low", "Medium", "High", "VeryHigh" };
 const char *GameLODManager::s_cpuNames[] = { "XX", "P3", "P4", "K7" };
-
-const char *GameLODManager::s_videoNames[] = {
+const char *GameLODManager::s_gpuNames[] = {
     "XX",
     "V2",
     "V3",
@@ -162,14 +160,13 @@ void GameLODManager::Init()
         nullptr
     );
 
-    // If physical memory is greater that 256MiB the test passes. Note that the test currently uses
-    // GlobalMemoryStatus and only stores the result in a 32bit int so this test can fail on
+    // If physical memory is greater than 256MiB the test passes. Note that the test currently uses
+    // GlobalMemoryStatus on windows and only stores the result in a 32bit int so this test can fail on
     // modern machines.
     if ( (float)m_physicalMem / 2.684E8f >= 0.94f ) {
         m_didMemPass = true;
     }
 
-    
 #if GAME_ALLOW_BENCHMARK
     // This section benchmarks the system to try and work out the best lod level to use against
     // some existing presets. Mac version does not have the benchmark code and does not
@@ -211,7 +208,27 @@ void GameLODManager::Init()
             if ( m_integerScore / m_benchProfiles[i].integer_score >= 0.94f
                 && m_floatingPointScore / m_benchProfiles[i].floating_point_score >= 0.94f
                 && m_memoryScore / m_benchProfiles[i].memory_score >= 0.94f ) {
-                // TODO
+                int j;
+
+                for ( j = STATLOD_HIGH; j >= STATLOD_LOW; --j ) {
+                    int k;
+
+                    for ( k = 0; k < m_staticLODPresetCount[j]; ++k ) {
+                        if ( m_benchProfiles[i].cpu_type == m_LODPresets[j][k].cpu_type
+                            && (double)m_benchProfiles[i].mhz / (double)m_LODPresets[j][k].mhz > 0.94 ) {
+                            break;
+                        }
+                    }
+
+                    if ( k < m_staticLODPresetCount[j] ) {
+                        break;
+                    }
+                }
+
+                if ( j >= STATLOD_LOW ) {
+                    m_cpuType = m_benchProfiles[i].cpu_type;
+                    m_cpuMHz = m_benchProfiles[i].mhz;
+                }
             }
         }
     }
@@ -539,7 +556,7 @@ void GameLODManager::Parse_LOD_Preset(INI *ini)
                     ini,
                     nullptr,
                     &g_theGameLODManager->m_LODPresets[level][preset_count].video_type,
-                    s_videoNames
+                    s_gpuNames
                 );
 
                 INI::Parse_Int(

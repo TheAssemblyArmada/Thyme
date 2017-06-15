@@ -202,7 +202,7 @@ private:
     int m_reallyLowMHz;
 
     static const char *s_cpuNames[];
-    static const char *s_videoNames[];
+    static const char *s_gpuNames[];
 };
 
 #define g_theGameLODManager (Make_Global<GameLODManager*>(0x00A2B924))

@@ -26,6 +26,7 @@
 #include "commandline.h"
 #include "commandlist.h"
 #include "filesystem.h"
+#include "gamelod.h"
 #include "globaldata.h"
 #include "ini.h"
 #include "localfilesystem.h"
@@ -98,6 +99,21 @@ void GameEngine::Init(int argc, char *argv[])
     );
 
     Parse_Command_Line(argc, argv);
+    g_theGameLODManager = new GameLODManager;
+    g_theGameLODManager->Init();
+
+    //if ( g_theWriteableGlobalData->m_updateTGAtoDDS ) {
+        // Windows version looks for a file called buildDDS.txt to get a list of
+        // TGA format textures to convert to DDS and then calls nvdxt as follows
+        // "..\\Build\\nvdxt -list buildDDS.txt -dxt5 -full -outdir Art\\Textures > buildDDS.out"
+        // There seems little point in keeping this as 1. its not cross platform and 2. most
+        // textures are DDS in the release build anyhow.
+    //}
+
+    ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
+    ini.Load("Data/INI/Water.ini", INI_LOAD_OVERWRITE, &xfer);
+    ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
+    ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
     //TODO this is a WIP
 }

@@ -38,6 +38,7 @@ public:
 
     Overridable *Get_Final_Override();
     Overridable *Delete_Overrides();
+    void Add_Override(Overridable *obj);
 
 protected:
     Overridable *m_next;
@@ -68,6 +69,15 @@ inline Overridable *Overridable::Delete_Overrides()
     }
 
     return this;
+}
+
+inline void Overridable::Add_Override(Overridable *obj)
+{
+    if ( m_next != nullptr ) {
+        Get_Final_Override()->m_next = obj;
+    } else {
+        m_next = obj;
+    }
 }
 
 #endif // OVERRIDABLE_H

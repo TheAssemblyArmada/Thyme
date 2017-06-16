@@ -26,6 +26,7 @@
 #include "gametype.h"
 
 // WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
+// WaterTrasparencySetting *g_theWaterTransparency = nullptr;
 
 FieldParse WaterSetting::m_waterSettingFieldParseTable[] =
 {
@@ -44,6 +45,23 @@ FieldParse WaterSetting::m_waterSettingFieldParseTable[] =
     { nullptr, nullptr, nullptr, 0 }
 };
 
+FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] =
+{
+    { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
+    { "TransparentWaterMinOpacity", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
+    { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
+    { "StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture) },
+    { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
+    { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
+    { "SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN) },
+    { "SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE) },
+    { "SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS) },
+    { "SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW) },
+    { "SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT) },
+    { nullptr, nullptr, nullptr, 0 }
+};
+
+
 void WaterSetting::Parse_Water_Setting(INI *ini)
 {
     AsciiString token = ini->Get_Next_Token();
@@ -57,4 +75,44 @@ void WaterSetting::Parse_Water_Setting(INI *ini)
 
     ASSERT_THROW(tod < TIME_OF_DAY_COUNT, 0xDEAD0006);
     ini->Init_From_INI(&g_waterSettings[tod], m_waterSettingFieldParseTable);
+}
+
+WaterTransparencySetting::WaterTransparencySetting() :
+    m_transparentWaterDepth(3.0f),
+    m_transparentWaterMinOpacity(1.0f),
+    m_standingWaterColor{ 1.0f, 1.0f, 1.0f },
+    m_radarWaterColor{ 140.0f, 140.0f, 255.0f },
+    m_additiveBlending(false),
+    m_standingWaterTexture("TWWater01.tga"),
+    m_skyboxTextureN("TSMorningN.tga"),
+    m_skyboxTextureE("TSMorningE.tga"),
+    m_skyboxTextureS("TSMorningS.tga"),
+    m_skyboxTextureW("TSMorningW.tga"),
+    m_skyboxTextureT("TSMorningT.tga")
+{
+
+}
+
+void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
+{
+    if ( g_theWaterTransparency == nullptr ) {
+        g_theWaterTransparency = new WaterTransparencySetting;
+    } else {
+        ASSERT_THROW(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES, 0xDEAD0006);
+        WaterTransparencySetting *new_wts = new WaterTransparencySetting;
+        *new_wts = *g_theWaterTransparency;
+        new_wts->m_deleteFlag = true;
+        g_theWaterTransparency->Add_Override(new_wts);
+    }
+
+    ini->Init_From_INI(
+        g_theWaterTransparency->Get_Override(),
+        m_waterTransparencySettingFieldParseTable
+    );
+
+    if ( ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES ) {
+        if ( g_theWaterTransparency != g_theWaterTransparency->Get_Override() ) {
+            // TODO requires TerrainVisual virtual table layout implementing.
+        }
+    }
 }

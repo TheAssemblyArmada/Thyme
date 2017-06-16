@@ -56,15 +56,39 @@ private:
     static FieldParse m_waterSettingFieldParseTable[];
 };
 
-class WaterTransparencySettings : public Overridable
+class WaterTransparencySetting : public Overridable
 {
+    IMPLEMENT_POOL(WaterTransparencySetting);
 public:
+    WaterTransparencySetting();
+    virtual ~WaterTransparencySetting() {}
+
+    WaterTransparencySetting *Get_Override()
+    {
+        return m_next == nullptr ? this : (WaterTransparencySetting*)Get_Final_Override();
+    }
+
+    static void Parse_Water_Transparency(INI *ini);
 
 private:
+    float m_transparentWaterDepth;
+    float m_transparentWaterMinOpacity;
+    RGBColor m_standingWaterColor;
+    RGBColor m_radarWaterColor;
+    bool m_additiveBlending;
+    AsciiString m_standingWaterTexture;
+    AsciiString m_skyboxTextureN;
+    AsciiString m_skyboxTextureE;
+    AsciiString m_skyboxTextureS;
+    AsciiString m_skyboxTextureW;
+    AsciiString m_skyboxTextureT;
 
+    static FieldParse m_waterTransparencySettingFieldParseTable[];
 };
 
 #define g_waterSettings (Make_Pointer<WaterSetting>(0x00A2F0B8))
 // extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
+#define g_theWaterTransparency (Make_Global<WaterTransparencySetting*>(0x00A2F0B0))
+// extern WaterTrasparencySetting *g_theWaterTransparency;
 
 #endif // WATER_H

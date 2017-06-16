@@ -30,6 +30,8 @@
 
 using rts::FourCC;
 
+// GameTextInterface *g_theGameText = nullptr;
+
 // Comparison function used for sorting and searching StringLookUp arrays.
 int GameTextManager::Compare_LUT(void const *a, void const *b)
 {

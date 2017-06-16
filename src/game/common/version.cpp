@@ -79,7 +79,7 @@ UnicodeString Version::Get_Unicode_Version()
 {
     UnicodeString ret;
 
-    ret.Format(TheGameText->Fetch("Version:Format2").Str(), m_major, m_minor);
+    ret.Format(g_theGameText->Fetch("Version:Format2").Str(), m_major, m_minor);
 
     return ret;
 }
@@ -89,9 +89,9 @@ UnicodeString Version::Get_Full_Unicode_Version()
     UnicodeString ret;
 
     if ( m_localBuildNum != 0 ) {
-        ret.Format(TheGameText->Fetch("Version:Format4").Str(), m_major, m_minor, m_buildNum, m_localBuildNum);
+        ret.Format(g_theGameText->Fetch("Version:Format4").Str(), m_major, m_minor, m_buildNum, m_localBuildNum);
     } else {
-        ret.Format(TheGameText->Fetch("Version:Format3").Str(), m_major, m_minor, m_buildNum);
+        ret.Format(g_theGameText->Fetch("Version:Format3").Str(), m_major, m_minor, m_buildNum);
     }
 
     return ret;
@@ -103,7 +103,7 @@ UnicodeString Version::Get_Unicode_Branch()
     UnicodeString branch;
 
     branch.Translate(m_branch);
-    ret.Format(TheGameText->Fetch("Version:BuildLocation").Str(), branch.Str());
+    ret.Format(g_theGameText->Fetch("Version:BuildLocation").Str(), branch.Str());
 
     return ret;
 }
@@ -114,7 +114,7 @@ UnicodeString Version::Get_Unicode_Commit_Hash()
     UnicodeString hash;
 
     hash.Translate(m_commitHash);
-    ret.Format(TheGameText->Fetch("Version:BuildUser").Str(), hash.Str());
+    ret.Format(g_theGameText->Fetch("Version:BuildUser").Str(), hash.Str());
 
     return ret;
 }
@@ -128,7 +128,7 @@ UnicodeString Version::Get_Unicode_Build_Time()
     date.Translate(m_buildDate);
     time.Translate(m_buildTime);
 
-    ret.Format(TheGameText->Fetch("Version:BuildTime").Str(), date.Str(), time.Str());
+    ret.Format(g_theGameText->Fetch("Version:BuildTime").Str(), date.Str(), time.Str());
 
     return ret;
 }

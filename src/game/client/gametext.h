@@ -148,8 +148,8 @@ private:
     std::vector<AsciiString> m_stringVector;
 };
 
-#define TheGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
-
+#define g_theGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
+// extern GameTextInterface *g_theGameText;
 inline void GameTextManager::Hook_Me()
 {
     Hook_Function((Make_Function_Ptr<GameTextInterface*>(0x00418320)), &Create_Game_Text_Interface);

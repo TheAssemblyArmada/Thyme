@@ -27,6 +27,7 @@
 #include "commandlist.h"
 #include "filesystem.h"
 #include "gamelod.h"
+#include "gametext.h"
 #include "globaldata.h"
 #include "ini.h"
 #include "localfilesystem.h"
@@ -115,6 +116,15 @@ void GameEngine::Init(int argc, char *argv[])
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
+    g_theGameText = GameTextManager::Create_Game_Text_Interface();
+    g_theSubsystemList->Init_Subsystem(
+        g_theGameText,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        "TheGameText"
+    );
     //TODO this is a WIP
 }
 

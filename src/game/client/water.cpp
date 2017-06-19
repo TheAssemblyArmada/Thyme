@@ -101,7 +101,7 @@ void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
         ASSERT_THROW(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES, 0xDEAD0006);
         WaterTransparencySetting *new_wts = new WaterTransparencySetting;
         *new_wts = *g_theWaterTransparency;
-        new_wts->m_deleteFlag = true;
+        new_wts->m_isAllocated = true;
         g_theWaterTransparency->Add_Override(new_wts);
     }
 

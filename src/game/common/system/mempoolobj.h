@@ -61,7 +61,7 @@ public:
             return The##classname##Pool; \
         } \
     public: \
-        virtual MemoryPool *Get_Object_Pool() \
+        virtual MemoryPool *Get_Object_Pool() override\
         { \
             return Get_Class_Pool(); \
         } \

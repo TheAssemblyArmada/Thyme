@@ -33,6 +33,7 @@
 #include "localfilesystem.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "science.h"
 #include "subsysteminterface.h"
 #include "xfercrc.h"
 
@@ -116,6 +117,7 @@ void GameEngine::Init(int argc, char *argv[])
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
+    // Text manager isn't controlled by ini files, it uses either a csf or str file.
     g_theGameText = GameTextManager::Create_Game_Text_Interface();
     g_theSubsystemList->Init_Subsystem(
         g_theGameText,
@@ -125,6 +127,17 @@ void GameEngine::Init(int argc, char *argv[])
         nullptr,
         "TheGameText"
     );
+
+    g_theScienceStore = new ScienceStore;
+    g_theSubsystemList->Init_Subsystem(
+        g_theScienceStore,
+        "Data\\INI\\Default\\Science.ini",
+        "Data\\INI\\Science.ini",
+        nullptr,
+        &xfer,
+        "TheScienceStore"
+    );
+
     //TODO this is a WIP
 }
 

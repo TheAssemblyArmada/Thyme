@@ -1,18 +1,41 @@
+////////////////////////////////////////////////////////////////////////////////
+//                               --  THYME  --                                //
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Project Name:: Thyme
+//
+//          File:: SCIENCE.H
+//
+//        Author:: OmniBlade
+//
+//  Contributors:: 
+//
+//   Description:: Handles abilities granted by gaining experience points.
+//
+//       License:: Thyme is free software: you can redistribute it and/or 
+//                 modify it under the terms of the GNU General Public License 
+//                 as published by the Free Software Foundation, either version 
+//                 2 of the License, or (at your option) any later version.
+//
+//                 A full copy of the GNU General Public License can be found in
+//                 LICENSE
+//
+////////////////////////////////////////////////////////////////////////////////
 #include "science.h"
 
-// ScienceStore *g_theScienceStore = nullptr;
-
-#if 0
-FieldParse __ZZN12ScienceStore29friend_parseScienceDefinitionEP3INIE12myFieldParse[6] =
-{
-    { "PrerequisiteSciences", &INI::parseScienceVector, NULL, 36 },
-    { "SciencePurchasePointCost", &INI::parseInt, NULL, 48 },
-    { "IsGrantable", &INI::parseBool, NULL, 52 },
-    { "DisplayName", &INI::parseAndTranslateLabel, NULL, 16 },
-    { "Description", &INI::parseAndTranslateLabel, NULL, 20 },
-    { NULL, NULL, NULL, 0 }
-};
+#ifdef THYME_STANDALONE
+ScienceStore *g_theScienceStore = nullptr;
 #endif
+
+FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
+    //{ "PrerequisiteSciences", &INI::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
+    { "PrerequisiteSciences", (inifieldparse_t)(0x0041B2C0), nullptr, offsetof(ScienceInfo, m_prerequisites) },
+    { "SciencePurchasePointCost", &INI::Parse_Int, nullptr, offsetof(ScienceInfo, m_purchaseCost) },
+    { "IsGrantable", &INI::Parse_Bool, nullptr, offsetof(ScienceInfo, m_isGrantable) },
+    { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_displayName) },
+    { "Description", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_description) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 void ScienceStore::Reset()
 {

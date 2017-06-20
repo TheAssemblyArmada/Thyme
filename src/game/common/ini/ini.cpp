@@ -28,6 +28,7 @@
 #include "filesystem.h"
 #include "gamedebug.h"
 #include "gamelod.h"
+#include "gametext.h"
 #include "globaldata.h"
 #include "minmax.h"
 #include "water.h"
@@ -675,4 +676,10 @@ void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *us
     } else {
         *static_cast<int32_t*>(store) &= ~i;
     }
+}
+
+void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, void const *user_data)
+{
+    UnicodeString *str = static_cast<UnicodeString*>(store);
+    *str = g_theGameText->Fetch(ini->Get_Next_Token());
 }

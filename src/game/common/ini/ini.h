@@ -152,6 +152,7 @@ public:
     static void Parse_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_Acceleration_Real(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data);
+    static void Parse_And_Translate_Label(INI *ini, void *formal, void *store, void const *user_data);
         
     // Block parsing functions
 

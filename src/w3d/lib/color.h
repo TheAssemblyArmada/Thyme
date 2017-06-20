@@ -36,28 +36,28 @@ inline uint32_t Make_Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 
 class RGBColor
 {
-    public:
-        float red;
-        float green;
-        float blue;
+public:
+    float red;
+    float green;
+    float blue;
 };
 
 class RGBAColorReal
 {
-    public:
-        float red;
-        float green;
-        float blue;
-        float alpha;
+public:
+    float red;
+    float green;
+    float blue;
+    float alpha;
 };
 
 class RGBAColorInt
 {
-    public:
-        uint32_t red;
-        uint32_t green;
-        uint32_t blue;
-        uint32_t alpha;
+public:
+    uint32_t red;
+    uint32_t green;
+    uint32_t blue;
+    uint32_t alpha;
 };
 
 #endif // _COLOR_H

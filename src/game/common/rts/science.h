@@ -33,6 +33,7 @@
 #include "always.h"
 #include "ini.h"
 #include "mempoolobj.h"
+#include "namekeygenerator.h"
 #include "overridable.h"
 #include "subsysteminterface.h"
 #include "unicodestring.h"
@@ -41,6 +42,7 @@
 enum ScienceType : int32_t
 {
     SCIENCE_INVALID = -1,
+    SCIENCE_BOGUS = 0,
 };
 
 class ScienceInfo : public Overridable
@@ -48,9 +50,12 @@ class ScienceInfo : public Overridable
     IMPLEMENT_POOL(ScienceInfo);
 public:
     ScienceInfo();
-    virtual ~ScienceInfo();
+    virtual ~ScienceInfo() {}
+
+    NameKeyType Get_Name_Key() { return m_nameKey; }
+
 private:
-    int m_unkInt1;
+    NameKeyType m_nameKey;
     UnicodeString m_displayName;
     UnicodeString m_description;
     std::vector<ScienceType> m_unkVec1;

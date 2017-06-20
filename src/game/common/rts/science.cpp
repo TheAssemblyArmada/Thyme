@@ -37,6 +37,18 @@ FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
+ScienceInfo::ScienceInfo() :
+    m_nameKey((NameKeyType)-1),
+    m_displayName(),
+    m_description(),
+    m_unkVec1(),
+    m_prerequisites(),
+    m_purchaseCost(0),
+    m_isGrantable(true)
+{
+
+}
+
 void ScienceStore::Reset()
 {
     for ( auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it ) {

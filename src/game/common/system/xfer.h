@@ -32,6 +32,7 @@
 #include "coord.h"
 #include "kindof.h"
 #include "matrix3d.h"
+#include "science.h"
 #include "snapshot.h"
 #include "unicodestring.h"
 #include <list>
@@ -45,12 +46,6 @@ struct RealRange
 
 typedef int ObjectID;
 typedef int DrawableID;
-
-enum ScienceType
-{
-    SCIENCE_INVALID = -1,
-    SCIENCE_BOGUS = 0,
-};
 
 enum XferType
 {

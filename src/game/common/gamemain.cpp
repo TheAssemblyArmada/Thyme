@@ -27,7 +27,7 @@
 GameEngine *Create_Game_Engine()
 {
     GameEngine *tmp = new Win32GameEngine;
-    tmp->Set_Is_Active();
+    tmp->Set_Is_Active(true);
 
     return tmp;
 }

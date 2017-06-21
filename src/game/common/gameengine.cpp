@@ -31,10 +31,12 @@
 #include "globaldata.h"
 #include "ini.h"
 #include "localfilesystem.h"
+#include "multiplayersettings.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "science.h"
 #include "subsysteminterface.h"
+#include "terraintypes.h"
 #include "xfercrc.h"
 
 #ifdef PLATFORM_WINDOWS
@@ -44,9 +46,9 @@
 //GameEngine *g_theGameEngine = nullptr;
 
 GameEngine::GameEngine() :
-    MaxFPS(0),
-    Quitting(false),
-    Active(false)
+    m_maxFPS(0),
+    m_isQuitting(false),
+    m_isActive(false)
 {
 #ifdef PLATFORM_WINDOWS
     timeBeginPeriod(1);
@@ -131,34 +133,37 @@ void GameEngine::Init(int argc, char *argv[])
     g_theScienceStore = new ScienceStore;
     g_theSubsystemList->Init_Subsystem(
         g_theScienceStore,
-        "Data\\INI\\Default\\Science.ini",
-        "Data\\INI\\Science.ini",
+        "Data/INI/Default/Science.ini",
+        "Data/INI/Science.ini",
         nullptr,
         &xfer,
         "TheScienceStore"
+    );
+
+    g_theMultiplayerSettings = new MultiplayerSettings;
+    g_theSubsystemList->Init_Subsystem(
+        g_theMultiplayerSettings,
+        "Data/INI/Default/Multiplayer.ini",
+        "Data/INI/Multiplayer.ini",
+        nullptr,
+        &xfer,
+        "TheMultiplayerSettings"
+    );
+
+    g_theTerrainTypes = new TerrainTypeCollection;
+    g_theSubsystemList->Init_Subsystem(
+        g_theTerrainTypes,
+        "Data/INI/Default/Terrain.ini",
+        "Data/INI/Terrain.ini",
+        nullptr,
+        &xfer,
+        "TheTerrainTypes"
     );
 
     //TODO this is a WIP
 }
 
 void GameEngine::Execute()
-{
-}
-
-void GameEngine::Set_FPS_Limit(int limit)
-{
-}
-
-int GameEngine::Get_FPS_Limit()
-{
-    return 0;
-}
-
-void GameEngine::Set_Quitting(bool quitting)
-{
-}
-
-void GameEngine::Get_Quitting()
 {
 }
 
@@ -171,18 +176,9 @@ void GameEngine::Service_Windows_OS()
 {
 }
 
-bool GameEngine::Get_Is_Active()
-{
-    return false;
-}
-
-void GameEngine::Set_Is_Active()
-{
-}
-
 FileSystem *GameEngine::Create_File_System()
 {
-    return nullptr;
+    return new FileSystem;
 }
 
 MessageStream *GameEngine::Create_Message_Stream()

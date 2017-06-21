@@ -52,6 +52,7 @@ set(GAMEENGINE_SRC
     game/common/namekeygenerator.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
+    game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp
     game/common/ini/ini.cpp

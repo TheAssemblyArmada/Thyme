@@ -61,7 +61,7 @@ inline Overridable *Overridable::Get_Final_Override()
 inline Overridable *Overridable::Delete_Overrides()
 {
     if ( m_isAllocated ) {
-        delete this;
+        Delete_Instance(this);
 
         return nullptr;
     }

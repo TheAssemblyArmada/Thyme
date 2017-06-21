@@ -31,6 +31,7 @@
 #include "gametext.h"
 #include "globaldata.h"
 #include "minmax.h"
+#include "terraintypes.h"
 #include "water.h"
 #include "xfer.h"
 #include <cctype>
@@ -91,7 +92,7 @@ BlockParse TheTypeTable[] =
     { "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
     { "SpecialPower", (iniblockparse_t)(0x00504690)/*&INI::parseSpecialPowerDefinition*/ },
     { "ShellMenuScheme", (iniblockparse_t)(0x00503CE0)/*&INI::parseShellMenuSchemeDefinition*/ },
-    { "Terrain", (iniblockparse_t)(0x00503BB0)/*&INI::parseTerrainDefinition*/ },
+    { "Terrain", &TerrainTypeCollection::Parse_Terrain_Definition },
     { "Upgrade", (iniblockparse_t)(0x00503BA0)/*&INI::parseUpgradeDefinition*/ },
     { "Video", (iniblockparse_t)(0x005039D0)/*&INI::parseVideoDefinition*/ },
     { "WaterSet", &WaterSetting::Parse_Water_Setting },

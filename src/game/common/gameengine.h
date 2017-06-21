@@ -58,14 +58,14 @@ public:
     // GameEngine interface
     virtual void Init(int argc, char *argv[]);
     virtual void Execute();
-    virtual void Set_FPS_Limit(int limit);
-    virtual int Get_FPS_Limit();
-    virtual void Set_Quitting(bool quitting);
-    virtual void Get_Quitting();
+    virtual void Set_FPS_Limit(int limit) { m_maxFPS = limit; }
+    virtual int Get_FPS_Limit() { return m_maxFPS; }
+    virtual void Set_Quitting(bool quitting) { m_isQuitting = quitting; }
+    virtual bool Get_Quitting() { return m_isQuitting; }
     virtual bool Is_Multiplayer_Session();
     virtual void Service_Windows_OS();
-    virtual bool Get_Is_Active();
-    virtual void Set_Is_Active();
+    virtual bool Get_Is_Active() { return m_isActive; }
+    virtual void Set_Is_Active(bool active) { m_isActive = active; }
     virtual FileSystem *Create_File_System();
     virtual LocalFileSystem *Create_Local_File_System() = 0;
     virtual ArchiveFileSystem *Create_Archive_File_System() = 0;
@@ -82,9 +82,9 @@ public:
     virtual Network *Create_Network() = 0;
 
 protected:
-    int MaxFPS;
-    bool Quitting;
-    bool Active;
+    int m_maxFPS;
+    bool m_isQuitting;
+    bool m_isActive;
 };
 
 #define g_theGameEngine Make_Global<GameEngine*>(0x00A29B80)

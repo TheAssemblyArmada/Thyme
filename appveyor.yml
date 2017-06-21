@@ -1,0 +1,57 @@
+# Specify version format
+version: "{build}"
+
+# Operating system (build VM template)
+os: Visual Studio 2015
+
+# build platform, i.e. Win32 (instead of x86), x64, Any CPU. This setting is optional.
+platform: Win32
+
+# specify custom environment variables
+environment:
+  MSVC_DEFAULT_OPTIONS: ON
+
+# build configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - cmd: cmake --version
+  - cmd: msbuild /version
+  - git config --global core.autocrlf input
+  
+# clone directory
+clone_folder: C:\projects\thyme
+
+# branches to build
+branches:
+  # whitelist
+  only: 
+    - master
+
+skip_commits:
+  files:
+    - docs/*
+
+# Maximum number of concurrent jobs for the project
+max_jobs: 1
+
+# scripts that run after cloning repository
+#install:
+#  - ps: cd C:\projects
+
+# scripts to run before build
+before_build:
+  - cmd: cd C:\projects\thyme
+  - cmd: md build
+  - cmd: cd build
+  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 14 2015
+  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%  ..
+
+build:
+  project: C:\projects\thyme\build\thyme.sln # path to Visual Studio solution or project
+  parallel: true                             # enable MSBuild parallel builds
+  verbosity: normal                          # MSBuild verbosity level (quiet|minimal|normal|detailed)
+
+test: off

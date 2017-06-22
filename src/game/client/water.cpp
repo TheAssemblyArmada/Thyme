@@ -25,8 +25,10 @@
 #include "gamedebug.h"
 #include "gametype.h"
 
-// WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
-// WaterTrasparencySetting *g_theWaterTransparency = nullptr;
+#ifdef THYME_STANDALONE
+WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
+WaterTrasparencySetting *g_theWaterTransparency = nullptr;
+#endif
 
 FieldParse WaterSetting::m_waterSettingFieldParseTable[] =
 {

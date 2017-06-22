@@ -1,5 +1,7 @@
 # Thyme
 
+[![Build status](https://ci.appveyor.com/api/projects/status/thd1as29wfnkh586?svg=true)](https://ci.appveyor.com/project/AdamMondez/thyme)
+
 An Open Source Re-Implementation of Generals: Zero Hour
 
 This project is a bottom-up rewrite of Generals: Zero Hour,

@@ -36,6 +36,7 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/main.cpp
     game/maputil.cpp
+    game/weather.cpp
     game/client/gametext.cpp
     game/client/optionpreferences.cpp
     game/client/water.cpp

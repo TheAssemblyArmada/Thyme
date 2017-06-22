@@ -26,10 +26,14 @@
 #ifndef WATER_H
 #define WATER_H
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
+#include "always.h"
 #include "overridable.h"
 #include "asciistring.h"
 #include "color.h"
-#include "hooker.h"
 #include "ini.h"
 
 class WaterSetting
@@ -86,9 +90,12 @@ private:
     static FieldParse m_waterTransparencySettingFieldParseTable[];
 };
 
+#ifdef THYME_STANDALONE
+extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
+extern WaterTrasparencySetting *g_theWaterTransparency;
+#else
 #define g_waterSettings (Make_Pointer<WaterSetting>(0x00A2F0B8))
-// extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 #define g_theWaterTransparency (Make_Global<WaterTransparencySetting*>(0x00A2F0B0))
-// extern WaterTrasparencySetting *g_theWaterTransparency;
+#endif
 
 #endif // WATER_H

@@ -97,16 +97,16 @@ private:
         ALL_TEMP_STRINGS_USED_MASK = 0xFF
     };
 
-    void Get_String(int length, bool is_temp);
-    char *Allocate_Buffer(int length);
+    void Get_String(size_t length, bool is_temp);
+    char *Allocate_Buffer(size_t length);
     void Resize(int size);
-    void Uninitialised_Grow(int length);
+    void Uninitialised_Grow(size_t length);
     void Free_String();
     void Store_Length(int length);
     void Store_Allocated_Length(int allocated_length);
     HEADER *Get_Header() const;
     int Get_Allocated_Length() const;
-    void Set_Buffer_And_Allocated_Length(char *buffer, int length);
+    void Set_Buffer_And_Allocated_Length(char *buffer, size_t length);
 
     char *m_buffer;
 
@@ -151,7 +151,7 @@ inline StringClass::StringClass(const StringClass &string, bool hint_temporary)
 inline StringClass::StringClass(const char *string, bool hint_temporary)
     : m_buffer(m_emptyString)
 {
-    int len = string ? strlen(string) : 0;
+    size_t len = string ? strlen(string) : 0;
 
     if ( hint_temporary || len > 0 ) {
         Get_String(len + 1, hint_temporary);
@@ -163,7 +163,7 @@ inline StringClass::StringClass(const char *string, bool hint_temporary)
 inline StringClass::StringClass(const wchar_t *string, bool hint_temporary)
     : m_buffer(m_emptyString)
 {
-    int len = string ? wcslen(string) : 0;
+    size_t len = string ? wcslen(string) : 0;
 
     if ( hint_temporary || len > 0 ) {
         Get_String(len + 1, hint_temporary);
@@ -191,7 +191,7 @@ inline const StringClass &StringClass::operator=(const StringClass &string)
 inline const StringClass &StringClass::operator=(const char *string)
 {
     if ( string != 0 ) {
-        int len = strlen(string);
+        size_t len = strlen(string);
         Uninitialised_Grow(len + 1);
         Store_Length(len);
 
@@ -290,7 +290,7 @@ inline void StringClass::Trim()
 inline const StringClass &StringClass::operator+=(const char *string)
 {
     int cur_len = Get_Length();
-    int src_len = strlen(string);
+    size_t src_len = strlen(string);
     int new_len = cur_len + src_len;
 
     Resize(new_len + 1);
@@ -375,7 +375,7 @@ inline int StringClass::Get_Allocated_Length() const
 
 inline int StringClass::Get_Length() const
 {
-    int length = 0;
+    size_t length = 0;
 
     if ( m_buffer != m_emptyString ) {
         HEADER *header = Get_Header();
@@ -390,7 +390,7 @@ inline int StringClass::Get_Length() const
     return length;
 }
 
-inline void StringClass::Set_Buffer_And_Allocated_Length(char *buffer, int length)
+inline void StringClass::Set_Buffer_And_Allocated_Length(char *buffer, size_t length)
 {
     Free_String();
     m_buffer = buffer;
@@ -401,7 +401,7 @@ inline void StringClass::Set_Buffer_And_Allocated_Length(char *buffer, int lengt
     }
 }
 
-inline char *StringClass::Allocate_Buffer(int length)
+inline char *StringClass::Allocate_Buffer(size_t length)
 {
     char *buffer = new char[(sizeof(char) * length) + sizeof(StringClass::HEADER)];
 
@@ -435,8 +435,8 @@ inline void StringClass::Store_Length(int length)
 
 inline void StringClass::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<void, StringClass, int, bool>(0x0089D0B0), &Get_String);
-    Hook_Method(Make_Method_Ptr<void, StringClass>(0x0089D460), &Free_String);
+    //Hook_Method(Make_Method_Ptr<void, StringClass, size_t, bool>(0x0089D0B0), &Get_String);
+    //Hook_Method(Make_Method_Ptr<void, StringClass>(0x0089D460), &Free_String);
 }
 
 #endif //WWSTRING_H

@@ -53,8 +53,8 @@ after_build:
   - cmd: 7z a thyme.zip .\Release\thyme.dll .\Release\launchthyme.exe -tzip
 
 artifacts:
-  path: thyme.zip
-  name: zip-archive
+  - path: thyme.zip
+    name: zip-archive
   
 build:
   project: C:\projects\thyme\build\thyme.sln # path to Visual Studio solution or project

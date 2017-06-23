@@ -38,7 +38,9 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
-    add_definitions(-D_USE_32BIT_TIME_T)	#This is for ABI compatibility with a few functions, remove when original binary no longer required.
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        add_definitions(-D_USE_32BIT_TIME_T)	#This is for ABI compatibility with a few functions, remove when original binary no longer required.
+    endif()
 endif()
 
 # Prevent lib prefix when built with MinGW to target windows and move to own dir.

@@ -172,10 +172,6 @@ bool GameEngine::Is_Multiplayer_Session()
     return false;
 }
 
-void GameEngine::Service_Windows_OS()
-{
-}
-
 FileSystem *GameEngine::Create_File_System()
 {
     return new FileSystem;

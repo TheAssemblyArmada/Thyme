@@ -95,6 +95,7 @@ set(GAMEENGINE_SRC
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     w3d/lib/chunkio.cpp
+    w3d/lib/cpudetect.cpp
     w3d/lib/critsection.cpp
     w3d/lib/ffactory.cpp
     w3d/lib/fileclass.cpp

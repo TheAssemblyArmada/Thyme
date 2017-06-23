@@ -24,7 +24,9 @@
 #include "always.h"
 #include "systimer.h"
 
-//SysTimeClass g_theSysTimer;
+#ifdef THYME_STANDALONE
+SysTimeClass g_theSysTimer;
+#endif
 
 void SysTimeClass::Reset()
 {

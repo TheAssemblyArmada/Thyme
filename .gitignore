@@ -1,6 +1,7 @@
 *.user
 *.ncb
 build
+build64
 nbuild/
 mbuild/
 nbproject/

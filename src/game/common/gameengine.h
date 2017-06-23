@@ -63,7 +63,7 @@ public:
     virtual void Set_Quitting(bool quitting) { m_isQuitting = quitting; }
     virtual bool Get_Quitting() { return m_isQuitting; }
     virtual bool Is_Multiplayer_Session();
-    virtual void Service_Windows_OS();
+    virtual void Service_Windows_OS() {}
     virtual bool Get_Is_Active() { return m_isActive; }
     virtual void Set_Is_Active(bool active) { m_isActive = active; }
     virtual FileSystem *Create_File_System();

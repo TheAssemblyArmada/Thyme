@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "main.h"
+#include "cpudetect.h"
 #include "hooker.h"
 #include "hookcrt.h"
 #include "critsection.h"
@@ -381,6 +382,9 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     DEBUG_LOG("Build date: %s\n", g_theVersion->Get_Ascii_Build_Time().Str());
     DEBUG_LOG("Build branch: %s\n", g_theVersion->Get_Ascii_Branch().Str());
     DEBUG_LOG("Build commit: %s\n", g_theVersion->Get_Ascii_Commit_Hash().Str());
+    DEBUG_LOG("Processor: %s\n", CPUDetectClass::Get_Processor_String());
+    DEBUG_LOG("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
+    //DEBUG_LOG(CPUDetectClass::Get_Processor_Log());
     DEBUG_LOG("================================================================================\n");
 
     DEBUG_LOG("About to run Game_Main\n");

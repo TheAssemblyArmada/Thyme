@@ -1193,7 +1193,7 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
 #ifdef COMPILER_MSVC
     int32_t regs[4];
 
-    __cpuidex(regs, cpuid_type, cpuid_leaf);
+    __cpuid(regs, cpuid_type);
 #elif defined COMPILER_CLANG || defined COMPILER_GNUC
     uint32_t regs[4];
 

@@ -179,7 +179,7 @@ public:
     static const char *Get_Processor_Log() { return ProcessorLog; }
     static const char *Get_Compact_Log() { return CompactLog; }
 
-    static bool CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t cpuid_leaf = 0);
+    static bool CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type);
 
 private:
     static void Init_CPUID_Instruction();
@@ -273,7 +273,7 @@ private:
 class CPUIDStruct
 {
 public:
-    CPUIDStruct(uint32_t cpuid_type, uint32_t cpuid_leaf = 0)
+    CPUIDStruct(uint32_t cpuid_type)
     {
         if ( !CPUDetectClass::Has_CPUID_Instruction() ) {
             eax = ebx = ecx = edx = 0;
@@ -281,7 +281,7 @@ public:
             return;
         }
 
-        CPUDetectClass::CPUID(eax, ebx, ecx, edx, cpuid_type, cpuid_leaf);
+        CPUDetectClass::CPUID(eax, ebx, ecx, edx, cpuid_type);
     }
 
     uint32_t eax;

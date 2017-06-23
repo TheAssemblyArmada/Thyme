@@ -34,7 +34,6 @@
 #elif defined COMPILER_CLANG || defined COMPILER_GNUC
 #include <x86intrin.h>
 #include <cpuid.h>
-#include <sys/resource.h> // setrlimit, getrlimit
 #endif
 #else
 #error cpudetect.cpp needs work for this platform
@@ -1059,7 +1058,7 @@ void CPUDetectClass::Init_CPUID_Instruction(void)
 #if defined PROCESSOR_X86 && !defined PROCESSOR_X86_64
 
 #if defined COMPILER_MSVC
-    // 32bit x86 CPU might not have CPUID instrution, though unlikely.
+    // 32bit x86 CPU might not have CPUID instruction, though unlikely.
     uint32_t cpuid_available = 0;
 
     __asm
@@ -1184,7 +1183,7 @@ void CPUDetectClass::Init_OS()
 #endif
 }
 
-bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t cpuid_leaf)
+bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type)
 {
     if ( !Has_CPUID_Instruction() ) {
         return false;
@@ -1195,25 +1194,16 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
     int32_t regs[4];
 
     __cpuidex(regs, cpuid_type, cpuid_leaf);
+#elif defined COMPILER_CLANG || defined COMPILER_GNUC
+    uint32_t regs[4];
 
+    __get_cpuid(cpuid_type, &regs[0], &regs[1], &regs[2], &regs[3]);
+#endif
     u_eax_ = regs[0];
     u_ebx_ = regs[1];
     u_ecx_ = regs[2];
     u_edx_ = regs[3];
-#elif defined COMPILER_CLANG || defined COMPILER_GNUC
-    uint32_t i_eax;
-    uint32_t i_ebx;
-    uint32_t i_ecx;
-    uint32_t i_edx;
-
-    __cpuid_count(cpuid_type, cpuid_leaf, &i_eax, &i_ebx, &i_ecx, &i_edx);
-
-    u_eax_ = i_eax;
-    u_ebx_ = i_ebx;
-    u_ecx_ = i_ecx;
-    u_edx_ = i_edx;
-#endif
-
+    
     return true;
 }
 
@@ -1318,7 +1308,7 @@ void CPUDetectClass::Init_Processor_Log(void)
 
     if ( CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size() > 0 ) {
         CPU_LOG(
-            "L1 Instruction Trace Cache: %d way set associative, %dk µOPs\n",
+            "L1 Instruction Trace Cache: %d way set associative, %dk ï¿½OPs\n",
             CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
             CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024
         );
@@ -1372,7 +1362,7 @@ void CPUDetectClass::Init_Compact_Log()
 static class CPUDetectInitClass
 {
 public:
-    CPUDetectInitClass::CPUDetectInitClass()
+    CPUDetectInitClass()
     {
         CPUDetectClass::Init_CPUID_Instruction();
         // The game assumes its going to run on x86 hardware, hopefully we will be

@@ -51,6 +51,8 @@
 #include <sys/sysinfo.h>
 #endif
 
+namespace {
+
 struct OSInfoStruct
 {
     const char *Code;
@@ -170,13 +172,126 @@ OSInfoStruct WindowsVersionTable[] = {
 };
 #endif // PLATFORM_WINDOWS
 
-static void Get_OS_Info(
+void Get_OS_Info(
     OSInfoStruct &os_info,
     uint32_t OSVersionPlatformId,
     uint32_t OSVersionNumberMajor,
     uint32_t OSVersionNumberMinor,
-    uint32_t OSVersionBuildNumber
-);
+    uint32_t OSVersionBuildNumber)
+{
+#ifdef PLATFORM_WINDOWS
+    uint32_t build_major = (OSVersionBuildNumber & 0xFF000000) >> 24;
+    uint32_t build_minor = (OSVersionBuildNumber & 0xFF0000) >> 16;
+    uint32_t build_sub = (OSVersionBuildNumber & 0xFFFF);
+
+    switch ( OSVersionPlatformId ) {
+        case VER_PLATFORM_WIN32_WINDOWS:
+        {
+            for ( int i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i ) {
+                if (
+                    WindowsVersionTable[i].VersionMajor == OSVersionNumberMajor &&
+                    WindowsVersionTable[i].VersionMinor == OSVersionNumberMinor &&
+                    WindowsVersionTable[i].BuildMajor == build_major &&
+                    WindowsVersionTable[i].BuildMinor == build_minor &&
+                    WindowsVersionTable[i].BuildSub == build_sub ) {
+                    os_info = WindowsVersionTable[i];
+                    return;
+                }
+            }
+
+            os_info.BuildMajor = build_major;
+            os_info.BuildMinor = build_minor;
+            os_info.BuildSub = build_sub;
+            if ( OSVersionNumberMajor == 4 ) {
+                //				os_info.SubCode.Format("%d",build_sub);
+                os_info.SubCode = "UNKNOWN";
+                if ( OSVersionNumberMinor == 0 ) {
+                    os_info.Code = "WIN95";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 10 ) {
+                    os_info.Code = "WIN98";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 90 ) {
+                    os_info.Code = "WINME";
+                    return;
+                }
+
+                os_info.Code = "WIN9X";
+
+                return;
+            }
+        }
+        break;
+        case VER_PLATFORM_WIN32_NT:
+            //		os_info.SubCode.Format("%d",build_sub);
+            os_info.SubCode = "UNKNOWN";
+            if ( OSVersionNumberMajor == 4 ) {
+                os_info.Code = "WINNT";
+                return;
+            }
+
+            if ( OSVersionNumberMajor == 5 ) {
+                if ( OSVersionNumberMinor == 0 ) {
+                    os_info.Code = "WIN2K";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 1 ) {
+                    os_info.Code = "WINXP";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 2 ) {
+                    os_info.Code = "WINXP64";
+                    return;
+                }
+
+                os_info.Code = "WINXX";
+                return;
+            }
+
+            if ( OSVersionNumberMajor == 6 ) {
+                if ( OSVersionNumberMinor == 0 ) {
+                    os_info.Code = "WINVISTA";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 1 ) {
+                    os_info.Code = "WIN7";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 2 ) {
+                    os_info.Code = "WIN8";
+                    return;
+                }
+
+                if ( OSVersionNumberMinor == 3 ) {
+                    os_info.Code = "WIN8.1";
+                    return;
+                }
+
+                os_info.Code = "WINXX";
+                return;
+            }
+
+            break;
+
+        default:
+            memset(&os_info, 0, sizeof(os_info));
+            os_info.Code = "UNKNOWN";
+            os_info.SubCode = "UNKNOWN";
+            os_info.VersionString = "UNKNOWN";
+            break;
+    }
+#endif
+}
+
+} // namespace
 
 StringClass CPUDetectClass::ProcessorLog;
 StringClass CPUDetectClass::CompactLog;
@@ -267,10 +382,10 @@ static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
 
     timer0 = __rdtsc();
 
-    uint32_t start = timeGetTime();
+    uint32_t start = g_theSysTimer.Get();
     uint32_t elapsed;
 
-    while ( (elapsed = timeGetTime() - start) < 200 ) {
+    while ( (elapsed = g_theSysTimer.Get() - start) < 200 ) {
         timer1 = __rdtsc();
     }
 
@@ -1154,10 +1269,10 @@ void CPUDetectClass::Init_Memory()
     sysinfo(&mem);
     TotalPhysicalMemory = mem.totalram * mem.mem_unit;
     AvailablePhysicalMemory = mem.freeram * mem.mem_unit;
-    TotalPageMemory = 0;
-    AvailablePageMemory = 0;
-    TotalVirtualMemory = mem.totalswap * mem.mem_unit;
-    AvailableVirtualMemory = mem.freeswap * mem.mem_unit;
+    TotalPageMemory = mem.totalswap * mem.mem_unit;
+    AvailablePageMemory = mem.freeswap * mem.mem_unit;
+    TotalVirtualMemory = uintptr_t(intptr_t(-1));
+    AvailableVirtualMemory = uintptr_t(intptr_t(-1));
 #endif
 }
 
@@ -1205,7 +1320,7 @@ void CPUDetectClass::Init_Processor_Log(void)
 #define CPU_LOG(n, ...) do { work.Format(n, ##__VA_ARGS__); CPUDetectClass::ProcessorLog += work; } while (false)
     StringClass work;
 
-    CPU_LOG("Operating System: ");
+    CPU_LOG("Operating system: ");
 
     switch ( OSVersionPlatformId ) {
         case VER_PLATFORM_WIN32s:
@@ -1221,7 +1336,7 @@ void CPUDetectClass::Init_Processor_Log(void)
 
     CPU_LOG("\n");
 
-    CPU_LOG("Operating system version %d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor);
+    CPU_LOG("Operating system version: %d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor);
     CPU_LOG(
         "Operating system build: %d.%d.%d\n",
         (OSVersionBuildNumber & 0xFF000000) >> 24,
@@ -1374,122 +1489,3 @@ public:
         CPUDetectClass::Init_Compact_Log();
     }
 } _CPU_Detect_Init;
-
-void Get_OS_Info(
-    OSInfoStruct &os_info,
-    uint32_t OSVersionPlatformId,
-    uint32_t OSVersionNumberMajor,
-    uint32_t OSVersionNumberMinor,
-    uint32_t OSVersionBuildNumber)
-{
-#ifdef PLATFORM_WINDOWS
-    uint32_t build_major = (OSVersionBuildNumber & 0xFF000000) >> 24;
-    uint32_t build_minor = (OSVersionBuildNumber & 0xFF0000) >> 16;
-    uint32_t build_sub = (OSVersionBuildNumber & 0xFFFF);
-
-    switch ( OSVersionPlatformId ) {
-        case VER_PLATFORM_WIN32_WINDOWS:
-            {
-                for ( int i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i ) {
-                    if (
-                        WindowsVersionTable[i].VersionMajor == OSVersionNumberMajor &&
-                        WindowsVersionTable[i].VersionMinor == OSVersionNumberMinor &&
-                        WindowsVersionTable[i].BuildMajor == build_major &&
-                        WindowsVersionTable[i].BuildMinor == build_minor &&
-                        WindowsVersionTable[i].BuildSub == build_sub ) {
-                        os_info = WindowsVersionTable[i];
-                        return;
-                    }
-                }
-
-                os_info.BuildMajor = build_major;
-                os_info.BuildMinor = build_minor;
-                os_info.BuildSub = build_sub;
-                if ( OSVersionNumberMajor == 4 ) {
-                    //				os_info.SubCode.Format("%d",build_sub);
-                    os_info.SubCode = "UNKNOWN";
-                    if ( OSVersionNumberMinor == 0 ) {
-                        os_info.Code = "WIN95";
-                        return;
-                    }
-
-                    if ( OSVersionNumberMinor == 10 ) {
-                        os_info.Code = "WIN98";
-                        return;
-                    }
-
-                    if ( OSVersionNumberMinor == 90 ) {
-                        os_info.Code = "WINME";
-                        return;
-                    }
-
-                    os_info.Code = "WIN9X";
-
-                    return;
-                }
-            }
-            break;
-        case VER_PLATFORM_WIN32_NT:
-            //		os_info.SubCode.Format("%d",build_sub);
-            os_info.SubCode = "UNKNOWN";
-            if ( OSVersionNumberMajor == 4 ) {
-                os_info.Code = "WINNT";
-                return;
-            }
-
-            if ( OSVersionNumberMajor == 5 ) {
-                if ( OSVersionNumberMinor == 0 ) {
-                    os_info.Code = "WIN2K";
-                    return;
-                }
-
-                if ( OSVersionNumberMinor == 1 ) {
-                    os_info.Code = "WINXP";
-                    return;
-                }
-
-                if ( OSVersionNumberMinor == 2 ) {
-                    os_info.Code = "WINXP64";
-                    return;
-                }
-
-                os_info.Code = "WINXX";
-                return;
-            }
-
-            if ( OSVersionNumberMajor == 6 ) {
-                if ( OSVersionNumberMinor == 0 ) {
-                    os_info.Code = "WINVISTA";
-                    return;
-                }
-
-                if ( OSVersionNumberMinor == 1 ) {
-                    os_info.Code = "WIN7";
-                    return;
-                }
-
-                if ( OSVersionNumberMinor == 2 ) {
-                    os_info.Code = "WIN8";
-                    return;
-                }
-
-                if ( OSVersionNumberMinor == 3 ) {
-                    os_info.Code = "WIN8.1";
-                    return;
-                }
-
-                os_info.Code = "WINXX";
-                return;
-            }
-
-            break;
-
-        default:
-            memset(&os_info, 0, sizeof(os_info));
-            os_info.Code = "UNKNOWN";
-            os_info.SubCode = "UNKNOWN";
-            os_info.VersionString = "UNKNOWN";
-            break;
-    }
-#endif
-}

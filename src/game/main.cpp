@@ -377,7 +377,7 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
     );
 
     // Make pretty log header for debug logging builds.
-    DEBUG_LOG("================================================================================\n");
+    DEBUG_LOG("================================================================================\n\n");
     DEBUG_LOG("Thyme Version: %s\n", g_theVersion->Get_Ascii_Version().Str());
     DEBUG_LOG("Build date: %s\n", g_theVersion->Get_Ascii_Build_Time().Str());
     DEBUG_LOG("Build branch: %s\n", g_theVersion->Get_Ascii_Branch().Str());

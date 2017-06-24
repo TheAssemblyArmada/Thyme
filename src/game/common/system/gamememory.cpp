@@ -37,8 +37,9 @@
 // Globals
 //////////
 
-bool ThePreMainInitFlag = false;
-bool TheMainInitFlag = false;
+int g_theLinkChecker = 0;
+bool g_thePreMainInitFlag = false;
+bool g_theMainInitFlag = false;
 
 ///////////////////////////////////
 // Memory Manager Control Functions
@@ -49,22 +50,22 @@ void Init_Memory_Manager()
     int param_count;
     PoolInitRec const *params;
 
-    if ( TheMemoryPoolFactory == nullptr ) {
+    if ( g_memoryPoolFactory == nullptr ) {
         DEBUG_LOG("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
-        TheMemoryPoolFactory = new MemoryPoolFactory;
-        TheMemoryPoolFactory->Init();
-        TheDynamicMemoryAllocator = TheMemoryPoolFactory->Create_Dynamic_Memory_Allocator(param_count, params);
+        g_memoryPoolFactory = new MemoryPoolFactory;
+        g_memoryPoolFactory->Init();
+        g_dynamicMemoryAllocator = g_memoryPoolFactory->Create_Dynamic_Memory_Allocator(param_count, params);
         User_Memory_Init_Pools();
-        ThePreMainInitFlag = false;
+        g_thePreMainInitFlag = false;
     }
 
     //
     // Check that new and delete both use our custom implementation.
     // 
-    TheLinkChecker = 0;
+    g_theLinkChecker = 0;
 
-    //DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", TheLinkChecker);
+    //DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -73,14 +74,14 @@ void Init_Memory_Manager()
     SimpleCriticalSectionClass *tmp2 = new SimpleCriticalSectionClass;
     delete tmp2;
 
-    if ( TheLinkChecker != 6 ) {
-        DEBUG_LOG("Not linked correct new and delete operators, checker has value %d\n", TheLinkChecker);
+    if ( g_theLinkChecker != 6 ) {
+        DEBUG_LOG("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
         exit(-1);
     }
 
-    //DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", TheLinkChecker);
+    //DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", g_theLinkChecker);
 
-    TheMainInitFlag = true;
+    g_theMainInitFlag = true;
 }
 
 void Init_Memory_Manager_Pre_Main()
@@ -88,91 +89,94 @@ void Init_Memory_Manager_Pre_Main()
     int param_count;
     PoolInitRec const *params;
 
-    if ( TheMemoryPoolFactory == nullptr ) {
+    if ( g_memoryPoolFactory == nullptr ) {
         //DEBUG_INIT(DEBUG_LOG_TO_FILE);
         //DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
-        TheMemoryPoolFactory = new MemoryPoolFactory;
-        TheMemoryPoolFactory->Init();
-        TheDynamicMemoryAllocator = TheMemoryPoolFactory->Create_Dynamic_Memory_Allocator(param_count, params);
+        g_memoryPoolFactory = new MemoryPoolFactory;
+        g_memoryPoolFactory->Init();
+        g_dynamicMemoryAllocator = g_memoryPoolFactory->Create_Dynamic_Memory_Allocator(param_count, params);
         User_Memory_Init_Pools();
-        ThePreMainInitFlag = true;
+        g_thePreMainInitFlag = true;
     }
 }
 
 void Shutdown_Memory_Manager()
 {
-    if ( !ThePreMainInitFlag ) {
-        if ( TheMemoryPoolFactory != nullptr ) {
-            if ( TheDynamicMemoryAllocator != nullptr ) {
-                TheMemoryPoolFactory->Destroy_Dynamic_Memory_Allocator(TheDynamicMemoryAllocator);
-                TheDynamicMemoryAllocator = nullptr;
+    if ( !g_thePreMainInitFlag ) {
+        if ( g_memoryPoolFactory != nullptr ) {
+            if ( g_dynamicMemoryAllocator != nullptr ) {
+                g_memoryPoolFactory->Destroy_Dynamic_Memory_Allocator(g_dynamicMemoryAllocator);
+                g_dynamicMemoryAllocator = nullptr;
             }
 
-            delete TheMemoryPoolFactory;
-            TheMemoryPoolFactory = nullptr;
+            delete g_memoryPoolFactory;
+            g_memoryPoolFactory = nullptr;
         }
     }
 
-    TheMainInitFlag = false;
+    g_theMainInitFlag = false;
 }
 
 ////////////////////////
 // Replacement operators
 ////////////////////////
 
-MemoryPool *Create_Named_Pool(char const *name, int size)
+MemoryPool *Create_Named_Pool(const char *name, int size)
 {
-    ++TheLinkChecker;
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
-    return TheMemoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
+    return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
 }
 
-//
-// These all override the global news and deletes just by being linked.
-//
 void *New_New(size_t bytes)
 {
     ++TheLinkChecker;
     Init_Memory_Manager_Pre_Main();
 
-    return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
-}
-
-void *operator new(size_t bytes)
-{
-    ++TheLinkChecker;
-    Init_Memory_Manager_Pre_Main();
-
-    return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
-}
-
-void *operator new[](size_t bytes)
-{
-    ++TheLinkChecker;
-    Init_Memory_Manager_Pre_Main();
-
-    return TheDynamicMemoryAllocator->Allocate_Bytes(bytes);
+    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void New_Delete(void *ptr)
 {
+    // For some reason, not having this global increment in the replacement
+    // for the original function causes an exception during init, so it stays
+    // until we figure it out or we go standalone.
     ++TheLinkChecker;
     Init_Memory_Manager_Pre_Main();
-    TheDynamicMemoryAllocator->Free_Bytes(ptr);
+    g_dynamicMemoryAllocator->Free_Bytes(ptr);
+}
+
+//
+// These all override the global news and deletes just by being linked.
+//
+void *operator new(size_t bytes)
+{
+    ++g_theLinkChecker;
+    Init_Memory_Manager_Pre_Main();
+
+    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
+}
+
+void *operator new[](size_t bytes)
+{
+    ++g_theLinkChecker;
+    Init_Memory_Manager_Pre_Main();
+
+    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
 void operator delete(void *ptr)
 {
-    ++TheLinkChecker;
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
-    TheDynamicMemoryAllocator->Free_Bytes(ptr);
+    g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 
 void operator delete[](void *ptr)
 {
-    ++TheLinkChecker;
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
-    TheDynamicMemoryAllocator->Free_Bytes(ptr);
+    g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }

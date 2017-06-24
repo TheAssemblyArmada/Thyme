@@ -116,7 +116,7 @@ bool RawFileClass::Delete()
     return false;
 }
 
-bool RawFileClass::Open(char const *filename, int rights)
+bool RawFileClass::Open(const char *filename, int rights)
 {
     Set_Name(filename);
     
@@ -371,7 +371,7 @@ int RawFileClass::Write(void const *buffer, int length)
     return writelen;
 }
 
-char const *RawFileClass::Set_Name(char const *filename)
+const char *RawFileClass::Set_Name(const char *filename)
 {
     //free the existing filename if it exists.
     if ( m_filename && m_isAllocated ) {
@@ -431,7 +431,7 @@ bool RawFileClass::Set_Date_Time(time_t datetime)
     return false;
 }
 
-void RawFileClass::Error(int error, bool can_retry, char const *filename)
+void RawFileClass::Error(int error, bool can_retry, const char *filename)
 {
     // Nothing in SAGE
 }

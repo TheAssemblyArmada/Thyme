@@ -39,7 +39,7 @@ AsciiString::AsciiString() :
 {
 }
 
-AsciiString::AsciiString(char const *s) :
+AsciiString::AsciiString(const char *s) :
     m_data(nullptr)
 {
     if ( s != nullptr ) {
@@ -84,14 +84,14 @@ void AsciiString::Release_Buffer()
         __sync_sub_and_fetch(&m_data->ref_count, 1);
     #endif
         if ( m_data->ref_count == 0 ) {
-            TheDynamicMemoryAllocator->Free_Bytes(m_data);
+            g_dynamicMemoryAllocator->Free_Bytes(m_data);
         }
         
         m_data = nullptr;
     }
 }
 
-void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, char const *str_to_cpy, char const *str_to_cat)
+void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
 {
     if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
         if ( str_to_cpy != nullptr ) {
@@ -110,8 +110,8 @@ void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data,
             //throw(&preserveData, &_TI1_AW4ErrorCode__);
         //}
 
-        int size = TheDynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
-        AsciiStringData *new_data = reinterpret_cast<AsciiStringData *>(TheDynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
+        int size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
+        AsciiStringData *new_data = reinterpret_cast<AsciiStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
         
         new_data->ref_count = 1;
         new_data->num_chars_allocated = size - sizeof(AsciiStringData);
@@ -182,7 +182,7 @@ char *AsciiString::Get_Buffer_For_Read(int len)
     return Peek();
 }
 
-void AsciiString::Set(char const *s)
+void AsciiString::Set(const char *s)
 {
     if ( m_data != nullptr || s != m_data->Peek() ) {
         size_t len;
@@ -253,7 +253,7 @@ void AsciiString::Concat(char c)
     Concat(str);
 }
 
-void AsciiString::Concat(char const *s)
+void AsciiString::Concat(const char *s)
 {
     int len = strlen(s);
 
@@ -355,7 +355,7 @@ void AsciiString::Remove_Last_Char()
     }
 }
 
-void AsciiString::Format(char const *format, ...)
+void AsciiString::Format(const char *format, ...)
 {
     va_list va;
 
@@ -371,7 +371,7 @@ void AsciiString::Format(AsciiString format, ...)
     Format_VA(format, va);
 }
 
-void AsciiString::Format_VA(char const *format, va_list args)
+void AsciiString::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -389,7 +389,7 @@ void AsciiString::Format_VA(AsciiString &format, va_list args)
     Set(buf);
 }
 
-bool AsciiString::Starts_With(char const *p) const
+bool AsciiString::Starts_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -405,7 +405,7 @@ bool AsciiString::Starts_With(char const *p) const
     return strncmp(Peek(), p, thatlen) == 0;
 }
 
-bool AsciiString::Ends_With(char const *p) const
+bool AsciiString::Ends_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -421,7 +421,7 @@ bool AsciiString::Ends_With(char const *p) const
     return strncmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
-bool AsciiString::Starts_With_No_Case(char const *p) const
+bool AsciiString::Starts_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -437,7 +437,7 @@ bool AsciiString::Starts_With_No_Case(char const *p) const
     return strncasecmp(Peek(), p, thatlen) == 0;
 }
 
-bool AsciiString::Ends_With_No_Case(char const *p) const
+bool AsciiString::Ends_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -453,7 +453,7 @@ bool AsciiString::Ends_With_No_Case(char const *p) const
     return strncasecmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
-bool AsciiString::Next_Token(AsciiString *tok, char const *delims)
+bool AsciiString::Next_Token(AsciiString *tok, const char *delims)
 {
     if ( m_data == nullptr ) {
         return false;

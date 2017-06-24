@@ -286,7 +286,7 @@ void Xfer::xferKindOf(KindOfType *thing)
     xferVersion(&ver, 1);
 
     AsciiString kind;
-    char const *kindc;
+    const char *kindc;
 
     switch ( Get_Mode() ) {
         case XFER_SAVE:

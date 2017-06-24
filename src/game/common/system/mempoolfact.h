@@ -34,17 +34,17 @@ struct PoolInitRec;
 class MemoryPool;
 class DynamicMemoryAllocator;
 
-#define TheMemoryPoolFactory (Make_Global<MemoryPoolFactory*>(0x00A29B94))
+#define g_memoryPoolFactory (Make_Global<MemoryPoolFactory*>(0x00A29B94))
 
 class MemoryPoolFactory
 {
 public:
-    MemoryPoolFactory() : FirstPoolInFactory(nullptr), FirstDmaInFactory(nullptr) {}
+    MemoryPoolFactory() : m_firstPoolInFactory(nullptr), m_firstDmaInFactory(nullptr) {}
     ~MemoryPoolFactory();
     void Init() {}
     MemoryPool *Create_Memory_Pool(PoolInitRec const *params);
-    MemoryPool *Create_Memory_Pool(char const *name, int size, int count, int overflow);
-    MemoryPool *Find_Memory_Pool(char const *name);
+    MemoryPool *Create_Memory_Pool(const char *name, int size, int count, int overflow);
+    MemoryPool *Find_Memory_Pool(const char *name);
     void Destroy_Memory_Pool(MemoryPool *pool);
     DynamicMemoryAllocator *Create_Dynamic_Memory_Allocator(int subpools, PoolInitRec const *const params);
     void Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator *allocator);
@@ -60,8 +60,8 @@ public:
         Raw_Free(obj);
     }
 private:
-    MemoryPool *FirstPoolInFactory;
-    DynamicMemoryAllocator *FirstDmaInFactory;
+    MemoryPool *m_firstPoolInFactory;
+    DynamicMemoryAllocator *m_firstDmaInFactory;
 };
 
 #endif

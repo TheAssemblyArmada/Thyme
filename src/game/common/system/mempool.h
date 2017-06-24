@@ -41,7 +41,7 @@ class MemoryPool
 public:
     MemoryPool();
     ~MemoryPool();
-    void Init(MemoryPoolFactory *factory, char const *name, int size, int count, int overflow);
+    void Init(MemoryPoolFactory *factory, const char *name, int size, int count, int overflow);
     MemoryPoolBlob *Create_Blob(int count);
     int Free_Blob(MemoryPoolBlob *blob);
     void *Allocate_Block_No_Zero();
@@ -53,7 +53,7 @@ public:
     void Add_To_List(MemoryPool **head);
     void Remove_From_List(MemoryPool **head);
 
-    int Get_Alloc_Size() { return AllocationSize; }
+    int Get_Alloc_Size() { return m_allocationSize; }
 
     void *operator new(size_t size) throw()
     {
@@ -70,18 +70,18 @@ public:
     friend class DynamicMemoryAllocator;
 
 private:
-    MemoryPoolFactory *Factory;
-    MemoryPool *NextPoolInFactory;
-    char const *PoolName;
-    int AllocationSize;
-    int InitialAllocationCount;
-    int OverflowAllocationCount;
-    int UsedBlocksInPool;
-    int TotalBlocksInPool;
-    int PeakUsedBlocksInPool;
-    MemoryPoolBlob *FirstBlob;
-    MemoryPoolBlob *LastBlob;
-    MemoryPoolBlob *FirstBlobWithFreeBlocks;
+    MemoryPoolFactory *m_factory;
+    MemoryPool *m_nextPoolInFactory;
+    const char *m_poolName;
+    int m_allocationSize;
+    int m_initialAllocationCount;
+    int m_overflowAllocationCount;
+    int m_usedBlocksInPool;
+    int m_totalBlocksInPool;
+    int m_peakUsedBlocksInPool;
+    MemoryPoolBlob *m_firstBlob;
+    MemoryPoolBlob *m_lastBlob;
+    MemoryPoolBlob *m_firstBlobWithFreeBlocks;
 };
 
 #endif

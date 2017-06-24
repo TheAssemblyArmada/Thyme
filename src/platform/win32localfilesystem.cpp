@@ -34,7 +34,7 @@
 #include <sys/stat.h>
 #endif
 
-File *Win32LocalFileSystem::Open_File(char const *filename, int mode)
+File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
 {
     if ( strlen(filename) <= 0 ) {
         return nullptr;
@@ -72,7 +72,7 @@ File *Win32LocalFileSystem::Open_File(char const *filename, int mode)
     return file;
 }
 
-bool Win32LocalFileSystem::Does_File_Exist(char const *filename)
+bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
 {
     return access(filename, 0) == 0;
 }

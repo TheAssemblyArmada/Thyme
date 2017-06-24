@@ -156,10 +156,10 @@ public:
     TargaImage();
     ~TargaImage();
  
-    int Open(char const *name, int mode);
+    int Open(const char *name, int mode);
     void Close();
-    int Load(char const *name, int flags, bool invert_image);
-    int Save(char const *name, int flags, bool add_extension);
+    int Load(const char *name, int flags, bool invert_image);
+    int Save(const char *name, int flags, bool add_extension);
     char *Set_Image(char *buffer);
     char *Get_Image() { return m_image; }
     char *Set_Palette(char *buffer);
@@ -173,15 +173,15 @@ public:
 
     static void Hook_Me();
 private:
-    int Load(char const *name, char* palette, char* image, bool invert_image);
+    int Load(const char *name, char* palette, char* image, bool invert_image);
     int Decode_Image();
     int Encode_Image();
     void Invert_Image();
     void X_Flip();
     void Y_Flip();
-    bool File_Open_Read(char const *name);
-    bool File_Open_Write(char const *name);
-    bool File_Open_ReadWrite(char const *name);
+    bool File_Open_Read(const char *name);
+    bool File_Open_Write(const char *name);
+    bool File_Open_ReadWrite(const char *name);
     int File_Seek(int pos, int dir) { return m_TGAFile->Seek(pos, dir); }
     int File_Read(void* buffer, int size) { return m_TGAFile->Read(buffer, size); }
     int File_Write(void* buffer, int size) { return m_TGAFile->Write(buffer, size); }

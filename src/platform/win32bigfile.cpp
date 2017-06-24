@@ -41,7 +41,7 @@ bool Win32BIGFile::Get_File_Info(AsciiString const &name, FileInfo *info)
     return true;
 }
 
-File *Win32BIGFile::Open_File(char const *filename, int mode)
+File *Win32BIGFile::Open_File(const char *filename, int mode)
 {
     ArchivedFileInfo *arch_info = Get_Archived_File_Info(filename);
 

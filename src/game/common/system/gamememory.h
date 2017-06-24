@@ -33,9 +33,7 @@
 #include "hooker.h"         //Remove once all hooks implemented
 
 void *New_New(size_t bytes);
-void *New_Array_New(size_t bytes);
 void New_Delete(void *ptr);
-void New_Array_Delete(void *ptr);
 
 struct PoolInitRec;
 
@@ -47,12 +45,13 @@ class DynamicMemoryAllocator;
 class SimpleCriticalSectionClass;
 
 #define TheLinkChecker (Make_Global<int>(0x00A29B9C))
-extern bool ThePreMainInitFlag;
-extern bool TheMainInitFlag;
+extern int g_theLinkChecker;
+extern bool g_thePreMainInitFlag;
+extern bool g_theMainInitFlag;
 
 void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();
 void Shutdown_Memory_Manager();
-MemoryPool *Create_Named_Pool(char const *name, int size);
+MemoryPool *Create_Named_Pool(const char *name, int size);
 
 #endif // _GAMEMEMORY_H

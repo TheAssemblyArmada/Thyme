@@ -35,7 +35,7 @@ class MemoryPoolBlob;
 class MemoryPoolSingleBlock
 {
 public:
-    MemoryPoolSingleBlock() : OwningBlob(nullptr), NextBlock(nullptr), PrevBlock(nullptr) {}
+    MemoryPoolSingleBlock() : m_owningBlob(nullptr), m_nextBlock(nullptr), m_prevBlock(nullptr) {}
     void Init_Block(int size, MemoryPoolBlob *owning_blob);
     void Remove_Block_From_List(MemoryPoolSingleBlock **list_head);
     void Add_Block_To_List(MemoryPoolSingleBlock **list_head);
@@ -48,41 +48,41 @@ public:
     friend class DynamicMemoryAllocator;
 
 private:
-    MemoryPoolBlob *OwningBlob;
-    MemoryPoolSingleBlock *NextBlock;
-    MemoryPoolSingleBlock *PrevBlock;
+    MemoryPoolBlob *m_owningBlob;
+    MemoryPoolSingleBlock *m_nextBlock;
+    MemoryPoolSingleBlock *m_prevBlock;
 };
 
 inline void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_blob)
 {
-    NextBlock = 0;
-    PrevBlock = 0;
-    OwningBlob = owning_blob;
+    m_nextBlock = 0;
+    m_prevBlock = 0;
+    m_owningBlob = owning_blob;
 }
 
 inline void MemoryPoolSingleBlock::Remove_Block_From_List(MemoryPoolSingleBlock **list_head)
 {
-    ASSERT_PRINT(OwningBlob == nullptr, "This function should only be used on raw blocks.\n");
+    ASSERT_PRINT(m_owningBlob == nullptr, "This function should only be used on raw blocks.\n");
 
     // Do we have previous? If not, we are the head?
-    if ( PrevBlock != nullptr ) {
+    if ( m_prevBlock != nullptr ) {
         ASSERT_PRINT(this != *list_head, "Bad list linkage");
-        PrevBlock->NextBlock = NextBlock;
+        m_prevBlock->m_nextBlock = m_nextBlock;
     } else {
-        *list_head = NextBlock;
+        *list_head = m_nextBlock;
     }
 
-    if ( NextBlock != nullptr ) {
-        NextBlock->PrevBlock = PrevBlock;
+    if ( m_nextBlock != nullptr ) {
+        m_nextBlock->m_prevBlock = m_prevBlock;
     }
 }
 
 inline void MemoryPoolSingleBlock::Add_Block_To_List(MemoryPoolSingleBlock **list_head)
 {
-    NextBlock = *list_head;
+    m_nextBlock = *list_head;
 
     if ( *list_head != nullptr ) {
-        (*list_head)->PrevBlock = this;
+        (*list_head)->m_prevBlock = this;
     }
 
     //*list_head = this;
@@ -108,4 +108,4 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(M
     return block;
 }
 
-#endif // _MEMBLOCK_H
+#endif // MEMBLOCK_H

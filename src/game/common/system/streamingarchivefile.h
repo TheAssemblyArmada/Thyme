@@ -37,7 +37,7 @@ class StreamingArchiveFile : public RAMFile
         StreamingArchiveFile();
         virtual ~StreamingArchiveFile();
 
-        virtual bool Open(char const *filename, int mode);
+        virtual bool Open(const char *filename, int mode);
         virtual void Close();
         virtual int Read(void *dst, int bytes);
         virtual int Write(void const *src, int bytes);

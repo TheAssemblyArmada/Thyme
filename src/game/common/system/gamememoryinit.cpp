@@ -654,16 +654,16 @@ static PoolSizeRec UserMemoryPools[] =
 
 
 
-void User_Memory_Adjust_Pool_Size(char const *name, int &initial_alloc, int &overflow_alloc)
+void User_Memory_Adjust_Pool_Size(const char *name, int &initial_alloc, int &overflow_alloc)
 {
     if ( initial_alloc > 0 ) {
         return;
     }
 
-    for ( PoolSizeRec *psr = UserMemoryPools; psr->PoolName != nullptr; ++psr ) {
-        if ( strcmp(psr->PoolName, name) == 0 ) {
-            initial_alloc = psr->InitialAllocationCount;
-            overflow_alloc = psr->OverflowAllocationCount;
+    for ( PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr ) {
+        if ( strcmp(psr->pool_name, name) == 0 ) {
+            initial_alloc = psr->initial_allocation_count;
+            overflow_alloc = psr->overflow_allocation_count;
         }
     }
 }
@@ -722,10 +722,10 @@ void User_Memory_Init_Pools()
     if ( fp != nullptr ) {
         while ( fgets(path, PATH_MAX, fp) != nullptr ) {
             if ( *path != ';' && sscanf(path, "%s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3 ) {
-                for ( PoolSizeRec *psr = UserMemoryPools; psr->PoolName != nullptr; ++psr ) {
-                    if ( strcasecmp(psr->PoolName, pool_name) == 0 ) {
-                        psr->InitialAllocationCount = MAX((int)sizeof(void*), Round_Up_Word_Size(initial_alloc));
-                        psr->OverflowAllocationCount = MAX((int)sizeof(void*), Round_Up_Word_Size(overflow_alloc));
+                for ( PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr ) {
+                    if ( strcasecmp(psr->pool_name, pool_name) == 0 ) {
+                        psr->initial_allocation_count = MAX((int)sizeof(void*), Round_Up_Word_Size(initial_alloc));
+                        psr->overflow_allocation_count = MAX((int)sizeof(void*), Round_Up_Word_Size(overflow_alloc));
                     }
                 }
             }

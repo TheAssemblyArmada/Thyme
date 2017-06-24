@@ -27,10 +27,10 @@
 
 AsciiString Get_Base_Path_From_Path(AsciiString path)
 {
-    char const *path_str = path.Str();
+    const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    char const *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting base path from '%s'.\n", path_str);
 
@@ -47,10 +47,10 @@ AsciiString Get_Base_Path_From_Path(AsciiString path)
 
 AsciiString Get_File_From_Path(AsciiString path)
 {
-    char const *path_str = path.Str();
+    const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    char const *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting file from '%s'.\n", path_str);
 
@@ -63,10 +63,10 @@ AsciiString Get_File_From_Path(AsciiString path)
 
 AsciiString Get_Base_File_From_File(AsciiString path)
 {
-    char const *path_str = path.Str();
+    const char *path_str = path.Str();
 
     // Find the last . seperator for file extension.
-    char const *last_sep = strrchr(path_str, '.');
+    const char *last_sep = strrchr(path_str, '.');
 
     DEBUG_LOG("Getting base filename from '%s'.\n", path_str);
 

@@ -26,9 +26,9 @@
 #include "minmax.h"
 #include "globaldata.h"
 
-char const *const MapCache::s_mapDirName = "Maps";
-char const *const MapCache::s_mapExtension = "map";
-char const *const MapCache::s_mapCacheName = "MapCache.ini";
+const char *const MapCache::s_mapDirName = "Maps";
+const char *const MapCache::s_mapExtension = "map";
+const char *const MapCache::s_mapCacheName = "MapCache.ini";
 
 // Updates a waypoint map from the global waypoints map with initial cam position
 // and player start waypoints.

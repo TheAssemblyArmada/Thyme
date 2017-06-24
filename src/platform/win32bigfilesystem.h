@@ -41,8 +41,8 @@ public:
     virtual void Update() {}
 
     // ArchiveFileSystem implementations
-    virtual ArchiveFile *Open_Archive_File(char const *filename);
-    virtual void Close_Archive_File(char const *filename);
+    virtual ArchiveFile *Open_Archive_File(const char *filename);
+    virtual void Close_Archive_File(const char *filename);
     virtual void Close_All_Archives() {}
     virtual void Close_All_Files() {}
     virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs);

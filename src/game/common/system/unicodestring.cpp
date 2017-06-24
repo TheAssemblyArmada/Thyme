@@ -105,7 +105,7 @@ void UnicodeString::Release_Buffer()
 
     if ( m_data != nullptr ) {
         if ( --m_data->ref_count == 0 ) {
-            TheDynamicMemoryAllocator->Free_Bytes(m_data);
+            g_dynamicMemoryAllocator->Free_Bytes(m_data);
         }
 
         m_data = nullptr;
@@ -131,8 +131,8 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_dat
         //throw(&preserveData, &_TI1_AW4ErrorCode__);
         //}
 
-        int size = TheDynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(wchar_t) * chars_needed + sizeof(UnicodeStringData));
-        UnicodeStringData *new_data = reinterpret_cast<UnicodeStringData *>(TheDynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
+        int size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(wchar_t) * chars_needed + sizeof(UnicodeStringData));
+        UnicodeStringData *new_data = reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
 
         new_data->ref_count = 1;
         new_data->num_chars_allocated = (size - sizeof(UnicodeStringData)) / sizeof(wchar_t);

@@ -33,7 +33,7 @@ typedef int(*cmdparse_t)(char **, int);
 
 struct CmdParseStruct
 {
-    char const *argument;
+    const char *argument;
     cmdparse_t handler;
 };
 

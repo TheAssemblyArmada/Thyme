@@ -42,7 +42,7 @@ typedef int(*except_t)(int, _EXCEPTION_POINTERS*);
 class ThreadClass
 {
 public:
-    ThreadClass(char const *thread_name, except_t exception_handler = nullptr);
+    ThreadClass(const char *thread_name, except_t exception_handler = nullptr);
     virtual ~ThreadClass();
 
     virtual void Thread_Function() = 0;

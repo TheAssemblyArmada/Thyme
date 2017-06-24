@@ -65,7 +65,7 @@ protected:
 public:
     virtual ~File();
 
-    virtual bool Open(char const *filename, int mode);
+    virtual bool Open(const char *filename, int mode);
     virtual void Close();
     virtual int Read(void *dst, int bytes) = 0;
     virtual int Write(void const *src, int bytes) = 0;
@@ -74,7 +74,7 @@ public:
     virtual bool Scan_Int(int &integer) = 0;
     virtual bool Scan_Real(float &real) = 0;
     virtual bool Scan_String(AsciiString &string) = 0;
-    virtual bool Print(char const *format, ...);
+    virtual bool Print(const char *format, ...);
     virtual int Size();
     virtual int Position();
 

@@ -33,7 +33,7 @@ ArchiveFileSystem::~ArchiveFileSystem()
 {
 }
 
-File *ArchiveFileSystem::Open_File(char const *filename, int mode)
+File *ArchiveFileSystem::Open_File(const char *filename, int mode)
 {
     AsciiString archive = Get_Archive_Filename_For_File(filename);
 
@@ -48,7 +48,7 @@ File *ArchiveFileSystem::Open_File(char const *filename, int mode)
     return file->Open_File(filename, mode);
 }
 
-bool ArchiveFileSystem::Does_File_Exist(char const *filename)
+bool ArchiveFileSystem::Does_File_Exist(const char *filename)
 {
     AsciiString path = filename;
     AsciiString token;

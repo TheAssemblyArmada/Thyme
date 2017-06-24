@@ -28,12 +28,6 @@
 
 #include "wwstring.h"
 
-#if defined PLATFORM_WINDOWS && defined PROCESSOR_X86_64
-	#define MAX_CPU 64
-#else
-	//#define MAX_CPU 32
-#endif
-
 class CPUDetectInitClass;
 
 class CPUDetectClass

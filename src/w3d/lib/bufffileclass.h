@@ -32,7 +32,7 @@ class BufferedFileClass : public RawFileClass
 {
 public:
     BufferedFileClass();
-    BufferedFileClass(char const *filename);
+    BufferedFileClass(const char *filename);
     virtual ~BufferedFileClass();
 
     virtual int Write(void const *buffer, int size);

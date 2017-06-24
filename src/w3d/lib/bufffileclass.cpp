@@ -36,7 +36,7 @@ BufferedFileClass::BufferedFileClass() :
     
 }
 
-BufferedFileClass::BufferedFileClass(char const *filename) :
+BufferedFileClass::BufferedFileClass(const char *filename) :
     RawFileClass(filename),
     m_buffer(nullptr),
     m_bufferSize(0),

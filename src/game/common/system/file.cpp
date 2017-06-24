@@ -38,7 +38,7 @@ File::~File()
     File::Close();
 }
 
-bool File::Open(char const *filename, int mode)
+bool File::Open(const char *filename, int mode)
 {
     if ( Access ) {
         return false;
@@ -93,7 +93,7 @@ void File::Close()
     }
 }
 
-bool File::Print(char const *format, ...)
+bool File::Print(const char *format, ...)
 {
     va_list va;
     char buffer[10240];

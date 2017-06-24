@@ -55,7 +55,7 @@ class SubsystemInterfaceList
     public:
         SubsystemInterfaceList() : m_subsystems(), m_unksubsystems() {}
 
-        void Init_Subsystem(SubsystemInterface *sys, char const *default_ini_path, char const *ini_path, char const *dir_path, Xfer *xfer, AsciiString sys_name);
+        void Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path, const char *dir_path, Xfer *xfer, AsciiString sys_name);
         void Post_Process_Load_All();
         void Reset_All();
         void Shutdown_All();

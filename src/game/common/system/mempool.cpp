@@ -35,42 +35,42 @@ SimpleCriticalSectionClass *MemoryPoolCriticalSection = nullptr;
 /////////////
 
 MemoryPool::MemoryPool() :
-    Factory(nullptr),
-    NextPoolInFactory(nullptr),
-    PoolName(""),
-    AllocationSize(0),
-    InitialAllocationCount(0),
-    OverflowAllocationCount(0),
-    UsedBlocksInPool(0),
-    TotalBlocksInPool(0),
-    PeakUsedBlocksInPool(0),
-    FirstBlob(nullptr),
-    LastBlob(nullptr),
-    FirstBlobWithFreeBlocks(nullptr)
+    m_factory(nullptr),
+    m_nextPoolInFactory(nullptr),
+    m_poolName(""),
+    m_allocationSize(0),
+    m_initialAllocationCount(0),
+    m_overflowAllocationCount(0),
+    m_usedBlocksInPool(0),
+    m_totalBlocksInPool(0),
+    m_peakUsedBlocksInPool(0),
+    m_firstBlob(nullptr),
+    m_lastBlob(nullptr),
+    m_firstBlobWithFreeBlocks(nullptr)
 {
 
 }
 
 MemoryPool::~MemoryPool()
 {
-    for ( MemoryPoolBlob *b = FirstBlob; b != nullptr; b = FirstBlob ) {
+    for ( MemoryPoolBlob *b = m_firstBlob; b != nullptr; b = m_firstBlob ) {
         Free_Blob(b);
     }
 }
 
-void MemoryPool::Init(MemoryPoolFactory *factory, char const *name, int size, int count, int overflow)
+void MemoryPool::Init(MemoryPoolFactory *factory, const char *name, int size, int count, int overflow)
 {
-    Factory = factory;
-    PoolName = name;
-    AllocationSize = Round_Up_Word_Size(size);
-    OverflowAllocationCount = overflow;
-    InitialAllocationCount = count;
-    UsedBlocksInPool = 0;
-    TotalBlocksInPool = 0;
-    PeakUsedBlocksInPool = 0;
-    FirstBlob = nullptr;
-    LastBlob = nullptr;
-    FirstBlobWithFreeBlocks = nullptr;
+    m_factory = factory;
+    m_poolName = name;
+    m_allocationSize = Round_Up_Word_Size(size);
+    m_overflowAllocationCount = overflow;
+    m_initialAllocationCount = count;
+    m_usedBlocksInPool = 0;
+    m_totalBlocksInPool = 0;
+    m_peakUsedBlocksInPool = 0;
+    m_firstBlob = nullptr;
+    m_lastBlob = nullptr;
+    m_firstBlobWithFreeBlocks = nullptr;
     Create_Blob(count);
 }
 
@@ -78,29 +78,29 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
 {
     MemoryPoolBlob *blob = new MemoryPoolBlob;
     blob->Init_Blob(this, count);
-    blob->Add_Blob_To_List(&FirstBlob, &LastBlob);
+    blob->Add_Blob_To_List(&m_firstBlob, &m_lastBlob);
 
-    ASSERT_PRINT(FirstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
+    ASSERT_PRINT(m_firstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
 
-    FirstBlobWithFreeBlocks = blob;
-    TotalBlocksInPool += count;
+    m_firstBlobWithFreeBlocks = blob;
+    m_totalBlocksInPool += count;
 
     return blob;
 }
 
 int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 {
-    ASSERT_PRINT(blob->OwningPool == this, "Blob does not belong to this pool");
+    ASSERT_PRINT(blob->m_owningPool == this, "Blob does not belong to this pool");
 
-    blob->Remove_Blob_From_List(&FirstBlob, &LastBlob);
+    blob->Remove_Blob_From_List(&m_firstBlob, &m_lastBlob);
 
-    if ( FirstBlobWithFreeBlocks == blob ) {
-        FirstBlobWithFreeBlocks = FirstBlob;
+    if ( m_firstBlobWithFreeBlocks == blob ) {
+        m_firstBlobWithFreeBlocks = m_firstBlob;
     }
 
-    int blob_alloc = blob->TotalBlocksInBlob * AllocationSize + sizeof(*blob);
-    UsedBlocksInPool -= blob->UsedBlocksInBlob;
-    TotalBlocksInPool -= blob->TotalBlocksInBlob;
+    int blob_alloc = blob->m_totalBlocksInBlob * m_allocationSize + sizeof(*blob);
+    m_usedBlocksInPool -= blob->m_usedBlocksInBlob;
+    m_totalBlocksInPool -= blob->m_totalBlocksInBlob;
 
     delete blob;
 
@@ -111,31 +111,31 @@ void *MemoryPool::Allocate_Block_No_Zero()
 {
     ScopedCriticalSectionClass scs(MemoryPoolCriticalSection);
 
-    if ( FirstBlobWithFreeBlocks != nullptr && FirstBlobWithFreeBlocks->FirstFreeBlock == nullptr ) {
+    if ( m_firstBlobWithFreeBlocks != nullptr && m_firstBlobWithFreeBlocks->m_firstFreeBlock == nullptr ) {
         MemoryPoolBlob *i;
-        for ( i = FirstBlob; i != nullptr; i = i->NextBlob ) {
-            if ( i->FirstFreeBlock != nullptr ) {
+        for ( i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
+            if ( i->m_firstFreeBlock != nullptr ) {
                 break;
             }
         }
 
-        FirstBlobWithFreeBlocks = i;
+        m_firstBlobWithFreeBlocks = i;
     }
 
-    if ( FirstBlobWithFreeBlocks == nullptr ) {
-        ASSERT_THROW(OverflowAllocationCount != 0, 0xDEAD0002);
-        Create_Blob(OverflowAllocationCount);
+    if ( m_firstBlobWithFreeBlocks == nullptr ) {
+        ASSERT_THROW(m_overflowAllocationCount != 0, 0xDEAD0002);
+        Create_Blob(m_overflowAllocationCount);
     }
 
-    MemoryPoolSingleBlock *block = FirstBlobWithFreeBlocks->Allocate_Single_Block();
-    ++UsedBlocksInPool;
+    MemoryPoolSingleBlock *block = m_firstBlobWithFreeBlocks->Allocate_Single_Block();
+    ++m_usedBlocksInPool;
 
     //TODO convert to MAX()
-    //if ( PeakUsedBlocksInPool < UsedBlocksInPool ) {
-    //    PeakUsedBlocksInPool = UsedBlocksInPool;
+    //if ( m_peakUsedBlocksInPool < m_usedBlocksInPool ) {
+    //    m_peakUsedBlocksInPool = m_usedBlocksInPool;
     //}
 
-    PeakUsedBlocksInPool = MAX(PeakUsedBlocksInPool, UsedBlocksInPool);
+    m_peakUsedBlocksInPool = MAX(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();
 }
@@ -143,7 +143,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
 void *MemoryPool::Allocate_Block()
 {
     void *block = Allocate_Block_No_Zero();
-    memset(block, 0, AllocationSize);
+    memset(block, 0, m_allocationSize);
 
     return block;
 }
@@ -156,15 +156,15 @@ void MemoryPool::Free_Block(void *block)
 
     ScopedCriticalSectionClass scs(MemoryPoolCriticalSection);
     MemoryPoolSingleBlock *mp_block = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
-    MemoryPoolBlob *mp_blob = mp_block->OwningBlob;
+    MemoryPoolBlob *mp_blob = mp_block->m_owningBlob;
 
-    ASSERT_PRINT(mp_blob != nullptr && mp_blob->OwningPool == this, "Block is not part of this pool");
+    ASSERT_PRINT(mp_blob != nullptr && mp_blob->m_owningPool == this, "Block is not part of this pool");
 
     mp_blob->Free_Single_Block(mp_block);
 
-    if ( FirstBlobWithFreeBlocks == nullptr ) {
-        FirstBlobWithFreeBlocks = mp_blob;
-        --UsedBlocksInPool;
+    if ( m_firstBlobWithFreeBlocks == nullptr ) {
+        m_firstBlobWithFreeBlocks = mp_blob;
+        --m_usedBlocksInPool;
     }
 }
 
@@ -172,7 +172,7 @@ int MemoryPool::Count_Blobs()
 {
     int count = 0;
 
-    for ( MemoryPoolBlob *i = FirstBlob; i != nullptr; i = i->NextBlob ) {
+    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
         ++count;
     }
 
@@ -183,8 +183,8 @@ int MemoryPool::Release_Empties()
 {
     int count = 0;
 
-    for ( MemoryPoolBlob *i = FirstBlob; i != nullptr; i = i->NextBlob ) {
-        if ( i->UsedBlocksInBlob == 0 ) {
+    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
+        if ( i->m_usedBlocksInBlob == 0 ) {
             count += Free_Blob(i);
         }
     }
@@ -194,20 +194,20 @@ int MemoryPool::Release_Empties()
 
 void MemoryPool::Reset()
 {
-    for ( MemoryPoolBlob *i = FirstBlob; i != nullptr; i = FirstBlob ) {
+    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = m_firstBlob ) {
         Free_Blob(i);
     }
 
-    FirstBlob = nullptr;
-    LastBlob = nullptr;
-    FirstBlob = nullptr;
+    m_firstBlob = nullptr;
+    m_lastBlob = nullptr;
+    m_firstBlob = nullptr;
 
-    Init(Factory, PoolName, AllocationSize, InitialAllocationCount, OverflowAllocationCount);
+    Init(m_factory, m_poolName, m_allocationSize, m_initialAllocationCount, m_overflowAllocationCount);
 }
 
 void MemoryPool::Add_To_List(MemoryPool **head)
 {
-    NextPoolInFactory = *head;
+    m_nextPoolInFactory = *head;
     *head = this;
 }
 
@@ -222,7 +222,7 @@ void MemoryPool::Remove_From_List(MemoryPool **head)
 
     while ( check != this ) {
         last = check;
-        check = check->NextPoolInFactory;
+        check = check->m_nextPoolInFactory;
 
         if ( check == nullptr ) {
             return;
@@ -230,9 +230,9 @@ void MemoryPool::Remove_From_List(MemoryPool **head)
     }
 
     if ( last != nullptr ) {
-        last->NextPoolInFactory = NextPoolInFactory;
+        last->m_nextPoolInFactory = m_nextPoolInFactory;
     } else {
-        *head = NextPoolInFactory;
+        *head = m_nextPoolInFactory;
     }
 }
 

@@ -39,7 +39,7 @@ StreamingArchiveFile::~StreamingArchiveFile()
     File::Close();
 }
 
-bool StreamingArchiveFile::Open(char const *filename, int mode)
+bool StreamingArchiveFile::Open(const char *filename, int mode)
 {
     File *basefile = g_theFileSystem->Open(filename, mode);
 

@@ -56,39 +56,39 @@ public:
     friend class MemoryPool;
     friend class DynamicMemoryAllocator;
 private:
-    MemoryPool *OwningPool;
-    MemoryPoolBlob *NextBlob;
-    MemoryPoolBlob *PrevBlob;
-    MemoryPoolSingleBlock *FirstFreeBlock;
-    int UsedBlocksInBlob;
-    int TotalBlocksInBlob;
-    char *BlockData;
+    MemoryPool *m_owningPool;
+    MemoryPoolBlob *m_nextBlob;
+    MemoryPoolBlob *m_prevBlob;
+    MemoryPoolSingleBlock *m_firstFreeBlock;
+    int m_usedBlocksInBlob;
+    int m_totalBlocksInBlob;
+    char *m_blockData;
 };
 
 inline MemoryPoolBlob::MemoryPoolBlob() :
-    OwningPool(nullptr),
-    NextBlob(nullptr),
-    PrevBlob(nullptr),
-    FirstFreeBlock(nullptr),
-    UsedBlocksInBlob(0),
-    TotalBlocksInBlob(0),
-    BlockData(nullptr)
+    m_owningPool(nullptr),
+    m_nextBlob(nullptr),
+    m_prevBlob(nullptr),
+    m_firstFreeBlock(nullptr),
+    m_usedBlocksInBlob(0),
+    m_totalBlocksInBlob(0),
+    m_blockData(nullptr)
 {
 
 }
 
 inline MemoryPoolBlob::~MemoryPoolBlob()
 {
-    Raw_Free(BlockData);
+    Raw_Free(m_blockData);
 }
 
 inline void MemoryPoolBlob::Add_Blob_To_List(MemoryPoolBlob **head, MemoryPoolBlob **tail)
 {
-    NextBlob = 0;
-    PrevBlob = *tail;
+    m_nextBlob = 0;
+    m_prevBlob = *tail;
 
     if ( *tail != nullptr ) {
-        (*tail)->NextBlob = this;
+        (*tail)->m_nextBlob = this;
     }
 
     if ( *head == nullptr ) {
@@ -101,33 +101,33 @@ inline void MemoryPoolBlob::Add_Blob_To_List(MemoryPoolBlob **head, MemoryPoolBl
 inline void MemoryPoolBlob::Remove_Blob_From_List(MemoryPoolBlob **head, MemoryPoolBlob **tail)
 {
     if ( *head == this ) {
-        *head = NextBlob;
+        *head = m_nextBlob;
     } else {
-        PrevBlob->NextBlob = NextBlob;
+        m_prevBlob->m_nextBlob = m_nextBlob;
     }
 
     if ( *tail == this ) {
-        *tail = PrevBlob;
+        *tail = m_prevBlob;
     } else {
-        NextBlob->PrevBlob = PrevBlob;
+        m_nextBlob->m_prevBlob = m_prevBlob;
     }
 }
 
 inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 {
-    //ASSERT_PRINT(UsedBlocksInBlob < TotalBlocksInBlob, "Trying to allocate when all blocks allocated in blob for pool %s\n", OwningPool->PoolName);
-    //ASSERT_PRINT(FirstFreeBlock != nullptr, "Trying to allocated block from blob with null FirstFreeBlock for pool %s\n", OwningPool->PoolName);
-    MemoryPoolSingleBlock *block = FirstFreeBlock;
-    FirstFreeBlock = block->NextBlock;
-    ++UsedBlocksInBlob;
+    //ASSERT_PRINT(m_usedBlocksInBlob < m_totalBlocksInBlob, "Trying to allocate when all blocks allocated in blob for pool %s\n", m_owningPool->m_poolName);
+    //ASSERT_PRINT(m_firstFreeBlock != nullptr, "Trying to allocated block from blob with null m_firstFreeBlock for pool %s\n", m_owningPool->m_poolName);
+    MemoryPoolSingleBlock *block = m_firstFreeBlock;
+    m_firstFreeBlock = block->m_nextBlock;
+    ++m_usedBlocksInBlob;
 
     return block;
 }
 
 inline void MemoryPoolBlob::Free_Single_Block(MemoryPoolSingleBlock *block)
 {
-    block->Add_Block_To_List(&FirstFreeBlock);
-    --UsedBlocksInBlob;
+    block->Add_Block_To_List(&m_firstFreeBlock);
+    --m_usedBlocksInBlob;
 }
 
 #endif

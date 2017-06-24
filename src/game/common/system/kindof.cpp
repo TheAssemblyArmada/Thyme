@@ -29,7 +29,7 @@
 // but this is what the original looks like it did.
 // Maps what each bit flags.
 template <>
-char const *BitFlags<KINDOF_COUNT>::s_bitNamesList[] {
+const char *BitFlags<KINDOF_COUNT>::s_bitNamesList[] {
     "OBSTACLE",
     "SELECTABLE",
     "IMMOBILE",

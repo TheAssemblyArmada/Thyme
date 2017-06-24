@@ -312,7 +312,7 @@ uint32_t CRC::Memory(void const *data, size_t bytes, uint32_t crc)
     return ~crc;
 }
 
-uint32_t CRC::String(char const *string, uint32_t crc)
+uint32_t CRC::String(const char *string, uint32_t crc)
 {
     uint8_t const *buf = reinterpret_cast<uint8_t const *>(string);
     crc = ~crc;

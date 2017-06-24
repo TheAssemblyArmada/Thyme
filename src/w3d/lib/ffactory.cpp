@@ -28,7 +28,7 @@ RawFileFactoryClass defaultWritingFileFactory;
 //RawFileFactoryClass *TheWritingFileFactory = &defaultWritingFileFactory;
 //FileFactoryClass *TheFileFactory = nullptr;
 
-auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, char const *filename) :
+auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) :
     m_file(nullptr),
     m_factory(fact)
 {
@@ -39,7 +39,7 @@ auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, char const *filename) :
     }
 }
 
-FileClass *RawFileFactoryClass::Get_File(char const *filename)
+FileClass *RawFileFactoryClass::Get_File(const char *filename)
 {
     return new BufferedFileClass(filename);
 }

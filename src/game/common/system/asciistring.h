@@ -64,18 +64,18 @@ public:
     };
 
     AsciiString();
-    AsciiString(char const *s);
+    AsciiString(const char *s);
     AsciiString(AsciiString const &string);
     //AsciiString(UnicodeString const &stringSrc);
     ~AsciiString() { Release_Buffer(); }
 
     AsciiString &operator=(char *s) { Set(s); return *this; }
-    AsciiString &operator=(char const *s) { Set(s); return *this; }
+    AsciiString &operator=(const char *s) { Set(s); return *this; }
     AsciiString &operator=(AsciiString const &stringSrc) { Set(stringSrc); return *this; }
     //AsciiString &operator=(UnicodeString const &stringSrc);
 
     AsciiString &operator+=(char s) { Concat(s); return *this; }
-    AsciiString &operator+=(char const *s) { Concat(s); return *this; }
+    AsciiString &operator+=(const char *s) { Concat(s); return *this; }
     AsciiString &operator+=(AsciiString const &s) { Concat(s); return *this; }
     //AsciiString &operator+=(UnicodeString const &stringSrc);
 
@@ -86,17 +86,17 @@ public:
 
     void Clear() { Release_Buffer(); }
     char Get_Char(int index) const;
-    char const *Str() const;
+    const char *Str() const;
     char *Get_Buffer_For_Read(int len);
     // These two should probably be private with the = operator being the preferred interface?
-    void Set(char const *s);
+    void Set(const char *s);
     void Set(AsciiString const &string);
 
     void Translate(UnicodeString const &stringSrc);
 
     // Concat should probably be private and += used as the preferred interface.
     void Concat(char c);
-    void Concat(char const *s);
+    void Concat(const char *s);
     void Concat(AsciiString const &string) { Concat(string.Str()); }
 
     void Trim();
@@ -104,28 +104,28 @@ public:
     void Fix_Path();
     void Remove_Last_Char();
 
-    void Format(char const *format, ...);
+    void Format(const char *format, ...);
     void Format(AsciiString format, ...);
         
     // Compare funcs should probably be private and operators should be friends and the
     // preferred interface.
-    int Compare(char const *s) const { return strcmp(Str(), s); }
+    int Compare(const char *s) const { return strcmp(Str(), s); }
     int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
 
-    int Compare_No_Case(char const *s) const { return strcasecmp(Str(), s); }
+    int Compare_No_Case(const char *s) const { return strcasecmp(Str(), s); }
     int Compare_No_Case(AsciiString const &string) const { return strcasecmp(Str(), string.Str()); }
         
     // I assume these do this, though have no examples in binaries.
     char *Find(char c) { return strchr(Peek(), c); }
     char *Reverse_Find(char c) { return strrchr(Peek(), c); }
 
-    bool Starts_With(char const *p) const;
-    bool Ends_With(char const *p) const;
+    bool Starts_With(const char *p) const;
+    bool Ends_With(const char *p) const;
 
-    bool Starts_With_No_Case(char const *p) const;
-    bool Ends_With_No_Case(char const *p) const;
+    bool Starts_With_No_Case(const char *p) const;
+    bool Ends_With_No_Case(const char *p) const;
 
-    bool Next_Token(AsciiString *tok, char const *seps);
+    bool Next_Token(AsciiString *tok, const char *seps);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
     bool Is_Empty() const { return Get_Length() <= 0; }
@@ -141,28 +141,28 @@ public:
 
 private:
     //Probably supposed to be private
-    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, char const *str_to_copy = nullptr, char const *str_to_cat = nullptr);
+    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
 
-    void Format_VA(char const *format, va_list args);
+    void Format_VA(const char *format, va_list args);
     void Format_VA(AsciiString &format, va_list args);
 
     AsciiStringData *m_data;
 };
 
 inline bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }
-inline bool operator==(AsciiString const &left, char const *right) { return left.Compare(right) == 0; }
-inline bool operator==(char const *left, AsciiString const &right) { return right.Compare(left) == 0; }
+inline bool operator==(AsciiString const &left, const char *right) { return left.Compare(right) == 0; }
+inline bool operator==(const char *left, AsciiString const &right) { return right.Compare(left) == 0; }
 
 inline bool operator!=(AsciiString const &left, AsciiString const &right) { return left.Compare(right) != 0; }
-inline bool operator!=(AsciiString const &left, char const *right) { return left.Compare(right) != 0; }
-inline bool operator!=(char const *left, AsciiString const &right) { return right.Compare(left) != 0; }
+inline bool operator!=(AsciiString const &left, const char *right) { return left.Compare(right) != 0; }
+inline bool operator!=(const char *left, AsciiString const &right) { return right.Compare(left) != 0; }
 
 inline bool operator<(AsciiString const &left, AsciiString const &right) { return left.Compare(right) < 0; }
-inline bool operator<(AsciiString const &left, char const *right) { return left.Compare(right) < 0; }
-inline bool operator<(char const *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+inline bool operator<(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
+inline bool operator<(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
 
 inline bool operator>(AsciiString const &left, AsciiString const &right) { return left.Compare(right) > 0; }
-inline bool operator>(AsciiString const &left, char const *right) { return left.Compare(right) < 0; }
-inline bool operator>(char const *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+inline bool operator>(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
+inline bool operator>(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
 
 #endif // _ASCIISTRING_H

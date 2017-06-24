@@ -133,7 +133,7 @@ uint32_t Get_Logic_Random_Seed_CRC()
     return c.Get_CRC();
 }
 
-int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, char const * file, int line)
+int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
 {
     if ( hi - lo != -1 ) {
         return lo + Random_Value(TheGameClientSeed) % (hi - lo + 1);
@@ -142,7 +142,7 @@ int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, char const * file, int l
     return hi;
 }
 
-int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, char const * file, int line)
+int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
 {
     if ( hi - lo != -1 ) {
         return lo + Random_Value(TheGameAudioSeed) % (hi - lo + 1);
@@ -151,7 +151,7 @@ int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, char const * file, int li
     return hi;
 }
 
-int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, char const * file, int line)
+int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
 {
     if ( hi - lo != -1 ) {
         return lo + Random_Value(TheGameLogicSeed) % (hi - lo + 1);
@@ -160,7 +160,7 @@ int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, char const * file, int li
     return hi;
 }
 
-float Get_Client_Random_Value_Real(float lo, float hi, char const * file, int line)
+float Get_Client_Random_Value_Real(float lo, float hi, const char * file, int line)
 {
     float diff = hi - lo;
 
@@ -171,7 +171,7 @@ float Get_Client_Random_Value_Real(float lo, float hi, char const * file, int li
     return hi;
 }
 
-float Get_Audio_Random_Value_Real(float lo, float hi, char const * file, int line)
+float Get_Audio_Random_Value_Real(float lo, float hi, const char * file, int line)
 {
     float diff = hi - lo;
 
@@ -182,7 +182,7 @@ float Get_Audio_Random_Value_Real(float lo, float hi, char const * file, int lin
     return hi;
 }
 
-float Get_Logic_Random_Value_Real(float lo, float hi, char const * file, int line)
+float Get_Logic_Random_Value_Real(float lo, float hi, const char * file, int line)
 {
     float diff = hi - lo;
 

@@ -39,7 +39,7 @@ W3DFileSystem::~W3DFileSystem()
     TheFileFactory = nullptr;
 }
 
-FileClass *W3DFileSystem::Get_File(char const *filename)
+FileClass *W3DFileSystem::Get_File(const char *filename)
 {
     return new GameFileClass(filename);
 }
@@ -51,7 +51,7 @@ void W3DFileSystem::Return_File(FileClass *file)
     }
 }
 
-FileClass *W3DFileSystem::Get_File_NV(char const *filename)
+FileClass *W3DFileSystem::Get_File_NV(const char *filename)
 {
     return new GameFileClass(filename);
 }
@@ -63,7 +63,7 @@ void W3DFileSystem::Return_File_NV(FileClass *file)
     }
 }
 
-GameFileClass::GameFileClass(char const *filename) :
+GameFileClass::GameFileClass(const char *filename) :
     m_theFile(nullptr),
     m_fileExists(false)
 {
@@ -83,12 +83,12 @@ GameFileClass::~GameFileClass()
     }
 }
 
-char const *GameFileClass::File_Name()
+const char *GameFileClass::File_Name()
 {
     return m_filename;
 }
 
-char const *GameFileClass::Set_Name(char const *filename)
+const char *GameFileClass::Set_Name(const char *filename)
 {
     if ( Is_Open() ) {
         Close();
@@ -250,7 +250,7 @@ bool const GameFileClass::Is_Open()
     return m_theFile != nullptr;
 }
 
-bool GameFileClass::Open(char const *filename, int rights)
+bool GameFileClass::Open(const char *filename, int rights)
 {
     Set_Name(filename);
 

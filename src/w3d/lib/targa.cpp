@@ -52,7 +52,7 @@ TargaImage::~TargaImage()
     }
 }
 
-int TargaImage::Open(char const *name, int mode)
+int TargaImage::Open(const char *name, int mode)
 {
     if ( Is_File_Open() && m_access == mode ) {
         return 0;
@@ -174,7 +174,7 @@ void TargaImage::Close()
     }
 }
 
-int TargaImage::Load(char const *name, int flags, bool invert_image)
+int TargaImage::Load(const char *name, int flags, bool invert_image)
 {
     if ( Open(name, TARGA_READ) != TGA_RET_OK ) {
         return TGA_RET_UNABLE_TO_LOAD;
@@ -230,7 +230,7 @@ int TargaImage::Load(char const *name, int flags, bool invert_image)
     return ret;
 }
 
-int TargaImage::Load(char const *name, char *palette, char *image, bool invert_image)
+int TargaImage::Load(const char *name, char *palette, char *image, bool invert_image)
 {
     if ( Open(name, TARGA_READ) != TGA_RET_OK ) {
         return TGA_RET_UNABLE_TO_LOAD;
@@ -304,7 +304,7 @@ int TargaImage::Load(char const *name, char *palette, char *image, bool invert_i
     return TGA_RET_OK;
 }
 
-int TargaImage::Save(char const *name, int flags, bool add_extension)
+int TargaImage::Save(const char *name, int flags, bool add_extension)
 {
     if ( Open(name, TARGA_WRITE) != TGA_RET_OK ) {
         return TGA_RET_UNABLE_TO_LOAD;
@@ -575,7 +575,7 @@ bool TargaImage::Is_File_Open()
     return m_TGAFile != nullptr;
 }
 
-bool TargaImage::File_Open_Read(char const *name)
+bool TargaImage::File_Open_Read(const char *name)
 {
     m_TGAFile = TheFileFactory->Get_File(name);
 
@@ -586,7 +586,7 @@ bool TargaImage::File_Open_Read(char const *name)
     return false;
 }
 
-bool TargaImage::File_Open_Write(char const *name)
+bool TargaImage::File_Open_Write(const char *name)
 {
     m_TGAFile = TheWritingFileFactory->Get_File(name);
 
@@ -597,7 +597,7 @@ bool TargaImage::File_Open_Write(char const *name)
     return false;
 }
 
-bool TargaImage::File_Open_ReadWrite(char const *name)
+bool TargaImage::File_Open_ReadWrite(const char *name)
 {
     m_TGAFile = TheWritingFileFactory->Get_File(name);
 
@@ -608,7 +608,7 @@ bool TargaImage::File_Open_ReadWrite(char const *name)
     return false;
 }
 
-int TargaImage::Targa_Error_Handler(int load_err, char const *filename)
+int TargaImage::Targa_Error_Handler(int load_err, const char *filename)
 {
     switch ( load_err ) {
         case TGA_RET_OK:

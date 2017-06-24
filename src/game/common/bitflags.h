@@ -37,7 +37,7 @@ public:
     bool operator==(BitFlags &that) const { return m_bits == that.m_bits; }
     bool operator!=(BitFlags &that) const { return m_bits != that.m_bits; }
 
-    static char const *s_bitNamesList[];
+    static const char *s_bitNamesList[];
 private:
     std::bitset<bits> m_bits;
 };

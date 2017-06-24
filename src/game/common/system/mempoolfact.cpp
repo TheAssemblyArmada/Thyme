@@ -34,11 +34,11 @@
 
 MemoryPoolFactory::~MemoryPoolFactory()
 {
-    for ( MemoryPool *mp = FirstPoolInFactory; FirstPoolInFactory != nullptr; mp = FirstPoolInFactory ) {
+    for ( MemoryPool *mp = m_firstPoolInFactory; m_firstPoolInFactory != nullptr; mp = m_firstPoolInFactory ) {
         Destroy_Memory_Pool(mp);
     }
 
-    for ( DynamicMemoryAllocator *dma = FirstDmaInFactory; FirstDmaInFactory != nullptr; dma = FirstDmaInFactory ) {
+    for ( DynamicMemoryAllocator *dma = m_firstDmaInFactory; m_firstDmaInFactory != nullptr; dma = m_firstDmaInFactory ) {
         Destroy_Dynamic_Memory_Allocator(dma);
     }
 }
@@ -46,19 +46,19 @@ MemoryPoolFactory::~MemoryPoolFactory()
 MemoryPool *MemoryPoolFactory::Create_Memory_Pool(PoolInitRec const *params)
 {
     return Create_Memory_Pool(
-        params->PoolName,
-        params->AllocationSize,
-        params->InitialAllocationCount,
-        params->OverflowAllocationCount
+        params->pool_name,
+        params->allocation_size,
+        params->initial_allocation_count,
+        params->overflow_allocation_count
     );
 }
 
-MemoryPool *MemoryPoolFactory::Create_Memory_Pool(char const *name, int size, int count, int overflow)
+MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, int count, int overflow)
 {
     MemoryPool *pool = Find_Memory_Pool(name);
 
     if ( pool != nullptr ) {
-        ASSERT_PRINT(pool->AllocationSize == size, "Pool size mismatch");
+        ASSERT_PRINT(pool->m_allocationSize == size, "Pool size mismatch");
 
         return pool;
     }
@@ -72,7 +72,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(char const *name, int size, in
 
     pool = new MemoryPool;
     pool->Init(this, name, size, count, overflow);
-    pool->Add_To_List(&FirstPoolInFactory);
+    pool->Add_To_List(&m_firstPoolInFactory);
 
     return pool;
 }
@@ -86,21 +86,21 @@ void MemoryPoolFactory::Destroy_Memory_Pool(MemoryPool *pool)
         return;
     }
 
-    ASSERT_PRINT(pool->UsedBlocksInPool == 0, "Destroying none empty pool.");
+    ASSERT_PRINT(pool->m_usedBlocksInPool == 0, "Destroying none empty pool.");
 
-    pool->Remove_From_List(&FirstPoolInFactory);
+    pool->Remove_From_List(&m_firstPoolInFactory);
     delete pool;
 }
 
-MemoryPool *MemoryPoolFactory::Find_Memory_Pool(char const *name)
+MemoryPool *MemoryPoolFactory::Find_Memory_Pool(const char *name)
 {
     MemoryPool *pool = nullptr;
 
     //
     // Go through the pools and break on matching requested name.
     //
-    for ( pool = FirstPoolInFactory; pool != nullptr; pool = pool->NextPoolInFactory ) {
-        if ( strcmp(pool->PoolName, name) == 0 ) {
+    for ( pool = m_firstPoolInFactory; pool != nullptr; pool = pool->m_nextPoolInFactory ) {
+        if ( strcmp(pool->m_poolName, name) == 0 ) {
             break;
         }
     }
@@ -112,7 +112,7 @@ DynamicMemoryAllocator *MemoryPoolFactory::Create_Dynamic_Memory_Allocator(int s
 {
     DynamicMemoryAllocator *allocator = new DynamicMemoryAllocator;
     allocator->Init(this, subpools, params);
-    allocator->Add_To_List(&FirstDmaInFactory);
+    allocator->Add_To_List(&m_firstDmaInFactory);
 
     return allocator;
 }
@@ -123,17 +123,17 @@ void MemoryPoolFactory::Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator 
         return;
     }
 
-    allocator->Remove_From_List(&FirstDmaInFactory);
+    allocator->Remove_From_List(&m_firstDmaInFactory);
     delete allocator;
 }
 
 void MemoryPoolFactory::Reset()
 {
-    for ( MemoryPool *mp = FirstPoolInFactory; mp != nullptr; mp = mp->NextPoolInFactory ) {
+    for ( MemoryPool *mp = m_firstPoolInFactory; mp != nullptr; mp = mp->m_nextPoolInFactory ) {
         mp->Reset();
     }
 
-    for ( DynamicMemoryAllocator *dma = FirstDmaInFactory; dma != nullptr; dma = dma->NextDmaInFactory ) {
+    for ( DynamicMemoryAllocator *dma = m_firstDmaInFactory; dma != nullptr; dma = dma->m_nextDmaInFactory ) {
         dma->Reset();
     }
 }

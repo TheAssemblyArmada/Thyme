@@ -82,9 +82,9 @@ public:
     bool Load_User_Maps();
 
 private:
-    static char const *const s_mapDirName;
-    static char const *const s_mapExtension;
-    static char const *const s_mapCacheName;
+    static const char *const s_mapDirName;
+    static const char *const s_mapExtension;
+    static const char *const s_mapCacheName;
 
     std::map<AsciiString, int> m_seen;
 };

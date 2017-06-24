@@ -28,17 +28,17 @@
 
 void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
 {
-    ASSERT_PRINT(BlockData == nullptr, "Init called on blob with none null data for pool %s\n", owning_pool->PoolName);
+    ASSERT_PRINT(m_blockData == nullptr, "Init called on blob with none null data for pool %s\n", owning_pool->m_poolName);
 
-    OwningPool = owning_pool;
-    TotalBlocksInBlob = count;
-    UsedBlocksInBlob = 0;
+    m_owningPool = owning_pool;
+    m_totalBlocksInBlob = count;
+    m_usedBlocksInBlob = 0;
 
-    int alloc_size = Round_Up_Word_Size(owning_pool->AllocationSize) + sizeof(MemoryPoolSingleBlock);
-    BlockData = static_cast<char *>(Raw_Allocate(alloc_size * TotalBlocksInBlob));
-    char *current_block = BlockData;
+    int alloc_size = Round_Up_Word_Size(owning_pool->m_allocationSize) + sizeof(MemoryPoolSingleBlock);
+    m_blockData = static_cast<char *>(Raw_Allocate(alloc_size * m_totalBlocksInBlob));
+    char *current_block = m_blockData;
 
-    for ( int i = TotalBlocksInBlob - 1; i >= 0; --i ) {
+    for ( int i = m_totalBlocksInBlob - 1; i >= 0; --i ) {
         MemoryPoolSingleBlock *block_header = reinterpret_cast<MemoryPoolSingleBlock *>(current_block);
         block_header->Init_Block(0, this);
 
@@ -50,12 +50,12 @@ void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
             current_block = current_block + alloc_size;
             MemoryPoolSingleBlock *next = reinterpret_cast<MemoryPoolSingleBlock *>(current_block);
 
-            block_header->NextBlock = next;
-            next->PrevBlock = block_header;
+            block_header->m_nextBlock = next;
+            next->m_prevBlock = block_header;
         } else {
-            block_header->NextBlock = nullptr;
+            block_header->m_nextBlock = nullptr;
         }
     }
 
-    FirstFreeBlock = reinterpret_cast<MemoryPoolSingleBlock *>(BlockData);
+    m_firstFreeBlock = reinterpret_cast<MemoryPoolSingleBlock *>(m_blockData);
 }

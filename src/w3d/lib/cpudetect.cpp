@@ -44,25 +44,18 @@
 #endif
 
 #ifdef PLATFORM_APPLE
-#include <mach/mach.h>
-#include <mach/mach_init.h>     // mach_thread_self
-#include <mach/thread_policy.h> // Mac OS Thread affinity API
 #include <sys/sysctl.h>
 #endif
 
 #ifdef PLATFORM_LINUX
-#ifndef __GNU_SOURCE
-#define __GNU_SOURCE
-#endif
-#include <pthread.h> //already includes sched.h
 #include <sys/sysinfo.h>
 #endif
 
 struct OSInfoStruct
 {
-    char const *Code;
-    char const *SubCode;
-    char const *VersionString;
+    const char *Code;
+    const char *SubCode;
+    const char *VersionString;
     uint8_t VersionMajor;
     uint8_t VersionMinor;
     uint16_t VersionSub;
@@ -1377,8 +1370,8 @@ public:
         }
         CPUDetectClass::Init_Processor_Speed();
 
-        //CPUDetectClass::Init_Processor_Log();
-        //CPUDetectClass::Init_Compact_Log();
+        CPUDetectClass::Init_Processor_Log();
+        CPUDetectClass::Init_Compact_Log();
     }
 } _CPU_Detect_Init;
 

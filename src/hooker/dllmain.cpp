@@ -109,7 +109,7 @@ void Setup_Hooks()
     //
     // Replace MemoryPoolFactory functions
     //
-    Hook_Method((Make_Method_Ptr<MemoryPool *, MemoryPoolFactory, char const *, int, int, int>(0x00414180)), static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
+    Hook_Method((Make_Method_Ptr<MemoryPool *, MemoryPoolFactory, const char *, int, int, int>(0x00414180)), static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
     
     //
     // Replace File functions
@@ -124,9 +124,9 @@ void Setup_Hooks()
     //
     // Replace AsciiString
     //
-    Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
-    Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, char const *, char const *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    Hook_Method((Make_Method_Ptr<void, AsciiString, char const *>(0x0040FB40)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
+    Hook_Method((Make_Method_Ptr<void, AsciiString, const char *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
+    Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, const char *, const char *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method((Make_Method_Ptr<void, AsciiString, const char *>(0x0040FB40)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
 
     //
     // Replace INI

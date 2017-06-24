@@ -71,12 +71,12 @@ AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
     return AsciiString::s_emptyString;
 }
 
-NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(char const *name)
+NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
 {
     // Calculate a simple hash of the name
     unsigned int socket_hash = 0;
 
-    for ( char const *c = name; *c != '\0'; ++c ) {
+    for ( const char *c = name; *c != '\0'; ++c ) {
         socket_hash = (33 * socket_hash) + tolower(*c);
     }
 
@@ -104,12 +104,12 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(char const *name)
     return bucket->m_key;
 }
 
-NameKeyType NameKeyGenerator::Name_To_Key(char const *name)
+NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
 {
     // Calculate a simple hash of the name
     unsigned int socket_hash = 0;
 
-    for ( char const *c = name; *c != '\0'; ++c ) {
+    for ( const char *c = name; *c != '\0'; ++c ) {
         socket_hash = (33 * socket_hash) + *c;
     }
 

@@ -35,8 +35,8 @@ using rts::FourCC;
 // Comparison function used for sorting and searching StringLookUp arrays.
 int GameTextManager::Compare_LUT(void const *a, void const *b)
 {
-    char const *ac = static_cast<StringLookUp const*>(a)->label->Str();
-    char const *bc = static_cast<StringLookUp const*>(b)->label->Str();
+    const char *ac = static_cast<StringLookUp const*>(a)->label->Str();
+    const char *bc = static_cast<StringLookUp const*>(b)->label->Str();
 
     return strcasecmp(ac, bc);
 }
@@ -335,7 +335,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 }
 
 // Get the count of strings in a str file.
-bool GameTextManager::Get_String_Count(char const *filename, int &count)
+bool GameTextManager::Get_String_Count(const char *filename, int &count)
 {
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
     count = 0;
@@ -365,7 +365,7 @@ bool GameTextManager::Get_String_Count(char const *filename, int &count)
 }
 
 // Read info from a CSF file header.
-bool GameTextManager::Get_CSF_Info(char const *filename)
+bool GameTextManager::Get_CSF_Info(const char *filename)
 {
     static_assert(sizeof(CSFHeader) == 24, "CSFHeader struct not expected size.");
     CSFHeader header;
@@ -389,7 +389,7 @@ bool GameTextManager::Get_CSF_Info(char const *filename)
 }
 
 // Parses older format string files which only support ascii.
-bool GameTextManager::Parse_String_File(char const *filename)
+bool GameTextManager::Parse_String_File(const char *filename)
 {
     DEBUG_LOG("Parsing string file '%s'.\n", filename);
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
@@ -476,7 +476,7 @@ bool GameTextManager::Parse_String_File(char const *filename)
 }
 
 // Parses CSF files which support UCS2 strings, essentially the BMP of unicode.
-bool GameTextManager::Parse_CSF_File(char const *filename)
+bool GameTextManager::Parse_CSF_File(const char *filename)
 {
     DEBUG_LOG("Parsing CSF file '%s'.\n", filename);
     CSFHeader header;
@@ -580,7 +580,7 @@ bool GameTextManager::Parse_CSF_File(char const *filename)
 }
 
 // Parse an additional string file for a map. Currently cannot be localised.
-bool GameTextManager::Parse_Map_String_File(char const *filename)
+bool GameTextManager::Parse_Map_String_File(const char *filename)
 {
     DEBUG_LOG("Parsing map string file '%s'.\n", filename);
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
@@ -868,7 +868,7 @@ std::vector<AsciiString> *GameTextManager::Get_Strings_With_Prefix(AsciiString l
     // Search all string labels that start with the substring provided.
     if ( m_stringLUT != nullptr ) {
         for ( int i = 0; i < m_textCount; ++i ) {
-            char const *lut_label = m_stringLUT[i].label->Str();
+            const char *lut_label = m_stringLUT[i].label->Str();
 
             if ( strstr(lut_label, label.Str()) == lut_label ) {
                 m_stringVector.push_back(*m_stringLUT[i].label);
@@ -879,7 +879,7 @@ std::vector<AsciiString> *GameTextManager::Get_Strings_With_Prefix(AsciiString l
     // Same again for map strings.
     if ( m_mapStringLUT != nullptr ) {
         for ( int i = 0; i < m_mapTextCount; ++i ) {
-            char const *lut_label = m_mapStringLUT[i].label->Str();
+            const char *lut_label = m_mapStringLUT[i].label->Str();
             if ( strstr(lut_label, label.Str()) == lut_label ) {
                 m_stringVector.push_back(*m_mapStringLUT[i].label);
             }

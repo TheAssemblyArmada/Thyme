@@ -47,7 +47,7 @@ private:
 public:
     virtual ~Win32LocalFile();
 
-    virtual bool Open(char const *filename, int mode);
+    virtual bool Open(const char *filename, int mode);
     virtual int Read(void *dst, int bytes);
     virtual int Write(void const *src, int bytes);
     virtual int Seek(int offset, File::SeekMode mode);

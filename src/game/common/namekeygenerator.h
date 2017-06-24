@@ -74,8 +74,8 @@ public:
 
     // Key to name functions
     AsciiString Key_To_Name(NameKeyType key);
-    NameKeyType Name_To_Lower_Case_Key(char const *name);
-    NameKeyType Name_To_Key(char const *name);
+    NameKeyType Name_To_Lower_Case_Key(const char *name);
+    NameKeyType Name_To_Key(const char *name);
 
     static void Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata);
 
@@ -91,16 +91,16 @@ private:
 class StaticNameKey
 {
 public:
-    StaticNameKey(char const *name) : m_key(NAMEKEY_INVALID), m_name(name) {}
+    StaticNameKey(const char *name) : m_key(NAMEKEY_INVALID), m_name(name) {}
 
     operator NameKeyType() { return Key(); }
 
     NameKeyType Key();
-    char const *Name() { return m_name; }
+    const char *Name() { return m_name; }
 
 private:
     NameKeyType m_key;
-    char const *m_name;
+    const char *m_name;
 };
 
 #define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))

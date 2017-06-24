@@ -41,8 +41,8 @@ class Win32LocalFileSystem : public LocalFileSystem
         virtual void Update() {}
 
         // LocalFileSystem interface implementations.
-        virtual File *Open_File(char const *filename, int mode);
-        virtual bool Does_File_Exist(char const *filename);
+        virtual File *Open_File(const char *filename, int mode);
+        virtual bool Does_File_Exist(const char *filename);
         virtual void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs);
         virtual bool Get_File_Info(AsciiString const &filename, FileInfo *info);
         virtual bool Create_Directory(AsciiString);

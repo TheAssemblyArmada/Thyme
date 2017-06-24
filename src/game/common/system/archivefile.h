@@ -57,7 +57,7 @@ public:
     virtual ~ArchiveFile() {}
 
     virtual bool Get_File_Info(AsciiString const &name, FileInfo *info) = 0;
-    virtual File *Open_File(char const *filename, int mode) = 0;
+    virtual File *Open_File(const char *filename, int mode) = 0;
     virtual void Close_All_Files() = 0;
     virtual AsciiString Get_Name() = 0;
     virtual AsciiString Get_Path() = 0;

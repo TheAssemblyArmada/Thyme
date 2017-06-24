@@ -40,7 +40,7 @@ RAMFile::~RAMFile()
     }
 }
 
-bool RAMFile::Open(char const *filename, int mode)
+bool RAMFile::Open(const char *filename, int mode)
 {
     File *basefile = g_theFileSystem->Open(filename, mode);
 

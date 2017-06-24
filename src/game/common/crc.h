@@ -36,7 +36,7 @@ public:
     uint32_t Get_CRC() { return m_crc; }
 
     static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);
-    static uint32_t String(char const *string, uint32_t crc);
+    static uint32_t String(const char *string, uint32_t crc);
 private:
     void Add_CRC(uint8_t byte);
 

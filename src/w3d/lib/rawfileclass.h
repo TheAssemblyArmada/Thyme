@@ -32,16 +32,16 @@ class RawFileClass : public FileClass
 {
 public:
     RawFileClass() : FileClass(), m_rights(FM_CLOSED), m_biasStart(0), m_biasLength(-1), m_handle(-1), m_filename(nullptr), m_isAllocated(false), m_dateTime(0) { Set_Name(""); };
-    RawFileClass(char const *filename) : FileClass(), m_rights(FM_CLOSED), m_biasStart(0), m_biasLength(-1), m_handle(-1), m_filename(nullptr), m_isAllocated(false), m_dateTime(0) { Set_Name(filename); };
+    RawFileClass(const char *filename) : FileClass(), m_rights(FM_CLOSED), m_biasStart(0), m_biasLength(-1), m_handle(-1), m_filename(nullptr), m_isAllocated(false), m_dateTime(0) { Set_Name(filename); };
     
     virtual ~RawFileClass() { Reset(); };
-    virtual char const *File_Name() { return m_filename; };
-    virtual char const *Set_Name(char const *filename);
+    virtual const char *File_Name() { return m_filename; };
+    virtual const char *Set_Name(const char *filename);
     virtual bool Create();
     virtual bool Delete();
     virtual bool Is_Available(bool forced = false);
     virtual bool const Is_Open() { return m_handle != -1; };
-    virtual bool Open(char const *filename, int rights = FM_READ);
+    virtual bool Open(const char *filename, int rights = FM_READ);
     virtual bool Open(int rights = FM_READ);
     virtual int Read(void *buffer, int length);
     virtual int Seek(int offset, int whence = FS_SEEK_CURRENT);
@@ -53,7 +53,7 @@ public:
     virtual bool Set_Date_Time(time_t date_time);
     virtual int Get_File_Handle() { return m_handle; }
 
-    virtual void Error(int error, bool can_retry = false, char const *filename = nullptr);
+    virtual void Error(int error, bool can_retry = false, const char *filename = nullptr);
     virtual void Bias(int start, int length = -1);
     virtual void Attach(int handle, int rights);
     virtual void Detach();

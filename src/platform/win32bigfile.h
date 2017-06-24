@@ -35,7 +35,7 @@ public:
     virtual ~Win32BIGFile() {}
 
     virtual bool Get_File_Info(AsciiString const &name, FileInfo *info);
-    virtual File *Open_File(char const *filename, int mode);
+    virtual File *Open_File(const char *filename, int mode);
     virtual void Close_All_Files() {};
     virtual AsciiString Get_Name() { return FileName; }
     virtual AsciiString Get_Path() { return FilePath; }

@@ -120,11 +120,11 @@ private:
     void Reverse_Word(char *start, char *end);
     char Read_Char(File* file);
     bool Read_Line(char *buffer, int length, File *file);
-    bool Get_String_Count(char const *filename, int &count);
-    bool Get_CSF_Info(char const *filename);
-    bool Parse_String_File(char const *filename);
-    bool Parse_CSF_File(char const *filename);
-    bool Parse_Map_String_File(char const *filename);
+    bool Get_String_Count(const char *filename, int &count);
+    bool Get_CSF_Info(const char *filename);
+    bool Parse_String_File(const char *filename);
+    bool Parse_CSF_File(const char *filename);
+    bool Parse_Map_String_File(const char *filename);
 
 private:
     int m_textCount;

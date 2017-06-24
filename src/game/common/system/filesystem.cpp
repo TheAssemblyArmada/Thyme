@@ -56,7 +56,7 @@ void FileSystem::Update()
     g_theArchiveFileSystem->Update();
 }
 
-File *FileSystem::Open(char const *filename, int mode)
+File *FileSystem::Open(const char *filename, int mode)
 {
     File *file = nullptr;
 
@@ -71,7 +71,7 @@ File *FileSystem::Open(char const *filename, int mode)
     return file;
 }
 
-bool FileSystem::Does_File_Exist(char const *filename)
+bool FileSystem::Does_File_Exist(const char *filename)
 {
     NameKeyType name_id = g_theNameKeyGenerator->Name_To_Lower_Case_Key(filename);
 

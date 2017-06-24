@@ -50,12 +50,12 @@ class ArchiveFileSystem : public SubsystemInterface
 public:
     ArchiveFileSystem();
     virtual ~ArchiveFileSystem();
-    virtual ArchiveFile *Open_Archive_File(char const *filename) = 0;
-    virtual void Close_Archive_File(char const *filename) = 0;
+    virtual ArchiveFile *Open_Archive_File(const char *filename) = 0;
+    virtual void Close_Archive_File(const char *filename) = 0;
     virtual void Close_All_Archives() = 0;
-    virtual File *Open_File(char const *filename, int mode);
+    virtual File *Open_File(const char *filename, int mode);
     virtual void Close_All_Files() = 0;
-    virtual bool Does_File_Exist(char const *filename);
+    virtual bool Does_File_Exist(const char *filename);
     virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs) = 0;
     virtual void Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &dir, bool unk);
 

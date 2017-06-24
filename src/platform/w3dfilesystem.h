@@ -44,10 +44,10 @@ public:
     W3DFileSystem();
     virtual ~W3DFileSystem();
 
-    virtual FileClass *Get_File(char const *filename);
+    virtual FileClass *Get_File(const char *filename);
     virtual void Return_File(FileClass *file);
 
-    FileClass *Get_File_NV(char const *filename);
+    FileClass *Get_File_NV(const char *filename);
     void Return_File_NV(FileClass *file);
 
     static void Hook_Me();
@@ -56,16 +56,16 @@ public:
 class GameFileClass : public FileClass
 {
 public:
-    GameFileClass(char const *filename = nullptr);
+    GameFileClass(const char *filename = nullptr);
     virtual ~GameFileClass();
 
-    virtual char const *File_Name();
-    virtual char const *Set_Name(char const *filename);
+    virtual const char *File_Name();
+    virtual const char *Set_Name(const char *filename);
     virtual bool Create();
     virtual bool Delete();
     virtual bool Is_Available(bool forced = false);
     virtual bool const Is_Open();
-    virtual bool Open(char const *filename, int rights = FM_READ);
+    virtual bool Open(const char *filename, int rights = FM_READ);
     virtual bool Open(int rights = FM_READ);
     virtual int Read(void *buffer, int length);
     virtual int Seek(int offset, int whence = FS_SEEK_CURRENT);

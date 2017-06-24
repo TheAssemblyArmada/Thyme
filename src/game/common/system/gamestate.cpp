@@ -113,8 +113,8 @@ AsciiString GameState::Portable_To_Real_Map_Path(AsciiString &path)
 AsciiString Get_Leaf_And_Dir_Name(AsciiString const &path)
 {
     int len = path.Get_Length();
-    char const *str = path.Str();
-    char const *leaf = &str[len - 1];
+    const char *str = path.Str();
+    const char *leaf = &str[len - 1];
 
     // Search backwards for first directory
     while ( leaf > str ) {

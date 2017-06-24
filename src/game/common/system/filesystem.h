@@ -47,8 +47,8 @@ public:
     virtual void Update();
 
     // Filesystem
-    File *Open(char const *filename, int mode);
-    bool Does_File_Exist(char const *filename);
+    File *Open(const char *filename, int mode);
+    bool Does_File_Exist(const char *filename);
     void Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool a5);
 
     static bool Create_Dir(AsciiString name);

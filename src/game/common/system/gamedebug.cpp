@@ -70,8 +70,8 @@ void Debug_Init(int flags)
 
 #endif
 
-    //char const *prefix = gAppPrefix;      //todo
-    char const *prefix = "";
+    //const char *prefix = gAppPrefix;      //todo
+    const char *prefix = "";
     strcpy(prevbuf, dirbuf);
     strcat(prevbuf, prefix);
     strcat(prevbuf, "ThymeDebugLogPrev.txt");

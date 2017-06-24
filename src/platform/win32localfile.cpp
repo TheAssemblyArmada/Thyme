@@ -65,7 +65,7 @@ Win32LocalFile::~Win32LocalFile()
     File::Close();
 }
 
-bool Win32LocalFile::Open(char const *filename, int mode)
+bool Win32LocalFile::Open(const char *filename, int mode)
 {
     if ( !File::Open(filename, mode) ) {
         return false;

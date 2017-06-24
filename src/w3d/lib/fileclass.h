@@ -47,13 +47,13 @@ public:
     FileClass() {}
     virtual ~FileClass() {}
         
-    virtual char const *File_Name() = 0;
-    virtual char const *Set_Name(char const *filename) = 0;
+    virtual const char *File_Name() = 0;
+    virtual const char *Set_Name(const char *filename) = 0;
     virtual bool Create() = 0;
     virtual bool Delete() = 0;
     virtual bool Is_Available(bool forced = false) = 0;
     virtual bool const Is_Open() = 0;
-    virtual bool Open(char const *filename, int rights = FM_READ) = 0;
+    virtual bool Open(const char *filename, int rights = FM_READ) = 0;
     virtual bool Open(int rights = FM_READ) = 0;
     virtual int Read(void *buffer, int length) = 0;
     virtual int Seek(int offset, int whence = FS_SEEK_CURRENT) = 0;

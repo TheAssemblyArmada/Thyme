@@ -38,7 +38,7 @@ void SubsystemInterface::Set_Name(AsciiString name)
 /////////////////
 // Interface List
 /////////////////
-void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, char const *default_ini_path, char const *ini_path, char const *dir_path, Xfer *xfer, AsciiString sys_name)
+void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path, const char *dir_path, Xfer *xfer, AsciiString sys_name)
 {
     INI ini;
 

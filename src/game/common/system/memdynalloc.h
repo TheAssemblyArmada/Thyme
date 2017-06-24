@@ -36,9 +36,9 @@ class MemoryPoolFactory;
 class MemoryPoolSingleBlock;
 class SimpleCriticalSectionClass;
 
-extern SimpleCriticalSectionClass* DmaCriticalSection;
+extern SimpleCriticalSectionClass* g_dmaCriticalSection;
 
-#define TheDynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator*>(0x00A29B98))
+#define g_dynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator*>(0x00A29B98))
 
 class DynamicMemoryAllocator
 {
@@ -68,14 +68,12 @@ public:
     friend class MemoryPoolFactory;
 
 private:
-    MemoryPoolFactory *Factory;
-    DynamicMemoryAllocator *NextDmaInFactory;
-    int PoolCount;
-    int UsedBlocksInDma;
-    MemoryPool *Pools[8];
-    MemoryPoolSingleBlock *RawBlocks;
+    MemoryPoolFactory *m_factory;
+    DynamicMemoryAllocator *m_nextDmaInFactory;
+    int m_poolCount;
+    int m_usedBlocksInDma;
+    MemoryPool *m_pools[8];
+    MemoryPoolSingleBlock *m_rawBlocks;
 };
-
-
 
 #endif

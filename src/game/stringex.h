@@ -30,7 +30,7 @@
 #include <string.h>
 
 #ifdef __cplusplus
-inline char *nstrdup(char const *str)
+inline char *nstrdup(const char *str)
 {
     char *nstr = NULL;
 

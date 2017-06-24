@@ -164,8 +164,8 @@ bool Search_String_Matches(AsciiString string, AsciiString search)
         return false;
     }
 
-    char const *cstring = string.Peek();
-    char const *csearch = search.Peek();
+    const char *cstring = string.Peek();
+    const char *csearch = search.Peek();
 
     // ? is wildcard for a single character.
     // * is wildcard for a run of characters.

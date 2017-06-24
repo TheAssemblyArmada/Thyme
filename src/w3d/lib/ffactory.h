@@ -33,7 +33,7 @@ class FileFactoryClass
 {
 public:
     virtual ~FileFactoryClass() {}
-    virtual FileClass *Get_File(char const *filename) = 0;
+    virtual FileClass *Get_File(const char *filename) = 0;
     virtual void Return_File(FileClass *file) = 0;
 };
 
@@ -41,7 +41,7 @@ public:
 class auto_file_ptr
 {
 public:
-    auto_file_ptr(FileFactoryClass *fact, char const *filename);
+    auto_file_ptr(FileFactoryClass *fact, const char *filename);
     ~auto_file_ptr() { m_factory->Return_File(m_file); }
 
     operator FileClass*() { return m_file; }
@@ -57,7 +57,7 @@ private:
 class RawFileFactoryClass
 {
 public:
-    FileClass *Get_File(char const *filename);
+    FileClass *Get_File(const char *filename);
     void Return_File(FileClass *file);
 
     static void Hook_Me();

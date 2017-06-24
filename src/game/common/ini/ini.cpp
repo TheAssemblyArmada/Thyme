@@ -112,7 +112,7 @@ BlockParse TheTypeTable[] =
 };
 
 // Helper function for Load
-inline iniblockparse_t Find_Block_Parse(char const *token)
+inline iniblockparse_t Find_Block_Parse(const char *token)
 {
     // Iterate over the TypeTable to identify correct parsing function.
     for ( BlockParse *block = TheTypeTable; block->token != nullptr; ++block ) {
@@ -125,7 +125,7 @@ inline iniblockparse_t Find_Block_Parse(char const *token)
 }
 
 // Helper function for Init_From_INI_Multi
-inline inifieldparse_t Find_Field_Parse(FieldParse *table, char const *token, int &offset, void const *&data)
+inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int &offset, void const *&data)
 {
     FieldParse *tblptr;
 
@@ -392,13 +392,13 @@ void INI::Read_Line()
     }
 }
 
-int INI::Scan_Science(char const *token)
+int INI::Scan_Science(const char *token)
 {
     //return TheScienceStore->Friend_Lookup_Science(token);
     return Call_Function<int, char const*>(0x0041D740, token); // INI::scanScience
 }
 
-float INI::Scan_PercentToReal(char const *token)
+float INI::Scan_PercentToReal(const char *token)
 {
     float value;
 
@@ -407,7 +407,7 @@ float INI::Scan_PercentToReal(char const *token)
     return (float)(value / 100.0f);
 }
 
-float INI::Scan_Real(char const *token)
+float INI::Scan_Real(const char *token)
 {
     float value;
 
@@ -416,7 +416,7 @@ float INI::Scan_Real(char const *token)
     return (float)value;
 }
 
-unsigned int INI::Scan_UnsignedInt(char const *token)
+unsigned int INI::Scan_UnsignedInt(const char *token)
 {
     unsigned int value;
 
@@ -425,7 +425,7 @@ unsigned int INI::Scan_UnsignedInt(char const *token)
     return value;
 }
 
-int INI::Scan_Int(char const *token)
+int INI::Scan_Int(const char *token)
 {
     int value;
 
@@ -434,7 +434,7 @@ int INI::Scan_Int(char const *token)
     return value;
 }
 
-bool INI::Scan_Bool(char const *token)
+bool INI::Scan_Bool(const char *token)
 {
     if ( strcasecmp(token, "yes") == 0 ) {
         return true;
@@ -450,7 +450,7 @@ bool INI::Scan_Bool(char const *token)
     return false;
 }
 
-int INI::Scan_IndexList(char const *token, char const *const *list)
+int INI::Scan_IndexList(const char *token, const char *const *list)
 {
     ASSERT_THROW_PRINT(
         list != nullptr && *list != nullptr,
@@ -472,7 +472,7 @@ int INI::Scan_IndexList(char const *token, char const *const *list)
     return list_count;
 }
 
-int INI::Scan_LookupList(char const *token, LookupListRec const *list)
+int INI::Scan_LookupList(const char *token, LookupListRec const *list)
 {
     ASSERT_THROW_PRINT(
         list != nullptr && list->name != nullptr,
@@ -566,7 +566,7 @@ void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, v
 void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data)
 {
     int colors[3];
-    char const *names[3] = { "R", "G", "B" };
+    const char *names[3] = { "R", "G", "B" };
     RGBColor *rgb = static_cast<RGBColor*>(store);
 
     for ( int i = 0; i < 3; ++i ) {
@@ -582,7 +582,7 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_
 void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
 {
     int colors[4];
-    char const *names[4] = { "R", "G", "B", "A" };
+    const char *names[4] = { "R", "G", "B", "A" };
     RGBAColorInt *rgba = static_cast<RGBAColorInt*>(store);
 
     for ( int i = 0; i < 4; ++i ) {
@@ -607,7 +607,7 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *
 void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
 {
     int colors[4];
-    char const *names[4] = { "R", "G", "B", "A" };
+    const char *names[4] = { "R", "G", "B", "A" };
     uint32_t *rgba = static_cast<uint32_t*>(store);
 
     for ( int i = 0; i < 4; ++i ) {

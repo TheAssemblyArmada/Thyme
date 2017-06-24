@@ -53,7 +53,7 @@ void Win32BIGFileSystem::Init()
     }
 }
 
-ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
+ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 {
     uint32_t idbuff;
 
@@ -161,7 +161,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(char const *filename)
     return big;
 }
 
-void Win32BIGFileSystem::Close_Archive_File(char const *filename)
+void Win32BIGFileSystem::Close_Archive_File(const char *filename)
 {
     auto it = ArchiveFiles.find(filename);
 

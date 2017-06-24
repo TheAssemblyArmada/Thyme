@@ -54,19 +54,19 @@ typedef void(*iniblockparse_t)(INI *);
 
 struct LookupListRec
 {
-    char const *name;
+    const char *name;
     int value;
 };
 
 struct BlockParse
 {
-    char const *token;
+    const char *token;
     iniblockparse_t parse_func;
 };
 
 struct FieldParse
 {
-    char const *token;
+    const char *token;
     inifieldparse_t parse_func;
     void const *user_data;
     int offset;
@@ -112,22 +112,22 @@ public:
     void Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_list);
     void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *));
 
-    char *Get_Next_Token_Or_Null(char const *seps = nullptr);
-    char *Get_Next_Token(char const *seps = nullptr);
-    char *Get_Next_Sub_Token(char const *expected);
+    char *Get_Next_Token_Or_Null(const char *seps = nullptr);
+    char *Get_Next_Token(const char *seps = nullptr);
+    char *Get_Next_Sub_Token(const char *expected);
     AsciiString Get_Next_Ascii_String();
     AsciiString Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
 
     // Scan functions
-    static int Scan_Science(char const *token);
-    static float Scan_PercentToReal(char const *token);
-    static float Scan_Real(char const *token);
-    static unsigned int Scan_UnsignedInt(char const *token);
-    static int Scan_Int(char const *token);
-    static bool Scan_Bool(char const *token);
-    static int Scan_IndexList(char const *token, char const* const* list);
-    static int Scan_LookupList(char const *token, LookupListRec const *list);
+    static int Scan_Science(const char *token);
+    static float Scan_PercentToReal(const char *token);
+    static float Scan_Real(const char *token);
+    static unsigned int Scan_UnsignedInt(const char *token);
+    static int Scan_Int(const char *token);
+    static bool Scan_Bool(const char *token);
+    static int Scan_IndexList(const char *token, char const* const* list);
+    static int Scan_LookupList(const char *token, LookupListRec const *list);
 
     // Field parsing functions
     static void Parse_Bool(INI *ini, void *formal, void *store, void const *user_data);
@@ -173,11 +173,11 @@ private:
     int m_lineNumber;
     char m_currentBlock[MAX_LINE_LENGTH];
     char m_blockEnd;
-    char const *m_seps;
-    char const *m_sepsPercent;
-    char const *m_sepsColon;
-    char const *m_sepsQuote;
-    char const *m_endToken;
+    const char *m_seps;
+    const char *m_sepsPercent;
+    const char *m_sepsColon;
+    const char *m_sepsQuote;
+    const char *m_endToken;
     bool m_endOfFile;
 
     //static Xfer *SXfer;
@@ -218,12 +218,12 @@ inline void INI::Hook_Me()
 }
 
 // Functions for inlining, neater than including in class declaration
-inline char *INI::Get_Next_Token_Or_Null(char const *seps)
+inline char *INI::Get_Next_Token_Or_Null(const char *seps)
 {
     return crt_strtok(0, seps != nullptr ? seps : m_seps);
 }
 
-inline char *INI::Get_Next_Token(char const *seps)
+inline char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = crt_strtok(0, seps != nullptr ? seps : m_seps);
     ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
@@ -231,7 +231,7 @@ inline char *INI::Get_Next_Token(char const *seps)
     return ret;
 }
 
-inline char *INI::Get_Next_Sub_Token(char const *expected)
+inline char *INI::Get_Next_Sub_Token(const char *expected)
 {
     ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n" )
     return Get_Next_Token(m_sepsColon);

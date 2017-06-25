@@ -34,7 +34,7 @@ class MemoryPoolBlob;
 class SimpleCriticalSectionClass;
 
 // Allocated a critical section in WinMain, hooked to original currently.
-extern SimpleCriticalSectionClass* MemoryPoolCriticalSection;
+extern SimpleCriticalSectionClass* g_memoryPoolCriticalSection;
 
 class MemoryPool
 {

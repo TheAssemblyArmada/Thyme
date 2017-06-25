@@ -73,7 +73,7 @@ UnicodeString::UnicodeString(char16_t const *s) :
 UnicodeString::UnicodeString(UnicodeString const &string) :
     m_data(string.m_data)
 {
-    ScopedCriticalSectionClass cs(UnicodeStringCriticalSection);
+    ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
     if ( m_data != nullptr ) {
         ++m_data->ref_count;
@@ -101,7 +101,7 @@ wchar_t *UnicodeString::Peek() const
 
 void UnicodeString::Release_Buffer()
 {
-    ScopedCriticalSectionClass cs(UnicodeStringCriticalSection);
+    ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
     if ( m_data != nullptr ) {
         if ( --m_data->ref_count == 0 ) {
@@ -231,7 +231,7 @@ void UnicodeString::Set(char16_t const *s)
 
 void UnicodeString::Set(UnicodeString const &string)
 {
-    ScopedCriticalSectionClass cs(UnicodeStringCriticalSection);
+    ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
     if ( &string != this ) {
         Release_Buffer();

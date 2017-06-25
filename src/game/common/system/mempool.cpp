@@ -28,7 +28,7 @@
 #include "memblock.h"
 #include "minmax.h"
 
-SimpleCriticalSectionClass *MemoryPoolCriticalSection = nullptr;
+SimpleCriticalSectionClass *g_memoryPoolCriticalSection = nullptr;
 
 /////////////
 // MemoryPool
@@ -109,7 +109,7 @@ int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 
 void *MemoryPool::Allocate_Block_No_Zero()
 {
-    ScopedCriticalSectionClass scs(MemoryPoolCriticalSection);
+    ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
 
     if ( m_firstBlobWithFreeBlocks != nullptr && m_firstBlobWithFreeBlocks->m_firstFreeBlock == nullptr ) {
         MemoryPoolBlob *i;
@@ -154,7 +154,7 @@ void MemoryPool::Free_Block(void *block)
         return;
     }
 
-    ScopedCriticalSectionClass scs(MemoryPoolCriticalSection);
+    ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
     MemoryPoolSingleBlock *mp_block = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
     MemoryPoolBlob *mp_blob = mp_block->m_owningBlob;
 

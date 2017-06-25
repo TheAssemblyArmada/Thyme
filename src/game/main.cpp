@@ -340,9 +340,9 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 #endif
 
     // Assign some critical sections for code sensitive to threaded calls.
-    UnicodeStringCriticalSection = &critSec1;
+    g_unicodeStringCriticalSection = &critSec1;
     g_dmaCriticalSection = &critSec2;
-    MemoryPoolCriticalSection = &critSec3;
+    g_memoryPoolCriticalSection = &critSec3;
 
     // Set working directory to the exe directory.
     //DEBUG_LOG("Setting working directory.\n");
@@ -396,9 +396,9 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 
     Shutdown_Memory_Manager();
 
-    UnicodeStringCriticalSection = nullptr;
+    g_unicodeStringCriticalSection = nullptr;
     g_dmaCriticalSection = nullptr;
-    MemoryPoolCriticalSection = nullptr;
+    g_memoryPoolCriticalSection = nullptr;
 
     DEBUG_STOP();
 

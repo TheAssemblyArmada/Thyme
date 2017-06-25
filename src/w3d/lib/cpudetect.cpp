@@ -963,6 +963,8 @@ void CPUDetectClass::Init_AMD_Processor_Type()
                     AMDProcessor = AMD_PROCESSOR_ATHLON;
                     break;
             }
+        default:
+            break;
     }
 }
 
@@ -980,13 +982,19 @@ void CPUDetectClass::Init_VIA_Processor_Type()
                 case 9:
                     VIAProcessor = VIA_PROCESSOR_IDT_C6_WINCHIP3;
                     break;
+                default:
+                    break;
             }
         case 6:
             switch ( ProcessorModel ) {
                 case 4:
                     VIAProcessor = VIA_PROCESSOR_CYRIX_III_SAMUEL;
                     break;
+                default:
+                    break;
             }
+        default:
+            break;
     }
 }
 
@@ -1007,7 +1015,11 @@ void CPUDetectClass::Init_Rise_Processor_Type()
                 case 9:
                     RiseProcessor = RISE_PROCESSOR_DRAGON2_018;
                     break;
+                default:
+                    break;
             }
+        default:
+            break;
     }
 }
 
@@ -1467,6 +1479,7 @@ void CPUDetectClass::Init_Compact_Log()
 #undef COMPACT_LOG
 }
 
+// Initialises the info in the CPUID static class during static init before main is run.
 static class CPUDetectInitClass
 {
 public:

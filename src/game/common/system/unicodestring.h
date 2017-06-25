@@ -33,7 +33,7 @@
 #include "always.h"
 #include <wchar.h>
 
-#define UnicodeStringCriticalSection (Make_Global<SimpleCriticalSectionClass*>(0x00A2A294))
+#define g_unicodeStringCriticalSection (Make_Global<SimpleCriticalSectionClass*>(0x00A2A294))
 
 class AsciiString;
 

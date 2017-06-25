@@ -338,7 +338,7 @@ float OptionPreferences::Get_Gamma_Value()
         return 50.0f;
     }
 
-    return (float)atoi(it->second.Str());
+    return float(atoi(it->second.Str()));
 }
 
 void OptionPreferences::Get_Resolution(int *x, int *y)

@@ -26,7 +26,7 @@
 #include "gamedebug.h"
 #include "systimer.h"
 #include "stringex.h"
-#include <inttypes.h>   // For printf formatting macros
+#include <cinttypes>   // For printf formatting macros
 #include <stdio.h>
 
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64

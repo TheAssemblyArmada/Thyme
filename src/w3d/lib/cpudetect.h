@@ -122,7 +122,15 @@ public:
         RISE_PROCESSOR_DRAGON2_018
     };
 
-    static ProcessorManufacturerType Get_Processor_Manufacturer() {return ProcessorManufacturer;}
+    enum IntelCacheType
+    {
+        INTEL_CACHE_END,
+        INTEL_CACHE_DATA,
+        INTEL_CACHE_INST,
+        INTEL_CACHE_UNIFIED,
+    };
+
+    static ProcessorManufacturerType Get_Processor_Manufacturer() { return ProcessorManufacturer; }
     static const char* Get_Processor_Manufacturer_Name();
 
     static bool Has_CPUID_Instruction() { return HasCPUIDInstruction; }
@@ -148,6 +156,9 @@ public:
     static uint32_t Get_Feature_Bits() { return FeatureBits; }
     static uint32_t Get_Extended_Feature_Bits() { return ExtendedFeatureBits; }
 
+    static uint32_t Get_L3_Cache_Size() { return L3CacheSize; }
+    static uint32_t Get_L3_Cache_Line_Size() { return L3CacheLineSize; }
+    static uint32_t Get_L3_Cache_Set_Associative() { return L3CacheSetAssociative; }
     static uint32_t Get_L2_Cache_Size() { return L2CacheSize; }
     static uint32_t Get_L2_Cache_Line_Size() { return L2CacheLineSize; }
     static uint32_t Get_L2_Cache_Set_Associative() { return L2CacheSetAssociative; }
@@ -174,6 +185,7 @@ public:
     static const char *Get_Compact_Log() { return CompactLog; }
 
     static bool CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type);
+    static bool CPUID_Count(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t count);
 
 private:
     static void Init_CPUID_Instruction();
@@ -197,6 +209,7 @@ private:
 
     static void Process_Cache_Info(uint32_t value);
     static void Process_Extended_Cache_Info();
+    static void Process_Intel_Cache_Info();
 
     friend class CPUDetectInitClass;
 
@@ -219,6 +232,11 @@ private:
 
     static uint32_t FeatureBits;
     static uint32_t ExtendedFeatureBits;
+
+    // L3 cache information
+    static uint32_t L3CacheSize;
+    static uint32_t L3CacheLineSize;
+    static uint32_t L3CacheSetAssociative;
 
     // L2 cache information
     static uint32_t L2CacheSize;
@@ -276,6 +294,26 @@ public:
         }
 
         CPUDetectClass::CPUID(eax, ebx, ecx, edx, cpuid_type);
+    }
+
+    uint32_t eax;
+    uint32_t ebx;
+    uint32_t ecx;
+    uint32_t edx;
+};
+
+class CPUIDCountStruct
+{
+public:
+    CPUIDCountStruct(uint32_t cpuid_type, uint32_t count)
+    {
+        if ( !CPUDetectClass::Has_CPUID_Instruction() ) {
+            eax = ebx = ecx = edx = 0;
+
+            return;
+        }
+
+        CPUDetectClass::CPUID_Count(eax, ebx, ecx, edx, cpuid_type, count);
     }
 
     uint32_t eax;

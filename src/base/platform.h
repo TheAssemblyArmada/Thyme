@@ -287,19 +287,19 @@
         #undef  PLATFORM_OSX
         #define PLATFORM_OSX 1
         #define PLATFORM_UNIX 1
-        #define PLATFORM_NAME "OSX"
+        #define PLATFORM_NAME "macOS"
         #if defined(__i386__) || defined(__intel__)
             #define PROCESSOR_X86
             #define SYSTEM_LITTLE_ENDIAN
-            #define PLATFORM_DESCRIPTION "OSX on x86"
+            #define PLATFORM_DESCRIPTION "macOS on x86"
         #elif defined(__x86_64) || defined(__amd64)
             #define PROCESSOR_X86_64
             #define SYSTEM_LITTLE_ENDIAN
-            #define PLATFORM_DESCRIPTION "OSX on x86-64"
+            #define PLATFORM_DESCRIPTION "macOS on x86-64"
         #elif defined(__arm__)
             #define PROCESSOR_ARM
             #define SYSTEM_LITTLE_ENDIAN
-            #define PLATFORM_DESCRIPTION "OSX on ARM"
+            #define PLATFORM_DESCRIPTION "macOS on ARM"
         #elif defined(__POWERPC64__) || defined(__powerpc64__)
             #define PROCESSOR_POWERPC
             #define PROCESSOR_POWERPC_64

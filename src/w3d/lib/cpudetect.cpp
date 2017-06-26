@@ -26,6 +26,7 @@
 #include "gamedebug.h"
 #include "systimer.h"
 #include "stringex.h"
+#include <inttypes.h>   // For printf formatting macros
 #include <stdio.h>
 
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
@@ -49,6 +50,7 @@
 
 #ifdef PLATFORM_LINUX
 #include <sys/sysinfo.h>
+#include <sys/utsname.h>
 #endif
 
 namespace {
@@ -310,6 +312,9 @@ double CPUDetectClass::InvProcessorTicksPerSecond;
 uint32_t CPUDetectClass::FeatureBits;
 uint32_t CPUDetectClass::ExtendedFeatureBits;
 
+uint32_t CPUDetectClass::L3CacheSize;
+uint32_t CPUDetectClass::L3CacheLineSize;
+uint32_t CPUDetectClass::L3CacheSetAssociative;
 uint32_t CPUDetectClass::L2CacheSize;
 uint32_t CPUDetectClass::L2CacheLineSize;
 uint32_t CPUDetectClass::L2CacheSetAssociative;
@@ -436,7 +441,7 @@ void CPUDetectClass::Init_Processor_Manufacturer(void)
 {
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
     VendorID[0] = 0;
-    uint32_t max_cpuid;
+    uint32_t max_cpuid = 0;
 
     CPUID(
         max_cpuid,
@@ -640,6 +645,19 @@ void CPUDetectClass::Process_Cache_Info(uint32_t value)
             L2CacheLineSize = 32;
             L2CacheSetAssociative = 8;
             break;
+
+        case 0x86: // Unified cache, 64 byte cache line, 4 way set associative, 512K
+            L2CacheSize = 512 * 1024;
+            L2CacheLineSize = 64;
+            L2CacheSetAssociative = 4;
+            break;
+
+        case 0x87: // Unified cache, 64 byte cache line, 8 way set associative, 1M
+            L2CacheSize = 1024 * 1024;
+            L2CacheLineSize = 64;
+            L2CacheSetAssociative = 8;
+            break;
+
         default:
             break;
     }
@@ -698,11 +716,60 @@ void CPUDetectClass::Process_Extended_Cache_Info()
     }
 }
 
+void CPUDetectClass::Process_Intel_Cache_Info()
+{
+    for ( uint32_t count = 0; ; ++count ) {
+        CPUIDCountStruct id(4, count);
+
+        switch ( id.eax & 0x1F ) {
+            case INTEL_CACHE_END:
+                return;
+            case INTEL_CACHE_DATA:      // fallthrough
+            case INTEL_CACHE_UNIFIED:
+                switch ( (id.eax >> 5) & 0x07 ) {
+                    case 1:
+                    {
+                        L1DataCacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
+                        L1DataCacheLineSize = (id.ebx & 0x0FFF) + 1;
+                        L1DataCacheSize = L1DataCacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L1DataCacheLineSize * (id.ecx + 1);
+                        L1InstructionCacheSetAssociative = L1DataCacheSetAssociative;
+                        L1InstructionCacheLineSize = L1DataCacheLineSize;
+                        L1InstructionCacheSize = L1DataCacheSize;
+                    }
+                        break;
+                    case 2:
+                    {
+                        L2CacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
+                        L2CacheLineSize = (id.ebx & 0x0FFF) + 1;
+                        L2CacheSize = L2CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L2CacheLineSize * (id.ecx + 1);
+                    }
+                        break;
+                    case 3:
+                    {
+                        L3CacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
+                        L3CacheLineSize = (id.ebx & 0x0FFF) + 1;
+                        L3CacheSize = L3CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L3CacheLineSize * (id.ecx + 1);
+                    }
+                        break;
+                    default:
+                        break;
+                }
+
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 void CPUDetectClass::Init_Cache()
 {
+    CPUIDStruct max_reg(0);
     CPUIDStruct cache_id(2);
 
-    if ( (cache_id.eax & 0xFF) == 1 ) {
+    if ( Get_Processor_Manufacturer() == MANUFACTURER_INTEL && max_reg.eax >= 4 ) {
+        Process_Intel_Cache_Info();
+    } else if ( (cache_id.eax & 0xFF) == 1 ) {
 
         if ( !(cache_id.eax & 0x80000000) ) {
             Process_Cache_Info((cache_id.eax >> 24) & 0xFF);
@@ -1283,7 +1350,7 @@ void CPUDetectClass::Init_Memory()
     AvailablePhysicalMemory = mem.freeram * mem.mem_unit;
     TotalPageMemory = mem.totalswap * mem.mem_unit;
     AvailablePageMemory = mem.freeswap * mem.mem_unit;
-    TotalVirtualMemory = uintptr_t(intptr_t(-1));
+    TotalVirtualMemory = uintptr_t(intptr_t(-1));   // Should give ~4GB on 32bit and considerably more on 64bit.
     AvailableVirtualMemory = uintptr_t(intptr_t(-1));
 #endif
 }
@@ -1300,6 +1367,27 @@ void CPUDetectClass::Init_OS()
     OSVersionBuildNumber = os.dwBuildNumber;
     OSVersionPlatformId = os.dwPlatformId;
     snprintf(OSVersionExtraInfo, sizeof(OSVersionExtraInfo), "%s", os.szCSDVersion);
+#elif defined PLATFORM_OSX
+    char str[256];
+    size_t size = sizeof(str);
+    int ret = sysctlbyname("kern.osrelease", str, &size, NULL, 0);
+    int major;
+    int minor;
+    int build;
+
+    sscanf(str, "%d.%d.%d", &major, &minor, &build);
+
+    OSVersionNumberMajor = 10;
+    OSVersionNumberMinor = major - 4;
+    OSVersionBuildNumber = minor;
+    OSVersionPlatformId = -1;
+#elif defined PLATFORM_LINUX
+    // TODO
+#else
+    OSVersionNumberMajor = 0;
+    OSVersionNumberMinor = 0;
+    OSVersionBuildNumber = 0;
+    OSVersionPlatformId = -1;
 #endif
 }
 
@@ -1317,13 +1405,37 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
 #elif defined COMPILER_CLANG || defined COMPILER_GNUC
     uint32_t regs[4];
 
-    __get_cpuid(cpuid_type, &regs[0], &regs[1], &regs[2], &regs[3]);
+    __cpuid(cpuid_type, regs[0], regs[1], regs[2], regs[3]);
 #endif
     u_eax_ = regs[0];
     u_ebx_ = regs[1];
     u_ecx_ = regs[2];
     u_edx_ = regs[3];
     
+    return true;
+}
+
+bool CPUDetectClass::CPUID_Count(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t count)
+{
+    if ( !Has_CPUID_Instruction() ) {
+        return false;
+    }
+
+    // MSVC has a different signature for its __cpuid intrinsic vs clang/gcc
+#ifdef COMPILER_MSVC
+    int32_t regs[4];
+
+    __cpuidex(regs, cpuid_type, count);
+#elif defined COMPILER_CLANG || defined COMPILER_GNUC
+    uint32_t regs[4];
+
+    __cpuid_count(cpuid_type, count, regs[0], regs[1], regs[2], regs[3]);
+#endif
+    u_eax_ = regs[0];
+    u_ebx_ = regs[1];
+    u_ecx_ = regs[2];
+    u_edx_ = regs[3];
+
     return true;
 }
 
@@ -1335,19 +1447,23 @@ void CPUDetectClass::Init_Processor_Log(void)
     CPU_LOG("Operating system: ");
 
     switch ( OSVersionPlatformId ) {
-        case VER_PLATFORM_WIN32s:
+        case 0:
             CPU_LOG("Windows 3.1");
             break;
-        case VER_PLATFORM_WIN32_WINDOWS:
+        case 1:
             CPU_LOG("Windows 9x");
             break;
-        case VER_PLATFORM_WIN32_NT:
+        case 2:
             CPU_LOG("Windows NT");
+            break;
+        default:
+            CPU_LOG(PLATFORM_NAME);
             break;
     }
 
     CPU_LOG("\n");
 
+#if defined PLATFORM_WINDOWS
     CPU_LOG("Operating system version: %d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor);
     CPU_LOG(
         "Operating system build: %d.%d.%d\n",
@@ -1356,6 +1472,9 @@ void CPUDetectClass::Init_Processor_Log(void)
         (OSVersionBuildNumber & 0xFFFF)
     );
     //CPU_LOG("OS-Info: %s\n", OSVersionExtraInfo);
+#elif defined PLATFORM_OSX
+    CPU_LOG("Operating system version: %d.%d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor, OSVersionBuildNumber);
+#endif
 
     CPU_LOG("Processor: %s\n", CPUDetectClass::Get_Processor_String());
     CPU_LOG("Clock speed: ~%dMHz\n", CPUDetectClass::Get_Processor_Speed());
@@ -1382,12 +1501,12 @@ void CPUDetectClass::Init_Processor_Log(void)
 
     CPU_LOG("\n");
 
-    CPU_LOG("Total physical memory: %dMb\n", Get_Total_Physical_Memory() / (1024 * 1024));
-    CPU_LOG("Available physical memory: %dMb\n", Get_Available_Physical_Memory() / (1024 * 1024));
-    CPU_LOG("Total page file size: %dMb\n", Get_Total_Page_File_Size() / (1024 * 1024));
-    CPU_LOG("Total available page file size: %dMb\n", Get_Available_Page_File_Size() / (1024 * 1024));
-    CPU_LOG("Total virtual memory: %dMb\n", Get_Total_Virtual_Memory() / (1024 * 1024));
-    CPU_LOG("Available virtual memory: %dMb\n", Get_Available_Virtual_Memory() / (1024 * 1024));
+    CPU_LOG("Total physical memory: %" PRIu64 "Mb\n", Get_Total_Physical_Memory() / (1024 * 1024));
+    CPU_LOG("Available physical memory: %" PRIu64 "Mb\n", Get_Available_Physical_Memory() / (1024 * 1024));
+    CPU_LOG("Total page file size: %" PRIu64 "Mb\n", Get_Total_Page_File_Size() / (1024 * 1024));
+    CPU_LOG("Total available page file size: %" PRIu64 "Mb\n", Get_Available_Page_File_Size() / (1024 * 1024));
+    CPU_LOG("Total virtual memory: %" PRIu64 "Mb\n", Get_Total_Virtual_Memory() / (1024 * 1024));
+    CPU_LOG("Available virtual memory: %" PRIu64 "Mb\n", Get_Available_Virtual_Memory() / (1024 * 1024));
 
     CPU_LOG("\n");
 
@@ -1448,6 +1567,17 @@ void CPUDetectClass::Init_Processor_Log(void)
         CPU_LOG("L2 cache: None\n");
     }
 
+    if ( CPUDetectClass::Get_L3_Cache_Size() > 0 ) {
+        CPU_LOG(
+            "L3 Cache: %d byte cache lines, %d way set associative, %dk\n",
+            CPUDetectClass::Get_L3_Cache_Line_Size(),
+            CPUDetectClass::Get_L3_Cache_Set_Associative(),
+            CPUDetectClass::Get_L3_Cache_Size() / 1024
+        );
+    } else {
+        CPU_LOG("L3 cache: None\n");
+    }
+
     CPU_LOG("\n");
 #undef CPU_LOG
 }
@@ -1473,7 +1603,7 @@ void CPUDetectClass::Init_Compact_Log()
 
     COMPACT_LOG("%s\t%d\t", Get_Processor_Manufacturer_Name(), Get_Processor_Speed());
 
-    COMPACT_LOG("%d\t", Get_Total_Physical_Memory() / (1024 * 1024) + 1);
+    COMPACT_LOG("%" PRIu64 "\t", Get_Total_Physical_Memory() / (1024 * 1024) + 1);
 
     COMPACT_LOG("%x\t%x\t", Get_Feature_Bits(), Get_Extended_Feature_Bits());
 #undef COMPACT_LOG

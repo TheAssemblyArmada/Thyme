@@ -69,7 +69,7 @@ struct FieldParse
     const char *token;
     inifieldparse_t parse_func;
     void const *user_data;
-    int offset;
+    size_t offset;
 };
 
 struct MultiIniFieldParse
@@ -117,6 +117,7 @@ public:
     AsciiString Get_Next_Ascii_String();
     AsciiString Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
+    int Get_Line_Number() { return m_lineNumber; }
 
     // Scan functions
     static int Scan_Science(const char *token);

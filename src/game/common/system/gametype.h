@@ -44,7 +44,18 @@ enum WeatherType
     WEATHER_COUNT,
 };
 
+
+enum BodyDamageType
+{
+    BODY_PRISTINE,
+    BODY_DAMAGED,
+    BODY_REALLYDAMAGED,
+    BODY_RUBBLE,
+    BODY_COUNT,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT];
 extern const char *g_weatherNames[WEATHER_COUNT];
+extern const char *g_bodyDamgeNames[BODY_COUNT];
 
 #endif

@@ -55,15 +55,6 @@ enum TerrainLOD
     TERRAIN_LOD_NUM_TYPES,
 };
 
-enum BodyDamageType
-{
-    BODY_PRISTINE = 0,
-    BODY_DAMAGED,
-    BODY_REALLYDAMAGED,
-    BODY_RUBBLE,
-    BODY_COUNT,
-};
-
 class GlobalData : public SubsystemInterface
 {
 public:

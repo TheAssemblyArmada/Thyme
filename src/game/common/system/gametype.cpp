@@ -32,3 +32,4 @@ const char *g_timeOfDayNames[TIME_OF_DAY_COUNT] = {
 };
 
 const char *g_weatherNames[WEATHER_COUNT]{ "NORMAL", "SNOWY" };
+const char *g_bodyDamageNames[BODY_COUNT] = { "PRISTINE", "DAMAGED", "REALLYDAMAGED", "RUBBLE" };

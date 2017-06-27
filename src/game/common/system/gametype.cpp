@@ -23,13 +23,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "gametype.h"
 
-const char *g_timeOfDayNames[TIME_OF_DAY_COUNT] = {
+const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1] = {
     "NONE",
     "MORNING",
     "AFTERNOON",
     "EVENING",
-    "NIGHT"
+    "NIGHT",
+    nullptr
 };
 
-const char *g_weatherNames[WEATHER_COUNT]{ "NORMAL", "SNOWY" };
-const char *g_bodyDamageNames[BODY_COUNT] = { "PRISTINE", "DAMAGED", "REALLYDAMAGED", "RUBBLE" };
+const char *g_weatherNames[WEATHER_COUNT + 1]{ "NORMAL", "SNOWY", nullptr };
+const char *g_bodyDamageNames[BODY_COUNT + 1] = { "PRISTINE", "DAMAGED", "REALLYDAMAGED", "RUBBLE", nullptr };

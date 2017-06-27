@@ -94,7 +94,6 @@ struct MultiIniFieldParse
 
 class INI
 {
-friend void Setup_Hooks(); //Enables hooking functions we have as private
 public:
     enum
     {
@@ -112,9 +111,9 @@ public:
     void Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_list);
     void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *));
 
-    char *Get_Next_Token_Or_Null(const char *seps = nullptr);
-    char *Get_Next_Token(const char *seps = nullptr);
-    char *Get_Next_Sub_Token(const char *expected);
+    const char *Get_Next_Token_Or_Null(const char *seps = nullptr);
+    const char *Get_Next_Token(const char *seps = nullptr);
+    const char *Get_Next_Sub_Token(const char *expected);
     AsciiString Get_Next_Ascii_String();
     AsciiString Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
@@ -185,9 +184,9 @@ private:
 
 inline void INI::Hook_Me()
 {
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
-    Hook_Method((Make_Method_Ptr<char *, INI, char const*>(0x0041D950)), &INI::Get_Next_Sub_Token);
+    Hook_Method((Make_Method_Ptr<const char *, INI, char const*>(0x0041D6E0)), &INI::Get_Next_Token);
+    Hook_Method((Make_Method_Ptr<const char *, INI, char const*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
+    Hook_Method((Make_Method_Ptr<const char *, INI, char const*>(0x0041D950)), &INI::Get_Next_Sub_Token);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
     Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
     Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
@@ -218,12 +217,12 @@ inline void INI::Hook_Me()
 }
 
 // Functions for inlining, neater than including in class declaration
-inline char *INI::Get_Next_Token_Or_Null(const char *seps)
+inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 {
     return crt_strtok(0, seps != nullptr ? seps : m_seps);
 }
 
-inline char *INI::Get_Next_Token(const char *seps)
+inline const char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = crt_strtok(0, seps != nullptr ? seps : m_seps);
     ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
@@ -231,7 +230,7 @@ inline char *INI::Get_Next_Token(const char *seps)
     return ret;
 }
 
-inline char *INI::Get_Next_Sub_Token(const char *expected)
+inline const char *INI::Get_Next_Sub_Token(const char *expected)
 {
     ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n" )
     return Get_Next_Token(m_sepsColon);
@@ -242,7 +241,7 @@ inline AsciiString INI::Get_Next_Ascii_String()
     static char _buffer[1024];
     AsciiString next;
 
-    char *token = Get_Next_Token_Or_Null();
+    const char *token = Get_Next_Token_Or_Null();
 
     if ( token != nullptr ) {
         if ( *token == '"' ) {
@@ -250,7 +249,7 @@ inline AsciiString INI::Get_Next_Ascii_String()
                 strcpy(_buffer, token + 1);
             }
 
-            char *ntoken = Get_Next_Token(m_sepsQuote);
+            const char *ntoken = Get_Next_Token(m_sepsQuote);
 
             if ( strlen(ntoken) > 1 && ntoken[1] != '\t' ) {
                 strcat(_buffer, " ");

@@ -558,7 +558,7 @@ void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, v
     //DEBUG_LOG("Appending Vector for ini %s.\n", ini->m_fileName.Str());
     std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
 
-    for ( char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
+    for ( const char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
         vec->push_back(AsciiString(i));
     }
 }
@@ -570,7 +570,7 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_
     RGBColor *rgb = static_cast<RGBColor*>(store);
 
     for ( int i = 0; i < 3; ++i ) {
-        char *token = ini->Get_Next_Sub_Token(names[i]);
+        const char *token = ini->Get_Next_Sub_Token(names[i]);
         colors[i] = Clamp(Scan_Int(token), 0, 255);
     }
 
@@ -586,7 +586,7 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *
     RGBAColorInt *rgba = static_cast<RGBAColorInt*>(store);
 
     for ( int i = 0; i < 4; ++i ) {
-        char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
+        const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if ( token != nullptr ) {
             ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);
@@ -611,7 +611,7 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_
     uint32_t *rgba = static_cast<uint32_t*>(store);
 
     for ( int i = 0; i < 4; ++i ) {
-        char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
+        const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if ( token != nullptr ) {
             ASSERT_THROW_PRINT(strcasecmp(token, names[i]) == 0, 0xDEAD0006, "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n", token);

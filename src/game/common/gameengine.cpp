@@ -36,6 +36,7 @@
 #include "randomvalue.h"
 #include "science.h"
 #include "subsysteminterface.h"
+#include "terrainroads.h"
 #include "terraintypes.h"
 #include "xfercrc.h"
 
@@ -158,6 +159,16 @@ void GameEngine::Init(int argc, char *argv[])
         nullptr,
         &xfer,
         "TheTerrainTypes"
+    );
+
+    g_theTerrainRoads = new TerrainRoadCollection;
+    g_theSubsystemList->Init_Subsystem(
+        g_theTerrainRoads,
+        "Data/INI/Default/Roads.ini",
+        "Data/INI/Roads.ini",
+        nullptr,
+        &xfer,
+        "TheTerrainRoads"
     );
 
     //TODO this is a WIP

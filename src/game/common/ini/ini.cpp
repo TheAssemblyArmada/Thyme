@@ -31,6 +31,7 @@
 #include "gametext.h"
 #include "globaldata.h"
 #include "minmax.h"
+#include "terrainroads.h"
 #include "terraintypes.h"
 #include "water.h"
 #include "xfer.h"
@@ -50,7 +51,7 @@ BlockParse TheTypeTable[] =
     { "Armor", (iniblockparse_t)(0x004B60A0)/*&INI::parseArmorDefinition*/ },
     { "AudioEvent", (iniblockparse_t)(0x0044ED70)/*&INI::parseAudioEventDefinition*/ },
     { "AudioSettings", (iniblockparse_t)(0x00406FF0)/*&INI::parseAudioSettingsDefinition*/ },
-    { "Bridge", (iniblockparse_t)(0x00518C70)/*&INI::parseTerrainBridgeDefinition*/ },
+    { "Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definitions },
     { "Campaign", (iniblockparse_t)(0x00517490)/*&INI::parseCampaignDefinition*/ },
     { "ChallengeGenerals", (iniblockparse_t)(0x005170B0)/*&INI::parseChallengeModeDefinition*/ },
     { "CommandButton", (iniblockparse_t)(0x00516CE0)/*&INI::parseCommandButtonDefinition*/ },
@@ -66,7 +67,6 @@ BlockParse TheTypeTable[] =
     { "DrawGroupInfo", (iniblockparse_t)(0x005145B0)/*&INI::parseDrawGroupNumberDefinition*/ },
     { "EvaEvent", (iniblockparse_t)(0x00512BE0)/*&INI::parseEvaEvent*/ },
     { "FXList", (iniblockparse_t)(0x004CC260)/*&INI::parseFXListDefinition*/ },
-    //{ "GameData", (iniblockparse_t)(0x00512BD0)/*&INI::parseGameDataDefinition*/ },
     { "GameData", &GlobalData::Parse_Game_Data_Definitions },
     { "InGameUI", (iniblockparse_t)(0x00508440)/*&INI::parseInGameUIDefinition*/ },
     { "Locomotor", (iniblockparse_t)(0x004B8A70)/*&INI::parseLocomotorTemplateDefinition*/ },
@@ -87,7 +87,7 @@ BlockParse TheTypeTable[] =
     { "ObjectReskin", (iniblockparse_t)(0x00504990)/*&INI::parseObjectReskinDefinition*/ },
     { "ParticleSystem", (iniblockparse_t)(0x005047E0)/*&INI::parseParticleSystemDefinition*/ },
     { "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
-    { "Road", (iniblockparse_t)(0x005046A0)/*&INI::parseTerrainRoadDefinition*/ },
+    { "Road", TerrainRoadCollection::Parse_Terrain_Road_Definitions },
     { "Science", (iniblockparse_t)(0x00488EA0)/*&INI::parseScienceDefinition*/ },
     { "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
     { "SpecialPower", (iniblockparse_t)(0x00504690)/*&INI::parseSpecialPowerDefinition*/ },

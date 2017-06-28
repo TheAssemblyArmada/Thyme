@@ -39,6 +39,7 @@ set(GAMEENGINE_SRC
     game/weather.cpp
     game/client/gametext.cpp
     game/client/optionpreferences.cpp
+    game/client/terrainroads.cpp
     game/client/water.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp

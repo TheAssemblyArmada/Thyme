@@ -184,7 +184,7 @@ char *AsciiString::Get_Buffer_For_Read(int len)
 
 void AsciiString::Set(const char *s)
 {
-    if ( m_data != nullptr || s != m_data->Peek() ) {
+    if ( m_data == nullptr || s != m_data->Peek() ) {
         size_t len;
         
         if ( s && (len = strlen(s) + 1, len != 1) ) {

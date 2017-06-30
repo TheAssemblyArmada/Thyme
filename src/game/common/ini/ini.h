@@ -115,6 +115,7 @@ public:
     const char *Get_Next_Token(const char *seps = nullptr);
     const char *Get_Next_Sub_Token(const char *expected);
     AsciiString Get_Next_Ascii_String();
+    AsciiString Get_Next_Quoted_Ascii_String();
     AsciiString Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
     int Get_Line_Number() { return m_lineNumber; }
@@ -140,6 +141,7 @@ public:
     static void Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_AsciiString(INI *ini, void *formal, void *store, void const *user_data);
+    static void Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *user_data);
@@ -239,7 +241,7 @@ inline const char *INI::Get_Next_Sub_Token(const char *expected)
 
 inline AsciiString INI::Get_Next_Ascii_String()
 {
-    static char _buffer[1024];
+    static char _buffer[1028];
     AsciiString next;
 
     const char *token = Get_Next_Token_Or_Null();

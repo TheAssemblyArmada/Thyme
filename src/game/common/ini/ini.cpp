@@ -30,7 +30,9 @@
 #include "gamelod.h"
 #include "gametext.h"
 #include "globaldata.h"
+#include "globallanguage.h"
 #include "minmax.h"
+#include "stringex.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "water.h"
@@ -70,7 +72,8 @@ BlockParse TheTypeTable[] =
     { "GameData", &GlobalData::Parse_Game_Data_Definitions },
     { "InGameUI", (iniblockparse_t)(0x00508440)/*&INI::parseInGameUIDefinition*/ },
     { "Locomotor", (iniblockparse_t)(0x004B8A70)/*&INI::parseLocomotorTemplateDefinition*/ },
-    { "Language", (iniblockparse_t)(0x00420360)/*&INI::parseLanguageDefinition*/ },
+    //{ "Language", (iniblockparse_t)(0x00420360)/*&INI::parseLanguageDefinition*/ },
+    { "Language", &GlobalLanguage::Parse_Language_Defintions },
     { "MapCache", (iniblockparse_t)(0x00506760)/*&INI::parseMapCacheDefinition*/ },
     { "MapData", (iniblockparse_t)(0x0062D610)/*&INI::parseMapDataDefinition*/ },
     { "MappedImage", (iniblockparse_t)(0x00506510)/*&INI::parseMappedImageDefinition*/ },
@@ -161,7 +164,7 @@ INI::INI() :
     m_seps(" \n\r\t="),
     m_sepsPercent(" \n\r\t=%%"),
     m_sepsColon(" \n\r\t=:"),
-    m_sepsQuote(" \"\n="),
+    m_sepsQuote("\"\n="),
     m_endToken("END"),
     m_endOfFile(false)
 {
@@ -392,6 +395,46 @@ void INI::Read_Line()
     }
 }
 
+AsciiString INI::Get_Next_Quoted_Ascii_String()
+{
+    const char *token = Get_Next_Token_Or_Null();
+    AsciiString next;
+    char buffer[MAX_LINE_LENGTH];
+
+    buffer[0] = '\0';
+
+    if ( token != nullptr ) {
+        if ( *token == '"' ) {
+            if ( strlen(token) > 1 ) {
+                strlcpy(buffer, token + 1, sizeof(buffer));
+
+                if ( buffer[strlen(buffer) - 1] == '"' ) {
+                    buffer[strlen(buffer) - 1] = '\0';
+
+                    return buffer;
+                }
+            }
+
+            const char *next_tok = Get_Next_Token(m_sepsQuote);
+
+            if ( strlen(next_tok) > 1 && next_tok[1] != '\t' ) {
+                strlcat(buffer, " ", sizeof(buffer));
+                strlcat(buffer, next_tok, sizeof(buffer));
+            }
+
+            if ( buffer[strlen(buffer) - 1] == '"' ) {
+                buffer[strlen(buffer) - 1] = '\0';
+            }
+
+            next = buffer;
+        } else {
+            next = token;
+        }
+    }
+
+    return next;
+}
+
 int INI::Scan_Science(const char *token)
 {
     //return TheScienceStore->Friend_Lookup_Science(token);
@@ -551,6 +594,11 @@ void INI::Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, void 
 void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *user_data)
 {
     *static_cast<AsciiString*>(store) = ini->Get_Next_Ascii_String();
+}
+
+void INI::Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, void const *user_data)
+{
+    *static_cast<AsciiString*>(store) = ini->Get_Next_Quoted_Ascii_String();
 }
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)

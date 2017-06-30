@@ -29,6 +29,7 @@
 #include "gamelod.h"
 #include "gametext.h"
 #include "globaldata.h"
+#include "globallanguage.h"
 #include "ini.h"
 #include "localfilesystem.h"
 #include "multiplayersettings.h"
@@ -169,6 +170,16 @@ void GameEngine::Init(int argc, char *argv[])
         nullptr,
         &xfer,
         "TheTerrainRoads"
+    );
+
+    g_theGlobalLanguage = new GlobalLanguage;
+    g_theSubsystemList->Init_Subsystem(
+        g_theGlobalLanguage,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        "TheGlobalLanguageData"
     );
 
     //TODO this is a WIP

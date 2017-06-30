@@ -38,6 +38,7 @@ set(GAMEENGINE_SRC
     game/maputil.cpp
     game/weather.cpp
     game/client/gametext.cpp
+    game/client/globallanguage.cpp
     game/client/optionpreferences.cpp
     game/client/terrainroads.cpp
     game/client/water.cpp

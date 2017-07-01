@@ -116,6 +116,11 @@ set(GAMEENGINE_SRC
 )
 
 add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
-target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+
+if(MSVC AND NOT STANDALONE) 
+    target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+else()
+    target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+endif()
 
 target_link_libraries(thyme ${PLATFORM_LIBS})

@@ -31,6 +31,9 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
     message(FATAL_ERROR "Building in-source is not supported! Create a build dir and remove ${CMAKE_SOURCE_DIR}/CMakeCache.txt")
 endif()
 
+# This doesn't really work yet, work ongoing to make it usable
+option(STANDALONE "Build a standalone version." OFF)
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
 # Go lean and mean on windows.
@@ -112,6 +115,10 @@ else()
     add_definitions(-DTHYME_COMMIT_SHA1="NOGITHASH")
     add_definitions(-DTHYME_COMMIT_SHA1_SHORT="NOGITHASH")
     add_definitions(-DTHYME_COMMIT_COUNT=0)
+endif()
+
+if(STANDALONE)
+    add_definitions(-DTHYME_STANDALONE)
 endif()
 
 # Set where the build results will end up

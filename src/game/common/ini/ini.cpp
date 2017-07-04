@@ -28,6 +28,7 @@
 #include "filesystem.h"
 #include "gamedebug.h"
 #include "gamelod.h"
+#include "gamemath.h"
 #include "gametext.h"
 #include "globaldata.h"
 #include "globallanguage.h"
@@ -39,7 +40,8 @@
 #include "xfer.h"
 #include <cctype>
 #include <cstdio>
-#include <cmath>
+
+using GameMath::Ceil;
 
 const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
 const float _ANGLE_MULTIPLIER = 0.0174532925f;
@@ -72,7 +74,6 @@ BlockParse TheTypeTable[] =
     { "GameData", &GlobalData::Parse_Game_Data_Definitions },
     { "InGameUI", (iniblockparse_t)(0x00508440)/*&INI::parseInGameUIDefinition*/ },
     { "Locomotor", (iniblockparse_t)(0x004B8A70)/*&INI::parseLocomotorTemplateDefinition*/ },
-    //{ "Language", (iniblockparse_t)(0x00420360)/*&INI::parseLanguageDefinition*/ },
     { "Language", &GlobalLanguage::Parse_Language_Defintions },
     { "MapCache", (iniblockparse_t)(0x00506760)/*&INI::parseMapCacheDefinition*/ },
     { "MapData", (iniblockparse_t)(0x0062D610)/*&INI::parseMapDataDefinition*/ },
@@ -703,7 +704,7 @@ void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, void const *u
 
 void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *static_cast<uint32_t*>(store) = ceilf(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
+    *static_cast<uint32_t*>(store) = Ceil(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
 }
 
 void INI::Parse_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data)

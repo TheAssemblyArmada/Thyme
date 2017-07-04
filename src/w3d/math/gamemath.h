@@ -78,7 +78,7 @@ inline float Fabs(float val)
     float tmp = val;
     uint32_t value = *reinterpret_cast<uint32_a*>(&tmp);
     value &= 0x7fffffff;
-    return (float)*reinterpret_cast<float_a*>(&value);
+    return float(*reinterpret_cast<float_a*>(&value));
 }
 
 inline int Float_To_Int_Chop(const float &f)
@@ -110,47 +110,47 @@ inline int Float_To_Int_Floor(const float &f)
 
 inline float Cos(float val)
 {
-    return static_cast<float>(cosf(val));   // TODO reimplement based on fdlibm for cross platform reproducibility.
+    return float(cosf(val));   // TODO reimplement based on fdlibm for cross platform reproducibility.
 }
 
 inline float Sin(float val)
 {
-    return static_cast<float>(sinf(val));   // TODO reimplement based on fdlibm for cross platform reproducibility.
+    return float(sinf(val));   // TODO reimplement based on fdlibm for cross platform reproducibility.
 }
 
 inline float Sqrt(float val)
 {
-    return static_cast<float>(sqrtf(val));   // IEEE standard says this is predictable for all conforming implementations.
+    return float(sqrtf(val));   // IEEE standard says this is predictable for all conforming implementations.
 }
 
 inline float Inv_Sqrt(float val)
 {
-    return static_cast<float>(1.0f / sqrtf(val));
+    return float(1.0f / sqrtf(val));
 }
 
 inline float Acos(float val)
 {
-    return static_cast<float>(acosf(val));
+    return float(acosf(val));
 }
 
 inline float Asin(float val)
 {
-    return static_cast<float>(asinf(val));
+    return float(asinf(val));
 }
 
 inline float Atan(float val)
 {
-    return static_cast<float>(atanf(val));
+    return float(atanf(val));
 }
 
 inline float Atan2(float y, float x)
 {
-    return static_cast<float>(atan2f(y, x));
+    return float(atan2f(y, x));
 }
 
 inline float Tan(float val)
 {
-    return static_cast<float>(tanf(val));
+    return float(tanf(val));
 }
 
 inline float Fast_Sin(float val)
@@ -185,7 +185,7 @@ inline float Fast_Cos(float val)
 
 inline float Fast_Inv_Cos(float val)
 {
-    return (float)(1.0f / Fast_Cos(val));
+    return float(1.0f / Fast_Cos(val));
 }
 
 inline float Fast_Acos(float val)
@@ -198,7 +198,7 @@ inline float Fast_Acos(float val)
     val *= float(ARC_TABLE_SIZE / 2);
     int idx0 = Float_To_Int_Floor(val);
     int idx1 = idx0 + 1;
-    float frac = val - (float)idx0;
+    float frac = val - float(idx0);
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
@@ -218,7 +218,7 @@ inline float Fast_Asin(float val)
     val *= float(ARC_TABLE_SIZE / 2);
     int idx0 = Float_To_Int_Floor(val);
     int idx1 = idx0 + 1;
-    float frac = val - (float)idx0;
+    float frac = val - float(idx0);
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
@@ -257,12 +257,12 @@ inline bool Fast_Is_Float_Positive(const float &val)
 
 inline float Random_Float()
 {
-    return static_cast<float>(((float)(rand() & 0xFFF)) / (float)(0xFFF));
+    return float((float(rand() & 0xFFF)) / float(0xFFF));
 }
 
 inline float Random_Float(float min, float max)
 {
-    return static_cast<float>(Random_Float() * (max - min) + min);
+    return float(Random_Float() * (max - min) + min);
 }
 
 inline float Wrap(float val, float min = 0.0f, float max = 1.0f)
@@ -283,7 +283,7 @@ inline float Wrap(float val, float min = 0.0f, float max = 1.0f)
         val = max;
     }
 
-    return static_cast<float>(val);
+    return float(val);
 }
 
 //inline double Wrap(double val, double min = 0.0f, double max = 1.0f)
@@ -309,7 +309,7 @@ inline float Wrap(float val, float min = 0.0f, float max = 1.0f)
 
 inline float Lerp(float a, float b, float lerp)
 {
-    return (a + (b - a) * lerp);
+    return float(a + (b - a) * lerp);
 }
 
 // Do we want any double math?
@@ -320,7 +320,7 @@ inline float Lerp(float a, float b, float lerp)
 
 inline int Lerp(int a, int b, float lerp)
 {
-    return (a + (int)((b - a) * lerp));
+    return (a + int((b - a) * lerp));
 }
 
 
@@ -329,7 +329,7 @@ inline int Float_To_Long(float f)
 #ifdef PROCESSOR_X86
     return _mm_cvtt_ss2si(_mm_load_ss(&f));
 #else
-    return (int)(f);
+    return int(f);
 #endif
 }
 
@@ -345,12 +345,12 @@ inline int Float_To_Long(float f)
 
 inline unsigned char Unit_Float_To_Byte(float f)
 {
-    return (unsigned char)(f * 255.0f);
+    return unsigned char(f * 255.0f);
 }
 
 inline float Byte_To_Unit_Float(unsigned char byte)
 { 
-    return ((float)byte) / 255.0f;
+    return (float(byte)) / 255.0f;
 }
 
 inline bool Is_Valid_Float(float x)

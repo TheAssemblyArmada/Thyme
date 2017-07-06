@@ -158,16 +158,16 @@ inline float Fast_Sin(float val)
     val *= float(SIN_TABLE_SIZE) / (2.0f * GAMEMATH_PI);
     int idx0 = Float_To_Int_Floor(val);
     int idx1 = idx0 + 1;
-    float frac = val - (float)idx0;
-    idx0 = ((unsigned)idx0) & (SIN_TABLE_SIZE - 1);
-    idx1 = ((unsigned)idx1) & (SIN_TABLE_SIZE - 1);
+    float frac = val - float(idx0);
+    idx0 = (unsigned(idx0)) & (SIN_TABLE_SIZE - 1);
+    idx1 = (unsigned(idx1)) & (SIN_TABLE_SIZE - 1);
 
     return (1.0f - frac) * _FastSinTable[idx0] + frac * _FastSinTable[idx1];
 }
 
 inline float Fast_Inv_Sin(float val)
 {
-    return (float)(1.0f / Fast_Sin(val));
+    return float(1.0f / Fast_Sin(val));
 }
 
 inline float Fast_Cos(float val)
@@ -176,9 +176,9 @@ inline float Fast_Cos(float val)
     val *= float(SIN_TABLE_SIZE) / (2.0f * GAMEMATH_PI);
     int idx0 = Float_To_Int_Floor(val);
     int idx1 = idx0 + 1;
-    float frac = val - (float)idx0;
-    idx0 = ((unsigned)idx0) & (SIN_TABLE_SIZE - 1);
-    idx1 = ((unsigned)idx1) & (SIN_TABLE_SIZE - 1);
+    float frac = val - float(idx0);
+    idx0 = (unsigned(idx0)) & (SIN_TABLE_SIZE - 1);
+    idx1 = (unsigned(idx1)) & (SIN_TABLE_SIZE - 1);
 
     return (1.0f - frac) * _FastSinTable[idx0] + frac * _FastSinTable[idx1];
 }
@@ -343,14 +343,14 @@ inline int Float_To_Long(float f)
 //#endif
 //}
 
-inline unsigned char Unit_Float_To_Byte(float f)
+inline uint8_t Unit_Float_To_Byte(float f)
 {
-    return unsigned char(f * 255.0f);
+    return uint8_t(f * 255.0f);
 }
 
 inline float Byte_To_Unit_Float(unsigned char byte)
 { 
-    return (float(byte)) / 255.0f;
+    return float(byte) / 255.0f;
 }
 
 inline bool Is_Valid_Float(float x)

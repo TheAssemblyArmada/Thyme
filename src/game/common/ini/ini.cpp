@@ -129,7 +129,7 @@ inline iniblockparse_t Find_Block_Parse(const char *token)
 }
 
 // Helper function for Init_From_INI_Multi
-inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int &offset, void const *&data)
+inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int &offset, const void *&data)
 {
     FieldParse *tblptr;
 
@@ -282,7 +282,7 @@ void INI::Init_From_INI(void *what, FieldParse *parse_table)
     Init_From_INI_Multi(what, p);
 }
 
-void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_list)
+void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_list)
 {
     bool done = false;
 
@@ -311,7 +311,7 @@ void INI::Init_From_INI_Multi(void *what, MultiIniFieldParse const &parse_table_
         } else {
             inifieldparse_t parsefunc;
             int offset;
-            void const *data;
+            const void *data;
             int exoffset = 0;
 
             // Find an appropriate parser function from the parse table
@@ -516,7 +516,7 @@ int INI::Scan_IndexList(const char *token, const char *const *list)
     return list_count;
 }
 
-int INI::Scan_LookupList(const char *token, LookupListRec const *list)
+int INI::Scan_LookupList(const char *token, const LookupListRec *list)
 {
     ASSERT_THROW_PRINT(
         list != nullptr && list->name != nullptr,
@@ -539,12 +539,12 @@ int INI::Scan_LookupList(const char *token, LookupListRec const *list)
 }
 
 // Field parsing functions.
-void INI::Parse_Bool(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Bool(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<bool*>(store) = Scan_Bool(ini->Get_Next_Token());
 }
 
-void INI::Parse_Byte(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Byte(INI *ini, void *formal, void *store, const void *user_data)
 {
     int tmp = Scan_Int(ini->Get_Next_Token());
 
@@ -553,22 +553,22 @@ void INI::Parse_Byte(INI *ini, void *formal, void *store, void const *user_data)
     *static_cast<uint8_t*>(store) = tmp;
 }
 
-void INI::Parse_Int(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<int*>(store) = Scan_Int(ini->Get_Next_Token());
 }
 
-void INI::Parse_Unsigned(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Unsigned(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<unsigned int*>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
 }
 
-void INI::Parse_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token());
 }
 
-void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     float tmp = Scan_Real(ini->Get_Next_Token());
 
@@ -577,32 +577,32 @@ void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, voi
     *static_cast<float*>(store) = tmp;
 }
 
-void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_PercentToReal(ini->Get_Next_Token(ini->m_sepsPercent));
 }
 
-void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Angle_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _ANGLE_MULTIPLIER;
 }
 
-void INI::Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * (_SECONDS_PER_LOGICFRAME_REAL_74 * _ANGLE_MULTIPLIER);
 }
 
-void INI::Parse_AsciiString(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_AsciiString(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<AsciiString*>(store) = ini->Get_Next_Ascii_String();
 }
 
-void INI::Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<AsciiString*>(store) = ini->Get_Next_Quoted_Ascii_String();
 }
 
-void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, const void *user_data)
 {
     //DEBUG_LOG("Appending Vector for ini %s.\n", ini->m_fileName.Str());
     std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
@@ -612,7 +612,7 @@ void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, v
     }
 }
 
-void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[3];
     const char *names[3] = { "R", "G", "B" };
@@ -628,7 +628,7 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, void const *user_
     rgb->blue = colors[2] / 255.0f;
 }
 
-void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[4];
     const char *names[4] = { "R", "G", "B", "A" };
@@ -653,7 +653,7 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, void const *
     rgba->alpha = colors[3];
 }
 
-void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[4];
     const char *names[4] = { "R", "G", "B", "A" };
@@ -675,7 +675,7 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, void const *user_
     *rgba = Make_Color(colors[0], colors[1], colors[2], colors[3]);
 }
 
-void INI::Parse_Coord2D(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Coord2D(INI *ini, void *formal, void *store, const void *user_data)
 {
     Coord2D *coord = static_cast<Coord2D*>(store);
 
@@ -683,7 +683,7 @@ void INI::Parse_Coord2D(INI *ini, void *formal, void *store, void const *user_da
     coord->y = Scan_Real(ini->Get_Next_Sub_Token("Y"));
 }
 
-void INI::Parse_Coord3D(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Coord3D(INI *ini, void *formal, void *store, const void *user_data)
 {
     Coord3D *coord = static_cast<Coord3D*>(store);
 
@@ -692,32 +692,32 @@ void INI::Parse_Coord3D(INI *ini, void *formal, void *store, void const *user_da
     coord->z = Scan_Real(ini->Get_Next_Sub_Token("Z"));
 }
 
-void INI::Parse_Index_List(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Index_List(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<int*>(store) = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
 }
 
-void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = _DURATION_MULT * Scan_Real(ini->Get_Next_Token());
 }
 
-void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<uint32_t*>(store) = Ceil(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
 }
 
-void INI::Parse_Velocity_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _SECONDS_PER_LOGICFRAME_REAL_74;
 }
 
-void INI::Parse_Acceleration_Real(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Acceleration_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float*>(store) = Scan_Real(ini->Get_Next_Token()) * _SECONDS_PER_LOGICFRAME_REAL_74 * _SECONDS_PER_LOGICFRAME_REAL_74;
 }
 
-void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, const void *user_data)
 {
     uint32_t i = reinterpret_cast<uintptr_t>(user_data);
 
@@ -728,8 +728,154 @@ void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, void const *us
     }
 }
 
-void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, void const *user_data)
+void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, const void *user_data)
 {
     UnicodeString *str = static_cast<UnicodeString*>(store);
     *str = g_theGameText->Fetch(ini->Get_Next_Token());
+}
+
+void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *const *list = static_cast<const char *const *>(user_data);
+    ASSERT_THROW_PRINT(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.\n");
+    const char *token = ini->Get_Next_Token_Or_Null();
+    bool adjust = false;
+    bool set = false;
+
+    if ( token != nullptr ) {
+        while ( strcasecmp(token, "NONE") != 0 ) {
+            // If we have a plus or minus as first char, then that decides if bit is set or cleared.
+            // Otherwise just set.
+            if ( *token == '+' ) {
+                ASSERT_THROW_PRINT(
+                    !set,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to adjust when we already set.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                );
+
+                *static_cast<uint32_t*>(store) |= 1 << INI::Scan_IndexList(token + 1, list);
+                adjust = true;
+            } else if ( *token == '-' ) {
+                ASSERT_THROW_PRINT(
+                    !set,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to adjust when we already set.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                ); 
+                
+                *static_cast<uint32_t*>(store) &= ~(1 << INI::Scan_IndexList(token + 1, list));
+                adjust = true;
+            } else {
+                ASSERT_THROW_PRINT(
+                    !adjust,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to set when we already adjusted.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                );
+
+                // If we haven't started setting yet, 0 it out.
+                if ( !set ) {
+                    *static_cast<uint32_t*>(store) = 0;
+                }
+
+                *static_cast<uint32_t*>(store) |= 1 << INI::Scan_IndexList(token, list);
+                set = true;
+            }
+            
+            token = ini->Get_Next_Token_Or_Null();
+
+            if ( token == nullptr ) {
+                return;
+            }
+        }
+
+        // If we encounter a "NONE" entry, set all bits to 0.
+        // We should never reach here if something has already been set.
+        ASSERT_THROW_PRINT(
+            !adjust && !set,
+            0xDEAD0006,
+            "File: '%s', Line: %d Trying to clear when we already set or adjusted.\n",
+            ini->Get_Filename().Str(),
+            ini->Get_Line_Number()
+        ); 
+        
+        *static_cast<uint32_t*>(store) = 0;
+    }
+}
+
+void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *const *list = static_cast<const char *const *>(user_data);
+    ASSERT_THROW_PRINT(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.\n");
+    const char *token = ini->Get_Next_Token_Or_Null();
+    bool adjust = false;
+    bool set = false;
+
+    if ( token != nullptr ) {
+        while ( strcasecmp(token, "NONE") != 0 ) {
+            // If we have a plus or minus as first char, then that decides if bit is set or cleared.
+            // Otherwise just set.
+            if ( *token == '+' ) {
+                ASSERT_THROW_PRINT(
+                    !set,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to adjust when we already set.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                );
+
+                *static_cast<uint64_t*>(store) |= 1ll << INI::Scan_IndexList(token + 1, list);
+                adjust = true;
+            } else if ( *token == '-' ) {
+                ASSERT_THROW_PRINT(
+                    !set,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to adjust when we already set.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                );
+
+                *static_cast<uint64_t*>(store) &= ~(1ll << INI::Scan_IndexList(token + 1, list));
+                adjust = true;
+            } else {
+                ASSERT_THROW_PRINT(
+                    !adjust,
+                    0xDEAD0006,
+                    "File: '%s', Line: %d Trying to set when we already adjusted.\n",
+                    ini->Get_Filename().Str(),
+                    ini->Get_Line_Number()
+                );
+
+                // If we haven't started setting yet, 0 it out.
+                if ( !set ) {
+                    *static_cast<uint64_t*>(store) = 0;
+                }
+
+                *static_cast<uint64_t*>(store) |= 1ll << INI::Scan_IndexList(token, list);
+                set = true;
+            }
+
+            token = ini->Get_Next_Token_Or_Null();
+
+            if ( token == nullptr ) {
+                return;
+            }
+        }
+
+        // If we encounter a "NONE" entry, set all bits to 0.
+        // We should never reach here if something has already been set.
+        ASSERT_THROW_PRINT(
+            !adjust && !set,
+            0xDEAD0006,
+            "File: '%s', Line: %d Trying to clear when we already set or adjusted.\n",
+            ini->Get_Filename().Str(),
+            ini->Get_Line_Number()
+        ); 
+        
+        *static_cast<uint64_t*>(store) = 0;
+    }
 }

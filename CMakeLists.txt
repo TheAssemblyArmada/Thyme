@@ -33,6 +33,7 @@ endif()
 
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." OFF)
+option(USE_STLPORT "Use STLPort for std:: namespace implementations. Required for dll build." OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
@@ -119,6 +120,14 @@ endif()
 
 if(STANDALONE)
     add_definitions(-DTHYME_STANDALONE)
+endif()
+
+if(USE_STLPORT OR NOT STANDALONE)
+    set(USING_STLPORT TRUE BOOL INTERNAL)
+endif()
+
+if(USING_STLPORT)
+    add_definitions(-DTHYME_USE_STLPORT)
 endif()
 
 # Set where the build results will end up

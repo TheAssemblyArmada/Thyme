@@ -49,13 +49,34 @@ void tmemset(void *dst, T value, size_t size)
 template<typename T>
 struct less_than_nocase
 {
-    typedef T first_argument_type;
-    typedef T second_argument_type;
-    typedef bool result_type;
-
     constexpr bool operator()(const T &left, const T &right) const
     {
         return (left.Compare_No_Case(right) < 0);
+    }
+};
+
+template<typename T>
+struct equal_to
+{
+    constexpr bool operator()(const T &left, const T &right) const
+    {
+        return (left.Compare(right) == 0);
+    }
+};
+
+template<typename T>
+struct hash
+{
+    constexpr size_t operator()(const T &object) const
+    {
+        const char *c = reinterpret_cast<const char*>(object.Str());
+        size_t hash = 0;
+
+        do {
+            hash = *c + 5 * hash;
+        } while ( ++c );
+
+        return hash;
     }
 };
 

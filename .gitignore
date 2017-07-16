@@ -1,9 +1,6 @@
 *.user
 *.ncb
-build
-build64
-nbuild/
-mbuild/
+/build*
 nbproject/
 project/
 doxygen/

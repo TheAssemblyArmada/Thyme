@@ -50,10 +50,12 @@ before_build:
   - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%  ..
 
 after_build:
+  # Debug to work out why artifact isn't working.
+  - cmd: echo %CD%
   - cmd: 7z a thyme.zip .\Release\thyme.dll .\Release\launchthyme.exe -tzip
 
 artifacts:
-  - path: C:\projects\thyme\build\thyme.zip
+  - path: thyme.zip
     name: zip-archive
   
 build:

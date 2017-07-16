@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "gameengine.h"
 #include "archivefilesystem.h"
+#include "audiomanager.h"
 #include "commandline.h"
 #include "commandlist.h"
 #include "filesystem.h"
@@ -181,6 +182,20 @@ void GameEngine::Init(int argc, char *argv[])
         nullptr,
         "TheGlobalLanguageData"
     );
+
+    g_theAudio = Create_Audio_Manager();
+    g_theSubsystemList->Init_Subsystem(
+        g_theAudio,
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        "TheAudio"
+    );
+
+    if ( !g_theAudio->Is_Music_Already_Loaded() ) {
+        Set_Quitting(true);
+    }
 
     //TODO this is a WIP
 }

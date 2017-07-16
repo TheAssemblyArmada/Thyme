@@ -18,6 +18,7 @@ set(GAMEENGINE_INCLUDES
     game
     game/client
     game/common
+    game/common/audio
     game/common/ini
     game/common/system
     game/common/rts
@@ -58,6 +59,9 @@ set(GAMEENGINE_SRC
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp
+    game/common/audio/audioeventinfo.cpp
+    game/common/audio/audioeventrts.cpp
+    game/common/audio/audiomanager.cpp
     game/common/ini/ini.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp

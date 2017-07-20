@@ -157,6 +157,7 @@ public:
     static void Parse_And_Translate_Label(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Bitstring32(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Bitstring64(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data);
 
     // Block parsing functions
 

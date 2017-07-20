@@ -26,7 +26,9 @@
 #ifndef GAMETYPE_H
 #define GAMETYPE_H
 
-enum TimeOfDayType
+#include "always.h"
+
+enum TimeOfDayType : int32_t
 {
     TIME_OF_DAY_INVALID = 0,
     TIME_OF_DAY_FIRST = 1,
@@ -37,7 +39,7 @@ enum TimeOfDayType
     TIME_OF_DAY_COUNT,
 };
 
-enum WeatherType
+enum WeatherType : int32_t
 {
     WEATHER_NORMAL,
     WEATHER_SNOWY,
@@ -45,7 +47,7 @@ enum WeatherType
 };
 
 
-enum BodyDamageType
+enum BodyDamageType : int32_t
 {
     BODY_PRISTINE,
     BODY_DAMAGED,
@@ -54,8 +56,20 @@ enum BodyDamageType
     BODY_COUNT,
 };
 
+enum SpeakerType : int32_t
+{
+    SPEAKERS_TWO,
+    SPEAKERS_HEADPHONES,
+    SPEAKERS_SUROUND,
+    SPEAKERS_FOUR,
+    SPEAKERS_FIVE_P_ONE,
+    SPEAKERS_SEVEN_P_ONE,
+    SPEAKERS_COUNT,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];
+extern const char *g_speakerTypes[SPEAKERS_COUNT + 1];
 
 #endif

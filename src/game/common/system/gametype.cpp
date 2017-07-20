@@ -34,3 +34,13 @@ const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1] = {
 
 const char *g_weatherNames[WEATHER_COUNT + 1]{ "NORMAL", "SNOWY", nullptr };
 const char *g_bodyDamageNames[BODY_COUNT + 1] = { "PRISTINE", "DAMAGED", "REALLYDAMAGED", "RUBBLE", nullptr };
+
+const char *g_speakerTypes[SPEAKERS_COUNT + 1] = {
+    "2 Speakers",
+    "Headphones",
+    "Surround Sound",
+    "4 Speaker",
+    "5.1 Surround",
+    "7.1 Surround",
+    nullptr
+};

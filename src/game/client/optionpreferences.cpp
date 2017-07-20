@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
+#include "audiomanager.h"
 #include "optionpreferences.h"
 #include "globaldata.h"
 #include "hooker.h"
@@ -30,7 +31,6 @@
 
 OptionPreferences::OptionPreferences()
 {
-    DEBUG_LOG("Loading option preferences file.\n");
     Load("Options.ini");
 }
 
@@ -149,38 +149,98 @@ int OptionPreferences::Get_Static_Game_Detail()
 
 AsciiString OptionPreferences::Get_Preferred_3D_Provider()
 {
-    // TODO needs AudioInterface
-    return Call_Method<AsciiString, OptionPreferences>(0x00464720, this);
+    auto it = find("3DAudioProvider");
+
+    if ( it == end() ) {
+        // This gets Preferred3DSW entry from AudioSettings.ini as "Miles Fast 2D 
+        // Positional Audio" is actually the only provider the engine contains.
+        return g_theAudio->Get_Audio_Settings()->Get_Preferred_Driver(4);
+    }
+
+    return it->second;
 }
 
 AsciiString OptionPreferences::Get_Speaker_Type()
 {
-    // TODO needs AudioInterface
-    return Call_Method<AsciiString, OptionPreferences>(0x00464800, this);
+    auto it = find("SpeakerType");
+
+    if ( it == end() ) {
+        AudioSettings *as = g_theAudio->Get_Audio_Settings();
+
+        return g_theAudio->Translate_To_Speaker_Type(as->Get_Default_2D_Speaker());
+    }
+
+    return it->second;
 }
 
 float OptionPreferences::Get_Sound_Volume()
 {
-    // TODO needs AudioInterface
-    return Call_Method<float, OptionPreferences>(0x004648F0, this);
+    auto it = find("SFXVolume");
+
+    if ( it == end() ) {
+        AudioSettings *as = g_theAudio->Get_Audio_Settings();
+        float rel_vol = as->Get_Relative_Volume();
+        
+        if ( rel_vol >= 0.0f ) {
+            return as->Get_Default_Sound_Volume() * 100.0f;
+        }
+
+        return (rel_vol + 1.0f) * as->Get_Default_Sound_Volume() * 100.0f;
+    }
+
+    float ret = atof(it->second.Str());
+
+    return float(ret >= 0.0f ? ret : 0.0f);
 }
 
 float OptionPreferences::Get_3DSound_Volume()
 {
-    // TODO needs AudioInterface
-    return Call_Method<float, OptionPreferences>(0x00464A40, this);
+    auto it = find("SFX3DVolume");
+
+    if ( it == end() ) {
+        AudioSettings *as = g_theAudio->Get_Audio_Settings();
+        float rel_vol = as->Get_Relative_Volume();
+
+        if ( rel_vol >= 0.0f ) {
+            return as->Get_Default_3D_Sound_Volume() * 100.0f;
+        }
+
+        return (1.0f - rel_vol) * as->Get_Default_3D_Sound_Volume() * 100.0f;
+    }
+
+    float ret = atof(it->second.Str());
+
+    return float(ret >= 0.0f ? ret : 0.0f);
 }
 
 float OptionPreferences::Get_Speech_Volume()
 {
-    // TODO needs AudioInterface
-    return Call_Method<float, OptionPreferences>(0x00464B90, this);
+    auto it = find("VoiceVolume");
+
+    if ( it == end() ) {
+        AudioSettings *as = g_theAudio->Get_Audio_Settings();
+
+        return as->Get_Default_Speech_Volume() * 100.0f;
+    }
+
+    float ret = atof(it->second.Str());
+
+    return float(ret >= 0.0f ? ret : 0.0f);
 }
 
 float OptionPreferences::Get_Music_Volume()
 {
-    // TODO needs AudioInterface
-    return Call_Method<float, OptionPreferences>(0x00465AC0, this);
+    auto it = find("MusicVolume");
+
+    if ( it == end() ) {
+        AudioSettings *as = g_theAudio->Get_Audio_Settings();
+
+        return as->Get_Default_Speech_Volume() * 100.0f;
+    }
+
+    float ret = atof(it->second.Str());
+
+    return float(ret >= 0.0f ? ret : 0.0f);
 }
 
 bool OptionPreferences::Get_Cloud_Shadows_Enabled()

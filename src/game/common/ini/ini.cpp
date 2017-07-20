@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "ini.h"
+#include "audiomanager.h"
+#include "audiosettings.h"
 #include "color.h"
 #include "coord.h"
 #include "file.h"
@@ -30,6 +32,7 @@
 #include "gamelod.h"
 #include "gamemath.h"
 #include "gametext.h"
+#include "gametype.h"
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "minmax.h"
@@ -54,7 +57,7 @@ BlockParse TheTypeTable[] =
     { "Animation", (iniblockparse_t)(0x00518DB0)/*&INI::parseAnim2DDefinition*/ },
     { "Armor", (iniblockparse_t)(0x004B60A0)/*&INI::parseArmorDefinition*/ },
     { "AudioEvent", (iniblockparse_t)(0x0044ED70)/*&INI::parseAudioEventDefinition*/ },
-    { "AudioSettings", (iniblockparse_t)(0x00406FF0)/*&INI::parseAudioSettingsDefinition*/ },
+    { "AudioSettings", &AudioSettings::Parse_Audio_Settings },
     { "Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definitions },
     { "Campaign", (iniblockparse_t)(0x00517490)/*&INI::parseCampaignDefinition*/ },
     { "ChallengeGenerals", (iniblockparse_t)(0x005170B0)/*&INI::parseChallengeModeDefinition*/ },
@@ -878,4 +881,11 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
         
         *static_cast<uint64_t*>(store) = 0;
     }
+}
+
+void INI::Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data)
+{
+    AsciiString speaker;
+    Parse_AsciiString(ini, formal, &speaker, user_data);
+    *static_cast<SpeakerType*>(store) = static_cast<SpeakerType>(g_theAudio->Translate_From_Speaker_Type(speaker));
 }

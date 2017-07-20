@@ -29,6 +29,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "audioeventinfo.h"
+#include "audiosettings.h"
 #include "coord.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
@@ -58,7 +59,6 @@ enum AudioType
 
 class AudioEventRTS;
 class AudioRequest;
-class AudioSettings;
 class PlayingAudio;
 class MiscAudio;
 class MusicManager;
@@ -116,7 +116,7 @@ public:
     virtual unsigned int Get_Selected_Provider() = 0;
     virtual void Set_Speaker_Type(unsigned int type) = 0;
     virtual unsigned int Get_Speaker_Type() = 0;
-    virtual unsigned int Translate_From_Speaker_Type(const AsciiString type);
+    virtual unsigned int Translate_From_Speaker_Type(const AsciiString &type);
     virtual AsciiString Translate_To_Speaker_Type(unsigned int type);
     virtual int Get_Num_2D_Samples() const = 0;
     virtual int Get_Num_3D_Samples() const = 0;
@@ -132,6 +132,7 @@ public:
     virtual void Set_On(bool on, AudioAffect affect);
     virtual void Set_Volume(float volume, AudioAffect affect);
     virtual float Get_Volume(AudioAffect affect);
+    virtual void Set_3D_Volume_Adjustment(float adj);
     virtual bool Has_3D_Sensitive_Streams_Playing() = 0;
     virtual void *Get_Bink_Handle() = 0;
     virtual void Release_Bink_Handle() = 0;
@@ -151,7 +152,7 @@ public:
     virtual void Set_Speaker_Surround(bool surround);
     virtual bool Get_Speaker_Surround();
     virtual void Refresh_Cached_Variables();
-    virtual void Set_Preferred_Provider(AsciiString provider) = 0;
+    virtual void Set_Preferred_3D_Provider(AsciiString provider) = 0;
     virtual void Set_Preferred_Speaker(AsciiString speaker) = 0;
     virtual float Get_Audio_Length_MS(const AudioEventRTS *event);
     virtual float Get_File_Length_MS(AsciiString file_name) = 0;
@@ -171,6 +172,7 @@ public:
     virtual void Process_Fading_List() = 0;
     virtual void Process_Stopped_List() = 0;
 
+    AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
 protected:
     AudioSettings *m_audioSettings;
     MiscAudio *m_miscAudio; // TODO Work out what this is.

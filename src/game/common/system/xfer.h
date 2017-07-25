@@ -30,6 +30,7 @@
 #include "bitflags.h"
 #include "color.h"
 #include "coord.h"
+#include "gametype.h"
 #include "kindof.h"
 #include "matrix3d.h"
 #include "science.h"
@@ -44,7 +45,6 @@ struct RealRange
     float hi;
 };
 
-typedef int ObjectID;
 typedef int DrawableID;
 
 enum XferType

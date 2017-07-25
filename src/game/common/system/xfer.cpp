@@ -183,12 +183,12 @@ void Xfer::xferRGBAColorInt(RGBAColorInt *thing)
 
 void Xfer::xferObjectID(ObjectID *thing)
 {
-    xferInt(thing);
+    xferInt(reinterpret_cast<int32_t*>(thing));
 }
 
 void Xfer::xferDrawableID(DrawableID *thing)
 {
-    xferInt(thing);
+    xferInt(reinterpret_cast<int32_t*>(thing));
 }
 
 void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)

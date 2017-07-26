@@ -56,6 +56,28 @@ public:
         uint16_t ref_count;
         uint16_t num_chars_allocated;
 
+        void Inc_Ref_Count()
+        {
+        #ifdef COMPILER_MSVC
+            InterlockedIncrement16((volatile short*)&ref_count);
+        #elif defined COMPILER_GNUC || defined COMPILER_CLANG
+            __sync_add_and_fetch(&ref_count, 1);
+        #else
+            #error Compiler not supported, add atomic increment to asciistring.h 
+        #endif
+        }
+
+        void Dec_Ref_Count()
+        {
+        #ifdef COMPILER_MSVC
+            InterlockedDecrement16((volatile short*)&ref_count);
+        #elif defined COMPILER_GNUC || defined COMPILER_CLANG
+            __sync_sub_and_fetch(&ref_count, 1);
+        #else
+            #error Compiler not supported, add atomic decrement to asciistring.h 
+        #endif
+        }
+
         char *Peek()
         {
             // Actual string data is stored immediately after the AsciiStringData header.

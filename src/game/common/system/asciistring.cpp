@@ -54,11 +54,7 @@ AsciiString::AsciiString(AsciiString const &string) :
     m_data(string.m_data)
 {
     if ( m_data != nullptr ) {
-    #ifdef COMPILER_MSVC
-        InterlockedIncrement16((volatile short*)&string.m_data->ref_count);
-    #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-        __sync_add_and_fetch(&string.m_data->ref_count, 1);
-    #endif
+        m_data->Inc_Ref_Count();
     }
 }
 
@@ -78,11 +74,8 @@ char *AsciiString::Peek() const
 void AsciiString::Release_Buffer()
 {
     if ( m_data != nullptr ) {
-    #ifdef COMPILER_MSVC
-        InterlockedDecrement16((volatile short*)&m_data->ref_count);
-    #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-        __sync_sub_and_fetch(&m_data->ref_count, 1);
-    #endif
+        m_data->Dec_Ref_Count();
+
         if ( m_data->ref_count == 0 ) {
             g_dynamicMemoryAllocator->Free_Bytes(m_data);
         }
@@ -201,12 +194,8 @@ void AsciiString::Set(AsciiString const &string)
         Release_Buffer();
         m_data = string.m_data;
         
-        if ( string.m_data != nullptr ) {
-        #ifdef COMPILER_MSVC
-            InterlockedIncrement16((volatile short*)&string.m_data->ref_count);
-        #elif defined COMPILER_GNUC || defined COMPILER_CLANG
-            __sync_add_and_fetch(&string.m_data->ref_count, 1);
-        #endif
+        if ( m_data != nullptr ) {
+            m_data->Inc_Ref_Count();
         }
     }
 }

@@ -44,7 +44,7 @@ UnicodeString::UnicodeString() :
 {
 }
 
-UnicodeString::UnicodeString(wchar_t const *s) :
+UnicodeString::UnicodeString(const wchar_t*s) :
     m_data(nullptr)
 {
     if ( s != nullptr ) {
@@ -112,7 +112,7 @@ void UnicodeString::Release_Buffer()
     }
 }
 
-void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, wchar_t const *str_to_cpy, wchar_t const *str_to_cat)
+void UnicodeString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, const wchar_t*str_to_cpy, const wchar_t*str_to_cat)
 {
     if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
         if ( str_to_cpy != nullptr ) {
@@ -182,9 +182,9 @@ wchar_t UnicodeString::Get_Char(int index) const
     return L'\0';
 }
 
-wchar_t const *UnicodeString::Str() const
+const wchar_t*UnicodeString::Str() const
 {
-    static wchar_t const *TheNullChr = L"";
+    static const wchar_t*TheNullChr = L"";
 
     if ( m_data != nullptr ) {
         return Peek();
@@ -205,7 +205,7 @@ wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
     return Peek();
 }
 
-void UnicodeString::Set(wchar_t const *s)
+void UnicodeString::Set(const wchar_t*s)
 {
     if ( m_data != nullptr || s != m_data->Peek() ) {
         size_t len;
@@ -218,7 +218,7 @@ void UnicodeString::Set(wchar_t const *s)
     }
 }
 
-void UnicodeString::Set(char16_t const *s)
+void UnicodeString::Set(const char16_t *s)
 {
     size_t len;
 
@@ -271,7 +271,7 @@ void UnicodeString::Concat(wchar_t c)
     Concat(str);
 }
 
-void UnicodeString::Concat(wchar_t const *s)
+void UnicodeString::Concat(const wchar_t*s)
 {
     size_t len = wcslen(s);
 
@@ -350,7 +350,7 @@ void UnicodeString::Remove_Last_Char()
     }
 }
 
-void UnicodeString::Format(wchar_t const *format, ...)
+void UnicodeString::Format(const wchar_t*format, ...)
 {
     va_list va;
 
@@ -366,7 +366,7 @@ void UnicodeString::Format(UnicodeString format, ...)
     Format_VA(format, va);
 }
 
-void UnicodeString::Format_VA(wchar_t const *format, char *args)
+void UnicodeString::Format_VA(const wchar_t*format, char *args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
@@ -401,7 +401,7 @@ bool UnicodeString::Next_Token(UnicodeString *tok, UnicodeString delims)
         delims = L" \n\r\t";
     }
     
-    wchar_t const *start = Str();
+    const wchar_t*start = Str();
 
     size_t pos = wcscspn(Peek(), delims.Str());
 

@@ -67,6 +67,16 @@ enum SpeakerType : int32_t
     SPEAKERS_COUNT,
 };
 
+enum PriorityType : int32_t
+{
+    PRIORITY_LOWEST,
+    PRIORITY_LOW,
+    PRIORITY_NORMAL,
+    PRIORITY_HIGH,
+    PRIORITY_CRITICAL,
+    PRIORITY_COUNT,
+};
+
 // Placeholder
 enum ObjectID : int32_t
 {
@@ -77,5 +87,6 @@ extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];
 extern const char *g_speakerTypes[SPEAKERS_COUNT + 1];
+extern const char *g_audioPriorityNames[PRIORITY_COUNT + 1];
 
 #endif

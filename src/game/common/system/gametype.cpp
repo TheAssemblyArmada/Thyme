@@ -44,3 +44,12 @@ const char *g_speakerTypes[SPEAKERS_COUNT + 1] = {
     "7.1 Surround",
     nullptr
 };
+
+const char *g_audioPriorityNames[PRIORITY_COUNT + 1] = {
+    "LOWEST",
+    "LOW",
+    "NORMAL",
+    "HIGH",
+    "CRITICAL",
+    nullptr
+};

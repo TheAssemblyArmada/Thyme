@@ -40,6 +40,8 @@ public:
     AudioEventRTS(const AsciiString &name, const Coord3D *pos);
     virtual ~AudioEventRTS() {}
 
+    AudioEventRTS &operator=(const AudioEventRTS &that);
+
 private:
     AsciiString m_filename;
     AudioEventInfo *m_eventInfo;
@@ -48,7 +50,7 @@ private:
     AsciiString m_eventName;
     AsciiString m_filenameAttack;
     AsciiString m_filenameDecay;
-    int m_priority; //PriorityType
+    PriorityType m_priority;
     float m_volumeAdjustFactor;
     TimeOfDayType m_timeOfDay;
     Coord3D m_positionOfAudio;
@@ -63,7 +65,7 @@ private:
     int m_loopCount;
     int m_currentSoundIndex;
     int m_unkInt1;
-    unsigned m_playerIndex;
+    int m_playerIndex;
     int m_nextPlayPortion;
 };
 

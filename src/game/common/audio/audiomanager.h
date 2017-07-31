@@ -173,6 +173,7 @@ public:
     virtual void Process_Stopped_List() = 0;
 
     AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
+
 protected:
     AudioSettings *m_audioSettings;
     MiscAudio *m_miscAudio; // TODO Work out what this is.
@@ -201,7 +202,6 @@ protected:
     AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
     int *m_savedVolumes; // TODO check the type this is a pointer to
     unsigned int m_cachedVariables;
-
 };
 
 #ifdef THYME_STANDALONE

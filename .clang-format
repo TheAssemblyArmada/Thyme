@@ -1,57 +1,84 @@
-﻿---
+---
+Language: Cpp
 AccessModifierOffset: -4
 AlignAfterOpenBracket: DontAlign
-AlignConsecutiveAssignments: 'false'
-AlignConsecutiveDeclarations: 'false'
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
 AlignEscapedNewlines: DontAlign
-AlignOperands: 'false'
-AlignTrailingComments: 'false'
-AllowAllParametersOfDeclarationOnNextLine: 'true'
-AllowShortBlocksOnASingleLine: 'false'
-AllowShortCaseLabelsOnASingleLine: 'true'
+AlignOperands: false
+AlignTrailingComments: false
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: Inline
-AllowShortIfStatementsOnASingleLine: 'false'
-AllowShortLoopsOnASingleLine: 'true'
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: 'false'
-AlwaysBreakTemplateDeclarations: 'true'
-BinPackArguments: 'false'
-BinPackParameters: 'true'
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: true
+BinPackArguments: false
+BinPackParameters: true
+BraceWrapping:
+  AfterClass:      true
+  AfterControlStatement: false
+  AfterEnum:       true
+  AfterFunction:   true
+  AfterNamespace:  true
+  AfterObjCDeclaration: true
+  AfterStruct:     true
+  AfterUnion:      true
+  BeforeCatch:     false
+  BeforeElse:      false
+  IndentBraces:    false
+  SplitEmptyFunctionBody: true
 BreakBeforeBinaryOperators: NonAssignment
-BreakBeforeBraces: Mozilla
-BreakBeforeInheritanceComma: 'false'
-BreakBeforeTernaryOperators: 'true'
+BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: false
+BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: AfterColon
-BreakConstructorInitializersBeforeComma: 'false'
-BreakStringLiterals: 'true'
+BreakConstructorInitializersBeforeComma: false
+BreakStringLiterals: true
 ColumnLimit: 125
-ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+CompactNamespaces: false
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: 'true'
-FixNamespaceComments: 'true'
-IndentCaseLabels: 'true'
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+DisableFormat: false
+ForEachMacros: []
+IncludeCategories:
+  - Regex:           'always.h'
+    Priority:        -1
+  - Regex:           '^<'
+    Priority:        2
+  - Regex:           '^"'
+    Priority:        1
+FixNamespaceComments: true
+IndentCaseLabels: true
 IndentWidth: 4
-IndentWrappedFunctionNames: 'true'
-KeepEmptyLinesAtTheStartOfBlocks: 'false'
-Language: Cpp
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+MacroBlockBegin: ''
+MacroBlockEnd: ''
 MaxEmptyLinesToKeep: '1'
 NamespaceIndentation: None
 PointerAlignment: Right
-ReflowComments: 'true'
-SortIncludes: 'true'
-SortUsingDeclarations: 'true'
-SpaceAfterCStyleCast: 'false'
-SpaceAfterTemplateKeyword: 'false'
-SpaceBeforeAssignmentOperators: 'true'
+ReflowComments: true
+SortIncludes: true
+SortUsingDeclarations: true
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements
-SpaceInEmptyParentheses: 'false'
+SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
-SpacesInAngles: 'false'
-SpacesInCStyleCastParentheses: 'false'
-SpacesInParentheses: 'false'
-SpacesInSquareBrackets: 'false'
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
 Standard: Cpp11
+TabWidth: 4
 UseTab: Never
 
 ...

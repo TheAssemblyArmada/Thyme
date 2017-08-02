@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "ini.h"
+#include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
 #include "color.h"
@@ -81,7 +82,8 @@ BlockParse TheTypeTable[] =
     { "MapCache", (iniblockparse_t)(0x00506760)/*&INI::parseMapCacheDefinition*/ },
     { "MapData", (iniblockparse_t)(0x0062D610)/*&INI::parseMapDataDefinition*/ },
     { "MappedImage", (iniblockparse_t)(0x00506510)/*&INI::parseMappedImageDefinition*/ },
-    { "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
+    //{ "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
+    { "MiscAudio", &MiscAudio::Parse_Misc_Audio },
     { "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },
     { "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
     { "MultiplayerColor", (iniblockparse_t)(0x00504B10)/*&INI::parseMultiplayerColorDefinition*/ },
@@ -888,4 +890,16 @@ void INI::Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *us
     AsciiString speaker;
     Parse_AsciiString(ini, formal, &speaker, user_data);
     *static_cast<SpeakerType*>(store) = static_cast<SpeakerType>(g_theAudio->Translate_From_Speaker_Type(speaker));
+}
+
+void INI::Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data)
+{
+    AudioEventRTS *ev = static_cast<AudioEventRTS *>(store);
+    const char *token = ini->Get_Next_Token();
+
+    if (strcasecmp(token, "NoSound") != 0) {
+        ev->Set_Event_Name(token);
+    }
+
+    g_theAudio->Get_Info_For_Audio_Event(ev);
 }

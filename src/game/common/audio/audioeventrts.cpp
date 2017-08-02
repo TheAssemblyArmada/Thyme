@@ -201,3 +201,12 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
 
     return *this;
 }
+
+void AudioEventRTS::Set_Event_Name(AsciiString name)
+{
+    if (strcmp(name, m_eventName) != 0 && m_eventInfo != nullptr) {
+        m_eventInfo = nullptr;
+    }
+
+    m_eventName = name;
+}

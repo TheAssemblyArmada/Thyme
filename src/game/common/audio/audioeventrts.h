@@ -8,13 +8,13 @@
 //
 //        Author:: OmniBlade
 //
-//  Contributors:: 
+//  Contributors::
 //
 //   Description:: Audio event class.
 //
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
+//       License:: Thyme is free software: you can redistribute it and/or
+//                 modify it under the terms of the GNU General Public License
+//                 as published by the Free Software Foundation, either version
 //                 2 of the License, or (at your option) any later version.
 //
 //                 A full copy of the GNU General Public License can be found in
@@ -29,6 +29,7 @@
 #include "audioeventinfo.h"
 #include "coord.h"
 #include "gametype.h"
+#include "ini.h"
 
 class AudioEventRTS
 {
@@ -41,6 +42,8 @@ public:
     virtual ~AudioEventRTS() {}
 
     AudioEventRTS &operator=(const AudioEventRTS &that);
+
+    void Set_Event_Name(AsciiString name);
 
 private:
     AsciiString m_filename;

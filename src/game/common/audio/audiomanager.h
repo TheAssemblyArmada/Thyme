@@ -29,6 +29,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "audioeventinfo.h"
+#include "audiomisc.h"
 #include "audiosettings.h"
 #include "coord.h"
 #include "rtsutils.h"
@@ -60,7 +61,6 @@ enum AudioType
 class AudioEventRTS;
 class AudioRequest;
 class PlayingAudio;
-class MiscAudio;
 class MusicManager;
 class SoundManager;
 
@@ -173,6 +173,7 @@ public:
     virtual void Process_Stopped_List() = 0;
 
     AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
+    MiscAudio *Get_Misc_Audio() { return m_miscAudio; }
 
 protected:
     AudioSettings *m_audioSettings;

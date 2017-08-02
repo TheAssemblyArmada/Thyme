@@ -82,6 +82,8 @@ public:
     UnicodeString &operator+=(UnicodeString const &s) { Concat(s); return *this; }
     //UnicodeString &operator+=(AsciiString const &string);
 
+    operator const wchar_t*() { return Str(); }
+
     //TODO
     //wchar_t *operator[](int index) const { return m_data->Peek()[index]; }
 

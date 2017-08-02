@@ -101,6 +101,8 @@ public:
     AsciiString &operator+=(AsciiString const &s) { Concat(s); return *this; }
     //AsciiString &operator+=(UnicodeString const &stringSrc);
 
+    operator const char*() { return Str(); }
+
     void Validate();
     char *Peek() const;
     void Release_Buffer();

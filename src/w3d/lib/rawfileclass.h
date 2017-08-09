@@ -8,13 +8,13 @@
 //
 //        Author:: CCHyper, OmniBlade
 //
-//  Contributors:: 
+//  Contributors::
 //
 //   Description:: FileClass for reading files with raw OS API calls.
 //
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
+//       License:: Thyme is free software: you can redistribute it and/or
+//                 modify it under the terms of the GNU General Public License
+//                 as published by the Free Software Foundation, either version
 //                 2 of the License, or (at your option) any later version.
 //
 //                 A full copy of the GNU General Public License can be found in
@@ -26,14 +26,14 @@
 #ifndef RAWFILECLASS_H
 #define RAWFILECLASS_H
 
-#include	"fileclass.h"
+#include "fileclass.h"
 
 class RawFileClass : public FileClass
 {
 public:
-    RawFileClass() : FileClass(), m_rights(FM_CLOSED), m_biasStart(0), m_biasLength(-1), m_handle(-1), m_filename(nullptr), m_isAllocated(false), m_dateTime(0) { Set_Name(""); };
-    RawFileClass(const char *filename) : FileClass(), m_rights(FM_CLOSED), m_biasStart(0), m_biasLength(-1), m_handle(-1), m_filename(nullptr), m_isAllocated(false), m_dateTime(0) { Set_Name(filename); };
-    
+    RawFileClass();
+    RawFileClass(const char *filename);
+
     virtual ~RawFileClass() { Reset(); };
     virtual const char *File_Name() { return m_filename; };
     virtual const char *Set_Name(const char *filename);
@@ -63,8 +63,8 @@ private:
     int Raw_Seek(int offset, int whence = FS_SEEK_CURRENT);
 
 protected:
-    int m_rights;     // This is the current rights to this file.
-    int m_biasStart;  // Offset from true start to treat as start of file
+    int m_rights; // This is the current rights to this file.
+    int m_biasStart; // Offset from true start to treat as start of file
     int m_biasLength; // Logical length of file.
     int m_handle;
     char *m_filename;

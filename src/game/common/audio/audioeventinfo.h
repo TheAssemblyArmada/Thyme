@@ -37,6 +37,9 @@ class AudioEventInfo : public MemoryPoolObject
 public:
     virtual ~AudioEventInfo() {}
 
+    const AsciiString &Get_Event_name() const { return m_eventName; }
+    int Get_Type() const { return m_type; }
+
     static void Parse_Audio_Event(INI *ini);
 
 protected:

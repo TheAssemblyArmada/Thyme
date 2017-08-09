@@ -30,6 +30,7 @@
 #include "asciistring.h"
 #include "audioeventinfo.h"
 #include "audiomisc.h"
+#include "audiorequest.h"
 #include "audiosettings.h"
 #include "coord.h"
 #include "rtsutils.h"
@@ -58,16 +59,24 @@ enum AudioType
     AUDIOTYPE_UNK,
 };
 
+enum CachedVarsType
+{
+    CACHED_START,
+    CACHED_UNK1 = 1 << 1,
+    CACHED_HW_ACCEL = 1 << 5,
+    CACHED_SURROUND = 1 << 6,
+    CACHED_FROM_CD = 1 << 7,
+};
+
 class AudioEventRTS;
-class AudioRequest;
 class PlayingAudio;
 class MusicManager;
 class SoundManager;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const AsciiString, AudioEventInfo, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
+typedef std::hash_map<const AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
 #else
-typedef std::unordered_map<const AsciiString, AudioEventInfo, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
+typedef std::unordered_map<const AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
 #endif
 
 class AudioManager : public SubsystemInterface
@@ -138,8 +147,8 @@ public:
     virtual void Release_Bink_Handle() = 0;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) = 0;
     virtual void Set_Listener_Position(const Coord3D *position, const Coord3D *direction);
-    virtual Coord3D *Get_Listener_Position() const;
-    virtual AudioRequest *Allocate_Audio_Request(bool unk);
+    virtual const Coord3D *Get_Listener_Position() const;
+    virtual AudioRequest *Allocate_Audio_Request(bool is_add_request);
     virtual void Release_Audio_Request(AudioRequest *request);
     virtual void Append_Audio_Request(AudioRequest *request);
     virtual void Process_Request_List() = 0;
@@ -160,7 +169,7 @@ public:
     virtual bool Is_Music_Already_Loaded();
     virtual bool Is_Music_Playing_From_CD();
     virtual void Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list);
-    virtual audioinfomap_t *Get_All_Audio_Events() const;
+    virtual const audioinfomap_t *Get_All_Audio_Events() const;
     virtual bool Is_Current_Provider_Hardware_Accelerated();
     virtual bool Is_Current_Speaker_Type_Surround();
     virtual bool Should_Play_Locally(const AudioEventRTS *event);
@@ -177,7 +186,7 @@ public:
 
 protected:
     AudioSettings *m_audioSettings;
-    MiscAudio *m_miscAudio; // TODO Work out what this is.
+    MiscAudio *m_miscAudio;
     MusicManager *m_musicManager;
     SoundManager *m_soundManager;
     Coord3D m_listenerPosition;

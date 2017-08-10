@@ -281,7 +281,7 @@ int GameFileClass::Read(void *buffer, int length)
     return m_theFile->Read(buffer, length);
 }
 
-int GameFileClass::Seek(int offset, int whence)
+off_t GameFileClass::Seek(off_t offset, int whence)
 {
     File::SeekMode file_whence;
 
@@ -305,7 +305,7 @@ int GameFileClass::Seek(int offset, int whence)
     return m_theFile->Seek(offset, file_whence);
 }
 
-int GameFileClass::Size()
+off_t GameFileClass::Size()
 {
     if ( m_theFile == nullptr ) {
         return -1;

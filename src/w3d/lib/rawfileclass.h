@@ -44,9 +44,9 @@ public:
     virtual bool Open(const char *filename, int rights = FM_READ);
     virtual bool Open(int rights = FM_READ);
     virtual int Read(void *buffer, int length);
-    virtual int Seek(int offset, int whence = FS_SEEK_CURRENT);
-    virtual int Tell() { return Seek(0, FS_SEEK_CURRENT); }
-    virtual int Size();
+    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT);
+    virtual off_t Tell() { return Seek(0, FS_SEEK_CURRENT); }
+    virtual off_t Size();
     virtual int Write(void const *buffer, int length);
     virtual void Close();
     virtual time_t Get_Date_Time();

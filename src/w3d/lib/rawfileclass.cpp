@@ -26,7 +26,6 @@
 #include "stringex.h"
 #include <cstdlib>
 #include <fcntl.h>
-#include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
@@ -272,7 +271,7 @@ int RawFileClass::Read(void *buffer, int length)
     return totalread;
 }
 
-int RawFileClass::Seek(int offset, int whence)
+off_t RawFileClass::Seek(off_t offset, int whence)
 {
     if (m_biasLength == -1) {
         return Raw_Seek(offset, whence);
@@ -312,29 +311,14 @@ int RawFileClass::Seek(int offset, int whence)
     return seekval;
 }
 
-int RawFileClass::Size()
+off_t RawFileClass::Size()
 {
-    int retval = 0;
-    int size = 0;
+    stat_t attrib;
 
     if (m_biasLength == -1) {
-        if (Is_Open()) {
-            off_t cur = lseek(m_handle, 0, FS_SEEK_CURRENT);
-
-            size = lseek(m_handle, 0, FS_SEEK_END);
-
-            if (size == -1) {
-                Error(errno, 0, m_filename);
-            }
-
-            // reset our pos in the file
-            lseek(m_handle, cur, FS_SEEK_START);
-        } else if (Open(FM_READ)) {
-            size = Size();
-            Close();
+        if (stat(m_filename, &attrib) != 0) {
+            m_biasLength = attrib.st_size - m_biasStart;
         }
-
-        m_biasLength = size - m_biasStart;
     }
 
     return m_biasLength;
@@ -407,12 +391,14 @@ const char *RawFileClass::Set_Name(const char *filename)
 
 time_t RawFileClass::Get_Date_Time()
 {
-    struct stat attrib;
+    stat_t attrib;
 
     // get stats
-    stat(m_filename, &attrib);
+    if (stat(m_filename, &attrib) == 0) {
+        return attrib.st_mtime;
+    }
 
-    return (attrib.st_mtime);
+    return 0;
 }
 
 bool RawFileClass::Set_Date_Time(time_t datetime)

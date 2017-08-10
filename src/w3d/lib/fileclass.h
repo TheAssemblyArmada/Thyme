@@ -12,9 +12,9 @@
 //
 //   Description:: Interface for WW3D file io.
 //
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
+//       License:: Thyme is free software: you can redistribute it and/or
+//                 modify it under the terms of the GNU General Public License
+//                 as published by the Free Software Foundation, either version
 //                 2 of the License, or (at your option) any later version.
 //
 //                 A full copy of the GNU General Public License can be found in
@@ -26,19 +26,21 @@
 #ifndef FILECLASS_H
 #define FILECLASS_H
 
-#include	"always.h"
+#include "always.h"
 
-enum FileOpenType {
-    FM_CLOSED     = 0,
-    FM_READ       = 1,
-    FM_WRITE      = 2,
+enum FileOpenType
+{
+    FM_CLOSED = 0,
+    FM_READ = 1,
+    FM_WRITE = 2,
     FM_READ_WRITE = FM_READ | FM_WRITE,
 };
 
-enum FileSeekType {
-    FS_SEEK_START   = 0,    //Seek to position relative to the start of file.
-    FS_SEEK_CURRENT = 1,    //Seek to position relative to the current offset.
-    FS_SEEK_END     = 2,    //Seek to position relative to the end of file.
+enum FileSeekType
+{
+    FS_SEEK_START = 0, // Seek to position relative to the start of file.
+    FS_SEEK_CURRENT = 1, // Seek to position relative to the current offset.
+    FS_SEEK_END = 2, // Seek to position relative to the end of file.
 };
 
 class FileClass
@@ -46,7 +48,7 @@ class FileClass
 public:
     FileClass() {}
     virtual ~FileClass() {}
-        
+
     virtual const char *File_Name() = 0;
     virtual const char *Set_Name(const char *filename) = 0;
     virtual bool Create() = 0;
@@ -56,9 +58,9 @@ public:
     virtual bool Open(const char *filename, int rights = FM_READ) = 0;
     virtual bool Open(int rights = FM_READ) = 0;
     virtual int Read(void *buffer, int length) = 0;
-    virtual int Seek(int offset, int whence = FS_SEEK_CURRENT) = 0;
-    virtual int Tell();
-    virtual int Size() = 0;
+    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) = 0;
+    virtual off_t Tell();
+    virtual off_t Size() = 0;
     virtual int Write(void const *buffer, int size) = 0;
     virtual void Close() = 0;
     virtual time_t Get_Date_Time();

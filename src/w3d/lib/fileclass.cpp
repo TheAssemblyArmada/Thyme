@@ -23,7 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include	"fileclass.h"
 
-int FileClass::Tell(void)
+off_t FileClass::Tell(void)
 {
     return Seek(0, FS_SEEK_CURRENT);
 }

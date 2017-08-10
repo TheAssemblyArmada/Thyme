@@ -101,7 +101,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     for ( unsigned int i = 0; i < file_count; ++i ) {
         int32_t file_size = 0;
         int32_t file_pos = 0;
-        char namebuf[PATH_MAX];
+        char namebuf[BIG_PATH_MAX];
 
         // Read file size and position in the Big into host integer format.
         file->Read(&file_pos, sizeof(file_pos));
@@ -116,7 +116,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         int strlen = 0;
         char *putp = namebuf;
 
-        for ( ; strlen < PATH_MAX; ++strlen ) {
+        for ( ; strlen < BIG_PATH_MAX; ++strlen ) {
             file->Read(putp, sizeof(*putp));
 
             if ( *putp == '\0' ) {
@@ -126,7 +126,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
             ++putp;
         }
 
-        ASSERT_THROW_PRINT(strlen < PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
+        ASSERT_THROW_PRINT(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
 
         //DEBUG_LOG("Recovered a file path of '%s' with size '%d' and position '%d'.\n", namebuf, file_size, file_pos);
 

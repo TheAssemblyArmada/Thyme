@@ -31,6 +31,10 @@
 
 class Win32BIGFileSystem : public ArchiveFileSystem
 {
+    enum
+    {
+        BIG_PATH_MAX = 260,
+    };
 public:
     Win32BIGFileSystem() {}
     virtual ~Win32BIGFileSystem() {}

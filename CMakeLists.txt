@@ -33,7 +33,6 @@ endif()
 
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." OFF)
-option(USE_STLPORT "Use STLPort for std:: namespace implementations. Required for dll build." OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
@@ -42,7 +41,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     add_definitions(-DWIN32_LEAN_AND_MEAN)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    if(NOT STANDALONE)
         add_definitions(-D_USE_32BIT_TIME_T)	#This is for ABI compatibility with a few functions, remove when original binary no longer required.
     endif()
 endif()
@@ -122,7 +121,7 @@ if(STANDALONE)
     add_definitions(-DTHYME_STANDALONE)
 endif()
 
-if(USE_STLPORT OR NOT STANDALONE AND NOT MINGW)
+if(NOT STANDALONE AND NOT MINGW)
     set(USING_STLPORT TRUE BOOL INTERNAL)
 endif()
 

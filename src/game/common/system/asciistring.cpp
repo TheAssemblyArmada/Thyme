@@ -27,8 +27,9 @@
 //  Includes
 ////////////////////////////////////////////////////////////////////////////////
 #include "asciistring.h"
-#include "unicodestring.h"
+#include "endiantype.h"
 #include "gamedebug.h"
+#include "unicodestring.h"
 #include <cctype>
 #include <cstdio>
 
@@ -229,6 +230,18 @@ void AsciiString::Translate(UnicodeString const &string)
         // prevents issues if unicode string contains none ascii chars.
         // This will have endian issues on big endian.
         c &= 0xFF;
+
+#ifdef SYSTEM_BIG_ENDIAN
+        // Byte swap if on big endian, only care about least significant byte
+        if (sizeof(wchar_t) == 2) {
+            c = htole16(c);
+        } else if (sizeof(wchar_t) == 4) {
+            c = htole32(c);
+        } else {
+            DEBUG_ASSERT_PRINT(false, "wchar_t is not an expected size.\n");
+        }
+#endif
+
         Concat(reinterpret_cast<char *>(&c));
     }
 }

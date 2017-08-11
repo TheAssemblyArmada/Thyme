@@ -10,7 +10,8 @@
 //
 //  Contributors:: CCHyper
 //
-//   Description:: Base class for archive file handling.
+//   Description:: Macros for handling byte swapping between big endian and
+//                 little endian.
 //
 //       License:: Thyme is free software: you can redistribute it and/or 
 //                 modify it under the terms of the GNU General Public License 

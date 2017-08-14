@@ -405,7 +405,7 @@ static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
 #endif
 }
 
-void CPUDetectClass::Init_Processor_Speed(void)
+void CPUDetectClass::Init_Processor_Speed()
 {
     if ( !Has_RDTSC_Instruction() ) {
         ProcessorSpeed = 0;
@@ -437,7 +437,7 @@ void CPUDetectClass::Init_Processor_Speed(void)
 
 }
 
-void CPUDetectClass::Init_Processor_Manufacturer(void)
+void CPUDetectClass::Init_Processor_Manufacturer()
 {
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
     VendorID[0] = 0;
@@ -1240,58 +1240,20 @@ void CPUDetectClass::Init_Processor_String()
 
 }
 
-void CPUDetectClass::Init_CPUID_Instruction(void)
+void CPUDetectClass::Init_CPUID_Instruction()
 {
 #if defined PROCESSOR_X86 && !defined PROCESSOR_X86_64
-
-#if defined COMPILER_MSVC
     // 32bit x86 CPU might not have CPUID instruction, though unlikely.
-    uint32_t cpuid_available = 0;
+    uint32_t    old_eflg;
+    uint32_t    new_eflg;
 
-    __asm
-    {
-        mov cpuid_available, 0
-        push ebx
-        pushfd
-        pop eax
-        mov ebx, eax
-        xor eax, 0x00200000
-        push eax
-        popfd
-        pushfd
-        pop eax
-        xor eax, ebx
-        je done
-        mov cpuid_available, 1
-        done:
-        push ebx
-        popfd
-        pop ebx
-    }
+    // These intrinsics should be available on recent MSVC and GCC, no more ifdefs.
+    old_eflg = __readeflags();
+    new_eflg = old_eflg ^ 0x00200000;
+    __writeeflags(new_eflg);
+    new_eflg = __readeflags();
 
-    HasCPUIDInstruction = cpuid_available != 0;
-#elif defined COMPILER_CLANG || defined COMPILER_GNUC
-    uint32_t __eax;
-    uint32_t __ebx;
-
-    __asm__(
-        "pushf{l|d}\n\t"
-        "pushf{l|d}\n\t"
-        "pop{l}\t%0\n\t"
-        "mov{l}\t{%0, %1|%1, %0}\n\t"
-        "xor{l}\t{%2, %0|%0, %2}\n\t"
-        "push{l}\t%0\n\t"
-        "popf{l|d}\n\t"
-        "pushf{l|d}\n\t"
-        "pop{l}\t%0\n\t"
-        "popf{l|d}\n\t"
-        : "=&r" (__eax), "=&r" (__ebx)
-        : "i" (0x00200000)
-    );
-
-    HasCPUIDInstruction = ((__eax ^ __ebx) & 0x00200000) != 0;
-#endif
-    
+    HasCPUIDInstruction = new_eflg != old_eflg;  
 #elif defined PROCESSOR_X86_64 
     // 64bit x86 CPU always has it.
     HasCPUIDInstruction = true;
@@ -1439,7 +1401,7 @@ bool CPUDetectClass::CPUID_Count(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u
     return true;
 }
 
-void CPUDetectClass::Init_Processor_Log(void)
+void CPUDetectClass::Init_Processor_Log()
 {
 #define CPU_LOG(n, ...) do { work.Format(n, ##__VA_ARGS__); CPUDetectClass::ProcessorLog += work; } while (false)
     StringClass work;

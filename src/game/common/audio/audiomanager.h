@@ -66,6 +66,7 @@ enum CachedVarsType
     CACHED_HW_ACCEL = 1 << 5,
     CACHED_SURROUND = 1 << 6,
     CACHED_FROM_CD = 1 << 7,
+    CACHED_UNK2 = 1 << 8,
 };
 
 class AudioEventRTS;
@@ -195,7 +196,7 @@ protected:
     std::vector<AsciiString> m_trackList;
     audioinfomap_t m_audioInfoHashMap;
     int m_audioHandleCounter;
-    std::list<std::pair<AsciiString, float>> m_unkList1; // TODO workout what list this actually is
+    std::list<std::pair<AsciiString, float>> m_unkList1; // TODO workout what list this actually is, some kind of volume list
     float m_musicVolume;
     float m_soundVolume;
     float m_3dSoundVolume;
@@ -205,12 +206,12 @@ protected:
     float m_3dSoundVolumeAdjust;
     float m_speechVolumeAdjust;
     float m_initialMusicVolume;
-    float m_initiaSoundVolume;
+    float m_initialSoundVolume;
     float m_initial3DSoundVolume;
     float m_initialSpeechVolume;
     int m_unkInt1;  // TODO work out type/use of this var
     AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
-    int *m_savedVolumes; // TODO check the type this is a pointer to
+    float *m_savedVolumes; // Used during focus loss to preserve volume settings.
     unsigned int m_cachedVariables;
 };
 

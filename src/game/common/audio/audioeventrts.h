@@ -43,7 +43,21 @@ public:
 
     AudioEventRTS &operator=(const AudioEventRTS &that);
 
+    void Generate_Filename();
+    void Generate_Play_Info();
+
     void Set_Event_Name(AsciiString name);
+    void Set_Playing_Handle(int handle) { m_playingHandle = handle; }
+    void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
+    void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
+
+    const AsciiString &Get_Event_Name() const { return m_filename; }
+    const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
+    AudioEventType Get_Event_Type() const { return m_eventType; }
+    int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
+    bool Should_Play_Locally() const { return m_shouldPlayLocally; }
+    float Get_Volume() const;
+    int Get_Playing_Handle() const { return m_playingHandle; }
 
 private:
     AsciiString m_filename;
@@ -58,15 +72,15 @@ private:
     TimeOfDayType m_timeOfDay;
     Coord3D m_positionOfAudio;
     ObjectID m_objectID;
-    int m_eventType;
+    AudioEventType m_eventType;
     bool m_shouldFade;
     bool m_isLogical;
-    bool m_unkBool1;
+    bool m_shouldPlayLocally;
     float m_pitchShift;
     float m_volumeShift;
     float m_delay;
     int m_loopCount;
-    int m_currentSoundIndex;
+    mutable int m_currentSoundIndex;
     int m_unkInt1;
     int m_playerIndex;
     int m_nextPlayPortion;

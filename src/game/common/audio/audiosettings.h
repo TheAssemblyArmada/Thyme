@@ -37,14 +37,17 @@ public:
     AudioSettings() {}
     ~AudioSettings() {}
 
-    AsciiString Get_Preferred_Driver(int index) { return m_preferredDrivers[index]; }
-    SpeakerType Get_Default_2D_Speaker() { return m_default2DSpeakerType; }
-    float Get_Default_Sound_Volume() { return m_defaultSoundVolume; }
-    float Get_Default_3D_Sound_Volume() { return m_default3DSoundVolume; }
-    float Get_Default_Music_Volume() { return m_defaultMusicVolume; }
-    float Get_Default_Speech_Volume() { return m_defaultSpeechVolume; }
-    float Get_Relative_Volume() { return m_relative2DVolume; }
-
+    AsciiString Get_Preferred_Driver(int index) const { return m_preferredDrivers[index]; }
+    SpeakerType Get_Default_2D_Speaker() const { return m_default2DSpeakerType; }
+    float Get_Default_Sound_Volume() const { return m_defaultSoundVolume; }
+    float Get_Default_3D_Sound_Volume() const { return m_default3DSoundVolume; }
+    float Get_Default_Music_Volume() const { return m_defaultMusicVolume; }
+    float Get_Default_Speech_Volume() const { return m_defaultSpeechVolume; }
+    float Get_Relative_Volume() const { return m_relative2DVolume; }
+    SpeakerType Get_Default_2D_Speaker_Type() const { return m_default2DSpeakerType; }
+    SpeakerType Get_Default_3D_Speaker_Type() const { return m_default3DSpeakerType; }
+    float Get_Min_Sample_Vol() const { return m_minSampleVolume; }
+    
     static void Parse_Audio_Settings(INI *ini);
 
 private:

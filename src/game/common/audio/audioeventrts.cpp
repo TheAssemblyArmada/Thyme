@@ -36,10 +36,10 @@ AudioEventRTS::AudioEventRTS() :
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
     m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
-    m_eventType(4),
+    m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
-    m_unkBool1(false),
+    m_shouldPlayLocally(false),
     m_pitchShift(1.0f),
     m_volumeShift(0.0f),
     m_delay(0.0f),
@@ -67,7 +67,7 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_eventType(that.m_eventType),
     m_shouldFade(that.m_shouldFade),
     m_isLogical(that.m_isLogical),
-    m_unkBool1(that.m_unkBool1),
+    m_shouldPlayLocally(that.m_shouldPlayLocally),
     m_pitchShift(that.m_pitchShift),
     m_volumeShift(that.m_volumeShift),
     m_delay(that.m_delay),
@@ -92,10 +92,10 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name) :
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
     m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
-    m_eventType(4),
+    m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
-    m_unkBool1(false),
+    m_shouldPlayLocally(false),
     m_pitchShift(1.0f),
     m_volumeShift(0.0f),
     m_delay(0.0f),
@@ -120,10 +120,10 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name, ObjectID id) :
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
     m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(id),
-    m_eventType(4),
+    m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
-    m_unkBool1(false),
+    m_shouldPlayLocally(false),
     m_pitchShift(1.0f),
     m_volumeShift(0.0f),
     m_delay(0.0f),
@@ -134,7 +134,7 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name, ObjectID id) :
     m_nextPlayPortion()
 {
     if ( m_objectID != OBJECT_UNK ) {
-        m_eventType = 2;
+        m_eventType = EVENT_SOUND;
     }
 }
 
@@ -151,10 +151,10 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name, const Coord3D *pos) :
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
     m_positionOfAudio(*pos),
     m_objectID(),
-    m_eventType(4),
+    m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
-    m_unkBool1(false),
+    m_shouldPlayLocally(false),
     m_pitchShift(1.0f),
     m_volumeShift(0.0f),
     m_delay(0.0f),
@@ -188,7 +188,7 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_eventType = that.m_eventType;
         m_shouldFade = that.m_shouldFade;
         m_isLogical = that.m_isLogical;
-        m_unkBool1 = that.m_unkBool1;
+        m_shouldPlayLocally = that.m_shouldPlayLocally;
         m_pitchShift = that.m_pitchShift;
         m_volumeShift = that.m_volumeShift;
         m_delay = that.m_delay;
@@ -202,6 +202,14 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
     return *this;
 }
 
+void AudioEventRTS::Generate_Filename()
+{
+}
+
+void AudioEventRTS::Generate_Play_Info()
+{
+}
+
 void AudioEventRTS::Set_Event_Name(AsciiString name)
 {
     if (strcmp(name, m_eventName) != 0 && m_eventInfo != nullptr) {
@@ -209,4 +217,17 @@ void AudioEventRTS::Set_Event_Name(AsciiString name)
     }
 
     m_eventName = name;
+}
+
+float AudioEventRTS::Get_Volume() const
+{
+    if (m_volumeAdjustFactor == -1.0f) {
+        if (m_eventInfo != nullptr) {
+            return m_eventInfo->Get_Volume();
+        }
+
+        return 0.5f;
+    }
+
+    return m_volumeAdjustFactor;
 }

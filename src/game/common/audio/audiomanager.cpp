@@ -41,7 +41,7 @@ void AudioManager::Reset()
     m_3dSoundVolumeAdjust = 1.0f;
     m_speechVolumeAdjust = 1.0f;
     m_musicVolume = m_initialMusicVolume;
-    m_soundVolume = m_initiaSoundVolume;
+    m_soundVolume = m_initialSoundVolume;
     m_3dSoundVolume = m_initial3DSoundVolume;
     m_speechVolume = m_initialSpeechVolume;
     m_cachedVariables &= ~CACHED_UNK1;
@@ -95,12 +95,12 @@ AudioEventInfo *AudioManager::New_Audio_Event_Info(AsciiString name)
 
 void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
 {
-    AudioEventInfo *found = Find_Audio_Event_Info(info->Get_Event_name());
+    AudioEventInfo *found = Find_Audio_Event_Info(info->Get_Event_Name());
 
     if (found != nullptr) {
         *found = *info;
     } else {
-        m_audioInfoHashMap[info->Get_Event_name()] = info;
+        m_audioInfoHashMap[info->Get_Event_Name()] = info;
     }
 }
 
@@ -200,36 +200,159 @@ const audioinfomap_t *AudioManager::Get_All_Audio_Events() const
 
 bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
+    // Search preferred providers list against current provider.
+    for (int i = 0; i < 5; ++i) {
+        if (strcmp(m_audioSettings->Get_Preferred_Driver(i), Get_Provider_Name(Get_Selected_Provider())) == 0) {
+            return true;
+        }
+    }
+
     return false;
 }
 
 bool AudioManager::Is_Current_Speaker_Type_Surround()
 {
-    return false;
+    return Get_Speaker_Type() == m_audioSettings->Get_Default_3D_Speaker_Type();
 }
 
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
-    return false;
+    // TODO Requires classes for g_theControlBar, g_thePlayerList
+    return Call_Method<bool, AudioManager, const AudioEventRTS*>(0x00406E00, this, event);
 }
 
 int AudioManager::Allocate_New_Handle()
 {
-    return 0;
+    return m_audioHandleCounter++;
 }
 
-void AudioManager::Remove_Level_Specific_Audio_Event_Infos() {}
+void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
+{
+    for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end();) {
+        auto delete_it = it;
+        ++it;
 
-void AudioManager::Lose_Focus() {}
+        if (it->second->Is_Level_Specific()) {
+            Delete_Instance(delete_it->second);
+            m_audioInfoHashMap.erase(delete_it);
+        }
+    }
+}
 
-void AudioManager::Regain_Focus() {}
+void AudioManager::Lose_Focus()
+{
+    m_savedVolumes = new float[4];
+    m_savedVolumes[0] = m_initialMusicVolume;
+    m_savedVolumes[1] = m_initialSoundVolume;
+    m_savedVolumes[2] = m_initial3DSoundVolume;
+    m_savedVolumes[3] = m_initialMusicVolume;
+    Set_Volume(0.0f, AUDIOAFFECT_MUSIC | AUDIOAFFECT_SOUND | AUDIOAFFECT_3DSOUND | AUDIOAFFECT_SPEECH | AUDIOAFFECT_BASEVOL);
+}
+
+void AudioManager::Regain_Focus()
+{
+    if (m_savedVolumes != nullptr) {
+        Set_Volume(m_savedVolumes[0], AUDIOAFFECT_MUSIC | AUDIOAFFECT_BASEVOL);
+        Set_Volume(m_savedVolumes[1], AUDIOAFFECT_SOUND | AUDIOAFFECT_BASEVOL);
+        Set_Volume(m_savedVolumes[2], AUDIOAFFECT_3DSOUND | AUDIOAFFECT_BASEVOL);
+        Set_Volume(m_savedVolumes[3], AUDIOAFFECT_SPEECH | AUDIOAFFECT_BASEVOL);
+        delete[] m_savedVolumes;
+        m_savedVolumes = nullptr;
+    }
+}
 
 int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 {
-    return 0;
+    if (event->Get_Event_Name().Is_Empty()) {
+        return 1;
+    }
+
+    if (event->Get_Event_Name() == "NoSound") {
+        return 1;
+    }
+
+    if (event->Get_Event_Info() == nullptr) {
+        Get_Info_For_Audio_Event(event);
+
+        if (event->Get_Event_Info() == nullptr) {
+            return 0;
+        }
+    }
+
+    switch (event->Get_Event_Type()) {
+        case EVENT_MUSIC:
+            if (!Is_On(AUDIOAFFECT_MUSIC)) {
+                return 1;
+            }
+
+            break;
+        case EVENT_SPEECH:
+            if (!Is_On(AUDIOAFFECT_SPEECH)) {
+                return 1;
+            }
+
+            break;
+        case EVENT_SOUND:
+            if (!Is_On(AUDIOAFFECT_SOUND)) {
+                return 1;
+            }
+
+            if (!Is_On(AUDIOAFFECT_3DSOUND)) {
+                return 1;
+            }
+
+            break;
+        default:
+            break;
+    }
+
+    if ((m_cachedVariables & CACHED_UNK2) && event->Get_Event_Type() == EVENT_SPEECH ) {
+        return 1;
+    }
+
+    AudioEventRTS *new_event = new AudioEventRTS(*event);
+    new_event->Set_Playing_Handle(Allocate_New_Handle());
+    new_event->Generate_Filename();
+    event->Set_Current_Sound_Index(new_event->Get_Current_Sound_Index());
+    new_event->Generate_Play_Info();
+
+    auto it = m_unkList1.begin();
+
+    for (; it != m_unkList1.end(); ++it) {
+        if (it->first == new_event->Get_Event_Name()) {
+            break;
+        }
+    }
+
+    if (it != m_unkList1.end()) {
+        new_event->Set_Volume(it->second);
+    }
+
+    if (new_event->Should_Play_Locally() || Should_Play_Locally(new_event)) {
+        if (new_event->Get_Volume() >= m_audioSettings->Get_Min_Sample_Vol()) {
+            if (event->Get_Event_Info()->Get_Type() != EVENT_MUSIC) {
+                // TODO needs soundmanager
+            } else {
+                // TODO needs musicmanager
+            }
+
+            return new_event->Get_Playing_Handle();
+        } else {
+            Release_Audio_Event_RTS(new_event);
+
+            return 2;
+        }
+    }
+
+    Release_Audio_Event_RTS(new_event);
+    
+    return 3;
 }
 
-void AudioManager::Remove_Audio_Event(unsigned int event) {}
+void AudioManager::Remove_Audio_Event(unsigned int event)
+{
+
+}
 
 void AudioManager::Remove_Audio_Event(AsciiString event) {}
 

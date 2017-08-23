@@ -31,14 +31,36 @@
 #include "mempoolobj.h"
 #include <vector>
 
+enum AudioEventType : int32_t
+{
+    EVENT_MUSIC,
+    EVENT_SPEECH,
+    EVENT_SOUND,
+    EVENT_UNKVAL3,
+    EVENT_UNKVAL4,
+};
+
+enum AudioControlType : int32_t
+{
+    CONTROL_IS_INTERRUPTING = 1 << 4,
+};
+
+class DynamicAudioEventInfo;
+
 class AudioEventInfo : public MemoryPoolObject
 {
     IMPLEMENT_POOL(AudioEventInfo);
 public:
     virtual ~AudioEventInfo() {}
 
-    const AsciiString &Get_Event_name() const { return m_eventName; }
-    int Get_Type() const { return m_type; }
+    virtual bool Is_Level_Specific() { return false; }
+    virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() { return nullptr; }
+    virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }
+
+    const AsciiString &Get_Event_Name() const { return m_eventName; }
+    AudioEventType Get_Type() const { return m_type; }
+    float Get_Volume() const { return m_volume; }
+    int Get_Control() const { return m_control; }
 
     static void Parse_Audio_Event(INI *ini);
 
@@ -55,7 +77,7 @@ protected:
     int m_limit;
     int m_loopCount;
     int m_priority;
-    int m_type;
+    AudioEventType m_type;
     int m_control;
     std::vector<AsciiString> m_soundsMorning;
     std::vector<AsciiString> m_sounds;

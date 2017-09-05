@@ -1,33 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMEENGINE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Interface for the game engine implementation.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Interface for the game engine implementation.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
 #include "subsysteminterface.h"
+
+#ifndef THYME_STANDALONE
 #include "hooker.h"
+#endif
 
 class ArchiveFileSystem;
 class AudioManager;
@@ -87,7 +82,10 @@ protected:
     bool m_isActive;
 };
 
-#define g_theGameEngine Make_Global<GameEngine*>(0x00A29B80)
-//extern GameEngine *g_theGameEngine;
+#ifndef THYME_STANDALONE
+extern GameEngine *&g_theGameEngine;
+#else
+extern GameEngine *g_theGameEngine;
+#endif
 
 #endif // _GAMEENGINE_H

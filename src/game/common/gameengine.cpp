@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMEENGINE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Interface for the game engine implementation.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Interface for the game engine implementation.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "gameengine.h"
 #include "archivefilesystem.h"
 #include "audiomanager.h"
@@ -46,12 +38,13 @@
 #include <mmsystem.h>
 #endif
 
-//GameEngine *g_theGameEngine = nullptr;
+#ifndef THYME_STANDALONE
+GameEngine *&g_theGameEngine = Make_Global<GameEngine *>(0x00A29B80);
+#else
+GameEngine *g_theGameEngine = nullptr;
+#endif
 
-GameEngine::GameEngine() :
-    m_maxFPS(0),
-    m_isQuitting(false),
-    m_isActive(false)
+GameEngine::GameEngine() : m_maxFPS(0), m_isQuitting(false), m_isActive(false)
 {
 #ifdef PLATFORM_WINDOWS
     timeBeginPeriod(1);
@@ -60,20 +53,16 @@ GameEngine::GameEngine() :
 
 GameEngine::~GameEngine()
 {
-    //TODO
+// TODO
 
 #ifdef PLATFORM_WINDOWS
     timeEndPeriod(1);
 #endif
 }
 
-void GameEngine::Reset()
-{
-}
+void GameEngine::Reset() {}
 
-void GameEngine::Update()
-{
-}
+void GameEngine::Update() {}
 
 void GameEngine::Init(int argc, char *argv[])
 {
@@ -94,27 +83,25 @@ void GameEngine::Init(int argc, char *argv[])
     g_theSubsystemList->Init_Subsystem(g_theLocalFileSystem, nullptr, nullptr, nullptr, &xfer, "TheLocalFileSystem");
     g_theArchiveFileSystem = Create_Archive_File_System();
     g_theSubsystemList->Init_Subsystem(g_theArchiveFileSystem, nullptr, nullptr, nullptr, &xfer, "TheArchiveFileSystem");
-    
+
     g_theWriteableGlobalData = new GlobalData;
-    g_theSubsystemList->Init_Subsystem(
-        g_theWriteableGlobalData,
+    g_theSubsystemList->Init_Subsystem(g_theWriteableGlobalData,
         "Data/INI/Default/GameData.ini",
         "Data/INI/GameData.ini",
         nullptr,
         &xfer,
-        "TheWriteableGlobalData"
-    );
+        "TheWriteableGlobalData");
 
     Parse_Command_Line(argc, argv);
     g_theGameLODManager = new GameLODManager;
     g_theGameLODManager->Init();
 
-    //if ( g_theWriteableGlobalData->m_updateTGAtoDDS ) {
-        // Windows version looks for a file called buildDDS.txt to get a list of
-        // TGA format textures to convert to DDS and then calls nvdxt as follows
-        // "..\\Build\\nvdxt -list buildDDS.txt -dxt5 -full -outdir Art\\Textures > buildDDS.out"
-        // There seems little point in keeping this as 1. its not cross platform and 2. most
-        // textures are DDS in the release build anyhow.
+    // if ( g_theWriteableGlobalData->m_updateTGAtoDDS ) {
+    // Windows version looks for a file called buildDDS.txt to get a list of
+    // TGA format textures to convert to DDS and then calls nvdxt as follows
+    // "..\\Build\\nvdxt -list buildDDS.txt -dxt5 -full -outdir Art\\Textures > buildDDS.out"
+    // There seems little point in keeping this as 1. its not cross platform and 2. most
+    // textures are DDS in the release build anyhow.
     //}
 
     ini.Load("Data/INI/Default/Water.ini", INI_LOAD_OVERWRITE, &xfer);
@@ -124,85 +111,42 @@ void GameEngine::Init(int argc, char *argv[])
 
     // Text manager isn't controlled by ini files, it uses either a csf or str file.
     g_theGameText = GameTextManager::Create_Game_Text_Interface();
-    g_theSubsystemList->Init_Subsystem(
-        g_theGameText,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        "TheGameText"
-    );
+    g_theSubsystemList->Init_Subsystem(g_theGameText, nullptr, nullptr, nullptr, nullptr, "TheGameText");
 
     g_theScienceStore = new ScienceStore;
     g_theSubsystemList->Init_Subsystem(
-        g_theScienceStore,
-        "Data/INI/Default/Science.ini",
-        "Data/INI/Science.ini",
-        nullptr,
-        &xfer,
-        "TheScienceStore"
-    );
+        g_theScienceStore, "Data/INI/Default/Science.ini", "Data/INI/Science.ini", nullptr, &xfer, "TheScienceStore");
 
     g_theMultiplayerSettings = new MultiplayerSettings;
-    g_theSubsystemList->Init_Subsystem(
-        g_theMultiplayerSettings,
+    g_theSubsystemList->Init_Subsystem(g_theMultiplayerSettings,
         "Data/INI/Default/Multiplayer.ini",
         "Data/INI/Multiplayer.ini",
         nullptr,
         &xfer,
-        "TheMultiplayerSettings"
-    );
+        "TheMultiplayerSettings");
 
     g_theTerrainTypes = new TerrainTypeCollection;
     g_theSubsystemList->Init_Subsystem(
-        g_theTerrainTypes,
-        "Data/INI/Default/Terrain.ini",
-        "Data/INI/Terrain.ini",
-        nullptr,
-        &xfer,
-        "TheTerrainTypes"
-    );
+        g_theTerrainTypes, "Data/INI/Default/Terrain.ini", "Data/INI/Terrain.ini", nullptr, &xfer, "TheTerrainTypes");
 
     g_theTerrainRoads = new TerrainRoadCollection;
     g_theSubsystemList->Init_Subsystem(
-        g_theTerrainRoads,
-        "Data/INI/Default/Roads.ini",
-        "Data/INI/Roads.ini",
-        nullptr,
-        &xfer,
-        "TheTerrainRoads"
-    );
+        g_theTerrainRoads, "Data/INI/Default/Roads.ini", "Data/INI/Roads.ini", nullptr, &xfer, "TheTerrainRoads");
 
     g_theGlobalLanguage = new GlobalLanguage;
-    g_theSubsystemList->Init_Subsystem(
-        g_theGlobalLanguage,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        "TheGlobalLanguageData"
-    );
+    g_theSubsystemList->Init_Subsystem(g_theGlobalLanguage, nullptr, nullptr, nullptr, nullptr, "TheGlobalLanguageData");
 
     g_theAudio = Create_Audio_Manager();
-    g_theSubsystemList->Init_Subsystem(
-        g_theAudio,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        "TheAudio"
-    );
+    g_theSubsystemList->Init_Subsystem(g_theAudio, nullptr, nullptr, nullptr, nullptr, "TheAudio");
 
-    if ( !g_theAudio->Is_Music_Already_Loaded() ) {
+    if (!g_theAudio->Is_Music_Already_Loaded()) {
         Set_Quitting(true);
     }
 
-    //TODO this is a WIP
+    // TODO this is a WIP
 }
 
-void GameEngine::Execute()
-{
-}
+void GameEngine::Execute() {}
 
 bool GameEngine::Is_Multiplayer_Session()
 {

@@ -1,33 +1,36 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: AUDIOMANAGER.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors::
-//
-//   Description:: Base class for managing the audio engine.
-//
-//       License:: Thyme is free software: you can redistribute it and/or
-//                 modify it under the terms of the GNU General Public License
-//                 as published by the Free Software Foundation, either version
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Base class for managing the audio engine.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "audiomanager.h"
 #include "musicmanager.h"
 #include "soundmanager.h"
+#include "minmax.h"
 
 #ifdef THYME_STANDALONE
 AudioManager *g_theAudio = nullptr;
 #endif
+
+const char *AudioManager::s_speakerTypes[] = {
+    "2 Speakers",
+    "Headphones",
+    "Surround Sound",
+    "4 Speaker",
+    "5.1 Surround",
+    "7.1 Surround",
+    nullptr
+};
 
 AudioManager::AudioManager() {}
 
@@ -46,7 +49,7 @@ void AudioManager::Reset()
     m_soundVolume = m_initialSoundVolume;
     m_3dSoundVolume = m_initial3DSoundVolume;
     m_speechVolume = m_initialSpeechVolume;
-    m_cachedVariables &= ~CACHED_UNK1;
+    m_cachedVariables &= ~CACHED_SOUND_ON;
 }
 
 void AudioManager::Update()
@@ -55,7 +58,7 @@ void AudioManager::Update()
     Call_Method<void, AudioManager>(0x00404FB0, this);
 }
 
-void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D *direction) 
+void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D *direction)
 {
     // TODO Should probably take references
     m_listenerPosition = *position;
@@ -220,7 +223,7 @@ bool AudioManager::Is_Current_Speaker_Type_Surround()
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
     // TODO Requires classes for g_theControlBar, g_thePlayerList
-    return Call_Method<bool, AudioManager, const AudioEventRTS*>(0x00406E00, this, event);
+    return Call_Method<bool, AudioManager, const AudioEventRTS *>(0x00406E00, this, event);
 }
 
 int AudioManager::Allocate_New_Handle()
@@ -308,7 +311,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
             break;
     }
 
-    if ((m_cachedVariables & CACHED_UNK2) && event->Get_Event_Type() == EVENT_SPEECH ) {
+    if ((m_cachedVariables & CACHED_3DSOUND_ON) && event->Get_Event_Type() == EVENT_SPEECH) {
         return 1;
     }
 
@@ -352,7 +355,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     }
 
     Release_Audio_Event_RTS(new_event);
-    
+
     return 3;
 }
 
@@ -416,11 +419,11 @@ void AudioManager::Set_Audio_Event_Volume_Override(AsciiString event, float vol_
     if (m_unkList1.empty() && vol_override != -1.0f) {
         m_unkList1.push_back(std::pair<AsciiString, float>(event, vol_override));
     } else {
-        auto it = m_unkList1.begin();
-
-        for (; it != m_unkList1.end(); ++it) {
+        for (auto it = m_unkList1.begin(); it != m_unkList1.end(); ++it) {
             if (event == it->first && vol_override != -1.0f) {
                 it->second = vol_override;
+
+                break;
             }
         }
     }
@@ -442,26 +445,123 @@ void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
 
 unsigned int AudioManager::Translate_From_Speaker_Type(const AsciiString &type)
 {
-    return 0;
+    unsigned int i = 0;
+
+    while (s_speakerTypes[i] != nullptr) {
+        if (type == s_speakerTypes[i]) {
+            break;
+        }
+
+        ++i;
+    }
+
+    return i;
 }
 
 AsciiString AudioManager::Translate_To_Speaker_Type(unsigned int type)
 {
-    return AsciiString();
+    if (type < ARRAY_SIZE(s_speakerTypes)) {
+        return s_speakerTypes[type];
+    }
+
+    return s_speakerTypes[0];
 }
 
 bool AudioManager::Is_On(AudioAffect affect) const
 {
-    return false;
+    if (affect & AUDIOAFFECT_MUSIC) {
+        return (m_cachedVariables & CACHED_MUSIC_ON) != 0;
+    } else if (affect & AUDIOAFFECT_SOUND) {
+        return (m_cachedVariables & CACHED_SOUND_ON) != 0;
+    } else if (affect & AUDIOAFFECT_3DSOUND) {
+        return (m_cachedVariables & CACHED_3DSOUND_ON) != 0;
+    }
+
+    return (m_cachedVariables & CACHED_SPEECH_ON) != 0;
 }
 
-void AudioManager::Set_On(bool on, AudioAffect affect) {}
+void AudioManager::Set_On(bool on, AudioAffect affect)
+{
+    if (affect & AUDIOAFFECT_MUSIC) {
+        m_cachedVariables = (m_cachedVariables & (~CACHED_MUSIC_ON)) | (on ? CACHED_MUSIC_ON : 0);
+    }
 
-void AudioManager::Set_Volume(float volume, AudioAffect affect) {}
+    if (affect & AUDIOAFFECT_SOUND) {
+        m_cachedVariables = (m_cachedVariables & (~CACHED_SOUND_ON)) | (on ? CACHED_SOUND_ON : 0);
+    }
+
+    if (affect & AUDIOAFFECT_3DSOUND) {
+        m_cachedVariables = (m_cachedVariables & (~CACHED_3DSOUND_ON)) | (on ? CACHED_3DSOUND_ON : 0);
+    }
+
+    if (affect & AUDIOAFFECT_SPEECH) {
+        m_cachedVariables = (m_cachedVariables & (~CACHED_SPEECH_ON)) | (on ? CACHED_SPEECH_ON : 0);
+    }
+}
+
+void AudioManager::Set_Volume(float volume, AudioAffect affect)
+{
+    if (affect & AUDIOAFFECT_MUSIC) {
+        if (affect & AUDIOAFFECT_BASEVOL) {
+            m_initialMusicVolume = volume;
+        } else {
+            m_musicVolumeAdjust = volume;
+        }
+
+        m_musicVolume = m_initialMusicVolume * m_musicVolumeAdjust;
+    }
+
+    if (affect & AUDIOAFFECT_SOUND) {
+        if (affect & AUDIOAFFECT_BASEVOL) {
+            m_initialSoundVolume = volume;
+        } else {
+            m_soundVolumeAdjust = volume;
+        }
+
+        m_soundVolume = m_initialSoundVolume * m_soundVolumeAdjust;
+    }
+
+    if (affect & AUDIOAFFECT_3DSOUND) {
+        if (affect & AUDIOAFFECT_BASEVOL) {
+            m_initial3DSoundVolume = volume;
+        } else {
+            m_3dSoundVolumeAdjust = volume;
+        }
+
+        m_3dSoundVolume = m_initial3DSoundVolume * m_3dSoundVolumeAdjust;
+    }
+
+    if (affect & AUDIOAFFECT_SPEECH) {
+        if (affect & AUDIOAFFECT_BASEVOL) {
+            m_initialSpeechVolume = volume;
+        } else {
+            m_speechVolumeAdjust = volume;
+        }
+
+        m_speechVolume = m_initialSpeechVolume * m_speechVolumeAdjust;
+    }
+    
+    m_cachedVariables |= CACHED_VOL_SET;
+}
 
 float AudioManager::Get_Volume(AudioAffect affect)
 {
-    return 0.0f;
+    if (affect & AUDIOAFFECT_MUSIC) {
+        return m_musicVolume;
+    } else if (affect & AUDIOAFFECT_SOUND) {
+        return m_soundVolume;
+    } else if (affect & AUDIOAFFECT_3DSOUND) {
+        return m_3dSoundVolume;
+    }
+
+    return m_speechVolume;
 }
 
-void AudioManager::Set_3D_Volume_Adjustment(float adj) {}
+void AudioManager::Set_3D_Volume_Adjustment(float adj) 
+{
+    m_3dSoundVolume = Clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);
+
+    if (Has_3D_Sensitive_Streams_Playing()) {
+        m_cachedVariables |= CACHED_VOL_SET;
+    }
+}

@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: AUDIOMANAGER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Base class for managing the audio engine.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Base class for managing the audio engine.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef AUDIOMANAGER_H
@@ -62,11 +54,15 @@ enum AudioType
 enum CachedVarsType
 {
     CACHED_START,
-    CACHED_UNK1 = 1 << 1,
+    CACHED_SPEECH_ON = 1 << 0,
+    CACHED_SOUND_ON = 1 << 1,
+    CACHED_3DSOUND_ON = 1 << 2,
+    CACHED_MUSIC_ON = 1 << 3,
+    CACHED_VOL_SET = 1 << 4,
     CACHED_HW_ACCEL = 1 << 5,
     CACHED_SURROUND = 1 << 6,
     CACHED_FROM_CD = 1 << 7,
-    CACHED_UNK2 = 1 << 8,
+    CACHED_UNK8 = 1 << 8,
 };
 
 class AudioEventRTS;
@@ -75,9 +71,11 @@ class MusicManager;
 class SoundManager;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
+typedef std::hash_map<const AsciiString, AudioEventInfo *, rts::hash<AsciiString>, rts::equal_to<AsciiString>>
+    audioinfomap_t;
 #else
-typedef std::unordered_map<const AsciiString, AudioEventInfo*, rts::hash<AsciiString>, rts::equal_to<AsciiString>> audioinfomap_t;
+typedef std::unordered_map<const AsciiString, AudioEventInfo *, rts::hash<AsciiString>, rts::equal_to<AsciiString>>
+    audioinfomap_t;
 #endif
 
 class AudioManager : public SubsystemInterface
@@ -192,7 +190,7 @@ protected:
     SoundManager *m_soundManager;
     Coord3D m_listenerPosition;
     Coord3D m_listenerFacing;
-    std::list<AudioRequest*> m_audioRequestList;
+    std::list<AudioRequest *> m_audioRequestList;
     std::vector<AsciiString> m_trackList;
     audioinfomap_t m_audioInfoHashMap;
     int m_audioHandleCounter;
@@ -209,16 +207,19 @@ protected:
     float m_initialSoundVolume;
     float m_initial3DSoundVolume;
     float m_initialSpeechVolume;
-    int m_unkInt1;  // TODO work out type/use of this var
+    int m_unkInt1; // TODO work out type/use of this var
     AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
     float *m_savedVolumes; // Used during focus loss to preserve volume settings.
     unsigned int m_cachedVariables;
+
+private:
+    static const char *s_speakerTypes[];
 };
 
 #ifdef THYME_STANDALONE
 extern AudioManager *g_theAudio
 #else
-#define g_theAudio (Make_Global<AudioManager*>(0x00A29B6C))
+#define g_theAudio (Make_Global<AudioManager *>(0x00A29B6C))
 #endif
 
 #endif // AUDIOMANAGER_H

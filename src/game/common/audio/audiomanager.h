@@ -102,8 +102,8 @@ public:
     virtual void Remove_Audio_Event(unsigned int event);
     virtual void Remove_Audio_Event(AsciiString event);
     virtual void Kill_Event_Immediately(unsigned int event) = 0;
-    virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event);
-    virtual bool Is_Valid_Audio_Event(AudioEventRTS *event);
+    virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event) const;
+    virtual bool Is_Valid_Audio_Event(AudioEventRTS *event) const;
     virtual void Next_Music_Track() = 0;
     virtual void Prev_Music_Track() = 0;
     virtual bool Is_Music_Playing() = 0;
@@ -112,7 +112,7 @@ public:
     virtual void Set_Audio_Event_Enabled(AsciiString event, bool vol_override);
     virtual void Set_Audio_Event_Volume_Override(AsciiString event, float vol_override);
     virtual void Remove_Disabled_Events();
-    virtual void Get_Info_For_Audio_Event(const AudioEventRTS *event);
+    virtual void Get_Info_For_Audio_Event(const AudioEventRTS *event) const;
     virtual bool Is_Currently_Playing() = 0;
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
@@ -136,7 +136,7 @@ public:
     virtual bool Is_Playing_Already(AudioEventRTS *event) const = 0;
     virtual bool Is_Object_Playing_Void(unsigned int obj) const = 0;
     virtual void Adjust_Volume_Of_Playing_Audio(AsciiString name, float adjust) = 0;
-    virtual void Remove_PLaying_Audio(AsciiString name) = 0;
+    virtual void Remove_Playing_Audio(AsciiString name) = 0;
     virtual void Remove_All_Disabled_Audio() = 0;
     virtual bool Is_On(AudioAffect affect) const;
     virtual void Set_On(bool on, AudioAffect affect);

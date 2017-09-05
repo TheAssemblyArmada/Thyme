@@ -32,8 +32,15 @@
 
 union reqevent_t
 {
-    int handle;
+    unsigned int handle;
     AudioEventRTS *object;
+};
+
+enum RequestType
+{
+    REQUEST_MUSIC_ADD,
+    REQUEST_SOUND_ADD,
+    REQUEST_REMOVE,
 };
 
 class AudioRequest : public MemoryPoolObject
@@ -43,6 +50,9 @@ class AudioRequest : public MemoryPoolObject
 
 public:
     virtual ~AudioRequest() {}
+
+    void Set_Music_Event_Object(AudioEventRTS *object) { m_event.object = object; m_requestType = REQUEST_MUSIC_ADD; }
+    void Set_Event_Handle(unsigned int handle) { m_event.handle = handle; m_requestType = REQUEST_REMOVE; }
 
 private:
     AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false) {}

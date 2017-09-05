@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "audiomanager.h"
+#include "musicmanager.h"
+#include "soundmanager.h"
 
 #ifdef THYME_STANDALONE
 AudioManager *g_theAudio = nullptr;
@@ -331,9 +333,14 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     if (new_event->Should_Play_Locally() || Should_Play_Locally(new_event)) {
         if (new_event->Get_Volume() >= m_audioSettings->Get_Min_Sample_Vol()) {
             if (event->Get_Event_Info()->Get_Type() != EVENT_MUSIC) {
-                // TODO needs soundmanager
+                m_soundManager->Add_Audio_Event(new_event);
             } else {
-                // TODO needs musicmanager
+                m_musicManager->Add_Audio_Event(new_event);
+            }
+
+            // Is this even possible to reach?
+            if (new_event == nullptr) {
+                return 1;
             }
 
             return new_event->Get_Playing_Handle();
@@ -351,28 +358,87 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 
 void AudioManager::Remove_Audio_Event(unsigned int event)
 {
-
+    if (event == 4 || event == 5) {
+        m_musicManager->Remove_Audio_Event(event);
+    } else if (event > 6) {
+        AudioRequest *request = Allocate_Audio_Request(false);
+        request->Set_Event_Handle(event);
+        Append_Audio_Request(request);
+    }
 }
 
-void AudioManager::Remove_Audio_Event(AsciiString event) {}
-
-bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event)
+void AudioManager::Remove_Audio_Event(AsciiString event)
 {
-    return false;
+    Remove_Playing_Audio(event);
 }
 
-bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event)
+bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 {
-    return false;
+    if (event->Get_Event_Name().Is_Empty()) {
+        return false;
+    }
+
+    Get_Info_For_Audio_Event(event);
+
+    return event->Get_Event_Info() != nullptr;
 }
 
-void AudioManager::Set_Audio_Event_Enabled(AsciiString event, bool vol_override) {}
+bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
+{
+    if (event->Get_Event_Name().Is_Empty()) {
+        return false;
+    }
 
-void AudioManager::Set_Audio_Event_Volume_Override(AsciiString event, float vol_override) {}
+    Get_Info_For_Audio_Event(event);
 
-void AudioManager::Remove_Disabled_Events() {}
+    return event->Get_Event_Info() != nullptr;
+}
 
-void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) {}
+void AudioManager::Set_Audio_Event_Enabled(AsciiString event, bool vol_override)
+{
+    Set_Audio_Event_Volume_Override(event, vol_override ? -1.0f : 0.0f);
+}
+
+void AudioManager::Set_Audio_Event_Volume_Override(AsciiString event, float vol_override)
+{
+    if (event == AsciiString::s_emptyString) {
+        m_unkList1.clear();
+
+        return;
+    }
+
+    // -1.0f indicates no adjustment is to be made.
+
+    if (vol_override != -1.0f) {
+        Adjust_Volume_Of_Playing_Audio(event, vol_override);
+    }
+
+    if (m_unkList1.empty() && vol_override != -1.0f) {
+        m_unkList1.push_back(std::pair<AsciiString, float>(event, vol_override));
+    } else {
+        auto it = m_unkList1.begin();
+
+        for (; it != m_unkList1.end(); ++it) {
+            if (event == it->first && vol_override != -1.0f) {
+                it->second = vol_override;
+            }
+        }
+    }
+}
+
+void AudioManager::Remove_Disabled_Events()
+{
+    Remove_All_Disabled_Audio();
+}
+
+void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
+{
+    if (event == nullptr || event->Get_Event_Info() != nullptr) {
+        return;
+    }
+
+    event->Set_Event_Info(Find_Audio_Event_Info(event->Get_Event_Name()));
+}
 
 unsigned int AudioManager::Translate_From_Speaker_Type(const AsciiString &type)
 {

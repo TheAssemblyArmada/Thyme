@@ -64,6 +64,7 @@ set(GAMEENGINE_SRC
     game/common/audio/audiomanager.cpp
     game/common/audio/audiomisc.cpp
     game/common/audio/audiosettings.cpp
+    game/common/audio/musicmanager.cpp
     game/common/audio/soundmanager.cpp
     game/common/ini/ini.cpp
     game/common/system/archivefile.cpp

@@ -1,19 +1,15 @@
 #include "soundmanager.h"
 
-void SoundManager::Reset()
-{
-}
+void SoundManager::Reset() {}
 
-void SoundManager::Add_Audio_Event(AudioEventRTS * event)
-{
-}
+void SoundManager::Add_Audio_Event(AudioEventRTS *event) {}
 
-bool SoundManager::Can_Play_Now(AudioEventRTS * event)
+bool SoundManager::Can_Play_Now(AudioEventRTS *event)
 {
     return false;
 }
 
-bool SoundManager::Violates_Voice(AudioEventRTS * event)
+bool SoundManager::Violates_Voice(AudioEventRTS *event)
 {
     return false;
 }

@@ -50,6 +50,7 @@ public:
     void Set_Playing_Handle(int handle) { m_playingHandle = handle; }
     void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
+    void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
 
     const AsciiString &Get_Event_Name() const { return m_filename; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
@@ -61,7 +62,7 @@ public:
 
 private:
     AsciiString m_filename;
-    AudioEventInfo *m_eventInfo;
+    mutable AudioEventInfo *m_eventInfo;
     int m_playingHandle;
     int m_handleToKill;
     AsciiString m_eventName;

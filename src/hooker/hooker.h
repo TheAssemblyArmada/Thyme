@@ -141,13 +141,13 @@ __forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types...
 // written one.
 // Typically the in pointer will be provided by one of the Make_*_Ptr functions
 // above to ensure the parameters are correct.
-template<typename T, typename... Types>
-void Hook_Function(T(__cdecl * in)(Types...), T(__cdecl * out)(Types...))
+template<typename T>
+void Hook_Function(uintptr_t in, T out)
 {
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>(out) - reinterpret_cast<uintptr_t>(in) - 5;
+    cmd.addr = reinterpret_cast<uintptr_t>(out) - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 }
 
@@ -163,13 +163,13 @@ void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types
 
 // Method pointers need funky syntax to get the underlying function address
 // hence the odd cast to void for the out pointer.
-template<typename T, typename C, typename... Types>
-void Hook_Method(T(__thiscall *in)(C *, Types...), T(C:: *out)(Types...))
+template<typename T>
+void Hook_Method(uintptr_t in, T out)
 {
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>((void*&)out) - reinterpret_cast<uintptr_t>(in) - 5;
+    cmd.addr = reinterpret_cast<uintptr_t>((void*&)out) - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 }
 

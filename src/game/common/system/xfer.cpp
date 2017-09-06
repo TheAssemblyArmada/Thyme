@@ -349,10 +349,10 @@ void Xfer::xferMapName(AsciiString *thing)
     AsciiString map;
 
     if ( Get_Mode() == XFER_SAVE ) {
-        map = TheGameState->Real_To_Portable_Map_Path(*thing);
+        map = g_theGameState->Real_To_Portable_Map_Path(*thing);
         xferAsciiString(&map);
     } else if ( Get_Mode() == XFER_LOAD ) {
         xferAsciiString(&map);
-        *thing = TheGameState->Portable_To_Real_Map_Path(map);
+        *thing = g_theGameState->Portable_To_Real_Map_Path(map);
     }
 }

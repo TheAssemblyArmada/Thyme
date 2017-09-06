@@ -1,42 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: RANDOMVALUE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes and functions for generating pseudo random numbers
-//                 that are deterministic from a given seed.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes and functions for generating pseudo random numbers that are deterministic from a given seed.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef RANDOMVALUE_H
 #define RANDOMVALUE_H
 
 #include "bittype.h"
-#include "hooker.h"
 
-// Audio and Client could be other way around, will become clear as more functions
-// are mapped.
-//#define TheGameClientSeed (Make_Pointer<uint32_t>(0x009D76C4))
-//#define TheGameAudioSeed (Make_Pointer<uint32_t>(0x009D76DC))
-//#define TheGameLogicSeed (Make_Pointer<uint32_t>(0x009D76F4))
-//#define TheGameLogicBaseSeed (Make_Global<uint32_t>(0x00A2B9FC))
-//#define TheMultFactor (Make_Global<const float>(0x00942344))
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 void Init_Random();
 void Init_Random(uint32_t initial);
@@ -49,7 +35,6 @@ int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char *file = nullpt
 float Get_Client_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
 float Get_Audio_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
 float Get_Logic_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
-void Verify_Random_Value();
 
 class GameLogicRandomVariable
 {
@@ -93,25 +78,27 @@ private:
     float m_high;
 };
 
-namespace RandomValue {
-
+#ifndef THYME_STANDALONE
+namespace RandomValue
+{
 inline void Hook_Me()
 {
-    Hook_Function(Make_Function_Ptr<void>(0x0048DC00), Init_Random);
-    Hook_Function(Make_Function_Ptr<void, uint32_t>(0x0048DCF0), Init_Random);
-    Hook_Function(Make_Function_Ptr<void, uint32_t>(0x0048DDB0), Init_Game_Logic_Random);
-    Hook_Function(Make_Function_Ptr<uint32_t>(0x0048DBB0), Get_Logic_Random_Seed_CRC);
-    Hook_Function(Make_Function_Ptr<uint32_t>(0x0048DBA0), Get_Logic_Random_Seed);
-    Hook_Function(Make_Function_Ptr<int32_t, int32_t, int32_t, const char *, int>(0x0048DEB0), Get_Client_Random_Value);
-    Hook_Function(Make_Function_Ptr<int32_t, int32_t, int32_t, const char *, int>(0x0048DE00), Get_Logic_Random_Value);
-    Hook_Function(Make_Function_Ptr<int32_t, int32_t, int32_t, const char *, int>(0x0048DEE0), Get_Audio_Random_Value);
-    Hook_Function(Make_Function_Ptr<float, float, float, const char *, int>(0x0048DF70), Get_Client_Random_Value_Real);
-    Hook_Function(Make_Function_Ptr<float, float, float, const char *, int>(0x0048DF10), Get_Logic_Random_Value_Real);
-    Hook_Function(Make_Function_Ptr<float, float, float, const char *, int>(0x0048DFD0), Get_Audio_Random_Value_Real);
-    Hook_Method(Make_Method_Ptr<float, GameClientRandomVariable>(0x0048E030), &GameClientRandomVariable::Get_Value);
-    Hook_Method(Make_Method_Ptr<float, GameLogicRandomVariable>(0x0048E0D0), &GameLogicRandomVariable::Get_Value);
+    Hook_Function(0x0048DC00, static_cast<void (*)()>(Init_Random));
+    Hook_Function(0x0048DCF0, static_cast<void (*)(uint32_t)>(Init_Random));
+    Hook_Function(0x0048DDB0, Init_Game_Logic_Random);
+    Hook_Function(0x0048DBB0, Get_Logic_Random_Seed_CRC);
+    Hook_Function(0x0048DBA0, Get_Logic_Random_Seed);
+    Hook_Function(0x0048DEB0, Get_Client_Random_Value);
+    Hook_Function(0x0048DE00, Get_Logic_Random_Value);
+    Hook_Function(0x0048DEE0, Get_Audio_Random_Value);
+    Hook_Function(0x0048DF70, Get_Client_Random_Value_Real);
+    Hook_Function(0x0048DF10, Get_Logic_Random_Value_Real);
+    Hook_Function(0x0048DFD0, Get_Audio_Random_Value_Real);
+    Hook_Method(0x0048E030, &GameClientRandomVariable::Get_Value);
+    Hook_Method(0x0048E0D0, &GameLogicRandomVariable::Get_Value);
 }
 
 } // namespace RandomValue
+#endif
 
 #endif // _RANDOMVALUE_H

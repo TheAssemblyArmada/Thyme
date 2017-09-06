@@ -24,7 +24,6 @@
 #include "main.h"
 #include "cpudetect.h"
 #include "hooker.h"
-#include "hookcrt.h"
 #include "critsection.h"
 #include "gamemain.h"
 #include "gamememory.h"
@@ -34,9 +33,12 @@
 #include "version.h"
 #include "gamedebug.h"
 
-//
+#ifndef THYME_STANDALONE
+#include "hookcrt.h"
+#else
+
+#endif
 // Some Critical Sections to dole out to the functions that can use them.
-//
 SimpleCriticalSectionClass critSec1;
 SimpleCriticalSectionClass critSec2;
 SimpleCriticalSectionClass critSec3;

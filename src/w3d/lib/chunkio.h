@@ -1,34 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: CHUNKIO.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes for reading and writing the binary chunk format used
-//                 in WW3D and SAGE games.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes for reading and writing the binary chunk format used in WW3D and SAGE games.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef CHUNKIO_H
 #define CHUNKIO_H
 
 #include "always.h"
+
+#ifndef THYME_STANDALONE
 #include "hooker.h"
+#endif
 
 class FileClass;
 
@@ -76,10 +70,7 @@ public:
 
     void Set_Type(uint32_t type) { m_chunkType = type; }
 
-    void Set_Size(uint32_t size)
-    {
-        m_chunkSize = (size & (~SUB_CHUNK_FLAG)) | (m_chunkSize & SUB_CHUNK_FLAG);
-    }
+    void Set_Size(uint32_t size) { m_chunkSize = (size & (~SUB_CHUNK_FLAG)) | (m_chunkSize & SUB_CHUNK_FLAG); }
 
     void Add_Size(uint32_t size)
     {
@@ -111,12 +102,12 @@ private:
     uint8_t m_chunkSize;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief Westwood Chunk format writer.
-/// 
-/// This class handles writing to a binary chunk format as used by various 
-/// W3D binary file formats.
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Westwood Chunk format writer.
+ *
+ * This class handles writing to a binary chunk format as used by various
+ * W3D binary file formats.
+ */
 class ChunkSaveClass
 {
 private:
@@ -142,7 +133,10 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
+
 private:
     FileClass *m_file;
     int m_stackIndex;
@@ -153,12 +147,12 @@ private:
     MicroChunkHeader m_microChunkHeader;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-/// \brief Westwood Chunk format reader.
-/// 
-/// This class handles reading from a binary chunk format as used by various 
-/// W3D binary file formats.
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Westwood Chunk format reader.
+ *
+ * This class handles reading from a binary chunk format as used by various
+ * W3D binary file formats.
+ */
 class ChunkLoadClass
 {
 private:
@@ -168,7 +162,7 @@ private:
     };
 
 public:
-    //TODO check return types
+    // TODO check return types
     ChunkLoadClass(FileClass *file);
 
     bool Open_Chunk();
@@ -195,7 +189,10 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
+
 private:
     FileClass *m_file;
     int m_stackIndex;
@@ -206,27 +203,29 @@ private:
     MicroChunkHeader m_microChunkHeader;
 };
 
+#ifndef THYME_STANDALONE
 inline void ChunkSaveClass::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<bool, ChunkSaveClass, unsigned int>(0x008A0F90), &Begin_Chunk);
-    Hook_Method(Make_Method_Ptr<bool, ChunkSaveClass>(0x008A1020), &End_Chunk);
-    Hook_Method(Make_Method_Ptr<bool, ChunkSaveClass, unsigned int>(0x008A10D0), &Begin_Micro_Chunk);
-    Hook_Method(Make_Method_Ptr<bool, ChunkSaveClass>(0x008A1160), &End_Micro_Chunk);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkSaveClass, void const*, unsigned int>(0x008A11C0), &Write);
+    Hook_Method(0x008A0F90, &Begin_Chunk);
+    Hook_Method(0x008A1020, &End_Chunk);
+    Hook_Method(0x008A10D0, &Begin_Micro_Chunk);
+    Hook_Method(0x008A1160, &End_Micro_Chunk);
+    Hook_Method(0x008A11C0, static_cast<unsigned int (ChunkSaveClass::*)(void const *, unsigned int)>(&Write));
 }
 
 inline void ChunkLoadClass::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<bool, ChunkLoadClass>(0x008A1290), &Open_Chunk);
-    Hook_Method(Make_Method_Ptr<bool, ChunkLoadClass>(0x008A12E0), &Close_Chunk);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass>(0x008A1330), &Cur_Chunk_ID);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass>(0x008A1340), &Cur_Chunk_Length);
-    Hook_Method(Make_Method_Ptr<bool, ChunkLoadClass>(0x008A1350), &Open_Micro_Chunk);
-    Hook_Method(Make_Method_Ptr<bool, ChunkLoadClass>(0x008A1380), &Close_Micro_Chunk);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass>(0x008A13D0), &Cur_Micro_Chunk_ID);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass>(0x008A13E0), &Cur_Micro_Chunk_Length);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass, unsigned int>(0x008A13F0), &Seek);
-    Hook_Method(Make_Method_Ptr<unsigned int, ChunkLoadClass, void*, unsigned int>(0x008A1480), &Read);
+    Hook_Method(0x008A1290, &Open_Chunk);
+    Hook_Method(0x008A12E0, &Close_Chunk);
+    Hook_Method(0x008A1330, &Cur_Chunk_ID);
+    Hook_Method(0x008A1340, &Cur_Chunk_Length);
+    Hook_Method(0x008A1350, &Open_Micro_Chunk);
+    Hook_Method(0x008A1380, &Close_Micro_Chunk);
+    Hook_Method(0x008A13D0, &Cur_Micro_Chunk_ID);
+    Hook_Method(0x008A13E0, &Cur_Micro_Chunk_Length);
+    Hook_Method(0x008A13F0, &Seek);
+    Hook_Method(0x008A1480, static_cast<unsigned int (ChunkLoadClass::*)(void *, unsigned int)>(&Read));
 }
+#endif
 
 #endif // _CHUNKIO_H

@@ -60,77 +60,55 @@
 
 void Setup_Hooks()
 {
-    //
     // Hook WinMain
-    //
     Hook_StdCall_Function((Make_StdCall_Ptr<int, HINSTANCE, HINSTANCE, LPSTR, int>(0x00401700)), Main_Func);
 
-	//
 	// Code that checks the launcher is running, launcher does CD check.
-	//
-    Hook_Function((Make_Function_Ptr<void, unsigned int, int>(0x00412420)), CopyProtect::checkForMessage);
-    Hook_Function((Make_Function_Ptr<bool>(0x00412450)), CopyProtect::validate);
+    Hook_Function(0x00412420, CopyProtect::checkForMessage);
+    Hook_Function(0x00412450, CopyProtect::validate);
 
-    //
     // Returns true for any CD checks
-    //
-    Hook_Function((Make_Function_Ptr<bool>(0x005F1CB0)), IsFirstCDPresent);
+    Hook_Function(0x005F1CB0, IsFirstCDPresent);
     
-    //
     // Replace memory intialisation
-    //
-    Hook_Function((Make_Function_Ptr<void>(0x00414510)), Init_Memory_Manager);
-    Hook_Function((Make_Function_Ptr<void>(0x004148C0)), Init_Memory_Manager_Pre_Main);
+    Hook_Function(0x00414510, Init_Memory_Manager);
+    Hook_Function(0x004148C0, Init_Memory_Manager_Pre_Main);
 
 
-    //
     // Replace memory allocation operators
-    //
-    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414450)), New_New);    // operator new
-    Hook_Function((Make_Function_Ptr<void *, size_t>(0x00414490)), New_New);    // operator new[]
-    Hook_Function((Make_Function_Ptr<void, void *>(0x004144D0)), New_Delete);   // operator delete
-    Hook_Function((Make_Function_Ptr<void, void *>(0x004144F0)), New_Delete);   // operator delete[]
-    Hook_Function((Make_Function_Ptr<MemoryPool *, const char *, int>(0x00414B30)), Create_Named_Pool);
+    Hook_Function(0x00414450, New_New);    // operator new
+    Hook_Function(0x00414490, New_New);    // operator new[]
+    Hook_Function(0x004144D0, New_Delete);   // operator delete
+    Hook_Function(0x004144F0, New_Delete);   // operator delete[]
+    Hook_Function(0x00414B30, Create_Named_Pool);
     
-    //
     // Replace pool functions
-    //
-    Hook_Method((Make_Method_Ptr<void *, MemoryPool>(0x00413C10)), &MemoryPool::Allocate_Block);
-    Hook_Method((Make_Method_Ptr<void, MemoryPool, void *>(0x00413C40)), &MemoryPool::Free_Block);
+    Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);
+    Hook_Method(0x00413C40, &MemoryPool::Free_Block);
 
-    //
     // Replace DMA functions
-    //
-    Hook_Method((Make_Method_Ptr<void *, DynamicMemoryAllocator, int>(0x00413EE0)), &DynamicMemoryAllocator::Allocate_Bytes_No_Zero);
-    Hook_Method((Make_Method_Ptr<void *, DynamicMemoryAllocator, int>(0x00413FE0)), &DynamicMemoryAllocator::Allocate_Bytes);
-    Hook_Method((Make_Method_Ptr<void, DynamicMemoryAllocator, void *>(0x00414010)), &DynamicMemoryAllocator::Free_Bytes);
-    Hook_Method((Make_Method_Ptr<int, DynamicMemoryAllocator, int>(0x00414140)), &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
+    Hook_Method(0x00413EE0, &DynamicMemoryAllocator::Allocate_Bytes_No_Zero);
+    Hook_Method(0x00413FE0, &DynamicMemoryAllocator::Allocate_Bytes);
+    Hook_Method(0x00414010, &DynamicMemoryAllocator::Free_Bytes);
+    Hook_Method(0x00414140, &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
     
-    //
     // Replace MemoryPoolFactory functions
-    //
-    Hook_Method((Make_Method_Ptr<MemoryPool *, MemoryPoolFactory, const char *, int, int, int>(0x00414180)), static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
+    Hook_Method(0x00414180, static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
     
-    //
     // Replace File functions
-    //
     FileSystem::Hook_Me();
-    Hook_Method((Make_Method_Ptr<LocalFileSystem*, Win32GameEngine>(0x007420F0)), &Win32GameEngine::Create_Local_File_System_NV);
-    Hook_Method((Make_Method_Ptr<ArchiveFileSystem*, Win32GameEngine>(0x00742150)), &Win32GameEngine::Create_Archive_File_System_NV);
-    Hook_Method((Make_Method_Ptr<void, ArchiveFileSystem, AsciiString const &, AsciiString const &, AsciiString const &, std::set<AsciiString, rts::less_than_nocase<AsciiString> >&, bool>(0x0048F410)), &ArchiveFileSystem::Get_File_List_From_Dir);
-    Hook_Method((Make_Method_Ptr<AsciiString, ArchiveFileSystem, AsciiString const &>(0x0048F250)), &ArchiveFileSystem::Get_Archive_Filename_For_File);
-    Hook_Method((Make_Method_Ptr<bool, ArchiveFileSystem, AsciiString const &, FileInfo*>(0x0048F160)), &ArchiveFileSystem::Get_File_Info);
+    Hook_Method(0x007420F0, &Win32GameEngine::Create_Local_File_System_NV);
+    Hook_Method(0x00742150, &Win32GameEngine::Create_Archive_File_System_NV);
+    Hook_Method(0x0048F410, &ArchiveFileSystem::Get_File_List_From_Dir);
+    Hook_Method(0x0048F250, &ArchiveFileSystem::Get_Archive_Filename_For_File);
+    Hook_Method(0x0048F160, &ArchiveFileSystem::Get_File_Info);
 
-    //
     // Replace AsciiString
-    //
-    Hook_Method((Make_Method_Ptr<void, AsciiString, const char *>(0x0040D640)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
-    Hook_Method((Make_Method_Ptr<void, AsciiString, int, bool, const char *, const char *>(0x00415290)), &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    Hook_Method((Make_Method_Ptr<void, AsciiString, const char *>(0x0040FB40)), static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
+    Hook_Method(0x0040D640, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
+    Hook_Method(0x00415290, &AsciiString::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method(0x0040FB40, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
 
-    //
     // Replace INI
-    //
     INI::Hook_Me();
 
     // Replace NameKeyGenerator

@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: NAMEKEYGENERATOR.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Maps strings to 32bit integers.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Maps strings to 32bit integers.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef NAMEKEYGENERATOR_H
@@ -28,11 +20,14 @@
 
 #include "asciistring.h"
 #include "bittype.h"
-#include "hooker.h"
 #include "ini.h"
 #include "macros.h"
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 enum NameKeyType : int32_t
 {
@@ -79,7 +74,9 @@ public:
 
     static void Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata);
 
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
 private:
     void Free_Sockets();
 
@@ -103,14 +100,18 @@ private:
     const char *m_name;
 };
 
-#define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
-//extern NameKeyGenerator *g_theNameKeyGenerator;
+#ifndef THYME_STANDALONE
+//#define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
+extern NameKeyGenerator *&g_theNameKeyGenerator;
 
 inline void NameKeyGenerator::Hook_Me()
 {
-    Hook_Method((Make_Method_Ptr<AsciiString, NameKeyGenerator, NameKeyType>(0x0047B2F0)), &NameKeyGenerator::Key_To_Name);
-    Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B360)), &NameKeyGenerator::Name_To_Key);
-    Hook_Method((Make_Method_Ptr<NameKeyType, NameKeyGenerator, char const*>(0x0047B500)), &NameKeyGenerator::Name_To_Lower_Case_Key);
+    Hook_Method(0x0047B2F0, &Key_To_Name);
+    Hook_Method(0x0047B360, &Name_To_Key);
+    Hook_Method(0x0047B500, &Name_To_Lower_Case_Key);
 }
+#else
+extern NameKeyGenerator *g_theNameKeyGenerator;
+#endif
 
 #endif

@@ -1,42 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: FILESYSTEM.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Filesystem abstraction merging local and archive file
-//                 handling.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Filesystem abstraction merging local and archive file handling.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "filesystem.h"
 #include "archivefilesystem.h"
 #include "localfilesystem.h"
 #include "namekeygenerator.h"
 
-FileSystem::FileSystem() :
-    m_availableFiles()
-{
-
-}
-
-FileSystem::~FileSystem()
-{
-
-}
+#ifndef THYME_STANDALONE
+FileSystem *&g_theFileSystem = Make_Global<FileSystem *>(0x00A2B670);
+#else
+FileSystem *g_theFileSystem = nullptr;
+#endif
 
 void FileSystem::Init()
 {
@@ -60,11 +46,11 @@ File *FileSystem::Open(const char *filename, int mode)
 {
     File *file = nullptr;
 
-    if ( g_theLocalFileSystem != nullptr ) {
+    if (g_theLocalFileSystem != nullptr) {
         file = g_theLocalFileSystem->Open_File(filename, mode);
     }
 
-    if ( file == nullptr && g_theArchiveFileSystem != nullptr ) {
+    if (file == nullptr && g_theArchiveFileSystem != nullptr) {
         file = g_theArchiveFileSystem->Open_File(filename, 0);
     }
 
@@ -77,17 +63,17 @@ bool FileSystem::Does_File_Exist(const char *filename)
 
     auto it = m_availableFiles.find(name_id);
 
-    if ( it != m_availableFiles.end() ) {
+    if (it != m_availableFiles.end()) {
         return it->second;
     }
 
-    if ( g_theLocalFileSystem->Does_File_Exist(filename) ) {
+    if (g_theLocalFileSystem->Does_File_Exist(filename)) {
         m_availableFiles[name_id] = true;
 
         return true;
     }
 
-    if ( g_theArchiveFileSystem->Does_File_Exist(filename) ) {
+    if (g_theArchiveFileSystem->Does_File_Exist(filename)) {
         m_availableFiles[name_id] = true;
 
         return true;
@@ -98,7 +84,8 @@ bool FileSystem::Does_File_Exist(const char *filename)
     return false;
 }
 
-void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
+void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter,
+    std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs)
 {
     g_theLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
     g_theArchiveFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
@@ -106,7 +93,7 @@ void FileSystem::Get_File_List_From_Dir(AsciiString const &dir, AsciiString cons
 
 bool FileSystem::Create_Dir(AsciiString name)
 {
-    if ( g_theLocalFileSystem == nullptr ) {
+    if (g_theLocalFileSystem == nullptr) {
         return false;
     }
 
@@ -128,5 +115,5 @@ bool FileSystem::Load_Music_Files_From_CD()
 
 void FileSystem::Unload_Music_Files_From_CD()
 {
-    //TODO Needs audio interface.
+    // TODO Needs audio interface.
 }

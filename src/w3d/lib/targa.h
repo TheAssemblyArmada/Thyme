@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: TARGA.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: Class for handling TARGA images.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author CCHyper, OmniBlade
+ *
+ * @brief Class for handling TARGA images.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef TARGA_H
@@ -29,9 +21,12 @@
 #include "always.h"
 #include "endiantype.h"
 #include "fileclass.h"
-#include "hooker.h"
 
-//http://www.programminghomeworkhelp.com/c-programming/
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
+// http://www.programminghomeworkhelp.com/c-programming/
 
 // Pack all the structures to 1 byte alignment
 #pragma pack(push, 1)
@@ -51,7 +46,7 @@ struct TGAHeader
     int8_t image_descriptor;
 };
 
-//struct TGAHandle
+// struct TGAHandle
 //{
 //    int32_t fh;
 //    int32_t mode;
@@ -155,7 +150,7 @@ public:
 
     TargaImage();
     ~TargaImage();
- 
+
     int Open(const char *name, int mode);
     void Close();
     int Load(const char *name, int flags, bool invert_image);
@@ -170,10 +165,11 @@ public:
     bool Is_File_Open();
 
     static int Targa_Error_Handler(int load_err, const char *filename);
-
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
 private:
-    int Load(const char *name, char* palette, char* image, bool invert_image);
+    int Load(const char *name, char *palette, char *image, bool invert_image);
     int Decode_Image();
     int Encode_Image();
     void Invert_Image();
@@ -183,8 +179,8 @@ private:
     bool File_Open_Write(const char *name);
     bool File_Open_ReadWrite(const char *name);
     int File_Seek(int pos, int dir) { return m_TGAFile->Seek(pos, dir); }
-    int File_Read(void* buffer, int size) { return m_TGAFile->Read(buffer, size); }
-    int File_Write(void* buffer, int size) { return m_TGAFile->Write(buffer, size); }
+    int File_Read(void *buffer, int size) { return m_TGAFile->Read(buffer, size); }
+    int File_Write(void *buffer, int size) { return m_TGAFile->Write(buffer, size); }
 
     static void Header_To_Host(TGAHeader &header);
     static void Header_To_File(TGAHeader &header);
@@ -200,13 +196,15 @@ private:
     TGA2Extension m_extension;
 };
 
+#ifndef THYME_STANDALONE
 inline void TargaImage::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<int, TargaImage, char const*, int, bool>(0x008A43F0), &Load);
-    Hook_Method(Make_Method_Ptr<int, TargaImage, char const*, int>(0x008A3E60), &Open);
-    Hook_Method(Make_Method_Ptr<char*, TargaImage, char*>(0x008A45F0), &Set_Palette);
-    Hook_Function(Make_Function_Ptr<int, int, char const*>(0x008A4780), &Targa_Error_Handler);
+    Hook_Method(0x008A43F0, static_cast<int (TargaImage::*)(char const *, int, bool)>(&Load));
+    Hook_Method(0x008A3E60, &Open);
+    Hook_Method(0x008A45F0, &Set_Palette);
+    Hook_Function(0x008A4780, &Targa_Error_Handler);
 }
+#endif
 
 inline void TargaImage::Header_To_Host(TGAHeader &header)
 {

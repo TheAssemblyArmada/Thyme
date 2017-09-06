@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: W3DFILESYSTEM.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: W3DLib style wrapper around filesystem.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief W3DLib style wrapper around filesystem.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "w3dfilesystem.h"
 #include "asciistring.h"
 #include "filesystem.h"
@@ -31,12 +23,12 @@
 
 W3DFileSystem::W3DFileSystem()
 {
-    TheFileFactory = this;
+    g_theFileFactory = this;
 }
 
 W3DFileSystem::~W3DFileSystem()
 {
-    TheFileFactory = nullptr;
+    g_theFileFactory = nullptr;
 }
 
 FileClass *W3DFileSystem::Get_File(const char *filename)
@@ -46,7 +38,7 @@ FileClass *W3DFileSystem::Get_File(const char *filename)
 
 void W3DFileSystem::Return_File(FileClass *file)
 {
-    if ( file != nullptr ) {
+    if (file != nullptr) {
         delete file;
     }
 }
@@ -58,26 +50,24 @@ FileClass *W3DFileSystem::Get_File_NV(const char *filename)
 
 void W3DFileSystem::Return_File_NV(FileClass *file)
 {
-    if ( file != nullptr ) {
+    if (file != nullptr) {
         delete file;
     }
 }
 
-GameFileClass::GameFileClass(const char *filename) :
-    m_theFile(nullptr),
-    m_fileExists(false)
+GameFileClass::GameFileClass(const char *filename) : m_theFile(nullptr), m_fileExists(false)
 {
     m_filePath[0] = '\0';
     m_filename[0] = '\0';
 
-    if ( filename != nullptr ) {
+    if (filename != nullptr) {
         Set_Name(filename);
     }
 }
 
 GameFileClass::~GameFileClass()
 {
-    if ( m_theFile != nullptr ) {
+    if (m_theFile != nullptr) {
         m_theFile->Close();
         m_theFile = nullptr;
     }
@@ -90,7 +80,7 @@ const char *GameFileClass::File_Name()
 
 const char *GameFileClass::Set_Name(const char *filename)
 {
-    if ( Is_Open() ) {
+    if (Is_Open()) {
         Close();
     }
 
@@ -101,12 +91,12 @@ const char *GameFileClass::Set_Name(const char *filename)
     strlcpy(buff, filename, sizeof(buff));
 
     int count = 1;
-    for ( size_t i = strlen(buff) - 1; i > 0; --i ) {
-        if ( count >= 32 ) {
+    for (size_t i = strlen(buff) - 1; i > 0; --i) {
+        if (count >= 32) {
             break;
         }
 
-        if ( buff[i] == '.' ) {
+        if (buff[i] == '.') {
             strlcpy(ext, &buff[i], sizeof(ext));
             buff[i] = '\0';
 
@@ -117,8 +107,8 @@ const char *GameFileClass::Set_Name(const char *filename)
 
     // Strip spaces.
     int put = 0;
-    for ( int get = 0; buff[get] != '\0'; ++get ) {
-        if ( buff[get] != ' ' ) {
+    for (int get = 0; buff[get] != '\0'; ++get) {
+        if (buff[get] != ' ') {
             buff[put++] = buff[get];
         }
     }
@@ -128,46 +118,36 @@ const char *GameFileClass::Set_Name(const char *filename)
     GameFileType file_type = GAME_FILE_UNK;
 
     // Handle special paths for certain asset types
-    if ( strcasecmp(ext, ".w3d") == 0 ) {
+    if (strcasecmp(ext, ".w3d") == 0) {
         file_type = GAME_FILE_W3D;
-        snprintf(
-            m_filePath,
-            sizeof(m_filePath),
-            "Data/%s/Art/W3D/",
-            Get_Registry_Language().Str()
-        );
+        snprintf(m_filePath, sizeof(m_filePath), "Data/%s/Art/W3D/", Get_Registry_Language().Str());
         strlcat(m_filePath, filename, sizeof(m_filePath));
     } else {
-        if ( strcasecmp(ext, ".tga") == 0 ) {
+        if (strcasecmp(ext, ".tga") == 0) {
             file_type = GAME_FILE_TGA;
         }
 
-        if ( strcasecmp(ext, ".dds") == 0 ) {
+        if (strcasecmp(ext, ".dds") == 0) {
             file_type = GAME_FILE_DDS;
         }
 
-        if ( file_type != GAME_FILE_UNK ) {
-            snprintf(
-                m_filePath,
-                sizeof(m_filePath),
-                "Data/%s/Art/Textures/",
-                Get_Registry_Language().Str()
-            );
+        if (file_type != GAME_FILE_UNK) {
+            snprintf(m_filePath, sizeof(m_filePath), "Data/%s/Art/Textures/", Get_Registry_Language().Str());
 
             strlcat(m_filePath, filename, sizeof(m_filePath));
-        } 
+        }
     }
 
     m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
 
-    if ( !m_fileExists ) {
-        switch ( file_type ) {
+    if (!m_fileExists) {
+        switch (file_type) {
             case GAME_FILE_W3D:
                 strlcpy(m_filePath, "Art/W3D/", sizeof(m_filePath));
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             case GAME_FILE_TGA:
-            case GAME_FILE_DDS: //Fallthrough
+            case GAME_FILE_DDS: // Fallthrough
                 strlcpy(m_filePath, "Art/Textures/", sizeof(m_filePath));
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
@@ -179,11 +159,11 @@ const char *GameFileClass::Set_Name(const char *filename)
         m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
-    if ( !m_fileExists ) {
-        switch ( file_type ) {
+    if (!m_fileExists) {
+        switch (file_type) {
             case GAME_FILE_W3D:
             case GAME_FILE_TGA:
-            case GAME_FILE_DDS: //Fallthrough
+            case GAME_FILE_DDS: // Fallthrough
                 strlcpy(m_filePath, "../TestArt/", sizeof(m_filePath));
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
@@ -194,14 +174,14 @@ const char *GameFileClass::Set_Name(const char *filename)
         m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
-    if ( !m_fileExists && g_theWriteableGlobalData != nullptr ) {
-        switch ( file_type ) {
+    if (!m_fileExists && g_theWriteableGlobalData != nullptr) {
+        switch (file_type) {
             case GAME_FILE_W3D:
                 snprintf(m_filePath, sizeof(m_filePath), "%sW3D/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             case GAME_FILE_TGA:
-            case GAME_FILE_DDS: //Fallthrough
+            case GAME_FILE_DDS: // Fallthrough
                 snprintf(m_filePath, sizeof(m_filePath), "%sTextures/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
@@ -212,12 +192,13 @@ const char *GameFileClass::Set_Name(const char *filename)
         m_fileExists = g_theFileSystem->Does_File_Exist(m_filePath);
     }
 
-    if ( !m_fileExists && g_theWriteableGlobalData != nullptr ) {
-        switch ( file_type ) {
+    if (!m_fileExists && g_theWriteableGlobalData != nullptr) {
+        switch (file_type) {
             case GAME_FILE_TGA:
-            //TODO Allow DDS for map previews as well at some point?
-            //case GAME_FILE_DDS: //Fallthrough
-                snprintf(m_filePath, sizeof(m_filePath), "%sMapPreviews/", g_theWriteableGlobalData->m_userDataDirectory.Str());
+                // TODO Allow DDS for map previews as well at some point?
+                // case GAME_FILE_DDS: //Fallthrough
+                snprintf(
+                    m_filePath, sizeof(m_filePath), "%sMapPreviews/", g_theWriteableGlobalData->m_userDataDirectory.Str());
                 strlcat(m_filePath, filename, sizeof(m_filePath));
                 break;
             default:
@@ -254,16 +235,16 @@ bool GameFileClass::Open(const char *filename, int rights)
 {
     Set_Name(filename);
 
-    if ( !Is_Available() ) {
+    if (!Is_Available()) {
         return false;
     }
-    
+
     return Open(rights);
 }
 
 bool GameFileClass::Open(int rights)
 {
-    if ( rights != FM_READ ) {
+    if (rights != FM_READ) {
         return false;
     }
 
@@ -274,7 +255,7 @@ bool GameFileClass::Open(int rights)
 
 int GameFileClass::Read(void *buffer, int length)
 {
-    if ( m_theFile == nullptr ) {
+    if (m_theFile == nullptr) {
         return 0;
     }
 
@@ -285,11 +266,11 @@ off_t GameFileClass::Seek(off_t offset, int whence)
 {
     File::SeekMode file_whence;
 
-    if ( m_theFile == nullptr ) {
+    if (m_theFile == nullptr) {
         return -1;
     }
 
-    switch ( whence ) {
+    switch (whence) {
         case FS_SEEK_START:
             file_whence = File::START;
             break;
@@ -307,7 +288,7 @@ off_t GameFileClass::Seek(off_t offset, int whence)
 
 off_t GameFileClass::Size()
 {
-    if ( m_theFile == nullptr ) {
+    if (m_theFile == nullptr) {
         return -1;
     }
 
@@ -321,7 +302,7 @@ int GameFileClass::Write(void const *buffer, int size)
 
 void GameFileClass::Close()
 {
-    if ( m_theFile != nullptr ) {
+    if (m_theFile != nullptr) {
         m_theFile->Close();
         m_theFile = nullptr;
     }

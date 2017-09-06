@@ -152,8 +152,8 @@ private:
 // extern GameTextInterface *g_theGameText;
 inline void GameTextManager::Hook_Me()
 {
-    Hook_Function((Make_Function_Ptr<GameTextInterface*>(0x00418320)), &Create_Game_Text_Interface);
-    Hook_Function((Make_Function_Ptr<int, void const *, void const *>(0x0041A020)), &Compare_LUT);
+    Hook_Function(0x00418320, &Create_Game_Text_Interface);
+    Hook_Function(0x0041A020, &Compare_LUT);
 }
 
 #endif // _GAMETEXT_H

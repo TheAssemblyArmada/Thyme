@@ -84,7 +84,7 @@ private:
 #ifndef THYME_STANDALONE
 inline void FunctionLexicon::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<void, FunctionLexicon, TableEntry*, TableIndex>(0x004F3D00), &Load_Table);
+    Hook_Method(0x004F3D00, &Load_Table);
 }
 #endif
 

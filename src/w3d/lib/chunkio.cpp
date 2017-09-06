@@ -1,33 +1,24 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: CHUNKIO.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes for reading and writing the binary chunk format used
-//                 in WW3D and SAGE games.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-#include    "chunkio.h"
-#include    "fileclass.h"
-#include    "gamedebug.h"
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes for reading and writing the binary chunk format used in WW3D and SAGE games.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "chunkio.h"
+#include "fileclass.h"
+#include "gamedebug.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// TODO 
+// TODO
 //
 // These classes currently assume little endian arch and so do no byte swapping
 // to host order.
@@ -38,7 +29,7 @@
 ///     Class Constructor.
 /// \param
 ///     file - Pointer to a FileClass instance to use to write the chunk.
-/// \see 
+/// \see
 ///     FileClass
 ////////////////////////////////////////////////////////////////////////////////
 ChunkSaveClass::ChunkSaveClass(FileClass *file) :
@@ -52,7 +43,7 @@ ChunkSaveClass::ChunkSaveClass(FileClass *file) :
     // Original code does this, seems pointless when it memsets it to 0 again
     // just after anyway though.
     //
-    //for ( int i = 0; i < ARRAY_SIZE(m_headerStack); ++i ) {
+    // for ( int i = 0; i < ARRAY_SIZE(m_headerStack); ++i ) {
     //    m_headerStack[i].Set_Type(0);
     //    m_headerStack[i].Set_Size(0);
     //}
@@ -76,7 +67,7 @@ bool ChunkSaveClass::Begin_Chunk(unsigned int id)
     //
     // Set a flag on the type to flag as nested?
     //
-    if ( m_stackIndex > 0 ) {
+    if (m_stackIndex > 0) {
         m_headerStack[m_stackIndex - 1].Set_Sub_Chunk_Flag(0);
     }
 
@@ -89,7 +80,6 @@ bool ChunkSaveClass::Begin_Chunk(unsigned int id)
 
     return m_file->Write(&chunkh, sizeof(chunkh)) == sizeof(chunkh);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -105,8 +95,8 @@ bool ChunkSaveClass::End_Chunk()
     ChunkHeader chunkh = m_headerStack[m_stackIndex];
     m_file->Seek(m_positionStack[m_stackIndex], FS_SEEK_START);
 
-    if ( m_file->Write(&chunkh, sizeof(chunkh)) == sizeof(chunkh) ) {
-        if ( m_stackIndex > 0 ) {
+    if (m_file->Write(&chunkh, sizeof(chunkh)) == sizeof(chunkh)) {
+        if (m_stackIndex > 0) {
             m_headerStack[m_stackIndex - 1].Add_Size(chunkh.Get_Size() + sizeof(chunkh));
         }
 
@@ -117,7 +107,6 @@ bool ChunkSaveClass::End_Chunk()
 
     return false;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -136,7 +125,7 @@ bool ChunkSaveClass::Begin_Micro_Chunk(unsigned int id)
     m_microChunkHeader.Set_Size(0);
     m_microChunkPos = m_file->Seek(0);
 
-    if ( Write(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader) ) {
+    if (Write(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader)) {
         m_inMicroChunk = true;
 
         return true;
@@ -144,7 +133,6 @@ bool ChunkSaveClass::Begin_Micro_Chunk(unsigned int id)
 
     return false;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -159,7 +147,7 @@ bool ChunkSaveClass::End_Micro_Chunk()
     int current_pos = m_file->Seek(0);
     m_file->Seek(m_microChunkPos, FS_SEEK_START);
 
-    if ( Write(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader) ) {
+    if (Write(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader)) {
         m_file->Seek(current_pos, FS_SEEK_START);
         m_inMicroChunk = false;
 
@@ -168,7 +156,6 @@ bool ChunkSaveClass::End_Micro_Chunk()
 
     return false;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -180,25 +167,23 @@ bool ChunkSaveClass::End_Micro_Chunk()
 /// \return
 ///     Number of bytes written.
 ////////////////////////////////////////////////////////////////////////////////
-// Inline here should just inline the call in the other write functions.
-inline unsigned int ChunkSaveClass::Write(void const *buf, unsigned int bytes)
+unsigned int ChunkSaveClass::Write(void const *buf, unsigned int bytes)
 {
     DEBUG_ASSERT_PRINT(m_headerStack[m_stackIndex - 1].Get_Sub_Chunk_Flag() == 0, "Subchunk flag is set.\n");
     DEBUG_ASSERT_PRINT(m_stackIndex > 0, "Stack index below 1.\n");
 
-    if ( m_file->Write(buf, bytes) != bytes ) {
+    if (m_file->Write(buf, bytes) != bytes) {
         return 0;
     }
 
     m_headerStack[m_stackIndex - 1].Add_Size(bytes);
 
-    if ( m_inMicroChunk ) {
+    if (m_inMicroChunk) {
         m_microChunkHeader.Add_Size(bytes);
     }
 
     return bytes;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -213,7 +198,6 @@ unsigned int ChunkSaveClass::Write(IOVector2Struct const &vect)
     return Write(&vect, sizeof(vect));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Write a 3D Vector to the chunk.
@@ -226,7 +210,6 @@ unsigned int ChunkSaveClass::Write(IOVector3Struct const &vect)
 {
     return Write(&vect, sizeof(vect));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -241,7 +224,6 @@ unsigned int ChunkSaveClass::Write(IOVector4Struct const &vect)
     return Write(&vect, sizeof(vect));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Write a Quaternion to the chunk.
@@ -255,13 +237,12 @@ unsigned int ChunkSaveClass::Write(IOQuaternionStruct const &quat)
     return Write(&quat, sizeof(quat));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Class Constructor.
 /// \param
 ///     file - Pointer to a FileClass instance to use to read the chunk.
-/// \see 
+/// \see
 ///     FileClass
 ////////////////////////////////////////////////////////////////////////////////
 ChunkLoadClass::ChunkLoadClass(FileClass *file) :
@@ -275,7 +256,7 @@ ChunkLoadClass::ChunkLoadClass(FileClass *file) :
     // Original code does this, seems pointless when it memsets it to 0 again
     // just after anyway though.
     //
-    //for ( int i = 0; i < ARRAY_SIZE(m_headerStack); ++i ) {
+    // for ( int i = 0; i < ARRAY_SIZE(m_headerStack); ++i ) {
     //    m_headerStack[i].Set_Type(0);
     //    m_headerStack[i].Set_Size(0);
     //}
@@ -283,7 +264,6 @@ ChunkLoadClass::ChunkLoadClass(FileClass *file) :
     memset(m_positionStack, 0, sizeof(m_positionStack));
     memset(m_headerStack, 0, sizeof(m_headerStack));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -296,11 +276,11 @@ bool ChunkLoadClass::Open_Chunk()
     DEBUG_ASSERT_PRINT(!m_inMicroChunk, "Currently in a micro chunk.\n");
     DEBUG_ASSERT_PRINT(m_stackIndex < MAX_STACK_DEPTH - 1, "Stack is too full.\n");
 
-    if ( m_stackIndex > 0 && m_positionStack[m_stackIndex - 1] == m_headerStack[m_stackIndex - 1].Get_Size() ) {
+    if (m_stackIndex > 0 && m_positionStack[m_stackIndex - 1] == m_headerStack[m_stackIndex - 1].Get_Size()) {
         return false;
     }
 
-    if ( m_file->Read(&m_headerStack[m_stackIndex], sizeof(m_headerStack[0])) == sizeof(m_headerStack[0]) ) {
+    if (m_file->Read(&m_headerStack[m_stackIndex], sizeof(m_headerStack[0])) == sizeof(m_headerStack[0])) {
         m_positionStack[m_stackIndex++] = 0;
 
         return true;
@@ -308,7 +288,6 @@ bool ChunkLoadClass::Open_Chunk()
 
     return false;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -324,19 +303,18 @@ bool ChunkLoadClass::Close_Chunk()
     int chunksize = m_headerStack[m_stackIndex - 1].Get_Size();
     int position = m_positionStack[m_stackIndex - 1];
 
-    if ( position < chunksize ) {
+    if (position < chunksize) {
         m_file->Seek(chunksize - position);
     }
 
     --m_stackIndex;
 
-    if ( m_stackIndex > 0 ) {
+    if (m_stackIndex > 0) {
         m_positionStack[m_stackIndex - 1] += chunksize + sizeof(*m_headerStack);
     }
 
     return true;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -351,7 +329,6 @@ unsigned int ChunkLoadClass::Cur_Chunk_ID()
     return m_headerStack[m_stackIndex - 1].Get_Type();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Get the size of the current chunk.
@@ -365,30 +342,28 @@ unsigned int ChunkLoadClass::Cur_Chunk_Length()
     return m_headerStack[m_stackIndex - 1].Get_Size();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Returns if the current chunk itself contains chunks.
 /// \return
-///     Int containing value of the flag indicating if it contains other chunks. 
+///     Int containing value of the flag indicating if it contains other chunks.
 ////////////////////////////////////////////////////////////////////////////////
 int ChunkLoadClass::Contains_Chunks()
 {
     return m_headerStack[m_stackIndex - 1].Get_Sub_Chunk_Flag();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Opens a micro chunk at the current file position.
 /// \return
-///     Bool indicating if a chunk was opened. 
+///     Bool indicating if a chunk was opened.
 ////////////////////////////////////////////////////////////////////////////////
 bool ChunkLoadClass::Open_Micro_Chunk()
 {
     DEBUG_ASSERT_PRINT(!m_inMicroChunk, "Already in a micro chunk.\n");
 
-    if ( Read(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader) ) {
+    if (Read(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader)) {
         m_microChunkPos = 0;
         m_inMicroChunk = true;
 
@@ -397,7 +372,6 @@ bool ChunkLoadClass::Open_Micro_Chunk()
 
     return false;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -411,17 +385,16 @@ bool ChunkLoadClass::Close_Micro_Chunk()
 
     m_inMicroChunk = false;
 
-    if ( m_microChunkPos < m_microChunkHeader.Get_Size() ) {
+    if (m_microChunkPos < m_microChunkHeader.Get_Size()) {
         m_file->Seek(m_microChunkHeader.Get_Size() - m_microChunkPos);
 
-        if ( m_stackIndex > 0 ) {
+        if (m_stackIndex > 0) {
             m_positionStack[m_stackIndex - 1] += m_microChunkHeader.Get_Size() - m_microChunkPos;
         }
     }
 
     return true;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -436,7 +409,6 @@ unsigned int ChunkLoadClass::Cur_Micro_Chunk_ID()
     return m_microChunkHeader.Get_Type();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Get the length of the current micro chunk.
@@ -449,7 +421,6 @@ unsigned int ChunkLoadClass::Cur_Micro_Chunk_Length()
 
     return m_microChunkHeader.Get_Size();
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -464,20 +435,20 @@ unsigned int ChunkLoadClass::Seek(unsigned int bytes)
     DEBUG_ASSERT_PRINT(m_stackIndex > 0, "Stack index less than 1.\n");
     DEBUG_ASSERT_PRINT(m_file->Is_Open(), "File is not open for seeking.\n");
 
-    if ( bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size() ) {
+    if (bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size()) {
         return 0;
     }
 
-    if ( m_inMicroChunk && bytes + m_microChunkPos > m_microChunkHeader.Get_Size() ) {
+    if (m_inMicroChunk && bytes + m_microChunkPos > m_microChunkHeader.Get_Size()) {
         return 0;
     }
 
     int current = m_file->Tell();
 
-    if ( m_file->Seek(bytes) - current == bytes ) {
+    if (m_file->Seek(bytes) - current == bytes) {
         m_positionStack[m_stackIndex - 1] += bytes;
 
-        if ( m_inMicroChunk ) {
+        if (m_inMicroChunk) {
             m_microChunkPos += bytes;
         }
 
@@ -486,7 +457,6 @@ unsigned int ChunkLoadClass::Seek(unsigned int bytes)
 
     return 0;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -503,27 +473,26 @@ unsigned int ChunkLoadClass::Read(void *buf, unsigned int bytes)
     DEBUG_ASSERT_PRINT(m_stackIndex > 0, "Stack index less than 1.\n");
     DEBUG_ASSERT_PRINT(m_file->Is_Open(), "File is not open for reading.\n");
 
-    if ( bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size() ) {
+    if (bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size()) {
         return 0;
     }
 
-    if ( m_inMicroChunk && bytes + m_microChunkPos > m_microChunkHeader.Get_Size() ) {
+    if (m_inMicroChunk && bytes + m_microChunkPos > m_microChunkHeader.Get_Size()) {
         return 0;
     }
 
-    if ( m_file->Read(buf, bytes) != bytes ) {
+    if (m_file->Read(buf, bytes) != bytes) {
         return 0;
     }
 
     m_positionStack[m_stackIndex - 1] += bytes;
 
-    if ( m_inMicroChunk ) {
+    if (m_inMicroChunk) {
         m_microChunkPos += bytes;
     }
 
     return bytes;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
@@ -540,7 +509,6 @@ unsigned int ChunkLoadClass::Read(IOVector2Struct *vect)
     return Read(vect, sizeof(*vect));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Reads a 3D vector from the file.
@@ -554,7 +522,6 @@ unsigned int ChunkLoadClass::Read(IOVector3Struct *vect)
     return Read(vect, sizeof(*vect));
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief
 ///     Reads a 4D vector from the file.
@@ -567,7 +534,6 @@ unsigned int ChunkLoadClass::Read(IOVector4Struct *vect)
 {
     return Read(vect, sizeof(*vect));
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /// \brief

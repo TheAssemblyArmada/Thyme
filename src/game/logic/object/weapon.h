@@ -1,33 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WEAPON.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Weapon objects.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Weapon objects.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef WEAPON_H
 #define WEAPON_H
 
 #include "mempoolobj.h"
+
+#ifndef THYME_STANDALONE
 #include "hooker.h"
+#endif
 
 class INI;
 
@@ -88,14 +83,18 @@ class WeaponBonusSet : public MemoryPoolObject
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
 private:
     WeaponBonus m_bonus[WEAPONBONUSCONDITION_COUNT];
 };
 
+#ifndef THYME_STANDALONE
 inline void WeaponBonusSet::Hook_Me()
 {
-    Hook_Function(Make_Function_Ptr<void, INI*, void*, void*, void const*>(0x004C9860), Parse_Weapon_Bonus_Set_Ptr);
+    Hook_Function(0x004C9860, Parse_Weapon_Bonus_Set_Ptr);
 }
+#endif
 
 #endif // WEAPON_H

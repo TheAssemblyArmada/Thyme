@@ -1,38 +1,34 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GLOBALDATA.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Class for handling various global variables
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Class for handling various global variables.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef GLOBALDATA_H
 #define GLOBALDATA_H
 
-#include "subsysteminterface.h"
 #include "asciistring.h"
 #include "color.h"
 #include "coord.h"
 #include "gametype.h"
 #include "ini.h"
 #include "money.h"
+#include "subsysteminterface.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 class INI;
 class WeaponBonusSet;
@@ -90,17 +86,17 @@ public:
     bool m_useHeatEffects;
     bool m_useFPSLimit;
     bool m_dumpAssetUsage;
-    //char pad[2]
+    // char pad[2]
     int32_t m_framesPerSecondLimit;
     int32_t m_chipsetType;
     bool m_windowed;
-    //char pad[3]
+    // char pad[3]
     int32_t m_xResolution;
     int32_t m_yResolution;
     int32_t m_maxShellScreens;
     bool m_useCloudMap;
-    //char pad[3]
-    int32_t m_use3WayTerrainBlends;   //Should be bool? m_if so, fix when all GlobalData reading code implemented.
+    // char pad[3]
+    int32_t m_use3WayTerrainBlends; // Should be bool? m_if so, fix when all GlobalData reading code implemented.
     bool m_useLightMap;
     bool m_bilinearTerrainTexture;
     bool m_trilinearTerrainTexture;
@@ -111,8 +107,8 @@ public:
     bool m_drawEntireTerrain;
     TerrainLOD m_terrainLOD;
     bool m_dynamicLOD;
-    bool m_useStaticLODLevels;  // Controls if LOD levels are loaded from GameLOD.ini
-    //char pad[2]
+    bool m_useStaticLODLevels; // Controls if LOD levels are loaded from GameLOD.ini
+    // char pad[2]
     int32_t m_terrainLODTargetTimeMS;
     bool m_alternateMouseEnabled;
     bool m_retaliationModeEnabled;
@@ -124,7 +120,7 @@ public:
     bool m_shadowDecals;
     int32_t m_textureReductionFactor;
     bool m_useBehindBuildingMarker;
-    //char pad[3]
+    // char pad[3]
     float m_waterPositionX;
     float m_waterPositionY;
     float m_waterPositionZ;
@@ -134,7 +130,7 @@ public:
     bool m_showSoftWaterEdge;
     bool m_unkBool6;
     bool m_unkBool7;
-    //char pad[1]
+    // char pad[1]
     float m_featherWater;
     AsciiString m_vertexWaterAvailableMaps[4];
     float m_vertexWaterHeightClampLow[4];
@@ -152,8 +148,8 @@ public:
     float m_vertexWaterAttenuationRange[4];
     float m_downWindAngle;
     float m_skyBoxPositionZ;
-    bool m_drawSkyBox;    // init code suggests this might be an int, old BOOL typedef?
-    //char pad[3]
+    bool m_drawSkyBox; // init code suggests this might be an int, old BOOL typedef?
+    // char pad[3]
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;
@@ -171,7 +167,7 @@ public:
     bool m_unkBool12;
     bool m_unkBool13;
     bool m_unkBool14;
-    //char pad[1]
+    // char pad[1]
     float m_partitionCellSize;
     Coord3D m_ammoPipWorldOffset;
     Coord3D m_containerPipWorldOffset;
@@ -214,7 +210,7 @@ public:
     float m_normalSoloAIHealthBonus;
     float m_hardSoloAIHealthBonus;
     int32_t m_maxTranslucencyObjects;
-    int32_t m_unkInt5;    // These 3 are probably some kind of max and get set to 512
+    int32_t m_unkInt5; // These 3 are probably some kind of max and get set to 512
     int32_t m_unkInt6;
     int32_t m_unkInt7;
     float m_occludedColorLuminanceScale;
@@ -230,23 +226,23 @@ public:
     bool m_speechOn;
     bool m_videoOn;
     bool m_disableCameraMovements;
-    bool m_fogOfWarOn;    // not 100% sure about this, needs confirming
+    bool m_fogOfWarOn; // not 100% sure about this, needs confirming
     bool m_showClientPhysics;
     bool m_showTerrainNormals;
-    //char pad[2]
+    // char pad[2]
     float m_unkFloat4;
-    int32_t m_debugAI;    // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
+    int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
     bool m_unkBool8;
     bool m_debugObstacleAI;
     bool m_showObjectHealth;
-    bool m_scriptDebug;   // Requires DebugWindow.dll to do anything
-    bool m_particleEdit;  // Requires ParticleEditor.dll to do anything
-    bool m_displayDebug;  // not 100% sure and needs confirming
+    bool m_scriptDebug; // Requires DebugWindow.dll to do anything
+    bool m_particleEdit; // Requires ParticleEditor.dll to do anything
+    bool m_displayDebug; // not 100% sure and needs confirming
     bool m_winCursors;
     bool m_unkBool9;
     bool m_benchMark;
     bool m_writeBenchMarkFile;
-    //char pad[2]
+    // char pad[2]
     int32_t m_fixedSeed;
     float m_particleScale;
     AsciiString m_autoFireParticleSmallPrefix;
@@ -270,14 +266,14 @@ public:
     AsciiString m_autoAFlameParticlePrefix;
     AsciiString m_autoAFlameParticleSystem;
     int32_t m_autoAFlameParticleMax;
-    int32_t m_netMinPlayers;  // not 100% sure, needs confirming
+    int32_t m_netMinPlayers; // not 100% sure, needs confirming
     int32_t m_lanIPAddress;
     int32_t m_firewallBehaviour;
     bool m_sendDelay;
-    //char pad[3]
+    // char pad[3]
     int32_t m_firewallPortOverrides;
     int16_t m_firewallPortAllocationDelta;
-    //char pad[2]
+    // char pad[2]
     int32_t m_valuesPerSupplyBox;
     float m_buildSpeed;
     float m_minDistanceFromMapEdgeForBuild;
@@ -298,7 +294,7 @@ public:
     float m_cameraAdjustSpeed;
     bool m_enforceMaxCameraHeight;
     bool m_buildMapCache; // not 100% sure, needs confirming
-    //char pad[2]
+    // char pad[2]
     AsciiString m_initialFile; // not 100% sure, needs confirming
     AsciiString m_pendingFile; // not 100% sure, needs confirming
     int32_t m_maxParticleCount;
@@ -316,16 +312,16 @@ public:
     bool m_afterIntro;
     bool m_unkBool16;
     bool m_unkBool17;
-    //char pad[2]
+    // char pad[2]
     float m_keyboardScrollFactor;
     float m_keyboardDefaultScrollFactor;
-    float m_musicVolumeFactor;  // not 100% sure, needs confirming
-    float m_SFXVolumeFactor;  // not 100% sure, needs confirming
-    float m_voiceVolumeFactor;  // not 100% sure, needs confirming
-    bool m_sound3DPref;  // not 100% sure, needs confirming
+    float m_musicVolumeFactor; // not 100% sure, needs confirming
+    float m_SFXVolumeFactor; // not 100% sure, needs confirming
+    float m_voiceVolumeFactor; // not 100% sure, needs confirming
+    bool m_sound3DPref; // not 100% sure, needs confirming
     bool m_animateWindows;
-    bool m_setMinVertextBufferSize;  // not 100% sure, needs confirming
-    //char pad[1]
+    bool m_setMinVertextBufferSize; // not 100% sure, needs confirming
+    // char pad[1]
     uint32_t m_iniCRC;
     uint32_t m_gameCRC;
     BodyDamageType m_movementPenaltyDamageState;
@@ -335,16 +331,16 @@ public:
     int32_t m_maxUnitSelectSounds;
     float m_selectionFlashSaturationFactor;
     bool m_selectionFlashHouseColor;
-    //char pad[3]
+    // char pad[3]
     float m_cameraAudibleRadius;
     float m_groupMoveClickToGatherAreaFactor;
-    int32_t m_antiAliasBoxValue;     // could be float
+    int32_t m_antiAliasBoxValue; // could be float
     bool m_languageFilter;
     bool m_unkBool20;
     bool m_unkBool21;
     bool m_saveCameraInReplays;
     bool m_useCameraInReplays;
-    //char pad[3]
+    // char pad[3]
     float m_shakeSubtleIntensity;
     float m_shakeNormalIntensity;
     float m_shakeStrongIntensity;
@@ -362,26 +358,26 @@ public:
     float m_standardMinefieldDensity;
     float m_standardMinefieldDistance;
     bool m_showMetrics;
-    //char pad[3]
+    // char pad[3]
     Money m_defaultStartingCash;
     bool m_unkBool22;
-    //char pad[3]
+    // char pad[3]
     int32_t m_powerBarBase;
     float m_powerBarIntervals;
     int32_t m_powerBarYellowRange;
     float m_gammaValue;
     uint32_t m_unlookPersistDuration;
     bool m_updateTGAtoDDS;
-    //char pad[3]
+    // char pad[3]
     int32_t m_doubleClickTime;
-    //int32_t m_shroudColor;
-    //float m_unkFloat6;
-    //float m_unkFloat7;
+    // int32_t m_shroudColor;
+    // float m_unkFloat6;
+    // float m_unkFloat7;
     RGBColor m_shroudColor;
     uint8_t m_clearAlpha;
     uint8_t m_fogAlpha;
     uint8_t m_shroudAlpha;
-    //char pad[1]
+    // char pad[1]
     int32_t m_networkFPSHistoryLength;
     int32_t m_networkLatencyHistoryLength;
     int32_t m_networkCushionHistoryLength;
@@ -396,7 +392,7 @@ public:
     bool m_unkBool24;
     bool m_unkBool25;
     bool m_unkBool26;
-    //char pad[1]
+    // char pad[1]
     AsciiString m_userModDirectory;
     AsciiString m_userModFile;
     AsciiString m_userDataDirectory;
@@ -407,12 +403,15 @@ private:
     static GlobalData *s_theOriginal;
 };
 
+#ifndef THYME_STANDALONE
 inline void GlobalData::Hook_Me()
 {
-    Hook_Function(Make_Function_Ptr<void, INI*>(0x00418090), Parse_Game_Data_Definitions);
+    Hook_Function(0x00418090, Parse_Game_Data_Definitions);
 }
 
-#define g_theWriteableGlobalData (Make_Global<GlobalData*>(0x00A2A2A4))
-//extern GlobalData *g_theWriteableGlobalData;
+extern GlobalData *&g_theWriteableGlobalData;
+#else
+extern GlobalData *g_theWriteableGlobalData;
+#endif
 
 #endif

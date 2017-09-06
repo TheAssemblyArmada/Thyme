@@ -1,51 +1,38 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMESTATE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Game state tracker.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Game state tracker.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "gamestate.h"
 #include "filetransfer.h"
 #include "globaldata.h"
 #include "maputil.h"
 
-GameState::GameState()
-{
+#ifndef THYME_STANDALONE
+GameState *&g_theGameState = Make_Global<GameState *>(0x00A2BA04);
+#else
+GameState *g_theGameState = nullptr;
+#endif
 
-}
+GameState::GameState() {}
 
-GameState::~GameState()
-{
-}
+GameState::~GameState() {}
 
-void GameState::Init()
-{
-}
+void GameState::Init() {}
 
-void GameState::Reset()
-{
-}
+void GameState::Reset() {}
 
-void GameState::Xfer_Snapshot(Xfer *xfer)
-{
-}
+void GameState::Xfer_Snapshot(Xfer *xfer) {}
 
 AsciiString GameState::Get_Save_Dir()
 {
@@ -59,17 +46,17 @@ AsciiString GameState::Real_To_Portable_Map_Path(AsciiString &path)
 {
     AsciiString ret;
 
-    path.Fix_Path();  
+    path.Fix_Path();
 
-    if ( path.Starts_With_No_Case(Get_Save_Dir().Str()) ) {
+    if (path.Starts_With_No_Case(Get_Save_Dir().Str())) {
         ret = "Save/";
         ret += Get_File_From_Path(path);
     } else {
-        if ( path.Starts_With_No_Case(TheMapCache->Get_Map_Dir().Str()) ) {
+        if (path.Starts_With_No_Case(TheMapCache->Get_Map_Dir().Str())) {
             ret = "Maps/";
             ret += Get_Leaf_And_Dir_Name(path);
         } else {
-            if ( path.Starts_With_No_Case(TheMapCache->Get_User_Map_Dir().Str()) ) {
+            if (path.Starts_With_No_Case(TheMapCache->Get_User_Map_Dir().Str())) {
                 ret = "UserData/Maps/";
                 ret += Get_Leaf_And_Dir_Name(path);
             } else {
@@ -89,14 +76,14 @@ AsciiString GameState::Portable_To_Real_Map_Path(AsciiString &path)
 
     path.Fix_Path();
 
-    if ( path.Starts_With_No_Case("Save/") ) {
+    if (path.Starts_With_No_Case("Save/")) {
         ret = Get_Save_Dir();
         ret += Get_File_From_Path(path);
-    } else if ( path.Starts_With_No_Case("Maps/") ) {
+    } else if (path.Starts_With_No_Case("Maps/")) {
         ret = TheMapCache->Get_Map_Dir();
         ret += "/";
         ret += Get_Leaf_And_Dir_Name(path);
-    } else if ( path.Starts_With_No_Case("UserData/Maps/") ) {
+    } else if (path.Starts_With_No_Case("UserData/Maps/")) {
         ret = TheMapCache->Get_User_Map_Dir();
         ret += "/";
         ret += Get_Leaf_And_Dir_Name(path);
@@ -117,28 +104,28 @@ AsciiString Get_Leaf_And_Dir_Name(AsciiString const &path)
     const char *leaf = &str[len - 1];
 
     // Search backwards for first directory
-    while ( leaf > str ) {
-        if ( *leaf == '\\' || *leaf == '/' ) {
+    while (leaf > str) {
+        if (*leaf == '\\' || *leaf == '/') {
             break;
         }
 
         --leaf;
     }
 
-    if ( leaf == nullptr || leaf <= str ) {
+    if (leaf == nullptr || leaf <= str) {
         return path;
     }
 
     // Search backwards from last pos for the second directory.
-    while ( leaf > str ) {
-        if ( *leaf == '\\' || *leaf == '/' ) {
+    while (leaf > str) {
+        if (*leaf == '\\' || *leaf == '/') {
             break;
         }
 
         --leaf;
     }
 
-    if ( leaf == nullptr || leaf <= str ) {
+    if (leaf == nullptr || leaf <= str) {
         return path;
     }
 

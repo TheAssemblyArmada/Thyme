@@ -1,36 +1,33 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GLOBALDATA.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Class for handling various global variables
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Class for handling various global variables.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "globaldata.h"
 #include "crc.h"
-#include "filesystem.h"
 #include "endiantype.h"
+#include "filesystem.h"
 #include "optionpreferences.h"
 #include "rtsutils.h"
 #include "version.h"
 #include "weapon.h"
 
-//GlobalData *g_theWriteableGlobalData = nullptr;
+#ifndef THYME_STANDALONE
+GlobalData *&g_theWriteableGlobalData = Make_Global<GlobalData *>(0x00A2A2A4);
+#else
+GlobalData *g_theWriteableGlobalData = nullptr;
+#endif
+
 GlobalData *GlobalData::s_theOriginal = nullptr;
 const int CRC_BUFFER_SIZE = 0x10000;
 
@@ -384,7 +381,7 @@ FieldParse GlobalData::s_fieldParseTable[337] =
 
 GlobalData::GlobalData()
 {
-    if ( s_theOriginal == nullptr ) {
+    if (s_theOriginal == nullptr) {
         s_theOriginal = this;
     }
 
@@ -449,7 +446,7 @@ GlobalData::GlobalData()
     m_showMetrics = false;
 
     // Set defaults for water effects.
-    for ( int i = 0; i < 4; ++i ) {
+    for (int i = 0; i < 4; ++i) {
         m_vertexWaterAvailableMaps[i].Clear();
         m_vertexWaterHeightClampLow[i] = 0.0f;
         m_vertexWaterHeightClampLHigh[i] = 0.0f;
@@ -499,7 +496,7 @@ GlobalData::GlobalData()
     m_containerPipScreenOffset.y = 0.0f;
 
     // Set defaults for the lighting
-    for ( int i = 0; i < 3; ++i ) {
+    for (int i = 0; i < 3; ++i) {
         m_terrainAmbient[i].red = 0.0f;
         m_terrainAmbient[i].green = 0.0f;
         m_terrainAmbient[i].blue = 0.0f;
@@ -510,7 +507,7 @@ GlobalData::GlobalData()
         m_terrainLightPos[i].y = 0.0f;
         m_terrainLightPos[i].z = -1.0f;
 
-        for ( int j = 0; j < TIME_OF_DAY_COUNT; ++j ) {
+        for (int j = 0; j < TIME_OF_DAY_COUNT; ++j) {
             m_terrainPlaneLighting[j][i].ambient.red = 0.0f;
             m_terrainPlaneLighting[j][i].ambient.green = 0.0f;
             m_terrainPlaneLighting[j][i].ambient.blue = 0.0f;
@@ -655,7 +652,7 @@ GlobalData::GlobalData()
     m_powerBarYellowRange = 5;
     m_gammaValue = 1.0f;
     m_standardPublicBones.clear();
-    m_antiAliasBoxValue = 0;    //possibly float
+    m_antiAliasBoxValue = 0; // possibly float
     m_languageFilter = true;
     m_firewallBehaviour = 0;
     m_sendDelay = 0;
@@ -679,8 +676,8 @@ GlobalData::GlobalData()
     m_unkBool25 = false;
     m_unkBool26 = false;
 
-    if ( m_timeOfDay > TIME_OF_DAY_INVALID && m_timeOfDay < TIME_OF_DAY_COUNT ) {
-        for ( int i = 0; i < LIGHT_COUNT; ++i ) {
+    if (m_timeOfDay > TIME_OF_DAY_INVALID && m_timeOfDay < TIME_OF_DAY_COUNT) {
+        for (int i = 0; i < LIGHT_COUNT; ++i) {
             m_terrainAmbient[i] = m_terrainPlaneLighting[m_timeOfDay][i].ambient;
             m_terrainDiffuse[i] = m_terrainPlaneLighting[m_timeOfDay][i].diffuse;
             m_terrainLightPos[i] = m_terrainPlaneLighting[m_timeOfDay][i].lightPos;
@@ -702,9 +699,9 @@ GlobalData::GlobalData()
     m_hardSoloAIHealthBonus = 1.0f;
     m_defaultStructureRubbleHeight = 1.0f;
     m_weaponBonusSetPtr = new WeaponBonusSet;
-    
-    for ( int i = 0; i < WEAPONBONUSCONDITION_COUNT; ++i ) {
-        for ( int j = 0; j < WeaponBonus::COUNT; ++j ) {
+
+    for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; ++i) {
+        for (int j = 0; j < WeaponBonus::COUNT; ++j) {
             m_weaponBonusSetPtr->m_bonus[i].field[j] = 1.0f;
         }
     }
@@ -728,14 +725,13 @@ GlobalData::GlobalData()
     m_animateWindows = true;
     m_iniCRC = 0;
     m_gameCRC = 0;
-    CRC crc;    // Prepare to generate a crc of parts of the game state.
+    CRC crc; // Prepare to generate a crc of parts of the game state.
 
-    // Original crc's the exe, just needs something unique between builds, 
-    // but consistent for the same build.
+    // Original crc's the exe, but that won't work cross platform so use full commit hash from git.
     crc.Compute_CRC(THYME_COMMIT_SHA1, strlen(THYME_COMMIT_SHA1));
 
     // Add game version to the crc.
-    if ( g_theVersion ) {
+    if (g_theVersion) {
         // Make sure bytes are consistently correct way round as crc'd
         // as a byte array.
         int32_t version = htole32(g_theVersion->Get_Version_Number());
@@ -747,14 +743,14 @@ GlobalData::GlobalData()
     uint8_t buffer[CRC_BUFFER_SIZE];
     int read = 0;
 
-    while ( (read = scriptfile->Read(buffer, sizeof(buffer))) != 0 ) {
+    while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
         crc.Compute_CRC(buffer, read);
     }
 
     scriptfile->Close();
     scriptfile = g_theFileSystem->Open("Data/Scripts/MultiplayerScripts.scb", File::BINARY | File::READ);
 
-    while ( (read = scriptfile->Read(buffer, sizeof(buffer))) != 0 ) {
+    while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
         crc.Compute_CRC(buffer, read);
     }
 
@@ -766,16 +762,16 @@ GlobalData::GlobalData()
 #ifdef PLATFORM_WINDOWS
     m_doubleClickTime = GetDoubleClickTime();
 #else
-    // TODO, probably based on whatever crossplatform event framework we use.
+// TODO, probably based on whatever crossplatform event framework we use.
 #endif
     m_keyboardCameraRotateSpeed = 0.1f;
 #ifdef PLATFORM_WINDOWS
     m_userDataDirectory = getenv("CSIDL_MYDOCUMENTS");
     m_userDataDirectory += "\\Command and Conquer Generals Zero Hour Data\\";
 #elif PLATFORM_LINUX
-    // TODO
+// TODO
 #elif PLATFORM_OSX
-    // TODO
+// TODO
 #endif // PLATFORM_WINDOWS
     g_theFileSystem->Create_Dir(m_userDataDirectory);
     m_retaliationModeEnabled = true;
@@ -784,7 +780,7 @@ GlobalData::GlobalData()
 
 GlobalData::~GlobalData()
 {
-    if ( s_theOriginal == this ) {
+    if (s_theOriginal == this) {
         s_theOriginal = nullptr;
         g_theWriteableGlobalData = nullptr;
     }
@@ -792,7 +788,7 @@ GlobalData::~GlobalData()
 
 void GlobalData::Reset()
 {
-    while ( g_theWriteableGlobalData != s_theOriginal ) {
+    while (g_theWriteableGlobalData != s_theOriginal) {
         GlobalData *tmp = g_theWriteableGlobalData->m_next;
         delete g_theWriteableGlobalData;
         g_theWriteableGlobalData = tmp;
@@ -801,13 +797,13 @@ void GlobalData::Reset()
 
 bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
 {
-    if ( time <= TIME_OF_DAY_INVALID || time >= TIME_OF_DAY_COUNT ) {
+    if (time <= TIME_OF_DAY_INVALID || time >= TIME_OF_DAY_COUNT) {
         return false;
     }
 
     m_timeOfDay = time;
 
-    for ( int i = 0; i < LIGHT_COUNT; ++i ) {
+    for (int i = 0; i < LIGHT_COUNT; ++i) {
         m_terrainAmbient[i] = m_terrainPlaneLighting[time][i].ambient;
         m_terrainDiffuse[i] = m_terrainPlaneLighting[time][i].diffuse;
         m_terrainLightPos[i] = m_terrainPlaneLighting[time][i].lightPos;
@@ -820,17 +816,16 @@ void GlobalData::Parse_Game_Data_Definitions(INI *ini)
 {
     DEBUG_LOG("Parsing Global Data from '%s'.\n", ini->Get_Filename().Str());
 
-    if ( g_theWriteableGlobalData == nullptr ) {
+    if (g_theWriteableGlobalData == nullptr) {
         g_theWriteableGlobalData = new GlobalData;
-    } else if ( ini->Get_Load_Type() != INI_LOAD_UNK 
-        && ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES ) {
+    } else if (ini->Get_Load_Type() != INI_LOAD_UNK && ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
         GlobalData *tmp = new GlobalData;
         tmp->m_next = g_theWriteableGlobalData;
         g_theWriteableGlobalData = tmp;
     }
 
     ini->Init_From_INI(g_theWriteableGlobalData, s_fieldParseTable);
-    
+
     OptionPreferences opts;
     g_theWriteableGlobalData->m_alternateMouseEnabled = opts.Get_Alternate_Mouse_Mode_Enabled();
     g_theWriteableGlobalData->m_retaliationModeEnabled = opts.Get_Retaliation_Mode_Enabled();
@@ -845,11 +840,11 @@ void GlobalData::Parse_Game_Data_Definitions(INI *ini)
     g_theWriteableGlobalData->m_useCameraInReplays = opts.Use_Camera_In_Replays();
     int gamma = opts.Get_Gamma_Value();
 
-    if ( gamma >= 50 ) {
-        if ( gamma > 50 ) {
+    if (gamma >= 50) {
+        if (gamma > 50) {
             g_theWriteableGlobalData->m_gammaValue = ((gamma - 50) / 50.0f) + 1.0f;
         }
-    } else if ( gamma <= 0 ) {
+    } else if (gamma <= 0) {
         g_theWriteableGlobalData->m_gammaValue = 0.6f;
     } else {
         g_theWriteableGlobalData->m_gammaValue = (((50 - gamma) * 0.4f) / -50.0f) + 1.0f;

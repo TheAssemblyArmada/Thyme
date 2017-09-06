@@ -1,33 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: NAMEKEYGENERATOR.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Maps strings to 32bit integers.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Maps strings to 32bit integers.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "namekeygenerator.h"
 #include "gamedebug.h"
 
-//NameKeyGenerator *g_theNameKeyGenerator = nullptr;
+#ifndef THYME_STANDALONE
+NameKeyGenerator *&g_theNameKeyGenerator = Make_Global<NameKeyGenerator *>(0x00A2B928);
+#else
+NameKeyGenerator *g_theNameKeyGenerator = nullptr;
+#endif
 
-NameKeyGenerator::NameKeyGenerator() :
-    m_nextID(NAMEKEY_INVALID)
+NameKeyGenerator::NameKeyGenerator() : m_nextID(NAMEKEY_INVALID)
 {
     memset(m_sockets, 0, sizeof(m_sockets));
 }
@@ -56,11 +51,11 @@ AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
     // Find the bucket that matches the provided key if it exists.
     Bucket *bucket;
 
-    for ( int i = 0; i < SOCKET_COUNT; ++i ) {
+    for (int i = 0; i < SOCKET_COUNT; ++i) {
         bucket = m_sockets[i];
 
-        while ( bucket != nullptr ) {
-            if ( bucket->m_key == key ) {
+        while (bucket != nullptr) {
+            if (bucket->m_key == key) {
                 return bucket->m_nameString;
             }
 
@@ -76,7 +71,7 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
     // Calculate a simple hash of the name
     unsigned int socket_hash = 0;
 
-    for ( const char *c = name; *c != '\0'; ++c ) {
+    for (const char *c = name; *c != '\0'; ++c) {
         socket_hash = (33 * socket_hash) + tolower(*c);
     }
 
@@ -85,8 +80,8 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
 
     Bucket *bucket;
 
-    for ( bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket ) {
-        if ( strcasecmp(bucket->m_nameString.Str(), name) == 0 ) {
+    for (bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket) {
+        if (strcasecmp(bucket->m_nameString.Str(), name) == 0) {
             return bucket->m_key;
         }
     }
@@ -109,7 +104,7 @@ NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
     // Calculate a simple hash of the name
     unsigned int socket_hash = 0;
 
-    for ( const char *c = name; *c != '\0'; ++c ) {
+    for (const char *c = name; *c != '\0'; ++c) {
         socket_hash = (33 * socket_hash) + *c;
     }
 
@@ -118,8 +113,8 @@ NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
 
     Bucket *bucket;
 
-    for ( bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket ) {
-        if ( strcmp(bucket->m_nameString.Str(), name) == 0 ) {
+    for (bucket = m_sockets[socket_hash]; bucket != nullptr; bucket = bucket->m_nextInSocket) {
+        if (strcmp(bucket->m_nameString.Str(), name) == 0) {
             return bucket->m_key;
         }
     }
@@ -139,15 +134,15 @@ NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
 
 void NameKeyGenerator::Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata)
 {
-    *static_cast<NameKeyType*>(store) = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
+    *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
 }
 
 void NameKeyGenerator::Free_Sockets()
 {
     // Go over sockets and free them.
-    for ( int i = 0; i < SOCKET_COUNT; ++i ) {
+    for (int i = 0; i < SOCKET_COUNT; ++i) {
         // Delete linked list of entries under given key.
-        if ( m_sockets[i] != nullptr ) {
+        if (m_sockets[i] != nullptr) {
             Bucket *bucket = m_sockets[i];
             Bucket *next;
 
@@ -155,7 +150,7 @@ void NameKeyGenerator::Free_Sockets()
                 next = bucket->m_nextInSocket;
                 Delete_Instance(bucket);
                 bucket = next;
-            } while ( next != nullptr );
+            } while (next != nullptr);
         }
 
         m_sockets[i] = nullptr;
@@ -164,7 +159,7 @@ void NameKeyGenerator::Free_Sockets()
 
 NameKeyType StaticNameKey::Key()
 {
-    if ( m_key == NAMEKEY_INVALID && g_theNameKeyGenerator != nullptr ) {
+    if (m_key == NAMEKEY_INVALID && g_theNameKeyGenerator != nullptr) {
         m_key = g_theNameKeyGenerator->Name_To_Key(m_name);
     }
 

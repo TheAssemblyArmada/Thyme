@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: INI.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Parser for SAGE engine configuration files.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Parser for SAGE engine configuration files.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef INI_H
@@ -29,13 +21,16 @@
 #include "asciistring.h"
 #include "gamedebug.h"
 #include "hookcrt.h"
+
+#ifndef THYME_STANDALONE
 #include "hooker.h"
+#endif
 
 class File;
 class Xfer;
 class INI;
 
-#define SXfer (Make_Global<Xfer*>(0x00A2A6B8))
+#define SXfer (Make_Global<Xfer *>(0x00A2A6B8))
 
 extern const float _SECONDS_PER_LOGICFRAME_REAL_74;
 extern const float _ANGLE_MULTIPLIER;
@@ -49,8 +44,8 @@ enum INILoadType
 };
 
 // Function pointer type for the field parser functions
-typedef void(*inifieldparse_t)(INI *, void *, void *, const void *);
-typedef void(*iniblockparse_t)(INI *);
+typedef void (*inifieldparse_t)(INI *, void *, void *, const void *);
+typedef void (*iniblockparse_t)(INI *);
 
 struct LookupListRec
 {
@@ -85,7 +80,10 @@ struct MultiIniFieldParse
         ++count;
     }
 
-    enum { MAX_MULTI_FIELDS = 16 };
+    enum
+    {
+        MAX_MULTI_FIELDS = 16
+    };
 
     FieldParse *field_parsers[MAX_MULTI_FIELDS];
     unsigned int extra_offsets[MAX_MULTI_FIELDS];
@@ -160,10 +158,12 @@ public:
     static void Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
 
-    // Block parsing functions
+// Block parsing functions
 
+#ifndef THYME_STANDALONE
     // Hooking function
     static void Hook_Me();
+#endif
 
 private:
     void Read_Line();
@@ -186,43 +186,44 @@ private:
     const char *m_endToken;
     bool m_endOfFile;
 
-    //static Xfer *SXfer;
+    // static Xfer *SXfer;
 };
 
+#ifndef THYME_STANDALONE
 inline void INI::Hook_Me()
 {
-    Hook_Method((Make_Method_Ptr<const char *, INI, const char*>(0x0041D6E0)), &INI::Get_Next_Token);
-    Hook_Method((Make_Method_Ptr<const char *, INI, const char*>(0x0041D720)), &INI::Get_Next_Token_Or_Null);
-    Hook_Method((Make_Method_Ptr<const char *, INI, const char*>(0x0041D950)), &INI::Get_Next_Sub_Token);
-    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType>(0x0041A4B0)), &INI::Prep_File);
-    Hook_Method((Make_Method_Ptr<void, INI, void *, MultiIniFieldParse const &>(0x0041D460)), &INI::Init_From_INI_Multi);
-    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, INILoadType, Xfer*>(0x0041A5C0)), &INI::Load);
-    Hook_Method((Make_Method_Ptr<void, INI, AsciiString, bool, INILoadType, Xfer*>(0x0041A1C0)), &INI::Load_Directory);
+    Hook_Method(0x0041D6E0, &INI::Get_Next_Token);
+    Hook_Method(0x0041D720, &INI::Get_Next_Token_Or_Null);
+    Hook_Method(0x0041D950, &INI::Get_Next_Sub_Token);
+    Hook_Method(0x0041A4B0, &INI::Prep_File);
+    Hook_Method(0x0041D460, &INI::Init_From_INI_Multi);
+    Hook_Method(0x0041A5C0, &INI::Load);
+    Hook_Method(0x0041A1C0, &INI::Load_Directory);
 
     // Field parsing functions
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041ADA0)), &INI::Parse_Bool);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041A980)), &INI::Parse_Byte);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AAB0)), &INI::Parse_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AB20)), &INI::Parse_Unsigned);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AB90)), &INI::Parse_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AC00)), &INI::Parse_Positive_None_Zero_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041BA50)), &INI::Parse_Percent_To_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041ACA0)), &INI::Parse_Angle_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AD20)), &INI::Parse_Angular_Velocity_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041AF20)), &INI::Parse_AsciiString);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041B1B0)), &INI::Parse_AsciiString_Vector_Append);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041BDD0)), &INI::Parse_RGB_Color);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041C100)), &INI::Parse_Color_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041C530)), &INI::Parse_Coord2D);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041C2C0)), &INI::Parse_Coord3D);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041D140)), &INI::Parse_Index_List);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041DB50)), &INI::Parse_Duration_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041DBD0)), &INI::Parse_Duration_Int);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041DD10)), &INI::Parse_Velocity_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041DD90)), &INI::Parse_Acceleration_Real);
-    Hook_Function((Make_Function_Ptr<void, INI*, void*, void*, const void*>(0x0041BB20)), &INI::Parse_Bitstring32);
-
+    Hook_Function(0x0041ADA0, &INI::Parse_Bool);
+    Hook_Function(0x0041A980, &INI::Parse_Byte);
+    Hook_Function(0x0041AAB0, &INI::Parse_Int);
+    Hook_Function(0x0041AB20, &INI::Parse_Unsigned);
+    Hook_Function(0x0041AB90, &INI::Parse_Real);
+    Hook_Function(0x0041AC00, &INI::Parse_Positive_None_Zero_Real);
+    Hook_Function(0x0041BA50, &INI::Parse_Percent_To_Real);
+    Hook_Function(0x0041ACA0, &INI::Parse_Angle_Real);
+    Hook_Function(0x0041AD20, &INI::Parse_Angular_Velocity_Real);
+    Hook_Function(0x0041AF20, &INI::Parse_AsciiString);
+    Hook_Function(0x0041B1B0, &INI::Parse_AsciiString_Vector_Append);
+    Hook_Function(0x0041BDD0, &INI::Parse_RGB_Color);
+    Hook_Function(0x0041C100, &INI::Parse_Color_Int);
+    Hook_Function(0x0041C530, &INI::Parse_Coord2D);
+    Hook_Function(0x0041C2C0, &INI::Parse_Coord3D);
+    Hook_Function(0x0041D140, &INI::Parse_Index_List);
+    Hook_Function(0x0041DB50, &INI::Parse_Duration_Real);
+    Hook_Function(0x0041DBD0, &INI::Parse_Duration_Int);
+    Hook_Function(0x0041DD10, &INI::Parse_Velocity_Real);
+    Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
+    Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
 }
+#endif
 
 // Functions for inlining, neater than including in class declaration
 inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
@@ -240,7 +241,7 @@ inline const char *INI::Get_Next_Token(const char *seps)
 
 inline const char *INI::Get_Next_Sub_Token(const char *expected)
 {
-    ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n" )
+    ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n")
     return Get_Next_Token(m_sepsColon);
 }
 
@@ -251,15 +252,15 @@ inline AsciiString INI::Get_Next_Ascii_String()
 
     const char *token = Get_Next_Token_Or_Null();
 
-    if ( token != nullptr ) {
-        if ( *token == '"' ) {
-            if ( strlen(token) > 1 ) {
+    if (token != nullptr) {
+        if (*token == '"') {
+            if (strlen(token) > 1) {
                 strcpy(_buffer, token + 1);
             }
 
             const char *ntoken = Get_Next_Token(m_sepsQuote);
 
-            if ( strlen(ntoken) > 1 && ntoken[1] != '\t' ) {
+            if (strlen(ntoken) > 1 && ntoken[1] != '\t') {
                 strcat(_buffer, " ");
             }
 

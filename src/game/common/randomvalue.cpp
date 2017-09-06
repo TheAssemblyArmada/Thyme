@@ -1,27 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: RANDOMVALUE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes and functions for generating pseudo random numbers
-//                 that are deterministic from a given seed.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes and functions for generating pseudo random numbers that are deterministic from a given seed.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "randomvalue.h"
 #include "crc.h"
 #include "gamedebug.h"
@@ -61,12 +52,12 @@ uint32_t Random_Value(uint32_t seed[6])
     seed[2] += (seed[3] < tmp3) + seed[3];
     seed[1] += (seed[2] < tmp2) + seed[2];
     seed[0] += (seed[1] < tmp1) + seed[1];
-    
-    if ( ++seed[5] == 0 ) {
-        if ( ++seed[4] == 0 ) {
-            if ( ++seed[3] == 0 ) {
-                if ( ++seed[2] == 0 ) {
-                    if ( ++seed[1] == 0 ) {
+
+    if (++seed[5] == 0) {
+        if (++seed[4] == 0) {
+            if (++seed[3] == 0) {
+                if (++seed[2] == 0) {
+                    if (++seed[1] == 0) {
                         ++seed[0];
                     }
                 }
@@ -133,98 +124,64 @@ uint32_t Get_Logic_Random_Seed_CRC()
     return c.Get_CRC();
 }
 
-int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
+int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, const char *file, int line)
 {
-    if ( hi - lo != -1 ) {
+    if (hi - lo != -1) {
         return lo + Random_Value(TheGameClientSeed) % (hi - lo + 1);
     }
 
     return hi;
 }
 
-int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
+int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, const char *file, int line)
 {
-    if ( hi - lo != -1 ) {
+    if (hi - lo != -1) {
         return lo + Random_Value(TheGameAudioSeed) % (hi - lo + 1);
     }
 
     return hi;
 }
 
-int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char * file, int line)
+int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char *file, int line)
 {
-    if ( hi - lo != -1 ) {
+    if (hi - lo != -1) {
         return lo + Random_Value(TheGameLogicSeed) % (hi - lo + 1);
     }
 
     return hi;
 }
 
-float Get_Client_Random_Value_Real(float lo, float hi, const char * file, int line)
+float Get_Client_Random_Value_Real(float lo, float hi, const char *file, int line)
 {
     float diff = hi - lo;
 
-    if ( diff > 0.0f ) {
+    if (diff > 0.0f) {
         return Random_Value(TheGameClientSeed) * TheMultFactor * diff + lo;
     }
 
     return hi;
 }
 
-float Get_Audio_Random_Value_Real(float lo, float hi, const char * file, int line)
+float Get_Audio_Random_Value_Real(float lo, float hi, const char *file, int line)
 {
     float diff = hi - lo;
 
-    if ( diff > 0.0f ) {
+    if (diff > 0.0f) {
         return Random_Value(TheGameAudioSeed) * TheMultFactor * diff + lo;
     }
 
     return hi;
 }
 
-float Get_Logic_Random_Value_Real(float lo, float hi, const char * file, int line)
+float Get_Logic_Random_Value_Real(float lo, float hi, const char *file, int line)
 {
     float diff = hi - lo;
 
-    if ( diff > 0.0f ) {
+    if (diff > 0.0f) {
         return Random_Value(TheGameLogicSeed) * TheMultFactor * diff + lo;
     }
 
     return hi;
-}
-
-// Testing function that comparsed random value code from game against thyme code.
-void Verify_Random_Value()
-{
-    // This only works when the original randomValue functions has not been hooked
-    // otherwise it's guaranteed to match as its the same function being called.
-#define randomValue (Make_Function_Ptr<uint32_t, uint32_t*>(0x0048DE30))
-
-    uint32_t game[6] = {
-        0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D
-    };
-
-    uint32_t thyme[6] = {
-        0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D
-    };
-
-    time_t initial = time(nullptr);
-
-    Seed_Random(initial, game);
-    Seed_Random(initial, thyme);
-
-    for ( int i = 0; i < 1000; ++i ) {
-        uint32_t tmp1 = randomValue(game);
-        uint32_t tmp2 = Random_Value(thyme);
-
-        if ( tmp1 != tmp2 ) {
-            DEBUG_LOG("Verify_Random_Value failed, values didn't match after %d rounds.\n", i);
-
-            return;
-        }
-    }
-
-    DEBUG_LOG("Verify_Random_Value succeeded, all rounds matched original.\n");
 }
 
 void GameLogicRandomVariable::Set_Range(float min, float max, DistributionType type)
@@ -236,9 +193,9 @@ void GameLogicRandomVariable::Set_Range(float min, float max, DistributionType t
 
 float GameLogicRandomVariable::Get_Value()
 {
-    switch ( m_type ) {
+    switch (m_type) {
         case CONSTANT:
-            if ( m_low == m_high ) {
+            if (m_low == m_high) {
                 return m_low;
             } else {
                 DEBUG_LOG("m_low doesn't match m_high for CONSTANT GameLogicRandomVariable.\n");
@@ -262,9 +219,9 @@ void GameClientRandomVariable::Set_Range(float min, float max, DistributionType 
 
 float GameClientRandomVariable::Get_Value()
 {
-    switch ( m_type ) {
+    switch (m_type) {
         case CONSTANT:
-            if ( m_low == m_high ) {
+            if (m_low == m_high) {
                 return m_low;
             } else {
                 DEBUG_LOG("m_low doesn't match m_high for CONSTANT GameClientRandomVariable.\n");

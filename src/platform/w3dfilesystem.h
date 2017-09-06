@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: W3DFILESYSTEM.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: W3DLib style wrapper around filesystem.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief W3DLib style wrapper around filesystem.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef W3DFILESYSTEM_H
@@ -47,10 +39,12 @@ public:
     virtual FileClass *Get_File(const char *filename);
     virtual void Return_File(FileClass *file);
 
+#ifndef THYME_STANDALONE
     FileClass *Get_File_NV(const char *filename);
     void Return_File_NV(FileClass *file);
 
     static void Hook_Me();
+#endif
 };
 
 class GameFileClass : public FileClass
@@ -80,10 +74,12 @@ private:
     char m_filename[PATH_MAX];
 };
 
+#ifndef THYME_STANDALONE
 inline void W3DFileSystem::Hook_Me()
 {
-    Hook_Method(Make_Method_Ptr<FileClass*, W3DFileSystem, char const*>(0x00763880), &Get_File_NV);
-    Hook_Method(Make_Method_Ptr<void, W3DFileSystem, FileClass*>(0x00815370), &Return_File_NV);
+    Hook_Method(0x00763880, &Get_File_NV);
+    Hook_Method(0x00815370, &Return_File_NV);
 }
+#endif
 
-#endif // _W3DFILESYSTEM_H
+#endif // W3DFILESYSTEM_H

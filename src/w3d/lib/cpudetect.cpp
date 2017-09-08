@@ -1344,7 +1344,19 @@ void CPUDetectClass::Init_OS()
     OSVersionBuildNumber = minor;
     OSVersionPlatformId = -1;
 #elif defined PLATFORM_LINUX
-    // TODO
+    struct utsname uts;
+    uname(&uts);
+
+    int major;
+    int minor;
+    int build;
+
+    sscanf(uts.release, "%d.%d.%d", &major, &minor, &build);
+
+    OSVersionNumberMajor = major;
+    OSVersionNumberMinor = minor;
+    OSVersionBuildNumber = build;
+    OSVersionPlatformId = -1;
 #else
     OSVersionNumberMajor = 0;
     OSVersionNumberMinor = 0;

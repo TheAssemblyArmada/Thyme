@@ -19,6 +19,7 @@
 #include "commandline.h"
 #include "commandlist.h"
 #include "filesystem.h"
+#include "functionlexicon.h"
 #include "gamelod.h"
 #include "gametext.h"
 #include "globaldata.h"
@@ -143,6 +144,9 @@ void GameEngine::Init(int argc, char *argv[])
         Set_Quitting(true);
     }
 
+    g_theFunctionLexicon = Create_Function_Lexicon();
+    g_theSubsystemList->Init_Subsystem(g_theFunctionLexicon, nullptr, nullptr, nullptr, nullptr, "TheFunctionLexicon");
+    
     // TODO this is a WIP
 }
 

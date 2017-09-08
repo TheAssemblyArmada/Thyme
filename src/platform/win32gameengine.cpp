@@ -15,6 +15,7 @@
  */
 #include "win32gameengine.h"
 #include "main.h"
+#include "w3dfunctionlexicon.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
@@ -81,7 +82,7 @@ ThingFactory *Win32GameEngine::Create_Thing_Factory()
 
 FunctionLexicon *Win32GameEngine::Create_Function_Lexicon()
 {
-    return nullptr;
+    return new W3DFunctionLexicon;
 }
 
 Radar *Win32GameEngine::Create_Radar()

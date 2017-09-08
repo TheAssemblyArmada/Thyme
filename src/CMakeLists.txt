@@ -100,6 +100,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapon.cpp
     game/network/filetransfer.cpp
     platform/w3dfilesystem.cpp
+    platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
     platform/win32gameengine.cpp

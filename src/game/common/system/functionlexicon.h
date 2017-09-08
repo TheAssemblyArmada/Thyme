@@ -3,7 +3,7 @@
  *
  * @Author OmniBlade
  *
- * @brief Interface for interface function pointer manager.
+ * @brief Interface for UI function pointer manager.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -86,6 +86,10 @@ inline void FunctionLexicon::Hook_Me()
 {
     Hook_Method(0x004F3D00, &Load_Table);
 }
+
+extern FunctionLexicon *&g_theFunctionLexicon;
+#else
+extern FunctionLexicon *g_theFunctionLexicon;
 #endif
 
 #endif // FUNCTIONLEXICON_H

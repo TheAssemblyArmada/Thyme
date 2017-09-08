@@ -54,7 +54,7 @@ public:
 
     const AsciiString &Get_Event_Name() const { return m_filename; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
-    AudioEventType Get_Event_Type() const { return m_eventType; }
+    AudioType Get_Event_Type() const { return m_eventType; }
     int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
     bool Should_Play_Locally() const { return m_shouldPlayLocally; }
     float Get_Volume() const;
@@ -73,7 +73,7 @@ private:
     TimeOfDayType m_timeOfDay;
     Coord3D m_positionOfAudio;
     ObjectID m_objectID;
-    AudioEventType m_eventType;
+    AudioType m_eventType;
     bool m_shouldFade;
     bool m_isLogical;
     bool m_shouldPlayLocally;

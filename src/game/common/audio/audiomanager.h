@@ -50,11 +50,6 @@ enum AudioAffect
 };
 DEFINE_ENUMERATION_BITWISE_OPERATORS(AudioAffect);
 
-enum AudioType
-{
-    AUDIOTYPE_UNK,
-};
-
 enum CachedVarsType
 {
     CACHED_START,

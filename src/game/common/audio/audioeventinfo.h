@@ -31,7 +31,7 @@
 #include "mempoolobj.h"
 #include <vector>
 
-enum AudioEventType : int32_t
+enum AudioType : int32_t
 {
     EVENT_MUSIC,
     EVENT_SPEECH,
@@ -58,7 +58,7 @@ public:
     virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }
 
     const AsciiString &Get_Event_Name() const { return m_eventName; }
-    AudioEventType Get_Type() const { return m_type; }
+    AudioType Get_Type() const { return m_type; }
     float Get_Volume() const { return m_volume; }
     int Get_Control() const { return m_control; }
 
@@ -77,7 +77,7 @@ protected:
     int m_limit;
     int m_loopCount;
     int m_priority;
-    AudioEventType m_type;
+    AudioType m_type;
     int m_control;
     std::vector<AsciiString> m_soundsMorning;
     std::vector<AsciiString> m_sounds;

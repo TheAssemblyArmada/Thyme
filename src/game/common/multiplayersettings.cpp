@@ -1,66 +1,54 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MULTIPLAYERSETTINGS.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Multiplayer setting handling class.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Multiplayer settings handling class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "multiplayersettings.h"
 #include "gamemath.h"
 
 using GameMath::Floor;
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+MultiplayerSettings *&g_theMultiplayerSettings = Make_Global<MultiplayerSettings *>(0x00A2BE58);
+#else
 MultiplayerSettings *g_theMultiplayerSettings = nullptr;
 #endif
 
 FieldParse MultiplayerColorDefinition::s_colorFieldParsetable[] = {
-    { "TooltipName", &INI::Parse_AsciiString, nullptr, offsetof(MultiplayerColorDefinition, m_tooltipName) },
-    { "RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue) },
-    { "RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue) },
-    { nullptr, nullptr, nullptr, 0 }
+    {"TooltipName", &INI::Parse_AsciiString, nullptr, offsetof(MultiplayerColorDefinition, m_tooltipName)},
+    {"RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue)},
+    {"RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue)},
+    {nullptr, nullptr, nullptr, 0}
 };
 
 void MultiplayerColorDefinition::Set_Color(RGBColor rgb)
 {
-    m_color =
-        (int)Floor(rgb.blue * 255.0f) |
-        ((int)Floor(rgb.green * 255.0f) << 8) |
-        ((int)Floor(rgb.red * 255.0f) << 16) |
-        0xFF000000;
+    m_color = (int)Floor(rgb.blue * 255.0f) | ((int)Floor(rgb.green * 255.0f) << 8) | ((int)Floor(rgb.red * 255.0f) << 16)
+        | 0xFF000000;
 }
 
 void MultiplayerColorDefinition::Set_Night_Color(RGBColor rgb)
 {
-    m_nightColor =
-        (int)Floor(rgb.blue * 255.0f) |
-        ((int)Floor(rgb.green * 255.0f) << 8) |
-        ((int)Floor(rgb.red * 255.0f) << 16) |
-        0xFF000000;
+    m_nightColor = (int)Floor(rgb.blue * 255.0f) | ((int)Floor(rgb.green * 255.0f) << 8)
+        | ((int)Floor(rgb.red * 255.0f) << 16) | 0xFF000000;
 }
 
 void MultiplayerColorDefinition::Parse_Color_Definition(INI *ini)
 {
     AsciiString token = ini->Get_Next_Token();
     MultiplayerColorDefinition *def = g_theMultiplayerSettings->Find_Color_Definition(token);
-    
-    if ( def == nullptr ) {
+
+    if (def == nullptr) {
         def = g_theMultiplayerSettings->New_Color_Definition(token);
     }
 
@@ -86,7 +74,6 @@ MultiplayerSettings::MultiplayerSettings() :
     m_startingMoney(),
     m_moneyDefault(false)
 {
-
 }
 
 MultiplayerColorDefinition *MultiplayerSettings::Find_Color_Definition(AsciiString name)

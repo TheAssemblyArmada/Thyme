@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: FILE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Base class for file IO.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Base class for file IO.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef FILE_H
@@ -32,19 +24,20 @@
 
 struct FileInfo
 {
-    int FileSizeHigh;
-    int FileSizeLow;
-    int WriteTimeHigh;
-    int WriteTimeLow;
+    int file_size_high;
+    int file_size_low;
+    int write_time_high;
+    int write_time_low;
 };
 
 class File : public MemoryPoolObject
 {
 public:
-    enum SeekMode {
-        START   = 0,
+    enum SeekMode
+    {
+        START = 0,
         CURRENT = 1,
-        END     = 2,
+        END = 2,
     };
 
     enum FileMode
@@ -58,9 +51,6 @@ public:
         BINARY = 0x40,
         STREAMING = 0x100,
     };
-
-protected:
-    File();
 
 public:
     virtual ~File();
@@ -81,16 +71,18 @@ public:
     virtual void *Read_All_And_Close() = 0;
     virtual File *Convert_To_RAM() = 0;
 
-    AsciiString &Get_File_Name() { return FileName; }
-    int Get_File_Mode() { return OpenMode; }
-    void Set_Del_On_Close(bool del) { DeleteOnClose = del; }
+    AsciiString &Get_File_Name() { return m_filename; }
+    int Get_File_Mode() { return m_openMode; }
+    void Set_Del_On_Close(bool del) { m_deleteOnClose = del; }
 
 protected:
+    File() : m_filename("<no file>"), m_openMode(0), m_access(false), m_deleteOnClose(false) {}
 
-    AsciiString FileName;
-    int OpenMode;
-    bool Access;
-    bool DeleteOnClose;
+protected:
+    AsciiString m_filename;
+    int m_openMode;
+    bool m_access;
+    bool m_deleteOnClose;
 };
 
 #endif // _FILE_H

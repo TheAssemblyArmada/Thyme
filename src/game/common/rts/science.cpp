@@ -1,29 +1,23 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: SCIENCE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Handles abilities granted by gaining experience points.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Handles abilities granted by gaining experience points.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "science.h"
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+ScienceStore *&g_theScienceStore = Make_Global<ScienceStore *>(0x00A2B978);
+#else
 ScienceStore *g_theScienceStore = nullptr;
 #endif
 
@@ -46,17 +40,16 @@ ScienceInfo::ScienceInfo() :
     m_purchaseCost(0),
     m_isGrantable(true)
 {
-
 }
 
 void ScienceStore::Reset()
 {
-    for ( auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it ) {
-        if ( *it != nullptr ) {
-            *it = reinterpret_cast<ScienceInfo*>((*it)->Delete_Overrides());
+    for (auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it) {
+        if (*it != nullptr) {
+            *it = reinterpret_cast<ScienceInfo *>((*it)->Delete_Overrides());
         }
 
-        if ( *it == nullptr ) {
+        if (*it == nullptr) {
             m_infoVec.erase(it);
         }
     }

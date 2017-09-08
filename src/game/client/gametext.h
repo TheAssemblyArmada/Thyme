@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMETEXT.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: String file handler.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief String file handler.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef GAMETEXT_H
@@ -28,9 +20,12 @@
 
 #include "asciistring.h"
 #include "file.h"
-#include "hooker.h"
 #include "subsysteminterface.h"
 #include "unicodestring.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 // This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
 enum LanguageID : int32_t
@@ -110,15 +105,16 @@ public:
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();
-
+#ifndef THYME_STANDALONE
     static void Hook_Me();
+#endif
 private:
     void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len);
     void Translate_Copy(char16_t *out, char *in);
     void Remove_Leading_And_Trailing(char *buffer);
     void Strip_Spaces(char16_t *buffer);
     void Reverse_Word(char *start, char *end);
-    char Read_Char(File* file);
+    char Read_Char(File *file);
     bool Read_Line(char *buffer, int length, File *file);
     bool Get_String_Count(const char *filename, int &count);
     bool Get_CSF_Info(const char *filename);
@@ -148,12 +144,16 @@ private:
     std::vector<AsciiString> m_stringVector;
 };
 
-#define g_theGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
-// extern GameTextInterface *g_theGameText;
+#ifndef THYME_STANDALONE
+//#define g_theGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
+extern GameTextInterface *&g_theGameText;
 inline void GameTextManager::Hook_Me()
 {
     Hook_Function(0x00418320, &Create_Game_Text_Interface);
     Hook_Function(0x0041A020, &Compare_LUT);
 }
+#else
+extern GameTextInterface *g_theGameText;
+#endif
 
 #endif // _GAMETEXT_H

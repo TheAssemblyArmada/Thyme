@@ -36,6 +36,10 @@
 #include <unordered_map>
 #endif
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
 enum AudioAffect
 {
     AUDIOAFFECT_MUSIC = 1 << 0,
@@ -216,10 +220,10 @@ private:
     static const char *s_speakerTypes[];
 };
 
-#ifdef THYME_STANDALONE
-extern AudioManager *g_theAudio
+#ifndef THYME_STANDALONE
+extern AudioManager *&g_theAudio;
 #else
-#define g_theAudio (Make_Global<AudioManager *>(0x00A29B6C))
+extern AudioManager *g_theAudio;
 #endif
 
 #endif // AUDIOMANAGER_H

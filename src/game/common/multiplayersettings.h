@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MULTIPLAYERSETTINGS.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Multiplayer setting handling class.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Multiplayer settings handling class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MULTIPLAYERSETTINGS_H
@@ -47,6 +39,7 @@ public:
     void Set_Night_Color(RGBColor rgb);
 
     static void Parse_Color_Definition(INI *ini);
+
 private:
     AsciiString m_tooltipName;
     RGBColor m_rgbValue;
@@ -59,17 +52,16 @@ private:
 
 inline MultiplayerColorDefinition::MultiplayerColorDefinition() :
     m_tooltipName(),
-    m_rgbValue{ 1.0f, 1.0f, 1.0f },
+    m_rgbValue{1.0f, 1.0f, 1.0f},
     m_color(-1),
-    m_rgbNightValue{ 1.0f, 1.0f, 1.0f },
+    m_rgbNightValue{1.0f, 1.0f, 1.0f},
     m_nightColor(-1)
 {
-
 }
 
 inline MultiplayerColorDefinition &MultiplayerColorDefinition::operator=(MultiplayerColorDefinition &rval)
 {
-    if ( this != &rval ) {
+    if (this != &rval) {
         m_tooltipName = rval.m_tooltipName;
         m_rgbValue = rval.m_rgbValue;
         m_color = rval.m_color;
@@ -92,6 +84,7 @@ public:
 
     MultiplayerColorDefinition *Find_Color_Definition(AsciiString name);
     MultiplayerColorDefinition *New_Color_Definition(AsciiString name);
+
 private:
     int m_initialCreditsMin;
     int m_initialCreditsMax;
@@ -110,10 +103,11 @@ private:
     bool m_moneyDefault;
 };
 
-#ifdef THYME_STANDALONE
-extern MultiplayerSettings *g_theMultiplayerSettings;
+#ifndef THYME_STANDALONE
+extern MultiplayerSettings *&g_theMultiplayerSettings;
 #else
-#define g_theMultiplayerSettings (Make_Global<MultiplayerSettings*>(0x00A2BE58))
+#define g_theMultiplayerSettings (Make_Global<MultiplayerSettings *>(0x00A2BE58))
+extern MultiplayerSettings *g_theMultiplayerSettings;
 #endif
 
 #endif // MULTIPLAYERSETTINGS_H

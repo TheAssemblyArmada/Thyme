@@ -1,29 +1,27 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: VERSION.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Stores information about the current build.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Stores information about the current build.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "version.h"
 #include "gametext.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+Version *&g_theVersion = Make_Global<Version *>(0x00A29BA0);
+#else
+Version *g_theVersion = nullptr;
+#endif
 
 Version::Version() :
     m_major(1),
@@ -36,12 +34,10 @@ Version::Version() :
     m_buildTime(),
     m_useFullVersion(false)
 {
-
 }
 
-void Version::Set_Version(
-    int32_t maj, int32_t min, int32_t build, int32_t local_build, 
-    AsciiString location, AsciiString user, AsciiString time, AsciiString date ) 
+void Version::Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, AsciiString location,
+    AsciiString user, AsciiString time, AsciiString date)
 {
     m_major = maj;
     m_minor = min;
@@ -57,7 +53,7 @@ AsciiString Version::Get_Ascii_Version()
 {
     AsciiString version;
 
-    if ( m_localBuildNum != 0 ) {
+    if (m_localBuildNum != 0) {
         version.Format("%d.%d.%d.%d", m_major, m_minor, m_buildNum, m_localBuildNum);
     } else {
         version.Format("%d.%d.%d", m_major, m_minor, m_buildNum);
@@ -88,7 +84,7 @@ UnicodeString Version::Get_Full_Unicode_Version()
 {
     UnicodeString ret;
 
-    if ( m_localBuildNum != 0 ) {
+    if (m_localBuildNum != 0) {
         ret.Format(g_theGameText->Fetch("Version:Format4").Str(), m_major, m_minor, m_buildNum, m_localBuildNum);
     } else {
         ret.Format(g_theGameText->Fetch("Version:Format3").Str(), m_major, m_minor, m_buildNum);

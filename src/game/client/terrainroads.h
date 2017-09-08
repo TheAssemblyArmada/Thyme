@@ -1,40 +1,32 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: TERRAINROADS.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes for handling road and bridge properties.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes for handling road and bridge properties.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef TERRAINROADS_H
 #define TERRAINROADS_H
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 #include "color.h"
 #include "gametype.h"
 #include "ini.h"
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 enum BridgeTowerType
 {
@@ -50,10 +42,11 @@ class TerrainRoadType : public MemoryPoolObject
     friend class TerrainRoadCollection;
 
     IMPLEMENT_POOL(TerrainRoadType);
+
 public:
     TerrainRoadType();
     virtual ~TerrainRoadType() {}
-    
+
     // TODO more setters and getters as needed.
     AsciiString Get_Name() { return m_name; }
     AsciiString Get_Damaged_OCL(int dmg, int effect) { return m_damagedTransitionOCL[dmg][effect]; }
@@ -128,10 +121,10 @@ private:
     static FieldParse s_terrainBridgeFieldParseTable[];
 };
 
-#ifdef THYME_STANDALONE
-extern TerrainRoadCollection *g_theTerrainRoads;
+#ifndef THYME_STANDALONE
+extern TerrainRoadCollection *&g_theTerrainRoads;
 #else
-#define g_theTerrainRoads (Make_Global<TerrainRoadCollection*>(0x00A2BE4C))
+extern TerrainRoadCollection *g_theTerrainRoads;
 #endif
 
 #endif // TERRAINROADS_H

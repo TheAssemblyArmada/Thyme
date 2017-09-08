@@ -1,30 +1,24 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: TERRAINTYPES.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes for handling terrain textures and properties.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes for handling terrain textures and properties.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "terraintypes.h"
 #include "gamedebug.h"
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+TerrainTypeCollection *&g_theTerrainTypes = Make_Global<TerrainTypeCollection *>(0x00A2BE54);
+#else
 TerrainTypeCollection *g_theTerrainTypes = nullptr;
 #endif
 
@@ -91,12 +85,11 @@ TerrainType::TerrainType() :
     m_restrictConstruction(false),
     m_next(nullptr)
 {
-
 }
 
 TerrainTypeCollection::~TerrainTypeCollection()
 {
-    while ( m_terrainList != nullptr ) {
+    while (m_terrainList != nullptr) {
         TerrainType *next = m_terrainList->m_next;
         Delete_Instance(m_terrainList);
         m_terrainList = next;
@@ -108,8 +101,8 @@ TerrainType *TerrainTypeCollection::Find_Terrain(AsciiString name)
     TerrainType *retval = m_terrainList;
 
     // Find a TerrainType with a matching name and return it.
-    while ( retval != nullptr ) {
-        if ( strcmp(retval->m_name.Str(), name.Str()) == 0 ) {
+    while (retval != nullptr) {
+        if (strcmp(retval->m_name.Str(), name.Str()) == 0) {
             break;
         }
 
@@ -124,7 +117,7 @@ TerrainType *TerrainTypeCollection::New_Terrain(AsciiString name)
     TerrainType *retval = new TerrainType;
     TerrainType *def = Find_Terrain("DefaultTerrain");
 
-    if ( def != nullptr ) {
+    if (def != nullptr) {
         *retval = *def;
     }
 
@@ -140,7 +133,7 @@ void TerrainTypeCollection::Parse_Terrain_Definition(INI *ini)
     AsciiString token = ini->Get_Next_Token();
     TerrainType *tt = g_theTerrainTypes->Find_Terrain(token);
 
-    if ( tt == nullptr ) {
+    if (tt == nullptr) {
         tt = g_theTerrainTypes->New_Terrain(token);
     }
 

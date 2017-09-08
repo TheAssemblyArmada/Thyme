@@ -328,7 +328,7 @@ bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, in
 
         if ( file->Seek(pos, START) == pos ) {
             if ( file->Read(Data, Size) == size ) {
-                FileName = file->Get_File_Name();
+                m_filename = file->Get_File_Name();
 
                 return true;
             }

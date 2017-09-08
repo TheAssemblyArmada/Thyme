@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMELOD.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Handles LOD level choices.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Handle LOD level choices.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef GAMELOD_H
@@ -28,8 +20,11 @@
 
 #include "always.h"
 #include "asciistring.h"
-#include "hooker.h"
 #include "ini.h"
+
+#ifndef THYME_STANALONE
+#include "hooker.h"
+#endif
 
 enum DynamicGameLODLevel : int32_t
 {
@@ -61,7 +56,7 @@ enum CPUType : int32_t
 
 enum GPUType : int32_t
 {
-    GPU_INVALID= -1,
+    GPU_INVALID = -1,
     GPU_UNKNOWN,
     GPU_V2,
     GPU_V3,
@@ -121,7 +116,7 @@ struct LODPreset
 {
     CPUType cpu_type;
     int mhz;
-    float score;    // Not actually sure what this is, some kind of benchmark score?
+    float score; // Not actually sure what this is, some kind of benchmark score?
     GPUType video_type;
     int video_mem;
 };
@@ -164,6 +159,7 @@ public:
     static void Parse_LOD_Preset(INI *ini);
     static void Parse_Bench_Profiles(INI *ini);
     static void Parse_Low_MHz(INI *ini);
+
 private:
     enum
     {
@@ -205,7 +201,11 @@ private:
     static const char *s_gpuNames[];
 };
 
-#define g_theGameLODManager (Make_Global<GameLODManager*>(0x00A2B924))
-//extern GameLODManager *g_theGameLODManager;
+#ifndef THYME_STANALONE
+//#define g_theGameLODManager (Make_Global<GameLODManager*>(0x00A2B924))
+extern GameLODManager *&g_theGameLODManager;
+#else
+extern GameLODManager *g_theGameLODManager;
+#endif
 
 #endif // GAMELOD_H

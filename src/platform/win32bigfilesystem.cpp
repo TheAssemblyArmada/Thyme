@@ -109,9 +109,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         file_size = be32toh(file_size);
         file_pos = be32toh(file_pos);
 
-        info->Size = file_size;
-        info->Position = file_pos;
-        info->ArchiveName = filename;
+        info->size = file_size;
+        info->position = file_pos;
+        info->archive_name = filename;
 
         int strlen = 0;
         char *putp = namebuf;
@@ -141,8 +141,8 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 
         // Store the file name in the info struct and then null first char so we
         // can recover the rest of the path.
-        info->FileName = &namebuf[name_start + 1];
-        info->FileName.To_Lower();
+        info->file_name = &namebuf[name_start + 1];
+        info->file_name.To_Lower();
         //DEBUG_LOG("Base name is '%s'.\n", &namebuf[name_start + 1]);
 
         namebuf[name_start + 1] = '\0';
@@ -150,7 +150,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         //DEBUG_LOG("Path is '%s'.\n", namebuf);
 
         AsciiString file_path = namebuf;
-        file_path += info->FileName;
+        file_path += info->file_name;
         big->Add_File(namebuf, info);
     }
 
@@ -163,9 +163,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 
 void Win32BIGFileSystem::Close_Archive_File(const char *filename)
 {
-    auto it = ArchiveFiles.find(filename);
+    auto it = m_archiveFiles.find(filename);
 
-    if ( it != ArchiveFiles.end() ) {
+    if ( it != m_archiveFiles.end() ) {
         // If we are removing the music big file, set audio engine accordingly
         if ( strcasecmp(filename, "Music.Big") == 0 ) {
             DEBUG_LOG("Something is supposed to happen to audio engine here.\n");
@@ -176,7 +176,7 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
             delete it->second;
         }
 
-        ArchiveFiles.erase(it);
+        m_archiveFiles.erase(it);
     }
 }
 
@@ -191,7 +191,7 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(AsciiString dir, AsciiString fil
 
         if ( arch != nullptr ) {
             Load_Into_Dir_Tree(arch, *it, read_subdirs);
-            ArchiveFiles[*it] = arch;
+            m_archiveFiles[*it] = arch;
         }
     }
 }

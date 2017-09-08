@@ -27,15 +27,25 @@
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
 #include "hooker.h"
+HWND &g_applicationHWnd = Make_Global<HWND>(0x00A27B08);
+unsigned &g_theMessageTime = Make_Global<unsigned>(0x00A27B14);
 
 // Some globals, replace exe versions with own once all code that uses them is implemented.
-#define GameIsWindowed (Make_Global<bool>(0x00A27B0C))
-#define GameNotFullscreen (Make_Global<bool>(0x009C0ACC))
-#define CreatingWindow (Make_Global<bool>(0x00A27B1C))
-#define SplashImage (Make_Global<HGDIOBJ>(0x00A27B20))
-#define ApplicationHInstance (Make_Global<HINSTANCE>(0x00A27B04))
+bool &g_gameIsWindowed = Make_Global<bool>(0x00A27B0C);
+bool &g_gameNotFullscreen = Make_Global<bool>(0x009C0ACC);
+bool &g_creatingWindow = Make_Global<bool>(0x00A27B1C);
+HGDIOBJ &g_splashImage = Make_Global<HGDIOBJ>(0x00A27B20);
+HINSTANCE &g_applicationHInstance = Make_Global<HINSTANCE>(0x00A27B04);
 #else
-
+#ifdef PLATFORM_WINDOWS
+HWND g_applicationHWnd;
+unsigned g_theMessageTime = 0;
+bool g_gameIsWindowed;
+bool g_gameNotFullscreen;
+bool g_creatingWindow;
+HGDIOBJ g_splashImage;
+HINSTANCE g_applicationHInstance;
+#endif
 #endif
 
 // Some Critical Sections to dole out to the functions that can use them.
@@ -182,7 +192,7 @@ void Check_Windowed(int argc, char *argv[])
         // DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
 
         if (strcasecmp(argv[i], "-win") == 0) {
-            GameIsWindowed = true;
+            g_gameIsWindowed = true;
         }
 
         if (strcasecmp(argv[i], "-noBorder") == 0) {
@@ -222,8 +232,8 @@ void Create_Window()
         show_cmd = SW_SHOWDEFAULT;
     }
 
-    SplashImage = LoadImageA(app_hinstance, "Install_Final.bmp", 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);
-    bool is_windowed = GameIsWindowed;
+    g_splashImage = LoadImageA(app_hinstance, "Install_Final.bmp", 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);
+    bool is_windowed = g_gameIsWindowed;
 
     WndClass.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
     WndClass.lpfnWndProc = Make_StdCall_Ptr<LRESULT, HWND, UINT, WPARAM, LPARAM>(0x00401000); // original WinProc
@@ -255,7 +265,7 @@ void Create_Window()
 
     AdjustWindowRect(&Rect, style, 0);
 
-    CreatingWindow = true;
+    g_creatingWindow = true;
 
     // 0x90C80000
     // WS_POPUP | WS_VISIBLE | WS_BORDER | WS_EX_LAYOUTRTL | WS_EX_LAYERED
@@ -295,18 +305,18 @@ void Create_Window()
     ShowWindow(app_hwnd, show_cmd);
     UpdateWindow(app_hwnd);
 
-    ApplicationHInstance = app_hinstance;
-    ApplicationHWnd = app_hwnd;
+    g_applicationHInstance = app_hinstance;
+    g_applicationHWnd = app_hwnd;
 
-    CreatingWindow = false;
+    g_creatingWindow = false;
 
     if (!is_windowed) {
-        GameNotFullscreen = false;
+        g_gameNotFullscreen = false;
     }
 
-    if (SplashImage) {
-        DeleteObject(SplashImage);
-        SplashImage = 0;
+    if (g_splashImage) {
+        DeleteObject(g_splashImage);
+        g_splashImage = 0;
     }
 #endif
 }

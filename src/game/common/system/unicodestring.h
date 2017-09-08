@@ -1,39 +1,26 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: UNICODESTRING.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: 
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief String class handing "wide" chars.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef UNICODESTRING_H
 #define UNICODESTRING_H
 
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
+#include "critsection.h"
 #include <wchar.h>
-
-#define g_unicodeStringCriticalSection (Make_Global<SimpleCriticalSectionClass*>(0x00A2A294))
 
 class AsciiString;
 
@@ -41,17 +28,18 @@ class UnicodeString
 {
 public:
     friend class AsciiString;
-        
-    enum {
+
+    enum
+    {
         MAX_FORMAT_BUF_LEN = 2048,
         MAX_LEN = 32767,
     };
 
     struct UnicodeStringData
     {
-    #ifdef GAME_DEBUG_STRUCTS
+#ifdef GAME_DEBUG_STRUCTS
         wchar_t *debug_ptr;
-    #endif // GAME_DEBUG_STRUCTS
+#endif // GAME_DEBUG_STRUCTS
 
         uint16_t ref_count;
         uint16_t num_chars_allocated;
@@ -60,37 +48,61 @@ public:
         {
             // Actual string data is stored immediately after the UnicodeStringData header.
             // wchar_a to avoid strict aliasing issues on gcc/clang
-            return reinterpret_cast<wchar_a*>(&this[1]);
+            return reinterpret_cast<wchar_a *>(&this[1]);
         }
-
     };
 
-    UnicodeString();
+    UnicodeString() : m_data(nullptr) {}
     UnicodeString(const wchar_t *s);
     UnicodeString(char16_t const *s);
     UnicodeString(UnicodeString const &string);
-    //UnicodeString(AsciiString const &string);
+    // UnicodeString(AsciiString const &string);
     ~UnicodeString();
 
-    UnicodeString &operator=(const wchar_t *s) { Set(s); return *this; }
-    UnicodeString &operator=(char16_t const *s) { Set(s); return *this; }
-    UnicodeString &operator=(UnicodeString const &string) { Set(string); return *this; }
-    //UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
+    UnicodeString &operator=(const wchar_t *s)
+    {
+        Set(s);
+        return *this;
+    }
+    UnicodeString &operator=(char16_t const *s)
+    {
+        Set(s);
+        return *this;
+    }
+    UnicodeString &operator=(UnicodeString const &string)
+    {
+        Set(string);
+        return *this;
+    }
+    // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
-    UnicodeString &operator+=(wchar_t s) { Concat(s); return *this; }
-    UnicodeString &operator+=(const wchar_t *s) { Concat(s); return *this; }
-    UnicodeString &operator+=(UnicodeString const &s) { Concat(s); return *this; }
-    //UnicodeString &operator+=(AsciiString const &string);
+    UnicodeString &operator+=(wchar_t s)
+    {
+        Concat(s);
+        return *this;
+    }
+    UnicodeString &operator+=(const wchar_t *s)
+    {
+        Concat(s);
+        return *this;
+    }
+    UnicodeString &operator+=(UnicodeString const &s)
+    {
+        Concat(s);
+        return *this;
+    }
+    // UnicodeString &operator+=(AsciiString const &string);
 
-    operator const wchar_t*() { return Str(); }
+    operator const wchar_t *() { return Str(); }
 
-    //TODO
-    //wchar_t *operator[](int index) const { return m_data->Peek()[index]; }
+    // TODO
+    // wchar_t *operator[](int index) const { return m_data->Peek()[index]; }
 
     void Validate();
     wchar_t *Peek() const;
     void Release_Buffer();
-    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, const wchar_t *str_to_cpy = nullptr, const wchar_t *str_to_cat = nullptr);
+    void Ensure_Unique_Buffer_Of_Size(
+        int chars_needed, bool keep_data = false, const wchar_t *str_to_cpy = nullptr, const wchar_t *str_to_cat = nullptr);
     int Get_Length() const;
     void Clear();
     wchar_t Get_Char(int) const;
@@ -130,28 +142,67 @@ public:
 
 private:
     static wchar_t *Char16_To_WChar(wchar_t *dst, char16_t const *src);
-
-    // 
     static UnicodeString const EmptyString;
 
-    // 
     UnicodeStringData *m_data;
 };
 
-inline bool operator==(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) == 0; }
-inline bool operator==(UnicodeString const &left, const wchar_t *right) { return left.Compare(right) == 0; }
-inline bool operator==(const wchar_t *left, UnicodeString const &right) { return right.Compare(left) == 0; }
+inline bool operator==(UnicodeString const &left, UnicodeString const &right)
+{
+    return left.Compare(right) == 0;
+}
+inline bool operator==(UnicodeString const &left, const wchar_t *right)
+{
+    return left.Compare(right) == 0;
+}
+inline bool operator==(const wchar_t *left, UnicodeString const &right)
+{
+    return right.Compare(left) == 0;
+}
 
-inline bool operator!=(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) != 0; }
-inline bool operator!=(UnicodeString const &left, const wchar_t *right) { return left.Compare(right) != 0; }
-inline bool operator!=(const wchar_t *left, UnicodeString const &right) { return right.Compare(left) != 0; }
+inline bool operator!=(UnicodeString const &left, UnicodeString const &right)
+{
+    return left.Compare(right) != 0;
+}
+inline bool operator!=(UnicodeString const &left, const wchar_t *right)
+{
+    return left.Compare(right) != 0;
+}
+inline bool operator!=(const wchar_t *left, UnicodeString const &right)
+{
+    return right.Compare(left) != 0;
+}
 
-inline bool operator<(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) < 0; }
-inline bool operator<(UnicodeString const &left, const wchar_t *right) { return left.Compare(right) < 0; }
-inline bool operator<(const wchar_t *left, UnicodeString const &right) { return right.Compare(left) < 0; }
+inline bool operator<(UnicodeString const &left, UnicodeString const &right)
+{
+    return left.Compare(right) < 0;
+}
+inline bool operator<(UnicodeString const &left, const wchar_t *right)
+{
+    return left.Compare(right) < 0;
+}
+inline bool operator<(const wchar_t *left, UnicodeString const &right)
+{
+    return right.Compare(left) < 0;
+}
 
-inline bool operator>(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) > 0; }
-inline bool operator>(UnicodeString const &left, const wchar_t *right) { return left.Compare(right) > 0; }
-inline bool operator>(const wchar_t *left, UnicodeString const &right) { return right.Compare(left) > 0; }
+inline bool operator>(UnicodeString const &left, UnicodeString const &right)
+{
+    return left.Compare(right) > 0;
+}
+inline bool operator>(UnicodeString const &left, const wchar_t *right)
+{
+    return left.Compare(right) > 0;
+}
+inline bool operator>(const wchar_t *left, UnicodeString const &right)
+{
+    return right.Compare(left) > 0;
+}
+
+#ifndef THYME_STANDALONE
+extern SimpleCriticalSectionClass *&g_unicodeStringCriticalSection;
+#else
+extern SimpleCriticalSectionClass *g_unicodeStringCriticalSection;
+#endif
 
 #endif // _UNICODESTRING_H

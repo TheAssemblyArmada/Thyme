@@ -27,22 +27,18 @@
 #ifndef BASE_ENDIANTYPE_H
 #define BASE_ENDIANTYPE_H
 
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
-#include	"bittype.h"
+#include "bittype.h"
 
 //
 // If building for Linux...
 //
-#if defined(PLATFORM_LINUX)
+#if defined(__linux__)
 #include	<endian.h>
 
 //
 // If building for Mac OS X...
 //
-#elif defined(PLATFORM_OSX)
+#elif defined(__APPLE__) && defined(__MACH__)
 #include	<libkern/OSByteOrder.h>
 
 #define htobe16(x) OSSwapHostToBigInt16(x)
@@ -84,10 +80,8 @@
 //
 // If building for Windows...
 //
-#elif defined(PLATFORM_WINDOWS)
+#elif defined(_WIN32)
 #include	<stdlib.h>
-
-#if defined(SYSTEM_LITTLE_ENDIAN)
     #define htobe16(x) _byteswap_ushort(x)
     #define htole16(x) (x)
     #define be16toh(x) _byteswap_ushort(x)
@@ -102,19 +96,15 @@
     #define htole64(x) (x)
     #define be64toh(x) _byteswap_uint64(x)
     #define le64toh(x) (x)
-#endif // SYSTEM_LITTLE_ENDIAN
-
-//
 // Unsupported platform, report this to the compiler.
-//
 #else
-COMPILER_ERROR("platform not supported");
+#error platform not supported
 #endif 	//PLATFORM_LINUX || PLATFORM_OSX || PLATFORM_WINDOWS
 
 //
 // Byte access macros for different word sizes for Little Endian.
 //
-#if defined(SYSTEM_LITTLE_ENDIAN)
+#if defined(_WIN32) || __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     #define GETBYTE32(x, n)    (*((uint8*)&(x)+n))
     #define GETSBYTE32(x, n)   (*((sint8*)&(x)+n))
     #define GETBYTE16(x, n)    (*((uint8*)&(x)+n))
@@ -125,10 +115,8 @@ COMPILER_ERROR("platform not supported");
     #define htolef(x)           (x)
     #define leftoh(x)           (x)
 
-//
 // Byte access macros for different word sizes for Big Endian.
-//
-#elif defined(SYSTEM_BIG_ENDIAN)
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     #define GETBYTE32(x, n)	   (*((uint8*)&(x)+(3-n)))
     #define GETSBYTE32(x, n)   (*((sint8*)&(x)+(3-n)))
     #define GETBYTE16(x, n)	   (*((uint8*)&(x)+(1-n)))
@@ -142,7 +130,7 @@ COMPILER_ERROR("platform not supported");
 // Unsupported byte order, report this to the compiler.
 //
 #else
-COMPILER_ERROR("byte order not supported");
+#error byte order not supported
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

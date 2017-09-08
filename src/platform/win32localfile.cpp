@@ -73,29 +73,29 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
     int openmode = O_RDONLY;
 
-    if ( (OpenMode & CREATE) != 0 ) {
+    if ( (m_openMode & CREATE) != 0 ) {
         openmode |= O_CREAT;
     }
 
-    if ( (OpenMode & TRUNCATE) != 0 ) {
+    if ( (m_openMode & TRUNCATE) != 0 ) {
         openmode |= O_TRUNC;
     }
 
-    if ( (OpenMode & APPEND) != 0 ) {
+    if ( (m_openMode & APPEND) != 0 ) {
         openmode |= O_APPEND;
     }
 
-    if ( (OpenMode & TEXT) != 0 ) {
+    if ( (m_openMode & TEXT) != 0 ) {
         openmode |= O_TEXT;
     }
 
-    if ( (OpenMode & BINARY) != 0 ) {
+    if ( (m_openMode & BINARY) != 0 ) {
         openmode |= O_BINARY;
     }
 
-    if ( (OpenMode & (READ | WRITE)) == (READ | WRITE) ) {
+    if ( (m_openMode & (READ | WRITE)) == (READ | WRITE) ) {
         openmode |= O_RDWR;
-    } else if ( (OpenMode & 2) != 0 ) {
+    } else if ( (m_openMode & 2) != 0 ) {
         openmode |= O_WRONLY | O_CREAT;
     }
 
@@ -107,7 +107,7 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
     ++TotalOpen;
 
-    if ( (OpenMode & APPEND) != 0 && Seek(0, END) < 0 ) {
+    if ( (m_openMode & APPEND) != 0 && Seek(0, END) < 0 ) {
         Close();
 
         return false;
@@ -118,7 +118,7 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
 int Win32LocalFile::Read(void *dst, int bytes)
 {
-    if ( !Access ) {
+    if ( !m_access ) {
         return -1;
     }
 
@@ -133,7 +133,7 @@ int Win32LocalFile::Read(void *dst, int bytes)
 
 int Win32LocalFile::Write(void const *src, int bytes)
 {
-    if ( !Access || src == nullptr ) {
+    if ( !m_access || src == nullptr ) {
         return -1;
     }
 
@@ -156,7 +156,7 @@ int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 
 void Win32LocalFile::Next_Line(char *dst, int bytes)
 {
-    DEBUG_LOG("Seeking getting next line from Win32LocalFile %s.\n", FileName.Str());
+    DEBUG_LOG("Seeking getting next line from Win32LocalFile %s.\n", m_filename.Str());
 
     int i;
 
@@ -180,7 +180,7 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
 
 bool Win32LocalFile::Scan_Int(int &integer)
 {
-    DEBUG_LOG("Scanning Int from Win32LocalFile %s.\n", FileName.Str());
+    DEBUG_LOG("Scanning Int from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;
     AsciiString number;
 
@@ -221,7 +221,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
 
 bool Win32LocalFile::Scan_Real(float &real)
 {
-    DEBUG_LOG("Scanning Real from Win32LocalFile %s.\n", FileName.Str());
+    DEBUG_LOG("Scanning Real from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;
     AsciiString number;
 
@@ -268,7 +268,7 @@ bool Win32LocalFile::Scan_Real(float &real)
 
 bool Win32LocalFile::Scan_String(AsciiString &string)
 {
-    DEBUG_LOG("Scanning String from Win32LocalFile %s.\n", FileName.Str());
+    DEBUG_LOG("Scanning String from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;
     string.Clear();
 

@@ -18,7 +18,9 @@
 #include "soundmanager.h"
 #include "minmax.h"
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+AudioManager *&g_theAudio = Make_Global<AudioManager *>(0x00A29B6C);
+#else
 AudioManager *g_theAudio = nullptr;
 #endif
 

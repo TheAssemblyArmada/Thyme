@@ -34,9 +34,9 @@ bool Win32BIGFile::Get_File_Info(AsciiString const &name, FileInfo *info)
         return false;
     }
 
-    g_theLocalFileSystem->Get_File_Info(BackingFile->Get_File_Name(), info);
-    info->FileSizeHigh = 0;
-    info->FileSizeLow = arch_info->Size;
+    g_theLocalFileSystem->Get_File_Info(m_backingFile->Get_File_Name(), info);
+    info->file_size_high = 0;
+    info->file_size_low = arch_info->size;
 
     return true;
 }
@@ -60,7 +60,7 @@ File *Win32BIGFile::Open_File(const char *filename, int mode)
 
     file->Set_Del_On_Close(true);
 
-    if ( !file->Open_From_Archive(BackingFile, arch_info->FileName, arch_info->Position, arch_info->Size) ) {
+    if ( !file->Open_From_Archive(m_backingFile, arch_info->file_name, arch_info->position, arch_info->size) ) {
         file->Close();
 
         return nullptr;

@@ -153,10 +153,10 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
         return false;
     }
 
-    info->WriteTimeHigh = data.ftLastWriteTime.dwHighDateTime;
-    info->WriteTimeLow = data.ftLastWriteTime.dwLowDateTime;
-    info->FileSizeHigh = data.nFileSizeHigh;
-    info->FileSizeLow = data.nFileSizeLow;
+    info->write_time_high = data.ftLastWriteTime.dwHighDateTime;
+    info->write_time_low = data.ftLastWriteTime.dwLowDateTime;
+    info->file_size_high = data.nFileSizeHigh;
+    info->file_size_low = data.nFileSizeLow;
 
     FindClose(hndl);
 

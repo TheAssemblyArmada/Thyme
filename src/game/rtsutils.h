@@ -26,6 +26,7 @@
 #ifndef RTSUTILS_H
 #define RTSUTILS_H
 
+#include "always.h"
 #include "endiantype.h"
 
 namespace rts {

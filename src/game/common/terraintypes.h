@@ -1,40 +1,32 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: TERRAINTYPES.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Classes for handling terrain textures and properties.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Classes for handling terrain textures and properties.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef TERRAINTYPES_H
 #define TERRAINTYPES_H
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 #include "always.h"
 #include "asciistring.h"
 #include "ini.h"
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 enum TerrainClass : int32_t
 {
@@ -83,6 +75,7 @@ class TerrainType : public MemoryPoolObject
 {
     IMPLEMENT_POOL(TerrainType);
     friend class TerrainTypeCollection;
+
 public:
     TerrainType();
     virtual ~TerrainType() {}
@@ -103,24 +96,25 @@ public:
     virtual ~TerrainTypeCollection();
 
     // SubsystemInterface implementations
-    virtual void Init() override {};
-    virtual void Reset() override {};
-    virtual void Update() override {};
+    virtual void Init() override{};
+    virtual void Reset() override{};
+    virtual void Update() override{};
 
     TerrainType *Find_Terrain(AsciiString name);
     TerrainType *New_Terrain(AsciiString name);
 
     static void Parse_Terrain_Definition(INI *ini);
+
 private:
     TerrainType *m_terrainList;
 
     static FieldParse s_terrainTypeParseTable[];
 };
 
-#ifdef THYME_STANDALONE
-extern TerrainTypeCollection *g_theTerrainTypes;
+#ifndef THYME_STANDALONE
+extern TerrainTypeCollection *&g_theTerrainTypes;
 #else
-#define g_theTerrainTypes (Make_Global<TerrainTypeCollection*>(0x00A2BE54))
+extern TerrainTypeCollection *g_theTerrainTypes;
 #endif
 
 #endif // TERRAINTYPES_H

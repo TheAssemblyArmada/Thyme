@@ -32,7 +32,7 @@ void *LocalFile::Read_All_And_Close()
     uint8_t *data;
 
     if ( size > 0 ) {
-        DEBUG_LOG("Reading %s and closing.\n", FileName.Str());
+        DEBUG_LOG("Reading %s and closing.\n", m_filename.Str());
         data = new uint8_t[size];
 
         Read(data, size);
@@ -48,11 +48,11 @@ void *LocalFile::Read_All_And_Close()
 
 File *LocalFile::Convert_To_RAM()
 {
-    DEBUG_LOG("Converting %s to RAMFile.\n", FileName.Str());
+    DEBUG_LOG("Converting %s to RAMFile.\n", m_filename.Str());
     RAMFile *ramfile = new RAMFile;
 
     if ( ramfile->Open(this) ) {
-        if ( DeleteOnClose ) {
+        if ( m_deleteOnClose ) {
             ramfile->Set_Del_On_Close(true);
             Close();
 

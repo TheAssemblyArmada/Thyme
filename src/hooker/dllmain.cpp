@@ -61,7 +61,7 @@
 void Setup_Hooks()
 {
     // Hook WinMain
-    Hook_StdCall_Function((Make_StdCall_Ptr<int, HINSTANCE, HINSTANCE, LPSTR, int>(0x00401700)), Main_Func);
+    Hook_Function(0x00401700, Main_Func);
 
 	// Code that checks the launcher is running, launcher does CD check.
     Hook_Function(0x00412420, CopyProtect::checkForMessage);
@@ -73,7 +73,6 @@ void Setup_Hooks()
     // Replace memory intialisation
     Hook_Function(0x00414510, Init_Memory_Manager);
     Hook_Function(0x004148C0, Init_Memory_Manager_Pre_Main);
-
 
     // Replace memory allocation operators
     Hook_Function(0x00414450, New_New);    // operator new
@@ -97,57 +96,30 @@ void Setup_Hooks()
     
     // Replace File functions
     FileSystem::Hook_Me();
-    Hook_Method(0x007420F0, &Win32GameEngine::Create_Local_File_System_NV);
-    Hook_Method(0x00742150, &Win32GameEngine::Create_Archive_File_System_NV);
-    Hook_Method(0x0048F410, &ArchiveFileSystem::Get_File_List_From_Dir);
-    Hook_Method(0x0048F250, &ArchiveFileSystem::Get_Archive_Filename_For_File);
-    Hook_Method(0x0048F160, &ArchiveFileSystem::Get_File_Info);
+    ArchiveFileSystem::Hook_Me();
 
     // Replace AsciiString
     Hook_Method(0x0040D640, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
     Hook_Method(0x00415290, &AsciiString::Ensure_Unique_Buffer_Of_Size);
     Hook_Method(0x0040FB40, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
 
-    // Replace INI
+    Win32GameEngine::Hook_Me();
     INI::Hook_Me();
-
-    // Replace NameKeyGenerator
     NameKeyGenerator::Hook_Me();
-
-    // Replace GameTextManager
     GameTextManager::Hook_Me();
-
-    // Replace CommandList
     GameMessageList::Hook_Me();
     CommandList::Hook_Me();
-
-    // Replace RNG
     RandomValue::Hook_Me();
-
-    // Replace Command Line parser
     CommandLine::Hook_Me();
-
-    // Replace W3D file system
     W3DFileSystem::Hook_Me();
-
-    //Replace ChunkIO system
     ChunkSaveClass::Hook_Me();
     ChunkLoadClass::Hook_Me();
-
-    // Replace Targa
     TargaImage::Hook_Me();
-
-    // Some file transfer related functions
     FileTransfer::Hook_Me();
-
     GameState::Hook_Me();
-
     WeaponBonusSet::Hook_Me();
-
     GlobalData::Hook_Me();
-
     ThreadClass::Hook_Me();
-
     StringClass::Hook_Me();
 }
 

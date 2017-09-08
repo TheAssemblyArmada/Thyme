@@ -1,34 +1,22 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: SCIENCE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Handles abilities granted by gaining experience points.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Handles abilities granted by gaining experience points.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef SCIENCE_H
 #define SCIENCE_H
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 #include "always.h"
 #include "ini.h"
@@ -39,6 +27,10 @@
 #include "unicodestring.h"
 #include <vector>
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
 enum ScienceType : int32_t
 {
     SCIENCE_INVALID = -1,
@@ -48,6 +40,7 @@ enum ScienceType : int32_t
 class ScienceInfo : public Overridable
 {
     IMPLEMENT_POOL(ScienceInfo);
+
 public:
     ScienceInfo();
     virtual ~ScienceInfo() {}
@@ -76,13 +69,13 @@ public:
     virtual void Update() override {}
 
 private:
-    std::vector<ScienceInfo*> m_infoVec;
+    std::vector<ScienceInfo *> m_infoVec;
 };
 
-#ifdef THYME_STANDALONE
-extern ScienceStore *g_theScienceStore;
+#ifndef THYME_STANDALONE
+extern ScienceStore *&g_theScienceStore;
 #else
-#define g_theScienceStore (Make_Global<ScienceStore*>(0x00A2B978))
+extern ScienceStore *g_theScienceStore;
 #endif
 
 #endif // SCIENCE_H

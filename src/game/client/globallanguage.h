@@ -1,43 +1,36 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GLOBALLANGUAGE.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Handles font configurations for current language.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Handles font configurations for current language.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef GLOBALLANGUAGE_H
 #define GLOBALLANGUAGE_H
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 #include "asciistring.h"
 #include "ini.h"
 #include "subsysteminterface.h"
 #include <list>
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
 class FontDesc
 {
     friend class GlobalLanguage;
+
 public:
     FontDesc() : m_name("Arial Unicode MS"), m_pointSize(12), m_bold(false) {}
 
@@ -94,10 +87,10 @@ private:
     static FieldParse s_languageParseTable[];
 };
 
-#ifdef THYME_STANDALONE
-extern GlobalLanguage *g_theGlobalLanguage;
+#ifndef THYME_STANDALONE
+extern GlobalLanguage *&g_theGlobalLanguage;
 #else
-#define g_theGlobalLanguage (Make_Global<GlobalLanguage*>(0x00A2A6CC))
+extern GlobalLanguage *g_theGlobalLanguage;
 #endif
 
 #endif // GLOBALLANGUAGE_H

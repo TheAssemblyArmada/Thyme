@@ -1,37 +1,33 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMELOD.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Handles LOD level choices.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @Author OmniBlade
+ *
+ * @brief Handle LOD level choices.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "gamelod.h"
 #include "globaldata.h"
 #include "optionpreferences.h"
 #include <cstdio>
 
-// TODO when all references to original are reimplemented.
-//GameLODManager *g_theGameLODManager = nullptr;
+#ifndef THYME_STANALONE
+GameLODManager *&g_theGameLODManager = Make_Global<GameLODManager *>(0x00A2B924);
+#else
+GameLODManager *g_theGameLODManager = nullptr;
+#endif
 
 // TODO remove when function has been reimplemented.
 #define Test_Minimum_Requirements(chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score) \
-    Call_Function<void, GPUType*, CPUType*, int*, int*, float*, float*, float*>(0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
+    Call_Function<void, GPUType *, CPUType *, int *, int *, float *, float *, float *>( \
+        0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
 
 // The names and number of strings here correlates to the enums in gamelod.h
 const char *g_staticGameLODNames[] = { "Low", "Medium", "High", "Custom" };
@@ -82,7 +78,7 @@ GameLODManager::GameLODManager() :
     m_textureReductionFactor(0),
     m_reallyLowMHz(400)
 {
-    for ( int i = 0; i < STATLOD_COUNT; ++i ) {
+    for (int i = 0; i < STATLOD_COUNT; ++i) {
         m_staticLOD[i].minimum_fps = 0;
         m_staticLOD[i].minimum_cpu_fps = 0;
         m_staticLOD[i].sample_count_2D = 6;
@@ -107,7 +103,7 @@ GameLODManager::GameLODManager() :
         m_staticLOD[i].use_trees = true;
     }
 
-    for ( int i = 0; i < DYNLOD_COUNT; ++i ) {
+    for (int i = 0; i < DYNLOD_COUNT; ++i) {
         m_dynamicLOD[i].minimum_fps = 0;
         m_dynamicLOD[i].particle_skip_mask = 0;
         m_dynamicLOD[i].debris_skip_mask = 0;
@@ -116,8 +112,8 @@ GameLODManager::GameLODManager() :
         m_dynamicLOD[i].min_particle_skip_priority = 1;
     }
 
-    for ( int i = 0; i < STATLOD_COUNT - 1; ++i ) {
-        for ( int j = 0; j < 32; ++j ) {
+    for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
+        for (int j = 0; j < 32; ++j) {
             m_LODPresets[i][j].cpu_type = CPU_UNKNOWN;
             m_LODPresets[i][j].mhz = 1;
             m_LODPresets[i][j].score = 1.0f;
@@ -126,7 +122,7 @@ GameLODManager::GameLODManager() :
         }
     }
 
-    for ( int i = 0; i < 16; ++i ) {
+    for (int i = 0; i < 16; ++i) {
         m_benchProfiles[i].cpu_type = CPU_UNKNOWN;
         m_benchProfiles[i].mhz = 1;
         m_benchProfiles[i].integer_score = 1.0f;
@@ -134,7 +130,7 @@ GameLODManager::GameLODManager() :
         m_benchProfiles[i].memory_score = 1.0f;
     }
 
-    for ( int i = 0; i < STATLOD_COUNT - 1; ++i ) {
+    for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
         m_staticLODPresetCount[i] = 0;
     }
 }
@@ -150,20 +146,12 @@ void GameLODManager::Init()
     StaticGameLODLevel static_detail = (StaticGameLODLevel)opts.Get_Static_Game_Detail();
     m_idealStaticGameDetail = (StaticGameLODLevel)opts.Get_Ideal_Static_Game_Detail();
 
-    Test_Minimum_Requirements(
-        nullptr,
-        &m_cpuType,
-        &m_cpuMHz,
-        &m_physicalMem,
-        nullptr,
-        nullptr,
-        nullptr
-    );
+    Test_Minimum_Requirements(nullptr, &m_cpuType, &m_cpuMHz, &m_physicalMem, nullptr, nullptr, nullptr);
 
     // If physical memory is greater than 256MiB the test passes. Note that the test currently uses
     // GlobalMemoryStatus on windows and only stores the result in a 32bit int so this test can fail on
     // modern machines.
-    if ( (float)m_physicalMem / 2.684E8f >= 0.94f ) {
+    if ((float)m_physicalMem / 2.684E8f >= 0.94f) {
         m_didMemPass = true;
     }
 
@@ -171,32 +159,23 @@ void GameLODManager::Init()
     // This section benchmarks the system to try and work out the best lod level to use against
     // some existing presets. Mac version does not have the benchmark code and does not
     // bother doing this.
-    if ( (m_idealStaticGameDetail == STATLOD_INVALID && m_cpuType == CPU_UNKNOWN)
-        || g_theWriteableGlobalData->m_writeBenchMarkFile ) {
+    if ((m_idealStaticGameDetail == STATLOD_INVALID && m_cpuType == CPU_UNKNOWN)
+        || g_theWriteableGlobalData->m_writeBenchMarkFile) {
         Test_Minimum_Requirements(
-            nullptr,
-            nullptr,
-            nullptr,
-            nullptr,
-            &m_integerScore,
-            &m_floatingPointScore,
-            &m_memoryScore
-        );
+            nullptr, nullptr, nullptr, nullptr, &m_integerScore, &m_floatingPointScore, &m_memoryScore);
 
-        if ( g_theWriteableGlobalData->m_writeBenchMarkFile ) {
+        if (g_theWriteableGlobalData->m_writeBenchMarkFile) {
             FILE *bmfile = fopen("Benchmark.txt", "w");
 
             // Print a benchmark entry to the file we just opened.
-            if ( bmfile != nullptr ) {
-                fprintf(
-                    bmfile,
+            if (bmfile != nullptr) {
+                fprintf(bmfile,
                     "BenchProfile = %s %d %f %f %f",
                     s_cpuNames[m_cpuType],
                     m_cpuMHz,
                     m_integerScore,
                     m_floatingPointScore,
-                    m_memoryScore
-                );
+                    m_memoryScore);
 
                 fclose(bmfile);
             }
@@ -204,28 +183,28 @@ void GameLODManager::Init()
 
         m_overallScore = m_integerScore + m_floatingPointScore;
 
-        for ( int i = 0; i < m_benchProfileCount; ++i ) {
-            if ( m_integerScore / m_benchProfiles[i].integer_score >= 0.94f
+        for (int i = 0; i < m_benchProfileCount; ++i) {
+            if (m_integerScore / m_benchProfiles[i].integer_score >= 0.94f
                 && m_floatingPointScore / m_benchProfiles[i].floating_point_score >= 0.94f
-                && m_memoryScore / m_benchProfiles[i].memory_score >= 0.94f ) {
+                && m_memoryScore / m_benchProfiles[i].memory_score >= 0.94f) {
                 int j;
 
-                for ( j = STATLOD_HIGH; j >= STATLOD_LOW; --j ) {
+                for (j = STATLOD_HIGH; j >= STATLOD_LOW; --j) {
                     int k;
 
-                    for ( k = 0; k < m_staticLODPresetCount[j]; ++k ) {
-                        if ( m_benchProfiles[i].cpu_type == m_LODPresets[j][k].cpu_type
-                            && (double)m_benchProfiles[i].mhz / (double)m_LODPresets[j][k].mhz > 0.94 ) {
+                    for (k = 0; k < m_staticLODPresetCount[j]; ++k) {
+                        if (m_benchProfiles[i].cpu_type == m_LODPresets[j][k].cpu_type
+                            && (double)m_benchProfiles[i].mhz / (double)m_LODPresets[j][k].mhz > 0.94) {
                             break;
                         }
                     }
 
-                    if ( k < m_staticLODPresetCount[j] ) {
+                    if (k < m_staticLODPresetCount[j]) {
                         break;
                     }
                 }
 
-                if ( j >= STATLOD_LOW ) {
+                if (j >= STATLOD_LOW) {
                     m_cpuType = m_benchProfiles[i].cpu_type;
                     m_cpuMHz = m_benchProfiles[i].mhz;
                 }
@@ -234,7 +213,7 @@ void GameLODManager::Init()
     }
 #endif
 
-    if ( static_detail == STATLOD_CUSTOM ) {
+    if (static_detail == STATLOD_CUSTOM) {
         g_theWriteableGlobalData->m_textureReductionFactor = opts.Get_Texture_Reduction();
         g_theWriteableGlobalData->m_shadowVolumes = opts.Get_3DShadows_Enabled();
         g_theWriteableGlobalData->m_shadowDecals = opts.Get_2DShadows_Enabled();
@@ -251,9 +230,8 @@ void GameLODManager::Init()
         g_theWriteableGlobalData->m_useTrees = opts.Get_Trees_Enabled();
     }
 
-    if ( g_theWriteableGlobalData->m_useStaticLODLevels ) {
-        if ( static_detail != STATLOD_INVALID
-            && (static_detail == STATLOD_CUSTOM || m_staticLODLevel != static_detail) ) {
+    if (g_theWriteableGlobalData->m_useStaticLODLevels) {
+        if (static_detail != STATLOD_INVALID && (static_detail == STATLOD_CUSTOM || m_staticLODLevel != static_detail)) {
             Apply_Static_LOD_Level(static_detail);
             m_staticLODLevel = static_detail;
         }
@@ -286,13 +264,13 @@ int GameLODManager::Get_Static_LOD_Index(AsciiString name)
 {
     int index = STATLOD_LOW;
 
-    for ( ; index < STATLOD_COUNT; ++index ) {
-        if ( strcasecmp(name.Str(), g_staticGameLODNames[index]) == 0 ) {
+    for (; index < STATLOD_COUNT; ++index) {
+        if (strcasecmp(name.Str(), g_staticGameLODNames[index]) == 0) {
             break;
         }
     }
 
-    if ( index >= STATLOD_COUNT ) {
+    if (index >= STATLOD_COUNT) {
         return STATLOD_INVALID;
     }
 
@@ -306,37 +284,28 @@ const char *GameLODManager::Get_Static_LOD_Name(StaticGameLODLevel level)
 
 StaticGameLODLevel GameLODManager::Find_Static_LOD_Level()
 {
-    if ( m_idealStaticGameDetail != STATLOD_INVALID ) {
+    if (m_idealStaticGameDetail != STATLOD_INVALID) {
         return m_idealStaticGameDetail;
     }
 
-    Test_Minimum_Requirements(
-        &m_gpuType,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr
-    );
+    Test_Minimum_Requirements(&m_gpuType, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 
-    if ( m_gpuType == GPU_UNKNOWN ) {
+    if (m_gpuType == GPU_UNKNOWN) {
         m_gpuType = GPU_TNT2;
     }
 
-    for ( int i = STATLOD_HIGH; i >= STATLOD_LOW; --i ) {
-        for ( int j = 0; j < m_staticLODPresetCount[j]; ++j ) {
-            if ( m_cpuType == m_LODPresets[i][j].cpu_type ) {
-                if ( (double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94
-                    && m_gpuType >= m_LODPresets[i][j].video_type 
-                    && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94 ) {
+    for (int i = STATLOD_HIGH; i >= STATLOD_LOW; --i) {
+        for (int j = 0; j < m_staticLODPresetCount[j]; ++j) {
+            if (m_cpuType == m_LODPresets[i][j].cpu_type) {
+                if ((double)m_cpuMHz / (double)m_LODPresets[i][j].mhz >= 0.94 && m_gpuType >= m_LODPresets[i][j].video_type
+                    && (double)(m_physicalMem / 0x100000) / (double)m_LODPresets[i][j].video_mem >= 0.94) {
                     m_idealStaticGameDetail = (StaticGameLODLevel)i;
                     break;
                 }
             }
         }
 
-        if ( m_idealStaticGameDetail >= i ) {
+        if (m_idealStaticGameDetail >= i) {
             break;
         }
     }
@@ -351,12 +320,12 @@ StaticGameLODLevel GameLODManager::Find_Static_LOD_Level()
 
 bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)
 {
-    if ( !g_theWriteableGlobalData->m_useStaticLODLevels ) {
+    if (!g_theWriteableGlobalData->m_useStaticLODLevels) {
         m_staticLODLevel = STATLOD_CUSTOM;
         return false;
     }
 
-    if ( level == STATLOD_INVALID || (level != STATLOD_CUSTOM && m_staticLODLevel == level) ) {
+    if (level == STATLOD_INVALID || (level != STATLOD_CUSTOM && m_staticLODLevel == level)) {
         return false;
     }
 
@@ -368,21 +337,23 @@ bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)
 
 void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 {
+#ifndef THYME_STANDALONE
     // TODO requires parts of TerrainVisual and GameClient classes.
     Call_Method<void, GameLODManager, StaticGameLODLevel>(0x0047AC60, this, level);
+#endif
 }
 
 int GameLODManager::Get_Dynamic_LOD_Index(AsciiString name)
 {
     int index = DYNLOD_LOW;
 
-    for ( ; index < DYNLOD_COUNT; ++index ) {
-        if ( strcasecmp(name.Str(), g_dynamicGameLODNames[index]) == 0 ) {
+    for (; index < DYNLOD_COUNT; ++index) {
+        if (strcasecmp(name.Str(), g_dynamicGameLODNames[index]) == 0) {
             break;
         }
     }
 
-    if ( index >= DYNLOD_COUNT ) {
+    if (index >= DYNLOD_COUNT) {
         return DYNLOD_INVALID;
     }
 
@@ -397,11 +368,11 @@ const char *GameLODManager::Get_Dynamic_LOD_Name(DynamicGameLODLevel level)
 DynamicGameLODLevel GameLODManager::Find_Dynamic_LOD_Level(float fps)
 {
     int level = DYNLOD_VERYHIGH;
-    
-    while ( m_dynamicLOD[level].minimum_fps >= (int64_t)fps ) {
+
+    while (m_dynamicLOD[level].minimum_fps >= (int64_t)fps) {
         --level;
-        
-        if ( level < 0 ) {
+
+        if (level < 0) {
             return DYNLOD_LOW;
         }
     }
@@ -411,7 +382,7 @@ DynamicGameLODLevel GameLODManager::Find_Dynamic_LOD_Level(float fps)
 
 bool GameLODManager::Set_Dynamic_LOD_Level(DynamicGameLODLevel level)
 {
-    if ( level == DYNLOD_INVALID || level == m_dynamicLODLevel ) {
+    if (level == DYNLOD_INVALID || level == m_dynamicLODLevel) {
         return false;
     }
 
@@ -434,11 +405,11 @@ void GameLODManager::Apply_Dynamic_LOD_Level(DynamicGameLODLevel level)
 
 int GameLODManager::Get_Recommended_Texture_Reduction()
 {
-    if ( m_idealStaticGameDetail == STATLOD_INVALID ) {
+    if (m_idealStaticGameDetail == STATLOD_INVALID) {
         Find_Static_LOD_Level();
     }
 
-    if ( m_didMemPass ) {
+    if (m_didMemPass) {
         return m_staticLOD[m_idealStaticGameDetail].texture_reduction_factor;
     }
 
@@ -473,10 +444,10 @@ void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
 
     AsciiString token = ini->Get_Next_Token();
 
-    if ( g_theGameLODManager != nullptr ) {
+    if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Static_LOD_Index(token);
 
-        if ( level != STATLOD_INVALID ) {
+        if (level != STATLOD_INVALID) {
             ini->Init_From_INI(&g_theGameLODManager->m_staticLOD[level], _static_lod_parsers);
         }
     }
@@ -516,10 +487,10 @@ void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
 
     AsciiString token = ini->Get_Next_Token();
 
-    if ( g_theGameLODManager != nullptr ) {
+    if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Dynamic_LOD_Index(token);
 
-        if ( level != STATLOD_INVALID ) {
+        if (level != STATLOD_INVALID) {
             ini->Init_From_INI(&g_theGameLODManager->m_dynamicLOD[level], _dynamic_lod_parsers);
         }
     }
@@ -529,42 +500,24 @@ void GameLODManager::Parse_LOD_Preset(INI *ini)
 {
     AsciiString token = ini->Get_Next_Token();
 
-    if ( g_theGameLODManager != nullptr ) {
+    if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Static_LOD_Index(token);
 
-        if ( level != STATLOD_INVALID ) {
+        if (level != STATLOD_INVALID) {
             int preset_count = g_theGameLODManager->m_staticLODPresetCount[level];
 
-            if ( preset_count < MAX_PRESETS ) {
+            if (preset_count < MAX_PRESETS) {
                 ++g_theGameLODManager->m_staticLODPresetCount[level];
 
                 INI::Parse_Index_List(
-                    ini,
-                    nullptr,
-                    &g_theGameLODManager->m_LODPresets[level][preset_count].cpu_type,
-                    s_cpuNames
-                );
+                    ini, nullptr, &g_theGameLODManager->m_LODPresets[level][preset_count].cpu_type, s_cpuNames);
 
-                INI::Parse_Int(
-                    ini,
-                    nullptr,
-                    &g_theGameLODManager->m_LODPresets[level][preset_count].mhz,
-                    nullptr
-                );
+                INI::Parse_Int(ini, nullptr, &g_theGameLODManager->m_LODPresets[level][preset_count].mhz, nullptr);
 
                 INI::Parse_Index_List(
-                    ini,
-                    nullptr,
-                    &g_theGameLODManager->m_LODPresets[level][preset_count].video_type,
-                    s_gpuNames
-                );
+                    ini, nullptr, &g_theGameLODManager->m_LODPresets[level][preset_count].video_type, s_gpuNames);
 
-                INI::Parse_Int(
-                    ini,
-                    nullptr,
-                    &g_theGameLODManager->m_LODPresets[level][preset_count].video_mem,
-                    nullptr
-                );
+                INI::Parse_Int(ini, nullptr, &g_theGameLODManager->m_LODPresets[level][preset_count].video_mem, nullptr);
             }
         }
     }
@@ -572,56 +525,26 @@ void GameLODManager::Parse_LOD_Preset(INI *ini)
 
 void GameLODManager::Parse_Bench_Profiles(INI *ini)
 {
-    if ( g_theGameLODManager != nullptr ) {
+    if (g_theGameLODManager != nullptr) {
         int bench_count = g_theGameLODManager->m_benchProfileCount;
 
-        if ( bench_count < MAX_PROFILES ) {
+        if (bench_count < MAX_PROFILES) {
             ++g_theGameLODManager->m_benchProfileCount;
-
-            INI::Parse_Index_List(
-                ini,
-                nullptr,
-                &g_theGameLODManager->m_benchProfiles[bench_count].cpu_type,
-                s_cpuNames
-            );
-
-            INI::Parse_Int(
-                ini,
-                nullptr,
-                &g_theGameLODManager->m_benchProfiles[bench_count].mhz,
-                nullptr
-            );
-
-            INI::Parse_Real(
-                ini,
-                nullptr,
-                &g_theGameLODManager->m_benchProfiles[bench_count].integer_score,
-                nullptr
-            );
-
-            INI::Parse_Real(
-                ini,
-                nullptr,
-                &g_theGameLODManager->m_benchProfiles[bench_count].floating_point_score,
-                nullptr
-            );
-
-            INI::Parse_Real(
-                ini,
-                nullptr,
-                &g_theGameLODManager->m_benchProfiles[bench_count].memory_score,
-                nullptr
-            );
+            INI::Parse_Index_List(ini, nullptr, &g_theGameLODManager->m_benchProfiles[bench_count].cpu_type, s_cpuNames);
+            INI::Parse_Int(ini, nullptr, &g_theGameLODManager->m_benchProfiles[bench_count].mhz, nullptr);
+            INI::Parse_Real(ini, nullptr, &g_theGameLODManager->m_benchProfiles[bench_count].integer_score, nullptr);
+            INI::Parse_Real(ini, nullptr, &g_theGameLODManager->m_benchProfiles[bench_count].floating_point_score, nullptr);
+            INI::Parse_Real(ini, nullptr, &g_theGameLODManager->m_benchProfiles[bench_count].memory_score, nullptr);
         }
     }
 }
 
-void GameLODManager::Parse_Low_MHz(INI * ini)
+void GameLODManager::Parse_Low_MHz(INI *ini)
 {
     int mhz;
     INI::Parse_Int(ini, nullptr, &mhz, nullptr);
 
-    if ( g_theGameLODManager != nullptr ) {
+    if (g_theGameLODManager != nullptr) {
         g_theGameLODManager->m_reallyLowMHz = mhz;
     }
 }

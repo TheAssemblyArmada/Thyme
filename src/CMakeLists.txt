@@ -20,6 +20,7 @@ set(GAMEENGINE_INCLUDES
     game/common
     game/common/audio
     game/common/ini
+    game/common/modules
     game/common/system
     game/common/rts
     game/logic/object
@@ -67,6 +68,7 @@ set(GAMEENGINE_SRC
     game/common/audio/musicmanager.cpp
     game/common/audio/soundmanager.cpp
     game/common/ini/ini.cpp
+    game/common/modules/modulefactory.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp

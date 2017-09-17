@@ -26,6 +26,7 @@
 #include "globallanguage.h"
 #include "ini.h"
 #include "localfilesystem.h"
+#include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
@@ -147,6 +148,9 @@ void GameEngine::Init(int argc, char *argv[])
     g_theFunctionLexicon = Create_Function_Lexicon();
     g_theSubsystemList->Init_Subsystem(g_theFunctionLexicon, nullptr, nullptr, nullptr, nullptr, "TheFunctionLexicon");
     
+    g_theModuleFactory = Create_Module_Factory();
+    g_theSubsystemList->Init_Subsystem(g_theModuleFactory, nullptr, nullptr, nullptr, nullptr, "TheModuleFactory");
+
     // TODO this is a WIP
 }
 

@@ -1,0 +1,451 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Functions for creating dumps of information on program crash.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "stackdump.h"
+#include "main.h"
+#include "stringex.h"
+#include <inttypes.h>
+#include <stdio.h>
+
+#ifndef THYME_STANDALONE
+AsciiString &g_exceptionFileBuffer = Make_Global<AsciiString>(0x00A29FB8);
+#else
+AsciiString g_exceptionFileBuffer;
+#endif
+
+#ifdef PLATFORM_WINDOWS
+
+#if defined PROCESSOR_X86_64
+#define PRIPTRSIZE "16"
+#elif defined PROCESSOR_X86
+#define PRIPTRSIZE "8"
+#else
+#define PRIPTRSIZE
+#endif
+
+#define STACK_SYMNAME_MAX 512
+#define STACK_DEPTH_MAX 30
+
+const char *g_errorCodes[22] = {
+    "Error code: EXCEPTION_ACCESS_VIOLATION\r\r\nDescription: The thread tried to read from or write to a virtual address "
+    "for which it does not have the appropriate access.",
+    "Error code: EXCEPTION_ARRAY_BOUNDS_EXCEEDED\r\r\nDescription: The thread tried to access an array element that is out "
+    "of bounds and the underlying hardware supports bounds checking.",
+    "Error code: EXCEPTION_BREAKPOINT\r\r\nDescription: A breakpoint was encountered.",
+    "Error code: EXCEPTION_DATATYPE_MISALIGNMENT\r\r\nDescription: The thread tried to read or write data that is "
+    "misaligned on hardware that does not provide alignment. For example, 16-bit values must be aligned on 2-byte "
+    "boundaries; 32-bit values on 4-byte boundaries, and so on.",
+    "Error code: EXCEPTION_FLT_DENORMAL_OPERAND\r\r\nDescription: One of the operands in a floating-point operation is "
+    "denormal. A denormal value is one that is too small to represent as a standard floating-point value.",
+    "Error code: EXCEPTION_FLT_DIVIDE_BY_ZERO\r\r\nDescription: The thread tried to divide a floating-point value by a "
+    "floating-point divisor of zero.",
+    "Error code: EXCEPTION_FLT_INEXACT_RESULT\r\r\nDescription: The result of a floating-point operation cannot be "
+    "represented exactly as a decimal fraction.",
+    "Error code: EXCEPTION_FLT_INVALID_OPERATION\r\r\nDescription: Some strange unknown floating point operation was "
+    "attempted.",
+    "Error code: EXCEPTION_FLT_OVERFLOW\r\r\nDescription: The exponent of a floating-point operation is greater than the "
+    "magnitude allowed by the corresponding type.",
+    "Error code: EXCEPTION_FLT_STACK_CHECK\r\r\nDescription: The stack overflowed or underflowed as the result of a "
+    "floating-point operation.",
+    "Error code: EXCEPTION_FLT_UNDERFLOW\r\r\nDescription:\tThe exponent of a floating-point operation is less than the "
+    "magnitude allowed by the corresponding type.",
+    "Error code: EXCEPTION_ILLEGAL_INSTRUCTION\r\r\nDescription:\tThe thread tried to execute an invalid instruction.",
+    "Error code: EXCEPTION_IN_PAGE_ERROR\r\r\nDescription:\tThe thread tried to access a page that was not present, and the "
+    "system was unable to load the page. For example, this exception might occur if a network connection is lost while "
+    "running a program over the network.",
+    "Error code: EXCEPTION_INT_DIVIDE_BY_ZERO\r\r\nDescription: The thread tried to divide an integer value by an integer "
+    "divisor of zero.",
+    "Error code: EXCEPTION_INT_OVERFLOW\r\r\nDescription: The result of an integer operation caused a carry out of the most "
+    "significant bit of the result.",
+    "Error code: EXCEPTION_INVALID_DISPOSITION\r\r\nDescription: An exception handler returned an invalid disposition to "
+    "the exception dispatcher. Programmers using a high-level language such as C should never encounter this exception.",
+    "Error code: EXCEPTION_NONCONTINUABLE_EXCEPTION\r\r\nDescription: The thread tried to continue execution after a "
+    "noncontinuable exception occurred.",
+    "Error code: EXCEPTION_PRIV_INSTRUCTION\r\r\nDescription: The thread tried to execute an instruction whose operation is "
+    "not allowed in the current machine mode.",
+    "Error code: EXCEPTION_SINGLE_STEP\r\r\nDescription: A trace trap or other single-instruction mechanism signaled that "
+    "one instruction has been executed.",
+    "Error code: EXCEPTION_STACK_OVERFLOW\r\r\nDescription: The thread used up its stack.",
+    "Error code: ?????\r\r\nDescription: Unknown exception.",
+};
+
+unsigned int g_errorValues[] = {
+    0xC0000005,
+    0xC000008C,
+    0x80000003,
+    0x80000002,
+    0xC000008D,
+    0xC000008E,
+    0xC000008F,
+    0xC0000090,
+    0xC0000091,
+    0xC0000092,
+    0xC0000093,
+    0xC000001D,
+    0xC0000006,
+    0xC0000094,
+    0xC0000095,
+    0xC0000026,
+    0xC0000025,
+    0xC0000096,
+    0x80000004,
+    0xC00000FD,
+    0xFFFFFFFF
+};
+
+static bool g_symbolInit;
+static CONTEXT g_stackContext;
+typedef BOOL(__stdcall *symgetlinefromaddrfunc_t)(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE);
+static symgetlinefromaddrfunc_t g_symGetLineFromAddrFunc;
+
+static void Get_Function_Details(void *pointer, char *name, char *filename, unsigned *linenumber, uintptr_t *address)
+{
+    Init_Symbol_Info();
+    if (name) {
+        strcpy(name, "<Unknown>");
+    }
+
+    if (filename) {
+        strcpy(filename, "<Unknown>");
+    }
+
+    if (linenumber) {
+        *linenumber = (unsigned)-1;
+    }
+
+    if (address) {
+        *address = (uintptr_t)-1;
+    }
+
+    unsigned displacement = 0;
+
+    HANDLE process = GetCurrentProcess();
+    char symbol_buffer[sizeof(IMAGEHLP_SYMBOL) + STACK_SYMNAME_MAX];
+    IMAGEHLP_SYMBOL *const symbol_bufferp = reinterpret_cast<IMAGEHLP_SYMBOL*>(symbol_buffer);
+    memset(symbol_buffer, 0, sizeof(symbol_buffer));
+    symbol_bufferp->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL) + STACK_SYMNAME_MAX;
+    symbol_bufferp->MaxNameLength = STACK_SYMNAME_MAX;
+
+    if (SymGetSymFromAddr(process, reinterpret_cast<DWORD>(pointer), reinterpret_cast<PDWORD>(&displacement), symbol_bufferp)) {
+        if (name != nullptr) {
+            strcpy(name, symbol_bufferp->Name);
+            strcat(name, "();");
+        }
+
+        if (g_symGetLineFromAddrFunc != nullptr) {
+            IMAGEHLP_LINE line;
+            line.Key = 0;
+            line.LineNumber = 0;
+            line.SizeOfStruct = sizeof(line);
+            line.FileName = 0;
+            line.Address = 0;
+
+            if (g_symGetLineFromAddrFunc(process, reinterpret_cast<DWORD>(pointer), reinterpret_cast<PDWORD>(&displacement), &line)) {
+                if (filename != nullptr) {
+                    strcpy(filename, line.FileName);
+                }
+
+                if (linenumber != nullptr) {
+                    *linenumber = line.LineNumber;
+                }
+
+                if (address != nullptr) {
+                    *address = line.Address;
+                }
+            }
+        }
+    }
+}
+
+static void Write_Stack_Line(void *address, void(__cdecl *callback)(const char *))
+{
+    static char filename[STACK_SYMNAME_MAX];
+    static char funcname[PATH_MAX];
+    static char dest[260];
+
+    uintptr_t addr;
+    unsigned line;
+
+    Get_Function_Details(address, funcname, filename, &line, &addr);
+    sprintf(dest, "  %s(%d) : %s 0x%" PRIPTRSIZE PRIXPTR "\n", filename, line, funcname, (uintptr_t)address);
+    g_exceptionFileBuffer += dest;
+    callback(dest);
+}
+
+void Uninit_Symbol_Info()
+{
+    if (g_symbolInit) {
+        g_symbolInit = false;
+        SymCleanup(GetCurrentProcess());
+    }
+}
+
+BOOL Init_Symbol_Info()
+{
+    char drive[10];
+    char pathname[PATH_MAX + 1];
+    char directory[PATH_MAX + 1];
+
+    if (g_symbolInit) {
+        return true;
+    }
+
+    g_symbolInit = true;
+    atexit(Uninit_Symbol_Info);
+    g_symGetLineFromAddrFunc =
+        (symgetlinefromaddrfunc_t)GetProcAddress(GetModuleHandleA("dbghelp.dll"), "SymGetLineFromAddr");
+    SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_LOAD_LINES | SYMOPT_UNDNAME | SYMOPT_OMAP_FIND_NEAREST);
+    HANDLE process = GetCurrentProcess();
+    GetModuleFileNameA(0, pathname, PATH_MAX);
+    _splitpath(pathname, drive, directory, 0, 0);
+    sprintf(pathname, "%s:\\%s", drive, directory);
+    strcat(pathname, ";.;");
+
+    if (SymInitialize(process, pathname, 0)) {
+        GetModuleFileNameA(0, pathname, PATH_MAX);
+
+        if (SymLoadModule(process, 0, pathname, 0, 0, 0)) {
+            return true;
+        }
+
+        SymCleanup(process);
+    }
+
+    return false;
+}
+
+void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void (*callback)(char const *))
+{
+    BOOL carry_on = true;
+    STACKFRAME stack_frame;
+    HANDLE thread = GetCurrentThread();
+    HANDLE process = GetCurrentProcess();
+
+    memset(&g_stackContext, 0, sizeof(g_stackContext));
+    memset(&stack_frame, 0, sizeof(stack_frame));
+
+    g_stackContext.ContextFlags = CONTEXT_FULL;
+
+    stack_frame.AddrPC.Mode = AddrModeFlat;
+    stack_frame.AddrStack.Mode = AddrModeFlat;
+    stack_frame.AddrFrame.Mode = AddrModeFlat;
+    stack_frame.AddrPC.Offset = myeip;
+    stack_frame.AddrStack.Offset = myesp;
+    stack_frame.AddrFrame.Offset = myebp;
+
+    callback("Call Stack\n**********\n");
+
+    while (skip_frames-- != 0) {
+        carry_on = StackWalk(IMAGE_FILE_MACHINE_I386,
+            process,
+            thread,
+            &stack_frame,
+            nullptr,
+            nullptr,
+            SymFunctionTableAccess,
+            SymGetModuleBase,
+            nullptr);
+
+        if (!carry_on) {
+            break;
+        }
+    }
+
+    for (int i = 0; carry_on && i < STACK_DEPTH_MAX; ++i) {
+        carry_on = StackWalk(IMAGE_FILE_MACHINE_I386,
+            process,
+            thread,
+            &stack_frame,
+            nullptr,
+            nullptr,
+            SymFunctionTableAccess,
+            SymGetModuleBase,
+            nullptr);
+
+        if (carry_on) {
+            Write_Stack_Line((void*)stack_frame.AddrPC.Offset, callback);
+        }
+    }
+}
+
+void Stack_Dump_Handler(const char *data)
+{
+    g_exceptionFileBuffer += data;
+}
+
+void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
+{
+    AsciiString tmp;
+    g_exceptionFileBuffer.Clear();
+    unsigned int e_code = e_info->ExceptionRecord->ExceptionCode;
+
+    if (e_code == EXCEPTION_ACCESS_VIOLATION) {
+        tmp = "Exception is access violation\n";
+    } else {
+        tmp.Format("Exception code is %x\n", e_code);
+    }
+
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("main function at %" PRIPTRSIZE PRIXPTR "\n", main);
+    g_exceptionFileBuffer += tmp;
+
+    int error_index = 0;
+
+    while (g_errorValues[error_index] != 0xFFFFFFFF) {
+        if (g_errorValues[error_index] == e_code) {
+            break;
+        }
+
+        ++error_index;
+    }
+
+    tmp.Format("%s\n", g_errorCodes[error_index]);
+    g_exceptionFileBuffer += tmp;
+
+    if (e_code == EXCEPTION_ACCESS_VIOLATION) {
+        // This checks the kind of access vioation.
+        switch (e_info->ExceptionRecord->ExceptionInformation[0]) {
+            case 0: // Read violation
+                tmp.Format("Access address:%" PRIPTRSIZE PRIXPTR " was read from.\n",
+                    e_info->ExceptionRecord->ExceptionInformation[1]);
+                break;
+            case 1:
+                tmp.Format("Access address:%" PRIPTRSIZE PRIXPTR " was written to.\n",
+                    e_info->ExceptionRecord->ExceptionInformation[1]);
+                break;
+            case 8:
+                tmp.Format("Access address:%" PRIPTRSIZE PRIXPTR " DEP violation.\n",
+                    e_info->ExceptionRecord->ExceptionInformation[1]);
+                break;
+            default:
+                tmp.Format("Access address:%" PRIPTRSIZE PRIXPTR " Unknown violation.\n",
+                    e_info->ExceptionRecord->ExceptionInformation[1]);
+                break;
+        }
+
+        g_exceptionFileBuffer += tmp;
+    }
+
+    g_exceptionFileBuffer += "\nStack Dump:\n";
+    Init_Symbol_Info();
+
+    CONTEXT *ctext = e_info->ContextRecord;
+
+#if defined PROCESSOR_X86_64
+    Make_Stack_Trace(ctext->Rip, ctext->Rsp, ctext->Rbp, 0, Stack_Dump_Handler);
+#elif defined PROCESSOR_X86
+    Make_Stack_Trace(ctext->Eip, ctext->Esp, ctext->Ebp, 0, Stack_Dump_Handler);
+#endif
+
+    g_exceptionFileBuffer += "\nDetails:\n";
+    g_exceptionFileBuffer += "\nRegister dump...\n";
+
+#if defined PROCESSOR_X86_64
+    tmp.Format("Rip:%" PRIPTRSIZE PRIXPTR "\tRsp:%" PRIPTRSIZE PRIXPTR "\tRbp:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Rip,
+        ctext->Rsp,
+        ctext->Rbp);
+#elif defined PROCESSOR_X86
+    tmp.Format("Eip:%" PRIPTRSIZE PRIXPTR "\tEsp:%" PRIPTRSIZE PRIXPTR "\tEbp:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Eip,
+        ctext->Esp,
+        ctext->Ebp);
+#endif
+    g_exceptionFileBuffer += tmp;
+
+#if defined PROCESSOR_X86_64
+    tmp.Format("Rax:%" PRIPTRSIZE PRIXPTR "\tRbx:%" PRIPTRSIZE PRIXPTR "\tRcx:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Rax,
+        ctext->Rbx,
+        ctext->Rcx);
+#elif defined PROCESSOR_X86
+    tmp.Format("Eax:%" PRIPTRSIZE PRIXPTR "\tEbx:%" PRIPTRSIZE PRIXPTR "\tEcx:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Eax,
+        ctext->Ebx,
+        ctext->Ecx);
+#endif
+    g_exceptionFileBuffer += tmp;
+
+#if defined PROCESSOR_X86_64
+    tmp.Format("Rdx:%" PRIPTRSIZE PRIXPTR "\tRsi:%" PRIPTRSIZE PRIXPTR "\tRdi:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Rdx,
+        ctext->Rsi,
+        ctext->Rdi);
+#elif defined PROCESSOR_X86
+    tmp.Format("Edx:%" PRIPTRSIZE PRIXPTR "\tEsi:%" PRIPTRSIZE PRIXPTR "\tEdi:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->Edx,
+        ctext->Esi,
+        ctext->Edi);
+#endif
+    g_exceptionFileBuffer += tmp;
+
+#if defined PROCESSOR_X86_64
+    tmp.Format("R8 :%" PRIPTRSIZE PRIXPTR "\tR9 :%" PRIPTRSIZE PRIXPTR "\tR10:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->R8,
+        ctext->R9,
+        ctext->R10);
+    g_exceptionFileBuffer += tmp;
+
+    tmp.Format("R11:%" PRIPTRSIZE PRIXPTR "\tR12:%" PRIPTRSIZE PRIXPTR "\tR13:%" PRIPTRSIZE PRIXPTR "\n",
+        ctext->R11,
+        ctext->R12,
+        ctext->R13);
+    g_exceptionFileBuffer += tmp;
+
+    tmp.Format("R14:%" PRIPTRSIZE PRIXPTR "\tR15:%" PRIPTRSIZE PRIXPTR "\n", ctext->R14, ctext->R15);
+    g_exceptionFileBuffer += tmp;
+#endif
+
+    tmp.Format("EFlags:%08X \n", ctext->EFlags);
+    g_exceptionFileBuffer += tmp;
+
+    tmp.Format("CS:%04x  SS:%04x  DS:%04x  ES:%04x  FS:%04x  GS:%04x\n",
+        ctext->SegCs,
+        ctext->SegSs,
+        ctext->SegDs,
+        ctext->SegEs,
+        ctext->SegFs,
+        ctext->SegGs);
+    g_exceptionFileBuffer += tmp;
+    g_exceptionFileBuffer += "EIP bytes dump...\n";
+
+    char bytestr[32];
+    char scratch[512];
+    uint8_t *eip_pointer;
+
+#if defined PROCESSOR_X86_64
+    sprintf(scratch, "\nBytes at CS:RIP (%" PRIPTRSIZE PRIXPTR ")  : ", ctext->Rip);
+    eip_pointer = reinterpret_cast<uint8_t *>(ctext->Rip);
+#elif defined PROCESSOR_X86
+    sprintf(scratch, "\nBytes at CS:EIP (%" PRIPTRSIZE PRIXPTR ")  : ", ctext->Eip);
+    eip_pointer = reinterpret_cast<uint8_t *>(ctext->Eip);
+#endif
+
+    for (int i = 32; i != 0; --i) {
+        if (IsBadReadPtr(eip_pointer, 1)) {
+            strcat(scratch, "?? ");
+        } else {
+            sprintf(bytestr, "%02X ", *eip_pointer);
+            strcat(scratch, bytestr);
+        }
+
+        ++eip_pointer;
+    }
+
+    strcat(scratch, "\n");
+    g_exceptionFileBuffer += scratch;
+}
+
+#endif

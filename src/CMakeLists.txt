@@ -7,7 +7,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
     endif()
     
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm)
+    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
 else()
     #No other platforms yet.
 endif()
@@ -89,6 +89,7 @@ set(GAMEENGINE_SRC
     game/common/system/mempoolfact.cpp
     game/common/system/ramfile.cpp
     game/common/system/snapshot.cpp
+    game/common/system/stackdump.cpp
     game/common/system/streamingarchivefile.cpp
     game/common/system/subsysteminterface.cpp
     game/common/system/unicodestring.cpp

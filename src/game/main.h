@@ -25,7 +25,12 @@ extern HWND &g_applicationHWnd;
 extern unsigned &g_theMessageTime;
 
 // This will eventually be replaced by a standard int main(int arc, char *argv[]) function
+#ifndef THYME_STANDALONE
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+#endif
+
+int main(int argc, char *argv[]);
+
 #else
 #ifdef PLATFORM_WINDOWS
 extern unsigned g_theMessageTime;

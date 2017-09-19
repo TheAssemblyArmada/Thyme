@@ -28,9 +28,9 @@ AsciiString g_exceptionFileBuffer;
 #ifdef PLATFORM_WINDOWS
 
 #if defined PROCESSOR_X86_64
-#define PRIPTRSIZE "16"
+#define PRIPTRSIZE "016"
 #elif defined PROCESSOR_X86
-#define PRIPTRSIZE "8"
+#define PRIPTRSIZE "08"
 #else
 #define PRIPTRSIZE
 #endif
@@ -338,7 +338,7 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
         g_exceptionFileBuffer += tmp;
     }
 
-    g_exceptionFileBuffer += "\nStack Dump:\n";
+    g_exceptionFileBuffer += "\nStack Walk:\n";
     Init_Symbol_Info();
 
     CONTEXT *ctext = e_info->ContextRecord;
@@ -419,6 +419,36 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
         ctext->SegFs,
         ctext->SegGs);
     g_exceptionFileBuffer += tmp;
+
+    g_exceptionFileBuffer += "\nFloating point status\n";
+    tmp.Format("     Control word: %08x\n", ctext->FloatSave.ControlWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("      Status word: %08x\n", ctext->FloatSave.StatusWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("         Tag word: %08x\n", ctext->FloatSave.TagWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("     Error Offset: %08x\n", ctext->FloatSave.ErrorOffset);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("   Error Selector: %08x\n", ctext->FloatSave.ErrorSelector);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("      Data Offset: %08x\n", ctext->FloatSave.DataOffset);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("    Data Selector: %08x\n", ctext->FloatSave.DataSelector);
+    g_exceptionFileBuffer += tmp;
+
+    for (int i = 0; i < 8; ++i) {
+        tmp.Format("ST%d : ", i);
+        g_exceptionFileBuffer += tmp;
+
+        for (int j = 0; j < 10; ++j) {
+            tmp.Format("%02X", ctext->FloatSave.RegisterArea[i * 10 + j]);
+            g_exceptionFileBuffer += tmp;
+        }
+        
+        tmp.Format("   %+#.17e\n", *reinterpret_cast<double*>(&ctext->FloatSave.RegisterArea[i * 10]));
+        g_exceptionFileBuffer += tmp;
+    }
+
     g_exceptionFileBuffer += "EIP bytes dump...\n";
 
     char bytestr[32];

@@ -335,7 +335,7 @@ int main(int argc, char *argv[])
     // Only works on MSVC and only for SEH exceptions.
     //crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));
     crt_set_se_translator(Dump_Exception_Info);
-    _set_se_translator(Dump_Exception_Info);
+    //_set_se_translator(Dump_Exception_Info);
 #endif
 
     // Assign some critical sections for code sensitive to threaded calls.

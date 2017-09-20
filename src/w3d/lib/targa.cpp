@@ -507,6 +507,7 @@ int TargaImage::Decode_Image()
                 putp += pixel_bytes;
             }
         } else {
+            ++count;
             int read_size = pixel_bytes * count;
 
             if (File_Read(putp, read_size) != read_size) {

@@ -245,7 +245,7 @@ int TargaImage::Load(const char *name, char *palette, char *image, bool invert_i
 
     if (image != nullptr) {
         int total_bytes = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
-
+        
         switch (m_header.image_type) {
             case TGA_TYPE_MAPPED:
             case TGA_TYPE_COLOR:
@@ -496,7 +496,7 @@ int TargaImage::Decode_Image()
             count = (count & 0x7F) + 1;
             char *getp = putp;
 
-            if (File_Read(getp, pixel_bytes) != sizeof(pixel_bytes)) {
+            if (File_Read(getp, pixel_bytes) != pixel_bytes) {
                 return TGA_RET_NOT_TGA;
             }
 

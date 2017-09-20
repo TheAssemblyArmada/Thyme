@@ -57,6 +57,8 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 {
     uint32_t idbuff;
 
+    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - opening BIG file %s.\n", filename);
+
     File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
     
@@ -89,7 +91,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     file->Read(&file_count, sizeof(file_count));
     arch_size = le32toh(arch_size);
     file_count = be32toh(file_count);
-    
+    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - size of archive file is %u bytes.\n", arch_size);
+    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - %u files are contained within the archive.\n", file_count);
+
     //DEBUG_LOG("Big file is '%u' bytes long and contains '%u' files.\n", arch_size, file_count);
 
     // Seek to first file information
@@ -187,11 +191,14 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(AsciiString dir, AsciiString fil
     g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 
     for ( auto it = file_list.begin(); it != file_list.end(); ++it ) {
+        DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.\n", (*it).Str());
         ArchiveFile *arch = Open_Archive_File((*it).Str());
 
         if ( arch != nullptr ) {
             Load_Into_Dir_Tree(arch, *it, read_subdirs);
             m_archiveFiles[*it] = arch;
+
+            DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map. \n", (*it).Str());
         }
     }
 }

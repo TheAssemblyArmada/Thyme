@@ -45,6 +45,7 @@
 #include "globaldata.h"
 #include "ini.h"
 #include "main.h"
+#include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "targa.h"
@@ -121,6 +122,7 @@ void Setup_Hooks()
     GlobalData::Hook_Me();
     ThreadClass::Hook_Me();
     StringClass::Hook_Me();
+    MessageStream::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

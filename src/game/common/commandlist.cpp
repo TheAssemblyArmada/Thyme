@@ -37,8 +37,10 @@ void CommandList::Destroy_All_Messages()
 
 void CommandList::Append_Message_List(GameMessage *list)
 {
-    for (GameMessage *msg = m_firstMessage; msg != nullptr; msg = msg->Get_Next()) {
+    for (GameMessage *msg = list; msg != nullptr;) {
+        GameMessage *next = msg->Get_Next();
         Append_Message(msg);
+        msg = next;
     }
 }
 

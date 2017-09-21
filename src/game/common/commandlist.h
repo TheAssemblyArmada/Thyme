@@ -29,12 +29,13 @@ public:
     virtual void Reset();
     virtual void Update() {}
 
+    void Append_Message_List(GameMessage *list);
+
 #ifndef THYME_STANDALONE
     static void Hook_Me();
 #endif
 private:
     void Destroy_All_Messages();
-    void Append_Message_List(GameMessage *list);
 };
 
 #ifndef THYME_STANDALONE

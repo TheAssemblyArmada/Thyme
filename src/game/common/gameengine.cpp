@@ -26,6 +26,7 @@
 #include "globallanguage.h"
 #include "ini.h"
 #include "localfilesystem.h"
+#include "messagestream.h"
 #include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
@@ -151,6 +152,9 @@ void GameEngine::Init(int argc, char *argv[])
     g_theModuleFactory = Create_Module_Factory();
     g_theSubsystemList->Init_Subsystem(g_theModuleFactory, nullptr, nullptr, nullptr, nullptr, "TheModuleFactory");
 
+    g_theMessageStream = Create_Message_Stream();
+    g_theSubsystemList->Init_Subsystem(g_theMessageStream, nullptr, nullptr, nullptr, nullptr, "TheMessageStream");
+    
     // TODO this is a WIP
 }
 
@@ -168,5 +172,5 @@ FileSystem *GameEngine::Create_File_System()
 
 MessageStream *GameEngine::Create_Message_Stream()
 {
-    return nullptr;
+    return Call_Method<MessageStream*, GameEngine>(0x0040FF00, this);
 }

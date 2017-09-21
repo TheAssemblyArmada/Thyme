@@ -55,6 +55,7 @@ set(GAMEENGINE_SRC
     game/common/gamemessagelist.cpp
     game/common/globaldata.cpp
     game/common/namekeygenerator.cpp
+    game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
     game/common/terraintypes.cpp

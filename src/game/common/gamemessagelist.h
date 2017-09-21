@@ -31,15 +31,15 @@ public:
     GameMessageList() : m_firstMessage(nullptr), m_lastMessage(nullptr) {}
 
     // SubsystemInterface implementations
-    virtual ~GameMessageList() {}
-    virtual void Init() {}
-    virtual void Reset() {}
-    virtual void Update() {}
+    virtual ~GameMessageList();
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
 
     virtual void Append_Message(GameMessage *msg);
     virtual void Insert_Message(GameMessage *msg, GameMessage *at);
     virtual void Remove_Message(GameMessage *msg);
-    virtual bool Contains_Message_Of_Type(MessageType type);
+    virtual bool Contains_Message_Of_Type(GameMessage::MessageType type);
 
     GameMessage *Get_First_Message() { return m_firstMessage; }
 
@@ -48,7 +48,7 @@ public:
     void Append_Message_Nv(GameMessage *msg);
     void Insert_Message_Nv(GameMessage *msg, GameMessage *at);
     void Remove_Message_Nv(GameMessage *msg);
-    bool Contains_Message_Of_Type_Nv(MessageType type);
+    bool Contains_Message_Of_Type_Nv(GameMessage::MessageType type);
 
     static void Hook_Me();
 #endif

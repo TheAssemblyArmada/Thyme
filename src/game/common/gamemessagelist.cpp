@@ -16,6 +16,16 @@
 #include "gamemessagelist.h"
 #include "gamemessage.h"
 
+GameMessageList::~GameMessageList()
+{
+    for (GameMessage *data = m_firstMessage; data != nullptr;) {
+        GameMessage *current = data;
+        data = data->m_next;
+        current->m_list = nullptr;
+        Delete_Instance(current);
+    }
+}
+
 void GameMessageList::Append_Message(GameMessage *msg)
 {
     if (m_lastMessage != nullptr) {
@@ -64,7 +74,7 @@ void GameMessageList::Remove_Message(GameMessage *msg)
     msg->m_list = nullptr;
 }
 
-bool GameMessageList::Contains_Message_Of_Type(MessageType type)
+bool GameMessageList::Contains_Message_Of_Type(GameMessage::MessageType type)
 {
     GameMessage *msg = m_firstMessage;
 
@@ -95,7 +105,7 @@ void GameMessageList::Remove_Message_Nv(GameMessage *msg)
     GameMessageList::Remove_Message(msg);
 }
 
-bool GameMessageList::Contains_Message_Of_Type_Nv(MessageType type)
+bool GameMessageList::Contains_Message_Of_Type_Nv(GameMessage::MessageType type)
 {
     return GameMessageList::Contains_Message_Of_Type(type);
 }

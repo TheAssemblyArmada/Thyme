@@ -16,7 +16,7 @@
 #include "stackdump.h"
 #include "main.h"
 #include "stringex.h"
-#include <inttypes.h>
+#include <cinttypes>
 #include <stdio.h>
 
 #ifndef THYME_STANDALONE

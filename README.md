@@ -5,20 +5,21 @@
 An Open Source Re-Implementation of Generals: Zero Hour
 
 This project is a bottom-up rewrite of Generals: Zero Hour,
-using the original binary in place of not-yet-implemented functions.
+using the original binary to provide functions that have not been implemented yet.
 The intention is to allow the fixing of bugs, implementation of new
 features and porting to platforms unsupported by the original.
 
 ## Building
 
-This project currently supports building on Visual Studio or MinGW-w64. 
-Use CMake to generate a solution outside of the src directory. For example,
-when using the CMake GUI and the source is at C:\path\to\thyme set the build
-path to C:\path\to\thyme\build. Note that although you can use MingGW-w64 to
-build thyme, the dll built by it will not work correctly as the GCC ABI does not
-match that used in the the original binary. Once clang can build with exceptions
-for Windows, it should be possible to use that with MinGW-w64 to get the correct
-ABI. This limitation will not apply once the re-implementation is complete.
+In order to generate a working binary, currently you must build the project using
+a version of the Microsoft Visual Studio compiler (2015 and above). Building using MinGW-w64
+is also tested periodically, but because of differences in the compiler ABI, dll's that it generates
+will not work correctly with the original game binary. Once the reimplementation is complete
+it should be possible to build with any C++11 compiler.
+ 
+In order to build, use CMake to generate a solution outside of the src directory.
+For example, when using the CMake GUI and the source is at C:\path\to\thyme set the build
+path to C:\path\to\thyme\build.
 
 ## Running
 
@@ -26,11 +27,11 @@ To run the game, you need to first have Generals: Zero Hour installed.
 The easiest way to get the game to run is to place both `launchthyme.exe`
 and `thyme.dll` in the same directory as `game.dat`. You can then
 launch `launchthyme.exe` from the directory, or use a shortcut to `launchthyme.exe`
-to launch the game.
-Currently only the original disc based install patched to version 1.04 is 
+to launch the game. The launcher will also pass any command line parameters on.
+
+Currently only the original disc based english language version patched to version 1.04 is 
 supported, though adding the `game.dat` from that version to a TFD or Origin
-install should also allow those to work. When the project is complete, this
-restriction will not apply.
+install should also allow those to work.
 
 ### Linux and macOS
 
@@ -62,6 +63,8 @@ There is also the [Wikipedia page for open source games](https://en.wikipedia.or
 If you are interested in contributing to Thyme, you will need some knowledge of C++
 as a minimum requirement. Join the developer chat listed below for more information on
 what else you will need such as the idc file for the current map of the binary.
+
+You can also check the [wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for more information.
 
 ## Contact
 

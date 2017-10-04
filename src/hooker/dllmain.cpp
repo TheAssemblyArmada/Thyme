@@ -35,6 +35,7 @@
 #include "copyprotect.h"
 #include "commandline.h"
 #include "commandlist.h"
+#include "dict.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
 #include "gamememory.h"
@@ -123,6 +124,7 @@ void Setup_Hooks()
     ThreadClass::Hook_Me();
     StringClass::Hook_Me();
     MessageStream::Hook_Me();
+    Dict::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

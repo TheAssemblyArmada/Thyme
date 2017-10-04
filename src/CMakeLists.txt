@@ -48,6 +48,7 @@ set(GAMEENGINE_SRC
     game/common/commandline.cpp
     game/common/commandlist.cpp
     game/common/crc.cpp
+    game/common/dict.cpp
     game/common/gameengine.cpp
     game/common/gamelod.cpp
     game/common/gamemain.cpp

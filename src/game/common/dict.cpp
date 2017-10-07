@@ -463,7 +463,7 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
     DictPairData *new_data = nullptr;
 
     if (pairs_needed > 0) {
-        DEBUG_LOG("Allocating for %d Dict pairs.\n", pairs_needed);
+        // DEBUG_LOG("Allocating for %d Dict pairs.\n", pairs_needed);
         int size =
             g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(DictPair) * pairs_needed + sizeof(DictPairData));
         new_data = reinterpret_cast<DictPairData *>(g_dynamicMemoryAllocator->Allocate_Bytes(size));
@@ -471,10 +471,10 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
         new_data->m_refCount = 1;
         new_data->m_numPairsAllocated = (size - sizeof(DictPairData)) / sizeof(DictPair);
         new_data->m_numPairsUsed = 0;
-        DEBUG_LOG("  Allocated for %d Dict pairs.\n", (int)new_data->m_numPairsAllocated);
+        // DEBUG_LOG("  Allocated for %d Dict pairs.\n", (int)new_data->m_numPairsAllocated);
 
         if (preserve_data && m_data != nullptr) {
-            DEBUG_LOG("  Preserving %d Dict pairs.\n", (int)m_data->m_numPairsUsed);
+            // DEBUG_LOG("  Preserving %d Dict pairs.\n", (int)m_data->m_numPairsUsed);
             DictPair *newpair = new_data->Get_Pairs();
             DictPair *oldpair = m_data->Get_Pairs();
 
@@ -490,17 +490,17 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
 
     if (to_translate != nullptr && m_data != nullptr) {
         translate_val = ((uintptr_t)to_translate - (uintptr_t)m_data - sizeof(DictPairData)) / sizeof(DictPair);
-        DEBUG_LOG("  Dict translate position is %d.\n", translate_val);
+        // DEBUG_LOG("  Dict translate position is %d.\n", translate_val);
     } else {
         translate_val = 0;
-        DEBUG_LOG("  Have no current data to translate from, position is %d.\n", translate_val);
+        // DEBUG_LOG("  Have no current data to translate from, position is %d.\n", translate_val);
     }
 
     Release_Data();
     m_data = new_data;
 
     if (to_translate != nullptr && new_data != nullptr) {
-        DEBUG_LOG("  Getting translated pair at position %d.\n", translate_val);
+        // DEBUG_LOG("  Getting translated pair at position %d.\n", translate_val);
         to_translate = &new_data->Get_Pairs()[translate_val];
     }
 

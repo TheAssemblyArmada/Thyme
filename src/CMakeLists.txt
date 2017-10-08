@@ -19,6 +19,7 @@ set(GAMEENGINE_INCLUDES
     game/client
     game/common
     game/common/audio
+    game/common/compression
     game/common/ini
     game/common/modules
     game/common/system
@@ -69,6 +70,8 @@ set(GAMEENGINE_SRC
     game/common/audio/audiosettings.cpp
     game/common/audio/musicmanager.cpp
     game/common/audio/soundmanager.cpp
+    game/common/compression/compressionmanager.cpp
+    game/common/compression/refpack.cpp
     game/common/ini/ini.cpp
     game/common/modules/modulefactory.cpp
     game/common/system/archivefile.cpp

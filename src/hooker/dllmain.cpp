@@ -35,6 +35,7 @@
 #include "copyprotect.h"
 #include "commandline.h"
 #include "commandlist.h"
+#include "compressionmanager.h"
 #include "dict.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -125,6 +126,7 @@ void Setup_Hooks()
     StringClass::Hook_Me();
     MessageStream::Hook_Me();
     Dict::Hook_Me();
+    CompressionManager::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

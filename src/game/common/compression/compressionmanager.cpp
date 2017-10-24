@@ -111,8 +111,18 @@ CompressionType CompressionManager::Get_Compression_Type(const void *data, int s
 /**
  * @brief Get uncompressed size based on a small header.
  */
-int CompressionManager::Get_Uncompressed_Size(const void *data)
+int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
 {
+    if (size < 8) {
+        return size;
+    }
+
+    CompressionType type = Get_Compression_Type(data, size);
+
+    if (type == COMPRESSION_NONE || type >= COMPRESSION_COUNT) {
+        return size;
+    }
+
     return le32toh(static_cast<const int32_t *>(data)[1]);
 }
 

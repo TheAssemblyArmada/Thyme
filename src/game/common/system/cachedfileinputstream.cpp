@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "cachedfileinputstream.h"
+#include "compressionmanager.h"
 #include "filesystem.h"
 #include "minmax.h"
 
@@ -24,8 +25,8 @@ CachedFileInputStream::~CachedFileInputStream()
 }
 
 /**
-* @brief Read data from the cached file.
-*/
+ * @brief Read data from the cached file.
+ */
 int CachedFileInputStream::Read(void *dst, int size)
 {
     if (m_cachedData != nullptr) {
@@ -45,16 +46,16 @@ int CachedFileInputStream::Read(void *dst, int size)
 }
 
 /**
-* @brief Get current position in the stream.
-*/
+ * @brief Get current position in the stream.
+ */
 unsigned CachedFileInputStream::Tell()
 {
     return m_cachePos;
 }
 
 /**
-* @brief Seek to an absolute position in the stream.
-*/
+ * @brief Seek to an absolute position in the stream.
+ */
 bool CachedFileInputStream::Absolute_Seek(unsigned pos)
 {
     if (pos < m_cachedSize) {
@@ -66,14 +67,19 @@ bool CachedFileInputStream::Absolute_Seek(unsigned pos)
     return true;
 }
 
+/**
+ * @brief Check if we are at the end of the file.
+ */
 bool CachedFileInputStream::Eof()
 {
     return m_cachedSize == m_cachePos;
 }
 
+/**
+ * @brief Open a file as an input stream.
+ */
 bool CachedFileInputStream::Open(AsciiString filename)
 {
-#if 0
     File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
     m_cachedSize = 0;
 
@@ -84,18 +90,34 @@ bool CachedFileInputStream::Open(AsciiString filename)
             m_cachedData = static_cast<uint8_t *>(file->Read_All_And_Close());
             file = nullptr;
         }
+
+        m_cachePos = 0;
     }
 
-    // TODO Needs CompressionManager class to handle compression here
+    // Handle compressed data.
+    if (CompressionManager::Is_Data_Compressed(m_cachedData, m_cachedSize)) {
+        int decomp_size = CompressionManager::Get_Uncompressed_Size(m_cachedData, m_cachedSize);
+        uint8_t *decomp_data = new uint8_t[decomp_size];
+
+        if (CompressionManager::Decompress_Data(m_cachedData, m_cachedSize, decomp_data, decomp_size) == decomp_size) {
+            delete[] m_cachedData;
+            m_cachedData = decomp_data;
+            m_cachedSize = decomp_size;
+        } else {
+            delete[] decomp_data;
+        }
+    }
+
+    if (file != nullptr) {
+        file->Close();
+    }
 
     return m_cachedSize > 0;
-#elif !defined THYME_STANDALONE
-    return Call_Method<bool, CachedFileInputStream, AsciiString>(0x00571E00, this, filename);
-#else
-    return false;
-#endif
 }
 
+/**
+ * @brief Close an input stream.
+ */
 void CachedFileInputStream::Close()
 {
     if (m_cachedData) {

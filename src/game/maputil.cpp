@@ -57,7 +57,7 @@ void WaypointMap::Update()
             ++m_numStartSpots;
         }
         
-        m_numStartSpots = MAX(m_numStartSpots, 1);
+        m_numStartSpots = Max(m_numStartSpots, 1);
     } else {
         m_numStartSpots = 1;
     }

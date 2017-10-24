@@ -374,7 +374,7 @@ int OptionPreferences::Get_Particle_Cap()
 
     int ret = atoi(it->second.Str());
 
-    return MIN(ret, 100);
+    return Min(ret, 100);
 }
 
 int OptionPreferences::Get_Texture_Reduction()
@@ -387,7 +387,7 @@ int OptionPreferences::Get_Texture_Reduction()
 
     int ret = atoi(it->second.Str());
 
-    return MAX(ret, 2);
+    return Max(ret, 2);
 }
 
 float OptionPreferences::Get_Gamma_Value()
@@ -444,7 +444,7 @@ int OptionPreferences::Get_Firewall_Behavior()
 
     int ret = atoi(it->second.Str());
 
-    return MAX(ret, 0);
+    return Max(ret, 0);
 }
 
 int16_t OptionPreferences::Get_Firewall_Port_Allocation_Delta()

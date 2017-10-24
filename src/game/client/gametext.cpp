@@ -418,7 +418,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #endif
 
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = MAX((int32_t)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = Max((int32_t)strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -505,7 +505,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
 
         m_bufferIn[length] = '\0';
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = MAX(length, m_maxLabelLen);
+        m_maxLabelLen = Max(length, m_maxLabelLen);
 
         // Read all strings associated with this label, Nox used multiple strings for
         // random variation, Generals only cares about first one.
@@ -608,7 +608,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 #endif
 
         m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = MAX((int32_t)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = Max((int32_t)strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 

@@ -724,8 +724,8 @@ void User_Memory_Init_Pools()
             if ( *path != ';' && sscanf(path, "%s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3 ) {
                 for ( PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr ) {
                     if ( strcasecmp(psr->pool_name, pool_name) == 0 ) {
-                        psr->initial_allocation_count = MAX((int)sizeof(void*), Round_Up_Word_Size(initial_alloc));
-                        psr->overflow_allocation_count = MAX((int)sizeof(void*), Round_Up_Word_Size(overflow_alloc));
+                        psr->initial_allocation_count = Max((int)sizeof(void*), Round_Up_Word_Size(initial_alloc));
+                        psr->overflow_allocation_count = Max((int)sizeof(void*), Round_Up_Word_Size(overflow_alloc));
                     }
                 }
             }

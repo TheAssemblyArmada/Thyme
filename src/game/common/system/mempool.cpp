@@ -130,12 +130,12 @@ void *MemoryPool::Allocate_Block_No_Zero()
     MemoryPoolSingleBlock *block = m_firstBlobWithFreeBlocks->Allocate_Single_Block();
     ++m_usedBlocksInPool;
 
-    //TODO convert to MAX()
+    //TODO convert to Max()
     //if ( m_peakUsedBlocksInPool < m_usedBlocksInPool ) {
     //    m_peakUsedBlocksInPool = m_usedBlocksInPool;
     //}
 
-    m_peakUsedBlocksInPool = MAX(m_peakUsedBlocksInPool, m_usedBlocksInPool);
+    m_peakUsedBlocksInPool = Max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();
 }

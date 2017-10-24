@@ -64,7 +64,7 @@ int BufferedFileClass::Read(void *buffer, int size)
 
     if ( m_bufferAvailable > 0 ) {
 
-        int nsize = MIN(m_bufferAvailable, size);
+        int nsize = Min(m_bufferAvailable, size);
 
         memmove(buffer, m_buffer + m_bufferOffset, nsize);
         m_bufferAvailable -= nsize;
@@ -106,7 +106,7 @@ int BufferedFileClass::Read(void *buffer, int size)
 
         if ( m_bufferAvailable > 0 ) {
 
-            int nsize = MIN(m_bufferAvailable, size);
+            int nsize = Min(m_bufferAvailable, size);
 
             if ( !m_buffer ) {
                 return 0;

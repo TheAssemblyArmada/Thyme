@@ -22,7 +22,7 @@ AsciiString Get_Base_Path_From_Path(AsciiString path)
     const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    const char *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = Max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting base path from '%s'.\n", path_str);
 
@@ -42,7 +42,7 @@ AsciiString Get_File_From_Path(AsciiString path)
     const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    const char *last_sep = MAX(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = Max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting file from '%s'.\n", path_str);
 

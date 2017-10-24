@@ -71,7 +71,7 @@ int RAMFile::Read(void *dst, int bytes)
     }
 
     // Clip the amount to read to be within the data remaining.
-    bytes = MIN(bytes, Size - Pos);
+    bytes = Min(bytes, Size - Pos);
 
     if ( bytes > 0 ) {
         memcpy(dst, Data + Pos, bytes);
@@ -108,7 +108,7 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
     }
 
     // Don't seek to outside the file.
-    Pos = Clamp(Pos, 0, Size); // MAX(0, MIN(Pos, Size));
+    Pos = Clamp(Pos, 0, Size); // Max(0, Min(Pos, Size));
 
     return Pos;
 }
@@ -150,7 +150,7 @@ void RAMFile::Next_Line(char *dst, int bytes)
     }
 
     // Make sure our position is still within data.
-    Pos = MIN(Pos, Size);
+    Pos = Min(Pos, Size);
 }
 
 bool RAMFile::Scan_Int(int &integer)

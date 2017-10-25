@@ -29,6 +29,12 @@ class Dict
         MAX_LEN = 0x7FFF,
     };
 
+    enum DictPairKeyType : int32_t
+    {
+        DICTPAIRKEY_ILLEGAL,
+    };
+
+public:
     enum DataType : int32_t
     {
         DICT_NONE = -1,
@@ -42,11 +48,7 @@ class Dict
         DICT_TYPE_MASK = 0xFF,
     };
 
-    enum DictPairKeyType : int32_t
-    {
-        DICTPAIRKEY_ILLEGAL,
-    };
-
+private:
     union DictPairValue
     {
         DictPairValue() {}

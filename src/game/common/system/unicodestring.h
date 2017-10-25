@@ -64,11 +64,13 @@ public:
         Set(s);
         return *this;
     }
+
     UnicodeString &operator=(char16_t const *s)
     {
         Set(s);
         return *this;
     }
+
     UnicodeString &operator=(UnicodeString const &string)
     {
         Set(string);
@@ -76,16 +78,24 @@ public:
     }
     // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
+    UnicodeString &operator+=(char16_t s)
+    {
+        Concat(s);
+        return *this;
+    }
+
     UnicodeString &operator+=(wchar_t s)
     {
         Concat(s);
         return *this;
     }
+
     UnicodeString &operator+=(const wchar_t *s)
     {
         Concat(s);
         return *this;
     }
+
     UnicodeString &operator+=(UnicodeString const &s)
     {
         Concat(s);
@@ -114,6 +124,7 @@ public:
 
     void Translate(AsciiString const &string);
 
+    void Concat(char16_t c);
     void Concat(wchar_t c);
     void Concat(const wchar_t *s);
     void Concat(UnicodeString const &string) { Concat(string.Str()); }

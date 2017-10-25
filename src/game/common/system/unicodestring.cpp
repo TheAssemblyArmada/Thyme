@@ -242,6 +242,15 @@ void UnicodeString::Translate(AsciiString const &string)
     }
 }
 
+void UnicodeString::Concat(char16_t c)
+{
+    wchar_t str[2];
+
+    str[0] = c;
+    str[1] = L'\0';
+    Concat(str);
+}
+
 void UnicodeString::Concat(wchar_t c)
 {
     wchar_t str[2];

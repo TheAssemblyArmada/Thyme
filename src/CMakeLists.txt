@@ -78,6 +78,7 @@ set(GAMEENGINE_SRC
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp
     game/common/system/cachedfileinputstream.cpp
+    game/common/system/datachunk.cpp
     game/common/system/datachunktoc.cpp
     game/common/system/file.cpp
     game/common/system/filesystem.cpp

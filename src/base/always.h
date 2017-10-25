@@ -162,6 +162,8 @@ typedef struct stat stat_t;
 #if defined(COMPILER_MSVC)
 // "conversion from 'double' to 'float', possible loss of data".
 #pragma warning(disable : 4244)
+// warning C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
+#pragma warning(disable : 4800)
 #endif
 
 // Evaluate the value of some of these.
@@ -228,9 +230,6 @@ typedef struct stat stat_t;
     // 'function selected for automatic inline expansion'.  Cool, but since we're treating
     // warnings as errors, don't warn me about this!
 #pragma warning(disable : 4711)
-
-    // warning C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
-#pragma warning(disable : 4800)
 
     //for catching unrefernced local variables, we do not need to worry about this when compiling debug builds.
 #if !defined(NDEBUG)

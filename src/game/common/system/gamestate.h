@@ -44,8 +44,8 @@ public:
     virtual void Load_Post_Process() {}
 
     AsciiString Get_Save_Dir();
-    AsciiString Real_To_Portable_Map_Path(AsciiString &path);
-    AsciiString Portable_To_Real_Map_Path(AsciiString &path);
+    AsciiString Real_To_Portable_Map_Path(const AsciiString &path);
+    AsciiString Portable_To_Real_Map_Path(const AsciiString &path);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -53,7 +53,7 @@ public:
 private:
 };
 
-AsciiString Get_Leaf_And_Dir_Name(AsciiString const &path);
+AsciiString Get_Leaf_And_Dir_Name(const AsciiString &path);
 
 #ifndef THYME_STANDALONE
 extern GameState *&g_theGameState;

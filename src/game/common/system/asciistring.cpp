@@ -1,31 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: ASCIISTRING.CPP
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: 
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Class for handling strings that have a single byte as a code point.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "asciistring.h"
 #include "endiantype.h"
 #include "gamedebug.h"
@@ -320,16 +306,15 @@ void AsciiString::To_Lower()
     Set(buf);
 }
 
-// Sanitize the path to use all forward slashes for cross platform
-// compat. Ideally we call this immediately on reading a path from the OS
-// or config file and everything else assumes it, but until we control all
-// path inputs, we need to do this everywhere paths are compared.
-void AsciiString::Fix_Path()
+/**
+ * @brief Convert any windows path separators to posix ('\' to '/').
+ */
+AsciiString AsciiString::Posix_Path() const
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
     if ( m_data == nullptr ) {
-        return;
+        return s_emptyString;
     }
 
     strcpy(buf, Peek());
@@ -340,7 +325,29 @@ void AsciiString::Fix_Path()
         }
     }
 
-    Set(buf);
+    return buf;
+}
+
+/**
+ * @brief Convert any posix path separators to windows ('/' to '\').
+ */
+AsciiString AsciiString::Windows_Path() const
+{
+    char buf[MAX_FORMAT_BUF_LEN];
+
+    if (m_data == nullptr) {
+        return s_emptyString;
+    }
+
+    strcpy(buf, Peek());
+
+    for (char *c = buf; *c != '\0'; ++c) {
+        if (*c == '/') {
+            *c = '\\';
+        }
+    }
+
+    return buf;
 }
 
 void AsciiString::Remove_Last_Char()
@@ -429,7 +436,7 @@ bool AsciiString::Starts_With_No_Case(const char *p) const
         return true;
     }
     
-    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
+    int thislen = Get_Length();
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {

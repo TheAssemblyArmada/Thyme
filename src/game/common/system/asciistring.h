@@ -1,34 +1,22 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: ASCIISTRING.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: 
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Class for handling strings that have a single byte as a code point.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef ASCIISTRING_H
 #define ASCIISTRING_H
 
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
 #include "memdynalloc.h"
 
@@ -42,40 +30,41 @@ class AsciiString
     friend class UnicodeString;
 
 public:
-    enum {
+    enum
+    {
         MAX_FORMAT_BUF_LEN = 2048,
         MAX_LEN = 32767,
     };
 
     struct AsciiStringData
     {
-    #ifdef GAME_DEBUG_STRUCTS
+#ifdef GAME_DEBUG_STRUCTS
         char *debug_ptr;
-    #endif // GAME_DEBUG_STRUCTS
+#endif // GAME_DEBUG_STRUCTS
 
         uint16_t ref_count;
         uint16_t num_chars_allocated;
 
         void Inc_Ref_Count()
         {
-        #ifdef COMPILER_MSVC
-            InterlockedIncrement16((volatile short*)&ref_count);
-        #elif defined COMPILER_GNUC || defined COMPILER_CLANG
+#ifdef COMPILER_MSVC
+            InterlockedIncrement16((volatile short *)&ref_count);
+#elif defined COMPILER_GNUC || defined COMPILER_CLANG
             __sync_add_and_fetch(&ref_count, 1);
-        #else
-            #error Compiler not supported, add atomic increment to asciistring.h 
-        #endif
+#else
+#error Compiler not supported, add atomic increment to asciistring.h
+#endif
         }
 
         void Dec_Ref_Count()
         {
-        #ifdef COMPILER_MSVC
-            InterlockedDecrement16((volatile short*)&ref_count);
-        #elif defined COMPILER_GNUC || defined COMPILER_CLANG
+#ifdef COMPILER_MSVC
+            InterlockedDecrement16((volatile short *)&ref_count);
+#elif defined COMPILER_GNUC || defined COMPILER_CLANG
             __sync_sub_and_fetch(&ref_count, 1);
-        #else
-            #error Compiler not supported, add atomic decrement to asciistring.h 
-        #endif
+#else
+#error Compiler not supported, add atomic decrement to asciistring.h
+#endif
         }
 
         char *Peek()
@@ -88,20 +77,20 @@ public:
     AsciiString();
     AsciiString(const char *s);
     AsciiString(AsciiString const &string);
-    //AsciiString(UnicodeString const &stringSrc);
+    // AsciiString(UnicodeString const &stringSrc);
     ~AsciiString() { Release_Buffer(); }
 
-    AsciiString &operator=(char *s) { Set(s); return *this; }
-    AsciiString &operator=(const char *s) { Set(s); return *this; }
-    AsciiString &operator=(AsciiString const &stringSrc) { Set(stringSrc); return *this; }
-    //AsciiString &operator=(UnicodeString const &stringSrc);
+    AsciiString &operator=(char *s);
+    AsciiString &operator=(const char *s);
+    AsciiString &operator=(AsciiString const &stringSrc);
+    // AsciiString &operator=(UnicodeString const &stringSrc);
 
-    AsciiString &operator+=(char s) { Concat(s); return *this; }
-    AsciiString &operator+=(const char *s) { Concat(s); return *this; }
-    AsciiString &operator+=(AsciiString const &s) { Concat(s); return *this; }
-    //AsciiString &operator+=(UnicodeString const &stringSrc);
+    AsciiString &operator+=(char s);
+    AsciiString &operator+=(const char *s);
+    AsciiString &operator+=(AsciiString const &s);
+    // AsciiString &operator+=(UnicodeString const &stringSrc);
 
-    operator const char*() { return Str(); }
+    operator const char *() { return Str(); }
 
     void Validate();
     char *Peek() const;
@@ -125,12 +114,11 @@ public:
 
     void Trim();
     void To_Lower();
-    void Fix_Path();
     void Remove_Last_Char();
 
     void Format(const char *format, ...);
     void Format(AsciiString format, ...);
-        
+
     // Compare funcs should probably be private and operators should be friends and the
     // preferred interface.
     int Compare(const char *s) const { return strcmp(Str(), s); }
@@ -138,7 +126,7 @@ public:
 
     int Compare_No_Case(const char *s) const { return strcasecmp(Str(), s); }
     int Compare_No_Case(AsciiString const &string) const { return strcasecmp(Str(), string.Str()); }
-        
+
     // I assume these do this, though have no examples in binaries.
     char *Find(char c) { return strchr(Peek(), c); }
     char *Reverse_Find(char c) { return strrchr(Peek(), c); }
@@ -156,16 +144,19 @@ public:
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
 
+    AsciiString Posix_Path() const;
+    AsciiString Windows_Path() const;
+
 #ifdef GAME_DEBUG
     void Debug_Ignore_Leaks();
 #endif // GAME_DEBUG
 public:
     static AsciiString const s_emptyString;
 
-
 private:
-    //Probably supposed to be private
-    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
+    // Probably supposed to be private
+    void Ensure_Unique_Buffer_Of_Size(
+        int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
 
     void Format_VA(const char *format, va_list args);
     void Format_VA(AsciiString &format, va_list args);
@@ -173,20 +164,108 @@ private:
     AsciiStringData *m_data;
 };
 
-inline bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }
-inline bool operator==(AsciiString const &left, const char *right) { return left.Compare(right) == 0; }
-inline bool operator==(const char *left, AsciiString const &right) { return right.Compare(left) == 0; }
+inline AsciiString &AsciiString::operator=(char *s)
+{
+    Set(s);
 
-inline bool operator!=(AsciiString const &left, AsciiString const &right) { return left.Compare(right) != 0; }
-inline bool operator!=(AsciiString const &left, const char *right) { return left.Compare(right) != 0; }
-inline bool operator!=(const char *left, AsciiString const &right) { return right.Compare(left) != 0; }
+    return *this;
+}
 
-inline bool operator<(AsciiString const &left, AsciiString const &right) { return left.Compare(right) < 0; }
-inline bool operator<(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
-inline bool operator<(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+inline AsciiString &AsciiString::operator=(const char *s)
+{
+    Set(s);
 
-inline bool operator>(AsciiString const &left, AsciiString const &right) { return left.Compare(right) > 0; }
-inline bool operator>(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
-inline bool operator>(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+    return *this;
+}
+
+inline AsciiString &AsciiString::operator=(AsciiString const &stringSrc)
+{
+    Set(stringSrc);
+
+    return *this;
+}
+
+// AsciiString &operator=(UnicodeString const &stringSrc);
+
+inline AsciiString &AsciiString::operator+=(char s)
+{
+    Concat(s);
+
+    return *this;
+}
+
+inline AsciiString &AsciiString::operator+=(const char *s)
+{
+    Concat(s);
+
+    return *this;
+}
+
+inline AsciiString &AsciiString::operator+=(AsciiString const &s)
+{
+    Concat(s);
+
+    return *this;
+}
+
+inline bool operator==(AsciiString const &left, AsciiString const &right)
+{
+    return left.Compare(right) == 0;
+}
+
+inline bool operator==(AsciiString const &left, const char *right)
+{
+    return left.Compare(right) == 0;
+}
+
+inline bool operator==(const char *left, AsciiString const &right)
+{
+    return right.Compare(left) == 0;
+}
+
+inline bool operator!=(AsciiString const &left, AsciiString const &right)
+{
+    return left.Compare(right) != 0;
+}
+
+inline bool operator!=(AsciiString const &left, const char *right)
+{
+    return left.Compare(right) != 0;
+}
+
+inline bool operator!=(const char *left, AsciiString const &right)
+{
+    return right.Compare(left) != 0;
+}
+
+inline bool operator<(AsciiString const &left, AsciiString const &right)
+{
+    return left.Compare(right) < 0;
+}
+
+inline bool operator<(AsciiString const &left, const char *right)
+{
+    return left.Compare(right) < 0;
+}
+
+inline bool operator<(const char *left, AsciiString const &right)
+{
+    return right.Compare(left) >= 0;
+}
+
+inline bool operator>(AsciiString const &left, AsciiString const &right)
+{
+    return left.Compare(right) > 0;
+}
+
+inline bool operator>(AsciiString const &left, const char *right)
+{
+    return left.Compare(right) < 0;
+}
+
+inline bool operator>(const char *left, AsciiString const &right)
+{
+    return right.Compare(left) >= 0;
+}
 
 #endif // _ASCIISTRING_H

@@ -89,6 +89,10 @@ public:
     void Read_Byte_Array(uint8_t *ptr, int length);
     NameKeyType Read_Name_Key();
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     void Decrement_Data_Left(int size);
     void Clear_Chunk_Stack();
@@ -102,5 +106,27 @@ private:
     void *m_currentObject;
     void *m_userData;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void DataChunkInput::Hook_Me()
+{
+    Hook_Method(0x00572450, &Register_Parser);
+    Hook_Method(0x00572680, &Parse);
+    Hook_Method(0x005729D0, &Open_Data_Chunk);
+    //Hook_Method(0x005729C0, &Is_Valid_File);
+    //Hook_Method(0x00572BE0, &At_End_Of_Chunk);
+    Hook_Method(0x00572C20, &Read_Real32);
+    Hook_Method(0x00572C50, &Read_Int32);
+    Hook_Method(0x00572C80, &Read_Byte);
+    Hook_Method(0x00572CB0, &Read_Byte_Array);
+    Hook_Method(0x00572CE0, &Read_Name_Key);
+    Hook_Method(0x00572DA0, &Read_Dict);
+    Hook_Method(0x00573010, &Read_AsciiString);
+    Hook_Method(0x00573120, &Read_UnicodeString);
+}
+
+#endif
 
 #endif

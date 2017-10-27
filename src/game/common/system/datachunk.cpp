@@ -50,8 +50,8 @@ DataChunkInput::DataChunkInput(ChunkInputStream *stream) :
 DataChunkInput::~DataChunkInput() {}
 
 /**
-* @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
-*/
+ * @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
+ */
 void DataChunkInput::Register_Parser(const AsciiString &label, const AsciiString &parent_label,
     char (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data)
 {
@@ -65,8 +65,8 @@ void DataChunkInput::Register_Parser(const AsciiString &label, const AsciiString
 }
 
 /**
-* @brief Parse the file using all currently registered chunk parsers.
-*/
+ * @brief Parse the file using all currently registered chunk parsers.
+ */
 bool DataChunkInput::Parse(void *user_data)
 {
     AsciiString label;
@@ -74,6 +74,7 @@ bool DataChunkInput::Parse(void *user_data)
 
     // We can't parse if the header chunk hasn't been opened yet.
     if (!Is_Valid_File()) {
+        DEBUG_LOG("Attempted to parse a chunk file before TOC has been read.\n");
         return false;
     }
 
@@ -82,8 +83,10 @@ bool DataChunkInput::Parse(void *user_data)
     }
 
     while (!At_End_Of_File()) {
-        if (Get_Chunk_Data_Left() < 4) {
-            break;
+        if (m_chunkStack != nullptr) {
+            if (m_chunkStack->data_left < 4) {
+                break;
+            }
         }
 
         uint16_t version;
@@ -97,34 +100,31 @@ bool DataChunkInput::Parse(void *user_data)
         UserParser *parser;
         for (parser = m_parserList; parser != nullptr; parser = parser->next) {
             if (label == parser->label && parent_label == parser->parent_label) {
+                DataChunkInfo info;
+                info.label = label;
+                info.parent_label = parent_label;
+                info.version = version;
+                info.data_size = Get_Chunk_Data_Size();
+
+                // If parsing failed, return false.
+                if (!parser->parser(*this, &info, user_data)) {
+                    return false;
+                }
+
                 break;
-            }
-        }
-
-        // Setup the chunk info for the parser and then parse the chunk.
-        if (parser != nullptr) {
-            DataChunkInfo info;
-            info.label = label;
-            info.parent_label = parent_label;
-            info.version = version;
-            info.data_size = Get_Chunk_Data_Size();
-
-            // If parsing failed, return false.
-            if (!parser->parser(*this, &info, user_data)) {
-                return false;
             }
         }
 
         // Close the current chunk and remove it from the stack.
         Close_Data_Chunk();
     }
-    
+
     return true;
 }
 
 /**
-* @brief Opens a data chunk and returns the label associated with it. Optionally returns version in passed pointer.
-*/
+ * @brief Opens a data chunk and returns the label associated with it. Optionally returns version in passed pointer.
+ */
 AsciiString DataChunkInput::Open_Data_Chunk(uint16_t *version)
 {
     InputChunk *chunk = new InputChunk;
@@ -152,7 +152,7 @@ AsciiString DataChunkInput::Open_Data_Chunk(uint16_t *version)
     chunk->chunk_start = m_file->Tell();
     chunk->next = m_chunkStack;
     m_chunkStack = chunk;
-    
+
     if (m_file->Eof()) {
         return AsciiString::s_emptyString;
     }
@@ -197,13 +197,13 @@ float DataChunkInput::Read_Real32()
     uint32_t tmp;
 
     DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a float.\n");
-    
+
     m_file->Read(&tmp, sizeof(tmp));
     Decrement_Data_Left(sizeof(tmp));
     tmp = le32toh(tmp);
-    
+
     // Use aliasing type for the cast as GCC and Clang enforce aliasing rules which might break this otherwise.
-    return *reinterpret_cast<float_a*>(&tmp);
+    return *reinterpret_cast<float_a *>(&tmp);
 }
 
 int32_t DataChunkInput::Read_Int32()
@@ -243,7 +243,7 @@ AsciiString DataChunkInput::Read_AsciiString()
     size = le16toh(size);
 
     DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= size, "Read past end of chunk reading AsciiString string.\n");
-    
+
     m_file->Read(string.Get_Buffer_For_Read(size), size);
     Decrement_Data_Left(size);
     string.Peek()[size] = '\0';
@@ -263,7 +263,8 @@ UnicodeString DataChunkInput::Read_UnicodeString()
     Decrement_Data_Left(sizeof(size));
     size = le16toh(size);
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading UnicodeString string.\n");
+    DEBUG_ASSERT_PRINT(
+        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading UnicodeString string.\n");
 
     // Data is stored as LE UCS-16, so only BMP unicode chars can be stored.
     // TODO revamp unicode handling for none windows systems using libicu or libiconv.

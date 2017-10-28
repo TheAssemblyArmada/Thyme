@@ -28,6 +28,7 @@ branches:
   # whitelist
   only: 
     - master
+    - develop
 
 skip_commits:
   files:

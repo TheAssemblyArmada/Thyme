@@ -160,6 +160,9 @@ AsciiString DataChunkInput::Open_Data_Chunk(uint16_t *version)
     return m_contents.Get_Name(chunk->id);
 }
 
+/**
+ * @brief Closes the current chunk and pops its entry off the stack.
+ */
 void DataChunkInput::Close_Data_Chunk()
 {
     if (m_chunkStack == nullptr) {
@@ -176,6 +179,9 @@ void DataChunkInput::Close_Data_Chunk()
     delete done;
 }
 
+/**
+ * @brief Empties the chunk stack and positions the file stream at the start of the first chunk.
+ */
 void DataChunkInput::Reset()
 {
     Clear_Chunk_Stack();
@@ -191,6 +197,9 @@ AsciiString DataChunkInput::Get_Chunk_Label()
     return AsciiString::s_emptyString;
 }
 
+/**
+ * @brief Reads a 32bit floating point value from the chunk.
+ */
 float DataChunkInput::Read_Real32()
 {
     // Read as 32bit int so we can byteswap easily and then type pun for the return.
@@ -206,6 +215,9 @@ float DataChunkInput::Read_Real32()
     return *reinterpret_cast<float_a *>(&tmp);
 }
 
+/**
+ * @brief Reads a 32bit integer value from the chunk.
+ */
 int32_t DataChunkInput::Read_Int32()
 {
     int32_t tmp;
@@ -219,6 +231,9 @@ int32_t DataChunkInput::Read_Int32()
     return tmp;
 }
 
+/**
+ * @brief Reads a byte from the chunk.
+ */
 uint8_t DataChunkInput::Read_Byte()
 {
     uint8_t tmp;
@@ -231,6 +246,9 @@ uint8_t DataChunkInput::Read_Byte()
     return tmp;
 }
 
+/**
+ * @brief Reads an ascii string from the chunk.
+ */
 AsciiString DataChunkInput::Read_AsciiString()
 {
     uint16_t size;
@@ -251,6 +269,9 @@ AsciiString DataChunkInput::Read_AsciiString()
     return string;
 }
 
+/**
+ * @brief Reads a UCS-16 string from the chunk.
+ */
 UnicodeString DataChunkInput::Read_UnicodeString()
 {
     uint16_t size;
@@ -280,6 +301,9 @@ UnicodeString DataChunkInput::Read_UnicodeString()
     return string;
 }
 
+/**
+ * @brief Reads a Dict from the chunk.
+ */
 Dict DataChunkInput::Read_Dict()
 {
     uint16_t size = 0;
@@ -323,6 +347,9 @@ Dict DataChunkInput::Read_Dict()
     return dict;
 }
 
+/**
+ * @brief Reads an array of bytes from the chunk.
+ */
 void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int length)
 {
     DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= length, "Read past end of chunk reading AsciiString string.\n");
@@ -331,6 +358,9 @@ void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int length)
     Decrement_Data_Left(length);
 }
 
+/**
+ * @brief Reads a NameKeyType from the chunk.
+ */
 NameKeyType DataChunkInput::Read_Name_Key()
 {
     uint32_t key = Read_Int32();

@@ -113,11 +113,11 @@ public:
     NameKeyType Get_Nth_Key(int n);
     DataType Get_Type(NameKeyType key);
     DataType Get_Nth_Type(int n);
-    bool Get_Bool(NameKeyType key, bool *exists);
-    int Get_Int(NameKeyType key, bool *exists);
-    float Get_Real(NameKeyType key, bool *exists);
-    AsciiString Get_AsciiString(NameKeyType key, bool *exists);
-    UnicodeString Get_UnicodeString(NameKeyType key, bool *exists);
+    bool Get_Bool(NameKeyType key, bool *exists = nullptr);
+    int Get_Int(NameKeyType key, bool *exists = nullptr);
+    float Get_Real(NameKeyType key, bool *exists = nullptr);
+    AsciiString Get_AsciiString(NameKeyType key, bool *exists = nullptr);
+    UnicodeString Get_UnicodeString(NameKeyType key, bool *exists = nullptr);
     bool Get_Nth_Bool(int n);
     int Get_Nth_Int(int n);
     float Get_Nth_Real(int n);

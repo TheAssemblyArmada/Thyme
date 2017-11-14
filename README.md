@@ -55,6 +55,7 @@ Below is a list of similar projects and their respective original games:
  * [OpenTTD](https://www.openttd.org/) - Transport Tycoon Deluxe
  * [OpenMC2](https://github.com/LRFLEW/OpenMC2) - Midnight Club 2
  * [OpenDUNE](https://github.com/OpenDUNE/OpenDUNE) - Dune 2
+ * [OpenFodder] (https://github.com/OpenFodder/openfodder) - Cannon Fodder
 
 There is also the [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
 

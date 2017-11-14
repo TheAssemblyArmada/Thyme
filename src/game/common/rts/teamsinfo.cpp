@@ -16,7 +16,6 @@
 #include "gamedebug.h"
 
 #ifndef THYME_STANDALONE
-#include "hooker.h"
 StaticNameKey &g_theTeamNameKey = Make_Global<StaticNameKey>(0x00A3A830);
 #else
 StaticNameKey g_theTeamNameKey("teamName");
@@ -53,6 +52,7 @@ void TeamsInfoRec::Add_Team(const Dict *team)
             ti[i].dict.Clear();
         }
 
+        // Delete old array and replace with new one.
         if (m_teams != nullptr) {
             delete[] m_teams;
         }

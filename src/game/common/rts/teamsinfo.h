@@ -47,6 +47,10 @@ public:
 
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     int m_numTeams;
     int m_numTeamsAllocated;
@@ -68,7 +72,16 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
 
 // TODO Move this if more appropriate location found.
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+
 extern StaticNameKey &g_theTeamNameKey;
+
+inline void TeamsInfoRec::Hook_Me()
+{
+    Hook_Method(0x004D8F80, &Clear);
+    Hook_Method(0x004D9050, &Find_Team);
+    Hook_Method(0x004D91C0, &Add_Team);
+}
 #else
 extern StaticNameKey g_theTeamNameKey;
 #endif

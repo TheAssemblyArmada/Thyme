@@ -52,6 +52,7 @@
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "targa.h"
+#include "teamsinfo.h"
 #include "thread.h"
 #include "w3dfilesystem.h"
 #include "weapon.h"
@@ -129,6 +130,7 @@ void Setup_Hooks()
     Dict::Hook_Me();
     CompressionManager::Hook_Me();
     DataChunkInput::Hook_Me();
+    TeamsInfoRec::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

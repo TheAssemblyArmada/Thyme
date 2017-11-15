@@ -202,7 +202,7 @@ public:
     float m_infantryLightAfternoonScale;
     float m_infantryLightEveningScale;
     float m_infantryLightNightScale;
-    float m_unkFloat3;
+    float m_infantryLightOverride; // Based on ScriptAction::doSetInfantryLightingOverride
     float m_easySoloHumanHealthBonus;
     float m_normalSoloHumanHealthBonus;
     float m_hardSoloHumanHealthBonus;

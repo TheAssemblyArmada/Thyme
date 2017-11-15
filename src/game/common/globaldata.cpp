@@ -533,7 +533,7 @@ GlobalData::GlobalData()
     m_infantryLightAfternoonScale = 1.5f;
     m_infantryLightEveningScale = 1.5f;
     m_infantryLightNightScale = 1.5f;
-    m_unkFloat3 = -1.0f;
+    m_infantryLightOverride = -1.0f;
     m_numberGlobalLights = LIGHT_COUNT;
     m_maxRoadSegments = 0;
     m_maxRoadVertex = 0;

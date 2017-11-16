@@ -111,6 +111,7 @@ set(GAMEENGINE_SRC
     game/common/rts/science.cpp
     game/common/rts/teamsinfo.cpp
     game/logic/object/weapon.cpp
+    game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptaction.cpp
     game/logic/scriptengine/scriptcondition.cpp
     game/logic/scriptengine/scriptparam.cpp

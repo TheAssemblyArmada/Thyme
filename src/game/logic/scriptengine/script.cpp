@@ -17,6 +17,8 @@
 #include "scriptaction.h"
 #include "scriptcondition.h"
 
+Script *Script::s_emptyScript;
+
 Script::Script() :
     m_scriptName(),
     m_comment(),
@@ -62,7 +64,5 @@ void Script::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
     xfer->xferVersion(&version, 1);
-    bool active = m_isActive;
-    xfer->xferBool(&active);
-    m_isActive = active;
+    xfer->xferBool(&m_isActive);
 }

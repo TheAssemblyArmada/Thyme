@@ -37,6 +37,10 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    Script *Get_Next() { return m_nextScript; }
+
+    static Script *s_emptyScript;
+
 private:
     AsciiString m_scriptName;
     AsciiString m_comment;

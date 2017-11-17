@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Class for maintaining groups of scripts.
+ * @brief Class for maintaining a list of scripts.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,40 +14,33 @@
  */
 #pragma once
 
-#ifndef SCRIPTGROUP_H
-#define SCRIPTGROUP_H
+#ifndef SCRIPTLIST_H
+#define SCRIPTLIST_H
 
 #include "always.h"
-#include "asciistring.h"
 #include "mempoolobj.h"
 #include "snapshot.h"
 
+class ScriptGroup;
 class Script;
 
-class ScriptGroup : public MemoryPoolObject, public SnapShot
+class ScriptList : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_POOL(ScriptGroup);
-
+    IMPLEMENT_POOL(ScriptList)
 public:
-    ScriptGroup();
-    ~ScriptGroup();
+    ScriptList() : m_firstGroup(nullptr), m_firstScript(nullptr) {}
+    virtual ~ScriptList();
 
     // Snapshot interface methods.
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    ScriptGroup *Get_Next() { return m_nextGroup; }
-
 private:
+    ScriptGroup *m_firstGroup;
     Script *m_firstScript;
-    AsciiString m_groupName;
-    bool m_isGroupActive;
-    bool m_isGroupSubroutine;
-    ScriptGroup *m_nextGroup;
-    bool m_hasWarnings;
-
-    static int s_curID;
+    static int s_numInReadList;
+    static ScriptGroup *s_emptyGroup;
 };
 
-#endif
+#endif // SCRIPTLIST_H

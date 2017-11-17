@@ -17,7 +17,7 @@
 #include "scriptaction.h"
 #include "scriptcondition.h"
 
-Script *Script::s_emptyScript;
+Script *Script::s_emptyScript = nullptr;
 
 Script::Script() :
     m_scriptName(),

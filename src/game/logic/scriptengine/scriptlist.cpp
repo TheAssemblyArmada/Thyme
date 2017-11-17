@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Class for maintaining groups of scripts.
+ * @brief Classes for managing scripts.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,45 +12,26 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "scriptgroup.h"
+#include "scriptlist.h"
 #include "script.h"
+#include "scriptgroup.h"
 #include "xfer.h"
 
-int ScriptGroup::s_curID = 0;
+int ScriptList::s_numInReadList = 0;
+ScriptGroup *ScriptList::s_emptyGroup = nullptr;
 
-ScriptGroup::ScriptGroup() :
-    m_firstScript(nullptr),
-    m_groupName(),
-    m_isGroupActive(true),
-    m_isGroupSubroutine(false),
-    m_nextGroup(nullptr),
-    m_hasWarnings(false)
+ScriptList::~ScriptList()
 {
-    m_groupName.Format("Script Group %d", ++s_curID);
-}
-
-ScriptGroup::~ScriptGroup()
-{
+    delete m_firstGroup;
+    m_firstGroup = nullptr;
     delete m_firstScript;
     m_firstScript = nullptr;
-
-    ScriptGroup *saved;
-    for (ScriptGroup *next = m_nextGroup; next != nullptr; next = saved) {
-        saved = next->m_nextGroup;
-        next->m_nextGroup = nullptr;
-        delete next;
-        next = saved;
-    }
 }
 
-void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
+void ScriptList::Xfer_Snapshot(Xfer *xfer)
 {
-    uint8_t version = 2;
-    xfer->xferVersion(&version, 2);
-
-    if (version >= 2) {
-        xfer->xferBool(&m_isGroupActive);
-    }
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
 
     uint16_t script_count = 0;
     for (Script *next = m_firstScript; next != nullptr; next = next->Get_Next()) {
@@ -74,6 +55,31 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
 
         while (script_count--) {
             xfer->xferSnapshot(Script::s_emptyScript);
+        }
+    }
+
+    uint16_t group_count = 0;
+    for (ScriptGroup *next = m_firstGroup; next != nullptr; next = next->Get_Next()) {
+        ++group_count;
+    }
+
+    xfer->xferUnsignedShort(&group_count);
+
+    for (ScriptGroup *next = m_firstGroup; next != nullptr; next = next->Get_Next()) {
+        xfer->xferSnapshot(next);
+
+        if (--group_count == 0) {
+            break;
+        }
+    }
+
+    if (group_count > 0) {
+        if (ScriptList::s_emptyGroup == nullptr) {
+            ScriptList::s_emptyGroup = new ScriptGroup;
+        }
+
+        while (group_count--) {
+            xfer->xferSnapshot(ScriptList::s_emptyGroup);
         }
     }
 }

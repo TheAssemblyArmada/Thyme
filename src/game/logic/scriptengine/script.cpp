@@ -51,13 +51,13 @@ Script::~Script()
     for (Script *next = m_nextScript; next != nullptr; next = saved) {
         saved = next->m_nextScript;
         next->m_nextScript = nullptr;
-        delete next;
+        Delete_Instance(next);
         next = saved;
     }
 
-    delete m_condition;
-    delete m_action;
-    delete m_actionFalse;
+    Delete_Instance(m_condition);
+    Delete_Instance(m_action);
+    Delete_Instance(m_actionFalse);
 }
 
 void Script::Xfer_Snapshot(Xfer *xfer)

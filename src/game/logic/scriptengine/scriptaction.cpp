@@ -26,14 +26,14 @@ ScriptAction::ScriptAction() :
 ScriptAction::~ScriptAction()
 {
     for (int i = m_numParams; i < MAX_ACTION_PARAMETERS; ++i) {
-        delete m_params[i];
+        Delete_Instance(m_params[i]);
         m_params[i] = nullptr;
     }
 
     ScriptAction *saved;
     for (ScriptAction *next = m_nextAction; next != nullptr; next = saved) {
         saved = next->m_nextAction;
-        delete next;
+        Delete_Instance(next);
         next = saved;
     }
 }

@@ -22,9 +22,9 @@ ScriptGroup *ScriptList::s_emptyGroup = nullptr;
 
 ScriptList::~ScriptList()
 {
-    delete m_firstGroup;
+    Delete_Instance(m_firstGroup);
     m_firstGroup = nullptr;
-    delete m_firstScript;
+    Delete_Instance(m_firstScript);
     m_firstScript = nullptr;
 }
 

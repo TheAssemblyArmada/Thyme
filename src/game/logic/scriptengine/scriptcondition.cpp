@@ -38,7 +38,7 @@ Condition::Condition(ConditionType type) :
 Condition::~Condition()
 {
     for (int i = m_numParams; i < MAX_CONDITION_PARAMETERS; ++i) {
-        delete m_params[i];
+        Delete_Instance(m_params[i]);
         m_params[i] = nullptr;
     }
 
@@ -46,21 +46,21 @@ Condition::~Condition()
     for (Condition *next = m_nextAndCondition; next != nullptr; next = saved) {
         saved = next->m_nextAndCondition;
         next->m_nextAndCondition = nullptr;
-        delete next;
+        Delete_Instance(next);
         next = saved;
     }
 }
 
 OrCondition::~OrCondition()
 {
-    delete m_firstAnd;
+    Delete_Instance(m_firstAnd);
     m_firstAnd = nullptr;
 
     OrCondition *saved;
     for (OrCondition  *next = m_nextOr; next != nullptr; next = saved) {
         saved = next->m_nextOr;
         next->m_nextOr = nullptr;
-        delete next;
+        Delete_Instance(next);
         next = saved;
     }
 }

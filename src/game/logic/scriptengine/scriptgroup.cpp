@@ -31,14 +31,14 @@ ScriptGroup::ScriptGroup() :
 
 ScriptGroup::~ScriptGroup()
 {
-    delete m_firstScript;
+    Delete_Instance(m_firstScript);
     m_firstScript = nullptr;
 
     ScriptGroup *saved;
     for (ScriptGroup *next = m_nextGroup; next != nullptr; next = saved) {
         saved = next->m_nextGroup;
         next->m_nextGroup = nullptr;
-        delete next;
+        Delete_Instance(next);
         next = saved;
     }
 }

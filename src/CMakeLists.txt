@@ -109,6 +109,7 @@ set(GAMEENGINE_SRC
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
     game/common/rts/science.cpp
+    game/common/rts/sideslist.cpp
     game/common/rts/teamsinfo.cpp
     game/logic/object/weapon.cpp
     game/logic/scriptengine/script.cpp

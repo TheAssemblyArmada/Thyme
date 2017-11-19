@@ -19,10 +19,9 @@
 
 #include "always.h"
 #include "mempoolobj.h"
+#include "script.h"
+#include "scriptgroup.h"
 #include "snapshot.h"
-
-class ScriptGroup;
-class Script;
 
 class ScriptList : public MemoryPoolObject, public SnapShot
 {
@@ -35,6 +34,9 @@ public:
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
+
+    Script *Get_Scripts() { return m_firstScript; }
+    ScriptGroup *Get_Groups() { return m_firstGroup; }
 
 private:
     ScriptGroup *m_firstGroup;

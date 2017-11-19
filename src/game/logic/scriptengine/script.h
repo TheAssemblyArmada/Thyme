@@ -20,10 +20,9 @@
 #include "always.h"
 #include "asciistring.h"
 #include "mempoolobj.h"
+#include "scriptaction.h"
+#include "scriptcondition.h"
 #include "snapshot.h"
-
-class OrCondition;
-class ScriptAction;
 
 class Script : public MemoryPoolObject, public SnapShot
 {

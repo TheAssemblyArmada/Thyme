@@ -16,8 +16,10 @@
 #include "gamedebug.h"
 #include "xfer.h"
 
-#ifndef THYME_STANDALONE
-#include "hooker.h"
+#ifndef THYME_STNADALONE
+SidesList *&g_theSidesList = Make_Global<SidesList *>(0x00A2BE3C);
+#else
+SidesList *g_theSidesList = nullptr;
 #endif
 
 BuildListInfo::BuildListInfo() :

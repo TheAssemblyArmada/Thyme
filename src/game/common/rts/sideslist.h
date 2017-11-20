@@ -125,4 +125,12 @@ private:
     TeamsInfoRec m_skirmishTeamsRec;
 };
 
+#ifndef THYME_STNADALONE
+#include "hooker.h"
+
+extern SidesList *&g_theSidesList;
+#else
+extern SidesList *g_theSidesList;
+#endif
+
 #endif // SIDESLIST_H

@@ -32,6 +32,7 @@
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "science.h"
+#include "sideslist.h"
 #include "subsysteminterface.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
@@ -154,6 +155,9 @@ void GameEngine::Init(int argc, char *argv[])
 
     g_theMessageStream = Create_Message_Stream();
     g_theSubsystemList->Init_Subsystem(g_theMessageStream, nullptr, nullptr, nullptr, nullptr, "TheMessageStream");
+    
+    g_theSidesList = new SidesList;
+    g_theSubsystemList->Init_Subsystem(g_theSidesList, nullptr, nullptr, nullptr, nullptr, "TheSidesList");
     
     // TODO this is a WIP
 }

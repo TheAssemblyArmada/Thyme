@@ -140,7 +140,7 @@ public:
     bool Next_Token(AsciiString *tok, const char *seps);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
-    bool Is_Empty() const { return Get_Length() <= 0; }
+    bool Is_Empty() const { return  m_data == nullptr || *m_data->Peek() == '\0'; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
 

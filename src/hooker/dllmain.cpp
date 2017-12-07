@@ -51,6 +51,7 @@
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "scriptparam.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "thread.h"

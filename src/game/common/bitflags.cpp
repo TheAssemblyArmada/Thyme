@@ -65,7 +65,7 @@ template<> const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {
 };
 
 // TODO Temp to force instantiation. Fixes issue with Parameter::Read_Parameter.
-BitFlags<KIND_OF_COUNT> g_bf;
+template class BitFlags<KIND_OF_COUNT>;
 
 template<> const char *BitFlags<KIND_OF_COUNT>::s_bitNamesList[] = {
     "OBSTACLE",

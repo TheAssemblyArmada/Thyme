@@ -207,7 +207,4 @@ private:
     std::bitset<bits> m_bits;
 };
 
-// TODO Temp to force instantiation. Fixes issue with Parameter::Read_Parameter.
-extern BitFlags<KIND_OF_COUNT> g_bf;
-
 #endif // _BITFLAGS_H

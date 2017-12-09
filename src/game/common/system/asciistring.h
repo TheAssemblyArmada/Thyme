@@ -26,7 +26,6 @@ class AsciiString
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
-
     friend class UnicodeString;
 
 public:
@@ -266,6 +265,14 @@ inline bool operator>(AsciiString const &left, const char *right)
 inline bool operator>(const char *left, AsciiString const &right)
 {
     return right.Compare(left) >= 0;
+}
+
+inline AsciiString operator+(const AsciiString &a, const AsciiString &b)
+{
+    AsciiString retval = a;
+    retval += b;
+
+    return retval;
 }
 
 #endif // _ASCIISTRING_H

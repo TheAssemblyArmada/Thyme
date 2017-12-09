@@ -29,6 +29,41 @@ Parameter::Parameter(ParameterType type) :
 }
 
 /**
+ * @brief Alters the stored string of some types of paramter.
+ *
+ * 0x0051E990, also inlined example at around 0x00520376
+ */
+void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test, const AsciiString &side_replacemet)
+{
+    DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
+    switch (m_type) {
+        case SIDE:
+            DEBUG_LOG("Qualifying side '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
+            if (m_string + suffix == side_test) {
+                m_string = side_replacemet;
+            }
+
+            break;
+        case TEAM:
+            if (m_string == "<This Team>") {
+                DEBUG_LOG("Qualifying team, adding suffix '%s'.\n", suffix.Str());
+                m_string += suffix;
+            }
+
+            break;
+        case SCRIPT: // Fallthrough
+        case COUNTER: // Fallthrough
+        case FLAG: // Fallthrough
+        case SCRIPT_SUBROUTINE:
+            DEBUG_LOG("Qualifying adding suffix '%s' to '%s'.\n", suffix.Str(), m_string.Str());
+            m_string += suffix;
+            break;
+        default:
+            break;
+    };
+}
+
+/**
  * @brief Get the UI string for this parameter.
  *
  * 0x0051EB90
@@ -37,14 +72,14 @@ AsciiString Parameter::Get_UI_Text()
 {
     // Dunno where this is supposed to be from, only appears used here.
     static BorderColor _border_colors[] = {
-        { "Orange", 0xFFFF8700 },
-        { "Green", 0xFF00FF00 },
-        { "Blue", 0xFF0000FF },
-        { "Cyan", 0xFF00FFFF },
-        { "Magenta", 0xFFFF00FF },
-        { "Yellow", 0xFFFFFF00 },
-        { "Purple", 0xFF9E00FF },
-        { "Pink", 0xFFFF8670 }
+        {"Orange", 0xFFFF8700},
+        {"Green", 0xFF00FF00},
+        {"Blue", 0xFF0000FF},
+        {"Cyan", 0xFF00FFFF},
+        {"Magenta", 0xFFFF00FF},
+        {"Yellow", 0xFFFFFF00},
+        {"Purple", 0xFF9E00FF},
+        {"Pink", 0xFFFF8670}
     };
 
     AsciiString ui_string = m_string.Is_Empty() ? "???" : m_string;

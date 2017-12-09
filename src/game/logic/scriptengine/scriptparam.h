@@ -134,8 +134,11 @@ public:
     Parameter(ParameterType type);
     virtual ~Parameter() {}
 
-    AsciiString Get_UI_Text();
+    Parameter &operator=(const Parameter &that);
 
+    void Qualify(const AsciiString &suffix, const AsciiString &side_test, const AsciiString &side_replacemet);
+
+    AsciiString Get_UI_Text();
     void Get_Coord3D(Coord3D *coord);
     void Set_Coord3D(Coord3D *coord);
 
@@ -154,6 +157,21 @@ private:
     BitFlags<OBJECT_STATUS_COUNT> m_objStatus;
 };
 
+inline Parameter &Parameter::operator=(const Parameter &that)
+{
+    if (this != &that) {
+        m_type = that.m_type;
+        m_initialized = that.m_initialized;
+        m_int = that.m_int;
+        m_real = that.m_real;
+        m_string = that.m_string;
+        m_coord = that.m_coord;
+        m_objStatus = that.m_objStatus;
+    }
+
+    return *this;
+}
+
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
@@ -161,6 +179,7 @@ inline void Parameter::Hook_Me()
 {
     Hook_Function(0x0051F760, Read_Parameter);
     Hook_Method(0x0051EB90, &Get_UI_Text);
+    Hook_Method(0x0051E990, &Qualify);
 }
 #endif
 

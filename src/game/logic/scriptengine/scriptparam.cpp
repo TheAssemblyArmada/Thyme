@@ -17,172 +17,6 @@
 #include "gametype.h"
 #include "stringex.h"
 
-// TODO move this somewhere more appropriate?
-const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {"NONE",
-    "DESTROYED",
-    "CAN_ATTACK",
-    "UNDER_CONSTRUCTION",
-    "UNSELECTABLE",
-    "NO_COLLISIONS",
-    "NO_ATTACK",
-    "AIRBORNE_TARGET",
-    "PARACHUTING",
-    "REPULSOR",
-    "HIJACKED",
-    "AFLAME",
-    "BURNED",
-    "WET",
-    "IS_FIRING_WEAPON",
-    "IS_BRAKING",
-    "STEALTHED",
-    "DETECTED",
-    "CAN_STEALTH",
-    "SOLD",
-    "UNDERGOING_REPAIR",
-    "RECONSTRUCTING",
-    "MASKED",
-    "IS_ATTACKING",
-    "USING_ABILITY",
-    "IS_AIMING_WEAPON",
-    "NO_ATTACK_FROM_AI",
-    "IGNORING_STEALTH",
-    "IS_CARBOMB",
-    "DECK_HEIGHT_OFFSET",
-    "STATUS_RIDER1",
-    "STATUS_RIDER2",
-    "STATUS_RIDER3",
-    "STATUS_RIDER4",
-    "STATUS_RIDER5",
-    "STATUS_RIDER6",
-    "STATUS_RIDER7",
-    "STATUS_RIDER8",
-    "FAERIE_FIRE",
-    "KILLING_SELF",
-    "REASSIGN_PARKING",
-    "BOOBY_TRAPPED",
-    "IMMOBILE",
-    "DISGUISED",
-    "DEPLOYED",
-    nullptr};
-
-const char *BitFlags<KIND_OF_COUNT>::s_bitNamesList[] = {"OBSTACLE",
-    "SELECTABLE",
-    "IMMOBILE",
-    "CAN_ATTACK",
-    "STICK_TO_TERRAIN_SLOPE",
-    "CAN_CAST_REFLECTIONS",
-    "SHRUBBERY",
-    "STRUCTURE",
-    "INFANTRY",
-    "VEHICLE",
-    "AIRCRAFT",
-    "HUGE_VEHICLE",
-    "DOZER",
-    "HARVESTER",
-    "COMMANDCENTER",
-    "LINEBUILD",
-    "SALVAGER",
-    "WEAPON_SALVAGER",
-    "TRANSPORT",
-    "BRIDGE",
-    "LANDMARK_BRIDGE",
-    "BRIDGE_TOWER",
-    "PROJECTILE",
-    "PRELOAD",
-    "NO_GARRISON",
-    "WAVEGUIDE",
-    "WAVE_EFFECT",
-    "NO_COLLIDE",
-    "REPAIR_PAD",
-    "HEAL_PAD",
-    "STEALTH_GARRISON",
-    "CASH_GENERATOR",
-    "DRAWABLE_ONLY",
-    "MP_COUNT_FOR_VICTORY",
-    "REBUILD_HOLE",
-    "SCORE",
-    "SCORE_CREATE",
-    "SCORE_DESTROY",
-    "NO_HEAL_ICON",
-    "CAN_RAPPEL",
-    "PARACHUTABLE",
-    "CAN_BE_REPULSED",
-    "MOB_NEXUS",
-    "IGNORED_IN_GUI",
-    "CRATE",
-    "CAPTURABLE",
-    "CLEARED_BY_BUILD",
-    "SMALL_MISSILE",
-    "ALWAYS_VISIBLE",
-    "UNATTACKABLE",
-    "MINE",
-    "CLEANUP_HAZARD",
-    "PORTABLE_STRUCTURE",
-    "ALWAYS_SELECTABLE",
-    "ATTACK_NEEDS_LINE_OF_SIGHT",
-    "WALK_ON_TOP_OF_WALL",
-    "DEFENSIVE_WALL",
-    "FS_POWER",
-    "FS_FACTORY",
-    "FS_BASE_DEFENSE",
-    "FS_TECHNOLOGY",
-    "AIRCRAFT_PATH_AROUND",
-    "LOW_OVERLAPPABLE",
-    "FORCEATTACKABLE",
-    "AUTO_RALLYPOINT",
-    "TECH_BUILDING",
-    "POWERED",
-    "PRODUCED_AT_HELIPAD",
-    "DRONE",
-    "CAN_SEE_THROUGH_STRUCTURE",
-    "BALLISTIC_MISSILE",
-    "CLICK_THROUGH",
-    "SUPPLY_SOURCE_ON_PREVIEW",
-    "PARACHUTE",
-    "GARRISONABLE_UNTIL_DESTROYED",
-    "BOAT",
-    "IMMUNE_TO_CAPTURE",
-    "HULK",
-    "SHOW_PORTRAIT_WHEN_CONTROLLED",
-    "SPAWNS_ARE_THE_WEAPONS",
-    "CANNOT_BUILD_NEAR_SUPPLIES",
-    "SUPPLY_SOURCE",
-    "REVEAL_TO_ALL",
-    "DISGUISER",
-    "INERT",
-    "HERO",
-    "IGNORES_SELECT_ALL",
-    "DONT_AUTO_CRUSH_INFANTRY",
-    "CLIFF_JUMPER",
-    "FS_SUPPLY_DROPZONE",
-    "FS_SUPERWEAPON",
-    "FS_BLACK_MARKET",
-    "FS_SUPPLY_CENTER",
-    "FS_STRATEGY_CENTER",
-    "MONEY_HACKER",
-    "ARMOR_SALVAGER",
-    "REVEALS_ENEMY_PATHS",
-    "BOOBY_TRAP",
-    "FS_FAKE",
-    "FS_INTERNET_CENTER",
-    "BLAST_CRATER",
-    "PROP",
-    "OPTIMIZED_TREE",
-    "FS_ADVANCED_TECH",
-    "FS_BARRACKS",
-    "FS_WARFACTORY",
-    "FS_AIRFIELD",
-    "AIRCRAFT_CARRIER",
-    "NO_SELECT",
-    "REJECT_UNMANNED",
-    "CANNOT_RETALIATE",
-    "TECH_BASE_DEFENSE",
-    "EMP_HARDENED",
-    "DEMOTRAP",
-    "CONSERVATIVE_BUILDING",
-    "IGNORE_DOCKING_BONES",
-    nullptr};
-
 Parameter::Parameter(ParameterType type) :
     m_type(type),
     m_initialized(false),
@@ -564,7 +398,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
     // Read the object status into our bitflag struct.
     if (param->m_type == OBJECT_STATUS) {
         for (unsigned bit = 0; bit < OBJECT_STATUS_COUNT; ++bit) {
-            if (strcasecmp(param->m_string.Str(), BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[bit]) == 0) {
+            if (param->m_string.Compare_No_Case(BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[bit]) == 0) {
                 param->m_objStatus.Set(bit);
                 break;
             }
@@ -576,39 +410,39 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
             bool found = false; // For assertion check.
 
             for (int i = 0; BitFlags<KIND_OF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
-                if (param->m_string.Compare_No_Case(BitFlags<KIND_OF_COUNT>::s_bitNamesList[i])) {
+                if (param->m_string.Compare_No_Case(BitFlags<KIND_OF_COUNT>::s_bitNamesList[i]) == 0) {
                     param->m_int = i;
-                    found = true;
-                    break;
+
+                    return param;
                 }
 
                 // These additional checks look like they are intended to fix up old entries. Probably don't need to be
                 // checked every loop though... Need to identify maps/scripts that require these fixes.
-                if (param->m_string.Compare_No_Case("CRUSHER")) {
+                if (param->m_string.Compare_No_Case("CRUSHER") == 0) {
                     DEBUG_LOG("Parameter KindOF Matched CRUSHER.");
                     param->m_int = i;
-                    found = true;
-                    break;
+                    
+                    return param;
                 }
 
-                if (param->m_string.Compare_No_Case("CRUSHABLE")) {
+                if (param->m_string.Compare_No_Case("CRUSHABLE") == 0) {
                     DEBUG_LOG("Parameter KindOF Matched CRUSHABLE.");
                     param->m_int = i;
-                    found = true;
-                    break;
+
+                    return param;
                 }
 
-                if (param->m_string.Compare_No_Case("OVERLAPPABLE")) {
+                if (param->m_string.Compare_No_Case("OVERLAPPABLE") == 0) {
                     DEBUG_LOG("Parameter KindOF Matched OVERLAPPABLE.");
                     param->m_int = i;
-                    found = true;
-                    break;
+
+                    return param;
                 }
 
                 // This is a very odd condition, it basically sets it to SMALL_MISSILE, sets the m_int to 0 (because the
                 // compare will always hit and it has reset the loop counter) and then continues the loop though
                 // until SMALL_MISSLE is encountered in the list...
-                if (param->m_string.Compare_No_Case("MISSILE")) {
+                if (param->m_string.Compare_No_Case("MISSILE") == 0) {
                     // param->m_string.Format("SMALL_MISSLE");
                     // for (i = 0; BitFlags<KIND_OF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
                     //    if (param->m_string.Compare_No_Case("SMALL_MISSILE")) {

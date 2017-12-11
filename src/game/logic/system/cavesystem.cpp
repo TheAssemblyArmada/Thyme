@@ -16,14 +16,37 @@
 
 #include "cavesystem.h"
 
-CaveSystem::CaveSystem() : m_firstCave(0), m_lastCave(0), m_unk14(0) {};
+void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
+{
+#ifndef THYME_STANDALONE
+    Call_Method<void, TunnelTracker>(0x00587CC3, this);
+#else
+    // TODO 
+#endif
+}
+
+void TunnelTracker::Load_Post_Process()
+{
+#ifndef THYME_STANDALONE
+    Call_Method<void, TunnelTracker>(0x00587DA0, this);
+#else
+    // TODO 
+#endif
+}
 
 void CaveSystem::Reset()
 {
+
+    
 #ifndef THYME_STANDALONE
     Call_Method<void, CaveSystem>(0x004D56D0, this);
 #else
-    // TODO 
+    // Todo verify this
+    for (auto it = caves.begin(); it != caves.end(); ++it) {
+        if (*it != nullptr) {
+            caves.erase(it);
+        }
+    }
 #endif
 }
 

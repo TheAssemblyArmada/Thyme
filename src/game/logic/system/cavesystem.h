@@ -19,14 +19,31 @@
 #ifndef CAVESYSTEM_H
 #define CAVESYSTEM_H
 
-
+#include "mempoolobj.h"
 #include "subsysteminterface.h"
 #include "snapshot.h"
+
+class TunnelTracker : public MemoryPoolObject, public SnapShot
+{
+    IMPLEMENT_POOL(TunnelTracker);
+
+    // Snapshot interface methods
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override;
+
+    int unk08; //Ptr uses new
+    int unk0C; //Ptr uses new
+    int unk10; //Ptr uses new
+    int unk14;
+    int unk18;
+    int unk1C;
+    int unk20;
+};
 
 class CaveSystem : public SubsystemInterface, public SnapShot
 {
 public:
-    CaveSystem();
     virtual ~CaveSystem() {};
 
     // Subsystem interface methods.
@@ -40,9 +57,7 @@ public:
     virtual void Load_Post_Process() override {}
 
 private:
-    int m_firstCave; // 0x0C TunnelTracker *
-    int m_lastCave; // 0x10 TunnelTrack *
-    int m_unk14;
+    std::vector<TunnelTracker *> caves;
 };
 
 #endif // CAVESYSTEM_H

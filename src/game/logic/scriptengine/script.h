@@ -37,6 +37,8 @@ public:
     virtual void Load_Post_Process() override {}
 
     Script *Get_Next() { return m_nextScript; }
+    OrCondition *Get_Condition() { return m_condition; }
+    void Set_Condition(OrCondition *condition) { m_condition = condition; }
 
     static Script *s_emptyScript;
 

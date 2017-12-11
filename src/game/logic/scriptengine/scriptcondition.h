@@ -18,6 +18,7 @@
 #define SCRIPTCONDITION_H
 
 #include "always.h"
+#include "datachunk.h"
 #include "mempoolobj.h"
 #include "scriptparam.h"
 
@@ -41,6 +42,16 @@ public:
     Condition(ConditionType type);
     virtual ~Condition();
 
+    Condition *Duplicate();
+    Condition *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    void Set_Condition_Type(ConditionType type);
+
+    static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     ConditionType m_conditionType;
     int m_numParams;
@@ -59,9 +70,34 @@ public:
     OrCondition() : m_nextOr(nullptr), m_firstAnd(nullptr) {}
     virtual ~OrCondition();
 
+    OrCondition *Duplicate();
+    OrCondition *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    
+    static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     OrCondition *m_nextOr;
     Condition *m_firstAnd;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+inline void Condition::Hook_Me()
+{
+    Hook_Method(0x0051DD90, &Duplicate);
+    Hook_Method(0x0051E0B0, &Duplicate_And_Qualify);
+}
+
+inline void OrCondition::Hook_Me()
+{
+    Hook_Method(0x0051D7B0, &Duplicate);
+    Hook_Method(0x0051D8A0, &Duplicate_And_Qualify);
+    Hook_Function(0x0051D9B0, Parse_Data_Chunk);
+}
+#endif
 
 #endif // SCRIPTCONDITION_H

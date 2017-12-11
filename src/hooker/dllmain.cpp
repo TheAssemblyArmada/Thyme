@@ -51,7 +51,7 @@
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
-#include "scriptparam.h"
+#include "scriptcondition.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "thread.h"
@@ -132,6 +132,8 @@ void Setup_Hooks()
     CompressionManager::Hook_Me();
     DataChunkInput::Hook_Me();
     TeamsInfoRec::Hook_Me();
+    Condition::Hook_Me();
+    OrCondition::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

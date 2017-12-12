@@ -44,7 +44,7 @@ class TunnelTracker : public MemoryPoolObject, public SnapShot
 class CaveSystem : public SubsystemInterface, public SnapShot
 {
 public:
-    virtual ~CaveSystem() {};
+    virtual ~CaveSystem() { Reset(); };
 
     // Subsystem interface methods.
     virtual void Init() override {}
@@ -56,8 +56,30 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    bool Can_Switch_Index_to_Index(size_t unk1, size_t unk2);
+    TunnelTracker *Register_New_Cave(int index);
+    TunnelTracker *Get_Tunnel_Tracker_For_Cave_Index(size_t index);
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
 private:
-    std::vector<TunnelTracker *> caves;
+    std::vector<TunnelTracker *> m_caves;
 };
+
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+extern CaveSystem *&g_theCaveSystem;
+
+inline void CaveSystem::Hook_Me()
+{
+    Hook_Method(0x004D5730, &Can_Switch_Index_to_Index);
+    Hook_Method(0x004D5790, &Register_New_Cave);
+    Hook_Method(0x004D5880, &Get_Tunnel_Tracker_For_Cave_Index);
+}
+#else
+extern CaveSystem *g_theCaveSystem;
+#endif
 
 #endif // CAVESYSTEM_H

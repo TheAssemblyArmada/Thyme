@@ -25,6 +25,7 @@ set(GAMEENGINE_INCLUDES
     game/common/system
     game/common/rts
     game/logic/object
+    game/logic/system
     game/network
     platform
     w3d/lib
@@ -109,6 +110,7 @@ set(GAMEENGINE_SRC
     game/common/rts/playerlist.cpp
     game/common/rts/science.cpp
     game/logic/object/weapon.cpp
+    game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp

@@ -1,15 +1,19 @@
 # Specify version format
 version: "{build}"
 
-# Operating system (build VM template)
-os: Visual Studio 2015
-
 # build platform, i.e. Win32 (instead of x86), x64, Any CPU. This setting is optional.
 platform: Win32
 
 # specify custom environment variables
 environment:
   MSVC_DEFAULT_OPTIONS: ON
+  matrix:
+  - GENERATOR: "Visual Studio 14 2015"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+
+  - GENERATOR: "Visual Studio 15 2017"
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+  
 
 # build configuration, i.e. Debug, Release, etc.
 configuration: Release
@@ -46,8 +50,8 @@ before_build:
   - cmd: cd C:\projects\thyme
   - cmd: md build
   - cmd: cd build
-  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=Visual Studio 14 2015
-  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=Visual Studio 14 2015 Win64
+  - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=%GENERATOR%
+  - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=%GENERATOR% Win64
   - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%  ..
 
 after_build:

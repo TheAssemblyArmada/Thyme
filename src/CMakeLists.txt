@@ -7,7 +7,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
     endif()
     
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
+    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp ws2_32)
 else()
     #No other platforms yet.
 endif()

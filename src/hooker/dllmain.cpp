@@ -69,11 +69,47 @@
 #include <windows.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <winsock2.h>
+
+struct hostent *__stdcall cnconline_hook(const char *name)
+{
+    if (strcmp(name, "gamestats.gamespy.com") == 0) {
+        return gethostbyname("gamestats.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "master.gamespy.com") == 0) {
+        return gethostbyname("master.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "peerchat.gamespy.com") == 0) {
+        return gethostbyname("peerchat.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "gpcm.gamespy.com") == 0) {
+        return gethostbyname("gpcm.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "master.gamespy.com") == 0 || strcmp(name, "ccgenerals.ms19.gamespy.com") == 0 || strcmp(name, "ccgenzh.ms6.gamespy.com") == 0) {
+        return gethostbyname("master.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "servserv.generals.ea.com") == 0) {
+        return gethostbyname("http.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "www.gamespy.com") == 0 || strcmp(name, "ingamead.gamespy.com") == 0) {
+        return gethostbyname("server.cnc-online.net");
+    }
+
+    return gethostbyname(name);
+}
 
 void Setup_Hooks()
 {
     // Hook WinMain
     Hook_Function(0x00401700, Main_Func);
+
+    Hook_Function(0x007F5B06, cnconline_hook);
 
 	// Code that checks the launcher is running, launcher does CD check.
     Hook_Function(0x00412420, CopyProtect::checkForMessage);

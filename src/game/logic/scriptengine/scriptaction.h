@@ -38,7 +38,23 @@ public:
 
 public:
     ScriptAction();
+    ScriptAction(ScriptActionType type);
     virtual ~ScriptAction();
+
+    ScriptAction *Duplicate();
+    ScriptAction *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    AsciiString Get_UI_Text();
+
+    static bool Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static bool Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
+private:
+    void Set_Action_Type(ScriptActionType type);
+    static ScriptAction *Parse_Action(DataChunkInput &input, DataChunkInfo *info);
 
 private:
     ScriptActionType m_actionType;
@@ -47,5 +63,17 @@ private:
     ScriptAction *m_nextAction;
     bool m_hasWarnings;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void ScriptAction::Hook_Me()
+{
+    Hook_Method(0x0051FF80, &Duplicate);
+    Hook_Method(0x00520240, &Duplicate_And_Qualify);
+    Hook_Function(0x00521240, &Parse_Action_Chunk);
+    Hook_Function(0x00521280, &Parse_False_Action_Chunk);
+}
+#endif
 
 #endif // SCRIPTACTION_H

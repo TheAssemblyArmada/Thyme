@@ -51,6 +51,7 @@
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "scriptaction.h"
 #include "scriptcondition.h"
 #include "targa.h"
 #include "teamsinfo.h"
@@ -134,6 +135,7 @@ void Setup_Hooks()
     TeamsInfoRec::Hook_Me();
     Condition::Hook_Me();
     OrCondition::Hook_Me();
+    ScriptAction::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -38,7 +38,11 @@ public:
 
     Script *Get_Next() { return m_nextScript; }
     OrCondition *Get_Condition() { return m_condition; }
+    ScriptAction *Get_Action() { return m_action; }
+    ScriptAction *Get_False_Action() { return m_actionFalse; }
     void Set_Condition(OrCondition *condition) { m_condition = condition; }
+    void Set_Action(ScriptAction *action) { m_action = action; }
+    void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
 
     static Script *s_emptyScript;
 

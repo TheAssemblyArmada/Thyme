@@ -46,7 +46,7 @@ ScriptAction::~ScriptAction()
 }
 
 /**
- * @brief Returns a pointer to a duplicate of the or conditon.
+ * @brief Returns a pointer to a duplicate of this action.
  *
  * 0x0051FF80
  */
@@ -75,7 +75,7 @@ ScriptAction *ScriptAction::Duplicate()
 }
 
 /**
- * @brief Returns a pointer to a duplicate of the action, qualifying any parameters.
+ * @brief Returns a pointer to a duplicate of this action, qualifying any parameters.
  *
  * @see Parameter::Qualify
  *

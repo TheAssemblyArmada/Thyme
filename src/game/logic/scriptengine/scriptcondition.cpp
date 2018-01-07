@@ -241,7 +241,7 @@ OrCondition *OrCondition::Duplicate_And_Qualify(const AsciiString &str1, const A
  *
  * 0x0051D9B0
  */
-bool OrCondition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+bool OrCondition::Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     Script *script = static_cast<Script *>(data);
     OrCondition *new_or = new OrCondition;

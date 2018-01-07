@@ -36,6 +36,8 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    Script *Duplicate();
+    Script *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
     Script *Get_Next() { return m_nextScript; }
     OrCondition *Get_Condition() { return m_condition; }
     ScriptAction *Get_Action() { return m_action; }
@@ -44,6 +46,14 @@ public:
     void Set_Action(ScriptAction *action) { m_action = action; }
     void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
 
+    static Script *Parse_Script(DataChunkInput &input, uint16_t version);
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    void Hook_Xfer_Snapshot(Xfer *xfer);
+#endif
+
+public:
     static Script *s_emptyScript;
 
 private:
@@ -51,7 +61,7 @@ private:
     AsciiString m_comment;
     AsciiString m_conditionComment;
     AsciiString m_actionComment;
-    int m_unkInt1;
+    int32_t m_unkInt1;
     bool m_isActive;
     bool m_isOneShot;
     bool m_isSubroutine;
@@ -69,5 +79,17 @@ private:
     int m_unkInt4;
     int m_unkInt5;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void Script::Hook_Me()
+{
+    Hook_Method(0x0051CD70, &Hook_Xfer_Snapshot);
+    Hook_Method(0x0051CDB0, &Duplicate);
+    Hook_Method(0x0051CFC0, &Duplicate_And_Qualify);
+    Hook_Function(0x0051D200, Parse_Script);
+}
+#endif
 
 #endif // SCRIPT_H

@@ -51,6 +51,7 @@
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
 #include "targa.h"
@@ -136,6 +137,7 @@ void Setup_Hooks()
     Condition::Hook_Me();
     OrCondition::Hook_Me();
     ScriptAction::Hook_Me();
+    Script::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

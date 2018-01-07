@@ -73,7 +73,7 @@ public:
     OrCondition *Duplicate();
     OrCondition *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
     
-    static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static bool Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -96,7 +96,7 @@ inline void OrCondition::Hook_Me()
 {
     Hook_Method(0x0051D7B0, &Duplicate);
     Hook_Method(0x0051D8A0, &Duplicate_And_Qualify);
-    Hook_Function(0x0051D9B0, Parse_Data_Chunk);
+    Hook_Function(0x0051D9B0, Parse_OrCondition_Chunk);
 }
 #endif
 

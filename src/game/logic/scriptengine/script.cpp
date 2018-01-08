@@ -15,6 +15,8 @@
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
+#include "scriptgroup.h"
+#include "scriptlist.h"
 #include "xfer.h"
 
 Script *Script::s_emptyScript = nullptr;
@@ -24,7 +26,7 @@ Script::Script() :
     m_comment(),
     m_conditionComment(),
     m_actionComment(),
-    m_unkInt1(0),
+    m_evaluationInterval(0),
     m_isActive(true),
     m_isOneShot(true),
     m_isSubroutine(false),
@@ -81,8 +83,8 @@ Script *Script::Duplicate()
     Script *new_script = new Script;
 
     // Original calls these deletes here, but the ctor sets them null anyhow...
-    //Delete_Instance(new_script->m_condition);
-    //Delete_Instance(new_script->m_action);
+    // Delete_Instance(new_script->m_condition);
+    // Delete_Instance(new_script->m_action);
 
     new_script->m_scriptName = m_scriptName;
     new_script->m_comment = m_comment;
@@ -94,7 +96,7 @@ Script *Script::Duplicate()
     new_script->m_easy = m_easy;
     new_script->m_normal = m_normal;
     new_script->m_hard = m_hard;
-    new_script->m_unkInt1 = m_unkInt1;
+    new_script->m_evaluationInterval = m_evaluationInterval;
 
     if (m_condition) {
         new_script->m_condition = m_condition->Duplicate();
@@ -121,8 +123,8 @@ Script *Script::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString
     Script *new_script = new Script;
 
     // Original calls these deletes here, but the ctor sets them null anyhow...
-    //Delete_Instance(new_script->m_condition);
-    //Delete_Instance(new_script->m_action);
+    // Delete_Instance(new_script->m_condition);
+    // Delete_Instance(new_script->m_action);
 
     new_script->m_scriptName = m_scriptName;
     new_script->m_comment = m_comment;
@@ -134,7 +136,7 @@ Script *Script::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString
     new_script->m_easy = m_easy;
     new_script->m_normal = m_normal;
     new_script->m_hard = m_hard;
-    new_script->m_unkInt1 = m_unkInt1;
+    new_script->m_evaluationInterval = m_evaluationInterval;
 
     if (m_condition) {
         new_script->m_condition = m_condition->Duplicate_And_Qualify(str1, str2, str3);
@@ -149,6 +151,32 @@ Script *Script::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString
     }
 
     return new_script;
+}
+
+/**
+ * @brief Parses a script from a script group chunk.
+ *
+ * 0x0051D610
+ */
+bool Script::Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+{
+    Script *script = Parse_Script(input, info->version);
+    static_cast<ScriptGroup *>(data)->Add_Script(script, 0xFFFFFF);
+
+    return true;
+}
+
+/**
+ * @brief Parses a script from a script list chunk.
+ *
+ * 0x0051D5B0
+ */
+bool Script::Parse_Script_From_List_Chunk(DataChunkInput & input, DataChunkInfo * info, void * data)
+{
+    Script *script = Parse_Script(input, info->version);
+    static_cast<ScriptList *>(data)->Add_Script(script, 0xFFFFFF);
+
+    return true;
 }
 
 /**
@@ -168,22 +196,22 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
     new_script->m_comment = input.Read_AsciiString();
     new_script->m_conditionComment = input.Read_AsciiString();
     new_script->m_actionComment = input.Read_AsciiString();
-    new_script->m_isActive = input.Read_Byte() != 0;
-    new_script->m_isOneShot = input.Read_Byte() != 0;
-    new_script->m_easy = input.Read_Byte() != 0;
-    new_script->m_normal = input.Read_Byte() != 0;
-    new_script->m_hard = input.Read_Byte() != 0;
-    new_script->m_isSubroutine = input.Read_Byte() != 0;
+    new_script->m_isActive = input.Read_Byte();
+    new_script->m_isOneShot = input.Read_Byte();
+    new_script->m_easy = input.Read_Byte();
+    new_script->m_normal = input.Read_Byte();
+    new_script->m_hard = input.Read_Byte();
+    new_script->m_isSubroutine = input.Read_Byte();
 
     // Scripts version 2 and above appear to have this extra integer.
     if (version >= 2) {
-        new_script->m_unkInt1 = input.Read_Int32();
+        new_script->m_evaluationInterval = input.Read_Int32();
     }
 
     input.Register_Parser("OrCondition", "Script", OrCondition::Parse_OrCondition_Chunk, nullptr);
     input.Register_Parser("ScriptAction", "Script", ScriptAction::Parse_Action_Chunk, nullptr);
     input.Register_Parser("ScriptActionFalse", "Script", ScriptAction::Parse_False_Action_Chunk, nullptr);
-    
+
     return input.Parse(new_script) ? new_script : nullptr;
 }
 

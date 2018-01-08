@@ -19,6 +19,7 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "datachunk.h"
 #include "mempoolobj.h"
 #include "snapshot.h"
 
@@ -37,7 +38,14 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    ScriptGroup *Duplicate();
+    ScriptGroup *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    void Add_Script(Script *script, int index);
     ScriptGroup *Get_Next() { return m_nextGroup; }
+    Script *Get_Scripts() { return m_firstScript; }
+    void Set_Next(ScriptGroup *next) { m_nextGroup = next; }
+
+    static bool Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 private:
     Script *m_firstScript;

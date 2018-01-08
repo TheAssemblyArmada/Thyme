@@ -42,16 +42,21 @@ public:
     OrCondition *Get_Condition() { return m_condition; }
     ScriptAction *Get_Action() { return m_action; }
     ScriptAction *Get_False_Action() { return m_actionFalse; }
+    void Set_Next(Script *next) { m_nextScript = next; }
     void Set_Condition(OrCondition *condition) { m_condition = condition; }
     void Set_Action(ScriptAction *action) { m_action = action; }
     void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
 
-    static Script *Parse_Script(DataChunkInput &input, uint16_t version);
+    static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
     void Hook_Xfer_Snapshot(Xfer *xfer);
 #endif
+
+private:
+    static Script *Parse_Script(DataChunkInput &input, uint16_t version);
 
 public:
     static Script *s_emptyScript;
@@ -61,7 +66,7 @@ private:
     AsciiString m_comment;
     AsciiString m_conditionComment;
     AsciiString m_actionComment;
-    int32_t m_unkInt1;
+    int32_t m_evaluationInterval;
     bool m_isActive;
     bool m_isOneShot;
     bool m_isSubroutine;

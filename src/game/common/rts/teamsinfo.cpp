@@ -36,8 +36,6 @@ TeamsInfoRec::~TeamsInfoRec()
  */
 void TeamsInfoRec::Add_Team(const Dict *team)
 {
-    DEBUG_ASSERT_PRINT(m_numTeams < 1024, "Large number of teams created.\n");
-
     // If we have too many teams for our current allocation to handle, reallocate more.
     if (m_numTeams >= m_numTeamsAllocated) {
         TeamsInfo *ti = new TeamsInfo[m_numTeamsAllocated + TEAMINFO_GROWTH_STEP];

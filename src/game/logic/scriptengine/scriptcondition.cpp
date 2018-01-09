@@ -66,6 +66,7 @@ Condition::~Condition()
  */
 Condition *Condition::Duplicate()
 {
+    // Parameters are allocated in Set_Condition_Type which the ctor calls.
     Condition *new_cond = new Condition(m_conditionType);
 
     for (int i = 0; i < m_numParams; ++i) {
@@ -80,7 +81,7 @@ Condition *Condition::Duplicate()
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
 
-        for (int i = 0; i < m_numParams; ++i) {
+        for (int i = 0; i < next->m_numParams; ++i) {
             *new_cond->m_params[i] = *next->m_params[i];
         }
     }
@@ -97,13 +98,14 @@ Condition *Condition::Duplicate()
  */
 Condition *Condition::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
 {
+    // Parameters are allocated in Set_Condition_Type which the ctor calls.
     Condition *new_cond = new Condition(m_conditionType);
 
     for (int i = 0; i < m_numParams; ++i) {
         *new_cond->m_params[i] = *m_params[i];
         new_cond->m_params[i]->Qualify(str1, str2, str3);
     }
-
+    
     Condition *retval = new_cond;
 
     for (Condition *next = m_nextAndCondition; next != nullptr; next = next->m_nextAndCondition) {
@@ -112,7 +114,7 @@ Condition *Condition::Duplicate_And_Qualify(const AsciiString &str1, const Ascii
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
 
-        for (int i = 0; i < m_numParams; ++i) {
+        for (int i = 0; i < next->m_numParams; ++i) {
             *new_cond->m_params[i] = *next->m_params[i];
             new_cond->m_params[i]->Qualify(str1, str2, str3);
         }

@@ -35,7 +35,7 @@ Parameter::Parameter(ParameterType type) :
  */
 void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test, const AsciiString &side_replacemet)
 {
-    DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
+    //DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
     switch (m_type) {
         case SIDE:
             DEBUG_LOG("Qualifying side '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());

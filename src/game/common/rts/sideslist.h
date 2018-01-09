@@ -47,6 +47,11 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    BuildListInfo &operator=(const BuildListInfo &that);
+    
+    BuildListInfo *Get_Next() { return m_nextBuildList; }
+    void Set_Next(BuildListInfo *next) { m_nextBuildList = next; }
+
 private:
     AsciiString m_buildingName;
     AsciiString m_templateName;
@@ -115,6 +120,8 @@ public:
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
+
+    void Clear();
 
 private:
     int m_numSides;

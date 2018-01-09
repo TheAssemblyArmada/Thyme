@@ -53,8 +53,7 @@ BuildListInfo::BuildListInfo() :
 
 BuildListInfo::~BuildListInfo()
 {
-    BuildListInfo *saved;
-    for (BuildListInfo *next = m_nextBuildList; next != nullptr; next = saved) {
+    for (BuildListInfo *next = m_nextBuildList, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextBuildList;
         Delete_Instance(next);
         next = saved;
@@ -91,6 +90,39 @@ void BuildListInfo::Xfer_Snapshot(Xfer *xfer)
     }
 }
 
+BuildListInfo &BuildListInfo::operator=(const BuildListInfo &that)
+{
+    if (this != &that) {
+        m_buildingName = that.m_buildingName;
+        m_templateName = that.m_templateName;
+        m_location = that.m_location;
+        m_rallyPointOffset = that.m_rallyPointOffset;
+        m_angle = that.m_angle;
+        m_isInitiallyBuilt = that.m_isInitiallyBuilt;
+        m_numRebuilds = that.m_numRebuilds;
+        m_nextBuildList = that.m_nextBuildList;
+        m_script = that.m_script;
+        m_health = that.m_health;
+        m_whiner = that.m_whiner;
+        m_repairable = that.m_repairable;
+        m_sellable = that.m_sellable;
+        m_autoBuild = that.m_autoBuild;
+        m_renderObj = that.m_renderObj;
+        m_shadowObj = that.m_shadowObj;
+        m_selected = that.m_selected;
+        m_objectID = that.m_objectID;
+        m_objectTimestamp = that.m_objectTimestamp;
+        m_underConstruction = that.m_underConstruction;
+        memcpy(m_unkArray, that.m_unkArray, sizeof(m_unkArray));
+        m_unkbool3 = that.m_unkbool3;
+        m_unkint1 = that.m_unkint1;
+        m_unkint2 = that.m_unkint2;
+        m_unkbool4 = that.m_unkbool4;
+    }
+    
+    return *this;
+}
+
 SidesInfo::SidesInfo(const SidesInfo &that) : m_buildList(nullptr), m_dict(0), m_scripts(nullptr)
 {
     *this = that;
@@ -99,12 +131,14 @@ SidesInfo::SidesInfo(const SidesInfo &that) : m_buildList(nullptr), m_dict(0), m
 SidesInfo::~SidesInfo()
 {
     Init();
+    m_dict.Release_Data();
 }
 
 void SidesInfo::Init(const Dict *dict)
 {
     Delete_Instance(m_buildList);
     m_buildList = nullptr;
+    m_dict.Clear();
     Delete_Instance(m_scripts);
     m_scripts = nullptr;
 
@@ -115,7 +149,25 @@ void SidesInfo::Init(const Dict *dict)
 
 void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
 {
-    // TODO
+    BuildListInfo *position = nullptr;
+    BuildListInfo *build_list = m_buildList;
+
+    for (int i = pos; i > 0; --i) {
+        if (build_list == nullptr) {
+            break;
+        }
+
+        position = build_list;
+        build_list = build_list->Get_Next();
+    }
+
+    if (position != nullptr) {
+        list->Set_Next(position->Get_Next());
+        position->Set_Next(list);
+    } else {
+        list->Set_Next(m_buildList);
+        m_buildList = list;
+    }
 }
 
 int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
@@ -132,29 +184,39 @@ void SidesInfo::Reorder_In_BuildList(BuildListInfo *list, int pos)
 
 SidesInfo &SidesInfo::operator=(const SidesInfo &that)
 {
-#ifndef THYME_STANDALONE
-    return Call_Method<SidesInfo &, SidesInfo, const SidesInfo &>(0x004D5C80, this, that);
-#else
     if (this != &that) {
-        Init(nullptr);
+        Init();
         m_dict = that.m_dict;
 
-        //TODO Requires duplicate functions.
+        // Copy the build list.
+        for (BuildListInfo *next = that.m_buildList, *last = nullptr; next != nullptr; next = next->Get_Next()) {
+            BuildListInfo *new_list = new BuildListInfo;
+            *new_list = *next;
+
+            if (last == nullptr) {
+                m_buildList = new_list;
+            } else {
+                last->Set_Next(new_list);
+            }
+
+            last = new_list;
+        }
+        
+        if (that.m_scripts != nullptr) {
+            m_scripts = that.m_scripts->Duplicate();
+        }
     }
 
     return *this;
-#endif
 }
 
 SidesList::SidesList() : m_numSides(0), m_numSkirmishSides(0), m_teamRec(), m_skirmishTeamsRec() {}
 
 void SidesList::Reset()
 {
-#ifndef THYME_STANDALONE
-    Call_Method<void, SidesList>(0x004D6100, this);
-#else
-    // TODO Requires ScriptList ScriptGroup and BuildList
-#endif
+    Clear();
+    m_teamRec.Clear();
+    m_skirmishTeamsRec.Clear();
 }
 
 void SidesList::Xfer_Snapshot(Xfer *xfer)
@@ -175,5 +237,16 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
             // Transfer script class.
             xfer->xferSnapshot(m_sides[i].Get_ScriptList()->Get_Scripts());
         }
+    }
+}
+
+void SidesList::Clear()
+{
+    m_numSides = 0;
+    m_numSkirmishSides = 0;
+
+    for (int i = 0; i < MAX_SIDE_COUNT; ++i) {
+        m_sides[i].Init();
+        m_skirmishSides[i].Init();
     }
 }

@@ -283,3 +283,10 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
 
     return false;
 }
+
+#ifndef THYME_STANDALONE
+void ScriptList::Hook_Xfer_Snapshot(Xfer *xfer)
+{
+    ScriptList::Xfer_Snapshot(xfer);
+}
+#endif

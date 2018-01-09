@@ -93,7 +93,8 @@ inline void Script::Hook_Me()
     Hook_Method(0x0051CD70, &Hook_Xfer_Snapshot);
     Hook_Method(0x0051CDB0, &Duplicate);
     Hook_Method(0x0051CFC0, &Duplicate_And_Qualify);
-    Hook_Function(0x0051D200, Parse_Script);
+    Hook_Function(0x0051D610, Parse_Script_From_Group_Chunk);
+    Hook_Function(0x0051D5B0, Parse_Script_From_List_Chunk);
 }
 #endif
 

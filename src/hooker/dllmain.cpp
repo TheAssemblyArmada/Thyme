@@ -54,6 +54,8 @@
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
+#include "scriptgroup.h"
+#include "scriptlist.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "thread.h"
@@ -138,6 +140,8 @@ void Setup_Hooks()
     OrCondition::Hook_Me();
     ScriptAction::Hook_Me();
     Script::Hook_Me();
+    ScriptGroup::Hook_Me();
+    ScriptList::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

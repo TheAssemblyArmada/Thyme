@@ -104,7 +104,7 @@ TeamsInfo *TeamsInfoRec::Find_Team(AsciiString name, int *id)
         NameKeyType key = g_theTeamNameKey.Key();
         AsciiString string = m_teams[i].dict.Get_AsciiString(key);
 
-        if (string = name) {
+        if (string == name) {
             if (id != nullptr) {
                 *id = i;
             }

@@ -32,14 +32,16 @@ ScriptAction::ScriptAction(ScriptActionType type) :
 
 ScriptAction::~ScriptAction()
 {
+    // Clear our paramter instances.
     for (int i = m_numParams; i < MAX_ACTION_PARAMETERS; ++i) {
         Delete_Instance(m_params[i]);
         m_params[i] = nullptr;
     }
 
-    ScriptAction *saved;
-    for (ScriptAction *next = m_nextAction; next != nullptr; next = saved) {
+    // Clear our list of action instances.
+    for (ScriptAction *next = m_nextAction, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextAction;
+        next->m_nextAction = nullptr; // Prevent trying to next object twice
         Delete_Instance(next);
         next = saved;
     }
@@ -66,7 +68,7 @@ ScriptAction *ScriptAction::Duplicate()
         new_action->m_nextAction = new_next;
         new_action = new_next;
 
-        for (int i = 0; i < m_numParams; ++i) {
+        for (int i = 0; i < next->m_numParams; ++i) {
             *new_action->m_params[i] = *next->m_params[i];
         }
     }
@@ -98,7 +100,7 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const AsciiString &str1, const
         new_action->m_nextAction = new_next;
         new_action = new_next;
 
-        for (int i = 0; i < m_numParams; ++i) {
+        for (int i = 0; i < next->m_numParams; ++i) {
             *new_action->m_params[i] = *next->m_params[i];
             new_action->m_params[i]->Qualify(str1, str2, str3);
         }

@@ -50,10 +50,9 @@ Condition::~Condition()
     }
 
     // Clear our list of condition instances.
-    Condition *saved;
-    for (Condition *next = m_nextAndCondition; next != nullptr; next = saved) {
+    for (Condition *next = m_nextAndCondition, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextAndCondition;
-        next->m_nextAndCondition = nullptr;
+        next->m_nextAndCondition = nullptr;  // Prevent trying to next object twice
         Delete_Instance(next);
         next = saved;
     }

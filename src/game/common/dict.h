@@ -109,20 +109,20 @@ public:
     Dict &operator=(const Dict &src);
 
     void Clear() { Release_Data(); m_data = nullptr; }
-    int Get_PairCount() { return m_data->m_numPairsUsed; }
-    NameKeyType Get_Nth_Key(int n);
-    DataType Get_Type(NameKeyType key);
-    DataType Get_Nth_Type(int n);
-    bool Get_Bool(NameKeyType key, bool *exists = nullptr);
-    int Get_Int(NameKeyType key, bool *exists = nullptr);
-    float Get_Real(NameKeyType key, bool *exists = nullptr);
-    AsciiString Get_AsciiString(NameKeyType key, bool *exists = nullptr);
-    UnicodeString Get_UnicodeString(NameKeyType key, bool *exists = nullptr);
-    bool Get_Nth_Bool(int n);
-    int Get_Nth_Int(int n);
-    float Get_Nth_Real(int n);
-    AsciiString Get_Nth_AsciiString(int n);
-    UnicodeString Get_Nth_UnicodeString(int n);
+    int Get_PairCount() const { return m_data->m_numPairsUsed; }
+    NameKeyType Get_Nth_Key(int n) const;
+    DataType Get_Type(NameKeyType key) const;
+    DataType Get_Nth_Type(int n) const;
+    bool Get_Bool(NameKeyType key, bool *exists = nullptr) const;
+    int Get_Int(NameKeyType key, bool *exists = nullptr) const;
+    float Get_Real(NameKeyType key, bool *exists = nullptr) const;
+    AsciiString Get_AsciiString(NameKeyType key, bool *exists = nullptr) const;
+    UnicodeString Get_UnicodeString(NameKeyType key, bool *exists = nullptr) const;
+    bool Get_Nth_Bool(int n) const;
+    int Get_Nth_Int(int n) const;
+    float Get_Nth_Real(int n) const;
+    AsciiString Get_Nth_AsciiString(int n) const;
+    UnicodeString Get_Nth_UnicodeString(int n) const;
     void Set_Bool(NameKeyType key, bool value);
     void Set_Int(NameKeyType key, int value);
     void Set_Real(NameKeyType key, float value);
@@ -139,7 +139,7 @@ public:
 private:
     DictPair *Ensure_Unique(int pairs_needed, bool preserve_data = false, DictPair *to_translate = nullptr);
     DictPair *Set_Prep(NameKeyType key, DataType type);
-    DictPair *Find_Pair_By_Key(NameKeyType key);
+    DictPair *Find_Pair_By_Key(NameKeyType key) const;
     void Sort_Pairs();
 
 private:

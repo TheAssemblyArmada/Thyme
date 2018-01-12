@@ -14,12 +14,7 @@
  */
 #include "teamsinfo.h"
 #include "gamedebug.h"
-
-#ifndef THYME_STANDALONE
-StaticNameKey &g_theTeamNameKey = Make_Global<StaticNameKey>(0x00A3A830);
-#else
-StaticNameKey g_theTeamNameKey("teamName");
-#endif
+#include "staticnamekey.h"
 
 TeamsInfoRec::TeamsInfoRec(const TeamsInfoRec &that) : m_numTeams(0), m_numTeamsAllocated(0), m_teams(nullptr)
 {

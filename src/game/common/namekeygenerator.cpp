@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Maps strings to 32bit integers.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -155,13 +154,4 @@ void NameKeyGenerator::Free_Sockets()
 
         m_sockets[i] = nullptr;
     }
-}
-
-NameKeyType StaticNameKey::Key()
-{
-    if (m_key == NAMEKEY_INVALID && g_theNameKeyGenerator != nullptr) {
-        m_key = g_theNameKeyGenerator->Name_To_Key(m_name);
-    }
-
-    return m_key;
 }

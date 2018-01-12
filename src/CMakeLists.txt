@@ -61,6 +61,7 @@ set(GAMEENGINE_SRC
     game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
+    game/common/staticnamekey.cpp
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp

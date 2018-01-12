@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Maps strings to 32bit integers.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -83,21 +82,6 @@ private:
 private:
     Bucket *m_sockets[SOCKET_COUNT];
     NameKeyType m_nextID;
-};
-
-class StaticNameKey
-{
-public:
-    StaticNameKey(const char *name) : m_key(NAMEKEY_INVALID), m_name(name) {}
-
-    operator NameKeyType() { return Key(); }
-
-    NameKeyType Key();
-    const char *Name() { return m_name; }
-
-private:
-    NameKeyType m_key;
-    const char *m_name;
 };
 
 #ifndef THYME_STANDALONE

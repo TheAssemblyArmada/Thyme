@@ -1,30 +1,29 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MAPUTIL.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Map file handling utility functions.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Map file handling utility functions.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "maputil.h"
-#include "namekeygenerator.h"
+#include "staticnamekey.h"
 #include "minmax.h"
 #include "globaldata.h"
+
+#ifndef THYME_STANDALONE
+WaypointMap *&g_waypoints = Make_Global<WaypointMap*>(0x00945AD4);
+MapCache *&g_theMapCache = Make_Global<MapCache*>(0x00A2B974);
+#else
+WaypointMap *g_waypoints;
+MapCache *g_theMapCache;
+#endif
 
 const char *const MapCache::s_mapDirName = "Maps";
 const char *const MapCache::s_mapExtension = "map";
@@ -36,7 +35,7 @@ void WaypointMap::Update()
 {
     if ( g_waypoints != nullptr ) {
         clear();
-        AsciiString key_name = g_theNameKeyGenerator->Key_To_Name(g_keyInitialCameraPosition);
+        AsciiString key_name = g_theNameKeyGenerator->Key_To_Name(g_theInitialCameraPositionKey);
         auto it = g_waypoints->find(key_name);
 
         if ( it != g_waypoints->end() ) {

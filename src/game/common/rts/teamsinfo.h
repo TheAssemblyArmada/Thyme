@@ -74,16 +74,12 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
-extern StaticNameKey &g_theTeamNameKey;
-
 inline void TeamsInfoRec::Hook_Me()
 {
     Hook_Method(0x004D8F80, &Clear);
     Hook_Method(0x004D9050, &Find_Team);
     Hook_Method(0x004D91C0, &Add_Team);
 }
-#else
-extern StaticNameKey g_theTeamNameKey;
 #endif
 
 #endif // TEAMSINFO_H

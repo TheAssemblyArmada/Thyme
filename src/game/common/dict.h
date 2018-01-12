@@ -108,6 +108,7 @@ public:
 
     Dict &operator=(const Dict &src);
 
+    void Init(const Dict *dict = nullptr);
     void Clear() { Release_Data(); m_data = nullptr; }
     int Get_PairCount() const { return m_data->m_numPairsUsed; }
     NameKeyType Get_Nth_Key(int n) const;
@@ -145,6 +146,15 @@ private:
 private:
     DictPairData *m_data;
 };
+
+inline void Dict::Init(const Dict *that)
+{
+    Clear();
+
+    if (that != nullptr) {
+        *this = *that;
+    }
+}
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"

@@ -136,7 +136,7 @@ public:
     bool Starts_With_No_Case(const char *p) const;
     bool Ends_With_No_Case(const char *p) const;
 
-    bool Next_Token(AsciiString *tok, const char *seps);
+    bool Next_Token(AsciiString *tok, const char *seps = nullptr);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
     bool Is_Empty() const { return  m_data == nullptr || *m_data->Peek() == '\0'; }

@@ -38,13 +38,27 @@ private:
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
-extern StaticNameKey &g_theTeamNameKey;
+extern StaticNameKey &g_teamNameKey;
 extern StaticNameKey &g_theInitialCameraPositionKey;
-extern StaticNameKey &g_thePlayerNameKey;
+extern StaticNameKey &g_playerNameKey;
+extern StaticNameKey &g_playerIsHumanKey;
+extern StaticNameKey &g_playerDisplayNameKey;
+extern StaticNameKey &g_playerFactionKey;
+extern StaticNameKey &g_playerAlliesKey;
+extern StaticNameKey &g_playerEnemiesKey;
+extern StaticNameKey &g_teamOwnerKey;
+extern StaticNameKey &g_teamIsSingletonKey;
 #else
-extern StaticNameKey g_theTeamNameKey;
+extern StaticNameKey g_teamNameKey;
 extern StaticNameKey g_theInitialCameraPositionKey;
-extern StaticNameKey g_thePlayerNameKey;
+extern StaticNameKey g_playerNameKey;
+extern StaticNameKey g_playerIsHumanKey;
+extern StaticNameKey g_playerDisplayNameKey;
+extern StaticNameKey g_playerFactionKey;
+extern StaticNameKey g_playerAlliesKey;
+extern StaticNameKey g_playerEnemiesKey;
+extern StaticNameKey g_teamOwnerKey;
+extern StaticNameKey g_teamIsSingletonKey;
 #endif
 
 #endif // STATICNAMEKEY_H

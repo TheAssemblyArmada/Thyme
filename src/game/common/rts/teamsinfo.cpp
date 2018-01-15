@@ -96,7 +96,7 @@ TeamsInfo *TeamsInfoRec::Find_Team(AsciiString name, int *id)
     }
 
     for (int i = 0; i < m_numTeams; ++i) {
-        NameKeyType key = g_theTeamNameKey.Key();
+        NameKeyType key = g_teamNameKey.Key();
         AsciiString string = m_teams[i].dict.Get_AsciiString(key);
 
         if (string == name) {
@@ -118,7 +118,7 @@ void TeamsInfoRec::Clear()
 {
     // Clear all the dicts
     for (int i = 0; i < m_numTeamsAllocated; ++i) {
-        m_teams[i].dict.Clear();
+        m_teams[i].dict.Init();
     }
 
     m_numTeams = 0;

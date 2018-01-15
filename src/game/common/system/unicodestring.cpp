@@ -242,6 +242,25 @@ void UnicodeString::Translate(AsciiString const &string)
     }
 }
 
+void UnicodeString::Translate(const char *string)
+{
+    Release_Buffer();
+
+    int str_len = strlen(string);
+
+    for (int i = 0; i < str_len; ++i) {
+        wchar_t c;
+
+        if (string[i] != '\0') {
+            c = string[i];
+        } else {
+            c = L'\0';
+        }
+
+        Concat(c);
+    }
+}
+
 void UnicodeString::Concat(char16_t c)
 {
     wchar_t str[2];

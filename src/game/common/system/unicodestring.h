@@ -136,6 +136,7 @@ public:
     void Set(UnicodeString const &string);
 
     void Translate(AsciiString const &string);
+    void Translate(const char *string);
 
     void Concat(char16_t c);
     void Concat(wchar_t c);

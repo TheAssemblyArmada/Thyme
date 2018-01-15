@@ -76,6 +76,19 @@ public:
         Set(string);
         return *this;
     }
+
+    UnicodeString &operator=(AsciiString const &string)
+    {
+        Translate(string);
+        return *this;
+    }
+
+    UnicodeString &operator=(const char *s)
+    {
+        Translate(s);
+        return *this;
+    }
+
     // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
     UnicodeString &operator+=(char16_t s)

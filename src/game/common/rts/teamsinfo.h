@@ -19,6 +19,7 @@
 
 #include "always.h"
 #include "dict.h"
+#include "gamedebug.h"
 #include "namekeygenerator.h"
 
 // Wrapper around dict with a default ctor.
@@ -44,8 +45,9 @@ public:
     void Remove_Team(int id);
     TeamsInfo *Find_Team(AsciiString name, int *id);
     void Clear();
-
+    int Count() { return m_numTeams; }
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
+    TeamsInfo *Get_Team_Info(int index);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -69,6 +71,13 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
 
     return *this;
 }
+
+inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
+{
+    ASSERT_THROW_PRINT(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.\n");
+    return &m_teams[index];
+}
+
 
 // TODO Move this if more appropriate location found.
 #ifndef THYME_STANDALONE

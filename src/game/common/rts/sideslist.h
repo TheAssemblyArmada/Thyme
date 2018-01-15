@@ -35,7 +35,7 @@ class BuildListInfo : public MemoryPoolObject, public SnapShot
 
     enum
     {
-        UNLIMITED_REBUILDS = 0xFFFFFFFF,
+        UNLIMITED_REBUILDS = -1,
     };
 
 public:
@@ -51,6 +51,12 @@ public:
     
     BuildListInfo *Get_Next() { return m_nextBuildList; }
     void Set_Next(BuildListInfo *next) { m_nextBuildList = next; }
+    void Set_Building_Name(AsciiString name) { m_buildingName = name; }
+    void Set_Template_Name(AsciiString name) { m_templateName = name; }
+    void Set_Location(Coord3D &location) { m_location = location; }
+    void Set_Angle(float angle) { m_angle = angle; }
+    void Set_Intially_Built(bool built) { m_isInitiallyBuilt = built; }
+    void Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info);
 
 private:
     AsciiString m_buildingName;
@@ -91,7 +97,10 @@ public:
     void Add_To_BuildList(BuildListInfo *list, int pos);
     int Remove_From_BuildList(BuildListInfo *list);
     void Reorder_In_BuildList(BuildListInfo *list, int pos);
-    ScriptList *Get_ScriptList() { return m_scripts; }
+    void Set_ScriptList(ScriptList *list) { m_scripts = list; }
+    ScriptList *Get_ScriptList() const { return m_scripts; }
+    Dict &Get_Dict() { return m_dict; }
+
     SidesInfo &operator=(const SidesInfo &that);
 
 private:
@@ -106,9 +115,10 @@ class SidesList : public SubsystemInterface, public SnapShot
     {
         MAX_TEAM_DEPTH = 3,
         MAX_SIDE_COUNT = 16,
+        MAX_LIST_COUNT = 24,
     };
 public:
-    SidesList();
+    SidesList() : m_numSides(0), m_numSkirmishSides(0), m_teamRec(), m_skirmishTeamsRec() {}
     virtual ~SidesList() {}
 
     // Subsystem interface methods.
@@ -122,6 +132,20 @@ public:
     virtual void Load_Post_Process() override {}
 
     void Clear();
+    void Add_Side(const Dict *dict);
+    void Add_Team(const Dict *dict) { m_teamRec.Add_Team(dict); }
+    void Remove_Team(int index) { m_teamRec.Remove_Team(index); }
+    void Empty_Teams();
+    void Empty_Sides();
+    bool Validate_Sides();
+    bool Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &allies);
+    void Add_Player_By_Template(AsciiString template_name);
+    SidesInfo *Find_Side_Info(AsciiString name, int *index = nullptr);
+    SidesInfo *Find_Skirmish_Side_Info(AsciiString name, int *index = nullptr);
+    SidesInfo *Get_Sides_Info(int index);
+    TeamsInfo *Find_Team_Info(AsciiString name, int *index) { return m_teamRec.Find_Team(name, index); }
+
+    static bool Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 private:
     int m_numSides;

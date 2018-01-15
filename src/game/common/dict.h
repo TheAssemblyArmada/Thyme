@@ -103,7 +103,7 @@ private:
 
 public:
     Dict(const Dict &src);
-    Dict(int pair_pre_alloc);
+    Dict(int pair_pre_alloc = 0);
     ~Dict();
 
     Dict &operator=(const Dict &src);

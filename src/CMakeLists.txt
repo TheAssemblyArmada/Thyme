@@ -105,11 +105,13 @@ set(GAMEENGINE_SRC
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
+    game/common/rts/buildinfo.cpp
     game/common/rts/handicap.cpp
     game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
     game/common/rts/science.cpp
+    game/common/rts/sidesinfo.cpp
     game/common/rts/sideslist.cpp
     game/common/rts/teamsinfo.cpp
     game/logic/object/weapon.cpp

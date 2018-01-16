@@ -24,234 +24,11 @@ SidesList *&g_theSidesList = Make_Global<SidesList *>(0x00A2BE3C);
 SidesList *g_theSidesList = nullptr;
 #endif
 
-BuildListInfo::BuildListInfo() :
-    m_buildingName(),
-    m_templateName(),
-    m_location{0.0f, 0.0f, 0.0f},
-    m_rallyPointOffset{0.0f, 0.0f},
-    m_angle(0.0f),
-    m_isInitiallyBuilt(false),
-    m_numRebuilds(0),
-    m_nextBuildList(nullptr),
-    m_script(),
-    m_health(100),
-    m_whiner(true),
-    m_repairable(false),
-    m_sellable(true),
-    m_autoBuild(true),
-    m_renderObj(nullptr),
-    m_shadowObj(nullptr),
-    m_selected(false),
-    m_objectID(OBJECT_UNK),
-    m_objectTimestamp(0),
-    m_underConstruction(false),
-    m_unkbool3(false),
-    m_unkint1(0),
-    m_unkint2(0),
-    m_unkbool4(false)
-{
-    memset(m_unkArray, 0, sizeof(m_unkArray));
-}
-
-BuildListInfo::~BuildListInfo()
-{
-    for (BuildListInfo *next = m_nextBuildList, *saved = nullptr; next != nullptr; next = saved) {
-        saved = next->m_nextBuildList;
-        Delete_Instance(next);
-        next = saved;
-    }
-}
-
-void BuildListInfo::Xfer_Snapshot(Xfer *xfer)
-{
-    uint8_t version = 2;
-    xfer->xferVersion(&version, 2);
-    xfer->xferAsciiString(&m_buildingName);
-    xfer->xferAsciiString(&m_templateName);
-    xfer->xferCoord3D(&m_location);
-    xfer->xferCoord2D(&m_rallyPointOffset);
-    xfer->xferReal(&m_angle);
-    xfer->xferBool(&m_isInitiallyBuilt);
-    xfer->xferUnsignedInt(&m_numRebuilds);
-    xfer->xferAsciiString(&m_script);
-    xfer->xferInt(&m_health);
-    xfer->xferBool(&m_whiner);
-    xfer->xferBool(&m_repairable);
-    xfer->xferBool(&m_sellable);
-    xfer->xferBool(&m_autoBuild);
-    xfer->xferObjectID(&m_objectID);
-    xfer->xferUnsignedInt(&m_objectTimestamp);
-    xfer->xferBool(&m_underConstruction);
-    xfer->xferUser(m_unkArray, sizeof(m_unkArray));
-    xfer->xferBool(&m_unkbool3);
-    xfer->xferInt(&m_unkint1);
-    xfer->xferBool(&m_unkbool4);
-
-    if (version >= 2) {
-        xfer->xferInt(&m_unkint2);
-    }
-}
-
-BuildListInfo &BuildListInfo::operator=(const BuildListInfo &that)
-{
-    if (this != &that) {
-        m_buildingName = that.m_buildingName;
-        m_templateName = that.m_templateName;
-        m_location = that.m_location;
-        m_rallyPointOffset = that.m_rallyPointOffset;
-        m_angle = that.m_angle;
-        m_isInitiallyBuilt = that.m_isInitiallyBuilt;
-        m_numRebuilds = that.m_numRebuilds;
-        m_nextBuildList = that.m_nextBuildList;
-        m_script = that.m_script;
-        m_health = that.m_health;
-        m_whiner = that.m_whiner;
-        m_repairable = that.m_repairable;
-        m_sellable = that.m_sellable;
-        m_autoBuild = that.m_autoBuild;
-        m_renderObj = that.m_renderObj;
-        m_shadowObj = that.m_shadowObj;
-        m_selected = that.m_selected;
-        m_objectID = that.m_objectID;
-        m_objectTimestamp = that.m_objectTimestamp;
-        m_underConstruction = that.m_underConstruction;
-        memcpy(m_unkArray, that.m_unkArray, sizeof(m_unkArray));
-        m_unkbool3 = that.m_unkbool3;
-        m_unkint1 = that.m_unkint1;
-        m_unkint2 = that.m_unkint2;
-        m_unkbool4 = that.m_unkbool4;
-    }
-
-    return *this;
-}
-
-void BuildListInfo::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info)
-{
-    m_buildingName = input.Read_AsciiString();
-    m_templateName = input.Read_AsciiString();
-    m_location.x = input.Read_Real32();
-    m_location.y = input.Read_Real32();
-    m_location.z = input.Read_Real32();
-    m_angle = input.Read_Real32();
-    m_isInitiallyBuilt = input.Read_Byte();
-    m_numRebuilds = input.Read_Int32();
-
-    if (info->version >= 3) {
-        m_script = input.Read_AsciiString();
-        m_health = input.Read_Int32();
-        m_whiner = input.Read_Byte();
-        m_repairable = input.Read_Byte();
-        m_sellable = input.Read_Byte();
-    }
-}
-
-SidesInfo::SidesInfo(const SidesInfo &that) : m_buildList(nullptr), m_dict(0), m_scripts(nullptr)
-{
-    *this = that;
-}
-
-SidesInfo::~SidesInfo()
-{
-    Init();
-    m_dict.Release_Data();
-}
-
-void SidesInfo::Init(const Dict *dict)
-{
-    Delete_Instance(m_buildList);
-    m_buildList = nullptr;
-    m_dict.Init(dict);
-    Delete_Instance(m_scripts);
-    m_scripts = nullptr;
-}
-
-void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
-{
-    BuildListInfo *position = nullptr;
-    BuildListInfo *build_list = m_buildList;
-
-    for (int i = pos; i > 0; --i) {
-        if (build_list == nullptr) {
-            break;
-        }
-
-        position = build_list;
-        build_list = build_list->Get_Next();
-    }
-
-    if (position != nullptr) {
-        list->Set_Next(position->Get_Next());
-        position->Set_Next(list);
-    } else {
-        list->Set_Next(m_buildList);
-        m_buildList = list;
-    }
-}
-
-int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
-{
-    if (list == nullptr) {
-        return 0;
-    }
-
-    if (list == m_buildList) {
-        m_buildList = list->Get_Next();
-        list->Set_Next(nullptr);
-
-        return 0;
-    }
-
-    int pos = 1;
-
-    for (BuildListInfo *next = m_buildList; next != nullptr; next = next->Get_Next()) {
-        if (list == next->Get_Next()) {
-            next->Set_Next(list->Get_Next());
-
-            break;
-        }
-
-        ++pos;
-    }
-
-    list->Set_Next(nullptr);
-
-    return pos;
-}
-
-void SidesInfo::Reorder_In_BuildList(BuildListInfo *list, int pos)
-{
-    Remove_From_BuildList(list);
-    Add_To_BuildList(list, pos);
-}
-
-SidesInfo &SidesInfo::operator=(const SidesInfo &that)
-{
-    if (this != &that) {
-        Init();
-        m_dict = that.m_dict;
-
-        // Copy the build list.
-        for (BuildListInfo *next = that.m_buildList, *last = nullptr; next != nullptr; next = next->Get_Next()) {
-            BuildListInfo *new_list = new BuildListInfo;
-            *new_list = *next;
-
-            if (last == nullptr) {
-                m_buildList = new_list;
-            } else {
-                last->Set_Next(new_list);
-            }
-
-            last = new_list;
-        }
-
-        if (that.m_scripts != nullptr) {
-            m_scripts = that.m_scripts->Duplicate();
-        }
-    }
-
-    return *this;
-}
-
+/**
+ * @brief Resets this subsystem.
+ *
+ * 0x004D6100
+ */
 void SidesList::Reset()
 {
     Clear();
@@ -259,6 +36,11 @@ void SidesList::Reset()
     m_skirmishTeamsRec.Clear();
 }
 
+/**
+ * @brief Uses the passed Xfer object to perform transfer of this sides list.
+ *
+ * 0x004D85F0
+ */
 void SidesList::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
@@ -280,6 +62,11 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
     }
 }
 
+/**
+ * @brief Clears the existing data.
+ *
+ * 0x004D77A0
+ */
 void SidesList::Clear()
 {
     m_numSides = 0;
@@ -291,6 +78,9 @@ void SidesList::Clear()
     }
 }
 
+/**
+ * @brief Adds a side to the list.
+ */
 void SidesList::Add_Side(const Dict *dict)
 {
     if (m_numSides < MAX_SIDE_COUNT) {
@@ -298,12 +88,18 @@ void SidesList::Add_Side(const Dict *dict)
     }
 }
 
+/**
+ * @brief Empties all teams from the list.
+ */
 void SidesList::Empty_Teams()
 {
     m_teamRec.Clear();
     m_skirmishTeamsRec.Clear();
 }
 
+/**
+ * @brief Empties all sides from the list.
+ */
 void SidesList::Empty_Sides()
 {
     for (int i = 0; i < MAX_SIDE_COUNT; ++i) {
@@ -312,6 +108,11 @@ void SidesList::Empty_Sides()
     }
 }
 
+/**
+ * @brief Validates sides in the list.
+ *
+ * 0x004D7F70
+ */
 bool SidesList::Validate_Sides()
 {
     bool modified = false;
@@ -403,6 +204,11 @@ bool SidesList::Validate_Sides()
     return modified;
 }
 
+/**
+ * @brief Validates an ally or enemy list.
+ *
+ * 0x004D79A0
+ */
 bool SidesList::Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &allies)
 {
     bool modified = false;
@@ -429,6 +235,11 @@ bool SidesList::Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &a
     return modified;
 }
 
+/**
+ * @brief Adds a template player.
+ *
+ * 0x004D7BC0
+ */
 void SidesList::Add_Player_By_Template(AsciiString template_name)
 {
     AsciiString player_name;
@@ -470,6 +281,11 @@ void SidesList::Add_Player_By_Template(AsciiString template_name)
     Add_Team(&dict);
 }
 
+/**
+ * @brief Finds side info matching the provided name.
+ *
+ * 0x004D6A60
+ */
 SidesInfo *SidesList::Find_Side_Info(AsciiString name, int *index)
 {
     for (int i = 0; i < m_numSides; ++i) {
@@ -485,6 +301,11 @@ SidesInfo *SidesList::Find_Side_Info(AsciiString name, int *index)
     return nullptr;
 }
 
+/**
+ * @brief Finds skirmish side info matching the provided name.
+ *
+ * 0x004D6BD0
+ */
 SidesInfo *SidesList::Find_Skirmish_Side_Info(AsciiString name, int *index)
 {
     for (int i = 0; i < m_numSkirmishSides; ++i) {
@@ -500,6 +321,9 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(AsciiString name, int *index)
     return nullptr;
 }
 
+/**
+ * @brief Retrieves side info at the given index.
+ */
 SidesInfo *SidesList::Get_Sides_Info(int index)
 {
     ASSERT_THROW_PRINT(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
@@ -507,6 +331,11 @@ SidesInfo *SidesList::Get_Sides_Info(int index)
     return &m_sides[index];
 }
 
+/**
+ * @brief Parses a sides list chunk from a data chunk stream.
+ *
+ * 0x004D62A0
+ */
 bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     if (g_theSidesList == nullptr) {

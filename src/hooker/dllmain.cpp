@@ -57,6 +57,7 @@
 #include "scriptgroup.h"
 #include "scriptlist.h"
 #include "sidesinfo.h"
+#include "sideslist.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "thread.h"
@@ -144,6 +145,7 @@ void Setup_Hooks()
     ScriptGroup::Hook_Me();
     ScriptList::Hook_Me();
     SidesInfo::Hook_Me();
+    SidesList::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

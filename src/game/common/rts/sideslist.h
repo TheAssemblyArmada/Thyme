@@ -81,7 +81,13 @@ extern SidesList *&g_theSidesList;
 
 inline void SidesList::Hook_Me()
 {
-
+    Hook_Method(0x004D77A0, &Clear);
+    Hook_Method(0x004D7F70, &Validate_Sides);
+    Hook_Method(0x004D79A0, &Validate_Ally_Enemy_List);
+    Hook_Method(0x004D7BC0, &Add_Player_By_Template);
+    Hook_Method(0x004D6A60, &Find_Side_Info);
+    Hook_Method(0x004D6BD0, &Find_Skirmish_Side_Info);
+    Hook_Function(0x004D62A0, &Parse_Sides_Chunk);
 }
 #else
 extern SidesList *g_theSidesList;

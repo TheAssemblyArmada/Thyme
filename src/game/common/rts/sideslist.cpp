@@ -175,7 +175,7 @@ bool SidesList::Validate_Sides()
         TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
         AsciiString team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
 
-        if (Find_Side_Info(team_name) == nullptr) {
+        if (Find_Side_Info(team_name) != nullptr) {
             DEBUG_LOG("Duplicate name '%s' between player and team, removing...\n", team_name.Str());
             Remove_Team(index);
             modified = true;
@@ -194,9 +194,9 @@ bool SidesList::Validate_Sides()
         AsciiString team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
         AsciiString team_owner = tinfo->dict.Get_AsciiString(g_teamOwnerKey);
 
-        if (!Find_Side_Info(team_owner) || team_name == team_owner) {
+        if (Find_Side_Info(team_owner) == nullptr || team_name == team_owner) {
             DEBUG_LOG("Bad owner '%s', reset to neutral.\n", team_owner.Str());
-            tinfo->dict.Set_AsciiString(g_teamOwnerKey, "");
+            tinfo->dict.Set_AsciiString(g_teamOwnerKey, AsciiString::s_emptyString);
             modified = true;
         }
     }
@@ -292,9 +292,9 @@ SidesInfo *SidesList::Find_Side_Info(AsciiString name, int *index)
         if (m_sides[i].Get_Dict().Get_AsciiString(g_playerNameKey) == name) {
             if (index != nullptr) {
                 *index = i;
-
-                return &m_sides[i];
             }
+
+            return &m_sides[i];
         }
     }
 
@@ -312,9 +312,9 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(AsciiString name, int *index)
         if (m_skirmishSides[i].Get_Dict().Get_AsciiString(g_playerNameKey) == name) {
             if (index != nullptr) {
                 *index = i;
-
-                return &m_skirmishSides[i];
             }
+
+            return &m_skirmishSides[i];
         }
     }
 

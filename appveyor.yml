@@ -28,11 +28,11 @@ init:
 clone_folder: C:\projects\thyme
 
 # branches to build
-branches:
+#branches:
   # whitelist
-  only: 
-    - master
-    - develop
+  #only: 
+    #- master
+    #- develop
 
 skip_commits:
   files:

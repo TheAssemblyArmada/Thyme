@@ -1,31 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME --                                 //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: DLLMAIN.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: CCHyper
-//
-//   Description:: Defines the entry point for the DLL application.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author OmniBlade
+ *
+ * @brief Defines the DLL entry point and performs initial hooking.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "hooker.h"
 #include "filesystem.h"
 #include "archivefile.h"
@@ -118,18 +105,10 @@ void Setup_Hooks()
     // Returns true for any CD checks
     Hook_Function(0x005F1CB0, IsFirstCDPresent);
     
-    // Replace memory intialisation
-    Hook_Function(0x00414510, Init_Memory_Manager);
-    Hook_Function(0x004148C0, Init_Memory_Manager_Pre_Main);
+    // Replace memory init functions.
+    GameMemory::Hook_Me();
 
-    // Replace memory allocation operators
-    Hook_Function(0x00414450, New_New);    // operator new
-    Hook_Function(0x00414490, New_New);    // operator new[]
-    Hook_Function(0x004144D0, New_Delete);   // operator delete
-    Hook_Function(0x004144F0, New_Delete);   // operator delete[]
-    Hook_Function(0x00414B30, Create_Named_Pool);
-    
-    // Replace pool functions
+     // Replace pool functions
     Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);
     Hook_Method(0x00413C40, &MemoryPool::Free_Block);
 

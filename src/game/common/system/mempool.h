@@ -1,43 +1,37 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMPOOL.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MEMPOOL_H
 #define MEMPOOL_H
 
+#include "always.h"
 #include "rawalloc.h"
 
 class MemoryPoolFactory;
 class MemoryPoolBlob;
 class SimpleCriticalSectionClass;
 
-// Allocated a critical section in WinMain, hooked to original currently.
-extern SimpleCriticalSectionClass* g_memoryPoolCriticalSection;
+extern SimpleCriticalSectionClass *g_memoryPoolCriticalSection;
 
 class MemoryPool
 {
+    friend class MemoryPoolBlob;
+    friend class MemoryPoolFactory;
+    friend class DynamicMemoryAllocator;
+
 public:
     MemoryPool();
     ~MemoryPool();
@@ -52,22 +46,10 @@ public:
     void Reset();
     void Add_To_List(MemoryPool **head);
     void Remove_From_List(MemoryPool **head);
-
     int Get_Alloc_Size() { return m_allocationSize; }
 
-    void *operator new(size_t size) throw()
-    {
-        return Raw_Allocate(size);
-    }
-
-    void operator delete(void *obj)
-    {
-        Raw_Free(obj);
-    }
-
-    friend class MemoryPoolBlob;
-    friend class MemoryPoolFactory;
-    friend class DynamicMemoryAllocator;
+    void *operator new(size_t size) throw() { return Raw_Allocate(size); }
+    void operator delete(void *obj) { Raw_Free(obj); }
 
 private:
     MemoryPoolFactory *m_factory;

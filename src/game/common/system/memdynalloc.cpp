@@ -147,7 +147,7 @@ void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
     if ( mp != nullptr ) {
         block = mp->Allocate_Block_No_Zero();
     } else {
-        block = MemoryPoolSingleBlock::Raw_Allocate_Single_Block(&m_rawBlocks, bytes)->Get_User_Data();
+        block = MemoryPoolSingleBlock::Raw_Allocate_Single_Block(&m_rawBlocks, bytes, m_factory)->Get_User_Data();
     }
 
     ++m_usedBlocksInDma;

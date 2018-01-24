@@ -1,40 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMPOOLFACT.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MEMPOOLFACT_H
 #define MEMPOOLFACT_H
 
+#include "always.h"
 #include "rawalloc.h"
-#include "hooker.h"
 
 struct PoolInitRec;
 class MemoryPool;
 class DynamicMemoryAllocator;
-
-#define g_memoryPoolFactory (Make_Global<MemoryPoolFactory*>(0x00A29B94))
 
 class MemoryPoolFactory
 {
@@ -59,9 +47,18 @@ public:
     {
         Raw_Free(obj);
     }
+
 private:
     MemoryPool *m_firstPoolInFactory;
     DynamicMemoryAllocator *m_firstDmaInFactory;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+extern MemoryPoolFactory *&g_memoryPoolFactory;
+#else
+extern MemoryPoolFactory *g_memoryPoolFactory;
+#endif
 
 #endif

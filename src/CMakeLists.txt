@@ -7,7 +7,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
     endif()
     
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
+    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp ws2_32)
 else()
     #No other platforms yet.
 endif()
@@ -25,6 +25,7 @@ set(GAMEENGINE_INCLUDES
     game/common/system
     game/common/rts
     game/logic/object
+    game/logic/scriptengine
     game/logic/system
     game/network
     platform
@@ -61,6 +62,7 @@ set(GAMEENGINE_SRC
     game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
+    game/common/staticnamekey.cpp
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp
@@ -104,12 +106,22 @@ set(GAMEENGINE_SRC
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
+    game/common/rts/buildinfo.cpp
     game/common/rts/handicap.cpp
     game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
     game/common/rts/science.cpp
+    game/common/rts/sidesinfo.cpp
+    game/common/rts/sideslist.cpp
+    game/common/rts/teamsinfo.cpp
     game/logic/object/weapon.cpp
+    game/logic/scriptengine/script.cpp
+    game/logic/scriptengine/scriptaction.cpp
+    game/logic/scriptengine/scriptcondition.cpp
+    game/logic/scriptengine/scriptgroup.cpp
+    game/logic/scriptengine/scriptlist.cpp
+    game/logic/scriptengine/scriptparam.cpp
     game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
     platform/w3dfilesystem.cpp

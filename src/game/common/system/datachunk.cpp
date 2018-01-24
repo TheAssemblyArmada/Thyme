@@ -53,7 +53,7 @@ DataChunkInput::~DataChunkInput() {}
  * @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
  */
 void DataChunkInput::Register_Parser(const AsciiString &label, const AsciiString &parent_label,
-    char (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data)
+    bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data)
 {
     UserParser *user_parser = new UserParser;
     user_parser->label = label;

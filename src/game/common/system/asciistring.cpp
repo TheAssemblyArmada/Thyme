@@ -152,11 +152,8 @@ const char *AsciiString::Str() const
 
 char *AsciiString::Get_Buffer_For_Read(int len)
 {
-    ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
     
-    //
     // Generate buffer sufficient to read requested size into.
-    //
     Ensure_Unique_Buffer_Of_Size(len + 1, 0, 0, 0);
 
     return Peek();

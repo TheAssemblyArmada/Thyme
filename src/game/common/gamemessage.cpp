@@ -22,7 +22,7 @@ GameMessage::GameMessage(MessageType type) :
     m_prev(nullptr),
     m_list(nullptr),
     m_type(type),
-    m_playerIndex(ThePlayerList->Get_Local_Player()->Get_Player_Index()), // ThePlayerList->m_local->m_playerIndex
+    m_playerIndex(g_thePlayerList->Get_Local_Player()->Get_Player_Index()), // g_thePlayerList->m_local->m_playerIndex
     m_argCount(0),
     m_argList(nullptr),
     m_argTail(nullptr)

@@ -76,6 +76,19 @@ public:
         Set(string);
         return *this;
     }
+
+    UnicodeString &operator=(AsciiString const &string)
+    {
+        Translate(string);
+        return *this;
+    }
+
+    UnicodeString &operator=(const char *s)
+    {
+        Translate(s);
+        return *this;
+    }
+
     // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
     UnicodeString &operator+=(char16_t s)
@@ -123,6 +136,7 @@ public:
     void Set(UnicodeString const &string);
 
     void Translate(AsciiString const &string);
+    void Translate(const char *string);
 
     void Concat(char16_t c);
     void Concat(wchar_t c);

@@ -57,7 +57,7 @@ class DataChunkInput
         friend class DataChunkInput;
 
         UserParser *next;
-        char (*parser)(DataChunkInput &, DataChunkInfo *, void *);
+        bool (*parser)(DataChunkInput &, DataChunkInfo *, void *);
         AsciiString label;
         AsciiString parent_label;
         void *user_data;
@@ -68,7 +68,7 @@ public:
     ~DataChunkInput();
 
     void Register_Parser(const AsciiString &label, const AsciiString &parent_label,
-        char (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data);
+        bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data);
     bool Parse(void *user_data);
     bool Is_Valid_File() { return m_contents.Header_Opened(); }
     AsciiString Open_Data_Chunk(uint16_t *version);

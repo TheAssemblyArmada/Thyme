@@ -1,31 +1,21 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: GAMEMEMORY.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "gamememory.h"
-#include "gamememoryinit.h"
 #include "critsection.h"
 #include "gamedebug.h"
+#include "gamememoryinit.h"
 #include "memblob.h"
 #include "memblock.h"
 #include "memdynalloc.h"
@@ -33,24 +23,34 @@
 #include "mempoolfact.h"
 #include "minmax.h"
 
-//////////
-// Globals
-//////////
+#ifndef THYME_STANDALONE
+void *New_New(size_t bytes)
+{
+    ++(Make_Global<int>(0x00A29B9C));
+    Init_Memory_Manager_Pre_Main();
+
+    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
+}
+
+void New_Delete(void *ptr)
+{
+    // Can't use the DLL increment/decrement tracker or game doesn't start correctly.
+    ++(Make_Global<int>(0x00A29B9C));
+    Init_Memory_Manager_Pre_Main();
+    g_dynamicMemoryAllocator->Free_Bytes(ptr);
+}
+#endif
 
 int g_theLinkChecker = 0;
 bool g_thePreMainInitFlag = false;
 bool g_theMainInitFlag = false;
-
-///////////////////////////////////
-// Memory Manager Control Functions
-///////////////////////////////////
 
 void Init_Memory_Manager()
 {
     int param_count;
     PoolInitRec const *params;
 
-    if ( g_memoryPoolFactory == nullptr ) {
+    if (g_memoryPoolFactory == nullptr) {
         DEBUG_LOG("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
@@ -60,12 +60,10 @@ void Init_Memory_Manager()
         g_thePreMainInitFlag = false;
     }
 
-    //
     // Check that new and delete both use our custom implementation.
-    // 
     g_theLinkChecker = 0;
 
-    //DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
+    // DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -74,12 +72,12 @@ void Init_Memory_Manager()
     SimpleCriticalSectionClass *tmp2 = new SimpleCriticalSectionClass;
     delete tmp2;
 
-    if ( g_theLinkChecker != 6 ) {
+    if (g_theLinkChecker != 6) {
         DEBUG_LOG("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
         exit(-1);
     }
 
-    //DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", g_theLinkChecker);
+    // DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", g_theLinkChecker);
 
     g_theMainInitFlag = true;
 }
@@ -89,9 +87,9 @@ void Init_Memory_Manager_Pre_Main()
     int param_count;
     PoolInitRec const *params;
 
-    if ( g_memoryPoolFactory == nullptr ) {
-        //DEBUG_INIT(DEBUG_LOG_TO_FILE);
-        //DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
+    if (g_memoryPoolFactory == nullptr) {
+        // DEBUG_INIT(DEBUG_LOG_TO_FILE);
+        // DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
@@ -104,9 +102,9 @@ void Init_Memory_Manager_Pre_Main()
 
 void Shutdown_Memory_Manager()
 {
-    if ( !g_thePreMainInitFlag ) {
-        if ( g_memoryPoolFactory != nullptr ) {
-            if ( g_dynamicMemoryAllocator != nullptr ) {
+    if (!g_thePreMainInitFlag) {
+        if (g_memoryPoolFactory != nullptr) {
+            if (g_dynamicMemoryAllocator != nullptr) {
                 g_memoryPoolFactory->Destroy_Dynamic_Memory_Allocator(g_dynamicMemoryAllocator);
                 g_dynamicMemoryAllocator = nullptr;
             }
@@ -119,10 +117,6 @@ void Shutdown_Memory_Manager()
     g_theMainInitFlag = false;
 }
 
-////////////////////////
-// Replacement operators
-////////////////////////
-
 MemoryPool *Create_Named_Pool(const char *name, int size)
 {
     ++g_theLinkChecker;
@@ -130,27 +124,7 @@ MemoryPool *Create_Named_Pool(const char *name, int size)
     return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
 }
 
-void *New_New(size_t bytes)
-{
-    ++TheLinkChecker;
-    Init_Memory_Manager_Pre_Main();
-
-    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
-}
-
-void New_Delete(void *ptr)
-{
-    // For some reason, not having this global increment in the replacement
-    // for the original function causes an exception during init, so it stays
-    // until we figure it out or we go standalone.
-    ++TheLinkChecker;
-    Init_Memory_Manager_Pre_Main();
-    g_dynamicMemoryAllocator->Free_Bytes(ptr);
-}
-
-//
 // These all override the global news and deletes just by being linked.
-//
 void *operator new(size_t bytes)
 {
     ++g_theLinkChecker;

@@ -1,44 +1,36 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMPOOLFACT.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "mempoolfact.h"
 #include "gamedebug.h"
 #include "gamememoryinit.h"
 #include "memdynalloc.h"
 #include "mempool.h"
 
-////////////////////
-// MemoryPoolFactory
-////////////////////
+#ifndef THYME_STANDALONE
+MemoryPoolFactory *&g_memoryPoolFactory = Make_Global<MemoryPoolFactory*>(0x00A29B94);
+#else
+MemoryPoolFactory *g_memoryPoolFactory = nullptr;
+#endif
 
 MemoryPoolFactory::~MemoryPoolFactory()
 {
-    for ( MemoryPool *mp = m_firstPoolInFactory; m_firstPoolInFactory != nullptr; mp = m_firstPoolInFactory ) {
+    for (MemoryPool *mp = m_firstPoolInFactory; m_firstPoolInFactory != nullptr; mp = m_firstPoolInFactory) {
         Destroy_Memory_Pool(mp);
     }
 
-    for ( DynamicMemoryAllocator *dma = m_firstDmaInFactory; m_firstDmaInFactory != nullptr; dma = m_firstDmaInFactory ) {
+    for (DynamicMemoryAllocator *dma = m_firstDmaInFactory; m_firstDmaInFactory != nullptr; dma = m_firstDmaInFactory) {
         Destroy_Dynamic_Memory_Allocator(dma);
     }
 }
@@ -46,18 +38,14 @@ MemoryPoolFactory::~MemoryPoolFactory()
 MemoryPool *MemoryPoolFactory::Create_Memory_Pool(PoolInitRec const *params)
 {
     return Create_Memory_Pool(
-        params->pool_name,
-        params->allocation_size,
-        params->initial_allocation_count,
-        params->overflow_allocation_count
-    );
+        params->pool_name, params->allocation_size, params->initial_allocation_count, params->overflow_allocation_count);
 }
 
 MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, int count, int overflow)
 {
     MemoryPool *pool = Find_Memory_Pool(name);
 
-    if ( pool != nullptr ) {
+    if (pool != nullptr) {
         ASSERT_PRINT(pool->m_allocationSize == size, "Pool size mismatch");
 
         return pool;
@@ -65,9 +53,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, in
 
     User_Memory_Adjust_Pool_Size(name, count, overflow);
 
-    //
     // Count and overflow should never end up as 0 from adjustment.
-    //
     ASSERT_THROW(count > 0 && overflow > 0, 0xDEAD0002);
 
     pool = new MemoryPool;
@@ -79,10 +65,8 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, in
 
 void MemoryPoolFactory::Destroy_Memory_Pool(MemoryPool *pool)
 {
-    //
     // Can't destroy a none existent pool.
-    //
-    if ( pool == nullptr ) {
+    if (pool == nullptr) {
         return;
     }
 
@@ -96,11 +80,9 @@ MemoryPool *MemoryPoolFactory::Find_Memory_Pool(const char *name)
 {
     MemoryPool *pool = nullptr;
 
-    //
     // Go through the pools and break on matching requested name.
-    //
-    for ( pool = m_firstPoolInFactory; pool != nullptr; pool = pool->m_nextPoolInFactory ) {
-        if ( strcmp(pool->m_poolName, name) == 0 ) {
+    for (pool = m_firstPoolInFactory; pool != nullptr; pool = pool->m_nextPoolInFactory) {
+        if (strcmp(pool->m_poolName, name) == 0) {
             break;
         }
     }
@@ -119,7 +101,7 @@ DynamicMemoryAllocator *MemoryPoolFactory::Create_Dynamic_Memory_Allocator(int s
 
 void MemoryPoolFactory::Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator *allocator)
 {
-    if ( allocator == nullptr ) {
+    if (allocator == nullptr) {
         return;
     }
 
@@ -129,12 +111,11 @@ void MemoryPoolFactory::Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator 
 
 void MemoryPoolFactory::Reset()
 {
-    for ( MemoryPool *mp = m_firstPoolInFactory; mp != nullptr; mp = mp->m_nextPoolInFactory ) {
+    for (MemoryPool *mp = m_firstPoolInFactory; mp != nullptr; mp = mp->m_nextPoolInFactory) {
         mp->Reset();
     }
 
-    for ( DynamicMemoryAllocator *dma = m_firstDmaInFactory; dma != nullptr; dma = dma->m_nextDmaInFactory ) {
+    for (DynamicMemoryAllocator *dma = m_firstDmaInFactory; dma != nullptr; dma = dma->m_nextDmaInFactory) {
         dma->Reset();
     }
 }
-

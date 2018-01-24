@@ -53,11 +53,11 @@ AsciiString GameState::Real_To_Portable_Map_Path(const AsciiString &path)
         ret = "Save/";
         ret += Get_File_From_Path(ppath);
     } else {
-        if (ppath.Starts_With_No_Case(TheMapCache->Get_Map_Dir().Str())) {
+        if (ppath.Starts_With_No_Case(g_theMapCache->Get_Map_Dir().Str())) {
             ret = "Maps/";
             ret += Get_Leaf_And_Dir_Name(ppath);
         } else {
-            if (ppath.Starts_With_No_Case(TheMapCache->Get_User_Map_Dir().Str())) {
+            if (ppath.Starts_With_No_Case(g_theMapCache->Get_User_Map_Dir().Str())) {
                 ret = "UserData/Maps/";
                 ret += Get_Leaf_And_Dir_Name(ppath);
             } else {
@@ -82,11 +82,11 @@ AsciiString GameState::Portable_To_Real_Map_Path(const AsciiString &path)
         ret = Get_Save_Dir();
         ret += Get_File_From_Path(path);
     } else if (path.Starts_With_No_Case("Maps/") || path.Starts_With_No_Case("Maps\\")) {
-        ret = TheMapCache->Get_Map_Dir();
+        ret = g_theMapCache->Get_Map_Dir();
         ret += "/";
         ret += Get_Leaf_And_Dir_Name(path);
     } else if (path.Starts_With_No_Case("UserData/Maps/") || path.Starts_With_No_Case("UserData\\Maps\\")) {
-        ret = TheMapCache->Get_User_Map_Dir();
+        ret = g_theMapCache->Get_User_Map_Dir();
         ret += "/";
         ret += Get_Leaf_And_Dir_Name(path);
     } else {

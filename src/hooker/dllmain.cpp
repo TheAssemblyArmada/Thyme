@@ -1,31 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME --                                 //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: DLLMAIN.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: CCHyper
-//
-//   Description:: Defines the entry point for the DLL application.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author OmniBlade
+ *
+ * @brief Defines the DLL entry point and performs initial hooking.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "hooker.h"
 #include "filesystem.h"
 #include "archivefile.h"
@@ -52,7 +39,15 @@
 #include "messagestream.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "script.h"
+#include "scriptaction.h"
+#include "scriptcondition.h"
+#include "scriptgroup.h"
+#include "scriptlist.h"
+#include "sidesinfo.h"
+#include "sideslist.h"
 #include "targa.h"
+#include "teamsinfo.h"
 #include "thread.h"
 #include "w3dfilesystem.h"
 #include "weapon.h"
@@ -62,11 +57,47 @@
 #include <windows.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <winsock2.h>
+
+struct hostent *__stdcall cnconline_hook(const char *name)
+{
+    if (strcmp(name, "gamestats.gamespy.com") == 0) {
+        return gethostbyname("gamestats.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "master.gamespy.com") == 0) {
+        return gethostbyname("master.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "peerchat.gamespy.com") == 0) {
+        return gethostbyname("peerchat.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "gpcm.gamespy.com") == 0) {
+        return gethostbyname("gpcm.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "master.gamespy.com") == 0 || strcmp(name, "ccgenerals.ms19.gamespy.com") == 0 || strcmp(name, "ccgenzh.ms6.gamespy.com") == 0) {
+        return gethostbyname("master.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "servserv.generals.ea.com") == 0) {
+        return gethostbyname("http.server.cnc-online.net");
+    }
+
+    if (strcmp(name, "www.gamespy.com") == 0 || strcmp(name, "ingamead.gamespy.com") == 0) {
+        return gethostbyname("server.cnc-online.net");
+    }
+
+    return gethostbyname(name);
+}
 
 void Setup_Hooks()
 {
     // Hook WinMain
     Hook_Function(0x00401700, Main_Func);
+
+    Hook_Function(0x007F5B06, cnconline_hook);
 
 	// Code that checks the launcher is running, launcher does CD check.
     Hook_Function(0x00412420, CopyProtect::checkForMessage);
@@ -75,18 +106,10 @@ void Setup_Hooks()
     // Returns true for any CD checks
     Hook_Function(0x005F1CB0, IsFirstCDPresent);
     
-    // Replace memory intialisation
-    Hook_Function(0x00414510, Init_Memory_Manager);
-    Hook_Function(0x004148C0, Init_Memory_Manager_Pre_Main);
+    // Replace memory init functions.
+    GameMemory::Hook_Me();
 
-    // Replace memory allocation operators
-    Hook_Function(0x00414450, New_New);    // operator new
-    Hook_Function(0x00414490, New_New);    // operator new[]
-    Hook_Function(0x004144D0, New_Delete);   // operator delete
-    Hook_Function(0x004144F0, New_Delete);   // operator delete[]
-    Hook_Function(0x00414B30, Create_Named_Pool);
-    
-    // Replace pool functions
+     // Replace pool functions
     Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);
     Hook_Method(0x00413C40, &MemoryPool::Free_Block);
 
@@ -131,6 +154,15 @@ void Setup_Hooks()
     CompressionManager::Hook_Me();
     DataChunkInput::Hook_Me();
     CaveSystem::Hook_Me();
+    TeamsInfoRec::Hook_Me();
+    Condition::Hook_Me();
+    OrCondition::Hook_Me();
+    ScriptAction::Hook_Me();
+    Script::Hook_Me();
+    ScriptGroup::Hook_Me();
+    ScriptList::Hook_Me();
+    SidesInfo::Hook_Me();
+    SidesList::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

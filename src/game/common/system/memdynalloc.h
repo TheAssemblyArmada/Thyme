@@ -1,34 +1,24 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMDYNALLOC.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MEMDYNALLOC_H
 #define MEMDYNALLOC_H
 
+#include "always.h"
 #include "rawalloc.h"
-#include "hooker.h"
 
 struct PoolInitRec;
 class MemoryPool;
@@ -36,12 +26,12 @@ class MemoryPoolFactory;
 class MemoryPoolSingleBlock;
 class SimpleCriticalSectionClass;
 
-extern SimpleCriticalSectionClass* g_dmaCriticalSection;
-
-#define g_dynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator*>(0x00A29B98))
+extern SimpleCriticalSectionClass *g_dmaCriticalSection;
 
 class DynamicMemoryAllocator
 {
+    friend class MemoryPoolFactory;
+
 public:
     DynamicMemoryAllocator();
     void Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params);
@@ -55,17 +45,8 @@ public:
     int Get_Actual_Allocation_Size(int bytes);
     void Reset();
 
-    void *operator new(size_t size)
-    {
-        return Raw_Allocate_No_Zero(size);
-    }
-
-    void operator delete(void *obj)
-    {
-        Raw_Free(obj);
-    }
-
-    friend class MemoryPoolFactory;
+    void *operator new(size_t size) { return Raw_Allocate_No_Zero(size); }
+    void operator delete(void *obj) { Raw_Free(obj); }
 
 private:
     MemoryPoolFactory *m_factory;
@@ -75,5 +56,14 @@ private:
     MemoryPool *m_pools[8];
     MemoryPoolSingleBlock *m_rawBlocks;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+//#define g_dynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator *>(0x00A29B98))
+extern DynamicMemoryAllocator *&g_dynamicMemoryAllocator;
+#else
+extern DynamicMemoryAllocator *g_dynamicMemoryAllocator;
+#endif
 
 #endif

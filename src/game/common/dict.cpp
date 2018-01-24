@@ -107,12 +107,12 @@ Dict &Dict::operator=(const Dict &src)
     return *this;
 }
 
-NameKeyType Dict::Get_Nth_Key(int n)
+NameKeyType Dict::Get_Nth_Key(int n) const
 {
     return m_data->Get_Pairs()[n - 1].Get_Key();
 }
 
-Dict::DataType Dict::Get_Type(NameKeyType key)
+Dict::DataType Dict::Get_Type(NameKeyType key) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -123,12 +123,12 @@ Dict::DataType Dict::Get_Type(NameKeyType key)
     return pair->Get_Type();
 }
 
-Dict::DataType Dict::Get_Nth_Type(int n)
+Dict::DataType Dict::Get_Nth_Type(int n) const
 {
     return m_data->Get_Pairs()[n - 1].Get_Type();
 }
 
-bool Dict::Get_Bool(NameKeyType key, bool *exists)
+bool Dict::Get_Bool(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -149,7 +149,7 @@ bool Dict::Get_Bool(NameKeyType key, bool *exists)
     return false;
 }
 
-int Dict::Get_Int(NameKeyType key, bool *exists)
+int Dict::Get_Int(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -170,7 +170,7 @@ int Dict::Get_Int(NameKeyType key, bool *exists)
     return 0;
 }
 
-float Dict::Get_Real(NameKeyType key, bool *exists)
+float Dict::Get_Real(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -191,7 +191,7 @@ float Dict::Get_Real(NameKeyType key, bool *exists)
     return 0.0f;
 }
 
-AsciiString Dict::Get_AsciiString(NameKeyType key, bool *exists)
+AsciiString Dict::Get_AsciiString(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -212,7 +212,7 @@ AsciiString Dict::Get_AsciiString(NameKeyType key, bool *exists)
     return AsciiString();
 }
 
-UnicodeString Dict::Get_UnicodeString(NameKeyType key, bool *exists)
+UnicodeString Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -233,7 +233,7 @@ UnicodeString Dict::Get_UnicodeString(NameKeyType key, bool *exists)
     return UnicodeString();
 }
 
-bool Dict::Get_Nth_Bool(int n)
+bool Dict::Get_Nth_Bool(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -246,7 +246,7 @@ bool Dict::Get_Nth_Bool(int n)
     return false;
 }
 
-int Dict::Get_Nth_Int(int n)
+int Dict::Get_Nth_Int(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -259,7 +259,7 @@ int Dict::Get_Nth_Int(int n)
     return 0;
 }
 
-float Dict::Get_Nth_Real(int n)
+float Dict::Get_Nth_Real(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -272,7 +272,7 @@ float Dict::Get_Nth_Real(int n)
     return 0.0f;
 }
 
-AsciiString Dict::Get_Nth_AsciiString(int n)
+AsciiString Dict::Get_Nth_AsciiString(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -285,7 +285,7 @@ AsciiString Dict::Get_Nth_AsciiString(int n)
     return AsciiString();
 }
 
-UnicodeString Dict::Get_Nth_UnicodeString(int n)
+UnicodeString Dict::Get_Nth_UnicodeString(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -406,7 +406,7 @@ Dict::DictPair *Dict::Set_Prep(NameKeyType key, DataType type)
     return pair;
 }
 
-Dict::DictPair *Dict::Find_Pair_By_Key(NameKeyType key)
+Dict::DictPair *Dict::Find_Pair_By_Key(NameKeyType key) const
 {
     if (m_data == nullptr || m_data->m_numPairsUsed <= 0) {
         return nullptr;

@@ -161,7 +161,7 @@ void Inject_Loader(const char *path, const char *dllname, char *args)
             
             VirtualProtectEx(hProcess, entry, 2, oldProtect, &oldProtect2);
             
-            MessageBox(NULL, "Attach debugger or continue.", "game.dat Debug Time!", MB_OK|MB_SERVICE_NOTIFICATION);
+            //MessageBox(NULL, "Attach debugger or continue.", "game.dat Debug Time!", MB_OK|MB_SERVICE_NOTIFICATION);
             
             // you are ready to go
             ResumeThread(ProcessInformation.hThread);

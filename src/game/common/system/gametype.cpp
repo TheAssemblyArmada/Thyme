@@ -53,3 +53,23 @@ const char *g_audioPriorityNames[PRIORITY_COUNT + 1] = {
     "CRITICAL",
     nullptr
 };
+
+const char *g_buildableStatusNames[BSTATUS_COUNT + 1] = {
+    "Yes",
+    "Ignore_Prerequisites",
+    "No",
+    "Only_By_AI",
+    nullptr
+};
+
+const char *g_surfaceNames[SURFACE_COUNT + 1] = { "Ground", "Air", "Ground or Air", nullptr };
+
+const char *g_shakeIntensityNames[SHAKE_COUNT + 1] = {
+    "Subtle",
+    "Normal",
+    "Strong",
+    "Severe",
+    "Cine_Extreme",
+    "Cine_Insane",
+    nullptr
+};

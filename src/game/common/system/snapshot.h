@@ -26,6 +26,8 @@
 #ifndef SNAPSHOT_H
 #define SNAPSHOT_H
 
+#include "always.h"
+
 class Xfer;
 
 enum SnapshotCode

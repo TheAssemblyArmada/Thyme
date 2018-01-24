@@ -26,7 +26,6 @@ class AsciiString
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
-
     friend class UnicodeString;
 
 public:
@@ -137,10 +136,10 @@ public:
     bool Starts_With_No_Case(const char *p) const;
     bool Ends_With_No_Case(const char *p) const;
 
-    bool Next_Token(AsciiString *tok, const char *seps);
+    bool Next_Token(AsciiString *tok, const char *seps = nullptr);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
-    bool Is_Empty() const { return Get_Length() <= 0; }
+    bool Is_Empty() const { return  m_data == nullptr || *m_data->Peek() == '\0'; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
 
@@ -266,6 +265,14 @@ inline bool operator>(AsciiString const &left, const char *right)
 inline bool operator>(const char *left, AsciiString const &right)
 {
     return right.Compare(left) >= 0;
+}
+
+inline AsciiString operator+(const AsciiString &a, const AsciiString &b)
+{
+    AsciiString retval = a;
+    retval += b;
+
+    return retval;
 }
 
 #endif // _ASCIISTRING_H

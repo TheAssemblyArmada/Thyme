@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MAPUTIL.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Map file handling utility functions.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Map file handling utility functions.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MAPUTIL_H
@@ -31,11 +22,6 @@
 #include "hooker.h"
 #include "list"
 #include <map>
-
-// Part of some static class?
-#define g_waypoints (Make_Global<WaypointMap*>(0x00945AD4))
-#define g_keyInitialCameraPosition (Make_Global<StaticNameKey>(0x00A3A880))
-#define TheMapCache (Make_Global<MapCache*>(0x00A2B974))
 
 class WaypointMap : public std::map<AsciiString, Coord3D>
 {
@@ -88,5 +74,15 @@ private:
 
     std::map<AsciiString, int> m_seen;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+extern WaypointMap *&g_waypoints;
+extern MapCache *&g_theMapCache;
+#else
+extern WaypointMap *g_waypoints;
+extern MapCache *g_theMapCache;
+#endif
 
 #endif // MAPUTIL_H

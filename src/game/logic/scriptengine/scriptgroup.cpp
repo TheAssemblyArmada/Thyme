@@ -1,0 +1,198 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Class for maintaining groups of scripts.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "scriptgroup.h"
+#include "script.h"
+#include "scriptlist.h"
+#include "xfer.h"
+
+int ScriptGroup::s_curID = 0;
+
+ScriptGroup::ScriptGroup() :
+    m_firstScript(nullptr),
+    m_groupName(),
+    m_isGroupActive(true),
+    m_isGroupSubroutine(false),
+    m_nextGroup(nullptr),
+    m_hasWarnings(false)
+{
+    m_groupName.Format("Script Group %d", ++s_curID);
+}
+
+ScriptGroup::~ScriptGroup()
+{
+    Delete_Instance(m_firstScript);
+    m_firstScript = nullptr;
+
+    ScriptGroup *saved;
+    for (ScriptGroup *next = m_nextGroup; next != nullptr; next = saved) {
+        saved = next->m_nextGroup;
+        next->m_nextGroup = nullptr;
+        Delete_Instance(next);
+        next = saved;
+    }
+}
+
+/**
+ * @brief Uses the passed Xfer object to perform transfer of this script group.
+ *
+ * 0x0051C3B0
+ */
+void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 2;
+    xfer->xferVersion(&version, 2);
+
+    if (version >= 2) {
+        xfer->xferBool(&m_isGroupActive);
+    }
+
+    uint16_t script_count = 0;
+    for (Script *next = m_firstScript; next != nullptr; next = next->Get_Next()) {
+        ++script_count;
+    }
+
+    xfer->xferUnsignedShort(&script_count);
+
+    for (Script *next = m_firstScript; next != nullptr; next = next->Get_Next()) {
+        xfer->xferSnapshot(next);
+
+        if (--script_count == 0) {
+            break;
+        }
+    }
+
+    if (script_count > 0) {
+        if (Script::s_emptyScript == nullptr) {
+            Script::s_emptyScript = new Script;
+        }
+
+        while (script_count--) {
+            xfer->xferSnapshot(Script::s_emptyScript);
+        }
+    }
+}
+
+/**
+ * @brief Returns a pointer to a duplicate of the script group.
+ *
+ * 0x0051C510
+ */
+ScriptGroup *ScriptGroup::Duplicate()
+{
+    ScriptGroup *new_group = new ScriptGroup;
+
+    for (Script *script = m_firstScript, *new_script = nullptr; script != nullptr; script = script->Get_Next()) {
+        Script *duplicate = script->Duplicate();
+
+        if (new_script != nullptr) {
+            new_script->Set_Next(duplicate);
+        } else {
+            new_group->m_firstScript = duplicate;
+        }
+
+        new_script = duplicate;
+    }
+
+    new_group->m_groupName = m_groupName;
+    new_group->m_isGroupActive = m_isGroupActive;
+    new_group->m_isGroupSubroutine = m_isGroupSubroutine;
+    new_group->m_nextGroup = nullptr;
+
+    return new_group;
+}
+
+/**
+ * @brief Returns a pointer to a duplicate of the script group, qualifying any parameters.
+ *
+ * 0x0051C670
+ */
+ScriptGroup *ScriptGroup::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+{
+    ScriptGroup *new_group = new ScriptGroup;
+
+    for (Script *script = m_firstScript, *new_script = nullptr; script != nullptr; script = script->Get_Next()) {
+        Script *duplicate = script->Duplicate_And_Qualify(str1, str2, str3);
+
+        if (new_script != nullptr) {
+            new_script->Set_Next(duplicate);
+        } else {
+            new_group->m_firstScript = duplicate;
+        }
+
+        new_script = duplicate;
+    }
+
+    new_group->m_groupName = m_groupName;
+    new_group->m_isGroupActive = m_isGroupActive;
+    new_group->m_isGroupSubroutine = m_isGroupSubroutine;
+    new_group->m_nextGroup = nullptr;
+
+    return new_group;
+}
+
+/**
+ * @brief Adds a script at the requested point in the list, or at the end if the index is larger than the script count.
+ */
+void ScriptGroup::Add_Script(Script *script, int index)
+{
+    Script *position = nullptr;
+    Script *script_list = m_firstScript;
+
+    for (int i = index; i > 0; --i) {
+        if (script_list == nullptr) {
+            break;
+        }
+
+        position = script_list;
+        script_list = script_list->Get_Next();
+    }
+
+    if (position != nullptr) {
+        script->Set_Next(position->Get_Next());
+        position->Set_Next(script);
+    } else {
+        script->Set_Next(m_firstScript);
+        m_firstScript = script;
+    }
+}
+
+/**
+ * @brief Parses a script group chunk from a data chunk stream.
+ *
+ * 0x0051C860
+ */
+bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
+{
+    ScriptGroup *new_group = new ScriptGroup;
+
+    new_group->m_groupName = input.Read_AsciiString();
+    new_group->m_isGroupActive = input.Read_Byte();
+
+    if (info->version >= 2) {
+        new_group->m_isGroupSubroutine = input.Read_Byte();
+    }
+
+    static_cast<ScriptList*>(data)->Add_Group(new_group, 0xFFFFFF);
+    input.Register_Parser("Script", info->label, Script::Parse_Script_From_Group_Chunk, nullptr);
+    
+    return input.Parse(new_group);
+}
+
+#ifndef THYME_STANDALONE
+void ScriptGroup::Hook_Xfer_Snapshot(Xfer *xfer)
+{
+    ScriptGroup::Xfer_Snapshot(xfer);
+}
+#endif

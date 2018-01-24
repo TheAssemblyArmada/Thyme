@@ -1,39 +1,32 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMBLOB.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef MEMBLOB_H
 #define MEMBLOB_H
 
-#include "rawalloc.h"
 #include "memblock.h"
+#include "rawalloc.h"
 
 class MemoryPool;
 
 class MemoryPoolBlob
 {
+    friend class MemoryPool;
+    friend class DynamicMemoryAllocator;
+
 public:
     MemoryPoolBlob();
     ~MemoryPoolBlob();
@@ -43,18 +36,9 @@ public:
     MemoryPoolSingleBlock *Allocate_Single_Block();
     void Free_Single_Block(MemoryPoolSingleBlock *block);
 
-    void *operator new(size_t size) throw()
-    {
-        return Raw_Allocate(size);
-    }
+    void *operator new(size_t size) throw() { return Raw_Allocate(size); }
+    void operator delete(void *obj) { Raw_Free(obj); }
 
-    void operator delete(void *obj)
-    {
-        Raw_Free(obj);
-    }
-
-    friend class MemoryPool;
-    friend class DynamicMemoryAllocator;
 private:
     MemoryPool *m_owningPool;
     MemoryPoolBlob *m_nextBlob;
@@ -74,7 +58,6 @@ inline MemoryPoolBlob::MemoryPoolBlob() :
     m_totalBlocksInBlob(0),
     m_blockData(nullptr)
 {
-
 }
 
 inline MemoryPoolBlob::~MemoryPoolBlob()
@@ -87,11 +70,11 @@ inline void MemoryPoolBlob::Add_Blob_To_List(MemoryPoolBlob **head, MemoryPoolBl
     m_nextBlob = 0;
     m_prevBlob = *tail;
 
-    if ( *tail != nullptr ) {
+    if (*tail != nullptr) {
         (*tail)->m_nextBlob = this;
     }
 
-    if ( *head == nullptr ) {
+    if (*head == nullptr) {
         *head = this;
     }
 
@@ -100,13 +83,13 @@ inline void MemoryPoolBlob::Add_Blob_To_List(MemoryPoolBlob **head, MemoryPoolBl
 
 inline void MemoryPoolBlob::Remove_Blob_From_List(MemoryPoolBlob **head, MemoryPoolBlob **tail)
 {
-    if ( *head == this ) {
+    if (*head == this) {
         *head = m_nextBlob;
     } else {
         m_prevBlob->m_nextBlob = m_nextBlob;
     }
 
-    if ( *tail == this ) {
+    if (*tail == this) {
         *tail = m_prevBlob;
     } else {
         m_nextBlob->m_prevBlob = m_prevBlob;
@@ -115,10 +98,9 @@ inline void MemoryPoolBlob::Remove_Blob_From_List(MemoryPoolBlob **head, MemoryP
 
 inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 {
-    //ASSERT_PRINT(m_usedBlocksInBlob < m_totalBlocksInBlob, "Trying to allocate when all blocks allocated in blob for pool %s\n", m_owningPool->m_poolName);
-    //ASSERT_PRINT(m_firstFreeBlock != nullptr, "Trying to allocated block from blob with null m_firstFreeBlock for pool %s\n", m_owningPool->m_poolName);
+    ASSERT_PRINT(m_firstFreeBlock != nullptr, "Trying to allocated block from blob with no free blocks\n");
     MemoryPoolSingleBlock *block = m_firstFreeBlock;
-    m_firstFreeBlock = block->m_nextBlock;
+    m_firstFreeBlock = block->Get_Next_Free();
     ++m_usedBlocksInBlob;
 
     return block;
@@ -126,8 +108,11 @@ inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 
 inline void MemoryPoolBlob::Free_Single_Block(MemoryPoolSingleBlock *block)
 {
-    block->Add_Block_To_List(&m_firstFreeBlock);
+    ASSERT_THROW_PRINT(
+        block->m_owningBlob == this, 0xDEAD0002, "Attempting to free a block that does not belong to this blob.\n");
+    block->Set_Next_Free(m_firstFreeBlock);
     --m_usedBlocksInBlob;
+    m_firstFreeBlock = block;
 }
 
 #endif

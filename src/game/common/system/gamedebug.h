@@ -41,7 +41,7 @@ extern "C" {
 #define DEBUG_ASSERT(exp)                   if (!(exp)) { Debug_Log("%s %d Assert failed", __FILE__, __LINE__); }
 #define ASSERT_PRINT(exp, msg, ...)         if (!(exp)) { Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__); }
 #define DEBUG_ASSERT_PRINT(exp, msg, ...)   if (!(exp)) { Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__); }
-#define ASSERT_THROW(exp, except)           if (!(exp)) { Debug_Log("Oops, thyme is throwing an exception.\n"); throw except; }
+#define ASSERT_THROW(exp, except)           if (!(exp)) { Debug_Log("Oops, thyme is throwing an exception %s %d.\n", __FILE__, __LINE__); throw except; }
 #define ASSERT_THROW_PRINT(exp, except, msg, ...)         if (!(exp)) { Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__); throw except; }
 
 enum DebugOptions {

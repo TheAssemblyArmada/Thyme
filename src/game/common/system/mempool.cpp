@@ -1,27 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: MEMPOOL.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Custom memory manager designed to limit OS calls to allocate
-//                 heap memory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Custom memory manager designed to limit OS calls to allocate heap memory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "mempool.h"
 #include "critsection.h"
 #include "memblob.h"
@@ -29,10 +19,6 @@
 #include "minmax.h"
 
 SimpleCriticalSectionClass *g_memoryPoolCriticalSection = nullptr;
-
-/////////////
-// MemoryPool
-/////////////
 
 MemoryPool::MemoryPool() :
     m_factory(nullptr),
@@ -48,12 +34,11 @@ MemoryPool::MemoryPool() :
     m_lastBlob(nullptr),
     m_firstBlobWithFreeBlocks(nullptr)
 {
-
 }
 
 MemoryPool::~MemoryPool()
 {
-    for ( MemoryPoolBlob *b = m_firstBlob; b != nullptr; b = m_firstBlob ) {
+    for (MemoryPoolBlob *b = m_firstBlob; b != nullptr; b = m_firstBlob) {
         Free_Blob(b);
     }
 }
@@ -94,7 +79,7 @@ int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 
     blob->Remove_Blob_From_List(&m_firstBlob, &m_lastBlob);
 
-    if ( m_firstBlobWithFreeBlocks == blob ) {
+    if (m_firstBlobWithFreeBlocks == blob) {
         m_firstBlobWithFreeBlocks = m_firstBlob;
     }
 
@@ -111,10 +96,10 @@ void *MemoryPool::Allocate_Block_No_Zero()
 {
     ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
 
-    if ( m_firstBlobWithFreeBlocks != nullptr && m_firstBlobWithFreeBlocks->m_firstFreeBlock == nullptr ) {
+    if (m_firstBlobWithFreeBlocks != nullptr && m_firstBlobWithFreeBlocks->m_firstFreeBlock == nullptr) {
         MemoryPoolBlob *i;
-        for ( i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
-            if ( i->m_firstFreeBlock != nullptr ) {
+        for (i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
+            if (i->m_firstFreeBlock != nullptr) {
                 break;
             }
         }
@@ -122,19 +107,13 @@ void *MemoryPool::Allocate_Block_No_Zero()
         m_firstBlobWithFreeBlocks = i;
     }
 
-    if ( m_firstBlobWithFreeBlocks == nullptr ) {
+    if (m_firstBlobWithFreeBlocks == nullptr) {
         ASSERT_THROW(m_overflowAllocationCount != 0, 0xDEAD0002);
         Create_Blob(m_overflowAllocationCount);
     }
 
     MemoryPoolSingleBlock *block = m_firstBlobWithFreeBlocks->Allocate_Single_Block();
     ++m_usedBlocksInPool;
-
-    //TODO convert to Max()
-    //if ( m_peakUsedBlocksInPool < m_usedBlocksInPool ) {
-    //    m_peakUsedBlocksInPool = m_usedBlocksInPool;
-    //}
-
     m_peakUsedBlocksInPool = Max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();
@@ -150,7 +129,7 @@ void *MemoryPool::Allocate_Block()
 
 void MemoryPool::Free_Block(void *block)
 {
-    if ( block == nullptr ) {
+    if (block == nullptr) {
         return;
     }
 
@@ -162,7 +141,7 @@ void MemoryPool::Free_Block(void *block)
 
     mp_blob->Free_Single_Block(mp_block);
 
-    if ( m_firstBlobWithFreeBlocks == nullptr ) {
+    if (m_firstBlobWithFreeBlocks == nullptr) {
         m_firstBlobWithFreeBlocks = mp_blob;
         --m_usedBlocksInPool;
     }
@@ -172,7 +151,7 @@ int MemoryPool::Count_Blobs()
 {
     int count = 0;
 
-    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
+    for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
         ++count;
     }
 
@@ -183,18 +162,18 @@ int MemoryPool::Release_Empties()
 {
     int count = 0;
 
-    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob ) {
-        if ( i->m_usedBlocksInBlob == 0 ) {
+    for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
+        if (i->m_usedBlocksInBlob == 0) {
             count += Free_Blob(i);
         }
     }
 
-    return  count;
+    return count;
 }
 
 void MemoryPool::Reset()
 {
-    for ( MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = m_firstBlob ) {
+    for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = m_firstBlob) {
         Free_Blob(i);
     }
 
@@ -213,26 +192,25 @@ void MemoryPool::Add_To_List(MemoryPool **head)
 
 void MemoryPool::Remove_From_List(MemoryPool **head)
 {
-    if ( *head == nullptr ) {
+    if (*head == nullptr) {
         return;
     }
 
     MemoryPool *check = *head;
     MemoryPool *last = nullptr;
 
-    while ( check != this ) {
+    while (check != this) {
         last = check;
         check = check->m_nextPoolInFactory;
 
-        if ( check == nullptr ) {
+        if (check == nullptr) {
             return;
         }
     }
 
-    if ( last != nullptr ) {
+    if (last != nullptr) {
         last->m_nextPoolInFactory = m_nextPoolInFactory;
     } else {
         *head = m_nextPoolInFactory;
     }
 }
-

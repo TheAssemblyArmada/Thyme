@@ -365,8 +365,8 @@ int main(int argc, char *argv[])
         THYME_COMMIT_COUNT, // Internal build number
         THYME_BRANCH, // Git branch, was "location" in original build system
         THYME_COMMIT_SHA1_SHORT, // Git commit, was "user" in original build system
-        __TIME__, // Build time
-        __DATE__ // Build date
+        THYME_COMMIT_TIME, // Commit time
+        THYME_COMMIT_DATE // Commit date
     );
 
     // Make pretty log header for debug logging builds.

@@ -109,12 +109,27 @@ if(GIT_FOUND)
         ERROR_QUIET
     )
     add_definitions(-DTHYME_COMMIT_COUNT=${THYME_COMMIT_COUNT})
-
+    
+    # Define commit date and time. Make builds more reproducible than using __DATE__ and __TIME__
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} log -1 --date=iso --pretty=format:%cd
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE THYME_DATE_AND_TIME
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    string(REPLACE " " ";" THYME_DATE_AND_TIME ${THYME_DATE_AND_TIME})
+    list(GET THYME_DATE_AND_TIME 0 THYME_DATE)
+    list(GET THYME_DATE_AND_TIME 1 THYME_TIME)
+    add_definitions(-DTHYME_COMMIT_DATE="${THYME_DATE}")
+    add_definitions(-DTHYME_COMMIT_TIME="${THYME_TIME}")
 else()
-    add_definitions(-DTHYME_BRANCH="NOGITBRANCH")
-    add_definitions(-DTHYME_COMMIT_SHA1="NOGITHASH")
-    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="NOGITHASH")
+    add_definitions(-DTHYME_BRANCH="netherrealm")
+    add_definitions(-DTHYME_COMMIT_SHA1="DEADBEEF")
+    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="DEADBEEF")
     add_definitions(-DTHYME_COMMIT_COUNT=0)
+    add_definitions(-DTHYME_COMMIT_DATE="1955-11-12")
+    add_definitions(-DTHYME_COMMIT_TIME="22:04:00")
 endif()
 
 if(STANDALONE)

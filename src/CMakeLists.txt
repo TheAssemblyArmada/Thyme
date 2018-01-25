@@ -26,6 +26,7 @@ set(GAMEENGINE_INCLUDES
     game/common/rts
     game/logic/object
     game/logic/scriptengine
+    game/logic/system
     game/network
     platform
     w3d/lib
@@ -121,6 +122,7 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptgroup.cpp
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
+    game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author Duncans_pumpkin
+ * @author Duncans_pumpkin
  *
  * @brief Cave System?
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -25,7 +24,7 @@ CaveSystem *g_theCaveSystem = nullptr;
 void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
 {
 #ifndef THYME_STANDALONE
-    Call_Method<void, TunnelTracker>(0x00587CC3, this);
+    Call_Method<void, TunnelTracker, Xfer *>(0x00587CC3, this, xfer);
 #else
     // TODO 
 #endif
@@ -52,7 +51,7 @@ void CaveSystem::Reset()
 void CaveSystem::Xfer_Snapshot(Xfer *xfer)
 {
 #ifndef THYME_STANDALONE
-    Call_Method<void, CaveSystem>(0x004D58A2, this);
+    Call_Method<void, CaveSystem, Xfer *>(0x004D58A2, this, xfer);
 #else
     // TODO 
 #endif

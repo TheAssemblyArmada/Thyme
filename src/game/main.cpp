@@ -25,6 +25,10 @@
 #include "unicodestring.h"
 #include "version.h"
 
+#ifdef PLATFORM_WINDOWS
+#include <shellapi.h>
+#endif
+
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
 #include "hooker.h"
@@ -60,87 +64,48 @@ int g_xPos = c_invalidPos;
 int g_yPos = c_invalidPos;
 bool g_noBorder = false;
 
-#if !defined THYME_STANDALONE && defined PLATFORM_WINDOWS
-// Taken from http://alter.org.ua/docs/win/args/
-// Needed while we still have WinMain.
-PCHAR *CommandLineToArgvA(PCHAR CmdLine, int *_argc)
+#ifdef PLATFORM_WINDOWS
+// Taken from https://github.com/thpatch/win32_utf8/blob/master/src/shell32_dll.c
+// Get the command line as UTF-8 as it would be on other platforms.
+char **CommandLineToArgvU(LPCWSTR lpCmdLine, int *pNumArgs)
 {
-    PCHAR *argv;
-    PCHAR _argv;
-    ULONG len;
-    ULONG argc;
-    CHAR a;
-    ULONG i;
-    ULONG j;
+    int cmd_line_pos; // Array "index" of the actual command line string
+    //int lpCmdLine_len = wcslen(lpCmdLine) + 1;
+    int lpCmdLine_len = WideCharToMultiByte(CP_UTF8, 0, lpCmdLine, -1, nullptr, 0, nullptr, nullptr) + 1;
+    char **argv_u;
 
-    BOOLEAN in_QM;
-    BOOLEAN in_TEXT;
-    BOOLEAN in_SPACE;
+    wchar_t **argv_w = CommandLineToArgvW(lpCmdLine, pNumArgs);
 
-    len = strlen(CmdLine);
-    i = ((len + 2) / 2) * sizeof(PVOID) + sizeof(PVOID);
-
-    argv = (PCHAR *)GlobalAlloc(GMEM_FIXED, i + (len + 2) * sizeof(CHAR));
-
-    _argv = (PCHAR)(((PUCHAR)argv) + i);
-
-    argc = 0;
-    argv[argc] = _argv;
-    in_QM = FALSE;
-    in_TEXT = FALSE;
-    in_SPACE = TRUE;
-    i = 0;
-    j = 0;
-
-    while (a = CmdLine[i]) {
-        if (in_QM) {
-            if (a == '\"') {
-                in_QM = FALSE;
-            } else {
-                _argv[j] = a;
-                j++;
-            }
-        } else {
-            switch (a) {
-                case '\"':
-                    in_QM = TRUE;
-                    in_TEXT = TRUE;
-                    if (in_SPACE) {
-                        argv[argc] = _argv + j;
-                        argc++;
-                    }
-                    in_SPACE = FALSE;
-                    break;
-                case ' ':
-                case '\t':
-                case '\n':
-                case '\r':
-                    if (in_TEXT) {
-                        _argv[j] = '\0';
-                        j++;
-                    }
-                    in_TEXT = FALSE;
-                    in_SPACE = TRUE;
-                    break;
-                default:
-                    in_TEXT = TRUE;
-                    if (in_SPACE) {
-                        argv[argc] = _argv + j;
-                        argc++;
-                    }
-                    _argv[j] = a;
-                    j++;
-                    in_SPACE = FALSE;
-                    break;
-            }
-        }
-        i++;
+    if (!argv_w) {
+        return nullptr;
     }
-    _argv[j] = '\0';
-    argv[argc] = NULL;
 
-    (*_argc) = argc;
-    return argv;
+    cmd_line_pos = *pNumArgs + 1;
+
+    // argv is indeed terminated with an additional sentinel NULL pointer.
+    argv_u = (char**)LocalAlloc(
+        LMEM_FIXED, cmd_line_pos * sizeof(char*) + lpCmdLine_len
+    );
+
+    if (argv_u) {
+        int i;
+        char *cur_arg_u = (char*)&argv_u[cmd_line_pos];
+
+        for (i = 0; i < *pNumArgs; i++) {
+            size_t cur_arg_u_len;
+            argv_u[i] = cur_arg_u;
+            int conv_len = WideCharToMultiByte(CP_UTF8, 0, argv_w[i], -1, cur_arg_u, lpCmdLine_len, nullptr, nullptr);
+
+            cur_arg_u_len = argv_w[i] != nullptr ? conv_len : conv_len + 1;
+            cur_arg_u += cur_arg_u_len;
+            lpCmdLine_len -= cur_arg_u_len;
+        }
+
+        argv_u[i] = nullptr;
+    }
+
+    LocalFree(argv_w);
+    return argv_u;
 }
 #endif
 
@@ -398,15 +363,22 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+#ifdef PLATFORM_WINDOWS
 #ifndef THYME_STANDALONE
 /**
  * @brief Wrapper for main to hook original entry point
  */
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#endif
 {
     int argc;
-    char **argv = CommandLineToArgvA(GetCommandLineA(), &argc);
+    char **argv = CommandLineToArgvU(GetCommandLineW(), &argc);
 
-    return main(argc, argv);
+    int ret = main(argc, argv);
+    LocalFree(argv);
+
+    return ret;
 }
 #endif

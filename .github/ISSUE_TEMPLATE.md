@@ -3,7 +3,7 @@
 -->
 ####Operating System: [e.g. Windows 10]
 ####Commit/build: [e.g. 30376e1]
-####Original game source: [e.g. Origin or game disc]
+####Original game source: [e.g. Origin, TFD or game disc]
 
 - [ ] Reproducible in the original Generals Zero Hour?
 - [ ] Multiplayer affected?

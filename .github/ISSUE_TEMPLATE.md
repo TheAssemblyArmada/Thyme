@@ -18,7 +18,7 @@
 3.
 
 ###Log files
-<!--Provide the "ThymeDebugLogFile.txt" by drag & dropping it here. It can be found in the following folder: %USERPROFILE%\Documents\Command and Conquer Generals Zero Hour Data-->
+<!--Provide the "ThymeDebugLogFile.txt" (and the "ReleaseCrashInfo.txt" in case of a crash) by drag & dropping it here. It can be found in the following folder: %USERPROFILE%\Documents\Command and Conquer Generals Zero Hour Data-->
 
 ###Screenshot(s) or video
 <!-- If neccesary to show us the prolem, drag & drop screenshots here. You can use https://youtube.com to upload a video. -->

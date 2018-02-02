@@ -9,6 +9,10 @@ using the original binary to provide functions that have not been implemented ye
 The intention is to allow the fixing of bugs, implementation of new
 features and porting to platforms unsupported by the original.
 
+## Chat
+
+You can chat and discuss the development of Thyme on our [Discord channel](https://discord.gg/YhdMbvD) or on freenode in the #thyme channel.
+
 ## Running Thyme
 
 Currently Thyme can only be run on Windows.
@@ -70,7 +74,3 @@ Below is a list of similar projects and their respective original games:
  * [OpenFodder](https://github.com/OpenFodder/openfodder) - Cannon Fodder
 
 There is also a [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
-
-## Contact
-
-You can chat discuss (development of) Thyme on our [Discord channel](https://discord.gg/YhdMbvD) or on freenode in the #thyme channel.

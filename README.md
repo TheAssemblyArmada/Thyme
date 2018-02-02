@@ -2,7 +2,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/thd1as29wfnkh586?svg=true)](https://ci.appveyor.com/project/AdamMondez/thyme)
 
-Thyme is an open source re-implementation of Command & Conquer Generals: Zero Hour.
+Thyme is an open source re-implementation of Command & Conquer Generals: Zero Hour. Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.
 
 This project is a bottom-up rewrite of Generals: Zero Hour,
 using the original binary to provide functions that have not been implemented yet.
@@ -13,7 +13,9 @@ features and porting to platforms unsupported by the original.
 
 Currently Thyme can only be run on Windows.
 
-To run the game, you need to first have Command & Conquer Generals: Zero Hour installed. Currently only the original disc based english language version that is patched to version 1.04 is supported. That patch can be found [here](ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe). Thyme should also work with the pre-patched The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
+To run Thyme, you first need to have Command & Conquer Generals: Zero Hour installed. If you don't have the original game disc, Generals: Zero Hour can currently be bought most easily as a downloadable version that is part of the Command & Conquer The Ultimate Collection from [Origin](https://www.origin.com/en-us/store/command-and-conquer/command-and-conquer-the-ultimate-collection/ultimate-collection) or a third-party like [Amazon](https://www.amazon.com/Command-Conquer-Ultimate-Collection-PC/dp/B0095C0I4W).
+
+Currently only the installed original Windows disc based english language version of Generals: Zero Hour (patched to version 1.04) is supported. That 1.04 patch can be downloaded [here](ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe) if your installation hasn't been updated yet. Thyme should also work with the pre-patched installation of The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
 
 Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AdamMondez/thyme). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#building-thyme-yourself).
 

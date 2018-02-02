@@ -73,4 +73,4 @@ There is also a [Wikipedia page for open source games](https://en.wikipedia.org/
 
 ## Contact
 
-You can discuss development of this project on freenode in the #thyme channel.
+You can chat discuss (development of) Thyme on our [Discord channel](https://discord.gg/YhdMbvD) or on freenode in the #thyme channel.

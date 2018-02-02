@@ -51,7 +51,7 @@ is currently untested.
 ## Contributing
 
 If you are interested in contributing to Thyme, you will need some knowledge of C++
-as a minimum requirement. Join the developer chat listed below for more information on
+as a minimum requirement. Join the developer chat listed above for more information on
 what else you will need, such as the idc file for the current map of the binary.
 
 You can also check the [wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for more information.

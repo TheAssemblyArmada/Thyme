@@ -13,7 +13,7 @@ features and porting to platforms unsupported by the original.
 
 Currently Thyme can only be run on Windows.
 
-To run the game, you need to first have Command & Conquer Generals: Zero Hour installed. Currently only the original disc based english language version that is patched to version 1.04 is supported. Thyme should also work with the The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
+To run the game, you need to first have Command & Conquer Generals: Zero Hour installed. Currently only the original disc based english language version that is patched to version 1.04 is supported. That patch can be found [here](ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe). Thyme should also work with the pre-patched The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
 
 Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AdamMondez/thyme). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#building-thyme-yourself).
 

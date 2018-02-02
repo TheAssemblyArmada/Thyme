@@ -15,15 +15,15 @@ Currently Thyme can only be run on Windows.
 
 To run the game, you need to first have Command & Conquer Generals: Zero Hour installed. Currently only the original disc based english language version that is patched to version 1.04 is supported. Thyme should also work with the The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
 
-Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AdamMondez/thyme). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#anti-virus-warning).
+Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AdamMondez/thyme). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#building-thyme-yourself).
 
 The easiest way to get Thyme to actually run is to place both `launchthyme.exe` and `thyme.dll` in the same directory as `game.dat` in the installation folder of Generals: Zero Hour. You can then launch `launchthyme.exe` from that directory. You can also use a shortcut to `launchthyme.exe` to launch the game. The launcher will also pass any command line parameters on to get for examples mods to run.
 
 ### Anti-virus warning
 
-Anti-virus software like Windows Defender could mark Thyme as a virus. This is a false-positive. We can assure you that Thyme is fully safe to use.
+Anti-virus software like Windows Defender could mark Thyme as a virus. This is a false-positive. We can assure you that Thyme is fully safe to use. If you are still unsure about this, you can just [build Thyme yourself](#building-thyme-yourself).
 
-## Building
+## Building Thyme yourself
 
 In order to generate a working binary, currently you must build the project using
 a version of the Microsoft Visual Studio compiler (2015 and above). Building using MinGW-w64
@@ -41,6 +41,14 @@ Native support for Linux and macOS is planned for the future, but because of how
 the project is developed, a native binary will not be possible for some time.
 In the mean time, using Wine on Linux and macOS, should be possible but
 is currently untested.
+
+## Contributing
+
+If you are interested in contributing to Thyme, you will need some knowledge of C++
+as a minimum requirement. Join the developer chat listed below for more information on
+what else you will need, such as the idc file for the current map of the binary.
+
+You can also check the [wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for more information.
 
 ## Licence
 
@@ -60,14 +68,6 @@ Below is a list of similar projects and their respective original games:
  * [OpenFodder](https://github.com/OpenFodder/openfodder) - Cannon Fodder
 
 There is also a [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
-
-## Contributing
-
-If you are interested in contributing to Thyme, you will need some knowledge of C++
-as a minimum requirement. Join the developer chat listed below for more information on
-what else you will need, such as the idc file for the current map of the binary.
-
-You can also check the [wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for more information.
 
 ## Contact
 

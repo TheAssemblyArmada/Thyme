@@ -2,12 +2,26 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/thd1as29wfnkh586?svg=true)](https://ci.appveyor.com/project/AdamMondez/thyme)
 
-An Open Source Re-Implementation of Generals: Zero Hour
+Thyme is an open source re-implementation of Command & Conquer Generals: Zero Hour.
 
 This project is a bottom-up rewrite of Generals: Zero Hour,
 using the original binary to provide functions that have not been implemented yet.
 The intention is to allow the fixing of bugs, implementation of new
 features and porting to platforms unsupported by the original.
+
+## Running Thyme
+
+Currently Thyme can only be run on Windows.
+
+To run the game, you need to first have Command & Conquer Generals: Zero Hour installed. Currently only the original disc based english language version that is patched to version 1.04 is supported. Thyme should also work with the The First Decade or The Ultimate Collection (from Origin). This can be achieved by adding the `game.dat` file from from the the original disc based english language version to the Generals: Zero Hour installation directory of the TFD or TUC version.
+
+Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AdamMondez/thyme). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. 
+
+The easiest way to get Thyme to actually run is to place both `launchthyme.exe` and `thyme.dll` in the same directory as `game.dat` in the installation folder of Generals: Zero Hour. You can then launch `launchthyme.exe` from that directory. You can also use a shortcut to `launchthyme.exe` to launch the game. The launcher will also pass any command line parameters on to get for examples mods to run.
+
+###Anti-verus warning
+
+Anti-virus software like Windows Defender could mark Thyme as a virus. This is a false-positive. We can assure you that Thyme is fully safe to use.
 
 ## Building
 
@@ -20,18 +34,6 @@ it should be possible to build with any C++11 compiler.
 In order to build, use CMake to generate a solution outside of the src directory.
 For example, when using the CMake GUI and the source is at C:\path\to\thyme set the build
 path to C:\path\to\thyme\build.
-
-## Running
-
-To run the game, you need to first have Generals: Zero Hour installed.
-The easiest way to get the game to run is to place both `launchthyme.exe`
-and `thyme.dll` in the same directory as `game.dat`. You can then
-launch `launchthyme.exe` from the directory, or use a shortcut to `launchthyme.exe`
-to launch the game. The launcher will also pass any command line parameters on.
-
-Currently only the original disc based english language version patched to version 1.04 is 
-supported, though adding the `game.dat` from that version to a TFD or Origin
-install should also allow those to work.
 
 ### Linux and macOS
 
@@ -57,13 +59,13 @@ Below is a list of similar projects and their respective original games:
  * [OpenDUNE](https://github.com/OpenDUNE/OpenDUNE) - Dune 2
  * [OpenFodder](https://github.com/OpenFodder/openfodder) - Cannon Fodder
 
-There is also the [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
+There is also a [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).
 
 ## Contributing
 
 If you are interested in contributing to Thyme, you will need some knowledge of C++
 as a minimum requirement. Join the developer chat listed below for more information on
-what else you will need such as the idc file for the current map of the binary.
+what else you will need, such as the idc file for the current map of the binary.
 
 You can also check the [wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for more information.
 

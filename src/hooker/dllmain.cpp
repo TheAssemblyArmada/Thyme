@@ -35,6 +35,7 @@
 #include "gametext.h"
 #include "globaldata.h"
 #include "ini.h"
+#include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
 #include "namekeygenerator.h"
@@ -163,6 +164,7 @@ void Setup_Hooks()
     ScriptList::Hook_Me();
     SidesInfo::Hook_Me();
     SidesList::Hook_Me();
+    Keyboard::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

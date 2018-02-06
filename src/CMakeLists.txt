@@ -17,6 +17,7 @@ set(GAMEENGINE_INCLUDES
     base
     game
     game/client
+    game/client/input
     game/common
     game/common/audio
     game/common/compression
@@ -47,6 +48,7 @@ set(GAMEENGINE_SRC
     game/client/optionpreferences.cpp
     game/client/terrainroads.cpp
     game/client/water.cpp
+    game/client/input/keyboard.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

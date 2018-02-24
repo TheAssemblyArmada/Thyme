@@ -17,6 +17,7 @@ set(GAMEENGINE_INCLUDES
     base
     game
     game/client
+    game/client/gui
     game/client/input
     game/common
     game/common/audio
@@ -43,11 +44,13 @@ set(GAMEENGINE_SRC
     game/main.cpp
     game/maputil.cpp
     game/weather.cpp
+    game/client/displaystring.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
     game/client/optionpreferences.cpp
     game/client/terrainroads.cpp
     game/client/water.cpp
+    game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp

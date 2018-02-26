@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: RTSUTILS.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: 
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Useful code that doesn't really fit anywhere else.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef RTSUTILS_H
@@ -28,6 +19,12 @@
 
 #include "always.h"
 #include "endiantype.h"
+
+#ifdef PLATFORM_WINDOWS
+#include <mmsystem.h>
+#else
+#include <sys/time.h>
+#endif
 
 namespace rts {
 
@@ -90,6 +87,17 @@ struct FourCC
     static const uint32_t value = (((((a << 8) | b) << 8) | c) << 8) | d;
 #endif
 };
+
+inline unsigned Get_Time()
+{
+#ifdef PLATFORM_WINDOWS
+	return timeGetTime();
+#else
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	return now.tv_usec / 1000;
+#endif
+}
 
 } // namespace rts
 

@@ -46,7 +46,7 @@ public:
     bool Is_Getting_Late();
 private:
     void Reset();
-    static int Time_Func();
+    static unsigned Time_Func();
 
     int m_startTime;
     int m_negTime;
@@ -66,7 +66,7 @@ inline SysTimeClass::~SysTimeClass()
 #endif
 }
 
-inline int SysTimeClass::Time_Func()
+inline unsigned SysTimeClass::Time_Func()
 {
 #ifdef PLATFORM_WINDOWS
     return timeGetTime();

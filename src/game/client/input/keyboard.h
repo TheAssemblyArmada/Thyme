@@ -87,6 +87,7 @@ public:
     bool Is_Shift();
     bool Is_Ctrl();
     bool Is_Alt();
+    uint16_t Get_Modifiers() { return m_modifiers; }
 
 #ifndef THYME_STANDALONE
     void Hook_Init();

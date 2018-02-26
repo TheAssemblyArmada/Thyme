@@ -45,6 +45,7 @@ set(GAMEENGINE_SRC
     game/maputil.cpp
     game/weather.cpp
     game/client/displaystring.cpp
+    game/client/displaystringmanager.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
     game/client/optionpreferences.cpp

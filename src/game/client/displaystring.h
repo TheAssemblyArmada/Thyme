@@ -26,6 +26,7 @@
 class DisplayString : public MemoryPoolObject
 {
     IMPLEMENT_POOL(DisplayString);
+    friend class DisplayStringManager;
 
 public:
     DisplayString();
@@ -34,7 +35,7 @@ public:
     virtual void Set_Text(UnicodeString text);
     virtual UnicodeString Get_Text() { return m_textString; }
     virtual int Get_Text_Length() { return m_textString.Get_Length(); }
-	virtual void Notify_Text_Changed() {}
+    virtual void Notify_Text_Changed() {}
     virtual void Reset();
     virtual void Set_Font(GameFont *font) { m_font = font; }
     virtual GameFont *Get_Font() { return m_font; }
@@ -45,8 +46,8 @@ public:
     virtual void Get_Size(int *x, int *y) = 0;
     virtual int Get_Width(int char_count) = 0;
     virtual void Set_Clip_Region(IRegion2D *region) = 0;
-	virtual void Remove_Last_Char();
-	virtual void Add_Char(wchar_t ch);
+    virtual void Remove_Last_Char();
+    virtual void Add_Char(wchar_t ch);
 
 protected:
     UnicodeString m_textString;

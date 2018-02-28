@@ -53,6 +53,7 @@ set(GAMEENGINE_SRC
     game/client/water.cpp
     game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp
+    game/client/input/mouse.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

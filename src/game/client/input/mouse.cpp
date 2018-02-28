@@ -29,11 +29,14 @@ extern Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
 extern Mouse *g_theMouse = nullptr;
 #endif
 
+/**
+ * 0x004029D0
+ */
 Mouse::Mouse() :
     m_tooltipFontName("Times New Roman"),
     m_tooltipFontSize(12),
     m_tooltipFontIsBold(false),
-    //m_tooltipFont("Times New Roman"),
+    // m_tooltipFont("Times New Roman"),
     m_tooltipAnimateBackground(true),
     m_tooltipFillTime(50),
     m_tooltipDelayTime(50),
@@ -85,8 +88,29 @@ Mouse::Mouse() :
     memset(&m_prevMouse, 0, sizeof(m_prevMouse));
 }
 
-Mouse::~Mouse() {}
+/**
+ * 0x00402E50
+ */
+Mouse::~Mouse()
+{
+    if (m_tooltipDisplayString != nullptr) {
+        g_theDisplayStringManger->Free_Display_String(m_tooltipDisplayString);
+    }
 
+    m_tooltipDisplayString = nullptr;
+
+    if (m_cursorTextDisplayString != nullptr) {
+        g_theDisplayStringManger->Free_Display_String(m_cursorTextDisplayString);
+    }
+
+    m_cursorTextDisplayString = nullptr;
+}
+
+/**
+ * @brief Initialises the subsystem.
+ *
+ * 0x00402FC0
+ */
 void Mouse::Init()
 {
     m_currentRedrawMode =
@@ -112,6 +136,11 @@ void Mouse::Init()
     m_cursorTextDisplayString = g_theDisplayStringManger->New_Display_String();
 }
 
+/**
+ * @brief Resets the subsystem.
+ *
+ * 0x00403160
+ */
 void Mouse::Reset()
 {
     if (m_cursorTextDisplayString != nullptr) {
@@ -119,17 +148,32 @@ void Mouse::Reset()
     }
 }
 
+/**
+ * @brief Updates the subsystem.
+ *
+ * 0x00403170
+ */
 void Mouse::Update()
 {
     Update_Mouse_Data();
 }
 
+/**
+ * @brief Parses mouse configuration data from Data/INI/Mouse.ini.
+ *
+ * 0x00402F40
+ */
 void Mouse::Parse_INI()
 {
     INI ini;
     ini.Load("Data/INI/Mouse.ini", INI_LOAD_OVERWRITE, nullptr);
 }
 
+/**
+ * @brief Adds input messages to the message stream based on recorded mouse events.
+ *
+ * 0x004031F0
+ */
 void Mouse::Create_Stream_Messages()
 {
     if (g_theMessageStream != nullptr) {
@@ -164,96 +208,106 @@ void Mouse::Create_Stream_Messages()
                 m_stillTime = call_time;
             }
 
-			GameMessage *event_msg;
+            GameMessage *event_msg;
 
-			switch (m_currMouse.left_event) {
-				case 5:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_DOWN);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 6:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 7:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DOUBLE_CLICK);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 8:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DRAG);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-				default:
-					break;
-			}
+            switch (m_currMouse.left_event) {
+                case 5:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_DOWN);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 6:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 7:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DOUBLE_CLICK);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 8:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DRAG);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                default:
+                    break;
+            }
 
-			switch (m_currMouse.middle_event) {
-				case 9:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_BUTTON_DOWN);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 10:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_BUTTON_UP);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 11:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DOUBLE_CLICK);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 12:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DRAG);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-				default:
-					break;
-			}
+            switch (m_currMouse.middle_event) {
+                case 9:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_BUTTON_DOWN);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 10:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_BUTTON_UP);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 11:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DOUBLE_CLICK);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 12:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DRAG);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                default:
+                    break;
+            }
 
-			switch (m_currMouse.right_event) {
-				case 13:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_BUTTON_DOWN);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 14:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_BUTTON_UP);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 15:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DOUBLE_CLICK);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-					event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
-				case 16:
-					event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DRAG);
-					event_msg->Append_Pixel_Arg(m_currMouse.pos);
-					event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-				default:
-					break;
-			}
+            switch (m_currMouse.right_event) {
+                case 13:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_BUTTON_DOWN);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 14:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_BUTTON_UP);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 15:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DOUBLE_CLICK);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                case 16:
+                    event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DRAG);
+                    event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                default:
+                    break;
+            }
 
-			if (m_currMouse.wheel_delta != 0) {
-				GameMessage *wheel_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_WHEEL);
-				wheel_msg->Append_Pixel_Arg(m_currMouse.pos);
-				wheel_msg->Append_Int_Arg(m_currMouse.wheel_delta / 120);
-				wheel_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
-			}
+            if (m_currMouse.wheel_delta != 0) {
+                GameMessage *wheel_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_WHEEL);
+                wheel_msg->Append_Pixel_Arg(m_currMouse.pos);
+                wheel_msg->Append_Int_Arg(m_currMouse.wheel_delta / 120);
+                wheel_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+            }
         }
     }
 }
 
+/**
+ * @brief Sets the mouse position.
+ *
+ * 0x00403B40
+ */
 void Mouse::Set_Position(int x, int y)
 {
     m_currMouse.pos.x = x;
     m_currMouse.pos.y = y;
 }
 
+/**
+ * @brief Sets the limits on what mouse coordinates are valid based on current resolution.
+ *
+ * 0x00403B40
+ */
 void Mouse::Set_Mouse_Limits()
 {
     // TODO Requires DisplayClass
@@ -270,9 +324,14 @@ void Mouse::Set_Mouse_Limits()
 #endif
 }
 
+/**
+ * @brief Causes mouse to update its configuration for the current resolution settings.
+ *
+ * 0x00403090
+ */
 void Mouse::Notify_Resolution_Change()
 {
-    // TODO Requires DisplayClass
+    // TODO Requires FontLibrary
 #ifndef THYME_STANDALONE
     Call_Method<void, Mouse>(0x00403090, this);
 #elif 0
@@ -282,7 +341,7 @@ void Mouse::Notify_Resolution_Change()
 
     m_tooltipDisplayString = g_theDisplayStringManger->New_Display_String();
 
-    //FontDesc font;
+    // FontDesc font;
     AsciiString font_name;
     int font_size;
     bool font_bold;
@@ -302,6 +361,9 @@ void Mouse::Notify_Resolution_Change()
 #endif
 }
 
+/**
+ * @brief Updates mouse's internal data state.
+ */
 void Mouse::Update_Mouse_Data()
 {
     static bool _busy;
@@ -336,6 +398,11 @@ void Mouse::Update_Mouse_Data()
     }
 }
 
+/**
+ * @brief Processes a given mouse event in the event buffer.
+ *
+ * 0x004024E0
+ */
 void Mouse::Process_Mouse_Event(int event_num)
 {
     m_currMouse.left_event = 0;
@@ -451,6 +518,11 @@ void Mouse::Process_Mouse_Event(int event_num)
     memcpy(&m_prevMouse, &m_currMouse, sizeof(m_prevMouse));
 }
 
+/**
+ * @brief Moves the mouse position.
+ *
+ * 0x00402450
+ */
 void Mouse::Move_Mouse(int x, int y, int absolute)
 {
     if (absolute) {

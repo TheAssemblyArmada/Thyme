@@ -110,7 +110,7 @@ protected:
 	void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
 
-private:
+protected:
     CursorInfo m_cursorInfo[INFO_COUNT];
     AsciiString m_tooltipFontName;
     int m_tooltipFontSize;

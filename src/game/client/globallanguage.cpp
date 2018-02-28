@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handles font configurations for current language.
  *
@@ -9,11 +9,13 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #include "globallanguage.h"
+#include "gamemath.h"
+#include "globaldata.h"
+#include "minmax.h"
 
 #ifndef THYME_STANDALONE
 #include "hookcrt.h" // Needed until we move registry queries elsewhere.
@@ -64,8 +66,7 @@ FieldParse GlobalLanguage::s_languageParseTable[] = {
     {"CreditsTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsTitleFont)},
     {"CreditsMinorTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsMinorTitleFont)},
     {"CreditsNormalFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsNormalFont)},
-    {nullptr, nullptr, nullptr, 0}
-};
+    {nullptr, nullptr, nullptr, 0}};
 
 GlobalLanguage::GlobalLanguage() :
     m_unicodeFontName(),
@@ -106,6 +107,14 @@ void GlobalLanguage::Init()
     // instead if the file existed. Thyme doesn't support running on Win9x so
     // we don't implement it. Only chinese language known to use it.
     ini.Load(file, INI_LOAD_OVERWRITE, nullptr);
+}
+
+int GlobalLanguage::Adjust_Font_Size(int size)
+{
+    float adjustment =
+        Clamp((((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
+
+    return GameMath::Fast_To_Int_Floor(adjustment * size);
 }
 
 void GlobalLanguage::Parse_Language_Defintions(INI *ini)

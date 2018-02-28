@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handles font configurations for current language.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -33,10 +32,14 @@ class FontDesc
 
 public:
     FontDesc() : m_name("Arial Unicode MS"), m_pointSize(12), m_bold(false) {}
+    FontDesc(const char *name, int size = 12, bool bold = false) : m_name(name), m_pointSize(size), m_bold(bold) {}
 
-    AsciiString &Get_Font_Name() { return m_name; }
-    int Get_Point_Size() { return m_pointSize; }
-    bool Is_Bold() { return m_bold; }
+    const AsciiString &Name() const { return m_name; }
+    int Point_Size() const { return m_pointSize; }
+    bool Bold() const { return m_bold; }
+    void Set_Name(AsciiString name) { m_name = name; }
+    void Set_Point_Size(int size) { m_pointSize = size; }
+    void Set_Bold(bool bold) { m_bold = bold; }
 
 private:
     AsciiString m_name;
@@ -53,6 +56,10 @@ public:
     virtual void Init() override;
     virtual void Reset() override {}
     virtual void Update() override {}
+
+    int Adjust_Font_Size(int size);
+
+    const FontDesc &Tooltip() const { return m_tooltipFont; }
 
     static void Parse_Language_Defintions(INI *ini);
     static void Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data);

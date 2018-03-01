@@ -24,6 +24,55 @@
 #include "globallanguage.h"
 #include "subsysteminterface.h"
 
+ // If you add additional cursors, you will need to add a string to the Mouse::s_cursorNames array in mouse.cpp to match it.
+enum MouseCursor
+{
+    CURSOR_INVALID = -1,
+    CURSOR_NONE,
+    CURSOR_NORMAL,
+    CURSOR_ARROW,
+    CURSOR_SCROLL,
+    CURSOR_TARGET,
+    CURSOR_MOVE,
+    CURSOR_ATTACK_MOVE,
+    CURSOR_ATTACK_OBJ,
+    CURSOR_FORCE_ATTACK_OBJ,
+    CURSOR_FORCE_ATTACK_GROUND,
+    CURSOR_BUILD,
+    CURSOR_INVALID_BUILD,
+    CURSOR_GENERIC_INVALID,
+    CURSOR_SELECT,
+    CURSOR_ENTER_FRIENDLY,
+    CURSOR_ENTER_AGRESSIVE,
+    CURSOR_SET_RALLY_POINT,
+    CURSOR_GET_REPAIRED,
+    CURSOR_GET_HEALED,
+    CURSOR_DO_REPAIR,
+    CURSOR_RESUME_CONSTRUCTION,
+    CURSOR_CAPTURE_BUILDING,
+    CURSOR_SNIPE_VEHICLE,
+    CURSOR_LASER_GUIDED_MISSLES,
+    CURSOR_TANK_HUNTER_TNT_ATTACK,
+    CURSOR_STAB_ATTACK,
+    CURSOR_PLACE_REMOTE_CHARGE,
+    CURSOR_PLACE_TIMED_CHARGE,
+    CURSOR_DEFECTOR,
+    CURSOR_DOCK,
+    CURSOR_FIRE_FLAME,
+    CURSOR_FIRE_BOMB,
+    CURSOR_PLACE_BEACON,
+    CURSOR_DISGUISE_AS_VEHICLE,
+    CURSOR_WAYPOINT,
+    CURSOR_OUT_RANGE,
+    CURSOR_STAB_ATTACK_INVALID,
+    CURSOR_PLACE_CHARGE_INVALID,
+    CURSOR_HACK,
+    CURSOR_PARTICLE_UPLINK_CANNON,
+    CURSOR_COUNT,
+};
+
+DEFINE_ENUMERATION_OPERATORS(MouseCursor);
+
 struct MouseIO
 {
     ICoord2D pos;
@@ -43,31 +92,26 @@ struct MouseIO
 
 struct CursorInfo
 {
-    AsciiString unkAsciiString;
-    AsciiString cursorText;
-    RGBAColorInt cursorTextColor;
-    RGBAColorInt cursorTextDropColor;
-    AsciiString textureName;
-    AsciiString imageName;
-    AsciiString W3DModelName;
-    AsciiString W3DAnimName;
-    float W3DScale;
+    AsciiString unk_string;
+    AsciiString cursor_text;
+    RGBAColorInt cursor_text_color;
+    RGBAColorInt cursor_text_drop_color;
+    AsciiString texture_name;
+    AsciiString image_name;
+    AsciiString w3d_model_name;
+    AsciiString w3d_anim_name;
+    float w3d_scale;
     bool loop;
-    Coord2D hotSpot;
+    Coord2D hot_spot;
     int frames;
     float fps;
     int directions;
 };
 
+class INI;
+
 class Mouse : public SubsystemInterface
 {
-    enum MouseCursor
-    {
-        NONE,
-        GENERIC,
-        UNKNOWN,
-    };
-
     enum RedrawMode
     {
         RM_WINDOWS,
@@ -80,7 +124,6 @@ class Mouse : public SubsystemInterface
 	enum
 	{
         TOOLTIP_WRAP = 120,
-		INFO_COUNT = 40,
 		MAX_EVENTS = 256,
 	};
 public:
@@ -105,13 +148,22 @@ public:
 
 	void Notify_Resolution_Change();
 
+    static void Parse_Mouse_Definitions(INI *ini);
+    static void Parse_Cursor_Definitions(INI *ini);
+
+#ifndef THYME_STANDALONE
+    void Hook_Create_Stream_Messages();
+    static void Hook_Me();
+#endif
+
 protected:
 	void Update_Mouse_Data();
 	void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
+    MouseCursor Get_Cursor_Index(const AsciiString &name);
 
 protected:
-    CursorInfo m_cursorInfo[INFO_COUNT];
+    CursorInfo m_cursorInfo[CURSOR_COUNT];
     AsciiString m_tooltipFontName;
     int m_tooltipFontSize;
     bool m_tooltipFontIsBold;
@@ -119,7 +171,7 @@ protected:
     bool m_tooltipAnimateBackground;
     int m_tooltipFillTime;
     int m_tooltipDelayTime;
-    float m_toolTipwidth;
+    float m_tooltipWidth;
     float unkFloat;
     RGBAColorInt m_tooltipColorText;
     RGBAColorInt m_tooltipColorHighlight;
@@ -132,9 +184,9 @@ protected:
     bool m_adjustTooltipAltColor;
     bool m_orthoCamera;
     float m_orthoZoom;
-    int m_dragTolerance;
-    int m_dragTolerance3D;
-    int m_dragToleranceMS;
+    unsigned m_dragTolerance;
+    unsigned m_dragTolerance3D;
+    unsigned m_dragToleranceMS;
     int8_t m_numButtons;
     int8_t m_numAxes;
     bool m_forceFeedback;
@@ -163,13 +215,22 @@ protected:
     unsigned m_stillTime;
     RGBAColorInt m_tooltipColorTextCopy;
     RGBAColorInt m_tooltipColorBackgroundCopy;
-    int unkInt3;
+    int m_eventCount;
+
+private:
+    static const char *s_cursorNames[];
 };
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
 extern Mouse *&g_theMouse;
+
+inline void Mouse::Hook_Me()
+{
+    //Hook_Method(0x004031F0, &Hook_Create_Stream_Messages);
+    Hook_Method(0x004024E0, &Process_Mouse_Event);
+}
 #else
 extern Mouse *g_theMouse;
 #endif

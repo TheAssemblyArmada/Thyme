@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Parser for SAGE engine configuration files.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -146,6 +145,8 @@ public:
     static void Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Coord2D(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Coord3D(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_ICoord2D(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_ICoord3D(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Index_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Duration_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Duration_Int(INI *ini, void *formal, void *store, const void *user_data);

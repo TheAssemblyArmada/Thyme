@@ -25,9 +25,59 @@ using rts::Get_Time;
 
 #ifndef THYME_STANDALONE
 extern Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
+
+void Mouse::Hook_Create_Stream_Messages()
+{
+    Mouse::Create_Stream_Messages();
+}
 #else
 extern Mouse *g_theMouse = nullptr;
 #endif
+
+// If you add additional cursors, you will need to add an entry to the MouseCursor enum in mouse.h to match it.
+const char *Mouse::s_cursorNames[] = {
+    "None",
+    "Normal",
+    "Arrow",
+    "Scroll",
+    "Target",
+    "Move",
+    "AttackMove",
+    "AttackObj",
+    "ForceAttackObj",
+    "ForceAttackGround",
+    "Build",
+    "InvalidBuild",
+    "GenericInvalid",
+    "Select",
+    "EnterFriendly",
+    "EnterAggressive",
+    "SetRallyPoint",
+    "GetRepaired",
+    "GetHealed",
+    "DoRepair",
+    "ResumeConstruction",
+    "CaptureBuilding",
+    "SnipeVehicle",
+    "LaserGuidedMissiles",
+    "TankHunterTNTAttack",
+    "StabAttack",
+    "PlaceRemoteCharge",
+    "PlaceTimedCharge",
+    "Defector",
+    "Dock",
+    "FireFlame",
+    "FireBomb",
+    "PlaceBeacon",
+    "DisguiseAsVehicle",
+    "Waypoint",
+    "OutRange",
+    "StabAttackInvalid",
+    "PlaceChargeInvalid",
+    "Hack",
+    "ParticleUplinkCannon",
+    nullptr,
+};
 
 /**
  * 0x004029D0
@@ -40,7 +90,7 @@ Mouse::Mouse() :
     m_tooltipAnimateBackground(true),
     m_tooltipFillTime(50),
     m_tooltipDelayTime(50),
-    m_toolTipwidth(15.0f),
+    m_tooltipWidth(15.0f),
     unkFloat(0.0f),
     m_tooltipColorText{220, 220, 220, 255},
     m_tooltipColorHighlight{255, 255, 0, 255},
@@ -71,7 +121,7 @@ Mouse::Mouse() :
     m_deadInputFrame(0),
     m_inputMovesAbsolute(false),
     m_visible(false),
-    m_currentCursor(UNKNOWN),
+    m_currentCursor(CURSOR_ARROW),
     m_cursorTextDisplayString(nullptr),
     m_cursorTextColor{255, 255, 255, 255},
     m_cursorTextDropColor{255, 255, 255, 255},
@@ -81,7 +131,7 @@ Mouse::Mouse() :
     m_stillTime(0),
     m_tooltipColorTextCopy{255, 255, 255, 255},
     m_tooltipColorBackgroundCopy{0, 0, 0, 255},
-    unkInt3(0)
+    m_eventCount(0)
 {
     memset(m_mouseEvents, 0, sizeof(m_mouseEvents));
     memset(&m_currMouse, 0, sizeof(m_currMouse));
@@ -131,8 +181,8 @@ void Mouse::Init()
     m_inputFrame = 0;
     m_deadInputFrame = 0;
     m_inputMovesAbsolute = 0;
-    unkInt3 = 0;
-    m_currentCursor = UNKNOWN;
+    m_eventCount = 0;
+    m_currentCursor = CURSOR_ARROW;
     m_cursorTextDisplayString = g_theDisplayStringManger->New_Display_String();
 }
 
@@ -199,7 +249,7 @@ void Mouse::Create_Stream_Messages()
             m_displayTooltip = true;
         }
 
-        for (int i = 0; i < unkInt3; ++i) {
+        for (int i = 0; i < m_eventCount; ++i) {
             Process_Mouse_Event(i);
 
             // If the mouse has moved, set m_stillTime to be the time we got at function start to time elapsed time since
@@ -208,7 +258,7 @@ void Mouse::Create_Stream_Messages()
                 m_stillTime = call_time;
             }
 
-            GameMessage *event_msg;
+            GameMessage *event_msg = nullptr;
 
             switch (m_currMouse.left_event) {
                 case 5:
@@ -229,6 +279,7 @@ void Mouse::Create_Stream_Messages()
                 case 8:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                 default:
                     break;
@@ -253,6 +304,7 @@ void Mouse::Create_Stream_Messages()
                 case 12:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                 default:
                     break;
@@ -277,6 +329,7 @@ void Mouse::Create_Stream_Messages()
                 case 16:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
+                    event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                 default:
                     break;
@@ -388,9 +441,9 @@ void Mouse::Update_Mouse_Data()
     _busy = false;
 
     if (events > 0) {
-        unkInt3 = events - 1;
+        m_eventCount = events - 1;
     } else {
-        unkInt3 = 0;
+        m_eventCount = 0;
     }
 
     if (events != 0) {
@@ -535,4 +588,86 @@ void Mouse::Move_Mouse(int x, int y, int absolute)
 
     m_currMouse.pos.x = Clamp(m_currMouse.pos.x, m_minX, m_maxX);
     m_currMouse.pos.y = Clamp(m_currMouse.pos.y, m_minY, m_maxY);
+}
+
+/**
+ * @brief Gets the cursor enum value from its name. Used for parsing configuration files.
+ */
+MouseCursor Mouse::Get_Cursor_Index(const AsciiString &name)
+{
+    for (MouseCursor i = CURSOR_NONE; i < CURSOR_COUNT; ++i) {
+        if (name == s_cursorNames[i]) {
+            return i;
+        }
+    }
+
+    return CURSOR_INVALID;
+}
+
+/**
+ * @brief Parses "Mouse" configuration sections from .ini files.
+ * @see ini.cpp
+ *
+ * 0x004041F0
+ */
+void Mouse::Parse_Mouse_Definitions(INI *ini)
+{
+    static FieldParse _static_mouse_parsers[] = {
+        {"TooltipFontName", &INI::Parse_AsciiString, nullptr, offsetof(Mouse, m_tooltipFontName)},
+        {"TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize) },
+        {"TooltipFontIsBold", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipFontIsBold) },
+        {"TooltipAnimateBackground", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipAnimateBackground) },
+        {"TooltipFillTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFillTime) },
+        {"TooltipDelayTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipDelayTime) },
+        {"TooltipTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorText) },
+        {"TooltipHighlightColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorHighlight) },
+        {"TooltipShadowColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorShadow) },
+        {"TooltipBackgroundColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBackground) },
+        {"TooltipBorderColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBorder) },
+        {"TooltipWidth", &INI::Parse_Percent_To_Real, nullptr, offsetof(Mouse, m_tooltipWidth) },
+        {"CursorMode", &INI::Parse_Int, nullptr, offsetof(Mouse, m_currentRedrawMode) },
+        {"UseTooltipAltTextColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltTextColor) },
+        {"UseTooltipAltBackColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltBackColor) },
+        {"AdjustTooltipAltColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_adjustTooltipAltColor) },
+        {"OrthoCamera", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_orthoCamera) },
+        {"OrthoZoom", &INI::Parse_Real, nullptr, offsetof(Mouse, m_orthoZoom) },
+        {"DragTolerance", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance) },
+        {"DragTolerance3D", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance3D) },
+        {"DragToleranceMS", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragToleranceMS) }};
+
+    if (g_theMouse != nullptr) {
+        ini->Init_From_INI(g_theMouse, _static_mouse_parsers);
+    }
+}
+
+/**
+ * @brief Parses "MouseCursor" configuration sections from .ini files.
+ * @see ini.cpp
+ *
+ * 0x00404060
+ */
+void Mouse::Parse_Cursor_Definitions(INI *ini)
+{
+    static FieldParse _cursor_parsers[] =
+    {
+        { "CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text)},
+        { "CursorTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_color) },
+        { "CursorTextDropColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_drop_color) },
+        { "W3DModel", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_model_name) },
+        { "W3DAnim", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_anim_name) },
+        { "W3DScale", &INI::Parse_Real, nullptr, offsetof(CursorInfo, w3d_scale) },
+        { "Loop", &INI::Parse_Bool, nullptr, offsetof(CursorInfo, loop) },
+        { "Image", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, image_name) },
+        { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, texture_name) },
+        { "HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot) },
+        { "Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames) },
+        { "FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps) },
+        { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) }
+    };
+
+    AsciiString tok = ini->Get_Next_Token();
+
+    if (g_theMouse != nullptr && tok.Is_Not_Empty()) {
+        ini->Init_From_INI(&g_theMouse->m_cursorInfo[g_theMouse->Get_Cursor_Index(tok)], _cursor_parsers);
+    }
 }

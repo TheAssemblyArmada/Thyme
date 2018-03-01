@@ -266,21 +266,25 @@ void Mouse::Create_Stream_Messages()
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 6:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_BUTTON_UP);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 7:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DOUBLE_CLICK);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 8:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_LEFT_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    break;
                 default:
                     break;
             }
@@ -291,21 +295,25 @@ void Mouse::Create_Stream_Messages()
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 10:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_BUTTON_UP);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 11:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DOUBLE_CLICK);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 12:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_MIDDLE_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    break;
                 default:
                     break;
             }
@@ -316,21 +324,25 @@ void Mouse::Create_Stream_Messages()
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 14:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_BUTTON_UP);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 15:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DOUBLE_CLICK);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
                     event_msg->Append_Int_Arg(m_currMouse.wheel_pos);
+                    break;
                 case 16:
                     event_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_RIGHT_DRAG);
                     event_msg->Append_Pixel_Arg(m_currMouse.pos);
                     event_msg->Append_Pixel_Arg(m_currMouse.delta_pos);
                     event_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
+                    break;
                 default:
                     break;
             }

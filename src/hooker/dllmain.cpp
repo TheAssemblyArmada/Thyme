@@ -31,6 +31,7 @@
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamedebug.h"
+#include "gamemessage.h"
 #include "gamestate.h"
 #include "gametext.h"
 #include "globaldata.h"
@@ -38,6 +39,7 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
+#include "mouse.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
 #include "script.h"
@@ -165,6 +167,8 @@ void Setup_Hooks()
     SidesInfo::Hook_Me();
     SidesList::Hook_Me();
     Keyboard::Hook_Me();
+    Mouse::Hook_Me();
+    GameMessage::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -369,6 +368,10 @@ public:
     GameMessage *Get_Next() { return m_next; }
     GameMessage *Get_Prev() { return m_prev; }
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     GameMessage *m_next;
     GameMessage *m_prev;
@@ -381,4 +384,13 @@ private:
     GameMessageArgument *m_argTail;
 };
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void GameMessage::Hook_Me()
+{
+    Hook_Method(0x0040A8F0, &Append_Pixel_Arg);
+    Hook_Method(0x0040A800, &Append_Int_Arg);
+}
+#endif
 #endif

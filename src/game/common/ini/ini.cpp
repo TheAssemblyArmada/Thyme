@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Parser for SAGE engine configuration files.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -29,6 +28,7 @@
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "minmax.h"
+#include "mouse.h"
 #include "stringex.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
@@ -76,8 +76,10 @@ BlockParse TheTypeTable[] =
     { "MappedImage", (iniblockparse_t)(0x00506510)/*&INI::parseMappedImageDefinition*/ },
     //{ "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
     { "MiscAudio", &MiscAudio::Parse_Misc_Audio },
-    { "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },
-    { "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
+    //{ "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },
+    { "Mouse", &Mouse::Parse_Mouse_Definitions },
+    //{ "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
+    { "MouseCursor", &Mouse::Parse_Cursor_Definitions },
     { "MultiplayerColor", (iniblockparse_t)(0x00504B10)/*&INI::parseMultiplayerColorDefinition*/ },
     { "MultiplayerStartingMoneyChoice", (iniblockparse_t)(0x00504C80)/*&INI::parseMultiplayerStartingMoneyChoiceDefinition*/ },
     { "OnlineChatColors", (iniblockparse_t)(0x00504D10)/*&INI::parseOnlineChatColorDefinition*/ },
@@ -687,6 +689,23 @@ void INI::Parse_Coord3D(INI *ini, void *formal, void *store, const void *user_da
     coord->x = Scan_Real(ini->Get_Next_Sub_Token("X"));
     coord->y = Scan_Real(ini->Get_Next_Sub_Token("Y"));
     coord->z = Scan_Real(ini->Get_Next_Sub_Token("Z"));
+}
+
+void INI::Parse_ICoord2D(INI *ini, void *formal, void *store, const void *user_data)
+{
+    ICoord2D *coord = static_cast<ICoord2D*>(store);
+
+    coord->x = Scan_Int(ini->Get_Next_Sub_Token("X"));
+    coord->y = Scan_Int(ini->Get_Next_Sub_Token("Y"));
+}
+
+void INI::Parse_ICoord3D(INI *ini, void *formal, void *store, const void *user_data)
+{
+    ICoord3D *coord = static_cast<ICoord3D*>(store);
+
+    coord->x = Scan_Int(ini->Get_Next_Sub_Token("X"));
+    coord->y = Scan_Int(ini->Get_Next_Sub_Token("Y"));
+    coord->z = Scan_Int(ini->Get_Next_Sub_Token("Z"));
 }
 
 void INI::Parse_Index_List(INI *ini, void *formal, void *store, const void *user_data)

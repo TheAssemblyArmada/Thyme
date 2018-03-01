@@ -228,7 +228,7 @@ void Mouse::Create_Stream_Messages()
 {
     if (g_theMessageStream != nullptr) {
         unsigned call_time = Get_Time();
-        GameMessage *start_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_BEGIN);
+        GameMessage *start_msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_MOUSE_POSITION);
         start_msg->Append_Pixel_Arg(m_currMouse.pos);
         start_msg->Append_Int_Arg(g_theKeyboard->Get_Modifiers());
         unsigned delay = 0;

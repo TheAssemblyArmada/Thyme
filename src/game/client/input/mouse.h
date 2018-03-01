@@ -228,7 +228,7 @@ extern Mouse *&g_theMouse;
 
 inline void Mouse::Hook_Me()
 {
-    //Hook_Method(0x004031F0, &Hook_Create_Stream_Messages);
+    Hook_Method(0x004031F0, &Hook_Create_Stream_Messages);
     Hook_Method(0x004024E0, &Process_Mouse_Event);
 }
 #else

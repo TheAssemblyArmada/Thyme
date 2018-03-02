@@ -28,7 +28,7 @@ struct KeyboardIO
         STATUS_USED,
     };
 
-    int8_t key;
+    uint8_t key;
     int8_t status;
     uint16_t state;
     uint32_t sequence;
@@ -79,7 +79,7 @@ public:
     virtual void Update() override;
 
     virtual bool Get_Caps_State() = 0;
-    virtual void Create_Message_Stream();
+    virtual void Create_Stream_Messages();
     virtual int Get_Key(KeyboardIO *io) = 0;
 
     wchar_t Get_Printable_Key(uint8_t key, int key_type);
@@ -116,7 +116,7 @@ protected:
 inline void Keyboard::Hook_Me()
 {
     Hook_Method(0x0040A120, &Hook_Init);
-    Hook_Method(0x0040A120, &Hook_Update);
+    Hook_Method(0x0040A140, &Hook_Update);
     Hook_Method(0x00407F50, &Hook_Create_Message_Stream);
     Hook_Method(0x0040A4A0, &Get_Printable_Key);
     Hook_Method(0x0040A150, &Reset_Keys);

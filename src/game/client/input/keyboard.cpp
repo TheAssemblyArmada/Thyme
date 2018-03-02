@@ -30,7 +30,7 @@ void Keyboard::Hook_Update()
 
 void Keyboard::Hook_Create_Message_Stream()
 {
-    Keyboard::Create_Message_Stream();
+    Keyboard::Create_Stream_Messages();
 }
 
 #else
@@ -145,7 +145,7 @@ void Keyboard::Update()
  *
  * 0x00407F50
  */
-void Keyboard::Create_Message_Stream()
+void Keyboard::Create_Stream_Messages()
 {
     if (g_theMessageStream != nullptr) {
         GameMessage *msg = nullptr;
@@ -172,7 +172,8 @@ void Keyboard::Create_Message_Stream()
  */
 wchar_t Keyboard::Get_Printable_Key(uint8_t key, int key_type)
 {
-    if (key_type < STANDARD || key_type > SHIFTEDEX) {
+    // This should be impossible.
+    if (key >= 256) {
         return L'\0';
     }
 
@@ -254,12 +255,12 @@ void Keyboard::Update_Keys()
     while (true) {
         Get_Key(&m_keys[pos]);
 
-        if (m_keys[pos].key == -1) {
+        if (m_keys[pos].key == 0xFF) {
             Reset_Keys();
             pos = 0;
         }
 
-        if (m_keys[pos].key != -1) {
+        if (m_keys[pos].key != 0xFF) {
             if (m_keys[pos++].key == 0) {
                 break;
             }
@@ -276,8 +277,8 @@ void Keyboard::Update_Keys()
                 m_keys[i].status = KeyboardIO::STATUS_USED;
             }
         } else {
-            if (m_keys[i].key == 58 || m_keys[i].key == 29 || m_keys[i].key == -99 || m_keys[i].key == 42
-                || m_keys[i].key == 54 || m_keys[i].key == 56 || m_keys[i].key == -72) {
+            if (m_keys[i].key == 58 || m_keys[i].key == 29 || m_keys[i].key == 157 || m_keys[i].key == 42
+                || m_keys[i].key == 54 || m_keys[i].key == 56 || m_keys[i].key == 184) {
                 Translate_Key(m_keys[i].key);
             }
         }

@@ -17,6 +17,9 @@
 #include "memblob.h"
 #include "memblock.h"
 #include "minmax.h"
+#include <cstring>
+
+using std::memset;
 
 SimpleCriticalSectionClass *g_memoryPoolCriticalSection = nullptr;
 

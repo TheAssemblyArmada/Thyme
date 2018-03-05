@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handle LOD level choices.
  *
@@ -9,25 +9,21 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #include "gamelod.h"
+#include "cpudetect.h"
 #include "globaldata.h"
 #include "optionpreferences.h"
 #include <cstdio>
+#include <cstddef>
 
-#ifndef THYME_STANALONE
+#ifndef THYME_STANDALONE
 GameLODManager *&g_theGameLODManager = Make_Global<GameLODManager *>(0x00A2B924);
 #else
 GameLODManager *g_theGameLODManager = nullptr;
 #endif
-
-// TODO remove when function has been reimplemented.
-#define Test_Minimum_Requirements(chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score) \
-    Call_Function<void, GPUType *, CPUType *, int *, int *, float *, float *, float *>( \
-        0x0074EB20, chipset, cpu_type, cpu_speed, phys_mem, int_score, float_score, mem_score)
 
 // The names and number of strings here correlates to the enums in gamelod.h
 const char *g_staticGameLODNames[] = { "Low", "Medium", "High", "Custom" };
@@ -51,6 +47,18 @@ const char *GameLODManager::s_gpuNames[] = {
     "PS20",
     "R300" 
 };
+
+void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score)
+{
+#ifndef THYME_STANDALONE
+    Call_Function<void, GPUType *, CPUType *, int *, int *, float *, float *, float *>(0x0074EB20, gpu, cpu, cpu_speed, memory, int_score, float_score, mem_score);
+#else
+    *cpu = CPU_P3;
+    *gpu = GPU_GF4;
+    *cpu_speed = 2500;
+    *memory = CPUDetectClass::Get_Available_Physical_Memory() > INT_MAX ? INT_MAX : CPUDetectClass::Get_Available_Physical_Memory();
+#endif
+}
 
 GameLODManager::GameLODManager() :
     m_staticLODLevel(STATLOD_INVALID),

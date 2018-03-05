@@ -21,10 +21,12 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#include "always.h"
 #include "systimer.h"
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+// CPUDetect uses this in static init, breaks if that is initialised before this, define instantiates where used.
+//SysTimeClass &g_theSysTimer = Make_Global<SysTimeClass>(0x00A66B30);
+#else
 SysTimeClass g_theSysTimer;
 #endif
 

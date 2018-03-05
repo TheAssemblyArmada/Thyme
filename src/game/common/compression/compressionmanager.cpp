@@ -16,6 +16,9 @@
 #include "endiantype.h"
 #include "gamedebug.h"
 #include "refpack.h"
+#include <cstring>
+
+using std::memcmp;
 
 const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = {
     "No compression",

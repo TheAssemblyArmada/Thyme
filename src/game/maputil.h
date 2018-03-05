@@ -19,7 +19,6 @@
 
 #include "asciistring.h"
 #include "coord.h"
-#include "hooker.h"
 #include "list"
 #include <map>
 

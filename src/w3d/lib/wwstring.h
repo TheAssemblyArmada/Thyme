@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WWSTRING.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: Tiberian Technologies
-//
-//   Description:: Another string class?
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ * @author Tiberian Technologies
+ *
+ * @brief Another string class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef WWSTRING_H
@@ -28,9 +20,10 @@
 
 #include "always.h"
 #include "critsection.h"
-#include "hooker.h"
 #include "gamedebug.h"
+#include <cstdarg>
 #include <cstring>
+#include <cwchar>
 
 class StringClass
 {
@@ -69,7 +62,7 @@ public:
     bool Is_Empty() const { return (m_buffer[0] == m_nullChar); }
     void Erase(int start_index, int char_count);
     int Format(const char *format, ...);
-    int Format_Args(const char *format, const va_list &arg_list);
+    int Format_Args(const char *format, va_list &arg_list);
     void Truncate_Left(unsigned int truncateLength);
     void Truncate_Right(unsigned int truncateLength);
     void Trim_Left();
@@ -433,10 +426,14 @@ inline void StringClass::Store_Length(int length)
     }
 }
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
 inline void StringClass::Hook_Me()
 {
     //Hook_Method(Make_Method_Ptr<void, StringClass, size_t, bool>(0x0089D0B0), &Get_String);
     //Hook_Method(Make_Method_Ptr<void, StringClass>(0x0089D460), &Free_String);
 }
+#endif
 
 #endif //WWSTRING_H

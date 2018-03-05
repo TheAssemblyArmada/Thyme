@@ -18,11 +18,8 @@
 #ifndef FILETRANSFER_H
 #define FILETRANSFER_H
 
+#include "always.h"
 #include "asciistring.h"
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 class GameInfo;
 class MapTransferLoadScreen;
@@ -40,6 +37,8 @@ bool Do_Any_File_Transfers(GameInfo *gameinfo);
 bool Do_File_Transfer(AsciiString filename, MapTransferLoadScreen *screen, int unkbool);
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+
 namespace FileTransfer
 {
 inline void Hook_Me()

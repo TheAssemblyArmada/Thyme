@@ -17,6 +17,9 @@
 #include "gamememoryinit.h"
 #include "memdynalloc.h"
 #include "mempool.h"
+#include <cstring>
+
+using std::strcmp;
 
 #ifndef THYME_STANDALONE
 MemoryPoolFactory *&g_memoryPoolFactory = Make_Global<MemoryPoolFactory*>(0x00A29B94);

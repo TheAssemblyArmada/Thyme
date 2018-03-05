@@ -25,7 +25,9 @@
 #include "critsection.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
+#include <stdarg.h>
 #ifdef PLATFORM_WINDOWS
 #include <direct.h>
 #else

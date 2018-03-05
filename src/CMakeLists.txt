@@ -9,7 +9,11 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     
     set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp ws2_32)
 else()
-    #No other platforms yet.
+    # Find pthreads on none windows platforms.
+    find_package(Threads REQUIRED)
+    if(CMAKE_THREAD_LIBS_INIT)
+        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_THREAD_LIBS_INIT})
+    endif()
 endif()
 
 # Build and link the DLL.
@@ -69,6 +73,7 @@ set(GAMEENGINE_SRC
     game/common/messagestream.cpp
     game/common/multiplayersettings.cpp
     game/common/randomvalue.cpp
+    game/common/registry.cpp
     game/common/staticnamekey.cpp
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
@@ -131,6 +136,7 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptparam.cpp
     game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
+    platform/fpusetting.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp
@@ -157,12 +163,20 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8wrapper.cpp
 )
 
-add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
-
-if(MSVC AND NOT STANDALONE) 
-    target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+if(STANDALONE)
+    add_executable(thyme ${GAMEENGINE_SRC})
+    target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} ${GAMEENGINE_INCLUDES})
+    if(THREADS_HAVE_PTHREAD_ARG)
+        target_compile_options(thyme PUBLIC "-pthread")
+    endif()
 else()
-    target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+    add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
+
+    if(MSVC) 
+        target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+    else()
+        target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
+    endif()
 endif()
 
 target_link_libraries(thyme ${PLATFORM_LIBS})

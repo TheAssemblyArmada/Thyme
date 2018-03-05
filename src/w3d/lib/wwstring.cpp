@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WWSTRING.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Another string class?
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ * @author Tiberian Technologies
+ *
+ * @brief Another string class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "wwstring.h"
 #include <cstdio>
 
@@ -91,14 +83,14 @@ void StringClass::Free_String()
 {
     if ( m_buffer != m_emptyString ) {
 
-        ptrdiff_t buffer_base = reinterpret_cast<ptrdiff_t>(m_buffer - sizeof(StringClass::HEADER));
-        ptrdiff_t diff = buffer_base - reinterpret_cast<ptrdiff_t>(m_tempStrings[0]);
+        intptr_t buffer_base = reinterpret_cast<intptr_t>(m_buffer - sizeof(StringClass::HEADER));
+        intptr_t diff = buffer_base - reinterpret_cast<intptr_t>(m_tempStrings[0]);
 
         if ( diff >= 0 && diff < MAX_TEMP_BYTES * MAX_TEMP_STRING ) {
             m_buffer[0] = 0;
             FastCriticalSectionClass::LockClass m(m_mutex);
 
-            ptrdiff_t index = buffer_base / MAX_TEMP_BYTES;
+            intptr_t index = buffer_base / MAX_TEMP_BYTES;
             m_reserveMask &= ~(1 << index);
         } else {
             char *buffer = reinterpret_cast<char*>(buffer_base);
@@ -109,7 +101,7 @@ void StringClass::Free_String()
     }
 }
 
-int StringClass::Format_Args(const char *format, const va_list &arg_list)
+int StringClass::Format_Args(const char *format, va_list &arg_list)
 {
     char temp_buffer[512] = { 0 };
     int retval = vsnprintf(temp_buffer, 512, format, arg_list);

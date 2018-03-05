@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Classes for handling road and bridge properties.
  *
@@ -9,11 +9,11 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #include "terrainroads.h"
+#include <cstddef>
 
 #ifndef THYME_STANDALONE
 TerrainRoadCollection *&g_theTerrainRoads = Make_Global<TerrainRoadCollection *>(0x00A2BE4C);

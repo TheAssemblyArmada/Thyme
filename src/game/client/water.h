@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WATER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Configuration for water effects.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Configuration for water effects.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #ifndef WATER_H
@@ -34,6 +25,7 @@
 #include "overridable.h"
 #include "asciistring.h"
 #include "color.h"
+#include "gametype.h"
 #include "ini.h"
 
 class WaterSetting
@@ -92,7 +84,7 @@ private:
 
 #ifdef THYME_STANDALONE
 extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
-extern WaterTrasparencySetting *g_theWaterTransparency;
+extern WaterTransparencySetting *g_theWaterTransparency;
 #else
 #define g_waterSettings (Make_Pointer<WaterSetting>(0x00A2F0B8))
 #define g_theWaterTransparency (Make_Global<WaterTransparencySetting*>(0x00A2F0B0))

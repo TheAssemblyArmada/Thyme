@@ -23,10 +23,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "win32localfile.h"
-#include "hooker.h"
-#include "hookcrt.h"
 #include <fcntl.h>
 #include <cstdlib>
+#include <cctype>
 #include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
@@ -46,6 +45,8 @@
 //typedef __int64 off_t;
 #else
 #include <unistd.h>
+#define O_TEXT 0
+#define O_BINARY 0
 #endif
 
 Win32LocalFile::Win32LocalFile() :

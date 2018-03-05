@@ -27,13 +27,11 @@
 #include "endiantype.h"
 #include "file.h"
 #include "localfilesystem.h"
-#include "hooker.h"
+#include "registry.h"
 #include "rtsutils.h"
 #include "win32bigfile.h"
 
 using rts::FourCC;
-
-#define GetStringFromGeneralsRegistry(x,y,z) Call_Function<void, AsciiString, AsciiString, AsciiString const &>(0x004988A0, x, y, z)
 
 void Win32BIGFileSystem::Init()
 {
@@ -43,7 +41,7 @@ void Win32BIGFileSystem::Init()
 
         AsciiString gen_path;
 
-        GetStringFromGeneralsRegistry("", "InstallPath", gen_path);
+        Get_String_From_Generals_Registry("", "InstallPath", gen_path);
 
         DEBUG_LOG("Retrieved Generals path as '%s' from registry.\n", gen_path.Str());
 

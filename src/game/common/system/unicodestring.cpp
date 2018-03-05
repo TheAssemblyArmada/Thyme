@@ -19,6 +19,7 @@
 #include "gamedebug.h"
 #include "stringex.h"
 #include <stdio.h>
+#include <wctype.h>
 
 //#ifndef vsnwprintf
 //#define vsnwprintf _vsnwprintf
@@ -374,7 +375,7 @@ void UnicodeString::Format(UnicodeString format, ...)
     Format_VA(format, va);
 }
 
-void UnicodeString::Format_VA(const wchar_t *format, char *args)
+void UnicodeString::Format_VA(const wchar_t *format, va_list args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 
@@ -383,7 +384,7 @@ void UnicodeString::Format_VA(const wchar_t *format, char *args)
     Set(buf);
 }
 
-void UnicodeString::Format_VA(UnicodeString &format, char *args)
+void UnicodeString::Format_VA(UnicodeString &format, va_list args)
 {
     wchar_t buf[MAX_FORMAT_BUF_LEN];
 

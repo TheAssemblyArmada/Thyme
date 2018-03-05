@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handle LOD level choices.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -21,10 +20,6 @@
 #include "always.h"
 #include "asciistring.h"
 #include "ini.h"
-
-#ifndef THYME_STANALONE
-#include "hooker.h"
-#endif
 
 enum DynamicGameLODLevel : int32_t
 {
@@ -201,8 +196,11 @@ private:
     static const char *s_gpuNames[];
 };
 
-#ifndef THYME_STANALONE
-//#define g_theGameLODManager (Make_Global<GameLODManager*>(0x00A2B924))
+void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score);
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
 extern GameLODManager *&g_theGameLODManager;
 #else
 extern GameLODManager *g_theGameLODManager;

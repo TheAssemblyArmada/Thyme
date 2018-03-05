@@ -22,17 +22,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "dx8wrapper.h"
-#include "hooker.h"
 
-d3dcreate_t DX8Wrapper::s_d3dCreateFunction = nullptr;
-HINSTANCE DX8Wrapper::s_d3dLib = nullptr;
+#ifndef THYME_STANDALONE
+IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Global<IDirect3D8 *(__stdcall *)(unsigned)>(0x00A47F6C);
+HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
+#else
+#ifdef PLATFORM_WINDOWS
+IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
+HMODULE DX8Wrapper::s_d3dLib = nullptr;
+#endif
+#endif
 
 void DX8Wrapper::Init(void *hwnd, bool lite)
 {
+#ifndef THYME_STANDALONE
     Call_Function<void, void*, bool>(0x00800670, hwnd, lite);
+#endif
 }
 
 void DX8Wrapper::Shutdown()
 {
+#ifndef THYME_STANDALONE
     Call_Function<void>(0x00800860);
+#endif
 }

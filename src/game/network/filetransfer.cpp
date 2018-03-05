@@ -16,6 +16,9 @@
 #include "filetransfer.h"
 #include "gamedebug.h"
 #include "minmax.h"
+#include <cstddef>
+
+using std::ptrdiff_t;
 
 AsciiString Get_Base_Path_From_Path(AsciiString path)
 {

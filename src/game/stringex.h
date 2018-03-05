@@ -28,6 +28,7 @@
 #define STRINGEX_H
 
 #include <string.h>
+#include <ctype.h>
 
 #ifdef __cplusplus
 inline char *nstrdup(const char *str)

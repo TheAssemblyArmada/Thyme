@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief GameMain function which sets up and runs the game engine.
+ * @brief Map file handling utility functions.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,15 +14,16 @@
  */
 #pragma once
 
-#ifndef GAMEMAIN_H
-#define GAMEMAIN_H
+#ifndef FPUSETTING_H
+#define FPUSETTING_H
 
 #include "always.h"
 
-void Game_Main(int argc, char *argv[]);
+void Set_FP_Mode();
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
 
-#endif // GAMEMAIN_H
+#endif // FPUSETTING_H
+

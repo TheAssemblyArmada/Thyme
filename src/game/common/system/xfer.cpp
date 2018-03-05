@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "xfer.h"
 #include "gamestate.h"
-#include "hooker.h"
 #include "matrix3d.h"
 
 void Xfer::Open(AsciiString filename)

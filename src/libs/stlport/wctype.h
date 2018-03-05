@@ -20,7 +20,7 @@
 #  define _STLP_DONT_POP_0x279
 # endif
 
-# include _STLP_NATIVE_C_HEADER(wctype.h)
+# include _STLP_NATIVE_C_HEADER_UCRT(wctype.h)
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x279)
 #  if ! defined (_STLP_DONT_POP_0x279)

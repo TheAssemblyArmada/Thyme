@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 #include "audioeventinfo.h"
+#include <cstddef>
 
 FieldParse AudioEventInfo::s_audioEventParseTable[] =
 {

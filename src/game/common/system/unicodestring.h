@@ -20,6 +20,7 @@
 
 #include "always.h"
 #include "critsection.h"
+#include <stdarg.h>
 #include <wchar.h>
 
 class AsciiString;
@@ -149,8 +150,8 @@ public:
 
     void Format(const wchar_t *format, ...);
     void Format(UnicodeString format, ...);
-    void Format_VA(const wchar_t *format, char *args);
-    void Format_VA(UnicodeString &format, char *args);
+    void Format_VA(const wchar_t *format, va_list args);
+    void Format_VA(UnicodeString &format, va_list args);
 
     int Compare(const wchar_t *s) const { return wcscmp(Str(), s); };
     int Compare(UnicodeString const &string) const { return wcscmp(Str(), string.Str()); };

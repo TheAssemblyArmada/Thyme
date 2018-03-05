@@ -26,9 +26,7 @@
 #ifndef SYSTIMER_H
 #define SYSTIMER_H
 
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
+#include "always.h"
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
@@ -77,10 +75,13 @@ inline unsigned SysTimeClass::Time_Func()
 #endif
 }
 
-#ifdef THYME_STANDALONE
-extern SysTimeClass g_theSysTimer;
-#else
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
 #define g_theSysTimer (Make_Global<SysTimeClass>(0x00A66B30))
+#else
+extern SysTimeClass g_theSysTimer;
 #endif
 
 #endif // SYSTIMER_H

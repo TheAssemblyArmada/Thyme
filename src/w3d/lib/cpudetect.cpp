@@ -1561,9 +1561,11 @@ void CPUDetectClass::Init_Compact_Log()
 #define COMPACT_LOG(n, ...) do { work.Format(n, ##__VA_ARGS__); CPUDetectClass::CompactLog += work; } while (false)
     StringClass work;
 
+#ifdef PLATFORM_WINDOWS
     TIME_ZONE_INFORMATION time_zone;
     GetTimeZoneInformation(&time_zone);
     COMPACT_LOG("%d\t", time_zone.Bias);
+#endif
 
     OSInfoStruct os_info;
     Get_OS_Info(os_info, OSVersionPlatformId, OSVersionNumberMajor, OSVersionNumberMinor, OSVersionBuildNumber);

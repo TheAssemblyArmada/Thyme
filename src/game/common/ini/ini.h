@@ -19,17 +19,10 @@
 
 #include "asciistring.h"
 #include "gamedebug.h"
-#include "hookcrt.h"
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 class File;
 class Xfer;
 class INI;
-
-#define SXfer (Make_Global<Xfer *>(0x00A2A6B8))
 
 extern const float _SECONDS_PER_LOGICFRAME_REAL_74;
 extern const float _ANGLE_MULTIPLIER;
@@ -191,6 +184,11 @@ private:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+#include "hookcrt.h"
+
+extern Xfer *&g_sXfer;
+
 inline void INI::Hook_Me()
 {
     Hook_Method(0x0041D6E0, &INI::Get_Next_Token);
@@ -224,17 +222,19 @@ inline void INI::Hook_Me()
     Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
     Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
 }
+#else 
+extern Xfer *g_sXfer;
 #endif
 
 // Functions for inlining, neater than including in class declaration
 inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 {
-    return crt_strtok(0, seps != nullptr ? seps : m_seps);
+    return strtok(0, seps != nullptr ? seps : m_seps);
 }
 
 inline const char *INI::Get_Next_Token(const char *seps)
 {
-    char *ret = crt_strtok(0, seps != nullptr ? seps : m_seps);
+    char *ret = strtok(0, seps != nullptr ? seps : m_seps);
     ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
 
     return ret;

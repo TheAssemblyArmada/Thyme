@@ -17,6 +17,16 @@
 #include "minmax.h"
 #include "rawalloc.h"
 #include <cstdio>
+#include <cstring>
+
+#ifndef PLATFORM_WINDOWS
+#include <libgen.h>
+#include <unistd.h>
+#endif
+
+using std::strcat;
+using std::strcmp;
+using std::strlen;
 
 static PoolInitRec const UserDMAParameters[7] = {
     {"dmaPool_16", 16, 130000, 10000},
@@ -666,8 +676,6 @@ void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params)
 
 void User_Memory_Init_Pools()
 {
-    // DEBUG_LOG("Initialising user memory pools.\n");
-
     char path[PATH_MAX];
     char pool_name[256];
     int initial_alloc;
@@ -675,10 +683,18 @@ void User_Memory_Init_Pools()
 
 #ifdef PLATFORM_WINDOWS
     GetModuleFileNameA(0, path, PATH_MAX);
-#else
-    // TODO
-#error Not implemented for the target platform.
+#elif defined PLATFORM_LINUX  // posix otherwise, really just linux currently
+    // TODO /proc/curproc/file for FreeBSD /proc/self/path/a.out Solaris
+    readlink("/proc/self/exe", path, PATH_MAX);
+    dirname(path);
+#elif defined(PLATFORM_OSX) // osx otherwise
+    int size = PATH_MAX;
+    _NSGetExecutablePath(path, &size);
+    dirname(path);
+#else //
+#error Platform not supported for Set_Working_Directory()!
 #endif
+    
     // Get path to current exe without filename.
     char *path_end = &path[strlen(path)];
 

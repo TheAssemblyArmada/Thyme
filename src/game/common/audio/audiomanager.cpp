@@ -57,7 +57,9 @@ void AudioManager::Reset()
 void AudioManager::Update()
 {
     // TODO Requires g_theTacticalView.
+#ifndef THYME_STANDALONE
     Call_Method<void, AudioManager>(0x00404FB0, this);
+#endif
 }
 
 void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D *direction)
@@ -164,13 +166,21 @@ void AudioManager::Refresh_Cached_Variables()
 float AudioManager::Get_Audio_Length_MS(const AudioEventRTS *event)
 {
     // TODO Needs more of AudioEventRTS implementing.
+#ifndef THYME_STANDALONE
     return Call_Method<float, AudioManager, const AudioEventRTS *>(0x00406970, this, event);
+#else
+    return 0.0f;
+#endif
 }
 
 bool AudioManager::Is_Music_Already_Loaded()
 {
     // TODO Needs more of AudioEventRTS implementing.
+#ifndef THYME_STANDALONE
     return Call_Method<bool, AudioManager>(0x00406A90, this);
+#else
+    return true;
+#endif
 }
 
 bool AudioManager::Is_Music_Playing_From_CD()
@@ -225,7 +235,11 @@ bool AudioManager::Is_Current_Speaker_Type_Surround()
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
     // TODO Requires classes for g_theControlBar, g_thePlayerList
+#ifndef THYME_STANDALONE
     return Call_Method<bool, AudioManager, const AudioEventRTS *>(0x00406E00, this, event);
+#else
+    return false;
+#endif
 }
 
 int AudioManager::Allocate_New_Handle()

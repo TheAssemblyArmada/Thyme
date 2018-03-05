@@ -16,9 +16,10 @@
 #include "gamemath.h"
 #include "globaldata.h"
 #include "minmax.h"
+#include "registry.h"
+#include <cstddef>
 
 #ifndef THYME_STANDALONE
-#include "hookcrt.h" // Needed until we move registry queries elsewhere.
 GlobalLanguage *&g_theGlobalLanguage = Make_Global<GlobalLanguage *>(0x00A2A6CC);
 #else
 GlobalLanguage *g_theGlobalLanguage;

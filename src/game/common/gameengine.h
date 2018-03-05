@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Interface for the game engine implementation.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -18,11 +17,8 @@
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
+#include "always.h"
 #include "subsysteminterface.h"
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 class ArchiveFileSystem;
 class AudioManager;
@@ -83,6 +79,8 @@ protected:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+
 extern GameEngine *&g_theGameEngine;
 #else
 extern GameEngine *g_theGameEngine;

@@ -15,10 +15,14 @@
  */
 #include "gametext.h"
 #include "filesystem.h"
-#include "hookcrt.h"
 #include "main.h" // For g_applicationHWnd
 #include "minmax.h"
+#include "registry.h"
 #include "rtsutils.h"
+
+#ifndef THYME_STANDALONE
+#include "hookcrt.h"
+#endif
 
 using rts::FourCC;
 
@@ -93,7 +97,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
         }
 
         // Treat any white space as a space char.
-        if (iswspace(current)) {
+        if (isspace(current)) {
             current = ' ';
         }
 
@@ -127,7 +131,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
         }
 
         // state 0 ignores initial whitespace and '='
-        if (state == 0 && !iswspace(current) && current != '=') {
+        if (state == 0 && !isspace(current) && current != '=') {
             state = 1;
         }
 
@@ -237,7 +241,7 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
     int first = 0;
 
     // Find first none whitespace char.
-    while (buffer[first] != '\0' && iswspace(buffer[first])) {
+    while (buffer[first] != '\0' && isspace(buffer[first])) {
         ++first;
     }
 
@@ -249,7 +253,7 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
     }
 
     // Move pos back to last none whitespace.
-    while (--pos >= 0 && iswspace(buffer[pos])) {
+    while (--pos >= 0 && isspace(buffer[pos])) {
         // Empty loop.
     }
 

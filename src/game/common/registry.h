@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief GameMain function which sets up and runs the game engine.
+ * @brief Recovers configuration information.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,15 +14,18 @@
  */
 #pragma once
 
-#ifndef GAMEMAIN_H
-#define GAMEMAIN_H
+#ifndef REGISTRY_H
+#define REGISTRY_H
 
 #include "always.h"
+#include "asciistring.h"
 
-void Game_Main(int argc, char *argv[]);
+AsciiString Get_Registry_Language();
+void Get_String_From_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination);
+void Get_String_From_Generals_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination);
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
 
-#endif // GAMEMAIN_H
+#endif // REGISTRY_H

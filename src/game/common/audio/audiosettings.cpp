@@ -25,6 +25,7 @@
 #include "audiomanager.h"
 #include "gamedebug.h"
 #include "optionpreferences.h"
+#include <cstddef>
 
 FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { "AudioRoot", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_audioRoot) },

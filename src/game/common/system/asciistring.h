@@ -19,6 +19,8 @@
 
 #include "always.h"
 #include "memdynalloc.h"
+#include <cstdarg>
+#include <cstring>
 
 class UnicodeString;
 

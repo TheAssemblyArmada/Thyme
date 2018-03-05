@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "science.h"
+#include <cstddef>
 
 #ifndef THYME_STANDALONE
 ScienceStore *&g_theScienceStore = Make_Global<ScienceStore *>(0x00A2B978);

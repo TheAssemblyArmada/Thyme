@@ -46,25 +46,30 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
-# Prevent lib prefix when built with MinGW to target windows and move to own dir.
-if(MINGW)
-    set(CMAKE_SHARED_LIBRARY_PREFIX "")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -std=gnu++0x -mabi=ms -Wno-invalid-offsetof")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -Wno-invalid-offsetof")
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_definitions(-DGAME_DEBUG_LOG)
+    # Prevent lib prefix when built with MinGW to target windows and move to own dir.
+    if(MINGW)
+        set(CMAKE_SHARED_LIBRARY_PREFIX "")
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -mabi=ms")
     endif()
-endif()
+endif ()
 
 # Enable debug features in MSVC Debug configs.
-if(MSVC)
+#if(MSVC)
     #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /DGAME_DEBUG_LOG")
     #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DGAME_DEBUG_LOG")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DGAME_DEBUG_LOG")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DGAME_DEBUG_LOG")
-endif()
+    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DGAME_DEBUG_LOG")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DGAME_DEBUG_LOG")
+#endif()
+
+#Always enable debug logging for now.
+#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DGAME_DEBUG_LOG)
+#endif()
 
 # Locate git binary to provide information to the build environment
 find_package(Git)
@@ -149,8 +154,10 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+if(NOT STANDALONE)
 # Build the launcher
 add_subdirectory(launcher)
+endif()
 
 # Build Thyme
 add_subdirectory(src)

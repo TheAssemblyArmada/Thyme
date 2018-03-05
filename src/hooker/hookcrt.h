@@ -39,6 +39,9 @@
 #endif
 #define free crt_free
 
-// Define additional unimplemented functions that are used in more than one location
-#define Get_Registry_Language (Make_Function_Ptr<AsciiString>(0x00498E40))
+#ifdef strtok
+#undef strtok
+#endif
+#define strtok crt_strtok
+
 #endif // _HOOK_CRT_H

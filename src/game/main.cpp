@@ -29,6 +29,11 @@
 #include <shellapi.h>
 #endif
 
+#ifdef PLATFORM_UNIX
+#include <unistd.h>
+#include <libgen.h>
+#endif
+
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
 #include "hooker.h"

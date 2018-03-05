@@ -172,6 +172,10 @@ bool Win32LocalFileSystem::Create_Directory(AsciiString dir_path)
         return false;
     }
 
-    // Original uses CreateDirectoryA here, mkdir more cross platform.
+    // So much for mkdir being more cross platform
+#ifdef PLATFORM_WINDOWS
     return mkdir(dir_path.Peek()) == 0;
+#else
+    return mkdir(dir_path.Peek(), 0777) == 0;
+#endif
 }

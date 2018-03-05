@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief W3DLib style wrapper around filesystem.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -17,7 +16,7 @@
 #include "asciistring.h"
 #include "filesystem.h"
 #include "globaldata.h"
-#include "hookcrt.h"
+#include "registry.h"
 #include "stringex.h"
 #include <cstdio>
 
@@ -37,18 +36,6 @@ FileClass *W3DFileSystem::Get_File(const char *filename)
 }
 
 void W3DFileSystem::Return_File(FileClass *file)
-{
-    if (file != nullptr) {
-        delete file;
-    }
-}
-
-FileClass *W3DFileSystem::Get_File_NV(const char *filename)
-{
-    return new GameFileClass(filename);
-}
-
-void W3DFileSystem::Return_File_NV(FileClass *file)
 {
     if (file != nullptr) {
         delete file;
@@ -307,3 +294,15 @@ void GameFileClass::Close()
         m_theFile = nullptr;
     }
 }
+
+#ifndef THYME_STANDALONE
+FileClass *W3DFileSystem::Get_File_NV(const char *filename)
+{
+    return W3DFileSystem::Get_File(filename);
+}
+
+void W3DFileSystem::Return_File_NV(FileClass *file)
+{
+    W3DFileSystem::Return_File(file);
+}
+#endif

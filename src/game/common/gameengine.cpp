@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Interface for the game engine implementation.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -176,5 +175,9 @@ FileSystem *GameEngine::Create_File_System()
 
 MessageStream *GameEngine::Create_Message_Stream()
 {
+#ifndef THYME_STANDALONE
     return Call_Method<MessageStream*, GameEngine>(0x0040FF00, this);
+#else
+    return nullptr;
+#endif
 }

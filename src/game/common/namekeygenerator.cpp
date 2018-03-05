@@ -14,6 +14,9 @@
  */
 #include "namekeygenerator.h"
 #include "gamedebug.h"
+#include <cctype>
+
+using std::tolower;
 
 #ifndef THYME_STANDALONE
 NameKeyGenerator *&g_theNameKeyGenerator = Make_Global<NameKeyGenerator *>(0x00A2B928);

@@ -25,8 +25,14 @@
 #include "bufffileclass.h"
 
 RawFileFactoryClass defaultWritingFileFactory;
-//RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
-//FileFactoryClass *g_theFileFactory = nullptr;
+
+#ifndef THYME_STANDALONE
+RawFileFactoryClass *&g_theWritingFileFactory = Make_Global<RawFileFactoryClass*>(0x00A1EEB8);
+FileFactoryClass *&g_theFileFactory = Make_Global<FileFactoryClass*>(0x00A1EEB0);
+#else
+RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
+FileFactoryClass *g_theFileFactory = nullptr;
+#endif
 
 auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) :
     m_file(nullptr),

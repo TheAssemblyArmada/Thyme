@@ -119,4 +119,8 @@ protected:
     AsciiString m_filename;
 };
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
+
 #endif // _XFER_H

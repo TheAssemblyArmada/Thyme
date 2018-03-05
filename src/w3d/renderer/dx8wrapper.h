@@ -26,15 +26,15 @@
 #ifndef DX8WRAPPER_H
 #define DX8WRAPPER_H
 
-#include "hooker.h"
+#include "always.h"
 #include "vector4.h"
+
+#ifdef PLATFORM_WINDOWS
 #include <d3d8.h>
+#endif
 
-#define o_d3dInterface Make_Global<IDirect3D8 *>(0x00A47EEC);
+//#define o_d3dInterface Make_Global<IDirect3D8 *>(0x00A47EEC);
 
-typedef IDirect3D8 *(__stdcall *d3dcreate_t)(unsigned sdk_version);
-
-const unsigned MAX_TEXTURE_STAGES = 8;
 
 // This class is going to be very much a WIP until we have a better idea
 // of the way it interacts with the rest of the program and what its structure
@@ -42,6 +42,10 @@ const unsigned MAX_TEXTURE_STAGES = 8;
 
 class DX8Wrapper
 {
+    enum
+    {
+        MAX_TEXTURE_STAGES = 8,
+    };
 public:
     static void Init(void *hwnd, bool lite = false);
     static void Shutdown();
@@ -65,15 +69,18 @@ public:
     static const char *Get_DX8_Debug_Monitor_Token_Name(unsigned value);
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
 private:
-    static d3dcreate_t s_d3dCreateFunction;
-    static HINSTANCE s_d3dLib;
-    //static IDirect3DBaseTexture8 *s_textures[MAX_TEXTURE_STAGES];
-    //static unsigned s_renderStates[256];
-    //static unsigned s_textureStageStates[MAX_TEXTURE_STAGES][32];
-    //static Vector4 s_vertexShaderConstants[96];   // Not 100% sure this is a Vector4 array
-    //static unsigned s_pixelShaderConstants[32];   // Not 100% on type, seems unused.
+#ifndef THYME_STANDALONE
+    static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
+    static HMODULE &s_d3dLib;
+#else
+#ifdef PLATFORM_WINDOWS
+    static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
+    static HMODULE s_d3dLib;
+#endif
+#endif
 };
 
+#ifdef PLATFORM_WINDOWS
 //Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
 inline const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
 {
@@ -328,5 +335,10 @@ inline const char *DX8Wrapper::Get_DX8_Blend_Op_Name(unsigned value)
         default: return "UNKNOWN";
     }
 }
+#endif
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 #endif

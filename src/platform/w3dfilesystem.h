@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief W3DLib style wrapper around filesystem.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -18,6 +17,7 @@
 #ifndef W3DFILESYSTEM_H
 #define W3DFILESYSTEM_H
 
+#include "always.h"
 #include "ffactory.h"
 #include "file.h"
 #include "fileclass.h"
@@ -75,6 +75,8 @@ private:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+
 inline void W3DFileSystem::Hook_Me()
 {
     Hook_Method(0x00763880, &Get_File_NV);

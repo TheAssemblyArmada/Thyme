@@ -23,6 +23,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "audiomisc.h"
 #include "audiomanager.h"
+#include <cstddef>
 
 FieldParse MiscAudio::s_fieldParseTable[] = {
     {"RadarNotifyUnitUnderAttackSound",

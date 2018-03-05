@@ -20,6 +20,7 @@
 #include "coord.h"
 #include "file.h"
 #include "filesystem.h"
+#include "fpusetting.h"
 #include "gamedebug.h"
 #include "gamelod.h"
 #include "gamemath.h"
@@ -38,6 +39,12 @@
 #include <cstdio>
 
 using GameMath::Ceil;
+
+#ifndef THYME_STANDALONE
+Xfer *&g_sXfer = Make_Global<Xfer *>(0x00A2A6B8);
+#else
+Xfer *g_sXfer = nullptr;
+#endif
 
 const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
 const float _ANGLE_MULTIPLIER = 0.0174532925f;
@@ -176,8 +183,8 @@ INI::~INI()
 
 void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
 {
-    Call_Function<void>(0x004A1E40); // setFPMode()
-    SXfer = xfer;
+    Set_FP_Mode(); // Ensure floating point mode is a consistent mode for loading.
+    g_sXfer = xfer;
     Prep_File(filename, type);
 
     while ( !m_endOfFile ) {
@@ -187,7 +194,7 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
         // parsed block, possible leftover from debug code?
         //AsciiString block(m_currentBlock);
 
-        char *token = crt_strtok(m_currentBlock, m_seps);
+        char *token = strtok(m_currentBlock, m_seps);
         
         if ( token != nullptr ) {
             iniblockparse_t parser = Find_Block_Parse(token);
@@ -270,7 +277,7 @@ void INI::Unprep_File()
     m_loadType = INI_LOAD_INVALID;
     m_lineNumber = 0;
     m_endOfFile = false;
-    SXfer = nullptr;
+    g_sXfer = nullptr;
 }
 
 void INI::Init_From_INI(void *what, FieldParse *parse_table)
@@ -299,7 +306,7 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
 
         Read_Line();
 
-        char *token = crt_strtok(m_currentBlock, m_seps);
+        char *token = strtok(m_currentBlock, m_seps);
 
         if ( token == nullptr ) {
             continue;
@@ -390,8 +397,8 @@ void INI::Read_Line()
     }
 
     // If we have a transfer object assigned, do the transfer.
-    if ( SXfer != nullptr ) {
-        SXfer->xferImplementation(m_currentBlock, strlen(m_currentBlock));
+    if ( g_sXfer != nullptr ) {
+        g_sXfer->xferImplementation(m_currentBlock, strlen(m_currentBlock));
     }
 }
 
@@ -437,8 +444,12 @@ AsciiString INI::Get_Next_Quoted_Ascii_String()
 
 int INI::Scan_Science(const char *token)
 {
+#ifndef THYME_STANDALONE
     //return TheScienceStore->Friend_Lookup_Science(token);
     return Call_Function<int, char const*>(0x0041D740, token); // INI::scanScience
+#else
+    return 0;
+#endif
 }
 
 float INI::Scan_PercentToReal(const char *token)

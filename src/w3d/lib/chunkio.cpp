@@ -16,6 +16,9 @@
 #include "chunkio.h"
 #include "fileclass.h"
 #include "gamedebug.h"
+#include <cstring>
+
+using std::memset;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TODO

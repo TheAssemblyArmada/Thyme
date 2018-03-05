@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Class for handling various global variables.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -58,7 +57,7 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, 62 },//
     { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, 63 },//
     //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
-    { "TerrainLOD", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9C6D18), 64 },//
+    { "TerrainLOD", &INI::Parse_Index_List, reinterpret_cast<void const*>(0x9C6D18), 64 },//
     { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, 72 },//
     { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, 79 },//
     { "UseWaterPlane", &INI::Parse_Bool, nullptr, 80 },//
@@ -159,8 +158,8 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "MaxTerrainTracks", &INI::Parse_Int, nullptr, 476 },//
     //{ "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
     //{ "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
-    { "TimeOfDay", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9E6028), 516 },//
-    { "Weather", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9E6040), 520 },//
+    { "TimeOfDay", &INI::Parse_Index_List, reinterpret_cast<void const*>(0x9E6028), 516 },//
+    { "Weather", &INI::Parse_Index_List, reinterpret_cast<void const*>(0x9E6040), 520 },//
     { "MakeTrackMarks", &INI::Parse_Bool, nullptr, 524 },//
     { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, 525 },//
     { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, 526 },//
@@ -314,7 +313,7 @@ FieldParse GlobalData::s_fieldParseTable[337] =
     { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, 2080 },//
     { "KeyboardDefaultScrollSpeedFactor", &INI::Parse_Real, nullptr, 2084 },//
     //{ "MovementPenaltyDamageState", &INI::Parse_Index_List, &TheBodyDamageTypeNames, 2112 },//
-    { "MovementPenaltyDamageState", &INI::Parse_Index_List, Make_Pointer<void const*>(0x9C6D04), 2112 },//
+    { "MovementPenaltyDamageState", &INI::Parse_Index_List, reinterpret_cast<void const*>(0x9C6D04), 2112 },//
     { "HealthBonus_Veteran", &INI::Parse_Percent_To_Real, nullptr, 2052 },//
     { "HealthBonus_Elite", &INI::Parse_Percent_To_Real, nullptr, 2056 },//
     { "HealthBonus_Heroic", &INI::Parse_Percent_To_Real, nullptr, 2060 },//

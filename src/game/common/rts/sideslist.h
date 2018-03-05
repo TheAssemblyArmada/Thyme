@@ -74,7 +74,7 @@ private:
     TeamsInfoRec m_skirmishTeamsRec;
 };
 
-#ifndef THYME_STNADALONE
+#ifndef THYME_STANDALONE
 #include "hooker.h"
 
 extern SidesList *&g_theSidesList;

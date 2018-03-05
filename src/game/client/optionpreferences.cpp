@@ -1,31 +1,20 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: OPTIONPREFERENCES.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Class holding preferences from options.ini.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-#include "always.h"
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Class holding preferences from options.ini.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "audiomanager.h"
 #include "optionpreferences.h"
 #include "globaldata.h"
-#include "hooker.h"
 #include "minmax.h"
 #include <cstdio>
 
@@ -36,14 +25,20 @@ OptionPreferences::OptionPreferences()
 
 int OptionPreferences::Get_Campaign_Difficulty()
 {
+#ifndef THYME_STANDALONE
     // TODO, needs script engine member.
     return Call_Method<int, OptionPreferences>(0x00462BA0, this);
+#else
+    return 0;
+#endif
 }
 
 void OptionPreferences::Set_Campaign_Difficulty(int difficulty)
 {
+#ifndef THYME_STANDALONE
     // TODO, needs script engine member.
     return Call_Method<void, OptionPreferences, int>(0x00462CB0, this, difficulty);
+#endif
 }
 
 bool OptionPreferences::Get_Alternate_Mouse_Mode_Enabled()
@@ -490,36 +485,52 @@ bool OptionPreferences::Get_Firewall_Need_Refresh()
 
 uint32_t OptionPreferences::Get_LAN_IPAddress()
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<uint32_t, OptionPreferences>(0x00462EA0, this);
+#else
+    return 0;
+#endif
 }
 
 void OptionPreferences::Set_LAN_IPAddress(AsciiString address)
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<void, OptionPreferences, AsciiString>(0x004630E0, this, address);
+#endif
 }
 
 void OptionPreferences::Set_LAN_IPAddress(uint32_t address)
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<void, OptionPreferences, uint32_t>(0x004632B0, this, address);
+#endif
 }
 
 uint32_t OptionPreferences::Get_Online_IPAddress()
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<uint32_t, OptionPreferences>(0x004634B0, this);
+#else
+    return 0;
+#endif
 }
 
 void OptionPreferences::Set_Online_IPAddress(AsciiString address)
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<void, OptionPreferences, AsciiString>(0x004636F0, this, address);
+#endif
 }
 
 void OptionPreferences::Set_Online_IPAddress(uint32_t address)
 {
+#ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
     return Call_Method<void, OptionPreferences, uint32_t>(0x004638C0, this, address);
+#endif
 }

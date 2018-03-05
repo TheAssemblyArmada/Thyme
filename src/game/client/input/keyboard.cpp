@@ -14,6 +14,7 @@
  */
 #include "keyboard.h"
 #include "messagestream.h"
+#include <cwctype>
 
 #ifndef THYME_STANDALONE
 Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(0x00A29B70);

@@ -20,18 +20,19 @@
 #include "messagestream.h"
 #include "minmax.h"
 #include "rtsutils.h"
+#include <cstddef>
 
 using rts::Get_Time;
 
 #ifndef THYME_STANDALONE
-extern Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
+Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
 
 void Mouse::Hook_Create_Stream_Messages()
 {
     Mouse::Create_Stream_Messages();
 }
 #else
-extern Mouse *g_theMouse = nullptr;
+Mouse *g_theMouse = nullptr;
 #endif
 
 // If you add additional cursors, you will need to add an entry to the MouseCursor enum in mouse.h to match it.

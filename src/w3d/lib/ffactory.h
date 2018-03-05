@@ -27,7 +27,6 @@
 #define FFACTORY_H
 
 #include "fileclass.h"
-#include "hooker.h"
 
 class FileFactoryClass
 {
@@ -63,15 +62,19 @@ public:
     static void Hook_Me();
 };
 
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
 inline void RawFileFactoryClass::Hook_Me()
 {
 
 }
 
-#define g_theWritingFileFactory (Make_Global<RawFileFactoryClass*>(0x00A1EEB8))
-//extern RawFileFactoryClass *g_theWritingFileFactory;
-
-#define g_theFileFactory (Make_Global<FileFactoryClass*>(0x00A1EEB0))
-//extern FileFactoryClass *g_theFileFactory;
+extern RawFileFactoryClass *&g_theWritingFileFactory;
+extern FileFactoryClass *&g_theFileFactory;
+#else
+extern RawFileFactoryClass *g_theWritingFileFactory;
+extern FileFactoryClass *g_theFileFactory;
+#endif
 
 #endif

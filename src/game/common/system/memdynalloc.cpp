@@ -19,6 +19,9 @@
 #include "memblock.h"
 #include "mempool.h"
 #include "mempoolfact.h"
+#include <cstring>
+
+using std::memset;
 
 #ifndef THYME_STANDALONE
 DynamicMemoryAllocator *&g_dynamicMemoryAllocator = Make_Global<DynamicMemoryAllocator *>(0x00A29B98);

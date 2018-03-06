@@ -38,8 +38,11 @@ void SysTimeClass::Reset()
 
 int SysTimeClass::Get()
 {
-    //static bool _is_init;
+#ifndef THYME_STANDALONE
 #define _is_init (Make_Global<bool>(0x00A66B30))
+#else
+    static bool _is_init;
+#endif
 
     if ( !_is_init ) {
         Reset();

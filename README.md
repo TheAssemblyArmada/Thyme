@@ -45,9 +45,11 @@ Check the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for [det
 Native support for Linux and macOS is planned for the future, but because of how
 the project is developed, a fully playable native binary will not be possible for some time.
 In the mean time, using Wine on Linux and macOS, should be possible but
-is currently untested. If you are interested in developing the cross platform aspect of the project
+is currently untested.
+
+If you are interested in developing the cross platform aspect of the project
 it is now possible to build the project standalone by passing ```-DSTANDALONE=TRUE``` to CMake when configuring the project
-but thee resulting binary currently has very limited functionality.
+but the resulting binary currently has very limited functionality.
 
 ## Contributing
 

@@ -13,4 +13,4 @@ before_script:
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DSTANDALONE=TRUE ..
   
-script: make
+script: make -j2

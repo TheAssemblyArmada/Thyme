@@ -1,6 +1,7 @@
 # Thyme
 
 [![Build status](https://ci.appveyor.com/api/projects/status/thd1as29wfnkh586?svg=true)](https://ci.appveyor.com/project/AdamMondez/thyme)
+[![Build Status](https://travis-ci.org/TheAssemblyArmada/Thyme.svg?branch=develop)](https://travis-ci.org/TheAssemblyArmada/Thyme)
 
 Thyme is an open source re-implementation of Command & Conquer Generals: Zero Hour. Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.
 
@@ -32,21 +33,21 @@ Anti-virus software like Windows Defender could mark Thyme as a virus. This is a
 ## Building Thyme yourself
 
 In order to generate a working binary, currently you must build the project using
-a version of the Microsoft Visual Studio compiler (2015 and above). Building using MinGW-w64
-is also tested periodically, but because of differences in the compiler ABI, dll's that it generates
-will not work correctly with the original game binary. Once the reimplementation is complete
-it should be possible to build with any C++11 compiler.
+a version of the Microsoft Visual Studio compiler (2015 and above). Building with Clang against a Windows SDK is in theory
+possible but is untested for a cross compile solution.
+
+It is also possible to build a standalone binary if you want to test compiling on other platforms.
  
-In order to build, use CMake to generate a solution outside of the src directory.
-For example, when using the CMake GUI and the source is at C:\path\to\thyme set the build
-path to C:\path\to\thyme\build.
+Check the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki) for [detailed build instructions](https://github.com/TheAssemblyArmada/Thyme/wiki/Compiling-Thyme).
 
 ### Linux and macOS
 
 Native support for Linux and macOS is planned for the future, but because of how
-the project is developed, a native binary will not be possible for some time.
+the project is developed, a fully playable native binary will not be possible for some time.
 In the mean time, using Wine on Linux and macOS, should be possible but
-is currently untested.
+is currently untested. If you are interested in developing the cross platform aspect of the project
+it is now possible to build the project standalone by passing ```-DSTANDALONE=TRUE``` to CMake when configuring the project
+but thee resulting binary currently has very limited functionality.
 
 ## Contributing
 

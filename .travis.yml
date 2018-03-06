@@ -11,6 +11,6 @@ env:
 before_script:
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DSTANDALONE:TRUE ..
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DSTANDALONE=TRUE ..
   
 script: make

@@ -1,39 +1,30 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: HOOKER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: CCHyper, Saberhawk, jonwil, LRFLEW
-//
-//   Description:: Originally based on work by the Tiberian Technologies team
-//                 to hook Renegade, rewritten based on work by LRFLEW for
-//                 OpenMC2. Provides methods for accessing data and functions in
-//                 an existing binary and replacing functions with new 
-//                 implementations from an injected DLL.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author jonwil
+ * @author LRFLEW
+ * @author OmniBlade
+ * @author Saberhawk
+ *
+ * @brief Hooking system for interacting with original binary.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ *
+ * Originally based on work by the Tiberian Technologies team to hook Renegade, rewritten based on work by LRFLEW for
+ * OpenMC2. Provides methods for accessing data and functions in an existing binary and replacing functions with new
+ * implementations from an injected DLL.
+ */
 #pragma once
 
 #ifndef HOOK_SUPPORT_H
 #define HOOK_SUPPORT_H
 
-
-////////////////////////////////////////////////////////////////////////////////
-//  Includes
-////////////////////////////////////////////////////////////////////////////////
 #include "always.h"
 
 template <typename T, const int size>
@@ -88,17 +79,29 @@ __forceinline T *Make_Pointer(const uintptr_t address) {
 // binary where they are required and a replacement hasn't been written yet.
 template<typename T, typename... Types>
 __forceinline T Call_Function(const uintptr_t address, Types... args) {
+#ifndef THYME_STANDALONE
     return reinterpret_cast<T(__cdecl *)(Types...)>(address)(args...);
+#else
+    return T();
+#endif
 }
 
 template<typename T, typename... Types>
 __forceinline T Call__StdCall_Function(const uintptr_t address, Types... args) {
+#ifndef THYME_STANDALONE
     return reinterpret_cast<T(__stdcall *)(Types...)>(address)(args...);
+#else
+    return T();
+#endif
 }
 
 template<typename T, typename X, typename... Types>
 __forceinline T Call_Method(const uintptr_t address, X *const self, Types... args) {
+#ifndef THYME_STANDALONE
     return reinterpret_cast<T(__thiscall *)(X *, Types...)>(address)(self, args...);
+#else
+    return T();
+#endif
 }
 
 // These create pointers to various types of function where the return,
@@ -144,21 +147,25 @@ __forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types...
 template<typename T>
 void Hook_Function(uintptr_t in, T out)
 {
+#ifndef THYME_STANDALONE
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
     cmd.addr = reinterpret_cast<uintptr_t>(out) - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
+#endif
 }
 
 template<typename T, typename... Types>
 void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types...))
 {
+#ifndef THYME_STANDALONE
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
     cmd.addr = reinterpret_cast<uintptr_t>(out) - reinterpret_cast<uintptr_t>(in) - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
+#endif
 }
 
 // Method pointers need funky syntax to get the underlying function address
@@ -166,11 +173,13 @@ void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types
 template<typename T>
 void Hook_Method(uintptr_t in, T out)
 {
+#ifndef THYME_STANDALONE
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
     cmd.addr = reinterpret_cast<uintptr_t>((void*&)out) - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
+#endif
 }
 
 __declspec(dllexport) void StartHooking();

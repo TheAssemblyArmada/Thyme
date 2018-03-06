@@ -70,7 +70,7 @@ inline unsigned SysTimeClass::Time_Func()
     return timeGetTime();
 #else
     struct timeval now;
-    gettimeofday(&now, NULL);
+    gettimeofday(&now, nullptr);
     return now.tv_usec / 1000;
 #endif
 }

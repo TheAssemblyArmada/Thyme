@@ -58,6 +58,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     endif()
 endif ()
 
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+endif()
+
 # Enable debug features in MSVC Debug configs.
 #if(MSVC)
     #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /DGAME_DEBUG_LOG")

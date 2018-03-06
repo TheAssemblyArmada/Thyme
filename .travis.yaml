@@ -1,0 +1,16 @@
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+env:
+  - 'BUILD_TYPE=Release'
+  - 'BUILD_TYPE=Debug'
+  
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DSTANDALONE:TRUE ..
+  
+script: make

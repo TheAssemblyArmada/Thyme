@@ -48,6 +48,7 @@ BuildListInfo::~BuildListInfo()
 {
     for (BuildListInfo *next = m_nextBuildList, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextBuildList;
+        next->m_nextBuildList = nullptr;
         Delete_Instance(next);
         next = saved;
     }

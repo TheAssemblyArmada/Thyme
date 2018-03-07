@@ -50,7 +50,6 @@ BuildListInfo::~BuildListInfo()
         saved = next->m_nextBuildList;
         next->m_nextBuildList = nullptr;
         Delete_Instance(next);
-        next = saved;
     }
 }
 

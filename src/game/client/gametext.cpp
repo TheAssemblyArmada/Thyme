@@ -97,7 +97,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
         }
 
         // Treat any white space as a space char.
-        if (isspace(current)) {
+        if (isspace(uint8_t(current))) {
             current = ' ';
         }
 
@@ -131,7 +131,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
         }
 
         // state 0 ignores initial whitespace and '='
-        if (state == 0 && !isspace(current) && current != '=') {
+        if (state == 0 && !isspace(uint8_t(current)) && current != '=') {
             state = 1;
         }
 
@@ -241,7 +241,7 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
     int first = 0;
 
     // Find first none whitespace char.
-    while (buffer[first] != '\0' && isspace(buffer[first])) {
+    while (buffer[first] != '\0' && isspace(uint8_t(buffer[first]))) {
         ++first;
     }
 

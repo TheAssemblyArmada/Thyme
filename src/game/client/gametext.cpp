@@ -193,6 +193,8 @@ void GameTextManager::Translate_Copy(char16_t *out, char *in)
     while (current != '\0') {
         // Last char was a '\', handle for escape sequence.
         if (escape) {
+            escape = false;
+
             switch (current) {
                 case '\\':
                     *out++ = u'\\';

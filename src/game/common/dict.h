@@ -142,6 +142,7 @@ private:
     DictPair *Set_Prep(NameKeyType key, DataType type);
     DictPair *Find_Pair_By_Key(NameKeyType key) const;
     void Sort_Pairs();
+    static int Pair_Compare(const void *l, const void *r);
 
 private:
     DictPairData *m_data;

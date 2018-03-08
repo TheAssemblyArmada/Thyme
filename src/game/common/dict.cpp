@@ -370,6 +370,7 @@ void Dict::Sort_Pairs()
         return;
     }
 
+#if 0
     for (unsigned j = m_data->m_numPairsUsed / 2; j > 0; j /= 2) {
         for (unsigned i = j; i < m_data->m_numPairsUsed; ++i) {
             for (int k = i - j; k >= 0; k -= j) {
@@ -384,6 +385,22 @@ void Dict::Sort_Pairs()
             }
         }
     }
+#endif
+
+    qsort(m_data->Get_Pairs(), m_data->m_numPairsUsed, sizeof(DictPair), Pair_Compare);
+}
+
+int Dict::Pair_Compare(const void * l, const void * r)
+{
+    if (static_cast<const DictPair*>(l)->Get_Key() > static_cast<const DictPair*>(r)->Get_Key()) {
+        return 1;
+    }
+
+    if (static_cast<const DictPair*>(l)->Get_Key() < static_cast<const DictPair*>(r)->Get_Key()) {
+        return -1;
+    }
+
+    return 0;
 }
 
 Dict::DictPair *Dict::Set_Prep(NameKeyType key, DataType type)

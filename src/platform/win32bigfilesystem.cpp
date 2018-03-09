@@ -1,29 +1,20 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WIN32BIGFILESYSTEM.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Implements the ArchiveFileSystem interface on the BIG file
-//                 format.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Implements the ArchiveFileSystem interface on the BIG file format.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "win32bigfilesystem.h"
 #include "asciistring.h"
+#include "audiomanager.h"
 #include "endiantype.h"
 #include "file.h"
 #include "localfilesystem.h"
@@ -55,7 +46,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 {
     uint32_t idbuff;
 
-    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - opening BIG file %s.\n", filename);
+    //DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - opening BIG file %s.\n", filename);
 
     File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
@@ -89,8 +80,8 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     file->Read(&file_count, sizeof(file_count));
     arch_size = le32toh(arch_size);
     file_count = be32toh(file_count);
-    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - size of archive file is %u bytes.\n", arch_size);
-    DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - %u files are contained within the archive.\n", file_count);
+    //DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - size of archive file is %u bytes.\n", arch_size);
+    //DEBUG_LOG("Win32BigFileSystem::Open_Archive_File - %u files are contained within the archive.\n", file_count);
 
     //DEBUG_LOG("Big file is '%u' bytes long and contains '%u' files.\n", arch_size, file_count);
 
@@ -172,6 +163,7 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
         if ( strcasecmp(filename, "Music.Big") == 0 ) {
             DEBUG_LOG("Something is supposed to happen to audio engine here.\n");
             //Do something with audio engine
+            g_theAudio->Stop_Audio(AUDIOAFFECT_MUSIC);
         }
 
         if ( it->second != nullptr ) {
@@ -189,14 +181,14 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(AsciiString dir, AsciiString fil
     g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 
     for ( auto it = file_list.begin(); it != file_list.end(); ++it ) {
-        DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.\n", (*it).Str());
+        //DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.\n", (*it).Str());
         ArchiveFile *arch = Open_Archive_File((*it).Str());
 
         if ( arch != nullptr ) {
             Load_Into_Dir_Tree(arch, *it, read_subdirs);
             m_archiveFiles[*it] = arch;
 
-            DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map. \n", (*it).Str());
+            //DEBUG_LOG("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map. \n", (*it).Str());
         }
     }
 }

@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WIN32LOCALFILESYSTEM.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Implements the LocalFileSystem interface.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Implements the LocalFileSystem interface.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "win32localfilesystem.h"
 #include "win32localfile.h"
 
@@ -85,7 +76,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
 
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATA data;
-    HANDLE hndl = FindFirstFileA(search_path.Str(), &data);
+    HANDLE hndl = FindFirstFileA(search_path.Windows_Path().Str(), &data);
 
     if ( hndl != INVALID_HANDLE_VALUE ) {
         // Loop over all files in the directory, ignoring other directories
@@ -97,7 +88,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
                 AsciiString filepath = dirpath;
                 filepath += subdir;
                 filepath += data.cFileName;
-                filelist.insert(filepath);
+                filelist.insert(filepath.Posix_Path());
             }
         } while ( FindNextFileA(hndl, &data) );
     }
@@ -110,7 +101,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
         sub_path += subdir;
         sub_path += "*.";
 
-        hndl = FindFirstFileA(sub_path.Str(), &data);
+        hndl = FindFirstFileA(sub_path.Windows_Path().Str(), &data);
         
         if ( hndl != INVALID_HANDLE_VALUE ) {
             // Loop over all files in the directory, ignoring other directories
@@ -147,7 +138,7 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
     //TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATA data;
-    HANDLE hndl = FindFirstFileA(filename.Str(), &data);
+    HANDLE hndl = FindFirstFileA(filename.Windows_Path().Str(), &data);
 
     if ( hndl == INVALID_HANDLE_VALUE ) {
         return false;

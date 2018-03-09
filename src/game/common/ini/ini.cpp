@@ -239,7 +239,7 @@ void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type,
         // Create path string with initial dir stripped off.
         AsciiString path_check = &it->Str()[dir.Get_Length()];
         
-        if ( strchr(path_check.Str(), '\\') != nullptr && strchr(path_check.Str(), '/') != nullptr ) {
+        if ( strchr(path_check.Str(), '\\') != nullptr || strchr(path_check.Str(), '/') != nullptr ) {
             Load(*it, type, xfer);
         }
     }

@@ -28,8 +28,9 @@ set(GAMEENGINE_INCLUDES
     game/common/compression
     game/common/ini
     game/common/modules
-    game/common/system
     game/common/rts
+    game/common/system
+    game/common/thing
     game/logic/object
     game/logic/scriptengine
     game/logic/system
@@ -89,6 +90,15 @@ set(GAMEENGINE_SRC
     game/common/compression/refpack.cpp
     game/common/ini/ini.cpp
     game/common/modules/modulefactory.cpp
+    game/common/rts/buildinfo.cpp
+    game/common/rts/handicap.cpp
+    game/common/rts/money.cpp
+    game/common/rts/player.cpp
+    game/common/rts/playerlist.cpp
+    game/common/rts/science.cpp
+    game/common/rts/sidesinfo.cpp
+    game/common/rts/sideslist.cpp
+    game/common/rts/teamsinfo.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp
     game/common/system/asciistring.cpp
@@ -118,15 +128,7 @@ set(GAMEENGINE_SRC
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
-    game/common/rts/buildinfo.cpp
-    game/common/rts/handicap.cpp
-    game/common/rts/money.cpp
-    game/common/rts/player.cpp
-    game/common/rts/playerlist.cpp
-    game/common/rts/science.cpp
-    game/common/rts/sidesinfo.cpp
-    game/common/rts/sideslist.cpp
-    game/common/rts/teamsinfo.cpp
+    game/common/thing/thing.cpp
     game/logic/object/weapon.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptaction.cpp

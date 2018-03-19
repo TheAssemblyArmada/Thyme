@@ -15,6 +15,7 @@
 #include "scriptparam.h"
 #include "gamemath.h"
 #include "gametype.h"
+#include "kindof.h"
 #include "stringex.h"
 
 Parameter::Parameter(ParameterType type) :
@@ -229,10 +230,10 @@ AsciiString Parameter::Get_UI_Text()
             ui_text.Format("Bridge '%s'", ui_string.Str());
             break;
         case KIND_OF_PARAM:
-            if (m_int < KIND_OF_OBSTACLE || m_int >= KIND_OF_COUNT) {
+            if (m_int < KINDOF_OBSTACLE || m_int >= KINDOF_COUNT) {
                 ui_text.Format("Kind is 'unknown kind'", ui_string.Str());
             } else {
-                ui_text.Format("Kind is '%s'", BitFlags<KIND_OF_COUNT>::s_bitNamesList[m_int]);
+                ui_text.Format("Kind is '%s'", BitFlags<KINDOF_COUNT>::s_bitNamesList[m_int]);
             }
             break;
         case ATTACK_PRIORITY_SET:
@@ -444,8 +445,8 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
         if (param->m_string.Is_Not_Empty()) {
             bool found = false; // For assertion check.
 
-            for (int i = 0; BitFlags<KIND_OF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
-                if (param->m_string.Compare_No_Case(BitFlags<KIND_OF_COUNT>::s_bitNamesList[i]) == 0) {
+            for (int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
+                if (param->m_string.Compare_No_Case(BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0) {
                     param->m_int = i;
 
                     return param;
@@ -489,7 +490,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                     // Outcome should basically be this I believe:
                     DEBUG_LOG("Parameter KindOF Matched MISSILE.");
                     param->m_string = "SMALL_MISSILE";
-                    param->m_int = KIND_OF_SMALL_MISSILE;
+                    param->m_int = KINDOF_SMALL_MISSILE;
                     found = true;
                     break;
                 }
@@ -497,7 +498,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
 
             ASSERT_THROW_PRINT(found, 0xDEAD0001, "Did not find parameter kind from string.\n");
         } else {
-            param->m_string = BitFlags<KIND_OF_COUNT>::s_bitNamesList[param->m_int];
+            param->m_string = BitFlags<KINDOF_COUNT>::s_bitNamesList[param->m_int];
         }
     }
 

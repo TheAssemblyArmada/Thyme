@@ -113,6 +113,7 @@ set(GAMEENGINE_SRC
     game/common/system/gamememoryinit.cpp
     game/common/system/gamestate.cpp
     game/common/system/gametype.cpp
+    game/common/system/geometry.cpp
     game/common/system/kindof.cpp
     game/common/system/localfile.cpp
     game/common/system/localfilesystem.cpp

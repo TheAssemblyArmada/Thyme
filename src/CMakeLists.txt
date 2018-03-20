@@ -95,6 +95,7 @@ set(GAMEENGINE_SRC
     game/common/rts/money.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
+    game/common/rts/productionprerequisite.cpp
     game/common/rts/science.cpp
     game/common/rts/sidesinfo.cpp
     game/common/rts/sideslist.cpp

@@ -129,6 +129,7 @@ set(GAMEENGINE_SRC
     game/common/system/unicodestring.cpp
     game/common/system/xfer.cpp
     game/common/system/xfercrc.cpp
+    game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
     game/logic/object/weapon.cpp
     game/logic/scriptengine/script.cpp

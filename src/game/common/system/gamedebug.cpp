@@ -174,7 +174,7 @@ void Log_Output(const char *buffer)
     #ifdef PLATFORM_WINDOWS
         OutputDebugStringA(buffer);
     #else
-        printf(buffer);
+        printf("%s", buffer);
     #endif
     }
 }
@@ -198,7 +198,7 @@ void Debug_Crash(const char *format, ...)
     va_list va;
     va_start(va, format);
 
-    if ( DebugFlags = 0 ) {
+    if ( DebugFlags == 0 ) {
     #ifdef PLATFORM_WINDOWS
         MessageBoxA(0, "Debug not initialized properly", DebugCaption, 0);
     #else

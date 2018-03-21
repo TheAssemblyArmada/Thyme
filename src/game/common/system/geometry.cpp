@@ -59,6 +59,8 @@ void GeometryInfo::Set(GeometryType type, bool small, float height, float major_
             m_majorRadius = major_radius;
             m_minorRadius = minor_radius;
             break;
+        default:
+            return;
     }
 
     Calc_Bounding_Box_Stuff();
@@ -80,5 +82,7 @@ void GeometryInfo::Calc_Bounding_Box_Stuff()
             m_boundingSphereRadius = Sqrt(float(float(m_minorRadius * m_minorRadius) + float(m_majorRadius * m_majorRadius)
                 + float(float(m_height * 0.5f) * float(m_height * 0.5f))));
             break;
+        default:
+            return;
     }
 }

@@ -67,10 +67,10 @@ void Init_Memory_Manager()
 
     char *tmp = new char;
     delete tmp;
-    tmp = new char[8];
-    delete[] tmp;
-    SimpleCriticalSectionClass *tmp2 = new SimpleCriticalSectionClass;
-    delete tmp2;
+    char *tmp2 = new char[8];
+    delete[] tmp2;
+    SimpleCriticalSectionClass *tmp3 = new SimpleCriticalSectionClass;
+    delete tmp3;
 
     if (g_theLinkChecker != 6) {
         DEBUG_LOG("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);

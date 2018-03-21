@@ -99,6 +99,24 @@ enum ShakeIntensities
     SHAKE_COUNT,
 };
 
+enum WeaponSlotType
+{
+    WEAPONSLOT_PRIMARY,
+    WEAPONSLOT_SECONDARY,
+    WEAPONSLOT_TERTIARY,
+    WEAPONSLOT_COUNT,
+};
+
+enum CommandSourceType
+{
+    COMMANDSOURCE_PLAYER,
+    COMMANDSOURCE_SCRIPT,
+    COMMANDSOURCE_AI,
+    COMMANDSOURCE_DOZER,
+    COMMANDSOURCE_DEFAULT_SWITCH_WEAPON,
+    COMMANDSOURCE_COUNT,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];
@@ -107,3 +125,5 @@ extern const char *g_audioPriorityNames[PRIORITY_COUNT + 1];
 extern const char *g_buildableStatusNames[BSTATUS_COUNT + 1];
 extern const char *g_surfaceNames[SURFACE_COUNT + 1];
 extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
+extern const char *g_weaponSlotNames[WEAPONSLOT_COUNT + 1];
+extern const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1];

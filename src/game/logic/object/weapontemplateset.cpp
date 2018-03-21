@@ -15,7 +15,7 @@
 #include "weapontemplateset.h"
 #include <cstddef>
 
-const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = {
+template<> const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = {
     "VETERAN",
     "ELITE",
     "HERO",

@@ -133,6 +133,7 @@ set(GAMEENGINE_SRC
     game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
     game/logic/object/weapon.cpp
+    game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptaction.cpp
     game/logic/scriptengine/scriptcondition.cpp

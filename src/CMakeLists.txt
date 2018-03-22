@@ -132,6 +132,7 @@ set(GAMEENGINE_SRC
     game/common/system/xfercrc.cpp
     game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
+    game/common/thing/thingtemplate.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp

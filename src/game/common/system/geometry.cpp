@@ -14,6 +14,7 @@
  */
 #include "geometry.h"
 #include "gamemath.h"
+#include "minmax.h"
 #include "xfer.h"
 
 #define GEOMETRY_XFER_VERSION 1
@@ -60,7 +61,7 @@ void GeometryInfo::Set(GeometryType type, bool small, float height, float major_
             m_minorRadius = minor_radius;
             break;
         default:
-            return;
+            break;
     }
 
     Calc_Bounding_Box_Stuff();
@@ -74,7 +75,7 @@ void GeometryInfo::Calc_Bounding_Box_Stuff()
             break;
         case GEOMETRY_CYLINDER:
             m_boundingCircleRadius = m_majorRadius;
-            m_boundingSphereRadius = m_height * 0.5f;
+            m_boundingSphereRadius = Max(m_height * 0.5f, m_majorRadius);
             break;
         case GEOMETRY_BOX:
             m_boundingCircleRadius =
@@ -83,6 +84,6 @@ void GeometryInfo::Calc_Bounding_Box_Stuff()
                 + float(float(m_height * 0.5f) * float(m_height * 0.5f))));
             break;
         default:
-            return;
+            break;
     }
 }

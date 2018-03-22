@@ -15,7 +15,7 @@
 #include "armortemplateset.h"
 #include <cstddef>
 
-const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT + 1] =
+template<> const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT + 1] =
 {
     "VETERAN",
     "ELITE",

@@ -86,11 +86,14 @@ public:
     void Parse(INI *ini, AsciiString *string = nullptr);
     static void Parse_INI(INI *ini, void *formal, void *store, const void *user_data);
 
-    static const char *s_bitNamesList[];
+    static const char *s_bitNamesList[bits + 1];
 
 private:
     std::bitset<bits> m_bits;
 };
+
+template<int bits>
+const char *BitFlags<bits>::s_bitNamesList[bits + 1];
 
 template<int bits>
 void BitFlags<bits>::Parse(INI *ini, AsciiString *string)

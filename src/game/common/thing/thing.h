@@ -28,6 +28,10 @@ class Drawable;
 
 class Thing : public MemoryPoolObject
 {
+    enum {
+        CACHED_DIRECTION2D = 1 << 0,
+    };
+
 public:
     Thing(const ThingTemplate *thing = nullptr);
     virtual ~Thing() {}
@@ -39,6 +43,12 @@ public:
     virtual const Drawable *As_Drawable_Meth() const { return nullptr; }
     virtual void React_To_Transform(const Matrix3D *matrix, const Coord3D *pos, float angle) = 0;
 
+    ThingTemplate *Get_Template();
+    const Coord3D &Get_Unit_Dir_Vector2D();
+    void Get_Unit_Dir_Vector2D(Coord3D &dst);
+    void Get_Unit_Dir_Vector3D(Coord3D &dst);
+    void Set_Position_Z(float pos);
+
 private:
     ThingTemplate *m_template;
     Matrix3D m_transform;
@@ -49,5 +59,9 @@ private:
     float m_cachedAltitudeAboveTerrainOrWater;
     int m_cacheFlags;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+#endif
 
 #endif // THING_H

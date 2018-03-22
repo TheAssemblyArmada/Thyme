@@ -92,8 +92,8 @@ private:
     std::bitset<bits> m_bits;
 };
 
-template<int bits>
-const char *BitFlags<bits>::s_bitNamesList[bits + 1];
+//template<int bits>
+//const char *BitFlags<bits>::s_bitNamesList[bits + 1];
 
 template<int bits>
 void BitFlags<bits>::Parse(INI *ini, AsciiString *string)

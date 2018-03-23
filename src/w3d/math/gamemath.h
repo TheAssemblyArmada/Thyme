@@ -92,9 +92,7 @@ inline int Float_To_Int_Floor(const float &f)
     int32_t imask = ((1 << (31 - (exponent)))) - 1;
     int32_t mantissa = (a & ((1 << 23) - 1));
     int32_t r = ((uint32_t)(mantissa | (1 << 23)) << 8) >> (31 - exponent);
-    // warning C6290: Bitwise operation on logical result: ! has higher precedence than &. Use  && or (!(x & y)) instead
-#pragma warning(suppress : 6290)
-    r = ((r & expsign) ^ (sign)) + ((!((mantissa << 8) & imask) & (expsign ^ ((a - 1) >> 31))) & sign);
+    r = ((r & expsign) ^ (sign)) + (((!((mantissa << 8) & imask)) & (expsign ^ ((a - 1) >> 31))) & sign);
 
     return r;
 }

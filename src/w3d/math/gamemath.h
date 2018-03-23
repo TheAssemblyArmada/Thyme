@@ -27,7 +27,7 @@
 #endif
 
 #define GAMEMATH_EPSILON 0.0001f
-#define GAMEMATH_EPSILON2 GAMEMATH_EPSILON *GAMEMATH_EPSILON
+#define GAMEMATH_EPSILON2 GAMEMATH_EPSILON * GAMEMATH_EPSILON
 #define GAMEMATH_PI 3.141592654f
 #define GAMEMATH_FLOAT_MAX (FLT_MAX)
 #define GAMEMATH_FLOAT_MIN (FLT_MIN)
@@ -36,6 +36,7 @@
 #define GAMEMATH_SQRT3 1.732050808f
 #define GAMEMATH_OOSQRT2 0.707106781f
 #define GAMEMATH_OOSQRT3 0.577350269f
+#define GAMEMATH_TIGHT_CORNER_RADIUS 0.5f
 
 #ifndef RAD_TO_DEG
 #define RAD_TO_DEG(x) (((double)x) * 180.0 / GAMEMATH_PI)
@@ -62,6 +63,11 @@ namespace GameMath
 {
 void Init();
 void Shutdown();
+
+inline float Square(float val)
+{
+    return float(val *val);
+}
 
 inline float Fabs(float val)
 {

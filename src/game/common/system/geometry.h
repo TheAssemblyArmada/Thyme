@@ -42,14 +42,19 @@ public:
     void Set(GeometryType type, bool small, float height, float major_radius, float minor_radius);
     void Calc_Bounding_Stuff();
     void Set_Max_Height_Above_Position(float max_height);
-    float Get_Max_Height_Above_Position();
-    float Get_Max_Height_Below_Position();
-    float Get_ZDelta_To_Center_Position();
-    void Get_Center_Position(const Coord3D &pos, Coord3D &result);
-    float Get_Footprint_Area();
+    float Get_Max_Height_Above_Position() const;
+    float Get_Max_Height_Below_Position() const;
+    float Get_ZDelta_To_Center_Position() const;
+    void Get_Center_Position(const Coord3D &pos, Coord3D &result) const;
+    float Get_Footprint_Area() const;
     void Expand_Footprint(float expand_by);
     float Is_Intersected_By_Line_Segment(Coord3D &loc, Coord3D &from, Coord3D &to);
-
+    void Calc_Pitches(const Coord3D coord1, const GeometryInfo &info, const Coord3D coord2, float &f1, float &f2) const;
+    void Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &region) const;
+    void Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) const;
+    bool Is_Point_In_Footprint(const Coord3D &pos, const Coord3D &point) const;
+    void Make_Random_Offset_In_Footprint(Coord3D &offset) const;
+    void Make_Random_Offset_In_Perimeter(Coord3D &offset) const;
     // TODO none virtual functions.
 
     static void Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, void *user_data);

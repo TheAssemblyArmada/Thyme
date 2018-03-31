@@ -34,6 +34,7 @@
 #include "gamemessage.h"
 #include "gamestate.h"
 #include "gametext.h"
+#include "geometry.h"
 #include "globaldata.h"
 #include "ini.h"
 #include "keyboard.h"
@@ -169,6 +170,7 @@ void Setup_Hooks()
     Keyboard::Hook_Me();
     Mouse::Hook_Me();
     GameMessage::Hook_Me();
+    GeometryInfo::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

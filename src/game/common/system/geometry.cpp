@@ -35,6 +35,11 @@ GeometryInfo::GeometryInfo(GeometryType type, bool small, float height, float ma
     Set(type, small, height, major_radius, minor_radius);
 }
 
+/**
+ * @brief Uses the passed Xfer object to perform transfer of this object.
+ *
+ * 0x005CFAF0
+ */
 void GeometryInfo::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = GEOMETRY_XFER_VERSION;
@@ -49,6 +54,11 @@ void GeometryInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferReal(&m_boundingSphereRadius);
 }
 
+/**
+ * @brief Sets members and recalculates bounding info.
+ *
+ * 0x005CF220
+ */
 void GeometryInfo::Set(GeometryType type, bool small, float height, float major_radius, float minor_radius)
 {
     m_type = type;
@@ -74,6 +84,11 @@ void GeometryInfo::Set(GeometryType type, bool small, float height, float major_
     Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Calculates bounding info.
+ *
+ * 0x005CFA60
+ */
 void GeometryInfo::Calc_Bounding_Stuff()
 {
     switch (m_type) {
@@ -94,6 +109,11 @@ void GeometryInfo::Calc_Bounding_Stuff()
     }
 }
 
+/**
+ * @brief Set max height above position.
+ *
+ * 0x005CF350
+ */
 void GeometryInfo::Set_Max_Height_Above_Position(float max_height)
 {
     switch (m_type) {
@@ -112,6 +132,11 @@ void GeometryInfo::Set_Max_Height_Above_Position(float max_height)
     Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Get max height above position.
+ *
+ * 0x005CF380
+ */
 float GeometryInfo::Get_Max_Height_Above_Position() const
 {
     switch (m_type) {
@@ -128,6 +153,11 @@ float GeometryInfo::Get_Max_Height_Above_Position() const
     return 0.0f;
 }
 
+/**
+ * @brief Get max height below position.
+ *
+ * 0x005CF3A0
+ */
 float GeometryInfo::Get_Max_Height_Below_Position() const
 {
     if (m_type == GEOMETRY_SPHERE) {
@@ -137,6 +167,11 @@ float GeometryInfo::Get_Max_Height_Below_Position() const
     return 0.0f;
 }
 
+/**
+ * @brief Get zdelta to center position.
+ *
+ * 0x005CF3C0
+ */
 float GeometryInfo::Get_ZDelta_To_Center_Position() const
 {
     if (m_type != GEOMETRY_SPHERE) {
@@ -146,12 +181,22 @@ float GeometryInfo::Get_ZDelta_To_Center_Position() const
     return 0.0f;
 }
 
+/**
+ * @brief Get center position.
+ *
+ * 0x005CF3E0
+ */
 void GeometryInfo::Get_Center_Position(const Coord3D &pos, Coord3D &result) const
 {
     result = pos;
     result.z = Get_ZDelta_To_Center_Position() + result.z;
 }
 
+/**
+ * @brief Get footprint area.
+ *
+ * 0x005CFA20
+ */
 float GeometryInfo::Get_Footprint_Area() const
 {
     switch (m_type) {
@@ -168,6 +213,11 @@ float GeometryInfo::Get_Footprint_Area() const
     return 0.0f;
 }
 
+/**
+ * @brief Expand footprint.
+ *
+ * 0x005CF430
+ */
 void GeometryInfo::Expand_Footprint(float expand_by)
 {
     m_majorRadius += expand_by;
@@ -175,20 +225,33 @@ void GeometryInfo::Expand_Footprint(float expand_by)
     Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Present in mac symbols, possibly inlined?
+ */
 float GeometryInfo::Is_Intersected_By_Line_Segment(Coord3D &loc, Coord3D &from, Coord3D &to)
 {
     // TODO Unused in game or inlined somewhere? From symbols.
     return 0.0f;
 }
 
-void GeometryInfo::Calc_Pitches(const Coord3D coord1, const GeometryInfo &info, const Coord3D coord2, float &f1, float &f2) const
+/**
+ * @brief Calculate pitches between objects?
+ *
+ * 0x005CF290
+ */
+void GeometryInfo::Calc_Pitches(const Coord3D &coord1, const GeometryInfo &info, const Coord3D &coord2, float &f1, float &f2) const
 {
     float z = Get_ZDelta_To_Center_Position() + coord1.z;
     float xy = Sqrt(Square(coord2.y - coord1.y) + Square(coord2.x - coord1.x));
-    f2 = Atan2(xy, float(Get_Max_Height_Above_Position() + coord2.z) - z);
+    f2 = Atan2(xy, float(coord2.z + info.Get_Max_Height_Above_Position()) - z);
     f1 = Atan2(xy, float(coord2.z - info.Get_Max_Height_Below_Position()) - z);
 }
 
+/**
+ * @brief Retrieves 2D bounds as a region object.
+ *
+ * 0x005CF450
+ */
 void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &region) const
 {
     switch (m_type) {
@@ -237,6 +300,11 @@ void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &regi
     }
 }
 
+/**
+ * @brief Clips a coord object to the geometry footprint.
+ *
+ * 0x005CF620
+ */
 void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) const
 {
     switch (m_type) {
@@ -263,6 +331,11 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
     }
 }
 
+/**
+ * @brief Checks if a point is within the geometry footprint.
+ *
+ * 0x005CF720
+ */
 bool GeometryInfo::Is_Point_In_Footprint(const Coord3D &pos, const Coord3D &point) const
 {
     switch (m_type) {
@@ -279,6 +352,11 @@ bool GeometryInfo::Is_Point_In_Footprint(const Coord3D &pos, const Coord3D &poin
     return false;
 }
 
+/**
+ * @brief Creates a random offset that lies within the footprint.
+ *
+ * 0x005CF7E0
+ */
 void GeometryInfo::Make_Random_Offset_In_Footprint(Coord3D &offset) const
 {
     offset.z = 0.0f;
@@ -302,6 +380,11 @@ void GeometryInfo::Make_Random_Offset_In_Footprint(Coord3D &offset) const
     }
 }
 
+/**
+ * @brief Creates a random offset that lies within the perimeter.
+ *
+ * 0x005CF8E0
+ */
 void GeometryInfo::Make_Random_Offset_In_Perimeter(Coord3D &offset) const
 {
     switch (m_type) {
@@ -338,30 +421,55 @@ void GeometryInfo::Make_Random_Offset_In_Perimeter(Coord3D &offset) const
     }
 }
 
+/**
+ * @brief Parse the minor radius from an ini file.
+ *
+ * 0x005CF200
+ */
 void GeometryInfo::Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_minorRadius = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Parse the major radius from an ini file.
+ *
+ * 0x005CF1E0
+ */
 void GeometryInfo::Parse_Geometry_MajorRadius(INI *ini, void *formal, void *store, void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_majorRadius = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Parse the height from an ini file.
+ *
+ * 0x005CF1C0
+ */
 void GeometryInfo::Parse_Geometry_Height(INI *ini, void *formal, void *store, void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_height = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Parse if the object is small from an ini file.
+ *
+ * 0x005CF1A0
+ */
 void GeometryInfo::Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_isSmall = INI::Scan_Bool(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
 
+/**
+ * @brief Parse the geometry objects type from an ini file.
+ *
+ * 0x005CF170
+ */
 void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data)
 {
     static const char *_geometry_names[] = { "SPHERE", "CYLINDER", "BOX", nullptr };
@@ -369,3 +477,10 @@ void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, void
     static_cast<GeometryInfo *>(store)->m_type = GeometryType(INI::Scan_IndexList(ini->Get_Next_Token(), _geometry_names));
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
+
+#ifndef THYME_STANDALONE
+void GeometryInfo::Hook_Xfer(Xfer *xfer)
+{
+    GeometryInfo::Xfer_Snapshot(xfer);
+}
+#endif

@@ -34,8 +34,24 @@ enum ModuleType
 };
 
 class Module;
-class ModuleData;
+class W3DModelDrawModuleData;
+class W3DTreeDrawModuleData;
 class Thing;
+
+// TODO possibly move to more appropriate location?
+class ModuleData : public SnapShot
+{
+public:
+    virtual void CRC_Snapshot(Xfer *xfer) {}
+    virtual void Xfer_Snapshot(Xfer *xfer) {}
+    virtual void Load_Post_Process() {}
+
+    virtual ~ModuleData() {}
+    virtual bool Is_AI_Module_Data() const { return false; }
+    virtual W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const { return nullptr; }
+    virtual W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
+    virtual void *Get_Minimum_Required_Game_LOD() const { return nullptr; } // Not sure what this actually returns.
+};
 
 typedef Module *(*modcreateproc_t)(Thing *, ModuleData *);
 typedef ModuleData *(*moddatacreateproc_t)(INI *);
@@ -50,8 +66,7 @@ class ModuleFactory : public SubsystemInterface, public SnapShot
     };
 
 public:
-    ModuleFactory();
-    virtual ~ModuleFactory();
+    virtual ~ModuleFactory() {}
 
     virtual void Init() override;
     virtual void Reset() override {}
@@ -68,7 +83,7 @@ private:
 
 protected:
     std::map<NameKeyType, ModuleTemplate> m_moduleTemplateMap;
-    std::vector<ModuleData const *> m_moduleDataList;
+    std::vector<const ModuleData *> m_moduleDataList; // Originally const, but snapshot methods are not const methods, casted in original?
 };
 
 #ifndef THYME_STANDALONE

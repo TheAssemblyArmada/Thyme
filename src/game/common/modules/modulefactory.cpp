@@ -22,6 +22,28 @@ ModuleFactory *&g_theModuleFactory = Make_Global<ModuleFactory *>(0x00A2BE40);
 ModuleFactory *g_theModuleFactory = nullptr;
 #endif
 
+void ModuleFactory::Init() 
+{
+    // TODO, needs most module derived classes implementing.
+#ifndef THYME_STANDALONE
+    Call_Method<void, ModuleFactory>(0x004D9660, this);
+#endif
+}
+
+void ModuleFactory::CRC_Snapshot(Xfer *xfer)
+{
+    for (auto it = m_moduleDataList.begin(); it != m_moduleDataList.end(); ++it) {
+        const_cast<ModuleData *>(*it)->CRC_Snapshot(xfer);
+    }
+}
+
+void ModuleFactory::Xfer_Snapshot(Xfer *xfer)
+{
+    for (auto it = m_moduleDataList.begin(); it != m_moduleDataList.end(); ++it) {
+        const_cast<ModuleData *>(*it)->Xfer_Snapshot(xfer);
+    }
+}
+
 NameKeyType ModuleFactory::Make_Decorated_Name_Key(AsciiString &name, ModuleType type)
 {
     char tmp[256];

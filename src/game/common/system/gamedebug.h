@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef GAMEDEBUG_H
-#define GAMEDEBUG_H
-
 #include "always.h"
 
 #ifdef __cplusplus
@@ -81,5 +78,3 @@ void Debug_Set_Flags(int flags);
 #ifdef __cplusplus
 } // extern "C"
 #endif
-
-#endif // _GAMEDEBUG_H

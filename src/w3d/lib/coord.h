@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef COORD_H
-#define COORD_H
-
 #include <cstdint>
 #include <math.h>
 
@@ -90,5 +87,3 @@ public:
     ICoord3D lo;
     ICoord3D hi;
 };
-
-#endif // _COORD_H

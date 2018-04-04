@@ -23,9 +23,4 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef FORCE_NOCD_H
-#define FORCE_NOCD_H
-
 bool IsFirstCDPresent();        //0x004469C0
-
-#endif // _FORCE_NOCD_H

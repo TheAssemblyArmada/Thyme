@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SIDESINFO_H
-#define SIDESINFO_H
-
 #include "always.h"
 #include "buildinfo.h"
 #include "dict.h"
@@ -58,5 +55,3 @@ inline void SidesInfo::Hook_Me()
     Hook_Method(0x004D5C80, &operator=);
 }
 #endif
-
-#endif // SIDESINFO_H

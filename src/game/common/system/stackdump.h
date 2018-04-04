@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef STACKDUMP_H
-#define STACKDUMP_H
-
 #include "always.h"
 #include "asciistring.h"
 
@@ -38,6 +35,4 @@ void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int ski
 extern AsciiString &g_exceptionFileBuffer;
 #else
 extern AsciiString g_exceptionFileBuffer;
-#endif
-
 #endif

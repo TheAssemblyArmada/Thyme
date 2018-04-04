@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPTACTION_H
-#define SCRIPTACTION_H
-
 #include "always.h"
 #include "mempoolobj.h"
 #include "scriptparam.h"
@@ -75,5 +72,3 @@ inline void ScriptAction::Hook_Me()
     Hook_Function(0x00521280, &Parse_False_Action_Chunk);
 }
 #endif
-
-#endif // SCRIPTACTION_H

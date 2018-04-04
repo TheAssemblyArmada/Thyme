@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef AUDIOEVENTRTS_H
-#define AUDIOEVENTRTS_H
-
 #include "audioeventinfo.h"
 #include "coord.h"
 #include "gametype.h"
@@ -86,5 +83,3 @@ private:
     int m_playerIndex;
     int m_nextPlayPortion;
 };
-
-#endif // AUDIOEVENTRTS_H

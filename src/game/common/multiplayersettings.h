@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MULTIPLAYERSETTINGS_H
-#define MULTIPLAYERSETTINGS_H
-
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
@@ -107,5 +104,3 @@ extern MultiplayerSettings *&g_theMultiplayerSettings;
 #else
 extern MultiplayerSettings *g_theMultiplayerSettings;
 #endif
-
-#endif // MULTIPLAYERSETTINGS_H

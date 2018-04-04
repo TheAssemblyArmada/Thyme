@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMETYPE_H
-#define GAMETYPE_H
-
 #include "always.h"
 
 enum TimeOfDayType : int32_t
@@ -110,4 +107,3 @@ extern const char *g_audioPriorityNames[PRIORITY_COUNT + 1];
 extern const char *g_buildableStatusNames[BSTATUS_COUNT + 1];
 extern const char *g_surfaceNames[SURFACE_COUNT + 1];
 extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
-#endif

@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef COMMANDLIST_H
-#define COMMANDLIST_H
-
 #include "gamemessagelist.h"
 
 class CommandList : public GameMessageList
@@ -48,6 +45,4 @@ inline void CommandList::Hook_Me()
 }
 #else
 extern CommandList *g_theCommandList;
-#endif
-
 #endif

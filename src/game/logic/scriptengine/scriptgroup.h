@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPTGROUP_H
-#define SCRIPTGROUP_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "datachunk.h"
@@ -73,6 +70,4 @@ inline void ScriptGroup::Hook_Me()
     Hook_Method(0x0051C670, &Duplicate_And_Qualify);
     Hook_Function(0x0051C860, Parse_Group_Chunk);
 }
-#endif
-
 #endif

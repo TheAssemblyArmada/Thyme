@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef RAWFILECLASS_H
-#define RAWFILECLASS_H
-
 #include "fileclass.h"
 
 class RawFileClass : public FileClass
@@ -71,5 +68,3 @@ protected:
     time_t m_dateTime;
     bool m_isAllocated;
 };
-
-#endif // _RAWFILECLASS_H

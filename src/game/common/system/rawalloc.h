@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef RAWALLOC_H
-#define RAWALLOC_H
-
 #include "always.h"
 #include "gamedebug.h"
 #include <cstdlib>
@@ -107,5 +104,3 @@ inline int Round_Up_8(int number) { return (number + 7) & (~7); }   // For 8byte
  * @brief Rounds a number up to a multiple of the architecture word size.
  */
 inline int Round_Up_Word_Size(int number) { return (number + sizeof(void*) - 1) & (~(sizeof(void*) - 1)); } // For machine wordsize alignment
-
-#endif // _RAWALLOC_H

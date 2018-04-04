@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef PLAYER_H
-#define PLAYER_H
-
 #include "snapshot.h"
 #include "handicap.h"
 #include "unicodestring.h"
@@ -35,5 +32,3 @@ public:
     int unk4;
     int m_playerIndex;
 };
-
-#endif

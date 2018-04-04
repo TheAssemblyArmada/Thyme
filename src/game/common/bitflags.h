@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef BITFLAGS_H
-#define BITFLAGS_H
-
 #include <bitset>
 
  // TODO move this somewhere more appropriate?
@@ -206,5 +203,3 @@ public:
 private:
     std::bitset<bits> m_bits;
 };
-
-#endif // _BITFLAGS_H

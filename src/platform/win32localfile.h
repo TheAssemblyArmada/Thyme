@@ -24,9 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef WIN32LOCALFILE_H
-#define WIN32LOCALFILE_H
-
 #include "localfile.h"
 
 class Win32LocalFile : public LocalFile
@@ -59,5 +56,3 @@ public:
 private:
     int FileHandle;
 };
-
-#endif // _WIN32LOCALFILE_H

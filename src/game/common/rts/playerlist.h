@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef PLAYERLIST_H
-#define PLAYERLIST_H
-
 #include "player.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
@@ -55,6 +52,4 @@ private:
 extern PlayerList *&g_thePlayerList;
 #else
 extern PlayerList *g_thePlayerList;
-#endif
-
 #endif

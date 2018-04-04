@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEMAIN_H
-#define GAMEMAIN_H
-
 #include "always.h"
 
 void Game_Main(int argc, char *argv[]);
@@ -24,5 +21,3 @@ void Game_Main(int argc, char *argv[]);
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
-
-#endif // GAMEMAIN_H

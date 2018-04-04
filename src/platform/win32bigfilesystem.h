@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef WIN32BIGFILESYSTEM_H
-#define WIN32BIGFILESYSTEM_H
-
 #include "archivefilesystem.h"
 
 class Win32BIGFileSystem : public ArchiveFileSystem
@@ -41,5 +38,3 @@ public:
     virtual void Close_All_Files() {}
     virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs);
 };
-
-#endif

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEFONT_H
-#define GAMEFONT_H
-
 #include "always.h"
 #include "asciistring.h"
 
@@ -29,5 +26,3 @@ struct GameFont
 	void *font_data;
 	GameFont *next;
 };
-
-#endif // GAMEFONT_H

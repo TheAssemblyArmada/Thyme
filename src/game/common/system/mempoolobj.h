@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMPOOLOBJ_H
-#define MEMPOOLOBJ_H
-
 #include "gamedebug.h"
 #include "mempool.h"
 #include "mempoolfact.h"
@@ -130,5 +127,3 @@ public:
 private:
     MemoryPoolObject *Obj;
 };
-
-#endif

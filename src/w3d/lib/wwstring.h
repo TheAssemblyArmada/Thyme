@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef WWSTRING_H
-#define WWSTRING_H
-
 #include "always.h"
 #include "critsection.h"
 #include "gamedebug.h"
@@ -435,5 +432,3 @@ inline void StringClass::Hook_Me()
     //Hook_Method(Make_Method_Ptr<void, StringClass>(0x0089D460), &Free_String);
 }
 #endif
-
-#endif //WWSTRING_H

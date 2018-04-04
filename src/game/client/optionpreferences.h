@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef OPTIONPREFERENCES_H
-#define OPTIONPREFERENCES_H
-
 #include "always.h"
 #include "userpreferences.h"
 #include "asciistring.h"
@@ -80,5 +77,3 @@ private:
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
-
-#endif // OPTIONPREFERENCES_H

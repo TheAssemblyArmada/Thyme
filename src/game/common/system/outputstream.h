@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef OUTPUTSTREAM_H
-#define OUTPUTSTREAM_H
-
 #include "always.h"
 
 class OutputStream
@@ -24,5 +21,3 @@ class OutputStream
 public:
     virtual int Write(const void *src, int size) = 0;
 };
-
-#endif

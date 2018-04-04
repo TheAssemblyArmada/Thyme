@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef UNICODESTRING_H
-#define UNICODESTRING_H
-
 #include "always.h"
 #include "critsection.h"
 #include <stdarg.h>
@@ -230,5 +227,3 @@ extern SimpleCriticalSectionClass *&g_unicodeStringCriticalSection;
 #else
 extern SimpleCriticalSectionClass *g_unicodeStringCriticalSection;
 #endif
-
-#endif // _UNICODESTRING_H

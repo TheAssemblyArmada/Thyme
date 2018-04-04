@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef STREAMINGARCHIVEFILE_H
-#define STREAMINGARCHIVEFILE_H
-
 #include "ramfile.h"
 #include "gamememory.h"
 
@@ -59,5 +56,3 @@ class StreamingArchiveFile : public RAMFile
         int FileSize;
         int FilePos;
 };
-
-#endif // _STREAMINGARCHIVEFILE_H

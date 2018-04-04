@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef FILESYSTEM_H
-#define FILESYSTEM_H
-
 #include "file.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
@@ -67,5 +64,3 @@ inline void FileSystem::Hook_Me()
 #else
 extern FileSystem *g_theFileSystem;
 #endif
-
-#endif // _FILESYSTEM_H

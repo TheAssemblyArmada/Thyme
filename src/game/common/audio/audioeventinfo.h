@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef AUDIOEVENTINFO_H
-#define AUDIOEVENTINFO_H
-
 #include "asciistring.h"
 #include "ini.h"
 #include "mempoolobj.h"
@@ -93,5 +90,3 @@ protected:
 private:
     static FieldParse s_audioEventParseTable[];
 };
-
-#endif // AUDIOEVENTINFO_H

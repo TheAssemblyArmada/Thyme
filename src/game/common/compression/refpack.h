@@ -14,11 +14,6 @@
  */
 #pragma once
 
-#ifndef REFPACK_H
-#define REFPACK_H
-
 #include "always.h"
 
 int RefPack_Uncompress(void *dst, const void *src, int *size);
-
-#endif

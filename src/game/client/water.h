@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef WATER_H
-#define WATER_H
-
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
@@ -89,5 +86,3 @@ extern WaterTransparencySetting *g_theWaterTransparency;
 #define g_waterSettings (Make_Pointer<WaterSetting>(0x00A2F0B8))
 #define g_theWaterTransparency (Make_Global<WaterTransparencySetting*>(0x00A2F0B0))
 #endif
-
-#endif // WATER_H

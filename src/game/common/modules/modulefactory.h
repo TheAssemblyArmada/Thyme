@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef MODULEFACTORY_H
-#define MODULEFACTORY_H
-
 #include "always.h"
 #include "ini.h"
 #include "namekeygenerator.h"
@@ -79,5 +76,3 @@ extern ModuleFactory *&g_theModuleFactory;
 #else
 extern ModuleFactory *g_theModuleFactory;
 #endif
-
-#endif // MODULEFACTORY_H

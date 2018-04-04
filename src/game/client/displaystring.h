@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef DISPLAYSTRING_H
-#define DISPLAYSTRING_H
-
 #include "always.h"
 #include "coord.h"
 #include "gamefont.h"
@@ -55,5 +52,3 @@ protected:
     DisplayString *m_next;
     DisplayString *m_prev;
 };
-
-#endif // DISPLAYSTRING_H

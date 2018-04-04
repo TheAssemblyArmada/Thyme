@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef PLANE_H
-#define PLANE_H
-
 #include "vector3.h"
 #include "sphere.h"
 
@@ -140,5 +137,3 @@ inline bool PlaneClass::Compute_Intersection(const Vector3 &p0, const Vector3 &p
 
     return true;
 }
-
-#endif

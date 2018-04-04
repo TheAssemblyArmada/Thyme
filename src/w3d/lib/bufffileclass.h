@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef BUFFFILECLASS_H
-#define BUFFFILECLASS_H
-
 #include	"rawfileclass.h"
 
 class BufferedFileClass : public RawFileClass
@@ -53,5 +50,3 @@ protected:
 private:
     static int DesiredBufferSize;
 };
-
-#endif // _BUFFFILECLASS_H

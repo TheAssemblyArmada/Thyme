@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef CHUNKIO_H
-#define CHUNKIO_H
-
 #include "always.h"
 
 #ifndef THYME_STANDALONE
@@ -227,5 +224,3 @@ inline void ChunkLoadClass::Hook_Me()
     Hook_Method(0x008A1480, static_cast<unsigned int (ChunkLoadClass::*)(void *, unsigned int)>(&Read));
 }
 #endif
-
-#endif // _CHUNKIO_H

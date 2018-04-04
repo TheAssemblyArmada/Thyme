@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef AUDIOMISC_H
-#define AUDIOMISC_H
-
 #include "always.h"
 #include "audioeventrts.h"
 #include "ini.h"
@@ -75,5 +72,3 @@ private:
 
     static FieldParse s_fieldParseTable[];
 };
-
-#endif // AUDIOMISC_H

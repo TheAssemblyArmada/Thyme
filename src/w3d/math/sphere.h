@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef SPHERE_H
-#define SPHERE_H
-
 #include "gamemath.h"
 #include "matrix3d.h"
 #include "vector3.h"
@@ -268,5 +265,3 @@ inline SphereClass operator * (const Matrix3D &m, const SphereClass &s)
 {
     return Transform_Sphere(m, s);
 }
-
-#endif

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef HANDICAP_H
-#define HANDICAP_H
-
 class Dict;
 class ThingTemplate;
 
@@ -56,5 +53,3 @@ public:
 private:
     float m_handicaps[HANDICAP_TYPE_COUNT][POLYGON];
 };
-
-#endif

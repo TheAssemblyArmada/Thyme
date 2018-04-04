@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef SOUNDMANAGER_H
-#define SOUNDMANAGER_H
-
 #include "asciistring.h"
 #include "audioeventrts.h"
 #include "subsysteminterface.h"
@@ -61,5 +58,3 @@ private:
     int m_2dSamplesPlaying;
     int m_3dSamplesPlaying;
 };
-
-#endif

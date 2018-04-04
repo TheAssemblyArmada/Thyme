@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef KINDOF_H
-#define KINDOF_H
-
 #include "always.h"
 
 enum KindOfType : int32_t
@@ -149,5 +146,3 @@ enum KindOfType : int32_t
     KINDOF_IGNORE_DOCKING_BONES,
     KINDOF_COUNT,
 };
-
-#endif

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMPOOLFACT_H
-#define MEMPOOLFACT_H
-
 #include "always.h"
 #include "rawalloc.h"
 
@@ -59,6 +56,4 @@ private:
 extern MemoryPoolFactory *&g_memoryPoolFactory;
 #else
 extern MemoryPoolFactory *g_memoryPoolFactory;
-#endif
-
 #endif

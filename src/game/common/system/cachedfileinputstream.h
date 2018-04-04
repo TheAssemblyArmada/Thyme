@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef CACHEDFILEINPUTSTREAM_H
-#define CACHEDFILEINPUTSTREAM_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "chunkinputstream.h"
@@ -45,5 +42,3 @@ private:
     uint8_t *m_cachedData;
     unsigned m_cachePos;
 };
-
-#endif

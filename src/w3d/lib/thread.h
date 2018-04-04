@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef THREAD_H
-#define THREAD_H
-
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
@@ -81,5 +78,3 @@ inline void ThreadClass::Hook_Me()
     Hook_Function(0x0089CF00, &Get_Current_Thread_ID);
 }
 #endif
-
-#endif // _THREAD_H_

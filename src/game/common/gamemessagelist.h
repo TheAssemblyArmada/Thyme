@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef GAMEMESSAGELIST_H
-#define GAMEMESSAGELIST_H
-
 #include "gamemessage.h"
 #include "subsysteminterface.h"
 
@@ -65,6 +62,4 @@ inline void GameMessageList::Hook_Me()
     Hook_Method(0x0040D7D0, &Remove_Message_Nv);
     Hook_Method(0x0040D820, &Contains_Message_Of_Type_Nv);
 }
-#endif
-
 #endif

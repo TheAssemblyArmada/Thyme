@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef DATACHUNK_H
-#define DATACHUNK_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "chunkinputstream.h"
@@ -126,7 +123,5 @@ inline void DataChunkInput::Hook_Me()
     Hook_Method(0x00573010, &Read_AsciiString);
     Hook_Method(0x00573120, &Read_UnicodeString);
 }
-
-#endif
 
 #endif

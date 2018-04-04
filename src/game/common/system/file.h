@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef FILE_H
-#define FILE_H
-
 #include "asciistring.h"
 #include "gamememory.h"
 #include "mempoolobj.h"
@@ -84,5 +81,3 @@ protected:
     bool m_access;
     bool m_deleteOnClose;
 };
-
-#endif // _FILE_H

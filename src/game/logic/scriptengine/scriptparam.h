@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPTPARAM_H
-#define SCRIPTPARAM_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "bitflags.h"
@@ -182,5 +179,3 @@ inline void Parameter::Hook_Me()
     Hook_Method(0x0051E990, &Qualify);
 }
 #endif
-
-#endif // SCRIPTPARAM_H

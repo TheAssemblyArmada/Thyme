@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef AUDIOMANAGER_H
-#define AUDIOMANAGER_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "audioeventinfo.h"
@@ -220,5 +217,3 @@ extern AudioManager *&g_theAudio;
 #else
 extern AudioManager *g_theAudio;
 #endif
-
-#endif // AUDIOMANAGER_H

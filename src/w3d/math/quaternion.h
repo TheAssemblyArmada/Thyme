@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef QUATERNION_H
-#define QUATERNION_H
-
 #include "vector3.h"
 
 class Vector2;
@@ -162,5 +159,3 @@ void Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpIn
 Quaternion Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpInfoStruct *slerpinfo);
 void Fast_Slerp(Quaternion &result, const Quaternion &a, const Quaternion &b, float t);
 Matrix3 Build_Matrix3(const Quaternion &quat);
-
-#endif // _QUATERNION_H

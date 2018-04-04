@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef GAMETEXT_H
-#define GAMETEXT_H
-
 #include "asciistring.h"
 #include "file.h"
 #include "subsysteminterface.h"
@@ -155,5 +152,3 @@ inline void GameTextManager::Hook_Me()
 #else
 extern GameTextInterface *g_theGameText;
 #endif
-
-#endif // _GAMETEXT_H

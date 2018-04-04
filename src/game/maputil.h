@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MAPUTIL_H
-#define MAPUTIL_H
-
 #include "asciistring.h"
 #include "coord.h"
 #include "list"
@@ -83,5 +80,3 @@ extern MapCache *&g_theMapCache;
 extern WaypointMap *g_waypoints;
 extern MapCache *g_theMapCache;
 #endif
-
-#endif // MAPUTIL_H

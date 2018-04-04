@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SIDESLIST_H
-#define SIDESLIST_H
-
 #include "always.h"
 #include "sidesinfo.h"
 #include "snapshot.h"
@@ -92,5 +89,3 @@ inline void SidesList::Hook_Me()
 #else
 extern SidesList *g_theSidesList;
 #endif
-
-#endif // SIDESLIST_H

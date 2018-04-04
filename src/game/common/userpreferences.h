@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef USERPREFERENCES_H
-#define USERPREFERENCES_H
-
 #include "asciistring.h"
 #include <map>
 
@@ -50,5 +47,3 @@ public:
 private:
     AsciiString m_filename;
 };
-
-#endif // USERPREFERENCES_H

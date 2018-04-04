@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef BUILDINFO_H
-#define BUILDINFO_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "coord.h"
@@ -84,5 +81,3 @@ private:
     int m_unkint2;
     bool m_unkbool4;
 };
-
-#endif

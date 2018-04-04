@@ -27,9 +27,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef BASE_COMPILER_H
-#define BASE_COMPILER_H
-
 /*
  * Currently supported defines include:
  *     COMPILER_GNUC
@@ -404,5 +401,3 @@
     #define COMPILER_NO_UNWIND
 
 #endif // COMPILER_NO_EXCEPTIONS / COMPILER_NO_UNWIND
-
-#endif // _BASE_COMPILER_H

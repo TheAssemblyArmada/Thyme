@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef ASCIISTRING_H
-#define ASCIISTRING_H
-
 #include "always.h"
 #include "memdynalloc.h"
 #include <cstdarg>
@@ -276,5 +273,3 @@ inline AsciiString operator+(const AsciiString &a, const AsciiString &b)
 
     return retval;
 }
-
-#endif // _ASCIISTRING_H

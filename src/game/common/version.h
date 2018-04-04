@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef VERSION_H
-#define VERSION_H
-
 #include "asciistring.h"
 #include "unicodestring.h"
 
@@ -63,5 +60,3 @@ extern Version *&g_theVersion;
 #else
 extern Version *g_theVersion;
 #endif
-
-#endif // _VERSION_H

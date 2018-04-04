@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef W3DFILESYSTEM_H
-#define W3DFILESYSTEM_H
-
 #include "always.h"
 #include "ffactory.h"
 #include "file.h"
@@ -83,5 +80,3 @@ inline void W3DFileSystem::Hook_Me()
     Hook_Method(0x00815370, &Return_File_NV);
 }
 #endif
-
-#endif // W3DFILESYSTEM_H

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef KEYBOARD_H
-#define KEYBOARD_H
-
 #include "always.h"
 #include "subsysteminterface.h"
 
@@ -129,5 +126,3 @@ extern Keyboard *&g_theKeyboard;
 #else
 extern Keyboard *g_theKeyboard;
 #endif
-
-#endif // KEYBOARD_H

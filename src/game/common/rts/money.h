@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef MONEY_H
-#define MONEY_H
-
 #include "snapshot.h"
 
 class INI;
@@ -46,5 +43,3 @@ protected:
     unsigned int m_money;
     int m_playerIndex;
 };
-
-#endif

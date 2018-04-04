@@ -24,9 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef STRINGEX_H
-#define STRINGEX_H
-
 #include <string.h>
 #include <ctype.h>
 
@@ -187,6 +184,4 @@ inline char *strtrim(char *str)
 
 #ifdef __cplusplus
 } // extern "C"
-#endif
-
 #endif

@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef WIN32GAMEENGINE_H
-#define WIN32GAMEENGINE_H
-
 #include "gameengine.h"
 
 #ifndef THYME_STANDALONE
@@ -66,5 +63,3 @@ inline void Win32GameEngine::Hook_Me()
     Hook_Method(0x00742150, &Create_Archive_File_System_NV);
 }
 #endif
-
-#endif // _WIN32GAMEENGINE_H

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef MATRIX3_H
-#define MATRIX3_H
-
 #include "always.h"
 #include "vector3.h"
 #include "matrix3d.h"
@@ -553,5 +550,3 @@ __forceinline Matrix3 Create_Z_Rotation_Matrix3(float rad)
 {
     return Create_Z_Rotation_Matrix3(GameMath::Sin(rad), GameMath::Cos(rad));
 }
-
-#endif

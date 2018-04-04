@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef DATACHUNKTOC_H
-#define DATACHUNKTOC_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "chunkinputstream.h"
@@ -62,5 +59,3 @@ private:
     unsigned m_nextID;
     bool m_headerOpened;
 };
-
-#endif // DATACHUNKTOC_H

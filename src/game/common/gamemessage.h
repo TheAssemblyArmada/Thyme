@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEMESSAGE_H
-#define GAMEMESSAGE_H
-
 #include "asciistring.h"
 #include "coord.h"
 #include "mempoolobj.h"
@@ -392,5 +389,4 @@ inline void GameMessage::Hook_Me()
     Hook_Method(0x0040A8F0, &Append_Pixel_Arg);
     Hook_Method(0x0040A800, &Append_Int_Arg);
 }
-#endif
 #endif

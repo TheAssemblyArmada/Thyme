@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef LOCALFILE_H
-#define LOCALFILE_H
-
 #include "always.h"
 #include "file.h"
 
@@ -38,5 +35,3 @@ public:
 protected:
     static int TotalOpen;
 };
-
-#endif // _LOCALFILE_H

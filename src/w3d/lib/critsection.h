@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef CRITSECTION_H
-#define CRITSECTION_H
-
 #include "always.h"
 #include "gamedebug.h"
 
@@ -310,5 +307,3 @@ private:
 
     long Flag;
 };
-
-#endif // _CRITSECTION_H

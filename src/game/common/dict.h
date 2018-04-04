@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef DICT_H
-#define DICT_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "namekeygenerator.h"
@@ -180,5 +177,3 @@ inline void Dict::Hook_Me()
 }
 
 #endif
-
-#endif // DICT_H

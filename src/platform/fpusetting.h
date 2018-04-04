@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef FPUSETTING_H
-#define FPUSETTING_H
-
 #include "always.h"
 
 void Set_FP_Mode();
@@ -24,6 +21,3 @@ void Set_FP_Mode();
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
-
-#endif // FPUSETTING_H
-

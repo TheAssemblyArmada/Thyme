@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef FFACTORY_H
-#define FFACTORY_H
-
 #include "fileclass.h"
 
 class FileFactoryClass
@@ -75,6 +72,4 @@ extern FileFactoryClass *&g_theFileFactory;
 #else
 extern RawFileFactoryClass *g_theWritingFileFactory;
 extern FileFactoryClass *g_theFileFactory;
-#endif
-
 #endif

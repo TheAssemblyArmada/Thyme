@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MOUSE_H
-#define MOUSE_H
-
 #include "always.h"
 #include "color.h"
 #include "coord.h"
@@ -234,5 +231,3 @@ inline void Mouse::Hook_Me()
 #else
 extern Mouse *g_theMouse;
 #endif
-
-#endif // MOUSE_H

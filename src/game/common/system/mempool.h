@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMPOOL_H
-#define MEMPOOL_H
-
 #include "always.h"
 #include "rawalloc.h"
 
@@ -65,5 +62,3 @@ private:
     MemoryPoolBlob *m_lastBlob;
     MemoryPoolBlob *m_firstBlobWithFreeBlocks;
 };
-
-#endif

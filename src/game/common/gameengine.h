@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEENGINE_H
-#define GAMEENGINE_H
-
 #include "always.h"
 #include "subsysteminterface.h"
 
@@ -85,5 +82,3 @@ extern GameEngine *&g_theGameEngine;
 #else
 extern GameEngine *g_theGameEngine;
 #endif
-
-#endif // _GAMEENGINE_H

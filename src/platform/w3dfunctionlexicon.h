@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef W3DFUNCTIONLEXICON_H
-#define W3DFUNCTIONLEXICON_H
-
 #include "functionlexicon.h"
 
 class W3DFunctionLexicon : public FunctionLexicon
@@ -30,5 +27,3 @@ public:
     virtual void Reset() override { FunctionLexicon::Reset(); }
     virtual void Update() override {}
 };
-
-#endif

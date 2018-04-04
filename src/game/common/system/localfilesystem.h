@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef LOCALFILESYSTEM_H
-#define LOCALFILESYSTEM_H
-
 #include "rtsutils.h"
 #include "subsysteminterface.h"
 #include <set>
@@ -46,6 +43,4 @@ public:
 extern LocalFileSystem *&g_theLocalFileSystem;
 #else
 extern LocalFileSystem *g_theLocalFileSystem;
-#endif
-
 #endif

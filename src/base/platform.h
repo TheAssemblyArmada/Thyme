@@ -27,9 +27,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef BASE_PLATFORM_H
-#define BASE_PLATFORM_H
-
 /*-----------------------------------------------------------------------------
  * Currently supported platform indentification defines include:
  *    PLATFORM_PS3
@@ -506,6 +503,3 @@
       #define PLATFORM_WORD_SIZE PLATFORM_PTR_SIZE
    #endif
 #endif
-
-
-#endif // _BASE_PLATFORM_H

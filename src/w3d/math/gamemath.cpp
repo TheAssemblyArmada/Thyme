@@ -3,6 +3,7 @@
  *
  * @author Tiberian Technologies
  * @author OmniBlade
+ * @author feliwir
  *
  * @brief Floating point math functions. Based on Tiberian Technologies Renegade Scripts wwmath class.
  *
@@ -15,28 +16,28 @@
  */
 #include "gamemath.h"
 
-float _FastAcosTable[ARC_TABLE_SIZE];
-float _FastAsinTable[ARC_TABLE_SIZE];
-float _FastSinTable[SIN_TABLE_SIZE];
-float _FastInvSinTable[SIN_TABLE_SIZE];
+template<typename T, int N>
+inline constexpr auto calculateFastTable(T(*func)(T),bool arc)
+{
+	Array<T, N> table;
+	for (int a = 0; a < N; ++a) 
+	{
+		float cv = arc ?  (a - N / T(2)) * (T(1) / (N / T(2)))
+							: T(a) * 2.0f * GAMEMATH_PI / SIN_TABLE_SIZE;
+
+		table[a] = func(cv);
+	}
+
+	return table;
+}
+
+//calculate all tables at compile time
+const Array<float, ARC_TABLE_SIZE>  _FastAcosTable = calculateFastTable<float,ARC_TABLE_SIZE>(GameMath::Acos,true);
+const Array<float, ARC_TABLE_SIZE>  _FastAsinTable = calculateFastTable<float, ARC_TABLE_SIZE>(GameMath::Asin,true);
+const Array<float, SIN_TABLE_SIZE>  _FastSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Sin,false);
+const Array<float, SIN_TABLE_SIZE>  _FastInvSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Inv_Sin,false);
 
 void GameMath::Init()
 {
-    for (int a = 0; a < ARC_TABLE_SIZE; ++a) {
-        float cv = float(a - ARC_TABLE_SIZE / 2) * (1.0f / (ARC_TABLE_SIZE / 2));
-        _FastAcosTable[a] = Acos(cv);
-        _FastAsinTable[a] = Asin(cv);
-    }
-
-    for (int a = 0; a < SIN_TABLE_SIZE; ++a) {
-        float cv = (float)a * 2.0f * GAMEMATH_PI / SIN_TABLE_SIZE;
-        _FastSinTable[a] = Sin(cv);
-
-        if (a > 0) {
-            _FastInvSinTable[a] = 1.0f / _FastSinTable[a];
-        } else {
-            _FastInvSinTable[a] = GAMEMATH_FLOAT_MAX;
-        }
-    }
 }
 void GameMath::Shutdown() {}

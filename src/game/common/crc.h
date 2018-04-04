@@ -19,6 +19,7 @@
 
 #include "always.h"
 #include "bittype.h"
+#include "array.h"
 
 class CRC
 {
@@ -32,7 +33,7 @@ public:
 private:
     void Add_CRC(uint8_t byte);
 
-    static uint32_t m_table[256];
+    static const Array<uint32_t,256> m_table;
     uint32_t m_crc;
 };
 

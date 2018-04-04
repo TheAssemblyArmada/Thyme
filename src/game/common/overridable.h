@@ -24,9 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef OVERRIDABLE_H
-#define OVERRIDABLE_H
-
 #include "mempoolobj.h"
 
 class Overridable : public MemoryPoolObject
@@ -81,5 +78,3 @@ inline void Overridable::Add_Override(Overridable *obj)
         m_next = obj;
     }
 }
-
-#endif // OVERRIDABLE_H

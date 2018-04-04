@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef CHUNKINPUTSTREAM_H
-#define CHUNKINPUTSTREAM_H
-
 #include "always.h"
 #include "inputstream.h"
 
@@ -27,5 +24,3 @@ public:
     virtual bool Absolute_Seek(unsigned int pos) = 0;
     virtual bool Eof() = 0;
 };
-
-#endif

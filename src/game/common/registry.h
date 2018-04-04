@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef REGISTRY_H
-#define REGISTRY_H
-
 #include "always.h"
 #include "asciistring.h"
 
@@ -27,5 +24,3 @@ void Get_String_From_Generals_Registry(AsciiString subkey, AsciiString value, As
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
-
-#endif // REGISTRY_H

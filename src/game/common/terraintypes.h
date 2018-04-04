@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef TERRAINTYPES_H
-#define TERRAINTYPES_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "ini.h"
@@ -116,5 +113,3 @@ extern TerrainTypeCollection *&g_theTerrainTypes;
 #else
 extern TerrainTypeCollection *g_theTerrainTypes;
 #endif
-
-#endif // TERRAINTYPES_H

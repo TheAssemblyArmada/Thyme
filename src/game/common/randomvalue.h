@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef RANDOMVALUE_H
-#define RANDOMVALUE_H
-
 #include "bittype.h"
 
 #ifndef THYME_STANDALONE
@@ -100,5 +97,3 @@ inline void Hook_Me()
 
 } // namespace RandomValue
 #endif
-
-#endif // _RANDOMVALUE_H

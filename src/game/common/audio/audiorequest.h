@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef AUDIOREQUEST_H
-#define AUDIOREQUEST_H
-
 #include "always.h"
 #include "audioeventrts.h"
 #include "mempoolobj.h"
@@ -63,5 +60,3 @@ private:
     bool m_isAdding;
     bool m_isProcessed;
 };
-
-#endif // AUDIOREQUEST_H

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEMEMORY_H
-#define GAMEMEMORY_H
-
 #include "always.h"
 #include "gamedebug.h"
 #include "rawalloc.h"
@@ -57,5 +54,3 @@ inline void Hook_Me()
 } // namespace GameMemory
 
 #endif
-
-#endif // _GAMEMEMORY_H

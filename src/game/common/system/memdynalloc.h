@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMDYNALLOC_H
-#define MEMDYNALLOC_H
-
 #include "always.h"
 #include "rawalloc.h"
 
@@ -64,6 +61,4 @@ private:
 extern DynamicMemoryAllocator *&g_dynamicMemoryAllocator;
 #else
 extern DynamicMemoryAllocator *g_dynamicMemoryAllocator;
-#endif
-
 #endif

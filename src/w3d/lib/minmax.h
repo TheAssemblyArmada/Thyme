@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MINMAX_H
-#define MINMAX_H
-
 /**
  * @brief Returns the minimum of 'minval' and 'maxval'.
  */
@@ -51,5 +48,3 @@ T Clamp(T original, T minval, T maxval)
 
     return original;
 };
-
-#endif // MINMAX_H

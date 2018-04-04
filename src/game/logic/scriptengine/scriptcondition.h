@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPTCONDITION_H
-#define SCRIPTCONDITION_H
-
 #include "always.h"
 #include "datachunk.h"
 #include "mempoolobj.h"
@@ -99,5 +96,3 @@ inline void OrCondition::Hook_Me()
     Hook_Function(0x0051D9B0, Parse_OrCondition_Chunk);
 }
 #endif
-
-#endif // SCRIPTCONDITION_H

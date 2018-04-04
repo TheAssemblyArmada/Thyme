@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef MESSAGESTREAM_H
-#define MESSAGESTREAM_H
-
 #include "always.h"
 #include "gamemessagelist.h"
 
@@ -93,6 +90,4 @@ inline void MessageStream::Hook_Me()
 }
 #else
 extern MessageStream *g_theMessageStream;
-#endif
-
 #endif

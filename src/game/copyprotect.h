@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef COPYPROTECT_H
-#define COPYPROTECT_H
-
 class CopyProtect {
     public:
         static bool isLauncherRunning();                            //0x004122F0
@@ -38,6 +35,3 @@ class CopyProtect {
         // Original used a mutex and void* to communicate with the launcher.
         //
 };
-
-
-#endif // COPYPROTECT_H

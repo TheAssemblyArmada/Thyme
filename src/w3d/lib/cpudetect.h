@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef CPUDETECT_H
-#define CPUDETECT_H
-
 #include "wwstring.h"
 
 class CPUDetectInitClass;
@@ -321,5 +318,3 @@ public:
     uint32_t ecx;
     uint32_t edx;
 };
-
-#endif // CPUDETECT_H

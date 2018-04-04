@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef STATICNAMEKEY_H
-#define STATICNAMEKEY_H
-
 #include "always.h"
 #include "namekeygenerator.h"
 
@@ -60,5 +57,3 @@ extern StaticNameKey g_playerEnemiesKey;
 extern StaticNameKey g_teamOwnerKey;
 extern StaticNameKey g_teamIsSingletonKey;
 #endif
-
-#endif // STATICNAMEKEY_H

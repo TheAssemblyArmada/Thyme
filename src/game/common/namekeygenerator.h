@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef NAMEKEYGENERATOR_H
-#define NAMEKEYGENERATOR_H
-
 #include "asciistring.h"
 #include "bittype.h"
 #include "ini.h"
@@ -96,6 +93,4 @@ inline void NameKeyGenerator::Hook_Me()
 }
 #else
 extern NameKeyGenerator *g_theNameKeyGenerator;
-#endif
-
 #endif

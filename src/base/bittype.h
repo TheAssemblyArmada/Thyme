@@ -23,12 +23,7 @@
 //                 
 //
 ////////////////////////////////////////////////////////////////////////////////
-#if defined(COMPILER_MSVC) && (COMPILER_VERSION >= 1000) // MSVC++ 4.0
 #pragma once
-#endif // COMPILER_MSVC && COMPILER_VERSION >= 1000
-
-#if !defined(_BITTYPE_H_)
-#define _BITTYPE_H_
 
 //We aren't supporting MSVC versions earlier than 2010
 #if defined(__GNUC__) || defined(__clang__) || defined(__WATCOM__) || _MSC_VER >= 1600 // GNU C++ or clang
@@ -59,5 +54,3 @@
     typedef uint64_t uint64_a;
     typedef wchar_t wchar_a;
 #endif
-    
-#endif //_BITTYPE_H_

@@ -15,9 +15,6 @@
 
 #pragma once
 
-#ifndef CAVESYSTEM_H
-#define CAVESYSTEM_H
-
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 #include "snapshot.h"
@@ -80,5 +77,3 @@ inline void CaveSystem::Hook_Me()
 #else
 extern CaveSystem *g_theCaveSystem;
 #endif
-
-#endif // CAVESYSTEM_H

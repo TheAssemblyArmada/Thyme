@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef GAMESTATE_H
-#define GAMESTATE_H
-
 #include "asciistring.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
@@ -65,6 +62,4 @@ inline void GameState::Hook_Me()
 }
 #else
 extern GameState *g_theGameState;
-#endif
-
 #endif

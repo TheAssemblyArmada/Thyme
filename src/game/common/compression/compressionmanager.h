@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef COMPRESSIONMANAGER_H
-#define COMPRESSIONMANAGER_H
-
 #include "always.h"
 
 enum CompressionType : int32_t
@@ -62,6 +59,4 @@ inline void CompressionManager::Hook_Me()
     Hook_Function(0x006F5FE0, &Get_Compression_Type);
     Hook_Function(0x006F6110, &Decompress_Data);
 }
-#endif
-
 #endif

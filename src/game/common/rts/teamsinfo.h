@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef TEAMSINFO_H
-#define TEAMSINFO_H
-
 #include "always.h"
 #include "dict.h"
 #include "gamedebug.h"
@@ -90,5 +87,3 @@ inline void TeamsInfoRec::Hook_Me()
     Hook_Method(0x004D91C0, &Add_Team);
 }
 #endif
-
-#endif // TEAMSINFO_H

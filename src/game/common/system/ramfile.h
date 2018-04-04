@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef RAMFILE_H
-#define RAMFILE_H
-
 #include "file.h"
 
 class RAMFile : public File
@@ -57,5 +54,3 @@ class RAMFile : public File
         int Pos;
         int Size;
 };
-
-#endif // _RAMFILE_H

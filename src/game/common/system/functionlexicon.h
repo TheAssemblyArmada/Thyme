@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef FUNCTIONLEXICON_H
-#define FUNCTIONLEXICON_H
-
 #include "namekeygenerator.h"
 #include "subsysteminterface.h"
 
@@ -91,5 +88,3 @@ extern FunctionLexicon *&g_theFunctionLexicon;
 #else
 extern FunctionLexicon *g_theFunctionLexicon;
 #endif
-
-#endif // FUNCTIONLEXICON_H

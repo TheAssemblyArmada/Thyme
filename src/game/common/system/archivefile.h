@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef ARCHIVEFILE_H
-#define ARCHIVEFILE_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "file.h"
@@ -73,5 +70,3 @@ protected:
 };
 
 bool Search_String_Matches(AsciiString string, AsciiString search);
-
-#endif // _ARCHIVEFILE_H

@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef TERRAINROADS_H
-#define TERRAINROADS_H
-
 #include "color.h"
 #include "gametype.h"
 #include "ini.h"
@@ -125,5 +122,3 @@ extern TerrainRoadCollection *&g_theTerrainRoads;
 #else
 extern TerrainRoadCollection *g_theTerrainRoads;
 #endif
-
-#endif // TERRAINROADS_H

@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef COMMANDLINE_H
-#define COMMANDLINE_H
-
 #include "always.h"
 
 #ifndef THYME_STANDALONE
@@ -37,5 +34,3 @@ inline void Hook_Me()
 
 } // namespace CommandLine
 #endif
-
-#endif // _COMMANDLINE_H

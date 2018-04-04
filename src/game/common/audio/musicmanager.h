@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef MUSICMANAGER_H
-#define MUSICMANAGER_H
-
 #include "always.h"
 #include "audioeventrts.h"
 
@@ -32,5 +29,3 @@ private:
     void Play_Track(AudioEventRTS *event);
     void Stop_Track(unsigned int handle);
 };
-
-#endif

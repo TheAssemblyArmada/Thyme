@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef XFERCRC_H
-#define XFERCRC_H
-
 #include "xfer.h"
 
 class XferCRC : public Xfer
@@ -49,5 +46,3 @@ protected:
 
     uint32_t m_crc;
 };
-
-#endif // XFERCRC_H

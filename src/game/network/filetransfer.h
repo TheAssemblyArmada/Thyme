@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef FILETRANSFER_H
-#define FILETRANSFER_H
-
 #include "always.h"
 #include "asciistring.h"
 
@@ -50,5 +47,3 @@ inline void Hook_Me()
 }
 }
 #endif
-
-#endif // _FILETRANSFER_H

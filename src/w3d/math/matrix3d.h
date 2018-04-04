@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef MATRIX3D_H
-#define MATRIX3D_H
-
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
@@ -736,5 +733,3 @@ __forceinline bool operator!=(const Matrix3D &A, const Matrix3D &B)
 {
     return !(A == B);
 }
-
-#endif

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef XFER_H
-#define XFER_H
-
 #include "asciistring.h"
 #include "bitflags.h"
 #include "color.h"
@@ -122,5 +119,3 @@ protected:
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
-
-#endif // _XFER_H

@@ -24,9 +24,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef BASE_ENDIANTYPE_H
-#define BASE_ENDIANTYPE_H
-
 #include "bittype.h"
 
 //
@@ -142,5 +139,3 @@
 #define READ_LE_UINT32(p) ((uint32)(p)[0] | ((uint32)(p)[1] << 8) | ((uint32)(p)[2] << 16) | ((uint32)(p)[3] << 24))
 #define GETBYTE(x, n)    (*((uint8*)&(x)+n))
 #define GETSBYTE(x, n)   (*((sint8*)&(x)+n))
-
-#endif	// _ENDIAN_H

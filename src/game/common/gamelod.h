@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMELOD_H
-#define GAMELOD_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "ini.h"
@@ -205,5 +202,3 @@ extern GameLODManager *&g_theGameLODManager;
 #else
 extern GameLODManager *g_theGameLODManager;
 #endif
-
-#endif // GAMELOD_H

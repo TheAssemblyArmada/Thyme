@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef INPUTSTREAM_H
-#define INPUTSTREAM_H
-
 #include "always.h"
 
 class InputStream
@@ -24,5 +21,3 @@ class InputStream
 public:
     virtual int Read(void *dst, int size) = 0;
 };
-
-#endif

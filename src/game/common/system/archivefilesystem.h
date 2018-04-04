@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef ARCHIVEFILESYSTEM_H
-#define ARCHIVEFILESYSTEM_H
-
 #include "always.h"
 #include "rtsutils.h"
 #include "subsysteminterface.h"
@@ -79,5 +76,3 @@ extern ArchiveFileSystem *&g_theArchiveFileSystem;
 #else
 extern ArchiveFileSystem *g_theArchiveFileSystem;
 #endif
-
-#endif // _ARCHIVEFILESYSTEM_H

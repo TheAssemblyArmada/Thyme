@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMBLOB_H
-#define MEMBLOB_H
-
 #include "memblock.h"
 #include "rawalloc.h"
 
@@ -114,5 +111,3 @@ inline void MemoryPoolBlob::Free_Single_Block(MemoryPoolSingleBlock *block)
     --m_usedBlocksInBlob;
     m_firstFreeBlock = block;
 }
-
-#endif

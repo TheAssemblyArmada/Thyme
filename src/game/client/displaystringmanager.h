@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef DISPLAYSTRINGMANAGER_H
-#define DISPLAYSTRINGMANAGER_H
-
 #include "always.h"
 #include "displaystring.h"
 #include "subsysteminterface.h"
@@ -51,5 +48,3 @@ extern DisplayStringManager *&g_theDisplayStringManger;
 #else
 extern DisplayStringManager *g_theDisplayStringManger;
 #endif
-
-#endif // DISPLAYSTRINGMANAGER_H

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef AUDIOSETTINGS_H
-#define AUDIOSETTINGS_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "gametype.h"
@@ -90,5 +87,3 @@ private:
 
     static FieldParse s_audioSettingsParseTable[];
 };
-
-#endif // AUDIOSETTINGS_H

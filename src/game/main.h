@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef MAIN_H
-#define MAIN_H
-
 #include "always.h"
 
 #ifndef THYME_STANDALONE
@@ -36,6 +33,4 @@ int main(int argc, char *argv[]);
 extern unsigned g_theMessageTime;
 extern HWND g_applicationHWnd;
 #endif
-#endif
-
 #endif

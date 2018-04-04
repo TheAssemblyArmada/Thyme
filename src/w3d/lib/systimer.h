@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SYSTIMER_H
-#define SYSTIMER_H
-
 #include "always.h"
 
 #ifdef PLATFORM_WINDOWS
@@ -74,5 +71,3 @@ inline unsigned SysTimeClass::Time_Func()
 #else
 extern SysTimeClass g_theSysTimer;
 #endif
-
-#endif // SYSTIMER_H

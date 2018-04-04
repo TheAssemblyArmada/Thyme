@@ -22,9 +22,6 @@
  */
 #pragma once
 
-#ifndef HOOK_SUPPORT_H
-#define HOOK_SUPPORT_H
-
 #include "always.h"
 
 template <typename T, const int size>
@@ -189,5 +186,3 @@ __declspec(dllexport) void StopHooking();
 #define REF_ARR_DECL(type, name, size) RefArrayHelper<type, size> & name
 #define REF_DEF(type, name, client) type & name = client;
 #define REF_ARR_DEF(type, name, size, client) RefArrayHelper<type, size> & name = client;
-
-#endif // _HOOK_SUPPORT_H

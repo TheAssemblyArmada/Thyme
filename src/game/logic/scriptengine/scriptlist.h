@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPTLIST_H
-#define SCRIPTLIST_H
-
 #include "always.h"
 #include "mempoolobj.h"
 #include "script.h"
@@ -83,5 +80,3 @@ inline void ScriptList::Hook_Me()
     Hook_Function(0x0051BF00, Parse_Scripts_Chunk); // Must hook with Get_Read_Scripts
 }
 #endif
-
-#endif // SCRIPTLIST_H

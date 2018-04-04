@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef WIN32BIGFILE_H
-#define WIN32BIGFILE_H
-
 #include "archivefile.h"
 
 class Win32BIGFile : public ArchiveFile
@@ -46,5 +43,3 @@ private:
     AsciiString FileName;
     AsciiString FilePath;
 };
-
-#endif // _WIN32BIGFILE_H

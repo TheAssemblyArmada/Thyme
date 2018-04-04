@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef SCIENCE_H
-#define SCIENCE_H
-
 #include "always.h"
 #include "ini.h"
 #include "mempoolobj.h"
@@ -77,5 +74,3 @@ extern ScienceStore *&g_theScienceStore;
 #else
 extern ScienceStore *g_theScienceStore;
 #endif
-
-#endif // SCIENCE_H

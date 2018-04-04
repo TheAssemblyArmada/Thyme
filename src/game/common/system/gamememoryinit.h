@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GAMEMEMORYINIT_H
-#define GAMEMEMORYINIT_H
-
 #include "always.h"
 
 struct PoolInitRec
@@ -37,5 +34,3 @@ struct PoolSizeRec
 void User_Memory_Adjust_Pool_Size(const char *name, int &initial_alloc, int &overflow_alloc);
 void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params);
 void User_Memory_Init_Pools();
-
-#endif // GAMEMEMORYINIT_H

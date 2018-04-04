@@ -21,12 +21,7 @@
 //                 LICENSE
 //
 ////////////////////////////////////////////////////////////////////////////////
-#ifdef _MSC_VER
 #pragma once
-#endif
-
-#ifndef VECTOR4_H
-#define VECTOR4_H
 
 #include    "always.h"
 #include    "gamemath.h"
@@ -183,5 +178,3 @@ __forceinline Vector4 Lerp(const Vector4 &a, const Vector4 &b, float alpha)
         (a.W + (b.W - a.W) * alpha)
     );
 }
-
-#endif

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef DX8WRAPPER_H
-#define DX8WRAPPER_H
-
 #include "always.h"
 #include "vector4.h"
 
@@ -339,6 +336,4 @@ inline const char *DX8Wrapper::Get_DX8_Blend_Op_Name(unsigned value)
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
-#endif
-
 #endif

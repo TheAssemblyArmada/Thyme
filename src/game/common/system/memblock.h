@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MEMBLOCK_H
-#define MEMBLOCK_H
-
 #include "always.h"
 #include "gamedebug.h"
 #include "rawalloc.h"
@@ -114,5 +111,3 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(M
 
     return block;
 }
-
-#endif // MEMBLOCK_H

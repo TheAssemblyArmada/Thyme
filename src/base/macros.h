@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef BASE_MACROS_H
-#define BASE_MACROS_H
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  Includes
@@ -301,5 +298,3 @@
         "__asm__(\".att_syntax prefix\");"
     #endif // COMPILER_MSVC || COMPILER_GNUC || COMPILER_CLANG
 #endif // !INLINE_ASM
-
-#endif // _BASE_MACROS_H_

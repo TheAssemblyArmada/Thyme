@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef SUBSYSTEMINTERFACE_H
-#define SUBSYSTEMINTERFACE_H
-
 #include "asciistring.h"
 #include <vector>
 
@@ -66,5 +63,3 @@ extern SubsystemInterfaceList *&g_theSubsystemList;
 #else
 extern SubsystemInterfaceList *g_theSubsystemList;
 #endif
-
-#endif // _SUBSYSTEMINTERFACEH_

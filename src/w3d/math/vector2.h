@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef VECTOR2_H
-#define VECTOR2_H
-
 #include    "always.h"
 #include    "gamemath.h"
 #include    "gamedebug.h"
@@ -353,5 +350,3 @@ __forceinline float Distance(float x1, float y1, float x2, float y2)
 
     return (GameMath::Sqrt((x_diff * x_diff) + (y_diff * y_diff)));
 }
-
-#endif

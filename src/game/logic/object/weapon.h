@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef WEAPON_H
-#define WEAPON_H
-
 #include "mempoolobj.h"
 
 #ifndef THYME_STANDALONE
@@ -96,5 +93,3 @@ inline void WeaponBonusSet::Hook_Me()
     Hook_Function(0x004C9860, Parse_Weapon_Bonus_Set_Ptr);
 }
 #endif
-
-#endif // WEAPON_H

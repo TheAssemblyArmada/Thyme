@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef CRC_H
-#define CRC_H
-
 #include "always.h"
 #include "bittype.h"
 
@@ -35,5 +32,3 @@ private:
     static uint32_t m_table[256];
     uint32_t m_crc;
 };
-
-#endif // _CRC_H

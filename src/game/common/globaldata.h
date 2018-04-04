@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GLOBALDATA_H
-#define GLOBALDATA_H
-
 #include "asciistring.h"
 #include "color.h"
 #include "coord.h"
@@ -411,6 +408,4 @@ inline void GlobalData::Hook_Me()
 extern GlobalData *&g_theWriteableGlobalData;
 #else
 extern GlobalData *g_theWriteableGlobalData;
-#endif
-
 #endif

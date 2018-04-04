@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef HOOK_CRT_H
-#define HOOK_CRT_H
-
 #include "hooker.h"
 
 // Define references to msvcrt functions in the original binary that maintain state
@@ -43,5 +40,3 @@
 #undef strtok
 #endif
 #define strtok crt_strtok
-
-#endif // _HOOK_CRT_H

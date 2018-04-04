@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef GAMEMATH_H
-#define GAMEMATH_H
-
 #include "always.h"
 #include "gamedebug.h"
 #include <cfloat>
@@ -382,5 +379,3 @@ inline bool Is_Valid_Float(float x)
 //}
 
 } // namespace GameMath
-
-#endif

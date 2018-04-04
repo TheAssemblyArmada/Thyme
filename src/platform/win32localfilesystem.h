@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef WIN32LOCALFILESYSTEM_H
-#define WIN32LOCALFILESYSTEM_H
-
 #include "localfilesystem.h"
 #include "win32localfile.h"
 
@@ -40,4 +37,3 @@ class Win32LocalFileSystem : public LocalFileSystem
     private:
         
 };
-#endif // _WIN32LOCALFILESYSTEM_H

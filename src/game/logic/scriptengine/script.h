@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef SCRIPT_H
-#define SCRIPT_H
-
 #include "always.h"
 #include "asciistring.h"
 #include "mempoolobj.h"
@@ -97,5 +94,3 @@ inline void Script::Hook_Me()
     Hook_Function(0x0051D5B0, Parse_Script_From_List_Chunk);
 }
 #endif
-
-#endif // SCRIPT_H

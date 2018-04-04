@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef COLOR_H
-#define COLOR_H
-
 #include <cstdint>
 
 // Pack individual bytes into a dword
@@ -59,5 +56,3 @@ public:
     uint32_t blue;
     uint32_t alpha;
 };
-
-#endif // _COLOR_H

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef SNAPSHOT_H
-#define SNAPSHOT_H
-
 #include "always.h"
 
 class Xfer;
@@ -44,5 +41,3 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) = 0;
     virtual void Load_Post_Process() = 0;
 };
-
-#endif

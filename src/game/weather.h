@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef WEATHER_H
-#define WEATHER_H
-
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 #endif
@@ -71,6 +68,4 @@ private:
 extern WeatherSetting *g_theWeatherSetting;
 #else
 #define g_theWeatherSetting (Make_Global<WeatherSetting*>(0x00A2BF00))
-#endif
-
 #endif

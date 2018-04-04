@@ -15,9 +15,6 @@
  */
 #pragma once
 
-#ifndef TARGA_H
-#define TARGA_H
-
 #include "always.h"
 #include "endiantype.h"
 #include "fileclass.h"
@@ -271,5 +268,3 @@ inline void TargaImage::Extension_To_File(TGA2Extension &extension)
     extension.post_stamp = htole32(extension.post_stamp);
     extension.scan_line = htole32(extension.scan_line);
 }
-
-#endif // _TARGA_H

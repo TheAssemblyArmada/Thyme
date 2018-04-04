@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GLOBALLANGUAGE_H
-#define GLOBALLANGUAGE_H
-
 #include "asciistring.h"
 #include "ini.h"
 #include "subsysteminterface.h"
@@ -99,5 +96,3 @@ extern GlobalLanguage *&g_theGlobalLanguage;
 #else
 extern GlobalLanguage *g_theGlobalLanguage;
 #endif
-
-#endif // GLOBALLANGUAGE_H

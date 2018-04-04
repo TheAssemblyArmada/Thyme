@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef MATRIX4_H
-#define MATRIX4_H
-
 #include "vector4.h"
 #include "vector3.h"
 #include "matrix3d.h"
@@ -372,5 +369,3 @@ __forceinline Vector4 operator*(const Matrix4 &a, const Vector4 &v)
 {
     return Vector4(a[0][0] * v[0] + a[0][1] * v[1] + a[0][2] * v[2] + a[0][3] * v[3], a[1][0] * v[0] + a[1][1] * v[1] + a[1][2] * v[2] + a[1][3] * v[3], a[2][0] * v[0] + a[2][1] * v[1] + a[2][2] * v[2] + a[2][3] * v[3], a[3][0] * v[0] + a[3][1] * v[1] + a[3][2] * v[2] + a[3][3] * v[3]);
 }
-
-#endif

@@ -23,9 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#ifndef FILECLASS_H
-#define FILECLASS_H
-
 #include "always.h"
 
 enum FileOpenType
@@ -67,5 +64,3 @@ public:
     virtual bool Set_Date_Time(time_t date_time);
     virtual int Get_File_Handle();
 };
-
-#endif // _FILECLASS_H

@@ -19,7 +19,7 @@ inline constexpr auto calculateCRC()
 {
 	Array<T,N> lookup;
 	const unsigned long POLYNOMIAL = 0xEDB88320;
-	unsigned long remainder;
+	unsigned long remainder = 0;
 	unsigned char b = 0;
 	do {
 		// Start with the data byte

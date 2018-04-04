@@ -14,10 +14,6 @@
  */
 #pragma once
 
-#ifndef ARRAY_H
-#define ARRAY_H
-
-
 template<typename T, int N>
 class Array
 {
@@ -46,6 +42,3 @@ public:
 private:
 	T m_data[N];
 };
-
-
-#endif

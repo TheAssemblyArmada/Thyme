@@ -20,6 +20,7 @@
 
 #include "always.h"
 #include "gamedebug.h"
+#include "array.h"
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
@@ -55,10 +56,10 @@
 const int ARC_TABLE_SIZE = 1024;
 const int SIN_TABLE_SIZE = 1024;
 
-extern float _FastAcosTable[ARC_TABLE_SIZE];
-extern float _FastAsinTable[ARC_TABLE_SIZE];
-extern float _FastSinTable[SIN_TABLE_SIZE];
-extern float _FastInvSinTable[SIN_TABLE_SIZE];
+extern const Array<float, ARC_TABLE_SIZE> _FastAcosTable;
+extern const Array<float, ARC_TABLE_SIZE> _FastAsinTable;
+extern const Array<float, SIN_TABLE_SIZE> _FastSinTable;
+extern const Array<float, SIN_TABLE_SIZE> _FastInvSinTable;
 
 namespace GameMath
 {
@@ -109,6 +110,11 @@ inline float Cos(float val)
 inline float Sin(float val)
 {
     return float(sinf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+}
+
+inline float Inv_Sin(float val)
+{
+	return (val>0.0f) ? 1.0f / Sin(val) : GAMEMATH_FLOAT_MAX;
 }
 
 inline float Sqrt(float val)

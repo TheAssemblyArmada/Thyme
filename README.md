@@ -33,7 +33,7 @@ Anti-virus software like Windows Defender could mark Thyme as a virus. This is a
 ## Building Thyme yourself
 
 In order to generate a working binary, currently you must build the project using
-a version of the Microsoft Visual Studio compiler (2015 and above). Building with Clang against a Windows SDK is in theory
+a version of the Microsoft Visual Studio compiler (2017 and above). Building with Clang against a Windows SDK is in theory
 possible but is untested for a cross compile solution.
 
 It is also possible to build a standalone binary if you want to test compiling on other platforms.

@@ -88,7 +88,7 @@ public:
     AsciiString &operator+=(AsciiString const &s);
     // AsciiString &operator+=(UnicodeString const &stringSrc);
 
-    operator const char *() { return Str(); }
+    operator const char *() const { return Str(); }
 
     void Validate();
     char *Peek() const;

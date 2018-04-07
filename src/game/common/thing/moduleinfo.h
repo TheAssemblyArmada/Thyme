@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef MODULEINFO_H
-#define MODULEINFO_H
-
 #include "always.h"
 #include "asciistring.h"
 #include <vector>
@@ -43,5 +40,3 @@ public:
 private:
     std::vector<Nugget> m_info;
 };
-
-#endif // MODULEINFO_H

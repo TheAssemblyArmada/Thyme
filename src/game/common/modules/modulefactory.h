@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Factory class for modules.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -31,6 +30,8 @@
 enum ModuleType
 {
     MODULE_FIRST,
+    MODULE_DEFAULT = 0,
+    MODULE_UNK = 2,
 };
 
 class Module;
@@ -41,6 +42,7 @@ class Thing;
 // TODO possibly move to more appropriate location?
 class ModuleData : public SnapShot
 {
+    friend class ModuleFactory;
 public:
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer) {}
@@ -51,6 +53,9 @@ public:
     virtual W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const { return nullptr; }
     virtual W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
     virtual void *Get_Minimum_Required_Game_LOD() const { return nullptr; } // Not sure what this actually returns.
+
+private:
+    NameKeyType m_tagKey;
 };
 
 typedef Module *(*modcreateproc_t)(Thing *, ModuleData *);
@@ -76,14 +81,19 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-private:
-    static NameKeyType Make_Decorated_Name_Key(AsciiString &name, ModuleType type);
+    int Find_Interface_Mask(const AsciiString &name, ModuleType type);
+    Module *New_Module(Thing *thing, const AsciiString &name, ModuleData *data, ModuleType type);
+    ModuleData *New_Module_Data_From_INI(INI *ini, const AsciiString &name, ModuleType type, const AsciiString &tag);
+
+protected:
+    static NameKeyType Make_Decorated_Name_Key(const AsciiString &name, ModuleType type);
     void Add_Module_Internal(
         modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, AsciiString name, int interface);
+    const ModuleTemplate *Find_Module_Template(const AsciiString &name, ModuleType type) const;
 
 protected:
     std::map<NameKeyType, ModuleTemplate> m_moduleTemplateMap;
-    std::vector<const ModuleData *> m_moduleDataList; // Originally const, but snapshot methods are not const methods, casted in original?
+    std::vector<const ModuleData *> m_moduleDataList;
 };
 
 #ifndef THYME_STANDALONE

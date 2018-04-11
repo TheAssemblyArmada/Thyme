@@ -33,23 +33,24 @@ public:
     virtual void Update() { GameEngine::Update(); }
 
     // GameEngine interface
-    virtual void Service_Windows_OS();
-    virtual LocalFileSystem *Create_Local_File_System();
-    virtual ArchiveFileSystem *Create_Archive_File_System();
-    virtual GameLogic *Create_Game_Logic();
-    virtual GameClient *Create_Game_Client();
-    virtual ModuleFactory *Create_Module_Factory();
-    virtual ThingFactory *Create_Thing_Factory();
-    virtual FunctionLexicon *Create_Function_Lexicon();
-    virtual Radar *Create_Radar();
-    virtual WebBrowser *Create_Web_Browser();
-    virtual ParticleSystemManager *Create_Particle_System_Manager();
-    virtual AudioManager *Create_Audio_Manager();
-    virtual Network *Create_Network();
+    virtual void Service_Windows_OS() override;
+    virtual LocalFileSystem *Create_Local_File_System() override;
+    virtual ArchiveFileSystem *Create_Archive_File_System() override;
+    virtual GameLogic *Create_Game_Logic() override;
+    virtual GameClient *Create_Game_Client() override;
+    virtual ModuleFactory *Create_Module_Factory() override;
+    virtual ThingFactory *Create_Thing_Factory() override;
+    virtual FunctionLexicon *Create_Function_Lexicon() override;
+    virtual Radar *Create_Radar() override;
+    virtual WebBrowser *Create_Web_Browser() override;
+    virtual ParticleSystemManager *Create_Particle_System_Manager() override;
+    virtual AudioManager *Create_Audio_Manager() override;
+    virtual Network *Create_Network() override;
 
 #ifndef THYME_STANDALONE
     LocalFileSystem *Create_Local_File_System_NV();
     ArchiveFileSystem *Create_Archive_File_System_NV();
+    ModuleFactory *Hook_Create_Module_Factory();
     static void Hook_Me();
 #endif
 private:
@@ -61,5 +62,6 @@ inline void Win32GameEngine::Hook_Me()
 {
     Hook_Method(0x007420F0, &Create_Local_File_System_NV);
     Hook_Method(0x00742150, &Create_Archive_File_System_NV);
+    Hook_Method(0x00741FA0, &Hook_Create_Module_Factory);
 }
 #endif

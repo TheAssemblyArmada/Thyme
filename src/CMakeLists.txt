@@ -36,6 +36,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/system
     game/network
     platform
+    platform/w3dengine/common/thing
     w3d/lib
     w3d/math
     w3d/renderer
@@ -152,6 +153,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/chunkio.cpp
     w3d/lib/cpudetect.cpp
     w3d/lib/critsection.cpp

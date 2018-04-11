@@ -16,6 +16,7 @@
 #include "win32gameengine.h"
 #include "main.h"
 #include "w3dfunctionlexicon.h"
+#include "w3dmodulefactory.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
@@ -72,7 +73,7 @@ GameClient *Win32GameEngine::Create_Game_Client()
 
 ModuleFactory *Win32GameEngine::Create_Module_Factory()
 {
-    return nullptr;
+    return new W3DModuleFactory;
 }
 
 ThingFactory *Win32GameEngine::Create_Thing_Factory()
@@ -119,5 +120,9 @@ LocalFileSystem *Win32GameEngine::Create_Local_File_System_NV()
 ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System_NV()
 {
     return Win32GameEngine::Create_Archive_File_System();
+}
+ModuleFactory *Win32GameEngine::Hook_Create_Module_Factory()
+{
+    return Win32GameEngine::Create_Module_Factory();
 }
 #endif

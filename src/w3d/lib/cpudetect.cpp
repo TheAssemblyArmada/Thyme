@@ -1,40 +1,30 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: CPUDETECT.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Class for determining CPU type.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-#include "always.h"
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Determine platform and operating system information.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "cpudetect.h"
 #include "gamedebug.h"
-#include "systimer.h"
 #include "stringex.h"
-#include <cinttypes>   // For printf formatting macros
+#include "systimer.h"
+#include <cinttypes> // For printf formatting macros
 #include <stdio.h>
 
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
 #ifdef COMPILER_MSVC
 #include <intrin.h>
 #elif defined COMPILER_CLANG || defined COMPILER_GNUC
-#include <x86intrin.h>
 #include <cpuid.h>
+#include <x86intrin.h>
 #endif
 #else
 #error cpudetect.cpp needs work for this platform
@@ -53,8 +43,8 @@
 #include <sys/utsname.h>
 #endif
 
-namespace {
-
+namespace
+{
 struct OSInfoStruct
 {
     const char *Code;
@@ -70,132 +60,125 @@ struct OSInfoStruct
 
 #ifdef PLATFORM_WINDOWS
 OSInfoStruct WindowsVersionTable[] = {
-    {"WIN95",	"FINAL",	"Windows 95",								4,0,950,		4,0,950		},
-    {"WIN95",	"A",		"Windows 95a OSR1 final Update",			4,0,950,		4,0,951		},
-    {"WIN95",	"B20OEM",	"Windows 95B OSR 2.0 final OEM",			4,0,950,		4,0,1111	},
-    {"WIN95",	"B20UPD",	"Windows 95B OSR 2.1 final Update",			4,0,950,		4,3,1212	},
-    {"WIN95",	"B21OEM",	"Windows 95B OSR 2.1 final OEM",			4,1,971,		4,1,971		},
-    {"WIN95",	"C25OEM",	"Windows 95C OSR 2.5 final OEM",			4,0,950,		4,3,1214	},
-    {"WIN98",	"BETAPRD",	"Windows 98 Beta pre-DR",					4,10,1351,		4,10,1351 	},
-    {"WIN98",	"BETADR",	"Windows 98 Beta DR",						4,10,1358,		4,10,1358 	},
-    {"WIN98",	"BETAE",	"Windows 98 early Beta",					4,10,1378,		4,10,1378 	},
-    {"WIN98",	"BETAE",	"Windows 98 early Beta",					4,10,1410,		4,10,1410 	},
-    {"WIN98",	"BETAE",	"Windows 98 early Beta",					4,10,1423,		4,10,1423 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1500,		4,10,1500 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1508,		4,10,1508	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1511,		4,10,1511 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1525,		4,10,1525 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1535,		4,10,1535 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1538,		4,10,1538 	},
-    {"WIN98",	"BETA1",	"Windows 98 Beta 1",						4,10,1543,		4,10,1543 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1544,		4,10,1544 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1546,		4,10,1546 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1550,		4,10,1550 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1559,		4,10,1559 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1564,		4,10,1564 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1569,		4,10,1569 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1577,		4,10,1577 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1581,		4,10,1581 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1593,		4,10,1593 	},
-    {"WIN98",	"BETA2",	"Windows 98 Beta 2",						4,10,1599,		4,10,1599 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1602,		4,10,1602 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1605,		4,10,1605 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1614,		4,10,1614 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1619,		4,10,1619 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1624,		4,10,1624 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1629,		4,10,1629 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1633,		4,10,1633 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1650,		4,10,1650 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1650,      4,10,1650  	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1650,      4,10,1650	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1666,		4,10,1666 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1671,		4,10,1671 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1677,		4,10,1677 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1681,		4,10,1681 	},
-    {"WIN98",	"BETA3",	"Windows 98 Beta 3",						4,10,1687,		4,10,1687 	},
-    {"WIN98",	"RC0",		"Windows 98 RC0",							4,10,1691,		4,10,1691 	},
-    {"WIN98",	"RC0",		"Windows 98 RC0",							4,10,1702,		4,10,1702 	},
-    {"WIN98",	"RC0",		"Windows 98 RC0",							4,10,1708,		4,10,1708 	},
-    {"WIN98",	"RC0",		"Windows 98 RC0",							4,10,1713,		4,10,1713 	},
-    {"WIN98",	"RC1",		"Windows 98 RC1",							4,10,1721,      4,10,1721  	},
-    {"WIN98",	"RC2",		"Windows 98 RC2",							4,10,1723,      4,10,1723  	},
-    {"WIN98",	"RC2",		"Windows 98 RC2",							4,10,1726,		4,10,1726	},
-    {"WIN98",	"RC3",		"Windows 98 RC3",							4,10,1900,      4,10,1900	},
-    {"WIN98",	"RC4",		"Windows 98 RC4",							4,10,1900,      4,10,1900 	},
-    {"WIN98",	"RC5",		"Windows 98 RC5",							4,10,1998,		4,10,1998	},
-    {"WIN98",	"FINAL",	"Windows 98",								4,10,1998,      4,10,1998 	},
-    {"WIN98",	"SP1B1",	"Windows 98 SP1 Beta 1",					4,10,2088,		4,10,2088	},
-    {"WIN98",	"OSR1B1",	"Windows 98 OSR1 Beta 1",					4,10,2106,		4,10,2106 	},
-    {"WIN98",	"OSR1B1",	"Windows 98 OSR1 Beta 1",					4,10,2120,		4,10,2120 	},
-    {"WIN98",	"OSR1B1",	"Windows 98 OSR1 Beta 1",					4,10,2126,		4,10,2126 	},
-    {"WIN98",	"OSR1B1",	"Windows 98 OSR1 Beta 1",					4,10,2131,		4,10,2131 	},
-    {"WIN98",	"SP1B2",	"Windows 98 SP1 Beta 2",					4,10,2150,      4,10,2150 	},
-    {"WIN98",	"SP1B2",	"Windows 98 SP1 Beta 2",					4,10,2150,      4,10,2150  	},
-    {"WIN98",	"SP1",		"Windows 98 SP1 final Update",				4,10,2000,		4,10,2000 	},
-    {"WIN98",	"OSR1B2",	"Windows 98 OSR1 Beta 2",					4,10,2174,		4,10,2174 	},
-    {"WIN98",	"SERC1",	"Windows 98 SE RC1",						4,10,2183,		4,10,2183 	},
-    {"WIN98",	"SERC2",	"Windows 98 SE RC2",						4,10,2185,		4,10,2185 	},
-    {"WIN98",	"SE",		"Windows 98 SE",							4,10,2222,		4,10,2222  	},
-    {"WINME",	"MEBDR1",	"Windows ME Beta DR1",						4,90,2332,		4,90,2332 	},
-    {"WINME",	"MEBDR2",	"Windows ME Beta DR2",						4,90,2348,		4,90,2348 	},
-    {"WINME",	"MEBDR3",	"Windows ME Beta DR3",						4,90,2358,		4,90,2358 	},
-    {"WINME",	"MEBDR4",	"Windows ME Beta DR4",						4,90,2363,		4,90,2363 	},
-    {"WINME",	"MEEB",		"Windows ME early Beta",					4,90,2368,		4,90,2368 	},
-    {"WINME",	"MEEB",		"Windows ME early Beta",					4,90,2374,		4,90,2374 	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2380,		4,90,2380 	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2394,		4,90,2394 	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2399,		4,90,2399 	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2404,		4,90,2404 	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2410,		4,90,2410	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2416,		4,90,2416	},
-    {"WINME",	"MEB1",		"Windows ME Beta 1",						4,90,2419,      4,90,2419  	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2429,		4,90,2429 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2434,		4,90,2434 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2443,		4,90,2443 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2447,		4,90,2447 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2455,		4,90,2455 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2460,		4,90,2460 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2465,		4,90,2465 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2470,		4,90,2470 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2474,		4,90,2474 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2481,		4,90,2481 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2487,		4,90,2487 	},
-    {"WINME",	"MEB2",		"Windows ME Beta 2",						4,90,2491,		4,90,2491 	},
-    {"WINME",	"MEB3",		"Windows ME Beta 3",						4,90,2499,		4,90,2499 	},
-    {"WINME",	"MEB3",		"Windows ME Beta 3",						4,90,2499,      4,90,2499  	},
-    {"WINME",	"MEB3",		"Windows ME Beta 3",						4,90,2509,		4,90,2509 	},
-    {"WINME",	"MEB3",		"Windows ME Beta 3",						4,90,2513,		4,90,2513 	},
-    {"WINME",	"MEB3",		"Windows ME Beta 3",						4,90,2516,		4,90,2516 	},
-    {"WINME",	"RC0",		"Windows ME RC0",							4,90,2525,		4,90,2525 	},
-    {"WINME",	"RC1",		"Windows ME RC1",							4,90,2525,      4,90,2525 	},
-    {"WINME",	"RC2",		"Windows ME RC2",							4,90,2535,		4,90,2535	},
-    {"WINME",	"FINAL",	"Windows ME",								4,90,3000,      4,90,3000	},
-    {"",	    "",	        "",						                    4,90,3000,      4,90,3000 	},
+    {"WIN95", "FINAL", "Windows 95", 4, 0, 950, 4, 0, 950},
+    {"WIN95", "A", "Windows 95a OSR1 final Update", 4, 0, 950, 4, 0, 951},
+    {"WIN95", "B20OEM", "Windows 95B OSR 2.0 final OEM", 4, 0, 950, 4, 0, 1111},
+    {"WIN95", "B20UPD", "Windows 95B OSR 2.1 final Update", 4, 0, 950, 4, 3, 1212},
+    {"WIN95", "B21OEM", "Windows 95B OSR 2.1 final OEM", 4, 1, 971, 4, 1, 971},
+    {"WIN95", "C25OEM", "Windows 95C OSR 2.5 final OEM", 4, 0, 950, 4, 3, 1214},
+    {"WIN98", "BETAPRD", "Windows 98 Beta pre-DR", 4, 10, 1351, 4, 10, 1351},
+    {"WIN98", "BETADR", "Windows 98 Beta DR", 4, 10, 1358, 4, 10, 1358},
+    {"WIN98", "BETAE", "Windows 98 early Beta", 4, 10, 1378, 4, 10, 1378},
+    {"WIN98", "BETAE", "Windows 98 early Beta", 4, 10, 1410, 4, 10, 1410},
+    {"WIN98", "BETAE", "Windows 98 early Beta", 4, 10, 1423, 4, 10, 1423},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1500, 4, 10, 1500},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1508, 4, 10, 1508},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1511, 4, 10, 1511},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1525, 4, 10, 1525},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1535, 4, 10, 1535},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1538, 4, 10, 1538},
+    {"WIN98", "BETA1", "Windows 98 Beta 1", 4, 10, 1543, 4, 10, 1543},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1544, 4, 10, 1544},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1546, 4, 10, 1546},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1550, 4, 10, 1550},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1559, 4, 10, 1559},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1564, 4, 10, 1564},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1569, 4, 10, 1569},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1577, 4, 10, 1577},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1581, 4, 10, 1581},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1593, 4, 10, 1593},
+    {"WIN98", "BETA2", "Windows 98 Beta 2", 4, 10, 1599, 4, 10, 1599},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1602, 4, 10, 1602},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1605, 4, 10, 1605},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1614, 4, 10, 1614},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1619, 4, 10, 1619},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1624, 4, 10, 1624},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1629, 4, 10, 1629},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1633, 4, 10, 1633},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1650, 4, 10, 1650},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1650, 4, 10, 1650},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1650, 4, 10, 1650},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1666, 4, 10, 1666},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1671, 4, 10, 1671},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1677, 4, 10, 1677},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1681, 4, 10, 1681},
+    {"WIN98", "BETA3", "Windows 98 Beta 3", 4, 10, 1687, 4, 10, 1687},
+    {"WIN98", "RC0", "Windows 98 RC0", 4, 10, 1691, 4, 10, 1691},
+    {"WIN98", "RC0", "Windows 98 RC0", 4, 10, 1702, 4, 10, 1702},
+    {"WIN98", "RC0", "Windows 98 RC0", 4, 10, 1708, 4, 10, 1708},
+    {"WIN98", "RC0", "Windows 98 RC0", 4, 10, 1713, 4, 10, 1713},
+    {"WIN98", "RC1", "Windows 98 RC1", 4, 10, 1721, 4, 10, 1721},
+    {"WIN98", "RC2", "Windows 98 RC2", 4, 10, 1723, 4, 10, 1723},
+    {"WIN98", "RC2", "Windows 98 RC2", 4, 10, 1726, 4, 10, 1726},
+    {"WIN98", "RC3", "Windows 98 RC3", 4, 10, 1900, 4, 10, 1900},
+    {"WIN98", "RC4", "Windows 98 RC4", 4, 10, 1900, 4, 10, 1900},
+    {"WIN98", "RC5", "Windows 98 RC5", 4, 10, 1998, 4, 10, 1998},
+    {"WIN98", "FINAL", "Windows 98", 4, 10, 1998, 4, 10, 1998},
+    {"WIN98", "SP1B1", "Windows 98 SP1 Beta 1", 4, 10, 2088, 4, 10, 2088},
+    {"WIN98", "OSR1B1", "Windows 98 OSR1 Beta 1", 4, 10, 2106, 4, 10, 2106},
+    {"WIN98", "OSR1B1", "Windows 98 OSR1 Beta 1", 4, 10, 2120, 4, 10, 2120},
+    {"WIN98", "OSR1B1", "Windows 98 OSR1 Beta 1", 4, 10, 2126, 4, 10, 2126},
+    {"WIN98", "OSR1B1", "Windows 98 OSR1 Beta 1", 4, 10, 2131, 4, 10, 2131},
+    {"WIN98", "SP1B2", "Windows 98 SP1 Beta 2", 4, 10, 2150, 4, 10, 2150},
+    {"WIN98", "SP1B2", "Windows 98 SP1 Beta 2", 4, 10, 2150, 4, 10, 2150},
+    {"WIN98", "SP1", "Windows 98 SP1 final Update", 4, 10, 2000, 4, 10, 2000},
+    {"WIN98", "OSR1B2", "Windows 98 OSR1 Beta 2", 4, 10, 2174, 4, 10, 2174},
+    {"WIN98", "SERC1", "Windows 98 SE RC1", 4, 10, 2183, 4, 10, 2183},
+    {"WIN98", "SERC2", "Windows 98 SE RC2", 4, 10, 2185, 4, 10, 2185},
+    {"WIN98", "SE", "Windows 98 SE", 4, 10, 2222, 4, 10, 2222},
+    {"WINME", "MEBDR1", "Windows ME Beta DR1", 4, 90, 2332, 4, 90, 2332},
+    {"WINME", "MEBDR2", "Windows ME Beta DR2", 4, 90, 2348, 4, 90, 2348},
+    {"WINME", "MEBDR3", "Windows ME Beta DR3", 4, 90, 2358, 4, 90, 2358},
+    {"WINME", "MEBDR4", "Windows ME Beta DR4", 4, 90, 2363, 4, 90, 2363},
+    {"WINME", "MEEB", "Windows ME early Beta", 4, 90, 2368, 4, 90, 2368},
+    {"WINME", "MEEB", "Windows ME early Beta", 4, 90, 2374, 4, 90, 2374},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2380, 4, 90, 2380},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2394, 4, 90, 2394},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2399, 4, 90, 2399},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2404, 4, 90, 2404},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2410, 4, 90, 2410},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2416, 4, 90, 2416},
+    {"WINME", "MEB1", "Windows ME Beta 1", 4, 90, 2419, 4, 90, 2419},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2429, 4, 90, 2429},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2434, 4, 90, 2434},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2443, 4, 90, 2443},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2447, 4, 90, 2447},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2455, 4, 90, 2455},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2460, 4, 90, 2460},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2465, 4, 90, 2465},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2470, 4, 90, 2470},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2474, 4, 90, 2474},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2481, 4, 90, 2481},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2487, 4, 90, 2487},
+    {"WINME", "MEB2", "Windows ME Beta 2", 4, 90, 2491, 4, 90, 2491},
+    {"WINME", "MEB3", "Windows ME Beta 3", 4, 90, 2499, 4, 90, 2499},
+    {"WINME", "MEB3", "Windows ME Beta 3", 4, 90, 2499, 4, 90, 2499},
+    {"WINME", "MEB3", "Windows ME Beta 3", 4, 90, 2509, 4, 90, 2509},
+    {"WINME", "MEB3", "Windows ME Beta 3", 4, 90, 2513, 4, 90, 2513},
+    {"WINME", "MEB3", "Windows ME Beta 3", 4, 90, 2516, 4, 90, 2516},
+    {"WINME", "RC0", "Windows ME RC0", 4, 90, 2525, 4, 90, 2525},
+    {"WINME", "RC1", "Windows ME RC1", 4, 90, 2525, 4, 90, 2525},
+    {"WINME", "RC2", "Windows ME RC2", 4, 90, 2535, 4, 90, 2535},
+    {"WINME", "FINAL", "Windows ME", 4, 90, 3000, 4, 90, 3000},
+    {"", "", "", 4, 90, 3000, 4, 90, 3000},
 };
 #endif // PLATFORM_WINDOWS
 
-void Get_OS_Info(
-    OSInfoStruct &os_info,
-    uint32_t OSVersionPlatformId,
-    uint32_t OSVersionNumberMajor,
-    uint32_t OSVersionNumberMinor,
-    uint32_t OSVersionBuildNumber)
+void Get_OS_Info(OSInfoStruct &os_info, uint32_t OSVersionPlatformId, uint32_t OSVersionNumberMajor,
+    uint32_t OSVersionNumberMinor, uint32_t OSVersionBuildNumber)
 {
 #ifdef PLATFORM_WINDOWS
     uint32_t build_major = (OSVersionBuildNumber & 0xFF000000) >> 24;
     uint32_t build_minor = (OSVersionBuildNumber & 0xFF0000) >> 16;
     uint32_t build_sub = (OSVersionBuildNumber & 0xFFFF);
 
-    switch ( OSVersionPlatformId ) {
-        case VER_PLATFORM_WIN32_WINDOWS:
-        {
-            for ( int i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i ) {
-                if (
-                    WindowsVersionTable[i].VersionMajor == OSVersionNumberMajor &&
-                    WindowsVersionTable[i].VersionMinor == OSVersionNumberMinor &&
-                    WindowsVersionTable[i].BuildMajor == build_major &&
-                    WindowsVersionTable[i].BuildMinor == build_minor &&
-                    WindowsVersionTable[i].BuildSub == build_sub ) {
+    switch (OSVersionPlatformId) {
+        case VER_PLATFORM_WIN32_WINDOWS: {
+            for (int i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i) {
+                if (WindowsVersionTable[i].VersionMajor == OSVersionNumberMajor
+                    && WindowsVersionTable[i].VersionMinor == OSVersionNumberMinor
+                    && WindowsVersionTable[i].BuildMajor == build_major && WindowsVersionTable[i].BuildMinor == build_minor
+                    && WindowsVersionTable[i].BuildSub == build_sub) {
                     os_info = WindowsVersionTable[i];
                     return;
                 }
@@ -204,20 +187,20 @@ void Get_OS_Info(
             os_info.BuildMajor = build_major;
             os_info.BuildMinor = build_minor;
             os_info.BuildSub = build_sub;
-            if ( OSVersionNumberMajor == 4 ) {
+            if (OSVersionNumberMajor == 4) {
                 //				os_info.SubCode.Format("%d",build_sub);
                 os_info.SubCode = "UNKNOWN";
-                if ( OSVersionNumberMinor == 0 ) {
+                if (OSVersionNumberMinor == 0) {
                     os_info.Code = "WIN95";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 10 ) {
+                if (OSVersionNumberMinor == 10) {
                     os_info.Code = "WIN98";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 90 ) {
+                if (OSVersionNumberMinor == 90) {
                     os_info.Code = "WINME";
                     return;
                 }
@@ -226,58 +209,56 @@ void Get_OS_Info(
 
                 return;
             }
-        }
-        break;
+        } break;
         case VER_PLATFORM_WIN32_NT:
             //		os_info.SubCode.Format("%d",build_sub);
             os_info.SubCode = "UNKNOWN";
-            if ( OSVersionNumberMajor == 4 ) {
+            if (OSVersionNumberMajor == 4) {
                 os_info.Code = "WINNT";
                 return;
             }
 
-            if ( OSVersionNumberMajor == 5 ) {
-                if ( OSVersionNumberMinor == 0 ) {
+            if (OSVersionNumberMajor == 5) {
+                if (OSVersionNumberMinor == 0) {
                     os_info.Code = "WIN2K";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 1 ) {
+                if (OSVersionNumberMinor == 1) {
                     os_info.Code = "WINXP";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 2 ) {
+                if (OSVersionNumberMinor == 2) {
                     os_info.Code = "WINXP64";
                     return;
                 }
-
-                os_info.Code = "WINXX";
-                return;
             }
 
-            if ( OSVersionNumberMajor == 6 ) {
-                if ( OSVersionNumberMinor == 0 ) {
+            if (OSVersionNumberMajor == 6) {
+                if (OSVersionNumberMinor == 0) {
                     os_info.Code = "WINVISTA";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 1 ) {
+                if (OSVersionNumberMinor == 1) {
                     os_info.Code = "WIN7";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 2 ) {
+                if (OSVersionNumberMinor == 2) {
                     os_info.Code = "WIN8";
                     return;
                 }
 
-                if ( OSVersionNumberMinor == 3 ) {
+                if (OSVersionNumberMinor == 3) {
                     os_info.Code = "WIN8.1";
                     return;
                 }
+            }
 
-                os_info.Code = "WINXX";
+            if (OSVersionNumberMajor == 10) {
+                os_info.Code = "WIN10";
                 return;
             }
 
@@ -364,16 +345,7 @@ const char *CPUDetectClass::Get_Processor_Manufacturer_Name()
 {
 #if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
     static const char *_manufacturer_names[] = {
-        "<Unknown>",
-        "Intel",
-        "UMC",
-        "AMD",
-        "Cyrix",
-        "NextGen",
-        "VIA",
-        "Rise",
-        "Transmeta"
-    };
+        "<Unknown>", "Intel", "UMC", "AMD", "Cyrix", "NextGen", "VIA", "Rise", "Transmeta"};
 
     return _manufacturer_names[ProcessorManufacturer];
 #else
@@ -392,13 +364,13 @@ static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
     uint32_t start = g_theSysTimer.Get();
     uint32_t elapsed;
 
-    while ( (elapsed = g_theSysTimer.Get() - start) < 200 ) {
+    while ((elapsed = g_theSysTimer.Get() - start) < 200) {
         timer1 = __rdtsc();
     }
 
     int64_t t = timer1 - timer0;
 
-    ticks_per_second = (1000 / 200) * t;	// Ticks per second
+    ticks_per_second = (1000 / 200) * t; // Ticks per second
 
     return uint32_t(t / (elapsed * 1000));
 #else
@@ -409,7 +381,7 @@ static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
 
 void CPUDetectClass::Init_Processor_Speed()
 {
-    if ( !Has_RDTSC_Instruction() ) {
+    if (!Has_RDTSC_Instruction()) {
         ProcessorSpeed = 0;
 
         return;
@@ -418,12 +390,11 @@ void CPUDetectClass::Init_Processor_Speed()
     uint32_t speed1 = Calculate_Processor_Speed(ProcessorTicksPerSecond);
     uint32_t total_speed = speed1;
 
-    for ( int i = 0; i < 5; ++i ) {
-
+    for (int i = 0; i < 5; ++i) {
         uint32_t speed2 = Calculate_Processor_Speed(ProcessorTicksPerSecond);
         float rel = float(speed1) / float(speed2);
 
-        if ( rel >= 0.95f && rel <= 1.05f ) {
+        if (rel >= 0.95f && rel <= 1.05f) {
             ProcessorSpeed = (speed1 + speed2) / 2;
             InvProcessorTicksPerSecond = 1.0 / double(ProcessorTicksPerSecond);
             return;
@@ -431,12 +402,10 @@ void CPUDetectClass::Init_Processor_Speed()
 
         speed1 = speed2;
         total_speed += speed2;
-
     }
 
     ProcessorSpeed = total_speed / 6;
     InvProcessorTicksPerSecond = 1.0 / double(ProcessorTicksPerSecond);
-
 }
 
 void CPUDetectClass::Init_Processor_Manufacturer()
@@ -445,32 +414,34 @@ void CPUDetectClass::Init_Processor_Manufacturer()
     VendorID[0] = 0;
     uint32_t max_cpuid = 0;
 
-    CPUID(
-        max_cpuid,
-        (uint32_t&)VendorID[0],
-        (uint32_t&)VendorID[8],
-        (uint32_t&)VendorID[4],
-        0
-    );
+    CPUID(max_cpuid, (uint32_t &)VendorID[0], (uint32_t &)VendorID[8], (uint32_t &)VendorID[4], 0);
 
     ProcessorManufacturer = MANUFACTURER_UNKNOWN;
 
-    if ( strcasecmp(VendorID, "GenuineIntel") == 0 ) ProcessorManufacturer = MANUFACTURER_INTEL;
-    else if ( strcasecmp(VendorID, "AuthenticAMD") == 0 ) ProcessorManufacturer = MANUFACTURER_AMD;
-    else if ( strcasecmp(VendorID, "AMD ISBETTER") == 0 ) ProcessorManufacturer = MANUFACTURER_AMD;
-    else if ( strcasecmp(VendorID, "UMC UMC UMC") == 0 ) ProcessorManufacturer = MANUFACTURER_UMC;
-    else if ( strcasecmp(VendorID, "CyrixInstead") == 0 ) ProcessorManufacturer = MANUFACTURER_CYRIX;
-    else if ( strcasecmp(VendorID, "NexGenDriven") == 0 ) ProcessorManufacturer = MANUFACTURER_NEXTGEN;
-    else if ( strcasecmp(VendorID, "CentaurHauls") == 0 ) ProcessorManufacturer = MANUFACTURER_VIA;
-    else if ( strcasecmp(VendorID, "RiseRiseRise") == 0 ) ProcessorManufacturer = MANUFACTURER_RISE;
-    else if ( strcasecmp(VendorID, "GenuineTMx86") == 0 ) ProcessorManufacturer = MANUFACTURER_TRANSMETA;
+    if (strcasecmp(VendorID, "GenuineIntel") == 0)
+        ProcessorManufacturer = MANUFACTURER_INTEL;
+    else if (strcasecmp(VendorID, "AuthenticAMD") == 0)
+        ProcessorManufacturer = MANUFACTURER_AMD;
+    else if (strcasecmp(VendorID, "AMD ISBETTER") == 0)
+        ProcessorManufacturer = MANUFACTURER_AMD;
+    else if (strcasecmp(VendorID, "UMC UMC UMC") == 0)
+        ProcessorManufacturer = MANUFACTURER_UMC;
+    else if (strcasecmp(VendorID, "CyrixInstead") == 0)
+        ProcessorManufacturer = MANUFACTURER_CYRIX;
+    else if (strcasecmp(VendorID, "NexGenDriven") == 0)
+        ProcessorManufacturer = MANUFACTURER_NEXTGEN;
+    else if (strcasecmp(VendorID, "CentaurHauls") == 0)
+        ProcessorManufacturer = MANUFACTURER_VIA;
+    else if (strcasecmp(VendorID, "RiseRiseRise") == 0)
+        ProcessorManufacturer = MANUFACTURER_RISE;
+    else if (strcasecmp(VendorID, "GenuineTMx86") == 0)
+        ProcessorManufacturer = MANUFACTURER_TRANSMETA;
 #endif
 }
 
 void CPUDetectClass::Process_Cache_Info(uint32_t value)
 {
-    switch ( value ) {
-
+    switch (value) {
         case 0x00: // Null
             break;
 
@@ -512,7 +483,7 @@ void CPUDetectClass::Process_Cache_Info(uint32_t value)
 
         case 0x40: // No L2 cache (P6 family), or No L3 cache (Pentium 4 processor)
             // Nice of Intel, Pentium4 has an exception and this field is defined as "no L3 cache"
-            if ( ProcessorManufacturer != MANUFACTURER_INTEL || ProcessorFamily != 0xF ) {
+            if (ProcessorManufacturer != MANUFACTURER_INTEL || ProcessorFamily != 0xF) {
                 L2CacheSize = 0;
                 L2CacheLineSize = 0;
                 L2CacheSetAssociative = 0;
@@ -663,15 +634,13 @@ void CPUDetectClass::Process_Cache_Info(uint32_t value)
         default:
             break;
     }
-
 }
 
 void CPUDetectClass::Process_Extended_Cache_Info()
 {
     CPUIDStruct max_ext(0x80000000);
 
-    if ( max_ext.eax >= 0x80000006 ) {
-
+    if (max_ext.eax >= 0x80000006) {
         CPUIDStruct l1info(0x80000005);
         CPUIDStruct l2info(0x80000006);
 
@@ -689,7 +658,7 @@ void CPUDetectClass::Process_Extended_Cache_Info()
         L2CacheSize = ((l2info.ecx >> 16) & 0xFFFF) * 1024;
         L2CacheLineSize = l2info.ecx & 0xFF;
 
-        switch ( (l2info.ecx >> 12) & 0xF ) {
+        switch ((l2info.ecx >> 12) & 0xF) {
             case 0:
                 L2CacheSetAssociative = 0;
                 break;
@@ -714,45 +683,41 @@ void CPUDetectClass::Process_Extended_Cache_Info()
             default:
                 break;
         }
-
     }
 }
 
 void CPUDetectClass::Process_Intel_Cache_Info()
 {
-    for ( uint32_t count = 0; ; ++count ) {
+    for (uint32_t count = 0;; ++count) {
         CPUIDCountStruct id(4, count);
 
-        switch ( id.eax & 0x1F ) {
+        switch (id.eax & 0x1F) {
             case INTEL_CACHE_END:
                 return;
-            case INTEL_CACHE_DATA:      // fallthrough
+            case INTEL_CACHE_DATA: // fallthrough
             case INTEL_CACHE_UNIFIED:
-                switch ( (id.eax >> 5) & 0x07 ) {
-                    case 1:
-                    {
+                switch ((id.eax >> 5) & 0x07) {
+                    case 1: {
                         L1DataCacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
                         L1DataCacheLineSize = (id.ebx & 0x0FFF) + 1;
-                        L1DataCacheSize = L1DataCacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L1DataCacheLineSize * (id.ecx + 1);
+                        L1DataCacheSize =
+                            L1DataCacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L1DataCacheLineSize * (id.ecx + 1);
                         L1InstructionCacheSetAssociative = L1DataCacheSetAssociative;
                         L1InstructionCacheLineSize = L1DataCacheLineSize;
                         L1InstructionCacheSize = L1DataCacheSize;
-                    }
-                        break;
-                    case 2:
-                    {
+                    } break;
+                    case 2: {
                         L2CacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
                         L2CacheLineSize = (id.ebx & 0x0FFF) + 1;
-                        L2CacheSize = L2CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L2CacheLineSize * (id.ecx + 1);
-                    }
-                        break;
-                    case 3:
-                    {
+                        L2CacheSize =
+                            L2CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L2CacheLineSize * (id.ecx + 1);
+                    } break;
+                    case 3: {
                         L3CacheSetAssociative = ((id.ebx >> 22) & 0x3FF) + 1;
                         L3CacheLineSize = (id.ebx & 0x0FFF) + 1;
-                        L3CacheSize = L3CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L3CacheLineSize * (id.ecx + 1);
-                    }
-                        break;
+                        L3CacheSize =
+                            L3CacheSetAssociative * (((id.ebx >> 12) & 0x3FF) + 1) * L3CacheLineSize * (id.ecx + 1);
+                    } break;
                     default:
                         break;
                 }
@@ -769,31 +734,30 @@ void CPUDetectClass::Init_Cache()
     CPUIDStruct max_reg(0);
     CPUIDStruct cache_id(2);
 
-    if ( Get_Processor_Manufacturer() == MANUFACTURER_INTEL && max_reg.eax >= 4 ) {
+    if (Get_Processor_Manufacturer() == MANUFACTURER_INTEL && max_reg.eax >= 4) {
         Process_Intel_Cache_Info();
-    } else if ( (cache_id.eax & 0xFF) == 1 ) {
-
-        if ( !(cache_id.eax & 0x80000000) ) {
+    } else if ((cache_id.eax & 0xFF) == 1) {
+        if (!(cache_id.eax & 0x80000000)) {
             Process_Cache_Info((cache_id.eax >> 24) & 0xFF);
             Process_Cache_Info((cache_id.eax >> 16) & 0xFF);
             Process_Cache_Info((cache_id.eax >> 8) & 0xFF);
         }
 
-        if ( !(cache_id.ebx & 0x80000000) ) {
+        if (!(cache_id.ebx & 0x80000000)) {
             Process_Cache_Info((cache_id.ebx >> 24) & 0xFF);
             Process_Cache_Info((cache_id.ebx >> 16) & 0xFF);
             Process_Cache_Info((cache_id.ebx >> 8) & 0xFF);
             Process_Cache_Info((cache_id.ebx) & 0xFF);
         }
-        
-        if ( !(cache_id.ecx & 0x80000000) ) {
+
+        if (!(cache_id.ecx & 0x80000000)) {
             Process_Cache_Info((cache_id.ecx >> 24) & 0xFF);
             Process_Cache_Info((cache_id.ecx >> 16) & 0xFF);
             Process_Cache_Info((cache_id.ecx >> 8) & 0xFF);
             Process_Cache_Info((cache_id.ecx) & 0xFF);
         }
-        
-        if ( !(cache_id.edx & 0x80000000) ) {
+
+        if (!(cache_id.edx & 0x80000000)) {
             Process_Cache_Info((cache_id.edx >> 24) & 0xFF);
             Process_Cache_Info((cache_id.edx >> 16) & 0xFF);
             Process_Cache_Info((cache_id.edx >> 8) & 0xFF);
@@ -806,12 +770,12 @@ void CPUDetectClass::Init_Cache()
 
 void CPUDetectClass::Init_Intel_Processor_Type()
 {
-    switch ( ProcessorFamily ) {
+    switch (ProcessorFamily) {
         case 3:
             IntelProcessor = INTEL_PROCESSOR_80386;
             break;
         case 4:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 default:
                 case 0:
                 case 1:
@@ -842,7 +806,7 @@ void CPUDetectClass::Init_Intel_Processor_Type()
 
             break;
         case 5:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 default:
                 case 0:
                     IntelProcessor = INTEL_PROCESSOR_PENTIUM;
@@ -873,7 +837,7 @@ void CPUDetectClass::Init_Intel_Processor_Type()
                     break;
             }
         case 6:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 default:
                 case 0:
                     IntelProcessor = INTEL_PROCESSOR_PENTIUM_PRO_SAMPLE;
@@ -882,7 +846,7 @@ void CPUDetectClass::Init_Intel_Processor_Type()
                     IntelProcessor = INTEL_PROCESSOR_PENTIUM_PRO;
                     break;
                 case 3:
-                    if ( ProcessorType == 0 ) {
+                    if (ProcessorType == 0) {
                         IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_MODEL_3;
                     } else {
                         IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_OVERDRIVE;
@@ -892,25 +856,23 @@ void CPUDetectClass::Init_Intel_Processor_Type()
                 case 4:
                     IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_MODEL_4;
                     break;
-                case 5:
-                    {
-                        CPUIDStruct cache_id(2);
+                case 5: {
+                    CPUIDStruct cache_id(2);
 
-                        if ( L2CacheSize == 0 ) {
-                            IntelProcessor = INTEL_PROCESSOR_CELERON_MODEL_5;
-                        } else if ( L2CacheSize <= 512 * 1024 ) {
-                            IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_MODEL_5;
-                        } else {
-                            IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_XEON_MODEL_5;
-                        }
+                    if (L2CacheSize == 0) {
+                        IntelProcessor = INTEL_PROCESSOR_CELERON_MODEL_5;
+                    } else if (L2CacheSize <= 512 * 1024) {
+                        IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_MODEL_5;
+                    } else {
+                        IntelProcessor = INTEL_PROCESSOR_PENTIUM_II_XEON_MODEL_5;
                     }
-                    break;
+                } break;
 
                 case 6:
                     IntelProcessor = INTEL_PROCESSOR_CELERON_MODEL_6;
                     break;
                 case 7:
-                    if ( L2CacheSize <= 512 * 1024 ) {
+                    if (L2CacheSize <= 512 * 1024) {
                         IntelProcessor = INTEL_PROCESSOR_PENTIUM_III_MODEL_7;
                     } else {
                         IntelProcessor = INTEL_PROCESSOR_PENTIUM_III_XEON_MODEL_7;
@@ -921,7 +883,7 @@ void CPUDetectClass::Init_Intel_Processor_Type()
                     // This could be PentiumIII Coppermine or Celeron with SSE, or a Xeon
                     {
                         CPUIDStruct brand(1);
-                        switch ( brand.ebx & 0xFF ) {
+                        switch (brand.ebx & 0xFF) {
                             case 0x1:
                                 IntelProcessor = INTEL_PROCESSOR_CELERON_MODEL_8;
                                 break;
@@ -957,9 +919,9 @@ void CPUDetectClass::Init_Intel_Processor_Type()
 
 void CPUDetectClass::Init_AMD_Processor_Type()
 {
-    switch ( ProcessorFamily ) {
+    switch (ProcessorFamily) {
         case 4:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 3:
                     AMDProcessor = AMD_PROCESSOR_486DX2;
                     break;
@@ -983,7 +945,7 @@ void CPUDetectClass::Init_AMD_Processor_Type()
             }
             break;
         case 5:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 0:
                     AMDProcessor = AMD_PROCESSOR_K5_MODEL0;
                     break;
@@ -1015,7 +977,7 @@ void CPUDetectClass::Init_AMD_Processor_Type()
                     AMDProcessor = AMD_PROCESSOR_K6;
             }
         case 6:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 1:
                     AMDProcessor = AMD_PROCESSOR_ATHLON_025;
                     break;
@@ -1039,9 +1001,9 @@ void CPUDetectClass::Init_AMD_Processor_Type()
 
 void CPUDetectClass::Init_VIA_Processor_Type()
 {
-    switch ( ProcessorFamily ) {
+    switch (ProcessorFamily) {
         case 5:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 4:
                     VIAProcessor = VIA_PROCESSOR_IDT_C6_WINCHIP;
                     break;
@@ -1055,7 +1017,7 @@ void CPUDetectClass::Init_VIA_Processor_Type()
                     break;
             }
         case 6:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 4:
                     VIAProcessor = VIA_PROCESSOR_CYRIX_III_SAMUEL;
                     break;
@@ -1069,9 +1031,9 @@ void CPUDetectClass::Init_VIA_Processor_Type()
 
 void CPUDetectClass::Init_Rise_Processor_Type()
 {
-    switch ( ProcessorFamily ) {
+    switch (ProcessorFamily) {
         case 5:
-            switch ( ProcessorModel ) {
+            switch (ProcessorModel) {
                 case 0:
                     RiseProcessor = RISE_PROCESSOR_DRAGON_025;
                     break;
@@ -1104,7 +1066,7 @@ void CPUDetectClass::Init_Processor_Family()
     ProcessorType = (signature >> 12) & 0x0F;
     ProcessorFamily = (signature >> 8) & 0x0F;
     ProcessorModel = (signature >> 4) & 0x0F;
-    ProcessorRevision = (signature) & 0x0F;
+    ProcessorRevision = (signature)&0x0F;
 
     IntelProcessor = INTEL_PROCESSOR_UNKNOWN;
     AMDProcessor = AMD_PROCESSOR_UNKNOWN;
@@ -1113,7 +1075,7 @@ void CPUDetectClass::Init_Processor_Family()
 
     Init_Cache();
 
-    switch ( ProcessorManufacturer ) {
+    switch (ProcessorManufacturer) {
         case MANUFACTURER_INTEL:
             Init_Intel_Processor_Type();
             break;
@@ -1133,121 +1095,144 @@ void CPUDetectClass::Init_Processor_Family()
 
 void CPUDetectClass::Init_Processor_String()
 {
-    if ( !Has_CPUID_Instruction() ) {
+    if (!Has_CPUID_Instruction()) {
         ProcessorString[0] = '\0';
     }
 
     CPUIDStruct ext_id(0x80000000);
 
-    if ( ext_id.eax & 0x80000000 ) {
-        CPUDetectClass::CPUID(
-            (uint32_t&)ProcessorString[0],
-            (uint32_t&)ProcessorString[4],
-            (uint32_t&)ProcessorString[8],
-            (uint32_t&)ProcessorString[12],
-            0x80000002
-        );
+    if (ext_id.eax & 0x80000000) {
+        CPUDetectClass::CPUID((uint32_t &)ProcessorString[0],
+            (uint32_t &)ProcessorString[4],
+            (uint32_t &)ProcessorString[8],
+            (uint32_t &)ProcessorString[12],
+            0x80000002);
 
-        CPUDetectClass::CPUID(
-            (uint32_t&)ProcessorString[16],
-            (uint32_t&)ProcessorString[20],
-            (uint32_t&)ProcessorString[24],
-            (uint32_t&)ProcessorString[28],
-            0x80000003
-        );
+        CPUDetectClass::CPUID((uint32_t &)ProcessorString[16],
+            (uint32_t &)ProcessorString[20],
+            (uint32_t &)ProcessorString[24],
+            (uint32_t &)ProcessorString[28],
+            0x80000003);
 
-        CPUDetectClass::CPUID(
-            (uint32_t&)ProcessorString[32],
-            (uint32_t&)ProcessorString[36],
-            (uint32_t&)ProcessorString[40],
-            (uint32_t&)ProcessorString[44],
-            0x80000004
-        );
+        CPUDetectClass::CPUID((uint32_t &)ProcessorString[32],
+            (uint32_t &)ProcessorString[36],
+            (uint32_t &)ProcessorString[40],
+            (uint32_t &)ProcessorString[44],
+            0x80000004);
 
         strtrim(ProcessorString);
     } else {
         char str[2048];
         strcat(str, Get_Processor_Manufacturer_Name());
 
-        if ( ProcessorManufacturer == MANUFACTURER_INTEL ) {
+        if (ProcessorManufacturer == MANUFACTURER_INTEL) {
             strcat(str, " ");
 
-            switch ( IntelProcessor ) {
-                case INTEL_PROCESSOR_80386:                         
-                    strcat(str, "80386"); break;
+            switch (IntelProcessor) {
+                case INTEL_PROCESSOR_80386:
+                    strcat(str, "80386");
+                    break;
                 case INTEL_PROCESSOR_80486DX:
-                    strcat(str, "80486DX"); break;
-                case INTEL_PROCESSOR_80486SX: 
-                    strcat(str, "80486SX"); break;
+                    strcat(str, "80486DX");
+                    break;
+                case INTEL_PROCESSOR_80486SX:
+                    strcat(str, "80486SX");
+                    break;
                 case INTEL_PROCESSOR_80486DX2:
-                    strcat(str, "80486DX2"); break;
+                    strcat(str, "80486DX2");
+                    break;
                 case INTEL_PROCESSOR_80486SL:
-                    strcat(str, "80486SL"); break;
+                    strcat(str, "80486SL");
+                    break;
                 case INTEL_PROCESSOR_80486SX2:
-                    strcat(str, "80486SX2"); break;
+                    strcat(str, "80486SX2");
+                    break;
                 case INTEL_PROCESSOR_80486DX2_WB:
-                    strcat(str, "80486DX2(WB)"); break;
+                    strcat(str, "80486DX2(WB)");
+                    break;
                 case INTEL_PROCESSOR_80486DX4:
-                    strcat(str, "80486DX4"); break;
+                    strcat(str, "80486DX4");
+                    break;
                 case INTEL_PROCESSOR_80486DX4_WB:
-                    strcat(str, "80486DX4(WB)"); break;
+                    strcat(str, "80486DX4(WB)");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM:
-                    strcat(str, "Pentium"); break;
+                    strcat(str, "Pentium");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_OVERDRIVE:
-                    strcat(str, "Pentium Overdrive"); break;
+                    strcat(str, "Pentium Overdrive");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_MMX:
-                    strcat(str, "Pentium MMX"); break;
+                    strcat(str, "Pentium MMX");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_PRO_SAMPLE:
-                    strcat(str, "Pentium Pro (Engineering Sample)"); break;
+                    strcat(str, "Pentium Pro (Engineering Sample)");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_PRO:
-                    strcat(str, "Pentium Pro"); break;
+                    strcat(str, "Pentium Pro");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_II_OVERDRIVE:
-                    strcat(str, "Pentium II Overdrive"); break;
+                    strcat(str, "Pentium II Overdrive");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_II_MODEL_3:
-                    strcat(str, "Pentium II, model 3"); break;
+                    strcat(str, "Pentium II, model 3");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_II_MODEL_4:
-                    strcat(str, "Pentium II, model 4"); break;
+                    strcat(str, "Pentium II, model 4");
+                    break;
                 case INTEL_PROCESSOR_CELERON_MODEL_5:
-                    strcat(str, "Celeron, model 5"); break;
+                    strcat(str, "Celeron, model 5");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_II_MODEL_5:
-                    strcat(str, "Pentium II, model 5"); break;
+                    strcat(str, "Pentium II, model 5");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_II_XEON_MODEL_5:
-                    strcat(str, "Pentium II Xeon, model 5"); break;
+                    strcat(str, "Pentium II Xeon, model 5");
+                    break;
                 case INTEL_PROCESSOR_CELERON_MODEL_6:
-                    strcat(str, "Celeron, model 6"); break;
+                    strcat(str, "Celeron, model 6");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_MODEL_7:
-                    strcat(str, "Pentium III, model 7"); break;
+                    strcat(str, "Pentium III, model 7");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_XEON_MODEL_7:
-                    strcat(str, "Pentium III Xeon, model 7"); break;
+                    strcat(str, "Pentium III Xeon, model 7");
+                    break;
                 case INTEL_PROCESSOR_CELERON_MODEL_8:
-                    strcat(str, "Celeron, model 8"); break;
+                    strcat(str, "Celeron, model 8");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_MODEL_8:
-                    strcat(str, "Pentium III, model 8"); break;
+                    strcat(str, "Pentium III, model 8");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_XEON_MODEL_8:
-                    strcat(str, "Pentium III Xeon, model 8"); break;
+                    strcat(str, "Pentium III Xeon, model 8");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_XEON_MODEL_A:
-                    strcat(str, "Pentium III Xeon, model A"); break;
+                    strcat(str, "Pentium III Xeon, model A");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM_III_MODEL_B:
-                    strcat(str, "Pentium III, model B"); break;
+                    strcat(str, "Pentium III, model B");
+                    break;
                 case INTEL_PROCESSOR_PENTIUM4:
-                    strcat(str, "Pentium4"); break;
+                    strcat(str, "Pentium4");
+                    break;
                 case INTEL_PROCESSOR_UNKNOWN:
                 default:
-                    strcat(str, "<UNKNOWN>"); break;
+                    strcat(str, "<UNKNOWN>");
+                    break;
             }
         }
 
         strncpy(ProcessorString, str, sizeof(ProcessorString));
     }
-
 }
 
 void CPUDetectClass::Init_CPUID_Instruction()
 {
 #if defined PROCESSOR_X86 && !defined PROCESSOR_X86_64
     // 32bit x86 CPU might not have CPUID instruction, though unlikely.
-    uint32_t    old_eflg;
-    uint32_t    new_eflg;
+    uint32_t old_eflg;
+    uint32_t new_eflg;
 
     // These intrinsics should be available on recent MSVC and GCC, no more ifdefs.
     old_eflg = __readeflags();
@@ -1255,8 +1240,8 @@ void CPUDetectClass::Init_CPUID_Instruction()
     __writeeflags(new_eflg);
     new_eflg = __readeflags();
 
-    HasCPUIDInstruction = new_eflg != old_eflg;  
-#elif defined PROCESSOR_X86_64 
+    HasCPUIDInstruction = new_eflg != old_eflg;
+#elif defined PROCESSOR_X86_64
     // 64bit x86 CPU always has it.
     HasCPUIDInstruction = true;
 #else
@@ -1267,7 +1252,7 @@ void CPUDetectClass::Init_CPUID_Instruction()
 
 void CPUDetectClass::Init_Processor_Features()
 {
-    if ( !CPUDetectClass::Has_CPUID_Instruction() ) {
+    if (!CPUDetectClass::Has_CPUID_Instruction()) {
         return;
     }
 
@@ -1281,11 +1266,11 @@ void CPUDetectClass::Init_Processor_Features()
     Has3DNowSupport = false;
     ExtendedFeatureBits = 0;
 
-    if ( ProcessorManufacturer == MANUFACTURER_AMD ) {
-        if ( Has_CPUID_Instruction() ) {
+    if (ProcessorManufacturer == MANUFACTURER_AMD) {
+        if (Has_CPUID_Instruction()) {
             CPUIDStruct max_ext_id(0x80000000);
 
-            if ( max_ext_id.eax >= 0x80000001 ) {	// Signature & features field available?
+            if (max_ext_id.eax >= 0x80000001) { // Signature & features field available?
                 CPUIDStruct ext_signature(0x80000001);
                 ExtendedFeatureBits = ext_signature.edx;
                 Has3DNowSupport = !!(ExtendedFeatureBits & 0x80000000);
@@ -1384,7 +1369,7 @@ void CPUDetectClass::Init_OS()
 
 bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type)
 {
-    if ( !Has_CPUID_Instruction() ) {
+    if (!Has_CPUID_Instruction()) {
         return false;
     }
 
@@ -1402,13 +1387,14 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
     u_ebx_ = regs[1];
     u_ecx_ = regs[2];
     u_edx_ = regs[3];
-    
+
     return true;
 }
 
-bool CPUDetectClass::CPUID_Count(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t count)
+bool CPUDetectClass::CPUID_Count(
+    uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_, uint32_t &u_edx_, uint32_t cpuid_type, uint32_t count)
 {
-    if ( !Has_CPUID_Instruction() ) {
+    if (!Has_CPUID_Instruction()) {
         return false;
     }
 
@@ -1432,12 +1418,16 @@ bool CPUDetectClass::CPUID_Count(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u
 
 void CPUDetectClass::Init_Processor_Log()
 {
-#define CPU_LOG(n, ...) do { work.Format(n, ##__VA_ARGS__); CPUDetectClass::ProcessorLog += work; } while (false)
+#define CPU_LOG(n, ...) \
+    do { \
+        work.Format(n, ##__VA_ARGS__); \
+        CPUDetectClass::ProcessorLog += work; \
+    } while (false)
     StringClass work;
 
     CPU_LOG("Operating system: ");
 
-    switch ( OSVersionPlatformId ) {
+    switch (OSVersionPlatformId) {
         case 0:
             CPU_LOG("Windows 3.1");
             break;
@@ -1456,14 +1446,12 @@ void CPUDetectClass::Init_Processor_Log()
 
 #if defined PLATFORM_WINDOWS
     CPU_LOG("Operating system version: %d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor);
-    CPU_LOG(
-        "Operating system build: %d.%d.%d\n",
+    CPU_LOG("Operating system build: %d.%d.%d\n",
         (OSVersionBuildNumber & 0xFF000000) >> 24,
         (OSVersionBuildNumber & 0xFF0000) >> 16,
-        (OSVersionBuildNumber & 0xFFFF)
-    );
-    //CPU_LOG("OS-Info: %s\n", OSVersionExtraInfo);
-#elif defined PLATFORM_OSX
+        (OSVersionBuildNumber & 0xFFFF));
+    // CPU_LOG("OS-Info: %s\n", OSVersionExtraInfo);
+#elif defined PLATFORM_OSX || defined PLATFORM_LINUX
     CPU_LOG("Operating system version: %d.%d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor, OSVersionBuildNumber);
 #endif
 
@@ -1471,8 +1459,8 @@ void CPUDetectClass::Init_Processor_Log()
     CPU_LOG("Clock speed: ~%dMHz\n", CPUDetectClass::Get_Processor_Speed());
 
     StringClass cpu_type;
-    switch ( CPUDetectClass::Get_Processor_Type() ) {
-        case 0: 
+    switch (CPUDetectClass::Get_Processor_Type()) {
+        case 0:
             cpu_type = "Original OEM";
             break;
         case 1:
@@ -1488,7 +1476,7 @@ void CPUDetectClass::Init_Processor_Log()
             break;
     }
 
-    //CPU_LOG("Processor type: %s\n", cpu_type);
+    // CPU_LOG("Processor type: %s\n", cpu_type);
 
     CPU_LOG("\n");
 
@@ -1514,57 +1502,46 @@ void CPUDetectClass::Init_Processor_Log()
 
     CPU_LOG("\n");
 
-    if ( CPUDetectClass::Get_L1_Data_Cache_Size() > 0 ) {
-        CPU_LOG(
-            "L1 Data Cache: %d byte cache lines, %d way set associative, %dk\n",
+    if (CPUDetectClass::Get_L1_Data_Cache_Size() > 0) {
+        CPU_LOG("L1 Data Cache: %d byte cache lines, %d way set associative, %dk\n",
             CPUDetectClass::Get_L1_Data_Cache_Line_Size(),
             CPUDetectClass::Get_L1_Data_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Data_Cache_Size() / 1024
-        );
+            CPUDetectClass::Get_L1_Data_Cache_Size() / 1024);
     } else {
         CPU_LOG("L1 Data Cache: None\n");
     }
 
-    if ( CPUDetectClass::Get_L1_Instruction_Cache_Size() > 0 ) {
-        CPU_LOG(
-            "L1 Instruction Cache: %d byte cache lines, %d way set associative, %dk\n",
+    if (CPUDetectClass::Get_L1_Instruction_Cache_Size() > 0) {
+        CPU_LOG("L1 Instruction Cache: %d byte cache lines, %d way set associative, %dk\n",
             CPUDetectClass::Get_L1_Instruction_Cache_Line_Size(),
             CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024
-        );
+            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024);
     } else {
         CPU_LOG("L1 Instruction Cache: None\n");
     }
 
-    if ( CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size() > 0 ) {
-        CPU_LOG(
-            "L1 Instruction Trace Cache: %d way set associative, %dk �OPs\n",
+    if (CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size() > 0) {
+        CPU_LOG("L1 Instruction Trace Cache: %d way set associative, %dk �OPs\n",
             CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024
-        );
+            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024);
     } else {
         CPU_LOG("L1 Instruction Trace Cache: None\n");
     }
 
-
-    if ( CPUDetectClass::Get_L2_Cache_Size() > 0 ) {
-        CPU_LOG(
-            "L2 Cache: %d byte cache lines, %d way set associative, %dk\n",
+    if (CPUDetectClass::Get_L2_Cache_Size() > 0) {
+        CPU_LOG("L2 Cache: %d byte cache lines, %d way set associative, %dk\n",
             CPUDetectClass::Get_L2_Cache_Line_Size(),
             CPUDetectClass::Get_L2_Cache_Set_Associative(),
-            CPUDetectClass::Get_L2_Cache_Size() / 1024
-        );
+            CPUDetectClass::Get_L2_Cache_Size() / 1024);
     } else {
         CPU_LOG("L2 cache: None\n");
     }
 
-    if ( CPUDetectClass::Get_L3_Cache_Size() > 0 ) {
-        CPU_LOG(
-            "L3 Cache: %d byte cache lines, %d way set associative, %dk\n",
+    if (CPUDetectClass::Get_L3_Cache_Size() > 0) {
+        CPU_LOG("L3 Cache: %d byte cache lines, %d way set associative, %dk\n",
             CPUDetectClass::Get_L3_Cache_Line_Size(),
             CPUDetectClass::Get_L3_Cache_Set_Associative(),
-            CPUDetectClass::Get_L3_Cache_Size() / 1024
-        );
+            CPUDetectClass::Get_L3_Cache_Size() / 1024);
     } else {
         CPU_LOG("L3 cache: None\n");
     }
@@ -1575,7 +1552,11 @@ void CPUDetectClass::Init_Processor_Log()
 
 void CPUDetectClass::Init_Compact_Log()
 {
-#define COMPACT_LOG(n, ...) do { work.Format(n, ##__VA_ARGS__); CPUDetectClass::CompactLog += work; } while (false)
+#define COMPACT_LOG(n, ...) \
+    do { \
+        work.Format(n, ##__VA_ARGS__); \
+        CPUDetectClass::CompactLog += work; \
+    } while (false)
     StringClass work;
 
 #ifdef PLATFORM_WINDOWS
@@ -1588,7 +1569,7 @@ void CPUDetectClass::Init_Compact_Log()
     Get_OS_Info(os_info, OSVersionPlatformId, OSVersionNumberMajor, OSVersionNumberMinor, OSVersionBuildNumber);
     COMPACT_LOG("%s\t", os_info.Code);
 
-    if ( !strcasecmp(os_info.SubCode, "UNKNOWN") ) {
+    if (!strcasecmp(os_info.SubCode, "UNKNOWN")) {
         COMPACT_LOG("%d\t", OSVersionBuildNumber & 0xFFFF);
     } else {
         COMPACT_LOG("%s\t", os_info.SubCode);
@@ -1611,7 +1592,7 @@ public:
         CPUDetectClass::Init_CPUID_Instruction();
         // The game assumes its going to run on x86 hardware, hopefully we will be
         // able to change that eventually.
-        if ( CPUDetectClass::Has_CPUID_Instruction() ) {
+        if (CPUDetectClass::Has_CPUID_Instruction()) {
             CPUDetectClass::Init_Processor_Manufacturer();
             CPUDetectClass::Init_Processor_Family();
             CPUDetectClass::Init_Processor_String();

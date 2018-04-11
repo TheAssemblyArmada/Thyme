@@ -281,6 +281,8 @@ void Get_OS_Info(
                 return;
             }
 
+            os_info.Code = "WINXX";
+
             break;
 
         default:
@@ -1312,23 +1314,38 @@ void CPUDetectClass::Init_Memory()
     AvailablePhysicalMemory = mem.freeram * mem.mem_unit;
     TotalPageMemory = mem.totalswap * mem.mem_unit;
     AvailablePageMemory = mem.freeswap * mem.mem_unit;
-    TotalVirtualMemory = uintptr_t(intptr_t(-1));   // Should give ~4GB on 32bit and considerably more on 64bit.
+    TotalVirtualMemory = uintptr_t(intptr_t(-1)); // Should give ~4GB on 32bit and considerably more on 64bit.
     AvailableVirtualMemory = uintptr_t(intptr_t(-1));
 #endif
 }
 
 void CPUDetectClass::Init_OS()
 {
+    OSVersionExtraInfo[0] = '\0';
 #if defined PLATFORM_WINDOWS
-    OSVERSIONINFOA os;
-    os.dwOSVersionInfoSize = sizeof(os);
-    GetVersionExA(&os);
+    typedef LONG(WINAPI * getinfoptr_t)(PRTL_OSVERSIONINFOW);
+    HMODULE nt_lib = LoadLibraryA("ntdll");
+    if (nt_lib != nullptr) {
+        getinfoptr_t RtlGetVersion = (getinfoptr_t)::GetProcAddress(nt_lib, "RtlGetVersion");
 
-    OSVersionNumberMajor = os.dwMajorVersion;
-    OSVersionNumberMinor = os.dwMinorVersion;
-    OSVersionBuildNumber = os.dwBuildNumber;
-    OSVersionPlatformId = os.dwPlatformId;
-    snprintf(OSVersionExtraInfo, sizeof(OSVersionExtraInfo), "%s", os.szCSDVersion);
+        if (RtlGetVersion != nullptr) {
+            RTL_OSVERSIONINFOW os = {0};
+            os.dwOSVersionInfoSize = sizeof(os);
+            RtlGetVersion(&os);
+
+            OSVersionNumberMajor = os.dwMajorVersion;
+            OSVersionNumberMinor = os.dwMinorVersion;
+            OSVersionBuildNumber = os.dwBuildNumber;
+            OSVersionPlatformId = os.dwPlatformId;
+
+            return;
+        }
+    }
+
+    OSVersionNumberMajor = 6;
+    OSVersionNumberMinor = 2;
+    OSVersionBuildNumber = 0;
+    OSVersionPlatformId = 2;
 #elif defined PLATFORM_OSX
     char str[256];
     size_t size = sizeof(str);

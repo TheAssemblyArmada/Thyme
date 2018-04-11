@@ -31,6 +31,7 @@ enum ModuleType
 {
     MODULE_FIRST,
     MODULE_DEFAULT = 0,
+    MODULE_W3D = 1,
     MODULE_UNK = 2,
 };
 

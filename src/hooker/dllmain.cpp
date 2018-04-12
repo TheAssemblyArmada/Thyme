@@ -40,6 +40,7 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
+#include "modulefactory.h"
 #include "mouse.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
@@ -171,6 +172,7 @@ void Setup_Hooks()
     Mouse::Hook_Me();
     GameMessage::Hook_Me();
     GeometryInfo::Hook_Me();
+    ModuleFactory::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

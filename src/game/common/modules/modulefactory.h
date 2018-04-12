@@ -22,10 +22,6 @@
 #include <map>
 #include <vector>
 
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
-
 // TODO move/remove these as needed.
 enum ModuleType
 {
@@ -86,6 +82,10 @@ public:
     Module *New_Module(Thing *thing, const AsciiString &name, ModuleData *data, ModuleType type);
     ModuleData *New_Module_Data_From_INI(INI *ini, const AsciiString &name, ModuleType type, const AsciiString &tag);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 protected:
     static NameKeyType Make_Decorated_Name_Key(const AsciiString &name, ModuleType type);
     void Add_Module_Internal(
@@ -98,7 +98,18 @@ protected:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
 extern ModuleFactory *&g_theModuleFactory;
+
+inline void ModuleFactory::Hook_Me()
+{
+    // Virtual functions not hooked here, hook to create factory in Win32GameEngine handles vtable.
+    Hook_Method(0x004F2D60, &Make_Decorated_Name_Key);
+    Hook_Method(0x004F2E80, &Add_Module_Internal);
+    Hook_Method(0x004F2B80, &Find_Interface_Mask);
+    Hook_Method(0x004F2DD0, &New_Module);
+    Hook_Method(0x004F2C20, &New_Module_Data_From_INI);
+}
 #else
 extern ModuleFactory *g_theModuleFactory;
 #endif

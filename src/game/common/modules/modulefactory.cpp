@@ -163,7 +163,7 @@ NameKeyType ModuleFactory::Make_Decorated_Name_Key(const AsciiString &name, Modu
  * 0x004F2E80
  */
 void ModuleFactory::Add_Module_Internal(
-    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, AsciiString name, int interface)
+    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const AsciiString &name, int interface)
 {
     ModuleTemplate &data = m_moduleTemplateMap[Make_Decorated_Name_Key(name, type)];
     data.create_proc = proc;

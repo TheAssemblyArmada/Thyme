@@ -35,7 +35,7 @@ void RankInfoStore::Reset()
 
 RankInfo *RankInfoStore::Get_Rank_Info(int level)
 {
-    if (level < 1 || level > m_infoStore.size() || m_infoStore[level] == nullptr) {
+    if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level] == nullptr) {
         return nullptr;
     }
 
@@ -65,7 +65,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
     int rank_level = INI::Scan_Int(ini->Get_Next_Token());
 
     if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
-        ASSERT_THROW_PRINT(rank_level >= 1 && rank_level <= g_theRankInfoStore->m_infoStore.size(),
+        ASSERT_THROW_PRINT(rank_level >= 1 && (unsigned)rank_level <= g_theRankInfoStore->m_infoStore.size(),
             0xDEAD0006,
             "%s, Line: %d - Rank is not within expected range, must be between 1 and %d.\n",
             ini->Get_Filename(),

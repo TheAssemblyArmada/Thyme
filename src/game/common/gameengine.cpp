@@ -15,6 +15,7 @@
 #include "gameengine.h"
 #include "archivefilesystem.h"
 #include "audiomanager.h"
+#include "cavesystem.h"
 #include "commandline.h"
 #include "commandlist.h"
 #include "filesystem.h"
@@ -29,6 +30,7 @@
 #include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
+#include "rankinfo.h"
 #include "randomvalue.h"
 #include "science.h"
 #include "sideslist.h"
@@ -158,6 +160,11 @@ void GameEngine::Init(int argc, char *argv[])
     g_theSidesList = new SidesList;
     g_theSubsystemList->Init_Subsystem(g_theSidesList, nullptr, nullptr, nullptr, nullptr, "TheSidesList");
     
+    g_theCaveSystem = new CaveSystem;
+    g_theSubsystemList->Init_Subsystem(g_theCaveSystem, nullptr, nullptr, nullptr, nullptr, "TheCaveSystem");
+
+    g_theRankInfoStore = new RankInfoStore;
+    g_theSubsystemList->Init_Subsystem(g_theRankInfoStore, nullptr, "Data/INI/Rank.ini", nullptr, &xfer, "TheRankInfoStore");
     // TODO this is a WIP
 }
 

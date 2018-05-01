@@ -85,7 +85,8 @@ TunnelTracker *CaveSystem::Register_New_Cave(int index)
 #ifndef THYME_STANDALONE
     return Call_Method<TunnelTracker *, CaveSystem, int>(0x004D58A2, this, index);
 #else
-    // TODO 
+    // TODO
+    return nullptr;
 #endif
 }
 

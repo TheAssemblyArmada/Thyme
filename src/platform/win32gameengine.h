@@ -27,10 +27,10 @@ public:
     Win32GameEngine();
     virtual ~Win32GameEngine();
 
-    // SubsystemInterface implementations
-    virtual void Init() { GameEngine::Init(); }
-    virtual void Reset() { GameEngine::Reset(); }
-    virtual void Update() { GameEngine::Update(); }
+    // SubsystemInterface implementations, the original appears to do this to no benefit?
+    virtual void Init() override { GameEngine::Init(); }
+    virtual void Reset() override { GameEngine::Reset(); }
+    virtual void Update() override { GameEngine::Update(); }
 
     // GameEngine interface
     virtual void Service_Windows_OS() override;

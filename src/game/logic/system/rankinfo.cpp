@@ -69,7 +69,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         ASSERT_THROW_PRINT(rank_level >= 1 && (unsigned)rank_level <= g_theRankInfoStore->m_infoStore.size(),
             0xDEAD0006,
             "%s, Line: %d - Rank is not within expected range, must be between 1 and %d.\n",
-            ini->Get_Filename(),
+            ini->Get_Filename().Str(),
             ini->Get_Line_Number(),
             g_theRankInfoStore->m_infoStore.size());
 
@@ -78,7 +78,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         ASSERT_THROW_PRINT(current_info != nullptr,
             0xDEAD0006,
             "%s, Line: %d - Cannot create override as no rank already exists at this level.\n",
-            ini->Get_Filename(),
+            ini->Get_Filename().Str(),
             ini->Get_Line_Number());
 
         RankInfo *new_info = new RankInfo;
@@ -90,7 +90,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         ASSERT_THROW_PRINT(rank_level == g_theRankInfoStore->m_infoStore.size() + 1,
             0xDEAD0006,
             "%s, Line: %d - Rank is not in sequence, check for missing Rank %d.\n",
-            ini->Get_Filename(),
+            ini->Get_Filename().Str(),
             ini->Get_Line_Number(),
             rank_level - 1);
 

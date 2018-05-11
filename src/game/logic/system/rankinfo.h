@@ -38,6 +38,11 @@ public:
 
     static void Parse_Rank_Definition(INI *ini);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    void Hook_Init();
+    void Hook_Reset();
+#endif
 private:
     std::vector<RankInfo *> m_infoStore;
 };
@@ -60,6 +65,25 @@ private:
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 extern RankInfoStore *&g_theRankInfoStore;
+
+inline void RankInfoStore::Hook_Init()
+{
+    RankInfoStore::Init();
+}
+
+inline void RankInfoStore::Hook_Reset()
+{
+    RankInfoStore::Reset();
+}
+
+inline void RankInfoStore::Hook_Me()
+{
+    Hook_Function(0x00489520, &RankInfoStore::Parse_Rank_Definition);
+    Hook_Method(0x00489410, &RankInfoStore::Hook_Init);
+    Hook_Method(0x00489440, &RankInfoStore::Hook_Reset);
+    Hook_Method(0x004894E0, &RankInfoStore::Get_Rank_Info);
+    Hook_Method(0x004894D0, &RankInfoStore::Get_Rank_Level_Count);
+}
 #else
 extern RankInfoStore *g_theRankInfoStore;
 #endif

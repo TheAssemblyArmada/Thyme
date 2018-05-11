@@ -44,6 +44,7 @@
 #include "mouse.h"
 #include "namekeygenerator.h"
 #include "randomvalue.h"
+#include "rankinfo.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -173,6 +174,7 @@ void Setup_Hooks()
     GameMessage::Hook_Me();
     GeometryInfo::Hook_Me();
     ModuleFactory::Hook_Me();
+    RankInfoStore::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

@@ -22,11 +22,21 @@ RankInfoStore *&g_theRankInfoStore = Make_Global<RankInfoStore *>(0x00A2B97C);
 RankInfoStore *g_theRankInfoStore = nullptr;
 #endif
 
+/**
+ * @brief Initialise subsystem.
+ *
+ * 0x00489410
+ */
 void RankInfoStore::Init()
 {
     m_infoStore.clear();
 }
 
+/**
+ * @brief Reset subsystem.
+ *
+ * 0x00489440
+ */
 void RankInfoStore::Reset()
 {
     for (auto it = m_infoStore.begin(); it != m_infoStore.end(); it = m_infoStore.erase(it)) {
@@ -34,6 +44,11 @@ void RankInfoStore::Reset()
     }
 }
 
+/**
+ * @brief Get rank info for a given level.
+ *
+ * 0x004894E0
+ */
 RankInfo *RankInfoStore::Get_Rank_Info(int level)
 {
     if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level] == nullptr) {
@@ -43,11 +58,21 @@ RankInfo *RankInfoStore::Get_Rank_Info(int level)
     return reinterpret_cast<RankInfo *>(m_infoStore[level]->Get_Final_Override());
 }
 
+/**
+ * @brief Get number of levels available.
+ *
+ * 0x004894D0
+ */
 int RankInfoStore::Get_Rank_Level_Count() const
 {
     return m_infoStore.size();
 }
 
+/**
+ * @brief Parses rank information from an ini file.
+ *
+ * 0x00489520
+ */
 void RankInfoStore::Parse_Rank_Definition(INI *ini)
 {
     static FieldParse _parse_table[5] = {

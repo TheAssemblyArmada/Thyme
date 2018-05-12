@@ -55,6 +55,7 @@ class RankInfo : public Overridable
 public:
     virtual ~RankInfo() {}
 
+    RankInfo *Get_Override() { return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this; }
 private:
     UnicodeString m_rankName;
     int m_skillPointsNeeded;
@@ -79,7 +80,7 @@ inline void RankInfoStore::Hook_Reset()
 inline void RankInfoStore::Hook_Me()
 {
     Hook_Function(0x00489520, &RankInfoStore::Parse_Rank_Definition);
-    Hook_Method(0x00489410, &RankInfoStore::Hook_Init);
+    //Hook_Method(0x00489410, &RankInfoStore::Hook_Init); // Works, but shares function in binary with ScienceStore as compiles to same code.
     Hook_Method(0x00489440, &RankInfoStore::Hook_Reset);
     Hook_Method(0x004894E0, &RankInfoStore::Get_Rank_Info);
     Hook_Method(0x004894D0, &RankInfoStore::Get_Rank_Level_Count);

@@ -39,8 +39,15 @@ void RankInfoStore::Init()
  */
 void RankInfoStore::Reset()
 {
-    for (auto it = m_infoStore.begin(); it != m_infoStore.end(); it = m_infoStore.erase(it)) {
-        Delete_Instance(*it);
+    auto it = m_infoStore.begin();
+    while (it != m_infoStore.end()) {
+        if (*it != nullptr) { // Original code has this check but result will be infinte loop if it is null?
+            if ((*it)->Delete_Overrides() == nullptr) {
+                m_infoStore.erase(it);
+            } else {
+                ++it;
+            }
+        }
     }
 }
 
@@ -51,11 +58,11 @@ void RankInfoStore::Reset()
  */
 RankInfo *RankInfoStore::Get_Rank_Info(int level)
 {
-    if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level] == nullptr) {
+    if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level - 1] == nullptr) {
         return nullptr;
     }
 
-    return reinterpret_cast<RankInfo *>(m_infoStore[level]->Get_Final_Override());
+    return m_infoStore[level - 1]->Get_Override();
 }
 
 /**

@@ -48,6 +48,7 @@ public:
     void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
+    void Set_Player_Index(int index) { m_playerIndex = index; }
 
     const AsciiString &Get_Event_Name() const { return m_filename; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }

@@ -81,7 +81,7 @@ public:
 
     void Clear() { m_bits.reset(); }
     void Set(unsigned bit) { m_bits.set(bit); }
-    bool Get(unsigned bit) { return m_bits.test(bit); }
+    bool Get(unsigned bit) const { return m_bits.test(bit); }
 
     void Parse(INI *ini, AsciiString *string = nullptr);
     static void Parse_INI(INI *ini, void *formal, void *store, const void *user_data);

@@ -81,7 +81,7 @@ public:
     ThingTemplate();
     virtual ~ThingTemplate() {}
 
-    bool Is_KindOf(KindOfType type) { return m_kindOf.Get(type); }
+    bool Is_KindOf(KindOfType type) const { return m_kindOf.Get(type); }
 
 private:
     UnicodeString m_displayName;

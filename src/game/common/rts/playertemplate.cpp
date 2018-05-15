@@ -75,6 +75,11 @@ Image *PlayerTemplate::Get_Enabled_Image()
 #endif
 }
 
+/**
+ * @brief Parses modifiers for production cost into the internal map.
+ *
+ * 0x004D2B50
+ */
 void PlayerTemplate::Parse_Production_Cost_Change(INI *ini, void *formal, void *store, const void *user_data)
 {
     PlayerTemplate *pt = static_cast<PlayerTemplate *>(formal);
@@ -83,6 +88,11 @@ void PlayerTemplate::Parse_Production_Cost_Change(INI *ini, void *formal, void *
     pt->m_productionCostChanges[key] = value;
 }
 
+/**
+ * @brief Parses modifiers for production time into the internal map.
+ *
+ * 0x004D2BF0
+ */
 void PlayerTemplate::Parse_Production_Time_Change(INI *ini, void *formal, void *store, const void *user_data)
 {
     PlayerTemplate *pt = static_cast<PlayerTemplate *>(formal);
@@ -91,6 +101,11 @@ void PlayerTemplate::Parse_Production_Time_Change(INI *ini, void *formal, void *
     pt->m_productionTimeChanges[key] = value;
 }
 
+/**
+ * @brief Parses modifiers for veterancy level into the internal map.
+ *
+ * 0x004D2C90
+ */
 void PlayerTemplate::Parse_Production_Veterancy_Level(INI *ini, void *formal, void *store, const void *user_data)
 {
     PlayerTemplate *pt = static_cast<PlayerTemplate *>(formal);
@@ -99,6 +114,11 @@ void PlayerTemplate::Parse_Production_Veterancy_Level(INI *ini, void *formal, vo
     pt->m_productionTimeChanges[key] = value;
 }
 
+/**
+ * @brief Parses starting money amounts.
+ *
+ * 0x004D2DC0
+ */
 void PlayerTemplate::Parse_Start_Money(INI *ini, void *formal, void *store, const void *user_data)
 {
     Money *money = static_cast<Money *>(store);
@@ -108,6 +128,11 @@ void PlayerTemplate::Parse_Start_Money(INI *ini, void *formal, void *store, cons
     money->Deposit(value, true);
 }
 
+/**
+ * @brief Looks up the index in the vector for the first player template with the provided name.
+ *
+ * 0x004D3170
+ */
 int PlayerTemplateStore::Get_Template_Number_By_Name(AsciiString name)
 {
     for (int i = 0; i < m_playerTemplates.size(); ++i) {
@@ -119,6 +144,11 @@ int PlayerTemplateStore::Get_Template_Number_By_Name(AsciiString name)
     return -1;
 }
 
+/**
+ * @brief Finds a player template from a key.
+ *
+ * 0x004D32D0
+ */
 PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
 {
     static const NameKeyType _a0 = g_theNameKeyGenerator->Name_To_Key("FactionAmerica");
@@ -137,6 +167,7 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
     static const NameKeyType _g3 = g_theNameKeyGenerator->Name_To_Key("FactionGLABiowarCommand");
     static const NameKeyType _g4 = g_theNameKeyGenerator->Name_To_Key("FactionGLAWarlordCommand");
 
+    // Specialist sides are converted to base side for purposes of this lookup.
     if (key == _a1 || key == _a2 || key == _a3 || key == _a4) {
         key = _a0;
     } else if (key == _c1 || key == _c2 || key == _c3 || key == _c4) {
@@ -154,6 +185,11 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
     return nullptr;
 }
 
+/**
+ * @brief Retrieves a player template from its vector index.
+ *
+ * 0x004D35E0
+ */
 PlayerTemplate *PlayerTemplateStore::Get_Nth_Player_Template(int index)
 {
     if (index < 0 || index > m_playerTemplates.size()) {
@@ -163,6 +199,11 @@ PlayerTemplate *PlayerTemplateStore::Get_Nth_Player_Template(int index)
     return &m_playerTemplates[index];
 }
 
+/**
+ * @brief Populates a list of all sides used by players in the store.
+ *
+ * 0x004D3630
+ */
 void PlayerTemplateStore::Get_All_Side_Strings(std::list<AsciiString> *list)
 {
     if (list == nullptr) {
@@ -171,10 +212,12 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<AsciiString> *list)
 
     std::list<AsciiString> tmp;
 
+    // Go through the template vector and add all the sides present in it to the list.
     for (int i = 0; i < m_playerTemplates.size(); ++i) {
         AsciiString side_name = m_playerTemplates[i].Get_Side_Name();
         auto found = std::find(tmp.begin(), tmp.end(), side_name);
 
+        // If a matching entry isn't found already, add this side name to the list.
         if (found == tmp.end()) {
             tmp.push_back(side_name);
         }
@@ -183,6 +226,11 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<AsciiString> *list)
     *list = tmp;
 }
 
+/**
+ * @brief Parses player template definitions into the store from an ini file.
+ *
+ * 0x004D3860
+ */
 void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
 {
     static FieldParse _parse_table[] = {
@@ -234,13 +282,16 @@ void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
         { nullptr, nullptr, nullptr, 0 }
     };
 
-    PlayerTemplate *temp = g_thePlayerTemplateStore->Find_Player_Template(g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token()));
+    NameKeyType key = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
+    PlayerTemplate *temp = g_thePlayerTemplateStore->Find_Player_Template(key);
 
     if (temp != nullptr) {
         ini->Init_From_INI(temp, _parse_table);
+        temp->m_nameKey = key;
     } else {
         PlayerTemplate new_temp;
         ini->Init_From_INI(&new_temp, _parse_table);
+        new_temp.m_nameKey = key;
         g_thePlayerTemplateStore->m_playerTemplates.push_back(new_temp);
     }
 }

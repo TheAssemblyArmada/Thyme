@@ -30,6 +30,7 @@
 class MiscAudio
 {
 public:
+    const AudioEventRTS &Money_Deposit_Sound() { return m_moneyDeposit; }
     static void Parse_Misc_Audio(INI *ini);
 
 private:

@@ -117,6 +117,15 @@ enum CommandSourceType
     COMMANDSOURCE_COUNT,
 };
 
+enum VeterancyLevel
+{
+    VETERANCY_REGULAR,
+    VETERANCY_VETERAN,
+    VETERANCY_ELITE,
+    VETERANCY_HEROIC,
+    VETERANCY_COUNT,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];
@@ -127,3 +136,4 @@ extern const char *g_surfaceNames[SURFACE_COUNT + 1];
 extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
 extern const char *g_weaponSlotNames[WEAPONSLOT_COUNT + 1];
 extern const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1];
+extern const char *g_veterancyNames[VETERANCY_COUNT + 1];

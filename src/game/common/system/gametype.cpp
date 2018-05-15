@@ -75,3 +75,5 @@ const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1] = {
     "DEFAULT_SWITCH_WEAPON",
     nullptr
 };
+
+const char *g_veterancyNames[VETERANCY_COUNT + 1] = { "REGULAR", "VETERAN", "ELITE", "HEROIC", nullptr };

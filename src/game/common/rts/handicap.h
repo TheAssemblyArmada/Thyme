@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: HANDICAP.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: TODO.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Tracks handicap modifiers.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 class Dict;
@@ -40,16 +31,16 @@ public:
     {
         NONE = 0,
         GENERIC,
-        POLYGON,
+        THING_TYPE_COUNT,
     };
 
     Handicap();
 
     void Init();
-    void Read_From_Dict(Dict const *dict);
-    ThingType Get_Best_Thing_Type(ThingTemplate const *thing);
-    float Get_Handicap(HandicapType ht, ThingTemplate const *thing);
+    void Read_From_Dict(const Dict *dict);
+    ThingType Get_Best_Thing_Type(const ThingTemplate *thing);
+    float Get_Handicap(HandicapType ht, const ThingTemplate *thing);
 
 private:
-    float m_handicaps[HANDICAP_TYPE_COUNT][POLYGON];
+    float m_handicaps[HANDICAP_TYPE_COUNT][THING_TYPE_COUNT];
 };

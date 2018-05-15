@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handles abilities granted by gaining experience points.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -54,4 +53,19 @@ void ScienceStore::Reset()
             m_infoVec.erase(it);
         }
     }
+}
+
+ScienceType ScienceStore::Lookup_Science(const char *name)
+{
+    NameKeyType key = g_theNameKeyGenerator->Name_To_Key(name);
+
+    for (auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it) {
+        ScienceInfo *info = (*it)->Get_Override();
+
+        if (info->Check_Name_Key(key)) {
+            return ScienceType(key);
+        }
+    }
+
+    ASSERT_THROW_PRINT(false, 0xDEAD0006, "Failed to find matching ScienceType in Science Store.\n");
 }

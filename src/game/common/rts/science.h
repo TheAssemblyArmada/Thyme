@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Handles abilities granted by gaining experience points.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -34,6 +33,23 @@ enum ScienceType : int32_t
     SCIENCE_BOGUS = 0,
 };
 
+class ScienceInfo;
+
+class ScienceStore : public SubsystemInterface
+{
+public:
+    virtual ~ScienceStore() {}
+
+    virtual void Init() override { m_infoVec.clear(); }
+    virtual void Reset() override;
+    virtual void Update() override {}
+
+    ScienceType Lookup_Science(const char *name);
+
+private:
+    std::vector<ScienceInfo *> m_infoVec;
+};
+
 class ScienceInfo : public Overridable
 {
     IMPLEMENT_POOL(ScienceInfo);
@@ -43,6 +59,8 @@ public:
     virtual ~ScienceInfo() {}
 
     NameKeyType Get_Name_Key() { return m_nameKey; }
+    bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
+    ScienceInfo *Get_Override() { return m_next != nullptr ? reinterpret_cast<ScienceInfo *>(m_next->Get_Final_Override()) : this; }
 
 private:
     NameKeyType m_nameKey;
@@ -54,19 +72,6 @@ private:
     bool m_isGrantable;
 
     static FieldParse s_scienceFieldParseTable[];
-};
-
-class ScienceStore : public SubsystemInterface
-{
-public:
-    virtual ~ScienceStore() {}
-
-    virtual void Init() override { m_infoVec.clear(); }
-    virtual void Reset() override;
-    virtual void Update() override {}
-
-private:
-    std::vector<ScienceInfo *> m_infoVec;
 };
 
 #ifndef THYME_STANDALONE

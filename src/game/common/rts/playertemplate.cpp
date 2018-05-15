@@ -147,7 +147,7 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
 
     for (auto it = m_playerTemplates.begin(); it != m_playerTemplates.end(); ++it) {
         if (it->Check_Name_Key(key)) {
-            return it;
+            return &(*it);
         }
     }
 

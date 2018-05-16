@@ -30,6 +30,8 @@
 #include "globallanguage.h"
 #include "minmax.h"
 #include "mouse.h"
+#include "playertemplate.h"
+#include "rankinfo.h"
 #include "science.h"
 #include "stringex.h"
 #include "terrainroads.h"
@@ -97,10 +99,12 @@ BlockParse TheTypeTable[] =
     { "ObjectCreationList", (iniblockparse_t)(0x004C1570)/*&INI::parseObjectCreationListDefinition*/ },
     { "ObjectReskin", (iniblockparse_t)(0x00504990)/*&INI::parseObjectReskinDefinition*/ },
     { "ParticleSystem", (iniblockparse_t)(0x005047E0)/*&INI::parseParticleSystemDefinition*/ },
-    { "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
-    { "Road", TerrainRoadCollection::Parse_Terrain_Road_Definitions },
+    //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
+    { "PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definitions },
+    { "Road", &TerrainRoadCollection::Parse_Terrain_Road_Definitions },
     { "Science", (iniblockparse_t)(0x00488EA0)/*&INI::parseScienceDefinition*/ },
-    { "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
+    //{ "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
+    { "Rank", &RankInfoStore::Parse_Rank_Definition },
     { "SpecialPower", (iniblockparse_t)(0x00504690)/*&INI::parseSpecialPowerDefinition*/ },
     { "ShellMenuScheme", (iniblockparse_t)(0x00503CE0)/*&INI::parseShellMenuSchemeDefinition*/ },
     { "Terrain", &TerrainTypeCollection::Parse_Terrain_Definition },

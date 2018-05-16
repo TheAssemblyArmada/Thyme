@@ -114,6 +114,10 @@ public:
 
     static void Parse_Player_Template_Definitions(INI *ini);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     std::vector<PlayerTemplate> m_playerTemplates;
 };
@@ -122,6 +126,15 @@ private:
 #include "hooker.h"
 
 extern PlayerTemplateStore *&g_thePlayerTemplateStore;
+
+inline void PlayerTemplateStore::Hook_Me()
+{
+    Hook_Method(0x004D3170, &Get_Template_Number_By_Name);
+    Hook_Method(0x004D32D0, &Find_Player_Template);
+    Hook_Method(0x004D35E0, &Get_Nth_Player_Template);
+    Hook_Method(0x004D3630, &Get_All_Side_Strings);
+    Hook_Function(0x004D3860, &Parse_Player_Template_Definitions);
+}
 #else
 extern PlayerTemplateStore *g_thePlayerTemplateStore;
 #endif

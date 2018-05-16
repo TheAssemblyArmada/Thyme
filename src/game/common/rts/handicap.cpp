@@ -13,29 +13,60 @@
  *            LICENSE
  */
 #include "handicap.h"
+#include "dict.h"
+#include "namekeygenerator.h"
 
 Handicap::Handicap()
 {
-    m_handicaps[0][0] = 1.0f;
-    m_handicaps[0][1] = 1.0f;
-    m_handicaps[1][0] = 1.0f;
-    m_handicaps[1][1] = 1.0f;
+    Init();
 }
 
+/**
+ * @brief Initialises all handicap multipliers to 1.0.
+ *
+ * 0x005773A0
+ */
 void Handicap::Init()
 {
+    m_handicaps[BUILDCOST][GENERIC] = 1.0f;
+    m_handicaps[BUILDCOST][BUILDINGS] = 1.0f;
+    m_handicaps[BUILDTIME][GENERIC] = 1.0f;
+    m_handicaps[BUILDTIME][BUILDINGS] = 1.0f;
 }
 
-void Handicap::Read_From_Dict(const Dict * dict)
+/**
+ * @brief Read handicap settings from a dict object.
+ *
+ * 0x005773C0
+ */
+void Handicap::Read_From_Dict(const Dict *dict)
 {
+    static const char *_ht_names[] = { "BUILDCOST", "BUILDTIME" };
+    static const char *_tt_names[] = { "GENERIC", "BUILDINGS" };
+    bool exists = false;
+
+    for (int i = 0; i < HANDICAP_TYPE_COUNT; ++i) {
+        for (int j = 0; j < THING_TYPE_COUNT; ++j) {
+            AsciiString key_name = "HANDICAP_";
+            key_name += _ht_names[i];
+            key_name += "_";
+            key_name += _tt_names[j];
+
+            float value = dict->Get_Real(g_theNameKeyGenerator->Name_To_Key(key_name), &exists);
+
+            if (exists) {
+                m_handicaps[i][j] = value;
+            }
+        }
+    }
 }
 
-Handicap::ThingType Handicap::Get_Best_Thing_Type(const ThingTemplate * thing)
+/**
+ * @brief Gets the handicap of the requested type for a thing.
+ *
+ * 0x00577640
+ */
+float Handicap::Get_Handicap(HandicapType ht, const ThingTemplate *thing)
 {
-    return ThingType();
-}
-
-float Handicap::Get_Handicap(HandicapType ht, const ThingTemplate * thing)
-{
-    return 0.0f;
+    return m_handicaps[ht][Get_Best_Thing_Type(thing)];
 }

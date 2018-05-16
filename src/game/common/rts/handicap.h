@@ -14,23 +14,25 @@
  */
 #pragma once
 
+#include "always.h"
+#include "thingtemplate.h"
+
 class Dict;
-class ThingTemplate;
 
 class Handicap
 {
 public:
     enum HandicapType
     {
-        BUILDCOST = 0,
+        BUILDCOST,
         BUILDTIME,
         HANDICAP_TYPE_COUNT,
     };
 
     enum ThingType
     {
-        NONE = 0,
         GENERIC,
+        BUILDINGS,
         THING_TYPE_COUNT,
     };
 
@@ -38,7 +40,7 @@ public:
 
     void Init();
     void Read_From_Dict(const Dict *dict);
-    ThingType Get_Best_Thing_Type(const ThingTemplate *thing);
+    ThingType Get_Best_Thing_Type(const ThingTemplate *thing) { return thing->Is_KindOf(KINDOF_STRUCTURE) ? BUILDINGS : GENERIC; }
     float Get_Handicap(HandicapType ht, const ThingTemplate *thing);
 
 private:

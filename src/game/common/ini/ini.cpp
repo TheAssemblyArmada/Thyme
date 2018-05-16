@@ -932,7 +932,7 @@ void INI::Parse_Science_Vector(INI *ini, void *formal, void *store, const void *
     std::vector<ScienceType> *sci_vec = static_cast<std::vector<ScienceType> *>(store);
     sci_vec->clear();
 
-    for (const char *token = ini->Get_Next_Token(); token != nullptr; token = ini->Get_Next_Token()) {
+    for (const char *token = ini->Get_Next_Token_Or_Null(); token != nullptr; token = ini->Get_Next_Token_Or_Null()) {
         if (strcasecmp(token, "None") == 0) {
             sci_vec->clear();
 

@@ -233,7 +233,7 @@ inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 inline const char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = strtok(0, seps != nullptr ? seps : m_seps);
-    ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens\n");
+    ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens in '%s', line %d\n", m_fileName.Str(), m_lineNumber);
 
     return ret;
 }

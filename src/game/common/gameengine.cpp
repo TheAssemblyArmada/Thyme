@@ -30,8 +30,9 @@
 #include "modulefactory.h"
 #include "multiplayersettings.h"
 #include "namekeygenerator.h"
-#include "rankinfo.h"
+#include "playertemplate.h"
 #include "randomvalue.h"
+#include "rankinfo.h"
 #include "science.h"
 #include "sideslist.h"
 #include "subsysteminterface.h"
@@ -58,7 +59,7 @@ GameEngine::GameEngine() : m_maxFPS(0), m_isQuitting(false), m_isActive(false)
 
 GameEngine::~GameEngine()
 {
-// TODO
+    // TODO
 
 #ifdef PLATFORM_WINDOWS
     timeEndPeriod(1);
@@ -150,21 +151,30 @@ void GameEngine::Init(int argc, char *argv[])
 
     g_theFunctionLexicon = Create_Function_Lexicon();
     g_theSubsystemList->Init_Subsystem(g_theFunctionLexicon, nullptr, nullptr, nullptr, nullptr, "TheFunctionLexicon");
-    
+
     g_theModuleFactory = Create_Module_Factory();
     g_theSubsystemList->Init_Subsystem(g_theModuleFactory, nullptr, nullptr, nullptr, nullptr, "TheModuleFactory");
 
     g_theMessageStream = Create_Message_Stream();
     g_theSubsystemList->Init_Subsystem(g_theMessageStream, nullptr, nullptr, nullptr, nullptr, "TheMessageStream");
-    
+
     g_theSidesList = new SidesList;
     g_theSubsystemList->Init_Subsystem(g_theSidesList, nullptr, nullptr, nullptr, nullptr, "TheSidesList");
-    
+
     g_theCaveSystem = new CaveSystem;
     g_theSubsystemList->Init_Subsystem(g_theCaveSystem, nullptr, nullptr, nullptr, nullptr, "TheCaveSystem");
 
     g_theRankInfoStore = new RankInfoStore;
     g_theSubsystemList->Init_Subsystem(g_theRankInfoStore, nullptr, "Data/INI/Rank.ini", nullptr, &xfer, "TheRankInfoStore");
+
+    g_thePlayerTemplateStore = new PlayerTemplateStore;
+    g_theSubsystemList->Init_Subsystem(g_thePlayerTemplateStore,
+        "Data/INI/Default/PlayerTemplate.ini",
+        "Data/INI/PlayerTemplate.ini",
+        nullptr,
+        &xfer,
+        "ThePlayerTemplateStore");
+
     // TODO this is a WIP
 }
 
@@ -183,7 +193,7 @@ FileSystem *GameEngine::Create_File_System()
 MessageStream *GameEngine::Create_Message_Stream()
 {
 #ifndef THYME_STANDALONE
-    return Call_Method<MessageStream*, GameEngine>(0x0040FF00, this);
+    return Call_Method<MessageStream *, GameEngine>(0x0040FF00, this);
 #else
     return nullptr;
 #endif

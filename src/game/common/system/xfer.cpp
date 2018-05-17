@@ -1,29 +1,22 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: XFER.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Some transfer thing interface.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Some data transfer interface?
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "xfer.h"
+#include "endiantype.h"
 #include "gamestate.h"
 #include "matrix3d.h"
+#include "randomvalue.h"
 
 void Xfer::Open(AsciiString filename)
 {
@@ -54,46 +47,63 @@ void Xfer::xferBool(bool *thing)
 
 void Xfer::xferInt(int32_t *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    int32_t temp = htole32(*thing);
+    xferImplementation(&temp, sizeof(temp));
+    *thing = le32toh(temp);
 }
 
 void Xfer::xferInt64(int64_t *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    int64_t temp = htole64(*thing);
+    xferImplementation(&temp, sizeof(temp));
+    *thing = le64toh(temp);
 }
 
 void Xfer::xferUnsignedInt(uint32_t *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    uint32_t temp = htole32(*thing);
+    xferImplementation(&temp, sizeof(temp));
+    *thing = le32toh(temp);
 }
 
 void Xfer::xferShort(int16_t *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    int16_t temp = htole16(*thing);
+    xferImplementation(&temp, sizeof(temp));
+    *thing = le16toh(temp);
 }
 
 void Xfer::xferUnsignedShort(uint16_t *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    int16_t temp = htole16(*thing);
+    xferImplementation(&temp, sizeof(temp));
+    *thing = le16toh(temp);
 }
 
 void Xfer::xferReal(float *thing)
 {
-    xferImplementation(thing, sizeof(*thing));
+    static_assert(sizeof(float_int_tp) == sizeof(uint32_t), "Type punning union size is incorrect.");
+    float_int_tp temp;
+    temp.real = *thing;
+    temp.integer = htole32(temp.integer);
+    xferImplementation(&temp, sizeof(temp));
+    temp.integer = le32toh(temp.integer);
+    *thing = temp.real;
 }
 
 void Xfer::xferMarkerLabel(AsciiString thing)
 {
+    // Empty
 }
 
 void Xfer::xferAsciiString(AsciiString *thing)
 {
-    xferImplementation(const_cast<char*>(thing->Str()), thing->Get_Length());
+    xferImplementation(const_cast<char *>(thing->Str()), thing->Get_Length());
 }
 
 void Xfer::xferUnicodeString(UnicodeString *thing)
 {
-    xferImplementation(const_cast<wchar_t*>(thing->Str()), thing->Get_Length() * 2);
+    xferImplementation(const_cast<wchar_t *>(thing->Str()), thing->Get_Length() * 2);
 }
 
 void Xfer::xferCoord3D(Coord3D *thing)
@@ -182,12 +192,12 @@ void Xfer::xferRGBAColorInt(RGBAColorInt *thing)
 
 void Xfer::xferObjectID(ObjectID *thing)
 {
-    xferInt(reinterpret_cast<int32_t*>(thing));
+    xferInt(reinterpret_cast<int32_t *>(thing));
 }
 
 void Xfer::xferDrawableID(DrawableID *thing)
 {
-    xferInt(reinterpret_cast<int32_t*>(thing));
+    xferInt(reinterpret_cast<int32_t *>(thing));
 }
 
 void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
@@ -198,8 +208,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
 
-    if ( Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC ) {
-        for ( auto it = thing->begin(); it != thing->end(); ++it ) {
+    if (Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC) {
+        for (auto it = thing->begin(); it != thing->end(); ++it) {
             xferObjectID(&(*it));
         }
     } else {
@@ -208,7 +218,7 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
 
         ObjectID val;
 
-        for ( int i = 0; i < count; ++i ) {
+        for (int i = 0; i < count; ++i) {
             xferObjectID(&val);
             thing->insert(thing->end(), val);
         }
@@ -223,8 +233,8 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
 
-    if ( Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC ) {
-        for ( auto it = thing->begin(); it != thing->end(); ++it ) {
+    if (Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC) {
+        for (auto it = thing->begin(); it != thing->end(); ++it) {
             xferObjectID(&(*it));
         }
     } else {
@@ -233,7 +243,7 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
 
         ObjectID val;
 
-        for ( int i = 0; i < count; ++i ) {
+        for (int i = 0; i < count; ++i) {
             xferObjectID(&val);
             thing->insert(thing->end(), val);
         }
@@ -242,7 +252,7 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
 
 void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 {
-    if ( thing == nullptr ) {
+    if (thing == nullptr) {
         return;
     }
 
@@ -252,8 +262,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
 
-    if ( Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC ) {
-        for ( auto it = thing->begin(); it != thing->end(); ++it ) {
+    if (Get_Mode() == XFER_SAVE || Get_Mode() == XFER_CRC) {
+        for (auto it = thing->begin(); it != thing->end(); ++it) {
             xferInt(&(*it));
         }
     } else {
@@ -262,7 +272,7 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 
         int32_t val;
 
-        for ( int i = 0; i < count; ++i ) {
+        for (int i = 0; i < count; ++i) {
             xferInt(&val);
             thing->insert(thing->end(), val);
         }
@@ -272,11 +282,17 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 void Xfer::xferScienceType(ScienceType *thing)
 {
     // TODO, needs parts of ScienceStore
+#ifndef THYME_STANDALONE
+    Call_Method<void, Xfer, ScienceType *>(0x005F0120, this, thing);
+#endif
 }
 
 void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 {
     // TODO, needs parts of ScienceStore
+#ifndef THYME_STANDALONE
+    Call_Method<void, Xfer, std::vector<ScienceType> *>(0x005F02A0, this, thing);
+#endif
 }
 
 void Xfer::xferKindOf(KindOfType *thing)
@@ -287,9 +303,9 @@ void Xfer::xferKindOf(KindOfType *thing)
     AsciiString kind;
     const char *kindc;
 
-    switch ( Get_Mode() ) {
+    switch (Get_Mode()) {
         case XFER_SAVE:
-            if ( *thing >= KINDOF_FIRST || *thing < KINDOF_COUNT ) {
+            if (*thing >= KINDOF_FIRST || *thing < KINDOF_COUNT) {
                 kind = BitFlags<KINDOF_COUNT>::s_bitNamesList[*thing];
             }
 
@@ -300,8 +316,8 @@ void Xfer::xferKindOf(KindOfType *thing)
             xferAsciiString(&kind);
             kindc = kind.Str();
 
-            for ( int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i ) {
-                if ( strcasecmp(kindc, BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0 ) {
+            for (int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
+                if (strcasecmp(kindc, BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0) {
                     *thing = (KindOfType)i;
                     break;
                 }
@@ -320,6 +336,9 @@ void Xfer::xferKindOf(KindOfType *thing)
 void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 {
     // TODO, needs part of UpgradeCenter
+#ifndef THYME_STANDALONE
+    Call_Method<void, Xfer, BitFlags<128> *>(0x005F05C0, this, thing);
+#endif
 }
 
 void Xfer::xferUser(void *thing, int size)
@@ -347,11 +366,25 @@ void Xfer::xferMapName(AsciiString *thing)
 {
     AsciiString map;
 
-    if ( Get_Mode() == XFER_SAVE ) {
+    if (Get_Mode() == XFER_SAVE) {
         map = g_theGameState->Real_To_Portable_Map_Path(*thing);
         xferAsciiString(&map);
-    } else if ( Get_Mode() == XFER_LOAD ) {
+    } else if (Get_Mode() == XFER_LOAD) {
         xferAsciiString(&map);
         *thing = g_theGameState->Portable_To_Real_Map_Path(map);
     }
+}
+
+void Xfer::Xfer_Client_Random_Var(GameClientRandomVariable *thing)
+{
+    xferInt(reinterpret_cast<int32_t *>(&thing->m_type));
+    xferReal(&thing->m_low);
+    xferReal(&thing->m_high);
+}
+
+void Xfer::Xfer_Logic_Random_Var(GameLogicRandomVariable *thing)
+{
+    xferInt(reinterpret_cast<int32_t *>(&thing->m_type));
+    xferReal(&thing->m_low);
+    xferReal(&thing->m_high);
 }

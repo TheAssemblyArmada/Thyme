@@ -1,63 +1,62 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: COORD.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Coordinate objects.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Coordinate objects.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
-#include <cstdint>
-#include <math.h>
+#include "always.h"
+#include "gamemath.h"
+
+using GameMath::Sqrt;
 
 class Coord2D
 {
-    public:
-        float x;
-        float y;
+public:
+    Coord2D() : x(0.0f), y(0.0f) {}
+    Coord2D(float x_val, float y_val) : x(x_val), y(y_val) {}
+    float Length() { return float(Sqrt(float(float(x * x) + float(y * y)))); }
 
-        float Length() { return (float)sqrtf(x * x + y * y); }
+public:
+    float x;
+    float y;
 };
 
 class Coord3D
 {
-    public:
-        float x;
-        float y;
-        float z;
+public:
+    Coord3D() : x(0.0f), y(0.0f), z(0.0f) {}
+    Coord3D(float x_val, float y_val, float z_val) : x(x_val), y(y_val), z(z_val) {}
+    float Length() { return float(Sqrt(float(float(float(x * x) + float(y * y)) + float(z * z)))); }
 
-        float Length() { return (float)sqrtf(x * x + y * y + z * z); }
+public:
+    float x;
+    float y;
+    float z;
 };
 
 class ICoord2D
 {
-    public:
-        int32_t x;
-        int32_t y;
+public:
+    int32_t x;
+    int32_t y;
 };
 
 class ICoord3D
 {
-    public:
-        int32_t x;
-        int32_t y;
-        int32_t z;
+public:
+    int32_t x;
+    int32_t y;
+    int32_t z;
 };
 
 class Region2D

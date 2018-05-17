@@ -77,3 +77,22 @@ const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1] = {
 };
 
 const char *g_veterancyNames[VETERANCY_COUNT + 1] = { "REGULAR", "VETERAN", "ELITE", "HEROIC", nullptr };
+
+const char *g_particlePriorityNames[PARTPRIORITY_COUNT + 1] =
+{
+    "NONE",
+    "WEAPON_EXPLOSION",
+    "SCORCHMARK",
+    "DUST_TRAIL",
+    "BUILDUP",
+    "DEBRIS_TRAIL",
+    "UNIT_DAMAGE_FX",
+    "DEATH_EXPLOSION",
+    "SEMI_CONSTANT",
+    "CONSTANT",
+    "WEAPON_TRAIL",
+    "AREA_EFFECT",
+    "CRITICAL",
+    "ALWAYS_RENDER",
+    nullptr
+};

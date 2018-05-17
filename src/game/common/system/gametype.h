@@ -126,6 +126,25 @@ enum VeterancyLevel
     VETERANCY_COUNT,
 };
 
+enum ParticlePriorityType
+{
+    PARTPRIORITY_NONE,
+    PARTPRIORITY_WEAPON_EXPLOSION,
+    PARTPRIORITY_SCORCHMARK,
+    PARTPRIORITY_DUST_TRAIL,
+    PARTPRIORITY_BUILDUP,
+    PARTPRIORITY_DEBRIS_TRAIL,
+    PARTPRIORITY_UNIT_DAMAGE_FX,
+    PARTPRIORITY_DEATH_EXPLOSION,
+    PARTPRIORITY_SEMI_CONSTANT,
+    PARTPRIORITY_CONSTANT,
+    PARTPRIORITY_WEAPON_TRAIL,
+    PARTPRIORITY_AREA_EFFECT,
+    PARTPRIORITY_CRITICAL,
+    PARTPRIORITY_ALWAYS_RENDER,
+    PARTPRIORITY_COUNT,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];
@@ -137,3 +156,4 @@ extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
 extern const char *g_weaponSlotNames[WEAPONSLOT_COUNT + 1];
 extern const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1];
 extern const char *g_veterancyNames[VETERANCY_COUNT + 1];
+extern const char *g_particlePriorityNames[PARTPRIORITY_COUNT + 1];

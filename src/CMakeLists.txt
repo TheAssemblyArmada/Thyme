@@ -23,6 +23,7 @@ set(GAMEENGINE_INCLUDES
     game/client
     game/client/gui
     game/client/input
+    game/client/system/particlesystem
     game/common
     game/common/audio
     game/common/compression
@@ -60,6 +61,7 @@ set(GAMEENGINE_SRC
     game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/system/particlesystem/particlesysinfo.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

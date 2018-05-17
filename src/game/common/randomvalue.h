@@ -34,6 +34,7 @@ float Get_Logic_Random_Value_Real(float lo, float hi, const char *file = nullptr
 
 class GameLogicRandomVariable
 {
+    friend class Xfer;
 public:
     enum DistributionType : int32_t
     {
@@ -55,6 +56,7 @@ private:
 
 class GameClientRandomVariable
 {
+    friend class Xfer;
 public:
     enum DistributionType : int32_t
     {

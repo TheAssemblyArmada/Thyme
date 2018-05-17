@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: XFER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Some transfer thing interface.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Some data transfer interface?
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "asciistring.h"
@@ -42,15 +33,19 @@ struct RealRange
     float hi;
 };
 
+// TODO temp until we have proper DrawableID enum.
 typedef int DrawableID;
 
 enum XferType
 {
-    XFER_INVALID = 0,
-    XFER_SAVE    = 1,
-    XFER_LOAD    = 2,
-    XFER_CRC     = 3,
+    XFER_INVALID,
+    XFER_SAVE,
+    XFER_LOAD,
+    XFER_CRC,
 };
+
+class GameClientRandomVariable;
+class GameLogicRandomVariable;
 
 class Xfer
 {
@@ -59,9 +54,9 @@ public:
     virtual ~Xfer() {}
 
     virtual XferType Get_Mode() { return m_type; }
-    virtual void Set_Options(unsigned int options) { m_options |= options; }
-    virtual void Clear_Options(unsigned int options) { m_options &= ~options; }
-    virtual unsigned int Get_Options(void) { return m_options; }
+    virtual void Set_Options(unsigned options) { m_options |= options; }
+    virtual void Clear_Options(unsigned options) { m_options &= ~options; }
+    virtual unsigned Get_Options() { return m_options; }
 
     virtual void Open(AsciiString filename);
     virtual void Close() = 0;
@@ -110,8 +105,11 @@ public:
     virtual void xferMapName(AsciiString *thing);
     virtual void xferImplementation(void *thing, int size) = 0;
 
+    void Xfer_Client_Random_Var(GameClientRandomVariable *thing);
+    void Xfer_Logic_Random_Var(GameLogicRandomVariable *thing);
+
 protected:
-    unsigned int m_options;
+    unsigned m_options;
     XferType m_type;
     AsciiString m_filename;
 };

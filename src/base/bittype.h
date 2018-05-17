@@ -54,3 +54,10 @@
     typedef uint64_t uint64_a;
     typedef wchar_t wchar_a;
 #endif
+
+// Union to use for type punning.
+union float_int_tp
+{
+    uint32_a integer;
+    float_a real;
+};

@@ -22,6 +22,10 @@
 #include "randomvalue.h"
 #include "snapshot.h"
 
+#ifndef THYME_STANDALONE
+#include <new>
+#endif
+
 class ParticleSystemInfo : public SnapShot
 {
     enum
@@ -133,12 +137,26 @@ public:
 
     void Tint_All_Colors(int tint);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    void Hook_Xfer(Xfer *xfer) { ParticleSystemInfo::Xfer_Snapshot(xfer); }
+    ParticleSystemInfo *Hook_Ctor() { return new(this) ParticleSystemInfo; }
+#endif
+
 protected:
     bool m_isOneShot;
     ParticleShaderType m_shaderType;
     ParticleType m_particleType;
     AsciiString m_particleTypeName;
+#ifdef THYME_STANDALONE
+    GameClientRandomVariable m_angleX;
+    GameClientRandomVariable m_angleY;
+#endif
     GameClientRandomVariable m_angleZ;
+#ifdef THYME_STANDALONE
+    GameClientRandomVariable m_angularRateX;
+    GameClientRandomVariable m_angularRateY;
+#endif
     GameClientRandomVariable m_angularRateZ;
     GameClientRandomVariable m_angularDamping;
     GameClientRandomVariable m_velDamping;
@@ -182,3 +200,14 @@ protected:
     float m_windMotionEndAngleMax;
     bool m_windMotionMovingToEndAngle;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void ParticleSystemInfo::Hook_Me()
+{
+    Hook_Method(0x004CD460, &Hook_Ctor);
+    Hook_Method(0x004CD5D0, &Hook_Xfer);
+    Hook_Method(0x004CD540, &Tint_All_Colors);
+}
+#endif

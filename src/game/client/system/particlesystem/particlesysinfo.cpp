@@ -80,11 +80,21 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_shaderType));  // Original calls xferUser, endianness issues.
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_particleType));  // Original calls xferUser, endianness issues.
     xfer->xferAsciiString(&m_particleTypeName);
+#ifdef THYME_STANDALONE
+    xfer->Xfer_Client_Random_Var(&m_angleX);
+    xfer->Xfer_Client_Random_Var(&m_angleY);
+#else
     xfer->Xfer_Client_Random_Var(&fake); // angleX in Generals. // These xfers used xferUser to transfer as opaque objects, but has endian issues.
     xfer->Xfer_Client_Random_Var(&fake); // angleY in Generals.
+#endif
     xfer->Xfer_Client_Random_Var(&m_angleZ);
+#ifdef THYME_STANDALONE
+    xfer->Xfer_Client_Random_Var(&m_angularRateX);
+    xfer->Xfer_Client_Random_Var(&m_angularRateY);
+#else
     xfer->Xfer_Client_Random_Var(&fake); // angularRateX in Generals.
     xfer->Xfer_Client_Random_Var(&fake); // angularRateY in Generals.
+#endif
     xfer->Xfer_Client_Random_Var(&m_angularRateZ);
     xfer->Xfer_Client_Random_Var(&m_angularDamping);
     xfer->Xfer_Client_Random_Var(&m_velDamping);

@@ -39,7 +39,6 @@ void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test,
     //DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
     switch (m_type) {
         case SIDE:
-            DEBUG_LOG("Qualifying side '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
             if (m_string + suffix == side_test) {
                 m_string = side_replacemet;
             }
@@ -47,7 +46,6 @@ void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test,
             break;
         case TEAM:
             if (m_string == "<This Team>") {
-                DEBUG_LOG("Qualifying team, adding suffix '%s'.\n", suffix.Str());
                 m_string += suffix;
             }
 
@@ -56,7 +54,6 @@ void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test,
         case COUNTER: // Fallthrough
         case FLAG: // Fallthrough
         case SCRIPT_SUBROUTINE:
-            DEBUG_LOG("Qualifying adding suffix '%s' to '%s'.\n", suffix.Str(), m_string.Str());
             m_string += suffix;
             break;
         default:

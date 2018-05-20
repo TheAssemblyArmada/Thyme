@@ -33,12 +33,6 @@ class ParticleSystemInfo : public SnapShot
         KEYFRAME_COUNT = 8,
     };
 
-    struct RandomKeyframe
-    {
-        GameClientRandomVariable var;
-        uint32_t frame;
-    };
-
     enum EmissionVelocityType : int32_t
     {
         EMISSION_VELOCITY_NONE,
@@ -126,6 +120,13 @@ class ParticleSystemInfo : public SnapShot
         PARTICLE_TYPE_STREAK,
         PARTICLE_TYPE_VOLUME_PARTICLE,
         PARTICLE_TYPE_SMUDGE,
+    };
+
+protected:
+    struct RandomKeyframe
+    {
+        GameClientRandomVariable var;
+        uint32_t frame;
     };
 
 public:

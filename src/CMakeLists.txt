@@ -62,6 +62,7 @@ set(GAMEENGINE_SRC
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
     game/client/system/particlesystem/particlesysinfo.cpp
+    game/client/system/particlesystem/particlesysmanager.cpp
     game/client/system/particlesystem/particlesystemplate.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp

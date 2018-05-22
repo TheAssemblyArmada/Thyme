@@ -551,7 +551,7 @@ GlobalData::GlobalData()
     m_unkInt6 = 512;
     m_unkInt7 = 512;
     m_occludedColorLuminanceScale = 0.5f;
-    m_fogOfWarOn = true;
+    m_useFX = true;
     m_unkFloat4 = 0;
     m_particleScale = 1.0f;
     m_autoFireParticleSmallMax = 0;

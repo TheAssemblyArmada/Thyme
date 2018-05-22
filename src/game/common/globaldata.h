@@ -222,7 +222,7 @@ public:
     bool m_speechOn;
     bool m_videoOn;
     bool m_disableCameraMovements;
-    bool m_fogOfWarOn; // not 100% sure about this, needs confirming
+    bool m_useFX;
     bool m_showClientPhysics;
     bool m_showTerrainNormals;
     // char pad[2]

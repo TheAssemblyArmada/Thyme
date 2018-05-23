@@ -190,7 +190,7 @@ void GameLogicRandomVariable::Set_Range(float min, float max, DistributionType t
     m_type = type;
 }
 
-float GameLogicRandomVariable::Get_Value()
+float GameLogicRandomVariable::Get_Value() const
 {
     switch (m_type) {
         case CONSTANT:
@@ -216,7 +216,7 @@ void GameClientRandomVariable::Set_Range(float min, float max, DistributionType 
     m_type = type;
 }
 
-float GameClientRandomVariable::Get_Value()
+float GameClientRandomVariable::Get_Value() const
 {
     switch (m_type) {
         case CONSTANT:

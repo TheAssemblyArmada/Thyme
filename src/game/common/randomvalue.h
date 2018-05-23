@@ -42,11 +42,13 @@ public:
         UNIFORM,
     };
 
+    operator float() const { return Get_Value(); }
+
     void Set_Range(float min, float max, DistributionType type);
-    float Get_Value();
-    float Get_Min() { return m_low; }
-    float Get_Max() { return m_high; }
-    DistributionType Get_Type() { return m_type; }
+    float Get_Value() const ;
+    float Get_Min() const { return m_low; }
+    float Get_Max() const { return m_high; }
+    DistributionType Get_Type() const { return m_type; }
 
 private:
     DistributionType m_type;
@@ -64,11 +66,13 @@ public:
         UNIFORM,
     };
 
+    operator float() const { return Get_Value(); }
+
     void Set_Range(float min, float max, DistributionType type);
-    float Get_Value();
-    float Get_Min() { return m_low; }
-    float Get_Max() { return m_high; }
-    DistributionType Get_Type() { return m_type; }
+    float Get_Value() const;
+    float Get_Min() const { return m_low; }
+    float Get_Max() const { return m_high; }
+    DistributionType Get_Type() const { return m_type; }
 
 private:
     DistributionType m_type;

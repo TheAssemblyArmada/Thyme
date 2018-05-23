@@ -28,6 +28,7 @@
 
 class ParticleSystemInfo : public SnapShot
 {
+protected:
     enum
     {
         KEYFRAME_COUNT = 8,
@@ -46,6 +47,14 @@ class ParticleSystemInfo : public SnapShot
     union EmissionVelocityUnion
     {
         EmissionVelocityUnion() {}
+        EmissionVelocityUnion &operator=(const EmissionVelocityUnion &that)
+        {
+            if (this != &that) {
+                memcpy(this, &that, sizeof(that));
+            }
+
+            return *this;
+        }
 
         struct
         {
@@ -80,6 +89,15 @@ class ParticleSystemInfo : public SnapShot
     union EmissionVolumeUnion
     {
         EmissionVolumeUnion() {}
+
+        EmissionVolumeUnion &operator=(const EmissionVolumeUnion &that)
+        {
+            if (this != &that) {
+                memcpy(this, &that, sizeof(that));
+            }
+
+            return *this;
+        }
 
         struct
         {
@@ -122,7 +140,6 @@ class ParticleSystemInfo : public SnapShot
         PARTICLE_TYPE_SMUDGE,
     };
 
-protected:
     struct RandomKeyframe
     {
         GameClientRandomVariable var;
@@ -131,6 +148,7 @@ protected:
 
 public:
     ParticleSystemInfo();
+    ParticleSystemInfo(const ParticleSystemInfo &that);
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
@@ -201,6 +219,67 @@ protected:
     float m_windMotionEndAngleMax;
     bool m_windMotionMovingToEndAngle;
 };
+
+inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
+    m_isOneShot(that.m_isOneShot),
+    m_shaderType(that.m_shaderType),
+    m_particleType(that.m_particleType),
+    m_particleTypeName(that.m_particleTypeName),
+#ifdef THYME_STANDALONE
+    m_angleX(that.m_angleX),
+    m_angleY(that.m_angleY),
+#endif
+    m_angleZ(that.m_angleZ),
+#ifdef THYME_STANDALONE
+    m_angularRateX(that.m_angularRateX),
+    m_angularRateY(that.m_angularRateY),
+#endif
+    m_angularRateZ(that.m_angularRateZ),
+    m_angularDamping(that.m_angularDamping),
+    m_velDamping(that.m_velDamping),
+    m_lifetime(that.m_lifetime),
+    m_systemLifetime(that.m_systemLifetime),
+    m_startSize(that.m_startSize),
+    m_startSizeRate(that.m_startSizeRate),
+    m_sizeRate(that.m_sizeRate),
+    m_sizeRateDamping(that.m_sizeRateDamping),
+    m_unkValue(that.m_unkValue),
+    m_colorScale(that.m_colorScale),
+    m_burstDelay(that.m_burstDelay),
+    m_burstCount(that.m_burstCount),
+    m_initialDelay(that.m_initialDelay),
+    m_driftVelocity(that.m_driftVelocity),
+    m_gravity(that.m_gravity),
+    m_slaveSystemName(that.m_slaveSystemName),
+    m_slavePosOffset(that.m_slavePosOffset),
+    m_attachedSystemName(that.m_attachedSystemName),
+    m_emissionVelocityType(that.m_emissionVelocityType),
+    m_priority(that.m_priority),
+    m_emissionVelocity(that.m_emissionVelocity),
+    m_emissionVolumeType(that.m_emissionVolumeType),
+    m_emissionVolume(that.m_emissionVolume),
+    m_isEmissionVolumeHollow(that.m_isEmissionVolumeHollow),
+    m_isGroundAligned(that.m_isGroundAligned),
+    m_isEmitAboveGroundOnly(that.m_isEmitAboveGroundOnly),
+    m_isParticleUpTowardsEmitter(that.m_isParticleUpTowardsEmitter),
+    m_windMotion(that.m_windMotion),
+    m_windAngle(that.m_windAngle),
+    m_windAngleChange(that.m_windAngleChange),
+    m_windAngleChangeMin(that.m_windAngleChangeMin),
+    m_windAngleChangeMax(that.m_windAngleChangeMax),
+    m_windMotionStartAngle(that.m_windMotionStartAngle),
+    m_windMotionStartAngleMin(that.m_windMotionStartAngleMin),
+    m_windMotionStartAngleMax(that.m_windMotionStartAngleMax),
+    m_windMotionEndAngle(that.m_windMotionEndAngle),
+    m_windMotionEndAngleMin(that.m_windMotionEndAngleMin),
+    m_windMotionEndAngleMax(that.m_windMotionEndAngleMax),
+    m_windMotionMovingToEndAngle(that.m_windMotionMovingToEndAngle)
+{
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        m_alphaKey[i] = that.m_alphaKey[i];
+        m_colorKey[i] = that.m_colorKey[i];
+    }
+}
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"

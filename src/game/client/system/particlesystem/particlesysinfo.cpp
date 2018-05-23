@@ -23,7 +23,15 @@ ParticleSystemInfo::ParticleSystemInfo() :
     m_shaderType(PARTICLE_SHADER_NONE),
     m_particleType(PARTICLE_TYPE_NONE),
     m_particleTypeName(),
+#ifdef THYME_STANDALONE
+    m_angleX(),
+    m_angleY(),
+#endif
     m_angleZ(),
+#ifdef THYME_STANDALONE
+    m_angularRateX(),
+    m_angularRateY(),
+#endif
     m_angularRateZ(),
     m_angularDamping(),
     m_velDamping(),

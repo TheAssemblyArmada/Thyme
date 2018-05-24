@@ -14,9 +14,16 @@
  */
 #include "particlesysmanager.h"
 #include "ini.h"
+#include "particlesys.h"
+
+#ifndef THYME_STANDALONE
+ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemManager *>(0x00A2BDAC);
+#else
+ParticleSystemManager *g_theParticleSystemManager;
+#endif
 
 ParticleSystemManager::ParticleSystemManager() :
-    m_uniqueSystemID(0),
+    m_uniqueSystemID(PARTSYS_ID_NONE),
     m_allParticleSystemList(),
     m_particleCount(),
     m_unkInt1(0),
@@ -90,4 +97,24 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 #ifndef THYME_STANDALONE
     Call_Method<void, ParticleSystemManager, Xfer *>(0x004D2460, this, xfer);
 #endif
+}
+
+ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &name)
+{
+    auto it = m_templateStore.find(name);
+
+    if (it != m_templateStore.end()) {
+        return it->second;
+    }
+
+    return nullptr;
+}
+
+ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves)
+{
+    if (temp == nullptr) {
+        return nullptr;
+    }
+
+    return new ParticleSystem(*temp, ++m_uniqueSystemID, create_slaves);
 }

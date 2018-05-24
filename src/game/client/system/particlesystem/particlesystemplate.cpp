@@ -14,6 +14,7 @@
  */
 #include "particlesystemplate.h"
 #include "ini.h"
+#include "particlesysmanager.h"
 
 /**
  * @brief Parses random keyframe data.
@@ -42,4 +43,17 @@ void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, vo
     RGBColorKeyframe *rkf = static_cast<RGBColorKeyframe *>(store);
     INI::Parse_RGB_Color(ini, formal, &rkf->color, user_data);
     INI::Parse_Int(ini, formal, &rkf->frame, user_data);
+}
+
+ParticleSystem *ParticleSystemTemplate::Create_Slave_System(bool create_slaves)
+{
+    if (m_slaveTemplate == nullptr && m_slaveSystemName.Is_Not_Empty()) {
+        m_slaveTemplate = g_theParticleSystemManager->Find_Template(m_slaveSystemName);
+    }
+
+    if (m_slaveTemplate == nullptr) {
+        return nullptr;
+    }
+
+    return g_theParticleSystemManager->Create_Particle_System(m_slaveTemplate, create_slaves);
 }

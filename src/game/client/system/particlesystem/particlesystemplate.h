@@ -23,16 +23,20 @@ class INI;
 
 class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInfo
 {
+    friend class ParticleSystem;
     IMPLEMENT_POOL(ParticleSystemTemplate);
-
+    
 public:
-    ParticleSystemTemplate(const AsciiString &name) : m_name(name), m_next(nullptr) {}
+    ParticleSystemTemplate(const AsciiString &name) : m_name(name), m_slaveTemplate(nullptr) {}
     virtual ~ParticleSystemTemplate() {}
 
     static void Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
+    ParticleSystem *Create_Slave_System(bool create_slaves);
+
+private:
     AsciiString m_name;
-    ParticleSystemTemplate *m_next;
+    ParticleSystemTemplate *m_slaveTemplate;
 };

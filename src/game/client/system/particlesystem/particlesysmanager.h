@@ -39,6 +39,12 @@ typedef std::unordered_map<const AsciiString, ParticleSystemTemplate *, rts::has
 partsystempmap_t;
 #endif
 
+enum ParticleSystemID : int32_t
+{
+    PARTSYS_ID_NONE,
+};
+DEFINE_ENUMERATION_OPERATORS(ParticleSystemID);
+
 class ParticleSystemManager : public SubsystemInterface, public SnapShot
 {
     enum
@@ -57,10 +63,13 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    ParticleSystemTemplate *Find_Template(const AsciiString &name);
+    ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
+
 private:
     Particle *m_allParticlesHead[PARTICLE_ARRAY_SIZE];
     Particle *m_allParticlesTail[PARTICLE_ARRAY_SIZE];
-    int m_uniqueSystemID;
+    ParticleSystemID m_uniqueSystemID;
     std::list<ParticleSystem *> m_allParticleSystemList;
     int m_particleCount;
     unsigned m_unkInt1;
@@ -70,3 +79,11 @@ private:
     int m_unkInt2;
     partsystempmap_t m_templateStore;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+extern ParticleSystemManager *&g_theParticleSystemManager;
+#else
+extern ParticleSystemManager *g_theParticleSystemManager;
+#endif

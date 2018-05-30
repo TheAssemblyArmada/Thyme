@@ -81,7 +81,6 @@ ParticleSystemInfo::ParticleSystemInfo() :
 void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
 {
 #define PARTICLESYS_XFER_VERSION 1
-    GameClientRandomVariable fake; // Used to keep version number after angleX and angleY members removed.
     uint8_t version = PARTICLESYS_XFER_VERSION;
     xfer->xferVersion(&version, PARTICLESYS_XFER_VERSION);
     xfer->xferBool(&m_isOneShot);
@@ -92,6 +91,7 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->Xfer_Client_Random_Var(&m_angleX);
     xfer->Xfer_Client_Random_Var(&m_angleY);
 #else
+    GameClientRandomVariable fake; // Used to keep version number after angleX and angleY members removed.
     xfer->Xfer_Client_Random_Var(&fake); // angleX in Generals. // These xfers used xferUser to transfer as opaque objects, but has endian issues.
     xfer->Xfer_Client_Random_Var(&fake); // angleY in Generals.
 #endif

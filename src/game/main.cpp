@@ -187,7 +187,7 @@ void Check_Windowed(int argc, char *argv[])
 
 void Create_Window()
 {
-#ifdef PLATFORM_WINDOWS
+#if defined PLATFORM_WINDOWS && !defined THYME_STANDALONE
     WNDCLASSA WndClass;
     RECT Rect;
     HINSTANCE app_hinstance = GetModuleHandle(nullptr);
@@ -300,7 +300,7 @@ int main(int argc, char *argv[])
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
 // DEBUG_LOG("Running main().\n");
 
-#ifdef PLATFORM_WINDOWS
+#if defined PLATFORM_WINDOWS && !defined THYME_STANDALONE
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
     //crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));

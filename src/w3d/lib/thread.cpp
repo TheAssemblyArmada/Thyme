@@ -22,8 +22,11 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
-// void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
+#ifndef THYME_STANDALONE
 #define test_event (Make_Global<void *>(0x00A65178))
+#else
+void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
+#endif
 #else
 #include <sched.h>
 #include <unistd.h>

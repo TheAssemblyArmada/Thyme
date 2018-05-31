@@ -399,6 +399,7 @@ void TargaImage::X_Flip()
 
     // Must have at least one row of pixels.
     if (m_header.height <= 0) {
+        DEBUG_ASSERT_PRINT(false, "Image has no pixels.\n");
         return;
     }
 
@@ -430,11 +431,6 @@ void TargaImage::X_Flip()
 void TargaImage::Y_Flip()
 {
     int pixel_size = (m_header.pixel_depth + 7) / 8;
-
-    // Height must be a multiple of 2 to be flippable.
-    if ((m_header.height % 2) != 0) {
-        return;
-    }
 
     for (int y = 0; y < (m_header.height / 2); ++y) {
         // Set pointers to the start and end rows.
@@ -476,7 +472,6 @@ char *TargaImage::Set_Palette(char *buffer)
     m_palette = buffer;
 
     return old_pal;
-    return nullptr;
 }
 
 int TargaImage::Decode_Image()
@@ -525,6 +520,7 @@ int TargaImage::Decode_Image()
 
 int TargaImage::Encode_Image()
 {
+    // TODO
     return 0;
 }
 

@@ -1,27 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WIN32LOCALFILE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Implementation of LocalFile file io interface. Despite the
-//                 class name, the API used is Posix even on windows.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Implementation of LocalFile file io interface. Despite the class name, the API used is Posix even on windows.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "win32localfile.h"
 #include <fcntl.h>
 #include <cstdlib>
@@ -30,7 +20,12 @@
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
+#include "utf.h"
 #include <io.h>
+
+// Wraps the wide string call with an adapter from utf8.
+#undef open
+#define open(filename, oflags, ...) _wopen(UTF8To16(filename), oflags, ##__VA_ARGS__)
 
 // Make lseek 64bit on windows to match other platforms behaviour?
 //#ifdef lseek

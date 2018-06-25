@@ -65,6 +65,7 @@ public:
 
     ParticleSystemTemplate *Find_Template(const AsciiString &name);
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
+    ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
 
 private:
     Particle *m_allParticlesHead[PARTICLE_ARRAY_SIZE];

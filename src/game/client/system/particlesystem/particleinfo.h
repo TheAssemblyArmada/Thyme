@@ -33,6 +33,7 @@ class ParticleInfo : public SnapShot
     };
 public:
     ParticleInfo();
+    ParticleInfo(const ParticleInfo &that);
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
@@ -64,3 +65,33 @@ protected:
     float m_windRandomness;
     bool m_particleUpTowardsEmitter;
 };
+
+inline ParticleInfo::ParticleInfo(const ParticleInfo &that) : 
+    m_vel(that.m_vel),
+    m_pos(that.m_pos),
+    m_emitterPos(that.m_emitterPos),
+    m_velDamping(that.m_velDamping),
+#ifdef THYME_STANDALONE
+    m_angleX(that.m_angleX),
+    m_angleY(that.m_angleY),
+#endif
+    m_angleZ(that.m_angleZ),
+#ifdef THYME_STANDALONE
+    m_angularRateX(that.m_angularRateX),
+    m_angularRateY(that.m_angularRateY),
+#endif
+    m_angularRateZ(that.m_angularRateZ),
+    m_angularDamping(that.m_angularDamping),
+    m_lifetime(that.m_lifetime),
+    m_size(that.m_size),
+    m_sizeRate(that.m_sizeRate),
+    m_sizeRateDamping(that.m_sizeRateDamping),
+    m_colorScale(that.m_colorScale),
+    m_windRandomness(that.m_windRandomness),
+    m_particleUpTowardsEmitter(that.m_particleUpTowardsEmitter)
+{
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {   
+        m_alphaKey[i] = that.m_alphaKey[i];
+        m_colorKey[i] = that.m_colorKey[i];
+    }
+}

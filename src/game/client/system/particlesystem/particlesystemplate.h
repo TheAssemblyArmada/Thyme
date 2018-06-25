@@ -20,6 +20,7 @@
 #include "particlesysinfo.h"
 
 class INI;
+class ParticleSystem;
 
 class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInfo
 {

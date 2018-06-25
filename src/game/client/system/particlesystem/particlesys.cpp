@@ -113,7 +113,9 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
 
 ParticleSystem::~ParticleSystem()
 {
-
+    Remove_Slave();
+    Remove_Master();
+    // TODO needs particle.
 }
 
 void ParticleSystem::Xfer_Snapshot(Xfer *xfer)

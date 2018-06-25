@@ -54,7 +54,7 @@ void ParticleInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferReal(&m_angleX);
     xfer->xferReal(&m_angleY);
 #else
-    float fake; // Used to keep version number after angleX and angleY members removed.
+    float fake = 0.0f; // Used to keep version number after angleX and angleY members removed.
     xfer->xferReal(&fake); // angleX in Generals.
     xfer->xferReal(&fake); // angleY in Generals.
 #endif

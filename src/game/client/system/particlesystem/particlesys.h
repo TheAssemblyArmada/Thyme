@@ -33,6 +33,9 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
+    ParticleSystemID System_ID() const { return m_systemID; }
+    void Set_Control_Particle(Particle *particle) { m_controlParticle = particle; }
+
 private:
     void Remove_Master();
     void Remove_Slave();

@@ -60,7 +60,7 @@ void ParticleSystemManager::Init()
 
 void ParticleSystemManager::Reset()
 {
-    //TODO Needs ParticleSystem
+    // TODO Needs ParticleSystem
 #if 0
     while (m_particleSystemCount) {
         ParticleSystem *sys = *m_allParticleSystemList.begin();
@@ -117,4 +117,17 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
     }
 
     return new ParticleSystem(*temp, ++m_uniqueSystemID, create_slaves);
+}
+
+ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const 
+{
+    if (id != PARTSYS_ID_NONE) {
+        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
+            if ((*it)->System_ID() == id) {
+                return *it;
+            }
+        }
+    }
+
+    return nullptr;
 }

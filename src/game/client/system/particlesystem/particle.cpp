@@ -24,14 +24,19 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_createTimestamp(),
     m_drawable(false)
 {
-    //TODO
+    // TODO
 }
 
 Particle::~Particle()
 {
-    
+    // TODO
 }
 
+/**
+ * @brief Transfer the object data.
+ *
+ * 0x004CD2E0
+ */
 void Particle::Xfer_Snapshot(Xfer *xfer) 
 {
 #define PARTICLE_XFER_VERSION 1
@@ -57,6 +62,11 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUnsignedInt(reinterpret_cast<uint32_t *>(&id));
 }
 
+/**
+ * @brief Performs additional post data load house keeping.
+ *
+ * 0x004CD3F0
+ */
 void Particle::Load_Post_Process()
 {
     // When is the system ID loaded to the memory for the pointer? Some unswizzling scheme?
@@ -69,6 +79,11 @@ void Particle::Load_Post_Process()
     }
 }
 
+/**
+ * @brief Computes rate based on current target key.
+ *
+ * 0x004CCB50
+ */
 void Particle::Compute_Alpha_Rate()
 {
     if (m_alphaKey[m_alphaTargetKey].frame != 0) {
@@ -80,6 +95,11 @@ void Particle::Compute_Alpha_Rate()
     }
 }
 
+/**
+ * @brief Computes rate based on current target key.
+ *
+ * 0x004CCBA0
+ */
 void Particle::Compute_Color_Rate()
 {
     if (m_colorKey[m_colorTargetKey].frame != 0) {
@@ -95,11 +115,19 @@ void Particle::Compute_Color_Rate()
     }
 }
 
+/**
+ * @brief Applies some force to the accelration vector.
+ */
 void Particle::Apply_Force(const Coord3D &force)
 {
     m_accel += force;
 }
 
+/**
+ * @brief Applies wind motion logic to the particle.
+ *
+ * 0x004CD160
+ */
 void Particle::Do_Wind_Motion()
 {
     // TODO requires GameLogic and GameClient global.

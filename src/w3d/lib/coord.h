@@ -42,6 +42,30 @@ public:
         return *this;
     }
 
+    Coord2D &operator/=(const Coord2D &rhs)
+    {
+        x /= rhs.x;
+        y /= rhs.y;
+
+        return *this;
+    }
+
+    Coord2D &operator/=(const float &rhs)
+    {
+        x /= rhs;
+        y /= rhs;
+
+        return *this;
+    }
+
+    Coord2D &operator*=(const float &rhs)
+    {
+        x *= rhs;
+        y *= rhs;
+
+        return *this;
+    }
+
 public:
     float x;
     float y;
@@ -68,6 +92,33 @@ public:
         x -= rhs.x;
         y -= rhs.y;
         z -= rhs.z;
+
+        return *this;
+    }
+
+    Coord3D &operator/=(const Coord3D &rhs)
+    {
+        x /= rhs.x;
+        y /= rhs.y;
+        z /= rhs.z;
+
+        return *this;
+    }
+
+    Coord3D &operator/=(const float &rhs)
+    {
+        x /= rhs;
+        y /= rhs;
+        z /= rhs;
+
+        return *this;
+    }
+
+    Coord3D &operator*=(const float &rhs)
+    {
+        x *= rhs;
+        y *= rhs;
+        z *= rhs;
 
         return *this;
     }

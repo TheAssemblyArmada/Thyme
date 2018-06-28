@@ -23,37 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Includes
-//
-////////////////////////////////////////////////////////////////////////////////
 #include	"platform.h"
 #include    "compiler.h"
-
-
-////////////////////////////////////////////////////////////////////////////////
-//
-//  PACK
-//    Some defines for structure packing
-//    http://stackoverflow.com/a/3312896
-//
-//    Example usage:
-//        PACK struct _ABC {
-//            sint32    A;
-//            sint32    B;
-//            sint16    C;
-//        });
-//
-////////////////////////////////////////////////////////////////////////////////
-#if defined(COMPILER_MSVC)
-    #define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop) )
-    #pragma warning(disable : 4102) //unreferenced label
-    #pragma warning(disable : 4996) //deprecated functions
-#elif defined(COMPILER_GNUC) || defined(COMPILER_CLANG)
-    #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
-#endif // COMPILER_MSVC || (COMPILER_GNUC || COMPILER_CLANG)
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -130,17 +101,17 @@
     #if !defined(DEFINE_ENUMERATION_BITWISE_OPERATORS)
         #define DEFINE_ENUMERATION_BITWISE_OPERATORS(ENUMTYPE) \
         extern "C++" { \
-            __forceinline ENUMTYPE operator | (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int &)a) | ((int &)b)); } \
-            __forceinline ENUMTYPE operator & (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int&)a) & ((int &)b)); } \
-            __forceinline ENUMTYPE operator ~ (ENUMTYPE const &a) { return ENUMTYPE(~((int &)a)); } \
-            __forceinline ENUMTYPE operator ^ (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int &)a) ^ ((int &)b)); } \
-            __forceinline ENUMTYPE &operator ^= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) ^= ((int &)b)); } \
-            __forceinline ENUMTYPE &operator &= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) &= ((int &)b)); } \
-            __forceinline ENUMTYPE &operator |= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) |= ((int &)b)); } \
-            __forceinline ENUMTYPE operator << (ENUMTYPE &a, int const b) { return (ENUMTYPE)(((int &)a) << ((int)b)); } \
-            __forceinline ENUMTYPE operator >> (ENUMTYPE &a, int const b) { return (ENUMTYPE)(((int &)a) >> ((int)b)); } \
-            __forceinline ENUMTYPE &operator <<= (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) << ((int)b)); } \
-            __forceinline ENUMTYPE &operator >>= (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) >> ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator | (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int &)a) | ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE operator & (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int&)a) & ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE operator ~ (ENUMTYPE const &a) { return ENUMTYPE(~((int &)a)); } \
+            __forceinline constexpr ENUMTYPE operator ^ (ENUMTYPE const &a, ENUMTYPE const &b) { return ENUMTYPE(((int &)a) ^ ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE &operator ^= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) ^= ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE &operator &= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) &= ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE &operator |= (ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((int &)a) |= ((int &)b)); } \
+            __forceinline constexpr ENUMTYPE operator << (ENUMTYPE &a, int const b) { return (ENUMTYPE)(((int &)a) << ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator >> (ENUMTYPE &a, int const b) { return (ENUMTYPE)(((int &)a) >> ((int)b)); } \
+            __forceinline constexpr ENUMTYPE &operator <<= (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) << ((int)b)); } \
+            __forceinline constexpr ENUMTYPE &operator >>= (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) >> ((int)b)); } \
         }
     #endif // !DEFINE_ENUMERATION_BITWISE_OPERATORS
 #else
@@ -169,21 +140,21 @@
         #define DEFINE_ENUMERATION_OPERATORS(ENUMTYPE) \
         extern "C++" { \
             __forceinline ENUMTYPE operator ++ (ENUMTYPE const &a) { return (ENUMTYPE)(++((int &)a)); } \
-            __forceinline ENUMTYPE operator -- (ENUMTYPE const &a) { return (ENUMTYPE)(--((int &)a)); } \
-            __forceinline ENUMTYPE operator + (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)(((int &)a) + ((int &)b)); } \
-            __forceinline ENUMTYPE operator - (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)(((int &)a) - ((int &)b)); } \
-            __forceinline ENUMTYPE operator * (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)(((int &)a) * ((int &)b)); } \
-            __forceinline ENUMTYPE operator / (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)(((int &)a) / ((int &)b)); } \
-            __forceinline ENUMTYPE operator % (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)(((int &)a) % ((int &)b)); } \
+            __forceinline ENUMTYPE operator--(ENUMTYPE const &a) { return (ENUMTYPE)(--((int &)a)); } \
+            __forceinline constexpr ENUMTYPE operator + (ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((int)a) + ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator - (ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((int)a) - ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator * (ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((int)a) * ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator / (ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((int)a) / ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator % (ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((int)a) % ((int)b)); } \
             __forceinline ENUMTYPE &operator += (ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((int &)a = ((int &)a) + ((ENUMTYPE)b)); } \
             __forceinline ENUMTYPE &operator -= (ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((int &)a = ((int &)a) - ((ENUMTYPE)b)); } \
-            __forceinline ENUMTYPE operator ++ (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(++((int &)a)); } \
-            __forceinline ENUMTYPE operator -- (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(--((int &)a)); } \
-            __forceinline ENUMTYPE operator + (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(((int &)a) + ((int)b)); } \
-            __forceinline ENUMTYPE operator - (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(((int &)a) - ((int)b)); } \
-            __forceinline ENUMTYPE operator * (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(((int &)a) * ((int)b)); } \
-            __forceinline ENUMTYPE operator / (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(((int &)a) / ((int)b)); } \
-            __forceinline ENUMTYPE operator % (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(((int &)a) % ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator ++ (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(++((int &)a)); } \
+            __forceinline constexpr ENUMTYPE operator -- (ENUMTYPE const &a, int const b) { return (ENUMTYPE)(--((int &)a)); } \
+            __forceinline constexpr ENUMTYPE operator + (ENUMTYPE const a, int const b) { return (ENUMTYPE)(((int)a) + ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator - (ENUMTYPE const a, int const b) { return (ENUMTYPE)(((int)a) - ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator * (ENUMTYPE const a, int const b) { return (ENUMTYPE)(((int)a) * ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator / (ENUMTYPE const a, int const b) { return (ENUMTYPE)(((int)a) / ((int)b)); } \
+            __forceinline constexpr ENUMTYPE operator % (ENUMTYPE const a, int const b) { return (ENUMTYPE)(((int)a) % ((int)b)); } \
             __forceinline ENUMTYPE &operator += (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) + ((int)b)); } \
             __forceinline ENUMTYPE &operator -= (ENUMTYPE &a, int const b) { return (ENUMTYPE &)((int &)a = ((int &)a) - ((int)b)); } \
             /*__forceinline bool operator != (ENUMTYPE const &a, ENUMTYPE const &b) { return (ENUMTYPE)((int &)a != ((int &)b)); }*/ \

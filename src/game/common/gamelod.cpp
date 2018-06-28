@@ -63,13 +63,13 @@ void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *
 GameLODManager::GameLODManager() :
     m_staticLODLevel(STATLOD_INVALID),
     m_dynamicLODLevel(DYNLOD_HIGH),
-    m_unkInt1(0),
+    m_particleCount(0),
     m_particleSkipMask(0),
     m_unkInt2(0),
     m_debrisSkipMask(0),
     m_slowDeathScale(1.0f),
-    m_minParticlePriority(0),
-    m_minParticleSkipPriority(0),
+    m_minParticlePriority(PARTPRIORITY_NONE),
+    m_minParticleSkipPriority(PARTPRIORITY_NONE),
     m_unkBool1(0),
     m_unkBool2(0),
     m_didMemPass(0),
@@ -116,8 +116,8 @@ GameLODManager::GameLODManager() :
         m_dynamicLOD[i].particle_skip_mask = 0;
         m_dynamicLOD[i].debris_skip_mask = 0;
         m_dynamicLOD[i].slow_death_scale = 1.0f;
-        m_dynamicLOD[i].min_particle_priority = 1;
-        m_dynamicLOD[i].min_particle_skip_priority = 1;
+        m_dynamicLOD[i].min_particle_priority = PARTPRIORITY_WEAPON_EXPLOSION;
+        m_dynamicLOD[i].min_particle_skip_priority = PARTPRIORITY_WEAPON_EXPLOSION;
     }
 
     for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
@@ -402,7 +402,7 @@ bool GameLODManager::Set_Dynamic_LOD_Level(DynamicGameLODLevel level)
 
 void GameLODManager::Apply_Dynamic_LOD_Level(DynamicGameLODLevel level)
 {
-    m_unkInt1 = 0;
+    m_particleCount = 0;
     m_particleSkipMask = m_dynamicLOD[level].particle_skip_mask;
     m_unkInt2 = 0;
     m_debrisSkipMask = m_dynamicLOD[level].debris_skip_mask;

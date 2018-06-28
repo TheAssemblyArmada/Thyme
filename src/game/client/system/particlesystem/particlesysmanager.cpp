@@ -26,14 +26,14 @@ ParticleSystemManager::ParticleSystemManager() :
     m_uniqueSystemID(PARTSYS_ID_NONE),
     m_allParticleSystemList(),
     m_particleCount(),
-    m_unkInt1(0),
+    m_fieldParticleCount(0),
     m_particleSystemCount(0),
     m_onScreenParticleCount(0),
     m_someGameLogicValue(0),
     m_unkInt2(0),
     m_templateStore()
 {
-    for (int i = 0; i < PARTICLE_ARRAY_SIZE; ++i) {
+    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -52,7 +52,7 @@ void ParticleSystemManager::Init()
     INI ini;
     ini.Load("Data/INI/ParticleSystem.ini", INI_LOAD_OVERWRITE, nullptr);
 
-    for (int i = 0; i < PARTICLE_ARRAY_SIZE; ++i) {
+    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -70,13 +70,13 @@ void ParticleSystemManager::Reset()
         }
     }
 
-    for (int i = 0; i < PARTICLE_ARRAY_SIZE; ++i) {
+    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
 
     m_particleCount = 0;
-    m_unkInt1 = 0;
+    m_fieldParticleCount = 0;
     m_particleSystemCount = 0;
     m_uniqueSystemID = 0;
     m_someGameLogicValue = -1;

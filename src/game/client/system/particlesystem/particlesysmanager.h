@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "gametype.h"
 #include "rtsutils.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
@@ -47,10 +48,6 @@ DEFINE_ENUMERATION_OPERATORS(ParticleSystemID);
 
 class ParticleSystemManager : public SubsystemInterface, public SnapShot
 {
-    enum
-    {
-        PARTICLE_ARRAY_SIZE = 14,
-    };
 public:
     ParticleSystemManager();
     virtual ~ParticleSystemManager();
@@ -67,13 +64,17 @@ public:
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
 
+    int Particle_Count() const { return m_particleCount; }
+    int Field_Particle_Count() const { return m_fieldParticleCount; }
+    Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
+
 private:
-    Particle *m_allParticlesHead[PARTICLE_ARRAY_SIZE];
-    Particle *m_allParticlesTail[PARTICLE_ARRAY_SIZE];
+    Particle *m_allParticlesHead[PARTPRIORITY_COUNT];
+    Particle *m_allParticlesTail[PARTPRIORITY_COUNT];
     ParticleSystemID m_uniqueSystemID;
     std::list<ParticleSystem *> m_allParticleSystemList;
     int m_particleCount;
-    unsigned m_unkInt1;
+    int m_fieldParticleCount;
     unsigned m_particleSystemCount;
     int m_onScreenParticleCount;
     int m_someGameLogicValue;

@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "gametype.h"
 #include "ini.h"
 
 enum DynamicGameLODLevel : int32_t
@@ -100,8 +101,8 @@ struct DynamicGameLOD
     int particle_skip_mask;
     int debris_skip_mask;
     float slow_death_scale;
-    int min_particle_priority;
-    int min_particle_skip_priority;
+    ParticlePriorityType min_particle_priority;
+    ParticlePriorityType min_particle_skip_priority;
 };
 
 struct LODPreset
@@ -146,6 +147,12 @@ public:
     int Get_Recommended_Texture_Reduction();
     bool Did_Mem_Pass() { return m_didMemPass; }
 
+    void Increment_Particle_Count() { ++m_particleCount; }
+    int Particle_Count() const { return m_particleCount; }
+    int Particle_Skip_Mask() const { return m_particleSkipMask; }
+    ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
+    ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
+
     static void Parse_Static_LOD_Definitions(INI *ini);
     static void Parse_Dynamic_LOD_Definitions(INI *ini);
     static void Parse_LOD_Preset(INI *ini);
@@ -165,13 +172,13 @@ private:
     BenchProfile m_benchProfiles[MAX_PROFILES];
     StaticGameLODLevel m_staticLODLevel;
     DynamicGameLODLevel m_dynamicLODLevel;
-    int m_unkInt1;
+    int m_particleCount;
     int m_particleSkipMask;
     int m_unkInt2;
     int m_debrisSkipMask;
     float m_slowDeathScale;
-    int m_minParticlePriority;
-    int m_minParticleSkipPriority;
+    ParticlePriorityType m_minParticlePriority;
+    ParticlePriorityType m_minParticleSkipPriority;
     bool m_unkBool1;
     bool m_unkBool2;
     bool m_didMemPass;
@@ -193,7 +200,8 @@ private:
     static const char *s_gpuNames[];
 };
 
-void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score);
+void Test_Minimum_Requirements(
+    GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score);
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"

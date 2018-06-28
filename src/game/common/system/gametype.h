@@ -126,7 +126,7 @@ enum VeterancyLevel
     VETERANCY_COUNT,
 };
 
-enum ParticlePriorityType
+enum ParticlePriorityType : int32_t
 {
     PARTPRIORITY_NONE,
     PARTPRIORITY_WEAPON_EXPLOSION,
@@ -144,6 +144,7 @@ enum ParticlePriorityType
     PARTPRIORITY_ALWAYS_RENDER,
     PARTPRIORITY_COUNT,
 };
+DEFINE_ENUMERATION_OPERATORS(ParticlePriorityType);
 
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];

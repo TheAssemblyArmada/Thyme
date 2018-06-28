@@ -50,6 +50,42 @@ public:
         return *this;
     }
 
+    Coord2D &operator*=(const Coord2D &rhs)
+    {
+        x *= rhs.x;
+        y *= rhs.y;
+
+        return *this;
+    }
+
+    friend Coord2D operator+(Coord2D lhs, const Coord2D &rhs)
+    {
+        lhs += rhs;
+
+        return lhs;
+    }
+
+    friend Coord2D operator-(Coord2D lhs, const Coord2D &rhs)
+    {
+        lhs -= rhs;
+
+        return lhs;
+    }
+
+    friend Coord2D operator/(Coord2D lhs, const Coord2D &rhs)
+    {
+        lhs /= rhs;
+
+        return lhs;
+    }
+
+    friend Coord2D operator*(Coord2D lhs, const Coord2D &rhs)
+    {
+        lhs *= rhs;
+
+        return lhs;
+    }
+
     Coord2D &operator/=(const float &rhs)
     {
         x /= rhs;
@@ -103,6 +139,43 @@ public:
         z /= rhs.z;
 
         return *this;
+    }
+
+    Coord3D &operator*=(const Coord3D &rhs)
+    {
+        x *= rhs.x;
+        y *= rhs.y;
+        z *= rhs.z;
+
+        return *this;
+    }
+
+    friend Coord3D operator+(Coord3D lhs, const Coord3D &rhs)
+    { 
+        lhs += rhs;
+
+        return lhs;
+    }
+
+    friend Coord3D operator-(Coord3D lhs, const Coord3D &rhs)
+    {
+        lhs -= rhs;
+
+        return lhs;
+    }
+
+    friend Coord3D operator/(Coord3D lhs, const Coord3D &rhs)
+    {
+        lhs /= rhs;
+
+        return lhs;
+    }
+
+    friend Coord3D operator*(Coord3D lhs, const Coord3D &rhs)
+    {
+        lhs *= rhs;
+
+        return lhs;
     }
 
     Coord3D &operator/=(const float &rhs)

@@ -15,6 +15,7 @@
 #include "particlesysmanager.h"
 #include "ini.h"
 #include "particlesys.h"
+#include "particle.h"
 
 #ifndef THYME_STANDALONE
 ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemManager *>(0x00A2BDAC);
@@ -130,4 +131,43 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
     }
 
     return nullptr;
+}
+
+void ParticleSystemManager::Remove_Particle(Particle *particle)
+{
+    if (particle->m_inOverallList) {
+        ParticlePriorityType priority = particle->Get_Priority();
+
+        if (particle->m_overallNext != nullptr) {
+            particle->m_overallNext->m_overallPrev = particle->m_overallPrev;
+        }
+
+        if (particle->m_overallPrev != nullptr) {
+            particle->m_overallPrev->m_overallNext = particle->m_overallNext;
+        }
+
+        if (particle == m_allParticlesHead[priority]) {
+            m_allParticlesHead[priority] = particle->m_overallNext;
+        }
+
+        if (particle == m_allParticlesTail[priority]) {
+            m_allParticlesTail[priority] = particle->m_overallPrev;
+        }
+
+        particle->m_overallPrev = nullptr;
+        particle->m_overallNext = nullptr;
+        particle->m_inOverallList = false;
+        --m_particleCount;
+    }
+}
+
+
+void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
+{
+    for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
+        if (*it == system) {
+            m_allParticleSystemList.erase(it);
+            --m_particleSystemCount;
+        }
+    }
 }

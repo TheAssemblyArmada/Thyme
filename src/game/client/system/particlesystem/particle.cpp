@@ -29,7 +29,15 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
 
 Particle::~Particle()
 {
-    // TODO
+    m_system->Remove_Particle(this);
+
+    if (m_systemUnderControl != nullptr) {
+        m_systemUnderControl->Set_Control_Particle(nullptr);
+        m_systemUnderControl->Destroy();
+    }
+
+    m_systemUnderControl = nullptr;
+    g_theParticleSystemManager->Remove_Particle(this);
 }
 
 /**
@@ -136,3 +144,7 @@ void Particle::Do_Wind_Motion()
 #endif
 }
 
+ParticlePriorityType Particle::Get_Priority() const
+{
+    return m_system->Get_Priority();
+}

@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "gametype.h"
 #include "particleinfo.h"
 #include "mempoolobj.h"
 
@@ -23,6 +24,8 @@ class ParticleSystem;
 class Particle : public MemoryPoolObject, public ParticleInfo
 {
     IMPLEMENT_POOL(Particle);
+    friend class ParticleSystem;
+    friend class ParticleSystemManager;
 
 public:
     Particle(ParticleSystem *system, const ParticleInfo &info);
@@ -36,6 +39,8 @@ public:
     void Compute_Color_Rate();
     void Apply_Force(const Coord3D &force);
     void Do_Wind_Motion();
+
+    ParticlePriorityType Get_Priority() const;
 
 private:
     Particle *m_systemNext;
@@ -56,6 +61,6 @@ private:
     int32_t m_colorTargetKey;
     bool m_drawable;
     bool m_inSystemList;
-    bool field_17A;
+    bool m_inOverallList;
     ParticleSystem *m_systemUnderControl;
 };

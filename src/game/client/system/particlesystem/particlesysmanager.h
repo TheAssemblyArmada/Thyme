@@ -63,6 +63,8 @@ public:
     ParticleSystemTemplate *Find_Template(const AsciiString &name);
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
+    void Remove_Particle(Particle *particle);
+    void Remove_Particle_System(ParticleSystem *system);
 
     int Particle_Count() const { return m_particleCount; }
     int Field_Particle_Count() const { return m_fieldParticleCount; }

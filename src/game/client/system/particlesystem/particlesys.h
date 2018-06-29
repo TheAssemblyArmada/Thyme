@@ -21,11 +21,16 @@
 #include "particlesysmanager.h"
 
 class Particle;
+class ParticleInfo;
 class ParticleSystemTemplate;
+class Drawable;
+class Object;
 
 class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
 {
     IMPLEMENT_POOL(ParticleSystem);
+    friend class ParticleSystemManager;
+
 public:
     ParticleSystem(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves);
     virtual ~ParticleSystem();
@@ -35,8 +40,28 @@ public:
 
     ParticleSystemID System_ID() const { return m_systemID; }
     void Set_Control_Particle(Particle *particle) { m_controlParticle = particle; }
+    void Start() { m_isStopped = false; }
+    void Stop() { m_isStopped = true; }
+    void Set_Saveable(bool saveable);
+    void Destroy();
+    void Get_Position(Coord3D *pos) const;
+    void Set_Position(const Coord3D &pos);
+    void Set_Local_Transform(const Matrix3D &transform);
+    void Rotate_Local_Transform_X(float theta);
+    void Rotate_Local_Transform_Y(float theta);
+    void Rotate_Local_Transform_Z(float theta);
+    void Attach_To_Drawable(const Drawable *drawable);
+    void Attach_To_Object(const Object *object);
+    Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
+    Coord3D *Compute_Particle_Position();
+    Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
+    void Add_Particle(Particle *particle);
+    void Remove_Particle(Particle *particle);
+
+    ParticlePriorityType Get_Priority() const { return m_priority; }
 
 private:
+    static Coord3D *Compute_Point_On_Sphere();
     void Remove_Master();
     void Remove_Slave();
 

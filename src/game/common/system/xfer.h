@@ -33,9 +33,6 @@ struct RealRange
     float hi;
 };
 
-// TODO temp until we have proper DrawableID enum.
-typedef int DrawableID;
-
 enum XferType
 {
     XFER_INVALID,

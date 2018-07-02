@@ -35,9 +35,11 @@ public:
     ParticleSystem(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves);
     virtual ~ParticleSystem();
 
+    virtual void Update(int unk);
+    virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
-
+    
     ParticleSystemID System_ID() const { return m_systemID; }
     void Set_Control_Particle(Particle *particle) { m_controlParticle = particle; }
     void Start() { m_isStopped = false; }
@@ -54,9 +56,9 @@ public:
     void Attach_To_Object(const Object *object);
     Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
     Coord3D *Compute_Particle_Position();
-    Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
+    ParticleInfo *Generate_Particle_Info(int id, int count);
 
     ParticlePriorityType Get_Priority() const { return m_priority; }
 
@@ -70,8 +72,8 @@ private:
     Particle *m_systemParticlesTail;
     uint32_t m_particleCount;
     ParticleSystemID m_systemID;
-    uint32_t m_attachedToDrawableID;
-    uint32_t m_attachedToObjectID;
+    DrawableID m_attachedToDrawableID;
+    ObjectID m_attachedToObjectID;
     Matrix3D m_localTransform;
     Matrix3D m_transform;
     uint32_t m_burstDelayLeft;
@@ -79,7 +81,7 @@ private:
     uint32_t m_startTimestamp;
     uint32_t m_systemLifetimeLeft;
     uint32_t m_nextParticleIDMaybe;
-    uint32_t m_accumulatedSizeBonus;
+    float m_accumulatedSizeBonus;
     Coord3D m_velCoefficient;
     float m_countCoefficient;
     float m_delayCoefficient;

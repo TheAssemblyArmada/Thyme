@@ -63,7 +63,7 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     xfer->xferRGBColor(&m_colorRate);
     xfer->xferInt(&m_colorTargetKey);
     
-    DrawableID drawable_id_fake = 0; // Looks like this was removed and a fake entry added to avoid version bump.
+    DrawableID drawable_id_fake = DRAWABLE_UNK; // Looks like this was removed and a fake entry added to avoid version bump.
     xfer->xferDrawableID(&drawable_id_fake);
 
     ParticleSystemID id = m_systemUnderControl != nullptr ? m_systemUnderControl->System_ID() : PARTSYS_ID_NONE;

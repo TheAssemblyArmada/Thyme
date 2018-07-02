@@ -71,6 +71,11 @@ enum ObjectID : int32_t
     OBJECT_UNK,
 };
 
+enum DrawableID : int32_t
+{
+    DRAWABLE_UNK,
+};
+
 enum BuildableStatus
 {
     BSTATUS_YES,

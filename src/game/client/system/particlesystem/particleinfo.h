@@ -27,6 +27,8 @@ struct Keyframe
 
 class ParticleInfo : public SnapShot
 {
+    friend class ParticleSystem;
+
     enum
     {
         KEYFRAME_COUNT = 8,

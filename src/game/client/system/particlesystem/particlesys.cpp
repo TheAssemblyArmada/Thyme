@@ -26,6 +26,9 @@ using GameMath::Cos;
 using GameMath::Sin;
 using GameMath::Sqrt;
 
+/**
+ * 0x004CDA10
+ */
 ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves) :
     m_systemParticlesHead(nullptr),
     m_systemParticlesTail(nullptr),
@@ -123,6 +126,9 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_particleTypeName = temp.m_particleTypeName;
 }
 
+/**
+ * 0x004CE310
+ */
 ParticleSystem::~ParticleSystem()
 {
     Remove_Slave();
@@ -144,8 +150,24 @@ ParticleSystem::~ParticleSystem()
     g_theParticleSystemManager->Remove_Particle_System(this);
 }
 
-void ParticleSystem::Update(int unk) {}
+/**
+ * @brief Performs logic tick update.
+ *
+ * 0x004CFB80
+ */
+void ParticleSystem::Update(int unk)
+{
+    // Needs Drawable, GameClient, GameLogic
+#ifndef THYME_STANDALONE
+    Call_Method<void, ParticleSystem, int>(0x004CFB80, this, unk);
+#endif
+}
 
+/**
+ * @brief Performs transfer logic on the class.
+ *
+ * 0x004D11E0
+ */
 void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
 {
 #define PARTICLESYS_XFER_VERSION 1
@@ -192,8 +214,37 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
     }
 }
 
-void ParticleSystem::Load_Post_Process() {}
+/**
+ * @brief Performs additional post data load house keeping.
+ *
+ * 0x004D1430
+ */
+void ParticleSystem::Load_Post_Process()
+{
+    if (m_slaveID != PARTSYS_ID_NONE) {
+        ASSERT_THROW_PRINT(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.\n");
 
+        m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
+
+        ASSERT_THROW_PRINT(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
+            6,
+            "Slave system not found or is set as destroyed.\n");
+    }
+
+    if (m_masterID != PARTSYS_ID_NONE) {
+        ASSERT_THROW_PRINT(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.\n");
+
+        m_masterSystem = g_theParticleSystemManager->Find_Particle_System(m_masterID);
+
+        ASSERT_THROW_PRINT(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
+            6,
+            "Master system not found or is set as destroyed.\n");
+    }
+}
+
+/**
+ * @brief Sets this object and all slave objects as saveable.
+ */
 void ParticleSystem::Set_Saveable(bool saveable)
 {
     m_saveable = saveable;
@@ -203,6 +254,11 @@ void ParticleSystem::Set_Saveable(bool saveable)
     }
 }
 
+/**
+ * @brief Sets this and all slave systems as destroyed.
+ *
+ * 0x004CE500
+ */
 void ParticleSystem::Destroy()
 {
     m_isDestroyed = true;
@@ -212,6 +268,11 @@ void ParticleSystem::Destroy()
     }
 }
 
+/**
+ * @brief Gets the position of this particle system.
+ *
+ * 0x004CE530
+ */
 void ParticleSystem::Get_Position(Coord3D *pos) const
 {
     if (pos != nullptr) {
@@ -219,6 +280,11 @@ void ParticleSystem::Get_Position(Coord3D *pos) const
     }
 }
 
+/**
+ * @brief Sets the position of this particle system.
+ *
+ * 0x004CE570
+ */
 void ParticleSystem::Set_Position(const Coord3D &pos)
 {
     m_localTransform[0][3] = pos.x;
@@ -227,27 +293,52 @@ void ParticleSystem::Set_Position(const Coord3D &pos)
     m_isLocalIdentity = false;
 }
 
+/**
+ * @brief Sets the local transform matrix.
+ *
+ * 0x004CE5A0
+ */
 void ParticleSystem::Set_Local_Transform(const Matrix3D &transform)
 {
     m_localTransform = transform;
     m_isLocalIdentity = false;
 }
 
+/**
+ * @brief Rotates the local transform matrix around X.
+ *
+ * 0x004CE620
+ */
 void ParticleSystem::Rotate_Local_Transform_X(float theta)
 {
     m_localTransform.Rotate_X(theta);
 }
 
+/**
+ * @brief Rotates the local transform matrix around Y.
+ *
+ * 0x004CE6C0
+ */
 void ParticleSystem::Rotate_Local_Transform_Y(float theta)
 {
     m_localTransform.Rotate_Y(theta);
 }
 
+/**
+ * @brief Rotates the local transform matrix around Z.
+ *
+ * 0x004CE760
+ */
 void ParticleSystem::Rotate_Local_Transform_Z(float theta)
 {
     m_localTransform.Rotate_Z(theta);
 }
 
+/**
+ * @brief Attaches system to a drawable object.
+ *
+ * 0x004CE800
+ */
 void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
 {
 // TODO requires Drawable.
@@ -256,6 +347,11 @@ void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
 #endif
 }
 
+/**
+ * @brief Attaches system to an Object object.
+ *
+ * 0x004CE830
+ */
 void ParticleSystem::Attach_To_Object(const Object *object)
 {
 // TODO requires Object.
@@ -264,6 +360,11 @@ void ParticleSystem::Attach_To_Object(const Object *object)
 #endif
 }
 
+/**
+ * @brief Computes an initial velocity for a particle.
+ *
+ * 0x004CE860
+ */
 Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
 {
     static Coord3D _vel;
@@ -383,6 +484,11 @@ Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
     return &_vel;
 }
 
+/**
+ * @brief Computes an initial position for a particle.
+ *
+ * 0x004CEF60
+ */
 Coord3D *ParticleSystem::Compute_Particle_Position()
 {
     static Coord3D _pos;
@@ -485,6 +591,11 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
     return &_pos;
 }
 
+/**
+ * @brief Creates a particle from provided info.
+ *
+ * 0x004CF530
+ */
 Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render)
 {
     if (!always_render) {
@@ -531,6 +642,11 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
     return new Particle(this, info);
 }
 
+/**
+ * @brief Generates info used to create particles for this system.
+ *
+ * 0x004CF750
+ */
 ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 {
     static ParticleInfo _info;
@@ -609,6 +725,9 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
     return &_info;
 }
 
+/**
+ * @brief Adds a particle to this systems lists.
+ */
 void ParticleSystem::Add_Particle(Particle *particle)
 {
     if (!particle->m_inSystemList) {
@@ -629,6 +748,9 @@ void ParticleSystem::Add_Particle(Particle *particle)
     }
 }
 
+/**
+ * @brief Removes a particle from this systems lists
+ */
 void ParticleSystem::Remove_Particle(Particle *particle)
 {
     if (particle->m_inSystemList) {
@@ -655,6 +777,9 @@ void ParticleSystem::Remove_Particle(Particle *particle)
     }
 }
 
+/**
+ * @brief Computes a point on a sphere.
+ */
 Coord3D *ParticleSystem::Compute_Point_On_Sphere()
 {
     static Coord3D _point;
@@ -675,6 +800,9 @@ Coord3D *ParticleSystem::Compute_Point_On_Sphere()
     return &_point;
 }
 
+/**
+ * @brief Removes the master system from this particle system.
+ */
 void ParticleSystem::Remove_Master()
 {
     if (m_masterSystem != nullptr) {
@@ -685,6 +813,9 @@ void ParticleSystem::Remove_Master()
     }
 }
 
+/**
+ * @brief Removes the slave system from this particle system.
+ */
 void ParticleSystem::Remove_Slave()
 {
     if (m_slaveSystem != nullptr) {

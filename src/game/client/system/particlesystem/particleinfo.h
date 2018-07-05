@@ -28,6 +28,7 @@ struct Keyframe
 class ParticleInfo : public SnapShot
 {
     friend class ParticleSystem;
+    friend class Particle;
 
     enum
     {

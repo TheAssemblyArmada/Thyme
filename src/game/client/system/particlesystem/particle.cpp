@@ -19,12 +19,29 @@
 
 Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     ParticleInfo(info),
+    m_systemNext(nullptr),
+    m_systemPrev(nullptr),
+    m_overallNext(nullptr),
+    m_overallPrev(nullptr),
     m_system(system),
     m_particleIDMaybe(0),
-    m_createTimestamp(),
-    m_drawable(false)
+    m_accel(),
+    m_lastPos(),
+    m_lifetimeLeft(info.m_lifetime),
+    m_createTimestamp(), // TODO from gameclient
+    m_alpha(info.m_alphaKey[0].value),
+    m_alphaTargetKey(true),
+    m_color(info.m_colorKey[0].color),
+    m_colorTargetKey(true),
+    m_drawable(false),
+    m_inSystemList(false),
+    m_inOverallList(false),
+    m_systemUnderControl(nullptr)
 {
-    // TODO
+    Compute_Alpha_Rate();
+    Compute_Color_Rate();
+    g_theParticleSystemManager->Add_Particle(this, m_system->Get_Priority());
+    m_system->Add_Particle(this);
 }
 
 Particle::~Particle()
@@ -66,8 +83,9 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     DrawableID drawable_id_fake = DRAWABLE_UNK; // Looks like this was removed and a fake entry added to avoid version bump.
     xfer->xferDrawableID(&drawable_id_fake);
 
+    // This looks like it will save/process the value, but not restore it?
     ParticleSystemID id = m_systemUnderControl != nullptr ? m_systemUnderControl->System_ID() : PARTSYS_ID_NONE;
-    xfer->xferUnsignedInt(reinterpret_cast<uint32_t *>(&id));
+    xfer->xferInt(reinterpret_cast<int32_t *>(&id));
 }
 
 /**

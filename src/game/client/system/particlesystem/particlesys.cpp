@@ -25,6 +25,7 @@
 using GameMath::Cos;
 using GameMath::Sin;
 using GameMath::Sqrt;
+using GameMath::Fabs;
 
 /**
  * 0x004CDA10
@@ -798,6 +799,65 @@ Coord3D *ParticleSystem::Compute_Point_On_Sphere()
     }
 
     return &_point;
+}
+
+/**
+ * @brief Updates system to take account of wind simulation.
+ *
+ * 0x004D0920
+ */
+void ParticleSystem::Update_Wind_Motion()
+{
+    switch (m_windMotion) {
+        case WIND_MOTION_PING_PONG:
+        {
+            // Mathsy stuff here, not sure what the actual formula being used here is for, harmonic motion perhaps?
+            float tmp = float(m_windMotionStartAngle - m_windMotionEndAngle) * 0.5f;
+            float change = float(1.0f - float(Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp)) * m_windAngleChange;
+            change = Max(change, 0.005f);
+
+            // Apply change in correct direction.
+            if (m_windMotionMovingToEndAngle) {
+                m_windAngle += change;
+
+                if (m_windAngle < m_windMotionStartAngle) {
+                    return;
+                }
+
+                m_windMotionMovingToEndAngle = false;
+            } else {
+                m_windAngle -= change;
+
+                if (m_windAngle > m_windMotionEndAngle) {
+                    return;
+                }
+
+                m_windMotionMovingToEndAngle = true;
+            }
+
+            m_windAngleChange = Get_Client_Random_Value_Real(m_windAngleChangeMin, m_windAngleChangeMax);
+            m_windMotionStartAngle = Get_Client_Random_Value_Real(m_windMotionStartAngleMin, m_windMotionStartAngleMax);
+            m_windMotionEndAngle = Get_Client_Random_Value_Real(m_windMotionEndAngleMin, m_windMotionEndAngleMax);
+        }
+
+            break;
+        case WIND_MOTION_CIRCULAR:
+            if (m_windAngleChange == 0.0f) {
+                m_windAngleChange = Get_Client_Random_Value_Real(m_windAngleChangeMin, m_windAngleChangeMax);
+            }
+
+            m_windAngle += m_windAngleChange;
+
+            if (m_windAngle > GAMEMATH_PI * 2) {
+                m_windAngle -= GAMEMATH_PI * 2;
+            } else if (m_windAngle < 0.0f) {
+                m_windAngle += GAMEMATH_PI * 2;
+            }
+
+            break;
+        default:
+            break;
+    }
 }
 
 /**

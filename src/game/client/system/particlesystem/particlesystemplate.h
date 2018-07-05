@@ -34,6 +34,8 @@ public:
     static void Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
 
+    AsciiString Get_Name() const { return m_name; }
+
 private:
     ParticleSystem *Create_Slave_System(bool create_slaves);
 

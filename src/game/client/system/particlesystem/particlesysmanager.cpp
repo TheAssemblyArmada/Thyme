@@ -15,7 +15,9 @@
 #include "particlesysmanager.h"
 #include "ini.h"
 #include "particlesys.h"
+#include "particlesystemplate.h"
 #include "particle.h"
+#include "xfer.h"
 
 #ifndef THYME_STANDALONE
 ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemManager *>(0x00A2BDAC);
@@ -42,10 +44,7 @@ ParticleSystemManager::ParticleSystemManager() :
 
 ParticleSystemManager::~ParticleSystemManager()
 {
-    // TODO needs ParticleSystem.
-#ifndef THYME_STANDALONE
-    Call_Method<void, ParticleSystemManager>(0x004D18E0, this);
-#endif
+    Reset();
 }
 
 void ParticleSystemManager::Init()
@@ -61,8 +60,6 @@ void ParticleSystemManager::Init()
 
 void ParticleSystemManager::Reset()
 {
-    // TODO Needs ParticleSystem
-#if 0
     while (m_particleSystemCount) {
         ParticleSystem *sys = *m_allParticleSystemList.begin();
 
@@ -79,9 +76,8 @@ void ParticleSystemManager::Reset()
     m_particleCount = 0;
     m_fieldParticleCount = 0;
     m_particleSystemCount = 0;
-    m_uniqueSystemID = 0;
+    m_uniqueSystemID = PARTSYS_ID_NONE;
     m_someGameLogicValue = -1;
-#endif
 }
 
 void ParticleSystemManager::Update()
@@ -94,10 +90,38 @@ void ParticleSystemManager::Update()
 
 void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 {
-    // TODO Needs ParticleSystem
-#ifndef THYME_STANDALONE
-    Call_Method<void, ParticleSystemManager, Xfer *>(0x004D2460, this, xfer);
-#endif
+#define PARTICLE_XFER_VERSION 1
+    uint8_t version = PARTICLE_XFER_VERSION;
+    xfer->xferVersion(&version, PARTICLE_XFER_VERSION);
+    xfer->xferInt(reinterpret_cast<int32_t *>(&m_uniqueSystemID));
+    uint32_t count = m_particleSystemCount;
+    xfer->xferUnsignedInt(&count);
+    AsciiString name;
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
+            if (!(*it)->m_isDestroyed && (*it)->m_saveable) {
+                name = (*it)->m_template->Get_Name();
+                xfer->xferAsciiString(&name);
+                xfer->xferSnapshot(*it);
+            } else {
+                AsciiString empty = "";
+                xfer->xferAsciiString(&empty);
+            }
+        }
+    } else {
+        for (unsigned i = 0; i < count; ++i) {
+            xfer->xferAsciiString(&name);
+
+            if (name.Is_Not_Empty()) {
+                ParticleSystemTemplate *temp = Find_Template(name);
+                ASSERT_THROW_PRINT(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
+                ParticleSystem *sys = new ParticleSystem(*temp, ++m_uniqueSystemID, false);
+                ASSERT_THROW_PRINT(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
+                xfer->xferSnapshot(sys);
+            }
+        }
+    }
 }
 
 ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &name)
@@ -131,6 +155,31 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
     }
 
     return nullptr;
+}
+
+void ParticleSystemManager::Add_Particle(Particle *particle, ParticlePriorityType priority)
+{
+    if (!particle->m_inOverallList) {
+        if (m_allParticlesHead[priority] == nullptr) {
+            m_allParticlesHead[priority] = particle;
+        }
+
+        if (m_allParticlesTail[priority] != nullptr) {
+            m_allParticlesTail[priority]->m_systemNext = particle;
+        }
+
+        particle->m_overallPrev = m_allParticlesTail[priority];
+        m_allParticlesTail[priority] = particle;
+        particle->m_overallNext = nullptr;
+        particle->m_inOverallList = true;
+        ++m_particleCount;
+    }
+}
+
+void ParticleSystemManager::Add_Particle_System(ParticleSystem *system)
+{
+    m_allParticleSystemList.push_back(system);
+    ++m_particleSystemCount;
 }
 
 void ParticleSystemManager::Remove_Particle(Particle *particle)

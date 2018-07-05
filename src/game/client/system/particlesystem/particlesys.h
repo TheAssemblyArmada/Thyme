@@ -54,18 +54,20 @@ public:
     void Rotate_Local_Transform_Z(float theta);
     void Attach_To_Drawable(const Drawable *drawable);
     void Attach_To_Object(const Object *object);
-    Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
-    Coord3D *Compute_Particle_Position();
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
-    ParticleInfo *Generate_Particle_Info(int id, int count);
-
+    
     ParticlePriorityType Get_Priority() const { return m_priority; }
 
 private:
-    static Coord3D *Compute_Point_On_Sphere();
+    ParticleInfo *Generate_Particle_Info(int id, int count);
+    Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
+    Coord3D *Compute_Particle_Position();
+    void Update_Wind_Motion();
     void Remove_Master();
     void Remove_Slave();
+
+    static Coord3D *Compute_Point_On_Sphere();
 
 private:
     Particle *m_systemParticlesHead;

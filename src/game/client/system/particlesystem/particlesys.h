@@ -82,7 +82,7 @@ private:
     uint32_t m_delayLeft;
     uint32_t m_startTimestamp;
     uint32_t m_systemLifetimeLeft;
-    uint32_t m_nextParticleIDMaybe;
+    uint32_t m_lastParticleID;
     float m_accumulatedSizeBonus;
     Coord3D m_velCoefficient;
     float m_countCoefficient;

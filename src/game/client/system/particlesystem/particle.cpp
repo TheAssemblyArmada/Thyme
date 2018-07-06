@@ -13,6 +13,7 @@
  *            LICENSE
  */ 
 #include "particle.h"
+#include "gameclient.h"
 #include "particlesys.h"
 #include "particlesysmanager.h"
 #include "xfer.h"
@@ -24,11 +25,11 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_overallNext(nullptr),
     m_overallPrev(nullptr),
     m_system(system),
-    m_particleIDMaybe(0),
+    m_particleID(0),
     m_accel(),
     m_lastPos(),
     m_lifetimeLeft(info.m_lifetime),
-    m_createTimestamp(), // TODO from gameclient
+    m_createTimestamp(g_theGameClient->Get_Frame()),
     m_alpha(info.m_alphaKey[0].value),
     m_alphaTargetKey(true),
     m_color(info.m_colorKey[0].color),
@@ -68,7 +69,7 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     uint8_t version = PARTICLE_XFER_VERSION;
     xfer->xferVersion(&version, PARTICLE_XFER_VERSION);
     ParticleInfo::Xfer_Snapshot(xfer);
-    xfer->xferUnsignedInt(&m_particleIDMaybe);
+    xfer->xferUnsignedInt(&m_particleID);
     xfer->xferCoord3D(&m_accel);
     xfer->xferCoord3D(&m_lastPos);
     xfer->xferUnsignedInt(&m_lifetimeLeft);

@@ -53,6 +53,7 @@ set(GAMEENGINE_SRC
     game/weather.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
+    game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
     game/client/optionpreferences.cpp

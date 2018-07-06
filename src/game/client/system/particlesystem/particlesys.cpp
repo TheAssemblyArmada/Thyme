@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "gamelod.h"
+#include "gameclient.h"
 #include "gamemath.h"
 #include "globaldata.h"
 #include "minmax.h"
@@ -39,11 +40,11 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_attachedToObjectID(OBJECT_UNK),
     m_localTransform(true),
     m_transform(true),
-    m_burstDelayLeft(),
+    m_burstDelayLeft(0),
     m_delayLeft(),
-    m_startTimestamp(),
+    m_startTimestamp(g_theGameClient->Get_Frame()),
     m_systemLifetimeLeft(),
-    m_nextParticleIDMaybe(),
+    m_lastParticleID(),
     m_accumulatedSizeBonus(0.0f),
     m_velCoefficient(1.0f, 1.0f, 1.0f),
     m_countCoefficient(1.0f),
@@ -84,11 +85,9 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_colorScale.Set_Range(
         temp.m_colorScale.Get_Min() / 255.0f, temp.m_colorScale.Get_Max() / 255.0f, GameClientRandomVariable::UNIFORM);
     m_burstDelay = temp.m_burstDelay;
-    m_burstDelayLeft = 0;
     m_burstCount = temp.m_burstCount;
     m_isOneShot = temp.m_isOneShot;
     m_delayLeft = m_initialDelay;
-    /*m_startTimestamp = g_theGameClient->*/ // TODO Needs GameClient
     m_systemLifetimeLeft = temp.m_systemLifetime;
     m_isForever = m_systemLifetime == 0;
     m_velDamping = temp.m_velDamping;
@@ -186,7 +185,7 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUnsignedInt(&m_delayLeft);
     xfer->xferUnsignedInt(&m_startTimestamp);
     xfer->xferUnsignedInt(&m_systemLifetimeLeft);
-    xfer->xferUnsignedInt(&m_nextParticleIDMaybe);
+    xfer->xferUnsignedInt(&m_lastParticleID);
     xfer->xferBool(&m_isForever);
     xfer->xferReal(&m_accumulatedSizeBonus);
     xfer->xferBool(&m_isStopped);
@@ -224,9 +223,7 @@ void ParticleSystem::Load_Post_Process()
 {
     if (m_slaveID != PARTSYS_ID_NONE) {
         ASSERT_THROW_PRINT(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.\n");
-
         m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
-
         ASSERT_THROW_PRINT(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
             6,
             "Slave system not found or is set as destroyed.\n");
@@ -234,9 +231,7 @@ void ParticleSystem::Load_Post_Process()
 
     if (m_masterID != PARTSYS_ID_NONE) {
         ASSERT_THROW_PRINT(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.\n");
-
         m_masterSystem = g_theParticleSystemManager->Find_Particle_System(m_masterID);
-
         ASSERT_THROW_PRINT(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
             6,
             "Master system not found or is set as destroyed.\n");
@@ -497,7 +492,6 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
     switch (m_emissionVolumeType) {
         case EMISSION_VOLUME_LINE: {
             float scale = Get_Client_Random_Value_Real(0.0f, 1.0f);
-
             _pos.x = float(scale * float(m_emissionVolume.line.end.x - m_emissionVolume.line.start.x))
                 + m_emissionVolume.line.start.x;
             _pos.y = float(scale * float(m_emissionVolume.line.end.y - m_emissionVolume.line.start.y))
@@ -744,7 +738,7 @@ void ParticleSystem::Add_Particle(Particle *particle)
         m_systemParticlesTail = particle;
         particle->m_systemNext = nullptr;
         particle->m_inSystemList = true;
-        particle->m_particleIDMaybe = m_nextParticleIDMaybe++;
+        particle->m_particleID = m_lastParticleID++;
         ++m_particleCount;
     }
 }

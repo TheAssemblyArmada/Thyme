@@ -93,6 +93,11 @@ public:
         { \
             return Get_Class_Pool()->Allocate_Block(); \
         } \
+        void *operator new(size_t size, void *dst) \
+        { \
+            return dst; \
+        } \
+        void operator delete(void *p, void *q) {} \
         void operator delete(void *ptr) \
         { \
             return Get_Class_Pool()->Free_Block(ptr); \

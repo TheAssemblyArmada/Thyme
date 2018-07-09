@@ -23,7 +23,7 @@ class ParticleSystem;
 
 class Particle : public MemoryPoolObject, public ParticleInfo
 {
-    IMPLEMENT_POOL(Particle);
+    IMPLEMENT_NAMED_POOL(Particle, ParticlePool);
     friend class ParticleSystem;
     friend class ParticleSystemManager;
 

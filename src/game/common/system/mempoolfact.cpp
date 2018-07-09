@@ -57,7 +57,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, in
     User_Memory_Adjust_Pool_Size(name, count, overflow);
 
     // Count and overflow should never end up as 0 from adjustment.
-    ASSERT_THROW(count > 0 && overflow > 0, 0xDEAD0002);
+    ASSERT_THROW_PRINT(count > 0 && overflow > 0, 0xDEAD0002, "Count and overflow are 0 for pool '%s'.\n", name);
 
     pool = new MemoryPool;
     pool->Init(this, name, size, count, overflow);

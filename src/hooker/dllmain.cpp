@@ -44,6 +44,7 @@
 #include "mouse.h"
 #include "namekeygenerator.h"
 #include "playertemplate.h"
+#include "particle.h"
 #include "particlesysinfo.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
@@ -179,6 +180,7 @@ void Setup_Hooks()
     RankInfoStore::Hook_Me();
     PlayerTemplateStore::Hook_Me();
     ParticleSystemInfo::Hook_Me();
+    Particle::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

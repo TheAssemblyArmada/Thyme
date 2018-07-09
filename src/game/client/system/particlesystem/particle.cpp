@@ -18,8 +18,10 @@
 #include "particlesysmanager.h"
 #include "xfer.h"
 
+/**
+ * 0x004CCC30
+ */
 Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
-    ParticleInfo(info),
     m_systemNext(nullptr),
     m_systemPrev(nullptr),
     m_overallNext(nullptr),
@@ -39,12 +41,47 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_inOverallList(false),
     m_systemUnderControl(nullptr)
 {
+    m_vel = info.m_vel;
+    m_pos = info.m_pos;
+    m_emitterPos = info.m_emitterPos;
+    m_velDamping = info.m_velDamping;
+#ifdef THYME_STANDALONE
+    m_angleX = info.m_angleX;
+    m_angleY = info.m_angleY;
+#endif
+    m_angleZ = info.m_angleZ;
+#ifdef THYME_STANDALONE
+    m_angularRateX = info.m_angularRateX;
+    m_angularRateY = info.m_angularRateY;
+#endif
+    m_angularRateZ = info.m_angularRateZ;
+    m_angularDamping = info.m_angularDamping;
+    m_lifetime = info.m_lifetime;
+    m_size = info.m_size;
+    m_sizeRate = info.m_sizeRate;
+    m_sizeRateDamping = info.m_sizeRateDamping;
+    m_colorScale = info.m_colorScale;
+    m_windRandomness = info.m_windRandomness;
+    m_particleUpTowardsEmitter = info.m_particleUpTowardsEmitter;
+
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        m_alphaKey[i] = info.m_alphaKey[i];
+    }
+
     Compute_Alpha_Rate();
+
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        m_colorKey[i] = info.m_colorKey[i];
+    }
+
     Compute_Color_Rate();
     g_theParticleSystemManager->Add_Particle(this, m_system->Get_Priority());
     m_system->Add_Particle(this);
 }
 
+/**
+ * 0x004CD040
+ */
 Particle::~Particle()
 {
     m_system->Remove_Particle(this);
@@ -163,6 +200,9 @@ void Particle::Do_Wind_Motion()
 #endif
 }
 
+/**
+ * @brief Gets the priority of the system this particle belongs to.
+ */
 ParticlePriorityType Particle::Get_Priority() const
 {
     return m_system->Get_Priority();

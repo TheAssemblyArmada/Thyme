@@ -25,6 +25,9 @@ ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemM
 ParticleSystemManager *g_theParticleSystemManager;
 #endif
 
+/**
+ * 0x004D1790
+ */
 ParticleSystemManager::ParticleSystemManager() :
     m_uniqueSystemID(PARTSYS_ID_NONE),
     m_allParticleSystemList(),
@@ -42,11 +45,19 @@ ParticleSystemManager::ParticleSystemManager() :
     }
 }
 
+/**
+ * 0x004D18E0
+ */
 ParticleSystemManager::~ParticleSystemManager()
 {
     Reset();
 }
 
+/**
+ * @brief Initialise the subsystem.
+ *
+ * 0x004D1BA0
+ */
 void ParticleSystemManager::Init()
 {
     INI ini;
@@ -58,6 +69,11 @@ void ParticleSystemManager::Init()
     }
 }
 
+/**
+ * @brief Reset the subsystem.
+ *
+ * 0x004D1C40
+ */
 void ParticleSystemManager::Reset()
 {
     while (m_particleSystemCount) {
@@ -80,6 +96,11 @@ void ParticleSystemManager::Reset()
     m_someGameLogicValue = -1;
 }
 
+/**
+ * @brief Update the subsystem.
+ *
+ * 0x004D1CC0
+ */
 void ParticleSystemManager::Update()
 {
     // TODO Needs game logic.
@@ -88,6 +109,11 @@ void ParticleSystemManager::Update()
 #endif
 }
 
+/**
+ * @brief Xfer this Snapshot object.
+ *
+ * 0x004D2460
+ */
 void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 {
 #define PARTICLE_XFER_VERSION 1
@@ -124,6 +150,11 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
     }
 }
 
+/**
+ * @brief Find a particle system template by name.
+ *
+ * 0x004D1EB0
+ */
 ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &name)
 {
     auto it = m_templateStore.find(name);
@@ -135,6 +166,11 @@ ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &
     return nullptr;
 }
 
+/**
+ * @brief Create a particle system from a template.
+ *
+ * 0x004D1D40
+ */
 ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves)
 {
     if (temp == nullptr) {
@@ -144,6 +180,9 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
     return new ParticleSystem(*temp, ++m_uniqueSystemID, create_slaves);
 }
 
+/**
+ * @brief Find a particle system from a unique id.
+ */
 ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const 
 {
     if (id != PARTSYS_ID_NONE) {
@@ -157,6 +196,9 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
     return nullptr;
 }
 
+/**
+ * @brief Add a particle to the management lists.
+ */
 void ParticleSystemManager::Add_Particle(Particle *particle, ParticlePriorityType priority)
 {
     if (!particle->m_inOverallList) {
@@ -176,12 +218,18 @@ void ParticleSystemManager::Add_Particle(Particle *particle, ParticlePriorityTyp
     }
 }
 
+/**
+ * @brief Add a particle system to the management lists.
+ */
 void ParticleSystemManager::Add_Particle_System(ParticleSystem *system)
 {
     m_allParticleSystemList.push_back(system);
     ++m_particleSystemCount;
 }
 
+/**
+ * @brief Remote a particle from the management lists.
+ */
 void ParticleSystemManager::Remove_Particle(Particle *particle)
 {
     if (particle->m_inOverallList) {
@@ -210,7 +258,9 @@ void ParticleSystemManager::Remove_Particle(Particle *particle)
     }
 }
 
-
+/**
+ * @brief Remote a particle system from the management lists.
+ */
 void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
 {
     for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {

@@ -207,7 +207,7 @@ void ParticleSystemManager::Add_Particle(Particle *particle, ParticlePriorityTyp
         }
 
         if (m_allParticlesTail[priority] != nullptr) {
-            m_allParticlesTail[priority]->m_systemNext = particle;
+            m_allParticlesTail[priority]->m_overallNext = particle;
         }
 
         particle->m_overallPrev = m_allParticlesTail[priority];

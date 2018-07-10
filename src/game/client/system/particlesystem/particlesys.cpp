@@ -124,6 +124,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_shaderType = temp.m_shaderType;
     m_particleType = temp.m_particleType;
     m_particleTypeName = temp.m_particleTypeName;
+    g_theParticleSystemManager->Add_Particle_System(this);
 }
 
 /**

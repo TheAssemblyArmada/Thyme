@@ -26,8 +26,15 @@
 class Drawable;
 class RayEffectData;
 class ThingTemplate;
-enum Scorches;
-enum DrawableStatus;
+enum Scorches
+{
+    SCORCHES_UNK,
+};
+
+enum DrawableStatus
+{
+    DRAWABLE_STATUS_UNK,
+};
 
 // Temp until class properly implemented.
 class CommandTranslator
@@ -71,7 +78,7 @@ public:
     virtual RayEffectData *Create_Ray_Effect_From_Template(
         const Coord3D *src, const Coord3D *dst, const ThingTemplate *temp) = 0;
     virtual void Add_Scorch(Coord3D *pos, float scale, Scorches scorch) = 0;
-    virtual bool Load_Map(AsciiString name) { name.Is_Not_Empty() ? true : false; }
+    virtual bool Load_Map(AsciiString name) { return name.Is_Not_Empty() ? true : false; }
     virtual void Unload_Map(AsciiString name) {}
     virtual void Iterate_Drawables_In_Region(Region3D *region, void (*func)(Drawable *, void *), void *data);
     virtual Drawable *Create_Drawable(ThingTemplate *temp, DrawableStatus status) = 0;

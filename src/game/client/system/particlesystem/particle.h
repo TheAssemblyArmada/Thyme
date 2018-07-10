@@ -77,7 +77,7 @@ private:
 
 inline void Particle::Hook_Me()
 {
-    //Hook_Method(0x004CCC30, &Particle::Hook_Ctor);
+    Hook_Method(0x004CCC30, &Particle::Hook_Ctor);
     Hook_Method(0x004CD040, &Particle::Hook_Dtor);
     Hook_Method(0x004CD2E0, &Particle::Hook_Xfer);
     Hook_Method(0x004CD3F0, &Particle::Hook_LoadPP);

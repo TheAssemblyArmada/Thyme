@@ -28,7 +28,7 @@ class Object;
 
 class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
 {
-    IMPLEMENT_POOL(ParticleSystem);
+    IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
     friend class ParticleSystemManager;
 
 public:
@@ -39,7 +39,7 @@ public:
     virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
-    
+
     ParticleSystemID System_ID() const { return m_systemID; }
     void Set_Control_Particle(Particle *particle) { m_controlParticle = particle; }
     void Start() { m_isStopped = false; }

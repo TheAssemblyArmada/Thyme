@@ -71,10 +71,11 @@ public:
     int Particle_Count() const { return m_particleCount; }
     int Field_Particle_Count() const { return m_fieldParticleCount; }
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
-
+    unsigned Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap);
+    
 private:
-    Particle *m_allParticlesHead[PARTPRIORITY_COUNT];
-    Particle *m_allParticlesTail[PARTPRIORITY_COUNT];
+    Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];
+    Particle *m_allParticlesTail[PARTICLE_PRIORITY_COUNT];
     ParticleSystemID m_uniqueSystemID;
     std::list<ParticleSystem *> m_allParticleSystemList;
     int m_particleCount;

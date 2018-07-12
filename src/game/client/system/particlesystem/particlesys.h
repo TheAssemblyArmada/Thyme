@@ -56,9 +56,24 @@ public:
     void Attach_To_Object(const Object *object);
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
-    
+
     ParticlePriorityType Get_Priority() const { return m_priority; }
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    ParticleSystem *Hook_Ctor(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves)
+    {
+        return new (this) ParticleSystem(temp, id, create_slaves);
+    }
+    void Hook_Dtor() { ParticleSystem::~ParticleSystem(); }
+    //void Hook_Update(int unk) { ParticleSystem::Update(unk); }
+    Particle *Hook_Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render)
+    {
+        return ParticleSystem::Create_Particle(info, priority, always_render);
+    }
+    void Hook_Xfer(Xfer *xfer) { ParticleSystem::Xfer_Snapshot(xfer); }
+    void Hook_LoadPP() { ParticleSystem::Load_Post_Process(); }
+#endif
 private:
     ParticleInfo *Generate_Particle_Info(int id, int count);
     Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
@@ -66,7 +81,6 @@ private:
     void Update_Wind_Motion();
     void Remove_Master();
     void Remove_Slave();
-
     static Coord3D *Compute_Point_On_Sphere();
 
 private:
@@ -105,3 +119,28 @@ private:
     bool m_saveable;
     bool m_unkBool1;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void ParticleSystem::Hook_Me()
+{
+    Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
+    Hook_Method(0x004CE310, &ParticleSystem::Hook_Dtor);
+    Hook_Method(0x004D11E0, &ParticleSystem::Hook_Xfer);
+    Hook_Method(0x004D1430, &ParticleSystem::Hook_LoadPP);
+    Hook_Method(0x004CE500, &ParticleSystem::Destroy);
+    Hook_Method(0x004CE530, &ParticleSystem::Get_Position);
+    Hook_Method(0x004CE570, &ParticleSystem::Set_Position);
+    Hook_Method(0x004CE5A0, &ParticleSystem::Set_Local_Transform);
+    Hook_Method(0x004CE620, &ParticleSystem::Rotate_Local_Transform_X);
+    Hook_Method(0x004CE6C0, &ParticleSystem::Rotate_Local_Transform_Y);
+    Hook_Method(0x004CE760, &ParticleSystem::Rotate_Local_Transform_Z);
+    Hook_Method(0x004CE860, &ParticleSystem::Compute_Particle_Velocity);
+    Hook_Method(0x004CEF60, &ParticleSystem::Compute_Particle_Position);
+    Hook_Method(0x004CF530, &ParticleSystem::Hook_Create_Particle);
+    //Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
+    Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
+}
+
+#endif

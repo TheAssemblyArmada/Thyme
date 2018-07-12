@@ -45,7 +45,7 @@ void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, vo
     INI::Parse_Int(ini, formal, &rkf->frame, user_data);
 }
 
-ParticleSystem *ParticleSystemTemplate::Create_Slave_System(bool create_slaves)
+ParticleSystem *ParticleSystemTemplate::Create_Slave_System(bool create_slaves) const
 {
     if (m_slaveTemplate == nullptr && m_slaveSystemName.Is_Not_Empty()) {
         m_slaveTemplate = g_theParticleSystemManager->Find_Template(m_slaveSystemName);

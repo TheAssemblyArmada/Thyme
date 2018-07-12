@@ -34,17 +34,17 @@ using GameMath::Fabs;
 ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves) :
     m_systemParticlesHead(nullptr),
     m_systemParticlesTail(nullptr),
-    m_particleCount(),
+    m_particleCount(0),
     m_systemID(id),
     m_attachedToDrawableID(DRAWABLE_UNK),
     m_attachedToObjectID(OBJECT_UNK),
     m_localTransform(true),
     m_transform(true),
     m_burstDelayLeft(0),
-    m_delayLeft(),
+    m_delayLeft(0),
     m_startTimestamp(g_theGameClient->Get_Frame()),
     m_systemLifetimeLeft(),
-    m_lastParticleID(),
+    m_lastParticleID(0),
     m_accumulatedSizeBonus(0.0f),
     m_velCoefficient(1.0f, 1.0f, 1.0f),
     m_countCoefficient(1.0f),
@@ -57,7 +57,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_masterSystem(nullptr),
     m_masterID(PARTSYS_ID_NONE),
     m_template(&temp),
-    m_controlParticle(),
+    m_controlParticle(nullptr),
     m_isLocalIdentity(true),
     m_isIdentity(true),
     m_isForever(false),
@@ -87,7 +87,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_burstDelay = temp.m_burstDelay;
     m_burstCount = temp.m_burstCount;
     m_isOneShot = temp.m_isOneShot;
-    m_delayLeft = m_initialDelay;
+    m_delayLeft = m_initialDelay.Get_Value();
     m_systemLifetimeLeft = temp.m_systemLifetime;
     m_isForever = m_systemLifetime == 0;
     m_velDamping = temp.m_velDamping;
@@ -104,7 +104,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_emissionVelocityType = temp.m_emissionVelocityType;
     memcpy(&m_emissionVelocity, &temp.m_emissionVelocity, sizeof(m_emissionVelocity));
     m_emissionVolumeType = temp.m_emissionVolumeType;
-    memcpy(&m_emissionVolume, &temp.m_emissionVolume, sizeof(m_emissionVelocity));
+    memcpy(&m_emissionVolume, &temp.m_emissionVolume, sizeof(m_emissionVolume));
     m_isEmissionVolumeHollow = temp.m_isEmissionVolumeHollow;
     m_isGroundAligned = temp.m_isGroundAligned;
     m_isEmitAboveGroundOnly = temp.m_isEmitAboveGroundOnly;
@@ -124,6 +124,20 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate &temp, ParticleSyste
     m_shaderType = temp.m_shaderType;
     m_particleType = temp.m_particleType;
     m_particleTypeName = temp.m_particleTypeName;
+
+    if (create_slaves) {
+        ParticleSystem *slave = temp.Create_Slave_System(true);
+
+        if (slave != nullptr) {
+            m_slaveSystem = slave;
+            m_slaveID = slave->m_systemID;
+            slave->m_masterID = m_systemID;
+            slave->m_masterSystem = this;
+        }
+    }
+
+    m_attachedSystemName = temp.m_attachedSystemName;
+
     g_theParticleSystemManager->Add_Particle_System(this);
 }
 
@@ -594,45 +608,43 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
  */
 Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render)
 {
-    if (!always_render) {
-        if (!g_theWriteableGlobalData->m_useFX) {
+    if (always_render) {
+        return new Particle(this, info);
+    }
+
+    if (!g_theWriteableGlobalData->m_useFX) {
+        return nullptr;
+    }
+
+    // Don't render if priority is lower than LOD minimum priority.
+    if (priority < g_theGameLODManager->Min_Particle_Priority()) {
+        return nullptr;
+    }
+
+    // If skip priority is lower than LOD minimum, workout if we skip this particular particle.
+    if (priority < g_theGameLODManager->Min_Particle_Skip_Priority()) {
+        if (g_theGameLODManager->Skip_Particle()) {
             return nullptr;
         }
+    }
 
-        // Don't render if priority is lower than LOD minimum priority.
-        if (priority < g_theGameLODManager->Min_Particle_Priority()) {
+    if (m_particleCount != 0 && priority == PARTICLE_PRIORITY_AREA_EFFECT) {
+        if (m_isGroundAligned
+            && g_theParticleSystemManager->Field_Particle_Count() > g_theWriteableGlobalData->m_maxFieldParticleCount) {
             return nullptr;
         }
+    } else if (priority == PARTICLE_PRIORITY_ALWAYS_RENDER) {
+        return new Particle(this, info);
+    }
 
-        // If skip priority is lower than LOD minimum, workout if we skip this particular particle.
-        if (priority < g_theGameLODManager->Min_Particle_Skip_Priority()) {
-            g_theGameLODManager->Increment_Particle_Count();
+    int excess = g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
 
-            if ((g_theGameLODManager->Particle_Count() & g_theGameLODManager->Particle_Skip_Mask())
-                != g_theGameLODManager->Particle_Skip_Mask()) {
-                return nullptr;
-            }
-        }
+    if (excess > 0 && g_theParticleSystemManager->Remove_Oldest_Particles(excess, priority) != unsigned(excess)) {
+        return nullptr;
+    }
 
-        if (m_particleCount != 0 && priority == PARTPRIORITY_AREA_EFFECT) {
-            if (m_isGroundAligned
-                && g_theParticleSystemManager->Field_Particle_Count() > g_theWriteableGlobalData->m_maxFieldParticleCount) {
-                return nullptr;
-            }
-        } else if (priority != PARTPRIORITY_ALWAYS_RENDER) {
-            int excess_particles =
-                g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxFieldParticleCount;
-
-            if (excess_particles > 0) {
-                while (excess_particles != 0 && g_theParticleSystemManager->Particle_Count() != 0) {
-                    for (ParticlePriorityType i = PARTPRIORITY_WEAPON_EXPLOSION; i < priority; ++i) {
-                        if (g_theParticleSystemManager->Get_Particle_Head(i) != nullptr) {
-                            Delete_Instance(g_theParticleSystemManager->Get_Particle_Head(i));
-                        }
-                    }
-                }
-            }
-        }
+    if (g_theWriteableGlobalData->m_maxParticleCount == 0) {
+        return nullptr;
     }
 
     return new Particle(this, info);

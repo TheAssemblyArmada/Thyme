@@ -37,9 +37,9 @@ public:
     AsciiString Get_Name() const { return m_name; }
 
 private:
-    ParticleSystem *Create_Slave_System(bool create_slaves);
+    ParticleSystem *Create_Slave_System(bool create_slaves) const;
 
 private:
     AsciiString m_name;
-    ParticleSystemTemplate *m_slaveTemplate;
+    mutable ParticleSystemTemplate *m_slaveTemplate;
 };

@@ -39,7 +39,7 @@ ParticleSystemManager::ParticleSystemManager() :
     m_unkInt2(0),
     m_templateStore()
 {
-    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
+    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -63,7 +63,7 @@ void ParticleSystemManager::Init()
     INI ini;
     ini.Load("Data/INI/ParticleSystem.ini", INI_LOAD_OVERWRITE, nullptr);
 
-    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
+    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -84,7 +84,7 @@ void ParticleSystemManager::Reset()
         }
     }
 
-    for (int i = 0; i < PARTPRIORITY_COUNT; ++i) {
+    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -259,7 +259,7 @@ void ParticleSystemManager::Remove_Particle(Particle *particle)
 }
 
 /**
- * @brief Remote a particle system from the management lists.
+ * @brief Remove a particle system from the management lists.
  */
 void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
 {
@@ -269,4 +269,20 @@ void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
             --m_particleSystemCount;
         }
     }
+}
+
+unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap)
+{
+    unsigned remaining = count - 1;
+
+    for (unsigned i = 0; i < count && m_particleCount != 0; ++i, --remaining) {
+        for (ParticlePriorityType j = PARTICLE_PRIORITY_LOWEST; j < priority_cap; ++j) {
+            if (m_allParticlesHead[j] != nullptr) {
+                Delete_Instance(m_allParticlesHead[j]);
+                break;
+            }
+        }
+    }
+
+    return count - remaining;
 }

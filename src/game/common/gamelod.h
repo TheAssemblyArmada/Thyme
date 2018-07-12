@@ -147,9 +147,10 @@ public:
     int Get_Recommended_Texture_Reduction();
     bool Did_Mem_Pass() { return m_didMemPass; }
 
-    void Increment_Particle_Count() { ++m_particleCount; }
-    int Particle_Count() const { return m_particleCount; }
+    void Increment_Particle_Skip_Count() { ++m_particleSkipCount; }
+    int Particle_Count() const { return m_particleSkipCount; }
     int Particle_Skip_Mask() const { return m_particleSkipMask; }
+    bool Skip_Particle() { return m_particleSkipMask != (m_particleSkipMask & (++m_particleSkipCount)); }
     ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
     ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
 
@@ -172,7 +173,7 @@ private:
     BenchProfile m_benchProfiles[MAX_PROFILES];
     StaticGameLODLevel m_staticLODLevel;
     DynamicGameLODLevel m_dynamicLODLevel;
-    int m_particleCount;
+    int m_particleSkipCount;
     int m_particleSkipMask;
     int m_unkInt2;
     int m_debrisSkipMask;

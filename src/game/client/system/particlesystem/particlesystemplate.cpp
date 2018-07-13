@@ -54,9 +54,9 @@ ParticleSystem *ParticleSystemTemplate::Create_Slave_System(bool create_slaves) 
         m_slaveTemplate = g_theParticleSystemManager->Find_Template(m_slaveSystemName);
     }
 
-    if (m_slaveTemplate == nullptr) {
-        return nullptr;
+    if (m_slaveTemplate != nullptr) {
+        return g_theParticleSystemManager->Create_Particle_System(m_slaveTemplate, create_slaves);
     }
 
-    return g_theParticleSystemManager->Create_Particle_System(m_slaveTemplate, create_slaves);
+    return nullptr;
 }

@@ -670,27 +670,34 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
             }
 
             float scale = 1.0f - float(float(id) / float(count));
-            Coord3D tmp = m_pos - m_lastPos;
-            tmp *= scale;
+            
+            Coord3D adjustment = m_pos - m_lastPos;
+            adjustment *= scale;
 
             // Looks like a matrix transfom... original code perhaps casted Coord3D to Vector3?
-            _info.m_pos.x = float(float(float(_info.m_pos.x * m_transform[0][0]) + float(_info.m_pos.y * m_transform[0][1]))
-                                + float(_info.m_pos.z * m_transform[0][2])) + m_transform[0][3];
-            _info.m_pos.y = float(float(float(_info.m_pos.x * m_transform[1][0]) + float(_info.m_pos.y * m_transform[1][1]))
-                                + float(_info.m_pos.z * m_transform[1][2]))
-                + m_transform[1][3];
-            _info.m_pos.z = float(float(float(_info.m_pos.x * m_transform[2][0]) + float(_info.m_pos.y * m_transform[2][1]))
-                                + float(_info.m_pos.z * m_transform[2][2]))
-                + m_transform[2][3];
-            _info.m_pos -= tmp;
+            Coord3D tmp = _info.m_pos;
+            _info.m_pos.x = float(float(float(float(tmp.x * m_transform[0].X) + float(tmp.y * m_transform[0].Y))
+                                      + float(tmp.z * m_transform[0].Z))
+                                + m_transform[0].W)
+                - adjustment.x;
+            _info.m_pos.y = float(float(float(float(tmp.x * m_transform[1].X) + float(tmp.y * m_transform[1].Y))
+                                      + float(tmp.z * m_transform[1].Z))
+                                + m_transform[1].W)
+                - adjustment.y;
+            _info.m_pos.z = float(float(float(float(tmp.x * m_transform[2].X) + float(tmp.y * m_transform[2].Y))
+                                      + float(tmp.z * m_transform[2].Z))
+                                + m_transform[2].W)
+                - adjustment.z;
+            _info.m_pos -= adjustment;
 
             // Looks like a matrix rotate... original code perhaps casted Coord3D to Vector3?
-            _info.m_vel.x = float(float(_info.m_vel.x * m_transform[0][0]) + float(_info.m_vel.y * m_transform[0][1]))
-                                + float(_info.m_vel.z * m_transform[0][2]);
-            _info.m_vel.y = float(float(_info.m_vel.x * m_transform[1][0]) + float(_info.m_vel.y * m_transform[1][1]))
-                                + float(_info.m_vel.z * m_transform[1][2]);
-            _info.m_vel.z = float(float(_info.m_vel.x * m_transform[2][0]) + float(_info.m_vel.y * m_transform[2][1]))
-                                + float(_info.m_vel.z * m_transform[2][2]);
+            tmp = _info.m_vel;
+            _info.m_vel.x =
+                float(float(tmp.x * m_transform[0].X) + float(tmp.y * m_transform[0].Y)) + float(tmp.z * m_transform[0].Z);
+            _info.m_vel.y =
+                float(float(tmp.x * m_transform[1].X) + float(tmp.y * m_transform[1].Y)) + float(tmp.z * m_transform[1].Z);
+            _info.m_vel.z =
+                float(float(tmp.x * m_transform[2].X) + float(tmp.y * m_transform[2].Y)) + float(tmp.z * m_transform[2].Z);
         }
 
         _info.m_velDamping = m_velDamping.Get_Value();
@@ -706,11 +713,15 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 #endif
         _info.m_angularRateZ = m_angularRateZ.Get_Value();
         _info.m_lifetime = m_lifetime.Get_Value();
-        _info.m_size = float(m_startSize.Get_Value() * g_theWriteableGlobalData->m_particleScale) * m_sizeCoefficient;
-        _info.m_sizeRate = float(m_sizeRate.Get_Value() * g_theWriteableGlobalData->m_particleScale) * m_sizeCoefficient;
+        _info.m_size = float(m_startSize.Get_Value() * m_sizeCoefficient) * g_theWriteableGlobalData->m_particleScale;
+        _info.m_sizeRate = float(m_sizeRate.Get_Value() * m_sizeCoefficient) * g_theWriteableGlobalData->m_particleScale;
         _info.m_sizeRateDamping = m_sizeRateDamping.Get_Value();
         _info.m_size += m_accumulatedSizeBonus;
-        m_accumulatedSizeBonus = Clamp(m_accumulatedSizeBonus + m_startSizeRate.Get_Value(), 0.0f, 50.0f);
+        m_accumulatedSizeBonus += m_startSizeRate.Get_Value();
+        
+        if (m_accumulatedSizeBonus != 0.0f) {
+            m_accumulatedSizeBonus = Min(m_accumulatedSizeBonus, 50.0f);
+        }
         
         for (int i = 0; i < KEYFRAME_COUNT; ++i) {
             _info.m_alphaKey[i].value = m_alphaKey[i].var.Get_Value();
@@ -721,9 +732,9 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 
         _info.m_colorScale = m_colorScale.Get_Value();
         _info.m_emitterPos = {
-            m_transform[0][3],
-            m_transform[1][3],
-            m_transform[2][3],
+            m_transform[0].W,
+            m_transform[1].W,
+            m_transform[2].W
         };
 
         _info.m_particleUpTowardsEmitter = m_isParticleUpTowardsEmitter;

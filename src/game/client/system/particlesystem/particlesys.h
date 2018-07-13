@@ -32,7 +32,7 @@ class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
     friend class ParticleSystemManager;
 
 public:
-    ParticleSystem(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves);
+    ParticleSystem(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves);
     virtual ~ParticleSystem();
 
     virtual void Update(int unk);
@@ -61,7 +61,7 @@ public:
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
-    ParticleSystem *Hook_Ctor(const ParticleSystemTemplate &temp, ParticleSystemID id, bool create_slaves)
+    ParticleSystem *Hook_Ctor(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves)
     {
         return new (this) ParticleSystem(temp, id, create_slaves);
     }
@@ -79,6 +79,8 @@ private:
     Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
     Coord3D *Compute_Particle_Position();
     void Update_Wind_Motion();
+    void Add_Master(ParticleSystem *master);
+    void Add_Slave(ParticleSystem *slave);
     void Remove_Master();
     void Remove_Slave();
     static Coord3D *Compute_Point_On_Sphere();
@@ -125,7 +127,7 @@ private:
 
 inline void ParticleSystem::Hook_Me()
 {
-    //Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
+    Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
     Hook_Method(0x004CE310, &ParticleSystem::Hook_Dtor);
     Hook_Method(0x004D11E0, &ParticleSystem::Hook_Xfer);
     Hook_Method(0x004D1430, &ParticleSystem::Hook_LoadPP);

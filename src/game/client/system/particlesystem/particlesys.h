@@ -125,7 +125,7 @@ private:
 
 inline void ParticleSystem::Hook_Me()
 {
-    Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
+    //Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
     Hook_Method(0x004CE310, &ParticleSystem::Hook_Dtor);
     Hook_Method(0x004D11E0, &ParticleSystem::Hook_Xfer);
     Hook_Method(0x004D1430, &ParticleSystem::Hook_LoadPP);
@@ -139,7 +139,7 @@ inline void ParticleSystem::Hook_Me()
     Hook_Method(0x004CE860, &ParticleSystem::Compute_Particle_Velocity);
     Hook_Method(0x004CEF60, &ParticleSystem::Compute_Particle_Position);
     Hook_Method(0x004CF530, &ParticleSystem::Hook_Create_Particle);
-    //Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
+    Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
     Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
 }
 

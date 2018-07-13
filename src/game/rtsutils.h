@@ -72,7 +72,8 @@ struct hash
 
         do {
             hash = *c + 5 * hash;
-        } while ( ++c );
+            ++c;
+        } while (*c != '\0');
 
         return hash;
     }

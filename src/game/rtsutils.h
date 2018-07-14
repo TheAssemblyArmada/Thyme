@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef RTSUTILS_H
-#define RTSUTILS_H
-
 #include "always.h"
 #include "endiantype.h"
 
@@ -101,5 +98,3 @@ inline unsigned Get_Time()
 }
 
 } // namespace rts
-
-#endif // _RTSUTILS_H

@@ -872,6 +872,10 @@ void ParticleSystem::Update_Wind_Motion()
             break;
     }
 }
+
+/**
+ * @brief Adds the master system to this particle system.
+ */
 void ParticleSystem::Add_Master(ParticleSystem *master)
 {
     m_masterSystem = master;
@@ -883,6 +887,9 @@ void ParticleSystem::Add_Master(ParticleSystem *master)
     }
 }
 
+/**
+ * @brief Adds the slave system to this particle system.
+ */
 void ParticleSystem::Add_Slave(ParticleSystem *slave)
 {
     m_slaveSystem = slave;
@@ -917,5 +924,66 @@ void ParticleSystem::Remove_Slave()
         m_slaveSystem->m_masterID = PARTSYS_ID_NONE;
         m_slaveSystem = nullptr;
         m_slaveID = PARTSYS_ID_NONE;
+    }
+}
+
+/**
+ * @brief Creates a particle info from the information in two systems.
+ *
+ * 0x004D0B30
+ */
+ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave)
+{
+    if (master != nullptr && slave != nullptr) {
+        ParticleInfo tmp = *master->Generate_Particle_Info(1, 1);
+        ParticleInfo *slave_info = slave->Generate_Particle_Info(1, 1);
+
+        tmp.m_lifetime = slave_info->m_lifetime;
+        tmp.m_size *= slave_info->m_size;
+        tmp.m_sizeRate *= slave_info->m_sizeRate;
+        tmp.m_sizeRateDamping *= slave_info->m_sizeRateDamping;
+#ifdef THYME_STANDALONE
+        tmp.m_angleX = slave_info->m_angleX;
+        tmp.m_angleY = slave_info->m_angleY;
+#endif
+        tmp.m_angleZ = slave_info->m_angleZ;
+#ifdef THYME_STANDALONE
+        tmp.m_angularRateX = slave_info->m_angularRateX;
+        tmp.m_angularRateY = slave_info->m_angularRateY;
+#endif
+        tmp.m_angularRateZ = slave_info->m_angularRateZ;
+        tmp.m_angularDamping = slave_info->m_angularDamping;
+
+        for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+            tmp.m_alphaKey[i] = slave_info->m_alphaKey[i];
+            tmp.m_colorKey[i] = slave_info->m_colorKey[i];
+        }
+
+        tmp.m_colorScale = slave_info->m_colorScale;
+        tmp.m_pos += slave->m_slavePosOffset;
+
+        if (promote_slave) {
+            slave->m_burstCount = master->m_burstCount;
+            slave->m_burstDelay = master->m_burstDelay;
+            slave->m_priority = master->m_priority;
+            memcpy(&slave->m_emissionVelocity, &master->m_emissionVelocity, sizeof(slave->m_emissionVelocity));
+            slave->m_emissionVelocityType = master->m_emissionVelocityType;
+            memcpy(&slave->m_emissionVolume, &master->m_emissionVolume, sizeof(slave->m_emissionVolume));
+            slave->m_emissionVolumeType = master->m_emissionVolumeType;
+            slave->m_isEmissionVolumeHollow = master->m_isEmissionVolumeHollow;
+            slave->m_startSize.Set_Range(slave->m_startSize.Get_Min() * master->m_startSize.Get_Min(),
+                slave->m_startSize.Get_Max() * master->m_startSize.Get_Max(),
+                master->m_startSize.Get_Type());
+            slave->m_sizeRate.Set_Range(slave->m_sizeRate.Get_Min() * master->m_sizeRate.Get_Min(),
+                slave->m_sizeRate.Get_Max() * master->m_sizeRate.Get_Max(),
+                master->m_sizeRate.Get_Type());
+            slave->m_sizeRateDamping.Set_Range(slave->m_sizeRateDamping.Get_Min() * master->m_sizeRateDamping.Get_Min(),
+                slave->m_sizeRateDamping.Get_Max() * master->m_sizeRateDamping.Get_Max(),
+                master->m_sizeRateDamping.Get_Type());
+        }
+
+        return tmp;
+    } else {
+        return ParticleInfo();
     }
 }

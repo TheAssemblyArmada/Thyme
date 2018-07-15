@@ -56,8 +56,8 @@ public:
     void Attach_To_Object(const Object *object);
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
-
     ParticlePriorityType Get_Priority() const { return m_priority; }
+    static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -143,6 +143,7 @@ inline void ParticleSystem::Hook_Me()
     Hook_Method(0x004CF530, &ParticleSystem::Hook_Create_Particle);
     Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
     Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
+    Hook_Function(0x004D0B30, &ParticleSystem::Merge_Related_Systems);
 }
 
 #endif

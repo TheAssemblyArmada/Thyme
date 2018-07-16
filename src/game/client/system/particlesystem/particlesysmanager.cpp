@@ -167,6 +167,28 @@ ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &
 }
 
 /**
+ * @brief Find a particle system template by name and create a new one if it didn't exist.
+ *
+ * 0x004D0B30
+ */
+ParticleSystemTemplate *ParticleSystemManager::New_Template(const AsciiString &name)
+{
+    ParticleSystemTemplate *retval = Find_Template(name);
+
+    if (retval == nullptr) {
+        retval = new ParticleSystemTemplate(name);
+        auto res = m_templateStore.insert({name, retval});
+
+        if (!res.second && retval != nullptr) {
+            delete retval;
+            retval = nullptr;
+        }
+    }
+
+    return retval;
+}
+
+/**
  * @brief Create a particle system from a template.
  *
  * 0x004D1D40
@@ -182,6 +204,8 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
 
 /**
  * @brief Find a particle system from a unique id.
+ *
+ * 0x004D1E30
  */
 ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const 
 {
@@ -194,6 +218,46 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
     }
 
     return nullptr;
+}
+
+/**
+ * @brief Destroys a particle system from a unique id.
+ *
+ * 0x004D1E30
+ */
+void ParticleSystemManager::Destroy_Particle_System_By_ID(ParticleSystemID id)
+{
+    ParticleSystem *sys = Find_Particle_System(id);
+
+    if (sys != nullptr) {
+        sys->Destroy();
+    }
+}
+
+/**
+ * @brief Destroys particle systems attached to an object.
+ *
+ * 0x004D2270
+ */
+void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
+{
+    // TODO Requires Object.
+#ifndef THYME_STANDALONE
+    Call_Method<void, ParticleSystemManager, Object *>(0x004D2270, this, object);
+#endif
+}
+
+/**
+ * @brief Preloads graphical assets for particle systems.
+ *
+ * 0x004D2370
+ */
+void ParticleSystemManager::Preload_Assets(TimeOfDayType time)
+{
+    // TODO Requires Display.
+#ifndef THYME_STANDALONE
+    Call_Method<void, ParticleSystemManager, TimeOfDayType>(0x004D2370, this, time);
+#endif
 }
 
 /**
@@ -271,6 +335,9 @@ void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
     }
 }
 
+/**
+ * @brief Removes count number of the oldest particles the manager knows about.
+ */
 unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap)
 {
     unsigned remaining = count - 1;

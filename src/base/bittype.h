@@ -30,13 +30,13 @@
     #include    <stdint.h>
     #include    <limits.h>
 #else // !_MSC_VER || !(__GNUC__ || __clang__ || __WATCOM__)
-    COMPILER_ERROR("Unknown compiler. Please specify fixed-size integer types in 'bittype.h'.");
+    #error Unknown compiler.Please specify fixed - size integer types in 'bittype.h'.
 #endif // _MSC_VER || (__GNUC__ || __clang__ || __WATCOM__)
     
     //
     // Use these as pointers to do type punning.
     //
-#if defined(COMPILER_GNUC) || defined(COMPILER_CLANG)
+#if defined(__GNUC__) || defined(__clang__)
     typedef float __attribute__((__may_alias__)) float_a;
     typedef int32_t __attribute__((__may_alias__)) int32_a;
     typedef uint32_t __attribute__((__may_alias__)) uint32_a;

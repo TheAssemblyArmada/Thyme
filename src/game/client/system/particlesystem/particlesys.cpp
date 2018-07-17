@@ -126,8 +126,8 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
         ParticleSystem *slave = temp->Create_Slave_System(create_slaves);
 
         if (slave != nullptr) {
-            Add_Slave(slave);
-            slave->Add_Master(this);
+            Set_Slave(slave);
+            slave->Set_Master(this);
         }
     }
 
@@ -876,7 +876,7 @@ void ParticleSystem::Update_Wind_Motion()
 /**
  * @brief Adds the master system to this particle system.
  */
-void ParticleSystem::Add_Master(ParticleSystem *master)
+void ParticleSystem::Set_Master(ParticleSystem *master)
 {
     m_masterSystem = master;
 
@@ -890,7 +890,7 @@ void ParticleSystem::Add_Master(ParticleSystem *master)
 /**
  * @brief Adds the slave system to this particle system.
  */
-void ParticleSystem::Add_Slave(ParticleSystem *slave)
+void ParticleSystem::Set_Slave(ParticleSystem *slave)
 {
     m_slaveSystem = slave;
 

@@ -64,6 +64,7 @@ public:
 
     ParticleSystemTemplate *Find_Template(const AsciiString &name);
     ParticleSystemTemplate *New_Template(const AsciiString &name);
+    ParticleSystemTemplate *Find_Parent_Template(const AsciiString &name, int parent);
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
     void Destroy_Particle_System_By_ID(ParticleSystemID id);
@@ -78,6 +79,9 @@ public:
     int Field_Particle_Count() const { return m_fieldParticleCount; }
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
     unsigned Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap);
+
+    static ParticleSystemID Create_Attached_Particle_System_ID(
+        const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
 
 private:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];

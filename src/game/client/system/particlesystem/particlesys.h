@@ -57,6 +57,8 @@ public:
     void Add_Particle(Particle *particle);
     void Remove_Particle(Particle *particle);
     ParticlePriorityType Get_Priority() const { return m_priority; }
+    void Set_Lifetime_Range(float min, float max) { m_lifetime.Set_Range(min, max, GameClientRandomVariable::UNIFORM); }
+
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 
 #ifndef THYME_STANDALONE
@@ -79,8 +81,8 @@ private:
     Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
     Coord3D *Compute_Particle_Position();
     void Update_Wind_Motion();
-    void Add_Master(ParticleSystem *master);
-    void Add_Slave(ParticleSystem *slave);
+    void Set_Master(ParticleSystem *master);
+    void Set_Slave(ParticleSystem *slave);
     void Remove_Master();
     void Remove_Slave();
     static Coord3D *Compute_Point_On_Sphere();

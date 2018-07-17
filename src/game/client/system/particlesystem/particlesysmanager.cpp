@@ -189,6 +189,24 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const AsciiString &n
 }
 
 /**
+ * @brief Find a particle system template parent.
+ *
+ * 0x004D2130
+ */
+ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const AsciiString &name, int parent)
+{
+    if (name.Is_Not_Empty()) {
+        for (auto it = m_templateStore.begin(); it != m_templateStore.end(); ++it) {
+            if (strcmp(it->second->m_slaveSystemName.Str(), name.Str()) == 0 && parent-- == 0) {
+                return it->second;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+/**
  * @brief Create a particle system from a template.
  *
  * 0x004D1D40
@@ -352,4 +370,26 @@ unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, Particle
     }
 
     return count - remaining;
+}
+
+/**
+ * @brief Creates particle system and attaches it to the object, returning the ID allocated.
+ *
+ * 0x004D1DF0
+ */
+ParticleSystemID ParticleSystemManager::Create_Attached_Particle_System_ID(
+    const ParticleSystemTemplate *temp, Object *object, bool create_slaves)
+{
+#ifndef THYME_STANDALONE
+    return Call_Function<ParticleSystemID, const ParticleSystemTemplate *, Object *, bool>(
+        0x004D1DF0, temp, object, create_slaves);
+#else
+    ParticleSystem *sys = g_theParticleSystemManager->Create_Particle_System(temp, create_slaves);
+
+    if (sys != nullptr) {
+        // TODO requires Object.
+    }
+
+    return PARTSYS_ID_NONE;
+#endif
 }

@@ -28,6 +28,8 @@
 
 class ParticleSystemInfo : public SnapShot
 {
+    friend class ParticleSystemManager;
+
 protected:
     enum
     {

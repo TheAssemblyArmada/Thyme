@@ -83,6 +83,15 @@ public:
     static ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    ParticleSystemManager *Hook_Ctor() { return new (this) ParticleSystemManager(); }
+    void Hook_Dtor() { ParticleSystemManager::~ParticleSystemManager(); }
+    void Hook_Xfer(Xfer *xfer) { ParticleSystemManager::Xfer_Snapshot(xfer); }
+    void Hook_Init() { ParticleSystemManager::Init(); }
+    void Hook_Reset() { ParticleSystemManager::Reset(); }
+#endif
+
 private:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];
     Particle *m_allParticlesTail[PARTICLE_PRIORITY_COUNT];
@@ -99,6 +108,22 @@ private:
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
+
+inline void ParticleSystemManager::Hook_Me()
+{
+    Hook_Method(0x004D1790, &ParticleSystemManager::Hook_Ctor);
+    Hook_Method(0x004D18E0, &ParticleSystemManager::Hook_Dtor);
+    Hook_Method(0x004D1BA0, &ParticleSystemManager::Hook_Init);
+    Hook_Method(0x004D1C40, &ParticleSystemManager::Hook_Reset);
+    Hook_Method(0x004D2460, &ParticleSystemManager::Hook_Xfer);
+    Hook_Method(0x004D1EB0, &ParticleSystemManager::Find_Template);
+    Hook_Method(0x004D1EE0, &ParticleSystemManager::New_Template);
+    Hook_Method(0x004D2130, &ParticleSystemManager::Find_Parent_Template);
+    Hook_Method(0x004D1D40, &ParticleSystemManager::Create_Particle_System);
+    Hook_Method(0x004D1E30, &ParticleSystemManager::Find_Particle_System);
+    Hook_Method(0x004D1E60, &ParticleSystemManager::Destroy_Particle_System_By_ID);
+    Hook_Method(0x004D22D0, &ParticleSystemManager::Remove_Particle);
+}
 
 extern ParticleSystemManager *&g_theParticleSystemManager;
 #else

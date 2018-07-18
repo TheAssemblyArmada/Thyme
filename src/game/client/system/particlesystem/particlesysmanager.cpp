@@ -169,7 +169,7 @@ ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &
 /**
  * @brief Find a particle system template by name and create a new one if it didn't exist.
  *
- * 0x004D0B30
+ * 0x004D1EE0
  */
 ParticleSystemTemplate *ParticleSystemManager::New_Template(const AsciiString &name)
 {
@@ -241,7 +241,7 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
 /**
  * @brief Destroys a particle system from a unique id.
  *
- * 0x004D1E30
+ * 0x004D1E60
  */
 void ParticleSystemManager::Destroy_Particle_System_By_ID(ParticleSystemID id)
 {
@@ -311,6 +311,8 @@ void ParticleSystemManager::Add_Particle_System(ParticleSystem *system)
 
 /**
  * @brief Remote a particle from the management lists.
+ *
+ * 0x004D22D0
  */
 void ParticleSystemManager::Remove_Particle(Particle *particle)
 {

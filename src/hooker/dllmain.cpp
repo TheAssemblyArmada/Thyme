@@ -47,6 +47,7 @@
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
+#include "particlesysmanager.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "script.h"
@@ -183,6 +184,7 @@ void Setup_Hooks()
     ParticleSystemInfo::Hook_Me();
     Particle::Hook_Me();
     ParticleSystem::Hook_Me();
+    ParticleSystemManager::Hook_Me();
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall

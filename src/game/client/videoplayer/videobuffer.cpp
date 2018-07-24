@@ -53,8 +53,8 @@ void VideoBuffer::Free()
 RectClass VideoBuffer::Rect(float x1, float y1, float x2, float y2)
 {
     if (Valid()) {
-        float width = m_width / m_textureWidth;
-        float height = m_height / m_textureHeight;
+        float width = float(m_width) / float(m_textureWidth);
+        float height = float(m_height) / float(m_textureHeight);
         return RectClass(width * x1, height *y1, width * x2, height * y2);
     }
 

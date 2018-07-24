@@ -24,6 +24,7 @@ set(GAMEENGINE_INCLUDES
     game/client/gui
     game/client/input
     game/client/system/particlesystem
+    game/client/videoplayer
     game/common
     game/common/audio
     game/common/compression
@@ -68,6 +69,9 @@ set(GAMEENGINE_SRC
     game/client/system/particlesystem/particlesysinfo.cpp
     game/client/system/particlesystem/particlesysmanager.cpp
     game/client/system/particlesystem/particlesystemplate.cpp
+    game/client/videoplayer/videobuffer.cpp
+    game/client/videoplayer/videoplayer.cpp
+    game/client/videoplayer/videostream.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

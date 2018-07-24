@@ -16,6 +16,7 @@
 #pragma once
 
 #include "always.h"
+#include "minmax.h"
 #include "vector2.h"
 
 class RectClass
@@ -47,13 +48,13 @@ public:
         bottom -= o.Y;
         return *this;
     }
-    
+
     RectClass &operator+=(const RectClass &r)
     {
-        left = min(left, r.left);
-        top = min(top, r.top);
-        right = max(right, r.right);
-        bottom = max(bottom, r.bottom);
+        left = Min(left, r.left);
+        top = Min(top, r.top);
+        right = Max(right, r.right);
+        bottom = Max(bottom, r.bottom);
         return *this;
     }
 
@@ -94,7 +95,7 @@ public:
     float Height(void) const { return bottom - top; }
     Vector2 Center(void) const { return Vector2((left + right) / 2, (top + bottom) / 2); }
     Vector2 Extent(void) const { return Vector2((right - left) / 2, (bottom - top) / 2); }
-    
+
     RectClass &Scale_Relative_Center(float k)
     {
         Vector2 center = Center();

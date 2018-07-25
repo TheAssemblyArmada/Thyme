@@ -309,7 +309,11 @@ inline int Fast_To_Int_Floor(float val)
         val -= _almost_one;
     }
 
-    return lrintf(truncf(val));
+#ifdef THYME_USING_GAMEMATH
+    return gm_lrintf(gm_truncf(val));
+#else
+    return lrintf(truncf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Random_Float()

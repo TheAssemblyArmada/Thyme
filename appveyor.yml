@@ -39,8 +39,9 @@ skip_commits:
 max_jobs: 1
 
 # scripts that run after cloning repository
-#install:
-#  - ps: cd C:\projects
+install:
+  - cmd: cd C:\projects\thyme
+  - cmd: git submodule update --init --recursive
 
 # scripts to run before build
 before_build:

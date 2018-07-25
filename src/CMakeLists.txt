@@ -16,6 +16,12 @@ else()
     endif()
 endif()
 
+if(THYME_USE_GAMEMATH)
+    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
+    add_definitions(-DTHYME_USING_GAMEMATH)
+    set(PLATFORM_LIBS ${PLATFORM_LIBS} gamemath_static_lib)
+endif()
+
 # Build and link the DLL.
 set(GAMEENGINE_INCLUDES
     base

@@ -33,6 +33,7 @@ endif()
 
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." OFF)
+option(THYME_USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 

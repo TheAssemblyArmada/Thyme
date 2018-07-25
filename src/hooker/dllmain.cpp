@@ -13,24 +13,25 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "hooker.h"
-#include "filesystem.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
 #include "cavesystem.h"
 #include "chunkio.h"
-#include "copyprotect.h"
 #include "commandline.h"
 #include "commandlist.h"
 #include "compressionmanager.h"
+#include "copyprotect.h"
 #include "datachunk.h"
 #include "dict.h"
+#include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
+#include "hooker.h"
+#include "gamemath.h"
+#include "gamedebug.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
-#include "gamedebug.h"
 #include "gamemessage.h"
 #include "gamestate.h"
 #include "gametext.h"
@@ -43,11 +44,11 @@
 #include "modulefactory.h"
 #include "mouse.h"
 #include "namekeygenerator.h"
-#include "playertemplate.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
 #include "particlesysmanager.h"
+#include "playertemplate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "script.h"
@@ -65,9 +66,9 @@
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include "wwstring.h"
-#include <windows.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <windows.h>
 #include <winsock2.h>
 
 struct hostent *__stdcall cnconline_hook(const char *name)
@@ -88,7 +89,8 @@ struct hostent *__stdcall cnconline_hook(const char *name)
         return gethostbyname("gpcm.server.cnc-online.net");
     }
 
-    if (strcmp(name, "master.gamespy.com") == 0 || strcmp(name, "ccgenerals.ms19.gamespy.com") == 0 || strcmp(name, "ccgenzh.ms6.gamespy.com") == 0) {
+    if (strcmp(name, "master.gamespy.com") == 0 || strcmp(name, "ccgenerals.ms19.gamespy.com") == 0
+        || strcmp(name, "ccgenzh.ms6.gamespy.com") == 0) {
         return gethostbyname("master.server.cnc-online.net");
     }
 
@@ -110,17 +112,17 @@ void Setup_Hooks()
 
     Hook_Function(0x007F5B06, cnconline_hook);
 
-	// Code that checks the launcher is running, launcher does CD check.
+    // Code that checks the launcher is running, launcher does CD check.
     Hook_Function(0x00412420, CopyProtect::checkForMessage);
     Hook_Function(0x00412450, CopyProtect::validate);
 
     // Returns true for any CD checks
     Hook_Function(0x005F1CB0, IsFirstCDPresent);
-    
+
     // Replace memory init functions.
     GameMemory::Hook_Me();
 
-     // Replace pool functions
+    // Replace pool functions
     Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);
     Hook_Method(0x00413C40, &MemoryPool::Free_Block);
 
@@ -129,18 +131,20 @@ void Setup_Hooks()
     Hook_Method(0x00413FE0, &DynamicMemoryAllocator::Allocate_Bytes);
     Hook_Method(0x00414010, &DynamicMemoryAllocator::Free_Bytes);
     Hook_Method(0x00414140, &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
-    
+
     // Replace MemoryPoolFactory functions
-    Hook_Method(0x00414180, static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const*, int, int, int)>(&MemoryPoolFactory::Create_Memory_Pool));
-    
+    Hook_Method(0x00414180,
+        static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const *, int, int, int)>(
+            &MemoryPoolFactory::Create_Memory_Pool));
+
     // Replace File functions
     FileSystem::Hook_Me();
     ArchiveFileSystem::Hook_Me();
 
     // Replace AsciiString
-    Hook_Method(0x0040D640, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Set));
+    Hook_Method(0x0040D640, static_cast<void (AsciiString::*)(char const *)>(&AsciiString::Set));
     Hook_Method(0x00415290, &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    Hook_Method(0x0040FB40, static_cast<void (AsciiString::*)(char const*)>(&AsciiString::Concat));
+    Hook_Method(0x0040FB40, static_cast<void (AsciiString::*)(char const *)>(&AsciiString::Concat));
 
     Win32GameEngine::Hook_Me();
     INI::Hook_Me();
@@ -185,6 +189,11 @@ void Setup_Hooks()
     Particle::Hook_Me();
     ParticleSystem::Hook_Me();
     ParticleSystemManager::Hook_Me();
+
+    Hook_Function(0x00537580, &GameMath::Sin);
+    Hook_Function(0x00537590, &GameMath::Cos);
+    Hook_Function(0x005375B0, &GameMath::Asin);
+    Hook_Function(0x005375A0, &GameMath::Acos);
 }
 
 // Use DLLMain to Set up our hooks when the DLL loads. The launcher should stall
@@ -192,22 +201,20 @@ void Setup_Hooks()
 // be our code.
 BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
-    switch ( ul_reason_for_call ) {
-
+    switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
-			StartHooking();
+            StartHooking();
             Setup_Hooks();
             break;
 
         case DLL_PROCESS_DETACH:
             StopHooking();
             break;
-            
+
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
         default:
             break;
-
     }
 
     return TRUE;

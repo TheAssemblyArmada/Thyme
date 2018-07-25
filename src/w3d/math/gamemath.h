@@ -19,11 +19,16 @@
 #include "gamedebug.h"
 #include "array.h"
 #include <cfloat>
-#include <cmath>
 #include <cstdlib>
 
 #ifdef PROCESSOR_X86
 #include <xmmintrin.h>
+#endif
+
+#ifdef THYME_USING_GAMEMATH
+#include "gmath.h"
+#else
+#include <cmath>
 #endif
 
 #define GAMEMATH_EPSILON 0.0001f
@@ -66,7 +71,7 @@ void Shutdown();
 
 inline float Square(float val)
 {
-    return float(val *val);
+    return float(val * val);
 }
 
 inline float Fabs(float val)
@@ -105,12 +110,20 @@ inline int Float_To_Int_Floor(const float &f)
 
 inline float Cos(float val)
 {
+#ifdef THYME_USING_GAMEMATH
+    return gm_cosf(val);
+#else
     return float(cosf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Sin(float val)
 {
+#ifdef THYME_USING_GAMEMATH
+    return gm_sinf(val);
+#else
     return float(sinf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Inv_Sin(float val)
@@ -120,37 +133,61 @@ inline float Inv_Sin(float val)
 
 inline float Sqrt(float val)
 {
+#ifdef THYME_USING_GAMEMATH
+    return gm_sqrtf(val);
+#else
     return float(sqrtf(val)); // IEEE standard says this is predictable for all conforming implementations.
+#endif
 }
 
 inline float Inv_Sqrt(float val)
 {
-    return float(1.0f / sqrtf(val));
+    return float(1.0f / Sqrt(val));
 }
 
 inline float Acos(float val)
 {
-    return float(acosf(val));
+#ifdef THYME_USING_GAMEMATH
+    return gm_acosf(val);
+#else
+    return float(acosf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Asin(float val)
 {
-    return float(asinf(val));
+#ifdef THYME_USING_GAMEMATH
+    return gm_asinf(val);
+#else
+    return float(asinf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Atan(float val)
 {
-    return float(atanf(val));
+#ifdef THYME_USING_GAMEMATH
+    return gm_atanf(val);
+#else
+    return float(atanf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Atan2(float y, float x)
 {
-    return float(atan2f(y, x));
+#ifdef THYME_USING_GAMEMATH
+    return gm_atan2f(y, x);
+#else
+    return float(atan2f(y, x)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Tan(float val)
 {
-    return float(tanf(val));
+#ifdef THYME_USING_GAMEMATH
+    return gm_tanf(val);
+#else
+    return float(tanf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Fast_Sin(float val)
@@ -243,12 +280,20 @@ inline float Sign(float val)
 
 inline float Ceil(float val)
 {
-    return ceilf(val);
+#ifdef THYME_USING_GAMEMATH
+    return gm_ceilf(val);
+#else
+    return float(ceilf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline float Floor(float val)
 {
-    return floorf(val);
+#ifdef THYME_USING_GAMEMATH
+    return gm_floorf(val);
+#else
+    return float(floorf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
 }
 
 inline bool Fast_Is_Float_Positive(const float &val)

@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: SPHERE.H
-//
-//        Author:: Tiberian Technologies
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: Plane class
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author Tiberian Technologies
+ * @author OmniBlade
+ *
+ * @brief Sphere object.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "gamemath.h"
@@ -141,7 +133,7 @@ inline SphereClass::SphereClass(const Vector3 *Position, const int VertCount)
         float testrad2 = dx * dx + dy * dy + dz * dz;
 
         if ( testrad2 > radsqr ) {
-            float testrad = sqrt(testrad2);
+            float testrad = GameMath::Sqrt(testrad2);
             radius = (radius + testrad) / 2.0f;
             radsqr = radius * radius;
             float oldtonew = testrad - radius;

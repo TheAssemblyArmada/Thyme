@@ -16,6 +16,7 @@
 
 #include "asciistring.h"
 #include "gamedebug.h"
+#include "stringex.h"
 
 class File;
 class Xfer;
@@ -150,7 +151,7 @@ public:
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
 
-// Block parsing functions
+    // Block parsing functions
 
 #ifndef THYME_STANDALONE
     // Hooking function
@@ -182,8 +183,8 @@ private:
 };
 
 #ifndef THYME_STANDALONE
-#include "hooker.h"
 #include "hookcrt.h"
+#include "hooker.h"
 
 extern Xfer *&g_sXfer;
 
@@ -220,7 +221,7 @@ inline void INI::Hook_Me()
     Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
     Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
 }
-#else 
+#else
 extern Xfer *g_sXfer;
 #endif
 
@@ -233,7 +234,8 @@ inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 inline const char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = strtok(0, seps != nullptr ? seps : m_seps);
-    ASSERT_THROW_PRINT(ret != nullptr, 0xDEAD0006, "Expected further tokens in '%s', line %d\n", m_fileName.Str(), m_lineNumber);
+    ASSERT_THROW_PRINT(
+        ret != nullptr, 0xDEAD0006, "Expected further tokens in '%s', line %d\n", m_fileName.Str(), m_lineNumber);
 
     return ret;
 }
@@ -246,24 +248,35 @@ inline const char *INI::Get_Next_Sub_Token(const char *expected)
 
 inline AsciiString INI::Get_Next_Ascii_String()
 {
-    static char _buffer[1028];
+    static char _buffer[MAX_LINE_LENGTH];
     AsciiString next;
 
     const char *token = Get_Next_Token_Or_Null();
 
     if (token != nullptr) {
-        if (*token == '"') {
+        if (*token == '"') { // Handle quoted tokens.
+            _buffer[0] = '\0';
+
             if (strlen(token) > 1) {
-                strcpy(_buffer, token + 1);
+                strlcpy(_buffer, token + 1, sizeof(_buffer));
             }
 
-            const char *ntoken = Get_Next_Token(m_sepsQuote);
+            const char *next_token = Get_Next_Token_Or_Null(m_sepsQuote);
 
-            if (strlen(ntoken) > 1 && ntoken[1] != '\t') {
-                strcat(_buffer, " ");
+            if (next_token != nullptr) { // If we have another token, parse that too.
+                if (strlen(next_token) > 1 && next_token[1] != '\t') {
+                    strlcat(_buffer, " ", sizeof(_buffer));
+                }
+
+                strlcat(_buffer, next_token, sizeof(_buffer));
+            } else { // Handle trailing ".
+                size_t length = strlen(_buffer);
+
+                if (length > 1 && _buffer[length - 1] == '"') {
+                    _buffer[length - 1] = '\0';
+                }
             }
 
-            strcat(_buffer, ntoken);
             next = _buffer;
         } else {
             next = token;

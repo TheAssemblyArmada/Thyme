@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: LOCALFILE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Interface for local file IO.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Interface for local file IO.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "localfile.h"
 #include "ramfile.h"
 
@@ -31,7 +22,7 @@ void *LocalFile::Read_All_And_Close()
     int size = Size();
     uint8_t *data;
 
-    if ( size > 0 ) {
+    if (size > 0) {
         DEBUG_LOG("Reading %s and closing.\n", m_filename.Str());
         data = new uint8_t[size];
 
@@ -51,8 +42,8 @@ File *LocalFile::Convert_To_RAM()
     DEBUG_LOG("Converting %s to RAMFile.\n", m_filename.Str());
     RAMFile *ramfile = new RAMFile;
 
-    if ( ramfile->Open(this) ) {
-        if ( m_deleteOnClose ) {
+    if (ramfile->Open(this)) {
+        if (m_deleteOnClose) {
             ramfile->Set_Del_On_Close(true);
             Close();
 
@@ -64,7 +55,7 @@ File *LocalFile::Convert_To_RAM()
             return ramfile;
         }
     }
-        
+
     ramfile->Close();
     Delete_Instance(ramfile);
 

@@ -13,9 +13,9 @@
  *            LICENSE
  */
 #include "win32localfile.h"
-#include <fcntl.h>
-#include <cstdlib>
 #include <cctype>
+#include <cstdlib>
+#include <fcntl.h>
 #include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
@@ -37,22 +37,18 @@
 //#endif
 
 //#define lseek _lseeki64
-//typedef __int64 off_t;
+// typedef __int64 off_t;
 #else
 #include <unistd.h>
 #define O_TEXT 0
 #define O_BINARY 0
 #endif
 
-Win32LocalFile::Win32LocalFile() :
-    FileHandle(INVALID_HANDLE)
-{
-
-}
+Win32LocalFile::Win32LocalFile() : FileHandle(INVALID_HANDLE) {}
 
 Win32LocalFile::~Win32LocalFile()
 {
-    if ( FileHandle != INVALID_HANDLE ) {
+    if (FileHandle != INVALID_HANDLE) {
         close(FileHandle);
         FileHandle = -1;
         --TotalOpen;
@@ -63,47 +59,47 @@ Win32LocalFile::~Win32LocalFile()
 
 bool Win32LocalFile::Open(const char *filename, int mode)
 {
-    if ( !File::Open(filename, mode) ) {
+    if (!File::Open(filename, mode)) {
         return false;
     }
 
     int openmode = O_RDONLY;
 
-    if ( (m_openMode & CREATE) != 0 ) {
+    if ((m_openMode & CREATE) != 0) {
         openmode |= O_CREAT;
     }
 
-    if ( (m_openMode & TRUNCATE) != 0 ) {
+    if ((m_openMode & TRUNCATE) != 0) {
         openmode |= O_TRUNC;
     }
 
-    if ( (m_openMode & APPEND) != 0 ) {
+    if ((m_openMode & APPEND) != 0) {
         openmode |= O_APPEND;
     }
 
-    if ( (m_openMode & TEXT) != 0 ) {
+    if ((m_openMode & TEXT) != 0) {
         openmode |= O_TEXT;
     }
 
-    if ( (m_openMode & BINARY) != 0 ) {
+    if ((m_openMode & BINARY) != 0) {
         openmode |= O_BINARY;
     }
 
-    if ( (m_openMode & (READ | WRITE)) == (READ | WRITE) ) {
+    if ((m_openMode & (READ | WRITE)) == (READ | WRITE)) {
         openmode |= O_RDWR;
-    } else if ( (m_openMode & 2) != 0 ) {
+    } else if ((m_openMode & 2) != 0) {
         openmode |= O_WRONLY | O_CREAT;
     }
 
     FileHandle = open(filename, openmode, S_IREAD | S_IWRITE);
 
-    if ( FileHandle == -1 ) {
+    if (FileHandle == -1) {
         return false;
     }
 
     ++TotalOpen;
 
-    if ( (m_openMode & APPEND) != 0 && Seek(0, END) < 0 ) {
+    if ((m_openMode & APPEND) != 0 && Seek(0, END) < 0) {
         Close();
 
         return false;
@@ -114,11 +110,11 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
 int Win32LocalFile::Read(void *dst, int bytes)
 {
-    if ( !m_access ) {
+    if (!m_access) {
         return -1;
     }
 
-    if ( dst != nullptr ) {
+    if (dst != nullptr) {
         return read(FileHandle, dst, bytes);
     } else {
         lseek(FileHandle, bytes, CURRENT);
@@ -129,7 +125,7 @@ int Win32LocalFile::Read(void *dst, int bytes)
 
 int Win32LocalFile::Write(void const *src, int bytes)
 {
-    if ( !m_access || src == nullptr ) {
+    if (!m_access || src == nullptr) {
         return -1;
     }
 
@@ -138,7 +134,7 @@ int Win32LocalFile::Write(void const *src, int bytes)
 
 int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 {
-    switch ( mode ) {
+    switch (mode) {
         case START:
         case CURRENT:
         case END:
@@ -156,20 +152,20 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
 
     int i;
 
-    for ( i = 0; i < bytes - 1; ++i ) {
+    for (i = 0; i < bytes - 1; ++i) {
         char tmp;
         int ret = read(FileHandle, &tmp, sizeof(tmp));
 
-        if ( ret <= 0 || tmp == '\n' ) {
+        if (ret <= 0 || tmp == '\n') {
             break;
         }
 
-        if ( dst != nullptr ) {
+        if (dst != nullptr) {
             dst[i] = tmp;
         }
     }
 
-    if ( dst != nullptr ) {
+    if (dst != nullptr) {
         dst[i] = '\0';
     }
 }
@@ -184,25 +180,25 @@ bool Win32LocalFile::Scan_Int(int &integer)
 
     // Loop to find the first numeric character.
     do {
-        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if (read(FileHandle, &tmp, sizeof(tmp)) == 0) {
             return false;
         }
-    } while ( !isdigit(tmp) && tmp != '-' );
+    } while (!isdigit(tmp) && tmp != '-');
 
     // Build up our string of numeric characters
-    while ( true ) {
+    while (true) {
         number.Concat(tmp);
 
         int bytes = read(FileHandle, &tmp, sizeof(tmp));
 
-        if ( bytes == 0 ) {
+        if (bytes == 0) {
             break;
         }
 
-        if ( !isdigit(tmp) ) {
+        if (!isdigit(tmp)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if ( bytes ) {
+            if (bytes) {
                 lseek(FileHandle, -1, CURRENT);
             }
 
@@ -225,31 +221,31 @@ bool Win32LocalFile::Scan_Real(float &real)
 
     // Loop to find the first numeric character.
     do {
-        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if (read(FileHandle, &tmp, sizeof(tmp)) == 0) {
             return false;
         }
-    } while ( !isdigit(tmp) && tmp != '-' && tmp != '.' );
+    } while (!isdigit(tmp) && tmp != '-' && tmp != '.');
 
     // Build up our string of numeric characters
     bool have_point = false;
 
-    while ( true ) {
+    while (true) {
         number.Concat(tmp);
 
-        if ( tmp == '.' ) {
+        if (tmp == '.') {
             have_point = true;
         }
 
         int bytes = read(FileHandle, &tmp, sizeof(tmp));
 
-        if ( bytes == 0 ) {
+        if (bytes == 0) {
             break;
         }
 
-        if ( !isdigit(tmp) && (tmp != '.' || have_point) ) {
+        if (!isdigit(tmp) && (tmp != '.' || have_point)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if ( bytes ) {
+            if (bytes) {
                 lseek(FileHandle, -1, CURRENT);
             }
 
@@ -270,24 +266,24 @@ bool Win32LocalFile::Scan_String(AsciiString &string)
 
     // Loop to find the none space character.
     do {
-        if ( read(FileHandle, &tmp, sizeof(tmp)) == 0 ) {
+        if (read(FileHandle, &tmp, sizeof(tmp)) == 0) {
             return false;
         }
-    } while ( isspace(tmp) );
+    } while (isspace(tmp));
 
-    while ( true ) {
+    while (true) {
         string.Concat(tmp);
 
         int bytes = read(FileHandle, &tmp, sizeof(tmp));
 
-        if ( bytes == 0 ) {
+        if (bytes == 0) {
             break;
         }
 
-        if ( isspace(tmp) ) {
+        if (isspace(tmp)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if ( bytes ) {
+            if (bytes) {
                 lseek(FileHandle, -1, CURRENT);
             }
 

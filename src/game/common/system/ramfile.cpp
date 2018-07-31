@@ -1,41 +1,26 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: RAMFILE.CPP
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: RAM file IO.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Implements RAM file IO.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #include "ramfile.h"
 #include "filesystem.h"
 #include "minmax.h"
 
-RAMFile::RAMFile() :
-    Data(nullptr),
-    Pos(0),
-    Size(0)
-{
-
-}
+RAMFile::RAMFile() : Data(nullptr), Pos(0), Size(0) {}
 
 RAMFile::~RAMFile()
 {
-    if ( Data != nullptr ) {
+    if (Data != nullptr) {
         delete[] Data;
     }
 }
@@ -44,7 +29,7 @@ bool RAMFile::Open(const char *filename, int mode)
 {
     File *basefile = g_theFileSystem->Open(filename, mode);
 
-    if ( basefile == nullptr ) {
+    if (basefile == nullptr) {
         return false;
     }
 
@@ -56,7 +41,7 @@ bool RAMFile::Open(const char *filename, int mode)
 
 void RAMFile::Close()
 {
-    if ( Data != nullptr ) {
+    if (Data != nullptr) {
         delete[] Data;
         Data = nullptr;
     }
@@ -66,14 +51,14 @@ void RAMFile::Close()
 
 int RAMFile::Read(void *dst, int bytes)
 {
-    if ( dst == nullptr ) {
+    if (dst == nullptr) {
         return -1;
     }
 
     // Clip the amount to read to be within the data remaining.
     bytes = Min(bytes, Size - Pos);
 
-    if ( bytes > 0 ) {
+    if (bytes > 0) {
         memcpy(dst, Data + Pos, bytes);
     }
 
@@ -85,12 +70,12 @@ int RAMFile::Read(void *dst, int bytes)
 int RAMFile::Write(void const *src, int bytes)
 {
     // No writing to RAM files.
-    return - 1;
+    return -1;
 }
 
 int RAMFile::Seek(int offset, File::SeekMode mode)
 {
-    switch ( mode ) {
+    switch (mode) {
         case START:
             Pos = offset;
             break;
@@ -118,22 +103,22 @@ void RAMFile::Next_Line(char *dst, int bytes)
     int i = 0;
 
     // Copy data until newline.
-    for ( ; Pos < Size; ++Pos ) {
+    for (; Pos < Size; ++Pos) {
         char tmp = Data[Pos];
 
-        if ( tmp == '\n' ) {
+        if (tmp == '\n') {
             break;
         }
 
-        if ( dst != nullptr && i < bytes - 1 ) {
+        if (dst != nullptr && i < bytes - 1) {
             dst[i++] = tmp;
         }
     }
 
     // If we broke on newline, increment past it.
-    if ( Pos < Size ) {
+    if (Pos < Size) {
         // Copy newline to destination if not full?
-        if ( dst != nullptr &&  i < bytes ) {
+        if (dst != nullptr && i < bytes) {
             dst[i++] = Data[Pos];
         }
 
@@ -141,8 +126,8 @@ void RAMFile::Next_Line(char *dst, int bytes)
     }
 
     // If we have a data pointer to copy to, make sure its null terminiated
-    if ( dst != nullptr ) {
-        if ( i >= bytes ) {
+    if (dst != nullptr) {
+        if (i >= bytes) {
             dst[bytes] = '\0';
         } else {
             dst[i] = '\0';
@@ -160,7 +145,7 @@ bool RAMFile::Scan_Int(int &integer)
 
     integer = 0;
 
-    if ( Pos >= Size ) {
+    if (Pos >= Size) {
         Pos = Size;
 
         return false;
@@ -170,19 +155,19 @@ bool RAMFile::Scan_Int(int &integer)
     do {
         tmp = Data[Pos];
 
-        if ( isdigit(tmp) || tmp == '-' ) {
+        if (isdigit(tmp) || tmp == '-') {
             break;
         }
 
-    } while ( ++Pos < Size );
+    } while (++Pos < Size);
 
-    if ( Pos >= Size ) {
+    if (Pos >= Size) {
         Pos = Size;
 
         return false;
     }
 
-    for ( tmp = Data[Pos]; Pos < Size && isdigit(tmp); tmp = Data[++Pos] ) {
+    for (tmp = Data[Pos]; Pos < Size && isdigit(tmp); tmp = Data[++Pos]) {
         number.Concat(tmp);
     }
 
@@ -198,7 +183,7 @@ bool RAMFile::Scan_Real(float &real)
 
     real = 0.0f;
 
-    if ( Pos >= Size ) {
+    if (Pos >= Size) {
         Pos = Size;
 
         return false;
@@ -208,14 +193,14 @@ bool RAMFile::Scan_Real(float &real)
     do {
         tmp = Data[Pos];
 
-        if ( isdigit(tmp) || tmp == '-' || tmp == '.') {
+        if (isdigit(tmp) || tmp == '-' || tmp == '.') {
             break;
         }
 
-    } while ( ++Pos < Size );
+    } while (++Pos < Size);
 
     // Check we are still in bounds
-    if ( Pos >= Size ) {
+    if (Pos >= Size) {
         Pos = Size;
 
         return false;
@@ -223,10 +208,10 @@ bool RAMFile::Scan_Real(float &real)
 
     bool have_point = false;
 
-    for ( tmp = Data[Pos]; Pos < Size && (isdigit(tmp) || ( tmp == '.' && !have_point)); tmp = Data[++Pos] ) {
+    for (tmp = Data[Pos]; Pos < Size && (isdigit(tmp) || (tmp == '.' && !have_point)); tmp = Data[++Pos]) {
         number.Concat(tmp);
 
-        if ( tmp == '.' ) {
+        if (tmp == '.') {
             have_point = true;
         }
     }
@@ -241,22 +226,22 @@ bool RAMFile::Scan_String(AsciiString &string)
     string.Clear();
 
     // Find first none space.
-    for ( ; Pos < Size; ++Pos ) {
-        if ( !isspace(Data[Pos]) ) {
+    for (; Pos < Size; ++Pos) {
+        if (!isspace(Data[Pos])) {
             break;
         }
     }
 
     // Check we are still in bounds
-    if ( Pos >= Size ) {
+    if (Pos >= Size) {
         Pos = Size;
 
         return false;
     }
 
     // Read into AsciiString
-    for ( ; Pos < Size; ++Pos ) {
-        if ( isspace(Data[Pos]) ) {
+    for (; Pos < Size; ++Pos) {
+        if (isspace(Data[Pos])) {
             break;
         }
 
@@ -270,7 +255,7 @@ void *RAMFile::Read_All_And_Close()
 {
     char *data;
 
-    if ( Data != nullptr ) {
+    if (Data != nullptr) {
         data = Data;
         Data = nullptr;
         Close();
@@ -284,20 +269,20 @@ void *RAMFile::Read_All_And_Close()
 
 bool RAMFile::Open(File *file)
 {
-    if ( file == nullptr ) {
+    if (file == nullptr) {
         return false;
     }
 
-    if ( File::Open(file->Get_File_Name().Str(), file->Get_File_Mode()) ) {
+    if (File::Open(file->Get_File_Name().Str(), file->Get_File_Mode())) {
         Size = file->Size();
         Data = new char[Size];
 
-        if ( Data != nullptr ) {
+        if (Data != nullptr) {
             // Read the entire file into our buffer.
             Size = file->Read(Data, Size);
-            
+
             // If we didn't read any data into our buffer, abort.
-            if ( Size >= 0 ) {
+            if (Size >= 0) {
                 Pos = 0;
 
                 return true;
@@ -313,12 +298,12 @@ bool RAMFile::Open(File *file)
 
 bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, int size)
 {
-    if ( file == nullptr ) {
+    if (file == nullptr) {
         return false;
     }
 
-    if ( File::Open(name.Str(), READ | BINARY) ) {
-        if ( Data != nullptr ) {
+    if (File::Open(name.Str(), READ | BINARY)) {
+        if (Data != nullptr) {
             delete[] Data;
             Data = nullptr;
         }
@@ -326,8 +311,8 @@ bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, in
         Size = size;
         Data = new char[size];
 
-        if ( file->Seek(pos, START) == pos ) {
-            if ( file->Read(Data, Size) == size ) {
+        if (file->Seek(pos, START) == pos) {
+            if (file->Read(Data, Size) == size) {
                 m_filename = file->Get_File_Name();
 
                 return true;

@@ -155,7 +155,7 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
     return true;
 #else
     struct stat data;
-    int rc = stat(filename.c_str(), &data);
+    int rc = stat(filename, &data);
 
     if (rc != 0) {
         return false;

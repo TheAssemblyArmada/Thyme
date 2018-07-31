@@ -82,14 +82,15 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
     if ( hndl != INVALID_HANDLE_VALUE ) {
         // Loop over all files in the directory, ignoring other directories
         do {
-            if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+            if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
                 AsciiString name = UTF16To8(data.cFileName);
 
                 if (name != "." && name != "..") {
                     AsciiString filepath = dirpath;
                     filepath += subdir;
                     filepath += name;
-                    filelist.insert(filepath.Posix_Path());
+                    // filelist.insert(filepath.Posix_Path()); // TODO 0x006C8400 relies on '\' as path sep.
+                    filelist.insert(filepath);
                 }
             }
         } while ( FindNextFileW(hndl, &data) );
@@ -108,7 +109,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
         if ( hndl != INVALID_HANDLE_VALUE ) {
             // Loop over all files in the directory finding only directories.
             do {
-                if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+                if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                     AsciiString name = UTF16To8(data.cFileName);
 
                     if (name != "." && name != "..") {

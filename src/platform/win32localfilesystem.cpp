@@ -17,6 +17,7 @@
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
+#include "utf.h"
 #include <io.h>
 #include <direct.h>
 #else
@@ -75,22 +76,23 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
     search_path += filter;
 
 #ifdef PLATFORM_WINDOWS
-    WIN32_FIND_DATA data;
-    HANDLE hndl = FindFirstFileA(search_path.Windows_Path().Str(), &data);
+    WIN32_FIND_DATAW data;
+    HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path().Str()), &data);
 
     if ( hndl != INVALID_HANDLE_VALUE ) {
         // Loop over all files in the directory, ignoring other directories
         do {
-            if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0
-                && strcmp(data.cFileName, ".") != 0
-                && strcmp(data.cFileName, "..") != 0
-            ) {
-                AsciiString filepath = dirpath;
-                filepath += subdir;
-                filepath += data.cFileName;
-                filelist.insert(filepath.Posix_Path());
+            if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+                AsciiString name = UTF16To8(data.cFileName);
+
+                if (name != "." && name != "..") {
+                    AsciiString filepath = dirpath;
+                    filepath += subdir;
+                    filepath += name;
+                    filelist.insert(filepath.Posix_Path());
+                }
             }
-        } while ( FindNextFileA(hndl, &data) );
+        } while ( FindNextFileW(hndl, &data) );
     }
 
     FindClose(hndl);
@@ -101,29 +103,30 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
         sub_path += subdir;
         sub_path += "*.";
 
-        hndl = FindFirstFileA(sub_path.Windows_Path().Str(), &data);
+        hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path().Str()), &data);
         
         if ( hndl != INVALID_HANDLE_VALUE ) {
-            // Loop over all files in the directory, ignoring other directories
+            // Loop over all files in the directory finding only directories.
             do {
-                if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0
-                    && strcmp(data.cFileName, ".") != 0
-                    && strcmp(data.cFileName, "..") != 0
-                ) {
-                    AsciiString filepath;
-                    filepath += subdir;
-                    filepath += data.cFileName;
-                    filepath += '\\';
+                if ( (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) {
+                    AsciiString name = UTF16To8(data.cFileName);
+
+                    if (name != "." && name != "..") {
+                        AsciiString filepath;
+                        filepath += subdir;
+                        filepath += name;
+                        filepath += '\\';
                     
-                    Get_File_List_From_Dir(
-                        filepath,
-                        dirpath,
-                        filter,
-                        filelist,
-                        search_subdirs
-                    );
+                        Get_File_List_From_Dir(
+                            filepath,
+                            dirpath,
+                            filter,
+                            filelist,
+                            search_subdirs
+                        );
+                    }
                 }
-            } while ( FindNextFileA(hndl, &data) != 0 );
+            } while ( FindNextFileW(hndl, &data) != 0 );
         }
 
         FindClose(hndl);
@@ -137,8 +140,8 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
 {
     //TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
-    WIN32_FIND_DATA data;
-    HANDLE hndl = FindFirstFileA(filename.Windows_Path().Str(), &data);
+    WIN32_FIND_DATAW data;
+    HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path().Str()), &data);
 
     if ( hndl == INVALID_HANDLE_VALUE ) {
         return false;

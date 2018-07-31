@@ -34,14 +34,14 @@ private:
 public:
     virtual ~Win32LocalFile();
 
-    virtual bool Open(const char *filename, int mode);
-    virtual int Read(void *dst, int bytes);
-    virtual int Write(void const *src, int bytes);
-    virtual int Seek(int offset, File::SeekMode mode);
-    virtual void Next_Line(char *dst, int bytes);
-    virtual bool Scan_Int(int &integer);
-    virtual bool Scan_Real(float &real);
-    virtual bool Scan_String(AsciiString &string);
+    virtual bool Open(const char *filename, int mode) override;
+    virtual int Read(void *dst, int bytes) override;
+    virtual int Write(void const *src, int bytes) override;
+    virtual int Seek(int offset, File::SeekMode mode) override;
+    virtual void Next_Line(char *dst, int bytes) override;
+    virtual bool Scan_Int(int &integer) override;
+    virtual bool Scan_Real(float &real) override;
+    virtual bool Scan_String(AsciiString &string) override;
 
 private:
     int FileHandle;

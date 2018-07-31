@@ -19,21 +19,20 @@
 
 class Win32LocalFileSystem : public LocalFileSystem
 {
-    public:
-        Win32LocalFileSystem() { DEBUG_LOG("Creating Win32LocalFileSystem.\n"); }
-        virtual ~Win32LocalFileSystem() {}
+public:
+    Win32LocalFileSystem() { DEBUG_LOG("Creating Win32LocalFileSystem.\n"); }
+    virtual ~Win32LocalFileSystem() {}
 
-        // Subsystem interface implementations.
-        virtual void Init() {}
-        virtual void Reset() {}
-        virtual void Update() {}
+    // Subsystem interface implementations.
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
 
-        // LocalFileSystem interface implementations.
-        virtual File *Open_File(const char *filename, int mode);
-        virtual bool Does_File_Exist(const char *filename);
-        virtual void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs);
-        virtual bool Get_File_Info(AsciiString const &filename, FileInfo *info);
-        virtual bool Create_Directory(AsciiString);
-    private:
-        
+    // LocalFileSystem interface implementations.
+    virtual File *Open_File(const char *filename, int mode) override;
+    virtual bool Does_File_Exist(const char *filename) override;
+    virtual void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter,
+        std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs) override;
+    virtual bool Get_File_Info(AsciiString const &filename, FileInfo *info) override;
+    virtual bool Create_Directory(AsciiString dir_path) override;
 };

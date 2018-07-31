@@ -27,14 +27,14 @@ public:
     virtual ~Win32BIGFileSystem() {}
 
     // SubsystemInterface implementations
-    virtual void Init();
-    virtual void Reset() {}
-    virtual void Update() {}
+    virtual void Init() override;
+    virtual void Reset() override {}
+    virtual void Update() override {}
 
     // ArchiveFileSystem implementations
-    virtual ArchiveFile *Open_Archive_File(const char *filename);
-    virtual void Close_Archive_File(const char *filename);
-    virtual void Close_All_Archives() {}
-    virtual void Close_All_Files() {}
-    virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs);
+    virtual ArchiveFile *Open_Archive_File(const char *filename) override;
+    virtual void Close_Archive_File(const char *filename) override;
+    virtual void Close_All_Archives() override {}
+    virtual void Close_All_Files() override {}
+    virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs) override;
 };

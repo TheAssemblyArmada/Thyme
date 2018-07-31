@@ -18,26 +18,26 @@
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
 #include "utf.h"
-#include <io.h>
 #include <direct.h>
+#include <io.h>
 #else
 #include <dirent.h>
-#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
 #endif
 
 File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
 {
-    if ( strlen(filename) <= 0 ) {
+    if (strlen(filename) <= 0) {
         return nullptr;
     }
 
     Win32LocalFile *file = new Win32LocalFile;
 
     // If we need to write a file, ensure the needed directory exists.
-    if ( (mode & File::WRITE) != 0 ) {
+    if ((mode & File::WRITE) != 0) {
         DEBUG_LOG("Preparing file '%s' for write access.\n", filename);
         AsciiString name = filename;
         AsciiString token;
@@ -47,7 +47,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
         path = token;
 
         // Iterate over the path and create them as needed for entire path.
-        while ( strchr(token.Str(), '.') == nullptr || strchr(name.Str(), '.') != nullptr ) {
+        while (strchr(token.Str(), '.') == nullptr || strchr(name.Str(), '.') != nullptr) {
             Create_Directory(path);
             path.Concat('/');
             name.Next_Token(&token, "\\/");
@@ -56,7 +56,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
     }
 
     // Try and open the file, if not, delete instance and return null.
-    if ( file->Open(filename, mode) ) {
+    if (file->Open(filename, mode)) {
         file->Set_Del_On_Close(true);
     } else {
         Delete_Instance(file);
@@ -71,7 +71,8 @@ bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
     return access(filename, 0) == 0;
 }
 
-void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString> > &filelist, bool search_subdirs)
+void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath,
+    AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs)
 {
     AsciiString search_path = dirpath;
     search_path += subdir;
@@ -81,7 +82,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
     WIN32_FIND_DATAW data;
     HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path()), &data);
 
-    if ( hndl != INVALID_HANDLE_VALUE ) {
+    if (hndl != INVALID_HANDLE_VALUE) {
         // Loop over all files in the directory, ignoring other directories
         do {
             if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
@@ -95,20 +96,20 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
                     filelist.insert(filepath);
                 }
             }
-        } while ( FindNextFileW(hndl, &data) );
+        } while (FindNextFileW(hndl, &data));
     }
 
     FindClose(hndl);
 
     // Recurse into subdirectories if required.
-    if ( search_subdirs ) {
+    if (search_subdirs) {
         AsciiString sub_path = dirpath;
         sub_path += subdir;
         sub_path += "*.";
 
         hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path()), &data);
-        
-        if ( hndl != INVALID_HANDLE_VALUE ) {
+
+        if (hndl != INVALID_HANDLE_VALUE) {
             // Loop over all files in the directory finding only directories.
             do {
                 if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -119,34 +120,28 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
                         filepath += subdir;
                         filepath += name;
                         filepath += '\\';
-                    
-                        Get_File_List_From_Dir(
-                            filepath,
-                            dirpath,
-                            filter,
-                            filelist,
-                            search_subdirs
-                        );
+
+                        Get_File_List_From_Dir(filepath, dirpath, filter, filelist, search_subdirs);
                     }
                 }
-            } while ( FindNextFileW(hndl, &data) != 0 );
+            } while (FindNextFileW(hndl, &data) != 0);
         }
 
         FindClose(hndl);
     }
 #else
-    //TODO Some combo of dirent and fnmatch to get same functionality for posix?
+    // TODO Some combo of dirent and fnmatch to get same functionality for posix?
 #endif
 }
 
 bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *info)
 {
-    //TODO Make this cross platform.
+    // TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATAW data;
     HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path()), &data);
 
-    if ( hndl == INVALID_HANDLE_VALUE ) {
+    if (hndl == INVALID_HANDLE_VALUE) {
         return false;
     }
 
@@ -180,7 +175,7 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
 
 bool Win32LocalFileSystem::Create_Directory(AsciiString dir_path)
 {
-    if ( dir_path.Is_Empty() || dir_path.Get_Length() > PATH_MAX ) {
+    if (dir_path.Is_Empty() || dir_path.Get_Length() > PATH_MAX) {
         return false;
     }
 

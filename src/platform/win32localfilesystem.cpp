@@ -24,6 +24,8 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <time.h>
 #endif
 
 File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
@@ -77,7 +79,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
 
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATAW data;
-    HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path().Str()), &data);
+    HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path()), &data);
 
     if ( hndl != INVALID_HANDLE_VALUE ) {
         // Loop over all files in the directory, ignoring other directories
@@ -104,7 +106,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
         sub_path += subdir;
         sub_path += "*.";
 
-        hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path().Str()), &data);
+        hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path()), &data);
         
         if ( hndl != INVALID_HANDLE_VALUE ) {
             // Loop over all files in the directory finding only directories.
@@ -142,7 +144,7 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
     //TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATAW data;
-    HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path().Str()), &data);
+    HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path()), &data);
 
     if ( hndl == INVALID_HANDLE_VALUE ) {
         return false;
@@ -157,7 +159,22 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
 
     return true;
 #else
-    return false;
+    struct stat data;
+    int rc = stat(filename.c_str(), &data);
+
+    if (rc != 0) {
+        return false;
+    }
+
+    // Assumes 64bit stat.
+    info->file_size_high = data.st_size >> 32;
+    info->file_size_low = data.st_size & UINT32_MAX;
+
+    int64_t time = data.st_mtime * 10000000ll;
+    info->write_time_high = time >> 32;
+    info->write_time_low = time & UINT32_MAX;
+
+    return true;
 #endif
 }
 
@@ -169,8 +186,8 @@ bool Win32LocalFileSystem::Create_Directory(AsciiString dir_path)
 
     // So much for mkdir being more cross platform
 #ifdef PLATFORM_WINDOWS
-    return mkdir(dir_path.Peek()) == 0;
+    return CreateDirectoryW(UTF8To16(dir_path), nullptr) != 0;
 #else
-    return mkdir(dir_path.Peek(), 0777) == 0;
+    return mkdir(dir_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
 #endif
 }

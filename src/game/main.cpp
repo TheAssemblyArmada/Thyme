@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Entry point and associated low level init code.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -27,11 +26,16 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <shellapi.h>
+
+#ifdef THYME_STANDALONE
+// This pragma makes windows use the normal main function for GUI applications.
+#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
+#endif
 #endif
 
 #ifdef PLATFORM_UNIX
-#include <unistd.h>
 #include <libgen.h>
+#include <unistd.h>
 #endif
 
 #ifndef THYME_STANDALONE
@@ -70,12 +74,20 @@ int g_yPos = c_invalidPos;
 bool g_noBorder = false;
 
 #ifdef PLATFORM_WINDOWS
+// Global so we can ensure the argument list is freed at exit.
+char **g_argv;
+
+void Free_Argv()
+{
+    LocalFree(g_argv);
+}
+
 // Taken from https://github.com/thpatch/win32_utf8/blob/master/src/shell32_dll.c
 // Get the command line as UTF-8 as it would be on other platforms.
 char **CommandLineToArgvU(LPCWSTR lpCmdLine, int *pNumArgs)
 {
     int cmd_line_pos; // Array "index" of the actual command line string
-    //int lpCmdLine_len = wcslen(lpCmdLine) + 1;
+    // int lpCmdLine_len = wcslen(lpCmdLine) + 1;
     int lpCmdLine_len = WideCharToMultiByte(CP_UTF8, 0, lpCmdLine, -1, nullptr, 0, nullptr, nullptr) + 1;
     char **argv_u;
 
@@ -88,13 +100,11 @@ char **CommandLineToArgvU(LPCWSTR lpCmdLine, int *pNumArgs)
     cmd_line_pos = *pNumArgs + 1;
 
     // argv is indeed terminated with an additional sentinel NULL pointer.
-    argv_u = (char**)LocalAlloc(
-        LMEM_FIXED, cmd_line_pos * sizeof(char*) + lpCmdLine_len
-    );
+    argv_u = (char **)LocalAlloc(LMEM_FIXED, cmd_line_pos * sizeof(char *) + lpCmdLine_len);
 
     if (argv_u) {
         int i;
-        char *cur_arg_u = (char*)&argv_u[cmd_line_pos];
+        char *cur_arg_u = (char *)&argv_u[cmd_line_pos];
 
         for (i = 0; i < *pNumArgs; i++) {
             size_t cur_arg_u_len;
@@ -107,9 +117,17 @@ char **CommandLineToArgvU(LPCWSTR lpCmdLine, int *pNumArgs)
         }
 
         argv_u[i] = nullptr;
+
+        if (g_argv != nullptr) {
+            LocalFree(g_argv);
+        }
+
+        g_argv = argv_u;
+        atexit(Free_Argv);
     }
 
     LocalFree(argv_w);
+
     return argv_u;
 }
 #endif
@@ -295,15 +313,20 @@ void Create_Window()
 /**
  * @brief Entry point for the game engine.
  */
-int main(int argc, char *argv[])
+int main(int argc, char **argv)
 {
+    // Windows main can't take arguments as UTF8, so we need to overwrite them with the correct content.
+#ifdef PLATFORM_WINDOWS
+    argv = CommandLineToArgvU(GetCommandLineW(), &argc);
+#endif
+
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
-// DEBUG_LOG("Running main().\n");
+    // DEBUG_LOG("Running main().\n");
 
 #if defined PLATFORM_WINDOWS && !defined THYME_STANDALONE
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
-    //crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));
+    // crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));
     crt_set_se_translator(Dump_Exception_Info);
     //_set_se_translator(Dump_Exception_Info);
 #endif
@@ -368,21 +391,14 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-#ifdef PLATFORM_WINDOWS
 #ifndef THYME_STANDALONE
 /**
  * @brief Wrapper for main to hook original entry point
  */
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#endif
 {
-    int argc;
-    char **argv = CommandLineToArgvU(GetCommandLineW(), &argc);
-
-    int ret = main(argc, argv);
-    LocalFree(argv);
+    // Windows code will replace the arguments to main anyway so it doesn't matter what we do here.
+    int ret = main(0, nullptr);
 
     return ret;
 }

@@ -33,13 +33,13 @@ enum GeometryType : int32_t
 class GeometryInfo : public SnapShot
 {
 public:
-    GeometryInfo(GeometryType type, bool small, float height, float major_radius, float minor_radius);
+    GeometryInfo(GeometryType type, bool little, float height, float major_radius, float minor_radius);
 
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process() {}
 
-    void Set(GeometryType type, bool small, float height, float major_radius, float minor_radius);
+    void Set(GeometryType type, bool little, float height, float major_radius, float minor_radius);
     void Calc_Bounding_Stuff();
     void Set_Max_Height_Above_Position(float max_height);
     float Get_Max_Height_Above_Position() const;

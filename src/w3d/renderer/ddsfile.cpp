@@ -263,6 +263,7 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, 
  */
 void DDSFileClass::Copy_Level_To_Surface(unsigned level, IDirect3DSurface8 *d3d_surface, const Vector3 &color_shift)
 {
+#ifdef PLATFORM_WINDOWS
     D3DSURFACE_DESC desc;
     D3DLOCKED_RECT rect;
 
@@ -285,6 +286,7 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, IDirect3DSurface8 *d3d_
     if (d3d_surface->UnlockRect() != 0) {
         DEBUG_LOG("Error unlocking D3D surface in DDSFileClass.\n");
     }
+#endif
 }
 
 /**

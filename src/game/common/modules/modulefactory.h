@@ -89,7 +89,7 @@ public:
 protected:
     static NameKeyType Make_Decorated_Name_Key(const AsciiString &name, ModuleType type);
     void Add_Module_Internal(
-        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const AsciiString &name, int interface);
+        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const AsciiString &name, int iface);
     const ModuleTemplate *Find_Module_Template(const AsciiString &name, ModuleType type) const;
 
 protected:

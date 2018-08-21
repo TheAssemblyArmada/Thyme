@@ -28,11 +28,11 @@ using GameMath::Atan2;
 using GameMath::Cos;
 using GameMath::Sin;
 
-GeometryInfo::GeometryInfo(GeometryType type, bool small, float height, float major_radius, float minor_radius) :
+GeometryInfo::GeometryInfo(GeometryType type, bool little, float height, float major_radius, float minor_radius) :
     m_boundingCircleRadius(0.0f),
     m_boundingSphereRadius(0.0f)
 {
-    Set(type, small, height, major_radius, minor_radius);
+    Set(type, little, height, major_radius, minor_radius);
 }
 
 /**
@@ -59,10 +59,10 @@ void GeometryInfo::Xfer_Snapshot(Xfer *xfer)
  *
  * 0x005CF220
  */
-void GeometryInfo::Set(GeometryType type, bool small, float height, float major_radius, float minor_radius)
+void GeometryInfo::Set(GeometryType type, bool little, float height, float major_radius, float minor_radius)
 {
     m_type = type;
-    m_isSmall = small;
+    m_isSmall = little;
 
     switch (type) {
         case GEOMETRY_SPHERE:

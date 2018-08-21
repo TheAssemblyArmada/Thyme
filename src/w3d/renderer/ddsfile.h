@@ -20,6 +20,8 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <d3d8.h>
+#else
+struct IDirect3DSurface8;
 #endif
 
 enum DDSPixelFormatFlags

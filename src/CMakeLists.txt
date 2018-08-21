@@ -190,7 +190,10 @@ set(GAMEENGINE_SRC
     w3d/math/matrix3d.cpp
     w3d/math/matrix4.cpp
     w3d/math/quaternion.cpp
+    w3d/renderer/colorspace.cpp
+    w3d/renderer/ddsfile.cpp
     w3d/renderer/dx8wrapper.cpp
+    w3d/renderer/w3dformat.cpp
 )
 
 if(STANDALONE)

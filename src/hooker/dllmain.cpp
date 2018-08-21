@@ -23,6 +23,7 @@
 #include "compressionmanager.h"
 #include "copyprotect.h"
 #include "datachunk.h"
+#include "ddsfile.h"
 #include "dict.h"
 #include "filesystem.h"
 #include "filetransfer.h"
@@ -189,6 +190,7 @@ void Setup_Hooks()
     Particle::Hook_Me();
     ParticleSystem::Hook_Me();
     ParticleSystemManager::Hook_Me();
+    DDSFileClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

@@ -98,7 +98,7 @@ int UDP::Read(const uint8_t *buffer, int length, sockaddr_in *from)
             return result;
         }
 
-        if (LastSocketError != SOCKEWOULDBLOCK) {
+        if (LastSocketError != SOCKEWOULDBLOCK && LastSocketError != SOCKEAGAIN) {
             m_status = LastSocketError;
 
             return SOCKET_ERROR;
@@ -110,7 +110,7 @@ int UDP::Read(const uint8_t *buffer, int length, sockaddr_in *from)
             return result;
         }
 
-        if (LastSocketError != SOCKEWOULDBLOCK) {
+        if (LastSocketError != SOCKEWOULDBLOCK && LastSocketError != SOCKEAGAIN) {
             m_status = LastSocketError;
 
             return SOCKET_ERROR;
@@ -148,6 +148,10 @@ int UDP::Get_Status()
             return NOTSOCK;
         case SOCKEWOULDBLOCK:
             return WOULDBLOCK;
+#ifndef PLATFORM_WINDOWS // EAGAIN is an alternative to EWOULDBLOCK, but not on windows.
+        case SOCKEAGAIN:
+            return AGAIN;
+#endif
         case SOCKEINVAL:
             return INVAL;
         case SOCKETIMEDOUT:

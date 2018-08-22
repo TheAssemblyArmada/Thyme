@@ -7,7 +7,13 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
     endif()
     
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp ws2_32)
+    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
+
+    if(STANDALONE)
+        set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm ws2_32)
+    else()
+        set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm wsock32) # Original links wsock32, not ws2_32
+    endif()
 
     # ICU is optional for windows builds, use only for development purposes.
     if(USE_ICU_LIB)
@@ -183,6 +189,7 @@ set(GAMEENGINE_SRC
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
+    game/network/udp.cpp
     platform/fpusetting.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp

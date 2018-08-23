@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "w3dformat.h"
+#include "gamedebug.h"
 #include "rtsutils.h"
 
 using rts::FourCC;
@@ -25,6 +26,8 @@ WW3DFormat g_D3DFormatToWW3DFormatConversionArray[62];
 
 WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
 {
+    char buff[5];
+
     switch (format) {
         case FourCC<'D', 'X', 'T', '1'>::value:
             return WW3D_FORMAT_DXT1;
@@ -43,6 +46,11 @@ WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
     if (format < 63) {
         return g_D3DFormatToWW3DFormatConversionArray[format];
     }
+
+    // Log if the engine tries to load a DDS format we don't currently handle.
+    memcpy(buff, &format, sizeof(format));
+    buff[4] = '\0';
+    DEBUG_LOG("TODO Unhandled format FourCC '%s', implementations welcome.\n", buff);
 
     return WW3D_FORMAT_UNKNOWN;
 }

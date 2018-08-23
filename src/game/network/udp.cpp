@@ -148,9 +148,9 @@ int UDP::Get_Status()
             return NOTSOCK;
         case SOCKEWOULDBLOCK:
             return WOULDBLOCK;
-#ifndef PLATFORM_WINDOWS // EAGAIN is an alternative to EWOULDBLOCK, but not on windows.
+#if SOCKEAGAIN != SOCKEWOULDBLOCK // EAGAIN is an alternative to EWOULDBLOCK and may not be the same value.
         case SOCKEAGAIN:
-            return AGAIN;
+            return WOULDBLOCK;
 #endif
         case SOCKEINVAL:
             return INVAL;
@@ -183,4 +183,59 @@ int UDP::Set_Blocking(bool block)
     unsigned long mode = block == false;
 
     return (ioctlsocket(m_fd, FIONBIO, &mode) != SOCKET_ERROR) - 1;
+}
+
+/**
+ * Set the buffer size used for incoming UDP packets.
+ */
+bool UDP::Set_Input_Buffer(uint32_t size)
+{
+    uint32_t tmp = size;
+
+    return setsockopt(m_fd, SOL_SOCKET, SO_RCVBUF, (char *)&tmp, sizeof(tmp)) == 0;
+}
+
+/**
+ * Set the buffer size used for outgoing UDP packets.
+ */
+bool UDP::Set_Output_Buffer(uint32_t size)
+{
+    uint32_t tmp = size;
+
+    return setsockopt(m_fd, SOL_SOCKET, SO_SNDBUF, (char *)&tmp, sizeof(tmp)) == 0;
+}
+
+/**
+ * Query the buffer size used for incoming UDP packets.
+ */
+uint32_t UDP::Get_Input_Buffer()
+{
+    uint32_t size = 0;
+    socklen_t len = sizeof(size);
+    getsockopt(m_fd, SOL_SOCKET, SO_RCVBUF, (char *)&size, &len);
+
+    return size;
+}
+
+/**
+ * Query the buffer size used for outgoing UDP packets.
+ */
+uint32_t UDP::Get_Output_Buffer()
+{
+    uint32_t size = 0;
+    socklen_t len = sizeof(size);
+    getsockopt(m_fd, SOL_SOCKET, SO_SNDBUF, (char *)&size, &len);
+
+    return size;
+}
+
+/**
+ * Query the currently bound IP address and port.
+ */
+int UDP::Get_Local_Addr(uint32_t &address, uint16_t &port)
+{
+    port = m_myPort;
+    address = m_myIP;
+
+    return OK;
 }

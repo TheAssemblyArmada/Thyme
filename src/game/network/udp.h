@@ -49,7 +49,12 @@ public:
     void Clear_Status() { m_status = 0; }
     bool Allow_Broadcasts(bool allow);
     int Set_Blocking(bool block);
-    
+    bool Set_Input_Buffer(uint32_t size);
+    bool Set_Output_Buffer(uint32_t size);
+    uint32_t Get_Input_Buffer();
+    uint32_t Get_Output_Buffer();
+    int Get_Local_Addr(uint32_t &address, uint16_t &port);
+
 private:
     SOCKET m_fd;
     uint32_t m_myIP;

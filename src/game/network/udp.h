@@ -19,6 +19,7 @@
 
 class UDP
 {
+public:
     enum SockStatus
     {
         OK = 0,

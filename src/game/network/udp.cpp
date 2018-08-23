@@ -45,7 +45,7 @@ int UDP::Bind(uint32_t address, uint16_t port)
             return Get_Status();
         }
 
-        int len = sizeof(m_addr);
+        socklen_t len = sizeof(m_addr);
         getsockname(m_fd, (sockaddr *)&m_addr, &len);
         m_myIP = be32toh(m_addr.sin_addr.s_addr);
         m_myPort = be16toh(m_addr.sin_port);
@@ -91,7 +91,7 @@ int UDP::Read(const uint8_t *buffer, int length, sockaddr_in *from)
     int result = SOCKET_ERROR;
 
     if (from != nullptr) {
-        int addr_len = sizeof(*from);
+        socklen_t addr_len = sizeof(*from);
         result = recvfrom(m_fd, (char *)buffer, length, 0, (sockaddr *)from, &addr_len);
 
         if (result != SOCKET_ERROR) {

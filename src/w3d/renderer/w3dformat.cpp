@@ -15,8 +15,10 @@
 #include "w3dformat.h"
 #include "gamedebug.h"
 #include "rtsutils.h"
+#include <cstring>
 
 using rts::FourCC;
+using std::memcpy;
 
 #ifndef THYME_STANDALONE
 WW3DFormat *g_D3DFormatToWW3DFormatConversionArray = Make_Pointer<WW3DFormat>(0x00A5243C);

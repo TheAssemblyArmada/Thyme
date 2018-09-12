@@ -34,11 +34,11 @@ class ParticleSystemTemplate;
 class Object;
 
 #ifdef THYME_USE_STLPORT
-    typedef std::hash_map<const AsciiString, ParticleSystemTemplate *, rts::hash<AsciiString>, rts::equal_to<AsciiString>>
+    typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
         partsystempmap_t;
 #else
-    typedef std::unordered_map<const AsciiString, ParticleSystemTemplate *, rts::hash<AsciiString>,
-        rts::equal_to<AsciiString>>
+    typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>,
+        rts::equal_to<Utf8String>>
         partsystempmap_t;
 #endif
 
@@ -62,9 +62,9 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    ParticleSystemTemplate *Find_Template(const AsciiString &name);
-    ParticleSystemTemplate *New_Template(const AsciiString &name);
-    ParticleSystemTemplate *Find_Parent_Template(const AsciiString &name, int parent);
+    ParticleSystemTemplate *Find_Template(const Utf8String &name);
+    ParticleSystemTemplate *New_Template(const Utf8String &name);
+    ParticleSystemTemplate *Find_Parent_Template(const Utf8String &name, int parent);
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
     void Destroy_Particle_System_By_ID(ParticleSystemID id);

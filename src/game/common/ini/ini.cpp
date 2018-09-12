@@ -186,7 +186,7 @@ INI::~INI()
 {
 }
 
-void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
+void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
 {
     Set_FP_Mode(); // Ensure floating point mode is a consistent mode for loading.
     g_sXfer = xfer;
@@ -195,9 +195,9 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
     while ( !m_endOfFile ) {
         Read_Line();
         
-        // Original seems to make an unused AsciiString from the
+        // Original seems to make an unused Utf8String from the
         // parsed block, possible leftover from debug code?
-        //AsciiString block(m_currentBlock);
+        //Utf8String block(m_currentBlock);
 
         char *token = strtok(m_currentBlock, m_seps);
         
@@ -220,11 +220,11 @@ void INI::Load(AsciiString filename, INILoadType type, Xfer *xfer)
     Unprep_File();
 }
 
-void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type, Xfer *xfer)
+void INI::Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, Xfer *xfer)
 {
     ASSERT_THROW(!dir.Is_Empty(), 0xDEAD0006);
 
-    std::set<AsciiString, rts::less_than_nocase<AsciiString> > files;
+    std::set<Utf8String, rts::less_than_nocase<Utf8String> > files;
     dir += '/';
 
     g_theFileSystem->Get_File_List_From_Dir(dir, "*.ini", files, true);
@@ -232,7 +232,7 @@ void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type,
     // Load everything from the top level directory first.
     for ( auto it = files.begin(); it != files.end(); ++it ) {
         // Create path string with initial dir stripped off.
-        AsciiString path_check = &it->Str()[strlen(dir.Str())];
+        Utf8String path_check = &it->Str()[strlen(dir.Str())];
         
         if ( strchr(path_check.Str(), '\\') == nullptr && strchr(path_check.Str(), '/') == nullptr ) {
             Load(*it, type, xfer);
@@ -242,7 +242,7 @@ void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type,
     // Now process everything from sub directories.
     for ( auto it = files.begin(); it != files.end(); ++it ) {
         // Create path string with initial dir stripped off.
-        AsciiString path_check = &it->Str()[dir.Get_Length()];
+        Utf8String path_check = &it->Str()[dir.Get_Length()];
         
         if ( strchr(path_check.Str(), '\\') != nullptr || strchr(path_check.Str(), '/') != nullptr ) {
             Load(*it, type, xfer);
@@ -250,7 +250,7 @@ void INI::Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type,
     }
 }
 
-void INI::Prep_File(AsciiString filename, INILoadType type)
+void INI::Prep_File(Utf8String filename, INILoadType type)
 {
     ASSERT_THROW_PRINT(
         m_backingFile == nullptr,
@@ -407,10 +407,10 @@ void INI::Read_Line()
     }
 }
 
-AsciiString INI::Get_Next_Quoted_Ascii_String()
+Utf8String INI::Get_Next_Quoted_Ascii_String()
 {
     const char *token = Get_Next_Token_Or_Null();
-    AsciiString next;
+    Utf8String next;
     char buffer[MAX_LINE_LENGTH];
 
     buffer[0] = '\0';
@@ -609,21 +609,21 @@ void INI::Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, const
 
 void INI::Parse_AsciiString(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *static_cast<AsciiString*>(store) = ini->Get_Next_Ascii_String();
+    *static_cast<Utf8String*>(store) = ini->Get_Next_Ascii_String();
 }
 
 void INI::Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *static_cast<AsciiString*>(store) = ini->Get_Next_Quoted_Ascii_String();
+    *static_cast<Utf8String*>(store) = ini->Get_Next_Quoted_Ascii_String();
 }
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, const void *user_data)
 {
     //DEBUG_LOG("Appending Vector for ini %s.\n", ini->m_fileName.Str());
-    std::vector<AsciiString> *vec = static_cast<std::vector<AsciiString> *>(store);
+    std::vector<Utf8String> *vec = static_cast<std::vector<Utf8String> *>(store);
 
     for ( const char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null() ) {
-        vec->push_back(AsciiString(i));
+        vec->push_back(Utf8String(i));
     }
 }
 
@@ -914,7 +914,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
 
 void INI::Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data)
 {
-    AsciiString speaker;
+    Utf8String speaker;
     Parse_AsciiString(ini, formal, &speaker, user_data);
     *static_cast<SpeakerType*>(store) = static_cast<SpeakerType>(g_theAudio->Translate_From_Speaker_Type(speaker));
 }

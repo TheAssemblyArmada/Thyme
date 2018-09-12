@@ -100,7 +100,7 @@ GlobalLanguage::GlobalLanguage() :
 void GlobalLanguage::Init()
 {
     INI ini;
-    AsciiString file;
+    Utf8String file;
 
     file.Format("Data/%s/Language.ini", Get_Registry_Language().Str());
 
@@ -127,7 +127,7 @@ void GlobalLanguage::Parse_Language_Defintions(INI *ini)
 
 void GlobalLanguage::Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data)
 {
-    AsciiString font_name = ini->Get_Next_Ascii_String();
+    Utf8String font_name = ini->Get_Next_Ascii_String();
     static_cast<GlobalLanguage *>(formal)->m_localFontFiles.push_front(font_name);
 }
 

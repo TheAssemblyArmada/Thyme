@@ -24,9 +24,9 @@ class VideoStream;
 
 struct Video
 {
-    AsciiString file_name;
-    AsciiString internal_name;
-    AsciiString world_builder_comment;
+    Utf8String file_name;
+    Utf8String internal_name;
+    Utf8String world_builder_comment;
 };
 
 class VideoPlayer : public SubsystemInterface
@@ -42,15 +42,15 @@ public:
     virtual void Deinit() {}
     virtual void Lose_Focus() {}
     virtual void Regain_Focus() {}
-    virtual int Open(AsciiString title) { return 0; }
-    virtual int Load(AsciiString title) { return 0; }
+    virtual int Open(Utf8String title) { return 0; }
+    virtual int Load(Utf8String title) { return 0; }
     virtual VideoStream *First_Stream() { return m_firstStream; }
     virtual void Close_All_Streams();
     virtual void Add_Video(Video *video);
     virtual void Remove_Video(Video *video);
     virtual int Get_Video_Count();
     virtual Video *Get_Video(int index);
-    virtual Video *Get_Video(AsciiString name);
+    virtual Video *Get_Video(Utf8String name);
     virtual FieldParse *Get_Field_Parse() { return s_videoFieldParseTable; }
     virtual void Notify_Player_Of_New_Provider(bool unk) {}
 

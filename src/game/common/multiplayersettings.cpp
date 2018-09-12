@@ -45,7 +45,7 @@ void MultiplayerColorDefinition::Set_Night_Color(RGBColor rgb)
 
 void MultiplayerColorDefinition::Parse_Color_Definition(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
     MultiplayerColorDefinition *def = g_theMultiplayerSettings->Find_Color_Definition(token);
 
     if (def == nullptr) {
@@ -76,12 +76,12 @@ MultiplayerSettings::MultiplayerSettings() :
 {
 }
 
-MultiplayerColorDefinition *MultiplayerSettings::Find_Color_Definition(AsciiString name)
+MultiplayerColorDefinition *MultiplayerSettings::Find_Color_Definition(Utf8String name)
 {
     return nullptr;
 }
 
-MultiplayerColorDefinition *MultiplayerSettings::New_Color_Definition(AsciiString name)
+MultiplayerColorDefinition *MultiplayerSettings::New_Color_Definition(Utf8String name)
 {
     return nullptr;
 }

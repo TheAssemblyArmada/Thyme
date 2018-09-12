@@ -58,7 +58,7 @@ FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[]
 
 void WaterSetting::Parse_Water_Setting(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
     int tod;
 
     for ( tod = 0; tod < TIME_OF_DAY_COUNT; ++tod ) {

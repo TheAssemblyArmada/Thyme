@@ -133,8 +133,8 @@ bool SidesList::Validate_Sides()
     // Validates side info.
     for (index = 0; index < m_numSides; ++index) {
         SidesInfo *info = Get_Sides_Info(index);
-        AsciiString player_name = info->Get_Dict().Get_AsciiString(g_playerNameKey);
-        AsciiString team_name = "team";
+        Utf8String player_name = info->Get_Dict().Get_AsciiString(g_playerNameKey);
+        Utf8String team_name = "team";
         team_name += player_name;
         TeamsInfo *team_info = Find_Team_Info(team_name, nullptr);
 
@@ -157,8 +157,8 @@ bool SidesList::Validate_Sides()
             modified = true;
         }
 
-        AsciiString allies = info->Get_Dict().Get_AsciiString(g_playerAlliesKey);
-        AsciiString enemies = info->Get_Dict().Get_AsciiString(g_playerEnemiesKey);
+        Utf8String allies = info->Get_Dict().Get_AsciiString(g_playerAlliesKey);
+        Utf8String enemies = info->Get_Dict().Get_AsciiString(g_playerEnemiesKey);
 
         // Allies and enemies are whitespace separated lists.
         if (Validate_Ally_Enemy_List(player_name, allies)) {
@@ -173,7 +173,7 @@ bool SidesList::Validate_Sides()
     // Validates team names.
     for (index = 0; index < m_teamRec.Count(); ++index) {
         TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
-        AsciiString team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
+        Utf8String team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
 
         if (Find_Side_Info(team_name) != nullptr) {
             DEBUG_LOG("Duplicate name '%s' between player and team, removing...\n", team_name.Str());
@@ -191,12 +191,12 @@ bool SidesList::Validate_Sides()
     // Validates team owner
     for (index = 0; index < m_teamRec.Count(); ++index) {
         TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
-        AsciiString team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
-        AsciiString team_owner = tinfo->dict.Get_AsciiString(g_teamOwnerKey);
+        Utf8String team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
+        Utf8String team_owner = tinfo->dict.Get_AsciiString(g_teamOwnerKey);
 
         if (Find_Side_Info(team_owner) == nullptr || team_name == team_owner) {
             DEBUG_LOG("Bad owner '%s', reset to neutral.\n", team_owner.Str());
-            tinfo->dict.Set_AsciiString(g_teamOwnerKey, AsciiString::s_emptyString);
+            tinfo->dict.Set_AsciiString(g_teamOwnerKey, Utf8String::s_emptyString);
             modified = true;
         }
     }
@@ -209,12 +209,12 @@ bool SidesList::Validate_Sides()
  *
  * 0x004D79A0
  */
-bool SidesList::Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &allies)
+bool SidesList::Validate_Ally_Enemy_List(const Utf8String &team, Utf8String &allies)
 {
     bool modified = false;
-    AsciiString str = allies;
-    AsciiString token;
-    AsciiString new_str;
+    Utf8String str = allies;
+    Utf8String token;
+    Utf8String new_str;
 
     // Goes through string constructing a new space separated list from the old one, skipping ones that don't match existing
     // side info.
@@ -240,9 +240,9 @@ bool SidesList::Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &a
  *
  * 0x004D7BC0
  */
-void SidesList::Add_Player_By_Template(AsciiString template_name)
+void SidesList::Add_Player_By_Template(Utf8String template_name)
 {
-    AsciiString player_name;
+    Utf8String player_name;
     Utf16String display_name;
     bool is_human;
 
@@ -273,7 +273,7 @@ void SidesList::Add_Player_By_Template(AsciiString template_name)
     Add_Side(&dict);
     dict.Clear();
 
-    AsciiString team_name = "team";
+    Utf8String team_name = "team";
     team_name += player_name;
     dict.Set_AsciiString(g_teamNameKey, team_name);
     dict.Set_AsciiString(g_teamOwnerKey, player_name);
@@ -286,7 +286,7 @@ void SidesList::Add_Player_By_Template(AsciiString template_name)
  *
  * 0x004D6A60
  */
-SidesInfo *SidesList::Find_Side_Info(AsciiString name, int *index)
+SidesInfo *SidesList::Find_Side_Info(Utf8String name, int *index)
 {
     for (int i = 0; i < m_numSides; ++i) {
         if (m_sides[i].Get_Dict().Get_AsciiString(g_playerNameKey) == name) {
@@ -306,7 +306,7 @@ SidesInfo *SidesList::Find_Side_Info(AsciiString name, int *index)
  *
  * 0x004D6BD0
  */
-SidesInfo *SidesList::Find_Skirmish_Side_Info(AsciiString name, int *index)
+SidesInfo *SidesList::Find_Skirmish_Side_Info(Utf8String name, int *index)
 {
     for (int i = 0; i < m_numSkirmishSides; ++i) {
         if (m_skirmishSides[i].Get_Dict().Get_AsciiString(g_playerNameKey) == name) {

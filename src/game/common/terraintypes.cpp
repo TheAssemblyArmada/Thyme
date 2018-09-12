@@ -97,7 +97,7 @@ TerrainTypeCollection::~TerrainTypeCollection()
     }
 }
 
-TerrainType *TerrainTypeCollection::Find_Terrain(AsciiString name)
+TerrainType *TerrainTypeCollection::Find_Terrain(Utf8String name)
 {
     TerrainType *retval = m_terrainList;
 
@@ -113,7 +113,7 @@ TerrainType *TerrainTypeCollection::Find_Terrain(AsciiString name)
     return retval;
 }
 
-TerrainType *TerrainTypeCollection::New_Terrain(AsciiString name)
+TerrainType *TerrainTypeCollection::New_Terrain(Utf8String name)
 {
     TerrainType *retval = new TerrainType;
     TerrainType *def = Find_Terrain("DefaultTerrain");
@@ -131,7 +131,7 @@ TerrainType *TerrainTypeCollection::New_Terrain(AsciiString name)
 
 void TerrainTypeCollection::Parse_Terrain_Definition(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
     TerrainType *tt = g_theTerrainTypes->Find_Terrain(token);
 
     if (tt == nullptr) {

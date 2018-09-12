@@ -133,7 +133,7 @@ void PlayerTemplate::Parse_Start_Money(INI *ini, void *formal, void *store, cons
  *
  * 0x004D3170
  */
-int PlayerTemplateStore::Get_Template_Number_By_Name(AsciiString name)
+int PlayerTemplateStore::Get_Template_Number_By_Name(Utf8String name)
 {
     for (unsigned i = 0; i < m_playerTemplates.size(); ++i) {
         if (m_playerTemplates[i].Get_Name().Compare_No_Case(name) == 0) {
@@ -204,17 +204,17 @@ PlayerTemplate *PlayerTemplateStore::Get_Nth_Player_Template(int index)
  *
  * 0x004D3630
  */
-void PlayerTemplateStore::Get_All_Side_Strings(std::list<AsciiString> *list)
+void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
 {
     if (list == nullptr) {
         return;
     }
 
-    std::list<AsciiString> tmp;
+    std::list<Utf8String> tmp;
 
     // Go through the template vector and add all the sides present in it to the list.
     for (unsigned i = 0; i < m_playerTemplates.size(); ++i) {
-        AsciiString side_name = m_playerTemplates[i].Get_Side_Name();
+        Utf8String side_name = m_playerTemplates[i].Get_Side_Name();
         auto found = std::find(tmp.begin(), tmp.end(), side_name);
 
         // If a matching entry isn't found already, add this side name to the list.

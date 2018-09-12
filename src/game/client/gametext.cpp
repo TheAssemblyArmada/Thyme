@@ -695,7 +695,7 @@ void GameTextManager::Init()
         return;
     }
 
-    AsciiString csfpath;
+    Utf8String csfpath;
     bool use_csf = true;
 
     csfpath.Format("data/%s/Generals.csf", Get_Registry_Language().Str());
@@ -751,7 +751,7 @@ void GameTextManager::Init()
     qsort(m_stringLUT, m_textCount, sizeof(StringLookUp), Compare_LUT);
 
     // Fetch the GUI window title string and set it here.
-    AsciiString ntitle;
+    Utf8String ntitle;
     Utf16String wtitle = (const unichar_t *)u"Thyme - ";
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
@@ -783,7 +783,7 @@ void GameTextManager::Reset()
 
 // Find and return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
-Utf16String GameTextManager::Fetch(AsciiString args, bool *success)
+Utf16String GameTextManager::Fetch(Utf8String args, bool *success)
 {
     return Fetch(args.Str(), success);
 }
@@ -800,7 +800,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
         return m_failed;
     }
 
-    AsciiString argstr = args;
+    Utf8String argstr = args;
     StringLookUp key = {&argstr, nullptr};
 
     StringLookUp *found =
@@ -856,7 +856,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
 }
 
 // List all string labels that start with the prefix passed to the function.
-std::vector<AsciiString> *GameTextManager::Get_Strings_With_Prefix(AsciiString label)
+std::vector<Utf8String> *GameTextManager::Get_Strings_With_Prefix(Utf8String label)
 {
     m_stringVector.clear();
 
@@ -888,7 +888,7 @@ std::vector<AsciiString> *GameTextManager::Get_Strings_With_Prefix(AsciiString l
 
 // Initialises a string file associated with a specific map. Resources
 // allocated here are freed by GameTextManager::Reset()
-void GameTextManager::Init_Map_String_File(AsciiString const &filename)
+void GameTextManager::Init_Map_String_File(Utf8String const &filename)
 {
     // Check if we can use a standard string file, if not, try the csf file.
     Get_String_Count(filename.Str(), m_mapTextCount);

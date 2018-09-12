@@ -180,7 +180,7 @@ TerrainRoadCollection::~TerrainRoadCollection()
     }
 }
 
-TerrainRoadType *TerrainRoadCollection::New_Road(AsciiString name)
+TerrainRoadType *TerrainRoadCollection::New_Road(Utf8String name)
 {
     TerrainRoadType *retval = new TerrainRoadType;
     TerrainRoadType *def = Find_Road("DefaultRoad");
@@ -204,7 +204,7 @@ TerrainRoadType *TerrainRoadCollection::New_Road(AsciiString name)
     return retval;
 }
 
-TerrainRoadType *TerrainRoadCollection::New_Bridge(AsciiString name)
+TerrainRoadType *TerrainRoadCollection::New_Bridge(Utf8String name)
 {
     TerrainRoadType *retval = new TerrainRoadType;
     TerrainRoadType *def = Find_Road("DefaultBridge");
@@ -255,7 +255,7 @@ TerrainRoadType *TerrainRoadCollection::New_Bridge(AsciiString name)
     return retval;
 }
 
-TerrainRoadType *TerrainRoadCollection::Find_Road(AsciiString name)
+TerrainRoadType *TerrainRoadCollection::Find_Road(Utf8String name)
 {
     TerrainRoadType *retval = m_roadList;
 
@@ -270,7 +270,7 @@ TerrainRoadType *TerrainRoadCollection::Find_Road(AsciiString name)
     return retval;
 }
 
-TerrainRoadType *TerrainRoadCollection::Find_Bridge(AsciiString name)
+TerrainRoadType *TerrainRoadCollection::Find_Bridge(Utf8String name)
 {
     TerrainRoadType *retval = m_bridgeList;
 
@@ -287,7 +287,7 @@ TerrainRoadType *TerrainRoadCollection::Find_Bridge(AsciiString name)
 
 void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
 
     ASSERT_THROW_PRINT(g_theTerrainRoads->Find_Road(token) == nullptr,
         0xDEAD0006,
@@ -300,7 +300,7 @@ void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
 
 void TerrainRoadCollection::Parse_Terrain_Bridge_Definitions(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
 
     ASSERT_THROW_PRINT(g_theTerrainRoads->Find_Bridge(token) == nullptr,
         0xDEAD0006,

@@ -52,7 +52,7 @@ DataChunkInput::~DataChunkInput() {}
 /**
  * @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
  */
-void DataChunkInput::Register_Parser(const AsciiString &label, const AsciiString &parent_label,
+void DataChunkInput::Register_Parser(const Utf8String &label, const Utf8String &parent_label,
     bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data)
 {
     UserParser *user_parser = new UserParser;
@@ -69,8 +69,8 @@ void DataChunkInput::Register_Parser(const AsciiString &label, const AsciiString
  */
 bool DataChunkInput::Parse(void *user_data)
 {
-    AsciiString label;
-    AsciiString parent_label;
+    Utf8String label;
+    Utf8String parent_label;
 
     // We can't parse if the header chunk hasn't been opened yet.
     if (!Is_Valid_File()) {
@@ -125,7 +125,7 @@ bool DataChunkInput::Parse(void *user_data)
 /**
  * @brief Opens a data chunk and returns the label associated with it. Optionally returns version in passed pointer.
  */
-AsciiString DataChunkInput::Open_Data_Chunk(uint16_t *version)
+Utf8String DataChunkInput::Open_Data_Chunk(uint16_t *version)
 {
     InputChunk *chunk = new InputChunk;
     chunk->id = 0;
@@ -154,7 +154,7 @@ AsciiString DataChunkInput::Open_Data_Chunk(uint16_t *version)
     m_chunkStack = chunk;
 
     if (m_file->Eof()) {
-        return AsciiString::s_emptyString;
+        return Utf8String::s_emptyString;
     }
 
     return m_contents.Get_Name(chunk->id);
@@ -188,13 +188,13 @@ void DataChunkInput::Reset()
     m_file->Absolute_Seek(m_fileposOfFirstChunk);
 }
 
-AsciiString DataChunkInput::Get_Chunk_Label()
+Utf8String DataChunkInput::Get_Chunk_Label()
 {
     if (m_chunkStack != nullptr) {
         return m_contents.Get_Name(m_chunkStack->id);
     }
 
-    return AsciiString::s_emptyString;
+    return Utf8String::s_emptyString;
 }
 
 /**
@@ -249,18 +249,18 @@ uint8_t DataChunkInput::Read_Byte()
 /**
  * @brief Reads an ascii string from the chunk.
  */
-AsciiString DataChunkInput::Read_AsciiString()
+Utf8String DataChunkInput::Read_AsciiString()
 {
     uint16_t size;
-    AsciiString string;
+    Utf8String string;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading AsciiString length.\n");
+    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
     size = le16toh(size);
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= size, "Read past end of chunk reading AsciiString string.\n");
+    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= size, "Read past end of chunk reading Utf8String string.\n");
 
     m_file->Read(string.Get_Buffer_For_Read(size), size);
     Decrement_Data_Left(size);
@@ -278,7 +278,7 @@ Utf16String DataChunkInput::Read_UnicodeString()
     char16_t ch;
     Utf16String string;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading AsciiString length.\n");
+    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
@@ -308,7 +308,7 @@ Dict DataChunkInput::Read_Dict()
 {
     uint16_t size = 0;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading AsciiString length.\n");
+    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
@@ -352,7 +352,7 @@ Dict DataChunkInput::Read_Dict()
  */
 void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int length)
 {
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= length, "Read past end of chunk reading AsciiString string.\n");
+    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= length, "Read past end of chunk reading Utf8String string.\n");
 
     m_file->Read(ptr, length);
     Decrement_Data_Left(length);

@@ -85,16 +85,16 @@ public:
 
 private:
     Utf16String m_displayName;
-    AsciiString m_unkAsciiString1;
-    AsciiString m_side;
-    AsciiString m_commandSet;
-    AsciiString m_selectPortrait;
-    AsciiString m_buttonImage;
-    AsciiString m_upgradeCameo[5];
-    AsciiString m_shadowTexture;
-    AsciiString m_unkAsciiString2;
-    AsciiString m_unkAsciiString3;
-    AsciiString m_unkAsciiString4;
+    Utf8String m_unkAsciiString1;
+    Utf8String m_side;
+    Utf8String m_commandSet;
+    Utf8String m_selectPortrait;
+    Utf8String m_buttonImage;
+    Utf8String m_upgradeCameo[5];
+    Utf8String m_shadowTexture;
+    Utf8String m_unkAsciiString2;
+    Utf8String m_unkAsciiString3;
+    Utf8String m_unkAsciiString4;
     GeometryInfo m_geometryInfo;
     //int m_kindOf[4];
     BitFlags<KINDOF_COUNT> m_kindOf;
@@ -106,13 +106,13 @@ private:
     int m_experienceValue[4];
     int m_experienceRequired[4];
     std::vector<ProductionPrerequisite> m_prerequisites;
-    std::vector<AsciiString> m_buildVariations;
+    std::vector<Utf8String> m_buildVariations;
     std::vector<WeaponTemplateSet> m_weaponTemplateSets;
     SparseMatchFinder<BitFlags<WEAPONSET_COUNT>, WeaponTemplateSet> m_weaponTemplateSetFinder;
     std::vector<ArmorTemplateSet> m_armorTemplateSets;
     SparseMatchFinder<BitFlags<ARMORSET_COUNT>, ArmorTemplateSet> m_armorTemplateSetFinder;
-    std::map<AsciiString, AudioEventRTS> m_perUnitSounds;
-    std::map<AsciiString, FXList *> m_perUnitEffects;
+    std::map<Utf8String, AudioEventRTS> m_perUnitSounds;
+    std::map<Utf8String, FXList *> m_perUnitEffects;
     int m_unkInt1;
     int m_unkInt2;
     int m_unkInt3;

@@ -19,7 +19,7 @@
 
 struct GameFont
 {
-	AsciiString name_string;
+	Utf8String name_string;
 	int point_size;
 	int bold;
 	int height;

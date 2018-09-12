@@ -131,7 +131,7 @@ ScriptList *ScriptList::Duplicate()
  *
  * 0x0051BD80
  */
-ScriptList *ScriptList::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+ScriptList *ScriptList::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     ScriptList *new_list = new ScriptList;
 

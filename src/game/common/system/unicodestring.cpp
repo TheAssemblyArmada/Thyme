@@ -198,7 +198,7 @@ void Utf16String::Set(Utf16String const &string)
     }
 }
 
-void Utf16String::Translate(AsciiString const &string)
+void Utf16String::Translate(Utf8String const &string)
 {
     Release_Buffer();
 
@@ -427,7 +427,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
         return false;
     }
 
-    // Copy found region into provided AsciiString, then move this string
+    // Copy found region into provided Utf8String, then move this string
     // to start of next section.
     unichar_t *tokstr = tok->Get_Buffer_For_Read(end - start + 1);
     memcpy(tokstr, start, end - start);

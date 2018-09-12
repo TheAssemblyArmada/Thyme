@@ -78,19 +78,19 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    int Find_Interface_Mask(const AsciiString &name, ModuleType type);
-    Module *New_Module(Thing *thing, const AsciiString &name, ModuleData *data, ModuleType type);
-    ModuleData *New_Module_Data_From_INI(INI *ini, const AsciiString &name, ModuleType type, const AsciiString &tag);
+    int Find_Interface_Mask(const Utf8String &name, ModuleType type);
+    Module *New_Module(Thing *thing, const Utf8String &name, ModuleData *data, ModuleType type);
+    ModuleData *New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
 #endif
 
 protected:
-    static NameKeyType Make_Decorated_Name_Key(const AsciiString &name, ModuleType type);
+    static NameKeyType Make_Decorated_Name_Key(const Utf8String &name, ModuleType type);
     void Add_Module_Internal(
-        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const AsciiString &name, int iface);
-    const ModuleTemplate *Find_Module_Template(const AsciiString &name, ModuleType type) const;
+        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int iface);
+    const ModuleTemplate *Find_Module_Template(const Utf8String &name, ModuleType type) const;
 
 protected:
     std::map<NameKeyType, ModuleTemplate> m_moduleTemplateMap;

@@ -141,7 +141,7 @@ void RAMFile::Next_Line(char *dst, int bytes)
 bool RAMFile::Scan_Int(int &integer)
 {
     char tmp;
-    AsciiString number;
+    Utf8String number;
 
     integer = 0;
 
@@ -179,7 +179,7 @@ bool RAMFile::Scan_Int(int &integer)
 bool RAMFile::Scan_Real(float &real)
 {
     char tmp;
-    AsciiString number;
+    Utf8String number;
 
     real = 0.0f;
 
@@ -221,7 +221,7 @@ bool RAMFile::Scan_Real(float &real)
     return true;
 }
 
-bool RAMFile::Scan_String(AsciiString &string)
+bool RAMFile::Scan_String(Utf8String &string)
 {
     string.Clear();
 
@@ -239,7 +239,7 @@ bool RAMFile::Scan_String(AsciiString &string)
         return false;
     }
 
-    // Read into AsciiString
+    // Read into Utf8String
     for (; Pos < Size; ++Pos) {
         if (isspace(Data[Pos])) {
             break;
@@ -296,7 +296,7 @@ bool RAMFile::Open(File *file)
     return false;
 }
 
-bool RAMFile::Open_From_Archive(File *file, AsciiString const &name, int pos, int size)
+bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int size)
 {
     if (file == nullptr) {
         return false;

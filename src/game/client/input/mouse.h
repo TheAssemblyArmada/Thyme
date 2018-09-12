@@ -89,14 +89,14 @@ struct MouseIO
 
 struct CursorInfo
 {
-    AsciiString unk_string;
-    AsciiString cursor_text;
+    Utf8String unk_string;
+    Utf8String cursor_text;
     RGBAColorInt cursor_text_color;
     RGBAColorInt cursor_text_drop_color;
-    AsciiString texture_name;
-    AsciiString image_name;
-    AsciiString w3d_model_name;
-    AsciiString w3d_anim_name;
+    Utf8String texture_name;
+    Utf8String image_name;
+    Utf8String w3d_model_name;
+    Utf8String w3d_anim_name;
     float w3d_scale;
     bool loop;
     Coord2D hot_spot;
@@ -157,11 +157,11 @@ protected:
 	void Update_Mouse_Data();
 	void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
-    MouseCursor Get_Cursor_Index(const AsciiString &name);
+    MouseCursor Get_Cursor_Index(const Utf8String &name);
 
 protected:
     CursorInfo m_cursorInfo[CURSOR_COUNT];
-    AsciiString m_tooltipFontName;
+    Utf8String m_tooltipFontName;
     int m_tooltipFontSize;
     bool m_tooltipFontIsBold;
     //FontDesc m_tooltipFont;

@@ -34,18 +34,18 @@ void GameState::Reset() {}
 
 void GameState::Xfer_Snapshot(Xfer *xfer) {}
 
-AsciiString GameState::Get_Save_Dir()
+Utf8String GameState::Get_Save_Dir()
 {
-    AsciiString ret = g_theWriteableGlobalData->m_userDataDirectory;
+    Utf8String ret = g_theWriteableGlobalData->m_userDataDirectory;
     ret += "Save/";
 
     return ret;
 }
 
-AsciiString GameState::Real_To_Portable_Map_Path(const AsciiString &path)
+Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
 {
-    AsciiString ret;
-    AsciiString ppath = path.Posix_Path();
+    Utf8String ret;
+    Utf8String ppath = path.Posix_Path();
 
     DEBUG_LOG("'%s' to portable:\n", path.Str());
 
@@ -72,9 +72,9 @@ AsciiString GameState::Real_To_Portable_Map_Path(const AsciiString &path)
     return ret.Windows_Path();
 }
 
-AsciiString GameState::Portable_To_Real_Map_Path(const AsciiString &path)
+Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path)
 {
-    AsciiString ret;
+    Utf8String ret;
 
     DEBUG_LOG("'%s' to real:\n", path.Str());
 
@@ -100,7 +100,7 @@ AsciiString GameState::Portable_To_Real_Map_Path(const AsciiString &path)
 }
 
 // Returns file and last two containing directories from path in the form "path/to/file"
-AsciiString Get_Leaf_And_Dir_Name(const AsciiString &path)
+Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path)
 {
     int len = path.Get_Length();
     const char *str = path.Str();
@@ -134,5 +134,5 @@ AsciiString Get_Leaf_And_Dir_Name(const AsciiString &path)
         return path;
     }
 
-    return AsciiString(++leaf);
+    return Utf8String(++leaf);
 }

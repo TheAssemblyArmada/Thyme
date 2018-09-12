@@ -32,7 +32,7 @@ void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int ski
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
-extern AsciiString &g_exceptionFileBuffer;
+extern Utf8String &g_exceptionFileBuffer;
 #else
-extern AsciiString g_exceptionFileBuffer;
+extern Utf8String g_exceptionFileBuffer;
 #endif

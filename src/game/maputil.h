@@ -19,7 +19,7 @@
 #include "list"
 #include <map>
 
-class WaypointMap : public std::map<AsciiString, Coord3D>
+class WaypointMap : public std::map<Utf8String, Coord3D>
 {
 public:
     void Update();
@@ -35,8 +35,8 @@ struct WinTimeStamp
 
 struct MapMetaData
 {
-    AsciiString m_displayName;
-    AsciiString m_lookupTag;
+    Utf8String m_displayName;
+    Utf8String m_lookupTag;
     Region3D m_extent;
     int m_numPlayers;
     bool m_isMultiplayer;
@@ -49,17 +49,17 @@ struct MapMetaData
     std::list<Coord3D> m_techPositions;
 };
 
-class MapCache : std::map<AsciiString, MapMetaData>
+class MapCache : std::map<Utf8String, MapMetaData>
 {
 public:
-    AsciiString Get_Map_Dir() { return s_mapDirName; }
-    AsciiString Get_Map_Extension() { return s_mapExtension; }
-    AsciiString Get_Cache_Name() { return s_mapCacheName; }
-    AsciiString Get_User_Map_Dir();
+    Utf8String Get_Map_Dir() { return s_mapDirName; }
+    Utf8String Get_Map_Extension() { return s_mapExtension; }
+    Utf8String Get_Cache_Name() { return s_mapCacheName; }
+    Utf8String Get_User_Map_Dir();
 
     void Write_Cache_INI(bool custom_cache);
     void Update_Cache();
-    bool Clear_Unseen_Maps(AsciiString prefix);
+    bool Clear_Unseen_Maps(Utf8String prefix);
     void Load_Standard_Maps();
     bool Load_User_Maps();
 
@@ -68,7 +68,7 @@ private:
     static const char *const s_mapExtension;
     static const char *const s_mapCacheName;
 
-    std::map<AsciiString, int> m_seen;
+    std::map<Utf8String, int> m_seen;
 };
 
 #ifndef THYME_STANDALONE

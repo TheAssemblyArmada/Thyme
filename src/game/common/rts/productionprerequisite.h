@@ -30,7 +30,7 @@ class ProductionPrerequisite
     {
         ThingTemplate *unit;
         int flags;
-        AsciiString name;
+        Utf8String name;
     };
 public:
     ProductionPrerequisite() {}

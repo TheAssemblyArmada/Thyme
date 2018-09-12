@@ -55,7 +55,7 @@ public:
     virtual void Clear_Options(unsigned options) { m_options &= ~options; }
     virtual unsigned Get_Options() { return m_options; }
 
-    virtual void Open(AsciiString filename);
+    virtual void Open(Utf8String filename);
     virtual void Close() = 0;
     virtual int Begin_Block() = 0;
     virtual void End_Block() = 0;
@@ -72,8 +72,8 @@ public:
     virtual void xferShort(int16_t *thing);
     virtual void xferUnsignedShort(uint16_t *thing);
     virtual void xferReal(float *thing);
-    virtual void xferMarkerLabel(AsciiString thing);
-    virtual void xferAsciiString(AsciiString *thing);
+    virtual void xferMarkerLabel(Utf8String thing);
+    virtual void xferAsciiString(Utf8String *thing);
     virtual void xferUnicodeString(Utf16String *thing);
     virtual void xferCoord3D(Coord3D *thing);
     virtual void xferICoord3D(ICoord3D *thing);
@@ -99,7 +99,7 @@ public:
     virtual void xferUpgradeMask(BitFlags<128> *thing);
     virtual void xferUser(void *thing, int size);
     virtual void xferMatrix3D(Matrix3D *thing);
-    virtual void xferMapName(AsciiString *thing);
+    virtual void xferMapName(Utf8String *thing);
     virtual void xferImplementation(void *thing, int size) = 0;
 
     void Xfer_Client_Random_Var(GameClientRandomVariable *thing);
@@ -108,7 +108,7 @@ public:
 protected:
     unsigned m_options;
     XferType m_type;
-    AsciiString m_filename;
+    Utf8String m_filename;
 };
 
 #ifndef THYME_STANDALONE

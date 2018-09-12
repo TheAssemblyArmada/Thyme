@@ -36,10 +36,10 @@ public:
     virtual void Update() = 0;
     virtual void Draw() {}
 
-    void Set_Name(AsciiString name); // Needs confirming.
+    void Set_Name(Utf8String name); // Needs confirming.
 
 private:
-    AsciiString m_subsystemName; // Needs confirming.
+    Utf8String m_subsystemName; // Needs confirming.
 };
 
 class SubsystemInterfaceList
@@ -48,7 +48,7 @@ public:
     SubsystemInterfaceList() : m_subsystems(), m_unksubsystems() {}
 
     void Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path, const char *dir_path,
-        Xfer *xfer, AsciiString sys_name);
+        Xfer *xfer, Utf8String sys_name);
     void Post_Process_Load_All();
     void Reset_All();
     void Shutdown_All();

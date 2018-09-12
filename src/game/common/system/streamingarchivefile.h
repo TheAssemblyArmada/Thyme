@@ -33,12 +33,12 @@ public:
     virtual void Next_Line(char *dst, int bytes) override;
     virtual bool Scan_Int(int &integer) override;
     virtual bool Scan_Real(float &real) override;
-    virtual bool Scan_String(AsciiString &string) override;
+    virtual bool Scan_String(Utf8String &string) override;
 
     virtual void *Read_All_And_Close() override;
     virtual RAMFile *Convert_To_RAM() override { return this; }
     virtual bool Open(File *file) override;
-    virtual bool Open_From_Archive(File *file, AsciiString const &name, int pos, int size) override;
+    virtual bool Open_From_Archive(File *file, Utf8String const &name, int pos, int size) override;
     virtual bool Copy_To_File(File *file) override { return false; }
 
 protected:

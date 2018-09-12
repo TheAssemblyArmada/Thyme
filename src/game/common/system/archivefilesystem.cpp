@@ -25,7 +25,7 @@ ArchiveFileSystem *g_theArchiveFileSystem = nullptr;
 
 File *ArchiveFileSystem::Open_File(const char *filename, int mode)
 {
-    AsciiString archive = Get_Archive_Filename_For_File(filename);
+    Utf8String archive = Get_Archive_Filename_For_File(filename);
 
     if (archive.Is_Empty()) {
         return nullptr;
@@ -40,8 +40,8 @@ File *ArchiveFileSystem::Open_File(const char *filename, int mode)
 
 bool ArchiveFileSystem::Does_File_Exist(const char *filename)
 {
-    AsciiString path = filename;
-    AsciiString token;
+    Utf8String path = filename;
+    Utf8String token;
     ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
     // Lower case for matching and get first item of the path.
@@ -72,17 +72,17 @@ bool ArchiveFileSystem::Does_File_Exist(const char *filename)
 
 // Loads an archive file into the virtual directory tree. The over write option allows it to use this archive to
 // replace the backing for a file name if it already has an entry in the tree.
-void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString const &archive_path, bool overwrite)
+void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, Utf8String const &archive_path, bool overwrite)
 {
-    std::set<AsciiString, rts::less_than_nocase<AsciiString>> file_list;
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> file_list;
 
     // Retrieve a list of files in the archive
     file->Get_File_List_From_Dir("", "", "*", file_list, true);
 
     for (auto it = file_list.begin(); it != file_list.end(); ++it) {
-        AsciiString path = *it;
-        AsciiString token;
-        // AsciiString fullname;
+        Utf8String path = *it;
+        Utf8String token;
+        // Utf8String fullname;
         ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
         // Lower case for matching.
@@ -109,14 +109,14 @@ void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, AsciiString 
     }
 }
 
-bool ArchiveFileSystem::Get_File_Info(AsciiString const &name, FileInfo *info)
+bool ArchiveFileSystem::Get_File_Info(Utf8String const &name, FileInfo *info)
 {
     if (info == nullptr || name.Is_Empty()) {
         return false;
     }
 
     // Find the archive that corresponds to this file name.
-    AsciiString archive = Get_Archive_Filename_For_File(name);
+    Utf8String archive = Get_Archive_Filename_For_File(name);
 
     // Find the archive file pointer for the archive name we retrieved.
     if (m_archiveFiles.find(archive) == m_archiveFiles.end()) {
@@ -127,10 +127,10 @@ bool ArchiveFileSystem::Get_File_Info(AsciiString const &name, FileInfo *info)
 }
 
 // Returns the filname of the archive file containing the passed in file name.
-AsciiString ArchiveFileSystem::Get_Archive_Filename_For_File(AsciiString const &filename)
+Utf8String ArchiveFileSystem::Get_Archive_Filename_For_File(Utf8String const &filename)
 {
-    AsciiString path = filename;
-    AsciiString token;
+    Utf8String path = filename;
+    Utf8String token;
     ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
     // Lower case for matching and get first item of the path.
@@ -142,7 +142,7 @@ AsciiString ArchiveFileSystem::Get_Archive_Filename_For_File(AsciiString const &
     // that do.
     while (strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr) {
         if (dirp->directories.find(token) == dirp->directories.end()) {
-            return AsciiString();
+            return Utf8String();
         }
 
         dirp = &dirp->directories[token];
@@ -152,15 +152,15 @@ AsciiString ArchiveFileSystem::Get_Archive_Filename_For_File(AsciiString const &
     // Assuming we didn't run out of directories to try, find the file
     // in the reached directory.
     if (dirp->files.find(token) == dirp->files.end()) {
-        return AsciiString();
+        return Utf8String();
     }
 
     return dirp->files[token];
 }
 
 // Populates a std::set of file paths based on the passed in filter and path to examine.
-void ArchiveFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath,
-    AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs)
+void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath,
+    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
 {
     // Get files from all archive files.
     for (auto it = m_archiveFiles.begin(); it != m_archiveFiles.end(); ++it) {

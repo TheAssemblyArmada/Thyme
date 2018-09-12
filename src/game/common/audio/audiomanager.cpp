@@ -89,7 +89,7 @@ void AudioManager::Append_Audio_Request(AudioRequest *request)
     m_audioRequestList.push_back(request);
 }
 
-AudioEventInfo *AudioManager::New_Audio_Event_Info(AsciiString name)
+AudioEventInfo *AudioManager::New_Audio_Event_Info(Utf8String name)
 {
     AudioEventInfo *info = Find_Audio_Event_Info(name);
 
@@ -113,7 +113,7 @@ void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
     }
 }
 
-AudioEventInfo *AudioManager::Find_Audio_Event_Info(AsciiString name) const
+AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
 {
     auto it = m_audioInfoHashMap.find(name);
 
@@ -386,7 +386,7 @@ void AudioManager::Remove_Audio_Event(unsigned int event)
     }
 }
 
-void AudioManager::Remove_Audio_Event(AsciiString event)
+void AudioManager::Remove_Audio_Event(Utf8String event)
 {
     Remove_Playing_Audio(event);
 }
@@ -413,14 +413,14 @@ bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
     return event->Get_Event_Info() != nullptr;
 }
 
-void AudioManager::Set_Audio_Event_Enabled(AsciiString event, bool vol_override)
+void AudioManager::Set_Audio_Event_Enabled(Utf8String event, bool vol_override)
 {
     Set_Audio_Event_Volume_Override(event, vol_override ? -1.0f : 0.0f);
 }
 
-void AudioManager::Set_Audio_Event_Volume_Override(AsciiString event, float vol_override)
+void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_override)
 {
-    if (event == AsciiString::s_emptyString) {
+    if (event == Utf8String::s_emptyString) {
         m_unkList1.clear();
 
         return;
@@ -433,7 +433,7 @@ void AudioManager::Set_Audio_Event_Volume_Override(AsciiString event, float vol_
     }
 
     if (m_unkList1.empty() && vol_override != -1.0f) {
-        m_unkList1.push_back(std::pair<AsciiString, float>(event, vol_override));
+        m_unkList1.push_back(std::pair<Utf8String, float>(event, vol_override));
     } else {
         for (auto it = m_unkList1.begin(); it != m_unkList1.end(); ++it) {
             if (event == it->first && vol_override != -1.0f) {
@@ -459,7 +459,7 @@ void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
     event->Set_Event_Info(Find_Audio_Event_Info(event->Get_Event_Name()));
 }
 
-unsigned int AudioManager::Translate_From_Speaker_Type(const AsciiString &type)
+unsigned int AudioManager::Translate_From_Speaker_Type(const Utf8String &type)
 {
     unsigned int i = 0;
 
@@ -474,7 +474,7 @@ unsigned int AudioManager::Translate_From_Speaker_Type(const AsciiString &type)
     return i;
 }
 
-AsciiString AudioManager::Translate_To_Speaker_Type(unsigned int type)
+Utf8String AudioManager::Translate_To_Speaker_Type(unsigned int type)
 {
     if (type < ARRAY_SIZE(s_speakerTypes)) {
         return s_speakerTypes[type];

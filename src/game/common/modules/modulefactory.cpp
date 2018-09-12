@@ -72,7 +72,7 @@ void ModuleFactory::Xfer_Snapshot(Xfer *xfer)
 /**
  * @brief Internal method for locating a template from a module name and type.
  */
-const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const AsciiString &name, ModuleType type) const
+const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const Utf8String &name, ModuleType type) const
 {
     auto it = m_moduleTemplateMap.find(Make_Decorated_Name_Key(name, type));
 
@@ -88,7 +88,7 @@ const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const A
  *
  * 0x004F2B80
  */
-int ModuleFactory::Find_Interface_Mask(const AsciiString &name, ModuleType type)
+int ModuleFactory::Find_Interface_Mask(const Utf8String &name, ModuleType type)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);
@@ -106,7 +106,7 @@ int ModuleFactory::Find_Interface_Mask(const AsciiString &name, ModuleType type)
  *
  * 0x004F2DD0
  */
-Module *ModuleFactory::New_Module(Thing *thing, const AsciiString &name, ModuleData *data, ModuleType type)
+Module *ModuleFactory::New_Module(Thing *thing, const Utf8String &name, ModuleData *data, ModuleType type)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);
@@ -125,7 +125,7 @@ Module *ModuleFactory::New_Module(Thing *thing, const AsciiString &name, ModuleD
  * 0x004F2C20
  */
 ModuleData *ModuleFactory::New_Module_Data_From_INI(
-    INI *ini, const AsciiString &name, ModuleType type, const AsciiString &tag)
+    INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);
@@ -147,7 +147,7 @@ ModuleData *ModuleFactory::New_Module_Data_From_INI(
  *
  * 0x004F2D60
  */
-NameKeyType ModuleFactory::Make_Decorated_Name_Key(const AsciiString &name, ModuleType type)
+NameKeyType ModuleFactory::Make_Decorated_Name_Key(const Utf8String &name, ModuleType type)
 {
     char tmp[256];
 
@@ -163,7 +163,7 @@ NameKeyType ModuleFactory::Make_Decorated_Name_Key(const AsciiString &name, Modu
  * 0x004F2E80
  */
 void ModuleFactory::Add_Module_Internal(
-    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const AsciiString &name, int iface)
+    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int iface)
 {
     ModuleTemplate &data = m_moduleTemplateMap[Make_Decorated_Name_Key(name, type)];
     data.create_proc = proc;

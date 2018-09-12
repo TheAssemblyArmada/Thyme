@@ -49,12 +49,12 @@ public:
     void Empty_Teams();
     void Empty_Sides();
     bool Validate_Sides();
-    bool Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &allies);
-    void Add_Player_By_Template(AsciiString template_name);
-    SidesInfo *Find_Side_Info(AsciiString name, int *index = nullptr);
-    SidesInfo *Find_Skirmish_Side_Info(AsciiString name, int *index = nullptr);
+    bool Validate_Ally_Enemy_List(const Utf8String &team, Utf8String &allies);
+    void Add_Player_By_Template(Utf8String template_name);
+    SidesInfo *Find_Side_Info(Utf8String name, int *index = nullptr);
+    SidesInfo *Find_Skirmish_Side_Info(Utf8String name, int *index = nullptr);
     SidesInfo *Get_Sides_Info(int index);
-    TeamsInfo *Find_Team_Info(AsciiString name, int *index) { return m_teamRec.Find_Team(name, index); }
+    TeamsInfo *Find_Team_Info(Utf8String name, int *index) { return m_teamRec.Find_Team(name, index); }
 
     static bool Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 

@@ -61,14 +61,14 @@ struct NoString
 
 struct StringInfo
 {
-    AsciiString label;
+    Utf8String label;
     Utf16String text;
-    AsciiString speech;
+    Utf8String speech;
 };
 
 struct StringLookUp
 {
-    AsciiString *label;
+    Utf8String *label;
     StringInfo *info;
 };
 
@@ -78,9 +78,9 @@ public:
     virtual ~GameTextInterface() {}
 
     virtual Utf16String Fetch(const char *args, bool *success = nullptr) = 0;
-    virtual Utf16String Fetch(AsciiString args, bool *success = nullptr) = 0;
-    virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label) = 0;
-    virtual void Init_Map_String_File(AsciiString const &filename) = 0;
+    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) = 0;
+    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) = 0;
+    virtual void Init_Map_String_File(Utf8String const &filename) = 0;
     virtual void Deinit() = 0;
 };
 
@@ -95,9 +95,9 @@ public:
     virtual void Update() {}
 
     virtual Utf16String Fetch(const char *args, bool *success = nullptr);
-    virtual Utf16String Fetch(AsciiString args, bool *success = nullptr);
-    virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label);
-    virtual void Init_Map_String_File(AsciiString const &filename);
+    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr);
+    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label);
+    virtual void Init_Map_String_File(Utf8String const &filename);
     virtual void Deinit();
 
     static int Compare_LUT(void const *a, void const *b);
@@ -138,7 +138,7 @@ private:
     StringInfo *m_mapStringInfo;
     StringLookUp *m_mapStringLUT;
     int m_mapTextCount;
-    std::vector<AsciiString> m_stringVector;
+    std::vector<Utf8String> m_stringVector;
 };
 
 #ifndef THYME_STANDALONE

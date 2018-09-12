@@ -39,9 +39,9 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
     // If we need to write a file, ensure the needed directory exists.
     if ((mode & File::WRITE) != 0) {
         DEBUG_LOG("Preparing file '%s' for write access.\n", filename);
-        AsciiString name = filename;
-        AsciiString token;
-        AsciiString path;
+        Utf8String name = filename;
+        Utf8String token;
+        Utf8String path;
 
         name.Next_Token(&token, "\\/");
         path = token;
@@ -71,10 +71,10 @@ bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
     return access(filename, 0) == 0;
 }
 
-void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath,
-    AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs)
+void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath,
+    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
 {
-    AsciiString search_path = dirpath;
+    Utf8String search_path = dirpath;
     search_path += subdir;
     search_path += filter;
 
@@ -86,10 +86,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
         // Loop over all files in the directory, ignoring other directories
         do {
             if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                AsciiString name = UTF16To8(data.cFileName);
+                Utf8String name = UTF16To8(data.cFileName);
 
                 if (name != "." && name != "..") {
-                    AsciiString filepath = dirpath;
+                    Utf8String filepath = dirpath;
                     filepath += subdir;
                     filepath += name;
                     // filelist.insert(filepath.Posix_Path()); // TODO 0x006C8400 relies on '\' as path sep.
@@ -103,7 +103,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
 
     // Recurse into subdirectories if required.
     if (search_subdirs) {
-        AsciiString sub_path = dirpath;
+        Utf8String sub_path = dirpath;
         sub_path += subdir;
         sub_path += "*.";
 
@@ -113,10 +113,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
             // Loop over all files in the directory finding only directories.
             do {
                 if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    AsciiString name = UTF16To8(data.cFileName);
+                    Utf8String name = UTF16To8(data.cFileName);
 
                     if (name != "." && name != "..") {
-                        AsciiString filepath;
+                        Utf8String filepath;
                         filepath += subdir;
                         filepath += name;
                         filepath += '\\';
@@ -134,7 +134,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(AsciiString const &subdir, Asc
 #endif
 }
 
-bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *info)
+bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *info)
 {
     // TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
@@ -173,7 +173,7 @@ bool Win32LocalFileSystem::Get_File_Info(AsciiString const &filename, FileInfo *
 #endif
 }
 
-bool Win32LocalFileSystem::Create_Directory(AsciiString dir_path)
+bool Win32LocalFileSystem::Create_Directory(Utf8String dir_path)
 {
     if (dir_path.Is_Empty() || dir_path.Get_Length() > PATH_MAX) {
         return false;

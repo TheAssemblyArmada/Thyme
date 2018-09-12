@@ -20,9 +20,9 @@
 #include <stdio.h>
 
 #ifndef THYME_STANDALONE
-AsciiString &g_exceptionFileBuffer = Make_Global<AsciiString>(0x00A29FB8);
+Utf8String &g_exceptionFileBuffer = Make_Global<Utf8String>(0x00A29FB8);
 #else
-AsciiString g_exceptionFileBuffer;
+Utf8String g_exceptionFileBuffer;
 #endif
 
 #ifdef PLATFORM_WINDOWS
@@ -287,7 +287,7 @@ void Stack_Dump_Handler(const char *data)
 
 void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
 {
-    AsciiString tmp;
+    Utf8String tmp;
     g_exceptionFileBuffer.Clear();
     unsigned int e_code = e_info->ExceptionRecord->ExceptionCode;
 

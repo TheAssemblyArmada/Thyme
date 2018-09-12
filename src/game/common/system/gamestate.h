@@ -40,9 +40,9 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process() {}
 
-    AsciiString Get_Save_Dir();
-    AsciiString Real_To_Portable_Map_Path(const AsciiString &path);
-    AsciiString Portable_To_Real_Map_Path(const AsciiString &path);
+    Utf8String Get_Save_Dir();
+    Utf8String Real_To_Portable_Map_Path(const Utf8String &path);
+    Utf8String Portable_To_Real_Map_Path(const Utf8String &path);
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -50,7 +50,7 @@ public:
 private:
 };
 
-AsciiString Get_Leaf_And_Dir_Name(const AsciiString &path);
+Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path);
 
 #ifndef THYME_STANDALONE
 extern GameState *&g_theGameState;

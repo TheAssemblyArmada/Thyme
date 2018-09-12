@@ -33,8 +33,8 @@ public:
     static void Parse_Water_Setting(INI *ini);
 
 private:
-    AsciiString m_skyTextureFile;
-    AsciiString m_waterTextureFile;
+    Utf8String m_skyTextureFile;
+    Utf8String m_waterTextureFile;
     int m_waterRepeatCount;
     float m_skyTexelsPerUnit;
     RGBAColorInt m_vertex00Diffuse;
@@ -69,12 +69,12 @@ private:
     RGBColor m_standingWaterColor;
     RGBColor m_radarWaterColor;
     bool m_additiveBlending;
-    AsciiString m_standingWaterTexture;
-    AsciiString m_skyboxTextureN;
-    AsciiString m_skyboxTextureE;
-    AsciiString m_skyboxTextureS;
-    AsciiString m_skyboxTextureW;
-    AsciiString m_skyboxTextureT;
+    Utf8String m_standingWaterTexture;
+    Utf8String m_skyboxTextureN;
+    Utf8String m_skyboxTextureE;
+    Utf8String m_skyboxTextureS;
+    Utf8String m_skyboxTextureW;
+    Utf8String m_skyboxTextureT;
 
     static FieldParse m_waterTransparencySettingFieldParseTable[];
 };

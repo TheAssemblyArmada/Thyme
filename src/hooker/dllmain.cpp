@@ -142,10 +142,10 @@ void Setup_Hooks()
     FileSystem::Hook_Me();
     ArchiveFileSystem::Hook_Me();
 
-    // Replace AsciiString
-    Hook_Method(0x0040D640, static_cast<void (AsciiString::*)(char const *)>(&AsciiString::Set));
-    Hook_Method(0x00415290, &AsciiString::Ensure_Unique_Buffer_Of_Size);
-    Hook_Method(0x0040FB40, static_cast<void (AsciiString::*)(char const *)>(&AsciiString::Concat));
+    // Replace Utf8String
+    Hook_Method(0x0040D640, static_cast<void (Utf8String::*)(char const *)>(&Utf8String::Set));
+    Hook_Method(0x00415290, &Utf8String::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method(0x0040FB40, static_cast<void (Utf8String::*)(char const *)>(&Utf8String::Concat));
 
     Win32GameEngine::Hook_Me();
     INI::Hook_Me();

@@ -34,7 +34,7 @@ public:
     virtual void Load_Post_Process() override {}
 
     Script *Duplicate();
-    Script *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    Script *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     Script *Get_Next() { return m_nextScript; }
     OrCondition *Get_Condition() { return m_condition; }
     ScriptAction *Get_Action() { return m_action; }
@@ -59,10 +59,10 @@ public:
     static Script *s_emptyScript;
 
 private:
-    AsciiString m_scriptName;
-    AsciiString m_comment;
-    AsciiString m_conditionComment;
-    AsciiString m_actionComment;
+    Utf8String m_scriptName;
+    Utf8String m_comment;
+    Utf8String m_conditionComment;
+    Utf8String m_actionComment;
     int32_t m_evaluationInterval;
     bool m_isActive;
     bool m_isOneShot;
@@ -76,7 +76,7 @@ private:
     Script *m_nextScript;
     int m_unkInt2;
     bool m_hasWarnings;
-    AsciiString m_conditionTeamName;
+    Utf8String m_conditionTeamName;
     int m_unkInt3;
     int m_unkInt4;
     int m_unkInt5;

@@ -27,12 +27,12 @@
 #error Support for utf16<->utf8 conversion not found for this platform.
 #endif
 
-class AsciiString;
+class Utf8String;
 
 class Utf16String
 {
 public:
-    friend class AsciiString;
+    friend class Utf8String;
 
     enum
     {
@@ -60,7 +60,7 @@ public:
     Utf16String() : m_data(nullptr) {}
     Utf16String(const unichar_t *s);
     Utf16String(Utf16String const &string);
-    // Utf16String(AsciiString const &string);
+    // Utf16String(Utf8String const &string);
     ~Utf16String();
 
     Utf16String &operator=(const unichar_t *s)
@@ -75,7 +75,7 @@ public:
         return *this;
     }
 
-    Utf16String &operator=(AsciiString const &string)
+    Utf16String &operator=(Utf8String const &string)
     {
         Translate(string);
         return *this;
@@ -87,7 +87,7 @@ public:
         return *this;
     }
 
-    // Utf16String &operator=(AsciiString const &string) { Set(string); return *this; }
+    // Utf16String &operator=(Utf8String const &string) { Set(string); return *this; }
 
     Utf16String &operator+=(unichar_t s)
     {
@@ -106,7 +106,7 @@ public:
         Concat(s);
         return *this;
     }
-    // Utf16String &operator+=(AsciiString const &string);
+    // Utf16String &operator+=(Utf8String const &string);
 
     operator const unichar_t *() const { return Str(); }
 
@@ -126,7 +126,7 @@ public:
     void Set(const unichar_t *s);
     void Set(Utf16String const &string);
 
-    void Translate(AsciiString const &string);
+    void Translate(Utf8String const &string);
     void Translate(const char *string);
 
     void Concat(unichar_t c);

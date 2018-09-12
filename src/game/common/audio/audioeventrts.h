@@ -33,9 +33,9 @@ class AudioEventRTS
 public:
     AudioEventRTS();
     AudioEventRTS(const AudioEventRTS &that);
-    AudioEventRTS(const AsciiString &name);
-    AudioEventRTS(const AsciiString &name, ObjectID id);
-    AudioEventRTS(const AsciiString &name, const Coord3D *pos);
+    AudioEventRTS(const Utf8String &name);
+    AudioEventRTS(const Utf8String &name, ObjectID id);
+    AudioEventRTS(const Utf8String &name, const Coord3D *pos);
     virtual ~AudioEventRTS() {}
 
     AudioEventRTS &operator=(const AudioEventRTS &that);
@@ -43,14 +43,14 @@ public:
     void Generate_Filename();
     void Generate_Play_Info();
 
-    void Set_Event_Name(AsciiString name);
+    void Set_Event_Name(Utf8String name);
     void Set_Playing_Handle(int handle) { m_playingHandle = handle; }
     void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
     void Set_Player_Index(int index) { m_playerIndex = index; }
 
-    const AsciiString &Get_Event_Name() const { return m_filename; }
+    const Utf8String &Get_Event_Name() const { return m_filename; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
     AudioType Get_Event_Type() const { return m_eventType; }
     int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
@@ -59,13 +59,13 @@ public:
     int Get_Playing_Handle() const { return m_playingHandle; }
 
 private:
-    AsciiString m_filename;
+    Utf8String m_filename;
     mutable AudioEventInfo *m_eventInfo;
     int m_playingHandle;
     int m_handleToKill;
-    AsciiString m_eventName;
-    AsciiString m_filenameAttack;
-    AsciiString m_filenameDecay;
+    Utf8String m_eventName;
+    Utf8String m_filenameAttack;
+    Utf8String m_filenameDecay;
     PriorityType m_priority;
     float m_volumeAdjustFactor;
     TimeOfDayType m_timeOfDay;

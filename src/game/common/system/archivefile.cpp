@@ -16,10 +16,10 @@
 #include "archivefile.h"
 #include "file.h"
 
-ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(AsciiString const &filename)
+ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename)
 {
-    AsciiString path = filename;
-    AsciiString token;
+    Utf8String path = filename;
+    Utf8String token;
     DetailedArchiveDirectoryInfo *dirp = &m_archiveInfo;
 
     // Lower case for matching and get first item of the path.
@@ -49,11 +49,11 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(AsciiString const &filenam
     return &file_it->second;
 }
 
-void ArchiveFile::Add_File(AsciiString const &filepath, ArchivedFileInfo const *info)
+void ArchiveFile::Add_File(Utf8String const &filepath, ArchivedFileInfo const *info)
 {
     // DEBUG_LOG("Adding '%s' to interal archive for '%s'.\n", filepath.Str(), info->archive_name.Str());
-    AsciiString path = filepath;
-    AsciiString token;
+    Utf8String path = filepath;
+    Utf8String token;
     DetailedArchiveDirectoryInfo *dirp = &m_archiveInfo;
 
     // Lower case for matching and get first item of the path.
@@ -83,11 +83,11 @@ void ArchiveFile::Attach_File(File *file)
     m_backingFile = file;
 }
 
-void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter,
-    std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdir) const
+void ArchiveFile::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath, Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const
 {
-    AsciiString path = dirpath;
-    AsciiString token;
+    Utf8String path = dirpath;
+    Utf8String token;
     DetailedArchiveDirectoryInfo const *dirp = &m_archiveInfo;
 
     // Lower case for matching and get first item of the path.
@@ -106,12 +106,12 @@ void ArchiveFile::Get_File_List_From_Dir(AsciiString const &subdir, AsciiString 
     Get_File_List_From_Dir(dirp, dirpath, filter, filelist, search_subdir);
 }
 
-void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, AsciiString const &dirpath,
-    AsciiString const &filter, std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdir) const
+void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, Utf8String const &dirpath,
+    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const
 {
     // Add the files from any subdirectories, recursive call.
     for (auto it = dir_info->directories.begin(); it != dir_info->directories.end(); ++it) {
-        AsciiString path = dirpath;
+        Utf8String path = dirpath;
 
         if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
             path += "/";
@@ -124,7 +124,7 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
     // Add all the files that match the search pattern.
     for (auto it = dir_info->files.begin(); it != dir_info->files.end(); ++it) {
         if (Search_String_Matches(it->second.file_name, filter)) {
-            AsciiString path = dirpath;
+            Utf8String path = dirpath;
 
             if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
                 path += "/";
@@ -137,7 +137,7 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
 }
 
 // Helper funtion to check if a string matches the search string.
-bool Search_String_Matches(AsciiString string, AsciiString search)
+bool Search_String_Matches(Utf8String string, Utf8String search)
 {
     // Trivial case if first string is empty.
     if (string.Is_Empty()) {

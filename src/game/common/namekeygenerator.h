@@ -44,7 +44,7 @@ public:
 public:
     Bucket *m_nextInSocket;
     NameKeyType m_key;
-    AsciiString m_nameString;
+    Utf8String m_nameString;
 };
 
 class NameKeyGenerator : public SubsystemInterface
@@ -64,7 +64,7 @@ public:
     virtual void Update() {}
 
     // Key to name functions
-    AsciiString Key_To_Name(NameKeyType key);
+    Utf8String Key_To_Name(NameKeyType key);
     NameKeyType Name_To_Lower_Case_Key(const char *name);
     NameKeyType Name_To_Key(const char *name);
 

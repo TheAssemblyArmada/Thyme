@@ -89,7 +89,7 @@ void TeamsInfoRec::Remove_Team(int id)
 /**
  * @brief Finds team info by name.
  */
-TeamsInfo *TeamsInfoRec::Find_Team(AsciiString name, int *id)
+TeamsInfo *TeamsInfoRec::Find_Team(Utf8String name, int *id)
 {
     if (m_numTeams <= 0) {
         return nullptr;
@@ -97,7 +97,7 @@ TeamsInfo *TeamsInfoRec::Find_Team(AsciiString name, int *id)
 
     for (int i = 0; i < m_numTeams; ++i) {
         NameKeyType key = g_teamNameKey.Key();
-        AsciiString string = m_teams[i].dict.Get_AsciiString(key);
+        Utf8String string = m_teams[i].dict.Get_AsciiString(key);
 
         if (string == name) {
             if (id != nullptr) {

@@ -26,7 +26,7 @@ SubsystemInterfaceList *g_theSubsystemList = nullptr;
 ////////////
 // Interface
 ////////////
-void SubsystemInterface::Set_Name(AsciiString name)
+void SubsystemInterface::Set_Name(Utf8String name)
 {
     m_subsystemName = name;
 }
@@ -35,7 +35,7 @@ void SubsystemInterface::Set_Name(AsciiString name)
 // Interface List
 /////////////////
 void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path,
-    const char *dir_path, Xfer *xfer, AsciiString sys_name)
+    const char *dir_path, Xfer *xfer, Utf8String sys_name)
 {
     INI ini;
 

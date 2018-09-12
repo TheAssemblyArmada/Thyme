@@ -35,7 +35,7 @@ void WaypointMap::Update()
 {
     if ( g_waypoints != nullptr ) {
         clear();
-        AsciiString key_name = g_theNameKeyGenerator->Key_To_Name(g_theInitialCameraPositionKey);
+        Utf8String key_name = g_theNameKeyGenerator->Key_To_Name(g_theInitialCameraPositionKey);
         auto it = g_waypoints->find(key_name);
 
         if ( it != g_waypoints->end() ) {
@@ -62,9 +62,9 @@ void WaypointMap::Update()
     }
 }
 
-AsciiString MapCache::Get_User_Map_Dir()
+Utf8String MapCache::Get_User_Map_Dir()
 {
-    AsciiString dir = g_theWriteableGlobalData->m_userDataDirectory;
+    Utf8String dir = g_theWriteableGlobalData->m_userDataDirectory;
     dir += Get_Map_Dir();
 
     return dir;

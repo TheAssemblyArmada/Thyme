@@ -67,10 +67,10 @@ class MusicManager;
 class SoundManager;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const AsciiString, AudioEventInfo *, rts::hash<AsciiString>, rts::equal_to<AsciiString>>
+typedef std::hash_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
     audioinfomap_t;
 #else
-typedef std::unordered_map<const AsciiString, AudioEventInfo *, rts::hash<AsciiString>, rts::equal_to<AsciiString>>
+typedef std::unordered_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
     audioinfomap_t;
 #endif
 
@@ -94,17 +94,17 @@ public:
     virtual void Regain_Focus();
     virtual int Add_Audio_Event(const AudioEventRTS *event);
     virtual void Remove_Audio_Event(unsigned int event);
-    virtual void Remove_Audio_Event(AsciiString event);
+    virtual void Remove_Audio_Event(Utf8String event);
     virtual void Kill_Event_Immediately(unsigned int event) = 0;
     virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event) const;
     virtual bool Is_Valid_Audio_Event(AudioEventRTS *event) const;
     virtual void Next_Music_Track() = 0;
     virtual void Prev_Music_Track() = 0;
     virtual bool Is_Music_Playing() = 0;
-    virtual bool Has_Music_Track_Completed(const AsciiString name) = 0;
-    virtual AsciiString Music_Track_Name() = 0;
-    virtual void Set_Audio_Event_Enabled(AsciiString event, bool vol_override);
-    virtual void Set_Audio_Event_Volume_Override(AsciiString event, float vol_override);
+    virtual bool Has_Music_Track_Completed(const Utf8String name) = 0;
+    virtual Utf8String Music_Track_Name() = 0;
+    virtual void Set_Audio_Event_Enabled(Utf8String event, bool vol_override);
+    virtual void Set_Audio_Event_Volume_Override(Utf8String event, float vol_override);
     virtual void Remove_Disabled_Events();
     virtual void Get_Info_For_Audio_Event(const AudioEventRTS *event) const;
     virtual bool Is_Currently_Playing() = 0;
@@ -113,15 +113,15 @@ public:
     virtual void *Get_Device() = 0;
     virtual void Notify_Of_Audio_Completion(unsigned int unk1, unsigned int unk2) = 0;
     virtual int Get_Provider_Count() = 0;
-    virtual AsciiString Get_Provider_Name(unsigned int index) const = 0;
-    virtual unsigned int Get_Provider_Index(AsciiString name) = 0;
+    virtual Utf8String Get_Provider_Name(unsigned int index) const = 0;
+    virtual unsigned int Get_Provider_Index(Utf8String name) = 0;
     virtual void Select_Provider(unsigned int provider) = 0;
     virtual void Unselect_Provider() = 0;
     virtual unsigned int Get_Selected_Provider() = 0;
     virtual void Set_Speaker_Type(unsigned int type) = 0;
     virtual unsigned int Get_Speaker_Type() = 0;
-    virtual unsigned int Translate_From_Speaker_Type(const AsciiString &type);
-    virtual AsciiString Translate_To_Speaker_Type(unsigned int type);
+    virtual unsigned int Translate_From_Speaker_Type(const Utf8String &type);
+    virtual Utf8String Translate_To_Speaker_Type(unsigned int type);
     virtual int Get_Num_2D_Samples() const = 0;
     virtual int Get_Num_3D_Samples() const = 0;
     virtual int Get_Num_Streams() const = 0;
@@ -129,8 +129,8 @@ public:
     virtual bool Is_Playing_Lower_Priority(AudioEventRTS *event) const = 0;
     virtual bool Is_Playing_Already(AudioEventRTS *event) const = 0;
     virtual bool Is_Object_Playing_Void(unsigned int obj) const = 0;
-    virtual void Adjust_Volume_Of_Playing_Audio(AsciiString name, float adjust) = 0;
-    virtual void Remove_Playing_Audio(AsciiString name) = 0;
+    virtual void Adjust_Volume_Of_Playing_Audio(Utf8String name, float adjust) = 0;
+    virtual void Remove_Playing_Audio(Utf8String name) = 0;
     virtual void Remove_All_Disabled_Audio() = 0;
     virtual bool Is_On(AudioAffect affect) const;
     virtual void Set_On(bool on, AudioAffect affect);
@@ -147,19 +147,19 @@ public:
     virtual void Release_Audio_Request(AudioRequest *request);
     virtual void Append_Audio_Request(AudioRequest *request);
     virtual void Process_Request_List() = 0;
-    virtual AudioEventInfo *New_Audio_Event_Info(AsciiString name);
+    virtual AudioEventInfo *New_Audio_Event_Info(Utf8String name);
     virtual void Add_Audio_Event_Info(AudioEventInfo *info);
-    virtual AudioEventInfo *Find_Audio_Event_Info(AsciiString name) const;
+    virtual AudioEventInfo *Find_Audio_Event_Info(Utf8String name) const;
     virtual void Release_Audio_Event_RTS(AudioEventRTS *event);
     virtual void Set_Hardware_Accelerated(bool accelerated);
     virtual bool Get_Hardware_Accelerated();
     virtual void Set_Speaker_Surround(bool surround);
     virtual bool Get_Speaker_Surround();
     virtual void Refresh_Cached_Variables();
-    virtual void Set_Preferred_3D_Provider(AsciiString provider) = 0;
-    virtual void Set_Preferred_Speaker(AsciiString speaker) = 0;
+    virtual void Set_Preferred_3D_Provider(Utf8String provider) = 0;
+    virtual void Set_Preferred_Speaker(Utf8String speaker) = 0;
     virtual float Get_Audio_Length_MS(const AudioEventRTS *event);
-    virtual float Get_File_Length_MS(AsciiString file_name) = 0;
+    virtual float Get_File_Length_MS(Utf8String file_name) = 0;
     virtual void Close_Any_Sample_Using_File(const void *handle) = 0;
     virtual bool Is_Music_Already_Loaded();
     virtual bool Is_Music_Playing_From_CD();
@@ -187,10 +187,10 @@ protected:
     Coord3D m_listenerPosition;
     Coord3D m_listenerFacing;
     std::list<AudioRequest *> m_audioRequestList;
-    std::vector<AsciiString> m_trackList;
+    std::vector<Utf8String> m_trackList;
     audioinfomap_t m_audioInfoHashMap;
     int m_audioHandleCounter;
-    std::list<std::pair<AsciiString, float>> m_unkList1; // TODO workout what list this actually is, some kind of volume list
+    std::list<std::pair<Utf8String, float>> m_unkList1; // TODO workout what list this actually is, some kind of volume list
     float m_musicVolume;
     float m_soundVolume;
     float m_3dSoundVolume;

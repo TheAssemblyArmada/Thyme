@@ -17,7 +17,7 @@
 #include "ramfile.h"
 #include "streamingarchivefile.h"
 
-bool Win32BIGFile::Get_File_Info(AsciiString const &name, FileInfo *info)
+bool Win32BIGFile::Get_File_Info(Utf8String const &name, FileInfo *info)
 {
     ArchivedFileInfo *arch_info = Get_Archived_File_Info(name);
 

@@ -22,7 +22,7 @@ public:
     XferCRC() : m_crc(0) { m_type = XFER_CRC; }
     virtual ~XferCRC() {}
 
-    virtual void Open(AsciiString filename);
+    virtual void Open(Utf8String filename);
     virtual void Close() {}
     virtual int Begin_Block() { return 0; }
     virtual void End_Block() {}

@@ -24,8 +24,8 @@ class ModuleInfo
 {
     struct Nugget
     {
-        AsciiString unk_string1;
-        AsciiString unk_string2;
+        Utf8String unk_string1;
+        Utf8String unk_string2;
         ModuleData *data;
         int interface_mask;
         bool copied_from_default;

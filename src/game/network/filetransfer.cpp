@@ -20,7 +20,7 @@
 
 using std::ptrdiff_t;
 
-AsciiString Get_Base_Path_From_Path(AsciiString path)
+Utf8String Get_Base_Path_From_Path(Utf8String path)
 {
     const char *path_str = path.Str();
 
@@ -31,16 +31,16 @@ AsciiString Get_Base_Path_From_Path(AsciiString path)
 
     if (last_sep != nullptr) {
         ptrdiff_t size = last_sep - path_str;
-        AsciiString ret;
+        Utf8String ret;
         memcpy(ret.Get_Buffer_For_Read(size + 1), path_str, size);
 
         return ret;
     }
 
-    return AsciiString::s_emptyString;
+    return Utf8String::s_emptyString;
 }
 
-AsciiString Get_File_From_Path(AsciiString path)
+Utf8String Get_File_From_Path(Utf8String path)
 {
     const char *path_str = path.Str();
 
@@ -50,13 +50,13 @@ AsciiString Get_File_From_Path(AsciiString path)
     DEBUG_LOG("Getting file from '%s'.\n", path_str);
 
     if (last_sep != nullptr) {
-        return AsciiString(last_sep + 1);
+        return Utf8String(last_sep + 1);
     }
 
     return path;
 }
 
-AsciiString Get_Base_File_From_File(AsciiString path)
+Utf8String Get_Base_File_From_File(Utf8String path)
 {
     const char *path_str = path.Str();
 
@@ -68,18 +68,18 @@ AsciiString Get_Base_File_From_File(AsciiString path)
     // If we have a file extension, return the part before it.
     if (last_sep != nullptr) {
         ptrdiff_t size = last_sep - path_str;
-        AsciiString ret;
+        Utf8String ret;
         memcpy(ret.Get_Buffer_For_Read(size + 1), path_str, size);
 
         return ret;
     }
 
-    return AsciiString::s_emptyString;
+    return Utf8String::s_emptyString;
 }
 
-AsciiString Get_Preview_From_Map(AsciiString path)
+Utf8String Get_Preview_From_Map(Utf8String path)
 {
-    AsciiString preview;
+    Utf8String preview;
 
     preview.Format(
         "%s/%s.tga", Get_Base_Path_From_Path(path).Str(), Get_Base_File_From_File(Get_File_From_Path(path)).Str());
@@ -87,45 +87,45 @@ AsciiString Get_Preview_From_Map(AsciiString path)
     return preview;
 }
 
-AsciiString Get_INI_From_Map(AsciiString path)
+Utf8String Get_INI_From_Map(Utf8String path)
 {
-    AsciiString ini;
+    Utf8String ini;
 
     ini.Format("%s/map.ini", Get_Base_Path_From_Path(path).Str());
 
     return ini;
 }
 
-AsciiString Get_Str_File_From_Map(AsciiString path)
+Utf8String Get_Str_File_From_Map(Utf8String path)
 {
-    AsciiString str;
+    Utf8String str;
 
     str.Format("%s/map.str", Get_Base_Path_From_Path(path).Str());
 
     return str;
 }
 
-AsciiString Get_Solo_INI_From_Map(AsciiString path)
+Utf8String Get_Solo_INI_From_Map(Utf8String path)
 {
-    AsciiString ini;
+    Utf8String ini;
 
     ini.Format("%s/solo.ini", Get_Base_Path_From_Path(path).Str());
 
     return ini;
 }
 
-AsciiString Get_Asset_Usage_From_Map(AsciiString path)
+Utf8String Get_Asset_Usage_From_Map(Utf8String path)
 {
-    AsciiString use;
+    Utf8String use;
 
     use.Format("%s/assetusage.txt", Get_Base_Path_From_Path(path).Str());
 
     return use;
 }
 
-AsciiString Get_Readme_From_Map(AsciiString path)
+Utf8String Get_Readme_From_Map(Utf8String path)
 {
-    AsciiString readme;
+    Utf8String readme;
 
     readme.Format("%s/readme.txt", Get_Base_Path_From_Path(path).Str());
 
@@ -138,7 +138,7 @@ bool Do_Any_File_Transfers(GameInfo *gameinfo)
     return false;
 }
 
-bool Do_File_Transfer(AsciiString filename, MapTransferLoadScreen *screen, int unkbool)
+bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int unkbool)
 {
     // TODO needs MapTransferLoadScreen
     return false;

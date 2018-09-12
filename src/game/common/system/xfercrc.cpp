@@ -21,7 +21,7 @@ void XferCRC::Add_CRC(uint32_t val)
     m_crc = htobe32(val) + (m_crc >> 31) + (m_crc << 1);
 }
 
-void XferCRC::Open(AsciiString filename)
+void XferCRC::Open(Utf8String filename)
 {
     Xfer::Open(filename);
     m_crc = 0;

@@ -40,7 +40,7 @@ public:
 
     void Add_Team(const Dict *team);
     void Remove_Team(int id);
-    TeamsInfo *Find_Team(AsciiString name, int *id);
+    TeamsInfo *Find_Team(Utf8String name, int *id);
     void Clear();
     int Count() { return m_numTeams; }
     TeamsInfoRec &operator=(const TeamsInfoRec &that);

@@ -351,7 +351,7 @@ public:
     GameMessageArgument *Allocate_Arg();
     ArgumentType *Get_Argument(int arg);
     ArgumentDataType Get_Argument_Type(int arg);
-    AsciiString Get_Command_As_Ascii(MessageType command);
+    Utf8String Get_Command_As_Ascii(MessageType command);
 
     void Append_Int_Arg(int arg);
     void Append_Real_Arg(float arg);

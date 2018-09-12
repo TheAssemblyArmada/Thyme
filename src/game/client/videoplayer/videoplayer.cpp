@@ -141,7 +141,7 @@ Video *VideoPlayer::Get_Video(int index)
  *
  * 0x0051B090
  */
-Video *VideoPlayer::Get_Video(AsciiString name)
+Video *VideoPlayer::Get_Video(Utf8String name)
 {
     for (auto it = m_videosAvailableToPlay.begin(); it != m_videosAvailableToPlay.end(); ++it) {
         if (it->internal_name == name) {

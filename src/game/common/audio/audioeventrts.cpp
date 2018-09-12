@@ -79,7 +79,7 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
 {
 }
 
-AudioEventRTS::AudioEventRTS(const AsciiString &name) :
+AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_filename(),
     m_eventInfo(nullptr),
     m_playingHandle(0),
@@ -107,7 +107,7 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name) :
 {
 }
 
-AudioEventRTS::AudioEventRTS(const AsciiString &name, ObjectID id) :
+AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_filename(),
     m_eventInfo(nullptr),
     m_playingHandle(0),
@@ -138,7 +138,7 @@ AudioEventRTS::AudioEventRTS(const AsciiString &name, ObjectID id) :
     }
 }
 
-AudioEventRTS::AudioEventRTS(const AsciiString &name, const Coord3D *pos) :
+AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_filename(),
     m_eventInfo(nullptr),
     m_playingHandle(0),
@@ -210,7 +210,7 @@ void AudioEventRTS::Generate_Play_Info()
 {
 }
 
-void AudioEventRTS::Set_Event_Name(AsciiString name)
+void AudioEventRTS::Set_Event_Name(Utf8String name)
 {
     if (strcmp(name, m_eventName) != 0 && m_eventInfo != nullptr) {
         m_eventInfo = nullptr;

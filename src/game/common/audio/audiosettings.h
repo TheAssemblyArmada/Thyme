@@ -34,7 +34,7 @@ public:
     AudioSettings() {}
     ~AudioSettings() {}
 
-    AsciiString Get_Preferred_Driver(int index) const { return m_preferredDrivers[index]; }
+    Utf8String Get_Preferred_Driver(int index) const { return m_preferredDrivers[index]; }
     SpeakerType Get_Default_2D_Speaker() const { return m_default2DSpeakerType; }
     float Get_Default_Sound_Volume() const { return m_defaultSoundVolume; }
     float Get_Default_3D_Sound_Volume() const { return m_default3DSoundVolume; }
@@ -48,11 +48,11 @@ public:
     static void Parse_Audio_Settings(INI *ini);
 
 private:
-    AsciiString m_audioRoot;
-    AsciiString m_soundsFolder;
-    AsciiString m_musicFolder;
-    AsciiString m_streamingFolder;
-    AsciiString m_soundExtension;
+    Utf8String m_audioRoot;
+    Utf8String m_soundsFolder;
+    Utf8String m_musicFolder;
+    Utf8String m_streamingFolder;
+    Utf8String m_soundExtension;
     bool m_useDigital;
     bool m_useMidi;
     int m_outputRate;
@@ -67,7 +67,7 @@ private:
     int m_timeToFadeAudio;
     int m_audioFootprintInBytes;
     float m_minSampleVolume;
-    AsciiString m_preferredDrivers[5];
+    Utf8String m_preferredDrivers[5];
     float m_relative2DVolume;
     float m_defaultSoundVolume;
     float m_default3DSoundVolume;

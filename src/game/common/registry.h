@@ -17,9 +17,9 @@
 #include "always.h"
 #include "asciistring.h"
 
-AsciiString Get_Registry_Language();
-void Get_String_From_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination);
-void Get_String_From_Generals_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination);
+Utf8String Get_Registry_Language();
+void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
+void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"

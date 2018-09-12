@@ -48,7 +48,7 @@ void NameKeyGenerator::Reset()
     m_nextID = (NameKeyType)1;
 }
 
-AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
+Utf8String NameKeyGenerator::Key_To_Name(NameKeyType key)
 {
     // Find the bucket that matches the provided key if it exists.
     Bucket *bucket;
@@ -65,7 +65,7 @@ AsciiString NameKeyGenerator::Key_To_Name(NameKeyType key)
         }
     }
 
-    return AsciiString::s_emptyString;
+    return Utf8String::s_emptyString;
 }
 
 NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)

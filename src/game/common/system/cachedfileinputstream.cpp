@@ -78,7 +78,7 @@ bool CachedFileInputStream::Eof()
 /**
  * @brief Open a file as an input stream.
  */
-bool CachedFileInputStream::Open(AsciiString filename)
+bool CachedFileInputStream::Open(Utf8String filename)
 {
     File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
     m_cachedSize = 0;

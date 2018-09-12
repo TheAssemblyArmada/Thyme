@@ -59,7 +59,7 @@ public:
     virtual void Next_Line(char *dst, int bytes) = 0;
     virtual bool Scan_Int(int &integer) = 0;
     virtual bool Scan_Real(float &real) = 0;
-    virtual bool Scan_String(AsciiString &string) = 0;
+    virtual bool Scan_String(Utf8String &string) = 0;
     virtual bool Print(const char *format, ...);
     virtual int Size();
     virtual int Position();
@@ -67,7 +67,7 @@ public:
     virtual void *Read_All_And_Close() = 0;
     virtual File *Convert_To_RAM() = 0;
 
-    AsciiString &Get_File_Name() { return m_filename; }
+    Utf8String &Get_File_Name() { return m_filename; }
     int Get_File_Mode() { return m_openMode; }
     void Set_Del_On_Close(bool del) { m_deleteOnClose = del; }
 
@@ -75,7 +75,7 @@ protected:
     File() : m_filename("<no file>"), m_openMode(0), m_access(false), m_deleteOnClose(false) {}
 
 protected:
-    AsciiString m_filename;
+    Utf8String m_filename;
     int m_openMode;
     bool m_access;
     bool m_deleteOnClose;

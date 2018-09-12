@@ -145,6 +145,27 @@ public:
     AsciiString Posix_Path() const;
     AsciiString Windows_Path() const;
 
+    friend bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }
+    friend bool operator==(AsciiString const &left, const char *right) { return left.Compare(right) == 0; }
+    friend bool operator==(const char *left, AsciiString const &right) { return right.Compare(left) == 0; }
+    friend bool operator!=(AsciiString const &left, AsciiString const &right) { return left.Compare(right) != 0; }
+    friend bool operator!=(AsciiString const &left, const char *right) { return left.Compare(right) != 0; }
+    friend bool operator!=(const char *left, AsciiString const &right) { return right.Compare(left) != 0; }
+    friend bool operator<(AsciiString const &left, AsciiString const &right) { return left.Compare(right) < 0; }
+    friend bool operator<(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
+    friend bool operator<(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+    friend bool operator>(AsciiString const &left, AsciiString const &right) { return left.Compare(right) > 0; }
+    friend bool operator>(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
+    friend bool operator>(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+
+    friend AsciiString operator+(const AsciiString &a, const AsciiString &b)
+    {
+        AsciiString retval = a;
+        retval += b;
+
+        return retval;
+    }
+
 #ifdef GAME_DEBUG
     void Debug_Ignore_Leaks();
 #endif // GAME_DEBUG
@@ -204,72 +225,4 @@ inline AsciiString &AsciiString::operator+=(AsciiString const &s)
     Concat(s);
 
     return *this;
-}
-
-inline bool operator==(AsciiString const &left, AsciiString const &right)
-{
-    return left.Compare(right) == 0;
-}
-
-inline bool operator==(AsciiString const &left, const char *right)
-{
-    return left.Compare(right) == 0;
-}
-
-inline bool operator==(const char *left, AsciiString const &right)
-{
-    return right.Compare(left) == 0;
-}
-
-inline bool operator!=(AsciiString const &left, AsciiString const &right)
-{
-    return left.Compare(right) != 0;
-}
-
-inline bool operator!=(AsciiString const &left, const char *right)
-{
-    return left.Compare(right) != 0;
-}
-
-inline bool operator!=(const char *left, AsciiString const &right)
-{
-    return right.Compare(left) != 0;
-}
-
-inline bool operator<(AsciiString const &left, AsciiString const &right)
-{
-    return left.Compare(right) < 0;
-}
-
-inline bool operator<(AsciiString const &left, const char *right)
-{
-    return left.Compare(right) < 0;
-}
-
-inline bool operator<(const char *left, AsciiString const &right)
-{
-    return right.Compare(left) >= 0;
-}
-
-inline bool operator>(AsciiString const &left, AsciiString const &right)
-{
-    return left.Compare(right) > 0;
-}
-
-inline bool operator>(AsciiString const &left, const char *right)
-{
-    return left.Compare(right) < 0;
-}
-
-inline bool operator>(const char *left, AsciiString const &right)
-{
-    return right.Compare(left) >= 0;
-}
-
-inline AsciiString operator+(const AsciiString &a, const AsciiString &b)
-{
-    AsciiString retval = a;
-    retval += b;
-
-    return retval;
 }

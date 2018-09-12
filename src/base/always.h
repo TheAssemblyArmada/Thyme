@@ -1,79 +1,61 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: ALWAYS.H
-//
-//        Author:: CCHyper & OmniBlade
-//
-//  Contributors::
-//
-//   Description:: Basic header files and defines that are always needed.
-//
-//       License:: Thyme is free software: you can redistribute it and/or
-//                 modify it under the terms of the GNU General Public License
-//                 as published by the Free Software Foundation, either version
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author OmniBlade
+ *
+ * @brief Basic header files and defines that are always needed.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Includes
-//
-////////////////////////////////////////////////////////////////////////////////
 #include "bittype.h"
 #include "config.h"
 #include "macros.h"
 #include "targetver.h"
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  External Library Includes
-//
-////////////////////////////////////////////////////////////////////////////////
 #if defined(PLATFORM_WINDOWS)
 #include <windows.h>
 #define NAME_MAX FILENAME_MAX
+
 #if !defined(PATH_MAX)
 #define PATH_MAX MAX_PATH
 #endif
 
 #endif
 
-////////////////////////////////////////////////////////////////////////////////
-//
+// Alias the ICU unicode functions when not building against it.
+#ifndef THYME_USE_ICU
+#define u_strlen wcslen
+#define u_strcpy wcscpy
+#define u_strcat wcscat
+#define u_vsnprintf_u vswprintf
+#define u_strcmp wcscmp
+#define u_strcasecmp(x, y, z) _wcsicmp(x, y)
+#define u_isspace iswspace
+#define u_tolower towlower
+#define U_COMPARE_CODE_POINT_ORDER 0x8000
+#endif
+
 //  Define nullptr when standard is less than C++x0
-//
-////////////////////////////////////////////////////////////////////////////////
 #if __cplusplus <= 199711L && !defined COMPILER_MSVC
 #define nullptr NULL
 #endif
 
-////////////////////////////////////////////////////////////////////////////////
-//
-//  General compiler specific
-//    <todo>
-//
-////////////////////////////////////////////////////////////////////////////////
 #if defined(COMPILER_MSVC)
 // Allow inline recursive functions within inline recursive functions.
 #pragma inline_recursion(on)
 
-// Compilers don't necessarily inline code with inline keyword, especially in debug builds.
-// Use FORCE_INLINE to force them to where it is possible.
-//#define FORCE_INLINE	__forceinline
 #define __noinline __declspec(noinline)
 #define __unused __pragma(warning(suppress : 4100 4101))
-// When including windows, lets just bump the warning level back to 3...
 #pragma warning(push, 3)
 
 #else // !COMPILER_MSVC
@@ -107,7 +89,6 @@
 #define __forceinline inline __attribute__((__always_inline__))
 #endif
 #else // !COMPILER_GNUC || !COMPILER_CLANG
-// otherwise, nullify fastcall
 #if !defined(__fastcall)
 #define __fastcall
 #endif
@@ -148,11 +129,7 @@ typedef struct stat stat_t;
 typedef struct stat stat_t;
 #endif // PLATFORM_WINDOWS
 
-////////////////////////////////////////////////////////////////////////////////
-//
 //  Microsoft / Visual Studio
-//
-////////////////////////////////////////////////////////////////////////////////
 // This includes the minimum set of compiler defines and pragmas in order to bring the
 // various compilers to a common behavior such that the engine will compile without
 // error or warning.

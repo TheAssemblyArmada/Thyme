@@ -1,7 +1,9 @@
 #look at this at some point for structuring the project
-#https://rix0r.nl/blog/2015/08/13/cmake-guide/
+#https: // rix0r.nl/blog/2015/08/13/cmake-guide/
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.0.0)
+
+cmake_policy(SET CMP0074 NEW)
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(STATUS "No build type selected, default to Debug")
@@ -39,6 +41,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
 # Go lean and mean on windows.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    option(USE_ICU_LIB "Use ICU for unicode support instead of Win32 API" OFF)
+
     add_definitions(-DWIN32_LEAN_AND_MEAN)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)

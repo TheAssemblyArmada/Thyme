@@ -26,7 +26,7 @@
 #endif // _MSC_VER || (__GNUC__ || __clang__ || __WATCOM__)
 
 #ifdef THYME_USE_ICU
-#include <unicode/umachine.h>
+#include <unicode/uchar.h>
 typedef UChar unichar_t;
 #else
 typedef wchar_t unichar_t;

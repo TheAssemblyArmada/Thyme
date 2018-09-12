@@ -20,7 +20,6 @@
 
 #ifdef THYME_USE_ICU
 #include <unicode/ustring.h>
-#include <unicode/stringoptions.h>
 #include <unicode/ustdio.h>
 
 #elif defined PLATFORM_WINDOWS

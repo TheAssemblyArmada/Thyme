@@ -1,9 +1,9 @@
 #look at this at some point for structuring the project
 #https: // rix0r.nl/blog/2015/08/13/cmake-guide/
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.7.0)
 
-cmake_policy(SET CMP0074 NEW)
+cmake_policy(VERSION 3.7.0)
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(STATUS "No build type selected, default to Debug")

@@ -11,15 +11,10 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 
     # ICU is optional for windows builds, use only for development purposes.
     if(USE_ICU_LIB)
-        #find_package(ICU) # Can't get this to work for some reason on windows.
         if(NOT ICU_ROOT)
             message(FATAL_ERROR "You must set the path to ICU as ICU_ROOT to use ICU in windows.")
         else()
-            set(ICU_FOUND true)
-            add_definitions(-DU_STATIC_IMPLEMENTATION)
-            set(ICU_INCLUDE_DIRS ${ICU_ROOT}/include)
-            #set(ICU_LIBRARIES ${ICU_ROOT}/lib/sicudt.lib ${ICU_ROOT}/lib/sicuin.lib ${ICU_ROOT}/lib/sicuio.lib ${ICU_ROOT}/lib/sicutest.lib ${ICU_ROOT}/lib/sicutu.lib ${ICU_ROOT}/lib/sicuuc.lib)
-            set(ICU_LIBRARIES ${ICU_ROOT}/lib/sicudtd.lib ${ICU_ROOT}/lib/sicuind.lib ${ICU_ROOT}/lib/sicuiod.lib ${ICU_ROOT}/lib/sicutestd.lib ${ICU_ROOT}/lib/sicutud.lib ${ICU_ROOT}/lib/sicuucd.lib)
+            find_package(ICU REQUIRED data i18n io tu uc)
         endif()
     endif()
 else()
@@ -30,7 +25,7 @@ else()
     endif()
 
     # Finds libicu, required for unicode on none windows.
-    find_package(ICU REQUIRED)
+    find_package(ICU REQUIRED data i18n io tu uc)
 endif()
 
 if(ICU_FOUND)

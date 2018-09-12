@@ -30,7 +30,7 @@ void Win32BIGFileSystem::Init()
     if (g_theLocalFileSystem != nullptr) {
         Load_Archives_From_Dir("", "*.big", false);
 
-        AsciiString gen_path;
+        Utf8String gen_path;
 
         Get_String_From_Generals_Registry("", "InstallPath", gen_path);
 
@@ -51,7 +51,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
 
-    AsciiString fullname = filename;
+    Utf8String fullname = filename;
     fullname.To_Lower();
 
     if (file == nullptr) {
@@ -142,7 +142,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 
         // DEBUG_LOG("Path is '%s'.\n", namebuf);
 
-        AsciiString file_path = namebuf;
+        Utf8String file_path = namebuf;
         file_path += info->file_name;
         big->Add_File(namebuf, info);
     }
@@ -174,9 +174,9 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
     }
 }
 
-void Win32BIGFileSystem::Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs)
+void Win32BIGFileSystem::Load_Archives_From_Dir(Utf8String dir, Utf8String filter, bool read_subdirs)
 {
-    std::set<AsciiString, rts::less_than_nocase<AsciiString>> file_list;
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> file_list;
 
     g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 

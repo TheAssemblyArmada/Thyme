@@ -268,7 +268,7 @@ void GameLODManager::Refresh_Custom_Static_LOD()
     m_staticLOD[STATLOD_CUSTOM].use_trees = g_theWriteableGlobalData->m_useTrees;
 }
 
-int GameLODManager::Get_Static_LOD_Index(AsciiString name)
+int GameLODManager::Get_Static_LOD_Index(Utf8String name)
 {
     int index = STATLOD_LOW;
 
@@ -351,7 +351,7 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 #endif
 }
 
-int GameLODManager::Get_Dynamic_LOD_Index(AsciiString name)
+int GameLODManager::Get_Dynamic_LOD_Index(Utf8String name)
 {
     int index = DYNLOD_LOW;
 
@@ -450,7 +450,7 @@ void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
         { nullptr, nullptr, nullptr, 0 }
     };
 
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
 
     if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Static_LOD_Index(token);
@@ -493,7 +493,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
         { nullptr, nullptr, nullptr, 0 }
     };
 
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
 
     if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Dynamic_LOD_Index(token);
@@ -506,7 +506,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
 
 void GameLODManager::Parse_LOD_Preset(INI *ini)
 {
-    AsciiString token = ini->Get_Next_Token();
+    Utf8String token = ini->Get_Next_Token();
 
     if (g_theGameLODManager != nullptr) {
         int level = g_theGameLODManager->Get_Static_LOD_Index(token);

@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Class for handling strings that have a single byte as a code point.
+ * @brief Class for handling strings that have a series of bytes as a code point.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -21,7 +21,7 @@
 
 class Utf16String;
 
-class AsciiString
+class Utf8String
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
@@ -72,21 +72,21 @@ public:
         }
     };
 
-    AsciiString();
-    AsciiString(const char *s);
-    AsciiString(AsciiString const &string);
-    // AsciiString(Utf16String const &stringSrc);
-    ~AsciiString() { Release_Buffer(); }
+    Utf8String();
+    Utf8String(const char *s);
+    Utf8String(Utf8String const &string);
+    // Utf8String(Utf16String const &stringSrc);
+    ~Utf8String() { Release_Buffer(); }
 
-    AsciiString &operator=(char *s);
-    AsciiString &operator=(const char *s);
-    AsciiString &operator=(AsciiString const &stringSrc);
-    // AsciiString &operator=(Utf16String const &stringSrc);
+    Utf8String &operator=(char *s);
+    Utf8String &operator=(const char *s);
+    Utf8String &operator=(Utf8String const &stringSrc);
+    // Utf8String &operator=(Utf16String const &stringSrc);
 
-    AsciiString &operator+=(char s);
-    AsciiString &operator+=(const char *s);
-    AsciiString &operator+=(AsciiString const &s);
-    // AsciiString &operator+=(Utf16String const &stringSrc);
+    Utf8String &operator+=(char s);
+    Utf8String &operator+=(const char *s);
+    Utf8String &operator+=(Utf8String const &s);
+    // Utf8String &operator+=(Utf16String const &stringSrc);
 
     operator const char *() const { return Str(); }
 
@@ -101,29 +101,29 @@ public:
     char *Get_Buffer_For_Read(int len);
     // These two should probably be private with the = operator being the preferred interface?
     void Set(const char *s);
-    void Set(AsciiString const &string);
+    void Set(Utf8String const &string);
 
     void Translate(Utf16String const &stringSrc);
 
     // Concat should probably be private and += used as the preferred interface.
     void Concat(char c);
     void Concat(const char *s);
-    void Concat(AsciiString const &string) { Concat(string.Str()); }
+    void Concat(Utf8String const &string) { Concat(string.Str()); }
 
     void Trim();
     void To_Lower();
     void Remove_Last_Char();
 
     void Format(const char *format, ...);
-    void Format(AsciiString format, ...);
+    void Format(Utf8String format, ...);
 
     // Compare funcs should probably be private and operators should be friends and the
     // preferred interface.
     int Compare(const char *s) const { return strcmp(Str(), s); }
-    int Compare(AsciiString const &string) const { return strcmp(Str(), string.Str()); }
+    int Compare(Utf8String const &string) const { return strcmp(Str(), string.Str()); }
 
     int Compare_No_Case(const char *s) const { return strcasecmp(Str(), s); }
-    int Compare_No_Case(AsciiString const &string) const { return strcasecmp(Str(), string.Str()); }
+    int Compare_No_Case(Utf8String const &string) const { return strcasecmp(Str(), string.Str()); }
 
     // I assume these do this, though have no examples in binaries.
     char *Find(char c) { return strchr(Peek(), c); }
@@ -135,32 +135,32 @@ public:
     bool Starts_With_No_Case(const char *p) const;
     bool Ends_With_No_Case(const char *p) const;
 
-    bool Next_Token(AsciiString *tok, const char *seps = nullptr);
+    bool Next_Token(Utf8String *tok, const char *seps = nullptr);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
     bool Is_Empty() const { return  m_data == nullptr || *m_data->Peek() == '\0'; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
 
-    AsciiString Posix_Path() const;
-    AsciiString Windows_Path() const;
+    Utf8String Posix_Path() const;
+    Utf8String Windows_Path() const;
 
-    friend bool operator==(AsciiString const &left, AsciiString const &right) { return left.Compare(right) == 0; }
-    friend bool operator==(AsciiString const &left, const char *right) { return left.Compare(right) == 0; }
-    friend bool operator==(const char *left, AsciiString const &right) { return right.Compare(left) == 0; }
-    friend bool operator!=(AsciiString const &left, AsciiString const &right) { return left.Compare(right) != 0; }
-    friend bool operator!=(AsciiString const &left, const char *right) { return left.Compare(right) != 0; }
-    friend bool operator!=(const char *left, AsciiString const &right) { return right.Compare(left) != 0; }
-    friend bool operator<(AsciiString const &left, AsciiString const &right) { return left.Compare(right) < 0; }
-    friend bool operator<(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
-    friend bool operator<(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
-    friend bool operator>(AsciiString const &left, AsciiString const &right) { return left.Compare(right) > 0; }
-    friend bool operator>(AsciiString const &left, const char *right) { return left.Compare(right) < 0; }
-    friend bool operator>(const char *left, AsciiString const &right) { return right.Compare(left) >= 0; }
+    friend bool operator==(Utf8String const &left, Utf8String const &right) { return left.Compare(right) == 0; }
+    friend bool operator==(Utf8String const &left, const char *right) { return left.Compare(right) == 0; }
+    friend bool operator==(const char *left, Utf8String const &right) { return right.Compare(left) == 0; }
+    friend bool operator!=(Utf8String const &left, Utf8String const &right) { return left.Compare(right) != 0; }
+    friend bool operator!=(Utf8String const &left, const char *right) { return left.Compare(right) != 0; }
+    friend bool operator!=(const char *left, Utf8String const &right) { return right.Compare(left) != 0; }
+    friend bool operator<(Utf8String const &left, Utf8String const &right) { return left.Compare(right) < 0; }
+    friend bool operator<(Utf8String const &left, const char *right) { return left.Compare(right) < 0; }
+    friend bool operator<(const char *left, Utf8String const &right) { return right.Compare(left) >= 0; }
+    friend bool operator>(Utf8String const &left, Utf8String const &right) { return left.Compare(right) > 0; }
+    friend bool operator>(Utf8String const &left, const char *right) { return left.Compare(right) < 0; }
+    friend bool operator>(const char *left, Utf8String const &right) { return right.Compare(left) >= 0; }
 
-    friend AsciiString operator+(const AsciiString &a, const AsciiString &b)
+    friend Utf8String operator+(const Utf8String &a, const Utf8String &b)
     {
-        AsciiString retval = a;
+        Utf8String retval = a;
         retval += b;
 
         return retval;
@@ -170,7 +170,7 @@ public:
     void Debug_Ignore_Leaks();
 #endif // GAME_DEBUG
 public:
-    static AsciiString const s_emptyString;
+    static Utf8String const s_emptyString;
 
 private:
     // Probably supposed to be private
@@ -178,49 +178,49 @@ private:
         int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
 
     void Format_VA(const char *format, va_list args);
-    void Format_VA(AsciiString &format, va_list args);
+    void Format_VA(Utf8String &format, va_list args);
 
     AsciiStringData *m_data;
 };
 
-inline AsciiString &AsciiString::operator=(char *s)
+inline Utf8String &Utf8String::operator=(char *s)
 {
     Set(s);
 
     return *this;
 }
 
-inline AsciiString &AsciiString::operator=(const char *s)
+inline Utf8String &Utf8String::operator=(const char *s)
 {
     Set(s);
 
     return *this;
 }
 
-inline AsciiString &AsciiString::operator=(AsciiString const &stringSrc)
+inline Utf8String &Utf8String::operator=(Utf8String const &stringSrc)
 {
     Set(stringSrc);
 
     return *this;
 }
 
-// AsciiString &operator=(Utf16String const &stringSrc);
+// Utf8String &operator=(Utf16String const &stringSrc);
 
-inline AsciiString &AsciiString::operator+=(char s)
+inline Utf8String &Utf8String::operator+=(char s)
 {
     Concat(s);
 
     return *this;
 }
 
-inline AsciiString &AsciiString::operator+=(const char *s)
+inline Utf8String &Utf8String::operator+=(const char *s)
 {
     Concat(s);
 
     return *this;
 }
 
-inline AsciiString &AsciiString::operator+=(AsciiString const &s)
+inline Utf8String &Utf8String::operator+=(Utf8String const &s)
 {
     Concat(s);
 

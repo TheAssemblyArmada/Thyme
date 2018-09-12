@@ -78,8 +78,8 @@ public:
     virtual ~TerrainType() {}
 
 private:
-    AsciiString m_name;
-    AsciiString m_texture;
+    Utf8String m_name;
+    Utf8String m_texture;
     bool m_blendEdgeTexture;
     TerrainClass m_class;
     bool m_restrictConstruction;
@@ -97,8 +97,8 @@ public:
     virtual void Reset() override{};
     virtual void Update() override{};
 
-    TerrainType *Find_Terrain(AsciiString name);
-    TerrainType *New_Terrain(AsciiString name);
+    TerrainType *Find_Terrain(Utf8String name);
+    TerrainType *New_Terrain(Utf8String name);
 
     static void Parse_Terrain_Definition(INI *ini);
 

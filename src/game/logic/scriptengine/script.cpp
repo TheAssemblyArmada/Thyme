@@ -118,7 +118,7 @@ Script *Script::Duplicate()
  *
  * 0x0051CFC0
  */
-Script *Script::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+Script *Script::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     Script *new_script = new Script;
 

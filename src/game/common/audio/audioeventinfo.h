@@ -54,7 +54,7 @@ public:
     virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() { return nullptr; }
     virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }
 
-    const AsciiString &Get_Event_Name() const { return m_eventName; }
+    const Utf8String &Get_Event_Name() const { return m_eventName; }
     AudioType Get_Type() const { return m_type; }
     float Get_Volume() const { return m_volume; }
     int Get_Control() const { return m_control; }
@@ -62,8 +62,8 @@ public:
     static void Parse_Audio_Event(INI *ini);
 
 protected:
-    AsciiString m_eventName;
-    AsciiString m_filename;
+    Utf8String m_eventName;
+    Utf8String m_filename;
     float m_volume;
     float m_volumeShift;
     float m_minVolume;
@@ -76,12 +76,12 @@ protected:
     int m_priority;
     AudioType m_type;
     int m_control;
-    std::vector<AsciiString> m_soundsMorning;
-    std::vector<AsciiString> m_sounds;
-    std::vector<AsciiString> m_soundsEvening;
-    std::vector<AsciiString> m_soundsNight;
-    std::vector<AsciiString> m_attack;
-    std::vector<AsciiString> m_decay;
+    std::vector<Utf8String> m_soundsMorning;
+    std::vector<Utf8String> m_sounds;
+    std::vector<Utf8String> m_soundsEvening;
+    std::vector<Utf8String> m_soundsNight;
+    std::vector<Utf8String> m_attack;
+    std::vector<Utf8String> m_decay;
     float m_lowPassCutoff;
     float m_minRange;
     float m_maxRange;

@@ -33,7 +33,7 @@ public:
     virtual bool Absolute_Seek(unsigned pos) override;
     virtual bool Eof() override;
 
-    bool Open(AsciiString filename);
+    bool Open(Utf8String filename);
     void Rewind() { m_cachePos = 0; }
     void Close();
 

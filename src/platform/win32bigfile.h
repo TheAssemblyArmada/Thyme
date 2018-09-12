@@ -22,15 +22,15 @@ public:
     Win32BIGFile() {}
     virtual ~Win32BIGFile() {}
 
-    virtual bool Get_File_Info(AsciiString const &name, FileInfo *info) override;
+    virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) override;
     virtual File *Open_File(const char *filename, int mode) override;
     virtual void Close_All_Files() override {};
-    virtual AsciiString Get_Name() override { return FileName; }
-    virtual AsciiString Get_Path() override { return FilePath; }
+    virtual Utf8String Get_Name() override { return FileName; }
+    virtual Utf8String Get_Path() override { return FilePath; }
     virtual void Set_Search_Priority(int priority) override {}
     virtual void Close() override {}
 
 private:
-    AsciiString FileName;
-    AsciiString FilePath;
+    Utf8String FileName;
+    Utf8String FilePath;
 };

@@ -47,7 +47,7 @@ public:
     virtual void Notify_Of_3D_Sample_Completion() { if (m_3dSamplesPlaying != 0) { --m_3dSamplesPlaying; } }
     virtual int Get_Available_Samples() { return m_2dSampleSlotCount - m_2dSamplesPlaying; }
     virtual int Get_Available_3D_Samples() { return m_3dSampleSlotCount - m_3dSamplesPlaying; }
-    virtual AsciiString Get_Filename_For_Play_From_Audio_Event() { return AsciiString(); }
+    virtual Utf8String Get_Filename_For_Play_From_Audio_Event() { return Utf8String(); }
     virtual bool Can_Play_Now(AudioEventRTS *event);
     virtual bool Violates_Voice(AudioEventRTS *event);
     virtual bool Is_Interrupting(AudioEventRTS *event);

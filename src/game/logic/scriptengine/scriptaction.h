@@ -39,8 +39,8 @@ public:
     virtual ~ScriptAction();
 
     ScriptAction *Duplicate();
-    ScriptAction *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
-    AsciiString Get_UI_Text();
+    ScriptAction *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
+    Utf8String Get_UI_Text();
 
     static bool Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);

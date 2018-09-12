@@ -47,7 +47,7 @@ public:
     static void Parse_Weather_Definition(INI *ini);
 
 private:
-    AsciiString m_snowTexture;
+    Utf8String m_snowTexture;
     float m_snowFreqScaleX;
     float m_snowFreqScaleY;
     float m_snowAmplitude;

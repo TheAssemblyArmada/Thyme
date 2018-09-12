@@ -74,8 +74,8 @@ public:
     // pad indicates where padding will be added to keep 4 byte alignment
     // useful if we want to cram any extra variables in without breaking ABI
 public:
-    AsciiString m_mapName;
-    AsciiString m_moveHintName;
+    Utf8String m_mapName;
+    Utf8String m_moveHintName;
     bool m_useTrees;
     bool m_useTreeSway;
     bool m_extraAnimationsDisabled;
@@ -128,7 +128,7 @@ public:
     bool m_unkBool7;
     // char pad[1]
     float m_featherWater;
-    AsciiString m_vertexWaterAvailableMaps[4];
+    Utf8String m_vertexWaterAvailableMaps[4];
     float m_vertexWaterHeightClampLow[4];
     float m_vertexWaterHeightClampLHigh[4];
     float m_vertexWaterAngle[4];
@@ -176,10 +176,10 @@ public:
     int32_t m_maxTankTrackEdges;
     int32_t m_maxTankTrackOpaqueEdges;
     int32_t m_maxTankTrackFadeDelay;
-    AsciiString m_levelGainAnimName;
+    Utf8String m_levelGainAnimName;
     float m_levelGainAnimTime;
     float m_levelGainAnimZRise;
-    AsciiString m_getHealedAnimName;
+    Utf8String m_getHealedAnimName;
     float m_getHealedAnimTime;
     float m_getHealedAnimZRise;
     TimeOfDayType m_timeOfDay;
@@ -241,26 +241,26 @@ public:
     // char pad[2]
     int32_t m_fixedSeed;
     float m_particleScale;
-    AsciiString m_autoFireParticleSmallPrefix;
-    AsciiString m_autoFireParticleSmallSystem;
+    Utf8String m_autoFireParticleSmallPrefix;
+    Utf8String m_autoFireParticleSmallSystem;
     int32_t m_autoFireParticleSmallMax;
-    AsciiString m_autoFireParticleMediumPrefix;
-    AsciiString m_autoFireParticleMediumSystem;
+    Utf8String m_autoFireParticleMediumPrefix;
+    Utf8String m_autoFireParticleMediumSystem;
     int32_t m_autoFireParticleMediumMax;
-    AsciiString m_autoFireParticleLargePrefix;
-    AsciiString m_autoFireParticleLargeSystem;
+    Utf8String m_autoFireParticleLargePrefix;
+    Utf8String m_autoFireParticleLargeSystem;
     int32_t m_autoFireParticleLargeMax;
-    AsciiString m_autoSmokeParticleSmallPrefix;
-    AsciiString m_autoSmokeParticleSmallSystem;
+    Utf8String m_autoSmokeParticleSmallPrefix;
+    Utf8String m_autoSmokeParticleSmallSystem;
     int32_t m_autoSmokeParticleSmallMax;
-    AsciiString m_autoSmokeParticleMediumPrefix;
-    AsciiString m_autoSmokeParticleMediumSystem;
+    Utf8String m_autoSmokeParticleMediumPrefix;
+    Utf8String m_autoSmokeParticleMediumSystem;
     int32_t m_autoSmokeParticleMediumMax;
-    AsciiString m_autoSmokeParticleLargePrefix;
-    AsciiString m_autoSmokeParticleLargeSystem;
+    Utf8String m_autoSmokeParticleLargePrefix;
+    Utf8String m_autoSmokeParticleLargeSystem;
     int32_t m_autoSmokeParticleLargeMax;
-    AsciiString m_autoAFlameParticlePrefix;
-    AsciiString m_autoAFlameParticleSystem;
+    Utf8String m_autoAFlameParticlePrefix;
+    Utf8String m_autoAFlameParticleSystem;
     int32_t m_autoAFlameParticleMax;
     int32_t m_netMinPlayers; // not 100% sure, needs confirming
     int32_t m_lanIPAddress;
@@ -291,8 +291,8 @@ public:
     bool m_enforceMaxCameraHeight;
     bool m_buildMapCache; // not 100% sure, needs confirming
     // char pad[2]
-    AsciiString m_initialFile; // not 100% sure, needs confirming
-    AsciiString m_pendingFile; // not 100% sure, needs confirming
+    Utf8String m_initialFile; // not 100% sure, needs confirming
+    Utf8String m_pendingFile; // not 100% sure, needs confirming
     int32_t m_maxParticleCount;
     int32_t m_maxFieldParticleCount;
     WeaponBonusSet *m_weaponBonusSetPtr;
@@ -301,7 +301,7 @@ public:
     float m_eliteHealthBonus;
     float m_heroicHealthBonus;
     float m_defaultStructureRubbleHeight;
-    AsciiString m_shellMapName;
+    Utf8String m_shellMapName;
     bool m_shellMapOn;
     bool m_playIntro;
     bool m_playSizzle;
@@ -349,8 +349,8 @@ public:
     float m_baseRegenHealthPercentPerSecond;
     uint32_t m_baseRegenDelay;
     int32_t m_hotKeytextColor;
-    AsciiString m_specialPowerViewObject;
-    std::vector<AsciiString> m_standardPublicBones;
+    Utf8String m_specialPowerViewObject;
+    std::vector<Utf8String> m_standardPublicBones;
     float m_standardMinefieldDensity;
     float m_standardMinefieldDistance;
     bool m_showMetrics;
@@ -389,9 +389,9 @@ public:
     bool m_unkBool25;
     bool m_unkBool26;
     // char pad[1]
-    AsciiString m_userModDirectory;
-    AsciiString m_userModFile;
-    AsciiString m_userDataDirectory;
+    Utf8String m_userModDirectory;
+    Utf8String m_userModFile;
+    Utf8String m_userDataDirectory;
     GlobalData *m_next;
 
 private:

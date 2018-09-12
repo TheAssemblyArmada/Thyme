@@ -34,7 +34,7 @@ Parameter::Parameter(ParameterType type) :
  *
  * 0x0051E990, also inlined example at around 0x00520376
  */
-void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test, const AsciiString &side_replacemet)
+void Parameter::Qualify(const Utf8String &suffix, const Utf8String &side_test, const Utf8String &side_replacemet)
 {
     //DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
     switch (m_type) {
@@ -66,7 +66,7 @@ void Parameter::Qualify(const AsciiString &suffix, const AsciiString &side_test,
  *
  * 0x0051EB90
  */
-AsciiString Parameter::Get_UI_Text()
+Utf8String Parameter::Get_UI_Text()
 {
     // Dunno where this is supposed to be from, only appears used here.
     static BorderColor _border_colors[] = {
@@ -80,8 +80,8 @@ AsciiString Parameter::Get_UI_Text()
         {"Pink", 0xFFFF8670}
     };
 
-    AsciiString ui_string = m_string.Is_Empty() ? "???" : m_string;
-    AsciiString ui_text;
+    Utf8String ui_string = m_string.Is_Empty() ? "???" : m_string;
+    Utf8String ui_text;
 
     switch (m_type) {
         case INT:

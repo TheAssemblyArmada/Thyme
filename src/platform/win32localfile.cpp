@@ -174,7 +174,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
 {
     DEBUG_LOG("Scanning Int from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;
-    AsciiString number;
+    Utf8String number;
 
     integer = 0;
 
@@ -215,7 +215,7 @@ bool Win32LocalFile::Scan_Real(float &real)
 {
     DEBUG_LOG("Scanning Real from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;
-    AsciiString number;
+    Utf8String number;
 
     real = 0.0f;
 
@@ -258,7 +258,7 @@ bool Win32LocalFile::Scan_Real(float &real)
     return true;
 }
 
-bool Win32LocalFile::Scan_String(AsciiString &string)
+bool Win32LocalFile::Scan_String(Utf8String &string)
 {
     DEBUG_LOG("Scanning String from Win32LocalFile %s.\n", m_filename.Str());
     char tmp;

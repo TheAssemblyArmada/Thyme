@@ -36,7 +36,7 @@ public:
     virtual void Load_Post_Process() override {}
 
     ScriptGroup *Duplicate();
-    ScriptGroup *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    ScriptGroup *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     void Add_Script(Script *script, int index);
     ScriptGroup *Get_Next() { return m_nextGroup; }
     Script *Get_Scripts() { return m_firstScript; }
@@ -51,7 +51,7 @@ public:
 
 private:
     Script *m_firstScript;
-    AsciiString m_groupName;
+    Utf8String m_groupName;
     bool m_isGroupActive;
     bool m_isGroupSubroutine;
     ScriptGroup *m_nextGroup;

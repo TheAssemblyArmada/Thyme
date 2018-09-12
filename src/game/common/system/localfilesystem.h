@@ -32,10 +32,10 @@ public:
 
     virtual File *Open_File(const char *filename, int mode) = 0;
     virtual bool Does_File_Exist(const char *filename) = 0;
-    virtual void Get_File_List_From_Dir(AsciiString const &subdir, AsciiString const &dirpath, AsciiString const &filter,
-        std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool search_subdirs) = 0;
-    virtual bool Get_File_Info(AsciiString const &filename, FileInfo *info) = 0;
-    virtual bool Create_Directory(AsciiString) = 0;
+    virtual void Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath, Utf8String const &filter,
+        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs) = 0;
+    virtual bool Get_File_Info(Utf8String const &filename, FileInfo *info) = 0;
+    virtual bool Create_Directory(Utf8String) = 0;
 };
 
 #ifndef THYME_STANDALONE

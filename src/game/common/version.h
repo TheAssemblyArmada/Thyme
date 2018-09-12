@@ -24,17 +24,17 @@ class Version
 public:
     Version();
 
-    void Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, AsciiString location, AsciiString user,
-        AsciiString time, AsciiString date);
+    void Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, Utf8String location, Utf8String user,
+        Utf8String time, Utf8String date);
 
     int32_t Get_Version_Number() { return m_minor | (m_major << 16); }
     int32_t Get_Build_Number() { return m_buildNum; }
     int32_t Get_Local_Build_Number() { return m_localBuildNum; }
 
-    AsciiString Get_Ascii_Version();
-    AsciiString Get_Ascii_Branch() { return m_branch; }
-    AsciiString Get_Ascii_Commit_Hash() { return m_commitHash; }
-    AsciiString Get_Ascii_Build_Time();
+    Utf8String Get_Ascii_Version();
+    Utf8String Get_Ascii_Branch() { return m_branch; }
+    Utf8String Get_Ascii_Commit_Hash() { return m_commitHash; }
+    Utf8String Get_Ascii_Build_Time();
     Utf16String Get_Unicode_Version();
     Utf16String Get_Full_Unicode_Version();
     Utf16String Get_Unicode_Branch();
@@ -49,10 +49,10 @@ private:
     int32_t m_minor;
     int32_t m_buildNum;
     int32_t m_localBuildNum;
-    AsciiString m_branch; // Was Location in orignal
-    AsciiString m_commitHash; // Was User in original
-    AsciiString m_buildTime;
-    AsciiString m_buildDate;
+    Utf8String m_branch; // Was Location in orignal
+    Utf8String m_commitHash; // Was User in original
+    Utf8String m_buildTime;
+    Utf8String m_buildDate;
     bool m_useFullVersion;
 };
 

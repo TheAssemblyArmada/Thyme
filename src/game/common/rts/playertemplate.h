@@ -47,8 +47,8 @@ public:
     Image *Get_Side_Icon_Image();
     Image *Get_General_Image();
     Image *Get_Enabled_Image();
-    AsciiString Get_Name() { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
-    AsciiString Get_Side_Name() { return m_side; }
+    Utf8String Get_Name() { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
+    Utf8String Get_Side_Name() { return m_side; }
     bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
 
     static void Parse_Production_Cost_Change(INI *ini, void *formal, void *store, const void *user_data);
@@ -59,42 +59,42 @@ public:
 private:
     NameKeyType m_nameKey;
     Utf16String m_displayName;
-    AsciiString m_side;
-    AsciiString m_baseSide;
+    Utf8String m_side;
+    Utf8String m_baseSide;
     Handicap m_handicap;
     Money m_money;
     RGBColor m_preferredColor;
-    AsciiString m_startingBuilding;
-    AsciiString m_startingUnits[STARTING_UNIT_COUNT];
+    Utf8String m_startingBuilding;
+    Utf8String m_startingUnits[STARTING_UNIT_COUNT];
     std::map<const NameKeyType, float> m_productionCostChanges;
     std::map<const NameKeyType, float> m_productionTimeChanges;
     std::map<const NameKeyType, VeterancyLevel> m_productionVeterancyLevels;
     std::vector<ScienceType> m_intrinsicSciences;
-    AsciiString m_purchaseCommandSetRankOne;
-    AsciiString m_purchaseCommandSetRankThree;
-    AsciiString m_purchaseCommandSetRankEight;
-    AsciiString m_specialPowerShortcutCommandSet;
-    AsciiString m_specialPowerShortcutWinName;
+    Utf8String m_purchaseCommandSetRankOne;
+    Utf8String m_purchaseCommandSetRankThree;
+    Utf8String m_purchaseCommandSetRankEight;
+    Utf8String m_specialPowerShortcutCommandSet;
+    Utf8String m_specialPowerShortcutWinName;
     int m_specialPowerShortcutButtonCount;
-    AsciiString m_loadScreenMusic;
-    AsciiString m_scoreScreenMusic;
-    AsciiString m_armyTooltip;
+    Utf8String m_loadScreenMusic;
+    Utf8String m_scoreScreenMusic;
+    Utf8String m_armyTooltip;
     bool m_isObserver;
     bool m_isPlayableSide;
     bool m_oldFaction;
     int m_intrinsicSciencePurchasePoints;
-    AsciiString m_scoreScreenImage;
-    AsciiString m_loadScreenImage;
-    AsciiString m_headWaterMark;
-    AsciiString m_flagWaterMark;
-    AsciiString m_enabledImage;
-    AsciiString m_sideIconImage;
-    AsciiString m_generalImage;
-    AsciiString m_beaconName;
-    AsciiString m_features;
-    AsciiString m_medallionRegular;
-    AsciiString m_medallionHilite;
-    AsciiString m_medallionSelect;
+    Utf8String m_scoreScreenImage;
+    Utf8String m_loadScreenImage;
+    Utf8String m_headWaterMark;
+    Utf8String m_flagWaterMark;
+    Utf8String m_enabledImage;
+    Utf8String m_sideIconImage;
+    Utf8String m_generalImage;
+    Utf8String m_beaconName;
+    Utf8String m_features;
+    Utf8String m_medallionRegular;
+    Utf8String m_medallionHilite;
+    Utf8String m_medallionSelect;
 };
 
 class PlayerTemplateStore : public SubsystemInterface
@@ -107,10 +107,10 @@ public:
     virtual void Reset() override {}
     virtual void Update() override {}
 
-    int Get_Template_Number_By_Name(AsciiString name);
+    int Get_Template_Number_By_Name(Utf8String name);
     PlayerTemplate *Find_Player_Template(NameKeyType key);
     PlayerTemplate *Get_Nth_Player_Template(int index);
-    void Get_All_Side_Strings(std::list<AsciiString> *list);
+    void Get_All_Side_Strings(std::list<Utf8String> *list);
 
     static void Parse_Player_Template_Definitions(INI *ini);
 

@@ -83,7 +83,7 @@ public:
     void Set(unsigned bit) { m_bits.set(bit); }
     bool Get(unsigned bit) const { return m_bits.test(bit); }
 
-    void Parse(INI *ini, AsciiString *string = nullptr);
+    void Parse(INI *ini, Utf8String *string = nullptr);
     static void Parse_INI(INI *ini, void *formal, void *store, const void *user_data);
 
     static const char *s_bitNamesList[bits + 1];
@@ -96,7 +96,7 @@ private:
 //const char *BitFlags<bits>::s_bitNamesList[bits + 1];
 
 template<int bits>
-void BitFlags<bits>::Parse(INI *ini, AsciiString *string)
+void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
 {
     if (string != nullptr) {
         string->Clear();
@@ -108,7 +108,7 @@ void BitFlags<bits>::Parse(INI *ini, AsciiString *string)
 
     if (token != nullptr) {
         while (strcasecmp(token, "NONE") != 0) {
-            // If we have a passed in AsciiString, add the tokens to it as we parse them.
+            // If we have a passed in Utf8String, add the tokens to it as we parse them.
             if (string != nullptr) {
                 if (string->Is_Not_Empty()) {
                     *string += " ";

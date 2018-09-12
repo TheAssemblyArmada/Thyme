@@ -408,7 +408,7 @@ void Mouse::Notify_Resolution_Change()
     m_tooltipDisplayString = g_theDisplayStringManger->New_Display_String();
 
     // FontDesc font;
-    AsciiString font_name;
+    Utf8String font_name;
     int font_size;
     bool font_bold;
 
@@ -606,7 +606,7 @@ void Mouse::Move_Mouse(int x, int y, int absolute)
 /**
  * @brief Gets the cursor enum value from its name. Used for parsing configuration files.
  */
-MouseCursor Mouse::Get_Cursor_Index(const AsciiString &name)
+MouseCursor Mouse::Get_Cursor_Index(const Utf8String &name)
 {
     for (MouseCursor i = CURSOR_NONE; i < CURSOR_COUNT; ++i) {
         if (name == s_cursorNames[i]) {
@@ -678,7 +678,7 @@ void Mouse::Parse_Cursor_Definitions(INI *ini)
         { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) }
     };
 
-    AsciiString tok = ini->Get_Next_Token();
+    Utf8String tok = ini->Get_Next_Token();
 
     if (g_theMouse != nullptr && tok.Is_Not_Empty()) {
         ini->Init_From_INI(&g_theMouse->m_cursorInfo[g_theMouse->Get_Cursor_Index(tok)], _cursor_parsers);

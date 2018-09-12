@@ -41,7 +41,7 @@ public:
     virtual void Next_Line(char *dst, int bytes) override;
     virtual bool Scan_Int(int &integer) override;
     virtual bool Scan_Real(float &real) override;
-    virtual bool Scan_String(AsciiString &string) override;
+    virtual bool Scan_String(Utf8String &string) override;
 
 private:
     int FileHandle;

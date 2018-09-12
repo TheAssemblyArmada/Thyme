@@ -47,7 +47,7 @@ void Handicap::Read_From_Dict(const Dict *dict)
 
     for (int i = 0; i < HANDICAP_TYPE_COUNT; ++i) {
         for (int j = 0; j < THING_TYPE_COUNT; ++j) {
-            AsciiString key_name = "HANDICAP_";
+            Utf8String key_name = "HANDICAP_";
             key_name += _ht_names[i];
             key_name += "_";
             key_name += _tt_names[j];

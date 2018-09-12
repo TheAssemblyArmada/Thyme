@@ -168,7 +168,7 @@ protected:
     bool m_isOneShot;
     ParticleShaderType m_shaderType;
     ParticleType m_particleType;
-    AsciiString m_particleTypeName;
+    Utf8String m_particleTypeName;
 #ifdef THYME_STANDALONE
     GameClientRandomVariable m_angleX;
     GameClientRandomVariable m_angleY;
@@ -196,9 +196,9 @@ protected:
     GameClientRandomVariable m_initialDelay;
     Coord3D m_driftVelocity;
     float m_gravity;
-    AsciiString m_slaveSystemName;
+    Utf8String m_slaveSystemName;
     Coord3D m_slavePosOffset;
-    AsciiString m_attachedSystemName;
+    Utf8String m_attachedSystemName;
     EmissionVelocityType m_emissionVelocityType;
     ParticlePriorityType m_priority;
     EmissionVelocityUnion m_emissionVelocity;

@@ -122,7 +122,7 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_uniqueSystemID));
     uint32_t count = m_particleSystemCount;
     xfer->xferUnsignedInt(&count);
-    AsciiString name;
+    Utf8String name;
 
     if (xfer->Get_Mode() == XFER_SAVE) {
         for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
@@ -131,7 +131,7 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
                 xfer->xferAsciiString(&name);
                 xfer->xferSnapshot(*it);
             } else {
-                AsciiString empty = "";
+                Utf8String empty = "";
                 xfer->xferAsciiString(&empty);
             }
         }
@@ -155,7 +155,7 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
  *
  * 0x004D1EB0
  */
-ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &name)
+ParticleSystemTemplate *ParticleSystemManager::Find_Template(const Utf8String &name)
 {
     auto it = m_templateStore.find(name);
 
@@ -171,7 +171,7 @@ ParticleSystemTemplate *ParticleSystemManager::Find_Template(const AsciiString &
  *
  * 0x004D1EE0
  */
-ParticleSystemTemplate *ParticleSystemManager::New_Template(const AsciiString &name)
+ParticleSystemTemplate *ParticleSystemManager::New_Template(const Utf8String &name)
 {
     ParticleSystemTemplate *retval = Find_Template(name);
 
@@ -193,7 +193,7 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const AsciiString &n
  *
  * 0x004D2130
  */
-ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const AsciiString &name, int parent)
+ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const Utf8String &name, int parent)
 {
     if (name.Is_Not_Empty()) {
         for (auto it = m_templateStore.begin(); it != m_templateStore.end(); ++it) {

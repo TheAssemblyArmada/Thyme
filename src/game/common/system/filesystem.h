@@ -39,10 +39,10 @@ public:
     // Filesystem
     File *Open(const char *filename, int mode);
     bool Does_File_Exist(const char *filename);
-    void Get_File_List_From_Dir(AsciiString const &dir, AsciiString const &filter,
-        std::set<AsciiString, rts::less_than_nocase<AsciiString>> &filelist, bool a5);
+    void Get_File_List_From_Dir(Utf8String const &dir, Utf8String const &filter,
+        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool a5);
 
-    static bool Create_Dir(AsciiString name);
+    static bool Create_Dir(Utf8String name);
     static bool Are_Music_Files_On_CD();
     static bool Load_Music_Files_From_CD();
     static void Unload_Music_Files_From_CD();

@@ -27,8 +27,8 @@
 
 struct DataChunkInfo
 {
-    AsciiString label;
-    AsciiString parent_label;
+    Utf8String label;
+    Utf8String parent_label;
     uint16_t version;
     int data_size;
 };
@@ -55,8 +55,8 @@ class DataChunkInput
 
         UserParser *next;
         bool (*parser)(DataChunkInput &, DataChunkInfo *, void *);
-        AsciiString label;
-        AsciiString parent_label;
+        Utf8String label;
+        Utf8String parent_label;
         void *user_data;
     };
 
@@ -64,23 +64,23 @@ public:
     DataChunkInput(ChunkInputStream *stream);
     ~DataChunkInput();
 
-    void Register_Parser(const AsciiString &label, const AsciiString &parent_label,
+    void Register_Parser(const Utf8String &label, const Utf8String &parent_label,
         bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data);
     bool Parse(void *user_data);
     bool Is_Valid_File() { return m_contents.Header_Opened(); }
-    AsciiString Open_Data_Chunk(uint16_t *version);
+    Utf8String Open_Data_Chunk(uint16_t *version);
     void Close_Data_Chunk();
     bool At_End_Of_File() { return m_file->Eof(); }
     bool At_End_Of_Chunk() { return m_chunkStack != nullptr ? m_chunkStack->data_left <= 0 : true; }
     void Reset();
-    AsciiString Get_Chunk_Label();
+    Utf8String Get_Chunk_Label();
     uint16_t Get_Chunk_Version() { return m_chunkStack != nullptr ? m_chunkStack->version : 0; }
     int Get_Chunk_Data_Size() { return m_chunkStack != nullptr ? m_chunkStack->data_size : 0; }
     int Get_Chunk_Data_Left() { return m_chunkStack != nullptr ? m_chunkStack->data_left : 0; }
     float Read_Real32();
     int32_t Read_Int32();
     uint8_t Read_Byte();
-    AsciiString Read_AsciiString();
+    Utf8String Read_AsciiString();
     Utf16String Read_UnicodeString();
     Dict Read_Dict();
     void Read_Byte_Array(uint8_t *ptr, int length);

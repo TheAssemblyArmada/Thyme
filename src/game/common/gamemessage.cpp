@@ -102,7 +102,7 @@ ArgumentDataType GameMessage::Get_Argument_Type(int arg)
     return argobj->m_type;
 }
 
-AsciiString GameMessage::Get_Command_As_Ascii(MessageType command)
+Utf8String GameMessage::Get_Command_As_Ascii(MessageType command)
 {
     switch (command) {
         case MSG_INVALID:

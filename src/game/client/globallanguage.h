@@ -31,15 +31,15 @@ public:
     FontDesc() : m_name("Arial Unicode MS"), m_pointSize(12), m_bold(false) {}
     FontDesc(const char *name, int size = 12, bool bold = false) : m_name(name), m_pointSize(size), m_bold(bold) {}
 
-    const AsciiString &Name() const { return m_name; }
+    const Utf8String &Name() const { return m_name; }
     int Point_Size() const { return m_pointSize; }
     bool Bold() const { return m_bold; }
-    void Set_Name(AsciiString name) { m_name = name; }
+    void Set_Name(Utf8String name) { m_name = name; }
     void Set_Point_Size(int size) { m_pointSize = size; }
     void Set_Bold(bool bold) { m_bold = bold; }
 
 private:
-    AsciiString m_name;
+    Utf8String m_name;
     int m_pointSize;
     bool m_bold;
 };
@@ -63,8 +63,8 @@ public:
     static void Parse_FontDesc(INI *ini, void *formal, void *store, void const *user_data);
 
 private:
-    AsciiString m_unicodeFontName;
-    AsciiString m_unkAsciiString;
+    Utf8String m_unicodeFontName;
+    Utf8String m_unkAsciiString;
     bool m_useHardWordWrap;
     int m_militaryCaptionSpeed;
     int m_militaryCaptionDelayMs;
@@ -86,7 +86,7 @@ private:
     FontDesc m_creditsMinorTitleFont;
     FontDesc m_creditsNormalFont;
     float m_resolutionFontAdjustment;
-    std::list<AsciiString> m_localFontFiles;
+    std::list<Utf8String> m_localFontFiles;
 
     static FieldParse s_languageParseTable[];
 };

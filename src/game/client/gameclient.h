@@ -50,7 +50,7 @@ class GameClient : public SubsystemInterface, public SnapShot
 {
     struct DrawableTOCEntry
     {
-        AsciiString name;
+        Utf8String name;
         uint16_t number;
     };
 
@@ -78,8 +78,8 @@ public:
     virtual RayEffectData *Create_Ray_Effect_From_Template(
         const Coord3D *src, const Coord3D *dst, const ThingTemplate *temp) = 0;
     virtual void Add_Scorch(Coord3D *pos, float scale, Scorches scorch) = 0;
-    virtual bool Load_Map(AsciiString name) { return name.Is_Not_Empty() ? true : false; }
-    virtual void Unload_Map(AsciiString name) {}
+    virtual bool Load_Map(Utf8String name) { return name.Is_Not_Empty() ? true : false; }
+    virtual void Unload_Map(Utf8String name) {}
     virtual void Iterate_Drawables_In_Region(Region3D *region, void (*func)(Drawable *, void *), void *data);
     virtual Drawable *Create_Drawable(ThingTemplate *temp, DrawableStatus status) = 0;
     virtual void Destroy_Drawable(Drawable *drawable);

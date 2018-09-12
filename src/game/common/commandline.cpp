@@ -144,7 +144,7 @@ int Parse_Play_Stats(char **argv, int argc)
 int Parse_Mod(char **argv, int argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
-        AsciiString path = argv[1];
+        Utf8String path = argv[1];
 
         // If its not an absolute path, make it relative to user data dir.
         if (!strchr(path.Str(), ':') && !path.Starts_With("/") && !path.Starts_With("\\")) {

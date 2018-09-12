@@ -47,23 +47,23 @@ public:
 
     BuildListInfo *Get_Next() { return m_nextBuildList; }
     void Set_Next(BuildListInfo *next) { m_nextBuildList = next; }
-    void Set_Building_Name(AsciiString name) { m_buildingName = name; }
-    void Set_Template_Name(AsciiString name) { m_templateName = name; }
+    void Set_Building_Name(Utf8String name) { m_buildingName = name; }
+    void Set_Template_Name(Utf8String name) { m_templateName = name; }
     void Set_Location(Coord3D &location) { m_location = location; }
     void Set_Angle(float angle) { m_angle = angle; }
     void Set_Intially_Built(bool built) { m_isInitiallyBuilt = built; }
     void Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info);
 
 private:
-    AsciiString m_buildingName;
-    AsciiString m_templateName;
+    Utf8String m_buildingName;
+    Utf8String m_templateName;
     Coord3D m_location;
     Coord2D m_rallyPointOffset;
     float m_angle;
     bool m_isInitiallyBuilt;
     unsigned m_numRebuilds;
     BuildListInfo *m_nextBuildList;
-    AsciiString m_script;
+    Utf8String m_script;
     int m_health;
     bool m_whiner;
     bool m_repairable;

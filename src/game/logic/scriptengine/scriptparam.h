@@ -133,9 +133,9 @@ public:
 
     Parameter &operator=(const Parameter &that);
 
-    void Qualify(const AsciiString &suffix, const AsciiString &side_test, const AsciiString &side_replacemet);
+    void Qualify(const Utf8String &suffix, const Utf8String &side_test, const Utf8String &side_replacemet);
 
-    AsciiString Get_UI_Text();
+    Utf8String Get_UI_Text();
     void Get_Coord3D(Coord3D *coord);
     void Set_Coord3D(Coord3D *coord);
 
@@ -149,7 +149,7 @@ private:
     bool m_initialized;
     int m_int;
     float m_real;
-    AsciiString m_string;
+    Utf8String m_string;
     Coord3D m_coord;
     BitFlags<OBJECT_STATUS_COUNT> m_objStatus;
 };

@@ -133,13 +133,13 @@ public:
 
     void Init();
     void Refresh_Custom_Static_LOD();
-    int Get_Static_LOD_Index(AsciiString name);
+    int Get_Static_LOD_Index(Utf8String name);
     const char *Get_Static_LOD_Name(StaticGameLODLevel level);
     StaticGameLODLevel Find_Static_LOD_Level();
     bool Set_Static_LOD_Level(StaticGameLODLevel level);
     void Apply_Static_LOD_Level(StaticGameLODLevel level);
     StaticGameLODLevel Get_Static_LOD_Level() { return m_staticLODLevel; }
-    int Get_Dynamic_LOD_Index(AsciiString name);
+    int Get_Dynamic_LOD_Index(Utf8String name);
     const char *Get_Dynamic_LOD_Name(DynamicGameLODLevel level);
     DynamicGameLODLevel Find_Dynamic_LOD_Level(float fps);
     bool Set_Dynamic_LOD_Level(DynamicGameLODLevel level);

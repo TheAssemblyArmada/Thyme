@@ -18,7 +18,7 @@
 #include "matrix3d.h"
 #include "randomvalue.h"
 
-void Xfer::Open(AsciiString filename)
+void Xfer::Open(Utf8String filename)
 {
     m_filename = filename;
 }
@@ -91,12 +91,12 @@ void Xfer::xferReal(float *thing)
     *thing = temp.real;
 }
 
-void Xfer::xferMarkerLabel(AsciiString thing)
+void Xfer::xferMarkerLabel(Utf8String thing)
 {
     // Empty
 }
 
-void Xfer::xferAsciiString(AsciiString *thing)
+void Xfer::xferAsciiString(Utf8String *thing)
 {
     xferImplementation(const_cast<char *>(thing->Str()), thing->Get_Length());
 }
@@ -300,7 +300,7 @@ void Xfer::xferKindOf(KindOfType *thing)
     uint8_t ver = 1;
     xferVersion(&ver, 1);
 
-    AsciiString kind;
+    Utf8String kind;
     const char *kindc;
 
     switch (Get_Mode()) {
@@ -362,9 +362,9 @@ void Xfer::xferMatrix3D(Matrix3D *thing)
     xferReal(&(*thing)[2][3]);
 }
 
-void Xfer::xferMapName(AsciiString *thing)
+void Xfer::xferMapName(Utf8String *thing)
 {
-    AsciiString map;
+    Utf8String map;
 
     if (Get_Mode() == XFER_SAVE) {
         map = g_theGameState->Real_To_Portable_Map_Path(*thing);

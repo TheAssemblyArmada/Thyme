@@ -40,7 +40,7 @@ public:
     virtual ~Condition();
 
     Condition *Duplicate();
-    Condition *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    Condition *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     void Set_Condition_Type(ConditionType type);
 
     static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
@@ -68,7 +68,7 @@ public:
     virtual ~OrCondition();
 
     OrCondition *Duplicate();
-    OrCondition *Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3);
+    OrCondition *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
     
     static bool Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 

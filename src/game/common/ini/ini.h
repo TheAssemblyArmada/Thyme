@@ -92,8 +92,8 @@ public:
     INI();
     ~INI();
 
-    void Load(AsciiString filename, INILoadType type, Xfer *xfer);
-    void Load_Directory(AsciiString dir, bool search_subdirs, INILoadType type, Xfer *xfer);
+    void Load(Utf8String filename, INILoadType type, Xfer *xfer);
+    void Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, Xfer *xfer);
 
     void Init_From_INI(void *what, FieldParse *parse_table);
     void Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_list);
@@ -102,9 +102,9 @@ public:
     const char *Get_Next_Token_Or_Null(const char *seps = nullptr);
     const char *Get_Next_Token(const char *seps = nullptr);
     const char *Get_Next_Sub_Token(const char *expected);
-    AsciiString Get_Next_Ascii_String();
-    AsciiString Get_Next_Quoted_Ascii_String();
-    AsciiString Get_Filename() { return m_fileName; }
+    Utf8String Get_Next_Ascii_String();
+    Utf8String Get_Next_Quoted_Ascii_String();
+    Utf8String Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
     int Get_Line_Number() { return m_lineNumber; }
 
@@ -160,14 +160,14 @@ public:
 
 private:
     void Read_Line();
-    void Prep_File(AsciiString filename, INILoadType type);
+    void Prep_File(Utf8String filename, INILoadType type);
     void Unprep_File();
 
     File *m_backingFile;
     char m_buffer[MAX_BUFFER_SIZE];
     int m_bufferReadPos;
     int m_bufferData;
-    AsciiString m_fileName;
+    Utf8String m_fileName;
     INILoadType m_loadType;
     int m_lineNumber;
     char m_currentBlock[MAX_LINE_LENGTH];
@@ -246,10 +246,10 @@ inline const char *INI::Get_Next_Sub_Token(const char *expected)
     return Get_Next_Token(m_sepsColon);
 }
 
-inline AsciiString INI::Get_Next_Ascii_String()
+inline Utf8String INI::Get_Next_Ascii_String()
 {
     static char _buffer[MAX_LINE_LENGTH];
-    AsciiString next;
+    Utf8String next;
 
     const char *token = Get_Next_Token_Or_Null();
 

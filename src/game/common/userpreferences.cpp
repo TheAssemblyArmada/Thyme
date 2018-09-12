@@ -29,7 +29,7 @@ UserPreferences::UserPreferences()
 {
 }
 
-bool UserPreferences::Load(AsciiString filename)
+bool UserPreferences::Load(Utf8String filename)
 {
     m_filename = g_theWriteableGlobalData->m_userDataDirectory;
     m_filename += filename;
@@ -41,11 +41,11 @@ bool UserPreferences::Load(AsciiString filename)
 
         while ( fgets(buffer, sizeof(buffer), fptr) != 0 ) {
             // Get key/value pair per line.
-            AsciiString key;
-            AsciiString line = buffer;
+            Utf8String key;
+            Utf8String line = buffer;
             line.Trim();
             line.Next_Token(&key, "=");
-            AsciiString value = line.Str() + 1;
+            Utf8String value = line.Str() + 1;
 
             // Trim whitespace.
             key.Trim();
@@ -84,7 +84,7 @@ bool UserPreferences::Write()
     return false;
 }
 
-AsciiString UserPreferences::Get_AsciiString(AsciiString key, AsciiString def_arg)
+Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg)
 {
     auto it = find(key);
 
@@ -95,9 +95,9 @@ AsciiString UserPreferences::Get_AsciiString(AsciiString key, AsciiString def_ar
     return it->second;
 }
 
-int UserPreferences::Get_Int(AsciiString key, int def_arg)
+int UserPreferences::Get_Int(Utf8String key, int def_arg)
 {
-    AsciiString value = Get_AsciiString(key);
+    Utf8String value = Get_AsciiString(key);
 
     if ( value.Is_Empty() ) {
         return def_arg;
@@ -106,9 +106,9 @@ int UserPreferences::Get_Int(AsciiString key, int def_arg)
     return atoi(value.Str());
 }
 
-float UserPreferences::Get_Real(AsciiString key, float def_arg)
+float UserPreferences::Get_Real(Utf8String key, float def_arg)
 {
-    AsciiString value = Get_AsciiString(key);
+    Utf8String value = Get_AsciiString(key);
 
     if ( value.Is_Empty() ) {
         return def_arg;
@@ -117,9 +117,9 @@ float UserPreferences::Get_Real(AsciiString key, float def_arg)
     return (float)atof(value.Str());
 }
 
-bool UserPreferences::Get_Bool(AsciiString key, bool def_arg)
+bool UserPreferences::Get_Bool(Utf8String key, bool def_arg)
 {
-    AsciiString value = Get_AsciiString(key);
+    Utf8String value = Get_AsciiString(key);
 
     if ( value.Is_Empty() ) {
         return def_arg;
@@ -141,28 +141,28 @@ bool UserPreferences::Get_Bool(AsciiString key, bool def_arg)
     return true;
 }
 
-void UserPreferences::Set_AsciiString(AsciiString key, AsciiString value)
+void UserPreferences::Set_AsciiString(Utf8String key, Utf8String value)
 {
     (*this)[key] = value;
 }
 
-void UserPreferences::Set_Int(AsciiString key, int value)
+void UserPreferences::Set_Int(Utf8String key, int value)
 {
-    AsciiString val;
+    Utf8String val;
     val.Format("%d", value);
     (*this)[key] = val;
 }
 
-void UserPreferences::Set_Real(AsciiString key, float value)
+void UserPreferences::Set_Real(Utf8String key, float value)
 {
-    AsciiString val;
+    Utf8String val;
     val.Format("%g", value);
     (*this)[key] = val;
 }
 
-void UserPreferences::Set_Bool(AsciiString key, bool value)
+void UserPreferences::Set_Bool(Utf8String key, bool value)
 {
-    AsciiString val;
+    Utf8String val;
     val.Format("%d", value);
     (*this)[key] = val;
 }

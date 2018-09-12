@@ -34,7 +34,7 @@ DataChunkTableOfContents::~DataChunkTableOfContents()
 /**
  * @brief Get the ID of an entry with the given name.
  */
-unsigned DataChunkTableOfContents::Get_ID(const AsciiString &name)
+unsigned DataChunkTableOfContents::Get_ID(const Utf8String &name)
 {
     Mapping *map = Find_Mapping(name);
 
@@ -50,7 +50,7 @@ unsigned DataChunkTableOfContents::Get_ID(const AsciiString &name)
 /**
  * @brief Get the name of an entry with the given ID.
  */
-AsciiString DataChunkTableOfContents::Get_Name(unsigned id)
+Utf8String DataChunkTableOfContents::Get_Name(unsigned id)
 {
     Mapping *map = m_list;
 
@@ -64,13 +64,13 @@ AsciiString DataChunkTableOfContents::Get_Name(unsigned id)
 
     DEBUG_LOG("ID '%u' not found trying to get name from DataChunk TOC.\n", id);
 
-    return AsciiString::s_emptyString;
+    return Utf8String::s_emptyString;
 }
 
 /**
  * @brief Get the ID of an entry with the given name or create it if it doesn't exist.
  */
-unsigned DataChunkTableOfContents::Allocate_ID(const AsciiString &name)
+unsigned DataChunkTableOfContents::Allocate_ID(const Utf8String &name)
 {
     Mapping *map = Find_Mapping(name);
 
@@ -158,7 +158,7 @@ void DataChunkTableOfContents::Write(OutputStream &stream)
 /**
  * @brief Find the Mapping entry corresponding to the given name.
  */
-DataChunkTableOfContents::Mapping *DataChunkTableOfContents::Find_Mapping(const AsciiString &name)
+DataChunkTableOfContents::Mapping *DataChunkTableOfContents::Find_Mapping(const Utf8String &name)
 {
     Mapping *map = m_list;
 

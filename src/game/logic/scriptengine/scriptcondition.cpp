@@ -95,7 +95,7 @@ Condition *Condition::Duplicate()
  *
  * 0x0051E0B0
  */
-Condition *Condition::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
     Condition *new_cond = new Condition(m_conditionType);
@@ -214,7 +214,7 @@ OrCondition *OrCondition::Duplicate()
  *
  * 0x0051D8A0
  */
-OrCondition *OrCondition::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+OrCondition *OrCondition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     OrCondition *new_or = new OrCondition;
 

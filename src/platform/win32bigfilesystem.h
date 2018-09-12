@@ -36,5 +36,5 @@ public:
     virtual void Close_Archive_File(const char *filename) override;
     virtual void Close_All_Archives() override {}
     virtual void Close_All_Files() override {}
-    virtual void Load_Archives_From_Dir(AsciiString dir, AsciiString filter, bool read_subdirs) override;
+    virtual void Load_Archives_From_Dir(Utf8String dir, Utf8String filter, bool read_subdirs) override;
 };

@@ -83,7 +83,7 @@ ScriptAction *ScriptAction::Duplicate()
  *
  * 0x00520240
  */
-ScriptAction *ScriptAction::Duplicate_And_Qualify(const AsciiString &str1, const AsciiString &str2, const AsciiString &str3)
+ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     ScriptAction *new_action = new ScriptAction(m_actionType);
 
@@ -114,13 +114,13 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const AsciiString &str1, const
  *
  * 0x005206B0
  */
-AsciiString ScriptAction::Get_UI_Text()
+Utf8String ScriptAction::Get_UI_Text()
 {
     // TODO Requires ScriptEngine vtable
 #ifndef THYME_STANDALONE
-    return Call_Method<AsciiString, ScriptAction>(0x005206B0, this);
+    return Call_Method<Utf8String, ScriptAction>(0x005206B0, this);
 #else
-    return AsciiString();
+    return Utf8String();
 #endif
 }
 

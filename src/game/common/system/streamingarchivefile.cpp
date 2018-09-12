@@ -97,7 +97,7 @@ bool StreamingArchiveFile::Scan_Real(float &real)
     return false;
 }
 
-bool StreamingArchiveFile::Scan_String(AsciiString &string)
+bool StreamingArchiveFile::Scan_String(Utf8String &string)
 {
     return false;
 }
@@ -112,7 +112,7 @@ bool StreamingArchiveFile::Open(File *file)
     return true;
 }
 
-bool StreamingArchiveFile::Open_From_Archive(File *file, AsciiString const &name, int pos, int size)
+bool StreamingArchiveFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int size)
 {
     if (file == nullptr || !File::Open(name.Str(), READ | BINARY | STREAMING)) {
         return false;

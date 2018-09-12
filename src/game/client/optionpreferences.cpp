@@ -142,7 +142,7 @@ int OptionPreferences::Get_Static_Game_Detail()
     return g_theGameLODManager->Get_Static_LOD_Index(it->second);
 }
 
-AsciiString OptionPreferences::Get_Preferred_3D_Provider()
+Utf8String OptionPreferences::Get_Preferred_3D_Provider()
 {
     auto it = find("3DAudioProvider");
 
@@ -155,7 +155,7 @@ AsciiString OptionPreferences::Get_Preferred_3D_Provider()
     return it->second;
 }
 
-AsciiString OptionPreferences::Get_Speaker_Type()
+Utf8String OptionPreferences::Get_Speaker_Type()
 {
     auto it = find("SpeakerType");
 
@@ -493,11 +493,11 @@ uint32_t OptionPreferences::Get_LAN_IPAddress()
 #endif
 }
 
-void OptionPreferences::Set_LAN_IPAddress(AsciiString address)
+void OptionPreferences::Set_LAN_IPAddress(Utf8String address)
 {
 #ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, AsciiString>(0x004630E0, this, address);
+    return Call_Method<void, OptionPreferences, Utf8String>(0x004630E0, this, address);
 #endif
 }
 
@@ -519,11 +519,11 @@ uint32_t OptionPreferences::Get_Online_IPAddress()
 #endif
 }
 
-void OptionPreferences::Set_Online_IPAddress(AsciiString address)
+void OptionPreferences::Set_Online_IPAddress(Utf8String address)
 {
 #ifndef THYME_STANDALONE
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, AsciiString>(0x004636F0, this, address);
+    return Call_Method<void, OptionPreferences, Utf8String>(0x004636F0, this, address);
 #endif
 }
 

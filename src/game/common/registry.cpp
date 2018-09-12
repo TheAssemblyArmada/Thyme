@@ -15,9 +15,9 @@
 
 #include "registry.h"
 
-AsciiString Get_Registry_Language()
+Utf8String Get_Registry_Language()
 {
-    static AsciiString lang = "english";
+    static Utf8String lang = "english";
     static bool retrieved = false;
     
     if(retrieved) {
@@ -30,16 +30,16 @@ AsciiString Get_Registry_Language()
     }
 }
 
-void Get_String_From_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination)
+void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
 {
 #ifndef THYME_STANDALONE
-    Call_Function<void, AsciiString, AsciiString, AsciiString const &>(0x00498A80, subkey, value, destination);
+    Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x00498A80, subkey, value, destination);
 #endif
 }
 
-void Get_String_From_Generals_Registry(AsciiString subkey, AsciiString value, AsciiString const &destination)
+void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
 {
 #ifndef THYME_STANDALONE
-    Call_Function<void, AsciiString, AsciiString, AsciiString const &>(0x004988A0, subkey, value, destination);
+    Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x004988A0, subkey, value, destination);
 #endif
 }

@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Class for handling strings that have a single byte as a code point.
+ * @brief Class for handling strings that have a series of bytes as a code point.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -19,14 +19,14 @@
 #include <cctype>
 #include <cstdio>
 
-AsciiString const AsciiString::s_emptyString(nullptr);
+Utf8String const Utf8String::s_emptyString(nullptr);
 
-AsciiString::AsciiString() :
+Utf8String::Utf8String() :
     m_data(nullptr)
 {
 }
 
-AsciiString::AsciiString(const char *s) :
+Utf8String::Utf8String(const char *s) :
     m_data(nullptr)
 {
     if ( s != nullptr ) {
@@ -37,7 +37,7 @@ AsciiString::AsciiString(const char *s) :
     }
 }
 
-AsciiString::AsciiString(AsciiString const &string) :
+Utf8String::Utf8String(Utf8String const &string) :
     m_data(string.m_data)
 {
     if ( m_data != nullptr ) {
@@ -45,12 +45,12 @@ AsciiString::AsciiString(AsciiString const &string) :
     }
 }
 
-void AsciiString::Validate()
+void Utf8String::Validate()
 {
     //TODO, doesnt seem to be implimented anywhere? It is called though...
 }
 
-char *AsciiString::Peek() const
+char *Utf8String::Peek() const
 {
     ASSERT_PRINT(m_data != nullptr, "null string ptr");
     
@@ -58,7 +58,7 @@ char *AsciiString::Peek() const
 }
 
 
-void AsciiString::Release_Buffer()
+void Utf8String::Release_Buffer()
 {
     if ( m_data != nullptr ) {
         m_data->Dec_Ref_Count();
@@ -71,7 +71,7 @@ void AsciiString::Release_Buffer()
     }
 }
 
-void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
+void Utf8String::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
 {
     if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
         if ( str_to_cpy != nullptr ) {
@@ -119,7 +119,7 @@ void AsciiString::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data,
     }
 }
 
-int AsciiString::Get_Length() const
+int Utf8String::Get_Length() const
 {
     if ( m_data != nullptr ) {
         int len = strlen(Str());
@@ -131,7 +131,7 @@ int AsciiString::Get_Length() const
     return 0;
 }
 
-char AsciiString::Get_Char(int index) const
+char Utf8String::Get_Char(int index) const
 {
     ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
     ASSERT_PRINT(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
@@ -139,7 +139,7 @@ char AsciiString::Get_Char(int index) const
     return Peek()[index];
 }
 
-const char *AsciiString::Str() const
+const char *Utf8String::Str() const
 {
     static char const TheNullChr[4] = "";
 
@@ -150,7 +150,7 @@ const char *AsciiString::Str() const
     return TheNullChr;
 }
 
-char *AsciiString::Get_Buffer_For_Read(int len)
+char *Utf8String::Get_Buffer_For_Read(int len)
 {
     
     // Generate buffer sufficient to read requested size into.
@@ -159,7 +159,7 @@ char *AsciiString::Get_Buffer_For_Read(int len)
     return Peek();
 }
 
-void AsciiString::Set(const char *s)
+void Utf8String::Set(const char *s)
 {
     if ( m_data == nullptr || s != m_data->Peek() ) {
         size_t len;
@@ -172,7 +172,7 @@ void AsciiString::Set(const char *s)
     }
 }
 
-void AsciiString::Set(AsciiString const &string)
+void Utf8String::Set(Utf8String const &string)
 {
     if ( &string != this ) {
         Release_Buffer();
@@ -184,7 +184,7 @@ void AsciiString::Set(AsciiString const &string)
     }
 }
 
-void AsciiString::Translate(Utf16String const &string)
+void Utf8String::Translate(Utf16String const &string)
 {
     Release_Buffer();
     
@@ -249,7 +249,7 @@ void AsciiString::Translate(Utf16String const &string)
 #endif
 }
 
-void AsciiString::Concat(char c)
+void Utf8String::Concat(char c)
 {
     char str[2];
  
@@ -258,7 +258,7 @@ void AsciiString::Concat(char c)
     Concat(str);
 }
 
-void AsciiString::Concat(const char *s)
+void Utf8String::Concat(const char *s)
 {
     int len = strlen(s);
 
@@ -271,7 +271,7 @@ void AsciiString::Concat(const char *s)
     }
 }
 
-void AsciiString::Trim()
+void Utf8String::Trim()
 {
     // No string, no Trim.
     if ( m_data == nullptr ) {
@@ -306,7 +306,7 @@ void AsciiString::Trim()
     }
 }
 
-void AsciiString::To_Lower()
+void Utf8String::To_Lower()
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -326,7 +326,7 @@ void AsciiString::To_Lower()
 /**
  * @brief Convert any windows path separators to posix ('\' to '/').
  */
-AsciiString AsciiString::Posix_Path() const
+Utf8String Utf8String::Posix_Path() const
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -348,7 +348,7 @@ AsciiString AsciiString::Posix_Path() const
 /**
  * @brief Convert any posix path separators to windows ('/' to '\').
  */
-AsciiString AsciiString::Windows_Path() const
+Utf8String Utf8String::Windows_Path() const
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -367,7 +367,7 @@ AsciiString AsciiString::Windows_Path() const
     return buf;
 }
 
-void AsciiString::Remove_Last_Char()
+void Utf8String::Remove_Last_Char()
 {
     if ( m_data == nullptr ) {
         return;
@@ -381,7 +381,7 @@ void AsciiString::Remove_Last_Char()
     }
 }
 
-void AsciiString::Format(const char *format, ...)
+void Utf8String::Format(const char *format, ...)
 {
     va_list va;
 
@@ -389,7 +389,7 @@ void AsciiString::Format(const char *format, ...)
     Format_VA(format, va);
 }
 
-void AsciiString::Format(AsciiString format, ...)
+void Utf8String::Format(Utf8String format, ...)
 {
     va_list va;
 
@@ -397,7 +397,7 @@ void AsciiString::Format(AsciiString format, ...)
     Format_VA(format, va);
 }
 
-void AsciiString::Format_VA(const char *format, va_list args)
+void Utf8String::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -406,7 +406,7 @@ void AsciiString::Format_VA(const char *format, va_list args)
     Set(buf);
 }
 
-void AsciiString::Format_VA(AsciiString &format, va_list args)
+void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
@@ -415,7 +415,7 @@ void AsciiString::Format_VA(AsciiString &format, va_list args)
     Set(buf);
 }
 
-bool AsciiString::Starts_With(const char *p) const
+bool Utf8String::Starts_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -431,7 +431,7 @@ bool AsciiString::Starts_With(const char *p) const
     return strncmp(Peek(), p, thatlen) == 0;
 }
 
-bool AsciiString::Ends_With(const char *p) const
+bool Utf8String::Ends_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -447,7 +447,7 @@ bool AsciiString::Ends_With(const char *p) const
     return strncmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
-bool AsciiString::Starts_With_No_Case(const char *p) const
+bool Utf8String::Starts_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -463,7 +463,7 @@ bool AsciiString::Starts_With_No_Case(const char *p) const
     return strncasecmp(Peek(), p, thatlen) == 0;
 }
 
-bool AsciiString::Ends_With_No_Case(const char *p) const
+bool Utf8String::Ends_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
@@ -479,7 +479,7 @@ bool AsciiString::Ends_With_No_Case(const char *p) const
     return strncasecmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
-bool AsciiString::Next_Token(AsciiString *tok, const char *delims)
+bool Utf8String::Next_Token(Utf8String *tok, const char *delims)
 {
     if ( m_data == nullptr ) {
         return false;
@@ -533,7 +533,7 @@ bool AsciiString::Next_Token(AsciiString *tok, const char *delims)
     }
     
     //
-    // Copy found region into provided AsciiString, then move this string
+    // Copy found region into provided Utf8String, then move this string
     // to start of next section.
     //
     char *tokstr = tok->Get_Buffer_For_Read(end - start + 1);
@@ -545,7 +545,7 @@ bool AsciiString::Next_Token(AsciiString *tok, const char *delims)
 }
 
 #ifdef GAME_DEBUG
-void AsciiString::Debug_Ignore_Leaks()
+void Utf8String::Debug_Ignore_Leaks()
 {
     //TODO, doesnt seem to be implimented anywhere? It is called though...
 }

@@ -37,7 +37,7 @@ public:
     static void Parse_Color_Definition(INI *ini);
 
 private:
-    AsciiString m_tooltipName;
+    Utf8String m_tooltipName;
     RGBColor m_rgbValue;
     int m_color;
     RGBColor m_rgbNightValue;
@@ -78,8 +78,8 @@ public:
     virtual void Reset() override {}
     virtual void Update() override {}
 
-    MultiplayerColorDefinition *Find_Color_Definition(AsciiString name);
-    MultiplayerColorDefinition *New_Color_Definition(AsciiString name);
+    MultiplayerColorDefinition *Find_Color_Definition(Utf8String name);
+    MultiplayerColorDefinition *New_Color_Definition(Utf8String name);
 
 private:
     int m_initialCreditsMin;
@@ -90,7 +90,7 @@ private:
     bool m_showRandomPlayerTemplate;
     bool m_showRandomStartPos;
     bool m_showRandomColor;
-    std::map<AsciiString, MultiplayerColorDefinition> m_colorList;
+    std::map<Utf8String, MultiplayerColorDefinition> m_colorList;
     int m_numColors;
     MultiplayerColorDefinition m_colorDef1;
     MultiplayerColorDefinition m_colorDef2;

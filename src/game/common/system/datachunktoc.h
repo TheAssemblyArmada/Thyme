@@ -35,7 +35,7 @@ class DataChunkTableOfContents
 
     private:
         Mapping *m_next;
-        AsciiString m_name;
+        Utf8String m_name;
         unsigned m_id;
     };
 
@@ -43,15 +43,15 @@ public:
     DataChunkTableOfContents() : m_list(nullptr), m_listLength(0), m_nextID(1), m_headerOpened(false) {}
     ~DataChunkTableOfContents();
 
-    unsigned Get_ID(const AsciiString &name);
-    AsciiString Get_Name(unsigned id);
-    unsigned Allocate_ID(const AsciiString &name);
+    unsigned Get_ID(const Utf8String &name);
+    Utf8String Get_Name(unsigned id);
+    unsigned Allocate_ID(const Utf8String &name);
     void Read(ChunkInputStream &stream);
     void Write(OutputStream &stream);
     bool Header_Opened() { return m_headerOpened; }
 
 private:
-    Mapping *Find_Mapping(const AsciiString &name);
+    Mapping *Find_Mapping(const Utf8String &name);
 
 private:
     Mapping *m_list;

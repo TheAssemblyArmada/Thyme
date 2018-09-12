@@ -36,8 +36,8 @@ Version::Version() :
 {
 }
 
-void Version::Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, AsciiString location,
-    AsciiString user, AsciiString time, AsciiString date)
+void Version::Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, Utf8String location,
+    Utf8String user, Utf8String time, Utf8String date)
 {
     m_major = maj;
     m_minor = min;
@@ -49,9 +49,9 @@ void Version::Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local
     m_buildDate = date;
 }
 
-AsciiString Version::Get_Ascii_Version()
+Utf8String Version::Get_Ascii_Version()
 {
-    AsciiString version;
+    Utf8String version;
 
     if (m_localBuildNum != 0) {
         version.Format("%d.%d.%d.%d", m_major, m_minor, m_buildNum, m_localBuildNum);
@@ -62,9 +62,9 @@ AsciiString Version::Get_Ascii_Version()
     return version;
 }
 
-AsciiString Version::Get_Ascii_Build_Time()
+Utf8String Version::Get_Ascii_Build_Time()
 {
-    AsciiString version;
+    Utf8String version;
 
     version.Format("%s %s", m_buildDate.Str(), m_buildTime.Str());
 

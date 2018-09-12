@@ -64,8 +64,8 @@ public:
 
 private:
     NameKeyType m_nameKey;
-    UnicodeString m_displayName;
-    UnicodeString m_description;
+    Utf16String m_displayName;
+    Utf16String m_description;
     std::vector<ScienceType> m_unkVec1;
     std::vector<ScienceType> m_prerequisites;
     int m_purchaseCost;

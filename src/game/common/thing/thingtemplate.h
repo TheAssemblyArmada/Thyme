@@ -84,7 +84,7 @@ public:
     bool Is_KindOf(KindOfType type) const { return m_kindOf.Get(type); }
 
 private:
-    UnicodeString m_displayName;
+    Utf16String m_displayName;
     AsciiString m_unkAsciiString1;
     AsciiString m_side;
     AsciiString m_commandSet;

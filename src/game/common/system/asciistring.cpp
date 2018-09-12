@@ -184,7 +184,7 @@ void AsciiString::Set(AsciiString const &string)
     }
 }
 
-void AsciiString::Translate(UnicodeString const &string)
+void AsciiString::Translate(Utf16String const &string)
 {
     Release_Buffer();
     
@@ -213,9 +213,9 @@ void AsciiString::Translate(UnicodeString const &string)
         //This is a debug assert from the look of it.
         /*if ( v4 < 8 || (!stringSrc.m_data ? (v6 = 0) : (v5 = stringSrc.Peek(), v6 = wcslen(v5)), v3 >= v6) )
         {
-            if ( `UnicodeString::Get_Char'::`14'::allowCrash )
+            if ( `Utf16String::Get_Char'::`14'::allowCrash )
             {
-                TheCurrentAllowCrashPtr = &`UnicodeString::Get_Char'::`14'::allowCrash;
+                TheCurrentAllowCrashPtr = &`Utf16String::Get_Char'::`14'::allowCrash;
                 DebugCrash(aBadIndexInGetch);
                 TheCurrentAllowCrashPtr = 0;
             }

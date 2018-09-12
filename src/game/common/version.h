@@ -35,11 +35,11 @@ public:
     AsciiString Get_Ascii_Branch() { return m_branch; }
     AsciiString Get_Ascii_Commit_Hash() { return m_commitHash; }
     AsciiString Get_Ascii_Build_Time();
-    UnicodeString Get_Unicode_Version();
-    UnicodeString Get_Full_Unicode_Version();
-    UnicodeString Get_Unicode_Branch();
-    UnicodeString Get_Unicode_Commit_Hash();
-    UnicodeString Get_Unicode_Build_Time();
+    Utf16String Get_Unicode_Version();
+    Utf16String Get_Full_Unicode_Version();
+    Utf16String Get_Unicode_Branch();
+    Utf16String Get_Unicode_Commit_Hash();
+    Utf16String Get_Unicode_Build_Time();
 
     void Set_Use_Full_Version(bool cmd_line) { m_useFullVersion = cmd_line; }
     bool Using_Full_Version() { return m_useFullVersion; }

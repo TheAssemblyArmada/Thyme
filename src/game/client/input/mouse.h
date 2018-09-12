@@ -187,7 +187,7 @@ protected:
     int8_t m_numButtons;
     int8_t m_numAxes;
     bool m_forceFeedback;
-    UnicodeString m_tooltipString;
+    Utf16String m_tooltipString;
     DisplayString *m_tooltipDisplayString;
     bool m_displayTooltip;
     bool m_isTooltipEmpty;

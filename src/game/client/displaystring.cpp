@@ -32,7 +32,7 @@ DisplayString::~DisplayString()
  * 
  * 0x007F8260
  */
-void DisplayString::Set_Text(UnicodeString text)
+void DisplayString::Set_Text(Utf16String text)
 {
 	if (text != m_textString) {
 		m_textString = text;

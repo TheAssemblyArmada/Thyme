@@ -29,7 +29,7 @@
 
 class AsciiString;
 
-class UnicodeString
+class Utf16String
 {
 public:
     friend class AsciiString;
@@ -57,56 +57,56 @@ public:
         }
     };
 
-    UnicodeString() : m_data(nullptr) {}
-    UnicodeString(const unichar_t *s);
-    UnicodeString(UnicodeString const &string);
-    // UnicodeString(AsciiString const &string);
-    ~UnicodeString();
+    Utf16String() : m_data(nullptr) {}
+    Utf16String(const unichar_t *s);
+    Utf16String(Utf16String const &string);
+    // Utf16String(AsciiString const &string);
+    ~Utf16String();
 
-    UnicodeString &operator=(const unichar_t *s)
+    Utf16String &operator=(const unichar_t *s)
     {
         Set(s);
         return *this;
     }
 
-    UnicodeString &operator=(UnicodeString const &string)
+    Utf16String &operator=(Utf16String const &string)
     {
         Set(string);
         return *this;
     }
 
-    UnicodeString &operator=(AsciiString const &string)
+    Utf16String &operator=(AsciiString const &string)
     {
         Translate(string);
         return *this;
     }
 
-    UnicodeString &operator=(const char *s)
+    Utf16String &operator=(const char *s)
     {
         Translate(s);
         return *this;
     }
 
-    // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
+    // Utf16String &operator=(AsciiString const &string) { Set(string); return *this; }
 
-    UnicodeString &operator+=(unichar_t s)
+    Utf16String &operator+=(unichar_t s)
     {
         Concat(s);
         return *this;
     }
 
-    UnicodeString &operator+=(const unichar_t *s)
+    Utf16String &operator+=(const unichar_t *s)
     {
         Concat(s);
         return *this;
     }
 
-    UnicodeString &operator+=(UnicodeString const &s)
+    Utf16String &operator+=(Utf16String const &s)
     {
         Concat(s);
         return *this;
     }
-    // UnicodeString &operator+=(AsciiString const &string);
+    // Utf16String &operator+=(AsciiString const &string);
 
     operator const unichar_t *() const { return Str(); }
 
@@ -124,34 +124,34 @@ public:
     const unichar_t *Str() const;
     unichar_t *Get_Buffer_For_Read(int len);
     void Set(const unichar_t *s);
-    void Set(UnicodeString const &string);
+    void Set(Utf16String const &string);
 
     void Translate(AsciiString const &string);
     void Translate(const char *string);
 
     void Concat(unichar_t c);
     void Concat(const unichar_t *s);
-    void Concat(UnicodeString const &string) { Concat(string.Str()); }
+    void Concat(Utf16String const &string) { Concat(string.Str()); }
 
     void Trim();
     void To_Lower();
     void Remove_Last_Char();
 
     void Format(const unichar_t *format, ...);
-    void Format(UnicodeString format, ...);
+    void Format(Utf16String format, ...);
     void Format_VA(const unichar_t *format, va_list args);
-    void Format_VA(UnicodeString &format, va_list args);
+    void Format_VA(Utf16String &format, va_list args);
 
     int Compare(const unichar_t *s) const { return u_strcmp(Str(), s); };
-    int Compare(UnicodeString const &string) const { return u_strcmp(Str(), string.Str()); };
+    int Compare(Utf16String const &string) const { return u_strcmp(Str(), string.Str()); };
 
     int Compare_No_Case(const unichar_t *s) const { return u_strcasecmp(Str(), s, U_COMPARE_CODE_POINT_ORDER); };
-    int Compare_No_Case(UnicodeString const &string) const
+    int Compare_No_Case(Utf16String const &string) const
     {
         return u_strcasecmp(Str(), string.Str(), U_COMPARE_CODE_POINT_ORDER);
     };
 
-    bool Next_Token(UnicodeString *tok, UnicodeString delims);
+    bool Next_Token(Utf16String *tok, Utf16String delims);
 
     bool Is_None()
     {
@@ -161,24 +161,24 @@ public:
     bool Is_Not_Empty() { return !Is_Empty(); }
     bool Is_Not_None() { return !Is_None(); }
 
-    friend bool operator==(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) == 0; }
-    friend bool operator==(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) == 0; }
-    friend bool operator==(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) == 0; }
+    friend bool operator==(Utf16String const &left, Utf16String const &right) { return left.Compare(right) == 0; }
+    friend bool operator==(Utf16String const &left, const unichar_t *right) { return left.Compare(right) == 0; }
+    friend bool operator==(const unichar_t *left, Utf16String const &right) { return right.Compare(left) == 0; }
 
-    friend bool operator!=(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) != 0; }
-    friend bool operator!=(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) != 0; }
-    friend bool operator!=(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) != 0; }
+    friend bool operator!=(Utf16String const &left, Utf16String const &right) { return left.Compare(right) != 0; }
+    friend bool operator!=(Utf16String const &left, const unichar_t *right) { return left.Compare(right) != 0; }
+    friend bool operator!=(const unichar_t *left, Utf16String const &right) { return right.Compare(left) != 0; }
 
-    friend bool operator<(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) < 0; }
-    friend bool operator<(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) < 0; }
-    friend bool operator<(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) < 0; }
+    friend bool operator<(Utf16String const &left, Utf16String const &right) { return left.Compare(right) < 0; }
+    friend bool operator<(Utf16String const &left, const unichar_t *right) { return left.Compare(right) < 0; }
+    friend bool operator<(const unichar_t *left, Utf16String const &right) { return right.Compare(left) < 0; }
 
-    friend bool operator>(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) > 0; }
-    friend bool operator>(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) > 0; }
-    friend bool operator>(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) > 0; }
+    friend bool operator>(Utf16String const &left, Utf16String const &right) { return left.Compare(right) > 0; }
+    friend bool operator>(Utf16String const &left, const unichar_t *right) { return left.Compare(right) > 0; }
+    friend bool operator>(const unichar_t *left, Utf16String const &right) { return right.Compare(left) > 0; }
 
 private:
-    static UnicodeString const EmptyString;
+    static Utf16String const EmptyString;
 
     UnicodeStringData *m_data;
 };

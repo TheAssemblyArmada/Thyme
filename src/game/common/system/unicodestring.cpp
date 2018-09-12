@@ -29,9 +29,9 @@ SimpleCriticalSectionClass *&g_unicodeStringCriticalSection = Make_Global<Simple
 SimpleCriticalSectionClass *g_unicodeStringCriticalSection = nullptr;
 #endif
 
-UnicodeString const UnicodeString::EmptyString;
+Utf16String const Utf16String::EmptyString;
 
-UnicodeString::UnicodeString(const unichar_t *s) : m_data(nullptr)
+Utf16String::Utf16String(const unichar_t *s) : m_data(nullptr)
 {
     if (s != nullptr) {
         size_t len = u_strlen(s);
@@ -42,7 +42,7 @@ UnicodeString::UnicodeString(const unichar_t *s) : m_data(nullptr)
     }
 }
 
-UnicodeString::UnicodeString(UnicodeString const &string) : m_data(string.m_data)
+Utf16String::Utf16String(Utf16String const &string) : m_data(string.m_data)
 {
     ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
@@ -51,14 +51,14 @@ UnicodeString::UnicodeString(UnicodeString const &string) : m_data(string.m_data
     }
 }
 
-UnicodeString::~UnicodeString()
+Utf16String::~Utf16String()
 {
     Release_Buffer();
 }
 
-void UnicodeString::Validate() {}
+void Utf16String::Validate() {}
 
-unichar_t *UnicodeString::Peek() const
+unichar_t *Utf16String::Peek() const
 {
     ASSERT_PRINT(m_data != nullptr, "null string ptr");
 
@@ -66,7 +66,7 @@ unichar_t *UnicodeString::Peek() const
     return m_data->Peek();
 }
 
-void UnicodeString::Release_Buffer()
+void Utf16String::Release_Buffer()
 {
     ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
@@ -79,7 +79,7 @@ void UnicodeString::Release_Buffer()
     }
 }
 
-void UnicodeString::Ensure_Unique_Buffer_Of_Size(
+void Utf16String::Ensure_Unique_Buffer_Of_Size(
     int chars_needed, bool keep_data, const unichar_t *str_to_cpy, const unichar_t *str_to_cat)
 {
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
@@ -128,7 +128,7 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(
     }
 }
 
-int UnicodeString::Get_Length() const
+int Utf16String::Get_Length() const
 {
     if (m_data != nullptr) {
         return u_strlen(m_data->Peek());
@@ -137,12 +137,12 @@ int UnicodeString::Get_Length() const
     return 0;
 }
 
-void UnicodeString::Clear()
+void Utf16String::Clear()
 {
     Release_Buffer();
 }
 
-unichar_t UnicodeString::Get_Char(int index) const
+unichar_t Utf16String::Get_Char(int index) const
 {
     if (m_data != nullptr) {
         return m_data->Peek()[index];
@@ -151,7 +151,7 @@ unichar_t UnicodeString::Get_Char(int index) const
     return u'\0';
 }
 
-const unichar_t *UnicodeString::Str() const
+const unichar_t *Utf16String::Str() const
 {
     static const unichar_t *TheNullChr = (const unichar_t *)u"";
 
@@ -162,7 +162,7 @@ const unichar_t *UnicodeString::Str() const
     return TheNullChr;
 }
 
-unichar_t *UnicodeString::Get_Buffer_For_Read(int len)
+unichar_t *Utf16String::Get_Buffer_For_Read(int len)
 {
     ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
 
@@ -171,7 +171,7 @@ unichar_t *UnicodeString::Get_Buffer_For_Read(int len)
     return Peek();
 }
 
-void UnicodeString::Set(const unichar_t *s)
+void Utf16String::Set(const unichar_t *s)
 {
     if (m_data != nullptr || s != m_data->Peek()) {
         size_t len;
@@ -184,7 +184,7 @@ void UnicodeString::Set(const unichar_t *s)
     }
 }
 
-void UnicodeString::Set(UnicodeString const &string)
+void Utf16String::Set(Utf16String const &string)
 {
     ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
@@ -198,7 +198,7 @@ void UnicodeString::Set(UnicodeString const &string)
     }
 }
 
-void UnicodeString::Translate(AsciiString const &string)
+void Utf16String::Translate(AsciiString const &string)
 {
     Release_Buffer();
 
@@ -217,7 +217,7 @@ void UnicodeString::Translate(AsciiString const &string)
     }
 }
 
-void UnicodeString::Translate(const char *string)
+void Utf16String::Translate(const char *string)
 {
     Release_Buffer();
 
@@ -256,7 +256,7 @@ void UnicodeString::Translate(const char *string)
 #endif
 }
 
-void UnicodeString::Concat(unichar_t c)
+void Utf16String::Concat(unichar_t c)
 {
     unichar_t str[2];
 
@@ -265,7 +265,7 @@ void UnicodeString::Concat(unichar_t c)
     Concat(str);
 }
 
-void UnicodeString::Concat(const unichar_t *s)
+void Utf16String::Concat(const unichar_t *s)
 {
     size_t len = u_strlen(s);
 
@@ -278,7 +278,7 @@ void UnicodeString::Concat(const unichar_t *s)
     }
 }
 
-void UnicodeString::Trim()
+void Utf16String::Trim()
 {
     // No string, no Trim.
     if (m_data == nullptr) {
@@ -313,7 +313,7 @@ void UnicodeString::Trim()
     }
 }
 
-void UnicodeString::To_Lower()
+void Utf16String::To_Lower()
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
 
@@ -331,7 +331,7 @@ void UnicodeString::To_Lower()
     Set(buf);
 }
 
-void UnicodeString::Remove_Last_Char()
+void Utf16String::Remove_Last_Char()
 {
     if (m_data == nullptr) {
         return;
@@ -345,7 +345,7 @@ void UnicodeString::Remove_Last_Char()
     }
 }
 
-void UnicodeString::Format(const unichar_t *format, ...)
+void Utf16String::Format(const unichar_t *format, ...)
 {
     va_list va;
 
@@ -353,7 +353,7 @@ void UnicodeString::Format(const unichar_t *format, ...)
     Format_VA(format, va);
 }
 
-void UnicodeString::Format(UnicodeString format, ...)
+void Utf16String::Format(Utf16String format, ...)
 {
     va_list va;
 
@@ -361,7 +361,7 @@ void UnicodeString::Format(UnicodeString format, ...)
     Format_VA(format, va);
 }
 
-void UnicodeString::Format_VA(const unichar_t *format, va_list args)
+void Utf16String::Format_VA(const unichar_t *format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
 
@@ -370,7 +370,7 @@ void UnicodeString::Format_VA(const unichar_t *format, va_list args)
     Set(buf);
 }
 
-void UnicodeString::Format_VA(UnicodeString &format, va_list args)
+void Utf16String::Format_VA(Utf16String &format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
 
@@ -379,7 +379,7 @@ void UnicodeString::Format_VA(UnicodeString &format, va_list args)
     Set(buf);
 }
 
-bool UnicodeString::Next_Token(UnicodeString *tok, UnicodeString delims)
+bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
 {
     if (m_data == nullptr) {
         return false;

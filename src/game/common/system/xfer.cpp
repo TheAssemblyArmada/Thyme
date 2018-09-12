@@ -101,7 +101,7 @@ void Xfer::xferAsciiString(AsciiString *thing)
     xferImplementation(const_cast<char *>(thing->Str()), thing->Get_Length());
 }
 
-void Xfer::xferUnicodeString(UnicodeString *thing)
+void Xfer::xferUnicodeString(Utf16String *thing)
 {
     xferImplementation(const_cast<unichar_t *>(thing->Str()), thing->Get_Length() * 2);
 }

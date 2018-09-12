@@ -43,10 +43,6 @@
 #define u_isspace iswspace
 #define u_tolower towlower
 #define U_COMPARE_CODE_POINT_ORDER 0x8000
-#else
-// Attempts to prevent lookup against icu::UnicodeString
-class UnicodeString;
-using ::UnicodeString;
 #endif
 
 //  Define nullptr when standard is less than C++x0

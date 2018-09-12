@@ -212,7 +212,7 @@ AsciiString Dict::Get_AsciiString(NameKeyType key, bool *exists) const
     return AsciiString();
 }
 
-UnicodeString Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
+Utf16String Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -230,7 +230,7 @@ UnicodeString Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
         DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
     }
 
-    return UnicodeString();
+    return Utf16String();
 }
 
 bool Dict::Get_Nth_Bool(int n) const
@@ -285,7 +285,7 @@ AsciiString Dict::Get_Nth_AsciiString(int n) const
     return AsciiString();
 }
 
-UnicodeString Dict::Get_Nth_UnicodeString(int n) const
+Utf16String Dict::Get_Nth_UnicodeString(int n) const
 {
     DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
 
@@ -295,7 +295,7 @@ UnicodeString Dict::Get_Nth_UnicodeString(int n) const
 
     DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
 
-    return UnicodeString();
+    return Utf16String();
 }
 
 void Dict::Set_Bool(NameKeyType key, bool value)
@@ -326,7 +326,7 @@ void Dict::Set_AsciiString(NameKeyType key, const AsciiString &value)
     Sort_Pairs();
 }
 
-void Dict::Set_UnicodeString(NameKeyType key, const UnicodeString &value)
+void Dict::Set_UnicodeString(NameKeyType key, const Utf16String &value)
 {
     DictPair *pair = Set_Prep(key, DICT_UNICODESTRING);
     pair->Set_Value(value);

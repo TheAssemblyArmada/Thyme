@@ -243,7 +243,7 @@ bool SidesList::Validate_Ally_Enemy_List(const AsciiString &team, AsciiString &a
 void SidesList::Add_Player_By_Template(AsciiString template_name)
 {
     AsciiString player_name;
-    UnicodeString display_name;
+    Utf16String display_name;
     bool is_human;
 
     if (template_name.Is_Empty()) {

@@ -752,7 +752,7 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     AsciiString ntitle;
-    UnicodeString wtitle = (const unichar_t *)u"Thyme - ";
+    Utf16String wtitle = (const unichar_t *)u"Thyme - ";
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);
@@ -783,14 +783,14 @@ void GameTextManager::Reset()
 
 // Find and return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
-UnicodeString GameTextManager::Fetch(AsciiString args, bool *success)
+Utf16String GameTextManager::Fetch(AsciiString args, bool *success)
 {
     return Fetch(args.Str(), success);
 }
 
 // Find anr return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
-UnicodeString GameTextManager::Fetch(const char *args, bool *success)
+Utf16String GameTextManager::Fetch(const char *args, bool *success)
 {
     if (m_stringInfo == nullptr) {
         if (success != nullptr) {
@@ -832,7 +832,7 @@ UnicodeString GameTextManager::Fetch(const char *args, bool *success)
     }
 
     // If we reached here, we didn't find a string from our string file.
-    UnicodeString missing;
+    Utf16String missing;
     NoString *no_string;
 
     missing.Format((const unichar_t *)u"MISSING: '%hs'", args);

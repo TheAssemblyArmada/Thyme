@@ -56,13 +56,13 @@ struct CSFHeader
 struct NoString
 {
     NoString *next;
-    UnicodeString text;
+    Utf16String text;
 };
 
 struct StringInfo
 {
     AsciiString label;
-    UnicodeString text;
+    Utf16String text;
     AsciiString speech;
 };
 
@@ -77,8 +77,8 @@ class GameTextInterface : public SubsystemInterface
 public:
     virtual ~GameTextInterface() {}
 
-    virtual UnicodeString Fetch(const char *args, bool *success = nullptr) = 0;
-    virtual UnicodeString Fetch(AsciiString args, bool *success = nullptr) = 0;
+    virtual Utf16String Fetch(const char *args, bool *success = nullptr) = 0;
+    virtual Utf16String Fetch(AsciiString args, bool *success = nullptr) = 0;
     virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label) = 0;
     virtual void Init_Map_String_File(AsciiString const &filename) = 0;
     virtual void Deinit() = 0;
@@ -94,8 +94,8 @@ public:
     virtual void Reset();
     virtual void Update() {}
 
-    virtual UnicodeString Fetch(const char *args, bool *success = nullptr);
-    virtual UnicodeString Fetch(AsciiString args, bool *success = nullptr);
+    virtual Utf16String Fetch(const char *args, bool *success = nullptr);
+    virtual Utf16String Fetch(AsciiString args, bool *success = nullptr);
     virtual std::vector<AsciiString> *Get_Strings_With_Prefix(AsciiString label);
     virtual void Init_Map_String_File(AsciiString const &filename);
     virtual void Deinit();
@@ -134,7 +134,7 @@ private:
     bool m_useStringFile;
     // pad 3 chars
     LanguageID m_language;
-    UnicodeString m_failed;
+    Utf16String m_failed;
     StringInfo *m_mapStringInfo;
     StringLookUp *m_mapStringLUT;
     int m_mapTextCount;

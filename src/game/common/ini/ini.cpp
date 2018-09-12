@@ -762,7 +762,7 @@ void INI::Parse_Bit_In_Int32(INI *ini, void *formal, void *store, const void *us
 
 void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, const void *user_data)
 {
-    UnicodeString *str = static_cast<UnicodeString*>(store);
+    Utf16String *str = static_cast<Utf16String*>(store);
     *str = g_theGameText->Fetch(ini->Get_Next_Token());
 }
 

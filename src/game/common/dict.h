@@ -54,7 +54,7 @@ private:
         float real;
         int integer;
         AsciiString ascii;
-        UnicodeString unicode;
+        Utf16String unicode;
     };
 
     class DictPair
@@ -73,7 +73,7 @@ private:
         void Set_Value(float val) { m_value.real = val; }
         void Set_Value(bool val) { m_value.boolean = val; }
         void Set_Value(const AsciiString &val) { m_value.ascii = val; }
-        void Set_Value(const UnicodeString &val) { m_value.unicode = val; }
+        void Set_Value(const Utf16String &val) { m_value.unicode = val; }
 
         const DictPairValue &Get_Value() { return m_value; }
 
@@ -115,17 +115,17 @@ public:
     int Get_Int(NameKeyType key, bool *exists = nullptr) const;
     float Get_Real(NameKeyType key, bool *exists = nullptr) const;
     AsciiString Get_AsciiString(NameKeyType key, bool *exists = nullptr) const;
-    UnicodeString Get_UnicodeString(NameKeyType key, bool *exists = nullptr) const;
+    Utf16String Get_UnicodeString(NameKeyType key, bool *exists = nullptr) const;
     bool Get_Nth_Bool(int n) const;
     int Get_Nth_Int(int n) const;
     float Get_Nth_Real(int n) const;
     AsciiString Get_Nth_AsciiString(int n) const;
-    UnicodeString Get_Nth_UnicodeString(int n) const;
+    Utf16String Get_Nth_UnicodeString(int n) const;
     void Set_Bool(NameKeyType key, bool value);
     void Set_Int(NameKeyType key, int value);
     void Set_Real(NameKeyType key, float value);
     void Set_AsciiString(NameKeyType key, const AsciiString &value);
-    void Set_UnicodeString(NameKeyType key, const UnicodeString &value);
+    void Set_UnicodeString(NameKeyType key, const Utf16String &value);
     bool Remove(NameKeyType key);
     void Copy_Pair_From(Dict &that, NameKeyType key);
     void Release_Data();

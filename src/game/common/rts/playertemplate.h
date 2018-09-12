@@ -58,7 +58,7 @@ public:
 
 private:
     NameKeyType m_nameKey;
-    UnicodeString m_displayName;
+    Utf16String m_displayName;
     AsciiString m_side;
     AsciiString m_baseSide;
     Handicap m_handicap;

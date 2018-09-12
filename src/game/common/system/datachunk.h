@@ -81,7 +81,7 @@ public:
     int32_t Read_Int32();
     uint8_t Read_Byte();
     AsciiString Read_AsciiString();
-    UnicodeString Read_UnicodeString();
+    Utf16String Read_UnicodeString();
     Dict Read_Dict();
     void Read_Byte_Array(uint8_t *ptr, int length);
     NameKeyType Read_Name_Key();

@@ -74,7 +74,7 @@ public:
     virtual void xferReal(float *thing);
     virtual void xferMarkerLabel(AsciiString thing);
     virtual void xferAsciiString(AsciiString *thing);
-    virtual void xferUnicodeString(UnicodeString *thing);
+    virtual void xferUnicodeString(Utf16String *thing);
     virtual void xferCoord3D(Coord3D *thing);
     virtual void xferICoord3D(ICoord3D *thing);
     virtual void xferRegion3D(Region3D *thing);

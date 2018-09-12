@@ -272,11 +272,11 @@ AsciiString DataChunkInput::Read_AsciiString()
 /**
  * @brief Reads a UCS-16 string from the chunk.
  */
-UnicodeString DataChunkInput::Read_UnicodeString()
+Utf16String DataChunkInput::Read_UnicodeString()
 {
     uint16_t size;
     char16_t ch;
-    UnicodeString string;
+    Utf16String string;
 
     DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading AsciiString length.\n");
 
@@ -285,7 +285,7 @@ UnicodeString DataChunkInput::Read_UnicodeString()
     size = le16toh(size);
 
     DEBUG_ASSERT_PRINT(
-        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading UnicodeString string.\n");
+        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading Utf16String string.\n");
 
     // Data is stored as LE UCS-16, so only BMP unicode chars can be stored.
     // TODO revamp unicode handling for none windows systems using libicu or libiconv.

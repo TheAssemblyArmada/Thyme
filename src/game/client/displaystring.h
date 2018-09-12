@@ -29,8 +29,8 @@ public:
     DisplayString();
     virtual ~DisplayString();
 
-    virtual void Set_Text(UnicodeString text);
-    virtual UnicodeString Get_Text() { return m_textString; }
+    virtual void Set_Text(Utf16String text);
+    virtual Utf16String Get_Text() { return m_textString; }
     virtual int Get_Text_Length() { return m_textString.Get_Length(); }
     virtual void Notify_Text_Changed() {}
     virtual void Reset();
@@ -47,7 +47,7 @@ public:
     virtual void Add_Char(wchar_t ch);
 
 protected:
-    UnicodeString m_textString;
+    Utf16String m_textString;
     GameFont *m_font;
     DisplayString *m_next;
     DisplayString *m_prev;

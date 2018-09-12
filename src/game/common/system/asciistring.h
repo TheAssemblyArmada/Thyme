@@ -19,13 +19,13 @@
 #include <cstdarg>
 #include <cstring>
 
-class UnicodeString;
+class Utf16String;
 
 class AsciiString
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
-    friend class UnicodeString;
+    friend class Utf16String;
 
 public:
     enum
@@ -75,18 +75,18 @@ public:
     AsciiString();
     AsciiString(const char *s);
     AsciiString(AsciiString const &string);
-    // AsciiString(UnicodeString const &stringSrc);
+    // AsciiString(Utf16String const &stringSrc);
     ~AsciiString() { Release_Buffer(); }
 
     AsciiString &operator=(char *s);
     AsciiString &operator=(const char *s);
     AsciiString &operator=(AsciiString const &stringSrc);
-    // AsciiString &operator=(UnicodeString const &stringSrc);
+    // AsciiString &operator=(Utf16String const &stringSrc);
 
     AsciiString &operator+=(char s);
     AsciiString &operator+=(const char *s);
     AsciiString &operator+=(AsciiString const &s);
-    // AsciiString &operator+=(UnicodeString const &stringSrc);
+    // AsciiString &operator+=(Utf16String const &stringSrc);
 
     operator const char *() const { return Str(); }
 
@@ -103,7 +103,7 @@ public:
     void Set(const char *s);
     void Set(AsciiString const &string);
 
-    void Translate(UnicodeString const &stringSrc);
+    void Translate(Utf16String const &stringSrc);
 
     // Concat should probably be private and += used as the preferred interface.
     void Concat(char c);
@@ -183,7 +183,7 @@ inline AsciiString &AsciiString::operator=(AsciiString const &stringSrc)
     return *this;
 }
 
-// AsciiString &operator=(UnicodeString const &stringSrc);
+// AsciiString &operator=(Utf16String const &stringSrc);
 
 inline AsciiString &AsciiString::operator+=(char s)
 {

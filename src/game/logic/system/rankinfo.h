@@ -57,7 +57,7 @@ public:
 
     RankInfo *Get_Override() { return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this; }
 private:
-    UnicodeString m_rankName;
+    Utf16String m_rankName;
     int m_skillPointsNeeded;
     unsigned m_sciencePurchasePointsGranted;
     std::vector<ScienceType> m_sciencesGranted;

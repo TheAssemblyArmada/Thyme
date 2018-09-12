@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief String class handing "wide" chars.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -19,11 +18,10 @@
 #include "gamedebug.h"
 #include "stringex.h"
 #include <stdio.h>
-#include <wctype.h>
 
-//#ifndef vsnwprintf
-//#define vsnwprintf _vsnwprintf
-//#endif
+#if !defined THYME_USE_ICU && defined PLATFORM_WINDOWS
+#include <wctype.h>
+#endif
 
 #ifndef THYME_STANDALONE
 SimpleCriticalSectionClass *&g_unicodeStringCriticalSection = Make_Global<SimpleCriticalSectionClass *>(0x00A2A294);
@@ -33,27 +31,14 @@ SimpleCriticalSectionClass *g_unicodeStringCriticalSection = nullptr;
 
 UnicodeString const UnicodeString::EmptyString;
 
-UnicodeString::UnicodeString(const wchar_t *s) : m_data(nullptr)
+UnicodeString::UnicodeString(const unichar_t *s) : m_data(nullptr)
 {
     if (s != nullptr) {
-        size_t len = wcslen(s);
+        size_t len = u_strlen(s);
 
         if (len > 0) {
             Ensure_Unique_Buffer_Of_Size(len + 1, false, s, nullptr);
         }
-    }
-}
-
-UnicodeString::UnicodeString(char16_t const *s) : m_data(nullptr)
-{
-    if (s != nullptr) {
-        size_t len = strlen16(s);
-
-        if (len > 0) {
-            Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
-        }
-
-        Char16_To_WChar(Peek(), s);
     }
 }
 
@@ -73,7 +58,7 @@ UnicodeString::~UnicodeString()
 
 void UnicodeString::Validate() {}
 
-wchar_t *UnicodeString::Peek() const
+unichar_t *UnicodeString::Peek() const
 {
     ASSERT_PRINT(m_data != nullptr, "null string ptr");
 
@@ -95,15 +80,15 @@ void UnicodeString::Release_Buffer()
 }
 
 void UnicodeString::Ensure_Unique_Buffer_Of_Size(
-    int chars_needed, bool keep_data, const wchar_t *str_to_cpy, const wchar_t *str_to_cat)
+    int chars_needed, bool keep_data, const unichar_t *str_to_cpy, const unichar_t *str_to_cat)
 {
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
-            wcscpy(Peek(), str_to_cpy);
+            u_strcpy(Peek(), str_to_cpy);
         }
 
         if (str_to_cat != nullptr) {
-            wcscat(Peek(), str_to_cat);
+            u_strcat(Peek(), str_to_cat);
         }
 
     } else {
@@ -113,29 +98,29 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(
         // throw(&preserveData, &_TI1_AW4ErrorCode__);
         //}
 
-        int size =
-            g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(wchar_t) * chars_needed + sizeof(UnicodeStringData));
+        int size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(
+            sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData));
         UnicodeStringData *new_data =
             reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
 
         new_data->ref_count = 1;
-        new_data->num_chars_allocated = (size - sizeof(UnicodeStringData)) / sizeof(wchar_t);
+        new_data->num_chars_allocated = (size - sizeof(UnicodeStringData)) / sizeof(unichar_t);
 #ifdef GAME_DEBUG_STRUCTS
         new_data->debug_ptr = new_data->Peek();
 #endif
 
         if (m_data != nullptr && keep_data) {
-            wcscpy(new_data->Peek(), Peek());
+            u_strcpy(new_data->Peek(), Peek());
         } else {
-            *new_data->Peek() = L'\0';
+            *new_data->Peek() = (unichar_t)u'\0';
         }
 
         if (str_to_cpy != nullptr) {
-            wcscpy(new_data->Peek(), str_to_cpy);
+            u_strcpy(new_data->Peek(), str_to_cpy);
         }
 
         if (str_to_cat != nullptr) {
-            wcscat(new_data->Peek(), str_to_cat);
+            u_strcat(new_data->Peek(), str_to_cat);
         }
 
         Release_Buffer();
@@ -146,7 +131,7 @@ void UnicodeString::Ensure_Unique_Buffer_Of_Size(
 int UnicodeString::Get_Length() const
 {
     if (m_data != nullptr) {
-        return wcslen(m_data->Peek());
+        return u_strlen(m_data->Peek());
     }
 
     return 0;
@@ -157,18 +142,18 @@ void UnicodeString::Clear()
     Release_Buffer();
 }
 
-wchar_t UnicodeString::Get_Char(int index) const
+unichar_t UnicodeString::Get_Char(int index) const
 {
     if (m_data != nullptr) {
         return m_data->Peek()[index];
     }
 
-    return L'\0';
+    return u'\0';
 }
 
-const wchar_t *UnicodeString::Str() const
+const unichar_t *UnicodeString::Str() const
 {
-    static const wchar_t *TheNullChr = L"";
+    static const unichar_t *TheNullChr = (const unichar_t *)u"";
 
     if (m_data != nullptr) {
         return Peek();
@@ -177,7 +162,7 @@ const wchar_t *UnicodeString::Str() const
     return TheNullChr;
 }
 
-wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
+unichar_t *UnicodeString::Get_Buffer_For_Read(int len)
 {
     ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
 
@@ -186,27 +171,16 @@ wchar_t *UnicodeString::Get_Buffer_For_Read(int len)
     return Peek();
 }
 
-void UnicodeString::Set(const wchar_t *s)
+void UnicodeString::Set(const unichar_t *s)
 {
     if (m_data != nullptr || s != m_data->Peek()) {
         size_t len;
 
-        if (s && (len = wcslen(s) + 1, len != 1)) {
+        if (s && (len = u_strlen(s) + 1, len != 1)) {
             Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
         } else {
             Release_Buffer();
         }
-    }
-}
-
-void UnicodeString::Set(const char16_t *s)
-{
-    size_t len;
-
-    if (s && (len = strlen16(s) + 1, len != 1)) {
-        Ensure_Unique_Buffer_Of_Size(len, false, nullptr, nullptr);
-
-        Char16_To_WChar(Peek(), s);
     }
 }
 
@@ -231,12 +205,12 @@ void UnicodeString::Translate(AsciiString const &string)
     int str_len = string.Get_Length();
 
     for (int i = 0; i < str_len; ++i) {
-        wchar_t c;
+        unichar_t c;
 
         if (string.m_data != nullptr) {
             c = string.Get_Char(i);
         } else {
-            c = L'\0';
+            c = (unichar_t)u'\0';
         }
 
         Concat(c);
@@ -247,46 +221,57 @@ void UnicodeString::Translate(const char *string)
 {
     Release_Buffer();
 
+#if defined THYME_USE_ICU // Use ICU convertors
+    int32_t length;
+    UErrorCode error = U_ZERO_ERROR;
+    u_strFromUTF8(nullptr, 0, &length, string, -1, &error);
+
+    if (U_SUCCESS(error) && length > 0) {
+        u_strFromUTF8(Get_Buffer_For_Read(length), length, nullptr, string, -1, &error);
+
+        if (U_FAILURE(error)) {
+            Clear();
+        }
+    }
+#elif defined PLATFORM_WINDOWS // Use WIN32 API convertors.
+    int length = MultiByteToWideChar(CP_UTF8, 0, string, -1, nullptr, 0);
+
+    if (length > 0) {
+        MultiByteToWideChar(CP_UTF8, 0, string, -1, Get_Buffer_For_Read(length), length);
+    }
+#else // Naive copy, this is what the original does.
     int str_len = strlen(string);
 
     for (int i = 0; i < str_len; ++i) {
-        wchar_t c;
+        unichar_t c;
 
         if (string[i] != '\0') {
             c = string[i];
         } else {
-            c = L'\0';
+            c = (unichar_t)u'\0';
         }
 
         Concat(c);
     }
+#endif
 }
 
-void UnicodeString::Concat(char16_t c)
+void UnicodeString::Concat(unichar_t c)
 {
-    wchar_t str[2];
+    unichar_t str[2];
 
     str[0] = c;
-    str[1] = L'\0';
+    str[1] = (unichar_t)u'\0';
     Concat(str);
 }
 
-void UnicodeString::Concat(wchar_t c)
+void UnicodeString::Concat(const unichar_t *s)
 {
-    wchar_t str[2];
-
-    str[0] = c;
-    str[1] = L'\0';
-    Concat(str);
-}
-
-void UnicodeString::Concat(const wchar_t *s)
-{
-    size_t len = wcslen(s);
+    size_t len = u_strlen(s);
 
     if (len > 0) {
         if (m_data != nullptr) {
-            Ensure_Unique_Buffer_Of_Size(wcslen(Peek()) + len + 1, true, 0, s);
+            Ensure_Unique_Buffer_Of_Size(u_strlen(Peek()) + len + 1, true, 0, s);
         } else {
             Set(s);
         }
@@ -300,11 +285,11 @@ void UnicodeString::Trim()
         return;
     }
 
-    wchar_t *str = Peek();
+    unichar_t *str = Peek();
 
     // Find first none space in string if not the first.
     for (char i = *str; i != '\0'; i = *(++str)) {
-        if (!iswspace(i)) {
+        if (!u_isspace(i)) {
             break;
         }
     }
@@ -319,8 +304,8 @@ void UnicodeString::Trim()
         return;
     }
 
-    for (int i = wcslen(Peek()) - 1; i >= 0; --i) {
-        if (!iswspace(Get_Char(i))) {
+    for (int i = u_strlen(Peek()) - 1; i >= 0; --i) {
+        if (!u_isspace(Get_Char(i))) {
             break;
         }
 
@@ -330,16 +315,17 @@ void UnicodeString::Trim()
 
 void UnicodeString::To_Lower()
 {
-    wchar_t buf[MAX_FORMAT_BUF_LEN];
+    unichar_t buf[MAX_FORMAT_BUF_LEN];
 
     if (m_data == nullptr) {
         return;
     }
 
-    wcscpy(buf, Peek());
+    u_strcpy(buf, Peek());
 
-    for (wchar_t *c = buf; *c != L'\0'; ++c) {
-        *c = towlower(*c);
+    for (unichar_t *c = buf; *c != (unichar_t)u'\0'; ++c) {
+        //*c = towlower(*c);
+        *c = u_tolower(*c);
     }
 
     Set(buf);
@@ -351,15 +337,15 @@ void UnicodeString::Remove_Last_Char()
         return;
     }
 
-    int len = wcslen(Peek());
+    int len = u_strlen(Peek());
 
     if (len > 0) {
         Ensure_Unique_Buffer_Of_Size(len + 1, true);
-        Peek()[len] = L'\0';
+        Peek()[len] = (unichar_t)u'\0';
     }
 }
 
-void UnicodeString::Format(const wchar_t *format, ...)
+void UnicodeString::Format(const unichar_t *format, ...)
 {
     va_list va;
 
@@ -375,20 +361,20 @@ void UnicodeString::Format(UnicodeString format, ...)
     Format_VA(format, va);
 }
 
-void UnicodeString::Format_VA(const wchar_t *format, va_list args)
+void UnicodeString::Format_VA(const unichar_t *format, va_list args)
 {
-    wchar_t buf[MAX_FORMAT_BUF_LEN];
+    unichar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vswprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
+    ASSERT_THROW_PRINT(u_vsnprintf_u(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
 
 void UnicodeString::Format_VA(UnicodeString &format, va_list args)
 {
-    wchar_t buf[MAX_FORMAT_BUF_LEN];
+    unichar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vswprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+    ASSERT_THROW_PRINT(u_vsnprintf_u(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -399,41 +385,71 @@ bool UnicodeString::Next_Token(UnicodeString *tok, UnicodeString delims)
         return false;
     }
 
-    if (*Peek() == L'\0' || this == tok) {
+    if (*Peek() == (unichar_t)u'\0' || this == tok) {
         return false;
     }
 
     // If no separators provided, default to white space.
     if (delims == nullptr) {
-        delims = L" \n\r\t";
+        delims = (const unichar_t *)u" \n\r\t";
     }
 
-    const wchar_t *start = Str();
+#if THYME_USE_ICU
+    unichar_t *start = Peek();
+
+    // Find next instance of token or end of string
+    for (unichar_t c = *start; c != (unichar_t)u'\0'; c = *(++start)) {
+        if (u_strchr(delims, c) == nullptr) {
+            break;
+        }
+    }
+
+    if (*start == (unichar_t)u'\0') {
+        Release_Buffer();
+        tok->Release_Buffer();
+
+        return false;
+    }
+
+    unichar_t *end = start;
+
+    // Find next instance of token or end of string.
+    for (unichar_t c = *end; c != (unichar_t)u'\0'; c = *(++end)) {
+        if (u_strchr(delims, c) != nullptr) {
+            break;
+        }
+    }
+
+    if (end <= start) {
+        Release_Buffer();
+        tok->Release_Buffer();
+
+        return false;
+    }
+
+    // Copy found region into provided AsciiString, then move this string
+    // to start of next section.
+    unichar_t *tokstr = tok->Get_Buffer_For_Read(end - start + 1);
+    memcpy(tokstr, start, end - start);
+    tokstr[end - start] = (unichar_t)u'\0';
+    Set(end);
+
+    return true;
+#else
+    const unichar_t *start = Str();
 
     size_t pos = wcscspn(Peek(), delims.Str());
 
-    //
     // Check if the position of the next token is not the start of data anyway.
-    //
     if (&(Peek()[pos]) > Peek()) {
-        wchar_t *read_buffer = tok->Get_Buffer_For_Read(pos + 1);
+        unichar_t *read_buffer = tok->Get_Buffer_For_Read(pos + 1);
         memcpy(read_buffer, Peek(), pos);
-        read_buffer[pos] = L'\0';
+        read_buffer[pos] = (unichar_t)u'\0';
         Set(&(Peek()[pos]));
 
         return true;
     }
 
     return false;
-}
-
-// Naive copy of char16_t to wchar_t assuming only BMP characters
-wchar_t *UnicodeString::Char16_To_WChar(wchar_t *dst, char16_t const *src)
-{
-    wchar_t *tmp = dst;
-
-    while ((*tmp++ = *src++) != 0) {
-    }
-
-    return dst;
+#endif
 }

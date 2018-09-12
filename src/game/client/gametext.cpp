@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief String file handler.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -183,7 +182,7 @@ bool GameTextManager::Read_Line(char *buffer, int length, File *file)
 }
 
 // Converts an ASCII string into a usc2/utf16 string.
-void GameTextManager::Translate_Copy(char16_t *out, char *in)
+void GameTextManager::Translate_Copy(unichar_t *out, char *in)
 {
     // Unsigned allows handling latin extended code page.
     unsigned char *in_unsigned = reinterpret_cast<unsigned char *>(in);
@@ -264,13 +263,13 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
 }
 
 // Strip spaces from a ucs2/utf16 string.
-void GameTextManager::Strip_Spaces(char16_t *buffer)
+void GameTextManager::Strip_Spaces(unichar_t *buffer)
 {
-    char16_t *getp = buffer;
-    char16_t *putp = buffer;
+    unichar_t *getp = buffer;
+    unichar_t *putp = buffer;
 
-    char16_t current = *getp++;
-    char16_t last = '\0';
+    unichar_t current = *getp++;
+    unichar_t last = '\0';
 
     bool prev_whitepsace = true;
 
@@ -673,7 +672,7 @@ GameTextManager::GameTextManager() :
     m_noStringList(nullptr),
     m_useStringFile(true),
     m_language(LANGUAGE_ID_US),
-    m_failed(L"***FATAL*** String Manager failed to initialize properly"),
+    m_failed((const unichar_t *)u"***FATAL*** String Manager failed to initialize properly"),
     m_mapStringInfo(nullptr),
     m_mapStringLUT(nullptr),
     m_mapTextCount(0),
@@ -753,7 +752,7 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     AsciiString ntitle;
-    UnicodeString wtitle = L"Thyme - ";
+    UnicodeString wtitle = (const unichar_t *)u"Thyme - ";
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);
@@ -761,7 +760,7 @@ void GameTextManager::Init()
 #ifdef PLATFORM_WINDOWS
     if (g_applicationHWnd != 0) {
         SetWindowTextA(g_applicationHWnd, ntitle.Str());
-        SetWindowTextW(g_applicationHWnd, wtitle.Str());
+        SetWindowTextW(g_applicationHWnd, (const wchar_t *)wtitle.Str());
     }
 #else
 
@@ -782,7 +781,7 @@ void GameTextManager::Reset()
     }
 }
 
-// Find anr return the unicode string corresponding to the label provided.
+// Find and return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
 UnicodeString GameTextManager::Fetch(AsciiString args, bool *success)
 {
@@ -836,11 +835,11 @@ UnicodeString GameTextManager::Fetch(const char *args, bool *success)
     UnicodeString missing;
     NoString *no_string;
 
-    missing.Format(L"MISSING: '%hs'", args);
+    missing.Format((const unichar_t *)u"MISSING: '%hs'", args);
 
     // Find missing string in NoString list if it already exists.
     for (no_string = m_noStringList; no_string != nullptr; no_string = no_string->next) {
-        if (wcscmp(missing.Str(), no_string->text.Str()) == 0) {
+        if (missing == no_string->text) {
             break;
         }
     }

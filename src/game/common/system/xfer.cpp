@@ -103,7 +103,7 @@ void Xfer::xferAsciiString(AsciiString *thing)
 
 void Xfer::xferUnicodeString(UnicodeString *thing)
 {
-    xferImplementation(const_cast<wchar_t *>(thing->Str()), thing->Get_Length() * 2);
+    xferImplementation(const_cast<unichar_t *>(thing->Str()), thing->Get_Length() * 2);
 }
 
 void Xfer::xferCoord3D(Coord3D *thing)

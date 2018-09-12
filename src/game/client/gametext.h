@@ -107,9 +107,9 @@ public:
 #endif
 private:
     void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len);
-    void Translate_Copy(char16_t *out, char *in);
+    void Translate_Copy(unichar_t *out, char *in);
     void Remove_Leading_And_Trailing(char *buffer);
-    void Strip_Spaces(char16_t *buffer);
+    void Strip_Spaces(unichar_t *buffer);
     void Reverse_Word(char *start, char *end);
     char Read_Char(File *file);
     bool Read_Line(char *buffer, int length, File *file);
@@ -125,7 +125,7 @@ private:
     char m_bufferIn[10240];
     char m_bufferOut[10240];
     char m_bufferEx[10240];
-    char16_t m_translateBuffer[20480];
+    unichar_t m_translateBuffer[20480];
     StringInfo *m_stringInfo;
     StringLookUp *m_stringLUT;
     bool m_initialized;

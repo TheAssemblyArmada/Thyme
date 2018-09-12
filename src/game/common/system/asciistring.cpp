@@ -188,6 +188,25 @@ void AsciiString::Translate(UnicodeString const &string)
 {
     Release_Buffer();
     
+#if defined THYME_USE_ICU // Use ICU convertors
+    int32_t length;
+    UErrorCode error = U_ZERO_ERROR;
+    u_strToUTF8(nullptr, 0, &length, string, -1, &error);
+
+    if (U_SUCCESS(error) && length > 0) {
+        u_strToUTF8(Get_Buffer_For_Read(length), length, nullptr, string, -1, &error);
+
+        if (U_FAILURE(error)) {
+            Clear();
+        }
+    }
+#elif defined PLATFORM_WINDOWS // Use WIN32 API convertors.
+    int length = WideCharToMultiByte(CP_UTF8, 0, string, -1, nullptr, 0, nullptr, nullptr);
+
+    if (length > 0) {
+        WideCharToMultiByte(CP_UTF8, 0, string, -1, Get_Buffer_For_Read(length), length, nullptr, nullptr);
+    }
+#else // Naive copy, this is what the original does.
     int str_len = string.Get_Length();
 
     for ( int i = 0; i < str_len; ++i ) {
@@ -227,6 +246,7 @@ void AsciiString::Translate(UnicodeString const &string)
 
         Concat(reinterpret_cast<char *>(&c));
     }
+#endif
 }
 
 void AsciiString::Concat(char c)

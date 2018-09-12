@@ -162,63 +162,27 @@ public:
     bool Is_Not_Empty() { return !Is_Empty(); }
     bool Is_Not_None() { return !Is_None(); }
 
+    friend bool operator==(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) == 0; }
+    friend bool operator==(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) == 0; }
+    friend bool operator==(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) == 0; }
+
+    friend bool operator!=(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) != 0; }
+    friend bool operator!=(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) != 0; }
+    friend bool operator!=(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) != 0; }
+
+    friend bool operator<(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) < 0; }
+    friend bool operator<(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) < 0; }
+    friend bool operator<(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) < 0; }
+
+    friend bool operator>(UnicodeString const &left, UnicodeString const &right) { return left.Compare(right) > 0; }
+    friend bool operator>(UnicodeString const &left, const unichar_t *right) { return left.Compare(right) > 0; }
+    friend bool operator>(const unichar_t *left, UnicodeString const &right) { return right.Compare(left) > 0; }
+
 private:
     static UnicodeString const EmptyString;
 
     UnicodeStringData *m_data;
 };
-
-inline bool operator==(UnicodeString const &left, UnicodeString const &right)
-{
-    return left.Compare(right) == 0;
-}
-inline bool operator==(UnicodeString const &left, const unichar_t *right)
-{
-    return left.Compare(right) == 0;
-}
-inline bool operator==(const unichar_t *left, UnicodeString const &right)
-{
-    return right.Compare(left) == 0;
-}
-
-inline bool operator!=(UnicodeString const &left, UnicodeString const &right)
-{
-    return left.Compare(right) != 0;
-}
-inline bool operator!=(UnicodeString const &left, const unichar_t *right)
-{
-    return left.Compare(right) != 0;
-}
-inline bool operator!=(const unichar_t *left, UnicodeString const &right)
-{
-    return right.Compare(left) != 0;
-}
-
-inline bool operator<(UnicodeString const &left, UnicodeString const &right)
-{
-    return left.Compare(right) < 0;
-}
-inline bool operator<(UnicodeString const &left, const unichar_t *right)
-{
-    return left.Compare(right) < 0;
-}
-inline bool operator<(const unichar_t *left, UnicodeString const &right)
-{
-    return right.Compare(left) < 0;
-}
-
-inline bool operator>(UnicodeString const &left, UnicodeString const &right)
-{
-    return left.Compare(right) > 0;
-}
-inline bool operator>(UnicodeString const &left, const unichar_t *right)
-{
-    return left.Compare(right) > 0;
-}
-inline bool operator>(const unichar_t *left, UnicodeString const &right)
-{
-    return right.Compare(left) > 0;
-}
 
 #ifndef THYME_STANDALONE
 extern SimpleCriticalSectionClass *&g_unicodeStringCriticalSection;

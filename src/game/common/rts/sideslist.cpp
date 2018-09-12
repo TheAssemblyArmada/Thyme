@@ -248,7 +248,7 @@ void SidesList::Add_Player_By_Template(AsciiString template_name)
 
     if (template_name.Is_Empty()) {
         player_name = "";
-        display_name = L"Neutral";
+        display_name = (const unichar_t *)u"Neutral";
         is_human = false;
     } else {
         player_name = "Plyr";

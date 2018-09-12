@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief String class handing "wide" chars.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -18,7 +17,17 @@
 #include "always.h"
 #include "critsection.h"
 #include <stdarg.h>
+
+#ifdef THYME_USE_ICU
+#include <unicode/ustring.h>
+#include <unicode/stringoptions.h>
+#include <unicode/ustdio.h>
+
+#elif defined PLATFORM_WINDOWS
 #include <wchar.h>
+#else
+#error Support for utf16<->utf8 conversion not found for this platform.
+#endif
 
 class AsciiString;
 
@@ -36,34 +45,27 @@ public:
     struct UnicodeStringData
     {
 #ifdef GAME_DEBUG_STRUCTS
-        wchar_t *debug_ptr;
+        unichar_t *debug_ptr;
 #endif // GAME_DEBUG_STRUCTS
 
         uint16_t ref_count;
         uint16_t num_chars_allocated;
 
-        wchar_t *Peek()
+        unichar_t *Peek()
         {
             // Actual string data is stored immediately after the UnicodeStringData header.
             // wchar_a to avoid strict aliasing issues on gcc/clang
-            return reinterpret_cast<wchar_a *>(&this[1]);
+            return reinterpret_cast<unichar_a *>(&this[1]);
         }
     };
 
     UnicodeString() : m_data(nullptr) {}
-    UnicodeString(const wchar_t *s);
-    UnicodeString(char16_t const *s);
+    UnicodeString(const unichar_t *s);
     UnicodeString(UnicodeString const &string);
     // UnicodeString(AsciiString const &string);
     ~UnicodeString();
 
-    UnicodeString &operator=(const wchar_t *s)
-    {
-        Set(s);
-        return *this;
-    }
-
-    UnicodeString &operator=(char16_t const *s)
+    UnicodeString &operator=(const unichar_t *s)
     {
         Set(s);
         return *this;
@@ -89,19 +91,13 @@ public:
 
     // UnicodeString &operator=(AsciiString const &string) { Set(string); return *this; }
 
-    UnicodeString &operator+=(char16_t s)
+    UnicodeString &operator+=(unichar_t s)
     {
         Concat(s);
         return *this;
     }
 
-    UnicodeString &operator+=(wchar_t s)
-    {
-        Concat(s);
-        return *this;
-    }
-
-    UnicodeString &operator+=(const wchar_t *s)
+    UnicodeString &operator+=(const unichar_t *s)
     {
         Concat(s);
         return *this;
@@ -114,57 +110,60 @@ public:
     }
     // UnicodeString &operator+=(AsciiString const &string);
 
-    operator const wchar_t *() { return Str(); }
+    operator const unichar_t *() const { return Str(); }
 
     // TODO
-    // wchar_t *operator[](int index) const { return m_data->Peek()[index]; }
+    // unichar_t *operator[](int index) const { return m_data->Peek()[index]; }
 
     void Validate();
-    wchar_t *Peek() const;
+    unichar_t *Peek() const;
     void Release_Buffer();
-    void Ensure_Unique_Buffer_Of_Size(
-        int chars_needed, bool keep_data = false, const wchar_t *str_to_cpy = nullptr, const wchar_t *str_to_cat = nullptr);
+    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, const unichar_t *str_to_cpy = nullptr,
+        const unichar_t *str_to_cat = nullptr);
     int Get_Length() const;
     void Clear();
-    wchar_t Get_Char(int) const;
-    const wchar_t *Str() const;
-    wchar_t *Get_Buffer_For_Read(int len);
-    void Set(const wchar_t *s);
-    void Set(const char16_t *s);
+    unichar_t Get_Char(int) const;
+    const unichar_t *Str() const;
+    unichar_t *Get_Buffer_For_Read(int len);
+    void Set(const unichar_t *s);
     void Set(UnicodeString const &string);
 
     void Translate(AsciiString const &string);
     void Translate(const char *string);
 
-    void Concat(char16_t c);
-    void Concat(wchar_t c);
-    void Concat(const wchar_t *s);
+    void Concat(unichar_t c);
+    void Concat(const unichar_t *s);
     void Concat(UnicodeString const &string) { Concat(string.Str()); }
 
     void Trim();
     void To_Lower();
     void Remove_Last_Char();
 
-    void Format(const wchar_t *format, ...);
+    void Format(const unichar_t *format, ...);
     void Format(UnicodeString format, ...);
-    void Format_VA(const wchar_t *format, va_list args);
+    void Format_VA(const unichar_t *format, va_list args);
     void Format_VA(UnicodeString &format, va_list args);
 
-    int Compare(const wchar_t *s) const { return wcscmp(Str(), s); };
-    int Compare(UnicodeString const &string) const { return wcscmp(Str(), string.Str()); };
+    int Compare(const unichar_t *s) const { return u_strcmp(Str(), s); };
+    int Compare(UnicodeString const &string) const { return u_strcmp(Str(), string.Str()); };
 
-    int Compare_No_Case(const wchar_t *s) const { return wcscasecmp(Str(), s); };
-    int Compare_No_Case(UnicodeString const &string) const { return wcscasecmp(Str(), string.Str()); };
+    int Compare_No_Case(const unichar_t *s) const { return u_strcasecmp(Str(), s, U_COMPARE_CODE_POINT_ORDER); };
+    int Compare_No_Case(UnicodeString const &string) const
+    {
+        return u_strcasecmp(Str(), string.Str(), U_COMPARE_CODE_POINT_ORDER);
+    };
 
     bool Next_Token(UnicodeString *tok, UnicodeString delims);
 
-    bool Is_None() { return m_data != nullptr && wcscasecmp(Peek(), L"None") == 0; }
+    bool Is_None()
+    {
+        return m_data != nullptr && u_strcasecmp(Peek(), (const unichar_t *)u"None", U_COMPARE_CODE_POINT_ORDER) == 0;
+    }
     bool Is_Empty() { return Get_Length() <= 0; }
     bool Is_Not_Empty() { return !Is_Empty(); }
     bool Is_Not_None() { return !Is_None(); }
 
 private:
-    static wchar_t *Char16_To_WChar(wchar_t *dst, char16_t const *src);
     static UnicodeString const EmptyString;
 
     UnicodeStringData *m_data;
@@ -174,11 +173,11 @@ inline bool operator==(UnicodeString const &left, UnicodeString const &right)
 {
     return left.Compare(right) == 0;
 }
-inline bool operator==(UnicodeString const &left, const wchar_t *right)
+inline bool operator==(UnicodeString const &left, const unichar_t *right)
 {
     return left.Compare(right) == 0;
 }
-inline bool operator==(const wchar_t *left, UnicodeString const &right)
+inline bool operator==(const unichar_t *left, UnicodeString const &right)
 {
     return right.Compare(left) == 0;
 }
@@ -187,11 +186,11 @@ inline bool operator!=(UnicodeString const &left, UnicodeString const &right)
 {
     return left.Compare(right) != 0;
 }
-inline bool operator!=(UnicodeString const &left, const wchar_t *right)
+inline bool operator!=(UnicodeString const &left, const unichar_t *right)
 {
     return left.Compare(right) != 0;
 }
-inline bool operator!=(const wchar_t *left, UnicodeString const &right)
+inline bool operator!=(const unichar_t *left, UnicodeString const &right)
 {
     return right.Compare(left) != 0;
 }
@@ -200,11 +199,11 @@ inline bool operator<(UnicodeString const &left, UnicodeString const &right)
 {
     return left.Compare(right) < 0;
 }
-inline bool operator<(UnicodeString const &left, const wchar_t *right)
+inline bool operator<(UnicodeString const &left, const unichar_t *right)
 {
     return left.Compare(right) < 0;
 }
-inline bool operator<(const wchar_t *left, UnicodeString const &right)
+inline bool operator<(const unichar_t *left, UnicodeString const &right)
 {
     return right.Compare(left) < 0;
 }
@@ -213,11 +212,11 @@ inline bool operator>(UnicodeString const &left, UnicodeString const &right)
 {
     return left.Compare(right) > 0;
 }
-inline bool operator>(UnicodeString const &left, const wchar_t *right)
+inline bool operator>(UnicodeString const &left, const unichar_t *right)
 {
     return left.Compare(right) > 0;
 }
-inline bool operator>(const wchar_t *left, UnicodeString const &right)
+inline bool operator>(const unichar_t *left, UnicodeString const &right)
 {
     return right.Compare(left) > 0;
 }

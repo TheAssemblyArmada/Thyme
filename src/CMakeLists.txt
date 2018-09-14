@@ -192,13 +192,17 @@ set(GAMEENGINE_SRC
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
+    w3d/lib/bufffileclass.cpp
     w3d/lib/chunkio.cpp
     w3d/lib/cpudetect.cpp
     w3d/lib/critsection.cpp
     w3d/lib/ffactory.cpp
     w3d/lib/fileclass.cpp
-    w3d/lib/bufffileclass.cpp
+    w3d/lib/filestraw.cpp
+    w3d/lib/iniclass.cpp
     w3d/lib/rawfileclass.cpp
+    w3d/lib/readline.cpp
+    w3d/lib/straw.cpp
     w3d/lib/systimer.cpp
     w3d/lib/targa.cpp
     w3d/lib/thread.cpp

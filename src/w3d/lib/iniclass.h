@@ -134,7 +134,7 @@ public:
 public:
     INIClass() : m_fileName(nullptr) { Initialize(); }
     INIClass(FileClass &file);
-    ~INIClass();
+    virtual ~INIClass();
     
     void Initialize();
     bool Clear(const char *section = nullptr, const char *entry = nullptr);

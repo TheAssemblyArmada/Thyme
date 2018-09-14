@@ -25,7 +25,7 @@ class GenericNode
 public:
     GenericNode() : m_nextNode(nullptr), m_prevNode(nullptr) {}
     GenericNode(GenericNode &node) { node.Link(this); }
-    ~GenericNode() { Unlink(); }
+    virtual ~GenericNode() { Unlink(); }
 
     GenericNode &operator=(GenericNode &node);
     void Unlink();
@@ -105,7 +105,7 @@ class GenericList
 {
 public:
     GenericList() { m_firstNode.Link(&m_lastNode); }
-    ~GenericList();
+    virtual ~GenericList();
 
     GenericNode *First() const { return m_firstNode.Next(); }
     GenericNode *First_Valid() const;

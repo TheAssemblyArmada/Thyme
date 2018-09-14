@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: DX8WRAPPER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Wrapper around platform 3D functions.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Wrapper around platform 3D graphics library.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "always.h"
@@ -43,6 +34,7 @@ class DX8Wrapper
     {
         MAX_TEXTURE_STAGES = 8,
     };
+
 public:
     static void Init(void *hwnd, bool lite = false);
     static void Shutdown();
@@ -69,11 +61,27 @@ private:
 #ifndef THYME_STANDALONE
     static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
     static HMODULE &s_d3dLib;
+    static IDirect3D8 *&s_d3dInterface;
+    static IDirect3DBaseTexture8 **s_textures;
+    static unsigned *s_renderStates;
+    static unsigned *s_textureStageStates;
+    static Vector4 *s_vertexShaderConstants;
+    static unsigned *s_pixelShaderConstants;
+    static bool &s_isInitialised;
+    static bool &s_isWindowed;
 #else
 #ifdef PLATFORM_WINDOWS
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
     static HMODULE s_d3dLib;
+    static IDirect3D8 *s_d3dInterface;
+    static IDirect3DBaseTexture8 *s_textures[MAX_TEXTURE_STAGES];
 #endif
+    static unsigned s_renderStates[256];
+    static unsigned s_textureStageStates[MAX_TEXTURE_STAGES][32];
+    static Vector4 s_vertexShaderConstants[96]; // Not 100% sure this is a Vector4 array
+    static unsigned s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
+    static bool s_isInitialised;
+    static bool s_isWindowed;
 #endif
 };
 

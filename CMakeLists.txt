@@ -88,6 +88,7 @@ endif()
 #if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_definitions(-DGAME_DEBUG_LOG)
 #endif()
+add_compile_options("$<$<CONFIG:DEBUG>:-DTHYME_DEBUG>")
 
 # Locate git binary to provide information to the build environment
 find_package(Git)

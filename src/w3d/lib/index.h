@@ -30,12 +30,12 @@ public:
         NodeElement(const KeyType &id, const ValueType &data) : m_id(id), m_data(data) {}
         NodeElement() : m_id((KeyType)0), m_data((ValueType) nullptr) {}
 
-        BOOL operator==(NodeElement const &node) const { return m_id == node.m_id; }
-        BOOL operator!=(NodeElement const &node) const { return m_id != node.m_id; }
-        BOOL operator<(NodeElement const &node) const { return m_id < node.m_id; }
-        BOOL operator>(NodeElement const &node) const { return m_id > node.m_id; }
-        BOOL operator<=(NodeElement const &node) const { return m_id <= node.m_id; }
-        BOOL operator>=(NodeElement const &node) const { return m_id >= node.m_id; }
+        bool operator==(NodeElement const &node) const { return m_id == node.m_id; }
+        bool operator!=(NodeElement const &node) const { return m_id != node.m_id; }
+        bool operator<(NodeElement const &node) const { return m_id < node.m_id; }
+        bool operator>(NodeElement const &node) const { return m_id > node.m_id; }
+        bool operator<=(NodeElement const &node) const { return m_id <= node.m_id; }
+        bool operator>=(NodeElement const &node) const { return m_id >= node.m_id; }
 
         KeyType Get_ID() { return m_id; }
         ValueType Get_Data() { return m_data; }
@@ -53,14 +53,14 @@ public:
     ValueType Fetch_Index(const KeyType &id) const;
     ValueType &Fetch_Data_By_Index(int index) { return m_indexTable[index].m_data; }
     KeyType Fetch_ID_By_Index(int index) { return m_indexTable[index].m_id; }
-    BOOL Is_Present(const KeyType &id) const;
-    BOOL Add_Index(const KeyType &id, const ValueType &data);
-    BOOL Remove_Index(const KeyType &id);
+    bool Is_Present(const KeyType &id) const;
+    bool Add_Index(const KeyType &id, const ValueType &data);
+    bool Remove_Index(const KeyType &id);
     void Clear();
     int Count() const { return m_indexCount; }
-    BOOL Increase_Table_Size(int amount);
+    bool Increase_Table_Size(int amount);
     void Set_Archive(NodeElement *archive) const { m_archive = archive; }
-    BOOL Is_Archive_Same(const KeyType &id) const { return m_archive != nullptr && m_archive->m_id == id; }
+    bool Is_Archive_Same(const KeyType &id) const { return m_archive != nullptr && m_archive->m_id == id; }
     void Invalidate_Archive() const { m_archive = nullptr; }
     NodeElement *Search_For_Node(const KeyType &id) const;
 
@@ -72,7 +72,7 @@ private:
     NodeElement *m_indexTable;
     int m_indexCount;
     int m_indexSize;
-    mutable BOOL m_isSorted;
+    mutable bool m_isSorted;
     mutable NodeElement *m_archive;
 };
 
@@ -89,7 +89,7 @@ const ValueType &IndexClass<KeyType, ValueType>::operator[](const KeyType &id) c
 }
 
 template<typename KeyType, class ValueType>
-BOOL IndexClass<KeyType, ValueType>::Is_Present(const KeyType &id) const
+bool IndexClass<KeyType, ValueType>::Is_Present(const KeyType &id) const
 {
     if (Count() > 0) {
         if (Is_Archive_Same(id)) {
@@ -118,7 +118,7 @@ ValueType IndexClass<KeyType, ValueType>::Fetch_Index(const KeyType &id) const
 }
 
 template<typename KeyType, class ValueType>
-BOOL IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueType &data)
+bool IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueType &data)
 {
     if (Count() + 1 <= m_indexSize) {
         m_indexTable[m_indexCount].m_id = id;
@@ -148,7 +148,7 @@ BOOL IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueTyp
 }
 
 template<typename KeyType, class ValueType>
-BOOL IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
+bool IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
 {
     int pos = -1;
     for (int i = 0; i < m_indexCount; ++i) {
@@ -191,7 +191,7 @@ void IndexClass<KeyType, ValueType>::Clear()
 }
 
 template<typename KeyType, class ValueType>
-BOOL IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
+bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
 {
     DEBUG_ASSERT(amount > 0);
 

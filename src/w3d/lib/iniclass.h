@@ -33,7 +33,7 @@ enum INIIntegerType
     INIINTEGER_AS_MOTOROLA_HEX = 2
 };
 
-enum INILoadType
+enum INILoadMode
 {
     INI_LOAD_INVALID = 0,
     INI_LOAD_OVERWRITE = 1,

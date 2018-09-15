@@ -34,5 +34,5 @@ private:
 
 private:
     FileClass *m_file;
-    BOOL m_hasOpened;
+    bool m_hasOpened;
 };

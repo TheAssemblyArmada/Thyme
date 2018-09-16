@@ -212,6 +212,7 @@ set(GAMEENGINE_SRC
     w3d/lib/multilist.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/readline.cpp
+    w3d/lib/refcount.cpp
     w3d/lib/straw.cpp
     w3d/lib/systimer.cpp
     w3d/lib/targa.cpp

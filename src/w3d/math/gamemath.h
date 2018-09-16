@@ -69,6 +69,16 @@ namespace GameMath
 void Init();
 void Shutdown();
 
+inline float Max(float v1, float v2)
+{
+    return gm_fmaxf(v1, v2);
+}
+
+inline float Min(float v1, float v2)
+{
+    return gm_fminf(v1, v2);
+}
+
 inline float Square(float val)
 {
     return float(val * val);

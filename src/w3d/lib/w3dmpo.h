@@ -1,12 +1,25 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ * @author tomsons26
+ *
+ * @brief Alternative MemoryPoolObject style class for the W3D classes.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "always.h"
 #include "gamememory.h"
 #include "mempoolobj.h"
 
-// think this stands for W3DMemoryPoolObject
-// it might be the one creating the Clone functions
-
+// I think this stands for W3DMemoryPoolObject
 class W3DMPO
 {
 public:

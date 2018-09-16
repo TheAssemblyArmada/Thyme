@@ -29,6 +29,8 @@ void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();
 void Shutdown_Memory_Manager();
 MemoryPool *Create_Named_Pool(const char *name, int size);
+void *Allocate_From_Pool(MemoryPool *pool, int size);
+void Free_From_Pool(MemoryPool *pool, void *memory);
 
 #ifndef THYME_STANDALONE
 #include "hooker.h" //Remove once all hooks implemented

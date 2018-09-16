@@ -124,6 +124,16 @@ MemoryPool *Create_Named_Pool(const char *name, int size)
     return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
 }
 
+void *Allocate_From_Pool(MemoryPool *pool, int size)
+{
+    return pool->Allocate_Block();
+}
+
+void Free_From_Pool(MemoryPool *pool, void *memory)
+{
+    pool->Free_Block(memory);
+}
+
 // These all override the global news and deletes just by being linked.
 void *operator new(size_t bytes)
 {

@@ -1,15 +1,39 @@
-#include "refcount.h"
+#pragma once
 
-//think this stands for W3DMemoryPoolObject
+#include "always.h"
+#include "gamememory.h"
+#include "mempoolobj.h"
+
+// think this stands for W3DMemoryPoolObject
 // it might be the one creating the Clone functions
 
-class W3DMPO// : public RefCountClass
+class W3DMPO
 {
 public:
-    // i think the glueEnforcer comes from this\
-	// original is a pure virtual
-	// but its always a return 4 in classes that derive from it
-	// so ill just set it here
-    virtual int const glueEnforcer() { return 4; }; 
+    // I think the glueEnforcer comes from this original is a pure virtual but its always a return 4 in classes that derive
+    // from it so ill just set it here
+    virtual int const glueEnforcer() { return 4; };
     virtual ~W3DMPO() {}
 };
+
+#define IMPLEMENT_W3D_POOL(classname) \
+private: \
+    static MemoryPool *Get_Class_Pool() \
+    { \
+        static MemoryPool *const The##classname##Pool = \
+            g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
+        ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
+            "Pool %s is wrong size for class (need %d, currently %d)", \
+            #classname, \
+            sizeof(classname), \
+            The##classname##Pool->Get_Alloc_Size()); \
+        return The##classname##Pool; \
+    } \
+\
+public: \
+    void *operator new(size_t size) { return Allocate_From_Pool(Get_Class_Pool(), sizeof(classname)); } \
+    void *operator new(size_t size, void *dst) { return dst; } \
+    void operator delete(void *p, void *q) {} \
+    void operator delete(void *ptr) { return Free_From_Pool(Get_Class_Pool(), ptr); } \
+\
+private:

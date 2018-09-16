@@ -35,9 +35,9 @@ enum INIIntegerType
 
 enum INILoadMode
 {
-    INI_LOAD_INVALID = 0,
-    INI_LOAD_OVERWRITE = 1,
-    INI_LOAD_CREATE_OVERRIDES = 2
+    INIC_LOAD_INVALID = 0,
+    INIC_LOAD_OVERWRITE = 1,
+    INIC_LOAD_CREATE_OVERRIDES = 2
 };
 
 class INIEntry : public Node<INIEntry *>

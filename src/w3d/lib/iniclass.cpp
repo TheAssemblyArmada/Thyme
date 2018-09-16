@@ -163,7 +163,7 @@ int INIClass::Load(Straw &straw)
         Read_Line(straw, buffer, MAX_LINE_LENGTH, end_of_file);
         if (end_of_file) {
             DEBUG_LOG("INIClass::Load() - reached end of file before finding a section\n");
-            return INI_LOAD_INVALID;
+            return INIC_LOAD_INVALID;
         }
 
         if (buffer[0] == '[' && strchr(buffer, ']') != nullptr) {
@@ -184,7 +184,7 @@ int INIClass::Load(Straw &straw)
 
             Clear();
 
-            return INI_LOAD_INVALID;
+            return INIC_LOAD_INVALID;
         }
 
         while (!end_of_file) {
@@ -220,7 +220,7 @@ int INIClass::Load(Straw &straw)
                             delete section;
                             Clear();
 
-                            return INI_LOAD_INVALID;
+                            return INIC_LOAD_INVALID;
                         }
                         
                         // Is this Name, Value or something?
@@ -247,7 +247,7 @@ int INIClass::Load(Straw &straw)
         }
     }
 
-    return INI_LOAD_OVERWRITE;
+    return INIC_LOAD_OVERWRITE;
 }
 
 INISection *INIClass::Find_Section(const char *section) const

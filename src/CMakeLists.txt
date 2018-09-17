@@ -189,6 +189,7 @@ set(GAMEENGINE_SRC
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
     game/network/filetransfer.cpp
+    game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
     game/network/transport.cpp
     game/network/udp.cpp

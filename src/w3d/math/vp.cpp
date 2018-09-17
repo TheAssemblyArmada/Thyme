@@ -220,6 +220,6 @@ void VectorProcessorClass::ClampMin(float *dst, float *src, float min, int count
 void VectorProcessorClass::Power(float *dst, float *src, float pow, int count)
 {
     for (int i = 0; i < count; i++) {
-        dst[i] = powf(src[i], pow);
+        dst[i] = GameMath::Pow(src[i], pow);
     }
 }

@@ -71,12 +71,29 @@ void Shutdown();
 
 inline float Max(float v1, float v2)
 {
+#ifdef THYME_USING_GAMEMATH
     return gm_fmaxf(v1, v2);
+#else
+    return fmaxf(v1, v2);
+#endif
 }
 
 inline float Min(float v1, float v2)
 {
+#ifdef THYME_USING_GAMEMATH
     return gm_fminf(v1, v2);
+#else
+    return fminf(v1, v2);
+#endif
+}
+
+inline float Pow(float val, float power)
+{
+#ifdef THYME_USING_GAMEMATH
+    return gm_powf(val, power);
+#else
+    return powf(val, power);
+#endif
 }
 
 inline float Square(float val)

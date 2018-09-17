@@ -18,7 +18,6 @@
 #include "globaldata.h"
 #include "rtsutils.h"
 #include "sockets.h"
-#include "udp.h"
 
 /**
  * Initialises the packet transport system.

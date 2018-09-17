@@ -16,8 +16,8 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
 #include "array.h"
+#include "gamedebug.h"
 #include <cfloat>
 #include <cstdlib>
 
@@ -155,7 +155,7 @@ inline float Sin(float val)
 
 inline float Inv_Sin(float val)
 {
-	return (val>0.0f) ? 1.0f / Sin(val) : GAMEMATH_FLOAT_MAX;
+    return (val > 0.0f) ? 1.0f / Sin(val) : GAMEMATH_FLOAT_MAX;
 }
 
 inline float Sqrt(float val)

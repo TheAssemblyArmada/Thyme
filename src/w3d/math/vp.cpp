@@ -25,56 +25,56 @@ void VectorProcessorClass::Prefetch(void *address)
     // Nothing in checked binaries, if found fill it in
 }
 
-void VectorProcessorClass::TransformNoW(Vector3 *dst, Vector3 const *src, Matrix3D const &mtx, int count)
+void VectorProcessorClass::TransformNoW(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = mtx.Rotate_Vector(src[i]);
     }
 }
 
-void VectorProcessorClass::Transform(Vector3 *dst, Vector3 const *src, Matrix3D const &mtx, int count)
+void VectorProcessorClass::Transform(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int count)
 {
     while (count--) {
         dst[count] = mtx * src[count];
     }
 }
 
-void VectorProcessorClass::Transform(Vector4 *dst, Vector3 const *src, Matrix4 const &mtx, int count)
+void VectorProcessorClass::Transform(Vector4 *dst, const Vector3 *src, const Matrix4 &mtx, int count)
 {
     while (count--) {
         dst[count] = mtx * src[count];
     }
 }
 
-void VectorProcessorClass::Copy(Vector2 *dst, Vector2 const *src, int count)
+void VectorProcessorClass::Copy(Vector2 *dst, const Vector2 *src, int count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector2) * count);
     }
 }
 
-void VectorProcessorClass::Copy(unsigned int *dst, unsigned int const *src, int count)
+void VectorProcessorClass::Copy(unsigned *dst, const unsigned *src, int count)
 {
     if (count > 0) {
-        memcpy(dst, src, sizeof(unsigned int) * count);
+        memcpy(dst, src, sizeof(unsigned) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector3 *dst, Vector3 const *src, int count)
+void VectorProcessorClass::Copy(Vector3 *dst, const Vector3 *src, int count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector3) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, Vector4 const *src, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector4 *src, int count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector4) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const *src, float const *srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, const float *srca, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i].X = src[i].X;
@@ -84,7 +84,7 @@ void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const *src, float const *s
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const *src, float srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, float srca, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i].X = src[i].X;
@@ -94,7 +94,7 @@ void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const *src, float srca, in
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const &src, float const *srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 &src, const float *srca, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i].X = src.X;
@@ -104,7 +104,7 @@ void VectorProcessorClass::Copy(Vector4 *dst, Vector3 const &src, float const *s
     }
 }
 
-void VectorProcessorClass::CopyIndexed(unsigned int *dst, unsigned int const *src, unsigned int const *index, int count)
+void VectorProcessorClass::CopyIndexed(unsigned *dst, const unsigned *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
@@ -112,7 +112,7 @@ void VectorProcessorClass::CopyIndexed(unsigned int *dst, unsigned int const *sr
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector2 *dst, Vector2 const *src, const unsigned int *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector2 *dst, const Vector2 *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
@@ -120,7 +120,7 @@ void VectorProcessorClass::CopyIndexed(Vector2 *dst, Vector2 const *src, const u
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector3 *dst, Vector3 const *src, const unsigned int *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector3 *dst, const Vector3 *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
@@ -128,30 +128,29 @@ void VectorProcessorClass::CopyIndexed(Vector3 *dst, Vector3 const *src, const u
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector4 *dst, Vector4 const *src, unsigned int const *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector4 *dst, const Vector4 *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-void VectorProcessorClass::CopyIndexed(unsigned char *dst, unsigned char *src, unsigned int const *index, int count)
+void VectorProcessorClass::CopyIndexed(unsigned char *dst, unsigned char *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-void VectorProcessorClass::CopyIndexed(float *dst, float *src, unsigned int const *index, int count)
+void VectorProcessorClass::CopyIndexed(float *dst, float *src, const unsigned *index, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-// this has a bugfix where it always set minf value only
-// dunno what consequences fixing this could cause
-void VectorProcessorClass::Clamp(Vector4 *dst, Vector4 const *src, float min, float max, int count)
+// This has a bugfix where it always set minf value only dunno what consequences fixing this could cause
+void VectorProcessorClass::Clamp(Vector4 *dst, const Vector4 *src, float min, float max, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i].X = GameMath::Max(min, src[i].X);
@@ -172,7 +171,6 @@ void VectorProcessorClass::Clear(Vector3 *dst, int count)
     }
 }
 
-// code confirmish
 void VectorProcessorClass::Normalize(Vector3 *dst, int count)
 {
     for (int i = 0; i < count; i++) {
@@ -180,8 +178,7 @@ void VectorProcessorClass::Normalize(Vector3 *dst, int count)
     }
 }
 
-// this has a bugfix where it always set minf value only
-// dunno what consequences fixing this could cause
+// This has a bugfix where it always set minf value only dunno what consequences fixing this could cause
 void VectorProcessorClass::MinMax(Vector3 *src, Vector3 &min, Vector3 &max, int count)
 {
     min = *src;
@@ -203,7 +200,7 @@ void VectorProcessorClass::MulAdd(float *dest, float multiplier, float add, int 
     }
 }
 
-void VectorProcessorClass::DotProduct(float *dst, Vector3 const &a, Vector3 const *b, int count)
+void VectorProcessorClass::DotProduct(float *dst, const Vector3 &a, const Vector3 *b, int count)
 {
     for (int i = 0; i < count; i++) {
         dst[i] = a * b[i];

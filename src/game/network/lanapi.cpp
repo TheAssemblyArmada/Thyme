@@ -213,7 +213,7 @@ void LANAPI::Request_Game_Join_Direct(uint32_t addr)
         msg.message_type = LANMessage::MSG_REQUEST_GAME_INFO;
         Fill_In_Message(&msg);
         msg.direct_join.addr = Get_Local_IP();
-        u_strlcpy(msg.direct_join.name, (const char16_t*)m_name.Str(), m_name.Get_Length() + 1);
+        u_strlcpy(msg.direct_join.name, (const unichar_t*)m_name.Str(), m_name.Get_Length() + 1);
         Send_Message(&msg, addr);
         m_pendingAction = ACT_LEAVE;
         m_expiration = m_actionTimeout + rts::Get_Time();
@@ -286,7 +286,7 @@ LANGameInfo *LANAPI::Lookup_Game_By_Offset(int offset)
 
 void LANAPI::Fill_In_Message(LANMessage *msg)
 {
-    u_strlcpy(msg->name, (const char16_t *)m_name.Str(), sizeof(msg->name));
+    u_strlcpy(msg->name, (const unichar_t *)m_name.Str(), sizeof(msg->name));
     strlcpy(msg->user_name, m_userName, sizeof(msg->user_name));
     strlcpy(msg->host_name, m_hostName, sizeof(msg->host_name));
 }

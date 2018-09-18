@@ -81,6 +81,7 @@ set(GAMEENGINE_SRC
     game/main.cpp
     game/maputil.cpp
     game/weather.cpp
+    game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
     game/client/gameclient.cpp

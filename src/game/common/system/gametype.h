@@ -152,6 +152,13 @@ enum ParticlePriorityType : int32_t
 };
 DEFINE_ENUMERATION_OPERATORS(ParticlePriorityType);
 
+enum CellShroudStatus
+{
+    SHROUD_STATUS_CLEAR,
+    SHROUD_STATUS_FOG,
+    SHROUD_STATUS_SHROUD,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];

@@ -376,7 +376,7 @@ void Mouse::Set_Position(int x, int y)
  */
 void Mouse::Set_Mouse_Limits()
 {
-    // TODO Requires DisplayClass
+    // TODO Requires Display
 #ifndef THYME_STANDALONE
     Call_Method<void, Mouse>(0x00403B60, this);
 #elif 0

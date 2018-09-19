@@ -60,8 +60,8 @@ class Display : public SubsystemInterface
     virtual bool Set_Display_Mode(unsigned, unsigned, unsigned, bool);
     virtual int Get_Display_Mode_Count();
     virtual void Get_Display_Mode_Description(int, int *, int *, int *);
-    virtual void Set_Gamma(float, float, float, BOOL);
-    virtual bool Test_Min_Spec_Requirements(BOOL *a2, BOOL *a3, BOOL *a4, StaticGameLODLevel *lod_level, float *a6)
+    virtual void Set_Gamma(float, float, float, bool);
+    virtual bool Test_Min_Spec_Requirements(bool *a2, bool *a3, bool *a4, StaticGameLODLevel *lod_level, float *a6)
     {
         *a4 = 1;
         *a3 = 1;

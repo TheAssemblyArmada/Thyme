@@ -19,6 +19,10 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
+#include <cstring>
+
+using std::memcpy;
+using std::memset;
 
 void VectorProcessorClass::Prefetch(void *address)
 {

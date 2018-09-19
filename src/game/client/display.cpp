@@ -2,6 +2,7 @@
  * @file
  *
  * @author tomsons26
+ * @author OmniBlade
  *
  * @brief Base class for the display handling.
  *
@@ -15,6 +16,7 @@
 #include "display.h"
 #include "gamefont.h"
 #include "mouse.h"
+#include "view.h"
 
 Display::Display() :
     m_width(0),
@@ -55,16 +57,13 @@ Display::~Display()
  */
 void Display::Reset()
 {
-#ifndef THYME_STANDALONE
-    Call_Method<void, Display>(0x00421A00, this);
-#else
-    /*m_letterBoxFadeLevel = 0;
-    m_letterBoxEnabled = 0;
+    m_letterBoxFadeLevel = 0;
+    m_letterBoxEnabled = false;
     Stop_Movie();
-    for (View *i = m_viewList; i; i = i->getNextView()) {
+
+    for (View *i = m_viewList; i; i = i->Get_Next_View()) {
         i->Reset();
-    }*/
-#endif
+    }
 }
 
 /**
@@ -101,6 +100,9 @@ void Display::Set_Height(unsigned height)
     }
 }
 
+/**
+ * 0x00421390
+ */
 bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
 {
 // TODO Requires TacticalView
@@ -111,6 +113,9 @@ bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
 #endif
 }
 
+/**
+ * 0x0073C5D0
+ */
 int Display::Get_Display_Mode_Count()
 {
 // TODO Requires WW3D
@@ -121,6 +126,9 @@ int Display::Get_Display_Mode_Count()
 #endif
 }
 
+/**
+ * 0x0073C650
+ */
 void Display::Get_Display_Mode_Description(int a1, int * a2, int * a3, int * a4) 
 {
 // TODO Requires WW3D
@@ -129,6 +137,9 @@ void Display::Get_Display_Mode_Description(int a1, int * a2, int * a3, int * a4)
 #endif
 }
 
+/**
+ * 0x0073C650
+ */
 void Display::Set_Gamma(float a1, float a2, float a3, bool a4)
 {
 // TODO Requires DX8Wrapper
@@ -137,13 +148,12 @@ void Display::Set_Gamma(float a1, float a2, float a3, bool a4)
 #endif
 }
 
+/**
+ * 0x00421300
+ */
 void Display::Attach_View(View *view)
 {
-#ifndef THYME_STANDALONE
-    Call_Method<void, Display, View *>(0x00421300, this, view);
-#else
-    //m_viewList = view->prependViewToList(m_viewList);
-#endif
+    m_viewList = view->Prepend_View_To_List(m_viewList);
 }
 
 View *Display::Get_First_View()
@@ -151,40 +161,41 @@ View *Display::Get_First_View()
     return m_viewList;
 }
 
+/**
+ * 0x004210A0
+ */
 View *Display::Get_Next_View(View *view)
 {
-#ifndef THYME_STANDALONE
-    return Call_Method<View *, Display, View *>(0x00421320, this, view);
-#else
-    /*if (view) {
-        return view->getNextView();
-    }*/
+    if (view) {
+        return view->Get_Next_View();
+    }
+
     return nullptr;
-#endif
 }
 
+/**
+ * 0x00421320
+ */
 void Display::Draw_Views()
 {
-#ifndef THYME_STANDALONE
-    Call_Method<void, Display>(0x00421320, this);
-#else
-    /*for (View *i = m_viewList; i; i = i->getNextView()) {
-        i->drawView();
-    }*/
-#endif
+    for (View *i = m_viewList; i; i = i->Get_Next_View()) {
+        i->Draw_View();
+    }
 }
 
+/**
+ * 0x00421350
+ */
 void Display::Update_Views()
 {
-#ifndef THYME_STANDALONE
-    Call_Method<void, Display>(0x00421350, this);
-#else
-    /*for (View *i = m_viewList; i; i = i->getNextView()) {
-        i->updateView();
-    }*/
-#endif
+    for (View *i = m_viewList; i; i = i->Get_Next_View()) {
+        i->Update_View();
+    }
 }
 
+/**
+ * 0x00421500
+ */
 void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
 {
 #ifndef THYME_STANDALONE
@@ -192,12 +203,19 @@ void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
 #endif
 }
 
+/**
+ * 0x00421670
+ */
 void Display::Play_Movie(Utf8String name)
 {
 #ifndef THYME_STANDALONE
     Call_Method<void, Display, Utf8String>(0x00421670, this, name);
 #endif
 }
+
+/**
+ * 0x004217D0
+ */
 void Display::Stop_Movie()
 {
 #ifndef THYME_STANDALONE
@@ -205,6 +223,9 @@ void Display::Stop_Movie()
 #endif
 }
 
+/**
+ * 0x004212C0
+ */
 void Display::Delete_Views()
 {
 #ifndef THYME_STANDALONE

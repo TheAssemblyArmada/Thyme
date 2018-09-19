@@ -29,7 +29,7 @@ Display::Display() :
     m_debugDisplay(nullptr),
     m_debugDisplayCallback(nullptr),
     m_debugDisplayUserData(nullptr),
-    m_letterBoxFadeLevel(0.0),
+    m_letterBoxFadeLevel(0.0f),
     m_letterBoxEnabled(false),
     m_letterBoxFadeStart(0),
     m_someLogoMovieInt1(-1),
@@ -40,6 +40,9 @@ Display::Display() :
 {
 }
 
+/**
+ * 0x004211A0
+ */
 Display::~Display()
 {
 #ifndef THYME_STANDALONE
@@ -47,6 +50,9 @@ Display::~Display()
 #endif
 }
 
+/**
+ * 0x00421A00
+ */
 void Display::Reset()
 {
 #ifndef THYME_STANDALONE
@@ -61,6 +67,9 @@ void Display::Reset()
 #endif
 }
 
+/**
+ * 0x00421870
+ */
 void Display::Update()
 {
 #ifndef THYME_STANDALONE
@@ -96,7 +105,7 @@ bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
 {
 // TODO Requires TacticalView
 #ifndef THYME_STANDALONE
-    return Call_Method<bool, Display, unsigned, unsigned, unsigned, BOOL>(0x00421390, this, a2, a3, a4, a5);
+    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(0x00421390, this, a2, a3, a4, a5);
 #else
     return 0;
 #endif
@@ -120,11 +129,11 @@ void Display::Get_Display_Mode_Description(int a1, int * a2, int * a3, int * a4)
 #endif
 }
 
-void Display::Set_Gamma(float a1, float a2, float a3, BOOL a4)
+void Display::Set_Gamma(float a1, float a2, float a3, bool a4)
 {
 // TODO Requires DX8Wrapper
 #ifndef THYME_STANDALONE
-    Call_Method<void, Display, float, float, float, BOOL>(0x0073C650, this, a1, a2, a3, a4);
+    Call_Method<void, Display, float, float, float, bool>(0x0073C650, this, a1, a2, a3, a4);
 #endif
 }
 

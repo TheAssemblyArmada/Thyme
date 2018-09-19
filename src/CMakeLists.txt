@@ -89,6 +89,7 @@ set(GAMEENGINE_SRC
     game/client/globallanguage.cpp
     game/client/optionpreferences.cpp
     game/client/terrainroads.cpp
+    game/client/view.cpp
     game/client/water.cpp
     game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp

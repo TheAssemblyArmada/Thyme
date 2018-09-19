@@ -2,6 +2,7 @@
  * @file
  *
  * @author tomsons26
+ * @author OmniBlade
  *
  * @brief Base class for the display handling.
  *

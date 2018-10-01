@@ -379,7 +379,7 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
     if (le32toh(header.version) <= 1) {
         m_language = LANGUAGE_ID_US;
     } else {
-        m_language = le32toh(header.langid);
+        m_language = (LanguageID)le32toh(header.langid);
     }
 
     file->Close();

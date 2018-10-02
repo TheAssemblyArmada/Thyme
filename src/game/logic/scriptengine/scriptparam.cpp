@@ -80,7 +80,7 @@ Utf8String Parameter::Get_UI_Text()
         {"Pink", 0xFFFF8670}
     };
 
-    Utf8String ui_string = m_string.Is_Empty() ? "???" : m_string;
+    Utf8String ui_string = m_string.Is_Empty() ? "?" : m_string;
     Utf8String ui_text;
 
     switch (m_type) {
@@ -276,7 +276,7 @@ Utf8String Parameter::Get_UI_Text()
             break;
         case BUILDABLE:
             if (m_int < BSTATUS_YES || m_int >= BSTATUS_COUNT) {
-                ui_text.Format("Buildable (???)");
+                ui_text.Format("Buildable (?)");
             } else {
                 ui_text.Format("Buildable (%s)", g_buildableStatusNames[m_int]);
             }
@@ -284,7 +284,7 @@ Utf8String Parameter::Get_UI_Text()
             break;
         case SURFACES_ALLOWED:
             if (m_int - 1 < SURFACE_GROUND || m_int - 1 >= SURFACE_COUNT) {
-                ui_text.Format("Surfaces Allowed: ???");
+                ui_text.Format("Surfaces Allowed: ?");
             } else {
                 ui_text.Format("Surfaces Allowed: %s", g_surfaceNames[m_int - 1]);
             }
@@ -292,7 +292,7 @@ Utf8String Parameter::Get_UI_Text()
             break;
         case SHAKE_INTENSITY:
             if (m_int < SHAKE_SUBTLE || m_int >= SHAKE_COUNT) {
-                ui_text.Format("Shake Intensity: ???");
+                ui_text.Format("Shake Intensity: ?");
             } else {
                 ui_text.Format("Shake Intensity: %s", g_shakeIntensityNames[m_int]);
             }
@@ -305,7 +305,7 @@ Utf8String Parameter::Get_UI_Text()
             break;
         case OBJECT_STATUS:
             if (m_string.Is_Empty()) {
-                ui_text.Format("Object Status is '???'");
+                ui_text.Format("Object Status is '?'");
             } else {
                 ui_text.Format("Object Status is '%s'", ui_string.Str());
             }

@@ -43,14 +43,14 @@ struct LANMessage
         MSG_GAME_TIMER,
         MSG_GAME_OPTIONS,
         MSG_SET_ACTIVE,
-		MSG_REQUEST_GAME_INFO,
+        MSG_REQUEST_GAME_INFO,
         MSG_MAX
     } message_type;
     unichar_t name[13];
     char user_name[2];
     char host_name[2];
 
-	union
+    union
     {
         struct
         {
@@ -60,26 +60,26 @@ struct LANMessage
             char cd_key[24];
         } join;
 
-		// Its not clear from the original how large the name array actually is.
-		// Pratically the actual space is 216 based on overall size of the LANMessage union.
-		struct
+        // Its not clear from the original how large the name array actually is.
+        // Pratically the actual space is 216 based on overall size of the LANMessage union.
+        struct
         {
             uint32_t addr;
             unichar_t name[17];
         } direct_join;
 
-		struct
+        struct
         {
             unichar_t name[17];
         } leave;
 
-		struct
+        struct
         {
             unichar_t name[17];
             bool unk_bool;
         } accept;
 
-		struct
+        struct
         {
             unichar_t game_name[17];
             char unk_byte;
@@ -87,30 +87,30 @@ struct LANMessage
             char unk_byte2;
         } announce;
 
-		struct
+        struct
         {
             unichar_t game_name[17];
             int map_name_crc;
             bool has_map;
         } map;
 
-		struct
+        struct
         {
             unichar_t game_name[17];
             int32_t chat_type;
             unichar_t chat_buff[101];
         } chat;
 
-		struct
+        struct
         {
             uint32_t tick;
         } timer;
 
-		struct
+        struct
         {
             char info_string[401];
         } options;
-	};
+    };
 };
 #pragma pack(pop)
 
@@ -125,13 +125,14 @@ public:
         LANCHAT_MAX,
     };
 
-	enum ReturnType
+    enum ReturnType
     {
         RET_OK,
         RET_TIMEOUT,
         RET_GAME_FULL,
         RET_DUPLICATE_NAME,
         RET_CRC_MISMATCH,
+        RET_DUPLICATE_SERIAL,
         RET_GAME_STARTED,
         RET_GAME_EXISTS,
         RET_GAME_GONE,
@@ -175,8 +176,14 @@ public:
     virtual void On_Name_Change(uint32_t ip, Utf16String name) = 0;
     virtual LANGameInfo *Lookup_Game(Utf16String name) = 0;
     virtual LANGameInfo *Lookup_Game_By_Offset(int offset) = 0;
+    virtual void Set_Local_IP(uint32_t address) = 0;
+    virtual void Set_Local_IP(Utf8String address) = 0;
+    virtual bool Am_I_Host() = 0;
+    virtual Utf16String Get_My_Name() = 0;
+    virtual LANGameInfo *Get_My_Game() = 0;
     virtual void Fill_In_Message(LANMessage *msg) = 0;
-    virtual void Check_MOTD() = 0;
+    virtual void Check_MOTD() = 0; // Both these two virtuals are empty in implementation.
+    virtual void On_In_Active() = 0; // Order they occur is unclear.
     virtual LANPlayer *Lookup_Player(uint32_t ip) = 0;
     virtual uint32_t Get_Local_IP() = 0;
 };

@@ -32,7 +32,7 @@ class LANAPI : public LANAPIInterface
 
     enum
     {
-		LANAPI_PORT = 8086,
+        LANAPI_PORT = 8086,
     };
 
 public:
@@ -75,13 +75,20 @@ public:
     virtual void On_Name_Change(uint32_t ip, Utf16String name) override;
     virtual LANGameInfo *Lookup_Game(Utf16String name) override;
     virtual LANGameInfo *Lookup_Game_By_Offset(int offset) override;
+    virtual void Set_Local_IP(uint32_t address) override;
+    virtual void Set_Local_IP(Utf8String address) override;
+    virtual bool Am_I_Host() override;
+    virtual Utf16String Get_My_Name() override { return m_name; }
+    virtual LANGameInfo *Get_My_Game() override { return m_currentGame; }
     virtual void Fill_In_Message(LANMessage *msg) override;
-    virtual void Check_MOTD() override;
+    virtual void Check_MOTD() override {}
+    virtual void On_In_Active() override {}
     virtual LANPlayer *Lookup_Player(uint32_t ip) override;
-    virtual uint32_t Get_Local_IP() override;
+    virtual uint32_t Get_Local_IP() override { return m_localIP; }
 
 private:
     void Send_Message(LANMessage *msg, uint32_t addr);
+    static uint32_t Resolve_IP(Utf8String addr); 
 
 private:
     LANPlayer *m_lobbyPlayers;

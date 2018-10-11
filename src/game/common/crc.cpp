@@ -15,7 +15,7 @@
 #include "crc.h"
 
 template<typename T, int N>
-inline constexpr auto calculateCRC()
+inline constexpr Array<T,N> calculateCRC()
 {
 	Array<T,N> lookup;
 	const unsigned long POLYNOMIAL = 0xEDB88320;

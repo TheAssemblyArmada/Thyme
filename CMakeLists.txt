@@ -33,8 +33,14 @@ if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
     message(FATAL_ERROR "Building in-source is not supported! Create a build dir and remove ${CMAKE_SOURCE_DIR}/CMakeCache.txt")
 endif()
 
+if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    set(DEFAULT_STANDALONE OFF)
+else()
+    set(DEFAULT_STANDALONE ON)
+endif()
+
 # This doesn't really work yet, work ongoing to make it usable
-option(STANDALONE "Build a standalone version." OFF)
+option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(THYME_USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)

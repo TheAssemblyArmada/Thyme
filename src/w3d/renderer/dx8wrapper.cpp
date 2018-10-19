@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "dx8wrapper.h"
+#include "thread.h"
 #include <cstring>
 
 using std::memcpy;
@@ -24,6 +25,8 @@ IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Globa
 HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
 IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(0x00A47EEC);
 IDirect3DBaseTexture8 **DX8Wrapper::s_textures = Make_Pointer<IDirect3DBaseTexture8 *>(0x00A42784);
+void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(0x00A47EBC);
+void *&DX8Wrapper::s_hwnd = Make_Global<void *>(0x00A47EBC);
 unsigned *DX8Wrapper::s_renderStates = Make_Pointer<unsigned>(0x00A46CC0);
 unsigned *DX8Wrapper::s_textureStageStates = Make_Pointer<unsigned>(0x00A46CC0);
 Vector4 *DX8Wrapper::s_vertexShaderConstants = Make_Pointer<Vector4>(0x00A47778);
@@ -35,6 +38,8 @@ unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(0x00A42778);
 float &DX8Wrapper::s_zNear = Make_Global<float>(0x00A47E38);
 float &DX8Wrapper::s_zFar = Make_Global<float>(0x00A47EB8);
 Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
+int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
+int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 #else
 #ifdef PLATFORM_WINDOWS
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
@@ -42,6 +47,8 @@ HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;
 IDirect3DBaseTexture8 *DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
 #endif
+void *DX8Wrapper::s_shadowMap;
+void *DX8Wrapper::s_hwnd;
 unsigned DX8Wrapper::s_renderStates[256];
 unsigned DX8Wrapper::s_textureStageStates[MAX_TEXTURE_STAGES][32];
 Vector4 DX8Wrapper::s_vertexShaderConstants[96]; // Not 100% sure this is a Vector4 array
@@ -53,6 +60,8 @@ unsigned s_renderStateChanged;
 float s_zNear;
 float s_zFar;
 Matrix4 s_projectionMatrix;
+int DX8Wrapper::s_mainThreadID;
+int DX8Wrapper::s_currentRenderDevice = -1;
 #endif
 
 void DX8Wrapper::Init(void *hwnd, bool lite)
@@ -74,6 +83,10 @@ void DX8Wrapper::Init(void *hwnd, bool lite)
     memset(s_pixelShaderConstants, 0, sizeof(s_pixelShaderConstants));
 #endif
     memset(&s_renderState, 0, sizeof(s_renderState));
+    s_shadowMap = nullptr;
+    s_hwnd = hwnd;
+    s_mainThreadID = ThreadClass::Get_Current_Thread_ID(); // Init only called from main thread so this is fine.
+    s_currentRenderDevice = -1;
 #endif
 }
 

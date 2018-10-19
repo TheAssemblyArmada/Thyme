@@ -134,6 +134,8 @@ private:
     static IDirect3D8 *&s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;
     static IDirect3DBaseTexture8 **s_textures;
+    static void *&s_hwnd; // Actually a hwnd, but we only care for building the dll.
+    static void *&s_shadowMap;
     static unsigned *s_renderStates;
     static unsigned *s_textureStageStates;
     static Vector4 *s_vertexShaderConstants;
@@ -145,7 +147,8 @@ private:
     static float &s_zNear;
     static float &s_zFar;
     static Matrix4 &s_projectionMatrix;
-
+    static int &s_mainThreadID;
+    static int &s_currentRenderDevice;
 #else
 #ifdef PLATFORM_WINDOWS
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -154,6 +157,8 @@ private:
     static IDirect3DDevice8 *&s_d3dDevice;
     static IDirect3DBaseTexture8 *s_textures[MAX_TEXTURE_STAGES];
 #endif
+    static void *s_hwnd;
+    static void *s_shadowMap; // Not sure what type this actually is for now.
     static unsigned s_renderStates[256];
     static unsigned s_textureStageStates[MAX_TEXTURE_STAGES][32];
     static Vector4 s_vertexShaderConstants[96]; // Not 100% sure this is a Vector4 array
@@ -165,6 +170,8 @@ private:
     static float s_zNear;
     static float s_zFar;
     static Matrix4 s_projectionMatrix;
+    static int s_mainThreadID;
+    static int s_currentRenderDevice;
 #endif
     static unsigned s_matrixChanges;
     static unsigned s_textureStageStateChanges;

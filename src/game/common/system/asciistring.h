@@ -19,6 +19,11 @@
 #include <cstdarg>
 #include <cstring>
 
+// Using STLPort seems to screw up some of the C++11 header inclusions.
+#ifdef THYME_STANDALONE
+#include <atomic>
+#endif
+
 class Utf16String;
 
 class Utf8String
@@ -40,28 +45,28 @@ public:
         char *debug_ptr;
 #endif // GAME_DEBUG_STRUCTS
 
+#ifdef THYME_STANDALONE
+        std::atomic<uint16_t> ref_count;
+#else
         uint16_t ref_count;
+#endif
         uint16_t num_chars_allocated;
 
         void Inc_Ref_Count()
         {
-#ifdef COMPILER_MSVC
+#ifdef THYME_STANDALONE
+            ++ref_count;
+#elif defined PLATFORM_WINDOWS
             InterlockedIncrement16((volatile short *)&ref_count);
-#elif defined COMPILER_GNUC || defined COMPILER_CLANG
-            __sync_add_and_fetch(&ref_count, 1);
-#else
-#error Compiler not supported, add atomic increment to asciistring.h
 #endif
         }
 
         void Dec_Ref_Count()
         {
-#ifdef COMPILER_MSVC
+#ifdef THYME_STANDALONE
+            --ref_count;
+#elif defined PLATFORM_WINDOWS
             InterlockedDecrement16((volatile short *)&ref_count);
-#elif defined COMPILER_GNUC || defined COMPILER_CLANG
-            __sync_sub_and_fetch(&ref_count, 1);
-#else
-#error Compiler not supported, add atomic decrement to asciistring.h
 #endif
         }
 
@@ -138,7 +143,7 @@ public:
     bool Next_Token(Utf8String *tok, const char *seps = nullptr);
 
     bool Is_None() const { return m_data != nullptr && strcasecmp(Peek(), "None") == 0; }
-    bool Is_Empty() const { return  m_data == nullptr || *m_data->Peek() == '\0'; }
+    bool Is_Empty() const { return m_data == nullptr || *m_data->Peek() == '\0'; }
     bool Is_Not_Empty() const { return !Is_Empty(); }
     bool Is_Not_None() const { return !Is_None(); }
 

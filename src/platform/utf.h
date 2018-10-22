@@ -34,7 +34,7 @@
 class UTF8To16
 {
 public:
-    UTF8To16(char const *utf8) : m_buffer(nullptr)
+    UTF8To16(const char *utf8) : m_buffer(nullptr)
     {
 #ifdef PLATFORM_WINDOWS
         int size = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
@@ -53,7 +53,7 @@ public:
 #endif // PLATFORM_WINDOWS
     }
 
-    operator wchar_t *() const { return m_buffer; }
+    operator const wchar_t *() const { return m_buffer; }
 
 private:
     wchar_t *m_buffer;
@@ -74,7 +74,7 @@ private:
 class UTF16To8
 {
 public:
-    UTF16To8(wchar_t const *utf16) : m_buffer(nullptr)
+    UTF16To8(const wchar_t *utf16) : m_buffer(nullptr)
     {
 #ifdef PLATFORM_WINDOWS
         int size = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, nullptr, nullptr);
@@ -93,7 +93,7 @@ public:
 #endif // PLATFORM_WINDOWS
     }
 
-    operator char *() const { return m_buffer; }
+    operator const char *() const { return m_buffer; }
 
 private:
     char *m_buffer;

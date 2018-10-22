@@ -86,7 +86,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8
         // Loop over all files in the directory, ignoring other directories
         do {
             if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                Utf8String name = UTF16To8(data.cFileName);
+                Utf8String name = static_cast<const char *>(UTF16To8(data.cFileName)); // Force conversion for MinGW.
 
                 if (name != "." && name != "..") {
                     Utf8String filepath = dirpath;
@@ -113,7 +113,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8
             // Loop over all files in the directory finding only directories.
             do {
                 if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    Utf8String name = UTF16To8(data.cFileName);
+                    Utf8String name = static_cast<const char *>(UTF16To8(data.cFileName)); // Force conversion for MinGW.
 
                     if (name != "." && name != "..") {
                         Utf8String filepath;

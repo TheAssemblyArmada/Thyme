@@ -17,10 +17,9 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 
     # ICU is optional for windows builds, use only for development purposes.
     if(USE_ICU_LIB)
-        if(NOT ICU_ROOT)
-            message(FATAL_ERROR "You must set the path to ICU as ICU_ROOT to use ICU in windows.")
-        else()
             find_package(ICU REQUIRED data i18n io tu uc)
+        if(NOT ICU_FOUND)
+            message(FATAL_ERROR "ICU not found. You may have to set the path to ICU as ICU_ROOT to use ICU with MSVC.")
         endif()
     endif()
 else()

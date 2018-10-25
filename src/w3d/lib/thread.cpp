@@ -37,6 +37,14 @@ void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
 #include <sys/types.h>
 #endif
 
+#if defined PLATFORM_FREEBSD || defined PLATFORM_OSX
+#ifdef PLATFORM_FREEBSD
+#include <pthread_np.h>
+#endif
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#endif
+
 ThreadClass::ThreadClass(const char *thread_name, except_t exception_handler) :
     m_isRunning(false),
     m_handle(0),
@@ -99,10 +107,11 @@ void ThreadClass::Execute()
     SetThreadPriority(m_handle, m_priority);
 #else
     // These can be used to set none default params
-    // pthread_attr_t attr;
-    // pthread_attr_init(&attr);
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     // Second param can be pthread_attr_t, NULL causes it to use defaults
-    pthread_create(&m_handle, nullptr, Internal_Thread_Function, this);
+    pthread_create(&m_handle, &attr, Internal_Thread_Function, this);
     Set_Priority(m_priority);
 #endif // PLATFORM_WINDOWS
 }
@@ -167,13 +176,16 @@ void ThreadClass::Set_Priority(int priority)
 void ThreadClass::Stop(unsigned int ms)
 {
     DEBUG_LOG("Stopping thread '%s'.\n", m_threadName);
-#ifdef PLATFORM_WINDOWS
     m_isRunning = false;
     unsigned int time = g_theSysTimer.Get();
 
     while (m_handle != 0) {
         if (g_theSysTimer.Get() - time > ms) {
+#ifdef PLATFORM_WINDOWS
             if (!TerminateThread(m_handle, 0)) {
+#else
+            if (pthread_cancel(m_handle) != 0 || pthread_join(m_handle, nullptr) != 0) {
+#endif
                 /*
                 if ( byte_8A9AD9 ) {
 
@@ -187,19 +199,13 @@ void ThreadClass::Stop(unsigned int ms)
             m_handle = 0;
         }
 
+#ifdef PLATFORM_WINDOWS
         Sleep(0);
-    }
 #else
-    m_isRunning = false;
-
-    if (m_handle != 0) {
-        if (pthread_join(m_handle, nullptr) != 0) {
-            // Handle error from thread not ending?
-        }
+        sched_yield();
+#endif
     }
 
-    m_handle = 0;
-#endif
 }
 
 /**
@@ -240,8 +246,13 @@ uintptr_t ThreadClass::Get_Current_Thread_ID()
 #ifdef PLATFORM_WINDOWS
     return GetCurrentThreadId();
 #elif defined PLATFORM_LINUX
-    return syscall(SYS_gettid);
-#elif defined PLATFORM_APPLE || defined PLATFORM_BSD
+    pid_t tid = syscall(SYS_gettid);
+    return tid;
+#elif defined PLATFORM_APPLE
+    uint64_t ktid;
+    pthread_threadid_np(NULL, &ktid);
+    return ktid;
+#elif defined PLATFORM_FREEBSD
     return pthread_getthreadid_np();
 #else
 #error Check platform documentation for appropriate function for integral thread id.

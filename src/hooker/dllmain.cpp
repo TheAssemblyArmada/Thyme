@@ -28,9 +28,8 @@
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
-#include "hooker.h"
-#include "gamemath.h"
 #include "gamedebug.h"
+#include "gamemath.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamemessage.h"
@@ -38,6 +37,7 @@
 #include "gametext.h"
 #include "geometry.h"
 #include "globaldata.h"
+#include "hooker.h"
 #include "ini.h"
 #include "keyboard.h"
 #include "main.h"
@@ -57,6 +57,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
 #include "targa.h"
@@ -191,6 +192,7 @@ void Setup_Hooks()
     ParticleSystem::Hook_Me();
     ParticleSystemManager::Hook_Me();
     DDSFileClass::Hook_Me();
+    ShaderClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

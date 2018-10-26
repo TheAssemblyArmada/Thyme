@@ -12,7 +12,7 @@ features and porting to platforms unsupported by the original.
 
 ## Chat
 
-You can chat and discuss the development of Thyme on our [Discord channel](https://discord.gg/YhdMbvD) or on freenode in the #thyme channel.
+You can chat and discuss the development of Thyme on our [Discord channel](https://discord.gg/UnWK2Tw) or on freenode in the #thyme channel.
 
 ## Running Thyme
 
@@ -77,5 +77,6 @@ Below is a list of similar projects and their respective original games:
  * [OpenMC2](https://github.com/LRFLEW/OpenMC2) - Midnight Club 2
  * [OpenDUNE](https://github.com/OpenDUNE/OpenDUNE) - Dune 2
  * [OpenFodder](https://github.com/OpenFodder/openfodder) - Cannon Fodder
+ * [Devilution](https://github.com/diasurgical/devilution) - Diablo
 
 There is also a [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).

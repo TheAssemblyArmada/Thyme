@@ -389,6 +389,10 @@ public:
     static void Invert_Backface_Culling(bool onoff);
     static bool Is_Backface_Culling_Inverted() { return s_polygonCullMode == 3; }
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 protected:
     void Report_Unable_To_Fog(const char *source);
 
@@ -461,4 +465,13 @@ inline bool ShaderClass::Uses_Post_Detail_Texture() const
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
+
+inline void ShaderClass::Hook_Me()
+{
+    Hook_Method(0x00813420, &ShaderClass::Init_From_Material3);
+    Hook_Method(0x00813F80, &ShaderClass::Get_Static_Sort_Category);
+    Hook_Method(0x00814010, &ShaderClass::Guess_Sort_Level);
+    Hook_Method(0x00813F60, &ShaderClass::Invert_Backface_Culling);
+}
+
 #endif

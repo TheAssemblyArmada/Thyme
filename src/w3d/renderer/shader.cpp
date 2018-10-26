@@ -67,7 +67,6 @@ ShaderClass ShaderClass::s_presetScreenSpriteShader(0x94073);
 ShaderClass ShaderClass::s_presetMultiplicative2DShader(0x90057);
 ShaderClass ShaderClass::s_presetMultiplicativeSpriteShader(0x90053);
 
-
 #ifndef THYME_STANDALONE
 bool &ShaderClass::s_shaderDirty = Make_Global<bool>(0x00A16C1C);
 uint32_t &ShaderClass::s_currentShader = Make_Global<uint32_t>(0x00A4C1B4);
@@ -78,6 +77,11 @@ uint32_t ShaderClass::s_currentShader = 0;
 uint32_t ShaderClass::s_polygonCullMode = 2;
 #endif
 
+/**
+ * Init the shader bits based on a material struct.
+ *
+ * 0x00813420
+ */
 void ShaderClass::Init_From_Material3(const W3dMaterial3Struct &material)
 {
     // TODO figure out what the attribute bits do.
@@ -88,6 +92,9 @@ void ShaderClass::Init_From_Material3(const W3dMaterial3Struct &material)
     }
 }
 
+/**
+ * Enable fog shading? Dunno where this is in windows binary yet.
+ */
 void ShaderClass::Enable_Fog(const char *source)
 {
     switch (Get_Src_Blend_Func()) {
@@ -129,6 +136,11 @@ void ShaderClass::Enable_Fog(const char *source)
     }
 }
 
+/**
+ * Work out what sort category the current shader belongs to.
+ *
+ * 0x00813F80
+ */
 ShaderClass::StaticSortCategoryType ShaderClass::Get_Static_Sort_Category() const
 {
     if (Get_Alpha_Test() == ALPHATEST_DISABLE && Get_Dst_Blend_Func() == DSTBLEND_ZERO) {
@@ -153,6 +165,11 @@ ShaderClass::StaticSortCategoryType ShaderClass::Get_Static_Sort_Category() cons
     return Get_Dst_Blend_Func() == DSTBLEND_ONE_MINUS_SRC_COLOR ? SSCAT_OTHER : SSCAT_OTHER2;
 }
 
+/**
+ * Work out what sort level the current shader belongs to.
+ *
+ * 0x00814010
+ */
 int ShaderClass::Guess_Sort_Level() const
 {
     switch (Get_Static_Sort_Category()) {
@@ -168,6 +185,9 @@ int ShaderClass::Guess_Sort_Level() const
     }
 }
 
+/**
+ * Debug function to get readout of what options are set in the current shader.
+ */
 void ShaderClass::Get_Description(StringClass &desc)
 {
     desc = "";
@@ -402,17 +422,30 @@ void ShaderClass::Get_Description(StringClass &desc)
     }
 }
 
+/**
+ * Sets the culling mode.
+ *
+ * 0x00813F60
+ */
 void ShaderClass::Invert_Backface_Culling(bool onoff)
 {
     Invalidate();
     s_polygonCullMode = onoff ? 3 : 2;
 }
 
+/**
+ * Logs inability to enable fog.
+ */
 void ShaderClass::Report_Unable_To_Fog(const char *source)
 {
     DEBUG_LOG("WARNING: Unable to fog shader in %s with given blending mode.\n");
 }
 
+/**
+ * Applies shader.
+ *
+ * 0x00813590
+ */
 void ShaderClass::Apply()
 {
     // TODO Needs DX8Wrapper, DX8Caps.
@@ -420,4 +453,3 @@ void ShaderClass::Apply()
     Call_Method<void, ShaderClass>(0x00813590, this);
 #endif
 }
-

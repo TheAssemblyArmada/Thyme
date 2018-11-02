@@ -353,6 +353,10 @@ inline int GenericMultiListClass::Count() const
 template<class ObjectType>
 class PriorityMultiListIterator : public MultiListIterator<ObjectType>
 {
+    using MultiListIterator<ObjectType>::First;
+    using MultiListIterator<ObjectType>::Remove_Current_Object;
+    using MultiListIterator<ObjectType>::m_curNode;
+
 public:
     PriorityMultiListIterator(MultiListClass<ObjectType> *list) :
         m_originalHead(nullptr),

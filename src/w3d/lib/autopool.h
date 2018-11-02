@@ -35,7 +35,7 @@ public:
 
         while (block) {
             void *nextBlock = *(void **)block;
-            delete[] block;
+            delete[] (char *)block;
             block = nextBlock;
         }
     }
@@ -129,8 +129,8 @@ private:
 #define MAKE_AUTOPOOL(name, size) ObjectPoolClass<name, size> AutoPoolClass<name, size>::m_allocator
 #else
 // Standalone just provides a templated instantiation so macros don't do anything.
-#define HOOK_AUTOPOOL(name, size, address) ((void)0)
-#define MAKE_AUTOPOOL(name, size) ((void)0)
+#define HOOK_AUTOPOOL(name, size, address)
+#define MAKE_AUTOPOOL(name, size)
 
 template<typename T, unsigned BLOCKSIZE>
 ObjectPoolClass<T, BLOCKSIZE> AutoPoolClass<T, BLOCKSIZE>::m_allocator;

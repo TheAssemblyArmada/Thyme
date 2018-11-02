@@ -209,6 +209,7 @@ set(GAMEENGINE_SRC
     w3d/lib/fileclass.cpp
     w3d/lib/filestraw.cpp
     w3d/lib/iniclass.cpp
+    w3d/lib/multilist.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/readline.cpp
     w3d/lib/straw.cpp

@@ -55,11 +55,11 @@ Vector4 DX8Wrapper::s_vertexShaderConstants[96]; // Not 100% sure this is a Vect
 unsigned DX8Wrapper::s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
 bool DX8Wrapper::s_isInitialised;
 bool DX8Wrapper::s_isWindowed;
-RenderStateStruct s_renderState;
-unsigned s_renderStateChanged;
-float s_zNear;
-float s_zFar;
-Matrix4 s_projectionMatrix;
+RenderStateStruct DX8Wrapper::s_renderState;
+unsigned DX8Wrapper::s_renderStateChanged;
+float DX8Wrapper::s_zNear;
+float DX8Wrapper::s_zFar;
+Matrix4 DX8Wrapper::s_projectionMatrix;
 int DX8Wrapper::s_mainThreadID;
 int DX8Wrapper::s_currentRenderDevice = -1;
 #endif

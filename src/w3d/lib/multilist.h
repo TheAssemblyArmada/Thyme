@@ -67,6 +67,10 @@ public:
     bool Contains(MultiListObjectClass *obj) const;
     int Count() const;
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 protected:
     bool Internal_Add(MultiListObjectClass *obj, bool onlyonce = true);
     bool Internal_Add_Tail(MultiListObjectClass *obj, bool onlyonce = true);
@@ -74,14 +78,7 @@ protected:
         MultiListObjectClass *obj, const MultiListObjectClass *existing_list_member, bool onlyonce = true);
     bool Internal_Remove(MultiListObjectClass *obj);
     MultiListObjectClass *Internal_Remove_List_Head();
-
-    MultiListObjectClass *Internal_Get_List_Head() const
-    {
-        if (Is_Empty())
-            return 0;
-        DEBUG_ASSERT(m_head.m_next->m_object != nullptr);
-        return m_head.m_next->m_object;
-    };
+    MultiListObjectClass *Internal_Get_List_Head() const;
 
 private:
     MultiListNodeClass m_head;
@@ -390,3 +387,16 @@ public:
 protected:
     const MultiListNodeClass *m_originalHead;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void GenericMultiListClass::Hook_Me()
+{
+    Hook_Method(0x008A03F0, &GenericMultiListClass::Contains);
+    Hook_Method(0x008A0420, &GenericMultiListClass::Internal_Add);
+    Hook_Method(0x008A0800, &GenericMultiListClass::Internal_Remove);
+    Hook_Method(0x008A0880, &GenericMultiListClass::Internal_Remove_List_Head);
+    Hook_Method(0x00824720, &GenericMultiListClass::Internal_Get_List_Head);
+}
+#endif

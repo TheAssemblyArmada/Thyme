@@ -44,6 +44,7 @@
 #include "messagestream.h"
 #include "modulefactory.h"
 #include "mouse.h"
+#include "multilist.h"
 #include "namekeygenerator.h"
 #include "particle.h"
 #include "particlesys.h"
@@ -193,6 +194,7 @@ void Setup_Hooks()
     ParticleSystemManager::Hook_Me();
     DDSFileClass::Hook_Me();
     ShaderClass::Hook_Me();
+    GenericMultiListClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

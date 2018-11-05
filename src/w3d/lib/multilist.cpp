@@ -17,6 +17,11 @@
 
 HOOK_AUTOPOOL(MultiListNodeClass, 256, 0x00A66288);
 
+/**
+ * Checks if an object is contained within the multilist.
+ *
+ * 0x008A03F0
+ */
 bool GenericMultiListClass::Contains(MultiListObjectClass *obj) const
 {
     DEBUG_ASSERT(obj);
@@ -28,6 +33,11 @@ bool GenericMultiListClass::Contains(MultiListObjectClass *obj) const
     return false;
 }
 
+/**
+ * Adds an object to the head of the multilist.
+ *
+ * 0x008A0420
+ */
 bool GenericMultiListClass::Internal_Add(MultiListObjectClass *obj, bool onlyonce)
 {
     DEBUG_ASSERT(obj);
@@ -52,6 +62,9 @@ bool GenericMultiListClass::Internal_Add(MultiListObjectClass *obj, bool onlyonc
     return true;
 };
 
+/**
+ * Adds an object to the tail of the multilist.
+ */
 bool GenericMultiListClass::Internal_Add_Tail(MultiListObjectClass *obj, bool onlyonce)
 {
     DEBUG_ASSERT(obj);
@@ -76,6 +89,9 @@ bool GenericMultiListClass::Internal_Add_Tail(MultiListObjectClass *obj, bool on
     return true;
 };
 
+/**
+ * Adds an object after the existing member of the multilist.
+ */
 bool GenericMultiListClass::Internal_Add_After(
     MultiListObjectClass *obj, const MultiListObjectClass *existing_list_member, bool onlyonce)
 {
@@ -110,6 +126,11 @@ bool GenericMultiListClass::Internal_Add_After(
     return true;
 };
 
+/**
+ * Removes an object from the multilist.
+ *
+ * 0x008A0800
+ */
 bool GenericMultiListClass::Internal_Remove(MultiListObjectClass *obj)
 {
     DEBUG_ASSERT(obj);
@@ -141,6 +162,11 @@ bool GenericMultiListClass::Internal_Remove(MultiListObjectClass *obj)
     return true;
 };
 
+/**
+ * Removes an object at the head of the multilist.
+ *
+ * 0x008A0880
+ */
 MultiListObjectClass *GenericMultiListClass::Internal_Remove_List_Head()
 {
     if (Is_Empty()) {
@@ -151,4 +177,20 @@ MultiListObjectClass *GenericMultiListClass::Internal_Remove_List_Head()
     Internal_Remove(obj);
 
     return obj;
+};
+
+
+/**
+ * Removes an object from the multilist.
+ *
+ * 0x00824720
+ */
+MultiListObjectClass *GenericMultiListClass::Internal_Get_List_Head() const
+{
+    if (Is_Empty()) {
+        return 0;
+    }
+
+    DEBUG_ASSERT(m_head.m_next->m_object != nullptr);
+    return m_head.m_next->m_object;
 };

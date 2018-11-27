@@ -19,12 +19,8 @@
 #include "refcount.h"
 #include "shader.h"
 #include "vector4.h"
+#include "w3dtypes.h"
 #include "wwstring.h"
-
-#ifdef PLATFORM_WINDOWS
-#include <d3d8.h>
-#include <d3d8types.h>
-#endif
 
 // Some constants to control numbers of things.
 enum
@@ -40,9 +36,11 @@ extern uint32_t &g_numberOfDx8Calls;
 extern uint32_t g_numberOfDx8Calls;
 #endif
 
+#ifdef D3D8_BUILD
 #define DX8CALL(x) \
     DX8Wrapper::Get_D3D_Device8()->x; \
     g_numberOfDx8Calls++;
+#endif
 
 // This class is going to be very much a WIP until we have a better idea
 // of the way it interacts with the rest of the program and what its structure
@@ -53,7 +51,7 @@ struct RenderStateStruct
     ShaderClass shader; // ShaderClass
     void *material; // VertexMaterialClass
     void *Textures[MAX_TEXTURE_STAGES]; // TextureClass
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
     D3DLIGHT8 Lights[LIGHT_COUNT];
 #endif
     bool LightEnable[LIGHT_COUNT];
@@ -102,7 +100,7 @@ class DX8Wrapper
 public:
     static void Init(void *hwnd, bool lite = false);
     static void Shutdown();
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
@@ -126,6 +124,7 @@ public:
     static const char *Get_DX8_Patch_Edge_Style_Name(unsigned value);
     static const char *Get_DX8_Debug_Monitor_Token_Name(unsigned value);
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
+    static void Log_DX8_ErrorCode(unsigned error);
 
 private:
 #ifndef THYME_STANDALONE
@@ -133,7 +132,7 @@ private:
     static HMODULE &s_d3dLib;
     static IDirect3D8 *&s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;
-    static IDirect3DBaseTexture8 **s_textures;
+    static w3dbasetexture_t *s_textures;
     static void *&s_hwnd; // Actually a hwnd, but we only care for building the dll.
     static void *&s_shadowMap;
     static unsigned *s_renderStates;
@@ -150,16 +149,16 @@ private:
     static int &s_mainThreadID;
     static int &s_currentRenderDevice;
 #else
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
     static HMODULE s_d3dLib;
     static IDirect3D8 *s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;
-    static IDirect3DBaseTexture8 *s_textures[MAX_TEXTURE_STAGES];
 #endif
     static void *s_hwnd;
     static void *s_shadowMap; // Not sure what type this actually is for now.
     static unsigned s_renderStates[256];
+    static w3dbasetexture_t s_textures[MAX_TEXTURE_STAGES];
     static unsigned s_textureStageStates[MAX_TEXTURE_STAGES][32];
     static Vector4 s_vertexShaderConstants[96]; // Not 100% sure this is a Vector4 array
     static unsigned s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
@@ -215,7 +214,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
     LightEnable[1] = src.LightEnable[1];
     LightEnable[2] = src.LightEnable[2];
     LightEnable[3] = src.LightEnable[3];
-
+#ifdef D3D8_BUILD
     if (LightEnable[0]) {
         Lights[0] = src.Lights[0];
 
@@ -231,7 +230,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
             }
         }
     }
-
+#endif
     shader = src.shader;
     world = src.world;
     view = src.view;
@@ -249,7 +248,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
     return *this;
 }
 
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
 #ifndef THYME_STANDALONE

@@ -1,6 +1,8 @@
 /**
  * @file
  *
+ * @author OmniBlade
+ * @author Tiberian Technologies
  * @author tomsons26
  *
  * @brief Base class for objects that need to be reference counted.
@@ -13,6 +15,8 @@
  *            LICENSE
  */
 #pragma once
+
+#include "always.h"
 
 class RefCountClass
 {
@@ -39,7 +43,7 @@ public:
 #ifdef THYME_DEBUG
         Dec_Total_Refs(this);
 #endif
-        m_numRefs--;
+        --m_numRefs;
 
         if (m_numRefs == 0) {
             Delete_This();
@@ -58,7 +62,8 @@ private:
     static int m_totalRefs;
 };
 
-inline void Ref_Ptr_Set(RefCountClass *&src, RefCountClass *&dst)
+template<typename T>
+void Ref_Ptr_Set(T *&src, T *&dst)
 {
     if (src != nullptr) {
         src->Add_Ref();
@@ -71,7 +76,8 @@ inline void Ref_Ptr_Set(RefCountClass *&src, RefCountClass *&dst)
     dst = src;
 }
 
-inline void Ref_Ptr_Release(RefCountClass *&ptr)
+template<typename T>
+void Ref_Ptr_Release(T *&ptr)
 {
     if (ptr != nullptr) {
         ptr->Release_Ref();

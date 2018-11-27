@@ -16,6 +16,7 @@
 #include "crc.h"
 #include "endiantype.h"
 #include "filesystem.h"
+#include "gitverinfo.h"
 #include "optionpreferences.h"
 #include "rtsutils.h"
 #include "version.h"
@@ -727,7 +728,7 @@ GlobalData::GlobalData()
     CRC crc; // Prepare to generate a crc of parts of the game state.
 
     // Original crc's the exe, but that won't work cross platform so use full commit hash from git.
-    crc.Compute_CRC(THYME_COMMIT_SHA1, strlen(THYME_COMMIT_SHA1));
+    crc.Compute_CRC(g_gitSHA1, strlen(g_gitSHA1));
 
     // Add game version to the crc.
     if (g_theVersion) {

@@ -18,6 +18,7 @@
 #include "gamedebug.h"
 #include "gamemain.h"
 #include "gamememory.h"
+#include "gitverinfo.h"
 #include "mempool.h"
 #include "minmax.h"
 #include "stackdump.h"
@@ -353,13 +354,13 @@ int main(int argc, char **argv)
     // DEBUG_LOG("Initialising Version manager.\n");
     g_theVersion = new Version;
     g_theVersion->Set_Version(0, // Major
-        1, // Minor
-        0, // Patch
-        THYME_COMMIT_COUNT, // Internal build number
-        THYME_BRANCH, // Git branch, was "location" in original build system
-        THYME_COMMIT_SHA1_SHORT, // Git commit, was "user" in original build system
-        THYME_COMMIT_TIME, // Commit time
-        THYME_COMMIT_DATE // Commit date
+        g_minorVersion, // Minor
+        g_majorVersion, // Patch
+        g_gitCommitCount, // Internal build number
+        g_gitBranch, // Git branch, was "location" in original build system
+        g_gitShortSHA1, // Git commit, was "user" in original build system
+        g_gitCommitTime, // Commit time
+        g_gitCommitDate // Commit date
     );
 
     // Make pretty log header for debug logging builds.

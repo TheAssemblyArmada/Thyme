@@ -19,17 +19,6 @@
 #include <cinttypes> // For printf formatting macros
 #include <stdio.h>
 
-#if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
-#ifdef COMPILER_MSVC
-#include <intrin.h>
-#elif defined COMPILER_CLANG || defined COMPILER_GNUC
-#include <cpuid.h>
-#include <x86intrin.h>
-#endif
-#else
-#error cpudetect.cpp needs work for this platform
-#endif
-
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
 #endif
@@ -355,7 +344,7 @@ const char *CPUDetectClass::Get_Processor_Manufacturer_Name()
 
 static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
 {
-#if defined PROCESSOR_X86 || defined PROCESSOR_X86_64
+#ifdef HAVE__RDTSC
     uint64_t timer0;
     uint64_t timer1;
 
@@ -1229,7 +1218,10 @@ void CPUDetectClass::Init_Processor_String()
 
 void CPUDetectClass::Init_CPUID_Instruction()
 {
-#if defined PROCESSOR_X86 && !defined PROCESSOR_X86_64
+#ifdef PROCESSOR_X86_64
+    // 64bit x86 CPU always has it.
+    HasCPUIDInstruction = true;
+#elif defined HAVE__READEFLAGS && defined HAVE__WRITEEFLAGS
     // 32bit x86 CPU might not have CPUID instruction, though unlikely.
     uint32_t old_eflg;
     uint32_t new_eflg;
@@ -1241,9 +1233,6 @@ void CPUDetectClass::Init_CPUID_Instruction()
     new_eflg = __readeflags();
 
     HasCPUIDInstruction = new_eflg != old_eflg;
-#elif defined PROCESSOR_X86_64
-    // 64bit x86 CPU always has it.
-    HasCPUIDInstruction = true;
 #else
     // None x86 hardware doesn't.
     HasCPUIDInstruction = false;
@@ -1374,14 +1363,16 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
     }
 
     // MSVC has a different signature for its __cpuid intrinsic vs clang/gcc
-#ifdef COMPILER_MSVC
+#ifdef HAVE__CPUID_MSVC
     int32_t regs[4];
 
     __cpuid(regs, cpuid_type);
-#elif defined COMPILER_CLANG || defined COMPILER_GNUC
+#elif defined HAVE__CPUID_GCC
     uint32_t regs[4];
 
     __cpuid(cpuid_type, regs[0], regs[1], regs[2], regs[3]);
+#else
+    int32_t regs[4]; // Prevent compiler errors on none x86 platforms.
 #endif
     u_eax_ = regs[0];
     u_ebx_ = regs[1];
@@ -1399,14 +1390,16 @@ bool CPUDetectClass::CPUID_Count(
     }
 
     // MSVC has a different signature for its __cpuid intrinsic vs clang/gcc
-#ifdef COMPILER_MSVC
+#ifdef HAVE__CPUIDEX
     int32_t regs[4];
 
     __cpuidex(regs, cpuid_type, count);
-#elif defined COMPILER_CLANG || defined COMPILER_GNUC
+#elif defined HAVE__CPUID_COUNT
     uint32_t regs[4];
 
     __cpuid_count(cpuid_type, count, regs[0], regs[1], regs[2], regs[3]);
+#else
+    int32_t regs[4]; // Prevent compiler errors on none x86 platforms.
 #endif
     u_eax_ = regs[0];
     u_ebx_ = regs[1];

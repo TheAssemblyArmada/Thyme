@@ -20,7 +20,6 @@
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
-#include "utf.h"
 #include <io.h>
 
 // Wraps the wide string call with an adapter from utf8.

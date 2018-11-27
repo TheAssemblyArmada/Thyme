@@ -15,19 +15,25 @@
  */
 #pragma once
 
-#include "bittype.h"
 #include "config.h"
+
+#include "bittype.h"
+#include "compiler.h"
+#include "intrinsics.h"
 #include "macros.h"
+#include "platform.h"
 #include "targetver.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#if defined(PLATFORM_WINDOWS)
+#ifdef PLATFORM_WINDOWS
 #define NOMINMAX
 #include <windows.h>
+// Include after windows.h
+#include "utf.h"
 #define NAME_MAX FILENAME_MAX
 
-#if !defined(PATH_MAX)
+#ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
 #endif
 
@@ -36,17 +42,8 @@
 
 #endif
 
-// Alias the ICU unicode functions when not building against it.
-#ifndef THYME_USE_ICU
-#define u_strlen wcslen
-#define u_strcpy wcscpy
-#define u_strcat wcscat
-#define u_vsnprintf_u vswprintf
-#define u_strcmp wcscmp
-#define u_strcasecmp(x, y, z) _wcsicmp(x, y)
-#define u_isspace iswspace
-#define u_tolower towlower
-#define U_COMPARE_CODE_POINT_ORDER 0x8000
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
 #endif
 
 // Enable inline recursion for MSVC
@@ -122,25 +119,27 @@
 #endif
 #endif // COMPILER_MSVC
 
-// Few defines to keep things straight between windows and posix
-#if defined(PLATFORM_WINDOWS)
-// Not sure what flags need passing to MinGW-w64 GCC to get wcscasecmp without this
-#define wcscasecmp(a, b) _wcsicmp(a, b)
-#define localtime_r(a, b) localtime_s(b, a)
-typedef struct stat stat_t;
-
-#if !defined(PLATFORM_MINGW)
-#define strdup(s) _strdup(s)
-#define strcasecmp(a, b) _stricmp(a, b)
-#define strncasecmp(a, b, c) _strnicmp(a, b, c)
+// Alias the ICU unicode functions when not building against it.
+#if !defined THYME_USE_ICU && defined PLATFORM_WINDOWS
+#define u_strlen wcslen
+#define u_strcpy wcscpy
+#define u_strcat wcscat
+#define u_vsnprintf_u vswprintf
+#define u_strcmp wcscmp
+#define u_strcasecmp(x, y, z) _wcsicmp(x, y)
+#define u_isspace iswspace
+#define u_tolower towlower
+#define U_COMPARE_CODE_POINT_ORDER 0x8000
 #endif
 
-// These are apparently implemented correctly in MSVC 2015
-#if defined(COMPILER_MSVC) && (COMPILER_VERSION < 1900)
-#define snprintf(...) _snprintf_s(__VA_ARGS__)
-#define vsnprintf(...) _vsnprintf_s(__VA_ARGS__)
+// Based on the build system generated config.h information we define some stuff here
+// for cross platform consistency.
+#if defined HAVE__STRICMP && !defined HAVE_STRCASECMP
+#define strcasecmp _stricmp
 #endif
 
-#else
+#if defined HAVE__STRNICMP && !defined HAVE_STRNCASECMP
+#define strncasecmp _strnicmp
+#endif
+
 typedef struct stat stat_t;
-#endif // PLATFORM_WINDOWS

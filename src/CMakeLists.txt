@@ -84,6 +84,7 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp)
 
 set(GAMEENGINE_SRC
+    ${CMAKE_CURRENT_BINARY_DIR}/base/gitverinfo.cpp
     game/copyprotect.cpp
     game/force_nocd.cpp
     game/main.cpp

@@ -16,9 +16,7 @@ if(MSVC)
     set(MSVC_INCREMENTAL_DEFAULT ON)
 endif()
 
-set(PROJECT thyme)
-
-project(${PROJECT})
+project(thyme VERSION 1.04 LANGUAGES C CXX)
 
 if(MSVC)
     string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
@@ -109,63 +107,83 @@ if(GIT_FOUND)
     execute_process(
         COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE THYME_BRANCH
+        OUTPUT_VARIABLE GITINFO_BRANCH
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
-    add_definitions(-DTHYME_BRANCH="${THYME_BRANCH}")
 
     # Define commit hash.
     execute_process(
         COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE THYME_COMMIT_SHA1
+        OUTPUT_VARIABLE GITINFO_COMMIT_SHA1
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
-    add_definitions(-DTHYME_COMMIT_SHA1="${THYME_COMMIT_SHA1}")
-
+    
     # Define short commit hash.
     execute_process(
         COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE THYME_COMMIT_SHA1_SHORT
+        OUTPUT_VARIABLE GITINFO_COMMIT_SHA1_SHORT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
-    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="${THYME_COMMIT_SHA1_SHORT}")
-
+    
     # Define commit count.
     execute_process(
         COMMAND ${GIT_EXECUTABLE} rev-list HEAD --count
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE THYME_COMMIT_COUNT
+        OUTPUT_VARIABLE GITINFO_COMMIT_COUNT
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
-    add_definitions(-DTHYME_COMMIT_COUNT=${THYME_COMMIT_COUNT})
+    
+    # Define commit time stamp.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:%ct
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GITINFO_COMMIT_TSTAMP
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    
+    # Define commit author.
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} log -1 --pretty=format:'%an'
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        OUTPUT_VARIABLE GITINFO_COMMIT_AUTHOR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    string(REPLACE "'" "" GITINFO_COMMIT_AUTHOR ${GITINFO_COMMIT_AUTHOR})
     
     # Define commit date and time. Make builds more reproducible than using __DATE__ and __TIME__
     execute_process(
         COMMAND ${GIT_EXECUTABLE} log -1 --date=iso --pretty=format:%cd
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        OUTPUT_VARIABLE THYME_DATE_AND_TIME
+        OUTPUT_VARIABLE GITINFO_DATE_AND_TIME
         OUTPUT_STRIP_TRAILING_WHITESPACE
         ERROR_QUIET
     )
-    string(REPLACE " " ";" THYME_DATE_AND_TIME ${THYME_DATE_AND_TIME})
-    list(GET THYME_DATE_AND_TIME 0 THYME_DATE)
-    list(GET THYME_DATE_AND_TIME 1 THYME_TIME)
-    add_definitions(-DTHYME_COMMIT_DATE="${THYME_DATE}")
-    add_definitions(-DTHYME_COMMIT_TIME="${THYME_TIME}")
+    string(REPLACE " " ";" GITINFO_DATE_AND_TIME ${GITINFO_DATE_AND_TIME})
+    list(GET GITINFO_DATE_AND_TIME 0 GITINFO_COMMIT_DATE)
+    list(GET GITINFO_DATE_AND_TIME 1 GITINFO_COMMIT_TIME)
+    list(GET GITINFO_DATE_AND_TIME 2 GITINFO_COMMIT_TZONE)
 else()
-    add_definitions(-DTHYME_BRANCH="netherrealm")
-    add_definitions(-DTHYME_COMMIT_SHA1="DEADBEEF")
-    add_definitions(-DTHYME_COMMIT_SHA1_SHORT="DEADBEEF")
-    add_definitions(-DTHYME_COMMIT_COUNT=0)
-    add_definitions(-DTHYME_COMMIT_DATE="1955-11-12")
-    add_definitions(-DTHYME_COMMIT_TIME="22:04:00")
+    # Fallback information if git isn't found. This should never be present in official builds.
+    set(GITINFO_BRANCH "netherrealm")
+    set(GITINFO_COMMIT_SHA1 "DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF")
+    set(GITINFO_COMMIT_SHA1_SHORT "DEADBEEF")
+    set(GITINFO_COMMIT_COUNT 0)
+    set(GITINFO_COMMIT_TSTAMP 0)
+    set(GITINFO_COMMIT_DATE "1955-11-12")
+    set(GITINFO_COMMIT_TIME "22:04:00")
+    set(GITINFO_COMMIT_TZONE "+0000")
+    set(GITINFO_COMMIT_AUTHOR "Someone")
 endif()
+
+configure_file(src/base/gitverinfo.cpp.in src/base/gitverinfo.cpp @ONLY)
 
 if(STANDALONE)
     add_definitions(-DTHYME_STANDALONE)

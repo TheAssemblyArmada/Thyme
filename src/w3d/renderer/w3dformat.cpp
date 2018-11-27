@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author Tiberian Technologies
  *
  * @brief W3D format info.
  *
@@ -82,4 +83,14 @@ unsigned Get_Bytes_Per_Pixel(WW3DFormat format)
     }
 
     return 0;
+}
+
+WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
+{
+    // TODO Requires DX8Caps
+#ifndef THYME_STANDALONE
+    return Call_Function<WW3DFormat, WW3DFormat, bool>(0x00820370, format, allow_compression);
+#else
+    return WW3D_FORMAT_UNKNOWN;
+#endif
 }

@@ -63,6 +63,7 @@
 #include "sideslist.h"
 #include "targa.h"
 #include "teamsinfo.h"
+#include "texturebase.h"
 #include "thread.h"
 #include "w3dfilesystem.h"
 #include "weapon.h"
@@ -195,6 +196,7 @@ void Setup_Hooks()
     DDSFileClass::Hook_Me();
     ShaderClass::Hook_Me();
     GenericMultiListClass::Hook_Me();
+    TextureBaseClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

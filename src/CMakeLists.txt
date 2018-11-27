@@ -5,6 +5,13 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(DirectX_D3D8_INCLUDE_FOUND)
         message("Located Direct3D8 headers.")
         set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
+        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${DirectX_D3D8_LIBRARIES})
+    endif()
+
+    if(DirectX_D3DX8_INCLUDE_FOUND)
+        message("Located Direct3D8X headers.")
+        set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8X_INCLUDE_DIR})
+        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${DirectX_D3D8X_LIBRARIES})
     endif()
     
     set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
@@ -230,6 +237,11 @@ set(GAMEENGINE_SRC
     w3d/renderer/ddsfile.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/shader.cpp
+    w3d/renderer/texture.cpp
+    w3d/renderer/texturebase.cpp
+    w3d/renderer/textureloadtask.cpp
+    w3d/renderer/textureloadtasklist.cpp
+    w3d/renderer/w3d.cpp
     w3d/renderer/w3dformat.cpp
 )
 

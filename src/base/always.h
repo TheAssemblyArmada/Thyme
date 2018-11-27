@@ -23,12 +23,16 @@
 #include <sys/types.h>
 
 #if defined(PLATFORM_WINDOWS)
+#define NOMINMAX
 #include <windows.h>
 #define NAME_MAX FILENAME_MAX
 
 #if !defined(PATH_MAX)
 #define PATH_MAX MAX_PATH
 #endif
+
+// Temp until build system is refactored to add it.
+#define D3D8_BUILD
 
 #endif
 
@@ -56,6 +60,7 @@
 
 #define __noinline __declspec(noinline)
 #define __unused __pragma(warning(suppress : 4100 4101))
+#define __mayalias
 #pragma warning(push, 3)
 
 #else // !COMPILER_MSVC
@@ -84,6 +89,7 @@
 
 #define __noinline __attribute__((noinline))
 #define __unused __attribute__((unused))
+#define __mayalias __attribute__((__may_alias__))
 
 #if !defined(__forceinline)
 #define __forceinline inline __attribute__((__always_inline__))
@@ -102,6 +108,8 @@
 #define __forceinline inline
 #endif
 #define __noinline
+#define __unused
+#define __mayalias
 #endif // COMPILER_GNUC || COMPILER_CLANG
 
 #endif // COMPILER_MSVC

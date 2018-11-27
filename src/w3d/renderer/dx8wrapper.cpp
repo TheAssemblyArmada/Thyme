@@ -24,7 +24,7 @@ IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Globa
     0x00A47F6C);
 HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
 IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(0x00A47EEC);
-IDirect3DBaseTexture8 **DX8Wrapper::s_textures = Make_Pointer<IDirect3DBaseTexture8 *>(0x00A42784);
+IDirect3DBaseTexture8 **DX8Wrapper::s_textures = Make_Pointer<w3dbasetexture_t>(0x00A42784);
 void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(0x00A47EBC);
 void *&DX8Wrapper::s_hwnd = Make_Global<void *>(0x00A47EBC);
 unsigned *DX8Wrapper::s_renderStates = Make_Pointer<unsigned>(0x00A46CC0);
@@ -45,12 +45,12 @@ int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;
-IDirect3DBaseTexture8 *DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
 #endif
 void *DX8Wrapper::s_shadowMap;
 void *DX8Wrapper::s_hwnd;
 unsigned DX8Wrapper::s_renderStates[256];
 unsigned DX8Wrapper::s_textureStageStates[MAX_TEXTURE_STAGES][32];
+w3dbasetexture_t DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
 Vector4 DX8Wrapper::s_vertexShaderConstants[96]; // Not 100% sure this is a Vector4 array
 unsigned DX8Wrapper::s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
 bool DX8Wrapper::s_isInitialised;
@@ -97,9 +97,15 @@ void DX8Wrapper::Shutdown()
 #endif
 }
 
-#ifdef PLATFORM_WINDOWS
+void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
+{
+    // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
+    DEBUG_LOG("Direct3D8 generated error %x.\n", error);
+}
+
+#ifdef D3D8_BUILD
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
 {
     switch (value) {
         case D3DTOP_DISABLE:
@@ -160,7 +166,7 @@ inline const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Texture_Arg_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Texture_Arg_Name(unsigned value)
 {
     switch (value) {
         case D3DTA_CURRENT:
@@ -187,7 +193,7 @@ inline const char *DX8Wrapper::Get_DX8_Texture_Arg_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Texture_Filter_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Texture_Filter_Name(unsigned value)
 {
     switch (value) {
         case D3DTEXF_NONE:
@@ -208,7 +214,7 @@ inline const char *DX8Wrapper::Get_DX8_Texture_Filter_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Texture_Address_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Texture_Address_Name(unsigned value)
 {
     switch (value) {
         case D3DTADDRESS_WRAP:
@@ -227,7 +233,7 @@ inline const char *DX8Wrapper::Get_DX8_Texture_Address_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Texture_Transform_Flag_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Texture_Transform_Flag_Name(unsigned value)
 {
     switch (value) {
         case D3DTTFF_DISABLE:
@@ -248,7 +254,7 @@ inline const char *DX8Wrapper::Get_DX8_Texture_Transform_Flag_Name(unsigned valu
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_ZBuffer_Type_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_ZBuffer_Type_Name(unsigned value)
 {
     switch (value) {
         case D3DZB_FALSE:
@@ -263,7 +269,7 @@ inline const char *DX8Wrapper::Get_DX8_ZBuffer_Type_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Fill_Mode_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Fill_Mode_Name(unsigned value)
 {
     switch (value) {
         case D3DFILL_POINT:
@@ -278,7 +284,7 @@ inline const char *DX8Wrapper::Get_DX8_Fill_Mode_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Shade_Mode_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Shade_Mode_Name(unsigned value)
 {
     switch (value) {
         case D3DSHADE_FLAT:
@@ -293,7 +299,7 @@ inline const char *DX8Wrapper::Get_DX8_Shade_Mode_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Blend_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Blend_Name(unsigned value)
 {
     switch (value) {
         case D3DBLEND_ZERO:
@@ -328,7 +334,7 @@ inline const char *DX8Wrapper::Get_DX8_Blend_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Cull_Mode_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Cull_Mode_Name(unsigned value)
 {
     switch (value) {
         case D3DCULL_NONE:
@@ -343,7 +349,7 @@ inline const char *DX8Wrapper::Get_DX8_Cull_Mode_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Cmp_Func_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Cmp_Func_Name(unsigned value)
 {
     switch (value) {
         case D3DCMP_NEVER:
@@ -368,7 +374,7 @@ inline const char *DX8Wrapper::Get_DX8_Cmp_Func_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Fog_Mode_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Fog_Mode_Name(unsigned value)
 {
     switch (value) {
         case D3DFOG_NONE:
@@ -385,7 +391,7 @@ inline const char *DX8Wrapper::Get_DX8_Fog_Mode_Name(unsigned value)
 }
 
 // Inlined in DX8Wrapper::Get_DX8_Render_State_Value_Name in ZH
-inline const char *DX8Wrapper::Get_DX8_Stencil_Op_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Stencil_Op_Name(unsigned value)
 {
     switch (value) {
         case D3DSTENCILOP_KEEP:
@@ -409,7 +415,7 @@ inline const char *DX8Wrapper::Get_DX8_Stencil_Op_Name(unsigned value)
     }
 }
 
-inline const char *DX8Wrapper::Get_DX8_Material_Source_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Material_Source_Name(unsigned value)
 {
     switch (value) {
         case D3DMCS_MATERIAL:
@@ -423,7 +429,7 @@ inline const char *DX8Wrapper::Get_DX8_Material_Source_Name(unsigned value)
     }
 }
 
-inline const char *DX8Wrapper::Get_DX8_Vertex_Blend_Flag_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Vertex_Blend_Flag_Name(unsigned value)
 {
     switch (value) {
         case D3DVBF_DISABLE:
@@ -443,7 +449,7 @@ inline const char *DX8Wrapper::Get_DX8_Vertex_Blend_Flag_Name(unsigned value)
     }
 }
 
-inline const char *DX8Wrapper::Get_DX8_Patch_Edge_Style_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Patch_Edge_Style_Name(unsigned value)
 {
     switch (value) {
         case D3DPATCHEDGE_DISCRETE:
@@ -455,7 +461,7 @@ inline const char *DX8Wrapper::Get_DX8_Patch_Edge_Style_Name(unsigned value)
     }
 }
 
-inline const char *DX8Wrapper::Get_DX8_Debug_Monitor_Token_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Debug_Monitor_Token_Name(unsigned value)
 {
     switch (value) {
         case D3DDMT_ENABLE:
@@ -467,7 +473,7 @@ inline const char *DX8Wrapper::Get_DX8_Debug_Monitor_Token_Name(unsigned value)
     }
 }
 
-inline const char *DX8Wrapper::Get_DX8_Blend_Op_Name(unsigned value)
+const char *DX8Wrapper::Get_DX8_Blend_Op_Name(unsigned value)
 {
     switch (value) {
         case D3DBLENDOP_ADD:

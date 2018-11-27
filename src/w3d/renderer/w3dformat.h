@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author Tiberian Technologies
  *
  * @brief W3D format info.
  *
@@ -48,6 +49,7 @@ enum WW3DFormat : int32_t
 
 WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format);
 unsigned Get_Bytes_Per_Pixel(WW3DFormat format);
+WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression);
 
 inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
 {

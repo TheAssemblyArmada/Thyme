@@ -1,7 +1,7 @@
 #look at this at some point for structuring the project
 #https: // rix0r.nl/blog/2015/08/13/cmake-guide/
 
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
 if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
@@ -28,7 +28,14 @@ if(MSVC)
     string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO})
     set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
     set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
+    # Set warning level 3
+    # disable C4244: conversion from 'double' to 'float', possible loss of data
+    # disable C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244 /wd4800")
 endif()
+
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_STANDARD 11)
 
 # We don't support in tree builds, so help people make the right choice.
 if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -61,7 +68,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -Wno-invalid-offsetof")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
 
     # Prevent lib prefix when built with MinGW to target windows and move to own dir.
     if(MINGW)
@@ -73,7 +80,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Wno-invalid-offsetof")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
 endif()
 
 # Enable debug features in MSVC Debug configs.

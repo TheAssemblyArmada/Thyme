@@ -90,6 +90,10 @@ endif()
 #endif()
 add_compile_options("$<$<CONFIG:DEBUG>:-DTHYME_DEBUG>")
 
+# Include some standard CMake modules we use.
+include(CheckSymbolExists)
+include(CheckIncludeFile)
+
 # Locate git binary to provide information to the build environment
 find_package(Git)
 
@@ -166,6 +170,30 @@ endif()
 
 if(USING_STLPORT)
     add_definitions(-DTHYME_USE_STLPORT)
+endif()
+
+# Check for best macro that expands to current function name.
+check_symbol_exists(__PRETTY_FUNCTION__ "" HAVE_PRETTY_FUNCTION_MACRO)
+if(NOT HAVE_PRETTY_FUNCTION_MACRO)
+    check_symbol_exists(__FUNCSIG__ "" HAVE_FUNCSIG_MACRO)
+
+    if(NOT HAVE_FUNCSIG_MACRO)
+        check_symbol_exists(__FUNCTION__ "" HAVE_FUNCTION_MACRO)
+        if(NOT HAVE_FUNCTION_MACRO)
+            check_symbol_exists(__func__ "" HAVE_FUNC_MACRO)
+            if(NOT HAVE_FUNCTION_MACRO)
+                message(FATAL_ERROR "No function name macro found, please report!")
+            else()
+                add_definitions(-D__CURRENT_FUNCTION__=__func__)
+            endif()
+        else()
+            add_definitions(-D__CURRENT_FUNCTION__=__FUNCTION__)
+        endif()
+    else()
+        add_definitions(-D__CURRENT_FUNCTION__=__FUNCSIG__)
+    endif()
+else()
+    add_definitions(-D__CURRENT_FUNCTION__=__PRETTY_FUNCTION__)
 endif()
 
 # Set where the build results will end up

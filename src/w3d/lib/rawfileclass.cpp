@@ -22,7 +22,6 @@
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
-#include "utf.h"
 #include <io.h>
 #include <sys/utime.h>
 

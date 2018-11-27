@@ -14,7 +14,7 @@
  */
 #pragma once
 
-#include "always.h"
+#ifdef PLATFORM_WINDOWS
 #include <wchar.h>
 
 /**
@@ -36,21 +36,15 @@ class UTF8To16
 public:
     UTF8To16(const char *utf8) : m_buffer(nullptr)
     {
-#ifdef PLATFORM_WINDOWS
         int size = MultiByteToWideChar(CP_UTF8, 0, utf8, -1, nullptr, 0);
-
         m_buffer = new wchar_t[size];
-
         MultiByteToWideChar(CP_UTF8, 0, utf8, -1, m_buffer, size);
-#endif // PLATFORM_WINDOWS
     }
 
     ~UTF8To16()
     {
-#ifdef PLATFORM_WINDOWS
         delete[] m_buffer;
         m_buffer = nullptr;
-#endif // PLATFORM_WINDOWS
     }
 
     operator const wchar_t *() const { return m_buffer; }
@@ -76,21 +70,15 @@ class UTF16To8
 public:
     UTF16To8(const wchar_t *utf16) : m_buffer(nullptr)
     {
-#ifdef PLATFORM_WINDOWS
         int size = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, nullptr, 0, nullptr, nullptr);
-
         m_buffer = new char[size];
-
         WideCharToMultiByte(CP_UTF8, 0, utf16, -1, m_buffer, size, nullptr, nullptr);
-#endif // PLATFORM_WINDOWS
     }
 
     ~UTF16To8()
     {
-#ifdef PLATFORM_WINDOWS
         delete[] m_buffer;
         m_buffer = nullptr;
-#endif // PLATFORM_WINDOWS
     }
 
     operator const char *() const { return m_buffer; }
@@ -98,3 +86,4 @@ public:
 private:
     char *m_buffer;
 };
+#endif // PLATFORM_WINDOWS

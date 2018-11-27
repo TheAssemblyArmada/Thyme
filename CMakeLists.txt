@@ -179,6 +179,32 @@ if(USING_STLPORT)
     add_definitions(-DTHYME_USE_STLPORT)
 endif()
 
+# Check for the existence of platform specific headers.
+check_include_file(strings.h HAVE_STRINGS_H)
+
+check_include_file(intrin.h HAVE_INTRIN_H)
+check_include_file(x86intrin.h HAVE_X86INTRIN_H)
+check_include_file(cpuid.h HAVE_CPUID_H)
+
+# Check for the existence of some functions we need or their equivalents.
+check_symbol_exists(strcasecmp "strings.h" HAVE_STRCASECMP)
+if(NOT HAVE_STRCASECMP)
+    check_symbol_exists(_stricmp "string.h" HAVE__STRICMP)
+    if(NOT HAVE__STRICMP)
+        message(FATAL_ERROR "No case-insensitive compare function found, please report!")
+    endif()
+endif()
+
+check_symbol_exists(strncasecmp "strings.h" HAVE_STRNCASECMP)
+if(NOT HAVE_STRNCASECMP)
+    check_symbol_exists(_strnicmp "string.h" HAVE__STRNICMP)
+    if(NOT HAVE__STRNICMP)
+        message(FATAL_ERROR "No case-insensitive size-limited compare function found, please report!")
+    endif()
+endif()
+
+include(CheckIntrinsics)
+
 # Check for best macro that expands to current function name.
 check_symbol_exists(__PRETTY_FUNCTION__ "" HAVE_PRETTY_FUNCTION_MACRO)
 if(NOT HAVE_PRETTY_FUNCTION_MACRO)
@@ -202,6 +228,8 @@ if(NOT HAVE_PRETTY_FUNCTION_MACRO)
 else()
     add_definitions(-D__CURRENT_FUNCTION__=__PRETTY_FUNCTION__)
 endif()
+
+configure_file(src/base/config.h.in src/base/config.h @ONLY)
 
 # Set where the build results will end up
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

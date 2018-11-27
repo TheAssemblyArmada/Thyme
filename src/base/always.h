@@ -49,69 +49,77 @@
 #define U_COMPARE_CODE_POINT_ORDER 0x8000
 #endif
 
-//  Define nullptr when standard is less than C++x0
-#if __cplusplus <= 199711L && !defined COMPILER_MSVC
-#define nullptr NULL
+// Enable inline recursion for MSVC
+#ifdef COMPILER_MSVC
+#pragma inline_recursion(on)
 #endif
 
-#if defined(COMPILER_MSVC)
-// Allow inline recursive functions within inline recursive functions.
-#pragma inline_recursion(on)
+// This section defines some keywords defining calling conventions
+// where the keywords needed differ between compilers.
+#if !defined COMPILER_MSVC
+#if !defined(__fastcall)
+#if __has_attribute(fastcall)
+#define __fastcall __attribute__((fastcall))
+#else
+#define __fastcall
+#endif
+#endif
 
+#if !defined(__cdecl)
+#if __has_attribute(cdecl)
+#define __cdecl __attribute__((cdecl))
+#else
+#define __cdecl
+#endif
+#endif
+
+#if !defined(__stdcall)
+#if __has_attribute(stdcall)
+#define __stdcall __attribute__((stdcall))
+#else
+#define __stdcall
+#endif
+#endif
+#endif // !defined COMPILER_MSVC
+
+// This section defines some keywords controlling inlining and unused variables
+// where the keywords needed differ between compilers.
+#ifdef COMPILER_MSVC
 #define __noinline __declspec(noinline)
 #define __unused __pragma(warning(suppress : 4100 4101))
 #define __mayalias
-#pragma warning(push, 3)
-
-#else // !COMPILER_MSVC
-#if defined(COMPILER_GNUC) || defined(COMPILER_CLANG)
-#if defined(PROCESSOR_X86) // Only applies to 32bit
-#if !defined(__fastcall)
-#define __fastcall __attribute__((fastcall))
-#endif
-#if !defined(__cdecl)
-#define __cdecl __attribute__((cdecl))
-#endif
-#if !defined(__stdcall)
-#define __stdcall __attribute__((stdcall))
-#endif
 #else
-#if !defined(__fastcall)
-#define __fastcall
-#endif
-#if !defined(__cdecl)
-#define __cdecl
-#endif
-#if !defined(__stdcall)
-#define __stdcall
-#endif
-#endif
-
-#define __noinline __attribute__((noinline))
-#define __unused __attribute__((unused))
-#define __mayalias __attribute__((__may_alias__))
-
 #if !defined(__forceinline)
+#if __has_attribute(__always_inline__)
 #define __forceinline inline __attribute__((__always_inline__))
-#endif
-#else // !COMPILER_GNUC || !COMPILER_CLANG
-#if !defined(__fastcall)
-#define __fastcall
-#endif
-#if !defined(__cdecl)
-#define __cdecl
-#endif
-#if !defined(__stdcall)
-#define __stdcall
-#endif
-#if !defined(__forceinline)
+#else
 #define __forceinline inline
 #endif
-#define __noinline
-#define __unused
-#define __mayalias
-#endif // COMPILER_GNUC || COMPILER_CLANG
+#endif
 
+#if !defined(__unused)
+#if __has_attribute(unused)
+#define __unused __attribute__((unused))
+#else
+#define __unused
+#endif
+#endif
+
+#if !defined(__noinline)
+#if __has_attribute(noinline)
+#define __noinline __attribute__((noinline))
+#else
+#define __noinline
+#endif
+#endif
+
+#ifndef __mayalias
+#if __has_attribute(__may_alias__)
+#define __mayalias __attribute__((__may_alias__))
+#else
+#define __mayalias
+#endif
+#endif
 #endif // COMPILER_MSVC
 
 // Few defines to keep things straight between windows and posix

@@ -245,14 +245,21 @@ set(GAMEENGINE_SRC
     w3d/renderer/w3dformat.cpp
 )
 
+# Glob all the header files together to add to the project for msvc/xcode.
+if(CMAKE_CONFIGURATION_TYPES)
+    file(GLOB_RECURSE GAMEENGINE_HEADERS "*.h")
+    # Filter out headers from included 3rd party libraries like STLPort or gamemath.
+    list(FILTER GAMEENGINE_HEADERS EXCLUDE REGEX "libs/.*")
+endif()
+
 if(STANDALONE)
-    add_executable(thyme ${GAMEENGINE_SRC})
+    add_executable(thyme ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} ${GAMEENGINE_INCLUDES})
     if(THREADS_HAVE_PTHREAD_ARG)
         target_compile_options(thyme PUBLIC "-pthread")
     endif()
 else()
-    add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC})
+    add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
 
     if(MSVC) 
         target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
@@ -260,5 +267,8 @@ else()
         target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
     endif()
 endif()
+
+# For MSVC/XCode this will add the headers to the project.
+source_group("Header Files" FILES ${GAMEENGINE_HEADERS})
 
 target_link_libraries(thyme ${PLATFORM_LIBS})

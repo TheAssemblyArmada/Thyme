@@ -24,3 +24,4 @@ unsigned g_gitCommitCount = @GITINFO_COMMIT_COUNT@;
 time_t g_gitCommitTimeStamp = @GITINFO_COMMIT_TSTAMP@;
 unsigned g_majorVersion = @thyme_VERSION_MAJOR@;
 unsigned g_minorVersion = @thyme_VERSION_MINOR@;
+unsigned g_patchVersion = @thyme_VERSION_PATCH@;

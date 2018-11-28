@@ -26,3 +26,4 @@ extern unsigned g_gitCommitCount;
 extern time_t g_gitCommitTimeStamp;
 extern unsigned g_majorVersion;
 extern unsigned g_minorVersion;
+extern unsigned g_patchVersion;

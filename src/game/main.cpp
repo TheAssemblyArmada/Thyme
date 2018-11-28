@@ -353,9 +353,9 @@ int main(int argc, char **argv)
     // Use of some of the version strings to use the git commit and branch stuff.
     // DEBUG_LOG("Initialising Version manager.\n");
     g_theVersion = new Version;
-    g_theVersion->Set_Version(0, // Major
+    g_theVersion->Set_Version(g_majorVersion, // Major
         g_minorVersion, // Minor
-        g_majorVersion, // Patch
+        g_patchVersion, // Patch
         g_gitCommitCount, // Internal build number
         g_gitBranch, // Git branch, was "location" in original build system
         g_gitShortSHA1, // Git commit, was "user" in original build system

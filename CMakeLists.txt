@@ -1,6 +1,3 @@
-#look at this at some point for structuring the project
-#https: // rix0r.nl/blog/2015/08/13/cmake-guide/
-
 cmake_minimum_required(VERSION 3.1.0)
 
 if(POLICY CMP0074)
@@ -32,8 +29,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244 /wd4800")
 endif()
 
-set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 # We don't support in tree builds, so help people make the right choice.
 if (CMAKE_BINARY_DIR STREQUAL CMAKE_SOURCE_DIR)
@@ -81,19 +77,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
 endif()
 
-# Enable debug features in MSVC Debug configs.
-#if(MSVC)
-    #set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /DGAME_DEBUG_LOG")
-    #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /DGAME_DEBUG_LOG")
-    #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /DGAME_DEBUG_LOG")
-    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DGAME_DEBUG_LOG")
-#endif()
-
-#Always enable debug logging for now.
-#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    add_definitions(-DGAME_DEBUG_LOG)
-#endif()
-add_compile_options("$<$<CONFIG:DEBUG>:-DTHYME_DEBUG>")
+add_definitions(-DGAME_DEBUG_LOG)
 
 # Include some standard CMake modules we use.
 include(CheckSymbolExists)
@@ -197,12 +181,22 @@ if(USING_STLPORT)
     add_definitions(-DTHYME_USE_STLPORT)
 endif()
 
+set(THREADS_PREFER_PTHREAD_FLAG TRUE BOOL)
+
+find_package(DirectX COMPONENTS d3d8)
+find_package(ICU COMPONENTS data i18n io tu uc)
+find_package(Threads REQUIRED)
+
 # Check for the existence of platform specific headers.
 check_include_file(strings.h HAVE_STRINGS_H)
-
 check_include_file(intrin.h HAVE_INTRIN_H)
 check_include_file(x86intrin.h HAVE_X86INTRIN_H)
 check_include_file(cpuid.h HAVE_CPUID_H)
+
+# Only use the pthread header if we don't have win32 threads.
+if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
+    set(HAVE_PTHREAD_H TRUE BOOL)
+endif()
 
 # Check for the existence of some functions we need or their equivalents.
 check_symbol_exists(strcasecmp "strings.h" HAVE_STRCASECMP)
@@ -255,8 +249,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 if(NOT STANDALONE)
-# Build the launcher
-add_subdirectory(launcher)
+    # Build the launcher
+    add_subdirectory(launcher)
 endif()
 
 # Build Thyme

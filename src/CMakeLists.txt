@@ -1,57 +1,3 @@
-# Add platform libraries needed for the build
-if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    find_package(DirectX REQUIRED)
-    
-    if(DirectX_D3D8_INCLUDE_FOUND)
-        message("Located Direct3D8 headers.")
-        set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8_INCLUDE_DIR})
-        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${DirectX_D3D8_LIBRARIES})
-    endif()
-
-    if(DirectX_D3DX8_INCLUDE_FOUND)
-        message("Located Direct3D8X headers.")
-        set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${DirectX_D3D8X_INCLUDE_DIR})
-        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${DirectX_D3D8X_LIBRARIES})
-    endif()
-    
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm dbghelp)
-
-    if(STANDALONE)
-        set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm ws2_32)
-    else()
-        set(PLATFORM_LIBS ${PLATFORM_LIBS} winmm wsock32) # Original links wsock32, not ws2_32
-    endif()
-
-    # ICU is optional for windows builds, use only for development purposes.
-    if(USE_ICU_LIB)
-            find_package(ICU REQUIRED data i18n io tu uc)
-        if(NOT ICU_FOUND)
-            message(FATAL_ERROR "ICU not found. You may have to set the path to ICU as ICU_ROOT to use ICU with MSVC.")
-        endif()
-    endif()
-else()
-    # Find pthreads on none windows platforms.
-    find_package(Threads REQUIRED)
-    if(CMAKE_THREAD_LIBS_INIT)
-        set(PLATFORM_LIBS ${PLATFORM_LIBS} ${CMAKE_THREAD_LIBS_INIT})
-    endif()
-
-    # Finds libicu, required for unicode on none windows.
-    find_package(ICU REQUIRED data i18n io tu uc)
-endif()
-
-if(ICU_FOUND)
-    add_definitions(-DTHYME_USE_ICU)
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} ${ICU_LIBRARIES})
-    set(PLATFORM_INCLUDES ${PLATFORM_INCLUDES} ${ICU_INCLUDE_DIRS})
-endif()
-
-if(THYME_USE_GAMEMATH)
-    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
-    add_definitions(-DTHYME_USING_GAMEMATH)
-    set(PLATFORM_LIBS ${PLATFORM_LIBS} gamemath_static_lib)
-endif()
-
 # Build and link the DLL.
 set(GAMEENGINE_INCLUDES
     ${CMAKE_CURRENT_BINARY_DIR}/base
@@ -248,6 +194,8 @@ set(GAMEENGINE_SRC
 )
 
 # Glob all the header files together to add to the project for msvc/xcode.
+# Not ideal as CMake won't notice if you add any until something else prompts a CMake run
+# but this is largely a convenience feature for MSVC/XCode users.
 if(CMAKE_CONFIGURATION_TYPES)
     file(GLOB_RECURSE GAMEENGINE_HEADERS "*.h")
     # Filter out headers from included 3rd party libraries like STLPort or gamemath.
@@ -256,21 +204,43 @@ endif()
 
 if(STANDALONE)
     add_executable(thyme ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-    target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} ${GAMEENGINE_INCLUDES})
-    if(THREADS_HAVE_PTHREAD_ARG)
-        target_compile_options(thyme PUBLIC "-pthread")
-    endif()
+    target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-
-    if(MSVC) 
-        target_include_directories(thyme BEFORE PUBLIC libs/stlport ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
-    else()
-        target_include_directories(thyme BEFORE PUBLIC ${PLATFORM_INCLUDES} hooker ${GAMEENGINE_INCLUDES})
-    endif()
+    target_include_directories(thyme BEFORE PUBLIC libs/stlport hooker ${GAMEENGINE_INCLUDES})
 endif()
 
 # For MSVC/XCode this will add the headers to the project.
 source_group("Header Files" FILES ${GAMEENGINE_HEADERS})
 
-target_link_libraries(thyme ${PLATFORM_LIBS})
+if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    target_link_libraries(thyme winmm dbghelp)
+
+    if(STANDALONE)
+        target_link_libraries(thyme ws2_32)
+    else()
+        target_link_libraries(thyme wsock32) # Original links wsock32, not ws2_32
+    endif()
+endif()
+
+target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:-DTHYME_DEBUG>)
+
+# We don't need to link anything if we have win32 threads. Affects MinGW builds primarily.
+if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
+    target_link_libraries(thyme Threads::Threads)
+endif()
+
+if(THYME_USE_GAMEMATH)
+    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
+    target_link_libraries(thyme gamemath_static_lib)
+    target_compile_definitions(thyme PRIVATE THYME_USING_GAMEMATH=1)
+endif()
+
+if(ICU_FOUND)
+    target_compile_definitions(thyme PRIVATE THYME_USE_ICU=1)
+    target_link_libraries(thyme ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+endif()
+
+if(D3D8_FOUND)
+    target_link_libraries(thyme DirectX::d3d8)
+endif()

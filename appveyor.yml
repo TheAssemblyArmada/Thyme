@@ -2,19 +2,35 @@
 version: "{build}"
 
 # build platform, i.e. Win32 (instead of x86), x64, Any CPU. This setting is optional.
-platform: Win32
+platform:
+    - Win32
+    - x64
 
 # specify custom environment variables
 environment:
-  MSVC_DEFAULT_OPTIONS: ON
-  matrix:
-  - GENERATOR: "Visual Studio 15 2017"
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-  
-
-# build configuration, i.e. Debug, Release, etc.
-configuration: Release
-
+    MSVC_DEFAULT_OPTIONS: ON
+    matrix:
+        - GENERATOR: "Visual Studio 15 2017"
+          CMAKE_OPTIONS: ""
+          APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+        - GENERATOR: "Visual Studio 15 2017"
+          CMAKE_OPTIONS: "-DSTANDALONE=ON"
+          APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+ 
+matrix:
+    exclude:
+        - platform: x64
+          CMAKE_OPTIONS: ""
+    allow_failures:
+        - platform: x64
+ 
+configuration:
+    - Release
+    - Debug
+    
+cache:
+    - c:\projects\dxsdk_aug2007.exe
+    
 # scripts that are called at very beginning, before repo cloning
 init:
   - cmd: cmake --version
@@ -35,14 +51,29 @@ skip_commits:
   files:
     - docs/*
 
-# Maximum number of concurrent jobs for the project
-max_jobs: 1
-
 # scripts that run after cloning repository
 install:
-  - cmd: cd C:\projects\thyme
-  - cmd: git submodule update --init --recursive
-
+    - cmd: cd C:\projects\thyme
+    - cmd: git submodule update --init --recursive
+    - ps: >-
+        $DXSDK_INSTALLER = "dxsdk_aug2007.exe";
+        $DXSDK_TMP = "dxsdk_aug2007_tmp.exe";
+        $DXSDK_URL = "https://download.microsoft.com/download/3/3/f/33f1af6e-c61b-4f14-a0de-3e9096ed4b3a/$DXSDK_INSTALLER";
+        $DXSDK_DIR = "c:\projects\dxsdk"
+        
+        If ($env:CMAKE_OPTIONS -eq "-DSTANDALONE=ON") {
+            Set-Location c:\projects | Out-Null;
+            
+            If (-Not (Test-Path "$DXSDK_INSTALLER")) {
+                    & appveyor DownloadFile "$DXSDK_URL" -FileName "$DXSDK_TMP";
+                    & 7z x -y "c:\projects\$DXSDK_TMP";
+            }
+            
+            New-Item -ItemType directory -Path $DXSDK_DIR| Out-Null;
+            Set-Location $DXSDK_DIR | Out-Null;
+            & 7z x -y "c:\projects\$DXSDK_INSTALLER";
+        }
+        
 # scripts to run before build
 before_build:
   - cmd: cd C:\projects\thyme
@@ -50,18 +81,19 @@ before_build:
   - cmd: cd build
   - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=%GENERATOR%
   - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=%GENERATOR% Win64
-  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" -DCMAKE_BUILD_TYPE=%configuration%  ..
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" %CMAKE_OPTIONS% -DCMAKE_BUILD_TYPE=%configuration%  -DDirectX_ROOT="c:\projects\dxsdk" ..
 
 after_build:
-  - cmd: 7z a thyme.zip .\Release\thyme.dll .\Release\launchthyme.exe -tzip
+  - cmd: if "%CMAKE_OPTIONS%"=="" 7z a thyme.zip .\%configuration%\thyme.dll .\%configuration%\launchthyme.exe -tzip
+  - cmd: if "%CMAKE_OPTIONS%"=="-DSTANDALONE=ON" 7z a thyme.zip .\%configuration%\thyme.exe -tzip
 
 artifacts:
   - path: build/thyme.zip
     name: zip-archive
   
 build:
-  project: C:\projects\thyme\build\thyme.sln # path to Visual Studio solution or project
-  parallel: true                             # enable MSBuild parallel builds
-  verbosity: minimal                         # MSBuild verbosity level (quiet|minimal|normal|detailed)
+    project: C:\projects\thyme\build\thyme.sln # path to Visual Studio solution or project
+    parallel: true                             # enable MSBuild parallel builds
+    verbosity: minimal                         # MSBuild verbosity level (quiet|minimal|normal|detailed)
 
 test: off

@@ -183,7 +183,10 @@ endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG TRUE BOOL)
 
-find_package(DirectX COMPONENTS d3d8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND STANDALONE)
+    find_package(DirectX COMPONENTS d3d8)
+endif()
+
 find_package(ICU COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 

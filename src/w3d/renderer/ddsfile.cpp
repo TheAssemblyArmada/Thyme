@@ -261,9 +261,9 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, 
  *
  * 0x0087A0E0
  */
-void DDSFileClass::Copy_Level_To_Surface(unsigned level, IDirect3DSurface8 *d3d_surface, const Vector3 &color_shift)
+void DDSFileClass::Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surface, const Vector3 &color_shift)
 {
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
     D3DSURFACE_DESC desc;
     D3DLOCKED_RECT rect;
 

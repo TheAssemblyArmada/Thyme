@@ -201,7 +201,7 @@ class FastCriticalSectionClass
 {
 public:
 #ifdef THYME_STANDALONE
-    FastCriticalSectionClass() : m_flag(ATOMIC_FLAG_INIT) {}
+    FastCriticalSectionClass() { m_flag.clear(); }
 #else
     FastCriticalSectionClass() : m_flag(0) {}
 #endif

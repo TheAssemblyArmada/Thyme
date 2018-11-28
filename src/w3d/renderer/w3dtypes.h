@@ -22,12 +22,14 @@
 
 typedef LPDIRECT3DTEXTURE8 w3dtexture_t;
 typedef LPDIRECT3DBASETEXTURE8 w3dbasetexture_t;
+typedef LPDIRECT3DSURFACE8 w3dsurface_t;
 
 #define W3D_TYPE_INVALID_TEXTURE nullptr
 #else
 // TODO for alternate 3D frameworks such as OpenGL or later D3D
 typedef int w3dtexture_t;
 typedef int w3dbasetexture_t;
+typedef int w3dsurface_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
 #endif

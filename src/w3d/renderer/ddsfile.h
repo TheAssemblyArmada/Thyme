@@ -17,12 +17,7 @@
 #include "always.h"
 #include "vector3.h"
 #include "w3dformat.h"
-
-#ifdef PLATFORM_WINDOWS
-#include <d3d8.h>
-#else
-struct IDirect3DSurface8;
-#endif
+#include "w3dtypes.h"
 
 enum DDSPixelFormatFlags
 {
@@ -117,7 +112,7 @@ public:
     WW3DFormat Get_Format() { return m_format; }
     void Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, unsigned dst_width, unsigned dst_height,
         uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift);
-    void Copy_Level_To_Surface(unsigned level, IDirect3DSurface8 *d3d_surface, const Vector3 &color_shift);
+    void Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surface, const Vector3 &color_shift);
     void Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, WW3DFormat dst_format, unsigned dst_width,
         unsigned dst_height, uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift);
    bool Load();

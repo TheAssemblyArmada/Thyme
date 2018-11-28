@@ -36,10 +36,6 @@
 #ifndef PATH_MAX
 #define PATH_MAX MAX_PATH
 #endif
-
-// Temp until build system is refactored to add it.
-#define D3D8_BUILD
-
 #endif
 
 #ifdef HAVE_STRINGS_H

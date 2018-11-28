@@ -207,7 +207,8 @@ if(STANDALONE)
     target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-    target_include_directories(thyme BEFORE PUBLIC libs/stlport hooker ${GAMEENGINE_INCLUDES})
+    target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
+    target_compile_definitions(thyme PRIVATE D3D8_BUILD=1)
 endif()
 
 # For MSVC/XCode this will add the headers to the project.
@@ -223,7 +224,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
-target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:-DTHYME_DEBUG>)
+target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:THYME_DEBUG=1>)
 
 # We don't need to link anything if we have win32 threads. Affects MinGW builds primarily.
 if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
@@ -242,5 +243,6 @@ if(ICU_FOUND)
 endif()
 
 if(D3D8_FOUND)
+    target_compile_definitions(thyme PRIVATE D3D8_BUILD=1)
     target_link_libraries(thyme DirectX::d3d8)
 endif()

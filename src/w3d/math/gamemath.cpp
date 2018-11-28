@@ -17,18 +17,16 @@
 #include "gamemath.h"
 
 template<typename T, int N>
-inline constexpr Array<T, N> calculateFastTable(T(*func)(T),bool arc)
+inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
 {
-	Array<T, N> table;
-	for (int a = 0; a < N; ++a) 
-	{
-		float cv = arc ?  (a - N / T(2)) * (T(1) / (N / T(2)))
-							: T(a) * 2.0f * GAMEMATH_PI / SIN_TABLE_SIZE;
+    Array<T, N> table;
+    for (int a = 0; a < N; ++a) {
+        float cv = arc ? (a - N / T(2)) * (T(1) / (N / T(2))) : T(a) * 2.0f * GAMEMATH_PI / SIN_TABLE_SIZE;
 
-		table[a] = func(cv);
-	}
+        table[a] = func(cv);
+    }
 
-	return table;
+    return table;
 }
 
 //calculate all tables at compile time
@@ -40,4 +38,5 @@ const Array<float, SIN_TABLE_SIZE>  _FastInvSinTable = calculateFastTable<float,
 void GameMath::Init()
 {
 }
+
 void GameMath::Shutdown() {}

@@ -81,8 +81,7 @@ const char *g_errorCodes[22] = {
     "Error code: ?????\r\r\nDescription: Unknown exception.",
 };
 
-unsigned int g_errorValues[] = {
-    0xC0000005,
+unsigned int g_errorValues[] = {0xC0000005,
     0xC000008C,
     0x80000003,
     0x80000002,
@@ -102,12 +101,11 @@ unsigned int g_errorValues[] = {
     0xC0000096,
     0x80000004,
     0xC00000FD,
-    0xFFFFFFFF
-};
+    0xFFFFFFFF};
 
 static bool g_symbolInit;
 static CONTEXT g_stackContext;
-typedef BOOL(__stdcall *symgetlinefromaddrfunc_t)(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE);
+typedef BOOL(__stdcall *symgetlinefromaddrfunc_t)(HANDLE, DWORD_PTR, PDWORD_PTR, PIMAGEHLP_LINE);
 static symgetlinefromaddrfunc_t g_symGetLineFromAddrFunc;
 
 static void Get_Function_Details(void *pointer, char *name, char *filename, unsigned *linenumber, uintptr_t *address)
@@ -133,12 +131,13 @@ static void Get_Function_Details(void *pointer, char *name, char *filename, unsi
 
     HANDLE process = GetCurrentProcess();
     char symbol_buffer[sizeof(IMAGEHLP_SYMBOL) + STACK_SYMNAME_MAX];
-    IMAGEHLP_SYMBOL *const symbol_bufferp = reinterpret_cast<IMAGEHLP_SYMBOL*>(symbol_buffer);
+    IMAGEHLP_SYMBOL *const symbol_bufferp = reinterpret_cast<IMAGEHLP_SYMBOL *>(symbol_buffer);
     memset(symbol_buffer, 0, sizeof(symbol_buffer));
     symbol_bufferp->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL) + STACK_SYMNAME_MAX;
     symbol_bufferp->MaxNameLength = STACK_SYMNAME_MAX;
 
-    if (SymGetSymFromAddr(process, reinterpret_cast<DWORD>(pointer), reinterpret_cast<PDWORD>(&displacement), symbol_bufferp)) {
+    if (SymGetSymFromAddr(
+            process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD_PTR>(&displacement), symbol_bufferp)) {
         if (name != nullptr) {
             strcpy(name, symbol_bufferp->Name);
             strcat(name, "();");
@@ -152,7 +151,8 @@ static void Get_Function_Details(void *pointer, char *name, char *filename, unsi
             line.FileName = 0;
             line.Address = 0;
 
-            if (g_symGetLineFromAddrFunc(process, reinterpret_cast<DWORD>(pointer), reinterpret_cast<PDWORD>(&displacement), &line)) {
+            if (g_symGetLineFromAddrFunc(
+                    process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD_PTR>(&displacement), &line)) {
                 if (filename != nullptr) {
                     strcpy(filename, line.FileName);
                 }
@@ -275,7 +275,7 @@ void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int ski
             nullptr);
 
         if (carry_on) {
-            Write_Stack_Line((void*)stack_frame.AddrPC.Offset, callback);
+            Write_Stack_Line((void *)stack_frame.AddrPC.Offset, callback);
         }
     }
 }
@@ -421,6 +421,22 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
     g_exceptionFileBuffer += tmp;
 
     g_exceptionFileBuffer += "\nFloating point status\n";
+#if defined PROCESSOR_X86_64
+    tmp.Format("     Control word: %08x\n", ctext->FltSave.ControlWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("      Status word: %08x\n", ctext->FltSave.StatusWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("         Tag word: %08x\n", ctext->FltSave.TagWord);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("     Error Offset: %08x\n", ctext->FltSave.ErrorOffset);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("   Error Selector: %08x\n", ctext->FltSave.ErrorSelector);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("      Data Offset: %08x\n", ctext->FltSave.DataOffset);
+    g_exceptionFileBuffer += tmp;
+    tmp.Format("    Data Selector: %08x\n", ctext->FltSave.DataSelector);
+    g_exceptionFileBuffer += tmp;
+#elif defined PROCESSOR_X86
     tmp.Format("     Control word: %08x\n", ctext->FloatSave.ControlWord);
     g_exceptionFileBuffer += tmp;
     tmp.Format("      Status word: %08x\n", ctext->FloatSave.StatusWord);
@@ -435,7 +451,9 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
     g_exceptionFileBuffer += tmp;
     tmp.Format("    Data Selector: %08x\n", ctext->FloatSave.DataSelector);
     g_exceptionFileBuffer += tmp;
+#endif
 
+#if defined PROCESSOR_X86
     for (int i = 0; i < 8; ++i) {
         tmp.Format("ST%d : ", i);
         g_exceptionFileBuffer += tmp;
@@ -444,10 +462,11 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
             tmp.Format("%02X", ctext->FloatSave.RegisterArea[i * 10 + j]);
             g_exceptionFileBuffer += tmp;
         }
-        
-        tmp.Format("   %+#.17e\n", *reinterpret_cast<double*>(&ctext->FloatSave.RegisterArea[i * 10]));
+
+        tmp.Format("   %+#.17e\n", *reinterpret_cast<double *>(&ctext->FloatSave.RegisterArea[i * 10]));
         g_exceptionFileBuffer += tmp;
     }
+#endif
 
     g_exceptionFileBuffer += "EIP bytes dump...\n";
 

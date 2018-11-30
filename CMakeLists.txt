@@ -48,10 +48,10 @@ option(THYME_USE_GAMEMATH "Use own maths library rather than libc version for th
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
+include(CheckCXXCompilerFlag)
+
 # Go lean and mean on windows.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    option(USE_ICU_LIB "Use ICU for unicode support instead of Win32 API" OFF)
-
     add_definitions(-DWIN32_LEAN_AND_MEAN)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
@@ -61,9 +61,13 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+check_cxx_compiler_flag(-Wno-invalid-offsetof HAVE_NO_INVALID_OFFSETOF)
 
+if(HAVE_NO_INVALID_OFFSETOF)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # Prevent lib prefix when built with MinGW to target windows and move to own dir.
     if(MINGW)
         set(CMAKE_SHARED_LIBRARY_PREFIX "")
@@ -72,10 +76,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -mabi=ms")
     endif()
 endif ()
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
-endif()
 
 add_definitions(-DGAME_DEBUG_LOG)
 

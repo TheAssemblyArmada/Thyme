@@ -27,7 +27,7 @@
 #include <sys/types.h>
 
 #ifdef PLATFORM_WINDOWS
-#define NOMINMAX
+#define NOMINMAX 1
 #include <windows.h>
 // Include after windows.h
 #include "utf.h"

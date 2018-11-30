@@ -41,7 +41,7 @@ Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 #else
-#ifdef PLATFORM_WINDOWS
+#ifdef D3D8_BUILD
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;

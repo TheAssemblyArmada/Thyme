@@ -70,6 +70,8 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # Prevent lib prefix when built with MinGW to target windows and move to own dir.
     if(MINGW)
+        add_definitions(-D__STDC_FORMAT_MACROS)
+        add_definitions(-D__STDC_LIMIT_MACROS)
         set(CMAKE_SHARED_LIBRARY_PREFIX "")
         set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)
         set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${thyme_BINARY_DIR}/bin)

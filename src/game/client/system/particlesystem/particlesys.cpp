@@ -232,17 +232,17 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
 void ParticleSystem::Load_Post_Process()
 {
     if (m_slaveID != PARTSYS_ID_NONE) {
-        ASSERT_THROW_PRINT(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.\n");
+        DEBUG_ASSERT_THROW(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.\n");
         m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
-        ASSERT_THROW_PRINT(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
+        DEBUG_ASSERT_THROW(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
             6,
             "Slave system not found or is set as destroyed.\n");
     }
 
     if (m_masterID != PARTSYS_ID_NONE) {
-        ASSERT_THROW_PRINT(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.\n");
+        DEBUG_ASSERT_THROW(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.\n");
         m_masterSystem = g_theParticleSystemManager->Find_Particle_System(m_masterID);
-        ASSERT_THROW_PRINT(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
+        DEBUG_ASSERT_THROW(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
             6,
             "Master system not found or is set as destroyed.\n");
     }

@@ -141,9 +141,9 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 
             if (name.Is_Not_Empty()) {
                 ParticleSystemTemplate *temp = Find_Template(name);
-                ASSERT_THROW_PRINT(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
+                DEBUG_ASSERT_THROW(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
                 ParticleSystem *sys = new ParticleSystem(temp, ++m_uniqueSystemID, false);
-                ASSERT_THROW_PRINT(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
+                DEBUG_ASSERT_THROW(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
                 xfer->xferSnapshot(sys);
             }
         }

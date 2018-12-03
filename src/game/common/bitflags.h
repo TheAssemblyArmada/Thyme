@@ -120,7 +120,7 @@ void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
             // If we have a plus or minus as first char, then that decides if bit is set or cleared.
             // Otherwise just set.
             if (*token == '+') {
-                ASSERT_THROW_PRINT(!set,
+                DEBUG_ASSERT_THROW(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.\n",
                     ini->Get_Filename().Str(),
@@ -129,7 +129,7 @@ void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
                 m_bits.set(INI::Scan_IndexList(token + 1, s_bitNamesList));
                 adjust = true;
             } else if (*token == '-') {
-                ASSERT_THROW_PRINT(!set,
+                DEBUG_ASSERT_THROW(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.\n",
                     ini->Get_Filename().Str(),
@@ -138,7 +138,7 @@ void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
                 m_bits.reset(INI::Scan_IndexList(token + 1, s_bitNamesList));
                 adjust = true;
             } else {
-                ASSERT_THROW_PRINT(!adjust,
+                DEBUG_ASSERT_THROW(!adjust,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to set when we already adjusted.\n",
                     ini->Get_Filename().Str(),
@@ -162,7 +162,7 @@ void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
 
         // If we encounter a "NONE" entry, set all bits to 0.
         // We should never reach here if something has already been set.
-        ASSERT_THROW_PRINT(!adjust && !set,
+        DEBUG_ASSERT_THROW(!adjust && !set,
             0xDEAD0006,
             "File: '%s', Line: %d Trying to clear when we already set or adjusted.\n",
             ini->Get_Filename().Str(),

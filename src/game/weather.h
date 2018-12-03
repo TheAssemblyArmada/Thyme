@@ -1,31 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: WEATHER.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Weather control device.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Weather control device.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 #include "always.h"
 #include "asciistring.h"
@@ -64,8 +51,10 @@ private:
     static FieldParse s_weatherSettingParseTable[];
 };
 
-#ifdef THYME_STANDALONE
-extern WeatherSetting *g_theWeatherSetting;
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+extern WeatherSetting *&g_theWeatherSetting;
 #else
-#define g_theWeatherSetting (Make_Global<WeatherSetting*>(0x00A2BF00))
+extern WeatherSetting *g_theWeatherSetting;
 #endif

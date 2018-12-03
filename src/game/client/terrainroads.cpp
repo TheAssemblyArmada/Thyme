@@ -103,7 +103,7 @@ void TerrainRoadType::Parse_Transition_To_OCL(INI *ini, void *formal, void *stor
     if (strcasecmp(transition, "Damage") == 0) {
         is_damage = true;
     } else {
-        ASSERT_THROW_PRINT(strcasecmp(transition, "Repair") == 0,
+        DEBUG_ASSERT_THROW(strcasecmp(transition, "Repair") == 0,
             0xDEAD0006,
             "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.\n",
             ini->Get_Filename().Str(),
@@ -115,7 +115,7 @@ void TerrainRoadType::Parse_Transition_To_OCL(INI *ini, void *formal, void *stor
     int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
     int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
-    ASSERT_THROW_PRINT(effect >= 0 && effect < 3,
+    DEBUG_ASSERT_THROW(effect >= 0 && effect < 3,
         0xDEAD0006,
         "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.\n",
         ini->Get_Filename().Str(),
@@ -138,7 +138,7 @@ void TerrainRoadType::Parse_Transition_To_FX(INI *ini, void *formal, void *store
     if (strcasecmp(transition, "Damage") == 0) {
         is_damage = true;
     } else {
-        ASSERT_THROW_PRINT(strcasecmp(transition, "Repair") == 0,
+        DEBUG_ASSERT_THROW(strcasecmp(transition, "Repair") == 0,
             0xDEAD0006,
             "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.\n",
             ini->Get_Filename().Str(),
@@ -150,7 +150,7 @@ void TerrainRoadType::Parse_Transition_To_FX(INI *ini, void *formal, void *store
     int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
     int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
-    ASSERT_THROW_PRINT(effect >= 0 && effect < 3,
+    DEBUG_ASSERT_THROW(effect >= 0 && effect < 3,
         0xDEAD0006,
         "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.\n",
         ini->Get_Filename().Str(),
@@ -289,7 +289,7 @@ void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 
-    ASSERT_THROW_PRINT(g_theTerrainRoads->Find_Road(token) == nullptr,
+    DEBUG_ASSERT_THROW(g_theTerrainRoads->Find_Road(token) == nullptr,
         0xDEAD0006,
         "'%s' at line %d has a duplicated Road that has been loaded elsewhere already.\n",
         ini->Get_Filename().Str(),
@@ -302,7 +302,7 @@ void TerrainRoadCollection::Parse_Terrain_Bridge_Definitions(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 
-    ASSERT_THROW_PRINT(g_theTerrainRoads->Find_Bridge(token) == nullptr,
+    DEBUG_ASSERT_THROW(g_theTerrainRoads->Find_Bridge(token) == nullptr,
         0xDEAD0006,
         "'%s' at line %d has a duplicated Bridge that has been loaded elsewhere already.\n",
         ini->Get_Filename().Str(),

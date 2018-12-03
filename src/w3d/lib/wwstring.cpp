@@ -127,7 +127,7 @@ void StringClass::Release_Resources() {}
 bool StringClass::Copy_Wide(const unichar_t *source)
 {
     if (source != nullptr) {
-#if defined THYME_USE_ICU
+#if defined BUILD_WITH_ICU
         int32_t length;
         UErrorCode error = U_ZERO_ERROR;
         u_strToUTF8(nullptr, 0, &length, source, -1, &error);

@@ -41,7 +41,7 @@ Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 #else
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;
@@ -69,7 +69,7 @@ void DX8Wrapper::Init(void *hwnd, bool lite)
 #ifndef THYME_STANDALONE
     Call_Function<void, void *, bool>(0x00800670, hwnd, lite);
 #else
-#if THYME_STANDALONE
+#ifndef THYME_STANDALONE
     memset(s_textures, 0, sizeof(*s_textures) * MAX_TEXTURE_STAGES);
     memset(s_renderStates, 0, sizeof(*s_renderStates) * 256);
     memset(s_textureStageStates, 0, (sizeof(*s_textureStageStates) * 32) * MAX_TEXTURE_STAGES);
@@ -103,7 +103,7 @@ void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
     DEBUG_LOG("Direct3D8 generated error %x.\n", error);
 }
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
 const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
 {

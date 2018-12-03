@@ -23,14 +23,14 @@ class RefCountClass
 public:
     RefCountClass() : m_numRefs(1)
     {
-#ifdef THYME_DEBUG
+#ifdef GAME_DEBUG
         Inc_Total_Refs(this);
 #endif
     }
 
     RefCountClass(const RefCountClass &) : m_numRefs(1)
     {
-#ifdef THYME_DEBUG
+#ifdef GAME_DEBUG
         Inc_Total_Refs(this);
 #endif
     }
@@ -40,7 +40,7 @@ public:
     
     void Release_Ref()
     {
-#ifdef THYME_DEBUG
+#ifdef GAME_DEBUG
         Dec_Total_Refs(this);
 #endif
         --m_numRefs;

@@ -52,7 +52,7 @@ void Utf8String::Validate()
 
 char *Utf8String::Peek() const
 {
-    ASSERT_PRINT(m_data != nullptr, "null string ptr");
+    DEBUG_ASSERT_PRINT(m_data != nullptr, "null string ptr");
     
     return m_data->Peek();
 }
@@ -123,7 +123,7 @@ int Utf8String::Get_Length() const
 {
     if ( m_data != nullptr ) {
         int len = strlen(Str());
-        ASSERT_PRINT(len > 0, "length of string is less than or equal to 0.");
+        DEBUG_ASSERT_PRINT(len > 0, "length of string is less than or equal to 0.");
         
         return len;
     }
@@ -133,8 +133,8 @@ int Utf8String::Get_Length() const
 
 char Utf8String::Get_Char(int index) const
 {
-    ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
-    ASSERT_PRINT(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    DEBUG_ASSERT_PRINT(index >= 0, "bad index in getCharAt.");
+    DEBUG_ASSERT_PRINT(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
     
     return Peek()[index];
 }
@@ -188,7 +188,7 @@ void Utf8String::Translate(Utf16String const &string)
 {
     Release_Buffer();
     
-#if defined THYME_USE_ICU // Use ICU convertors
+#if defined BUILD_WITH_ICU // Use ICU convertors
     int32_t length;
     UErrorCode error = U_ZERO_ERROR;
     u_strToUTF8(nullptr, 0, &length, string, -1, &error);
@@ -401,7 +401,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vsnprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
+    DEBUG_ASSERT_THROW(vsnprintf(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -410,7 +410,7 @@ void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(vsnprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+    DEBUG_ASSERT_THROW(vsnprintf(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

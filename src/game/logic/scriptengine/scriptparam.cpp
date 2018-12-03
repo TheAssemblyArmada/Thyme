@@ -493,7 +493,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                 }
             }
 
-            ASSERT_THROW_PRINT(found, 0xDEAD0001, "Did not find parameter kind from string.\n");
+            DEBUG_ASSERT_THROW(found, 0xDEAD0001, "Did not find parameter kind from string.\n");
         } else {
             param->m_string = BitFlags<KINDOF_COUNT>::s_bitNamesList[param->m_int];
         }

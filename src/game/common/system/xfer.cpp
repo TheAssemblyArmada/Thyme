@@ -27,7 +27,7 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));
 
-    ASSERT_THROW_PRINT(*thing > check, 0xD, "Xfer version %d greater than expected, %d.\n", *thing, check);
+    DEBUG_ASSERT_THROW(*thing > check, 0xD, "Xfer version %d greater than expected, %d.\n", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -213,8 +213,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
-        ASSERT_THROW_PRINT(thing->size(), 0xF, "Trying to xfer load to none empty vector.\n");
+        DEBUG_ASSERT_THROW(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        DEBUG_ASSERT_THROW(thing->size(), 0xF, "Trying to xfer load to none empty vector.\n");
 
         ObjectID val;
 
@@ -238,8 +238,8 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
-        ASSERT_THROW_PRINT(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
+        DEBUG_ASSERT_THROW(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        DEBUG_ASSERT_THROW(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
 
         ObjectID val;
 
@@ -267,8 +267,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
             xferInt(&(*it));
         }
     } else {
-        ASSERT_THROW_PRINT(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
-        ASSERT_THROW_PRINT(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
+        DEBUG_ASSERT_THROW(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.\n");
+        DEBUG_ASSERT_THROW(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.\n");
 
         int32_t val;
 
@@ -328,7 +328,7 @@ void Xfer::xferKindOf(KindOfType *thing)
             xferImplementation(thing, sizeof(*thing));
             break;
         default:
-            ASSERT_THROW_PRINT(false, 0x8, "Xfer mode unknown.\n");
+            DEBUG_ASSERT_THROW(false, 0x8, "Xfer mode unknown.\n");
             break;
     }
 }

@@ -17,65 +17,66 @@
 #include "gametype.h"
 #include <cstddef>
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+WaterSetting *g_waterSettings = Make_Pointer<WaterSetting>(0x00A2F0B8);
+WaterTransparencySetting *&g_theWaterTransparency = Make_Global<WaterTransparencySetting *>(0x00A2F0B0);
+#else
 WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 WaterTransparencySetting *g_theWaterTransparency = nullptr;
 #endif
 
-FieldParse WaterSetting::m_waterSettingFieldParseTable[] =
-{
-    { "SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile) },
-    { "WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile) },
-    { "Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse) },
-    { "Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse) },
-    { "Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse) },
-    { "Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse) },
-    { "DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor) },
-    { "TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse) },
-    { "UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs) },
-    { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
-    { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
-    { "WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount) },
-    { nullptr, nullptr, nullptr, 0 }
-};
+FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
+    {"SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile)},
+    {"WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile)},
+    {"Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse)},
+    {"Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse)},
+    {"Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse)},
+    {"Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse)},
+    {"DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor)},
+    {"TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse)},
+    {"UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs)},
+    {"VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs)},
+    {"SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit)},
+    {"WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount)},
+    {nullptr, nullptr, nullptr, 0}};
 
-FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] =
-{
-    { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
-    { "TransparentWaterMinOpacity", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
-    { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
-    { "StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture) },
-    { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
-    { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
-    { "SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN) },
-    { "SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE) },
-    { "SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS) },
-    { "SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW) },
-    { "SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT) },
-    { nullptr, nullptr, nullptr, 0 }
-};
-
+FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
+    {"TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth)},
+    {"TransparentWaterMinOpacity",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity)},
+    {"StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor)},
+    {"StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture)},
+    {"AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending)},
+    {"RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor)},
+    {"SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN)},
+    {"SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE)},
+    {"SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS)},
+    {"SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW)},
+    {"SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT)},
+    {nullptr, nullptr, nullptr, 0}};
 
 void WaterSetting::Parse_Water_Setting(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
     int tod;
 
-    for ( tod = 0; tod < TIME_OF_DAY_COUNT; ++tod ) {
-        if ( strcasecmp(g_timeOfDayNames[tod], token.Str()) == 0 ) {
+    for (tod = 0; tod < TIME_OF_DAY_COUNT; ++tod) {
+        if (strcasecmp(g_timeOfDayNames[tod], token.Str()) == 0) {
             break;
         }
     }
 
-    ASSERT_THROW(tod < TIME_OF_DAY_COUNT, 0xDEAD0006);
+    DEBUG_ASSERT_THROW(tod < TIME_OF_DAY_COUNT, 0xDEAD0006, "Failed to parse a valid time of day.\n");
     ini->Init_From_INI(&g_waterSettings[tod], m_waterSettingFieldParseTable);
 }
 
 WaterTransparencySetting::WaterTransparencySetting() :
     m_transparentWaterDepth(3.0f),
     m_transparentWaterMinOpacity(1.0f),
-    m_standingWaterColor{ 1.0f, 1.0f, 1.0f },
-    m_radarWaterColor{ 140.0f, 140.0f, 255.0f },
+    m_standingWaterColor{1.0f, 1.0f, 1.0f},
+    m_radarWaterColor{140.0f, 140.0f, 255.0f},
     m_additiveBlending(false),
     m_standingWaterTexture("TWWater01.tga"),
     m_skyboxTextureN("TSMorningN.tga"),
@@ -84,28 +85,26 @@ WaterTransparencySetting::WaterTransparencySetting() :
     m_skyboxTextureW("TSMorningW.tga"),
     m_skyboxTextureT("TSMorningT.tga")
 {
-
 }
 
 void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
 {
-    if ( g_theWaterTransparency == nullptr ) {
+    if (g_theWaterTransparency == nullptr) {
         g_theWaterTransparency = new WaterTransparencySetting;
     } else {
-        ASSERT_THROW(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES, 0xDEAD0006);
+        DEBUG_ASSERT_THROW(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
+            0xDEAD0006,
+            "g_theWaterTransparency is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.\n");
         WaterTransparencySetting *new_wts = new WaterTransparencySetting;
         *new_wts = *g_theWaterTransparency;
         new_wts->m_isAllocated = true;
         g_theWaterTransparency->Add_Override(new_wts);
     }
 
-    ini->Init_From_INI(
-        g_theWaterTransparency->Get_Override(),
-        m_waterTransparencySettingFieldParseTable
-    );
+    ini->Init_From_INI(g_theWaterTransparency->Get_Override(), m_waterTransparencySettingFieldParseTable);
 
-    if ( ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES ) {
-        if ( g_theWaterTransparency != g_theWaterTransparency->Get_Override() ) {
+    if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+        if (g_theWaterTransparency != g_theWaterTransparency->Get_Override()) {
             // TODO requires TerrainVisual virtual table layout implementing.
         }
     }

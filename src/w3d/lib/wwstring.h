@@ -22,7 +22,7 @@
 #include <cstring>
 #include <cwchar>
 
-#ifdef THYME_USE_ICU
+#ifdef BUILD_WITH_ICU
 #include <unicode/ustring.h>
 #endif
 

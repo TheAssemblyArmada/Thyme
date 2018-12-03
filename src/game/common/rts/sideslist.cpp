@@ -47,15 +47,15 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     int32_t sides = m_numSides;
     xfer->xferInt(&sides);
-    ASSERT_THROW(sides == m_numSides, 6);
+    DEBUG_ASSERT_THROW(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.\n", sides, m_numSides);
 
     for (int i = 0; i < sides; ++i) {
-        ASSERT_THROW(i < m_numSides, 0xDEAD0003);
+        DEBUG_ASSERT_THROW(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.\n");
         bool has_scripts = m_sides[i].Get_ScriptList() != nullptr;
         xfer->xferBool(&has_scripts);
 
         if (m_sides[i].Get_ScriptList() != nullptr) {
-            ASSERT_THROW(has_scripts, 6);
+            DEBUG_ASSERT_THROW(has_scripts, 6, "We have a script list, but has_scripts is not set.\n");
             // Transfer script class.
             xfer->xferSnapshot(m_sides[i].Get_ScriptList()->Get_Scripts());
         }
@@ -326,7 +326,7 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(Utf8String name, int *index)
  */
 SidesInfo *SidesList::Get_Sides_Info(int index)
 {
-    ASSERT_THROW_PRINT(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
+    DEBUG_ASSERT_THROW(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
 
     return &m_sides[index];
 }
@@ -370,7 +370,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
     }
 
     input.Register_Parser("PlayerScriptsList", info->label, ScriptList::Parse_Scripts_Chunk, nullptr);
-    ASSERT_THROW_PRINT(input.Parse(nullptr), 0xDEAD0005, "Parsing script chunk failed.\n");
+    DEBUG_ASSERT_THROW(input.Parse(nullptr), 0xDEAD0005, "Parsing script chunk failed.\n");
 
     ScriptList *scripts[MAX_LIST_COUNT];
     int script_count = ScriptList::Get_Read_Scripts(scripts);

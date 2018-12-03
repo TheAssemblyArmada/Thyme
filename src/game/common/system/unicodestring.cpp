@@ -19,7 +19,7 @@
 #include "stringex.h"
 #include <stdio.h>
 
-#if !defined THYME_USE_ICU && defined PLATFORM_WINDOWS
+#if !defined BUILD_WITH_ICU && defined PLATFORM_WINDOWS
 #include <wctype.h>
 #endif
 
@@ -60,7 +60,7 @@ void Utf16String::Validate() {}
 
 unichar_t *Utf16String::Peek() const
 {
-    ASSERT_PRINT(m_data != nullptr, "null string ptr");
+    DEBUG_ASSERT_PRINT(m_data != nullptr, "null string ptr");
 
     // Actual string data is stored immediately after the UnicodeStringData header.
     return m_data->Peek();
@@ -164,7 +164,7 @@ const unichar_t *Utf16String::Str() const
 
 unichar_t *Utf16String::Get_Buffer_For_Read(int len)
 {
-    ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
+    DEBUG_ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
 
     Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
 
@@ -221,7 +221,7 @@ void Utf16String::Translate(const char *string)
 {
     Release_Buffer();
 
-#if defined THYME_USE_ICU // Use ICU convertors
+#if defined BUILD_WITH_ICU // Use ICU convertors
     int32_t length;
     UErrorCode error = U_ZERO_ERROR;
     u_strFromUTF8(nullptr, 0, &length, string, -1, &error);
@@ -365,7 +365,7 @@ void Utf16String::Format_VA(const unichar_t *format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(u_vsnprintf_u(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
+    DEBUG_ASSERT_THROW(u_vsnprintf_u(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -374,7 +374,7 @@ void Utf16String::Format_VA(Utf16String &format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
 
-    ASSERT_THROW_PRINT(u_vsnprintf_u(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+    DEBUG_ASSERT_THROW(u_vsnprintf_u(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -394,7 +394,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
         delims = (const unichar_t *)u" \n\r\t";
     }
 
-#if THYME_USE_ICU
+#if BUILD_WITH_ICU
     unichar_t *start = Peek();
 
     // Find next instance of token or end of string

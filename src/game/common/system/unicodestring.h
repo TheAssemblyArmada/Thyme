@@ -18,7 +18,7 @@
 #include "critsection.h"
 #include <stdarg.h>
 
-#ifdef THYME_USE_ICU
+#ifdef BUILD_WITH_ICU
 #include <unicode/ustring.h>
 #include <unicode/ustdio.h>
 #elif defined PLATFORM_WINDOWS

@@ -19,7 +19,7 @@
 #include <inttypes.h>
 #include <limits.h>
 
-#ifdef THYME_USE_ICU
+#ifdef BUILD_WITH_ICU
 #include <unicode/uchar.h>
 typedef UChar unichar_t;
 #else

@@ -45,7 +45,7 @@ public:
                 PoolInit = true; \
                 The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
             } \
-            ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
+            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
             return The##classname##Pool; \
         } \
     public: \
@@ -81,7 +81,7 @@ public:
                 PoolInit = true; \
                 The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
             } \
-            ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
+            DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
             return The##classname##Pool; \
         } \
     public: \

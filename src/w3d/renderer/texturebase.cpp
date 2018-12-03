@@ -64,7 +64,7 @@ TextureBaseClass::~TextureBaseClass()
     delete m_thumbnailTextureLoadTask;
     m_thumbnailTextureLoadTask = nullptr;
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         m_d3dTexture->Release();
         m_d3dTexture = nullptr;
@@ -80,7 +80,7 @@ TextureBaseClass::~TextureBaseClass()
 void TextureBaseClass::Invalidate()
 {
     if (!m_normalTextureLoadTask && !m_thumbnailTextureLoadTask && !m_isProcedural) {
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
         if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
             m_d3dTexture->Release();
             m_d3dTexture = nullptr;
@@ -142,7 +142,7 @@ bool TextureBaseClass::Is_Missing_Texture() const
  */
 unsigned TextureBaseClass::Get_Priority()
 {
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         return m_d3dTexture->GetPriority();
     }
@@ -156,7 +156,7 @@ unsigned TextureBaseClass::Get_Priority()
  */
 void TextureBaseClass::Set_Priority(unsigned priority)
 {
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         m_d3dTexture->SetPriority(priority);
     }
@@ -182,7 +182,7 @@ w3dbasetexture_t TextureBaseClass::Peek_Platform_Base_Texture() const
  */
 void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
 {
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         m_d3dTexture->Release();
     }
@@ -190,7 +190,7 @@ void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
 
     m_d3dTexture = tex;
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         m_d3dTexture->AddRef();
     }

@@ -14,10 +14,6 @@
  */
 #pragma once
 
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
-
 #include "always.h"
 #include "overridable.h"
 #include "asciistring.h"
@@ -79,10 +75,12 @@ private:
     static FieldParse m_waterTransparencySettingFieldParseTable[];
 };
 
-#ifdef THYME_STANDALONE
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+extern WaterSetting *g_waterSettings;
+extern WaterTransparencySetting *&g_theWaterTransparency;
+#else
 extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 extern WaterTransparencySetting *g_theWaterTransparency;
-#else
-#define g_waterSettings (Make_Pointer<WaterSetting>(0x00A2F0B8))
-#define g_theWaterTransparency (Make_Global<WaterTransparencySetting*>(0x00A2F0B0))
 #endif

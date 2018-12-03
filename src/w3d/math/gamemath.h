@@ -25,7 +25,7 @@
 #include <xmmintrin.h>
 #endif
 
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
 #include "gmath.h"
 #else
 #include <cmath>
@@ -71,7 +71,7 @@ void Shutdown();
 
 inline float Max(float v1, float v2)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_fmaxf(v1, v2);
 #else
     return fmaxf(v1, v2);
@@ -80,7 +80,7 @@ inline float Max(float v1, float v2)
 
 inline float Min(float v1, float v2)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_fminf(v1, v2);
 #else
     return fminf(v1, v2);
@@ -89,7 +89,7 @@ inline float Min(float v1, float v2)
 
 inline float Pow(float val, float power)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_powf(val, power);
 #else
     return powf(val, power);
@@ -137,7 +137,7 @@ inline int Float_To_Int_Floor(const float &f)
 
 inline float Cos(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_cosf(val);
 #else
     return float(cosf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -146,7 +146,7 @@ inline float Cos(float val)
 
 inline float Sin(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_sinf(val);
 #else
     return float(sinf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -160,7 +160,7 @@ inline float Inv_Sin(float val)
 
 inline float Sqrt(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_sqrtf(val);
 #else
     return float(sqrtf(val)); // IEEE standard says this is predictable for all conforming implementations.
@@ -174,7 +174,7 @@ inline float Inv_Sqrt(float val)
 
 inline float Acos(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_acosf(val);
 #else
     return float(acosf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -183,7 +183,7 @@ inline float Acos(float val)
 
 inline float Asin(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_asinf(val);
 #else
     return float(asinf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -192,7 +192,7 @@ inline float Asin(float val)
 
 inline float Atan(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_atanf(val);
 #else
     return float(atanf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -201,7 +201,7 @@ inline float Atan(float val)
 
 inline float Atan2(float y, float x)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_atan2f(y, x);
 #else
     return float(atan2f(y, x)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -210,7 +210,7 @@ inline float Atan2(float y, float x)
 
 inline float Tan(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_tanf(val);
 #else
     return float(tanf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -266,8 +266,8 @@ inline float Fast_Acos(float val)
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
-    ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
-    ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
+    DEBUG_ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
+    DEBUG_ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
 
     return (1.0f - frac) * _FastAcosTable[idx0] + frac * _FastAcosTable[idx1];
 }
@@ -286,8 +286,8 @@ inline float Fast_Asin(float val)
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
-    ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
-    ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
+    DEBUG_ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
+    DEBUG_ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
 
     return (1.0f - frac) * _FastAsinTable[idx0] + frac * _FastAsinTable[idx1];
 }
@@ -307,7 +307,7 @@ inline float Sign(float val)
 
 inline float Ceil(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_ceilf(val);
 #else
     return float(ceilf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -316,7 +316,7 @@ inline float Ceil(float val)
 
 inline float Floor(float val)
 {
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_floorf(val);
 #else
     return float(floorf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
@@ -336,7 +336,7 @@ inline int Fast_To_Int_Floor(float val)
         val -= _almost_one;
     }
 
-#ifdef THYME_USING_GAMEMATH
+#ifdef BUILD_WITH_GAMEMATH
     return gm_lrintf(gm_truncf(val));
 #else
     return lrintf(truncf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.

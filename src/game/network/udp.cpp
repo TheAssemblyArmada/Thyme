@@ -51,7 +51,7 @@ int UDP::Bind(uint32_t address, uint16_t port)
         m_myPort = be16toh(m_addr.sin_port);
 
         if (Set_Blocking(false) == -1) {
-            ASSERT_PRINT(false, "Couldn't set nonblocking mode!\n");
+            DEBUG_ASSERT_PRINT(false, "Couldn't set nonblocking mode!\n");
         }
 
         return OK;

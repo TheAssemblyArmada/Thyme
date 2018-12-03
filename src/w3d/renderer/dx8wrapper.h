@@ -36,7 +36,7 @@ extern uint32_t &g_numberOfDx8Calls;
 extern uint32_t g_numberOfDx8Calls;
 #endif
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
 #define DX8CALL(x) \
     DX8Wrapper::Get_D3D_Device8()->x; \
     g_numberOfDx8Calls++;
@@ -51,7 +51,7 @@ struct RenderStateStruct
     ShaderClass shader; // ShaderClass
     void *material; // VertexMaterialClass
     void *Textures[MAX_TEXTURE_STAGES]; // TextureClass
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     D3DLIGHT8 Lights[LIGHT_COUNT];
 #endif
     bool LightEnable[LIGHT_COUNT];
@@ -100,7 +100,7 @@ class DX8Wrapper
 public:
     static void Init(void *hwnd, bool lite = false);
     static void Shutdown();
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
@@ -149,7 +149,7 @@ private:
     static int &s_mainThreadID;
     static int &s_currentRenderDevice;
 #else
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
     static HMODULE s_d3dLib;
     static IDirect3D8 *s_d3dInterface;
@@ -214,7 +214,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
     LightEnable[1] = src.LightEnable[1];
     LightEnable[2] = src.LightEnable[2];
     LightEnable[3] = src.LightEnable[3];
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
     if (LightEnable[0]) {
         Lights[0] = src.Lights[0];
 
@@ -248,7 +248,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
     return *this;
 }
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
 #ifndef THYME_STANDALONE

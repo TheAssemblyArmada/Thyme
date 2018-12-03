@@ -116,7 +116,7 @@
 #endif // COMPILER_MSVC
 
 // Alias the ICU unicode functions when not building against it.
-#if !defined THYME_USE_ICU && defined PLATFORM_WINDOWS
+#if !defined BUILD_WITH_ICU && defined PLATFORM_WINDOWS
 #define u_strlen wcslen
 #define u_strcpy wcscpy
 #define u_strcat wcscat

@@ -119,7 +119,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
             ++putp;
         }
 
-        ASSERT_THROW_PRINT(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
+        DEBUG_ASSERT_THROW(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
 
         // DEBUG_LOG("Recovered a file path of '%s' with size '%d' and position '%d'.\n", namebuf, file_size, file_pos);
 

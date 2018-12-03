@@ -340,7 +340,7 @@ Dict DataChunkInput::Read_Dict()
                 dict.Set_UnicodeString(nk, Read_UnicodeString());
                 break;
             default:
-                ASSERT_THROW(false, 0xDEAD0005);
+                DEBUG_ASSERT_THROW(false, 0xDEAD0005, "Attempting to handle unknown Dict type data, code shouldn't reach here.\n");
         }
     }
 

@@ -16,13 +16,17 @@
 
 #include "always.h"
 
-#ifdef D3D8_BUILD
+#ifdef BUILD_WITH_D3D8
 #include <d3d8.h>
 #include <d3d8types.h>
 
 typedef LPDIRECT3DTEXTURE8 w3dtexture_t;
 typedef LPDIRECT3DBASETEXTURE8 w3dbasetexture_t;
 typedef LPDIRECT3DSURFACE8 w3dsurface_t;
+typedef D3DCAPS8 w3dcaps_t;
+typedef LPDIRECT3D8 w3dhandle_t;
+typedef D3DADAPTER_IDENTIFIER8 w3dadapterid_t;
+typedef LPDIRECT3DDEVICE8 w3ddevice_t;
 
 #define W3D_TYPE_INVALID_TEXTURE nullptr
 #else
@@ -30,6 +34,10 @@ typedef LPDIRECT3DSURFACE8 w3dsurface_t;
 typedef int w3dtexture_t;
 typedef int w3dbasetexture_t;
 typedef int w3dsurface_t;
+typedef int w3dcaps_t;
+typedef int w3dhandle_t;
+typedef int w3dadapterid_t;
+typedef int w3ddevice_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
 #endif

@@ -32,7 +32,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    ASSERT_THROW(r != nullptr, 0xDEAD0002);
+    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
 
     return r;
 }
@@ -48,7 +48,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    ASSERT_THROW(r != nullptr, 0xDEAD0002);
+    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
 
     return r;
 }
@@ -71,7 +71,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    ASSERT_THROW(r != nullptr, 0xDEAD0002);
+    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
 
     return r;
 }
@@ -87,7 +87,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    ASSERT_THROW(r != nullptr, 0xDEAD0002);
+    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
 
     return r;
 }

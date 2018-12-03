@@ -11,6 +11,7 @@ set(GAMEENGINE_INCLUDES
     game/common
     game/common/audio
     game/common/compression
+    game/common/debug
     game/common/ini
     game/common/modules
     game/common/rts
@@ -87,6 +88,8 @@ set(GAMEENGINE_SRC
     game/common/audio/soundmanager.cpp
     game/common/compression/compressionmanager.cpp
     game/common/compression/refpack.cpp
+    game/common/debug/gameassert.cpp
+    game/common/debug/gamelogging.cpp
     game/common/ini/ini.cpp
     game/common/modules/modulefactory.cpp
     game/common/rts/buildinfo.cpp
@@ -109,7 +112,6 @@ set(GAMEENGINE_SRC
     game/common/system/file.cpp
     game/common/system/filesystem.cpp
     game/common/system/functionlexicon.cpp
-    game/common/system/gamedebug.cpp
     game/common/system/gamememory.cpp
     game/common/system/gamememoryinit.cpp
     game/common/system/gamestate.cpp
@@ -208,7 +210,7 @@ if(STANDALONE)
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
-    target_compile_definitions(thyme PRIVATE D3D8_BUILD=1)
+    target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
 endif()
 
 # For MSVC/XCode this will add the headers to the project.
@@ -224,25 +226,35 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
-target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:THYME_DEBUG=1>)
+target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
+
+# Enable Thyme debug logging.
+if(LOGGING)
+    target_compile_definitions(thyme PUBLIC GAME_LOGGING=1)
+endif()
+
+# Enable Thyme debug assertions.
+if(ASSERTIONS)
+    target_compile_definitions(thyme PUBLIC GAME_ASSERTS=1)
+endif()
 
 # We don't need to link anything if we have win32 threads. Affects MinGW builds primarily.
 if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
     target_link_libraries(thyme Threads::Threads)
 endif()
 
-if(THYME_USE_GAMEMATH)
+if(USE_GAMEMATH)
     add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
     target_link_libraries(thyme gamemath_static_lib)
-    target_compile_definitions(thyme PRIVATE THYME_USING_GAMEMATH=1)
+    target_compile_definitions(thyme PRIVATE BUILD_WITH_GAMEMATH=1)
 endif()
 
 if(ICU_FOUND)
-    target_compile_definitions(thyme PRIVATE THYME_USE_ICU=1)
+    target_compile_definitions(thyme PRIVATE BUILD_WITH_ICU=1)
     target_link_libraries(thyme ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
 endif()
 
 if(D3D8_FOUND)
-    target_compile_definitions(thyme PRIVATE D3D8_BUILD=1)
+    target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
     target_link_libraries(thyme DirectX::d3d8)
 endif()

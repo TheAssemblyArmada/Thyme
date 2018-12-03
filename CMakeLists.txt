@@ -42,9 +42,19 @@ else()
     set(DEFAULT_STANDALONE ON)
 endif()
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(DEFAULT_LOGGING ON)
+    set(DEFAULT_ASSERTIONS ON)
+else()
+    set(DEFAULT_ASSERTIONS OFF)
+    set(DEFAULT_LOGGING OFF)
+endif()
+
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
-option(THYME_USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
+option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
+option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
+option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 
@@ -57,7 +67,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
     add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
     if(NOT STANDALONE)
-        add_definitions(-D_USE_32BIT_TIME_T)	#This is for ABI compatibility with a few functions, remove when original binary no longer required.
+        add_definitions(-D_USE_32BIT_TIME_T) #This is for ABI compatibility with a few functions, remove when original binary no longer required.
     endif()
 endif()
 
@@ -78,8 +88,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -mabi=ms")
     endif()
 endif ()
-
-add_definitions(-DGAME_DEBUG_LOG)
 
 # Include some standard CMake modules we use.
 include(CheckSymbolExists)
@@ -190,6 +198,13 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND STANDALONE)
 endif()
 
 find_package(ICU COMPONENTS data i18n io tu uc)
+
+if(NOT WIN32 OR NOT "${CMAKE_SYSTEM}" MATCHES "Windows")
+    if(NOT ICU_FOUND)
+        message(FATAL_ERROR "ICU is required on none windows platforms and was not found.")
+    endif()
+endif()
+
 find_package(Threads REQUIRED)
 
 # Check for the existence of platform specific headers.

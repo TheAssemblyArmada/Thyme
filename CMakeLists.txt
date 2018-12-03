@@ -201,7 +201,7 @@ find_package(ICU COMPONENTS data i18n io tu uc)
 
 if(NOT WIN32 OR NOT "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(NOT ICU_FOUND)
-        message(FATAL_ERROR "ICU is required on none windows platforms and was not found.")
+        message(FATAL_ERROR "ICU is required on non-windows platforms and was not found.")
     endif()
 endif()
 

@@ -129,7 +129,8 @@ void Inject_Loader(const char *path, const char *dllname, char *args)
 
             // wait until the thread stuck at entry point
             CONTEXT context;
-            
+            memset(&context, 0, sizeof(context));
+
             for ( unsigned int i = 0; i < 50 && context.Eip != (DWORD)entry; ++i ) {
                 // patience.
                 Sleep(100);

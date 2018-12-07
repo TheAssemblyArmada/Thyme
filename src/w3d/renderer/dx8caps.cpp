@@ -348,7 +348,7 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     Check_Shader_Support(m_caps);
     Check_Driver_Version_Status();
     Check_Max_Texture_Support(m_caps);
-    Vendor_Specific_Hacks();
+    Vendor_Specific_Hacks(identifier);
     DEBUG_LOG(static_cast<const char *>(m_videoCardSpecString));
 }
 
@@ -378,12 +378,11 @@ void DX8Caps::Check_Texture_Format_Support(WW3DFormat format, const w3dcaps_t &c
     for (WW3DFormat i = WW3D_FORMAT_UNKNOWN; i < WW3D_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
         m_supportTextureFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
-                                        caps.DeviceType,
-                                        (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
-                                        0,
-                                        D3DRTYPE_TEXTURE,
-                                        (D3DFORMAT)WW3DFormat_To_D3DFormat(i))
-            >= 0;
+            caps.DeviceType,
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
+            0,
+            D3DRTYPE_TEXTURE,
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)) >= 0;
 #else
         m_supportTextureFormat[i] = false;
 #endif
@@ -412,12 +411,11 @@ void DX8Caps::Check_Render_To_Texture_Support(WW3DFormat format, const w3dcaps_t
     for (WW3DFormat i = WW3D_FORMAT_UNKNOWN; i < WW3D_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
         m_supportRenderToTextureFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
-                                                caps.DeviceType,
-                                                (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
-                                                D3DUSAGE_RENDERTARGET,
-                                                D3DRTYPE_TEXTURE,
-                                                (D3DFORMAT)WW3DFormat_To_D3DFormat(i))
-            >= 0;
+            caps.DeviceType,
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
+            D3DUSAGE_RENDERTARGET,
+            D3DRTYPE_TEXTURE,
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)) >= 0;
 #else
         m_supportRenderToTextureFormat[i] = false;
 #endif
@@ -446,12 +444,11 @@ void DX8Caps::Check_Depth_Stencil_Support(WW3DFormat format, const w3dcaps_t &ca
     for (WW3DZFormat i = WW3DZ_FORMAT_UNKNOWN; i < WW3DZ_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
         m_supportDepthStencilFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
-                                             caps.DeviceType,
-                                             (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
-                                             D3DUSAGE_DEPTHSTENCIL,
-                                             D3DRTYPE_TEXTURE,
-                                             (D3DFORMAT)WW3DZFormat_To_D3DFormat(i))
-            >= 0;
+            caps.DeviceType,
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
+            D3DUSAGE_DEPTHSTENCIL,
+            D3DRTYPE_TEXTURE,
+            (D3DFORMAT)WW3DZFormat_To_D3DFormat(i)) >= 0;
 #else
         m_supportDepthStencilFormat[i] = false;
 #endif
@@ -584,10 +581,10 @@ void DX8Caps::Check_Driver_Version_Status()
  *
  * 0x00846FF0
  */
-void DX8Caps::Vendor_Specific_Hacks()
+void DX8Caps::Vendor_Specific_Hacks(const w3dadapterid_t &identifier)
 {
 #ifndef THYME_STANDALONE
-    Call_Method<void, DX8Caps>(0x00846FF0, this);
+    Call_Method<void, DX8Caps, const w3dadapterid_t &>(0x00846FF0, this, identifier);
 #else
     // TODO, do we want to implement this? Largely refers to hardware that was old when Generals was released.
 #endif

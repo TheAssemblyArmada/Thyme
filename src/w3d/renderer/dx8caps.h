@@ -62,7 +62,7 @@ private:
     void Check_Shader_Support(const w3dcaps_t &caps);
     void Check_Max_Texture_Support(const w3dcaps_t &caps);
     void Check_Driver_Version_Status();
-    void Vendor_Specific_Hacks();
+    void Vendor_Specific_Hacks(const w3dadapterid_t &identifier);
     int Define_Vendor(unsigned vendor_id);
     int Get_NVidia_Device(unsigned device_id);
     int Get_AMD_Device(unsigned device_id);

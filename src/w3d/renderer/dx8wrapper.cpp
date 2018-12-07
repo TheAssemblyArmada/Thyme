@@ -20,10 +20,17 @@ using std::memcpy;
 using std::memset;
 
 #ifndef THYME_STANDALONE
+uint32_t &g_numberOfDx8Calls = Make_Global<uint32_t>(0x00A47F40);
+#else
+uint32_t g_numberOfDx8Calls = 0;
+#endif
+
+#ifndef THYME_STANDALONE
 IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Global<IDirect3D8 *(__stdcall *)(unsigned)>(
     0x00A47F6C);
 HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
 IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(0x00A47EEC);
+IDirect3DDevice8 *&DX8Wrapper::s_d3dDevice = Make_Global<IDirect3DDevice8 *>(0x00A47EF0);
 IDirect3DBaseTexture8 **DX8Wrapper::s_textures = Make_Pointer<w3dbasetexture_t>(0x00A42784);
 void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(0x00A47EBC);
 void *&DX8Wrapper::s_hwnd = Make_Global<void *>(0x00A47EBC);
@@ -45,6 +52,7 @@ int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;
+IDirect3DDevice8 *DX8Wrapper::s_d3dDevice;
 #endif
 void *DX8Wrapper::s_shadowMap;
 void *DX8Wrapper::s_hwnd;

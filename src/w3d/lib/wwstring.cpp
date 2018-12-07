@@ -122,8 +122,6 @@ int StringClass::Format(const char *format, ...)
     return retval;
 }
 
-void StringClass::Release_Resources() {}
-
 bool StringClass::Copy_Wide(const unichar_t *source)
 {
     if (source != nullptr) {

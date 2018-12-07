@@ -185,6 +185,7 @@ set(GAMEENGINE_SRC
     w3d/math/vp.cpp
     w3d/renderer/colorspace.cpp
     w3d/renderer/ddsfile.cpp
+    w3d/renderer/dx8caps.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/texture.cpp

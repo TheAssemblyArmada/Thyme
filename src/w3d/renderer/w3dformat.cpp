@@ -16,6 +16,7 @@
 #include "w3dformat.h"
 #include "gamedebug.h"
 #include "rtsutils.h"
+#include "wwstring.h"
 #include <cstring>
 
 using rts::FourCC;
@@ -26,6 +27,41 @@ WW3DFormat *g_D3DFormatToWW3DFormatConversionArray = Make_Pointer<WW3DFormat>(0x
 #else
 WW3DFormat g_D3DFormatToWW3DFormatConversionArray[62];
 #endif
+
+uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format)
+{
+    static uint32_t _conversion_array[WW3D_FORMAT_COUNT] = {0,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        40,
+        41,
+        50,
+        51,
+        52,
+        60,
+        61,
+        62,
+        FourCC<'D', 'X', 'T', '1'>::value,
+        FourCC<'D', 'X', 'T', '2'>::value,
+        FourCC<'D', 'X', 'T', '3'>::value,
+        FourCC<'D', 'X', 'T', '4'>::value,
+        FourCC<'D', 'X', 'T', '5'>::value};
+
+    if (format < WW3D_FORMAT_COUNT) {
+        return _conversion_array[format];
+    }
+
+    return 0;
+}
 
 WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
 {
@@ -56,6 +92,134 @@ WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
     DEBUG_LOG("TODO Unhandled format FourCC '%s', implementations welcome.\n", buff);
 
     return WW3D_FORMAT_UNKNOWN;
+}
+
+void Get_WW3D_Format_Name(WW3DFormat format, StringClass &name)
+{
+    switch (format)
+    {
+        case WW3D_FORMAT_R8G8B8:
+            name = "R8G8B8";
+            break;
+        case WW3D_FORMAT_A8R8G8B8:
+            name = "A8R8G8B8";
+            break;
+        case WW3D_FORMAT_X8R8G8B8:
+            name = "X8R8G8B8";
+            break;
+        case WW3D_FORMAT_R5G6B5:
+            name = "R5G6B5";
+            break;
+        case WW3D_FORMAT_X1R5G5B5:
+            name = "X1R5G5B5";
+            break;
+        case WW3D_FORMAT_A1R5G5B5:
+            name = "A1R5G5B5";
+            break;
+        case WW3D_FORMAT_A4R4G4B4:
+            name = "A4R4G4B4";
+            break;
+        case WW3D_FORMAT_R3G3B2:
+            name = "R3G3B2";
+            break;
+        case WW3D_FORMAT_A8:
+            name = "A8";
+            break;
+        case WW3D_FORMAT_A8R3G3B2:
+            name = "A8R3G3B2";
+            break;
+        case WW3D_FORMAT_X4R4G4B4:
+            name = "X4R4G4B4";
+            break;
+        case WW3D_FORMAT_A8P8:
+            name = "A8P8";
+            break;
+        case WW3D_FORMAT_P8:
+            name = "P8";
+            break;
+        case WW3D_FORMAT_L8:
+            name = "L8";
+            break;
+        case WW3D_FORMAT_A8L8:
+            name = "A8L8";
+            break;
+        case WW3D_FORMAT_A4L4:
+            name = "A4L4";
+            break;
+        case WW3D_FORMAT_U8V8:
+            name = "U8V8";
+            break;
+        case WW3D_FORMAT_L6V5U5:
+            name = "L6V5U5";
+            break;
+        case WW3D_FORMAT_X8L8V8U8:
+            name = "X8L8V8U8";
+            break;
+        case WW3D_FORMAT_DXT1:
+            name = "DXT1";
+            break;
+        case WW3D_FORMAT_DXT2:
+            name = "DXT2";
+            break;
+        case WW3D_FORMAT_DXT3:
+            name = "DXT3";
+            break;
+        case WW3D_FORMAT_DXT4:
+            name = "DXT4";
+            break;
+        case WW3D_FORMAT_DXT5:
+            name = "DXT5";
+            break;
+        default:
+            name = "Unknown";
+            break;
+    };
+}
+
+uint32_t WW3DZFormat_To_D3DFormat(WW3DZFormat format)
+{
+    uint32_t _conversion_array[WW3DZ_FORMAT_COUNT] = {0, 70, 71, 73, 75, 80, 77, 79};
+
+    if (format < WW3DZ_FORMAT_COUNT) {
+        return _conversion_array[format];
+    }
+
+    return 0;
+}
+
+WW3DZFormat D3DFormat_To_WW3DZFormat(uint32_t format)
+{
+    return WW3DZFormat();
+}
+
+void Get_WW3DZ_Format_Name(WW3DZFormat format, StringClass &name)
+{
+    switch (format) {
+        case WW3DZ_FORMAT_D16LOCKABLE:
+            name = "D16Lockable";
+            break;
+        case WW3DZ_FORMAT_D32:
+            name = "D32";
+            break;
+        case WW3DZ_FORMAT_D15S1:
+            name = "D15S1";
+            break;
+        case WW3DZ_FORMAT_D24S8:
+            name = "D24S8";
+            break;
+        case WW3DZ_FORMAT_D16:
+            name = "D16";
+            break;
+        case WW3DZ_FORMAT_D24X8:
+            name = "D24X8";
+            break;
+        case WW3DZ_FORMAT_D24X4S4:
+            name = "D24X4S4";
+            break;
+        default:
+            name = "Unknown";
+            break;
+    };
 }
 
 unsigned Get_Bytes_Per_Pixel(WW3DFormat format)

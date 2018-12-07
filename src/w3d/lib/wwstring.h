@@ -73,8 +73,8 @@ public:
     char *Peek_Buffer() { return m_buffer; }
     const char *Peek_Buffer() const { return m_buffer; }
     bool Copy_Wide(const unichar_t *source);
+    void Release_Resources() { Free_String(); }
 
-    static void Release_Resources();
     static void Hook_Me();
 
 private:

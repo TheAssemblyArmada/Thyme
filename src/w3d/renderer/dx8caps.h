@@ -18,6 +18,7 @@
 #include "w3dformat.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
+#include <new>
 
 class DX8Caps
 {
@@ -74,6 +75,21 @@ private:
     int Get_3DLabs_Device(unsigned device_id);
     static bool Has_Feature(unsigned caps, unsigned feature) { return (caps & feature) == feature; }
 
+#ifndef THYME_STANDALONE
+    DX8Caps *Hook_Ctor1(w3dhandle_t handle, const w3dcaps_t &caps, WW3DFormat format, const w3dadapterid_t &identifier)
+    {
+        return new (this) DX8Caps(handle, caps, format, identifier);
+    }
+
+    DX8Caps *Hook_Ctor2(w3dhandle_t handle, w3ddevice_t device, WW3DFormat format, const w3dadapterid_t &identifier)
+    {
+        return new (this) DX8Caps(handle, device, format, identifier);
+    }
+
+public:
+    static void Hook_Me();
+#endif
+
 private:
     int m_widthLimit;
     int m_heightLimit;
@@ -95,10 +111,10 @@ private:
     bool m_supportsCubeMap;
     bool m_supportMultiTexture;
     bool m_supportFog;
-    int m_maxTexturesPerPass;
-    unsigned m_vertexShaderVersion;
-    unsigned m_pixelShaderVersion;
-    int m_maxSupportedTextures;
+    uint32_t m_maxTexturesPerPass;
+    uint32_t m_vertexShaderVersion;
+    uint32_t m_pixelShaderVersion;
+    uint32_t m_maxSupportedTextures;
     int m_deviceNumber;
     int m_driverBuildNum;
     int m_driverStatus;
@@ -117,4 +133,16 @@ private:
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
+inline void DX8Caps::Hook_Me()
+{
+    Hook_Method(0x00844BB0, &DX8Caps::Compute_Caps);
+    Hook_Method(0x00846FC0, &DX8Caps::Is_Valid_Display_Format);
+    Hook_Method(0x008462D0, &DX8Caps::Check_Texture_Format_Support);
+    Hook_Method(0x008464B0, &DX8Caps::Check_Render_To_Texture_Support);
+    Hook_Method(0x00846690, &DX8Caps::Check_Depth_Stencil_Support);
+    Hook_Method(0x008461E0, &DX8Caps::Check_Texture_Compression_Support);
+    Hook_Method(0x00846870, &DX8Caps::Check_Shader_Support);
+    Hook_Method(0x00844A90, &DX8Caps::Hook_Ctor1);
+    Hook_Method(0x00844950, &DX8Caps::Hook_Ctor2);
+}
 #endif

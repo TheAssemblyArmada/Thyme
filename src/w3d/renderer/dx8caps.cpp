@@ -159,6 +159,9 @@ DX8Caps::DX8Caps(w3dhandle_t handle, w3ddevice_t device, WW3DFormat format, cons
 {
     Init_Caps(device);
     Compute_Caps(format, identifier);
+    DEBUG_LOG("================================================================================\n\n");
+    DEBUG_LOG(static_cast<const char *>(m_videoCardSpecString));
+    DEBUG_LOG("\n================================================================================\n");
 }
 
 /**
@@ -204,13 +207,13 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     m_videoCardName = "";
     m_driverFilename = "";
 #ifdef BUILD_WITH_D3D8
-    s_videoCardDetails.Format("Video Card: %s\r\n", identifier.Description);
+    s_videoCardDetails.Format("Video Card: %s\n", identifier.Description);
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Driver: %s\r\n", identifier.Driver);
+    s_videoCardDetails.Format("Driver: %s\n", identifier.Driver);
     m_videoCardSpecString += s_videoCardDetails;
     m_driverFilename = identifier.Driver;
     m_driverBuildNum = identifier.DriverVersion.LowPart & 0xFFFF;
-    s_videoCardDetails.Format("Product=%d, Version=%d, SubVersion=%d, Build=%d\r\n",
+    s_videoCardDetails.Format("Product=%d, Version=%d, SubVersion=%d, Build=%d\n",
         identifier.DriverVersion.HighPart >> 16,
         identifier.DriverVersion.HighPart & 0xFFFF,
         identifier.DriverVersion.LowPart >> 16,
@@ -228,7 +231,7 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
 
     s_videoCardDetails.Format("%s\t", g_videoCardVendors[m_vendorNumber]);
     m_videoCardName += s_videoCardDetails;
-    s_videoCardDetails.Format("Video Card Chip Vendor: %s\r\n", g_videoCardVendors[m_vendorNumber]);
+    s_videoCardDetails.Format("Video Card Chip Vendor: %s\n", g_videoCardVendors[m_vendorNumber]);
     m_videoCardSpecString += s_videoCardDetails;
     s_videoCardDetails.Format("Type of chip: ");
     m_videoCardSpecString += s_videoCardDetails;
@@ -276,19 +279,19 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     m_videoCardName += s_videoCardDetails;
     s_videoCardDetails.Format("\t%d\t", m_driverBuildNum);
     m_videoCardName += s_videoCardDetails;
-    s_videoCardDetails.Format("\r\n");
+    s_videoCardDetails.Format("\n");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Vendor id: 0x%x\r\n", identifier.VendorId);
+    s_videoCardDetails.Format("Vendor id: 0x%x\n", identifier.VendorId);
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Device id: 0x%x\r\n", identifier.DeviceId);
+    s_videoCardDetails.Format("Device id: 0x%x\n", identifier.DeviceId);
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("SubSys id: 0x%x\r\n", identifier.SubSysId);
+    s_videoCardDetails.Format("SubSys id: 0x%x\n", identifier.SubSysId);
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Revision: %d\r\n", identifier.Revision);
+    s_videoCardDetails.Format("Revision: %d\n", identifier.Revision);
     m_videoCardSpecString += s_videoCardDetails;
     s_videoCardDetails.Format(
         "GUID = {0x%x, 0x%x, 0x%x}, {0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x, "
-        "0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x}\r\n",
+        "0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x}\n",
         identifier.DeviceIdentifier.Data1,
         identifier.DeviceIdentifier.Data2,
         identifier.DeviceIdentifier.Data3,
@@ -323,21 +326,19 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     m_supportAnisotropicFiltering = false;
 #endif
 
-    s_videoCardDetails.Format("Hardware T&L support: %s\r\n", m_useTnL ? "Yes" : "No");
+    s_videoCardDetails.Format("Hardware T&L support: %s\n", m_useTnL ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("NPatch support: %s\r\n", m_supportNPatches ? "Yes" : "No");
+    s_videoCardDetails.Format("NPatch support: %s\n", m_supportNPatches ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("ZBias support: %s\r\n", m_supportZBias ? "Yes" : "No");
+    s_videoCardDetails.Format("ZBias support: %s\n", m_supportZBias ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Gamma support: %s\r\n", m_supportGamma ? "Yes" : "No");
+    s_videoCardDetails.Format("Gamma support: %s\n", m_supportGamma ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("ModAlphaAddClr support: %s\r\n", m_supportsModulateAlphaAddColor ? "Yes" : "No");
+    s_videoCardDetails.Format("ModAlphaAddClr support: %s\n", m_supportsModulateAlphaAddColor ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Dot3 support: %s\r\n", m_supportDot3Blend ? "Yes" : "No");
+    s_videoCardDetails.Format("Dot3 support: %s\n", m_supportDot3Blend ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Anisotropic filtering support: %s\r\n", m_supportAnisotropicFiltering ? "Yes" : "No");
-    m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Anisotropic filtering support: %s\r\n", m_supportAnisotropicFiltering ? "Yes" : "No");
+    s_videoCardDetails.Format("Anisotropic filtering support: %s\n", m_supportAnisotropicFiltering ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
 
     Check_Texture_Format_Support(format, m_caps);
@@ -349,7 +350,6 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     Check_Driver_Version_Status();
     Check_Max_Texture_Support(m_caps);
     Vendor_Specific_Hacks(identifier);
-    DEBUG_LOG(static_cast<const char *>(m_videoCardSpecString));
 }
 
 /**
@@ -377,19 +377,19 @@ void DX8Caps::Check_Texture_Format_Support(WW3DFormat format, const w3dcaps_t &c
 
     for (WW3DFormat i = WW3D_FORMAT_UNKNOWN; i < WW3D_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
-        m_supportTextureFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
+        m_supportTextureFormat[i] = SUCCEEDED(m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
             caps.DeviceType,
             (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
             0,
             D3DRTYPE_TEXTURE,
-            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)) >= 0;
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)));
 #else
         m_supportTextureFormat[i] = false;
 #endif
         if (m_supportTextureFormat[i]) {
             StringClass tmp;
             Get_WW3D_Format_Name(i, tmp);
-            s_videoCardDetails.Format("Supports texture format: %s\r\n", static_cast<const char *>(tmp));
+            s_videoCardDetails.Format("Supports texture format: %s\n", static_cast<const char *>(tmp));
             m_videoCardSpecString += s_videoCardDetails;
         }
     }
@@ -410,19 +410,19 @@ void DX8Caps::Check_Render_To_Texture_Support(WW3DFormat format, const w3dcaps_t
 
     for (WW3DFormat i = WW3D_FORMAT_UNKNOWN; i < WW3D_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
-        m_supportRenderToTextureFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
+        m_supportRenderToTextureFormat[i] = SUCCEEDED(m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
             caps.DeviceType,
             (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
             D3DUSAGE_RENDERTARGET,
             D3DRTYPE_TEXTURE,
-            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)) >= 0;
+            (D3DFORMAT)WW3DFormat_To_D3DFormat(i)));
 #else
         m_supportRenderToTextureFormat[i] = false;
 #endif
         if (m_supportRenderToTextureFormat[i]) {
             StringClass tmp;
             Get_WW3D_Format_Name(i, tmp);
-            s_videoCardDetails.Format("Supports render-to-texture format: %s\r\n", static_cast<const char *>(tmp));
+            s_videoCardDetails.Format("Supports render-to-texture format: %s\n", static_cast<const char *>(tmp));
             m_videoCardSpecString += s_videoCardDetails;
         }
     }
@@ -443,19 +443,19 @@ void DX8Caps::Check_Depth_Stencil_Support(WW3DFormat format, const w3dcaps_t &ca
 
     for (WW3DZFormat i = WW3DZ_FORMAT_UNKNOWN; i < WW3DZ_FORMAT_COUNT; ++i) {
 #ifdef BUILD_WITH_D3D8
-        m_supportDepthStencilFormat[i] = m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
+        m_supportDepthStencilFormat[i] = SUCCEEDED(m_d3dInterface->CheckDeviceFormat(caps.AdapterOrdinal,
             caps.DeviceType,
             (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
             D3DUSAGE_DEPTHSTENCIL,
             D3DRTYPE_TEXTURE,
-            (D3DFORMAT)WW3DZFormat_To_D3DFormat(i)) >= 0;
+            (D3DFORMAT)WW3DZFormat_To_D3DFormat(i)));
 #else
         m_supportDepthStencilFormat[i] = false;
 #endif
         if (m_supportDepthStencilFormat[i]) {
             StringClass tmp;
             Get_WW3DZ_Format_Name(i, tmp);
-            s_videoCardDetails.Format("Supports depth stencil format: %s\r\n", static_cast<const char *>(tmp));
+            s_videoCardDetails.Format("Supports depth stencil format: %s\n", static_cast<const char *>(tmp));
             m_videoCardSpecString += s_videoCardDetails;
         }
     }
@@ -472,7 +472,7 @@ void DX8Caps::Check_Texture_Compression_Support(const w3dcaps_t &caps)
         || m_supportTextureFormat[WW3D_FORMAT_DXT3] || m_supportTextureFormat[WW3D_FORMAT_DXT4]
         || m_supportTextureFormat[WW3D_FORMAT_DXT5];
 
-    s_videoCardDetails.Format("Texture compression support: %s\r\n", m_supportDXTC ? "Yes" : "No");
+    s_videoCardDetails.Format("Texture compression support: %s\n", m_supportDXTC ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
 }
 
@@ -490,9 +490,9 @@ void DX8Caps::Check_Bumpmap_Support(const w3dcaps_t &caps)
     m_supportBumpEnvmap = false;
     m_supportBumpEnvmapLuminance = false;
 #endif
-    s_videoCardDetails.Format("Bumpmap support: %s\r\n", m_supportBumpEnvmap ? "Yes" : "No");
+    s_videoCardDetails.Format("Bumpmap support: %s\n", m_supportBumpEnvmap ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format("Bumpmap luminance support: %s\r\n", m_supportBumpEnvmapLuminance ? "Yes" : "No");
+    s_videoCardDetails.Format("Bumpmap luminance support: %s\n", m_supportBumpEnvmapLuminance ? "Yes" : "No");
     m_videoCardSpecString += s_videoCardDetails;
 }
 
@@ -510,10 +510,10 @@ void DX8Caps::Check_Shader_Support(const w3dcaps_t &caps)
     m_vertexShaderVersion = 0;
     m_pixelShaderVersion = 0;
 #endif
-    s_videoCardDetails.Format("Vertex shader version: %d.%d, Pixel shader version: %d.%d\r\n",
-        m_vertexShaderVersion >> 8,
+    s_videoCardDetails.Format("Vertex shader version: %d.%d, Pixel shader version: %d.%d\n",
+        (m_vertexShaderVersion >> 8) & 0xFF,
         m_vertexShaderVersion & 0xFF,
-        m_pixelShaderVersion >> 8,
+        (m_pixelShaderVersion >> 8) & 0xFF,
         m_pixelShaderVersion & 0xFF);
     m_videoCardSpecString += s_videoCardDetails;
 }
@@ -528,7 +528,7 @@ void DX8Caps::Check_Max_Texture_Support(const w3dcaps_t &caps)
 #else
     m_maxSupportedTextures = m_maxTexturesPerPass = 0;
 #endif
-    s_videoCardDetails.Format("Max textures per pass: %d\r\n", m_maxTexturesPerPass);
+    s_videoCardDetails.Format("Max textures per pass: %d\n", m_maxTexturesPerPass);
     m_videoCardSpecString += s_videoCardDetails;
 }
 
@@ -559,16 +559,16 @@ void DX8Caps::Check_Driver_Version_Status()
 
     switch (m_driverStatus) {
         case DRIVER_GOOD:
-            s_videoCardDetails = "Driver version status: Good\r\n";
+            s_videoCardDetails = "Driver version status: Good\n";
             break;
         case DRIVER_OK:
-            s_videoCardDetails = "Driver version status: OK (No known problems)\r\n";
+            s_videoCardDetails = "Driver version status: OK (No known problems)\n";
             break;
         case DRIVER_BAD:
-            s_videoCardDetails = "Driver version status: Bad (Driver update recommended)\r\n";
+            s_videoCardDetails = "Driver version status: Bad (Driver update recommended)\n";
             break;
         default:
-            s_videoCardDetails = "Driver version status: Unknown\r\n";
+            s_videoCardDetails = "Driver version status: Unknown\n";
             break;
     }
 

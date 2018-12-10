@@ -25,6 +25,7 @@
 #include "datachunk.h"
 #include "ddsfile.h"
 #include "dict.h"
+#include "dx8caps.h"
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -197,6 +198,7 @@ void Setup_Hooks()
     ShaderClass::Hook_Me();
     GenericMultiListClass::Hook_Me();
     TextureBaseClass::Hook_Me();
+    DX8Caps::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

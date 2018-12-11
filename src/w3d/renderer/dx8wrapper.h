@@ -153,7 +153,7 @@ private:
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
     static HMODULE s_d3dLib;
     static IDirect3D8 *s_d3dInterface;
-    static IDirect3DDevice8 *&s_d3dDevice;
+    static IDirect3DDevice8 *s_d3dDevice;
 #endif
     static void *s_hwnd;
     static void *s_shadowMap; // Not sure what type this actually is for now.

@@ -74,6 +74,7 @@ public:
     const char *Peek_Buffer() const { return m_buffer; }
     bool Copy_Wide(const unichar_t *source);
     void Release_Resources() { Free_String(); }
+    unsigned Get_Hash();
 
     static void Hook_Me();
 
@@ -420,6 +421,30 @@ inline void StringClass::Store_Length(int length)
         HEADER *header = Get_Header();
         header->length = length;
     }
+}
+
+/**
+ * Used when StringClass is used as a key for HashTemplateClass
+ */
+inline unsigned StringClass::Get_Hash()
+{
+    int length = Get_Length();
+
+    if (length >= 8) {
+        uint32_t value = *reinterpret_cast<uint32_t *>(&m_buffer[length - 8]);
+        return (value >> 20) + value + (value >> 10) + (value >> 5);
+    }
+
+    unsigned result = 0;
+
+    if (length != 0) {
+        for (int i = 0; i < length; ++i) {
+            unsigned val = (uint8_t)m_buffer[i];
+            result = val + 38 * result;
+        }
+    }
+
+    return result;
 }
 
 #ifndef THYME_STANDALONE

@@ -25,7 +25,7 @@ class W3DMPO
 public:
     // I think the glueEnforcer comes from this original is a pure virtual but its always a return 4 in classes that derive
     // from it so ill just set it here
-    virtual int const glueEnforcer() { return 4; };
+    virtual int glueEnforcer() { return 4; };
     virtual ~W3DMPO() {}
 };
 

@@ -81,8 +81,8 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
     DEBUG_ASSERT(lo > -100.0f && hi >= lo);
-    info->m_pitchShiftLow = lo * 0.01f;
-    info->m_pitchShiftHigh = hi * 0.01f;
+    info->m_pitchShiftLow = float(lo / 100.0f) + 1.0f;
+    info->m_pitchShiftHigh = float(hi / 100.0f) + 1.0f;
 }
 
 /**

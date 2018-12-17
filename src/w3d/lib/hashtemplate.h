@@ -21,6 +21,9 @@
 
 using std::max;
 
+template<typename Key, typename Value>
+class HashTemplateIterator;
+
 template<typename Key>
 class HashTemplateKeyClass
 {
@@ -31,7 +34,7 @@ public:
 template<typename Key, typename Value>
 class HashTemplateClass
 {
-    friend class HashTemplateIterator<Key, Value>;
+    friend HashTemplateIterator<Key, Value>;
 
     struct Entry
     {
@@ -178,7 +181,7 @@ private:
     static unsigned Get_Hash_Val(const Key &key, unsigned max_size)
     {
         // Make sure max_size is a power of two, or the fast modulo code below will not work
-        GAME_ASSERT((max_size % 2) == 0);
+        DEBUG_ASSERT((max_size % 2) == 0);
         return HashTemplateKeyClass<Key>::Get_Hash_Value(key) & (max_size - 1);
     }
 
@@ -186,7 +189,7 @@ private:
 
     void Re_Hash()
     {
-        unsigned new_size = max(m_size * 2, 4); // Increase the size and make sure there are at least 4 entries.
+        unsigned new_size = max(m_size * 2, 4u); // Increase the size and make sure there are at least 4 entries.
 
         Entry *new_table = new Entry[new_size];
         int *new_index = new int[new_size];

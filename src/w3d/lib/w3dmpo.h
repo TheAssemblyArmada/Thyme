@@ -35,7 +35,7 @@ private: \
     { \
         static MemoryPool *const The##classname##Pool = \
             g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
-        ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
+        DEBUG_ASSERT_PRINT(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
             "Pool %s is wrong size for class (need %d, currently %d)", \
             #classname, \
             sizeof(classname), \

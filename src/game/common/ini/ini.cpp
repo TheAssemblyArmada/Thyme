@@ -905,7 +905,7 @@ void INI::Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *u
     sound_vec->clear();
 
     for (const char *token = ini->Get_Next_Token_Or_Null(" \t,="); token != nullptr;
-         token = ini->Get_Next_Token_Or_Null(" \t,=")) {
+        token = ini->Get_Next_Token_Or_Null(" \t,=")) {
         sound_vec->push_back(token);
     }
 }

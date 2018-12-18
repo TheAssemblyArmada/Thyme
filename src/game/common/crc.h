@@ -27,6 +27,7 @@ public:
 
     static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);
     static uint32_t String(const char *string, uint32_t crc);
+    static uint32_t Stringi(const char *string, uint32_t crc);
 private:
     void Add_CRC(uint8_t byte);
 

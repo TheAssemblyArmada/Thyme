@@ -79,3 +79,15 @@ uint32_t CRC::String(const char *string, uint32_t crc)
 
     return ~crc;
 }
+
+uint32_t CRC::Stringi(char const *string, uint32_t crc)
+{
+    uint8_t const *buf = reinterpret_cast<uint8_t const *>(string);
+    crc = ~crc;
+
+    for (; *buf != 0; ++buf) {
+        crc = m_table[toupper(*buf) ^ (uint8_t)crc] ^ (crc >> 8);
+    }
+
+    return ~crc;
+}

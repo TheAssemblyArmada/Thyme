@@ -182,6 +182,7 @@ set(GAMEENGINE_SRC
     w3d/lib/targa.cpp
     w3d/lib/thread.cpp
     w3d/lib/wwstring.cpp
+    w3d/lib/hash.cpp
     w3d/math/gamemath.cpp
     w3d/math/matrix3.cpp
     w3d/math/matrix3d.cpp

@@ -24,7 +24,7 @@ public:
     virtual bool Has_Rotation(int pividx) { return true; }
     virtual bool Has_Visibility(int pividx) { return true; }
     virtual int Class_ID() { return -1 /*CLASSID_UNKNOWN*/; }
-    virtual bool Has_Embedded_Sounds() const { return (Bitfield >> 0x1F) ^ 1; }
+    virtual bool Has_Embedded_Sounds() const { return (Bitfield >> 31) ^ 1; }
     virtual void Set_Embedded_Sound_Bone_Index(int index) { Bitfield = index; };
     virtual int Get_Embedded_Sound_Bone_Index() { return Bitfield; }
 

@@ -21,7 +21,7 @@
 
 void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba);
 void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv);
-void Adjust_RGBA(Vector4 &rgba, Vector3 hsv_adj);
+void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj);
 
 /**
 * @brief Utility function to pack separate bytes into an RGBA pixel.
@@ -58,4 +58,12 @@ inline void RGBA_To_Bytes(uint8_t &r, uint8_t &g, uint8_t &b, uint8_t &a, const 
     g = rgba.Y * 255.0f;
     b = rgba.Z * 255.0f;
     a = rgba.W * 255.0f;
+}
+
+inline void Recolor(uint32_t &color, const Vector3 &adj)
+{
+    Vector4 rgba;
+    Color_To_RGBA(rgba, color);
+    Adjust_RGBA(rgba, adj);
+    RGBA_To_Color(color, rgba);
 }

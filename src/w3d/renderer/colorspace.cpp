@@ -107,7 +107,7 @@ void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
 /**
  * @brief Applies a HSV color shift to an RGBA value, alpha is untouched.
  */
-void Adjust_RGBA(Vector4 &rgba, Vector3 hsv_adj)
+void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj)
 {
     Vector3 hsv;
     RGBA_To_HSV(hsv, rgba);

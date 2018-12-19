@@ -18,6 +18,7 @@
 #include "asciistring.h"
 #include "binkvideoplayer.h"
 #include "binkvideostream.h"
+#include "bitmaphandler.h"
 #include "cavesystem.h"
 #include "chunkio.h"
 #include "commandline.h"
@@ -203,6 +204,7 @@ void Setup_Hooks()
     DX8Caps::Hook_Me();
     BinkVideoPlayer::Hook_Me();
     BinkVideoStream::Hook_Me();
+    BitmapHandlerClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

@@ -1,0 +1,12 @@
+EXPORTS
+_BinkOpen@8
+_BinkSetSoundTrack@8
+_BinkSetSoundSystem@8
+_BinkOpenDirectSound@4
+_BinkClose@4
+_BinkWait@4
+_BinkDoFrame@4
+_BinkCopyToBuffer@28
+_BinkSetVolume@12
+_BinkNextFrame@4
+_BinkGoto@12

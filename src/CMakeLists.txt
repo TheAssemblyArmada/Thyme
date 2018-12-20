@@ -212,6 +212,13 @@ else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
+
+    # We don't look for FMpeg yet, but its intended to replace binkw32.dll
+    if(NOT FFMPEG_FOUND)
+        add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
+        target_link_libraries(thyme binkstub)
+        target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1)
+    endif()
 endif()
 
 # For MSVC/XCode this will add the headers to the project.

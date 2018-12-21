@@ -12,6 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
+
 #include <stdint.h>
 
 #if !defined _MSC_VER

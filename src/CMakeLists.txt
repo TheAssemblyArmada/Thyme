@@ -22,6 +22,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/system
     game/network
     platform
+    platform/video/
     platform/w3dengine/common/thing
     w3d/lib
     w3d/math
@@ -159,6 +160,8 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/video/binkvideoplayer.cpp
+    platform/video/binkvideostream.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/bufffileclass.cpp
     w3d/lib/chunkio.cpp

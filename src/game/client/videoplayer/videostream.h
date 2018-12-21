@@ -26,19 +26,21 @@ class VideoStream
 public:
     VideoStream() : m_player(nullptr), m_next(nullptr) {}
     virtual ~VideoStream();
+
     virtual VideoStream *Next() { return m_next; };
     virtual void Update() {}
     virtual void Close() { delete this; }
-    virtual int Is_Frame_Ready() { return 1; } // TODO, make bool?
+    virtual bool Is_Frame_Ready() { return true; }
     virtual void Decompress_Frame() {}
     virtual void Render_Frame(VideoBuffer *buffer) {}
     virtual void Next_Frame() {}
-    virtual int Is_Done() { return 1; } // TODO, make bool?
+    bool Is_Done() { return true; } // Virtual in Mac build, optimised out perhaps?
     virtual int Frame_Index() { return 0; }
     virtual int Frame_Count() { return 0; }
     virtual void Goto_Frame(int frame) {}
     virtual int Height() { return 0; }
     virtual int Width() { return 0; }
+
 
 protected:
     VideoPlayer *m_player;

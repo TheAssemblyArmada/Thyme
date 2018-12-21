@@ -42,8 +42,8 @@ public:
     virtual void Deinit() {}
     virtual void Lose_Focus() {}
     virtual void Regain_Focus() {}
-    virtual int Open(Utf8String title) { return 0; }
-    virtual int Load(Utf8String title) { return 0; }
+    virtual VideoStream *Open(Utf8String title) { return nullptr; }
+    virtual VideoStream *Load(Utf8String title) { return nullptr; }
     virtual VideoStream *First_Stream() { return m_firstStream; }
     virtual void Close_All_Streams();
     virtual void Add_Video(Video *video);

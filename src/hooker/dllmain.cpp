@@ -16,6 +16,8 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
+#include "binkvideoplayer.h"
+#include "binkvideostream.h"
 #include "cavesystem.h"
 #include "chunkio.h"
 #include "commandline.h"
@@ -199,6 +201,8 @@ void Setup_Hooks()
     GenericMultiListClass::Hook_Me();
     TextureBaseClass::Hook_Me();
     DX8Caps::Hook_Me();
+    BinkVideoPlayer::Hook_Me();
+    BinkVideoStream::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

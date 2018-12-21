@@ -19,6 +19,7 @@
 
 class VideoBuffer
 {
+public:
     enum Type
     {
         TYPE_UNKNOWN,
@@ -39,6 +40,12 @@ public:
     virtual bool Valid() = 0;
 
     RectClass Rect(float x1, float y1, float x2, float y2);
+    unsigned Get_XPos() const { return m_xPos; }
+    unsigned Get_YPos() const { return m_yPos; }
+    unsigned Get_Width() const { return m_width; }
+    unsigned Get_Height() const { return m_height; }
+    unsigned Get_Pitch() const { return m_pitch; }
+    Type Get_Format() const { return m_format; }
 
 protected:
     unsigned m_xPos;

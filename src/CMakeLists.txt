@@ -228,6 +228,13 @@ else()
         target_link_libraries(thyme binkstub)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1)
     endif()
+
+    # We don't look for OpenAL yet, but its intended to replace mss32.dll with it.
+    if(NOT OPENAL_FOUND)
+        add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
+        target_link_libraries(thyme milesstub)
+        target_compile_definitions(thyme PRIVATE BUILD_WITH_MILES=1)
+    endif()
 endif()
 
 target_link_libraries(thyme base)

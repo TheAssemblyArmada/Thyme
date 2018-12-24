@@ -18,6 +18,7 @@
 #include "always.h"
 
 class StringClass;
+class TargaImage;
 
 enum WW3DFormat : int32_t
 {
@@ -76,6 +77,8 @@ void Get_WW3DZ_Format_Name(WW3DZFormat format, StringClass &name);
 
 unsigned Get_Bytes_Per_Pixel(WW3DFormat format);
 WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression);
+
+void Get_WW3D_Format(WW3DFormat &format, unsigned &bpp, const TargaImage &tga);
 
 inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
 {

@@ -593,7 +593,7 @@ bool TargaImage::File_Open_ReadWrite(const char *name)
     return false;
 }
 
-int TargaImage::Targa_Error_Handler(int load_err, const char *filename)
+int TargaImage::Error_Handler(int load_err, const char *filename)
 {
     switch (load_err) {
         case TGA_RET_OK:

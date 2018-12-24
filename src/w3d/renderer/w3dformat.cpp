@@ -16,6 +16,7 @@
 #include "w3dformat.h"
 #include "gamedebug.h"
 #include "rtsutils.h"
+#include "targa.h"
 #include "wwstring.h"
 #include <cstring>
 
@@ -257,4 +258,39 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
 #else
     return WW3D_FORMAT_UNKNOWN;
 #endif
+}
+
+/**
+ * Calculates the format based and bytes per pixel based on the Targa header info.
+ *
+ * 0x008202B0
+ */
+void Get_WW3D_Format(WW3DFormat &format, unsigned &bpp, const TargaImage &tga)
+{
+    switch (tga.Get_Header().pixel_depth) {
+        case 8:
+            bpp = 1;
+
+            if (tga.Get_Header().cmap_type == 1) {
+                format = WW3D_FORMAT_P8;
+            } else {
+                format = tga.Get_Header().image_type != TGA_TYPE_GREY ? WW3D_FORMAT_A8 : WW3D_FORMAT_L8;
+            }
+
+            break;
+        case 16:
+            bpp = 2;
+            format = WW3D_FORMAT_A1R5G5B5;
+            break;
+        case 24:
+            bpp = 3;
+            format = WW3D_FORMAT_R8G8B8;
+            break;
+        case 32:
+            bpp = 4;
+            format = WW3D_FORMAT_A8R8G8B8;
+            break;
+        default:
+            break;
+    }
 }

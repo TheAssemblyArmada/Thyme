@@ -160,8 +160,10 @@ public:
     TGA2Extension *Get_Extension() { return m_flags & 8 ? &m_extension : nullptr; }
     void Clear_File();
     bool Is_File_Open();
+    void Toggle_Flip_Y() { m_header.image_descriptor ^= 0x20; }
+    const TGAHeader &Get_Header() const { return m_header; }
 
-    static int Targa_Error_Handler(int load_err, const char *filename);
+    static int Error_Handler(int load_err, const char *filename);
 #ifndef THYME_STANDALONE
     static void Hook_Me();
 #endif
@@ -199,7 +201,7 @@ inline void TargaImage::Hook_Me()
     Hook_Method(0x008A43F0, static_cast<int (TargaImage::*)(char const *, int, bool)>(&Load));
     Hook_Method(0x008A3E60, &Open);
     Hook_Method(0x008A45F0, &Set_Palette);
-    Hook_Function(0x008A4780, &Targa_Error_Handler);
+    Hook_Function(0x008A4780, &Error_Handler);
 }
 #endif
 

@@ -198,6 +198,8 @@ set(GAMEENGINE_SRC
     w3d/renderer/texturebase.cpp
     w3d/renderer/textureloadtask.cpp
     w3d/renderer/textureloadtasklist.cpp
+    w3d/renderer/thumbnail.cpp
+    w3d/renderer/thumbnailmanager.cpp
     w3d/renderer/w3d.cpp
     w3d/renderer/w3dformat.cpp
 )

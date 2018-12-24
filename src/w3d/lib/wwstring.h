@@ -74,7 +74,8 @@ public:
     const char *Peek_Buffer() const { return m_buffer; }
     bool Copy_Wide(const unichar_t *source);
     void Release_Resources() { Free_String(); }
-    unsigned Get_Hash();
+    unsigned Get_Hash() const;
+    void To_Lower() { strlwr(m_buffer); }
 
     static void Hook_Me();
 
@@ -426,7 +427,7 @@ inline void StringClass::Store_Length(int length)
 /**
  * Used when StringClass is used as a key for HashTemplateClass
  */
-inline unsigned StringClass::Get_Hash()
+inline unsigned StringClass::Get_Hash() const
 {
     int length = Get_Length();
 

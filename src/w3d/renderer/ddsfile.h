@@ -110,6 +110,7 @@ public:
     uint8_t *Get_Memory_Pointer(unsigned level) { return &m_DDSMemory[m_levelOffsets[level]]; }
     unsigned Get_Level_Size(unsigned level) { return m_levelSizes[level]; }
     WW3DFormat Get_Format() { return m_format; }
+    time_t Get_Time() const { return m_time; }
     void Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, unsigned dst_width, unsigned dst_height,
         uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift);
     void Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surface, const Vector3 &color_shift);

@@ -170,6 +170,7 @@ set(GAMEENGINE_SRC
     w3d/lib/iniclass.cpp
     w3d/lib/multilist.cpp
     w3d/lib/nstrdup.cpp
+    w3d/lib/mutex.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/readline.cpp
     w3d/lib/refcount.cpp

@@ -20,6 +20,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/system
     game/network
     platform
+    platform/audio/
     platform/video/
     platform/w3dengine/common/thing
     w3d/lib
@@ -157,6 +158,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/audio/milesaudiomanager.cpp
     platform/video/binkvideoplayer.cpp
     platform/video/binkvideostream.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp

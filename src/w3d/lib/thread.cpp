@@ -19,6 +19,9 @@
 #include "stringex.h"
 #include "systimer.h"
 #include <cstdio>
+#include <cstring>
+
+using std::strcpy;
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>

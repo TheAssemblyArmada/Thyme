@@ -19,8 +19,11 @@
 #include "minmax.h"
 #include "rtsutils.h"
 #include "stringex.h"
+#include <cstring>
 
 using rts::FourCC;
+using std::memcpy;
+using std::strlen;
 
 /**
  * 0x00879BF0

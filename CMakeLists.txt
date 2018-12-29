@@ -177,7 +177,7 @@ else()
     set(GITINFO_COMMIT_AUTHOR "Someone")
 endif()
 
-configure_file(src/base/gitverinfo.cpp.in src/base/gitverinfo.cpp @ONLY)
+configure_file(src/base/gitverinfo.c.in src/base/gitverinfo.c @ONLY)
 
 if(STANDALONE)
     add_definitions(-DTHYME_STANDALONE)
@@ -234,6 +234,11 @@ if(NOT HAVE_STRNCASECMP)
         message(FATAL_ERROR "No case-insensitive size-limited compare function found, please report!")
     endif()
 endif()
+
+check_symbol_exists(strlwr "string.h" HAVE_STRLWR)
+check_symbol_exists(strupr "string.h" HAVE_STRUPR)
+check_symbol_exists(strlcat "string.h" HAVE_STRLCAT)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
 
 include(CheckIntrinsics)
 

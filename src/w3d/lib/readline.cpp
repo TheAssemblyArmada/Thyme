@@ -17,6 +17,9 @@
 #include "filestraw.h"
 #include "gamedebug.h"
 #include "stringex.h"
+#include <cstring>
+
+using std::strlen;
 
 int Read_Line(FileClass &file, char *line, int length, bool &eof)
 {

@@ -17,12 +17,15 @@
 #include "ffactory.h"
 #include "gamedebug.h"
 #include "stringex.h"
+#include <cstring>
+#include <malloc.h>
 
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
-#else
-#include <malloc.h>
 #endif
+
+using std::memset;
+using std::memset;
 
 TargaImage::TargaImage() : m_TGAFile(nullptr), m_access(0), m_flags(0), m_image(nullptr), m_palette(nullptr)
 {

@@ -22,6 +22,7 @@
 #include "intrinsics.h"
 #include "macros.h"
 #include "platform.h"
+#include "stringex.h"
 #include "targetver.h"
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -136,6 +137,26 @@
 
 #if defined HAVE__STRNICMP && !defined HAVE_STRNCASECMP
 #define strncasecmp _strnicmp
+#endif
+
+#ifndef HAVE_STRLWR
+#define strlwr ex_strlwr
+#endif
+
+#ifndef HAVE_STRUPR
+#define strupr ex_strupr
+#endif
+
+#ifndef HAVE_STRLCAT
+#define strlcat ex_strlcat
+#endif
+
+#ifndef HAVE_STRLCPY
+#define strlcpy ex_strlcpy
+#endif
+
+#ifndef HAVE_STRTRIM
+#define strtrim ex_strtrim
 #endif
 
 typedef struct stat stat_t;

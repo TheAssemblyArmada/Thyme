@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Globals for accessing git version information from the build system.
+ * @brief Some extra string manipulation functions not present in all standard CRTs
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,23 +14,18 @@
  */
 #pragma once
 
-#include <time.h>
+#include "bittype.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern char g_gitBranch[];
-extern char g_gitSHA1[];
-extern char g_gitShortSHA1[];
-extern char g_gitCommitTime[];
-extern char g_gitCommitDate[];
-extern char g_gitCommitAuthor[];
-extern unsigned g_gitCommitCount;
-extern time_t g_gitCommitTimeStamp;
-extern unsigned g_majorVersion;
-extern unsigned g_minorVersion;
-extern unsigned g_patchVersion;
+size_t ex_strlcat(char *dst, const char *src, size_t dsize);
+size_t ex_strlcpy(char *dst, const char *src, size_t dsize);
+size_t u_strlcpy(unichar_t *dst, const unichar_t *src, size_t dsize);
+char *ex_strtrim(char *str);
+char *ex_strlwr(char *str);
+char *ex_strupr(char *str);
 
 #ifdef __cplusplus
 } // extern "C"

@@ -22,6 +22,7 @@
 #include "listnode.h"
 #include "straw.h"
 #include "stringex.h"
+#include <string.h>
 
 #define SYS_NEW_LINE "\r\n"
 

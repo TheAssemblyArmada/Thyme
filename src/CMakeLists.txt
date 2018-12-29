@@ -32,7 +32,8 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp)
 
 set(GAMEENGINE_SRC
-    ${CMAKE_CURRENT_BINARY_DIR}/base/gitverinfo.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/base/gitverinfo.c
+    base/stringex.c
     game/copyprotect.cpp
     game/force_nocd.cpp
     game/main.cpp
@@ -172,6 +173,7 @@ set(GAMEENGINE_SRC
     w3d/lib/filestraw.cpp
     w3d/lib/iniclass.cpp
     w3d/lib/multilist.cpp
+    w3d/lib/nstrdup.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/readline.cpp
     w3d/lib/refcount.cpp

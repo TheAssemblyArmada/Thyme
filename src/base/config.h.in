@@ -27,6 +27,10 @@
 #cmakedefine HAVE__CPUIDEX
 #cmakedefine HAVE__CPUID_COUNT
 #cmakedefine HAVE__DEBUGBREAK
+#cmakedefine HAVE_STRLWR
+#cmakedefine HAVE_STRUPR
+#cmakedefine HAVE_STRLCAT
+#cmakedefine HAVE_STRLCPY
 
 #cmakedefine HAVE_INTRIN_H
 #cmakedefine HAVE_X86INTRIN_H

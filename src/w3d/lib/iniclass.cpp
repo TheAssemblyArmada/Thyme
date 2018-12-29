@@ -17,9 +17,15 @@
 #include "filestraw.h"
 #include "rawfileclass.h"
 #include "readline.h"
-#include "stringex.h"
-#include <ctype.h>
-#include <stdio.h>
+#include "nstrdup.h"
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+
+using std::free;
+using std::malloc;
+using std::strchr;
+using std::strlen;
 
 INIEntry::~INIEntry()
 {

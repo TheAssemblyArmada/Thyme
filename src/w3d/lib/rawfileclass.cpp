@@ -19,6 +19,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <fcntl.h>
+#include <string.h>
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
@@ -77,7 +78,7 @@ void RawFileClass::Reset()
 
     // free the existing filename if it exists.
     if (m_filename != nullptr && m_isAllocated) {
-        delete[] m_filename;
+        free(m_filename);
         m_filename = nullptr;
         m_isAllocated = false;
     }
@@ -360,7 +361,7 @@ const char *RawFileClass::Set_Name(const char *filename)
 {
     // free the existing filename if it exists.
     if (m_filename && m_isAllocated) {
-        delete[] m_filename; // set with nstrdup which uses new not malloc
+        free(m_filename);
         m_filename = nullptr;
         m_isAllocated = false;
     }
@@ -370,7 +371,7 @@ const char *RawFileClass::Set_Name(const char *filename)
         // reset the file bias.
         Bias(0, -1);
 
-        m_filename = nstrdup(filename);
+        m_filename = strdup(filename);
 
         // if we could not copy the filename, return a error.
         if (m_filename == nullptr) {

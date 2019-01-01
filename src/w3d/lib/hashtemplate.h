@@ -65,10 +65,10 @@ public:
         return nullptr;
     }
 
-    Value Get(const Key &key, Value default) const
+    Value Get(const Key &key, Value def_val) const
     {
         Value *result = Get(key);
-        return result ? *result : default;
+        return result != nullptr ? *result : def_val;
     }
 
     bool Exists(const Key &key) const { return Get(key) != nullptr; }
@@ -231,4 +231,63 @@ private:
     Entry *m_table;
     int m_nextFree;
     unsigned m_size;
+};
+
+template<typename Key, typename Value>
+class HashTemplateIterator
+{
+public:
+    HashTemplateIterator(HashTemplateClass<Key, Value> &_table)
+    {
+        m_table = &_table;
+        Reset();
+    }
+
+    void Reset()
+    {
+        m_index = -1;
+
+        for (m_hash = 0; m_hash < m_table->m_size; m_hash++) {
+            m_index = m_table->m_index[m_hash];
+
+            if (m_index != -1) {
+                break;
+            }
+        }
+    }
+
+    // Removes the current element and advances to the next element.
+    void Remove()
+    {
+        const Key &k = Get_Key();
+        Increment();
+        m_table->Remove(k);
+    }
+
+    const Key &Get_Key() { return m_table->m_table[m_index].key; }
+    Value &getValue() { return m_table->m_table[m_index].value; }
+
+    void operator++() { Increment(); }
+    operator bool() const { return m_index != -1; }
+
+private:
+    void Increment()
+    {
+        m_index = m_table->m_table[m_index].next;
+
+        if (m_index == -1) {
+            for (m_hash++; m_hash < m_table->m_size; m_hash++) {
+                m_index = m_table->m_index[m_hash];
+
+                if (m_index != -1) {
+                    break;
+                }
+            }
+        }
+    }
+
+private:
+    uint32_t m_hash;
+    int m_index;
+    HashTemplateClass<Key, Value> *m_table;
 };

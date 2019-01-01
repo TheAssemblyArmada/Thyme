@@ -31,6 +31,7 @@ public:
     ~ThumbnailClass();
 
     const StringClass &Get_Name() const { return m_filename; }
+    uint8_t *Get_Bitmap() const { return m_bitmap; }
 
 private:
     StringClass m_filename;

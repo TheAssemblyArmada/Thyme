@@ -39,34 +39,47 @@ public:
 
     static void Add_Thumbnail_Manager(const char *thumbfilename, const char *mixfilename);
     static void Remove_Thumbnail_Manager(const char *thumbfilename);
-    static void Update_Thumbnail_File(const char *thumbfilename, bool b);
+    static void Update_Thumbnail_File(const char *thumbfilename, bool display_message);
     static ThumbnailManagerClass *Peek_Thumbnail_Manager(const char *thumbfilename);
-    ThumbnailClass *Peek_Thumbnail_Instance_From_Any_Manager(const StringClass &texture);
+    static ThumbnailClass *Peek_Thumbnail_Instance_From_Any_Manager(const StringClass &texture);
     static void Init();
     static void Deinit();
     static void Pre_Init(bool b) { /*Looks left over from Renegade, references .mix files*/ }
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
-    bool AllowThumbnailCreation;
-    StringClass ThumbFilename;
-    StringClass MixFilename;
+    bool m_allowThumbnailCreation;
+    StringClass m_thumbFileName;
+    StringClass m_mixFileName;
     HashTemplateClass<StringClass, ThumbnailClass *> Hash;
     uint8_t *m_bitmap;
-    bool Loading;
-    unsigned Time;
+    bool m_loading;
+    unsigned m_time;
 
 #ifndef THYME_STANDALONE
     static DLListClass<ThumbnailManagerClass> &ThumbnailManagerList;
+    static bool &s_createIfNotFound;
 #else
     static DLListClass<ThumbnailManagerClass> ThumbnailManagerList;
+    static bool s_createIfNotFound;
 #endif
 };
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
+inline void ThumbnailManagerClass::Hook_Me()
+{
+    Hook_Method(0x0086AE20, &ThumbnailManagerClass::Remove_From_Hash);
+    //Hook_Function(0x0086ABC0, &ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager);
+    Hook_Function(0x0086AFE0, &ThumbnailManagerClass::Init);
+    Hook_Function(0x0086B070, &ThumbnailManagerClass::Deinit);
+}
+
 extern ThumbnailManagerClass *&g_thumbnailManager;
 #else
 extern ThumbnailManagerClass *g_thumbnailManager;
 #endif
-

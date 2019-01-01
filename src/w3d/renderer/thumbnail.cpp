@@ -42,7 +42,18 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const char *textu
 /**
  * 0x0086A040
  */
-ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass &texture)
+ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass &texture) :
+    m_filename(texture),
+    m_bitmap(nullptr),
+    m_height(0),
+    m_width(0),
+    m_maxWidth(0),
+    m_maxHeight(0),
+    m_mipLevels(0),
+    m_format(WW3D_FORMAT_UNKNOWN),
+    m_time(0),
+    m_isAllocated(false),
+    m_manager(manager)
 {
     DDSFileClass dds(texture, 3);
     unsigned mips = dds.Get_Mip_Level_Count();
@@ -104,7 +115,7 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
             }
 
             int width;
-            for (width = 1; width < width; width *= 2) {
+            for (width = 1; width < m_width; width *= 2) {
             }
 
             m_height = height;

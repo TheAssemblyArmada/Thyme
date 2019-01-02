@@ -66,15 +66,17 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     }
 
     // The original doesn't actually check this, but might as well log if we have oddly formatted .dds files.
-    if (header_fourcc != FourCC<'d', 'd', 's', ' '>::value) {
-        DEBUG_LOG("DDS file '%s' does not have the correct FourCC value in the first 4 bytes.", m_name);
+    if (header_fourcc != FourCC<'D', 'D', 'S', ' '>::value) {
+        char fourcc_debug[5] = {0};
+        memcpy(fourcc_debug, &header_fourcc, sizeof(header_fourcc));
+        DEBUG_LOG("DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.\n", m_name, fourcc_debug);
     }
 
     int header_size = fp->Read(&m_fileHeader, sizeof(m_fileHeader));
 
     // Check that we read the header correctly, if not, return?
     if (header_size != sizeof(m_fileHeader) || header_size != m_fileHeader.dwSize) {
-        DEBUG_LOG("File load failed, read %d of %d bytes and header size reports %d.",
+        DEBUG_LOG("File load failed, read %d of %d bytes and header size reports %d.\n",
             header_size,
             sizeof(m_fileHeader),
             m_fileHeader.dwSize);

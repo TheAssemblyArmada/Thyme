@@ -20,12 +20,13 @@
 DLListClass<ThumbnailManagerClass> &ThumbnailManagerClass::ThumbnailManagerList =
     Make_Global<DLListClass<ThumbnailManagerClass>>(0x00A544B0);
 ThumbnailManagerClass *&g_thumbnailManager = Make_Global<ThumbnailManagerClass *>(0x00A544A8);
-bool &ThumbnailManagerClass::s_createIfNotFound = Make_Global<bool>(0x007F66AC);
+//bool &ThumbnailManagerClass::s_createIfNotFound = Make_Global<bool>(0x007F66AC);
 #else
 DLListClass<ThumbnailManagerClass> ThumbnailManagerClass::ThumbnailManagerList;
 ThumbnailManagerClass *g_thumbnailManager;
-bool ThumbnailManagerClass::s_createIfNotFound = false;
 #endif
+
+bool ThumbnailManagerClass::s_createIfNotFound = false;
 
 namespace
 {
@@ -204,28 +205,32 @@ ThumbnailClass *ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager(
 
     for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::ThumbnailManagerList.Head(); thumbnailmgr != nullptr;
          thumbnailmgr = thumbnailmgr->Succ()) {
-        thumb = thumbnailmgr->Get_From_Hash(texture);
+        thumb = thumbnailmgr->Peek_Thumbnail_Instance(texture);
 
         if (thumb != nullptr) {
             return thumb;
         }
     }
 
-    if (g_thumbnailManager == nullptr || (thumb = g_thumbnailManager->Get_From_Hash(texture)) == nullptr) {
-        if (s_createIfNotFound && g_thumbnailManager != nullptr) {
-            thumb = new ThumbnailClass(g_thumbnailManager, texture);
+    if (g_thumbnailManager != nullptr) {
+        thumb = g_thumbnailManager->Peek_Thumbnail_Instance(texture);
 
-            if (thumb->Get_Bitmap() == nullptr) {
-                delete thumb;
-
-                return nullptr;
-            }
-        } else {
-            return nullptr;
+        if (thumb != nullptr) {
+            return thumb;
         }
     }
 
-    return thumb;
+    if (s_createIfNotFound && g_thumbnailManager != nullptr) {
+        thumb = new ThumbnailClass(g_thumbnailManager, texture);
+
+        if (thumb->Get_Bitmap() != nullptr) {
+            return thumb;
+        }
+
+        delete thumb;
+    }
+
+    return nullptr;
 }
 
 /**

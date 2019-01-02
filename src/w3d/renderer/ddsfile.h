@@ -18,6 +18,7 @@
 #include "vector3.h"
 #include "w3dformat.h"
 #include "w3dtypes.h"
+#include <new>
 
 enum DDSPixelFormatFlags
 {
@@ -119,6 +120,10 @@ public:
    bool Load();
 
 #ifndef THYME_STANDALONE
+   DDSFileClass *Hook_Ctor(const char *filename, unsigned reduction_factor)
+   {
+       return new (this) DDSFileClass(filename, reduction_factor);
+   }
    static void Hook_Me();
 #endif
 
@@ -171,5 +176,6 @@ inline void DDSFileClass::Hook_Me()
     Hook_Method(0x0087AEE0, &Copy_CubeMap_Level_To_Surface);
     Hook_Method(0x0087BBF0, &Get_4x4_Block);
     Hook_Method(0x00879F80, &Load);
+    Hook_Method(0x00879BF0, &Hook_Ctor);
 }
 #endif

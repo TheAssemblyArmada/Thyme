@@ -13,6 +13,9 @@
  *            LICENSE
  */
 #include "crc.h"
+#include <cctype>
+
+using std::toupper;
 
 template<typename T, int N>
 inline constexpr Array<T, N> calculateCRC()

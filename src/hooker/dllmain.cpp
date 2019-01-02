@@ -69,6 +69,7 @@
 #include "teamsinfo.h"
 #include "texturebase.h"
 #include "thread.h"
+#include "thumbnail.h"
 #include "thumbnailmanager.h"
 #include "w3dfilesystem.h"
 #include "weapon.h"
@@ -207,6 +208,7 @@ void Setup_Hooks()
     BinkVideoStream::Hook_Me();
     BitmapHandlerClass::Hook_Me();
     ThumbnailManagerClass::Hook_Me();
+    ThumbnailClass::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

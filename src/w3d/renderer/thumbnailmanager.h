@@ -59,12 +59,11 @@ private:
     bool m_loading;
     unsigned m_time;
 
+    static bool s_createIfNotFound;
 #ifndef THYME_STANDALONE
     static DLListClass<ThumbnailManagerClass> &ThumbnailManagerList;
-    static bool &s_createIfNotFound;
 #else
     static DLListClass<ThumbnailManagerClass> ThumbnailManagerList;
-    static bool s_createIfNotFound;
 #endif
 };
 
@@ -74,7 +73,7 @@ private:
 inline void ThumbnailManagerClass::Hook_Me()
 {
     Hook_Method(0x0086AE20, &ThumbnailManagerClass::Remove_From_Hash);
-    //Hook_Function(0x0086ABC0, &ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager);
+    Hook_Function(0x0086ABC0, &ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager);
     Hook_Function(0x0086AFE0, &ThumbnailManagerClass::Init);
     Hook_Function(0x0086B070, &ThumbnailManagerClass::Deinit);
 }

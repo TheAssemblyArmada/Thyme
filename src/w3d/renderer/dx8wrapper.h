@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "dx8caps.h"
 #include "matrix4.h"
 #include "refcount.h"
 #include "shader.h"
@@ -126,6 +127,9 @@ public:
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
     static void Log_DX8_ErrorCode(unsigned error);
 
+    static int Get_Main_Thread_ID() { return s_mainThreadID; }
+    static const DX8Caps *Get_Caps() { return s_currentCaps; }
+
 private:
 #ifndef THYME_STANDALONE
     static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
@@ -148,6 +152,7 @@ private:
     static Matrix4 &s_projectionMatrix;
     static int &s_mainThreadID;
     static int &s_currentRenderDevice;
+    static DX8Caps *&s_currentCaps;
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -171,6 +176,7 @@ private:
     static Matrix4 s_projectionMatrix;
     static int s_mainThreadID;
     static int s_currentRenderDevice;
+    static DX8Caps *s_currentCaps;
 #endif
     static unsigned s_matrixChanges;
     static unsigned s_textureStageStateChanges;
@@ -286,8 +292,7 @@ inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Mat
             s_zFar = 0.0f;
             s_zNear = 0.0f;
             DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&ProjectionMatrix));
-        }   
-            break;
+        } break;
         default:
             s_matrixChanges++;
             Matrix4 m2 = m.Transpose();

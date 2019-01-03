@@ -47,6 +47,7 @@ float &DX8Wrapper::s_zFar = Make_Global<float>(0x00A47EB8);
 Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
+DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(0x007F1C6C);
 #else
 #ifdef BUILD_WITH_D3D8
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
@@ -70,6 +71,7 @@ float DX8Wrapper::s_zFar;
 Matrix4 DX8Wrapper::s_projectionMatrix;
 int DX8Wrapper::s_mainThreadID;
 int DX8Wrapper::s_currentRenderDevice = -1;
+DX8Caps *DX8Wrapper::s_currentCaps;
 #endif
 
 void DX8Wrapper::Init(void *hwnd, bool lite)

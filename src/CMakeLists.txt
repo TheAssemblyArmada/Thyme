@@ -191,6 +191,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8caps.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/shader.cpp
+    w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texture.cpp
     w3d/renderer/texturebase.cpp
     w3d/renderer/textureloadtask.cpp

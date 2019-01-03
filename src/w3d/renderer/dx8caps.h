@@ -54,6 +54,16 @@ public:
     void Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier);
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
+#ifdef BUILD_WITH_D3D8
+    unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }
+    unsigned Get_Max_Tex_Height() const { return m_caps.MaxTextureHeight; }
+    unsigned Get_Max_Vol_Extent() const { return m_caps.MaxVolumeExtent; }
+#else
+    unsigned Get_Max_Tex_Width() const { return 1024; }
+    unsigned Get_Max_Tex_Height() const { return 1024; }
+    unsigned Get_Max_Vol_Extent() const { return 1024; }
+#endif
+
 private:
     void Check_Texture_Format_Support(WW3DFormat format, const w3dcaps_t &caps);
     void Check_Render_To_Texture_Support(WW3DFormat format, const w3dcaps_t &caps);

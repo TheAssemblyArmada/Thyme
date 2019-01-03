@@ -72,6 +72,8 @@ public:
     virtual void Lock_Surfaces();
     virtual void Unlock_Surfaces();
 
+    static void Delete_Free_Pool();
+
 private:
     static void Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height, unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);
 

@@ -42,20 +42,7 @@ TextureLoadTaskClass::TextureLoadTaskClass() :
 
 TextureLoadTaskClass::~TextureLoadTaskClass()
 {
-    if (m_texture != nullptr) {
-        switch (m_type) {
-            case TASK_THUMBNAIL:
-                m_texture->m_thumbnailTextureLoadTask = nullptr;
-                break;
-            case TASK_LOAD:
-                m_texture->m_normalTextureLoadTask = nullptr;
-                break;
-            default:
-                break;
-        }
-
-        Ref_Ptr_Release(m_texture);
-    }
+    Deinit();
 }
 
 void TextureLoadTaskClass::Destroy()
@@ -87,7 +74,6 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
     m_reduction = m_texture->Get_Reduction();
     m_hsvAdjust = m_texture->m_hsvShift;
 
-
     for (int i = 0; i < MAX_SURFACES; ++i) {
         m_lockedSurfacePtr[i] = nullptr;
         m_lockedSurfacePitch[i] = 0;
@@ -107,23 +93,20 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
 
 void TextureLoadTaskClass::Deinit()
 {
-    if (m_texture == nullptr) {
-        return;
-    }
+    if (m_texture != nullptr) {
+        switch (m_type) {
+            case TASK_THUMBNAIL:
+                m_texture->m_thumbnailTextureLoadTask = nullptr;
+                break;
+            case TASK_LOAD:
+                m_texture->m_normalTextureLoadTask = nullptr;
+                break;
+            default:
+                break;
+        }
 
-    switch (m_type) {
-        case TASK_THUMBNAIL:
-            m_texture->m_thumbnailTextureLoadTask = nullptr;
-            break;
-        case TASK_LOAD:
-            m_texture->m_normalTextureLoadTask = nullptr;
-            break;
-        default:
-            break;
+        Ref_Ptr_Release(m_texture);
     }
-
-    m_texture->Release_Ref();
-    m_texture = nullptr;
 }
 
 void TextureLoadTaskClass::Begin_Compressed_Load() {}
@@ -137,6 +120,21 @@ void TextureLoadTaskClass::Load_Uncompressed_Mipmap() {}
 void TextureLoadTaskClass::Lock_Surfaces() {}
 
 void TextureLoadTaskClass::Unlock_Surfaces() {}
+
+void TextureLoadTaskClass::Delete_Free_Pool()
+{
+    for (TextureLoadTaskClass *task = g_freeList.Pop_Front(); task != nullptr; task = g_freeList.Pop_Front()) {
+        delete task;
+    }
+
+    for (TextureLoadTaskClass *task = g_cubeFreeList.Pop_Front(); task != nullptr; task = g_freeList.Pop_Front()) {
+        delete task;
+    }
+
+    for (TextureLoadTaskClass *task = g_volFreeList.Pop_Front(); task != nullptr; task = g_freeList.Pop_Front()) {
+        delete task;
+    }
+}
 
 void TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height,
     unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds)

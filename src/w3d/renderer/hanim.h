@@ -1,6 +1,29 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ * @author tomsons26
+ *
+ * @brief Hashed animation base class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
-class HAnimClass : class RefCountClass, class HashableClass
+#include "always.h"
+#include "hash.h"
+#include "refcount.h"
+
+class Vector3;
+class Quaternion;
+class Matrix3D;
+
+class HAnimClass : public RefCountClass, public HashableClass
 {
 public:
     virtual ~HAnimClass(){};
@@ -24,10 +47,10 @@ public:
     virtual bool Has_Rotation(int pividx) { return true; }
     virtual bool Has_Visibility(int pividx) { return true; }
     virtual int Class_ID() { return -1 /*CLASSID_UNKNOWN*/; }
-    virtual bool Has_Embedded_Sounds() const { return (Bitfield >> 31) ^ 1; }
-    virtual void Set_Embedded_Sound_Bone_Index(int index) { Bitfield = index; };
-    virtual int Get_Embedded_Sound_Bone_Index() { return Bitfield; }
+    virtual bool Has_Embedded_Sounds() const { return (m_bitfield >> 31) ^ 1; }
+    virtual void Set_Embedded_Sound_Bone_Index(int index) { m_bitfield = index; };
+    virtual int Get_Embedded_Sound_Bone_Index() { return m_bitfield; }
 
 protected:
-    unsigned int Bitfield;
+    unsigned int m_bitfield;
 };

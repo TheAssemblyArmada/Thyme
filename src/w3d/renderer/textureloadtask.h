@@ -57,6 +57,9 @@ public:
     {
         STATE_NONE,
         STATE_LOAD_BEGUN,
+        STATE_LOADED,
+        STATE_LOAD_ENDED,
+        STATE_4,
     };
 
     TextureLoadTaskClass();
@@ -65,14 +68,26 @@ public:
     virtual void Destroy();
     virtual void Init(TextureBaseClass *texture, TaskType type, PriorityType priority);
     virtual void Deinit();
-    virtual void Begin_Compressed_Load();
-    virtual void Begin_Uncompressed_Load();
-    virtual void Load_Compressed_Mipmap();
-    virtual void Load_Uncompressed_Mipmap();
+    virtual bool Begin_Compressed_Load();
+    virtual bool Begin_Uncompressed_Load();
+    virtual bool Load_Compressed_Mipmap();
+    virtual bool Load_Uncompressed_Mipmap();
     virtual void Lock_Surfaces();
     virtual void Unlock_Surfaces();
 
+    void Apply(bool initialized);
+    void Apply_Missing_Texture();
+    bool Begin_Load();
+    bool Load();
+    void End_Load();
+    void Finish_Load();
+    StateType Get_Load_State() const { return m_loadState; }
+    void Set_Load_State(StateType state) { m_loadState = state; }
+    void Set_Priority(PriorityType priority) { m_priority = priority; }
+    TextureLoadTaskListClass *Get_Parent() { return m_parent; }
+
     static void Delete_Free_Pool();
+    static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority); 
 
 private:
     static void Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height, unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);

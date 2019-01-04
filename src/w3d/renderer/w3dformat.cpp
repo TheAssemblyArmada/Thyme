@@ -294,3 +294,15 @@ void Get_WW3D_Format(WW3DFormat &format, unsigned &bpp, const TargaImage &tga)
             break;
     }
 }
+
+void Get_WW3D_Format(WW3DFormat &dest_format, WW3DFormat &src_format, unsigned &bpp, const TargaImage &tga)
+{
+    Get_WW3D_Format(src_format, bpp, tga);
+    dest_format = src_format;
+
+    if (dest_format == WW3D_FORMAT_P8 || dest_format == WW3D_FORMAT_L8) {
+        dest_format = WW3D_FORMAT_X8R8G8B8;
+    }
+
+    dest_format = Get_Valid_Texture_Format(dest_format, false);
+}

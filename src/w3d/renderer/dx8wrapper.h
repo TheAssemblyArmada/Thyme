@@ -19,6 +19,7 @@
 #include "matrix4.h"
 #include "refcount.h"
 #include "shader.h"
+#include "texturebase.h"
 #include "vector4.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
@@ -127,8 +128,14 @@ public:
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
     static void Log_DX8_ErrorCode(unsigned error);
 
+    static w3dtexture_t Create_Texture(unsigned width, unsigned height, WW3DFormat format,
+        MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dsurface_t Create_Surface(
+        unsigned width, unsigned height, WW3DFormat format);
+
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps() { return s_currentCaps; }
+    static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
 
 private:
 #ifndef THYME_STANDALONE

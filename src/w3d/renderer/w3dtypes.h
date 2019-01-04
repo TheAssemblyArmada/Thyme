@@ -27,8 +27,10 @@ typedef D3DCAPS8 w3dcaps_t;
 typedef LPDIRECT3D8 w3dhandle_t;
 typedef D3DADAPTER_IDENTIFIER8 w3dadapterid_t;
 typedef LPDIRECT3DDEVICE8 w3ddevice_t;
+typedef D3DPOOL w3dpool_t;
 
 #define W3D_TYPE_INVALID_TEXTURE nullptr
+#define W3D_TYPE_INVALID_SURFACE nullptr
 #else
 // TODO for alternate 3D frameworks such as OpenGL or later D3D
 typedef int w3dtexture_t;
@@ -38,6 +40,7 @@ typedef int w3dcaps_t;
 typedef int w3dhandle_t;
 typedef int w3dadapterid_t;
 typedef int w3ddevice_t;
+typedef int w3dpool_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
 #endif

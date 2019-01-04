@@ -113,6 +113,29 @@ void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
     DEBUG_LOG("Direct3D8 generated error %x.\n", error);
 }
 
+w3dtexture_t DX8Wrapper::Create_Texture(
+    unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget)
+{
+#ifndef THYME_STANDALONE
+    return Call_Function<w3dtexture_t, unsigned, unsigned, WW3DFormat, MipCountType, w3dpool_t, bool>(
+        0x008036F0, width, height, format, mip_level_count, pool, rendertarget);
+#else
+    return w3dtexture_t();
+#endif
+}
+
+w3dsurface_t DX8Wrapper::Create_Surface(unsigned width, unsigned height, WW3DFormat format)
+{
+#ifdef BUILD_WITH_D3D8
+    w3dsurface_t surf = W3D_TYPE_INVALID_SURFACE;
+    DX8CALL(CreateImageSurface(width, height, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), &surf));
+
+    return surf;
+#else
+    return w3dsurface_t();
+#endif
+}
+
 #ifdef BUILD_WITH_D3D8
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
 const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)

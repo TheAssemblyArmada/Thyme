@@ -79,6 +79,7 @@ unsigned Get_Bytes_Per_Pixel(WW3DFormat format);
 WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression);
 
 void Get_WW3D_Format(WW3DFormat &format, unsigned &bpp, const TargaImage &tga);
+void Get_WW3D_Format(WW3DFormat &dest_format, WW3DFormat &src_format, unsigned &bpp, const TargaImage &tga);
 
 inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
 {

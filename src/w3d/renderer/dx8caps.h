@@ -54,6 +54,8 @@ public:
     void Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier);
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
+    bool Supports_DXTC() const { return m_supportDXTC; }
+
 #ifdef BUILD_WITH_D3D8
     unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }
     unsigned Get_Max_Tex_Height() const { return m_caps.MaxTextureHeight; }

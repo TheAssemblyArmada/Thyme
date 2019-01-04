@@ -244,7 +244,7 @@ void ThreadClass::Switch_Thread()
 /**
  * @brief Get an integral value that identifies the thread.
  */
-uintptr_t ThreadClass::Get_Current_Thread_ID()
+int ThreadClass::Get_Current_Thread_ID()
 {
 #ifdef PLATFORM_WINDOWS
     return GetCurrentThreadId();

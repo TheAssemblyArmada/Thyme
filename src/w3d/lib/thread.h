@@ -43,7 +43,7 @@ public:
     void Set_Priority(int priority);
 
     static void Sleep_Ms(unsigned int ms);
-    static uintptr_t Get_Current_Thread_ID();
+    static int Get_Current_Thread_ID();
     static void Switch_Thread();
 
 #ifndef THYME_STANDALONE

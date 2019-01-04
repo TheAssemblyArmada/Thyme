@@ -15,6 +15,8 @@
  *            LICENSE
  */
 #include "textureloadtask.h"
+#include "ddsfile.h"
+#include "missing.h"
 #include "texture.h"
 #include "textureloadtasklist.h"
 #include <cstring>
@@ -109,17 +111,108 @@ void TextureLoadTaskClass::Deinit()
     }
 }
 
-void TextureLoadTaskClass::Begin_Compressed_Load() {}
+bool TextureLoadTaskClass::Begin_Compressed_Load()
+{
+    return false;
+}
 
-void TextureLoadTaskClass::Begin_Uncompressed_Load() {}
+bool TextureLoadTaskClass::Begin_Uncompressed_Load()
+{
+    return false;
+}
 
-void TextureLoadTaskClass::Load_Compressed_Mipmap() {}
+bool TextureLoadTaskClass::Load_Compressed_Mipmap()
+{
+    return false;
+}
 
-void TextureLoadTaskClass::Load_Uncompressed_Mipmap() {}
+bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
+{
+    return false;
+}
 
 void TextureLoadTaskClass::Lock_Surfaces() {}
 
 void TextureLoadTaskClass::Unlock_Surfaces() {}
+
+void TextureLoadTaskClass::Apply(bool initialized)
+{
+    DEBUG_ASSERT(m_texture != nullptr);
+    m_texture->Apply_New_Surface(m_d3dTexture, initialized, false);
+#ifdef BUILD_WITH_D3D8
+    m_d3dTexture->Release();
+    m_d3dTexture = nullptr;
+#endif
+}
+
+void TextureLoadTaskClass::Apply_Missing_Texture()
+{
+    m_d3dTexture = MissingTextureClass::Get_Missing_Texture();
+    Apply(true);
+}
+
+bool TextureLoadTaskClass::Begin_Load()
+{
+    DEBUG_ASSERT(m_texture != 0);
+    bool res = false;
+
+    if (m_texture->m_compressionAllowed) {
+        res = Begin_Compressed_Load();
+    }
+
+    if (!res) {
+        res = Begin_Uncompressed_Load();
+    }
+
+    if (res) {
+        Lock_Surfaces();
+        m_loadState = STATE_LOAD_BEGUN;
+    }
+
+    return res;
+}
+
+bool TextureLoadTaskClass::Load()
+{
+    DEBUG_ASSERT(m_texture != 0);
+    bool res = false;
+
+    if (m_texture->m_compressionAllowed) {
+        res = Load_Compressed_Mipmap();
+    }
+
+    if (!res) {
+        res = Load_Uncompressed_Mipmap();
+    }
+
+    m_loadState = STATE_LOADED;
+
+    return res;
+}
+
+void TextureLoadTaskClass::End_Load()
+{
+    Unlock_Surfaces();
+    Apply(true);
+    m_loadState = STATE_LOAD_ENDED;
+}
+
+void TextureLoadTaskClass::Finish_Load()
+{
+    switch (m_loadState) {
+        case STATE_NONE:
+            if (!Begin_Load()) {
+                Apply_Missing_Texture();
+                return;
+            }
+        case STATE_LOAD_BEGUN: // Fallthough
+            Load();
+        case STATE_LOADED: // Fallthough
+            End_Load();
+        default:
+            break;
+    }
+}
 
 void TextureLoadTaskClass::Delete_Free_Pool()
 {
@@ -134,6 +227,16 @@ void TextureLoadTaskClass::Delete_Free_Pool()
     for (TextureLoadTaskClass *task = g_volFreeList.Pop_Front(); task != nullptr; task = g_freeList.Pop_Front()) {
         delete task;
     }
+}
+
+TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, TaskType type, PriorityType priority)
+{
+#ifndef THYME_STANDALONE
+    return Call_Function<TextureLoadTaskClass *, TextureBaseClass *, TaskType, PriorityType>(
+        0x0082FFD0, texture, type, priority);
+#else
+    return nullptr;
+#endif
 }
 
 void TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height,

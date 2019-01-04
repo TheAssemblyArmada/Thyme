@@ -195,6 +195,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texture.cpp
     w3d/renderer/texturebase.cpp
+    w3d/renderer/textureloader.cpp
     w3d/renderer/textureloadtask.cpp
     w3d/renderer/textureloadtasklist.cpp
     w3d/renderer/thumbnail.cpp

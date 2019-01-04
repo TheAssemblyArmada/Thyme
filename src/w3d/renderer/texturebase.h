@@ -27,35 +27,35 @@ class TextureClass;
 class CubeTextureClass;
 class VolumeTextureClass;
 
+enum MipCountType
+{
+    MIP_LEVELS_ALL,
+    MIP_LEVELS_1,
+    MIP_LEVELS_2,
+    MIP_LEVELS_3,
+    MIP_LEVELS_4,
+    MIP_LEVELS_5,
+    MIP_LEVELS_6,
+    MIP_LEVELS_7,
+    MIP_LEVELS_8,
+    MIP_LEVELS_10, // TT Scripts has it this way, no 9?
+    MIP_LEVELS_11,
+    MIP_LEVELS_12,
+    MIP_LEVELS_MAX,
+};
+
+enum PoolType
+{
+    POOL_DEFAULT,
+    POOL_MANAGED,
+    POOL_SYSTEMMEM,
+};
+
 class TextureBaseClass : public RefCountClass
 {
     friend class TextureLoadTaskClass;
 
 public:
-    enum MipCountType
-    {
-        MIP_LEVELS_ALL,
-        MIP_LEVELS_1,
-        MIP_LEVELS_2,
-        MIP_LEVELS_3,
-        MIP_LEVELS_4,
-        MIP_LEVELS_5,
-        MIP_LEVELS_6,
-        MIP_LEVELS_7,
-        MIP_LEVELS_8,
-        MIP_LEVELS_10, // TT Scripts has it this way, no 9?
-        MIP_LEVELS_11,
-        MIP_LEVELS_12,
-        MIP_LEVELS_MAX,
-    };
-
-    enum PoolType
-    {
-        POOL_DEFAULT,
-        POOL_MANAGED,
-        POOL_SYSTEMMEM,
-    };
-
     TextureBaseClass(unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool unk1, bool unk2);
     virtual ~TextureBaseClass();
     virtual int Get_Asset_Type() = 0;
@@ -77,6 +77,12 @@ public:
     bool Is_Missing_Texture() const;
     unsigned Get_Priority();
     void Set_Priority(unsigned priority);
+    TextureLoadTaskClass *Get_Normal_Load_Task() { return m_normalTextureLoadTask; }
+    TextureLoadTaskClass *Get_Thumbnail_Load_Task() { return m_thumbnailTextureLoadTask; }
+    const StringClass &Get_Full_Path() const { return m_fullPath; }
+    const StringClass &Get_Name() const { return m_name; }
+    const Vector3 &Get_Recolor() const { return m_hsvShift; }
+    bool Is_Initialized() const { return m_initialized; }
 
     static void Invalidate_Old_Unused_Textures(unsigned unk);
     static void Apply_Null(unsigned unk);

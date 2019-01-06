@@ -1,7 +1,5 @@
 # Build and link the DLL.
 set(GAMEENGINE_INCLUDES
-    ${CMAKE_CURRENT_BINARY_DIR}/base
-    base
     game
     game/client
     game/client/gui
@@ -32,8 +30,6 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp)
 
 set(GAMEENGINE_SRC
-    ${CMAKE_CURRENT_BINARY_DIR}/base/gitverinfo.c
-    base/stringex.c
     game/copyprotect.cpp
     game/force_nocd.cpp
     game/main.cpp
@@ -212,6 +208,7 @@ if(CMAKE_CONFIGURATION_TYPES)
     file(GLOB_RECURSE GAMEENGINE_HEADERS "*.h")
     # Filter out headers from included 3rd party libraries like STLPort or gamemath.
     list(FILTER GAMEENGINE_HEADERS EXCLUDE REGEX "libs/.*")
+    list(FILTER GAMEENGINE_HEADERS EXCLUDE REGEX "base/.*")
 endif()
 
 if(STANDALONE)
@@ -229,6 +226,8 @@ else()
         target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1)
     endif()
 endif()
+
+target_link_libraries(thyme base)
 
 # For MSVC/XCode this will add the headers to the project.
 source_group("Header Files" FILES ${GAMEENGINE_HEADERS})

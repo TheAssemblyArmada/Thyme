@@ -1362,18 +1362,12 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
         return false;
     }
 
-    // MSVC has a different signature for its __cpuid intrinsic vs clang/gcc
-#ifdef HAVE__CPUID_MSVC
     int32_t regs[4];
 
-    __cpuid(regs, cpuid_type);
-#elif defined HAVE__CPUID_GCC
-    uint32_t regs[4];
-
-    __cpuid(cpuid_type, regs[0], regs[1], regs[2], regs[3]);
-#else
-    int32_t regs[4]; // Prevent compiler errors on none x86 platforms.
+#ifdef HAVE__CPUID
+    __cpuidc(regs, cpuid_type);
 #endif
+
     u_eax_ = regs[0];
     u_ebx_ = regs[1];
     u_ecx_ = regs[2];
@@ -1389,18 +1383,12 @@ bool CPUDetectClass::CPUID_Count(
         return false;
     }
 
-    // MSVC has a different signature for its __cpuid intrinsic vs clang/gcc
-#ifdef HAVE__CPUIDEX
     int32_t regs[4];
 
+#ifdef HAVE__CPUIDEX
     __cpuidex(regs, cpuid_type, count);
-#elif defined HAVE__CPUID_COUNT
-    uint32_t regs[4];
-
-    __cpuid_count(cpuid_type, count, regs[0], regs[1], regs[2], regs[3]);
-#else
-    int32_t regs[4]; // Prevent compiler errors on none x86 platforms.
 #endif
+
     u_eax_ = regs[0];
     u_ebx_ = regs[1];
     u_ecx_ = regs[2];

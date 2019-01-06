@@ -34,11 +34,6 @@
 #endif
 #endif
 
-#ifdef PLATFORM_UNIX
-#include <libgen.h>
-#include <unistd.h>
-#endif
-
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
 #include "hooker.h"

@@ -90,20 +90,20 @@ public:
     static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority); 
 
 private:
-    static void Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height, unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);
+    static bool Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height, unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);
 
 protected:
     TextureLoadTaskListNode m_listNode;
     TextureLoadTaskListClass *m_parent;
     TextureBaseClass *m_texture;
-    w3dbasetexture_t m_d3dTexture;
+    w3dtexture_t m_d3dTexture;
     WW3DFormat m_format;
     unsigned m_width;
     unsigned m_height;
     unsigned m_mipLevelCount;
     unsigned m_reduction;
     Vector3 m_hsvAdjust;
-    char *m_lockedSurfacePtr[MAX_SURFACES];
+    uint8_t *m_lockedSurfacePtr[MAX_SURFACES];
     int m_lockedSurfacePitch[MAX_SURFACES];
     TaskType m_type;
     PriorityType m_priority;

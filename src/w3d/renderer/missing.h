@@ -27,22 +27,27 @@ public:
     virtual ~MissingTextureClass(){};
     virtual const char *Get_Key() override { return m_name.Peek_Buffer(); };
 
+private:
+    StringClass m_name;
+};
+
+typedef MissingTextureClass MissingAnimClass;
+typedef MissingTextureClass MissingGeomClass;
+
+class MissingTexture : public HashableClass
+{
+public:
     static w3dtexture_t Get_Missing_Texture();
     static void Init();
     static void Deinit();
 
 private:
-    StringClass m_name;
-
 #ifndef THYME_STANDALONE
     static w3dtexture_t &s_missingTexture;
 #else
     static w3dtexture_t s_missingTexture;
 #endif
 };
-
-typedef MissingTextureClass MissingAnimClass;
-typedef MissingTextureClass MissingGeomClass;
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"

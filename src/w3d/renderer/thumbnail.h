@@ -32,6 +32,10 @@ public:
 
     const StringClass &Get_Name() const { return m_filename; }
     uint8_t *Get_Bitmap() const { return m_bitmap; }
+    int Get_Max_Width() const { return m_width; }
+    int Get_Max_Height() const { return m_height; }
+    int Get_Mip_Levels() const { return m_mipLevels; }
+    WW3DFormat Get_Format() const { return m_format; }
 
 #ifndef THYME_STANDALONE
     ThumbnailClass *Hook_Ctor(ThumbnailManagerClass *manager, const StringClass &texture)

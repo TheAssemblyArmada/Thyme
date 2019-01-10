@@ -18,9 +18,11 @@
 #ifndef THYME_STANDALONE
 unsigned &W3D::s_syncTime = Make_Global<unsigned>(0x00A47F9C);
 int &W3D::s_textureReduction = Make_Global<int>(0x00A47FE4);
+int &W3D::s_textureMinDimension = Make_Global<int>(0x00A1699C);
 bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(0x00A47FE8);
 #else
 unsigned W3D::s_syncTime;
 int W3D::s_textureReduction;
+int W3D::s_textureMinDimension = 1;
 bool W3D::s_largeTextureExtraReduction;
 #endif

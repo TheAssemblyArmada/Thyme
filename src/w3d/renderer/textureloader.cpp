@@ -152,7 +152,7 @@ void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, uns
 w3dtexture_t TextureLoader::Load_Thumbnail(const StringClass &texture, const Vector3 &adjust)
 {
     // Checks for Peek_Thumbnail_Instance_From_Any_Manager(texture), but it always returns nullptr.
-    return MissingTextureClass::Get_Missing_Texture();
+    return MissingTexture::Get_Missing_Texture();
 }
 
 w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, WW3DFormat format, bool allow_compressed)

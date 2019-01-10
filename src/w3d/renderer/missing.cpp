@@ -18,12 +18,12 @@
 #include "w3dformat.h"
 
 #ifndef THYME_STANDALONE
-w3dtexture_t &MissingTextureClass::s_missingTexture = Make_Global<w3dtexture_t>(0x00A522F8);
+w3dtexture_t &MissingTexture::s_missingTexture = Make_Global<w3dtexture_t>(0x00A522F8);
 #else
-w3dtexture_t MissingTextureClass::s_missingTexture;
+w3dtexture_t MissingTexture::s_missingTexture;
 #endif
 
-w3dtexture_t MissingTextureClass::Get_Missing_Texture()
+w3dtexture_t MissingTexture::Get_Missing_Texture()
 {
 #ifdef BUILD_WITH_D3D8
     s_missingTexture->AddRef();
@@ -32,7 +32,7 @@ w3dtexture_t MissingTextureClass::Get_Missing_Texture()
     return s_missingTexture;
 }
 
-void MissingTextureClass::Init()
+void MissingTexture::Init()
 {
     static const int _missing_width = 256;
     static const int _missing_height = 256;
@@ -43,7 +43,7 @@ void MissingTextureClass::Init()
 #endif
 }
 
-void MissingTextureClass::Deinit()
+void MissingTexture::Deinit()
 {
 #ifdef BUILD_WITH_D3D8
     s_missingTexture->Release();

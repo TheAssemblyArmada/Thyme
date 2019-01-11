@@ -34,7 +34,7 @@ private:
 typedef MissingTextureClass MissingAnimClass;
 typedef MissingTextureClass MissingGeomClass;
 
-class MissingTexture : public HashableClass
+class MissingTexture
 {
 public:
     static w3dtexture_t Get_Missing_Texture();

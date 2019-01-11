@@ -56,14 +56,15 @@ public:
     static void Load_Thumbnail(TextureBaseClass *texture);
 
 private:
+    static bool Queues_Not_Empty();
 #ifndef THYME_STANDALONE
-    //static bool &s_textureLoadSuspended;
     static unsigned &s_textureInactiveOverrideTime;
     static LoaderThreadClass &s_textureLoadThread;
+    static bool &s_textureLoadSuspended;
 #else
-    //static bool s_textureLoadSuspended;
     static unsigned s_textureInactiveOverrideTime;
     static LoaderThreadClass s_textureLoadThread;
+    static bool s_textureLoadSuspended;
 #endif
 };
 

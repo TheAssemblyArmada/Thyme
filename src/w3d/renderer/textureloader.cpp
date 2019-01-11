@@ -20,6 +20,7 @@
 #include "dx8wrapper.h"
 #include "gamedebug.h"
 #include "missing.h"
+#include "rtsutils.h"
 #include "shader.h"
 #include "synctextureloadtasklist.h"
 #include "targa.h"
@@ -31,12 +32,14 @@
 // bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00000000);
 unsigned &TextureLoader::s_textureInactiveOverrideTime = Make_Global<unsigned>(0x00A4C688);
 LoaderThreadClass &TextureLoader::s_textureLoadThread = Make_Global<LoaderThreadClass>(0x00A4C620);
+bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00A4C604);
 FastCriticalSectionClass &g_backgroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C608);
 FastCriticalSectionClass &g_foregroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C60C);
 #else
 // bool TextureLoader::s_textureLoadSuspended;
 unsigned TextureLoader::s_textureInactiveOverrideTime;
 LoaderThreadClass TextureLoader::s_textureLoadThread("Thyme texture Loader thread");
+bool TextureLoader::s_textureLoadSuspended;
 FastCriticalSectionClass g_backgroundCritSec;
 FastCriticalSectionClass g_foregroundCritSec;
 #endif
@@ -312,7 +315,7 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
             thumb_task->Set_Load_State(TextureLoadTaskClass::STATE_4);
         }
 
-        if (task !=nullptr) {
+        if (task != nullptr) {
             if (task->Get_Parent() == &g_backgroundQueue) {
                 g_backgroundQueue.Remove(task);
                 g_foregroundQueue.Push_Back(task);
@@ -334,7 +337,8 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
             g_foregroundQueue.Remove(task);
             g_backgroundQueue.Remove(task);
         } else {
-            task = TextureLoadTaskClass::Create(texture, TextureLoadTaskClass::TASK_LOAD, TextureLoadTaskClass::PRIORITY_FOREGROUND);
+            task = TextureLoadTaskClass::Create(
+                texture, TextureLoadTaskClass::TASK_LOAD, TextureLoadTaskClass::PRIORITY_FOREGROUND);
         }
 
         task->Finish_Load();
@@ -342,9 +346,48 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
     }
 }
 
-void TextureLoader::Flush_Pending_Load_Tasks() {}
+bool TextureLoader::Queues_Not_Empty()
+{
+    FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+    return !g_backgroundQueue.Empty() && !g_foregroundQueue.Empty();
+}
 
-void TextureLoader::Update(void (*update)(void)) {}
+void TextureLoader::Flush_Pending_Load_Tasks()
+{
+    while (Queues_Not_Empty()) {
+        FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+        Update(nullptr);
+        ThreadClass::Switch_Thread();
+    }
+}
+
+void TextureLoader::Update(void (*update)(void))
+{
+    if (!s_textureLoadSuspended) {
+        FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+        int time = rts::Get_Time();
+        TextureLoadTaskClass *task;
+
+        while ((task = g_foregroundQueue.Pop_Front()) != nullptr) {
+            if (update != nullptr) {
+                int time2 = rts::Get_Time();
+
+                if ((time2 - time) > 20) {
+                    update();
+                    time2 = time;
+                }
+            }
+
+            if (task->Get_Task_Type() == TextureLoadTaskClass::TASK_THUMBNAIL) {
+                TextureLoader::Process_Foreground_Thumbnail(task);
+            } else if (task->Get_Task_Type() == TextureLoadTaskClass::TASK_LOAD) {
+                TextureLoader::Process_Foreground_Load(task);
+            }
+        }
+
+        TextureBaseClass::Invalidate_Old_Unused_Textures(0);
+    }
+}
 
 void TextureLoader::Suspend_Texture_Load() {}
 

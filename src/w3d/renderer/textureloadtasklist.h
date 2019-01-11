@@ -30,6 +30,7 @@ public:
     TextureLoadTaskClass *Pop_Front();
     TextureLoadTaskClass *Pop_Back();
     void Remove(TextureLoadTaskClass *task);
+    bool Empty() { return m_head == reinterpret_cast<__mayalias TextureLoadTaskListNode *>(this); }
 
 private:
     TextureLoadTaskListNode *m_head;

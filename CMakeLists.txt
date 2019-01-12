@@ -120,6 +120,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_subdirectory(src/libs/baseconfig)
 
 if(NOT STANDALONE)
+    set(SETSAIL_ENTRY 0x008E0778)
+    set(SETSAIL_DLL "${PROJECT_NAME}.dll")
+    set(SETSAIL_EXE "game.dat")
+    set(SETSAIL_LAUNCHER launch${PROJECT_NAME})
+    set(SETSAIL_HASH "5b805b4ecba79581fe8ec454b5acf7b7e13d4dd5")
+    message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
     # Build the launcher
     add_subdirectory(launcher)
 endif()

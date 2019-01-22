@@ -68,6 +68,8 @@
 #include "targa.h"
 #include "teamsinfo.h"
 #include "texturebase.h"
+#include "textureloader.h"
+#include "textureloadtask.h"
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
@@ -209,6 +211,8 @@ void Setup_Hooks()
     BitmapHandlerClass::Hook_Me();
     ThumbnailManagerClass::Hook_Me();
     ThumbnailClass::Hook_Me();
+    TextureLoadTaskClass::Hook_Me();
+    TextureLoader::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

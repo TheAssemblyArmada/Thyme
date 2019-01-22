@@ -144,12 +144,11 @@ inline void TextureLoadTaskClass::Hook_Me()
     Hook_Method(0x00830C40, &Hook_Load_Uncompressed_Mipmap);
     Hook_Method(0x00830A80, &Hook_Lock_Surfaces);
     Hook_Method(0x00830AE0, &Hook_Unlock_Surfaces);
-    // Hook_Method(0x00831160, &Apply);
-    // Hook_Method(0x00831160, &Apply_Missing_Texture);
-    // Hook_Method(0x00831160, &Begin_Load);
-    // Hook_Method(0x00831160, &Load);
-    // Hook_Method(0x00831160, &End_Load);
-    // Hook_Method(0x00831160, &Finish_Load);
-    Hook_Function(0x0082FFD0, &Create);
+    Hook_Method(0x00830380, &Apply);
+    Hook_Method(0x008302D0, &Begin_Load);
+    Hook_Method(0x00830310, &Load);
+    Hook_Method(0x00830340, &End_Load);
+    // Hook_Function(0x0082FFD0, &Create);//no code yet
+    Hook_Function(0x008305F0, &Get_Texture_Information);
 }
 #endif

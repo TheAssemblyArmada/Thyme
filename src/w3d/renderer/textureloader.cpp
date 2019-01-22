@@ -99,27 +99,14 @@ bool TextureLoader::Is_DX8_Thread()
 
 void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, unsigned &volume)
 {
-    unsigned w = 1;
-    unsigned h = 1;
-    unsigned v = 1;
-
-    if (width > 1) {
-        do {
-            w *= 2;
-        } while (width > w);
-    }
-
-    if (height > 1) {
-        do {
-            h *= 2;
-        } while (height > h);
-    }
-
-    if (volume > 1) {
-        do {
-            v *= 2;
-        } while (v < volume);
-    }
+    unsigned w;
+    unsigned h;
+    unsigned v;
+    // clang-format off
+    for (w = 1; w < width; w *= 2);
+    for (h = 1; h < height; h *= 2);
+    for (v = 1; v < volume; v *= 2);
+    // clang-format on
 
     if (DX8Wrapper::Get_Caps()->Get_Max_Tex_Width() < w) {
         w = DX8Wrapper::Get_Caps()->Get_Max_Tex_Width();
@@ -134,22 +121,18 @@ void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, uns
     }
 
     if (w > h) {
-        while (w / h > 8) {
+        while ((w / h) > 8) {
             h *= 2;
         }
-
-        width = w;
-        height = h;
-        volume = v;
     } else {
-        while (h / w > 8) {
+        while ((h / w) > 8) {
             w *= 2;
         }
-
-        width = w;
-        height = h;
-        volume = v;
     }
+
+    width = w;
+    height = h;
+    volume = v;
 }
 
 w3dtexture_t TextureLoader::Load_Thumbnail(const StringClass &texture, const Vector3 &adjust)

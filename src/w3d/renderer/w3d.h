@@ -25,20 +25,20 @@ public:
     static unsigned Get_Sync_Time() { return s_syncTime; }
 
     // Texture control functions.
-    static int Get_Texture_Reduction() { return s_textureReduction; }
-    static int Get_Texture_Min_Dimension() { return s_textureMinDimension; }
+    static unsigned Get_Texture_Reduction() { return s_textureReduction; }
+    static unsigned Get_Texture_Min_Dimension() { return s_textureMinDimension; }
     static bool Large_Texture_Extra_Reduction_Enabled() { return s_largeTextureExtraReduction; }
 
 private:
 #ifndef THYME_STANDALONE
     static unsigned &s_syncTime;
-    static int &s_textureReduction;
-    static int &s_textureMinDimension;
+    static unsigned &s_textureReduction;
+    static unsigned &s_textureMinDimension;
     static bool &s_largeTextureExtraReduction;
 #else
     static unsigned s_syncTime;
-    static int s_textureReduction;
-    static int s_textureMinDimension;
+    static unsigned s_textureReduction;
+    static unsigned s_textureMinDimension;
     static bool s_largeTextureExtraReduction;
 #endif
 };

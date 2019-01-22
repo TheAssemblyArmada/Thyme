@@ -54,6 +54,9 @@ public:
     static void Process_Foreground_Load(TextureLoadTaskClass *texture);
     static void Begin_Load_And_Queue(TextureLoadTaskClass *texture);
     static void Load_Thumbnail(TextureBaseClass *texture);
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
 
 private:
     static bool Queues_Not_Empty();
@@ -70,4 +73,9 @@ private:
 
 #ifndef THYME_STANDALONE
 #include "hooker.h"
+
+inline void TextureLoader::Hook_Me()
+{
+    Hook_Function(0x0082EE10, &Validate_Texture_Size);
+}
 #endif

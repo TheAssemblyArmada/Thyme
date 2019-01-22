@@ -29,13 +29,13 @@ unsigned TextureBaseClass::s_unusedTextureID = 0;
  * 0x0081A3A0
  */
 TextureBaseClass::TextureBaseClass(
-    unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool unk1, bool unk2) :
+    unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool unk1, bool allow_reduction) :
     m_mipLevelCount(mip_count),
     m_initialized(false),
     m_unkBool1(false),
     m_compressionAllowed(false),
     m_isProcedural(false),
-    m_unkBool2(unk2),
+    m_allowReduction(allow_reduction),
     m_inactivationTime(0),
     m_someTimeVal(0),
     m_startTime(0),

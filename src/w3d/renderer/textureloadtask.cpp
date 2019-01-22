@@ -65,11 +65,8 @@ void TextureLoadTaskClass::Destroy()
 
 void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
-    texture->Add_Ref();
-    m_texture->Release_Ref();
-
+    Ref_Ptr_Set(texture, m_texture);
     m_type = type;
-    m_texture = texture;
     m_priority = priority;
     m_loadState = STATE_NONE;
     m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
@@ -175,7 +172,7 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
     m_format = Get_Valid_Texture_Format(format, m_texture->m_compressionAllowed);
     m_reduction = reduction;
 
-    if (m_texture->m_unkBool2 && m_texture->m_mipLevelCount != 1) {
+    if (m_texture->m_allowReduction && m_texture->m_mipLevelCount != 1) {
         if (m_texture->m_mipLevelCount != 0 && (m_mipLevelCount - m_reduction) == 0) {
             --m_reduction;
         }
@@ -231,7 +228,7 @@ bool TextureLoadTaskClass::Begin_Uncompressed_Load()
     WW3DFormat format;
     unsigned levels;
 
-    if (!Get_Texture_Information(*name, reduction, width, height, vol, format, levels, true)) {
+    if (!Get_Texture_Information(*name, reduction, width, height, vol, format, levels, false)) {
         return false;
     }
 
@@ -242,7 +239,7 @@ bool TextureLoadTaskClass::Begin_Uncompressed_Load()
     m_height = height;
     m_reduction = reduction;
 
-    if (m_texture->m_unkBool2 && m_texture->m_mipLevelCount != 1) {
+    if (m_texture->m_allowReduction && m_texture->m_mipLevelCount != 1) {
         if (m_texture->m_mipLevelCount != 0 && (m_mipLevelCount - m_reduction) == 0) {
             --m_reduction;
         }
@@ -282,14 +279,15 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
     const StringClass *name = m_texture->Get_Full_Path().Is_Empty() ? &m_texture->Get_Name() : &m_texture->Get_Full_Path();
     DDSFileClass dds(*name, m_reduction);
 
-    if (!dds.Load()) {
+    if (!dds.Have_Level_Sizes() || !dds.Load()) {
         return false;
     }
 
     unsigned reduced_width = m_width;
     unsigned reduced_height = m_height;
+    unsigned reduction = m_reduction;
 
-    for (unsigned i = 0; i < m_reduction; ++i) {
+    while (reduction-- > 0) {
         reduced_width /= 2;
         reduced_height /= 2;
     }
@@ -297,6 +295,8 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         dds.Copy_Level_To_Surface(
             i, m_format, reduced_width, reduced_height, m_lockedSurfacePtr[i], m_lockedSurfacePitch[i], m_hsvAdjust);
+        reduced_width /= 2;
+        reduced_height /= 2;
     }
 
     return true;
@@ -590,7 +590,7 @@ bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &r
         depth = dds.Get_Depth(0);
         format = dds.Get_Format();
         levels = dds.Get_Mip_Level_Count();
-        int reduct = W3D::Get_Texture_Reduction();
+        unsigned reduct = W3D::Get_Texture_Reduction();
 
         if (reduct > levels) {
             reduct = levels - 1;
@@ -598,7 +598,7 @@ bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &r
 
         unsigned w = width;
         unsigned h = height;
-        int r;
+        unsigned r;
 
         for (r = 0; r < reduct; ++r) {
             if (w <= W3D::Get_Texture_Min_Dimension() || h <= W3D::Get_Texture_Min_Dimension()) {
@@ -628,7 +628,7 @@ bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &r
             h /= 2;
         }
 
-        int reduct = W3D::Get_Texture_Reduction();
+        unsigned reduct = W3D::Get_Texture_Reduction();
 
         if (reduct > levels) {
             reduct = levels - 1;
@@ -636,7 +636,7 @@ bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &r
 
         w = tga.Get_Header().width;
         h = tga.Get_Header().height;
-        int r;
+        unsigned r;
 
         for (r = 0; r < reduct; ++r) {
             if (w <= W3D::Get_Texture_Min_Dimension() || h <= W3D::Get_Texture_Min_Dimension()) {

@@ -71,7 +71,7 @@ public:
     w3dbasetexture_t Peek_Platform_Base_Texture() const;
     void Set_Platform_Base_Texture(w3dbasetexture_t tex);
     void Set_Texture_Name(const char *name) { m_name = name; }
-    void Set_HSV_Shift(const Vector3 &shift);
+    void Set_Recolor(const Vector3 &shift);
     unsigned Get_Reduction() const;
     void Load_Locked_Surface();
     bool Is_Missing_Texture() const;

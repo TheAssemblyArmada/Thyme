@@ -94,7 +94,7 @@ void TextureBaseClass::Invalidate()
 /**
  * Set a HSV adjustment.
  */
-void TextureBaseClass::Set_HSV_Shift(const Vector3 &shift)
+void TextureBaseClass::Set_Recolor(const Vector3 &shift)
 {
     Invalidate();
     m_hsvShift = shift;

@@ -29,14 +29,12 @@
 #include "vector3.h"
 
 #ifndef THYME_STANDALONE
-// bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00000000);
 unsigned &TextureLoader::s_textureInactiveOverrideTime = Make_Global<unsigned>(0x00A4C688);
 LoaderThreadClass &TextureLoader::s_textureLoadThread = Make_Global<LoaderThreadClass>(0x00A4C620);
 bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00A4C604);
 FastCriticalSectionClass &g_backgroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C608);
 FastCriticalSectionClass &g_foregroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C60C);
 #else
-// bool TextureLoader::s_textureLoadSuspended;
 unsigned TextureLoader::s_textureInactiveOverrideTime;
 LoaderThreadClass TextureLoader::s_textureLoadThread("Thyme texture Loader thread");
 bool TextureLoader::s_textureLoadSuspended;
@@ -44,6 +42,11 @@ FastCriticalSectionClass g_backgroundCritSec;
 FastCriticalSectionClass g_foregroundCritSec;
 #endif
 
+/**
+ * Loads a dds formatted texture file into a platform texture.
+ *
+ * 0x0082EB00
+ */
 w3dtexture_t Load_Compressed_Texture(
     const StringClass &filename, unsigned base_mip_index, MipCountType mip_level_count, WW3DFormat dest_format)
 {
@@ -74,8 +77,33 @@ w3dtexture_t Load_Compressed_Texture(
     return W3D_TYPE_INVALID_TEXTURE;
 };
 
-void LoaderThreadClass::Thread_Function() {}
+/**
+ * LoaderThread implementation of Thread_Function, thread loads textures pushed to background queue.
+ *
+ * 0x0082FDE0
+ */
+void LoaderThreadClass::Thread_Function()
+{
+    while (m_isRunning) {
+        if (!g_backgroundQueue.Empty()) {
+            FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+            TextureLoadTaskClass *task = g_backgroundQueue.Pop_Front();
+            if (task) {
+                task->Load();
+                FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
+                g_foregroundQueue.Push_Back(task);
+            }
+        }
 
+        Switch_Thread();
+    }
+}
+
+/**
+ * Initialise the texture loader.
+ *
+ * 0x0082EC90
+ */
 void TextureLoader::Init()
 {
     ThumbnailManagerClass::Init();
@@ -84,6 +112,11 @@ void TextureLoader::Init()
     s_textureInactiveOverrideTime = 0;
 }
 
+/**
+ * Deinitialise the texture loader.
+ *
+ * 0x0082ECC0
+ */
 void TextureLoader::Deinit()
 {
     FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
@@ -92,11 +125,21 @@ void TextureLoader::Deinit()
     TextureLoadTaskClass::Delete_Free_Pool();
 }
 
+/**
+ * Check if the current thread is the main thread.
+ *
+ * 0x0082EDF0
+ */
 bool TextureLoader::Is_DX8_Thread()
 {
     return DX8Wrapper::Get_Main_Thread_ID() == ThreadClass::Get_Current_Thread_ID();
 }
 
+/**
+ * Validates the texture dimensions are a multiple of 2.
+ *
+ * 0x0082EE10
+ */
 void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, unsigned &volume)
 {
     unsigned w;
@@ -135,12 +178,22 @@ void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, uns
     volume = v;
 }
 
+/**
+ * Loads a thumbnail.
+ *
+ * 0x0082EED0
+ */
 w3dtexture_t TextureLoader::Load_Thumbnail(const StringClass &texture, const Vector3 &adjust)
 {
     // Checks for Peek_Thumbnail_Instance_From_Any_Manager(texture), but it always returns nullptr.
     return MissingTexture::Get_Missing_Texture();
 }
 
+/**
+ * Loads a texture file to a platform surface immediately.
+ *
+ * 0x0082F080
+ */
 w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, WW3DFormat format, bool allow_compressed)
 {
     bool dxt = format == WW3D_FORMAT_DXT1 || format == WW3D_FORMAT_DXT2 || format == WW3D_FORMAT_DXT3
@@ -230,6 +283,11 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
     return surface;
 }
 
+/**
+ * Requests loading of a thumbnail texture object.
+ *
+ * 0x0082F3A0
+ */
 void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
 {
     FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
@@ -264,6 +322,11 @@ void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
     }
 }
 
+/**
+ * Requests background loading of a texture object. Handled off the main thread.
+ *
+ * 0x0082F520
+ */
 void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
 {
     FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
@@ -280,6 +343,11 @@ void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
     }
 }
 
+/**
+ * Requests foreground loading of a texture object. Handled on the main thread.
+ *
+ * 0x0082F6A0
+ */
 void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
 {
     DEBUG_ASSERT(texture != nullptr);
@@ -329,12 +397,20 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
     }
 }
 
+/**
+ * Checks if there are load tasks queued.
+ */
 bool TextureLoader::Queues_Not_Empty()
 {
     FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
     return !g_backgroundQueue.Empty() && !g_foregroundQueue.Empty();
 }
 
+/**
+ * Flushes all loading tasks held on the foreground queue to completion.
+ *
+ * 0x0082F960
+ */
 void TextureLoader::Flush_Pending_Load_Tasks()
 {
     while (Queues_Not_Empty()) {
@@ -344,6 +420,9 @@ void TextureLoader::Flush_Pending_Load_Tasks()
     }
 }
 
+/**
+ * Processes the next task in the foreground queue.
+ */
 void TextureLoader::Update(void (*update)(void))
 {
     if (!s_textureLoadSuspended) {
@@ -372,14 +451,69 @@ void TextureLoader::Update(void (*update)(void))
     }
 }
 
-void TextureLoader::Suspend_Texture_Load() {}
+/**
+ * Processes a thumbnail task, initiating loading it it hasn't started, destroying it if it has finished.
+ */
+void TextureLoader::Process_Foreground_Thumbnail(TextureLoadTaskClass *task)
+{
+    switch (task->Get_Load_State()) {
+        case TextureLoadTaskClass::STATE_NONE:
+            Load_Thumbnail(task->Get_Texture());
+        case TextureLoadTaskClass::STATE_4: // Fallthrough
+            task->Destroy();
+            break;
+        default:
+            break;
+    }
+}
 
-void TextureLoader::Continue_Texture_Load() {}
+/**
+ * Processes a task, initiating loading it it hasn't started, destroying it if it has finished.
+ */
+void TextureLoader::Process_Foreground_Load(TextureLoadTaskClass *task)
+{
+    if (task->Get_Priority() == TextureLoadTaskClass::PRIORITY_FOREGROUND) {
+        task->Finish_Load();
+        task->Destroy();
+    } else if (task->Get_Load_State() == TextureLoadTaskClass::STATE_NONE) {
+        TextureLoader::Begin_Load_And_Queue(task);
+    } else if (task->Get_Load_State() == TextureLoadTaskClass::STATE_LOADED) {
+        task->End_Load();
+        task->Destroy();
+    }
+}
 
-void TextureLoader::Process_Foreground_Thumbnail(TextureLoadTaskClass *texture) {}
+/**
+ * Starts a task loading and pushes it onto the background queue.
+ */
+void TextureLoader::Begin_Load_And_Queue(TextureLoadTaskClass *task)
+{
+    // Start the background loader thread if it isn't already running.
+    if (!s_textureLoadThread.Is_Running()) {
+        s_textureLoadThread.Execute();
+        s_textureLoadThread.Set_Priority(-4);
+    }
 
-void TextureLoader::Process_Foreground_Load(TextureLoadTaskClass *texture) {}
+    // If we can't start the load of either a dds or tga for the filename in the task set it to missing.
+    if ((task->Allow_Compression() && task->Begin_Compressed_Load()) || task->Begin_Uncompressed_Load()) {
+        task->Lock_Surfaces();
+        task->Set_Load_State(TextureLoadTaskClass::STATE_LOAD_BEGUN);
+        g_backgroundQueue.Push_Front(task);
+    } else {
+        task->Apply_Missing_Texture();
+        task->Destroy();
+    }
+}
 
-void TextureLoader::Begin_Load_And_Queue(TextureLoadTaskClass *texture) {}
-
-void TextureLoader::Load_Thumbnail(TextureBaseClass *texture) {}
+/**
+ * Loads a thumbnail to a texture object.
+ */
+void TextureLoader::Load_Thumbnail(TextureBaseClass *texture)
+{
+    const StringClass *name = texture->Get_Full_Path().Is_Empty() ? &texture->Get_Name() : &texture->Get_Full_Path();
+    w3dtexture_t tex = Load_Thumbnail(*name, texture->Get_Recolor());
+    texture->Apply_New_Surface(tex, false, false);
+#ifdef BUILD_WITH_D3D8
+    tex->Release();
+#endif
+}

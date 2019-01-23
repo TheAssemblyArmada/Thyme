@@ -33,6 +33,9 @@ using std::max;
 using std::memset;
 using std::min;
 
+/**
+ * 0x0082FF20
+ */
 TextureLoadTaskClass::TextureLoadTaskClass() :
     m_listNode{nullptr, nullptr},
     m_parent(nullptr),
@@ -52,17 +55,30 @@ TextureLoadTaskClass::TextureLoadTaskClass() :
     memset(m_lockedSurfacePitch, 0, sizeof(m_lockedSurfacePitch));
 }
 
+/**
+ * 0x0082FF80
+ */
 TextureLoadTaskClass::~TextureLoadTaskClass()
 {
     Deinit();
 }
 
+/**
+ * Deinitialize this task and add it to the list of free task objects.
+ *
+ * 0x008301D0
+ */
 void TextureLoadTaskClass::Destroy()
 {
     Deinit();
     g_freeList.Push_Front(this);
 }
 
+/**
+ * Initialize this task to load to the specified texture object.
+ *
+ * 0x00830210
+ */
 void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
     Ref_Ptr_Set(texture, m_texture);
@@ -100,6 +116,11 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
     }
 }
 
+/**
+ * Deinitialize this task.
+ *
+ * 0x00830210
+ */
 void TextureLoadTaskClass::Deinit()
 {
     if (m_texture != nullptr) {
@@ -118,6 +139,11 @@ void TextureLoadTaskClass::Deinit()
     }
 }
 
+/**
+ * Begin loading a "compressed" (dds format) texture.
+ *
+ * 0x008303B0
+ */
 bool TextureLoadTaskClass::Begin_Compressed_Load()
 {
     DEBUG_ASSERT(m_texture != nullptr);
@@ -216,6 +242,11 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
     return true;
 }
 
+/**
+ * Begin loading an "uncompressed" (tga format) texture.
+ *
+ * 0x00830950
+ */
 bool TextureLoadTaskClass::Begin_Uncompressed_Load()
 {
     DEBUG_ASSERT(m_texture != nullptr);
@@ -273,6 +304,11 @@ bool TextureLoadTaskClass::Begin_Uncompressed_Load()
     return true;
 }
 
+/**
+ * Load a "compressed" (dds format) texture mipmap.
+ *
+ * 0x00830B30
+ */
 bool TextureLoadTaskClass::Load_Compressed_Mipmap()
 {
     DEBUG_ASSERT(m_texture != nullptr);
@@ -302,6 +338,11 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
     return true;
 }
 
+/**
+ * Load an "uncompressed" (tga format) texture mipmap.
+ *
+ * 0x00830C40
+ */
 bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
 {
     DEBUG_ASSERT(m_texture != nullptr);
@@ -427,6 +468,11 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
     return true;
 }
 
+/**
+ * Lock mipmap levels in a texture and save pointers to data.
+ *
+ * 0x00830A80
+ */
 void TextureLoadTaskClass::Lock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
@@ -442,6 +488,11 @@ void TextureLoadTaskClass::Lock_Surfaces()
 #endif
 }
 
+/**
+ * Unlock mipmap levels in a texture and clear pointers to data.
+ *
+ * 0x00830AE0
+ */
 void TextureLoadTaskClass::Unlock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
@@ -456,6 +507,11 @@ void TextureLoadTaskClass::Unlock_Surfaces()
 #endif
 }
 
+/**
+ * Applies the platform level texture to the texture object.
+ *
+ * 0x00830380
+ */
 void TextureLoadTaskClass::Apply(bool initialized)
 {
     DEBUG_ASSERT(m_texture != nullptr);
@@ -466,12 +522,20 @@ void TextureLoadTaskClass::Apply(bool initialized)
 #endif
 }
 
+/**
+ * Applies the missing texture as the platform and texture object texture.
+ */
 void TextureLoadTaskClass::Apply_Missing_Texture()
 {
     m_d3dTexture = MissingTexture::Get_Missing_Texture();
     Apply(true);
 }
 
+/**
+ * Begins the process of loading a texture file to the texture object.
+ *
+ * 0x008302D0
+ */
 bool TextureLoadTaskClass::Begin_Load()
 {
     DEBUG_ASSERT(m_texture != 0);
@@ -493,6 +557,11 @@ bool TextureLoadTaskClass::Begin_Load()
     return res;
 }
 
+/**
+ * Performs load of the texture data.
+ *
+ * 0x00830310
+ */
 bool TextureLoadTaskClass::Load()
 {
     DEBUG_ASSERT(m_texture != 0);
@@ -511,6 +580,9 @@ bool TextureLoadTaskClass::Load()
     return res;
 }
 
+/**
+ * Finalises the load by unlocking surfaces and applying platform texture to the texture object.
+ */
 void TextureLoadTaskClass::End_Load()
 {
     Unlock_Surfaces();
@@ -518,6 +590,9 @@ void TextureLoadTaskClass::End_Load()
     m_loadState = STATE_LOAD_ENDED;
 }
 
+/**
+ * Performs the load stages in sequence.
+ */
 void TextureLoadTaskClass::Finish_Load()
 {
     switch (m_loadState) {
@@ -535,6 +610,9 @@ void TextureLoadTaskClass::Finish_Load()
     }
 }
 
+/**
+ * Deletes all TextureLoadTaskClass objects from the free lists.
+ */
 void TextureLoadTaskClass::Delete_Free_Pool()
 {
     for (TextureLoadTaskClass *task = g_freeList.Pop_Front(); task != nullptr; task = g_freeList.Pop_Front()) {
@@ -550,6 +628,11 @@ void TextureLoadTaskClass::Delete_Free_Pool()
     }
 }
 
+/**
+ * Creates a TextureLoadTaskClass to load to a given texture object.
+ *
+ * 0x0082FFD0
+ */
 TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
 #ifndef THYME_STANDALONE
@@ -560,6 +643,11 @@ TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, Ta
 #endif
 }
 
+/**
+ * Helper to get information about a given texture file.
+ *
+ * 0x008305F0
+ */
 bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height,
     unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds)
 {

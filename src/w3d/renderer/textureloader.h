@@ -48,11 +48,11 @@ public:
     static void Request_Foreground_Loading(TextureBaseClass *texture);
     static void Flush_Pending_Load_Tasks();
     static void Update(void (*update)(void));
-    static void Suspend_Texture_Load();
-    static void Continue_Texture_Load();
-    static void Process_Foreground_Thumbnail(TextureLoadTaskClass *texture);
-    static void Process_Foreground_Load(TextureLoadTaskClass *texture);
-    static void Begin_Load_And_Queue(TextureLoadTaskClass *texture);
+    static void Suspend_Texture_Load() { s_textureLoadSuspended = true; }
+    static void Continue_Texture_Load() { s_textureLoadSuspended = false; }
+    static void Process_Foreground_Thumbnail(TextureLoadTaskClass *task);
+    static void Process_Foreground_Load(TextureLoadTaskClass *task);
+    static void Begin_Load_And_Queue(TextureLoadTaskClass *task);
     static void Load_Thumbnail(TextureBaseClass *texture);
 #ifndef THYME_STANDALONE
     static void Hook_Me();

@@ -17,12 +17,12 @@
 #pragma once
 
 #include "always.h"
+#include "texturebase.h"
 #include "vector3.h"
 #include "w3dformat.h"
 #include "w3dtypes.h"
 
 class TextureLoadTaskListClass;
-class TextureBaseClass;
 
 struct TextureLoadTaskListNode
 {
@@ -85,10 +85,13 @@ public:
     TaskType Get_Task_Type() const { return m_type; }
     void Set_Load_State(StateType state) { m_loadState = state; }
     void Set_Priority(PriorityType priority) { m_priority = priority; }
+    PriorityType Get_Priority() const { return m_priority; }
     TextureLoadTaskListClass *Get_Parent() { return m_parent; }
+    TextureBaseClass *Get_Texture() { return m_texture; }
+    bool Allow_Compression() const { return m_texture->m_compressionAllowed; }
 
     static void Delete_Free_Pool();
-    static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority); 
+    static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority);
 #ifndef THYME_STANDALONE
     static void Hook_Me();
     TextureLoadTaskClass *Hook_Ctor() { return new (this) TextureLoadTaskClass; }
@@ -108,7 +111,8 @@ public:
 #endif
 
 private:
-    static bool Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height, unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);
+    static bool Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height,
+        unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds);
 
 protected:
     TextureLoadTaskListNode m_listNode;

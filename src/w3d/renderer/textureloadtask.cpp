@@ -184,7 +184,7 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
             TextureLoader::Validate_Texture_Size(v_reduced_width, v_reduced_height, vol);
 
             if (reduced_width == v_reduced_width && reduced_height == v_reduced_height) {
-                m_reduction = l;
+                m_reduction += l;
                 v_width = v_reduced_width;
                 v_height = v_reduced_height;
 
@@ -199,8 +199,8 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
     m_reduction = reduction;
 
     if (m_texture->m_allowReduction && m_texture->m_mipLevelCount != 1) {
-        if (m_texture->m_mipLevelCount != 0 && (m_mipLevelCount - m_reduction) == 0) {
-            --m_reduction;
+        if (m_texture->m_mipLevelCount != 0 && (m_texture->m_mipLevelCount - m_reduction) < 1) {
+            m_reduction = m_texture->m_mipLevelCount - 1;
         }
     } else {
         m_reduction = 0;
@@ -221,11 +221,11 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
             mip_level_count -= m_reduction;
             reduced_width >>= m_reduction;
             reduced_height >>= m_reduction;
-        } else {
-            mip_level_count = max((int)(levels - reduction), 1);
-            reduced_width = m_width >> m_reduction;
-            reduced_height = m_height >> m_reduction;
         }
+    } else {
+        mip_level_count = max((int)(levels - reduction), 1);
+        reduced_width = m_width >> m_reduction;
+        reduced_height = m_height >> m_reduction;
     }
 
     unsigned mip_limit = 1;

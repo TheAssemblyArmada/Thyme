@@ -40,6 +40,7 @@ public:
     static w3dtexture_t Get_Missing_Texture();
     static void Init();
     static void Deinit();
+    static w3dsurface_t Create_Missing_Surface();
 
 private:
 #ifndef THYME_STANDALONE

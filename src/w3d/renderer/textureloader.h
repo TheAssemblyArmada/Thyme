@@ -76,6 +76,14 @@ private:
 
 inline void TextureLoader::Hook_Me()
 {
+    Hook_Function(0x0082EC90, &Init);
+    Hook_Function(0x0082ECC0, &Deinit);
     Hook_Function(0x0082EE10, &Validate_Texture_Size);
+    // Hook_Function(0x0082EED0, &Load_Thumbnail);
+    Hook_Function(0x0082F080, &Load_Surface_Immediate);
+    Hook_Function(0x0082F520, &Request_Background_Loading);
+    Hook_Function(0x0082F6A0, &Request_Foreground_Loading);
+    Hook_Function(0x0082F960, &Flush_Pending_Load_Tasks);
+    Hook_Function(0x0082FBC0, &Update);
 }
 #endif

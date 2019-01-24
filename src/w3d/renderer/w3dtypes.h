@@ -43,4 +43,5 @@ typedef int w3ddevice_t;
 typedef int w3dpool_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
+#define W3D_TYPE_INVALID_SURFACE 0
 #endif

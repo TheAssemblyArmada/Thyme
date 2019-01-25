@@ -15,6 +15,8 @@
  *            LICENSE
  */
 #include "texturebase.h"
+#include "missing.h"
+#include "textureloader.h"
 #include "textureloadtask.h"
 #include "w3d.h"
 #include <algorithm>
@@ -126,15 +128,37 @@ unsigned TextureBaseClass::Get_Reduction() const
     return reduction;
 }
 
+/**
+ * Request load to a locked surface.
+ */
 void TextureBaseClass::Load_Locked_Surface()
 {
-    // TODO
+    if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
+#ifdef BUILD_WITH_D3D8
+        m_d3dTexture->Release();
+#endif
+    }
+
+    m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
+    TextureLoader::Request_Thumbnail(this);
+    m_initialized = false;
 }
 
+/**
+ * Checks if this texture object is a missing texture.
+ */
 bool TextureBaseClass::Is_Missing_Texture() const
 {
-    // TODO
-    return false;
+    w3dbasetexture_t missing = MissingTexture::Get_Missing_Texture();
+    bool ret = missing == m_d3dTexture;
+
+    if (missing != W3D_TYPE_INVALID_TEXTURE) {
+#ifdef BUILD_WITH_D3D8
+        missing->Release();
+#endif
+    }
+
+    return ret;
 }
 
 /**
@@ -182,17 +206,18 @@ w3dbasetexture_t TextureBaseClass::Peek_Platform_Base_Texture() const
  */
 void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
 {
+    w3dbasetexture_t old = Peek_Platform_Base_Texture();
 #ifdef BUILD_WITH_D3D8
-    if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
-        m_d3dTexture->Release();
+    if (old != W3D_TYPE_INVALID_TEXTURE) {
+        old->Release();
     }
 #endif
 
     m_d3dTexture = tex;
 
 #ifdef BUILD_WITH_D3D8
-    if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
-        m_d3dTexture->AddRef();
+    if (tex != W3D_TYPE_INVALID_TEXTURE) {
+        tex->AddRef();
     }
 #endif
 }

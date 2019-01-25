@@ -154,7 +154,7 @@ inline void TextureLoadTaskClass::Hook_Me()
     Hook_Method(0x008302D0, &Begin_Load);
     Hook_Method(0x00830310, &Load);
     Hook_Method(0x00830340, &End_Load);
-    // Hook_Function(0x0082FFD0, &Create);//no code yet
+    Hook_Function(0x0082FFD0, &Create);
     Hook_Function(0x008305F0, &Get_Texture_Information);
 }
 #endif

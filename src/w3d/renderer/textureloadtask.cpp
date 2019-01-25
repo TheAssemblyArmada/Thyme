@@ -655,13 +655,19 @@ void TextureLoadTaskClass::Delete_Free_Pool()
  */
 TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
-    // TODO Needs VolumeTextureLoadClass and CubeTextureLoadClass
-#ifndef THYME_STANDALONE
-    return Call_Function<TextureLoadTaskClass *, TextureBaseClass *, TaskType, PriorityType>(
-        0x0082FFD0, texture, type, priority);
-#else
-    return nullptr;
-#endif
+    // TODO Original can load volume and cube textures too, test if it actuall does.
+    DEBUG_ASSERT_PRINT(
+        texture->Get_Asset_Type() == 0, "Attempting to create texture asset of type %d.\n", texture->Get_Asset_Type());
+    
+    TextureLoadTaskClass *task = g_freeList.Pop_Front();
+
+    if (task == nullptr) {
+        task = new TextureLoadTaskClass;
+    }
+
+    task->Init(texture, type, priority);
+
+    return task;
 }
 
 /**

@@ -213,7 +213,7 @@ bool GameFileClass::Is_Available(bool forced)
     return m_fileExists;
 }
 
-bool const GameFileClass::Is_Open()
+bool GameFileClass::Is_Open()
 {
     return m_theFile != nullptr;
 }

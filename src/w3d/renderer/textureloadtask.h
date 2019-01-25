@@ -81,6 +81,8 @@ public:
     bool Load();
     void End_Load();
     void Finish_Load();
+    uint8_t *Get_Locked_Surface_Pointer(unsigned level);
+    int Get_Locked_Surface_Pitch(unsigned level);
     StateType Get_Load_State() const { return m_loadState; }
     TaskType Get_Task_Type() const { return m_type; }
     void Set_Load_State(StateType state) { m_loadState = state; }

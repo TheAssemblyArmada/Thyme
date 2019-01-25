@@ -64,6 +64,26 @@ TextureLoadTaskClass::~TextureLoadTaskClass()
 }
 
 /**
+ * Fetched the locked surface pointer, performs checks when built with asserts.
+ */
+uint8_t *TextureLoadTaskClass::Get_Locked_Surface_Pointer(unsigned level)
+{
+    DEBUG_ASSERT(level < m_mipLevelCount);
+    DEBUG_ASSERT(m_lockedSurfacePtr[level] != nullptr);
+    return m_lockedSurfacePtr[level];
+}
+
+/**
+ * Fetched the locked surface pitch, performs checks when built with asserts.
+ */
+int TextureLoadTaskClass::Get_Locked_Surface_Pitch(unsigned level)
+{
+    DEBUG_ASSERT(level < m_mipLevelCount);
+    DEBUG_ASSERT(m_lockedSurfacePitch[level] != 0);
+    return m_lockedSurfacePitch[level];
+}
+
+/**
  * Deinitialize this task and add it to the list of free task objects.
  *
  * 0x008301D0
@@ -330,7 +350,7 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         dds.Copy_Level_To_Surface(
-            i, m_format, reduced_width, reduced_height, m_lockedSurfacePtr[i], m_lockedSurfacePitch[i], m_hsvAdjust);
+            i, m_format, reduced_width, reduced_height, Get_Locked_Surface_Pointer(i), Get_Locked_Surface_Pitch(i), m_hsvAdjust);
         reduced_width /= 2;
         reduced_height /= 2;
     }
@@ -437,10 +457,10 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
     }
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
-        BitmapHandlerClass::Copy_Image(m_lockedSurfacePtr[i],
+        BitmapHandlerClass::Copy_Image(Get_Locked_Surface_Pointer(i),
             width,
             height,
-            m_lockedSurfacePitch[i],
+            Get_Locked_Surface_Pitch(i),
             m_format,
             src_surface,
             srcwidth,
@@ -635,6 +655,7 @@ void TextureLoadTaskClass::Delete_Free_Pool()
  */
 TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
+    // TODO Needs VolumeTextureLoadClass and CubeTextureLoadClass
 #ifndef THYME_STANDALONE
     return Call_Function<TextureLoadTaskClass *, TextureBaseClass *, TaskType, PriorityType>(
         0x0082FFD0, texture, type, priority);

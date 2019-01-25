@@ -26,7 +26,7 @@ public:
 			m_data[i] = val;
 	}
 
-	inline const int Size() const
+	inline int Size() const
 	{
 		return N;
 	}

@@ -55,7 +55,7 @@ public:
     virtual bool Create();
     virtual bool Delete();
     virtual bool Is_Available(bool forced = false);
-    virtual bool const Is_Open();
+    virtual bool Is_Open();
     virtual bool Open(const char *filename, int rights = FM_READ);
     virtual bool Open(int rights = FM_READ);
     virtual int Read(void *buffer, int length);

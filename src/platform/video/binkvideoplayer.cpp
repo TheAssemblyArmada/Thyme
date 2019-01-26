@@ -141,6 +141,10 @@ void BinkVideoPlayer::Initialise_Bink_With_Miles()
  */
 VideoStream *BinkVideoPlayer::Create_Stream(Bink *handle)
 {
+    if (handle == nullptr) {
+        return nullptr;
+    }
+
     BinkVideoStream *stream = new BinkVideoStream;
     stream->m_binkHandle = handle;
     stream->m_next = m_firstStream;

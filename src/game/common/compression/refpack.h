@@ -17,3 +17,4 @@
 #include "always.h"
 
 int RefPack_Uncompress(void *dst, const void *src, int *size);
+int RefPack_Compress(void *dst, const void *src, int size, bool quick);

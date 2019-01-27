@@ -13,10 +13,198 @@
  *            LICENSE
  */
 #include "refpack.h"
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+
+using std::malloc;
+using std::max;
+using std::memcpy;
+using std::memset;
+using std::min;
 
 /**
-* @brief Decompresses EA's proprietary "RefPack" format.
-*/
+ * Utility function for compression for checking length of matching data.
+ */
+static uint32_t RefPack_Matchlen(const uint8_t *s, const uint8_t *d, uint32_t maxmatch)
+{
+    uint32_t current;
+
+    for (current = 0; current < maxmatch && *s++ == *d++; ++current);
+
+    return current;
+}
+
+/**
+ * Compresses data using refpack LZ method
+ */
+static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, bool quick)
+{
+    int32_t len;
+    uint32_t tlen;
+    uint32_t tcost;
+    uint32_t run;
+    uint32_t toffset;
+    uint32_t boffset;
+    uint32_t blen;
+    uint32_t bcost;
+    uint32_t mlen;
+    const uint8_t *tptr;
+    const uint8_t *getp;
+    const uint8_t *runp;
+    uint8_t *putp;
+
+    int countliterals = 0;
+    int countshort = 0;
+    int countlong = 0;
+    int countvlong = 0;
+    int32_t hash;
+    int32_t hoffset;
+    int32_t minhoffset;
+    int i;
+    int32_t *link;
+    int32_t *hashtbl;
+    int32_t *hashptr;
+
+    len = src_len;
+    putp = static_cast<uint8_t *>(dst);
+    run = 0;
+    getp = runp = static_cast<const uint8_t *>(src);
+
+    hashtbl = static_cast<int32_t *>(malloc(sizeof(int32_t) * 65536));
+    link = static_cast<int32_t *>(malloc(sizeof(int32_t) * 131072));
+    hashptr = hashtbl;
+    memset(hashtbl, 0xFF, sizeof(int32_t) * 65536);
+
+    while (len > 0) {
+        boffset = 0;
+        blen = bcost = 2;
+        mlen = min(len, 1028);
+        tptr = getp - 1;
+        hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
+        hoffset = hashtbl[hash];
+        minhoffset = max(intptr_t(getp - static_cast<const uint8_t *>(src) - 131071), intptr_t(0));
+
+        if (hoffset >= minhoffset) {
+            do {
+                tptr = static_cast<const uint8_t *>(src) + hoffset;
+
+                if (getp[blen] == tptr[blen]) {
+                    tlen = RefPack_Matchlen(getp, tptr, mlen);
+
+                    if (tlen > blen) {
+                        toffset = (getp - 1) - tptr;
+
+                        if (toffset < 1024 && tlen <= 10) { // two byte long form
+                            tcost = 2;
+                        } else if (toffset < 16384 && tlen <= 67) { // three byte long form
+                            tcost = 3;
+                        } else { // four byte very long form
+                            tcost = 4;
+                        }
+
+                        if (tlen - tcost + 4 > blen - bcost + 4) {
+                            blen = tlen;
+                            bcost = tcost;
+                            boffset = toffset;
+
+                            if (blen >= 1028) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            } while ((hoffset = link[hoffset & 131071]) >= minhoffset);
+        }
+
+        if (bcost >= blen) {
+            hoffset = (getp - static_cast<const uint8_t *>(src));
+            link[hoffset & 131071] = hashtbl[hash];
+            hashtbl[hash] = hoffset;
+
+            ++run;
+            ++getp;
+            --len;
+        } else {
+            while (run > 3) {// literal block of data
+                tlen = min((uint32_t)112, run & ~3);
+                run -= tlen;
+                *putp++ = (unsigned char)(0xe0 + (tlen >> 2) - 1);
+                memcpy(putp, runp, tlen);
+                runp += tlen;
+                putp += tlen;
+                ++countliterals;
+            }
+
+            if (bcost == 2) // two byte long form
+            {
+                *putp++ = (unsigned char)(((boffset >> 8) << 5) + ((blen - 3) << 2) + run);
+                *putp++ = (unsigned char)boffset;
+                ++countshort;
+            } else if (bcost == 3) { //three byte long form
+                *putp++ = (unsigned char)(0x80 + (blen - 4));
+                *putp++ = (unsigned char)((run << 6) + (boffset >> 8));
+                *putp++ = (unsigned char)boffset;
+                ++countlong;
+            } else { // four byte very long form
+                *putp++ = (unsigned char)(0xc0 + ((boffset >> 16) << 4) + (((blen - 5) >> 8) << 2) + run);
+                *putp++ = (unsigned char)(boffset >> 8);
+                *putp++ = (unsigned char)(boffset);
+                *putp++ = (unsigned char)(blen - 5);
+                ++countvlong;
+            }
+
+            if (run) {
+                memcpy(putp, runp, run);
+                putp += run;
+                run = 0;
+            }
+
+            if (quick) {
+                hoffset = (getp - static_cast<const uint8_t *>(src));
+                link[hoffset & 131071] = hashtbl[hash];
+                hashtbl[hash] = hoffset;
+                getp += blen;
+            } else {
+                for (i = 0; i < (int)blen; ++i) {
+                    hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
+                    hoffset = (getp - static_cast<const uint8_t *>(src));
+                    link[hoffset & 131071] = hashtbl[hash];
+                    hashtbl[hash] = hoffset;
+                    ++getp;
+                }
+            }
+
+            runp = getp;
+            len -= blen;
+        }
+    }
+
+    while (run > 3) // no match at end, use literal
+    {
+        tlen = min((uint32_t)112, run & ~3);
+        run -= tlen;
+        *putp++ = (unsigned char)(0xe0 + (tlen >> 2) - 1);
+        memcpy(putp, runp, tlen);
+        runp += tlen;
+        putp += tlen;
+    }
+
+    *putp++ = (unsigned char)(0xFC + run); // end of stream command + 0..3 literal
+    if (run) {
+        memcpy(putp, runp, run);
+        putp += run;
+    }
+
+    free(link);
+    free(hashtbl);
+
+    return putp - static_cast<uint8_t *>(dst);
+}
+
+/**
+ * Decompresses EA's proprietary "RefPack" format.
+ */
 int RefPack_Uncompress(void *dst, const void *src, int *size)
 {
     const uint8_t *getp;
@@ -153,4 +341,32 @@ int RefPack_Uncompress(void *dst, const void *src, int *size)
     }
 
     return out_length;
+}
+
+/**
+ * Compresses EA's proprietary "RefPack" format.
+ */
+int RefPack_Compress(void *dst, const void *src, int size, bool quick)
+{
+    uint8_t *putp = static_cast<uint8_t *>(dst);
+    int header_len = 0;
+
+    if (size < 0xFFFFFF) {
+        putp[0] = 0x10;
+        putp[1] = 0xFB;
+        putp[2] = (unsigned)(size & 0xFF0000) >> 16;
+        putp[3] = (unsigned)(size & 0xFF00) >> 8;
+        putp[4] = (unsigned)(size & 0xFF);
+        header_len = 5;
+    } else {
+        putp[0] = 0x90;
+        putp[1] = 0xFB;
+        putp[2] = (unsigned)(size & 0xFF000000) >> 24;
+        putp[3] = (unsigned)(size & 0xFF0000) >> 16;
+        putp[4] = (unsigned)(size & 0xFF00) >> 8;
+        putp[5] = (unsigned)(size & 0xFF);
+        header_len = 6;
+    }
+
+    return header_len + RefPack_Encode(src, size, &putp[header_len], 0x20000, quick);
 }

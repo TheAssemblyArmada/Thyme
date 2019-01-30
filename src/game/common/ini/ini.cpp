@@ -59,6 +59,7 @@ BlockParse TheTypeTable[] = {
     {"Animation", (iniblockparse_t)(0x00518DB0) /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     {"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
+    //{"AudioEvent", AudioEventInfo::Parse_Audio_Event},
     {"AudioSettings", &AudioSettings::Parse_Audio_Settings},
     {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definitions},
     {"Campaign", (iniblockparse_t)(0x00517490) /*&INI::parseCampaignDefinition*/},
@@ -895,5 +896,16 @@ void INI::Parse_Science_Vector(INI *ini, void *formal, void *store, const void *
         }
 
         sci_vec->push_back(g_theScienceStore->Lookup_Science(token));
+    }
+}
+
+void INI::Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *user_data)
+{
+    std::vector<Utf8String> *sound_vec = static_cast<std::vector<Utf8String> *>(store);
+    sound_vec->clear();
+
+    for (const char *token = ini->Get_Next_Token_Or_Null(" \t,="); token != nullptr;
+         token = ini->Get_Next_Token_Or_Null(" \t,=")) {
+        sound_vec->push_back(token);
     }
 }

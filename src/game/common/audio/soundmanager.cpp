@@ -16,5 +16,5 @@ bool SoundManager::Violates_Voice(AudioEventRTS *event)
 
 bool SoundManager::Is_Interrupting(AudioEventRTS *event)
 {
-    return (event->Get_Event_Info()->Get_Control() & CONTROL_IS_INTERRUPTING) != 0;
+    return (event->Get_Event_Info()->Get_Control() & CONTROL_INTERRUPT) != 0;
 }

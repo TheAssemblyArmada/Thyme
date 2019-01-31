@@ -75,7 +75,7 @@ public:
     float Get_Volume_Shift() const { return Get_Audio_Random_Value_Real(m_volumeShift + 1.0f, 1.0f); }
     float Get_Delay() const { return Get_Audio_Random_Value_Real(m_delayLow, m_delayHigh); }
 
-    size_t Sound_Count() const { return m_decay.size(); }
+    size_t Sound_Count() const { return m_sounds.size(); }
     const Utf8String &Get_Sound(int index) const  { return m_sounds[index]; }
     size_t Attack_Count() const { return m_attack.size(); }
     const Utf8String &Get_Attack(int index) const { return m_attack[index]; }

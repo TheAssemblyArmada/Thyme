@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: AUDIOEVENTRTS.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors::
-//
-//   Description:: Audio event class.
-//
-//       License:: Thyme is free software: you can redistribute it and/or
-//                 modify it under the terms of the GNU General Public License
-//                 as published by the Free Software Foundation, either version
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Audio event class.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "audioeventinfo.h"
@@ -51,12 +42,21 @@ public:
     void Set_Player_Index(int index) { m_playerIndex = index; }
 
     const Utf8String &Get_Event_Name() const { return m_filename; }
+    const Utf8String &Get_Attack_Name() const { return m_filenameAttack; }
+    const Utf8String &Get_Decay_Name() const { return m_filenameDecay; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
     AudioType Get_Event_Type() const { return m_eventType; }
     int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
     bool Should_Play_Locally() const { return m_shouldPlayLocally; }
+    bool Is_Positional_Audio();
     float Get_Volume() const;
     int Get_Playing_Handle() const { return m_playingHandle; }
+    int Get_Next_Play_Portion() const { return m_nextPlayPortion; }
+
+private:
+    Utf8String Generate_Filename_Prefix(AudioType type, bool localize);
+    Utf8String Generate_Filename_Extension(AudioType type);
+    void Adjust_For_Localization(Utf8String &filename);
 
 private:
     Utf8String m_filename;

@@ -16,6 +16,7 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
+#include "audioeventrts.h"
 #include "binkvideoplayer.h"
 #include "binkvideostream.h"
 #include "bitmaphandler.h"
@@ -213,6 +214,7 @@ void Setup_Hooks()
     ThumbnailClass::Hook_Me();
     TextureLoadTaskClass::Hook_Me();
     TextureLoader::Hook_Me();
+    AudioEventRTS::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

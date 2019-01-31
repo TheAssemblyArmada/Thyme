@@ -393,13 +393,11 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
  */
 bool AudioEventRTS::Is_Positional_Audio()
 {
-    if (m_eventInfo == nullptr || m_eventInfo->Get_Event_Type() & EVENT_SOUND) {
-        if (m_eventType != EVENT_UNKVAL4 && (m_objectID != OBJECT_UNK || m_eventType == EVENT_MUSIC)) {
-            return true;
-        }
+    if (m_eventInfo != nullptr && !(m_eventInfo->Get_Type() & VISIBILITY_WORLD)) {
+        return false;
     }
 
-    return false;
+    return m_eventType != EVENT_UNKVAL4 && (m_objectID != OBJECT_UNK || m_eventType == EVENT_MUSIC);
 }
 
 /**

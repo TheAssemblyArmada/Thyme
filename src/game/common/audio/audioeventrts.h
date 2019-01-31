@@ -53,6 +53,10 @@ public:
     int Get_Playing_Handle() const { return m_playingHandle; }
     int Get_Next_Play_Portion() const { return m_nextPlayPortion; }
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     Utf8String Generate_Filename_Prefix(AudioType type, bool localize);
     Utf8String Generate_Filename_Extension(AudioType type);
@@ -84,3 +88,19 @@ private:
     int m_playerIndex;
     int m_nextPlayPortion;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void AudioEventRTS::Hook_Me()
+{
+    Hook_Method(0x00445080, &Generate_Filename);
+    Hook_Method(0x00445380, &Generate_Play_Info);
+    Hook_Method(0x00445A20, &Generate_Filename_Prefix);
+    Hook_Method(0x00445C30, &Generate_Filename_Extension);
+    Hook_Method(0x00445D80, &Adjust_For_Localization);
+    Hook_Method(0x00444F90, &Set_Event_Name);
+    Hook_Method(0x00445900, &Is_Positional_Audio);
+    Hook_Method(0x00445950, &Get_Volume);
+}
+#endif

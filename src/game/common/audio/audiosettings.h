@@ -34,6 +34,11 @@ public:
     AudioSettings() {}
     ~AudioSettings() {}
 
+    const Utf8String &Get_Audio_Root() const { return m_audioRoot; }
+    const Utf8String &Get_Sound_Folder() const { return m_soundsFolder; }
+    const Utf8String &Get_Music_Folder() const { return m_musicFolder; }
+    const Utf8String &Get_Streaming_Folder() const { return m_streamingFolder; }
+    const Utf8String &Get_Extension() const { return m_soundExtension; }
     Utf8String Get_Preferred_Driver(int index) const { return m_preferredDrivers[index]; }
     SpeakerType Get_Default_2D_Speaker() const { return m_default2DSpeakerType; }
     float Get_Default_Sound_Volume() const { return m_defaultSoundVolume; }

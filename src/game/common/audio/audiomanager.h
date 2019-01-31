@@ -202,7 +202,7 @@ protected:
     float m_initialSoundVolume;
     float m_initial3DSoundVolume;
     float m_initialSpeechVolume;
-    int m_unkInt1; // TODO work out type/use of this var
+    float m_zoomVolume;
     AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
     float *m_savedVolumes; // Used during focus loss to preserve volume settings.
     unsigned int m_cachedVariables;

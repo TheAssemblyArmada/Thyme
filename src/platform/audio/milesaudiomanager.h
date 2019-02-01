@@ -17,7 +17,7 @@
 #include "always.h"
 #include "audiomanager.h"
 
-class AudioFileCache;
+class MilesAudioFileCache;
 class PlayingAudio;
 
 struct MilesProviderStruct
@@ -114,7 +114,7 @@ private:
     std::list<PlayingAudio *> m_playingList_maybe;
     std::list<PlayingAudio *> m_fadingList_maybe;
     std::list<PlayingAudio *> m_stoppedList_maybe;
-    AudioFileCache *m_audioFileCache;
+    MilesAudioFileCache *m_audioFileCache;
     PlayingAudio *m_binkPlayingAudio;
     int m_2dSampleCount;
     int m_3dSampleCount;

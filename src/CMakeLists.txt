@@ -158,6 +158,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/audio/milesaudiofilecache.cpp
     platform/audio/milesaudiomanager.cpp
     platform/video/binkvideoplayer.cpp
     platform/video/binkvideostream.cpp

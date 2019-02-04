@@ -58,6 +58,10 @@ public:
     void Close_File(void *file);
     void Set_Max_Size(unsigned size);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     bool Free_Space_For_Sample(const OpenAudioFile &file);
     void Release_Open_Audio(OpenAudioFile *file);
@@ -69,3 +73,17 @@ private:
     SimpleMutexClass m_mutex;
 #endif
 };
+
+#ifdef BUILD_WITH_MILES
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void MilesAudioFileCache::Hook_Me()
+{
+    Hook_Method(0x00780F80, &MilesAudioFileCache::Open_File);
+    Hook_Method(0x007813D0, &MilesAudioFileCache::Close_File);
+    Hook_Method(0x007814D0, &MilesAudioFileCache::Free_Space_For_Sample);
+}
+
+#endif
+#endif

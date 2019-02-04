@@ -47,6 +47,7 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
+#include "milesaudiofilecache.h"
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
@@ -215,6 +216,7 @@ void Setup_Hooks()
     TextureLoadTaskClass::Hook_Me();
     TextureLoader::Hook_Me();
     AudioEventRTS::Hook_Me();
+    MilesAudioFileCache::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

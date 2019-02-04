@@ -69,6 +69,13 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     // Load the file from disk
     File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
+
+    if (file == nullptr) {
+        DEBUG_LOG("Missing audio file '%s', could not cache.\n", filename.Str());
+
+        return nullptr;
+    }
+
     uint32_t file_size = file->Size();
     void *file_data = file->Read_All_And_Close();
 

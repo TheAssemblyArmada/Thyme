@@ -49,7 +49,11 @@ public:
     SpeakerType Get_Default_2D_Speaker_Type() const { return m_default2DSpeakerType; }
     SpeakerType Get_Default_3D_Speaker_Type() const { return m_default3DSpeakerType; }
     float Get_Min_Sample_Vol() const { return m_minSampleVolume; }
-    
+    float Get_Sound_Volume() const { return m_soundVolume; }
+    float Get_3D_Sound_Volume() const { return m_3dSoundVolume; }
+    float Get_Music_Volume() const { return m_musicVolume; }
+    float Get_Speech_Volume() const { return m_speechVolume; }
+
     static void Parse_Audio_Settings(INI *ini);
 
 private:

@@ -13,9 +13,10 @@
  *            LICENSE
  */
 #include "audiomanager.h"
+#include "filesystem.h"
+#include "minmax.h"
 #include "musicmanager.h"
 #include "soundmanager.h"
-#include "minmax.h"
 
 #ifndef THYME_STANDALONE
 AudioManager *&g_theAudio = Make_Global<AudioManager *>(0x00A29B6C);
@@ -24,20 +25,85 @@ AudioManager *g_theAudio = nullptr;
 #endif
 
 const char *AudioManager::s_speakerTypes[] = {
-    "2 Speakers",
-    "Headphones",
-    "Surround Sound",
-    "4 Speaker",
-    "5.1 Surround",
-    "7.1 Surround",
-    nullptr
-};
+    "2 Speakers", "Headphones", "Surround Sound", "4 Speaker", "5.1 Surround", "7.1 Surround", nullptr};
 
-AudioManager::AudioManager() {}
+AudioManager::AudioManager() : 
+    m_audioSettings(new AudioSettings),
+    m_miscAudio(new MiscAudio),
+    m_musicManager(nullptr),
+    m_soundManager(nullptr),
+    m_listenerFacing(0.0f, 1.0f, 0.0f),
+    m_audioHandleCounter(6),
+    m_musicVolume(0.0f),
+    m_soundVolume(0.0f),
+    m_3dSoundVolume(0.0f),
+    m_speechVolume(0.0f),
+    m_musicVolumeAdjust(0.0f),
+    m_soundVolumeAdjust(0.0f),
+    m_3dSoundVolumeAdjust(0.0f),
+    m_speechVolumeAdjust(0.0f),
+    m_initialMusicVolume(0.0f),
+    m_initialSoundVolume(0.0f),
+    m_initial3DSoundVolume(0.0f),
+    m_initialSpeechVolume(0.0f),
+    m_zoomVolume(),
+    m_unkAudioEventRTS(new AudioEventRTS),
+    m_savedVolumes(nullptr),
+    m_cachedVariables(0xF)
+{
+}
 
-AudioManager::~AudioManager() {}
+AudioManager::~AudioManager()
+{
+    delete m_unkAudioEventRTS;
+    m_unkAudioEventRTS = nullptr;
+    delete m_musicManager;
+    m_musicManager = nullptr;
+    delete m_soundManager;
+    m_soundManager = nullptr;
+    delete m_miscAudio;
+    m_miscAudio = nullptr;
+    delete m_audioSettings;
+    m_audioSettings = nullptr;
+    delete m_savedVolumes;
+}
 
-void AudioManager::Init() {}
+void AudioManager::Init()
+{
+    INI ini;
+    ini.Load("Data/INI/AudioSettings.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Default/Music.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Music.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Default/SoundEffects.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/SoundEffects.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Default/Speech.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Speech.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Default/Voice.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/Voice.ini", INI_LOAD_OVERWRITE, nullptr);
+    ini.Load("Data/INI/MiscAudio.ini", INI_LOAD_OVERWRITE, nullptr);
+
+    if (!Is_Music_Already_Loaded()) {
+        m_cachedVariables |= CACHED_FROM_CD;
+        DEBUG_LOG("Music not detected as loaded, this shouldn't happen with released game data.\n");
+        // Original code prompts to insert disc at this point, but it shouldn't be possible with the shipped
+        // installer to install without the audio installed to the hard drive.
+    }
+
+    m_musicManager = new MusicManager;
+    m_soundManager = new SoundManager;
+    m_initialMusicVolume = m_audioSettings != nullptr ? m_audioSettings->Get_Music_Volume() : 0.55f;
+    m_initialSoundVolume = m_audioSettings != nullptr ? m_audioSettings->Get_Sound_Volume() : 0.75f;
+    m_initial3DSoundVolume = m_audioSettings != nullptr ? m_audioSettings->Get_3D_Sound_Volume() : 0.75f;
+    m_initialSpeechVolume = m_audioSettings != nullptr ? m_audioSettings->Get_Speech_Volume() : 0.55f;
+    m_musicVolumeAdjust = 1.0f;
+    m_soundVolumeAdjust = 1.0f;
+    m_3dSoundVolumeAdjust = 1.0f;
+    m_speechVolumeAdjust = 1.0f;
+    m_musicVolume = m_initialMusicVolume;
+    m_soundVolume = m_initialSoundVolume;
+    m_3dSoundVolume = m_initial3DSoundVolume;
+    m_speechVolume = m_initialSpeechVolume;
+}
 
 void AudioManager::Reset()
 {
@@ -164,22 +230,40 @@ void AudioManager::Refresh_Cached_Variables()
 
 float AudioManager::Get_Audio_Length_MS(const AudioEventRTS *event)
 {
-    // TODO Needs more of AudioEventRTS implementing.
-#ifndef THYME_STANDALONE
-    return Call_Method<float, AudioManager, const AudioEventRTS *>(0x00406970, this, event);
-#else
-    return 0.0f;
-#endif
+    // If the event doesn't have info, try and populate it, if that fails return 0.
+    if (event->Get_Event_Info() == nullptr) {
+        Get_Info_For_Audio_Event(event);
+
+        if (event->Get_Event_Info() == nullptr) {
+            return 0.0f;
+        }
+    }
+
+    AudioEventRTS new_event = *event;
+    new_event.Generate_Filename();
+    new_event.Generate_Play_Info();
+    float attack_len = Get_File_Length_MS(new_event.Get_Attack_Name());
+    float normal_len = Get_File_Length_MS(new_event.Get_File_Name());
+    float decay_len = Get_File_Length_MS(new_event.Get_Decay_Name());
+
+    return float(attack_len + normal_len) + decay_len;
 }
 
 bool AudioManager::Is_Music_Already_Loaded()
 {
-    // TODO Needs more of AudioEventRTS implementing.
-#ifndef THYME_STANDALONE
-    return Call_Method<bool, AudioManager>(0x00406A90, this);
-#else
-    return true;
-#endif
+    AudioEventInfo *event_info;
+
+    for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
+        if (it->second != nullptr && it->second->Get_Event_Type() == EVENT_MUSIC) {
+            event_info = it->second;
+        }
+    }
+
+    AudioEventRTS rts_event;
+    rts_event.Set_Event_Info(event_info);
+    rts_event.Generate_Filename();
+
+    return g_theFileSystem->Does_File_Exist(rts_event.Get_File_Name());
 }
 
 bool AudioManager::Is_Music_Playing_From_CD()
@@ -283,11 +367,11 @@ void AudioManager::Regain_Focus()
 
 int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 {
-    if (event->Get_Event_Name().Is_Empty()) {
+    if (event->Get_File_Name().Is_Empty()) {
         return 1;
     }
 
-    if (event->Get_Event_Name() == "NoSound") {
+    if (event->Get_File_Name() == "NoSound") {
         return 1;
     }
 
@@ -339,7 +423,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     auto it = m_unkList1.begin();
 
     for (; it != m_unkList1.end(); ++it) {
-        if (it->first == new_event->Get_Event_Name()) {
+        if (it->first == new_event->Get_File_Name()) {
             break;
         }
     }
@@ -392,7 +476,7 @@ void AudioManager::Remove_Audio_Event(Utf8String event)
 
 bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 {
-    if (event->Get_Event_Name().Is_Empty()) {
+    if (event->Get_File_Name().Is_Empty()) {
         return false;
     }
 
@@ -403,7 +487,7 @@ bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 
 bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
 {
-    if (event->Get_Event_Name().Is_Empty()) {
+    if (event->Get_File_Name().Is_Empty()) {
         return false;
     }
 
@@ -455,7 +539,7 @@ void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
         return;
     }
 
-    event->Set_Event_Info(Find_Audio_Event_Info(event->Get_Event_Name()));
+    event->Set_Event_Info(Find_Audio_Event_Info(event->Get_File_Name()));
 }
 
 unsigned int AudioManager::Translate_From_Speaker_Type(const Utf8String &type)
@@ -555,7 +639,7 @@ void AudioManager::Set_Volume(float volume, AudioAffect affect)
 
         m_speechVolume = m_initialSpeechVolume * m_speechVolumeAdjust;
     }
-    
+
     m_cachedVariables |= CACHED_VOL_SET;
 }
 
@@ -572,7 +656,7 @@ float AudioManager::Get_Volume(AudioAffect affect)
     return m_speechVolume;
 }
 
-void AudioManager::Set_3D_Volume_Adjustment(float adj) 
+void AudioManager::Set_3D_Volume_Adjustment(float adj)
 {
     m_3dSoundVolume = Clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);
 

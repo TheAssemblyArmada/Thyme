@@ -41,7 +41,7 @@ public:
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
     void Set_Player_Index(int index) { m_playerIndex = index; }
 
-    const Utf8String &Get_Event_Name() const { return m_filename; }
+    const Utf8String &Get_File_Name() const { return m_filename; }
     const Utf8String &Get_Attack_Name() const { return m_filenameAttack; }
     const Utf8String &Get_Decay_Name() const { return m_filenameDecay; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }

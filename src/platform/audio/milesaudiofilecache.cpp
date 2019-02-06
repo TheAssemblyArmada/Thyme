@@ -47,7 +47,7 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
             filename = audio_event->Get_Attack_Name();
             break;
         case 1:
-            filename = audio_event->Get_Event_Name();
+            filename = audio_event->Get_File_Name();
             break;
         case 2:
             filename = audio_event->Get_Decay_Name();

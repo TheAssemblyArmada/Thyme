@@ -65,12 +65,13 @@ public:
 
     const Utf8String &Get_Event_Name() const { return m_eventName; }
     const Utf8String &Get_File_Name() const { return m_filename; }
-    int Get_Type() const { return m_type; }
+    int Get_Visibility() const { return m_visibility; }
     AudioType Get_Event_Type() const { return m_eventType; }
     float Get_Volume() const { return m_volume; }
     int Get_Loop_Count() const { return m_loopCount; }
     int Get_Control() const { return m_control; }
     int Get_Priority() const { return m_priority; }
+    int Get_Limit() const { return m_limit; }
     float Get_Pitch_Shift() const { return Get_Audio_Random_Value_Real(m_pitchShiftLow, m_pitchShiftHigh); }
     float Get_Volume_Shift() const { return Get_Audio_Random_Value_Real(m_volumeShift + 1.0f, 1.0f); }
     float Get_Delay() const { return Get_Audio_Random_Value_Real(m_delayLow, m_delayHigh); }
@@ -81,7 +82,9 @@ public:
     const Utf8String &Get_Attack(int index) const { return m_attack[index]; }
     size_t Decay_Count() const { return m_decay.size(); }
     const Utf8String &Get_Decay(int index) const { return m_decay[index]; }
-    
+    float Min_Range() const { return m_minRange; }
+    float Max_Range() const { return m_maxRange; }
+
     static void Parse_Audio_Event(INI *ini);
 
 private:
@@ -101,7 +104,7 @@ protected:
     int m_limit;
     int m_loopCount;
     int m_priority;
-    int32_t m_type;
+    int32_t m_visibility;
     int32_t m_control;
     std::vector<Utf8String> m_soundsMorning;
     std::vector<Utf8String> m_sounds;

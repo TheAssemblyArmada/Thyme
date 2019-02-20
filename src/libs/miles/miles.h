@@ -61,10 +61,10 @@ typedef struct _AILSOUNDINFO
 /*
  * Various callback typedefs.
  */
-typedef uint32_t(__stdcall *AIL_file_open_callback)(const char *, uint32_t *);
-typedef void(__stdcall *AIL_file_close_callback)(uint32_t);
-typedef int32_t(__stdcall *AIL_file_seek_callback)(uint32_t, int32_t, uint32_t);
-typedef uint32_t(__stdcall *AIL_file_read_callback)(uint32_t, void *, uint32_t);
+typedef int(__stdcall *AIL_file_open_callback)(const char *, uintptr_t *);
+typedef void(__stdcall *AIL_file_close_callback)(uintptr_t);
+typedef int32_t(__stdcall *AIL_file_seek_callback)(uintptr_t, int32_t, uint32_t);
+typedef uint32_t(__stdcall *AIL_file_read_callback)(uintptr_t, void *, uint32_t);
 typedef void(__stdcall *AIL_stream_callback)(void *);
 typedef void(__stdcall *AIL_3dsample_callback)(void*);
 typedef void(__stdcall *AIL_sample_callback)(void *);

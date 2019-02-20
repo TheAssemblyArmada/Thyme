@@ -1,32 +1,33 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: AUDIOSETTINGS.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Class holding the settings for the audio engine.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Class holding the settings for the audio engine.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "always.h"
 #include "asciistring.h"
 #include "gametype.h"
 #include "ini.h"
+
+enum PreferredDrivers
+{
+    DRIVER_HW1,
+    DRIVER_HW2,
+    DRIVER_HW3,
+    DRIVER_HW4,
+    DRIVER_SOFTWARE,
+    DRIVER_COUNT,
+};
 
 class AudioSettings
 {
@@ -53,6 +54,18 @@ public:
     float Get_3D_Sound_Volume() const { return m_3dSoundVolume; }
     float Get_Music_Volume() const { return m_musicVolume; }
     float Get_Speech_Volume() const { return m_speechVolume; }
+    int Get_Audio_Footprint() const { return m_audioFootprintInBytes; }
+    bool Use_Digital() const { return m_useDigital; }
+    bool Use_Midi() const { return m_useMidi; }
+    int Output_Rate() const { return m_outputRate; }
+    int Output_Bits() const { return m_outputBits; }
+    int Output_Channels() const { return m_outputChannels; }
+    int Global_Min_Range() const { return m_globalMinRange; }
+    int Global_Max_Range() const { return m_globalMaxRange; }
+    int Get_2D_Sample_Count() const { return m_sampleCount2D; }
+    int Get_3D_Sample_Count() const { return m_sampleCount3D; }
+    int Get_Stream_Count() const { return m_streamCount; }
+    int Get_Time_To_Fade() const { return m_timeToFadeAudio; }
 
     static void Parse_Audio_Settings(INI *ini);
 
@@ -76,7 +89,7 @@ private:
     int m_timeToFadeAudio;
     int m_audioFootprintInBytes;
     float m_minSampleVolume;
-    Utf8String m_preferredDrivers[5];
+    Utf8String m_preferredDrivers[DRIVER_COUNT];
     float m_relative2DVolume;
     float m_defaultSoundVolume;
     float m_default3DSoundVolume;

@@ -57,17 +57,16 @@ enum CachedVarsType
     CACHED_HW_ACCEL = 1 << 5,
     CACHED_SURROUND = 1 << 6,
     CACHED_FROM_CD = 1 << 7,
-    CACHED_UNK8 = 1 << 8,
+    CACHED_UNK8 = 1 << 8, // Speech related.
 };
 
 class AudioEventRTS;
-class PlayingAudio;
+struct PlayingAudio;
 class MusicManager;
 class SoundManager;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
-    audioinfomap_t;
+typedef std::hash_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> audioinfomap_t;
 #else
 typedef std::unordered_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
     audioinfomap_t;
@@ -94,31 +93,31 @@ public:
     virtual int Add_Audio_Event(const AudioEventRTS *event);
     virtual void Remove_Audio_Event(unsigned int event);
     virtual void Remove_Audio_Event(Utf8String event);
-    virtual void Kill_Event_Immediately(unsigned int event) = 0;
+    virtual void Kill_Event_Immediately(uintptr_t event) = 0;
     virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event) const;
     virtual bool Is_Valid_Audio_Event(AudioEventRTS *event) const;
     virtual void Next_Music_Track() = 0;
     virtual void Prev_Music_Track() = 0;
     virtual bool Is_Music_Playing() = 0;
-    virtual bool Has_Music_Track_Completed(const Utf8String name) = 0;
+    virtual bool Has_Music_Track_Completed(const Utf8String &name, int loops) = 0;
     virtual Utf8String Music_Track_Name() = 0;
     virtual void Set_Audio_Event_Enabled(Utf8String event, bool vol_override);
     virtual void Set_Audio_Event_Volume_Override(Utf8String event, float vol_override);
     virtual void Remove_Disabled_Events();
     virtual void Get_Info_For_Audio_Event(const AudioEventRTS *event) const;
-    virtual bool Is_Currently_Playing() = 0;
+    virtual bool Is_Currently_Playing(uintptr_t event) = 0;
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
     virtual void *Get_Device() = 0;
-    virtual void Notify_Of_Audio_Completion(unsigned int unk1, unsigned int unk2) = 0;
+    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned int unk2) = 0;
     virtual int Get_Provider_Count() = 0;
-    virtual Utf8String Get_Provider_Name(unsigned int index) const = 0;
-    virtual unsigned int Get_Provider_Index(Utf8String name) = 0;
-    virtual void Select_Provider(unsigned int provider) = 0;
+    virtual Utf8String Get_Provider_Name(unsigned provider) const = 0;
+    virtual unsigned Get_Provider_Index(Utf8String name) = 0;
+    virtual void Select_Provider(unsigned provider) = 0;
     virtual void Unselect_Provider() = 0;
     virtual unsigned int Get_Selected_Provider() = 0;
-    virtual void Set_Speaker_Type(unsigned int type) = 0;
-    virtual unsigned int Get_Speaker_Type() = 0;
+    virtual void Set_Speaker_Type(unsigned type) = 0;
+    virtual unsigned Get_Speaker_Type() = 0;
     virtual unsigned int Translate_From_Speaker_Type(const Utf8String &type);
     virtual Utf8String Translate_To_Speaker_Type(unsigned int type);
     virtual int Get_Num_2D_Samples() const = 0;
@@ -127,7 +126,7 @@ public:
     virtual bool Does_Violate_Limit(AudioEventRTS *event) const = 0;
     virtual bool Is_Playing_Lower_Priority(AudioEventRTS *event) const = 0;
     virtual bool Is_Playing_Already(AudioEventRTS *event) const = 0;
-    virtual bool Is_Object_Playing_Void(unsigned int obj) const = 0;
+    virtual bool Is_Object_Playing_Voice(unsigned obj) const = 0;
     virtual void Adjust_Volume_Of_Playing_Audio(Utf8String name, float adjust) = 0;
     virtual void Remove_Playing_Audio(Utf8String name) = 0;
     virtual void Remove_All_Disabled_Audio() = 0;
@@ -149,11 +148,11 @@ public:
     virtual AudioEventInfo *New_Audio_Event_Info(Utf8String name);
     virtual void Add_Audio_Event_Info(AudioEventInfo *info);
     virtual AudioEventInfo *Find_Audio_Event_Info(Utf8String name) const;
-    virtual void Release_Audio_Event_RTS(AudioEventRTS *event);
-    virtual void Set_Hardware_Accelerated(bool accelerated);
-    virtual bool Get_Hardware_Accelerated();
-    virtual void Set_Speaker_Surround(bool surround);
-    virtual bool Get_Speaker_Surround();
+    virtual void Release_Audio_Event_RTS(AudioEventRTS *event) { delete event; }
+    virtual void Set_Hardware_Accelerated(bool accelerated) { m_hardwareAccelerated = accelerated; }
+    virtual bool Get_Hardware_Accelerated() { return m_hardwareAccelerated; }
+    virtual void Set_Speaker_Surround(bool surround) { m_surround = surround; }
+    virtual bool Get_Speaker_Surround() { return m_surround; }
     virtual void Refresh_Cached_Variables();
     virtual void Set_Preferred_3D_Provider(Utf8String provider) = 0;
     virtual void Set_Preferred_Speaker(Utf8String speaker) = 0;
@@ -161,7 +160,7 @@ public:
     virtual float Get_File_Length_MS(Utf8String file_name) = 0;
     virtual void Close_Any_Sample_Using_File(const void *handle) = 0;
     virtual bool Is_Music_Already_Loaded();
-    virtual bool Is_Music_Playing_From_CD();
+    virtual bool Is_Music_Playing_From_CD() { return m_fromCD; }
     virtual void Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list);
     virtual const audioinfomap_t *Get_All_Audio_Events() const;
     virtual bool Is_Current_Provider_Hardware_Accelerated();
@@ -170,13 +169,18 @@ public:
     virtual void Set_Device_Listener_Position() = 0;
     virtual int Allocate_New_Handle();
     virtual void Remove_Level_Specific_Audio_Event_Infos();
-    virtual PlayingAudio *Find_Playing_Audio_From(unsigned int unk1, unsigned int unk2) = 0;
+    virtual PlayingAudio *Find_Playing_Audio_From(uintptr_t handle, unsigned type) = 0;
     virtual void Process_Playing_List() = 0;
     virtual void Process_Fading_List() = 0;
     virtual void Process_Stopped_List() = 0;
 
     AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() { return m_miscAudio; }
+
+protected:
+    Utf8String Next_Track_Name(Utf8String track) const;
+    Utf8String Prev_Track_Name(Utf8String track) const;
+    void Remove_All_Audio_Requests();
 
 protected:
     AudioSettings *m_audioSettings;
@@ -189,7 +193,8 @@ protected:
     std::vector<Utf8String> m_trackList;
     audioinfomap_t m_audioInfoHashMap;
     int m_audioHandleCounter;
-    std::list<std::pair<Utf8String, float>> m_unkList1; // TODO workout what list this actually is, some kind of volume list
+    std::list<std::pair<Utf8String, float>>
+        m_eventVolumeList; // TODO workout what list this actually is, some kind of volume list
     float m_musicVolume;
     float m_soundVolume;
     float m_3dSoundVolume;
@@ -205,7 +210,24 @@ protected:
     float m_zoomVolume;
     AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
     float *m_savedVolumes; // Used during focus loss to preserve volume settings.
-    unsigned int m_cachedVariables;
+
+    // Use a bitfield union to make bit twiddling code simpler.
+    union
+    {
+        struct
+        {
+            bool m_speechOn : 1;
+            bool m_soundOn : 1;
+            bool m_3dSoundOn : 1;
+            bool m_musicOn : 1;
+            bool m_volumeSet : 1;
+            bool m_hardwareAccelerated : 1;
+            bool m_surround : 1;
+            bool m_fromCD : 1;
+            bool m_unkSpeech : 1;
+        };
+        unsigned int m_cachedVariables;
+    };
 
 private:
     static const char *s_speakerTypes[];

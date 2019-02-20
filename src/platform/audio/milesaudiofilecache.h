@@ -18,7 +18,6 @@
 #include "asciistring.h"
 #include "mutex.h"
 #include "rtsutils.h"
-#ifdef BUILD_WITH_MILES
 #include <miles.h>
 
 #ifdef THYME_USE_STLPORT
@@ -46,11 +45,9 @@ typedef std::hash_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, rt
 typedef std::unordered_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
     audiocachemap_t;
 #endif
-#endif // BUILD_WITH_MILES
 
 class MilesAudioFileCache
 {
-#ifdef BUILD_WITH_MILES
 public:
     MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~MilesAudioFileCache();
@@ -71,10 +68,8 @@ private:
     unsigned m_currentSize;
     unsigned m_maxSize;
     SimpleMutexClass m_mutex;
-#endif
 };
 
-#ifdef BUILD_WITH_MILES
 #ifndef THYME_STANDALONE
 #include "hooker.h"
 
@@ -85,5 +80,4 @@ inline void MilesAudioFileCache::Hook_Me()
     Hook_Method(0x007814D0, &MilesAudioFileCache::Free_Space_For_Sample);
 }
 
-#endif
 #endif

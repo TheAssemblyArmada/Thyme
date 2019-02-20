@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "milesaudiofilecache.h"
-#ifdef BUILD_WITH_MILES
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "filesystem.h"
@@ -239,4 +238,3 @@ void MilesAudioFileCache::Release_Open_Audio(OpenAudioFile *file)
         file->audio_event_info = nullptr;
     }
 }
-#endif // BUILD_WITH_MILES

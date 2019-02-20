@@ -43,7 +43,7 @@ AudioEventRTS::AudioEventRTS() :
     m_delay(0.0f),
     m_loopCount(1),
     m_currentSoundIndex(-1),
-    m_unkInt1(0),
+    m_soundListPos(0),
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
@@ -74,7 +74,7 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_delay(that.m_delay),
     m_loopCount(that.m_loopCount),
     m_currentSoundIndex(that.m_currentSoundIndex),
-    m_unkInt1(that.m_unkInt1),
+    m_soundListPos(that.m_soundListPos),
     m_playerIndex(that.m_playerIndex),
     m_nextPlayPortion(that.m_nextPlayPortion)
 {
@@ -105,7 +105,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_delay(0.0f),
     m_loopCount(1),
     m_currentSoundIndex(-1),
-    m_unkInt1(0),
+    m_soundListPos(0),
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
@@ -136,7 +136,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_delay(0.0f),
     m_loopCount(1),
     m_currentSoundIndex(-1),
-    m_unkInt1(0),
+    m_soundListPos(0),
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
@@ -170,7 +170,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_delay(0.0f),
     m_loopCount(1),
     m_currentSoundIndex(-1),
-    m_unkInt1(0),
+    m_soundListPos(0),
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
@@ -207,7 +207,7 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_delay = that.m_delay;
         m_loopCount = that.m_loopCount;
         m_currentSoundIndex = that.m_currentSoundIndex;
-        m_unkInt1 = that.m_unkInt1;
+        m_soundListPos = that.m_soundListPos;
         m_playerIndex = that.m_playerIndex;
         m_nextPlayPortion = that.m_nextPlayPortion;
     }
@@ -295,6 +295,57 @@ void AudioEventRTS::Generate_Play_Info()
     }
 
     m_isLogical = false;
+}
+
+/**
+ * Decrements the events loop count.
+ *
+ * 0x00445740
+ */
+void AudioEventRTS::Decrease_Loop_Count()
+{
+    if (m_loopCount == 1) {
+        m_loopCount = -1;
+    } else if (m_loopCount > 1) {
+        --m_loopCount;
+    }
+}
+
+/**
+ * Advances the next play portion.
+ *
+ * 0x004456C0
+ */
+void AudioEventRTS::Advance_Next_Play_Portion()
+{
+    switch (m_nextPlayPortion) {
+        case 0:
+            m_nextPlayPortion = 1;
+            break;
+        case 1:
+            if (m_eventInfo != nullptr && m_eventInfo->Get_Control() & CONTROL_ALL) {
+                if (m_soundListPos == m_eventInfo->Sound_Count()) {
+                    // Unclear why this is set here as its changed immediately after.
+                    // Possible inlined function or incorrect fallthrough?
+                    m_nextPlayPortion = 2;
+                }
+
+                ++m_soundListPos;
+            }
+
+            if (m_filenameDecay.Is_Empty()) {
+                m_nextPlayPortion = 3;
+            } else {
+                m_nextPlayPortion = 2;
+            }
+
+            break;
+        case 2:
+            m_nextPlayPortion = 3;
+            break;
+        default:
+            break;
+    }
 }
 
 /**
@@ -386,6 +437,15 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
     m_eventName = name;
 }
 
+Coord3D *AudioEventRTS::Get_Current_Pos()
+{
+#ifndef THYME_STANDALONE
+    return Call_Method<Coord3D *, AudioEventRTS>(0x00445980, this);
+#else
+    return nullptr;
+#endif
+}
+
 /**
  * Checks if the event relates to positional audio.
  *
@@ -393,7 +453,7 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
  */
 bool AudioEventRTS::Is_Positional_Audio()
 {
-    if (m_eventInfo != nullptr && !(m_eventInfo->Get_Type() & VISIBILITY_WORLD)) {
+    if (m_eventInfo != nullptr && !(m_eventInfo->Get_Visibility() & VISIBILITY_WORLD)) {
         return false;
     }
 

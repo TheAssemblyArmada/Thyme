@@ -29,7 +29,7 @@
 
 union reqevent_t
 {
-    unsigned int handle;
+    uintptr_t handle;
     AudioEventRTS *object;
 };
 
@@ -44,18 +44,23 @@ class AudioRequest : public MemoryPoolObject
 {
     IMPLEMENT_POOL(AudioRequest);
     friend class AudioManager;
+    friend class MilesAudioManager;
 
 public:
     virtual ~AudioRequest() {}
 
     void Set_Music_Event_Object(AudioEventRTS *object) { m_event.object = object; m_requestType = REQUEST_MUSIC_ADD; }
-    void Set_Event_Handle(unsigned int handle) { m_event.handle = handle; m_requestType = REQUEST_REMOVE; }
+    void Set_Event_Handle(uintptr_t handle) { m_event.handle = handle; m_requestType = REQUEST_REMOVE; }
+    RequestType Request_Type() const { return m_requestType; }
+    uintptr_t Event_Handle() const { return m_event.handle; }
+    AudioEventRTS *Event_Object() const { return m_event.object; }
+    bool Is_Adding() const { return m_isAdding; }
 
 private:
     AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false) {}
 
 private:
-    int m_requestType;
+    RequestType m_requestType;
     reqevent_t m_event;
     bool m_isAdding;
     bool m_isProcessed;

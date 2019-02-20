@@ -343,6 +343,16 @@ inline int Fast_To_Int_Floor(float val)
 #endif
 }
 
+inline int Fast_To_Int_Truncate(float val)
+{
+#ifdef BUILD_WITH_GAMEMATH
+    return gm_lrintf(gm_truncf(val));
+#else
+    return lrintf(truncf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
+#endif
+}
+
+
 inline float Random_Float()
 {
     return float((float(rand() & 0xFFF)) / float(0xFFF));

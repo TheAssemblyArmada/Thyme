@@ -34,7 +34,7 @@ FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     {"Limit", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_limit)},
     {"LoopCount", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_loopCount)},
     {"Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority)},
-    {"Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_type)},
+    {"Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility)},
     {"Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control)},
     {"Sounds", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_sounds)},
     {"SoundsNight", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsNight)},

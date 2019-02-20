@@ -83,7 +83,7 @@ void AudioManager::Init()
     ini.Load("Data/INI/MiscAudio.ini", INI_LOAD_OVERWRITE, nullptr);
 
     if (!Is_Music_Already_Loaded()) {
-        m_cachedVariables |= CACHED_FROM_CD;
+        m_fromCD = true;
         DEBUG_LOG("Music not detected as loaded, this shouldn't happen with released game data.\n");
         // Original code prompts to insert disc at this point, but it shouldn't be possible with the shipped
         // installer to install without the audio installed to the hard drive.
@@ -107,7 +107,7 @@ void AudioManager::Init()
 
 void AudioManager::Reset()
 {
-    m_unkList1.clear();
+    m_eventVolumeList.clear();
     m_musicVolumeAdjust = 1.0f;
     m_soundVolumeAdjust = 1.0f;
     m_3dSoundVolumeAdjust = 1.0f;
@@ -189,39 +189,6 @@ AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
     return nullptr;
 }
 
-void AudioManager::Release_Audio_Event_RTS(AudioEventRTS *event)
-{
-    delete event;
-}
-
-void AudioManager::Set_Hardware_Accelerated(bool accelerated)
-{
-    if (accelerated) {
-        m_cachedVariables |= CACHED_HW_ACCEL;
-    } else {
-        m_cachedVariables &= ~CACHED_HW_ACCEL;
-    }
-}
-
-bool AudioManager::Get_Hardware_Accelerated()
-{
-    return (m_cachedVariables & CACHED_HW_ACCEL) != 0;
-}
-
-void AudioManager::Set_Speaker_Surround(bool surround)
-{
-    if (surround) {
-        m_cachedVariables |= CACHED_SURROUND;
-    } else {
-        m_cachedVariables &= ~CACHED_SURROUND;
-    }
-}
-
-bool AudioManager::Get_Speaker_Surround()
-{
-    return (m_cachedVariables & CACHED_SURROUND) != 0;
-}
-
 void AudioManager::Refresh_Cached_Variables()
 {
     AudioManager::Set_Hardware_Accelerated(Is_Current_Provider_Hardware_Accelerated());
@@ -266,11 +233,6 @@ bool AudioManager::Is_Music_Already_Loaded()
     return g_theFileSystem->Does_File_Exist(rts_event.Get_File_Name());
 }
 
-bool AudioManager::Is_Music_Playing_From_CD()
-{
-    return (m_cachedVariables & CACHED_FROM_CD) != 0;
-}
-
 void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list)
 {
     for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
@@ -278,7 +240,7 @@ void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<Aud
 
         // From current position, find if an entry matches the type.
         for (; find_it != m_audioInfoHashMap.end(); ++find_it) {
-            if (find_it->second->Get_Type() == type) {
+            if (find_it->second->Get_Event_Type() == type) {
                 break;
             }
         }
@@ -341,6 +303,69 @@ void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
             m_audioInfoHashMap.erase(delete_it);
         }
     }
+}
+
+void AudioManager::Remove_All_Audio_Requests()
+{
+    for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
+        Release_Audio_Request(*it);
+    }
+
+    m_audioRequestList.clear();
+}
+
+Utf8String AudioManager::Next_Track_Name(Utf8String track) const
+{
+    Utf8String next;
+    auto it = m_trackList.begin();
+
+    // Look for the track we want the next track from in the list
+    while (it != m_trackList.end()) {
+        if (*it == track) {
+            break;
+        }
+
+        ++it;
+    }
+
+    // If we found the track, then return the next track if valid, else loop back to the start.
+    if (it != m_trackList.end()) {
+        ++it;
+
+        if (it != m_trackList.end()) {
+            next = *it;
+        } else if (m_trackList.begin() != m_trackList.end()) { next = *m_trackList.begin(); }
+    }
+
+    return next;
+}
+
+Utf8String AudioManager::Prev_Track_Name(Utf8String track) const
+{
+    Utf8String next;
+    auto it = m_trackList.rbegin();
+
+    // Look for the track we want the previous track from in the list
+    while (it != m_trackList.rend()) {
+        if (*it == track) {
+            break;
+        }
+
+        ++it;
+    }
+
+    // If we found the track, then return the next track if valid, else loop back to the start.
+    if (it != m_trackList.rend()) {
+        ++it;
+
+        if (it != m_trackList.rend()) {
+            next = *it;
+        } else if (m_trackList.rbegin() != m_trackList.rend()) {
+            next = *m_trackList.rbegin();
+        }
+    }
+
+    return next;
 }
 
 void AudioManager::Lose_Focus()
@@ -410,7 +435,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
             break;
     }
 
-    if ((m_cachedVariables & CACHED_3DSOUND_ON) && event->Get_Event_Type() == EVENT_SPEECH) {
+    if (m_3dSoundOn && event->Get_Event_Type() == EVENT_SPEECH) {
         return 1;
     }
 
@@ -420,21 +445,18 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     event->Set_Current_Sound_Index(new_event->Get_Current_Sound_Index());
     new_event->Generate_Play_Info();
 
-    auto it = m_unkList1.begin();
+    
 
-    for (; it != m_unkList1.end(); ++it) {
+    for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
         if (it->first == new_event->Get_File_Name()) {
+            new_event->Set_Volume(it->second);
             break;
         }
     }
 
-    if (it != m_unkList1.end()) {
-        new_event->Set_Volume(it->second);
-    }
-
     if (new_event->Should_Play_Locally() || Should_Play_Locally(new_event)) {
         if (new_event->Get_Volume() >= m_audioSettings->Get_Min_Sample_Vol()) {
-            if (event->Get_Event_Info()->Get_Type() != EVENT_MUSIC) {
+            if (event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
                 m_soundManager->Add_Audio_Event(new_event);
             } else {
                 m_musicManager->Add_Audio_Event(new_event);
@@ -504,7 +526,7 @@ void AudioManager::Set_Audio_Event_Enabled(Utf8String event, bool vol_override)
 void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_override)
 {
     if (event == Utf8String::s_emptyString) {
-        m_unkList1.clear();
+        m_eventVolumeList.clear();
 
         return;
     }
@@ -515,10 +537,10 @@ void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_o
         Adjust_Volume_Of_Playing_Audio(event, vol_override);
     }
 
-    if (m_unkList1.empty() && vol_override != -1.0f) {
-        m_unkList1.push_back(std::pair<Utf8String, float>(event, vol_override));
+    if (m_eventVolumeList.empty() && vol_override != -1.0f) {
+        m_eventVolumeList.push_back(std::pair<Utf8String, float>(event, vol_override));
     } else {
-        for (auto it = m_unkList1.begin(); it != m_unkList1.end(); ++it) {
+        for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
             if (event == it->first && vol_override != -1.0f) {
                 it->second = vol_override;
 
@@ -569,32 +591,32 @@ Utf8String AudioManager::Translate_To_Speaker_Type(unsigned int type)
 bool AudioManager::Is_On(AudioAffect affect) const
 {
     if (affect & AUDIOAFFECT_MUSIC) {
-        return (m_cachedVariables & CACHED_MUSIC_ON) != 0;
+        return m_musicOn;
     } else if (affect & AUDIOAFFECT_SOUND) {
-        return (m_cachedVariables & CACHED_SOUND_ON) != 0;
+        return m_soundOn;
     } else if (affect & AUDIOAFFECT_3DSOUND) {
-        return (m_cachedVariables & CACHED_3DSOUND_ON) != 0;
+        return m_3dSoundOn;
     }
 
-    return (m_cachedVariables & CACHED_SPEECH_ON) != 0;
+    return m_speechOn;
 }
 
 void AudioManager::Set_On(bool on, AudioAffect affect)
 {
     if (affect & AUDIOAFFECT_MUSIC) {
-        m_cachedVariables = (m_cachedVariables & (~CACHED_MUSIC_ON)) | (on ? CACHED_MUSIC_ON : 0);
+        m_musicOn = on;
     }
 
     if (affect & AUDIOAFFECT_SOUND) {
-        m_cachedVariables = (m_cachedVariables & (~CACHED_SOUND_ON)) | (on ? CACHED_SOUND_ON : 0);
+        m_soundOn = on;
     }
 
     if (affect & AUDIOAFFECT_3DSOUND) {
-        m_cachedVariables = (m_cachedVariables & (~CACHED_3DSOUND_ON)) | (on ? CACHED_3DSOUND_ON : 0);
+        m_3dSoundOn = on;
     }
 
     if (affect & AUDIOAFFECT_SPEECH) {
-        m_cachedVariables = (m_cachedVariables & (~CACHED_SPEECH_ON)) | (on ? CACHED_SPEECH_ON : 0);
+        m_speechOn = on;
     }
 }
 
@@ -640,7 +662,7 @@ void AudioManager::Set_Volume(float volume, AudioAffect affect)
         m_speechVolume = m_initialSpeechVolume * m_speechVolumeAdjust;
     }
 
-    m_cachedVariables |= CACHED_VOL_SET;
+    m_volumeSet = true;
 }
 
 float AudioManager::Get_Volume(AudioAffect affect)
@@ -661,6 +683,6 @@ void AudioManager::Set_3D_Volume_Adjustment(float adj)
     m_3dSoundVolume = Clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);
 
     if (Has_3D_Sensitive_Streams_Playing()) {
-        m_cachedVariables |= CACHED_VOL_SET;
+        m_volumeSet = true;
     }
 }

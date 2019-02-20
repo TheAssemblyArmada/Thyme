@@ -158,8 +158,6 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
-    platform/audio/milesaudiofilecache.cpp
-    platform/audio/milesaudiomanager.cpp
     platform/video/binkvideoplayer.cpp
     platform/video/binkvideostream.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
@@ -207,6 +205,13 @@ set(GAMEENGINE_SRC
     w3d/renderer/w3d.cpp
     w3d/renderer/w3dformat.cpp
 )
+
+# Don't try and build the miles sound system when not building to link to the original game.
+if(NOT STANDALONE)
+    list(APPEND GAMEENGINE_SRC 
+    platform/audio/milesaudiofilecache.cpp
+    platform/audio/milesaudiomanager.cpp)
+endif()
 
 # Glob all the header files together to add to the project for msvc/xcode.
 # Not ideal as CMake won't notice if you add any until something else prompts a CMake run

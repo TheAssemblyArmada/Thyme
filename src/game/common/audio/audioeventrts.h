@@ -33,6 +33,8 @@ public:
 
     void Generate_Filename();
     void Generate_Play_Info();
+    void Decrease_Loop_Count();
+    void Advance_Next_Play_Portion();
 
     void Set_Event_Name(Utf8String name);
     void Set_Playing_Handle(int handle) { m_playingHandle = handle; }
@@ -40,18 +42,29 @@ public:
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
     void Set_Player_Index(int index) { m_playerIndex = index; }
+    void Set_Next_Play_Portion(int portion) { m_nextPlayPortion = portion; }
+    void Set_Handle_To_Kill(int handle) { m_handleToKill = handle; }
 
     const Utf8String &Get_File_Name() const { return m_filename; }
     const Utf8String &Get_Attack_Name() const { return m_filenameAttack; }
     const Utf8String &Get_Decay_Name() const { return m_filenameDecay; }
+    const Utf8String &Get_Event_Name() const { return m_eventName; }
     const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
+    uintptr_t Get_Handle_To_Kill() const { return m_handleToKill; }
+    Coord3D *Get_Current_Pos();
     AudioType Get_Event_Type() const { return m_eventType; }
     int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
     bool Should_Play_Locally() const { return m_shouldPlayLocally; }
     bool Is_Positional_Audio();
     float Get_Volume() const;
-    int Get_Playing_Handle() const { return m_playingHandle; }
+    float Get_Pitch_Shift() const { return m_pitchShift; }
+    float Get_Volume_Shift() const { return m_volumeShift; }
+    float Get_Delay() const { return m_delay; }
+    uintptr_t Get_Playing_Handle() const { return m_playingHandle; }
     int Get_Next_Play_Portion() const { return m_nextPlayPortion; }
+    bool Has_More_Loops() const { return m_loopCount >= 0; }
+    ObjectID Get_Object_ID() const { return m_objectID; }
+    void Decrement_Delay(float amount) { m_delay -= amount; }
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -65,8 +78,8 @@ private:
 private:
     Utf8String m_filename;
     mutable AudioEventInfo *m_eventInfo;
-    int m_playingHandle;
-    int m_handleToKill;
+    uintptr_t m_playingHandle;
+    uintptr_t m_handleToKill;
     Utf8String m_eventName;
     Utf8String m_filenameAttack;
     Utf8String m_filenameDecay;
@@ -84,7 +97,7 @@ private:
     float m_delay;
     int m_loopCount;
     mutable int m_currentSoundIndex;
-    int m_unkInt1;
+    unsigned m_soundListPos;
     int m_playerIndex;
     int m_nextPlayPortion;
 };

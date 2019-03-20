@@ -62,10 +62,6 @@ include(CheckCXXCompilerFlag)
 
 # Go lean and mean on windows.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    add_definitions(-DWIN32_LEAN_AND_MEAN)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
-    add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS)
     if(NOT STANDALONE)
         add_definitions(-D_USE_32BIT_TIME_T) #This is for ABI compatibility with a few functions, remove when original binary no longer required.
     endif()
@@ -120,6 +116,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(GITINFO_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(GITINFO_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(GITINFO_VERSION_PATCH ${PROJECT_VERSION_PATCH})
+
+if(NOT STANDALONE)
+    set(BASECONF_WINSOCK32 TRUE BOOL)
+endif()
 
 # Add base module
 add_subdirectory(src/libs/baseconfig)

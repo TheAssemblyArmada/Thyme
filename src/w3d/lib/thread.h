@@ -19,13 +19,13 @@
 #include "hooker.h"
 #endif
 
-#ifdef PLATFORM_WINDOWS
-#include <process.h>
-typedef HANDLE threadid_t;
-#else
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-typedef pthread_t threadid_t;
 typedef void _EXCEPTION_POINTERS; // TODO set this to something appropriate, void for now so it compiles
+#elif defined PLATFORM_WINDOWS
+#include <process.h>
+#else
+#error Threading API not detected.
 #endif
 
 typedef int (*except_t)(int, _EXCEPTION_POINTERS *);
@@ -50,12 +50,11 @@ public:
     static void Hook_Me();
 #endif
 private:
-// Thread prototypes are slightly different between windows and posix.
-#ifdef PLATFORM_WINDOWS
-    static void Internal_Thread_Function(void *params);
-#else
-    // Return is void* for pthread, must be static to be callback?
+// Thread prototypes are slightly different between winapi threads and pthread.
+#ifdef HAVE_PTHREAD_H
     static void *Internal_Thread_Function(void *params);
+#elif defined PLATFORM_WINDOWS
+    static void Internal_Thread_Function(void *params);
 #endif
 
 protected:
@@ -63,7 +62,11 @@ protected:
     char m_threadName[67];
     uintptr_t m_threadID;
     except_t m_exceptionHandler;
-    threadid_t m_handle;
+#ifdef HAVE_PTHREAD_H
+    pthread_t m_handle;
+#elif defined PLATFORM_WINDOWS
+    HANDLE m_handle;
+#endif
     int m_priority;
 };
 

@@ -23,6 +23,8 @@
 #pragma once
 
 #include "always.h"
+#include <processthreadsapi.h>
+#include <memoryapi.h>
 
 template <typename T, const int size>
 class RefArrayHelper

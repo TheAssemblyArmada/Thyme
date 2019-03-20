@@ -19,6 +19,14 @@
 #include "registry.h"
 #include "rtsutils.h"
 
+#ifdef PLATFORM_WINDOWS
+#include <winuser.h>
+#endif
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #ifndef THYME_STANDALONE
 #include "hookcrt.h"
 #endif

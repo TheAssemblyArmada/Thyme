@@ -20,6 +20,10 @@
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
+#ifdef PLATFORM_WINDOWS
+#include <winuser.h>
+#endif
+
 Win32GameEngine::Win32GameEngine()
 {
 #ifdef PLATFORM_WINDOWS

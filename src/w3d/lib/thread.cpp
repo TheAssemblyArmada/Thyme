@@ -25,26 +25,31 @@ using std::strcpy;
 
 #ifdef PLATFORM_WINDOWS
 #include <mmsystem.h>
+#include <processthreadsapi.h>
+#include <synchapi.h>
 #ifndef THYME_STANDALONE
 #define test_event (Make_Global<void *>(0x00A65178))
 #else
 void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
 #endif
-#else
-#include <sched.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#ifdef HAVE_SCHED_H
+#include <sched.h>
 #endif
 
 #ifdef PLATFORM_LINUX
 #include <sys/syscall.h>
-#include <sys/types.h>
 #endif
 
 #if defined PLATFORM_FREEBSD || defined PLATFORM_OSX
 #ifdef PLATFORM_FREEBSD
 #include <pthread_np.h>
 #endif
-#include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
 
@@ -78,10 +83,10 @@ ThreadClass::~ThreadClass()
  * thread by deriving from the ThreadClass base and implementing the
  * virtual Thread_Function to do the actual work.
  */
-#ifdef PLATFORM_WINDOWS
-void ThreadClass::Internal_Thread_Function(void *params)
-#else
+#ifdef HAVE_PTHREAD_H
 void *ThreadClass::Internal_Thread_Function(void *params)
+#elif defined PLATFORM_WINDOWS
+void ThreadClass::Internal_Thread_Function(void *params)
 #endif
 {
     //
@@ -93,8 +98,8 @@ void *ThreadClass::Internal_Thread_Function(void *params)
     static_cast<ThreadClass *>(params)->Thread_Function();
     static_cast<ThreadClass *>(params)->m_handle = 0;
 
-// Returns void * on none windows
-#ifndef PLATFORM_WINDOWS
+// Returns void * for pthread
+#ifdef HAVE_PTHREAD_H
     return nullptr;
 #endif
 }
@@ -105,10 +110,7 @@ void *ThreadClass::Internal_Thread_Function(void *params)
 void ThreadClass::Execute()
 {
     DEBUG_LOG("Executing thread '%s'.\n", m_threadName);
-#ifdef PLATFORM_WINDOWS
-    m_handle = (threadid_t)_beginthread(ThreadClass::Internal_Thread_Function, 0, this);
-    SetThreadPriority(m_handle, m_priority);
-#else
+#ifdef HAVE_PTHREAD_H
     // These can be used to set none default params
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -116,7 +118,10 @@ void ThreadClass::Execute()
     // Second param can be pthread_attr_t, NULL causes it to use defaults
     pthread_create(&m_handle, &attr, Internal_Thread_Function, this);
     Set_Priority(m_priority);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    m_handle = (HANDLE)_beginthread(ThreadClass::Internal_Thread_Function, 0, this);
+    SetThreadPriority(m_handle, m_priority);
+#endif
 }
 
 /**
@@ -129,46 +134,6 @@ void ThreadClass::Set_Priority(int priority)
     if (m_handle != 0) {
 #ifdef PLATFORM_WINDOWS
         SetThreadPriority(m_handle, m_priority);
-#else
-// This emulates windows SetThreadPriority behaviour.
-// Should consider if we really need this as linux at least this won't have an effect.
-#if 0
-        struct sched_param param;
-        int method;
-        
-        if ( pthread_getschedparam(m_handle, &method, &param) == 0 ) {
-            if ( m_priority + 15 < 30 ) {
-                switch( m_priority + 15 ) {
-                    case 0:		//Fallthrough
-                    case 13:
-                        param.sched_priority = sched_get_priority_min(method);
-                        break;
-                        
-                    case 14:
-                        param.sched_priority = (sched_get_priority_min(method) + 0x1F) / 2;
-                        break;
-                        
-                    case 15:
-                        param.sched_priority = 31;
-                        break;
-                        
-                    case 17:
-                        param.sched_priority = sched_get_priority_max(method);
-                        break;
-                        
-                    case 16:	//Fallthrough
-                    case 30:
-                        param.sched_priority = (sched_get_priority_max(method) + 0x1F) / 2;
-                        break;
-                        
-                    default:
-                        break;
-                }
-            }
-            
-            pthread_setschedparam(m_handle, method, &param);
-        }
-#endif
 #endif // PLATFORM_WINDOWS
     }
 }
@@ -184,28 +149,23 @@ void ThreadClass::Stop(unsigned int ms)
 
     while (m_handle != 0) {
         if (g_theSysTimer.Get() - time > ms) {
-#ifdef PLATFORM_WINDOWS
-            if (!TerminateThread(m_handle, 0)) {
-#else
+#ifdef HAVE_PTHREAD_H
             if (pthread_cancel(m_handle) != 0 || pthread_join(m_handle, nullptr) != 0) {
+#elif defined PLATFORM_WINDOWS
+            if (!TerminateThread(m_handle, 0)) {
 #endif
-                /*
-                if ( byte_8A9AD9 ) {
-
-                    TheCurrentAllowCrashPtr = (int)&byte_8A9AD9;
-                    DebugCrash(aSSD, aRes, aCProjectsRt_23, 64);
-                    TheCurrentAllowCrashPtr = 0;
-                }
-                */
+                DEBUG_ASSERT(false);
             }
 
             m_handle = 0;
         }
 
-#ifdef PLATFORM_WINDOWS
+#ifdef HAVE_SCHED_H
+        sched_yield();
+#elif defined PLATFORM_WINDOWS
         Sleep(0);
 #else
-        sched_yield();
+#error Add appropriate thread yield function to thread.cpp
 #endif
     }
 
@@ -216,10 +176,12 @@ void ThreadClass::Stop(unsigned int ms)
  */
 void ThreadClass::Sleep_Ms(unsigned int ms)
 {
-#ifdef PLATFORM_WINDOWS
+#ifdef HAVE_UNISTD_H
+    usleep(ms * 1000);
+#elif defined PLATFORM_WINDOWS
     Sleep(ms);
 #else
-    usleep(ms * 1000);
+#error Add appropriate sleep function to thread.cpp
 #endif
 }
 
@@ -228,17 +190,13 @@ void ThreadClass::Sleep_Ms(unsigned int ms)
  */
 void ThreadClass::Switch_Thread()
 {
-#ifdef PLATFORM_WINDOWS
-    // Waits for 1 millisecond
+#ifdef HAVE_UNISTD_H
+    usleep(1);
+#elif defined PLATFORM_WINDOWS
     WaitForSingleObject(test_event, 1);
 #else
-    //
-    // Force thread to sleep, not quite same as windows code as it can be
-    // interrupted by test_event, but it only sleeps for 1ms anyhow so who cares
-    // if it can be interrupted in theory.
-    //
-    usleep(1);
-#endif // PLATFORM_WINDOWS
+#error Add appropriate unconditionally yield function to thread.cpp
+#endif
 }
 
 /**
@@ -257,6 +215,8 @@ int ThreadClass::Get_Current_Thread_ID()
     return ktid;
 #elif defined PLATFORM_FREEBSD
     return pthread_getthreadid_np();
+#elif defined PLATFORM_OPENBSD
+    return getthrid();
 #else
 #error Check platform documentation for appropriate function for integral thread id.
 #endif

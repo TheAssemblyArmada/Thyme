@@ -22,9 +22,13 @@
 #include <atomic>
 #endif
 
-#ifndef PLATFORM_WINDOWS
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#endif // !(PLATFORM_WINDOWS)
+#elif defined PLATFORM_WINDOWS
+#include <synchapi.h>
+#else
+#error Threading API not detected.
+#endif
 
 /**
  * @brief Wrapper around WinAPI critical secitons and pthread mutexes.
@@ -49,73 +53,61 @@ public:
     void Leave();
 
 protected:
-    //
     SimpleCriticalSectionClass &operator=(SimpleCriticalSectionClass const &that) { return *this; }
 
-    //
-#ifdef PLATFORM_WINDOWS
-    CRITICAL_SECTION m_handle;
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_t m_handle;
-#endif // !(PLATFORM_WINDOWS)
+#elif defined PLATFORM_WINDOWS
+    CRITICAL_SECTION m_handle;
+#endif
 };
 
 inline SimpleCriticalSectionClass::SimpleCriticalSectionClass() : m_handle()
 {
-#ifdef PLATFORM_WINDOWS
-    InitializeCriticalSection(&m_handle);
-
-    //
-    // We should look at profiling this when more mature and seeing if its worth
-    // bothering with.
-    //
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms683476(v=vs.85).aspx
-    // InitializeCriticalSectionAndSpinCount(&m_handle, spin);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutexattr_t attr;
-
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&m_handle, &attr);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    InitializeCriticalSection(&m_handle);
+#endif
 }
 
 inline SimpleCriticalSectionClass::~SimpleCriticalSectionClass()
 {
-#ifdef PLATFORM_WINDOWS
-    DeleteCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_destroy(&m_handle);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    DeleteCriticalSection(&m_handle);
+#endif
 }
 
 inline void SimpleCriticalSectionClass::Enter()
 {
-#ifdef PLATFORM_WINDOWS
-    // DEBUG_LOG("Entering CriticalSection %lp\n", this);
-    EnterCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_lock(&m_handle);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    EnterCriticalSection(&m_handle);
+#endif
 }
 
 inline bool SimpleCriticalSectionClass::Try_Enter()
 {
-#ifdef PLATFORM_WINDOWS
-    return TryEnterCriticalSection(&m_handle) != FALSE;
-#else
+#ifdef HAVE_PTHREAD_H
     return pthread_mutex_trylock(&m_handle) == 0;
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    return TryEnterCriticalSection(&m_handle) != FALSE;
+#endif
 }
 
 inline void SimpleCriticalSectionClass::Leave()
 {
-#ifdef PLATFORM_WINDOWS
-    // DEBUG_LOG("Leaving CriticalSection %lp\n", this);
-    LeaveCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_unlock(&m_handle);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    LeaveCriticalSection(&m_handle);
+#endif
 }
 
 class ScopedCriticalSectionClass
@@ -180,11 +172,11 @@ private:
     void Unlock();
     bool Is_Locked() { return m_locked > 0; }
 
-#ifdef PLATFORM_WINDOWS
-    CRITICAL_SECTION m_handle;
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_t m_handle;
-#endif // !(PLATFORM_WINDOWS)
+#elif defined PLATFORM_WINDOWS
+    CRITICAL_SECTION m_handle;
+#endif
 
     unsigned int m_locked;
 };

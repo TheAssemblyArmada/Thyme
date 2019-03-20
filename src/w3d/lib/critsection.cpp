@@ -15,30 +15,30 @@
  */
 #include "critsection.h"
 
-#ifndef PLATFORM_WINDOWS
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
 CriticalSectionClass::CriticalSectionClass() : m_handle(), m_locked(0)
 {
-#ifdef PLATFORM_WINDOWS
-    InitializeCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutexattr_t attr;
 
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&m_handle, &attr);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    InitializeCriticalSection(&m_handle);
+#endif
 }
 
 CriticalSectionClass::~CriticalSectionClass()
 {
-#ifdef PLATFORM_WINDOWS
-    DeleteCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_destroy(&m_handle);
-#endif // PLATFORM_WINDOWS
+#elif defined PLATFORM_WINDOWS
+    DeleteCriticalSection(&m_handle);
+#endif
 }
 
 /**
@@ -46,12 +46,11 @@ CriticalSectionClass::~CriticalSectionClass()
  */
 void CriticalSectionClass::Lock()
 {
-#ifdef PLATFORM_WINDOWS
-    EnterCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_lock(&m_handle);
-#endif // PLATFORM_WINDOWS
-
+#elif defined PLATFORM_WINDOWS
+    EnterCriticalSection(&m_handle);
+#endif
     ++m_locked;
 }
 
@@ -60,12 +59,11 @@ void CriticalSectionClass::Lock()
  */
 void CriticalSectionClass::Unlock()
 {
-#ifdef PLATFORM_WINDOWS
-    LeaveCriticalSection(&m_handle);
-#else
+#ifdef HAVE_PTHREAD_H
     pthread_mutex_unlock(&m_handle);
-#endif // PLATFORM_WINDOWS
-
+#elif defined PLATFORM_WINDOWS
+    LeaveCriticalSection(&m_handle);
+#endif
     --m_locked;
 }
 
@@ -81,10 +79,12 @@ void FastCriticalSectionClass::Thread_Safe_Set_Flag()
     while (_interlockedbittestandset(&m_flag, 0)) {
 #endif
         // Yield the thread if no lock aquired.
-#ifdef PLATFORM_WINDOWS
+#ifdef HAVE_UNISTD_H
+        usleep(1);
+#elif defined PLATFORM_WINDOWS
         Sleep(1);
 #else
-        usleep(1); // TODO test for usleep in build system?
+#error Add appropriate sleep function to critsection.cpp
 #endif
     }
 }

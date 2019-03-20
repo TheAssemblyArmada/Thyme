@@ -237,12 +237,6 @@ source_group("Header Files" FILES ${GAMEENGINE_HEADERS})
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     target_link_libraries(thyme winmm dbghelp)
-
-    if(STANDALONE)
-        target_link_libraries(thyme ws2_32)
-    else()
-        target_link_libraries(thyme wsock32) # Original links wsock32, not ws2_32
-    endif()
 endif()
 
 target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
@@ -255,11 +249,6 @@ endif()
 # Enable Thyme debug assertions.
 if(ASSERTIONS)
     target_compile_definitions(thyme PUBLIC GAME_ASSERTS=1)
-endif()
-
-# We don't need to link anything if we have win32 threads. Affects MinGW builds primarily.
-if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
-    target_link_libraries(thyme Threads::Threads)
 endif()
 
 if(USE_GAMEMATH)

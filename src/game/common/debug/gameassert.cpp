@@ -19,6 +19,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef PLATFORM_WINDOWS
+#include <winbase.h>
+#include <winuser.h>
+#endif
+
 #ifdef GAME_ASSERTS
 
 bool ExitOnAssert = true;

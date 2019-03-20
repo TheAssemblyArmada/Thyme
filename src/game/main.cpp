@@ -27,6 +27,8 @@
 
 #ifdef PLATFORM_WINDOWS
 #include <shellapi.h>
+#include <wingdi.h>
+#include <winuser.h>
 
 #ifdef THYME_STANDALONE
 // This pragma makes windows use the normal main function for GUI applications.

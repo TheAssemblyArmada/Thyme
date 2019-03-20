@@ -19,6 +19,7 @@
 #include "asciistring.h"
 
 #ifdef PLATFORM_WINDOWS
+#include <winver.h>
 #include <dbghelp.h>
 #include <eh.h>
 

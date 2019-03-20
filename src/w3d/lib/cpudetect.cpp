@@ -16,11 +16,13 @@
 #include "gamedebug.h"
 #include "stringex.h"
 #include "systimer.h"
-#include <cinttypes> // For printf formatting macros
-#include <stdio.h>
+#include <cstdio>
 
 #ifdef PLATFORM_WINDOWS
+#include <libloaderapi.h>
 #include <mmsystem.h>
+#include <sysinfoapi.h>
+#include <timezoneapi.h>
 #endif
 
 #ifdef PLATFORM_APPLE
@@ -1298,7 +1300,7 @@ void CPUDetectClass::Init_OS()
     OSVersionExtraInfo[0] = '\0';
 #if defined PLATFORM_WINDOWS
     typedef LONG(WINAPI * getinfoptr_t)(PRTL_OSVERSIONINFOW);
-    HMODULE nt_lib = LoadLibraryA("ntdll");
+    HMODULE nt_lib = LoadLibraryExA("ntdll", NULL, 0);
     if (nt_lib != nullptr) {
         getinfoptr_t RtlGetVersion = (getinfoptr_t)::GetProcAddress(nt_lib, "RtlGetVersion");
 

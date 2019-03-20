@@ -20,6 +20,8 @@
 #include <cstdio>
 #include <fcntl.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
@@ -313,7 +315,7 @@ off_t RawFileClass::Seek(off_t offset, int whence)
 
 off_t RawFileClass::Size()
 {
-    stat_t attrib;
+    struct stat attrib;
 
     if (m_biasLength == -1) {
         if (stat(m_filename, &attrib) != 0) {
@@ -391,7 +393,7 @@ const char *RawFileClass::Set_Name(const char *filename)
 
 time_t RawFileClass::Get_Date_Time()
 {
-    stat_t attrib;
+    struct stat attrib;
 
     // get stats
     if (stat(m_filename, &attrib) == 0) {

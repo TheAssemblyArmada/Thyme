@@ -25,7 +25,9 @@
 #ifdef PLATFORM_WINDOWS
 #include <conio.h>
 #include <direct.h>
+#include <winbase.h>
 #include <wincon.h>
+#include <winuser.h>
 #endif
 
 #ifndef PLATFORM_WINDOWS

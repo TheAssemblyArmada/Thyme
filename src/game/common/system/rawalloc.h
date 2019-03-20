@@ -21,6 +21,8 @@
 // Use GlobalAlloc as the raw allocator on windows to avoid CRT issues.
 // Needed until runs standalone then just use malloc/calloc
 #ifdef PLATFORM_WINDOWS
+#include <winbase.h>
+
 /**
  * @brief Allocates a block of memory, contents will be zeroed.
  */

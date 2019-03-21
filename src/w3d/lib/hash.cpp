@@ -16,6 +16,10 @@
 #include "crc.h"
 #include "gamedebug.h"
 
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 /**
  * 0x008A0900
  */

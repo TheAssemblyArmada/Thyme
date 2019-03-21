@@ -25,6 +25,18 @@
 #include "unicodestring.h"
 #include "version.h"
 
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
+#ifdef HAVE_LIBGEN_H
+#include <libgen.h>
+#endif
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif
+
 #ifdef PLATFORM_WINDOWS
 #include <shellapi.h>
 #include <wingdi.h>

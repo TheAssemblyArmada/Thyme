@@ -19,7 +19,12 @@
 #include <sys/stat.h>
 
 // Headers needed for posix open, close, read... etc.
-#ifdef PLATFORM_WINDOWS
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#define O_TEXT 0
+#define O_BINARY 0
+#elif defined PLATFORM_WINDOWS
+#include <io.h>
 // Wraps the wide string call with an adapter from utf8.
 #undef open
 #define open(filename, oflags, ...) _wopen(UTF8To16(filename), oflags, ##__VA_ARGS__)
@@ -35,6 +40,8 @@
 
 //#define lseek _lseeki64
 // typedef __int64 off_t;
+#else
+#error Headers for posix IO needed in win32localfile.cpp
 #endif
 
 Win32LocalFile::Win32LocalFile() : FileHandle(INVALID_HANDLE) {}

@@ -236,7 +236,7 @@ target_link_libraries(thyme base)
 source_group("Header Files" FILES ${GAMEENGINE_HEADERS})
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    target_link_libraries(thyme winmm dbghelp)
+    target_link_libraries(thyme winmm)
 endif()
 
 target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)

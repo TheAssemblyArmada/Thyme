@@ -116,7 +116,7 @@ void AudioManager::Reset()
     m_soundVolume = m_initialSoundVolume;
     m_3dSoundVolume = m_initial3DSoundVolume;
     m_speechVolume = m_initialSpeechVolume;
-    m_cachedVariables &= ~CACHED_SOUND_ON;
+    m_soundOn = false;
 }
 
 void AudioManager::Update()

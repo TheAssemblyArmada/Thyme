@@ -497,9 +497,9 @@ void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned in
         return;
     }
 
-    if ((m_cachedVariables & CACHED_UNK8)
+    if (m_unkSpeech
         && playing->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
-        m_cachedVariables &= ~CACHED_UNK8;
+        m_unkSpeech = false;
     }
 
     if (playing->miles.audio_event->Get_Event_Info()->Get_Control() & CONTROL_LOOP) {
@@ -1807,7 +1807,7 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
                 }
             } else {
                 if (event->Should_Play_Locally()) {
-                    m_cachedVariables |= CACHED_SPEECH_ON;
+                    m_speechOn = true;
                 }
 
                 AIL_set_stream_volume_pan(stream_handle, event->Get_Volume() * m_speechVolume, 0.5f);

@@ -51,6 +51,7 @@ public:
 
     void Set_Music_Event_Object(AudioEventRTS *object) { m_event.object = object; m_requestType = REQUEST_MUSIC_ADD; }
     void Set_Event_Handle(uintptr_t handle) { m_event.handle = handle; m_requestType = REQUEST_REMOVE; }
+    void Set_Type(RequestType type) { m_requestType = type; }
     RequestType Request_Type() const { return m_requestType; }
     uintptr_t Event_Handle() const { return m_event.handle; }
     AudioEventRTS *Event_Object() const { return m_event.object; }

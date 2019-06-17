@@ -16,8 +16,8 @@
 
 #include "asciistring.h"
 #include "audioeventrts.h"
-#include "subsysteminterface.h"
 #include "coord.h"
+#include "subsysteminterface.h"
 
 class SoundManager : public SubsystemInterface
 {
@@ -34,8 +34,18 @@ public:
     virtual void Add_Audio_Event(AudioEventRTS *event);
     virtual void Notify_Of_2D_Sample_Start() { ++m_2dSamplesPlaying; }
     virtual void Notify_Of_3D_Sample_Start() { ++m_3dSamplesPlaying; }
-    virtual void Notify_Of_2D_Sample_Completion() { if (m_2dSamplesPlaying != 0) { --m_2dSamplesPlaying; } }
-    virtual void Notify_Of_3D_Sample_Completion() { if (m_3dSamplesPlaying != 0) { --m_3dSamplesPlaying; } }
+    virtual void Notify_Of_2D_Sample_Completion()
+    {
+        if (m_2dSamplesPlaying != 0) {
+            --m_2dSamplesPlaying;
+        }
+    }
+    virtual void Notify_Of_3D_Sample_Completion()
+    {
+        if (m_3dSamplesPlaying != 0) {
+            --m_3dSamplesPlaying;
+        }
+    }
     virtual int Get_Available_Samples() { return m_2dSampleSlotCount - m_2dSamplesPlaying; }
     virtual int Get_Available_3D_Samples() { return m_3dSampleSlotCount - m_3dSamplesPlaying; }
     virtual Utf8String Get_Filename_For_Play_From_Audio_Event() { return Utf8String(); }
@@ -43,9 +53,31 @@ public:
     virtual bool Violates_Voice(AudioEventRTS *event);
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    void Hook_Reset() { SoundManager::Reset(); }
+    void Hook_Add_Event(AudioEventRTS *event) { SoundManager::Add_Audio_Event(event); }
+    bool Hook_Can_Play_Now(AudioEventRTS *event) { return SoundManager::Can_Play_Now(event); }
+    bool Hook_Violates_Voice(AudioEventRTS *event) { return SoundManager::Violates_Voice(event); }
+    bool Hook_Is_Interrupting(AudioEventRTS *event) { return SoundManager::Is_Interrupting(event); }
+#endif
 private:
     int m_2dSampleSlotCount;
     int m_3dSampleSlotCount;
     int m_2dSamplesPlaying;
     int m_3dSamplesPlaying;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void SoundManager::Hook_Me() 
+{
+    Hook_Method(0x00445FF0, &SoundManager::Hook_Reset);
+    Hook_Method(0x00446010, &SoundManager::Hook_Add_Event);
+    // Hook_Method(0x00446120, &SoundManager::Hook_Can_Play_Now); // Not implemented.
+    Hook_Method(0x004462F0, &SoundManager::Hook_Violates_Voice);
+    Hook_Method(0x00446350, &SoundManager::Hook_Is_Interrupting);
+}
+
+#endif

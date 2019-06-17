@@ -67,6 +67,7 @@
 #include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
+#include "soundmanager.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "texturebase.h"
@@ -217,6 +218,7 @@ void Setup_Hooks()
     TextureLoader::Hook_Me();
     AudioEventRTS::Hook_Me();
     MilesAudioFileCache::Hook_Me();
+    SoundManager::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

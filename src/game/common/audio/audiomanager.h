@@ -32,10 +32,6 @@
 #include <unordered_map>
 #endif
 
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
-
 enum AudioAffect
 {
     AUDIOAFFECT_MUSIC = 1 << 0,
@@ -91,7 +87,7 @@ public:
     virtual void Lose_Focus();
     virtual void Regain_Focus();
     virtual int Add_Audio_Event(const AudioEventRTS *event);
-    virtual void Remove_Audio_Event(unsigned int event);
+    virtual void Remove_Audio_Event(unsigned event);
     virtual void Remove_Audio_Event(Utf8String event);
     virtual void Kill_Event_Immediately(uintptr_t event) = 0;
     virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event) const;
@@ -109,17 +105,17 @@ public:
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
     virtual void *Get_Device() = 0;
-    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned int unk2) = 0;
+    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) = 0;
     virtual int Get_Provider_Count() = 0;
     virtual Utf8String Get_Provider_Name(unsigned provider) const = 0;
     virtual unsigned Get_Provider_Index(Utf8String name) = 0;
     virtual void Select_Provider(unsigned provider) = 0;
     virtual void Unselect_Provider() = 0;
-    virtual unsigned int Get_Selected_Provider() = 0;
+    virtual unsigned Get_Selected_Provider() = 0;
     virtual void Set_Speaker_Type(unsigned type) = 0;
     virtual unsigned Get_Speaker_Type() = 0;
-    virtual unsigned int Translate_From_Speaker_Type(const Utf8String &type);
-    virtual Utf8String Translate_To_Speaker_Type(unsigned int type);
+    virtual unsigned Translate_From_Speaker_Type(const Utf8String &type);
+    virtual Utf8String Translate_To_Speaker_Type(unsigned type);
     virtual int Get_Num_2D_Samples() const = 0;
     virtual int Get_Num_3D_Samples() const = 0;
     virtual int Get_Num_Streams() const = 0;
@@ -140,7 +136,7 @@ public:
     virtual void Release_Bink_Handle() = 0;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) = 0;
     virtual void Set_Listener_Position(const Coord3D *position, const Coord3D *direction);
-    virtual const Coord3D *Get_Listener_Position() const;
+    virtual const Coord3D *Get_Listener_Position() const { return &m_listenerPosition; }
     virtual AudioRequest *Allocate_Audio_Request(bool is_add_request);
     virtual void Release_Audio_Request(AudioRequest *request);
     virtual void Append_Audio_Request(AudioRequest *request);
@@ -176,6 +172,66 @@ public:
 
     AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() { return m_miscAudio; }
+
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+    void Hook_Init() { AudioManager::Init(); }
+    void Hook_Reset() { AudioManager::Reset(); }
+    void Hook_Update() { AudioManager::Update(); }
+
+    void Hook_Lose_Focus() { AudioManager::Lose_Focus(); }
+    void Hook_Regain_Focus() { AudioManager::Regain_Focus(); }
+    int Hook_Add_Audio_Event(const AudioEventRTS *event) { return AudioManager::Add_Audio_Event(event); }
+    void Hook_Remove_Audio_Event(unsigned event) { AudioManager::Remove_Audio_Event(event); }
+    void Hook_Remove_Audio_Event_String(Utf8String event) { AudioManager::Remove_Audio_Event(event); }
+    bool Hook_Is_Valid_Const_Audio_Event(const AudioEventRTS *event) { return AudioManager::Is_Valid_Audio_Event(event); }
+    void Hook_Set_Audio_Event_Enabled(Utf8String event, bool vol_override)
+    {
+        AudioManager::Set_Audio_Event_Enabled(event, vol_override);
+    }
+    void Hook_Set_Audio_Event_Volume_Override(Utf8String event, float vol_override)
+    {
+        AudioManager::Set_Audio_Event_Volume_Override(event, vol_override);
+    }
+    void Hook_Remove_Disabled_Events() { AudioManager::Remove_Disabled_Events(); }
+    void Hook_Get_Info_For_Audio_Event(const AudioEventRTS *event) { AudioManager::Get_Info_For_Audio_Event(event); }
+    unsigned Hook_Translate_From_Speaker_Type(const Utf8String &type)
+    {
+        return AudioManager::Translate_From_Speaker_Type(type);
+    }
+    Utf8String Hook_Translate_To_Speaker_Type(unsigned type) { return AudioManager::Translate_To_Speaker_Type(type); }
+    bool Hook_Is_On(AudioAffect affect) { return AudioManager::Is_On(affect); }
+    void Hook_Set_On(bool on, AudioAffect affect) { AudioManager::Set_On(on, affect); }
+    void Hook_Set_Volume(float volume, AudioAffect affect) { AudioManager::Set_Volume(volume, affect); }
+    float Hook_Get_Volume(AudioAffect affect) { return AudioManager::Get_Volume(affect); }
+    void Hook_Set_3D_Volume_Adjustment(float adj) { AudioManager::Set_3D_Volume_Adjustment(adj); }
+    void Hook_Set_Listener_Position(const Coord3D *position, const Coord3D *direction)
+    {
+        AudioManager::Set_Listener_Position(position, direction);
+    }
+    AudioRequest *Hook_Allocate_Audio_Request(bool is_add_request)
+    {
+        return AudioManager::Allocate_Audio_Request(is_add_request);
+    }
+    void Hook_Release_Audio_Request(AudioRequest *request) { AudioManager::Release_Audio_Request(request); }
+    void Hook_Append_Audio_Request(AudioRequest *request) { AudioManager::Append_Audio_Request(request); }
+    AudioEventInfo *Hook_New_Audio_Event_Info(Utf8String name) { return AudioManager::New_Audio_Event_Info(name); }
+    void Hook_Add_Audio_Event_Info(AudioEventInfo *info) { AudioManager::Add_Audio_Event_Info(info); }
+    AudioEventInfo *Hook_Find_Audio_Event_Info(Utf8String name) { return AudioManager::Find_Audio_Event_Info(name); }
+    void Hook_Refresh_Cached_Variables() { AudioManager::Refresh_Cached_Variables(); }
+    float Hook_Get_Audio_Length_MS(const AudioEventRTS *event) { return AudioManager::Get_Audio_Length_MS(event); }
+    bool Hook_Is_Music_Already_Loaded() { return AudioManager::Is_Music_Already_Loaded(); }
+    void Hook_Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list)
+    {
+        AudioManager::Find_All_Audio_Events_Of_Type(type, list);
+    }
+    const audioinfomap_t *Hook_Get_All_Audio_Events() { return AudioManager::Get_All_Audio_Events(); }
+    bool Hook_Is_Current_Provider_Hardware_Accelerated() { return AudioManager::Is_Current_Provider_Hardware_Accelerated(); }
+    bool Hook_Is_Current_Speaker_Type_Surround() { return AudioManager::Is_Current_Speaker_Type_Surround(); }
+    bool Hook_Should_Play_Locally(const AudioEventRTS *event) { return AudioManager::Should_Play_Locally(event); }
+    int Hook_Allocate_New_Handle() { return AudioManager::Allocate_New_Handle(); }
+    void Hook_Remove_Level_Specific_Audio_Event_Infos() { AudioManager::Remove_Level_Specific_Audio_Event_Infos(); }
+#endif
 
 protected:
     Utf8String Next_Track_Name(Utf8String track) const;
@@ -226,7 +282,7 @@ protected:
             bool m_fromCD : 1;
             bool m_unkSpeech : 1;
         };
-        unsigned int m_cachedVariables;
+        unsigned m_cachedVariables;
     };
 
 private:
@@ -234,7 +290,52 @@ private:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
 extern AudioManager *&g_theAudio;
+
+inline void AudioManager::Hook_Me()
+{
+    Hook_Method(0x00404C60, &AudioManager::Hook_Init);
+    Hook_Method(0x00404F30, &AudioManager::Hook_Reset);
+    // Hook_Method(0x00404F30, &AudioManager::Hook_Update); // Not Implemented.
+    Hook_Method(0x00406050, &AudioManager::Hook_Set_Listener_Position);
+    Hook_Method(0x00406090, &AudioManager::Hook_Allocate_Audio_Request);
+    Hook_Method(0x004061A0, &AudioManager::Hook_Release_Audio_Request);
+    Hook_Method(0x004061D0, &AudioManager::Hook_Append_Audio_Request);
+    Hook_Method(0x00406250, &AudioManager::Hook_New_Audio_Event_Info);
+    Hook_Method(0x004065D0, &AudioManager::Hook_Add_Audio_Event_Info);
+    Hook_Method(0x004067B0, &AudioManager::Hook_Find_Audio_Event_Info);
+    Hook_Method(0x00406920, &AudioManager::Hook_Refresh_Cached_Variables);
+    Hook_Method(0x00406970, &AudioManager::Hook_Get_Audio_Length_MS);
+    Hook_Method(0x00406A90, &AudioManager::Hook_Is_Music_Already_Loaded);
+    Hook_Method(0x00406C10, &AudioManager::Hook_Find_All_Audio_Events_Of_Type);
+    Hook_Method(0x005B9460, &AudioManager::Hook_Get_All_Audio_Events);
+    Hook_Method(0x00406D00, &AudioManager::Hook_Is_Current_Provider_Hardware_Accelerated);
+    Hook_Method(0x00406DE0, &AudioManager::Hook_Is_Current_Speaker_Type_Surround);
+    // Hook_Method(0x00406E00, &AudioManager::Hook_Should_Play_Locally); // Not Implemented.
+    Hook_Method(0x00406F00, &AudioManager::Hook_Allocate_New_Handle);
+    Hook_Method(0x00406860, &AudioManager::Hook_Remove_Level_Specific_Audio_Event_Infos);
+    Hook_Method(0x00406F00, &AudioManager::Remove_All_Audio_Requests);
+    Hook_Method(0x00405700, &AudioManager::Next_Track_Name);
+    Hook_Method(0x004057D0, &AudioManager::Prev_Track_Name);
+    Hook_Method(0x00406F10, &AudioManager::Hook_Lose_Focus);
+    Hook_Method(0x00406F70, &AudioManager::Hook_Regain_Focus);
+    Hook_Method(0x00405390, &AudioManager::Hook_Add_Audio_Event);
+    Hook_Method(0x004058A0, &AudioManager::Hook_Remove_Audio_Event);
+    Hook_Method(0x00405C30, &AudioManager::Hook_Remove_Audio_Event_String);
+    Hook_Method(0x00405680, &AudioManager::Hook_Is_Valid_Const_Audio_Event);
+    Hook_Method(0x004058F0, &AudioManager::Hook_Set_Audio_Event_Enabled);
+    Hook_Method(0x00405990, &AudioManager::Hook_Set_Audio_Event_Volume_Override);
+    Hook_Method(0x00405CC0, &AudioManager::Hook_Remove_Disabled_Events);
+    Hook_Method(0x00405340, &AudioManager::Hook_Get_Info_For_Audio_Event);
+    Hook_Method(0x00405CD0, &AudioManager::Hook_Translate_From_Speaker_Type);
+    Hook_Method(0x00405DD0, &AudioManager::Hook_Translate_To_Speaker_Type);
+    Hook_Method(0x00405E50, &AudioManager::Hook_Is_On);
+    Hook_Method(0x00405E90, &AudioManager::Hook_Set_On);
+    Hook_Method(0x00405F20, &AudioManager::Hook_Set_Volume);
+    Hook_Method(0x00405FC0, &AudioManager::Hook_Get_Volume);
+    Hook_Method(0x00405FF0, &AudioManager::Hook_Set_3D_Volume_Adjustment);
+}
 #else
 extern AudioManager *g_theAudio;
 #endif

@@ -489,7 +489,7 @@ void MilesAudioManager::Close_Device()
  *
  * 0x0077E6C0
  */
-void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned int unk2)
+void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
 {
     PlayingAudio *playing = Find_Playing_Audio_From(handle, unk2);
 

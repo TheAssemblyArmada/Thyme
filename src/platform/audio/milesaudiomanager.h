@@ -59,7 +59,7 @@ public:
     virtual void Open_Device() override;
     virtual void Close_Device() override;
     virtual void *Get_Device() override { return m_milesDigitalDriver; }
-    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned int unk2) override;
+    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) override;
     virtual int Get_Provider_Count() override { return m_milesMaxProviderIndex; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
     virtual unsigned Get_Provider_Index(Utf8String name) override;

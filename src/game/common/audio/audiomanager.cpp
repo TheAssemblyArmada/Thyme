@@ -68,6 +68,11 @@ AudioManager::~AudioManager()
     delete m_savedVolumes;
 }
 
+/**
+ * Initialises the subsystem.
+ *
+ * 0x00404C60
+ */
 void AudioManager::Init()
 {
     INI ini;
@@ -105,6 +110,11 @@ void AudioManager::Init()
     m_speechVolume = m_initialSpeechVolume;
 }
 
+/**
+ * Resets the subsystem.
+ *
+ * 0x00404FB0
+ */
 void AudioManager::Reset()
 {
     m_eventVolumeList.clear();
@@ -119,6 +129,11 @@ void AudioManager::Reset()
     m_soundOn = false;
 }
 
+/**
+ * Updates the subsystem.
+ *
+ * 0x00404F30
+ */
 void AudioManager::Update()
 {
     // TODO Requires g_theTacticalView.
@@ -127,6 +142,11 @@ void AudioManager::Update()
 #endif
 }
 
+/**
+ * Sets the position of the listener for 3D audio.
+ *
+ * 0x00406050
+ */
 void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D *direction)
 {
     // TODO Should probably take references
@@ -134,26 +154,41 @@ void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D 
     m_listenerFacing = *direction;
 }
 
-const Coord3D *AudioManager::Get_Listener_Position() const
-{
-    return &m_listenerPosition;
-}
-
+/**
+ * Allocates a request object.
+ *
+ * 0x00406090
+ */
 AudioRequest *AudioManager::Allocate_Audio_Request(bool is_add_request)
 {
     return new AudioRequest(is_add_request);
 }
 
+/**
+ * Frees a request object.
+ *
+ * 0x004061A0
+ */
 void AudioManager::Release_Audio_Request(AudioRequest *request)
 {
     Delete_Instance(request);
 }
 
+/**
+ * Appends a request object to the internal processing queue.
+ *
+ * 0x004061D0
+ */
 void AudioManager::Append_Audio_Request(AudioRequest *request)
 {
     m_audioRequestList.push_back(request);
 }
 
+/**
+ * Find or allocate an AudioEventInfo object for the given name.
+ *
+ * 0x00406250
+ */
 AudioEventInfo *AudioManager::New_Audio_Event_Info(Utf8String name)
 {
     AudioEventInfo *info = Find_Audio_Event_Info(name);
@@ -167,6 +202,11 @@ AudioEventInfo *AudioManager::New_Audio_Event_Info(Utf8String name)
     return info;
 }
 
+/**
+ * Adds an AudioEventInfo object to the internal directory.
+ *
+ * 0x004065D0
+ */
 void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
 {
     AudioEventInfo *found = Find_Audio_Event_Info(info->Get_Event_Name());
@@ -178,6 +218,11 @@ void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
     }
 }
 
+/**
+ * Finds an AudioEventInfo object in the internal directory.
+ *
+ * 0x004067B0
+ */
 AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
 {
     auto it = m_audioInfoHashMap.find(name);
@@ -189,12 +234,22 @@ AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
     return nullptr;
 }
 
+/**
+ * Refresh boolean cached variables.
+ *
+ * 0x00406920
+ */
 void AudioManager::Refresh_Cached_Variables()
 {
     AudioManager::Set_Hardware_Accelerated(Is_Current_Provider_Hardware_Accelerated());
     AudioManager::Set_Speaker_Surround(Is_Current_Speaker_Type_Surround());
 }
 
+/**
+ * Gets the length of the audio file in milliseconds associated with an event.
+ *
+ * 0x00406970
+ */
 float AudioManager::Get_Audio_Length_MS(const AudioEventRTS *event)
 {
     // If the event doesn't have info, try and populate it, if that fails return 0.
@@ -216,14 +271,23 @@ float AudioManager::Get_Audio_Length_MS(const AudioEventRTS *event)
     return float(attack_len + normal_len) + decay_len;
 }
 
+/**
+ * Checks if a music file is accessible.
+ *
+ * 0x00406A90
+ */
 bool AudioManager::Is_Music_Already_Loaded()
 {
-    AudioEventInfo *event_info;
+    AudioEventInfo *event_info = nullptr;
 
     for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
         if (it->second != nullptr && it->second->Get_Event_Type() == EVENT_MUSIC) {
             event_info = it->second;
         }
+    }
+
+    if (event_info == nullptr) {
+        return false;
     }
 
     AudioEventRTS rts_event;
@@ -233,6 +297,11 @@ bool AudioManager::Is_Music_Already_Loaded()
     return g_theFileSystem->Does_File_Exist(rts_event.Get_File_Name());
 }
 
+/**
+ * Populates a container with all events of a given type.
+ *
+ * 0x00406C10
+ */
 void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list)
 {
     for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
@@ -255,11 +324,21 @@ void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<Aud
     }
 }
 
+/**
+ * Retrieves hash map of all audio event info.
+ *
+ * 0x005B9460
+ */
 const audioinfomap_t *AudioManager::Get_All_Audio_Events() const
 {
     return &m_audioInfoHashMap;
 }
 
+/**
+ * Checks if the current driver is hardware accelerated.
+ *
+ * 0x00406D00
+ */
 bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
     // Search preferred providers list against current provider.
@@ -272,11 +351,21 @@ bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
     return false;
 }
 
+/**
+ * Checks if the current speaker config is a surround config.
+ *
+ * 0x00406DE0
+ */
 bool AudioManager::Is_Current_Speaker_Type_Surround()
 {
     return Get_Speaker_Type() == m_audioSettings->Get_Default_3D_Speaker_Type();
 }
 
+/**
+ * Checks if an event should play locally.
+ *
+ * 0x00406E00
+ */
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
     // TODO Requires classes for g_theControlBar, g_thePlayerList
@@ -287,11 +376,21 @@ bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 #endif
 }
 
+/**
+ * Allocates a unique handle value.
+ *
+ * 0x00406F00
+ */
 int AudioManager::Allocate_New_Handle()
 {
     return m_audioHandleCounter++;
 }
 
+/**
+ * Removed level specific event info from the all info hash map.
+ *
+ * 0x00406860
+ */
 void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
 {
     for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end();) {
@@ -305,6 +404,11 @@ void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
     }
 }
 
+/**
+ * Removes all audio requests from the request list.
+ *
+ * 0x00406200
+ */
 void AudioManager::Remove_All_Audio_Requests()
 {
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
@@ -314,6 +418,11 @@ void AudioManager::Remove_All_Audio_Requests()
     m_audioRequestList.clear();
 }
 
+/**
+ * Fetches the name of the track that follows the one provided.
+ *
+ * 0x00405700
+ */
 Utf8String AudioManager::Next_Track_Name(Utf8String track) const
 {
     Utf8String next;
@@ -340,6 +449,11 @@ Utf8String AudioManager::Next_Track_Name(Utf8String track) const
     return next;
 }
 
+/**
+ * Fetches the name of the track that preceeds the one provided.
+ *
+ * 0x004057D0
+ */
 Utf8String AudioManager::Prev_Track_Name(Utf8String track) const
 {
     Utf8String next;
@@ -368,6 +482,11 @@ Utf8String AudioManager::Prev_Track_Name(Utf8String track) const
     return next;
 }
 
+/**
+ * Handles the loss of focus event for the audio engine.
+ *
+ * 0x00406F10
+ */
 void AudioManager::Lose_Focus()
 {
     m_savedVolumes = new float[4];
@@ -378,6 +497,11 @@ void AudioManager::Lose_Focus()
     Set_Volume(0.0f, AUDIOAFFECT_MUSIC | AUDIOAFFECT_SOUND | AUDIOAFFECT_3DSOUND | AUDIOAFFECT_SPEECH | AUDIOAFFECT_BASEVOL);
 }
 
+/**
+ * Handles the regaining of focus event for the audio engine.
+ *
+ * 0x00406F70
+ */
 void AudioManager::Regain_Focus()
 {
     if (m_savedVolumes != nullptr) {
@@ -390,6 +514,11 @@ void AudioManager::Regain_Focus()
     }
 }
 
+/**
+ * Adds an audio event.
+ *
+ * 0x00405390
+ */
 int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 {
     if (event->Get_File_Name().Is_Empty()) {
@@ -480,7 +609,12 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     return 3;
 }
 
-void AudioManager::Remove_Audio_Event(unsigned int event)
+/**
+ * Removes an audio event.
+ *
+ * 0x004058A0
+ */
+void AudioManager::Remove_Audio_Event(unsigned event)
 {
     if (event == 4 || event == 5) {
         m_musicManager->Remove_Audio_Event(event);
@@ -491,11 +625,21 @@ void AudioManager::Remove_Audio_Event(unsigned int event)
     }
 }
 
+/**
+ * Removes an audio event.
+ *
+ * 0x00405C30
+ */
 void AudioManager::Remove_Audio_Event(Utf8String event)
 {
     Remove_Playing_Audio(event);
 }
 
+/**
+ * Checks if an event is valid.
+ *
+ * 0x00405680
+ */
 bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 {
     if (event->Get_File_Name().Is_Empty()) {
@@ -507,6 +651,12 @@ bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
     return event->Get_Event_Info() != nullptr;
 }
 
+/**
+ * Checks if an event is valid.
+ *
+ * 0x00405680
+ */
+// Windows calls same function for both locations in vtable.
 bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
 {
     if (event->Get_File_Name().Is_Empty()) {
@@ -518,11 +668,21 @@ bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
     return event->Get_Event_Info() != nullptr;
 }
 
+/**
+ * Sets an event as enabled.
+ *
+ * 0x004058F0
+ */
 void AudioManager::Set_Audio_Event_Enabled(Utf8String event, bool vol_override)
 {
     Set_Audio_Event_Volume_Override(event, vol_override ? -1.0f : 0.0f);
 }
 
+/**
+ * Sets an override volume.
+ *
+ * 0x00405990
+ */
 void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_override)
 {
     if (event == Utf8String::s_emptyString) {
@@ -550,11 +710,21 @@ void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_o
     }
 }
 
+/**
+ * Removes events that have been disabled.
+ *
+ * 0x00405CC0
+ */
 void AudioManager::Remove_Disabled_Events()
 {
     Remove_All_Disabled_Audio();
 }
 
+/**
+ * Gets the audio info for an audio event.
+ *
+ * 0x00405340
+ */
 void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
 {
     if (event == nullptr || event->Get_Event_Info() != nullptr) {
@@ -564,9 +734,14 @@ void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
     event->Set_Event_Info(Find_Audio_Event_Info(event->Get_File_Name()));
 }
 
-unsigned int AudioManager::Translate_From_Speaker_Type(const Utf8String &type)
+/**
+ * Converts a speaker type name to an index.
+ *
+ * 0x00405CD0
+ */
+unsigned AudioManager::Translate_From_Speaker_Type(const Utf8String &type)
 {
-    unsigned int i = 0;
+    unsigned i = 0;
 
     while (s_speakerTypes[i] != nullptr) {
         if (type == s_speakerTypes[i]) {
@@ -579,7 +754,12 @@ unsigned int AudioManager::Translate_From_Speaker_Type(const Utf8String &type)
     return i;
 }
 
-Utf8String AudioManager::Translate_To_Speaker_Type(unsigned int type)
+/**
+ * Converts a speaker index to a type name.
+ *
+ * 0x00405DD0
+ */
+Utf8String AudioManager::Translate_To_Speaker_Type(unsigned type)
 {
     if (type < ARRAY_SIZE(s_speakerTypes)) {
         return s_speakerTypes[type];
@@ -588,6 +768,11 @@ Utf8String AudioManager::Translate_To_Speaker_Type(unsigned int type)
     return s_speakerTypes[0];
 }
 
+/**
+ * Checks if a class of sounds is enabled.
+ *
+ * 0x00405E50
+ */
 bool AudioManager::Is_On(AudioAffect affect) const
 {
     if (affect & AUDIOAFFECT_MUSIC) {
@@ -601,6 +786,11 @@ bool AudioManager::Is_On(AudioAffect affect) const
     return m_speechOn;
 }
 
+/**
+ * Sets the state of a class of sounds.
+ *
+ * 0x00405E90
+ */
 void AudioManager::Set_On(bool on, AudioAffect affect)
 {
     if (affect & AUDIOAFFECT_MUSIC) {
@@ -620,6 +810,11 @@ void AudioManager::Set_On(bool on, AudioAffect affect)
     }
 }
 
+/**
+ * Set a class of sounds volume.
+ *
+ * 0x00405F20
+ */
 void AudioManager::Set_Volume(float volume, AudioAffect affect)
 {
     if (affect & AUDIOAFFECT_MUSIC) {
@@ -665,6 +860,11 @@ void AudioManager::Set_Volume(float volume, AudioAffect affect)
     m_volumeSet = true;
 }
 
+/**
+ * Gets the volume for the specified class of sounds.
+ *
+ * 0x00405FC0
+ */
 float AudioManager::Get_Volume(AudioAffect affect)
 {
     if (affect & AUDIOAFFECT_MUSIC) {
@@ -678,6 +878,11 @@ float AudioManager::Get_Volume(AudioAffect affect)
     return m_speechVolume;
 }
 
+/**
+ * Sets an adjustment for 3D sounds.
+ *
+ * 0x00405FF0
+ */
 void AudioManager::Set_3D_Volume_Adjustment(float adj)
 {
     m_3dSoundVolume = Clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);

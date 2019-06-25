@@ -170,8 +170,8 @@ public:
     virtual void Process_Fading_List() = 0;
     virtual void Process_Stopped_List() = 0;
 
-    AudioSettings *Get_Audio_Settings() { return m_audioSettings; }
-    MiscAudio *Get_Misc_Audio() { return m_miscAudio; }
+    AudioSettings *Get_Audio_Settings() const { return m_audioSettings; }
+    MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
 
 #ifndef THYME_STANDALONE
     static void Hook_Me();
@@ -315,7 +315,7 @@ inline void AudioManager::Hook_Me()
     // Hook_Method(0x00406E00, &AudioManager::Hook_Should_Play_Locally); // Not Implemented.
     Hook_Method(0x00406F00, &AudioManager::Hook_Allocate_New_Handle);
     Hook_Method(0x00406860, &AudioManager::Hook_Remove_Level_Specific_Audio_Event_Infos);
-    Hook_Method(0x00406F00, &AudioManager::Remove_All_Audio_Requests);
+    Hook_Method(0x00406200, &AudioManager::Remove_All_Audio_Requests);
     Hook_Method(0x00405700, &AudioManager::Next_Track_Name);
     Hook_Method(0x004057D0, &AudioManager::Prev_Track_Name);
     Hook_Method(0x00406F10, &AudioManager::Hook_Lose_Focus);

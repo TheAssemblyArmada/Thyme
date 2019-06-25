@@ -220,7 +220,7 @@ void Setup_Hooks()
     AudioEventRTS::Hook_Me();
     MilesAudioFileCache::Hook_Me();
     SoundManager::Hook_Me();
-    // AudioManager::Hook_Me();
+    AudioManager::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

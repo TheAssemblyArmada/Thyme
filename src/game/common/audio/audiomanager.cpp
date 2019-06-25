@@ -126,7 +126,7 @@ void AudioManager::Reset()
     m_soundVolume = m_initialSoundVolume;
     m_3dSoundVolume = m_initial3DSoundVolume;
     m_speechVolume = m_initialSpeechVolume;
-    m_soundOn = false;
+    m_unkSpeech = false;
 }
 
 /**
@@ -397,7 +397,7 @@ void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
         auto delete_it = it;
         ++it;
 
-        if (it->second->Is_Level_Specific()) {
+        if (delete_it->second->Is_Level_Specific()) {
             Delete_Instance(delete_it->second);
             m_audioInfoHashMap.erase(delete_it);
         }
@@ -521,11 +521,11 @@ void AudioManager::Regain_Focus()
  */
 int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 {
-    if (event->Get_File_Name().Is_Empty()) {
+    if (event->Get_Event_Name().Is_Empty()) {
         return 1;
     }
 
-    if (event->Get_File_Name() == "NoSound") {
+    if (event->Get_Event_Name() == "NoSound") {
         return 1;
     }
 
@@ -564,7 +564,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
             break;
     }
 
-    if (m_3dSoundOn && event->Get_Event_Type() == EVENT_SPEECH) {
+    if (m_unkSpeech && event->Get_Event_Type() == EVENT_SPEECH) {
         return 1;
     }
 
@@ -573,8 +573,6 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     new_event->Generate_Filename();
     event->Set_Current_Sound_Index(new_event->Get_Current_Sound_Index());
     new_event->Generate_Play_Info();
-
-    
 
     for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
         if (it->first == new_event->Get_File_Name()) {
@@ -600,13 +598,13 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
         } else {
             Release_Audio_Event_RTS(new_event);
 
-            return 2;
+            return 2; // Volume too low?
         }
     }
 
     Release_Audio_Event_RTS(new_event);
 
-    return 3;
+    return 3; // Don't play locally?
 }
 
 /**
@@ -731,7 +729,7 @@ void AudioManager::Get_Info_For_Audio_Event(const AudioEventRTS *event) const
         return;
     }
 
-    event->Set_Event_Info(Find_Audio_Event_Info(event->Get_File_Name()));
+    event->Set_Event_Info(Find_Audio_Event_Info(event->Get_Event_Name()));
 }
 
 /**

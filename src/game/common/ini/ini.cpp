@@ -54,8 +54,7 @@ const float _ANGLE_MULTIPLIER = 0.0174532925f;
 const float _DURATION_MULT = 0.029999999f;
 
 // Replace original function addresses as thyme implementations are written.
-BlockParse TheTypeTable[] = {
-    {"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
+BlockParse TheTypeTable[] = {{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
     {"Animation", (iniblockparse_t)(0x00518DB0) /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     //{"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
@@ -124,8 +123,7 @@ BlockParse TheTypeTable[] = {
     {"ReallyLowMHz", &GameLODManager::Parse_Low_MHz},
     {"ScriptAction", (iniblockparse_t)(0x004221C0) /*&ScriptEngine::parseScriptAction*/},
     {"ScriptCondition", (iniblockparse_t)(0x00422680) /*&ScriptEngine::parseScriptCondition*/},
-    {nullptr, nullptr}
-};
+    {nullptr, nullptr}};
 
 // Helper function for Load
 inline iniblockparse_t Find_Block_Parse(const char *token)
@@ -174,6 +172,7 @@ INI::INI() :
     m_bufferData(0),
     m_fileName("None"),
     m_loadType(INI_LOAD_INVALID),
+    m_lineNumber(0),
     m_seps(" \n\r\t="),
     m_sepsPercent(" \n\r\t=%%"),
     m_sepsColon(" \n\r\t=:"),
@@ -181,6 +180,7 @@ INI::INI() :
     m_endToken("END"),
     m_endOfFile(false)
 {
+    m_currentBlock[0] = '\0';
 }
 
 INI::~INI() {}
@@ -905,7 +905,7 @@ void INI::Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *u
     sound_vec->clear();
 
     for (const char *token = ini->Get_Next_Token_Or_Null(" \t,="); token != nullptr;
-        token = ini->Get_Next_Token_Or_Null(" \t,=")) {
+         token = ini->Get_Next_Token_Or_Null(" \t,=")) {
         sound_vec->push_back(token);
     }
 }

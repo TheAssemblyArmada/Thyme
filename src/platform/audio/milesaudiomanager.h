@@ -16,7 +16,10 @@
 
 #include "always.h"
 #include "audiomanager.h"
+#include "milesaudiofilecache.h"
 #include <miles.h>
+
+#define MSEC_PER_LOGICFRAME_REAL (1000.0f / 30.0f)
 
 class MilesAudioFileCache;
 struct PlayingAudio;
@@ -118,9 +121,19 @@ private:
     void Adjust_Playing_Volume(PlayingAudio *audio);
     HSAMPLE Get_First_2D_Sample();
     H3DSAMPLE Get_First_3D_Sample();
-    float Get_Effective_Volume(AudioEventRTS *event);
+    float Get_Effective_Volume(AudioEventRTS *event) const;
     bool Kill_Lowest_Priority_Sound_Immediately(AudioEventRTS *event);
     AudioEventRTS *Find_Lowest_Priority_Sound(AudioEventRTS *event);
+    Coord3D *Get_Current_Position_From_Event(AudioEventRTS *event);
+    void *Open_File(AudioEventRTS *event) { return m_audioFileCache->Open_File(event); }
+    void Close_File(void *handle) { m_audioFileCache->Close_File(handle); }
+    bool Provider_Is_Valid() const { return m_milesCurrentProvider < m_milesMaxProviderIndex; }
+    void Build_Provider_List();
+    void Init_Delay_Filters();
+    void Create_Listener();
+    bool Process_Request_This_Frame(AudioRequest *request);
+    void Adjust_Request(AudioRequest *request);
+    bool Check_For_Sample(AudioRequest *request);
 
     // Callbacks for file access
     static int __stdcall Streaming_File_Open(const char *name, uintptr_t *handle);

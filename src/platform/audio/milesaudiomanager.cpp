@@ -1410,7 +1410,7 @@ void MilesAudioManager::Process_Stopped_List()
 /**
  * Stops the playing audio sample.
  *
- * 0x0077DA30
+ * 0x0077D9B0
  */
 void MilesAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 {
@@ -1435,7 +1435,7 @@ void MilesAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 /**
  * Stops the playing audio sample.
  *
- * 0x0077DA30
+ * 0x0077D8E0
  */
 void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
 {
@@ -1465,7 +1465,7 @@ void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
 /**
  * Frees memory holding audio samples.
  *
- * 0x0077DA30
+ * 0x0077DB80
  */
 void MilesAudioManager::Free_All_Miles_Handles()
 {

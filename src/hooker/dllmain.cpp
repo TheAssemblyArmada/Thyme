@@ -48,6 +48,7 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
+#include "milesaudiomanager.h"
 #include "milesaudiofilecache.h"
 #include "modulefactory.h"
 #include "mouse.h"
@@ -221,6 +222,7 @@ void Setup_Hooks()
     MilesAudioFileCache::Hook_Me();
     SoundManager::Hook_Me();
     AudioManager::Hook_Me();
+    MilesAudioManager::Hook_Me();
 
     Hook_Function(0x00537580, &GameMath::Sin);
     Hook_Function(0x00537590, &GameMath::Cos);

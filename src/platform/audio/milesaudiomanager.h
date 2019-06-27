@@ -95,6 +95,10 @@ public:
     virtual void Process_Fading_List() override;
     virtual void Process_Stopped_List() override;
 
+#ifndef THYME_STANDALONE
+    static void Hook_Me();
+#endif
+
 private:
     void Release_Playing_Audio(PlayingAudio *audio);
     void Release_Miles_Handles(PlayingAudio *audio);
@@ -154,3 +158,33 @@ private:
     int m_3dSampleCount;
     int m_streamCount;
 };
+
+#ifndef THYME_STANDALONE
+#include "hooker.h"
+
+inline void MilesAudioManager::Hook_Me()
+{
+    Hook_Function(0x00780C90, &MilesAudioManager::Streaming_File_Open);
+    Hook_Function(0x00780CC0, &MilesAudioManager::Streaming_File_Close);
+    Hook_Function(0x00780CD0, &MilesAudioManager::Streaming_File_Seek);
+    Hook_Function(0x00780CF0, &MilesAudioManager::Streaming_File_Read);
+    Hook_Function(0x00780C70, &MilesAudioManager::Set_Stream_Complete);
+    Hook_Function(0x00780C30, &MilesAudioManager::Set_Sample_Complete);
+    Hook_Function(0x00780C50, &MilesAudioManager::Set_3DSample_Complete);
+    Hook_Method(0x0077D9B0, &MilesAudioManager::Release_Playing_Audio);
+    Hook_Method(0x0077D8E0, &MilesAudioManager::Release_Miles_Handles);
+    Hook_Method(0x0077DB80, &MilesAudioManager::Free_All_Miles_Handles);
+    Hook_Method(0x0077DA30, &MilesAudioManager::Stop_All_Audio_Immediately);
+    Hook_Method(0x00780520, &MilesAudioManager::Play_Sample3D);
+    Hook_Method(0x00780400, &MilesAudioManager::Start_Next_Loop);
+    Hook_Method(0x0077DD80, &MilesAudioManager::Init_Filters);
+    Hook_Method(0x007806F0, &MilesAudioManager::Init_Sample_Pools);
+    Hook_Method(0x0077D080, &MilesAudioManager::Play_Audio_Event);
+    Hook_Method(0x0077D630, &MilesAudioManager::Stop_Audio_Event);
+    Hook_Method(0x0077DD20, &MilesAudioManager::Stop_All_Speech);
+    Hook_Method(0x0077DC30, &MilesAudioManager::Adjust_Playing_Volume);
+    Hook_Method(0x00780280, &MilesAudioManager::Get_Effective_Volume);
+    Hook_Method(0x0077F330, &MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately);
+    Hook_Method(0x0077F1C0, &MilesAudioManager::Find_Lowest_Priority_Sound);
+}
+#endif

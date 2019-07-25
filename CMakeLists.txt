@@ -23,6 +23,17 @@ if(MSVC)
     string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO})
     set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
     set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
+    
+    # Disable Run Time Checking.
+    foreach(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+        #message("Processing flags ${flag_var}")
+        string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
+    endforeach(flag_var)
+
     # Set warning level 3
     # disable C4244: conversion from 'double' to 'float', possible loss of data
     # disable C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)

@@ -77,6 +77,7 @@ void MilesAudioManager::Init()
  */
 void MilesAudioManager::Reset()
 {
+    // Worldbuilder is a debug build and has code to dump a list of audio assets here.
     AudioManager::Reset();
     Stop_All_Audio_Immediately();
     Remove_All_Audio_Requests();
@@ -175,10 +176,12 @@ void MilesAudioManager::Pause_Audio(AudioAffect affect)
         }
     }
 
-    for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); it = m_audioRequestList.erase(it)) {
-        if (*it != nullptr) {
+    for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end();) {
+        if (*it != nullptr && (*it)->m_requestType == REQUEST_MUSIC_ADD) {
             Delete_Instance(*it);
-            m_audioRequestList.erase(it);
+            it = m_audioRequestList.erase(it);
+        } else {
+            ++it;
         }
     }
 }
@@ -307,7 +310,8 @@ void MilesAudioManager::Prev_Music_Track()
     Remove_Audio_Event(4); // 4 and 5 appear to relate to MusicManager.
     track_name = Prev_Track_Name(track_name);
     AudioEventRTS rts_event(track_name);
-    g_theAudio->Add_Audio_Event(&rts_event);
+    // g_theAudio->Add_Audio_Event(&rts_event);
+    Add_Audio_Event(&rts_event);
 }
 
 /**
@@ -317,10 +321,6 @@ void MilesAudioManager::Prev_Music_Track()
  */
 bool MilesAudioManager::Is_Music_Playing()
 {
-    if (m_streamList.empty()) {
-        return false;
-    }
-
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr && (*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
             return true;
@@ -337,10 +337,6 @@ bool MilesAudioManager::Is_Music_Playing()
  */
 bool MilesAudioManager::Has_Music_Track_Completed(const Utf8String &name, int loops)
 {
-    if (m_streamList.empty()) {
-        return false;
-    }
-
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr && (*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
             if ((*it)->miles.audio_event->Get_Event_Name() == name

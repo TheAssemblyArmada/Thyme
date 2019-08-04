@@ -61,7 +61,7 @@ public:
 
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     ParticleSystem *Hook_Ctor(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves)
     {
@@ -124,7 +124,7 @@ private:
     bool m_unkBool1;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ParticleSystem::Hook_Me()

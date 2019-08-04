@@ -75,7 +75,7 @@ private:
     static FieldParse m_waterTransparencySettingFieldParseTable[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern WaterSetting *g_waterSettings;

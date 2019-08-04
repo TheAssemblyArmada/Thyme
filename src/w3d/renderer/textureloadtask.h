@@ -94,7 +94,7 @@ public:
 
     static void Delete_Free_Pool();
     static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority);
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     TextureLoadTaskClass *Hook_Ctor() { return new (this) TextureLoadTaskClass; }
     void Hook_Dtor() { TextureLoadTaskClass::~TextureLoadTaskClass(); }
@@ -134,7 +134,7 @@ protected:
     StateType m_loadState;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void TextureLoadTaskClass::Hook_Me()

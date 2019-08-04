@@ -95,20 +95,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     endif()
 endif ()
 
-if(STANDALONE)
-    add_definitions(-DTHYME_STANDALONE)
-endif()
-
-if(NOT STANDALONE AND MSVC)
-    set(USING_STLPORT TRUE BOOL INTERNAL)
-endif()
-
-if(USING_STLPORT)
-    add_definitions(-DTHYME_USE_STLPORT)
-endif()
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND STANDALONE)
-    find_package(DirectX COMPONENTS d3d8)
+if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+        find_package(DirectX COMPONENTS d3d8)
+    endif()
 endif()
 
 find_package(ICU COMPONENTS data i18n io tu uc)

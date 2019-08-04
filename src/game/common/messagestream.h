@@ -62,7 +62,7 @@ public:
     void Remove_Translator(unsigned id);
     void Propagate_Messages();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     GameMessage *Hook_Append_Message(GameMessage::MessageType type);
     GameMessage *Hook_Insert_Message(GameMessage::MessageType type, GameMessage *msg);
@@ -74,7 +74,7 @@ private:
     unsigned m_nextTranslatorID;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern MessageStream *&g_theMessageStream;

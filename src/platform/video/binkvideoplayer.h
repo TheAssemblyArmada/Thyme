@@ -39,7 +39,7 @@ public:
     virtual void Notify_Player_Of_New_Provider(bool unk) override;
     virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Init() { BinkVideoPlayer::Init(); }
     void Hook_Deinit() { BinkVideoPlayer::Deinit(); }
@@ -55,7 +55,7 @@ private:
 };
 
 #ifdef BUILD_WITH_BINK
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void BinkVideoPlayer::Hook_Me()

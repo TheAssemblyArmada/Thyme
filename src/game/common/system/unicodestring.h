@@ -183,7 +183,7 @@ private:
     UnicodeStringData *m_data;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern SimpleCriticalSectionClass *&g_unicodeStringCriticalSection;
 #else
 extern SimpleCriticalSectionClass *g_unicodeStringCriticalSection;

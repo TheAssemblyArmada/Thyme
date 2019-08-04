@@ -42,7 +42,7 @@ public:
 
     ParticlePriorityType Get_Priority() const;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     Particle *Hook_Ctor(ParticleSystem *system, const ParticleInfo &info) { return new (this) Particle(system, info); }
     void Hook_Dtor() { Particle::~Particle(); }
@@ -72,7 +72,7 @@ private:
     ParticleSystem *m_systemUnderControl;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void Particle::Hook_Me()

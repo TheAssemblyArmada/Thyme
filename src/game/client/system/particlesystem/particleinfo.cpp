@@ -20,12 +20,12 @@ ParticleInfo::ParticleInfo() :
     m_pos(),
     m_emitterPos(),
     m_velDamping(0.0f),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX(0.0f),
     m_angleY(0.0f),
 #endif
     m_angleZ(0.0f),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angularRateX(0.0f),
     m_angularRateY(0.0f),
 #endif
@@ -50,7 +50,7 @@ void ParticleInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferCoord3D(&m_pos);
     xfer->xferCoord3D(&m_emitterPos);
     xfer->xferReal(&m_velDamping);
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     xfer->xferReal(&m_angleX);
     xfer->xferReal(&m_angleY);
 #else
@@ -59,7 +59,7 @@ void ParticleInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferReal(&fake); // angleY in Generals.
 #endif
     xfer->xferReal(&m_angleZ);
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     xfer->xferReal(&m_angularRateX);
     xfer->xferReal(&m_angularRateY);
 #else

@@ -16,7 +16,7 @@
 
 #include "bittype.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -80,7 +80,7 @@ private:
     float m_high;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 namespace RandomValue
 {
 inline void Hook_Me()

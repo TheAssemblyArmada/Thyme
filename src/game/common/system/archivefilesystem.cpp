@@ -17,7 +17,7 @@
 #include "archivefile.h"
 #include "globaldata.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 ArchiveFileSystem *&g_theArchiveFileSystem = Make_Global<ArchiveFileSystem *>(0x00A2BA00);
 #else
 ArchiveFileSystem *g_theArchiveFileSystem = nullptr;

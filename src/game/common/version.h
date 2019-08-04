@@ -56,7 +56,7 @@ private:
     bool m_useFullVersion;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern Version *&g_theVersion;
 #else
 extern Version *g_theVersion;

@@ -19,7 +19,7 @@
 #include <cstdio>
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameLODManager *&g_theGameLODManager = Make_Global<GameLODManager *>(0x00A2B924);
 #else
 GameLODManager *g_theGameLODManager = nullptr;
@@ -50,7 +50,7 @@ const char *GameLODManager::s_gpuNames[] = {
 
 void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, GPUType *, CPUType *, int *, int *, float *, float *, float *>(0x0074EB20, gpu, cpu, cpu_speed, memory, int_score, float_score, mem_score);
 #else
     *cpu = CPU_P3;
@@ -345,7 +345,7 @@ bool GameLODManager::Set_Static_LOD_Level(StaticGameLODLevel level)
 
 void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     // TODO requires parts of TerrainVisual and GameClient classes.
     Call_Method<void, GameLODManager, StaticGameLODLevel>(0x0047AC60, this, level);
 #endif

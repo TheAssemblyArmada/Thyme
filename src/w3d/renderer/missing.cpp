@@ -17,7 +17,7 @@
 #include "dx8wrapper.h"
 #include "w3dformat.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 w3dtexture_t &MissingTexture::s_missingTexture = Make_Global<w3dtexture_t>(0x00A522F8);
 #else
 w3dtexture_t MissingTexture::s_missingTexture;

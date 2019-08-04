@@ -18,7 +18,7 @@
 #include "asciistring.h"
 #include <vector>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -58,7 +58,7 @@ private:
     std::vector<SubsystemInterface *> m_unksubsystems; // Needs confirming.
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern SubsystemInterfaceList *&g_theSubsystemList;
 #else
 extern SubsystemInterfaceList *g_theSubsystemList;

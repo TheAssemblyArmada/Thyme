@@ -54,13 +54,13 @@ public:
     static void Process_Foreground_Load(TextureLoadTaskClass *task);
     static void Begin_Load_And_Queue(TextureLoadTaskClass *task);
     static void Load_Thumbnail(TextureBaseClass *texture);
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
 private:
     static bool Queues_Not_Empty();
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static unsigned &s_textureInactiveOverrideTime;
     static LoaderThreadClass &s_textureLoadThread;
     static bool &s_textureLoadSuspended;
@@ -71,7 +71,7 @@ private:
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void TextureLoader::Hook_Me()

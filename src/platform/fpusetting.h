@@ -18,6 +18,6 @@
 
 void Set_FP_Mode();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

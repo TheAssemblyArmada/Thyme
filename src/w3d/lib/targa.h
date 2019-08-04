@@ -19,7 +19,7 @@
 #include "endiantype.h"
 #include "fileclass.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -164,7 +164,7 @@ public:
     const TGAHeader &Get_Header() const { return m_header; }
 
     static int Error_Handler(int load_err, const char *filename);
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -195,7 +195,7 @@ private:
     TGA2Extension m_extension;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void TargaImage::Hook_Me()
 {
     Hook_Method(0x008A43F0, static_cast<int (TargaImage::*)(char const *, int, bool)>(&Load));

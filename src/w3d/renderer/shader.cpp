@@ -67,7 +67,7 @@ ShaderClass ShaderClass::s_presetScreenSpriteShader(0x94073);
 ShaderClass ShaderClass::s_presetMultiplicative2DShader(0x90057);
 ShaderClass ShaderClass::s_presetMultiplicativeSpriteShader(0x90053);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 bool &ShaderClass::s_shaderDirty = Make_Global<bool>(0x00A16C1C);
 uint32_t &ShaderClass::s_currentShader = Make_Global<uint32_t>(0x00A4C1B4);
 uint32_t &ShaderClass::s_polygonCullMode = Make_Global<uint32_t>(0x00A16C20);
@@ -449,7 +449,7 @@ void ShaderClass::Report_Unable_To_Fog(const char *source)
 void ShaderClass::Apply()
 {
     // TODO Needs DX8Wrapper, DX8Caps.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ShaderClass>(0x00813590, this);
 #endif
 }

@@ -63,7 +63,7 @@ protected:
     static FieldParse s_videoFieldParseTable[3];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern VideoPlayer *&g_theVideoPlayer;

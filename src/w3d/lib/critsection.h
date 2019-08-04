@@ -18,7 +18,7 @@
 #include "always.h"
 #include "gamedebug.h"
 
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
 #include <atomic>
 #endif
 
@@ -192,7 +192,7 @@ private:
 class FastCriticalSectionClass
 {
 public:
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     FastCriticalSectionClass() { m_flag.clear(); }
 #else
     FastCriticalSectionClass() : m_flag(0) {}
@@ -221,7 +221,7 @@ private:
     void Thread_Safe_Clear_Flag();
 
 private:
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     std::atomic_flag m_flag;
 #else
     long m_flag;

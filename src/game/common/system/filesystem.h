@@ -21,7 +21,7 @@
 #include <map>
 #include <set>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -47,14 +47,14 @@ public:
     static bool Load_Music_Files_From_CD();
     static void Unload_Music_Files_From_CD();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
     std::map<unsigned int, bool> m_availableFiles;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern FileSystem *&g_theFileSystem;
 inline void FileSystem::Hook_Me()
 {

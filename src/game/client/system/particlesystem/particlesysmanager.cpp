@@ -19,7 +19,7 @@
 #include "particle.h"
 #include "xfer.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemManager *>(0x00A2BDAC);
 #else
 ParticleSystemManager *g_theParticleSystemManager;
@@ -104,7 +104,7 @@ void ParticleSystemManager::Reset()
 void ParticleSystemManager::Update()
 {
     // TODO Needs game logic.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystemManager>(0x004D1CC0, this);
 #endif
 }
@@ -260,7 +260,7 @@ void ParticleSystemManager::Destroy_Particle_System_By_ID(ParticleSystemID id)
 void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
 {
     // TODO Requires Object.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystemManager, Object *>(0x004D2270, this, object);
 #endif
 }
@@ -273,7 +273,7 @@ void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
 void ParticleSystemManager::Preload_Assets(TimeOfDayType time)
 {
     // TODO Requires Display.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystemManager, TimeOfDayType>(0x004D2370, this, time);
 #endif
 }
@@ -382,7 +382,7 @@ unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, Particle
 ParticleSystemID ParticleSystemManager::Create_Attached_Particle_System_ID(
     const ParticleSystemTemplate *temp, Object *object, bool create_slaves)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<ParticleSystemID, const ParticleSystemTemplate *, Object *, bool>(
         0x004D1DF0, temp, object, create_slaves);
 #else

@@ -37,7 +37,7 @@ public:
     int Get_Mip_Levels() const { return m_mipLevels; }
     WW3DFormat Get_Format() const { return m_format; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     ThumbnailClass *Hook_Ctor(ThumbnailManagerClass *manager, const StringClass &texture)
     {
         return new (this) ThumbnailClass(manager, texture);
@@ -60,7 +60,7 @@ private:
     ThumbnailManagerClass *m_manager;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ThumbnailClass::Hook_Me()

@@ -226,10 +226,16 @@ endif()
 if(STANDALONE)
     add_executable(thyme ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
+    target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=")
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
-    target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
+    target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+    target_compile_definitions(thyme PRIVATE GAME_DLL=1)
+
+    if (MSVC)
+        target_compile_definitions(thyme PRIVATE THYME_USE_STLPORT=1)
+    endif()
 
     # We don't look for FMpeg yet, but its intended to replace binkw32.dll
     if(NOT FFMPEG_FOUND)

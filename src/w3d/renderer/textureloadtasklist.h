@@ -37,7 +37,7 @@ private:
     TextureLoadTaskListNode *m_tail;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern TextureLoadTaskListClass &g_freeList;
 extern TextureLoadTaskListClass &g_cubeFreeList;

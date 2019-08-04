@@ -20,7 +20,7 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -117,7 +117,7 @@ private:
     static FieldParse s_terrainBridgeFieldParseTable[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern TerrainRoadCollection *&g_theTerrainRoads;
 #else
 extern TerrainRoadCollection *g_theTerrainRoads;

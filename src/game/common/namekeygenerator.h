@@ -21,7 +21,7 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -70,7 +70,7 @@ public:
 
     static void Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -81,7 +81,7 @@ private:
     NameKeyType m_nextID;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 //#define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
 extern NameKeyGenerator *&g_theNameKeyGenerator;
 

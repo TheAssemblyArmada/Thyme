@@ -16,7 +16,7 @@
 #include "messagestream.h"
 #include "commandlist.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 MessageStream *&g_theMessageStream = Make_Global<MessageStream *>(0x00A29B74);
 #else
 MessageStream *g_theMessageStream = nullptr;
@@ -179,7 +179,7 @@ void MessageStream::Propagate_Messages()
     m_lastMessage = nullptr;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameMessage *MessageStream::Hook_Append_Message(GameMessage::MessageType type)
 {
     return MessageStream::Append_Message(type);

@@ -55,7 +55,7 @@ public:
     void Close_File(void *file);
     void Set_Max_Size(unsigned size);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -70,7 +70,7 @@ private:
     SimpleMutexClass m_mutex;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void MilesAudioFileCache::Hook_Me()

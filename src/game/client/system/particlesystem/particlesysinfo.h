@@ -22,7 +22,7 @@
 #include "randomvalue.h"
 #include "snapshot.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include <new>
 #endif
 
@@ -158,7 +158,7 @@ public:
 
     void Tint_All_Colors(int tint);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Xfer(Xfer *xfer) { ParticleSystemInfo::Xfer_Snapshot(xfer); }
     ParticleSystemInfo *Hook_Ctor() { return new(this) ParticleSystemInfo; }
@@ -169,12 +169,12 @@ protected:
     ParticleShaderType m_shaderType;
     ParticleType m_particleType;
     Utf8String m_particleTypeName;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     GameClientRandomVariable m_angleX;
     GameClientRandomVariable m_angleY;
 #endif
     GameClientRandomVariable m_angleZ;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     GameClientRandomVariable m_angularRateX;
     GameClientRandomVariable m_angularRateY;
 #endif
@@ -227,12 +227,12 @@ inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
     m_shaderType(that.m_shaderType),
     m_particleType(that.m_particleType),
     m_particleTypeName(that.m_particleTypeName),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX(that.m_angleX),
     m_angleY(that.m_angleY),
 #endif
     m_angleZ(that.m_angleZ),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angularRateX(that.m_angularRateX),
     m_angularRateY(that.m_angularRateY),
 #endif
@@ -283,7 +283,7 @@ inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
     }
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ParticleSystemInfo::Hook_Me()

@@ -15,7 +15,7 @@
  */
 #include "synctextureloadtasklist.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 SynchronizedTextureLoadTaskListClass &g_foregroundQueue = Make_Global<SynchronizedTextureLoadTaskListClass>(0x00A4C610);
 SynchronizedTextureLoadTaskListClass &g_backgroundQueue = Make_Global<SynchronizedTextureLoadTaskListClass>(0x00A4C678);
 #else

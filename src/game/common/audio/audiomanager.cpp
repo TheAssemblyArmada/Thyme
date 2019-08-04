@@ -18,7 +18,7 @@
 #include "musicmanager.h"
 #include "soundmanager.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 AudioManager *&g_theAudio = Make_Global<AudioManager *>(0x00A29B6C);
 #else
 AudioManager *g_theAudio = nullptr;
@@ -137,7 +137,7 @@ void AudioManager::Reset()
 void AudioManager::Update()
 {
     // TODO Requires g_theTacticalView.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, AudioManager>(0x00404FB0, this);
 #endif
 }
@@ -369,7 +369,7 @@ bool AudioManager::Is_Current_Speaker_Type_Surround()
 bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
     // TODO Requires classes for g_theControlBar, g_thePlayerList
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<bool, AudioManager, const AudioEventRTS *>(0x00406E00, this, event);
 #else
     return false;

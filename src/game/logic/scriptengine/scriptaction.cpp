@@ -117,7 +117,7 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
 Utf8String ScriptAction::Get_UI_Text()
 {
     // TODO Requires ScriptEngine vtable
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Utf8String, ScriptAction>(0x005206B0, this);
 #else
     return Utf8String();
@@ -178,7 +178,7 @@ bool ScriptAction::Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo
 void ScriptAction::Set_Action_Type(ScriptActionType type)
 {
     // TODO Requires ScriptEngine vtable
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ScriptAction, ScriptActionType>(0x0051FE50, this, type);
 #endif
 }
@@ -191,7 +191,7 @@ void ScriptAction::Set_Action_Type(ScriptActionType type)
 ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *info)
 {
     // TODO Requires ScriptEngine vtable
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *>(0x005208A0, input, info);
 #else
     return nullptr;

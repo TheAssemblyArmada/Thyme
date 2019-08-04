@@ -14,7 +14,7 @@
  */
 #include "staticnamekey.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 StaticNameKey &g_teamNameKey = Make_Global<StaticNameKey>(0x00A3A830);
 StaticNameKey &g_theInitialCameraPositionKey = Make_Global<StaticNameKey>(0x00A3A880);
 StaticNameKey &g_playerNameKey = Make_Global<StaticNameKey>(0x00A32580);

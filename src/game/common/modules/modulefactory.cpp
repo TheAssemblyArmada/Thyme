@@ -15,7 +15,7 @@
 #include "modulefactory.h"
 #include "stringex.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 ModuleFactory *&g_theModuleFactory = Make_Global<ModuleFactory *>(0x00A2BE40);
 #else
 ModuleFactory *g_theModuleFactory = nullptr;
@@ -29,7 +29,7 @@ ModuleFactory *g_theModuleFactory = nullptr;
 void ModuleFactory::Init()
 {
     // TODO, needs most module derived classes implementing.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ModuleFactory>(0x004D9660, this);
 #elif 0 // TODO, complete function with raw addresses until reimplemented code exists.
     Add_Module_Internal(

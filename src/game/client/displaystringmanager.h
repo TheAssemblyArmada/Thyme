@@ -41,7 +41,7 @@ private:
     DisplayString *m_currentCheckpoint;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern DisplayStringManager *&g_theDisplayStringManger;

@@ -75,7 +75,7 @@ protected:
     bool m_isActive;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern GameEngine *&g_theGameEngine;

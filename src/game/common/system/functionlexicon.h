@@ -18,7 +18,7 @@
 #include "namekeygenerator.h"
 #include "subsysteminterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -66,7 +66,7 @@ public:
     drawfunc_t Game_Win_Draw_Func(NameKeyType key, TableIndex index);
     layoutfunc_t Win_Layout_Init_Func(NameKeyType key, TableIndex index);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 protected:
@@ -78,7 +78,7 @@ private:
     TableEntry *m_tables[MAX_FUNCTION_TABLES];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void FunctionLexicon::Hook_Me()
 {
     Hook_Method(0x004F3D00, &Load_Table);

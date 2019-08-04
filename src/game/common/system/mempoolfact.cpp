@@ -21,7 +21,7 @@
 
 using std::strcmp;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 MemoryPoolFactory *&g_memoryPoolFactory = Make_Global<MemoryPoolFactory*>(0x00A29B94);
 #else
 MemoryPoolFactory *g_memoryPoolFactory = nullptr;

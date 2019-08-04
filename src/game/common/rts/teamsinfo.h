@@ -46,7 +46,7 @@ public:
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
     TeamsInfo *Get_Team_Info(int index);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -77,7 +77,7 @@ inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
 
 
 // TODO Move this if more appropriate location found.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void TeamsInfoRec::Hook_Me()

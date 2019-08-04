@@ -16,7 +16,7 @@
 #include "messagestream.h"
 #include <cwctype>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(0x00A29B70);
 
 void Keyboard::Hook_Init()

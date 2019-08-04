@@ -99,7 +99,7 @@ public:
     virtual void Process_Fading_List() override;
     virtual void Process_Stopped_List() override;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Init() { MilesAudioManager::Init(); }
     void Hook_Reset() { MilesAudioManager::Reset(); }
@@ -232,7 +232,7 @@ private:
     int m_streamCount;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void MilesAudioManager::Hook_Me()

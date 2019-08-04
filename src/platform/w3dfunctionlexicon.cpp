@@ -17,7 +17,7 @@
 
 void W3DFunctionLexicon::Init()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, FunctionLexicon>(0x007774E0, this);
 #else
     FunctionLexicon::Init();

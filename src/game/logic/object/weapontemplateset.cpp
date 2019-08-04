@@ -107,7 +107,7 @@ void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate 
 void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const void *user_data)
 {
     // TODO requires WeaponTemplate parser
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, INI *, void *, void *, const void *>(0x00605E60, ini, formal, store, user_data);
 #endif
 }

@@ -239,13 +239,13 @@ protected:
     bool m_snapImmediate;
     Coord2D m_guardBandBias;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static uint32_t &s_idNext;
 #else
     static uint32_t s_idNext;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

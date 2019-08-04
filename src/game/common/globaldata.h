@@ -22,7 +22,7 @@
 #include "money.h"
 #include "subsysteminterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -399,7 +399,7 @@ private:
     static GlobalData *s_theOriginal;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void GlobalData::Hook_Me()
 {
     Hook_Function(0x00418090, Parse_Game_Data_Definitions);

@@ -87,7 +87,7 @@ public:
     static void Invalidate_Old_Unused_Textures(unsigned unk);
     static void Apply_Null(unsigned unk);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 protected:
@@ -114,14 +114,14 @@ protected:
     TextureLoadTaskClass *m_thumbnailTextureLoadTask;
 
 private:
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static unsigned &s_unusedTextureID;
 #else
     static unsigned s_unusedTextureID;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void TextureBaseClass::Hook_Me()

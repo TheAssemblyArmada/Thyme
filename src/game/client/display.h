@@ -142,6 +142,6 @@ protected:
     DisplayString *m_unkDisplayString;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

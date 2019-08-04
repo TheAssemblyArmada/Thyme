@@ -45,7 +45,7 @@ public:
     static bool Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -61,7 +61,7 @@ private:
     bool m_hasWarnings;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ScriptAction::Hook_Me()

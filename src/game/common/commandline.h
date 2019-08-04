@@ -17,13 +17,13 @@
 
 #include "always.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
 void Parse_Command_Line(int argc, char *argv[]);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 namespace CommandLine
 {
 

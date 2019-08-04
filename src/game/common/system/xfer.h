@@ -111,6 +111,6 @@ protected:
     Utf8String m_filename;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

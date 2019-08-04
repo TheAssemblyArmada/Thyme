@@ -19,7 +19,7 @@
 #include "subsysteminterface.h"
 #include <list>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -91,7 +91,7 @@ private:
     static FieldParse s_languageParseTable[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern GlobalLanguage *&g_theGlobalLanguage;
 #else
 extern GlobalLanguage *g_theGlobalLanguage;

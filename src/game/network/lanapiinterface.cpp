@@ -14,7 +14,7 @@
  */
 #include "lanapiinterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 LANAPIInterface *&g_theLAN = Make_Global<LANAPIInterface *>(0x00A2E0EC);
 #else
 LANAPIInterface *g_theLAN = nullptr;

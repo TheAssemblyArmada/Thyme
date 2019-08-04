@@ -23,7 +23,7 @@
 #include "unicodestring.h"
 #include <vector>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -74,7 +74,7 @@ private:
     static FieldParse s_scienceFieldParseTable[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern ScienceStore *&g_theScienceStore;
 #else
 extern ScienceStore *g_theScienceStore;

@@ -20,7 +20,7 @@
 #include <cinttypes>
 #include <stdio.h>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 Utf8String &g_exceptionFileBuffer = Make_Global<Utf8String>(0x00A29FB8);
 #else
 Utf8String g_exceptionFileBuffer;
@@ -238,7 +238,7 @@ static void Get_Function_Details(void *pointer, char *name, char *filename, unsi
             line.Address = 0;
 
             if (SymGetLineFromAddrPtr(
-                    process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD_PTR>(&displacement), &line)) {
+                    process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD>(&displacement), &line)) {
                 if (filename != nullptr) {
                     strcpy(filename, line.FileName);
                 }

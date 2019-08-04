@@ -14,7 +14,7 @@
  */
 #include "displaystringmanager.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 DisplayStringManager *&g_theDisplayStringManger = Make_Global<DisplayStringManager *>(0x00A2A6C4);
 #else
 DisplayStringManager *g_theDisplayStringManger = nullptr;

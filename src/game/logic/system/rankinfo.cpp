@@ -16,7 +16,7 @@
 #include "ini.h"
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 RankInfoStore *&g_theRankInfoStore = Make_Global<RankInfoStore *>(0x00A2B97C);
 #else
 RankInfoStore *g_theRankInfoStore = nullptr;

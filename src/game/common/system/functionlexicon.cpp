@@ -15,7 +15,7 @@
  */
 #include "functionlexicon.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 FunctionLexicon *&g_theFunctionLexicon = Make_Global<FunctionLexicon*>(0x00A2BE44);
 #else
 FunctionLexicon *g_theFunctionLexicon = nullptr;
@@ -92,7 +92,7 @@ void *FunctionLexicon::Key_To_Func(NameKeyType key, TableEntry *table)
  */
 void FunctionLexicon::Init()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, FunctionLexicon>(0x004F3EC0, this);
 #else
 // TODO requires several function pointer tables, do them as functions that call them require it?

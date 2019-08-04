@@ -50,7 +50,7 @@ private:
     DynamicMemoryAllocator *m_firstDmaInFactory;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern MemoryPoolFactory *&g_memoryPoolFactory;

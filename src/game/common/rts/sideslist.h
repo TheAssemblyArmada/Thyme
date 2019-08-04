@@ -58,7 +58,7 @@ public:
 
     static bool Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -71,7 +71,7 @@ private:
     TeamsInfoRec m_skirmishTeamsRec;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern SidesList *&g_theSidesList;

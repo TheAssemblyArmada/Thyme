@@ -67,7 +67,7 @@ public:
     bool Contains(MultiListObjectClass *obj) const;
     int Count() const;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -388,7 +388,7 @@ protected:
     const MultiListNodeClass *m_originalHead;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void GenericMultiListClass::Hook_Me()

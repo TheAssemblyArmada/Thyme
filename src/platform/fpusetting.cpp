@@ -16,7 +16,7 @@
 
 void Set_FP_Mode()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void>(0x004A1E40);
 #else
     

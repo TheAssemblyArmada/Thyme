@@ -72,7 +72,7 @@ void CriticalSectionClass::Unlock()
  */
 void FastCriticalSectionClass::Thread_Safe_Set_Flag()
 {
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     while (m_flag.test_and_set(std::memory_order_seq_cst)) {
 #else
     // Should work for both x86_32 and x86_64 plus no assembly.
@@ -94,7 +94,7 @@ void FastCriticalSectionClass::Thread_Safe_Set_Flag()
  */
 void FastCriticalSectionClass::Thread_Safe_Clear_Flag()
 {
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_flag.clear();
 #else
     m_flag = 0;

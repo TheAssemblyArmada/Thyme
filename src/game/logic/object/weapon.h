@@ -17,7 +17,7 @@
 
 #include "mempoolobj.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -80,14 +80,14 @@ class WeaponBonusSet : public MemoryPoolObject
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
     WeaponBonus m_bonus[WEAPONBONUSCONDITION_COUNT];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void WeaponBonusSet::Hook_Me()
 {
     Hook_Function(0x004C9860, Parse_Weapon_Bonus_Set_Ptr);

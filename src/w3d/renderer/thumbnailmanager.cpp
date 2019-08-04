@@ -16,7 +16,7 @@
 #include "thumbnailmanager.h"
 #include "thumbnail.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 DLListClass<ThumbnailManagerClass> &ThumbnailManagerClass::ThumbnailManagerList =
     Make_Global<DLListClass<ThumbnailManagerClass>>(0x00A544B0);
 ThumbnailManagerClass *&g_thumbnailManager = Make_Global<ThumbnailManagerClass *>(0x00A544A8);

@@ -87,7 +87,7 @@ private:
     int Get_3DLabs_Device(unsigned device_id);
     static bool Has_Feature(unsigned caps, unsigned feature) { return (caps & feature) == feature; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     DX8Caps *Hook_Ctor1(w3dhandle_t handle, const w3dcaps_t &caps, WW3DFormat format, const w3dadapterid_t &identifier)
     {
         return new (this) DX8Caps(handle, caps, format, identifier);
@@ -136,14 +136,14 @@ private:
     StringClass m_videoCardSpecString;
     StringClass m_videoCardName;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static StringClass &s_videoCardDetails;
 #else
     static StringClass s_videoCardDetails;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 inline void DX8Caps::Hook_Me()
 {

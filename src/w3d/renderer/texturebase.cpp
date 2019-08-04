@@ -21,7 +21,7 @@
 #include "w3d.h"
 #include <algorithm>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 unsigned &TextureBaseClass::s_unusedTextureID = Make_Global<unsigned>(0x00A4C388);
 #else
 unsigned TextureBaseClass::s_unusedTextureID = 0;
@@ -230,7 +230,7 @@ void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
 void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
 {
     // TODO Needs W3DAssetManager
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, unsigned>(0x0081A620, unk);
 #endif
 }
@@ -243,7 +243,7 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
 void TextureBaseClass::Apply_Null(unsigned unk)
 {
     // TODO Needs more of DX8Wrapper
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, unsigned>(0x0081A890, unk);
 #endif
 }

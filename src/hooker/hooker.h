@@ -78,7 +78,7 @@ __forceinline T *Make_Pointer(const uintptr_t address) {
 // binary where they are required and a replacement hasn't been written yet.
 template<typename T, typename... Types>
 __forceinline T Call_Function(const uintptr_t address, Types... args) {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return reinterpret_cast<T(__cdecl *)(Types...)>(address)(args...);
 #else
     return T();
@@ -87,7 +87,7 @@ __forceinline T Call_Function(const uintptr_t address, Types... args) {
 
 template<typename T, typename... Types>
 __forceinline T Call__StdCall_Function(const uintptr_t address, Types... args) {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return reinterpret_cast<T(__stdcall *)(Types...)>(address)(args...);
 #else
     return T();
@@ -96,7 +96,7 @@ __forceinline T Call__StdCall_Function(const uintptr_t address, Types... args) {
 
 template<typename T, typename X, typename... Types>
 __forceinline T Call_Method(const uintptr_t address, X *const self, Types... args) {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return reinterpret_cast<T(__thiscall *)(X *, Types...)>(address)(self, args...);
 #else
     return T();
@@ -146,7 +146,7 @@ __forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types...
 template<typename T>
 void Hook_Function(uintptr_t in, T out)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
@@ -158,7 +158,7 @@ void Hook_Function(uintptr_t in, T out)
 template<typename T, typename... Types>
 void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types...))
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
@@ -172,7 +172,7 @@ void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types
 template<typename T>
 void Hook_Method(uintptr_t in, T out)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;

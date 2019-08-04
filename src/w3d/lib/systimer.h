@@ -64,7 +64,7 @@ inline unsigned SysTimeClass::Time_Func()
 #endif
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 #define g_theSysTimer (Make_Global<SysTimeClass>(0x00A66B30))

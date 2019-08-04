@@ -27,13 +27,13 @@
 #include <strings.h>
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hookcrt.h"
 #endif
 
 using rts::FourCC;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameTextInterface *&g_theGameText = Make_Global<GameTextInterface *>(0x00A2A2AC);
 #else
 GameTextInterface *g_theGameText = nullptr;

@@ -21,7 +21,7 @@
 #include <map>
 #include <set>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -56,7 +56,7 @@ public:
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs);
     void Load_Mods();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 protected:
@@ -64,7 +64,7 @@ protected:
     ArchivedDirectoryInfo m_archiveDirInfo;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void ArchiveFileSystem::Hook_Me()
 {
     Hook_Method(0x0048F410, &Get_File_List_From_Dir);

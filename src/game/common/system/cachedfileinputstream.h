@@ -18,7 +18,7 @@
 #include "asciistring.h"
 #include "chunkinputstream.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 

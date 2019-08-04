@@ -88,7 +88,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_systemLifetimeLeft = temp->m_systemLifetime;
     m_isForever = temp->m_systemLifetime == 0;
     m_velDamping = temp->m_velDamping;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX = temp->m_angleX;
     m_angularRateX = temp->m_angularRateX;
     m_angleY = temp->m_angleY;
@@ -168,7 +168,7 @@ ParticleSystem::~ParticleSystem()
 void ParticleSystem::Update(int unk)
 {
     // Needs Drawable, GameClient, GameLogic
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystem, int>(0x004CFB80, this, unk);
 #endif
 }
@@ -348,7 +348,7 @@ void ParticleSystem::Rotate_Local_Transform_Z(float theta)
 void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
 {
 // TODO requires Drawable.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystem, const Drawable *>(0x004CE800, this, drawable);
 #endif
 }
@@ -361,7 +361,7 @@ void ParticleSystem::Attach_To_Drawable(const Drawable *drawable)
 void ParticleSystem::Attach_To_Object(const Object *object)
 {
 // TODO requires Object.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, ParticleSystem, const Object *>(0x004CE830, this, object);
 #endif
 }
@@ -697,12 +697,12 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
 
         _info.m_velDamping = m_velDamping.Get_Value();
         _info.m_angularDamping = m_angularDamping.Get_Value();
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
         _info.m_angleX = m_angleX.Get_Value();
         _info.m_angleY = m_angleY.Get_Value();
 #endif
         _info.m_angleZ = m_angleZ.Get_Value();
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
         _info.m_angularRateX = m_angularRateX.Get_Value();
         _info.m_angularRateY = m_angularRateY.Get_Value();
 #endif
@@ -942,12 +942,12 @@ ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, Parti
         tmp.m_size *= slave_info->m_size;
         tmp.m_sizeRate *= slave_info->m_sizeRate;
         tmp.m_sizeRateDamping *= slave_info->m_sizeRateDamping;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
         tmp.m_angleX = slave_info->m_angleX;
         tmp.m_angleY = slave_info->m_angleY;
 #endif
         tmp.m_angleZ = slave_info->m_angleZ;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
         tmp.m_angularRateX = slave_info->m_angularRateX;
         tmp.m_angularRateY = slave_info->m_angularRateY;
 #endif

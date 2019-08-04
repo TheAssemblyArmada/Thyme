@@ -173,7 +173,7 @@ public:
     AudioSettings *Get_Audio_Settings() const { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Init() { AudioManager::Init(); }
     void Hook_Reset() { AudioManager::Reset(); }
@@ -289,7 +289,7 @@ private:
     static const char *s_speakerTypes[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern AudioManager *&g_theAudio;
 

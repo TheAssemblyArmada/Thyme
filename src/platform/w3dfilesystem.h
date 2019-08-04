@@ -36,7 +36,7 @@ public:
     virtual FileClass *Get_File(const char *filename);
     virtual void Return_File(FileClass *file);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     FileClass *Get_File_NV(const char *filename);
     void Return_File_NV(FileClass *file);
 
@@ -71,7 +71,7 @@ private:
     char m_filename[PATH_MAX];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void W3DFileSystem::Hook_Me()

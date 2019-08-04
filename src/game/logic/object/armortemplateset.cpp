@@ -36,7 +36,7 @@ template<> const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT +
 void ArmorTemplateSet::Parse_Armor_Template_Set(INI *ini)
 {
     // TODO Requires ArmorTemplate and DamageFX parsers.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static FieldParse _parse_table[] = { 
         { "Conditions", BitFlags<ARMORSET_COUNT>::Parse_INI, nullptr, offsetof(ArmorTemplateSet, m_conditions) },
         // { "Armor", &INI::parseArmorTemplate, nullptr, offsetof(ArmorTemplateSet, m_template) },

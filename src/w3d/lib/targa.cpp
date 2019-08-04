@@ -20,7 +20,7 @@
 #include <cstring>
 #include <malloc.h>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hookcrt.h"
 #endif
 

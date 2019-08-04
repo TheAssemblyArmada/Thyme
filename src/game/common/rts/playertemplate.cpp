@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 PlayerTemplateStore *&g_thePlayerTemplateStore = Make_Global<PlayerTemplateStore *>(0x00A2BDF4);
 #else
 PlayerTemplateStore *g_thePlayerTemplateStore = nullptr;
@@ -41,7 +41,7 @@ Image *PlayerTemplate::Get_Head_Watermark_Image()
 
 Image *PlayerTemplate::Get_Flag_Watermark_Image()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Image *, PlayerTemplate>(0x004D2FB0, this);
 #else
     return nullptr;
@@ -50,7 +50,7 @@ Image *PlayerTemplate::Get_Flag_Watermark_Image()
 
 Image *PlayerTemplate::Get_Side_Icon_Image()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Image *, PlayerTemplate>(0x004D2FD0, this);
 #else
     return nullptr;
@@ -59,7 +59,7 @@ Image *PlayerTemplate::Get_Side_Icon_Image()
 
 Image *PlayerTemplate::Get_General_Image()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Image *, PlayerTemplate>(0x004D2FF0, this);
 #else
     return nullptr;
@@ -68,7 +68,7 @@ Image *PlayerTemplate::Get_General_Image()
 
 Image *PlayerTemplate::Get_Enabled_Image()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Image *, PlayerTemplate>(0x004D3010, this);
 #else
     return nullptr;

@@ -368,7 +368,7 @@ public:
     GameMessage *Get_Next() { return m_next; }
     GameMessage *Get_Prev() { return m_prev; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -384,7 +384,7 @@ private:
     GameMessageArgument *m_argTail;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void GameMessage::Hook_Me()

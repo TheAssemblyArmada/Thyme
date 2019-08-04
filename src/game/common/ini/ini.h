@@ -154,7 +154,7 @@ public:
     
     // Block parsing functions
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     // Hooking function
     static void Hook_Me();
 #endif
@@ -183,7 +183,7 @@ private:
     // static Xfer *SXfer;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hookcrt.h"
 #include "hooker.h"
 

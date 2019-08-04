@@ -47,12 +47,12 @@ protected:
     Coord3D m_pos;
     Coord3D m_emitterPos;
     float m_velDamping;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     float m_angleX;
     float m_angleY;
 #endif
     float m_angleZ;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     float m_angularRateX;
     float m_angularRateY;
 #endif
@@ -74,12 +74,12 @@ inline ParticleInfo::ParticleInfo(const ParticleInfo &that) :
     m_pos(that.m_pos),
     m_emitterPos(that.m_emitterPos),
     m_velDamping(that.m_velDamping),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX(that.m_angleX),
     m_angleY(that.m_angleY),
 #endif
     m_angleZ(that.m_angleZ),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angularRateX(that.m_angularRateX),
     m_angularRateY(that.m_angularRateY),
 #endif

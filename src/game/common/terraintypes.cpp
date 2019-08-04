@@ -17,7 +17,7 @@
 #include "gamedebug.h"
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 TerrainTypeCollection *&g_theTerrainTypes = Make_Global<TerrainTypeCollection *>(0x00A2BE54);
 #else
 TerrainTypeCollection *g_theTerrainTypes = nullptr;

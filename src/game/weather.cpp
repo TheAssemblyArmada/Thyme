@@ -14,7 +14,7 @@
  */
 #include "weather.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 WeatherSetting *&g_theWeatherSetting = Make_Global<WeatherSetting *>(0x00A2BF00);
 #else
 WeatherSetting *g_theWeatherSetting;

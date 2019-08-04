@@ -61,18 +61,16 @@ install:
         $DXSDK_URL = "https://download.microsoft.com/download/3/3/f/33f1af6e-c61b-4f14-a0de-3e9096ed4b3a/$DXSDK_INSTALLER";
         $DXSDK_DIR = "c:\projects\dxsdk"
         
-        If ($env:CMAKE_OPTIONS -eq "-DSTANDALONE=ON") {
-            Set-Location c:\projects | Out-Null;
-            
-            If (-Not (Test-Path "$DXSDK_INSTALLER")) {
-                    & appveyor DownloadFile "$DXSDK_URL" -FileName "$DXSDK_TMP";
-                    & 7z x -y "c:\projects\$DXSDK_TMP";
-            }
-            
-            New-Item -ItemType directory -Path $DXSDK_DIR| Out-Null;
-            Set-Location $DXSDK_DIR | Out-Null;
-            & 7z x -y "c:\projects\$DXSDK_INSTALLER";
+        Set-Location c:\projects | Out-Null;
+        
+        If (-Not (Test-Path "$DXSDK_INSTALLER")) {
+                & appveyor DownloadFile "$DXSDK_URL" -FileName "$DXSDK_TMP";
+                & 7z x -y "c:\projects\$DXSDK_TMP";
         }
+        
+        New-Item -ItemType directory -Path $DXSDK_DIR| Out-Null;
+        Set-Location $DXSDK_DIR | Out-Null;
+        & 7z x -y "c:\projects\$DXSDK_INSTALLER";
         
 # scripts to run before build
 before_build:

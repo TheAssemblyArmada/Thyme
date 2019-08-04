@@ -204,7 +204,7 @@ private:
 void Test_Minimum_Requirements(
     GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern GameLODManager *&g_theGameLODManager;

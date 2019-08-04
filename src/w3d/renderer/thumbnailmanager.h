@@ -46,7 +46,7 @@ public:
     static void Deinit();
     static void Pre_Init(bool b) { /*Looks left over from Renegade, references .mix files*/ }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -60,14 +60,14 @@ private:
     unsigned m_time;
 
     static bool s_createIfNotFound;
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static DLListClass<ThumbnailManagerClass> &ThumbnailManagerList;
 #else
     static DLListClass<ThumbnailManagerClass> ThumbnailManagerList;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ThumbnailManagerClass::Hook_Me()

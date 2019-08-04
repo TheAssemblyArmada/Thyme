@@ -114,7 +114,7 @@ inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
     }
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern WW3DFormat *g_D3DFormatToWW3DFormatConversionArray;

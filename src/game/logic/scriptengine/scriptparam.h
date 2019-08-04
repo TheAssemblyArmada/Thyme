@@ -141,7 +141,7 @@ public:
 
     static Parameter *Read_Parameter(DataChunkInput &input);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -169,7 +169,7 @@ inline Parameter &Parameter::operator=(const Parameter &that)
     return *this;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void Parameter::Hook_Me()

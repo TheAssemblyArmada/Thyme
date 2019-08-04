@@ -71,7 +71,7 @@ private:
     std::map<Utf8String, int> m_seen;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern WaypointMap *&g_waypoints;

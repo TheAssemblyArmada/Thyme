@@ -83,7 +83,7 @@ public:
     static ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     ParticleSystemManager *Hook_Ctor() { return new (this) ParticleSystemManager(); }
     void Hook_Dtor() { ParticleSystemManager::~ParticleSystemManager(); }
@@ -106,7 +106,7 @@ private:
     partsystempmap_t m_templateStore;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ParticleSystemManager::Hook_Me()

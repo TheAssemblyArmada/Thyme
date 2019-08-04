@@ -18,7 +18,7 @@
 #include "globaldata.h"
 #include "maputil.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameState *&g_theGameState = Make_Global<GameState *>(0x00A2BA04);
 #else
 GameState *g_theGameState = nullptr;

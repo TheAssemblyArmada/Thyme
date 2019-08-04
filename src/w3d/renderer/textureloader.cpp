@@ -28,7 +28,7 @@
 #include "thumbnailmanager.h"
 #include "vector3.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 unsigned &TextureLoader::s_textureInactiveOverrideTime = Make_Global<unsigned>(0x00A4C688);
 LoaderThreadClass &TextureLoader::s_textureLoadThread = Make_Global<LoaderThreadClass>(0x00A4C620);
 bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00A4C604);

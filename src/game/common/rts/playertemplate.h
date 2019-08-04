@@ -114,7 +114,7 @@ public:
 
     static void Parse_Player_Template_Definitions(INI *ini);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -122,7 +122,7 @@ private:
     std::vector<PlayerTemplate> m_playerTemplates;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern PlayerTemplateStore *&g_thePlayerTemplateStore;

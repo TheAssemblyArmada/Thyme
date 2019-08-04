@@ -32,14 +32,14 @@ Utf8String Get_Registry_Language()
 
 void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x00498A80, subkey, value, destination);
 #endif
 }
 
 void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x004988A0, subkey, value, destination);
 #endif
 }

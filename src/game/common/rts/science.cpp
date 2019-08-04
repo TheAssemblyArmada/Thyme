@@ -15,7 +15,7 @@
 #include "science.h"
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 ScienceStore *&g_theScienceStore = Make_Global<ScienceStore *>(0x00A2B978);
 #else
 ScienceStore *g_theScienceStore = nullptr;

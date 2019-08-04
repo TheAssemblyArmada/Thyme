@@ -33,7 +33,7 @@ public:
         unsigned src_surface_height, unsigned src_surface_pitch, WW3DFormat src_surface_format, uint8_t *src_palette,
         unsigned src_palette_bpp, bool generate_mip_level, const Vector3 &adjust);
     
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -47,7 +47,7 @@ private:
         WW3DFormat src_surface_format, const uint8_t *src_palette, unsigned src_palette_bpp, const Vector3 &adjust);
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void BitmapHandlerClass::Hook_Me()

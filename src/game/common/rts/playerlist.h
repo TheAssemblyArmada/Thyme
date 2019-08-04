@@ -46,7 +46,7 @@ private:
     Player *m_players;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern PlayerList *&g_thePlayerList;

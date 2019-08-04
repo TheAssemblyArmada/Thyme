@@ -14,7 +14,7 @@
  */
 #include "systimer.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 // CPUDetect uses this in static init, breaks if that is initialised before this, define instantiates where used.
 // SysTimeClass &g_theSysTimer = Make_Global<SysTimeClass>(0x00A66B30);
 #else
@@ -29,7 +29,7 @@ void SysTimeClass::Reset()
 
 int SysTimeClass::Get()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #define _is_init (Make_Global<bool>(0x00A66B30))
 #else
     static bool _is_init;

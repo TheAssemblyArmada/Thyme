@@ -23,7 +23,7 @@
 #include <wctype.h>
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 SimpleCriticalSectionClass *&g_unicodeStringCriticalSection = Make_Global<SimpleCriticalSectionClass *>(0x00A2A294);
 #else
 SimpleCriticalSectionClass *g_unicodeStringCriticalSection = nullptr;

@@ -130,7 +130,7 @@ public:
     void Copy_Pair_From(Dict &that, NameKeyType key);
     void Release_Data();
     
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -154,7 +154,7 @@ inline void Dict::Init(const Dict *that)
     }
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void Dict::Hook_Me()

@@ -38,7 +38,7 @@ public:
 
     static void Parse_Rank_Definition(INI *ini);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Init();
     void Hook_Reset();
@@ -63,7 +63,7 @@ private:
     std::vector<ScienceType> m_sciencesGranted;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern RankInfoStore *&g_theRankInfoStore;
 

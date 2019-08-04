@@ -45,12 +45,12 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_pos = info.m_pos;
     m_emitterPos = info.m_emitterPos;
     m_velDamping = info.m_velDamping;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX = info.m_angleX;
     m_angleY = info.m_angleY;
 #endif
     m_angleZ = info.m_angleZ;
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angularRateX = info.m_angularRateX;
     m_angularRateY = info.m_angularRateY;
 #endif
@@ -195,7 +195,7 @@ void Particle::Apply_Force(const Coord3D &force)
 void Particle::Do_Wind_Motion()
 {
     // TODO requires GameLogic and GameClient global.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Particle>(0x004CD160, this);
 #endif
 }

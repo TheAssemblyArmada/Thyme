@@ -129,7 +129,7 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
  */
 void Condition::Set_Condition_Type(ConditionType type)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Condition, ConditionType>(0x0051DB90, this, type);
 #else
     // Clear existing paramters.
@@ -150,7 +150,7 @@ void Condition::Set_Condition_Type(ConditionType type)
  */
 bool Condition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<bool, DataChunkInput &, DataChunkInfo *, void *>(0x0051E540, input, info, data);
 #else
     Condition *new_condition = new Condition;

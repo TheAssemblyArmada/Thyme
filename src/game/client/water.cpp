@@ -17,7 +17,7 @@
 #include "gametype.h"
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 WaterSetting *g_waterSettings = Make_Pointer<WaterSetting>(0x00A2F0B8);
 WaterTransparencySetting *&g_theWaterTransparency = Make_Global<WaterTransparencySetting *>(0x00A2F0B0);
 #else

@@ -75,7 +75,7 @@ void Thing::Get_Unit_Dir_Vector3D(Coord3D &dst)
 void Thing::Set_Position_Z(float pos)
 {
     // TODO Requires TerrainLogic
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Thing, float>(0x005435C0, this, pos);
 #elif 0
     if (Get_Template()->Is_KindOf(KINDOF_STICK_TO_TERRAIN_SLOPE)) {

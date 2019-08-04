@@ -56,7 +56,7 @@ public:
     TunnelTracker *Register_New_Cave(int index);
     TunnelTracker *Get_Tunnel_Tracker_For_Cave_Index(size_t index);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -64,7 +64,7 @@ private:
 };
 
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern CaveSystem *&g_theCaveSystem;
 

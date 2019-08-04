@@ -14,7 +14,7 @@
  */
 #include "playerlist.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 PlayerList *&g_thePlayerList = Make_Global<PlayerList *>(0x00A2B688);
 #else
 PlayerList *g_thePlayerList = nullptr;

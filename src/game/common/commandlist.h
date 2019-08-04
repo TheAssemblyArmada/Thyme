@@ -28,14 +28,14 @@ public:
 
     void Append_Message_List(GameMessage *list);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
     void Destroy_All_Messages();
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern CommandList *&g_theCommandList;
 
 inline void CommandList::Hook_Me()

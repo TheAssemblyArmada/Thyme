@@ -41,7 +41,7 @@ public:
     virtual int Height() override;
     virtual int Width() override;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Update() { BinkVideoStream::Update(); }
     bool Hook_Is_Frame_Ready() { return BinkVideoStream::Is_Frame_Ready(); }
@@ -58,7 +58,7 @@ private:
 };
 
 #ifdef BUILD_WITH_BINK
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void BinkVideoStream::Hook_Me()

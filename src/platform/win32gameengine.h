@@ -17,7 +17,7 @@
 
 #include "gameengine.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -47,7 +47,7 @@ public:
     virtual AudioManager *Create_Audio_Manager() override;
     virtual Network *Create_Network() override;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     LocalFileSystem *Create_Local_File_System_NV();
     ArchiveFileSystem *Create_Archive_File_System_NV();
     ModuleFactory *Hook_Create_Module_Factory();
@@ -57,7 +57,7 @@ private:
     unsigned int m_previousErrorMode;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void Win32GameEngine::Hook_Me()
 {
     Hook_Method(0x007420F0, &Create_Local_File_System_NV);

@@ -58,7 +58,7 @@ void SoundManager::Add_Audio_Event(AudioEventRTS *event)
 bool SoundManager::Can_Play_Now(AudioEventRTS *event)
 {
     // Requires PlayerList and PartitionManager classes.
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<bool, SoundManager, AudioEventRTS *>(0x00446120, this, event);
 #else
     return false;

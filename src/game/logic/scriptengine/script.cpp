@@ -215,7 +215,7 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
     return input.Parse(new_script) ? new_script : nullptr;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 void Script::Hook_Xfer_Snapshot(Xfer *xfer)
 {
     Script::Xfer_Snapshot(xfer);

@@ -439,7 +439,7 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
 
 Coord3D *AudioEventRTS::Get_Current_Pos()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<Coord3D *, AudioEventRTS>(0x00445980, this);
 #else
     return nullptr;

@@ -107,7 +107,7 @@ ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<AudioManager *, Win32GameEngine>(0x007424B0, this);
 #else
     return nullptr;
@@ -119,7 +119,7 @@ Network *Win32GameEngine::Create_Network()
     return nullptr;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 LocalFileSystem *Win32GameEngine::Create_Local_File_System_NV()
 {
     return Win32GameEngine::Create_Local_File_System();

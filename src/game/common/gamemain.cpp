@@ -17,7 +17,7 @@
 
 GameEngine *Create_Game_Engine()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<GameEngine*>(0x00401CD0);
 #else
     GameEngine *tmp = new Win32GameEngine;

@@ -15,7 +15,7 @@
  */
 #include "view.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 uint32_t &View::s_idNext = Make_Global<uint32_t>(0x009D4178);
 #else
 uint32_t View::s_idNext = 1;

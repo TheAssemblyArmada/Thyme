@@ -478,7 +478,7 @@ void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, void
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 void GeometryInfo::Hook_Xfer(Xfer *xfer)
 {
     GeometryInfo::Xfer_Snapshot(xfer);

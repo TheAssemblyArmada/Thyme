@@ -30,7 +30,7 @@ void Stack_Dump_Handler(const char *data);
 void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skipFrames, void (*callback)(char const *));
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern Utf8String &g_exceptionFileBuffer;

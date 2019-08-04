@@ -18,6 +18,6 @@
 
 void Game_Main(int argc, char *argv[]);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

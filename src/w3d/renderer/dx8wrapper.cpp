@@ -19,13 +19,13 @@
 using std::memcpy;
 using std::memset;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 uint32_t &g_numberOfDx8Calls = Make_Global<uint32_t>(0x00A47F40);
 #else
 uint32_t g_numberOfDx8Calls = 0;
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Global<IDirect3D8 *(__stdcall *)(unsigned)>(
     0x00A47F6C);
 HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
@@ -76,10 +76,10 @@ DX8Caps *DX8Wrapper::s_currentCaps;
 
 void DX8Wrapper::Init(void *hwnd, bool lite)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void, void *, bool>(0x00800670, hwnd, lite);
 #else
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     memset(s_textures, 0, sizeof(*s_textures) * MAX_TEXTURE_STAGES);
     memset(s_renderStates, 0, sizeof(*s_renderStates) * 256);
     memset(s_textureStageStates, 0, (sizeof(*s_textureStageStates) * 32) * MAX_TEXTURE_STAGES);
@@ -102,7 +102,7 @@ void DX8Wrapper::Init(void *hwnd, bool lite)
 
 void DX8Wrapper::Shutdown()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Function<void>(0x00800860);
 #endif
 }
@@ -116,7 +116,7 @@ void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
 w3dtexture_t DX8Wrapper::Create_Texture(
     unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<w3dtexture_t, unsigned, unsigned, WW3DFormat, MipCountType, w3dpool_t, bool>(
         0x008036F0, width, height, format, mip_level_count, pool, rendertarget);
 #else

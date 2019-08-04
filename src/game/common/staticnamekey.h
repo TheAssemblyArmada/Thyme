@@ -32,7 +32,7 @@ private:
     const char *m_name;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern StaticNameKey &g_teamNameKey;

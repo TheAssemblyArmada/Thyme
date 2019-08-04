@@ -122,7 +122,7 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -178,7 +178,7 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -192,7 +192,7 @@ private:
     MicroChunkHeader m_microChunkHeader;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ChunkSaveClass::Hook_Me()

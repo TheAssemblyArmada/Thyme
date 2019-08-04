@@ -23,7 +23,7 @@
 #include "mempoolfact.h"
 #include "minmax.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 void *New_New(size_t bytes)
 {
     ++(Make_Global<int>(0x00A29B9C));

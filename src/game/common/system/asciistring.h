@@ -20,7 +20,7 @@
 #include <cstring>
 
 // Using STLPort seems to screw up some of the C++11 header inclusions.
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
 #include <atomic>
 #endif
 
@@ -45,7 +45,7 @@ public:
         char *debug_ptr;
 #endif // GAME_DEBUG_STRUCTS
 
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
         std::atomic<uint16_t> ref_count;
 #else
         uint16_t ref_count;
@@ -54,7 +54,7 @@ public:
 
         void Inc_Ref_Count()
         {
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
             ++ref_count;
 #elif defined PLATFORM_WINDOWS
             InterlockedIncrement16((volatile short *)&ref_count);
@@ -63,7 +63,7 @@ public:
 
         void Dec_Ref_Count()
         {
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
             --ref_count;
 #elif defined PLATFORM_WINDOWS
             InterlockedDecrement16((volatile short *)&ref_count);

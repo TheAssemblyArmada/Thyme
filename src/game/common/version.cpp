@@ -16,7 +16,7 @@
 #include "version.h"
 #include "gametext.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 Version *&g_theVersion = Make_Global<Version *>(0x00A29BA0);
 #else

@@ -32,7 +32,7 @@ enum
     LIGHT_COUNT = 4,
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern uint32_t &g_numberOfDx8Calls;
 #else
 extern uint32_t g_numberOfDx8Calls;
@@ -138,7 +138,7 @@ public:
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
 
 private:
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
     static HMODULE &s_d3dLib;
     static IDirect3D8 *&s_d3dInterface;
@@ -264,7 +264,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
 #ifdef BUILD_WITH_D3D8
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     if (s_textureStageStates[stage * sizeof(*s_textureStageStates) + state] == value) {
         return;
     }
@@ -334,6 +334,6 @@ inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &
 }
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

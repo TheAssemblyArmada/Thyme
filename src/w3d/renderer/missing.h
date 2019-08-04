@@ -43,13 +43,13 @@ public:
     static w3dsurface_t Create_Missing_Surface();
 
 private:
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static w3dtexture_t &s_missingTexture;
 #else
     static w3dtexture_t s_missingTexture;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

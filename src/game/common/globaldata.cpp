@@ -26,7 +26,7 @@
 #include <winuser.h>
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GlobalData *&g_theWriteableGlobalData = Make_Global<GlobalData *>(0x00A2A2A4);
 #else
 GlobalData *g_theWriteableGlobalData = nullptr;

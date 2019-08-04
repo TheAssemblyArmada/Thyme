@@ -42,13 +42,13 @@
 #include <wingdi.h>
 #include <winuser.h>
 
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
 // This pragma makes windows use the normal main function for GUI applications.
 #pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hookcrt.h"
 #include "hooker.h"
 HWND &g_applicationHWnd = Make_Global<HWND>(0x00A27B08);
@@ -215,7 +215,7 @@ void Check_Windowed(int argc, char *argv[])
 
 void Create_Window()
 {
-#if defined PLATFORM_WINDOWS && !defined THYME_STANDALONE
+#if defined PLATFORM_WINDOWS && defined GAME_DLL
     WNDCLASSA WndClass;
     RECT Rect;
     HINSTANCE app_hinstance = GetModuleHandle(nullptr);
@@ -333,7 +333,7 @@ int main(int argc, char **argv)
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
     // DEBUG_LOG("Running main().\n");
 
-#if defined PLATFORM_WINDOWS && !defined THYME_STANDALONE
+#if defined PLATFORM_WINDOWS && defined GAME_DLL
     // Set the exception handler to the one provided by the EXE.
     // Only works on MSVC and only for SEH exceptions.
     // crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));
@@ -401,7 +401,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 /**
  * @brief Wrapper for main to hook original entry point
  */

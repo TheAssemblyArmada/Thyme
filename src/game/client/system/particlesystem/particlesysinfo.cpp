@@ -23,12 +23,12 @@ ParticleSystemInfo::ParticleSystemInfo() :
     m_shaderType(PARTICLE_SHADER_NONE),
     m_particleType(PARTICLE_TYPE_NONE),
     m_particleTypeName(),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angleX(),
     m_angleY(),
 #endif
     m_angleZ(),
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     m_angularRateX(),
     m_angularRateY(),
 #endif
@@ -87,7 +87,7 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_shaderType));  // Original calls xferUser, endianness issues.
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_particleType));  // Original calls xferUser, endianness issues.
     xfer->xferAsciiString(&m_particleTypeName);
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     xfer->Xfer_Client_Random_Var(&m_angleX);
     xfer->Xfer_Client_Random_Var(&m_angleY);
 #else
@@ -96,7 +96,7 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->Xfer_Client_Random_Var(&fake); // angleY in Generals.
 #endif
     xfer->Xfer_Client_Random_Var(&m_angleZ);
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
     xfer->Xfer_Client_Random_Var(&m_angularRateX);
     xfer->Xfer_Client_Random_Var(&m_angularRateY);
 #else

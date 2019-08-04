@@ -89,7 +89,7 @@ bool GameMessageList::Contains_Message_Of_Type(GameMessage::MessageType type)
     return false;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 void GameMessageList::Append_Message_Nv(GameMessage *msg)
 {
     GameMessageList::Append_Message(msg);

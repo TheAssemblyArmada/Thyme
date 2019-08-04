@@ -18,7 +18,7 @@
 #include "localfilesystem.h"
 #include "namekeygenerator.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 FileSystem *&g_theFileSystem = Make_Global<FileSystem *>(0x00A2B670);
 #else
 FileSystem *g_theFileSystem = nullptr;

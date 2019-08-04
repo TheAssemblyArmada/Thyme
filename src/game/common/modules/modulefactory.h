@@ -82,7 +82,7 @@ public:
     Module *New_Module(Thing *thing, const Utf8String &name, ModuleData *data, ModuleType type);
     ModuleData *New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -97,7 +97,7 @@ protected:
     std::vector<const ModuleData *> m_moduleDataList;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern ModuleFactory *&g_theModuleFactory;
 

@@ -21,6 +21,6 @@ Utf8String Get_Registry_Language();
 void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
 void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

@@ -101,7 +101,7 @@ protected:
     std::vector<void *> m_unkVector; // Presumed, needs confirming.
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern GameClient *&g_theGameClient;

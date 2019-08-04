@@ -18,7 +18,7 @@
 #include "subsysteminterface.h"
 #include <set>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -38,7 +38,7 @@ public:
     virtual bool Create_Directory(Utf8String) = 0;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern LocalFileSystem *&g_theLocalFileSystem;
 #else
 extern LocalFileSystem *g_theLocalFileSystem;

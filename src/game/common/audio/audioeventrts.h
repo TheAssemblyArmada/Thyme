@@ -66,7 +66,7 @@ public:
     ObjectID Get_Object_ID() const { return m_objectID; }
     void Decrement_Delay(float amount) { m_delay -= amount; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -102,7 +102,7 @@ private:
     int m_nextPlayPortion;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void AudioEventRTS::Hook_Me()

@@ -86,7 +86,7 @@ public:
     void Read_Byte_Array(uint8_t *ptr, int length);
     NameKeyType Read_Name_Key();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -104,7 +104,7 @@ private:
     void *m_userData;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void DataChunkInput::Hook_Me()

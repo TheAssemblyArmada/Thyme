@@ -23,7 +23,7 @@
 
 using std::memset;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 DynamicMemoryAllocator *&g_dynamicMemoryAllocator = Make_Global<DynamicMemoryAllocator *>(0x00A29B98);
 #else
 DynamicMemoryAllocator *g_dynamicMemoryAllocator = nullptr;

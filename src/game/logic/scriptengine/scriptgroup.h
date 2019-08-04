@@ -44,7 +44,7 @@ public:
 
     static bool Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     void Hook_Xfer_Snapshot(Xfer *xfer);
     static void Hook_Me();
 #endif
@@ -60,7 +60,7 @@ private:
     static int s_curID;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ScriptGroup::Hook_Me()

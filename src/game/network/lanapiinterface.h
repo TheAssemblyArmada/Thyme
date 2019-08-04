@@ -188,7 +188,7 @@ public:
     virtual uint32_t Get_Local_IP() = 0;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern LANAPIInterface *&g_theLAN;

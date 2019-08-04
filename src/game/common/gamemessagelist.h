@@ -18,7 +18,7 @@
 #include "gamemessage.h"
 #include "subsysteminterface.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -40,7 +40,7 @@ public:
 
     GameMessage *Get_First_Message() { return m_firstMessage; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     // Duplicates to test functionality of virtual members with hooking.
     void Append_Message_Nv(GameMessage *msg);
     void Insert_Message_Nv(GameMessage *msg, GameMessage *at);
@@ -54,7 +54,7 @@ protected:
     GameMessage *m_lastMessage;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void GameMessageList::Hook_Me()
 {
     Hook_Method(0x0040D760, &Append_Message_Nv);

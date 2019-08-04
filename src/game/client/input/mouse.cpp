@@ -24,7 +24,7 @@
 
 using rts::Get_Time;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
 
 void Mouse::Hook_Create_Stream_Messages()
@@ -377,7 +377,7 @@ void Mouse::Set_Position(int x, int y)
 void Mouse::Set_Mouse_Limits()
 {
     // TODO Requires Display
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Mouse>(0x00403B60, this);
 #elif 0
     m_minX = 0;
@@ -398,7 +398,7 @@ void Mouse::Set_Mouse_Limits()
 void Mouse::Notify_Resolution_Change()
 {
     // TODO Requires FontLibrary
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Mouse>(0x00403090, this);
 #elif 0
     if (m_tooltipDisplayString != nullptr) {

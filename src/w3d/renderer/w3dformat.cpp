@@ -23,7 +23,7 @@
 using rts::FourCC;
 using std::memcpy;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 WW3DFormat *g_D3DFormatToWW3DFormatConversionArray = Make_Pointer<WW3DFormat>(0x00A5243C);
 #else
 WW3DFormat g_D3DFormatToWW3DFormatConversionArray[62];
@@ -253,7 +253,7 @@ unsigned Get_Bytes_Per_Pixel(WW3DFormat format)
 WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
 {
     // TODO Requires DX8Caps
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Function<WW3DFormat, WW3DFormat, bool>(0x00820370, format, allow_compression);
 #else
     return WW3D_FORMAT_UNKNOWN;

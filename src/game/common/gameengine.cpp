@@ -44,7 +44,7 @@
 #include <mmsystem.h>
 #endif
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameEngine *&g_theGameEngine = Make_Global<GameEngine *>(0x00A29B80);
 #else
 GameEngine *g_theGameEngine = nullptr;
@@ -192,7 +192,7 @@ FileSystem *GameEngine::Create_File_System()
 
 MessageStream *GameEngine::Create_Message_Stream()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<MessageStream *, GameEngine>(0x0040FF00, this);
 #else
     return nullptr;

@@ -51,7 +51,7 @@ private:
     static FieldParse s_weatherSettingParseTable[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern WeatherSetting *&g_theWeatherSetting;

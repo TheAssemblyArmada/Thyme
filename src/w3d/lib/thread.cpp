@@ -27,7 +27,7 @@ using std::strcpy;
 #include <mmsystem.h>
 #include <processthreadsapi.h>
 #include <synchapi.h>
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #define test_event (Make_Global<void *>(0x00A65178))
 #else
 void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");

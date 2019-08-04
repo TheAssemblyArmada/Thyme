@@ -448,7 +448,7 @@ inline unsigned StringClass::Get_Hash() const
     return result;
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void StringClass::Hook_Me()

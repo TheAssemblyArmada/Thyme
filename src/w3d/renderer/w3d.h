@@ -30,7 +30,7 @@ public:
     static bool Large_Texture_Extra_Reduction_Enabled() { return s_largeTextureExtraReduction; }
 
 private:
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static unsigned &s_syncTime;
     static unsigned &s_textureReduction;
     static unsigned &s_textureMinDimension;
@@ -43,6 +43,6 @@ private:
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

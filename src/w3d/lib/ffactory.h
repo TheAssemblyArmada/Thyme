@@ -59,7 +59,7 @@ public:
     static void Hook_Me();
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void RawFileFactoryClass::Hook_Me()

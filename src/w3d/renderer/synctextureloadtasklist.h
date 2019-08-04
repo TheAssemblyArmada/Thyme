@@ -33,7 +33,7 @@ private:
     FastCriticalSectionClass m_mutex;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 extern SynchronizedTextureLoadTaskListClass &g_foregroundQueue;
 extern SynchronizedTextureLoadTaskListClass &g_backgroundQueue;

@@ -17,7 +17,7 @@
 
 #include "always.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern HWND &g_applicationHWnd;
 extern unsigned &g_theMessageTime;
 

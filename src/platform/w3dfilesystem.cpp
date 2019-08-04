@@ -295,7 +295,7 @@ void GameFileClass::Close()
     }
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 FileClass *W3DFileSystem::Get_File_NV(const char *filename)
 {
     return W3DFileSystem::Get_File(filename);

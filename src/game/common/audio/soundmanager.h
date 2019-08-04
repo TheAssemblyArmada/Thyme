@@ -53,7 +53,7 @@ public:
     virtual bool Violates_Voice(AudioEventRTS *event);
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Reset() { SoundManager::Reset(); }
     void Hook_Add_Event(AudioEventRTS *event) { SoundManager::Add_Audio_Event(event); }
@@ -68,7 +68,7 @@ private:
     int m_3dSamplesPlaying;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void SoundManager::Hook_Me() 

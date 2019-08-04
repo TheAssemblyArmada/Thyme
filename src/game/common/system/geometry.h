@@ -63,7 +63,7 @@ public:
     static void Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, void *user_data);
     static void Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data);
     
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Xfer(Xfer *xfer);
 #endif
@@ -78,7 +78,7 @@ private:
     float m_boundingSphereRadius;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void GeometryInfo::Hook_Me()

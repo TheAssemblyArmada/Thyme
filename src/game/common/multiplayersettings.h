@@ -14,7 +14,7 @@
  */
 #pragma once
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -99,7 +99,7 @@ private:
     bool m_moneyDefault;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern MultiplayerSettings *&g_theMultiplayerSettings;
 #else
 extern MultiplayerSettings *g_theMultiplayerSettings;

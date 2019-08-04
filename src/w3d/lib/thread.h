@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -46,7 +46,7 @@ public:
     static int Get_Current_Thread_ID();
     static void Switch_Thread();
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -70,7 +70,7 @@ protected:
     int m_priority;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 inline void ThreadClass::Hook_Me()
 {
     Hook_Method(0x0089CDC0, &Execute);

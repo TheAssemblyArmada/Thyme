@@ -17,7 +17,7 @@
 #include "ini.h"
 #include "xfer.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 SubsystemInterfaceList *&g_theSubsystemList = Make_Global<SubsystemInterfaceList *>(0x00A29B84);
 #else
 SubsystemInterfaceList *g_theSubsystemList = nullptr;

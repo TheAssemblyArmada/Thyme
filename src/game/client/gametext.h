@@ -20,7 +20,7 @@
 #include "subsysteminterface.h"
 #include "unicodestring.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -102,7 +102,7 @@ public:
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -141,7 +141,7 @@ private:
     std::vector<Utf8String> m_stringVector;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 //#define g_theGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
 extern GameTextInterface *&g_theGameText;
 inline void GameTextManager::Hook_Me()

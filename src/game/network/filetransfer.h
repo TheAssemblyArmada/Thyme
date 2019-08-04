@@ -33,7 +33,7 @@ Utf8String Get_Readme_From_Map(Utf8String path);
 bool Do_Any_File_Transfers(GameInfo *gameinfo);
 bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int unkbool);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 namespace FileTransfer

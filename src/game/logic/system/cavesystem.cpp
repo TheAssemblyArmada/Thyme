@@ -15,7 +15,7 @@
 
 #include "cavesystem.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 CaveSystem *&g_theCaveSystem = Make_Global<CaveSystem *>(0x00A2BDF8);
 #else
 CaveSystem *g_theCaveSystem = nullptr;
@@ -23,7 +23,7 @@ CaveSystem *g_theCaveSystem = nullptr;
 
 void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, TunnelTracker, Xfer *>(0x00587CC3, this, xfer);
 #else
     // TODO 
@@ -32,7 +32,7 @@ void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
 
 void TunnelTracker::Load_Post_Process()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, TunnelTracker>(0x00587DA0, this);
 #else
     // TODO 
@@ -50,7 +50,7 @@ void CaveSystem::Reset()
 
 void CaveSystem::Xfer_Snapshot(Xfer *xfer)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, CaveSystem, Xfer *>(0x004D58A2, this, xfer);
 #else
     // TODO 
@@ -82,7 +82,7 @@ bool CaveSystem::Can_Switch_Index_to_Index(size_t unk1, size_t unk2)
 // 0x004D5790
 TunnelTracker *CaveSystem::Register_New_Cave(int index)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     return Call_Method<TunnelTracker *, CaveSystem, int>(0x004D58A2, this, index);
 #else
     // TODO

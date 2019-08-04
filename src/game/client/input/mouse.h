@@ -148,7 +148,7 @@ public:
     static void Parse_Mouse_Definitions(INI *ini);
     static void Parse_Cursor_Definitions(INI *ini);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     void Hook_Create_Stream_Messages();
     static void Hook_Me();
 #endif
@@ -218,7 +218,7 @@ private:
     static const char *s_cursorNames[];
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 extern Mouse *&g_theMouse;

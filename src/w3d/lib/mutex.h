@@ -17,7 +17,7 @@
 #include "always.h"
 #include "gamedebug.h"
 
-#ifdef THYME_STANDALONE
+#ifndef GAME_DLL
 #include <atomic>
 #endif
 

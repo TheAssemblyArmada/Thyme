@@ -45,7 +45,7 @@ public:
 
     static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -72,7 +72,7 @@ public:
     
     static bool Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -81,7 +81,7 @@ private:
     Condition *m_firstAnd;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 inline void Condition::Hook_Me()
 {

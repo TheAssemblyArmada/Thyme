@@ -282,7 +282,7 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 void Xfer::xferScienceType(ScienceType *thing)
 {
     // TODO, needs parts of ScienceStore
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Xfer, ScienceType *>(0x005F0120, this, thing);
 #endif
 }
@@ -290,7 +290,7 @@ void Xfer::xferScienceType(ScienceType *thing)
 void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 {
     // TODO, needs parts of ScienceStore
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Xfer, std::vector<ScienceType> *>(0x005F02A0, this, thing);
 #endif
 }
@@ -336,7 +336,7 @@ void Xfer::xferKindOf(KindOfType *thing)
 void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 {
     // TODO, needs part of UpgradeCenter
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, Xfer, BitFlags<128> *>(0x005F05C0, this, thing);
 #endif
 }

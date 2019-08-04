@@ -20,7 +20,7 @@
 #include "subsysteminterface.h"
 #include "xfer.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
@@ -44,7 +44,7 @@ public:
     Utf8String Real_To_Portable_Map_Path(const Utf8String &path);
     Utf8String Portable_To_Real_Map_Path(const Utf8String &path);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 private:
@@ -52,7 +52,7 @@ private:
 
 Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 extern GameState *&g_theGameState;
 
 inline void GameState::Hook_Me()

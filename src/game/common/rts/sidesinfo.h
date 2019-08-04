@@ -36,7 +36,7 @@ public:
 
     SidesInfo &operator=(const SidesInfo &that);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -46,7 +46,7 @@ private:
     ScriptList *m_scripts;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void SidesInfo::Hook_Me()

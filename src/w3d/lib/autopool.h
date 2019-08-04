@@ -111,14 +111,14 @@ private:
     static void operator delete[](void *object);
 
 // TT Scripts handles this with a singleton class instead, this is easier to hook IMO
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static ObjectPoolClass<T, BLOCKSIZE> &m_allocator;
 #else
     static ObjectPoolClass<T, BLOCKSIZE> m_allocator;
 #endif
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 // Use HOOK_AUTOPOOL macro in the cpp file where an allocator needs to be hooked, use MAKE_AUTOPOOL if it can be normally

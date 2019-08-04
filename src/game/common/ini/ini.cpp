@@ -43,7 +43,7 @@
 
 using GameMath::Ceil;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 Xfer *&g_sXfer = Make_Global<Xfer *>(0x00A2A6B8);
 #else
 Xfer *g_sXfer = nullptr;
@@ -432,7 +432,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
 
 int INI::Scan_Science(const char *token)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     // return TheScienceStore->Friend_Lookup_Science(token);
     return Call_Function<int, char const *>(0x0041D740, token); // INI::scanScience
 #else

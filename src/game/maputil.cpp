@@ -17,7 +17,7 @@
 #include "minmax.h"
 #include "globaldata.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 WaypointMap *&g_waypoints = Make_Global<WaypointMap*>(0x00945AD4);
 MapCache *&g_theMapCache = Make_Global<MapCache*>(0x00A2B974);
 #else

@@ -19,7 +19,7 @@
 #include "registry.h"
 #include <cstddef>
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GlobalLanguage *&g_theGlobalLanguage = Make_Global<GlobalLanguage *>(0x00A2A6CC);
 #else
 GlobalLanguage *g_theGlobalLanguage;

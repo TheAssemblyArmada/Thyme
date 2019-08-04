@@ -14,7 +14,7 @@
  */ 
 #include "gameclient.h"
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 GameClient *&g_theGameClient = Make_Global<GameClient *>(0x00A2BBF8);
 #else
 GameClient *g_theGameClient;

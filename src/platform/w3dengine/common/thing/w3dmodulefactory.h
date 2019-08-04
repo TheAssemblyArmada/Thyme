@@ -24,6 +24,6 @@ public:
     virtual void Init() override;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 #endif

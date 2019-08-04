@@ -389,7 +389,7 @@ public:
     static void Invert_Backface_Culling(bool onoff);
     static bool Is_Backface_Culling_Inverted() { return s_polygonCullMode == 3; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
 #endif
 
@@ -425,7 +425,7 @@ public:
 
 protected:
     uint32_t m_shaderBits;
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static uint32_t &s_currentShader;
     static bool &s_shaderDirty;
     static uint32_t &s_polygonCullMode;
@@ -463,7 +463,7 @@ inline bool ShaderClass::Uses_Post_Detail_Texture() const
     return (Get_Post_Detail_Color_Func() != DETAILCOLOR_DISABLE) || (Get_Post_Detail_Alpha_Func() != DETAILALPHA_DISABLE);
 }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void ShaderClass::Hook_Me()

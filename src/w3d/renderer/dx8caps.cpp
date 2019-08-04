@@ -20,7 +20,7 @@
 using std::memcpy;
 using std::memset;
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 StringClass &DX8Caps::s_videoCardDetails = Make_Global<StringClass>(0x00A51ECC);
 #else
 StringClass DX8Caps::s_videoCardDetails;
@@ -539,7 +539,7 @@ void DX8Caps::Check_Max_Texture_Support(const w3dcaps_t &caps)
  */
 void DX8Caps::Check_Driver_Version_Status()
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, DX8Caps>(0x00846960, this);
 #else
     switch (m_vendorNumber) {
@@ -583,7 +583,7 @@ void DX8Caps::Check_Driver_Version_Status()
  */
 void DX8Caps::Vendor_Specific_Hacks(const w3dadapterid_t &identifier)
 {
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     Call_Method<void, DX8Caps, const w3dadapterid_t &>(0x00846FF0, this, identifier);
 #else
     // TODO, do we want to implement this? Largely refers to hardware that was old when Generals was released.

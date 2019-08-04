@@ -47,7 +47,7 @@ public:
     static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     static void Hook_Me();
     void Hook_Xfer_Snapshot(Xfer *xfer);
 #endif
@@ -82,7 +82,7 @@ private:
     int m_unkInt5;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void Script::Hook_Me()

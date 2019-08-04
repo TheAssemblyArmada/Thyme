@@ -86,7 +86,7 @@ public:
     bool Is_Alt();
     uint16_t Get_Modifiers() { return m_modifiers; }
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
     void Hook_Init();
     void Hook_Update();
     void Hook_Create_Message_Stream();
@@ -107,7 +107,7 @@ protected:
     uint32_t m_inputFrame;
 };
 
-#ifndef THYME_STANDALONE
+#ifdef GAME_DLL
 #include "hooker.h"
 
 inline void Keyboard::Hook_Me()

@@ -227,6 +227,11 @@ if(STANDALONE)
     add_executable(thyme ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=")
+
+    if(D3D8_FOUND)
+        target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
+        target_link_libraries(thyme DirectX::d3d8)
+    endif()
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
@@ -235,6 +240,13 @@ else()
 
     if (MSVC)
         target_compile_definitions(thyme PRIVATE THYME_USE_STLPORT=1)
+    endif()
+
+    # Using the DirectX detection module fully with STLPort breaks the build.
+    # Just pull out the lib instead and rely on the headers provided in olddx
+    if(D3D8_FOUND)
+        target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
+        target_link_libraries(thyme ${DirectX_LIBRARIES})
     endif()
 
     # We don't look for FMpeg yet, but its intended to replace binkw32.dll
@@ -282,9 +294,4 @@ endif()
 if(ICU_FOUND)
     target_compile_definitions(thyme PRIVATE BUILD_WITH_ICU=1)
     target_link_libraries(thyme ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
-endif()
-
-if(D3D8_FOUND)
-    target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
-    target_link_libraries(thyme DirectX::d3d8)
 endif()

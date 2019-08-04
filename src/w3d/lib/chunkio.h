@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Classes for reading and writing the binary chunk format used in WW3D and SAGE games.
  *
@@ -9,17 +9,12 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #pragma once
 
 #include "always.h"
-
-#ifndef THYME_STANDALONE
-#include "hooker.h"
-#endif
 
 class FileClass;
 
@@ -58,15 +53,12 @@ private:
     };
 
 public:
-    ChunkHeader(uint32_t type, uint32_t size) : m_chunkType(type), m_chunkSize(size) {}
-    ChunkHeader() : m_chunkType(), m_chunkSize() {}
+    ChunkHeader(uint32_t type = 0, uint32_t size = 0) : m_chunkType(type), m_chunkSize(size) {}
 
     uint32_t Get_Type() { return m_chunkType; }
     uint32_t Get_Size() { return m_chunkSize & (~SUB_CHUNK_FLAG); }
     uint32_t Get_Sub_Chunk_Flag() { return m_chunkSize & SUB_CHUNK_FLAG; }
-
     void Set_Type(uint32_t type) { m_chunkType = type; }
-
     void Set_Size(uint32_t size) { m_chunkSize = (size & (~SUB_CHUNK_FLAG)) | (m_chunkSize & SUB_CHUNK_FLAG); }
 
     void Add_Size(uint32_t size)
@@ -74,7 +66,7 @@ public:
         m_chunkSize = ((Get_Size() + size) & (~SUB_CHUNK_FLAG)) | (m_chunkSize & SUB_CHUNK_FLAG);
     }
 
-    void Set_Sub_Chunk_Flag(unsigned char a1) { m_chunkSize |= SUB_CHUNK_FLAG; }
+    void Set_Sub_Chunk_Flag(uint8_t a1) { m_chunkSize |= SUB_CHUNK_FLAG; }
 
 private:
     uint32_t m_chunkType;
@@ -116,17 +108,17 @@ private:
 public:
     ChunkSaveClass(FileClass *file);
 
-    bool Begin_Chunk(unsigned int id);
+    bool Begin_Chunk(unsigned id);
     bool End_Chunk();
 
-    bool Begin_Micro_Chunk(unsigned int id);
+    bool Begin_Micro_Chunk(unsigned id);
     bool End_Micro_Chunk();
 
-    unsigned int Write(void const *buf, unsigned int bytes);
-    unsigned int Write(IOVector2Struct const &vect);
-    unsigned int Write(IOVector3Struct const &vect);
-    unsigned int Write(IOVector4Struct const &vect);
-    unsigned int Write(IOQuaternionStruct const &quat);
+    unsigned Write(const void *buf, unsigned bytes);
+    unsigned Write(const IOVector2Struct &vect);
+    unsigned Write(const IOVector3Struct &vect);
+    unsigned Write(const IOVector4Struct &vect);
+    unsigned Write(const IOQuaternionStruct &quat);
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
@@ -165,24 +157,24 @@ public:
     bool Open_Chunk();
     bool Close_Chunk();
 
-    unsigned int Cur_Chunk_ID();
-    unsigned int Cur_Chunk_Length();
+    unsigned Cur_Chunk_ID();
+    unsigned Cur_Chunk_Length();
 
     int Contains_Chunks();
 
     bool Open_Micro_Chunk();
     bool Close_Micro_Chunk();
 
-    unsigned int Cur_Micro_Chunk_ID();
-    unsigned int Cur_Micro_Chunk_Length();
+    unsigned Cur_Micro_Chunk_ID();
+    unsigned Cur_Micro_Chunk_Length();
 
-    unsigned int Seek(unsigned int bytes);
+    unsigned Seek(unsigned bytes);
 
-    unsigned int Read(void *buf, unsigned int bytes);
-    unsigned int Read(IOVector2Struct *vect);
-    unsigned int Read(IOVector3Struct *vect);
-    unsigned int Read(IOVector4Struct *vect);
-    unsigned int Read(IOQuaternionStruct *quat);
+    unsigned Read(void *buf, unsigned bytes);
+    unsigned Read(IOVector2Struct *vect);
+    unsigned Read(IOVector3Struct *vect);
+    unsigned Read(IOVector4Struct *vect);
+    unsigned Read(IOQuaternionStruct *quat);
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
@@ -201,26 +193,29 @@ private:
 };
 
 #ifndef THYME_STANDALONE
+#include "hooker.h"
+
 inline void ChunkSaveClass::Hook_Me()
 {
-    Hook_Method(0x008A0F90, &Begin_Chunk);
-    Hook_Method(0x008A1020, &End_Chunk);
-    Hook_Method(0x008A10D0, &Begin_Micro_Chunk);
-    Hook_Method(0x008A1160, &End_Micro_Chunk);
-    Hook_Method(0x008A11C0, static_cast<unsigned int (ChunkSaveClass::*)(void const *, unsigned int)>(&Write));
+    Hook_Method(0x008A0F90, &ChunkSaveClass::Begin_Chunk);
+    Hook_Method(0x008A1020, &ChunkSaveClass::End_Chunk);
+    Hook_Method(0x008A10D0, &ChunkSaveClass::Begin_Micro_Chunk);
+    Hook_Method(0x008A1160, &ChunkSaveClass::End_Micro_Chunk);
+    Hook_Method(
+        0x008A11C0, static_cast<unsigned (ChunkSaveClass::*)(void const *, unsigned)>(&ChunkSaveClass::Write));
 }
 
 inline void ChunkLoadClass::Hook_Me()
 {
-    Hook_Method(0x008A1290, &Open_Chunk);
-    Hook_Method(0x008A12E0, &Close_Chunk);
-    Hook_Method(0x008A1330, &Cur_Chunk_ID);
-    Hook_Method(0x008A1340, &Cur_Chunk_Length);
-    Hook_Method(0x008A1350, &Open_Micro_Chunk);
-    Hook_Method(0x008A1380, &Close_Micro_Chunk);
-    Hook_Method(0x008A13D0, &Cur_Micro_Chunk_ID);
-    Hook_Method(0x008A13E0, &Cur_Micro_Chunk_Length);
-    Hook_Method(0x008A13F0, &Seek);
-    Hook_Method(0x008A1480, static_cast<unsigned int (ChunkLoadClass::*)(void *, unsigned int)>(&Read));
+    Hook_Method(0x008A1290, &ChunkLoadClass::Open_Chunk);
+    Hook_Method(0x008A12E0, &ChunkLoadClass::Close_Chunk);
+    Hook_Method(0x008A1330, &ChunkLoadClass::Cur_Chunk_ID);
+    Hook_Method(0x008A1340, &ChunkLoadClass::Cur_Chunk_Length);
+    Hook_Method(0x008A1350, &ChunkLoadClass::Open_Micro_Chunk);
+    Hook_Method(0x008A1380, &ChunkLoadClass::Close_Micro_Chunk);
+    Hook_Method(0x008A13D0, &ChunkLoadClass::Cur_Micro_Chunk_ID);
+    Hook_Method(0x008A13E0, &ChunkLoadClass::Cur_Micro_Chunk_Length);
+    Hook_Method(0x008A13F0, &ChunkLoadClass::Seek);
+    Hook_Method(0x008A1480, static_cast<unsigned (ChunkLoadClass::*)(void *, unsigned)>(&ChunkLoadClass::Read));
 }
 #endif

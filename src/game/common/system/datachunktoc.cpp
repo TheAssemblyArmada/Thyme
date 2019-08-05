@@ -15,8 +15,8 @@
 #include "datachunktoc.h"
 #include "endiantype.h"
 #include "gamedebug.h"
-#include "minmax.h"
 #include "rtsutils.h"
+#include <algorithm>
 
 using rts::FourCC;
 
@@ -120,11 +120,11 @@ void DataChunkTableOfContents::Read(ChunkInputStream &stream)
             map->m_next = m_list;
             m_list = map;
             ++m_listLength;
-            max_id = Max(max_id, map->m_id);
+            max_id = std::max(max_id, map->m_id);
         }
 
         m_headerOpened = !(count <= 0 || stream.Eof());
-        m_nextID = Max(m_nextID, max_id + 1);
+        m_nextID = std::max(m_nextID, max_id + 1);
     }
 }
 

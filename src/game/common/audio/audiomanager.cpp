@@ -14,9 +14,9 @@
  */
 #include "audiomanager.h"
 #include "filesystem.h"
-#include "minmax.h"
 #include "musicmanager.h"
 #include "soundmanager.h"
+#include <algorithm>
 
 #ifdef GAME_DLL
 AudioManager *&g_theAudio = Make_Global<AudioManager *>(0x00A29B6C);
@@ -883,7 +883,7 @@ float AudioManager::Get_Volume(AudioAffect affect)
  */
 void AudioManager::Set_3D_Volume_Adjustment(float adj)
 {
-    m_3dSoundVolume = Clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);
+    m_3dSoundVolume = std::clamp(m_initial3DSoundVolume * m_3dSoundVolumeAdjust * adj, 0.0f, 1.0f);
 
     if (Has_3D_Sensitive_Streams_Playing()) {
         m_volumeSet = true;

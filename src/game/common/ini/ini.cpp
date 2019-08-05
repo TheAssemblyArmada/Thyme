@@ -28,7 +28,6 @@
 #include "gametype.h"
 #include "globaldata.h"
 #include "globallanguage.h"
-#include "minmax.h"
 #include "mouse.h"
 #include "playertemplate.h"
 #include "rankinfo.h"
@@ -38,6 +37,7 @@
 #include "terraintypes.h"
 #include "water.h"
 #include "xfer.h"
+#include <algorithm>
 #include <cctype>
 #include <cstdio>
 
@@ -596,7 +596,7 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_
 
     for (int i = 0; i < 3; ++i) {
         const char *token = ini->Get_Next_Sub_Token(names[i]);
-        colors[i] = Clamp(Scan_Int(token), 0, 255);
+        colors[i] = std::clamp(Scan_Int(token), 0, 255);
     }
 
     rgb->red = colors[0] / 255.0f;
@@ -619,7 +619,7 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *
                 "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n",
                 token);
 
-            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
+            colors[i] = std::clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
             DEBUG_ASSERT_THROW(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
             colors[i] = 255;
@@ -647,7 +647,7 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_
                 "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.\n",
                 token);
 
-            colors[i] = Clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
+            colors[i] = std::clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
             DEBUG_ASSERT_THROW(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.\n");
             colors[i] = 255;

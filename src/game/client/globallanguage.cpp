@@ -15,8 +15,8 @@
 #include "globallanguage.h"
 #include "gamemath.h"
 #include "globaldata.h"
-#include "minmax.h"
 #include "registry.h"
+#include <algorithm>
 #include <cstddef>
 
 #ifdef GAME_DLL
@@ -113,7 +113,7 @@ void GlobalLanguage::Init()
 int GlobalLanguage::Adjust_Font_Size(int size)
 {
     float adjustment =
-        Clamp((((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
+        std::clamp((((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
 
     return GameMath::Fast_To_Int_Floor(adjustment * size);
 }

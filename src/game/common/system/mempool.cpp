@@ -16,7 +16,7 @@
 #include "critsection.h"
 #include "memblob.h"
 #include "memblock.h"
-#include "minmax.h"
+#include <algorithm>
 #include <cstring>
 
 using std::memset;
@@ -117,7 +117,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
 
     MemoryPoolSingleBlock *block = m_firstBlobWithFreeBlocks->Allocate_Single_Block();
     ++m_usedBlocksInPool;
-    m_peakUsedBlocksInPool = Max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
+    m_peakUsedBlocksInPool = std::max(m_peakUsedBlocksInPool, m_usedBlocksInPool);
 
     return block->Get_User_Data();
 }

@@ -14,7 +14,7 @@
  */
 #include "ramfile.h"
 #include "filesystem.h"
-#include "minmax.h"
+#include <algorithm>
 
 RAMFile::RAMFile() : Data(nullptr), Pos(0), Size(0) {}
 
@@ -56,7 +56,7 @@ int RAMFile::Read(void *dst, int bytes)
     }
 
     // Clip the amount to read to be within the data remaining.
-    bytes = Min(bytes, Size - Pos);
+    bytes = std::min(bytes, Size - Pos);
 
     if (bytes > 0) {
         memcpy(dst, Data + Pos, bytes);
@@ -93,7 +93,7 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
     }
 
     // Don't seek to outside the file.
-    Pos = Clamp(Pos, 0, Size); // Max(0, Min(Pos, Size));
+    Pos = std::clamp(Pos, 0, Size); // std::min(0, std::min(Pos, Size));
 
     return Pos;
 }
@@ -135,7 +135,7 @@ void RAMFile::Next_Line(char *dst, int bytes)
     }
 
     // Make sure our position is still within data.
-    Pos = Min(Pos, Size);
+    Pos = std::min(Pos, Size);
 }
 
 bool RAMFile::Scan_Int(int &integer)

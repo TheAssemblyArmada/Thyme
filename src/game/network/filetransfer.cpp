@@ -15,7 +15,7 @@
  */
 #include "filetransfer.h"
 #include "gamedebug.h"
-#include "minmax.h"
+#include <algorithm>
 #include <cstddef>
 
 using std::ptrdiff_t;
@@ -25,7 +25,7 @@ Utf8String Get_Base_Path_From_Path(Utf8String path)
     const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    const char *last_sep = Max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = std::max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting base path from '%s'.\n", path_str);
 
@@ -45,7 +45,7 @@ Utf8String Get_File_From_Path(Utf8String path)
     const char *path_str = path.Str();
 
     // Find the last path seperator for either win or unix style.
-    const char *last_sep = Max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
+    const char *last_sep = std::max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
     DEBUG_LOG("Getting file from '%s'.\n", path_str);
 

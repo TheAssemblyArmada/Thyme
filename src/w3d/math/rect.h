@@ -16,8 +16,8 @@
 #pragma once
 
 #include "always.h"
-#include "minmax.h"
 #include "vector2.h"
+#include <algorithm>
 
 class RectClass
 {
@@ -51,10 +51,10 @@ public:
 
     RectClass &operator+=(const RectClass &r)
     {
-        left = Min(left, r.left);
-        top = Min(top, r.top);
-        right = Max(right, r.right);
-        bottom = Max(bottom, r.bottom);
+        left = std::min(left, r.left);
+        top = std::min(top, r.top);
+        right = std::max(right, r.right);
+        bottom = std::max(bottom, r.bottom);
         return *this;
     }
 

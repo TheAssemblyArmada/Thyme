@@ -15,7 +15,7 @@
 #include "cachedfileinputstream.h"
 #include "compressionmanager.h"
 #include "filesystem.h"
-#include "minmax.h"
+#include <algorithm>
 
 CachedFileInputStream::~CachedFileInputStream()
 {

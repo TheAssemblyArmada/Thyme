@@ -14,7 +14,7 @@
  */
 #include "streamingarchivefile.h"
 #include "filesystem.h"
-#include "minmax.h"
+#include <algorithm>
 
 StreamingArchiveFile::StreamingArchiveFile() : ArchiveFile(nullptr), FileStart(0), FileSize(0), FilePos(0) {}
 
@@ -67,15 +67,15 @@ int StreamingArchiveFile::Seek(int offset, File::SeekMode mode)
 {
     switch (mode) {
         case START:
-            FilePos = Clamp(offset, 0, FileSize);
+            FilePos = std::clamp(offset, 0, FileSize);
             break;
 
         case CURRENT:
-            FilePos = Clamp(FilePos + offset, 0, FileSize);
+            FilePos = std::clamp(FilePos + offset, 0, FileSize);
             break;
 
         case END:
-            FilePos = Clamp(FileSize + offset, 0, FileSize);
+            FilePos = std::clamp(FileSize + offset, 0, FileSize);
             break;
 
         default:

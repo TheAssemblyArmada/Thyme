@@ -1,49 +1,30 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: BUFFFILECLASS.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: Buffer file IO class.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
-#include	"bufffileclass.h"
-#include	"minmax.h"
-#include	<string.h>
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief FileClass for reading files with buffered calls.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "bufffileclass.h"
+#include <algorithm>
+#include <cstring>
 
-int BufferedFileClass::DesiredBufferSize = 1024;
+using std::memcpy;
 
-BufferedFileClass::BufferedFileClass() :
-    m_buffer(nullptr),
-    m_bufferSize(0),
-    m_bufferAvailable(0),
-    m_bufferOffset(0)
-{
-    
-}
+unsigned BufferedFileClass::m_desiredBufferSize = 0x4000;
+
+BufferedFileClass::BufferedFileClass() : m_buffer(nullptr), m_bufferSize(0), m_bufferAvailable(0), m_bufferOffset(0) {}
 
 BufferedFileClass::BufferedFileClass(const char *filename) :
-    RawFileClass(filename),
-    m_buffer(nullptr),
-    m_bufferSize(0),
-    m_bufferAvailable(0),
-    m_bufferOffset(0)
+    RawFileClass(filename), m_buffer(nullptr), m_bufferSize(0), m_bufferAvailable(0), m_bufferOffset(0)
 {
-    
 }
 
 BufferedFileClass::~BufferedFileClass()
@@ -53,8 +34,8 @@ BufferedFileClass::~BufferedFileClass()
 
 int BufferedFileClass::Write(void const *buffer, int size)
 {
-    //DEBUG_ASSERT(m_bufferSize > 0);
-    
+    // DEBUG_ASSERT(m_bufferSize > 0);
+
     return RawFileClass::Write(buffer, size);
 }
 
@@ -62,60 +43,45 @@ int BufferedFileClass::Read(void *buffer, int size)
 {
     int read = 0;
 
-    if ( m_bufferAvailable > 0 ) {
-
-        int nsize = Min(m_bufferAvailable, size);
+    if (m_bufferAvailable > 0) {
+        int nsize = std::min(m_bufferAvailable, size);
 
         memmove(buffer, m_buffer + m_bufferOffset, nsize);
         m_bufferAvailable -= nsize;
         m_bufferOffset += nsize;
         size -= nsize;
-
-        buffer = static_cast<char *>(buffer) + nsize;
-
+        buffer = static_cast<uint8_t *>(buffer) + nsize;
         read = nsize;
-
     }
 
-    if ( size > 0 ) {
+    if (size > 0) {
         int bsize = m_bufferSize;
 
-        if ( !bsize ) {
-            bsize = DesiredBufferSize;
+        if (bsize == 0) {
+            bsize = m_desiredBufferSize;
         }
 
-        if ( size > bsize ) {
+        if (size > bsize) {
             return read + RawFileClass::Read(buffer, size);
         }
 
-        if ( !m_bufferSize ) {
-            m_bufferSize = DesiredBufferSize;
-            m_buffer = new char[m_bufferSize];
+        if (m_bufferSize == 0) {
+            m_bufferSize = m_desiredBufferSize;
+            m_buffer = new uint8_t[m_bufferSize];
             m_bufferAvailable = 0;
             m_bufferOffset = 0;
         }
 
-        if ( !m_buffer ) {
-            return 0;
-        }
-
-        if ( !m_bufferAvailable ) {
+        if (m_bufferAvailable == 0) {
             m_bufferAvailable = RawFileClass::Read(m_buffer, m_bufferSize);
             m_bufferOffset = 0;
         }
 
-        if ( m_bufferAvailable > 0 ) {
-
-            int nsize = Min(m_bufferAvailable, size);
-
-            if ( !m_buffer ) {
-                return 0;
-            }
-
-            memmove(buffer, (static_cast<char *>(m_buffer) + m_bufferOffset), nsize);
+        if (m_bufferAvailable > 0) {
+            int nsize = std::min(m_bufferAvailable, size);
+            memcpy(buffer, m_buffer + m_bufferOffset, nsize);
             m_bufferAvailable -= nsize;
             m_bufferOffset += nsize;
-
             read += nsize;
         }
     }
@@ -123,26 +89,26 @@ int BufferedFileClass::Read(void *buffer, int size)
     return read;
 }
 
-int BufferedFileClass::Seek(int pos, int whence)
+off_t BufferedFileClass::Seek(off_t offset, int whence)
 {
-    if ( whence != FS_SEEK_CURRENT || pos < 0 ) {
+    if (whence != FS_SEEK_CURRENT || offset < 0) {
         Reset_Buffer();
     }
 
-    if ( m_bufferAvailable ) {
+    if (m_bufferAvailable != 0) {
         int left = m_bufferAvailable;
-        
-        if ( left > pos ) {
-            left = pos;
+
+        if (left > offset) {
+            left = offset;
         }
 
         m_bufferAvailable -= left;
         m_bufferOffset += left;
 
-        return RawFileClass::Seek(pos - left, whence) - m_bufferAvailable;       
+        return RawFileClass::Seek(offset - left, whence) - m_bufferAvailable;
     }
 
-    return RawFileClass::Seek(pos, whence);
+    return RawFileClass::Seek(offset, whence);
 }
 
 void BufferedFileClass::Close()
@@ -153,7 +119,7 @@ void BufferedFileClass::Close()
 
 void BufferedFileClass::Reset_Buffer()
 {
-    if ( m_buffer != nullptr ) {
+    if (m_buffer != nullptr) {
         delete[] m_buffer;
         m_buffer = nullptr;
         m_bufferSize = 0;

@@ -1,26 +1,18 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: FILECLASS.H
-//
-//        Author:: CCHyper
-//
-//  Contributors:: OmniBlade
-//
-//   Description:: Interface for WW3D file io.
-//
-//       License:: Thyme is free software: you can redistribute it and/or
-//                 modify it under the terms of the GNU General Public License
-//                 as published by the Free Software Foundation, either version
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author OmniBlade
+ *
+ * @brief Interface for file IO.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "always.h"
@@ -62,5 +54,4 @@ public:
     virtual void Close() = 0;
     virtual time_t Get_Date_Time();
     virtual bool Set_Date_Time(time_t date_time);
-    virtual int Get_File_Handle();
 };

@@ -46,10 +46,6 @@ public:
     static void Deinit();
     static void Pre_Init(bool b) { /*Looks left over from Renegade, references .mix files*/ }
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     bool m_allowThumbnailCreation;
     StringClass m_thumbFileName;
@@ -69,15 +65,6 @@ private:
 
 #ifdef GAME_DLL
 #include "hooker.h"
-
-inline void ThumbnailManagerClass::Hook_Me()
-{
-    Hook_Method(0x0086AE20, &ThumbnailManagerClass::Remove_From_Hash);
-    Hook_Function(0x0086ABC0, &ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager);
-    Hook_Function(0x0086AFE0, &ThumbnailManagerClass::Init);
-    Hook_Function(0x0086B070, &ThumbnailManagerClass::Deinit);
-}
-
 extern ThumbnailManagerClass *&g_thumbnailManager;
 #else
 extern ThumbnailManagerClass *g_thumbnailManager;

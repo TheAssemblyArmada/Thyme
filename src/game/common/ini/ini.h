@@ -16,7 +16,6 @@
 
 #include "asciistring.h"
 #include "gamedebug.h"
-#include "stringex.h"
 
 class File;
 class Xfer;
@@ -82,6 +81,7 @@ struct MultiIniFieldParse
 
 class INI
 {
+    ALLOW_HOOKING
 public:
     enum
     {
@@ -151,13 +151,6 @@ public:
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *user_data);
-    
-    // Block parsing functions
-
-#ifdef GAME_DLL
-    // Hooking function
-    static void Hook_Me();
-#endif
 
 private:
     void Read_Line();
@@ -179,8 +172,6 @@ private:
     const char *m_sepsQuote;
     const char *m_endToken;
     bool m_endOfFile;
-
-    // static Xfer *SXfer;
 };
 
 #ifdef GAME_DLL
@@ -188,40 +179,6 @@ private:
 #include "hooker.h"
 
 extern Xfer *&g_sXfer;
-
-inline void INI::Hook_Me()
-{
-    Hook_Method(0x0041D6E0, &INI::Get_Next_Token);
-    Hook_Method(0x0041D720, &INI::Get_Next_Token_Or_Null);
-    Hook_Method(0x0041D950, &INI::Get_Next_Sub_Token);
-    Hook_Method(0x0041A4B0, &INI::Prep_File);
-    Hook_Method(0x0041D460, &INI::Init_From_INI_Multi);
-    Hook_Method(0x0041A5C0, &INI::Load);
-    Hook_Method(0x0041A1C0, &INI::Load_Directory);
-
-    // Field parsing functions
-    Hook_Function(0x0041ADA0, &INI::Parse_Bool);
-    Hook_Function(0x0041A980, &INI::Parse_Byte);
-    Hook_Function(0x0041AAB0, &INI::Parse_Int);
-    Hook_Function(0x0041AB20, &INI::Parse_Unsigned);
-    Hook_Function(0x0041AB90, &INI::Parse_Real);
-    Hook_Function(0x0041AC00, &INI::Parse_Positive_None_Zero_Real);
-    Hook_Function(0x0041BA50, &INI::Parse_Percent_To_Real);
-    Hook_Function(0x0041ACA0, &INI::Parse_Angle_Real);
-    Hook_Function(0x0041AD20, &INI::Parse_Angular_Velocity_Real);
-    Hook_Function(0x0041AF20, &INI::Parse_AsciiString);
-    Hook_Function(0x0041B1B0, &INI::Parse_AsciiString_Vector_Append);
-    Hook_Function(0x0041BDD0, &INI::Parse_RGB_Color);
-    Hook_Function(0x0041C100, &INI::Parse_Color_Int);
-    Hook_Function(0x0041C530, &INI::Parse_Coord2D);
-    Hook_Function(0x0041C2C0, &INI::Parse_Coord3D);
-    Hook_Function(0x0041D140, &INI::Parse_Index_List);
-    Hook_Function(0x0041DB50, &INI::Parse_Duration_Real);
-    Hook_Function(0x0041DBD0, &INI::Parse_Duration_Int);
-    Hook_Function(0x0041DD10, &INI::Parse_Velocity_Real);
-    Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
-    Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
-}
 #else
 extern Xfer *g_sXfer;
 #endif

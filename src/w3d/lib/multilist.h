@@ -49,6 +49,7 @@ private:
 
 class GenericMultiListClass
 {
+    ALLOW_HOOKING
     friend class GenericMultiListIterator;
     friend class MultiListObjectClass;
 
@@ -66,10 +67,6 @@ public:
     bool Is_Empty() const { return (m_head.m_next == &m_head); };
     bool Contains(MultiListObjectClass *obj) const;
     int Count() const;
-
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 
 protected:
     bool Internal_Add(MultiListObjectClass *obj, bool onlyonce = true);
@@ -387,16 +384,3 @@ public:
 protected:
     const MultiListNodeClass *m_originalHead;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void GenericMultiListClass::Hook_Me()
-{
-    Hook_Method(0x008A03F0, &GenericMultiListClass::Contains);
-    Hook_Method(0x008A0420, &GenericMultiListClass::Internal_Add);
-    Hook_Method(0x008A0800, &GenericMultiListClass::Internal_Remove);
-    Hook_Method(0x008A0880, &GenericMultiListClass::Internal_Remove_List_Head);
-    Hook_Method(0x00824720, &GenericMultiListClass::Internal_Get_List_Head);
-}
-#endif

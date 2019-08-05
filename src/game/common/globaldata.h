@@ -22,10 +22,6 @@
 #include "money.h"
 #include "subsysteminterface.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 class INI;
 class WeaponBonusSet;
 
@@ -61,14 +57,13 @@ public:
     virtual ~GlobalData();
 
     // m_subsystemInterface implementation
-    virtual void Init() {}
-    virtual void Reset();
-    virtual void Update() {}
+    virtual void Init() override {}
+    virtual void Reset() override;
+    virtual void Update() override {}
 
     bool Set_Time_Of_Day(TimeOfDayType time);
 
     static void Parse_Game_Data_Definitions(INI *ini);
-    static void Hook_Me();
     // Looks like members are likely public or there would have been a lot of
     // getters/setters.
     // pad indicates where padding will be added to keep 4 byte alignment
@@ -366,9 +361,6 @@ public:
     bool m_updateTGAtoDDS;
     // char pad[3]
     int32_t m_doubleClickTime;
-    // int32_t m_shroudColor;
-    // float m_unkFloat6;
-    // float m_unkFloat7;
     RGBColor m_shroudColor;
     uint8_t m_clearAlpha;
     uint8_t m_fogAlpha;
@@ -400,11 +392,7 @@ private:
 };
 
 #ifdef GAME_DLL
-inline void GlobalData::Hook_Me()
-{
-    Hook_Function(0x00418090, Parse_Game_Data_Definitions);
-}
-
+#include "hooker.h"
 extern GlobalData *&g_theWriteableGlobalData;
 #else
 extern GlobalData *g_theWriteableGlobalData;

@@ -19,30 +19,23 @@
 
 class CommandList : public GameMessageList
 {
+    ALLOW_HOOKING
 public:
     // SubsystemInterface implementations
     virtual ~CommandList();
-    virtual void Init() {}
-    virtual void Reset();
-    virtual void Update() {}
+    virtual void Init() override {}
+    virtual void Reset() override;
+    virtual void Update() override {}
 
     void Append_Message_List(GameMessage *list);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
     void Destroy_All_Messages();
 };
 
 #ifdef GAME_DLL
+#include "hooker.h"
 extern CommandList *&g_theCommandList;
-
-inline void CommandList::Hook_Me()
-{
-    // This one actually replaces Reset as it is just inlined Destroy_All_Messages
-    Hook_Method(0x0040DD70, &Destroy_All_Messages);
-}
 #else
 extern CommandList *g_theCommandList;
 #endif

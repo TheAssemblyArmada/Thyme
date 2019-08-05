@@ -283,10 +283,3 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
 
     return false;
 }
-
-#ifdef GAME_DLL
-void ScriptList::Hook_Xfer_Snapshot(Xfer *xfer)
-{
-    ScriptList::Xfer_Snapshot(xfer);
-}
-#endif

@@ -13,8 +13,6 @@
  *            LICENSE
  */
 #include "binkvideoplayer.h"
-
-#ifdef BUILD_WITH_BINK
 #include "audiomanager.h"
 #include "binkvideostream.h"
 #include "globaldata.h"
@@ -156,4 +154,3 @@ VideoStream *BinkVideoPlayer::Create_Stream(Bink *handle)
 
     return stream;
 }
-#endif // BUILD_WITH_BINK

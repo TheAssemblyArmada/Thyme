@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Interface for an archive file system implementations.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -20,10 +19,6 @@
 #include "subsysteminterface.h"
 #include <map>
 #include <set>
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 class File;
 class ArchiveFile;
@@ -56,22 +51,13 @@ public:
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs);
     void Load_Mods();
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 protected:
     std::map<Utf8String, ArchiveFile *> m_archiveFiles;
     ArchivedDirectoryInfo m_archiveDirInfo;
 };
 
 #ifdef GAME_DLL
-inline void ArchiveFileSystem::Hook_Me()
-{
-    Hook_Method(0x0048F410, &Get_File_List_From_Dir);
-    Hook_Method(0x0048F250, &Get_Archive_Filename_For_File);
-    Hook_Method(0x0048F160, &Get_File_Info);
-}
-
+#include "hooker.h"
 extern ArchiveFileSystem *&g_theArchiveFileSystem;
 #else
 extern ArchiveFileSystem *g_theArchiveFileSystem;

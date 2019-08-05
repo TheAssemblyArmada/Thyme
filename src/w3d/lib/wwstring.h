@@ -77,8 +77,6 @@ public:
     unsigned Get_Hash() const;
     void To_Lower() { strlwr(m_buffer); }
 
-    static void Hook_Me();
-
 private:
     struct HEADER
     {
@@ -447,13 +445,3 @@ inline unsigned StringClass::Get_Hash() const
 
     return result;
 }
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void StringClass::Hook_Me()
-{
-    // Hook_Method(Make_Method_Ptr<void, StringClass, size_t, bool>(0x0089D0B0), &Get_String);
-    // Hook_Method(Make_Method_Ptr<void, StringClass>(0x0089D460), &Free_String);
-}
-#endif

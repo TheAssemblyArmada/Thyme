@@ -45,10 +45,6 @@ public:
 
     static bool Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     ConditionType m_conditionType;
     int m_numParams;
@@ -72,27 +68,7 @@ public:
     
     static bool Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     OrCondition *m_nextOr;
     Condition *m_firstAnd;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-inline void Condition::Hook_Me()
-{
-    Hook_Method(0x0051DD90, &Duplicate);
-    Hook_Method(0x0051E0B0, &Duplicate_And_Qualify);
-}
-
-inline void OrCondition::Hook_Me()
-{
-    Hook_Method(0x0051D7B0, &Duplicate);
-    Hook_Method(0x0051D8A0, &Duplicate_And_Qualify);
-    Hook_Function(0x0051D9B0, Parse_OrCondition_Chunk);
-}
-#endif

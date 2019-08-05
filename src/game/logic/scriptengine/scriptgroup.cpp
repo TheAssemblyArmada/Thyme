@@ -189,10 +189,3 @@ bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, 
     
     return input.Parse(new_group);
 }
-
-#ifdef GAME_DLL
-void ScriptGroup::Hook_Xfer_Snapshot(Xfer *xfer)
-{
-    ScriptGroup::Xfer_Snapshot(xfer);
-}
-#endif

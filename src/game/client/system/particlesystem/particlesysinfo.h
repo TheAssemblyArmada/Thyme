@@ -159,7 +159,6 @@ public:
     void Tint_All_Colors(int tint);
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Xfer(Xfer *xfer) { ParticleSystemInfo::Xfer_Snapshot(xfer); }
     ParticleSystemInfo *Hook_Ctor() { return new(this) ParticleSystemInfo; }
 #endif
@@ -282,14 +281,3 @@ inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
         m_colorKey[i] = that.m_colorKey[i];
     }
 }
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ParticleSystemInfo::Hook_Me()
-{
-    Hook_Method(0x004CD460, &Hook_Ctor);
-    Hook_Method(0x004CD5D0, &Hook_Xfer);
-    Hook_Method(0x004CD540, &Tint_All_Colors);
-}
-#endif

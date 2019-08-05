@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Implementation of the GameEngine interface.
  *
@@ -9,17 +9,12 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #pragma once
 
 #include "gameengine.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 class Win32GameEngine : public GameEngine
 {
@@ -48,20 +43,11 @@ public:
     virtual Network *Create_Network() override;
 
 #ifdef GAME_DLL
-    LocalFileSystem *Create_Local_File_System_NV();
-    ArchiveFileSystem *Create_Archive_File_System_NV();
-    ModuleFactory *Hook_Create_Module_Factory();
-    static void Hook_Me();
+    LocalFileSystem *Hook_Create_Local_File_System() { return Win32GameEngine::Create_Local_File_System(); }
+    ArchiveFileSystem *Hook_Create_Archive_File_System() { return Win32GameEngine::Create_Archive_File_System(); }
+    ModuleFactory *Hook_Create_Module_Factory() { return Win32GameEngine::Create_Module_Factory(); }
+    AudioManager *Hook_Create_Audio_Manager() { return Win32GameEngine::Create_Audio_Manager(); }
 #endif
 private:
     unsigned int m_previousErrorMode;
 };
-
-#ifdef GAME_DLL
-inline void Win32GameEngine::Hook_Me()
-{
-    Hook_Method(0x007420F0, &Create_Local_File_System_NV);
-    Hook_Method(0x00742150, &Create_Archive_File_System_NV);
-    Hook_Method(0x00741FA0, &Hook_Create_Module_Factory);
-}
-#endif

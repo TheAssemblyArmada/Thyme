@@ -21,10 +21,6 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 enum NameKeyType : int32_t
 {
     NAMEKEY_INVALID = 0,
@@ -70,9 +66,6 @@ public:
 
     static void Parse_String_As_NameKeyType(INI *ini, void *formal, void *store, void const *userdata);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
     void Free_Sockets();
 
@@ -82,15 +75,8 @@ private:
 };
 
 #ifdef GAME_DLL
-//#define g_theNameKeyGenerator (Make_Global<NameKeyGenerator*>(0x00A2B928))
+#include "hooker.h"
 extern NameKeyGenerator *&g_theNameKeyGenerator;
-
-inline void NameKeyGenerator::Hook_Me()
-{
-    Hook_Method(0x0047B2F0, &Key_To_Name);
-    Hook_Method(0x0047B360, &Name_To_Key);
-    Hook_Method(0x0047B500, &Name_To_Lower_Case_Key);
-}
 #else
 extern NameKeyGenerator *g_theNameKeyGenerator;
 #endif

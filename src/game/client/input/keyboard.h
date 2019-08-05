@@ -87,10 +87,9 @@ public:
     uint16_t Get_Modifiers() { return m_modifiers; }
 
 #ifdef GAME_DLL
-    void Hook_Init();
-    void Hook_Update();
-    void Hook_Create_Message_Stream();
-    static void Hook_Me();
+    void Hook_Init() { Keyboard::Init(); }
+    void Hook_Update() { Keyboard::Update(); }
+    void Hook_Create_Message_Stream() { Keyboard::Create_Stream_Messages(); }
 #endif
 private:
     void Init_Key_Names();
@@ -109,18 +108,6 @@ protected:
 
 #ifdef GAME_DLL
 #include "hooker.h"
-
-inline void Keyboard::Hook_Me()
-{
-    Hook_Method(0x0040A120, &Hook_Init);
-    Hook_Method(0x0040A140, &Hook_Update);
-    Hook_Method(0x00407F50, &Hook_Create_Message_Stream);
-    Hook_Method(0x0040A4A0, &Get_Printable_Key);
-    Hook_Method(0x0040A150, &Reset_Keys);
-    Hook_Method(0x0040A460, &Is_Shift);
-    Hook_Method(0x0040A480, &Is_Ctrl);
-    Hook_Method(0x0040A490, &Is_Alt);
-}
 
 extern Keyboard *&g_theKeyboard;
 #else

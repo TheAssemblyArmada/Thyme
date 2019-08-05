@@ -22,7 +22,12 @@
 #include "mempool.h"
 #include "mempoolfact.h"
 
+int g_theLinkChecker = 0;
+bool g_thePreMainInitFlag = false;
+bool g_theMainInitFlag = false;
+
 #ifdef GAME_DLL
+#include "hooker.h"
 void *New_New(size_t bytes)
 {
     ++(Make_Global<int>(0x00A29B9C));
@@ -39,10 +44,6 @@ void New_Delete(void *ptr)
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 #endif
-
-int g_theLinkChecker = 0;
-bool g_thePreMainInitFlag = false;
-bool g_theMainInitFlag = false;
 
 void Init_Memory_Manager()
 {

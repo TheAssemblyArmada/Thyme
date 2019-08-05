@@ -33,14 +33,12 @@ public:
     W3DFileSystem();
     virtual ~W3DFileSystem();
 
-    virtual FileClass *Get_File(const char *filename);
-    virtual void Return_File(FileClass *file);
+    virtual FileClass *Get_File(const char *filename) override;
+    virtual void Return_File(FileClass *file) override;
 
 #ifdef GAME_DLL
-    FileClass *Get_File_NV(const char *filename);
-    void Return_File_NV(FileClass *file);
-
-    static void Hook_Me();
+    FileClass *Hook_Get_File(const char *filename) { return W3DFileSystem::Get_File(filename); }
+    void Hook_Return_File(FileClass *file) { W3DFileSystem::Return_File(file); }
 #endif
 };
 
@@ -50,19 +48,19 @@ public:
     GameFileClass(const char *filename = nullptr);
     virtual ~GameFileClass();
 
-    virtual const char *File_Name();
-    virtual const char *Set_Name(const char *filename);
-    virtual bool Create();
-    virtual bool Delete();
-    virtual bool Is_Available(bool forced = false);
-    virtual bool Is_Open();
-    virtual bool Open(const char *filename, int rights = FM_READ);
-    virtual bool Open(int rights = FM_READ);
-    virtual int Read(void *buffer, int length);
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT);
-    virtual off_t Size();
-    virtual int Write(void const *buffer, int size);
-    virtual void Close();
+    virtual const char *File_Name() override;
+    virtual const char *Set_Name(const char *filename) override;
+    virtual bool Create() override;
+    virtual bool Delete() override;
+    virtual bool Is_Available(bool forced = false) override;
+    virtual bool Is_Open() override;
+    virtual bool Open(const char *filename, int rights = FM_READ) override;
+    virtual bool Open(int rights = FM_READ) override;
+    virtual int Read(void *buffer, int length) override;
+    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    virtual off_t Size() override;
+    virtual int Write(void const *buffer, int size) override;
+    virtual void Close() override;
 
 private:
     File *m_theFile;
@@ -70,13 +68,3 @@ private:
     char m_filePath[PATH_MAX];
     char m_filename[PATH_MAX];
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void W3DFileSystem::Hook_Me()
-{
-    Hook_Method(0x00763880, &Get_File_NV);
-    Hook_Method(0x00815370, &Return_File_NV);
-}
-#endif

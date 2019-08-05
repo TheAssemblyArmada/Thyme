@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Interface for UI function pointer manager.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -17,10 +16,6 @@
 
 #include "namekeygenerator.h"
 #include "subsysteminterface.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 class GameWindow;
 class WinInstanceData;
@@ -31,6 +26,7 @@ typedef void (*layoutfunc_t)(WinLayout *, void *);
 
 class FunctionLexicon : public SubsystemInterface
 {
+    ALLOW_HOOKING
 public:
     enum TableIndex
     {
@@ -66,9 +62,6 @@ public:
     drawfunc_t Game_Win_Draw_Func(NameKeyType key, TableIndex index);
     layoutfunc_t Win_Layout_Init_Func(NameKeyType key, TableIndex index);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 protected:
     void Load_Table(TableEntry *table, TableIndex index);
     bool Validate();
@@ -79,11 +72,7 @@ private:
 };
 
 #ifdef GAME_DLL
-inline void FunctionLexicon::Hook_Me()
-{
-    Hook_Method(0x004F3D00, &Load_Table);
-}
-
+#include "hooker.h"
 extern FunctionLexicon *&g_theFunctionLexicon;
 #else
 extern FunctionLexicon *g_theFunctionLexicon;

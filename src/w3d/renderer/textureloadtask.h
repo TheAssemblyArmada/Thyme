@@ -32,6 +32,7 @@ struct TextureLoadTaskListNode
 
 class TextureLoadTaskClass
 {
+    ALLOW_HOOKING
     friend class TextureLoadTaskListClass;
 
     enum
@@ -95,7 +96,6 @@ public:
     static void Delete_Free_Pool();
     static TextureLoadTaskClass *Create(TextureBaseClass *texture, TaskType type, PriorityType priority);
 #ifdef GAME_DLL
-    static void Hook_Me();
     TextureLoadTaskClass *Hook_Ctor() { return new (this) TextureLoadTaskClass; }
     void Hook_Dtor() { TextureLoadTaskClass::~TextureLoadTaskClass(); }
     void Hook_Destroy() { TextureLoadTaskClass::Destroy(); }
@@ -133,28 +133,3 @@ protected:
     PriorityType m_priority;
     StateType m_loadState;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void TextureLoadTaskClass::Hook_Me()
-{
-    Hook_Method(0x0082FF20, &Hook_Ctor);
-    Hook_Method(0x0082FF80, &Hook_Dtor);
-    Hook_Method(0x008301D0, &Hook_Destroy);
-    Hook_Method(0x00830210, &Hook_Init);
-    Hook_Method(0x00831160, &Hook_Deinit);
-    Hook_Method(0x008303B0, &Hook_Begin_Compressed_Load);
-    Hook_Method(0x00830950, &Hook_Begin_Uncompressed_Load);
-    Hook_Method(0x00830B30, &Hook_Load_Compressed_Mipmap);
-    Hook_Method(0x00830C40, &Hook_Load_Uncompressed_Mipmap);
-    Hook_Method(0x00830A80, &Hook_Lock_Surfaces);
-    Hook_Method(0x00830AE0, &Hook_Unlock_Surfaces);
-    Hook_Method(0x00830380, &Apply);
-    Hook_Method(0x008302D0, &Begin_Load);
-    Hook_Method(0x00830310, &Load);
-    Hook_Method(0x00830340, &End_Load);
-    Hook_Function(0x0082FFD0, &Create);
-    Hook_Function(0x008305F0, &Get_Texture_Information);
-}
-#endif

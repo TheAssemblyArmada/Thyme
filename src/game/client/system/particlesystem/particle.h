@@ -43,7 +43,6 @@ public:
     ParticlePriorityType Get_Priority() const;
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     Particle *Hook_Ctor(ParticleSystem *system, const ParticleInfo &info) { return new (this) Particle(system, info); }
     void Hook_Dtor() { Particle::~Particle(); }
     void Hook_Xfer(Xfer *xfer) { Particle::Xfer_Snapshot(xfer); }
@@ -71,17 +70,3 @@ private:
     bool m_inOverallList;
     ParticleSystem *m_systemUnderControl;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void Particle::Hook_Me()
-{
-    Hook_Method(0x004CCC30, &Particle::Hook_Ctor);
-    Hook_Method(0x004CD040, &Particle::Hook_Dtor);
-    Hook_Method(0x004CD2E0, &Particle::Hook_Xfer);
-    Hook_Method(0x004CD3F0, &Particle::Hook_LoadPP);
-    Hook_Method(0x004CCB50, &Particle::Compute_Alpha_Rate);
-    Hook_Method(0x004CCBA0, &Particle::Compute_Color_Rate);
-}
-#endif

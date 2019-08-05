@@ -16,7 +16,6 @@
 #include "gamemath.h"
 #include "gametype.h"
 #include "kindof.h"
-#include "stringex.h"
 
 Parameter::Parameter(ParameterType type) :
     m_type(type),

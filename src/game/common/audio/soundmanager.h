@@ -54,7 +54,6 @@ public:
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Reset() { SoundManager::Reset(); }
     void Hook_Add_Event(AudioEventRTS *event) { SoundManager::Add_Audio_Event(event); }
     bool Hook_Can_Play_Now(AudioEventRTS *event) { return SoundManager::Can_Play_Now(event); }
@@ -68,16 +67,3 @@ private:
     int m_3dSamplesPlaying;
 };
 
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void SoundManager::Hook_Me() 
-{
-    Hook_Method(0x00445FF0, &SoundManager::Hook_Reset);
-    Hook_Method(0x00446010, &SoundManager::Hook_Add_Event);
-    // Hook_Method(0x00446120, &SoundManager::Hook_Can_Play_Now); // Not implemented.
-    Hook_Method(0x004462F0, &SoundManager::Hook_Violates_Voice);
-    Hook_Method(0x00446350, &SoundManager::Hook_Is_Interrupting);
-}
-
-#endif

@@ -477,10 +477,3 @@ void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, void
     static_cast<GeometryInfo *>(store)->m_type = GeometryType(INI::Scan_IndexList(ini->Get_Next_Token(), _geometry_names));
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
 }
-
-#ifdef GAME_DLL
-void GeometryInfo::Hook_Xfer(Xfer *xfer)
-{
-    GeometryInfo::Xfer_Snapshot(xfer);
-}
-#endif

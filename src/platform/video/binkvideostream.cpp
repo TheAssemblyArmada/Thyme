@@ -13,8 +13,6 @@
  *            LICENSE
  */
 #include "binkvideostream.h"
-
-#ifdef BUILD_WITH_BINK
 #include "videobuffer.h"
 #include <bink.h>
 
@@ -162,5 +160,3 @@ int BinkVideoStream::Width()
 {
     return m_binkHandle->width;
 }
-
-#endif // BUILD_WITH_BINK

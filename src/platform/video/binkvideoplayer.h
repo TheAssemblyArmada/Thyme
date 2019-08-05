@@ -21,10 +21,9 @@ struct Bink;
 
 class BinkVideoPlayer final : public VideoPlayer
 {
+    ALLOW_HOOKING
 public:
     BinkVideoPlayer();
-
-#ifdef BUILD_WITH_BINK
     virtual ~BinkVideoPlayer();
 
     // Subsystem interface methods
@@ -40,7 +39,6 @@ public:
     virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Init() { BinkVideoPlayer::Init(); }
     void Hook_Deinit() { BinkVideoPlayer::Deinit(); }
     VideoStream *Hook_Open(Utf8String title) { return BinkVideoPlayer::Open(title); }
@@ -48,25 +46,7 @@ public:
     void Hook_Notify_Player_Of_New_Provider(bool unk) { BinkVideoPlayer::Notify_Player_Of_New_Provider(unk); };
     void Hook_Initialise_Bink_With_Miles() { BinkVideoPlayer::Initialise_Bink_With_Miles(); }
 #endif
-#endif // BUILD_WITH_BINK
 
 private:
     VideoStream *Create_Stream(Bink *handle);
 };
-
-#ifdef BUILD_WITH_BINK
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void BinkVideoPlayer::Hook_Me()
-{
-    Hook_Method(0x007AA550, &Hook_Init);
-    Hook_Method(0x007AA570, &Hook_Deinit);
-    Hook_Method(0x007AA6A0, &Hook_Open);
-    Hook_Method(0x007AA8E0, &Hook_Load);
-    Hook_Method(0x007AA970, &Hook_Notify_Player_Of_New_Provider);
-    Hook_Method(0x007AA9A0, &Hook_Initialise_Bink_With_Miles);
-    Hook_Method(0x007AA5B0, &Create_Stream);
-}
-#endif
-#endif // BUILD_WITH_BINK

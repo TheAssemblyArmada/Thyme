@@ -25,8 +25,6 @@ class BinkVideoStream final : public VideoStream
 
 public:
     BinkVideoStream() : m_binkHandle(nullptr) {}
-
-#ifdef BUILD_WITH_BINK
     virtual ~BinkVideoStream();
 
     virtual void Update() override;
@@ -42,7 +40,6 @@ public:
     virtual int Width() override;
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Update() { BinkVideoStream::Update(); }
     bool Hook_Is_Frame_Ready() { return BinkVideoStream::Is_Frame_Ready(); }
     void Hook_Decompress_Frame() { BinkVideoStream::Decompress_Frame(); }
@@ -50,25 +47,8 @@ public:
     void Hook_Next_Frame() { BinkVideoStream::Next_Frame(); }
     void Hook_Goto_Frame(int frame) { BinkVideoStream::Goto_Frame(frame); }
 #endif
-#endif // BUILD_WITH_BINK
 
 private:
     Bink *m_binkHandle;
     uint32_t m_unk;
 };
-
-#ifdef BUILD_WITH_BINK
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void BinkVideoStream::Hook_Me()
-{
-    Hook_Method(0x007AAA20, &Hook_Update);
-    Hook_Method(0x007AAA30, &Hook_Is_Frame_Ready);
-    Hook_Method(0x007AAA40, &Hook_Decompress_Frame);
-    Hook_Method(0x007AAA50, &Hook_Render_Frame);
-    Hook_Method(0x007AAAD0, &Hook_Next_Frame);
-    Hook_Method(0x007AAB00, &Hook_Goto_Frame);
-}
-#endif
-#endif // BUILD_WITH_BINK

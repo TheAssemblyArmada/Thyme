@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Functions involved in file transfers.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -32,18 +31,3 @@ Utf8String Get_Asset_Usage_From_Map(Utf8String path);
 Utf8String Get_Readme_From_Map(Utf8String path);
 bool Do_Any_File_Transfers(GameInfo *gameinfo);
 bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int unkbool);
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-namespace FileTransfer
-{
-inline void Hook_Me()
-{
-    Hook_Function(0x006F6200, &Get_Base_Path_From_Path);
-    Hook_Function(0x006F6390, &Get_File_From_Path);
-    Hook_Function(0x006F6490, &Get_Base_File_From_File);
-    Hook_Function(0x006F6620, &Get_Preview_From_Map);
-}
-}
-#endif

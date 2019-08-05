@@ -48,16 +48,13 @@ typedef std::unordered_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String
 
 class MilesAudioFileCache
 {
+    ALLOW_HOOKING
 public:
     MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~MilesAudioFileCache();
     void *Open_File(AudioEventRTS *file);
     void Close_File(void *file);
     void Set_Max_Size(unsigned size);
-
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 
 private:
     bool Free_Space_For_Sample(const OpenAudioFile &file);
@@ -69,15 +66,3 @@ private:
     unsigned m_maxSize;
     SimpleMutexClass m_mutex;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void MilesAudioFileCache::Hook_Me()
-{
-    Hook_Method(0x00780F80, &MilesAudioFileCache::Open_File);
-    Hook_Method(0x007813D0, &MilesAudioFileCache::Close_File);
-    Hook_Method(0x007814D0, &MilesAudioFileCache::Free_Space_For_Sample);
-}
-
-#endif

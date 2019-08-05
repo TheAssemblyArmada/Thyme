@@ -368,10 +368,6 @@ public:
     GameMessage *Get_Next() { return m_next; }
     GameMessage *Get_Prev() { return m_prev; }
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     GameMessage *m_next;
     GameMessage *m_prev;
@@ -383,13 +379,3 @@ private:
     GameMessageArgument *m_argList;
     GameMessageArgument *m_argTail;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void GameMessage::Hook_Me()
-{
-    Hook_Method(0x0040A8F0, &Append_Pixel_Arg);
-    Hook_Method(0x0040A800, &Append_Int_Arg);
-}
-#endif

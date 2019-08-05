@@ -15,8 +15,11 @@
 #include "randomvalue.h"
 #include "crc.h"
 #include "gamedebug.h"
-#include <cmath>
+#include "gamemath.h"
 #include <ctime>
+
+using GameMath::Pow;
+using std::time;
 
 namespace {
 
@@ -34,7 +37,7 @@ uint32_t g_theGameLogicSeed[6] = {
 
 uint32_t g_theGameLogicBaseSeed;
 
-float const g_theMultFactor = 1.0 / (pow(2.0, 32.0) - 1.0);
+const float g_theMultFactor = 1.0 / (Pow(2.0, 32.0) - 1.0);
 
 // Get the next random value based on the given seed.
 uint32_t Random_Value(uint32_t seed[6])

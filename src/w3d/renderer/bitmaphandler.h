@@ -32,10 +32,6 @@ public:
         unsigned dest_surface_pitch, WW3DFormat dest_surface_format, uint8_t *src_surface, unsigned src_surface_width,
         unsigned src_surface_height, unsigned src_surface_pitch, WW3DFormat src_surface_format, uint8_t *src_palette,
         unsigned src_palette_bpp, bool generate_mip_level, const Vector3 &adjust);
-    
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 
 private:
     static void Read_B8G8R8A8(uint8_t *dest_surface, uint8_t const *src_surface, WW3DFormat src_surface_format,
@@ -46,13 +42,3 @@ private:
     static void Copy_Pixel(uint8_t *dest_surface, WW3DFormat dest_surface_format, const uint8_t *src_surface,
         WW3DFormat src_surface_format, const uint8_t *src_palette, unsigned src_palette_bpp, const Vector3 &adjust);
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void BitmapHandlerClass::Hook_Me()
-{
-    Hook_Function(0x0087E7A0, Copy_Image);
-    Hook_Function(0x008202B0, Copy_Image_Generate_Mipmap);
-}
-#endif

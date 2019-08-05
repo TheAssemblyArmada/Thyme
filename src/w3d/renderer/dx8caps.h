@@ -22,6 +22,7 @@
 
 class DX8Caps
 {
+    ALLOW_HOOKING
     enum Vendors
     {
         VENDOR_UNKNOWN,
@@ -99,7 +100,6 @@ private:
     }
 
 public:
-    static void Hook_Me();
 #endif
 
 private:
@@ -142,19 +142,3 @@ private:
     static StringClass s_videoCardDetails;
 #endif
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-inline void DX8Caps::Hook_Me()
-{
-    Hook_Method(0x00844BB0, &DX8Caps::Compute_Caps);
-    Hook_Method(0x00846FC0, &DX8Caps::Is_Valid_Display_Format);
-    Hook_Method(0x008462D0, &DX8Caps::Check_Texture_Format_Support);
-    Hook_Method(0x008464B0, &DX8Caps::Check_Render_To_Texture_Support);
-    Hook_Method(0x00846690, &DX8Caps::Check_Depth_Stencil_Support);
-    Hook_Method(0x008461E0, &DX8Caps::Check_Texture_Compression_Support);
-    Hook_Method(0x00846870, &DX8Caps::Check_Shader_Support);
-    Hook_Method(0x00844A90, &DX8Caps::Hook_Ctor1);
-    Hook_Method(0x00844950, &DX8Caps::Hook_Ctor2);
-}
-#endif

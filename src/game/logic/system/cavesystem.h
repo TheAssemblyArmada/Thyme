@@ -56,9 +56,6 @@ public:
     TunnelTracker *Register_New_Cave(int index);
     TunnelTracker *Get_Tunnel_Tracker_For_Cave_Index(size_t index);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
     std::vector<TunnelTracker *> m_caves;
 };
@@ -67,13 +64,6 @@ private:
 #ifdef GAME_DLL
 #include "hooker.h"
 extern CaveSystem *&g_theCaveSystem;
-
-inline void CaveSystem::Hook_Me()
-{
-    Hook_Method(0x004D5730, &Can_Switch_Index_to_Index);
-    Hook_Method(0x004D5790, &Register_New_Cave);
-    Hook_Method(0x004D5880, &Get_Tunnel_Tracker_For_Cave_Index);
-}
 #else
 extern CaveSystem *g_theCaveSystem;
 #endif

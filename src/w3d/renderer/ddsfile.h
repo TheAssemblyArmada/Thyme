@@ -93,6 +93,7 @@ struct DDSHeader
 
 class DDSFileClass
 {
+    ALLOW_HOOKING
     enum
     {
         TEXTURE,
@@ -125,7 +126,6 @@ public:
    {
        return new (this) DDSFileClass(filename, reduction_factor);
    }
-   static void Hook_Me();
 #endif
 
 private:
@@ -166,18 +166,3 @@ inline uint32_t DDSFileClass::Decode_Line_Code(uint8_t *packed)
 {
     return uint32_t(packed[0]) | (uint32_t(packed[1]) << 8) | (uint32_t(packed[2]) << 16) | (uint32_t(packed[3]) << 24);
 }
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void DDSFileClass::Hook_Me()
-{
-    Hook_Method(0x0087A170, static_cast<void (DDSFileClass::*)(unsigned, WW3DFormat, unsigned, unsigned, uint8_t *, unsigned, const Vector3 &)>(&DDSFileClass::Copy_Level_To_Surface));
-    Hook_Method(0x0087A0E0,
-        static_cast<void (DDSFileClass::*)(unsigned, w3dsurface_t, const Vector3 &)>(&DDSFileClass::Copy_Level_To_Surface));
-    Hook_Method(0x0087AEE0, &Copy_CubeMap_Level_To_Surface);
-    Hook_Method(0x0087BBF0, &Get_4x4_Block);
-    Hook_Method(0x00879F80, &Load);
-    Hook_Method(0x00879BF0, &Hook_Ctor);
-}
-#endif

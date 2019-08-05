@@ -45,10 +45,6 @@ public:
     static bool Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     void Set_Action_Type(ScriptActionType type);
     static ScriptAction *Parse_Action(DataChunkInput &input, DataChunkInfo *info);
@@ -60,15 +56,3 @@ private:
     ScriptAction *m_nextAction;
     bool m_hasWarnings;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ScriptAction::Hook_Me()
-{
-    Hook_Method(0x0051FF80, &Duplicate);
-    Hook_Method(0x00520240, &Duplicate_And_Qualify);
-    Hook_Function(0x00521240, &Parse_Action_Chunk);
-    Hook_Function(0x00521280, &Parse_False_Action_Chunk);
-}
-#endif

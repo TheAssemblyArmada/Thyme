@@ -55,8 +55,7 @@ public:
     static bool Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 #ifdef GAME_DLL
-    void Hook_Xfer_Snapshot(Xfer *xfer);
-    static void Hook_Me();
+    void Hook_Xfer_Snapshot(Xfer *xfer) { ScriptList::Xfer_Snapshot(xfer); }
 #endif
 
 private:
@@ -66,17 +65,3 @@ private:
     static int s_numInReadList;
     static ScriptGroup *s_emptyGroup;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ScriptList::Hook_Me()
-{
-    Hook_Method(0x0051B920, &Hook_Xfer_Snapshot);
-    Hook_Method(0x0051BC70, &Duplicate);
-    Hook_Method(0x0051BD80, &Duplicate_And_Qualify);
-    Hook_Function(0x0051C040, Get_Read_Scripts); // Must hooke with Parse_Scripts_Chunk
-    Hook_Function(0x0051C080, Parse_Script_List_Chunk);
-    Hook_Function(0x0051BF00, Parse_Scripts_Chunk); // Must hook with Get_Read_Scripts
-}
-#endif

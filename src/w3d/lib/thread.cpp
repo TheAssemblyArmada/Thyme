@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Base class to wrap threading API.
  *
@@ -9,14 +9,12 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #include "always.h"
 #include "thread.h"
 #include "gamedebug.h"
-#include "stringex.h"
 #include "systimer.h"
 #include <cstdio>
 #include <cstring>
@@ -89,10 +87,8 @@ void *ThreadClass::Internal_Thread_Function(void *params)
 void ThreadClass::Internal_Thread_Function(void *params)
 #endif
 {
-    //
     // Set is running true and call the virtual thread function. Function should
     // check for m_isRunning in its loop and finish if set false;
-    //
     static_cast<ThreadClass *>(params)->m_isRunning = true;
     static_cast<ThreadClass *>(params)->m_threadID = Get_Current_Thread_ID();
     static_cast<ThreadClass *>(params)->Thread_Function();

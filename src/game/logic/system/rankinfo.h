@@ -39,9 +39,8 @@ public:
     static void Parse_Rank_Definition(INI *ini);
 
 #ifdef GAME_DLL
-    static void Hook_Me();
-    void Hook_Init();
-    void Hook_Reset();
+    void Hook_Init() { RankInfoStore::Init(); }
+    void Hook_Reset() { RankInfoStore::Reset(); }
 #endif
 private:
     std::vector<RankInfo *> m_infoStore;
@@ -50,12 +49,16 @@ private:
 class RankInfo : public Overridable
 {
     IMPLEMENT_POOL(RankInfo);
-    friend void RankInfoStore::Parse_Rank_Definition(INI*);
+    friend void RankInfoStore::Parse_Rank_Definition(INI *);
 
 public:
     virtual ~RankInfo() {}
 
-    RankInfo *Get_Override() { return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this; }
+    RankInfo *Get_Override()
+    {
+        return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this;
+    }
+
 private:
     Utf16String m_rankName;
     int m_skillPointsNeeded;
@@ -66,25 +69,6 @@ private:
 #ifdef GAME_DLL
 #include "hooker.h"
 extern RankInfoStore *&g_theRankInfoStore;
-
-inline void RankInfoStore::Hook_Init()
-{
-    RankInfoStore::Init();
-}
-
-inline void RankInfoStore::Hook_Reset()
-{
-    RankInfoStore::Reset();
-}
-
-inline void RankInfoStore::Hook_Me()
-{
-    Hook_Function(0x00489520, &RankInfoStore::Parse_Rank_Definition);
-    //Hook_Method(0x00489410, &RankInfoStore::Hook_Init); // Works, but shares function in binary with ScienceStore as compiles to same code.
-    Hook_Method(0x00489440, &RankInfoStore::Hook_Reset);
-    Hook_Method(0x004894E0, &RankInfoStore::Get_Rank_Info);
-    Hook_Method(0x004894D0, &RankInfoStore::Get_Rank_Level_Count);
-}
 #else
 extern RankInfoStore *g_theRankInfoStore;
 #endif

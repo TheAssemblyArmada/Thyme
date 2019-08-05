@@ -17,7 +17,6 @@
 #include "filesystem.h"
 #include "globaldata.h"
 #include "registry.h"
-#include "stringex.h"
 #include <cstdio>
 
 W3DFileSystem::W3DFileSystem()
@@ -294,15 +293,3 @@ void GameFileClass::Close()
         m_theFile = nullptr;
     }
 }
-
-#ifdef GAME_DLL
-FileClass *W3DFileSystem::Get_File_NV(const char *filename)
-{
-    return W3DFileSystem::Get_File(filename);
-}
-
-void W3DFileSystem::Return_File_NV(FileClass *file)
-{
-    W3DFileSystem::Return_File(file);
-}
-#endif

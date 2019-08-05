@@ -87,9 +87,6 @@ public:
     static void Invalidate_Old_Unused_Textures(unsigned unk);
     static void Apply_Null(unsigned unk);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 protected:
     MipCountType m_mipLevelCount;
     bool m_initialized;
@@ -120,15 +117,3 @@ private:
     static unsigned s_unusedTextureID;
 #endif
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void TextureBaseClass::Hook_Me()
-{
-    Hook_Method(0x0081A760, &TextureBaseClass::Invalidate);
-    Hook_Method(0x0081A830, &TextureBaseClass::Get_Reduction);
-    Hook_Method(0x0081A7A0, &TextureBaseClass::Peek_Platform_Base_Texture);
-    Hook_Method(0x0081A7B0, &TextureBaseClass::Set_Platform_Base_Texture);
-}
-#endif

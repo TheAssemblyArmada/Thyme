@@ -46,10 +46,6 @@ public:
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
     TeamsInfo *Get_Team_Info(int index);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     int m_numTeams;
     int m_numTeamsAllocated;
@@ -74,16 +70,3 @@ inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
     DEBUG_ASSERT_THROW(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.\n");
     return &m_teams[index];
 }
-
-
-// TODO Move this if more appropriate location found.
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void TeamsInfoRec::Hook_Me()
-{
-    Hook_Method(0x004D8F80, &Clear);
-    Hook_Method(0x004D9050, &Find_Team);
-    Hook_Method(0x004D91C0, &Add_Team);
-}
-#endif

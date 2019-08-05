@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Message list handling.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -17,10 +16,6 @@
 
 #include "gamemessage.h"
 #include "subsysteminterface.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 class GameMessageList : public SubsystemInterface
 {
@@ -42,24 +37,15 @@ public:
 
 #ifdef GAME_DLL
     // Duplicates to test functionality of virtual members with hooking.
-    void Append_Message_Nv(GameMessage *msg);
-    void Insert_Message_Nv(GameMessage *msg, GameMessage *at);
-    void Remove_Message_Nv(GameMessage *msg);
-    bool Contains_Message_Of_Type_Nv(GameMessage::MessageType type);
-
-    static void Hook_Me();
+    void Hook_Append_Message(GameMessage *msg) { GameMessageList::Append_Message(msg); }
+    void Hook_Insert_Message(GameMessage *msg, GameMessage *at) { GameMessageList::Insert_Message(msg, at); }
+    void Hook_Remove_Message(GameMessage *msg) { GameMessageList::Remove_Message(msg); }
+    bool Hook_Contains_Message_Of_Type(GameMessage::MessageType type)
+    {
+        return GameMessageList::Contains_Message_Of_Type(type);
+    }
 #endif
 protected:
     GameMessage *m_firstMessage;
     GameMessage *m_lastMessage;
 };
-
-#ifdef GAME_DLL
-inline void GameMessageList::Hook_Me()
-{
-    Hook_Method(0x0040D760, &Append_Message_Nv);
-    Hook_Method(0x0040D7A0, &Insert_Message_Nv);
-    Hook_Method(0x0040D7D0, &Remove_Message_Nv);
-    Hook_Method(0x0040D820, &Contains_Message_Of_Type_Nv);
-}
-#endif

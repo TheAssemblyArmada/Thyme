@@ -1,26 +1,17 @@
-////////////////////////////////////////////////////////////////////////////////
-//                               --  THYME  --                                //
-////////////////////////////////////////////////////////////////////////////////
-//
-//  Project Name:: Thyme
-//
-//          File:: FFACTORY.H
-//
-//        Author:: OmniBlade
-//
-//  Contributors:: 
-//
-//   Description:: Base class for the W3dLib file io factory.
-//
-//       License:: Thyme is free software: you can redistribute it and/or 
-//                 modify it under the terms of the GNU General Public License 
-//                 as published by the Free Software Foundation, either version 
-//                 2 of the License, or (at your option) any later version.
-//
-//                 A full copy of the GNU General Public License can be found in
-//                 LICENSE
-//
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Base class for the W3dLib file io factory.
+ *
+ * @copyright Thyme is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
 #pragma once
 
 #include "fileclass.h"
@@ -55,18 +46,10 @@ class RawFileFactoryClass
 public:
     FileClass *Get_File(const char *filename);
     void Return_File(FileClass *file);
-
-    static void Hook_Me();
 };
 
 #ifdef GAME_DLL
 #include "hooker.h"
-
-inline void RawFileFactoryClass::Hook_Me()
-{
-
-}
-
 extern RawFileFactoryClass *&g_theWritingFileFactory;
 extern FileFactoryClass *&g_theFileFactory;
 #else

@@ -174,7 +174,6 @@ public:
     MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Init() { AudioManager::Init(); }
     void Hook_Reset() { AudioManager::Reset(); }
     void Hook_Update() { AudioManager::Update(); }
@@ -292,50 +291,6 @@ private:
 #ifdef GAME_DLL
 #include "hooker.h"
 extern AudioManager *&g_theAudio;
-
-inline void AudioManager::Hook_Me()
-{
-    Hook_Method(0x00404C60, &AudioManager::Hook_Init);
-    Hook_Method(0x00404F30, &AudioManager::Hook_Reset);
-    // Hook_Method(0x00404F30, &AudioManager::Hook_Update); // Not Implemented.
-    Hook_Method(0x00406050, &AudioManager::Hook_Set_Listener_Position);
-    Hook_Method(0x00406090, &AudioManager::Hook_Allocate_Audio_Request);
-    Hook_Method(0x004061A0, &AudioManager::Hook_Release_Audio_Request);
-    Hook_Method(0x004061D0, &AudioManager::Hook_Append_Audio_Request);
-    Hook_Method(0x00406250, &AudioManager::Hook_New_Audio_Event_Info);
-    Hook_Method(0x004065D0, &AudioManager::Hook_Add_Audio_Event_Info);
-    Hook_Method(0x004067B0, &AudioManager::Hook_Find_Audio_Event_Info);
-    Hook_Method(0x00406920, &AudioManager::Hook_Refresh_Cached_Variables);
-    Hook_Method(0x00406970, &AudioManager::Hook_Get_Audio_Length_MS);
-    Hook_Method(0x00406A90, &AudioManager::Hook_Is_Music_Already_Loaded);
-    Hook_Method(0x00406C10, &AudioManager::Hook_Find_All_Audio_Events_Of_Type);
-    Hook_Method(0x005B9460, &AudioManager::Hook_Get_All_Audio_Events);
-    Hook_Method(0x00406D00, &AudioManager::Hook_Is_Current_Provider_Hardware_Accelerated);
-    Hook_Method(0x00406DE0, &AudioManager::Hook_Is_Current_Speaker_Type_Surround);
-    // Hook_Method(0x00406E00, &AudioManager::Hook_Should_Play_Locally); // Not Implemented.
-    Hook_Method(0x00406F00, &AudioManager::Hook_Allocate_New_Handle);
-    Hook_Method(0x00406860, &AudioManager::Hook_Remove_Level_Specific_Audio_Event_Infos);
-    Hook_Method(0x00406200, &AudioManager::Remove_All_Audio_Requests);
-    Hook_Method(0x00405700, &AudioManager::Next_Track_Name);
-    Hook_Method(0x004057D0, &AudioManager::Prev_Track_Name);
-    Hook_Method(0x00406F10, &AudioManager::Hook_Lose_Focus);
-    Hook_Method(0x00406F70, &AudioManager::Hook_Regain_Focus);
-    Hook_Method(0x00405390, &AudioManager::Hook_Add_Audio_Event);
-    Hook_Method(0x004058A0, &AudioManager::Hook_Remove_Audio_Event);
-    Hook_Method(0x00405C30, &AudioManager::Hook_Remove_Audio_Event_String);
-    Hook_Method(0x00405680, &AudioManager::Hook_Is_Valid_Const_Audio_Event);
-    Hook_Method(0x004058F0, &AudioManager::Hook_Set_Audio_Event_Enabled);
-    Hook_Method(0x00405990, &AudioManager::Hook_Set_Audio_Event_Volume_Override);
-    Hook_Method(0x00405CC0, &AudioManager::Hook_Remove_Disabled_Events);
-    Hook_Method(0x00405340, &AudioManager::Hook_Get_Info_For_Audio_Event);
-    Hook_Method(0x00405CD0, &AudioManager::Hook_Translate_From_Speaker_Type);
-    Hook_Method(0x00405DD0, &AudioManager::Hook_Translate_To_Speaker_Type);
-    Hook_Method(0x00405E50, &AudioManager::Hook_Is_On);
-    Hook_Method(0x00405E90, &AudioManager::Hook_Set_On);
-    Hook_Method(0x00405F20, &AudioManager::Hook_Set_Volume);
-    Hook_Method(0x00405FC0, &AudioManager::Hook_Get_Volume);
-    Hook_Method(0x00405FF0, &AudioManager::Hook_Set_3D_Volume_Adjustment);
-}
 #else
 extern AudioManager *g_theAudio;
 #endif

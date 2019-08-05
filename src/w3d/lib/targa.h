@@ -1,7 +1,8 @@
 /**
  * @file
  *
- * @Author CCHyper, OmniBlade
+ * @author CCHyper
+ * @author OmniBlade
  *
  * @brief Class for handling TARGA images.
  *
@@ -9,7 +10,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -18,12 +18,6 @@
 #include "always.h"
 #include "endiantype.h"
 #include "fileclass.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
-// http://www.programminghomeworkhelp.com/c-programming/
 
 // Pack all the structures to 1 byte alignment
 #pragma pack(push, 1)
@@ -42,13 +36,6 @@ struct TGAHeader
     int8_t pixel_depth;
     int8_t image_descriptor;
 };
-
-// struct TGAHandle
-//{
-//    int32_t fh;
-//    int32_t mode;
-//    TGAHeader *header;
-//};
 
 struct TGA2DateStamp
 {
@@ -137,6 +124,7 @@ enum TGAFlags
 
 class TargaImage
 {
+    ALLOW_HOOKING
 public:
     enum
     {
@@ -164,9 +152,7 @@ public:
     const TGAHeader &Get_Header() const { return m_header; }
 
     static int Error_Handler(int load_err, const char *filename);
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
+
 private:
     int Load(const char *name, char *palette, char *image, bool invert_image);
     int Decode_Image();
@@ -194,16 +180,6 @@ private:
     char *m_palette;
     TGA2Extension m_extension;
 };
-
-#ifdef GAME_DLL
-inline void TargaImage::Hook_Me()
-{
-    Hook_Method(0x008A43F0, static_cast<int (TargaImage::*)(char const *, int, bool)>(&Load));
-    Hook_Method(0x008A3E60, &Open);
-    Hook_Method(0x008A45F0, &Set_Palette);
-    Hook_Function(0x008A4780, &Error_Handler);
-}
-#endif
 
 inline void TargaImage::Header_To_Host(TGAHeader &header)
 {

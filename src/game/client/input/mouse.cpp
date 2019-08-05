@@ -26,11 +26,6 @@ using rts::Get_Time;
 
 #ifdef GAME_DLL
 Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
-
-void Mouse::Hook_Create_Stream_Messages()
-{
-    Mouse::Create_Stream_Messages();
-}
 #else
 Mouse *g_theMouse = nullptr;
 #endif

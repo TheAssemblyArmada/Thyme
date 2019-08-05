@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -178,15 +177,3 @@ void MessageStream::Propagate_Messages()
     m_firstMessage = nullptr;
     m_lastMessage = nullptr;
 }
-
-#ifdef GAME_DLL
-GameMessage *MessageStream::Hook_Append_Message(GameMessage::MessageType type)
-{
-    return MessageStream::Append_Message(type);
-}
-
-GameMessage *MessageStream::Hook_Insert_Message(GameMessage::MessageType type, GameMessage *at)
-{
-    return MessageStream::Insert_Message(type, at);
-}
-#endif

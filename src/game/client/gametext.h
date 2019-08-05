@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief String file handler.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -20,10 +19,6 @@
 #include "file.h"
 #include "subsysteminterface.h"
 #include "unicodestring.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 // This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
 enum LanguageID : int32_t
@@ -103,9 +98,7 @@ public:
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
+
 private:
     void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len);
     void Translate_Copy(unichar_t *out, char *in);
@@ -143,13 +136,8 @@ private:
 };
 
 #ifdef GAME_DLL
-//#define g_theGameText Make_Global<GameTextInterface*>(0x00A2A2AC)
+#include "hooker.h"
 extern GameTextInterface *&g_theGameText;
-inline void GameTextManager::Hook_Me()
-{
-    Hook_Function(0x00418320, &Create_Game_Text_Interface);
-    Hook_Function(0x0041A020, &Compare_LUT);
-}
 #else
 extern GameTextInterface *g_theGameText;
 #endif

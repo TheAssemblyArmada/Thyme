@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Base class to wrap threading API.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -32,6 +31,7 @@ typedef int (*except_t)(int, _EXCEPTION_POINTERS *);
 
 class ThreadClass
 {
+    ALLOW_HOOKING
 public:
     ThreadClass(const char *thread_name, except_t exception_handler = nullptr);
     virtual ~ThreadClass();
@@ -46,9 +46,6 @@ public:
     static int Get_Current_Thread_ID();
     static void Switch_Thread();
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
 // Thread prototypes are slightly different between winapi threads and pthread.
 #ifdef HAVE_PTHREAD_H
@@ -69,15 +66,3 @@ protected:
 #endif
     int m_priority;
 };
-
-#ifdef GAME_DLL
-inline void ThreadClass::Hook_Me()
-{
-    Hook_Method(0x0089CDC0, &Execute);
-    Hook_Method(0x0089CE10, &Stop);
-    Hook_Method(0x0089CDF0, &Set_Priority);
-    Hook_Function(0x0089CEF0, &Switch_Thread);
-    Hook_Function(0x0089CD10, &Internal_Thread_Function);
-    Hook_Function(0x0089CF00, &Get_Current_Thread_ID);
-}
-#endif

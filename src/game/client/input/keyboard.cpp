@@ -18,28 +18,13 @@
 
 #ifdef GAME_DLL
 Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(0x00A29B70);
-
-void Keyboard::Hook_Init()
-{
-    Keyboard::Init();
-}
-
-void Keyboard::Hook_Update()
-{
-    Keyboard::Update();
-}
-
-void Keyboard::Hook_Create_Message_Stream()
-{
-    Keyboard::Create_Stream_Messages();
-}
-
 #else
 Keyboard *g_theKeyboard = nullptr;
 #endif
 
-namespace {
-
+namespace
+{
+// clang-format off
 KeyboardKeyNames g_defaultNames[] = {
     { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, { L'1', L'!', L'\0' }, { L'2', L'@', L'\0' }, // 4
     { L'3', L'#', L'\0' }, { L'4', L'$', L'\0' }, { L'5', L'%', L'\0' }, { L'6', L'^', L'\0' }, // 8
@@ -106,8 +91,8 @@ KeyboardKeyNames g_defaultNames[] = {
     { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, // 252
     { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' }, { L'\0', L'\0', L'\0' } // 256
 };
-
-}
+// clang-format on
+} // namespace
 
 /**
  * 0x0040A0A0
@@ -393,7 +378,8 @@ int Keyboard::Check_Key_Repeat()
 {
     // Find first KeyboardIO with 0 key.
     int i;
-    for (i = 0; m_keys[i].key != 0; ++i);
+    for (i = 0; m_keys[i].key != 0; ++i)
+        ;
 
     // Check for repeat status.
     int j;

@@ -122,10 +122,6 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     FileClass *m_file;
     int m_stackIndex;
@@ -178,10 +174,6 @@ public:
 
     int Cur_Chunk_Depth() { return m_stackIndex; }
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     FileClass *m_file;
     int m_stackIndex;
@@ -191,31 +183,3 @@ private:
     int m_microChunkPos;
     MicroChunkHeader m_microChunkHeader;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ChunkSaveClass::Hook_Me()
-{
-    Hook_Method(0x008A0F90, &ChunkSaveClass::Begin_Chunk);
-    Hook_Method(0x008A1020, &ChunkSaveClass::End_Chunk);
-    Hook_Method(0x008A10D0, &ChunkSaveClass::Begin_Micro_Chunk);
-    Hook_Method(0x008A1160, &ChunkSaveClass::End_Micro_Chunk);
-    Hook_Method(
-        0x008A11C0, static_cast<unsigned (ChunkSaveClass::*)(void const *, unsigned)>(&ChunkSaveClass::Write));
-}
-
-inline void ChunkLoadClass::Hook_Me()
-{
-    Hook_Method(0x008A1290, &ChunkLoadClass::Open_Chunk);
-    Hook_Method(0x008A12E0, &ChunkLoadClass::Close_Chunk);
-    Hook_Method(0x008A1330, &ChunkLoadClass::Cur_Chunk_ID);
-    Hook_Method(0x008A1340, &ChunkLoadClass::Cur_Chunk_Length);
-    Hook_Method(0x008A1350, &ChunkLoadClass::Open_Micro_Chunk);
-    Hook_Method(0x008A1380, &ChunkLoadClass::Close_Micro_Chunk);
-    Hook_Method(0x008A13D0, &ChunkLoadClass::Cur_Micro_Chunk_ID);
-    Hook_Method(0x008A13E0, &ChunkLoadClass::Cur_Micro_Chunk_Length);
-    Hook_Method(0x008A13F0, &ChunkLoadClass::Seek);
-    Hook_Method(0x008A1480, static_cast<unsigned (ChunkLoadClass::*)(void *, unsigned)>(&ChunkLoadClass::Read));
-}
-#endif

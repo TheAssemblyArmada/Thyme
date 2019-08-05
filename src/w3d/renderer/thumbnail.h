@@ -42,8 +42,6 @@ public:
     {
         return new (this) ThumbnailClass(manager, texture);
     }
-
-    static void Hook_Me();
 #endif
 
 private:
@@ -59,12 +57,3 @@ private:
     bool m_isAllocated;
     ThumbnailManagerClass *m_manager;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ThumbnailClass::Hook_Me()
-{
-    Hook_Method(0x0086A040, &ThumbnailClass::Hook_Ctor);
-}
-#endif

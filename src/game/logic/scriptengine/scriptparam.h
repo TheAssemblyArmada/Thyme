@@ -141,9 +141,6 @@ public:
 
     static Parameter *Read_Parameter(DataChunkInput &input);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
     ParameterType m_type;
     bool m_initialized;
@@ -168,14 +165,3 @@ inline Parameter &Parameter::operator=(const Parameter &that)
 
     return *this;
 }
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void Parameter::Hook_Me()
-{
-    Hook_Function(0x0051F760, Read_Parameter);
-    Hook_Method(0x0051EB90, &Get_UI_Text);
-    Hook_Method(0x0051E990, &Qualify);
-}
-#endif

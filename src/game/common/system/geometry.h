@@ -14,9 +14,6 @@
  */
 #pragma once
 
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
-
 #include "always.h"
 #include "coord.h"
 #include "ini.h"
@@ -64,8 +61,7 @@ public:
     static void Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data);
     
 #ifdef GAME_DLL
-    static void Hook_Me();
-    void Hook_Xfer(Xfer *xfer);
+    void Hook_Xfer(Xfer *xfer) { GeometryInfo::Xfer_Snapshot(xfer); }
 #endif
 
 private:
@@ -77,35 +73,3 @@ private:
     float m_boundingCircleRadius;
     float m_boundingSphereRadius;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void GeometryInfo::Hook_Me()
-{
-    Hook_Method(0x005CFAF0, &Hook_Xfer);
-    Hook_Method(0x005CF220, &Set);
-    Hook_Method(0x005CFA60, &Calc_Bounding_Stuff);
-    Hook_Method(0x005CF350, &Set_Max_Height_Above_Position);
-    Hook_Method(0x005CF380, &Get_Max_Height_Above_Position);
-    Hook_Method(0x005CF3A0, &Get_Max_Height_Below_Position);
-    Hook_Method(0x005CF3C0, &Get_ZDelta_To_Center_Position);
-    Hook_Method(0x005CF3E0, &Get_Center_Position);
-    Hook_Method(0x005CFA20, &Get_Footprint_Area);
-    Hook_Method(0x005CF430, &Expand_Footprint);
-    Hook_Method(0x005CF290, &Calc_Pitches);
-    Hook_Method(0x005CF450, &Get_2D_Bounds);
-    Hook_Method(0x005CF620, &Clip_Point_To_Footprint);
-    Hook_Method(0x005CF720, &Is_Point_In_Footprint);
-    Hook_Method(0x005CF7E0, &Make_Random_Offset_In_Footprint);
-    Hook_Method(0x005CF8E0, &Make_Random_Offset_In_Perimeter);
-    Hook_Function(0x005CF200, Parse_Geometry_MinorRadius);
-    Hook_Function(0x005CF1E0, Parse_Geometry_MajorRadius);
-    Hook_Function(0x005CF1C0, Parse_Geometry_Height);
-    Hook_Function(0x005CF1A0, Parse_Geometry_IsSmall);
-    Hook_Function(0x005CF170, Parse_Geometry_Type);
-}
-
-#endif
-
-#endif // GEOMETRY_H

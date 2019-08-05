@@ -16,10 +16,6 @@
 
 #include "bittype.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 void Init_Random();
 void Init_Random(uint32_t initial);
 void Init_Game_Logic_Random(uint32_t initial);
@@ -79,26 +75,3 @@ private:
     float m_low;
     float m_high;
 };
-
-#ifdef GAME_DLL
-namespace RandomValue
-{
-inline void Hook_Me()
-{
-    Hook_Function(0x0048DC00, static_cast<void (*)()>(Init_Random));
-    Hook_Function(0x0048DCF0, static_cast<void (*)(uint32_t)>(Init_Random));
-    Hook_Function(0x0048DDB0, Init_Game_Logic_Random);
-    Hook_Function(0x0048DBB0, Get_Logic_Random_Seed_CRC);
-    Hook_Function(0x0048DBA0, Get_Logic_Random_Seed);
-    Hook_Function(0x0048DEB0, Get_Client_Random_Value);
-    Hook_Function(0x0048DE00, Get_Logic_Random_Value);
-    Hook_Function(0x0048DEE0, Get_Audio_Random_Value);
-    Hook_Function(0x0048DF70, Get_Client_Random_Value_Real);
-    Hook_Function(0x0048DF10, Get_Logic_Random_Value_Real);
-    Hook_Function(0x0048DFD0, Get_Audio_Random_Value_Real);
-    Hook_Method(0x0048E030, &GameClientRandomVariable::Get_Value);
-    Hook_Method(0x0048E0D0, &GameLogicRandomVariable::Get_Value);
-}
-
-} // namespace RandomValue
-#endif

@@ -24,6 +24,7 @@ GameState *&g_theGameState = Make_Global<GameState *>(0x00A2BA04);
 GameState *g_theGameState = nullptr;
 #endif
 
+// TODO This is currently a skeleton of the class to allow virtual calls against a pointer from the original.
 GameState::GameState() {}
 
 GameState::~GameState() {}

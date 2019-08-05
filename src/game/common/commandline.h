@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Command line argument parser.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -17,20 +16,4 @@
 
 #include "always.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 void Parse_Command_Line(int argc, char *argv[]);
-
-#ifdef GAME_DLL
-namespace CommandLine
-{
-
-inline void Hook_Me()
-{
-    Hook_Function(0x004F8150, &Parse_Command_Line);
-}
-
-} // namespace CommandLine
-#endif

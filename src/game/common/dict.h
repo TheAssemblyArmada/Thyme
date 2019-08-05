@@ -21,6 +21,7 @@
 
 class Dict
 {
+    ALLOW_HOOKING
     enum
     {
         MAX_LEN = 0x7FFF,
@@ -129,10 +130,6 @@ public:
     bool Remove(NameKeyType key);
     void Copy_Pair_From(Dict &that, NameKeyType key);
     void Release_Data();
-    
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 
 private:
     DictPair *Ensure_Unique(int pairs_needed, bool preserve_data = false, DictPair *to_translate = nullptr);
@@ -153,27 +150,3 @@ inline void Dict::Init(const Dict *that)
         *this = *that;
     }
 }
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void Dict::Hook_Me()
-{
-    Hook_Method(0x00573660, &Release_Data);
-    Hook_Method(0x00573750, &operator=);
-    Hook_Method(0x00573820, &Get_Type);
-    Hook_Method(0x00573880, &Get_Bool);
-    Hook_Method(0x005738F0, &Get_Int);
-    Hook_Method(0x00573960, &Get_Real);
-    Hook_Method(0x005739E0, &Get_AsciiString);
-    Hook_Method(0x00573A80, &Get_UnicodeString);
-    Hook_Method(0x00573B00, &Sort_Pairs);
-    Hook_Method(0x00573320, &Ensure_Unique);
-    Hook_Method(0x00573BB0, &Set_Bool);
-    Hook_Method(0x00573C60, &Set_Int);
-    Hook_Method(0x00573D20, &Set_Real);
-    Hook_Method(0x00573DE0, &Set_AsciiString);
-    Hook_Method(0x00573EC0, &Set_UnicodeString);
-}
-
-#endif

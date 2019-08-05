@@ -28,6 +28,7 @@ class Object;
 
 class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
 {
+    ALLOW_HOOKING
     IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
     friend class ParticleSystemManager;
 
@@ -62,7 +63,6 @@ public:
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     ParticleSystem *Hook_Ctor(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves)
     {
         return new (this) ParticleSystem(temp, id, create_slaves);
@@ -123,29 +123,3 @@ private:
     bool m_saveable;
     bool m_unkBool1;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ParticleSystem::Hook_Me()
-{
-    Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
-    Hook_Method(0x004CE310, &ParticleSystem::Hook_Dtor);
-    Hook_Method(0x004D11E0, &ParticleSystem::Hook_Xfer);
-    Hook_Method(0x004D1430, &ParticleSystem::Hook_LoadPP);
-    Hook_Method(0x004CE500, &ParticleSystem::Destroy);
-    Hook_Method(0x004CE530, &ParticleSystem::Get_Position);
-    Hook_Method(0x004CE570, &ParticleSystem::Set_Position);
-    Hook_Method(0x004CE5A0, &ParticleSystem::Set_Local_Transform);
-    Hook_Method(0x004CE620, &ParticleSystem::Rotate_Local_Transform_X);
-    Hook_Method(0x004CE6C0, &ParticleSystem::Rotate_Local_Transform_Y);
-    Hook_Method(0x004CE760, &ParticleSystem::Rotate_Local_Transform_Z);
-    Hook_Method(0x004CE860, &ParticleSystem::Compute_Particle_Velocity);
-    Hook_Method(0x004CEF60, &ParticleSystem::Compute_Particle_Position);
-    Hook_Method(0x004CF530, &ParticleSystem::Hook_Create_Particle);
-    Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
-    Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
-    Hook_Function(0x004D0B30, &ParticleSystem::Merge_Related_Systems);
-}
-
-#endif

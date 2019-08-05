@@ -36,22 +36,8 @@ public:
 
     SidesInfo &operator=(const SidesInfo &that);
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     BuildListInfo *m_buildList;
     Dict m_dict;
     ScriptList *m_scripts;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void SidesInfo::Hook_Me()
-{
-    Hook_Method(0x004D5C00, &Init);
-    Hook_Method(0x004D5C80, &operator=);
-}
-#endif

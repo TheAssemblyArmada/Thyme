@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Implementation of the GameEngine interface.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -19,6 +18,10 @@
 #include "w3dmodulefactory.h"
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
+
+#ifdef BUILD_WITH_MILES
+#include "milesaudiomanager.h"
+#endif
 
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
@@ -107,8 +110,8 @@ ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()
 {
-#ifdef GAME_DLL
-    return Call_Method<AudioManager *, Win32GameEngine>(0x007424B0, this);
+#ifdef BUILD_WITH_MILES
+    return new MilesAudioManager;
 #else
     return nullptr;
 #endif
@@ -118,19 +121,3 @@ Network *Win32GameEngine::Create_Network()
 {
     return nullptr;
 }
-
-#ifdef GAME_DLL
-LocalFileSystem *Win32GameEngine::Create_Local_File_System_NV()
-{
-    return Win32GameEngine::Create_Local_File_System();
-}
-
-ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System_NV()
-{
-    return Win32GameEngine::Create_Archive_File_System();
-}
-ModuleFactory *Win32GameEngine::Hook_Create_Module_Factory()
-{
-    return Win32GameEngine::Create_Module_Factory();
-}
-#endif

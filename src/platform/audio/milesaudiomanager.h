@@ -34,6 +34,7 @@ struct MilesProviderStruct
 
 class MilesAudioManager final : public AudioManager
 {
+    ALLOW_HOOKING
     enum
     {
         MILES_PROVIDER_COUNT = 64,
@@ -100,7 +101,6 @@ public:
     virtual void Process_Stopped_List() override;
 
 #ifdef GAME_DLL
-    static void Hook_Me();
     void Hook_Init() { MilesAudioManager::Init(); }
     void Hook_Reset() { MilesAudioManager::Reset(); }
     void Hook_Update() { MilesAudioManager::Update(); }
@@ -231,81 +231,3 @@ private:
     int m_3dSampleCount;
     int m_streamCount;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void MilesAudioManager::Hook_Me()
-{
-    Hook_Function(0x00780C90, &MilesAudioManager::Streaming_File_Open);
-    Hook_Function(0x00780CC0, &MilesAudioManager::Streaming_File_Close);
-    Hook_Function(0x00780CD0, &MilesAudioManager::Streaming_File_Seek);
-    Hook_Function(0x00780CF0, &MilesAudioManager::Streaming_File_Read);
-    Hook_Function(0x00780C70, &MilesAudioManager::Set_Stream_Complete);
-    Hook_Function(0x00780C30, &MilesAudioManager::Set_Sample_Complete);
-    Hook_Function(0x00780C50, &MilesAudioManager::Set_3DSample_Complete);
-    Hook_Method(0x0077D9B0, &MilesAudioManager::Release_Playing_Audio);
-    Hook_Method(0x0077D8E0, &MilesAudioManager::Release_Miles_Handles);
-    Hook_Method(0x0077DB80, &MilesAudioManager::Free_All_Miles_Handles);
-    Hook_Method(0x0077DA30, &MilesAudioManager::Stop_All_Audio_Immediately);
-    Hook_Method(0x00780520, &MilesAudioManager::Play_Sample3D);
-    Hook_Method(0x00780400, &MilesAudioManager::Start_Next_Loop);
-    Hook_Method(0x0077DD80, &MilesAudioManager::Init_Filters);
-    Hook_Method(0x007806F0, &MilesAudioManager::Init_Sample_Pools);
-    Hook_Method(0x0077D080, &MilesAudioManager::Play_Audio_Event);
-    Hook_Method(0x0077D630, &MilesAudioManager::Stop_Audio_Event);
-    Hook_Method(0x0077DD20, &MilesAudioManager::Stop_All_Speech);
-    Hook_Method(0x0077DC30, &MilesAudioManager::Adjust_Playing_Volume);
-    Hook_Method(0x00780280, &MilesAudioManager::Get_Effective_Volume);
-    Hook_Method(0x0077F330, &MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately);
-    Hook_Method(0x0077F1C0, &MilesAudioManager::Find_Lowest_Priority_Sound);
-    // Hook virtuals
-    Hook_Method(0x0077CCE0, &MilesAudioManager::Hook_Init);
-    Hook_Method(0x0077CD30, &MilesAudioManager::Hook_Reset);
-    Hook_Method(0x0077CD60, &MilesAudioManager::Hook_Update);
-    Hook_Method(0x0077CDA0, &MilesAudioManager::Hook_Stop_Audio);
-    Hook_Method(0x0077CEB0, &MilesAudioManager::Hook_Pause_Audio);
-    Hook_Method(0x0077CFC0, &MilesAudioManager::Hook_Resume_Audio);
-    Hook_Method(0x0077D780, &MilesAudioManager::Hook_Kill_Event_Immediately);
-    Hook_Method(0x0077DE80, &MilesAudioManager::Hook_Next_Music_Track);
-    Hook_Method(0x0077E020, &MilesAudioManager::Hook_Prev_Music_Track);
-    Hook_Method(0x0077E1C0, &MilesAudioManager::Hook_Is_Music_Playing);
-    Hook_Method(0x0077E200, &MilesAudioManager::Hook_Has_Music_Track_Completed);
-    Hook_Method(0x0077E2D0, &MilesAudioManager::Hook_Music_Track_Name);
-    Hook_Method(0x0077E5F0, &MilesAudioManager::Hook_Is_Currently_Playing);
-    Hook_Method(0x0077E3B0, &MilesAudioManager::Hook_Open_Device);
-    Hook_Method(0x0077E5D0, &MilesAudioManager::Hook_Close_Device);
-    Hook_Method(0x0077E6C0, &MilesAudioManager::Hook_Notify_Of_Audio_Completion);
-    Hook_Method(0x0077E900, &MilesAudioManager::Hook_Get_Provider_Name);
-    Hook_Method(0x0077E970, &MilesAudioManager::Hook_Get_Provider_Index);
-    Hook_Method(0x0077EA60, &MilesAudioManager::Hook_Select_Provider);
-    Hook_Method(0x0077ECB0, &MilesAudioManager::Hook_Unselect_Provider);
-    Hook_Method(0x0077ED40, &MilesAudioManager::Hook_Set_Speaker_Type);
-    Hook_Method(0x0077ED80, &MilesAudioManager::Hook_Get_Speaker_Type);
-    Hook_Method(0x0077EDD0, &MilesAudioManager::Hook_Does_Violate_Limit);
-    Hook_Method(0x0077F2A0, &MilesAudioManager::Hook_Is_Playing_Lower_Priority);
-    Hook_Method(0x0077F020, &MilesAudioManager::Hook_Is_Playing_Already);
-    Hook_Method(0x0077F130, &MilesAudioManager::Hook_Is_Object_Playing_Voice);
-    Hook_Method(0x0077F400, &MilesAudioManager::Hook_Adjust_Volume_Of_Playing_Audio);
-    Hook_Method(0x0077F6C0, &MilesAudioManager::Hook_Remove_Playing_Audio);
-    Hook_Method(0x0077F8F0, &MilesAudioManager::Hook_Remove_All_Disabled_Audio);
-    Hook_Method(0x0077FD80, &MilesAudioManager::Hook_Has_3D_Sensitive_Streams_Playing);
-    Hook_Method(0x00780820, &MilesAudioManager::Hook_Get_Bink_Handle);
-    Hook_Method(0x007809C0, &MilesAudioManager::Hook_Release_Bink_Handle);
-    Hook_Method(0x007809E0, &MilesAudioManager::Hook_Force_Play_Audio_Event);
-    Hook_Method(0x0077FA00, &MilesAudioManager::Hook_Process_Request_List);
-    Hook_Method(0x0077FF30, &MilesAudioManager::Hook_Set_Hardware_Accelerated);
-    Hook_Method(0x00780020, &MilesAudioManager::Hook_Set_Speaker_Surround);
-    Hook_Method(0x0077C970, &MilesAudioManager::Hook_Set_Preferred_3D_Provider);
-    Hook_Method(0x0077CA10, &MilesAudioManager::Hook_Set_Preferred_Speaker);
-    Hook_Method(0x00780090, &MilesAudioManager::Hook_Get_Audio_Length_MS);
-    Hook_Method(0x00780190, &MilesAudioManager::Hook_Close_Any_Sample_Using_File);
-    Hook_Method(0x00780230, &MilesAudioManager::Hook_Set_Device_Listener_Position);
-    Hook_Method(0x0077E860, &MilesAudioManager::Hook_Find_Playing_Audio_From);
-    Hook_Method(0x0077FB10, &MilesAudioManager::Hook_Process_Playing_List);
-    Hook_Method(0x0077FDE0, &MilesAudioManager::Hook_Process_Fading_List);
-    Hook_Method(0x0077FEE0, &MilesAudioManager::Hook_Process_Stopped_List);
-    Hook_Method(0x0077C700, &MilesAudioManager::Hook_Ctor);
-    Hook_Method(0x0077CAD0, &MilesAudioManager::Hook_Dtor);
-}
-#endif

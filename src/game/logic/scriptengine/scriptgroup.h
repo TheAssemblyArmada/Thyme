@@ -45,8 +45,7 @@ public:
     static bool Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 #ifdef GAME_DLL
-    void Hook_Xfer_Snapshot(Xfer *xfer);
-    static void Hook_Me();
+    void Hook_Xfer_Snapshot(Xfer *xfer) { ScriptGroup::Xfer_Snapshot(xfer); }
 #endif
 
 private:
@@ -59,15 +58,3 @@ private:
 
     static int s_curID;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void ScriptGroup::Hook_Me()
-{
-    Hook_Method(0x0051C3B0, &Hook_Xfer_Snapshot);
-    Hook_Method(0x0051C510, &Duplicate);
-    Hook_Method(0x0051C670, &Duplicate_And_Qualify);
-    Hook_Function(0x0051C860, Parse_Group_Chunk);
-}
-#endif

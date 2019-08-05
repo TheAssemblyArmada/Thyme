@@ -21,6 +21,7 @@
 
 class AudioEventRTS
 {
+    ALLOW_HOOKING
 public:
     AudioEventRTS();
     AudioEventRTS(const AudioEventRTS &that);
@@ -66,10 +67,6 @@ public:
     ObjectID Get_Object_ID() const { return m_objectID; }
     void Decrement_Delay(float amount) { m_delay -= amount; }
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
-
 private:
     Utf8String Generate_Filename_Prefix(AudioType type, bool localize);
     Utf8String Generate_Filename_Extension(AudioType type);
@@ -101,19 +98,3 @@ private:
     int m_playerIndex;
     int m_nextPlayPortion;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-
-inline void AudioEventRTS::Hook_Me()
-{
-    Hook_Method(0x00445080, &Generate_Filename);
-    Hook_Method(0x00445380, &Generate_Play_Info);
-    Hook_Method(0x00445A20, &Generate_Filename_Prefix);
-    Hook_Method(0x00445C30, &Generate_Filename_Extension);
-    Hook_Method(0x00445D80, &Adjust_For_Localization);
-    Hook_Method(0x00444F90, &Set_Event_Name);
-    Hook_Method(0x00445900, &Is_Positional_Audio);
-    Hook_Method(0x00445950, &Get_Volume);
-}
-#endif

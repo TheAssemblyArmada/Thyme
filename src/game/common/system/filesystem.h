@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Filesystem abstraction merging local and archive file handling.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -20,10 +19,6 @@
 #include "subsysteminterface.h"
 #include <map>
 #include <set>
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 class FileSystem : public SubsystemInterface
 {
@@ -47,20 +42,13 @@ public:
     static bool Load_Music_Files_From_CD();
     static void Unload_Music_Files_From_CD();
 
-#ifdef GAME_DLL
-    static void Hook_Me();
-#endif
 private:
     std::map<unsigned int, bool> m_availableFiles;
 };
 
 #ifdef GAME_DLL
+#include "hooker.h"
 extern FileSystem *&g_theFileSystem;
-inline void FileSystem::Hook_Me()
-{
-    Hook_Function(0x004469C0, Are_Music_Files_On_CD);
-    Hook_Method(0x00446770, &Get_File_List_From_Dir);
-}
 #else
 extern FileSystem *g_theFileSystem;
 #endif

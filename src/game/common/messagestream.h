@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -63,9 +62,11 @@ public:
     void Propagate_Messages();
 
 #ifdef GAME_DLL
-    static void Hook_Me();
-    GameMessage *Hook_Append_Message(GameMessage::MessageType type);
-    GameMessage *Hook_Insert_Message(GameMessage::MessageType type, GameMessage *msg);
+    GameMessage *Hook_Append_Message(GameMessage::MessageType type) { return MessageStream::Append_Message(type); }
+    GameMessage *Hook_Insert_Message(GameMessage::MessageType type, GameMessage *msg)
+    {
+        return MessageStream::Insert_Message(type, msg);
+    }
 #endif
 
 private:
@@ -76,18 +77,7 @@ private:
 
 #ifdef GAME_DLL
 #include "hooker.h"
-
 extern MessageStream *&g_theMessageStream;
-
-inline void MessageStream::Hook_Me()
-{
-    Hook_Method(0x0040D960, &Hook_Append_Message);
-    Hook_Method(0x0040DA00, &Hook_Insert_Message);
-    Hook_Method(0x0040DAA0, &Attach_Translator);
-    Hook_Method(0x0040DB60, &Find_Translator);
-    Hook_Method(0x0040DB90, &Remove_Translator);
-    Hook_Method(0x0040DBF0, &Propagate_Messages);
-}
 #else
 extern MessageStream *g_theMessageStream;
 #endif

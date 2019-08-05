@@ -109,6 +109,7 @@ class INI;
 
 class Mouse : public SubsystemInterface
 {
+    ALLOW_HOOKING
     enum RedrawMode
     {
         RM_WINDOWS,
@@ -149,8 +150,7 @@ public:
     static void Parse_Cursor_Definitions(INI *ini);
 
 #ifdef GAME_DLL
-    void Hook_Create_Stream_Messages();
-    static void Hook_Me();
+    void Hook_Create_Stream_Messages() { Mouse::Create_Stream_Messages(); }
 #endif
 
 protected:
@@ -222,12 +222,6 @@ private:
 #include "hooker.h"
 
 extern Mouse *&g_theMouse;
-
-inline void Mouse::Hook_Me()
-{
-    Hook_Method(0x004031F0, &Hook_Create_Stream_Messages);
-    Hook_Method(0x004024E0, &Process_Mouse_Event);
-}
 #else
 extern Mouse *g_theMouse;
 #endif

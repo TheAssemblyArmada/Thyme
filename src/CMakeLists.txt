@@ -158,8 +158,6 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
-    platform/video/binkvideoplayer.cpp
-    platform/video/binkvideostream.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/bufffileclass.cpp
     w3d/lib/chunkio.cpp
@@ -207,10 +205,12 @@ set(GAMEENGINE_SRC
 )
 
 # Don't try and build the miles sound system when not building to link to the original game.
-if(NOT STANDALONE)
+if(NOT STANDALONE AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     list(APPEND GAMEENGINE_SRC 
     platform/audio/milesaudiofilecache.cpp
-    platform/audio/milesaudiomanager.cpp)
+    platform/audio/milesaudiomanager.cpp
+    platform/video/binkvideoplayer.cpp
+    platform/video/binkvideostream.cpp)
 endif()
 
 if(CMAKE_CONFIGURATION_TYPES)
@@ -269,15 +269,11 @@ else()
         target_link_libraries(thyme ${DirectX_LIBRARIES})
     endif()
 
-    # We don't look for FMpeg yet, but its intended to replace binkw32.dll
-    if(NOT FFMPEG_FOUND)
+    # We don't look for OpenAL of FFMpeg yet, but its intended to replace mss32.dll and bink.dll with them.
+    if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
         add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
         target_link_libraries(thyme binkstub)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1)
-    endif()
-
-    # We don't look for OpenAL yet, but its intended to replace mss32.dll with it.
-    if(NOT OPENAL_FOUND)
         add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
         target_link_libraries(thyme milesstub)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_MILES=1)

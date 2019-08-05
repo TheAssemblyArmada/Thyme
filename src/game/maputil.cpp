@@ -14,8 +14,8 @@
  */
 #include "maputil.h"
 #include "staticnamekey.h"
-#include "minmax.h"
 #include "globaldata.h"
+#include <algorithm>
 
 #ifdef GAME_DLL
 WaypointMap *&g_waypoints = Make_Global<WaypointMap*>(0x00945AD4);
@@ -56,7 +56,7 @@ void WaypointMap::Update()
             ++m_numStartSpots;
         }
         
-        m_numStartSpots = Max(m_numStartSpots, 1);
+        m_numStartSpots = std::max(m_numStartSpots, 1);
     } else {
         m_numStartSpots = 1;
     }

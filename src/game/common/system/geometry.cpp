@@ -16,9 +16,9 @@
 #include "geometry.h"
 #include "gamedebug.h"
 #include "gamemath.h"
-#include "minmax.h"
 #include "randomvalue.h"
 #include "xfer.h"
+#include <algorithm>
 
 #define GEOMETRY_XFER_VERSION 1
 
@@ -97,7 +97,7 @@ void GeometryInfo::Calc_Bounding_Stuff()
             break;
         case GEOMETRY_CYLINDER:
             m_boundingCircleRadius = m_majorRadius;
-            m_boundingSphereRadius = Max(m_height * GAMEMATH_TIGHT_CORNER_RADIUS, m_majorRadius);
+            m_boundingSphereRadius = std::max(m_height * GAMEMATH_TIGHT_CORNER_RADIUS, m_majorRadius);
             break;
         case GEOMETRY_BOX:
             m_boundingCircleRadius = Sqrt(float(Square(m_minorRadius)) + float(Square(m_majorRadius)));
@@ -275,24 +275,24 @@ void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &regi
 
             float tmp_x = float(adj_major + pos.x) - opp_minor;
             float tmp_y = float(opp_major + pos.y) + adj_minor;
-            region.lo.x = Min(region.lo.x, tmp_x);
-            region.lo.y = Min(region.lo.y, tmp_y);
-            region.hi.x = Max(region.hi.x, tmp_x);
-            region.hi.y = Max(region.hi.y, tmp_y);
+            region.lo.x = std::min(region.lo.x, tmp_x);
+            region.lo.y = std::min(region.lo.y, tmp_y);
+            region.hi.x = std::max(region.hi.x, tmp_x);
+            region.hi.y = std::max(region.hi.y, tmp_y);
 
             tmp_x = float(opp_minor + pos.x) + adj_major;
             tmp_y = float(pos.y - adj_minor) + opp_major;
-            region.lo.x = Min(region.lo.x, tmp_x);
-            region.lo.y = Min(region.lo.y, tmp_y);
-            region.hi.x = Max(region.hi.x, tmp_x);
-            region.hi.y = Max(region.hi.y, tmp_y);
+            region.lo.x = std::min(region.lo.x, tmp_x);
+            region.lo.y = std::min(region.lo.y, tmp_y);
+            region.hi.x = std::max(region.hi.x, tmp_x);
+            region.hi.y = std::max(region.hi.y, tmp_y);
 
             tmp_x = float(opp_minor + pos.x) - adj_major;
             tmp_y = float(pos.y - adj_minor) - opp_major;
-            region.lo.x = Min(region.lo.x, tmp_x);
-            region.lo.y = Min(region.lo.y, tmp_y);
-            region.hi.x = Max(region.hi.x, tmp_x);
-            region.hi.y = Max(region.hi.y, tmp_y);
+            region.lo.x = std::min(region.lo.x, tmp_x);
+            region.lo.y = std::min(region.lo.y, tmp_y);
+            region.hi.x = std::max(region.hi.x, tmp_x);
+            region.hi.y = std::max(region.hi.y, tmp_y);
         }
             break;
         default:
@@ -322,8 +322,8 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
         }
             break;
         case GEOMETRY_BOX:
-            point.x = Clamp(point.x, pos.x - m_majorRadius, pos.x + m_majorRadius);
-            point.y = Clamp(point.y, pos.y - m_minorRadius, pos.y + m_minorRadius);
+            point.x = std::clamp(point.x, pos.x - m_majorRadius, pos.x + m_majorRadius);
+            point.y = std::clamp(point.y, pos.y - m_minorRadius, pos.y + m_minorRadius);
 
             break;
         default:

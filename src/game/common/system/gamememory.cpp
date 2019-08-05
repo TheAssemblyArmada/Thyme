@@ -21,7 +21,6 @@
 #include "memdynalloc.h"
 #include "mempool.h"
 #include "mempoolfact.h"
-#include "minmax.h"
 
 #ifdef GAME_DLL
 void *New_New(size_t bytes)

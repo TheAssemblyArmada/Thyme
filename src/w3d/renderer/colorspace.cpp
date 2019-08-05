@@ -14,15 +14,15 @@
  */
 #include "colorspace.h"
 #include "gamemath.h"
-#include "minmax.h"
+#include <algorithm>
 
 /**
  * @brief Converts the RGB values to HSV, the alpha value is discarded.
  */
 void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba)
 {
-    float min = Min(rgba.X, Min(rgba.Y, rgba.Z));
-    float max = Max(rgba.X, Max(rgba.Y, rgba.Z));
+    float min = std::min(rgba.X, std::min(rgba.Y, rgba.Z));
+    float max = std::max(rgba.X, std::max(rgba.Y, rgba.Z));
     float delta = max - min;
     hsv.Z = max; // V
 
@@ -126,7 +126,7 @@ void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj)
         hsv.X -= 360.0f;
     }
 
-    hsv.Y = Clamp(hsv.Y, 0.0f, 1.0f);
-    hsv.Z = Clamp(hsv.Z, 0.0f, 1.0f);
+    hsv.Y = std::clamp(hsv.Y, 0.0f, 1.0f);
+    hsv.Z = std::clamp(hsv.Z, 0.0f, 1.0f);
     HSV_To_RGBA(rgba, hsv);
 }

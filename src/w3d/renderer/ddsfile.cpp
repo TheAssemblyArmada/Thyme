@@ -16,9 +16,8 @@
 #include "colorspace.h"
 #include "ffactory.h"
 #include "gamedebug.h"
-#include "minmax.h"
 #include "rtsutils.h"
-#include "stringex.h"
+#include <algorithm>
 #include <cstring>
 
 using rts::FourCC;
@@ -86,7 +85,7 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
 
     // Convert the texture format to our own internal format type enum.
     m_format = D3DFormat_To_WW3DFormat(m_fileHeader.ddspf.dwFourCC);
-    m_mipLevels = Max(m_fileHeader.dwMipMapCount, 1u);
+    m_mipLevels = std::max(m_fileHeader.dwMipMapCount, 1u);
 
     if (m_mipLevels <= m_reductionFactor) {
         m_mipLevels = 1;
@@ -171,7 +170,7 @@ DDSFileClass::~DDSFileClass()
  */
 unsigned DDSFileClass::Get_Width(unsigned level)
 {
-    return Max(m_width >> level, 4u);
+    return std::max(m_width >> level, 4u);
 }
 
 /**
@@ -181,7 +180,7 @@ unsigned DDSFileClass::Get_Width(unsigned level)
  */
 unsigned DDSFileClass::Get_Height(unsigned level)
 {
-    return Max(m_height >> level, 4u);
+    return std::max(m_height >> level, 4u);
 }
 
 /**
@@ -191,7 +190,7 @@ unsigned DDSFileClass::Get_Height(unsigned level)
  */
 unsigned DDSFileClass::Get_Depth(unsigned level)
 {
-    return Max(m_depth >> level, 4u);
+    return std::max(m_depth >> level, 4u);
 }
 
 /**

@@ -15,7 +15,7 @@
 #include "audiomanager.h"
 #include "optionpreferences.h"
 #include "globaldata.h"
-#include "minmax.h"
+#include <algorithm>
 #include <cstdio>
 
 OptionPreferences::OptionPreferences()
@@ -82,7 +82,7 @@ float OptionPreferences::Get_Scroll_Factor()
         return g_theWriteableGlobalData->m_keyboardDefaultScrollFactor;
     }
 
-    int factor = Clamp(atoi(it->second.Str()), 0, 100);
+    int factor = std::clamp(atoi(it->second.Str()), 0, 100);
 
     return (float)(factor / 100.0f);
 }
@@ -369,7 +369,7 @@ int OptionPreferences::Get_Particle_Cap()
 
     int ret = atoi(it->second.Str());
 
-    return Min(ret, 100);
+    return std::min(ret, 100);
 }
 
 int OptionPreferences::Get_Texture_Reduction()
@@ -382,7 +382,7 @@ int OptionPreferences::Get_Texture_Reduction()
 
     int ret = atoi(it->second.Str());
 
-    return Max(ret, 2);
+    return std::max(ret, 2);
 }
 
 float OptionPreferences::Get_Gamma_Value()
@@ -439,7 +439,7 @@ int OptionPreferences::Get_Firewall_Behavior()
 
     int ret = atoi(it->second.Str());
 
-    return Max(ret, 0);
+    return std::max(ret, 0);
 }
 
 int16_t OptionPreferences::Get_Firewall_Port_Allocation_Delta()

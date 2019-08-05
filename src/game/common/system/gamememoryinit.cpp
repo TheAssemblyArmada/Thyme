@@ -14,8 +14,8 @@
  */
 #include "gamememoryinit.h"
 #include "gamedebug.h"
-#include "minmax.h"
 #include "rawalloc.h"
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
@@ -683,7 +683,7 @@ void User_Memory_Init_Pools()
 
 #ifdef PLATFORM_WINDOWS
     GetModuleFileNameA(0, path, PATH_MAX);
-#elif defined PLATFORM_LINUX  // posix otherwise, really just linux currently
+#elif defined PLATFORM_LINUX // posix otherwise, really just linux currently
     // TODO /proc/curproc/file for FreeBSD /proc/self/path/a.out Solaris
     readlink("/proc/self/exe", path, PATH_MAX);
     dirname(path);
@@ -694,7 +694,7 @@ void User_Memory_Init_Pools()
 #else //
 #error Platform not supported for Set_Working_Directory()!
 #endif
-    
+
     // Get path to current exe without filename.
     char *path_end = &path[strlen(path)];
 
@@ -723,8 +723,8 @@ void User_Memory_Init_Pools()
             if (*path != ';' && sscanf(path, "%s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3) {
                 for (PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr) {
                     if (strcasecmp(psr->pool_name, pool_name) == 0) {
-                        psr->initial_allocation_count = Max((int)sizeof(void *), Round_Up_Word_Size(initial_alloc));
-                        psr->overflow_allocation_count = Max((int)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
+                        psr->initial_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(initial_alloc));
+                        psr->overflow_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
                     }
                 }
             }

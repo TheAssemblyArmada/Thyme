@@ -18,8 +18,8 @@
 #include "ini.h"
 #include "keyboard.h"
 #include "messagestream.h"
-#include "minmax.h"
 #include "rtsutils.h"
+#include <algorithm>
 #include <cstddef>
 
 using rts::Get_Time;
@@ -599,8 +599,8 @@ void Mouse::Move_Mouse(int x, int y, int absolute)
         m_currMouse.pos.y += y;
     }
 
-    m_currMouse.pos.x = Clamp(m_currMouse.pos.x, m_minX, m_maxX);
-    m_currMouse.pos.y = Clamp(m_currMouse.pos.y, m_minY, m_maxY);
+    m_currMouse.pos.x = std::clamp(m_currMouse.pos.x, m_minX, m_maxX);
+    m_currMouse.pos.y = std::clamp(m_currMouse.pos.y, m_minY, m_maxY);
 }
 
 /**
@@ -627,26 +627,26 @@ void Mouse::Parse_Mouse_Definitions(INI *ini)
 {
     static FieldParse _static_mouse_parsers[] = {
         {"TooltipFontName", &INI::Parse_AsciiString, nullptr, offsetof(Mouse, m_tooltipFontName)},
-        {"TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize) },
-        {"TooltipFontIsBold", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipFontIsBold) },
-        {"TooltipAnimateBackground", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipAnimateBackground) },
-        {"TooltipFillTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFillTime) },
-        {"TooltipDelayTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipDelayTime) },
-        {"TooltipTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorText) },
-        {"TooltipHighlightColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorHighlight) },
-        {"TooltipShadowColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorShadow) },
-        {"TooltipBackgroundColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBackground) },
-        {"TooltipBorderColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBorder) },
-        {"TooltipWidth", &INI::Parse_Percent_To_Real, nullptr, offsetof(Mouse, m_tooltipWidth) },
-        {"CursorMode", &INI::Parse_Int, nullptr, offsetof(Mouse, m_currentRedrawMode) },
-        {"UseTooltipAltTextColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltTextColor) },
-        {"UseTooltipAltBackColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltBackColor) },
-        {"AdjustTooltipAltColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_adjustTooltipAltColor) },
-        {"OrthoCamera", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_orthoCamera) },
-        {"OrthoZoom", &INI::Parse_Real, nullptr, offsetof(Mouse, m_orthoZoom) },
-        {"DragTolerance", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance) },
-        {"DragTolerance3D", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance3D) },
-        {"DragToleranceMS", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragToleranceMS) }};
+        {"TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize)},
+        {"TooltipFontIsBold", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipFontIsBold)},
+        {"TooltipAnimateBackground", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipAnimateBackground)},
+        {"TooltipFillTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFillTime)},
+        {"TooltipDelayTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipDelayTime)},
+        {"TooltipTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorText)},
+        {"TooltipHighlightColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorHighlight)},
+        {"TooltipShadowColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorShadow)},
+        {"TooltipBackgroundColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBackground)},
+        {"TooltipBorderColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBorder)},
+        {"TooltipWidth", &INI::Parse_Percent_To_Real, nullptr, offsetof(Mouse, m_tooltipWidth)},
+        {"CursorMode", &INI::Parse_Int, nullptr, offsetof(Mouse, m_currentRedrawMode)},
+        {"UseTooltipAltTextColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltTextColor)},
+        {"UseTooltipAltBackColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_useTooltipAltBackColor)},
+        {"AdjustTooltipAltColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_adjustTooltipAltColor)},
+        {"OrthoCamera", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_orthoCamera)},
+        {"OrthoZoom", &INI::Parse_Real, nullptr, offsetof(Mouse, m_orthoZoom)},
+        {"DragTolerance", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance)},
+        {"DragTolerance3D", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance3D)},
+        {"DragToleranceMS", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragToleranceMS)}};
 
     if (g_theMouse != nullptr) {
         ini->Init_From_INI(g_theMouse, _static_mouse_parsers);
@@ -661,22 +661,20 @@ void Mouse::Parse_Mouse_Definitions(INI *ini)
  */
 void Mouse::Parse_Cursor_Definitions(INI *ini)
 {
-    static FieldParse _cursor_parsers[] =
-    {
-        { "CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text)},
-        { "CursorTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_color) },
-        { "CursorTextDropColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_drop_color) },
-        { "W3DModel", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_model_name) },
-        { "W3DAnim", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_anim_name) },
-        { "W3DScale", &INI::Parse_Real, nullptr, offsetof(CursorInfo, w3d_scale) },
-        { "Loop", &INI::Parse_Bool, nullptr, offsetof(CursorInfo, loop) },
-        { "Image", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, image_name) },
-        { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, texture_name) },
-        { "HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot) },
-        { "Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames) },
-        { "FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps) },
-        { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) }
-    };
+    static FieldParse _cursor_parsers[] = {
+        {"CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text)},
+        {"CursorTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_color)},
+        {"CursorTextDropColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_drop_color)},
+        {"W3DModel", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_model_name)},
+        {"W3DAnim", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_anim_name)},
+        {"W3DScale", &INI::Parse_Real, nullptr, offsetof(CursorInfo, w3d_scale)},
+        {"Loop", &INI::Parse_Bool, nullptr, offsetof(CursorInfo, loop)},
+        {"Image", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, image_name)},
+        {"Texture", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, texture_name)},
+        {"HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot)},
+        {"Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames)},
+        {"FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps)},
+        {"Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions)}};
 
     Utf8String tok = ini->Get_Next_Token();
 

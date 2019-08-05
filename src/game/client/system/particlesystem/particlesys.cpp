@@ -16,12 +16,12 @@
 #include "gameclient.h"
 #include "gamemath.h"
 #include "globaldata.h"
-#include "minmax.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesystemplate.h"
 #include "randomvalue.h"
 #include "xfer.h"
+#include <algorithm>
 
 using GameMath::Cos;
 using GameMath::Sin;
@@ -715,7 +715,7 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
         m_accumulatedSizeBonus += m_startSizeRate.Get_Value();
         
         if (m_accumulatedSizeBonus != 0.0f) {
-            m_accumulatedSizeBonus = Min(m_accumulatedSizeBonus, 50.0f);
+            m_accumulatedSizeBonus = std::min(m_accumulatedSizeBonus, 50.0f);
         }
         
         for (int i = 0; i < KEYFRAME_COUNT; ++i) {
@@ -827,7 +827,7 @@ void ParticleSystem::Update_Wind_Motion()
             // Mathsy stuff here, not sure what the actual formula being used here is for, harmonic motion perhaps?
             float tmp = float(m_windMotionStartAngle - m_windMotionEndAngle) * 0.5f;
             float change = float(1.0f - float(Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp)) * m_windAngleChange;
-            change = Max(change, 0.005f);
+            change = std::max(change, 0.005f);
 
             // Apply change in correct direction.
             if (m_windMotionMovingToEndAngle) {

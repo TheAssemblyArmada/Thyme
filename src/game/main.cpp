@@ -20,10 +20,10 @@
 #include "gamememory.h"
 #include "gitverinfo.h"
 #include "mempool.h"
-#include "minmax.h"
 #include "stackdump.h"
 #include "unicodestring.h"
 #include "version.h"
+#include <algorithm>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -201,13 +201,13 @@ void Check_Windowed(int argc, char *argv[])
         if (strcasecmp(argv[i], "-xpos") == 0) {
             ++i;
             g_xPos = atoi(argv[i]);
-            g_xPos = Clamp(g_xPos, 0, (int)(Res.right - 800)); // Prevent negative values
+            g_xPos = std::clamp(g_xPos, 0, (int)(Res.right - 800)); // Prevent negative values
         }
 
         if (strcasecmp(argv[i], "-ypos") == 0) {
             ++i;
             g_yPos = atoi(argv[i]);
-            g_yPos = Clamp(g_yPos, 0, (int)(Res.bottom - 600)); // Prevent negative values
+            g_yPos = std::clamp(g_yPos, 0, (int)(Res.bottom - 600)); // Prevent negative values
         }
     }
 #endif

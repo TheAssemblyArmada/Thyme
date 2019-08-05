@@ -15,7 +15,6 @@
 #pragma once
 
 #include "always.h"
-#include "minmax.h"
 #include "vector3.h"
 #include "vector4.h"
 

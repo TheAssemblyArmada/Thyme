@@ -16,7 +16,6 @@
 #include "targa.h"
 #include "ffactory.h"
 #include "gamedebug.h"
-#include "stringex.h"
 #include <cstring>
 #include <malloc.h>
 
@@ -24,7 +23,7 @@
 #include "hookcrt.h"
 #endif
 
-using std::memset;
+using std::memcpy;
 using std::memset;
 
 TargaImage::TargaImage() : m_TGAFile(nullptr), m_access(0), m_flags(0), m_image(nullptr), m_palette(nullptr)

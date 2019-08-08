@@ -14,9 +14,12 @@
  */
 #include "cpudetect.h"
 #include "gamedebug.h"
-#include "stringex.h"
 #include "systimer.h"
 #include <cstdio>
+#include <cstring>
+
+using std::strcat;
+using std::strncpy;
 
 #ifdef PLATFORM_WINDOWS
 #include <libloaderapi.h>
@@ -32,6 +35,10 @@
 #ifdef PLATFORM_LINUX
 #include <sys/sysinfo.h>
 #include <sys/utsname.h>
+#endif
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
 #endif
 
 namespace

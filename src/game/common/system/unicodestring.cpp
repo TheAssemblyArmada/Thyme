@@ -16,8 +16,8 @@
 #include "asciistring.h"
 #include "critsection.h"
 #include "gamedebug.h"
-#include "stringex.h"
 #include <stdio.h>
+#include <string.h>
 
 #if !defined BUILD_WITH_ICU && defined PLATFORM_WINDOWS
 #include <wctype.h>

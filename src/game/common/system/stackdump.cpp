@@ -16,7 +16,6 @@
 #include "stackdump.h"
 #include "cpudetect.h"
 #include "main.h"
-#include "stringex.h"
 #include <cinttypes>
 #include <stdio.h>
 

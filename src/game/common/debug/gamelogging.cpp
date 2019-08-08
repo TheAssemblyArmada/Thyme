@@ -15,7 +15,6 @@
  */
 #include "critsection.h"
 #include "gamedebug.h"
-#include "stringex.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>

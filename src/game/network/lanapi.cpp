@@ -15,9 +15,9 @@
 #include "lanapi.h"
 #include "gametext.h"
 #include "rtsutils.h"
-#include "stringex.h"
 #include "transport.h"
 #include <cctype>
+#include <cstring>
 
 #ifdef PLATFORM_WINDOWS
 #include <lmcons.h>
@@ -27,6 +27,7 @@
 #endif
 
 using std::isdigit;
+using std::strcpy;
 
 /**
  * 0x00728FB0

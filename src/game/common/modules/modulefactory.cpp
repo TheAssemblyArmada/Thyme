@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "modulefactory.h"
-#include "stringex.h"
 
 #ifdef GAME_DLL
 ModuleFactory *&g_theModuleFactory = Make_Global<ModuleFactory *>(0x00A2BE40);

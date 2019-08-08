@@ -32,7 +32,6 @@
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
-#include "stringex.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "water.h"

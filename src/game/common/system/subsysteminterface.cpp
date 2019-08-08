@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Base subsystem class.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -18,22 +17,17 @@
 #include "xfer.h"
 
 #ifdef GAME_DLL
+#include "hooker.h"
 SubsystemInterfaceList *&g_theSubsystemList = Make_Global<SubsystemInterfaceList *>(0x00A29B84);
 #else
 SubsystemInterfaceList *g_theSubsystemList = nullptr;
 #endif
 
-////////////
-// Interface
-////////////
 void SubsystemInterface::Set_Name(Utf8String name)
 {
     m_subsystemName = name;
 }
 
-/////////////////
-// Interface List
-/////////////////
 void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path,
     const char *dir_path, Xfer *xfer, Utf8String sys_name)
 {

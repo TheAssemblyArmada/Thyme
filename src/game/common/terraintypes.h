@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Classes for handling terrain textures and properties.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -20,10 +19,6 @@
 #include "ini.h"
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 enum TerrainClass : int32_t
 {
@@ -109,6 +104,7 @@ private:
 };
 
 #ifdef GAME_DLL
+#include "hooker.h"
 extern TerrainTypeCollection *&g_theTerrainTypes;
 #else
 extern TerrainTypeCollection *g_theTerrainTypes;

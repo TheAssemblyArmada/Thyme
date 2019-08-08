@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Template class providing a wrapper around a key/value pair container.
  *
@@ -9,14 +9,10 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #pragma once
-
-#ifndef SPARSEMATCHFINDER_H
-#define SPARSEMATCHFINDER_H
 
 #include "always.h"
 #include <map>
@@ -39,5 +35,3 @@ public:
 private:
     std::map<K, T, MapHelper> m_bestMatches;
 };
-
-#endif // SPARSEMATCHFINDER_H

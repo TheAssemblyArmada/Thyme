@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Base class for archive file handling.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -137,7 +136,7 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
 }
 
 // Helper funtion to check if a string matches the search string.
-bool Search_String_Matches(Utf8String string, Utf8String search)
+bool ArchiveFile::Search_String_Matches(Utf8String string, Utf8String search)
 {
     // Trivial case if first string is empty.
     if (string.Is_Empty()) {

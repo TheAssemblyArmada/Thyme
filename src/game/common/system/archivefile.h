@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @Author OmniBlade
+ * @author OmniBlade
  *
  * @brief Base class for archive file handling.
  *
@@ -9,7 +9,6 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
@@ -61,6 +60,7 @@ public:
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const;
 
 protected:
+    static bool Search_String_Matches(Utf8String string, Utf8String search);
     void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, Utf8String const &dirpath,
         Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
         bool search_subdir) const;
@@ -68,5 +68,3 @@ protected:
     File *m_backingFile;
     DetailedArchiveDirectoryInfo m_archiveInfo;
 };
-
-bool Search_String_Matches(Utf8String string, Utf8String search);

@@ -136,7 +136,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern GameTextInterface *&g_theGameText;
 #else
 extern GameTextInterface *g_theGameText;

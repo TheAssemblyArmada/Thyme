@@ -14,10 +14,10 @@
  */
 #include "modulefactory.h"
 
-#ifdef GAME_DLL
-ModuleFactory *&g_theModuleFactory = Make_Global<ModuleFactory *>(0x00A2BE40);
-#else
+#ifndef GAME_DLL
 ModuleFactory *g_theModuleFactory = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 /**

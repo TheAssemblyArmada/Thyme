@@ -68,9 +68,7 @@ ShaderClass ShaderClass::s_presetMultiplicative2DShader(0x90057);
 ShaderClass ShaderClass::s_presetMultiplicativeSpriteShader(0x90053);
 
 #ifdef GAME_DLL
-bool &ShaderClass::s_shaderDirty = Make_Global<bool>(0x00A16C1C);
-uint32_t &ShaderClass::s_currentShader = Make_Global<uint32_t>(0x00A4C1B4);
-uint32_t &ShaderClass::s_polygonCullMode = Make_Global<uint32_t>(0x00A16C20);
+#include "hooker.h"
 #else
 bool ShaderClass::s_shaderDirty = false;
 uint32_t ShaderClass::s_currentShader = 0;

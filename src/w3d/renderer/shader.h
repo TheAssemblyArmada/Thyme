@@ -432,10 +432,6 @@ protected:
 #endif
 };
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 inline bool ShaderClass::Uses_Alpha() const
 {
     // check if alpha test is enabled

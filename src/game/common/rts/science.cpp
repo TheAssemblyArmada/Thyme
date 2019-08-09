@@ -15,15 +15,12 @@
 #include "science.h"
 #include <cstddef>
 
-#ifdef GAME_DLL
-ScienceStore *&g_theScienceStore = Make_Global<ScienceStore *>(0x00A2B978);
-#else
+#ifndef GAME_DLL
 ScienceStore *g_theScienceStore = nullptr;
 #endif
 
 FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
-    //{ "PrerequisiteSciences", &INI::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
-    { "PrerequisiteSciences", (inifieldparse_t)(0x0041B2C0), nullptr, offsetof(ScienceInfo, m_prerequisites) },
+    { "PrerequisiteSciences", &INI::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
     { "SciencePurchasePointCost", &INI::Parse_Int, nullptr, offsetof(ScienceInfo, m_purchaseCost) },
     { "IsGrantable", &INI::Parse_Bool, nullptr, offsetof(ScienceInfo, m_isGrantable) },
     { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_displayName) },

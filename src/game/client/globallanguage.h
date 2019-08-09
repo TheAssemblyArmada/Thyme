@@ -19,10 +19,6 @@
 #include "subsysteminterface.h"
 #include <list>
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 class FontDesc
 {
     friend class GlobalLanguage;

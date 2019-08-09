@@ -20,7 +20,6 @@
 #include <cstddef>
 
 #ifdef GAME_DLL
-GameLODManager *&g_theGameLODManager = Make_Global<GameLODManager *>(0x00A2B924);
 #else
 GameLODManager *g_theGameLODManager = nullptr;
 #endif

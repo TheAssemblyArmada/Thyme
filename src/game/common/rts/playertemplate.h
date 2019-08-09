@@ -119,7 +119,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern PlayerTemplateStore *&g_thePlayerTemplateStore;
 #else
 extern PlayerTemplateStore *g_thePlayerTemplateStore;

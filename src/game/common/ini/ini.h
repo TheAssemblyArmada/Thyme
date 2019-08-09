@@ -176,8 +176,6 @@ private:
 
 #ifdef GAME_DLL
 #include "hookcrt.h"
-#include "hooker.h"
-
 extern Xfer *&g_sXfer;
 #else
 extern Xfer *g_sXfer;

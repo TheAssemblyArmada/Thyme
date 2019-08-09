@@ -333,7 +333,3 @@ inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &
     }
 }
 #endif
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif

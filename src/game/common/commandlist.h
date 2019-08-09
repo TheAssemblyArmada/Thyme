@@ -33,7 +33,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern CommandList *&g_theCommandList;
 #else
 extern CommandList *g_theCommandList;

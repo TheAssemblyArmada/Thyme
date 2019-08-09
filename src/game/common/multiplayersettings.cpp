@@ -18,9 +18,7 @@
 
 using GameMath::Floor;
 
-#ifdef GAME_DLL
-MultiplayerSettings *&g_theMultiplayerSettings = Make_Global<MultiplayerSettings *>(0x00A2BE58);
-#else
+#ifndef GAME_DLL
 MultiplayerSettings *g_theMultiplayerSettings = nullptr;
 #endif
 

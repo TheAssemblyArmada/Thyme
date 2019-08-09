@@ -245,7 +245,3 @@ protected:
     static uint32_t s_idNext;
 #endif
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif

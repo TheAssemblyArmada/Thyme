@@ -26,6 +26,7 @@
 class Drawable;
 class RayEffectData;
 class ThingTemplate;
+
 enum Scorches
 {
     SCORCHES_UNK,
@@ -102,8 +103,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern GameClient *&g_theGameClient;
 #else
 extern GameClient *g_theGameClient;

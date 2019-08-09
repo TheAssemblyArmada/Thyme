@@ -76,8 +76,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern WaterSetting *g_waterSettings;
 extern WaterTransparencySetting *&g_theWaterTransparency;
 #else

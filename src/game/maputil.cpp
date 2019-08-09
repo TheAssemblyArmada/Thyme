@@ -13,14 +13,11 @@
  *            LICENSE
  */
 #include "maputil.h"
-#include "staticnamekey.h"
 #include "globaldata.h"
+#include "staticnamekey.h"
 #include <algorithm>
 
-#ifdef GAME_DLL
-WaypointMap *&g_waypoints = Make_Global<WaypointMap*>(0x00945AD4);
-MapCache *&g_theMapCache = Make_Global<MapCache*>(0x00A2B974);
-#else
+#ifndef GAME_DLL
 WaypointMap *g_waypoints;
 MapCache *g_theMapCache;
 #endif
@@ -33,29 +30,29 @@ const char *const MapCache::s_mapCacheName = "MapCache.ini";
 // and player start waypoints.
 void WaypointMap::Update()
 {
-    if ( g_waypoints != nullptr ) {
+    if (g_waypoints != nullptr) {
         clear();
         Utf8String key_name = g_theNameKeyGenerator->Key_To_Name(g_theInitialCameraPositionKey);
         auto it = g_waypoints->find(key_name);
 
-        if ( it != g_waypoints->end() ) {
+        if (it != g_waypoints->end()) {
             (*this)[key_name] = it->second;
         }
 
         m_numStartSpots = 0;
 
-        for ( int i = 1; i <= 8; ++i ) {
+        for (int i = 1; i <= 8; ++i) {
             key_name.Format("Player_%d_Start", i);
             it = g_waypoints->find(key_name);
 
-            if ( it != g_waypoints->end() ) {
+            if (it != g_waypoints->end()) {
                 break;
             }
 
             (*this)[key_name] = it->second;
             ++m_numStartSpots;
         }
-        
+
         m_numStartSpots = std::max(m_numStartSpots, 1);
     } else {
         m_numStartSpots = 1;

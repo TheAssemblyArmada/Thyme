@@ -18,9 +18,7 @@
 
 using std::tolower;
 
-#ifdef GAME_DLL
-NameKeyGenerator *&g_theNameKeyGenerator = Make_Global<NameKeyGenerator *>(0x00A2B928);
-#else
+#ifndef GAME_DLL
 NameKeyGenerator *g_theNameKeyGenerator = nullptr;
 #endif
 

@@ -19,9 +19,7 @@
 #include <algorithm>
 #include <cstddef>
 
-#ifdef GAME_DLL
-GlobalLanguage *&g_theGlobalLanguage = Make_Global<GlobalLanguage *>(0x00A2A6CC);
-#else
+#ifndef GAME_DLL
 GlobalLanguage *g_theGlobalLanguage;
 #endif
 

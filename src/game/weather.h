@@ -52,8 +52,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern WeatherSetting *&g_theWeatherSetting;
 #else
 extern WeatherSetting *g_theWeatherSetting;

@@ -76,8 +76,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern GameEngine *&g_theGameEngine;
 #else
 extern GameEngine *g_theGameEngine;

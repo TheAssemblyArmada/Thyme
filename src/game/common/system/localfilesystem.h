@@ -18,10 +18,6 @@
 #include "subsysteminterface.h"
 #include <set>
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 struct FileInfo;
 class File;
 

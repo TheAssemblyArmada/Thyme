@@ -16,11 +16,7 @@
 #include "textureloadtasklist.h"
 #include "textureloadtask.h"
 
-#ifdef GAME_DLL
-TextureLoadTaskListClass &g_freeList = Make_Global<TextureLoadTaskListClass>(0x00A4C5E8);
-TextureLoadTaskListClass &g_cubeFreeList = Make_Global<TextureLoadTaskListClass>(0x00A4C5D8);
-TextureLoadTaskListClass &g_volFreeList = Make_Global<TextureLoadTaskListClass>(0x00A4C5F8);
-#else
+#ifndef GAME_DLL
 TextureLoadTaskListClass g_freeList;
 TextureLoadTaskListClass g_cubeFreeList;
 TextureLoadTaskListClass g_volFreeList;

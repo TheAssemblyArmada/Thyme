@@ -19,6 +19,11 @@
 #ifdef GAME_DLL
 extern HWND &g_applicationHWnd;
 extern unsigned &g_theMessageTime;
+extern bool &g_gameIsWindowed;
+extern bool &g_gameNotFullscreen;
+extern bool &g_creatingWindow;
+extern HGDIOBJ &g_splashImage;
+extern HINSTANCE &g_applicationHInstance;
 
 // This will eventually be replaced by a standard int main(int arc, char *argv[]) function
 int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
@@ -27,7 +32,12 @@ int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCm
 #ifdef PLATFORM_WINDOWS
 extern unsigned g_theMessageTime;
 extern HWND g_applicationHWnd;
+extern HGDIOBJ g_splashImage;
+extern HINSTANCE g_applicationHInstance;
 #endif
+extern bool g_gameIsWindowed;
+extern bool g_gameNotFullscreen;
+extern bool g_creatingWindow;
 #endif
 
 int main(int argc, char *argv[]);

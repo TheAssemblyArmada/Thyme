@@ -53,20 +53,10 @@ inline SysTimeClass::~SysTimeClass()
 #endif
 }
 
-inline unsigned SysTimeClass::Time_Func()
-{
-#ifdef PLATFORM_WINDOWS
-    return timeGetTime();
-#else
-    struct timeval now;
-    gettimeofday(&now, nullptr);
-    return now.tv_usec / 1000;
-#endif
-}
-
 #ifdef GAME_DLL
 #include "hooker.h"
 
+// This needs to stay here like this to avoid static init issues in cpudetect.
 #define g_theSysTimer (Make_Global<SysTimeClass>(0x00A66B30))
 #else
 extern SysTimeClass g_theSysTimer;

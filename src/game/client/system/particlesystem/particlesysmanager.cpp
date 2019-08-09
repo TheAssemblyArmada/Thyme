@@ -20,7 +20,6 @@
 #include "xfer.h"
 
 #ifdef GAME_DLL
-ParticleSystemManager *&g_theParticleSystemManager = Make_Global<ParticleSystemManager *>(0x00A2BDAC);
 #else
 ParticleSystemManager *g_theParticleSystemManager;
 #endif

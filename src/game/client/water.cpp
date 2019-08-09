@@ -17,10 +17,7 @@
 #include "gametype.h"
 #include <cstddef>
 
-#ifdef GAME_DLL
-WaterSetting *g_waterSettings = Make_Pointer<WaterSetting>(0x00A2F0B8);
-WaterTransparencySetting *&g_theWaterTransparency = Make_Global<WaterTransparencySetting *>(0x00A2F0B0);
-#else
+#ifndef GAME_DLL
 WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 WaterTransparencySetting *g_theWaterTransparency = nullptr;
 #endif

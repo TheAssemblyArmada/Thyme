@@ -76,7 +76,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern MessageStream *&g_theMessageStream;
 #else
 extern MessageStream *g_theMessageStream;

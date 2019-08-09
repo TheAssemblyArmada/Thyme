@@ -14,8 +14,6 @@
  */ 
 #include "gameclient.h"
 
-#ifdef GAME_DLL
-GameClient *&g_theGameClient = Make_Global<GameClient *>(0x00A2BBF8);
-#else
+#ifndef GAME_DLL
 GameClient *g_theGameClient;
 #endif

@@ -119,8 +119,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 // Use HOOK_AUTOPOOL macro in the cpp file where an allocator needs to be hooked, use MAKE_AUTOPOOL if it can be normally
 // defined.
 #define HOOK_AUTOPOOL(name, size, address) \

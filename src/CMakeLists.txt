@@ -28,7 +28,12 @@ set(GAMEENGINE_INCLUDES
     w3d/renderer
 )
 
-set(HOOKER_SRC hooker/dllmain.cpp hooker/hooker.cpp hooker/setuphooks.cpp)
+set(HOOKER_SRC
+    hooker/dllmain.cpp
+    hooker/hooker.cpp
+    hooker/setuphooks.cpp
+    hooker/setupglobals.cpp
+)
 
 set(GAMEENGINE_SRC
     game/copyprotect.cpp

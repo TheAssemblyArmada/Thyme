@@ -72,8 +72,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern WaypointMap *&g_waypoints;
 extern MapCache *&g_theMapCache;
 #else

@@ -15,9 +15,7 @@
 #include "commandlist.h"
 #include "gamemessage.h"
 
-#ifdef GAME_DLL
-CommandList *&g_theCommandList = Make_Global<CommandList *>(0x00A29B78);
-#else
+#ifndef GAME_DLL
 CommandList *g_theCommandList = nullptr;
 #endif
 

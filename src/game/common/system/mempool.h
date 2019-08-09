@@ -21,7 +21,11 @@ class MemoryPoolFactory;
 class MemoryPoolBlob;
 class SimpleCriticalSectionClass;
 
+#ifdef GAME_DLL
+extern SimpleCriticalSectionClass *&g_memoryPoolCriticalSection;
+#else
 extern SimpleCriticalSectionClass *g_memoryPoolCriticalSection;
+#endif
 
 class MemoryPool
 {

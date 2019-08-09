@@ -16,9 +16,7 @@
 #include "videostream.h"
 #include <cstddef>
 
-#ifdef GAME_DLL
-VideoPlayer *&g_theVideoPlayer = Make_Global<VideoPlayer *>(0x00A2C0AC);
-#else
+#ifndef GAME_DLL
 VideoPlayer *g_theVideoPlayer = nullptr;
 #endif
 

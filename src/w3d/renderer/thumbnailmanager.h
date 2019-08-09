@@ -64,7 +64,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern ThumbnailManagerClass *&g_thumbnailManager;
 #else
 extern ThumbnailManagerClass *g_thumbnailManager;

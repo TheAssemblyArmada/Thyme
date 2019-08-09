@@ -14,10 +14,10 @@
  */
 #include "functionlexicon.h"
 
-#ifdef GAME_DLL
-FunctionLexicon *&g_theFunctionLexicon = Make_Global<FunctionLexicon*>(0x00A2BE44);
-#else
+#ifndef GAME_DLL
 FunctionLexicon *g_theFunctionLexicon = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 FunctionLexicon::FunctionLexicon()

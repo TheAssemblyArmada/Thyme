@@ -75,7 +75,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern NameKeyGenerator *&g_theNameKeyGenerator;
 #else
 extern NameKeyGenerator *g_theNameKeyGenerator;

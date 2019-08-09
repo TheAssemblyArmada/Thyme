@@ -23,13 +23,10 @@
 
 using std::memset;
 
-#ifdef GAME_DLL
-DynamicMemoryAllocator *&g_dynamicMemoryAllocator = Make_Global<DynamicMemoryAllocator *>(0x00A29B98);
-#else
+#ifndef GAME_DLL
+SimpleCriticalSectionClass *g_dmaCriticalSection = nullptr;
 DynamicMemoryAllocator *g_dynamicMemoryAllocator = nullptr;
 #endif
-
-SimpleCriticalSectionClass *g_dmaCriticalSection = nullptr;
 
 DynamicMemoryAllocator::DynamicMemoryAllocator() :
     m_factory(nullptr),

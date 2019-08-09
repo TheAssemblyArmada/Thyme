@@ -189,8 +189,6 @@ public:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern LANAPIInterface *&g_theLAN;
 #else
 extern LANAPIInterface *g_theLAN;

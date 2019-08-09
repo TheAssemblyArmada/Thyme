@@ -33,9 +33,7 @@
 
 using rts::FourCC;
 
-#ifdef GAME_DLL
-GameTextInterface *&g_theGameText = Make_Global<GameTextInterface *>(0x00A2A2AC);
-#else
+#ifndef GAME_DLL
 GameTextInterface *g_theGameText = nullptr;
 #endif
 

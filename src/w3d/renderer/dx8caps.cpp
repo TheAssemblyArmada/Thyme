@@ -20,9 +20,7 @@
 using std::memcpy;
 using std::memset;
 
-#ifdef GAME_DLL
-StringClass &DX8Caps::s_videoCardDetails = Make_Global<StringClass>(0x00A51ECC);
-#else
+#ifndef GAME_DLL
 StringClass DX8Caps::s_videoCardDetails;
 #endif
 

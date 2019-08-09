@@ -219,8 +219,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern Mouse *&g_theMouse;
 #else
 extern Mouse *g_theMouse;

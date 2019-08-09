@@ -16,9 +16,7 @@
 #include "archivefile.h"
 #include "globaldata.h"
 
-#ifdef GAME_DLL
-ArchiveFileSystem *&g_theArchiveFileSystem = Make_Global<ArchiveFileSystem *>(0x00A2BA00);
-#else
+#ifndef GAME_DLL
 ArchiveFileSystem *g_theArchiveFileSystem = nullptr;
 #endif
 

@@ -20,35 +20,9 @@ using std::memcpy;
 using std::memset;
 
 #ifdef GAME_DLL
-uint32_t &g_numberOfDx8Calls = Make_Global<uint32_t>(0x00A47F40);
+#include "hooker.h"
 #else
 uint32_t g_numberOfDx8Calls = 0;
-#endif
-
-#ifdef GAME_DLL
-IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Global<IDirect3D8 *(__stdcall *)(unsigned)>(
-    0x00A47F6C);
-HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(0x00A47F70);
-IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(0x00A47EEC);
-IDirect3DDevice8 *&DX8Wrapper::s_d3dDevice = Make_Global<IDirect3DDevice8 *>(0x00A47EF0);
-IDirect3DBaseTexture8 **DX8Wrapper::s_textures = Make_Pointer<w3dbasetexture_t>(0x00A42784);
-void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(0x00A47EBC);
-void *&DX8Wrapper::s_hwnd = Make_Global<void *>(0x00A47EBC);
-unsigned *DX8Wrapper::s_renderStates = Make_Pointer<unsigned>(0x00A46CC0);
-unsigned *DX8Wrapper::s_textureStageStates = Make_Pointer<unsigned>(0x00A46CC0);
-Vector4 *DX8Wrapper::s_vertexShaderConstants = Make_Pointer<Vector4>(0x00A47778);
-unsigned *DX8Wrapper::s_pixelShaderConstants = Make_Pointer<unsigned>(0x00A427C0);
-bool &DX8Wrapper::s_isInitialised = Make_Global<bool>(0x00A47EC8);
-bool &DX8Wrapper::s_isWindowed = Make_Global<bool>(0x00A47EC9);
-RenderStateStruct &DX8Wrapper::s_renderState = Make_Global<RenderStateStruct>(0x00A47508);
-unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(0x00A42778);
-float &DX8Wrapper::s_zNear = Make_Global<float>(0x00A47E38);
-float &DX8Wrapper::s_zFar = Make_Global<float>(0x00A47EB8);
-Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
-int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
-int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
-DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(0x00A47F30);
-#else
 #ifdef BUILD_WITH_D3D8
 IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;

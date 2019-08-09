@@ -62,7 +62,6 @@ private:
 
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern CaveSystem *&g_theCaveSystem;
 #else
 extern CaveSystem *g_theCaveSystem;

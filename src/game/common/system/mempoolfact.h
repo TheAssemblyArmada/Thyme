@@ -51,8 +51,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern MemoryPoolFactory *&g_memoryPoolFactory;
 #else
 extern MemoryPoolFactory *g_memoryPoolFactory;

@@ -64,8 +64,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern VideoPlayer *&g_theVideoPlayer;
 #else
 extern VideoPlayer *g_theVideoPlayer;

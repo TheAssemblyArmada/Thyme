@@ -57,7 +57,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern ArchiveFileSystem *&g_theArchiveFileSystem;
 #else
 extern ArchiveFileSystem *g_theArchiveFileSystem;

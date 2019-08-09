@@ -67,7 +67,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern RankInfoStore *&g_theRankInfoStore;
 #else
 extern RankInfoStore *g_theRankInfoStore;

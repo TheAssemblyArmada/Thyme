@@ -95,7 +95,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern ModuleFactory *&g_theModuleFactory;
 #else
 extern ModuleFactory *g_theModuleFactory;

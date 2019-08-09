@@ -29,11 +29,8 @@
 #include "vector3.h"
 
 #ifdef GAME_DLL
-unsigned &TextureLoader::s_textureInactiveOverrideTime = Make_Global<unsigned>(0x00A4C688);
-LoaderThreadClass &TextureLoader::s_textureLoadThread = Make_Global<LoaderThreadClass>(0x00A4C620);
-bool &TextureLoader::s_textureLoadSuspended = Make_Global<bool>(0x00A4C604);
-FastCriticalSectionClass &g_backgroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C608);
-FastCriticalSectionClass &g_foregroundCritSec = Make_Global<FastCriticalSectionClass>(0x00A4C60C);
+extern FastCriticalSectionClass &g_backgroundCritSec;
+extern FastCriticalSectionClass &g_foregroundCritSec;
 #else
 unsigned TextureLoader::s_textureInactiveOverrideTime;
 LoaderThreadClass TextureLoader::s_textureLoadThread("Thyme texture Loader thread");

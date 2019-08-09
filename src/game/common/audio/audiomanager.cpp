@@ -18,10 +18,10 @@
 #include "soundmanager.h"
 #include <algorithm>
 
-#ifdef GAME_DLL
-AudioManager *&g_theAudio = Make_Global<AudioManager *>(0x00A29B6C);
-#else
+#ifndef GAME_DLL
 AudioManager *g_theAudio = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 const char *AudioManager::s_speakerTypes[] = {

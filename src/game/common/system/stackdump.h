@@ -31,8 +31,6 @@ void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int ski
 #endif
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern Utf8String &g_exceptionFileBuffer;
 #else
 extern Utf8String g_exceptionFileBuffer;

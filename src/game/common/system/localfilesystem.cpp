@@ -14,8 +14,6 @@
  */
 #include "localfilesystem.h"
 
-#ifdef GAME_DLL
-LocalFileSystem *&g_theLocalFileSystem = Make_Global<LocalFileSystem *>(0x00A2BE60);
-#else
+#ifndef GAME_DLL
 LocalFileSystem *g_theLocalFileSystem = nullptr;
 #endif

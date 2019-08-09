@@ -49,7 +49,3 @@ private:
     static w3dtexture_t s_missingTexture;
 #endif
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif

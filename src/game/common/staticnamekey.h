@@ -33,8 +33,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern StaticNameKey &g_teamNameKey;
 extern StaticNameKey &g_theInitialCameraPositionKey;
 extern StaticNameKey &g_playerNameKey;

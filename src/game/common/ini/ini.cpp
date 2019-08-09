@@ -42,9 +42,7 @@
 
 using GameMath::Ceil;
 
-#ifdef GAME_DLL
-Xfer *&g_sXfer = Make_Global<Xfer *>(0x00A2A6B8);
-#else
+#ifndef GAME_DLL
 Xfer *g_sXfer = nullptr;
 #endif
 

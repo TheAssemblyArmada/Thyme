@@ -17,10 +17,7 @@
 
 RawFileFactoryClass defaultWritingFileFactory;
 
-#ifdef GAME_DLL
-RawFileFactoryClass *&g_theWritingFileFactory = Make_Global<RawFileFactoryClass*>(0x00A1EEB8);
-FileFactoryClass *&g_theFileFactory = Make_Global<FileFactoryClass*>(0x00A1EEB0);
-#else
+#ifndef GAME_DLL
 RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
 FileFactoryClass *g_theFileFactory = nullptr;
 #endif

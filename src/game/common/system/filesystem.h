@@ -47,7 +47,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern FileSystem *&g_theFileSystem;
 #else
 extern FileSystem *g_theFileSystem;

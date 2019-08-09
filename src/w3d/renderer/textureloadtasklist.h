@@ -38,7 +38,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern TextureLoadTaskListClass &g_freeList;
 extern TextureLoadTaskListClass &g_cubeFreeList;
 extern TextureLoadTaskListClass &g_volFreeList;

@@ -107,8 +107,6 @@ protected:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern Keyboard *&g_theKeyboard;
 #else
 extern Keyboard *g_theKeyboard;

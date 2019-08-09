@@ -26,6 +26,10 @@
 #include <unistd.h>
 #endif
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 using std::isdigit;
 using std::strcpy;
 

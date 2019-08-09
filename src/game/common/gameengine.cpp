@@ -44,9 +44,7 @@
 #include <mmsystem.h>
 #endif
 
-#ifdef GAME_DLL
-GameEngine *&g_theGameEngine = Make_Global<GameEngine *>(0x00A29B80);
-#else
+#ifndef GAME_DLL
 GameEngine *g_theGameEngine = nullptr;
 #endif
 

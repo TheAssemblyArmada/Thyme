@@ -45,7 +45,6 @@ private:
 Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path);
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern GameState *&g_theGameState;
 #else
 extern GameState *g_theGameState;

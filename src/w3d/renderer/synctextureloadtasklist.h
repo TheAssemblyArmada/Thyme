@@ -34,7 +34,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern SynchronizedTextureLoadTaskListClass &g_foregroundQueue;
 extern SynchronizedTextureLoadTaskListClass &g_backgroundQueue;
 #else

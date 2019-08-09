@@ -19,9 +19,7 @@
 #include <cinttypes>
 #include <stdio.h>
 
-#ifdef GAME_DLL
-Utf8String &g_exceptionFileBuffer = Make_Global<Utf8String>(0x00A29FB8);
-#else
+#ifndef GAME_DLL
 Utf8String g_exceptionFileBuffer;
 #endif
 

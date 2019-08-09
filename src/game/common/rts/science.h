@@ -23,10 +23,6 @@
 #include "unicodestring.h"
 #include <vector>
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 enum ScienceType : int32_t
 {
     SCIENCE_INVALID = -1,

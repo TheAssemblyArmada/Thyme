@@ -20,10 +20,6 @@
 #include "mempoolobj.h"
 #include "subsysteminterface.h"
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 enum BridgeTowerType
 {
     BRIDGE_TOWER_FROM_LEFT,

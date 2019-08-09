@@ -72,7 +72,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern FunctionLexicon *&g_theFunctionLexicon;
 #else
 extern FunctionLexicon *g_theFunctionLexicon;

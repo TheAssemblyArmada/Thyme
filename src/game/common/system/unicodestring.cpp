@@ -23,9 +23,7 @@
 #include <wctype.h>
 #endif
 
-#ifdef GAME_DLL
-SimpleCriticalSectionClass *&g_unicodeStringCriticalSection = Make_Global<SimpleCriticalSectionClass *>(0x00A2A294);
-#else
+#ifndef GAME_DLL
 SimpleCriticalSectionClass *g_unicodeStringCriticalSection = nullptr;
 #endif
 

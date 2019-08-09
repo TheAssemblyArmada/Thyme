@@ -42,8 +42,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
 extern DisplayStringManager *&g_theDisplayStringManger;
 #else
 extern DisplayStringManager *g_theDisplayStringManger;

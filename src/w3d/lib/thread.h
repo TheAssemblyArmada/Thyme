@@ -14,10 +14,6 @@
  */
 #pragma once
 
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 typedef void _EXCEPTION_POINTERS; // TODO set this to something appropriate, void for now so it compiles

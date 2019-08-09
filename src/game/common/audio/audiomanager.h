@@ -289,7 +289,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern AudioManager *&g_theAudio;
 #else
 extern AudioManager *g_theAudio;

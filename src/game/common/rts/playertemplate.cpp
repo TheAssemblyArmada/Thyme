@@ -16,10 +16,10 @@
 #include <algorithm>
 #include <cstddef>
 
-#ifdef GAME_DLL
-PlayerTemplateStore *&g_thePlayerTemplateStore = Make_Global<PlayerTemplateStore *>(0x00A2BDF4);
-#else
+#ifndef GAME_DLL
 PlayerTemplateStore *g_thePlayerTemplateStore = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 PlayerTemplate::PlayerTemplate() :

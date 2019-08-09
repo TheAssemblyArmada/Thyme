@@ -104,7 +104,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern TerrainTypeCollection *&g_theTerrainTypes;
 #else
 extern TerrainTypeCollection *g_theTerrainTypes;

@@ -42,7 +42,3 @@ private:
     static bool s_largeTextureExtraReduction;
 #endif
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif

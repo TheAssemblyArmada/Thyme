@@ -15,9 +15,7 @@
 #include "terrainroads.h"
 #include <cstddef>
 
-#ifdef GAME_DLL
-TerrainRoadCollection *&g_theTerrainRoads = Make_Global<TerrainRoadCollection *>(0x00A2BE4C);
-#else
+#ifndef GAME_DLL
 TerrainRoadCollection *g_theTerrainRoads = nullptr;
 #endif
 

@@ -16,9 +16,7 @@
 #include "ini.h"
 #include <cstddef>
 
-#ifdef GAME_DLL
-RankInfoStore *&g_theRankInfoStore = Make_Global<RankInfoStore *>(0x00A2B97C);
-#else
+#ifndef GAME_DLL
 RankInfoStore *g_theRankInfoStore = nullptr;
 #endif
 

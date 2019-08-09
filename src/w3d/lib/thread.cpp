@@ -15,6 +15,7 @@
 #include "always.h"
 #include "thread.h"
 #include "gamedebug.h"
+#include "rtsutils.h"
 #include "systimer.h"
 #include <cstdio>
 #include <cstring>
@@ -26,6 +27,7 @@ using std::strcpy;
 #include <processthreadsapi.h>
 #include <synchapi.h>
 #ifdef GAME_DLL
+#include "hooker.h"
 #define test_event (Make_Global<void *>(0x00A65178))
 #else
 void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
@@ -172,13 +174,7 @@ void ThreadClass::Stop(unsigned int ms)
  */
 void ThreadClass::Sleep_Ms(unsigned int ms)
 {
-#ifdef HAVE_UNISTD_H
-    usleep(ms * 1000);
-#elif defined PLATFORM_WINDOWS
-    Sleep(ms);
-#else
-#error Add appropriate sleep function to thread.cpp
-#endif
+    rts::Sleep_Ms(ms);
 }
 
 /**

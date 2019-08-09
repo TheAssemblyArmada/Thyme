@@ -13,17 +13,15 @@
  *            LICENSE
  */
 #include "systimer.h"
+#include "rtsutils.h"
 
-#ifdef GAME_DLL
-// CPUDetect uses this in static init, breaks if that is initialised before this, define instantiates where used.
-// SysTimeClass &g_theSysTimer = Make_Global<SysTimeClass>(0x00A66B30);
-#else
+#ifndef GAME_DLL
 SysTimeClass g_theSysTimer;
 #endif
 
 void SysTimeClass::Reset()
 {
-    m_startTime = Time_Func();
+    m_startTime = rts::Get_Time();
     m_negTime = -m_startTime;
 }
 
@@ -40,7 +38,7 @@ int SysTimeClass::Get()
         _is_init = true;
     }
 
-    int time = Time_Func();
+    int time = rts::Get_Time();
 
     if (time < m_startTime) {
         return m_negTime + time;

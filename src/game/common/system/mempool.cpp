@@ -21,7 +21,9 @@
 
 using std::memset;
 
+#ifndef GAME_DLL
 SimpleCriticalSectionClass *g_memoryPoolCriticalSection = nullptr;
+#endif
 
 MemoryPool::MemoryPool() :
     m_factory(nullptr),

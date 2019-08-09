@@ -22,15 +22,16 @@
 #include "mempool.h"
 #include "mempoolfact.h"
 
+#ifndef GAME_DLL
 int g_theLinkChecker = 0;
 bool g_thePreMainInitFlag = false;
 bool g_theMainInitFlag = false;
+#endif
 
 #ifdef GAME_DLL
-#include "hooker.h"
 void *New_New(size_t bytes)
 {
-    ++(Make_Global<int>(0x00A29B9C));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
@@ -38,8 +39,7 @@ void *New_New(size_t bytes)
 
 void New_Delete(void *ptr)
 {
-    // Can't use the DLL increment/decrement tracker or game doesn't start correctly.
-    ++(Make_Global<int>(0x00A29B9C));
+    ++g_theLinkChecker;
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }

@@ -22,7 +22,7 @@
 #include <algorithm>
 
 #ifdef GAME_DLL
-unsigned &TextureBaseClass::s_unusedTextureID = Make_Global<unsigned>(0x00A4C388);
+#include "hooker.h"
 #else
 unsigned TextureBaseClass::s_unusedTextureID = 0;
 #endif

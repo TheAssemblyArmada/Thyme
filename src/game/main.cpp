@@ -50,16 +50,12 @@
 
 #ifdef GAME_DLL
 #include "hookcrt.h"
-#include "hooker.h"
-HWND &g_applicationHWnd = Make_Global<HWND>(0x00A27B08);
-unsigned &g_theMessageTime = Make_Global<unsigned>(0x00A27B14);
-
 // Some globals, replace exe versions with own once all code that uses them is implemented.
-bool &g_gameIsWindowed = Make_Global<bool>(0x00A27B0C);
-bool &g_gameNotFullscreen = Make_Global<bool>(0x009C0ACC);
-bool &g_creatingWindow = Make_Global<bool>(0x00A27B1C);
-HGDIOBJ &g_splashImage = Make_Global<HGDIOBJ>(0x00A27B20);
-HINSTANCE &g_applicationHInstance = Make_Global<HINSTANCE>(0x00A27B04);
+extern bool &g_gameIsWindowed;
+extern bool &g_gameNotFullscreen;
+extern bool &g_creatingWindow;
+extern HGDIOBJ &g_splashImage;
+extern HINSTANCE &g_applicationHInstance;
 #else
 #ifdef PLATFORM_WINDOWS
 HWND g_applicationHWnd;

@@ -15,10 +15,10 @@
 
 #include "cavesystem.h"
 
-#ifdef GAME_DLL
-CaveSystem *&g_theCaveSystem = Make_Global<CaveSystem *>(0x00A2BDF8);
-#else
+#ifndef GAME_DLL
 CaveSystem *g_theCaveSystem = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 void TunnelTracker::Xfer_Snapshot(Xfer *xfer)

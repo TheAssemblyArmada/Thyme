@@ -16,9 +16,7 @@
 #include "messagestream.h"
 #include <cwctype>
 
-#ifdef GAME_DLL
-Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(0x00A29B70);
-#else
+#ifndef GAME_DLL
 Keyboard *g_theKeyboard = nullptr;
 #endif
 

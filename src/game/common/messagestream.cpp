@@ -15,9 +15,7 @@
 #include "messagestream.h"
 #include "commandlist.h"
 
-#ifdef GAME_DLL
-MessageStream *&g_theMessageStream = Make_Global<MessageStream *>(0x00A29B74);
-#else
+#ifndef GAME_DLL
 MessageStream *g_theMessageStream = nullptr;
 #endif
 

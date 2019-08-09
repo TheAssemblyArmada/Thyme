@@ -24,9 +24,7 @@
 
 using rts::Get_Time;
 
-#ifdef GAME_DLL
-Mouse *&g_theMouse = Make_Global<Mouse *>(0x00A29B60);
-#else
+#ifndef GAME_DLL
 Mouse *g_theMouse = nullptr;
 #endif
 

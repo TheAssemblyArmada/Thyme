@@ -392,7 +392,6 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
 extern GlobalData *&g_theWriteableGlobalData;
 #else
 extern GlobalData *g_theWriteableGlobalData;

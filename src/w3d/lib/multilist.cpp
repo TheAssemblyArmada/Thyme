@@ -15,8 +15,6 @@
  */
 #include "multilist.h"
 
-HOOK_AUTOPOOL(MultiListNodeClass, 256, 0x00A66288);
-
 /**
  * Checks if an object is contained within the multilist.
  *

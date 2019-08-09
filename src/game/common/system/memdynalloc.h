@@ -23,8 +23,6 @@ class MemoryPoolFactory;
 class MemoryPoolSingleBlock;
 class SimpleCriticalSectionClass;
 
-extern SimpleCriticalSectionClass *g_dmaCriticalSection;
-
 class DynamicMemoryAllocator
 {
     friend class MemoryPoolFactory;
@@ -55,10 +53,9 @@ private:
 };
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
-//#define g_dynamicMemoryAllocator (Make_Global<DynamicMemoryAllocator *>(0x00A29B98))
+extern SimpleCriticalSectionClass *&g_dmaCriticalSection;
 extern DynamicMemoryAllocator *&g_dynamicMemoryAllocator;
 #else
+extern SimpleCriticalSectionClass *g_dmaCriticalSection;
 extern DynamicMemoryAllocator *g_dynamicMemoryAllocator;
 #endif

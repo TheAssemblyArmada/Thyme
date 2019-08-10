@@ -21,14 +21,14 @@
 class MemoryPool;
 
 #ifdef GAME_DLL
-extern int &g_theLinkChecker;
 extern bool &g_thePreMainInitFlag;
 extern bool &g_theMainInitFlag;
 #else
-extern int g_theLinkChecker;
 extern bool g_thePreMainInitFlag;
 extern bool g_theMainInitFlag;
 #endif
+
+extern int g_theLinkChecker;
 
 void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();

@@ -155,7 +155,6 @@ class FunctionLexicon;
 FunctionLexicon *&g_theFunctionLexicon = Make_Global<FunctionLexicon *>(0x00A2BE44);
 
 // gamememory.cpp
-int &g_theLinkChecker = Make_Global<int>(0x00A29B9C);
 bool &g_thePreMainInitFlag = Make_Global<bool>(0x00A29B90);
 bool &g_theMainInitFlag = Make_Global<bool>(0x00A29B91);
 

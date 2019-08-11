@@ -29,6 +29,10 @@ public:
     static unsigned Get_Texture_Min_Dimension() { return s_textureMinDimension; }
     static bool Large_Texture_Extra_Reduction_Enabled() { return s_largeTextureExtraReduction; }
 
+    // Calls to the graphics wrapper.
+    static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
+    static int Get_Texture_Bit_Depth();
+
 private:
 #ifdef GAME_DLL
     static unsigned &s_syncTime;

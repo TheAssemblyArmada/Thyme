@@ -23,35 +23,33 @@
 #pragma once
 
 #include "always.h"
-#include <processthreadsapi.h>
 #include <memoryapi.h>
+#include <processthreadsapi.h>
 
-template <typename T, const int size>
-class RefArrayHelper
+template<typename T, const int size>
+class ArrayHelper
 {
-    protected:
-        char _dummy[size * sizeof(T)];
+public:
+    operator T *() { return (T *)this; };
+    operator const T *() const { return (T *)this; };
+    T *operator&() { return (T *)this; };
+    const T *operator&() const { return (T *)this; };
+    T &operator[](int index) { return ((T *)this)[index]; }
+    const T &operator[](int index) const { return ((T *)this)[index]; }
 
-    public:
-        operator T*()
-        {
-            return (T*) this;
-        };
+protected:
+    char _dummy[size * sizeof(T)];
+};
 
-        operator const T*() const
-        {
-            return (T*) this;
-        };
+template<typename T, const int x, const int y>
+class ArrayHelper2D
+{
+public:
+    ArrayHelper<T, x> &operator[](int index) { return _dummy[index]; }
+    const ArrayHelper<T, x> &operator[](int index) const { return _dummy[index]; }
 
-        T *operator&()
-        {
-            return (T*) this;
-        };
-
-        const T *operator&() const
-        {
-            return (T*) this;
-        };
+protected:
+    ArrayHelper<T, x> _dummy[y];
 };
 
 // Helper Functions based on those from OpenMC2
@@ -65,19 +63,22 @@ class RefArrayHelper
 // allows you to use SomeGlobalVar as though it was a bool you declared, though
 // it will reflect the value the original exe sees at address 0x00FF00FF
 template<typename T>
-__forceinline T &Make_Global(const uintptr_t address) {
+__forceinline T &Make_Global(const uintptr_t address)
+{
     return *reinterpret_cast<T *>(address);
 }
 
 template<typename T>
-__forceinline T *Make_Pointer(const uintptr_t address) {
+__forceinline T *Make_Pointer(const uintptr_t address)
+{
     return reinterpret_cast<T *>(address);
 }
 
 // Call_Function and Call_Method can be used to call functions from the original
 // binary where they are required and a replacement hasn't been written yet.
 template<typename T, typename... Types>
-__forceinline T Call_Function(const uintptr_t address, Types... args) {
+__forceinline T Call_Function(const uintptr_t address, Types... args)
+{
 #ifdef GAME_DLL
     return reinterpret_cast<T(__cdecl *)(Types...)>(address)(args...);
 #else
@@ -86,7 +87,8 @@ __forceinline T Call_Function(const uintptr_t address, Types... args) {
 }
 
 template<typename T, typename... Types>
-__forceinline T Call__StdCall_Function(const uintptr_t address, Types... args) {
+__forceinline T Call__StdCall_Function(const uintptr_t address, Types... args)
+{
 #ifdef GAME_DLL
     return reinterpret_cast<T(__stdcall *)(Types...)>(address)(args...);
 #else
@@ -95,7 +97,8 @@ __forceinline T Call__StdCall_Function(const uintptr_t address, Types... args) {
 }
 
 template<typename T, typename X, typename... Types>
-__forceinline T Call_Method(const uintptr_t address, X *const self, Types... args) {
+__forceinline T Call_Method(const uintptr_t address, X *const self, Types... args)
+{
 #ifdef GAME_DLL
     return reinterpret_cast<T(__thiscall *)(X *, Types...)>(address)(self, args...);
 #else
@@ -106,7 +109,8 @@ __forceinline T Call_Method(const uintptr_t address, X *const self, Types... arg
 // These create pointers to various types of function where the return,
 // parameters and calling convention are known.
 template<typename T, typename... Types>
-__forceinline T(__cdecl *Make_Function_Ptr(const uintptr_t address))(Types...) {
+__forceinline T(__cdecl *Make_Function_Ptr(const uintptr_t address))(Types...)
+{
     return reinterpret_cast<T(__cdecl *)(Types...)>(address);
 }
 
@@ -123,7 +127,8 @@ __forceinline T(__thiscall *Make_Method_Ptr(const uintptr_t address))(C *, Types
 }
 
 template<typename T, typename... Types>
-__forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types..., ...) {
+__forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types..., ...)
+{
     return reinterpret_cast<T(__cdecl *)(Types..., ...)>(address);
 }
 
@@ -131,11 +136,11 @@ __forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types...
 // So long as the calling conventions and arguments for the replaced and
 // replacement functions are the same, everything should just work.
 #pragma pack(push, 1)
-    struct x86_jump
-    {
-        const uint8_t cmd = 0xE9;
-        uintptr_t addr;
-    };
+struct x86_jump
+{
+    const uint8_t cmd = 0xE9;
+    uintptr_t addr;
+};
 #pragma pack(pop)
 
 // Use these to hook existing functions and replace them with newly written ones
@@ -156,7 +161,7 @@ void Hook_Function(uintptr_t in, T out)
 }
 
 template<typename T, typename... Types>
-void Hook_StdCall_Function(T(__stdcall * in)(Types...), T(__stdcall * out)(Types...))
+void Hook_StdCall_Function(T(__stdcall *in)(Types...), T(__stdcall *out)(Types...))
 {
 #ifdef GAME_DLL
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
@@ -176,7 +181,7 @@ void Hook_Method(uintptr_t in, T out)
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>((void*&)out) - in - 5;
+    cmd.addr = reinterpret_cast<uintptr_t>((void *&)out) - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 #endif
 }
@@ -184,7 +189,7 @@ void Hook_Method(uintptr_t in, T out)
 __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();
 
-#define REF_DECL(type, name) type & name
-#define REF_ARR_DECL(type, name, size) RefArrayHelper<type, size> & name
-#define REF_DEF(type, name, client) type & name = client;
-#define REF_ARR_DEF(type, name, size, client) RefArrayHelper<type, size> & name = client;
+#define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
+#define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);
+#define ARRAY2D_DEC(type, var, x, y) ArrayHelper<type, x, y> &var
+#define ARRAY2D_DEF(address, type, var, x, y) ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper<type, x, y>>(address);

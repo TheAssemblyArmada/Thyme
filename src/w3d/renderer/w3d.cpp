@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "w3d.h"
+#include "dx8wrapper.h"
 
 #ifndef GAME_DLL
 unsigned W3D::s_syncTime;
@@ -21,3 +22,13 @@ unsigned W3D::s_textureReduction;
 unsigned W3D::s_textureMinDimension = 1;
 bool W3D::s_largeTextureExtraReduction;
 #endif
+
+void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
+{
+    DX8Wrapper::Get_Device_Resolution(width, height, bit_depth, windowed);
+}
+
+int W3D::Get_Texture_Bit_Depth()
+{
+    return DX8Wrapper::Get_Texture_Bit_Depth();
+}

@@ -14,20 +14,64 @@
  *            LICENSE
  */
 #include "w3dformat.h"
+#include "dx8wrapper.h"
 #include "gamedebug.h"
 #include "rtsutils.h"
 #include "targa.h"
+#include "w3d.h"
 #include "wwstring.h"
 #include <cstring>
 
-using rts::FourCC;
-using std::memcpy;
+#ifdef BUILD_WITH_D3D8
+#include <d3d8.h>
+#endif
 
 #ifdef GAME_DLL
-WW3DFormat *g_D3DFormatToWW3DFormatConversionArray = Make_Pointer<WW3DFormat>(0x00A5243C);
-#else
-WW3DFormat g_D3DFormatToWW3DFormatConversionArray[62];
+#include "hooker.h"
 #endif
+
+using rts::FourCC;
+using std::memcpy;
+using std::memset;
+
+#ifndef GAME_DLL
+WW3DFormat g_D3DFormatToWW3DFormatConversionArray[63];
+WW3DZFormat g_D3DFormatToWW3DZFormatConversionArray[80];
+#endif
+
+void Init_D3D_To_WW3_Conversion()
+{
+#ifdef BUILD_WITH_D3D8
+    memset(g_D3DFormatToWW3DFormatConversionArray, 0, sizeof(g_D3DFormatToWW3DFormatConversionArray));
+    memset(g_D3DFormatToWW3DZFormatConversionArray, 0, sizeof(g_D3DFormatToWW3DZFormatConversionArray));
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_UNKNOWN] = WW3D_FORMAT_X1R5G5B5;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_R8G8B8] = WW3D_FORMAT_R8G8B8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A8R8G8B8] = WW3D_FORMAT_A8R8G8B8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_X8R8G8B8] = WW3D_FORMAT_X8R8G8B8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_R5G6B5] = WW3D_FORMAT_R5G6B5;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_X1R5G5B5] = WW3D_FORMAT_X1R5G5B5;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A1R5G5B5] = WW3D_FORMAT_A1R5G5B5;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A4R4G4B4] = WW3D_FORMAT_A4R4G4B4;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_R3G3B2] = WW3D_FORMAT_R3G3B2;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A8] = WW3D_FORMAT_A8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A8R3G3B2] = WW3D_FORMAT_A8R3G3B2;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_X4R4G4B4] = WW3D_FORMAT_X4R4G4B4;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A8P8] = WW3D_FORMAT_A8P8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_P8] = WW3D_FORMAT_P8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_L8] = WW3D_FORMAT_L8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A8L8] = WW3D_FORMAT_A8L8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_A4L4] = WW3D_FORMAT_A4L4;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_V8U8] = WW3D_FORMAT_U8V8;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_L6V5U5] = WW3D_FORMAT_L6V5U5;
+    g_D3DFormatToWW3DFormatConversionArray[D3DFMT_X8L8V8U8] = WW3D_FORMAT_X8L8V8U8;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D16_LOCKABLE] = WW3DZ_FORMAT_D16_LOCKABLE;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D32] = WW3DZ_FORMAT_D32;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D15S1] = WW3DZ_FORMAT_D15S1;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D24S8] = WW3DZ_FORMAT_D24S8;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D24X8] = WW3DZ_FORMAT_D24X8;
+    g_D3DFormatToWW3DZFormatConversionArray[D3DFMT_D24X4S4] = WW3DZ_FORMAT_D24X4S4;
+#endif
+}
 
 uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format)
 {
@@ -97,8 +141,7 @@ WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
 
 void Get_WW3D_Format_Name(WW3DFormat format, StringClass &name)
 {
-    switch (format)
-    {
+    switch (format) {
         case WW3D_FORMAT_R8G8B8:
             name = "R8G8B8";
             break;
@@ -196,7 +239,7 @@ WW3DZFormat D3DFormat_To_WW3DZFormat(uint32_t format)
 void Get_WW3DZ_Format_Name(WW3DZFormat format, StringClass &name)
 {
     switch (format) {
-        case WW3DZ_FORMAT_D16LOCKABLE:
+        case WW3DZ_FORMAT_D16_LOCKABLE:
             name = "D16Lockable";
             break;
         case WW3DZ_FORMAT_D32:
@@ -252,12 +295,68 @@ unsigned Get_Bytes_Per_Pixel(WW3DFormat format)
 
 WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
 {
-    // TODO Requires DX8Caps
-#ifdef GAME_DLL
-    return Call_Function<WW3DFormat, WW3DFormat, bool>(0x00820370, format, allow_compression);
-#else
-    return WW3D_FORMAT_UNKNOWN;
-#endif
+    WW3DFormat check_format = format;
+
+    if (!DX8Wrapper::Get_Caps()->Supports_DXTC() || !allow_compression) {
+        if (format == WW3D_FORMAT_DXT1) {
+            check_format = WW3D_FORMAT_X8R8G8B8;
+        }
+
+        if (format > WW3D_FORMAT_DXT1 && format <= WW3D_FORMAT_DXT5) {
+            check_format = WW3D_FORMAT_A8R8G8B8;
+        }
+
+        if (check_format == WW3D_FORMAT_R8G8B8) {
+            check_format = WW3D_FORMAT_X8R8G8B8;
+        }
+    } else {
+        if (format != WW3D_FORMAT_DXT1) {
+            if (format > WW3D_FORMAT_DXT1 && format <= WW3D_FORMAT_DXT5
+                && !DX8Wrapper::Get_Caps()->Supports_Texture_Format(format)) {
+                check_format = WW3D_FORMAT_A8R8G8B8;
+            } else if (check_format == WW3D_FORMAT_R8G8B8) {
+                check_format = WW3D_FORMAT_X8R8G8B8;
+            }
+        } else if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT1)
+            && DX8Wrapper::Get_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT2)) {
+            check_format = WW3D_FORMAT_DXT2;
+        }
+    }
+
+    int width;
+    int height;
+    int bit_depth;
+    bool windowed;
+
+    W3D::Get_Device_Resolution(width, height, bit_depth, windowed);
+
+    if (W3D::Get_Texture_Bit_Depth() == 16) {
+        bit_depth = 16;
+    } else if (bit_depth <= 16) {
+        switch (check_format) {
+            case WW3D_FORMAT_R8G8B8:
+                return WW3D_FORMAT_R5G6B5;
+            case WW3D_FORMAT_A8R8G8B8:
+                return WW3D_FORMAT_A4R4G4B4;
+            case WW3D_FORMAT_X8R8G8B8:
+                return WW3D_FORMAT_R5G6B5;
+        }
+    }
+
+    if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+        check_format = WW3D_FORMAT_A8R8G8B8;
+        if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+            check_format = WW3D_FORMAT_A4R4G4B4;
+            if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+                check_format = WW3D_FORMAT_X8R8G8B8;
+                if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+                    check_format = WW3D_FORMAT_R5G6B5;
+                }
+            }
+        }
+    }
+
+    return check_format;
 }
 
 /**

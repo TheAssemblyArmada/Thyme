@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "dx8caps.h"
+#include "gamedebug.h"
 #include "matrix4.h"
 #include "refcount.h"
 #include "shader.h"
@@ -127,14 +128,18 @@ public:
     static const char *Get_DX8_Debug_Monitor_Token_Name(unsigned value);
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
     static void Log_DX8_ErrorCode(unsigned error);
-
-    static w3dtexture_t Create_Texture(unsigned width, unsigned height, WW3DFormat format,
-        MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
-    static w3dsurface_t Create_Surface(
-        unsigned width, unsigned height, WW3DFormat format);
+    static int Get_Texture_Bit_Depth() { return s_textureBitDepth; }
+    static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
+    static w3dtexture_t Create_Texture(
+        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
 
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
-    static const DX8Caps *Get_Caps() { return s_currentCaps; }
+    static const DX8Caps *Get_Caps()
+    {
+        DEBUG_ASSERT(s_currentCaps != nullptr);
+        return s_currentCaps;
+    }
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
 
 private:
@@ -160,6 +165,10 @@ private:
     static int &s_mainThreadID;
     static int &s_currentRenderDevice;
     static DX8Caps *&s_currentCaps;
+    static int &s_resolutionWidth;
+    static int &s_resolutionHeight;
+    static int &s_bitDepth;
+    static int &s_textureBitDepth;
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -184,6 +193,10 @@ private:
     static int s_mainThreadID;
     static int s_currentRenderDevice;
     static DX8Caps *s_currentCaps;
+    static int s_resolutionWidth;
+    static int s_resolutionHeight;
+    static int s_bitDepth;
+    static int s_textureBitDepth;
 #endif
     static unsigned s_matrixChanges;
     static unsigned s_textureStageStateChanges;

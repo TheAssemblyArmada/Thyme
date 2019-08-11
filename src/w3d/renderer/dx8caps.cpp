@@ -22,6 +22,8 @@ using std::memset;
 
 #ifndef GAME_DLL
 StringClass DX8Caps::s_videoCardDetails;
+#else
+#include "hooker.h"
 #endif
 
 namespace

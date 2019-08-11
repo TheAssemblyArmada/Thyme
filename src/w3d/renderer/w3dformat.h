@@ -55,7 +55,7 @@ DEFINE_ENUMERATION_OPERATORS(WW3DFormat);
 enum WW3DZFormat : int32_t
 {
     WW3DZ_FORMAT_UNKNOWN,
-    WW3DZ_FORMAT_D16LOCKABLE,
+    WW3DZ_FORMAT_D16_LOCKABLE,
     WW3DZ_FORMAT_D32,
     WW3DZ_FORMAT_D15S1,
     WW3DZ_FORMAT_D24S8,
@@ -66,6 +66,8 @@ enum WW3DZFormat : int32_t
 };
 
 DEFINE_ENUMERATION_OPERATORS(WW3DZFormat);
+
+void Init_D3D_To_WW3_Conversion();
 
 uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format);
 WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format);
@@ -116,8 +118,9 @@ inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
 
 #ifdef GAME_DLL
 #include "hooker.h"
-
-extern WW3DFormat *g_D3DFormatToWW3DFormatConversionArray;
+extern ARRAY_DEC(WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
+extern ARRAY_DEC(WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);
 #else
-extern WW3DFormat g_D3DFormatToWW3DFormatConversionArray[62];
+extern WW3DFormat g_D3DFormatToWW3DFormatConversionArray[63];
+extern WW3DZFormat g_D3DFormatToWW3DZFormatConversionArray[80];
 #endif

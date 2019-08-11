@@ -56,6 +56,7 @@ public:
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
     bool Supports_DXTC() const { return m_supportDXTC; }
+    bool Supports_Texture_Format(WW3DFormat format) const { return m_supportTextureFormat[format]; }
 
 #ifdef BUILD_WITH_D3D8
     unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }

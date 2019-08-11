@@ -239,6 +239,10 @@ Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(0x00A47DF8);
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(0x00A47F2C);
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(0x00898BC4);
 DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(0x00A47F30);
+int &DX8Wrapper::s_resolutionWidth = Make_Global<int>(0x00A15CE0);
+int &DX8Wrapper::s_resolutionHeight = Make_Global<int>(0x00A15CE4);
+int &DX8Wrapper::s_bitDepth = Make_Global<int>(0x00A15CE8);
+int &DX8Wrapper::s_textureBitDepth = Make_Global<int>(0x00CC36CC);
 
 // missing.cpp
 #include "missing.h"
@@ -286,3 +290,7 @@ unsigned &W3D::s_syncTime = Make_Global<unsigned>(0x00A47F9C);
 unsigned &W3D::s_textureReduction = Make_Global<unsigned>(0x00A47FE4);
 unsigned &W3D::s_textureMinDimension = Make_Global<unsigned>(0x00A1699C);
 bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(0x00A47FE8);
+
+// w3dformat.cpp
+ARRAY_DEF(0x00A5243C, WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
+ARRAY_DEF(0x00A522FC, WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);

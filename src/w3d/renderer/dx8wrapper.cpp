@@ -46,6 +46,10 @@ Matrix4 DX8Wrapper::s_projectionMatrix;
 int DX8Wrapper::s_mainThreadID;
 int DX8Wrapper::s_currentRenderDevice = -1;
 DX8Caps *DX8Wrapper::s_currentCaps;
+int DX8Wrapper::s_resolutionWidth;
+int DX8Wrapper::s_resolutionHeight;
+int DX8Wrapper::s_bitDepth;
+int DX8Wrapper::s_textureBitDepth;
 #endif
 
 void DX8Wrapper::Init(void *hwnd, bool lite)
@@ -85,6 +89,14 @@ void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
 {
     // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
     DEBUG_LOG("Direct3D8 generated error %x.\n", error);
+}
+
+void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
+{
+    width = s_resolutionWidth;
+    height = s_resolutionHeight;
+    bit_depth = s_bitDepth;
+    windowed = s_isWindowed;
 }
 
 w3dtexture_t DX8Wrapper::Create_Texture(

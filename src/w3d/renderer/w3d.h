@@ -28,6 +28,7 @@ public:
     static unsigned Get_Texture_Reduction() { return s_textureReduction; }
     static unsigned Get_Texture_Min_Dimension() { return s_textureMinDimension; }
     static bool Large_Texture_Extra_Reduction_Enabled() { return s_largeTextureExtraReduction; }
+    static bool Is_Screen_UVBiased() { return s_isScreenUVBiased; }
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
@@ -39,10 +40,12 @@ private:
     static unsigned &s_textureReduction;
     static unsigned &s_textureMinDimension;
     static bool &s_largeTextureExtraReduction;
+    static bool &s_isScreenUVBiased;
 #else
     static unsigned s_syncTime;
     static unsigned s_textureReduction;
     static unsigned s_textureMinDimension;
     static bool s_largeTextureExtraReduction;
+    static bool s_isScreenUVBiased;
 #endif
 };

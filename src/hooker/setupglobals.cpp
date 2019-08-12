@@ -249,6 +249,10 @@ int &DX8Wrapper::s_textureBitDepth = Make_Global<int>(0x00CC36CC);
 #include "w3dformat.h"
 w3dtexture_t &MissingTexture::s_missingTexture = Make_Global<w3dtexture_t>(0x00A522F8);
 
+// render2d.cpp
+#include "render2d.h"
+RectClass &Render2DClass::s_screenResolution = Make_Global<RectClass>(0x00A480B0);
+
 // shader.cpp
 bool &ShaderClass::s_shaderDirty = Make_Global<bool>(0x00A16C1C);
 uint32_t &ShaderClass::s_currentShader = Make_Global<uint32_t>(0x00A4C1B4);

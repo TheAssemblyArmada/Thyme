@@ -40,13 +40,15 @@ enum ShaderShiftConstants
 };
 
 // Utility function to convert enums to bitfield. Based on a macro provided by TT team.
-inline constexpr uint32_t Shader_Const(uint32_t depth_compare, uint32_t depth_mask, uint32_t color_mask, uint32_t src_blend,
-    uint32_t dst_blend, uint32_t fog, uint32_t pri_grad, uint32_t sec_grad, uint32_t texture, uint32_t alpha_test,
+inline constexpr uint32_t Shader_Const(uint32_t depth_compare, uint32_t depth_mask, uint32_t color_mask, 
+    uint32_t dst_blend,
+    uint32_t fog, uint32_t pri_grad, uint32_t sec_grad, uint32_t src_blend, uint32_t texture, uint32_t npatch,
+    uint32_t alpha_test,
     uint32_t cullmode, uint32_t post_det_color, uint32_t post_det_alpha)
 {
     return depth_compare << SHIFT_DEPTHCOMPARE | depth_mask << SHIFT_DEPTHMASK | color_mask << SHIFT_COLORMASK
         | dst_blend << SHIFT_DSTBLEND | fog << SHIFT_FOG | pri_grad << SHIFT_PRIGRADIENT | sec_grad << SHIFT_SECGRADIENT
-        | src_blend << SHIFT_SRCBLEND | texture << SHIFT_TEXTURING | alpha_test << SHIFT_ALPHATEST
+        | src_blend << SHIFT_SRCBLEND | texture << SHIFT_TEXTURING | npatch << SHIFT_NPATCHENABLE |alpha_test << SHIFT_ALPHATEST
         | cullmode << SHIFT_CULLMODE | post_det_color << SHIFT_POSTDETAILCOLORFUNC
         | post_det_alpha << SHIFT_POSTDETAILALPHAFUNC;
 }
@@ -209,20 +211,20 @@ public:
     // clang-format off
     enum
     {
-        MASK_DEPTHCOMPARE = (7 << 0),          // 0x00000007 -  0 00000000000000000000000000000111
-        MASK_DEPTHMASK = (1 << 3),             // 0x00000008 -  3 00000000000000000000000000001000
-        MASK_COLORMASK = (1 << 4),             // 0x00000010 -  4 00000000000000000000000000010000
-        MASK_DSTBLEND = (7 << 5),              // 0x000000E0 -  5 00000000000000000000000011100000
-        MASK_FOG = (3 << 8),                   // 0x00000300 -  8 00000000000000000000001100000000
-        MASK_PRIGRADIENT = (7 << 10),          // 0x00001C00 - 10 00000000000000000001110000000000
-        MASK_SECGRADIENT = (1 << 13),          // 0x00002000 - 13 00000000000000000010000000000000
-        MASK_SRCBLEND = (3 << 14),             // 0x0000C000 - 14 00000000000000001100000000000000
-        MASK_TEXTURING = (1 << 16),            // 0x00010000 - 16 00000000000000010000000000000000
-        MASK_NPATCHENABLE = (1 << 17),         // 0x00020000 - 17 00000000000000100000000000000000
-        MASK_ALPHATEST = (1 << 18),            // 0x00040000 - 18 00000000000001000000000000000000
-        MASK_CULLMODE = (1 << 19),             // 0x00080000 - 19 00000000000010000000000000000000
-        MASK_POSTDETAILCOLORFUNC = (15 << 20), // 0x00F00000 - 20 00000000111100000000000000000000
-        MASK_POSTDETAILALPHAFUNC = (7 << 24),  // 0x07000000 - 24 00000111000000000000000000000000
+        MASK_DEPTHCOMPARE = (7 << 0),          // 0x00000007 -  0 0000 0000 0000 0000 0000 0000 0000 0111
+        MASK_DEPTHMASK = (1 << 3),             // 0x00000008 -  3 0000 0000 0000 0000 0000 0000 0000 1000
+        MASK_COLORMASK = (1 << 4),             // 0x00000010 -  4 0000 0000 0000 0000 0000 0000 0001 0000
+        MASK_DSTBLEND = (7 << 5),              // 0x000000E0 -  5 0000 0000 0000 0000 0000 0000 1110 0000
+        MASK_FOG = (3 << 8),                   // 0x00000300 -  8 0000 0000 0000 0000 0000 0011 0000 0000
+        MASK_PRIGRADIENT = (7 << 10),          // 0x00001C00 - 10 0000 0000 0000 0000 0001 1100 0000 0000
+        MASK_SECGRADIENT = (1 << 13),          // 0x00002000 - 13 0000 0000 0000 0000 0010 0000 0000 0000
+        MASK_SRCBLEND = (3 << 14),             // 0x0000C000 - 14 0000 0000 0000 0000 1100 0000 0000 0000
+        MASK_TEXTURING = (1 << 16),            // 0x00010000 - 16 0000 0000 0000 0001 0000 0000 0000 0000
+        MASK_NPATCHENABLE = (1 << 17),         // 0x00020000 - 17 0000 0000 0000 0010 0000 0000 0000 0000
+        MASK_ALPHATEST = (1 << 18),            // 0x00040000 - 18 0000 0000 0000 0100 0000 0000 0000 0000
+        MASK_CULLMODE = (1 << 19),             // 0x00080000 - 19 0000 0000 0000 1000 0000 0000 0000 0000
+        MASK_POSTDETAILCOLORFUNC = (15 << 20), // 0x00F00000 - 20 0000 0000 1111 0000 0000 0000 0000 0000
+        MASK_POSTDETAILALPHAFUNC = (7 << 24),  // 0x07000000 - 24 0000 0111 0000 0000 0000 0000 0000 0000
     };
     // clang-format on
 

@@ -197,6 +197,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/mapper.cpp
     w3d/renderer/missing.cpp
+    w3d/renderer/render2d.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texture.cpp

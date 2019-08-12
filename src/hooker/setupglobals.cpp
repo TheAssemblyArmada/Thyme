@@ -290,6 +290,7 @@ unsigned &W3D::s_syncTime = Make_Global<unsigned>(0x00A47F9C);
 unsigned &W3D::s_textureReduction = Make_Global<unsigned>(0x00A47FE4);
 unsigned &W3D::s_textureMinDimension = Make_Global<unsigned>(0x00A1699C);
 bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(0x00A47FE8);
+bool &W3D::s_isScreenUVBiased = Make_Global<bool>(0x00A47FAF);
 
 // w3dformat.cpp
 ARRAY_DEF(0x00A5243C, WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);

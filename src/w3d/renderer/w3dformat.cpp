@@ -351,6 +351,8 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
                 check_format = WW3D_FORMAT_X8R8G8B8;
                 if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
                     check_format = WW3D_FORMAT_R5G6B5;
+                } else {
+                    DEBUG_ASSERT_PRINT(false, "Get_Valid_Texture_Format - No valid texture format found\n");
                 }
             }
         }

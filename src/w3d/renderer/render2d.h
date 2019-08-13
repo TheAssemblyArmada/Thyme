@@ -21,6 +21,7 @@
 #include "vector.h"
 #include "vector2.h"
 #include "w3dmpo.h"
+#include <new>
 
 class TextureClass;
 
@@ -75,6 +76,10 @@ public:
     static void Set_Screen_Resolution(const RectClass &rect) { s_screenResolution = rect; }
     static RectClass Get_Screen_Resolution() { return s_screenResolution; }
     static ShaderClass Get_Default_Shader();
+
+#ifdef GAME_DLL
+    Render2DClass *Hook_Ctor(TextureClass *texture) { return new (this) Render2DClass(texture); }
+#endif
 
 protected:
     void Convert_Vert(Vector2 &vert_out, const Vector2 &vert_in);

@@ -62,6 +62,7 @@
 #include "playertemplate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
+#include "render2d.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -771,4 +772,23 @@ void Setup_Hooks()
 
     // functionlexicon.h
     Hook_Method(0x004F3D00, &FunctionLexicon::Load_Table);
+
+    // render2d.h
+    Hook_Method(
+        0x0080A790, static_cast<void (Render2DClass::*)(const RectClass &, float, uint32_t)>(&Render2DClass::Add_Outline));
+    Hook_Method(0x0080A580, &Render2DClass::Add_Rect);
+    Hook_Method(0x0080A350,
+        static_cast<void (Render2DClass::*)(const Vector2 &, const Vector2 &, float, uint32_t, uint32_t)>(
+            &Render2DClass::Add_Line));
+    Hook_Method(0x00809EC0,
+        static_cast<void (Render2DClass::*)(const Vector2 &, const Vector2 &, float, uint32_t)>(&Render2DClass::Add_Line));
+    Hook_Method(0x00809CA0, &Render2DClass::Add_Tri);
+    Hook_Method(0x00809AF0,
+        static_cast<void (Render2DClass::*)(const RectClass &, const RectClass &, uint32_t)>(&Render2DClass::Add_Quad));
+    Hook_Method(0x008096C0, &Render2DClass::Set_Coordinate_Range);
+    Hook_Method(0x00809690, &Render2DClass::Enable_Texturing);
+    Hook_Method(0x00809640, &Render2DClass::Enable_Additive);
+    Hook_Method(0x008095F0, &Render2DClass::Enable_Alpha);
+    Hook_Method(0x008094E0, &Render2DClass::Reset);
+    Hook_Method(0x008090C0, &Render2DClass::Hook_Ctor);
 }

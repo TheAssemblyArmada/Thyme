@@ -19,6 +19,8 @@
 
 #ifndef GAME_DLL
 RectClass Render2DClass::s_screenResolution;
+#else
+#include "hooker.h"
 #endif
 
 Render2DClass::Render2DClass(TextureClass *texture) :
@@ -65,6 +67,9 @@ void Render2DClass::Reset()
 void Render2DClass::Render()
 {
     // TODO
+#ifdef GAME_DLL
+    Call_Method<void, Render2DClass>(0x0080AAC0, this);
+#endif
 }
 
 /**
@@ -89,6 +94,9 @@ void Render2DClass::Set_Coordinate_Range(const RectClass &range)
 void Render2DClass::Set_Texture(const char *filename)
 {
     // TODO Needs W3DAssetManager
+#ifdef GAME_DLL
+    Call_Method<void, Render2DClass, const char *>(0x00809590, this, filename);
+#endif
 }
 
 /**

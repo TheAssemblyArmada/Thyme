@@ -25,6 +25,7 @@ Render2DClass::Render2DClass(TextureClass *texture) :
     m_coordinateScale(1.0f, 1.0f),
     m_coordinateOffset(0.0f, 0.0f),
     m_texture(nullptr),
+    m_shader(),
     m_indices(60, m_indicesPreAlloc),
     m_vertices(60, m_verticesPreAlloc),
     m_uvCoordinates(60, m_uvCoordinatePreAlloc),
@@ -34,21 +35,7 @@ Render2DClass::Render2DClass(TextureClass *texture) :
     m_zValue(0.0f)
 {
     Set_Texture(texture);
-    //m_shader = 0x984B7;
-    m_shader = Shader_Const(ShaderClass::PASS_ALWAYS,
-        ShaderClass::DEPTH_WRITE_DISABLE,
-        ShaderClass::COLOR_WRITE_ENABLE,
-        ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA,
-        ShaderClass::FOG_DISABLE,
-        ShaderClass::GRADIENT_MODULATE,
-        ShaderClass::SECONDARY_GRADIENT_DISABLE,
-        ShaderClass::SRCBLEND_SRC_ALPHA,
-        ShaderClass::TEXTURING_ENABLE,
-        ShaderClass::NPATCH_DISABLE,
-        ShaderClass::ALPHATEST_DISABLE,
-        ShaderClass::CULL_MODE_ENABLE,
-        ShaderClass::DETAILCOLOR_DISABLE,
-        ShaderClass::DETAILCOLOR_DISABLE);
+    m_shader = Get_Default_Shader();
 }
 
 Render2DClass::~Render2DClass()
@@ -87,10 +74,10 @@ void Render2DClass::Render()
  */
 void Render2DClass::Set_Coordinate_Range(const RectClass &range)
 {
-    m_coordinateScale.X = (float)(2.0f / (float)(range.right - range.left));
-    m_coordinateScale.Y = (float)(-2.0f / (float)(range.bottom - range.top));
-    m_coordinateOffset.X = (float)((float)(-(m_coordinateScale.X * range.left)) - 1.0f);
-    m_coordinateOffset.Y = (float)(1.0f - (float)(range.top * m_coordinateScale.Y));
+    m_coordinateScale.X = 2.0f / range.Width();
+    m_coordinateScale.Y = -2.0f / range.Height();
+    m_coordinateOffset.X = (float)(-(m_coordinateScale.X * range.left)) - 1.0f;
+    m_coordinateOffset.Y = 1.0f - (float)(range.top * m_coordinateScale.Y);
     Update_Bias();
 }
 
@@ -275,7 +262,7 @@ void Render2DClass::Add_Quad_VGradient(const Vector2 &v0, const Vector2 &v1, con
 void Render2DClass::Add_Quad_HGradient(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3,
     const RectClass &uv, uint32_t left_color, uint32_t right_color)
 {
-    Internal_Add_Quad_Indicies(m_vertices.Count(), true);
+    Internal_Add_Quad_Indicies(m_vertices.Count(), false);
     Internal_Add_Quad_Vertices(v0, v1, v2, v3);
     Internal_Add_Quad_UVs(uv);
     Internal_Add_Quad_HColors(left_color, right_color);
@@ -368,10 +355,10 @@ void Render2DClass::Add_Outline(const RectClass &rect, float width, uint32_t col
  */
 void Render2DClass::Add_Outline(const RectClass &rect, float width, const RectClass &uv, uint32_t color)
 {
-    Add_Line(Vector2(rect.left, rect.bottom), Vector2(rect.left, rect.top - 1), width, uv, color);
-    Add_Line(Vector2(rect.left, rect.top), Vector2(rect.right, rect.top), width, uv, color);
-    Add_Line(Vector2(rect.right, rect.top), Vector2(rect.right, rect.bottom), width, uv, color);
-    Add_Line(Vector2(rect.right, rect.bottom), Vector2(rect.left - 1, rect.bottom), width, uv, color);
+    Add_Line(Vector2(rect.left + 1.0f, rect.bottom), Vector2(rect.left + 1.0f, rect.top + 1.0f), width, uv, color);
+    Add_Line(Vector2(rect.left, rect.top + 1.0f), Vector2(rect.right - 1.0f, rect.top + 1.0f), width, uv, color);
+    Add_Line(Vector2(rect.right, rect.top), Vector2(rect.right, rect.bottom - 1.0f), width, uv, color);
+    Add_Line(Vector2(rect.right, rect.bottom), Vector2(rect.left + 1.0f, rect.bottom), width, uv, color);
 }
 
 /**
@@ -456,9 +443,20 @@ void Render2DClass::Force_Color(int color)
  */
 ShaderClass Render2DClass::Get_Default_Shader()
 {
-    // TODO decode this to Shader_Const call.
-    // Original does some maths to arrive at this, but it is always this value.
-    return 0x984B7;
+    return Shader_Const(ShaderClass::PASS_ALWAYS,
+        ShaderClass::DEPTH_WRITE_DISABLE,
+        ShaderClass::COLOR_WRITE_ENABLE,
+        ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA,
+        ShaderClass::FOG_DISABLE,
+        ShaderClass::GRADIENT_MODULATE,
+        ShaderClass::SECONDARY_GRADIENT_DISABLE,
+        ShaderClass::SRCBLEND_SRC_ALPHA,
+        ShaderClass::TEXTURING_ENABLE,
+        ShaderClass::NPATCH_DISABLE,
+        ShaderClass::ALPHATEST_DISABLE,
+        ShaderClass::CULL_MODE_ENABLE,
+        ShaderClass::DETAILCOLOR_DISABLE,
+        ShaderClass::DETAILCOLOR_DISABLE);
 }
 
 /**
@@ -493,9 +491,8 @@ void Render2DClass::Update_Bias()
     m_biasedCoordinateOffset =  m_coordinateOffset;
 
     if (W3D::Is_Screen_UVBiased()) {
-        m_biasedCoordinateOffset.X += (float)(-0.5f / (float)((float)(s_screenResolution.right - s_screenResolution.left) * 0.5f));
-        m_biasedCoordinateOffset.Y +=
-            (float)(-0.5f / (float)((float)(s_screenResolution.bottom - s_screenResolution.top) * -0.5f));
+        m_biasedCoordinateOffset.X += (float)(-0.5f / (float)(s_screenResolution.Width() * 0.5f));
+        m_biasedCoordinateOffset.Y += (float)(-0.5f / (float)(s_screenResolution.Height() * -0.5f));
     }
 }
 

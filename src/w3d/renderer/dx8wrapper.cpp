@@ -107,15 +107,23 @@ bool DX8Wrapper::Init(void *hwnd, bool lite)
     // If we are doing a full init we need to load d3d8 as well.
     if (!lite) {
         s_d3dLib = LoadLibraryA("d3d8.dll");
+
+        if (s_d3dLib == nullptr) {
+            DEBUG_LOG("Failed to load d3d8.dll\n");
+            return false;
+        }
+
         s_d3dCreateFunction = reinterpret_cast<IDirect3D8 *(__stdcall *)(unsigned)>(GetProcAddress(s_d3dLib, "Direct3DCreate8"));
 
         if (s_d3dCreateFunction == nullptr) {
+            DEBUG_LOG("Failed to get address of Direct3DCreate8.\n");
             return false;
         }
 
         s_d3dInterface = s_d3dCreateFunction(D3D_SDK_VERSION);
 
         if (s_d3dInterface == nullptr) {
+            DEBUG_LOG("Failed to create D3D8 interface.\n");
             return false;
         }
 

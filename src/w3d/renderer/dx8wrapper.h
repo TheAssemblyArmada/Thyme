@@ -79,6 +79,7 @@ struct RenderStateStruct
 
 class DX8Wrapper
 {
+    ALLOW_HOOKING
     enum ChangedStates
     {
         WORLD_CHANGED = 1 << 0,
@@ -155,13 +156,13 @@ private:
     static HMODULE &s_d3dLib;
     static IDirect3D8 *&s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;
-    static w3dbasetexture_t *s_textures;
+    static ARRAY_DEC(w3dbasetexture_t, s_textures, MAX_TEXTURE_STAGES);
     static void *&s_hwnd; // Actually a hwnd, but we only care for building the dll.
     static void *&s_shadowMap;
-    static unsigned *s_renderStates;
-    static unsigned *s_textureStageStates;
-    static Vector4 *s_vertexShaderConstants;
-    static unsigned *s_pixelShaderConstants;
+    static ARRAY_DEC(unsigned, s_renderStates, 256);
+    static ARRAY2D_DEC(unsigned, s_textureStageStates, MAX_TEXTURE_STAGES, 32);
+    static ARRAY_DEC(Vector4, s_vertexShaderConstants, 96);
+    static ARRAY_DEC(unsigned, s_pixelShaderConstants, 32);
     static bool &s_isInitialised;
     static bool &s_isWindowed;
     static bool &s_debugIsWindowed;
@@ -177,7 +178,7 @@ private:
     static int &s_resolutionHeight;
     static int &s_bitDepth;
     static int &s_textureBitDepth;
-    static bool *s_currentLightEnables;
+    static ARRAY_DEC(bool, s_currentLightEnables, LIGHT_COUNT);
     static unsigned &s_matrixChanges;
     static unsigned &s_materialChanges;
     static unsigned &s_vertexBufferChanges;
@@ -330,19 +331,11 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
 #ifdef BUILD_WITH_D3D8
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
-#ifdef GAME_DLL
-    if (s_textureStageStates[stage * sizeof(*s_textureStageStates) + state] == value) {
-        return;
-    }
-
-    s_textureStageStates[stage * sizeof(*s_textureStageStates) + state] = value;
-#else
     if (s_textureStageStates[stage][state] == value) {
         return;
     }
 
     s_textureStageStates[stage][state] = value;
-#endif
     DX8CALL(SetTextureStageState(stage, state, value));
     s_textureStageStateChanges++;
 }

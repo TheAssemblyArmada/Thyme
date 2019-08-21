@@ -83,19 +83,11 @@ DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionT
 bool DX8Wrapper::Init(void *hwnd, bool lite)
 {
 #ifdef BUILD_WITH_D3D8
-#ifdef GAME_DLL
-    memset(s_textures, 0, sizeof(*s_textures) * MAX_TEXTURE_STAGES);
-    memset(s_renderStates, 0, sizeof(*s_renderStates) * 256);
-    memset(s_textureStageStates, 0, (sizeof(*s_textureStageStates) * 32) * MAX_TEXTURE_STAGES);
-    memset(s_vertexShaderConstants, 0, sizeof(*s_vertexShaderConstants) * 96);
-    memset(s_pixelShaderConstants, 0, sizeof(*s_pixelShaderConstants) * 32);
-#else
     memset(s_textures, 0, sizeof(s_textures));
     memset(s_renderStates, 0, sizeof(s_renderStates));
     memset(s_textureStageStates, 0, sizeof(s_textureStageStates));
     memset(s_vertexShaderConstants, 0, sizeof(s_vertexShaderConstants));
     memset(s_pixelShaderConstants, 0, sizeof(s_pixelShaderConstants));
-#endif
     memset(&s_renderState, 0, sizeof(s_renderState));
     s_shadowMap = nullptr;
     s_hwnd = hwnd;

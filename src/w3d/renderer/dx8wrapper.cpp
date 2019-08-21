@@ -42,6 +42,7 @@ Vector4 DX8Wrapper::s_vertexShaderConstants[96]; // Not 100% sure this is a Vect
 unsigned DX8Wrapper::s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
 bool DX8Wrapper::s_isInitialised;
 bool DX8Wrapper::s_isWindowed;
+bool DX8Wrapper::s_debugIsWindowed;
 RenderStateStruct DX8Wrapper::s_renderState;
 unsigned DX8Wrapper::s_renderStateChanged;
 float DX8Wrapper::s_zNear;
@@ -103,8 +104,9 @@ bool DX8Wrapper::Init(void *hwnd, bool lite)
     s_resolutionWidth = 640;
     s_resolutionHeight = 480;
     Render2DClass::Set_Screen_Resolution(RectClass(0.0f, 0.0f, 640.0f, 480.0f));
-    s_isWindowed = false;
+    s_isWindowed = s_debugIsWindowed = false;
     memset(s_currentLightEnables, 0, sizeof(s_currentLightEnables));
+    s_bitDepth = 32;
     s_d3dInterface = nullptr;
     s_d3dDevice = nullptr;
     Reset_Statistics();

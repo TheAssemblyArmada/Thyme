@@ -231,6 +231,7 @@ Vector4 *DX8Wrapper::s_vertexShaderConstants = Make_Pointer<Vector4>(0x00A47778)
 unsigned *DX8Wrapper::s_pixelShaderConstants = Make_Pointer<unsigned>(0x00A427C0);
 bool &DX8Wrapper::s_isInitialised = Make_Global<bool>(0x00A47EC8);
 bool &DX8Wrapper::s_isWindowed = Make_Global<bool>(0x00A47EC9);
+bool &DX8Wrapper::s_debugIsWindowed = Make_Global<bool>(0x00A15CD8);
 RenderStateStruct &DX8Wrapper::s_renderState = Make_Global<RenderStateStruct>(0x00A47508);
 unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(0x00A42778);
 float &DX8Wrapper::s_zNear = Make_Global<float>(0x00A47E38);

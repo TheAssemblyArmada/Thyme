@@ -164,6 +164,7 @@ private:
     static unsigned *s_pixelShaderConstants;
     static bool &s_isInitialised;
     static bool &s_isWindowed;
+    static bool &s_debugIsWindowed;
     static RenderStateStruct &s_renderState;
     static unsigned &s_renderStateChanged;
     static float &s_zNear;
@@ -215,6 +216,7 @@ private:
     static unsigned s_pixelShaderConstants[32]; // Not 100% on type, seems unused.
     static bool s_isInitialised;
     static bool s_isWindowed;
+    static bool s_debugIsWindowed;
     static RenderStateStruct s_renderState;
     static unsigned s_renderStateChanged;
     static float s_zNear;

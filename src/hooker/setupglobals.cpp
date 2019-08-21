@@ -243,6 +243,32 @@ int &DX8Wrapper::s_resolutionWidth = Make_Global<int>(0x00A15CE0);
 int &DX8Wrapper::s_resolutionHeight = Make_Global<int>(0x00A15CE4);
 int &DX8Wrapper::s_bitDepth = Make_Global<int>(0x00A15CE8);
 int &DX8Wrapper::s_textureBitDepth = Make_Global<int>(0x00CC36CC);
+bool *DX8Wrapper::s_currentLightEnables = Make_Pointer<bool>(0x00A4277C);
+unsigned &DX8Wrapper::s_matrixChanges = Make_Global<unsigned>(0x00A47F08);
+unsigned &DX8Wrapper::s_materialChanges = Make_Global<unsigned>(0x00A47F0C);
+unsigned &DX8Wrapper::s_vertexBufferChanges = Make_Global<unsigned>(0x00A47F10);
+unsigned &DX8Wrapper::s_indexBufferChanges = Make_Global<unsigned>(0x00A47F14);
+unsigned &DX8Wrapper::s_lightChanges = Make_Global<unsigned>(0x00A47F18);
+unsigned &DX8Wrapper::s_textureChanges = Make_Global<unsigned>(0x00A47F1C);
+unsigned &DX8Wrapper::s_renderStateChanges = Make_Global<unsigned>(0x00A47F20);
+unsigned &DX8Wrapper::s_textureStageStateChanges = Make_Global<unsigned>(0x00A47F24);
+unsigned &DX8Wrapper::s_drawCalls = Make_Global<unsigned>(0x00A47F28);
+unsigned &DX8Wrapper::s_lastFrameMatrixChanges = Make_Global<unsigned>(0x00A47F44);
+unsigned &DX8Wrapper::s_lastFrameMaterialChanges = Make_Global<unsigned>(0x00A47F48);
+unsigned &DX8Wrapper::s_lastFrameVertexBufferChanges = Make_Global<unsigned>(0x00A47F4C);
+unsigned &DX8Wrapper::s_lastFrameIndexBufferChanges = Make_Global<unsigned>(0x00A47F50);
+unsigned &DX8Wrapper::s_lastFrameLightChanges = Make_Global<unsigned>(0x00A47F54);
+unsigned &DX8Wrapper::s_lastFrameTextureChanges = Make_Global<unsigned>(0x00A47F58);
+unsigned &DX8Wrapper::s_lastFrameRenderStateChanges = Make_Global<unsigned>(0x00A47F5C);
+unsigned &DX8Wrapper::s_lastFrameTextureStageStateChanges = Make_Global<unsigned>(0x00A47F60);
+unsigned &DX8Wrapper::s_lastFrameNumberDX8Calls = Make_Global<unsigned>(0x00A47F64);
+unsigned &DX8Wrapper::s_lastFrameDrawCalls = Make_Global<unsigned>(0x00A47F68);
+DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceNameTable =
+    Make_Global<DynamicVectorClass<StringClass>>(0x00A47DC8);
+DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceShortNameTable =
+    Make_Global<DynamicVectorClass<StringClass>>(0x00A474F0);
+DynamicVectorClass<RenderDeviceDescClass> &DX8Wrapper::s_renderDeviceDescriptionTable =
+    Make_Global<DynamicVectorClass<RenderDeviceDescClass>>(0x00A427A8);
 
 // missing.cpp
 #include "missing.h"

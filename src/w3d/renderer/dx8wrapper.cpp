@@ -13,11 +13,15 @@
  *            LICENSE
  */
 #include "dx8wrapper.h"
+#include "rect.h"
+#include "render2d.h"
 #include "thread.h"
+#include <cstdio>
 #include <cstring>
 
 using std::memcpy;
 using std::memset;
+using std::sprintf;
 
 #ifdef GAME_DLL
 #include "hooker.h"
@@ -50,13 +54,34 @@ int DX8Wrapper::s_resolutionWidth;
 int DX8Wrapper::s_resolutionHeight;
 int DX8Wrapper::s_bitDepth;
 int DX8Wrapper::s_textureBitDepth;
+bool DX8Wrapper::s_currentLightEnables[4];
+unsigned DX8Wrapper::s_matrixChanges;
+unsigned DX8Wrapper::s_materialChanges;
+unsigned DX8Wrapper::s_vertexBufferChanges;
+unsigned DX8Wrapper::s_indexBufferChanges;
+unsigned DX8Wrapper::s_lightChanges;
+unsigned DX8Wrapper::s_textureChanges;
+unsigned DX8Wrapper::s_renderStateChanges;
+unsigned DX8Wrapper::s_textureStageStateChanges;
+unsigned DX8Wrapper::s_drawCalls;
+unsigned DX8Wrapper::s_lastFrameMatrixChanges;
+unsigned DX8Wrapper::s_lastFrameMaterialChanges;
+unsigned DX8Wrapper::s_lastFrameVertexBufferChanges;
+unsigned DX8Wrapper::s_lastFrameIndexBufferChanges;
+unsigned DX8Wrapper::s_lastFrameLightChanges;
+unsigned DX8Wrapper::s_lastFrameTextureChanges;
+unsigned DX8Wrapper::s_lastFrameRenderStateChanges;
+unsigned DX8Wrapper::s_lastFrameTextureStageStateChanges;
+unsigned DX8Wrapper::s_lastFrameNumberDX8Calls;
+unsigned DX8Wrapper::s_lastFrameDrawCalls;
+DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceNameTable;
+DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceShortNameTable;
+DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionTable;
 #endif
 
-void DX8Wrapper::Init(void *hwnd, bool lite)
+bool DX8Wrapper::Init(void *hwnd, bool lite)
 {
-#ifdef GAME_DLL
-    Call_Function<void, void *, bool>(0x00800670, hwnd, lite);
-#else
+#ifdef BUILD_WITH_D3D8
 #ifdef GAME_DLL
     memset(s_textures, 0, sizeof(*s_textures) * MAX_TEXTURE_STAGES);
     memset(s_renderStates, 0, sizeof(*s_renderStates) * 256);
@@ -75,6 +100,38 @@ void DX8Wrapper::Init(void *hwnd, bool lite)
     s_hwnd = hwnd;
     s_mainThreadID = ThreadClass::Get_Current_Thread_ID(); // Init only called from main thread so this is fine.
     s_currentRenderDevice = -1;
+    s_resolutionWidth = 640;
+    s_resolutionHeight = 480;
+    Render2DClass::Set_Screen_Resolution(RectClass(0.0f, 0.0f, 640.0f, 480.0f));
+    s_isWindowed = false;
+    memset(s_currentLightEnables, 0, sizeof(s_currentLightEnables));
+    s_d3dInterface = nullptr;
+    s_d3dDevice = nullptr;
+    Reset_Statistics();
+    Invalidate_Cached_Render_States();
+
+    // If we are doing a full init we need to load d3d8 as well.
+    if (!lite) {
+        s_d3dLib = LoadLibraryA("d3d8.dll");
+        s_d3dCreateFunction = reinterpret_cast<IDirect3D8 *(__stdcall *)(unsigned)>(GetProcAddress(s_d3dLib, "Direct3DCreate8"));
+
+        if (s_d3dCreateFunction == nullptr) {
+            return false;
+        }
+
+        s_d3dInterface = s_d3dCreateFunction(D3D_SDK_VERSION);
+
+        if (s_d3dInterface == nullptr) {
+            return false;
+        }
+
+        s_isInitialised = true;
+        Enumerate_Devices();
+    }
+
+    return true;
+#else
+    return false;
 #endif
 }
 
@@ -82,6 +139,80 @@ void DX8Wrapper::Shutdown()
 {
 #ifdef GAME_DLL
     Call_Function<void>(0x00800860);
+#endif
+}
+
+void DX8Wrapper::Enumerate_Devices()
+{
+#ifdef BUILD_WITH_D3D8
+    int adapter_count = s_d3dInterface->GetAdapterCount();
+
+    for (int i = 0; i < adapter_count; i++) {
+        D3DADAPTER_IDENTIFIER8 id;
+        memset(&id, 0, sizeof(D3DADAPTER_IDENTIFIER8));
+        HRESULT res = s_d3dInterface->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &id);
+
+        if (res == D3D_OK) {
+            RenderDeviceDescClass desc;
+            desc.m_deviceName = id.Description;
+            desc.m_driverName = id.Driver;
+            char buf[64];
+
+            sprintf(buf,
+                "%d.%d.%d.%d",
+                (id.DriverVersion.HighPart >> 16) & 0xFFFF,
+                id.DriverVersion.HighPart & 0xFFFF,
+                (id.DriverVersion.LowPart >> 16) & 0xFFFF,
+                id.DriverVersion.LowPart & 0xFFFF);
+
+            desc.m_driverVersion = buf;
+            s_d3dInterface->GetDeviceCaps(i, D3DDEVTYPE_HAL, &desc.m_caps);
+            s_d3dInterface->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &desc.m_adapterID);
+
+            DX8Caps dx8caps(s_d3dInterface, desc.m_caps, WW3D_FORMAT_UNKNOWN, desc.m_adapterID);
+            desc.m_resArray.Delete_All();
+            int mode_count = s_d3dInterface->GetAdapterModeCount(i);
+            
+            for (int j = 0; j < mode_count; j++) {
+                D3DDISPLAYMODE d3dmode;
+                memset(&d3dmode, 0, sizeof(d3dmode));
+                res = s_d3dInterface->EnumAdapterModes(i, j, &d3dmode);
+
+                if (res == D3D_OK) {
+                    int bits = 0;
+
+                    switch (d3dmode.Format) {
+                        case D3DFMT_R8G8B8:
+                        case D3DFMT_A8R8G8B8:
+                        case D3DFMT_X8R8G8B8:
+                            bits = 32;
+                            break;
+
+                        case D3DFMT_R5G6B5:
+                        case D3DFMT_X1R5G5B5:
+                            bits = 16;
+                            break;
+                    }
+
+                    if (!dx8caps.Is_Valid_Display_Format(
+                            d3dmode.Width, d3dmode.Height, D3DFormat_To_WW3DFormat(d3dmode.Format))) {
+                        bits = 0;
+                    }
+
+                    if (bits != 0) {
+                        desc.m_resArray.Add(ResolutionDescClass(d3dmode.Width, d3dmode.Height, bits));
+                    }
+                }
+            }
+
+            if (desc.m_resArray.Count() > 0) {
+                StringClass device_name(id.Description, true);
+                s_renderDeviceNameTable.Add(device_name);
+                s_renderDeviceShortNameTable.Add(device_name);
+                s_renderDeviceDescriptionTable.Add(desc);
+            }
+        }
+    }
 #endif
 }
 
@@ -119,6 +250,36 @@ w3dsurface_t DX8Wrapper::Create_Surface(unsigned width, unsigned height, WW3DFor
     return surf;
 #else
     return w3dsurface_t();
+#endif
+}
+
+void DX8Wrapper::Reset_Statistics()
+{
+    s_matrixChanges = 0;
+    s_materialChanges = 0;
+    s_vertexBufferChanges = 0;
+    s_indexBufferChanges = 0;
+    s_lightChanges = 0;
+    s_textureChanges = 0;
+    s_renderStateChanges = 0;
+    s_textureStageStateChanges = 0;
+    s_drawCalls = 0;
+    s_lastFrameMatrixChanges = 0;
+    s_lastFrameMaterialChanges = 0;
+    s_lastFrameVertexBufferChanges = 0;
+    s_lastFrameIndexBufferChanges = 0;
+    s_lastFrameLightChanges = 0;
+    s_lastFrameTextureChanges = 0;
+    s_lastFrameRenderStateChanges = 0;
+    s_lastFrameTextureStageStateChanges = 0;
+    s_lastFrameNumberDX8Calls = 0;
+    s_lastFrameDrawCalls = 0;
+}
+
+void DX8Wrapper::Invalidate_Cached_Render_States()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(0x008009E0);
 #endif
 }
 

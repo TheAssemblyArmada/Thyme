@@ -19,8 +19,10 @@
 #include "gamedebug.h"
 #include "matrix4.h"
 #include "refcount.h"
+#include "renderdevicedesc.h"
 #include "shader.h"
 #include "texturebase.h"
+#include "vector.h"
 #include "vector4.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
@@ -101,8 +103,9 @@ class DX8Wrapper
     };
 
 public:
-    static void Init(void *hwnd, bool lite = false);
+    static bool Init(void *hwnd, bool lite = false);
     static void Shutdown();
+    static void Enumerate_Devices();
 #ifdef BUILD_WITH_D3D8
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
@@ -143,6 +146,10 @@ public:
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
 
 private:
+    static void Reset_Statistics();
+    static void Invalidate_Cached_Render_States();
+
+private:
 #ifdef GAME_DLL
     static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
     static HMODULE &s_d3dLib;
@@ -169,6 +176,29 @@ private:
     static int &s_resolutionHeight;
     static int &s_bitDepth;
     static int &s_textureBitDepth;
+    static bool *s_currentLightEnables;
+    static unsigned &s_matrixChanges;
+    static unsigned &s_materialChanges;
+    static unsigned &s_vertexBufferChanges;
+    static unsigned &s_indexBufferChanges;
+    static unsigned &s_lightChanges;
+    static unsigned &s_textureChanges;
+    static unsigned &s_renderStateChanges;
+    static unsigned &s_textureStageStateChanges;
+    static unsigned &s_drawCalls;
+    static unsigned &s_lastFrameMatrixChanges;
+    static unsigned &s_lastFrameMaterialChanges;
+    static unsigned &s_lastFrameVertexBufferChanges;
+    static unsigned &s_lastFrameIndexBufferChanges;
+    static unsigned &s_lastFrameLightChanges;
+    static unsigned &s_lastFrameTextureChanges;
+    static unsigned &s_lastFrameRenderStateChanges;
+    static unsigned &s_lastFrameTextureStageStateChanges;
+    static unsigned &s_lastFrameNumberDX8Calls;
+    static unsigned &s_lastFrameDrawCalls;
+    static DynamicVectorClass<StringClass> &s_renderDeviceNameTable;
+    static DynamicVectorClass<StringClass> &s_renderDeviceShortNameTable;
+    static DynamicVectorClass<RenderDeviceDescClass> &s_renderDeviceDescriptionTable;
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -197,9 +227,30 @@ private:
     static int s_resolutionHeight;
     static int s_bitDepth;
     static int s_textureBitDepth;
-#endif
+    static bool s_currentLightEnables[LIGHT_COUNT];
     static unsigned s_matrixChanges;
+    static unsigned s_materialChanges;
+    static unsigned s_vertexBufferChanges;
+    static unsigned s_indexBufferChanges;
+    static unsigned s_lightChanges;
+    static unsigned s_textureChanges;
+    static unsigned s_renderStateChanges;
     static unsigned s_textureStageStateChanges;
+    static unsigned s_drawCalls;
+    static unsigned s_lastFrameMatrixChanges;
+    static unsigned s_lastFrameMaterialChanges;
+    static unsigned s_lastFrameVertexBufferChanges;
+    static unsigned s_lastFrameIndexBufferChanges;
+    static unsigned s_lastFrameLightChanges;
+    static unsigned s_lastFrameTextureChanges;
+    static unsigned s_lastFrameRenderStateChanges;
+    static unsigned s_lastFrameTextureStageStateChanges;
+    static unsigned s_lastFrameNumberDX8Calls;
+    static unsigned s_lastFrameDrawCalls;
+    static DynamicVectorClass<StringClass> s_renderDeviceNameTable;
+    static DynamicVectorClass<StringClass> s_renderDeviceShortNameTable;
+    static DynamicVectorClass<RenderDeviceDescClass> s_renderDeviceDescriptionTable;
+#endif
 };
 
 inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)

@@ -41,10 +41,14 @@ protected:
     char _dummy[size * sizeof(T)];
 };
 
-template<typename T, const int x, const int y>
+template<typename T, const int y, const int x>
 class ArrayHelper2D
 {
 public:
+    operator ArrayHelper<T, x> *() { return (ArrayHelper<T, x> *)this; };
+    operator const ArrayHelper<T, x> *() const { return (ArrayHelper<T, x> *)this; };
+    ArrayHelper<T, x> *operator&() { return (ArrayHelper<T, x> *)this; };
+    const ArrayHelper<T, x> *operator&() const { return (ArrayHelper<T, x> *)this; };
     ArrayHelper<T, x> &operator[](int index) { return _dummy[index]; }
     const ArrayHelper<T, x> &operator[](int index) const { return _dummy[index]; }
 
@@ -191,5 +195,5 @@ __declspec(dllexport) void StopHooking();
 
 #define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
 #define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);
-#define ARRAY2D_DEC(type, var, x, y) ArrayHelper<type, x, y> &var
-#define ARRAY2D_DEF(address, type, var, x, y) ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper<type, x, y>>(address);
+#define ARRAY2D_DEC(type, var, x, y) ArrayHelper2D<type, x, y> &var
+#define ARRAY2D_DEF(address, type, var, x, y) ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);

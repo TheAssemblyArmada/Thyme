@@ -151,7 +151,7 @@ void DX8Wrapper::Enumerate_Devices()
 
     for (int i = 0; i < adapter_count; i++) {
         D3DADAPTER_IDENTIFIER8 id;
-        memset(&id, 0, sizeof(D3DADAPTER_IDENTIFIER8));
+        memset(&id, 0, sizeof(id));
         HRESULT res = s_d3dInterface->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &id);
 
         if (res == D3D_OK) {
@@ -196,13 +196,10 @@ void DX8Wrapper::Enumerate_Devices()
                             break;
                     }
 
-                    if (!dx8caps.Is_Valid_Display_Format(
-                            d3dmode.Width, d3dmode.Height, D3DFormat_To_WW3DFormat(d3dmode.Format))) {
-                        bits = 0;
-                    }
-
-                    if (bits != 0) {
-                        desc.m_resArray.Add(ResolutionDescClass(d3dmode.Width, d3dmode.Height, bits));
+                    if (dx8caps.Is_Valid_Display_Format(
+                            d3dmode.Width, d3dmode.Height, D3DFormat_To_WW3DFormat(d3dmode.Format)) && bits
+                        != 0) {
+                        desc.Add_Resolution(d3dmode.Width, d3dmode.Height, bits);
                     }
                 }
             }

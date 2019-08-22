@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "vector.h"
+#include "w3dtypes.h"
 #include "wwstring.h"
 
 #ifdef BUILD_WITH_D3D8
@@ -50,6 +51,21 @@ public:
     bool operator==(const RenderDeviceDescClass &that) { return this == &that; }
     bool operator!=(const RenderDeviceDescClass &that) { return this != &that; }
 
+    void Add_Resolution(int w, int h, int b)
+    {
+        bool found = false;
+
+        for (int i = 0; i < m_resArray.Count(); ++i) {
+            if (m_resArray[i].Get_Width() == w && m_resArray[i].Get_Height() == h && m_resArray[i].Get_Depth() == b) {
+                found = true;
+            }
+        }
+
+        if (!found) {
+            m_resArray.Add(ResolutionDescClass(w, h, b));
+        }
+    }
+
 private:
     StringClass m_deviceName;
     StringClass m_deviceVendor;
@@ -60,9 +76,7 @@ private:
     StringClass m_hardwareName;
     StringClass m_hardwareVendor;
     StringClass m_hardwareChipset;
-#ifdef BUILD_WITH_D3D8
-    D3DCAPS8 m_caps;
-    D3DADAPTER_IDENTIFIER8 m_adapterID;
-#endif
+    w3dcaps_t m_caps;
+    w3dadapterid_t m_adapterID;
     DynamicVectorClass<ResolutionDescClass> m_resArray;
 };

@@ -194,6 +194,8 @@ void DX8Wrapper::Enumerate_Devices()
                         case D3DFMT_X1R5G5B5:
                             bits = 16;
                             break;
+                        default:
+                            break;
                     }
 
                     if (dx8caps.Is_Valid_Display_Format(

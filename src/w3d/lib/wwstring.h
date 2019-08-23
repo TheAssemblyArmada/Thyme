@@ -64,8 +64,8 @@ public:
     void Erase(int start_index, int char_count);
     int Format(const char *format, ...);
     int Format_Args(const char *format, va_list &arg_list);
-    void Truncate_Left(unsigned int truncateLength);
-    void Truncate_Right(unsigned int truncateLength);
+    void Truncate_Left(unsigned truncateLength);
+    void Truncate_Right(unsigned truncateLength);
     void Trim_Left();
     void Trim_Right();
     void Trim();
@@ -105,11 +105,18 @@ private:
 
     char *m_buffer;
 
-    static unsigned int m_reserveMask;
     static char m_tempStrings[StringClass::MAX_TEMP_STRING][StringClass::MAX_TEMP_BYTES];
+#ifdef GAME_DLL
+    static FastCriticalSectionClass &m_mutex;
+    static char &m_nullChar;
+    static char *&m_emptyString;
+    static unsigned &m_reserveMask;
+#else
     static FastCriticalSectionClass m_mutex;
     static char m_nullChar;
     static char *m_emptyString;
+    static unsigned m_reserveMask;
+#endif
 };
 
 inline StringClass::StringClass(bool hint_temporary) : m_buffer(m_emptyString)
@@ -227,9 +234,9 @@ inline void StringClass::Erase(int start_index, int char_count)
     }
 }
 
-inline void StringClass::Truncate_Left(unsigned int truncateLength)
+inline void StringClass::Truncate_Left(unsigned truncateLength)
 {
-    unsigned int length = Get_Length();
+    unsigned length = Get_Length();
 
     if (length <= truncateLength) {
         Free_String();
@@ -240,9 +247,9 @@ inline void StringClass::Truncate_Left(unsigned int truncateLength)
     }
 }
 
-inline void StringClass::Truncate_Right(unsigned int truncateLength)
+inline void StringClass::Truncate_Right(unsigned truncateLength)
 {
-    unsigned int length = Get_Length();
+    unsigned length = Get_Length();
     if (length <= truncateLength) {
         Free_String();
     } else {

@@ -16,11 +16,13 @@
 #include "wwstring.h"
 #include <cstdio>
 
+#ifndef GAME_DLL
 FastCriticalSectionClass StringClass::m_mutex;
 char StringClass::m_nullChar = '\0';
 char *StringClass::m_emptyString = &m_nullChar;
+unsigned StringClass::m_reserveMask = 0;
+#endif
 char StringClass::m_tempStrings[StringClass::MAX_TEMP_STRING][StringClass::MAX_TEMP_BYTES];
-unsigned int StringClass::m_reserveMask = 0;
 
 void StringClass::Get_String(size_t length, bool is_temp)
 {
@@ -35,7 +37,7 @@ void StringClass::Get_String(size_t length, bool is_temp)
         FastCriticalSectionClass::LockClass m(m_mutex);
 
         for (int i = 0; i < MAX_TEMP_STRING; ++i) {
-            unsigned int mask = 1 << i;
+            unsigned mask = 1 << i;
 
             if (!(m_reserveMask & mask)) {
                 m_reserveMask |= mask;

@@ -326,3 +326,10 @@ bool &W3D::s_isScreenUVBiased = Make_Global<bool>(0x00A47FAF);
 // w3dformat.cpp
 ARRAY_DEF(0x00A5243C, WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
 ARRAY_DEF(0x00A522FC, WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);
+
+// wwstring.cpp
+#include "wwstring.h"
+FastCriticalSectionClass &StringClass::m_mutex = Make_Global<FastCriticalSectionClass>(0x00A65184);
+char &StringClass::m_nullChar = Make_Global<char>(0x00A66188);
+char *&StringClass::m_emptyString = Make_Global<char *>(0x00A1DB70);
+unsigned &StringClass::m_reserveMask = Make_Global<unsigned>(0x00A6618C);

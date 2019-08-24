@@ -36,7 +36,7 @@ public:
     T &operator[](int index);
     const T &operator[](int index) const;
 
-    virtual VectorClass<T> &operator=(VectorClass<T> const &that);
+    VectorClass<T> &operator=(VectorClass<T> const &that);
     virtual bool operator==(const VectorClass<T> &that) const;
 
     virtual bool Resize(int newsize, const T *array = nullptr);

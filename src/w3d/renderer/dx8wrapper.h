@@ -32,7 +32,7 @@ enum
 {
     MAX_TEXTURE_STAGES = 8,
     VERTEX_BUFFERS = 2,
-    LIGHT_COUNT = 4,
+    GFX_LIGHT_COUNT = 4,
 };
 
 #ifdef GAME_DLL
@@ -57,9 +57,9 @@ struct RenderStateStruct
     void *material; // VertexMaterialClass
     void *Textures[MAX_TEXTURE_STAGES]; // TextureClass
 #ifdef BUILD_WITH_D3D8
-    D3DLIGHT8 Lights[LIGHT_COUNT];
+    D3DLIGHT8 Lights[GFX_LIGHT_COUNT];
 #endif
-    bool LightEnable[LIGHT_COUNT];
+    bool LightEnable[GFX_LIGHT_COUNT];
     Matrix4 world;
     Matrix4 view;
     unsigned vertex_buffer_types[VERTEX_BUFFERS];
@@ -178,7 +178,7 @@ private:
     static int &s_resolutionHeight;
     static int &s_bitDepth;
     static int &s_textureBitDepth;
-    static ARRAY_DEC(bool, s_currentLightEnables, LIGHT_COUNT);
+    static ARRAY_DEC(bool, s_currentLightEnables, GFX_LIGHT_COUNT);
     static unsigned &s_matrixChanges;
     static unsigned &s_materialChanges;
     static unsigned &s_vertexBufferChanges;
@@ -230,7 +230,7 @@ private:
     static int s_resolutionHeight;
     static int s_bitDepth;
     static int s_textureBitDepth;
-    static bool s_currentLightEnables[LIGHT_COUNT];
+    static bool s_currentLightEnables[GFX_LIGHT_COUNT];
     static unsigned s_matrixChanges;
     static unsigned s_materialChanges;
     static unsigned s_vertexBufferChanges;

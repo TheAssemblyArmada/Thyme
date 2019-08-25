@@ -31,6 +31,7 @@
 #include "ddsfile.h"
 #include "dict.h"
 #include "dx8caps.h"
+#include "dx8wrapper.h"
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -801,4 +802,8 @@ void Setup_Hooks()
     // This nulls out CPUDetect::Init_Compact_Log in the original binary.
     // This is a fix for an odd crash in the windows CRT related to vsnprintf.
     Hook_Function(0x0089FA20, Null_Func);
+
+    // dx8wrapper.h
+    Hook_Function(0x00800670, &DX8Wrapper::Init);
+    Hook_Function(0x00801240, &DX8Wrapper::Enumerate_Devices);
 }

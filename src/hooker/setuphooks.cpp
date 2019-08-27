@@ -124,6 +124,8 @@ struct hostent *__stdcall cnconline_hook(const char *name)
     return gethostbyname(name);
 }
 
+void Null_Func(){};
+
 void Setup_Hooks()
 {
     // Hook WinMain
@@ -791,4 +793,12 @@ void Setup_Hooks()
     Hook_Method(0x008095F0, &Render2DClass::Enable_Alpha);
     Hook_Method(0x008094E0, &Render2DClass::Reset);
     Hook_Method(0x008090C0, &Render2DClass::Hook_Ctor);
+
+    // wwstring.h
+    Hook_Method(0x0089D4E0, &StringClass::Format);
+
+    // cpudetect.h
+    // This nulls out CPUDetect::Init_Compact_Log in the original binary.
+    // This is a fix for an odd crash in the windows CRT related to vsnprintf.
+    Hook_Function(0x0089FA20, Null_Func);
 }

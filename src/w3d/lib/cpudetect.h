@@ -202,8 +202,8 @@ private:
     static void Process_Extended_Cache_Info();
     static void Process_Intel_Cache_Info();
 
-    static StringClass ProcessorLog;
-    static StringClass CompactLog;
+    static char ProcessorLog[1024];
+    static char CompactLog[1024];
 
     static int32_t ProcessorType;
     static int32_t ProcessorFamily;

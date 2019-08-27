@@ -276,8 +276,8 @@ void Get_OS_Info(OSInfoStruct &os_info, uint32_t OSVersionPlatformId, uint32_t O
 
 } // namespace
 
-StringClass CPUDetectClass::ProcessorLog;
-StringClass CPUDetectClass::CompactLog;
+char CPUDetectClass::ProcessorLog[1024];
+char CPUDetectClass::CompactLog[1024];
 
 int32_t CPUDetectClass::ProcessorType;
 int32_t CPUDetectClass::ProcessorFamily;
@@ -1410,10 +1410,11 @@ void CPUDetectClass::Init_Processor_Log()
 {
 #define CPU_LOG(n, ...) \
     do { \
-        work.Format(n, ##__VA_ARGS__); \
-        CPUDetectClass::ProcessorLog += work; \
+        snprintf(work, sizeof(work), n, ##__VA_ARGS__); \
+        strlcat(ProcessorLog, work, sizeof(ProcessorLog)); \
     } while (false)
-    StringClass work;
+
+    char work[256];
 
     CPU_LOG("Operating system: ");
 
@@ -1544,10 +1545,11 @@ void CPUDetectClass::Init_Compact_Log()
 {
 #define COMPACT_LOG(n, ...) \
     do { \
-        work.Format(n, ##__VA_ARGS__); \
-        CPUDetectClass::CompactLog += work; \
+        snprintf(work, sizeof(work), n, ##__VA_ARGS__); \
+        strlcat(CompactLog, work, sizeof(CompactLog)); \
     } while (false)
-    StringClass work;
+
+    char work[256];
 
 #ifdef PLATFORM_WINDOWS
     TIME_ZONE_INFORMATION time_zone;

@@ -116,16 +116,25 @@ bool RawFileClass::Delete()
     Close();
 
     // is the filename valid and the file available?
-    if (m_filename == nullptr) {
+    if (m_filename.Is_Empty()) {
         Error(2);
     } else if (Is_Available()) {
         // delete the file.
+#ifdef PLATFORM_WINDOWS
+        if (DeleteFileA(m_filename)) {
+            return true;
+        } else {
+            Error(GetLastError(), 0, m_filename);
+            return false;
+        }
+#else
         if (remove(m_filename)) {
             return true;
         } else {
             Error(errno, 0, m_filename);
             return false;
         }
+#endif
     }
 
     return false;
@@ -144,7 +153,7 @@ bool RawFileClass::Open(int rights)
     RawFileClass::Close();
 
     // make sure we have a valid filename set.
-    if (m_filename == nullptr) {
+    if (m_filename.Get_Length() == 0) {
         Error(2);
     }
 
@@ -192,13 +201,13 @@ bool RawFileClass::Open(int rights)
 
 #ifdef PLATFORM_WINDOWS
     if (m_handle == INVALID_HANDLE_VALUE) {
-#else
-    if (m_handle == -1) {
-#endif
-        Error(errno, 0, m_filename);
-
         return false;
     }
+#else
+    if (m_handle == -1) {
+        return false;
+    }
+#endif
 
     return true;
 }
@@ -206,7 +215,7 @@ bool RawFileClass::Open(int rights)
 bool RawFileClass::Is_Available(bool forced)
 {
     // if the filename is invalid, the file is not available.
-    if (m_filename == nullptr) {
+    if (m_filename.Get_Length() == 0) {
         return false;
     }
 
@@ -371,6 +380,7 @@ off_t RawFileClass::Seek(off_t offset, int whence)
             break;
 
         case FS_SEEK_END:
+            whence = FS_SEEK_START; 
             offset += m_biasLength + m_biasStart;
             break;
 

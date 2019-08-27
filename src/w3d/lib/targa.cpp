@@ -76,7 +76,7 @@ int TargaImage::Open(const char *name, int mode)
             }
 
             // If we don't have the correct footer info, not a TGA file.
-            if (strncasecmp(footer.signature, "TRUEVISION-XFILE", sizeof(footer.signature)) && footer.extension != 0) {
+            if (strncasecmp(footer.signature, "TRUEVISION-XFILE", sizeof(footer.signature)) == 0 && footer.extension != 0) {
                 m_flags |= 8;
             }
 

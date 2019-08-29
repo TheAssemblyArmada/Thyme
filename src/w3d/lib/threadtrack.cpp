@@ -13,11 +13,13 @@
  *            LICENSE
  */
 #include "threadtrack.h"
+#include <cstring>
+
+using std::strcmp;
 
 #ifndef GAME_DLL
 DynamicVectorClass<ThreadTracker *> g_threadTracker;
 #endif
-
 
 /**
  * Registers a thread in the tracker.
@@ -29,7 +31,7 @@ void Register_Thread_ID(int id, const char *name, bool is_main)
     }
 
     for (int i = 0; i < g_threadTracker.Count(); ++i) {
-        if (strcasecmp(name, g_threadTracker[i]->name) == 0) {
+        if (strcmp(name, g_threadTracker[i]->name) == 0) {
             g_threadTracker[i]->id = id;
 
             return;
@@ -50,11 +52,25 @@ void Register_Thread_ID(int id, const char *name, bool is_main)
 void Unregister_Thread_ID(int id, const char *name)
 {
     for (int i = 0; i < g_threadTracker.Count(); ++i) {
-        if (strcasecmp(name, g_threadTracker[i]->name) == 0) {
+        if (strcmp(name, g_threadTracker[i]->name) == 0) {
             delete g_threadTracker[i];
             g_threadTracker.Delete(i);
 
             break;
         }
     }
+}
+
+/**
+ * Gets the id of the first thread flagged as main or the first id in array if none flagged.
+ */
+int Get_Main_Thread_ID()
+{
+    for (int i = 0; i < g_threadTracker.Count(); ++i) {
+        if (g_threadTracker[i]->is_main) {
+            return g_threadTracker[i]->id;
+        }
+    }
+
+    return g_threadTracker[0]->id;
 }

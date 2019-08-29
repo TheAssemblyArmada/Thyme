@@ -23,6 +23,7 @@
 #include "stackdump.h"
 #include "unicodestring.h"
 #include "version.h"
+#include "win32compat.h"
 #include <algorithm>
 
 #ifdef HAVE_UNISTD_H
@@ -78,65 +79,6 @@ int const c_invalidPos = -1000000;
 int g_xPos = c_invalidPos;
 int g_yPos = c_invalidPos;
 bool g_noBorder = false;
-
-#ifdef PLATFORM_WINDOWS
-// Global so we can ensure the argument list is freed at exit.
-char **g_argv;
-
-void Free_Argv()
-{
-    LocalFree(g_argv);
-}
-
-// Taken from https://github.com/thpatch/win32_utf8/blob/master/src/shell32_dll.c
-// Get the command line as UTF-8 as it would be on other platforms.
-char **CommandLineToArgvU(LPCWSTR lpCmdLine, int *pNumArgs)
-{
-    int cmd_line_pos; // Array "index" of the actual command line string
-    // int lpCmdLine_len = wcslen(lpCmdLine) + 1;
-    int lpCmdLine_len = WideCharToMultiByte(CP_UTF8, 0, lpCmdLine, -1, nullptr, 0, nullptr, nullptr) + 1;
-    char **argv_u;
-
-    wchar_t **argv_w = CommandLineToArgvW(lpCmdLine, pNumArgs);
-
-    if (!argv_w) {
-        return nullptr;
-    }
-
-    cmd_line_pos = *pNumArgs + 1;
-
-    // argv is indeed terminated with an additional sentinel NULL pointer.
-    argv_u = (char **)LocalAlloc(LMEM_FIXED, cmd_line_pos * sizeof(char *) + lpCmdLine_len);
-
-    if (argv_u) {
-        int i;
-        char *cur_arg_u = (char *)&argv_u[cmd_line_pos];
-
-        for (i = 0; i < *pNumArgs; i++) {
-            size_t cur_arg_u_len;
-            argv_u[i] = cur_arg_u;
-            int conv_len = WideCharToMultiByte(CP_UTF8, 0, argv_w[i], -1, cur_arg_u, lpCmdLine_len, nullptr, nullptr);
-
-            cur_arg_u_len = argv_w[i] != nullptr ? conv_len : conv_len + 1;
-            cur_arg_u += cur_arg_u_len;
-            lpCmdLine_len -= cur_arg_u_len;
-        }
-
-        argv_u[i] = nullptr;
-
-        if (g_argv != nullptr) {
-            LocalFree(g_argv);
-        }
-
-        g_argv = argv_u;
-        atexit(Free_Argv);
-    }
-
-    LocalFree(argv_w);
-
-    return argv_u;
-}
-#endif
 
 /**
  * @brief Sets the working directory, some code currently expects data to be in this directory.
@@ -322,9 +264,8 @@ void Create_Window()
 int main(int argc, char **argv)
 {
     // Windows main can't take arguments as UTF8, so we need to overwrite them with the correct content.
-#ifdef PLATFORM_WINDOWS
-    argv = CommandLineToArgvU(GetCommandLineW(), &argc);
-#endif
+    Handle_Win32_Args(&argc, &argv);
+    Handle_Win32_Console();
 
     DEBUG_INIT(DEBUG_LOG_TO_FILE);
     // DEBUG_LOG("Running main().\n");

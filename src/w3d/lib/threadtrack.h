@@ -27,6 +27,7 @@ struct ThreadTracker
 
 void Register_Thread_ID(int id, const char *name, bool is_main);
 void Unregister_Thread_ID(int id, const char *name);
+int Get_Main_Thread_ID();
 
 #ifdef GAME_DLL
 extern DynamicVectorClass<ThreadTracker *> &g_threadTracker;

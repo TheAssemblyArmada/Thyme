@@ -12,11 +12,11 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "always.h"
 #include "thread.h"
 #include "gamedebug.h"
 #include "rtsutils.h"
 #include "systimer.h"
+#include "threadtrack.h"
 #include <cstdio>
 #include <cstring>
 
@@ -93,7 +93,9 @@ void ThreadClass::Internal_Thread_Function(void *params)
     // check for m_isRunning in its loop and finish if set false;
     static_cast<ThreadClass *>(params)->m_isRunning = true;
     static_cast<ThreadClass *>(params)->m_threadID = Get_Current_Thread_ID();
+    Register_Thread_ID(static_cast<ThreadClass *>(params)->m_threadID, static_cast<ThreadClass *>(params)->m_threadName, false);
     static_cast<ThreadClass *>(params)->Thread_Function();
+    Unregister_Thread_ID(static_cast<ThreadClass *>(params)->m_threadID, static_cast<ThreadClass *>(params)->m_threadName);
     static_cast<ThreadClass *>(params)->m_handle = 0;
 
 // Returns void * for pthread
@@ -166,7 +168,6 @@ void ThreadClass::Stop(unsigned int ms)
 #error Add appropriate thread yield function to thread.cpp
 #endif
     }
-
 }
 
 /**

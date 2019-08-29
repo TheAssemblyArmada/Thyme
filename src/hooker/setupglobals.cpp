@@ -333,3 +333,7 @@ FastCriticalSectionClass &StringClass::m_mutex = Make_Global<FastCriticalSection
 char &StringClass::m_nullChar = Make_Global<char>(0x00A66188);
 char *&StringClass::m_emptyString = Make_Global<char *>(0x00A1DB70);
 unsigned &StringClass::m_reserveMask = Make_Global<unsigned>(0x00A6618C);
+
+// thread.cpp
+#include "threadtrack.h"
+DynamicVectorClass<ThreadTracker *> &g_threadTracker = Make_Global<DynamicVectorClass<ThreadTracker *>>(0x00A65020);

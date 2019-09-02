@@ -31,14 +31,21 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC
     hooker/dllmain.cpp
     hooker/hooker.cpp
-    hooker/setuphooks.cpp
-    hooker/setupglobals.cpp
+)
+
+set(HOOKER_WB_SRC
+    hooker/setuphooks_wb.cpp
+    hooker/setupglobals_wb.cpp
+)
+
+set(HOOKER_GAME_SRC
+    hooker/setuphooks_zh.cpp
+    hooker/setupglobals_zh.cpp
 )
 
 set(GAMEENGINE_SRC
     game/copyprotect.cpp
     game/force_nocd.cpp
-    game/main.cpp
     game/maputil.cpp
     game/weather.cpp
     game/win32compat.c
@@ -213,6 +220,14 @@ set(GAMEENGINE_SRC
     w3d/renderer/w3dformat.cpp
 )
 
+# Game binary only source
+set(GAMEENGINE_GAME_SRC
+    game/main.cpp
+)
+
+set(GAMEENGINE_WB_SRC
+)
+
 # Don't try and build the miles sound system when not building to link to the original game.
 if(NOT STANDALONE AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     list(APPEND GAMEENGINE_SRC 
@@ -227,10 +242,10 @@ if(CMAKE_CONFIGURATION_TYPES)
     # Not ideal as CMake won't notice if you add any until something else prompts a CMake run
     # but this is largely a convenience feature for MSVC/XCode users.
     file(GLOB_RECURSE GAMEENGINE_HEADERS "*.h")
-    set(_GAMEENGINE_SOURCES ${GAMEENGINE_SRC})
+    set(_GAMEENGINE_SOURCES ${GAMEENGINE_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_WB_SRC})
 
     if(NOT STANDALONE)
-        list(APPEND _GAMEENGINE_SOURCES ${HOOKER_SRC})
+        list(APPEND _GAMEENGINE_SOURCES ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${HOOKER_WB_SRC})
     endif()
 
     # Filter out headers from included 3rd party libraries like STLPort or gamemath.
@@ -253,7 +268,7 @@ if(CMAKE_CONFIGURATION_TYPES)
 endif()
 
 if(STANDALONE)
-    add_executable(thyme ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+    add_executable(thyme ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=")
 
@@ -261,14 +276,30 @@ if(STANDALONE)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
         target_link_libraries(thyme DirectX::d3d8)
     endif()
+
+    if(WORLD_BUILDER)
+        add_executable(thymewb ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+        target_include_directories(thymewb BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
+        target_compile_definitions(thymewb PRIVATE "ALLOW_HOOKING=")
+    endif()
 else()
-    add_library(thyme SHARED ${HOOKER_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+    add_library(thyme SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
     target_compile_definitions(thyme PRIVATE GAME_DLL=1)
 
+    if(WORLD_BUILDER)
+        add_library(thymewb SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+        target_include_directories(thymewb BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
+        target_compile_definitions(thymewb PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+        target_compile_definitions(thymewb PRIVATE GAME_DLL=1 GAME_DEBUG_STRUCTS=1 WORLD_BUILDER=1)
+    endif()
+
     if (MSVC)
         target_compile_definitions(thyme PRIVATE THYME_USE_STLPORT=1)
+        if(WORLD_BUILDER)
+            target_compile_definitions(thymewb PRIVATE THYME_USE_STLPORT=1)
+        endif()
     endif()
 
     # Using the DirectX detection module fully with STLPort breaks the build.
@@ -276,16 +307,23 @@ else()
     if(D3D8_FOUND)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
         target_link_libraries(thyme ${DirectX_LIBRARIES})
+        if(WORLD_BUILDER)
+            target_compile_definitions(thymewb PRIVATE BUILD_WITH_D3D8=1)
+            target_link_libraries(thymewb ${DirectX_LIBRARIES})
+        endif()
     endif()
 
     # We don't look for OpenAL of FFMpeg yet, but its intended to replace mss32.dll and bink.dll with them.
     if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
         add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
-        target_link_libraries(thyme binkstub)
-        target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1)
         add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
-        target_link_libraries(thyme milesstub)
-        target_compile_definitions(thyme PRIVATE BUILD_WITH_MILES=1)
+        target_link_libraries(thyme binkstub milesstub)
+        target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
+
+         if(WORLD_BUILDER)
+            target_link_libraries(thymewb binkstub milesstub)
+            target_compile_definitions(thymewb PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
+        endif()
     endif()
 endif()
 
@@ -316,4 +354,31 @@ endif()
 if(ICU_FOUND)
     target_compile_definitions(thyme PRIVATE BUILD_WITH_ICU=1)
     target_link_libraries(thyme ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+endif()
+
+# Note that we don't care about which math lib we link against for worldbuilder.
+# Since worldbuilder isn't multiplayer we don't need to worry about sources of indeterminancy
+if(WORLD_BUILDER)
+    target_link_libraries(thymewb base)
+
+    if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+        target_link_libraries(thymewb winmm)
+    endif()
+
+    target_compile_definitions(thymewb PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
+
+    # Enable Thyme debug logging.
+    if(LOGGING)
+        target_compile_definitions(thymewb PUBLIC GAME_LOGGING=1)
+    endif()
+
+    # Enable Thyme debug assertions.
+    if(ASSERTIONS)
+        target_compile_definitions(thymewb PUBLIC GAME_ASSERTS=1)
+    endif()
+
+    if(ICU_FOUND)
+        target_compile_definitions(thymewb PRIVATE BUILD_WITH_ICU=1)
+        target_link_libraries(thymewb ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+    endif()
 endif()

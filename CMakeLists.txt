@@ -67,6 +67,11 @@ option(USE_GAMEMATH "Use own maths library rather than libc version for this pla
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 
+if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    # World builder will be Win32 only until enough is complete to port to other graphical toolkit.
+    option(WORLD_BUILDER "Build World Builder." OFF)
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE) # Needed to prevent FindDirectX screwing up a mingw build.
 
@@ -127,14 +132,25 @@ endif()
 add_subdirectory(src/libs/baseconfig)
 
 if(NOT STANDALONE)
-    set(SETSAIL_ENTRY 0x008E0778)
-    set(SETSAIL_DLL "${PROJECT_NAME}.dll")
-    set(SETSAIL_EXE "game.dat")
-    set(SETSAIL_LAUNCHER launch${PROJECT_NAME})
-    set(SETSAIL_HASH "5b805b4ecba79581fe8ec454b5acf7b7e13d4dd5")
-    message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
-    # Build the launcher
-    add_subdirectory(launcher)
+    if(WORLD_BUILDER)
+        set(SETSAIL_ENTRY 0x00B88F90)
+        set(SETSAIL_DLL "thymewb.dll")
+        set(SETSAIL_EXE "game.dat")
+        set(SETSAIL_LAUNCHER launchthymewb)
+        set(SETSAIL_HASH "3c1a1d431eae665978c9406f05c427252bc4e768")
+        message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
+        # Build the launcher
+        add_subdirectory(launcher)
+    else()
+        set(SETSAIL_ENTRY 0x008E0778)
+        set(SETSAIL_DLL "thyme.dll")
+        set(SETSAIL_EXE "game.dat")
+        set(SETSAIL_LAUNCHER launchthyme)
+        set(SETSAIL_HASH "5b805b4ecba79581fe8ec454b5acf7b7e13d4dd5")
+        message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
+        # Build the launcher
+        add_subdirectory(launcher)
+    endif()
 endif()
 
 # Build Thyme

@@ -26,6 +26,14 @@
 #include <memoryapi.h>
 #include <processthreadsapi.h>
 
+// For the few locations where a hook needs to be in the code, this macro can list all addresses and will select
+// the correct one at compile time.
+#ifdef WORLD_BUILDER
+#define PICK_ADDRESS(a, b) (b)
+#else
+#define PICK_ADDRESS(a, b) (a)
+#endif
+
 template<typename T, const int size>
 class ArrayHelper
 {

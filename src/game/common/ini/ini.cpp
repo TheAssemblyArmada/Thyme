@@ -51,7 +51,9 @@ const float _ANGLE_MULTIPLIER = 0.0174532925f;
 const float _DURATION_MULT = 0.029999999f;
 
 // Replace original function addresses as thyme implementations are written.
-BlockParse TheTypeTable[] = {{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
+// clang-format off
+BlockParse TheTypeTable[] = {
+	{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
     {"Animation", (iniblockparse_t)(0x00518DB0) /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     //{"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
@@ -70,7 +72,8 @@ BlockParse TheTypeTable[] = {{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::pa
     {"WindowTransition", (iniblockparse_t)(0x005145F0) /*&INI::parseWindowTransitions*/},
     {"DamageFX", (iniblockparse_t)(0x005145E0) /*&INI::parseDamageFXDefinition*/},
     {"DialogEvent", (iniblockparse_t)(0x0044EFE0) /*&INI::parseDialogDefinition*/},
-    {"DrawGroupInfo", (iniblockparse_t)(0x005145B0) /*&INI::parseDrawGroupNumberDefinition*/},
+    //{"DrawGroupInfo", (iniblockparse_t)(0x005145B0) /*&INI::parseDrawGroupNumberDefinition*/},
+    {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", (iniblockparse_t)(0x00512BE0) /*&INI::parseEvaEvent*/},
     {"FXList", (iniblockparse_t)(0x004CC260) /*&INI::parseFXListDefinition*/},
     {"GameData", &GlobalData::Parse_Game_Data_Definitions},
@@ -120,7 +123,9 @@ BlockParse TheTypeTable[] = {{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::pa
     {"ReallyLowMHz", &GameLODManager::Parse_Low_MHz},
     {"ScriptAction", (iniblockparse_t)(0x004221C0) /*&ScriptEngine::parseScriptAction*/},
     {"ScriptCondition", (iniblockparse_t)(0x00422680) /*&ScriptEngine::parseScriptCondition*/},
-    {nullptr, nullptr}};
+    {nullptr, nullptr}
+};
+// clang-format on
 
 // Helper function for Load
 inline iniblockparse_t Find_Block_Parse(const char *token)
@@ -528,12 +533,12 @@ void INI::Parse_Byte(INI *ini, void *formal, void *store, const void *user_data)
 
 void INI::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *static_cast<int *>(store) = Scan_Int(ini->Get_Next_Token());
+    *static_cast<int32_t *>(store) = Scan_Int(ini->Get_Next_Token());
 }
 
 void INI::Parse_Unsigned(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *static_cast<unsigned int *>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
+    *static_cast<uint32_t *>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
 }
 
 void INI::Parse_Real(INI *ini, void *formal, void *store, const void *user_data)

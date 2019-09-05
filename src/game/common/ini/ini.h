@@ -152,6 +152,9 @@ public:
     static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *user_data);
 
+    // Block Parser functions
+    static void Parse_Draw_Group_Info(INI *ini);
+
 private:
     void Read_Line();
     void Prep_File(Utf8String filename, INILoadType type);

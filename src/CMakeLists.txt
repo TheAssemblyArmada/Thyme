@@ -52,6 +52,7 @@ set(GAMEENGINE_SRC
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
+    game/client/drawgroupinfo.cpp
     game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
@@ -103,6 +104,7 @@ set(GAMEENGINE_SRC
     game/common/debug/gameassert.cpp
     game/common/debug/gamelogging.cpp
     game/common/ini/ini.cpp
+    game/common/ini/inidrawgroupinfo.cpp
     game/common/modules/modulefactory.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/handicap.cpp

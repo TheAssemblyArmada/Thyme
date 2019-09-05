@@ -337,3 +337,7 @@ unsigned &StringClass::m_reserveMask = Make_Global<unsigned>(0x00A6618C);
 // thread.cpp
 #include "threadtrack.h"
 DynamicVectorClass<ThreadTracker *> &g_threadTracker = Make_Global<DynamicVectorClass<ThreadTracker *>>(0x00A65020);
+
+// drawgroupinfo.cpp
+class DrawGroupInfo;
+DrawGroupInfo *&g_theDrawGroupInfo = Make_Global<DrawGroupInfo *>(0x00A2C880);

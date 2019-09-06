@@ -328,6 +328,7 @@ else()
 endif()
 
 target_link_libraries(thyme base)
+set(TO_INSTALL ${TO_INSTALL} thyme PARENT_SCOPE)
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     target_link_libraries(thyme winmm)
@@ -360,7 +361,8 @@ endif()
 # Since worldbuilder isn't multiplayer we don't need to worry about sources of indeterminancy
 if(WORLD_BUILDER)
     target_link_libraries(thymewb base)
-
+    set(TO_INSTALL ${TO_INSTALL} thymewb PARENT_SCOPE)
+    
     if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
         target_link_libraries(thymewb winmm)
     endif()

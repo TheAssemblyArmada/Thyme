@@ -67,6 +67,11 @@ option(USE_GAMEMATH "Use own maths library rather than libc version for this pla
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 
+# Custom default install location.
+if(NOT STANDALONE)
+    get_filename_component(DLL_INSTALL_PREFIX  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour;InstallPath]" ABSOLUTE CACHE)
+endif()
+
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     # World builder will be Win32 only until enough is complete to port to other graphical toolkit.
     option(WORLD_BUILDER "Build World Builder." OFF)
@@ -76,6 +81,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE) # Needed to prevent FindDirectX screwing up a mingw build.
 
 include(CheckCXXCompilerFlag)
+include(GNUInstallDirs)
 
 # Go lean and mean on windows.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
@@ -129,7 +135,7 @@ if(NOT STANDALONE)
 endif()
 
 # Add base module
-add_subdirectory(src/libs/baseconfig)
+add_subdirectory(src/libs/baseconfig EXCLUDE_FROM_ALL)
 
 if(NOT STANDALONE)
     if(WORLD_BUILDER)
@@ -141,6 +147,7 @@ if(NOT STANDALONE)
         message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
         # Build the launcher
         add_subdirectory(launcher)
+        list(APPEND TO_INSTALL launchthymewb)
     else()
         set(SETSAIL_ENTRY 0x008E0778)
         set(SETSAIL_DLL "thyme.dll")
@@ -150,8 +157,16 @@ if(NOT STANDALONE)
         message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
         # Build the launcher
         add_subdirectory(launcher)
+        list(APPEND TO_INSTALL launchthyme)
     endif()
 endif()
 
 # Build Thyme
 add_subdirectory(src)
+
+# Setup the install target destination
+if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
+    install(TARGETS ${TO_INSTALL} 
+        RUNTIME DESTINATION ${DLL_INSTALL_PREFIX}
+        LIBRARY DESTINATION ${DLL_INSTALL_PREFIX})
+endif()

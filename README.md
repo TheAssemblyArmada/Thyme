@@ -1,6 +1,6 @@
 # Thyme
 
-[![Build status](https://ci.appveyor.com/api/projects/status/thd1as29wfnkh586?svg=true)](https://ci.appveyor.com/project/AdamMondez/thyme)
+[![Build status](https://ci.appveyor.com/api/projects/status/5j532niym4sprwro/branch/develop?svg=true)](https://ci.appveyor.com/project/AssemblyArmarda/thyme/branch/develop)
 [![Build Status](https://travis-ci.org/TheAssemblyArmada/Thyme.svg?branch=develop)](https://travis-ci.org/TheAssemblyArmada/Thyme)
 
 Thyme is an open source re-implementation of Command & Conquer Generals: Zero Hour. Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.

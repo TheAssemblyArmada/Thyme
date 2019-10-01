@@ -73,17 +73,7 @@ macro(_winsdk_announce)
 endmacro()
 
 set(_winsdk_win10vers
-    #10.0.17763.0 # Redstone 4 aka Win10 1803 "October 2018 Update"
-    10.0.17134.1 # Redstone 4 aka Win10 1803 "April 2018 Update"
-    10.0.17134.0 # Redstone 4 aka Win10 1803 "April 2018 Update"
-    10.0.17133.0 # Redstone 4 aka Win10 1803 "April 2018 Update"
-    10.0.16299.0 # Redstone 3 aka Win10 1709 "Fall Creators Update"
-    10.0.15063.0 # Redstone 2 aka Win10 1703 "Creators Update"
-    10.0.14393.0 # Redstone aka Win10 1607 "Anniversary Update"
-    10.0.10586.0 # TH2 aka Win10 1511
-    10.0.10240.0 # Win10 RTM
-    10.0.10150.0 # just ucrt
-    10.0.10056.0
+    ${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}
 )
 
 if(WindowsSDK_FIND_COMPONENTS MATCHES "tools")

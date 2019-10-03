@@ -391,7 +391,7 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
     }
 
     g_exceptionFileBuffer += tmp;
-#ifndef WORLD_BUILDER
+#ifndef BUILD_EDITOR
     tmp.Format("main function at %" PRIPTRSIZE PRIXPTR "\n", main);
     g_exceptionFileBuffer += tmp;
 #endif

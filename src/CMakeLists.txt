@@ -1,5 +1,6 @@
 # Build and link the DLL.
 set(GAMEENGINE_INCLUDES
+    editor
     game
     game/client
     game/client/gui
@@ -228,6 +229,7 @@ set(GAMEENGINE_GAME_SRC
 )
 
 set(GAMEENGINE_WB_SRC
+    editor/editmain.cpp
 )
 
 # Don't try and build the miles sound system when not building to link to the original game.
@@ -269,6 +271,15 @@ if(CMAKE_CONFIGURATION_TYPES)
     endforeach()
 endif()
 
+if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+    add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
+    add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
+endif()
+
+if(USE_GAMEMATH)
+    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
+endif()
+
 if(STANDALONE)
     add_executable(thyme ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
@@ -278,30 +289,14 @@ if(STANDALONE)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
         target_link_libraries(thyme DirectX::d3d8)
     endif()
-
-    if(WORLD_BUILDER)
-        add_executable(thymewb ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-        target_include_directories(thymewb BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
-        target_compile_definitions(thymewb PRIVATE "ALLOW_HOOKING=")
-    endif()
 else()
     add_library(thyme SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
     target_compile_definitions(thyme PRIVATE GAME_DLL=1)
 
-    if(WORLD_BUILDER)
-        add_library(thymewb SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-        target_include_directories(thymewb BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
-        target_compile_definitions(thymewb PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
-        target_compile_definitions(thymewb PRIVATE GAME_DLL=1 GAME_DEBUG_STRUCTS=1 WORLD_BUILDER=1)
-    endif()
-
     if (MSVC)
         target_compile_definitions(thyme PRIVATE THYME_USE_STLPORT=1)
-        if(WORLD_BUILDER)
-            target_compile_definitions(thymewb PRIVATE THYME_USE_STLPORT=1)
-        endif()
     endif()
 
     # Using the DirectX detection module fully with STLPort breaks the build.
@@ -309,23 +304,12 @@ else()
     if(D3D8_FOUND)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_D3D8=1)
         target_link_libraries(thyme ${DirectX_LIBRARIES})
-        if(WORLD_BUILDER)
-            target_compile_definitions(thymewb PRIVATE BUILD_WITH_D3D8=1)
-            target_link_libraries(thymewb ${DirectX_LIBRARIES})
-        endif()
     endif()
 
     # We don't look for OpenAL of FFMpeg yet, but its intended to replace mss32.dll and bink.dll with them.
     if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
-        add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
-        add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
         target_link_libraries(thyme binkstub milesstub)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
-
-         if(WORLD_BUILDER)
-            target_link_libraries(thymewb binkstub milesstub)
-            target_compile_definitions(thymewb PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
-        endif()
     endif()
 endif()
 
@@ -352,7 +336,6 @@ if(ASSERTIONS)
 endif()
 
 if(USE_GAMEMATH)
-    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
     target_link_libraries(thyme gamemath_static_lib)
     target_compile_definitions(thyme PRIVATE BUILD_WITH_GAMEMATH=1)
 endif()
@@ -364,28 +347,68 @@ endif()
 
 # Note that we don't care about which math lib we link against for worldbuilder.
 # Since worldbuilder isn't multiplayer we don't need to worry about sources of indeterminancy
-if(WORLD_BUILDER)
-    target_link_libraries(thymewb base)
-    set(TO_INSTALL ${TO_INSTALL} thymewb PARENT_SCOPE)
-    
-    if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-        target_link_libraries(thymewb winmm)
+if(BUILD_EDITOR)
+    set(CMAKE_MFC_FLAG 2) #Enable MFC
+    if(STANDALONE)
+        add_executable(thymeedit ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+        target_include_directories(thymeedit BEFORE PUBLIC ${GAMEENGINE_INCLUDES})
+        target_compile_definitions(thymeedit PRIVATE "ALLOW_HOOKING=")
+
+        if(D3D8_FOUND)
+            target_compile_definitions(thymeedit PRIVATE BUILD_WITH_D3D8=1)
+            target_link_libraries(thymeedit DirectX::d3d8)
+        endif()
+    else()
+        add_library(thymeedit SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+        target_include_directories(thymeedit BEFORE PUBLIC libs/stlport libs/olddx hooker ${GAMEENGINE_INCLUDES})
+        target_compile_definitions(thymeedit PRIVATE "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+        target_compile_definitions(thymeedit PRIVATE GAME_DLL=1 GAME_DEBUG_STRUCTS=1 BUILD_EDITOR=1)
+
+        if (MSVC)
+            target_compile_definitions(thymeedit PRIVATE THYME_USE_STLPORT=1)
+        endif()
+
+        # Using the DirectX detection module fully with STLPort breaks the build.
+        # Just pull out the lib instead and rely on the headers provided in olddx
+        if(D3D8_FOUND)
+            target_compile_definitions(thymeedit PRIVATE BUILD_WITH_D3D8=1)
+            target_link_libraries(thymeedit ${DirectX_LIBRARIES})
+        endif()
+
+        # We don't look for OpenAL of FFMpeg yet, but its intended to replace mss32.dll and bink.dll with them.
+        if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+            target_link_libraries(thymeedit binkstub milesstub)
+            target_compile_definitions(thymeedit PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
+        endif()
     endif()
 
-    target_compile_definitions(thymewb PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
+    target_link_libraries(thymeedit base)
+    target_link_libraries(thymeedit captnlog)
+    set(TO_INSTALL ${TO_INSTALL} thymeedit PARENT_SCOPE)
+
+    if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+        target_link_libraries(thymeedit winmm)
+    endif()
+
+    target_compile_definitions(thymeedit PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
 
     # Enable Thyme debug logging.
     if(LOGGING)
-        target_compile_definitions(thymewb PUBLIC GAME_LOGGING=1)
+        target_compile_definitions(thymeedit PUBLIC GAME_LOGGING=1)
     endif()
 
     # Enable Thyme debug assertions.
     if(ASSERTIONS)
-        target_compile_definitions(thymewb PUBLIC GAME_ASSERTS=1)
+        target_compile_definitions(thymeedit PUBLIC GAME_ASSERTS=1)
+    endif()
+
+    if(USE_GAMEMATH)
+        target_link_libraries(thymeedit gamemath_static_lib)
+        target_compile_definitions(thymeedit PRIVATE BUILD_WITH_GAMEMATH=1)
     endif()
 
     if(ICU_FOUND)
-        target_compile_definitions(thymewb PRIVATE BUILD_WITH_ICU=1)
-        target_link_libraries(thymewb ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+        target_compile_definitions(thymeedit PRIVATE BUILD_WITH_ICU=1)
+        target_link_libraries(thymeedit ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
     endif()
 endif()

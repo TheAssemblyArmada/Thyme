@@ -34,7 +34,7 @@ int g_theLinkChecker = 0;
 #ifdef GAME_DLL
 void *New_New(size_t bytes)
 {
-    ++(Make_Global<int>(0x00A29B9C));
+    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
     Init_Memory_Manager_Pre_Main();
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
@@ -42,7 +42,7 @@ void *New_New(size_t bytes)
 
 void New_Delete(void *ptr)
 {
-    ++(Make_Global<int>(0x00A29B9C));
+    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }

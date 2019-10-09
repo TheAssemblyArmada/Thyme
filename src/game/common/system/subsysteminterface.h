@@ -34,6 +34,14 @@ public:
     void Set_Name(Utf8String name); // Needs confirming.
 
 private:
+#ifdef GAME_DEBUG_STRUCTS
+    int32_t m_unkInt1;
+    int32_t m_unkInt2;
+    int32_t m_unkInt3;
+    int32_t m_unkInt4;
+    bool m_unkBool1;
+    bool m_unkBool2;
+#endif
     Utf8String m_subsystemName; // Needs confirming.
 };
 

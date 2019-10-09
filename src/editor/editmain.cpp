@@ -13,3 +13,12 @@
  *            LICENSE
  */
 #include "editmain.h"
+
+#if !defined GAME_DLL && defined PLATFORM_WINDOWS
+HWND g_applicationHWnd;
+#endif
+
+int main(int argc, char** argv)
+{
+    return 0; // TODO allows linking as none functional standalone.
+}

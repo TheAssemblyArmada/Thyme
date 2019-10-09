@@ -15,3 +15,11 @@
 #pragma once
 
 #include "always.h"
+
+#ifdef GAME_DLL
+extern HWND &g_applicationHWnd;
+#else
+#ifdef PLATFORM_WINDOWS
+extern HWND g_applicationHWnd;
+#endif
+#endif

@@ -103,34 +103,38 @@ void Setup_Hooks()
 
     // Returns true for any CD checks
     Hook_Function(0x005F1CB0, IsFirstCDPresent);
-
+#endif
     // Replace memory init functions.
-    Hook_Function(0x00414510, Init_Memory_Manager);
-    Hook_Function(0x004148C0, Init_Memory_Manager_Pre_Main);
+    Hook_Function(0x006B837C, Init_Memory_Manager);
+    Hook_Function(0x006B8570, Init_Memory_Manager_Pre_Main);
 
     // Replace memory allocation operators
     // TODO, use linker check globals so no need to hook new.
-    Hook_Function(0x00414450, New_New); // operator new
-    Hook_Function(0x00414490, New_New); // operator new[]
-    Hook_Function(0x004144D0, New_Delete); // operator delete
-    Hook_Function(0x004144F0, New_Delete); // operator delete[]
-    Hook_Function(0x00414B30, Create_Named_Pool);
+    Hook_Function(0x006B8044, New_New); // operator new
+    Hook_Function(0x006B80AB, New_New); // operator new[]
+    Hook_Function(0x006B81E0, New_New); // operator new
+    Hook_Function(0x006B82AE, New_New); // operator new[]
+    Hook_Function(0x006B8112, New_Delete); // operator delete
+    Hook_Function(0x006B8179, New_Delete); // operator delete[]
+    Hook_Function(0x006B8247, New_Delete); // operator delete
+    Hook_Function(0x006B8315, New_Delete); // operator delete[]
+    Hook_Function(0x006B8716, Create_Named_Pool); // createW3DMemoryPool in wb db.
 
     // Replace pool functions
-    Hook_Method(0x00413C10, &MemoryPool::Allocate_Block);
-    Hook_Method(0x00413C40, &MemoryPool::Free_Block);
+    Hook_Method(0x006B70FC, &MemoryPool::Allocate_Block);
+    Hook_Method(0x006B712E, &MemoryPool::Free_Block);
 
     // Replace DMA functions
-    Hook_Method(0x00413EE0, &DynamicMemoryAllocator::Allocate_Bytes_No_Zero);
-    Hook_Method(0x00413FE0, &DynamicMemoryAllocator::Allocate_Bytes);
-    Hook_Method(0x00414010, &DynamicMemoryAllocator::Free_Bytes);
-    Hook_Method(0x00414140, &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
+    Hook_Method(0x006B7819, &DynamicMemoryAllocator::Allocate_Bytes_No_Zero);
+    Hook_Method(0x006B7933, &DynamicMemoryAllocator::Allocate_Bytes);
+    Hook_Method(0x006B7966, &DynamicMemoryAllocator::Free_Bytes);
+    Hook_Method(0x006B7A65, &DynamicMemoryAllocator::Get_Actual_Allocation_Size);
 
     // Replace MemoryPoolFactory functions
-    Hook_Method(0x00414180,
+    Hook_Method(0x006B7BA9,
         static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const *, int, int, int)>(
             &MemoryPoolFactory::Create_Memory_Pool));
-
+#if 0
     // Replace File functions
     // virtuals for these are hooked by calls to Win32GameEngine which creates the objects with our vtables.
     Hook_Function(0x004469C0, FileSystem::Are_Music_Files_On_CD); // This one is part of the CD Check.

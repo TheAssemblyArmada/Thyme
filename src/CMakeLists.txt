@@ -171,7 +171,6 @@ set(GAMEENGINE_SRC
     platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
-    platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
@@ -226,6 +225,7 @@ set(GAMEENGINE_SRC
 # Game binary only source
 set(GAMEENGINE_GAME_SRC
     game/main.cpp
+    platform/win32gameengine.cpp
 )
 
 set(GAMEENGINE_WB_SRC

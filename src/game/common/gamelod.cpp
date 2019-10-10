@@ -359,7 +359,7 @@ void GameLODManager::Apply_Static_LOD_Level(StaticGameLODLevel level)
 {
 #ifdef GAME_DLL
     // TODO requires parts of TerrainVisual and GameClient classes.
-    Call_Method<void, GameLODManager, StaticGameLODLevel>(0x0047AC60, this, level);
+    Call_Method<void, GameLODManager, StaticGameLODLevel>(PICK_ADDRESS(0x0047AC60, 0x007E40D9), this, level);
 #endif
 }
 

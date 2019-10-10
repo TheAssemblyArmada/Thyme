@@ -196,7 +196,7 @@ void Particle::Do_Wind_Motion()
 {
     // TODO requires GameLogic and GameClient global.
 #ifdef GAME_DLL
-    Call_Method<void, Particle>(0x004CD160, this);
+    Call_Method<void, Particle>(PICK_ADDRESS(0x004CD160, 0), this);
 #endif
 }
 

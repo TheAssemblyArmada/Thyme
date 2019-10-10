@@ -48,7 +48,7 @@ Display::Display() :
 Display::~Display()
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display>(0x004211A0, this);
+    Call_Method<void, Display>(PICK_ADDRESS(0x004211A0, 0x007BD4D7), this);
 #endif
 }
 
@@ -72,7 +72,7 @@ void Display::Reset()
 void Display::Update()
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display>(0x00421870, this);
+    Call_Method<void, Display>(PICK_ADDRESS(0x00421870, 0x007BDB67), this);
 #endif
 }
 
@@ -107,7 +107,7 @@ bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
 {
 // TODO Requires TacticalView
 #ifdef GAME_DLL
-    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(0x00421390, this, a2, a3, a4, a5);
+    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(PICK_ADDRESS(0x00421390, 0x007BD676), this, a2, a3, a4, a5);
 #else
     return 0;
 #endif
@@ -120,7 +120,7 @@ int Display::Get_Display_Mode_Count()
 {
 // TODO Requires WW3D
 #ifdef GAME_DLL
-    return Call_Method<int, Display>(0x0073C5D0, this);
+    return Call_Method<int, Display>(PICK_ADDRESS(0x0073C5D0, 0x007BDEA0), this);
 #else
     return 0;
 #endif
@@ -133,7 +133,7 @@ void Display::Get_Display_Mode_Description(int a1, int * a2, int * a3, int * a4)
 {
 // TODO Requires WW3D
 #ifdef GAME_DLL
-    Call_Method<void, Display, int, int *, int *, int *>(0x0073C650, this, a1, a2, a3, a4);
+    Call_Method<void, Display, int, int *, int *, int *>(PICK_ADDRESS(0x0073C650, 0x007BDEB0), this, a1, a2, a3, a4);
 #endif
 }
 
@@ -144,7 +144,7 @@ void Display::Set_Gamma(float a1, float a2, float a3, bool a4)
 {
 // TODO Requires DX8Wrapper
 #ifdef GAME_DLL
-    Call_Method<void, Display, float, float, float, bool>(0x0073C650, this, a1, a2, a3, a4);
+    Call_Method<void, Display, float, float, float, bool>(PICK_ADDRESS(0x0073C650, 0x007BDEC0), this, a1, a2, a3, a4);
 #endif
 }
 
@@ -199,7 +199,7 @@ void Display::Update_Views()
 void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display, Utf8String, int, int>(0x00421500, this, name, a3, a4);
+    Call_Method<void, Display, Utf8String, int, int>(PICK_ADDRESS(0x00421500, 0x007BD836), this, name, a3, a4);
 #endif
 }
 
@@ -209,7 +209,7 @@ void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
 void Display::Play_Movie(Utf8String name)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display, Utf8String>(0x00421670, this, name);
+    Call_Method<void, Display, Utf8String>(PICK_ADDRESS(0x00421670, 0x007BD978), this, name);
 #endif
 }
 
@@ -219,7 +219,7 @@ void Display::Play_Movie(Utf8String name)
 void Display::Stop_Movie()
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display>(0x004217D0, this);
+    Call_Method<void, Display>(PICK_ADDRESS(0x004217D0, 0x007BDA9C), this);
 #endif
 }
 
@@ -229,6 +229,6 @@ void Display::Stop_Movie()
 void Display::Delete_Views()
 {
 #ifdef GAME_DLL
-    Call_Method<void, Display>(0x004212C0, this);
+    Call_Method<void, Display>(PICK_ADDRESS(0x004212C0, 0x007BD54E), this);
 #endif
 }

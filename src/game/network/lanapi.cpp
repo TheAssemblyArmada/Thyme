@@ -159,7 +159,7 @@ void LANAPI::Reset()
 {
     // Needs LANGameInfo, LANPlayer
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x007293D0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x007293D0, 0), this);
 #endif
 }
 
@@ -172,7 +172,7 @@ void LANAPI::Update()
 {
     // Needs some utlility functions
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x007295E0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x007295E0, 0), this);
 #endif
 }
 
@@ -211,7 +211,7 @@ void LANAPI::Request_Game_Join(LANGameInfo *game, uint32_t addr)
 {
     // Needs LANGameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, LANGameInfo *, uint32_t>(0x00729EF0, this, game, addr);
+    Call_Method<void, LANAPI, LANGameInfo *, uint32_t>(PICK_ADDRESS(0x00729EF0, 0), this, game, addr);
 #endif
 }
 
@@ -250,7 +250,7 @@ void LANAPI::Request_Accept()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072A440, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072A440, 0), this);
 #endif
 }
 
@@ -258,7 +258,7 @@ void LANAPI::Request_Has_Map()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072A4D0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072A4D0, 0), this);
 #endif
 }
 
@@ -266,7 +266,7 @@ void LANAPI::Request_Chat(const Utf16String &msg, ChatType format)
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, const Utf16String &, ChatType>(0x0072A850, this, msg, format);
+    Call_Method<void, LANAPI, const Utf16String &, ChatType>(PICK_ADDRESS(0x0072A850, 0), this, msg, format);
 #endif
 }
 
@@ -274,7 +274,7 @@ void LANAPI::Request_Game_Start()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072A9B0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072A9B0, 0), this);
 #endif
 }
 
@@ -282,7 +282,7 @@ void LANAPI::Request_Game_Start_Timer()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072AA20, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072AA20, 0), this);
 #endif
 }
 
@@ -290,7 +290,7 @@ void LANAPI::Request_Game_Options(Utf8String options, bool is_public, uint32_t a
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, Utf8String, bool, uint32_t>(0x0072AAB0, this, options, is_public, addr);
+    Call_Method<void, LANAPI, Utf8String, bool, uint32_t>(PICK_ADDRESS(0x0072AAB0, 0), this, options, is_public, addr);
 #endif
 }
 
@@ -298,7 +298,7 @@ void LANAPI::Request_Game_Create(const Utf16String &name, bool unk)
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, const Utf16String &, bool>(0x0072AC80, this, name, unk);
+    Call_Method<void, LANAPI, const Utf16String &, bool>(PICK_ADDRESS(0x0072AC80, 0), this, name, unk);
 #endif
 }
 
@@ -306,7 +306,7 @@ void LANAPI::Request_Game_Announce()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072A2D0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072A2D0, 0), this);
 #endif
 }
 
@@ -314,7 +314,7 @@ void LANAPI::Request_Set_Name(Utf16String name)
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, Utf16String>(0x0072B0F0, this, name);
+    Call_Method<void, LANAPI, Utf16String>(PICK_ADDRESS(0x0072B0F0, 0), this, name);
 #endif
 }
 
@@ -322,7 +322,7 @@ void LANAPI::Request_Lobby_Leave()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x0072B3C0, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x0072B3C0, 0), this);
 #endif
 }
 
@@ -341,7 +341,7 @@ void LANAPI::On_Game_List(LANGameInfo *game)
 {
     // TODO Requires LANGameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, LANGameInfo *>(0x005F96C0, this, game);
+    Call_Method<void, LANAPI, LANGameInfo *>(PICK_ADDRESS(0x005F96C0, 0), this, game);
 #endif
 }
 
@@ -349,7 +349,7 @@ void LANAPI::On_Player_List(LANPlayer *player)
 {
     // TODO Requires GadgetList functions
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, LANPlayer *>(0x005F97D0, this, player);
+    Call_Method<void, LANAPI, LANPlayer *>(PICK_ADDRESS(0x005F97D0, 0), this, player);
 #endif
 }
 
@@ -357,7 +357,7 @@ void LANAPI::On_Game_Join(ReturnType ret, LANGameInfo *game)
 {
     // TODO Requires Shell, LANPreferences
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, ReturnType, LANGameInfo *>(0x005F8EC0, this, ret, game);
+    Call_Method<void, LANAPI, ReturnType, LANGameInfo *>(PICK_ADDRESS(0x005F8EC0, 0), this, ret, game);
 #endif
 }
 
@@ -365,7 +365,7 @@ void LANAPI::On_Player_Join(uint32_t slot, Utf16String player)
 {
     // TODO Requires LANGameSlot, generateGameOptionsString, lanUpdatesSlotList
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, Utf16String>(0x005F8E40, this, slot, player);
+    Call_Method<void, LANAPI, uint32_t, Utf16String>(PICK_ADDRESS(0x005F8E40, 0), this, slot, player);
 #endif
 }
 
@@ -373,7 +373,7 @@ void LANAPI::On_Host_Leave()
 {
     // TODO Requires GameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x005F9160, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x005F9160, 0), this);
 #endif
 }
 
@@ -381,7 +381,7 @@ void LANAPI::On_Player_Leave(Utf16String player)
 {
     // TODO Requires Shell, generateGameOptionsString, LANPreferences, lanSlotUpdate, ShaderClass
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, Utf16String>(0x005F9190, this, player);
+    Call_Method<void, LANAPI, Utf16String>(PICK_ADDRESS(0x005F9190, 0), this, player);
 #endif
 }
 
@@ -389,7 +389,7 @@ void LANAPI::On_Accept(uint32_t player_ip, bool status)
 {
     // TODO Requires LANGameSlot, generateGameOptionsString, LANGameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, bool>(0x005F7960, this, player_ip, status);
+    Call_Method<void, LANAPI, uint32_t, bool>(PICK_ADDRESS(0x005F7960, 0), this, player_ip, status);
 #endif
 }
 
@@ -397,7 +397,7 @@ void LANAPI::On_Has_Map(uint32_t player_ip, bool status)
 {
     // TODO Requires LANGameSlot, LANGameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, bool>(0x005F7AC0, this, player_ip, status);
+    Call_Method<void, LANAPI, uint32_t, bool>(PICK_ADDRESS(0x005F7AC0, 0), this, player_ip, status);
 #endif
 }
 
@@ -405,7 +405,7 @@ void LANAPI::On_Chat(Utf16String player, uint32_t ip, Utf16String message, ChatT
 {
     // TODO Requires GameWindow, LanguageFilter, LANGameInfo, MultiplayerSettings, GadgetListBox*
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, Utf16String, uint32_t, Utf16String, ChatType>(0x005F9910, this, player, ip, message, format);
+    Call_Method<void, LANAPI, Utf16String, uint32_t, Utf16String, ChatType>(PICK_ADDRESS(0x005F9910, 0), this, player, ip, message, format);
 #endif
 }
 
@@ -413,7 +413,7 @@ void LANAPI::On_Game_Start()
 {
     // TODO Requires LANPreferences, LANGameInfo
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x005F7E50, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x005F7E50, 0), this);
 #endif
 }
 
@@ -441,7 +441,7 @@ void LANAPI::On_Game_Options(uint32_t player_addr, int player_slot, Utf8String o
 {
     // TODO Requires LANGameInfo, LANGameSlot, GameInfoToAsciiString
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, int, Utf8String>(0x005F84D0, this, player_addr, player_slot, options);
+    Call_Method<void, LANAPI, uint32_t, int, Utf8String>(PICK_ADDRESS(0x005F84D0, 0), this, player_addr, player_slot, options);
 #endif
 }
 
@@ -449,7 +449,7 @@ void LANAPI::On_Game_Create(ReturnType type)
 {
     // TODO Requires Shell, GadgetList*
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, ReturnType>(0x005F96E0, this, type);
+    Call_Method<void, LANAPI, ReturnType>(PICK_ADDRESS(0x005F96E0, 0), this, type);
 #endif
 }
 
@@ -467,7 +467,7 @@ LANGameInfo *LANAPI::Lookup_Game(Utf16String name)
 {
     // TODO Requires LANGameInfo
 #ifdef GAME_DLL
-    return Call_Method<LANGameInfo *, LANAPI, Utf16String>(0x0072B410, this, name);
+    return Call_Method<LANGameInfo *, LANAPI, Utf16String>(PICK_ADDRESS(0x0072B410, 0), this, name);
 #else
     return nullptr;
 #endif
@@ -477,7 +477,7 @@ LANGameInfo *LANAPI::Lookup_Game_By_Offset(int offset)
 {
     // TODO Requires LANGameInfo
 #ifdef GAME_DLL
-    return Call_Method<LANGameInfo *, LANAPI, int>(0x0072B4C0, this, offset);
+    return Call_Method<LANGameInfo *, LANAPI, int>(PICK_ADDRESS(0x0072B4C0, 0), this, offset);
 #else
     return nullptr;
 #endif
@@ -510,7 +510,7 @@ bool LANAPI::Am_I_Host()
 {
     // TODO Requires LANGameInfo
 #ifdef GAME_DLL
-    return Call_Method<bool, LANAPI>(0x0072B960, this);
+    return Call_Method<bool, LANAPI>(PICK_ADDRESS(0x0072B960, 0), this);
 #else
     return false;
 #endif
@@ -532,7 +532,7 @@ LANPlayer *LANAPI::Lookup_Player(uint32_t ip)
 {
     // TODO Requires LANPlayer
 #ifdef GAME_DLL
-    return Call_Method<LANPlayer *, LANAPI, uint32_t>(0x0072B540, this, ip);
+    return Call_Method<LANPlayer *, LANAPI, uint32_t>(PICK_ADDRESS(0x0072B540, 0), this, ip);
 #else
     return nullptr;
 #endif
@@ -547,7 +547,7 @@ void LANAPI::Send_Message(LANMessage *msg, uint32_t addr)
 {
     // Needs LANGameInfo, LANPlayer
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI>(0x00729530, this);
+    Call_Method<void, LANAPI>(PICK_ADDRESS(0x00729530, 0), this);
 #endif
 }
 

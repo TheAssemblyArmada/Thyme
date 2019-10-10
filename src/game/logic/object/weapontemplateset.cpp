@@ -108,7 +108,7 @@ void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const 
 {
     // TODO requires WeaponTemplate parser
 #ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(0x00605E60, ini, formal, store, user_data);
+    Call_Function<void, INI *, void *, void *, const void *>(PICK_ADDRESS(0x00605E60, 0x006DE34C), ini, formal, store, user_data);
 #endif
 }
 

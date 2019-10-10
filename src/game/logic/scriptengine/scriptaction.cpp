@@ -118,7 +118,7 @@ Utf8String ScriptAction::Get_UI_Text()
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    return Call_Method<Utf8String, ScriptAction>(0x005206B0, this);
+    return Call_Method<Utf8String, ScriptAction>(PICK_ADDRESS(0x005206B0, 0), this);
 #else
     return Utf8String();
 #endif
@@ -179,7 +179,7 @@ void ScriptAction::Set_Action_Type(ScriptActionType type)
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    Call_Method<void, ScriptAction, ScriptActionType>(0x0051FE50, this, type);
+    Call_Method<void, ScriptAction, ScriptActionType>(PICK_ADDRESS(0x0051FE50, 0), this, type);
 #endif
 }
 
@@ -192,7 +192,7 @@ ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *i
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *>(0x005208A0, input, info);
+    return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *>(PICK_ADDRESS(0x005208A0, 0), input, info);
 #else
     return nullptr;
 #endif

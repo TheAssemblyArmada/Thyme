@@ -138,7 +138,7 @@ void AudioManager::Update()
 {
     // TODO Requires g_theTacticalView.
 #ifdef GAME_DLL
-    Call_Method<void, AudioManager>(0x00404FB0, this);
+    Call_Method<void, AudioManager>(PICK_ADDRESS(0x00404FB0, 0x006E3ADF), this);
 #endif
 }
 
@@ -370,7 +370,7 @@ bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
 {
     // TODO Requires classes for g_theControlBar, g_thePlayerList
 #ifdef GAME_DLL
-    return Call_Method<bool, AudioManager, const AudioEventRTS *>(0x00406E00, this, event);
+    return Call_Method<bool, AudioManager, const AudioEventRTS *>(PICK_ADDRESS(0x00406E00, 0x006E5597), this, event);
 #else
     return false;
 #endif

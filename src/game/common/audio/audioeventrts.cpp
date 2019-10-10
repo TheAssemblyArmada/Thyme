@@ -440,7 +440,7 @@ void AudioEventRTS::Set_Event_Name(Utf8String name)
 Coord3D *AudioEventRTS::Get_Current_Pos()
 {
 #ifdef GAME_DLL
-    return Call_Method<Coord3D *, AudioEventRTS>(0x00445980, this);
+    return Call_Method<Coord3D *, AudioEventRTS>(PICK_ADDRESS(0x00445980, 0x006E2B4D), this);
 #else
     return nullptr;
 #endif

@@ -434,12 +434,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
 
 int INI::Scan_Science(const char *token)
 {
-#ifdef GAME_DLL
-    // return TheScienceStore->Friend_Lookup_Science(token);
-    return Call_Function<int, char const *>(0x0041D740, token); // INI::scanScience
-#else
-    return 0;
-#endif
+    return g_theScienceStore->Lookup_Science(token);
 }
 
 float INI::Scan_PercentToReal(const char *token)

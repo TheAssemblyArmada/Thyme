@@ -371,7 +371,7 @@ void Mouse::Set_Mouse_Limits()
 {
     // TODO Requires Display
 #ifdef GAME_DLL
-    Call_Method<void, Mouse>(0x00403B60, this);
+    Call_Method<void, Mouse>(PICK_ADDRESS(0x00403B60, 0x00852876), this);
 #elif 0
     m_minX = 0;
     m_minY = 0;
@@ -392,7 +392,7 @@ void Mouse::Notify_Resolution_Change()
 {
     // TODO Requires FontLibrary
 #ifdef GAME_DLL
-    Call_Method<void, Mouse>(0x00403090, this);
+    Call_Method<void, Mouse>(PICK_ADDRESS(0x00403090, 0x00851AEC), this);
 #elif 0
     if (m_tooltipDisplayString != nullptr) {
         g_theDisplayStringManger->Free_Display_String(m_tooltipDisplayString);

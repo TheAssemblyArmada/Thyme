@@ -68,7 +68,7 @@ void Render2DClass::Render()
 {
     // TODO
 #ifdef GAME_DLL
-    Call_Method<void, Render2DClass>(0x0080AAC0, this);
+    Call_Method<void, Render2DClass>(PICK_ADDRESS(0x0080AAC0, 0x004F4980), this);
 #endif
 }
 
@@ -95,7 +95,7 @@ void Render2DClass::Set_Texture(const char *filename)
 {
     // TODO Needs W3DAssetManager
 #ifdef GAME_DLL
-    Call_Method<void, Render2DClass, const char *>(0x00809590, this, filename);
+    Call_Method<void, Render2DClass, const char *>(PICK_ADDRESS(0x00809590, 0x004F3390), this, filename);
 #endif
 }
 

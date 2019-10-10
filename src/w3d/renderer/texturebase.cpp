@@ -231,7 +231,7 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
 {
     // TODO Needs W3DAssetManager
 #ifdef GAME_DLL
-    Call_Function<void, unsigned>(0x0081A620, unk);
+    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A620, 0x005065C0), unk);
 #endif
 }
 
@@ -244,6 +244,6 @@ void TextureBaseClass::Apply_Null(unsigned unk)
 {
     // TODO Needs more of DX8Wrapper
 #ifdef GAME_DLL
-    Call_Function<void, unsigned>(0x0081A890, unk);
+    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A890, 0x00506930), unk);
 #endif
 }

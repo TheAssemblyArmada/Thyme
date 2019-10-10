@@ -29,7 +29,7 @@ void ModuleFactory::Init()
 {
     // TODO, needs most module derived classes implementing.
 #ifdef GAME_DLL
-    Call_Method<void, ModuleFactory>(0x004D9660, this);
+    Call_Method<void, ModuleFactory>(PICK_ADDRESS(0x004D9660, 0x0076F6B7), this);
 #elif 0 // TODO, complete function with raw addresses until reimplemented code exists.
     Add_Module_Internal(
         (modcreateproc_t)0x004DE090, (moddatacreateproc_t)0x004DE170, MODULE_FIRST, "AutoHealBehaviour", 0x85);

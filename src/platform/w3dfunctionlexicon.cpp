@@ -17,7 +17,7 @@
 void W3DFunctionLexicon::Init()
 {
 #ifdef GAME_DLL
-    Call_Method<void, FunctionLexicon>(0x007774E0, this);
+    Call_Method<void, FunctionLexicon>(PICK_ADDRESS(0x007774E0, 0), this);
 #else
     FunctionLexicon::Init();
     // TODO requires several function pointer tables, do them as functions that call them require it?

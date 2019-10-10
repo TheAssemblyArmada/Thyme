@@ -18,7 +18,7 @@
 GameEngine *Create_Game_Engine()
 {
 #ifdef GAME_DLL
-    return Call_Function<GameEngine*>(0x00401CD0);
+    return Call_Function<GameEngine*>(PICK_ADDRESS(0x00401CD0, 0));
 #else
     GameEngine *tmp = new Win32GameEngine;
     tmp->Set_Is_Active(true);

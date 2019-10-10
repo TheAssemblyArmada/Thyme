@@ -42,7 +42,7 @@ Image *PlayerTemplate::Get_Head_Watermark_Image()
 Image *PlayerTemplate::Get_Flag_Watermark_Image()
 {
 #ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(0x004D2FB0, this);
+    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FB0, 0), this);
 #else
     return nullptr;
 #endif
@@ -51,7 +51,7 @@ Image *PlayerTemplate::Get_Flag_Watermark_Image()
 Image *PlayerTemplate::Get_Side_Icon_Image()
 {
 #ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(0x004D2FD0, this);
+    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FD0, 0), this);
 #else
     return nullptr;
 #endif
@@ -60,7 +60,7 @@ Image *PlayerTemplate::Get_Side_Icon_Image()
 Image *PlayerTemplate::Get_General_Image()
 {
 #ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(0x004D2FF0, this);
+    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D2FF0, 0), this);
 #else
     return nullptr;
 #endif
@@ -69,7 +69,7 @@ Image *PlayerTemplate::Get_General_Image()
 Image *PlayerTemplate::Get_Enabled_Image()
 {
 #ifdef GAME_DLL
-    return Call_Method<Image *, PlayerTemplate>(0x004D3010, this);
+    return Call_Method<Image *, PlayerTemplate>(PICK_ADDRESS(0x004D3010, 0), this);
 #else
     return nullptr;
 #endif

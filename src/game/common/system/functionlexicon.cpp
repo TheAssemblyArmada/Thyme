@@ -92,7 +92,7 @@ void *FunctionLexicon::Key_To_Func(NameKeyType key, TableEntry *table)
 void FunctionLexicon::Init()
 {
 #ifdef GAME_DLL
-    Call_Method<void, FunctionLexicon>(0x004F3EC0, this);
+    Call_Method<void, FunctionLexicon>(PICK_ADDRESS(0x004F3EC0, 0x00A31671), this);
 #else
 // TODO requires several function pointer tables, do them as functions that call them require it?
 #endif

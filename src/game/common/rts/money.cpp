@@ -24,7 +24,7 @@ void Money::Xfer_Snapshot(Xfer *xfer)
 void Money::Deposit(unsigned amount, bool play_sound)
 {
 #ifdef GAME_DLL
-    Call_Method<void, Money, unsigned, bool>(0x005008D0, this, amount, play_sound);
+    Call_Method<void, Money, unsigned, bool>(PICK_ADDRESS(0x005008D0, 0), this, amount, play_sound);
 #else
     if (amount == 0) {
         return;

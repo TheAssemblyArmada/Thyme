@@ -59,7 +59,7 @@ bool SoundManager::Can_Play_Now(AudioEventRTS *event)
 {
     // Requires PlayerList and PartitionManager classes.
 #ifdef GAME_DLL
-    return Call_Method<bool, SoundManager, AudioEventRTS *>(0x00446120, this, event);
+    return Call_Method<bool, SoundManager, AudioEventRTS *>(PICK_ADDRESS(0x00446120, 0x008AF28A), this, event);
 #else
     return false;
 #endif

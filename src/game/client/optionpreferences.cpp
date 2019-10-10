@@ -27,7 +27,7 @@ int OptionPreferences::Get_Campaign_Difficulty()
 {
 #ifdef GAME_DLL
     // TODO, needs script engine member.
-    return Call_Method<int, OptionPreferences>(0x00462BA0, this);
+    return Call_Method<int, OptionPreferences>(PICK_ADDRESS(0x00462BA0, 0x0087E225), this);
 #else
     return 0;
 #endif
@@ -37,7 +37,7 @@ void OptionPreferences::Set_Campaign_Difficulty(int difficulty)
 {
 #ifdef GAME_DLL
     // TODO, needs script engine member.
-    return Call_Method<void, OptionPreferences, int>(0x00462CB0, this, difficulty);
+    return Call_Method<void, OptionPreferences, int>(PICK_ADDRESS(0x00462CB0, 0x0087E2FA), this, difficulty);
 #endif
 }
 
@@ -487,7 +487,7 @@ uint32_t OptionPreferences::Get_LAN_IPAddress()
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<uint32_t, OptionPreferences>(0x00462EA0, this);
+    return Call_Method<uint32_t, OptionPreferences>(PICK_ADDRESS(0x00462EA0, 0x0087E392), this);
 #else
     return 0;
 #endif
@@ -497,7 +497,7 @@ void OptionPreferences::Set_LAN_IPAddress(Utf8String address)
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, Utf8String>(0x004630E0, this, address);
+    return Call_Method<void, OptionPreferences, Utf8String>(PICK_ADDRESS(0x004630E0, 0x0087E4C5), this, address);
 #endif
 }
 
@@ -505,7 +505,7 @@ void OptionPreferences::Set_LAN_IPAddress(uint32_t address)
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, uint32_t>(0x004632B0, this, address);
+    return Call_Method<void, OptionPreferences, uint32_t>(PICK_ADDRESS(0x004632B0, 0x0087E540), this, address);
 #endif
 }
 
@@ -513,7 +513,7 @@ uint32_t OptionPreferences::Get_Online_IPAddress()
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<uint32_t, OptionPreferences>(0x004634B0, this);
+    return Call_Method<uint32_t, OptionPreferences>(PICK_ADDRESS(0x004634B0, 0x0087E603), this);
 #else
     return 0;
 #endif
@@ -523,7 +523,7 @@ void OptionPreferences::Set_Online_IPAddress(Utf8String address)
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, Utf8String>(0x004636F0, this, address);
+    return Call_Method<void, OptionPreferences, Utf8String>(PICK_ADDRESS(0x004636F0, 0x0087E736), this, address);
 #endif
 }
 
@@ -531,6 +531,6 @@ void OptionPreferences::Set_Online_IPAddress(uint32_t address)
 {
 #ifdef GAME_DLL
     // TODO needs IPEnumeration
-    return Call_Method<void, OptionPreferences, uint32_t>(0x004638C0, this, address);
+    return Call_Method<void, OptionPreferences, uint32_t>(PICK_ADDRESS(0x004638C0, 0x0087E7B1), this, address);
 #endif
 }

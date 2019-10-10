@@ -540,7 +540,7 @@ void DX8Caps::Check_Max_Texture_Support(const w3dcaps_t &caps)
 void DX8Caps::Check_Driver_Version_Status()
 {
 #ifdef GAME_DLL
-    Call_Method<void, DX8Caps>(0x00846960, this);
+    Call_Method<void, DX8Caps>(PICK_ADDRESS(0x00846960, 0x0055A8C0), this);
 #else
     switch (m_vendorNumber) {
         // The original code looks for specific files and driver versions which are outdated.
@@ -584,7 +584,7 @@ void DX8Caps::Check_Driver_Version_Status()
 void DX8Caps::Vendor_Specific_Hacks(const w3dadapterid_t &identifier)
 {
 #ifdef GAME_DLL
-    Call_Method<void, DX8Caps, const w3dadapterid_t &>(0x00846FF0, this, identifier);
+    Call_Method<void, DX8Caps, const w3dadapterid_t &>(PICK_ADDRESS(0x00846FF0, 0x0055AFA0), this, identifier);
 #else
     // TODO, do we want to implement this? Largely refers to hardware that was old when Generals was released.
 #endif

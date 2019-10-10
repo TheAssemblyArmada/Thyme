@@ -283,7 +283,7 @@ void Xfer::xferScienceType(ScienceType *thing)
 {
     // TODO, needs parts of ScienceStore
 #ifdef GAME_DLL
-    Call_Method<void, Xfer, ScienceType *>(0x005F0120, this, thing);
+    Call_Method<void, Xfer, ScienceType *>(PICK_ADDRESS(0x005F0120, 0x00A01176), this, thing);
 #endif
 }
 
@@ -291,7 +291,7 @@ void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 {
     // TODO, needs parts of ScienceStore
 #ifdef GAME_DLL
-    Call_Method<void, Xfer, std::vector<ScienceType> *>(0x005F02A0, this, thing);
+    Call_Method<void, Xfer, std::vector<ScienceType> *>(PICK_ADDRESS(0x005F02A0, 0x00A01364), this, thing);
 #endif
 }
 
@@ -337,7 +337,7 @@ void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 {
     // TODO, needs part of UpgradeCenter
 #ifdef GAME_DLL
-    Call_Method<void, Xfer, BitFlags<128> *>(0x005F05C0, this, thing);
+    Call_Method<void, Xfer, BitFlags<128> *>(PICK_ADDRESS(0x005F05C0, 0x00A016CF), this, thing);
 #endif
 }
 

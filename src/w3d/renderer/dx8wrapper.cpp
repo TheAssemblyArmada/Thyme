@@ -140,7 +140,7 @@ bool DX8Wrapper::Init(void *hwnd, bool lite)
 void DX8Wrapper::Shutdown()
 {
 #ifdef GAME_DLL
-    Call_Function<void>(0x00800860);
+    Call_Function<void>(PICK_ADDRESS(0x00800860, 0x004F98D0));
 #endif
 }
 
@@ -236,7 +236,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
 {
 #ifdef GAME_DLL
     return Call_Function<w3dtexture_t, unsigned, unsigned, WW3DFormat, MipCountType, w3dpool_t, bool>(
-        0x008036F0, width, height, format, mip_level_count, pool, rendertarget);
+        PICK_ADDRESS(0x008036F0, 0x004FDF00), width, height, format, mip_level_count, pool, rendertarget);
 #else
     return w3dtexture_t();
 #endif
@@ -280,7 +280,7 @@ void DX8Wrapper::Reset_Statistics()
 void DX8Wrapper::Invalidate_Cached_Render_States()
 {
 #ifdef GAME_DLL
-    Call_Function<void>(0x008009E0);
+    Call_Function<void>(PICK_ADDRESS(0x008009E0, 0x004F9BF0));
 #endif
 }
 

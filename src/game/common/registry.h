@@ -18,9 +18,5 @@
 #include "asciistring.h"
 
 Utf8String Get_Registry_Language();
-void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
-void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination);
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
+bool Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String &destination);
+bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String &destination);

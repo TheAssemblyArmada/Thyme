@@ -15,31 +15,77 @@
 
 #include "registry.h"
 
+#ifdef PLATFORM_WINDOWS
+#include <winreg.h>
+
+static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8String& result)
+{
+    HKEY phk_result;
+    if (RegOpenKeyExA(hkey, subkey, 0, KEY_READ, &phk_result) == ERROR_SUCCESS) {
+        BYTE data[256];
+        DWORD data_len = 256;
+        DWORD type;
+        LSTATUS query_result = RegQueryValueExA(phk_result, key, 0, &type, data, &data_len);
+        RegCloseKey(phk_result);
+
+        if (query_result == ERROR_SUCCESS) {
+            result = reinterpret_cast<char *>(data);
+
+            return true;
+        }
+    }
+
+    return false;
+}
+#endif
+
 Utf8String Get_Registry_Language()
 {
     static Utf8String lang = "english";
     static bool retrieved = false;
-    
-    if(retrieved) {
+
+    if (retrieved) {
         return lang;
     } else {
         Get_String_From_Registry("", "Language", lang);
         retrieved = true;
-        
+
         return lang;
     }
 }
 
-void Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
+bool Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String &destination)
 {
-#ifdef GAME_DLL
-    Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x00498A80, subkey, value, destination);
+#ifdef PLATFORM_WINDOWS
+    Utf8String key = "SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour";
+    key += subkey;
+    DEBUG_LOG("Get_String_From_Registry - looking in %s for key %s\n", key.Str(), value.Str());
+    bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
+
+    if (!success) {
+        return getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
+    }
+
+    return false;
+#else
+    return false;
 #endif
 }
 
-void Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String const &destination)
+bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8String &destination)
 {
-#ifdef GAME_DLL
-    Call_Function<void, Utf8String, Utf8String, Utf8String const &>(0x004988A0, subkey, value, destination);
+#ifdef PLATFORM_WINDOWS
+    Utf8String key = "SOFTWARE\\Electronic Arts\\EA Games\\Generals";
+    key += subkey;
+    DEBUG_LOG("Get_String_From_Generals_Registry - looking in %s for key %s\n", key.Str(), value.Str());
+    bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
+
+    if (!success) {
+        return getStringFromReg(HKEY_CURRENT_USER, key, value, destination);
+    }
+
+    return false;
+#else
+    return false;
 #endif
 }

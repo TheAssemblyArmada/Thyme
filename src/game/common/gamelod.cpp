@@ -19,8 +19,7 @@
 #include <cstdio>
 #include <cstddef>
 
-#ifdef GAME_DLL
-#else
+#ifndef GAME_DLL
 GameLODManager *g_theGameLODManager = nullptr;
 #endif
 
@@ -47,16 +46,30 @@ const char *GameLODManager::s_gpuNames[] = {
     "R300" 
 };
 
-void Test_Minimum_Requirements(GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score)
+void Test_Minimum_Requirements(
+    GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score)
 {
-#ifdef GAME_DLL
-    Call_Function<void, GPUType *, CPUType *, int *, int *, float *, float *, float *>(0x0074EB20, gpu, cpu, cpu_speed, memory, int_score, float_score, mem_score);
-#else
-    *cpu = CPU_P3;
-    *gpu = GPU_GF4;
-    *cpu_speed = 2500;
-    *memory = CPUDetectClass::Get_Available_Physical_Memory() > INT_MAX ? INT_MAX : CPUDetectClass::Get_Available_Physical_Memory();
-#endif
+    // This implementation just gives the "best" results for cpu and gpu type as modern hardware isn't recognised correctly.
+    if (cpu != nullptr) {
+        *cpu = CPU_P3;
+    }
+
+    if (gpu != nullptr) {
+        *gpu = GPU_GF4;
+    }
+
+    if (cpu_speed != nullptr) {
+        *cpu_speed = 2500;
+    }
+
+    // Because memory is returned as an integer and systems with more than 2GB are now common we return a max of 2GB rather than overflowing.
+    if (memory != nullptr) {
+        *memory = CPUDetectClass::Get_Available_Physical_Memory() > INT_MAX ?
+            INT_MAX :
+            CPUDetectClass::Get_Available_Physical_Memory();
+    }
+
+    // The other values are ignored here and were generated from the integrated nbench benchmarking code if all 3 values were requested.
 }
 
 GameLODManager::GameLODManager() :

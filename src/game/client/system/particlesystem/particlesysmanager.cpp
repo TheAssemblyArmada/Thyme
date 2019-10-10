@@ -104,7 +104,7 @@ void ParticleSystemManager::Update()
 {
     // TODO Needs game logic.
 #ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager>(0x004D1CC0, this);
+    Call_Method<void, ParticleSystemManager>(PICK_ADDRESS(0x004D1CC0, 0x00769348), this);
 #endif
 }
 
@@ -260,7 +260,7 @@ void ParticleSystemManager::Destroy_Attached_Systems(Object *object)
 {
     // TODO Requires Object.
 #ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager, Object *>(0x004D2270, this, object);
+    Call_Method<void, ParticleSystemManager, Object *>(PICK_ADDRESS(0x004D2270, 0x00769810), this, object);
 #endif
 }
 
@@ -273,7 +273,7 @@ void ParticleSystemManager::Preload_Assets(TimeOfDayType time)
 {
     // TODO Requires Display.
 #ifdef GAME_DLL
-    Call_Method<void, ParticleSystemManager, TimeOfDayType>(0x004D2370, this, time);
+    Call_Method<void, ParticleSystemManager, TimeOfDayType>(PICK_ADDRESS(0x004D2370, 0x00769B8B), this, time);
 #endif
 }
 
@@ -383,7 +383,7 @@ ParticleSystemID ParticleSystemManager::Create_Attached_Particle_System_ID(
 {
 #ifdef GAME_DLL
     return Call_Function<ParticleSystemID, const ParticleSystemTemplate *, Object *, bool>(
-        0x004D1DF0, temp, object, create_slaves);
+        PICK_ADDRESS(0x004D1DF0, 0x007694CC), temp, object, create_slaves);
 #else
     ParticleSystem *sys = g_theParticleSystemManager->Create_Particle_System(temp, create_slaves);
 

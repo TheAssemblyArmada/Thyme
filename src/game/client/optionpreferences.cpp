@@ -12,8 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "audiomanager.h"
 #include "optionpreferences.h"
+#include "audiomanager.h"
 #include "globaldata.h"
 #include <algorithm>
 #include <cstdio>
@@ -45,7 +45,7 @@ bool OptionPreferences::Get_Alternate_Mouse_Mode_Enabled()
 {
     auto it = find("UseAlternateMouse");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_alternateMouseEnabled;
     }
 
@@ -56,7 +56,7 @@ bool OptionPreferences::Get_Retaliation_Mode_Enabled()
 {
     auto it = find("Retaliation");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_retaliationModeEnabled;
     }
 
@@ -67,7 +67,7 @@ bool OptionPreferences::Get_Double_Click_Attack_Move_Enabled()
 {
     auto it = find("UseDoubleClickAttackMove");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_doubleClickAttackMovesEnabled;
     }
 
@@ -78,7 +78,7 @@ float OptionPreferences::Get_Scroll_Factor()
 {
     auto it = find("ScrollFactor");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_keyboardDefaultScrollFactor;
     }
 
@@ -91,7 +91,7 @@ bool OptionPreferences::Uses_System_Map_Dir()
 {
     auto it = find("UseSystemMapDir");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return true;
     }
 
@@ -102,7 +102,7 @@ bool OptionPreferences::Save_Camera_In_Replays()
 {
     auto it = find("SaveCameraInReplays");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return true;
     }
 
@@ -113,7 +113,7 @@ bool OptionPreferences::Use_Camera_In_Replays()
 {
     auto it = find("UseCameraInReplays");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return true;
     }
 
@@ -124,7 +124,7 @@ int OptionPreferences::Get_Ideal_Static_Game_Detail()
 {
     auto it = find("IdealStaticGameLOD");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return STATLOD_INVALID;
     }
 
@@ -135,7 +135,7 @@ int OptionPreferences::Get_Static_Game_Detail()
 {
     auto it = find("StaticGameLOD");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theGameLODManager->Get_Static_LOD_Level();
     }
 
@@ -146,8 +146,8 @@ Utf8String OptionPreferences::Get_Preferred_3D_Provider()
 {
     auto it = find("3DAudioProvider");
 
-    if ( it == end() ) {
-        // This gets Preferred3DSW entry from AudioSettings.ini as "Miles Fast 2D 
+    if (it == end()) {
+        // This gets Preferred3DSW entry from AudioSettings.ini as "Miles Fast 2D
         // Positional Audio" is actually the only provider the engine contains.
         return g_theAudio->Get_Audio_Settings()->Get_Preferred_Driver(4);
     }
@@ -159,7 +159,7 @@ Utf8String OptionPreferences::Get_Speaker_Type()
 {
     auto it = find("SpeakerType");
 
-    if ( it == end() ) {
+    if (it == end()) {
         AudioSettings *as = g_theAudio->Get_Audio_Settings();
 
         return g_theAudio->Translate_To_Speaker_Type(as->Get_Default_2D_Speaker());
@@ -172,11 +172,11 @@ float OptionPreferences::Get_Sound_Volume()
 {
     auto it = find("SFXVolume");
 
-    if ( it == end() ) {
+    if (it == end()) {
         AudioSettings *as = g_theAudio->Get_Audio_Settings();
         float rel_vol = as->Get_Relative_Volume();
-        
-        if ( rel_vol >= 0.0f ) {
+
+        if (rel_vol >= 0.0f) {
             return as->Get_Default_Sound_Volume() * 100.0f;
         }
 
@@ -192,11 +192,11 @@ float OptionPreferences::Get_3DSound_Volume()
 {
     auto it = find("SFX3DVolume");
 
-    if ( it == end() ) {
+    if (it == end()) {
         AudioSettings *as = g_theAudio->Get_Audio_Settings();
         float rel_vol = as->Get_Relative_Volume();
 
-        if ( rel_vol >= 0.0f ) {
+        if (rel_vol >= 0.0f) {
             return as->Get_Default_3D_Sound_Volume() * 100.0f;
         }
 
@@ -212,7 +212,7 @@ float OptionPreferences::Get_Speech_Volume()
 {
     auto it = find("VoiceVolume");
 
-    if ( it == end() ) {
+    if (it == end()) {
         AudioSettings *as = g_theAudio->Get_Audio_Settings();
 
         return as->Get_Default_Speech_Volume() * 100.0f;
@@ -227,7 +227,7 @@ float OptionPreferences::Get_Music_Volume()
 {
     auto it = find("MusicVolume");
 
-    if ( it == end() ) {
+    if (it == end()) {
         AudioSettings *as = g_theAudio->Get_Audio_Settings();
 
         return as->Get_Default_Speech_Volume() * 100.0f;
@@ -242,7 +242,7 @@ bool OptionPreferences::Get_Cloud_Shadows_Enabled()
 {
     auto it = find("UseCloudMap");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useCloudMap;
     }
 
@@ -253,7 +253,7 @@ bool OptionPreferences::Get_Lightmap_Enabled()
 {
     auto it = find("UseLightMap");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useLightMap;
     }
 
@@ -264,7 +264,7 @@ bool OptionPreferences::Get_Smooth_Water_Enabled()
 {
     auto it = find("ShowSoftWaterEdge");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_showSoftWaterEdge;
     }
 
@@ -275,7 +275,7 @@ bool OptionPreferences::Get_Trees_Enabled()
 {
     auto it = find("ShowTrees");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useTrees;
     }
 
@@ -286,7 +286,7 @@ bool OptionPreferences::Get_Extra_Animations_Disabled()
 {
     auto it = find("ExtraAnimations");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_extraAnimationsDisabled;
     }
 
@@ -297,7 +297,7 @@ bool OptionPreferences::Get_Use_Heat_Effects()
 {
     auto it = find("HeatEffects");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useHeatEffects;
     }
 
@@ -308,7 +308,7 @@ bool OptionPreferences::Get_Dynamic_LOD_Enabled()
 {
     auto it = find("DynamicLOD");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_dynamicLOD;
     }
 
@@ -319,7 +319,7 @@ bool OptionPreferences::Get_FPSLimit_Enabled()
 {
     auto it = find("FPSLimit");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useFPSLimit;
     }
 
@@ -330,7 +330,7 @@ bool OptionPreferences::Get_3DShadows_Enabled()
 {
     auto it = find("UseShadowVolumes");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_shadowVolumes;
     }
 
@@ -341,7 +341,7 @@ bool OptionPreferences::Get_2DShadows_Enabled()
 {
     auto it = find("UseShadowDecals");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_shadowDecals;
     }
 
@@ -352,7 +352,7 @@ bool OptionPreferences::Get_Building_Occlusion_Enabled()
 {
     auto it = find("BuildingOcclusion");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_useBehindBuildingMarker;
     }
 
@@ -363,7 +363,7 @@ int OptionPreferences::Get_Particle_Cap()
 {
     auto it = find("MaxParticleCount");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_maxParticleCount;
     }
 
@@ -376,7 +376,7 @@ int OptionPreferences::Get_Texture_Reduction()
 {
     auto it = find("TextureReduction");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return -1;
     }
 
@@ -389,7 +389,7 @@ float OptionPreferences::Get_Gamma_Value()
 {
     auto it = find("Gamma");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return 50.0f;
     }
 
@@ -403,14 +403,14 @@ void OptionPreferences::Get_Resolution(int *x, int *y)
 
     auto it = find("Resolution");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return;
     }
 
     int tmpx;
     int tmpy;
 
-    if ( sscanf(it->second.Str(), "%d%d", &tmpx, &tmpy) != 2 ) {
+    if (sscanf(it->second.Str(), "%d%d", &tmpx, &tmpy) != 2) {
         return;
     }
 
@@ -422,7 +422,7 @@ bool OptionPreferences::Get_Send_Delay()
 {
     auto it = find("SendDelay");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_sendDelay;
     }
 
@@ -433,7 +433,7 @@ int OptionPreferences::Get_Firewall_Behavior()
 {
     auto it = find("FirewallBehaviour");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_firewallBehaviour;
     }
 
@@ -446,7 +446,7 @@ int16_t OptionPreferences::Get_Firewall_Port_Allocation_Delta()
 {
     auto it = find("FirewallPortAllocationDelta");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_firewallPortAllocationDelta;
     }
 
@@ -457,7 +457,7 @@ uint16_t OptionPreferences::Get_Firewall_Port_Override()
 {
     auto it = find("FirewallPortOverride");
 
-    if ( it == end() ) {
+    if (it == end()) {
         return g_theWriteableGlobalData->m_firewallPortOverrides;
     }
 
@@ -470,13 +470,13 @@ bool OptionPreferences::Get_Firewall_Need_Refresh()
     // to query for this string, not sure what purpose that serves.
     auto it = find("FirewallNeedToRefresh");
 
-    if ( it != end() ) {
-        if ( strcasecmp(it->second.Str(), "true") == 0 ) {
+    if (it != end()) {
+        if (strcasecmp(it->second.Str(), "true") == 0) {
             g_theWriteableGlobalData->m_firewallBehaviour = 0;
         }
     }
 
-    if ( g_theWriteableGlobalData->m_firewallBehaviour != 0 ) {
+    if (g_theWriteableGlobalData->m_firewallBehaviour != 0) {
         return true;
     }
 

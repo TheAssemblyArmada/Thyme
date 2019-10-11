@@ -3,7 +3,7 @@
  *
  * @author OmniBlade
  *
- * @brief Map file handling utility functions.
+ * @brief Function for ensuring FPU mode is consistent.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -13,13 +13,13 @@
  *            LICENSE
  */
 #include "fpusetting.h"
+#include <float.h>
 
 void Set_FP_Mode()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(0x004A1E40);
-#else
-    
+#ifdef PLATFORM_WINDOWS
+    _fpreset();
+    _controlfp(_statusfp() & 0xFFFCFCFF | 0x00020000, 0x00030300);
 #endif
 }
 

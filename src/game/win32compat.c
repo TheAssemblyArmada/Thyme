@@ -85,7 +85,7 @@ void Handle_Win32_Args(int *argc, char ***argv)
 void Handle_Win32_Console(void)
 {
     /* Attach to the console that started us if any */
-    if (AttachConsole(ATTACH_PARENT_PROCESS) == 0) {
+    if (AttachConsole(ATTACH_PARENT_PROCESS)) {
         /* We attached successfully, lets redirect IO to the consoles handles */
         freopen("CONIN$", "r", stdin);
         freopen("CONOUT$", "w", stdout);

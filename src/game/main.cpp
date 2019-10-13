@@ -267,7 +267,7 @@ int main(int argc, char **argv)
     Handle_Win32_Args(&argc, &argv);
     Handle_Win32_Console();
 
-    DEBUG_INIT(DEBUG_LOG_TO_FILE);
+    DEBUG_INIT(DEBUG_LOG_TO_FILE | DEBUG_LOG_TO_CONSOLE);
     // DEBUG_LOG("Running main().\n");
 
 #if defined PLATFORM_WINDOWS && defined GAME_DLL

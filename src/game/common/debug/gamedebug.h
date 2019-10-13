@@ -16,6 +16,8 @@
 #pragma once
 
 #include "always.h"
+#include "captnlog.h"
+#include "captnassert.h"
 #include "gameassert.h"
 #include "gamelogging.h"
 
@@ -24,8 +26,8 @@
 #define DEBUG_INIT(flags) Debug_Init(flags)
 #define DEBUG_STOP() Debug_Shutdown()
 
-#define DEBUG_LOG(msg, ...) Debug_Log(msg, ##__VA_ARGS__)
-#define DEBUG_LINE_LOG(msg, ...) Debug_Log("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__)
+#define DEBUG_LOG(msg, ...) captain_line(msg, ##__VA_ARGS__)
+#define DEBUG_LINE_LOG(msg, ...) captain_line("%s %d " msg, __FILE__, __LINE__, ##__VA_ARGS__)
 
 #else // !GAME_LOGGING
 
@@ -38,52 +40,9 @@
 #endif // GAME_LOGGING
 
 #ifdef GAME_ASSERTS
-#define DEBUG_ASSERT(exp) \
-    if (!(exp)) { \
-        static volatile bool _ignore_assert = false; \
-        static volatile bool _break = false; \
-        if (!_ignore_assert) { \
-            DEBUG_LOG( \
-                "ASSERTION FAILED!\n" \
-                "  File:%s\n  Line:%d\n  Function:%s\n  Expression:%s\n\n", \
-                __FILE__, \
-                __LINE__, \
-                __CURRENT_FUNCTION__, \
-                #exp); \
-            Debug_Assert(#exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, nullptr, _ignore_assert, _break); \
-        } \
-        if (_break) { \
-            __debugbreak(); \
-        } \
-    }
-
-#define DEBUG_ASSERT_PRINT(exp, msg, ...) \
-    if (!(exp)) { \
-        DEBUG_LOG( \
-            "ASSERTION FAILED!\n" \
-            "  File:%s\n  Line:%d\n  Function:%s\n  Expression:%s\n  Message:" msg "\n\n", \
-            __FILE__, \
-            __LINE__, \
-            __CURRENT_FUNCTION__, \
-            #exp, \
-            ##__VA_ARGS__); \
-    }
-
-#define DEBUG_ASSERT_THROW(exp, except, msg, ...) \
-    if (!(exp)) { \
-        DEBUG_LOG( \
-            "ASSERTION FAILED!\n" \
-            "  File:%s\n  Line:%d\n  Function:%s\n  Expression:%s\n  Message:" msg "\n\n", \
-            __FILE__, \
-            __LINE__, \
-            __CURRENT_FUNCTION__, \
-            #exp, \
-            ##__VA_ARGS__); \
-        if (BreakOnException) { \
-            __debugbreak(); \
-        } \
-        throw except; \
-    }
+#define DEBUG_ASSERT(exp) captain_dbgassert(exp, "")
+#define DEBUG_ASSERT_PRINT(exp, msg, ...) captain_dbgassert(exp, msg, ##__VA_ARGS__)
+#define DEBUG_ASSERT_THROW(exp, except, msg, ...) captain_assert(exp, except, msg, ##__VA_ARGS__)
 
 #else // !GAME_ASSERTS
 

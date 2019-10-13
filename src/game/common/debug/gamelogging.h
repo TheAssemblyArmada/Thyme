@@ -16,6 +16,7 @@
 #pragma once
 
 #include "always.h"
+#include "captnlog.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,9 +38,6 @@ enum DebugOptions
 
 void Debug_Init(int flags);
 void Debug_Shutdown();
-int Debug_Get_Flags();
-void Debug_Set_Flags(int flags);
-void Debug_Log(const char *format, ...);
 
 #endif // GAME_LOGGING
 

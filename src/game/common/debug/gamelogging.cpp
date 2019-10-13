@@ -250,22 +250,22 @@ void Debug_Init(int flags)
             }
         }
 #else
-        /*char *homedir = getenv("HOME");
+        char *homedir = getenv("HOME");
         if (homedir != nullptr) {
             strcpy(dirbuf, homedir);
         }
-        if (homedir == nullptr)
+
+        if (homedir == nullptr) {
             homedir = getpwuid(getuid())->pw_dir;
             if (homedir != nullptr) {
                 strcpy(dirbuf, homedir);
             }
         }
+
         if (homedir != nullptr) {
             strcat(dirbuf, "/Command and Conquer Generals Zero Hour Data");
-        }*/
+        }
 #endif
-
-        // const char *prefix = gAppPrefix;      //todo
         const char *prefix = "";
         strcpy(prevbuf, dirbuf);
         strcat(prevbuf, prefix);
@@ -275,106 +275,14 @@ void Debug_Init(int flags)
         strcat(curbuf, "ThymeDebugLogFile.txt");
         remove(prevbuf);
         rename(curbuf, prevbuf);
-        DebugLogFile = fopen(curbuf, "w");
-
-        if (DebugLogFile != nullptr) {
-            Debug_Log("Log %s opened: %s\n", curbuf, Get_Time_String());
-        }
     }
 
-    if (DebugFlags & DEBUG_LOG_TO_CONSOLE) {
-#ifdef PLATFORM_WINDOWS
-        AllocConsole();
-
-        // Redirect the CRT standard input, output, and error handles to the console.
-        freopen("CONIN$", "r", stdin);
-        freopen("CONOUT$", "w", stdout);
-        freopen("CONOUT$", "w", stderr);
-
-        // Set text colour to green.
-        DebugConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-        SetConsoleTextAttribute(DebugConsoleHandle, FOREGROUND_INTENSITY | FOREGROUND_GREEN);
-
-        Set_Console_Properties(DebugConsoleHandle, 0, 0, 120, 60);
-
-        COORD buffsize = {120, 4096};
-        SetConsoleScreenBufferSize(DebugConsoleHandle, buffsize);
-#endif
-    }
+    captain_init(LOGLEVEL_DEBUG, DebugFlags & DEBUG_LOG_TO_FILE ? curbuf : nullptr, (DebugFlags & DEBUG_LOG_TO_CONSOLE) != 0, false, false);
 }
 
 void Debug_Shutdown()
 {
-    if (DebugLogFile) {
-        Debug_Log("Log closed: %s\n", Get_Time_String());
-        fclose(DebugLogFile);
-    }
-
-    DebugLogFile = nullptr;
-    DebugFlags = 0;
-}
-
-int Debug_Get_Flags()
-{
-    return DebugFlags;
-}
-
-void Debug_Set_Flags(int flags)
-{
-    DebugFlags = flags;
-}
-
-void Log_Output(const char *buffer)
-{
-    CriticalSectionClass::LockClass m(DebugMutex);
-
-    if ((DebugFlags & DEBUG_LOG_TO_FILE)) {
-        if (DebugLogFile != nullptr) {
-            fprintf(DebugLogFile, "%s", buffer);
-            fflush(DebugLogFile);
-        }
-    }
-
-    if (DebugFlags & DEBUG_LOG_TO_DEBUGGER) {
-#if defined(PLATFORM_WINDOWS)
-        OutputDebugStringA(buffer);
-#else
-        printf("%s", buffer);
-#endif
-    }
-
-    if (DebugFlags & DEBUG_LOG_TO_CONSOLE) {
-        Debug_Console_Output(buffer);
-    }
-}
-
-void Debug_Log(const char *format, ...)
-{
-    va_list va;
-    va_start(va, format);
-
-    if (DebugFlags == 0) {
-#ifdef PLATFORM_WINDOWS
-        MessageBoxA(nullptr, "Debug not initialised properly", DebugCaption, 0);
-#else
-
-#endif
-    }
-
-    vsprintf(&DebugBuffer[strlen(DebugBuffer)], Prep_Buffer(format, DebugBuffer), va);
-
-    if (strlen(DebugBuffer) >= DEBUG_BUFFER_SIZE) {
-#ifdef PLATFORM_WINDOWS
-        MessageBoxA(nullptr, "String too long for debug buffer", DebugCaption, 0);
-#else
-
-#endif
-    }
-
-    Remove_Unprintable(DebugBuffer);
-
-    Log_Output(DebugBuffer);
-    va_end(va);
+    captain_deinit();
 }
 
 #endif // GAME_LOGGING

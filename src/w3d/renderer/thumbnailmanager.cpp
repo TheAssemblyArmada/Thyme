@@ -108,7 +108,7 @@ void ThumbnailManagerClass::Remove_From_Hash(ThumbnailClass *thumbnail)
 void ThumbnailManagerClass::Create_Thumbnails()
 {
     // Makes use of Renegade era MixFileFactory, probably not used.
-    DEBUG_ASSERT_PRINT(false, "Called an unimplemented function.\n")
+    DEBUG_ASSERT_PRINT(false, "Called an unimplemented function.\n");
 }
 
 /**

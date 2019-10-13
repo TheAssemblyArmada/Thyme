@@ -343,6 +343,9 @@ if(LOGGING)
     target_compile_definitions(thyme PUBLIC GAME_LOGGING=1)
 endif()
 
+add_subdirectory(libs/captnlog EXCLUDE_FROM_ALL)
+target_link_libraries(thyme captnlog)
+
 # Enable Thyme debug assertions.
 if(ASSERTIONS)
     target_compile_definitions(thyme PUBLIC GAME_ASSERTS=1)

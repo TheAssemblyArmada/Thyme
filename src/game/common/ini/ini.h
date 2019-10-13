@@ -201,7 +201,7 @@ inline const char *INI::Get_Next_Token(const char *seps)
 
 inline const char *INI::Get_Next_Sub_Token(const char *expected)
 {
-    DEBUG_ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n")
+    DEBUG_ASSERT_PRINT(strcasecmp(Get_Next_Token(m_sepsColon), expected) == 0, "Did not get expected token\n");
     return Get_Next_Token(m_sepsColon);
 }
 

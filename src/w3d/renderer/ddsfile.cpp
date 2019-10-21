@@ -15,7 +15,6 @@
 #include "ddsfile.h"
 #include "colorspace.h"
 #include "ffactory.h"
-#include "gamedebug.h"
 #include "rtsutils.h"
 #include <algorithm>
 #include <cstring>
@@ -68,14 +67,14 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     if (header_fourcc != FourCC<'D', 'D', 'S', ' '>::value) {
         char fourcc_debug[5] = {0};
         memcpy(fourcc_debug, &header_fourcc, sizeof(header_fourcc));
-        DEBUG_LOG("DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.\n", m_name, fourcc_debug);
+        captain_error("DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.", m_name, fourcc_debug);
     }
 
     int header_size = fp->Read(&m_fileHeader, sizeof(m_fileHeader));
 
     // Check that we read the header correctly, if not, return?
     if (header_size != sizeof(m_fileHeader) || header_size != m_fileHeader.dwSize) {
-        DEBUG_LOG("File load failed, read %d of %d bytes and header size reports %d.\n",
+        captain_error("File load failed, read %d of %d bytes and header size reports %d.",
             header_size,
             sizeof(m_fileHeader),
             m_fileHeader.dwSize);
@@ -216,7 +215,7 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, 
     if (dst_format == m_format && dst_width == Get_Width(level) && dst_height == Get_Height(level) && !adjust_color) {
         // TODO unpacks color component, adjusts it and then repacks it into destination buffer.
         if (adjust_color) {
-            DEBUG_ASSERT_PRINT(false, "Tried to color adjust DXT1 or DXT5.\n");
+            captain_dbgassert(false, "Tried to color adjust DXT1 or DXT5.");
         } else {
             memcpy(dst_surface, Get_Memory_Pointer(level), Get_Level_Size(level));
         }
@@ -240,7 +239,7 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, 
                 dst_surface += 4 * dst_pitch;
             }
         } else if (adjust_color) {
-            DEBUG_ASSERT_PRINT(false, "Tried to color adjust DXT1 to DXT2.\n");
+            captain_dbgassert(false, "Tried to color adjust DXT1 to DXT2.");
         } else {
             // Calc block count, rounding up to nearest.
             unsigned bc_y = (dst_height + 3) / 4;
@@ -272,11 +271,11 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surfac
     D3DLOCKED_RECT rect;
 
     if (d3d_surface->GetDesc(&desc) != 0) {
-        DEBUG_LOG("Error getting D3D surface description in DDSFileClass.\n");
+        captain_error("Error getting D3D surface description in DDSFileClass.");
     }
 
     if (d3d_surface->LockRect(&rect, nullptr, 0) != 0) {
-        DEBUG_LOG("Error locking D3D surface in DDSFileClass.\n");
+        captain_error("Error locking D3D surface in DDSFileClass.");
     }
 
     Copy_Level_To_Surface(level,
@@ -288,7 +287,7 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surfac
         color_shift);
 
     if (d3d_surface->UnlockRect() != 0) {
-        DEBUG_LOG("Error unlocking D3D surface in DDSFileClass.\n");
+        captain_error("Error unlocking D3D surface in DDSFileClass.");
     }
 #endif
 }
@@ -316,7 +315,7 @@ void DDSFileClass::Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, 
     if (dst_format == m_format && dst_width == Get_Width(level) && dst_height == Get_Height(level) && !adjust_color) {
         // TODO unpacks color component, adjusts it and then repacks it into destination buffer.
         if (adjust_color) {
-            DEBUG_ASSERT_PRINT(false, "Tried to color adjust CubeMap DXT1 or DXT5.\n");
+            captain_dbgassert(false, "Tried to color adjust CubeMap DXT1 or DXT5.");
         } else {
             memcpy(dst_surface, level_ptr, Get_Level_Size(level));
         }
@@ -340,7 +339,7 @@ void DDSFileClass::Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, 
                 dst_surface += 4 * dst_pitch;
             }
         } else { // TODO Copy DXT1 to DXT2?
-            DEBUG_ASSERT_PRINT(false, "Tried to copy CubeMap DXT1 to DXT2.\n");
+            captain_dbgassert(false, "Tried to copy CubeMap DXT1 to DXT2.");
         }
     }
 }
@@ -563,7 +562,7 @@ bool DDSFileClass::Load()
     auto_file_ptr fp(g_theFileFactory, m_name);
 
     if (!fp->Is_Available()) {
-        DEBUG_LOG("DDSFile '%s' is not available.\n", m_name);
+        captain_warn("DDSFile '%s' is not available.", m_name);
         return false;
     }
 
@@ -573,7 +572,7 @@ bool DDSFileClass::Load()
     unsigned data = fp->Size() - m_fileHeader.dwSize - sizeof(uint32_t);
 
     if (data == 0) {
-        DEBUG_LOG("DDSFile '%s' appears to contain no data, size is %d.\n", m_name, fp->Size());
+        captain_warn("DDSFile '%s' appears to contain no data, size is %d.", m_name, fp->Size());
         return false;
     }
 
@@ -597,7 +596,7 @@ bool DDSFileClass::Load()
         m_DDSMemory = new uint8_t[data];
         fp->Read(m_DDSMemory, data);
     } else {
-        DEBUG_LOG("Data size out of range at %d for '%s' at reduction factor %u.\n", data, m_name, m_reductionFactor);
+        captain_warn("Data size out of range at %d for '%s' at reduction factor %u.", data, m_name, m_reductionFactor);
     }
 
     fp->Close();

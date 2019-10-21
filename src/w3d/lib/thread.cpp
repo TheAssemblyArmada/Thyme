@@ -13,10 +13,10 @@
  *            LICENSE
  */
 #include "thread.h"
-#include "gamedebug.h"
 #include "rtsutils.h"
 #include "systimer.h"
 #include "threadtrack.h"
+#include <captnlog.h>
 #include <cstdio>
 #include <cstring>
 
@@ -93,7 +93,8 @@ void ThreadClass::Internal_Thread_Function(void *params)
     // check for m_isRunning in its loop and finish if set false;
     static_cast<ThreadClass *>(params)->m_isRunning = true;
     static_cast<ThreadClass *>(params)->m_threadID = Get_Current_Thread_ID();
-    Register_Thread_ID(static_cast<ThreadClass *>(params)->m_threadID, static_cast<ThreadClass *>(params)->m_threadName, false);
+    Register_Thread_ID(
+        static_cast<ThreadClass *>(params)->m_threadID, static_cast<ThreadClass *>(params)->m_threadName, false);
     static_cast<ThreadClass *>(params)->Thread_Function();
     Unregister_Thread_ID(static_cast<ThreadClass *>(params)->m_threadID, static_cast<ThreadClass *>(params)->m_threadName);
     static_cast<ThreadClass *>(params)->m_handle = 0;
@@ -109,7 +110,7 @@ void ThreadClass::Internal_Thread_Function(void *params)
  */
 void ThreadClass::Execute()
 {
-    DEBUG_LOG("Executing thread '%s'.\n", m_threadName);
+    captain_trace("Executing thread '%s'.", m_threadName);
 #ifdef HAVE_PTHREAD_H
     // These can be used to set none default params
     pthread_attr_t attr;
@@ -143,7 +144,7 @@ void ThreadClass::Set_Priority(int priority)
  */
 void ThreadClass::Stop(unsigned int ms)
 {
-    DEBUG_LOG("Stopping thread '%s'.\n", m_threadName);
+    captain_trace("Stopping thread '%s'.", m_threadName);
     m_isRunning = false;
     unsigned int time = g_theSysTimer.Get();
 
@@ -154,7 +155,7 @@ void ThreadClass::Stop(unsigned int ms)
 #elif defined PLATFORM_WINDOWS
             if (!TerminateThread(m_handle, 0)) {
 #endif
-                DEBUG_ASSERT(false);
+                captain_dbgassert(false, nullptr);
             }
 
             m_handle = 0;

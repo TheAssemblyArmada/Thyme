@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 #include <cstring>
 #include <new>
 
@@ -56,14 +56,14 @@ protected:
 template<typename T>
 T &VectorClass<T>::operator[](int index)
 {
-    DEBUG_ASSERT(unsigned(index) < unsigned(m_vectorMax));
+    captain_dbgassert(unsigned(index) < unsigned(m_vectorMax), nullptr);
     return m_vector[index];
 }
 
 template<typename T>
 const T &VectorClass<T>::operator[](int index) const
 {
-    DEBUG_ASSERT(unsigned(index) < unsigned(m_vectorMax));
+    captain_dbgassert(unsigned(index) < unsigned(m_vectorMax), nullptr);
     return m_vector[index];
 }
 

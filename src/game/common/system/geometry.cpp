@@ -14,11 +14,11 @@
  *            LICENSE
  */
 #include "geometry.h"
-#include "gamedebug.h"
 #include "gamemath.h"
 #include "randomvalue.h"
 #include "xfer.h"
 #include <algorithm>
+#include <captnlog.h>
 
 #define GEOMETRY_XFER_VERSION 1
 
@@ -125,7 +125,7 @@ void GeometryInfo::Set_Max_Height_Above_Position(float max_height)
             m_height = max_height;
             break;
         default:
-            DEBUG_LOG("GeometryInfo::Set_Max_Height_Above_Position - should never get here\n");
+            captain_error("GeometryInfo::Set_Max_Height_Above_Position - should never get here");
             break;
     }
 
@@ -146,7 +146,7 @@ float GeometryInfo::Get_Max_Height_Above_Position() const
         case GEOMETRY_BOX:
             return m_height;
         default:
-            DEBUG_LOG("GeometryInfo::Get_Max_Height_Above_Position - should never get here\n");
+            captain_error("GeometryInfo::Get_Max_Height_Above_Position - should never get here");
             break;
     }
 
@@ -206,7 +206,7 @@ float GeometryInfo::Get_Footprint_Area() const
             return float(4.0f * float(m_majorRadius * m_minorRadius));
         case GEOMETRY_SPHERE: // Fallthrough
         default:
-            DEBUG_LOG("GeometryInfo::Get_Footprint_Area - should never get here\n");
+            captain_error("GeometryInfo::Get_Footprint_Area - should never get here");
             break;
     }
 

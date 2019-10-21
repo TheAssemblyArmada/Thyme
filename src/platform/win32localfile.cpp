@@ -148,7 +148,7 @@ int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 
 void Win32LocalFile::Next_Line(char *dst, int bytes)
 {
-    DEBUG_LOG("Seeking getting next line from Win32LocalFile %s.\n", m_filename.Str());
+    captain_trace("Seeking getting next line from Win32LocalFile %s.", m_filename.Str());
 
     int i;
 
@@ -172,7 +172,7 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
 
 bool Win32LocalFile::Scan_Int(int &integer)
 {
-    DEBUG_LOG("Scanning Int from Win32LocalFile %s.\n", m_filename.Str());
+    captain_trace("Scanning Int from Win32LocalFile %s.", m_filename.Str());
     char tmp;
     Utf8String number;
 
@@ -213,7 +213,7 @@ bool Win32LocalFile::Scan_Int(int &integer)
 
 bool Win32LocalFile::Scan_Real(float &real)
 {
-    DEBUG_LOG("Scanning Real from Win32LocalFile %s.\n", m_filename.Str());
+    captain_trace("Scanning Real from Win32LocalFile %s.", m_filename.Str());
     char tmp;
     Utf8String number;
 
@@ -260,7 +260,7 @@ bool Win32LocalFile::Scan_Real(float &real)
 
 bool Win32LocalFile::Scan_String(Utf8String &string)
 {
-    DEBUG_LOG("Scanning String from Win32LocalFile %s.\n", m_filename.Str());
+    captain_trace("Scanning String from Win32LocalFile %s.", m_filename.Str());
     char tmp;
     string.Clear();
 

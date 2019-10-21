@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "functionlexicon.h"
+#include <captnlog.h>
 
 #ifndef GAME_DLL
 FunctionLexicon *g_theFunctionLexicon = nullptr;
@@ -55,7 +56,7 @@ bool FunctionLexicon::Validate()
             for (int j = 0; j < MAX_FUNCTION_TABLES; ++j) {
                 for (TableEntry *j_ent = m_tables[j]; j_ent != nullptr && j_ent->key != NAMEKEY_INVALID; ++i_ent) {
                     if (i_ent != j_ent && i_ent->func == j_ent->func) {
-                        DEBUG_LOG("WARNING! Function lexicon entries match same address! '%s' and '%s'\n",
+                        captain_warn("Function lexicon entries match same address! '%s' and '%s'\n",
                             i_ent->name,
                             j_ent->name);
                         valid = false;

@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "teamsinfo.h"
-#include "gamedebug.h"
 #include "staticnamekey.h"
 
 TeamsInfoRec::TeamsInfoRec(const TeamsInfoRec &that) : m_numTeams(0), m_numTeamsAllocated(0), m_teams(nullptr)

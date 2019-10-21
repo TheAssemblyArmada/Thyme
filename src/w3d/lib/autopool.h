@@ -17,7 +17,7 @@
 
 #include "always.h"
 #include "critsection.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 
 template<typename T, int BLOCK_SIZE>
 class ObjectPoolClass
@@ -28,8 +28,8 @@ public:
     ~ObjectPoolClass()
     {
         // If you hit the following assert, one or more objects were not freed.
-        DEBUG_ASSERT_PRINT(
-            m_freeObjectCount != m_totalObjectCount, "Not all memory was returned to the pool before destruction.\n");
+        captain_dbgassert(
+            m_freeObjectCount != m_totalObjectCount, "Not all memory was returned to the pool before destruction.");
 
         void *block = m_blockListHead;
 
@@ -94,7 +94,7 @@ class AutoPoolClass
 public:
     static void *operator new(size_t size)
     {
-        DEBUG_ASSERT(size == sizeof(T));
+        captain_dbgassert(size == sizeof(T), nullptr);
         return (void *)m_allocator.Allocate_Object_Memory();
     }
 

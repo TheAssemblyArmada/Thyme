@@ -15,7 +15,7 @@
  */
 #include "targa.h"
 #include "ffactory.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 #include <cstring>
 #include <malloc.h>
 
@@ -401,7 +401,7 @@ void TargaImage::X_Flip()
 
     // Must have at least one row of pixels.
     if (m_header.height <= 0) {
-        DEBUG_ASSERT_PRINT(false, "Image has no pixels.\n");
+        captain_dbgassert(false, "Image has no pixels.");
         return;
     }
 
@@ -599,23 +599,23 @@ int TargaImage::Error_Handler(int load_err, const char *filename)
             return load_err;
 
         case TGA_RET_UNABLE_TO_LOAD:
-            DEBUG_LOG("Targa: Failed to open file \"%s\"\n", filename);
+            captain_error("Targa: Failed to open file \"%s\"", filename);
             return load_err;
 
         case TGA_RET_NOT_TGA:
-            DEBUG_LOG("Targa: Failed to read file \"%s\"\n", filename);
+            captain_error("Targa: Failed to read file \"%s\"", filename);
             return load_err;
 
         case TGA_RET_UNSUPPORTED:
-            DEBUG_LOG("Targa: File \"%s\" is an unsupported Targa type\n", filename);
+            captain_error("Targa: File \"%s\" is an unsupported Targa type", filename);
             return load_err;
 
         case TGA_RET_OUT_OF_MEMORY:
-            DEBUG_LOG("Targa: Failed to allocate memory for file \"%s\"\n", filename);
+            captain_error("Targa: Failed to allocate memory for file \"%s\"", filename);
             return load_err;
 
         default:
-            DEBUG_LOG("Targa: Unknown error when loading file '%s'\n", filename);
+            captain_error("Targa: Unknown error when loading file '%s'", filename);
             return load_err;
     }
 }

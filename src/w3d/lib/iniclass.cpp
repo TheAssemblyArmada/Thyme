@@ -18,6 +18,7 @@
 #include "rawfileclass.h"
 #include "readline.h"
 #include "nstrdup.h"
+#include <captnassert.h>
 #include <cctype>
 #include <cstdio>
 
@@ -73,7 +74,7 @@ INIEntry *INISection::Find_Entry(const char *entry) const
     int crc;
 
     if (entry != nullptr && (crc = CRC(entry), m_entryIndex.Is_Present(crc))) {
-        // DEBUG_LOG("Fetching entry %s with CRC %08x\n", entry, crc);
+        // captain_trace("Fetching entry %s with CRC %08x", entry, crc);
         return m_entryIndex.Fetch_Index(crc);
     }
 
@@ -166,7 +167,7 @@ int INIClass::Load(Straw &straw)
     while (!end_of_file) {
         Read_Line(straw, buffer, MAX_LINE_LENGTH, end_of_file);
         if (end_of_file) {
-            DEBUG_LOG("INIClass::Load() - reached end of file before finding a section\n");
+            captain_trace("INIClass::Load() - reached end of file before finding a section");
             return INIC_LOAD_INVALID;
         }
 
@@ -176,7 +177,7 @@ int INIClass::Load(Straw &straw)
     }
 
     while (!end_of_file) {
-        DEBUG_ASSERT(buffer[0] == '[' && strchr(buffer, ']')); // at start of section
+        captain_dbgassert(buffer[0] == '[' && strchr(buffer, ']'), ".ini file is badly formatted."); // at start of section
         // Remove square brackets to get section name and create new section.
         buffer[0] = ' ';
         *strchr(buffer, ']') = '\0';
@@ -184,7 +185,7 @@ int INIClass::Load(Straw &straw)
         INISection *section = new INISection(buffer);
 
         if (section == nullptr) {
-            DEBUG_LOG("INIClass::Load() - failed to create section!\n");
+            captain_trace("INIClass::Load() - failed to create section!");
 
             Clear();
 
@@ -219,7 +220,7 @@ int INIClass::Load(Straw &straw)
 
                         INIEntry *entryptr = new INIEntry(entry, value);
                         if (!entryptr) {
-                            DEBUG_LOG("Failed to create entry '%s = %s'.\n", entry, value);
+                            captain_trace("Failed to create entry '%s = %s'.", entry, value);
 
                             delete section;
                             Clear();
@@ -256,7 +257,7 @@ int INIClass::Load(Straw &straw)
 
 INISection *INIClass::Find_Section(const char *section) const
 {
-    DEBUG_ASSERT(section != nullptr);
+    captain_dbgassert(section != nullptr, nullptr);
 
     int crc;
 
@@ -269,8 +270,8 @@ INISection *INIClass::Find_Section(const char *section) const
 
 INIEntry *INIClass::Find_Entry(const char *section, const char *entry) const
 {
-    DEBUG_ASSERT(section != nullptr);
-    DEBUG_ASSERT(entry != nullptr);
+    captain_dbgassert(section != nullptr, nullptr);
+    captain_dbgassert(entry != nullptr, nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -283,7 +284,7 @@ INIEntry *INIClass::Find_Entry(const char *section, const char *entry) const
 
 int INIClass::Entry_Count(const char *section) const
 {
-    DEBUG_ASSERT(section != nullptr);
+    captain_dbgassert(section != nullptr, nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -296,7 +297,7 @@ int INIClass::Entry_Count(const char *section) const
 
 const char *INIClass::Get_Entry(const char *section, int index) const
 {
-    DEBUG_ASSERT(section != nullptr);
+    captain_dbgassert(section != nullptr, nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -326,8 +327,8 @@ int INIClass::Enumerate_Entries(const char *section, const char *entry_prefix, u
     char buffer[256];
     uint32_t i = start_number;
 
-    DEBUG_ASSERT(section != nullptr);
-    DEBUG_ASSERT(!start_number && !end_number);
+    captain_dbgassert(section != nullptr, nullptr);
+    captain_dbgassert(!start_number && !end_number, nullptr);
 
     for (; i < end_number; ++i) {
         snprintf(buffer, sizeof(buffer), "%s%d", entry_prefix, i);
@@ -459,7 +460,7 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
     if (section != nullptr && entry != nullptr) {
         // If this string is for a section that doesn't exist yet, create it.
         if ((sectionptr = Find_Section(section)) == nullptr) {
-            DEBUG_LOG("INIClass::Put_String() Creating new section [%s]\n", section);
+            captain_trace("INIClass::Put_String() Creating new section [%s]", section);
             sectionptr = new INISection(section);
 
             if (sectionptr == nullptr) {
@@ -473,7 +474,7 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
         // Check if we already have a matching entry, either just CRC collision or same name.
         if ((entryptr = sectionptr->Find_Entry(entry)) != nullptr) {
             if (strcmp(entryptr->Get_Name(), entry) == 0) {
-                DEBUG_LOG("%s  - Duplicate Entry \"%s\"\n", entry);
+                captain_trace("%s  - Duplicate Entry \"%s\"", entry);
             } else {
                 Duplicate_CRC_Error(__CURRENT_FUNCTION__, section, entry);
             }
@@ -488,7 +489,7 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
 
         // Insert if we have a valid string that is not empty.
         if (string != nullptr && strlen(string) > 0) {
-            DEBUG_ASSERT(strlen(string) < MAX_LINE_LENGTH - 1);
+            captain_dbgassert(strlen(string) < MAX_LINE_LENGTH - 1, nullptr);
             entryptr = new INIEntry(entry, string);
 
             if (entryptr != nullptr) {
@@ -508,10 +509,10 @@ int INIClass::Get_String(const char *section, const char *entry, const char *def
     INIEntry *entryptr;
     const char *value = defvalue;
 
-    DEBUG_ASSERT(section != nullptr);
-    DEBUG_ASSERT(entry != nullptr);
-    DEBUG_ASSERT(buffer != nullptr);
-    DEBUG_ASSERT(length > 0);
+    captain_dbgassert(section != nullptr, nullptr);
+    captain_dbgassert(entry != nullptr, nullptr);
+    captain_dbgassert(buffer != nullptr, nullptr);
+    captain_dbgassert(length > 0, nullptr);
 
     if (buffer != nullptr && length > 0 && section != nullptr && entry != nullptr) {
         if ((entryptr = Find_Entry(section, entry)) == nullptr || (value = entryptr->Get_Value()) == nullptr) {
@@ -564,7 +565,7 @@ bool INIClass::Get_Bool(const char *section, const char *entry, bool defvalue) c
                     return false;
 
                 default:
-                    DEBUG_LOG("Invalid boolean entry in INIClass::Get_Bool()!");
+                    captain_trace("Invalid boolean entry in INIClass::Get_Bool()!");
                     return false;
             }
         }
@@ -589,5 +590,5 @@ void INIClass::Strip_Comments(char *line)
 
 void INIClass::Duplicate_CRC_Error(const char *message, const char *section, const char *entry)
 {
-    DEBUG_LOG("%s - Duplicate Entry \"%s\" in section \"%s\" (%s)\n", message, entry, section, m_fileName);
+    captain_warn("%s - Duplicate Entry \"%s\" in section \"%s\" (%s)", message, entry, section, m_fileName);
 }

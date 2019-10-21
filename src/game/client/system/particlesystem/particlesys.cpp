@@ -22,6 +22,7 @@
 #include "randomvalue.h"
 #include "xfer.h"
 #include <algorithm>
+#include <captnassert.h>
 
 using GameMath::Cos;
 using GameMath::Sin;
@@ -232,19 +233,19 @@ void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
 void ParticleSystem::Load_Post_Process()
 {
     if (m_slaveID != PARTSYS_ID_NONE) {
-        DEBUG_ASSERT_THROW(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.\n");
+        captain_assert(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.");
         m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
-        DEBUG_ASSERT_THROW(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
+        captain_assert(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
             6,
-            "Slave system not found or is set as destroyed.\n");
+            "Slave system not found or is set as destroyed.");
     }
 
     if (m_masterID != PARTSYS_ID_NONE) {
-        DEBUG_ASSERT_THROW(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.\n");
+        captain_assert(m_masterSystem == nullptr, 6, "Master ID set but master system already present on load.");
         m_masterSystem = g_theParticleSystemManager->Find_Particle_System(m_masterID);
-        DEBUG_ASSERT_THROW(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
+        captain_assert(m_masterSystem != nullptr && !m_masterSystem->m_isDestroyed,
             6,
-            "Master system not found or is set as destroyed.\n");
+            "Master system not found or is set as destroyed.");
     }
 }
 

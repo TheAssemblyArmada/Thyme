@@ -108,7 +108,7 @@ void ThumbnailManagerClass::Remove_From_Hash(ThumbnailClass *thumbnail)
 void ThumbnailManagerClass::Create_Thumbnails()
 {
     // Makes use of Renegade era MixFileFactory, probably not used.
-    DEBUG_ASSERT_PRINT(false, "Called an unimplemented function.\n");
+    captain_dbgassert(false, "Called an unimplemented function.");
 }
 
 /**
@@ -167,7 +167,7 @@ void ThumbnailManagerClass::Remove_Thumbnail_Manager(const char *thumbfilename)
 void ThumbnailManagerClass::Update_Thumbnail_File(const char *mixfilename, bool display_message)
 {
     // All places where this is called appear to be ellided in windows build as called with null.
-    DEBUG_ASSERT_PRINT(mixfilename == nullptr, "Code not implemented for string pointer not being null.\n");
+    captain_dbgassert(mixfilename == nullptr, "Code not implemented for string pointer not being null.");
 }
 
 /**

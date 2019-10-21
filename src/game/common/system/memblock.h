@@ -15,8 +15,8 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
 #include "rawalloc.h"
+#include <captnassert.h>
 
 class MemoryPoolBlob;
 class MemoryPoolFactory;
@@ -46,7 +46,7 @@ private:
 
 inline void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact)
 {
-    DEBUG_ASSERT_THROW(owning_fact != nullptr, 0xDEAD0002, "Owning factory is nullptr.\n");
+    captain_assert(owning_fact != nullptr, 0xDEAD0002, "Owning factory is nullptr.");
     m_nextBlock = 0;
     m_prevBlock = 0;
     m_owningBlob = owning_blob;
@@ -54,11 +54,11 @@ inline void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_b
 
 inline void MemoryPoolSingleBlock::Remove_Block_From_List(MemoryPoolSingleBlock **list_head)
 {
-    DEBUG_ASSERT_PRINT(m_owningBlob == nullptr, "This function should only be used on raw blocks.\n");
+    captain_dbgassert(m_owningBlob == nullptr, "This function should only be used on raw blocks.");
 
     // Do we have previous? If not, we are the head?
     if ( m_prevBlock != nullptr ) {
-        DEBUG_ASSERT_PRINT(this != *list_head, "Bad list linkage");
+        captain_dbgassert(this != *list_head, "Bad list linkage");
         m_prevBlock->m_nextBlock = m_nextBlock;
     } else {
         *list_head = m_nextBlock;
@@ -80,13 +80,13 @@ inline void MemoryPoolSingleBlock::Add_Block_To_List(MemoryPoolSingleBlock *list
 
 inline void MemoryPoolSingleBlock::Set_Next_Free(MemoryPoolSingleBlock *next)
 {
-    DEBUG_ASSERT_THROW(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.\n");
+    captain_assert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
     Add_Block_To_List(next);
 }
 
 inline MemoryPoolSingleBlock * MemoryPoolSingleBlock::Get_Next_Free()
 {
-    DEBUG_ASSERT_THROW(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.\n");
+    captain_assert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
 
     return m_nextBlock;
 }
@@ -96,7 +96,7 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Recover_Block_From_User_Dat
     if ( data != nullptr ) {
         return reinterpret_cast<MemoryPoolSingleBlock *>(static_cast<char *>(data) - sizeof(MemoryPoolSingleBlock));
     } else {
-        DEBUG_ASSERT_PRINT(false, "null data");
+        captain_dbgassert(false, "null data");
 
         return nullptr;
     }

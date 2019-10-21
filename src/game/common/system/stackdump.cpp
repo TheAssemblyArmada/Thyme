@@ -16,6 +16,7 @@
 #include "stackdump.h"
 #include "cpudetect.h"
 #include "main.h"
+#include <captnlog.h>
 #include <cinttypes>
 #include <stdio.h>
 
@@ -182,11 +183,11 @@ static void Init_DbgHelp()
             *_sym_pointers[i] = GetProcAddress(dll_handle, _sym_functions[i]);
 
             if (*_sym_pointers[i] == nullptr) {
-                DEBUG_LOG("Exception Handler: Unable to load %s from dbghelp.dll\n", _sym_functions[i]);
+                captain_debug("Exception Handler: Unable to load %s from dbghelp.dll.", _sym_functions[i]);
             }
         }
     } else {
-        DEBUG_LOG("Exception Handler: Unable to load dbghelp.dll\n");
+        captain_debug("Exception Handler: Unable to load dbghelp.dll.");
     }
 }
 

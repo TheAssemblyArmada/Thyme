@@ -14,6 +14,7 @@
  */
 #include "terrainroads.h"
 #include <cstddef>
+#include <captnassert.h>
 
 #ifndef GAME_DLL
 TerrainRoadCollection *g_theTerrainRoads = nullptr;
@@ -101,9 +102,9 @@ void TerrainRoadType::Parse_Transition_To_OCL(INI *ini, void *formal, void *stor
     if (strcasecmp(transition, "Damage") == 0) {
         is_damage = true;
     } else {
-        DEBUG_ASSERT_THROW(strcasecmp(transition, "Repair") == 0,
+        captain_assert(strcasecmp(transition, "Repair") == 0,
             0xDEAD0006,
-            "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.\n",
+            "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.",
             ini->Get_Filename().Str(),
             ini->Get_Line_Number());
 
@@ -113,9 +114,9 @@ void TerrainRoadType::Parse_Transition_To_OCL(INI *ini, void *formal, void *stor
     int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
     int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
-    DEBUG_ASSERT_THROW(effect >= 0 && effect < 3,
+    captain_assert(effect >= 0 && effect < 3,
         0xDEAD0006,
-        "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.\n",
+        "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.",
         ini->Get_Filename().Str(),
         ini->Get_Line_Number());
 
@@ -136,9 +137,9 @@ void TerrainRoadType::Parse_Transition_To_FX(INI *ini, void *formal, void *store
     if (strcasecmp(transition, "Damage") == 0) {
         is_damage = true;
     } else {
-        DEBUG_ASSERT_THROW(strcasecmp(transition, "Repair") == 0,
+        captain_assert(strcasecmp(transition, "Repair") == 0,
             0xDEAD0006,
-            "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.\n",
+            "'%s' at line %d has an invalid 'Transition:' type, must be 'Repair' or 'Damage'.",
             ini->Get_Filename().Str(),
             ini->Get_Line_Number());
 
@@ -148,9 +149,9 @@ void TerrainRoadType::Parse_Transition_To_FX(INI *ini, void *formal, void *store
     int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
     int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
-    DEBUG_ASSERT_THROW(effect >= 0 && effect < 3,
+    captain_assert(effect >= 0 && effect < 3,
         0xDEAD0006,
-        "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.\n",
+        "'%s' at line %d has an invalid 'EffectNum:' type, must be between 1 and 3 inclusive.",
         ini->Get_Filename().Str(),
         ini->Get_Line_Number());
 
@@ -287,9 +288,9 @@ void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 
-    DEBUG_ASSERT_THROW(g_theTerrainRoads->Find_Road(token) == nullptr,
+    captain_assert(g_theTerrainRoads->Find_Road(token) == nullptr,
         0xDEAD0006,
-        "'%s' at line %d has a duplicated Road that has been loaded elsewhere already.\n",
+        "'%s' at line %d has a duplicated Road that has been loaded elsewhere already.",
         ini->Get_Filename().Str(),
         ini->Get_Line_Number());
 
@@ -300,9 +301,9 @@ void TerrainRoadCollection::Parse_Terrain_Bridge_Definitions(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 
-    DEBUG_ASSERT_THROW(g_theTerrainRoads->Find_Bridge(token) == nullptr,
+    captain_assert(g_theTerrainRoads->Find_Bridge(token) == nullptr,
         0xDEAD0006,
-        "'%s' at line %d has a duplicated Bridge that has been loaded elsewhere already.\n",
+        "'%s' at line %d has a duplicated Bridge that has been loaded elsewhere already.",
         ini->Get_Filename().Str(),
         ini->Get_Line_Number());
 

@@ -95,7 +95,7 @@ inline void MemoryPoolBlob::Remove_Blob_From_List(MemoryPoolBlob **head, MemoryP
 
 inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 {
-    DEBUG_ASSERT_PRINT(m_firstFreeBlock != nullptr, "Trying to allocated block from blob with no free blocks\n");
+    captain_dbgassert(m_firstFreeBlock != nullptr, "Trying to allocated block from blob with no free blocks.");
     MemoryPoolSingleBlock *block = m_firstFreeBlock;
     m_firstFreeBlock = block->Get_Next_Free();
     ++m_usedBlocksInBlob;
@@ -105,8 +105,8 @@ inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 
 inline void MemoryPoolBlob::Free_Single_Block(MemoryPoolSingleBlock *block)
 {
-    DEBUG_ASSERT_THROW(
-        block->m_owningBlob == this, 0xDEAD0002, "Attempting to free a block that does not belong to this blob.\n");
+    captain_assert(
+        block->m_owningBlob == this, 0xDEAD0002, "Attempting to free a block that does not belong to this blob.");
     block->Set_Next_Free(m_firstFreeBlock);
     --m_usedBlocksInBlob;
     m_firstFreeBlock = block;

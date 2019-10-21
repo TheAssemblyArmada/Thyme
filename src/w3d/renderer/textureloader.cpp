@@ -18,7 +18,6 @@
 #include "critsection.h"
 #include "ddsfile.h"
 #include "dx8wrapper.h"
-#include "gamedebug.h"
 #include "missing.h"
 #include "rtsutils.h"
 #include "shader.h"
@@ -347,7 +346,7 @@ void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
  */
 void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
 {
-    DEBUG_ASSERT(texture != nullptr);
+    captain_dbgassert(texture != nullptr, nullptr);
     FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
 
     if (texture->Is_Initialized()) {

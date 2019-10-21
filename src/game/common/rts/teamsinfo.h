@@ -16,8 +16,8 @@
 
 #include "always.h"
 #include "dict.h"
-#include "gamedebug.h"
 #include "namekeygenerator.h"
+#include <captnassert.h>
 
 // Wrapper around dict with a default ctor.
 struct TeamsInfo
@@ -67,6 +67,6 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
 
 inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
 {
-    DEBUG_ASSERT_THROW(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.\n");
+    captain_assert(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.");
     return &m_teams[index];
 }

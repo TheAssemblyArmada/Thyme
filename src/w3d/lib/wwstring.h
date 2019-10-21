@@ -17,7 +17,6 @@
 
 #include "always.h"
 #include "critsection.h"
-#include "gamedebug.h"
 #include <cstdarg>
 #include <cstring>
 #include <cwchar>

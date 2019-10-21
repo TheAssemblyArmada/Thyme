@@ -13,11 +13,10 @@
  *            LICENSE
  */
 #include "ini.h"
-#include "gamedebug.h"
 #include "drawgroupinfo.h"
 
 void INI::Parse_Draw_Group_Info(INI *ini)
 {
-    DEBUG_ASSERT_THROW(g_theDrawGroupInfo != nullptr, 0xDEAD0006, "g_theDrawGroupInfo is null when attempting parse.\n");
+    captain_assert(g_theDrawGroupInfo != nullptr, 0xDEAD0006, "g_theDrawGroupInfo is null when attempting parse.");
     ini->Init_From_INI(g_theDrawGroupInfo, DrawGroupInfo::Get_Parse_Table());
 }

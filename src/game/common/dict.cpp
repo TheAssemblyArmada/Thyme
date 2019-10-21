@@ -14,6 +14,7 @@
  */
 #include "dict.h"
 #include "memdynalloc.h"
+#include <captnassert.h>
 
 void Dict::DictPair::Copy_From(const DictPair &that)
 {
@@ -143,7 +144,7 @@ bool Dict::Get_Bool(NameKeyType key, bool *exists) const
     if (exists != nullptr) {
         *exists = false;
     } else {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+        captain_dbgassert(false, "Dict key missing or of wrong type.");
     }
 
     return false;
@@ -164,7 +165,7 @@ int Dict::Get_Int(NameKeyType key, bool *exists) const
     if (exists != nullptr) {
         *exists = false;
     } else {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+        captain_dbgassert(false, "Dict key missing or of wrong type.");
     }
 
     return 0;
@@ -185,7 +186,7 @@ float Dict::Get_Real(NameKeyType key, bool *exists) const
     if (exists != nullptr) {
         *exists = false;
     } else {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+        captain_dbgassert(false, "Dict key missing or of wrong type.");
     }
 
     return 0.0f;
@@ -206,7 +207,7 @@ Utf8String Dict::Get_AsciiString(NameKeyType key, bool *exists) const
     if (exists != nullptr) {
         *exists = false;
     } else {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+        captain_dbgassert(false, "Dict key missing or of wrong type.");
     }
 
     return Utf8String();
@@ -227,7 +228,7 @@ Utf16String Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
     if (exists != nullptr) {
         *exists = false;
     } else {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+        captain_dbgassert(false, "Dict key missing or of wrong type.");
     }
 
     return Utf16String();
@@ -235,65 +236,65 @@ Utf16String Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
 
 bool Dict::Get_Nth_Bool(int n) const
 {
-    DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
+    captain_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
     if (m_data != nullptr && Get_Nth_Key(n) != (NameKeyType)(~DICT_TYPEMAX) && Get_Nth_Type(n) == DICT_BOOL) {
         return m_data->Get_Pairs()[n - 1].Get_Value().boolean;
     }
 
-    DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+    captain_dbgassert(false, "Dict key missing or of wrong type.");
 
     return false;
 }
 
 int Dict::Get_Nth_Int(int n) const
 {
-    DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
+    captain_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
     if (m_data != nullptr && Get_Nth_Key(n) != (NameKeyType)(~DICT_TYPEMAX) && Get_Nth_Type(n) == DICT_INT) {
         return m_data->Get_Pairs()[n - 1].Get_Value().integer;
     }
 
-    DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+    captain_dbgassert(false, "Dict key missing or of wrong type.");
 
     return 0;
 }
 
 float Dict::Get_Nth_Real(int n) const
 {
-    DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
+    captain_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
     if (m_data != nullptr && Get_Nth_Key(n) != (NameKeyType)(~DICT_TYPEMAX) && Get_Nth_Type(n) == DICT_REAL) {
         return m_data->Get_Pairs()[n - 1].Get_Value().real;
     }
 
-    DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+    captain_dbgassert(false, "Dict key missing or of wrong type.");
 
     return 0.0f;
 }
 
 Utf8String Dict::Get_Nth_AsciiString(int n) const
 {
-    DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
+    captain_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
     if (m_data != nullptr && Get_Nth_Key(n) != (NameKeyType)(~DICT_TYPEMAX) && Get_Nth_Type(n) == DICT_ASCIISTRING) {
         return m_data->Get_Pairs()[n - 1].Get_Value().ascii;
     }
 
-    DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+    captain_dbgassert(false, "Dict key missing or of wrong type.");
 
     return Utf8String();
 }
 
 Utf16String Dict::Get_Nth_UnicodeString(int n) const
 {
-    DEBUG_ASSERT_PRINT(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.\n");
+    captain_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
     if (m_data != nullptr && Get_Nth_Key(n) != (NameKeyType)(~DICT_TYPEMAX) && Get_Nth_Type(n) == DICT_UNICODESTRING) {
         return m_data->Get_Pairs()[n - 1].Get_Value().unicode;
     }
 
-    DEBUG_ASSERT_PRINT(false, "Dict key missing or of wrong type.\n");
+    captain_dbgassert(false, "Dict key missing or of wrong type.");
 
     return Utf16String();
 }
@@ -338,7 +339,7 @@ bool Dict::Remove(NameKeyType key)
     DictPair *pair = Find_Pair_By_Key(key);
 
     if (pair == nullptr) {
-        DEBUG_ASSERT_PRINT(false, "Dict key missing in Remove");
+        captain_dbgassert(false, "Dict key missing in Remove");
 
         return false;
     }
@@ -475,12 +476,12 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
         return to_translate;
     }
 
-    DEBUG_ASSERT_THROW(pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.\n");
+    captain_assert(pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.");
 
     DictPairData *new_data = nullptr;
 
     if (pairs_needed > 0) {
-        // DEBUG_LOG("Allocating for %d Dict pairs.\n", pairs_needed);
+        // captain_trace("Allocating for %d Dict pairs.", pairs_needed);
         int size =
             g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(DictPair) * pairs_needed + sizeof(DictPairData));
         new_data = reinterpret_cast<DictPairData *>(g_dynamicMemoryAllocator->Allocate_Bytes(size));
@@ -488,10 +489,10 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
         new_data->m_refCount = 1;
         new_data->m_numPairsAllocated = (size - sizeof(DictPairData)) / sizeof(DictPair);
         new_data->m_numPairsUsed = 0;
-        // DEBUG_LOG("  Allocated for %d Dict pairs.\n", (int)new_data->m_numPairsAllocated);
+        // captain_trace("  Allocated for %d Dict pairs.", (int)new_data->m_numPairsAllocated);
 
         if (preserve_data && m_data != nullptr) {
-            // DEBUG_LOG("  Preserving %d Dict pairs.\n", (int)m_data->m_numPairsUsed);
+            // captain_trace("  Preserving %d Dict pairs.", (int)m_data->m_numPairsUsed);
             DictPair *newpair = new_data->Get_Pairs();
             DictPair *oldpair = m_data->Get_Pairs();
 
@@ -507,17 +508,17 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
 
     if (to_translate != nullptr && m_data != nullptr) {
         translate_val = ((uintptr_t)to_translate - (uintptr_t)m_data - sizeof(DictPairData)) / sizeof(DictPair);
-        // DEBUG_LOG("  Dict translate position is %d.\n", translate_val);
+        captain_trace("  Dict translate position is %d.", translate_val);
     } else {
         translate_val = 0;
-        // DEBUG_LOG("  Have no current data to translate from, position is %d.\n", translate_val);
+        captain_trace("  Have no current data to translate from, position is %d.", translate_val);
     }
 
     Release_Data();
     m_data = new_data;
 
     if (to_translate != nullptr && new_data != nullptr) {
-        // DEBUG_LOG("  Getting translated pair at position %d.\n", translate_val);
+        captain_trace("  Getting translated pair at position %d.", translate_val);
         to_translate = &new_data->Get_Pairs()[translate_val];
     }
 

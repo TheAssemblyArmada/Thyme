@@ -16,6 +16,7 @@
 #include "gamemath.h"
 #include "gametype.h"
 #include "kindof.h"
+#include <captnassert.h>
 
 Parameter::Parameter(ParameterType type) :
     m_type(type),
@@ -35,7 +36,7 @@ Parameter::Parameter(ParameterType type) :
  */
 void Parameter::Qualify(const Utf8String &suffix, const Utf8String &side_test, const Utf8String &side_replacemet)
 {
-    //DEBUG_LOG("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.\n", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
+    //captain_trace("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
     switch (m_type) {
         case SIDE:
             if (m_string + suffix == side_test) {
@@ -122,7 +123,7 @@ Utf8String Parameter::Get_UI_Text()
                     ui_text = "Not Equal To";
                     break;
                 default:
-                    DEBUG_ASSERT_PRINT(false, "Unknown comparison.\n");
+                    captain_dbgassert(false, "Unknown comparison.");
                     break;
             };
 
@@ -179,7 +180,7 @@ Utf8String Parameter::Get_UI_Text()
                     ui_text = "Friend";
                     break;
                 default:
-                    DEBUG_ASSERT_PRINT(false, "Unknown relationship.\n");
+                    captain_dbgassert(false, "Unknown relationship.");
                     break;
             }
 
@@ -202,7 +203,7 @@ Utf8String Parameter::Get_UI_Text()
                     ui_text = "Aggressive";
                     break;
                 default:
-                    DEBUG_ASSERT_PRINT(false, "Unknown AI Mood.\n");
+                    captain_dbgassert(false, "Unknown AI Mood.");
                     break;
             }
 
@@ -366,7 +367,7 @@ Utf8String Parameter::Get_UI_Text()
 
 void Parameter::Get_Coord3D(Coord3D *coord)
 {
-    DEBUG_ASSERT_PRINT(m_type == COORD3D, "Parameter is not a Coord3D.\n");
+    captain_dbgassert(m_type == COORD3D, "Parameter is not a Coord3D.");
 
     if (m_type == COORD3D) {
         *coord = m_coord;
@@ -375,7 +376,7 @@ void Parameter::Get_Coord3D(Coord3D *coord)
 
 void Parameter::Set_Coord3D(Coord3D *coord)
 {
-    DEBUG_ASSERT_PRINT(m_type == COORD3D, "Parameter is not a Coord3D.\n");
+    captain_dbgassert(m_type == COORD3D, "Parameter is not a Coord3D.");
 
     if (m_type == COORD3D) {
         m_coord = *coord;
@@ -413,7 +414,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
             strlcpy(new_name, "GLA", sizeof(new_name));
             strlcat(new_name, &old_name[strlen("Fundamentalist")], sizeof(new_name));
             param->m_string = new_name;
-            DEBUG_LOG("Fixed up script reference from '%s' to '%s'.\n", old_name, new_name);
+            captain_trace("Fixed up script reference from '%s' to '%s'.", old_name, new_name);
         }
     }
 
@@ -423,7 +424,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
             || param->m_string == "Upgrade_ChinaRedguardCaptureBuilding"
             || param->m_string == "Upgrade_GLARebelCaptureBuilding") {
             param->m_string = "Upgrade_InfantryCaptureBuilding";
-            DEBUG_LOG("Fixed up script reference for 'Upgrade_InfantryCaptureBuilding'.\n");
+            captain_trace("Fixed up script reference for 'Upgrade_InfantryCaptureBuilding'.");
         }
     }
 
@@ -451,21 +452,21 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                 // These additional checks look like they are intended to fix up old entries. Probably don't need to be
                 // checked every loop though... Need to identify maps/scripts that require these fixes.
                 if (param->m_string.Compare_No_Case("CRUSHER") == 0) {
-                    DEBUG_LOG("Parameter KindOF Matched CRUSHER.");
+                    captain_trace("Parameter KindOF Matched CRUSHER.");
                     param->m_int = i;
                     
                     return param;
                 }
 
                 if (param->m_string.Compare_No_Case("CRUSHABLE") == 0) {
-                    DEBUG_LOG("Parameter KindOF Matched CRUSHABLE.");
+                    captain_trace("Parameter KindOF Matched CRUSHABLE.");
                     param->m_int = i;
 
                     return param;
                 }
 
                 if (param->m_string.Compare_No_Case("OVERLAPPABLE") == 0) {
-                    DEBUG_LOG("Parameter KindOF Matched OVERLAPPABLE.");
+                    captain_trace("Parameter KindOF Matched OVERLAPPABLE.");
                     param->m_int = i;
 
                     return param;
@@ -484,7 +485,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                     //    }
                     //}
                     // Outcome should basically be this I believe:
-                    DEBUG_LOG("Parameter KindOF Matched MISSILE.");
+                    captain_trace("Parameter KindOF Matched MISSILE.");
                     param->m_string = "SMALL_MISSILE";
                     param->m_int = KINDOF_SMALL_MISSILE;
                     found = true;
@@ -492,7 +493,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                 }
             }
 
-            DEBUG_ASSERT_THROW(found, 0xDEAD0001, "Did not find parameter kind from string.\n");
+            captain_assert(found, 0xDEAD0001, "Did not find parameter kind from string.");
         } else {
             param->m_string = BitFlags<KINDOF_COUNT>::s_bitNamesList[param->m_int];
         }

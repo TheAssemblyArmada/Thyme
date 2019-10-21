@@ -17,7 +17,7 @@
 
 #include "always.h"
 #include "array.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 #include <cfloat>
 #include <cstdlib>
 
@@ -26,7 +26,7 @@
 #endif
 
 #ifdef BUILD_WITH_GAMEMATH
-#include "gmath.h"
+#include <gmath.h>
 #else
 #include <cmath>
 #endif
@@ -266,8 +266,8 @@ inline float Fast_Acos(float val)
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
-    DEBUG_ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
-    DEBUG_ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
+    captain_dbgassert((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
+    captain_dbgassert((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
 
     return (1.0f - frac) * _FastAcosTable[idx0] + frac * _FastAcosTable[idx1];
 }
@@ -286,8 +286,8 @@ inline float Fast_Asin(float val)
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
 
-    DEBUG_ASSERT_PRINT((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
-    DEBUG_ASSERT_PRINT((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
+    captain_dbgassert((idx0 >= 0) && (idx0 < ARC_TABLE_SIZE), "Index out of table range");
+    captain_dbgassert((idx1 >= 0) && (idx1 < ARC_TABLE_SIZE), "Index out of table range");
 
     return (1.0f - frac) * _FastAsinTable[idx0] + frac * _FastAsinTable[idx1];
 }

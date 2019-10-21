@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "namekeygenerator.h"
-#include "gamedebug.h"
 #include <cctype>
 
 using std::tolower;

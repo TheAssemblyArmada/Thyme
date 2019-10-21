@@ -1601,7 +1601,7 @@ void MilesAudioManager::Init_Filters(HSAMPLE sample, AudioEventRTS *event)
 {
     AIL_set_sample_volume_pan(sample, event->Get_Volume_Shift() * event->Get_Volume() * m_soundVolume, 0.5f);
 
-    DEBUG_ASSERT_PRINT(
+    captain_dbgassert(
         event->Get_Pitch_Shift() != 0.0f, "Invalid Pitch shift in sound: '%s'", event->Get_Event_Name().Str());
 
     if (event->Get_Pitch_Shift() != 0.0f) {
@@ -1629,7 +1629,7 @@ void MilesAudioManager::Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event)
 {
     AIL_set_3D_sample_volume(sample, event->Get_Volume() * event->Get_Volume_Shift() * m_3dSoundVolume);
 
-    DEBUG_ASSERT_PRINT(
+    captain_dbgassert(
         event->Get_Pitch_Shift() != 0.0f, "Invalid Pitch shift in sound: '%s'", event->Get_Event_Name().Str());
 
     if (event->Get_Pitch_Shift() != 0.0f) {
@@ -1654,7 +1654,7 @@ void MilesAudioManager::Init_Sample_Pools()
 
     for (int i = 0; i < Get_Audio_Settings()->Get_2D_Sample_Count(); ++i) {
         HSAMPLE handle = AIL_allocate_sample_handle(m_milesDigitalDriver);
-        DEBUG_ASSERT_PRINT(handle != nullptr, "Couldn't get %d 2D samples\n", i + 1);
+        captain_dbgassert(handle != nullptr, "Couldn't get %d 2D samples", i + 1);
 
         if (handle != nullptr) {
             AIL_init_sample(handle);
@@ -1666,7 +1666,7 @@ void MilesAudioManager::Init_Sample_Pools()
 
     for (int i = 0; i < Get_Audio_Settings()->Get_3D_Sample_Count(); ++i) {
         H3DSAMPLE handle = AIL_allocate_3D_sample_handle(m_milesProviderList[m_milesCurrentProvider].provider);
-        DEBUG_ASSERT_PRINT(handle != nullptr, "Couldn't get %d 3D samples\n", i + 1);
+        captain_dbgassert(handle != nullptr, "Couldn't get %d 3D samples", i + 1);
 
         if (handle != nullptr) {
             AIL_set_3D_user_data(handle, 0, i + 1);
@@ -2099,7 +2099,7 @@ bool MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately(AudioEventRTS *ev
  */
 AudioEventRTS *MilesAudioManager::Find_Lowest_Priority_Sound(AudioEventRTS *event)
 {
-    DEBUG_ASSERT(event != nullptr);
+    captain_dbgassert(event != nullptr, nullptr);
     int target_priority = event->Get_Event_Info()->Get_Priority();
 
     // Nothing can be lower than this so can't return anything.

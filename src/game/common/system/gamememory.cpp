@@ -14,7 +14,6 @@
  */
 #include "gamememory.h"
 #include "critsection.h"
-#include "gamedebug.h"
 #include "gamememoryinit.h"
 #include "memblob.h"
 #include "memblock.h"
@@ -54,7 +53,7 @@ void Init_Memory_Manager()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        DEBUG_LOG("Memory Manager initialising normally.\n");
+        captain_trace("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
         g_memoryPoolFactory->Init();
@@ -66,7 +65,7 @@ void Init_Memory_Manager()
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
-    // DEBUG_LOG("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
+    // captain_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -76,11 +75,9 @@ void Init_Memory_Manager()
     delete tmp3;
 
     if (g_theLinkChecker != 6) {
-        DEBUG_LOG("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
+        captain_fatal("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
         exit(-1);
     }
-
-    // DEBUG_LOG("Memory manager operators passed check, link checker at %d\n", g_theLinkChecker);
 
     g_theMainInitFlag = true;
 }
@@ -91,8 +88,7 @@ void Init_Memory_Manager_Pre_Main()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        // DEBUG_INIT(DEBUG_LOG_TO_FILE);
-        // DEBUG_LOG("Memory Manager initialising prior to WinMain\n");
+        captain_trace("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;

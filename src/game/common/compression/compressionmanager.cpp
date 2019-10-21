@@ -14,8 +14,8 @@
  */
 #include "compressionmanager.h"
 #include "endiantype.h"
-#include "gamedebug.h"
 #include "refpack.h"
+#include <captnlog.h>
 #include <cstring>
 
 using std::memcmp;
@@ -158,7 +158,7 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_EAB:
         case COMPRESSION_EAH:
         default:
-            DEBUG_LOG("Compression format '%s' unhandled, file a bug report.\n",
+            captain_error("Compression format '%s' unhandled, file a bug report.\n",
                 Get_Compression_Name(Get_Compression_Type(src, src_size)));
             break;
     }

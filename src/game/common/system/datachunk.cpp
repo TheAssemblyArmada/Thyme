@@ -74,7 +74,7 @@ bool DataChunkInput::Parse(void *user_data)
 
     // We can't parse if the header chunk hasn't been opened yet.
     if (!Is_Valid_File()) {
-        DEBUG_LOG("Attempted to parse a chunk file before TOC has been read.\n");
+        captain_debug("Attempted to parse a chunk file before TOC has been read.");
         return false;
     }
 
@@ -205,7 +205,7 @@ float DataChunkInput::Read_Real32()
     // Read as 32bit int so we can byteswap easily and then type pun for the return.
     uint32_t tmp;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a float.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a float.");
 
     m_file->Read(&tmp, sizeof(tmp));
     Decrement_Data_Left(sizeof(tmp));
@@ -222,7 +222,7 @@ int32_t DataChunkInput::Read_Int32()
 {
     int32_t tmp;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading an int.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading an int.");
 
     m_file->Read(&tmp, sizeof(tmp));
     Decrement_Data_Left(sizeof(tmp));
@@ -238,7 +238,7 @@ uint8_t DataChunkInput::Read_Byte()
 {
     uint8_t tmp;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a byte.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a byte.");
 
     m_file->Read(&tmp, sizeof(tmp));
     Decrement_Data_Left(sizeof(tmp));
@@ -254,13 +254,13 @@ Utf8String DataChunkInput::Read_AsciiString()
     uint16_t size;
     Utf8String string;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
     size = le16toh(size);
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= size, "Read past end of chunk reading Utf8String string.\n");
+    captain_dbgassert(m_chunkStack->data_left >= size, "Read past end of chunk reading Utf8String string.");
 
     m_file->Read(string.Get_Buffer_For_Read(size), size);
     Decrement_Data_Left(size);
@@ -278,14 +278,14 @@ Utf16String DataChunkInput::Read_UnicodeString()
     char16_t ch;
     Utf16String string;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
     size = le16toh(size);
 
-    DEBUG_ASSERT_PRINT(
-        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading Utf16String string.\n");
+    captain_dbgassert(
+        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading Utf16String string.");
 
     // Data is stored as LE UCS-16, so only BMP unicode chars can be stored.
     // TODO revamp unicode handling for none windows systems using libicu or libiconv.
@@ -308,13 +308,13 @@ Dict DataChunkInput::Read_Dict()
 {
     uint16_t size = 0;
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.\n");
+    captain_dbgassert(m_chunkStack->data_left >= sizeof(size), "Read past end of chunk reading Utf8String length.");
 
     m_file->Read(&size, sizeof(size));
     Decrement_Data_Left(sizeof(size));
     size = le16toh(size);
 
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= size, "Read past end of chunk reading Dict.\n");
+    captain_dbgassert(m_chunkStack->data_left >= size, "Read past end of chunk reading Dict.");
 
     Dict dict(size);
 
@@ -340,7 +340,7 @@ Dict DataChunkInput::Read_Dict()
                 dict.Set_UnicodeString(nk, Read_UnicodeString());
                 break;
             default:
-                DEBUG_ASSERT_THROW(false, 0xDEAD0005, "Attempting to handle unknown Dict type data, code shouldn't reach here.\n");
+                captain_assert(false, 0xDEAD0005, "Attempting to handle unknown Dict type data, code shouldn't reach here.");
         }
     }
 
@@ -352,7 +352,7 @@ Dict DataChunkInput::Read_Dict()
  */
 void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int length)
 {
-    DEBUG_ASSERT_PRINT(m_chunkStack->data_left >= length, "Read past end of chunk reading Utf8String string.\n");
+    captain_dbgassert(m_chunkStack->data_left >= length, "Read past end of chunk reading Utf8String string.");
 
     m_file->Read(ptr, length);
     Decrement_Data_Left(length);

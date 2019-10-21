@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "rawfileclass.h"
-#include "gamedebug.h"
+#include <captnlog.h>
 #include <cerrno>
 #include <cstdlib>
 #include <cstdio>
@@ -332,12 +332,6 @@ int RawFileClass::Read(void *buffer, int length)
         }
 #else
         int readlen = read(m_handle, buffer, length);
-        DEBUG_LOG("Read %d out of attempted %d bytes.\n", readlen, length);
-
-        if (readlen == 0) {
-            readlen = read(m_handle, buffer, length);
-            DEBUG_LOG("Attempting to get more data after read of 0, got %d.\n", readlen);
-        }
 
         if (readlen >= 0) {
             length -= readlen;
@@ -521,7 +515,7 @@ bool RawFileClass::Set_Date_Time(time_t datetime)
 void RawFileClass::Error(int error, bool can_retry, const char *filename)
 {
     // Nothing in SAGE
-    DEBUG_LOG("Triggered error %d for file '%s'.\n", error, filename);
+    captain_error("Triggered error %d for file '%s'.", error, filename);
 }
 
 void RawFileClass::Bias(int offset, int length)

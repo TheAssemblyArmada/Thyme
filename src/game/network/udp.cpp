@@ -14,7 +14,7 @@
  */
 #include "udp.h"
 #include "endiantype.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 
 /**
  * 0x00733A20 
@@ -51,7 +51,7 @@ int UDP::Bind(uint32_t address, uint16_t port)
         m_myPort = be16toh(m_addr.sin_port);
 
         if (Set_Blocking(false) == -1) {
-            DEBUG_ASSERT_PRINT(false, "Couldn't set nonblocking mode!\n");
+            captain_dbgassert(false, "Couldn't set nonblocking mode!");
         }
 
         return OK;

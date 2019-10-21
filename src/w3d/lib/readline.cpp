@@ -15,7 +15,6 @@
  */
 #include "readline.h"
 #include "filestraw.h"
-#include "gamedebug.h"
 #include <cstring>
 
 using std::strlen;

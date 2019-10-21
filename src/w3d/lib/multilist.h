@@ -17,6 +17,7 @@
 
 #include "always.h"
 #include "autopool.h"
+#include <captnassert.h>
 
 class GenericMultiListClass;
 class MultiListObjectClass;
@@ -61,7 +62,7 @@ public:
         m_head.m_nextList = 0;
     };
 
-    virtual ~GenericMultiListClass() { DEBUG_ASSERT(Is_Empty()); };
+    virtual ~GenericMultiListClass() { captain_dbgassert(Is_Empty(), nullptr); };
 
     bool Is_In_List(MultiListObjectClass *obj) const { return Contains(obj); };
     bool Is_Empty() const { return (m_head.m_next == &m_head); };
@@ -90,7 +91,7 @@ class GenericMultiListIterator
 public:
     GenericMultiListIterator(const GenericMultiListClass *list)
     {
-        DEBUG_ASSERT(list != nullptr);
+        captain_dbgassert(list != nullptr, nullptr);
         First(list);
     };
 

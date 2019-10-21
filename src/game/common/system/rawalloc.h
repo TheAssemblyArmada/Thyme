@@ -15,7 +15,7 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
+#include "captnassert.h"
 #include <cstdlib>
 
 // Use GlobalAlloc as the raw allocator on windows to avoid CRT issues.
@@ -34,7 +34,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
+    captain_assert(r != nullptr, 0xDEAD0002, "Memory allocation failed.");
 
     return r;
 }
@@ -50,7 +50,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
+    captain_assert(r != nullptr, 0xDEAD0002, "Memory allocation failed.");
 
     return r;
 }
@@ -73,7 +73,7 @@ inline void *Raw_Allocate(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
+    captain_assert(r != nullptr, 0xDEAD0002, "Memory allocation failed.");
 
     return r;
 }
@@ -89,7 +89,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
     //    throw std::bad_alloc();
     //}
 
-    DEBUG_ASSERT_THROW(r != nullptr, 0xDEAD0002, "Memory allocation failed.\n");
+    captain_assert(r != nullptr, 0xDEAD0002, "Memory allocation failed.");
 
     return r;
 }

@@ -15,7 +15,6 @@
 #include "unicodestring.h"
 #include "asciistring.h"
 #include "critsection.h"
-#include "gamedebug.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -58,7 +57,7 @@ void Utf16String::Validate() {}
 
 unichar_t *Utf16String::Peek() const
 {
-    DEBUG_ASSERT_PRINT(m_data != nullptr, "null string ptr");
+    captain_dbgassert(m_data != nullptr, "null string ptr");
 
     // Actual string data is stored immediately after the UnicodeStringData header.
     return m_data->Peek();
@@ -162,7 +161,7 @@ const unichar_t *Utf16String::Str() const
 
 unichar_t *Utf16String::Get_Buffer_For_Read(int len)
 {
-    DEBUG_ASSERT_PRINT(len > 0, "No need to allocate 0 len strings.");
+    captain_dbgassert(len > 0, "No need to allocate 0 len strings.");
 
     Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
 
@@ -362,8 +361,8 @@ void Utf16String::Format(Utf16String format, ...)
 void Utf16String::Format_VA(const unichar_t *format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
-
-    DEBUG_ASSERT_THROW(u_vsnprintf_u(buf, sizeof(buf), format, args) > 0, 0xDEAD0002, "Unable to format buffer");
+    int res = u_vsnprintf_u(buf, sizeof(buf), format, args);
+    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer.");
 
     Set(buf);
 }
@@ -371,8 +370,8 @@ void Utf16String::Format_VA(const unichar_t *format, va_list args)
 void Utf16String::Format_VA(Utf16String &format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
-
-    DEBUG_ASSERT_THROW(u_vsnprintf_u(buf, sizeof(buf), format.Str(), args) > 0, 0xDEAD0002, "Unable to format buffer");
+    int res = u_vsnprintf_u(buf, sizeof(buf), format.Str(), args);
+    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

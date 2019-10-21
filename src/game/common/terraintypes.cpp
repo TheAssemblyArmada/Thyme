@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "terraintypes.h"
-#include "gamedebug.h"
 #include <cstddef>
 
 #ifndef GAME_DLL

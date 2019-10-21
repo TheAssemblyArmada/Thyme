@@ -109,21 +109,21 @@ bool DX8Wrapper::Init(void *hwnd, bool lite)
         s_d3dLib = LoadLibraryA("d3d8.dll");
 
         if (s_d3dLib == nullptr) {
-            DEBUG_LOG("Failed to load d3d8.dll\n");
+            captain_error("Failed to load d3d8.dll");
             return false;
         }
 
         s_d3dCreateFunction = reinterpret_cast<IDirect3D8 *(__stdcall *)(unsigned)>(GetProcAddress(s_d3dLib, "Direct3DCreate8"));
 
         if (s_d3dCreateFunction == nullptr) {
-            DEBUG_LOG("Failed to get address of Direct3DCreate8.\n");
+            captain_error("Failed to get address of Direct3DCreate8.");
             return false;
         }
 
         s_d3dInterface = s_d3dCreateFunction(D3D_SDK_VERSION);
 
         if (s_d3dInterface == nullptr) {
-            DEBUG_LOG("Failed to create D3D8 interface.\n");
+            captain_error("Failed to create D3D8 interface.");
             return false;
         }
 
@@ -220,7 +220,7 @@ void DX8Wrapper::Enumerate_Devices()
 void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
 {
     // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
-    DEBUG_LOG("Direct3D8 generated error %x.\n", error);
+    captain_error("Direct3D8 generated error %x.", error);
 }
 
 void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)

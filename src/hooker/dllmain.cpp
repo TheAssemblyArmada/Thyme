@@ -13,7 +13,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "gamedebug.h"
 #include "hooker.h"
 #include "setuphooks.h"
 #include <stdarg.h>

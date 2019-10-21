@@ -14,6 +14,7 @@
  */
 #include "rankinfo.h"
 #include "ini.h"
+#include <captnassert.h>
 #include <cstddef>
 
 #ifndef GAME_DLL
@@ -96,18 +97,18 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
     int rank_level = INI::Scan_Int(ini->Get_Next_Token());
 
     if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
-        DEBUG_ASSERT_THROW(rank_level >= 1 && (unsigned)rank_level <= g_theRankInfoStore->m_infoStore.size(),
+        captain_assert(rank_level >= 1 && (unsigned)rank_level <= g_theRankInfoStore->m_infoStore.size(),
             0xDEAD0006,
-            "%s, Line: %d - Rank is not within expected range, must be between 1 and %d.\n",
+            "%s, Line: %d - Rank is not within expected range, must be between 1 and %d.",
             ini->Get_Filename().Str(),
             ini->Get_Line_Number(),
             g_theRankInfoStore->m_infoStore.size());
 
         RankInfo *current_info = g_theRankInfoStore->m_infoStore[rank_level - 1];
 
-        DEBUG_ASSERT_THROW(current_info != nullptr,
+        captain_assert(current_info != nullptr,
             0xDEAD0006,
-            "%s, Line: %d - Cannot create override as no rank already exists at this level.\n",
+            "%s, Line: %d - Cannot create override as no rank already exists at this level.",
             ini->Get_Filename().Str(),
             ini->Get_Line_Number());
 
@@ -117,9 +118,9 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         override_info->Add_Override(new_info);
         ini->Init_From_INI(new_info, _parse_table);
     } else {
-        DEBUG_ASSERT_THROW(rank_level == g_theRankInfoStore->m_infoStore.size() + 1,
+        captain_assert(rank_level == g_theRankInfoStore->m_infoStore.size() + 1,
             0xDEAD0006,
-            "%s, Line: %d - Rank is not in sequence, check for missing Rank %d.\n",
+            "%s, Line: %d - Rank is not in sequence, check for missing Rank %d.",
             ini->Get_Filename().Str(),
             ini->Get_Line_Number(),
             rank_level - 1);

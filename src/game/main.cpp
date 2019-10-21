@@ -13,9 +13,9 @@
  *            LICENSE
  */
 #include "main.h"
+#include "captnlog.h"
 #include "cpudetect.h"
 #include "critsection.h"
-#include "gamedebug.h"
 #include "gamemain.h"
 #include "gamememory.h"
 #include "gitverinfo.h"
@@ -25,6 +25,10 @@
 #include "version.h"
 #include "win32compat.h"
 #include <algorithm>
+#include <cstdio>
+
+using std::rename;
+using std::remove;
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -38,7 +42,12 @@
 #include <strings.h>
 #endif
 
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+
 #ifdef PLATFORM_WINDOWS
+#include <direct.h>
 #include <shellapi.h>
 #include <wingdi.h>
 #include <winuser.h>
@@ -88,7 +97,7 @@ inline void Set_Working_Directory()
 #if defined(PLATFORM_WINDOWS)
     char path[MAX_PATH];
 
-    GetModuleFileName(GetModuleHandle(nullptr), path, sizeof(path));
+    GetModuleFileNameA(GetModuleHandleA(nullptr), path, sizeof(path));
 
     for (char *i = &path[strlen(path)]; i != path; --i) {
         if (*i == '\\' || *i == '/') {
@@ -97,7 +106,7 @@ inline void Set_Working_Directory()
         }
     }
 
-    SetCurrentDirectory(path);
+    SetCurrentDirectoryA(path);
 
 #elif defined(PLATFORM_LINUX) // posix otherwise, really just linux currently
     // TODO /proc/curproc/file for FreeBSD /proc/self/path/a.out Solaris
@@ -267,8 +276,57 @@ int main(int argc, char **argv)
     Handle_Win32_Args(&argc, &argv);
     Handle_Win32_Console();
 
-    DEBUG_INIT(DEBUG_LOG_TO_FILE | DEBUG_LOG_TO_CONSOLE);
-    // DEBUG_LOG("Running main().\n");
+    const char *logfile = nullptr;
+#if LOGGING_LEVEL != LOGLEVEL_NONE
+    char dirbuf[PATH_MAX];
+    char curbuf[PATH_MAX];
+    char prevbuf[PATH_MAX];
+
+#ifdef PLATFORM_WINDOWS
+    char *tmp = getenv("USERPROFILE");
+
+    if (tmp != NULL) {
+        strcpy(dirbuf, tmp);
+        strcat(dirbuf, "\\Documents\\Command and Conquer Generals Zero Hour Data");
+        mkdir(dirbuf);
+        strcat(dirbuf, "\\");
+    } else {
+        GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
+
+        // Get the path to the executable minus the actual filename.
+        for (char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i) {
+            *i = '\0';
+        }
+    }
+#else
+    char *homedir = getenv("HOME");
+    if (homedir != nullptr) {
+        strcpy(dirbuf, homedir);
+    }
+
+    if (homedir == nullptr) {
+        homedir = getpwuid(getuid())->pw_dir;
+        if (homedir != nullptr) {
+            strcpy(dirbuf, homedir);
+        }
+    }
+
+    if (homedir != nullptr) {
+        strcat(dirbuf, "/Command and Conquer Generals Zero Hour Data");
+    }
+#endif
+    const char *prefix = "";
+    strcpy(prevbuf, dirbuf);
+    strcat(prevbuf, prefix);
+    strcat(prevbuf, "ThymeDebugLogPrev.txt");
+    strcpy(curbuf, dirbuf);
+    strcat(curbuf, prefix);
+    strcat(curbuf, "ThymeDebugLogFile.txt");
+    remove(prevbuf);
+    rename(curbuf, prevbuf);
+    logfile = curbuf;
+#endif
+    captain_init(LOGLEVEL_DEBUG, logfile, true, false, false);
 
 #if defined PLATFORM_WINDOWS && defined GAME_DLL
     // Set the exception handler to the one provided by the EXE.
@@ -310,19 +368,19 @@ int main(int argc, char **argv)
     );
 
     // Make pretty log header for debug logging builds.
-    DEBUG_LOG("================================================================================\n\n");
-    DEBUG_LOG("Thyme Version: %s\n", g_theVersion->Get_Ascii_Version().Str());
-    DEBUG_LOG("Build date: %s\n", g_theVersion->Get_Ascii_Build_Time().Str());
-    DEBUG_LOG("Build branch: %s\n", g_theVersion->Get_Ascii_Branch().Str());
-    DEBUG_LOG("Build commit: %s\n", g_theVersion->Get_Ascii_Commit_Hash().Str());
-    // DEBUG_LOG("Processor: %s\n", CPUDetectClass::Get_Processor_String());
-    // DEBUG_LOG("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
-    DEBUG_LOG(CPUDetectClass::Get_Processor_Log());
-    DEBUG_LOG("================================================================================\n");
+    captain_line("================================================================================");
+    captain_line("Thyme Version: %s", g_theVersion->Get_Ascii_Version().Str());
+    captain_line("Build date: %s", g_theVersion->Get_Ascii_Build_Time().Str());
+    captain_line("Build branch: %s", g_theVersion->Get_Ascii_Branch().Str());
+    captain_line("Build commit: %s", g_theVersion->Get_Ascii_Commit_Hash().Str());
+    // captain_line("Processor: %s\n", CPUDetectClass::Get_Processor_String());
+    // captain_line("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
+    captain_line(CPUDetectClass::Get_Processor_Log());
+    captain_line("================================================================================");
 
-    DEBUG_LOG("About to run Game_Main\n");
+    captain_info("About to run Game_Main");
     Game_Main(argc, argv);
-    DEBUG_LOG("Game shutting down.\n");
+    captain_info("Game shutting down.");
 
     delete g_theVersion;
     g_theVersion = nullptr;
@@ -333,7 +391,7 @@ int main(int argc, char **argv)
     g_dmaCriticalSection = nullptr;
     g_memoryPoolCriticalSection = nullptr;
 
-    DEBUG_STOP();
+    captain_deinit();
 
     return 0;
 }

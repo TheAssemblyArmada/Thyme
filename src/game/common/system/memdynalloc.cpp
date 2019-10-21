@@ -73,7 +73,7 @@ void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, Pool
 
 DynamicMemoryAllocator::~DynamicMemoryAllocator()
 {
-    DEBUG_ASSERT_PRINT(m_usedBlocksInDma, "Destroying none empty DMA.");
+    captain_dbgassert(m_usedBlocksInDma, "Destroying none empty DMA.");
 
     for (int i = 0; i < m_poolCount; ++i) {
         m_factory->Destroy_Memory_Pool(m_pools[i]);

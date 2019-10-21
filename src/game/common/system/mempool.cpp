@@ -70,7 +70,7 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
     blob->Init_Blob(this, count);
     blob->Add_Blob_To_List(&m_firstBlob, &m_lastBlob);
 
-    DEBUG_ASSERT_PRINT(m_firstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
+    captain_dbgassert(m_firstBlobWithFreeBlocks == nullptr, "Expected nullptr here");
 
     m_firstBlobWithFreeBlocks = blob;
     m_totalBlocksInPool += count;
@@ -80,7 +80,7 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
 
 int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 {
-    DEBUG_ASSERT_PRINT(blob->m_owningPool == this, "Blob does not belong to this pool");
+    captain_dbgassert(blob->m_owningPool == this, "Blob does not belong to this pool");
 
     blob->Remove_Blob_From_List(&m_firstBlob, &m_lastBlob);
 
@@ -113,7 +113,7 @@ void *MemoryPool::Allocate_Block_No_Zero()
     }
 
     if (m_firstBlobWithFreeBlocks == nullptr) {
-        DEBUG_ASSERT_THROW(m_overflowAllocationCount != 0, 0xDEAD0002, "Attempting to allocate overflow blocks when m_overflowAllocationCount is 0.\n");
+        captain_assert(m_overflowAllocationCount != 0, 0xDEAD0002, "Attempting to allocate overflow blocks when m_overflowAllocationCount is 0.");
         Create_Blob(m_overflowAllocationCount);
     }
 
@@ -142,7 +142,7 @@ void MemoryPool::Free_Block(void *block)
     MemoryPoolSingleBlock *mp_block = MemoryPoolSingleBlock::Recover_Block_From_User_Data(block);
     MemoryPoolBlob *mp_blob = mp_block->m_owningBlob;
 
-    DEBUG_ASSERT_PRINT(mp_blob != nullptr && mp_blob->m_owningPool == this, "Block is not part of this pool");
+    captain_dbgassert(mp_blob != nullptr && mp_blob->m_owningPool == this, "Block is not part of this pool");
 
     mp_blob->Free_Single_Block(mp_block);
 

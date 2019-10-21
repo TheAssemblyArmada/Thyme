@@ -18,6 +18,7 @@
 #include "scriptgroup.h"
 #include "scriptlist.h"
 #include "xfer.h"
+#include <captnlog.h>
 
 Script *Script::s_emptyScript = nullptr;
 
@@ -188,7 +189,7 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
 {
     // Log if the version is not the normal chunk version seen in ZH.
     if (version != 2) {
-        DEBUG_LOG("Parsing script chunk for version %d.\n", version);
+        captain_info("Parsing script chunk for version %d.", version);
     }
 
     Script *new_script = new Script;

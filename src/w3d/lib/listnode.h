@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
+#include <captnassert.h>
 
 class GenericList;
 
@@ -88,7 +88,7 @@ inline GenericList *GenericNode::Main_List() const
 */
 inline void GenericNode::Link(GenericNode *node)
 {
-    DEBUG_ASSERT(node != nullptr);
+    captain_dbgassert(node != nullptr, nullptr);
 
     node->Unlink();
     node->m_nextNode = m_nextNode;

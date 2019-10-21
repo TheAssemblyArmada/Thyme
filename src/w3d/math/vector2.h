@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include "gamedebug.h"
+#include "captnassert.h"
 #include "gamemath.h"
 
 class Vector2i
@@ -50,7 +50,7 @@ public:
 
     __forceinline explicit Vector2(const float vector[2])
     {
-        DEBUG_ASSERT(vector != nullptr);
+        captain_dbgassert(vector != nullptr, "");
         X = vector[0];
         Y = vector[1];
     }

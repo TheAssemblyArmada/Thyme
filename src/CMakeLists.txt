@@ -10,7 +10,6 @@ set(GAMEENGINE_INCLUDES
     game/common
     game/common/audio
     game/common/compression
-    game/common/debug
     game/common/ini
     game/common/modules
     game/common/rts
@@ -49,7 +48,6 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/maputil.cpp
     game/weather.cpp
-    game/win32compat.c
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp
@@ -102,8 +100,6 @@ set(GAMEENGINE_SRC
     game/common/audio/soundmanager.cpp
     game/common/compression/compressionmanager.cpp
     game/common/compression/refpack.cpp
-    game/common/debug/gameassert.cpp
-    game/common/debug/gamelogging.cpp
     game/common/ini/ini.cpp
     game/common/ini/inidrawgroupinfo.cpp
     game/common/modules/modulefactory.cpp
@@ -324,16 +320,20 @@ target_compile_definitions(thyme PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
 
 # Enable Thyme debug logging.
 if(LOGGING)
-    target_compile_definitions(thyme PUBLIC GAME_LOGGING=1)
+    set(CAPTNLOG_LEVEL $<$<CONFIG:Debug>:5>$<$<CONFIG:RelWithDebInfo>:3>$<$<CONFIG:Release>:3>$<$<CONFIG:MinSizeRel>:3>)
+else()
+    set(CAPTNLOG_LEVEL 0)
+endif()
+
+# Enable Thyme debug assertions.
+if(ASSERTIONS)
+    set(CAPTNASSERT_LEVEL $<$<CONFIG:Debug>:2>$<$<CONFIG:RelWithDebInfo>:1>$<$<CONFIG:Release>:1>$<$<CONFIG:MinSizeRel>:1>)
+else()
+    set(CAPTNASSERT_LEVEL 0)
 endif()
 
 add_subdirectory(libs/captnlog EXCLUDE_FROM_ALL)
 target_link_libraries(thyme captnlog)
-
-# Enable Thyme debug assertions.
-if(ASSERTIONS)
-    target_compile_definitions(thyme PUBLIC GAME_ASSERTS=1)
-endif()
 
 if(USE_GAMEMATH)
     target_link_libraries(thyme gamemath_static_lib)

@@ -16,7 +16,6 @@
 
 #include "always.h"
 #include "dx8caps.h"
-#include "gamedebug.h"
 #include "matrix4.h"
 #include "refcount.h"
 #include "renderdevicedesc.h"
@@ -26,6 +25,7 @@
 #include "vector4.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
+#include <captnassert.h>
 
 // Some constants to control numbers of things.
 enum
@@ -141,7 +141,7 @@ public:
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps()
     {
-        DEBUG_ASSERT(s_currentCaps != nullptr);
+        captain_dbgassert(s_currentCaps != nullptr, nullptr);
         return s_currentCaps;
     }
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }

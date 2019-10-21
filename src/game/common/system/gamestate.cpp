@@ -14,9 +14,9 @@
  */
 #include "gamestate.h"
 #include "filetransfer.h"
-#include "gamedebug.h"
 #include "globaldata.h"
 #include "maputil.h"
+#include <captnlog.h>
 
 #ifndef GAME_DLL
 GameState *g_theGameState = nullptr;
@@ -46,8 +46,6 @@ Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
     Utf8String ret;
     Utf8String ppath = path.Posix_Path();
 
-    DEBUG_LOG("'%s' to portable:\n", path.Str());
-
     if (ppath.Starts_With_No_Case(Get_Save_Dir().Posix_Path())) {
         ret = "Save/";
         ret += Get_File_From_Path(ppath);
@@ -66,7 +64,6 @@ Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
     }
 
     ret.To_Lower();
-    DEBUG_LOG("    '%s'\n", ret.Windows_Path().Str());
 
     return ret.Windows_Path();
 }
@@ -74,8 +71,6 @@ Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
 Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path)
 {
     Utf8String ret;
-
-    DEBUG_LOG("'%s' to real:\n", path.Str());
 
     if (path.Starts_With_No_Case("Save/") || path.Starts_With_No_Case("Save\\")) {
         ret = Get_Save_Dir();
@@ -93,7 +88,6 @@ Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path)
     }
 
     ret.To_Lower();
-    DEBUG_LOG("    '%s'\n", ret.Windows_Path().Str());
 
     return ret.Windows_Path();
 }

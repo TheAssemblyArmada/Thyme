@@ -15,9 +15,9 @@
  */
 #pragma once
 
-#include    "always.h"
-#include    "gamemath.h"
-#include    "gamedebug.h"
+#include "always.h"
+#include "gamemath.h"
+#include <captnassert.h>
 
 class Vector4
 {
@@ -26,7 +26,7 @@ public:
     __forceinline Vector4() {}
     __forceinline Vector4(const Vector4 &v) { X = v.X; Y = v.Y; Z = v.Z; W = v.W; }
     __forceinline Vector4(float x, float y, float z, float w) { X = x; Y = y; Z = z; W = w; }
-    __forceinline explicit Vector4(const float v[4]) { DEBUG_ASSERT(v != nullptr); X = v[0]; Y = v[1]; Z = v[2]; W = v[3]; }
+    __forceinline explicit Vector4(const float v[4]) { captain_dbgassert(v != nullptr, ""); X = v[0]; Y = v[1]; Z = v[2]; W = v[3]; }
 
     // conversion constructors
     //__forceinline explicit Vector4(const Vector2& v) { X = v.X; Y = v.Y; Z = 0.0f; W = 0.0f; }

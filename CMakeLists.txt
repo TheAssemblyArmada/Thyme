@@ -108,7 +108,7 @@ endif ()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 4)
     if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-        find_package(DirectX COMPONENTS d3d8)
+        find_package(DirectX COMPONENTS d3d8 dinput8 dxguid)
     endif()
 endif()
 

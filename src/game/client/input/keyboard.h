@@ -40,6 +40,7 @@ struct KeyboardKeyNames
 
 class Keyboard : public SubsystemInterface
 {
+protected:
     enum
     {
         KEY_COUNT = 256,
@@ -77,7 +78,7 @@ public:
 
     virtual bool Get_Caps_State() = 0;
     virtual void Create_Stream_Messages();
-    virtual int Get_Key(KeyboardIO *io) = 0;
+    virtual void Get_Key(KeyboardIO *io) = 0;
 
     wchar_t Get_Printable_Key(uint8_t key, int key_type);
     void Reset_Keys();

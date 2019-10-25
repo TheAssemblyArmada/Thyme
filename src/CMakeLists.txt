@@ -21,6 +21,7 @@ set(GAMEENGINE_INCLUDES
     game/network
     platform
     platform/audio/
+    platform/directx/
     platform/video/
     platform/w3dengine/common/thing
     w3d/lib
@@ -237,6 +238,12 @@ if(NOT STANDALONE AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     platform/video/binkvideostream.cpp)
 endif()
 
+if(DINPUT8_FOUND)
+    list(APPEND GAMEENGINE_GAME_SRC
+        platform/directx/dinputkeybd.cpp
+    )
+endif()
+
 if(CMAKE_CONFIGURATION_TYPES)
     # Glob all the header files together to add to the project for msvc/xcode.
     # Not ideal as CMake won't notice if you add any until something else prompts a CMake run
@@ -307,6 +314,11 @@ else()
         target_link_libraries(thyme binkstub milesstub)
         target_compile_definitions(thyme PRIVATE BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
     endif()
+endif()
+
+if(DINPUT8_FOUND)
+    target_compile_definitions(thyme PRIVATE BUILD_WITH_DINPUT=1)
+    target_link_libraries(thyme ${DirectX_LIBRARIES})
 endif()
 
 target_link_libraries(thyme base)

@@ -30,6 +30,7 @@
 #include "datachunk.h"
 #include "ddsfile.h"
 #include "dict.h"
+#include "dinputkeybd.h"
 #include "dx8caps.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
@@ -805,4 +806,8 @@ void Setup_Hooks()
     // dx8wrapper.h
     Hook_Function(0x00800670, &DX8Wrapper::Init);
     Hook_Function(0x00801240, &DX8Wrapper::Enumerate_Devices);
+
+    // dinputkeybd.h
+    // Hooks all the virtual functions for DirectInputKeyboard.
+    Hook_Method(0x007ACC70, &DirectInputKeyboard::Hook_Ctor);
 }

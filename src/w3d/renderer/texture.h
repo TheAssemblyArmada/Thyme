@@ -36,7 +36,7 @@ class TextureClass final : public TextureBaseClass
 {
 public:
     // TODO
-    WW3DFormat Get_Format() const { return m_textureFormat; }
+    WW3DFormat Texture_Format() const { return m_textureFormat; }
 
 private:
     WW3DFormat m_textureFormat;

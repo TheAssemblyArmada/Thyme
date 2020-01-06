@@ -192,11 +192,7 @@ w3dtexture_t TextureLoader::Load_Thumbnail(const StringClass &texture, const Vec
  */
 w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, WW3DFormat format, bool allow_compressed)
 {
-    bool dxt = format == WW3D_FORMAT_DXT1 || format == WW3D_FORMAT_DXT2 || format == WW3D_FORMAT_DXT3
-        || format == WW3D_FORMAT_DXT4 || format == WW3D_FORMAT_DXT5;
-    bool compressed = format == WW3D_FORMAT_UNKNOWN && DX8Wrapper::Supports_DXTC() && allow_compressed;
-
-    if ((dxt || compressed)) {
+    if (Is_Format_Compressed(format, allow_compressed)) {
         w3dtexture_t tex = Load_Compressed_Texture(texture, 0, MIP_LEVELS_1, WW3D_FORMAT_UNKNOWN);
 #ifdef BUILD_WITH_D3D8
         if (tex != W3D_TYPE_INVALID_TEXTURE) {
@@ -289,17 +285,7 @@ void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
     FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
     if (texture->Peek_Platform_Base_Texture() == W3D_TYPE_INVALID_TEXTURE) {
         if (TextureLoader::Is_DX8_Thread()) {
-            w3dtexture_t tex = TextureLoader::Load_Thumbnail(
-                texture->Get_Full_Path().Is_Empty() ? texture->Get_Name() : texture->Get_Full_Path(),
-                texture->Get_Recolor());
-
-            if (texture->Get_Asset_Type() == 0) {
-                texture->Apply_New_Surface(tex, false, false);
-            }
-
-#ifdef BUILD_WITH_D3D8
-            tex->Release();
-#endif
+            Load_Thumbnail(texture);
             // This seems at odds with the Renegade code where the load tasks are the other way around.
             // Possibly this code isn't ever actually used with Thumbnail code in general being minimally
             // called.
@@ -309,7 +295,8 @@ void TextureLoader::Request_Thumbnail(TextureBaseClass *texture)
             }
         } else {
             if (texture->Get_Thumbnail_Load_Task() == nullptr) {
-                if (texture->Get_Normal_Load_Task() == nullptr || texture->Get_Normal_Load_Task()->Get_Load_State() <= 1) {
+                if (texture->Get_Normal_Load_Task() == nullptr
+                    || texture->Get_Normal_Load_Task()->Get_Load_State() == TextureLoadTaskClass::STATE_NONE) {
                     g_foregroundQueue.Push_Back(TextureLoadTaskClass::Create(
                         texture, TextureLoadTaskClass::TASK_THUMBNAIL, TextureLoadTaskClass::PRIORITY_BACKGROUND));
                 }
@@ -359,7 +346,7 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
     if (!TextureLoader::Is_DX8_Thread()) {
         FastCriticalSectionClass::LockClass lock2(g_backgroundCritSec);
         if (thumb_task != nullptr) {
-            thumb_task->Set_Load_State(TextureLoadTaskClass::STATE_4);
+            thumb_task->Set_Load_State(TextureLoadTaskClass::STATE_FOREGROUND_OVERRIDE);
         }
 
         if (task != nullptr) {
@@ -399,7 +386,22 @@ void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
 bool TextureLoader::Queues_Not_Empty()
 {
     FastCriticalSectionClass::LockClass lock(g_backgroundCritSec);
+
     return !g_backgroundQueue.Empty() && !g_foregroundQueue.Empty();
+}
+
+bool TextureLoader::Is_Format_Compressed(WW3DFormat format, bool allow_compressed)
+{
+    if (format == WW3D_FORMAT_DXT1 || format == WW3D_FORMAT_DXT2 || format == WW3D_FORMAT_DXT3 || format == WW3D_FORMAT_DXT4
+        || format == WW3D_FORMAT_DXT5) {
+        return true;
+    }
+
+    if (format == WW3D_FORMAT_UNKNOWN && DX8Wrapper::Supports_DXTC() && allow_compressed) {
+        return true;
+    }
+
+    return false;
 }
 
 /**
@@ -455,7 +457,7 @@ void TextureLoader::Process_Foreground_Thumbnail(TextureLoadTaskClass *task)
     switch (task->Get_Load_State()) {
         case TextureLoadTaskClass::STATE_NONE:
             Load_Thumbnail(task->Get_Texture());
-        case TextureLoadTaskClass::STATE_4: // Fallthrough
+        case TextureLoadTaskClass::STATE_FOREGROUND_OVERRIDE: // Fallthrough
             task->Destroy();
             break;
         default:
@@ -471,11 +473,20 @@ void TextureLoader::Process_Foreground_Load(TextureLoadTaskClass *task)
     if (task->Get_Priority() == TextureLoadTaskClass::PRIORITY_FOREGROUND) {
         task->Finish_Load();
         task->Destroy();
-    } else if (task->Get_Load_State() == TextureLoadTaskClass::STATE_NONE) {
-        TextureLoader::Begin_Load_And_Queue(task);
-    } else if (task->Get_Load_State() == TextureLoadTaskClass::STATE_LOADED) {
-        task->End_Load();
-        task->Destroy();
+        return;
+    }
+
+    // Finish up background tasks
+    switch (task->Get_Load_State()) {
+        case TextureLoadTaskClass::STATE_NONE:
+            TextureLoader::Begin_Load_And_Queue(task);
+            break;
+        case TextureLoadTaskClass::STATE_LOADED:
+            task->End_Load();
+            task->Destroy();
+            break;
+        default:
+            break;
     }
 }
 
@@ -491,9 +502,7 @@ void TextureLoader::Begin_Load_And_Queue(TextureLoadTaskClass *task)
     }
 
     // If we can't start the load of either a dds or tga for the filename in the task set it to missing.
-    if ((task->Allow_Compression() && task->Begin_Compressed_Load()) || task->Begin_Uncompressed_Load()) {
-        task->Lock_Surfaces();
-        task->Set_Load_State(TextureLoadTaskClass::STATE_LOAD_BEGUN);
+    if (task->Begin_Load()) {
         g_backgroundQueue.Push_Front(task);
     } else {
         task->Apply_Missing_Texture();

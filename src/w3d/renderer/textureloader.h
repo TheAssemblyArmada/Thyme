@@ -57,6 +57,7 @@ public:
 
 private:
     static bool Queues_Not_Empty();
+    static bool Is_Format_Compressed(WW3DFormat format, bool allow_compressed);
 #ifdef GAME_DLL
     static unsigned &s_textureInactiveOverrideTime;
     static LoaderThreadClass &s_textureLoadThread;

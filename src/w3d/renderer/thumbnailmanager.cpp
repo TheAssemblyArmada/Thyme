@@ -17,7 +17,7 @@
 #include "thumbnail.h"
 
 #ifndef GAME_DLL
-DLListClass<ThumbnailManagerClass> ThumbnailManagerClass::ThumbnailManagerList;
+DLListClass<ThumbnailManagerClass> ThumbnailManagerClass::s_thumbnailManagerList;
 ThumbnailManagerClass *g_thumbnailManager;
 #endif
 
@@ -127,7 +127,7 @@ void ThumbnailManagerClass::Save(bool force)
  */
 void ThumbnailManagerClass::Add_Thumbnail_Manager(const char *thumbfilename, const char *mixfilename)
 {
-    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::ThumbnailManagerList.Head(); thumbnailmgr != nullptr;
+    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::s_thumbnailManagerList.Head(); thumbnailmgr != nullptr;
          thumbnailmgr = thumbnailmgr->Succ()) {
         if (strcmp(thumbnailmgr->m_thumbFileName, thumbfilename) == 0) {
             return;
@@ -137,7 +137,7 @@ void ThumbnailManagerClass::Add_Thumbnail_Manager(const char *thumbfilename, con
     if (g_thumbnailManager == nullptr || strcmp(g_thumbnailManager->m_thumbFileName, thumbfilename) != 0) {
         Update_Thumbnail_File(mixfilename, false);
         ThumbnailManagerClass *manager = new ThumbnailManagerClass(thumbfilename, mixfilename);
-        ThumbnailManagerList.Add_Tail(manager);
+        s_thumbnailManagerList.Add_Tail(manager);
     }
 }
 
@@ -146,7 +146,7 @@ void ThumbnailManagerClass::Add_Thumbnail_Manager(const char *thumbfilename, con
  */
 void ThumbnailManagerClass::Remove_Thumbnail_Manager(const char *thumbfilename)
 {
-    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::ThumbnailManagerList.Head(); thumbnailmgr != nullptr;
+    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::s_thumbnailManagerList.Head(); thumbnailmgr != nullptr;
          thumbnailmgr = thumbnailmgr->Succ()) {
         if (strcmp(thumbnailmgr->m_thumbFileName, thumbfilename) == 0) {
             delete thumbnailmgr;
@@ -175,7 +175,7 @@ void ThumbnailManagerClass::Update_Thumbnail_File(const char *mixfilename, bool 
  */
 ThumbnailManagerClass *ThumbnailManagerClass::Peek_Thumbnail_Manager(const char *thumbfilename)
 {
-    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::ThumbnailManagerList.Head(); thumbnailmgr != nullptr;
+    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::s_thumbnailManagerList.Head(); thumbnailmgr != nullptr;
          thumbnailmgr = thumbnailmgr->Succ()) {
         if (strcmp(thumbnailmgr->m_thumbFileName, thumbfilename) == 0) {
             return thumbnailmgr;
@@ -186,7 +186,7 @@ ThumbnailManagerClass *ThumbnailManagerClass::Peek_Thumbnail_Manager(const char 
         return g_thumbnailManager;
     }
 
-    return 0;
+    return nullptr;
 }
 
 /**
@@ -198,7 +198,7 @@ ThumbnailClass *ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager(
 {
     ThumbnailClass *thumb = nullptr;
 
-    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::ThumbnailManagerList.Head(); thumbnailmgr != nullptr;
+    for (ThumbnailManagerClass *thumbnailmgr = ThumbnailManagerClass::s_thumbnailManagerList.Head(); thumbnailmgr != nullptr;
          thumbnailmgr = thumbnailmgr->Succ()) {
         thumb = thumbnailmgr->Peek_Thumbnail_Instance(texture);
 
@@ -246,8 +246,8 @@ void ThumbnailManagerClass::Init()
  */
 void ThumbnailManagerClass::Deinit()
 {
-    while (ThumbnailManagerList.Head() != nullptr) {
-        delete ThumbnailManagerList.Head();
+    while (s_thumbnailManagerList.Head() != nullptr) {
+        delete s_thumbnailManagerList.Head();
     }
 
     delete g_thumbnailManager;

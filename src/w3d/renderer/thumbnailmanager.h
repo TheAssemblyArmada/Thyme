@@ -57,9 +57,9 @@ private:
 
     static bool s_createIfNotFound;
 #ifdef GAME_DLL
-    static DLListClass<ThumbnailManagerClass> &ThumbnailManagerList;
+    static DLListClass<ThumbnailManagerClass> &s_thumbnailManagerList;
 #else
-    static DLListClass<ThumbnailManagerClass> ThumbnailManagerList;
+    static DLListClass<ThumbnailManagerClass> s_thumbnailManagerList;
 #endif
 };
 

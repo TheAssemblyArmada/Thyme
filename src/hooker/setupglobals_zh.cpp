@@ -310,7 +310,7 @@ TextureLoadTaskListClass &g_volFreeList = Make_Global<TextureLoadTaskListClass>(
 
 // thumbnailmanager.cpp
 #include "thumbnailmanager.h"
-DLListClass<ThumbnailManagerClass> &ThumbnailManagerClass::ThumbnailManagerList =
+DLListClass<ThumbnailManagerClass> &ThumbnailManagerClass::s_thumbnailManagerList =
     Make_Global<DLListClass<ThumbnailManagerClass>>(0x00A544B0);
 ThumbnailManagerClass *&g_thumbnailManager = Make_Global<ThumbnailManagerClass *>(0x00A544A8);
 // bool &ThumbnailManagerClass::s_createIfNotFound = Make_Global<bool>(0x007F66AC);

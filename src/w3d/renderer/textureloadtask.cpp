@@ -76,7 +76,7 @@ uint8_t *TextureLoadTaskClass::Get_Locked_Surface_Pointer(unsigned level)
 /**
  * Fetched the locked surface pitch, performs checks when built with asserts.
  */
-int TextureLoadTaskClass::Get_Locked_Surface_Pitch(unsigned level)
+unsigned TextureLoadTaskClass::Get_Locked_Surface_Pitch(unsigned level)
 {
     captain_dbgassert(level < m_mipLevelCount, nullptr);
     captain_dbgassert(m_lockedSurfacePitch[level] != 0, nullptr);
@@ -101,6 +101,7 @@ void TextureLoadTaskClass::Destroy()
  */
 void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
+    captain_dbgassert(texture != nullptr, nullptr);
     Ref_Ptr_Set(texture, m_texture);
     m_type = type;
     m_priority = priority;
@@ -108,7 +109,7 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
     m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
 
     if (texture->As_Texture() != nullptr) {
-        m_format = texture->As_Texture()->Get_Format();
+        m_format = texture->As_Texture()->Texture_Format();
     } else {
         m_format = WW3D_FORMAT_UNKNOWN;
     }
@@ -118,11 +119,8 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
     m_mipLevelCount = m_texture->m_mipLevelCount;
     m_reduction = m_texture->Get_Reduction();
     m_hsvAdjust = m_texture->m_hsvShift;
-
-    for (int i = 0; i < MAX_SURFACES; ++i) {
-        m_lockedSurfacePtr[i] = nullptr;
-        m_lockedSurfacePitch[i] = 0;
-    }
+    memset(m_lockedSurfacePtr, 0, sizeof(m_lockedSurfacePtr));
+    memset(m_lockedSurfacePitch, 0, sizeof(m_lockedSurfacePitch));
 
     switch (m_type) {
         case TASK_THUMBNAIL:
@@ -339,6 +337,7 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
         return false;
     }
 
+    captain_dbgassert(m_width != 0 && m_height != 0, nullptr);
     unsigned reduced_width = m_width;
     unsigned reduced_height = m_height;
     unsigned reduction = m_reduction;
@@ -497,7 +496,7 @@ void TextureLoadTaskClass::Lock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
     m_mipLevelCount = m_d3dTexture->GetLevelCount();
-    captain_dbgassert(m_mipLevelCount < MAX_SURFACES, nullptr);
+    captain_dbgassert(m_mipLevelCount < MAX_MIPLEVEL_COUNT, nullptr);
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         D3DLOCKED_RECT rect;
@@ -516,7 +515,7 @@ void TextureLoadTaskClass::Lock_Surfaces()
 void TextureLoadTaskClass::Unlock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
-    captain_dbgassert(m_mipLevelCount < MAX_SURFACES, nullptr);
+    captain_dbgassert(m_mipLevelCount < MAX_MIPLEVEL_COUNT, nullptr);
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         if (m_lockedSurfacePtr[i] != nullptr) {
@@ -534,7 +533,7 @@ void TextureLoadTaskClass::Unlock_Surfaces()
  */
 void TextureLoadTaskClass::Apply(bool initialized)
 {
-    captain_dbgassert(m_texture != nullptr, nullptr);
+    captain_dbgassert(m_d3dTexture != W3D_TYPE_INVALID_TEXTURE, nullptr);
     m_texture->Apply_New_Surface(m_d3dTexture, initialized, false);
 #ifdef BUILD_WITH_D3D8
     m_d3dTexture->Release();
@@ -547,6 +546,8 @@ void TextureLoadTaskClass::Apply(bool initialized)
  */
 void TextureLoadTaskClass::Apply_Missing_Texture()
 {
+    captain_dbgassert(TextureLoader::Is_DX8_Thread(), nullptr);
+    captain_dbgassert(m_d3dTexture == W3D_TYPE_INVALID_TEXTURE, nullptr);
     m_d3dTexture = MissingTexture::Get_Missing_Texture();
     Apply(true);
 }
@@ -605,6 +606,7 @@ bool TextureLoadTaskClass::Load()
  */
 void TextureLoadTaskClass::End_Load()
 {
+    captain_dbgassert(TextureLoader::Is_DX8_Thread(), nullptr);
     Unlock_Surfaces();
     Apply(true);
     m_loadState = STATE_LOAD_ENDED;
@@ -658,7 +660,8 @@ TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, Ta
     // TODO Original can load volume and cube textures too, test if it actuall does.
     captain_dbgassert(
         texture->Get_Asset_Type() == 0, "Attempting to create texture asset of type %d.", texture->Get_Asset_Type());
-    
+    captain_dbgassert(texture != nullptr, nullptr);
+
     TextureLoadTaskClass *task = g_freeList.Pop_Front();
 
     if (task == nullptr) {

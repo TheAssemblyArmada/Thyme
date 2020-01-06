@@ -37,7 +37,7 @@ class TextureLoadTaskClass
 
     enum
     {
-        MAX_SURFACES = 12,
+        MAX_MIPLEVEL_COUNT = 12,
     };
 
 public:
@@ -60,7 +60,7 @@ public:
         STATE_LOAD_BEGUN,
         STATE_LOADED,
         STATE_LOAD_ENDED,
-        STATE_4,
+        STATE_FOREGROUND_OVERRIDE,
     };
 
     TextureLoadTaskClass();
@@ -83,10 +83,10 @@ public:
     void End_Load();
     void Finish_Load();
     uint8_t *Get_Locked_Surface_Pointer(unsigned level);
-    int Get_Locked_Surface_Pitch(unsigned level);
+    unsigned Get_Locked_Surface_Pitch(unsigned level);
     StateType Get_Load_State() const { return m_loadState; }
-    TaskType Get_Task_Type() const { return m_type; }
     void Set_Load_State(StateType state) { m_loadState = state; }
+    TaskType Get_Task_Type() const { return m_type; }
     void Set_Priority(PriorityType priority) { m_priority = priority; }
     PriorityType Get_Priority() const { return m_priority; }
     TextureLoadTaskListClass *Get_Parent() { return m_parent; }
@@ -127,8 +127,8 @@ protected:
     unsigned m_mipLevelCount;
     unsigned m_reduction;
     Vector3 m_hsvAdjust;
-    uint8_t *m_lockedSurfacePtr[MAX_SURFACES];
-    int m_lockedSurfacePitch[MAX_SURFACES];
+    uint8_t *m_lockedSurfacePtr[MAX_MIPLEVEL_COUNT];
+    unsigned m_lockedSurfacePitch[MAX_MIPLEVEL_COUNT];
     TaskType m_type;
     PriorityType m_priority;
     StateType m_loadState;

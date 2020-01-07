@@ -68,8 +68,8 @@ TextureLoadTaskClass::~TextureLoadTaskClass()
  */
 uint8_t *TextureLoadTaskClass::Get_Locked_Surface_Pointer(unsigned level)
 {
-    captain_dbgassert(level < m_mipLevelCount, nullptr);
-    captain_dbgassert(m_lockedSurfacePtr[level] != nullptr, nullptr);
+    captain_assert(level < m_mipLevelCount);
+    captain_assert(m_lockedSurfacePtr[level] != nullptr);
     return m_lockedSurfacePtr[level];
 }
 
@@ -78,8 +78,8 @@ uint8_t *TextureLoadTaskClass::Get_Locked_Surface_Pointer(unsigned level)
  */
 unsigned TextureLoadTaskClass::Get_Locked_Surface_Pitch(unsigned level)
 {
-    captain_dbgassert(level < m_mipLevelCount, nullptr);
-    captain_dbgassert(m_lockedSurfacePitch[level] != 0, nullptr);
+    captain_assert(level < m_mipLevelCount);
+    captain_assert(m_lockedSurfacePitch[level] != 0);
     return m_lockedSurfacePitch[level];
 }
 
@@ -101,7 +101,7 @@ void TextureLoadTaskClass::Destroy()
  */
 void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
-    captain_dbgassert(texture != nullptr, nullptr);
+    captain_assert(texture != nullptr);
     Ref_Ptr_Set(texture, m_texture);
     m_type = type;
     m_priority = priority;
@@ -164,7 +164,7 @@ void TextureLoadTaskClass::Deinit()
  */
 bool TextureLoadTaskClass::Begin_Compressed_Load()
 {
-    captain_dbgassert(m_texture != nullptr, nullptr);
+    captain_assert(m_texture != nullptr);
     const StringClass *name = m_texture->Get_Full_Path().Is_Empty() ? &m_texture->Get_Name() : &m_texture->Get_Full_Path();
 
     unsigned reduction;
@@ -267,7 +267,7 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
  */
 bool TextureLoadTaskClass::Begin_Uncompressed_Load()
 {
-    captain_dbgassert(m_texture != nullptr, nullptr);
+    captain_assert(m_texture != nullptr);
     const StringClass *name = m_texture->Get_Full_Path().Is_Empty() ? &m_texture->Get_Name() : &m_texture->Get_Full_Path();
 
     unsigned reduction;
@@ -329,7 +329,7 @@ bool TextureLoadTaskClass::Begin_Uncompressed_Load()
  */
 bool TextureLoadTaskClass::Load_Compressed_Mipmap()
 {
-    captain_dbgassert(m_texture != nullptr, nullptr);
+    captain_assert(m_texture != nullptr);
     const StringClass *name = m_texture->Get_Full_Path().Is_Empty() ? &m_texture->Get_Name() : &m_texture->Get_Full_Path();
     DDSFileClass dds(*name, m_reduction);
 
@@ -337,7 +337,7 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
         return false;
     }
 
-    captain_dbgassert(m_width != 0 && m_height != 0, nullptr);
+    captain_assert(m_width != 0 && m_height != 0);
     unsigned reduced_width = m_width;
     unsigned reduced_height = m_height;
     unsigned reduction = m_reduction;
@@ -364,7 +364,7 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
  */
 bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
 {
-    captain_dbgassert(m_texture != nullptr, nullptr);
+    captain_assert(m_texture != nullptr);
 
     if (m_mipLevelCount == 0) {
         return false;
@@ -496,7 +496,7 @@ void TextureLoadTaskClass::Lock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
     m_mipLevelCount = m_d3dTexture->GetLevelCount();
-    captain_dbgassert(m_mipLevelCount < MAX_MIPLEVEL_COUNT, nullptr);
+    captain_assert(m_mipLevelCount < MAX_MIPLEVEL_COUNT);
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         D3DLOCKED_RECT rect;
@@ -515,7 +515,7 @@ void TextureLoadTaskClass::Lock_Surfaces()
 void TextureLoadTaskClass::Unlock_Surfaces()
 {
 #ifdef BUILD_WITH_D3D8
-    captain_dbgassert(m_mipLevelCount < MAX_MIPLEVEL_COUNT, nullptr);
+    captain_assert(m_mipLevelCount < MAX_MIPLEVEL_COUNT);
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
         if (m_lockedSurfacePtr[i] != nullptr) {
@@ -533,7 +533,7 @@ void TextureLoadTaskClass::Unlock_Surfaces()
  */
 void TextureLoadTaskClass::Apply(bool initialized)
 {
-    captain_dbgassert(m_d3dTexture != W3D_TYPE_INVALID_TEXTURE, nullptr);
+    captain_assert(m_d3dTexture != W3D_TYPE_INVALID_TEXTURE);
     m_texture->Apply_New_Surface(m_d3dTexture, initialized, false);
 #ifdef BUILD_WITH_D3D8
     m_d3dTexture->Release();
@@ -546,8 +546,8 @@ void TextureLoadTaskClass::Apply(bool initialized)
  */
 void TextureLoadTaskClass::Apply_Missing_Texture()
 {
-    captain_dbgassert(TextureLoader::Is_DX8_Thread(), nullptr);
-    captain_dbgassert(m_d3dTexture == W3D_TYPE_INVALID_TEXTURE, nullptr);
+    captain_assert(TextureLoader::Is_DX8_Thread());
+    captain_assert(m_d3dTexture == W3D_TYPE_INVALID_TEXTURE);
     m_d3dTexture = MissingTexture::Get_Missing_Texture();
     Apply(true);
 }
@@ -559,7 +559,7 @@ void TextureLoadTaskClass::Apply_Missing_Texture()
  */
 bool TextureLoadTaskClass::Begin_Load()
 {
-    captain_dbgassert(m_texture != 0, nullptr);
+    captain_assert(m_texture != 0);
     bool res = false;
 
     if (m_texture->m_compressionAllowed) {
@@ -585,7 +585,7 @@ bool TextureLoadTaskClass::Begin_Load()
  */
 bool TextureLoadTaskClass::Load()
 {
-    captain_dbgassert(m_texture != 0, nullptr);
+    captain_assert(m_texture != 0);
     bool res = false;
 
     if (m_texture->m_compressionAllowed) {
@@ -606,7 +606,7 @@ bool TextureLoadTaskClass::Load()
  */
 void TextureLoadTaskClass::End_Load()
 {
-    captain_dbgassert(TextureLoader::Is_DX8_Thread(), nullptr);
+    captain_assert(TextureLoader::Is_DX8_Thread());
     Unlock_Surfaces();
     Apply(true);
     m_loadState = STATE_LOAD_ENDED;
@@ -660,7 +660,7 @@ TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, Ta
     // TODO Original can load volume and cube textures too, test if it actuall does.
     captain_dbgassert(
         texture->Get_Asset_Type() == 0, "Attempting to create texture asset of type %d.", texture->Get_Asset_Type());
-    captain_dbgassert(texture != nullptr, nullptr);
+    captain_assert(texture != nullptr);
 
     TextureLoadTaskClass *task = g_freeList.Pop_Front();
 

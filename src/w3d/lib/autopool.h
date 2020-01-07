@@ -94,7 +94,7 @@ class AutoPoolClass
 public:
     static void *operator new(size_t size)
     {
-        captain_dbgassert(size == sizeof(T), nullptr);
+        captain_assert(size == sizeof(T));
         return (void *)m_allocator.Allocate_Object_Memory();
     }
 

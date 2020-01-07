@@ -193,14 +193,14 @@ void IndexClass<KeyType, ValueType>::Clear()
 template<typename KeyType, class ValueType>
 bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
 {
-    captain_dbgassert(amount > 0, nullptr);
+    captain_assert(amount > 0);
 
     if (amount >= 0) {
         int newsize = m_indexSize + amount;
         NodeElement *newindex = new NodeElement[newsize];
 
         if (newindex != nullptr) {
-            captain_dbgassert(m_indexCount < newsize, nullptr);
+            captain_assert(m_indexCount < newsize);
 
             for (int i = 0; i < m_indexCount; ++i) {
                 newindex[i].m_id = m_indexTable[i].m_id;

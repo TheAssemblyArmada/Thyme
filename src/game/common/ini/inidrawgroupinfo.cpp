@@ -17,6 +17,6 @@
 
 void INI::Parse_Draw_Group_Info(INI *ini)
 {
-    captain_assert(g_theDrawGroupInfo != nullptr, 0xDEAD0006, "g_theDrawGroupInfo is null when attempting parse.");
+    captain_relassert(g_theDrawGroupInfo != nullptr, 0xDEAD0006, "g_theDrawGroupInfo is null when attempting parse.");
     ini->Init_From_INI(g_theDrawGroupInfo, DrawGroupInfo::Get_Parse_Table());
 }

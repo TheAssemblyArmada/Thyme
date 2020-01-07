@@ -67,6 +67,6 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
 
 inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
 {
-    captain_assert(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.");
+    captain_relassert(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.");
     return &m_teams[index];
 }

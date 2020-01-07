@@ -62,7 +62,7 @@ public:
         m_head.m_nextList = 0;
     };
 
-    virtual ~GenericMultiListClass() { captain_dbgassert(Is_Empty(), nullptr); };
+    virtual ~GenericMultiListClass() { captain_assert(Is_Empty()); };
 
     bool Is_In_List(MultiListObjectClass *obj) const { return Contains(obj); };
     bool Is_Empty() const { return (m_head.m_next == &m_head); };
@@ -91,7 +91,7 @@ class GenericMultiListIterator
 public:
     GenericMultiListIterator(const GenericMultiListClass *list)
     {
-        captain_dbgassert(list != nullptr, nullptr);
+        captain_assert(list != nullptr);
         First(list);
     };
 

@@ -141,7 +141,7 @@ public:
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps()
     {
-        captain_dbgassert(s_currentCaps != nullptr, nullptr);
+        captain_assert(s_currentCaps != nullptr);
         return s_currentCaps;
     }
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }

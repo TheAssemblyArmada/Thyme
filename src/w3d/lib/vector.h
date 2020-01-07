@@ -56,14 +56,14 @@ protected:
 template<typename T>
 T &VectorClass<T>::operator[](int index)
 {
-    captain_dbgassert(unsigned(index) < unsigned(m_vectorMax), nullptr);
+    captain_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 
 template<typename T>
 const T &VectorClass<T>::operator[](int index) const
 {
-    captain_dbgassert(unsigned(index) < unsigned(m_vectorMax), nullptr);
+    captain_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 

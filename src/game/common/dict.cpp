@@ -476,7 +476,7 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
         return to_translate;
     }
 
-    captain_assert(pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.");
+    captain_relassert(pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.");
 
     DictPairData *new_data = nullptr;
 

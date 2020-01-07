@@ -257,7 +257,7 @@ int INIClass::Load(Straw &straw)
 
 INISection *INIClass::Find_Section(const char *section) const
 {
-    captain_dbgassert(section != nullptr, nullptr);
+    captain_assert(section != nullptr);
 
     int crc;
 
@@ -270,8 +270,8 @@ INISection *INIClass::Find_Section(const char *section) const
 
 INIEntry *INIClass::Find_Entry(const char *section, const char *entry) const
 {
-    captain_dbgassert(section != nullptr, nullptr);
-    captain_dbgassert(entry != nullptr, nullptr);
+    captain_assert(section != nullptr);
+    captain_assert(entry != nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -284,7 +284,7 @@ INIEntry *INIClass::Find_Entry(const char *section, const char *entry) const
 
 int INIClass::Entry_Count(const char *section) const
 {
-    captain_dbgassert(section != nullptr, nullptr);
+    captain_assert(section != nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -297,7 +297,7 @@ int INIClass::Entry_Count(const char *section) const
 
 const char *INIClass::Get_Entry(const char *section, int index) const
 {
-    captain_dbgassert(section != nullptr, nullptr);
+    captain_assert(section != nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
@@ -327,8 +327,8 @@ int INIClass::Enumerate_Entries(const char *section, const char *entry_prefix, u
     char buffer[256];
     uint32_t i = start_number;
 
-    captain_dbgassert(section != nullptr, nullptr);
-    captain_dbgassert(!start_number && !end_number, nullptr);
+    captain_assert(section != nullptr);
+    captain_assert(!start_number && !end_number);
 
     for (; i < end_number; ++i) {
         snprintf(buffer, sizeof(buffer), "%s%d", entry_prefix, i);
@@ -489,7 +489,7 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
 
         // Insert if we have a valid string that is not empty.
         if (string != nullptr && strlen(string) > 0) {
-            captain_dbgassert(strlen(string) < MAX_LINE_LENGTH - 1, nullptr);
+            captain_assert(strlen(string) < MAX_LINE_LENGTH - 1);
             entryptr = new INIEntry(entry, string);
 
             if (entryptr != nullptr) {
@@ -509,10 +509,10 @@ int INIClass::Get_String(const char *section, const char *entry, const char *def
     INIEntry *entryptr;
     const char *value = defvalue;
 
-    captain_dbgassert(section != nullptr, nullptr);
-    captain_dbgassert(entry != nullptr, nullptr);
-    captain_dbgassert(buffer != nullptr, nullptr);
-    captain_dbgassert(length > 0, nullptr);
+    captain_assert(section != nullptr);
+    captain_assert(entry != nullptr);
+    captain_assert(buffer != nullptr);
+    captain_assert(length > 0);
 
     if (buffer != nullptr && length > 0 && section != nullptr && entry != nullptr) {
         if ((entryptr = Find_Entry(section, entry)) == nullptr || (value = entryptr->Get_Value()) == nullptr) {

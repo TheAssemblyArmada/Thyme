@@ -155,7 +155,7 @@ void ThreadClass::Stop(unsigned int ms)
 #elif defined PLATFORM_WINDOWS
             if (!TerminateThread(m_handle, 0)) {
 #endif
-                captain_dbgassert(false, nullptr);
+                captain_assert(false);
             }
 
             m_handle = 0;

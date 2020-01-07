@@ -362,7 +362,7 @@ void Utf16String::Format_VA(const unichar_t *format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
     int res = u_vsnprintf_u(buf, sizeof(buf), format, args);
-    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer.");
+    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer.");
 
     Set(buf);
 }
@@ -371,7 +371,7 @@ void Utf16String::Format_VA(Utf16String &format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
     int res = u_vsnprintf_u(buf, sizeof(buf), format.Str(), args);
-    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer");
+    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

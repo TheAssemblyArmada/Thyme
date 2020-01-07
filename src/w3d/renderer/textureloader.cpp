@@ -333,7 +333,7 @@ void TextureLoader::Request_Background_Loading(TextureBaseClass *texture)
  */
 void TextureLoader::Request_Foreground_Loading(TextureBaseClass *texture)
 {
-    captain_dbgassert(texture != nullptr, nullptr);
+    captain_assert(texture != nullptr);
     FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
 
     if (texture->Is_Initialized()) {

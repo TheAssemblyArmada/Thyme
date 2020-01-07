@@ -168,7 +168,7 @@ void MilesAudioFileCache::Set_Max_Size(unsigned size)
  */
 bool MilesAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
 {
-    captain_dbgassert(m_currentSize >= m_maxSize, nullptr); // Assumed to be called only when we need more than allowed.
+    captain_assert(m_currentSize >= m_maxSize); // Assumed to be called only when we need more than allowed.
     std::list<Utf8String> to_free;
     unsigned required = m_currentSize - m_maxSize;
     unsigned freed = 0;

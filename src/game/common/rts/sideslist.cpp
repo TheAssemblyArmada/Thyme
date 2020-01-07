@@ -46,15 +46,15 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     int32_t sides = m_numSides;
     xfer->xferInt(&sides);
-    captain_assert(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
+    captain_relassert(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
 
     for (int i = 0; i < sides; ++i) {
-        captain_assert(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
+        captain_relassert(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
         bool has_scripts = m_sides[i].Get_ScriptList() != nullptr;
         xfer->xferBool(&has_scripts);
 
         if (m_sides[i].Get_ScriptList() != nullptr) {
-            captain_assert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
+            captain_relassert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
             // Transfer script class.
             xfer->xferSnapshot(m_sides[i].Get_ScriptList()->Get_Scripts());
         }
@@ -325,7 +325,7 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(Utf8String name, int *index)
  */
 SidesInfo *SidesList::Get_Sides_Info(int index)
 {
-    captain_assert(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
+    captain_relassert(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
 
     return &m_sides[index];
 }
@@ -370,7 +370,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
 
     input.Register_Parser("PlayerScriptsList", info->label, ScriptList::Parse_Scripts_Chunk, nullptr);
     bool tmp = input.Parse(nullptr);
-    captain_assert(tmp, 0xDEAD0005, "Parsing script chunk failed.");
+    captain_relassert(tmp, 0xDEAD0005, "Parsing script chunk failed.");
 
     ScriptList *scripts[MAX_LIST_COUNT];
     int script_count = ScriptList::Get_Read_Scripts(scripts);

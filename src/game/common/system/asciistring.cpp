@@ -402,7 +402,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
     char buf[MAX_FORMAT_BUF_LEN];
 
     int res = vsnprintf(buf, sizeof(buf), format, args);
-    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer");
+    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -411,7 +411,7 @@ void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
     int res = vsnprintf(buf, sizeof(buf), format.Str(), args);
-    captain_assert(res > 0, 0xDEAD0002, "Unable to format buffer");
+    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

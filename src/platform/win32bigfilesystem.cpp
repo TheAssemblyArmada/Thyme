@@ -118,7 +118,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
             ++putp;
         }
 
-        captain_assert(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
+        captain_relassert(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
 
         // captain_trace("Recovered a file path of '%s' with size '%d' and position '%d'.", namebuf, file_size, file_pos);
 

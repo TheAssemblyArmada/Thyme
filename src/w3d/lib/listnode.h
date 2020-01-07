@@ -88,7 +88,7 @@ inline GenericList *GenericNode::Main_List() const
 */
 inline void GenericNode::Link(GenericNode *node)
 {
-    captain_dbgassert(node != nullptr, nullptr);
+    captain_assert(node != nullptr);
 
     node->Unlink();
     node->m_nextNode = m_nextNode;

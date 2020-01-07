@@ -22,7 +22,7 @@
  */
 bool GenericMultiListClass::Contains(MultiListObjectClass *obj) const
 {
-    captain_dbgassert(obj != nullptr, nullptr);
+    captain_assert(obj != nullptr);
     for (MultiListNodeClass *node = obj->Get_List_Node(); node; node = node->m_nextList) {
         if (node->m_list == this) {
             return true;
@@ -38,7 +38,7 @@ bool GenericMultiListClass::Contains(MultiListObjectClass *obj) const
  */
 bool GenericMultiListClass::Internal_Add(MultiListObjectClass *obj, bool onlyonce)
 {
-    captain_dbgassert(obj != nullptr, nullptr);
+    captain_assert(obj != nullptr);
 
     if (onlyonce && Is_In_List(obj)) {
         return false;
@@ -65,7 +65,7 @@ bool GenericMultiListClass::Internal_Add(MultiListObjectClass *obj, bool onlyonc
  */
 bool GenericMultiListClass::Internal_Add_Tail(MultiListObjectClass *obj, bool onlyonce)
 {
-    captain_dbgassert(obj != nullptr, nullptr);
+    captain_assert(obj != nullptr);
 
     if (onlyonce && Is_In_List(obj)) {
         return false;
@@ -93,8 +93,8 @@ bool GenericMultiListClass::Internal_Add_Tail(MultiListObjectClass *obj, bool on
 bool GenericMultiListClass::Internal_Add_After(
     MultiListObjectClass *obj, const MultiListObjectClass *existing_list_member, bool onlyonce)
 {
-    captain_dbgassert(obj != nullptr, nullptr);
-    captain_dbgassert(existing_list_member, nullptr);
+    captain_assert(obj != nullptr);
+    captain_assert(existing_list_member);
 
     if (onlyonce && Is_In_List(obj)) {
         return false;
@@ -131,7 +131,7 @@ bool GenericMultiListClass::Internal_Add_After(
  */
 bool GenericMultiListClass::Internal_Remove(MultiListObjectClass *obj)
 {
-    captain_dbgassert(obj != nullptr, nullptr);
+    captain_assert(obj != nullptr);
 
     MultiListNodeClass *node = obj->Get_List_Node();
     MultiListNodeClass *prevnode = nullptr;
@@ -151,7 +151,7 @@ bool GenericMultiListClass::Internal_Remove(MultiListObjectClass *obj)
     if (prevnode != nullptr) {
         prevnode->m_nextList = node->m_nextList;
     } else {
-        captain_dbgassert(obj->Get_List_Node() == node, nullptr);
+        captain_assert(obj->Get_List_Node() == node);
         obj->Set_List_Node(node->m_nextList);
     }
 
@@ -189,6 +189,6 @@ MultiListObjectClass *GenericMultiListClass::Internal_Get_List_Head() const
         return 0;
     }
 
-    captain_dbgassert(m_head.m_next->m_object != nullptr, nullptr);
+    captain_assert(m_head.m_next->m_object != nullptr);
     return m_head.m_next->m_object;
 };

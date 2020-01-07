@@ -105,7 +105,7 @@ inline MemoryPoolSingleBlock *MemoryPoolBlob::Allocate_Single_Block()
 
 inline void MemoryPoolBlob::Free_Single_Block(MemoryPoolSingleBlock *block)
 {
-    captain_assert(
+    captain_relassert(
         block->m_owningBlob == this, 0xDEAD0002, "Attempting to free a block that does not belong to this blob.");
     block->Set_Next_Free(m_firstFreeBlock);
     --m_usedBlocksInBlob;

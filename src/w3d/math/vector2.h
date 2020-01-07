@@ -50,7 +50,7 @@ public:
 
     __forceinline explicit Vector2(const float vector[2])
     {
-        captain_dbgassert(vector != nullptr, "");
+        captain_assert(vector != nullptr);
         X = vector[0];
         Y = vector[1];
     }

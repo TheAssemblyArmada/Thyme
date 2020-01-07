@@ -65,6 +65,6 @@ ScienceType ScienceStore::Lookup_Science(const char *name)
         }
     }
 
-    captain_assert(false, 0xDEAD0006, "Failed to find matching ScienceType in Science Store.");
+    captain_relassert(false, 0xDEAD0006, "Failed to find matching ScienceType in Science Store.");
     return SCIENCE_INVALID;
 }

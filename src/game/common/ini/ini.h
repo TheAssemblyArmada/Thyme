@@ -63,7 +63,7 @@ struct MultiIniFieldParse
 
     void Add(FieldParse *field_parse, unsigned int extra_offset)
     {
-        captain_assert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
+        captain_relassert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
 
         field_parsers[count] = field_parse;
         extra_offsets[count] = extra_offset;
@@ -194,7 +194,7 @@ inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 inline const char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = strtok(0, seps != nullptr ? seps : m_seps);
-    captain_assert(
+    captain_relassert(
         ret != nullptr, 0xDEAD0006, "Expected further tokens in '%s', line %d", m_fileName.Str(), m_lineNumber);
 
     return ret;

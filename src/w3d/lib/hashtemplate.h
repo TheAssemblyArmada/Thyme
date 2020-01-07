@@ -181,7 +181,7 @@ private:
     static unsigned Get_Hash_Val(const Key &key, unsigned max_size)
     {
         // Make sure max_size is a power of two, or the fast modulo code below will not work
-        captain_dbgassert((max_size % 2) == 0, nullptr);
+        captain_assert((max_size % 2) == 0);
         return HashTemplateKeyClass<Key>::Get_Hash_Value(key) & (max_size - 1);
     }
 

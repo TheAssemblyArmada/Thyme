@@ -26,7 +26,7 @@
 HashTableClass::HashTableClass(int size)
 {
     m_hashTableSize = size;
-    captain_dbgassert((m_hashTableSize & (m_hashTableSize - 1)) == 0, nullptr);
+    captain_assert((m_hashTableSize & (m_hashTableSize - 1)) == 0);
     m_hashTable = new HashableClass *[m_hashTableSize];
     Reset();
 }
@@ -61,7 +61,7 @@ void HashTableClass::Reset()
  */
 void HashTableClass::Add(HashableClass *entry)
 {
-    captain_dbgassert(entry != nullptr, nullptr);
+    captain_assert(entry != nullptr);
     unsigned int hash = Hash(entry->Get_Key());
     entry->m_nextHash = m_hashTable[hash];
     m_hashTable[hash] = entry;
@@ -74,7 +74,7 @@ void HashTableClass::Add(HashableClass *entry)
  */
 bool HashTableClass::Remove(HashableClass *entry)
 {
-    captain_dbgassert(entry != nullptr, nullptr);
+    captain_assert(entry != nullptr);
     int hash = Hash(entry->Get_Key());
 
     if (!m_hashTable[hash]) {

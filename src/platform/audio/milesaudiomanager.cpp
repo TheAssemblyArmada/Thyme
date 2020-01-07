@@ -2099,7 +2099,7 @@ bool MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately(AudioEventRTS *ev
  */
 AudioEventRTS *MilesAudioManager::Find_Lowest_Priority_Sound(AudioEventRTS *event)
 {
-    captain_dbgassert(event != nullptr, nullptr);
+    captain_assert(event != nullptr);
     int target_priority = event->Get_Event_Info()->Get_Priority();
 
     // Nothing can be lower than this so can't return anything.

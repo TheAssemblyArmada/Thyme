@@ -46,7 +46,7 @@ private:
 
 inline void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact)
 {
-    captain_assert(owning_fact != nullptr, 0xDEAD0002, "Owning factory is nullptr.");
+    captain_relassert(owning_fact != nullptr, 0xDEAD0002, "Owning factory is nullptr.");
     m_nextBlock = 0;
     m_prevBlock = 0;
     m_owningBlob = owning_blob;
@@ -80,13 +80,13 @@ inline void MemoryPoolSingleBlock::Add_Block_To_List(MemoryPoolSingleBlock *list
 
 inline void MemoryPoolSingleBlock::Set_Next_Free(MemoryPoolSingleBlock *next)
 {
-    captain_assert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
+    captain_relassert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
     Add_Block_To_List(next);
 }
 
 inline MemoryPoolSingleBlock * MemoryPoolSingleBlock::Get_Next_Free()
 {
-    captain_assert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
+    captain_relassert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
 
     return m_nextBlock;
 }

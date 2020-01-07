@@ -32,16 +32,15 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC
     hooker/dllmain.cpp
     hooker/hooker.cpp
+    hooker/setupglobals_zh.cpp
 )
 
 set(HOOKER_WB_SRC
     hooker/setuphooks_wb.cpp
-    hooker/setupglobals_wb.cpp
 )
 
 set(HOOKER_GAME_SRC
     hooker/setuphooks_zh.cpp
-    hooker/setupglobals_zh.cpp
 )
 
 set(GAMEENGINE_SRC

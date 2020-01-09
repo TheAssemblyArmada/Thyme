@@ -69,6 +69,13 @@ public:
 
     void Invalidate();
     w3dbasetexture_t Peek_Platform_Base_Texture() const;
+    void Release_Platform_Base_Texture()
+    {
+#ifdef BUILD_WITH_D3D8
+        m_d3dTexture->Release();
+#endif
+        m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
+    }
     void Set_Platform_Base_Texture(w3dbasetexture_t tex);
     void Set_Texture_Name(const char *name) { m_name = name; }
     void Set_Recolor(const Vector3 &shift);
@@ -83,6 +90,7 @@ public:
     const StringClass &Get_Name() const { return m_name; }
     const Vector3 &Get_Recolor() const { return m_hsvShift; }
     bool Is_Initialized() const { return m_initialized; }
+    void Set_Dirty(bool dirty) { m_dirty = dirty; }
 
     static void Invalidate_Old_Unused_Textures(unsigned unk);
     static void Apply_Null(unsigned unk);

@@ -32,6 +32,7 @@
 #include "dict.h"
 #include "dinputkeybd.h"
 #include "dx8caps.h"
+#include "dx8texman.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
 #include "filetransfer.h"
@@ -810,4 +811,11 @@ void Setup_Hooks()
     // dinputkeybd.h
     // Hooks all the virtual functions for DirectInputKeyboard.
     Hook_Method(0x007ACC70, &DirectInputKeyboard::Hook_Ctor);
+
+    // dx8texman.h
+    Hook_Function(0x0084A9C0, &DX8TextureManagerClass::Add);
+    Hook_Function(0x0084AA60, &DX8TextureManagerClass::Recreate_Textures);
+    Hook_Function(0x0084AA30, &DX8TextureManagerClass::Release_Textures);
+    Hook_Function(0x0084A9E0, &DX8TextureManagerClass::Remove);
+    Hook_Function(0x0084A990, &DX8TextureManagerClass::Shutdown);
 }

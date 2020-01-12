@@ -153,18 +153,13 @@ void VectorProcessorClass::CopyIndexed(float *dst, float *src, const unsigned *i
     }
 }
 
-// This has a bugfix where it always set minf value only dunno what consequences fixing this could cause
 void VectorProcessorClass::Clamp(Vector4 *dst, const Vector4 *src, float min, float max, int count)
 {
     for (int i = 0; i < count; i++) {
-        dst[i].X = GameMath::Max(min, src[i].X);
-        dst[i].X = GameMath::Min(max, dst[i].X);
-        dst[i].Y = GameMath::Max(min, src[i].Y);
-        dst[i].Y = GameMath::Min(max, dst[i].Y);
-        dst[i].Z = GameMath::Max(min, src[i].Z);
-        dst[i].Z = GameMath::Min(max, dst[i].Z);
-        dst[i].W = GameMath::Max(min, src[i].W);
-        dst[i].W = GameMath::Min(max, dst[i].W);
+        dst[i].X = std::clamp(src[i].X, min, max);
+        dst[i].Y = std::clamp(src[i].Y, min, max);
+        dst[i].Z = std::clamp(src[i].Z, min, max);
+        dst[i].W = std::clamp(src[i].W, min, max);
     }
 }
 
@@ -185,15 +180,14 @@ void VectorProcessorClass::Normalize(Vector3 *dst, int count)
 // This has a bugfix where it always set minf value only dunno what consequences fixing this could cause
 void VectorProcessorClass::MinMax(Vector3 *src, Vector3 &min, Vector3 &max, int count)
 {
-    min = *src;
-    max = *src;
-    for (int i = 1; i < count; i++) {
-        min.X = GameMath::Min(min.X, src[i].X);
-        min.Y = GameMath::Min(min.Y, src[i].Y);
-        min.Z = GameMath::Min(min.Z, src[i].Z);
-        max.X = GameMath::Max(max.X, min.X);
-        max.Y = GameMath::Max(max.Y, min.Y);
-        max.Z = GameMath::Max(max.Z, min.Z);
+    if (count > 0) {
+        min = src[0];
+        max = src[0];
+
+        for (int i = 1; i < count; ++i) {
+            min.Update_Min(src[i]);
+            max.Update_Max(src[i]);
+        }
     }
 }
 

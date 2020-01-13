@@ -18,19 +18,59 @@
 #include "always.h"
 #include "texturebase.h"
 #include "w3dformat.h"
+#include <new>
 
 class TextureFilterClass
 {
 public:
-    // TODO
-private:
-    char *m_minTextureFilters;
-    char *m_magTextureFilters;
-    char *m_mipMapFilters;
-    uint32_t UAddressMode;
-    uint32_t VAddressMode;
-};
+    enum FilterType
+    {
+        FILTER_TYPE_NONE,
+        FILTER_TYPE_FAST,
+        FILTER_TYPE_BEST,
+        FILTER_TYPE_DEFAULT,
+        FILTER_TYPE_COUNT,
+    };
 
+    enum TextureFilterMode
+    {
+        FILTER_MODE_BILINEAR,
+        FILTER_MODE_TRILINEAR,
+        FILTER_MODE_ANISOTROPIC2X,
+        FILTER_MODE_ANISOTROPIC4X, // These appear to have been added by TTScripts?
+        FILTER_MODE_ANISOTROPIC8X,
+        FILTER_MODE_ANISOTROPIC16X,
+    };
+
+    enum TxtAddrMode
+    {
+        TEXTURE_ADDRESS_REPEAT,
+        TEXTURE_ADDRESS_CLAMP,
+    };
+
+public:
+    TextureFilterClass(MipCountType mip_count);
+    void Apply(unsigned stage);
+    void Set_Mip_Mapping(FilterType type) { m_mipMapFilter = type; }
+    void Set_Min_Filter(FilterType type) { m_minTextureFilter = type; }
+    void Set_Mag_Filter(FilterType type) { m_magTextureFilter = type; }
+    void Set_Default_Min_Filter(FilterType type); 
+    void Set_Default_Mag_Filter(FilterType type);
+    void Set_Default_Mip_Filter(FilterType type);
+
+    static void Init_Filters(TextureFilterMode mode);
+
+#ifdef GAME_DLL
+    TextureFilterClass *Hook_Ctor(MipCountType mip_count) { return new (this) TextureFilterClass(mip_count); }
+#endif
+
+private:
+    FilterType m_minTextureFilter;
+    FilterType m_magTextureFilter;
+    FilterType m_mipMapFilter;
+    TxtAddrMode m_uAddressMode;
+    TxtAddrMode m_vAddressMode;
+};
 
 class TextureClass final : public TextureBaseClass
 {

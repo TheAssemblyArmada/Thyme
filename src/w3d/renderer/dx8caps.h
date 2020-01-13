@@ -62,10 +62,12 @@ public:
     unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }
     unsigned Get_Max_Tex_Height() const { return m_caps.MaxTextureHeight; }
     unsigned Get_Max_Vol_Extent() const { return m_caps.MaxVolumeExtent; }
+    unsigned Get_Filter_Caps() const { return m_caps.TextureFilterCaps; }
 #else
     unsigned Get_Max_Tex_Width() const { return 1024; }
     unsigned Get_Max_Tex_Height() const { return 1024; }
     unsigned Get_Max_Vol_Extent() const { return 1024; }
+    unsigned Get_Filter_Caps() const { return 0; }
 #endif
 
 private:

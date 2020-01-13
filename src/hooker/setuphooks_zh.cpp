@@ -76,6 +76,7 @@
 #include "soundmanager.h"
 #include "targa.h"
 #include "teamsinfo.h"
+#include "texture.h"
 #include "texturebase.h"
 #include "textureloader.h"
 #include "textureloadtask.h"
@@ -818,4 +819,9 @@ void Setup_Hooks()
     Hook_Function(0x0084AA30, &DX8TextureManagerClass::Release_Textures);
     Hook_Function(0x0084A9E0, &DX8TextureManagerClass::Remove);
     Hook_Function(0x0084A990, &DX8TextureManagerClass::Shutdown);
+
+    // texture.h
+    Hook_Method(0x0081A150, &TextureFilterClass::Hook_Ctor);
+    Hook_Method(0x0081A180, &TextureFilterClass::Apply);
+    Hook_Function(0x0081A220, &TextureFilterClass::Init_Filters);
 }

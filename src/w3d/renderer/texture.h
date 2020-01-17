@@ -20,6 +20,8 @@
 #include "w3dformat.h"
 #include <new>
 
+class SurfaceClass;
+
 class TextureFilterClass
 {
 public:
@@ -75,7 +77,21 @@ private:
 class TextureClass final : public TextureBaseClass
 {
 public:
-    // TODO
+    TextureClass(
+        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool, bool rendertarget);
+    TextureClass(SurfaceClass *surface, MipCountType mip_level_count);
+    TextureClass(const char *name, const char *full_path, MipCountType mip_level_count, WW3DFormat texture_format,
+        bool allow_compression);
+    TextureClass(w3dbasetexture_t d3d_texture);
+
+    virtual ~TextureClass() {}
+    virtual int Get_Asset_Type() override;
+    virtual int Get_Texture_Memory_Usage() override;
+    virtual void Init() override;
+    virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
+    virtual void Apply(unsigned stage) override;
+    virtual TextureClass *As_Texture() override { return this; }
+
     WW3DFormat Texture_Format() const { return m_textureFormat; }
 
 private:

@@ -71,7 +71,9 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
     File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
 
     if (file == nullptr) {
-        captain_warn("Missing audio file '%s', could not cache.", filename.Str());
+        if (!filename.Is_Empty()) {
+            captain_warn("Missing audio file '%s', could not cache.", filename.Str());
+        }
 
         return nullptr;
     }

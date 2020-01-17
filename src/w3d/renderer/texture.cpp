@@ -134,3 +134,24 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
     }
 #endif
 }
+
+void TextureFilterClass::Set_Default_Min_Filter(FilterType type)
+{
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+        g_minTextureFilters[i][FILTER_TYPE_DEFAULT] = g_minTextureFilters[i][type];
+    }
+}
+
+void TextureFilterClass::Set_Default_Mag_Filter(FilterType type)
+{
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+        g_magTextureFilters[i][FILTER_TYPE_DEFAULT] = g_magTextureFilters[i][type];
+    }
+}
+
+void TextureFilterClass::Set_Default_Mip_Filter(FilterType type)
+{
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+        g_mipMapFilters[i][FILTER_TYPE_DEFAULT] = g_mipMapFilters[i][type];
+    }
+}

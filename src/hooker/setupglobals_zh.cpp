@@ -1,6 +1,11 @@
 #include "hooker.h"
 #include "view.h"
 
+#pragma warning(push)
+#pragma warning(disable : 4073) // warning C4073: initializers put in library initialization area
+#pragma init_seg(lib) // Forces objects and variables in this file to initialize before other stuff.
+#pragma warning(pop)
+
 // main.cpp
 HWND &g_applicationHWnd = Make_Global<HWND>(PICK_ADDRESS(0x00A27B08, 0x00DE80AC));
 unsigned &g_theMessageTime = Make_Global<unsigned>(PICK_ADDRESS(0x00A27B14, 0));

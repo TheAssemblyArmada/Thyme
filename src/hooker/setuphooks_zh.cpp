@@ -74,6 +74,7 @@
 #include "sidesinfo.h"
 #include "sideslist.h"
 #include "soundmanager.h"
+#include "surfaceclass.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "texture.h"
@@ -824,4 +825,20 @@ void Setup_Hooks()
     Hook_Method(0x0081A150, &TextureFilterClass::Hook_Ctor);
     Hook_Method(0x0081A180, &TextureFilterClass::Apply);
     Hook_Function(0x0081A220, &TextureFilterClass::Init_Filters);
+
+    // surfaceclass.h
+    Hook_Method(0x0081D2B0, &SurfaceClass::Hook_Ctor1);
+    Hook_Method(0x0081D430, &SurfaceClass::Hook_Ctor2);
+    Hook_Method(0x0081D380, &SurfaceClass::Hook_Ctor3);
+    Hook_Method(0x0081D4E0, &SurfaceClass::Hook_Dtor);
+    Hook_Method(0x0081D8D0, &SurfaceClass::FindBB);
+    Hook_Method(0x0081DBA0, &SurfaceClass::Is_Transparent_Column);
+    Hook_Method(0x0081D550, &SurfaceClass::Get_Description);
+    Hook_Method(0x0081D5B0, static_cast<void *(SurfaceClass::*)(int *)>(&SurfaceClass::Lock));
+    Hook_Method(0x0081D610, &SurfaceClass::Unlock);
+    Hook_Method(0x0081D630, &SurfaceClass::Clear);
+    Hook_Method(0x0081D740,
+        static_cast<void (SurfaceClass::*)(unsigned, unsigned, unsigned, unsigned, unsigned, unsigned, SurfaceClass *)>(
+            &SurfaceClass::Copy));
+    Hook_Method(0x0081DD90, &SurfaceClass::Draw_Pixel);
 }

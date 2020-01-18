@@ -207,6 +207,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/missing.cpp
     w3d/renderer/render2d.cpp
     w3d/renderer/shader.cpp
+    w3d/renderer/surfaceclass.cpp
     w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texture.cpp
     w3d/renderer/texturebase.cpp

@@ -56,6 +56,7 @@ protected:
         MODIFIER_LALT = 0x40,
         MODIFIER_RALT = 0x80,
         MODIFIER_ALT = MODIFIER_LALT | MODIFIER_RALT,
+        KEY_STATE_AUTOREPEAT = 0x100,
         MODIFIER_CAPS = 0x200,
         MODIFIER_SHIFTEX = 0x400,
     };

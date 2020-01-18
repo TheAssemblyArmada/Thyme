@@ -376,11 +376,13 @@ int Keyboard::Check_Key_Repeat()
 {
     // Find first KeyboardIO with 0 key.
     int i;
-    for (i = 0; m_keys[i].key != 0; ++i)
-        ;
+
+    for (i = 0; m_keys[i].key != 0; ++i) {
+    }
 
     // Check for repeat status.
     int j;
+
     for (j = 0; j < KEY_COUNT; ++j) {
         if (m_keyStatus[j].state & KEY_DOWN && m_inputFrame - m_keyStatus[j].sequence > KEY_REPEAT_DELAY) {
             break;
@@ -392,7 +394,7 @@ int Keyboard::Check_Key_Repeat()
     }
 
     m_keys[i].key = j;
-    m_keys[i].state = 0x100 | KEY_DOWN; // TODO work out what 0x100 bit flags
+    m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_DOWN;
     m_keys[i].status = 0;
     m_keys[i + 1].key = 0;
 

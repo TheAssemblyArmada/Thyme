@@ -115,8 +115,8 @@ void DirectInputKeyboard::Open_Keyboard()
     DIPROPDWORD prop;
     prop.diph.dwSize = sizeof(prop);
     prop.diph.dwHeaderSize = sizeof(prop.diph);
-    prop.diph.dwObj = 0;
-    prop.diph.dwHow = 0;
+    prop.diph.dwObj = 0; // Must be 0 if dwHow == DIPH_DEVICE 
+    prop.diph.dwHow = DIPH_DEVICE;
     prop.dwData = 256;
 
     if (m_inputDevice->SetProperty(DIPROP_BUFFERSIZE, (LPDIPROPHEADER)&prop) < 0) {

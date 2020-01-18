@@ -77,7 +77,7 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
         io->key = data.dwOfs;
         io->sequence = data.dwSequence;
         io->status = 0;
-        io->state = ((data.dwData & 0x80) != 0) ? KEY_UP : KEY_DOWN;
+        io->state = !((data.dwData & 0x80) == 0) + 1;
     }
 }
 

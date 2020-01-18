@@ -13,8 +13,11 @@
  *            LICENSE
  */
 #include "dx8wrapper.h"
+#include "ffactory.h"
+#include "missing.h"
 #include "rect.h"
 #include "render2d.h"
+#include "textureloader.h"
 #include "thread.h"
 #include <cstdio>
 #include <cstring>
@@ -22,6 +25,7 @@
 using std::memcpy;
 using std::memset;
 using std::sprintf;
+using std::strchr;
 
 #ifdef GAME_DLL
 #include "hooker.h"
@@ -113,7 +117,8 @@ bool DX8Wrapper::Init(void *hwnd, bool lite)
             return false;
         }
 
-        s_d3dCreateFunction = reinterpret_cast<IDirect3D8 *(__stdcall *)(unsigned)>(GetProcAddress(s_d3dLib, "Direct3DCreate8"));
+        s_d3dCreateFunction =
+            reinterpret_cast<IDirect3D8 *(__stdcall *)(unsigned)>(GetProcAddress(s_d3dLib, "Direct3DCreate8"));
 
         if (s_d3dCreateFunction == nullptr) {
             captain_error("Failed to get address of Direct3DCreate8.");
@@ -174,7 +179,7 @@ void DX8Wrapper::Enumerate_Devices()
             DX8Caps dx8caps(s_d3dInterface, desc.m_caps, WW3D_FORMAT_UNKNOWN, desc.m_adapterID);
             desc.m_resArray.Delete_All();
             int mode_count = s_d3dInterface->GetAdapterModeCount(i);
-            
+
             for (int j = 0; j < mode_count; j++) {
                 D3DDISPLAYMODE d3dmode;
                 memset(&d3dmode, 0, sizeof(d3dmode));
@@ -199,8 +204,8 @@ void DX8Wrapper::Enumerate_Devices()
                     }
 
                     if (dx8caps.Is_Valid_Display_Format(
-                            d3dmode.Width, d3dmode.Height, D3DFormat_To_WW3DFormat(d3dmode.Format)) && bits
-                        != 0) {
+                            d3dmode.Width, d3dmode.Height, D3DFormat_To_WW3DFormat(d3dmode.Format))
+                        && bits != 0) {
                         desc.Add_Resolution(d3dmode.Width, d3dmode.Height, bits);
                     }
                 }
@@ -252,6 +257,35 @@ w3dsurface_t DX8Wrapper::Create_Surface(unsigned width, unsigned height, WW3DFor
 #else
     return w3dsurface_t();
 #endif
+}
+
+w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
+{
+    char buf[PATH_MAX];
+
+    { // auto_file_ptr scope.
+        auto_file_ptr fptr(g_theFileFactory, name);
+
+        // If the initial file is tga and isn't available try the dds version.
+        if (!fptr->Is_Available()) {
+            strlcpy(buf, name, sizeof(buf));
+            char *ext = strchr(buf, '.');
+
+            if (strlen(ext) == 4) {
+                if (strncasecmp(ext, ".tga", 4)) {
+                    strcpy(ext, ".dds");
+                }
+            }
+
+            auto_file_ptr altptr(g_theFileFactory, buf);
+
+            if (!altptr->Is_Available()) {
+                return MissingTexture::Create_Missing_Surface();
+            }
+        }
+    }
+
+    return TextureLoader::Load_Surface_Immediate(name, WW3D_FORMAT_UNKNOWN, true);
 }
 
 void DX8Wrapper::Reset_Statistics()

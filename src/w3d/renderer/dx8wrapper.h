@@ -137,6 +137,7 @@ public:
     static w3dtexture_t Create_Texture(
         unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
     static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
+    static w3dsurface_t Create_Surface(const char *name);
 
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps()

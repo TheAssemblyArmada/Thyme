@@ -213,7 +213,7 @@ void SurfaceClass::Copy(Vector2i &min, Vector2i &max, unsigned char *other)
     uint8_t *bytes = static_cast<uint8_t *>(Lock_Rect(&pitch, min.I, max.I, min.J, max.J));
     int diff = max.I - min.I;
 
-    for (unsigned i = min.J; i < max.J; ++i) {
+    for (int i = min.J; i < max.J; ++i) {
         memcpy(bytes, &other[size * (min.I + sd.width * i)], diff * size);
         bytes += pitch;
     }

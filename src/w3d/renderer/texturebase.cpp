@@ -31,10 +31,10 @@ unsigned TextureBaseClass::s_unusedTextureID = 0;
  * 0x0081A3A0
  */
 TextureBaseClass::TextureBaseClass(
-    unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool unk1, bool allow_reduction) :
+    unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction) :
     m_mipLevelCount(mip_count),
     m_initialized(false),
-    m_unkBool1(false),
+    m_isLightMap(false),
     m_compressionAllowed(false),
     m_isProcedural(false),
     m_allowReduction(allow_reduction),
@@ -240,10 +240,10 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
  *
  * 0x0081A890
  */
-void TextureBaseClass::Apply_Null(unsigned unk)
+void TextureBaseClass::Apply_Null(unsigned stage)
 {
     // TODO Needs more of DX8Wrapper
 #ifdef GAME_DLL
-    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A890, 0x00506930), unk);
+    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A890, 0x00506930), stage);
 #endif
 }

@@ -56,10 +56,10 @@ class TextureBaseClass : public RefCountClass
     friend class TextureLoadTaskClass;
 
 public:
-    TextureBaseClass(unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool unk1, bool allow_reduction);
+    TextureBaseClass(unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction);
     virtual ~TextureBaseClass();
     virtual int Get_Asset_Type() = 0;
-    virtual int Get_Texture_Memory_Usage() = 0;
+    virtual unsigned Get_Texture_Memory_Usage() = 0;
     virtual void Init() = 0;
     virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) = 0;
     virtual void Apply(unsigned stage) = 0;
@@ -93,12 +93,12 @@ public:
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
 
     static void Invalidate_Old_Unused_Textures(unsigned unk);
-    static void Apply_Null(unsigned unk);
+    static void Apply_Null(unsigned stage);
 
 protected:
     MipCountType m_mipLevelCount;
     bool m_initialized;
-    bool m_unkBool1;
+    bool m_isLightMap;
     bool m_compressionAllowed;
     bool m_isProcedural;
     bool m_allowReduction;

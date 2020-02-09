@@ -44,7 +44,7 @@ extern uint32_t g_numberOfDx8Calls;
 #ifdef BUILD_WITH_D3D8
 #define DX8CALL(x) \
     DX8Wrapper::Get_D3D_Device8()->x; \
-    g_numberOfDx8Calls++;
+    ++g_numberOfDx8Calls;
 #endif
 
 // This class is going to be very much a WIP until we have a better idea
@@ -111,6 +111,7 @@ public:
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
+    static void Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture);
     static IDirect3DDevice8 *Get_D3D_Device8() { return s_d3dDevice; }
 #endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
@@ -132,10 +133,12 @@ public:
     static const char *Get_DX8_Debug_Monitor_Token_Name(unsigned value);
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
     static void Log_DX8_ErrorCode(unsigned error);
+    static void Handle_DX8_ErrorCode(unsigned error);
     static int Get_Texture_Bit_Depth() { return s_textureBitDepth; }
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static w3dtexture_t Create_Texture(
         unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dtexture_t Create_Texture(w3dsurface_t surface, MipCountType mip_level_count);
     static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
     static w3dsurface_t Create_Surface(const char *name);
 
@@ -338,7 +341,28 @@ inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTUREST
 
     s_textureStageStates[stage][state] = value;
     DX8CALL(SetTextureStageState(stage, state, value));
-    s_textureStageStateChanges++;
+    ++s_textureStageStateChanges;
+}
+
+inline void DX8Wrapper::Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture)
+{
+    if (stage >= MAX_TEXTURE_STAGES) {
+        DX8CALL(SetTexture(stage, nullptr));
+        return;
+    }
+
+    if (s_textures[stage] == texture) {
+        return;
+    }
+
+    if (s_textures[stage] != W3D_TYPE_INVALID_TEXTURE) {
+        s_textures[stage]->Release();
+    }
+
+    s_textures[stage] = texture;
+    s_textures[stage]->AddRef();
+    DX8CALL(SetTexture(stage, texture));
+    ++s_textureChanges;
 }
 
 inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)
@@ -393,3 +417,12 @@ inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &
     }
 }
 #endif
+
+inline void DX8Wrapper::Handle_DX8_ErrorCode(unsigned error)
+{
+#ifdef BUILD_WITH_D3D8
+    if (error != D3D_OK) {
+        DX8Wrapper::Log_DX8_ErrorCode(error);
+    }
+#endif
+}

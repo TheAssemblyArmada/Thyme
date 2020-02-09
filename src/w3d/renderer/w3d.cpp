@@ -22,6 +22,8 @@ unsigned W3D::s_textureReduction;
 unsigned W3D::s_textureMinDimension = 1;
 bool W3D::s_largeTextureExtraReduction;
 bool W3D::s_isScreenUVBiased;
+bool W3D::s_texturingEnabled = true;
+bool W3D::s_thumbnailEnabled = true;
 #endif
 
 void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)

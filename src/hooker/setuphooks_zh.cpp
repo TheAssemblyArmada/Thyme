@@ -825,6 +825,9 @@ void Setup_Hooks()
     Hook_Method(0x0081A150, &TextureFilterClass::Hook_Ctor);
     Hook_Method(0x0081A180, &TextureFilterClass::Apply);
     Hook_Function(0x0081A220, &TextureFilterClass::Init_Filters);
+    Hook_Method(0x0081A900, &TextureClass::Hook_Ctor1);
+    Hook_Method(0x0081AA30, &TextureClass::Hook_Ctor2);
+    Hook_Method(0x0081AC50, &TextureClass::Hook_Ctor3);
 
     // surfaceclass.h
     Hook_Method(0x0081D2B0, &SurfaceClass::Hook_Ctor1);

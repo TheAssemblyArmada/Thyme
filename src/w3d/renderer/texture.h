@@ -18,6 +18,7 @@
 #include "always.h"
 #include "texturebase.h"
 #include "w3dformat.h"
+#include "w3dmpo.h"
 #include <new>
 
 class SurfaceClass;
@@ -56,7 +57,7 @@ public:
     void Set_Mip_Mapping(FilterType type) { m_mipMapFilter = type; }
     void Set_Min_Filter(FilterType type) { m_minTextureFilter = type; }
     void Set_Mag_Filter(FilterType type) { m_magTextureFilter = type; }
-    void Set_Default_Min_Filter(FilterType type); 
+    void Set_Default_Min_Filter(FilterType type);
     void Set_Default_Mag_Filter(FilterType type);
     void Set_Default_Mip_Filter(FilterType type);
 
@@ -74,25 +75,45 @@ private:
     TxtAddrMode m_vAddressMode;
 };
 
-class TextureClass final : public TextureBaseClass
+class TextureClass : public TextureBaseClass
 {
-public:
-    TextureClass(
-        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool, bool rendertarget);
-    TextureClass(SurfaceClass *surface, MipCountType mip_level_count);
-    TextureClass(const char *name, const char *full_path, MipCountType mip_level_count, WW3DFormat texture_format,
-        bool allow_compression);
-    TextureClass(w3dbasetexture_t d3d_texture);
+    IMPLEMENT_W3D_POOL(TextureClass);
 
+public:
+    TextureClass(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool,
+        bool render_target, bool allow_reduction);
+    TextureClass(char const *name, char const *full_path, MipCountType mip_level_count, WW3DFormat format,
+        bool allow_compression, bool allow_reduction);
+    TextureClass(SurfaceClass *surface, MipCountType mip_level_count);
+    TextureClass(w3dbasetexture_t d3d_texture);
     virtual ~TextureClass() {}
-    virtual int Get_Asset_Type() override;
-    virtual int Get_Texture_Memory_Usage() override;
+
+    virtual int Get_Asset_Type() override { return 0; }
+    virtual unsigned Get_Texture_Memory_Usage() override;
     virtual void Init() override;
     virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
     virtual void Apply(unsigned stage) override;
     virtual TextureClass *As_Texture() override { return this; }
+    virtual int glueEnforcer() { return 4; };
 
+    SurfaceClass *Get_Surface_Level(unsigned level);
+    w3dsurface_t Get_D3D_Surface_Level(unsigned level);
     WW3DFormat Texture_Format() const { return m_textureFormat; }
+
+#ifdef GAME_DLL
+    TextureClass *Hook_Ctor1(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool,
+        bool render_target, bool allow_reduction)
+    {
+        return new (this) TextureClass(width, height, format, mip_level_count, pool, render_target, allow_reduction);
+    }
+    TextureClass *Hook_Ctor2(char const *name, char const *full_path, MipCountType mip_level_count, WW3DFormat format,
+        bool allow_compression, bool allow_reduction)
+    {
+        return new (this) TextureClass(name, full_path, mip_level_count, format, allow_compression, allow_reduction);
+    }
+    TextureClass *Hook_Ctor3(SurfaceClass *surface, MipCountType mip_level_count) { return new (this) TextureClass(surface, mip_level_count); }
+    TextureClass *Hook_Ctor4(w3dbasetexture_t d3d_texture) { return new (this) TextureClass(d3d_texture); }
+#endif
 
 private:
     WW3DFormat m_textureFormat;

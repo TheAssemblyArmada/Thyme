@@ -76,7 +76,7 @@ void *SurfaceClass::Lock(int *pitch)
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, 0);
 
     if (res != D3D_OK) {
-        captain_warn("Failed to lock surface with error %l.", res);
+        captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
     *pitch = lock_rect.Pitch;
@@ -102,7 +102,7 @@ void *SurfaceClass::Lock(int *pitch, bool discard)
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, (discard ? D3DLOCK_DISCARD : 0) | D3DLOCK_NOSYSLOCK);
 
     if (res != D3D_OK) {
-        captain_warn("Failed to lock surface with error %l.", res);
+        captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
     *pitch = lock_rect.Pitch;
@@ -132,7 +132,7 @@ void *SurfaceClass::Lock_Rect(int *pitch, int left, int top, int right, int bott
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, &rect, 0); // BFME has D3DLOCK_NOSYSLOCK
 
     if (res != D3D_OK) {
-        captain_warn("Failed to lock surface with error %l.", res);
+        captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
     *pitch = lock_rect.Pitch;
@@ -152,7 +152,7 @@ void SurfaceClass::Unlock()
     HRESULT res = m_d3dSurface->UnlockRect();
 
     if (res != D3D_OK) {
-        captain_warn("Failed to unlock surface with error %l.", res);
+        captainslog_warn("Failed to unlock surface with error %l.", res);
     }
 #endif
 }
@@ -172,7 +172,7 @@ void *SurfaceClass::Lock_ReadOnly(int *pitch)
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, D3DLOCK_READONLY);
 
     if (res != D3D_OK) {
-        captain_warn("Failed to lock surface with error %l.", res);
+        captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
     *pitch = lock_rect.Pitch;
@@ -230,9 +230,9 @@ void SurfaceClass::Copy(
     unsigned dst_x, unsigned dst_y, unsigned src_x, unsigned src_y, unsigned width, unsigned height, SurfaceClass *other)
 {
 #ifdef BUILD_WITH_D3D8
-    captain_assert(other != nullptr);
-    captain_assert(width != 0);
-    captain_assert(height != 0);
+    captainslog_assert(other != nullptr);
+    captainslog_assert(width != 0);
+    captainslog_assert(height != 0);
     SurfaceDescription src_desc;
     SurfaceDescription dst_desc;
     RECT src_rect;
@@ -249,7 +249,7 @@ void SurfaceClass::Copy(
         p.y = dst_y;
         DX8CALL(CopyRects(other->m_d3dSurface, &src_rect, 1, m_d3dSurface, &p));
     } else {
-        captain_relassert(false, -1, "Hit unimplemented code path.");
+        captainslog_relassert(false, -1, "Hit unimplemented code path.");
         // It seems impractical to link the old d3dx8.lib file as it tries to link in old libs no longer part of the windows
         // SDK.
         /*
@@ -315,7 +315,7 @@ void SurfaceClass::Draw_Horizonal_Line(unsigned y, unsigned x1, unsigned x2, uns
                 *reinterpret_cast<uint32_t *>(bytes) = color;
                 break;
             default:
-                captain_error("%s Does not support pixel size of %d", __CURRENT_FUNCTION__ , px_size);
+                captainslog_error("%s Does not support pixel size of %d", __CURRENT_FUNCTION__ , px_size);
                 break;
         }
 
@@ -401,7 +401,7 @@ void SurfaceClass::FindBB(Vector2i *min, Vector2i *max)
 #ifdef BUILD_WITH_D3D8
     SurfaceDescription desc;
     Get_Description(desc);
-    captain_assert(Has_Alpha(desc.format));
+    captainslog_assert(Has_Alpha(desc.format));
     uint8_t alpha = Alpha_Bits(desc.format);
     uint8_t mask = 0;
 
@@ -452,8 +452,8 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
 #ifdef BUILD_WITH_D3D8
     SurfaceDescription desc;
     Get_Description(desc);
-    captain_assert(column < desc.width);
-    captain_assert(Has_Alpha(desc.format));
+    captainslog_assert(column < desc.width);
+    captainslog_assert(Has_Alpha(desc.format));
     int alpha = Alpha_Bits(desc.format);
     int mask = 0;
 
@@ -483,7 +483,7 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, &rect, D3DLOCK_READONLY);
 
     if (res != D3D_OK) {
-        captain_warn("Failed to lock surface with error %l.", res);
+        captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
     if (desc.height <= 0) {

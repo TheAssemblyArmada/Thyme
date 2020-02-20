@@ -16,7 +16,7 @@
 
 #include "always.h"
 #include "asciistring.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 class File;
 class Xfer;
@@ -63,7 +63,7 @@ struct MultiIniFieldParse
 
     void Add(FieldParse *field_parse, unsigned int extra_offset)
     {
-        captain_relassert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
+        captainslog_relassert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
 
         field_parsers[count] = field_parse;
         extra_offsets[count] = extra_offset;
@@ -194,7 +194,7 @@ inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
 inline const char *INI::Get_Next_Token(const char *seps)
 {
     char *ret = strtok(0, seps != nullptr ? seps : m_seps);
-    captain_relassert(
+    captainslog_relassert(
         ret != nullptr, 0xDEAD0006, "Expected further tokens in '%s', line %d", m_fileName.Str(), m_lineNumber);
 
     return ret;
@@ -203,7 +203,7 @@ inline const char *INI::Get_Next_Token(const char *seps)
 inline const char *INI::Get_Next_Sub_Token(const char *expected)
 {
     const char *next = Get_Next_Token(m_sepsColon);
-    captain_dbgassert(strcasecmp(next, expected) == 0, "Did not get expected token");
+    captainslog_dbgassert(strcasecmp(next, expected) == 0, "Did not get expected token");
     return Get_Next_Token(m_sepsColon);
 }
 

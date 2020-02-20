@@ -16,7 +16,7 @@
 #include "endiantype.h"
 #include "rtsutils.h"
 #include <algorithm>
-#include <captnlog.h>
+#include <captainslog.h>
 
 using rts::FourCC;
 
@@ -42,7 +42,7 @@ unsigned DataChunkTableOfContents::Get_ID(const Utf8String &name)
         return map->m_id;
     }
 
-    captain_error("Name '%s' not found trying to get ID from DataChunk TOC.", name.Str());
+    captainslog_error("Name '%s' not found trying to get ID from DataChunk TOC.", name.Str());
 
     return 0;
 }
@@ -62,7 +62,7 @@ Utf8String DataChunkTableOfContents::Get_Name(unsigned id)
         map = map->m_next;
     }
 
-    captain_error("ID '%u' not found trying to get name from DataChunk TOC.", id);
+    captainslog_error("ID '%u' not found trying to get name from DataChunk TOC.", id);
 
     return Utf8String::s_emptyString;
 }

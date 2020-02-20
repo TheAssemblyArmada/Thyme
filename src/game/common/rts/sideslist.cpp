@@ -16,7 +16,7 @@
 #include "staticnamekey.h"
 #include "unicodestring.h"
 #include "xfer.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifdef GAME_DLL
 #else
@@ -46,15 +46,15 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     int32_t sides = m_numSides;
     xfer->xferInt(&sides);
-    captain_relassert(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
+    captainslog_relassert(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
 
     for (int i = 0; i < sides; ++i) {
-        captain_relassert(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
+        captainslog_relassert(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
         bool has_scripts = m_sides[i].Get_ScriptList() != nullptr;
         xfer->xferBool(&has_scripts);
 
         if (m_sides[i].Get_ScriptList() != nullptr) {
-            captain_relassert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
+            captainslog_relassert(has_scripts, 6, "We have a script list, but has_scripts is not set.");
             // Transfer script class.
             xfer->xferSnapshot(m_sides[i].Get_ScriptList()->Get_Scripts());
         }
@@ -175,7 +175,7 @@ bool SidesList::Validate_Sides()
         Utf8String team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
 
         if (Find_Side_Info(team_name) != nullptr) {
-            captain_warn("Duplicate name '%s' between player and team, removing...", team_name.Str());
+            captainslog_warn("Duplicate name '%s' between player and team, removing...", team_name.Str());
             Remove_Team(index);
             modified = true;
 
@@ -194,7 +194,7 @@ bool SidesList::Validate_Sides()
         Utf8String team_owner = tinfo->dict.Get_AsciiString(g_teamOwnerKey);
 
         if (Find_Side_Info(team_owner) == nullptr || team_name == team_owner) {
-            captain_warn("Bad owner '%s', reset to neutral.", team_owner.Str());
+            captainslog_warn("Bad owner '%s', reset to neutral.", team_owner.Str());
             tinfo->dict.Set_AsciiString(g_teamOwnerKey, Utf8String::s_emptyString);
             modified = true;
         }
@@ -325,7 +325,7 @@ SidesInfo *SidesList::Find_Skirmish_Side_Info(Utf8String name, int *index)
  */
 SidesInfo *SidesList::Get_Sides_Info(int index)
 {
-    captain_relassert(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
+    captainslog_relassert(index >= 0 && index < m_numSides, 0xDEAD0003, "Index out of bounds for side info.");
 
     return &m_sides[index];
 }
@@ -370,7 +370,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
 
     input.Register_Parser("PlayerScriptsList", info->label, ScriptList::Parse_Scripts_Chunk, nullptr);
     bool tmp = input.Parse(nullptr);
-    captain_relassert(tmp, 0xDEAD0005, "Parsing script chunk failed.");
+    captainslog_relassert(tmp, 0xDEAD0005, "Parsing script chunk failed.");
 
     ScriptList *scripts[MAX_LIST_COUNT];
     int script_count = ScriptList::Get_Read_Scripts(scripts);

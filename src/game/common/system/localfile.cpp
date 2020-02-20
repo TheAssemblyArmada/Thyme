@@ -14,7 +14,7 @@
  */
 #include "localfile.h"
 #include "ramfile.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 int LocalFile::TotalOpen = 0;
 
@@ -24,7 +24,7 @@ void *LocalFile::Read_All_And_Close()
     uint8_t *data;
 
     if (size > 0) {
-        captain_trace("Reading %s and closing.\n", m_filename.Str());
+        captainslog_trace("Reading %s and closing.\n", m_filename.Str());
         data = new uint8_t[size];
 
         Read(data, size);
@@ -40,7 +40,7 @@ void *LocalFile::Read_All_And_Close()
 
 File *LocalFile::Convert_To_RAM()
 {
-    captain_trace("Converting %s to RAMFile.\n", m_filename.Str());
+    captainslog_trace("Converting %s to RAMFile.\n", m_filename.Str());
     RAMFile *ramfile = new RAMFile;
 
     if (ramfile->Open(this)) {

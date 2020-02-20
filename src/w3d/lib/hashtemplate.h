@@ -17,7 +17,7 @@
 
 #include "always.h"
 #include <algorithm>
-#include <captnassert.h>
+#include <captainslog.h>
 
 using std::max;
 
@@ -181,7 +181,7 @@ private:
     static unsigned Get_Hash_Val(const Key &key, unsigned max_size)
     {
         // Make sure max_size is a power of two, or the fast modulo code below will not work
-        captain_assert((max_size % 2) == 0);
+        captainslog_assert((max_size % 2) == 0);
         return HashTemplateKeyClass<Key>::Get_Hash_Value(key) & (max_size - 1);
     }
 

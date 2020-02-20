@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "weather.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 WeatherSetting *g_theWeatherSetting;
@@ -58,7 +58,7 @@ void WeatherSetting::Parse_Weather_Definition(INI *ini)
     if (g_theWeatherSetting == nullptr) {
         g_theWeatherSetting = new WeatherSetting;
     } else {
-        captain_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES, 0xDEAD0006, "g_theWeatherSetting is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
+        captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES, 0xDEAD0006, "g_theWeatherSetting is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
         WeatherSetting *new_ws = new WeatherSetting;
         *new_ws = *g_theWeatherSetting;
         new_ws->m_isAllocated = true;

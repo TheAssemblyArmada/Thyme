@@ -16,7 +16,7 @@
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "filesystem.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <list>
 
 /**
@@ -72,7 +72,7 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {
-            captain_warn("Missing audio file '%s', could not cache.", filename.Str());
+            captainslog_warn("Missing audio file '%s', could not cache.", filename.Str());
         }
 
         return nullptr;
@@ -88,7 +88,7 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
     AIL_WAV_info(file_data, &sound_info);
 
     if (audio_event->Is_Positional_Audio() && sound_info.channels > 1) {
-        captain_error("Audio marked as positional audio cannot have more than one channel.");
+        captainslog_error("Audio marked as positional audio cannot have more than one channel.");
         delete[] file_data;
 
         return nullptr;
@@ -104,7 +104,7 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
         delete[] file_data;
     } else {
         if (sound_info.format != 1) { // Must be PCM otherwise.
-            captain_error("Audio file '%s' is not PCM or ADPCM and is unsupported by the MSS based audio engine.", filename.Str());
+            captainslog_error("Audio file '%s' is not PCM or ADPCM and is unsupported by the MSS based audio engine.", filename.Str());
             delete[] file_data;
             
             return nullptr;
@@ -170,7 +170,7 @@ void MilesAudioFileCache::Set_Max_Size(unsigned size)
  */
 bool MilesAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
 {
-    captain_assert(m_currentSize >= m_maxSize); // Assumed to be called only when we need more than allowed.
+    captainslog_assert(m_currentSize >= m_maxSize); // Assumed to be called only when we need more than allowed.
     std::list<Utf8String> to_free;
     unsigned required = m_currentSize - m_maxSize;
     unsigned freed = 0;

@@ -53,7 +53,7 @@ void Init_Memory_Manager()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        captain_trace("Memory Manager initialising normally.\n");
+        captainslog_trace("Memory Manager initialising normally.\n");
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;
         g_memoryPoolFactory->Init();
@@ -65,7 +65,7 @@ void Init_Memory_Manager()
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
-    // captain_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
+    // captainslog_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -75,7 +75,7 @@ void Init_Memory_Manager()
     delete tmp3;
 
     if (g_theLinkChecker != 6) {
-        captain_fatal("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
+        captainslog_fatal("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
         exit(-1);
     }
 
@@ -88,7 +88,7 @@ void Init_Memory_Manager_Pre_Main()
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
-        captain_trace("Memory Manager initialising prior to WinMain\n");
+        captainslog_trace("Memory Manager initialising prior to WinMain\n");
 
         User_Memory_Get_DMA_Params(&param_count, &params);
         g_memoryPoolFactory = new MemoryPoolFactory;

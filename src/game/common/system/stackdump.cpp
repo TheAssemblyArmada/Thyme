@@ -9,14 +9,13 @@
  *            modify it under the terms of the GNU General Public License
  *            as published by the Free Software Foundation, either version
  *            2 of the License, or (at your option) any later version.
- *
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
 #include "stackdump.h"
 #include "cpudetect.h"
 #include "main.h"
-#include <captnlog.h>
+#include <captainslog.h>
 #include <cinttypes>
 #include <stdio.h>
 
@@ -183,11 +182,11 @@ static void Init_DbgHelp()
             *_sym_pointers[i] = GetProcAddress(dll_handle, _sym_functions[i]);
 
             if (*_sym_pointers[i] == nullptr) {
-                captain_debug("Exception Handler: Unable to load %s from dbghelp.dll.", _sym_functions[i]);
+                captainslog_debug("Exception Handler: Unable to load %s from dbghelp.dll.", _sym_functions[i]);
             }
         }
     } else {
-        captain_debug("Exception Handler: Unable to load dbghelp.dll.");
+        captainslog_debug("Exception Handler: Unable to load dbghelp.dll.");
     }
 }
 

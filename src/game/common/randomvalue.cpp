@@ -15,7 +15,7 @@
 #include "randomvalue.h"
 #include "crc.h"
 #include "gamemath.h"
-#include <captnlog.h>
+#include <captainslog.h>
 #include <ctime>
 
 using GameMath::Pow;
@@ -86,7 +86,7 @@ void Seed_Random(uint32_t initial, uint32_t seed[6])
 // Initialise the RNG system based on the current time.
 void Init_Random()
 {
-    captain_info("Initialising random seeds with time() as the initial value.");
+    captainslog_info("Initialising random seeds with time() as the initial value.");
     time_t initial = time(nullptr);
     Seed_Random(initial, g_theGameAudioSeed);
     Seed_Random(initial, g_theGameClientSeed);
@@ -97,7 +97,7 @@ void Init_Random()
 // Initialise the RNG system based on an initial value.
 void Init_Random(uint32_t initial)
 {
-    captain_info("Initialising random seeds with %04X as the initial value.", initial);
+    captainslog_info("Initialising random seeds with %04X as the initial value.", initial);
     Seed_Random(initial, g_theGameAudioSeed);
     Seed_Random(initial, g_theGameClientSeed);
     Seed_Random(initial, g_theGameLogicSeed);
@@ -106,7 +106,7 @@ void Init_Random(uint32_t initial)
 // Initialise only the logic RNG system based on an initial value.
 void Init_Game_Logic_Random(uint32_t initial)
 {
-    captain_info("Initialising logic random seed with %04X as the initial value.", initial);
+    captainslog_info("Initialising logic random seed with %04X as the initial value.", initial);
     Seed_Random(initial, g_theGameLogicSeed);
 }
 
@@ -200,12 +200,12 @@ float GameLogicRandomVariable::Get_Value() const
             if (m_low == m_high) {
                 return m_low;
             } else {
-                captain_error("m_low doesn't match m_high for CONSTANT GameLogicRandomVariable.");
+                captainslog_error("m_low doesn't match m_high for CONSTANT GameLogicRandomVariable.");
             }
         case UNIFORM: // Intentional fallthrough
             return Get_Logic_Random_Value_Real(m_low, m_high);
         default:
-            captain_error("Unsupported distribution type in GameLogicRandomVariable.");
+            captainslog_error("Unsupported distribution type in GameLogicRandomVariable.");
             break;
     }
 
@@ -226,12 +226,12 @@ float GameClientRandomVariable::Get_Value() const
             if (m_low == m_high) {
                 return m_low;
             } else {
-                captain_info("m_low doesn't match m_high for CONSTANT GameClientRandomVariable.");
+                captainslog_info("m_low doesn't match m_high for CONSTANT GameClientRandomVariable.");
             }
         case UNIFORM: // Intentional fallthrough
             return Get_Client_Random_Value_Real(m_low, m_high);
         default:
-            captain_info("Unsupported distribution type in GameClientRandomVariable.");
+            captainslog_info("Unsupported distribution type in GameClientRandomVariable.");
             break;
     }
 

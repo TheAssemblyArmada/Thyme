@@ -37,7 +37,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
 
     // If we need to write a file, ensure the needed directory exists.
     if ((mode & File::WRITE) != 0) {
-        captain_trace("Preparing file '%s' for write access.", filename);
+        captainslog_trace("Preparing file '%s' for write access.", filename);
         Utf8String name = filename;
         Utf8String token;
         Utf8String path;

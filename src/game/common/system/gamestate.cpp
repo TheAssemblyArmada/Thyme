@@ -16,7 +16,7 @@
 #include "filetransfer.h"
 #include "globaldata.h"
 #include "maputil.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 GameState *g_theGameState = nullptr;

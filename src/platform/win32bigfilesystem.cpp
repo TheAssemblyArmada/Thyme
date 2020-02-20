@@ -26,7 +26,7 @@ using rts::FourCC;
 
 void Win32BIGFileSystem::Init()
 {
-    captain_trace("Initialising BIG file system.");
+    captainslog_trace("Initialising BIG file system.");
     if (g_theLocalFileSystem != nullptr) {
         Load_Archives_From_Dir("", "*.big", false);
 
@@ -34,7 +34,7 @@ void Win32BIGFileSystem::Init()
 
         Get_String_From_Generals_Registry("", "InstallPath", gen_path);
 
-        captain_trace("Retrieved Generals path as '%s' from registry.", gen_path.Str());
+        captainslog_trace("Retrieved Generals path as '%s' from registry.", gen_path.Str());
 
         if (!gen_path.Is_Empty()) {
             Load_Archives_From_Dir(gen_path, "*.big", false);
@@ -46,7 +46,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 {
     uint32_t idbuff;
 
-    captain_trace("Win32BigFileSystem::Open_Archive_File - opening BIG file %s.", filename);
+    captainslog_trace("Win32BigFileSystem::Open_Archive_File - opening BIG file %s.", filename);
 
     File *file = g_theLocalFileSystem->Open_File(filename, File::READ | File::BINARY);
     Win32BIGFile *big = new Win32BIGFile;
@@ -55,7 +55,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     fullname.To_Lower();
 
     if (file == nullptr) {
-        captain_trace("Couldn't open local archive file '%s'.", filename);
+        captainslog_trace("Couldn't open local archive file '%s'.", filename);
 
         return nullptr;
     }
@@ -65,7 +65,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     file->Read(&idbuff, sizeof(idbuff));
 
     if (idbuff != FourCC<'B', 'I', 'G', 'F'>::value && idbuff != FourCC<'B', 'I', 'G', '4'>::value) {
-        captain_error("Opened file '%s' does not have correct Big File FourCC, closing.", filename);
+        captainslog_error("Opened file '%s' does not have correct Big File FourCC, closing.", filename);
         file->Close();
 
         return nullptr;
@@ -80,9 +80,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     file->Read(&file_count, sizeof(file_count));
     arch_size = le32toh(arch_size);
     file_count = be32toh(file_count);
-    captain_trace("Win32BigFileSystem::Open_Archive_File - size of archive file is %u bytes.", arch_size);
-    captain_trace("Win32BigFileSystem::Open_Archive_File - %u files are contained within the archive.", file_count);
-    captain_trace("Big file is '%u' bytes long and contains '%u' files.", arch_size, file_count);
+    captainslog_trace("Win32BigFileSystem::Open_Archive_File - size of archive file is %u bytes.", arch_size);
+    captainslog_trace("Win32BigFileSystem::Open_Archive_File - %u files are contained within the archive.", file_count);
+    captainslog_trace("Big file is '%u' bytes long and contains '%u' files.", arch_size, file_count);
 
     // Seek to first file information
     file->Seek(16, File::START);
@@ -118,9 +118,9 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
             ++putp;
         }
 
-        captain_relassert(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
+        captainslog_relassert(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
 
-        // captain_trace("Recovered a file path of '%s' with size '%d' and position '%d'.", namebuf, file_size, file_pos);
+        // captainslog_trace("Recovered a file path of '%s' with size '%d' and position '%d'.", namebuf, file_size, file_pos);
 
         // Find the start of the file name
         int name_start = strlen;
@@ -135,11 +135,11 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         // can recover the rest of the path.
         info->file_name = &namebuf[name_start + 1];
         info->file_name.To_Lower();
-        // captain_trace("Base name is '%s'.", &namebuf[name_start + 1]);
+        // captainslog_trace("Base name is '%s'.", &namebuf[name_start + 1]);
 
         namebuf[name_start + 1] = '\0';
 
-        // captain_trace("Path is '%s'.", namebuf);
+        // captainslog_trace("Path is '%s'.", namebuf);
 
         Utf8String file_path = namebuf;
         file_path += info->file_name;
@@ -160,7 +160,7 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
     if (it != m_archiveFiles.end()) {
         // If we are removing the music big file, set audio engine accordingly
         if (strcasecmp(filename, "Music.Big") == 0) {
-            captain_trace("Something is supposed to happen to audio engine here.");
+            captainslog_trace("Something is supposed to happen to audio engine here.");
             // Do something with audio engine
             g_theAudio->Stop_Audio(AUDIOAFFECT_MUSIC);
         }
@@ -180,14 +180,14 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(Utf8String dir, Utf8String filte
     g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 
     for (auto it = file_list.begin(); it != file_list.end(); ++it) {
-        captain_trace("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.", (*it).Str());
+        captainslog_trace("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.", (*it).Str());
         ArchiveFile *arch = Open_Archive_File((*it).Str());
 
         if (arch != nullptr) {
             Load_Into_Dir_Tree(arch, *it, read_subdirs);
             m_archiveFiles[*it] = arch;
 
-            captain_trace("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map.", (*it).Str());
+            captainslog_trace("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map.", (*it).Str());
         }
     }
 }

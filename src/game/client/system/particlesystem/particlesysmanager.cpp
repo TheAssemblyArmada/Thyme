@@ -18,7 +18,7 @@
 #include "particlesystemplate.h"
 #include "particle.h"
 #include "xfer.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifdef GAME_DLL
 #else
@@ -141,9 +141,9 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 
             if (name.Is_Not_Empty()) {
                 ParticleSystemTemplate *temp = Find_Template(name);
-                captain_relassert(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
+                captainslog_relassert(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
                 ParticleSystem *sys = new ParticleSystem(temp, ++m_uniqueSystemID, false);
-                captain_relassert(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
+                captainslog_relassert(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
                 xfer->xferSnapshot(sys);
             }
         }

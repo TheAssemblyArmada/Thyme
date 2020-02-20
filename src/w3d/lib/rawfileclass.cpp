@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "rawfileclass.h"
-#include <captnlog.h>
+#include <captainslog.h>
 #include <cerrno>
 #include <cstdlib>
 #include <cstdio>
@@ -515,7 +515,7 @@ bool RawFileClass::Set_Date_Time(time_t datetime)
 void RawFileClass::Error(int error, bool can_retry, const char *filename)
 {
     // Nothing in SAGE
-    captain_error("Triggered error %d for file '%s'.", error, filename);
+    captainslog_error("Triggered error %d for file '%s'.", error, filename);
 }
 
 void RawFileClass::Bias(int offset, int length)

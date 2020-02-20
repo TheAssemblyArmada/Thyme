@@ -14,7 +14,7 @@
  */
 
 #include "registry.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 #ifdef PLATFORM_WINDOWS
 #include <winreg.h>
@@ -60,7 +60,7 @@ bool Get_String_From_Registry(Utf8String subkey, Utf8String value, Utf8String &d
 #ifdef PLATFORM_WINDOWS
     Utf8String key = "SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour";
     key += subkey;
-    captain_trace("Get_String_From_Registry - looking in %s for key %s\n", key.Str(), value.Str());
+    captainslog_trace("Get_String_From_Registry - looking in %s for key %s\n", key.Str(), value.Str());
     bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
 
     if (!success) {
@@ -78,7 +78,7 @@ bool Get_String_From_Generals_Registry(Utf8String subkey, Utf8String value, Utf8
 #ifdef PLATFORM_WINDOWS
     Utf8String key = "SOFTWARE\\Electronic Arts\\EA Games\\Generals";
     key += subkey;
-    captain_trace("Get_String_From_Generals_Registry - looking in %s for key %s\n", key.Str(), value.Str());
+    captainslog_trace("Get_String_From_Generals_Registry - looking in %s for key %s\n", key.Str(), value.Str());
     bool success = getStringFromReg(HKEY_LOCAL_MACHINE, key, value, destination);
 
     if (!success) {

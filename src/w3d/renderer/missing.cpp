@@ -16,7 +16,7 @@
 #include "missing.h"
 #include "dx8wrapper.h"
 #include "w3dformat.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 w3dtexture_t MissingTexture::s_missingTexture;
@@ -37,7 +37,7 @@ void MissingTexture::Init()
     static const int _missing_height = 256;
 
 #ifdef BUILD_WITH_D3D8
-    captain_assert(s_missingTexture != W3D_TYPE_INVALID_TEXTURE);
+    captainslog_assert(s_missingTexture != W3D_TYPE_INVALID_TEXTURE);
     w3dsurface_t dest = W3D_TYPE_INVALID_SURFACE;
     w3dsurface_t src = W3D_TYPE_INVALID_SURFACE;
     RECT rect{0, 0, _missing_width, _missing_height};

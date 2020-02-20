@@ -14,7 +14,7 @@
  */
 #include "audioeventinfo.h"
 #include "audiomanager.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstddef>
 
 namespace
@@ -80,7 +80,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captain_assert(lo > -100.0f && hi >= lo);
+    captainslog_assert(lo > -100.0f && hi >= lo);
     info->m_pitchShiftLow = float(lo / 100.0f) + 1.0f;
     info->m_pitchShiftHigh = float(hi / 100.0f) + 1.0f;
 }
@@ -96,7 +96,7 @@ void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captain_assert(lo >= 0.0f && hi >= lo);
+    captainslog_assert(lo >= 0.0f && hi >= lo);
     info->m_delayLow = lo;
     info->m_delayHigh = hi;
 }

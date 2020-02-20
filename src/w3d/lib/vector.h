@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstring>
 #include <new>
 
@@ -56,14 +56,14 @@ protected:
 template<typename T>
 T &VectorClass<T>::operator[](int index)
 {
-    captain_assert(unsigned(index) < unsigned(m_vectorMax));
+    captainslog_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 
 template<typename T>
 const T &VectorClass<T>::operator[](int index) const
 {
-    captain_assert(unsigned(index) < unsigned(m_vectorMax));
+    captainslog_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 

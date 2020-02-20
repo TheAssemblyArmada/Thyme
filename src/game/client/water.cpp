@@ -15,7 +15,7 @@
 #include "water.h"
 #include "gametype.h"
 #include <cstddef>
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
@@ -65,7 +65,7 @@ void WaterSetting::Parse_Water_Setting(INI *ini)
         }
     }
 
-    captain_relassert(tod < TIME_OF_DAY_COUNT, 0xDEAD0006, "Failed to parse a valid time of day.");
+    captainslog_relassert(tod < TIME_OF_DAY_COUNT, 0xDEAD0006, "Failed to parse a valid time of day.");
     ini->Init_From_INI(&g_waterSettings[tod], m_waterSettingFieldParseTable);
 }
 
@@ -89,7 +89,7 @@ void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
     if (g_theWaterTransparency == nullptr) {
         g_theWaterTransparency = new WaterTransparencySetting;
     } else {
-        captain_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
+        captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
             0xDEAD0006,
             "g_theWaterTransparency is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
         WaterTransparencySetting *new_wts = new WaterTransparencySetting;

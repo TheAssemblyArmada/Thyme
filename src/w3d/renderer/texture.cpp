@@ -185,14 +185,14 @@ TextureClass::TextureClass(unsigned width, unsigned height, WW3DFormat format, M
             m_d3dTexture = DX8Wrapper::Create_Texture(width, height, format, mip_count, D3DPOOL_SYSTEMMEM, render_target);
             break;
         default:
-            captain_warn("Attempted to create texture with unknown pool, using default.");
+            captainslog_warn("Attempted to create texture with unknown pool, using default.");
             m_d3dTexture = DX8Wrapper::Create_Texture(width, height, format, mip_count, D3DPOOL_DEFAULT, render_target);
             break;
     }
 #endif
 
     if (pool == POOL_DEFAULT) {
-        captain_assert(m_pool == POOL_DEFAULT);
+        captainslog_assert(m_pool == POOL_DEFAULT);
         m_dirty = true;
         DX8TextureManagerClass::Add(new DX8TextureTrackerClass(width, height, mip_count, this, format, render_target));
     }
@@ -331,7 +331,7 @@ void TextureClass::Apply_New_Surface(w3dbasetexture_t d3d_texture, bool initiali
         m_inactivationTime = 0;
     }
 
-    captain_assert(d3d_texture != W3D_TYPE_INVALID_TEXTURE);
+    captainslog_assert(d3d_texture != W3D_TYPE_INVALID_TEXTURE);
     w3dsurface_t surf = nullptr;
     DX8Wrapper::Handle_DX8_ErrorCode(
         reinterpret_cast<w3dtexture_t>(Peek_Platform_Base_Texture())->GetSurfaceLevel(0, &surf));
@@ -392,7 +392,7 @@ SurfaceClass *TextureClass::Get_Surface_Level(unsigned level)
 w3dsurface_t TextureClass::Get_D3D_Surface_Level(unsigned level)
 {
     if (Peek_Platform_Base_Texture() == W3D_TYPE_INVALID_TEXTURE) {
-        captain_assert(false);
+        captainslog_assert(false);
 
         return W3D_TYPE_INVALID_SURFACE;
     }

@@ -17,7 +17,7 @@
 
 #include "always.h"
 #include "gamemath.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 class Vector3
 {
@@ -45,7 +45,7 @@ public:
 
     __forceinline explicit Vector3(const float vector[3])
     {
-        captain_assert(vector != nullptr);
+        captainslog_assert(vector != nullptr);
         X = vector[0];
         Y = vector[1];
         Z = vector[2];
@@ -221,7 +221,7 @@ public:
 
     __forceinline static void Cross_Product(const Vector3 &a, const Vector3 &b, Vector3* __restrict set_result)
     {
-        captain_assert(!(set_result == &a || set_result == &b));
+        captainslog_assert(!(set_result == &a || set_result == &b));
         set_result->X = (a.Y * b.Z - a.Z * b.Y);
         set_result->Y = (a.Z * b.X - a.X * b.Z);
         set_result->Z = (a.X * b.Y - a.Y * b.X);

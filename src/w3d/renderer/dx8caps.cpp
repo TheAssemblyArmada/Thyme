@@ -14,7 +14,7 @@
  */
 #include "dx8caps.h"
 #include "dx8wrapper.h"
-#include <captnlog.h>
+#include <captainslog.h>
 #include <cstring>
 
 using std::memcpy;
@@ -159,9 +159,9 @@ DX8Caps::DX8Caps(w3dhandle_t handle, w3ddevice_t device, WW3DFormat format, cons
 {
     Init_Caps(device);
     Compute_Caps(format, identifier);
-    captain_line("================================================================================\n");
-    captain_line(static_cast<const char *>(m_videoCardSpecString));
-    captain_line("\n================================================================================");
+    captainslog_line("================================================================================\n");
+    captainslog_line(static_cast<const char *>(m_videoCardSpecString));
+    captainslog_line("\n================================================================================");
 }
 
 /**

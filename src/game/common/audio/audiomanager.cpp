@@ -17,7 +17,7 @@
 #include "musicmanager.h"
 #include "soundmanager.h"
 #include <algorithm>
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 AudioManager *g_theAudio = nullptr;
@@ -90,7 +90,7 @@ void AudioManager::Init()
 
     if (!Is_Music_Already_Loaded()) {
         m_fromCD = true;
-        captain_warn("Music not detected as loaded, this shouldn't happen with released game data.");
+        captainslog_warn("Music not detected as loaded, this shouldn't happen with released game data.");
         // Original code prompts to insert disc at this point, but it shouldn't be possible with the shipped
         // installer to install without the audio installed to the hard drive.
     }

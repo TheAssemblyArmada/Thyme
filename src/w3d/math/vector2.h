@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include "captnassert.h"
+#include <captainslog.h>
 #include "gamemath.h"
 
 class Vector2i
@@ -50,7 +50,7 @@ public:
 
     __forceinline explicit Vector2(const float vector[2])
     {
-        captain_assert(vector != nullptr);
+        captainslog_assert(vector != nullptr);
         X = vector[0];
         Y = vector[1];
     }

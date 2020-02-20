@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "science.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstddef>
 
 #ifndef GAME_DLL
@@ -65,6 +65,6 @@ ScienceType ScienceStore::Lookup_Science(const char *name)
         }
     }
 
-    captain_relassert(false, 0xDEAD0006, "Failed to find matching ScienceType in Science Store.");
+    captainslog_relassert(false, 0xDEAD0006, "Failed to find matching ScienceType in Science Store.");
     return SCIENCE_INVALID;
 }

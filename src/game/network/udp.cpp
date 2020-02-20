@@ -14,7 +14,7 @@
  */
 #include "udp.h"
 #include "endiantype.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 /**
  * 0x00733A20 
@@ -51,7 +51,7 @@ int UDP::Bind(uint32_t address, uint16_t port)
         m_myPort = be16toh(m_addr.sin_port);
 
         if (Set_Blocking(false) == -1) {
-            captain_dbgassert(false, "Couldn't set nonblocking mode!");
+            captainslog_dbgassert(false, "Couldn't set nonblocking mode!");
         }
 
         return OK;

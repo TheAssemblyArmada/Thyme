@@ -25,7 +25,7 @@
 #include "vector4.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 // Some constants to control numbers of things.
 enum
@@ -145,7 +145,7 @@ public:
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps()
     {
-        captain_assert(s_currentCaps != nullptr);
+        captainslog_assert(s_currentCaps != nullptr);
         return s_currentCaps;
     }
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }

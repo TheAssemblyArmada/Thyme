@@ -13,7 +13,6 @@
  *            LICENSE
  */
 #include "main.h"
-#include "captnlog.h"
 #include "cpudetect.h"
 #include "critsection.h"
 #include "gamemain.h"
@@ -25,6 +24,7 @@
 #include "version.h"
 #include "win32compat.h"
 #include <algorithm>
+#include <captainslog.h>
 #include <cstdio>
 
 using std::rename;
@@ -326,7 +326,7 @@ int main(int argc, char **argv)
     rename(curbuf, prevbuf);
     logfile = curbuf;
 #endif
-    captain_init(LOGLEVEL_DEBUG, logfile, true, false, false);
+    captainslog_init(LOGLEVEL_DEBUG, logfile, true, false, false);
 
 #if defined PLATFORM_WINDOWS && defined GAME_DLL
     // Set the exception handler to the one provided by the EXE.
@@ -368,19 +368,19 @@ int main(int argc, char **argv)
     );
 
     // Make pretty log header for debug logging builds.
-    captain_line("================================================================================");
-    captain_line("Thyme Version: %s", g_theVersion->Get_Ascii_Version().Str());
-    captain_line("Build date: %s", g_theVersion->Get_Ascii_Build_Time().Str());
-    captain_line("Build branch: %s", g_theVersion->Get_Ascii_Branch().Str());
-    captain_line("Build commit: %s", g_theVersion->Get_Ascii_Commit_Hash().Str());
-    // captain_line("Processor: %s\n", CPUDetectClass::Get_Processor_String());
-    // captain_line("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
-    captain_line(CPUDetectClass::Get_Processor_Log());
-    captain_line("================================================================================");
+    captainslog_line("================================================================================");
+    captainslog_line("Thyme Version: %s", g_theVersion->Get_Ascii_Version().Str());
+    captainslog_line("Build date: %s", g_theVersion->Get_Ascii_Build_Time().Str());
+    captainslog_line("Build branch: %s", g_theVersion->Get_Ascii_Branch().Str());
+    captainslog_line("Build commit: %s", g_theVersion->Get_Ascii_Commit_Hash().Str());
+    // captainslog_line("Processor: %s\n", CPUDetectClass::Get_Processor_String());
+    // captainslog_line("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
+    captainslog_line(CPUDetectClass::Get_Processor_Log());
+    captainslog_line("================================================================================");
 
-    captain_info("About to run Game_Main");
+    captainslog_info("About to run Game_Main");
     Game_Main(argc, argv);
-    captain_info("Game shutting down.");
+    captainslog_info("Game shutting down.");
 
     delete g_theVersion;
     g_theVersion = nullptr;
@@ -391,7 +391,7 @@ int main(int argc, char **argv)
     g_dmaCriticalSection = nullptr;
     g_memoryPoolCriticalSection = nullptr;
 
-    captain_deinit();
+    captainslog_deinit();
 
     return 0;
 }

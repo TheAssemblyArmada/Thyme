@@ -19,7 +19,7 @@
 #include "targa.h"
 #include "w3d.h"
 #include "wwstring.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstring>
 
 #ifdef BUILD_WITH_D3D8
@@ -134,7 +134,7 @@ WW3DFormat D3DFormat_To_WW3DFormat(uint32_t format)
     // Log if the engine tries to load a DDS format we don't currently handle.
     memcpy(buff, &format, sizeof(format));
     buff[4] = '\0';
-    captain_error("TODO Unhandled format FourCC '%s', implementations welcome.", buff);
+    captainslog_error("TODO Unhandled format FourCC '%s', implementations welcome.", buff);
 
     return WW3D_FORMAT_UNKNOWN;
 }
@@ -352,7 +352,7 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
                 if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
                     check_format = WW3D_FORMAT_R5G6B5;
                 } else {
-                    captain_dbgassert(false, "Get_Valid_Texture_Format - No valid texture format found");
+                    captainslog_dbgassert(false, "Get_Valid_Texture_Format - No valid texture format found");
                 }
             }
         }

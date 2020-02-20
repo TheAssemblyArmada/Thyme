@@ -14,7 +14,7 @@
  */
 #include "dinputkeybd.h"
 #include "main.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 DirectInputKeyboard::DirectInputKeyboard() : m_inputInterface(nullptr), m_inputDevice(nullptr)
 {
@@ -89,25 +89,25 @@ void DirectInputKeyboard::Open_Keyboard()
     if (DirectInput8Create(
             GetModuleHandleA(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID *)&m_inputInterface, 0)
         < 0) {
-        captain_error("DirectInput8Create failed.");
+        captainslog_error("DirectInput8Create failed.");
         Close_Keyboard();
         return;
     }
 
     if (m_inputInterface->CreateDevice(GUID_SysKeyboard, &m_inputDevice, 0) < 0) {
-        captain_error("CreateDevice failed.");
+        captainslog_error("CreateDevice failed.");
         Close_Keyboard();
         return;
     }
 
     if (m_inputDevice->SetDataFormat(&c_dfDIKeyboard) < 0) {
-        captain_error("Failed to set the data format.");
+        captainslog_error("Failed to set the data format.");
         Close_Keyboard();
         return;
     }
 
     if (m_inputDevice->SetCooperativeLevel(g_applicationHWnd, 6) < 0) {
-        captain_error("Failed to set cooperative level.");
+        captainslog_error("Failed to set cooperative level.");
         Close_Keyboard();
         return;
     }
@@ -120,15 +120,15 @@ void DirectInputKeyboard::Open_Keyboard()
     prop.dwData = 256;
 
     if (m_inputDevice->SetProperty(DIPROP_BUFFERSIZE, (LPDIPROPHEADER)&prop) < 0) {
-        captain_error("Failed to set buffer size property.");
+        captainslog_error("Failed to set buffer size property.");
         Close_Keyboard();
         return;
     }
 
     if (m_inputDevice->Acquire() < 0) {
-        captain_error("Failed to acquire device.");
+        captainslog_error("Failed to acquire device.");
     } else {
-        captain_info("DirectInput keyboard device initialised successfully.");
+        captainslog_info("DirectInput keyboard device initialised successfully.");
     }
 }
 

@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 class GenericList;
 
@@ -88,7 +88,7 @@ inline GenericList *GenericNode::Main_List() const
 */
 inline void GenericNode::Link(GenericNode *node)
 {
-    captain_assert(node != nullptr);
+    captainslog_assert(node != nullptr);
 
     node->Unlink();
     node->m_nextNode = m_nextNode;

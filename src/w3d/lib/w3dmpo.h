@@ -18,7 +18,7 @@
 #include "always.h"
 #include "gamememory.h"
 #include "mempoolobj.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 // I think this stands for W3DMemoryPoolObject
 class W3DMPO
@@ -36,7 +36,7 @@ private: \
     { \
         static MemoryPool *const The##classname##Pool = \
             g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
-        captain_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
+        captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
             "Pool %s is wrong size for class (need %d, currently %d)", \
             #classname, \
             sizeof(classname), \

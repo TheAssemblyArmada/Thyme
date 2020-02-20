@@ -25,7 +25,7 @@ Utf8String Get_Base_Path_From_Path(Utf8String path)
     // Find the last path seperator for either win or unix style.
     const char *last_sep = std::max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
-    captain_trace("Getting base path from '%s'.", path_str);
+    captainslog_trace("Getting base path from '%s'.", path_str);
 
     if (last_sep != nullptr) {
         ptrdiff_t size = last_sep - path_str;
@@ -45,7 +45,7 @@ Utf8String Get_File_From_Path(Utf8String path)
     // Find the last path seperator for either win or unix style.
     const char *last_sep = std::max(strrchr(path_str, '/'), strrchr(path_str, '\\'));
 
-    captain_trace("Getting file from '%s'.", path_str);
+    captainslog_trace("Getting file from '%s'.", path_str);
 
     if (last_sep != nullptr) {
         return Utf8String(last_sep + 1);
@@ -61,7 +61,7 @@ Utf8String Get_Base_File_From_File(Utf8String path)
     // Find the last . seperator for file extension.
     const char *last_sep = strrchr(path_str, '.');
 
-    captain_trace("Getting base filename from '%s'.", path_str);
+    captainslog_trace("Getting base filename from '%s'.", path_str);
 
     // If we have a file extension, return the part before it.
     if (last_sep != nullptr) {

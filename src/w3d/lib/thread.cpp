@@ -16,7 +16,7 @@
 #include "rtsutils.h"
 #include "systimer.h"
 #include "threadtrack.h"
-#include <captnlog.h>
+#include <captainslog.h>
 #include <cstdio>
 #include <cstring>
 
@@ -110,7 +110,7 @@ void ThreadClass::Internal_Thread_Function(void *params)
  */
 void ThreadClass::Execute()
 {
-    captain_trace("Executing thread '%s'.", m_threadName);
+    captainslog_trace("Executing thread '%s'.", m_threadName);
 #ifdef HAVE_PTHREAD_H
     // These can be used to set none default params
     pthread_attr_t attr;
@@ -144,7 +144,7 @@ void ThreadClass::Set_Priority(int priority)
  */
 void ThreadClass::Stop(unsigned int ms)
 {
-    captain_trace("Stopping thread '%s'.", m_threadName);
+    captainslog_trace("Stopping thread '%s'.", m_threadName);
     m_isRunning = false;
     unsigned int time = g_theSysTimer.Get();
 
@@ -155,7 +155,7 @@ void ThreadClass::Stop(unsigned int ms)
 #elif defined PLATFORM_WINDOWS
             if (!TerminateThread(m_handle, 0)) {
 #endif
-                captain_assert(false);
+                captainslog_assert(false);
             }
 
             m_handle = 0;

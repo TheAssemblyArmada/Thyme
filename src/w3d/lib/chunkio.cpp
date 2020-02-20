@@ -14,7 +14,7 @@
  */
 #include "chunkio.h"
 #include "fileclass.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstring>
 
 using std::memset;
@@ -92,8 +92,8 @@ bool ChunkSaveClass::End_Chunk()
  */
 bool ChunkSaveClass::Begin_Micro_Chunk(unsigned id)
 {
-    captain_dbgassert(id < MAX_STACK_DEPTH, "id is outside the stack range.");
-    captain_dbgassert(!m_inMicroChunk, "Already in a micro chunk.");
+    captainslog_dbgassert(id < MAX_STACK_DEPTH, "id is outside the stack range.");
+    captainslog_dbgassert(!m_inMicroChunk, "Already in a micro chunk.");
 
     m_microChunkHeader.Set_Type(id);
     m_microChunkHeader.Set_Size(0);
@@ -114,7 +114,7 @@ bool ChunkSaveClass::Begin_Micro_Chunk(unsigned id)
  */
 bool ChunkSaveClass::End_Micro_Chunk()
 {
-    captain_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
+    captainslog_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
 
     int current_pos = m_file->Seek(0);
     m_file->Seek(m_microChunkPos, FS_SEEK_START);
@@ -137,8 +137,8 @@ bool ChunkSaveClass::End_Micro_Chunk()
  */
 unsigned ChunkSaveClass::Write(const void *buf, unsigned bytes)
 {
-    captain_dbgassert(m_headerStack[m_stackIndex - 1].Get_Sub_Chunk_Flag() == 0, "Subchunk flag is set.");
-    captain_dbgassert(m_stackIndex > 0, "Stack index below 1.");
+    captainslog_dbgassert(m_headerStack[m_stackIndex - 1].Get_Sub_Chunk_Flag() == 0, "Subchunk flag is set.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index below 1.");
 
     if (m_file->Write(buf, bytes) != bytes) {
         return 0;
@@ -212,8 +212,8 @@ ChunkLoadClass::ChunkLoadClass(FileClass *file) :
  */
 bool ChunkLoadClass::Open_Chunk()
 {
-    captain_dbgassert(!m_inMicroChunk, "Currently in a micro chunk.");
-    captain_dbgassert(m_stackIndex < MAX_STACK_DEPTH - 1, "Stack is too full.");
+    captainslog_dbgassert(!m_inMicroChunk, "Currently in a micro chunk.");
+    captainslog_dbgassert(m_stackIndex < MAX_STACK_DEPTH - 1, "Stack is too full.");
 
     if (m_stackIndex > 0 && m_positionStack[m_stackIndex - 1] == m_headerStack[m_stackIndex - 1].Get_Size()) {
         return false;
@@ -234,8 +234,8 @@ bool ChunkLoadClass::Open_Chunk()
  */
 bool ChunkLoadClass::Close_Chunk()
 {
-    captain_dbgassert(!m_inMicroChunk, "Currently in a micro chunk.");
-    captain_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
+    captainslog_dbgassert(!m_inMicroChunk, "Currently in a micro chunk.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
 
     int chunksize = m_headerStack[m_stackIndex - 1].Get_Size();
     int position = m_positionStack[m_stackIndex - 1];
@@ -259,7 +259,7 @@ bool ChunkLoadClass::Close_Chunk()
  */
 unsigned ChunkLoadClass::Cur_Chunk_ID()
 {
-    captain_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
 
     return m_headerStack[m_stackIndex - 1].Get_Type();
 }
@@ -270,7 +270,7 @@ unsigned ChunkLoadClass::Cur_Chunk_ID()
  */
 unsigned ChunkLoadClass::Cur_Chunk_Length()
 {
-    captain_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
 
     return m_headerStack[m_stackIndex - 1].Get_Size();
 }
@@ -290,7 +290,7 @@ int ChunkLoadClass::Contains_Chunks()
  */
 bool ChunkLoadClass::Open_Micro_Chunk()
 {
-    captain_dbgassert(!m_inMicroChunk, "Already in a micro chunk.");
+    captainslog_dbgassert(!m_inMicroChunk, "Already in a micro chunk.");
 
     if (Read(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader)) {
         m_microChunkPos = 0;
@@ -308,7 +308,7 @@ bool ChunkLoadClass::Open_Micro_Chunk()
  */
 bool ChunkLoadClass::Close_Micro_Chunk()
 {
-    captain_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
+    captainslog_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
 
     m_inMicroChunk = false;
 
@@ -329,7 +329,7 @@ bool ChunkLoadClass::Close_Micro_Chunk()
  */
 unsigned ChunkLoadClass::Cur_Micro_Chunk_ID()
 {
-    captain_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
+    captainslog_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
 
     return m_microChunkHeader.Get_Type();
 }
@@ -340,7 +340,7 @@ unsigned ChunkLoadClass::Cur_Micro_Chunk_ID()
  */
 unsigned ChunkLoadClass::Cur_Micro_Chunk_Length()
 {
-    captain_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
+    captainslog_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
 
     return m_microChunkHeader.Get_Size();
 }
@@ -352,8 +352,8 @@ unsigned ChunkLoadClass::Cur_Micro_Chunk_Length()
  */
 unsigned ChunkLoadClass::Seek(unsigned bytes)
 {
-    captain_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
-    captain_dbgassert(m_file->Is_Open(), "File is not open for seeking.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
+    captainslog_dbgassert(m_file->Is_Open(), "File is not open for seeking.");
 
     if (bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size()) {
         return 0;
@@ -386,8 +386,8 @@ unsigned ChunkLoadClass::Seek(unsigned bytes)
  */
 unsigned ChunkLoadClass::Read(void *buf, unsigned bytes)
 {
-    captain_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
-    captain_dbgassert(m_file->Is_Open(), "File is not open for reading.");
+    captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
+    captainslog_dbgassert(m_file->Is_Open(), "File is not open for reading.");
 
     if (bytes + m_positionStack[m_stackIndex - 1] > m_headerStack[m_stackIndex - 1].Get_Size()) {
         return 0;

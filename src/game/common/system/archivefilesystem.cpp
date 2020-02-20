@@ -15,7 +15,7 @@
 #include "archivefilesystem.h"
 #include "archivefile.h"
 #include "globaldata.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 ArchiveFileSystem *g_theArchiveFileSystem = nullptr;
@@ -31,7 +31,7 @@ File *ArchiveFileSystem::Open_File(const char *filename, int mode)
 
     ArchiveFile *file = m_archiveFiles[archive];
 
-    captain_dbgassert(file != nullptr, "Did not find matching archive file.");
+    captainslog_dbgassert(file != nullptr, "Did not find matching archive file.");
 
     return file->Open_File(filename, mode);
 }
@@ -172,7 +172,7 @@ void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8Str
 void ArchiveFileSystem::Load_Mods()
 {
     if (!g_theWriteableGlobalData->m_userModFile.Is_Empty()) {
-        captain_info("Loading mod file '%s'.", g_theWriteableGlobalData->m_userModFile.Str());
+        captainslog_info("Loading mod file '%s'.", g_theWriteableGlobalData->m_userModFile.Str());
         ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile.Str());
 
         if (file != nullptr) {
@@ -182,7 +182,7 @@ void ArchiveFileSystem::Load_Mods()
     }
 
     if (!g_theWriteableGlobalData->m_userModDirectory.Is_Empty()) {
-        captain_info("Loading mod files from '%s'.", g_theWriteableGlobalData->m_userModDirectory.Str());
+        captainslog_info("Loading mod files from '%s'.", g_theWriteableGlobalData->m_userModDirectory.Str());
         Load_Archives_From_Dir(g_theWriteableGlobalData->m_userModDirectory, "*.big", true);
     }
 }

@@ -15,7 +15,7 @@
  */
 #include "dx8texman.h"
 #include "dx8wrapper.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 DX8TextureTrackerList DX8TextureManagerClass::s_managedTextures;
 
@@ -38,7 +38,7 @@ void DX8TextureManagerClass::Remove(TextureBaseClass *texture)
 
     for (it.First(); !it.Is_Done(); it.Next()) {
         DX8TextureTrackerClass *tracker = it.Peek_Obj();
-        captain_assert(tracker != nullptr);
+        captainslog_assert(tracker != nullptr);
 
         if (tracker->m_texture == texture) {
             it.Remove_Current_Object();
@@ -62,7 +62,7 @@ void DX8TextureManagerClass::Recreate_Textures()
 
     for (it.First(); !it.Is_Done(); it.Next()) {
         DX8TextureTrackerClass *ttc = it.Peek_Obj();
-        captain_assert(ttc->m_texture->Peek_Platform_Base_Texture() != W3D_TYPE_INVALID_TEXTURE);
+        captainslog_assert(ttc->m_texture->Peek_Platform_Base_Texture() != W3D_TYPE_INVALID_TEXTURE);
         ttc->Recreate();
         ttc->m_texture->Set_Dirty(true);
     }

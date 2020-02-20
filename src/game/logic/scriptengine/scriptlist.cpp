@@ -16,7 +16,7 @@
 #include "script.h"
 #include "scriptgroup.h"
 #include "xfer.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 ScriptList *ScriptList::s_readLists[16];
 int ScriptList::s_numInReadList = 0;
@@ -240,7 +240,7 @@ int ScriptList::Get_Read_Scripts(ScriptList **scripts)
  */
 bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    captain_dbgassert(static_cast<ScriptListReadInfo *>(data)->num_lists < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
+    captainslog_dbgassert(static_cast<ScriptListReadInfo *>(data)->num_lists < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
     ScriptListReadInfo *read_info = static_cast<ScriptListReadInfo *>(data);
 
     if (read_info->num_lists >= MAX_LIST_COUNT) {

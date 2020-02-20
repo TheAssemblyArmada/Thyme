@@ -16,12 +16,12 @@
 
 #include "localfilesystem.h"
 #include "win32localfile.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 class Win32LocalFileSystem : public LocalFileSystem
 {
 public:
-    Win32LocalFileSystem() { captain_trace("Creating Win32LocalFileSystem."); }
+    Win32LocalFileSystem() { captainslog_trace("Creating Win32LocalFileSystem."); }
     virtual ~Win32LocalFileSystem() {}
 
     // Subsystem interface implementations.

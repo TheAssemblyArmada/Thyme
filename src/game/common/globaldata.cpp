@@ -21,7 +21,7 @@
 #include "rtsutils.h"
 #include "version.h"
 #include "weapon.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
@@ -775,7 +775,7 @@ GlobalData::GlobalData()
 #endif // PLATFORM_WINDOWS
     g_theFileSystem->Create_Dir(m_userDataDirectory);
     m_retaliationModeEnabled = true;
-    captain_info("User data directory is set to '%s'.", m_userDataDirectory.Str());
+    captainslog_info("User data directory is set to '%s'.", m_userDataDirectory.Str());
 }
 
 GlobalData::~GlobalData()
@@ -814,7 +814,7 @@ bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
 
 void GlobalData::Parse_Game_Data_Definitions(INI *ini)
 {
-    captain_info("Parsing Global Data from '%s'.", ini->Get_Filename().Str());
+    captainslog_info("Parsing Global Data from '%s'.", ini->Get_Filename().Str());
 
     if (g_theWriteableGlobalData == nullptr) {
         g_theWriteableGlobalData = new GlobalData;

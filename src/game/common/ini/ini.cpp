@@ -204,7 +204,7 @@ void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
         if (token != nullptr) {
             iniblockparse_t parser = Find_Block_Parse(token);
 
-            captain_relassert(parser != nullptr,
+            captainslog_relassert(parser != nullptr,
                 0xDEAD0006,
                 "[LINE: %d - FILE: '%s'] Unknown block '%s'",
                 m_lineNumber,
@@ -220,7 +220,7 @@ void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
 
 void INI::Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, Xfer *xfer)
 {
-    captain_relassert(!dir.Is_Empty(), 0xDEAD0006, "No directory provided to load from.");
+    captainslog_relassert(!dir.Is_Empty(), 0xDEAD0006, "No directory provided to load from.");
 
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
     dir += '/';
@@ -250,11 +250,11 @@ void INI::Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, 
 
 void INI::Prep_File(Utf8String filename, INILoadType type)
 {
-    captain_relassert(m_backingFile == nullptr, 0xDEAD0006, "Cannot open file %s, file already open.", filename.Str());
+    captainslog_relassert(m_backingFile == nullptr, 0xDEAD0006, "Cannot open file %s, file already open.", filename.Str());
 
     m_backingFile = g_theFileSystem->Open(filename.Str(), File::READ);
 
-    captain_relassert(m_backingFile != nullptr, 0xDEAD0006, "Could not open file %s.", filename.Str());
+    captainslog_relassert(m_backingFile != nullptr, 0xDEAD0006, "Could not open file %s.", filename.Str());
 
     m_fileName = filename;
     m_loadType = type;
@@ -285,10 +285,10 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
 {
     bool done = false;
 
-    captain_relassert(what != nullptr, 0xDEAD0006, "Init_From_INI - Invalid parameters supplied.");
+    captainslog_relassert(what != nullptr, 0xDEAD0006, "Init_From_INI - Invalid parameters supplied.");
 
     while (!done) {
-        captain_relassert(!m_endOfFile,
+        captainslog_relassert(!m_endOfFile,
             0xDEAD0006,
             "Error parsing block '%s', in INI file '%s'.  Missing '%s' token",
             m_currentBlock,
@@ -313,7 +313,7 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
 
             // Find an appropriate parser function from the parse table
             for (int i = 0;; ++i) {
-                captain_relassert(i < parse_table_list.count,
+                captainslog_relassert(i < parse_table_list.count,
                     0xDEAD0006,
                     "[LINE: %d - FILE: '%s'] Unknown field '%s' in block '%s'",
                     m_lineNumber,
@@ -345,7 +345,7 @@ void INI::Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *
 
 void INI::Read_Line()
 {
-    captain_dbgassert(m_backingFile != nullptr, "Read_Line file pointer is nullptr.");
+    captainslog_dbgassert(m_backingFile != nullptr, "Read_Line file pointer is nullptr.");
 
     if (m_endOfFile) {
         m_currentBlock[0] = '\0';
@@ -440,7 +440,7 @@ float INI::Scan_PercentToReal(const char *token)
 {
     float value;
     int res = sscanf(token, "%f", &value);
-    captain_relassert(res == 1, 0xDEAD0006, "Unable to parse percentage from token %s.", token);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse percentage from token %s.", token);
 
     return (float)(value / 100.0f);
 }
@@ -449,7 +449,7 @@ float INI::Scan_Real(const char *token)
 {
     float value;
     int res = sscanf(token, "%f", &value);
-    captain_relassert(res == 1, 0xDEAD0006, "Unable to parse float from token %s.", token);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse float from token %s.", token);
 
     return (float)value;
 }
@@ -458,7 +458,7 @@ unsigned int INI::Scan_UnsignedInt(const char *token)
 {
     unsigned int value;
     int res = sscanf(token, "%u", &value);
-    captain_relassert(res == 1, 0xDEAD0006, "Unable to parse unsigned int from token %s.", token);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse unsigned int from token %s.", token);
 
     return value;
 }
@@ -467,7 +467,7 @@ int INI::Scan_Int(const char *token)
 {
     int value;
     int res = sscanf(token, "%d", &value);
-    captain_relassert(res == 1, 0xDEAD0006, "Unable to parse int from token %s.", token);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse int from token %s.", token);
 
     return value;
 }
@@ -477,7 +477,7 @@ bool INI::Scan_Bool(const char *token)
     if (strcasecmp(token, "yes") == 0) {
         return true;
     } else {
-        captain_relassert(strcasecmp(token, "no") == 0, 0xDEAD0006, "Invalid bool token %s, expected yes or no", token);
+        captainslog_relassert(strcasecmp(token, "no") == 0, 0xDEAD0006, "Invalid bool token %s, expected yes or no", token);
     }
 
     return false;
@@ -485,13 +485,13 @@ bool INI::Scan_Bool(const char *token)
 
 int INI::Scan_IndexList(const char *token, const char *const *list)
 {
-    captain_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
+    captainslog_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
 
     int list_count = 0;
 
     while (strcasecmp(list[list_count], token) != 0) {
         ++list_count;
-        captain_relassert(list[list_count] != nullptr, 0xDEAD0006, "Token %s not found in list", token);
+        captainslog_relassert(list[list_count] != nullptr, 0xDEAD0006, "Token %s not found in list", token);
     }
 
     return list_count;
@@ -499,14 +499,14 @@ int INI::Scan_IndexList(const char *token, const char *const *list)
 
 int INI::Scan_LookupList(const char *token, const LookupListRec *list)
 {
-    captain_relassert(
+    captainslog_relassert(
         list != nullptr && list->name != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_LookupList");
 
     int list_count = 0;
 
     while (strcasecmp(list[list_count].name, token) != 0) {
         ++list_count;
-        captain_relassert(list[list_count].name != nullptr, 0xDEAD0006, "Token %s not found in list", token);
+        captainslog_relassert(list[list_count].name != nullptr, 0xDEAD0006, "Token %s not found in list", token);
     }
 
     return list[list_count].value;
@@ -522,7 +522,7 @@ void INI::Parse_Byte(INI *ini, void *formal, void *store, const void *user_data)
 {
     int tmp = Scan_Int(ini->Get_Next_Token());
 
-    captain_relassert(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.");
+    captainslog_relassert(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.");
 
     *static_cast<uint8_t *>(store) = tmp;
 }
@@ -546,7 +546,7 @@ void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, con
 {
     float tmp = Scan_Real(ini->Get_Next_Token());
 
-    captain_relassert(tmp >= 0.0f, 0xDEAD0006, "Value parsed outside range of a positive none zero float.");
+    captainslog_relassert(tmp >= 0.0f, 0xDEAD0006, "Value parsed outside range of a positive none zero float.");
 
     *static_cast<float *>(store) = tmp;
 }
@@ -612,14 +612,14 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *
         const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if (token != nullptr) {
-            captain_relassert(strcasecmp(token, names[i]) == 0,
+            captainslog_relassert(strcasecmp(token, names[i]) == 0,
                 0xDEAD0006,
                 "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.",
                 token);
 
             colors[i] = std::clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
-            captain_relassert(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.");
+            captainslog_relassert(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.");
             colors[i] = 255;
         }
     }
@@ -640,14 +640,14 @@ void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_
         const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if (token != nullptr) {
-            captain_relassert(strcasecmp(token, names[i]) == 0,
+            captainslog_relassert(strcasecmp(token, names[i]) == 0,
                 0xDEAD0006,
                 "Unexpected token '%s', expected one of 'R', 'G', 'B' or 'A'.",
                 token);
 
             colors[i] = std::clamp(Scan_Int(ini->Get_Next_Token(ini->m_sepsColon)), 0, 255);
         } else {
-            captain_relassert(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.");
+            captainslog_relassert(i == 3, 0xDEAD006, "Expected token missing, only 'A' token is optional for 'RBGA'.");
             colors[i] = 255;
         }
     }
@@ -735,7 +735,7 @@ void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, const v
 void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *user_data)
 {
     const char *const *list = static_cast<const char *const *>(user_data);
-    captain_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.");
+    captainslog_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.");
     const char *token = ini->Get_Next_Token_Or_Null();
     bool adjust = false;
     bool set = false;
@@ -745,7 +745,7 @@ void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *use
             // If we have a plus or minus as first char, then that decides if bit is set or cleared.
             // Otherwise just set.
             if (*token == '+') {
-                captain_relassert(!set,
+                captainslog_relassert(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.",
                     ini->Get_Filename().Str(),
@@ -754,7 +754,7 @@ void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *use
                 *static_cast<uint32_t *>(store) |= 1 << INI::Scan_IndexList(token + 1, list);
                 adjust = true;
             } else if (*token == '-') {
-                captain_relassert(!set,
+                captainslog_relassert(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.",
                     ini->Get_Filename().Str(),
@@ -763,7 +763,7 @@ void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *use
                 *static_cast<uint32_t *>(store) &= ~(1 << INI::Scan_IndexList(token + 1, list));
                 adjust = true;
             } else {
-                captain_relassert(!adjust,
+                captainslog_relassert(!adjust,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to set when we already adjusted.",
                     ini->Get_Filename().Str(),
@@ -787,7 +787,7 @@ void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *use
 
         // If we encounter a "NONE" entry, set all bits to 0.
         // We should never reach here if something has already been set.
-        captain_relassert(!adjust && !set,
+        captainslog_relassert(!adjust && !set,
             0xDEAD0006,
             "File: '%s', Line: %d Trying to clear when we already set or adjusted.",
             ini->Get_Filename().Str(),
@@ -800,7 +800,7 @@ void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *use
 void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *user_data)
 {
     const char *const *list = static_cast<const char *const *>(user_data);
-    captain_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.");
+    captainslog_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "No flag list provided.");
     const char *token = ini->Get_Next_Token_Or_Null();
     bool adjust = false;
     bool set = false;
@@ -810,7 +810,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
             // If we have a plus or minus as first char, then that decides if bit is set or cleared.
             // Otherwise just set.
             if (*token == '+') {
-                captain_relassert(!set,
+                captainslog_relassert(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.",
                     ini->Get_Filename().Str(),
@@ -819,7 +819,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
                 *static_cast<uint64_t *>(store) |= 1ll << INI::Scan_IndexList(token + 1, list);
                 adjust = true;
             } else if (*token == '-') {
-                captain_relassert(!set,
+                captainslog_relassert(!set,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to adjust when we already set.",
                     ini->Get_Filename().Str(),
@@ -828,7 +828,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
                 *static_cast<uint64_t *>(store) &= ~(1ll << INI::Scan_IndexList(token + 1, list));
                 adjust = true;
             } else {
-                captain_relassert(!adjust,
+                captainslog_relassert(!adjust,
                     0xDEAD0006,
                     "File: '%s', Line: %d Trying to set when we already adjusted.",
                     ini->Get_Filename().Str(),
@@ -852,7 +852,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
 
         // If we encounter a "NONE" entry, set all bits to 0.
         // We should never reach here if something has already been set.
-        captain_relassert(!adjust && !set,
+        captainslog_relassert(!adjust && !set,
             0xDEAD0006,
             "File: '%s', Line: %d Trying to clear when we already set or adjusted.",
             ini->Get_Filename().Str(),

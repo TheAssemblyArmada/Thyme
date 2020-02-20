@@ -17,7 +17,7 @@
 #include "particlesys.h"
 #include "particlesysmanager.h"
 #include "xfer.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 /**
  * 0x004CCC30
@@ -138,7 +138,7 @@ void Particle::Load_Post_Process()
     if (m_systemUnderControl != nullptr) {
         ParticleSystemID id = ParticleSystemID(reinterpret_cast<uintptr_t>(m_systemUnderControl));
         ParticleSystem *sys = g_theParticleSystemManager->Find_Particle_System(id);
-        captain_relassert(sys != nullptr, 6, "Failed to find controlled particle system for ID %d.\n", id);
+        captainslog_relassert(sys != nullptr, 6, "Failed to find controlled particle system for ID %d.\n", id);
         sys->Set_Control_Particle(this);
         m_systemUnderControl = sys;
     }

@@ -15,7 +15,7 @@
 #include "asciistring.h"
 #include "endiantype.h"
 #include "unicodestring.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cctype>
 #include <cstdio>
 
@@ -52,7 +52,7 @@ void Utf8String::Validate()
 
 char *Utf8String::Peek() const
 {
-    captain_dbgassert(m_data != nullptr, "null string ptr");
+    captainslog_dbgassert(m_data != nullptr, "null string ptr");
     
     return m_data->Peek();
 }
@@ -123,7 +123,7 @@ int Utf8String::Get_Length() const
 {
     if ( m_data != nullptr ) {
         int len = strlen(Str());
-        captain_dbgassert(len > 0, "length of string is less than or equal to 0.");
+        captainslog_dbgassert(len > 0, "length of string is less than or equal to 0.");
         
         return len;
     }
@@ -133,8 +133,8 @@ int Utf8String::Get_Length() const
 
 char Utf8String::Get_Char(int index) const
 {
-    captain_dbgassert(index >= 0, "bad index in getCharAt.");
-    captain_dbgassert(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    captainslog_dbgassert(index >= 0, "bad index in getCharAt.");
+    captainslog_dbgassert(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
     
     return Peek()[index];
 }
@@ -240,7 +240,7 @@ void Utf8String::Translate(Utf16String const &string)
         } else if (sizeof(wchar_t) == 4) {
             c = htole32(c);
         } else {
-            captain_dbgassert(false, "wchar_t is not an expected size.");
+            captainslog_dbgassert(false, "wchar_t is not an expected size.");
         }
 #endif
 
@@ -402,7 +402,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
     char buf[MAX_FORMAT_BUF_LEN];
 
     int res = vsnprintf(buf, sizeof(buf), format, args);
-    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
+    captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }
@@ -411,7 +411,7 @@ void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
     int res = vsnprintf(buf, sizeof(buf), format.Str(), args);
-    captain_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
+    captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
 }

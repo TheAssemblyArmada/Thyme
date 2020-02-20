@@ -16,7 +16,7 @@
  */
 #include "shader.h"
 #include "wwstring.h"
-#include <captnlog.h>
+#include <captainslog.h>
 
 // TODO move these to w3dfile once that file is written.
 struct W3dRGBStruct
@@ -436,7 +436,7 @@ void ShaderClass::Invert_Backface_Culling(bool onoff)
  */
 void ShaderClass::Report_Unable_To_Fog(const char *source)
 {
-    captain_warn("Unable to fog shader in %s with given blending mode.");
+    captainslog_warn("Unable to fog shader in %s with given blending mode.");
 }
 
 /**

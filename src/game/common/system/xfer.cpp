@@ -17,7 +17,7 @@
 #include "gamestate.h"
 #include "matrix3d.h"
 #include "randomvalue.h"
-#include <captnassert.h>
+#include <captainslog.h>
 
 void Xfer::Open(Utf8String filename)
 {
@@ -28,7 +28,7 @@ void Xfer::xferVersion(uint8_t *thing, uint8_t check)
 {
     xferImplementation(thing, sizeof(*thing));
 
-    captain_relassert(*thing > check, 0xD, "Xfer version %d greater than expected, %d.", *thing, check);
+    captainslog_relassert(*thing > check, 0xD, "Xfer version %d greater than expected, %d.", *thing, check);
 }
 
 void Xfer::xferByte(int8_t *thing)
@@ -214,8 +214,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        captain_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captain_relassert(thing->size(), 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
+        captainslog_relassert(thing->size(), 0xF, "Trying to xfer load to none empty vector.");
 
         ObjectID val;
 
@@ -239,8 +239,8 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
             xferObjectID(&(*it));
         }
     } else {
-        captain_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captain_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
+        captainslog_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
 
         ObjectID val;
 
@@ -268,8 +268,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
             xferInt(&(*it));
         }
     } else {
-        captain_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
-        captain_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
+        captainslog_relassert(Get_Mode() == XFER_LOAD, 0x8, "Xfer mode unknown.");
+        captainslog_relassert(thing->size() == 0, 0xF, "Trying to xfer load to none empty vector.");
 
         int32_t val;
 
@@ -329,7 +329,7 @@ void Xfer::xferKindOf(KindOfType *thing)
             xferImplementation(thing, sizeof(*thing));
             break;
         default:
-            captain_relassert(false, 0x8, "Xfer mode unknown.");
+            captainslog_relassert(false, 0x8, "Xfer mode unknown.");
             break;
     }
 }

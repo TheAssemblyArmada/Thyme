@@ -37,7 +37,7 @@ File *Win32BIGFile::Open_File(const char *filename, int mode)
     ArchivedFileInfo *arch_info = Get_Archived_File_Info(filename);
 
     if (arch_info == nullptr) {
-        captain_trace("Couldn't find info for the requested file.");
+        captainslog_trace("Couldn't find info for the requested file.");
         return nullptr;
     }
 

@@ -16,7 +16,7 @@
 #pragma once
 
 #include "always.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstdlib>
 
 template<typename KeyType, typename ValueType>
@@ -193,14 +193,14 @@ void IndexClass<KeyType, ValueType>::Clear()
 template<typename KeyType, class ValueType>
 bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
 {
-    captain_assert(amount > 0);
+    captainslog_assert(amount > 0);
 
     if (amount >= 0) {
         int newsize = m_indexSize + amount;
         NodeElement *newindex = new NodeElement[newsize];
 
         if (newindex != nullptr) {
-            captain_assert(m_indexCount < newsize);
+            captainslog_assert(m_indexCount < newsize);
 
             for (int i = 0; i < m_indexCount; ++i) {
                 newindex[i].m_id = m_indexTable[i].m_id;

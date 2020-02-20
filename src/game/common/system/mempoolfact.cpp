@@ -16,7 +16,7 @@
 #include "gamememoryinit.h"
 #include "memdynalloc.h"
 #include "mempool.h"
-#include <captnassert.h>
+#include <captainslog.h>
 #include <cstring>
 
 using std::strcmp;
@@ -47,7 +47,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, in
     MemoryPool *pool = Find_Memory_Pool(name);
 
     if (pool != nullptr) {
-        captain_dbgassert(pool->m_allocationSize == size, "Pool size mismatch");
+        captainslog_dbgassert(pool->m_allocationSize == size, "Pool size mismatch");
 
         return pool;
     }
@@ -55,7 +55,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, in
     User_Memory_Adjust_Pool_Size(name, count, overflow);
 
     // Count and overflow should never end up as 0 from adjustment.
-    captain_relassert(count > 0 && overflow > 0, 0xDEAD0002, "Count and overflow are 0 for pool '%s'.", name);
+    captainslog_relassert(count > 0 && overflow > 0, 0xDEAD0002, "Count and overflow are 0 for pool '%s'.", name);
 
     pool = new MemoryPool;
     pool->Init(this, name, size, count, overflow);
@@ -71,7 +71,7 @@ void MemoryPoolFactory::Destroy_Memory_Pool(MemoryPool *pool)
         return;
     }
 
-    captain_dbgassert(pool->m_usedBlocksInPool == 0, "Destroying none empty pool.");
+    captainslog_dbgassert(pool->m_usedBlocksInPool == 0, "Destroying none empty pool.");
 
     pool->Remove_From_List(&m_firstPoolInFactory);
     delete pool;

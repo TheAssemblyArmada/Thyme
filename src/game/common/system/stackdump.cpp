@@ -263,7 +263,6 @@ static void Write_Stack_Line(void *address, void(__cdecl *callback)(const char *
 
     Get_Function_Details(address, funcname, filename, &line, &addr);
     sprintf(dest, "  %s(%d) : %s 0x%" PRIPTRSIZE PRIXPTR "\n", filename, line, funcname, (uintptr_t)address);
-    g_exceptionFileBuffer += dest;
     callback(dest);
 }
 
@@ -316,7 +315,7 @@ BOOL Init_Symbol_Info()
     return false;
 }
 
-void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void (*callback)(char const *))
+void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void (__cdecl *callback)(char const *))
 {
     BOOL carry_on = true;
     STACKFRAME stack_frame;
@@ -373,12 +372,12 @@ void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int ski
     }
 }
 
-void Stack_Dump_Handler(const char *data)
+void __cdecl Stack_Dump_Handler(const char *data)
 {
     g_exceptionFileBuffer += data;
 }
 
-void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
+void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
 {
     Utf8String tmp;
     g_exceptionFileBuffer.Clear();
@@ -453,6 +452,7 @@ void Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
         CPUDetectClass::Get_Processor_String(),
         CPUDetectClass::Get_Processor_Speed(),
         CPUDetectClass::Get_Processor_Manufacturer_Name());
+    g_exceptionFileBuffer += tmp;
     g_exceptionFileBuffer += "\nDetails:\n";
     g_exceptionFileBuffer += "\nRegister dump...\n";
 

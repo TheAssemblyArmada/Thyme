@@ -71,6 +71,7 @@ option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
+option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handing and reporting" OFF)
 
 # Custom default install location.
 if(NOT STANDALONE)
@@ -87,13 +88,6 @@ set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE) # Needed to prevent FindDirectX screwing
 
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
-
-# Go lean and mean on windows.
-if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    if(NOT STANDALONE)
-        add_definitions(-D_USE_32BIT_TIME_T) #This is for ABI compatibility with a few functions, remove when original binary no longer required.
-    endif()
-endif()
 
 check_cxx_compiler_flag(-Wno-invalid-offsetof HAVE_NO_INVALID_OFFSETOF)
 

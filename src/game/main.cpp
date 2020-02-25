@@ -14,6 +14,7 @@
  */
 #include "main.h"
 #include "cpudetect.h"
+#include "crashhandler.h"
 #include "critsection.h"
 #include "gamemain.h"
 #include "gamememory.h"
@@ -276,6 +277,9 @@ int main(int argc, char **argv)
     Handle_Win32_Args(&argc, &argv);
     Handle_Win32_Console();
 
+    // Install crash handler
+    bool crashes_handled = Setup_Crash_Handler();
+
     const char *logfile = nullptr;
 #if LOGGING_LEVEL != LOGLEVEL_NONE
     char dirbuf[PATH_MAX];
@@ -328,14 +332,6 @@ int main(int argc, char **argv)
 #endif
     captainslog_init(LOGLEVEL_DEBUG, logfile, true, false, false);
 
-#if defined PLATFORM_WINDOWS && defined GAME_DLL
-    // Set the exception handler to the one provided by the EXE.
-    // Only works on MSVC and only for SEH exceptions.
-    // crt_set_se_translator(Make_Function_Ptr<void, unsigned int, struct _EXCEPTION_POINTERS *>(0x00416490));
-    crt_set_se_translator(Dump_Exception_Info);
-    //_set_se_translator(Dump_Exception_Info);
-#endif
-
     // Assign some critical sections for code sensitive to threaded calls.
     g_unicodeStringCriticalSection = &critSec1;
     g_dmaCriticalSection = &critSec2;
@@ -377,6 +373,10 @@ int main(int argc, char **argv)
     // captainslog_line("Physical Memory: %llu MiB.\n", CPUDetectClass::Get_Total_Physical_Memory() / (1024 * 1024 + 1));
     captainslog_line(CPUDetectClass::Get_Processor_Log());
     captainslog_line("================================================================================");
+
+    if (!crashes_handled) {
+        captainslog_warn("Crash handler failed to install correctly, crash logs will not be generated.");
+    }
 
     captainslog_info("About to run Game_Main");
     Game_Main(argc, argv);

@@ -292,6 +292,9 @@ endif()
 # Setup various included libraries
 add_subdirectory(libs/captnlog EXCLUDE_FROM_ALL)
 
+# Gather needed link libraries and compile defintions
+list(APPEND GAME_LINK_LIBRARIES base captnlog)
+
 if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
     add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
@@ -299,23 +302,47 @@ endif()
 
 if(USE_GAMEMATH)
     add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
+    list(APPEND GAME_LINK_LIBRARIES gamemath_static_lib)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_GAMEMATH)
 endif()
 
-# Gather needed link libraries and compile defintions
-list(APPEND GAME_LINK_LIBRARIES base captnlog)
+# Add this file as a library as a hack so that this file isn't compiled against STLPort
+add_library(crash_handler STATIC game/crashhandler.cpp)
+list(APPEND GAME_LINK_LIBRARIES crash_handler)
+target_include_directories(crash_handler PRIVATE hooker ${GAMEENGINE_INCLUDES})
+target_link_libraries(crash_handler PRIVATE base captnlog)
+
+if(ICU_FOUND)
+    target_link_libraries(crash_handler PRIVATE ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+    target_compile_options(crash_handler PRIVATE -DBUILD_WITH_ICU)
+endif()
+
+if(NOT STANDALONE)
+    target_compile_options(crash_handler PRIVATE -DGAME_DLL)
+endif()
+
+if(USE_CRASHPAD)
+    add_subdirectory(libs/crashpad)
+    # Rename the crash handler so it won't conflict with any other installs of crashpad.
+    set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
+    list(APPEND GAME_LINK_LIBRARIES crashpad_client)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_CRASHPAD)
+    target_compile_options(crash_handler PRIVATE -DBUILD_WITH_CRASHPAD)
+    target_link_libraries(crash_handler PRIVATE crashpad_client)
+endif()
 
 if (MSVC AND NOT STANDALONE)
-    list(APPEND GAME_COMPILE_OPTIONS THYME_USE_STLPORT=1)
+    list(APPEND GAME_COMPILE_OPTIONS -DTHYME_USE_STLPORT)
 endif()
 
 if(STANDALONE)
     list(APPEND GAME_COMPILE_OPTIONS "ALLOW_HOOKING=")
 else()
-    list(APPEND GAME_COMPILE_OPTIONS "ALLOW_HOOKING=friend void Setup_Hooks()\\\;" GAME_DLL=1)
+    list(APPEND GAME_COMPILE_OPTIONS "ALLOW_HOOKING=friend void Setup_Hooks()\\\;" -DGAME_DLL)
 
     if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
         list(APPEND GAME_LINK_LIBRARIES binkstub milesstub)
-        list(APPEND GAME_COMPILE_OPTIONS BUILD_WITH_BINK=1 BUILD_WITH_MILES=1)
+        list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_BINK -DBUILD_WITH_MILES)
     endif()
 endif()
 
@@ -323,19 +350,15 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     list(APPEND GAME_LINK_LIBRARIES winmm)
 endif()
 
-if(USE_GAMEMATH)
-    list(APPEND GAME_LINK_LIBRARIES gamemath_static_lib)
-    list(APPEND GAME_COMPILE_OPTIONS BUILD_WITH_GAMEMATH=1)
-endif()
-
 if(ICU_FOUND)
     list(APPEND GAME_LINK_LIBRARIES ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
-    list(APPEND GAME_COMPILE_OPTIONS BUILD_WITH_ICU=1)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_ICU)
 endif()
 
 if(D3D8_FOUND)
     list(APPEND GAME_LINK_LIBRARIES d3d8 d3dx8)
-    list(APPEND GAME_COMPILE_OPTIONS BUILD_WITH_D3D8=1)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_D3D8)
+
     if(MSVC)
         list(APPEND GAME_LINK_LIBRARIES legacy_stdio_definitions)
     endif()
@@ -343,7 +366,7 @@ endif()
 
 if(DINPUT8_FOUND)
     list(APPEND GAME_LINK_LIBRARIES dxguid dinput8)
-    list(APPEND GAME_COMPILE_OPTIONS BUILD_WITH_DINPUT=1)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_DINPUT)
 endif()
 
 if(STANDALONE)
@@ -353,7 +376,7 @@ else()
     add_library(thyme SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme BEFORE PRIVATE libs/stlport)
     target_include_directories(thyme PRIVATE hooker ${GAMEENGINE_INCLUDES})
-    target_compile_definitions(thyme PRIVATE GAME_DLL=1)
+    target_compile_definitions(thyme PRIVATE -DGAME_DLL -D_USE_32BIT_TIME_T)
 endif()
 
 if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")    
@@ -363,7 +386,7 @@ endif()
 
 target_link_libraries(thyme ${GAME_LINK_LIBRARIES})
 target_compile_definitions(thyme PRIVATE ${GAME_COMPILE_OPTIONS})
-target_compile_definitions(thyme PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
+target_compile_definitions(thyme PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
 
 # Note that we don't care about which math lib we link against for worldbuilder.
 # Since worldbuilder isn't multiplayer we don't need to worry about sources of indeterminancy
@@ -376,7 +399,7 @@ if(BUILD_EDITOR)
         add_library(thymeedit SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
         target_include_directories(thymeedit BEFORE PRIVATE libs/stlport)
         target_include_directories(thymeedit PRIVATE hooker ${GAMEENGINE_INCLUDES})
-        target_compile_definitions(thymeedit PRIVATE GAME_DLL=1 GAME_DEBUG_STRUCTS=1 BUILD_EDITOR=1)
+        target_compile_definitions(thymeedit PRIVATE -DGAME_DLL -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
     endif()
     
     if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")    
@@ -385,5 +408,5 @@ if(BUILD_EDITOR)
     endif()
     target_link_libraries(thymeedit ${GAME_LINK_LIBRARIES})
     target_compile_definitions(thymeedit PRIVATE ${GAME_COMPILE_OPTIONS})
-    target_compile_definitions(thymeedit PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG=1>)
+    target_compile_definitions(thymeedit PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
 endif()

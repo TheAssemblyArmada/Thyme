@@ -12,7 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "setuphooks.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -51,8 +50,8 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
-#include "milesaudiomanager.h"
 #include "milesaudiofilecache.h"
+#include "milesaudiomanager.h"
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
@@ -70,6 +69,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "setuphooks.h"
 #include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
@@ -484,7 +484,7 @@ void Setup_Hooks()
     Hook_Method(0x0051C510, &ScriptGroup::Duplicate);
     Hook_Method(0x0051C670, &ScriptGroup::Duplicate_And_Qualify);
     Hook_Function(0x0051C860, ScriptGroup::Parse_Group_Chunk);
-    
+
     // scriptlist.h ScriptList
     Hook_Method(0x0051B920, &ScriptList::Hook_Xfer_Snapshot);
     Hook_Method(0x0051BC70, &ScriptList::Duplicate);

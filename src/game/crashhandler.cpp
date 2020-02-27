@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "crashhandler.h"
+#include "crashwrapper.h"
 #include <cstdlib>
 
 #ifdef BUILD_WITH_CRASHPAD
@@ -37,7 +38,7 @@ void __cdecl Crashpad_Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POIN
 
 bool Setup_Crash_Handler()
 {
-#ifdef BUILD_WITH_CRASHPAD    
+#ifdef BUILD_WITH_CRASHPAD
     #ifdef _WIN32
     std::wstring homedir;
     std::wstring handler_path = L"thymecrashhandler.exe";
@@ -50,16 +51,24 @@ bool Setup_Crash_Handler()
     homedir += "/Documents/Command and Conquer Generals Zero Hour Data/CrashLogs";
     #endif
 
+    CrashPrefWrapper prefs;
+
     // Cache directory that will store crashpad information and minidumps
     base::FilePath database(homedir);
     // Path to the out-of-process handler executable
     base::FilePath handler(handler_path);
     // URL used to submit minidumps to
-    std::string url = "";
+    std::string url = prefs.Upload_Allowed() ? prefs.Get_Upload_URL() : "";
     // Optional annotations passed via --annotations to the handler
     std::map<std::string, std::string> annotations;
     // Optional arguments to pass to the handler
     std::vector<std::string> arguments;
+
+    std::unique_ptr<crashpad::CrashReportDatabase> db = crashpad::CrashReportDatabase::Initialize(database);
+
+    if (db != nullptr && db->GetSettings() != nullptr) {
+        db->GetSettings()->SetUploadsEnabled(prefs.Upload_Allowed());
+    }
 
     crashpad::CrashpadClient client;
 

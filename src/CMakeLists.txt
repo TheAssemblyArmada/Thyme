@@ -45,9 +45,11 @@ set(HOOKER_GAME_SRC
 
 set(GAMEENGINE_SRC
     game/copyprotect.cpp
+    game/crashwrapper.cpp
     game/force_nocd.cpp
     game/maputil.cpp
     game/weather.cpp
+    game/client/crashpreferences.cpp
     game/client/display.cpp
     game/client/displaystring.cpp
     game/client/displaystringmanager.cpp

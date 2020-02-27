@@ -35,6 +35,6 @@ public:
     void Set_Real(Utf8String key, float value);
     void Set_Bool(Utf8String key, bool value);
 
-private:
+protected:
     Utf8String m_filename;
 };

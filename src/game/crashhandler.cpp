@@ -15,6 +15,7 @@
 #include "crashhandler.h"
 #include "crashwrapper.h"
 #include <cstdlib>
+#include <gitverinfo.h>
 
 #ifdef BUILD_WITH_CRASHPAD
 #include <client/crash_report_database.h>
@@ -60,7 +61,7 @@ bool Setup_Crash_Handler()
     // URL used to submit minidumps to
     std::string url = prefs.Upload_Allowed() ? prefs.Get_Upload_URL() : "";
     // Optional annotations passed via --annotations to the handler
-    std::map<std::string, std::string> annotations;
+    std::map<std::string, std::string> annotations = {{"commit", g_gitSHA1}};
     // Optional arguments to pass to the handler
     std::vector<std::string> arguments;
 

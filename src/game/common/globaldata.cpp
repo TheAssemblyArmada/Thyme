@@ -441,7 +441,7 @@ GlobalData::GlobalData()
     m_waterType = 0;
     m_featherWater = 0.0f;
     m_showSoftWaterEdge = true;
-    m_unkBool6 = false;
+    m_useWaveEditor = false;
     m_unkBool7 = false;
     m_showMetrics = false;
 

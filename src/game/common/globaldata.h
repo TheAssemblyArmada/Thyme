@@ -119,7 +119,7 @@ public:
     float m_waterExtentY;
     int32_t m_waterType;
     bool m_showSoftWaterEdge;
-    bool m_unkBool6;
+    bool m_useWaveEditor;
     bool m_unkBool7;
     // char pad[1]
     float m_featherWater;

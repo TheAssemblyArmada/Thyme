@@ -177,6 +177,15 @@ int Parse_Mod(char **argv, int argc)
     return 1;
 }
 
+int Parse_Use_Wave_Editor(char **argv, int argc)
+{
+    if (g_theWriteableGlobalData != nullptr) {
+        g_theWriteableGlobalData->m_useWaveEditor = true;
+    }
+
+    return 1;
+}
+
 // Parses the command line passed to the executable via argc and argv.
 void Parse_Command_Line(int argc, char *argv[])
 {
@@ -193,7 +202,8 @@ void Parse_Command_Line(int argc, char *argv[])
         { "-playStats", &Parse_Play_Stats },
         { "-mod", &Parse_Mod },
         { "-noshaders", &Parse_No_Shaders },
-        { "-quickstart", &Parse_Quick_Start }
+        { "-quickstart", &Parse_Quick_Start },
+        { "-useWaveEditor", &Parse_Use_Wave_Editor }
     };
 
     // Starting with argument 1 (0 being the name of the binary in most cases)

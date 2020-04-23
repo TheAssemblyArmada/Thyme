@@ -26,6 +26,9 @@
 #include "w3dtypes.h"
 #include "wwstring.h"
 #include <captainslog.h>
+class VertexMaterialClass;
+class VertexBufferClass;
+class IndexBufferClass;
 
 // Some constants to control numbers of things.
 enum
@@ -47,15 +50,11 @@ extern uint32_t g_numberOfDx8Calls;
     ++g_numberOfDx8Calls;
 #endif
 
-// This class is going to be very much a WIP until we have a better idea
-// of the way it interacts with the rest of the program and what its structure
-// is.
-
 struct RenderStateStruct
 {
-    ShaderClass shader; // ShaderClass
-    void *material; // VertexMaterialClass
-    void *Textures[MAX_TEXTURE_STAGES]; // TextureClass
+    ShaderClass shader;
+    VertexMaterialClass *material;
+    TextureClass *Textures[MAX_TEXTURE_STAGES];
 #ifdef BUILD_WITH_D3D8
     D3DLIGHT8 Lights[GFX_LIGHT_COUNT];
 #endif
@@ -67,8 +66,8 @@ struct RenderStateStruct
     unsigned short vba_offset;
     unsigned short vba_count;
     unsigned short iba_offset;
-    void *vertex_buffers[VERTEX_BUFFERS]; // VertexBufferClass
-    void *index_buffer; // IndexBufferClass
+    VertexBufferClass *vertex_buffers[VERTEX_BUFFERS];
+    IndexBufferClass *index_buffer;
     unsigned short index_base_offset;
 
     RenderStateStruct();

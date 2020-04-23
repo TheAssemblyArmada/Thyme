@@ -1,11 +1,11 @@
 /*==========================================================================;
-*
-*  Copyright (C) Microsoft Corporation.  All Rights Reserved.
-*
-*  File:       d3d8caps.h
-*  Content:    Direct3D capabilities include file
-*
-***************************************************************************/
+ *
+ *  Copyright (C) Microsoft Corporation.  All Rights Reserved.
+ *
+ *  File:       d3d8caps.h
+ *  Content:    Direct3D capabilities include file
+ *
+ ***************************************************************************/
 
 #ifndef _D3D8CAPS_H
 #define _D3D8CAPS_H
@@ -17,9 +17,7 @@
 // include this file content only if compiling for DX8 interfaces
 #if(DIRECT3D_VERSION >= 0x0800)
 
-#if defined(_X86_) || defined(_IA64_)
 #pragma pack(4)
-#endif
 
 typedef struct _D3DCAPS8
 {

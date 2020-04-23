@@ -28,9 +28,6 @@ configuration:
     - Release
     - Debug
     
-cache:
-    - c:\projects\dxsdk_aug2007.exe
-    
 # scripts that are called at very beginning, before repo cloning
 init:
   - cmd: cmake --version
@@ -55,22 +52,6 @@ skip_commits:
 install:
     - cmd: cd C:\projects\thyme
     - cmd: git submodule update --init --recursive
-    - ps: >-
-        $DXSDK_INSTALLER = "dxsdk_aug2007.exe";
-        $DXSDK_TMP = "dxsdk_aug2007_tmp.exe";
-        $DXSDK_URL = "https://download.microsoft.com/download/3/3/f/33f1af6e-c61b-4f14-a0de-3e9096ed4b3a/$DXSDK_INSTALLER";
-        $DXSDK_DIR = "c:\projects\dxsdk"
-        
-        Set-Location c:\projects | Out-Null;
-        
-        If (-Not (Test-Path "$DXSDK_INSTALLER")) {
-                & appveyor DownloadFile "$DXSDK_URL" -FileName "$DXSDK_TMP";
-                & 7z x -y "c:\projects\$DXSDK_TMP";
-        }
-        
-        New-Item -ItemType directory -Path $DXSDK_DIR| Out-Null;
-        Set-Location $DXSDK_DIR | Out-Null;
-        & 7z x -y "c:\projects\$DXSDK_INSTALLER";
         
 # scripts to run before build
 before_build:
@@ -79,7 +60,7 @@ before_build:
   - cmd: cd build
   - cmd: if "%platform%"=="Win32" set CMAKE_GENERATOR_NAME=%GENERATOR%
   - cmd: if "%platform%"=="x64"   set CMAKE_GENERATOR_NAME=%GENERATOR% Win64
-  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" %CMAKE_OPTIONS% -DCMAKE_BUILD_TYPE=%configuration%  -DDirectX_ROOT="c:\projects\dxsdk" ..
+  - cmd: cmake -G "%CMAKE_GENERATOR_NAME%" %CMAKE_OPTIONS% -DCMAKE_BUILD_TYPE=%configuration% ..
 
 after_build:
   - cmd: if "%CMAKE_OPTIONS%"=="" 7z a thyme.zip .\%configuration%\thyme.dll .\%configuration%\launchthyme.exe -tzip

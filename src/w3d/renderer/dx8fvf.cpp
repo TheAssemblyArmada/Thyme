@@ -14,21 +14,28 @@
  *            LICENSE
  */
 #include "dx8fvf.h"
+#ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
+#endif
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
 unsigned int Get_FVF_Vertex_Size(unsigned int fvf)
 {
+#ifdef BUILD_WITH_D3D8
     return D3DXGetFVFVertexSize(fvf);
+#else
+    return 0;
+#endif
 }
 
 FVFInfoClass::FVFInfoClass(unsigned int FVF_, unsigned int fvf_size_)
 {
+#ifdef BUILD_WITH_D3D8
     FVF = FVF_;
     if (FVF_) {
-        fvf_size = D3DXGetFVFVertexSize(FVF);
+        fvf_size = Get_FVF_Vertex_Size(FVF);
     } else {
         fvf_size = fvf_size_;
     }
@@ -63,6 +70,7 @@ FVFInfoClass::FVFInfoClass(unsigned int FVF_, unsigned int fvf_size_)
         }
         a++;
     }
+#endif
 }
 
 //void FVFInfoClass::Get_FVF_Name(StringClass &fvfname) const unimplemented, not required

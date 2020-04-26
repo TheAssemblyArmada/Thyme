@@ -91,6 +91,7 @@
 #include "win32localfilesystem.h"
 #include "wwstring.h"
 #include "dx8vertexbuffer.h"
+#include "dx8indexbuffer.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <windows.h>
@@ -337,6 +338,24 @@ void Setup_Hooks()
     Hook_Method(0x0081F9F0, &DynamicVBAccessClass::Hook_Dtor);
     Hook_Method(0x0081FA20, &DynamicVBAccessClass::_Reset);
     Hook_Method(0x0081FA40, &DynamicVBAccessClass::Get_Default_Vertex_Count);
+
+    // dx8indexbuffer.h
+    Hook_Method(0x0081E0D0, &IndexBufferClass::Add_Engine_Ref);
+    Hook_Method(0x0081E0E0, &IndexBufferClass::Release_Engine_Ref);
+    Hook_Method(0x0081E0F0, &IndexBufferClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x0081E160, &IndexBufferClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x0081E1A0, &IndexBufferClass::AppendLockClass::Hook_Ctor);
+    Hook_Method(0x0081E160, &IndexBufferClass::AppendLockClass::Hook_Dtor);
+    Hook_Method(0x0081E210, &DX8IndexBufferClass::Hook_Ctor);
+    Hook_Method(0x0081E450, &SortingIndexBufferClass::Hook_Ctor);
+    Hook_Method(0x0081E610, &DynamicIBAccessClass::Hook_Ctor);
+    Hook_Method(0x0081E6E0, &DynamicIBAccessClass::Hook_Dtor);
+    Hook_Method(0x0081E770, &DynamicIBAccessClass::_Deinit);
+    Hook_Method(0x0081E7E0, &DynamicIBAccessClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x0081E880, &DynamicIBAccessClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x0081EC50, &DynamicIBAccessClass::_Reset);
+    Hook_Method(0x0081EC70, &DynamicIBAccessClass::Get_Default_Index_Count);
+    Hook_Method(0x0081EC80, &DynamicIBAccessClass::Get_Next_Index);
 
     // bitmaphandler.h
     Hook_Function(0x0087E7A0, BitmapHandlerClass::Copy_Image);

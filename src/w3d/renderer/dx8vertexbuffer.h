@@ -2,6 +2,7 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
  * @brief Vertex Buffer classes
  *
@@ -20,12 +21,27 @@
 #include "vector2.h"
 #include "vector4.h"
 class FVFInfoClass;
-class VertexFormatXYZNDUV2;
 class VertexBufferClass;
+
+struct VertexFormatXYZNDUV2
+{
+    float x;
+    float y;
+    float z;
+    float nx;
+    float ny;
+    float nz;
+    unsigned int diffuse;
+    float u1;
+    float v1;
+    float u2;
+    float v2;
+};
+
 class VertexBufferLockClass
 {
 public:
-    VertexBufferLockClass(VertexBufferClass *VertexBuffer);
+    VertexBufferLockClass(VertexBufferClass *vertex_buffer) : VertexBuffer(vertex_buffer) {}
     void *Get_Vertex_Array() const { return Vertices; }
 
 protected:
@@ -33,28 +49,62 @@ protected:
     void *Vertices;
 };
 
+enum
+{
+    BUFFER_TYPE_DX8,
+    BUFFER_TYPE_SORTING,
+    BUFFER_TYPE_DYNAMIC_DX8,
+    BUFFER_TYPE_DYNAMIC_SORTING,
+    BUFFER_TYPE_INVALID,
+};
+
 class VertexBufferClass : public W3DMPO, public RefCountClass
 {
+    ALLOW_HOOKING
 public:
     class WriteLockClass : public VertexBufferLockClass
     {
+        ALLOW_HOOKING
     public:
         WriteLockClass(VertexBufferClass *VertexBuffer, int Flags);
         ~WriteLockClass();
+
+#ifdef GAME_DLL
+    private:
+        WriteLockClass *Hook_Ctor(VertexBufferClass *VertexBuffer, int Flags)
+        {
+            return new (this) WriteLockClass(VertexBuffer, Flags);
+        }
+        void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
+#endif
     };
 
     class AppendLockClass : public VertexBufferLockClass
     {
+        ALLOW_HOOKING
     public:
         AppendLockClass(VertexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range);
         ~AppendLockClass();
+
+#ifdef GAME_DLL
+    private:
+        AppendLockClass *Hook_Ctor(VertexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range)
+        {
+            return new (this) AppendLockClass(VertexBuffer, start_index, index_range);
+        }
+        void Hook_Dtor() { AppendLockClass::~AppendLockClass(); }
+#endif
     };
 
 public:
-    VertexBufferClass(unsigned int type_, unsigned int FVF, unsigned short vertex_count_, unsigned int fvf_size);
+    VertexBufferClass(unsigned int type_, unsigned int FVF, unsigned short vertex_count_, unsigned int vertex_size);
     ~VertexBufferClass();
-    void Add_Engine_Ref() { engine_refs++; }
-    void Release_Engine_Ref() { engine_refs--; }
+    void Add_Engine_Ref();
+    void Release_Engine_Ref();
+    FVFInfoClass &FVF_Info() { return *fvf_info; }
+    unsigned short Get_Vertex_Count() { return VertexCount; }
+    unsigned int Type() { return type; }
+    unsigned int Engine_Refs() { return engine_refs; }
     static unsigned int Get_Total_Buffer_Count();
     static unsigned int Get_Total_Allocated_Indices();
     static unsigned int Get_Total_Allocated_Memory();
@@ -69,15 +119,15 @@ protected:
 class DX8VertexBufferClass : public VertexBufferClass
 {
     IMPLEMENT_W3D_POOL(DX8VertexBufferClass)
+    ALLOW_HOOKING
 public:
     enum UsageType
     {
-        USAGE_DEFAULT,
-        USAGE_DYNAMIC,
-        USAGE_SOFTWAREPROCESSING,
-        USAGE_NPATCHES,
+        USAGE_DEFAULT = 0,
+        USAGE_DYNAMIC = 1,
+        USAGE_SOFTWAREPROCESSING = 2,
+        USAGE_NPATCHES = 4,
     };
-    ~DX8VertexBufferClass();
     DX8VertexBufferClass(unsigned int FVF, unsigned short vertex_count_, UsageType usage, unsigned int flags);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
@@ -86,6 +136,7 @@ public:
         unsigned short VertexCount, UsageType usage);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
+    ~DX8VertexBufferClass();
     void Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, unsigned int first_vertex, unsigned int count);
     void Copy(Vector3 *loc, unsigned int first_vertex, unsigned int count);
     void Copy(Vector3 *loc, Vector2 *uv, unsigned int first_vertex, unsigned int count);
@@ -93,8 +144,17 @@ public:
     void Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned int count);
     void Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned int count);
     void Create_Vertex_Buffer(UsageType usage);
+#ifdef BUILD_WITH_D3D8
+    IDirect3DVertexBuffer8 *Get_DX8_Vertex_Buffer() { return VertexBuffer; }
+#endif
 
 private:
+#ifdef GAME_DLL
+    DX8VertexBufferClass *Hook_Ctor(unsigned int FVF, unsigned short vertex_count_, UsageType usage, unsigned int flags)
+    {
+        return new (this) DX8VertexBufferClass(FVF, vertex_count_, usage, flags);
+    }
+#endif
 #ifdef BUILD_WITH_D3D8
     IDirect3DVertexBuffer8 *VertexBuffer;
 #endif
@@ -102,25 +162,42 @@ private:
 
 class SortingVertexBufferClass : public VertexBufferClass
 {
+    ALLOW_HOOKING
 public:
-    ~SortingVertexBufferClass();
     SortingVertexBufferClass(unsigned short VertexCount);
+    ~SortingVertexBufferClass();
+    VertexFormatXYZNDUV2 *Get_Sorting_Vertex_Buffer() { return VertexBuffer; }
 
 private:
+#ifdef GAME_DLL
+    SortingVertexBufferClass *Hook_Ctor(unsigned short VertexCount)
+    {
+        return new (this) SortingVertexBufferClass(VertexCount);
+    }
+#endif
     VertexFormatXYZNDUV2 *VertexBuffer;
 };
 
 class DynamicVBAccessClass
 {
+    ALLOW_HOOKING
 public:
     class WriteLockClass
     {
+        ALLOW_HOOKING
     public:
         WriteLockClass(DynamicVBAccessClass *dynamic_vb_access_);
         ~WriteLockClass();
         VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array() { return Vertices; }
 
     private:
+#ifdef GAME_DLL
+        WriteLockClass *Hook_Ctor(DynamicVBAccessClass *dynamic_vb_access_)
+        {
+            return new (this) WriteLockClass(dynamic_vb_access_);
+        }
+        void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
+#endif
         DynamicVBAccessClass *DynamicVBAccess;
         VertexFormatXYZNDUV2 *Vertices;
     };
@@ -133,11 +210,22 @@ public:
     static void _Reset(bool frame_changed);
     static void _Deinit();
     static unsigned short Get_Default_Vertex_Count();
+    FVFInfoClass &FVF_Info() { return FVFInfo; }
+    unsigned int Get_Type() { return Type; }
+    unsigned short Get_Vertex_Count() { return VertexCount; }
 
 private:
+#ifdef GAME_DLL
+    DynamicVBAccessClass *Hook_Ctor(unsigned int t, unsigned int fvf, unsigned short vertex_count_)
+    {
+        return new (this) DynamicVBAccessClass(t, fvf, vertex_count_);
+    }
+    void Hook_Dtor() { DynamicVBAccessClass::~DynamicVBAccessClass(); }
+#endif
     FVFInfoClass &FVFInfo;
     unsigned int Type;
     unsigned short VertexCount;
     unsigned short VertexBufferOffset;
     VertexBufferClass *VertexBuffer;
+    friend class WriteLockClass;
 };

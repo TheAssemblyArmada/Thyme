@@ -335,7 +335,7 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
     m_dynamicVBAccess(dynamic_vb_access_)
 {
     if (m_dynamicVBAccess->m_type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
-        captainslog_assert(_DynamicDX8VertexBuffer);
+        captainslog_assert(g_dynamicDX8VertexBuffer);
 #ifdef BUILD_WITH_D3D8
         DX8VertexBufferClass *buffer = static_cast<DX8VertexBufferClass *>(m_dynamicVBAccess->m_vertexBuffer);
         buffer->Get_DX8_Vertex_Buffer()->Lock(

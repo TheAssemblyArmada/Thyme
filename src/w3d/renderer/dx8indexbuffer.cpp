@@ -214,7 +214,8 @@ DynamicIBAccessClass::DynamicIBAccessClass(unsigned short type_, unsigned short 
     Type(type_),
     IndexCount(index_count_), IndexBuffer(nullptr)
 {
-    captainslog_assert(Type == BUFFER_TYPE_DYNAMIC_DX8 || Type == BUFFER_TYPE_DYNAMIC_SORTING);
+    captainslog_assert(
+        Type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8 || Type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING);
     if (Type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         Allocate_DX8_Dynamic_Buffer();
     } else {

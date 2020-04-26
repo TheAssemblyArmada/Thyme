@@ -30,40 +30,40 @@ unsigned int Get_FVF_Vertex_Size(unsigned int fvf)
 FVFInfoClass::FVFInfoClass(unsigned int FVF_, unsigned int fvf_size_)
 {
 #ifdef BUILD_WITH_D3D8
-    FVF = FVF_;
+    m_FVF = FVF_;
     if (FVF_) {
-        fvf_size = Get_FVF_Vertex_Size(FVF);
+        m_fvfSize = Get_FVF_Vertex_Size(m_FVF);
     } else {
-        fvf_size = fvf_size_;
+        m_fvfSize = fvf_size_;
     }
-    location_offset = 0;
-    blend_offset = 0;
-    if ((FVF & D3DFVF_XYZ) == D3DFVF_XYZ) {
-        blend_offset = 0x0C;
+    m_locationOffset = 0;
+    m_blendOffset = 0;
+    if ((m_FVF & D3DFVF_XYZ) == D3DFVF_XYZ) {
+        m_blendOffset = 0x0C;
     }
-    normal_offset = blend_offset;
-    if (((FVF & D3DFVF_XYZB4) == D3DFVF_XYZB4) && ((FVF & D3DFVF_LASTBETA_UBYTE4) == D3DFVF_LASTBETA_UBYTE4)) {
-        normal_offset = blend_offset + 0x10;
+    m_normalOffset = m_blendOffset;
+    if (((m_FVF & D3DFVF_XYZB4) == D3DFVF_XYZB4) && ((m_FVF & D3DFVF_LASTBETA_UBYTE4) == D3DFVF_LASTBETA_UBYTE4)) {
+        m_normalOffset = m_blendOffset + 0x10;
     }
-    diffuse_offset = normal_offset;
-    if ((FVF & D3DFVF_NORMAL) == D3DFVF_NORMAL) {
-        diffuse_offset = normal_offset + 0x0C;
+    m_diffuseOffset = m_normalOffset;
+    if ((m_FVF & D3DFVF_NORMAL) == D3DFVF_NORMAL) {
+        m_diffuseOffset = m_normalOffset + 0x0C;
     }
-    specular_offset = diffuse_offset;
-    if ((FVF & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE) {
-        specular_offset = diffuse_offset + 4;
+    m_specularOffset = m_diffuseOffset;
+    if ((m_FVF & D3DFVF_DIFFUSE) == D3DFVF_DIFFUSE) {
+        m_specularOffset = m_diffuseOffset + 4;
     }
-    texcoord_offset[0] = specular_offset;
-    if ((FVF & D3DFVF_SPECULAR) == D3DFVF_SPECULAR) {
-        texcoord_offset[0] = specular_offset + 4;
+    m_texcoordOffset[0] = m_specularOffset;
+    if ((m_FVF & D3DFVF_SPECULAR) == D3DFVF_SPECULAR) {
+        m_texcoordOffset[0] = m_specularOffset + 4;
     }
     int a = 1;
     for (unsigned int i = 0x0F; (i - 0xE) < 8; i++) {
-        texcoord_offset[a] = texcoord_offset[a - 1];
-        if ((FVF & (3 << i)) == (unsigned int)(3 << i)) {
-            texcoord_offset[a] = texcoord_offset[a - 1] + 4;
+        m_texcoordOffset[a] = m_texcoordOffset[a - 1];
+        if ((m_FVF & (3 << i)) == (unsigned int)(3 << i)) {
+            m_texcoordOffset[a] = m_texcoordOffset[a - 1] + 4;
         } else {
-            texcoord_offset[a] = texcoord_offset[a - 1] + 8;
+            m_texcoordOffset[a] = m_texcoordOffset[a - 1] + 8;
         }
         a++;
     }

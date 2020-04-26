@@ -41,12 +41,12 @@ struct VertexFormatXYZNDUV2
 class VertexBufferLockClass
 {
 public:
-    VertexBufferLockClass(VertexBufferClass *vertex_buffer) : VertexBuffer(vertex_buffer) {}
-    void *Get_Vertex_Array() const { return Vertices; }
+    VertexBufferLockClass(VertexBufferClass *vertex_buffer) : m_vertexBuffer(vertex_buffer) {}
+    void *Get_Vertex_Array() const { return m_vertices; }
 
 protected:
-    VertexBufferClass *VertexBuffer;
-    void *Vertices;
+    VertexBufferClass *m_vertexBuffer;
+    void *m_vertices;
 };
 
 
@@ -101,19 +101,19 @@ public:
     ~VertexBufferClass();
     void Add_Engine_Ref();
     void Release_Engine_Ref();
-    FVFInfoClass &FVF_Info() { return *fvf_info; }
-    unsigned short Get_Vertex_Count() { return VertexCount; }
-    unsigned int Type() { return type; }
-    unsigned int Engine_Refs() { return engine_refs; }
+    FVFInfoClass &FVF_Info() { return *m_fvfInfo; }
+    unsigned short Get_Vertex_Count() { return m_vertexCount; }
+    unsigned int Type() { return m_type; }
+    unsigned int Engine_Refs() { return m_engineRefs; }
     static unsigned int Get_Total_Buffer_Count();
     static unsigned int Get_Total_Allocated_Indices();
     static unsigned int Get_Total_Allocated_Memory();
 
 protected:
-    unsigned int type;
-    unsigned short VertexCount;
-    int engine_refs;
-    FVFInfoClass *fvf_info;
+    unsigned int m_type;
+    unsigned short m_vertexCount;
+    int m_engineRefs;
+    FVFInfoClass *m_fvfInfo;
 };
 
 class DX8VertexBufferClass : public VertexBufferClass
@@ -145,7 +145,7 @@ public:
     void Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned int count);
     void Create_Vertex_Buffer(UsageType usage);
 #ifdef BUILD_WITH_D3D8
-    IDirect3DVertexBuffer8 *Get_DX8_Vertex_Buffer() { return VertexBuffer; }
+    IDirect3DVertexBuffer8 *Get_DX8_Vertex_Buffer() { return m_vertexBuffer; }
 #endif
 
 private:
@@ -156,7 +156,7 @@ private:
     }
 #endif
 #ifdef BUILD_WITH_D3D8
-    IDirect3DVertexBuffer8 *VertexBuffer;
+    IDirect3DVertexBuffer8 *m_vertexBuffer;
 #endif
 };
 
@@ -166,7 +166,7 @@ class SortingVertexBufferClass : public VertexBufferClass
 public:
     SortingVertexBufferClass(unsigned short VertexCount);
     ~SortingVertexBufferClass();
-    VertexFormatXYZNDUV2 *Get_Sorting_Vertex_Buffer() { return VertexBuffer; }
+    VertexFormatXYZNDUV2 *Get_Sorting_Vertex_Buffer() { return m_vertexBuffer; }
 
 private:
 #ifdef GAME_DLL
@@ -175,7 +175,7 @@ private:
         return new (this) SortingVertexBufferClass(VertexCount);
     }
 #endif
-    VertexFormatXYZNDUV2 *VertexBuffer;
+    VertexFormatXYZNDUV2 *m_vertexBuffer;
 };
 
 class DynamicVBAccessClass
@@ -188,7 +188,7 @@ public:
     public:
         WriteLockClass(DynamicVBAccessClass *dynamic_vb_access_);
         ~WriteLockClass();
-        VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array() { return Vertices; }
+        VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array() { return m_vertices; }
 
     private:
 #ifdef GAME_DLL
@@ -198,8 +198,8 @@ public:
         }
         void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
 #endif
-        DynamicVBAccessClass *DynamicVBAccess;
-        VertexFormatXYZNDUV2 *Vertices;
+        DynamicVBAccessClass *m_dynamicVBAccess;
+        VertexFormatXYZNDUV2 *m_vertices;
     };
 
 public:
@@ -210,9 +210,9 @@ public:
     static void _Reset(bool frame_changed);
     static void _Deinit();
     static unsigned short Get_Default_Vertex_Count();
-    FVFInfoClass &FVF_Info() { return FVFInfo; }
-    unsigned int Get_Type() { return Type; }
-    unsigned short Get_Vertex_Count() { return VertexCount; }
+    FVFInfoClass &FVF_Info() { return m_fvfInfo; }
+    unsigned int Get_Type() { return m_type; }
+    unsigned short Get_Vertex_Count() { return m_vertexCount; }
 
 private:
 #ifdef GAME_DLL
@@ -222,10 +222,10 @@ private:
     }
     void Hook_Dtor() { DynamicVBAccessClass::~DynamicVBAccessClass(); }
 #endif
-    FVFInfoClass &FVFInfo;
-    unsigned int Type;
-    unsigned short VertexCount;
-    unsigned short VertexBufferOffset;
-    VertexBufferClass *VertexBuffer;
+    FVFInfoClass &m_fvfInfo;
+    unsigned int m_type;
+    unsigned short m_vertexCount;
+    unsigned short m_vertexBufferOffset;
+    VertexBufferClass *m_vertexBuffer;
     friend class WriteLockClass;
 };

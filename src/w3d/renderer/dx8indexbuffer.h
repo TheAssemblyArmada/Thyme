@@ -35,7 +35,7 @@ public:
     public:
         WriteLockClass(IndexBufferClass *index_buffer_, unsigned int flags);
         ~WriteLockClass();
-        unsigned short *Get_Index_Array() { return indices; }
+        unsigned short *Get_Index_Array() { return m_indices; }
 
     private:
 #ifdef GAME_DLL
@@ -45,8 +45,8 @@ public:
         }
         void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
 #endif
-        IndexBufferClass *index_buffer;
-        unsigned short *indices;
+        IndexBufferClass *m_indexBuffer;
+        unsigned short *m_indices;
     };
     class AppendLockClass
     {
@@ -54,7 +54,7 @@ public:
     public:
         AppendLockClass(IndexBufferClass *index_buffer_, unsigned int start_index, unsigned int index_range);
         ~AppendLockClass();
-        unsigned short *Get_Index_Array() { return indices; }
+        unsigned short *Get_Index_Array() { return m_indices; }
 
     private:
 #ifdef GAME_DLL
@@ -64,8 +64,8 @@ public:
         }
         void Hook_Dtor() { AppendLockClass::~AppendLockClass(); }
 #endif
-        IndexBufferClass *index_buffer;
-        unsigned short *indices;
+        IndexBufferClass *m_indexBuffer;
+        unsigned short *m_indices;
     };
 
 public:
@@ -75,17 +75,17 @@ public:
     void Release_Engine_Ref();
     void Copy(unsigned short *indices, unsigned int first_index, unsigned int count);
     void Copy(unsigned int *indices, unsigned int first_index, unsigned int count);
-    unsigned short Get_Index_Count() { return index_count; }
-    unsigned int Type() { return type; }
-    unsigned int Engine_Refs() { return engine_refs; }
+    unsigned short Get_Index_Count() { return m_indexCount; }
+    unsigned int Type() { return m_type; }
+    unsigned int Engine_Refs() { return m_engineRefs; }
     static unsigned int Get_Total_Buffer_Count();
     static unsigned int Get_Total_Allocated_Indices();
     static unsigned int Get_Total_Allocated_Memory();
 
 protected:
-    int engine_refs;
-    unsigned short index_count;
-    unsigned int type;
+    int m_engineRefs;
+    unsigned short m_indexCount;
+    unsigned int m_type;
 };
 
 class DX8IndexBufferClass : public IndexBufferClass
@@ -103,7 +103,7 @@ public:
     DX8IndexBufferClass(unsigned short index_count_, UsageType usage);
     ~DX8IndexBufferClass();
 #ifdef BUILD_WITH_D3D8
-    IDirect3DIndexBuffer8 *Get_DX8_Index_Buffer() { return index_buffer; }
+    IDirect3DIndexBuffer8 *Get_DX8_Index_Buffer() { return m_indexBuffer; }
 #endif
 
 private:
@@ -114,7 +114,7 @@ private:
     }
 #endif
 #ifdef BUILD_WITH_D3D8
-    IDirect3DIndexBuffer8 *index_buffer;
+    IDirect3DIndexBuffer8 *m_indexBuffer;
 #endif
 };
 
@@ -125,7 +125,7 @@ class SortingIndexBufferClass : public IndexBufferClass
 public:
     SortingIndexBufferClass(unsigned short index_count_);
     ~SortingIndexBufferClass();
-    unsigned short *Get_Sorting_Index_Buffer() { return index_buffer; }
+    unsigned short *Get_Sorting_Index_Buffer() { return m_indexBuffer; }
 
 private:
 #ifdef GAME_DLL
@@ -134,7 +134,7 @@ private:
         return new (this) SortingIndexBufferClass(index_count_);
     }
 #endif
-    unsigned short *index_buffer;
+    unsigned short *m_indexBuffer;
 };
 
 class DynamicIBAccessClass : public W3DMPO
@@ -148,7 +148,7 @@ public:
     public:
         WriteLockClass(DynamicIBAccessClass *ib_access_);
         ~WriteLockClass();
-        unsigned short *Get_Index_Array() { return Indices; }
+        unsigned short *Get_Index_Array() { return m_indices; }
 
     private:
 #ifdef GAME_DLL
@@ -158,8 +158,8 @@ public:
         }
         void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
 #endif
-        DynamicIBAccessClass *DynamicIBAccess;
-        unsigned short *Indices;
+        DynamicIBAccessClass *m_dynamicIBAccess;
+        unsigned short *m_indices;
     };
 
 public:
@@ -180,8 +180,8 @@ private:
     }
     void Hook_Dtor() { DynamicIBAccessClass::~DynamicIBAccessClass(); }
 #endif
-    unsigned int Type;
-    unsigned short IndexCount;
-    unsigned short IndexBufferOffset;
-    IndexBufferClass *IndexBuffer;
+    unsigned int m_type;
+    unsigned short m_indexCount;
+    unsigned short m_indexBufferOffset;
+    IndexBufferClass *m_indexBuffer;
 };

@@ -36,13 +36,13 @@ class FVFInfoClass : public W3DMPO
     ALLOW_HOOKING
 public:
     FVFInfoClass(unsigned int FVF_, unsigned int fvf_size_);
-    unsigned int Get_Location_Offset() const { return location_offset; }
-    unsigned int Get_Normal_Offset() const { return normal_offset; }
-    unsigned int Get_Tex_Offset(unsigned int texture) const { return texcoord_offset[texture]; }
-    unsigned int Get_Diffuse_Offset() const { return diffuse_offset; }
-    unsigned int Get_Specular_Offset() const { return specular_offset; }
-    unsigned int Get_FVF() const { return FVF; }
-    unsigned int Get_FVF_Size() const { return fvf_size; }
+    unsigned int Get_Location_Offset() const { return m_locationOffset; }
+    unsigned int Get_Normal_Offset() const { return m_normalOffset; }
+    unsigned int Get_Tex_Offset(unsigned int texture) const { return m_texcoordOffset[texture]; }
+    unsigned int Get_Diffuse_Offset() const { return m_diffuseOffset; }
+    unsigned int Get_Specular_Offset() const { return m_specularOffset; }
+    unsigned int Get_FVF() const { return m_FVF; }
+    unsigned int Get_FVF_Size() const { return m_fvfSize; }
     void Get_FVF_Name(StringClass &fvfname) const;
 
 private:
@@ -52,12 +52,12 @@ private:
         return new (this) FVFInfoClass(FVF_, fvf_size_);
     }
 #endif
-    unsigned int FVF;
-    unsigned int fvf_size;
-    unsigned int location_offset;
-    unsigned int normal_offset;
-    unsigned int blend_offset;
-    unsigned int texcoord_offset[8];
-    unsigned int diffuse_offset;
-    unsigned int specular_offset;
+    unsigned int m_FVF;
+    unsigned int m_fvfSize;
+    unsigned int m_locationOffset;
+    unsigned int m_normalOffset;
+    unsigned int m_blendOffset;
+    unsigned int m_texcoordOffset[8];
+    unsigned int m_diffuseOffset;
+    unsigned int m_specularOffset;
 };

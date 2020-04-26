@@ -20,7 +20,7 @@
 #include "dx8wrapper.h"
 #include "w3d.h"
 FVFInfoClass _DynamicFVFInfo(DX8_FVF_XYZNDUV2, 0);
-#define dynamic_fvf_type DX8_FVF_XYZNDUV2;
+#define dynamic_fvf_type DX8_FVF_XYZNDUV2
 unsigned int _VertexBufferCount;
 unsigned int _VertexBufferTotalVertices;
 unsigned int _VertexBufferTotalSize;

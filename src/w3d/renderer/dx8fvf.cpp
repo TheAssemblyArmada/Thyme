@@ -17,9 +17,6 @@
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
 
 unsigned int Get_FVF_Vertex_Size(unsigned int fvf)
 {

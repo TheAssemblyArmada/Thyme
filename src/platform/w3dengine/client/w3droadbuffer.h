@@ -68,8 +68,8 @@ struct TRoadPt
     int last;
     char multi;
     char count;
-    char isAngled;
-    char isJoin;
+    bool isAngled;
+    bool isJoin;
 };
 
 enum TCorner

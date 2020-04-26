@@ -15,7 +15,7 @@
 #pragma once
 #include "always.h"
 
-template<class T>
+template<typename T>
 class SimpleVecClass
 {
 public:
@@ -36,12 +36,12 @@ public:
     T &operator[](int index)
     {
         captainslog_assert(index < m_vectorMax);
-        return (m_vector[index]);
+        return m_vector[index];
     }
     T const &operator[](int index) const
     {
         captainslog_assert(index < m_vectorMax);
-        return (m_vector[index]);
+        return m_vector[index];
     }
     int Length() const { return m_vectorMax; }
     virtual bool Resize(int newsize)
@@ -92,37 +92,37 @@ protected:
     int m_vectorMax;
 };
 
-template<class T>
+template<typename T>
 class SimpleDynVecClass : public SimpleVecClass<T>
 {
 public:
     SimpleDynVecClass(int size = 0) : SimpleVecClass<T>(size), m_activeCount(0) {}
     virtual ~SimpleDynVecClass(void)
     {
-        if (m_vector != NULL) {
+        if (m_vector != nullptr) {
             delete[] m_vector;
-            m_vector = NULL;
+            m_vector = nullptr;
         }
     }
-    int Count(void) const { return (m_activeCount); }
+    int Count(void) const { return m_activeCount; }
     T &operator[](int index)
     {
         captainslog_assert(index < m_activeCount);
-        return (m_vector[index]);
+        return m_vector[index];
     }
     T const &operator[](int index) const
     {
         captainslog_assert(index < m_activeCount);
-        return (m_vector[index]);
+        return m_vector[index];
     }
     virtual bool Resize(int newsize)
     {
         if (SimpleVecClass<T>::Resize(newsize)) {
             if (Length() < m_activeCount)
                 m_activeCount = Length();
-            return (true);
+            return true;
         }
-        return (false);
+        return false;
     }
     bool Add(T const &object, int new_size_hint = 0)
     {
@@ -159,9 +159,9 @@ public:
     {
         int id = Find_Index(object);
         if (id != -1) {
-            return (Delete(id), allow_shrink);
+            return Delete(id, allow_shrink);
         }
-        return (false);
+        return false;
     }
     bool Delete_Range(int start, int count, bool allow_shrink = true)
     {
@@ -187,8 +187,8 @@ public:
 protected:
     bool Grow(int new_size_hint)
     {
-        int new_size = MAX(Length() + Length() / 4, Length() + 4);
-        new_size = MAX(new_size, new_size_hint);
+        int new_size = std::max(Length() + Length() / 4, Length() + 4);
+        new_size = std::max(new_size, new_size_hint);
         return Resize(new_size);
     }
     bool Shrink(void)
@@ -202,9 +202,9 @@ protected:
     {
         for (int index = 0; index < Count(); index++) {
             if ((*this)[index] == object)
-                return (index);
+                return index;
         }
-        return (-1);
+        return -1;
     }
     int m_activeCount;
 };

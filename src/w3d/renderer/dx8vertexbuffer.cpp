@@ -235,8 +235,9 @@ DynamicVBAccessClass::DynamicVBAccessClass(unsigned int t, unsigned int fvf, uns
     Type(t), FVFInfo(_DynamicFVFInfo), VertexCount(vertex_count_), VertexBuffer(nullptr)
 {
     captainslog_assert(fvf == dynamic_fvf_type);
-    captainslog_assert(Type == BUFFER_TYPE_DYNAMIC_DX8 || Type == BUFFER_TYPE_DYNAMIC_SORTING);
-    if (Type == BUFFER_TYPE_DYNAMIC_DX8) {
+    captainslog_assert(
+        Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8 || Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING);
+    if (Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         Allocate_DX8_Dynamic_Buffer();
     } else {
         Allocate_Sorting_Dynamic_Buffer();
@@ -245,7 +246,7 @@ DynamicVBAccessClass::DynamicVBAccessClass(unsigned int t, unsigned int fvf, uns
 
 DynamicVBAccessClass::~DynamicVBAccessClass()
 {
-    if (Type == BUFFER_TYPE_DYNAMIC_DX8) {
+    if (Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         _DynamicDX8VertexBufferInUse = false;
         _DynamicDX8VertexBufferOffset += VertexCount;
     } else {
@@ -330,7 +331,7 @@ void DynamicVBAccessClass::Allocate_Sorting_Dynamic_Buffer()
 DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynamic_vb_access_) :
     DynamicVBAccess(dynamic_vb_access_)
 {
-    if (DynamicVBAccess->Type == BUFFER_TYPE_DYNAMIC_DX8) {
+    if (DynamicVBAccess->Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         captainslog_assert(_DynamicDX8VertexBuffer);
 #ifdef BUILD_WITH_D3D8
         DX8VertexBufferClass *buffer = static_cast<DX8VertexBufferClass *>(DynamicVBAccess->VertexBuffer);
@@ -340,9 +341,9 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
             (BYTE **)&Vertices,
             (DynamicVBAccess->VertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD) | D3DLOCK_NOSYSLOCK);
 #endif
-    } else if (DynamicVBAccess->Type == BUFFER_TYPE_DYNAMIC_SORTING) {
-            SortingVertexBufferClass *buffer = static_cast<SortingVertexBufferClass *>(DynamicVBAccess->VertexBuffer);
-            Vertices = &buffer->Get_Sorting_Vertex_Buffer()[DynamicVBAccess->VertexBufferOffset];
+    } else if (DynamicVBAccess->Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING) {
+        SortingVertexBufferClass *buffer = static_cast<SortingVertexBufferClass *>(DynamicVBAccess->VertexBuffer);
+        Vertices = buffer->Get_Sorting_Vertex_Buffer() + DynamicVBAccess->VertexBufferOffset;
     } else {
         captainslog_assert(0);
     }
@@ -350,12 +351,12 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
 
 DynamicVBAccessClass::WriteLockClass::~WriteLockClass()
 {
-    if (DynamicVBAccess->Type == BUFFER_TYPE_DYNAMIC_DX8) {
+    if (DynamicVBAccess->Type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
 #ifdef BUILD_WITH_D3D8
         DX8VertexBufferClass *buffer = static_cast<DX8VertexBufferClass *>(DynamicVBAccess->VertexBuffer);
         buffer->Get_DX8_Vertex_Buffer()->Unlock();
 #endif
-    } else if (DynamicVBAccess->Type != BUFFER_TYPE_DYNAMIC_SORTING) {
+    } else if (DynamicVBAccess->Type != VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING) {
         captainslog_assert(0);
     }
 }

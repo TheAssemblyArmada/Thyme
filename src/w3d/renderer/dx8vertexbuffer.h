@@ -49,19 +49,19 @@ protected:
     void *Vertices;
 };
 
-enum
-{
-    BUFFER_TYPE_DX8,
-    BUFFER_TYPE_SORTING,
-    BUFFER_TYPE_DYNAMIC_DX8,
-    BUFFER_TYPE_DYNAMIC_SORTING,
-    BUFFER_TYPE_INVALID,
-};
 
 class VertexBufferClass : public W3DMPO, public RefCountClass
 {
     ALLOW_HOOKING
 public:
+    enum
+    {
+        BUFFER_TYPE_DX8,
+        BUFFER_TYPE_SORTING,
+        BUFFER_TYPE_DYNAMIC_DX8,
+        BUFFER_TYPE_DYNAMIC_SORTING,
+        BUFFER_TYPE_INVALID,
+    };
     class WriteLockClass : public VertexBufferLockClass
     {
         ALLOW_HOOKING

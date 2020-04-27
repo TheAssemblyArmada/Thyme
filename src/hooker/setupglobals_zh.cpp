@@ -245,12 +245,12 @@ bool &DX8Wrapper::s_isWindowed = Make_Global<bool>(PICK_ADDRESS(0x00A47EC9, 0x00
 bool &DX8Wrapper::s_debugIsWindowed = Make_Global<bool>(PICK_ADDRESS(0x00A15CD8, 0x00CC36B8));
 RenderStateStruct &DX8Wrapper::s_renderState = Make_Global<RenderStateStruct>(PICK_ADDRESS(0x00A47508, 0x00DEDD40));
 unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(PICK_ADDRESS(0x00A42778, 0x00DE8FB0));
-float &DX8Wrapper::s_zNear = Make_Global<float>(PICK_ADDRESS(0x00A47E38, 0));
-float &DX8Wrapper::s_zFar = Make_Global<float>(PICK_ADDRESS(0x00A47EB8, 0));
-Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(PICK_ADDRESS(0x00A47DF8, 0));
+float &DX8Wrapper::s_zNear = Make_Global<float>(PICK_ADDRESS(0x00A47E38, 0x00DEE670));
+float &DX8Wrapper::s_zFar = Make_Global<float>(PICK_ADDRESS(0x00A47EB8, 0x00DEE6F0));
+Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(PICK_ADDRESS(0x00A47DF8, 0x00DEE630));
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(PICK_ADDRESS(0x00A47F2C, 0x00DEE764));
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(PICK_ADDRESS(0x00A15CDC, 0x00CC36BC));
-DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(PICK_ADDRESS(0x00A47F30, 0));
+DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(PICK_ADDRESS(0x00A47F30, 0x00DEE768));
 int &DX8Wrapper::s_resolutionWidth = Make_Global<int>(PICK_ADDRESS(0x00A15CE0, 0x00CC36C0));
 int &DX8Wrapper::s_resolutionHeight = Make_Global<int>(PICK_ADDRESS(0x00A15CE4, 0x00CC36C4));
 int &DX8Wrapper::s_bitDepth = Make_Global<int>(PICK_ADDRESS(0x00A15CE8, 0x00CC36C8));
@@ -275,12 +275,15 @@ unsigned &DX8Wrapper::s_lastFrameRenderStateChanges = Make_Global<unsigned>(PICK
 unsigned &DX8Wrapper::s_lastFrameTextureStageStateChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F60, 0x00DEE798));
 unsigned &DX8Wrapper::s_lastFrameNumberDX8Calls = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F64, 0x00DEE79C));
 unsigned &DX8Wrapper::s_lastFrameDrawCalls = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F68, 0x00DEE7A0));
+D3DFORMAT &DX8Wrapper::s_displayFormat = Make_Global<D3DFORMAT>(PICK_ADDRESS(0x00A47ECC, 0x00DEE704));
 DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceNameTable =
     Make_Global<DynamicVectorClass<StringClass>>(PICK_ADDRESS(0x00A47DC8, 0x00DEE600));
 DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceShortNameTable =
     Make_Global<DynamicVectorClass<StringClass>>(PICK_ADDRESS(0x00A474F0, 0x00DEDD28));
 DynamicVectorClass<RenderDeviceDescClass> &DX8Wrapper::s_renderDeviceDescriptionTable =
     Make_Global<DynamicVectorClass<RenderDeviceDescClass>>(PICK_ADDRESS(0x00A427A8, 0x00DE8FE0));
+w3dadapterid_t &DX8Wrapper::s_currentAdapterIdentifier = Make_Global<w3dadapterid_t>(PICK_ADDRESS(0x00A470C0, 0x00DED8F8));
+ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), Matrix4, DX8Wrapper::s_DX8Transforms, 257);
 
 // missing.cpp
 #include "missing.h"
@@ -337,6 +340,15 @@ bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(PICK_ADDRESS(0x00A47
 bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0));
 bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00CC58B8));
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
+int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
+
+// dx8renderer.cpp
+#include "dx8renderer.h"
+DX8MeshRendererClass &g_theDX8MeshRenderer = Make_Global<DX8MeshRendererClass>(PICK_ADDRESS(0x00A4C4E0, 0x00DEEBF0));
+DynamicVectorClass<Vector3> &g_tempVertexBuffer = Make_Global<DynamicVectorClass<Vector3>>(PICK_ADDRESS(0x00A4C4B0, 0x00DEEBC0));
+DynamicVectorClass<Vector3> &g_tempNormalBuffer = Make_Global<DynamicVectorClass<Vector3>>(PICK_ADDRESS(0x00A4C4C8, 0x00DEEBA8));
+MultiListClass<DX8TextureCategoryClass> &g_textureCategoryDeleteList = Make_Global<MultiListClass<DX8TextureCategoryClass>>(PICK_ADDRESS(0x00A4C438, 0x00DEEB48));
+MultiListClass<DX8FVFCategoryContainer> &g_fvfCategoryContainerDeleteList = Make_Global<MultiListClass<DX8FVFCategoryContainer>>(PICK_ADDRESS(0x00A4C480, 0x00DEEB90));
 
 // w3dformat.cpp
 ARRAY_DEF(PICK_ADDRESS(0x00A5243C, 0x00DF6B20), WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);

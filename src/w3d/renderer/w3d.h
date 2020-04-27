@@ -31,6 +31,7 @@ public:
     static bool Is_Screen_UVBiased() { return s_isScreenUVBiased; }
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
+    static int Get_Texture_Filter() { return s_textureFilter; }
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
@@ -46,6 +47,7 @@ private:
     static bool &s_isScreenUVBiased;
     static bool &s_texturingEnabled;
     static bool &s_thumbnailEnabled;
+    static int &s_textureFilter;
 #else
     static unsigned s_syncTime;
     static unsigned s_textureReduction;
@@ -54,5 +56,6 @@ private:
     static bool s_isScreenUVBiased;
     static bool s_texturingEnabled;
     static bool s_thumbnailEnabled;
+    static int s_textureFilter;
 #endif
 };

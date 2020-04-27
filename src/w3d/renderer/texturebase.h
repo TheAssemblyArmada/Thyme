@@ -38,10 +38,10 @@ enum MipCountType
     MIP_LEVELS_6,
     MIP_LEVELS_7,
     MIP_LEVELS_8,
-    MIP_LEVELS_10, // TT Scripts has it this way, no 9?
-    MIP_LEVELS_11,
-    MIP_LEVELS_12,
-    MIP_LEVELS_MAX,
+    MIP_LEVELS_10 = 9,
+    MIP_LEVELS_11 = 10,
+    MIP_LEVELS_12 = 11,
+    MIP_LEVELS_MAX = 12,
 };
 
 enum PoolType

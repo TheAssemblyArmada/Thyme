@@ -29,6 +29,11 @@
 class VertexMaterialClass;
 class VertexBufferClass;
 class IndexBufferClass;
+class SurfaceClass;
+class DynamicVBAccessClass;
+class DynamicIBAccessClass;
+class LightEnvironmentClass;
+class ZTextureClass;
 
 // Some constants to control numbers of things.
 enum
@@ -108,13 +113,56 @@ class DX8Wrapper
 public:
     static bool Init(void *hwnd, bool lite = false);
     static void Shutdown();
-    static void Enumerate_Devices();
+    static void Do_Onetime_Device_Dependent_Inits();
+    static void Do_Onetime_Device_Dependent_Shutdowns();
+    static void Begin_Scene(void);
+    static void End_Scene(bool flip_frame = true);
+    static void Clear(
+        bool clear_color, bool clear_z_stencil, const Vector3 &color, float z = 1.0f, unsigned int stencil = 0);
+    static void Set_Viewport(CONST D3DVIEWPORT8 *pViewport);
+    static void Set_Vertex_Buffer(const VertexBufferClass *vb);
+    static void Set_Vertex_Buffer(const DynamicVBAccessClass &vba);
+    static void Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
+    static void Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
+    static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
+    static void Set_Light_Environment(LightEnvironmentClass *light_env);
+    static void Set_Light(unsigned index, const D3DLIGHT8 *light);
+    static void Apply_Render_State_Changes();
+    static void Draw_Triangles(unsigned int buffer_type, unsigned short start_index, unsigned short polygon_count,
+        unsigned short min_vertex_index, unsigned short vertex_count);
+    static void Draw_Triangles(unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index,
+        unsigned short vertex_count);
+    static void Draw_Strip(unsigned short start_index, unsigned short index_count, unsigned short min_vertex_index,
+        unsigned short vertex_count);
+    static w3dtexture_t Create_Texture(
+        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dcubetexture_t Create_Cube_Texture(
+        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dvolumetexture_t Create_Volume_Texture(
+        unsigned width, unsigned height, unsigned depth, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool);
+    static w3dtexture_t Create_Texture(w3dsurface_t surface, MipCountType mip_level_count);
+    static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
+    static w3dsurface_t Create_Surface(const char *name);
+    static SurfaceClass *_Get_DX8_Back_Buffer(unsigned int num = 0);
+    static void Begin_Statistics();
+    static void End_Statistics();
+    static TextureClass *Create_Render_Target(int width, int height, WW3DFormat format);
+    static void Set_Render_Target(w3dsurface_t *render_target, bool use_default_depth_buffer = false);
+    static void Set_Render_Target(w3dsurface_t *render_target, w3dsurface_t *depth_buffer);
+    static void Set_Render_Target_With_Z(TextureClass *texture, ZTextureClass *z_texture);
+    static const char *Get_DX8_Render_State_Name(D3DRENDERSTATETYPE state);
+    static const char *Get_DX8_Texture_Stage_State_Name(D3DTEXTURESTAGESTATETYPE state);
+    static void Get_DX8_Texture_Stage_State_Value_Name(StringClass &name, D3DTEXTURESTAGESTATETYPE state, unsigned value);
+    static void Get_DX8_Render_State_Value_Name(StringClass &name, D3DRENDERSTATETYPE state, unsigned value);
+
 #ifdef BUILD_WITH_D3D8
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
+    static void Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value);
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
     static void Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture);
     static IDirect3DDevice8 *Get_D3D_Device8() { return s_d3dDevice; }
+    static IDirect3DSurface8 *_Get_DX8_Front_Buffer();
 #endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
@@ -137,12 +185,6 @@ public:
     static void Log_DX8_ErrorCode(unsigned error);
     static void Handle_DX8_ErrorCode(unsigned error);
     static int Get_Texture_Bit_Depth() { return s_textureBitDepth; }
-    static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
-    static w3dtexture_t Create_Texture(
-        unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
-    static w3dtexture_t Create_Texture(w3dsurface_t surface, MipCountType mip_level_count);
-    static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
-    static w3dsurface_t Create_Surface(const char *name);
 
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Caps()
@@ -151,10 +193,37 @@ public:
         return s_currentCaps;
     }
     static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
+    static bool Has_Stencil();
+    static void Apply_Default_State();
+    static WW3DFormat Get_Back_Buffer_Format();
+    static void Get_Device_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static const w3dadapterid_t &Get_Current_Adapter_Identifier() { return s_currentAdapterIdentifier; }
 
 private:
+    static bool Create_Device();
+    static bool Reset_Device();
+    static void Release_Device();
     static void Reset_Statistics();
+    static void Enumerate_Devices();
+    static void Set_Default_Global_Render_States();
     static void Invalidate_Cached_Render_States();
+    static int Get_Render_Device(void);
+    static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
+    static bool Set_Device_Resolution(
+        int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
+    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static void Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
+        unsigned short min_vertex_index, unsigned short vertex_count);
+    static void Draw(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
+        unsigned short min_vertex_index = 0, unsigned short vertex_count = 0);
+#ifdef BUILD_WITH_D3D8
+    static bool Find_Color_And_Z_Mode(int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_zmode);
+    static bool Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode);
+    static bool Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
+    static bool Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);
+    static void Compute_Caps(WW3DFormat display_format);
+    static void Get_Format_Name(unsigned int format, StringClass *format_name);
+#endif
 
 private:
 #ifdef GAME_DLL
@@ -204,9 +273,12 @@ private:
     static unsigned &s_lastFrameTextureStageStateChanges;
     static unsigned &s_lastFrameNumberDX8Calls;
     static unsigned &s_lastFrameDrawCalls;
+    static D3DFORMAT &s_displayFormat;
     static DynamicVectorClass<StringClass> &s_renderDeviceNameTable;
     static DynamicVectorClass<StringClass> &s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> &s_renderDeviceDescriptionTable;
+    static w3dadapterid_t &s_currentAdapterIdentifier;
+    static ARRAY_DEC(Matrix4, s_DX8Transforms, 257);
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -256,9 +328,12 @@ private:
     static unsigned s_lastFrameTextureStageStateChanges;
     static unsigned s_lastFrameNumberDX8Calls;
     static unsigned s_lastFrameDrawCalls;
+    static D3DFORMAT s_displayFormat;
     static DynamicVectorClass<StringClass> s_renderDeviceNameTable;
     static DynamicVectorClass<StringClass> s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> s_renderDeviceDescriptionTable;
+    static w3dadapterid_t s_currentAdapterIdentifier;
+    static Matrix4 s_DX8Transforms[257];
 #endif
 };
 
@@ -335,6 +410,15 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
 }
 
 #ifdef BUILD_WITH_D3D8
+inline void DX8Wrapper::Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value)
+{
+    if (s_renderStates[state] == value)
+        return;
+
+    s_renderStates[state] = value;
+    DX8CALL(SetRenderState(state, value));
+}
+
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
     if (s_textureStageStates[stage][state] == value) {

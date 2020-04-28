@@ -27,6 +27,7 @@
 #include "boxrobj.h"
 #include "pointgr.h"
 #include "vertmaterial.h"
+#include "sortingrenderer.h"
 #include <cstdio>
 #include <cstring>
 
@@ -206,19 +207,111 @@ void DX8Wrapper::Shutdown()
 #endif
 }
 
-void DX8Wrapper::Set_Render_Target(w3dsurface_t *render_target, bool use_default_depth_buffer)
+void DX8Wrapper::Do_Onetime_Device_Dependent_Inits()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x008047E0, 0x004FF9A0));
+    Compute_Caps(D3DFormat_To_WW3DFormat(s_displayFormat));
+    MissingTexture::Init();
+    TextureFilterClass::Init_Filters((TextureFilterClass::TextureFilterMode)W3D::Get_Texture_Filter());
+    g_theDX8MeshRenderer.Init();
+    BoxRenderObjClass::Init();
+    VertexMaterialClass::Init();
+    PointGroupClass::Init();
+    TextureLoader::Init();
+    Set_Default_Global_Render_States();
+}
+
+inline DWORD F2DW(float f)
+{
+    return *((unsigned *)&f);
+}
+
+void DX8Wrapper::Set_Default_Global_Render_States()
+{
+#ifdef BUILD_WITH_D3D8
+    const D3DCAPS8 &caps = Get_Caps()->Get_DX8_Caps();
+
+    Set_DX8_Render_State(D3DRS_RANGEFOGENABLE, (caps.RasterCaps & D3DPRASTERCAPS_FOGRANGE) ? TRUE : FALSE);
+    Set_DX8_Render_State(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
+    Set_DX8_Render_State(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
+    Set_DX8_Render_State(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
+    Set_DX8_Render_State(D3DRS_COLORVERTEX, TRUE);
+    Set_DX8_Render_State(D3DRS_ZBIAS, 0);
+    Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLSCALE, F2DW(1.0f));
+    Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLOFFSET, F2DW(0.0f));
+    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT00, F2DW(1.0f));
+    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
+    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
+    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT11, F2DW(1.0f));
+#endif
+}
+
+void DX8Wrapper::Invalidate_Cached_Render_States()
+{
+#ifdef BUILD_WITH_D3D8
+    for (int i = 0; i < sizeof(s_renderStates) / sizeof(unsigned); i++) {
+        s_renderStates[i] = 0x12345678;
+    }
+    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
+        for (int j = 0; j < 32; j++) {
+            s_textureStageStates[i][j] = 0x12345678;
+        }
+        DX8CALL(SetTexture(i, nullptr));
+        s_textures[i]->Release();
+        s_textures[i] = nullptr;
+    }
+    ShaderClass::Invalidate();
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
+        }
+        Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
+    }
+    if (s_renderState.index_buffer) {
+        s_renderState.index_buffer->Release_Engine_Ref();
+        Ref_Ptr_Release(s_renderState.index_buffer);
+    }
+    Ref_Ptr_Release(s_renderState.material);
+    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
+        Ref_Ptr_Release(s_renderState.Textures[i]);
+    }
+    memset(s_DX8Transforms, 0, sizeof(s_DX8Transforms));
 #endif
 }
 
 void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x00800B60, 0x004F9D70));
-#endif
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
+        }
+        Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
+    }
+    if (s_renderState.index_buffer) {
+        s_renderState.index_buffer->Release_Engine_Ref();
+        Ref_Ptr_Release(s_renderState.index_buffer);
+    }
+    Ref_Ptr_Release(s_renderState.material);
+    for (unsigned int i = 0; i < Get_Caps()->Max_Textures_Per_Pass(); i++) {
+        Ref_Ptr_Release(s_renderState.Textures[i]);
+    }
+    TextureLoader::Deinit();
+    SortingRendererClass::Deinit();
+    DynamicVBAccessClass::_Deinit();
+    DynamicIBAccessClass::_Deinit();
+    PointGroupClass::Shutdown();
+    VertexMaterialClass::Shutdown();
+    BoxRenderObjClass::Shutdown();
+    g_theDX8MeshRenderer.Shutdown();
+    MissingTexture::Deinit();
+    if (s_currentCaps) {
+        delete s_currentCaps;
+        s_currentCaps = nullptr;
+    }
 }
+
+/////bool DX8Wrapper::Create_Device();
+
+/////bool DX8Wrapper::Reset_Device();
 
 void DX8Wrapper::Release_Device()
 {
@@ -319,11 +412,17 @@ void DX8Wrapper::Enumerate_Devices()
 #endif
 }
 
-void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
-{
-    // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
-    captainslog_error("Direct3D8 generated error %x.", error);
-}
+/////void DX8Wrapper::Get_Format_Name(unsigned int format, StringClass *format_name);
+
+/////bool DX8Wrapper::Set_Render_Device(int dev, int resx, int resy, int bits, int windowed ,bool resize_window);
+
+/////bool DX8Wrapper::Has_Stencil();
+
+/////int DX8Wrapper::Get_Render_Device(void);
+
+/////const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int deviceidx);
+
+/////bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window);
 
 void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
 {
@@ -332,6 +431,71 @@ void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, 
     bit_depth = s_bitDepth;
     windowed = s_isWindowed;
 }
+
+/////void DX8Wrapper::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+
+/////bool DX8Wrapper::Find_Color_And_Z_Mode(int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_zmode);
+
+/////bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode);
+
+/////bool DX8Wrapper::Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
+
+/////bool DX8Wrapper::Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);
+
+void DX8Wrapper::Reset_Statistics()
+{
+    s_matrixChanges = 0;
+    s_materialChanges = 0;
+    s_vertexBufferChanges = 0;
+    s_indexBufferChanges = 0;
+    s_lightChanges = 0;
+    s_textureChanges = 0;
+    s_renderStateChanges = 0;
+    s_textureStageStateChanges = 0;
+    s_drawCalls = 0;
+    s_lastFrameMatrixChanges = 0;
+    s_lastFrameMaterialChanges = 0;
+    s_lastFrameVertexBufferChanges = 0;
+    s_lastFrameIndexBufferChanges = 0;
+    s_lastFrameLightChanges = 0;
+    s_lastFrameTextureChanges = 0;
+    s_lastFrameRenderStateChanges = 0;
+    s_lastFrameTextureStageStateChanges = 0;
+    s_lastFrameNumberDX8Calls = 0;
+    s_lastFrameDrawCalls = 0;
+}
+
+/////void DX8Wrapper::Begin_Statistics();
+
+/////void DX8Wrapper::End_Statistics();
+
+/////void DX8Wrapper::Begin_Scene(void);
+
+/////void DX8Wrapper::End_Scene(bool flip_frame);
+
+/////void DX8Wrapper::Clear(bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z, unsigned int stencil);
+
+/////void DX8Wrapper::Set_Viewport(CONST D3DVIEWPORT8 *pViewport);
+
+/////void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number);
+
+/////void DX8Wrapper::Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
+
+/////void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba);
+
+/////void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
+
+/////void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count);
+
+/////void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index = 0, unsigned short vertex_count = 0);
+
+/////void DX8Wrapper::Draw_Triangles(unsigned int buffer_type, unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count);
+
+/////void DX8Wrapper::Draw_Triangles(unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count);
+
+/////void DX8Wrapper::Draw_Strip(unsigned short start_index, unsigned short index_count, unsigned short min_vertex_index, unsigned short vertex_count);
+
+/////void DX8Wrapper::Apply_Render_State_Changes();
 
 w3dtexture_t DX8Wrapper::Create_Texture(
     unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget)
@@ -353,6 +517,12 @@ w3dtexture_t DX8Wrapper::Create_Texture(w3dsurface_t surface, MipCountType mip_l
     return w3dtexture_t();
 #endif
 }
+
+/////w3dtexture_t DX8Wrapper::Create_ZTexture(unsigned width, unsigned height, WW3DZFormat format, MipCountType mip_level_count, w3dpool_t pool);
+
+/////w3dcubetexture_t DX8Wrapper::Create_Cube_Texture(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+
+/////w3dvolumetexture_t DX8Wrapper::Create_Volume_Texture(unsigned width, unsigned height, unsigned depth, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool);
 
 w3dsurface_t DX8Wrapper::Create_Surface(unsigned width, unsigned height, WW3DFormat format)
 {
@@ -395,106 +565,51 @@ w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
     return TextureLoader::Load_Surface_Immediate(name, WW3D_FORMAT_UNKNOWN, true);
 }
 
-void DX8Wrapper::Reset_Statistics()
-{
-    s_matrixChanges = 0;
-    s_materialChanges = 0;
-    s_vertexBufferChanges = 0;
-    s_indexBufferChanges = 0;
-    s_lightChanges = 0;
-    s_textureChanges = 0;
-    s_renderStateChanges = 0;
-    s_textureStageStateChanges = 0;
-    s_drawCalls = 0;
-    s_lastFrameMatrixChanges = 0;
-    s_lastFrameMaterialChanges = 0;
-    s_lastFrameVertexBufferChanges = 0;
-    s_lastFrameIndexBufferChanges = 0;
-    s_lastFrameLightChanges = 0;
-    s_lastFrameTextureChanges = 0;
-    s_lastFrameRenderStateChanges = 0;
-    s_lastFrameTextureStageStateChanges = 0;
-    s_lastFrameNumberDX8Calls = 0;
-    s_lastFrameDrawCalls = 0;
-}
-
-void DX8Wrapper::Invalidate_Cached_Render_States()
-{
-#ifdef BUILD_WITH_D3D8
-    for (int i = 0; i < sizeof(s_renderStates) / sizeof(unsigned); i++) {
-        s_renderStates[i] = 0x12345678;
-    }
-    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
-        for (int j = 0; j < 32; j++) {
-            s_textureStageStates[i][j] = 0x12345678;
-        }
-        DX8CALL(SetTexture(i, nullptr));
-        s_textures[i]->Release();
-        s_textures[i] = nullptr;
-    }
-    ShaderClass::Invalidate();
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        if (s_renderState.vertex_buffers[i]) {
-            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
-        }
-        Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
-    }
-    if (s_renderState.index_buffer) {
-        s_renderState.index_buffer->Release_Engine_Ref();
-        Ref_Ptr_Release(s_renderState.index_buffer);
-    }
-    Ref_Ptr_Release(s_renderState.material);
-    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
-        Ref_Ptr_Release(s_renderState.Textures[i]);
-    }
-    memset(s_DX8Transforms, 0, sizeof(s_DX8Transforms));
-#endif
-}
-
-void DX8Wrapper::Do_Onetime_Device_Dependent_Inits()
-{
-    Compute_Caps(D3DFormat_To_WW3DFormat(s_displayFormat));
-    MissingTexture::Init();
-    TextureFilterClass::Init_Filters((TextureFilterClass::TextureFilterMode)W3D::Get_Texture_Filter());
-    g_theDX8MeshRenderer.Init();
-    BoxRenderObjClass::Init();
-    VertexMaterialClass::Init();
-    PointGroupClass::Init();
-    TextureLoader::Init();
-    Set_Default_Global_Render_States();
-}
-
-inline DWORD F2DW(float f)
-{
-    return *((unsigned *)&f);
-}
-
-void DX8Wrapper::Set_Default_Global_Render_States()
-{
-#ifdef BUILD_WITH_D3D8
-    const D3DCAPS8 &caps = Get_Caps()->Get_DX8_Caps();
-
-    Set_DX8_Render_State(D3DRS_RANGEFOGENABLE, (caps.RasterCaps & D3DPRASTERCAPS_FOGRANGE) ? TRUE : FALSE);
-    Set_DX8_Render_State(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
-    Set_DX8_Render_State(D3DRS_FOGVERTEXMODE, D3DFOG_LINEAR);
-    Set_DX8_Render_State(D3DRS_SPECULARMATERIALSOURCE, D3DMCS_MATERIAL);
-    Set_DX8_Render_State(D3DRS_COLORVERTEX, TRUE);
-    Set_DX8_Render_State(D3DRS_ZBIAS, 0);
-    Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLSCALE, F2DW(1.0f));
-    Set_DX8_Texture_Stage_State(1, D3DTSS_BUMPENVLOFFSET, F2DW(0.0f));
-    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT00, F2DW(1.0f));
-    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT01, F2DW(0.0f));
-    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT10, F2DW(0.0f));
-    Set_DX8_Texture_Stage_State(0, D3DTSS_BUMPENVMAT11, F2DW(1.0f));
-#endif
-}
-
 void DX8Wrapper::Compute_Caps(WW3DFormat display_format)
 {
 #ifdef BUILD_WITH_D3D8
     delete s_currentCaps;
     s_currentCaps = new DX8Caps(s_d3dInterface, s_d3dDevice, display_format, Get_Current_Adapter_Identifier());
 #endif
+}
+
+/////void DX8Wrapper::Set_Light(unsigned index, const D3DLIGHT8 *light);
+
+/////void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env);
+
+/////IDirect3DSurface8 *DX8Wrapper::_Get_DX8_Front_Buffer();
+
+/////SurfaceClass *DX8Wrapper::_Get_DX8_Back_Buffer(unsigned int num = 0);
+
+/////TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat format);
+
+/////void DX8Wrapper::Set_Render_Target_With_Z(TextureClass *texture, ZTextureClass *z_texture);
+
+void DX8Wrapper::Set_Render_Target(w3dsurface_t *render_target, bool use_default_depth_buffer)
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x008047E0, 0x004FF9A0));
+#endif
+}
+
+/////void DX8Wrapper::Set_Render_Target(w3dsurface_t *render_target, w3dsurface_t *depth_buffer);
+
+/////void DX8Wrapper::Set_Gamma(float gamma, float bright, float contrast, bool calibrate, bool uselimit);
+
+/////void DX8Wrapper::Apply_Default_State();
+
+/////const char *DX8Wrapper::Get_DX8_Render_State_Name(D3DRENDERSTATETYPE state);
+
+/////const char *DX8Wrapper::Get_DX8_Texture_Stage_State_Name(D3DTEXTURESTAGESTATETYPE state);
+
+/////void DX8Wrapper::Get_DX8_Render_State_Value_Name(StringClass &name, D3DRENDERSTATETYPE state, unsigned value);
+
+/////void DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name(StringClass &name, D3DTEXTURESTAGESTATETYPE state, unsigned value);
+
+void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
+{
+    // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
+    captainslog_error("Direct3D8 generated error %x.", error);
 }
 
 #ifdef BUILD_WITH_D3D8
@@ -885,3 +1000,5 @@ const char *DX8Wrapper::Get_DX8_Blend_Op_Name(unsigned value)
     }
 }
 #endif
+
+/////WW3DFormat DX8Wrapper::Get_Back_Buffer_Format();

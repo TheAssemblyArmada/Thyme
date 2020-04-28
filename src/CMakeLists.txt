@@ -215,6 +215,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/pointgr.cpp
     w3d/renderer/render2d.cpp
     w3d/renderer/shader.cpp
+    w3d/renderer/sortingrenderer.cpp
     w3d/renderer/surfaceclass.cpp
     w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texture.cpp

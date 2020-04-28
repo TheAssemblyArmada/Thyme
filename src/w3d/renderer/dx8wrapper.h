@@ -123,15 +123,13 @@ public:
     static void Begin_Scene(void);
     static void End_Scene(bool flip_frame = true);
     static void Clear(
-        bool clear_color, bool clear_z_stencil, const Vector3 &color, float z = 1.0f, unsigned int stencil = 0);
-    static void Set_Viewport(CONST D3DVIEWPORT8 *pViewport);
-    static void Set_Vertex_Buffer(const VertexBufferClass *vb);
+        bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z = 1.0f, unsigned int stencil = 0);
+    static void Set_Vertex_Buffer(const VertexBufferClass *vb, int number);
     static void Set_Vertex_Buffer(const DynamicVBAccessClass &vba);
     static void Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
     static void Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
     static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
-    static void Set_Light(unsigned index, const D3DLIGHT8 *light);
     static void Apply_Render_State_Changes();
     static void Draw_Triangles(unsigned int buffer_type, unsigned short start_index, unsigned short polygon_count,
         unsigned short min_vertex_index, unsigned short vertex_count);
@@ -141,6 +139,8 @@ public:
         unsigned short vertex_count);
     static w3dtexture_t Create_Texture(
         unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
+    static w3dtexture_t Create_ZTexture(
+        unsigned width, unsigned height, WW3DZFormat format, MipCountType mip_level_count, w3dpool_t pool);
     static w3dcubetexture_t Create_Cube_Texture(
         unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
     static w3dvolumetexture_t Create_Volume_Texture(
@@ -161,6 +161,8 @@ public:
     static void Get_DX8_Render_State_Value_Name(StringClass &name, D3DRENDERSTATETYPE state, unsigned value);
 
 #ifdef BUILD_WITH_D3D8
+    static void Set_Viewport(CONST D3DVIEWPORT8 *pViewport);
+    static void Set_Light(unsigned index, const D3DLIGHT8 *light);
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value);
@@ -216,6 +218,8 @@ private:
     static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
     static bool Set_Device_Resolution(
         int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
+    static bool Set_Render_Device(int dev = -1, int resx = -1, int resy = -1, int bits = -1, int windowed = -1,
+        bool resize_window = false, bool reset_device = false, bool restore_assets = true);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
     static void Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
         unsigned short min_vertex_index, unsigned short vertex_count);

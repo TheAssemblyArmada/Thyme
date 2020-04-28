@@ -284,6 +284,32 @@ DynamicVectorClass<RenderDeviceDescClass> &DX8Wrapper::s_renderDeviceDescription
     Make_Global<DynamicVectorClass<RenderDeviceDescClass>>(PICK_ADDRESS(0x00A427A8, 0x00DE8FE0));
 w3dadapterid_t &DX8Wrapper::s_currentAdapterIdentifier = Make_Global<w3dadapterid_t>(PICK_ADDRESS(0x00A470C0, 0x00DED8F8));
 ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), Matrix4, DX8Wrapper::s_DX8Transforms, 257);
+D3DMATRIX &DX8Wrapper::s_oldPrj = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A15CD9, 0x00CC36B9));
+D3DMATRIX &DX8Wrapper::s_oldView = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A427A4, 0x00DE8FDC));
+D3DMATRIX &DX8Wrapper::s_oldWorld = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A46C80, 0x00DED4B8));
+D3DPRESENT_PARAMETERS &DX8Wrapper::s_PresentParameters =
+    Make_Global<D3DPRESENT_PARAMETERS>(PICK_ADDRESS(0x00A47D78, 0x00DEE5B0));
+D3DCOLOR &DX8Wrapper::s_fogColor = Make_Global<D3DCOLOR>(PICK_ADDRESS(0x00A47DB8, 0x00DEE5F0));
+bool &DX8Wrapper::s_EnableTriangleDraw = Make_Global<bool>(PICK_ADDRESS(0x00A47E40, 0x00DEE678));
+int &DX8Wrapper::s_ZBias = Make_Global<int>(PICK_ADDRESS(0x00A47E74, 0x00DEE6AC));
+Vector3 &DX8Wrapper::s_ambientColor = Make_Global<Vector3>(PICK_ADDRESS(0x00A47E78, 0x00DEE6B0));
+bool &DX8Wrapper::s_isDeviceLost = Make_Global<bool>(PICK_ADDRESS(0x00A47EC0, 0x00DEE6F8));
+int &DX8Wrapper::s_FPUPreserve = Make_Global<int>(PICK_ADDRESS(0x00A47ED0, 0x00DEE708));
+DWORD &DX8Wrapper::s_vertexShader = Make_Global<DWORD>(PICK_ADDRESS(0x00A47ED4, 0x00DEE70C));
+DWORD &DX8Wrapper::s_pixelShader = Make_Global<DWORD>(PICK_ADDRESS(0x00A47ED8, 0x00DEE710));
+LightEnvironmentClass *&DX8Wrapper::s_lightEnvironment =
+    Make_Global<LightEnvironmentClass *>(PICK_ADDRESS(0x00A47EE0, 0x00DEE718));
+DWORD &DX8Wrapper::s_vertexProcessingBehavior = Make_Global<DWORD>(PICK_ADDRESS(0x00A47EE4, 0x00DEE71C));
+bool &DX8Wrapper::s_fogEnable = Make_Global<bool>(PICK_ADDRESS(0x00A47EE8, 0x00DEE720));
+w3dsurface_t &DX8Wrapper::s_currentRenderTarget = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EF4, 0x00DEE72C));
+w3dsurface_t &DX8Wrapper::s_currentDepthBuffer = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EF8, 0x00DEE730));
+w3dsurface_t &DX8Wrapper::s_defaultRenderTarget = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EFC, 0x00DEE734));
+w3dsurface_t &DX8Wrapper::s_defaultDepthBuffer = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47F00, 0x00DEE738));
+bool &DX8Wrapper::s_isRenderToTexture = Make_Global<bool>(PICK_ADDRESS(0x00A47F04, 0x00DEE73C));
+unsigned int &DX8Wrapper::s_drawPolygonLowBoundLimit = Make_Global<unsigned int>(PICK_ADDRESS(0x00A47F34, 0x00DEE76C));
+unsigned long &DX8Wrapper::s_frameCount = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47F38, 0x00DEE770));
+bool &DX8Wrapper::s_DX8SingleThreaded = Make_Global<bool>(PICK_ADDRESS(0x00A47F3C, 0x00DEE774));
+DX8_CleanupHook *&DX8Wrapper::s_cleanupHook = Make_Global<DX8_CleanupHook *>(PICK_ADDRESS(0x00A47F74, 0x00DEE7AC));
 
 // missing.cpp
 #include "missing.h"

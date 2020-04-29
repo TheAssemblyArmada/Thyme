@@ -334,8 +334,8 @@ void Setup_Hooks()
     Hook_Method(0x0081F480, &DynamicVBAccessClass::Hook_Ctor);
     Hook_Method(0x0081F4C0, &DynamicVBAccessClass::Hook_Dtor);
     Hook_Method(0x0081F510, &DynamicVBAccessClass::_Deinit);
-    Hook_Method(0x0081F930, &DynamicVBAccessClass::Hook_Ctor);
-    Hook_Method(0x0081F9F0, &DynamicVBAccessClass::Hook_Dtor);
+    Hook_Method(0x0081F930, &DynamicVBAccessClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x0081F9F0, &DynamicVBAccessClass::WriteLockClass::Hook_Dtor);
     Hook_Method(0x0081FA20, &DynamicVBAccessClass::_Reset);
     Hook_Method(0x0081FA40, &DynamicVBAccessClass::Get_Default_Vertex_Count);
 
@@ -847,8 +847,50 @@ void Setup_Hooks()
     Hook_Function(0x0089FA20, Null_Func);
 
     // dx8wrapper.h
-    Hook_Function(0x00800670, &DX8Wrapper::Init);
-    Hook_Function(0x00801240, &DX8Wrapper::Enumerate_Devices);
+    Hook_Method(0x00800670, &DX8Wrapper::Init);
+    Hook_Method(0x00800860, &DX8Wrapper::Shutdown);
+    Hook_Method(0x008009E0, &DX8Wrapper::Invalidate_Cached_Render_States);
+    Hook_Method(0x00800F50, &DX8Wrapper::Reset_Device);
+    Hook_Method(0x00801DA0, &DX8Wrapper::Set_Render_Device);
+    Hook_Method(0x008021E0, &DX8Wrapper::Has_Stencil);
+    Hook_Method(0x00802200, &DX8Wrapper::Get_Render_Device);
+    Hook_Method(0x00802210, &DX8Wrapper::Get_Render_Device_Desc);
+    Hook_Method(0x00802240, &DX8Wrapper::Set_Device_Resolution);
+    Hook_Method(0x00802370, &DX8Wrapper::Get_Device_Resolution);
+    Hook_Method(0x008023A0, &DX8Wrapper::Get_Render_Target_Resolution);
+    Hook_Method(0x00802820, &DX8Wrapper::Begin_Scene);
+    Hook_Method(0x00802840, &DX8Wrapper::End_Scene);
+    Hook_Method(0x00802A00, &DX8Wrapper::Clear);
+    Hook_Method(0x00802B50, &DX8Wrapper::Set_Viewport);
+    Hook_Method(0x00802B70, static_cast<void (*)(const VertexBufferClass *, int)>(&DX8Wrapper::Set_Vertex_Buffer));
+    Hook_Method(0x00802C10, static_cast<void (*)(const IndexBufferClass *, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
+    Hook_Method(0x00802CB0, static_cast<void (*)(const DynamicVBAccessClass &)>(&DX8Wrapper::Set_Vertex_Buffer));
+    Hook_Method(
+        0x00802D40, static_cast<void (*)(const DynamicIBAccessClass &, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
+    Hook_Method(0x008031B0,
+        static_cast<void (*)(unsigned int, unsigned short, unsigned short, unsigned short, unsigned short)>(
+            &DX8Wrapper::Draw_Triangles));
+    Hook_Method(0x00803200,
+        static_cast<void (*)(unsigned short, unsigned short, unsigned short, unsigned short)>(&DX8Wrapper::Draw_Triangles));
+    Hook_Method(0x00803220, &DX8Wrapper::Draw_Strip);
+    Hook_Method(0x00803240, &DX8Wrapper::Apply_Render_State_Changes);
+    Hook_Method(0x008036F0,
+        static_cast<w3dtexture_t (*)(unsigned int, unsigned int, WW3DFormat, MipCountType, w3dpool_t, bool)>(
+            &DX8Wrapper::Create_Texture));
+    Hook_Method(0x00803990, static_cast<w3dtexture_t (*)(w3dsurface_t, MipCountType)>(&DX8Wrapper::Create_Texture));
+    Hook_Method(
+        0x00803E90, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::Create_Surface));
+    Hook_Method(0x00803EE0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::Create_Surface));
+    Hook_Method(0x008041B0, &DX8Wrapper::Set_Light);
+    Hook_Method(0x008044B0, &DX8Wrapper::_Get_DX8_Front_Buffer);
+    Hook_Method(0x00804520, &DX8Wrapper::_Get_DX8_Back_Buffer);
+    Hook_Method(0x008045E0, &DX8Wrapper::Create_Render_Target);
+    Hook_Method(0x00804780, &DX8Wrapper::Set_Render_Target_With_Z);
+    Hook_Method(0x008047E0, &DX8Wrapper::Set_Render_Target);
+    Hook_Method(0x00804AC0, &DX8Wrapper::Set_Gamma);
+    Hook_Method(0x00804D00, &DX8Wrapper::Get_DX8_Render_State_Value_Name);
+    Hook_Method(0x00805520, &DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name);
+    Hook_Method(0x00805B60, &DX8Wrapper::Get_Back_Buffer_Format);
 
     // dinputkeybd.h
     // Hooks all the virtual functions for DirectInputKeyboard.

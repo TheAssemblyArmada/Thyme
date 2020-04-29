@@ -45,7 +45,7 @@ private:
 public:
     void Init();
     void Shutdown();
-    void Invalidate();
+    void Invalidate(bool shutdown);
     void Clear_Pending_Delete_Lists();
 };
 

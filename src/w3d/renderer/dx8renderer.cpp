@@ -32,21 +32,27 @@ void DX8MeshRendererClass::Init()
 
 void DX8MeshRendererClass::Shutdown()
 {
-    Invalidate();
+    Invalidate(true);
     Clear_Pending_Delete_Lists();
-    g_tempVertexBuffer.Delete_All();
-    g_tempNormalBuffer.Delete_All();
+    g_tempVertexBuffer.Clear();
+    g_tempNormalBuffer.Clear();
 }
 
-void DX8MeshRendererClass::Invalidate()
+void DX8MeshRendererClass::Invalidate(bool shutdown)
 {
-    Call_Function<void>(PICK_ADDRESS(0x00827390, 0x005171C0));
+#ifdef GAME_DLL
+    Call_Method<void, DX8MeshRendererClass, bool>(PICK_ADDRESS(0x00827390, 0x005171C0), this, shutdown);
+#endif
 }
 
 void DX8MeshRendererClass::Clear_Pending_Delete_Lists()
 {
-    while (!g_textureCategoryDeleteList.Is_Empty())
-        delete g_textureCategoryDeleteList.Remove_Head();
-    while (!g_fvfCategoryContainerDeleteList.Is_Empty())
-        delete g_fvfCategoryContainerDeleteList.Remove_Head();
+    for (MultiListObjectClass *i = g_textureCategoryDeleteList.Remove_Head(); i;
+         i = g_textureCategoryDeleteList.Remove_Head()) {
+        delete i;
+    }
+    for (MultiListObjectClass *i = g_fvfCategoryContainerDeleteList.Remove_Head(); i;
+         i = g_fvfCategoryContainerDeleteList.Remove_Head()) {
+        delete i;
+    }
 }

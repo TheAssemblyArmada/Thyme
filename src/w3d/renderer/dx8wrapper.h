@@ -170,6 +170,8 @@ public:
     static Vector4 Convert_Color(unsigned color);
     static unsigned int Convert_Color(const Vector4 &color);
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
+    static void Set_DX8_Light(int index, D3DLIGHT8 *light);
+    static void _Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
 #endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
@@ -575,7 +577,7 @@ inline void DX8Wrapper::Set_Texture(unsigned stage, TextureClass *texture)
 {
     if (texture == s_renderState.Textures[stage])
         return;
-    Ref_Ptr_Set(s_renderState.Textures[stage], texture);
+    Ref_Ptr_Set(texture, s_renderState.Textures[stage]);
     s_renderStateChanged |= (TEXTURE0_CHANGED << stage);
 }
 
@@ -584,7 +586,7 @@ inline void DX8Wrapper::Set_Material(const VertexMaterialClass *material)
     if (material == s_renderState.material)
         return;
     VertexMaterialClass *v = const_cast<VertexMaterialClass *>(material);
-    Ref_Ptr_Set(s_renderState.material, v);
+    Ref_Ptr_Set(v, s_renderState.material);
     s_renderStateChanged |= MATERIAL_CHANGED;
 }
 
@@ -618,5 +620,27 @@ inline void DX8Wrapper::Set_Light(unsigned index, const D3DLIGHT8 *light)
         s_renderState.LightEnable[index] = false;
     }
     s_renderStateChanged |= (LIGHT0_CHANGED << index);
+}
+
+inline void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT8 *light)
+{
+    if (light) {
+        s_lightChanges++;
+        DX8CALL(SetLight(index, light));
+        DX8CALL(LightEnable(index, TRUE));
+        s_currentLightEnables[index] = true;
+    } else if (s_currentLightEnables[index]) {
+        s_lightChanges++;
+        s_currentLightEnables[index] = false;
+        DX8CALL(LightEnable(index, FALSE));
+    }
+}
+
+inline void DX8Wrapper::_Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)
+{
+    captainslog_assert(transform <= D3DTS_WORLD);
+    s_DX8Transforms[transform] = m;
+    s_matrixChanges++;
+    DX8CALL(SetTransform(transform, (D3DMATRIX *)&m));
 }
 #endif

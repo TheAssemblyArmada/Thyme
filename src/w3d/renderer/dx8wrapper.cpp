@@ -262,9 +262,13 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
         for (int j = 0; j < 32; j++) {
             s_textureStageStates[i][j] = 0x12345678;
         }
-        DX8CALL(SetTexture(i, nullptr));
-        s_textures[i]->Release();
-        s_textures[i] = nullptr;
+        if (s_d3dDevice) {
+            s_d3dDevice->SetTexture(i, nullptr);
+        }
+        if (s_textures[i]) {
+            s_textures[i]->Release();
+            s_textures[i] = nullptr;
+        }
     }
     ShaderClass::Invalidate();
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
@@ -1131,7 +1135,7 @@ void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number)
         buf->Release_Engine_Ref();
     }
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vb);
-    Ref_Ptr_Set(s_renderState.vertex_buffers[number], v);
+    Ref_Ptr_Set(v, s_renderState.vertex_buffers[number]);
     if (v) {
         v->Add_Engine_Ref();
         s_renderState.vertex_buffer_types[number] = v->Type();
@@ -1149,7 +1153,7 @@ void DX8Wrapper::Set_Index_Buffer(const IndexBufferClass *ib, unsigned short ind
         buf->Release_Engine_Ref();
     }
     IndexBufferClass *i = const_cast<IndexBufferClass *>(ib);
-    Ref_Ptr_Set(s_renderState.index_buffer, i);
+    Ref_Ptr_Set(i, s_renderState.index_buffer);
     s_renderState.index_base_offset = index_base_offset;
     if (i) {
         i->Add_Engine_Ref();
@@ -1171,7 +1175,7 @@ void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba)
     s_renderState.vba_offset = vba.Get_Vertex_Offset();
     s_renderState.vba_count = vba.Get_Vertex_Count();
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vba.Get_Vertex_Buffer());
-    Ref_Ptr_Set(s_renderState.vertex_buffers[0], v);
+    Ref_Ptr_Set(v, s_renderState.vertex_buffers[0]);
     v->Add_Engine_Ref();
     s_renderStateChanged |= VERTEX_BUFFER_CHANGED;
 }
@@ -1185,7 +1189,7 @@ void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned shor
     s_renderState.index_buffer_type = iba.Get_Type();
     s_renderState.iba_offset = iba.Get_Index_Offset();
     IndexBufferClass *i = const_cast<IndexBufferClass *>(iba.Get_Index_Buffer());
-    Ref_Ptr_Set(s_renderState.index_buffer, i);
+    Ref_Ptr_Set(i, s_renderState.index_buffer);
     i->Add_Engine_Ref();
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
@@ -1357,92 +1361,96 @@ void DX8Wrapper::Draw_Strip(
 void DX8Wrapper::Apply_Render_State_Changes()
 {
 #ifdef BUILD_WITH_D3D8
-    if (!s_renderStateChanged) {
-        return;
-    }
-    if ((s_renderStateChanged & SHADER_CHANGED) != 0) {
-        s_renderState.shader.Apply();
-    }
-    unsigned mask = TEXTURE0_CHANGED;
-    for (unsigned i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++, mask <<= 1) {
-        if (s_renderStateChanged & mask) {
-            if (s_renderState.Textures[i]) {
-                s_renderState.Textures[i]->Apply(i);
-            } else {
-                TextureBaseClass::Apply_Null(i);
-            }
+    if (s_renderStateChanged) {
+        if ((s_renderStateChanged & SHADER_CHANGED) != 0) {
+            s_renderState.shader.Apply();
         }
-    }
-    if (s_renderStateChanged & MATERIAL_CHANGED) {
-        VertexMaterialClass *material = const_cast<VertexMaterialClass *>(s_renderState.material);
-        if (material) {
-            material->Apply();
-        } else
-            VertexMaterialClass::Apply_Null();
-    }
-    if (s_renderStateChanged & LIGHTS_CHANGED) {
-        unsigned mask = LIGHT0_CHANGED;
-        for (unsigned index = 0; index < 4; ++index, mask <<= 1) {
+        unsigned mask = TEXTURE0_CHANGED;
+        for (unsigned i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++, mask <<= 1) {
             if (s_renderStateChanged & mask) {
-                if (s_renderState.LightEnable[index]) {
-                    Set_Light(index, &s_renderState.Lights[index]);
+                if (s_renderState.Textures[i]) {
+                    s_renderState.Textures[i]->Apply(i);
                 } else {
-                    Set_Light(index, nullptr);
+                    TextureBaseClass::Apply_Null(i);
                 }
             }
         }
-    }
-    if (s_renderStateChanged & WORLD_CHANGED) {
-        Set_Transform(D3DTS_WORLD, s_renderState.world);
-    }
-    if (s_renderStateChanged & VIEW_CHANGED) {
-        Set_Transform(D3DTS_VIEW, s_renderState.view);
-    }
-    if (s_renderStateChanged & VERTEX_BUFFER_CHANGED) {
-        if (s_renderState.vertex_buffers[0]) {
-            switch (s_renderState.vertex_buffer_types[0]) {
-                case VertexBufferClass::BUFFER_TYPE_DX8:
-                case VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
-                    DX8CALL(SetStreamSource(0,
-                        static_cast<DX8VertexBufferClass *>(s_renderState.vertex_buffers[0])->Get_DX8_Vertex_Buffer(),
-                        s_renderState.vertex_buffers[0]->FVF_Info().Get_FVF_Size()));
+        if (s_renderStateChanged & MATERIAL_CHANGED) {
+            VertexMaterialClass *material = const_cast<VertexMaterialClass *>(s_renderState.material);
+            if (material) {
+                material->Apply();
+            } else {
+                VertexMaterialClass::Apply_Null();
+            }
+        }
+        if (s_renderStateChanged & LIGHTS_CHANGED) {
+            unsigned mask = LIGHT0_CHANGED;
+            for (unsigned index = 0; index < 4; ++index, mask <<= 1) {
+                if (s_renderStateChanged & mask) {
+                    if (s_renderState.LightEnable[index]) {
+                        Set_DX8_Light(index, &s_renderState.Lights[index]);
+                    } else {
+                        Set_DX8_Light(index, nullptr);
+                    }
+                }
+            }
+        }
+        if (s_renderStateChanged & WORLD_CHANGED) {
+            _Set_DX8_Transform(D3DTS_WORLD, s_renderState.world);
+        }
+        if (s_renderStateChanged & VIEW_CHANGED) {
+            _Set_DX8_Transform(D3DTS_VIEW, s_renderState.view);
+        }
+        if (s_renderStateChanged & VERTEX_BUFFER_CHANGED) {
+            for (int i = 0; i < VERTEX_BUFFERS; i++) {
+                if (s_renderState.vertex_buffers[i]) {
+                    switch (s_renderState.vertex_buffer_types[i]) {
+                        case VertexBufferClass::BUFFER_TYPE_DX8:
+                        case VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
+                            DX8CALL(SetStreamSource(i,
+                                static_cast<DX8VertexBufferClass *>(s_renderState.vertex_buffers[i])->Get_DX8_Vertex_Buffer(),
+                                s_renderState.vertex_buffers[i]->FVF_Info().Get_FVF_Size()));
+                            s_vertexBufferChanges++;
+                            if (s_renderState.vertex_buffers[i]->FVF_Info().Get_FVF()) {
+                                s_vertexShader = s_renderState.vertex_buffers[i]->FVF_Info().Get_FVF();
+                                DX8CALL(SetVertexShader(s_vertexShader));
+                            }
+                            break;
+                        case VertexBufferClass::BUFFER_TYPE_SORTING:
+                        case VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING:
+                            break;
+                        default:
+                            captainslog_assert(0);
+                    }
+                } else {
+                    DX8CALL(SetStreamSource(i, NULL, 0));
                     s_vertexBufferChanges++;
-                    DX8CALL(SetVertexShader(s_renderState.vertex_buffers[0]->FVF_Info().Get_FVF()));
-                    break;
-                case VertexBufferClass::BUFFER_TYPE_SORTING:
-                case VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING:
-                    break;
-                default:
-                    captainslog_assert(0);
+                }
             }
-        } else {
-            DX8CALL(SetStreamSource(0, NULL, 0));
-            s_vertexBufferChanges++;
         }
-    }
-    if (s_renderStateChanged & INDEX_BUFFER_CHANGED) {
-        if (s_renderState.index_buffer) {
-            switch (s_renderState.index_buffer_type) {
-                case IndexBufferClass::BUFFER_TYPE_DX8:
-                case IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
-                    DX8CALL(
-                        SetIndices(static_cast<DX8IndexBufferClass *>(s_renderState.index_buffer)->Get_DX8_Index_Buffer(),
-                        s_renderState.index_base_offset + s_renderState.vba_offset));
-                    s_indexBufferChanges++;
-                    break;
-                case IndexBufferClass::BUFFER_TYPE_SORTING:
-                case IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING:
-                    break;
-                default:
-                    captainslog_assert(0);
+        if (s_renderStateChanged & INDEX_BUFFER_CHANGED) {
+            if (s_renderState.index_buffer) {
+                switch (s_renderState.index_buffer_type) {
+                    case IndexBufferClass::BUFFER_TYPE_DX8:
+                    case IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
+                        DX8CALL(
+                            SetIndices(static_cast<DX8IndexBufferClass *>(s_renderState.index_buffer)->Get_DX8_Index_Buffer(),
+                            s_renderState.index_base_offset + s_renderState.vba_offset));
+                        s_indexBufferChanges++;
+                        break;
+                    case IndexBufferClass::BUFFER_TYPE_SORTING:
+                    case IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING:
+                        break;
+                    default:
+                        captainslog_assert(0);
+                }
+            } else {
+                DX8CALL(SetIndices(NULL, 0));
+                s_indexBufferChanges++;
             }
-        } else {
-            DX8CALL(SetIndices(NULL, 0));
-            s_indexBufferChanges++;
         }
+        s_renderStateChanged &= ((unsigned)WORLD_IDENTITY | (unsigned)VIEW_IDENTITY);
     }
-
-    s_renderStateChanged &= ((unsigned)WORLD_IDENTITY | (unsigned)VIEW_IDENTITY);
 #endif
 }
 
@@ -1519,6 +1527,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(w3dsurface_t surface, MipCountType mip_l
     IDirect3DTexture8 *texture = Create_Texture(
         desc.Width, desc.Height, D3DFormat_To_WW3DFormat(desc.Format), mip_level_count, D3DPOOL_MANAGED, false);
     IDirect3DSurface8 *surf = nullptr;
+    texture->GetSurfaceLevel(0, &surf);
     D3DXLoadSurfaceFromSurface(surf, nullptr, nullptr, surface, nullptr, nullptr, D3DX_FILTER_BOX, 0);
     surf->Release();
     if (mip_level_count != 1) {

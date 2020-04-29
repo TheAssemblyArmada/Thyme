@@ -206,9 +206,9 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8caps.cpp
     w3d/renderer/dx8fvf.cpp
     w3d/renderer/dx8indexbuffer.cpp
-    w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8renderer.cpp
     w3d/renderer/dx8texman.cpp
+    w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/mapper.cpp
     w3d/renderer/missing.cpp

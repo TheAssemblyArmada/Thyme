@@ -235,7 +235,7 @@ IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(PICK_ADDRESS
 IDirect3DDevice8 *&DX8Wrapper::s_d3dDevice = Make_Global<IDirect3DDevice8 *>(PICK_ADDRESS(0x00A47EF0, 0x00DEE728));
 ARRAY_DEF(PICK_ADDRESS(0x00A42784, 0x00DE8FBC), w3dbasetexture_t, DX8Wrapper::s_textures, MAX_TEXTURE_STAGES);
 void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(PICK_ADDRESS(0x00A47EBC, 0x00DEE6F4));
-void *&DX8Wrapper::s_hwnd = Make_Global<void *>(PICK_ADDRESS(0x00A47EC4, 0x00DEE6FC));
+HWND &DX8Wrapper::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47EC4, 0x00DEE6FC));
 ARRAY_DEF(PICK_ADDRESS(0x00A46CC0, 0x00DED4F8), unsigned, DX8Wrapper::s_renderStates, 256);
 ARRAY2D_DEF(PICK_ADDRESS(0x00A46880, 0x00DED0B8), unsigned, DX8Wrapper::s_textureStageStates, MAX_TEXTURE_STAGES, 32);
 ARRAY_DEF(PICK_ADDRESS(0x00A47778, 0x00DEDFB0), Vector4, DX8Wrapper::s_vertexShaderConstants, 96);
@@ -287,7 +287,7 @@ ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), Matrix4, DX8Wrapper::s_DX8Transf
 D3DMATRIX &DX8Wrapper::s_oldPrj = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A15CD9, 0x00CC36B9));
 D3DMATRIX &DX8Wrapper::s_oldView = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A427A4, 0x00DE8FDC));
 D3DMATRIX &DX8Wrapper::s_oldWorld = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A46C80, 0x00DED4B8));
-D3DPRESENT_PARAMETERS &DX8Wrapper::s_PresentParameters =
+D3DPRESENT_PARAMETERS &DX8Wrapper::s_presentParameters =
     Make_Global<D3DPRESENT_PARAMETERS>(PICK_ADDRESS(0x00A47D78, 0x00DEE5B0));
 D3DCOLOR &DX8Wrapper::s_fogColor = Make_Global<D3DCOLOR>(PICK_ADDRESS(0x00A47DB8, 0x00DEE5F0));
 bool &DX8Wrapper::s_EnableTriangleDraw = Make_Global<bool>(PICK_ADDRESS(0x00A47E40, 0x00DEE678));

@@ -43,3 +43,10 @@ void W3D::_Invalidate_Mesh_Cache()
     Call_Function<void>(PICK_ADDRESS(0x00807840, 0x00503700));
 #endif
 }
+
+void W3D::_Invalidate_Textures()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00807850, 0x00503710));
+#endif
+}

@@ -25,6 +25,8 @@ public:
     static void Init();
     static void Shutdown();
     virtual ~VertexMaterialClass();
+    void Apply() const;
+    static void Apply_Null();
 
 private:
     w3dmat_t *m_material;

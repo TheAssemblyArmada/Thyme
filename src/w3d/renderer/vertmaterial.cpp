@@ -30,3 +30,17 @@ void VertexMaterialClass::Shutdown()
     Call_Function<void>(PICK_ADDRESS(0x008195B0, 0x004E6650));
 #endif
 }
+
+void VertexMaterialClass::Apply() const 
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x008193A0, 0x004E63A0));
+#endif
+}
+
+void VertexMaterialClass::Apply_Null() 
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00819460, 0x004E64B0));
+#endif
+}

@@ -171,6 +171,9 @@ public:
     static void _Reset(bool frame_changed);
     static unsigned short Get_Default_Index_Count();
     static unsigned short Get_Next_Index();
+    unsigned int Get_Type() const { return m_type; }
+    unsigned short Get_Index_Offset() const { return m_indexBufferOffset; }
+    IndexBufferClass *Get_Index_Buffer() const { return m_indexBuffer; }
 
 private:
 #ifdef GAME_DLL

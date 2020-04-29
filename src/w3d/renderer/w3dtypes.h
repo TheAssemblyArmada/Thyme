@@ -21,8 +21,6 @@
 #include <d3d8types.h>
 
 typedef LPDIRECT3DTEXTURE8 w3dtexture_t;
-typedef LPDIRECT3DCUBETEXTURE8 w3dcubetexture_t;
-typedef LPDIRECT3DVOLUMETEXTURE8 w3dvolumetexture_t;
 typedef LPDIRECT3DBASETEXTURE8 w3dbasetexture_t;
 typedef LPDIRECT3DSURFACE8 w3dsurface_t;
 typedef D3DCAPS8 w3dcaps_t;

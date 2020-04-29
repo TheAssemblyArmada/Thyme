@@ -37,6 +37,7 @@ public:
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static int Get_Texture_Bit_Depth();
     static void _Invalidate_Mesh_Cache();
+    static void _Invalidate_Textures();
 
 private:
 #ifdef GAME_DLL

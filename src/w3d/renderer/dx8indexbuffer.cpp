@@ -178,7 +178,7 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
                      2 * m_indexCount, d3dusage, D3DFMT_INDEX16, (D3DPOOL)(unsigned __int8)(usage & 1 ^ 1), &m_indexBuffer),
         res);
     if (res < 0) {
-        captainslog_warn("Index buffer creation failed, trying to release assets...\n");
+        captainslog_warn("Index buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
         W3D::_Invalidate_Mesh_Cache();
         DX8CALL(ResourceManagerDiscardBytes(0));
@@ -186,7 +186,7 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
             CreateIndexBuffer(
                 2 * m_indexCount, d3dusage, D3DFMT_INDEX16, (D3DPOOL)(unsigned __int8)(usage & 1 ^ 1), &m_indexBuffer),
             res);
-        captainslog_warn("...Index buffer creation succesful\n");
+        captainslog_warn("...Index buffer creation succesful");
     }
 #endif
 }

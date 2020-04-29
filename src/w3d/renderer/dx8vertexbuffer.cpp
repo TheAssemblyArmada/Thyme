@@ -15,12 +15,10 @@
  */
 #include "w3dtypes.h"
 #include "dx8vertexbuffer.h"
-#include "dx8fvf.h"
 #include "dx8caps.h"
 #include "dx8wrapper.h"
 #include "w3d.h"
 FVFInfoClass g_dynamicFVFInfo(DX8_FVF_XYZNDUV2, 0);
-#define dynamic_fvf_type DX8_FVF_XYZNDUV2
 unsigned int g_vertexBufferCount;
 unsigned int g_vertexBufferTotalVertices;
 unsigned int g_vertexBufferTotalSize;
@@ -219,7 +217,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
                      &m_vertexBuffer),
         res);
     if (res < 0) {
-        captainslog_warn("Vertex buffer creation failed, trying to release assets...\n");
+        captainslog_warn("Vertex buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
         W3D::_Invalidate_Mesh_Cache();
         DX8CALL(ResourceManagerDiscardBytes(0));
@@ -229,7 +227,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
                          (D3DPOOL)(unsigned __int8)(usage & 1 ^ 1),
                          &m_vertexBuffer),
             res);
-        captainslog_warn("...Vertex buffer creation succesful\n");
+        captainslog_warn("...Vertex buffer creation succesful");
     }
 #endif
 }

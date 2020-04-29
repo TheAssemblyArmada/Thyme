@@ -20,8 +20,10 @@
 #include "vector3.h"
 #include "vector2.h"
 #include "vector4.h"
+#include "dx8fvf.h"
 class FVFInfoClass;
 class VertexBufferClass;
+#define dynamic_fvf_type DX8_FVF_XYZNDUV2
 
 struct VertexFormatXYZNDUV2
 {
@@ -210,9 +212,11 @@ public:
     static void _Reset(bool frame_changed);
     static void _Deinit();
     static unsigned short Get_Default_Vertex_Count();
-    FVFInfoClass &FVF_Info() { return m_fvfInfo; }
-    unsigned int Get_Type() { return m_type; }
-    unsigned short Get_Vertex_Count() { return m_vertexCount; }
+    FVFInfoClass &FVF_Info() const { return m_fvfInfo; }
+    unsigned int Get_Type() const { return m_type; }
+    unsigned short Get_Vertex_Count() const { return m_vertexCount; }
+    unsigned short Get_Vertex_Offset() const { return m_vertexBufferOffset; }
+    VertexBufferClass *Get_Vertex_Buffer() const { return m_vertexBuffer; }
 
 private:
 #ifdef GAME_DLL

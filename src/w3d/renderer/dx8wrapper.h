@@ -214,9 +214,9 @@ private:
     static void Reset_Statistics();
     static void Enumerate_Devices();
     static void Set_Default_Global_Render_States();
+    static void Invalidate_Cached_Render_States();
     static int Get_Render_Device(void);
     static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
-    static void Invalidate_Cached_Render_States();
     static bool Set_Device_Resolution(
         int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
     static bool Set_Render_Device(int dev = -1, int resx = -1, int resy = -1, int bits = -1, int windowed = -1,
@@ -227,8 +227,7 @@ private:
     static void Draw(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
         unsigned short min_vertex_index = 0, unsigned short vertex_count = 0);
 #ifdef BUILD_WITH_D3D8
-    static bool Find_Color_And_Z_Mode(
-        int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
+    static bool Find_Color_And_Z_Mode(int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
     static bool Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode);
     static bool Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
     static bool Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);
@@ -239,7 +238,7 @@ private:
 private:
 #ifdef GAME_DLL
 #ifdef BUILD_WITH_D3D8
-    static IDirect3D8 *(__stdcall * &s_d3dCreateFunction)(unsigned);
+    static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
     static HMODULE &s_d3dLib;
     static IDirect3D8 *&s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;

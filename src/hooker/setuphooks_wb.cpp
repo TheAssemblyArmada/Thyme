@@ -772,9 +772,6 @@ void Setup_Hooks()
     // This is a fix for an odd crash in the windows CRT related to vsnprintf.
     Hook_Function(0x0089FA20, Null_Func);
 
-    // dx8wrapper.h
-    Hook_Function(0x00800670, &DX8Wrapper::Init);
-    Hook_Function(0x00801240, &DX8Wrapper::Enumerate_Devices);
 #endif
     // dx8fvf.h
     Hook_Method(0x00520160, &FVFInfoClass::Hook_Ctor);
@@ -812,4 +809,50 @@ void Setup_Hooks()
     Hook_Method(0x004E1D70, &DynamicIBAccessClass::_Reset);
     Hook_Method(0x004E1D90, &DynamicIBAccessClass::Get_Default_Index_Count);
     Hook_Method(0x004E1DA0, &DynamicIBAccessClass::Get_Next_Index);
+
+    // dx8wrapper.h
+    Hook_Method(0x004F96D0, &DX8Wrapper::Init);
+    Hook_Method(0x004F98D0, &DX8Wrapper::Shutdown);
+    Hook_Method(0x004F9BF0, &DX8Wrapper::Invalidate_Cached_Render_States);
+    Hook_Method(0x004FA080, &DX8Wrapper::Reset_Device);
+    Hook_Method(0x004FAF40, &DX8Wrapper::Set_Render_Device);
+    Hook_Method(0x004FB5C0, &DX8Wrapper::Has_Stencil);
+    Hook_Method(0x004FB5F0, &DX8Wrapper::Get_Render_Device);
+    Hook_Method(0x004FB600, &DX8Wrapper::Get_Render_Device_Desc);
+    Hook_Method(0x004FB7B0, &DX8Wrapper::Set_Device_Resolution);
+    Hook_Method(0x004FB8E0, &DX8Wrapper::Get_Device_Resolution);
+    Hook_Method(0x004FB960, &DX8Wrapper::Get_Render_Target_Resolution);
+    Hook_Method(0x004FC530, &DX8Wrapper::Begin_Scene);
+    Hook_Method(0x004FC550, &DX8Wrapper::End_Scene);
+    Hook_Method(0x004FC800, &DX8Wrapper::Clear);
+    Hook_Method(0x004FC950, &DX8Wrapper::Set_Viewport);
+    Hook_Method(0x004FC970, static_cast<void (*)(const VertexBufferClass *, int)>(&DX8Wrapper::Set_Vertex_Buffer));
+    Hook_Method(0x004FCA10, static_cast<void (*)(const IndexBufferClass *, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
+    Hook_Method(0x004FCAB0, static_cast<void (*)(const DynamicVBAccessClass &)>(&DX8Wrapper::Set_Vertex_Buffer));
+    Hook_Method(
+        0x004FCB40, static_cast<void (*)(const DynamicIBAccessClass &, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
+    Hook_Method(0x004FD3D0,
+        static_cast<void (*)(unsigned int, unsigned short, unsigned short, unsigned short, unsigned short)>(
+            &DX8Wrapper::Draw_Triangles));
+    Hook_Method(0x004FD420,
+        static_cast<void (*)(unsigned short, unsigned short, unsigned short, unsigned short)>(&DX8Wrapper::Draw_Triangles));
+    Hook_Method(0x004FD440, &DX8Wrapper::Draw_Strip);
+    Hook_Method(0x004FD460, &DX8Wrapper::Apply_Render_State_Changes);
+    Hook_Method(0x004FDF00,
+        static_cast<w3dtexture_t (*)(unsigned int, unsigned int, WW3DFormat, MipCountType, w3dpool_t, bool)>(
+            &DX8Wrapper::_Create_DX8_Texture));
+    Hook_Method(0x004FE200, static_cast<w3dtexture_t (*)(w3dsurface_t, MipCountType)>(&DX8Wrapper::_Create_DX8_Texture));
+    Hook_Method(
+        0x004FE820, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::_Create_DX8_Surface));
+    Hook_Method(0x004FE8B0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::_Create_DX8_Surface));
+    Hook_Method(0x004FECD0, &DX8Wrapper::Set_Light);
+    Hook_Method(0x004FF1E0, &DX8Wrapper::_Get_DX8_Front_Buffer);
+    Hook_Method(0x004FF250, &DX8Wrapper::_Get_DX8_Back_Buffer);
+    Hook_Method(0x004FF310, &DX8Wrapper::Create_Render_Target);
+    Hook_Method(0x004FF810, &DX8Wrapper::Set_Render_Target_With_Z);
+    Hook_Method(0x004FF9A0, &DX8Wrapper::Set_Render_Target);
+    Hook_Method(0x004FFE50, &DX8Wrapper::Set_Gamma);
+    Hook_Method(0x005004A0, &DX8Wrapper::Get_DX8_Render_State_Value_Name);
+    Hook_Method(0x00500860, &DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name);
+    Hook_Method(0x00501B10, &DX8Wrapper::Get_Back_Buffer_Format);
 }

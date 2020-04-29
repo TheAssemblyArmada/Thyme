@@ -26,6 +26,21 @@
 #include "w3dtypes.h"
 #include "wwstring.h"
 #include <captainslog.h>
+#include "vertmaterial.h"
+#include "texture.h"
+class VertexBufferClass;
+class IndexBufferClass;
+class SurfaceClass;
+class DynamicVBAccessClass;
+class DynamicIBAccessClass;
+class LightEnvironmentClass;
+class ZTextureClass;
+class DX8_CleanupHook
+{
+public:
+    virtual void ReleaseResources() = 0;
+    virtual void ReAcquireResources() = 0;
+};
 
 // Some constants to control numbers of things.
 enum
@@ -50,15 +65,11 @@ extern uint32_t g_numberOfDx8Calls;
     ++g_numberOfDx8Calls;
 #endif
 
-// This class is going to be very much a WIP until we have a better idea
-// of the way it interacts with the rest of the program and what its structure
-// is.
-
 struct RenderStateStruct
 {
-    ShaderClass shader; // ShaderClass
-    void *material; // VertexMaterialClass
-    void *Textures[MAX_TEXTURE_STAGES]; // TextureClass
+    ShaderClass shader;
+    VertexMaterialClass *material;
+    TextureClass *Textures[MAX_TEXTURE_STAGES];
 #ifdef BUILD_WITH_D3D8
     D3DLIGHT8 Lights[GFX_LIGHT_COUNT];
 #endif
@@ -70,8 +81,8 @@ struct RenderStateStruct
     unsigned short vba_offset;
     unsigned short vba_count;
     unsigned short iba_offset;
-    void *vertex_buffers[VERTEX_BUFFERS]; // VertexBufferClass
-    void *index_buffer; // IndexBufferClass
+    VertexBufferClass *vertex_buffers[VERTEX_BUFFERS];
+    IndexBufferClass *index_buffer;
     unsigned short index_base_offset;
 
     RenderStateStruct();
@@ -107,7 +118,7 @@ class DX8Wrapper
     };
 
 public:
-    static bool Init(void *hwnd, bool lite = false);
+    static bool Init(HWND hwnd, bool lite = false);
     static void Shutdown();
     static void Enumerate_Devices();
 #ifdef BUILD_WITH_D3D8
@@ -163,8 +174,14 @@ private:
     static HMODULE &s_d3dLib;
     static IDirect3D8 *&s_d3dInterface;
     static IDirect3DDevice8 *&s_d3dDevice;
+    static D3DMATRIX &s_oldPrj;
+    static D3DMATRIX &s_oldView;
+    static D3DMATRIX &s_oldWorld;
+    static D3DPRESENT_PARAMETERS &s_presentParameters;
+    static D3DCOLOR &s_fogColor;
+    static D3DFORMAT &s_displayFormat;
     static ARRAY_DEC(w3dbasetexture_t, s_textures, MAX_TEXTURE_STAGES);
-    static void *&s_hwnd; // Actually a hwnd, but we only care for building the dll.
+    static HWND &s_hwnd; // Actually a hwnd, but we only care for building the dll.
     static void *&s_shadowMap;
     static ARRAY_DEC(unsigned, s_renderStates, 256);
     static ARRAY2D_DEC(unsigned, s_textureStageStates, MAX_TEXTURE_STAGES, 32);
@@ -208,14 +225,41 @@ private:
     static DynamicVectorClass<StringClass> &s_renderDeviceNameTable;
     static DynamicVectorClass<StringClass> &s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> &s_renderDeviceDescriptionTable;
+    static w3dadapterid_t &s_currentAdapterIdentifier;
+    static ARRAY_DEC(Matrix4, s_DX8Transforms, 257);
+    static bool &s_EnableTriangleDraw;
+    static int &s_ZBias;
+    static Vector3 &s_ambientColor;
+    static bool &s_isDeviceLost;
+    static int &s_FPUPreserve;
+    static DWORD &s_vertexShader;
+    static DWORD &s_pixelShader;
+    static LightEnvironmentClass *&s_lightEnvironment;
+    static DWORD &s_vertexProcessingBehavior;
+    static bool &s_fogEnable;
+    static w3dsurface_t &s_currentRenderTarget;
+    static w3dsurface_t &s_currentDepthBuffer;
+    static w3dsurface_t &s_defaultRenderTarget;
+    static w3dsurface_t &s_defaultDepthBuffer;
+    static bool &s_isRenderToTexture;
+    static unsigned int &s_drawPolygonLowBoundLimit;
+    static unsigned long &s_frameCount;
+    static bool &s_DX8SingleThreaded;
+    static DX8_CleanupHook *&s_cleanupHook;
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
     static HMODULE s_d3dLib;
     static IDirect3D8 *s_d3dInterface;
     static IDirect3DDevice8 *s_d3dDevice;
+    static D3DMATRIX s_oldPrj;
+    static D3DMATRIX s_oldView;
+    static D3DMATRIX s_oldWorld;
+    static D3DPRESENT_PARAMETERS s_presentParameters;
+    static D3DCOLOR s_fogColor;
+    static D3DFORMAT s_displayFormat;
 #endif
-    static void *s_hwnd;
+    static HWND s_hwnd;
     static void *s_shadowMap; // Not sure what type this actually is for now.
     static unsigned s_renderStates[256];
     static w3dbasetexture_t s_textures[MAX_TEXTURE_STAGES];
@@ -260,6 +304,27 @@ private:
     static DynamicVectorClass<StringClass> s_renderDeviceNameTable;
     static DynamicVectorClass<StringClass> s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> s_renderDeviceDescriptionTable;
+    static w3dadapterid_t s_currentAdapterIdentifier;
+    static Matrix4 s_DX8Transforms[257];
+    static bool s_EnableTriangleDraw;
+    static int s_ZBias;
+    static Vector3 s_ambientColor;
+    static bool s_isDeviceLost;
+    static int s_FPUPreserve;
+    static DWORD s_vertexShader;
+    static DWORD s_pixelShader;
+    static LightEnvironmentClass *s_lightEnvironment;
+    static DWORD s_vertexProcessingBehavior;
+    static bool s_fogEnable;
+    static w3dsurface_t s_currentRenderTarget;
+    static w3dsurface_t s_currentDepthBuffer;
+    static w3dsurface_t s_defaultRenderTarget;
+    static w3dsurface_t s_defaultDepthBuffer;
+    static bool s_isRenderToTexture;
+    static unsigned int s_drawPolygonLowBoundLimit;
+    static unsigned long s_frameCount;
+    static bool s_DX8SingleThreaded;
+    static DX8_CleanupHook *s_cleanupHook;
 #endif
 };
 

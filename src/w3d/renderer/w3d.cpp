@@ -24,6 +24,7 @@ bool W3D::s_largeTextureExtraReduction;
 bool W3D::s_isScreenUVBiased;
 bool W3D::s_texturingEnabled = true;
 bool W3D::s_thumbnailEnabled = true;
+bool W3D::s_textureFilter;
 #endif
 
 void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
@@ -34,4 +35,18 @@ void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &w
 int W3D::Get_Texture_Bit_Depth()
 {
     return DX8Wrapper::Get_Texture_Bit_Depth();
+}
+
+void W3D::_Invalidate_Mesh_Cache()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00807840, 0x00503700));
+#endif
+}
+
+void W3D::_Invalidate_Textures()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00807850, 0x00503710));
+#endif
 }

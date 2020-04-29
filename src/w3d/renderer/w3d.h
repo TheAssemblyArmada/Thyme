@@ -31,10 +31,13 @@ public:
     static bool Is_Screen_UVBiased() { return s_isScreenUVBiased; }
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
+    static int Get_Texture_Filter() { return s_textureFilter; }
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static int Get_Texture_Bit_Depth();
+    static void _Invalidate_Mesh_Cache();
+    static void _Invalidate_Textures();
 
 private:
 #ifdef GAME_DLL
@@ -45,6 +48,7 @@ private:
     static bool &s_isScreenUVBiased;
     static bool &s_texturingEnabled;
     static bool &s_thumbnailEnabled;
+    static int &s_textureFilter;
 #else
     static unsigned s_syncTime;
     static unsigned s_textureReduction;
@@ -53,5 +57,6 @@ private:
     static bool s_isScreenUVBiased;
     static bool s_texturingEnabled;
     static bool s_thumbnailEnabled;
+    static int s_textureFilter;
 #endif
 };

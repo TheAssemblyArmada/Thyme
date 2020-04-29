@@ -32,6 +32,7 @@
 #include "dict.h"
 #include "dinputkeybd.h"
 #include "dx8caps.h"
+#include "dx8fvf.h"
 #include "dx8texman.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
@@ -316,6 +317,9 @@ void Setup_Hooks()
     Hook_Method(0x00846870, &DX8Caps::Check_Shader_Support);
     Hook_Method(0x00844A90, &DX8Caps::Hook_Ctor1);
     Hook_Method(0x00844950, &DX8Caps::Hook_Ctor2);
+
+    // dx8fvf.h
+    Hook_Method(0x0086B6E0, &FVFInfoClass::Hook_Ctor);
 
     // bitmaphandler.h
     Hook_Function(0x0087E7A0, BitmapHandlerClass::Copy_Image);

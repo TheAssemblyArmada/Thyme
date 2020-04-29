@@ -31,6 +31,7 @@
 #include "ddsfile.h"
 #include "dict.h"
 #include "dx8caps.h"
+#include "dx8fvf.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
 #include "filetransfer.h"
@@ -773,4 +774,6 @@ void Setup_Hooks()
     Hook_Function(0x00800670, &DX8Wrapper::Init);
     Hook_Function(0x00801240, &DX8Wrapper::Enumerate_Devices);
 #endif
+    // dx8fvf.h
+    Hook_Method(0x00520160, &FVFInfoClass::Hook_Ctor);
 }

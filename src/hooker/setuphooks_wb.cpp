@@ -85,6 +85,7 @@
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
+#include "dx8vertexbuffer.h"
 #include "dx8indexbuffer.h"
 #include "wwstring.h"
 #include <stdarg.h>
@@ -777,6 +778,22 @@ void Setup_Hooks()
 #endif
     // dx8fvf.h
     Hook_Method(0x00520160, &FVFInfoClass::Hook_Ctor);
+
+    // dx8vertexbuffer.h
+    Hook_Method(0x004E7960, &VertexBufferClass::Release_Engine_Ref);
+    Hook_Method(0x004E79A0, &VertexBufferClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x004E7AB0, &VertexBufferClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x004E7B30, &VertexBufferClass::AppendLockClass::Hook_Ctor);
+    Hook_Method(0x004E7CB0, &VertexBufferClass::AppendLockClass::Hook_Dtor);
+    Hook_Method(0x004E7D30, &SortingVertexBufferClass::Hook_Ctor);
+    Hook_Method(0x004E7E60, &DX8VertexBufferClass::Hook_Ctor);
+    Hook_Method(0x004E95D0, &DynamicVBAccessClass::Hook_Ctor);
+    Hook_Method(0x004E96A0, &DynamicVBAccessClass::Hook_Dtor);
+    Hook_Method(0x004E96F0, &DynamicVBAccessClass::_Deinit);
+    Hook_Method(0x004E9C60, &DynamicVBAccessClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x004E9DA0, &DynamicVBAccessClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x004E9E10, &DynamicVBAccessClass::_Reset);
+    Hook_Method(0x004E9E30, &DynamicVBAccessClass::Get_Default_Vertex_Count);
 
     // dx8indexbuffer.h
     Hook_Method(0x004E0C10, &IndexBufferClass::Add_Engine_Ref);

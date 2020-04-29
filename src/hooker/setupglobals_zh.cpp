@@ -339,6 +339,18 @@ bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00C
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
 int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
 
+// dx8renderer.cpp
+#include "dx8renderer.h"
+DX8MeshRendererClass &g_theDX8MeshRenderer = Make_Global<DX8MeshRendererClass>(PICK_ADDRESS(0x00A4C4E0, 0x00DEEBF0));
+DynamicVectorClass<Vector3> &g_tempVertexBuffer =
+    Make_Global<DynamicVectorClass<Vector3>>(PICK_ADDRESS(0x00A4C4B0, 0x00DEEBC0));
+DynamicVectorClass<Vector3> &g_tempNormalBuffer =
+    Make_Global<DynamicVectorClass<Vector3>>(PICK_ADDRESS(0x00A4C498, 0x00DEEBA8));
+MultiListClass<DX8TextureCategoryClass> &g_textureCategoryDeleteList =
+    Make_Global<MultiListClass<DX8TextureCategoryClass>>(PICK_ADDRESS(0x00A4C438, 0x00DEEB48));
+MultiListClass<DX8FVFCategoryContainer> &g_fvfCategoryContainerDeleteList =
+    Make_Global<MultiListClass<DX8FVFCategoryContainer>>(PICK_ADDRESS(0x00A4C480, 0x00DEEB90));
+
 // w3dformat.cpp
 ARRAY_DEF(PICK_ADDRESS(0x00A5243C, 0x00DF6B20), WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
 ARRAY_DEF(PICK_ADDRESS(0x00A522FC, 0x00DF69E0), WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);

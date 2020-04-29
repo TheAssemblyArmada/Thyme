@@ -85,6 +85,7 @@
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
+#include "dx8indexbuffer.h"
 #include "wwstring.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -776,4 +777,22 @@ void Setup_Hooks()
 #endif
     // dx8fvf.h
     Hook_Method(0x00520160, &FVFInfoClass::Hook_Ctor);
+
+    // dx8indexbuffer.h
+    Hook_Method(0x004E0C10, &IndexBufferClass::Add_Engine_Ref);
+    Hook_Method(0x004E0C20, &IndexBufferClass::Release_Engine_Ref);
+    Hook_Method(0x004E0DE0, &IndexBufferClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x004E0F10, &IndexBufferClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x004E0F90, &IndexBufferClass::AppendLockClass::Hook_Ctor);
+    Hook_Method(0x004E1100, &IndexBufferClass::AppendLockClass::Hook_Dtor);
+    Hook_Method(0x004E1180, &DX8IndexBufferClass::Hook_Ctor);
+    Hook_Method(0x004E13B0, &SortingIndexBufferClass::Hook_Ctor);
+    Hook_Method(0x004E1510, &DynamicIBAccessClass::Hook_Ctor);
+    Hook_Method(0x004E1640, &DynamicIBAccessClass::Hook_Dtor);
+    Hook_Method(0x004E16D0, &DynamicIBAccessClass::_Deinit);
+    Hook_Method(0x004E17C0, &DynamicIBAccessClass::WriteLockClass::Hook_Ctor);
+    Hook_Method(0x004E18E0, &DynamicIBAccessClass::WriteLockClass::Hook_Dtor);
+    Hook_Method(0x004E1D70, &DynamicIBAccessClass::_Reset);
+    Hook_Method(0x004E1D90, &DynamicIBAccessClass::Get_Default_Index_Count);
+    Hook_Method(0x004E1DA0, &DynamicIBAccessClass::Get_Next_Index);
 }

@@ -198,6 +198,7 @@ set(GAMEENGINE_SRC
     w3d/math/quaternion.cpp
     w3d/math/vp.cpp
     w3d/renderer/bitmaphandler.cpp
+    w3d/renderer/boxrobj.cpp
     w3d/renderer/colorspace.cpp
     w3d/renderer/ddsfile.cpp
     w3d/renderer/dx8caps.cpp

@@ -37,7 +37,7 @@ void MissingTexture::Init()
     static const int _missing_height = 256;
 
 #ifdef BUILD_WITH_D3D8
-    captainslog_assert(s_missingTexture != W3D_TYPE_INVALID_TEXTURE);
+    captainslog_assert(s_missingTexture == W3D_TYPE_INVALID_TEXTURE);
     w3dsurface_t dest = W3D_TYPE_INVALID_SURFACE;
     w3dsurface_t src = W3D_TYPE_INVALID_SURFACE;
     RECT rect{0, 0, _missing_width, _missing_height};

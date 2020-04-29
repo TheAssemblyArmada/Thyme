@@ -45,6 +45,9 @@ extern uint32_t g_numberOfDx8Calls;
 #define DX8CALL(x) \
     DX8Wrapper::Get_D3D_Device8()->x; \
     ++g_numberOfDx8Calls;
+#define DX8CALL_HRES(x, res) \
+    res = DX8Wrapper::Get_D3D_Device8()->x; \
+    ++g_numberOfDx8Calls;
 #endif
 
 // This class is going to be very much a WIP until we have a better idea

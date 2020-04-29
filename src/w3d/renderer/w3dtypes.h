@@ -28,6 +28,7 @@ typedef LPDIRECT3D8 w3dhandle_t;
 typedef D3DADAPTER_IDENTIFIER8 w3dadapterid_t;
 typedef LPDIRECT3DDEVICE8 w3ddevice_t;
 typedef D3DPOOL w3dpool_t;
+typedef D3DMATERIAL8 w3dmat_t;
 
 #define W3D_TYPE_INVALID_TEXTURE nullptr
 #define W3D_TYPE_INVALID_SURFACE nullptr
@@ -41,6 +42,7 @@ typedef int w3dhandle_t;
 typedef int w3dadapterid_t;
 typedef int w3ddevice_t;
 typedef int w3dpool_t;
+typedef int w3dmat_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
 #define W3D_TYPE_INVALID_SURFACE 0

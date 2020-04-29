@@ -36,9 +36,15 @@ IDirect3D8 *(__stdcall *DX8Wrapper::s_d3dCreateFunction)(unsigned) = nullptr;
 HMODULE DX8Wrapper::s_d3dLib = nullptr;
 IDirect3D8 *DX8Wrapper::s_d3dInterface;
 IDirect3DDevice8 *DX8Wrapper::s_d3dDevice;
+D3DMATRIX DX8Wrapper::s_oldPrj;
+D3DMATRIX DX8Wrapper::s_oldView;
+D3DMATRIX DX8Wrapper::s_oldWorld;
+D3DPRESENT_PARAMETERS DX8Wrapper::s_presentParameters;
+D3DCOLOR DX8Wrapper::s_fogColor;
+D3DFORMAT DX8Wrapper::s_displayFormat;
 #endif
 void *DX8Wrapper::s_shadowMap;
-void *DX8Wrapper::s_hwnd;
+HWND DX8Wrapper::s_hwnd;
 unsigned DX8Wrapper::s_renderStates[256];
 unsigned DX8Wrapper::s_textureStageStates[MAX_TEXTURE_STAGES][32];
 w3dbasetexture_t DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
@@ -82,9 +88,30 @@ unsigned DX8Wrapper::s_lastFrameDrawCalls;
 DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceNameTable;
 DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceShortNameTable;
 DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionTable;
+w3dadapterid_t DX8Wrapper::s_currentAdapterIdentifier;
+Matrix4 DX8Wrapper::s_DX8Transforms[257];
+bool DX8Wrapper::s_EnableTriangleDraw;
+int DX8Wrapper::s_ZBias;
+Vector3 DX8Wrapper::s_ambientColor;
+bool DX8Wrapper::s_isDeviceLost;
+int DX8Wrapper::s_FPUPreserve;
+DWORD DX8Wrapper::s_vertexShader;
+DWORD DX8Wrapper::s_pixelShader;
+LightEnvironmentClass *DX8Wrapper::s_lightEnvironment;
+DWORD DX8Wrapper::s_vertexProcessingBehavior;
+bool DX8Wrapper::s_fogEnable;
+w3dsurface_t DX8Wrapper::s_currentRenderTarget;
+w3dsurface_t DX8Wrapper::s_currentDepthBuffer;
+w3dsurface_t DX8Wrapper::s_defaultRenderTarget;
+w3dsurface_t DX8Wrapper::s_defaultDepthBuffer;
+bool DX8Wrapper::s_isRenderToTexture;
+unsigned int DX8Wrapper::s_drawPolygonLowBoundLimit;
+unsigned long DX8Wrapper::s_frameCount;
+bool DX8Wrapper::s_DX8SingleThreaded;
+DX8_CleanupHook *DX8Wrapper::s_cleanupHook;
 #endif
 
-bool DX8Wrapper::Init(void *hwnd, bool lite)
+bool DX8Wrapper::Init(HWND hwnd, bool lite)
 {
 #ifdef BUILD_WITH_D3D8
     memset(s_textures, 0, sizeof(s_textures));

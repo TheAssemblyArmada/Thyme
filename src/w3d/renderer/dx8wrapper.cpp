@@ -691,7 +691,7 @@ bool DX8Wrapper::Set_Render_Device(
     s_presentParameters.BackBufferHeight = s_resolutionHeight;
     s_presentParameters.MultiSampleType = D3DMULTISAMPLE_NONE;
     s_presentParameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
-    s_presentParameters.EnableAutoDepthStencil = 1;
+    s_presentParameters.EnableAutoDepthStencil = true;
     s_presentParameters.BackBufferCount = (s_isWindowed == 0) + 1;
     s_presentParameters.hDeviceWindow = s_hwnd;
     s_presentParameters.Flags = 0;
@@ -712,6 +712,9 @@ bool DX8Wrapper::Set_Render_Device(
             case D3DFMT_A8R8G8B8:
             case D3DFMT_R8G8B8:
                 s_bitDepth = 32;
+                if (s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, mode.Format, D3DFMT_A8R8G8B8, true) == 0) {
+                    s_presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;
+                }
                 break;
             case D3DFMT_A4R4G4B4:
             case D3DFMT_A1R5G5B5:

@@ -314,8 +314,8 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
     }
     TextureLoader::Deinit();
     SortingRendererClass::Deinit();
-    DynamicVBAccessClass::_Deinit();
-    DynamicIBAccessClass::_Deinit();
+    DynamicVBAccessClass::Deinit();
+    DynamicIBAccessClass::Deinit();
     PointGroupClass::Shutdown();
     VertexMaterialClass::Shutdown();
     BoxRenderObjClass::Shutdown();
@@ -379,7 +379,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
         captainslog_warn("Device reset failed");
         return false;
     }
-    W3D::_Invalidate_Textures();
+    W3D::Invalidate_Textures();
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
         Set_Vertex_Buffer(nullptr, i);
     }
@@ -387,8 +387,8 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     if (s_cleanupHook) {
         s_cleanupHook->ReleaseResources();
     }
-    DynamicVBAccessClass::_Deinit();
-    DynamicIBAccessClass::_Deinit();
+    DynamicVBAccessClass::Deinit();
+    DynamicIBAccessClass::Deinit();
     DX8TextureManagerClass::Release_Textures();
     memset(s_vertexShaderConstants, 0, sizeof(s_vertexShaderConstants));
     memset(s_pixelShaderConstants, 0, sizeof(s_pixelShaderConstants));
@@ -1408,10 +1408,10 @@ void DX8Wrapper::Apply_Render_State_Changes()
             }
         }
         if (s_renderStateChanged & WORLD_CHANGED) {
-            _Set_DX8_Transform(D3DTS_WORLD, s_renderState.world);
+            Set_DX8_Transform(D3DTS_WORLD, s_renderState.world);
         }
         if (s_renderStateChanged & VIEW_CHANGED) {
-            _Set_DX8_Transform(D3DTS_VIEW, s_renderState.view);
+            Set_DX8_Transform(D3DTS_VIEW, s_renderState.view);
         }
         if (s_renderStateChanged & VERTEX_BUFFER_CHANGED) {
             for (int i = 0; i < VERTEX_BUFFERS; i++) {
@@ -1479,7 +1479,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
         if (hr == D3DERR_OUTOFVIDEOMEMORY) {
             captainslog_warn("Error: Out of memory while creating texture. Trying to release assets...");
             TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
-            W3D::_Invalidate_Mesh_Cache();
+            W3D::Invalidate_Mesh_Cache();
             hr = D3DXCreateTexture(
                 s_d3dDevice, width, height, mip_level_count, 0, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), pool, &texture);
             if (hr < 0) {
@@ -1507,7 +1507,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
     if (hr == D3DERR_OUTOFVIDEOMEMORY) {
         captainslog_warn("Error: Out of memory while creating render target. Trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
-        W3D::_Invalidate_Mesh_Cache();
+        W3D::Invalidate_Mesh_Cache();
         hr = D3DXCreateTexture(s_d3dDevice,
             width,
             height,
@@ -1607,7 +1607,7 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
 }
 
 #ifdef BUILD_WITH_D3D8
-IDirect3DSurface8 *DX8Wrapper::_Get_DX8_Front_Buffer()
+IDirect3DSurface8 *DX8Wrapper::Get_DX8_Front_Buffer()
 {
     D3DDISPLAYMODE mode;
     DX8CALL(GetDisplayMode(&mode));
@@ -1618,7 +1618,7 @@ IDirect3DSurface8 *DX8Wrapper::_Get_DX8_Front_Buffer()
 }
 #endif
 
-SurfaceClass *DX8Wrapper::_Get_DX8_Back_Buffer(unsigned int num)
+SurfaceClass *DX8Wrapper::Get_DX8_Back_Buffer(unsigned int num)
 {
 #ifdef BUILD_WITH_D3D8
     IDirect3DSurface8 *bb;

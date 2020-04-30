@@ -219,7 +219,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
     if (res < 0) {
         captainslog_warn("Vertex buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
-        W3D::_Invalidate_Mesh_Cache();
+        W3D::Invalidate_Mesh_Cache();
         DX8CALL(ResourceManagerDiscardBytes(0));
         DX8CALL_HRES(CreateVertexBuffer(m_fvfInfo->Get_FVF_Size() * m_vertexCount,
                          d3dusage,
@@ -257,7 +257,7 @@ DynamicVBAccessClass::~DynamicVBAccessClass()
     Ref_Ptr_Release(m_vertexBuffer);
 }
 
-void DynamicVBAccessClass::_Deinit()
+void DynamicVBAccessClass::Deinit()
 {
     if (g_dynamicDX8VertexBuffer) {
         captainslog_assert((g_dynamicDX8VertexBuffer == NULL) || (g_dynamicDX8VertexBuffer->Num_Refs() == 1));
@@ -362,7 +362,7 @@ DynamicVBAccessClass::WriteLockClass::~WriteLockClass()
     }
 }
 
-void DynamicVBAccessClass::_Reset(bool frame_changed)
+void DynamicVBAccessClass::Reset(bool frame_changed)
 {
     g_dynamicSortingVertexArrayOffset = 0;
     if (frame_changed) {

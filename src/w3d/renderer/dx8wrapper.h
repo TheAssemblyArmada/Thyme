@@ -146,7 +146,7 @@ public:
     static w3dtexture_t Create_Texture(w3dsurface_t surface, MipCountType mip_level_count);
     static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
     static w3dsurface_t Create_Surface(const char *name);
-    static SurfaceClass *_Get_DX8_Back_Buffer(unsigned int num = 0);
+    static SurfaceClass *Get_DX8_Back_Buffer(unsigned int num = 0);
     static void Begin_Statistics();
     static void End_Statistics();
     static TextureClass *Create_Render_Target(int width, int height, WW3DFormat format);
@@ -168,12 +168,12 @@ public:
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
     static void Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture);
     static IDirect3DDevice8 *Get_D3D_Device8() { return s_d3dDevice; }
-    static IDirect3DSurface8 *_Get_DX8_Front_Buffer();
+    static IDirect3DSurface8 *Get_DX8_Front_Buffer();
     static Vector4 Convert_Color(unsigned color);
     static unsigned int Convert_Color(const Vector4 &color);
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
-    static void _Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
+    static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
 #endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
@@ -646,7 +646,7 @@ inline void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT8 *light)
     }
 }
 
-inline void DX8Wrapper::_Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)
+inline void DX8Wrapper::Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)
 {
     captainslog_assert(transform <= D3DTS_WORLD);
     s_DX8Transforms[transform] = m;

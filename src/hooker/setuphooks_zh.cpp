@@ -333,10 +333,10 @@ void Setup_Hooks()
     Hook_Method(0x0081F1D0, &DX8VertexBufferClass::Hook_Ctor);
     Hook_Method(0x0081F480, &DynamicVBAccessClass::Hook_Ctor);
     Hook_Method(0x0081F4C0, &DynamicVBAccessClass::Hook_Dtor);
-    Hook_Method(0x0081F510, &DynamicVBAccessClass::_Deinit);
+    Hook_Method(0x0081F510, &DynamicVBAccessClass::Deinit);
     Hook_Method(0x0081F930, &DynamicVBAccessClass::WriteLockClass::Hook_Ctor);
     Hook_Method(0x0081F9F0, &DynamicVBAccessClass::WriteLockClass::Hook_Dtor);
-    Hook_Method(0x0081FA20, &DynamicVBAccessClass::_Reset);
+    Hook_Method(0x0081FA20, &DynamicVBAccessClass::Reset);
     Hook_Method(0x0081FA40, &DynamicVBAccessClass::Get_Default_Vertex_Count);
 
     // dx8indexbuffer.h
@@ -350,10 +350,10 @@ void Setup_Hooks()
     Hook_Method(0x0081E450, &SortingIndexBufferClass::Hook_Ctor);
     Hook_Method(0x0081E610, &DynamicIBAccessClass::Hook_Ctor);
     Hook_Method(0x0081E6E0, &DynamicIBAccessClass::Hook_Dtor);
-    Hook_Method(0x0081E770, &DynamicIBAccessClass::_Deinit);
+    Hook_Method(0x0081E770, &DynamicIBAccessClass::Deinit);
     Hook_Method(0x0081E7E0, &DynamicIBAccessClass::WriteLockClass::Hook_Ctor);
     Hook_Method(0x0081E880, &DynamicIBAccessClass::WriteLockClass::Hook_Dtor);
-    Hook_Method(0x0081EC50, &DynamicIBAccessClass::_Reset);
+    Hook_Method(0x0081EC50, &DynamicIBAccessClass::Reset);
     Hook_Method(0x0081EC70, &DynamicIBAccessClass::Get_Default_Index_Count);
     Hook_Method(0x0081EC80, &DynamicIBAccessClass::Get_Next_Index);
 
@@ -882,8 +882,8 @@ void Setup_Hooks()
         0x00803E90, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x00803EE0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x008041B0, &DX8Wrapper::Set_Light);
-    Hook_Method(0x008044B0, &DX8Wrapper::_Get_DX8_Front_Buffer);
-    Hook_Method(0x00804520, &DX8Wrapper::_Get_DX8_Back_Buffer);
+    Hook_Method(0x008044B0, &DX8Wrapper::Get_DX8_Front_Buffer);
+    Hook_Method(0x00804520, &DX8Wrapper::Get_DX8_Back_Buffer);
     Hook_Method(0x008045E0, &DX8Wrapper::Create_Render_Target);
     Hook_Method(0x00804780, &DX8Wrapper::Set_Render_Target_With_Z);
     Hook_Method(0x008047E0, &DX8Wrapper::Set_Render_Target);

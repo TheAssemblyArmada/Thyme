@@ -167,8 +167,8 @@ public:
     ~DynamicIBAccessClass();
     void Allocate_Sorting_Dynamic_Buffer();
     void Allocate_DX8_Dynamic_Buffer();
-    static void _Deinit();
-    static void _Reset(bool frame_changed);
+    static void Deinit();
+    static void Reset(bool frame_changed);
     static unsigned short Get_Default_Index_Count();
     static unsigned short Get_Next_Index();
     unsigned int Get_Type() const { return m_type; }

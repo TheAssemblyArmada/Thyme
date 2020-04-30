@@ -209,8 +209,8 @@ public:
     ~DynamicVBAccessClass();
     void Allocate_Sorting_Dynamic_Buffer();
     void Allocate_DX8_Dynamic_Buffer();
-    static void _Reset(bool frame_changed);
-    static void _Deinit();
+    static void Reset(bool frame_changed);
+    static void Deinit();
     static unsigned short Get_Default_Vertex_Count();
     FVFInfoClass &FVF_Info() const { return m_fvfInfo; }
     unsigned int Get_Type() const { return m_type; }

@@ -1062,7 +1062,7 @@ void DX8Wrapper::End_Statistics()
     s_lastFrameDrawCalls = s_drawCalls;
 }
 
-void DX8Wrapper::Begin_Scene(void)
+void DX8Wrapper::Begin_Scene()
 {
 #ifdef BUILD_WITH_D3D8
     DX8CALL(BeginScene());

@@ -180,7 +180,7 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
     if (res < 0) {
         captainslog_warn("Index buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
-        W3D::_Invalidate_Mesh_Cache();
+        W3D::Invalidate_Mesh_Cache();
         DX8CALL(ResourceManagerDiscardBytes(0));
         DX8CALL_HRES(
             CreateIndexBuffer(
@@ -319,7 +319,7 @@ DynamicIBAccessClass::WriteLockClass::~WriteLockClass()
     m_dynamicIBAccess->m_indexBuffer->Release_Ref();
 }
 
-void DynamicIBAccessClass::_Deinit()
+void DynamicIBAccessClass::Deinit()
 {
     if (g_dynamicDX8IndexBuffer) {
         captainslog_assert((g_dynamicDX8IndexBuffer == NULL) || (g_dynamicDX8IndexBuffer->Num_Refs() == 1));
@@ -339,7 +339,7 @@ void DynamicIBAccessClass::_Deinit()
     g_dynamicSortingIndexArrayOffset = 0;
 }
 
-void DynamicIBAccessClass::_Reset(bool frame_changed)
+void DynamicIBAccessClass::Reset(bool frame_changed)
 {
     g_dynamicSortingIndexArrayOffset = 0;
     if (frame_changed) {

@@ -37,14 +37,14 @@ int W3D::Get_Texture_Bit_Depth()
     return DX8Wrapper::Get_Texture_Bit_Depth();
 }
 
-void W3D::_Invalidate_Mesh_Cache()
+void W3D::Invalidate_Mesh_Cache()
 {
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x00807840, 0x00503700));
 #endif
 }
 
-void W3D::_Invalidate_Textures()
+void W3D::Invalidate_Textures()
 {
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x00807850, 0x00503710));

@@ -1603,7 +1603,9 @@ void DX8Wrapper::Compute_Caps(WW3DFormat display_format)
 
 void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
 {
-    // todo pending definition of LightEnvironmentClass
+#ifdef GAME_DLL
+    return Call_Function<void, LightEnvironmentClass *>(PICK_ADDRESS(0x00804200, 0x004FEF90), light_env);
+#endif
 }
 
 #ifdef BUILD_WITH_D3D8

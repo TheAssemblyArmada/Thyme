@@ -124,7 +124,7 @@ public:
     static void Shutdown();
     static void Do_Onetime_Device_Dependent_Inits();
     static void Do_Onetime_Device_Dependent_Shutdowns();
-    static void Begin_Scene(void);
+    static void Begin_Scene();
     static void End_Scene(bool flip_frames = true);
     static void Clear(
         bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z = 1.0f, unsigned int stencil = 0);
@@ -217,7 +217,7 @@ private:
     static void Enumerate_Devices();
     static void Set_Default_Global_Render_States();
     static void Invalidate_Cached_Render_States();
-    static int Get_Render_Device(void);
+    static int Get_Render_Device();
     static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
     static bool Set_Device_Resolution(
         int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);

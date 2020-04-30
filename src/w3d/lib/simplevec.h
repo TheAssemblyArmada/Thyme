@@ -95,6 +95,9 @@ protected:
 template<typename T>
 class SimpleDynVecClass : public SimpleVecClass<T>
 {
+    using SimpleVecClass<T>::m_vector;
+    using SimpleVecClass<T>::m_vectorMax;
+
 public:
     SimpleDynVecClass(int size = 0) : SimpleVecClass<T>(size), m_activeCount(0) {}
     virtual ~SimpleDynVecClass(void)
@@ -118,8 +121,8 @@ public:
     virtual bool Resize(int newsize)
     {
         if (SimpleVecClass<T>::Resize(newsize)) {
-            if (Length() < m_activeCount)
-                m_activeCount = Length();
+            if (m_vectorMax < m_activeCount)
+                m_activeCount = m_vectorMax;
             return true;
         }
         return false;
@@ -168,7 +171,7 @@ public:
         captainslog_assert(start >= 0);
         captainslog_assert(start <= m_activeCount - count);
         if (start < m_activeCount - count) {
-            memmove(&(Vector[start]), &(Vector[start + count]), (m_activeCount - start - count) * sizeof(T));
+            memmove(&(m_vector[start]), &(m_vector[start + count]), (m_activeCount - start - count) * sizeof(T));
         }
         m_activeCount -= count;
         if (allow_shrink) {
@@ -187,13 +190,13 @@ public:
 protected:
     bool Grow(int new_size_hint)
     {
-        int new_size = std::max(Length() + Length() / 4, Length() + 4);
+        int new_size = std::max(m_vectorMax + m_vectorMax / 4, m_vectorMax + 4);
         new_size = std::max(new_size, new_size_hint);
         return Resize(new_size);
     }
     bool Shrink(void)
     {
-        if (m_activeCount < VectorMax / 4) {
+        if (m_activeCount < m_vectorMax / 4) {
             return Resize(m_activeCount);
         }
         return true;

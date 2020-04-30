@@ -295,11 +295,11 @@ int &DX8Wrapper::s_ZBias = Make_Global<int>(PICK_ADDRESS(0x00A427A4, 0x00DE8FDC)
 Vector3 &DX8Wrapper::s_ambientColor = Make_Global<Vector3>(PICK_ADDRESS(0x00A47DB8, 0x00DEE5F0));
 bool &DX8Wrapper::s_isDeviceLost = Make_Global<bool>(PICK_ADDRESS(0x00A47E74, 0x00DEE6AC));
 int &DX8Wrapper::s_FPUPreserve = Make_Global<int>(PICK_ADDRESS(0x00A47EC0, 0x00DEE6F8));
-DWORD &DX8Wrapper::s_vertexShader = Make_Global<DWORD>(PICK_ADDRESS(0x00A47ED0, 0x00DEE708));
-DWORD &DX8Wrapper::s_pixelShader = Make_Global<DWORD>(PICK_ADDRESS(0x00A47ED4, 0x00DEE70C));
+unsigned long &DX8Wrapper::s_vertexShader = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47ED0, 0x00DEE708));
+unsigned long &DX8Wrapper::s_pixelShader = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47ED4, 0x00DEE70C));
 LightEnvironmentClass *&DX8Wrapper::s_lightEnvironment =
     Make_Global<LightEnvironmentClass *>(PICK_ADDRESS(0x00A47ED8, 0x00DEE710));
-DWORD &DX8Wrapper::s_vertexProcessingBehavior = Make_Global<DWORD>(PICK_ADDRESS(0x00A47EE0, 0x00DEE718));
+unsigned long &DX8Wrapper::s_vertexProcessingBehavior = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47EE0, 0x00DEE718));
 bool &DX8Wrapper::s_fogEnable = Make_Global<bool>(PICK_ADDRESS(0x00A47EE4, 0x00DEE71C));
 w3dsurface_t &DX8Wrapper::s_currentRenderTarget = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EF4, 0x00DEE72C));
 w3dsurface_t &DX8Wrapper::s_currentDepthBuffer = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EF8, 0x00DEE730));

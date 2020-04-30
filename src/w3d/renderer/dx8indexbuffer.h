@@ -58,9 +58,9 @@ public:
 
     private:
 #ifdef GAME_DLL
-        AppendLockClass *Hook_Ctor(IndexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range)
+        AppendLockClass *Hook_Ctor(IndexBufferClass *index_buffer_, unsigned int start_index, unsigned int index_range)
         {
-            return new (this) AppendLockClass(VertexBuffer, start_index, index_range);
+            return new (this) AppendLockClass(index_buffer_, start_index, index_range);
         }
         void Hook_Dtor() { AppendLockClass::~AppendLockClass(); }
 #endif

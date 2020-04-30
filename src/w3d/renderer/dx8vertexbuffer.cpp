@@ -32,13 +32,13 @@ unsigned short g_dynamicDX8VertexBufferSize = 5000;
 unsigned short g_dynamicDX8VertexBufferOffset;
 
 VertexBufferClass::VertexBufferClass(
-    unsigned int type_, unsigned int FVF, unsigned short vertex_count_, unsigned int vertex_size) :
+    unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size) :
     m_type(type_), m_vertexCount(vertex_count_), m_engineRefs(0)
 {
     captainslog_assert(m_vertexCount);
     captainslog_assert(m_type == BUFFER_TYPE_DX8 || m_type == BUFFER_TYPE_SORTING);
-    captainslog_assert((FVF!=0 && vertex_size==0) || (FVF==0 && vertex_size!=0));
-    m_fvfInfo = new FVFInfoClass(FVF, vertex_size);
+    captainslog_assert((fvf != 0 && vertex_size == 0) || (fvf == 0 && vertex_size != 0));
+    m_fvfInfo = new FVFInfoClass(fvf, vertex_size);
     g_vertexBufferCount++;
     g_vertexBufferTotalVertices += m_vertexCount;
     g_vertexBufferTotalSize += m_vertexCount * m_fvfInfo->Get_FVF_Size();
@@ -80,23 +80,23 @@ void VertexBufferClass::Release_Engine_Ref()
     captainslog_assert(m_engineRefs >= 0);
 }
 
-VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *VertexBuffer, int Flags) :
-    VertexBufferLockClass(VertexBuffer)
+VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buffer, int flags) :
+    VertexBufferLockClass(vertex_buffer)
 {
-    captainslog_assert(VertexBuffer);
-    captainslog_assert(!VertexBuffer->Engine_Refs());
-    VertexBuffer->Add_Ref();
-    switch (VertexBuffer->Type()) {
+    captainslog_assert(vertex_buffer);
+    captainslog_assert(!vertex_buffer->Engine_Refs());
+    vertex_buffer->Add_Ref();
+    switch (vertex_buffer->Type()) {
         case BUFFER_TYPE_DX8: {
 #ifdef BUILD_WITH_D3D8
-            static_cast<DX8VertexBufferClass *>(VertexBuffer)
+            static_cast<DX8VertexBufferClass *>(vertex_buffer)
                 ->Get_DX8_Vertex_Buffer()
-                ->Lock(0, 0, (BYTE **)&m_vertices, Flags);
+                ->Lock(0, 0, (BYTE **)&m_vertices, flags);
 #endif
             break;
         }
         case BUFFER_TYPE_SORTING: {
-            m_vertices = static_cast<SortingVertexBufferClass *>(VertexBuffer)->Get_Sorting_Vertex_Buffer();
+            m_vertices = static_cast<SortingVertexBufferClass *>(vertex_buffer)->Get_Sorting_Vertex_Buffer();
             break;
         }
         default:
@@ -124,27 +124,27 @@ VertexBufferClass::WriteLockClass::~WriteLockClass()
 }
 
 VertexBufferClass::AppendLockClass::AppendLockClass(
-    VertexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range) :
-    VertexBufferLockClass(VertexBuffer)
+    VertexBufferClass *vertex_buffer, unsigned int start_index, unsigned int index_range) :
+    VertexBufferLockClass(vertex_buffer)
 {
-    captainslog_assert(VertexBuffer);
-    captainslog_assert(!VertexBuffer->Engine_Refs());
-    captainslog_assert(start_index + index_range <= VertexBuffer->Get_Vertex_Count());
-    VertexBuffer->Add_Ref();
-    switch (VertexBuffer->Type()) {
+    captainslog_assert(vertex_buffer);
+    captainslog_assert(!vertex_buffer->Engine_Refs());
+    captainslog_assert(start_index + index_range <= vertex_buffer->Get_Vertex_Count());
+    vertex_buffer->Add_Ref();
+    switch (vertex_buffer->Type()) {
         case BUFFER_TYPE_DX8: {
 #ifdef BUILD_WITH_D3D8
-            static_cast<DX8VertexBufferClass *>(VertexBuffer)
+            static_cast<DX8VertexBufferClass *>(vertex_buffer)
                 ->Get_DX8_Vertex_Buffer()
-                ->Lock(VertexBuffer->FVF_Info().Get_FVF_Size() * start_index,
-                    VertexBuffer->FVF_Info().Get_FVF_Size() * index_range,
+                ->Lock(vertex_buffer->FVF_Info().Get_FVF_Size() * start_index,
+                    vertex_buffer->FVF_Info().Get_FVF_Size() * index_range,
                     (BYTE **)&m_vertices,
                     0);
 #endif
             break;
         }
         case BUFFER_TYPE_SORTING: {
-            m_vertices = static_cast<SortingVertexBufferClass *>(VertexBuffer)->Get_Sorting_Vertex_Buffer() + start_index;
+            m_vertices = static_cast<SortingVertexBufferClass *>(vertex_buffer)->Get_Sorting_Vertex_Buffer() + start_index;
             break;
         }
         default:
@@ -183,8 +183,8 @@ SortingVertexBufferClass::~SortingVertexBufferClass()
 }
 
 DX8VertexBufferClass::DX8VertexBufferClass(
-    unsigned int FVF, unsigned short vertex_count_, UsageType usage, unsigned int flags) :
-    VertexBufferClass(BUFFER_TYPE_DX8, FVF, vertex_count_, flags)
+    unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags) :
+    VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count_, flags)
 #ifdef BUILD_WTIH_D3D8
     , VertexBuffer(nullptr)
 #endif

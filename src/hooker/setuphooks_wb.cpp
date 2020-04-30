@@ -840,11 +840,11 @@ void Setup_Hooks()
     Hook_Method(0x004FD460, &DX8Wrapper::Apply_Render_State_Changes);
     Hook_Method(0x004FDF00,
         static_cast<w3dtexture_t (*)(unsigned int, unsigned int, WW3DFormat, MipCountType, w3dpool_t, bool)>(
-            &DX8Wrapper::_Create_DX8_Texture));
-    Hook_Method(0x004FE200, static_cast<w3dtexture_t (*)(w3dsurface_t, MipCountType)>(&DX8Wrapper::_Create_DX8_Texture));
+            &DX8Wrapper::Create_Texture));
+    Hook_Method(0x004FE200, static_cast<w3dtexture_t (*)(w3dsurface_t, MipCountType)>(&DX8Wrapper::Create_Texture));
     Hook_Method(
-        0x004FE820, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::_Create_DX8_Surface));
-    Hook_Method(0x004FE8B0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::_Create_DX8_Surface));
+        0x004FE820, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::Create_Surface));
+    Hook_Method(0x004FE8B0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x004FECD0, &DX8Wrapper::Set_Light);
     Hook_Method(0x004FF1E0, &DX8Wrapper::_Get_DX8_Front_Buffer);
     Hook_Method(0x004FF250, &DX8Wrapper::_Get_DX8_Back_Buffer);

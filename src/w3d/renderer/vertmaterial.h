@@ -22,10 +22,10 @@ class TextureMapperClass;
 class VertexMaterialClass : public W3DMPO, public RefCountClass
 {
 public:
-    static void Init();
-    static void Shutdown();
     virtual ~VertexMaterialClass();
     void Apply() const;
+    static void Init();
+    static void Shutdown();
     static void Apply_Null();
 
 private:

@@ -68,14 +68,14 @@ public:
     {
         ALLOW_HOOKING
     public:
-        WriteLockClass(VertexBufferClass *VertexBuffer, int Flags);
+        WriteLockClass(VertexBufferClass *vertex_buffer, int flags);
         ~WriteLockClass();
 
 #ifdef GAME_DLL
     private:
-        WriteLockClass *Hook_Ctor(VertexBufferClass *VertexBuffer, int Flags)
+        WriteLockClass *Hook_Ctor(VertexBufferClass *vertex_buffer, int flags)
         {
-            return new (this) WriteLockClass(VertexBuffer, Flags);
+            return new (this) WriteLockClass(vertex_buffer, flags);
         }
         void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
 #endif
@@ -85,21 +85,21 @@ public:
     {
         ALLOW_HOOKING
     public:
-        AppendLockClass(VertexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range);
+        AppendLockClass(VertexBufferClass *vertex_buffer, unsigned int start_index, unsigned int index_range);
         ~AppendLockClass();
 
 #ifdef GAME_DLL
     private:
-        AppendLockClass *Hook_Ctor(VertexBufferClass *VertexBuffer, unsigned int start_index, unsigned int index_range)
+        AppendLockClass *Hook_Ctor(VertexBufferClass *vertex_buffer, unsigned int start_index, unsigned int index_range)
         {
-            return new (this) AppendLockClass(VertexBuffer, start_index, index_range);
+            return new (this) AppendLockClass(vertex_buffer, start_index, index_range);
         }
         void Hook_Dtor() { AppendLockClass::~AppendLockClass(); }
 #endif
     };
 
 public:
-    VertexBufferClass(unsigned int type_, unsigned int FVF, unsigned short vertex_count_, unsigned int vertex_size);
+    VertexBufferClass(unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size);
     ~VertexBufferClass();
     void Add_Engine_Ref();
     void Release_Engine_Ref();
@@ -130,7 +130,7 @@ public:
         USAGE_SOFTWAREPROCESSING = 2,
         USAGE_NPATCHES = 4,
     };
-    DX8VertexBufferClass(unsigned int FVF, unsigned short vertex_count_, UsageType usage, unsigned int flags);
+    DX8VertexBufferClass(unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
     DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
@@ -152,9 +152,9 @@ public:
 
 private:
 #ifdef GAME_DLL
-    DX8VertexBufferClass *Hook_Ctor(unsigned int FVF, unsigned short vertex_count_, UsageType usage, unsigned int flags)
+    DX8VertexBufferClass *Hook_Ctor(unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags)
     {
-        return new (this) DX8VertexBufferClass(FVF, vertex_count_, usage, flags);
+        return new (this) DX8VertexBufferClass(fvf, vertex_count_, usage, flags);
     }
 #endif
 #ifdef BUILD_WITH_D3D8

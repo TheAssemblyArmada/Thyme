@@ -35,22 +35,25 @@ class MeshModelClass;
 
 class DX8MeshRendererClass
 {
+public:
+    void Init();
+    void Shutdown();
+    void Invalidate(bool shutdown);
+    void Clear_Pending_Delete_Lists();
+
 private:
     bool m_enableLighting;
     CameraClass *m_camera;
     SimpleDynVecClass<MultiListClass<DX8FVFCategoryContainer> *> m_textureCategoryContainerListsRigid;
     MultiListClass<DX8FVFCategoryContainer> *m_textureCategoryContainerListSkin;
     DecalMeshClass *m_visibleDecalMeshes;
-
-public:
-    void Init();
-    void Shutdown();
-    void Invalidate(bool shutdown);
-    void Clear_Pending_Delete_Lists();
 };
 
 class DX8TextureCategoryClass : public MultiListObjectClass
 {
+public:
+    ~DX8TextureCategoryClass();
+
 private:
     int m_pass;
     TextureClass *m_textures[2];
@@ -59,13 +62,19 @@ private:
     MultiListClass<DX8PolygonRendererClass> m_polygonRendererList;
     DX8FVFCategoryContainer *m_container;
     PolyRenderTaskClass *m_renderTaskHead;
-
-public:
-    ~DX8TextureCategoryClass();
 };
 
 class DX8FVFCategoryContainer : public MultiListObjectClass
 {
+public:
+    ~DX8FVFCategoryContainer();
+    virtual void Render() = 0;
+    virtual void Add_Mesh(MeshClass *mesh) = 0;
+    virtual void Log(bool only_visible) = 0;
+    virtual bool Check_If_Mesh_Fits(MeshModelClass *mmc) = 0;
+    virtual void Add_Delayed_Visible_Material_Pass(MaterialPassClass *, MeshClass *) = 0;
+    virtual void Render_Delayed_Procedural_Material_Passes() = 0;
+
 private:
     MultiListClass<DX8TextureCategoryClass> m_textureCategoryList[4];
     MultiListClass<DX8TextureCategoryClass> m_visibleTextureCategoryList[4];
@@ -79,15 +88,6 @@ private:
     bool m_sorting;
     bool m_anythingToRender;
     bool m_delayedAnythingToRender;
-
-public:
-    ~DX8FVFCategoryContainer();
-    virtual void Render() = 0;
-    virtual void Add_Mesh(MeshClass *mesh) = 0;
-    virtual void Log(bool only_visible) = 0;
-    virtual bool Check_If_Mesh_Fits(MeshModelClass *mmc) = 0;
-    virtual void Add_Delayed_Visible_Material_Pass(MaterialPassClass *, MeshClass *) = 0;
-    virtual void Render_Delayed_Procedural_Material_Passes() = 0;
 };
 
 #ifdef GAME_DLL

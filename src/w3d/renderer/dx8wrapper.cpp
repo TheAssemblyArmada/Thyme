@@ -59,7 +59,9 @@ D3DCOLOR DX8Wrapper::s_fogColor;
 D3DFORMAT DX8Wrapper::s_displayFormat;
 #endif
 void *DX8Wrapper::s_shadowMap;
+#ifdef PLATFORM_WINDOWS
 HWND DX8Wrapper::s_hwnd;
+#endif
 unsigned DX8Wrapper::s_renderStates[256];
 unsigned DX8Wrapper::s_textureStageStates[MAX_TEXTURE_STAGES][32];
 w3dbasetexture_t DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
@@ -110,10 +112,10 @@ int DX8Wrapper::s_ZBias;
 Vector3 DX8Wrapper::s_ambientColor;
 bool DX8Wrapper::s_isDeviceLost;
 int DX8Wrapper::s_FPUPreserve;
-DWORD DX8Wrapper::s_vertexShader;
-DWORD DX8Wrapper::s_pixelShader;
+unsigned long DX8Wrapper::s_vertexShader;
+unsigned long DX8Wrapper::s_pixelShader;
 LightEnvironmentClass *DX8Wrapper::s_lightEnvironment;
-DWORD DX8Wrapper::s_vertexProcessingBehavior;
+unsigned long DX8Wrapper::s_vertexProcessingBehavior;
 bool DX8Wrapper::s_fogEnable;
 w3dsurface_t DX8Wrapper::s_currentRenderTarget;
 w3dsurface_t DX8Wrapper::s_currentDepthBuffer;
@@ -126,6 +128,7 @@ bool DX8Wrapper::s_DX8SingleThreaded;
 DX8_CleanupHook *DX8Wrapper::s_cleanupHook;
 #endif
 
+#ifdef PLATFORM_WINDOWS
 bool DX8Wrapper::Init(HWND hwnd, bool lite)
 {
 #ifdef BUILD_WITH_D3D8
@@ -183,6 +186,7 @@ bool DX8Wrapper::Init(HWND hwnd, bool lite)
     return false;
 #endif
 }
+#endif
 
 void DX8Wrapper::Shutdown()
 {
@@ -210,6 +214,8 @@ void DX8Wrapper::Shutdown()
     s_renderDeviceNameTable.Delete_All();
     s_renderDeviceShortNameTable.Delete_All();
     s_renderDeviceDescriptionTable.Delete_All();
+    s_currentCaps->Shutdown();
+    s_isInitialised = nullptr;
 #endif
 }
 
@@ -228,7 +234,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Inits()
 #endif
 }
 
-inline DWORD F2DW(float f)
+inline unsigned long F2DW(float f)
 {
     return *((unsigned *)&f);
 }
@@ -670,7 +676,7 @@ bool DX8Wrapper::Set_Render_Device(
             r.left = 0;
             r.top = 0;
             r.bottom = s_resolutionHeight;
-            DWORD style = GetWindowLong(s_hwnd, GWL_STYLE);
+            unsigned long style = GetWindowLong(s_hwnd, GWL_STYLE);
             AdjustWindowRect(&r, style, 0);
             if (windowed) {
                 SetWindowPos(s_hwnd, nullptr, 0, 0, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOMOVE);
@@ -824,7 +830,7 @@ bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int wind
             r.left = 0;
             r.top = 0;
             r.bottom = s_resolutionHeight;
-            DWORD style = GetWindowLong(s_hwnd, GWL_STYLE);
+            unsigned long style = GetWindowLong(s_hwnd, GWL_STYLE);
             AdjustWindowRect(&r, style, 0);
             if (windowed) {
                 SetWindowPos(s_hwnd, nullptr, 0, 0, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOMOVE);
@@ -1109,7 +1115,7 @@ void DX8Wrapper::Clear(
         }
         surface->Release();
     }
-    DWORD flags = 0;
+    unsigned long flags = 0;
     if (clear_color)
         flags |= D3DCLEAR_TARGET;
     if (clear_z_stencil)
@@ -1736,7 +1742,7 @@ void DX8Wrapper::Set_Gamma(float gamma, float bright, float contrast, bool calib
 
     g_numberOfDx8Calls++;
 
-    DWORD flag = (calibrate ? D3DSGR_CALIBRATE : D3DSGR_NO_CALIBRATION);
+    unsigned long flag = (calibrate ? D3DSGR_CALIBRATE : D3DSGR_NO_CALIBRATION);
 
     D3DGAMMARAMP ramp;
     float limit;

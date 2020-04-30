@@ -35,7 +35,7 @@ class FVFInfoClass : public W3DMPO
 {
     ALLOW_HOOKING
 public:
-    FVFInfoClass(unsigned int FVF_, unsigned int fvf_size_);
+    FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_);
     unsigned int Get_Location_Offset() const { return m_locationOffset; }
     unsigned int Get_Normal_Offset() const { return m_normalOffset; }
     unsigned int Get_Tex_Offset(unsigned int texture) const { return m_texcoordOffset[texture]; }
@@ -47,9 +47,9 @@ public:
 
 private:
 #ifdef GAME_DLL
-    FVFInfoClass *Hook_Ctor(unsigned int FVF_, unsigned int fvf_size_)
+    FVFInfoClass *Hook_Ctor(unsigned int fvf_, unsigned int fvf_size_)
     {
-        return new (this) FVFInfoClass(FVF_, fvf_size_);
+        return new (this) FVFInfoClass(fvf_, fvf_size_);
     }
 #endif
     unsigned int m_FVF;

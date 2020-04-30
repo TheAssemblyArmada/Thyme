@@ -118,7 +118,9 @@ class DX8Wrapper
     };
 
 public:
+#ifdef PLATFORM_WINDOWS
     static bool Init(HWND hwnd, bool lite = false);
+#endif
     static void Shutdown();
     static void Do_Onetime_Device_Dependent_Inits();
     static void Do_Onetime_Device_Dependent_Shutdowns();
@@ -250,7 +252,9 @@ private:
     static D3DFORMAT &s_displayFormat;
 #endif
     static ARRAY_DEC(w3dbasetexture_t, s_textures, MAX_TEXTURE_STAGES);
-    static HWND &s_hwnd; // Actually a hwnd, but we only care for building the dll.
+#ifdef PLATFORM_WINDOWS
+    static HWND &s_hwnd;
+#endif
     static void *&s_shadowMap;
     static ARRAY_DEC(unsigned, s_renderStates, 256);
     static ARRAY2D_DEC(unsigned, s_textureStageStates, MAX_TEXTURE_STAGES, 32);
@@ -301,10 +305,10 @@ private:
     static Vector3 &s_ambientColor;
     static bool &s_isDeviceLost;
     static int &s_FPUPreserve;
-    static DWORD &s_vertexShader;
-    static DWORD &s_pixelShader;
+    static unsigned long &s_vertexShader;
+    static unsigned long &s_pixelShader;
     static LightEnvironmentClass *&s_lightEnvironment;
-    static DWORD &s_vertexProcessingBehavior;
+    static unsigned long &s_vertexProcessingBehavior;
     static bool &s_fogEnable;
     static w3dsurface_t &s_currentRenderTarget;
     static w3dsurface_t &s_currentDepthBuffer;
@@ -328,7 +332,9 @@ private:
     static D3DCOLOR s_fogColor;
     static D3DFORMAT s_displayFormat;
 #endif
+#ifdef PLATFORM_WINDOWS
     static HWND s_hwnd;
+#endif
     static void *s_shadowMap; // Not sure what type this actually is for now.
     static unsigned s_renderStates[256];
     static w3dbasetexture_t s_textures[MAX_TEXTURE_STAGES];
@@ -380,10 +386,10 @@ private:
     static Vector3 s_ambientColor;
     static bool s_isDeviceLost;
     static int s_FPUPreserve;
-    static DWORD s_vertexShader;
-    static DWORD s_pixelShader;
+    static unsigned long s_vertexShader;
+    static unsigned long s_pixelShader;
     static LightEnvironmentClass *s_lightEnvironment;
-    static DWORD s_vertexProcessingBehavior;
+    static unsigned long s_vertexProcessingBehavior;
     static bool s_fogEnable;
     static w3dsurface_t s_currentRenderTarget;
     static w3dsurface_t s_currentDepthBuffer;

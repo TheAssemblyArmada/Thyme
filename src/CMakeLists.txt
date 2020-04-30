@@ -213,6 +213,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/mapper.cpp
     w3d/renderer/missing.cpp
     w3d/renderer/pointgr.cpp
+    w3d/renderer/pot.cpp
     w3d/renderer/render2d.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp

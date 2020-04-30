@@ -30,6 +30,7 @@
 #include "sortingrenderer.h"
 #include "dx8texman.h"
 #include "surfaceclass.h"
+#include "pot.h"
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
@@ -404,6 +405,8 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     Set_Default_Global_Render_States();
     captainslog_warn("Device reset completed");
     return true;
+#else
+    return false;
 #endif
 }
 
@@ -1620,28 +1623,6 @@ SurfaceClass *DX8Wrapper::_Get_DX8_Back_Buffer(unsigned int num)
 #else
     return nullptr;
 #endif
-}
-
-int Find_POT(int num)
-{
-    int num2 = num;
-    int n1 = 0;
-    int n2 = 0;
-    int n3 = 0;
-    if (num) {
-        do {
-            if (num2 & 1) {
-                n2 = n1;
-                n3++;
-            }
-            num2 >>= 1;
-            n1++;
-        } while (num2);
-        if (n3 >= 2) {
-            n2++;
-        }
-    }
-    return 1 << n2;
 }
 
 TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat format)

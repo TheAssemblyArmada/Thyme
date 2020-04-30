@@ -487,13 +487,17 @@ inline void DX8Wrapper::Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned 
 
 inline void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value)
 {
-    if (s_textureStageStates[stage][state] == value) {
-        return;
-    }
+    if (stage < 8) {
+        if (s_textureStageStates[stage][state] == value) {
+            return;
+        }
 
-    s_textureStageStates[stage][state] = value;
-    DX8CALL(SetTextureStageState(stage, state, value));
-    ++s_textureStageStateChanges;
+        s_textureStageStates[stage][state] = value;
+        DX8CALL(SetTextureStageState(stage, state, value));
+        ++s_textureStageStateChanges;
+    } else {
+        DX8CALL(SetTextureStageState(stage, state, value));
+    }
 }
 
 inline void DX8Wrapper::Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture)

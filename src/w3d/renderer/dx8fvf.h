@@ -34,6 +34,8 @@ enum
 class FVFInfoClass : public W3DMPO
 {
     ALLOW_HOOKING
+    IMPLEMENT_W3D_POOL(FVFInfoClass);
+
 public:
     FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_);
     unsigned int Get_Location_Offset() const { return m_locationOffset; }

@@ -80,6 +80,7 @@ IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_
     captainslog_assert(m_indexBuffer);
     captainslog_assert(!m_indexBuffer->Engine_Refs());
     m_indexBuffer->Add_Ref();
+
     switch (m_indexBuffer->Type()) {
         case BUFFER_TYPE_DX8: {
 #ifdef BUILD_WITH_D3D8
@@ -113,6 +114,7 @@ IndexBufferClass::WriteLockClass::~WriteLockClass()
             captainslog_assert(0);
             break;
     }
+
     m_indexBuffer->Release_Ref();
 }
 
@@ -123,8 +125,8 @@ IndexBufferClass::AppendLockClass::AppendLockClass(
     captainslog_assert(start_index + index_range <= m_indexBuffer->Get_Index_Count());
     captainslog_assert(m_indexBuffer);
     captainslog_assert(!m_indexBuffer->Engine_Refs());
-
     m_indexBuffer->Add_Ref();
+
     switch (m_indexBuffer->Type()) {
         case BUFFER_TYPE_DX8: {
 #ifdef BUILD_WITH_D3D8
@@ -159,6 +161,7 @@ IndexBufferClass::AppendLockClass::~AppendLockClass()
             captainslog_assert(0);
             break;
     }
+
     m_indexBuffer->Release_Ref();
 }
 
@@ -170,13 +173,16 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
     int d3dusage = ((usage & USAGE_NPATCHES) >= 1 ? D3DUSAGE_NPATCHES : 0)
         | ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
+
     if (!DX8Wrapper::Get_Caps()->Use_TnL()) {
         d3dusage |= D3DUSAGE_SOFTWAREPROCESSING;
     }
+
     HRESULT res;
     DX8CALL_HRES(CreateIndexBuffer(
                      2 * m_indexCount, d3dusage, D3DFMT_INDEX16, (D3DPOOL)(unsigned __int8)(usage & 1 ^ 1), &m_indexBuffer),
         res);
+
     if (res < 0) {
         captainslog_warn("Index buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
@@ -215,6 +221,7 @@ DynamicIBAccessClass::DynamicIBAccessClass(unsigned short type_, unsigned short 
 {
     captainslog_assert(
         m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8 || m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING);
+
     if (m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         Allocate_DX8_Dynamic_Buffer();
     } else {
@@ -225,6 +232,7 @@ DynamicIBAccessClass::DynamicIBAccessClass(unsigned short type_, unsigned short 
 DynamicIBAccessClass::~DynamicIBAccessClass()
 {
     Ref_Ptr_Release(m_indexBuffer);
+
     if (m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         g_dynamicDX8IndexBufferInUse = false;
         g_dynamicDX8IndexBufferOffset += m_indexCount;
@@ -240,17 +248,21 @@ void DynamicIBAccessClass::Allocate_Sorting_Dynamic_Buffer()
     g_dynamicSortingIndexArrayInUse = true;
     int new_index_count = g_dynamicSortingIndexArrayOffset + m_indexCount;
     captainslog_assert(new_index_count < 65536);
+
     if (new_index_count > g_dynamicSortingIndexArraySize) {
         Ref_Ptr_Release(g_dynamicSortingIndexArray);
         g_dynamicSortingIndexArraySize = 5000;
+
         if (new_index_count > 4999) {
             g_dynamicSortingIndexArraySize = new_index_count;
         }
     }
+
     if (!g_dynamicSortingIndexArray) {
         g_dynamicSortingIndexArray = new SortingIndexBufferClass(g_dynamicSortingIndexArraySize);
         g_dynamicSortingIndexArrayOffset = 0;
     }
+
     g_dynamicSortingIndexArray->Add_Ref();
     Ref_Ptr_Release(m_indexBuffer);
     m_indexBuffer = g_dynamicSortingIndexArray;
@@ -261,24 +273,31 @@ void DynamicIBAccessClass::Allocate_DX8_Dynamic_Buffer()
 {
     captainslog_assert(!g_dynamicDX8IndexBufferInUse);
     g_dynamicDX8IndexBufferInUse = true;
+
     if (m_indexCount > g_dynamicDX8IndexBufferSize) {
         Ref_Ptr_Release(g_dynamicDX8IndexBuffer);
         g_dynamicDX8IndexBufferSize = 5000;
+
         if (m_indexCount > 4999) {
             g_dynamicDX8IndexBufferSize = m_indexCount;
         }
     }
+
     if (!g_dynamicDX8IndexBuffer) {
         DX8IndexBufferClass::UsageType usage = DX8IndexBufferClass::USAGE_DYNAMIC;
+
         if (DX8Wrapper::Get_Caps()->Supports_NPatches()) {
             usage = (DX8IndexBufferClass::UsageType)(DX8IndexBufferClass::USAGE_DYNAMIC | DX8IndexBufferClass::USAGE_NPATCHES);
         }
+
         g_dynamicDX8IndexBuffer = new DX8IndexBufferClass(g_dynamicDX8IndexBufferSize, usage);
         g_dynamicDX8IndexBufferOffset = 0;
     }
+
     if (g_dynamicDX8IndexBufferOffset + m_indexCount > g_dynamicDX8IndexBufferSize) {
         g_dynamicDX8IndexBufferOffset = 0;
     }
+
     g_dynamicDX8IndexBuffer->Add_Ref();
     Ref_Ptr_Release(m_indexBuffer);
     m_indexBuffer = g_dynamicDX8IndexBuffer;
@@ -288,6 +307,7 @@ void DynamicIBAccessClass::Allocate_DX8_Dynamic_Buffer()
 DynamicIBAccessClass::WriteLockClass::WriteLockClass(DynamicIBAccessClass *ib_access_) : m_dynamicIBAccess(ib_access_)
 {
     m_dynamicIBAccess->m_indexBuffer->Add_Ref();
+
     if (m_dynamicIBAccess->m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
 #ifdef BUILD_WITH_D3D8
         captainslog_assert(m_dynamicIBAccess);
@@ -316,6 +336,7 @@ DynamicIBAccessClass::WriteLockClass::~WriteLockClass()
     } else if (m_dynamicIBAccess->m_type != IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING) {
         captainslog_assert(0);
     }
+
     m_dynamicIBAccess->m_indexBuffer->Release_Ref();
 }
 
@@ -325,14 +346,17 @@ void DynamicIBAccessClass::Deinit()
         captainslog_assert((g_dynamicDX8IndexBuffer == NULL) || (g_dynamicDX8IndexBuffer->Num_Refs() == 1));
         g_dynamicDX8IndexBuffer->Release_Ref();
     }
+
     g_dynamicDX8IndexBuffer = nullptr;
     g_dynamicDX8IndexBufferInUse = false;
     g_dynamicDX8IndexBufferSize = 5000;
     g_dynamicDX8IndexBufferOffset = 0;
+
     if (g_dynamicSortingIndexArray) {
         captainslog_assert((g_dynamicSortingIndexArray == NULL) || (g_dynamicSortingIndexArray->Num_Refs() == 1));
         g_dynamicSortingIndexArray->Release_Ref();
     }
+
     g_dynamicSortingIndexArray = nullptr;
     g_dynamicSortingIndexArrayInUse = false;
     g_dynamicSortingIndexArraySize = 0;
@@ -342,6 +366,7 @@ void DynamicIBAccessClass::Deinit()
 void DynamicIBAccessClass::Reset(bool frame_changed)
 {
     g_dynamicSortingIndexArrayOffset = 0;
+
     if (frame_changed) {
         g_dynamicDX8IndexBufferOffset = 0;
     }

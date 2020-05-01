@@ -195,10 +195,12 @@ void DX8Wrapper::Shutdown()
         Set_Render_Target(nullptr);
         Release_Device();
     }
+
     if (s_d3dInterface) {
         s_d3dInterface->Release();
         s_d3dInterface = nullptr;
     }
+
     if (s_currentCaps) {
         for (unsigned int i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
             if (s_textures[i]) {
@@ -207,10 +209,12 @@ void DX8Wrapper::Shutdown()
             }
         }
     }
+
     if (s_d3dLib) {
         FreeLibrary(s_d3dLib);
         s_d3dLib = nullptr;
     }
+
     s_renderDeviceNameTable.Delete_All();
     s_renderDeviceShortNameTable.Delete_All();
     s_renderDeviceDescriptionTable.Delete_All();
@@ -265,33 +269,42 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
     for (int i = 0; i < sizeof(s_renderStates) / sizeof(unsigned); i++) {
         s_renderStates[i] = 0x12345678;
     }
+
     for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
         for (int j = 0; j < 32; j++) {
             s_textureStageStates[i][j] = 0x12345678;
         }
+
         if (s_d3dDevice) {
             s_d3dDevice->SetTexture(i, nullptr);
         }
+
         if (s_textures[i]) {
             s_textures[i]->Release();
             s_textures[i] = nullptr;
         }
     }
+    
     ShaderClass::Invalidate();
+    
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
         }
         Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
     }
+
     if (s_renderState.index_buffer) {
         s_renderState.index_buffer->Release_Engine_Ref();
         Ref_Ptr_Release(s_renderState.index_buffer);
     }
+
     Ref_Ptr_Release(s_renderState.material);
+
     for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
+
     memset(s_DX8Transforms, 0, sizeof(s_DX8Transforms));
 #endif
 }
@@ -304,14 +317,18 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
         }
         Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
     }
+
     if (s_renderState.index_buffer) {
         s_renderState.index_buffer->Release_Engine_Ref();
         Ref_Ptr_Release(s_renderState.index_buffer);
     }
+
     Ref_Ptr_Release(s_renderState.material);
+
     for (unsigned int i = 0; i < Get_Caps()->Max_Textures_Per_Pass(); i++) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
+
     TextureLoader::Deinit();
     SortingRendererClass::Deinit();
     DynamicVBAccessClass::Deinit();
@@ -321,6 +338,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
     BoxRenderObjClass::Shutdown();
     g_theDX8MeshRenderer.Shutdown();
     MissingTexture::Deinit();
+
     if (s_currentCaps) {
         delete s_currentCaps;
         s_currentCaps = nullptr;
@@ -332,25 +350,32 @@ bool DX8Wrapper::Create_Device()
 #ifdef BUILD_WITH_D3D8
     D3DCAPS8 caps;
     captainslog_assert(s_d3dDevice == nullptr);
+
     if (s_d3dInterface->GetDeviceCaps(s_currentRenderDevice, D3DDEVTYPE_HAL, &caps) < 0) {
         return false;
     }
+
     memset(&s_currentAdapterIdentifier, 0, sizeof(s_currentAdapterIdentifier));
+
     if (s_d3dInterface->GetAdapterIdentifier(s_currentRenderDevice, D3DENUM_NO_WHQL_LEVEL, &s_currentAdapterIdentifier)
         < 0) {
         return false;
     }
+
     s_vertexProcessingBehavior = (caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0 ? D3DCREATE_MIXED_VERTEXPROCESSING :
                                                                                         D3DCREATE_SOFTWARE_VERTEXPROCESSING;
+
     if (s_FPUPreserve) {
         s_vertexProcessingBehavior |= D3DCREATE_FPU_PRESERVE;
     }
+
     if (s_d3dInterface->CreateDevice(
             s_currentRenderDevice, D3DDEVTYPE_HAL, s_hwnd, s_vertexProcessingBehavior, &s_presentParameters, &s_d3dDevice)
         >= 0) {
         Do_Onetime_Device_Dependent_Inits();
         return true;
     }
+
     if (s_presentParameters.BackBufferFormat != D3DFMT_R5G6B5 && s_presentParameters.BackBufferFormat != D3DFMT_X1R5G5B5
             && s_presentParameters.BackBufferFormat != D3DFMT_A1R5G5B5
         || s_presentParameters.AutoDepthStencilFormat != D3DFMT_D32
@@ -358,12 +383,15 @@ bool DX8Wrapper::Create_Device()
             && s_presentParameters.AutoDepthStencilFormat != D3DFMT_D24X8) {
         return false;
     }
+
     s_presentParameters.AutoDepthStencilFormat = D3DFMT_D16;
+
     if (s_d3dInterface->CreateDevice(
             s_currentRenderDevice, D3DDEVTYPE_HAL, s_hwnd, s_vertexProcessingBehavior, &s_presentParameters, &s_d3dDevice)
         < 0) {
         return false;
     }
+
     Do_Onetime_Device_Dependent_Inits();
     return true;
 #else
@@ -375,38 +403,49 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_warn("Resetting device.");
+
     if (!s_isInitialised || !s_d3dDevice) {
         captainslog_warn("Device reset failed");
         return false;
     }
+
     W3D::Invalidate_Textures();
+
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
         Set_Vertex_Buffer(nullptr, i);
     }
+
     Set_Index_Buffer(nullptr, 0);
+
     if (s_cleanupHook) {
         s_cleanupHook->ReleaseResources();
     }
+
     DynamicVBAccessClass::Deinit();
     DynamicIBAccessClass::Deinit();
     DX8TextureManagerClass::Release_Textures();
     memset(s_vertexShaderConstants, 0, sizeof(s_vertexShaderConstants));
     memset(s_pixelShaderConstants, 0, sizeof(s_pixelShaderConstants));
     s_frameCount = 0;
+
     if (s_d3dDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) {
         return false;
     }
+
     HRESULT res;
     DX8CALL_HRES(Reset(&s_presentParameters), res);
+
     if (res) {
         return false;
     }
+
     if (reacquire) {
         DX8TextureManagerClass::Recreate_Textures();
         if (s_cleanupHook) {
             s_cleanupHook->ReAcquireResources();
         }
     }
+
     Invalidate_Cached_Render_States();
     Set_Default_Global_Render_States();
     captainslog_warn("Device reset completed");
@@ -423,18 +462,22 @@ void DX8Wrapper::Release_Device()
         for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
             DX8CALL(SetTexture(i, nullptr));
         }
+
         DX8CALL(SetStreamSource(0, nullptr, 0));
         DX8CALL(SetIndices(nullptr, 0));
+
         for (int i = 0; i < VERTEX_BUFFERS; i++) {
             if (s_renderState.vertex_buffers[i]) {
                 s_renderState.vertex_buffers[i]->Release_Engine_Ref();
             }
             Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
         }
+
         if (s_renderState.index_buffer) {
             s_renderState.index_buffer->Release_Engine_Ref();
             Ref_Ptr_Release(s_renderState.index_buffer);
         }
+
         Do_Onetime_Device_Dependent_Shutdowns();
         s_d3dDevice->Release();
         s_d3dDevice = nullptr;
@@ -638,24 +681,31 @@ bool DX8Wrapper::Set_Render_Device(
     captainslog_assert(s_isInitialised);
     captainslog_assert(dev >= -1);
     captainslog_assert(dev < s_renderDeviceNameTable.Count());
+
     if ((s_currentRenderDevice == -1) && (dev == -1)) {
         s_currentRenderDevice = 0;
     } else if (dev != -1) {
         s_currentRenderDevice = dev;
     }
+
     if (resx != -1) {
         s_resolutionWidth = resx;
     }
+
     if (resy != -1) {
         s_resolutionHeight = resy;
     }
+
     Render2DClass::Set_Screen_Resolution(RectClass(0, 0, s_resolutionWidth, s_resolutionHeight));
+
     if (bits != -1) {
         s_bitDepth = bits;
     }
+
     if (windowed != -1) {
         s_isWindowed = windowed != 0;
     }
+
     s_debugIsWindowed = s_isWindowed;
     captainslog_debug("Attempting Set_Render_Device: name: %s (%s:%s), width: %d, height: %d, windowed: %d",
         s_renderDeviceNameTable[s_currentRenderDevice].Peek_Buffer(),
@@ -664,6 +714,7 @@ bool DX8Wrapper::Set_Render_Device(
         s_resolutionWidth,
         s_resolutionHeight,
         s_isWindowed != 0);
+
     if (resize_window) {
         RECT r;
         r.top = 0;
@@ -685,6 +736,7 @@ bool DX8Wrapper::Set_Render_Device(
             }
         }
     }
+
     captainslog_assert(reset_device || s_d3dDevice == nullptr);
     memset(&s_presentParameters, 0, sizeof(s_presentParameters));
     s_presentParameters.BackBufferWidth = s_resolutionWidth;
@@ -698,6 +750,7 @@ bool DX8Wrapper::Set_Render_Device(
     s_presentParameters.FullScreen_PresentationInterval = 0;
     s_presentParameters.FullScreen_RefreshRateInHz = 0;
     s_presentParameters.Windowed = s_isWindowed;
+
     if (s_isWindowed) {
         D3DDISPLAYMODE mode;
         mode.Format = D3DFMT_UNKNOWN;
@@ -707,6 +760,7 @@ bool DX8Wrapper::Set_Render_Device(
         s_d3dInterface->GetAdapterDisplayMode(s_currentRenderDevice, &mode);
         s_presentParameters.BackBufferFormat = mode.Format;
         s_displayFormat = mode.Format;
+
         switch (s_presentParameters.BackBufferFormat) {
             case D3DFMT_X8R8G8B8:
             case D3DFMT_A8R8G8B8:
@@ -729,6 +783,7 @@ bool DX8Wrapper::Set_Render_Device(
             default:
                 return false;
         }
+
         if (!Find_Z_Mode(s_presentParameters.BackBufferFormat,
                 s_presentParameters.BackBufferFormat,
                 &s_presentParameters.AutoDepthStencilFormat)) {
@@ -752,23 +807,27 @@ bool DX8Wrapper::Set_Render_Device(
             &s_presentParameters.BackBufferFormat,
             &s_presentParameters.AutoDepthStencilFormat);
     }
+
     if (s_presentParameters.AutoDepthStencilFormat == D3DFMT_UNKNOWN) {
         s_presentParameters.AutoDepthStencilFormat = D3DFMT_D32;
         if (s_bitDepth != 32) {
             s_presentParameters.AutoDepthStencilFormat = D3DFMT_D16;
         }
     }
+
     StringClass format_name;
     StringClass backbuffer_name;
     Get_Format_Name(s_displayFormat, &format_name);
     Get_Format_Name(s_presentParameters.BackBufferFormat, &backbuffer_name);
     captainslog_warn("Using Display/BackBuffer Formats: %s/%s", format_name.Peek_Buffer(), backbuffer_name.Peek_Buffer());
     bool res;
+
     if (reset_device) {
         res = Reset_Device(restore_assets);
     } else {
         res = Create_Device();
     }
+
     captainslog_warn("Reset/Create_Device done, reset_device=%d, restore_assets=%d", reset_device, restore_assets);
     return res;
 #else
@@ -794,14 +853,17 @@ int DX8Wrapper::Get_Render_Device()
 const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int deviceidx)
 {
     captainslog_assert(s_isInitialised);
+
     if ((deviceidx == -1) && (s_currentRenderDevice == -1)) {
         s_currentRenderDevice = 0;
     }
+
     if (deviceidx == -1) {
         captainslog_assert(s_currentRenderDevice >= 0);
         captainslog_assert(s_currentRenderDevice < s_renderDeviceNameTable.Count());
         return s_renderDeviceDescriptionTable[s_currentRenderDevice];
     }
+
     captainslog_assert(deviceidx >= 0);
     captainslog_assert(deviceidx < s_renderDeviceNameTable.Count());
     return s_renderDeviceDescriptionTable[deviceidx];
@@ -813,14 +875,17 @@ bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int wind
     if (!s_d3dDevice) {
         return false;
     }
+
     if (width != -1) {
         s_resolutionWidth = width;
         s_presentParameters.BackBufferWidth = width;
     }
+
     if (height != -1) {
         s_resolutionHeight = height;
         s_presentParameters.BackBufferHeight = height;
     }
+
     if (resize_window) {
         RECT r;
         r.top = 0;
@@ -828,6 +893,7 @@ bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int wind
         r.left = 0;
         r.bottom = 0;
         GetClientRect(s_hwnd, &r);
+
         if (r.right - r.left != s_resolutionWidth || r.bottom - r.top != s_resolutionHeight) {
             r.right = s_resolutionWidth;
             r.left = 0;
@@ -835,6 +901,7 @@ bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int wind
             r.bottom = s_resolutionHeight;
             unsigned long style = GetWindowLong(s_hwnd, GWL_STYLE);
             AdjustWindowRect(&r, style, 0);
+
             if (windowed) {
                 SetWindowPos(s_hwnd, nullptr, 0, 0, r.right - r.left, r.bottom - r.top, SWP_NOZORDER | SWP_NOMOVE);
             } else {
@@ -860,6 +927,7 @@ void DX8Wrapper::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_b
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_isInitialised);
+
     if (s_currentRenderTarget) {
         D3DSURFACE_DESC desc;
         s_currentRenderTarget->GetDesc(&desc);
@@ -885,6 +953,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
     };
     D3DFORMAT *format_table = nullptr;
     int format_count = 0;
+
     if (s_bitDepth == 16) {
         format_table = _formats16;
         format_count = sizeof(_formats16) / sizeof(D3DFORMAT);
@@ -892,9 +961,11 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
         format_table = _formats32;
         format_count = sizeof(_formats32) / sizeof(D3DFORMAT);
     }
+
     bool found = false;
     unsigned int mode = 0;
     int format_index;
+
     for (format_index = 0; format_index < format_count; format_index++) {
         found |= Find_Color_Mode(format_table[format_index], resx, resy, &mode);
         if (found)
@@ -911,6 +982,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
             *set_backbuffer = D3DFMT_A8R8G8B8;
         }
     }
+
     return Find_Z_Mode(*set_colorbuffer, *set_colorbuffer, set_zmode);
 }
 
@@ -925,6 +997,7 @@ bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT
     bool found = false;
     modemax = s_d3dInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT);
     i = 0;
+
     while (i < modemax && !found) {
         s_d3dInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, i, &dmode);
         if (dmode.Width == rx && dmode.Height == ry && dmode.Format == colorbuffer) {
@@ -934,13 +1007,17 @@ bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT
         }
         i++;
     }
+
     i--;
+
     if (!found) {
         captainslog_warn(("Failed to find a valid color mode"));
         return false;
     }
+
     bool stillok = true;
     j = i;
+
     while (j < modemax && stillok) {
         s_d3dInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, j, &dmode);
         if (dmode.Width == rx && dmode.Height == ry && dmode.Format == colorbuffer) {
@@ -950,11 +1027,13 @@ bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT
         }
         j++;
     }
+
     if (stillok == false) {
         *mode = j - 2;
     } else {
         *mode = i;
     }
+
     return true;
 }
 
@@ -965,31 +1044,37 @@ bool DX8Wrapper::Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFOR
         captainslog_warn("Found zbuffer mode D3DFMT_D24S8");
         return true;
     }
+
     if (Test_Z_Mode(colorbuffer, backbuffer, D3DFMT_D32)) {
         *zmode = D3DFMT_D32;
         captainslog_warn("Found zbuffer mode D3DFMT_D32");
         return true;
     }
+
     if (Test_Z_Mode(colorbuffer, backbuffer, D3DFMT_D24X8)) {
         *zmode = D3DFMT_D24X8;
         captainslog_warn("Found zbuffer mode D3DFMT_D24X8");
         return true;
     }
+
     if (Test_Z_Mode(colorbuffer, backbuffer, D3DFMT_D24X4S4)) {
         *zmode = D3DFMT_D24X4S4;
         captainslog_warn("Found zbuffer mode D3DFMT_D24X4S4");
         return true;
     }
+
     if (Test_Z_Mode(colorbuffer, backbuffer, D3DFMT_D16)) {
         *zmode = D3DFMT_D16;
         captainslog_warn("Found zbuffer mode D3DFMT_D16");
         return true;
     }
+
     if (Test_Z_Mode(colorbuffer, backbuffer, D3DFMT_D15S1)) {
         *zmode = D3DFMT_D15S1;
         captainslog_warn("Found zbuffer mode D3DFMT_D15S1");
         return true;
     }
+
     captainslog_warn("Failed to find a valid zbuffer mode");
     return false;
 }
@@ -1002,6 +1087,7 @@ bool DX8Wrapper::Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFOR
         captainslog_warn("CheckDeviceFormat failed.  Colorbuffer format = %d  Zbufferformat = %d", colorbuffer, zmode);
         return false;
     }
+
     if (s_d3dInterface->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, colorbuffer, backbuffer, zmode) < 0) {
         captainslog_warn(
             "CheckDepthStencilMatch failed.  Colorbuffer format = %d  Backbuffer format = %d Zbufferformat = %d",
@@ -1010,6 +1096,7 @@ bool DX8Wrapper::Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFOR
             zmode);
         return false;
     }
+
     return true;
 }
 #endif
@@ -1080,12 +1167,14 @@ void DX8Wrapper::End_Scene(bool flip_frames)
     if (flip_frames) {
         HRESULT hr;
         DX8CALL_HRES(Present(nullptr, nullptr, nullptr, nullptr), hr);
+
         if (hr < 0) {
             s_isDeviceLost = true;
         } else {
             s_isDeviceLost = false;
             s_frameCount++;
         }
+
         if (hr == D3DERR_DEVICELOST) {
             if (s_d3dDevice->TestCooperativeLevel() == D3DERR_DEVICENOTRESET) {
                 Reset_Device(true);
@@ -1094,11 +1183,14 @@ void DX8Wrapper::End_Scene(bool flip_frames)
             }
         }
     }
+
     Set_Vertex_Buffer(nullptr, 0);
     Set_Index_Buffer(nullptr, 0);
+
     for (unsigned int i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
         Set_Texture(i, nullptr);
     }
+
     Set_Material(nullptr);
 #endif
 }
@@ -1110,6 +1202,7 @@ void DX8Wrapper::Clear(
     bool has_stencil = false;
     IDirect3DSurface8 *surface;
     DX8CALL(GetDepthStencilSurface(&surface));
+
     if (surface) {
         D3DSURFACE_DESC desc;
         surface->GetDesc(&desc);
@@ -1118,13 +1211,18 @@ void DX8Wrapper::Clear(
         }
         surface->Release();
     }
+
     unsigned long flags = 0;
+    
     if (clear_color)
         flags |= D3DCLEAR_TARGET;
+    
     if (clear_z_stencil)
         flags |= D3DCLEAR_ZBUFFER;
+    
     if (clear_z_stencil && has_stencil)
         flags |= D3DCLEAR_STENCIL;
+
     if (flags) {
         DX8CALL(Clear(0, nullptr, flags, Convert_Color(color, alpha), z, stencil));
     }
@@ -1143,17 +1241,21 @@ void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number)
     s_renderState.vba_offset = 0;
     s_renderState.vba_count = 0;
     VertexBufferClass *buf = s_renderState.vertex_buffers[number];
+
     if (buf) {
         buf->Release_Engine_Ref();
     }
+
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vb);
     Ref_Ptr_Set(v, s_renderState.vertex_buffers[number]);
+
     if (v) {
         v->Add_Engine_Ref();
         s_renderState.vertex_buffer_types[number] = v->Type();
     } else {
         s_renderState.vertex_buffer_types[number] = VertexBufferClass::BUFFER_TYPE_INVALID;
     }
+
     s_renderStateChanged |= VERTEX_BUFFER_CHANGED;
 }
 
@@ -1161,18 +1263,22 @@ void DX8Wrapper::Set_Index_Buffer(const IndexBufferClass *ib, unsigned short ind
 {
     s_renderState.iba_offset = 0;
     IndexBufferClass *buf = s_renderState.index_buffer;
+
     if (buf) {
         buf->Release_Engine_Ref();
     }
+
     IndexBufferClass *i = const_cast<IndexBufferClass *>(ib);
     Ref_Ptr_Set(i, s_renderState.index_buffer);
     s_renderState.index_base_offset = index_base_offset;
+
     if (i) {
         i->Add_Engine_Ref();
         s_renderState.index_buffer_type = i->Type();
     } else {
         s_renderState.index_buffer_type = IndexBufferClass::BUFFER_TYPE_INVALID;
     }
+
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
 
@@ -1180,9 +1286,11 @@ void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba)
 {
     Set_Vertex_Buffer(nullptr, 1);
     VertexBufferClass *buf = s_renderState.vertex_buffers[0];
+
     if (buf) {
         buf->Release_Engine_Ref();
     }
+
     s_renderState.vertex_buffer_types[0] = vba.Get_Type();
     s_renderState.vba_offset = vba.Get_Vertex_Offset();
     s_renderState.vba_count = vba.Get_Vertex_Count();
@@ -1195,9 +1303,11 @@ void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba)
 void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset)
 {
     IndexBufferClass *buf = s_renderState.index_buffer;
+
     if (buf) {
         buf->Release_Engine_Ref();
     }
+
     s_renderState.index_buffer_type = iba.Get_Type();
     s_renderState.iba_offset = iba.Get_Index_Offset();
     IndexBufferClass *i = const_cast<IndexBufferClass *>(iba.Get_Index_Buffer());
@@ -1214,6 +1324,7 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
         || s_renderState.vertex_buffer_types[0] == VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING);
     captainslog_assert(s_renderState.index_buffer_type == IndexBufferClass::BUFFER_TYPE_SORTING
         || s_renderState.index_buffer_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING);
+
     DynamicVBAccessClass dyn_vb_access(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, dynamic_fvf_type, vertex_count);
     {
         DynamicVBAccessClass::WriteLockClass lock(&dyn_vb_access);
@@ -1229,14 +1340,18 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
             *dest_u++ = *src_u++;
         }
     }
+
     DX8CALL(SetStreamSource(0,
         static_cast<DX8VertexBufferClass *>(dyn_vb_access.Get_Vertex_Buffer())->Get_DX8_Vertex_Buffer(),
         dyn_vb_access.FVF_Info().Get_FVF_Size()));
+
     if (dyn_vb_access.FVF_Info().Get_FVF()) {
         DX8CALL(SetVertexShader(dyn_vb_access.FVF_Info().Get_FVF()));
     }
+
     unsigned index_count = 0;
     s_vertexBufferChanges++;
+
     switch (primitive_type) {
         case D3DPT_TRIANGLELIST:
             index_count = polygon_count * 3;
@@ -1251,6 +1366,7 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
             captainslog_assert(0);
             break;
     }
+
     DynamicIBAccessClass dyn_ib_access(IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, index_count);
     {
         DynamicIBAccessClass::WriteLockClass lock(&dyn_ib_access);
@@ -1258,6 +1374,7 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
         unsigned short *src = nullptr;
         src = static_cast<SortingIndexBufferClass *>(s_renderState.index_buffer)->Get_Sorting_Index_Buffer();
         src += s_renderState.iba_offset + start_index;
+
         for (unsigned short i = 0; i < index_count; ++i) {
             unsigned short index = *src++;
             index -= min_vertex_index;
@@ -1265,6 +1382,7 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
             *dest++ = index;
         }
     }
+
     DX8CALL(SetIndices(static_cast<DX8IndexBufferClass *>(dyn_ib_access.Get_Index_Buffer())->Get_DX8_Index_Buffer(),
         dyn_vb_access.Get_Vertex_Offset()));
     s_indexBufferChanges++;
@@ -1279,10 +1397,13 @@ void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, u
 #ifdef BUILD_WITH_D3D8
     if (!s_drawPolygonLowBoundLimit || s_drawPolygonLowBoundLimit < polygon_count) {
         Apply_Render_State_Changes();
+
         if (!s_EnableTriangleDraw)
             return;
+
         if (vertex_count < 3) {
             min_vertex_index = 0;
+
             switch (s_renderState.vertex_buffer_types[0]) {
                 case VertexBufferClass::BUFFER_TYPE_DX8:
                 case VertexBufferClass::BUFFER_TYPE_SORTING:
@@ -1299,6 +1420,7 @@ void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, u
     switch (s_renderState.vertex_buffer_types[0]) {
         case VertexBufferClass::BUFFER_TYPE_DX8:
         case VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
+
             switch (s_renderState.index_buffer_type) {
                 case IndexBufferClass::BUFFER_TYPE_DX8:
                 case IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8: {
@@ -1320,6 +1442,7 @@ void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, u
             break;
         case VertexBufferClass::BUFFER_TYPE_SORTING:
         case VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING:
+
             switch (s_renderState.index_buffer_type) {
                 case IndexBufferClass::BUFFER_TYPE_DX8:
                 case IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8:
@@ -1374,10 +1497,13 @@ void DX8Wrapper::Apply_Render_State_Changes()
 {
 #ifdef BUILD_WITH_D3D8
     if (s_renderStateChanged) {
+
         if ((s_renderStateChanged & SHADER_CHANGED) != 0) {
             s_renderState.shader.Apply();
         }
+
         unsigned mask = TEXTURE0_CHANGED;
+
         for (unsigned i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++, mask <<= 1) {
             if (s_renderStateChanged & mask) {
                 if (s_renderState.Textures[i]) {
@@ -1387,6 +1513,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
                 }
             }
         }
+
         if (s_renderStateChanged & MATERIAL_CHANGED) {
             VertexMaterialClass *material = const_cast<VertexMaterialClass *>(s_renderState.material);
             if (material) {
@@ -1395,6 +1522,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
                 VertexMaterialClass::Apply_Null();
             }
         }
+
         if (s_renderStateChanged & LIGHTS_CHANGED) {
             unsigned mask = LIGHT0_CHANGED;
             for (unsigned index = 0; index < 4; ++index, mask <<= 1) {
@@ -1407,12 +1535,15 @@ void DX8Wrapper::Apply_Render_State_Changes()
                 }
             }
         }
+
         if (s_renderStateChanged & WORLD_CHANGED) {
             Set_DX8_Transform(D3DTS_WORLD, s_renderState.world);
         }
+
         if (s_renderStateChanged & VIEW_CHANGED) {
             Set_DX8_Transform(D3DTS_VIEW, s_renderState.view);
         }
+
         if (s_renderStateChanged & VERTEX_BUFFER_CHANGED) {
             for (int i = 0; i < VERTEX_BUFFERS; i++) {
                 if (s_renderState.vertex_buffers[i]) {
@@ -1441,6 +1572,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
                 }
             }
         }
+
         if (s_renderStateChanged & INDEX_BUFFER_CHANGED) {
             if (s_renderState.index_buffer) {
                 switch (s_renderState.index_buffer_type) {
@@ -1462,6 +1594,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
                 s_indexBufferChanges++;
             }
         }
+
         s_renderStateChanged &= ((unsigned)WORLD_IDENTITY | (unsigned)VIEW_IDENTITY);
     }
 #endif
@@ -1473,15 +1606,18 @@ w3dtexture_t DX8Wrapper::Create_Texture(
 #ifdef BUILD_WITH_D3D8
     IDirect3DTexture8 *texture = nullptr;
     captainslog_assert(format != D3DFMT_P8);
+
     if (!rendertarget) {
         HRESULT hr = D3DXCreateTexture(
             s_d3dDevice, width, height, mip_level_count, 0, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), pool, &texture);
+
         if (hr == D3DERR_OUTOFVIDEOMEMORY) {
             captainslog_warn("Error: Out of memory while creating texture. Trying to release assets...");
             TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
             W3D::Invalidate_Mesh_Cache();
             hr = D3DXCreateTexture(
                 s_d3dDevice, width, height, mip_level_count, 0, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), pool, &texture);
+
             if (hr < 0) {
                 StringClass str;
                 Get_WW3D_Format_Name(format, str);
@@ -1493,6 +1629,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
         }
         return texture;
     }
+
     HRESULT hr = D3DXCreateTexture(s_d3dDevice,
         width,
         height,
@@ -1501,9 +1638,11 @@ w3dtexture_t DX8Wrapper::Create_Texture(
         (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
         pool,
         &texture);
+
     if (hr == D3DERR_NOTAVAILABLE) {
         return nullptr;
     }
+
     if (hr == D3DERR_OUTOFVIDEOMEMORY) {
         captainslog_warn("Error: Out of memory while creating render target. Trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
@@ -1516,11 +1655,13 @@ w3dtexture_t DX8Wrapper::Create_Texture(
             (D3DFORMAT)WW3DFormat_To_D3DFormat(format),
             pool,
             &texture);
+
         if (hr < 0) {
             captainslog_warn("...Render target creation failed.");
         } else {
             captainslog_warn("...Render target creation succesful.");
         }
+
         if (hr == D3DERR_OUTOFVIDEOMEMORY) {
             return nullptr;
         }
@@ -1543,9 +1684,11 @@ w3dtexture_t DX8Wrapper::Create_Texture(w3dsurface_t surface, MipCountType mip_l
     texture->GetSurfaceLevel(0, &surf);
     D3DXLoadSurfaceFromSurface(surf, nullptr, nullptr, surface, nullptr, nullptr, D3DX_FILTER_BOX, 0);
     surf->Release();
+
     if (mip_level_count != 1) {
         D3DXFilterTexture(texture, nullptr, 0, D3DX_FILTER_BOX);
     }
+
     return texture;
 #else
     return w3dtexture_t();
@@ -1557,7 +1700,6 @@ w3dsurface_t DX8Wrapper::Create_Surface(unsigned width, unsigned height, WW3DFor
 #ifdef BUILD_WITH_D3D8
     w3dsurface_t surf = W3D_TYPE_INVALID_SURFACE;
     DX8CALL(CreateImageSurface(width, height, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), &surf));
-
     return surf;
 #else
     return w3dsurface_t();
@@ -1626,10 +1768,12 @@ SurfaceClass *DX8Wrapper::Get_DX8_Back_Buffer(unsigned int num)
     IDirect3DSurface8 *bb;
     SurfaceClass *surf = NULL;
     DX8CALL(GetBackBuffer(num, D3DBACKBUFFER_TYPE_MONO, &bb));
+
     if (bb) {
         surf = new SurfaceClass(bb);
         bb->Release();
     }
+
     return surf;
 #else
     return nullptr;
@@ -1640,11 +1784,13 @@ TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat
 {
 #ifdef BUILD_WITH_D3D8
     g_numberOfDx8Calls++;
+
     if (format == WW3D_FORMAT_UNKNOWN) {
         D3DDISPLAYMODE mode;
         DX8CALL(GetDisplayMode(&mode));
         format = D3DFormat_To_WW3DFormat(mode.Format);
     }
+
     if (s_currentCaps->Supports_Render_To_Texture_Format(format)) {
         float f = width;
         D3DCAPS8 caps = s_currentCaps->Get_DX8_Caps();
@@ -1669,6 +1815,7 @@ TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat
     } else {
         captainslog_warn("DX8Wrapper - Render target format is not supported");
     }
+
     return nullptr;
 #else
     return nullptr;
@@ -1681,9 +1828,11 @@ void DX8Wrapper::Set_Render_Target_With_Z(TextureClass *texture, ZTextureClass *
     captainslog_assert(texture != nullptr);
     IDirect3DSurface8 *d3d_surf = texture->Get_D3D_Surface_Level(0);
     captainslog_assert(d3d_surf != nullptr);
+
     if (z_texture) {
         captainslog_dbgassert(0, "ZTextureClass not supported");
     }
+
     Set_Render_Target(d3d_surf, true);
     d3d_surf->Release();
     s_isRenderToTexture = true;
@@ -1697,6 +1846,7 @@ void DX8Wrapper::Set_Render_Target(w3dsurface_t render_target, bool use_default_
         if (s_currentRenderTarget) {
             captainslog_assert(s_defaultRenderTarget != nullptr);
         }
+
         if (s_defaultRenderTarget != nullptr) {
             DX8CALL(SetRenderTarget(s_defaultRenderTarget, s_defaultDepthBuffer));
             s_defaultRenderTarget->Release();
@@ -1712,20 +1862,26 @@ void DX8Wrapper::Set_Render_Target(w3dsurface_t render_target, bool use_default_
         }
     } else if (render_target != s_currentRenderTarget) {
         captainslog_assert(s_defaultRenderTarget != nullptr);
+
         if (s_defaultDepthBuffer == nullptr) {
             DX8CALL(GetDepthStencilSurface(&s_defaultDepthBuffer));
         }
+
         if (s_defaultRenderTarget == nullptr) {
             DX8CALL(GetRenderTarget(&s_defaultRenderTarget));
         }
+
         if (s_currentRenderTarget != nullptr) {
             s_currentRenderTarget->Release();
             s_currentRenderTarget = nullptr;
         }
+
         s_currentRenderTarget = render_target;
         captainslog_assert(s_currentRenderTarget != nullptr);
+
         if (s_currentRenderTarget != nullptr) {
             s_currentRenderTarget->AddRef();
+
             if (use_default_depth_buffer) {
                 DX8CALL(SetRenderTarget(s_currentRenderTarget, s_defaultDepthBuffer));
             } else {
@@ -1744,18 +1900,17 @@ void DX8Wrapper::Set_Gamma(float gamma, float bright, float contrast, bool calib
     bright = std::clamp(bright, -0.5f, 0.5f);
     contrast = std::clamp(contrast, 0.5f, 2.0f);
     float oo_gamma = 1.0f / gamma;
-
     g_numberOfDx8Calls++;
-
     unsigned long flag = (calibrate ? D3DSGR_CALIBRATE : D3DSGR_NO_CALIBRATION);
-
     D3DGAMMARAMP ramp;
     float limit;
+
     if (uselimit) {
         limit = (contrast - 1) / 2 * contrast;
     } else {
         limit = 0.0f;
     }
+
     for (int i = 0; i < 256; i++) {
         float in, out;
         in = i / 256.0f;
@@ -1774,6 +1929,7 @@ void DX8Wrapper::Set_Gamma(float gamma, float bright, float contrast, bool calib
     } else {
         HWND hwnd = GetDesktopWindow();
         HDC hdc = GetDC(hwnd);
+
         if (hdc) {
             SetDeviceGammaRamp(hdc, &ramp);
             ReleaseDC(hwnd, hdc);

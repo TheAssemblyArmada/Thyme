@@ -784,15 +784,12 @@ bool DX8Wrapper::Set_Render_Device(
                 return false;
         }
 
-        if (!Find_Z_Mode(s_presentParameters.BackBufferFormat,
-                s_presentParameters.BackBufferFormat,
-                &s_presentParameters.AutoDepthStencilFormat)) {
+        if (!Find_Z_Mode(
+                s_displayFormat, s_presentParameters.BackBufferFormat, &s_presentParameters.AutoDepthStencilFormat)) {
             if (s_bitDepth == 32) {
                 s_bitDepth = 16;
                 s_presentParameters.BackBufferFormat = D3DFMT_R5G6B5;
-                if (!Find_Z_Mode(s_presentParameters.BackBufferFormat,
-                        s_presentParameters.BackBufferFormat,
-                        &s_presentParameters.AutoDepthStencilFormat)) {
+                if (!Find_Z_Mode(D3DFMT_R5G6B5, D3DFMT_R5G6B5, &s_presentParameters.AutoDepthStencilFormat)) {
                     s_presentParameters.AutoDepthStencilFormat = D3DFMT_UNKNOWN;
                 }
             } else {

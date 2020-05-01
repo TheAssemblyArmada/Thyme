@@ -215,7 +215,7 @@ void DX8Wrapper::Shutdown()
     s_renderDeviceShortNameTable.Delete_All();
     s_renderDeviceDescriptionTable.Delete_All();
     s_currentCaps->Shutdown();
-    s_isInitialised = nullptr;
+    s_isInitialised = false;
 #endif
 }
 

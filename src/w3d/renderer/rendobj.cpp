@@ -147,6 +147,7 @@ void RenderObjClass::Validate_Transform() const
 {
     RenderObjClass *con = Get_Container();
     bool dirty = false;
+
     if (con != NULL) {
         dirty = con->Are_Sub_Object_Transforms_Dirty();
 

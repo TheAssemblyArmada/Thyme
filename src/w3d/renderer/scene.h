@@ -40,18 +40,21 @@ public:
         LIGHT = 0x1,
         RELEASE = 0x2,
     };
+
     enum PolyRenderType
     {
         POINT = 0x0,
         LINE = 0x1,
         FILL = 0x2,
     };
+
     enum ExtraPassPolyRenderType
     {
         EXTRA_PASS_DISABLE = 0x0,
         EXTRA_PASS_LINE = 0x1,
         EXTRA_PASS_CLEAR_LINE = 0x2,
     };
+
     virtual ~SceneClass();
     virtual int Get_Scene_ID();
     virtual void Add_Render_Object(RenderObjClass *obj);

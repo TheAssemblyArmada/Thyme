@@ -28,11 +28,13 @@ public:
     AABoxClass(Vector3 *points, int num) { Init(points, num); }
     bool operator==(const AABoxClass &src) { return (Center == src.Center) && (Extent == src.Extent); }
     bool operator!=(const AABoxClass &src) { return (Center != src.Center) || (Extent != src.Extent); }
+
     void Init(const Vector3 &center, const Vector3 &extent)
     {
         Center = center;
         Extent = extent;
     }
+
     void Init(Vector3 *points, int num)
     {
         Vector3 Min = points[0];
@@ -61,7 +63,9 @@ public:
         Center = (Max + Min) * 0.5f;
         Extent = (Max - Min) * 0.5f;
     }
+
     void Init(const MinMaxAABoxClass &minmaxbox);
+
     void Init(const LineSegClass &line)
     {
         Vector3 min_corner = line.Get_P0();
@@ -88,12 +92,15 @@ public:
         Center = (max_corner + min_corner) * 0.5f;
         Extent = (max_corner - min_corner) * 0.5f;
     }
+
     void Init_Min_Max(const Vector3 &min, const Vector3 &max)
     {
         Center = (max + min) * 0.5f;
         Extent = (max - min) * 0.5f;
     }
+
     void Init_Random(float min_center = -1.0f, float max_center = 1.0f, float min_extent = 0.5f, float max_extent = 1.0f);
+
     void Add_Point(const Vector3 &point)
     {
         Vector3 Min = Center - Extent;
@@ -120,6 +127,7 @@ public:
         Center = (Max + Min) / 2.0f;
         Extent = (Max - Min) / 2.0f;
     }
+
     void Add_Box(const AABoxClass &b)
     {
         Vector3 newmin = Center - Extent;
@@ -129,7 +137,9 @@ public:
         Center = (newmax + newmin) * 0.5f;
         Extent = (newmax - newmin) * 0.5f;
     }
+
     void Add_Box(const MinMaxAABoxClass &b);
+
     float Project_To_Axis(const Vector3 &axis) const
     {
         float x = Extent[0] * axis[0];
@@ -137,12 +147,14 @@ public:
         float z = Extent[2] * axis[2];
         return (GameMath::Fabs(x) + GameMath::Fabs(y) + GameMath::Fabs(z));
     }
+
     void Transform(const Matrix3D &tm)
     {
         Vector3 oldcenter = Center;
         Vector3 oldextent = Extent;
         tm.Transform_Center_Extent_AABox(oldcenter, oldextent, &Center, &Extent);
     }
+
     void Translate(const Vector3 &trans) { Center += trans; }
     float Volume() const { return 2.0 * Extent.X * 2.0 * Extent.Y * 2.0 * Extent.Z; }
     bool Contains(const Vector3 &point) const;
@@ -160,6 +172,7 @@ public:
     MinMaxAABoxClass(const Vector3 &min_corner, const Vector3 &max_corner) : MinCorner(min_corner), MaxCorner(max_corner) {}
     MinMaxAABoxClass(Vector3 *points, int num) { Init(points, num); }
     MinMaxAABoxClass(const AABoxClass &that) { Init(that); }
+
     void Init(Vector3 *points, int num)
     {
         MinCorner = points[0];
@@ -170,17 +183,21 @@ public:
             MaxCorner.Update_Max(points[i]);
         }
     }
+
     void Init(const AABoxClass &box)
     {
         MinCorner = box.Center - box.Extent;
         MaxCorner = box.Center + box.Extent;
     }
+
     void Init_Empty();
+
     void Add_Point(const Vector3 &point)
     {
         MinCorner.Update_Min(point);
         MaxCorner.Update_Max(point);
     }
+
     void Add_Box(const MinMaxAABoxClass &box)
     {
         if (box.MinCorner == box.MaxCorner)
@@ -189,6 +206,7 @@ public:
         MinCorner.Update_Min(box.MinCorner);
         MaxCorner.Update_Max(box.MaxCorner);
     }
+
     void Add_Box(const AABoxClass &box)
     {
         if (box.Extent == Vector3(0.0f, 0.0f, 0.0f))
@@ -197,6 +215,7 @@ public:
         MinCorner.Update_Min(box.Center - box.Extent);
         MaxCorner.Update_Max(box.Center + box.Extent);
     }
+
     void Add_Box(const Vector3 &min_corner, const Vector3 &max_corner)
     {
         if (min_corner == max_corner)
@@ -205,22 +224,26 @@ public:
         MinCorner.Update_Min(min_corner);
         MaxCorner.Update_Max(max_corner);
     }
+
     void Transform(const Matrix3D &tm)
     {
         Vector3 oldmin = MinCorner;
         Vector3 oldmax = MaxCorner;
         tm.Transform_Min_Max_AABox(oldmin, oldmax, &MinCorner, &MaxCorner);
     }
+
     void Translate(const Vector3 &pos)
     {
         MinCorner += pos;
         MaxCorner += pos;
     }
+
     float Volume() const
     {
         Vector3 size = MaxCorner - MinCorner;
         return size.X * size.Y * size.Z;
     }
+
     Vector3 MinCorner;
     Vector3 MaxCorner;
 };

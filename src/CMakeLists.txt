@@ -28,6 +28,7 @@ set(GAMEENGINE_INCLUDES
     w3d/lib
     w3d/math
     w3d/renderer
+    w3d/saveload
 )
 
 set(HOOKER_SRC
@@ -214,7 +215,9 @@ set(GAMEENGINE_SRC
     w3d/renderer/missing.cpp
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
+    w3d/renderer/predlod.cpp
     w3d/renderer/render2d.cpp
+    w3d/renderer/rendobj.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp
     w3d/renderer/surfaceclass.cpp

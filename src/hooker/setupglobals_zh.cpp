@@ -367,6 +367,7 @@ bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0));
 bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00CC58B8));
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
 int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
+float &W3D::s_defaultNativeScreenSize = Make_Global<float>(PICK_ADDRESS(0x00A16984, 0x00CC58A4));
 
 // dx8renderer.cpp
 #include "dx8renderer.h"
@@ -379,6 +380,10 @@ MultiListClass<DX8TextureCategoryClass> &g_textureCategoryDeleteList =
     Make_Global<MultiListClass<DX8TextureCategoryClass>>(PICK_ADDRESS(0x00A4C438, 0x00DEEB48));
 MultiListClass<DX8FVFCategoryContainer> &g_fvfCategoryContainerDeleteList =
     Make_Global<MultiListClass<DX8FVFCategoryContainer>>(PICK_ADDRESS(0x00A4C480, 0x00DEEB90));
+
+// predlod.cpp
+#include "predlod.h"
+float &PredictiveLODOptimizerClass::s_TotalCost = Make_Global<float>(PICK_ADDRESS(0x00A480AC, 0x00DEEB04));
 
 // w3dformat.cpp
 ARRAY_DEF(PICK_ADDRESS(0x00A5243C, 0x00DF6B20), WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);

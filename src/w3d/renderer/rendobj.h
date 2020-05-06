@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
 #include "aabox.h"
 #include "coltype.h"
@@ -21,6 +22,7 @@
 #include "persist.h"
 #include "refcount.h"
 #include "sphere.h"
+
 class SceneClass;
 class HAnimClass;
 class HTreeClass;

@@ -23,6 +23,7 @@
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
+
 const float RenderObjClass::AT_MIN_LOD = FLT_MAX;
 const float RenderObjClass::AT_MAX_LOD = -1.0f;
 

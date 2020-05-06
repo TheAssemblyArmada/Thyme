@@ -13,11 +13,14 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
 #include "refcount.h"
 #include "vector3.h"
+
 class RenderObjClass;
 class RenderInfoClass;
+
 class SceneIterator
 {
 public:
@@ -27,6 +30,7 @@ public:
     virtual bool Is_Done() = 0;
     virtual RenderObjClass *Current_Item() = 0;
 };
+
 class SceneClass : public RefCountClass
 {
 public:

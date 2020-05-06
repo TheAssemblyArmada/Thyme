@@ -13,21 +13,25 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
 #include "matrix3d.h"
 #include "vector3.h"
+
 class LineSegClass
 {
 public:
     LineSegClass(void) {}
     LineSegClass(const Vector3 &p0, const Vector3 &p1) : P0(p0), P1(p1) { recalculate(); }
     LineSegClass(const LineSegClass &that, const Matrix3D &tm) { Set(that, tm); }
+
     void Set(const Vector3 &p0, const Vector3 &p1)
     {
         P0 = p0;
         P1 = p1;
         recalculate();
     }
+
     void Set(const LineSegClass &that, const Matrix3D &tm);
     void Set_Random(const Vector3 &min, const Vector3 &max);
     const Vector3 &Get_P0() const { return P0; }
@@ -48,6 +52,7 @@ protected:
         Dir.Normalize();
         Length = DP.Length();
     }
+
     Vector3 P0;
     Vector3 P1;
     Vector3 DP;

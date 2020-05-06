@@ -13,9 +13,12 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
 #include "lineseg.h"
+
 class MinMaxAABoxClass;
+
 class AABoxClass
 {
 public:
@@ -149,6 +152,7 @@ public:
     Vector3 Center;
     Vector3 Extent;
 };
+
 class MinMaxAABoxClass
 {
 public:

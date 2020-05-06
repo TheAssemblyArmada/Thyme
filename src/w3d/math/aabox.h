@@ -41,23 +41,29 @@ public:
         Vector3 Max = points[0];
 
         for (int i = 1; i < num; i++) {
-            if (Min.X > points[i].X)
+            if (Min.X > points[i].X) {
                 Min.X = points[i].X;
+            }
 
-            if (Min.Y > points[i].Y)
+            if (Min.Y > points[i].Y) {
                 Min.Y = points[i].Y;
+            }
 
-            if (Min.Z > points[i].Z)
+            if (Min.Z > points[i].Z) {
                 Min.Z = points[i].Z;
+            }
 
-            if (Max.X < points[i].X)
+            if (Max.X < points[i].X) {
                 Max.X = points[i].X;
+            }
 
-            if (Max.Y < points[i].Y)
+            if (Max.Y < points[i].Y) {
                 Max.Y = points[i].Y;
+            }
 
-            if (Max.Z < points[i].Z)
+            if (Max.Z < points[i].Z) {
                 Max.Z = points[i].Z;
+            }
         }
 
         Center = (Max + Min) * 0.5f;
@@ -71,23 +77,29 @@ public:
         Vector3 min_corner = line.Get_P0();
         Vector3 max_corner = line.Get_P0();
 
-        if (min_corner.X > line.Get_P1().X)
+        if (min_corner.X > line.Get_P1().X) {
             min_corner.X = line.Get_P1().X;
+        }
 
-        if (min_corner.Y > line.Get_P1().Y)
+        if (min_corner.Y > line.Get_P1().Y) {
             min_corner.Y = line.Get_P1().Y;
+        }
 
-        if (min_corner.Z > line.Get_P1().Z)
+        if (min_corner.Z > line.Get_P1().Z) {
             min_corner.Z = line.Get_P1().Z;
+        }
 
-        if (max_corner.X < line.Get_P1().X)
+        if (max_corner.X < line.Get_P1().X) {
             max_corner.X = line.Get_P1().X;
+        }
 
-        if (max_corner.Y < line.Get_P1().Y)
+        if (max_corner.Y < line.Get_P1().Y) {
             max_corner.Y = line.Get_P1().Y;
+        }
 
-        if (max_corner.Z < line.Get_P1().Z)
+        if (max_corner.Z < line.Get_P1().Z) {
             max_corner.Z = line.Get_P1().Z;
+        }
 
         Center = (max_corner + min_corner) * 0.5f;
         Extent = (max_corner - min_corner) * 0.5f;
@@ -106,23 +118,29 @@ public:
         Vector3 Min = Center - Extent;
         Vector3 Max = Center + Extent;
 
-        if (Min.X > point.X)
+        if (Min.X > point.X) {
             Min.X = point.X;
+        }
 
-        if (Min.Y > point.Y)
+        if (Min.Y > point.Y) {
             Min.Y = point.Y;
+        }
 
-        if (Min.Z > point.Z)
+        if (Min.Z > point.Z) {
             Min.Z = point.Z;
+        }
 
-        if (Max.X < point.X)
+        if (Max.X < point.X) {
             Max.X = point.X;
+        }
 
-        if (Max.Y < point.Y)
+        if (Max.Y < point.Y) {
             Max.Y = point.Y;
+        }
 
-        if (Max.Z < point.Z)
+        if (Max.Z < point.Z) {
             Max.Z = point.Z;
+        }
 
         Center = (Max + Min) / 2.0f;
         Extent = (Max - Min) / 2.0f;
@@ -200,8 +218,9 @@ public:
 
     void Add_Box(const MinMaxAABoxClass &box)
     {
-        if (box.MinCorner == box.MaxCorner)
+        if (box.MinCorner == box.MaxCorner) {
             return;
+        }
 
         MinCorner.Update_Min(box.MinCorner);
         MaxCorner.Update_Max(box.MaxCorner);
@@ -209,8 +228,9 @@ public:
 
     void Add_Box(const AABoxClass &box)
     {
-        if (box.Extent == Vector3(0.0f, 0.0f, 0.0f))
+        if (box.Extent == Vector3(0.0f, 0.0f, 0.0f)) {
             return;
+        }
 
         MinCorner.Update_Min(box.Center - box.Extent);
         MaxCorner.Update_Max(box.Center + box.Extent);
@@ -218,8 +238,9 @@ public:
 
     void Add_Box(const Vector3 &min_corner, const Vector3 &max_corner)
     {
-        if (min_corner == max_corner)
+        if (min_corner == max_corner) {
             return;
+        }
 
         MinCorner.Update_Min(min_corner);
         MaxCorner.Update_Max(max_corner);

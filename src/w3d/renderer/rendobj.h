@@ -389,10 +389,14 @@ const AABoxClass &RenderObjClass::Get_Bounding_Box(void) const
 
 float Bound_Degrees(float angle)
 {
-    while (angle > 359)
+    while (angle > 359) {
         angle -= 360;
-    while (angle < 0)
+    }
+
+    while (angle < 0) {
         angle += 360;
+    }
+
     return angle;
 }
 

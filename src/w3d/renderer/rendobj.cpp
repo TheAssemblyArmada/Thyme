@@ -266,8 +266,9 @@ int RenderObjClass::Calculate_Cost_Value_Arrays(float screen_area, float *values
 
 void RenderObjClass::Update_Sub_Object_Bits()
 {
-    if (Get_Num_Sub_Objects() == 0)
+    if (Get_Num_Sub_Objects() == 0) {
         return;
+    }
 
     int coltype = 0;
     int istrans = 0;

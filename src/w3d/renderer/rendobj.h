@@ -350,6 +350,7 @@ const SphereClass &RenderObjClass::Get_Bounding_Sphere(void) const
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();
     }
+
     return m_cachedBoundingSphere;
 }
 
@@ -358,6 +359,7 @@ const AABoxClass &RenderObjClass::Get_Bounding_Box(void) const
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();
     }
+
     return m_cachedBoundingBox;
 }
 

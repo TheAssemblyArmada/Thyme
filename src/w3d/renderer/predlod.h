@@ -13,7 +13,9 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
+
 class PredictiveLODOptimizerClass
 {
 public:

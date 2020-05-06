@@ -108,12 +108,14 @@ public:
     RenderObjClass();
     RenderObjClass(const RenderObjClass &src);
     RenderObjClass &operator=(const RenderObjClass &that);
+
     virtual ~RenderObjClass()
     {
         if (m_unknown) {
             delete m_unknown;
         }
     }
+
     virtual RenderObjClass *Clone() const = 0;
     virtual int Class_ID() const { return CLASSID_UNKNOWN; }
     virtual const char *Get_Name() const { return "UNNAMED"; }
@@ -189,11 +191,13 @@ public:
     virtual int Get_LOD_Count() const { return 1; }
     virtual void Set_LOD_Bias(float bias) {}
     virtual int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const;
+
     virtual RenderObjClass *Get_Current_LOD()
     {
         Add_Ref();
         return this;
     }
+
     virtual bool Build_Dependency_List(DynamicVectorClass<StringClass> &file_list, bool recursive = true);
     virtual bool Build_Texture_List(DynamicVectorClass<StringClass> &texture_file_list, bool recursive = true);
     virtual void Create_Decal(DecalGeneratorClass *generator) {}
@@ -212,6 +216,7 @@ public:
     virtual int Is_Really_Visible() { return ((m_bits & IS_REALLY_VISIBLE) == IS_REALLY_VISIBLE); }
     virtual int Is_Not_Hidden_At_All() { return ((m_bits & IS_NOT_HIDDEN_AT_ALL) == IS_NOT_HIDDEN_AT_ALL); }
     virtual int Is_Visible() const { return (m_bits & IS_VISIBLE); }
+
     virtual void Set_Visible(int onoff)
     {
         if (onoff) {
@@ -220,7 +225,9 @@ public:
             m_bits &= ~IS_VISIBLE;
         }
     }
+
     virtual int Is_Hidden() const { return !(m_bits & IS_NOT_HIDDEN); }
+
     virtual void Set_Hidden(int onoff)
     {
         if (onoff) {
@@ -229,7 +236,9 @@ public:
             m_bits |= IS_NOT_HIDDEN;
         }
     }
+
     virtual int Is_Animation_Hidden() const { return !(m_bits & IS_NOT_ANIMATION_HIDDEN); }
+
     virtual void Set_Animation_Hidden(int onoff)
     {
         if (onoff) {
@@ -238,7 +247,9 @@ public:
             m_bits |= IS_NOT_ANIMATION_HIDDEN;
         }
     }
+
     virtual int Is_Force_Visible() const { return m_bits & IS_FORCE_VISIBLE; }
+
     virtual void Set_Force_Visible(int onoff)
     {
         if (onoff) {
@@ -247,7 +258,9 @@ public:
             m_bits &= ~IS_FORCE_VISIBLE;
         }
     }
+
     virtual int Is_Translucent() const { return m_bits & IS_TRANSLUCENT; }
+
     virtual void Set_Translucent(int onoff)
     {
         if (onoff) {
@@ -256,7 +269,9 @@ public:
             m_bits &= ~IS_TRANSLUCENT;
         }
     }
+
     virtual int Is_Alpha() const { return m_bits & IS_ALPHA; }
+
     virtual void Set_Alpha(int onoff)
     {
         if (onoff) {
@@ -265,7 +280,9 @@ public:
             m_bits &= ~IS_ALPHA;
         }
     }
+
     virtual int Is_Additive() const { return m_bits & IS_ADDITIVE; }
+
     virtual void Set_Additive(int onoff)
     {
         if (onoff) {
@@ -274,12 +291,15 @@ public:
             m_bits &= ~IS_ADDITIVE;
         }
     }
+
     virtual int Get_Collision_Type() const { return (m_bits & COLLISION_TYPE_MASK); }
+
     virtual void Set_Collision_Type(int type)
     {
         m_bits &= ~COLLISION_TYPE_MASK;
         m_bits |= (type & COLLISION_TYPE_MASK) | COLLISION_TYPE_ALL;
     }
+
     virtual bool Is_Complete() { return false; }
     virtual bool Is_In_Scene() { return m_scene != nullptr; }
     virtual float Get_Native_Screen_Size() const { return m_nativeScreenSize; }
@@ -296,6 +316,7 @@ public:
     bool Is_Transform_Identity() const;
     bool Is_Transform_Identity_No_Validity_Check() const;
     RenderObjClass *Get_Container() const { return m_container; }
+
     void Set_Sub_Object_Transforms_Dirty(bool onoff)
     {
         if (onoff) {
@@ -304,6 +325,7 @@ public:
             m_bits &= ~SUBOBJ_TRANSFORMS_DIRTY;
         }
     }
+
     bool Are_Sub_Object_Transforms_Dirty() { return (m_bits & SUBOBJ_TRANSFORMS_DIRTY) != 0; }
     Vector3 Get_Position() const;
     static const float AT_MIN_LOD;
@@ -315,6 +337,7 @@ protected:
     virtual void Update_Sub_Object_Bits();
     void Invalidate_Cached_Bounding_Volumes(void) const { m_bits &= ~BOUNDING_VOLUMES_VALID; }
     void Validate_Cached_Bounding_Volumes(void) const { m_bits |= BOUNDING_VOLUMES_VALID; }
+
     enum
     {
         COLLISION_TYPE_MASK = 0x000000FF,
@@ -331,6 +354,7 @@ protected:
         IS_NOT_HIDDEN_AT_ALL = IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
         DEFAULT_BITS = COLLISION_TYPE_ALL | IS_NOT_HIDDEN | IS_NOT_ANIMATION_HIDDEN,
     };
+
     mutable unsigned long m_bits;
     Matrix3D m_transform;
     float m_objectScale;

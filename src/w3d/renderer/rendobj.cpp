@@ -14,12 +14,12 @@
  *            LICENSE
  */
 #include "rendobj.h"
-#include "wwstring.h"
-#include "w3d.h"
-#include "scene.h"
-#include "predlod.h"
-#include "vector.h"
 #include "htree.h"
+#include "predlod.h"
+#include "scene.h"
+#include "vector.h"
+#include "w3d.h"
+#include "wwstring.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -159,7 +159,6 @@ void RenderObjClass::Validate_Transform() const
             m_isTransformIdentity = Check_Is_Transform_Identity(m_transform);
         }
     }
-
 }
 
 Vector3 RenderObjClass::Get_Position() const
@@ -188,7 +187,7 @@ RenderObjClass *RenderObjClass::Get_Sub_Object_By_Name(const char *name, int *in
         }
     }
 
-	for (i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
 
         if (robj) {
@@ -292,9 +291,7 @@ void RenderObjClass::Update_Sub_Object_Bits()
     }
 }
 
-void RenderObjClass::Update_Sub_Object_Transforms()
-{
-}
+void RenderObjClass::Update_Sub_Object_Transforms() {}
 
 void RenderObjClass::Add(SceneClass *scene)
 {
@@ -391,7 +388,7 @@ bool RenderObjClass::Build_Dependency_List(DynamicVectorClass<StringClass> &file
     return (file_list.Count() > 0);
 }
 
-bool RenderObjClass::Build_Texture_List(DynamicVectorClass<StringClass> &texture_file_list, bool recursive) 
+bool RenderObjClass::Build_Texture_List(DynamicVectorClass<StringClass> &texture_file_list, bool recursive)
 {
     if (recursive) {
         int subobj_count = Get_Num_Sub_Objects();
@@ -436,8 +433,7 @@ void RenderObjClass::Add_Dependencies_To_List(DynamicVectorClass<StringClass> &f
 #ifdef GAME_DLL
 const PersistFactoryClass &RenderObjClass::Get_Factory() const
 {
-    return Call_Method<PersistFactoryClass &, const RenderObjClass>(
-        PICK_ADDRESS(0x0081C700, 0x004DFBD0), this);
+    return Call_Method<PersistFactoryClass &, const RenderObjClass>(PICK_ADDRESS(0x0081C700, 0x004DFBD0), this);
 }
 #endif
 

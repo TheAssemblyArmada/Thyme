@@ -15,12 +15,12 @@
  */
 #pragma once
 #include "always.h"
+#include "aabox.h"
+#include "coltype.h"
+#include "multilist.h"
+#include "persist.h"
 #include "refcount.h"
 #include "sphere.h"
-#include "coltype.h"
-#include "aabox.h"
-#include "persist.h"
-#include "multilist.h"
 class SceneClass;
 class HAnimClass;
 class HTreeClass;

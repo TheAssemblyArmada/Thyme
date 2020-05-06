@@ -13,9 +13,12 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
 #include "w3dmpo.h"
+
 struct PivotClass;
+
 class HTreeClass : public W3DMPO
 {
     IMPLEMENT_W3D_POOL(HTreeClass)

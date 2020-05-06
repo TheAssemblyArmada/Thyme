@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "predlod.h"
+
 #ifndef GAME_DLL
 float PredictiveLODOptimizerClass::s_TotalCost;
 #endif

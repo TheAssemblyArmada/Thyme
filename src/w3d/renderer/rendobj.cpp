@@ -442,12 +442,12 @@ const PersistFactoryClass &RenderObjClass::Get_Factory() const
 
 bool RenderObjClass::Save(ChunkSaveClass &csave)
 {
-    captainslog_assert(0);
+    captainslog_assert(false);
     return true;
 }
 
 bool RenderObjClass::Load(ChunkLoadClass &cload)
 {
-    captainslog_assert(0);
+    captainslog_assert(false);
     return true;
 }

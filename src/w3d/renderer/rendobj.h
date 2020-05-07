@@ -48,8 +48,8 @@ class RenderObjUnk
 {
 public:
     virtual ~RenderObjUnk() = 0;
-    virtual bool Unk1(RenderObjClass *robj, RenderInfoClass *rinfo) = 0;
-    virtual void Unk2(RenderObjClass *robj, RenderInfoClass *rinfo) = 0;
+    virtual bool Unk1(RenderObjClass *robj, RenderInfoClass &rinfo) = 0;
+    virtual void Unk2(RenderObjClass *robj, RenderInfoClass &rinfo) = 0;
 };
 
 class RenderObjClass : public RefCountClass, public PersistClass, public MultiListObjectClass

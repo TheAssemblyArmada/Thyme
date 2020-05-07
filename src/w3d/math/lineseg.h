@@ -22,14 +22,14 @@ class LineSegClass
 {
 public:
     LineSegClass(void) {}
-    LineSegClass(const Vector3 &p0, const Vector3 &p1) : P0(p0), P1(p1) { recalculate(); }
+    LineSegClass(const Vector3 &p0, const Vector3 &p1) : P0(p0), P1(p1) { Recalculate(); }
     LineSegClass(const LineSegClass &that, const Matrix3D &tm) { Set(that, tm); }
 
     void Set(const Vector3 &p0, const Vector3 &p1)
     {
         P0 = p0;
         P1 = p1;
-        recalculate();
+        Recalculate();
     }
 
     void Set(const LineSegClass &that, const Matrix3D &tm);
@@ -45,7 +45,7 @@ public:
         const LineSegClass &other_line, Vector3 *p1, float *fraction1, Vector3 *p2, float *fraction2) const;
 
 protected:
-    void recalculate(void)
+    void Recalculate(void)
     {
         DP = P1 - P0;
         Dir = DP;

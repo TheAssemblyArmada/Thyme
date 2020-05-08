@@ -311,7 +311,7 @@ public:
     virtual bool Load(ChunkLoadClass &cload);
     const Matrix3D &Get_Transform() const;
     const Matrix3D &Get_Transform(bool &is_transform_identity) const;
-    const Matrix3D &Get_Transform_No_Validity_Check(void) const;
+    const Matrix3D &Get_Transform_No_Validity_Check() const;
     const Matrix3D &Get_Transform_No_Validity_Check(bool &is_transform_identity) const;
     bool Is_Transform_Identity() const;
     bool Is_Transform_Identity_No_Validity_Check() const;
@@ -335,8 +335,8 @@ protected:
     virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
     virtual void Update_Cached_Bounding_Volumes() const;
     virtual void Update_Sub_Object_Bits();
-    void Invalidate_Cached_Bounding_Volumes(void) const { m_bits &= ~BOUNDING_VOLUMES_VALID; }
-    void Validate_Cached_Bounding_Volumes(void) const { m_bits |= BOUNDING_VOLUMES_VALID; }
+    void Invalidate_Cached_Bounding_Volumes() const { m_bits &= ~BOUNDING_VOLUMES_VALID; }
+    void Validate_Cached_Bounding_Volumes() const { m_bits |= BOUNDING_VOLUMES_VALID; }
 
     enum
     {
@@ -369,7 +369,7 @@ protected:
     RenderObjUnk *m_unknown;
 };
 
-const SphereClass &RenderObjClass::Get_Bounding_Sphere(void) const
+const SphereClass &RenderObjClass::Get_Bounding_Sphere() const
 {
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();
@@ -378,7 +378,7 @@ const SphereClass &RenderObjClass::Get_Bounding_Sphere(void) const
     return m_cachedBoundingSphere;
 }
 
-const AABoxClass &RenderObjClass::Get_Bounding_Box(void) const
+const AABoxClass &RenderObjClass::Get_Bounding_Box() const
 {
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();

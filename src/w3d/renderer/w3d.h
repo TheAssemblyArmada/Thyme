@@ -32,7 +32,7 @@ public:
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
     static int Get_Texture_Filter() { return s_textureFilter; }
-    static float Get_Default_Native_Screen_Size(void) { return s_defaultNativeScreenSize; }
+    static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);

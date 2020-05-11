@@ -159,3 +159,85 @@ void Matrix3::Multiply(const Matrix3 &A, const Matrix3 &B, Matrix3 *set_res)
     (*set_res)[1][2] = (float)((*Aptr)[1][0] * tmp1 + (*Aptr)[1][1] * tmp2 + (*Aptr)[1][2] * tmp3);
     (*set_res)[2][2] = (float)((*Aptr)[2][0] * tmp1 + (*Aptr)[2][1] * tmp2 + (*Aptr)[2][2] * tmp3);
 }
+
+int Matrix3::Is_Orthogonal() const
+{
+    Vector3 x(Row[0].X, Row[0].Y, Row[0].Z);
+    Vector3 y(Row[1].X, Row[1].Y, Row[1].Z);
+    Vector3 z(Row[2].X, Row[2].Y, Row[2].Z);
+
+    if (Vector3::Dot_Product(x, y) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    if (Vector3::Dot_Product(y, z) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    if (Vector3::Dot_Product(z, x) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    if (GameMath::Fabs(x.Length() - 1.0f) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    if (GameMath::Fabs(y.Length() - 1.0f) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    if (GameMath::Fabs(z.Length() - 1.0f) > GAMEMATH_EPSILON) {
+        return 0;
+    }
+
+    return 1;
+}
+
+void Matrix3::Re_Orthogonalize()
+{
+    Vector3 x(Row[0][0], Row[0][1], Row[0][2]);
+    Vector3 y(Row[1][0], Row[1][1], Row[1][2]);
+    Vector3 z;
+
+    Vector3::Cross_Product(x, y, &z);
+    Vector3::Cross_Product(z, x, &y);
+
+    float len = x.Length();
+
+    if (len < GAMEMATH_EPSILON) {
+        Make_Identity();
+        return;
+    } else {
+        x /= len;
+    }
+
+    len = y.Length();
+
+    if (len < GAMEMATH_EPSILON) {
+        Make_Identity();
+        return;
+    } else {
+        y /= len;
+    }
+
+    len = z.Length();
+
+    if (len < GAMEMATH_EPSILON) {
+        Make_Identity();
+        return;
+    } else {
+        z /= len;
+    }
+
+    Row[0][0] = x.X;
+    Row[0][1] = x.Y;
+    Row[0][2] = x.Z;
+
+    Row[1][0] = y.X;
+    Row[1][1] = y.Y;
+    Row[1][2] = y.Z;
+
+    Row[2][0] = z.X;
+    Row[2][1] = z.Y;
+    Row[2][2] = z.Z;
+}

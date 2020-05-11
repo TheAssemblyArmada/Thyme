@@ -63,7 +63,7 @@ public:
 
     __forceinline explicit Matrix3(const Vector3 &axis, float s_angle, float c_angle) { Set(axis, s_angle, c_angle); }
 
-    __forceinline Matrix3(const Quaternion &q) { Set(q); }
+    __forceinline explicit Matrix3(const Quaternion &q) { Set(q); }
 
     void Set(const Matrix3D &m);
     void Set(const Matrix4 &m);
@@ -86,6 +86,8 @@ public:
 
     __forceinline void Set(const Vector3 &axis, float s, float c)
     {
+        captainslog_assert(GameMath::Fabs(axis.Length2() - 1.0f) < 0.001f);
+
         Row[0].Set((float)(axis[0] * axis[0] + c * (1.0f - axis[0] * axis[0])),
             (float)(axis[0] * axis[1] * (1.0f - c) - axis[2] * s),
             (float)(axis[2] * axis[0] * (1.0f - c) + axis[1] * s));
@@ -155,6 +157,7 @@ public:
 
         return *this;
     }
+
     __forceinline Matrix3 &operator/=(float d)
     {
         Row[0] /= d;
@@ -278,23 +281,28 @@ public:
     friend void Swap(Matrix3 &a, Matrix3 &b);
     friend Vector3 operator*(const Matrix3 &a, const Vector3 &v);
 
-    __forceinline static void Add(const Matrix3 &a, const Matrix3 &b, Matrix3 *res)
+    __forceinline static void Add(const Matrix3 &a, const Matrix3 &b, Matrix3 *c)
     {
-        Vector3::Add(a.Row[0], b.Row[0], &(res->Row[0]));
-        Vector3::Add(a.Row[1], b.Row[1], &(res->Row[1]));
-        Vector3::Add(a.Row[2], b.Row[2], &(res->Row[2]));
+        captainslog_assert(c);
+        Vector3::Add(a.Row[0], b.Row[0], &(c->Row[0]));
+        Vector3::Add(a.Row[1], b.Row[1], &(c->Row[1]));
+        Vector3::Add(a.Row[2], b.Row[2], &(c->Row[2]));
     }
 
-    __forceinline static void Subtract(const Matrix3 &a, const Matrix3 &b, Matrix3 *res)
+    __forceinline static void Subtract(const Matrix3 &a, const Matrix3 &b, Matrix3 *c)
     {
-        Vector3::Subtract(a.Row[0], b.Row[0], &(res->Row[0]));
-        Vector3::Subtract(a.Row[1], b.Row[1], &(res->Row[1]));
-        Vector3::Subtract(a.Row[2], b.Row[2], &(res->Row[2]));
+        captainslog_assert(c);
+        Vector3::Subtract(a.Row[0], b.Row[0], &(c->Row[0]));
+        Vector3::Subtract(a.Row[1], b.Row[1], &(c->Row[1]));
+        Vector3::Subtract(a.Row[2], b.Row[2], &(c->Row[2]));
     }
 
     static void Multiply(const Matrix3 &a, const Matrix3 &b, Matrix3 *res);
     static void Multiply(const Matrix3D &a, const Matrix3 &b, Matrix3 *res);
     static void Multiply(const Matrix3 &a, const Matrix3D &b, Matrix3 *res);
+
+    int Is_Orthogonal() const;
+    void Re_Orthogonalize();
 
     __forceinline static void Rotate_Vector(const Matrix3 &A, const Vector3 &in, Vector3 *out)
     {
@@ -334,11 +342,13 @@ public:
     {
         for (int i = 0; i < 3; i++) {
             (*new_extent)[i] = 0.0f;
+
             for (int j = 0; j < 3; j++) {
                 (*new_extent)[i] += GameMath::Fabs(Row[i][j] * extent[j]);
             }
         }
     }
+
 
     __forceinline Matrix3 Inverse() const
     {
@@ -350,6 +360,7 @@ public:
         for (j = 0; j < 3; j++) {
             // Find largest pivot in column j among rows j..3
             i1 = j;
+
             for (i = j + 1; i < 3; i++) {
                 if (GameMath::Fabs(a[i][j]) > GameMath::Fabs(a[i1][j])) {
                     i1 = i;
@@ -458,6 +469,7 @@ __forceinline Matrix3 Create_X_Rotation_Matrix3(float s, float c)
 
     return mat;
 }
+
 __forceinline Matrix3 Create_X_Rotation_Matrix3(float rad)
 {
     return Create_X_Rotation_Matrix3(GameMath::Sin(rad), GameMath::Cos(rad));

@@ -19,7 +19,6 @@
 #include "matrix3d.h"
 #include "vector3.h"
 #include "vector4.h"
-//#include "plane.h"
 
 class Matrix4
 {

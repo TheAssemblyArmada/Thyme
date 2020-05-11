@@ -24,17 +24,7 @@ using GameMath::Fabs;
 using GameMath::Inv_Sqrt;
 using GameMath::Sqrt;
 
-Matrix3D Matrix3D::Identity(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0);
-
-Matrix3D::Matrix3D() {}
-
-Matrix3D::Matrix3D(float _11, float _12, float _13, float _14, float _21, float _22, float _23, float _24, float _31,
-    float _32, float _33, float _34)
-{
-    this->Row[0] = Vector4(_11, _12, _13, _14);
-    this->Row[1] = Vector4(_21, _22, _23, _24);
-    this->Row[2] = Vector4(_31, _32, _33, _34);
-}
+const Matrix3D Matrix3D::Identity(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
 int Matrix3D::Is_Orthogonal() const
 {
@@ -187,26 +177,18 @@ void Matrix3D::Obj_Look_At(const Vector3 &p, const Vector3 &t, float roll)
     Rotate_X(roll);
 }
 
-Vector3 Matrix3D::Rotate_Vector(const Vector3 &vector) const
+Vector3 Matrix3D::Rotate_Vector(const Vector3 &vect) const
 {
-    Vector3 result;
-
-    result.X = Row[0].X * vector.X + Row[0].Y * vector.Y + Row[0].Z * vector.Z;
-    result.Y = Row[1].X * vector.X + Row[1].Y * vector.Y + Row[1].Z * vector.Z;
-    result.Z = Row[2].X * vector.X + Row[2].Y * vector.Y + Row[2].Z * vector.Z;
-
-    return result;
+    return Vector3((Row[0][0] * vect[0] + Row[0][1] * vect[1] + Row[0][2] * vect[2]),
+        (Row[1][0] * vect[0] + Row[1][1] * vect[1] + Row[1][2] * vect[2]),
+        (Row[2][0] * vect[0] + Row[2][1] * vect[1] + Row[2][2] * vect[2]));
 }
 
-Vector3 Matrix3D::Inverse_Rotate_Vector(const Vector3 &vector) const
+Vector3 Matrix3D::Inverse_Rotate_Vector(const Vector3 &vect) const
 {
-    Vector3 result;
-
-    result.X = Row[0].X * vector.X + Row[1].X * vector.Y + Row[2].X * vector.Z;
-    result.Y = Row[0].Y * vector.X + Row[1].Y * vector.Y + Row[2].Y * vector.Z;
-    result.Z = Row[0].Z * vector.X + Row[1].Z * vector.Y + Row[2].Z * vector.Z;
-
-    return result;
+    return Vector3((Row[0][0] * vect[0] + Row[1][0] * vect[1] + Row[2][0] * vect[2]),
+        (Row[0][1] * vect[0] + Row[1][1] * vect[1] + Row[2][1] * vect[2]),
+        (Row[0][2] * vect[0] + Row[1][2] * vect[1] + Row[2][2] * vect[2]));
 }
 
 void Matrix3D::Set_Rotation(const Quaternion &q)
@@ -220,33 +202,6 @@ void Matrix3D::Set_Rotation(const Quaternion &q)
     Row[2][0] = (float)(2.0 * (q[2] * q[0] - q[1] * q[3]));
     Row[2][1] = (float)(2.0 * (q[1] * q[2] + q[0] * q[3]));
     Row[2][2] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
-}
-
-Vector3 Matrix3D::operator*(const Vector3 &vector) const
-{
-    return Vector3(Row[0].X * vector.X + Row[0].Y * vector.Y + Row[0].Z * vector.Z + Row[0].W,
-        Row[1].X * vector.X + Row[1].Y * vector.Y + Row[1].Z * vector.Z + Row[1].W,
-        Row[2].X * vector.X + Row[2].Y * vector.Y + Row[2].Z * vector.Z + Row[2].W);
-}
-
-Matrix3D &Matrix3D::operator*=(const Matrix3D &matrix)
-{
-    Set(Row[0].X * matrix.Row[0].X + Row[0].Y * matrix.Row[1].X + Row[0].Z * matrix.Row[2].X,
-        Row[0].X * matrix.Row[0].Y + Row[0].Y * matrix.Row[1].Y + Row[0].Z * matrix.Row[2].Y,
-        Row[0].X * matrix.Row[0].Z + Row[0].Y * matrix.Row[1].Z + Row[0].Z * matrix.Row[2].Z,
-        Row[0].X * matrix.Row[0].W + Row[0].Y * matrix.Row[1].W + Row[0].Z * matrix.Row[2].W + Row[0].W,
-
-        Row[1].X * matrix.Row[0].X + Row[1].Y * matrix.Row[1].X + Row[1].Z * matrix.Row[2].X,
-        Row[1].X * matrix.Row[0].Y + Row[1].Y * matrix.Row[1].Y + Row[1].Z * matrix.Row[2].Y,
-        Row[1].X * matrix.Row[0].Z + Row[1].Y * matrix.Row[1].Z + Row[1].Z * matrix.Row[2].Z,
-        Row[1].X * matrix.Row[0].W + Row[1].Y * matrix.Row[1].W + Row[1].Z * matrix.Row[2].W + Row[1].W,
-
-        Row[2].X * matrix.Row[0].X + Row[2].Y * matrix.Row[1].X + Row[2].Z * matrix.Row[2].X,
-        Row[2].X * matrix.Row[0].Y + Row[2].Y * matrix.Row[1].Y + Row[2].Z * matrix.Row[2].Y,
-        Row[2].X * matrix.Row[0].Z + Row[2].Y * matrix.Row[1].Z + Row[2].Z * matrix.Row[2].Z,
-        Row[2].X * matrix.Row[0].W + Row[2].Y * matrix.Row[1].W + Row[2].Z * matrix.Row[2].W + Row[2].W);
-
-    return *this;
 }
 
 void Matrix3D::Set_Rotation(const Matrix3 &m)
@@ -298,6 +253,7 @@ void Matrix3D::Copy_3x3_Matrix(float matrix[3][3])
 
 void Matrix3D::Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_res)
 {
+    captainslog_assert(set_res != NULL);
     Matrix3D tmp;
     Matrix3D *Aptr;
     float tmp1, tmp2, tmp3;
@@ -337,6 +293,8 @@ void Matrix3D::Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_res)
 
 void Matrix3D::Transform_Min_Max_AABox(const Vector3 &min, const Vector3 &max, Vector3 *set_min, Vector3 *set_max) const
 {
+    captainslog_assert(set_min != &min);
+    captainslog_assert(set_max != &max);
     float tmp0, tmp1;
     set_min->X = set_max->X = Row[0][3];
     set_min->Y = set_max->Y = Row[1][3];
@@ -361,6 +319,9 @@ void Matrix3D::Transform_Min_Max_AABox(const Vector3 &min, const Vector3 &max, V
 void Matrix3D::Transform_Center_Extent_AABox(
     const Vector3 &center, const Vector3 &extent, Vector3 *set_center, Vector3 *set_extent) const
 {
+    captainslog_assert(set_center != &center);
+    captainslog_assert(set_extent != &extent);
+
     for (int i = 0; i < 3; i++) {
         (*set_center)[i] = Row[i][3];
         (*set_extent)[i] = 0.0f;
@@ -370,39 +331,6 @@ void Matrix3D::Transform_Center_Extent_AABox(
             (*set_extent)[i] += Fabs(Row[i][j] * extent[j]);
         }
     }
-}
-
-Matrix3D Matrix3D::Reflect_Plane(const PlaneClass &_plane)
-{
-    PlaneClass plane = _plane;
-    plane.Normalize();
-
-    Matrix3D temp(true);
-    temp[0][0] = -2 * plane.N.X * plane.N.X + 1;
-    temp[0][1] = -2 * plane.N.X * plane.N.Y;
-    temp[0][2] = -2 * plane.N.X * plane.N.Z;
-    temp[0][3] = 2 * plane.N.X * plane.D;
-    temp[1][0] = -2 * plane.N.Y * plane.N.X;
-    temp[1][1] = -2 * plane.N.Y * plane.N.Y + 1;
-    temp[1][2] = -2 * plane.N.Y * plane.N.Z;
-    temp[0][3] = 2 * plane.N.Y * plane.D;
-    temp[2][0] = -2 * plane.N.Z * plane.N.X;
-    temp[2][1] = -2 * plane.N.Z * plane.N.Y;
-    temp[2][2] = -2 * plane.N.Z * plane.N.Z + 1;
-    temp[2][3] = 2 * plane.N.Z * plane.D;
-
-    return temp;
-};
-
-PlaneClass Matrix3D::Transform_Plane(const PlaneClass &plane) const
-{
-    PlaneClass out;
-    out.N.X = Row[0][0] * plane.N.X + Row[1][0] * plane.N.Y + Row[2][0] * plane.N.Z;
-    out.N.Y = Row[0][1] * plane.N.X + Row[1][1] * plane.N.Y + Row[2][1] * plane.N.Z;
-    out.N.Z = Row[0][2] * plane.N.X + Row[1][2] * plane.N.Y + Row[2][2] * plane.N.Z;
-    out.D = Row[0][3] * plane.N.X + Row[1][3] * plane.N.Y + Row[2][3] * plane.N.Z + plane.D;
-
-    return out;
 }
 
 bool Matrix3D::Solve_Linear_System(Matrix3D &system)

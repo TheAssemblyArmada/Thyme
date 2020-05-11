@@ -22,7 +22,7 @@
 class Vector3
 {
 public:
-    Vector3() { X = Y = Z = 0.0f; }
+    __forceinline Vector3() {}
 
     __forceinline Vector3(const Vector3 &v)
     {
@@ -40,9 +40,8 @@ public:
 
     bool Is_Valid() const;
 
-    __forceinline explicit Vector3(const float vector[3])
+    __forceinline Vector3(const float vector[3])
     {
-        captainslog_assert(vector != nullptr);
         X = vector[0];
         Y = vector[1];
         Z = vector[2];
@@ -77,11 +76,13 @@ public:
 
     __forceinline void Normalize()
     {
-        float len2 = GAMEMATH_FLOAT_TINY + Length2();
-        float oolen = GameMath::Inv_Sqrt(len2);
-        X *= oolen;
-        Y *= oolen;
-        Z *= oolen;
+        float len2 = Length2();
+        if (len2 != 0.0f) {
+            float oolen = GameMath::Inv_Sqrt(Length2());
+            X *= oolen;
+            Y *= oolen;
+            Z *= oolen;
+        }
     }
 
     __forceinline float Length() const { return GameMath::Sqrt(Length2()); }
@@ -158,14 +159,13 @@ public:
 
     __forceinline Vector3 &operator/=(float k)
     {
-        X = X * 1.0f / k;
-        Y = Y * 1.0f / k;
-        Z = Z * 1.0f / k;
+        float ook = 1.0f / k;
+        X = X * ook;
+        Y = Y * ook;
+        Z = Z * ook;
 
         return *this;
     }
-
-    __forceinline Vector3 Mul(const Vector3 &b) { return Vector3(X * b.X, Y * b.Y, Z * b.Z); }
 
     friend Vector3 operator*(const Vector3 &a, float k);
     friend Vector3 operator*(float k, const Vector3 &a);
@@ -183,9 +183,9 @@ public:
         return Vector3((a.Y * b.Z - a.Z * b.Y), (a.Z * b.X - a.X * b.Z), (a.X * b.Y - a.Y * b.X));
     }
 
-    __forceinline static void Cross_Product(const Vector3 &a, const Vector3 &b, Vector3 *__restrict set_result)
+    __forceinline static void Cross_Product(const Vector3 &a, const Vector3 &b, Vector3 *set_result)
     {
-        captainslog_assert(!(set_result == &a || set_result == &b));
+        captainslog_assert(set_result != &a);
         set_result->X = (a.Y * b.Z - a.Z * b.Y);
         set_result->Y = (a.Z * b.X - a.X * b.Z);
         set_result->Z = (a.X * b.Y - a.Y * b.X);
@@ -199,6 +199,7 @@ public:
 
     __forceinline static void Add(const Vector3 &a, const Vector3 &b, Vector3 *set_result)
     {
+        captainslog_assert(set_result != NULL);
         set_result->X = a.X + b.X;
         set_result->Y = a.Y + b.Y;
         set_result->Z = a.Z + b.Z;
@@ -206,6 +207,7 @@ public:
 
     __forceinline static void Subtract(const Vector3 &a, const Vector3 &b, Vector3 *set_result)
     {
+        captainslog_assert(set_result != NULL);
         set_result->X = a.X - b.X;
         set_result->Y = a.Y - b.Y;
         set_result->Z = a.Z - b.Z;
@@ -304,8 +306,6 @@ public:
         }
     }
 
-    __forceinline Vector3 Abs() const { return Vector3(GameMath::Fabs(X), GameMath::Fabs(Y), GameMath::Fabs(Z)); }
-
     __forceinline static float Distance(const Vector3 &p1, const Vector3 &p2)
     {
         Vector3 temp;
@@ -314,16 +314,26 @@ public:
         return (temp.Length());
     }
 
+    __forceinline static float Quick_Distance(const Vector3 &p1, const Vector3 &p2)
+    {
+        Vector3 temp;
+        temp = p1 - p2;
+
+        return (temp.Quick_Length());
+    }
+
     __forceinline static void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result)
     {
+        captainslog_assert(set_result != NULL);
         set_result->X = (a.X + (b.X - a.X) * alpha);
         set_result->Y = (a.Y + (b.Y - a.Y) * alpha);
         set_result->Z = (a.Z + (b.Z - a.Z) * alpha);
     }
 
+    uint32_t Convert_To_ABGR() const;
     uint32_t Convert_To_ARGB() const;
 
-    float Quick_Length() const
+    __forceinline float Quick_Length() const
     {
         float max = GameMath::Fabs(X);
         float mid = GameMath::Fabs(Y);
@@ -351,8 +361,6 @@ public:
         return max + (11.0f / 32.0f) * mid + (1.0f / 4.0f) * min;
     }
 
-    __forceinline static Vector3 Replicate(float n) { return Vector3(n, n, n); }
-
 public:
     float X;
     float Y;
@@ -371,7 +379,8 @@ __forceinline Vector3 operator*(float k, const Vector3 &a)
 
 __forceinline Vector3 operator/(const Vector3 &a, float k)
 {
-    return Vector3((a.X * 1.0f / k), (a.Y * 1.0f / k), (a.Z * 1.0f / k));
+    float ook = 1.0f / k;
+    return Vector3((a.X * ook), (a.Y * ook), (a.Z * ook));
 }
 
 __forceinline Vector3 operator+(const Vector3 &a, const Vector3 &b)
@@ -399,10 +408,20 @@ __forceinline bool operator!=(const Vector3 &a, const Vector3 &b)
     return ((a.X != b.X) || (a.Y != b.Y) || (a.Z != b.Z));
 }
 
+__forceinline bool Equal_Within_Epsilon(const Vector3 &a, const Vector3 &b, float epsilon)
+{
+    return ((GameMath::Fabs(a.X - b.X) < epsilon) && (GameMath::Fabs(a.Y - b.Y) < epsilon)
+        && (GameMath::Fabs(a.Z - b.Z) < epsilon));
+}
+
 __forceinline Vector3 Normalize(const Vector3 &vec)
 {
-    float len2 = GAMEMATH_FLOAT_TINY + vec.Length2();
-    return vec * GameMath::Inv_Sqrt(len2);
+    float len2 = vec.Length2();
+    if (len2 != 0.0f) {
+        float oolen = GameMath::Inv_Sqrt(len2);
+        return vec * oolen;
+    }
+    return vec;
 }
 
 __forceinline void Swap(Vector3 &a, Vector3 &b)
@@ -419,6 +438,7 @@ __forceinline Vector3 Lerp(const Vector3 &a, const Vector3 &b, float alpha)
 
 __forceinline void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result)
 {
+    captainslog_assert(set_result != NULL);
     set_result->X = (a.X + (b.X - a.X) * alpha);
     set_result->Y = (a.Y + (b.Y - a.Y) * alpha);
     set_result->Z = (a.Z + (b.Z - a.Z) * alpha);
@@ -426,7 +446,12 @@ __forceinline void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3
 
 __forceinline bool Vector3::Is_Valid() const
 {
-    return GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z);
+    return (GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z));
+}
+
+__forceinline uint32_t Vector3::Convert_To_ABGR() const
+{
+    return (unsigned(255) << 24) | (unsigned(Z * 255.0f) << 16) | (unsigned(Y * 255.0f) << 8) | (unsigned(X * 255.0f));
 }
 
 __forceinline uint32_t Vector3::Convert_To_ARGB() const

@@ -72,7 +72,7 @@ public:
     __forceinline float &operator[](int i) { return (&X)[i]; }
     __forceinline const float &operator[](int i) const { return (&X)[i]; }
 
-    __forceinline void Normalize(void)
+    __forceinline void Normalize()
     {
         float len2 = GAMEMATH_FLOAT_TINY + Length2();
         float oolen = GameMath::Inv_Sqrt(len2);
@@ -82,9 +82,9 @@ public:
         W *= oolen;
     }
 
-    __forceinline float Length(void) const { return GameMath::Sqrt(Length2()); }
+    __forceinline float Length() const { return GameMath::Sqrt(Length2()); }
 
-    __forceinline float Length2(void) const { return X * X + Y * Y + Z * Z + W * W; }
+    __forceinline float Length2() const { return X * X + Y * Y + Z * Z + W * W; }
 
     // unary operators
     __forceinline Vector4 operator-() const { return (Vector4(-X, -Y, -Z, -W)); }

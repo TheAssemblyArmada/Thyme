@@ -89,12 +89,12 @@ public:
         bottom = r.bottom;
     }
 
-    Vector2 Upper_Right(void) const { return Vector2(right, top); }
-    Vector2 Lower_Left(void) const { return Vector2(left, bottom); }
-    float Width(void) const { return right - left; }
-    float Height(void) const { return bottom - top; }
-    Vector2 Center(void) const { return Vector2((left + right) / 2, (top + bottom) / 2); }
-    Vector2 Extent(void) const { return Vector2((right - left) / 2, (bottom - top) / 2); }
+    Vector2 Upper_Right() const { return Vector2(right, top); }
+    Vector2 Lower_Left() const { return Vector2(left, bottom); }
+    float Width() const { return right - left; }
+    float Height() const { return bottom - top; }
+    Vector2 Center() const { return Vector2((left + right) / 2, (top + bottom) / 2); }
+    Vector2 Extent() const { return Vector2((right - left) / 2, (bottom - top) / 2); }
 
     RectClass &Scale_Relative_Center(float k)
     {

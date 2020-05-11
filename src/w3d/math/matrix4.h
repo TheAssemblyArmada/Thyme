@@ -91,8 +91,8 @@ public:
         captainslog_assert(zfar > znear);
 
         Make_Identity();
-        Row[0][0] = static_cast<float>(1.0 / tan(hfov * 0.5));
-        Row[1][1] = static_cast<float>(1.0 / tan(vfov * 0.5));
+        Row[0][0] = static_cast<float>(1.0 / GameMath::Tan(hfov * 0.5));
+        Row[1][1] = static_cast<float>(1.0 / GameMath::Tan(vfov * 0.5));
         Row[2][2] = -(zfar + znear) / (zfar - znear);
         Row[2][3] = static_cast<float>(-(2.0 * zfar * znear) / (zfar - znear));
         Row[3][2] = -1.0f;
@@ -142,8 +142,11 @@ public:
     __forceinline Matrix4 Inverse() const
     {
         float s = Determinant();
-        if (s == 0.0)
+
+        if (s == 0.0) {
             return Matrix4();
+        }
+
         s = 1 / s;
         Matrix4 t;
         t.Row[0].X = s

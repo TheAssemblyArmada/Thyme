@@ -253,7 +253,7 @@ void Matrix3D::Copy_3x3_Matrix(float matrix[3][3])
 
 void Matrix3D::Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_res)
 {
-    captainslog_assert(set_res != NULL);
+    captainslog_assert(set_res != nullptr);
     Matrix3D tmp;
     Matrix3D *Aptr;
     float tmp1, tmp2, tmp3;

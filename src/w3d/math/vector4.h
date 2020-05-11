@@ -74,6 +74,7 @@ public:
     __forceinline void Normalize()
     {
         float len2 = Length2();
+
         if (len2 != 0.0f) {
             float oolen = GameMath::Inv_Sqrt(len2);
             X *= oolen;
@@ -88,7 +89,7 @@ public:
     __forceinline float Length2() const { return X * X + Y * Y + Z * Z + W * W; }
 
     // unary operators
-    __forceinline Vector4 operator-() const { return (Vector4(-X, -Y, -Z, -W)); }
+    __forceinline Vector4 operator-() const { return Vector4(-X, -Y, -Z, -W); }
     __forceinline Vector4 operator+() const { return *this; }
 
     __forceinline Vector4 &operator+=(const Vector4 &v)
@@ -159,8 +160,8 @@ public:
 
     __forceinline bool Is_Valid() const
     {
-        return (GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z)
-            && GameMath::Is_Valid_Float(W));
+        return GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z)
+            && GameMath::Is_Valid_Float(W);
     }
 
 public:
@@ -198,12 +199,12 @@ __forceinline Vector4 operator/(const Vector4 &a, float k)
 
 __forceinline bool operator==(const Vector4 &a, const Vector4 &b)
 {
-    return ((a[0] == b[0]) && (a[1] == b[1]) && (a[2] == b[2]) && (a[3] == b[3]));
+    return (a[0] == b[0]) && (a[1] == b[1]) && (a[2] == b[2]) && (a[3] == b[3]);
 }
 
 __forceinline bool operator!=(const Vector4 &a, const Vector4 &b)
 {
-    return ((a[0] != b[0]) || (a[1] != b[1]) || (a[2] != b[2]) || (a[3] != b[3]));
+    return (a[0] != b[0]) || (a[1] != b[1]) || (a[2] != b[2]) || (a[3] != b[3]);
 }
 
 __forceinline float operator*(const Vector4 &a, const Vector4 &b)
@@ -214,10 +215,12 @@ __forceinline float operator*(const Vector4 &a, const Vector4 &b)
 __forceinline Vector4 Normalize(const Vector4 &vec)
 {
     float len2 = vec.Length2();
+
     if (len2 != 0.0f) {
         float oolen = GameMath::Inv_Sqrt(len2);
         return vec * oolen;
     }
+
     return Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 

@@ -32,7 +32,7 @@
 #endif
 
 #define GAMEMATH_EPSILON 0.0001f
-#define GAMEMATH_EPSILON2 GAMEMATH_EPSILON * GAMEMATH_EPSILON
+#define GAMEMATH_EPSILON2 GAMEMATH_EPSILON *GAMEMATH_EPSILON
 #define GAMEMATH_PI 3.141592654f
 #define GAMEMATH_FLOAT_MAX (FLT_MAX)
 #define GAMEMATH_FLOAT_MIN (FLT_MIN)
@@ -351,7 +351,6 @@ inline int Fast_To_Int_Truncate(float val)
     return lrintf(truncf(val)); // TODO reimplement based on fdlibm for cross platform reproducibility.
 #endif
 }
-
 
 inline float Random_Float()
 {

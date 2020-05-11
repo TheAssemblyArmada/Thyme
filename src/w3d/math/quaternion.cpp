@@ -21,8 +21,8 @@
 #include "vector2.h"
 #include "vector3.h"
 
-namespace {
-
+namespace
+{
 // Utility function used in Trackball
 float Project_To_Sphere(float r, float x, float y)
 {
@@ -30,9 +30,9 @@ float Project_To_Sphere(float r, float x, float y)
     float t, z;
     float d = GameMath::Sqrt(x * x + y * y);
 
-    if ( d < r * (SQRT2 / (2.0f)) ) {            // inside sphere
+    if (d < r * (SQRT2 / (2.0f))) { // inside sphere
         z = GameMath::Sqrt(r * r - d * d);
-    } else {                                // on hyperbola
+    } else { // on hyperbola
         t = r / SQRT2;
         z = t * t / d;
     }
@@ -59,7 +59,7 @@ void Quaternion::Normalize()
 {
     float len2 = X * X + Y * Y + Z * Z + W * W;
 
-    if ( 0.0f == len2 ) {
+    if (0.0f == len2) {
         return;
     } else {
         float inv_mag = GameMath::Inv_Sqrt(len2);
@@ -73,9 +73,7 @@ void Quaternion::Normalize()
 
 Matrix3 Quaternion::Build_Matrix3()
 {
-    return Matrix3
-    (
-        1.f - 2.f * (j * j + k * k),
+    return Matrix3(1.f - 2.f * (j * j + k * k),
         2.f * (i * j - k * t),
         2.f * (k * i + j * t),
 
@@ -85,8 +83,7 @@ Matrix3 Quaternion::Build_Matrix3()
 
         2.f * (k * i - j * t),
         2.f * (j * k + i * t),
-        1.f - 2.f * (j * j + i * i)
-    );
+        1.f - 2.f * (j * j + i * i));
 }
 
 Matrix3D Quaternion::Build_Matrix3D()
@@ -124,10 +121,9 @@ Quaternion Quaternion::Trackball(float x0, float y0, float x1, float y1, float s
 
     float phi, t;
 
-    if ( (x0 == x1) && (y0 == y1) ) {
-        return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);    // Zero rotation
+    if ((x0 == x1) && (y0 == y1)) {
+        return Quaternion(0.0f, 0.0f, 0.0f, 1.0f); // Zero rotation
     }
-
 
     // Compute z coordinates for projection of p1 and p2 to
     // deformed sphere
@@ -139,7 +135,6 @@ Quaternion Quaternion::Trackball(float x0, float y0, float x1, float y1, float s
     p2[1] = y1;
     p2[2] = Project_To_Sphere(sphsize, x1, y1);
 
-
     // Find their cross product
     Vector3::Cross_Product(p2, p1, &a);
 
@@ -148,11 +143,11 @@ Quaternion Quaternion::Trackball(float x0, float y0, float x1, float y1, float s
     t = d.Length() / (2.0f * sphsize);
 
     // Avoid problems with out of control values
-    if ( t > 1.0f ) {
+    if (t > 1.0f) {
         t = 1.0f;
     }
 
-    if ( t < -1.0f ) {
+    if (t < -1.0f) {
         t = -1.0f;
     }
 
@@ -163,7 +158,7 @@ Quaternion Quaternion::Trackball(float x0, float y0, float x1, float y1, float s
 
 Quaternion Build_Quaternion(const Matrix3D &mat)
 {
-    static int _nxt[3] = { 1 , 2 , 0 };
+    static int _nxt[3] = {1, 2, 0};
 
     float tr, s;
     int i, j, k;
@@ -171,7 +166,7 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
 
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
-    if ( tr > 0.0f ) {
+    if (tr > 0.0f) {
         s = GameMath::Sqrt(tr + 1.0f);
         q[3] = s * 0.5f;
         s = 0.5f / s;
@@ -181,11 +176,11 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
     } else {
         i = 0;
 
-        if ( mat[1][1] > mat[0][0] ) {
+        if (mat[1][1] > mat[0][0]) {
             i = 1;
         }
 
-        if ( mat[2][2] > mat[i][i] ) {
+        if (mat[2][2] > mat[i][i]) {
             i = 2;
         }
 
@@ -194,7 +189,7 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
         s = GameMath::Sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0f);
         q[i] = s * 0.5f;
 
-        if ( s != 0.0f ) {
+        if (s != 0.0f) {
             s = 0.5f / s;
         }
 
@@ -212,14 +207,14 @@ void Slerp_Setup(const Quaternion &p, const Quaternion &q, SlerpInfoStruct *sler
     float cos_t;
     cos_t = p.X * q.X + p.Y * q.Y + p.Z * q.Z + p.W * q.W;
 
-    if ( cos_t < 0.0f ) {
+    if (cos_t < 0.0f) {
         cos_t = -cos_t;
         slerpinfo->flip = true;
     } else {
         slerpinfo->flip = false;
     }
 
-    if ( 1.0f - cos_t < SLERP_EPSILON ) {
+    if (1.0f - cos_t < SLERP_EPSILON) {
         slerpinfo->linear = true;
         slerpinfo->theta = 0.0f;
         slerpinfo->sin_theta = 0.0f;
@@ -235,7 +230,7 @@ Quaternion Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, S
     float beta;
     float oo_sin_t;
 
-    if ( slerpinfo->linear ) {
+    if (slerpinfo->linear) {
         beta = 1.0f - alpha;
     } else {
         oo_sin_t = 1.0f / slerpinfo->theta;
@@ -243,7 +238,7 @@ Quaternion Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, S
         alpha = GameMath::Sin(alpha * slerpinfo->theta) * oo_sin_t;
     }
 
-    if ( slerpinfo->flip ) {
+    if (slerpinfo->flip) {
         alpha = -alpha;
     }
 
@@ -261,7 +256,7 @@ void Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpIn
     float beta;
     float oo_sin_t;
 
-    if ( slerpinfo->linear ) {
+    if (slerpinfo->linear) {
         beta = 1.0f - alpha;
     } else {
         oo_sin_t = 1.0f / slerpinfo->theta;
@@ -269,7 +264,7 @@ void Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpIn
         alpha = GameMath::Sin(alpha * slerpinfo->theta) * oo_sin_t;
     }
 
-    if ( slerpinfo->flip ) {
+    if (slerpinfo->flip) {
         alpha = -alpha;
     }
 
@@ -281,31 +276,29 @@ void Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpIn
 
 void Fast_Slerp(Quaternion &res, const Quaternion &p, const Quaternion &q, float alpha)
 {
-    float beta;            // complementary interploation parameter
-    float theta;        // angle between p and q
-    float cos_t;         // sine, cosine of theta
+    float beta; // complementary interploation parameter
+    float theta; // angle between p and q
+    float cos_t; // sine, cosine of theta
     float oo_sin_t;
-    int qflip;            // use flip of q?
+    int qflip; // use flip of q?
 
     // cos theta = dot product of p and q
     cos_t = p.X * q.X + p.Y * q.Y + p.Z * q.Z + p.W * q.W;
 
     // if q is on opposite hemisphere from A, use -B instead
-    if ( cos_t < 0.0f ) {
+    if (cos_t < 0.0f) {
         cos_t = -cos_t;
         qflip = true;
     } else {
         qflip = false;
     }
 
-    if ( 1.0f - cos_t < GAMEMATH_EPSILON * GAMEMATH_EPSILON ) {
-
+    if (1.0f - cos_t < GAMEMATH_EPSILON * GAMEMATH_EPSILON) {
         // if q is very close to p, just linearly interpolate
         // between the two.
         beta = 1.0f - alpha;
 
     } else {
-
         theta = GameMath::Fast_Acos(cos_t);
         float sin_t = GameMath::Fast_Sin(theta);
         oo_sin_t = 1.0f / sin_t;
@@ -313,7 +306,7 @@ void Fast_Slerp(Quaternion &res, const Quaternion &p, const Quaternion &q, float
         alpha = GameMath::Fast_Sin(alpha * theta) * oo_sin_t;
     }
 
-    if ( qflip ) {
+    if (qflip) {
         alpha = -alpha;
     }
 

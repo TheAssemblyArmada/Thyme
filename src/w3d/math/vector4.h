@@ -24,17 +24,49 @@ class Vector4
 public:
     // default constructors
     __forceinline Vector4() {}
-    __forceinline Vector4(const Vector4 &v) { X = v.X; Y = v.Y; Z = v.Z; W = v.W; }
-    __forceinline Vector4(float x, float y, float z, float w) { X = x; Y = y; Z = z; W = w; }
-    __forceinline explicit Vector4(const float v[4]) { captainslog_assert(v != nullptr); X = v[0]; Y = v[1]; Z = v[2]; W = v[3]; }
+    __forceinline Vector4(const Vector4 &v)
+    {
+        X = v.X;
+        Y = v.Y;
+        Z = v.Z;
+        W = v.W;
+    }
+    __forceinline Vector4(float x, float y, float z, float w)
+    {
+        X = x;
+        Y = y;
+        Z = z;
+        W = w;
+    }
+    __forceinline explicit Vector4(const float v[4])
+    {
+        captainslog_assert(v != nullptr);
+        X = v[0];
+        Y = v[1];
+        Z = v[2];
+        W = v[3];
+    }
 
     // conversion constructors
     //__forceinline explicit Vector4(const Vector2& v) { X = v.X; Y = v.Y; Z = 0.0f; W = 0.0f; }
     //__forceinline explicit Vector4(const Vector3& v) { X = v.X; Y = v.Y; Z = v.Z; W = 0.0f; }
 
     // assignment operators
-    __forceinline Vector4 &operator=(const Vector4 &v) { X = v.X; Y = v.Y; Z = v.Z; W = v.W; return *this; }
-    __forceinline void Set(float x, float y, float z, float w) { X = x; Y = y; Z = z; W = w; }
+    __forceinline Vector4 &operator=(const Vector4 &v)
+    {
+        X = v.X;
+        Y = v.Y;
+        Z = v.Z;
+        W = v.W;
+        return *this;
+    }
+    __forceinline void Set(float x, float y, float z, float w)
+    {
+        X = x;
+        Y = y;
+        Z = z;
+        W = w;
+    }
 
     // array access operators
     __forceinline float &operator[](int i) { return (&X)[i]; }
@@ -50,24 +82,47 @@ public:
         W *= oolen;
     }
 
-    __forceinline float Length(void) const
-    {
-        return GameMath::Sqrt(Length2());
-    }
+    __forceinline float Length(void) const { return GameMath::Sqrt(Length2()); }
 
-    __forceinline float Length2(void) const
-    {
-        return X * X + Y * Y + Z * Z + W * W;
-    }
+    __forceinline float Length2(void) const { return X * X + Y * Y + Z * Z + W * W; }
 
     // unary operators
-    __forceinline Vector4 operator-()const { return(Vector4(-X, -Y, -Z, -W)); }
-    __forceinline Vector4 operator+()const { return *this; }
+    __forceinline Vector4 operator-() const { return (Vector4(-X, -Y, -Z, -W)); }
+    __forceinline Vector4 operator+() const { return *this; }
 
-    __forceinline Vector4 &operator+=(const Vector4 &v) { X += v.X; Y += v.Y; Z += v.Z; W += v.W; return *this; }
-    __forceinline Vector4 &operator-=(const Vector4 &v) { X -= v.X; Y -= v.Y; Z -= v.Z; W -= v.W; return *this; }
-    __forceinline Vector4 &operator*=(float f) { X *= f; Y *= f; Z *= f; W *= f; return *this; }
-    __forceinline Vector4 &operator/=(float f) { f = 1.0f / f; X /= f; Y /= f; Z /= f; W /= f;	return *this; }
+    __forceinline Vector4 &operator+=(const Vector4 &v)
+    {
+        X += v.X;
+        Y += v.Y;
+        Z += v.Z;
+        W += v.W;
+        return *this;
+    }
+    __forceinline Vector4 &operator-=(const Vector4 &v)
+    {
+        X -= v.X;
+        Y -= v.Y;
+        Z -= v.Z;
+        W -= v.W;
+        return *this;
+    }
+    __forceinline Vector4 &operator*=(float f)
+    {
+        X *= f;
+        Y *= f;
+        Z *= f;
+        W *= f;
+        return *this;
+    }
+    __forceinline Vector4 &operator/=(float f)
+    {
+        f = 1.0f / f;
+        X /= f;
+        Y /= f;
+        Z /= f;
+        W /= f;
+        return *this;
+    }
 
     // vector addition/subtraction
     friend Vector4 operator+(const Vector4 &a, const Vector4 &b);
@@ -79,21 +134,21 @@ public:
     friend Vector4 operator/(const Vector4 &a, float b);
 
     // equality operators
-    friend bool operator== (const Vector4 &a, const Vector4 &b);
-    friend bool operator!= (const Vector4 &a, const Vector4 &b);
+    friend bool operator==(const Vector4 &a, const Vector4 &b);
+    friend bool operator!=(const Vector4 &a, const Vector4 &b);
 
-    friend float operator * (const Vector4 &a, const Vector4 &b);
-    __forceinline static float Dot_Product(const Vector4 &a, const Vector4 &b)
-    {
-        return a * b;
-    }
+    friend float operator*(const Vector4 &a, const Vector4 &b);
+    __forceinline static float Dot_Product(const Vector4 &a, const Vector4 &b) { return a * b; }
 
     __forceinline static Vector4 Lerp(const Vector4 &a, const Vector4 &b, float alpha)
     {
-        return Vector4((a.X + (b.X - a.X) * alpha), (a.Y + (b.Y - a.Y) * alpha), (a.Z + (b.Z - a.Z) * alpha), (a.W + (b.W - a.W) * alpha));
+        return Vector4((a.X + (b.X - a.X) * alpha),
+            (a.Y + (b.Y - a.Y) * alpha),
+            (a.Z + (b.Z - a.Z) * alpha),
+            (a.W + (b.W - a.W) * alpha));
     }
 
-    __forceinline static void Lerp(const Vector4 &a, const Vector4 &b, float alpha, Vector4 * set_result)
+    __forceinline static void Lerp(const Vector4 &a, const Vector4 &b, float alpha, Vector4 *set_result)
     {
         set_result->X = (a.X + (b.X - a.X) * alpha);
         set_result->Y = (a.Y + (b.Y - a.Y) * alpha);
@@ -164,9 +219,5 @@ __forceinline void Swap(Vector4 &a, Vector4 &b)
 __forceinline Vector4 Lerp(const Vector4 &a, const Vector4 &b, float alpha)
 {
     return Vector4(
-        (a.X + (b.X - a.X) * alpha),
-        (a.Y + (b.Y - a.Y) * alpha),
-        (a.Z + (b.Z - a.Z) * alpha),
-        (a.W + (b.W - a.W) * alpha)
-    );
+        (a.X + (b.X - a.X) * alpha), (a.Y + (b.Y - a.Y) * alpha), (a.Z + (b.Z - a.Z) * alpha), (a.W + (b.W - a.W) * alpha));
 }

@@ -29,14 +29,12 @@ inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
     return table;
 }
 
-//calculate all tables at compile time
-const Array<float, ARC_TABLE_SIZE>  _FastAcosTable = calculateFastTable<float,ARC_TABLE_SIZE>(GameMath::Acos,true);
-const Array<float, ARC_TABLE_SIZE>  _FastAsinTable = calculateFastTable<float, ARC_TABLE_SIZE>(GameMath::Asin,true);
-const Array<float, SIN_TABLE_SIZE>  _FastSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Sin,false);
-const Array<float, SIN_TABLE_SIZE>  _FastInvSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Inv_Sin,false);
+// calculate all tables at compile time
+const Array<float, ARC_TABLE_SIZE> _FastAcosTable = calculateFastTable<float, ARC_TABLE_SIZE>(GameMath::Acos, true);
+const Array<float, ARC_TABLE_SIZE> _FastAsinTable = calculateFastTable<float, ARC_TABLE_SIZE>(GameMath::Asin, true);
+const Array<float, SIN_TABLE_SIZE> _FastSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Sin, false);
+const Array<float, SIN_TABLE_SIZE> _FastInvSinTable = calculateFastTable<float, SIN_TABLE_SIZE>(GameMath::Inv_Sin, false);
 
-void GameMath::Init()
-{
-}
+void GameMath::Init() {}
 
 void GameMath::Shutdown() {}

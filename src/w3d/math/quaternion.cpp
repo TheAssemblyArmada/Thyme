@@ -177,7 +177,7 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
     if (tr > 0.0f) {
-        s = sqrt(tr + 1.0);
+        s = GameMath::Sqrt(tr + 1.0);
         q[3] = s * 0.5;
         s = 0.5 / s;
         q[0] = (mat[2][1] - mat[1][2]) * s;
@@ -196,7 +196,7 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
 
         j = _nxt[i];
         k = _nxt[j];
-        s = sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
+        s = GameMath::Sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
         q[i] = s * 0.5;
 
         if (s != 0.0) {
@@ -220,7 +220,7 @@ Quaternion Build_Quaternion(const Matrix3 &mat)
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
     if (tr > 0.0) {
-        s = sqrt(tr + 1.0);
+        s = GameMath::Sqrt(tr + 1.0);
         q[3] = s * 0.5;
         s = 0.5 / s;
 
@@ -241,7 +241,7 @@ Quaternion Build_Quaternion(const Matrix3 &mat)
 
         j = _nxt[i];
         k = _nxt[j];
-        s = sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
+        s = GameMath::Sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
         q[i] = s * 0.5;
 
         if (s != 0.0) {
@@ -265,7 +265,7 @@ Quaternion Build_Quaternion(const Matrix4 &mat)
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
     if (tr > 0.0) {
-        s = sqrt(tr + 1.0);
+        s = GameMath::Sqrt(tr + 1.0);
         q[3] = s * 0.5;
         s = 0.5 / s;
         q[0] = (mat[2][1] - mat[1][2]) * s;
@@ -284,7 +284,7 @@ Quaternion Build_Quaternion(const Matrix4 &mat)
 
         j = _nxt[i];
         k = _nxt[j];
-        s = sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
+        s = GameMath::Sqrt((mat[i][i] - (mat[j][j] + mat[k][k])) + 1.0);
         q[i] = s * 0.5;
 
         if (s != 0.0) {

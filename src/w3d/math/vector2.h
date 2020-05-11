@@ -68,6 +68,7 @@ public:
     __forceinline void Normalize()
     {
         float len2 = Length2();
+
         if (len2 != 0.0f) {
             float oolen = GameMath::Inv_Sqrt(len2);
             X *= oolen;
@@ -77,7 +78,7 @@ public:
 
     __forceinline float Length() const { return (float)GameMath::Sqrt(Length2()); }
 
-    __forceinline float Length2() const { return (X * X + Y * Y); }
+    __forceinline float Length2() const { return X * X + Y * Y; }
 
     __forceinline Vector2 operator-() const { return Vector2(-X, -Y); }
 
@@ -194,7 +195,7 @@ public:
         Vector2 temp;
         temp = p1 - p2;
 
-        return (temp.Length());
+        return temp.Length();
     }
 
     __forceinline static void Lerp(const Vector2 &a, const Vector2 &b, float t, Vector2 *set_result)
@@ -204,7 +205,7 @@ public:
         set_result->Y = (a.Y + (b.Y - a.Y) * t);
     }
 
-    __forceinline bool Is_Valid() const { return (GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y)); }
+    __forceinline bool Is_Valid() const { return GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y); }
     static __forceinline float Quick_Distance(const Vector2 &a, const Vector2 &b)
     {
         return ::Quick_Distance(a.X, a.Y, b.X, b.Y);
@@ -274,14 +275,14 @@ __forceinline bool operator==(const Vector2 &a, const Vector2 &b)
 {
     bool a0b0(a[0] == b[0]);
     bool a1b1(a[1] == b[1]);
-    return (a0b0 & a1b1);
+    return a0b0 & a1b1;
 }
 
 __forceinline bool operator!=(const Vector2 &a, const Vector2 &b)
 {
     bool a0b0(a[0] != b[0]);
     bool a1b1(a[1] != b[1]);
-    return (a0b0 | a1b1);
+    return a0b0 | a1b1;
 }
 
 __forceinline Vector2 Normalize(const Vector2 &vec)
@@ -311,9 +312,9 @@ __forceinline float Quick_Distance(float x1, float y1, float x2, float y2)
     GameMath::Fabs(y_diff);
 
     if (x_diff > y_diff) {
-        return ((y_diff / 2) + x_diff);
+        return (y_diff / 2) + x_diff;
     } else {
-        return ((x_diff / 2) + y_diff);
+        return (x_diff / 2) + y_diff;
     }
 }
 
@@ -322,10 +323,10 @@ __forceinline float Distance(float x1, float y1, float x2, float y2)
     float x_diff = x1 - x2;
     float y_diff = y1 - y2;
 
-    return (GameMath::Sqrt((x_diff * x_diff) + (y_diff * y_diff)));
+    return GameMath::Sqrt((x_diff * x_diff) + (y_diff * y_diff));
 }
 
 __forceinline bool Equal_Within_Epsilon(const Vector2 &a, const Vector2 &b, float epsilon)
 {
-    return ((GameMath::Fabs(a.X - b.X) < epsilon) && (GameMath::Fabs(a.Y - b.Y) < epsilon));
+    return (GameMath::Fabs(a.X - b.X) < epsilon) && (GameMath::Fabs(a.Y - b.Y) < epsilon);
 }

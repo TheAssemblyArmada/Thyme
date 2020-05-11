@@ -283,7 +283,7 @@ public:
 
     __forceinline static void Add(const Matrix3 &a, const Matrix3 &b, Matrix3 *c)
     {
-        captainslog_assert(c);
+        captainslog_assert(c != nullptr);
         Vector3::Add(a.Row[0], b.Row[0], &(c->Row[0]));
         Vector3::Add(a.Row[1], b.Row[1], &(c->Row[1]));
         Vector3::Add(a.Row[2], b.Row[2], &(c->Row[2]));
@@ -291,7 +291,7 @@ public:
 
     __forceinline static void Subtract(const Matrix3 &a, const Matrix3 &b, Matrix3 *c)
     {
-        captainslog_assert(c);
+        captainslog_assert(c != nullptr);
         Vector3::Subtract(a.Row[0], b.Row[0], &(c->Row[0]));
         Vector3::Subtract(a.Row[1], b.Row[1], &(c->Row[1]));
         Vector3::Subtract(a.Row[2], b.Row[2], &(c->Row[2]));

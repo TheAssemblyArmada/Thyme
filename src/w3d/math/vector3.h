@@ -77,6 +77,7 @@ public:
     __forceinline void Normalize()
     {
         float len2 = Length2();
+
         if (len2 != 0.0f) {
             float oolen = GameMath::Inv_Sqrt(Length2());
             X *= oolen;
@@ -126,7 +127,7 @@ public:
         Y = s_angle * tmp_x + c_angle * tmp_y;
     }
 
-    __forceinline Vector3 operator-() const { return (Vector3(-X, -Y, -Z)); }
+    __forceinline Vector3 operator-() const { return Vector3(-X, -Y, -Z); }
 
     __forceinline Vector3 operator+() const { return *this; }
 
@@ -215,32 +216,32 @@ public:
 
     __forceinline static float Find_X_At_Y(float y, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.X + ((y - p1.Y) * ((p2.X - p1.X) / (p2.Y - p1.Y))));
+        return p1.X + ((y - p1.Y) * ((p2.X - p1.X) / (p2.Y - p1.Y)));
     }
 
     __forceinline static float Find_X_At_Z(float z, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.X + ((z - p1.Z) * ((p2.X - p1.X) / (p2.Z - p1.Z))));
+        return p1.X + ((z - p1.Z) * ((p2.X - p1.X) / (p2.Z - p1.Z)));
     }
 
     __forceinline static float Find_Y_At_X(float x, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.Y + ((x - p1.X) * ((p2.Y - p1.Y) / (p2.X - p1.X))));
+        return p1.Y + ((x - p1.X) * ((p2.Y - p1.Y) / (p2.X - p1.X)));
     }
 
     __forceinline static float Find_Y_At_Z(float z, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.Y + ((z - p1.Z) * ((p2.Y - p1.Y) / (p2.Z - p1.Z))));
+        return p1.Y + ((z - p1.Z) * ((p2.Y - p1.Y) / (p2.Z - p1.Z)));
     }
 
     __forceinline static float Find_Z_At_X(float x, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.Z + ((x - p1.X) * ((p2.Z - p1.Z) / (p2.X - p1.X))));
+        return p1.Z + ((x - p1.X) * ((p2.Z - p1.Z) / (p2.X - p1.X)));
     }
 
     __forceinline static float Find_Z_At_Y(float y, const Vector3 &p1, const Vector3 &p2)
     {
-        return (p1.Z + ((y - p1.Y) * ((p2.Z - p1.Z) / (p2.Y - p1.Y))));
+        return p1.Z + ((y - p1.Y) * ((p2.Z - p1.Z) / (p2.Y - p1.Y)));
     }
 
     __forceinline void Update_Min(const Vector3 &a)
@@ -311,7 +312,7 @@ public:
         Vector3 temp;
         temp = p1 - p2;
 
-        return (temp.Length());
+        return temp.Length();
     }
 
     __forceinline static float Quick_Distance(const Vector3 &p1, const Vector3 &p2)
@@ -319,7 +320,7 @@ public:
         Vector3 temp;
         temp = p1 - p2;
 
-        return (temp.Quick_Length());
+        return temp.Quick_Length();
     }
 
     __forceinline static void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3 *set_result)
@@ -400,27 +401,29 @@ __forceinline float operator*(const Vector3 &a, const Vector3 &b)
 
 __forceinline bool operator==(const Vector3 &a, const Vector3 &b)
 {
-    return ((a.X == b.X) && (a.Y == b.Y) && (a.Z == b.Z));
+    return (a.X == b.X) && (a.Y == b.Y) && (a.Z == b.Z);
 }
 
 __forceinline bool operator!=(const Vector3 &a, const Vector3 &b)
 {
-    return ((a.X != b.X) || (a.Y != b.Y) || (a.Z != b.Z));
+    return (a.X != b.X) || (a.Y != b.Y) || (a.Z != b.Z);
 }
 
 __forceinline bool Equal_Within_Epsilon(const Vector3 &a, const Vector3 &b, float epsilon)
 {
-    return ((GameMath::Fabs(a.X - b.X) < epsilon) && (GameMath::Fabs(a.Y - b.Y) < epsilon)
-        && (GameMath::Fabs(a.Z - b.Z) < epsilon));
+    return (GameMath::Fabs(a.X - b.X) < epsilon) && (GameMath::Fabs(a.Y - b.Y) < epsilon)
+        && (GameMath::Fabs(a.Z - b.Z) < epsilon);
 }
 
 __forceinline Vector3 Normalize(const Vector3 &vec)
 {
     float len2 = vec.Length2();
+
     if (len2 != 0.0f) {
         float oolen = GameMath::Inv_Sqrt(len2);
         return vec * oolen;
     }
+
     return vec;
 }
 
@@ -446,7 +449,7 @@ __forceinline void Lerp(const Vector3 &a, const Vector3 &b, float alpha, Vector3
 
 __forceinline bool Vector3::Is_Valid() const
 {
-    return (GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z));
+    return GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z);
 }
 
 __forceinline uint32_t Vector3::Convert_To_ABGR() const

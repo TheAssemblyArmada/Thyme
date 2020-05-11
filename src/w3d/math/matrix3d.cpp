@@ -409,3 +409,13 @@ void Matrix3D::Re_Orthogonalize()
     Row[2][1] = z.Y;
     Row[2][2] = z.Z;
 }
+
+Matrix3D Lerp(const Matrix3D &A, const Matrix3D &B, float factor)
+{
+    captainslog_assert(factor >= 0.0f);
+    captainslog_assert(factor <= 1.0f);
+    Vector3 pos = Lerp(A.Get_Translation(), B.Get_Translation(), factor);
+    Quaternion rot;
+    Slerp(rot, Build_Quaternion(A), Build_Quaternion(B), factor);
+    return Matrix3D(rot, pos);
+}

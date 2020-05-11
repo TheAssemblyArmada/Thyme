@@ -21,6 +21,13 @@
 class PlaneClass
 {
 public:
+    enum
+    {
+        FRONT = 0,
+        BACK,
+        ON
+    };
+
     PlaneClass() : N(0.0f, 0.0f, 1.0f), D(0.0f) {}
 
     PlaneClass(float nx, float ny, float nz, float dist) { Set(nx, ny, nz, dist); }
@@ -66,18 +73,11 @@ public:
         }
     }
 
-    inline void Normalize()
-    {
-        float oolength = 1.0f / N.Length();
-        N *= oolength;
-        D *= oolength;
-    }
-
-    inline PlaneClass operator-() { return PlaneClass(-N, D); }
-
     bool In_Front(const Vector3 &point) const;
     bool In_Front(const SphereClass &sphere) const;
     bool Compute_Intersection(const Vector3 &p0, const Vector3 &p1, float *set_t) const;
+    bool In_Front_Or_Intersecting(const SphereClass &sphere) const;
+    void Intersect_Planes(const PlaneClass &a, const PlaneClass &b, Vector3 *line_dir, Vector3 *line_point);
 
 public:
     Vector3 N;
@@ -113,4 +113,46 @@ inline bool PlaneClass::Compute_Intersection(const Vector3 &p0, const Vector3 &p
     }
 
     return true;
+}
+
+inline bool PlaneClass::In_Front_Or_Intersecting(const SphereClass &sphere) const
+{
+    float dist = Vector3::Dot_Product(sphere.Center, N);
+    return ((D - dist) < sphere.Radius);
+}
+
+inline void PlaneClass::Intersect_Planes(
+    const PlaneClass &a, const PlaneClass &b, Vector3 *line_dir, Vector3 *line_point)
+{
+    Vector3::Cross_Product(a.N, b.N, line_dir);
+    Vector3 abs_dir = *line_dir;
+    abs_dir.Update_Max(-abs_dir);
+
+    if (abs_dir.X > abs_dir.Y) {
+        if (abs_dir.X > abs_dir.Z) {
+            float ool = 1.0f / line_dir->X;
+            line_point->Y = (b.N.Z * a.D - a.N.Z * b.D) * ool;
+            line_point->Z = (a.N.Y * b.D - b.N.Y * a.D) * ool;
+            line_point->X = 0.0f;
+        } else {
+            float ool = 1.0f / line_dir->Z;
+            line_point->X = (b.N.Y * a.D - a.N.Y * b.D) * ool;
+            line_point->Y = (a.N.X * b.D - b.N.X * a.D) * ool;
+            line_point->Z = 0.0f;
+        }
+    } else {
+        if (abs_dir.Y > abs_dir.Z) {
+            float ool = 1.0f / line_dir->Y;
+            line_point->Z = (b.N.X * a.D - a.N.X * b.D) * ool;
+            line_point->X = (a.N.Z * b.D - b.N.Z * a.D) * ool;
+            line_point->Y = 0.0f;
+        } else {
+            float ool = 1.0f / line_dir->Z;
+            line_point->X = (b.N.Y * a.D - a.N.Y * b.D) * ool;
+            line_point->Y = (a.N.X * b.D - b.N.X * a.D) * ool;
+            line_point->Z = 0.0f;
+        }
+    }
+
+    line_dir->Normalize();
 }

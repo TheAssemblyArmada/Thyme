@@ -63,7 +63,10 @@ public:
         return (rval.left == left) && (rval.right == right) && (rval.top == top) && (rval.bottom == bottom);
     }
 
-    bool operator!=(const RectClass &rval) const { return !(*this == rval); }
+    bool operator!=(const RectClass &rval) const
+    {
+        return (rval.left != left) || (rval.right != right) || (rval.top != top) || (rval.bottom != bottom);
+    }
 
     void Set(float left, float top, float right, float bottom)
     {
@@ -158,8 +161,6 @@ public:
         top = (int)(top / u.Y + 0.5f) * u.Y;
         bottom = (int)(bottom / u.Y + 0.5f) * u.Y;
     }
-
-    Vector2 Get_Size() const { return Vector2(right - left, bottom - top); }
 
 public:
     float left;

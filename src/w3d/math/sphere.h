@@ -22,7 +22,7 @@
 class SphereClass
 {
 public:
-    SphereClass(void){};
+    SphereClass() {}
     SphereClass(const Vector3 &center, float radius) { Init(center, radius); }
     SphereClass(const Vector3 &center, const SphereClass &s0);
     SphereClass(const Vector3 *Position, const int VertCount);
@@ -31,7 +31,7 @@ public:
     void Re_Center(const Vector3 &center);
     void Add_Sphere(const SphereClass &s);
     void Transform(const Matrix3D &tm);
-    float Volume(void) const;
+    float Volume() const;
 
     SphereClass &operator+=(const SphereClass &s);
     SphereClass &operator*=(const Matrix3D &m);
@@ -205,7 +205,7 @@ inline void SphereClass::Transform(const Matrix3D &tm)
     Center = tm * Center;
 }
 
-inline float SphereClass::Volume(void) const
+inline float SphereClass::Volume() const
 {
     return (4.0f / 3.0f) * GAMEMATH_PI * (Radius * Radius * Radius);
 }

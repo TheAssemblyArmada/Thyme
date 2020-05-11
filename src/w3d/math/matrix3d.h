@@ -27,9 +27,15 @@ class PlaneClass;
 class Matrix3D
 {
 public:
-    Matrix3D();
-    Matrix3D(float _11, float _12, float _13, float _14, float _21, float _22, float _23, float _24, float _31, float _32,
-        float _33, float _34);
+    __forceinline Matrix3D() {}
+
+    __forceinline explicit Matrix3D(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24,
+        float m31, float m32, float m33, float m34)
+    {
+        Row[0].Set(m11, m12, m13, m14);
+        Row[1].Set(m21, m22, m23, m24);
+        Row[2].Set(m31, m32, m33, m34);
+    }
 
     __forceinline explicit Matrix3D(bool init)
     {
@@ -53,9 +59,9 @@ public:
 
     __forceinline explicit Matrix3D(const Vector3 &axis, float sine, float cosine) { Set(axis, sine, cosine); }
 
-    __forceinline explicit Matrix3D(const Matrix3 &rotation, const Vector3 &position) { Set(rotation, position); }
+    __forceinline explicit Matrix3D(const Matrix3 &rot, const Vector3 &pos) { Set(rot, pos); }
 
-    __forceinline explicit Matrix3D(const Quaternion &rotation, const Vector3 &position) { Set(rotation, position); }
+    __forceinline explicit Matrix3D(const Quaternion &rot, const Vector3 &pos) { Set(rot, pos); }
 
     __forceinline explicit Matrix3D(const Vector3 &position) { Set(position); }
 
@@ -78,14 +84,14 @@ public:
         return *this;
     }
 
-    void Get_Orthogonal_Inverse(Matrix3D &target) const;
+    void Get_Orthogonal_Inverse(Matrix3D &set_inverse) const;
     float Get_X_Rotation() const;
     float Get_Y_Rotation() const;
     float Get_Z_Rotation() const;
-    void Look_At(const Vector3 &, const Vector3 &, float);
-    void Obj_Look_At(const Vector3 &, const Vector3 &, float unknown = 0);
-    Vector3 Rotate_Vector(const Vector3 &vector) const;
-    Vector3 Inverse_Rotate_Vector(const Vector3 &vector) const;
+    void Look_At(const Vector3 &p, const Vector3 &t, float roll);
+    void Obj_Look_At(const Vector3 &p, const Vector3 &t, float roll);
+    Vector3 Rotate_Vector(const Vector3 &vect) const;
+    Vector3 Inverse_Rotate_Vector(const Vector3 &vect) const;
 
     __forceinline void Set(float m[12])
     {
@@ -118,6 +124,7 @@ public:
 
     __forceinline void Set(const Vector3 &axis, float s, float c)
     {
+        captainslog_assert(GameMath::Fabs(axis.Length2() - 1.0f) < 0.001f);
         Row[0].Set((float)(axis[0] * axis[0] + c * (1.0f - axis[0] * axis[0])),
             (float)(axis[0] * axis[1] * (1.0f - c) - axis[2] * s),
             (float)(axis[2] * axis[0] * (1.0f - c) + axis[1] * s),
@@ -143,7 +150,7 @@ public:
 
     void Set(const Matrix3 &rotation, const Vector3 &position);
     void Set(const Quaternion &rotation, const Vector3 &position);
-    void Set_Rotation(const Quaternion &rotation);
+    void Set_Rotation(const Quaternion &q);
     __forceinline Vector3 Get_Translation() const { return Vector3(Row[0][3], Row[1][3], Row[2][3]); }
     __forceinline void Get_Translation(Vector3 *set) const
     {
@@ -373,7 +380,6 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-
         tmp1 = Row[1][0];
         tmp2 = Row[2][0];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
@@ -645,10 +651,8 @@ public:
     }
 
     int Is_Orthogonal() const;
-    Matrix3D &operator*=(const Matrix3D &matrix);
-    Vector3 operator*(const Vector3 &vector) const;
 
-    static void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
+    static __forceinline void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
         Vector3 *v;
@@ -660,9 +664,9 @@ public:
             v = (Vector3 *)&in;
         }
 
-        out->X = (A.Row[0][0] * v->X + A.Row[0][1] * v->Y + A.Row[0][2] * v->Z + A.Row[0][3]);
-        out->Y = (A.Row[1][0] * v->X + A.Row[1][1] * v->Y + A.Row[1][2] * v->Z + A.Row[1][3]);
-        out->Z = (A.Row[2][0] * v->X + A.Row[2][1] * v->Y + A.Row[2][2] * v->Z + A.Row[2][3]);
+        out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z + A[0][3]);
+        out->Y = (A[1][0] * v->X + A[1][1] * v->Y + A[1][2] * v->Z + A[1][3]);
+        out->Z = (A[2][0] * v->X + A[2][1] * v->Y + A[2][2] * v->Z + A[2][3]);
     }
 
     __forceinline Vector3 Get_X_Vector() const { return Vector3(Row[0][0], Row[1][0], Row[2][0]); }
@@ -708,7 +712,7 @@ public:
         }
 
         Vector3 diff(v->X - A[0][3], v->Y - A[1][3], v->Z - A[2][3]);
-        Matrix3D::Inverse_Rotate_Vector(A, diff, out);
+        Inverse_Rotate_Vector(A, diff, out);
     }
 
     static __forceinline void Inverse_Rotate_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
@@ -728,15 +732,14 @@ public:
         out->Z = (A[0][2] * v->X + A[1][2] * v->Y + A[2][2] * v->Z);
     }
 
-    static Matrix3D Reflect_Plane(const PlaneClass &_plane);
-    PlaneClass Transform_Plane(const PlaneClass &_plane) const;
     static bool Solve_Linear_System(Matrix3D &system);
     void Re_Orthogonalize();
 
-    static Matrix3D Identity;
+    static const Matrix3D Identity;
 
 protected:
     Vector4 Row[3];
+    friend Vector3 operator*(const Matrix3D &A, const Vector3 &a);
 };
 
 __forceinline Matrix3D operator*(const Matrix3D &A, const Matrix3D &B)
@@ -768,6 +771,13 @@ __forceinline Matrix3D operator*(const Matrix3D &A, const Matrix3D &B)
     C[1][3] = (float)(A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3 + A[1][3]);
     C[2][3] = (float)(A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3 + A[2][3]);
     return C;
+}
+
+__forceinline Vector3 operator*(const Matrix3D &A, const Vector3 &a)
+{
+    return Vector3((A.Row[0].X * a.X + A.Row[0].Y * a.Y + A.Row[0].Z * a.Z + A.Row[0].W),
+        (A.Row[1].X * a.X + A.Row[1].Y * a.Y + A.Row[1].Z * a.Z + A.Row[1].W),
+        (A.Row[2].X * a.X + A.Row[2].Y * a.Y + A.Row[2].Z * a.Z + A.Row[2].W));
 }
 
 __forceinline bool operator==(const Matrix3D &A, const Matrix3D &B)

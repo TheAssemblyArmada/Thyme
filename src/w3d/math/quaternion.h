@@ -126,7 +126,7 @@ __forceinline Vector3 Quaternion::Rotate_Vector(const Vector3 &v) const
 
 __forceinline void Quaternion::Rotate_Vector(const Vector3 &v, Vector3 *result) const
 {
-    captainslog_assert(result != NULL);
+    captainslog_assert(result != nullptr);
 
     float x = W * v.X + (Y * v.Z - v.Y * Z);
     float y = W * v.Y - (X * v.Z - v.X * Z);

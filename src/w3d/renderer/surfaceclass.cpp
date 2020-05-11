@@ -16,6 +16,7 @@
  */
 #include "surfaceclass.h"
 #include "dx8wrapper.h"
+#include "vector2i.h"
 #include <algorithm>
 #include <cstring>
 

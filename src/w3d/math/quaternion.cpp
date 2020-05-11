@@ -303,7 +303,7 @@ Quaternion Build_Quaternion(const Matrix4 &mat)
 void Slerp_Setup(const Quaternion &p, const Quaternion &q, SlerpInfoStruct *slerpinfo)
 {
     float cos_t;
-    captainslog_assert(slerpinfo != NULL);
+    captainslog_assert(slerpinfo != nullptr);
     cos_t = p.X * q.X + p.Y * q.Y + p.Z * q.Z + p.W * q.W;
 
     if (cos_t < 0.0f) {

@@ -16,8 +16,8 @@
 #pragma once
 
 #include "always.h"
-#include <captainslog.h>
 #include "gamemath.h"
+#include <captainslog.h>
 
 class Vector2i
 {

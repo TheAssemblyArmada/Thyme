@@ -28,11 +28,14 @@ class Matrix3D
 {
 public:
     Matrix3D();
-    Matrix3D(float _11, float _12, float _13, float _14,
-        float _21, float _22, float _23, float _24,
-        float _31, float _32, float _33, float _34);
+    Matrix3D(float _11, float _12, float _13, float _14, float _21, float _22, float _23, float _24, float _31, float _32,
+        float _33, float _34);
 
-    __forceinline explicit Matrix3D(bool init) { if ( init ) Make_Identity(); }
+    __forceinline explicit Matrix3D(bool init)
+    {
+        if (init)
+            Make_Identity();
+    }
 
     __forceinline explicit Matrix3D(float m[12])
     {
@@ -46,30 +49,15 @@ public:
         Set(x, y, z, pos);
     }
 
-    __forceinline explicit Matrix3D(const Vector3 &axis, float angle)
-    {
-        Set(axis, angle);
-    }
+    __forceinline explicit Matrix3D(const Vector3 &axis, float angle) { Set(axis, angle); }
 
-    __forceinline explicit Matrix3D(const Vector3 &axis, float sine, float cosine)
-    {
-        Set(axis, sine, cosine);
-    }
+    __forceinline explicit Matrix3D(const Vector3 &axis, float sine, float cosine) { Set(axis, sine, cosine); }
 
-    __forceinline explicit Matrix3D(const Matrix3 &rotation, const Vector3 &position)
-    {
-        Set(rotation, position);
-    }
+    __forceinline explicit Matrix3D(const Matrix3 &rotation, const Vector3 &position) { Set(rotation, position); }
 
-    __forceinline explicit Matrix3D(const Quaternion &rotation, const Vector3 &position)
-    {
-        Set(rotation, position);
-    }
+    __forceinline explicit Matrix3D(const Quaternion &rotation, const Vector3 &position) { Set(rotation, position); }
 
-    __forceinline explicit Matrix3D(const Vector3 &position)
-    {
-        Set(position);
-    }
+    __forceinline explicit Matrix3D(const Vector3 &position) { Set(position); }
 
     __forceinline Matrix3D(const Matrix3D &m)
     {
@@ -90,12 +78,12 @@ public:
         return *this;
     }
 
-    void Get_Orthogonal_Inverse(Matrix3D& target) const;
+    void Get_Orthogonal_Inverse(Matrix3D &target) const;
     float Get_X_Rotation() const;
     float Get_Y_Rotation() const;
     float Get_Z_Rotation() const;
-    void Look_At(const Vector3&, const Vector3&, float);
-    void Obj_Look_At(const Vector3&, const Vector3&, float unknown = 0);
+    void Look_At(const Vector3 &, const Vector3 &, float);
+    void Obj_Look_At(const Vector3 &, const Vector3 &, float unknown = 0);
     Vector3 Rotate_Vector(const Vector3 &vector) const;
     Vector3 Inverse_Rotate_Vector(const Vector3 &vector) const;
 
@@ -106,7 +94,8 @@ public:
         Row[2].Set(m[8], m[9], m[10], m[11]);
     }
 
-    __forceinline void Set(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31, float m32, float m33, float m34)
+    __forceinline void Set(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31,
+        float m32, float m33, float m34)
     {
         Row[0].Set(m11, m12, m13, m14);
         Row[1].Set(m21, m22, m23, m24);
@@ -129,26 +118,20 @@ public:
 
     __forceinline void Set(const Vector3 &axis, float s, float c)
     {
-        Row[0].Set(
-            (float)(axis[0] * axis[0] + c*(1.0f - axis[0] * axis[0])),
+        Row[0].Set((float)(axis[0] * axis[0] + c * (1.0f - axis[0] * axis[0])),
             (float)(axis[0] * axis[1] * (1.0f - c) - axis[2] * s),
             (float)(axis[2] * axis[0] * (1.0f - c) + axis[1] * s),
-            0.0f
-        );
+            0.0f);
 
-        Row[1].Set(
-            (float)(axis[0] * axis[1] * (1.0f - c) + axis[2] * s),
-            (float)(axis[1] * axis[1] + c*(1.0f - axis[1] * axis[1])),
+        Row[1].Set((float)(axis[0] * axis[1] * (1.0f - c) + axis[2] * s),
+            (float)(axis[1] * axis[1] + c * (1.0f - axis[1] * axis[1])),
             (float)(axis[1] * axis[2] * (1.0f - c) - axis[0] * s),
-            0.0f
-        );
+            0.0f);
 
-        Row[2].Set(
-            (float)(axis[2] * axis[0] * (1.0f - c) - axis[1] * s),
+        Row[2].Set((float)(axis[2] * axis[0] * (1.0f - c) - axis[1] * s),
             (float)(axis[1] * axis[2] * (1.0f - c) + axis[0] * s),
-            (float)(axis[2] * axis[2] + c*(1 - axis[2] * axis[2])),
-            0.0f
-        );
+            (float)(axis[2] * axis[2] + c * (1 - axis[2] * axis[2])),
+            0.0f);
     }
 
     __forceinline void Set(const Vector3 &position)
@@ -158,12 +141,22 @@ public:
         Row[2].Set(0.0f, 0.0f, 1.0f, position[2]);
     }
 
-    void Set(const Matrix3& rotation, const Vector3 &position);
+    void Set(const Matrix3 &rotation, const Vector3 &position);
     void Set(const Quaternion &rotation, const Vector3 &position);
     void Set_Rotation(const Quaternion &rotation);
     __forceinline Vector3 Get_Translation() const { return Vector3(Row[0][3], Row[1][3], Row[2][3]); }
-    __forceinline void Get_Translation(Vector3 *set) const { set->X = Row[0][3]; set->Y = Row[1][3]; set->Z = Row[2][3]; }
-    __forceinline void Set_Translation(const Vector3 &t) { Row[0][3] = t[0]; Row[1][3] = t[1]; Row[2][3] = t[2]; }
+    __forceinline void Get_Translation(Vector3 *set) const
+    {
+        set->X = Row[0][3];
+        set->Y = Row[1][3];
+        set->Z = Row[2][3];
+    }
+    __forceinline void Set_Translation(const Vector3 &t)
+    {
+        Row[0][3] = t[0];
+        Row[1][3] = t[1];
+        Row[2][3] = t[2];
+    }
     void Set_Rotation(const Matrix3 &m);
     __forceinline float Get_X_Translation() const { return Row[0][3]; };
     __forceinline float Get_Y_Translation() const { return Row[1][3]; };
@@ -171,7 +164,12 @@ public:
     __forceinline void Set_X_Translation(float x) { Row[0][3] = x; };
     __forceinline void Set_Y_Translation(float y) { Row[1][3] = y; };
     __forceinline void Set_Z_Translation(float z) { Row[2][3] = z; };
-    __forceinline void Adjust_Translation(const Vector3 &t) { Row[0][3] += t[0]; Row[1][3] += t[1]; Row[2][3] += t[2]; };
+    __forceinline void Adjust_Translation(const Vector3 &t)
+    {
+        Row[0][3] += t[0];
+        Row[1][3] += t[1];
+        Row[2][3] += t[2];
+    };
     __forceinline void Adjust_X_Translation(float x) { Row[0][3] += x; };
     __forceinline void Adjust_Y_Translation(float y) { Row[1][3] += y; };
     __forceinline void Adjust_Z_Translation(float z) { Row[2][3] += z; };
@@ -210,7 +208,7 @@ public:
         Row[1][3] += (float)(Row[1][1] * y);
         Row[2][3] += (float)(Row[2][1] * y);
     }
-     
+
     __forceinline void Translate_Z(float z)
     {
         Row[0][3] += (float)(Row[0][2] * z);
@@ -224,15 +222,18 @@ public:
         float s, c;
         s = GameMath::Sin(theta);
         c = GameMath::Cos(theta);
-        tmp1 = Row[0][1]; tmp2 = Row[0][2];
+        tmp1 = Row[0][1];
+        tmp2 = Row[0][2];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[0][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[1][2];
+        tmp1 = Row[1][1];
+        tmp2 = Row[1][2];
         Row[1][1] = (float)(c * tmp1 + s * tmp2);
         Row[1][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][1]; tmp2 = Row[2][2];
+        tmp1 = Row[2][1];
+        tmp2 = Row[2][2];
         Row[2][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -243,15 +244,18 @@ public:
         float s, c;
         s = GameMath::Sin(theta);
         c = GameMath::Cos(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[0][2];
+        tmp1 = Row[0][0];
+        tmp2 = Row[0][2];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[0][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][0]; tmp2 = Row[1][2];
+        tmp1 = Row[1][0];
+        tmp2 = Row[1][2];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][0]; tmp2 = Row[2][2];
+        tmp1 = Row[2][0];
+        tmp2 = Row[2][2];
         Row[2][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
     }
@@ -262,15 +266,18 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[0][1];
+        tmp1 = Row[0][0];
+        tmp2 = Row[0][1];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[0][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][0]; tmp2 = Row[1][1];
+        tmp1 = Row[1][0];
+        tmp2 = Row[1][1];
         Row[1][0] = (float)(c * tmp1 + s * tmp2);
         Row[1][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][0]; tmp2 = Row[2][1];
+        tmp1 = Row[2][0];
+        tmp2 = Row[2][1];
         Row[2][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -278,15 +285,18 @@ public:
     __forceinline void Rotate_X(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][1]; tmp2 = Row[0][2];
+        tmp1 = Row[0][1];
+        tmp2 = Row[0][2];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[0][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[1][2];
+        tmp1 = Row[1][1];
+        tmp2 = Row[1][2];
         Row[1][1] = (float)(c * tmp1 + s * tmp2);
         Row[1][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][1]; tmp2 = Row[2][2];
+        tmp1 = Row[2][1];
+        tmp2 = Row[2][2];
         Row[2][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -294,15 +304,18 @@ public:
     __forceinline void Rotate_Y(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[0][2];
+        tmp1 = Row[0][0];
+        tmp2 = Row[0][2];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[0][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][0]; tmp2 = Row[1][2];
+        tmp1 = Row[1][0];
+        tmp2 = Row[1][2];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][0]; tmp2 = Row[2][2];
+        tmp1 = Row[2][0];
+        tmp2 = Row[2][2];
         Row[2][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
     }
@@ -310,15 +323,18 @@ public:
     __forceinline void Rotate_Z(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[0][1];
+        tmp1 = Row[0][0];
+        tmp2 = Row[0][1];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[0][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][0]; tmp2 = Row[1][1];
+        tmp1 = Row[1][0];
+        tmp2 = Row[1][1];
         Row[1][0] = (float)(c * tmp1 + s * tmp2);
         Row[1][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[2][0]; tmp2 = Row[2][1];
+        tmp1 = Row[2][0];
+        tmp2 = Row[2][1];
         Row[2][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -349,10 +365,7 @@ public:
         Row[2][2] *= z;
     }
 
-    __forceinline void Scale(Vector3 &scale)
-    {
-        Scale(scale.X, scale.Y, scale.Z);
-    }
+    __forceinline void Scale(Vector3 &scale) { Scale(scale.X, scale.Y, scale.Z); }
 
     __forceinline void Pre_Rotate_X(float theta)
     {
@@ -361,19 +374,23 @@ public:
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
 
-        tmp1 = Row[1][0]; tmp2 = Row[2][0];
+        tmp1 = Row[1][0];
+        tmp2 = Row[2][0];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[2][1];
+        tmp1 = Row[1][1];
+        tmp2 = Row[2][1];
         Row[1][1] = (float)(c * tmp1 - s * tmp2);
         Row[2][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][2]; tmp2 = Row[2][2];
+        tmp1 = Row[1][2];
+        tmp2 = Row[2][2];
         Row[1][2] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][3]; tmp2 = Row[2][3];
+        tmp1 = Row[1][3];
+        tmp2 = Row[2][3];
         Row[1][3] = (float)(c * tmp1 - s * tmp2);
         Row[2][3] = (float)(s * tmp1 + c * tmp2);
     }
@@ -384,19 +401,23 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[2][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[2][0];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][0] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[2][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[2][1];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[2][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[2][2];
         Row[0][2] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][3]; tmp2 = Row[2][3];
+        tmp1 = Row[0][3];
+        tmp2 = Row[2][3];
         Row[0][3] = (float)(c * tmp1 + s * tmp2);
         Row[2][3] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -407,19 +428,23 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[1][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[1][0];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[1][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[1][1];
         Row[0][1] = (float)(c * tmp1 - s * tmp2);
         Row[1][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[1][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[1][2];
         Row[0][2] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][3]; tmp2 = Row[1][3];
+        tmp1 = Row[0][3];
+        tmp2 = Row[1][3];
         Row[0][3] = (float)(c * tmp1 - s * tmp2);
         Row[1][3] = (float)(s * tmp1 + c * tmp2);
     }
@@ -427,19 +452,23 @@ public:
     __forceinline void Pre_Rotate_X(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[1][0]; tmp2 = Row[2][0];
+        tmp1 = Row[1][0];
+        tmp2 = Row[2][0];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[2][1];
+        tmp1 = Row[1][1];
+        tmp2 = Row[2][1];
         Row[1][1] = (float)(c * tmp1 - s * tmp2);
         Row[2][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][2]; tmp2 = Row[2][2];
+        tmp1 = Row[1][2];
+        tmp2 = Row[2][2];
         Row[1][2] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][3]; tmp2 = Row[2][3];
+        tmp1 = Row[1][3];
+        tmp2 = Row[2][3];
         Row[1][3] = (float)(c * tmp1 - s * tmp2);
         Row[2][3] = (float)(s * tmp1 + c * tmp2);
     }
@@ -447,19 +476,23 @@ public:
     __forceinline void Pre_Rotate_Y(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[2][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[2][0];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][0] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[2][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[2][1];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[2][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[2][2];
         Row[0][2] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][3]; tmp2 = Row[2][3];
+        tmp1 = Row[0][3];
+        tmp2 = Row[2][3];
         Row[0][3] = (float)(c * tmp1 + s * tmp2);
         Row[2][3] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -467,19 +500,23 @@ public:
     __forceinline void Pre_Rotate_Z(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[1][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[1][0];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[1][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[1][1];
         Row[0][1] = (float)(c * tmp1 - s * tmp2);
         Row[1][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[1][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[1][2];
         Row[0][2] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][3]; tmp2 = Row[1][3];
+        tmp1 = Row[0][3];
+        tmp2 = Row[1][3];
         Row[0][3] = (float)(c * tmp1 - s * tmp2);
         Row[1][3] = (float)(s * tmp1 + c * tmp2);
     }
@@ -490,15 +527,18 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[1][0]; tmp2 = Row[2][0];
+        tmp1 = Row[1][0];
+        tmp2 = Row[2][0];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[2][1];
+        tmp1 = Row[1][1];
+        tmp2 = Row[2][1];
         Row[1][1] = (float)(c * tmp1 - s * tmp2);
         Row[2][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][2]; tmp2 = Row[2][2];
+        tmp1 = Row[1][2];
+        tmp2 = Row[2][2];
         Row[1][2] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
     }
@@ -509,15 +549,18 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[2][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[2][0];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][0] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[2][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[2][1];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[2][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[2][2];
         Row[0][2] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -528,15 +571,18 @@ public:
         float c, s;
         c = GameMath::Cos(theta);
         s = GameMath::Sin(theta);
-        tmp1 = Row[0][0]; tmp2 = Row[1][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[1][0];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[1][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[1][1];
         Row[0][1] = (float)(c * tmp1 - s * tmp2);
         Row[1][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[1][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[1][2];
         Row[0][2] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
     }
@@ -544,15 +590,18 @@ public:
     __forceinline void In_Place_Pre_Rotate_X(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[1][0]; tmp2 = Row[2][0];
+        tmp1 = Row[1][0];
+        tmp2 = Row[2][0];
         Row[1][0] = (float)(c * tmp1 - s * tmp2);
         Row[2][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][1]; tmp2 = Row[2][1];
+        tmp1 = Row[1][1];
+        tmp2 = Row[2][1];
         Row[1][1] = (float)(c * tmp1 - s * tmp2);
         Row[2][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[1][2]; tmp2 = Row[2][2];
+        tmp1 = Row[1][2];
+        tmp2 = Row[2][2];
         Row[1][2] = (float)(c * tmp1 - s * tmp2);
         Row[2][2] = (float)(s * tmp1 + c * tmp2);
     }
@@ -560,15 +609,18 @@ public:
     __forceinline void In_Place_Pre_Rotate_Y(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[2][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[2][0];
         Row[0][0] = (float)(c * tmp1 + s * tmp2);
         Row[2][0] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[2][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[2][1];
         Row[0][1] = (float)(c * tmp1 + s * tmp2);
         Row[2][1] = (float)(-s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[2][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[2][2];
         Row[0][2] = (float)(c * tmp1 + s * tmp2);
         Row[2][2] = (float)(-s * tmp1 + c * tmp2);
     }
@@ -576,21 +628,24 @@ public:
     __forceinline void In_Place_Pre_Rotate_Z(float s, float c)
     {
         float tmp1, tmp2;
-        tmp1 = Row[0][0]; tmp2 = Row[1][0];
+        tmp1 = Row[0][0];
+        tmp2 = Row[1][0];
         Row[0][0] = (float)(c * tmp1 - s * tmp2);
         Row[1][0] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][1]; tmp2 = Row[1][1];
+        tmp1 = Row[0][1];
+        tmp2 = Row[1][1];
         Row[0][1] = (float)(c * tmp1 - s * tmp2);
         Row[1][1] = (float)(s * tmp1 + c * tmp2);
 
-        tmp1 = Row[0][2]; tmp2 = Row[1][2];
+        tmp1 = Row[0][2];
+        tmp2 = Row[1][2];
         Row[0][2] = (float)(c * tmp1 - s * tmp2);
         Row[1][2] = (float)(s * tmp1 + c * tmp2);
     }
 
     int Is_Orthogonal() const;
-    Matrix3D& operator*=(const Matrix3D& matrix);
+    Matrix3D &operator*=(const Matrix3D &matrix);
     Vector3 operator*(const Vector3 &vector) const;
 
     static void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
@@ -598,7 +653,7 @@ public:
         Vector3 tmp;
         Vector3 *v;
 
-        if ( out == &in ) {
+        if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
@@ -619,7 +674,8 @@ public:
     void Get_Inverse(Matrix3D &set_inverse) const;
     void Copy_3x3_Matrix(float matrix[3][3]);
     void Transform_Min_Max_AABox(const Vector3 &min, const Vector3 &max, Vector3 *set_min, Vector3 *set_max) const;
-    void Transform_Center_Extent_AABox(const Vector3 &center, const Vector3 &extent, Vector3 *set_center, Vector3 *set_extent) const;
+    void Transform_Center_Extent_AABox(
+        const Vector3 &center, const Vector3 &extent, Vector3 *set_center, Vector3 *set_extent) const;
     static void Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_result);
 
     static __forceinline void Rotate_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
@@ -627,7 +683,7 @@ public:
         Vector3 tmp;
         Vector3 *v;
 
-        if ( out == &in ) {
+        if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
@@ -644,7 +700,7 @@ public:
         Vector3 tmp;
         Vector3 *v;
 
-        if ( out == &in ) {
+        if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
@@ -660,7 +716,7 @@ public:
         Vector3 tmp;
         Vector3 *v;
 
-        if ( out == &in ) {
+        if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
@@ -672,8 +728,8 @@ public:
         out->Z = (A[0][2] * v->X + A[1][2] * v->Y + A[2][2] * v->Z);
     }
 
-    static Matrix3D Reflect_Plane(const PlaneClass& _plane);
-    PlaneClass Transform_Plane(const PlaneClass& _plane) const;
+    static Matrix3D Reflect_Plane(const PlaneClass &_plane);
+    PlaneClass Transform_Plane(const PlaneClass &_plane) const;
     static bool Solve_Linear_System(Matrix3D &system);
     void Re_Orthogonalize();
 
@@ -716,9 +772,9 @@ __forceinline Matrix3D operator*(const Matrix3D &A, const Matrix3D &B)
 
 __forceinline bool operator==(const Matrix3D &A, const Matrix3D &B)
 {
-    return (A[0].X == B[0].X && A[0].Y == B[0].Y && A[0].Z == B[0].Z && A[0].W == B[0].W
-        && A[1].X == B[1].X && A[1].Y == B[1].Y && A[1].Z == B[1].Z && A[1].W == B[1].W
-        && A[2].X == B[2].X && A[2].Y == B[2].Y && A[2].Z == B[2].Z && A[2].W == B[2].W);
+    return (A[0].X == B[0].X && A[0].Y == B[0].Y && A[0].Z == B[0].Z && A[0].W == B[0].W && A[1].X == B[1].X
+        && A[1].Y == B[1].Y && A[1].Z == B[1].Z && A[1].W == B[1].W && A[2].X == B[2].X && A[2].Y == B[2].Y
+        && A[2].Z == B[2].Z && A[2].W == B[2].W);
 }
 
 __forceinline bool operator!=(const Matrix3D &A, const Matrix3D &B)

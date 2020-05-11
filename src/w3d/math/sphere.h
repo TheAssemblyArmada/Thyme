@@ -22,7 +22,7 @@
 class SphereClass
 {
 public:
-    SphereClass(void) {};
+    SphereClass(void){};
     SphereClass(const Vector3 &center, float radius) { Init(center, radius); }
     SphereClass(const Vector3 &center, const SphereClass &s0);
     SphereClass(const Vector3 *Position, const int VertCount);
@@ -37,7 +37,7 @@ public:
     SphereClass &operator*=(const Matrix3D &m);
 
 public:
-    Vector3	Center;
+    Vector3 Center;
     float Radius;
 };
 
@@ -59,29 +59,41 @@ inline SphereClass::SphereClass(const Vector3 *Position, const int VertCount)
     Vector3 zmin(Position[0].X, Position[0].Y, Position[0].Z);
     Vector3 zmax(Position[0].X, Position[0].Y, Position[0].Z);
 
-    for ( i = 1; i < VertCount; i++ ) {
-        if ( Position[i].X < xmin.X ) {
-            xmin.X = Position[i].X; xmin.Y = Position[i].Y; xmin.Z = Position[i].Z;
+    for (i = 1; i < VertCount; i++) {
+        if (Position[i].X < xmin.X) {
+            xmin.X = Position[i].X;
+            xmin.Y = Position[i].Y;
+            xmin.Z = Position[i].Z;
         }
 
-        if ( Position[i].X > xmax.X ) {
-            xmax.X = Position[i].X; xmax.Y = Position[i].Y; xmax.Z = Position[i].Z;
+        if (Position[i].X > xmax.X) {
+            xmax.X = Position[i].X;
+            xmax.Y = Position[i].Y;
+            xmax.Z = Position[i].Z;
         }
 
-        if ( Position[i].Y < ymin.Y ) {
-            ymin.X = Position[i].X; ymin.Y = Position[i].Y; ymin.Z = Position[i].Z;
+        if (Position[i].Y < ymin.Y) {
+            ymin.X = Position[i].X;
+            ymin.Y = Position[i].Y;
+            ymin.Z = Position[i].Z;
         }
 
-        if ( Position[i].Y > ymax.Y ) {
-            ymax.X = Position[i].X; ymax.Y = Position[i].Y; ymax.Z = Position[i].Z;
+        if (Position[i].Y > ymax.Y) {
+            ymax.X = Position[i].X;
+            ymax.Y = Position[i].Y;
+            ymax.Z = Position[i].Z;
         }
 
-        if ( Position[i].Z < zmin.Z ) {
-            zmin.X = Position[i].X; zmin.Y = Position[i].Y; zmin.Z = Position[i].Z;
+        if (Position[i].Z < zmin.Z) {
+            zmin.X = Position[i].X;
+            zmin.Y = Position[i].Y;
+            zmin.Z = Position[i].Z;
         }
 
-        if ( Position[i].Z > zmax.Z ) {
-            zmax.X = Position[i].X; zmax.Y = Position[i].Y; zmax.Z = Position[i].Z;
+        if (Position[i].Z > zmax.Z) {
+            zmax.X = Position[i].X;
+            zmax.Y = Position[i].Y;
+            zmax.Z = Position[i].Z;
         }
     }
 
@@ -104,13 +116,13 @@ inline SphereClass::SphereClass(const Vector3 *Position, const int VertCount)
     Vector3 dia2 = xmax;
     float maxspan = xspan;
 
-    if ( yspan > maxspan ) {
+    if (yspan > maxspan) {
         maxspan = yspan;
         dia1 = ymin;
         dia2 = ymax;
     }
 
-    if ( zspan > maxspan ) {
+    if (zspan > maxspan) {
         maxspan = zspan;
         dia1 = zmin;
         dia2 = zmax;
@@ -126,13 +138,13 @@ inline SphereClass::SphereClass(const Vector3 *Position, const int VertCount)
     float radsqr = dx * dx + dy * dy + dz * dz;
     float radius = GameMath::Sqrt(radsqr);
 
-    for ( i = 0; i < VertCount; i++ ) {
+    for (i = 0; i < VertCount; i++) {
         dx = Position[i].X - center.X;
         dy = Position[i].Y - center.Y;
         dz = Position[i].Z - center.Z;
         float testrad2 = dx * dx + dy * dy + dz * dz;
 
-        if ( testrad2 > radsqr ) {
+        if (testrad2 > radsqr) {
             float testrad = GameMath::Sqrt(testrad2);
             radius = (radius + testrad) / 2.0f;
             radsqr = radius * radius;
@@ -162,13 +174,13 @@ inline void SphereClass::Re_Center(const Vector3 &center)
 
 inline void SphereClass::Add_Sphere(const SphereClass &s)
 {
-    if ( s.Radius == 0.0f ) {
+    if (s.Radius == 0.0f) {
         return;
     }
 
     float dist = (s.Center - Center).Length();
 
-    if ( dist == 0.0f ) {
+    if (dist == 0.0f) {
         Radius = (Radius > s.Radius) ? Radius : s.Radius;
 
         return;
@@ -176,10 +188,9 @@ inline void SphereClass::Add_Sphere(const SphereClass &s)
 
     float rnew = (dist + Radius + s.Radius) / 2.0f;
 
-    if ( rnew < Radius ) {
-
+    if (rnew < Radius) {
     } else {
-        if ( rnew < s.Radius ) {
+        if (rnew < s.Radius) {
             Init(s.Center, s.Radius);
         } else {
             float lerp = (rnew - Radius) / dist;
@@ -216,9 +227,9 @@ inline SphereClass &SphereClass::operator*=(const Matrix3D &m)
 inline bool Spheres_Intersect(const SphereClass &s0, const SphereClass &s1)
 {
     Vector3 delta = s0.Center - s1.Center;
-    float dist2 = delta*delta;
+    float dist2 = delta * delta;
 
-    if ( dist2 < (s0.Radius + s1.Radius) * (s0.Radius + s1.Radius) ) {
+    if (dist2 < (s0.Radius + s1.Radius) * (s0.Radius + s1.Radius)) {
         return true;
     } else {
         return false;
@@ -227,7 +238,7 @@ inline bool Spheres_Intersect(const SphereClass &s0, const SphereClass &s1)
 
 inline SphereClass Add_Spheres(const SphereClass &s0, const SphereClass &s1)
 {
-    if ( s0.Radius == 0.0f ) {
+    if (s0.Radius == 0.0f) {
         return s1;
     } else {
         SphereClass result(s0);
@@ -237,23 +248,23 @@ inline SphereClass Add_Spheres(const SphereClass &s0, const SphereClass &s1)
     }
 }
 
-inline SphereClass operator + (const SphereClass &s0, const SphereClass &s1)
+inline SphereClass operator+(const SphereClass &s0, const SphereClass &s1)
 {
     return Add_Spheres(s0, s1);
 }
 
 inline SphereClass Transform_Sphere(const Matrix3D &m, const SphereClass &s)
 {
-    return SphereClass(m*s.Center, s.Radius);
+    return SphereClass(m * s.Center, s.Radius);
 }
 
 inline void Transform_Sphere(const Matrix3D &m, const SphereClass &s, SphereClass &res)
 {
-    res.Center = m*s.Center;
+    res.Center = m * s.Center;
     res.Radius = s.Radius;
 }
 
-inline SphereClass operator * (const Matrix3D &m, const SphereClass &s)
+inline SphereClass operator*(const Matrix3D &m, const SphereClass &s)
 {
     return Transform_Sphere(m, s);
 }

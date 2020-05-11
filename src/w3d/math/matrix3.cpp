@@ -16,11 +16,7 @@
 #include "matrix3.h"
 #include "quaternion.h"
 
-const Matrix3 Matrix3::Identity(
-    1.0, 0.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 0.0, 1.0
-);
+const Matrix3 Matrix3::Identity(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
 
 Matrix3::Matrix3(const Matrix3D &m)
 {
@@ -83,7 +79,7 @@ Matrix3 &Matrix3::operator=(const Matrix4 &m)
 
 void Matrix3::Multiply(const Matrix3D &a, const Matrix3 &b, Matrix3 *res)
 {
-#define ROWCOL(i,j) a[i][0]*b[0][j] + a[i][1]*b[1][j] + a[i][2]*b[2][j]
+#define ROWCOL(i, j) a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j]
     (*res)[0][0] = ROWCOL(0, 0);
     (*res)[0][1] = ROWCOL(0, 1);
     (*res)[0][2] = ROWCOL(0, 2);
@@ -98,7 +94,7 @@ void Matrix3::Multiply(const Matrix3D &a, const Matrix3 &b, Matrix3 *res)
 
 void Matrix3::Multiply(const Matrix3 &a, const Matrix3D &b, Matrix3 *res)
 {
-#define ROWCOL(i,j) a[i][0]*b[0][j] + a[i][1]*b[1][j] + a[i][2]*b[2][j]
+#define ROWCOL(i, j) a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j]
     (*res)[0][0] = ROWCOL(0, 0);
     (*res)[0][1] = ROWCOL(0, 1);
     (*res)[0][2] = ROWCOL(0, 2);
@@ -113,23 +109,19 @@ void Matrix3::Multiply(const Matrix3 &a, const Matrix3D &b, Matrix3 *res)
 
 Matrix3 operator*(const Matrix3D &a, const Matrix3 &b)
 {
-#define ROWCOL(i,j) a[i][0]*b[0][j] + a[i][1]*b[1][j] + a[i][2]*b[2][j]
-    return Matrix3(
-        Vector3(ROWCOL(0, 0), ROWCOL(0, 1), ROWCOL(0, 2)),
+#define ROWCOL(i, j) a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j]
+    return Matrix3(Vector3(ROWCOL(0, 0), ROWCOL(0, 1), ROWCOL(0, 2)),
         Vector3(ROWCOL(1, 0), ROWCOL(1, 1), ROWCOL(1, 2)),
-        Vector3(ROWCOL(2, 0), ROWCOL(2, 1), ROWCOL(2, 2))
-    );
+        Vector3(ROWCOL(2, 0), ROWCOL(2, 1), ROWCOL(2, 2)));
 #undef ROWCOL
 }
 
 Matrix3 operator*(const Matrix3 &a, const Matrix3D &b)
 {
-#define ROWCOL(i,j) a[i][0]*b[0][j] + a[i][1]*b[1][j] + a[i][2]*b[2][j]
-    return Matrix3(
-        Vector3(ROWCOL(0, 0), ROWCOL(0, 1), ROWCOL(0, 2)),
+#define ROWCOL(i, j) a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j]
+    return Matrix3(Vector3(ROWCOL(0, 0), ROWCOL(0, 1), ROWCOL(0, 2)),
         Vector3(ROWCOL(1, 0), ROWCOL(1, 1), ROWCOL(1, 2)),
-        Vector3(ROWCOL(2, 0), ROWCOL(2, 1), ROWCOL(2, 2))
-    );
+        Vector3(ROWCOL(2, 0), ROWCOL(2, 1), ROWCOL(2, 2)));
 #undef ROWCOL
 }
 
@@ -139,7 +131,7 @@ void Matrix3::Multiply(const Matrix3 &A, const Matrix3 &B, Matrix3 *set_res)
     Matrix3 *Aptr;
     float tmp1, tmp2, tmp3;
 
-    if ( set_res == &A ) {
+    if (set_res == &A) {
         tmp = A;
         Aptr = &tmp;
     } else {
@@ -152,14 +144,14 @@ void Matrix3::Multiply(const Matrix3 &A, const Matrix3 &B, Matrix3 *set_res)
     (*set_res)[0][0] = (float)((*Aptr)[0][0] * tmp1 + (*Aptr)[0][1] * tmp2 + (*Aptr)[0][2] * tmp3);
     (*set_res)[1][0] = (float)((*Aptr)[1][0] * tmp1 + (*Aptr)[1][1] * tmp2 + (*Aptr)[1][2] * tmp3);
     (*set_res)[2][0] = (float)((*Aptr)[2][0] * tmp1 + (*Aptr)[2][1] * tmp2 + (*Aptr)[2][2] * tmp3);
-    
+
     tmp1 = B[0][1];
     tmp2 = B[1][1];
     tmp3 = B[2][1];
     (*set_res)[0][1] = (float)((*Aptr)[0][0] * tmp1 + (*Aptr)[0][1] * tmp2 + (*Aptr)[0][2] * tmp3);
     (*set_res)[1][1] = (float)((*Aptr)[1][0] * tmp1 + (*Aptr)[1][1] * tmp2 + (*Aptr)[1][2] * tmp3);
     (*set_res)[2][1] = (float)((*Aptr)[2][0] * tmp1 + (*Aptr)[2][1] * tmp2 + (*Aptr)[2][2] * tmp3);
-    
+
     tmp1 = B[0][2];
     tmp2 = B[1][2];
     tmp3 = B[2][2];

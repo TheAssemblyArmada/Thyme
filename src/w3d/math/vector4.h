@@ -38,13 +38,12 @@ public:
         Z = z;
         W = w;
     }
-    __forceinline explicit Vector4(const float v[4])
+    __forceinline Vector4(const float vector[4])
     {
-        captainslog_assert(v != nullptr);
-        X = v[0];
-        Y = v[1];
-        Z = v[2];
-        W = v[3];
+        X = vector[0];
+        Y = vector[1];
+        Z = vector[2];
+        W = vector[3];
     }
 
     // conversion constructors
@@ -74,12 +73,14 @@ public:
 
     __forceinline void Normalize()
     {
-        float len2 = GAMEMATH_FLOAT_TINY + Length2();
-        float oolen = GameMath::Inv_Sqrt(len2);
-        X *= oolen;
-        Y *= oolen;
-        Z *= oolen;
-        W *= oolen;
+        float len2 = Length2();
+        if (len2 != 0.0f) {
+            float oolen = GameMath::Inv_Sqrt(len2);
+            X *= oolen;
+            Y *= oolen;
+            Z *= oolen;
+            W *= oolen;
+        }
     }
 
     __forceinline float Length() const { return GameMath::Sqrt(Length2()); }
@@ -106,21 +107,21 @@ public:
         W -= v.W;
         return *this;
     }
-    __forceinline Vector4 &operator*=(float f)
+    __forceinline Vector4 &operator*=(float k)
     {
-        X *= f;
-        Y *= f;
-        Z *= f;
-        W *= f;
+        X = X * k;
+        Y = Y * k;
+        Z = Z * k;
+        W = W * k;
         return *this;
     }
-    __forceinline Vector4 &operator/=(float f)
+    __forceinline Vector4 &operator/=(float k)
     {
-        f = 1.0f / f;
-        X /= f;
-        Y /= f;
-        Z /= f;
-        W /= f;
+        k = 1.0f / k;
+        X = X * k;
+        Y = Y * k;
+        Z = Z * k;
+        W = W * k;
         return *this;
     }
 
@@ -156,6 +157,12 @@ public:
         set_result->W = (a.W + (b.W - a.W) * alpha);
     }
 
+    __forceinline bool Is_Valid() const
+    {
+        return (GameMath::Is_Valid_Float(X) && GameMath::Is_Valid_Float(Y) && GameMath::Is_Valid_Float(Z)
+            && GameMath::Is_Valid_Float(W));
+    }
+
 public:
     float X;
     float Y;
@@ -165,37 +172,38 @@ public:
 
 __forceinline Vector4 operator+(const Vector4 &a, const Vector4 &b)
 {
-    return Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
+    return Vector4(a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]);
 }
 
 __forceinline Vector4 operator-(const Vector4 &a, const Vector4 &b)
 {
-    return Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
+    return Vector4(a[0] - b[0], a[1] - b[1], a[2] - b[2], a[3] - b[3]);
 }
 
-__forceinline Vector4 operator*(const Vector4 &a, float b)
+__forceinline Vector4 operator*(const Vector4 &a, float k)
 {
-    return Vector4(a.X * b, a.Y * b, a.Z * b, a.W * b);
+    return Vector4((a.X * k), (a.Y * k), (a.Z * k), (a.W * k));
 }
 
-__forceinline Vector4 operator*(float a, const Vector4 &b)
+__forceinline Vector4 operator*(float k, const Vector4 &a)
 {
-    return b * a;
+    return a * k;
 }
 
 __forceinline Vector4 operator/(const Vector4 &a, float k)
 {
-    return Vector4(a.X * 1.0f / k, a.Y * 1.0f / k, a.Z * 1.0f / k, a.W * 1.0f / k);
+    float ook = 1.0f / k;
+    return Vector4((a[0] * ook), (a[1] * ook), (a[2] * ook), (a[3] * ook));
 }
 
 __forceinline bool operator==(const Vector4 &a, const Vector4 &b)
 {
-    return (a.X == b.X) && (a.Y == b.Y) && (a.Z == b.Z) && (a.W == b.W);
+    return ((a[0] == b[0]) && (a[1] == b[1]) && (a[2] == b[2]) && (a[3] == b[3]));
 }
 
 __forceinline bool operator!=(const Vector4 &a, const Vector4 &b)
 {
-    return (a.X != b.X) || (a.Y != b.Y) || (a.Z != b.Z) || (a.W != b.W);
+    return ((a[0] != b[0]) || (a[1] != b[1]) || (a[2] != b[2]) || (a[3] != b[3]));
 }
 
 __forceinline float operator*(const Vector4 &a, const Vector4 &b)
@@ -205,8 +213,12 @@ __forceinline float operator*(const Vector4 &a, const Vector4 &b)
 
 __forceinline Vector4 Normalize(const Vector4 &vec)
 {
-    float len2 = GAMEMATH_FLOAT_TINY + vec.Length2();
-    return vec * GameMath::Inv_Sqrt(len2);
+    float len2 = vec.Length2();
+    if (len2 != 0.0f) {
+        float oolen = GameMath::Inv_Sqrt(len2);
+        return vec * oolen;
+    }
+    return Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 __forceinline void Swap(Vector4 &a, Vector4 &b)

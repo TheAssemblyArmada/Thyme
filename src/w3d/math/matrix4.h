@@ -71,8 +71,11 @@ public:
         Row[3] = v3;
     }
 
-    __forceinline void Init_Ortho_OGL(float left, float right, float bottom, float top, float znear, float zfar)
+    __forceinline void Init_Ortho(float left, float right, float bottom, float top, float znear, float zfar)
     {
+        captainslog_assert(znear >= 0.0f);
+        captainslog_assert(zfar > znear);
+
         Make_Identity();
         Row[0][0] = 2.0f / (right - left);
         Row[0][3] = -(right + left) / (right - left);
@@ -82,50 +85,32 @@ public:
         Row[2][3] = -(zfar + znear) / (zfar - znear);
     }
 
-    __forceinline void Init_Perspective_OGL(float hfov, float vfov, float znear, float zfar)
+    __forceinline void Init_Perspective(float hfov, float vfov, float znear, float zfar)
     {
+        captainslog_assert(znear > 0.0f);
+        captainslog_assert(zfar > znear);
+
         Make_Identity();
-        Row[0][0] = static_cast<float>(1.0 / GameMath::Tan(hfov * 0.5));
-        Row[1][1] = static_cast<float>(1.0 / GameMath::Tan(vfov * 0.5));
+        Row[0][0] = static_cast<float>(1.0 / tan(hfov * 0.5));
+        Row[1][1] = static_cast<float>(1.0 / tan(vfov * 0.5));
         Row[2][2] = -(zfar + znear) / (zfar - znear);
         Row[2][3] = static_cast<float>(-(2.0 * zfar * znear) / (zfar - znear));
         Row[3][2] = -1.0f;
         Row[3][3] = 0.0f;
-    }
-
-    __forceinline void Init_Perspective_OGL(float left, float right, float bottom, float top, float znear, float zfar)
-    {
-        Make_Identity();
-        Row[0][0] = static_cast<float>(2.0 * znear / (right - left));
-        Row[0][2] = (right + left) / (right - left);
-        Row[1][1] = static_cast<float>(2.0 * znear / (top - bottom));
-        Row[1][2] = (top + bottom) / (top - bottom);
-        Row[2][2] = -(zfar + znear) / (zfar - znear);
-        Row[2][3] = static_cast<float>(-(2.0 * zfar * znear) / (zfar - znear));
-        Row[3][2] = -1.0f;
-        Row[3][3] = 0.0f;
-    }
-
-    __forceinline void Init_Ortho(float left, float right, float bottom, float top, float znear, float zfar)
-    {
-        Make_Identity();
-        Row[0][0] = 2.0f / (right - left);
-        Row[0][3] = (left + right) / (left - right);
-        Row[1][1] = 2.0f / (top - bottom);
-        Row[1][3] = (top + bottom) / (bottom - top);
-        Row[2][2] = 1.0f / (znear - zfar);
-        Row[2][3] = znear / (znear - zfar);
     }
 
     __forceinline void Init_Perspective(float left, float right, float bottom, float top, float znear, float zfar)
     {
+        captainslog_assert(znear > 0.0f);
+        captainslog_assert(zfar > 0.0f);
+
         Make_Identity();
         Row[0][0] = static_cast<float>(2.0 * znear / (right - left));
         Row[0][2] = (right + left) / (right - left);
         Row[1][1] = static_cast<float>(2.0 * znear / (top - bottom));
         Row[1][2] = (top + bottom) / (top - bottom);
-        Row[2][2] = zfar / (znear - zfar);
-        Row[2][3] = (znear * zfar) / (znear - zfar);
+        Row[2][2] = -(zfar + znear) / (zfar - znear);
+        Row[2][3] = static_cast<float>(-(2.0 * zfar * znear) / (zfar - znear));
         Row[3][2] = -1.0f;
         Row[3][3] = 0.0f;
     }
@@ -301,7 +286,7 @@ public:
     static void Multiply(const Matrix3D &A, const Matrix4 &B, Matrix4 *set_result);
     static void Multiply(const Matrix4 &A, const Matrix3D &B, Matrix4 *set_result);
 
-    __forceinline static void Transform_Vector(const Matrix4 &A, const Vector3 &in, Vector3 *out)
+    static __forceinline void Transform_Vector(const Matrix4 &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
         Vector3 *v;
@@ -318,7 +303,7 @@ public:
         out->Z = (A[2][0] * v->X + A[2][1] * v->Y + A[2][2] * v->Z + A[2][3]);
     }
 
-    __forceinline static void Transform_Vector(const Matrix4 &A, const Vector3 &in, Vector4 *out)
+    static __forceinline void Transform_Vector(const Matrix4 &A, const Vector3 &in, Vector4 *out)
     {
         out->X = (A[0][0] * in.X + A[0][1] * in.Y + A[0][2] * in.Z + A[0][3]);
         out->Y = (A[1][0] * in.X + A[1][1] * in.Y + A[1][2] * in.Z + A[1][3]);
@@ -326,7 +311,7 @@ public:
         out->W = 1.0f;
     }
 
-    __forceinline static void Transform_Vector(const Matrix4 &A, const Vector4 &in, Vector4 *out)
+    static __forceinline void Transform_Vector(const Matrix4 &A, const Vector4 &in, Vector4 *out)
     {
         Vector4 tmp;
         Vector4 *v;
@@ -343,8 +328,6 @@ public:
         out->Z = (A[2][0] * v->X + A[2][1] * v->Y + A[2][2] * v->Z + A[2][3] * v->W);
         out->W = (A[3][0] * v->X + A[3][1] * v->Y + A[3][2] * v->Z + A[3][3] * v->W);
     }
-
-    static Matrix4 ReflectPlane(const PlaneClass &plane); // Expects Ax + By + Cz + D = 0, not WW convention
 
     static const Matrix4 IDENTITY;
 
@@ -370,7 +353,6 @@ __forceinline Matrix4 operator*(float d, const Matrix4 &a)
 __forceinline Matrix4 operator/(const Matrix4 &a, float d)
 {
     float ood = 1.0f / d;
-
     return Matrix4(a.Row[0] * ood, a.Row[1] * ood, a.Row[2] * ood, a.Row[3] * ood);
 }
 
@@ -397,10 +379,12 @@ __forceinline Matrix4 Subtract(const Matrix4 &a, const Matrix4 &b)
 __forceinline Matrix4 operator*(const Matrix4 &a, const Matrix4 &b)
 {
 #define ROWCOL(i, j) a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j] + a[i][3] * b[3][j]
+
     return Matrix4(Vector4(ROWCOL(0, 0), ROWCOL(0, 1), ROWCOL(0, 2), ROWCOL(0, 3)),
         Vector4(ROWCOL(1, 0), ROWCOL(1, 1), ROWCOL(1, 2), ROWCOL(1, 3)),
         Vector4(ROWCOL(2, 0), ROWCOL(2, 1), ROWCOL(2, 2), ROWCOL(2, 3)),
         Vector4(ROWCOL(3, 0), ROWCOL(3, 1), ROWCOL(3, 2), ROWCOL(3, 3)));
+
 #undef ROWCOL
 }
 

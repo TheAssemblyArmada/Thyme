@@ -31,8 +31,8 @@ public:
     __forceinline const int &operator[](int n) const;
     __forceinline int &operator[](int n);
 public:
-    int I;
-    int J;
+    int32_t I;
+    int32_t J;
 };
 
 __forceinline Vector2i::Vector2i() {}

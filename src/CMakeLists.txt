@@ -194,11 +194,15 @@ set(GAMEENGINE_SRC
     w3d/lib/threadtrack.cpp
     w3d/lib/wwstring.cpp
     w3d/lib/hash.cpp
+    w3d/math/aabox.cpp
+    w3d/math/frustum.cpp
     w3d/math/gamemath.cpp
+    w3d/math/lineseg.cpp
     w3d/math/matrix3.cpp
     w3d/math/matrix3d.cpp
     w3d/math/matrix4.cpp
     w3d/math/quaternion.cpp
+    w3d/math/tri.cpp
     w3d/math/vp.cpp
     w3d/renderer/bitmaphandler.cpp
     w3d/renderer/boxrobj.cpp

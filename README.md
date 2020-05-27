@@ -33,9 +33,17 @@ Now you have the Generals: Zero Hour installation ready, you can [download the l
 
 The easiest way to get Thyme to actually run is to place `thyme.exe` or `launchthyme.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thyme.exe` or `launchthyme.exe` from that directory or create a shortcut to them.
 
+### Disclaimer
+
+Thyme is in heavy development and as such, development builds may not behave correctly compared to the original game. We will endevour to create numbered releases that are as free from bugs as possible but even they may have some unexpected behaviour.
+
 ### Anti-virus warning
 
 Anti-virus software like Windows Defender could mark Thyme as a virus. This is a false-positive. We can assure you that Thyme is fully safe to use. If you are still unsure about this, you can just [build Thyme yourself](#building-thyme-yourself).
+
+### Common Issues
+
+A black screen at startup is normally a sign that you have gentool installed. Due to how Thyme currently works, you will need to teporarily remove or rename the gentool d3d8.dll file.
 
 ## Building Thyme yourself
 

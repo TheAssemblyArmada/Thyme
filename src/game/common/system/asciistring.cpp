@@ -21,35 +21,41 @@
 
 Utf8String const Utf8String::s_emptyString(nullptr);
 
-Utf8String::Utf8String() :
-    m_data(nullptr)
+/**
+ * Default constructor added for convenience
+ */
+Utf8String::Utf8String() : m_data(nullptr)
 {
 }
 
-Utf8String::Utf8String(const char *s) :
-    m_data(nullptr)
+/**
+ * Inits this string with an existing string (copy) and increments reference count
+ */
+Utf8String::Utf8String(Utf8String const &string) : m_data(string.m_data)
+{
+    if (m_data != nullptr) {
+        m_data->Inc_Ref_Count();
+    }
+}
+
+/**
+ * Inits this string with a reference to the start of a char array.
+ */
+Utf8String::Utf8String(const char *s) : m_data(nullptr)
 {
     if ( s != nullptr ) {
+		//Get length of the string that was passed
         int len = (int)strlen(s);
         if ( len > 0 ) {
+			//Allocate a buffer
             Ensure_Unique_Buffer_Of_Size(len + 1, false, s);
         }
     }
 }
 
-Utf8String::Utf8String(Utf8String const &string) :
-    m_data(string.m_data)
-{
-    if ( m_data != nullptr ) {
-        m_data->Inc_Ref_Count();
-    }
-}
-
-void Utf8String::Validate()
-{
-    //TODO, doesnt seem to be implimented anywhere? It is called though...
-}
-
+/**
+ * A utility method to test nullptr on string content and log if that happens
+ */
 char *Utf8String::Peek() const
 {
     captainslog_dbgassert(m_data != nullptr, "null string ptr");
@@ -57,20 +63,31 @@ char *Utf8String::Peek() const
     return m_data->Peek();
 }
 
-
+/**
+ * Internal shorthand to decrement the reference count and release buffer if 0
+ */
 void Utf8String::Release_Buffer()
 {
     if ( m_data != nullptr ) {
         m_data->Dec_Ref_Count();
-
         if ( m_data->ref_count == 0 ) {
-            g_dynamicMemoryAllocator->Free_Bytes(m_data);
+            Free_Bytes();
         }
-        
         m_data = nullptr;
     }
 }
 
+/**
+ * Frees the allocated memory for this string. Thanks for all the fish!
+ */
+void Utf8String::Free_Bytes() 
+{
+    g_dynamicMemoryAllocator->Free_Bytes(m_data); 
+}
+
+/**
+ * Allocates a memory buffer for a string's content.
+ */
 void Utf8String::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
 {
     if ( m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed ) {
@@ -119,6 +136,9 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data, 
     }
 }
 
+/**
+* Gets the length of the string
+*/
 int Utf8String::Get_Length() const
 {
     if ( m_data != nullptr ) {
@@ -139,6 +159,9 @@ char Utf8String::Get_Char(int index) const
     return Peek()[index];
 }
 
+/**
+ * This is effectively ToString() It is in original code, but never called.
+ */
 const char *Utf8String::Str() const
 {
     static char const TheNullChr[4] = "";
@@ -150,28 +173,34 @@ const char *Utf8String::Str() const
     return TheNullChr;
 }
 
+/**
+ * Generates a buffer with the requested length for reading and returns it.
+ */
 char *Utf8String::Get_Buffer_For_Read(int len)
 {
-    
-    // Generate buffer sufficient to read requested size into.
     Ensure_Unique_Buffer_Of_Size(len + 1, 0, 0, 0);
-
     return Peek();
 }
 
-void Utf8String::Set(const char *s)
+/**
+ * Set this string content to a new string
+ */
+void Utf8String::Set(const char *c)
 {
-    if ( m_data == nullptr || s != m_data->Peek() ) {
+    if ( m_data == nullptr || c != m_data->Peek() ) {
         size_t len;
         
-        if ( s && (len = strlen(s) + 1, len != 1) ) {
-            Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
+        if ( c && (len = strlen(c) + 1, len != 1) ) {
+            Ensure_Unique_Buffer_Of_Size(len, false, c, nullptr);
         } else {
             Release_Buffer();
         }
     }
 }
 
+/**
+ * A convenience version of Set. Not found in original code.
+ */
 void Utf8String::Set(Utf8String const &string)
 {
     if ( &string != this ) {
@@ -184,6 +213,9 @@ void Utf8String::Set(Utf8String const &string)
     }
 }
 
+/**
+ * Converts a Utf16 string to Utf8
+ */
 void Utf8String::Translate(Utf16String const &string)
 {
     Release_Buffer();
@@ -249,6 +281,9 @@ void Utf8String::Translate(Utf16String const &string)
 #endif
 }
 
+/**
+ * Convenience concat for 1 char. Not in original code.
+ */
 void Utf8String::Concat(char c)
 {
     char str[2];
@@ -258,6 +293,9 @@ void Utf8String::Concat(char c)
     Concat(str);
 }
 
+/**
+ * The original concat as it was in original code.
+ */
 void Utf8String::Concat(const char *s)
 {
     int len = strlen(s);
@@ -271,6 +309,9 @@ void Utf8String::Concat(const char *s)
     }
 }
 
+/**
+ * Trims this string to remove all leading and trailing spaces
+ */
 void Utf8String::Trim()
 {
     // No string, no Trim.
@@ -306,9 +347,13 @@ void Utf8String::Trim()
     }
 }
 
+/**
+ * Converts this string to lower case
+ */
 void Utf8String::To_Lower()
 {
-    char buf[MAX_FORMAT_BUF_LEN];
+    // Size specifically matches original code for compatability
+    char buf[MAX_TO_LOWER_BUF_LEN];
 
     if ( m_data == nullptr ) {
         return;
@@ -367,6 +412,9 @@ Utf8String Utf8String::Windows_Path() const
     return buf;
 }
 
+/**
+ * Removes the last character from a string
+ */
 void Utf8String::Remove_Last_Char()
 {
     if ( m_data == nullptr ) {
@@ -381,22 +429,33 @@ void Utf8String::Remove_Last_Char()
     }
 }
 
+/**
+ * Forms a string from parameters to print to console.
+ */
 void Utf8String::Format(const char *format, ...)
 {
     va_list va;
 
     va_start(va, format);
     Format_VA(format, va);
+    va_end(va);
 }
 
+/**
+ * Forms a string from parameters to print to console.
+ */
 void Utf8String::Format(Utf8String format, ...)
 {
     va_list va;
 
     va_start(va, format);
     Format_VA(format, va);
+    va_end(va);
 }
 
+/**
+ * Prints a string to console for a capped length.
+ */
 void Utf8String::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
@@ -407,6 +466,9 @@ void Utf8String::Format_VA(const char *format, va_list args)
     Set(buf);
 }
 
+/**
+ * Prints a string to console for a capped length. Format_VA variant for convenience. Not used in original code.
+ */
 void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
@@ -416,12 +478,15 @@ void Utf8String::Format_VA(Utf8String &format, va_list args)
     Set(buf);
 }
 
+/**
+ *  Checks if string starts with *p
+ */
 bool Utf8String::Starts_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
     }
-    
+    // early out if our string is shorter than the input one
     int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
@@ -432,28 +497,34 @@ bool Utf8String::Starts_With(const char *p) const
     return strncmp(Peek(), p, thatlen) == 0;
 }
 
+/**
+ *  Checks if string ends with *p
+ */
 bool Utf8String::Ends_With(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
     }
-    
+    //early out if our string is shorter than the input one
     int thislen = m_data != nullptr ? strlen(Peek()) : 0;
     int thatlen = strlen(p);
     
     if ( thislen < thatlen ) {
         return false;
     }
-    
+    //compare strings
     return strncmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
+/**
+ *  Checks if string starts with *p, not case sensitive
+ */
 bool Utf8String::Starts_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
         return true;
     }
-    
+    // early out if our string is shorter than the input one
     int thislen = Get_Length();
     int thatlen = strlen(p);
     
@@ -464,6 +535,9 @@ bool Utf8String::Starts_With_No_Case(const char *p) const
     return strncasecmp(Peek(), p, thatlen) == 0;
 }
 
+/**
+ *  Checks if string ends with *p, not case sensitive
+ */
 bool Utf8String::Ends_With_No_Case(const char *p) const
 {
     if ( *p == '\0' ) {
@@ -480,6 +554,10 @@ bool Utf8String::Ends_With_No_Case(const char *p) const
     return strncasecmp(Peek() + thislen - thatlen, p, thatlen) == 0;
 }
 
+/**
+* Find the next tokens and loads *tok with the string between these token
+* The string this is used on is consumed in the process. (a primitive string split)
+*/
 bool Utf8String::Next_Token(Utf8String *tok, const char *delims)
 {
     if ( m_data == nullptr ) {
@@ -543,6 +621,11 @@ bool Utf8String::Next_Token(Utf8String *tok, const char *delims)
     Set(end);
     
     return true;
+}
+
+void Utf8String::Validate()
+{
+    // TODO, doesnt seem to be implimented anywhere? It is called though...
 }
 
 #ifdef GAME_DEBUG

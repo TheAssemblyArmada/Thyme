@@ -183,9 +183,28 @@ void Setup_Hooks()
     Hook_Method(0x0048F160, &ArchiveFileSystem::Get_File_Info);
 
     // Replace Utf8String
-    Hook_Method(0x0040D640, static_cast<void (Utf8String::*)(char const *)>(&Utf8String::Set));
-    Hook_Method(0x00415290, &Utf8String::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method(0x00402430, &Utf8String::Hook_Ctor2);
+    Hook_Method(0x00401D40, &Utf8String::Hook_Ctor1);
     Hook_Method(0x0040FB40, static_cast<void (Utf8String::*)(char const *)>(&Utf8String::Concat));
+    Hook_Method(0x00043E66, &Utf8String::Ends_With);
+    Hook_Method(0x00043C64, &Utf8String::Ends_With_No_Case);
+    Hook_Method(0x00415290, &Utf8String::Ensure_Unique_Buffer_Of_Size);
+    Hook_Method(0x00044866, static_cast<void (Utf8String::*)(char const *, ...)>(&Utf8String::Format));
+	//The below method is implemented, but due to only being called from Format above it is not hooked.
+    //Hook_Method(0x00044772, static_cast<void (Utf8String::*)(char const *, va_list args)>(&Utf8String::Format_VA));
+    Hook_Method(0x00415280, &Utf8String::Free_Bytes);
+    Hook_Method(0x00044174, &Utf8String::Get_Buffer_For_Read);
+    Hook_Method(0x00043D0A, &Utf8String::Is_None);
+    Hook_Method(0x000441B4, &Utf8String::Next_Token);
+    Hook_Method(0x00666B16, &Utf8String::Release_Buffer);
+    Hook_Method(0x00044118, &Utf8String::Remove_Last_Char);
+    Hook_Method(0x0040D640, static_cast<void (Utf8String::*)(char const *)>(&Utf8String::Set));
+    Hook_Method(0x00043D38, &Utf8String::Starts_With);
+    Hook_Method(0x00034DD4, &Utf8String::Starts_With_No_Case);
+    Hook_Method(0x006589E6, &Utf8String::Str);
+    Hook_Method(0x00044694, &Utf8String::To_Lower);
+    Hook_Method(0x00044424, &Utf8String::Translate);
+    Hook_Method(0x00044552, &Utf8String::Trim);
 
     // Replace Win32GameEngine
     Hook_Method(0x007420F0, &Win32GameEngine::Hook_Create_Local_File_System);

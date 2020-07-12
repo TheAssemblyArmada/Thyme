@@ -37,6 +37,7 @@ public:
     {
         MAX_FORMAT_BUF_LEN = 2048,
         MAX_LEN = 32767,
+        MAX_TO_LOWER_BUF_LEN = 2060,
     };
 
     struct AsciiStringData
@@ -177,11 +178,16 @@ public:
 public:
     static Utf8String const s_emptyString;
 
+#ifdef GAME_DLL // This define is only set when building a hooking DLL.
+    Utf8String *Hook_Ctor1(const char *s) { return new (this) Utf8String(s); }
+    Utf8String *Hook_Ctor2(Utf8String const &string) { return new (this) Utf8String(string); }
+#endif
+
 private:
     // Probably supposed to be private
     void Ensure_Unique_Buffer_Of_Size(
         int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
-
+    void Free_Bytes();
     void Format_VA(const char *format, va_list args);
     void Format_VA(Utf8String &format, va_list args);
 

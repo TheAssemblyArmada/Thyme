@@ -12,7 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "setuphooks.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -33,7 +32,9 @@
 #include "dinputkeybd.h"
 #include "dx8caps.h"
 #include "dx8fvf.h"
+#include "dx8indexbuffer.h"
 #include "dx8texman.h"
+#include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
 #include "filetransfer.h"
@@ -52,8 +53,8 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
-#include "milesaudiomanager.h"
 #include "milesaudiofilecache.h"
+#include "milesaudiomanager.h"
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
@@ -71,6 +72,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "setuphooks.h"
 #include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
@@ -90,8 +92,6 @@
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
 #include "wwstring.h"
-#include "dx8vertexbuffer.h"
-#include "dx8indexbuffer.h"
 #include <stdarg.h>
 #include <stdio.h>
 #include <windows.h>
@@ -191,8 +191,8 @@ void Setup_Hooks()
     Hook_Method(0x00415290, &Utf8String::Ensure_Unique_Buffer_Of_Size);
     Hook_Method(0x00415750, static_cast<void (Utf8String::*)(Utf8String, ...)>(&Utf8String::Format));
     Hook_Method(0x00415860, static_cast<void (Utf8String::*)(char const *, ...)>(&Utf8String::Format));
-	//The below method is implemented, but due to only being called from Format above it is not hooked.
-    //Hook_Method(0x00044772, static_cast<void (Utf8String::*)(char const *, va_list args)>(&Utf8String::Format_VA));
+    // The below method is implemented, but due to only being called from Format above it is not hooked.
+    // Hook_Method(0x00044772, static_cast<void (Utf8String::*)(char const *, va_list args)>(&Utf8String::Format_VA));
     Hook_Method(0x00415280, &Utf8String::Free_Bytes);
     Hook_Method(0x00415430, &Utf8String::Get_Buffer_For_Read);
     Hook_Method(0x00415AA0, &Utf8String::Is_None);
@@ -545,7 +545,7 @@ void Setup_Hooks()
     Hook_Method(0x0051C510, &ScriptGroup::Duplicate);
     Hook_Method(0x0051C670, &ScriptGroup::Duplicate_And_Qualify);
     Hook_Function(0x0051C860, ScriptGroup::Parse_Group_Chunk);
-    
+
     // scriptlist.h ScriptList
     Hook_Method(0x0051B920, &ScriptList::Hook_Xfer_Snapshot);
     Hook_Method(0x0051BC70, &ScriptList::Duplicate);

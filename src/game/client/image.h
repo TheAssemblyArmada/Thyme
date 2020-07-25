@@ -24,26 +24,30 @@ class TextureClass;
 
 class Image : public MemoryPoolObject
 {
+    IMPLEMENT_POOL(Image);
+
 public:
     Image();
     virtual ~Image();
 
     // Methods
+    // TODO check implement and hook once found
     void Clear_Status(uint32_t bit);
     void Set_Status(uint32_t bit);
 
     // initFromINIMulti variants for Field Parsing Functions.
     static void Parse_Image_Coords(INI *ini, void *formal, void *store, const void *user_data);
+    // TODO check implement and hook once found
     static void Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data);
 
 #ifdef GAME_DLL
-    //Image *Hook_Ctor() { return new (this) Image(); }
+    Image *Hook_Ctor() { return new (this) Image(); }
     void Hook_Dtor() { Image::~Image(); }
 #endif
 
 private:
-    Utf8String *m_name;
-    Utf8String *m_filename;
+    Utf8String m_name;
+    Utf8String m_filename;
     ICoord2D m_textureSize;
     Region2D m_UVCoords;
     ICoord2D m_imageSize;

@@ -26,13 +26,30 @@ Image::Image() :
 	m_textureSize(), 
 	m_imageSize(), 
 	m_rawTextureData(), 
-	m_status()
+	m_status(0)
 {
     m_UVCoords.hi.x = 1.0;
-    m_UVCoords.hi.x = 1.0;
+    m_UVCoords.hi.y = 1.0;
+    m_textureSize.x = 0;
+    m_textureSize.y = 0;
+    m_UVCoords.lo.x = 0.0;
+    m_UVCoords.lo.y = 0.0;
+    m_imageSize.x = 0;
+    m_imageSize.y = 0;
+    m_rawTextureData = nullptr;
 }
 
-Image::~Image() {}
+Image::~Image() 
+{
+    if (m_filename != nullptr) {
+        m_filename->~Utf8String();
+        m_filename = nullptr;
+    }
+    if (m_name != nullptr) {
+        m_name->~Utf8String();
+        m_name = nullptr;
+    }
+}
 
 void Image::Set_Status(uint32_t bit)
 {
@@ -49,11 +66,11 @@ void Image::Parse_Image_Coords(INI *ini, void *formal, void *store, const void *
     Image *image = static_cast<Image *>(formal);
     const char *token = ini->Get_Next_Sub_Token("Left");
     int left = ini->Scan_Int(token);
-    const char *token = ini->Get_Next_Sub_Token("Top");
+    token = ini->Get_Next_Sub_Token("Top");
     int top = ini->Scan_Int(token);
-    const char *token = ini->Get_Next_Sub_Token("Right");
+    token = ini->Get_Next_Sub_Token("Right");
     int right = ini->Scan_Int(token);
-    const char *token = ini->Get_Next_Sub_Token("Bottom");
+    token = ini->Get_Next_Sub_Token("Bottom");
     int bottom = ini->Scan_Int(token);
     float lowX = left;
     float lowY = top;

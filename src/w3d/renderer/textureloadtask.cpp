@@ -46,7 +46,7 @@ TextureLoadTaskClass::TextureLoadTaskClass() :
     m_height(0),
     m_mipLevelCount(0),
     m_reduction(0),
-    m_hsvAdjust(),
+    m_hsvAdjust(0.0f, 0.0f, 0.0f),
     m_type(TASK_NONE),
     m_priority(PRIORITY_BACKGROUND),
     m_loadState(STATE_NONE)
@@ -441,7 +441,7 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
                 0,
                 0,
                 true,
-                Vector3());
+                Vector3(0.0f, 0.0f, 0.0f));
             width >>= 1;
             height >>= 1;
             srcwidth >>= 1;
@@ -469,7 +469,7 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
             0,
             0,
             true,
-            Vector3());
+            Vector3(0.0f, 0.0f, 0.0f));
         width >>= 1;
         height >>= 1;
         srcwidth >>= 1;

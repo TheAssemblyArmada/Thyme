@@ -80,7 +80,8 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
         m_bitmap = new uint8_t[2 * m_height * m_width];
         m_isAllocated = true;
 
-        dds.Copy_Level_To_Surface(0, WW3D_FORMAT_A4R4G4B4, m_width, m_height, m_bitmap, 2 * m_width, Vector3());
+        dds.Copy_Level_To_Surface(
+            0, WW3D_FORMAT_A4R4G4B4, m_width, m_height, m_bitmap, 2 * m_width, Vector3(0.0f, 0.0f, 0.0f));
     } else {
         TargaImage targa;
 
@@ -154,7 +155,7 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
                 (uint8_t *)targa.Get_Palette(),
                 (uint8_t)targa.Get_Header().cmap_depth / 8,
                 false,
-                Vector3());
+                Vector3(0.0f, 0.0f, 0.0f));
         }
     }
 

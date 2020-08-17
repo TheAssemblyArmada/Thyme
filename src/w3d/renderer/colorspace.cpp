@@ -109,7 +109,7 @@ void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
  */
 void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj)
 {
-    Vector3 hsv;
+    Vector3 hsv(0.0f, 0.0f, 0.0f);
     RGBA_To_HSV(hsv, rgba);
 
     if (hsv.X > 0.0f) {

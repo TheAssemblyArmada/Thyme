@@ -62,7 +62,7 @@ w3dtexture_t Load_Compressed_Texture(
 
         for (unsigned i = 0; i < dds.Get_Mip_Level_Count(); ++i) {
             texture->GetSurfaceLevel(i, &surface);
-            dds.Copy_Level_To_Surface(i, surface, Vector3());
+            dds.Copy_Level_To_Surface(i, surface, Vector3(0.0f, 0.0f, 0.0f));
             surface->Release();
         };
 
@@ -242,7 +242,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
             (uint8_t *)targa.Get_Palette(),
             targa.Get_Header().cmap_depth >> 3,
             false,
-            Vector3());
+            Vector3(0.0f, 0.0f, 0.0f));
         src_surface = dest_surface;
         src_format = WW3D_FORMAT_A8R8G8B8;
         src_bpp = Get_Bytes_Per_Pixel(WW3D_FORMAT_A8R8G8B8);
@@ -265,7 +265,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
         (uint8_t *)targa.Get_Palette(),
         targa.Get_Header().cmap_depth >> 3,
         false,
-        Vector3());
+        Vector3(0.0f, 0.0f, 0.0f));
     surface->UnlockRect();
 #endif
     if (dest_surface) {

@@ -45,7 +45,7 @@ void Parameter::Qualify(const Utf8String &suffix, const Utf8String &side_test, c
 
             break;
         case TEAM:
-            if (m_string == "<This Team>") {
+            if (m_string != "<This Team>") {
                 m_string += suffix;
             }
 

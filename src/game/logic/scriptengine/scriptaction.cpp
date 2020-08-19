@@ -57,7 +57,9 @@ ScriptAction *ScriptAction::Duplicate()
     ScriptAction *new_action = new ScriptAction(m_actionType);
 
     for (int i = 0; i < m_numParams; ++i) {
-        new_action->m_params[i] = m_params[i];
+        if (new_action->m_params[i] != nullptr) {
+            new_action->m_params[i] = m_params[i];
+        }
     }
 
     ScriptAction *retval = new_action;
@@ -69,7 +71,9 @@ ScriptAction *ScriptAction::Duplicate()
         new_action = new_next;
 
         for (int i = 0; i < next->m_numParams; ++i) {
-            *new_action->m_params[i] = *next->m_params[i];
+            if (new_action->m_params[i] != nullptr && next->m_params[i] != nullptr) {
+                *new_action->m_params[i] = *next->m_params[i];
+            }
         }
     }
 
@@ -88,25 +92,29 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
     ScriptAction *new_action = new ScriptAction(m_actionType);
 
     for (int i = 0; i < m_numParams; ++i) {
-        *new_action->m_params[i] = *m_params[i];
-        new_action->m_params[i]->Qualify(str1, str2, str3);
-    }
-
-    ScriptAction *retval = new_action;
-
-    for (ScriptAction *next = m_nextAction; next != nullptr; next = next->m_nextAction) {
-        ScriptAction *new_next = new ScriptAction(next->m_actionType);
-
-        new_action->m_nextAction = new_next;
-        new_action = new_next;
-
-        for (int i = 0; i < next->m_numParams; ++i) {
-            *new_action->m_params[i] = *next->m_params[i];
+        if (new_action->m_params[i] != nullptr) {
+            *new_action->m_params[i] = *m_params[i];
             new_action->m_params[i]->Qualify(str1, str2, str3);
         }
     }
 
-    return retval;
+    ScriptAction *current_action = new_action;
+
+    for (ScriptAction *next = m_nextAction; next != nullptr; next = next->m_nextAction) {
+        ScriptAction *new_next = new ScriptAction(next->m_actionType);
+
+        current_action->m_nextAction = new_next;
+        current_action = current_action->m_nextAction;
+
+        for (int i = 0; i < next->m_numParams; ++i) {
+            if (current_action->m_params[i] != nullptr && next->m_params[i] != nullptr) {
+                *current_action->m_params[i] = *next->m_params[i];
+                current_action->m_params[i]->Qualify(str1, str2, str3);
+            }
+        }
+    }
+
+    return new_action;
 }
 
 /**
@@ -118,7 +126,7 @@ Utf8String ScriptAction::Get_UI_Text()
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    return Call_Method<Utf8String, ScriptAction>(PICK_ADDRESS(0x005206B0, 0), this);
+    return Call_Method<Utf8String, ScriptAction>(PICK_ADDRESS(0x005206B0, 0x006FAA16), this);
 #else
     return Utf8String();
 #endif
@@ -179,7 +187,7 @@ void ScriptAction::Set_Action_Type(ScriptActionType type)
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    Call_Method<void, ScriptAction, ScriptActionType>(PICK_ADDRESS(0x0051FE50, 0), this, type);
+    Call_Method<void, ScriptAction, ScriptActionType>(PICK_ADDRESS(0x0051FE50, 0x006FA4A5), this, type);
 #endif
 }
 

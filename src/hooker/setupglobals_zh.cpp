@@ -194,6 +194,7 @@ Utf8String &g_exceptionFileBuffer = Make_Global<Utf8String>(PICK_ADDRESS(0x00A29
 
 // subsysteminterface.cpp
 SubsystemInterfaceList *&g_theSubsystemList = Make_Global<SubsystemInterfaceList *>(PICK_ADDRESS(0x00A29B84, 0x00E268C4));
+float &SubsystemInterface::s_totalSubsystemTime = Make_Global<float>(PICK_ADDRESS(0, 0x00E1D4B0));
 
 // unicodestring.cpp
 SimpleCriticalSectionClass *&g_unicodeStringCriticalSection =

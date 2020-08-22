@@ -73,6 +73,7 @@ void GameEngine::Init(int argc, char *argv[])
     INI ini;
 
     g_theSubsystemList = new SubsystemInterfaceList;
+    g_theSubsystemList->Add_Subsystem(this);
     Init_Random();
     g_theFileSystem = Create_File_System();
     g_theNameKeyGenerator = new NameKeyGenerator;
@@ -83,19 +84,15 @@ void GameEngine::Init(int argc, char *argv[])
     XferCRC xfer;
     xfer.Open("lightCRC");
 
-    g_theLocalFileSystem = Create_Local_File_System();
-    g_theSubsystemList->Init_Subsystem(g_theLocalFileSystem, nullptr, nullptr, nullptr, &xfer, "TheLocalFileSystem");
-    g_theArchiveFileSystem = Create_Archive_File_System();
-    g_theSubsystemList->Init_Subsystem(g_theArchiveFileSystem, nullptr, nullptr, nullptr, &xfer, "TheArchiveFileSystem");
-
-    g_theWriteableGlobalData = new GlobalData;
-    g_theSubsystemList->Init_Subsystem(g_theWriteableGlobalData,
-        "Data/INI/Default/GameData.ini",
-        "Data/INI/GameData.ini",
-        nullptr,
+    Init_Subsystem(g_theLocalFileSystem, "TheLocalFileSystem", Create_Local_File_System());
+    Init_Subsystem(g_theArchiveFileSystem, "TheArchiveFileSystem", Create_Archive_File_System());
+    Init_Subsystem(g_theWriteableGlobalData,
+        "TheWriteableGlobalData",
+        new GlobalData,
         &xfer,
-        "TheWriteableGlobalData");
-
+        "Data/INI/Default/GameData.ini",
+        "Data/INI/GameData.ini");
+    // Worldbuilder loads GameDebugData.ini at this point and has additional debug members of the class.
     Parse_Command_Line(argc, argv);
     g_theGameLODManager = new GameLODManager;
     g_theGameLODManager->Init();
@@ -113,65 +110,57 @@ void GameEngine::Init(int argc, char *argv[])
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
+    
     // Text manager isn't controlled by ini files, it uses either a csf or str file.
-    g_theGameText = GameTextManager::Create_Game_Text_Interface();
-    g_theSubsystemList->Init_Subsystem(g_theGameText, nullptr, nullptr, nullptr, nullptr, "TheGameText");
-
-    g_theScienceStore = new ScienceStore;
-    g_theSubsystemList->Init_Subsystem(
-        g_theScienceStore, "Data/INI/Default/Science.ini", "Data/INI/Science.ini", nullptr, &xfer, "TheScienceStore");
-
-    g_theMultiplayerSettings = new MultiplayerSettings;
-    g_theSubsystemList->Init_Subsystem(g_theMultiplayerSettings,
-        "Data/INI/Default/Multiplayer.ini",
-        "Data/INI/Multiplayer.ini",
-        nullptr,
+    Init_Subsystem(g_theGameText, "TheGameText", GameTextManager::Create_Game_Text_Interface());
+    Init_Subsystem(g_theScienceStore,
+        "TheScienceStore",
+        new ScienceStore,
         &xfer,
-        "TheMultiplayerSettings");
-
-    g_theTerrainTypes = new TerrainTypeCollection;
-    g_theSubsystemList->Init_Subsystem(
-        g_theTerrainTypes, "Data/INI/Default/Terrain.ini", "Data/INI/Terrain.ini", nullptr, &xfer, "TheTerrainTypes");
-
-    g_theTerrainRoads = new TerrainRoadCollection;
-    g_theSubsystemList->Init_Subsystem(
-        g_theTerrainRoads, "Data/INI/Default/Roads.ini", "Data/INI/Roads.ini", nullptr, &xfer, "TheTerrainRoads");
-
-    g_theGlobalLanguage = new GlobalLanguage;
-    g_theSubsystemList->Init_Subsystem(g_theGlobalLanguage, nullptr, nullptr, nullptr, nullptr, "TheGlobalLanguageData");
-
-    g_theAudio = Create_Audio_Manager();
-    g_theSubsystemList->Init_Subsystem(g_theAudio, nullptr, nullptr, nullptr, nullptr, "TheAudio");
+        "Data/INI/Default/Science.ini",
+        "Data/INI/Science.ini");
+    Init_Subsystem(g_theMultiplayerSettings,
+        "TheMultiplayerSettings",
+        new MultiplayerSettings,
+        &xfer,
+        "Data/INI/Default/Multiplayer.ini",
+        "Data/INI/Multiplayer.ini");
+    Init_Subsystem(g_theTerrainTypes,
+        "TheTerrainTypes",
+        new TerrainTypeCollection,
+        &xfer,
+        "Data/INI/Default/Terrain.ini",
+        "Data/INI/Terrain.ini");
+    Init_Subsystem(g_theTerrainRoads,
+        "TheTerrainRoads",
+        new TerrainRoadCollection,
+        &xfer,
+        "Data/INI/Default/Roads.ini",
+        "Data/INI/Roads.ini");
+    Init_Subsystem(g_theGlobalLanguage, "TheGlobalLanguageData", new GlobalLanguage);
+    Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
     if (!g_theAudio->Is_Music_Already_Loaded()) {
         Set_Quitting(true);
     }
 
-    g_theFunctionLexicon = Create_Function_Lexicon();
-    g_theSubsystemList->Init_Subsystem(g_theFunctionLexicon, nullptr, nullptr, nullptr, nullptr, "TheFunctionLexicon");
-
-    g_theModuleFactory = Create_Module_Factory();
-    g_theSubsystemList->Init_Subsystem(g_theModuleFactory, nullptr, nullptr, nullptr, nullptr, "TheModuleFactory");
-
-    g_theMessageStream = Create_Message_Stream();
-    g_theSubsystemList->Init_Subsystem(g_theMessageStream, nullptr, nullptr, nullptr, nullptr, "TheMessageStream");
-
-    g_theSidesList = new SidesList;
-    g_theSubsystemList->Init_Subsystem(g_theSidesList, nullptr, nullptr, nullptr, nullptr, "TheSidesList");
-
-    g_theCaveSystem = new CaveSystem;
-    g_theSubsystemList->Init_Subsystem(g_theCaveSystem, nullptr, nullptr, nullptr, nullptr, "TheCaveSystem");
-
-    g_theRankInfoStore = new RankInfoStore;
-    g_theSubsystemList->Init_Subsystem(g_theRankInfoStore, nullptr, "Data/INI/Rank.ini", nullptr, &xfer, "TheRankInfoStore");
-
-    g_thePlayerTemplateStore = new PlayerTemplateStore;
-    g_theSubsystemList->Init_Subsystem(g_thePlayerTemplateStore,
-        "Data/INI/Default/PlayerTemplate.ini",
-        "Data/INI/PlayerTemplate.ini",
-        nullptr,
+    Init_Subsystem(g_theFunctionLexicon, "TheFunctionLexicon", Create_Function_Lexicon());
+    Init_Subsystem(g_theModuleFactory, "TheModuleFactory", Create_Module_Factory());
+    Init_Subsystem(g_theMessageStream, "TheMessageStream", Create_Message_Stream());
+    Init_Subsystem(g_theSidesList, "TheSidesList", new SidesList);
+    Init_Subsystem(g_theCaveSystem, "TheCaveSystem", new CaveSystem);
+    Init_Subsystem(g_theRankInfoStore,
+        "TheRankInfoStore",
+        new RankInfoStore,
         &xfer,
-        "ThePlayerTemplateStore");
+        nullptr,
+        "Data/INI/Rank.ini");
+    Init_Subsystem(g_thePlayerTemplateStore,
+        "ThePlayerTemplateStore",
+        new PlayerTemplateStore,
+        &xfer,
+        "Data/INI/Default/PlayerTemplate.ini",
+        "Data/INI/PlayerTemplate.ini");
 
     // TODO this is a WIP
 }

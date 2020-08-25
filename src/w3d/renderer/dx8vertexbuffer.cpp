@@ -190,8 +190,9 @@ SortingVertexBufferClass::~SortingVertexBufferClass()
 DX8VertexBufferClass::DX8VertexBufferClass(
     unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags) :
     VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count_, flags)
-#ifdef BUILD_WTIH_D3D8
-    , VertexBuffer(nullptr)
+#ifdef BUILD_WITH_D3D8
+    ,
+    m_vertexBuffer(nullptr)
 #endif
 {
     Create_Vertex_Buffer(usage);

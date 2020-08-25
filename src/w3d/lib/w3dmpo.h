@@ -24,9 +24,8 @@
 class W3DMPO
 {
 public:
-    // I think the glueEnforcer comes from this original is a pure virtual but its always a return 4 in classes that derive
-    // from it so ill just set it here
-    virtual int glueEnforcer() { return 4; };
+    // This enforcer is a checker to make sure a class has been set up correctly with the implement pool macro.
+    virtual int glueEnforcer() = 0;
     virtual ~W3DMPO() {}
 };
 
@@ -49,5 +48,6 @@ public: \
     void *operator new(size_t size, void *dst) { return dst; } \
     void operator delete(void *p, void *q) {} \
     void operator delete(void *ptr) { return Free_From_Pool(Get_Class_Pool(), ptr); } \
+    virtual int glueEnforcer() { return 4; }; \
 \
 private:

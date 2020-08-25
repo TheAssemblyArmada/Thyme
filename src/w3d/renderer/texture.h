@@ -94,7 +94,6 @@ public:
     virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
     virtual void Apply(unsigned stage) override;
     virtual TextureClass *As_Texture() override { return this; }
-    virtual int glueEnforcer() { return 4; };
 
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);

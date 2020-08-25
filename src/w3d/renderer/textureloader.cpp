@@ -516,7 +516,7 @@ void TextureLoader::Begin_Load_And_Queue(TextureLoadTaskClass *task)
 void TextureLoader::Load_Thumbnail(TextureBaseClass *texture)
 {
     const StringClass *name = texture->Get_Full_Path().Is_Empty() ? &texture->Get_Name() : &texture->Get_Full_Path();
-    w3dtexture_t tex = Load_Thumbnail(*name, texture->Get_Recolor());
+    w3dtexture_t tex = Load_Thumbnail(*name, texture->Get_HSV_Shift());
     texture->Apply_New_Surface(tex, false, false);
 #ifdef BUILD_WITH_D3D8
     tex->Release();

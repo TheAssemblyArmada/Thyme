@@ -23,6 +23,7 @@ class SoundManager : public SubsystemInterface
 {
 public:
     virtual void Init() override {}
+    virtual void PostProcessLoad() override {}
     virtual void Reset() override;
     virtual void Update() override {}
     virtual void Lose_Focus() {}

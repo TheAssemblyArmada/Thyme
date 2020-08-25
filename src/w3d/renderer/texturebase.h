@@ -78,7 +78,7 @@ public:
     }
     void Set_Platform_Base_Texture(w3dbasetexture_t tex);
     void Set_Texture_Name(const char *name) { m_name = name; }
-    void Set_Recolor(const Vector3 &shift);
+    void Set_HSV_Shift(const Vector3 &shift);
     unsigned Get_Reduction() const;
     void Load_Locked_Surface();
     bool Is_Missing_Texture() const;
@@ -88,7 +88,7 @@ public:
     TextureLoadTaskClass *Get_Thumbnail_Load_Task() { return m_thumbnailTextureLoadTask; }
     const StringClass &Get_Full_Path() const { return m_fullPath; }
     const StringClass &Get_Name() const { return m_name; }
-    const Vector3 &Get_Recolor() const { return m_hsvShift; }
+    const Vector3 &Get_HSV_Shift() const { return m_hsvShift; }
     bool Is_Initialized() const { return m_initialized; }
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
 

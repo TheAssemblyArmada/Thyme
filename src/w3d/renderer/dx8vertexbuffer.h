@@ -164,6 +164,7 @@ private:
 
 class SortingVertexBufferClass : public VertexBufferClass
 {
+    IMPLEMENT_W3D_POOL(SortingVertexBufferClass)
     ALLOW_HOOKING
 public:
     SortingVertexBufferClass(unsigned short VertexCount);

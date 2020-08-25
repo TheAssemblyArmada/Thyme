@@ -71,6 +71,7 @@ set(GAMEENGINE_SRC
     game/client/image.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/system/debugdisplay.cpp
     game/client/system/rayeffect.cpp
     game/client/system/particlesystem/particle.cpp
     game/client/system/particlesystem/particleinfo.cpp
@@ -180,6 +181,7 @@ set(GAMEENGINE_SRC
     platform/win32bigfilesystem.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/bufffileclass.cpp

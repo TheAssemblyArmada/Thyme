@@ -89,6 +89,7 @@
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
+#include "w3ddebugdisplay.h"
 #include "w3dfilesystem.h"
 #include "w3droadbuffer.h"
 #include "weapon.h"
@@ -1023,4 +1024,12 @@ void Setup_Hooks()
     Hook_Method(0x006DF600, &WinInstanceData::Set_Tooltip_Text);
     Hook_Method(0x004F93E0, &WinInstanceData::Get_Tooltip_Text);
     Hook_Method(0x006DF700, &WinInstanceData::Set_VideoBuffer);
+
+    // w3ddebugdisplay.h
+    Hook_Method(0x007F5CD0, &W3DDebugDisplay::Hook_Printf);
+    Hook_Method(0x007F5C70, &W3DDebugDisplay::Hook_Reset);
+    Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Ctor);
+    Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Draw_Text);
+    Hook_Method(0x00763A20, &W3DDebugDisplay::Init);
+    Hook_Method(0x00763B50, &W3DDebugDisplay::Set_Font);
 }

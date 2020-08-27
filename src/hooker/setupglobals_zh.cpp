@@ -417,3 +417,7 @@ W3DAssetManager *&W3DAssetManager::s_theInstance = Make_Global<W3DAssetManager *
 //baseheightmap.cpp
 #include "baseheightmap.h"
 BaseHeightMapRenderObjClass *&g_theTerrainRenderObject = Make_Global<BaseHeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3ABC8, 0x00E1A5F4));
+
+//mapboject.cpp
+#include "mapobject.h"
+MapObject *&g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));

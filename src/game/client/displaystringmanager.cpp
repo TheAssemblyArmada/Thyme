@@ -15,7 +15,7 @@
 #include "displaystringmanager.h"
 
 #ifndef GAME_DLL
-DisplayStringManager *g_theDisplayStringManger = nullptr;
+DisplayStringManager *g_theDisplayStringManager = nullptr;
 #endif
 
 /**

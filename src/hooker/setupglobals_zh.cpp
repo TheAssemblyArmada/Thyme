@@ -27,7 +27,7 @@ WeatherSetting *&g_theWeatherSetting = Make_Global<WeatherSetting *>(PICK_ADDRES
 
 // displaystringmanager.cpp
 class DisplayStringManager;
-DisplayStringManager *&g_theDisplayStringManger = Make_Global<DisplayStringManager *>(PICK_ADDRESS(0x00A2A6C4, 0x00A2A6C4));
+DisplayStringManager *&g_theDisplayStringManager = Make_Global<DisplayStringManager *>(PICK_ADDRESS(0x00A2A6C4, 0x00A2A6C4));
 
 // gameclient.cpp
 class GameClient;

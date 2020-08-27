@@ -138,13 +138,13 @@ Mouse::Mouse() :
 Mouse::~Mouse()
 {
     if (m_tooltipDisplayString != nullptr) {
-        g_theDisplayStringManger->Free_Display_String(m_tooltipDisplayString);
+        g_theDisplayStringManager->Free_Display_String(m_tooltipDisplayString);
     }
 
     m_tooltipDisplayString = nullptr;
 
     if (m_cursorTextDisplayString != nullptr) {
-        g_theDisplayStringManger->Free_Display_String(m_cursorTextDisplayString);
+        g_theDisplayStringManager->Free_Display_String(m_cursorTextDisplayString);
     }
 
     m_cursorTextDisplayString = nullptr;
@@ -177,7 +177,7 @@ void Mouse::Init()
     m_inputMovesAbsolute = 0;
     m_eventCount = 0;
     m_currentCursor = CURSOR_ARROW;
-    m_cursorTextDisplayString = g_theDisplayStringManger->New_Display_String();
+    m_cursorTextDisplayString = g_theDisplayStringManager->New_Display_String();
 }
 
 /**

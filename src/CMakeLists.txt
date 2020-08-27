@@ -51,6 +51,7 @@ set(GAMEENGINE_SRC
     game/force_nocd.cpp
     game/maputil.cpp
     game/weather.cpp
+    game/client/baseheightmap.cpp
     game/client/crashpreferences.cpp
     game/client/display.cpp
     game/client/displaystring.cpp

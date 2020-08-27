@@ -21,6 +21,8 @@ int ShaderManager::Get_Shader_Passes(ShaderTypes shader)
 {
 #ifdef GAME_DLL
     return Call_Function<int, ShaderTypes>(PICK_ADDRESS(0x0074E140, 0x00613479), shader);
+#else
+    return 0;
 #endif
 }
 
@@ -28,6 +30,8 @@ int ShaderManager::Set_Shader(ShaderTypes shader, int pass)
 {
 #ifdef GAME_DLL
     return Call_Function<int, ShaderTypes, int>(PICK_ADDRESS(0x0074E150, 0x00613488), shader, pass);
+#else
+    return 0;
 #endif
 }
 

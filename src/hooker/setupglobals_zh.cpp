@@ -412,4 +412,8 @@ ARRAY_DEF(PICK_ADDRESS(0x00A3AB20, 0x00E1A7C8), TextureClass *, ShaderManager::s
 
 // assetmgr.cpp
 #include "assetmgr.h"
-W3DAssetManager *&s_theInstance = Make_Global<W3DAssetManager *>(PICK_ADDRESS(0x00A4C1F4, 0x00DE8F84));
+W3DAssetManager *&W3DAssetManager::s_theInstance = Make_Global<W3DAssetManager *>(PICK_ADDRESS(0x00A4C1F4, 0x00DE8F84));
+
+//baseheightmap.cpp
+#include "baseheightmap.h"
+BaseHeightMapRenderObjClass *&g_theTerrainRenderObject = Make_Global<BaseHeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3ABC8, 0x00E1A5F4));

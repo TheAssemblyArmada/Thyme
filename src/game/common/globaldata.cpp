@@ -442,7 +442,7 @@ GlobalData::GlobalData()
     m_featherWater = 0.0f;
     m_showSoftWaterEdge = true;
     m_useWaveEditor = false;
-    m_unkBool7 = false;
+    m_unsortedShoreLines = false;
     m_showMetrics = false;
 
     // Set defaults for water effects.

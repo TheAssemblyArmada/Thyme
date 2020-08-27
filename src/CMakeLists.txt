@@ -60,10 +60,10 @@ set(GAMEENGINE_SRC
     game/client/gametext.cpp
     game/client/globallanguage.cpp
     game/client/optionpreferences.cpp
+    game/client/shadermanager.cpp
     game/client/terrainroads.cpp
     game/client/view.cpp
     game/client/water.cpp
-    game/client/shadermanager.cpp
     game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
@@ -207,6 +207,7 @@ set(GAMEENGINE_SRC
     w3d/math/quaternion.cpp
     w3d/math/tri.cpp
     w3d/math/vp.cpp
+    w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
     w3d/renderer/boxrobj.cpp
     w3d/renderer/colorspace.cpp

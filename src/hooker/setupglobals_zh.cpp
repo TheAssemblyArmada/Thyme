@@ -409,3 +409,7 @@ DrawGroupInfo *&g_theDrawGroupInfo = Make_Global<DrawGroupInfo *>(PICK_ADDRESS(0
 // shadermanager.cpp
 #include "shadermanager.h"
 ARRAY_DEF(PICK_ADDRESS(0x00A3AB20, 0x00E1A7C8), TextureClass *, ShaderManager::s_textures, MAX_TEXTURE_STAGES);
+
+// assetmgr.cpp
+#include "assetmgr.h"
+W3DAssetManager *&s_theInstance = Make_Global<W3DAssetManager *>(PICK_ADDRESS(0x00A4C1F4, 0x00DE8F84));

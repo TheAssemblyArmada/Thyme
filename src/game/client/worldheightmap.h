@@ -88,10 +88,10 @@ private:
     char *m_data;
     unsigned char *m_siesmicUpdateFlags;
     int m_siesmicUpdateWidth;
-    float *m_siesmicZVelocities;
+    float *m_siesmicZVelocitie;
     char *m_cellFlipState;
-    int m_stateWidth;
-    unsigned char *m_cliffStates;
+    int m_flipStateWidth;
+    unsigned char *m_cliffState;
     short *m_tileNdxes;
     short *m_blendTileNdxes;
     short *m_cliffInfoNdxes;
@@ -101,8 +101,8 @@ private:
     int m_numBlendedTiles;
     TileData *m_sourceTiles[1024];
     TileData *m_edgeTiles[1024];
-    TBlendTileInfo m_blendedTiles[8096];
-    TBlendTileInfo m_extraBlendedTiles[8096];
+    TBlendTileInfo m_blendedTiles[16192];
+    TBlendTileInfo m_extraBlendedTiles[16192];
     TCliffInfo m_cliffInfo[32384];
     int m_numCliffInfo;
     int m_numTextureClasses;

@@ -25,7 +25,7 @@ class WorldHeightMap;
 class RenderObjClass;
 struct VertexFormatXYZDUV1;
 class CameraClass;
-struct IRegion2D;
+class IRegion2D;
 
 class RoadType
 {

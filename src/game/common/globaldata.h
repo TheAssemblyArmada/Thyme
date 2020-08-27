@@ -155,9 +155,9 @@ public:
     float m_gravity;
     float m_stealthFriendlyOpacity;
     uint32_t m_defaultOcclusionDelay;
-    bool m_unkBool12;
-    bool m_unkBool13;
-    bool m_unkBool14;
+    bool m_preloadAssets;
+    bool m_preloadEverything;
+    bool m_logAssets;
     // char pad[1]
     float m_partitionCellSize;
     Coord3D m_ammoPipWorldOffset;
@@ -188,11 +188,7 @@ public:
     RGBColor m_terrainAmbient[LIGHT_COUNT];
     RGBColor m_terrainDiffuse[LIGHT_COUNT];
     Coord3D m_terrainLightPos[LIGHT_COUNT];
-    float m_unkFloat2;
-    float m_infantryLightMorningScale;
-    float m_infantryLightAfternoonScale;
-    float m_infantryLightEveningScale;
-    float m_infantryLightNightScale;
+    float m_infantryLight[TIME_OF_DAY_COUNT];
     float m_infantryLightOverride; // Based on ScriptAction::doSetInfantryLightingOverride
     float m_easySoloHumanHealthBonus;
     float m_normalSoloHumanHealthBonus;
@@ -221,16 +217,22 @@ public:
     bool m_showClientPhysics;
     bool m_showTerrainNormals;
     // char pad[2]
-    float m_unkFloat4;
+    int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int.
     int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
-    bool m_unkBool8;
+    bool m_logSupplyCenterPlacement;
     bool m_debugObstacleAI;
     bool m_showObjectHealth;
     bool m_scriptDebug; // Requires DebugWindow.dll to do anything
     bool m_particleEdit; // Requires ParticleEditor.dll to do anything
     bool m_displayDebug; // not 100% sure and needs confirming
     bool m_winCursors;
-    bool m_unkBool9;
+    bool m_constantDebugUpdate;
+#ifdef GAME_DEBUG_STRUCTS
+    bool m_doStatDump;
+    bool m_doStats;
+    bool m_altDoStats;
+    uint32_t m_statsInterval;
+#endif
     bool m_benchMark;
     bool m_writeBenchMarkFile;
     // char pad[2]
@@ -284,14 +286,14 @@ public:
     float m_scrollAmountCutoff;
     float m_cameraAdjustSpeed;
     bool m_enforceMaxCameraHeight;
-    bool m_buildMapCache; // not 100% sure, needs confirming
+    bool m_buildMapCache;
     // char pad[2]
-    Utf8String m_initialFile; // not 100% sure, needs confirming
-    Utf8String m_pendingFile; // not 100% sure, needs confirming
+    Utf8String m_initialFile;
+    Utf8String m_pendingFile;
     int32_t m_maxParticleCount;
     int32_t m_maxFieldParticleCount;
-    WeaponBonusSet *m_weaponBonusSetPtr;
-    float m_unkFloat5;
+    WeaponBonusSet *m_weaponBonusSet;
+    float m_normalHealthBonus;
     float m_veteranHealthBonus;
     float m_eliteHealthBonus;
     float m_heroicHealthBonus;
@@ -327,8 +329,8 @@ public:
     float m_groupMoveClickToGatherAreaFactor;
     int32_t m_antiAliasBoxValue; // could be float
     bool m_languageFilter;
-    bool m_unkBool20;
-    bool m_unkBool21;
+    bool m_loadScreenDemo;
+    bool m_demoToggleRender;
     bool m_saveCameraInReplays;
     bool m_useCameraInReplays;
     // char pad[3]
@@ -351,7 +353,7 @@ public:
     bool m_showMetrics;
     // char pad[3]
     Money m_defaultStartingCash;
-    bool m_unkBool22;
+    bool m_showFrameRateBar;
     // char pad[3]
     int32_t m_powerBarBase;
     float m_powerBarIntervals;
@@ -377,7 +379,62 @@ public:
     int32_t m_networkDisconnectScreenNotifyTime;
     float m_keyboardCameraRotateSpeed;
     int32_t m_playerStats;
-    bool m_unkBool24;
+    bool m_demoToggleSpecialPowerDelays;
+#ifdef GAME_DEBUG_STRUCTS
+    bool m_TiVOFastMode;
+    bool m_wireframe;
+    bool m_stateMachineDebug;
+    bool m_useCameraConstraints;
+    bool m_shroudOn;
+    bool m_fogOfWarOn;
+    bool m_jabberOn;
+    bool m_munkeeOn;
+    bool m_selectTheUnselectable;
+    bool m_disableCameraFade;
+    bool m_disableScriptedInputDisabling;
+    bool m_disableMilitaryCaption;
+    // pad[3]
+    int32_t m_benchmarkTimer; // Type to confirm.
+    bool m_checkMemoryLeaks;
+    bool m_vTune;
+    bool m_cameraDebug;
+    bool m_debugVisibility;
+    int32_t m_debugVisibilityTileCount; // Type to confirm.
+    int32_t m_debugVisibilityTileWidth; // Type to confirm.
+    int32_t m_debugVisibilityTileDuration; // Type to confirm.
+    bool m_debugMapThreat;
+    // pad[3]
+    int32_t m_maxDebugThreatMapValue; // Type to confirm.
+    int32_t m_debugThreatMapTileDuration;  // Type to confirm.
+    bool m_debugMapCash;
+    // pad[3]
+    int32_t m_maxDebugCashValueMapValue; // Type to confirm.
+    int32_t m_debugCashValueMapTileDuration; // Type to confirm.
+    RGBColor m_debugVisibilityTileTargettableColor;
+    RGBColor m_debugVisibilityTileDeshroudColor;
+    RGBColor m_debugVisibilityTileGapColor;
+    bool m_debugProjectilePath;
+    // pad[3]
+    int32_t m_debugProjectileTileWidth; // Type to confirm.
+    int32_t m_debugProjectileTileDuration; // Type to confirm.
+    RGBColor m_debugProjectileTileColor;
+    bool m_ignoreAsserts;
+    bool m_ignoreStackTrace;
+    bool m_showCollisionExtents;
+    bool m_showAudioLocations;
+    bool m_saveStats;
+    bool m_saveAllStats;
+    bool m_useLocalMOTD;
+    // pad[1]
+    Utf8String m_baseStatsDir;
+    Utf8String m_localMOTDPath;
+    int32_t m_latencyAverage; // Type to confirm.
+    int32_t m_latencyAmplitude; // Type to confirm.
+    int32_t m_latencyPeriod; // Type to confirm.
+    int32_t m_latencyNoise; // Type to confirm.
+    int32_t m_packetLoss; // Type to confirm.
+    bool m_extraLogging; // Type to confirm.
+#endif
     bool m_unkBool25;
     bool m_unkBool26;
     // char pad[1]

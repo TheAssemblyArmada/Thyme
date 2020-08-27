@@ -388,7 +388,7 @@ GlobalData::GlobalData()
     m_mapName.Clear();
     m_moveHintName.Clear();
     m_next = nullptr;
-    m_unkBool24 = false;
+    m_demoToggleSpecialPowerDelays = false;
     m_playerStats = -1;
     m_setMinVertextBufferSize = false;
     m_useTrees = false;
@@ -428,7 +428,7 @@ GlobalData::GlobalData()
     m_particleEdit = false;
     m_displayDebug = false;
     m_winCursors = true;
-    m_unkBool9 = false;
+    m_constantDebugUpdate = false;
     m_benchMark = false;
     m_fixedSeed = -1;
     m_horizontalScrollSpeedFactor = 1.0f;
@@ -529,10 +529,10 @@ GlobalData::GlobalData()
         }
     }
 
-    m_infantryLightMorningScale = 1.5f;
-    m_infantryLightAfternoonScale = 1.5f;
-    m_infantryLightEveningScale = 1.5f;
-    m_infantryLightNightScale = 1.5f;
+    m_infantryLight[TIME_OF_DAY_MORNING] = 1.5f;
+    m_infantryLight[TIME_OF_DAY_AFTERNOON] = 1.5f;
+    m_infantryLight[TIME_OF_DAY_EVENING] = 1.5f;
+    m_infantryLight[TIME_OF_DAY_NIGHT] = 1.5f;
     m_infantryLightOverride = -1.0f;
     m_numberGlobalLights = LIGHT_COUNT;
     m_maxRoadSegments = 0;
@@ -553,7 +553,7 @@ GlobalData::GlobalData()
     m_unkInt7 = 512;
     m_occludedColorLuminanceScale = 0.5f;
     m_useFX = true;
-    m_unkFloat4 = 0;
+    m_frameToJumpTo = 0;
     m_particleScale = 1.0f;
     m_autoFireParticleSmallMax = 0;
     m_autoFireParticleMediumMax = 0;
@@ -582,7 +582,7 @@ GlobalData::GlobalData()
     m_maxParticleCount = 0;
     m_maxFieldParticleCount = 30;
     m_debugAI = false;
-    m_unkBool8 = false;
+    m_logSupplyCenterPlacement = false;
     m_debugObstacleAI = false;
     m_showClientPhysics = true;
     m_showTerrainNormals = false;
@@ -601,9 +601,9 @@ GlobalData::GlobalData()
     m_gravity = -1.0f;
     m_stealthFriendlyOpacity = 0.5f;
     m_defaultOcclusionDelay = 90;
-    m_unkBool12 = false;
-    m_unkBool13 = false;
-    m_unkBool14 = false;
+    m_preloadAssets = false;
+    m_preloadEverything = false;
+    m_logAssets = false;
     m_netMinPlayers = 1;
     m_lanIPAddress = 0;
     m_buildSpeed = 0.0f;
@@ -658,11 +658,11 @@ GlobalData::GlobalData()
     m_sendDelay = 0;
     m_firewallPortOverrides = 0;
     m_firewallPortAllocationDelta = 0;
-    m_unkBool20 = false;
-    m_unkBool21 = false;
+    m_loadScreenDemo = false;
+    m_demoToggleRender = false;
     m_saveCameraInReplays = false;
     m_useCameraInReplays = false;
-    m_unkBool22 = false;
+    m_showFrameRateBar = false;
     m_unlookPersistDuration = 30;
     m_networkFPSHistoryLength = 30;
     m_networkLatencyHistoryLength = 200;
@@ -687,7 +687,7 @@ GlobalData::GlobalData()
     m_buildMapCache = false;
     m_initialFile.Clear();
     m_pendingFile.Clear();
-    m_unkFloat5 = 1.0f;
+    m_normalHealthBonus = 1.0f;
     m_veteranHealthBonus = 1.0f;
     m_eliteHealthBonus = 1.0f;
     m_heroicHealthBonus = 1.0f;
@@ -698,11 +698,11 @@ GlobalData::GlobalData()
     m_normalSoloAIHealthBonus = 1.0f;
     m_hardSoloAIHealthBonus = 1.0f;
     m_defaultStructureRubbleHeight = 1.0f;
-    m_weaponBonusSetPtr = new WeaponBonusSet;
+    m_weaponBonusSet = new WeaponBonusSet;
 
     for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; ++i) {
         for (int j = 0; j < WeaponBonus::COUNT; ++j) {
-            m_weaponBonusSetPtr->m_bonus[i].field[j] = 1.0f;
+            m_weaponBonusSet->m_bonus[i].field[j] = 1.0f;
         }
     }
 

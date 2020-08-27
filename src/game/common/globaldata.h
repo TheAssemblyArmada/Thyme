@@ -120,7 +120,7 @@ public:
     int32_t m_waterType;
     bool m_showSoftWaterEdge;
     bool m_useWaveEditor;
-    bool m_unkBool7;
+    bool m_unsortedShoreLines;
     // char pad[1]
     float m_featherWater;
     Utf8String m_vertexWaterAvailableMaps[4];

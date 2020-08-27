@@ -14,7 +14,7 @@
  */
 #include "shadermanager.h"
 #ifndef GAME_DLL
-TextureClass *DX8Wrapper::s_textures[MAX_TEXTURE_STAGES];
+TextureClass *ShaderManager::s_textures[MAX_TEXTURE_STAGES];
 #endif
 
 int ShaderManager::Get_Shader_Passes(ShaderTypes shader)

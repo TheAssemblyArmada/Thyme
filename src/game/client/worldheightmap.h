@@ -33,14 +33,14 @@ public:
 
 struct TBlendTileInfo
 {
-    int blendNdx;
+    int blend_ndx;
     char horiz;
     char vert;
-    char rightDiagonal;
-    char leftDiagonal;
+    char right_diagonal;
+    char left_diagonal;
     char inverted;
-    char longDiagonal;
-    int customBlendEdgeClass;
+    char long_diagonal;
+    int custom_blend_edge_class;
 };
 
 struct TCliffInfo
@@ -55,18 +55,18 @@ struct TCliffInfo
     float v3;
     int flip;
     int mutant;
-    short tileIndex;
+    short tile_index;
 };
 
 struct TXTextureClass
 {
-    int globalTextureClass;
-    int firstTile;
-    int numTiles;
+    int global_texture_class;
+    int first_tile;
+    int num_tiles;
     int width;
-    int isBlendEdgeTile;
+    int is_blend_edge_tile;
     Utf8String name;
-    ICoord2D positionInTexture;
+    ICoord2D position_in_texture;
 };
 
 class WorldHeightMap : public RefCountClass, public WorldHeightMapInterfaceClass

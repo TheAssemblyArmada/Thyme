@@ -177,9 +177,10 @@ public:
     friend bool operator>(Utf16String const &left, const unichar_t *right) { return left.Compare(right) > 0; }
     friend bool operator>(const unichar_t *left, Utf16String const &right) { return right.Compare(left) > 0; }
 
-private:
-    static Utf16String const EmptyString;
+public:
+    static Utf16String const s_emptyString;
 
+private:
     UnicodeStringData *m_data;
 };
 

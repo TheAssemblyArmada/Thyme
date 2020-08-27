@@ -26,7 +26,7 @@
 SimpleCriticalSectionClass *g_unicodeStringCriticalSection = nullptr;
 #endif
 
-Utf16String const Utf16String::EmptyString;
+Utf16String const Utf16String::s_emptyString;
 
 Utf16String::Utf16String(const unichar_t *s) : m_data(nullptr)
 {

@@ -63,6 +63,7 @@ set(GAMEENGINE_SRC
     game/client/terrainroads.cpp
     game/client/view.cpp
     game/client/water.cpp
+    game/client/shadermanager.cpp
     game/client/gui/gamefont.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp

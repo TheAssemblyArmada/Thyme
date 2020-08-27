@@ -42,7 +42,7 @@ private:
 };
 
 #ifdef GAME_DLL
-extern DisplayStringManager *&g_theDisplayStringManger;
+extern DisplayStringManager *&g_theDisplayStringManager;
 #else
-extern DisplayStringManager *g_theDisplayStringManger;
+extern DisplayStringManager *g_theDisplayStringManager;
 #endif

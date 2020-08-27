@@ -369,7 +369,7 @@ protected:
     RenderObjUnk *m_unknown;
 };
 
-const SphereClass &RenderObjClass::Get_Bounding_Sphere() const
+inline const SphereClass &RenderObjClass::Get_Bounding_Sphere() const
 {
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();
@@ -378,7 +378,7 @@ const SphereClass &RenderObjClass::Get_Bounding_Sphere() const
     return m_cachedBoundingSphere;
 }
 
-const AABoxClass &RenderObjClass::Get_Bounding_Box() const
+inline const AABoxClass &RenderObjClass::Get_Bounding_Box() const
 {
     if (!(m_bits & BOUNDING_VOLUMES_VALID)) {
         Update_Cached_Bounding_Volumes();
@@ -387,7 +387,7 @@ const AABoxClass &RenderObjClass::Get_Bounding_Box() const
     return m_cachedBoundingBox;
 }
 
-float Bound_Degrees(float angle)
+inline float Bound_Degrees(float angle)
 {
     while (angle > 359) {
         angle -= 360;
@@ -400,37 +400,37 @@ float Bound_Degrees(float angle)
     return angle;
 }
 
-const Matrix3D &RenderObjClass::Get_Transform() const
+inline const Matrix3D &RenderObjClass::Get_Transform() const
 {
     Validate_Transform();
     return m_transform;
 }
 
-const Matrix3D &RenderObjClass::Get_Transform(bool &is_transform_identity) const
+inline const Matrix3D &RenderObjClass::Get_Transform(bool &is_transform_identity) const
 {
     Validate_Transform();
     is_transform_identity = m_isTransformIdentity;
     return m_transform;
 }
 
-bool RenderObjClass::Is_Transform_Identity() const
+inline bool RenderObjClass::Is_Transform_Identity() const
 {
     Validate_Transform();
     return m_isTransformIdentity;
 }
 
-const Matrix3D &RenderObjClass::Get_Transform_No_Validity_Check() const
+inline const Matrix3D &RenderObjClass::Get_Transform_No_Validity_Check() const
 {
     return m_transform;
 }
 
-const Matrix3D &RenderObjClass::Get_Transform_No_Validity_Check(bool &is_transform_identity) const
+inline const Matrix3D &RenderObjClass::Get_Transform_No_Validity_Check(bool &is_transform_identity) const
 {
     is_transform_identity = m_isTransformIdentity;
     return m_transform;
 }
 
-bool RenderObjClass::Is_Transform_Identity_No_Validity_Check() const
+inline bool RenderObjClass::Is_Transform_Identity_No_Validity_Check() const
 {
     return m_isTransformIdentity;
 }

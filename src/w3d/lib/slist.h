@@ -61,8 +61,8 @@ class SList
 public:
     SList()
     {
-        HeadNode = nullptr;
-        TailNode = nullptr;
+        m_headNode = nullptr;
+        m_tailNode = nullptr;
     };
     virtual ~SList() { Remove_All(); };
     SLNode<T> *Head() const;
@@ -82,6 +82,6 @@ public:
     virtual long Get_Count() const;
 
 private:
-    SLNode<T> *HeadNode;
-    SLNode<T> *TailNode;
+    SLNode<T> *m_headNode;
+    SLNode<T> *m_tailNode;
 };

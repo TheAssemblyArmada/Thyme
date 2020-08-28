@@ -88,7 +88,7 @@ private:
     char *m_data;
     unsigned char *m_siesmicUpdateFlags;
     int m_siesmicUpdateWidth;
-    float *m_siesmicZVelocitie;
+    float *m_siesmicZVelocity;
     char *m_cellFlipState;
     int m_flipStateWidth;
     unsigned char *m_cliffState;

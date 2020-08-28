@@ -41,15 +41,15 @@ public:
         ST_MAX,
     };
 
-    static void Set_Texture(int index, TextureClass *texture) { s_textures[index] = texture; }
+    static void Set_Texture(int index, TextureBaseClass *texture) { s_textures[index] = texture; }
     static int Get_Shader_Passes(ShaderTypes shader);
     static int Set_Shader(ShaderTypes shader, int pass);
     static void Reset_Shader(ShaderTypes shader);
 
 private:
 #ifdef GAME_DLL
-    static ARRAY_DEC(TextureClass *, s_textures, MAX_TEXTURE_STAGES);
+    static ARRAY_DEC(TextureBaseClass *, s_textures, MAX_TEXTURE_STAGES);
 #else
-    static TextureClass *s_textures[MAX_TEXTURE_STAGES];
+    static TextureBaseClass *s_textures[MAX_TEXTURE_STAGES];
 #endif
 };

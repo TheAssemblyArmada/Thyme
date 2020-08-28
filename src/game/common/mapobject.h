@@ -58,7 +58,7 @@ private:
     int m_color;
     RenderObjClass *m_renderObj;
     Shadow *m_shadowObj;
-    RenderObjClass *m_bridgeRenderObjects[4];
+    RenderObjClass *m_bridgeRenderObj[4];
     int m_runtimeFlags;
 #ifdef GAME_DLL
     static MapObject *&g_theMapObjectListPtr;

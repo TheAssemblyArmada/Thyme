@@ -16,21 +16,28 @@
 #include "always.h"
 #include "texture.h"
 #include "dx8wrapper.h"
-class ShaderManager
+class W3DShaderManager
 {
 public:
     enum ShaderTypes
     {
         ST_INVALID,
-        ST_TERRAIN_BASE,
-        ST_TERRAIN_BASE_NOISE1,
-        ST_TERRAIN_BASE_NOISE2,
-        ST_TERRAIN_BASE_NOISE12,
+        ST_TERRAIN,
+        ST_TERRAIN_NOISE1,
+        ST_TERRAIN_NOISE2,
+        ST_TERRAIN_NOISE12,
         ST_SHROUD_TEXTURE,
-        ST_ROAD_BASE,
-        ST_ROAD_BASE_NOISE1,
-        ST_ROAD_BASE_NOISE2,
-        ST_ROAD_BASE_NOISE12,
+        ST_MASK_TEXTURE,
+        ST_ROAD,
+        ST_ROAD_NOISE1,
+        ST_ROAD_NOISE2,
+        ST_ROAD_NOISE12,
+        ST_CLOUD_TEXTURE,
+        ST_FLAT_TERRAIN,
+        ST_FLAT_TERRAIN_NOISE1,
+        ST_FLAT_TERRAIN_NOISE2,
+        ST_FLAT_TERRAIN_NOISE12,
+        ST_FLAT_SHROUD_TEXTURE,
         ST_MAX,
     };
 

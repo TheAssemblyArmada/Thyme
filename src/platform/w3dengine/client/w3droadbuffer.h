@@ -115,7 +115,12 @@ public :
     int Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int num_to_copy);
     int Get_Indices(unsigned short *destination_ib, int num_to_copy, int offset);
     void Update_Seg_Lighting();
-    void Flip();
+    void Flip()
+    {
+        TRoadPt temp = m_pt1;
+        m_pt1 = m_pt2;
+        m_pt2 = temp;
+    }
 
     TRoadPt m_pt1;
     TRoadPt m_pt2;

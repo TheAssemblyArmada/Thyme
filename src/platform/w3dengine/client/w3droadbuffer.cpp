@@ -20,6 +20,8 @@
 #include "dx8wrapper.h"
 #include "assetmgr.h"
 #include "globaldata.h"
+#include "baseheightmap.h"
+#include "worldheightmap.h"
 
 bool g_dynamic;
 
@@ -68,5 +70,125 @@ void RoadType::Load_Test_Texture()
             m_roadTexture->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);
             m_roadTexture->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);
         }
+    }
+}
+
+RoadSegment::RoadSegment() :
+    m_curveRadius(0),
+    m_type(SEGMENT),
+    m_scale(1),
+    m_widthInTexture(1),
+    m_uniqueID(0),
+    m_isVisible(0),
+    m_numVertex(0),
+    m_vb(nullptr),
+    m_numIndex(0),
+    m_ib(nullptr),
+    m_Bounds(Vector3(0, 0, 0), 1)
+{
+}
+
+RoadSegment::~RoadSegment()
+{
+    m_numVertex = 0;
+
+    if (m_vb != nullptr) {
+        delete[] m_vb;
+        m_vb = nullptr;
+    }
+
+    m_numIndex = 0;
+
+    if (m_ib != nullptr) {
+        delete[] m_ib;
+        m_ib = nullptr;
+    }
+}
+
+void RoadSegment::Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex)
+{
+    if (m_vb != nullptr) {
+        delete[] m_vb;
+        m_vb = nullptr;
+        m_numVertex = 0;
+    }
+
+    Vector3 pos[500];
+
+    if (num_vertex >= 1 && num_vertex <= 500) {
+        m_vb = new VertexFormatXYZDUV1[num_vertex];
+
+        if (m_vb != nullptr) {
+            m_numVertex = num_vertex;
+            memcpy(m_vb, vb, num_vertex * sizeof(VertexFormatXYZDUV1));
+
+            for (int i = 0; i < num_vertex; i++) {
+                pos[i].X = m_vb[i].x;
+                pos[i].Y = m_vb[i].y;
+                pos[i].Z = m_vb[i].z;
+            }
+
+            m_Bounds = SphereClass(pos, num_vertex);
+        }
+    }
+}
+
+void RoadSegment::Set_Index_Buffer(unsigned short *ib, int num_index)
+{
+    if (m_ib != nullptr) {
+        delete[] m_ib;
+        m_ib = nullptr;
+        m_numIndex = 0;
+    }
+
+    if (num_index >= 1 && num_index <= 2000) {
+        m_ib = new unsigned short[num_index];
+
+        if (m_ib != nullptr) {
+            m_numIndex = num_index;
+            memcpy(m_ib, ib, num_index * sizeof(unsigned short));
+        }
+    }
+}
+
+int RoadSegment::Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int num_to_copy) 
+{
+    if (m_vb == nullptr || num_to_copy < 1) {
+        return 0;
+    }
+
+    if (num_to_copy > m_numVertex) {
+        return 0;
+    }
+
+    memcpy(destination_vb, m_vb, num_to_copy * sizeof(VertexFormatXYZDUV1));
+    return num_to_copy;
+}
+
+int RoadSegment::Get_Indices(unsigned short *destination_ib, int num_to_copy, int offset)
+{
+    if (m_ib == nullptr || num_to_copy < 1) {
+        return 0;
+    }
+
+    if (num_to_copy > m_numIndex) {
+        return 0;
+    }
+
+    for (int i = 0; i < num_to_copy; i++) {
+        destination_ib[i] = offset + m_ib[i];
+    }
+
+    return num_to_copy;
+}
+
+void RoadSegment::Update_Seg_Lighting()
+{
+    int size = g_theTerrainRenderObject->Get_Map()->Get_Border_Size();
+
+    for (int i = 0; i < m_numVertex; i++) {
+        m_vb[i].diffuse = g_theTerrainRenderObject->Get_Static_Diffuse(
+                              size + (int)(m_vb[i].x / 10.0f + 0.5), size + (int)(m_vb[i].x / 10.0f + 0.5))
+            | 0xFF000000;
     }
 }

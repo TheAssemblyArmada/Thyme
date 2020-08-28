@@ -64,8 +64,10 @@ public:
     virtual void Reset();
     virtual int Get_Num_Extra_Blend_Tiles(char unk);
     virtual int Update_Block() = 0;
+
     virtual void Release_Resources();
     virtual void ReAcquire_Resources();
+
     virtual void CRC_Snapshot(Xfer *xfer);
     virtual void Xfer_Snapshot(Xfer *xfer);
     virtual void Load_Post_Process();
@@ -74,7 +76,7 @@ public:
     int Get_Static_Diffuse(int x, int y);
     float Get_Max_Cell_Height(float x, float y);
 
- private:
+ protected:
     int m_x;
     int m_y;
     DX8VertexBufferClass *m_vertexScorch;

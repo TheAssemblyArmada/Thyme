@@ -51,6 +51,13 @@ enum PoolType
     POOL_SYSTEMMEM,
 };
 
+enum TexAssetType
+{
+    ASSET_STANDARD,
+    ASSET_CUBE,
+    ASSET_VOLUME,
+};
+
 class TextureBaseClass : public RefCountClass
 {
     friend class TextureLoadTaskClass;

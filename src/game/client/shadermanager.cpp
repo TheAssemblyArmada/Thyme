@@ -14,10 +14,10 @@
  */
 #include "shadermanager.h"
 #ifndef GAME_DLL
-TextureClass *ShaderManager::s_textures[MAX_TEXTURE_STAGES];
+TextureClass *W3DShaderManager::s_textures[MAX_TEXTURE_STAGES];
 #endif
 
-int ShaderManager::Get_Shader_Passes(ShaderTypes shader)
+int W3DShaderManager::Get_Shader_Passes(ShaderTypes shader)
 {
 #ifdef GAME_DLL
     return Call_Function<int, ShaderTypes>(PICK_ADDRESS(0x0074E140, 0x00613479), shader);
@@ -26,7 +26,7 @@ int ShaderManager::Get_Shader_Passes(ShaderTypes shader)
 #endif
 }
 
-int ShaderManager::Set_Shader(ShaderTypes shader, int pass)
+int W3DShaderManager::Set_Shader(ShaderTypes shader, int pass)
 {
 #ifdef GAME_DLL
     return Call_Function<int, ShaderTypes, int>(PICK_ADDRESS(0x0074E150, 0x00613488), shader, pass);
@@ -35,7 +35,7 @@ int ShaderManager::Set_Shader(ShaderTypes shader, int pass)
 #endif
 }
 
-void ShaderManager::Reset_Shader(ShaderTypes shader)
+void W3DShaderManager::Reset_Shader(ShaderTypes shader)
 {
 #ifdef GAME_DLL
     Call_Function<void, ShaderTypes>(PICK_ADDRESS(0x0074E190, 0x006134E8), shader);

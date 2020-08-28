@@ -60,6 +60,8 @@ public:
     void Set_Default_Min_Filter(FilterType type);
     void Set_Default_Mag_Filter(FilterType type);
     void Set_Default_Mip_Filter(FilterType type);
+    void Set_U_Address_Mode(TxtAddrMode mode) { m_uAddressMode = mode; }
+    void Set_V_Address_Mode(TxtAddrMode mode) { m_vAddressMode = mode; }
 
     static void Init_Filters(TextureFilterMode mode);
 
@@ -98,6 +100,7 @@ public:
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);
     WW3DFormat Texture_Format() const { return m_textureFormat; }
+    TextureFilterClass *Get_Texture_Filter() { return &m_textureFilter; }
 
 #ifdef GAME_DLL
     TextureClass *Hook_Ctor1(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool,

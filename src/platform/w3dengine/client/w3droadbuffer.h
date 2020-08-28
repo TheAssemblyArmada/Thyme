@@ -29,7 +29,9 @@ class IRegion2D;
 
 class RoadType
 {
-public:
+    ALLOW_HOOKING
+
+public :
     RoadType();
     ~RoadType();
     void Load_Texture(Utf8String path, int ID);
@@ -48,7 +50,7 @@ public:
     Utf8String Get_Path() { return m_texturePath; }
     void Load_Test_Texture();
 
-private:
+protected:
     TextureClass *m_roadTexture;
     DX8VertexBufferClass *m_vertexRoad;
     DX8IndexBufferClass *m_indexRoad;
@@ -68,8 +70,8 @@ struct TRoadPt
     int last;
     char multi;
     char count;
-    bool isAngled;
-    bool isJoin;
+    bool is_angled;
+    bool is_join;
 };
 
 enum TCorner
@@ -88,17 +90,19 @@ enum TCorner
 struct TRoadSegInfo
 {
     Vector2 loc;
-    Vector2 roadNormal;
-    Vector2 roadVector;
+    Vector2 road_normal;
+    Vector2 road_vector;
     Vector2 corners[4];
-    float uOffset;
-    float vOffset;
+    float u_offset;
+    float v_offset;
     float scale;
 };
 
 class RoadSegment
 {
-public:
+    ALLOW_HOOKING
+
+public :
     RoadSegment();
     ~RoadSegment();
     void Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex);
@@ -113,7 +117,6 @@ public:
     void Update_Seg_Lighting();
     void Flip();
 
-private:
     TRoadPt m_pt1;
     TRoadPt m_pt2;
     float m_widthInTexture;
@@ -121,6 +124,8 @@ private:
     float m_scale;
     float m_curveRadius;
     int m_uniqueID;
+
+protected:
     bool m_isVisible;
     int m_numVertex;
     VertexFormatXYZDUV1 *m_vb;
@@ -132,7 +137,9 @@ private:
 
 class W3DRoadBuffer
 {
-public:
+    ALLOW_HOOKING
+
+public :
     W3DRoadBuffer();
     ~W3DRoadBuffer();
     void Load_Roads();
@@ -141,6 +148,8 @@ public:
         int maxx, int miny, int maxy, RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator);
     void Set_Map(WorldHeightMap *map);
     void Update_Lighting();
+
+protected:
     void Add_Map_Objects();
     void Add_Map_Object(RoadSegment *road, int update_the_counts);
     void Adjust_Stacking(int top_unique_id, int bottom_unique_id);
@@ -188,7 +197,6 @@ public:
     void Update_Center();
     void Set_Dirty();
 
-private:
     RoadType *m_roadTypes;
     RoadSegment *m_roads;
     int m_numRoads;

@@ -48,12 +48,12 @@ public:
     virtual AssetIterator *Create_HAnim_Iterator(void);
     virtual HAnimClass *Get_HAnim(const char *name);
     virtual bool Add_Anim(HAnimClass *new_anim);
-    virtual TextureClass *Get_Texture(const char *filename, MipCountType mip_level_count = MIP_LEVELS_ALL,
+    virtual TextureBaseClass *Get_Texture(const char *filename, MipCountType mip_level_count = MIP_LEVELS_ALL,
         WW3DFormat texture_format = WW3D_FORMAT_UNKNOWN, bool allow_compression = true,
         TexAssetType asset_type = ASSET_STANDARD, bool allow_reduction = true);
     virtual void Release_All_Textures();
     virtual void Release_Unused_Textures();
-    virtual void Release_Texture(TextureClass *tex);
+    virtual void Release_Texture(TextureBaseClass *tex);
     virtual void Load_Procedural_Textures();
     virtual MetalMapManagerClass *Peek_Metal_Map_Manager();
     virtual Font3DInstanceClass *Get_Font3DInstance(const char *name);
@@ -83,7 +83,7 @@ protected:
     bool m_loadOnDemand;
     bool m_activateFogOnLoad;
     MetalMapManagerClass *m_metalManager;
-    HashTemplateClass<StringClass, TextureClass *> m_textureHash;
+    HashTemplateClass<StringClass, TextureBaseClass *> m_textureHash;
 #ifdef GAME_DLL
     static W3DAssetManager *&s_theInstance;
 #else

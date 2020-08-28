@@ -61,7 +61,7 @@ public:
     virtual void Register_Prototype_Loader(PrototypeLoaderClass *loader);
     static W3DAssetManager *Get_Instance(void) { return s_theInstance; }
 
-private:
+protected:
     virtual AssetIterator *Create_Font3DData_Iterator();
     virtual void Add_Font3DData(Font3DDataClass *font);
     virtual void Remove_Font3DData(Font3DDataClass *font);

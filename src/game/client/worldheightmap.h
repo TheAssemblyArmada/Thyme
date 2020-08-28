@@ -78,7 +78,7 @@ public:
     virtual void Set_Seismic_Z_Velocity(int x, int y, float velocity);
     virtual float Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y);
 
-private:
+protected:
     int m_width;
     int m_height;
     int m_borderSize;

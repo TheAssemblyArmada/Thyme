@@ -950,7 +950,6 @@ void Setup_Hooks()
     Hook_Method(0x0081DD90, &SurfaceClass::Draw_Pixel);
 
     // image.h
-	//TODO find these methods to hook the adresses and check implementation
     Hook_Method(0x00519070, &Image::Hook_Ctor);
     Hook_Method(0x005191C0, &Image::Hook_Dtor);
     //Hook_Method(0x00000000, &Image::Clear_Status);

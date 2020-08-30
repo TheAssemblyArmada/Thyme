@@ -41,14 +41,7 @@ Image::Image() :
 
 Image::~Image() 
 {
-    if (m_filename != nullptr) {
-        m_filename->~Utf8String();
-        m_filename = nullptr;
-    }
-    if (m_name != nullptr) {
-        m_name->~Utf8String();
-        m_name = nullptr;
-    }
+    return;
 }
 
 void Image::Set_Status(uint32_t bit)

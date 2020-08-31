@@ -420,4 +420,4 @@ BaseHeightMapRenderObjClass *&g_theTerrainRenderObject = Make_Global<BaseHeightM
 
 //mapboject.cpp
 #include "mapobject.h"
-MapObject *&g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));
+MapObject *&MapObject::g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));

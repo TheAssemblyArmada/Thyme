@@ -89,6 +89,7 @@
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
 #include "w3dfilesystem.h"
+#include "w3droadbuffer.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -956,4 +957,50 @@ void Setup_Hooks()
     Hook_Method(0x00519260, &Image::Set_Status);
     Hook_Method(0x00518F10, &Image::Parse_Image_Coords);
     //Hook_Method(0x00000000, &Image::Parse_Image_Status);
+
+    // w3droadbuffer.h
+    Hook_Method(0x00795F90, &W3DRoadBuffer::Hook_Dtor);
+    Hook_Method(0x00790890, &W3DRoadBuffer::Add_Map_Object);
+    Hook_Method(0x00790F50, &W3DRoadBuffer::Add_Map_Objects);
+    Hook_Method(0x00794360, &W3DRoadBuffer::Adjust_Stacking);
+    Hook_Method(0x007960A0, &W3DRoadBuffer::Allocate_Road_Buffers);
+    Hook_Method(0x00790400, &W3DRoadBuffer::Check_Link_After);
+    Hook_Method(0x00790660, &W3DRoadBuffer::Check_Link_Before);
+    Hook_Method(0x00796320, &W3DRoadBuffer::Clear_All_Roads);
+    Hook_Method(0x00796530, &W3DRoadBuffer::Draw_Roads);
+    Hook_Method(0x00794360, &W3DRoadBuffer::Find_Cross_Type_Join_Vector);
+    Hook_Method(0x00796040, &W3DRoadBuffer::Free_Road_Buffers);
+    Hook_Method(0x007938D0, &W3DRoadBuffer::Insert_4Way);
+    Hook_Method(0x00794720, &W3DRoadBuffer::Insert_Cross_Type_Joins);
+    Hook_Method(0x00795290, &W3DRoadBuffer::Insert_Curve_Segment_At);
+    Hook_Method(0x00794250, &W3DRoadBuffer::Insert_Curve_Segments);
+    Hook_Method(0x00791940, &W3DRoadBuffer::Insert_Tee);
+    Hook_Method(0x00794180, &W3DRoadBuffer::Insert_Tee_Intersections);
+    Hook_Method(0x00792320, &W3DRoadBuffer::Insert_Y);
+    Hook_Method(0x0078DD20, &W3DRoadBuffer::Load_Alpha_Join);
+    Hook_Method(0x0078F2C0, &W3DRoadBuffer::Load_Curve);
+    Hook_Method(0x0078E790, &W3DRoadBuffer::Load_Float_4Pt_Section);
+    Hook_Method(0x0078E550, &W3DRoadBuffer::Load_Float_Section);
+    Hook_Method(0x0078E210, &W3DRoadBuffer::Load_H);
+    Hook_Method(0x0078FE10, &W3DRoadBuffer::Load_Road_Segment);
+    Hook_Method(0x007963F0, &W3DRoadBuffer::Load_Roads);
+    Hook_Method(0x0078FB90, &W3DRoadBuffer::Load_Roads_In_Vertex_And_Index_Buffers);
+    Hook_Method(0x0078DBC0, &W3DRoadBuffer::Load_Tee);
+    Hook_Method(0x0078DF90, &W3DRoadBuffer::Load_Y);
+    Hook_Method(0x00794EB0, &W3DRoadBuffer::Miter);
+    Hook_Method(0x0078FEF0, &W3DRoadBuffer::Move_Road_Seg_To);
+    Hook_Method(0x00792CB0, &W3DRoadBuffer::Offset_3Way);
+    Hook_Method(0x00793580, &W3DRoadBuffer::Offset_4Way);
+    Hook_Method(0x00792F60, &W3DRoadBuffer::Offset_H);
+    Hook_Method(0x007932E0, &W3DRoadBuffer::Offset_Y);
+    Hook_Method(0x0078F780, &W3DRoadBuffer::Preload_Road_Segment);
+    Hook_Method(0x0078F890, &W3DRoadBuffer::Preload_Roads_In_Vertex_And_Index_Buffers);
+    Hook_Method(0x00795F20, &W3DRoadBuffer::Rotate_About);
+    Hook_Method(0x007963C0, &W3DRoadBuffer::Set_Map);
+    Hook_Method(0x00796520, &W3DRoadBuffer::Update_Center);
+    Hook_Method(0x00791730, &W3DRoadBuffer::Update_Counts_And_Flags);
+    Hook_Method(0x00791590, &W3DRoadBuffer::Update_Counts);
+    Hook_Method(0x00796430, &W3DRoadBuffer::Update_Lighting);
+    Hook_Method(0x0078FCF0, &W3DRoadBuffer::Visibility_Changed);
+    Hook_Method(0x00796000, &W3DRoadBuffer::Hook_Ctor);
 }

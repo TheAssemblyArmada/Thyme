@@ -92,6 +92,7 @@
 #include "w3ddebugdisplay.h"
 #include "w3dfilesystem.h"
 #include "w3droadbuffer.h"
+#include "w3dpoly.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -1032,4 +1033,9 @@ void Setup_Hooks()
     Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Draw_Text);
     Hook_Method(0x00763A20, &W3DDebugDisplay::Init);
     Hook_Method(0x00763B50, &W3DDebugDisplay::Set_Font);
+    
+    // w3dpoly.h
+    Hook_Method(0x007A2BA0, &ClipPolyClass::Add_Vertex);
+    Hook_Method(0x007A2C00, &ClipPolyClass::Clip);
+    Hook_Method(0x007A2F50, &ClipPolyClass::Reset);
 }

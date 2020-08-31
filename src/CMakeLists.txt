@@ -182,6 +182,7 @@ set(GAMEENGINE_SRC
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
+    platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/bufffileclass.cpp

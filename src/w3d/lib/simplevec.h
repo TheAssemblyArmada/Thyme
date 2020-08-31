@@ -13,7 +13,11 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
+#include <algorithm>
+#include <captainslog.h>
+#include <cstring>
 
 template<typename T> class SimpleVecClass
 {
@@ -52,7 +56,7 @@ public:
             T *newptr = new T[newsize];
             if (m_vector != nullptr) {
                 int copycount = (newsize < m_vectorMax) ? newsize : m_vectorMax;
-                memcpy(newptr, m_vector, copycount * sizeof(T));
+                std::memcpy(newptr, m_vector, copycount * sizeof(T));
                 delete[] m_vector;
                 m_vector = nullptr;
             }

@@ -14,5 +14,5 @@
  */
 #include "mapobject.h"
 #ifndef GAME_DLL
-static MapObject *g_theMapObjectListPtr;
+MapObject *MapObject::g_theMapObjectListPtr;
 #endif

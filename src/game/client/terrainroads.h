@@ -46,6 +46,12 @@ public:
     Utf8String Get_Repaired_OCL(int dmg, int effect) { return m_repairedTransitionOCL[dmg][effect]; }
     Utf8String Get_Repaired_FX(int dmg, int effect) { return m_repairedTransitionFX[dmg][effect]; }
 
+    TerrainRoadType *Get_Next() { return m_next; }
+    int Get_ID() { return m_id; }
+    Utf8String Get_Texture() { return m_texture; }
+    float Get_Road_Width_In_Texture() { return m_roadWidthInTexture; }
+    float Get_Road_Width() { return m_roadWidth; }
+
     void Set_Name(Utf8String name) { m_name = name; }
     void Set_Damaged_OCL(int dmg, int effect, Utf8String name) { m_damagedTransitionOCL[dmg][effect] = name; }
     void Set_Damaged_FX(int dmg, int effect, Utf8String name) { m_damagedTransitionFX[dmg][effect] = name; }
@@ -103,6 +109,9 @@ public:
 
     static void Parse_Terrain_Road_Definitions(INI *ini);
     static void Parse_Terrain_Bridge_Definitions(INI *ini);
+
+    TerrainRoadType *First_Road() { return m_roadList; }
+    TerrainRoadType *Next_Road(TerrainRoadType *road) { return road->Get_Next(); }
 
 private:
     TerrainRoadType *m_roadList;

@@ -20,7 +20,7 @@ BaseHeightMapRenderObjClass *g_theTerrainRenderObject;
 int BaseHeightMapRenderObjClass::Get_Static_Diffuse(int x, int y)
 {
 #ifdef GAME_DLL
-    return Call_Function<int, int>(PICK_ADDRESS(0x00754E70, 0x00613479), x, y);
+    return Call_Method<int, BaseHeightMapRenderObjClass, int, int>(PICK_ADDRESS(0x00754E70, 0x00613479), this, x, y);
 #else
     return 0;
 #endif
@@ -29,7 +29,7 @@ int BaseHeightMapRenderObjClass::Get_Static_Diffuse(int x, int y)
 float BaseHeightMapRenderObjClass::Get_Max_Cell_Height(float x, float y)
 {
 #ifdef GAME_DLL
-    return Call_Function<float, float>(PICK_ADDRESS(0x00752D00, 0x005FF000), x, y);
+    return Call_Method<float, BaseHeightMapRenderObjClass, float, float>(PICK_ADDRESS(0x00752D00, 0x005FF000), this, x, y);
 #else
     return 0;
 #endif

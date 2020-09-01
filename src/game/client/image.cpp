@@ -17,8 +17,6 @@
 #include "always.h"
 #include "image.h"
 
-const char *imageStatusNames[3] = {"ROTATED_90_CLOCKWISE", "RAW_TEXTURE", nullptr};
-
 Image::Image() : 
 	m_name(), 
 	m_filename(), 
@@ -46,12 +44,12 @@ Image::~Image()
 
 void Image::Set_Status(uint32_t bit)
 {
-    m_status = m_status | bit;
+    m_status |= bit;
 }
 
 void Image::Clear_Status(uint32_t bit)
 {
-    m_status = m_status & ~bit;
+    m_status &= ~bit;
 }
 
 void Image::Parse_Image_Coords(INI *ini, void *formal, void *store, const void *user_data)
@@ -87,12 +85,19 @@ void Image::Parse_Image_Coords(INI *ini, void *formal, void *store, const void *
     image->m_imageSize.y = bottom - top;
 }
 
-void Image::Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data)
+void Image::Parse_Image_Status(INI *ini, void *instance, void *store, const void *user_data)
 {
-    Image *image = static_cast<Image *>(formal);
-    ini->Parse_Bitstring32(ini, formal, store, imageStatusNames);
+    const char *_imageStatusNames[3] = {"ROTATED_90_CLOCKWISE", "RAW_TEXTURE", nullptr};
+    enum _imageStatus //this does not seem to be used anywhere else. If WB proves otherwise, refactor.
+    {
+		IMAGE_STATUS_NONE,
+		IMAGE_STATUS_ROTATED_90_CLOCKWISE,
+		IMAGE_STATUS_RAW_TEXTURE
+    };
+    Image *image = static_cast<Image *>(instance);
+    ini->Parse_Bitstring32(ini, instance, store, _imageStatusNames);
     uint8_t *byte = static_cast<uint8_t *>(store);
-    if (byte != 0) {
+    if (*byte == IMAGE_STATUS_ROTATED_90_CLOCKWISE) {
         int oldx = image->m_imageSize.x;
         image->m_imageSize.x = image->m_imageSize.y;
         image->m_imageSize.y = oldx;

@@ -66,7 +66,7 @@ set(GAMEENGINE_SRC
     game/client/view.cpp
     game/client/water.cpp
     game/client/gui/gamefont.cpp
-	game/client/image.cpp
+    game/client/image.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
     game/client/system/particlesystem/particle.cpp

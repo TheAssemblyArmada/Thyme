@@ -143,7 +143,7 @@ int Parse_Play_Stats(char **argv, int argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_playerStats = tmp;
     }
 
@@ -404,7 +404,7 @@ int Parse_Latency_Average(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_latencyAverage = tmp;
     }
 #endif
@@ -416,7 +416,7 @@ int Parse_Latency_Amplitude(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_latencyAmplitude = tmp;
     }
 #endif
@@ -428,7 +428,7 @@ int Parse_Latency_Period(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_latencyPeriod = tmp;
     }
 #endif
@@ -440,7 +440,7 @@ int Parse_Latency_Noise(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_latencyNoise = tmp;
     }
 #endif
@@ -452,7 +452,7 @@ int Parse_Packet_Loss(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_packetLoss = tmp;
     }
 #endif
@@ -490,7 +490,7 @@ int Parse_FPS(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_framesPerSecondLimit = tmp;
     }
 
@@ -511,7 +511,7 @@ int Parse_Wire_Frame(char **argv, int argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
-        g_theWriteableGlobalData->m_wireFrame = true;
+        g_theWriteableGlobalData->m_wireframe = true;
     }
 #endif
     return 1;
@@ -779,7 +779,7 @@ int Parse_Seed(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_fixedSeed = tmp;
     }
 
@@ -799,7 +799,7 @@ int Parse_Net_Min_Players(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_netMinPlayers = tmp;
     }
 
@@ -864,9 +864,9 @@ int Parse_Benchmark(char **argv, int argc)
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_benchmarkTimer = tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_playerStats = tmp;
     }
 #endif
@@ -879,7 +879,7 @@ int Parse_Stats(char **argv, int argc)
     if (g_theWriteableGlobalData && argc > 1) {
         g_theWriteableGlobalData->m_altDoStats = true;
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_statsInterval = tmp;
     }
 #endif
@@ -931,7 +931,7 @@ int Parse_Jump_To_Frame(char **argv, int argc)
         g_theWriteableGlobalData->m_useFPSLimit = true;
         g_theWriteableGlobalData->m_framesPerSecondLimit = 30000;
         int32_t tmp;
-        sscanf(argv[1], PRId32, tmp);
+        sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_frameToJumpTo = tmp;
     }
 

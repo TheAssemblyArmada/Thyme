@@ -5,6 +5,7 @@ set(GAMEENGINE_INCLUDES
     game/client
     game/client/gui
     game/client/input
+    game/client/system
     game/client/system/particlesystem
     game/client/videoplayer
     game/common
@@ -69,6 +70,7 @@ set(GAMEENGINE_SRC
     game/client/image.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/system/rayeffect.cpp
     game/client/system/particlesystem/particle.cpp
     game/client/system/particlesystem/particleinfo.cpp
     game/client/system/particlesystem/particlesys.cpp

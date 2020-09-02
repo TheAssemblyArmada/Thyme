@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author OmniBlade
@@ -114,8 +114,15 @@ public:
     Coord3D(float x_val, float y_val, float z_val) : x(x_val), y(y_val), z(z_val) {}
     float Length() { return float(Sqrt(float(float(float(x * x) + float(y * y)) + float(z * z)))); }
 
+    void Zero()
+    {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+    }
+
     Coord3D &operator+=(const Coord3D &rhs)
-    { 
+    {
         x += rhs.x;
         y += rhs.y;
         z += rhs.z;
@@ -151,7 +158,7 @@ public:
     }
 
     friend Coord3D operator+(Coord3D lhs, const Coord3D &rhs)
-    { 
+    {
         lhs += rhs;
 
         return lhs;

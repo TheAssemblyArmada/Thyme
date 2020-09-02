@@ -67,6 +67,7 @@
 #include "playertemplate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
+#include "rayeffect.h"
 #include "render2d.h"
 #include "script.h"
 #include "scriptaction.h"
@@ -1003,4 +1004,9 @@ void Setup_Hooks()
     Hook_Method(0x00796430, &W3DRoadBuffer::Update_Lighting);
     Hook_Method(0x0078FCF0, &W3DRoadBuffer::Visibility_Changed);
     Hook_Method(0x00796000, &W3DRoadBuffer::Hook_Ctor);
+
+    // rayeffect.h
+    Hook_Method(0x00613AB0, &RayEffectSystem::Add_Ray_Effect);
+    Hook_Method(0x00613B30, &RayEffectSystem::Delete_Ray_Effect);
+    Hook_Method(0x00613B70, &RayEffectSystem::Get_Ray_Effect_Data);
 }

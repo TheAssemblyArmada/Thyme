@@ -1,4 +1,4 @@
-#include "hooker.h"
+﻿#include "hooker.h"
 #include "view.h"
 
 #pragma warning(push)
@@ -414,10 +414,15 @@ ARRAY_DEF(PICK_ADDRESS(0x00A3AB20, 0x00E1A7C8), TextureBaseClass *, W3DShaderMan
 #include "assetmgr.h"
 W3DAssetManager *&W3DAssetManager::s_theInstance = Make_Global<W3DAssetManager *>(PICK_ADDRESS(0x00A4C1F4, 0x00DE8F84));
 
-//baseheightmap.cpp
+// baseheightmap.cpp
 #include "baseheightmap.h"
-BaseHeightMapRenderObjClass *&g_theTerrainRenderObject = Make_Global<BaseHeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3ABC8, 0x00E1A5F4));
+BaseHeightMapRenderObjClass *&g_theTerrainRenderObject =
+    Make_Global<BaseHeightMapRenderObjClass *>(PICK_ADDRESS(0x00A3ABC8, 0x00E1A5F4));
 
-//mapboject.cpp
+// mapboject.cpp
 #include "mapobject.h"
 MapObject *&MapObject::g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));
+
+// rayeffect.cpp
+#include "rayeffect.h"
+RayEffectSystem *&g_theRayEffects = Make_Global<RayEffectSystem *>(PICK_ADDRESS(0x00A2F44C, 0x04CAB644));

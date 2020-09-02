@@ -13,7 +13,18 @@
  *            LICENSE
  */ 
 #include "gameclient.h"
+#include "rayeffect.h"
 
 #ifndef GAME_DLL
 GameClient *g_theGameClient;
 #endif
+
+void GameClient::Remove_From_Ray_Effects(Drawable *drawable)
+{
+    g_theRayEffects->Delete_Ray_Effect(drawable);
+}
+
+void GameClient::Get_Ray_Effect_Data(Drawable *drawable, RayEffectData *data)
+{
+    g_theRayEffects->Get_Ray_Effect_Data(drawable, data);
+}

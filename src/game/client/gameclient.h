@@ -24,7 +24,7 @@
 #include <vector>
 
 class Drawable;
-class RayEffectData;
+struct RayEffectData;
 class ThingTemplate;
 
 enum Scorches

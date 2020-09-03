@@ -201,6 +201,10 @@ set(GAMEENGINE_SRC
     w3d/lib/wwstring.cpp
     w3d/lib/hash.cpp
     w3d/math/aabox.cpp
+    w3d/math/colmath.cpp
+    w3d/math/colmathaaplane.cpp
+    w3d/math/colmathfrustum.cpp
+    w3d/math/colmathplane.cpp
     w3d/math/frustum.cpp
     w3d/math/gamemath.cpp
     w3d/math/lineseg.cpp

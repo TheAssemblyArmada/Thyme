@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author tomsons26
  *
  * @brief Base client object providing overall control of client IO and rendering.
  *
@@ -18,6 +19,7 @@
 #include "asciistring.h"
 #include "coord.h"
 #include "gametype.h"
+#include "messagestream.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
 #include <list>
@@ -107,3 +109,18 @@ extern GameClient *&g_theGameClient;
 #else
 extern GameClient *g_theGameClient;
 #endif
+
+class GameClientMessageDispatcher : public GameMessageTranslator
+{
+public:
+    GameClientMessageDispatcher() {}
+    virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg);
+    virtual ~GameClientMessageDispatcher() {}
+
+#ifdef GAME_DLL
+    GameMessageDisposition Hook_Translate_Game_Message(const GameMessage *msg)
+    {
+        return GameClientMessageDispatcher::Translate_Game_Message(msg);
+    }
+#endif
+};

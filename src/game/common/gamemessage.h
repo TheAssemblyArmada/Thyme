@@ -352,6 +352,7 @@ public:
 
     GameMessageArgument *Allocate_Arg();
     ArgumentType *Get_Argument(int arg);
+    int Get_Argument_Count() { return m_argCount; }
     ArgumentDataType Get_Argument_Type(int arg);
     Utf8String Get_Command_As_Ascii(MessageType command);
 
@@ -369,6 +370,8 @@ public:
 
     GameMessage *Get_Next() { return m_next; }
     GameMessage *Get_Prev() { return m_prev; }
+
+    MessageType Get_Type() const { return m_type; }
 
 private:
     GameMessage *m_next;

@@ -41,10 +41,12 @@
 #include "filetransfer.h"
 #include "force_nocd.h"
 #include "functionlexicon.h"
+#include "gameclient.h"
 #include "gamemath.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
 #include "gamemessage.h"
+#include "gamemessageparser.h"
 #include "gamestate.h"
 #include "gametext.h"
 #include "geometry.h"
@@ -1058,6 +1060,13 @@ void Setup_Hooks()
     Hook_Method(0x00842FA0, &FontCharsClass::Get_Char_Data);
     Hook_Method(0x00843750, &FontCharsClass::Grow_Unicode_Array);
     Hook_Method(0x00843860, &FontCharsClass::Free_Character_Arrays);
+    
+    // gameclient.h
+    Hook_Method(0x00613D10, &GameClientMessageDispatcher::Hook_Translate_Game_Message);
+
+    // gamemessageparser.h
+    Hook_Method(0x005F9C60, &GameMessageParser::Hook_Ctor);
+    Hook_Method(0x005F9F80, &GameMessageParser::Add_Arg_Type);
 
     // display.h
     Hook_Any(0x004217D0, Display::Stop_Movie);

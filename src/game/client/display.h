@@ -25,7 +25,7 @@
 
 class DebugDisplayInterface;
 class DisplayString;
-struct GameFont;
+class GameFont;
 class Image;
 class VideoBuffer;
 class VideoStream;

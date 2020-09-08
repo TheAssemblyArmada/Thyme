@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author OmniBlade
@@ -16,13 +16,21 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "mempoolobj.h"
 
-struct GameFont
+class GameFont : public MemoryPoolObject
 {
-	Utf8String name_string;
-	int point_size;
-	int bold;
-	int height;
-	void *font_data;
-	GameFont *next;
+    IMPLEMENT_NAMED_POOL(GameFont, GameFont);
+
+public:
+    GameFont() {}
+    virtual ~GameFont() {}
+
+public:
+    GameFont *m_next;
+    Utf8String m_nameString;
+    int m_pointSize;
+    int m_height;
+    void *m_fontData;
+    bool m_bold;
 };

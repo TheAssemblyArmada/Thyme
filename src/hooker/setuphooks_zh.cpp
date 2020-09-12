@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author OmniBlade
@@ -1009,4 +1009,8 @@ void Setup_Hooks()
     Hook_Method(0x00613AB0, &RayEffectSystem::Add_Ray_Effect);
     Hook_Method(0x00613B30, &RayEffectSystem::Delete_Ray_Effect);
     Hook_Method(0x00613B70, &RayEffectSystem::Get_Ray_Effect_Data);
+
+    // gamefont.h
+    Hook_Method(0x0041FE60, &FontLibrary::Unlink_Font);
+    Hook_Method(0x00420000, &FontLibrary::Get_Font);
 }

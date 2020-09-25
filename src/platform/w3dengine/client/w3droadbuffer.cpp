@@ -18,6 +18,7 @@
 #include "dx8indexbuffer.h"
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
+#include "gamemath.h"
 #include "globaldata.h"
 #include "mapobject.h"
 #include "shadermanager.h"
@@ -25,6 +26,7 @@
 #include "texture.h"
 #include "worldheightmap.h"
 
+using GameMath::Fabs;
 bool g_dynamic;
 
 enum
@@ -404,7 +406,9 @@ void W3DRoadBuffer::Draw_Roads(CameraClass *camera, TextureClass *cloud_texture,
                 if (m_roadTypes[j].Get_Num_Indices()) {
                     if (wireframe) {
                         m_roadTypes[j].Apply_Texture();
+#ifdef BUILD_WITH_D3D8
                         DX8Wrapper::Set_DX8_Texture(0, nullptr);
+#endif
                     } else {
                         m_roadTypes[j].Apply_Texture();
                     }
@@ -758,7 +762,7 @@ void W3DRoadBuffer::Adjust_Stacking(int top_unique_id, int bottom_unique_id)
     }
 }
 
-int xp_sign(Vector2 &v1, Vector2 &v2)
+int xp_sign(const Vector2 &v1, const Vector2 &v2)
 {
     float f = v1.X * v2.Y - v1.Y * v2.X;
     if (f >= 0) {
@@ -898,6 +902,7 @@ void W3DRoadBuffer::Insert_Curve_Segments()
 
 void W3DRoadBuffer::Load_Roads_In_Vertex_And_Index_Buffers()
 {
+#ifdef BUILD_WITH_D3D8 // Uses D3D defines.
     if (m_initialized) {
         m_curNumRoadVertices = 0;
         m_curNumRoadIndices = 0;
@@ -925,6 +930,8 @@ void W3DRoadBuffer::Load_Roads_In_Vertex_And_Index_Buffers()
             m_roadTypes[m_curRoadType].Set_Num_Indices(0);
         }
     }
+
+#endif
 }
 
 void W3DRoadBuffer::Load_Road_Segment(unsigned short *ib, VertexFormatXYZDUV1 *vb, RoadSegment *road)
@@ -1797,7 +1804,7 @@ void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
 
                 v4.Normalize();
 
-                if (fabs(Vector2::Dot_Product(v4, v5)) <= 0.5f) {
+                if (Fabs(Vector2::Dot_Product(v4, v5)) <= 0.5f) {
                     float f4 = DEG_TO_RAD(90);
 
                     if (Vector3::Cross_Product_Z(Vector3(v4.X, v4.Y, 0.0f), Vector3(v5.X, v5.Y, 0.0f)) < 0.0f) {
@@ -1986,7 +1993,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v1.Y, v1.X);
         if (xp_sign(v4, v2) == 1 && xp_sign(v4, v3) == 1) {
             b3 = true;
-            f6 = fabs(f2 + 0.70700002f) + fabs(f1 + 0.70700002f);
+            f6 = Fabs(f2 + 0.70700002f) + Fabs(f1 + 0.70700002f);
         }
     }
 
@@ -1997,7 +2004,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v3.Y, v3.X);
         if (xp_sign(v4, v2) == 1 && xp_sign(v4, v1) == 1) {
             b1 = true;
-            f4 = fabs(f3 + 0.70700002f) + fabs(f2 + 0.70700002f);
+            f4 = Fabs(f3 + 0.70700002f) + Fabs(f2 + 0.70700002f);
         }
     }
 
@@ -2008,7 +2015,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         Vector2 v4(-v3.Y, v3.X);
         if (xp_sign(v4, v3) == 1 && xp_sign(v4, v1) == 1) {
             b2 = true;
-            f5 = fabs(f3 + 0.70700002f) + fabs(f1 + 0.70700002f);
+            f5 = Fabs(f3 + 0.70700002f) + Fabs(f1 + 0.70700002f);
         }
     }
 

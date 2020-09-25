@@ -1,11 +1,5 @@
-<p align="center">
-  <img width="200" src="https://i.imgur.com/cSzalEP.png" alt="Thyme Logo">
-</p>
-
-<p align="center">
-  <a href="https://ci.appveyor.com/project/AssemblyArmarda/thyme/branch/develop"><img src="https://ci.appveyor.com/api/projects/status/5j532niym4sprwro/branch/develop?svg=true" alt="Build Status"></a>
-  <a href="https://travis-ci.org/TheAssemblyArmada/Thyme"><img src="https://travis-ci.org/TheAssemblyArmada/Thyme.svg?branch=develop" alt="Build Status"></a>
-</p>
+[![Actions Status](https://github.com/AssemblyArmarda/Thyme/workflows/windows/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)
+[![Actions Status](https://github.com/AssemblyArmarda/Thyme/workflows/linux/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)
 
 **Thyme** is an open source re-implementation of Command & Conquer Generals: Zero Hour.
 Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.
@@ -14,6 +8,9 @@ This project is a bottom-up rewrite of Generals: Zero Hour,
 using the original binary to provide functions that have not been implemented yet.
 The intention is to allow the fixing of bugs, implementation of new
 features and porting to platforms unsupported by the original.
+
+Please note that the Thyme developers have no affiliation with EA.
+EA has not endorsed and does not support this product.
 
 ## Chat
 
@@ -27,7 +24,7 @@ To run Thyme, you first need to have Command & Conquer Generals: Zero Hour insta
 
 If you wish to use our custom launcher without messing with patches or anything, only an install original Windows disc based English language version of Generals: Zero Hour (patched to version 1.04) is supported. That 1.04 patch can be downloaded [here](ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe) if your installation hasn't been updated yet.
 
- If you don't have the disc version or just want to run an executable directly, you will need to generate `thyme.exe` using the exe patching guide on the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki).
+If you don't have the disc version or just want to run an executable directly, you will need to generate `thyme.exe` using the exe patching guide on the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki).
 
 Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AssemblyArmarda/thyme/). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#building-thyme-yourself).
 

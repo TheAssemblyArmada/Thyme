@@ -4,10 +4,12 @@
 #### Operating System: [e.g. Windows 10]
 #### Commit/build: [e.g. 30376e1]
 #### Original game source: [e.g. Origin, TFD or game disc]
-
-- [ ] Reproducible in the original Generals Zero Hour?
-- [ ] Multiplayer affected?
-- [ ] Are you using any mods? (like Gentool, Rise of the Reds or Contra)
+<!--
+  Cross out either yes or no by surrounding with double tilde ~~yes~~/no for example. 
+-->
+- Reproducible in the original Generals Zero Hour? yes/no
+- Multiplayer affected? yes/no
+- Are you using any mods? (like Gentool, Rise of the Reds or Contra) yes/no
 
 ### Issue explanation
 <!-- Fill in the explanation of the issue you encountered. -->

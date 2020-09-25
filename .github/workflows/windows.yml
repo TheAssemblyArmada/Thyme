@@ -1,0 +1,53 @@
+name: windows
+
+on:
+  pull_request:
+  push:
+  release:
+    types: published
+
+jobs:
+  build_thyme_msvc:
+    runs-on: windows-2019
+    strategy:
+      matrix:
+        standalone: [ON, OFF]
+        platform: [x86, amd64]
+        exclude:
+          - {standalone: "OFF", platform: amd64}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'     
+    - uses: ilammy/msvc-dev-cmd@v1.2.0
+      with:
+        arch: ${{ matrix.platform }}
+      
+    - name: Install dependencies
+      shell: bash
+      run: |
+        curl -L -O https://github.com/ninja-build/ninja/releases/download/v1.10.1/ninja-win.zip
+        7z x ninja-win.zip -o`pwd`/deps/ninja
+        export PATH=`pwd`/deps/ninja:$PATH
+        ninja --version
+        
+    - name: Build Thyme
+      run: |
+        cmake -G Ninja -DSTANDALONE=${{ matrix.standalone }} -DUSE_CRASHPAD=${{ matrix.standalone }} -B build
+        cmake --build build --config Release
+
+    - name: Create archives
+      shell: bash
+      run: |
+        mkdir artifact
+        export ZIPNAME=thyme_${{ matrix.platform }}
+        if [ ${{ matrix.standalone }} != "ON" ]; then export FEATURES=_dll export EXTENSION=dll; else export FEATURES=_standalone export EXTENSION=exe;fi
+        7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.$EXTENSION
+        if [ ${{ matrix.standalone }} != "ON" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/launchthyme.exe; else 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymecrashhandler.exe; fi
+        if [ Release == "Debug" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.pdb; fi
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: thyme
+        path: artifact

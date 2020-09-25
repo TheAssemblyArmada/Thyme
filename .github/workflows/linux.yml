@@ -1,0 +1,24 @@
+name: linux
+
+on:
+  pull_request:
+  push:
+  release:
+    types: published
+
+jobs:
+  build_thyme_ubuntu_gcc:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get install -y libgtk-3-dev ninja-build
+
+    - name: Build thyme
+      run: |
+        cmake -DSTANDALONE=TRUE -DCMAKE_BUILD_TYPE=Release -DUSE_CRASHPAD=ON -B build -G Ninja
+        cmake --build build

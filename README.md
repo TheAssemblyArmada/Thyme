@@ -1,5 +1,5 @@
-[![Actions Status](https://github.com/AssemblyArmarda/Thyme/workflows/windows/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)
-[![Actions Status](https://github.com/AssemblyArmarda/Thyme/workflows/linux/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)
+[![windows](https://github.com/TheAssemblyArmada/Thyme/workflows/windows/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)  
+[![linux](https://github.com/TheAssemblyArmada/Thyme/workflows/linux/badge.svg)](https://github.com/AssemblyArmarda/Thyme/actions)
 
 **Thyme** is an open source re-implementation of Command & Conquer Generals: Zero Hour.
 Zero Hour is the expansion pack of Command & Conquer Generals, released in 2003.

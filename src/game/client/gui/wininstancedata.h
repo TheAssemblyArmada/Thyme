@@ -24,7 +24,7 @@ class GameWindow;
 class DisplayString;
 class VideoBuffer;
 
-struct GameFont;
+class GameFont;
 
 struct WinDrawData
 {
@@ -70,7 +70,7 @@ public:
     GameFont *Get_Font() { return m_font; }
     void Set_VideoBuffer(VideoBuffer *videoBuffer);
 
-	WinInstanceData &operator=(const WinInstanceData &that);
+    WinInstanceData &operator=(const WinInstanceData &that);
 
 #ifdef GAME_DLL
     WinInstanceData *Hook_Ctor() { return new (this) WinInstanceData; }

@@ -14,9 +14,9 @@
  */
 #include "bitflags.h"
 
- // TODO move this somewhere more appropriate?
-template<> const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {
-    "NONE",
+// TODO move this somewhere more appropriate?
+template<>
+const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = { "NONE",
     "DESTROYED",
     "CAN_ATTACK",
     "UNDER_CONSTRUCTION",
@@ -61,8 +61,7 @@ template<> const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {
     "IMMOBILE",
     "DISGUISED",
     "DEPLOYED",
-    nullptr
-};
+    nullptr };
 
 // TODO Temp to force instantiation. Fixes issue with Parameter::Read_Parameter.
-//template class BitFlags<KIND_OF_COUNT>;
+// template class BitFlags<KIND_OF_COUNT>;

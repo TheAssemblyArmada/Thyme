@@ -26,9 +26,10 @@ AudioManager *g_theAudio = nullptr;
 #endif
 
 const char *AudioManager::s_speakerTypes[] = {
-    "2 Speakers", "Headphones", "Surround Sound", "4 Speaker", "5.1 Surround", "7.1 Surround", nullptr};
+    "2 Speakers", "Headphones", "Surround Sound", "4 Speaker", "5.1 Surround", "7.1 Surround", nullptr
+};
 
-AudioManager::AudioManager() : 
+AudioManager::AudioManager() :
     m_audioSettings(new AudioSettings),
     m_miscAudio(new MiscAudio),
     m_musicManager(nullptr),
@@ -444,7 +445,9 @@ Utf8String AudioManager::Next_Track_Name(Utf8String track) const
 
         if (it != m_trackList.end()) {
             next = *it;
-        } else if (m_trackList.begin() != m_trackList.end()) { next = *m_trackList.begin(); }
+        } else if (m_trackList.begin() != m_trackList.end()) {
+            next = *m_trackList.begin();
+        }
     }
 
     return next;

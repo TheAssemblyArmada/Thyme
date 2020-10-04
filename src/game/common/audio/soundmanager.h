@@ -67,4 +67,3 @@ private:
     int m_2dSamplesPlaying;
     int m_3dSamplesPlaying;
 };
-

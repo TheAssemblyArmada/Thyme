@@ -14,10 +14,10 @@
  */
 #pragma once
 #include "always.h"
-#include "w3dtypes.h"
 #include "refcount.h"
-#include "wwstring.h"
 #include "w3dmpo.h"
+#include "w3dtypes.h"
+#include "wwstring.h"
 class TextureMapperClass;
 class VertexMaterialClass : public W3DMPO, public RefCountClass
 {

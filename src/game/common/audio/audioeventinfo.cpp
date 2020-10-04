@@ -19,33 +19,36 @@
 
 namespace
 {
-const char *g_audio_priority_names[] = {"LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL"};
-const char *g_sound_type_names[] = {"UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE"};
-const char *g_audio_control_names[] = {"LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT"};
+const char *g_audio_priority_names[] = { "LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL" };
+const char *g_sound_type_names[] = {
+    "UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE"
+};
+const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT" };
 } // namespace
 
 FieldParse AudioEventInfo::s_audioEventParseTable[] = {
-    {"Filename", &INI::Parse_AsciiString, nullptr, offsetof(AudioEventInfo, m_filename)},
-    {"Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume)},
-    {"VolumeShift", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volumeShift)},
-    {"MinVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_minVolume)},
-    {"PitchShift", &AudioEventInfo::Parse_Pitch_Shift, nullptr, 0},
-    {"Delay", &AudioEventInfo::Parse_Delay, nullptr, 0},
-    {"Limit", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_limit)},
-    {"LoopCount", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_loopCount)},
-    {"Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority)},
-    {"Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility)},
-    {"Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control)},
-    {"Sounds", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_sounds)},
-    {"SoundsNight", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsNight)},
-    {"SoundsEvening", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsEvening)},
-    {"SoundsMorning", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsMorning)},
-    {"Attack", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_attack)},
-    {"Decay", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_decay)},
-    {"MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange)},
-    {"MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange)},
-    {"LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff)},
-    {nullptr, nullptr, nullptr, 0}};
+    { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(AudioEventInfo, m_filename) },
+    { "Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume) },
+    { "VolumeShift", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volumeShift) },
+    { "MinVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_minVolume) },
+    { "PitchShift", &AudioEventInfo::Parse_Pitch_Shift, nullptr, 0 },
+    { "Delay", &AudioEventInfo::Parse_Delay, nullptr, 0 },
+    { "Limit", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_limit) },
+    { "LoopCount", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_loopCount) },
+    { "Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority) },
+    { "Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility) },
+    { "Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control) },
+    { "Sounds", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_sounds) },
+    { "SoundsNight", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsNight) },
+    { "SoundsEvening", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsEvening) },
+    { "SoundsMorning", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
+    { "Attack", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_attack) },
+    { "Decay", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_decay) },
+    { "MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange) },
+    { "MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange) },
+    { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 /**
  * Parses audio event definition information from an INI instance.

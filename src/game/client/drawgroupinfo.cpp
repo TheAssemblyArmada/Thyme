@@ -66,7 +66,7 @@ void DrawGroupInfo::Parse_Int(INI *ini, void *formal, void *store, const void *u
     } else {
         static_cast<DrawGroupInfo *>(store)->m_drawPositionYAbsolute = true;
         INI::Parse_Int(ini, nullptr, &static_cast<DrawGroupInfo *>(store)->m_drawPositionY, nullptr);
-	}
+    }
 }
 
 /**

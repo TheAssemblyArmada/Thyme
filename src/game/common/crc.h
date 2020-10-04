@@ -15,8 +15,8 @@
 #pragma once
 
 #include "always.h"
-#include "bittype.h"
 #include "array.h"
+#include "bittype.h"
 
 class CRC
 {
@@ -28,9 +28,10 @@ public:
     static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);
     static uint32_t String(const char *string, uint32_t crc);
     static uint32_t Stringi(const char *string, uint32_t crc);
+
 private:
     void Add_CRC(uint8_t byte);
 
-    static const Array<uint32_t,256> m_table;
+    static const Array<uint32_t, 256> m_table;
     uint32_t m_crc;
 };

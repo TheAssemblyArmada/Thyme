@@ -22,14 +22,12 @@
 class WeatherSetting : public Overridable
 {
     IMPLEMENT_POOL(WeatherSetting);
+
 public:
     WeatherSetting();
     virtual ~WeatherSetting() {}
 
-    WeatherSetting *Get_Override()
-    {
-        return m_next == nullptr ? this : (WeatherSetting*)Get_Final_Override();
-    }
+    WeatherSetting *Get_Override() { return m_next == nullptr ? this : (WeatherSetting *)Get_Final_Override(); }
 
     static void Parse_Weather_Definition(INI *ini);
 

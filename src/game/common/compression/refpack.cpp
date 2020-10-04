@@ -30,7 +30,8 @@ static uint32_t RefPack_Matchlen(const uint8_t *s, const uint8_t *d, uint32_t ma
 {
     uint32_t current;
 
-    for (current = 0; current < maxmatch && *s++ == *d++; ++current);
+    for (current = 0; current < maxmatch && *s++ == *d++; ++current)
+        ;
 
     return current;
 }
@@ -126,7 +127,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
             ++getp;
             --len;
         } else {
-            while (run > 3) {// literal block of data
+            while (run > 3) { // literal block of data
                 tlen = min((uint32_t)112, run & ~3);
                 run -= tlen;
                 *putp++ = (unsigned char)(0xe0 + (tlen >> 2) - 1);
@@ -141,7 +142,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
                 *putp++ = (unsigned char)(((boffset >> 8) << 5) + ((blen - 3) << 2) + run);
                 *putp++ = (unsigned char)boffset;
                 ++countshort;
-            } else if (bcost == 3) { //three byte long form
+            } else if (bcost == 3) { // three byte long form
                 *putp++ = (unsigned char)(0x80 + (blen - 4));
                 *putp++ = (unsigned char)((run << 6) + (boffset >> 8));
                 *putp++ = (unsigned char)boffset;

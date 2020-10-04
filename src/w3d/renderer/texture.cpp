@@ -162,8 +162,13 @@ void TextureFilterClass::Set_Default_Mip_Filter(FilterType type)
     }
 }
 
-TextureClass::TextureClass(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_count, PoolType pool,
-    bool render_target, bool allow_reduction) :
+TextureClass::TextureClass(unsigned width,
+    unsigned height,
+    WW3DFormat format,
+    MipCountType mip_count,
+    PoolType pool,
+    bool render_target,
+    bool allow_reduction) :
     TextureBaseClass(width, height, mip_count, pool, render_target, allow_reduction),
     m_textureFormat(format),
     m_textureFilter(mip_count)
@@ -200,8 +205,12 @@ TextureClass::TextureClass(unsigned width, unsigned height, WW3DFormat format, M
     m_lastAccess = W3D::Get_Sync_Time();
 }
 
-TextureClass::TextureClass(char const *name, char const *full_path, MipCountType mip_level_count, WW3DFormat format,
-    bool allow_compression, bool allow_reduction) :
+TextureClass::TextureClass(char const *name,
+    char const *full_path,
+    MipCountType mip_level_count,
+    WW3DFormat format,
+    bool allow_compression,
+    bool allow_reduction) :
     TextureBaseClass(0, 0, mip_level_count, POOL_MANAGED, false, true),
     m_textureFormat(format),
     m_textureFilter(mip_level_count)

@@ -35,48 +35,39 @@
 #include <sys/time.h>
 #endif
 
-namespace rts {
+namespace rts
+{
 
 // memset, but for patterns larger than a byte.
-template<typename T>
-void tmemset(void *dst, T value, size_t size)
+template<typename T> void tmemset(void *dst, T value, size_t size)
 {
     size_t i;
-    for ( i = 0; i < (size & (~(sizeof(value) - 1))); i += sizeof(value) ) {
-        memcpy(((char*)dst) + i, &value, sizeof(value));
+    for (i = 0; i < (size & (~(sizeof(value) - 1))); i += sizeof(value)) {
+        memcpy(((char *)dst) + i, &value, sizeof(value));
     }
 
-    for ( ; i < size; i++ ) {
-        ((char*)dst)[i] = ((char*)&value)[i & (sizeof(value) - 1)];
+    for (; i < size; i++) {
+        ((char *)dst)[i] = ((char *)&value)[i & (sizeof(value) - 1)];
     }
 }
 
 // Less than comparator for STL containers.
 // Use only for string classes.
-template<typename T>
-struct less_than_nocase
+template<typename T> struct less_than_nocase
 {
-    bool operator()(const T &left, const T &right) const
-    {
-        return (left.Compare_No_Case(right) < 0);
-    }
+    bool operator()(const T &left, const T &right) const { return (left.Compare_No_Case(right) < 0); }
 };
 
-template<typename T>
-struct equal_to
+template<typename T> struct equal_to
 {
-    bool operator()(const T &left, const T &right) const
-    {
-        return (left.Compare(right) == 0);
-    }
+    bool operator()(const T &left, const T &right) const { return (left.Compare(right) == 0); }
 };
 
-template<typename T>
-struct hash
+template<typename T> struct hash
 {
     size_t operator()(const T &object) const
     {
-        const char *c = reinterpret_cast<const char*>(object.Str());
+        const char *c = reinterpret_cast<const char *>(object.Str());
         size_t hash = 0;
 
         do {
@@ -88,8 +79,7 @@ struct hash
     }
 };
 
-template <int a, int b, int c, int d>
-struct FourCC
+template<int a, int b, int c, int d> struct FourCC
 {
 #ifdef SYSTEM_LITTLE_ENDIAN
     static const uint32_t value = (((((d << 8) | c) << 8) | b) << 8) | a;
@@ -101,11 +91,11 @@ struct FourCC
 inline unsigned Get_Time()
 {
 #ifdef PLATFORM_WINDOWS
-	return timeGetTime();
+    return timeGetTime();
 #else
-	struct timeval now;
-	gettimeofday(&now, nullptr);
-	return (now.tv_sec * 1000) + (now.tv_usec / 1000);
+    struct timeval now;
+    gettimeofday(&now, nullptr);
+    return (now.tv_sec * 1000) + (now.tv_usec / 1000);
 #endif
 }
 

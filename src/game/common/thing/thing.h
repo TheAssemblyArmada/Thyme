@@ -28,7 +28,8 @@ class Drawable;
 
 class Thing : public MemoryPoolObject
 {
-    enum {
+    enum
+    {
         CACHED_DIRECTION2D = 1 << 0,
     };
 

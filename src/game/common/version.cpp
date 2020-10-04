@@ -32,8 +32,14 @@ Version::Version() :
 {
 }
 
-void Version::Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, Utf8String location,
-    Utf8String user, Utf8String time, Utf8String date)
+void Version::Set_Version(int32_t maj,
+    int32_t min,
+    int32_t build,
+    int32_t local_build,
+    Utf8String location,
+    Utf8String user,
+    Utf8String time,
+    Utf8String date)
 {
     m_major = maj;
     m_minor = min;

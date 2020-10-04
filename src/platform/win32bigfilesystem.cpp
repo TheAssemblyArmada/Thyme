@@ -120,7 +120,8 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
 
         captainslog_relassert(strlen < BIG_PATH_MAX, 0xDEAD0002, "Filename string in BIG file header not null terminated");
 
-        // captainslog_trace("Recovered a file path of '%s' with size '%d' and position '%d'.", namebuf, file_size, file_pos);
+        // captainslog_trace("Recovered a file path of '%s' with size '%d' and position '%d'.", namebuf, file_size,
+        // file_pos);
 
         // Find the start of the file name
         int name_start = strlen;
@@ -187,7 +188,8 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(Utf8String dir, Utf8String filte
             Load_Into_Dir_Tree(arch, *it, read_subdirs);
             m_archiveFiles[*it] = arch;
 
-            captainslog_trace("Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map.", (*it).Str());
+            captainslog_trace(
+                "Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map.", (*it).Str());
         }
     }
 }

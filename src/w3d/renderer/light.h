@@ -51,8 +51,8 @@ public:
     virtual void Render(RenderInfoClass &rinfo) override {}
 
     // Scene
-    virtual void Notify_Added(SceneClass *scene)  override;
-    virtual void Notify_Removed(SceneClass *scene)  override;
+    virtual void Notify_Added(SceneClass *scene) override;
+    virtual void Notify_Removed(SceneClass *scene) override;
 
     // Bounding
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;

@@ -19,11 +19,10 @@
 TerrainTypeCollection *g_theTerrainTypes = nullptr;
 #endif
 
-namespace {
-
-const char *s_terrainTypeNames[] =
+namespace
 {
-    "NONE",
+
+const char *s_terrainTypeNames[] = { "NONE",
     "DESERT_1",
     "DESERT_2",
     "DESERT_3",
@@ -61,8 +60,7 @@ const char *s_terrainTypeNames[] =
     "CHINA",
     "ROCK_ACCENT",
     "URBAN",
-    nullptr
-};
+    nullptr };
 
 } // namespace
 
@@ -75,12 +73,7 @@ FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
 };
 
 TerrainType::TerrainType() :
-    m_name(),
-    m_texture(),
-    m_blendEdgeTexture(false),
-    m_class(TERRAIN_NONE),
-    m_restrictConstruction(false),
-    m_next(nullptr)
+    m_name(), m_texture(), m_blendEdgeTexture(false), m_class(TERRAIN_NONE), m_restrictConstruction(false), m_next(nullptr)
 {
 }
 

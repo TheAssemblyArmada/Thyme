@@ -21,10 +21,15 @@ class SortingRendererClass
 public:
     static void Flush_Sorting_Pool();
     static void Insert_To_Sorting_Pool(SortingNodeStruct *state);
-    static void Insert_Triangles(unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index,
+    static void Insert_Triangles(unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
         unsigned short vertex_count);
-    static void Insert_Triangles(class SphereClass &bounding_sphere, unsigned short start_index,
-        unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count);
+    static void Insert_Triangles(class SphereClass &bounding_sphere,
+        unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
+        unsigned short vertex_count);
     static void Flush();
     static void Deinit();
     static void SetMinVertexBufferSize(unsigned int val);

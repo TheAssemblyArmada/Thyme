@@ -79,7 +79,7 @@ const char *g_errorCodes[22] = {
     "Error code: ?????\r\r\nDescription: Unknown exception.",
 };
 
-unsigned int g_errorValues[] = {0xC0000005,
+unsigned int g_errorValues[] = { 0xC0000005,
     0xC000008C,
     0x80000003,
     0x80000002,
@@ -99,7 +99,7 @@ unsigned int g_errorValues[] = {0xC0000005,
     0xC0000096,
     0x80000004,
     0xC00000FD,
-    0xFFFFFFFF};
+    0xFFFFFFFF };
 
 static bool g_symbolInit;
 static CONTEXT g_stackContext;
@@ -111,8 +111,15 @@ static BOOL(__stdcall *SymInitializePtr)(HANDLE, PCSTR, BOOL);
 static DWORD64(__stdcall *SymLoadModulePtr)(HANDLE, HANDLE, PCSTR, PCSTR, DWORD64, DWORD);
 static DWORD(__stdcall *SymSetOptionsPtr)(DWORD);
 static BOOL(__stdcall *SymUnloadModulePtr)(HANDLE, DWORD64);
-static BOOL(__stdcall *StackWalkPtr)(DWORD, HANDLE, HANDLE, LPSTACKFRAME, PVOID, PREAD_PROCESS_MEMORY_ROUTINE,
-    PFUNCTION_TABLE_ACCESS_ROUTINE, PGET_MODULE_BASE_ROUTINE, PTRANSLATE_ADDRESS_ROUTINE);
+static BOOL(__stdcall *StackWalkPtr)(DWORD,
+    HANDLE,
+    HANDLE,
+    LPSTACKFRAME,
+    PVOID,
+    PREAD_PROCESS_MEMORY_ROUTINE,
+    PFUNCTION_TABLE_ACCESS_ROUTINE,
+    PGET_MODULE_BASE_ROUTINE,
+    PTRANSLATE_ADDRESS_ROUTINE);
 static PVOID(__stdcall *SymFunctionTableAccessPtr)(HANDLE, DWORD64);
 static BOOL(__stdcall *SymGetLineFromAddrPtr)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
 static DWORD64(__stdcall *SymGetModuleBasePtr)(HANDLE, DWORD64);
@@ -123,8 +130,15 @@ static BOOL(__stdcall *SymInitializePtr)(HANDLE, PCSTR, BOOL);
 static DWORD(__stdcall *SymLoadModulePtr)(HANDLE, HANDLE, PCSTR, PCSTR, DWORD, DWORD);
 static DWORD(__stdcall *SymSetOptionsPtr)(DWORD);
 static BOOL(__stdcall *SymUnloadModulePtr)(HANDLE, DWORD);
-static BOOL(__stdcall *StackWalkPtr)(DWORD, HANDLE, HANDLE, LPSTACKFRAME, PVOID, PREAD_PROCESS_MEMORY_ROUTINE,
-    PFUNCTION_TABLE_ACCESS_ROUTINE, PGET_MODULE_BASE_ROUTINE, PTRANSLATE_ADDRESS_ROUTINE);
+static BOOL(__stdcall *StackWalkPtr)(DWORD,
+    HANDLE,
+    HANDLE,
+    LPSTACKFRAME,
+    PVOID,
+    PREAD_PROCESS_MEMORY_ROUTINE,
+    PFUNCTION_TABLE_ACCESS_ROUTINE,
+    PGET_MODULE_BASE_ROUTINE,
+    PTRANSLATE_ADDRESS_ROUTINE);
 static PVOID(__stdcall *SymFunctionTableAccessPtr)(HANDLE, DWORD);
 static BOOL(__stdcall *SymGetLineFromAddrPtr)(HANDLE, DWORD, PDWORD, PIMAGEHLP_LINE);
 static DWORD(__stdcall *SymGetModuleBasePtr)(HANDLE, DWORD);
@@ -133,7 +147,7 @@ static DWORD(__stdcall *SymGetModuleBasePtr)(HANDLE, DWORD);
 static void Init_DbgHelp()
 {
 #if defined PROCESSOR_X86_64
-    static const char *_sym_functions[] = {"SymCleanup",
+    static const char *_sym_functions[] = { "SymCleanup",
         "SymGetSymFromAddr64",
         "SymInitialize",
         "SymLoadModule64",
@@ -142,9 +156,9 @@ static void Init_DbgHelp()
         "StackWalk",
         "SymFunctionTableAccess64",
         "SymGetLineFromAddr64",
-        "SymGetModuleBase64"};
+        "SymGetModuleBase64" };
 #elif defined PROCESSOR_X86
-    static const char *_sym_functions[] = {"SymCleanup",
+    static const char *_sym_functions[] = { "SymCleanup",
         "SymGetSymFromAddr",
         "SymInitialize",
         "SymLoadModule",
@@ -153,10 +167,10 @@ static void Init_DbgHelp()
         "StackWalk",
         "SymFunctionTableAccess",
         "SymGetLineFromAddr",
-        "SymGetModuleBase"};
+        "SymGetModuleBase" };
 #endif
 
-    static FARPROC *_sym_pointers[] = {(FARPROC *)&SymCleanupPtr,
+    static FARPROC *_sym_pointers[] = { (FARPROC *)&SymCleanupPtr,
         (FARPROC *)&SymGetSymFromAddrPtr,
         (FARPROC *)&SymInitializePtr,
         (FARPROC *)&SymLoadModulePtr,
@@ -165,7 +179,7 @@ static void Init_DbgHelp()
         (FARPROC *)&StackWalkPtr,
         (FARPROC *)&SymFunctionTableAccessPtr,
         (FARPROC *)&SymGetLineFromAddrPtr,
-        (FARPROC *)&SymGetModuleBasePtr};
+        (FARPROC *)&SymGetModuleBasePtr };
 
     static bool _initialised = false;
 
@@ -220,7 +234,7 @@ static void Get_Function_Details(void *pointer, char *name, char *filename, unsi
 
     if (SymGetSymFromAddrPtr != nullptr
         && SymGetSymFromAddrPtr(
-               process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD_PTR>(&displacement), symbol_bufferp)) {
+            process, reinterpret_cast<DWORD_PTR>(pointer), reinterpret_cast<PDWORD_PTR>(&displacement), symbol_bufferp)) {
         if (name != nullptr) {
             strcpy(name, symbol_bufferp->Name);
             strcat(name, "();");
@@ -315,7 +329,8 @@ BOOL Init_Symbol_Info()
     return false;
 }
 
-void Make_Stack_Trace(uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void (__cdecl *callback)(char const *))
+void Make_Stack_Trace(
+    uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void(__cdecl *callback)(char const *))
 {
     BOOL carry_on = true;
     STACKFRAME stack_frame;
@@ -440,7 +455,7 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
 #elif defined PROCESSOR_X86
     tmp.Format("Exception occurred at %" PRIPTRSIZE PRIXPTR "\n", ctext->Eip);
 #endif
-    g_exceptionFileBuffer += tmp; 
+    g_exceptionFileBuffer += tmp;
     g_exceptionFileBuffer += "\n";
 
 #if defined PROCESSOR_X86_64

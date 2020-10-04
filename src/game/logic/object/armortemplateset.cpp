@@ -15,9 +15,8 @@
 #include "armortemplateset.h"
 #include <cstddef>
 
-template<> const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT + 1] =
-{
-    "VETERAN",
+template<>
+const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT + 1] = { "VETERAN",
     "ELITE",
     "HERO",
     "PLAYER_UPGRADE",
@@ -25,8 +24,7 @@ template<> const char *BitFlags<ARMORSET_COUNT>::s_bitNamesList[ARMORSET_COUNT +
     "SECOND_LIFE",
     "CRATE_UPGRADE_ONE",
     "CRATE_UPGRADE_TWO",
-    nullptr
-};
+    nullptr };
 
 /**
  * @brief Parse a armor template set from an ini file.
@@ -37,7 +35,7 @@ void ArmorTemplateSet::Parse_Armor_Template_Set(INI *ini)
 {
     // TODO Requires ArmorTemplate and DamageFX parsers.
 #ifdef GAME_DLL
-    static FieldParse _parse_table[] = { 
+    static FieldParse _parse_table[] = {
         { "Conditions", BitFlags<ARMORSET_COUNT>::Parse_INI, nullptr, offsetof(ArmorTemplateSet, m_conditions) },
         // { "Armor", &INI::parseArmorTemplate, nullptr, offsetof(ArmorTemplateSet, m_template) },
         // { "DamageFX", &INI::parseDamageFX, nullptr, offsetof(ArmorTemplateSet, m_fx) },

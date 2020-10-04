@@ -47,11 +47,7 @@ private:
 };
 
 inline MultiplayerColorDefinition::MultiplayerColorDefinition() :
-    m_tooltipName(),
-    m_rgbValue{1.0f, 1.0f, 1.0f},
-    m_color(-1),
-    m_rgbNightValue{1.0f, 1.0f, 1.0f},
-    m_nightColor(-1)
+    m_tooltipName(), m_rgbValue{ 1.0f, 1.0f, 1.0f }, m_color(-1), m_rgbNightValue{ 1.0f, 1.0f, 1.0f }, m_nightColor(-1)
 {
 }
 

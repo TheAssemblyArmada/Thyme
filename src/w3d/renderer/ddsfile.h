@@ -114,23 +114,39 @@ public:
     WW3DFormat Get_Format() { return m_format; }
     time_t Get_Time() const { return m_time; }
     bool Have_Level_Sizes() const { return m_levelSizes != nullptr; }
-    void Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, unsigned dst_width, unsigned dst_height,
-        uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift);
+    void Copy_Level_To_Surface(unsigned level,
+        WW3DFormat dst_format,
+        unsigned dst_width,
+        unsigned dst_height,
+        uint8_t *dst_surface,
+        unsigned dst_pitch,
+        const Vector3 &color_shift);
     void Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surface, const Vector3 &color_shift);
-    void Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, WW3DFormat dst_format, unsigned dst_width,
-        unsigned dst_height, uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift);
-   bool Load();
+    void Copy_CubeMap_Level_To_Surface(unsigned face,
+        unsigned level,
+        WW3DFormat dst_format,
+        unsigned dst_width,
+        unsigned dst_height,
+        uint8_t *dst_surface,
+        unsigned dst_pitch,
+        const Vector3 &color_shift);
+    bool Load();
 
 #ifdef GAME_DLL
-   DDSFileClass *Hook_Ctor(const char *filename, unsigned reduction_factor)
-   {
-       return new (this) DDSFileClass(filename, reduction_factor);
-   }
+    DDSFileClass *Hook_Ctor(const char *filename, unsigned reduction_factor)
+    {
+        return new (this) DDSFileClass(filename, reduction_factor);
+    }
 #endif
 
 private:
-    bool Get_4x4_Block(uint8_t *dst_ptr, unsigned dst_pitch, WW3DFormat dst_format, unsigned level, unsigned src_x,
-        unsigned src_y, const Vector3 &color_shift);
+    bool Get_4x4_Block(uint8_t *dst_ptr,
+        unsigned dst_pitch,
+        WW3DFormat dst_format,
+        unsigned level,
+        unsigned src_x,
+        unsigned src_y,
+        const Vector3 &color_shift);
 
     static unsigned Calculate_S3TC_Surface_Size(unsigned width, unsigned height, WW3DFormat format);
     static uint32_t Decode_Packed_565(uint8_t *packed);

@@ -16,8 +16,8 @@
 #include "cpudetect.h"
 #include "globaldata.h"
 #include "optionpreferences.h"
-#include <cstdio>
 #include <cstddef>
+#include <cstdio>
 
 #ifndef GAME_DLL
 GameLODManager *g_theGameLODManager = nullptr;
@@ -28,22 +28,7 @@ const char *g_staticGameLODNames[] = { "Low", "Medium", "High", "Custom" };
 const char *g_dynamicGameLODNames[] = { "Low", "Medium", "High", "VeryHigh" };
 const char *GameLODManager::s_cpuNames[] = { "XX", "P3", "P4", "K7" };
 const char *GameLODManager::s_gpuNames[] = {
-    "XX",
-    "V2",
-    "V3",
-    "V4",
-    "V5",
-    "TNT",
-    "TNT2",
-    "GF2",
-    "R100",
-    "PS11",
-    "GF3",
-    "GF4",
-    "PS14",
-    "R200",
-    "PS20",
-    "R300" 
+    "XX", "V2", "V3", "V4", "V5", "TNT", "TNT2", "GF2", "R100", "PS11", "GF3", "GF4", "PS14", "R200", "PS20", "R300"
 };
 
 void Test_Minimum_Requirements(
@@ -62,14 +47,16 @@ void Test_Minimum_Requirements(
         *cpu_speed = 2500;
     }
 
-    // Because memory is returned as an integer and systems with more than 2GB are now common we return a max of 2GB rather than overflowing.
+    // Because memory is returned as an integer and systems with more than 2GB are now common we return a max of 2GB rather
+    // than overflowing.
     if (memory != nullptr) {
         *memory = CPUDetectClass::Get_Available_Physical_Memory() > INT_MAX ?
             INT_MAX :
             CPUDetectClass::Get_Available_Physical_Memory();
     }
 
-    // The other values are ignored here and were generated from the integrated nbench benchmarking code if all 3 values were requested.
+    // The other values are ignored here and were generated from the integrated nbench benchmarking code if all 3 values were
+    // requested.
 }
 
 GameLODManager::GameLODManager() :
@@ -438,8 +425,7 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
 
 void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
 {
-    static FieldParse _static_lod_parsers[] =
-    {
+    static FieldParse _static_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
         { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_cpu_fps) },
         { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_2D) },
@@ -475,9 +461,7 @@ void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
 
 void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
 {
-    static const char *_particle_prioritiy_names[] =
-    {
-        "NONE",
+    static const char *_particle_prioritiy_names[] = { "NONE",
         "WEAPON_EXPLOSION",
         "SCORCHMARK",
         "DUST_TRAIL",
@@ -491,17 +475,21 @@ void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
         "AREA_EFFECT",
         "CRITICAL",
         "ALWAYS_RENDER",
-        nullptr
-    };
+        nullptr };
 
-    static FieldParse _dynamic_lod_parsers[] =
-    {
+    static FieldParse _dynamic_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
         { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
         { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, debris_skip_mask) },
         { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLOD, slow_death_scale) },
-        { "MinParticlePriority", &INI::Parse_Index_List, _particle_prioritiy_names, offsetof(DynamicGameLOD, min_particle_priority) },
-        { "MinParticleSkipPriority", &INI::Parse_Index_List, _particle_prioritiy_names, offsetof(DynamicGameLOD, min_particle_skip_priority) },
+        { "MinParticlePriority",
+            &INI::Parse_Index_List,
+            _particle_prioritiy_names,
+            offsetof(DynamicGameLOD, min_particle_priority) },
+        { "MinParticleSkipPriority",
+            &INI::Parse_Index_List,
+            _particle_prioritiy_names,
+            offsetof(DynamicGameLOD, min_particle_skip_priority) },
         { nullptr, nullptr, nullptr, 0 }
     };
 

@@ -47,8 +47,11 @@ public:
 
     bool Get_File_Info(Utf8String const &name, FileInfo *info);
     Utf8String Get_Archive_Filename_For_File(Utf8String const &filename);
-    void Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath, Utf8String const &filter,
-        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs);
+    void Get_File_List_From_Dir(Utf8String const &subdir,
+        Utf8String const &dirpath,
+        Utf8String const &filter,
+        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+        bool search_subdirs);
     void Load_Mods();
 
 protected:

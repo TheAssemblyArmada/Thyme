@@ -102,7 +102,7 @@ public:
         UNK_COMMANDBUTTON_RELATED,
         FONT,
         OBJECT_STATUS,
-        UNK_ABILITY_RELATED, //Object ability perhaps?
+        UNK_ABILITY_RELATED, // Object ability perhaps?
         UNK_STRING_RELATED, // Message Popup perhaps?
         COLOR,
         EMOTICON,

@@ -34,7 +34,6 @@ enum WeatherType : int32_t
     WEATHER_COUNT,
 };
 
-
 enum BodyDamageType : int32_t
 {
     BODY_PRISTINE,

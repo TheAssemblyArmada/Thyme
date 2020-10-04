@@ -17,21 +17,18 @@
 #include "always.h"
 #include <map>
 
-template<typename K, typename T>
-class SparseMatchFinder
+template<typename K, typename T> class SparseMatchFinder
 {
     class MapHelper
     {
     public:
-        bool operator()(const K &left, const K &right) const
-        {
-            return left == right;
-        }
+        bool operator()(const K &left, const K &right) const { return left == right; }
     };
 
 public:
     // TODO implement more wrappers as they are determined required.
     T &operator[](const K &key) { return m_bestMatches[key]; }
+
 private:
     std::map<K, T, MapHelper> m_bestMatches;
 };

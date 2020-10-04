@@ -24,6 +24,7 @@
 class Script : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(Script);
+
 public:
     Script();
     virtual ~Script();

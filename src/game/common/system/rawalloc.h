@@ -30,7 +30,7 @@ inline void *Raw_Allocate(int bytes)
 {
     void *r = GlobalAlloc(GMEM_ZEROINIT | GMEM_FIXED, bytes);
 
-    //if (r == nullptr) {
+    // if (r == nullptr) {
     //    throw std::bad_alloc();
     //}
 
@@ -46,7 +46,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
 {
     void *r = GlobalAlloc(GMEM_FIXED, bytes);
 
-    //if (r == nullptr) {
+    // if (r == nullptr) {
     //    throw std::bad_alloc();
     //}
 
@@ -58,7 +58,11 @@ inline void *Raw_Allocate_No_Zero(int bytes)
 /**
  * @brief Frees a block of memory.
  */
-inline void Raw_Free(void *memory) { if ( memory != nullptr ) GlobalFree(memory); }
+inline void Raw_Free(void *memory)
+{
+    if (memory != nullptr)
+        GlobalFree(memory);
+}
 
 // Otherwise use standard allocators.
 #else
@@ -69,7 +73,7 @@ inline void *Raw_Allocate(int bytes)
 {
     void *r = calloc(1, bytes);
 
-    //if (r == nullptr) {
+    // if (r == nullptr) {
     //    throw std::bad_alloc();
     //}
 
@@ -85,7 +89,7 @@ inline void *Raw_Allocate_No_Zero(int bytes)
 {
     void *r = malloc(bytes);
 
-    //if (r == nullptr) {
+    // if (r == nullptr) {
     //    throw std::bad_alloc();
     //}
 
@@ -97,12 +101,25 @@ inline void *Raw_Allocate_No_Zero(int bytes)
 /**
  * @brief Frees a block of memory.
  */
-inline void Raw_Free(void *memory) { if ( memory != nullptr ) free(memory); }
+inline void Raw_Free(void *memory)
+{
+    if (memory != nullptr)
+        free(memory);
+}
 #endif
 
-inline int Round_Up_4(int number) { return (number + 3) & (~3); }   // For 4byte alignment
-inline int Round_Up_8(int number) { return (number + 7) & (~7); }   // For 8bytes alignment
+inline int Round_Up_4(int number)
+{
+    return (number + 3) & (~3);
+} // For 4byte alignment
+inline int Round_Up_8(int number)
+{
+    return (number + 7) & (~7);
+} // For 8bytes alignment
 /**
  * @brief Rounds a number up to a multiple of the architecture word size.
  */
-inline int Round_Up_Word_Size(int number) { return (number + sizeof(void*) - 1) & (~(sizeof(void*) - 1)); } // For machine wordsize alignment
+inline int Round_Up_Word_Size(int number)
+{
+    return (number + sizeof(void *) - 1) & (~(sizeof(void *) - 1));
+} // For machine wordsize alignment

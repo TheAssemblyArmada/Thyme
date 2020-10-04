@@ -16,9 +16,9 @@
 #include <cstdio>
 #include <cstdlib>
 
-using std::fopen;
-using std::fgets;
 using std::fclose;
+using std::fgets;
+using std::fopen;
 using std::getenv;
 
 CrashPreferences::CrashPreferences()

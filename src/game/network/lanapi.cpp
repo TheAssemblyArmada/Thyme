@@ -405,7 +405,8 @@ void LANAPI::On_Chat(Utf16String player, uint32_t ip, Utf16String message, ChatT
 {
     // TODO Requires GameWindow, LanguageFilter, LANGameInfo, MultiplayerSettings, GadgetListBox*
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, Utf16String, uint32_t, Utf16String, ChatType>(PICK_ADDRESS(0x005F9910, 0), this, player, ip, message, format);
+    Call_Method<void, LANAPI, Utf16String, uint32_t, Utf16String, ChatType>(
+        PICK_ADDRESS(0x005F9910, 0), this, player, ip, message, format);
 #endif
 }
 
@@ -441,7 +442,8 @@ void LANAPI::On_Game_Options(uint32_t player_addr, int player_slot, Utf8String o
 {
     // TODO Requires LANGameInfo, LANGameSlot, GameInfoToAsciiString
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, int, Utf8String>(PICK_ADDRESS(0x005F84D0, 0), this, player_addr, player_slot, options);
+    Call_Method<void, LANAPI, uint32_t, int, Utf8String>(
+        PICK_ADDRESS(0x005F84D0, 0), this, player_addr, player_slot, options);
 #endif
 }
 

@@ -14,11 +14,11 @@
  */
 #pragma once
 #include "always.h"
-#include "rendobj.h"
-#include "dx8wrapper.h"
-#include "snapshot.h"
 #include "asciistring.h"
 #include "coord.h"
+#include "dx8wrapper.h"
+#include "rendobj.h"
+#include "snapshot.h"
 #include <vector>
 
 class CloudMapTerrainTextureClass;
@@ -39,7 +39,6 @@ struct TScorch
     float m_radius;
     int m_scorchType;
 };
-
 
 class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHook, public SnapShot
 {
@@ -76,7 +75,7 @@ public:
     int Get_Static_Diffuse(int x, int y);
     float Get_Max_Cell_Height(float x, float y);
 
- protected:
+protected:
     int m_x;
     int m_y;
     DX8VertexBufferClass *m_vertexScorch;

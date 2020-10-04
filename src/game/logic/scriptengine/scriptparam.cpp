@@ -19,13 +19,7 @@
 #include <captainslog.h>
 
 Parameter::Parameter(ParameterType type) :
-    m_type(type),
-    m_initialized(false),
-    m_int(0),
-    m_real(0.0f),
-    m_string(),
-    m_coord{0.0f, 0.0f, 0.0f},
-    m_objStatus()
+    m_type(type), m_initialized(false), m_int(0), m_real(0.0f), m_string(), m_coord{ 0.0f, 0.0f, 0.0f }, m_objStatus()
 {
 }
 
@@ -36,7 +30,8 @@ Parameter::Parameter(ParameterType type) :
  */
 void Parameter::Qualify(const Utf8String &suffix, const Utf8String &side_test, const Utf8String &side_replacemet)
 {
-    //captainslog_trace("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.", m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
+    // captainslog_trace("Qualifying parameter string '%s' with suffix '%s' against '%s' to replace with '%s'.",
+    // m_string.Str(), suffix.Str(), side_test.Str(), side_replacemet.Str());
     switch (m_type) {
         case SIDE:
             if (m_string + suffix == side_test) {
@@ -69,16 +64,14 @@ void Parameter::Qualify(const Utf8String &suffix, const Utf8String &side_test, c
 Utf8String Parameter::Get_UI_Text()
 {
     // Dunno where this is supposed to be from, only appears used here.
-    static BorderColor _border_colors[] = {
-        {"Orange", 0xFFFF8700},
-        {"Green", 0xFF00FF00},
-        {"Blue", 0xFF0000FF},
-        {"Cyan", 0xFF00FFFF},
-        {"Magenta", 0xFFFF00FF},
-        {"Yellow", 0xFFFFFF00},
-        {"Purple", 0xFF9E00FF},
-        {"Pink", 0xFFFF8670}
-    };
+    static BorderColor _border_colors[] = { { "Orange", 0xFFFF8700 },
+        { "Green", 0xFF00FF00 },
+        { "Blue", 0xFF0000FF },
+        { "Cyan", 0xFF00FFFF },
+        { "Magenta", 0xFFFF00FF },
+        { "Yellow", 0xFFFFFF00 },
+        { "Purple", 0xFF9E00FF },
+        { "Pink", 0xFFFF8670 } };
 
     Utf8String ui_string = m_string.Is_Empty() ? "?" : m_string;
     Utf8String ui_text;
@@ -454,7 +447,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                 if (param->m_string.Compare_No_Case("CRUSHER") == 0) {
                     captainslog_trace("Parameter KindOF Matched CRUSHER.");
                     param->m_int = i;
-                    
+
                     return param;
                 }
 

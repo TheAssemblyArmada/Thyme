@@ -34,7 +34,9 @@ public:
     ThumbnailClass *Get_From_Hash(const StringClass &texture);
     void Remove_From_Hash(ThumbnailClass *thumbnail);
     void Create_Thumbnails();
-    void Load() { /*Empty in Zero Hour*/}
+    void Load()
+    { /*Empty in Zero Hour*/
+    }
     void Save(bool force);
 
     static void Add_Thumbnail_Manager(const char *thumbfilename, const char *mixfilename);
@@ -44,7 +46,9 @@ public:
     static ThumbnailClass *Peek_Thumbnail_Instance_From_Any_Manager(const StringClass &texture);
     static void Init();
     static void Deinit();
-    static void Pre_Init(bool b) { /*Looks left over from Renegade, references .mix files*/ }
+    static void Pre_Init(bool b)
+    { /*Looks left over from Renegade, references .mix files*/
+    }
 
 private:
     bool m_allowThumbnailCreation;

@@ -170,7 +170,7 @@ Quaternion Trackball(float x0, float y0, float x1, float y1, float sphsize)
 
 Quaternion Build_Quaternion(const Matrix3D &mat)
 {
-    static int _nxt[3] = {1, 2, 0};
+    static int _nxt[3] = { 1, 2, 0 };
     float tr, s;
     int i, j, k;
     Quaternion q;
@@ -213,7 +213,7 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
 
 Quaternion Build_Quaternion(const Matrix3 &mat)
 {
-    static int _nxt[3] = {1, 2, 0};
+    static int _nxt[3] = { 1, 2, 0 };
     float tr, s;
     int i, j, k;
     Quaternion q;
@@ -258,7 +258,7 @@ Quaternion Build_Quaternion(const Matrix3 &mat)
 
 Quaternion Build_Quaternion(const Matrix4 &mat)
 {
-    static int _nxt[3] = {1, 2, 0};
+    static int _nxt[3] = { 1, 2, 0 };
     float tr, s;
     int i, j, k;
     Quaternion q;
@@ -273,7 +273,7 @@ Quaternion Build_Quaternion(const Matrix4 &mat)
         q[2] = (mat[1][0] - mat[0][1]) * s;
     } else {
         i = 0;
-        
+
         if (mat[1][1] > mat[0][0]) {
             i = 1;
         }

@@ -34,6 +34,7 @@ class ScriptList : public MemoryPoolObject, public SnapShot
         int num_lists;
         ScriptList *read_lists[MAX_LIST_COUNT];
     };
+
 public:
     ScriptList() : m_firstGroup(nullptr), m_firstScript(nullptr) {}
     virtual ~ScriptList();

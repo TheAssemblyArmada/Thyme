@@ -19,7 +19,7 @@
 #ifdef PLATFORM_WINDOWS
 #include <winreg.h>
 
-static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8String& result)
+static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8String &result)
 {
     HKEY phk_result;
     if (RegOpenKeyExA(hkey, subkey, 0, KEY_READ, &phk_result) == ERROR_SUCCESS) {

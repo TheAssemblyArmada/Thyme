@@ -14,4 +14,4 @@
  */
 #pragma once
 
-bool IsFirstCDPresent();        //0x004469C0
+bool IsFirstCDPresent(); // 0x004469C0

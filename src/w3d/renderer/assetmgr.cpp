@@ -14,5 +14,5 @@
  */
 #include "assetmgr.h"
 #ifndef GAME_DLL
-W3DAssetManager *::W3DAssetManager::s_theInstance;
+W3DAssetManager * ::W3DAssetManager::s_theInstance;
 #endif

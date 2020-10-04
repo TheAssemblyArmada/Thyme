@@ -485,7 +485,8 @@ bool INI::Scan_Bool(const char *token)
 
 int INI::Scan_IndexList(const char *token, const char *const *list)
 {
-    captainslog_relassert(list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
+    captainslog_relassert(
+        list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
 
     int list_count = 0;
 
@@ -589,7 +590,7 @@ void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, c
 void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[3];
-    const char *names[3] = {"R", "G", "B"};
+    const char *names[3] = { "R", "G", "B" };
     RGBColor *rgb = static_cast<RGBColor *>(store);
 
     for (int i = 0; i < 3; ++i) {
@@ -605,7 +606,7 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_
 void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[4];
-    const char *names[4] = {"R", "G", "B", "A"};
+    const char *names[4] = { "R", "G", "B", "A" };
     RGBAColorInt *rgba = static_cast<RGBAColorInt *>(store);
 
     for (int i = 0; i < 4; ++i) {
@@ -633,7 +634,7 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *
 void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     int colors[4];
-    const char *names[4] = {"R", "G", "B", "A"};
+    const char *names[4] = { "R", "G", "B", "A" };
     uint32_t *rgba = static_cast<uint32_t *>(store);
 
     for (int i = 0; i < 4; ++i) {

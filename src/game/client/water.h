@@ -15,11 +15,11 @@
 #pragma once
 
 #include "always.h"
-#include "overridable.h"
 #include "asciistring.h"
 #include "color.h"
 #include "gametype.h"
 #include "ini.h"
+#include "overridable.h"
 
 class WaterSetting
 {
@@ -48,13 +48,14 @@ private:
 class WaterTransparencySetting : public Overridable
 {
     IMPLEMENT_POOL(WaterTransparencySetting);
+
 public:
     WaterTransparencySetting();
     virtual ~WaterTransparencySetting() {}
 
     WaterTransparencySetting *Get_Override()
     {
-        return m_next == nullptr ? this : (WaterTransparencySetting*)Get_Final_Override();
+        return m_next == nullptr ? this : (WaterTransparencySetting *)Get_Final_Override();
     }
 
     static void Parse_Water_Transparency(INI *ini);

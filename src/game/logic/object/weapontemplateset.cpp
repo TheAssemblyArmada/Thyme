@@ -15,8 +15,8 @@
 #include "weapontemplateset.h"
 #include <cstddef>
 
-template<> const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = {
-    "VETERAN",
+template<>
+const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = { "VETERAN",
     "ELITE",
     "HERO",
     "PLAYER_UPGRADE",
@@ -33,7 +33,7 @@ template<> const char *BitFlags<WEAPONSET_COUNT>::s_bitNamesList[] = {
     "WEAPON_RIDER6",
     "WEAPON_RIDER7",
     "WEAPON_RIDER8",
-    nullptr};
+    nullptr };
 
 /**
  * @brief Clears the template set.
@@ -87,13 +87,17 @@ bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set)
 void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type)
 {
     static FieldParse _parse_table[] = {
-        {"Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions)},
-        {"Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0},
-        {"AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0},
-        {"PreferredAgainst", &WeaponTemplateSet::Parse_Preferred_Against, nullptr, 0},
-        {"ShareWeaponReloadTime", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplateSet, m_shareWeaponReloadTime)},
-        {"WeaponLockSharedAcrossSets", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplateSet, m_weaponLockSharedAcrossSets)},
-        {nullptr, nullptr, nullptr, 0}};
+        { "Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions) },
+        { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
+        { "AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0 },
+        { "PreferredAgainst", &WeaponTemplateSet::Parse_Preferred_Against, nullptr, 0 },
+        { "ShareWeaponReloadTime", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplateSet, m_shareWeaponReloadTime) },
+        { "WeaponLockSharedAcrossSets",
+            &INI::Parse_Bool,
+            nullptr,
+            offsetof(WeaponTemplateSet, m_weaponLockSharedAcrossSets) },
+        { nullptr, nullptr, nullptr, 0 }
+    };
 
     ini->Init_From_INI(this, _parse_table);
     m_type = type;
@@ -108,7 +112,8 @@ void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const 
 {
     // TODO requires WeaponTemplate parser
 #ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(PICK_ADDRESS(0x00605E60, 0x006DE34C), ini, formal, store, user_data);
+    Call_Function<void, INI *, void *, void *, const void *>(
+        PICK_ADDRESS(0x00605E60, 0x006DE34C), ini, formal, store, user_data);
 #endif
 }
 
@@ -120,7 +125,8 @@ void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const 
 void WeaponTemplateSet::Parse_Auto_Choose(INI *ini, void *formal, void *store, const void *user_data)
 {
     int index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
-    INI::Parse_Bitstring32(ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_autoChooseMask[index], g_commandSourceMaskNames);
+    INI::Parse_Bitstring32(
+        ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_autoChooseMask[index], g_commandSourceMaskNames);
 }
 
 /**
@@ -131,5 +137,6 @@ void WeaponTemplateSet::Parse_Auto_Choose(INI *ini, void *formal, void *store, c
 void WeaponTemplateSet::Parse_Preferred_Against(INI *ini, void *formal, void *store, const void *user_data)
 {
     int index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
-    BitFlags<KINDOF_COUNT>::Parse_INI(ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_preferredAgainst[index], user_data);
+    BitFlags<KINDOF_COUNT>::Parse_INI(
+        ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_preferredAgainst[index], user_data);
 }

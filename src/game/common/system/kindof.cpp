@@ -19,9 +19,8 @@
 // on the template param incase of collision if it needs extending later,
 // but this is what the original looks like it did.
 // Maps what each bit flags.
-template <>
-const char *BitFlags<KINDOF_COUNT>::s_bitNamesList[] {
-    "OBSTACLE",
+template<>
+const char *BitFlags<KINDOF_COUNT>::s_bitNamesList[]{ "OBSTACLE",
     "SELECTABLE",
     "IMMOBILE",
     "CAN_ATTACK",
@@ -137,5 +136,4 @@ const char *BitFlags<KINDOF_COUNT>::s_bitNamesList[] {
     "DEMOTRAP",
     "CONSERVATIVE_BUILDING",
     "IGNORE_DOCKING_BONES",
-    nullptr
-};
+    nullptr };

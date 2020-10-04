@@ -24,7 +24,7 @@ PlayerTemplateStore *g_thePlayerTemplateStore = nullptr;
 
 PlayerTemplate::PlayerTemplate() :
     m_nameKey(NAMEKEY_INVALID),
-    m_preferredColor{0.0f, 0.0f, 0.0f},
+    m_preferredColor{ 0.0f, 0.0f, 0.0f },
     m_specialPowerShortcutButtonCount(0),
     m_isObserver(false),
     m_isPlayableSide(false),
@@ -233,8 +233,7 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
  */
 void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
 {
-    static FieldParse _parse_table[] = {
-        { "Side", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_side) },
+    static FieldParse _parse_table[] = { { "Side", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_side) },
         { "BaseSide", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_baseSide) },
         { "PlayableSide", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_isPlayableSide) },
         { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(PlayerTemplate, m_displayName) },
@@ -255,15 +254,36 @@ void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
         { "ProductionTimeChange", &PlayerTemplate::Parse_Production_Time_Change, nullptr, 0 },
         { "ProductionVeterancyLevel", &PlayerTemplate::Parse_Production_Veterancy_Level, nullptr, 0 },
         { "IntrinsicSciences", &INI::Parse_Science_Vector, nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
-        { "PurchaseScienceCommandSetRank1", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankOne) },
-        { "PurchaseScienceCommandSetRank3", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankThree) },
-        { "PurchaseScienceCommandSetRank8", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankEight) },
-        { "SpecialPowerShortcutCommandSet", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutCommandSet) },
-        { "SpecialPowerShortcutWinName", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutWinName) },
-        { "SpecialPowerShortcutButtonCount", &INI::Parse_Int, nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutButtonCount) },
+        { "PurchaseScienceCommandSetRank1",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(PlayerTemplate, m_purchaseCommandSetRankOne) },
+        { "PurchaseScienceCommandSetRank3",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(PlayerTemplate, m_purchaseCommandSetRankThree) },
+        { "PurchaseScienceCommandSetRank8",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(PlayerTemplate, m_purchaseCommandSetRankEight) },
+        { "SpecialPowerShortcutCommandSet",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(PlayerTemplate, m_specialPowerShortcutCommandSet) },
+        { "SpecialPowerShortcutWinName",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(PlayerTemplate, m_specialPowerShortcutWinName) },
+        { "SpecialPowerShortcutButtonCount",
+            &INI::Parse_Int,
+            nullptr,
+            offsetof(PlayerTemplate, m_specialPowerShortcutButtonCount) },
         { "IsObserver", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_isObserver) },
         { "OldFaction", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_oldFaction) },
-        { "IntrinsicSciencePurchasePoints", &INI::Parse_Int, nullptr, offsetof(PlayerTemplate, m_intrinsicSciencePurchasePoints) },
+        { "IntrinsicSciencePurchasePoints",
+            &INI::Parse_Int,
+            nullptr,
+            offsetof(PlayerTemplate, m_intrinsicSciencePurchasePoints) },
         { "ScoreScreenImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_scoreScreenImage) },
         { "LoadScreenImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_loadScreenImage) },
         { "LoadScreenMusic", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_loadScreenMusic) },
@@ -279,8 +299,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
         { "MedallionRegular", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionRegular) },
         { "MedallionHilite", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionHilite) },
         { "MedallionSelect", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionSelect) },
-        { nullptr, nullptr, nullptr, 0 }
-    };
+        { nullptr, nullptr, nullptr, 0 } };
 
     NameKeyType key = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
     PlayerTemplate *temp = g_thePlayerTemplateStore->Find_Player_Template(key);

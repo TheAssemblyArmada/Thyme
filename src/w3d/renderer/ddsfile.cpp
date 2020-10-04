@@ -65,9 +65,10 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
 
     // The original doesn't actually check this, but might as well log if we have oddly formatted .dds files.
     if (header_fourcc != FourCC<'D', 'D', 'S', ' '>::value) {
-        char fourcc_debug[5] = {0};
+        char fourcc_debug[5] = { 0 };
         memcpy(fourcc_debug, &header_fourcc, sizeof(header_fourcc));
-        captainslog_error("DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.", m_name, fourcc_debug);
+        captainslog_error(
+            "DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.", m_name, fourcc_debug);
     }
 
     int header_size = fp->Read(&m_fileHeader, sizeof(m_fileHeader));
@@ -197,8 +198,13 @@ unsigned DDSFileClass::Get_Depth(unsigned level)
  *
  * 0x0087A170
  */
-void DDSFileClass::Copy_Level_To_Surface(unsigned level, WW3DFormat dst_format, unsigned dst_width, unsigned dst_height,
-    uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift)
+void DDSFileClass::Copy_Level_To_Surface(unsigned level,
+    WW3DFormat dst_format,
+    unsigned dst_width,
+    unsigned dst_height,
+    uint8_t *dst_surface,
+    unsigned dst_pitch,
+    const Vector3 &color_shift)
 {
     if (m_DDSMemory == nullptr) {
         return;
@@ -297,8 +303,14 @@ void DDSFileClass::Copy_Level_To_Surface(unsigned level, w3dsurface_t d3d_surfac
  *
  * 0x0087AEE0
  */
-void DDSFileClass::Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, WW3DFormat dst_format, unsigned dst_width,
-    unsigned dst_height, uint8_t *dst_surface, unsigned dst_pitch, const Vector3 &color_shift)
+void DDSFileClass::Copy_CubeMap_Level_To_Surface(unsigned face,
+    unsigned level,
+    WW3DFormat dst_format,
+    unsigned dst_width,
+    unsigned dst_height,
+    uint8_t *dst_surface,
+    unsigned dst_pitch,
+    const Vector3 &color_shift)
 {
     if (m_DDSMemory == nullptr) {
         return;
@@ -349,8 +361,13 @@ void DDSFileClass::Copy_CubeMap_Level_To_Surface(unsigned face, unsigned level, 
  *
  * 0x0087BBF0
  */
-bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr, unsigned dst_pitch, WW3DFormat dst_format, unsigned level, unsigned src_x,
-    unsigned src_y, const Vector3 &color_shift)
+bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
+    unsigned dst_pitch,
+    WW3DFormat dst_format,
+    unsigned level,
+    unsigned src_x,
+    unsigned src_y,
+    const Vector3 &color_shift)
 {
     unsigned dst_bpp = Get_Bytes_Per_Pixel(dst_format);
     bool adjust_color = false;

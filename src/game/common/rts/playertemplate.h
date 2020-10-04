@@ -19,8 +19,8 @@
 #include "color.h"
 #include "gametype.h"
 #include "handicap.h"
-#include "namekeygenerator.h"
 #include "money.h"
+#include "namekeygenerator.h"
 #include "science.h"
 #include "subsysteminterface.h"
 #include "unicodestring.h"
@@ -33,11 +33,13 @@ class Image;
 
 class PlayerTemplate
 {
-    enum {
+    enum
+    {
         STARTING_UNIT_COUNT = 10,
     };
 
     friend class PlayerTemplateStore;
+
 public:
     PlayerTemplate();
     ~PlayerTemplate() {}

@@ -15,8 +15,7 @@
 #include "weapon.h"
 #include "ini.h"
 
-const char *TheWeaponBonusNames[] = {
-    "GARRISONED",
+const char *TheWeaponBonusNames[] = { "GARRISONED",
     "HORDE",
     "CONTINUOUS_FIRE_MEAN",
     "CONTINUOUS_FIRE_FAST",
@@ -43,23 +42,15 @@ const char *TheWeaponBonusNames[] = {
     "FRENZY_ONE",
     "FRENZY_TWO",
     "FRENZY_THREE",
-    nullptr
-};
+    nullptr };
 
-const char *TheWeaponBonusFieldNames[] = {
-    "DAMAGE",
-    "RADIUS",
-    "RANGE",
-    "RATE_OF_FIRE",
-    "PRE_ATTACK",
-    nullptr
-};
+const char *TheWeaponBonusFieldNames[] = { "DAMAGE", "RADIUS", "RANGE", "RATE_OF_FIRE", "PRE_ATTACK", nullptr };
 
 void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data)
 {
     // We get passed a pointer to the global object plus an offsets so its a pointer to
     // the weapon bonus set pointer in the global object.
-    WeaponBonusSet *wbs = *static_cast<WeaponBonusSet**>(store);
+    WeaponBonusSet *wbs = *static_cast<WeaponBonusSet **>(store);
     int set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
     int field = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames);
     wbs->m_bonus[set].field[field] = INI::Scan_PercentToReal(ini->Get_Next_Token());

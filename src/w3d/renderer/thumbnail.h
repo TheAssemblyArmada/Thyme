@@ -25,8 +25,17 @@ class ThumbnailManagerClass;
 class ThumbnailClass
 {
 public:
-    ThumbnailClass(ThumbnailManagerClass *manager, char const *texture, uint8_t *bits, unsigned width, unsigned height,
-        unsigned maxwidth, unsigned maxheight, unsigned miplevels, WW3DFormat format, bool isallocated, unsigned time);
+    ThumbnailClass(ThumbnailManagerClass *manager,
+        char const *texture,
+        uint8_t *bits,
+        unsigned width,
+        unsigned height,
+        unsigned maxwidth,
+        unsigned maxheight,
+        unsigned miplevels,
+        WW3DFormat format,
+        bool isallocated,
+        unsigned time);
     ThumbnailClass(ThumbnailManagerClass *manager, const StringClass &texture);
     ~ThumbnailClass();
 

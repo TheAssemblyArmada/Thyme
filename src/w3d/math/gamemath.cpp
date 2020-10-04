@@ -16,8 +16,7 @@
  */
 #include "gamemath.h"
 
-template<typename T, int N>
-inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
+template<typename T, int N> inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
 {
     Array<T, N> table;
     for (int a = 0; a < N; ++a) {

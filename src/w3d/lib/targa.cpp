@@ -86,7 +86,7 @@ int TargaImage::Open(const char *name, int mode)
             // not a TGA file.
             if ((m_flags & 8) != 0
                 && (File_Seek(footer.extension, FileSeekType::FS_SEEK_START) != -1
-                       || File_Read(&m_extension, sizeof(m_extension) != sizeof(m_extension)))) {
+                    || File_Read(&m_extension, sizeof(m_extension) != sizeof(m_extension)))) {
                 Close();
 
                 return TGA_RET_NOT_TGA;
@@ -247,7 +247,7 @@ int TargaImage::Load(const char *name, char *palette, char *image, bool invert_i
 
     if (image != nullptr) {
         int total_bytes = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
-        
+
         switch (m_header.image_type) {
             case TGA_TYPE_MAPPED:
             case TGA_TYPE_COLOR:

@@ -36,79 +36,65 @@ public:
 // based class to implement required functions. "classname" must match
 // the name of the class in which it is used.
 #define IMPLEMENT_POOL(classname) \
-    private: \
-        static MemoryPool *Get_Class_Pool() \
-        { \
-            static MemoryPool *The##classname##Pool; \
-            static bool PoolInit; \
-            if ( !PoolInit ) { \
-                PoolInit = true; \
-                The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
-            } \
-            captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
-            return The##classname##Pool; \
+private: \
+    static MemoryPool *Get_Class_Pool() \
+    { \
+        static MemoryPool *The##classname##Pool; \
+        static bool PoolInit; \
+        if (!PoolInit) { \
+            PoolInit = true; \
+            The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
         } \
-    public: \
-        virtual MemoryPool *Get_Object_Pool() override\
-        { \
-            return Get_Class_Pool(); \
-        } \
-        void *operator new(size_t size) \
-        { \
-            return Get_Class_Pool()->Allocate_Block(); \
-        } \
-        void *operator new(size_t size, void *dst) \
-        { \
-            return dst; \
-        } \
-        void operator delete(void *p, void *q) {} \
-        void operator delete(void *ptr) \
-        { \
-            return Get_Class_Pool()->Free_Block(ptr); \
-        }
+        captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
+            "Pool %s is wrong size for class (need %d, currently %d)", \
+            #classname, \
+            sizeof(classname), \
+            The##classname##Pool->Get_Alloc_Size()); \
+        return The##classname##Pool; \
+    } \
+\
+public: \
+    virtual MemoryPool *Get_Object_Pool() override { return Get_Class_Pool(); } \
+    void *operator new(size_t size) { return Get_Class_Pool()->Allocate_Block(); } \
+    void *operator new(size_t size, void *dst) { return dst; } \
+    void operator delete(void *p, void *q) {} \
+    void operator delete(void *ptr) { return Get_Class_Pool()->Free_Block(ptr); }
 
 // Use within a class declaration on a none virtual MemoryPoolObject
 // based class to implement required functions. "classname" must match
-// the name of the class in which it is used, "poolname" should match a 
+// the name of the class in which it is used, "poolname" should match a
 // gamememoryinit.cpp entry.
 #define IMPLEMENT_NAMED_POOL(classname, poolname) \
-    private: \
-        static MemoryPool *Get_Class_Pool() \
-        { \
-            static MemoryPool *The##classname##Pool; \
-            static bool PoolInit; \
-            if ( !PoolInit ) { \
-                PoolInit = true; \
-                The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
-            } \
-            captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), "Pool %s is wrong size for class (need %d, currently %d)", #classname, sizeof(classname), The##classname##Pool->Get_Alloc_Size()); \
-            return The##classname##Pool; \
+private: \
+    static MemoryPool *Get_Class_Pool() \
+    { \
+        static MemoryPool *The##classname##Pool; \
+        static bool PoolInit; \
+        if (!PoolInit) { \
+            PoolInit = true; \
+            The##classname##Pool = g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
         } \
-    public: \
-        virtual MemoryPool *Get_Object_Pool() override \
-        { \
-            return Get_Class_Pool(); \
-        } \
-        void *operator new(size_t size) \
-        { \
-            return Get_Class_Pool()->Allocate_Block(); \
-        } \
-        void *operator new(size_t size, void *dst) \
-        { \
-            return dst; \
-        } \
-        void operator delete(void *p, void *q) {} \
-        void operator delete(void *ptr) \
-        { \
-            return Get_Class_Pool()->Free_Block(ptr); \
-        }
+        captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
+            "Pool %s is wrong size for class (need %d, currently %d)", \
+            #classname, \
+            sizeof(classname), \
+            The##classname##Pool->Get_Alloc_Size()); \
+        return The##classname##Pool; \
+    } \
+\
+public: \
+    virtual MemoryPool *Get_Object_Pool() override { return Get_Class_Pool(); } \
+    void *operator new(size_t size) { return Get_Class_Pool()->Allocate_Block(); } \
+    void *operator new(size_t size, void *dst) { return dst; } \
+    void operator delete(void *p, void *q) {} \
+    void operator delete(void *ptr) { return Get_Class_Pool()->Free_Block(ptr); }
 
 /**
  * @brief Delete an instance of a MemoryPoolObject, ensuring correct pool is used via virtual call.
  */
 inline void Delete_Instance(MemoryPoolObject *ptr)
 {
-    if ( ptr != nullptr ) {
+    if (ptr != nullptr) {
         MemoryPool *pool = ptr->Get_Object_Pool();
         ptr->~MemoryPoolObject();
         pool->Free_Block(ptr);
@@ -125,7 +111,7 @@ public:
 
     ~MemoryPoolObjectHolder()
     {
-        if ( Obj != nullptr ) {
+        if (Obj != nullptr) {
             MemoryPool *mp = Obj->Get_Object_Pool();
             Obj->~MemoryPoolObject();
             mp->Free_Block(Obj);

@@ -15,9 +15,9 @@
 #pragma once
 
 #include "always.h"
-#include "userpreferences.h"
 #include "asciistring.h"
 #include "gamelod.h"
+#include "userpreferences.h"
 
 class OptionPreferences : public UserPreferences
 {
@@ -70,8 +70,8 @@ public:
     uint32_t Get_Online_IPAddress();
     void Set_Online_IPAddress(Utf8String address);
     void Set_Online_IPAddress(uint32_t address);
-private:
 
+private:
 };
 
 #ifdef GAME_DLL

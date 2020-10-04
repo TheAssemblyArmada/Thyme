@@ -14,15 +14,16 @@
  */
 #pragma once
 
-class CopyProtect {
-    public:
-        static bool isLauncherRunning();                            //0x004122F0
-        static bool notifyLauncher();                              //0x00412330
-        static void checkForMessage(unsigned int msg, int handle);     //0x00412420
-        static bool validate();                                    //0x00412450
-        static void *shutdown();                                   //0x004124B0
-    private:
-        //
-        // Original used a mutex and void* to communicate with the launcher.
-        //
+class CopyProtect
+{
+public:
+    static bool isLauncherRunning(); // 0x004122F0
+    static bool notifyLauncher(); // 0x00412330
+    static void checkForMessage(unsigned int msg, int handle); // 0x00412420
+    static bool validate(); // 0x00412450
+    static void *shutdown(); // 0x004124B0
+private:
+    //
+    // Original used a mutex and void* to communicate with the launcher.
+    //
 };

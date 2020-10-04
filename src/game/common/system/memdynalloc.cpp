@@ -29,11 +29,7 @@ DynamicMemoryAllocator *g_dynamicMemoryAllocator = nullptr;
 #endif
 
 DynamicMemoryAllocator::DynamicMemoryAllocator() :
-    m_factory(nullptr),
-    m_nextDmaInFactory(nullptr),
-    m_poolCount(0),
-    m_usedBlocksInDma(0),
-    m_rawBlocks(0)
+    m_factory(nullptr), m_nextDmaInFactory(nullptr), m_poolCount(0), m_usedBlocksInDma(0), m_rawBlocks(0)
 {
     memset(m_pools, 0, sizeof(m_pools));
 }
@@ -41,13 +37,13 @@ DynamicMemoryAllocator::DynamicMemoryAllocator() :
 void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params)
 {
     PoolInitRec const defaults[7] = {
-        {"dmaPool_16", 16, 64, 64},
-        {"dmaPool_32", 32, 64, 64},
-        {"dmaPool_64", 64, 64, 64},
-        {"dmaPool_128", 128, 64, 64},
-        {"dmaPool_256", 256, 64, 64},
-        {"dmaPool_512", 512, 64, 64},
-        {"dmaPool_1024", 1024, 64, 64},
+        { "dmaPool_16", 16, 64, 64 },
+        { "dmaPool_32", 32, 64, 64 },
+        { "dmaPool_64", 64, 64, 64 },
+        { "dmaPool_128", 128, 64, 64 },
+        { "dmaPool_256", 256, 64, 64 },
+        { "dmaPool_512", 512, 64, 64 },
+        { "dmaPool_1024", 1024, 64, 64 },
     };
 
     PoolInitRec const *init_list = params;

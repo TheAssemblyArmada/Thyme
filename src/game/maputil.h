@@ -23,6 +23,7 @@ class WaypointMap : public std::map<Utf8String, Coord3D>
 {
 public:
     void Update();
+
 public:
     int m_numStartSpots;
 };

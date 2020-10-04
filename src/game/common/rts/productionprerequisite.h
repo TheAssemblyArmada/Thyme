@@ -32,6 +32,7 @@ class ProductionPrerequisite
         int flags;
         Utf8String name;
     };
+
 public:
     ProductionPrerequisite() {}
     ~ProductionPrerequisite() {}

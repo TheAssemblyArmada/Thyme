@@ -116,7 +116,6 @@ inline void Color_To_Format(uint8_t *dst, uint32_t color, WW3DFormat format)
     }
 }
 
-
 /**
  * Determine if a surface format supports alpha.
  */

@@ -15,9 +15,9 @@
  */
 #include "iniclass.h"
 #include "filestraw.h"
+#include "nstrdup.h"
 #include "rawfileclass.h"
 #include "readline.h"
-#include "nstrdup.h"
 #include <captainslog.h>
 #include <cctype>
 #include <cstdio>
@@ -29,13 +29,13 @@ using std::strlen;
 INIEntry::~INIEntry()
 {
     if (m_key != nullptr) {
-        free((void*)m_key);
+        free((void *)m_key);
     }
 
     m_key = nullptr;
 
     if (m_value != nullptr) {
-        free((void*)m_value);
+        free((void *)m_value);
     }
 
     m_value = nullptr;
@@ -44,7 +44,7 @@ INIEntry::~INIEntry()
 void INIEntry::Set_Name(const char *new_name)
 {
     if (m_key != nullptr) {
-        free((void*)m_key);
+        free((void *)m_key);
     }
 
     m_key = strdup(new_name);
@@ -53,7 +53,7 @@ void INIEntry::Set_Name(const char *new_name)
 void INIEntry::Set_Value(const char *str)
 {
     if (m_value != nullptr) {
-        free((void*)m_value);
+        free((void *)m_value);
     }
 
     m_value = strdup(str);
@@ -62,7 +62,7 @@ void INIEntry::Set_Value(const char *str)
 INISection::~INISection()
 {
     if (m_sectionName != nullptr) {
-        free((void*)m_sectionName);
+        free((void *)m_sectionName);
     }
 
     m_sectionName = nullptr;
@@ -84,7 +84,7 @@ INIEntry *INISection::Find_Entry(const char *entry) const
 void INISection::Set_Name(const char *str)
 {
     if (m_sectionName != nullptr) {
-        free((void*)m_sectionName);
+        free((void *)m_sectionName);
     }
 
     m_sectionName = strdup(str);
@@ -136,7 +136,7 @@ bool INIClass::Clear(const char *section, const char *entry)
 
         return false;
     }
-    
+
     m_sectionList->Delete();
     m_sectionIndex->Clear();
 
@@ -155,7 +155,7 @@ int INIClass::Load(FileClass &file)
 int INIClass::Load(Straw &straw)
 {
     char buffer[MAX_LINE_LENGTH];
-    //char section[64];
+    // char section[64];
     bool merge = false;
     bool end_of_file = false;
 
@@ -177,7 +177,8 @@ int INIClass::Load(Straw &straw)
     }
 
     while (!end_of_file) {
-        captainslog_dbgassert(buffer[0] == '[' && strchr(buffer, ']'), ".ini file is badly formatted."); // at start of section
+        captainslog_dbgassert(
+            buffer[0] == '[' && strchr(buffer, ']'), ".ini file is badly formatted."); // at start of section
         // Remove square brackets to get section name and create new section.
         buffer[0] = ' ';
         *strchr(buffer, ']') = '\0';
@@ -227,7 +228,7 @@ int INIClass::Load(Straw &straw)
 
                             return INIC_LOAD_INVALID;
                         }
-                        
+
                         // Is this Name, Value or something?
                         CRC(entryptr->Get_Name());
                         int32_t crc = CRC(entryptr->Get_Name());
@@ -550,7 +551,8 @@ bool INIClass::Get_Bool(const char *section, const char *entry, bool defvalue) c
     const char *value;
 
     if (section != nullptr && entry != nullptr) {
-        if ((entryptr = Find_Entry(section, entry)) != nullptr && entryptr->Get_Name() && (value = entryptr->Get_Value()) != nullptr) {
+        if ((entryptr = Find_Entry(section, entry)) != nullptr && entryptr->Get_Name()
+            && (value = entryptr->Get_Value()) != nullptr) {
             switch (toupper(value[0])) {
                 // 1, true, yes...
                 case '1':
@@ -579,7 +581,7 @@ void INIClass::Strip_Comments(char *line)
     if (line != nullptr) {
         // fine first instance of ';'
         char *comment = strchr(line, ';');
-        
+
         // If we found a comment, replace the delimiter with a null char and trim.
         if (comment != nullptr) {
             *comment = '\0';

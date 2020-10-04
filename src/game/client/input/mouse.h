@@ -21,7 +21,7 @@
 #include "globallanguage.h"
 #include "subsysteminterface.h"
 
- // If you add additional cursors, you will need to add a string to the Mouse::s_cursorNames array in mouse.cpp to match it.
+// If you add additional cursors, you will need to add a string to the Mouse::s_cursorNames array in mouse.cpp to match it.
 enum MouseCursor
 {
     CURSOR_INVALID = -1,
@@ -119,32 +119,33 @@ class Mouse : public SubsystemInterface
         RM_MAX,
     };
 
-	enum
-	{
+    enum
+    {
         TOOLTIP_WRAP = 120,
-		MAX_EVENTS = 256,
-	};
-public:
-	Mouse();
-	virtual ~Mouse();
+        MAX_EVENTS = 256,
+    };
 
-	virtual void Init() override;
-	virtual void Reset() override;
-	virtual void Update() override;
-	virtual void Parse_INI();
-	virtual void Init_Cursor_Resources() = 0;
-	virtual void Create_Stream_Messages();
-	virtual void Set_Position(int x, int y);
-	virtual void Set_Cursor(MouseCursor cursor) = 0;
-	virtual void Capture() = 0;
-	virtual void Release_Capture() = 0;
-	virtual void Set_Mouse_Limits();
-	virtual void Set_Redraw_Mode(RedrawMode mode) { m_currentRedrawMode = mode; }
-	virtual RedrawMode Get_Redraw_Mode() { return m_currentRedrawMode; }
+public:
+    Mouse();
+    virtual ~Mouse();
+
+    virtual void Init() override;
+    virtual void Reset() override;
+    virtual void Update() override;
+    virtual void Parse_INI();
+    virtual void Init_Cursor_Resources() = 0;
+    virtual void Create_Stream_Messages();
+    virtual void Set_Position(int x, int y);
+    virtual void Set_Cursor(MouseCursor cursor) = 0;
+    virtual void Capture() = 0;
+    virtual void Release_Capture() = 0;
+    virtual void Set_Mouse_Limits();
+    virtual void Set_Redraw_Mode(RedrawMode mode) { m_currentRedrawMode = mode; }
+    virtual RedrawMode Get_Redraw_Mode() { return m_currentRedrawMode; }
     virtual void Set_Visibility(bool visibility) { m_visible = visibility; }
     virtual int8_t Get_Mouse_Event(MouseIO *io, int8_t unk) = 0;
 
-	void Notify_Resolution_Change();
+    void Notify_Resolution_Change();
 
     static void Parse_Mouse_Definitions(INI *ini);
     static void Parse_Cursor_Definitions(INI *ini);
@@ -154,8 +155,8 @@ public:
 #endif
 
 protected:
-	void Update_Mouse_Data();
-	void Process_Mouse_Event(int event_num);
+    void Update_Mouse_Data();
+    void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
     MouseCursor Get_Cursor_Index(const Utf8String &name);
 
@@ -164,7 +165,7 @@ protected:
     Utf8String m_tooltipFontName;
     int m_tooltipFontSize;
     bool m_tooltipFontIsBold;
-    //FontDesc m_tooltipFont;
+    // FontDesc m_tooltipFont;
     bool m_tooltipAnimateBackground;
     int m_tooltipFillTime;
     int m_tooltipDelayTime;

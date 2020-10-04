@@ -14,8 +14,8 @@
  */
 #include "water.h"
 #include "gametype.h"
-#include <cstddef>
 #include <captainslog.h>
+#include <cstddef>
 
 #ifndef GAME_DLL
 WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
@@ -23,36 +23,38 @@ WaterTransparencySetting *g_theWaterTransparency = nullptr;
 #endif
 
 FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
-    {"SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile)},
-    {"WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile)},
-    {"Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse)},
-    {"Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse)},
-    {"Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse)},
-    {"Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse)},
-    {"DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor)},
-    {"TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse)},
-    {"UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs)},
-    {"VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs)},
-    {"SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit)},
-    {"WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount)},
-    {nullptr, nullptr, nullptr, 0}};
+    { "SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile) },
+    { "WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile) },
+    { "Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse) },
+    { "Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse) },
+    { "Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse) },
+    { "Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse) },
+    { "DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor) },
+    { "TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse) },
+    { "UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs) },
+    { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
+    { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
+    { "WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
-    {"TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth)},
-    {"TransparentWaterMinOpacity",
+    { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
+    { "TransparentWaterMinOpacity",
         &INI::Parse_Real,
         nullptr,
-        offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity)},
-    {"StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor)},
-    {"StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture)},
-    {"AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending)},
-    {"RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor)},
-    {"SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN)},
-    {"SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE)},
-    {"SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS)},
-    {"SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW)},
-    {"SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT)},
-    {nullptr, nullptr, nullptr, 0}};
+        offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
+    { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
+    { "StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture) },
+    { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
+    { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
+    { "SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN) },
+    { "SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE) },
+    { "SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS) },
+    { "SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW) },
+    { "SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 void WaterSetting::Parse_Water_Setting(INI *ini)
 {
@@ -72,8 +74,8 @@ void WaterSetting::Parse_Water_Setting(INI *ini)
 WaterTransparencySetting::WaterTransparencySetting() :
     m_transparentWaterDepth(3.0f),
     m_transparentWaterMinOpacity(1.0f),
-    m_standingWaterColor{1.0f, 1.0f, 1.0f},
-    m_radarWaterColor{140.0f, 140.0f, 255.0f},
+    m_standingWaterColor{ 1.0f, 1.0f, 1.0f },
+    m_radarWaterColor{ 140.0f, 140.0f, 255.0f },
     m_additiveBlending(false),
     m_standingWaterTexture("TWWater01.tga"),
     m_skyboxTextureN("TSMorningN.tga"),

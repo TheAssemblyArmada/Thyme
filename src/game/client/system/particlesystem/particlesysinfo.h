@@ -160,7 +160,7 @@ public:
 
 #ifdef GAME_DLL
     void Hook_Xfer(Xfer *xfer) { ParticleSystemInfo::Xfer_Snapshot(xfer); }
-    ParticleSystemInfo *Hook_Ctor() { return new(this) ParticleSystemInfo; }
+    ParticleSystemInfo *Hook_Ctor() { return new (this) ParticleSystemInfo; }
 #endif
 
 protected:

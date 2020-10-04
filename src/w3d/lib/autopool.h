@@ -19,8 +19,7 @@
 #include "critsection.h"
 #include <captainslog.h>
 
-template<typename T, int BLOCK_SIZE>
-class ObjectPoolClass
+template<typename T, int BLOCK_SIZE> class ObjectPoolClass
 {
 public:
     ObjectPoolClass() : m_freeListHead(nullptr), m_blockListHead(nullptr), m_freeObjectCount(0), m_totalObjectCount(0) {}
@@ -35,7 +34,7 @@ public:
 
         while (block) {
             void *nextBlock = *(void **)block;
-            delete[] (char *)block;
+            delete[](char *) block;
             block = nextBlock;
         }
     }
@@ -88,8 +87,7 @@ private:
     FastCriticalSectionClass m_poolCS;
 };
 
-template<typename T, unsigned BLOCKSIZE>
-class AutoPoolClass
+template<typename T, unsigned BLOCKSIZE> class AutoPoolClass
 {
 public:
     static void *operator new(size_t size)
@@ -130,6 +128,5 @@ private:
 #define HOOK_AUTOPOOL(name, size, address)
 #define MAKE_AUTOPOOL(name, size)
 
-template<typename T, unsigned BLOCKSIZE>
-ObjectPoolClass<T, BLOCKSIZE> AutoPoolClass<T, BLOCKSIZE>::m_allocator;
+template<typename T, unsigned BLOCKSIZE> ObjectPoolClass<T, BLOCKSIZE> AutoPoolClass<T, BLOCKSIZE>::m_allocator;
 #endif

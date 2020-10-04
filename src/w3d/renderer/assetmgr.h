@@ -15,10 +15,10 @@
 #include "always.h"
 #include "hanimmgr.h"
 #include "htreemgr.h"
-#include "texture.h"
-#include "vector.h"
 #include "simplevec.h"
 #include "slist.h"
+#include "texture.h"
+#include "vector.h"
 
 class RenderObjClass;
 class RenderObjIterator;
@@ -48,9 +48,12 @@ public:
     virtual AssetIterator *Create_HAnim_Iterator(void);
     virtual HAnimClass *Get_HAnim(const char *name);
     virtual bool Add_Anim(HAnimClass *new_anim);
-    virtual TextureClass *Get_Texture(const char *filename, MipCountType mip_level_count = MIP_LEVELS_ALL,
-        WW3DFormat texture_format = WW3D_FORMAT_UNKNOWN, bool allow_compression = true,
-        TexAssetType asset_type = ASSET_STANDARD, bool allow_reduction = true);
+    virtual TextureClass *Get_Texture(const char *filename,
+        MipCountType mip_level_count = MIP_LEVELS_ALL,
+        WW3DFormat texture_format = WW3D_FORMAT_UNKNOWN,
+        bool allow_compression = true,
+        TexAssetType asset_type = ASSET_STANDARD,
+        bool allow_reduction = true);
     virtual void Release_All_Textures();
     virtual void Release_Unused_Textures();
     virtual void Release_Texture(TextureClass *tex);

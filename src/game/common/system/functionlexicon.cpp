@@ -56,9 +56,8 @@ bool FunctionLexicon::Validate()
             for (int j = 0; j < MAX_FUNCTION_TABLES; ++j) {
                 for (TableEntry *j_ent = m_tables[j]; j_ent != nullptr && j_ent->key != NAMEKEY_INVALID; ++i_ent) {
                     if (i_ent != j_ent && i_ent->func == j_ent->func) {
-                        captainslog_warn("Function lexicon entries match same address! '%s' and '%s'\n",
-                            i_ent->name,
-                            j_ent->name);
+                        captainslog_warn(
+                            "Function lexicon entries match same address! '%s' and '%s'\n", i_ent->name, j_ent->name);
                         valid = false;
                     }
                 }

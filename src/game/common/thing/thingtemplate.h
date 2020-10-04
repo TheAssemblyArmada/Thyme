@@ -38,7 +38,8 @@ class ThingTemplate : public Overridable
 {
     IMPLEMENT_POOL(ThingTemplate); // Implements standard functions for memory pool objects.
 
-    enum {
+    enum
+    {
         THING_VOICESELECT,
         THING_VOICEGROUPSELECT,
         THING_VOICESELECTELITE,
@@ -77,6 +78,7 @@ class ThingTemplate : public Overridable
         THING_VOICEGUARD,
         THING_SOUNDCOUNT,
     };
+
 public:
     ThingTemplate();
     virtual ~ThingTemplate() {}
@@ -96,10 +98,10 @@ private:
     Utf8String m_unkAsciiString3;
     Utf8String m_unkAsciiString4;
     GeometryInfo m_geometryInfo;
-    //int m_kindOf[4];
+    // int m_kindOf[4];
     BitFlags<KINDOF_COUNT> m_kindOf;
     AudioEventRTS *m_standardSounds[THING_SOUNDCOUNT];
-    ModuleInfo m_unkModule; //TODO
+    ModuleInfo m_unkModule; // TODO
     ModuleInfo m_draw;
     ModuleInfo m_clientUpdate;
     int m_skillPointValue[4];

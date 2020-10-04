@@ -14,11 +14,11 @@
  */
 #pragma once
 
-#include "snapshot.h"
 #include "handicap.h"
+#include "snapshot.h"
 #include "unicodestring.h"
 
-//TODO this is just a skeleton to support other objects at the moment.
+// TODO this is just a skeleton to support other objects at the moment.
 class Player : public SnapShot
 {
 public:

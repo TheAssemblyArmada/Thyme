@@ -808,7 +808,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
     }
 
     Utf8String argstr = args;
-    StringLookUp key = {&argstr, nullptr};
+    StringLookUp key = { &argstr, nullptr };
 
     StringLookUp *found =
         static_cast<StringLookUp *>(bsearch(&key, m_stringLUT, m_textCount, sizeof(StringLookUp), Compare_LUT));

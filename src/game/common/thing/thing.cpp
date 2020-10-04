@@ -13,20 +13,20 @@
  *            LICENSE
  */
 #include "thing.h"
-#include "thingtemplate.h"
 #include "gamemath.h"
+#include "thingtemplate.h"
 
 using GameMath::Cos;
-using GameMath::Sin;
 using GameMath::Inv_Sqrt;
+using GameMath::Sin;
 
 Thing::Thing(const ThingTemplate *thing) : m_template(nullptr)
 {
     if (thing != nullptr) {
         m_transform.Make_Identity();
-        m_cachedPos = {0.0f, 0.0f, 0.0f};
+        m_cachedPos = { 0.0f, 0.0f, 0.0f };
         m_cachedAngle = 0.0f;
-        m_cachedDirVector = {0.0f, 0.0f, 0.0f};
+        m_cachedDirVector = { 0.0f, 0.0f, 0.0f };
         m_cachedAltitudeAboveTerrain = 0.0f;
         m_cachedAltitudeAboveTerrainOrWater = 0.0f;
         m_cacheFlags = 0;
@@ -58,7 +58,8 @@ void Thing::Get_Unit_Dir_Vector2D(Coord3D &dst)
 
 void Thing::Get_Unit_Dir_Vector3D(Coord3D &dst)
 {
-    float square_sum = float(m_transform[0].X * m_transform[0].X) + float(m_transform[1].X * m_transform[1].X) + float(m_transform[2].X * m_transform[2].X);
+    float square_sum = float(m_transform[0].X * m_transform[0].X) + float(m_transform[1].X * m_transform[1].X)
+        + float(m_transform[2].X * m_transform[2].X);
 
     if (square_sum == 0.0f) {
         dst.x = m_transform[0].X;
@@ -81,7 +82,6 @@ void Thing::Set_Position_Z(float pos)
     if (Get_Template()->Is_KindOf(KINDOF_STICK_TO_TERRAIN_SLOPE)) {
 
     } else {
-
     }
 #endif
 }

@@ -40,7 +40,10 @@ public:
 
     void Init();
     void Read_From_Dict(const Dict *dict);
-    ThingType Get_Best_Thing_Type(const ThingTemplate *thing) { return thing->Is_KindOf(KINDOF_STRUCTURE) ? BUILDINGS : GENERIC; }
+    ThingType Get_Best_Thing_Type(const ThingTemplate *thing)
+    {
+        return thing->Is_KindOf(KINDOF_STRUCTURE) ? BUILDINGS : GENERIC;
+    }
     float Get_Handicap(HandicapType ht, const ThingTemplate *thing);
 
 private:

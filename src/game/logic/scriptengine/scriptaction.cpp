@@ -21,10 +21,7 @@ ScriptAction::ScriptAction() : m_actionType(DEFAULT), m_numParams(0), m_nextActi
 }
 
 ScriptAction::ScriptAction(ScriptActionType type) :
-    m_actionType(type),
-    m_numParams(0),
-    m_nextAction(nullptr),
-    m_hasWarnings(false)
+    m_actionType(type), m_numParams(0), m_nextAction(nullptr), m_hasWarnings(false)
 {
     memset(m_params, 0, sizeof(m_params));
     Set_Action_Type(type);

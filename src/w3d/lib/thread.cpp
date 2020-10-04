@@ -54,9 +54,7 @@ void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
 #endif
 
 ThreadClass::ThreadClass(const char *thread_name, except_t exception_handler) :
-    m_isRunning(false),
-    m_handle(0),
-    m_priority(0)
+    m_isRunning(false), m_handle(0), m_priority(0)
 {
     if (thread_name != nullptr) {
         // Safer copy, prevents buffer overrun

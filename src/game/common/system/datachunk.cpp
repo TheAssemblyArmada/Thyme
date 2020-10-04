@@ -36,12 +36,7 @@ void DataChunkInput::Clear_Chunk_Stack()
 }
 
 DataChunkInput::DataChunkInput(ChunkInputStream *stream) :
-    m_file(stream),
-    m_contents(),
-    m_parserList(nullptr),
-    m_chunkStack(nullptr),
-    m_currentObject(nullptr),
-    m_userData(nullptr)
+    m_file(stream), m_contents(), m_parserList(nullptr), m_chunkStack(nullptr), m_currentObject(nullptr), m_userData(nullptr)
 {
     m_contents.Read(*m_file);
     m_fileposOfFirstChunk = m_file->Tell();
@@ -52,8 +47,10 @@ DataChunkInput::~DataChunkInput() {}
 /**
  * @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
  */
-void DataChunkInput::Register_Parser(const Utf8String &label, const Utf8String &parent_label,
-    bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data)
+void DataChunkInput::Register_Parser(const Utf8String &label,
+    const Utf8String &parent_label,
+    bool (*parser)(DataChunkInput &, DataChunkInfo *, void *),
+    void *user_data)
 {
     UserParser *user_parser = new UserParser;
     user_parser->label = label;
@@ -340,7 +337,8 @@ Dict DataChunkInput::Read_Dict()
                 dict.Set_UnicodeString(nk, Read_UnicodeString());
                 break;
             default:
-                captainslog_relassert(false, 0xDEAD0005, "Attempting to handle unknown Dict type data, code shouldn't reach here.");
+                captainslog_relassert(
+                    false, 0xDEAD0005, "Attempting to handle unknown Dict type data, code shouldn't reach here.");
         }
     }
 

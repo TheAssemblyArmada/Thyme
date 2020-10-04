@@ -21,7 +21,6 @@ SubsystemInterfaceList *g_theSubsystemList = nullptr;
 float SubsystemInterface::s_totalSubsystemTime;
 #endif
 
-
 SubsystemInterface::SubsystemInterface() : m_subsystemName()
 {
     if (g_theSubsystemList != nullptr) {
@@ -41,8 +40,12 @@ void SubsystemInterface::Set_Name(Utf8String name)
     m_subsystemName = name;
 }
 
-void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path,
-    const char *dir_path, Xfer *xfer, Utf8String sys_name)
+void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys,
+    const char *default_ini_path,
+    const char *ini_path,
+    const char *dir_path,
+    Xfer *xfer,
+    Utf8String sys_name)
 {
     INI ini;
 
@@ -85,7 +88,6 @@ void SubsystemInterfaceList::Shutdown_All()
     }
 
     m_subsystems.clear();
-
 }
 
 void SubsystemInterfaceList::Add_Subsystem(SubsystemInterface *sys)

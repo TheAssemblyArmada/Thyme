@@ -121,8 +121,7 @@ inline bool PlaneClass::In_Front_Or_Intersecting(const SphereClass &sphere) cons
     return ((D - dist) < sphere.Radius);
 }
 
-inline void PlaneClass::Intersect_Planes(
-    const PlaneClass &a, const PlaneClass &b, Vector3 *line_dir, Vector3 *line_point)
+inline void PlaneClass::Intersect_Planes(const PlaneClass &a, const PlaneClass &b, Vector3 *line_dir, Vector3 *line_point)
 {
     Vector3::Cross_Product(a.N, b.N, line_dir);
     Vector3 abs_dir = *line_dir;

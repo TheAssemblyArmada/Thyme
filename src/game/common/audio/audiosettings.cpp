@@ -49,11 +49,20 @@ FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { "Default3DSoundVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_default3DSoundVolume) },
     { "DefaultSpeechVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_defaultSpeechVolume) },
     { "DefaultMusicVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_defaultMusicVolume) },
-    { "MicrophoneDesiredHeightAboveTerrain", &INI::Parse_Real, nullptr, offsetof(AudioSettings, m_microphoneDesiredHeightAboveTerrain) },
-    { "MicrophoneMaxPercentageBetweenGroundAndCamera", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_microphoneMaxPercentBetweenGroundAndCamera) },
+    { "MicrophoneDesiredHeightAboveTerrain",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(AudioSettings, m_microphoneDesiredHeightAboveTerrain) },
+    { "MicrophoneMaxPercentageBetweenGroundAndCamera",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(AudioSettings, m_microphoneMaxPercentBetweenGroundAndCamera) },
     { "ZoomMinDistance", &INI::Parse_Real, nullptr, offsetof(AudioSettings, m_zoomMinDistance) },
     { "ZoomMaxDistance", &INI::Parse_Real, nullptr, offsetof(AudioSettings, m_zoomMaxDistance) },
-    { "ZoomSoundVolumePercentageAmount", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_zoomSoundVolumePercentAmount) },
+    { "ZoomSoundVolumePercentageAmount",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(AudioSettings, m_zoomSoundVolumePercentAmount) },
     { nullptr, nullptr, nullptr, 0 }
 };
 
@@ -62,7 +71,7 @@ void AudioSettings::Parse_Audio_Settings(INI *ini)
     AudioSettings *as = g_theAudio->Get_Audio_Settings();
     ini->Init_From_INI(as, s_audioSettingsParseTable);
     OptionPreferences prefs;
-    
+
     g_theAudio->Set_Preferred_3D_Provider(prefs.Get_Preferred_3D_Provider());
     g_theAudio->Set_Preferred_Speaker(prefs.Get_Speaker_Type());
     as->m_soundVolume = prefs.Get_Sound_Volume() / 100.0f;

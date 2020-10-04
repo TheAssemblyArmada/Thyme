@@ -31,6 +31,7 @@ float Get_Logic_Random_Value_Real(float lo, float hi, const char *file = nullptr
 class GameLogicRandomVariable
 {
     friend class Xfer;
+
 public:
     enum DistributionType : int32_t
     {
@@ -41,7 +42,7 @@ public:
     operator float() const { return Get_Value(); }
 
     void Set_Range(float min, float max, DistributionType type);
-    float Get_Value() const ;
+    float Get_Value() const;
     float Get_Min() const { return m_low; }
     float Get_Max() const { return m_high; }
     DistributionType Get_Type() const { return m_type; }
@@ -55,6 +56,7 @@ private:
 class GameClientRandomVariable
 {
     friend class Xfer;
+
 public:
     enum DistributionType : int32_t
     {

@@ -70,8 +70,11 @@ bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
     return access(filename, 0) == 0;
 }
 
-void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath,
-    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
+void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
+    Utf8String const &dirpath,
+    Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    bool search_subdirs)
 {
     Utf8String search_path = dirpath;
     search_path += subdir;

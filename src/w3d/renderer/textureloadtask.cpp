@@ -37,7 +37,7 @@ using std::min;
  * 0x0082FF20
  */
 TextureLoadTaskClass::TextureLoadTaskClass() :
-    m_listNode{nullptr, nullptr},
+    m_listNode{ nullptr, nullptr },
     m_parent(nullptr),
     m_texture(nullptr),
     m_d3dTexture(W3D_TYPE_INVALID_TEXTURE),
@@ -348,8 +348,13 @@ bool TextureLoadTaskClass::Load_Compressed_Mipmap()
     }
 
     for (unsigned i = 0; i < m_mipLevelCount; ++i) {
-        dds.Copy_Level_To_Surface(
-            i, m_format, reduced_width, reduced_height, Get_Locked_Surface_Pointer(i), Get_Locked_Surface_Pitch(i), m_hsvAdjust);
+        dds.Copy_Level_To_Surface(i,
+            m_format,
+            reduced_width,
+            reduced_height,
+            Get_Locked_Surface_Pointer(i),
+            Get_Locked_Surface_Pitch(i),
+            m_hsvAdjust);
         reduced_width /= 2;
         reduced_height /= 2;
     }
@@ -678,8 +683,14 @@ TextureLoadTaskClass *TextureLoadTaskClass::Create(TextureBaseClass *texture, Ta
  *
  * 0x008305F0
  */
-bool TextureLoadTaskClass::Get_Texture_Information(const char *name, unsigned &reduction, unsigned &width, unsigned &height,
-    unsigned &depth, WW3DFormat &format, unsigned &levels, bool use_dds)
+bool TextureLoadTaskClass::Get_Texture_Information(const char *name,
+    unsigned &reduction,
+    unsigned &width,
+    unsigned &height,
+    unsigned &depth,
+    WW3DFormat &format,
+    unsigned &levels,
+    bool use_dds)
 {
     ThumbnailClass *thumb = ThumbnailManagerClass::Peek_Thumbnail_Instance_From_Any_Manager(name);
 

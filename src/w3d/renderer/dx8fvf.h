@@ -49,10 +49,7 @@ public:
 
 private:
 #ifdef GAME_DLL
-    FVFInfoClass *Hook_Ctor(unsigned int fvf_, unsigned int fvf_size_)
-    {
-        return new (this) FVFInfoClass(fvf_, fvf_size_);
-    }
+    FVFInfoClass *Hook_Ctor(unsigned int fvf_, unsigned int fvf_size_) { return new (this) FVFInfoClass(fvf_, fvf_size_); }
 #endif
     unsigned int m_FVF;
     unsigned int m_fvfSize;

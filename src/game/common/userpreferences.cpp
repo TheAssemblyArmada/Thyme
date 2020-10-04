@@ -16,9 +16,7 @@
 #include "globaldata.h"
 #include <cstdio>
 
-UserPreferences::UserPreferences()
-{
-}
+UserPreferences::UserPreferences() {}
 
 bool UserPreferences::Load(Utf8String filename)
 {
@@ -27,10 +25,10 @@ bool UserPreferences::Load(Utf8String filename)
 
     FILE *fptr = fopen(m_filename.Str(), "r");
 
-    if ( fptr != nullptr ) {
+    if (fptr != nullptr) {
         char buffer[2048];
 
-        while ( fgets(buffer, sizeof(buffer), fptr) != 0 ) {
+        while (fgets(buffer, sizeof(buffer), fptr) != 0) {
             // Get key/value pair per line.
             Utf8String key;
             Utf8String line = buffer;
@@ -56,14 +54,14 @@ bool UserPreferences::Load(Utf8String filename)
 
 bool UserPreferences::Write()
 {
-    if ( m_filename.Is_Empty() ) {
+    if (m_filename.Is_Empty()) {
         return false;
     }
 
     FILE *fp = fopen(m_filename.Str(), "w");
 
-    if ( fp != nullptr ) {
-        for ( auto it = begin(); it != end(); ++it ) {
+    if (fp != nullptr) {
+        for (auto it = begin(); it != end(); ++it) {
             fprintf(fp, "%s = %s\n", it->first.Str(), it->second.Str());
         }
 
@@ -79,7 +77,7 @@ Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg)
 {
     auto it = find(key);
 
-    if ( it == end() ) {
+    if (it == end()) {
         return def_arg;
     }
 
@@ -90,7 +88,7 @@ int UserPreferences::Get_Int(Utf8String key, int def_arg)
 {
     Utf8String value = Get_AsciiString(key);
 
-    if ( value.Is_Empty() ) {
+    if (value.Is_Empty()) {
         return def_arg;
     }
 
@@ -101,7 +99,7 @@ float UserPreferences::Get_Real(Utf8String key, float def_arg)
 {
     Utf8String value = Get_AsciiString(key);
 
-    if ( value.Is_Empty() ) {
+    if (value.Is_Empty()) {
         return def_arg;
     }
 
@@ -112,20 +110,15 @@ bool UserPreferences::Get_Bool(Utf8String key, bool def_arg)
 {
     Utf8String value = Get_AsciiString(key);
 
-    if ( value.Is_Empty() ) {
+    if (value.Is_Empty()) {
         return def_arg;
     }
 
     value.To_Lower();
     const char *val_c = value.Str();
 
-    if ( strcmp(val_c, "1") != 0
-        && strcmp(val_c, "t") != 0
-        && strcmp(val_c, "true") != 0
-        && strcmp(val_c, "y") != 0
-        && strcmp(val_c, "yes") != 0
-        && strcmp(val_c, "ok") != 0
-        ) {
+    if (strcmp(val_c, "1") != 0 && strcmp(val_c, "t") != 0 && strcmp(val_c, "true") != 0 && strcmp(val_c, "y") != 0
+        && strcmp(val_c, "yes") != 0 && strcmp(val_c, "ok") != 0) {
         return false;
     }
 

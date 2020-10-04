@@ -15,9 +15,9 @@
 #pragma once
 
 #include "always.h"
-#include "vector4.h"
-#include "vector3.h"
 #include "vector2.h"
+#include "vector3.h"
+#include "vector4.h"
 #include <captainslog.h>
 
 enum
@@ -48,8 +48,13 @@ public:
     const Vector3 *V[3];
 };
 
-inline bool Point_In_Triangle_2D(const Vector3 &tri_point0, const Vector3 &tri_point1, const Vector3 &tri_point2,
-    const Vector3 &test_point, int axis_1, int axis_2, unsigned char &flags)
+inline bool Point_In_Triangle_2D(const Vector3 &tri_point0,
+    const Vector3 &tri_point1,
+    const Vector3 &tri_point2,
+    const Vector3 &test_point,
+    int axis_1,
+    int axis_2,
+    unsigned char &flags)
 {
     Vector2 p0p1(tri_point1[axis_1] - tri_point0[axis_1], tri_point1[axis_2] - tri_point0[axis_2]);
     Vector2 p1p2(tri_point2[axis_1] - tri_point1[axis_1], tri_point2[axis_2] - tri_point1[axis_2]);
@@ -140,15 +145,22 @@ inline bool Point_In_Triangle_2D(const Vector3 &tri_point0, const Vector3 &tri_p
     }
 }
 
-inline bool Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(const Vector3 &tri_point0, const Vector3 &tri_point1,
-    const Vector3 &tri_point2, const Vector4 &tri_plane, const Vector3 &ray_start, int axis_r, int axis_1, int axis_2,
-    int direction, unsigned char &flags)
+inline bool Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(const Vector3 &tri_point0,
+    const Vector3 &tri_point1,
+    const Vector3 &tri_point2,
+    const Vector4 &tri_plane,
+    const Vector3 &ray_start,
+    int axis_r,
+    int axis_1,
+    int axis_2,
+    int direction,
+    unsigned char &flags)
 {
     bool retval = false;
     unsigned char flags_2d = TRI_RAYCAST_FLAG_NONE;
 
     if (Point_In_Triangle_2D(tri_point0, tri_point1, tri_point2, ray_start, axis_1, axis_2, flags_2d)) {
-        static const float sign[2] = {-1.0f, 1.0f};
+        static const float sign[2] = { -1.0f, 1.0f };
         float result = tri_plane[axis_r] * sign[direction]
             * (tri_plane.X * ray_start.X + tri_plane.Y * ray_start.Y + tri_plane.Z * ray_start.Z + tri_plane.W);
 

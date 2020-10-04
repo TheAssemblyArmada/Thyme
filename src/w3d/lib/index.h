@@ -19,8 +19,7 @@
 #include <captainslog.h>
 #include <cstdlib>
 
-template<typename KeyType, typename ValueType>
-class IndexClass
+template<typename KeyType, typename ValueType> class IndexClass
 {
 public:
     // a NodeElement is a entry in the indexer, it contains uniqiue m_id and a pointer to the data to index.
@@ -88,8 +87,7 @@ const ValueType &IndexClass<KeyType, ValueType>::operator[](const KeyType &id) c
     return x;
 }
 
-template<typename KeyType, class ValueType>
-bool IndexClass<KeyType, ValueType>::Is_Present(const KeyType &id) const
+template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Is_Present(const KeyType &id) const
 {
     if (Count() > 0) {
         if (Is_Archive_Same(id)) {
@@ -107,8 +105,7 @@ bool IndexClass<KeyType, ValueType>::Is_Present(const KeyType &id) const
     return false;
 }
 
-template<typename KeyType, class ValueType>
-ValueType IndexClass<KeyType, ValueType>::Fetch_Index(const KeyType &id) const
+template<typename KeyType, class ValueType> ValueType IndexClass<KeyType, ValueType>::Fetch_Index(const KeyType &id) const
 {
     if (Is_Present(id)) {
         return m_archive->m_data;
@@ -147,8 +144,7 @@ bool IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueTyp
     return false;
 }
 
-template<typename KeyType, class ValueType>
-bool IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
+template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
 {
     int pos = -1;
     for (int i = 0; i < m_indexCount; ++i) {
@@ -175,8 +171,7 @@ bool IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
     return true;
 }
 
-template<typename KeyType, class ValueType>
-void IndexClass<KeyType, ValueType>::Clear()
+template<typename KeyType, class ValueType> void IndexClass<KeyType, ValueType>::Clear()
 {
     if (m_indexTable != nullptr) {
         delete[] m_indexTable;
@@ -190,8 +185,7 @@ void IndexClass<KeyType, ValueType>::Clear()
     Invalidate_Archive();
 }
 
-template<typename KeyType, class ValueType>
-bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
+template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
 {
     captainslog_assert(amount > 0);
 

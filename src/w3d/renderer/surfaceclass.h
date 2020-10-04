@@ -51,7 +51,12 @@ public:
     void Unlock();
     void Clear();
     void Copy(Vector2i &min, Vector2i &max, unsigned char *other);
-    void Copy(unsigned dst_x, unsigned dst_y, unsigned src_x, unsigned src_y, unsigned width, unsigned height,
+    void Copy(unsigned dst_x,
+        unsigned dst_y,
+        unsigned src_x,
+        unsigned src_y,
+        unsigned width,
+        unsigned height,
         SurfaceClass *other);
     void Draw_Pixel(unsigned x, unsigned y, unsigned color);
     void Draw_Horizonal_Line(unsigned y, unsigned x1, unsigned x2, unsigned color);
@@ -67,14 +72,8 @@ public:
     {
         return new (this) SurfaceClass(width, height, format);
     }
-    SurfaceClass *Hook_Ctor2(w3dsurface_t d3d_surface)
-    {
-        return new (this) SurfaceClass(d3d_surface);
-    }
-    SurfaceClass *Hook_Ctor3(const char *name)
-    {
-        return new (this) SurfaceClass(name);
-    }
+    SurfaceClass *Hook_Ctor2(w3dsurface_t d3d_surface) { return new (this) SurfaceClass(d3d_surface); }
+    SurfaceClass *Hook_Ctor3(const char *name) { return new (this) SurfaceClass(name); }
     void Hook_Dtor() { SurfaceClass::~SurfaceClass(); }
 #endif
 

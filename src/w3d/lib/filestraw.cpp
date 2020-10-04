@@ -25,8 +25,8 @@ FileStraw::~FileStraw()
 }
 
 /**
-* @brief Reads data to the buffer from the underlying file class.
-*/
+ * @brief Reads data to the buffer from the underlying file class.
+ */
 int FileStraw::Get(void *buffer, int length)
 {
     if (Valid_File() && buffer && length > 0) {

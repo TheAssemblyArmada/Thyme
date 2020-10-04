@@ -68,7 +68,7 @@ VideoStream *BinkVideoPlayer::Open(Utf8String title)
 
     Bink *handle = nullptr;
     Utf8String path;
-    
+
     // First check the custom user "mod" directory if set.
     if (g_theWriteableGlobalData->m_userModDirectory.Is_Not_Empty()) {
         path.Format(
@@ -78,8 +78,7 @@ VideoStream *BinkVideoPlayer::Open(Utf8String title)
 
     // Next check for a language specific directoy Data/%language%/Movies.
     if (handle == nullptr) {
-        path.Format(
-            "Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), vid->file_name.Str(), "bik");
+        path.Format("Data/%s/Movies/%s.%s", Get_Registry_Language().Str(), vid->file_name.Str(), "bik");
         handle = BinkOpen(path.Str(), 0x2000);
     }
 

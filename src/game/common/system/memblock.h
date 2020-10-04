@@ -36,7 +36,8 @@ public:
     MemoryPoolSingleBlock *Get_Next_Free();
     void *Get_User_Data() { return reinterpret_cast<void *>(&this[1]); }
     static MemoryPoolSingleBlock *Recover_Block_From_User_Data(void *data);
-    static MemoryPoolSingleBlock *Raw_Allocate_Single_Block(MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact);
+    static MemoryPoolSingleBlock *Raw_Allocate_Single_Block(
+        MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact);
 
 private:
     MemoryPoolBlob *m_owningBlob;
@@ -57,14 +58,14 @@ inline void MemoryPoolSingleBlock::Remove_Block_From_List(MemoryPoolSingleBlock 
     captainslog_dbgassert(m_owningBlob == nullptr, "This function should only be used on raw blocks.");
 
     // Do we have previous? If not, we are the head?
-    if ( m_prevBlock != nullptr ) {
+    if (m_prevBlock != nullptr) {
         captainslog_dbgassert(this != *list_head, "Bad list linkage");
         m_prevBlock->m_nextBlock = m_nextBlock;
     } else {
         *list_head = m_nextBlock;
     }
 
-    if ( m_nextBlock != nullptr ) {
+    if (m_nextBlock != nullptr) {
         m_nextBlock->m_prevBlock = m_prevBlock;
     }
 }
@@ -73,7 +74,7 @@ inline void MemoryPoolSingleBlock::Add_Block_To_List(MemoryPoolSingleBlock *list
 {
     m_nextBlock = list_head;
 
-    if ( list_head != nullptr ) {
+    if (list_head != nullptr) {
         list_head->m_prevBlock = this;
     }
 }
@@ -84,7 +85,7 @@ inline void MemoryPoolSingleBlock::Set_Next_Free(MemoryPoolSingleBlock *next)
     Add_Block_To_List(next);
 }
 
-inline MemoryPoolSingleBlock * MemoryPoolSingleBlock::Get_Next_Free()
+inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Get_Next_Free()
 {
     captainslog_relassert(m_owningBlob != nullptr, 0xDEAD0002, "Must be called on a blob block.");
 
@@ -93,7 +94,7 @@ inline MemoryPoolSingleBlock * MemoryPoolSingleBlock::Get_Next_Free()
 
 inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Recover_Block_From_User_Data(void *data)
 {
-    if ( data != nullptr ) {
+    if (data != nullptr) {
         return reinterpret_cast<MemoryPoolSingleBlock *>(static_cast<char *>(data) - sizeof(MemoryPoolSingleBlock));
     } else {
         captainslog_dbgassert(false, "null data");
@@ -102,9 +103,11 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Recover_Block_From_User_Dat
     }
 }
 
-inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact)
+inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(
+    MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact)
 {
-    MemoryPoolSingleBlock *block = static_cast<MemoryPoolSingleBlock*>(Raw_Allocate_No_Zero(Round_Up_Word_Size(size) + sizeof(MemoryPoolSingleBlock)));
+    MemoryPoolSingleBlock *block =
+        static_cast<MemoryPoolSingleBlock *>(Raw_Allocate_No_Zero(Round_Up_Word_Size(size) + sizeof(MemoryPoolSingleBlock)));
     block->Init_Block(size, nullptr, owning_fact);
     block->Add_Block_To_List(*list_head);
     *list_head = block;

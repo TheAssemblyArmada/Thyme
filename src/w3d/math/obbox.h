@@ -15,10 +15,10 @@
 #pragma once
 
 #include "always.h"
-#include "vector3.h"
+#include "gamemath.h"
 #include "matrix3.h"
 #include "matrix3d.h"
-#include "gamemath.h"
+#include "vector3.h"
 
 class OBBoxClass
 {
@@ -80,7 +80,7 @@ public:
         set_extent->Z = GameMath::Fabs(m_extent[0] * m_basis[2][0]) + GameMath::Fabs(m_extent[1] * m_basis[2][1])
             + GameMath::Fabs(m_extent[2] * m_basis[2][2]);
     }
-    
+
     static void Transform(const Matrix3D &tm, const OBBoxClass &in, OBBoxClass *out)
     {
         captainslog_assert(out);

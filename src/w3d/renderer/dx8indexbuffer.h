@@ -16,6 +16,7 @@
 #include "always.h"
 #include "refcount.h"
 #include "w3dmpo.h"
+#include "w3dtypes.h"
 
 class IndexBufferClass : public W3DMPO, public RefCountClass
 {
@@ -152,10 +153,7 @@ public:
 
     private:
 #ifdef GAME_DLL
-        WriteLockClass *Hook_Ctor(DynamicIBAccessClass *ib_access_)
-        {
-            return new (this) WriteLockClass(ib_access_);
-        }
+        WriteLockClass *Hook_Ctor(DynamicIBAccessClass *ib_access_) { return new (this) WriteLockClass(ib_access_); }
         void Hook_Dtor() { WriteLockClass::~WriteLockClass(); }
 #endif
         DynamicIBAccessClass *m_dynamicIBAccess;

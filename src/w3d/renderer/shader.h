@@ -40,16 +40,25 @@ enum ShaderShiftConstants
 };
 
 // Utility function to convert enums to bitfield. Based on a macro provided by TT team.
-inline constexpr uint32_t Shader_Const(uint32_t depth_compare, uint32_t depth_mask, uint32_t color_mask, 
+inline constexpr uint32_t Shader_Const(uint32_t depth_compare,
+    uint32_t depth_mask,
+    uint32_t color_mask,
     uint32_t dst_blend,
-    uint32_t fog, uint32_t pri_grad, uint32_t sec_grad, uint32_t src_blend, uint32_t texture, uint32_t npatch,
+    uint32_t fog,
+    uint32_t pri_grad,
+    uint32_t sec_grad,
+    uint32_t src_blend,
+    uint32_t texture,
+    uint32_t npatch,
     uint32_t alpha_test,
-    uint32_t cullmode, uint32_t post_det_color, uint32_t post_det_alpha)
+    uint32_t cullmode,
+    uint32_t post_det_color,
+    uint32_t post_det_alpha)
 {
     return depth_compare << SHIFT_DEPTHCOMPARE | depth_mask << SHIFT_DEPTHMASK | color_mask << SHIFT_COLORMASK
         | dst_blend << SHIFT_DSTBLEND | fog << SHIFT_FOG | pri_grad << SHIFT_PRIGRADIENT | sec_grad << SHIFT_SECGRADIENT
-        | src_blend << SHIFT_SRCBLEND | texture << SHIFT_TEXTURING | npatch << SHIFT_NPATCHENABLE |alpha_test << SHIFT_ALPHATEST
-        | cullmode << SHIFT_CULLMODE | post_det_color << SHIFT_POSTDETAILCOLORFUNC
+        | src_blend << SHIFT_SRCBLEND | texture << SHIFT_TEXTURING | npatch << SHIFT_NPATCHENABLE
+        | alpha_test << SHIFT_ALPHATEST | cullmode << SHIFT_CULLMODE | post_det_color << SHIFT_POSTDETAILCOLORFUNC
         | post_det_alpha << SHIFT_POSTDETAILALPHAFUNC;
 }
 

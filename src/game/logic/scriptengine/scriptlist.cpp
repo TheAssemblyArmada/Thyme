@@ -240,7 +240,8 @@ int ScriptList::Get_Read_Scripts(ScriptList **scripts)
  */
 bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    captainslog_dbgassert(static_cast<ScriptListReadInfo *>(data)->num_lists < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
+    captainslog_dbgassert(
+        static_cast<ScriptListReadInfo *>(data)->num_lists < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
     ScriptListReadInfo *read_info = static_cast<ScriptListReadInfo *>(data);
 
     if (read_info->num_lists >= MAX_LIST_COUNT) {
@@ -250,7 +251,7 @@ bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *i
     read_info->read_lists[read_info->num_lists++] = new ScriptList;
     input.Register_Parser("Script", info->label, Script::Parse_Script_From_List_Chunk, nullptr);
     input.Register_Parser("ScriptGroup", info->label, ScriptGroup::Parse_Group_Chunk, nullptr);
-    
+
     return input.Parse(read_info->read_lists[read_info->num_lists - 1]);
 }
 

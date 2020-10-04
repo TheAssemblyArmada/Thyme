@@ -29,31 +29,31 @@ void XferCRC::Open(Utf8String filename)
 
 void XferCRC::xferSnapshot(SnapShot *thing)
 {
-    if ( thing != nullptr ) {
+    if (thing != nullptr) {
         thing->CRC_Snapshot(this);
     }
 }
 
 void XferCRC::xferImplementation(void *thing, int size)
 {
-    uint32_a *data = static_cast<uint32_a*>(thing);
+    uint32_a *data = static_cast<uint32_a *>(thing);
 
-    if ( thing == nullptr || size < 1 ) {
+    if (thing == nullptr || size < 1) {
         return;
     }
 
     // Use up all the multiples of 4 data.
-    for ( int i = size / 4; i > 0; --i ) {
+    for (int i = size / 4; i > 0; --i) {
         Add_CRC(*data++);
     }
 
     // Use remaining bytes padded with 0
-    if ( size % 4 > 0 ) {
+    if (size % 4 > 0) {
         uint32_t tmp = 0;
-        uint8_t *cdata = reinterpret_cast<uint8_t*>(data);
+        uint8_t *cdata = reinterpret_cast<uint8_t *>(data);
         int shift = 0;
 
-        for ( int i = 0; i < size % 4; ++i ) {
+        for (int i = 0; i < size % 4; ++i) {
             tmp |= cdata[i] << shift;
             shift += 8;
         }

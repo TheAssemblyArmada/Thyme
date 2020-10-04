@@ -19,7 +19,7 @@
 uint32_t View::s_idNext = 1;
 #endif
 
-View::View() : 
+View::View() :
     m_next(nullptr),
     m_id(s_idNext++),
     m_pos(),

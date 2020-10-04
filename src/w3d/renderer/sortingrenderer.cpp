@@ -25,8 +25,11 @@ void SortingRendererClass::Insert_Triangles(
 #endif
 }
 
-void SortingRendererClass::Insert_Triangles(class SphereClass &bounding_sphere, unsigned short start_index,
-    unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count)
+void SortingRendererClass::Insert_Triangles(class SphereClass &bounding_sphere,
+    unsigned short start_index,
+    unsigned short polygon_count,
+    unsigned short min_vertex_index,
+    unsigned short vertex_count)
 {
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x0080C610, 0x00569570));

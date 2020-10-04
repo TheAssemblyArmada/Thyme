@@ -157,8 +157,11 @@ Utf8String ArchiveFileSystem::Get_Archive_Filename_For_File(Utf8String const &fi
 }
 
 // Populates a std::set of file paths based on the passed in filter and path to examine.
-void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath,
-    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
+void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
+    Utf8String const &dirpath,
+    Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    bool search_subdirs)
 {
     // Get files from all archive files.
     for (auto it = m_archiveFiles.begin(); it != m_archiveFiles.end(); ++it) {

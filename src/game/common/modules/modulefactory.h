@@ -40,6 +40,7 @@ class Thing;
 class ModuleData : public SnapShot
 {
     friend class ModuleFactory;
+
 public:
     virtual void CRC_Snapshot(Xfer *xfer) {}
     virtual void Xfer_Snapshot(Xfer *xfer) {}

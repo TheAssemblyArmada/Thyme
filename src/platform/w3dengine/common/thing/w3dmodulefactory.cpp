@@ -26,15 +26,21 @@ void W3DModuleFactory::Init()
     Add_Module_Internal((modcreateproc_t)0x00775C90, (moddatacreateproc_t)0x0061D5D0, MODULE_W3D, "W3DDebrisDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00775E50, (moddatacreateproc_t)0x00775F40, MODULE_W3D, "W3DModelDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776110, (moddatacreateproc_t)0x007761F0, MODULE_W3D, "W3DLaserDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x007763C0, (moddatacreateproc_t)0x007764B0, MODULE_W3D, "W3DOverlordTankDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x00776680, (moddatacreateproc_t)0x00776770, MODULE_W3D, "W3DOverlordTruckDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x007767E0, (moddatacreateproc_t)0x007768D0, MODULE_W3D, "W3DOverlordAircraftDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x00776A30, (moddatacreateproc_t)0x00776B10, MODULE_W3D, "W3DProjectileStreamDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x007763C0, (moddatacreateproc_t)0x007764B0, MODULE_W3D, "W3DOverlordTankDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x00776680, (moddatacreateproc_t)0x00776770, MODULE_W3D, "W3DOverlordTruckDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x007767E0, (moddatacreateproc_t)0x007768D0, MODULE_W3D, "W3DOverlordAircraftDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x00776A30, (moddatacreateproc_t)0x00776B10, MODULE_W3D, "W3DProjectileStreamDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776940, (moddatacreateproc_t)0x00776610, MODULE_W3D, "W3DPoliceCarDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776B80, (moddatacreateproc_t)0x0061D5D0, MODULE_W3D, "W3DRopeDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x00776DC0, (moddatacreateproc_t)0x00776EB0, MODULE_W3D, "W3DScienceModelDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x00776DC0, (moddatacreateproc_t)0x00776EB0, MODULE_W3D, "W3DScienceModelDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776C60, (moddatacreateproc_t)0x00776D50, MODULE_W3D, "W3DSupplyDraw", 0x400);
-    Add_Module_Internal((modcreateproc_t)0x00775FB0, (moddatacreateproc_t)0x007760A0, MODULE_W3D, "W3DDependencyModelDraw", 0x400);
+    Add_Module_Internal(
+        (modcreateproc_t)0x00775FB0, (moddatacreateproc_t)0x007760A0, MODULE_W3D, "W3DDependencyModelDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776260, (moddatacreateproc_t)0x00776350, MODULE_W3D, "W3DTankDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00776520, (moddatacreateproc_t)0x00776610, MODULE_W3D, "W3DTruckDraw", 0x400);
     Add_Module_Internal((modcreateproc_t)0x00777080, (moddatacreateproc_t)0x0061D5D0, MODULE_W3D, "W3DTracerDraw", 0x400);

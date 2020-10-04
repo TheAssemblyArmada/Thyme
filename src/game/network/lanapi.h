@@ -88,7 +88,7 @@ public:
 
 private:
     void Send_Message(LANMessage *msg, uint32_t addr);
-    static uint32_t Resolve_IP(Utf8String addr); 
+    static uint32_t Resolve_IP(Utf8String addr);
 
 private:
     LANPlayer *m_lobbyPlayers;

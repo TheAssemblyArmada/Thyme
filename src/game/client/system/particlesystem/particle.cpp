@@ -11,7 +11,7 @@
  *            2 of the License, or (at your option) any later version.
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
- */ 
+ */
 #include "particle.h"
 #include "gameclient.h"
 #include "particlesys.h"
@@ -101,7 +101,7 @@ Particle::~Particle()
  *
  * 0x004CD2E0
  */
-void Particle::Xfer_Snapshot(Xfer *xfer) 
+void Particle::Xfer_Snapshot(Xfer *xfer)
 {
 #define PARTICLE_XFER_VERSION 1
     uint8_t version = PARTICLE_XFER_VERSION;
@@ -118,7 +118,7 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     xfer->xferRGBColor(&m_color);
     xfer->xferRGBColor(&m_colorRate);
     xfer->xferInt(&m_colorTargetKey);
-    
+
     DrawableID drawable_id_fake = DRAWABLE_UNK; // Looks like this was removed and a fake entry added to avoid version bump.
     xfer->xferDrawableID(&drawable_id_fake);
 
@@ -176,7 +176,7 @@ void Particle::Compute_Color_Rate()
         m_colorRate.blue =
             float(m_colorKey[m_colorTargetKey].color.blue - m_colorKey[m_colorTargetKey - 1].color.blue) / frame_diff;
     } else {
-        m_colorRate = {0.0f, 0.0f, 0.0f};
+        m_colorRate = { 0.0f, 0.0f, 0.0f };
     }
 }
 

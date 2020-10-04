@@ -43,28 +43,53 @@ public:
     void Enable_Texturing(bool b);
     void Enable_GreyScale(bool b) { m_greyScale = b; }
     ShaderClass *Get_Shader() { return &m_shader; }
-    void Add_Quad(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3, const RectClass &uv,
+    void Add_Quad(const Vector2 &v0,
+        const Vector2 &v1,
+        const Vector2 &v2,
+        const Vector2 &v3,
+        const RectClass &uv,
         uint32_t color = 0xFFFFFFFF);
-    void Add_Quad_Backfaced(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3, const RectClass &uv,
+    void Add_Quad_Backfaced(const Vector2 &v0,
+        const Vector2 &v1,
+        const Vector2 &v2,
+        const Vector2 &v3,
+        const RectClass &uv,
         uint32_t color = 0xFFFFFFFF);
     void Add_Quad(const RectClass &screen, const RectClass &uv, uint32_t color = 0xFFFFFFFF);
     void Add_Quad(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3, uint32_t color = 0xFFFFFFFF);
     void Add_Quad(const RectClass &screen, uint32_t color = 0xFFFFFFFF);
     void Add_Quad_VGradient(const RectClass &screen, uint32_t top_color, uint32_t bottom_color);
     void Add_Quad_HGradient(const RectClass &screen, uint32_t left_color, uint32_t right_color);
-    void Add_Quad_VGradient(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3,
-        const RectClass &screen, uint32_t top_color, uint32_t bottom_color);
-    void Add_Quad_HGradient(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3,
-        const RectClass &screen, uint32_t left_color, uint32_t right_color);
-    void Add_Tri(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &uv0, const Vector2 &uv1,
-        const Vector2 &uv2, uint32_t color = 0xFFFFFFFF);
+    void Add_Quad_VGradient(const Vector2 &v0,
+        const Vector2 &v1,
+        const Vector2 &v2,
+        const Vector2 &v3,
+        const RectClass &screen,
+        uint32_t top_color,
+        uint32_t bottom_color);
+    void Add_Quad_HGradient(const Vector2 &v0,
+        const Vector2 &v1,
+        const Vector2 &v2,
+        const Vector2 &v3,
+        const RectClass &screen,
+        uint32_t left_color,
+        uint32_t right_color);
+    void Add_Tri(const Vector2 &v0,
+        const Vector2 &v1,
+        const Vector2 &v2,
+        const Vector2 &uv0,
+        const Vector2 &uv1,
+        const Vector2 &uv2,
+        uint32_t color = 0xFFFFFFFF);
     void Add_Line(const Vector2 &a, const Vector2 &b, float width, uint32_t color = 0xFFFFFFFF);
     void Add_Line(const Vector2 &a, const Vector2 &b, float width, const RectClass &uv, uint32_t color = 0xFFFFFFFF);
     void Add_Line(const Vector2 &a, const Vector2 &b, float width, uint32_t color1, uint32_t color2);
     void Add_Line(const Vector2 &a, const Vector2 &b, float width, const RectClass &uv, uint32_t color1, uint32_t color2);
     void Add_Outline(const RectClass &rect, float width = 1.0F, uint32_t color = 0xFFFFFFFF);
     void Add_Outline(const RectClass &rect, float width, const RectClass &uv, uint32_t color = 0xFFFFFFFF);
-    void Add_Rect(const RectClass &rect, float border_width = 1.0F, uint32_t border_color = 0xFF000000,
+    void Add_Rect(const RectClass &rect,
+        float border_width = 1.0F,
+        uint32_t border_color = 0xFF000000,
         uint32_t fill_color = 0xFFFFFFFF);
     void Set_Hidden(bool hide) { m_isHidden = hide; }
     void Set_Z_Value(float z_value) { m_zValue = z_value; }

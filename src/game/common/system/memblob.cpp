@@ -18,7 +18,8 @@
 
 void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
 {
-    captainslog_dbgassert(m_blockData == nullptr, "Init called on blob with none null data for pool '%s'.", owning_pool->m_poolName);
+    captainslog_dbgassert(
+        m_blockData == nullptr, "Init called on blob with none null data for pool '%s'.", owning_pool->m_poolName);
 
     m_owningPool = owning_pool;
     m_totalBlocksInBlob = count;

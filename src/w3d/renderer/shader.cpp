@@ -42,7 +42,6 @@ struct W3dMaterial3Struct
     float fog_coeff;
 };
 
-
 // TODO these should be decoded into Shader_Const calls.
 ShaderClass ShaderClass::s_presetOpaqueShader(0x9441B);
 ShaderClass ShaderClass::s_presetAdditiveShader(0x94433);
@@ -144,7 +143,7 @@ ShaderClass::StaticSortCategoryType ShaderClass::Get_Static_Sort_Category() cons
     if (Get_Alpha_Test() == ALPHATEST_DISABLE && Get_Dst_Blend_Func() == DSTBLEND_ZERO) {
         return SSCAT_OPAQUE;
     }
-    
+
     if (Get_Alpha_Test() == MASK_ALPHATEST) {
         if (Get_Dst_Blend_Func() == DSTBLEND_ZERO
             || (Get_Dst_Blend_Func() == DSTBLEND_ONE_MINUS_SRC_ALPHA) && Get_Src_Blend_Func() == SRCBLEND_SRC_ALPHA) {

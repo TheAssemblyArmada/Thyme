@@ -33,6 +33,7 @@ public:
     void Deposit(unsigned amount, bool play_sound);
 
     static void Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data);
+
 protected:
     unsigned m_money;
     int m_playerIndex;

@@ -86,6 +86,10 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE) # Needed to prevent FindDirectX screwing up a mingw build.
 
+# Set up a format target to do automated clang format checking.
+find_package(ClangFormat)
+include(ClangFormat)
+
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 

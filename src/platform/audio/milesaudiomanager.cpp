@@ -131,7 +131,7 @@ void MilesAudioManager::Stop_Audio(AudioAffect affect)
             if (*it != nullptr) {
                 if ((affect & AUDIOAFFECT_MUSIC)
                     || ((*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
-                           && (affect & AUDIOAFFECT_SPEECH))) {
+                        && (affect & AUDIOAFFECT_SPEECH))) {
                     AIL_register_stream_callback((*it)->miles.stream, nullptr);
                     AIL_pause_stream((*it)->miles.stream, 1);
                     (*it)->miles.stopped = 1;
@@ -169,7 +169,7 @@ void MilesAudioManager::Pause_Audio(AudioAffect affect)
             if (*it != nullptr) {
                 if ((affect & AUDIOAFFECT_MUSIC)
                     || ((*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
-                           && (affect & AUDIOAFFECT_SPEECH))) {
+                        && (affect & AUDIOAFFECT_SPEECH))) {
                     AIL_pause_stream((*it)->miles.stream, 1);
                 }
             }
@@ -214,7 +214,7 @@ void MilesAudioManager::Resume_Audio(AudioAffect affect)
             if (*it != nullptr) {
                 if ((affect & AUDIOAFFECT_MUSIC)
                     || ((*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
-                           && (affect & AUDIOAFFECT_SPEECH))) {
+                        && (affect & AUDIOAFFECT_SPEECH))) {
                     AIL_pause_stream((*it)->miles.stream, 0);
                 }
             }
@@ -910,7 +910,7 @@ bool MilesAudioManager::Has_3D_Sensitive_Streams_Playing()
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr
             && ((*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
-                   || !(*it)->miles.audio_event->Get_Event_Name().Starts_With("Game_"))) {
+                || !(*it)->miles.audio_event->Get_Event_Name().Starts_With("Game_"))) {
             return true;
         }
     }
@@ -1260,7 +1260,7 @@ void MilesAudioManager::Process_Playing_List()
 
                         if (sample_vol < m_audioSettings->Get_Min_Sample_Vol()
                             && !(((*it)->miles.audio_event->Get_Event_Info()->Get_Visibility() & VISIBILITY_GLOBAL)
-                                   || ((*it)->miles.audio_event->Get_Event_Info()->Get_Priority() == 4))) {
+                                || ((*it)->miles.audio_event->Get_Event_Info()->Get_Priority() == 4))) {
                             AIL_register_3D_EOS_callback((*it)->miles.sample_3d, nullptr);
                             Release_Playing_Audio(*it);
                             it = m_positionalAudioList.erase(it);

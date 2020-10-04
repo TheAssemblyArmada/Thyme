@@ -84,15 +84,16 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     uint8_t version = PARTICLESYS_XFER_VERSION;
     xfer->xferVersion(&version, PARTICLESYS_XFER_VERSION);
     xfer->xferBool(&m_isOneShot);
-    xfer->xferInt(reinterpret_cast<int32_t *>(&m_shaderType));  // Original calls xferUser, endianness issues.
-    xfer->xferInt(reinterpret_cast<int32_t *>(&m_particleType));  // Original calls xferUser, endianness issues.
+    xfer->xferInt(reinterpret_cast<int32_t *>(&m_shaderType)); // Original calls xferUser, endianness issues.
+    xfer->xferInt(reinterpret_cast<int32_t *>(&m_particleType)); // Original calls xferUser, endianness issues.
     xfer->xferAsciiString(&m_particleTypeName);
 #ifndef GAME_DLL
     xfer->Xfer_Client_Random_Var(&m_angleX);
     xfer->Xfer_Client_Random_Var(&m_angleY);
 #else
     GameClientRandomVariable fake; // Used to keep version number after angleX and angleY members removed.
-    xfer->Xfer_Client_Random_Var(&fake); // angleX in Generals. // These xfers used xferUser to transfer as opaque objects, but has endian issues.
+    xfer->Xfer_Client_Random_Var(
+        &fake); // angleX in Generals. // These xfers used xferUser to transfer as opaque objects, but has endian issues.
     xfer->Xfer_Client_Random_Var(&fake); // angleY in Generals.
 #endif
     xfer->Xfer_Client_Random_Var(&m_angleZ);

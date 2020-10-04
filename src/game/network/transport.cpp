@@ -165,7 +165,8 @@ bool Transport::Do_Send()
             if (m_udpsock->Write(reinterpret_cast<uint8_t *>(&m_outBuffer[i]),
                     m_outBuffer[i].length + sizeof(TransportMessageHeader),
                     m_outBuffer[i].addr,
-                    m_outBuffer[i].port) <=0 ) {
+                    m_outBuffer[i].port)
+                <= 0) {
                 all_sent = false;
             } else {
                 ++m_outgoingPackets[m_statisticsSlot];

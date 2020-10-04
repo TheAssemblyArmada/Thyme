@@ -64,8 +64,10 @@ public:
     DataChunkInput(ChunkInputStream *stream);
     ~DataChunkInput();
 
-    void Register_Parser(const Utf8String &label, const Utf8String &parent_label,
-        bool (*parser)(DataChunkInput &, DataChunkInfo *, void *), void *user_data);
+    void Register_Parser(const Utf8String &label,
+        const Utf8String &parent_label,
+        bool (*parser)(DataChunkInput &, DataChunkInfo *, void *),
+        void *user_data);
     bool Parse(void *user_data);
     bool Is_Valid_File() { return m_contents.Header_Opened(); }
     Utf8String Open_Data_Chunk(uint16_t *version);

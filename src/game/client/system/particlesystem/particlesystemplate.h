@@ -26,7 +26,7 @@ class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInf
 {
     friend class ParticleSystem;
     IMPLEMENT_NAMED_POOL(ParticleSystemTemplate, ParticleSystemTemplatePool);
-    
+
 public:
     ParticleSystemTemplate(const Utf8String &name) : m_name(name), m_slaveTemplate(nullptr) {}
     virtual ~ParticleSystemTemplate() {}

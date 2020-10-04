@@ -37,7 +37,7 @@ public:
 
     void Add_Ref() { m_numRefs++; }
     int Num_Refs() { return m_numRefs; }
-    
+
     void Release_Ref()
     {
 #ifdef GAME_DEBUG
@@ -62,8 +62,7 @@ private:
     static int m_totalRefs;
 };
 
-template<typename T>
-void Ref_Ptr_Set(T *&src, T *&dst)
+template<typename T> void Ref_Ptr_Set(T *&src, T *&dst)
 {
     if (src != nullptr) {
         src->Add_Ref();
@@ -76,12 +75,11 @@ void Ref_Ptr_Set(T *&src, T *&dst)
     dst = src;
 }
 
-template<typename T>
-void Ref_Ptr_Release(T *&ptr)
+template<typename T> void Ref_Ptr_Release(T *&ptr)
 {
     if (ptr != nullptr) {
         ptr->Release_Ref();
     }
-    
+
     ptr = nullptr;
 }

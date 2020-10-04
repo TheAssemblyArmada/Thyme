@@ -30,6 +30,7 @@ public:
     __forceinline bool operator!=(const Vector2i &v) const;
     __forceinline const int &operator[](int n) const;
     __forceinline int &operator[](int n);
+
 public:
     int32_t I;
     int32_t J;

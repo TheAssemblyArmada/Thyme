@@ -63,7 +63,8 @@ class TextureBaseClass : public RefCountClass
     friend class TextureLoadTaskClass;
 
 public:
-    TextureBaseClass(unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction);
+    TextureBaseClass(
+        unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction);
     virtual ~TextureBaseClass();
     virtual int Get_Asset_Type() = 0;
     virtual unsigned Get_Texture_Memory_Usage() = 0;

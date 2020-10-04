@@ -41,7 +41,6 @@ public:
     virtual int Height() { return 0; }
     virtual int Width() { return 0; }
 
-
 protected:
     VideoPlayer *m_player;
     VideoStream *m_next;

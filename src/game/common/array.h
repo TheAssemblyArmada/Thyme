@@ -14,31 +14,23 @@
  */
 #pragma once
 
-template<typename T, int N>
-class Array
+template<typename T, int N> class Array
 {
 public:
-	inline Array()	{}
+    inline Array() {}
 
-	inline Array(T val)
-	{
-		for (int i = 0; i < N; ++i)
-			m_data[i] = val;
-	}
+    inline Array(T val)
+    {
+        for (int i = 0; i < N; ++i)
+            m_data[i] = val;
+    }
 
-	inline int Size() const
-	{
-		return N;
-	}
+    inline int Size() const { return N; }
 
-	inline T& operator [](int idx) {
-		return m_data[idx];
-	}
+    inline T &operator[](int idx) { return m_data[idx]; }
 
-	inline T operator [](int idx) const {
-		return m_data[idx];
-	}
+    inline T operator[](int idx) const { return m_data[idx]; }
 
 private:
-	T m_data[N];
+    T m_data[N];
 };

@@ -54,7 +54,11 @@ public:
     bool Do_Send();
     bool Do_Recv();
     bool Queue_Send(uint32_t addr, uint16_t port, const char *buf, int len);
-    void Allow_Broadcast(bool allow) { if (m_udpsock!= nullptr) m_udpsock->Allow_Broadcasts(allow); } 
+    void Allow_Broadcast(bool allow)
+    {
+        if (m_udpsock != nullptr)
+            m_udpsock->Allow_Broadcasts(allow);
+    }
 
 private:
     static void Obfuscate(void *data, int len);

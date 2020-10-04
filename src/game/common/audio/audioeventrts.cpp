@@ -32,7 +32,7 @@ AudioEventRTS::AudioEventRTS() :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{0.0f, 0.0f, 0.0f},
+    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -94,7 +94,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{0.0f, 0.0f, 0.0f},
+    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -125,7 +125,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{0.0f, 0.0f, 0.0f},
+    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(id),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -227,7 +227,7 @@ void AudioEventRTS::Generate_Filename()
     }
 
     m_filename = Generate_Filename_Prefix(m_eventInfo->Get_Event_Type(), false);
-    
+
     if (m_eventInfo->Get_Event_Type() != EVENT_MUSIC && m_eventInfo->Get_Event_Type() != EVENT_SPEECH) {
         unsigned count = m_eventInfo->Sound_Count();
 

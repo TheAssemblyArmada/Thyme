@@ -53,11 +53,9 @@ class HashTableIteratorClass
 {
 public:
     HashTableIteratorClass(const HashTableIteratorClass &that) :
-        m_table(that.m_table),
-        m_index(that.m_index),
-        m_currentEntry(that.m_currentEntry),
-        m_nextEntry(that.m_nextEntry)
-    {}
+        m_table(that.m_table), m_index(that.m_index), m_currentEntry(that.m_currentEntry), m_nextEntry(that.m_nextEntry)
+    {
+    }
     HashTableIteratorClass(HashTableClass &table) : m_table(table) {}
     virtual ~HashTableIteratorClass() {}
     void First();

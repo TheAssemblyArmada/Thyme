@@ -31,12 +31,13 @@ public:
     virtual ~Image();
 
     // Methods
-    void Clear_Status(uint32_t bit);//TODO not hooked or verified
+    void Clear_Status(uint32_t bit); // TODO not hooked or verified
     void Set_Status(uint32_t bit);
 
     // initFromINIMulti variants for Field Parsing Functions.
     static void Parse_Image_Coords(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data);//TODO not hooked or verified
+    static void Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data); // TODO not hooked or
+                                                                                                // verified
 
 #ifdef GAME_DLL
     Image *Hook_Ctor() { return new (this) Image(); }

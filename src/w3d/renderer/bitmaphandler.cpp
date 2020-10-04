@@ -29,8 +29,11 @@ unsigned Scale_Bits(unsigned src, unsigned src_bits, unsigned dest_bits)
 /**
  * Read an ARGB formatted pixel value from a bitmap of any supported uncompressed format.
  */
-void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface, uint8_t const *src_surface, WW3DFormat src_surface_format,
-    uint8_t const *src_palette, unsigned src_palete_bpp)
+void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
+    uint8_t const *src_surface,
+    WW3DFormat src_surface_format,
+    uint8_t const *src_palette,
+    unsigned src_palete_bpp)
 {
     switch (src_surface_format) {
         case WW3D_FORMAT_A8R8G8B8:
@@ -144,8 +147,8 @@ void BitmapHandlerClass::Write_B8G8R8A8(uint8_t *dest_surface, WW3DFormat dest_s
                 | ((src_surface[2] & 0xF8) << 7) | (src_surface[3] != 0 ? 0x8000 : 0);
             return;
         case WW3D_FORMAT_R5G6B5:
-            *reinterpret_cast<uint16_t *>(dest_surface) = ((src_surface[0]) >> 3)
-                | ((src_surface[1] & 0xFC) << 3) | ((src_surface[2] & 0xF8) << 8);
+            *reinterpret_cast<uint16_t *>(dest_surface) =
+                ((src_surface[0]) >> 3) | ((src_surface[1] & 0xFC) << 3) | ((src_surface[2] & 0xF8) << 8);
             return;
         case WW3D_FORMAT_R3G3B2:
             *reinterpret_cast<uint16_t *>(dest_surface) =
@@ -166,8 +169,12 @@ void BitmapHandlerClass::Write_B8G8R8A8(uint8_t *dest_surface, WW3DFormat dest_s
 /**
  * Create a mipmap from an ARGB surface.
  */
-void BitmapHandlerClass::Create_Mipmap_B8G8R8A8(uint8_t *dest_surface, unsigned dest_surface_pitch, uint8_t *src_surface,
-    unsigned src_surface_pitch, unsigned width, unsigned height)
+void BitmapHandlerClass::Create_Mipmap_B8G8R8A8(uint8_t *dest_surface,
+    unsigned dest_surface_pitch,
+    uint8_t *src_surface,
+    unsigned src_surface_pitch,
+    unsigned width,
+    unsigned height)
 {
     int pitch = src_surface_pitch >> 2;
 
@@ -190,9 +197,17 @@ void BitmapHandlerClass::Create_Mipmap_B8G8R8A8(uint8_t *dest_surface, unsigned 
  *
  * 0x008202B0
  */
-void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width, unsigned height, uint8_t *dest_surface,
-    unsigned dest_pitch, WW3DFormat dest_format, uint8_t *src_surface, unsigned src_pitch, WW3DFormat src_format,
-    uint8_t *mip_surface, unsigned mip_pitch, const Vector3 &adjust)
+void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width,
+    unsigned height,
+    uint8_t *dest_surface,
+    unsigned dest_pitch,
+    WW3DFormat dest_format,
+    uint8_t *src_surface,
+    unsigned src_pitch,
+    WW3DFormat src_format,
+    uint8_t *mip_surface,
+    unsigned mip_pitch,
+    const Vector3 &adjust)
 {
     bool recolor = adjust.X != 0.0f || adjust.Y != 0.0f || adjust.Z != 0.0f;
 
@@ -219,9 +234,11 @@ void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width, unsigned hei
                 Write_B8G8R8A8(&dest[dest_pitch], dest_format, tmp3);
                 Read_B8G8R8A8(tmp4, &src[bpp1] + src_pitch, src_format, 0, 0);
                 Write_B8G8R8A8(&dest[bpp2] + dest_pitch, dest_format, tmp4);
-                *reinterpret_cast<uint32_t *>(tmp5) = ((*reinterpret_cast<uint32_t *>(tmp4) & 0xFCFCFCFCu) >> 2) + ((*reinterpret_cast<uint32_t *>(tmp3) & 0xFCFCFCFCu) >> 2)
-                    + ((*reinterpret_cast<uint32_t *>(tmp2) & 0xFCFCFCFCu) >> 2) + ((*reinterpret_cast<uint32_t *>(tmp1) & 0xFCFCFCFCu) >> 2);
-                
+                *reinterpret_cast<uint32_t *>(tmp5) = ((*reinterpret_cast<uint32_t *>(tmp4) & 0xFCFCFCFCu) >> 2)
+                    + ((*reinterpret_cast<uint32_t *>(tmp3) & 0xFCFCFCFCu) >> 2)
+                    + ((*reinterpret_cast<uint32_t *>(tmp2) & 0xFCFCFCFCu) >> 2)
+                    + ((*reinterpret_cast<uint32_t *>(tmp1) & 0xFCFCFCFCu) >> 2);
+
                 if (recolor) {
                     Recolor(*reinterpret_cast<uint32_t *>(tmp5), adjust);
                 }
@@ -262,8 +279,7 @@ void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width, unsigned hei
                     dest2[pitch1 + 1] = src2[pitch2 + 1];
                     dest2[1] = src2[1];
                     *mip2 = ((src2[pitch2 + 1] & 0xFCFCFCFCu) >> 2) + ((src2[pitch2] & 0xFCFCFCFCu) >> 2)
-                        + ((src2[1] & 0xFCFCFCFCu) >> 2)
-                        + ((src2[0] & 0xFCFCFCFCu) >> 2);
+                        + ((src2[1] & 0xFCFCFCFCu) >> 2) + ((src2[0] & 0xFCFCFCFCu) >> 2);
                     src2 += 2;
                     dest2 += 2;
                 }
@@ -277,10 +293,20 @@ void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width, unsigned hei
  *
  * 0x0087E7A0
  */
-void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface_width, unsigned dest_surface_height,
-    unsigned dest_surface_pitch, WW3DFormat dest_surface_format, uint8_t *src_surface, unsigned src_surface_width,
-    unsigned src_surface_height, unsigned src_surface_pitch, WW3DFormat src_surface_format, uint8_t *src_palette,
-    unsigned src_palette_bpp, bool generate_mip_level, const Vector3 &adjust)
+void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
+    unsigned dest_surface_width,
+    unsigned dest_surface_height,
+    unsigned dest_surface_pitch,
+    WW3DFormat dest_surface_format,
+    uint8_t *src_surface,
+    unsigned src_surface_width,
+    unsigned src_surface_height,
+    unsigned src_surface_pitch,
+    WW3DFormat src_surface_format,
+    uint8_t *src_palette,
+    unsigned src_palette_bpp,
+    bool generate_mip_level,
+    const Vector3 &adjust)
 {
     if (dest_surface_format == WW3D_FORMAT_U8V8 || dest_surface_format == WW3D_FORMAT_L6V5U5
         || dest_surface_format == WW3D_FORMAT_X8L8V8U8) {
@@ -429,24 +455,29 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
                                 uint8_t pixel_4[4];
                                 Read_B8G8R8A8(pixel_1, src, src_surface_format, src_palette, src_palette_bpp);
                                 Read_B8G8R8A8(pixel_2, &src[bpp2], src_surface_format, src_palette, src_palette_bpp);
-                                Read_B8G8R8A8(pixel_3, &src[src_surface_pitch], src_surface_format, src_palette, src_palette_bpp);
                                 Read_B8G8R8A8(
-                                    pixel_4, &src[bpp2] + src_surface_pitch, src_surface_format, src_palette, src_palette_bpp);
-                                
+                                    pixel_3, &src[src_surface_pitch], src_surface_format, src_palette, src_palette_bpp);
+                                Read_B8G8R8A8(pixel_4,
+                                    &src[bpp2] + src_surface_pitch,
+                                    src_surface_format,
+                                    src_palette,
+                                    src_palette_bpp);
+
                                 if (recolor) {
                                     Recolor(*reinterpret_cast<uint32_t *>(pixel_1), adjust);
                                     Recolor(*reinterpret_cast<uint32_t *>(pixel_2), adjust);
                                     Recolor(*reinterpret_cast<uint32_t *>(pixel_3), adjust);
                                     Recolor(*reinterpret_cast<uint32_t *>(pixel_4), adjust);
                                 }
-                                
+
                                 Write_B8G8R8A8(dest, dest_surface_format, pixel_1);
                                 Write_B8G8R8A8(&dest[bpp1], dest_surface_format, pixel_2);
                                 Write_B8G8R8A8(&dest[dest_surface_pitch], dest_surface_format, pixel_3);
                                 Write_B8G8R8A8(&dest[bpp1] + dest_surface_pitch, dest_surface_format, pixel_4);
                                 /*uint8_t i6[4];
                                 *(unsigned *)i6 = ((*(unsigned *)pixel_4 & 0xFCFCFCFCu) >> 2)
-                                    + ((*(unsigned *)pixel_3 & 0xFCFCFCFCu) >> 2) + ((*(unsigned *)pixel_2 & 0xFCFCFCFCu) >> 2)
+                                    + ((*(unsigned *)pixel_3 & 0xFCFCFCFCu) >> 2) + ((*(unsigned *)pixel_2 & 0xFCFCFCFCu) >>
+                                2)
                                     + ((*(unsigned *)pixel_1 & 0xFCFCFCFCu) >> 2);
                                 Write_B8G8R8A8(src2, src_surface_format, i6);*/
                                 Write_B8G8R8A8(src2, src_surface_format, pixel_1);
@@ -463,7 +494,13 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
 
                         if (recolor) {
                             for (unsigned j = 0; j < dest_surface_width; ++j) {
-                                Copy_Pixel(dst, dest_surface_format, src3, src_surface_format, src_palette, src_palette_bpp, adjust);
+                                Copy_Pixel(dst,
+                                    dest_surface_format,
+                                    src3,
+                                    src_surface_format,
+                                    src_palette,
+                                    src_palette_bpp,
+                                    adjust);
                                 dst += bpp1;
                                 src3 += bpp2;
                             }
@@ -486,7 +523,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
                     uint32_t *dst1 = reinterpret_cast<uint32_t *>(&dest_surface[i * dest_surface_pitch]);
 
                     for (unsigned j = 0; j < dest_surface_width; dst1 += 4) {
-                        uint32_t *src =  reinterpret_cast<uint32_t *>(&src_surface[src_surface_pitch * (i * src_surface_height / dest_surface_height)]
+                        uint32_t *src = reinterpret_cast<uint32_t *>(
+                            &src_surface[src_surface_pitch * (i * src_surface_height / dest_surface_height)]
                             + 4 * (j++ * src_surface_width / dest_surface_width));
 
                         uint32_t tmp = *src;
@@ -509,8 +547,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
 
                         *reinterpret_cast<uint32_t *>(dest_surface) = tmp;
                     } else {
-                        for (unsigned i = 0; i<dest_surface_height>> 1; ++i) {
-                            uint32_t *dst = reinterpret_cast<uint32_t*>(&dest_surface[8 * dest_quarter_pitch * i]);
+                        for (unsigned i = 0; i < (dest_surface_height >> 1); ++i) {
+                            uint32_t *dst = reinterpret_cast<uint32_t *>(&dest_surface[8 * dest_quarter_pitch * i]);
                             uint32_t *src = reinterpret_cast<uint32_t *>(&src_surface[8 * src_quarter_pitch * i]);
                             uint32_t *mip = reinterpret_cast<uint32_t *>(&src_surface[4 * src_quarter_pitch * i]);
 
@@ -527,8 +565,9 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
                                     Recolor(dst[1], adjust);
                                 }
 
-                                *mip = ((src[src_quarter_pitch + 1] & 0xFCFCFCFCu) >> 2) + ((src[src_quarter_pitch] & 0xFCFCFCFC) >> 2)
-                                    + ((src[1] & 0xFCFCFCFCu) >> 2) + ((src[0] & 0xFCFCFCFCu) >> 2);
+                                *mip = ((src[src_quarter_pitch + 1] & 0xFCFCFCFCu) >> 2)
+                                    + ((src[src_quarter_pitch] & 0xFCFCFCFC) >> 2) + ((src[1] & 0xFCFCFCFCu) >> 2)
+                                    + ((src[0] & 0xFCFCFCFCu) >> 2);
                                 src += 2;
                                 dst += 2;
                             }
@@ -536,8 +575,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
                     }
                 } else {
                     for (unsigned i = 0; i < dest_surface_height; i++) {
-                        uint32_t *dst = reinterpret_cast<uint32_t*>(&dest_surface[4 * i * dest_quarter_pitch]);
-                        uint32_t *src = reinterpret_cast<uint32_t*>(&src_surface[4 * i * src_quarter_pitch]);
+                        uint32_t *dst = reinterpret_cast<uint32_t *>(&dest_surface[4 * i * dest_quarter_pitch]);
+                        uint32_t *src = reinterpret_cast<uint32_t *>(&src_surface[4 * i * src_quarter_pitch]);
 
                         for (unsigned j = 0; j < dest_surface_width; j++) {
                             uint32_t tmp = src[j];
@@ -558,8 +597,12 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface, unsigned dest_surface
 /**
  * Copies a pixel between two surfaces.
  */
-void BitmapHandlerClass::Copy_Pixel(uint8_t *dest_surface, WW3DFormat dest_surface_format, const uint8_t *src_surface,
-    WW3DFormat src_surface_format, const uint8_t *src_palette, unsigned src_palette_bpp)
+void BitmapHandlerClass::Copy_Pixel(uint8_t *dest_surface,
+    WW3DFormat dest_surface_format,
+    const uint8_t *src_surface,
+    WW3DFormat src_surface_format,
+    const uint8_t *src_palette,
+    unsigned src_palette_bpp)
 {
     // Perform optimised handling when formats are the same.
     if (dest_surface_format == src_surface_format) {
@@ -612,8 +655,13 @@ void BitmapHandlerClass::Copy_Pixel(uint8_t *dest_surface, WW3DFormat dest_surfa
 /**
  * Copies a pixel between two surfaces, applying a color adjustment.
  */
-void BitmapHandlerClass::Copy_Pixel(uint8_t *dest_surface, WW3DFormat dest_surface_format, const uint8_t *src_surface,
-    WW3DFormat src_surface_format, const uint8_t *src_palette, unsigned src_palette_bpp, const Vector3 &adjust)
+void BitmapHandlerClass::Copy_Pixel(uint8_t *dest_surface,
+    WW3DFormat dest_surface_format,
+    const uint8_t *src_surface,
+    WW3DFormat src_surface_format,
+    const uint8_t *src_palette,
+    unsigned src_palette_bpp,
+    const Vector3 &adjust)
 {
     // Cannot optimise when we have an adjustment to make.
     uint8_t pixel[4];

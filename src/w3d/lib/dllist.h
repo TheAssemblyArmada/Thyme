@@ -17,11 +17,9 @@
 #include "always.h"
 #include "w3dmpo.h"
 
-template<typename T>
-class DLNodeClass;
+template<typename T> class DLNodeClass;
 
-template<typename T>
-class DLListClass
+template<typename T> class DLListClass
 {
     friend DLNodeClass<T>;
 
@@ -44,8 +42,7 @@ private:
     DLNodeClass<T> *m_tail;
 };
 
-template<typename T>
-class DLDestroyListClass : public DLListClass<T>
+template<typename T> class DLDestroyListClass : public DLListClass<T>
 {
     using DLListClass<T>::Head;
 
@@ -58,8 +55,7 @@ public:
     }
 };
 
-template<typename T>
-class DLNodeClass : public W3DMPO
+template<typename T> class DLNodeClass : public W3DMPO
 {
     friend DLListClass<T>;
 
@@ -85,8 +81,7 @@ private:
 
 // Start of DLListClass<T> methods.
 
-template<typename T>
-void DLListClass<T>::Add_Head(DLNodeClass<T> *n)
+template<typename T> void DLListClass<T>::Add_Head(DLNodeClass<T> *n)
 {
     n->m_list = this;
 
@@ -101,8 +96,7 @@ void DLListClass<T>::Add_Head(DLNodeClass<T> *n)
     }
 }
 
-template<typename T>
-void DLListClass<T>::Add_Tail(DLNodeClass<T> *n)
+template<typename T> void DLListClass<T>::Add_Tail(DLNodeClass<T> *n)
 {
     n->m_list = this;
 
@@ -117,8 +111,7 @@ void DLListClass<T>::Add_Tail(DLNodeClass<T> *n)
     }
 }
 
-template<typename T>
-void DLListClass<T>::Remove_Head()
+template<typename T> void DLListClass<T>::Remove_Head()
 {
     if (m_head == nullptr) {
         return;
@@ -136,8 +129,7 @@ void DLListClass<T>::Remove_Head()
     n->Remove();
 }
 
-template<typename T>
-void DLListClass<T>::Remove_Tail()
+template<typename T> void DLListClass<T>::Remove_Tail()
 {
     if (m_tail == nullptr) {
         return;
@@ -157,8 +149,7 @@ void DLListClass<T>::Remove_Tail()
 
 // Start of DLNodeClass<T> methods.
 
-template<typename T>
-void DLNodeClass<T>::Insert_Before(DLNodeClass<T> *n)
+template<typename T> void DLNodeClass<T>::Insert_Before(DLNodeClass<T> *n)
 {
     m_list = n->m_list;
     m_succ = n;
@@ -175,8 +166,7 @@ void DLNodeClass<T>::Insert_Before(DLNodeClass<T> *n)
     }
 }
 
-template<typename T>
-void DLNodeClass<T>::Insert_After(DLNodeClass<T> *n)
+template<typename T> void DLNodeClass<T>::Insert_After(DLNodeClass<T> *n)
 {
     m_list = n->m_list;
     m_pred = n;
@@ -193,8 +183,7 @@ void DLNodeClass<T>::Insert_After(DLNodeClass<T> *n)
     }
 }
 
-template<typename T>
-void DLNodeClass<T>::Remove()
+template<typename T> void DLNodeClass<T>::Remove()
 {
     if (m_list == nullptr) {
         return;

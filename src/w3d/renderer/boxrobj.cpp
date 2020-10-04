@@ -17,7 +17,7 @@
 #include "hooker.h"
 #endif
 
-void BoxRenderObjClass::Init() 
+void BoxRenderObjClass::Init()
 {
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x00848A90, 0x0054C9C0));

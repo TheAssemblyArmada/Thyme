@@ -22,11 +22,11 @@
 #include <cstring>
 #include <sys/stat.h>
 
+using std::fclose;
+using std::fopen;
+using std::sscanf;
 using std::strchr;
 using std::strlen;
-using std::fopen;
-using std::fclose;
-using std::sscanf;
 
 typedef int (*cmdparse_t)(char **, int);
 
@@ -341,7 +341,7 @@ int Parse_No_Draw(char **argv, int argc)
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_frameToJumpTo = 1;
     }
-    
+
     return 1;
 }
 
@@ -663,7 +663,7 @@ int Parse_Force_Benchmark(char **argv, int argc)
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_benchMark = true;
     }
-    
+
     return 1;
 }
 
@@ -921,7 +921,7 @@ int Parse_Dump_Asset_Usage(char **argv, int argc)
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_dumpAssetUsage = true;
     }
-    
+
     return 1;
 }
 
@@ -951,98 +951,96 @@ int Parse_Update_Images(char **argv, int argc)
 void Parse_Command_Line(int argc, char *argv[])
 {
     // Arguments we support and the functions to parse them.
-    CmdParseStruct _params[] = {
-        {"-noshellmap", &Parse_No_Shell_Map},
-        {"-win", &Parse_Win},
-        {"-xres", &Parse_XRes},
-        {"-yres", &Parse_YRes},
-        {"-fullscreen", &Parse_Full_Screen}, // Default
-        {"-fullVersion", &Parse_Full_Version},
-        {"-particleEdit", &Parse_Particle_Edit},
-        {"-scriptDebug", &Parse_Script_Debug},
-        {"-playStats", &Parse_Play_Stats},
-        {"-mod", &Parse_Mod},
-        {"-noshaders", &Parse_No_Shaders},
-        {"-quickstart", &Parse_Quick_Start},
-        {"-useWaveEditor", &Parse_Use_Wave_Editor},
-        {"-noaudio", &Parse_No_Audio},
-        {"-map", &Parse_Map},
-        {"-nomusic", &Parse_No_Music},
-        {"-novideo", &Parse_No_Video},
-        {"-noShowClientPhysics", &Parse_No_Show_Client_Physics},
-        {"-noViewLimit", &Parse_No_View_Limit},
-        {"-lowDetail", &Parse_Low_Detail},
-        {"-noDynamicLOD", &Parse_No_Dynamic_LOD},
-        {"-noStaticLOD", &Parse_No_Static_LOD},
-        {"-noshadowvolumes", &Parse_No_Shadows},
-        {"-showTerrainNormals", &Parse_Show_Terrain_Normals},
-        {"-buildmapcache", &Parse_Build_Map_Cache},
-        {"-preload", &Parse_Preload},
-        {"-preloadEverything", &Parse_Preload_Everything},
-        {"-logAssets", &Parse_Log_Assets},
-        {"-displayDebug", &Parse_Display_Debug},
-        {"-file", &Parse_File},
-        {"-nofx", &Parse_No_FX},
-        {"-forceBenchmark", &Parse_Force_Benchmark},
-        {"-nomovecamera", &Parse_No_Move_Camera},
-        {"-nologo", &Parse_No_Logo},
-        {"-shellmap", &Parse_Shell_Map}, // Overrides the shell map with custom map name.
-        {"-noShellAnim", &Parse_No_Window_Animation},
-        {"-winCursors", &Parse_Win_Cursors}, // Default anyhow so will have no effect.
-        {"-constantDebug", &Parse_Constant_Debug},
-        {"-seed", &Parse_Seed}, // Useful for debugging randomness.
-        {"-noagpfix", &Parse_Incr_AGP_Buf},
-        {"-netMinPlayers", &Parse_Net_Min_Players},
-        {"-DemoLoadScreen", &Parse_Demo_Load_Screen},
-        {"-noFPSLimit", &Parse_No_FPS_Limit},
-        {"-fps", &Parse_FPS},
-        {"-dumpAssetUsage", &Parse_Dump_Asset_Usage},
-        {"-jumpToFrame", &Parse_Jump_To_Frame},
-        {"-updateImages", &Parse_Update_Images},
-        {"-noDraw", &Parse_No_Draw},
+    CmdParseStruct _params[] = { { "-noshellmap", &Parse_No_Shell_Map },
+        { "-win", &Parse_Win },
+        { "-xres", &Parse_XRes },
+        { "-yres", &Parse_YRes },
+        { "-fullscreen", &Parse_Full_Screen }, // Default
+        { "-fullVersion", &Parse_Full_Version },
+        { "-particleEdit", &Parse_Particle_Edit },
+        { "-scriptDebug", &Parse_Script_Debug },
+        { "-playStats", &Parse_Play_Stats },
+        { "-mod", &Parse_Mod },
+        { "-noshaders", &Parse_No_Shaders },
+        { "-quickstart", &Parse_Quick_Start },
+        { "-useWaveEditor", &Parse_Use_Wave_Editor },
+        { "-noaudio", &Parse_No_Audio },
+        { "-map", &Parse_Map },
+        { "-nomusic", &Parse_No_Music },
+        { "-novideo", &Parse_No_Video },
+        { "-noShowClientPhysics", &Parse_No_Show_Client_Physics },
+        { "-noViewLimit", &Parse_No_View_Limit },
+        { "-lowDetail", &Parse_Low_Detail },
+        { "-noDynamicLOD", &Parse_No_Dynamic_LOD },
+        { "-noStaticLOD", &Parse_No_Static_LOD },
+        { "-noshadowvolumes", &Parse_No_Shadows },
+        { "-showTerrainNormals", &Parse_Show_Terrain_Normals },
+        { "-buildmapcache", &Parse_Build_Map_Cache },
+        { "-preload", &Parse_Preload },
+        { "-preloadEverything", &Parse_Preload_Everything },
+        { "-logAssets", &Parse_Log_Assets },
+        { "-displayDebug", &Parse_Display_Debug },
+        { "-file", &Parse_File },
+        { "-nofx", &Parse_No_FX },
+        { "-forceBenchmark", &Parse_Force_Benchmark },
+        { "-nomovecamera", &Parse_No_Move_Camera },
+        { "-nologo", &Parse_No_Logo },
+        { "-shellmap", &Parse_Shell_Map }, // Overrides the shell map with custom map name.
+        { "-noShellAnim", &Parse_No_Window_Animation },
+        { "-winCursors", &Parse_Win_Cursors }, // Default anyhow so will have no effect.
+        { "-constantDebug", &Parse_Constant_Debug },
+        { "-seed", &Parse_Seed }, // Useful for debugging randomness.
+        { "-noagpfix", &Parse_Incr_AGP_Buf },
+        { "-netMinPlayers", &Parse_Net_Min_Players },
+        { "-DemoLoadScreen", &Parse_Demo_Load_Screen },
+        { "-noFPSLimit", &Parse_No_FPS_Limit },
+        { "-fps", &Parse_FPS },
+        { "-dumpAssetUsage", &Parse_Dump_Asset_Usage },
+        { "-jumpToFrame", &Parse_Jump_To_Frame },
+        { "-updateImages", &Parse_Update_Images },
+        { "-noDraw", &Parse_No_Draw },
         // Options below here needs additional members and/or code to work.
-        {"-benchmark", &Parse_Benchmark},
-        {"-stats", &Parse_Stats},
-        {"-saveStats", &Parse_Save_Stats},
-        {"-localMOTD", &Parse_Local_MOTD},
-        {"-UseCSF", &Parse_Use_CSF},
-        {"-NoInputDisable", &Parse_No_Input_Disable},
-        {"-DebugCRCFromFrame", &Parse_Debug_CRC_From_Frame},
-        {"-DebugCRCUntilFrame", &Parse_Debug_CRC_Until_Frame},
-        {"-KeepCRCSaves", &Parse_Keep_CRC_Saves},
-        {"-CRCLogicModuleData", &Parse_CRC_Logic_Module_Data},
-        {"-CRCClientModuleData", &Parse_CRC_Client_Module_Data},
-        {"-ClientDeepCRC", &Parse_Client_Deep_CRC},
-        {"-VerifyClientCRC", &Parse_Verify_Client_CRC},
-        {"-LogObjectCRCs", &Parse_Log_Object_CRC},
-        {"-saveAllStats", &Parse_Save_All_Stats},
-        {"-NetCRCInterval", &Parse_Net_CRC_Interval},
-        {"-ReplayCRCInterval", &Parse_Replay_CRC_Interval},
-        {"-nomilcap", &Parse_No_Military_Caption},
-        {"-nofade", &Parse_No_Fade},
-        {"-nocinematic", &Parse_No_Cinematics},
-        {"-packetloss", &Parse_Packet_Loss},
-        {"-latAvg", &Parse_Latency_Average},
-        {"-latAmp", &Parse_Latency_Amplitude},
-        {"-latPeriod", &Parse_Latency_Period},
-        {"-latNoise", &Parse_Latency_Noise},
-        {"-wireframe", &Parse_Wire_Frame},
-        {"-showCollision", &Parse_Show_Collision},
-        {"-stateMachineDebug", &Parse_State_Machine_Debug},
-        {"-jabber", &Parse_Jabber},
-        {"-munkee", &Parse_Munkee},
-        {"-cameraDebug", &Parse_Camera_Debug},
-        {"-ignoreAsserts", &Parse_Ignore_Asserts},
-        {"-ignoreStackTrace", &Parse_Ignore_Stack_Trace},
-        {"-logToCon", &Parse_Log_To_Console},
-        {"-vTune", &Parse_VTune},
-        {"-selectTheUnselectable", &Parse_Select_Unselectable},
-        {"-RunAhead", &Parse_Run_Ahead},
-        {"-noshroud", &Parse_No_Shroud},
-        {"-ignoresync", &Parse_Sync},
-        {"-showTeamDot", &Parse_Do_Team_Dot},
-        {"-extraLogging", &Parse_Extra_Logging}
-    };
+        { "-benchmark", &Parse_Benchmark },
+        { "-stats", &Parse_Stats },
+        { "-saveStats", &Parse_Save_Stats },
+        { "-localMOTD", &Parse_Local_MOTD },
+        { "-UseCSF", &Parse_Use_CSF },
+        { "-NoInputDisable", &Parse_No_Input_Disable },
+        { "-DebugCRCFromFrame", &Parse_Debug_CRC_From_Frame },
+        { "-DebugCRCUntilFrame", &Parse_Debug_CRC_Until_Frame },
+        { "-KeepCRCSaves", &Parse_Keep_CRC_Saves },
+        { "-CRCLogicModuleData", &Parse_CRC_Logic_Module_Data },
+        { "-CRCClientModuleData", &Parse_CRC_Client_Module_Data },
+        { "-ClientDeepCRC", &Parse_Client_Deep_CRC },
+        { "-VerifyClientCRC", &Parse_Verify_Client_CRC },
+        { "-LogObjectCRCs", &Parse_Log_Object_CRC },
+        { "-saveAllStats", &Parse_Save_All_Stats },
+        { "-NetCRCInterval", &Parse_Net_CRC_Interval },
+        { "-ReplayCRCInterval", &Parse_Replay_CRC_Interval },
+        { "-nomilcap", &Parse_No_Military_Caption },
+        { "-nofade", &Parse_No_Fade },
+        { "-nocinematic", &Parse_No_Cinematics },
+        { "-packetloss", &Parse_Packet_Loss },
+        { "-latAvg", &Parse_Latency_Average },
+        { "-latAmp", &Parse_Latency_Amplitude },
+        { "-latPeriod", &Parse_Latency_Period },
+        { "-latNoise", &Parse_Latency_Noise },
+        { "-wireframe", &Parse_Wire_Frame },
+        { "-showCollision", &Parse_Show_Collision },
+        { "-stateMachineDebug", &Parse_State_Machine_Debug },
+        { "-jabber", &Parse_Jabber },
+        { "-munkee", &Parse_Munkee },
+        { "-cameraDebug", &Parse_Camera_Debug },
+        { "-ignoreAsserts", &Parse_Ignore_Asserts },
+        { "-ignoreStackTrace", &Parse_Ignore_Stack_Trace },
+        { "-logToCon", &Parse_Log_To_Console },
+        { "-vTune", &Parse_VTune },
+        { "-selectTheUnselectable", &Parse_Select_Unselectable },
+        { "-RunAhead", &Parse_Run_Ahead },
+        { "-noshroud", &Parse_No_Shroud },
+        { "-ignoresync", &Parse_Sync },
+        { "-showTeamDot", &Parse_Do_Team_Dot },
+        { "-extraLogging", &Parse_Extra_Logging } };
 
     // Starting with argument 1 (0 being the name of the binary in most cases)
     // compare the argument against the list of argument handlers and call

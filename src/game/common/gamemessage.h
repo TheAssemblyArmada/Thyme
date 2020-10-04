@@ -56,8 +56,10 @@ union ArgumentType
 class GameMessageArgument : public MemoryPoolObject
 {
     IMPLEMENT_POOL(GameMessageArgument);
+
 public:
     GameMessageArgument() {}
+
 public:
     GameMessageArgument *m_next;
     ArgumentType m_data;

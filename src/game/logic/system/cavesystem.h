@@ -16,8 +16,8 @@
 #pragma once
 
 #include "mempoolobj.h"
-#include "subsysteminterface.h"
 #include "snapshot.h"
+#include "subsysteminterface.h"
 
 class TunnelTracker : public MemoryPoolObject, public SnapShot
 {
@@ -28,9 +28,9 @@ class TunnelTracker : public MemoryPoolObject, public SnapShot
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    int unk08; //Ptr uses new
-    int unk0C; //Ptr uses new
-    int unk10; //Ptr uses new
+    int unk08; // Ptr uses new
+    int unk0C; // Ptr uses new
+    int unk10; // Ptr uses new
     int unk14;
     int unk18;
     int unk1C;
@@ -59,7 +59,6 @@ public:
 private:
     std::vector<TunnelTracker *> m_caves;
 };
-
 
 #ifdef GAME_DLL
 extern CaveSystem *&g_theCaveSystem;

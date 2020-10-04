@@ -316,13 +316,13 @@ void SurfaceClass::Draw_Horizonal_Line(unsigned y, unsigned x1, unsigned x2, uns
                 *reinterpret_cast<uint32_t *>(bytes) = color;
                 break;
             default:
-                captainslog_error("%s Does not support pixel size of %d", __CURRENT_FUNCTION__ , px_size);
+                captainslog_error("%s Does not support pixel size of %d", __CURRENT_FUNCTION__, px_size);
                 break;
         }
 
         bytes += px_size;
     }
-    
+
     Unlock();
 }
 

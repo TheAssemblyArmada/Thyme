@@ -349,7 +349,6 @@ public:
         }
     }
 
-
     __forceinline Matrix3 Inverse() const
     {
         Matrix3 a(*this); // As a evolves from original mat into identity

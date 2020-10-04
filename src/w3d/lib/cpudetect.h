@@ -22,6 +22,7 @@ class CPUDetectInitClass;
 class CPUDetectClass
 {
     friend class CPUDetectInitClass;
+
 public:
     enum ProcessorManufacturerType
     {

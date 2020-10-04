@@ -23,8 +23,14 @@ class Version
 public:
     Version();
 
-    void Set_Version(int32_t maj, int32_t min, int32_t build, int32_t local_build, Utf8String location, Utf8String user,
-        Utf8String time, Utf8String date);
+    void Set_Version(int32_t maj,
+        int32_t min,
+        int32_t build,
+        int32_t local_build,
+        Utf8String location,
+        Utf8String user,
+        Utf8String time,
+        Utf8String date);
 
     int32_t Get_Version_Number() { return m_minor | (m_major << 16); }
     int32_t Get_Build_Number() { return m_buildNum; }

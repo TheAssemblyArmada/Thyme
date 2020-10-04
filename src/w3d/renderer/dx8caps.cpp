@@ -29,9 +29,10 @@ StringClass DX8Caps::s_videoCardDetails;
 namespace
 {
 const char *g_videoCardVendors[] = {
-    "Unknown", "NVidia", "ATI", "Intel", "S3", "PowerVR", "Matrox", "3Dfx", "3DLabs", "CirrusLogic", "Rendition"};
+    "Unknown", "NVidia", "ATI", "Intel", "S3", "PowerVR", "Matrox", "3Dfx", "3DLabs", "CirrusLogic", "Rendition"
+};
 
-const char *g_nVidiaDevices[] = {"Unknown NVidia device",
+const char *g_nVidiaDevices[] = { "Unknown NVidia device",
     "GeForce3",
     "Quadro2 PRO",
     "GeForce2 Go",
@@ -69,9 +70,9 @@ const char *g_nVidiaDevices[] = {"Unknown NVidia device",
     "Quadro2 MXR//EX//GO",
     "GeFORCE2_MX 100//200",
     "GeFORCE2_MX 400",
-    "Quadro DCC"};
+    "Quadro DCC" };
 
-const char *g_AMDDevices[] = {"Unknown ATI Device",
+const char *g_AMDDevices[] = { "Unknown ATI Device",
     "Rage II",
     "Rage II+",
     "Rage IIc PCI",
@@ -93,13 +94,13 @@ const char *g_AMDDevices[] = {"Unknown ATI Device",
     "Radeon DDR",
     "Radeon",
     "Mobility R7500",
-    "R7500"};
+    "R7500" };
 
-const char *g_intelDevices[] = {"Unknown Intel Device", "i810", "i810e", "i815"};
-const char *g_s3Devices[] = {"Unknown S3 Device", "Savage MX", "Savage 4", "Savage 200"};
-const char *g_powerVRDevices[] = {"Unknown PowerVR Device", "Kyro"};
+const char *g_intelDevices[] = { "Unknown Intel Device", "i810", "i810e", "i815" };
+const char *g_s3Devices[] = { "Unknown S3 Device", "Savage MX", "Savage 4", "Savage 200" };
+const char *g_powerVRDevices[] = { "Unknown PowerVR Device", "Kyro" };
 
-const char *g_matroxDevices[] = {"Unknown Matrox Device",
+const char *g_matroxDevices[] = { "Unknown Matrox Device",
     "G550",
     "G400",
     "G200 AGP",
@@ -111,12 +112,13 @@ const char *g_matroxDevices[] = {"Unknown Matrox Device",
     "Mystique",
     "Millennium",
     "Parhelia",
-    "Parhelia AGP 8X"};
+    "Parhelia AGP 8X" };
 
 const char *g_3DfxDevices[] = {
-    "Unknown 3Dfx Device", "Voodoo 5500 AGP", "Voodoo 3", "Banshee", "Voodoo 2", "Voodoo Graphics", "Voodoo Rush"};
+    "Unknown 3Dfx Device", "Voodoo 5500 AGP", "Voodoo 3", "Banshee", "Voodoo 2", "Voodoo Graphics", "Voodoo Rush"
+};
 
-const char *g_3DLabsDevices[16] = {"Unknown 3DLabs Device",
+const char *g_3DLabsDevices[16] = { "Unknown 3DLabs Device",
     "Permedia",
     "300SX",
     "500TX",
@@ -131,16 +133,14 @@ const char *g_3DLabsDevices[16] = {"Unknown 3DLabs Device",
     "G2",
     "Oxygen VX1",
     "TI P1",
-    "Permedia2"};
+    "Permedia2" };
 } // namespace
 
 /**
  * 0x00844A90
  */
 DX8Caps::DX8Caps(w3dhandle_t handle, const w3dcaps_t &caps, WW3DFormat format, const w3dadapterid_t &identifier) :
-    m_widthLimit(0),
-    m_heightLimit(0),
-    m_d3dInterface(handle)
+    m_widthLimit(0), m_heightLimit(0), m_d3dInterface(handle)
 {
 #ifdef BUILD_WITH_D3D8
     memcpy(&m_caps, &caps, sizeof(m_caps));
@@ -153,9 +153,7 @@ DX8Caps::DX8Caps(w3dhandle_t handle, const w3dcaps_t &caps, WW3DFormat format, c
  * 0x00844950
  */
 DX8Caps::DX8Caps(w3dhandle_t handle, w3ddevice_t device, WW3DFormat format, const w3dadapterid_t &identifier) :
-    m_widthLimit(0),
-    m_heightLimit(0),
-    m_d3dInterface(handle)
+    m_widthLimit(0), m_heightLimit(0), m_d3dInterface(handle)
 {
     Init_Caps(device);
     Compute_Caps(format, identifier);
@@ -173,7 +171,6 @@ void DX8Caps::Shutdown()
 {
     s_videoCardDetails.Release_Resources();
 }
-
 
 /**
  * Initialises caps from a device handle.
@@ -289,9 +286,8 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
     m_videoCardSpecString += s_videoCardDetails;
     s_videoCardDetails.Format("Revision: %d\n", identifier.Revision);
     m_videoCardSpecString += s_videoCardDetails;
-    s_videoCardDetails.Format(
-        "GUID = {0x%x, 0x%x, 0x%x}, {0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x, "
-        "0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x}\n",
+    s_videoCardDetails.Format("GUID = {0x%x, 0x%x, 0x%x}, {0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x, "
+                              "0x%2.2x, 0x%2.2x, 0x%2.2x, 0x%2.2x}\n",
         identifier.DeviceIdentifier.Data1,
         identifier.DeviceIdentifier.Data2,
         identifier.DeviceIdentifier.Data3,

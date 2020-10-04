@@ -31,7 +31,7 @@ public:
     auto_file_ptr(FileFactoryClass *fact, const char *filename);
     ~auto_file_ptr() { m_factory->Return_File(m_file); }
 
-    operator FileClass*() { return m_file; }
+    operator FileClass *() { return m_file; }
     FileClass &operator*() { return *m_file; }
     FileClass *operator->() { return m_file; }
     FileClass *Get() { return m_file; }

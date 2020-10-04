@@ -46,10 +46,12 @@ void SidesList::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     int32_t sides = m_numSides;
     xfer->xferInt(&sides);
-    captainslog_relassert(sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
+    captainslog_relassert(
+        sides == m_numSides, 6, "Transferred sides %d count does not match m_numSides %d.", sides, m_numSides);
 
     for (int i = 0; i < sides; ++i) {
-        captainslog_relassert(i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
+        captainslog_relassert(
+            i < m_numSides, 0xDEAD0003, "Attempting to process a side with a higher value than m_numSides.");
         bool has_scripts = m_sides[i].Get_ScriptList() != nullptr;
         xfer->xferBool(&has_scripts);
 

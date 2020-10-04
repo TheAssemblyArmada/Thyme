@@ -13,8 +13,8 @@
  *            LICENSE
  */
 #include "always.h"
-#include "coord.h"
 #include "asciistring.h"
+#include "coord.h"
 #include "dict.h"
 
 class ThingTemplate;

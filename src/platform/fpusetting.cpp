@@ -22,4 +22,3 @@ void Set_FP_Mode()
     _controlfp(_statusfp() & 0xFFFCFCFF | 0x00020000, 0x00030300);
 #endif
 }
-

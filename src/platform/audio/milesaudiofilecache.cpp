@@ -104,9 +104,10 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
         delete[] file_data;
     } else {
         if (sound_info.format != 1) { // Must be PCM otherwise.
-            captainslog_error("Audio file '%s' is not PCM or ADPCM and is unsupported by the MSS based audio engine.", filename.Str());
+            captainslog_error(
+                "Audio file '%s' is not PCM or ADPCM and is unsupported by the MSS based audio engine.", filename.Str());
             delete[] file_data;
-            
+
             return nullptr;
         }
 
@@ -144,7 +145,7 @@ void MilesAudioFileCache::Close_File(void *file)
     }
 
     ScopedMutexClass lock(&m_mutex);
-    
+
     for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
         if (it->second.wave_data == file) {
             --it->second.ref_count;
@@ -190,7 +191,8 @@ bool MilesAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
     // If we still don't have enough potential space freed up, look for lower priority sounds to remove.
     if (freed < required) {
         for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
-            if (it->second.ref_count != 0 && it->second.audio_event_info->Get_Priority() < file.audio_event_info->Get_Priority()) {
+            if (it->second.ref_count != 0
+                && it->second.audio_event_info->Get_Priority() < file.audio_event_info->Get_Priority()) {
                 to_free.push_back(it->first);
                 freed += it->second.data_size;
 

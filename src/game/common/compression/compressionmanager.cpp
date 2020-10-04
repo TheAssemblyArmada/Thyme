@@ -20,8 +20,7 @@
 
 using std::memcmp;
 
-const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = {
-    "No compression",
+const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = { "No compression",
     "RefPack",
     "LZH light (Nox, J2K)",
     "zlib compress",
@@ -34,8 +33,7 @@ const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = {
     "zlib compress",
     "zlib compress",
     "B-Tree compression",
-    "Huffman Tree compression"
-};
+    "Huffman Tree compression" };
 
 /**
  * @brief Detect if the data is compressed.

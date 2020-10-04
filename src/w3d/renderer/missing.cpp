@@ -40,7 +40,7 @@ void MissingTexture::Init()
     captainslog_assert(s_missingTexture == W3D_TYPE_INVALID_TEXTURE);
     w3dsurface_t dest = W3D_TYPE_INVALID_SURFACE;
     w3dsurface_t src = W3D_TYPE_INVALID_SURFACE;
-    RECT rect{0, 0, _missing_width, _missing_height};
+    RECT rect{ 0, 0, _missing_width, _missing_height };
     D3DLOCKED_RECT locked_rect;
 
     w3dtexture_t texture =

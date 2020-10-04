@@ -13,11 +13,11 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "w3dtypes.h"
 #include "dx8vertexbuffer.h"
 #include "dx8caps.h"
 #include "dx8wrapper.h"
 #include "w3d.h"
+
 FVFInfoClass g_dynamicFVFInfo(DX8_FVF_XYZNDUV2, 0);
 unsigned int g_vertexBufferCount;
 unsigned int g_vertexBufferTotalVertices;
@@ -308,7 +308,8 @@ void DynamicVBAccessClass::Allocate_DX8_Dynamic_Buffer()
     if (!g_dynamicDX8VertexBuffer) {
         DX8VertexBufferClass::UsageType usage = DX8VertexBufferClass::USAGE_DYNAMIC;
         if (DX8Wrapper::Get_Caps()->Supports_NPatches()) {
-            usage = (DX8VertexBufferClass::UsageType)(DX8VertexBufferClass::USAGE_DYNAMIC | DX8VertexBufferClass::USAGE_NPATCHES);
+            usage = (DX8VertexBufferClass::UsageType)(
+                DX8VertexBufferClass::USAGE_DYNAMIC | DX8VertexBufferClass::USAGE_NPATCHES);
         }
         g_dynamicDX8VertexBuffer = new DX8VertexBufferClass(DX8_FVF_XYZNDUV2, g_dynamicDX8VertexBufferSize, usage, 0);
         g_dynamicDX8VertexBufferOffset = 0;
@@ -397,14 +398,16 @@ unsigned short DynamicVBAccessClass::Get_Default_Vertex_Count()
     return g_dynamicDX8VertexBufferSize;
 }
 
-//unimplemented, not used
-//DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
-//DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector3 *normals, Vector4 *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
-//DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
-//DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, unsigned int first_vertex, unsigned int count)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, unsigned int first_vertex, unsigned int count)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, unsigned int first_vertex, unsigned int count)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, unsigned int first_vertex, unsigned int count)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned int count)
-//void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned int count)
+// unimplemented, not used
+// DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short
+// VertexCount, UsageType usage) DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector3 *normals, Vector4
+// *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
+// DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short
+// VertexCount, UsageType usage) DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned
+// short VertexCount, UsageType usage) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, unsigned int
+// first_vertex, unsigned int count) void DX8VertexBufferClass::Copy(Vector3 *loc, unsigned int first_vertex, unsigned int
+// count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, unsigned int first_vertex, unsigned int count) void
+// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, unsigned int first_vertex, unsigned int count) void
+// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned
+// int count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex,
+// unsigned int count)

@@ -12,12 +12,12 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "gamelod.h"
+#include "particlesys.h"
 #include "gameclient.h"
+#include "gamelod.h"
 #include "gamemath.h"
 #include "globaldata.h"
 #include "particle.h"
-#include "particlesys.h"
 #include "particlesystemplate.h"
 #include "randomvalue.h"
 #include "xfer.h"
@@ -25,9 +25,9 @@
 #include <captainslog.h>
 
 using GameMath::Cos;
+using GameMath::Fabs;
 using GameMath::Sin;
 using GameMath::Sqrt;
-using GameMath::Fabs;
 
 /**
  * 0x004CDA10
@@ -235,9 +235,8 @@ void ParticleSystem::Load_Post_Process()
     if (m_slaveID != PARTSYS_ID_NONE) {
         captainslog_relassert(m_slaveSystem == nullptr, 6, "Slave ID set but slave system already present on load.");
         m_slaveSystem = g_theParticleSystemManager->Find_Particle_System(m_slaveID);
-        captainslog_relassert(m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed,
-            6,
-            "Slave system not found or is set as destroyed.");
+        captainslog_relassert(
+            m_slaveSystem != nullptr && !m_slaveSystem->m_isDestroyed, 6, "Slave system not found or is set as destroyed.");
     }
 
     if (m_masterID != PARTSYS_ID_NONE) {
@@ -283,7 +282,7 @@ void ParticleSystem::Destroy()
 void ParticleSystem::Get_Position(Coord3D *pos) const
 {
     if (pos != nullptr) {
-        *pos = {m_localTransform[0][3], m_localTransform[1][3], m_localTransform[2][3]};
+        *pos = { m_localTransform[0][3], m_localTransform[1][3], m_localTransform[2][3] };
     }
 }
 
@@ -666,7 +665,7 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
             }
 
             float scale = 1.0f - float(float(id) / float(count));
-            
+
             Coord3D adjustment = m_pos - m_lastPos;
             adjustment *= scale;
 
@@ -714,11 +713,11 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
         _info.m_sizeRateDamping = m_sizeRateDamping.Get_Value();
         _info.m_size += m_accumulatedSizeBonus;
         m_accumulatedSizeBonus += m_startSizeRate.Get_Value();
-        
+
         if (m_accumulatedSizeBonus != 0.0f) {
             m_accumulatedSizeBonus = std::min(m_accumulatedSizeBonus, 50.0f);
         }
-        
+
         for (int i = 0; i < KEYFRAME_COUNT; ++i) {
             _info.m_alphaKey[i].value = m_alphaKey[i].var.Get_Value();
             _info.m_alphaKey[i].frame = m_alphaKey[i].frame;
@@ -727,11 +726,7 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
         }
 
         _info.m_colorScale = m_colorScale.Get_Value();
-        _info.m_emitterPos = {
-            m_transform[0].W,
-            m_transform[1].W,
-            m_transform[2].W
-        };
+        _info.m_emitterPos = { m_transform[0].W, m_transform[1].W, m_transform[2].W };
 
         _info.m_particleUpTowardsEmitter = m_isParticleUpTowardsEmitter;
         _info.m_windRandomness = Get_Client_Random_Value_Real(0.7f, 1.3f);
@@ -823,11 +818,11 @@ Coord3D *ParticleSystem::Compute_Point_On_Sphere()
 void ParticleSystem::Update_Wind_Motion()
 {
     switch (m_windMotion) {
-        case WIND_MOTION_PING_PONG:
-        {
+        case WIND_MOTION_PING_PONG: {
             // Mathsy stuff here, not sure what the actual formula being used here is for, harmonic motion perhaps?
             float tmp = float(m_windMotionStartAngle - m_windMotionEndAngle) * 0.5f;
-            float change = float(1.0f - float(Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp)) * m_windAngleChange;
+            float change =
+                float(1.0f - float(Fabs(float(tmp - m_windAngle) + m_windMotionEndAngle) / tmp)) * m_windAngleChange;
             change = std::max(change, 0.005f);
 
             // Apply change in correct direction.
@@ -854,7 +849,7 @@ void ParticleSystem::Update_Wind_Motion()
             m_windMotionEndAngle = Get_Client_Random_Value_Real(m_windMotionEndAngleMin, m_windMotionEndAngleMax);
         }
 
-            break;
+        break;
         case WIND_MOTION_CIRCULAR:
             if (m_windAngleChange == 0.0f) {
                 m_windAngleChange = Get_Client_Random_Value_Real(m_windAngleChangeMin, m_windAngleChangeMax);

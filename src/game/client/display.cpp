@@ -107,7 +107,8 @@ bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
 {
 // TODO Requires TacticalView
 #ifdef GAME_DLL
-    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(PICK_ADDRESS(0x00421390, 0x007BD676), this, a2, a3, a4, a5);
+    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(
+        PICK_ADDRESS(0x00421390, 0x007BD676), this, a2, a3, a4, a5);
 #else
     return 0;
 #endif
@@ -129,7 +130,7 @@ int Display::Get_Display_Mode_Count()
 /**
  * 0x0073C650
  */
-void Display::Get_Display_Mode_Description(int a1, int * a2, int * a3, int * a4) 
+void Display::Get_Display_Mode_Description(int a1, int *a2, int *a3, int *a4)
 {
 // TODO Requires WW3D
 #ifdef GAME_DLL

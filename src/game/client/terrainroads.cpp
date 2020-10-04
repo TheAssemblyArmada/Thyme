@@ -13,59 +13,62 @@
  *            LICENSE
  */
 #include "terrainroads.h"
-#include <cstddef>
 #include <captainslog.h>
+#include <cstddef>
 
 #ifndef GAME_DLL
 TerrainRoadCollection *g_theTerrainRoads = nullptr;
 #endif
 
 FieldParse TerrainRoadCollection::s_terrainRoadFieldParseTable[] = {
-    {"Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_texture)},
-    {"RoadWidth", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidth)},
-    {"RoadWidthInTexture", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidthInTexture)},
-    {nullptr, nullptr, nullptr, 0}
+    { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_texture) },
+    { "RoadWidth", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidth) },
+    { "RoadWidthInTexture", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidthInTexture) },
+    { nullptr, nullptr, nullptr, 0 }
 };
 
 FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
-    {"BridgeScale", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_bridgeScale)},
-    {"ScaffoldObjectName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_scaffoldObjectName)},
-    {"ScaffoldSupportObjectName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_scaffoldSupportObjectName)},
-    {"RadarColor", &INI::Parse_RGB_Color, nullptr, offsetof(TerrainRoadType, m_radarColor)},
-    {"TransitionEffectsHeight", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_transitionEffectsHeight)},
-    {"NumFXPerType", &INI::Parse_Int, nullptr, offsetof(TerrainRoadType, m_numFXPerType)},
-    {"BridgeModelName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelName)},
-    {"Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_texture)},
-    {"BridgeModelNameDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelNameDamaged)},
-    {"TextureDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureDamaged)},
-    {"BridgeModelNameReallyDamaged",
+    { "BridgeScale", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_bridgeScale) },
+    { "ScaffoldObjectName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_scaffoldObjectName) },
+    { "ScaffoldSupportObjectName",
         &INI::Parse_AsciiString,
         nullptr,
-        offsetof(TerrainRoadType, m_bridgeModelNameReallyDamaged)},
-    {"TextureReallyDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureReallyDamaged)},
-    {"BridgeModelNameBroken", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelNameBroken)},
-    {"TextureBroken", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureBroken)},
-    {"TowerObjectNameFromLeft",
+        offsetof(TerrainRoadType, m_scaffoldSupportObjectName) },
+    { "RadarColor", &INI::Parse_RGB_Color, nullptr, offsetof(TerrainRoadType, m_radarColor) },
+    { "TransitionEffectsHeight", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_transitionEffectsHeight) },
+    { "NumFXPerType", &INI::Parse_Int, nullptr, offsetof(TerrainRoadType, m_numFXPerType) },
+    { "BridgeModelName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelName) },
+    { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_texture) },
+    { "BridgeModelNameDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelNameDamaged) },
+    { "TextureDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureDamaged) },
+    { "BridgeModelNameReallyDamaged",
         &INI::Parse_AsciiString,
         nullptr,
-        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_FROM_LEFT])},
-    {"TowerObjectNameFromRight",
+        offsetof(TerrainRoadType, m_bridgeModelNameReallyDamaged) },
+    { "TextureReallyDamaged", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureReallyDamaged) },
+    { "BridgeModelNameBroken", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_bridgeModelNameBroken) },
+    { "TextureBroken", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_textureBroken) },
+    { "TowerObjectNameFromLeft",
         &INI::Parse_AsciiString,
         nullptr,
-        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_FROM_RIGHT])},
-    {"TowerObjectNameToLeft",
+        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_FROM_LEFT]) },
+    { "TowerObjectNameFromRight",
         &INI::Parse_AsciiString,
         nullptr,
-        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_TO_LEFT])},
-    {"TowerObjectNameToRight",
+        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_FROM_RIGHT]) },
+    { "TowerObjectNameToLeft",
         &INI::Parse_AsciiString,
         nullptr,
-        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_TO_RIGHT])},
-    {"DamagedToSound", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_damagedToSounds[BODY_DAMAGED])},
-    {"RepairedToSound", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_repairedToSounds[BODY_DAMAGED])},
-    {"TransitionToOCL", &TerrainRoadType::Parse_Transition_To_OCL, nullptr, 0},
-    {"TransitionToFX", &TerrainRoadType::Parse_Transition_To_FX, nullptr, 0},
-    {nullptr, nullptr, nullptr, 0}
+        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_TO_LEFT]) },
+    { "TowerObjectNameToRight",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(TerrainRoadType, m_towerObjectName[BRIDGE_TOWER_TO_RIGHT]) },
+    { "DamagedToSound", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_damagedToSounds[BODY_DAMAGED]) },
+    { "RepairedToSound", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_repairedToSounds[BODY_DAMAGED]) },
+    { "TransitionToOCL", &TerrainRoadType::Parse_Transition_To_OCL, nullptr, 0 },
+    { "TransitionToFX", &TerrainRoadType::Parse_Transition_To_FX, nullptr, 0 },
+    { nullptr, nullptr, nullptr, 0 }
 };
 
 int TerrainRoadCollection::s_idCounter;
@@ -80,7 +83,7 @@ TerrainRoadType::TerrainRoadType() :
     m_bridgeScale(1.0f),
     m_scaffoldObjectName(),
     m_scaffoldSupportObjectName(),
-    m_radarColor{0.0f, 0.0f, 0.0f},
+    m_radarColor{ 0.0f, 0.0f, 0.0f },
     m_bridgeModelName(),
     m_texture(),
     m_bridgeModelNameDamaged(),

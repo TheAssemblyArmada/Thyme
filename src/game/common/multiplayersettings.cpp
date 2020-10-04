@@ -23,10 +23,10 @@ MultiplayerSettings *g_theMultiplayerSettings = nullptr;
 #endif
 
 FieldParse MultiplayerColorDefinition::s_colorFieldParsetable[] = {
-    {"TooltipName", &INI::Parse_AsciiString, nullptr, offsetof(MultiplayerColorDefinition, m_tooltipName)},
-    {"RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue)},
-    {"RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue)},
-    {nullptr, nullptr, nullptr, 0}
+    { "TooltipName", &INI::Parse_AsciiString, nullptr, offsetof(MultiplayerColorDefinition, m_tooltipName) },
+    { "RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue) },
+    { "RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue) },
+    { nullptr, nullptr, nullptr, 0 }
 };
 
 void MultiplayerColorDefinition::Set_Color(RGBColor rgb)

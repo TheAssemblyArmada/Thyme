@@ -22,15 +22,14 @@
 
 #define GEOMETRY_XFER_VERSION 1
 
-using GameMath::Sqrt;
-using GameMath::Square;
 using GameMath::Atan2;
 using GameMath::Cos;
 using GameMath::Sin;
+using GameMath::Sqrt;
+using GameMath::Square;
 
 GeometryInfo::GeometryInfo(GeometryType type, bool little, float height, float major_radius, float minor_radius) :
-    m_boundingCircleRadius(0.0f),
-    m_boundingSphereRadius(0.0f)
+    m_boundingCircleRadius(0.0f), m_boundingSphereRadius(0.0f)
 {
     Set(type, little, height, major_radius, minor_radius);
 }
@@ -239,7 +238,8 @@ float GeometryInfo::Is_Intersected_By_Line_Segment(Coord3D &loc, Coord3D &from, 
  *
  * 0x005CF290
  */
-void GeometryInfo::Calc_Pitches(const Coord3D &coord1, const GeometryInfo &info, const Coord3D &coord2, float &f1, float &f2) const
+void GeometryInfo::Calc_Pitches(
+    const Coord3D &coord1, const GeometryInfo &info, const Coord3D &coord2, float &f1, float &f2) const
 {
     float z = Get_ZDelta_To_Center_Position() + coord1.z;
     float xy = Sqrt(Square(coord2.y - coord1.y) + Square(coord2.x - coord1.x));
@@ -262,8 +262,7 @@ void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &regi
             region.hi.x = pos.x + m_majorRadius;
             region.hi.y = pos.y + m_majorRadius;
             break;
-        case GEOMETRY_BOX:
-        {
+        case GEOMETRY_BOX: {
             float sin_theta = Sin(angle);
             float cos_theta = Cos(angle);
             float adj_major = cos_theta * m_majorRadius;
@@ -293,8 +292,7 @@ void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &regi
             region.lo.y = std::min(region.lo.y, tmp_y);
             region.hi.x = std::max(region.hi.x, tmp_x);
             region.hi.y = std::max(region.hi.y, tmp_y);
-        }
-            break;
+        } break;
         default:
             break;
     }
@@ -309,8 +307,7 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
 {
     switch (m_type) {
         case GEOMETRY_SPHERE: // Fallthrough
-        case GEOMETRY_CYLINDER:
-        {
+        case GEOMETRY_CYLINDER: {
             float x_diff = point.x - pos.x;
             float y_diff = point.y - pos.y;
             float hyp = Sqrt(Square(y_diff) + Square(x_diff));
@@ -319,8 +316,7 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
                 point.x = float(float(m_majorRadius / hyp) * x_diff) + pos.x;
                 point.x = float(float(m_majorRadius / hyp) * y_diff) + pos.y;
             }
-        }
-            break;
+        } break;
         case GEOMETRY_BOX:
             point.x = std::clamp(point.x, pos.x - m_majorRadius, pos.x + m_majorRadius);
             point.y = std::clamp(point.y, pos.y - m_minorRadius, pos.y + m_minorRadius);

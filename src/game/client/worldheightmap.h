@@ -13,8 +13,8 @@
  *            LICENSE
  */
 #include "always.h"
-#include "refcount.h"
 #include "coord.h"
+#include "refcount.h"
 #include <vector>
 
 class TileData;

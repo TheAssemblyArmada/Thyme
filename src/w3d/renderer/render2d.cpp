@@ -253,8 +253,13 @@ void Render2DClass::Add_Quad_HGradient(const RectClass &screen, uint32_t left_co
  *
  * Optimised out
  */
-void Render2DClass::Add_Quad_VGradient(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3,
-    const RectClass &uv, uint32_t top_color, uint32_t bottom_color)
+void Render2DClass::Add_Quad_VGradient(const Vector2 &v0,
+    const Vector2 &v1,
+    const Vector2 &v2,
+    const Vector2 &v3,
+    const RectClass &uv,
+    uint32_t top_color,
+    uint32_t bottom_color)
 {
     Internal_Add_Quad_Indicies(m_vertices.Count(), false);
     Internal_Add_Quad_Vertices(v0, v1, v2, v3);
@@ -267,8 +272,13 @@ void Render2DClass::Add_Quad_VGradient(const Vector2 &v0, const Vector2 &v1, con
  *
  * Optimised out
  */
-void Render2DClass::Add_Quad_HGradient(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &v3,
-    const RectClass &uv, uint32_t left_color, uint32_t right_color)
+void Render2DClass::Add_Quad_HGradient(const Vector2 &v0,
+    const Vector2 &v1,
+    const Vector2 &v2,
+    const Vector2 &v3,
+    const RectClass &uv,
+    uint32_t left_color,
+    uint32_t right_color)
 {
     Internal_Add_Quad_Indicies(m_vertices.Count(), false);
     Internal_Add_Quad_Vertices(v0, v1, v2, v3);
@@ -281,8 +291,13 @@ void Render2DClass::Add_Quad_HGradient(const Vector2 &v0, const Vector2 &v1, con
  *
  * 0x00809CA0
  */
-void Render2DClass::Add_Tri(const Vector2 &v0, const Vector2 &v1, const Vector2 &v2, const Vector2 &uv0, const Vector2 &uv1,
-    const Vector2 &uv2, uint32_t color)
+void Render2DClass::Add_Tri(const Vector2 &v0,
+    const Vector2 &v1,
+    const Vector2 &v2,
+    const Vector2 &uv0,
+    const Vector2 &uv1,
+    const Vector2 &uv2,
+    uint32_t color)
 {
     int startindex = m_vertices.Count();
     Convert_Vert(*m_vertices.Uninitialized_Add(), v0);
@@ -496,7 +511,7 @@ void Render2DClass::Convert_Vert(Vector2 &vert_out, float x_in, float y_in)
  */
 void Render2DClass::Update_Bias()
 {
-    m_biasedCoordinateOffset =  m_coordinateOffset;
+    m_biasedCoordinateOffset = m_coordinateOffset;
 
     if (W3D::Is_Screen_UVBiased()) {
         m_biasedCoordinateOffset.X += (float)(-0.5f / (float)(s_screenResolution.Width() * 0.5f));

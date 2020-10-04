@@ -14,8 +14,7 @@
  */
 #include "aabox.h"
 
-void AABoxClass::Init_Random(
-    float min_center, float max_center, float min_extent, float max_extent)
+void AABoxClass::Init_Random(float min_center, float max_center, float min_extent, float max_extent)
 {
     float center = max_center - min_center;
     m_center.X = GameMath::Random_Float() * center + min_center;

@@ -28,12 +28,13 @@ class SidesList : public SubsystemInterface, public SnapShot
         MAX_SIDE_COUNT = 16,
         MAX_LIST_COUNT = 24,
     };
+
 public:
     SidesList() : m_numSides(0), m_numSkirmishSides(0), m_teamRec(), m_skirmishTeamsRec() {}
     virtual ~SidesList() {}
 
     // Subsystem interface methods.
-    virtual void Init() override {};
+    virtual void Init() override{};
     virtual void Reset() override;
     virtual void Update() override {}
 

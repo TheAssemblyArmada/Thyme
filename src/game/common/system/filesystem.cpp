@@ -81,8 +81,10 @@ bool FileSystem::Does_File_Exist(const char *filename)
     return false;
 }
 
-void FileSystem::Get_File_List_From_Dir(Utf8String const &dir, Utf8String const &filter,
-    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
+void FileSystem::Get_File_List_From_Dir(Utf8String const &dir,
+    Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    bool search_subdirs)
 {
     g_theLocalFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);
     g_theArchiveFileSystem->Get_File_List_From_Dir("", dir, filter, filelist, search_subdirs);

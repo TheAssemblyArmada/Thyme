@@ -143,8 +143,15 @@ public:
     {
     public:
         // In order to enter a critical section create a local instance of LockClass with critical section as a parameter.
-        LockClass(MutexClass &critical_section, int time = MutexClass::WAIT_INFINITE) : m_muxtex(critical_section) { m_failed = !m_muxtex.Lock(time); }
-        ~LockClass() { if (!m_failed) m_muxtex.Unlock(); }
+        LockClass(MutexClass &critical_section, int time = MutexClass::WAIT_INFINITE) : m_muxtex(critical_section)
+        {
+            m_failed = !m_muxtex.Lock(time);
+        }
+        ~LockClass()
+        {
+            if (!m_failed)
+                m_muxtex.Unlock();
+        }
         bool Failed() const { return m_failed; }
 
     private:

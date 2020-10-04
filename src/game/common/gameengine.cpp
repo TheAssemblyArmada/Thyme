@@ -110,7 +110,6 @@ void GameEngine::Init(int argc, char *argv[])
     ini.Load("Data/INI/Default/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
     ini.Load("Data/INI/Weather.ini", INI_LOAD_OVERWRITE, &xfer);
 
-    
     // Text manager isn't controlled by ini files, it uses either a csf or str file.
     Init_Subsystem(g_theGameText, "TheGameText", GameTextManager::Create_Game_Text_Interface());
     Init_Subsystem(g_theScienceStore,
@@ -149,12 +148,7 @@ void GameEngine::Init(int argc, char *argv[])
     Init_Subsystem(g_theMessageStream, "TheMessageStream", Create_Message_Stream());
     Init_Subsystem(g_theSidesList, "TheSidesList", new SidesList);
     Init_Subsystem(g_theCaveSystem, "TheCaveSystem", new CaveSystem);
-    Init_Subsystem(g_theRankInfoStore,
-        "TheRankInfoStore",
-        new RankInfoStore,
-        &xfer,
-        nullptr,
-        "Data/INI/Rank.ini");
+    Init_Subsystem(g_theRankInfoStore, "TheRankInfoStore", new RankInfoStore, &xfer, nullptr, "Data/INI/Rank.ini");
     Init_Subsystem(g_thePlayerTemplateStore,
         "ThePlayerTemplateStore",
         new PlayerTemplateStore,

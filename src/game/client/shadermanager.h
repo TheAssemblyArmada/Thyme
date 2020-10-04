@@ -14,8 +14,8 @@
  */
 #pragma once
 #include "always.h"
-#include "texture.h"
 #include "dx8wrapper.h"
+#include "texture.h"
 class W3DShaderManager
 {
 public:

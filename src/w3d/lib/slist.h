@@ -14,8 +14,7 @@
  */
 #include "always.h"
 #include "autopool.h"
-template<typename T>
-class SList;
+template<typename T> class SList;
 
 class GenericSLNode : public AutoPoolClass<GenericSLNode, 256>
 {
@@ -38,8 +37,7 @@ private:
     void *m_nodeData;
 };
 
-template<typename T>
-class SLNode : public GenericSLNode
+template<typename T> class SLNode : public GenericSLNode
 {
 public:
     friend class SList<T>;
@@ -55,8 +53,7 @@ private:
     SLNode(){};
 };
 
-template<class T>
-class SList
+template<class T> class SList
 {
 public:
     SList()

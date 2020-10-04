@@ -82,10 +82,19 @@ class TextureClass : public TextureBaseClass
     IMPLEMENT_W3D_POOL(TextureClass);
 
 public:
-    TextureClass(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool,
-        bool render_target, bool allow_reduction);
-    TextureClass(char const *name, char const *full_path, MipCountType mip_level_count, WW3DFormat format,
-        bool allow_compression, bool allow_reduction);
+    TextureClass(unsigned width,
+        unsigned height,
+        WW3DFormat format,
+        MipCountType mip_level_count,
+        PoolType pool,
+        bool render_target,
+        bool allow_reduction);
+    TextureClass(char const *name,
+        char const *full_path,
+        MipCountType mip_level_count,
+        WW3DFormat format,
+        bool allow_compression,
+        bool allow_reduction);
     TextureClass(SurfaceClass *surface, MipCountType mip_level_count);
     TextureClass(w3dbasetexture_t d3d_texture);
     virtual ~TextureClass() {}
@@ -103,17 +112,29 @@ public:
     TextureFilterClass *Get_Texture_Filter() { return &m_textureFilter; }
 
 #ifdef GAME_DLL
-    TextureClass *Hook_Ctor1(unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, PoolType pool,
-        bool render_target, bool allow_reduction)
+    TextureClass *Hook_Ctor1(unsigned width,
+        unsigned height,
+        WW3DFormat format,
+        MipCountType mip_level_count,
+        PoolType pool,
+        bool render_target,
+        bool allow_reduction)
     {
         return new (this) TextureClass(width, height, format, mip_level_count, pool, render_target, allow_reduction);
     }
-    TextureClass *Hook_Ctor2(char const *name, char const *full_path, MipCountType mip_level_count, WW3DFormat format,
-        bool allow_compression, bool allow_reduction)
+    TextureClass *Hook_Ctor2(char const *name,
+        char const *full_path,
+        MipCountType mip_level_count,
+        WW3DFormat format,
+        bool allow_compression,
+        bool allow_reduction)
     {
         return new (this) TextureClass(name, full_path, mip_level_count, format, allow_compression, allow_reduction);
     }
-    TextureClass *Hook_Ctor3(SurfaceClass *surface, MipCountType mip_level_count) { return new (this) TextureClass(surface, mip_level_count); }
+    TextureClass *Hook_Ctor3(SurfaceClass *surface, MipCountType mip_level_count)
+    {
+        return new (this) TextureClass(surface, mip_level_count);
+    }
     TextureClass *Hook_Ctor4(w3dbasetexture_t d3d_texture) { return new (this) TextureClass(d3d_texture); }
 #endif
 

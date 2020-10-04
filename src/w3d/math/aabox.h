@@ -175,7 +175,7 @@ public:
 
     void Translate(const Vector3 &trans) { m_center += trans; }
     float Volume() const { return 2.0 * m_extent.X * 2.0 * m_extent.Y * 2.0 * m_extent.Z; }
-    bool Contains(const Vector3 &point) const; //needs CollisionMath
+    bool Contains(const Vector3 &point) const; // needs CollisionMath
     bool Contains(const AABoxClass &other_box) const; // needs CollisionMath
     bool Contains(const MinMaxAABoxClass &other_box) const; // needs CollisionMath
     static void Transform(const Matrix3D &tm, const AABoxClass &in, AABoxClass *out);
@@ -187,7 +187,9 @@ class MinMaxAABoxClass
 {
 public:
     MinMaxAABoxClass() {}
-    MinMaxAABoxClass(const Vector3 &min_corner, const Vector3 &max_corner) : m_minCorner(min_corner), m_maxCorner(max_corner) {}
+    MinMaxAABoxClass(const Vector3 &min_corner, const Vector3 &max_corner) : m_minCorner(min_corner), m_maxCorner(max_corner)
+    {
+    }
     MinMaxAABoxClass(Vector3 *points, int num) { Init(points, num); }
     MinMaxAABoxClass(const AABoxClass &that) { Init(that); }
 

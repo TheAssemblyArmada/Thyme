@@ -56,13 +56,18 @@ public:
     ArchivedFileInfo *Get_Archived_File_Info(Utf8String const &filename);
     void Add_File(Utf8String const &filename, ArchivedFileInfo const *info);
     void Attach_File(File *file);
-    void Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath, Utf8String const &filter,
-        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const;
+    void Get_File_List_From_Dir(Utf8String const &subdir,
+        Utf8String const &dirpath,
+        Utf8String const &filter,
+        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+        bool search_subdir) const;
 
 protected:
     static bool Search_String_Matches(Utf8String string, Utf8String search);
-    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, Utf8String const &dirpath,
-        Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info,
+        Utf8String const &dirpath,
+        Utf8String const &filter,
+        std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
         bool search_subdir) const;
 
     File *m_backingFile;

@@ -113,7 +113,9 @@ void *MemoryPool::Allocate_Block_No_Zero()
     }
 
     if (m_firstBlobWithFreeBlocks == nullptr) {
-        captainslog_relassert(m_overflowAllocationCount != 0, 0xDEAD0002, "Attempting to allocate overflow blocks when m_overflowAllocationCount is 0.");
+        captainslog_relassert(m_overflowAllocationCount != 0,
+            0xDEAD0002,
+            "Attempting to allocate overflow blocks when m_overflowAllocationCount is 0.");
         Create_Blob(m_overflowAllocationCount);
     }
 

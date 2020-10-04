@@ -85,7 +85,7 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
  * Internal init function.
  */
 void DirectInputKeyboard::Open_Keyboard()
-{ 
+{
     if (DirectInput8Create(
             GetModuleHandleA(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID *)&m_inputInterface, 0)
         < 0) {
@@ -115,7 +115,7 @@ void DirectInputKeyboard::Open_Keyboard()
     DIPROPDWORD prop;
     prop.diph.dwSize = sizeof(prop);
     prop.diph.dwHeaderSize = sizeof(prop.diph);
-    prop.diph.dwObj = 0; // Must be 0 if dwHow == DIPH_DEVICE 
+    prop.diph.dwObj = 0; // Must be 0 if dwHow == DIPH_DEVICE
     prop.diph.dwHow = DIPH_DEVICE;
     prop.dwData = 256;
 

@@ -12,8 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "ini.h"
 #include "drawgroupinfo.h"
+#include "ini.h"
 
 void INI::Parse_Draw_Group_Info(INI *ini)
 {

@@ -405,7 +405,7 @@ public:
     bool m_debugMapThreat;
     // pad[3]
     int32_t m_maxDebugThreatMapValue; // Type to confirm.
-    int32_t m_debugThreatMapTileDuration;  // Type to confirm.
+    int32_t m_debugThreatMapTileDuration; // Type to confirm.
     bool m_debugMapCash;
     // pad[3]
     int32_t m_maxDebugCashValueMapValue; // Type to confirm.

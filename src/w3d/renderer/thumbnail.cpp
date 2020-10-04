@@ -21,8 +21,16 @@
 #include "vector3.h"
 #include "w3dfilesystem.h"
 
-ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const char *texture, uint8_t *bits, unsigned width,
-    unsigned height, unsigned maxwidth, unsigned maxheight, unsigned miplevels, WW3DFormat format, bool isallocated,
+ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager,
+    const char *texture,
+    uint8_t *bits,
+    unsigned width,
+    unsigned height,
+    unsigned maxwidth,
+    unsigned maxheight,
+    unsigned miplevels,
+    WW3DFormat format,
+    bool isallocated,
     unsigned time) :
     m_filename(texture),
     m_bitmap(bits),

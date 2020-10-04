@@ -14,9 +14,9 @@
  */
 #include "particlesysmanager.h"
 #include "ini.h"
+#include "particle.h"
 #include "particlesys.h"
 #include "particlesystemplate.h"
-#include "particle.h"
 #include "xfer.h"
 #include <captainslog.h>
 
@@ -141,9 +141,11 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 
             if (name.Is_Not_Empty()) {
                 ParticleSystemTemplate *temp = Find_Template(name);
-                captainslog_relassert(temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
+                captainslog_relassert(
+                    temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
                 ParticleSystem *sys = new ParticleSystem(temp, ++m_uniqueSystemID, false);
-                captainslog_relassert(sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
+                captainslog_relassert(
+                    sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
                 xfer->xferSnapshot(sys);
             }
         }
@@ -177,7 +179,7 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const Utf8String &na
 
     if (retval == nullptr) {
         retval = new ParticleSystemTemplate(name);
-        auto res = m_templateStore.insert({name, retval});
+        auto res = m_templateStore.insert({ name, retval });
 
         if (!res.second && retval != nullptr) {
             delete retval;
@@ -225,7 +227,7 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
  *
  * 0x004D1E30
  */
-ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const 
+ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const
 {
     if (id != PARTSYS_ID_NONE) {
         for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {

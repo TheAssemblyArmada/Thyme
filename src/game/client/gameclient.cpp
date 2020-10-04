@@ -11,7 +11,7 @@
  *            2 of the License, or (at your option) any later version.
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
- */ 
+ */
 #include "gameclient.h"
 #include "rayeffect.h"
 

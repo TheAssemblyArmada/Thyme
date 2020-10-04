@@ -24,48 +24,49 @@ GlobalLanguage *g_theGlobalLanguage;
 #endif
 
 FieldParse GlobalLanguage::s_languageParseTable[] = {
-    {"UnicodeFontName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalLanguage, m_unicodeFontName)},
-    {"LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0},
-    {"MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed)},
-    {"UseHardWordWrap", &INI::Parse_Bool, nullptr, offsetof(GlobalLanguage, m_useHardWordWrap)},
-    {"ResolutionFontAdjustment", &INI::Parse_Real, nullptr, offsetof(GlobalLanguage, m_resolutionFontAdjustment)},
-    {"CopyrightFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_copyrightFont)},
-    {"MessageFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_messageFont)},
-    {"MilitaryCaptionTitleFont",
+    { "UnicodeFontName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalLanguage, m_unicodeFontName) },
+    { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
+    { "MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed) },
+    { "UseHardWordWrap", &INI::Parse_Bool, nullptr, offsetof(GlobalLanguage, m_useHardWordWrap) },
+    { "ResolutionFontAdjustment", &INI::Parse_Real, nullptr, offsetof(GlobalLanguage, m_resolutionFontAdjustment) },
+    { "CopyrightFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_copyrightFont) },
+    { "MessageFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_messageFont) },
+    { "MilitaryCaptionTitleFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_militaryCaptionTitleFont)},
-    {"MilitaryCaptionDelayMS", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionDelayMs)},
-    {"MilitaryCaptionFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_militaryCaptionFont)},
-    {"SuperweaponCountdownNormalFont",
+        offsetof(GlobalLanguage, m_militaryCaptionTitleFont) },
+    { "MilitaryCaptionDelayMS", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionDelayMs) },
+    { "MilitaryCaptionFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_militaryCaptionFont) },
+    { "SuperweaponCountdownNormalFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_superweaponCountdownNormalFont)},
-    {"SuperweaponCountdownReadyFont",
+        offsetof(GlobalLanguage, m_superweaponCountdownNormalFont) },
+    { "SuperweaponCountdownReadyFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_superweaponCountdownReadyFont)},
-    {"NamedTimerCountdownNormalFont",
+        offsetof(GlobalLanguage, m_superweaponCountdownReadyFont) },
+    { "NamedTimerCountdownNormalFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_namedTimerCountdownNormalFont)},
-    {"NamedTimerCountdownReadyFont",
+        offsetof(GlobalLanguage, m_namedTimerCountdownNormalFont) },
+    { "NamedTimerCountdownReadyFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_namedTimerCountdownReadyFont)},
-    {"DrawableCaptionFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_drawableCaptionFont)},
-    {"DefaultWindowFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_defaultWindowFont)},
-    {"DefaultDisplayStringFont",
+        offsetof(GlobalLanguage, m_namedTimerCountdownReadyFont) },
+    { "DrawableCaptionFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_drawableCaptionFont) },
+    { "DefaultWindowFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_defaultWindowFont) },
+    { "DefaultDisplayStringFont",
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
-        offsetof(GlobalLanguage, m_defaultDisplayStringFont)},
-    {"TooltipFontName", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_tooltipFont)},
-    {"NativeDebugDisplay", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_nativeDebugDisplayFont)},
-    {"DrawGroupInfoFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_drawGroupInfoFont)},
-    {"CreditsTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsTitleFont)},
-    {"CreditsMinorTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsMinorTitleFont)},
-    {"CreditsNormalFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsNormalFont)},
-    {nullptr, nullptr, nullptr, 0}};
+        offsetof(GlobalLanguage, m_defaultDisplayStringFont) },
+    { "TooltipFontName", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_tooltipFont) },
+    { "NativeDebugDisplay", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_nativeDebugDisplayFont) },
+    { "DrawGroupInfoFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_drawGroupInfoFont) },
+    { "CreditsTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsTitleFont) },
+    { "CreditsMinorTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsMinorTitleFont) },
+    { "CreditsNormalFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsNormalFont) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 GlobalLanguage::GlobalLanguage() :
     m_unicodeFontName(),
@@ -110,8 +111,8 @@ void GlobalLanguage::Init()
 
 int GlobalLanguage::Adjust_Font_Size(int size)
 {
-    float adjustment =
-        std::clamp((((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
+    float adjustment = std::clamp(
+        (((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);
 
     return GameMath::Fast_To_Int_Floor(adjustment * size);
 }

@@ -15,10 +15,10 @@
 #pragma once
 #include "always.h"
 #include "multilist.h"
+#include "shader.h"
 #include "simplevec.h"
 #include "vector.h"
 #include "vector3.h"
-#include "shader.h"
 class CameraClass;
 class DX8FVFCategoryContainer;
 class DecalMeshClass;

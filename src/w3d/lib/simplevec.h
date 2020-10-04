@@ -15,8 +15,7 @@
 #pragma once
 #include "always.h"
 
-template<typename T>
-class SimpleVecClass
+template<typename T> class SimpleVecClass
 {
 public:
     SimpleVecClass(int size) : m_vector(nullptr), m_vectorMax(0)
@@ -92,8 +91,7 @@ protected:
     int m_vectorMax;
 };
 
-template<typename T>
-class SimpleDynVecClass : public SimpleVecClass<T>
+template<typename T> class SimpleDynVecClass : public SimpleVecClass<T>
 {
     using SimpleVecClass<T>::m_vector;
     using SimpleVecClass<T>::m_vectorMax;

@@ -22,8 +22,8 @@ DX8TextureTrackerList DX8TextureManagerClass::s_managedTextures;
 void DX8TextureTrackerClass::Recreate()
 {
 #ifdef BUILD_WITH_D3D8
-    m_texture->Set_Platform_Base_Texture(DX8Wrapper::Create_Texture(
-        m_width, m_height, m_format, m_mipLevelCount, D3DPOOL_DEFAULT, m_renderTarget));
+    m_texture->Set_Platform_Base_Texture(
+        DX8Wrapper::Create_Texture(m_width, m_height, m_format, m_mipLevelCount, D3DPOOL_DEFAULT, m_renderTarget));
 #endif
 }
 

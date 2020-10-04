@@ -28,7 +28,7 @@ public:
         J = j;
         K = k;
     }
-    
+
     bool operator==(const Vector3i &v) const { return I == v.I && J == v.J && K == v.K; }
     bool operator!=(const Vector3i &v) const { return !(I == v.I && J == v.J && K == v.K); }
     const int &operator[](int n) const { return ((int *)this)[n]; }

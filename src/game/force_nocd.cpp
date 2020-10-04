@@ -14,7 +14,6 @@
  */
 #include "force_nocd.h"
 
-
 bool IsFirstCDPresent()
 {
     return true;

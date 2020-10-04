@@ -21,9 +21,9 @@ VideoPlayer *g_theVideoPlayer = nullptr;
 #endif
 
 FieldParse VideoPlayer::s_videoFieldParseTable[3] = {
-    {"Filename", &INI::Parse_AsciiString, nullptr, offsetof(Video, file_name)},
-    {"Comment", &INI::Parse_AsciiString, nullptr, offsetof(Video, world_builder_comment)},
-    {nullptr, nullptr, nullptr, 0}
+    { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(Video, file_name) },
+    { "Comment", &INI::Parse_AsciiString, nullptr, offsetof(Video, world_builder_comment) },
+    { nullptr, nullptr, nullptr, 0 }
 };
 
 /**
@@ -167,7 +167,7 @@ void VideoPlayer::Remove_Stream(VideoStream *stream)
         VideoStream *prev_stream = list_stream;
 
         while ((list_stream = list_stream->Next()) != nullptr) {
-            if(stream == list_stream) {
+            if (stream == list_stream) {
                 prev_stream->m_next = stream->m_next;
 
                 return;

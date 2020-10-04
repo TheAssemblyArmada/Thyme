@@ -15,12 +15,12 @@
 #include "rawfileclass.h"
 #include <captainslog.h>
 #include <cerrno>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <fcntl.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 // Headers needed for posix open, close, read... etc.
 #ifdef PLATFORM_WINDOWS
@@ -374,7 +374,7 @@ off_t RawFileClass::Seek(off_t offset, int whence)
             break;
 
         case FS_SEEK_END:
-            whence = FS_SEEK_START; 
+            whence = FS_SEEK_START;
             offset += m_biasLength + m_biasStart;
             break;
 

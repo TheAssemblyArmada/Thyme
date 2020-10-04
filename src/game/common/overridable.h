@@ -19,9 +19,15 @@
 class Overridable : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Overridable);
+
 public:
     Overridable() : m_next(nullptr), m_isAllocated(false) {}
-    virtual ~Overridable() { if ( m_next != nullptr ) { delete m_next; } }
+    virtual ~Overridable()
+    {
+        if (m_next != nullptr) {
+            delete m_next;
+        }
+    }
 
     Overridable *Get_Final_Override();
     Overridable *Delete_Overrides();

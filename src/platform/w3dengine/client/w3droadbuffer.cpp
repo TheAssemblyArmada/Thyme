@@ -352,8 +352,15 @@ void W3DRoadBuffer::Update_Center()
     m_dirty = true;
 }
 
-void W3DRoadBuffer::Draw_Roads(CameraClass *camera, TextureClass *cloud_texture, TextureClass *noise_texture, bool wireframe,
-    int minx, int maxx, int miny, int maxy, RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator)
+void W3DRoadBuffer::Draw_Roads(CameraClass *camera,
+    TextureClass *cloud_texture,
+    TextureClass *noise_texture,
+    bool wireframe,
+    int minx,
+    int maxx,
+    int miny,
+    int maxy,
+    RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator)
 {
     IRegion2D region;
     region.lo.x = (int)((float)minx * 10.0f);
@@ -1015,8 +1022,15 @@ void W3DRoadBuffer::Preload_Road_Segment(RoadSegment *road)
     Load_Float_4Pt_Section(road, road->m_pt1.loc, v2, v1, corners, uOffset, vOffset, road->m_scale, road->m_scale);
 }
 
-void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road, Vector2 loc, Vector2 road_normal, Vector2 road_vector,
-    Vector2 *cornersp, float uoffset, float voffset, float uscale, float vscale)
+void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
+    Vector2 loc,
+    Vector2 road_normal,
+    Vector2 road_vector,
+    Vector2 *cornersp,
+    float uoffset,
+    float voffset,
+    float uscale,
+    float vscale)
 {
     struct TColumn
     {
@@ -1332,8 +1346,15 @@ void W3DRoadBuffer::Load_H(RoadSegment *road, Vector2 loc1, Vector2 loc2, bool f
     Load_Float_4Pt_Section(road, loc1, v2, v1, corners, uOffset, vOffset, scale, scale);
 }
 
-void W3DRoadBuffer::Load_Float_Section(RoadSegment *road, Vector2 loc, Vector2 road_vector, float half_height, float left,
-    float right, float uoffset, float voffset, float scale)
+void W3DRoadBuffer::Load_Float_Section(RoadSegment *road,
+    Vector2 loc,
+    Vector2 road_vector,
+    float half_height,
+    float left,
+    float right,
+    float uoffset,
+    float voffset,
+    float scale)
 {
     if (m_map) {
         Vector2 v1(-road_vector.Y, road_vector.X);
@@ -2284,8 +2305,14 @@ void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
     }
 }
 
-void W3DRoadBuffer::Offset_4Way(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, TRoadPt *pr3, TRoadPt *pc4, Vector2 loc,
-    Vector2 align_vector, float width_in_texture)
+void W3DRoadBuffer::Offset_4Way(TRoadPt *pc1,
+    TRoadPt *pc2,
+    TRoadPt *pc3,
+    TRoadPt *pr3,
+    TRoadPt *pc4,
+    Vector2 loc,
+    Vector2 align_vector,
+    float width_in_texture)
 {
     pc1->loc = loc - align_vector;
     pc2->loc = loc + align_vector;
@@ -2438,8 +2465,15 @@ void W3DRoadBuffer::Offset_Y(
     }
 }
 
-void W3DRoadBuffer::Offset_H(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, Vector2 loc, Vector2 up_vector, Vector2 tee_vector,
-    bool flip, bool mirror, float width_in_texture)
+void W3DRoadBuffer::Offset_H(TRoadPt *pc1,
+    TRoadPt *pc2,
+    TRoadPt *pc3,
+    Vector2 loc,
+    Vector2 up_vector,
+    Vector2 tee_vector,
+    bool flip,
+    bool mirror,
+    float width_in_texture)
 {
     if (flip == mirror) {
         pc1->loc = loc - up_vector * 0.46f;

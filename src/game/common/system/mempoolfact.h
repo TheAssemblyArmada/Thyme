@@ -35,15 +35,9 @@ public:
     void Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator *allocator);
     void Reset();
 
-    void *operator new(size_t size) throw()
-    {
-        return Raw_Allocate_No_Zero(size);
-    }
+    void *operator new(size_t size) throw() { return Raw_Allocate_No_Zero(size); }
 
-    void operator delete(void *obj)
-    {
-        Raw_Free(obj);
-    }
+    void operator delete(void *obj) { Raw_Free(obj); }
 
 private:
     MemoryPool *m_firstPoolInFactory;

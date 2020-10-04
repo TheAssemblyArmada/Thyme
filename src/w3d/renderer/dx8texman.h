@@ -27,8 +27,12 @@ typedef MultiListIterator<DX8TextureTrackerClass> DX8TextureTrackerListIterator;
 class DX8TextureTrackerClass : public MultiListObjectClass
 {
 public:
-    DX8TextureTrackerClass(unsigned width, unsigned height, MipCountType mip_levels, TextureBaseClass *texture,
-        WW3DFormat format, bool render_target) :
+    DX8TextureTrackerClass(unsigned width,
+        unsigned height,
+        MipCountType mip_levels,
+        TextureBaseClass *texture,
+        WW3DFormat format,
+        bool render_target) :
         m_width(width),
         m_height(height),
         m_mipLevelCount(mip_levels),

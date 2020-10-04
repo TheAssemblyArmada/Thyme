@@ -65,7 +65,7 @@ public:
 
     OrCondition *Duplicate();
     OrCondition *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
-    
+
     static bool Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 private:

@@ -89,7 +89,13 @@ void BinkVideoStream::Render_Frame(VideoBuffer *buffer)
     }
 
     if (dst != nullptr) {
-        BinkCopyToBuffer(m_binkHandle, dst, buffer->Get_Pitch(), buffer->Get_Height(), buffer->Get_XPos(), buffer->Get_YPos(), bink_format);
+        BinkCopyToBuffer(m_binkHandle,
+            dst,
+            buffer->Get_Pitch(),
+            buffer->Get_Height(),
+            buffer->Get_XPos(),
+            buffer->Get_YPos(),
+            bink_format);
         buffer->Unlock();
     }
 }

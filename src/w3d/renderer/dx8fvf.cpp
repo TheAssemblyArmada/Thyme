@@ -81,5 +81,5 @@ FVFInfoClass::FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_)
 #endif
 }
 
-//unimplemented, not required
-//void FVFInfoClass::Get_FVF_Name(StringClass &fvfname) const
+// unimplemented, not required
+// void FVFInfoClass::Get_FVF_Name(StringClass &fvfname) const

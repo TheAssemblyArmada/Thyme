@@ -34,12 +34,11 @@ class ParticleSystemTemplate;
 class Object;
 
 #ifdef THYME_USE_STLPORT
-    typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
-        partsystempmap_t;
+typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+    partsystempmap_t;
 #else
-    typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>,
-        rts::equal_to<Utf8String>>
-        partsystempmap_t;
+typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+    partsystempmap_t;
 #endif
 
 enum ParticleSystemID : int32_t

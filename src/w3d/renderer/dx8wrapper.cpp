@@ -13,24 +13,24 @@
  *            LICENSE
  */
 #include "dx8wrapper.h"
-#include "ffactory.h"
-#include "missing.h"
-#include "rect.h"
-#include "render2d.h"
-#include "textureloader.h"
-#include "thread.h"
-#include "dx8vertexbuffer.h"
+#include "boxrobj.h"
 #include "dx8indexbuffer.h"
 #include "dx8renderer.h"
-#include "texture.h"
-#include "w3d.h"
-#include "boxrobj.h"
-#include "pointgr.h"
-#include "vertmaterial.h"
-#include "sortingrenderer.h"
 #include "dx8texman.h"
-#include "surfaceclass.h"
+#include "dx8vertexbuffer.h"
+#include "ffactory.h"
+#include "missing.h"
+#include "pointgr.h"
 #include "pot.h"
+#include "rect.h"
+#include "render2d.h"
+#include "sortingrenderer.h"
+#include "surfaceclass.h"
+#include "texture.h"
+#include "textureloader.h"
+#include "thread.h"
+#include "vertmaterial.h"
+#include "w3d.h"
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
@@ -284,9 +284,9 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
             s_textures[i] = nullptr;
         }
     }
-    
+
     ShaderClass::Invalidate();
-    
+
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
@@ -942,7 +942,7 @@ void DX8Wrapper::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_b
 bool DX8Wrapper::Find_Color_And_Z_Mode(
     int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode)
 {
-    static D3DFORMAT _formats16[] = {D3DFMT_R5G6B5, D3DFMT_X1R5G5B5, D3DFMT_A1R5G5B5};
+    static D3DFORMAT _formats16[] = { D3DFMT_R5G6B5, D3DFMT_X1R5G5B5, D3DFMT_A1R5G5B5 };
     static D3DFORMAT _formats32[] = {
         D3DFMT_A8R8G8B8,
         D3DFMT_X8R8G8B8,
@@ -1210,13 +1210,13 @@ void DX8Wrapper::Clear(
     }
 
     unsigned long flags = 0;
-    
+
     if (clear_color)
         flags |= D3DCLEAR_TARGET;
-    
+
     if (clear_z_stencil)
         flags |= D3DCLEAR_ZBUFFER;
-    
+
     if (clear_z_stencil && has_stencil)
         flags |= D3DCLEAR_STENCIL;
 
@@ -1313,8 +1313,11 @@ void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned shor
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
 
-void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
-    unsigned short min_vertex_index, unsigned short vertex_count)
+void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type,
+    unsigned short start_index,
+    unsigned short polygon_count,
+    unsigned short min_vertex_index,
+    unsigned short vertex_count)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_renderState.vertex_buffer_types[0] == VertexBufferClass::BUFFER_TYPE_SORTING
@@ -1388,8 +1391,11 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short 
 #endif
 }
 
-void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
-    unsigned short min_vertex_index, unsigned short vertex_count)
+void DX8Wrapper::Draw(unsigned int primitive_type,
+    unsigned short start_index,
+    unsigned short polygon_count,
+    unsigned short min_vertex_index,
+    unsigned short vertex_count)
 {
 #ifdef BUILD_WITH_D3D8
     if (!s_drawPolygonLowBoundLimit || s_drawPolygonLowBoundLimit < polygon_count) {
@@ -1461,8 +1467,11 @@ void DX8Wrapper::Draw(unsigned int primitive_type, unsigned short start_index, u
 #endif
 }
 
-void DX8Wrapper::Draw_Triangles(unsigned int buffer_type, unsigned short start_index, unsigned short polygon_count,
-    unsigned short min_vertex_index, unsigned short vertex_count)
+void DX8Wrapper::Draw_Triangles(unsigned int buffer_type,
+    unsigned short start_index,
+    unsigned short polygon_count,
+    unsigned short min_vertex_index,
+    unsigned short vertex_count)
 {
 #ifdef BUILD_WITH_D3D8
     if (buffer_type == VertexBufferClass::BUFFER_TYPE_SORTING

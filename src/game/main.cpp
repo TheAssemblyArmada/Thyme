@@ -28,8 +28,8 @@
 #include <captainslog.h>
 #include <cstdio>
 
-using std::rename;
 using std::remove;
+using std::rename;
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

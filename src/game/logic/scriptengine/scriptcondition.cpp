@@ -27,12 +27,7 @@ Condition::Condition() :
 }
 
 Condition::Condition(ConditionType type) :
-    m_conditionType(type),
-    m_numParams(0),
-    m_nextAndCondition(nullptr),
-    m_hasWarnings(false),
-    m_customData(0),
-    m_unkInt1(0)
+    m_conditionType(type), m_numParams(0), m_nextAndCondition(nullptr), m_hasWarnings(false), m_customData(0), m_unkInt1(0)
 {
     memset(m_params, 0, sizeof(m_params));
     Set_Condition_Type(m_conditionType);
@@ -52,7 +47,7 @@ Condition::~Condition()
     // Clear our list of condition instances.
     for (Condition *next = m_nextAndCondition, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextAndCondition;
-        next->m_nextAndCondition = nullptr;  // Prevent trying to next object twice
+        next->m_nextAndCondition = nullptr; // Prevent trying to next object twice
         Delete_Instance(next);
         next = saved;
     }
@@ -104,7 +99,7 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
         *new_cond->m_params[i] = *m_params[i];
         new_cond->m_params[i]->Qualify(str1, str2, str3);
     }
-    
+
     Condition *retval = new_cond;
 
     for (Condition *next = m_nextAndCondition; next != nullptr; next = next->m_nextAndCondition) {
@@ -162,8 +157,8 @@ bool Condition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, voi
 }
 
 /**
-* 0x0051D750
-*/
+ * 0x0051D750
+ */
 OrCondition::~OrCondition()
 {
     Delete_Instance(m_firstAnd);

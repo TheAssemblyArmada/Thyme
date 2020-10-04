@@ -177,7 +177,6 @@ MultiListObjectClass *GenericMultiListClass::Internal_Remove_List_Head()
     return obj;
 };
 
-
 /**
  * Removes an object from the multilist.
  *

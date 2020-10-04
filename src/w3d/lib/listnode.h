@@ -84,8 +84,8 @@ inline GenericList *GenericNode::Main_List() const
 }
 
 /**
-* @brief Adds this element to a list, before the given element.
-*/
+ * @brief Adds this element to a list, before the given element.
+ */
 inline void GenericNode::Link(GenericNode *node)
 {
     captainslog_assert(node != nullptr);
@@ -161,11 +161,9 @@ inline int GenericList::Get_Valid_Count() const
     return counter;
 }
 
-template<class T>
-class List;
+template<class T> class List;
 
-template<class T>
-class Node : public GenericNode
+template<class T> class Node : public GenericNode
 {
 public:
     List<T> *Main_List() const { return (List<T> *)GenericNode::Main_List(); }
@@ -176,8 +174,7 @@ public:
     bool Is_Valid() const { return GenericNode::Is_Valid(); }
 };
 
-template<class T>
-class List : public GenericList
+template<class T> class List : public GenericList
 {
 public:
     List() {}

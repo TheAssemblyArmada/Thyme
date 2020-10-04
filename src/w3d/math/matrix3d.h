@@ -29,8 +29,18 @@ class Matrix3D
 public:
     __forceinline Matrix3D() {}
 
-    __forceinline explicit Matrix3D(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24,
-        float m31, float m32, float m33, float m34)
+    __forceinline explicit Matrix3D(float m11,
+        float m12,
+        float m13,
+        float m14,
+        float m21,
+        float m22,
+        float m23,
+        float m24,
+        float m31,
+        float m32,
+        float m33,
+        float m34)
     {
         Row[0].Set(m11, m12, m13, m14);
         Row[1].Set(m21, m22, m23, m24);
@@ -100,8 +110,18 @@ public:
         Row[2].Set(m[8], m[9], m[10], m[11]);
     }
 
-    __forceinline void Set(float m11, float m12, float m13, float m14, float m21, float m22, float m23, float m24, float m31,
-        float m32, float m33, float m34)
+    __forceinline void Set(float m11,
+        float m12,
+        float m13,
+        float m14,
+        float m21,
+        float m22,
+        float m23,
+        float m24,
+        float m31,
+        float m32,
+        float m33,
+        float m34)
     {
         Row[0].Set(m11, m12, m13, m14);
         Row[1].Set(m21, m22, m23, m24);

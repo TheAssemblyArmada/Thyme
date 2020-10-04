@@ -26,7 +26,7 @@ void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
 #ifdef GAME_DLL
     Call_Method<void, TunnelTracker, Xfer *>(PICK_ADDRESS(0x00587CC3, 0x009118AB), this, xfer);
 #else
-    // TODO 
+    // TODO
 #endif
 }
 
@@ -35,7 +35,7 @@ void TunnelTracker::Load_Post_Process()
 #ifdef GAME_DLL
     Call_Method<void, TunnelTracker>(0x00587DA0, this);
 #else
-    // TODO 
+    // TODO
 #endif
 }
 
@@ -53,7 +53,7 @@ void CaveSystem::Xfer_Snapshot(Xfer *xfer)
 #ifdef GAME_DLL
     Call_Method<void, CaveSystem, Xfer *>(PICK_ADDRESS(0x004D58A2, 0x0076E80B), this, xfer);
 #else
-    // TODO 
+    // TODO
 #endif
 }
 

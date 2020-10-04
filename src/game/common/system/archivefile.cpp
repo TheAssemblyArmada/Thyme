@@ -82,8 +82,11 @@ void ArchiveFile::Attach_File(File *file)
     m_backingFile = file;
 }
 
-void ArchiveFile::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String const &dirpath, Utf8String const &filter,
-    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const
+void ArchiveFile::Get_File_List_From_Dir(Utf8String const &subdir,
+    Utf8String const &dirpath,
+    Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    bool search_subdir) const
 {
     Utf8String path = dirpath;
     Utf8String token;
@@ -105,8 +108,11 @@ void ArchiveFile::Get_File_List_From_Dir(Utf8String const &subdir, Utf8String co
     Get_File_List_From_Dir(dirp, dirpath, filter, filelist, search_subdir);
 }
 
-void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info, Utf8String const &dirpath,
-    Utf8String const &filter, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdir) const
+void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info,
+    Utf8String const &dirpath,
+    Utf8String const &filter,
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
+    bool search_subdir) const
 {
     // Add the files from any subdirectories, recursive call.
     for (auto it = dir_info->directories.begin(); it != dir_info->directories.end(); ++it) {

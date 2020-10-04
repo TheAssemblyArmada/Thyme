@@ -104,7 +104,7 @@ void StringClass::Free_String()
 
 int StringClass::Format_Args(const char *format, va_list &arg_list)
 {
-    char temp_buffer[512] = {0};
+    char temp_buffer[512] = { 0 };
     int retval = vsnprintf(temp_buffer, 512, format, arg_list);
 
     *this = temp_buffer;

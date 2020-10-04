@@ -72,8 +72,7 @@ enum ObjectStatuses
     OBJECT_STATUS_COUNT,
 };
 
-template<int bits>
-class BitFlags
+template<int bits> class BitFlags
 {
 public:
     bool operator==(BitFlags &that) const { return m_bits == that.m_bits; }
@@ -92,11 +91,10 @@ private:
     std::bitset<bits> m_bits;
 };
 
-//template<int bits>
-//const char *BitFlags<bits>::s_bitNamesList[bits + 1];
+// template<int bits>
+// const char *BitFlags<bits>::s_bitNamesList[bits + 1];
 
-template<int bits>
-void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
+template<int bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
 {
     if (string != nullptr) {
         string->Clear();
@@ -172,8 +170,7 @@ void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
     }
 }
 
-template<int bits>
-void BitFlags<bits>::Parse_INI(INI *ini, void *formal, void *store, const void *user_data)
+template<int bits> void BitFlags<bits>::Parse_INI(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<BitFlags<bits> *>(store)->Parse(ini, nullptr);
 }

@@ -113,10 +113,8 @@ protected:
     const MultiListNodeClass *m_curNode; // Node we're currently at.
 };
 
-template<typename T>
-class MultiListIterator;
-template<typename T>
-class MultiListClass : public GenericMultiListClass
+template<typename T> class MultiListIterator;
+template<typename T> class MultiListClass : public GenericMultiListClass
 {
 public:
     MultiListClass() : GenericMultiListClass(){};
@@ -156,8 +154,7 @@ private:
     MultiListClass &operator=(const MultiListClass &that);
 };
 
-template<typename T>
-class MultiListIterator : public GenericMultiListIterator
+template<typename T> class MultiListIterator : public GenericMultiListIterator
 {
 public:
     MultiListIterator(const MultiListClass<T> *list) : GenericMultiListIterator(list){};
@@ -180,16 +177,13 @@ public:
     T *operator*() { return Get_Obj(); }
 };
 
-template<typename T>
-MultiListIterator<T> MultiListClass<T>::Iterator() const
+template<typename T> MultiListIterator<T> MultiListClass<T>::Iterator() const
 {
     return MultiListIterator<T>(this);
 };
 
-template<typename T>
-class RefMultiListIterator;
-template<typename T>
-class RefMultiListClass : public GenericMultiListClass
+template<typename T> class RefMultiListIterator;
+template<typename T> class RefMultiListClass : public GenericMultiListClass
 {
 public:
     RefMultiListClass() : GenericMultiListClass(){};
@@ -286,8 +280,7 @@ private:
     RefMultiListClass &operator=(const RefMultiListClass &);
 };
 
-template<typename T>
-class RefMultiListIterator : public GenericMultiListIterator
+template<typename T> class RefMultiListIterator : public GenericMultiListIterator
 {
 public:
     RefMultiListIterator(const RefMultiListClass<T> *list) : GenericMultiListIterator(list){};
@@ -320,8 +313,7 @@ public:
     T *operator->() const { return Peek_Obj(); }
 };
 
-template<typename T>
-RefMultiListIterator<T> RefMultiListClass<T>::Iterator() const
+template<typename T> RefMultiListIterator<T> RefMultiListClass<T>::Iterator() const
 {
     return RefMultiListIterator<T>(this);
 };
@@ -345,8 +337,7 @@ inline int GenericMultiListClass::Count() const
     return counter;
 }
 
-template<class ObjectType>
-class PriorityMultiListIterator : public MultiListIterator<ObjectType>
+template<class ObjectType> class PriorityMultiListIterator : public MultiListIterator<ObjectType>
 {
     using MultiListIterator<ObjectType>::First;
     using MultiListIterator<ObjectType>::Remove_Current_Object;
@@ -354,8 +345,7 @@ class PriorityMultiListIterator : public MultiListIterator<ObjectType>
 
 public:
     PriorityMultiListIterator(MultiListClass<ObjectType> *list) :
-        m_originalHead(nullptr),
-        MultiListIterator<ObjectType>(list)
+        m_originalHead(nullptr), MultiListIterator<ObjectType>(list)
     {
         First();
     }

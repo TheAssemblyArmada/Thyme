@@ -16,9 +16,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo apt-get install -y libgtk-3-dev ninja-build
+        sudo apt-get install -y libgtk-3-dev ninja-build clang-format-10
 
     - name: Build thyme
       run: |
         cmake -DSTANDALONE=TRUE -DCMAKE_BUILD_TYPE=Release -DUSE_CRASHPAD=ON -B build -G Ninja
+        cmake --build build --target format
+        git diff --exit-code
         cmake --build build

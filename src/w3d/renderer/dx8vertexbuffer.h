@@ -15,12 +15,14 @@
  */
 #pragma once
 #include "always.h"
-#include "refcount.h"
-#include "w3dmpo.h"
-#include "vector3.h"
-#include "vector2.h"
-#include "vector4.h"
 #include "dx8fvf.h"
+#include "refcount.h"
+#include "vector2.h"
+#include "vector3.h"
+#include "vector4.h"
+#include "w3dmpo.h"
+#include "w3dtypes.h"
+
 class FVFInfoClass;
 class VertexBufferClass;
 #define dynamic_fvf_type DX8_FVF_XYZNDUV2
@@ -60,7 +62,6 @@ protected:
     VertexBufferClass *m_vertexBuffer;
     void *m_vertices;
 };
-
 
 class VertexBufferClass : public W3DMPO, public RefCountClass
 {
@@ -144,8 +145,12 @@ public:
     DX8VertexBufferClass(
         Vector3 *vertices, Vector3 *normals, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
     DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
-    DX8VertexBufferClass(Vector3 *vertices, Vector3 *normals, Vector4 *diffuse, Vector2 *tex_coords,
-        unsigned short VertexCount, UsageType usage);
+    DX8VertexBufferClass(Vector3 *vertices,
+        Vector3 *normals,
+        Vector4 *diffuse,
+        Vector2 *tex_coords,
+        unsigned short VertexCount,
+        UsageType usage);
     DX8VertexBufferClass(
         Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage);
     ~DX8VertexBufferClass();

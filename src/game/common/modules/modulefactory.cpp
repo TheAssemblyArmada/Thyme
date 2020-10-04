@@ -123,14 +123,13 @@ Module *ModuleFactory::New_Module(Thing *thing, const Utf8String &name, ModuleDa
  *
  * 0x004F2C20
  */
-ModuleData *ModuleFactory::New_Module_Data_From_INI(
-    INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag)
+ModuleData *ModuleFactory::New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);
 
         if (temp != nullptr) {
-            ModuleData *data =  temp->create_data_proc(ini);
+            ModuleData *data = temp->create_data_proc(ini);
             data->m_tagKey = g_theNameKeyGenerator->Name_To_Key(tag);
             m_moduleDataList.push_back(data);
 

@@ -19,8 +19,8 @@
 
 #ifdef BUILD_WITH_CRASHPAD
 #include <client/crash_report_database.h>
-#include <client/settings.h>
 #include <client/crashpad_client.h>
+#include <client/settings.h>
 #endif
 
 #if defined _WIN32 && defined GAME_DLL
@@ -40,17 +40,17 @@ void __cdecl Crashpad_Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POIN
 bool Setup_Crash_Handler()
 {
 #ifdef BUILD_WITH_CRASHPAD
-    #ifdef _WIN32
+#ifdef _WIN32
     std::wstring homedir;
     std::wstring handler_path = L"thymecrashhandler.exe";
     homedir += _wgetenv(L"USERPROFILE");
     homedir += L"\\Documents\\Command and Conquer Generals Zero Hour Data\\CrashLogs";
-    #else
+#else
     std::string homedir;
     std::string handler_path = "thymecrashhandler";
     homedir += getenv("HOME");
     homedir += "/Documents/Command and Conquer Generals Zero Hour Data/CrashLogs";
-    #endif
+#endif
 
     CrashPrefWrapper prefs;
 
@@ -61,7 +61,7 @@ bool Setup_Crash_Handler()
     // URL used to submit minidumps to
     std::string url = prefs.Upload_Allowed() ? prefs.Get_Upload_URL() : "";
     // Optional annotations passed via --annotations to the handler
-    std::map<std::string, std::string> annotations = {{"commit", g_gitSHA1}};
+    std::map<std::string, std::string> annotations = { { "commit", g_gitSHA1 } };
     // Optional arguments to pass to the handler
     std::vector<std::string> arguments;
 
@@ -83,7 +83,7 @@ bool Setup_Crash_Handler()
         /* asynchronous_start */ false);
 
     // This will force it to dump from the original binary.
-#if defined _WIN32 &&defined GAME_DLL
+#if defined _WIN32 && defined GAME_DLL
     crt_set_se_translator(Crashpad_Dump_Exception_Info);
 #endif
 

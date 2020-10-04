@@ -75,6 +75,7 @@ class WeaponBonusSet : public MemoryPoolObject
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);
+
 private:
     WeaponBonus m_bonus[WEAPONBONUSCONDITION_COUNT];
 };

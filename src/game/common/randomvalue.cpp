@@ -21,19 +21,14 @@
 using GameMath::Pow;
 using std::time;
 
-namespace {
+namespace
+{
 
-uint32_t g_theGameAudioSeed[6] = {
-    0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64
-};
+uint32_t g_theGameAudioSeed[6] = { 0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64 };
 
-uint32_t g_theGameClientSeed[6] = {
-    0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64
-};
+uint32_t g_theGameClientSeed[6] = { 0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64 };
 
-uint32_t g_theGameLogicSeed[6] = {
-    0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64
-};
+uint32_t g_theGameLogicSeed[6] = { 0xF22D0E56, 0x883126E9, 0xC624DD2F, 0x0702C49C, 0x9E353F7D, 0x6FDF3B64 };
 
 uint32_t g_theGameLogicBaseSeed;
 

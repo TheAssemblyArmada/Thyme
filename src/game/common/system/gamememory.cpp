@@ -24,7 +24,7 @@
 #ifndef GAME_DLL
 bool g_thePreMainInitFlag = false;
 bool g_theMainInitFlag = false;
-#else 
+#else
 #include "hooker.h"
 #endif
 

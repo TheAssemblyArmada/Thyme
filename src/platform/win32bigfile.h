@@ -24,7 +24,7 @@ public:
 
     virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) override;
     virtual File *Open_File(const char *filename, int mode) override;
-    virtual void Close_All_Files() override {};
+    virtual void Close_All_Files() override{};
     virtual Utf8String Get_Name() override { return m_fileName; }
     virtual Utf8String Get_Path() override { return m_filePath; }
     virtual void Set_Search_Priority(int priority) override {}

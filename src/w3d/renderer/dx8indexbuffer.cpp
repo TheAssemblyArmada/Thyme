@@ -12,10 +12,9 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "w3dtypes.h"
 #include "dx8indexbuffer.h"
-#include "dx8wrapper.h"
 #include "dx8caps.h"
+#include "dx8wrapper.h"
 #include "w3d.h"
 
 unsigned int g_indexBufferCount;
@@ -31,8 +30,7 @@ unsigned short g_dynamicDX8IndexBufferSize = 5000;
 unsigned short g_dynamicDX8IndexBufferOffset;
 
 IndexBufferClass::IndexBufferClass(unsigned int type_, unsigned short index_count_) :
-    m_indexCount(index_count_),
-    m_engineRefs(0), m_type(type_)
+    m_indexCount(index_count_), m_engineRefs(0), m_type(type_)
 {
     captainslog_assert(m_type == BUFFER_TYPE_DX8 || m_type == BUFFER_TYPE_SORTING);
     captainslog_assert(m_indexCount);
@@ -85,7 +83,8 @@ IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_
         case BUFFER_TYPE_DX8: {
 #ifdef BUILD_WITH_D3D8
             static_cast<DX8IndexBufferClass *>(m_indexBuffer)
-                ->Get_DX8_Index_Buffer()->Lock(0, 0, (BYTE **)&m_indices, flags);
+                ->Get_DX8_Index_Buffer()
+                ->Lock(0, 0, (BYTE **)&m_indices, flags);
 #endif
             break;
         }
@@ -287,7 +286,8 @@ void DynamicIBAccessClass::Allocate_DX8_Dynamic_Buffer()
         DX8IndexBufferClass::UsageType usage = DX8IndexBufferClass::USAGE_DYNAMIC;
 
         if (DX8Wrapper::Get_Caps()->Supports_NPatches()) {
-            usage = (DX8IndexBufferClass::UsageType)(DX8IndexBufferClass::USAGE_DYNAMIC | DX8IndexBufferClass::USAGE_NPATCHES);
+            usage =
+                (DX8IndexBufferClass::UsageType)(DX8IndexBufferClass::USAGE_DYNAMIC | DX8IndexBufferClass::USAGE_NPATCHES);
         }
 
         g_dynamicDX8IndexBuffer = new DX8IndexBufferClass(g_dynamicDX8IndexBufferSize, usage);
@@ -312,8 +312,7 @@ DynamicIBAccessClass::WriteLockClass::WriteLockClass(DynamicIBAccessClass *ib_ac
 #ifdef BUILD_WITH_D3D8
         captainslog_assert(m_dynamicIBAccess);
         DX8IndexBufferClass *buffer = static_cast<DX8IndexBufferClass *>(m_dynamicIBAccess->m_indexBuffer);
-        buffer->Get_DX8_Index_Buffer()->Lock(
-            2 * m_dynamicIBAccess->m_indexBufferOffset,
+        buffer->Get_DX8_Index_Buffer()->Lock(2 * m_dynamicIBAccess->m_indexBufferOffset,
             2 * m_dynamicIBAccess->m_indexCount,
             (BYTE **)&m_indices,
             m_dynamicIBAccess->m_indexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD);
@@ -382,6 +381,6 @@ unsigned short DynamicIBAccessClass::Get_Next_Index()
     return g_indexBufferTotalIndices + 1;
 }
 
-//unimplemented, not used
-//void IndexBufferClass::Copy(unsigned short *indices, unsigned int first_index, unsigned int count)
-//void IndexBufferClass::Copy(unsigned int *indices, unsigned int first_index, unsigned int count)
+// unimplemented, not used
+// void IndexBufferClass::Copy(unsigned short *indices, unsigned int first_index, unsigned int count)
+// void IndexBufferClass::Copy(unsigned int *indices, unsigned int first_index, unsigned int count)

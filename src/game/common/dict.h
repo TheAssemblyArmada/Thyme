@@ -64,7 +64,13 @@ private:
         DictPair() {}
         ~DictPair() { Clear(); }
 
-        DictPair &operator=(const DictPair &that) { if (this != &that) { Copy_From(that); } return *this; }
+        DictPair &operator=(const DictPair &that)
+        {
+            if (this != &that) {
+                Copy_From(that);
+            }
+            return *this;
+        }
 
         void Copy_From(const DictPair &that);
         void Clear();
@@ -98,7 +104,6 @@ private:
         uint16_t m_numPairsUsed;
     };
 
-
 public:
     Dict(const Dict &src);
     Dict(int pair_pre_alloc = 0);
@@ -107,7 +112,11 @@ public:
     Dict &operator=(const Dict &src);
 
     void Init(const Dict *dict = nullptr);
-    void Clear() { Release_Data(); m_data = nullptr; }
+    void Clear()
+    {
+        Release_Data();
+        m_data = nullptr;
+    }
     int Get_PairCount() const { return m_data->m_numPairsUsed; }
     NameKeyType Get_Nth_Key(int n) const;
     DataType Get_Type(NameKeyType key) const;

@@ -75,7 +75,7 @@ void Init_D3D_To_WW3_Conversion()
 
 uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format)
 {
-    static uint32_t _conversion_array[WW3D_FORMAT_COUNT] = {0,
+    static uint32_t _conversion_array[WW3D_FORMAT_COUNT] = { 0,
         20,
         21,
         22,
@@ -99,7 +99,7 @@ uint32_t WW3DFormat_To_D3DFormat(WW3DFormat format)
         FourCC<'D', 'X', 'T', '2'>::value,
         FourCC<'D', 'X', 'T', '3'>::value,
         FourCC<'D', 'X', 'T', '4'>::value,
-        FourCC<'D', 'X', 'T', '5'>::value};
+        FourCC<'D', 'X', 'T', '5'>::value };
 
     if (format < WW3D_FORMAT_COUNT) {
         return _conversion_array[format];
@@ -222,7 +222,7 @@ void Get_WW3D_Format_Name(WW3DFormat format, StringClass &name)
 
 uint32_t WW3DZFormat_To_D3DFormat(WW3DZFormat format)
 {
-    uint32_t _conversion_array[WW3DZ_FORMAT_COUNT] = {0, 70, 71, 73, 75, 80, 77, 79};
+    uint32_t _conversion_array[WW3DZ_FORMAT_COUNT] = { 0, 70, 71, 73, 75, 80, 77, 79 };
 
     if (format < WW3DZ_FORMAT_COUNT) {
         return _conversion_array[format];

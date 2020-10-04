@@ -54,8 +54,12 @@ private:
 class SubsystemInterfaceList
 {
 public:
-    void Init_Subsystem(SubsystemInterface *sys, const char *default_ini_path, const char *ini_path, const char *dir_path,
-        Xfer *xfer, Utf8String sys_name);
+    void Init_Subsystem(SubsystemInterface *sys,
+        const char *default_ini_path,
+        const char *ini_path,
+        const char *dir_path,
+        Xfer *xfer,
+        Utf8String sys_name);
     void Post_Process_Load_All();
     void Reset_All();
     void Shutdown_All();
@@ -74,8 +78,13 @@ extern SubsystemInterfaceList *g_theSubsystemList;
 #endif
 
 template<typename T>
-void Init_Subsystem(
-    T *&instance, Utf8String name, T *sys, Xfer *xfer = nullptr, const char *default_ini_path = nullptr, const char *ini_path = nullptr, const char *dir_path = nullptr)
+void Init_Subsystem(T *&instance,
+    Utf8String name,
+    T *sys,
+    Xfer *xfer = nullptr,
+    const char *default_ini_path = nullptr,
+    const char *ini_path = nullptr,
+    const char *dir_path = nullptr)
 {
     instance = sys;
     g_theSubsystemList->Init_Subsystem(sys, default_ini_path, ini_path, dir_path, xfer, name);

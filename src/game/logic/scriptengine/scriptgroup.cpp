@@ -184,8 +184,8 @@ bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, 
         new_group->m_isGroupSubroutine = input.Read_Byte();
     }
 
-    static_cast<ScriptList*>(data)->Add_Group(new_group, 0xFFFFFF);
+    static_cast<ScriptList *>(data)->Add_Group(new_group, 0xFFFFFF);
     input.Register_Parser("Script", info->label, Script::Parse_Script_From_Group_Chunk, nullptr);
-    
+
     return input.Parse(new_group);
 }

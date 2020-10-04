@@ -48,7 +48,7 @@ void Dict::DictPair::Copy_From(const DictPair &that)
 void Dict::DictPair::Clear()
 {
     switch (Get_Type()) {
-        case DICT_BOOL: //Fallthrough
+        case DICT_BOOL: // Fallthrough
         case DICT_INT:
             m_value.integer = 0;
             break;
@@ -391,13 +391,13 @@ void Dict::Sort_Pairs()
     qsort(m_data->Get_Pairs(), m_data->m_numPairsUsed, sizeof(DictPair), Pair_Compare);
 }
 
-int Dict::Pair_Compare(const void * l, const void * r)
+int Dict::Pair_Compare(const void *l, const void *r)
 {
-    if (static_cast<const DictPair*>(l)->Get_Key() > static_cast<const DictPair*>(r)->Get_Key()) {
+    if (static_cast<const DictPair *>(l)->Get_Key() > static_cast<const DictPair *>(r)->Get_Key()) {
         return 1;
     }
 
-    if (static_cast<const DictPair*>(l)->Get_Key() < static_cast<const DictPair*>(r)->Get_Key()) {
+    if (static_cast<const DictPair *>(l)->Get_Key() < static_cast<const DictPair *>(r)->Get_Key()) {
         return -1;
     }
 
@@ -466,7 +466,7 @@ void Dict::Release_Data()
 
         g_dynamicMemoryAllocator->Free_Bytes(m_data);
     }
- 
+
     m_data = nullptr;
 }
 
@@ -476,7 +476,8 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
         return to_translate;
     }
 
-    captainslog_relassert(pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.");
+    captainslog_relassert(
+        pairs_needed <= INT16_MAX, 0xDEAD0002, "pairs_needed exceeds max permittable with data types currently used.");
 
     DictPairData *new_data = nullptr;
 

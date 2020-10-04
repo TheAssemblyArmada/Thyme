@@ -40,8 +40,7 @@ class IntersectionResultClass;
 class CameraClass;
 class DecalGeneratorClass;
 class StringClass;
-template<typename T>
-class DynamicVectorClass;
+template<typename T> class DynamicVectorClass;
 class RenderObjClass;
 
 class RenderObjUnk

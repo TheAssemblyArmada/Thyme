@@ -44,7 +44,7 @@ Vector3 LineSegClass::Find_Point_Closest_To(const Vector3 &pos) const
     if (val1 <= 0.0f) {
         return m_P0;
     }
-     
+
     if (val1 >= m_length) {
         return m_P1;
     }

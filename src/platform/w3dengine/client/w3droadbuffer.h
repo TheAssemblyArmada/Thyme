@@ -143,8 +143,15 @@ public:
     ~W3DRoadBuffer();
     void Load_Roads();
     void Clear_All_Roads();
-    void Draw_Roads(CameraClass *camera, TextureClass *cloud_texture, TextureClass *noise_texture, bool wireframe, int minx,
-        int maxx, int miny, int maxy, RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator);
+    void Draw_Roads(CameraClass *camera,
+        TextureClass *cloud_texture,
+        TextureClass *noise_texture,
+        bool wireframe,
+        int minx,
+        int maxx,
+        int miny,
+        int maxy,
+        RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator);
     void Set_Map(WorldHeightMap *map);
     void Update_Lighting();
 
@@ -166,13 +173,31 @@ protected:
     void Insert_Tee(Vector2 loc, int index1, float scale);
     bool Insert_Y(Vector2 loc, int index1, float scale);
     void Insert_4Way(Vector2 loc, int index1, float scale);
-    void Offset_4Way(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, TRoadPt *pr3, TRoadPt *pc4, Vector2 loc, Vector2 align_vector,
+    void Offset_4Way(TRoadPt *pc1,
+        TRoadPt *pc2,
+        TRoadPt *pc3,
+        TRoadPt *pr3,
+        TRoadPt *pc4,
+        Vector2 loc,
+        Vector2 align_vector,
         float width_in_texture);
-    void Offset_3Way(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, Vector2 loc, Vector2 up_vector, Vector2 tee_vector,
+    void Offset_3Way(TRoadPt *pc1,
+        TRoadPt *pc2,
+        TRoadPt *pc3,
+        Vector2 loc,
+        Vector2 up_vector,
+        Vector2 tee_vector,
         float width_in_texture);
     void Offset_Y(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, Vector2 loc, Vector2 up_vector, float width_in_texture);
-    void Offset_H(TRoadPt *pc1, TRoadPt *pc2, TRoadPt *pc3, Vector2 loc, Vector2 up_vector, Vector2 tee_vector, bool flip,
-        bool mirror, float width_in_texture);
+    void Offset_H(TRoadPt *pc1,
+        TRoadPt *pc2,
+        TRoadPt *pc3,
+        Vector2 loc,
+        Vector2 up_vector,
+        Vector2 tee_vector,
+        bool flip,
+        bool mirror,
+        float width_in_texture);
     void Preload_Roads_In_Vertex_And_Index_Buffers();
     void Preload_Road_Segment(RoadSegment *road);
     void Load_Curve(RoadSegment *road, Vector2 loc1, Vector2 loc2, float scale);
@@ -180,11 +205,27 @@ protected:
     void Load_Y(RoadSegment *road, Vector2 loc1, Vector2 loc2, float scale);
     void Load_Alpha_Join(RoadSegment *road, Vector2 loc1, Vector2 loc2, float scale);
     void Load_H(RoadSegment *road, Vector2 loc1, Vector2 loc2, bool flip, float scale);
-    void Load_Float_Section(RoadSegment *road, Vector2 loc, Vector2 road_vector, float half_height, float left, float right,
-        float uoffset, float voffset, float scale);
-    void Load_Float_4Pt_Section(RoadSegment *road, Vector2 loc, Vector2 road_normal, Vector2 road_vector, Vector2 *cornersp,
-        float uoffset, float voffset, float uscale, float vscale);
-    void Load_Lit_4Pt_Section(RoadSegment *road, unsigned short *ib, VertexFormatXYZDUV1 *vb,
+    void Load_Float_Section(RoadSegment *road,
+        Vector2 loc,
+        Vector2 road_vector,
+        float half_height,
+        float left,
+        float right,
+        float uoffset,
+        float voffset,
+        float scale);
+    void Load_Float_4Pt_Section(RoadSegment *road,
+        Vector2 loc,
+        Vector2 road_normal,
+        Vector2 road_vector,
+        Vector2 *cornersp,
+        float uoffset,
+        float voffset,
+        float uscale,
+        float vscale);
+    void Load_Lit_4Pt_Section(RoadSegment *road,
+        unsigned short *ib,
+        VertexFormatXYZDUV1 *vb,
         RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator); // not used, unimplemented
     void Load_Roads_In_Vertex_And_Index_Buffers();
     void Load_Lit_Roads_In_Vertex_And_Index_Buffers(

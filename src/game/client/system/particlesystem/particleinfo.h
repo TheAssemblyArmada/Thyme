@@ -34,6 +34,7 @@ class ParticleInfo : public SnapShot
     {
         KEYFRAME_COUNT = 8,
     };
+
 public:
     ParticleInfo();
     ParticleInfo(const ParticleInfo &that);
@@ -69,7 +70,7 @@ protected:
     bool m_particleUpTowardsEmitter;
 };
 
-inline ParticleInfo::ParticleInfo(const ParticleInfo &that) : 
+inline ParticleInfo::ParticleInfo(const ParticleInfo &that) :
     m_vel(that.m_vel),
     m_pos(that.m_pos),
     m_emitterPos(that.m_emitterPos),
@@ -93,7 +94,7 @@ inline ParticleInfo::ParticleInfo(const ParticleInfo &that) :
     m_windRandomness(that.m_windRandomness),
     m_particleUpTowardsEmitter(that.m_particleUpTowardsEmitter)
 {
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {   
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
         m_alphaKey[i] = that.m_alphaKey[i];
         m_colorKey[i] = that.m_colorKey[i];
     }

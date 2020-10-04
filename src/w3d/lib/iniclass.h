@@ -135,7 +135,7 @@ public:
     INIClass() : m_fileName(nullptr) { Initialize(); }
     INIClass(FileClass &file);
     virtual ~INIClass();
-    
+
     void Initialize();
     bool Clear(const char *section = nullptr, const char *entry = nullptr);
     bool Is_Loaded() const { return m_sectionList->First()->Is_Valid(); }

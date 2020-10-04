@@ -18,7 +18,7 @@
 GameEngine *Create_Game_Engine()
 {
 #ifdef GAME_DLL
-    return Call_Function<GameEngine*>(PICK_ADDRESS(0x00401CD0, 0));
+    return Call_Function<GameEngine *>(PICK_ADDRESS(0x00401CD0, 0));
 #else
     GameEngine *tmp = new Win32GameEngine;
     tmp->Set_Is_Active(true);
@@ -33,7 +33,7 @@ void Game_Main(int argc, char *argv[])
     g_theGameEngine->Init(argc, argv);
     g_theGameEngine->Execute();
 
-    if ( g_theGameEngine != nullptr ) {
+    if (g_theGameEngine != nullptr) {
         delete g_theGameEngine;
     }
 

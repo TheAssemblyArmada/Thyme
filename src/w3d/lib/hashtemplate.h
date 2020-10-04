@@ -21,18 +21,15 @@
 
 using std::max;
 
-template<typename Key, typename Value>
-class HashTemplateIterator;
+template<typename Key, typename Value> class HashTemplateIterator;
 
-template<typename Key>
-class HashTemplateKeyClass
+template<typename Key> class HashTemplateKeyClass
 {
 public:
     static unsigned Get_Hash_Value(const Key &key) { return key.Get_Hash(); }
 };
 
-template<typename Key, typename Value>
-class HashTemplateClass
+template<typename Key, typename Value> class HashTemplateClass
 {
     friend HashTemplateIterator<Key, Value>;
 
@@ -233,8 +230,7 @@ private:
     unsigned m_size;
 };
 
-template<typename Key, typename Value>
-class HashTemplateIterator
+template<typename Key, typename Value> class HashTemplateIterator
 {
 public:
     HashTemplateIterator(HashTemplateClass<Key, Value> &_table)

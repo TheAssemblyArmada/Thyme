@@ -22,13 +22,11 @@ RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
 FileFactoryClass *g_theFileFactory = nullptr;
 #endif
 
-auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) :
-    m_file(nullptr),
-    m_factory(fact)
+auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) : m_file(nullptr), m_factory(fact)
 {
     m_file = m_factory->Get_File(filename);
 
-    if ( m_file == nullptr ) {
+    if (m_file == nullptr) {
         m_file = new BufferedFileClass;
     }
 }

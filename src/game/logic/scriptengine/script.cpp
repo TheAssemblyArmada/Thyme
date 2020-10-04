@@ -172,7 +172,7 @@ bool Script::Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo 
  *
  * 0x0051D5B0
  */
-bool Script::Parse_Script_From_List_Chunk(DataChunkInput & input, DataChunkInfo * info, void * data)
+bool Script::Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     Script *script = Parse_Script(input, info->version);
     static_cast<ScriptList *>(data)->Add_Script(script, 0xFFFFFF);

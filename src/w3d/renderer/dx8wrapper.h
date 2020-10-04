@@ -20,14 +20,14 @@
 #include "refcount.h"
 #include "renderdevicedesc.h"
 #include "shader.h"
+#include "texture.h"
 #include "texturebase.h"
 #include "vector.h"
 #include "vector4.h"
+#include "vertmaterial.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
 #include <captainslog.h>
-#include "vertmaterial.h"
-#include "texture.h"
 class VertexBufferClass;
 class IndexBufferClass;
 class SurfaceClass;
@@ -135,11 +135,18 @@ public:
     static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
     static void Apply_Render_State_Changes();
-    static void Draw_Triangles(unsigned int buffer_type, unsigned short start_index, unsigned short polygon_count,
-        unsigned short min_vertex_index, unsigned short vertex_count);
-    static void Draw_Triangles(unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index,
+    static void Draw_Triangles(unsigned int buffer_type,
+        unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
         unsigned short vertex_count);
-    static void Draw_Strip(unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index,
+    static void Draw_Triangles(unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
+        unsigned short vertex_count);
+    static void Draw_Strip(unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
         unsigned short vertex_count);
     static w3dtexture_t Create_Texture(
         unsigned width, unsigned height, WW3DFormat format, MipCountType mip_level_count, w3dpool_t pool, bool rendertarget);
@@ -221,15 +228,28 @@ private:
     static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
     static bool Set_Device_Resolution(
         int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
-    static bool Set_Render_Device(int dev = -1, int resx = -1, int resy = -1, int bits = -1, int windowed = -1,
-        bool resize_window = false, bool reset_device = false, bool restore_assets = true);
+    static bool Set_Render_Device(int dev = -1,
+        int resx = -1,
+        int resy = -1,
+        int bits = -1,
+        int windowed = -1,
+        bool resize_window = false,
+        bool reset_device = false,
+        bool restore_assets = true);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static void Draw_Sorting_IB_VB(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
-        unsigned short min_vertex_index, unsigned short vertex_count);
-    static void Draw(unsigned int primitive_type, unsigned short start_index, unsigned short polygon_count,
-        unsigned short min_vertex_index = 0, unsigned short vertex_count = 0);
+    static void Draw_Sorting_IB_VB(unsigned int primitive_type,
+        unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index,
+        unsigned short vertex_count);
+    static void Draw(unsigned int primitive_type,
+        unsigned short start_index,
+        unsigned short polygon_count,
+        unsigned short min_vertex_index = 0,
+        unsigned short vertex_count = 0);
 #ifdef BUILD_WITH_D3D8
-    static bool Find_Color_And_Z_Mode(int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
+    static bool Find_Color_And_Z_Mode(
+        int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
     static bool Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode);
     static bool Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
     static bool Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);

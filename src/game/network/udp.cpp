@@ -17,7 +17,7 @@
 #include <captainslog.h>
 
 /**
- * 0x00733A20 
+ * 0x00733A20
  */
 UDP::~UDP()
 {

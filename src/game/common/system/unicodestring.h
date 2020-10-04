@@ -19,8 +19,8 @@
 #include <stdarg.h>
 
 #ifdef BUILD_WITH_ICU
-#include <unicode/ustring.h>
 #include <unicode/ustdio.h>
+#include <unicode/ustring.h>
 #elif defined PLATFORM_WINDOWS
 #include <wchar.h>
 #else
@@ -116,7 +116,9 @@ public:
     void Validate();
     unichar_t *Peek() const;
     void Release_Buffer();
-    void Ensure_Unique_Buffer_Of_Size(int chars_needed, bool keep_data = false, const unichar_t *str_to_cpy = nullptr,
+    void Ensure_Unique_Buffer_Of_Size(int chars_needed,
+        bool keep_data = false,
+        const unichar_t *str_to_cpy = nullptr,
         const unichar_t *str_to_cat = nullptr);
     int Get_Length() const;
     void Clear();

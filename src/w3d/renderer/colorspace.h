@@ -25,7 +25,7 @@ void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj);
 /**
  * @brief Utility function to pack separate bytes into an RGBA pixel.
  */
-inline uint32_t Pack_RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+inline uint32_t Make_Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     return b | (g << 8) | (r << 16) | (a << 24);
 }
@@ -40,7 +40,7 @@ inline void Color_To_RGBA(Vector4 &rgba, uint32_t color)
 
 inline void RGBA_To_Color(uint32_t &color, const Vector4 &rgba)
 {
-    color = Pack_RGBA(rgba.X * 255.0f, rgba.Y * 255.0f, rgba.Z * 255.0f, rgba.W * 255.0f);
+    color = Make_Color(rgba.X * 255.0f, rgba.Y * 255.0f, rgba.Z * 255.0f, rgba.W * 255.0f);
 }
 
 inline void Bytes_To_RGBA(Vector4 &rgba, uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)

@@ -33,7 +33,7 @@ void W3DDebugDisplay::Draw_Text(int x, int y, char *text)
 
         m_displayString->Set_Text(unicode);
         m_displayString->Draw(
-            m_fontWidth * x, m_fontHeight * y + 13, Pack_RGBA(255, 255, 255, 255), Pack_RGBA(0, 0, 0, 255));
+            m_fontWidth * x, m_fontHeight * y + 13, Make_Color(255, 255, 255, 255), Make_Color(0, 0, 0, 255));
     }
 }
 

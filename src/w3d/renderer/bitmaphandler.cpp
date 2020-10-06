@@ -52,7 +52,7 @@ void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
             int r = Scale_Bits(sh2 >> 8, 4, 8);
             int g = Scale_Bits(sh2 >> 4, 4, 8);
             int b = Scale_Bits(sh2, 4, 8);
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(r, g, b, a);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, a);
             return;
         }
 
@@ -61,7 +61,7 @@ void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
             int r = Scale_Bits(sh2 >> 11, 5, 8);
             int g = Scale_Bits(sh2 >> 5, 6, 8);
             int b = Scale_Bits(sh2, 5, 8);
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(r, g, b, 0xFF);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, 0xFF);
             return;
         }
 
@@ -71,7 +71,7 @@ void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
             int r = Scale_Bits(sh2 >> 10, 5, 8);
             int g = Scale_Bits(sh2 >> 5, 5, 8);
             int b = Scale_Bits(sh2, 5, 8);
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(r, g, b, a);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, a);
             return;
         }
 
@@ -80,18 +80,18 @@ void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
             int r = Scale_Bits(sh3 >> 5, 3, 8);
             int g = Scale_Bits(sh3 >> 2, 3, 8);
             int b = Scale_Bits(sh3, 2, 8);
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(r, g, b, 0xff);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, 0xff);
             return;
         }
 
         case WW3D_FORMAT_L8: {
             int l = *src_surface;
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(l, l, l, 0xff);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(l, l, l, 0xff);
             return;
         }
 
         case WW3D_FORMAT_A8: {
-            *reinterpret_cast<uint32_t *>(dest_surface) = Pack_RGBA(0, 0, 0, *src_surface);
+            *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(0, 0, 0, *src_surface);
             return;
         }
 

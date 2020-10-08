@@ -26,6 +26,9 @@ bool W3D::s_texturingEnabled = true;
 bool W3D::s_thumbnailEnabled = true;
 int W3D::s_textureFilter;
 float W3D::s_defaultNativeScreenSize = 1;
+#ifdef PLATFORM_WINDOWS
+HWND W3D::s_hwnd;
+#endif
 #endif
 
 void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)

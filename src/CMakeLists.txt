@@ -239,6 +239,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/pot.cpp
     w3d/renderer/predlod.cpp
     w3d/renderer/render2d.cpp
+    w3d/renderer/render2dsentence.cpp
     w3d/renderer/rendobj.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp

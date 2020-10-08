@@ -69,6 +69,7 @@
 #include "rankinfo.h"
 #include "rayeffect.h"
 #include "render2d.h"
+#include "render2dsentence.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -1038,4 +1039,17 @@ void Setup_Hooks()
     Hook_Method(0x007A2BA0, &ClipPolyClass::Add_Vertex);
     Hook_Method(0x007A2C00, &ClipPolyClass::Clip);
     Hook_Method(0x007A2F50, &ClipPolyClass::Reset);
+
+    // render2dsentence.h
+    Hook_Method(0x00842CD0, &FontCharsClass::Hook_Ctor);
+    Hook_Method(0x00842E60, &FontCharsClass::Hook_Dtor);
+    Hook_Method(0x00843680, &FontCharsClass::Initialize_GDI_Font);
+    Hook_Method(0x00843710, &FontCharsClass::Is_Font);
+    Hook_Method(0x00843000, &FontCharsClass::Get_Char_Spacing);
+    Hook_Method(0x00843090, &FontCharsClass::Blit_Char);
+    Hook_Method(0x00843470, &FontCharsClass::Create_GDI_Font);
+    Hook_Method(0x00843190, &FontCharsClass::Store_GDI_Char);
+    Hook_Method(0x00842FA0, &FontCharsClass::Get_Char_Data);
+    Hook_Method(0x00843750, &FontCharsClass::Grow_Unicode_Array);
+    Hook_Method(0x00843860, &FontCharsClass::Free_Character_Arrays);
 }

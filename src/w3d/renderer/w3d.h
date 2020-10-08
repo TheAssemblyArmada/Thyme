@@ -40,6 +40,11 @@ public:
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
 
+    // Platform functions.
+#ifdef PLATFORM_WINDOWS
+    static HWND Get_Window() { return s_hwnd; }
+#endif
+
 private:
 #ifdef GAME_DLL
     static unsigned &s_syncTime;
@@ -51,6 +56,9 @@ private:
     static bool &s_thumbnailEnabled;
     static int &s_textureFilter;
     static float &s_defaultNativeScreenSize;
+#ifdef PLATFORM_WINDOWS
+    static HWND &s_hwnd;
+#endif
 #else
     static unsigned s_syncTime;
     static unsigned s_textureReduction;
@@ -61,5 +69,8 @@ private:
     static bool s_thumbnailEnabled;
     static int s_textureFilter;
     static float s_defaultNativeScreenSize;
+#ifdef PLATFORM_WINDOWS
+    static HWND s_hwnd;
+#endif
 #endif
 };

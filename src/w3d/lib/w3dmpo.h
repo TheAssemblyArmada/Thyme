@@ -29,12 +29,12 @@ public:
     virtual ~W3DMPO() {}
 };
 
-#define IMPLEMENT_W3D_POOL(classname) \
+#define IMPLEMENT_NAMED_W3D_POOL(classname, poolname) \
 private: \
     static MemoryPool *Get_Class_Pool() \
     { \
         static MemoryPool *const The##classname##Pool = \
-            g_memoryPoolFactory->Create_Memory_Pool(#classname, sizeof(classname), -1, -1); \
+            g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
         captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() == sizeof(classname), \
             "Pool %s is wrong size for class (need %d, currently %d)", \
             #classname, \
@@ -51,3 +51,5 @@ public: \
     virtual int glueEnforcer() { return 4; }; \
 \
 private:
+
+#define IMPLEMENT_W3D_POOL(classname) IMPLEMENT_NAMED_W3D_POOL(classname, classname)

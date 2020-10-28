@@ -14,8 +14,11 @@
  *            LICENSE
  */
 #include "display.h"
+#include "displaystringmanager.h"
 #include "gamefont.h"
 #include "mouse.h"
+#include "videobuffer.h"
+#include "videostream.h"
 #include "view.h"
 
 Display::Display() :
@@ -219,9 +222,25 @@ void Display::Play_Movie(Utf8String name)
  */
 void Display::Stop_Movie()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display>(PICK_ADDRESS(0x004217D0, 0x007BDA9C), this);
-#endif
+    delete m_videoBuffer;
+    m_videoBuffer = nullptr;
+
+    if (m_videoStream != nullptr) {
+        m_videoStream->Close();
+    }
+    m_videoStream = nullptr;
+
+    if (m_currentlyPlayingMovie.Is_Not_Empty()) {
+        m_currentlyPlayingMovie = Utf8String::s_emptyString;
+    }
+
+    if (m_unkDisplayString != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_unkDisplayString);
+    }
+    m_unkDisplayString = nullptr;
+
+    m_someLogoMovieInt1 = -1;
+    m_someLogoMovieInt2 = -1;
 }
 
 /**
@@ -229,7 +248,12 @@ void Display::Stop_Movie()
  */
 void Display::Delete_Views()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display>(PICK_ADDRESS(0x004212C0, 0x007BD54E), this);
-#endif
+    auto *view = m_viewList;
+    while (view != nullptr) {
+        // Save the next view before destroying the current view
+        auto *next_view = view->Get_Next_View();
+        delete view;
+        view = next_view;
+    }
+    m_viewList = nullptr;
 }

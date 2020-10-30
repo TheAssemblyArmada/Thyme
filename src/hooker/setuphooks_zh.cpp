@@ -60,6 +60,7 @@
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
+
 #include "namekeygenerator.h"
 #include "particle.h"
 #include "particlesys.h"
@@ -98,6 +99,7 @@
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
+#include "win32mouse.h"
 #include "wininstancedata.h"
 #include "wwstring.h"
 #include <stdarg.h>
@@ -1057,4 +1059,7 @@ void Setup_Hooks()
     // display.h
     Hook_Any(0x004217D0, Display::Stop_Movie);
     Hook_Any(0x004212C0, Display::Delete_Views);
+
+    // win32Mouse.h
+    Hook_Method(0x0073C170, &Win32Mouse::Add_Win32_Event);
 }

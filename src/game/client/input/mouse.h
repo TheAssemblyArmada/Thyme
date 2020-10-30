@@ -72,6 +72,12 @@ DEFINE_ENUMERATION_OPERATORS(MouseCursor);
 
 struct MouseIO
 {
+    enum MouseState
+    {
+        MOUSE_STATE_UP,
+        MOUSE_STATE_DOWN,
+        MOUSE_STATE_DBLCLICK,
+    };
     ICoord2D pos;
     int wheel_pos;
     int wheel_delta;
@@ -110,6 +116,8 @@ class INI;
 class Mouse : public SubsystemInterface
 {
     ALLOW_HOOKING
+
+protected:
     enum RedrawMode
     {
         RM_WINDOWS,
@@ -143,7 +151,7 @@ public:
     virtual void Set_Redraw_Mode(RedrawMode mode) { m_currentRedrawMode = mode; }
     virtual RedrawMode Get_Redraw_Mode() { return m_currentRedrawMode; }
     virtual void Set_Visibility(bool visibility) { m_visible = visibility; }
-    virtual int8_t Get_Mouse_Event(MouseIO *io, int8_t unk) = 0;
+    virtual bool Get_Mouse_Event(MouseIO *io, int8_t unk) = 0;
 
     void Notify_Resolution_Change();
 
@@ -159,6 +167,7 @@ protected:
     void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
     MouseCursor Get_Cursor_Index(const Utf8String &name);
+    void sub_403FC0(MouseCursor cursor);
 
 protected:
     CursorInfo m_cursorInfo[CURSOR_COUNT];

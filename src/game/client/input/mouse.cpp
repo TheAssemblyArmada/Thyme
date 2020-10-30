@@ -610,6 +610,13 @@ MouseCursor Mouse::Get_Cursor_Index(const Utf8String &name)
     return CURSOR_INVALID;
 }
 
+void Mouse::sub_403FC0(MouseCursor cursor)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Mouse, MouseCursor>(0x00403FC0, this, cursor);
+#endif
+}
+
 /**
  * @brief Parses "Mouse" configuration sections from .ini files.
  * @see ini.cpp

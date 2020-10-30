@@ -23,6 +23,7 @@ set(GAMEENGINE_INCLUDES
     platform
     platform/audio/
     platform/directx/
+    platform/input/
     platform/video/
     platform/w3dengine/client
     platform/w3dengine/common/thing
@@ -175,6 +176,7 @@ set(GAMEENGINE_SRC
     game/network/transport.cpp
     game/network/udp.cpp
     platform/fpusetting.cpp
+    platform/input/win32mouse.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp

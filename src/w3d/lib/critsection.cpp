@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "critsection.h"
+#include "captainslog.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -28,16 +29,19 @@ CriticalSectionClass::CriticalSectionClass() : m_handle(), m_locked(0)
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&m_handle, &attr);
 #elif defined PLATFORM_WINDOWS
-    InitializeCriticalSection(&m_handle);
+    m_handle = new CRITICAL_SECTION;
+    InitializeCriticalSection(m_handle);
 #endif
 }
 
 CriticalSectionClass::~CriticalSectionClass()
 {
+    captainslog_assert(!m_locked);
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_destroy(&m_handle);
 #elif defined PLATFORM_WINDOWS
-    DeleteCriticalSection(&m_handle);
+    DeleteCriticalSection(m_handle);
+    delete m_handle;
 #endif
 }
 
@@ -49,7 +53,7 @@ void CriticalSectionClass::Lock()
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_lock(&m_handle);
 #elif defined PLATFORM_WINDOWS
-    EnterCriticalSection(&m_handle);
+    EnterCriticalSection(m_handle);
 #endif
     ++m_locked;
 }
@@ -59,10 +63,11 @@ void CriticalSectionClass::Lock()
  */
 void CriticalSectionClass::Unlock()
 {
+    captainslog_assert(m_locked);
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_unlock(&m_handle);
 #elif defined PLATFORM_WINDOWS
-    LeaveCriticalSection(&m_handle);
+    LeaveCriticalSection(m_handle);
 #endif
     --m_locked;
 }

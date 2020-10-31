@@ -96,6 +96,7 @@
 #include "thumbnailmanager.h"
 #include "w3ddebugdisplay.h"
 #include "w3dfilesystem.h"
+#include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
 #include "weapon.h"
@@ -1097,4 +1098,7 @@ void Setup_Hooks()
     Hook_Any(0x008232B0, RenderInfoClass::Push_Override_Flags);
     Hook_Any(0x008232D0, RenderInfoClass::Pop_Override_Flags);
     Hook_Any(0x008232E0, RenderInfoClass::Current_Override_Flags);
+
+    // w3dmouse.h
+    Hook_Function(0x00775540, &Create_Mouse); // This is actually a W3DGameClient virtual method but this not used
 }

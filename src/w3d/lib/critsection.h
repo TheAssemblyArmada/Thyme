@@ -174,7 +174,7 @@ private:
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_t m_handle;
 #elif defined PLATFORM_WINDOWS
-    CRITICAL_SECTION m_handle;
+    CRITICAL_SECTION *m_handle;
 #endif
 
     unsigned int m_locked;

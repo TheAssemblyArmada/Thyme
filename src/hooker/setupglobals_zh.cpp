@@ -440,3 +440,13 @@ FontLibrary *&g_theFontLibrary = Make_Global<FontLibrary *>(PICK_ADDRESS(0x00A2A
 // view.cpp
 class View;
 View *&g_theTacticalView = Make_Global<View *>(PICK_ADDRESS(0x00A2B684, 0x00E23AD8));
+
+// w3dmouse.cpp
+#include "w3dmouse.h"
+MouseThreadClass &W3DMouse::s_mouseThread = Make_Global<MouseThreadClass>(0x00A3B370);
+bool &W3DMouse::s_mouseThreadIsDrawing = Make_Global<bool>(0x00A3B3C8);
+ARRAY_DEF(0x00A3B18C, HAnimClass *, W3DMouse::s_W3DMouseAssets1, CURSOR_COUNT);
+ARRAY_DEF(0x00A3B22C, RenderObjClass *, W3DMouse::s_W3DMouseAssets2, CURSOR_COUNT);
+ARRAY2D_DEF(0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, 21); // TODO unsure on type
+ARRAY_DEF(0x00A3B2CC, uint32_t, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
+CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>(0x00A3B3D0);

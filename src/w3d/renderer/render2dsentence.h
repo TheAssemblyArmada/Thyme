@@ -16,11 +16,19 @@
 #pragma once
 
 #include "always.h"
+#include "rect.h"
 #include "refcount.h"
+#include "shader.h"
 #include "vector.h"
+#include "vector2.h"
+#include "vector2i.h"
 #include "w3dmpo.h"
 #include "wwstring.h"
 #include <new>
+
+class Render2DClass;
+class SurfaceClass;
+class TextureClass;
 
 constexpr unsigned CHAR_BUFFER_LEN = 0x8000;
 
@@ -30,8 +38,9 @@ struct FontCharsBuffer
     IMPLEMENT_W3D_POOL(FontCharsBuffer)
 };
 
-class FontCharsClass : public W3DMPO, RefCountClass
+class FontCharsClass : public W3DMPO, public RefCountClass
 {
+    friend class Render2DSentenceClass;
     ALLOW_HOOKING
     IMPLEMENT_W3D_POOL(FontCharsClass)
 
@@ -93,4 +102,101 @@ private:
     unichar_t m_firstUnicodeChar;
     unichar_t m_lastUnicodeChar;
     bool m_isBold;
+};
+
+class Render2DSentenceClass
+{
+    ALLOW_HOOKING
+    struct SentenceDataStruct
+    {
+        SurfaceClass *surface;
+        RectClass screen_rect;
+        RectClass uv_rect;
+        bool operator==(const SentenceDataStruct &that) { return false; }
+        bool operator!=(const SentenceDataStruct &that) { return false; }
+    };
+
+    struct PendingSurfaceStruct
+    {
+        SurfaceClass *surface;
+        DynamicVectorClass<Render2DClass *> renderers;
+        bool operator==(const PendingSurfaceStruct &that) { return false; }
+        bool operator!=(const PendingSurfaceStruct &that) { return false; }
+    };
+
+    struct RendererDataStruct
+    {
+        Render2DClass *renderer;
+        SurfaceClass *surface;
+        bool operator==(const RendererDataStruct &that) { return false; }
+        bool operator!=(const RendererDataStruct &that) { return false; }
+    };
+
+public:
+    Render2DSentenceClass();
+    ~Render2DSentenceClass();
+
+    virtual void Reset();
+
+    void Render();
+    void Reset_Polys();
+    FontCharsClass *Peek_Font() { return m_font; }
+    void Set_Font(FontCharsClass *font);
+    void Set_Location(const Vector2 &loc);
+    void Set_Base_Location(const Vector2 &loc);
+    void Set_Wrapping_Width(float width) { m_wrapWidth = width; }
+    void Set_Clipping_Rect(const RectClass &rect)
+    {
+        m_clipRect = rect;
+        m_isClippedEnabled = true;
+    }
+    bool Is_Clipping_Enabled() const { return m_isClippedEnabled; }
+    void Enable_Clipping(bool onoff) { m_isClippedEnabled = onoff; }
+    void Make_Additive();
+    ShaderClass Get_Shader() const { return m_shader; }
+    void Set_Shader(ShaderClass shader);
+    const RectClass &Get_Draw_Extents() { return m_drawExtents; }
+    Vector2 Get_Text_Extents(const unichar_t *text);
+    Vector2 Get_Formatted_Text_Extents(const unichar_t *text);
+    void Build_Sentence(const unichar_t *text, int *x = nullptr, int *y = nullptr);
+    void Draw_Sentence(uint32_t color = 0xFFFFFFFF);
+    void Set_Texture_Size_Hint(int hint) { m_textureSizeHint = hint; }
+    int Get_Texture_Size_Hint() const { return m_textureSizeHint; }
+    void Set_Mono_Spaced(bool onoff) { m_monoSpaced = onoff; }
+
+private:
+    void Reset_Sentence_Data();
+    void Build_Textures();
+    void Record_Sentence_Chunk();
+    void Allocate_New_Surface(const unichar_t *text, bool unk);
+    void Release_Pending_Surfaces();
+    void Build_Sentence_Centered(const unichar_t *text, int *x = nullptr, int *y = nullptr);
+    Vector2 Build_Sentence_Not_Centered(
+        const unichar_t *text, int *x = nullptr, int *y = nullptr, bool reuse_surface = false);
+
+private:
+    DynamicVectorClass<SentenceDataStruct> m_sentenceData;
+    DynamicVectorClass<PendingSurfaceStruct> m_pendingSurfaces;
+    DynamicVectorClass<RendererDataStruct> m_renderers;
+    FontCharsClass *m_font;
+    Vector2 m_baseLocation;
+    Vector2 m_location;
+    Vector2 m_cursor;
+    Vector2i m_textureOffset;
+    int m_textureStartX;
+    int m_currTextureSize;
+    int m_textureSizeHint;
+    SurfaceClass *m_curSurface;
+    char m_monoSpaced;
+    float m_wrapWidth;
+    bool m_centered;
+    RectClass m_clipRect;
+    RectClass m_drawExtents;
+    bool m_isClippedEnabled;
+    bool m_processAmpersand;
+    bool m_partialWords;
+    uint16_t *m_lockedPtr;
+    int m_lockedStride;
+    TextureClass *m_curTexture;
+    ShaderClass m_shader;
 };

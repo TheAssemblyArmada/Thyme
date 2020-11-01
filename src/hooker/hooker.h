@@ -158,30 +158,24 @@ struct x86_jump
 // Use these to hook existing functions and replace them with newly written ones
 // to either replace them permenantly or just to test correctness of a newly
 // written one.
-// Typically the in pointer will be provided by one of the Make_*_Ptr functions
-// above to ensure the parameters are correct.
-template<typename T>
-void Hook_Function(uintptr_t in, T out)
+
+// Base hooking function to apply the actual hook.
+inline void Hook_Func(uintptr_t in, uintptr_t out)
 {
 #ifdef GAME_DLL
     static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
 
     x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>(out) - in - 5;
+    cmd.addr = out - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 #endif
 }
 
-template<typename T, typename... Types>
-void Hook_StdCall_Function(T(__stdcall *in)(Types...), T(__stdcall *out)(Types...))
+// Hook regular functions and static methods.
+template<typename T>
+void Hook_Function(uintptr_t in, T out)
 {
-#ifdef GAME_DLL
-    static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
-
-    x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>(out) - reinterpret_cast<uintptr_t>(in) - 5;
-    WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
-#endif
+    Hook_Func(in, reinterpret_cast<uintptr_t>(out));
 }
 
 // Method pointers need funky syntax to get the underlying function address
@@ -189,14 +183,16 @@ void Hook_StdCall_Function(T(__stdcall *in)(Types...), T(__stdcall *out)(Types..
 template<typename T>
 void Hook_Method(uintptr_t in, T out)
 {
-#ifdef GAME_DLL
-    static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
-
-    x86_jump cmd;
-    cmd.addr = reinterpret_cast<uintptr_t>((void *&)out) - in - 5;
-    WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
-#endif
+    Hook_Func(in, reinterpret_cast<uintptr_t>((void *&)out));
 }
+
+// Virtuals are even trickier so resort to inline asm for those curtesy of the TTScripts guys.
+#define Hook_Any(in, out) __asm { \
+      __asm push out                  \
+      __asm push in                         \
+      __asm call Hook_Func     \
+      __asm add esp, 8 }
+
 
 __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();

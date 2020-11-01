@@ -1079,6 +1079,18 @@ void Setup_Hooks()
     Hook_Method(0x00843750, &FontCharsClass::Grow_Unicode_Array);
     Hook_Method(0x00843860, &FontCharsClass::Free_Character_Arrays);
 
+    Hook_Any(0x00841580, Render2DSentenceClass::Reset);
+    Hook_Method(0x008416B0, &Render2DSentenceClass::Render);
+    Hook_Method(0x008416E0, &Render2DSentenceClass::Set_Location);
+    Hook_Method(0x00841700, &Render2DSentenceClass::Get_Formatted_Text_Extents);
+    Hook_Method(0x00841720, &Render2DSentenceClass::Build_Textures);
+    Hook_Method(0x00841910, &Render2DSentenceClass::Draw_Sentence);
+    Hook_Method(0x00841E30, &Render2DSentenceClass::Record_Sentence_Chunk);
+    Hook_Method(0x00841F20, &Render2DSentenceClass::Allocate_New_Surface);
+    Hook_Method(0x00842190, &Render2DSentenceClass::Build_Sentence_Centered);
+    Hook_Method(0x00842740, &Render2DSentenceClass::Build_Sentence_Not_Centered);
+    Hook_Method(0x00842C50, &Render2DSentenceClass::Build_Sentence);
+
     // gameclient.h
     Hook_Any(0x00613D10, GameClientMessageDispatcher::Translate_Game_Message);
 

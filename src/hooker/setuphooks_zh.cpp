@@ -98,6 +98,7 @@
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
 #include "w3ddebugdisplay.h"
+#include "w3ddisplay.h"
 #include "w3dfilesystem.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
@@ -1148,4 +1149,25 @@ void Setup_Hooks()
     Hook_Any(0x008229B0, LightEnvironmentClass::Pre_Render_Update);
     Hook_Any(0x00822B60, LightEnvironmentClass::Add_Fill_Light);
     Hook_Any(0x00822CF0, LightEnvironmentClass::Calculate_Fill_Light);
+
+    // w3ddisplay.h
+    Hook_Any(0x0073D030, W3DDisplay::Reset);
+    Hook_Any(0x0073C980, W3DDisplay::Set_Width);
+    Hook_Any(0x0073CA00, W3DDisplay::Set_Height);
+    Hook_Any(0x0073C840, W3DDisplay::Set_Display_Mode);
+    Hook_Any(0x0073C5D0, W3DDisplay::Get_Display_Mode_Count);
+    Hook_Any(0x0073C650, W3DDisplay::Get_Display_Mode_Description);
+    Hook_Any(0x00741360, W3DDisplay::Do_Smart_Asset_Purge_And_Preload);
+    Hook_Any(0x00740C80, W3DDisplay::Set_Clip_Region);
+    Hook_Any(0x0073EE10, W3DDisplay::Set_Time_Of_Day);
+    Hook_Any(0x0073F2A0, W3DDisplay::Draw_Fill_Rect);
+    Hook_Any(0x0073F320, W3DDisplay::Draw_Rect_Clock);
+    Hook_Any(0x0073FD40, W3DDisplay::Draw_Remaining_Rect_Clock);
+    Hook_Any(0x00740640, W3DDisplay::Draw_Image);
+    Hook_Any(0x007411F0, W3DDisplay::Preload_Model_Assets);
+    Hook_Any(0x007412D0, W3DDisplay::Preload_Texture_Assets);
+    Hook_Any(0x0073ED70, W3DDisplay::Toggle_LetterBox);
+    Hook_Any(0x0073EDB0, W3DDisplay::Enable_LetterBox);
+    Hook_Any(0x0073EC10, W3DDisplay::Is_LetterBox_Fading);
+    Hook_Function(0x007751A0, &Create_Game_Display); // This is actually a W3DGameClient virtual method but this not used
 }

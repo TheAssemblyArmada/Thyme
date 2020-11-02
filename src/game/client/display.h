@@ -36,6 +36,7 @@ typedef void (*debugdisplaycallback_t)(DebugDisplayInterface *, void *, FILE *);
 class Display : public SubsystemInterface
 {
     // names based on related code
+protected:
     enum DrawImageMode
     {
         DRAWIMAGE_ADDITIVE_ALPHA = 0,
@@ -43,6 +44,7 @@ class Display : public SubsystemInterface
         DRAWIMAGE_ADDITIVE,
     };
 
+public:
     Display();
     virtual ~Display();
     virtual void Init() override {}
@@ -87,7 +89,8 @@ class Display : public SubsystemInterface
     virtual void Draw_Fill_Rect(int, int, int, int, unsigned) = 0;
     virtual void Draw_Rect_Clock(int, int, int, int, int, unsigned) = 0;
     virtual void Draw_Remaining_Rect_Clock(int, int, int, int, int, unsigned) = 0;
-    virtual void Draw_Image(Image const *, int, int, int, int, int, DrawImageMode) = 0;
+    virtual void Draw_Image(
+        Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) = 0;
     virtual void Draw_VideoBuffer(VideoBuffer *, int, int, int, int) = 0;
     virtual void Play_Logo_Movie(Utf8String name, int a2, int a3);
     virtual void Play_Movie(Utf8String name);
@@ -101,7 +104,7 @@ class Display : public SubsystemInterface
     virtual debugdisplaycallback_t Get_Debug_Display_Callback() { return m_debugDisplayCallback; }
     virtual void Set_Shroud_Level(int, int, CellShroudStatus) = 0;
     virtual void Clear_Shroud() = 0;
-    virtual void Set_Border_Shroud_Level(unsigned char level) = 0;
+    virtual void Set_Border_Shroud_Level(uint8_t level) = 0;
     virtual void Preload_Model_Assets(Utf8String model) = 0;
     virtual void Preload_Texture_Assets(Utf8String texture) = 0;
     virtual void Take_ScreenShot() = 0;

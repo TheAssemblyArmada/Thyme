@@ -34,3 +34,10 @@ float BaseHeightMapRenderObjClass::Get_Max_Cell_Height(float x, float y)
     return 0;
 #endif
 }
+
+void BaseHeightMapRenderObjClass::Set_Time_Of_Day(TimeOfDayType time)
+{
+#ifdef GAME_DLL
+    Call_Method<void, BaseHeightMapRenderObjClass, TimeOfDayType>(0x007553B0, this, time);
+#endif
+}

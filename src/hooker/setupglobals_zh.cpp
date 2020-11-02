@@ -451,3 +451,11 @@ ARRAY_DEF(0x00A3B22C, RenderObjClass *, W3DMouse::s_W3DMouseAssets2, CURSOR_COUN
 ARRAY2D_DEF(0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, 21); // TODO unsure on type
 ARRAY_DEF(0x00A3B2CC, uint32_t, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
 CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>(0x00A3B3D0);
+
+// w3ddisplay.cpp
+#include "w3ddisplay.h"
+W3DAssetManager *&W3DDisplay::s_assetManager = Make_Global<W3DAssetManager *>(0x00A32518);
+SceneClass *&W3DDisplay::s_3DScene = Make_Global<SceneClass *>(0x00A3250C); // TODO: Actual type is RTS2DScene
+SceneClass *&W3DDisplay::s_2DScene = Make_Global<SceneClass *>(0x00A32510); // TODO: Actual type is RTS2DScene
+SceneClass *&W3DDisplay::s_3DInterfaceScene =
+    Make_Global<SceneClass *>(0x00A32514); // TODO: Actual type is RTS3DInterfaceScene

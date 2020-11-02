@@ -13,7 +13,18 @@
  *            LICENSE
  */
 #include "predlod.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 float PredictiveLODOptimizerClass::s_TotalCost;
 #endif
+
+// 0x00808FE0
+void PredictiveLODOptimizerClass::Free()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(0x00808FE0);
+#endif
+}

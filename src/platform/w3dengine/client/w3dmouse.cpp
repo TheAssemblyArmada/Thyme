@@ -18,6 +18,7 @@
 #include "rtsutils.h"
 #include "scene.h"
 #include "texture.h"
+#include "w3ddisplay.h"
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
 #endif
@@ -94,7 +95,7 @@ void W3DMouse::Init()
 // 0x007AD940
 void W3DMouse::Draw()
 {
-    // TODO: Requires W3DDisplay::m_3DInterfaceScene, theDisplay, InGameUI
+    // TODO: Requires theDisplay, InGameUI
 #ifdef GAME_DLL
     Call_Method<void, W3DMouse>(0x007AD940, this);
 #endif
@@ -189,8 +190,7 @@ void W3DMouse::Set_Cursor(MouseCursor cursor)
 
                 auto *current_w3d_asset = s_W3DMouseAssets2[m_currentW3DCursor];
 
-                // TODO: This is W3DDisplay::Get_InterfaceScene
-                SceneClass *scene = reinterpret_cast<SceneClass *>(0x00A32514);
+                auto *scene = W3DDisplay::Get_3DInterfaceScene();
                 if (current_w3d_asset != nullptr) {
                     scene->Remove_Render_Object(current_w3d_asset);
                 }
@@ -304,7 +304,7 @@ void W3DMouse::Free_D3D_Assets()
 // 0x007AD230
 void W3DMouse::Init_D3D_Assets()
 {
-    // TODO: Requires W3DDisplay::m_assetManager
+    // TODO: Requires W3DDisplay::s_assetManager
 #ifdef GAME_DLL
     Call_Method<void, W3DMouse>(0x007AD230, this);
 #endif
@@ -313,7 +313,7 @@ void W3DMouse::Init_D3D_Assets()
 // 0x007AD580
 void W3DMouse::Free_W3D_Assets()
 {
-    // TODO: Requires W3DDisplay::m_3DInterfaceScene
+    // TODO: Requires W3DDisplay::s_3DInterfaceScene
 #ifdef GAME_DLL
     Call_Method<void, W3DMouse>(0x007AD580, this);
 #endif
@@ -322,7 +322,7 @@ void W3DMouse::Free_W3D_Assets()
 // 0x007AD330
 void W3DMouse::Init_W3D_Assets()
 {
-    // TODO: Requires W3DDisplay::m_assetManager
+    // TODO: Requires W3DDisplay::s_assetManager
 #ifdef GAME_DLL
     Call_Method<void, W3DMouse>(0x007AD330, this);
 #endif

@@ -17,6 +17,7 @@
 #include "asciistring.h"
 #include "coord.h"
 #include "dx8wrapper.h"
+#include "gametype.h"
 #include "rendobj.h"
 #include "snapshot.h"
 #include <vector>
@@ -74,6 +75,7 @@ public:
     WorldHeightMap *Get_Map() { return m_map; }
     int Get_Static_Diffuse(int x, int y);
     float Get_Max_Cell_Height(float x, float y);
+    void Set_Time_Of_Day(TimeOfDayType time);
 
 protected:
     int m_x;

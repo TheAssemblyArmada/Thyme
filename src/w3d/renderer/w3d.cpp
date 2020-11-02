@@ -42,6 +42,11 @@ void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bo
     DX8Wrapper::Get_Render_Target_Resolution(set_w, set_h, set_bits, set_windowed);
 }
 
+const RenderDeviceDescClass W3D::Get_Render_Device_Desc(int deviceidx)
+{
+    return DX8Wrapper::Get_Render_Device_Desc(deviceidx);
+}
+
 int W3D::Get_Texture_Bit_Depth()
 {
     return DX8Wrapper::s_textureBitDepth;
@@ -59,4 +64,11 @@ void W3D::Invalidate_Textures()
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x00807850, 0x00503710));
 #endif
+}
+
+W3DErrorType W3D::Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window)
+{
+    return DX8Wrapper::Set_Device_Resolution(width, height, bits, windowed, resize_window) != 0 ?
+        W3D_ERROR_OK :
+        W3D_ERROR_INITIALIZATION_FAILED;
 }

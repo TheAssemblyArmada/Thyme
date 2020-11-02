@@ -45,6 +45,7 @@ public:
     static int Get_Shader_Passes(ShaderTypes shader);
     static int Set_Shader(ShaderTypes shader, int pass);
     static void Reset_Shader(ShaderTypes shader);
+    static void Shutdown();
 
 private:
 #ifdef GAME_DLL

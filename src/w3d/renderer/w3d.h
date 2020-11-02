@@ -16,6 +16,9 @@
 #pragma once
 
 #include "always.h"
+#include "w3derr.h"
+
+class RenderDeviceDescClass;
 
 // TODO This is a massive static class and is currently WIP to support implementing other classes.
 class W3D
@@ -38,9 +41,11 @@ public:
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static const RenderDeviceDescClass Get_Render_Device_Desc(int deviceidx);
     static int Get_Texture_Bit_Depth();
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
+    static W3DErrorType Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window);
 
     // Platform functions.
 #ifdef PLATFORM_WINDOWS

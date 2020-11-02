@@ -41,3 +41,10 @@ void W3DShaderManager::Reset_Shader(ShaderTypes shader)
     Call_Function<void, ShaderTypes>(PICK_ADDRESS(0x0074E190, 0x006134E8), shader);
 #endif
 }
+
+void W3DShaderManager::Shutdown()
+{
+#ifdef GAME_DLL
+    Call_Function<void>(0x0074E0A0);
+#endif
+}

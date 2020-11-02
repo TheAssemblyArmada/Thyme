@@ -20,6 +20,7 @@ class PredictiveLODOptimizerClass
 {
 public:
     static void Add_Cost(float cost) { s_TotalCost += cost; }
+    static void Free();
 
 private:
 #ifdef GAME_DLL

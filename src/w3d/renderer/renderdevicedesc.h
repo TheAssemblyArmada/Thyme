@@ -66,6 +66,8 @@ public:
         }
     }
 
+    const DynamicVectorClass<ResolutionDescClass> &Get_Resolution_Array() const { return m_resArray; }
+
 private:
     StringClass m_deviceName;
     StringClass m_deviceVendor;

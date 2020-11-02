@@ -62,7 +62,6 @@
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
-
 #include "namekeygenerator.h"
 #include "particle.h"
 #include "particlesys.h"
@@ -74,6 +73,7 @@
 #include "rayeffect.h"
 #include "render2d.h"
 #include "render2dsentence.h"
+#include "rinfo.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -1079,4 +1079,12 @@ void Setup_Hooks()
     Hook_Any(0x0073C200, Win32Mouse::Set_Visibility);
     Hook_Any(0x0073BE20, Win32Mouse::Get_Mouse_Event);
     Hook_Method(0x0073C170, &Win32Mouse::Add_Win32_Event);
+
+    // rinfo.h
+    Hook_Any(0x00823230, RenderInfoClass::Push_Material_Pass);
+    Hook_Any(0x00823260, RenderInfoClass::Pop_Material_Pass);
+    Hook_Any(0x008232A0, RenderInfoClass::Peek_Additional_Pass);
+    Hook_Any(0x008232B0, RenderInfoClass::Push_Override_Flags);
+    Hook_Any(0x008232D0, RenderInfoClass::Pop_Override_Flags);
+    Hook_Any(0x008232E0, RenderInfoClass::Current_Override_Flags);
 }

@@ -167,7 +167,8 @@ protected:
     void Process_Mouse_Event(int event_num);
     void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
     MouseCursor Get_Cursor_Index(const Utf8String &name);
-    void sub_403FC0(MouseCursor cursor);
+    void Set_Mouse_Text(const MouseCursor cursor);
+    void Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, const RGBAColorInt *drop_color);
 
 protected:
     CursorInfo m_cursorInfo[CURSOR_COUNT];

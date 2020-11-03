@@ -82,7 +82,7 @@ void Win32Mouse::Init_Cursor_Resources()
 // 0x0073C320
 void Win32Mouse::Set_Cursor(MouseCursor cursor)
 {
-    sub_403FC0(cursor);
+    Set_Mouse_Text(cursor);
 
     if (m_unknownbool == false) {
 #ifdef PLATFORM_WINDOWS
@@ -232,6 +232,8 @@ void Win32Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             break;
         }
         default:
+            captainslog_debug(
+                "Translate_Event: Unknown Win32 mouse event [%d,%d,%d]\n", event.msg, event.wParam, event.lParam);
             break;
     }
 #endif

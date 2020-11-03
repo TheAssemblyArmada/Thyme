@@ -14,6 +14,7 @@
  */
 #include "mouse.h"
 #include "displaystringmanager.h"
+#include "gametext.h"
 #include "globaldata.h"
 #include "ini.h"
 #include "keyboard.h"
@@ -610,11 +611,41 @@ MouseCursor Mouse::Get_Cursor_Index(const Utf8String &name)
     return CURSOR_INVALID;
 }
 
-void Mouse::sub_403FC0(MouseCursor cursor)
+// 0x00403FC0 (Originally called Set_Cursor but renamed to prevent confusion)
+void Mouse::Set_Mouse_Text(const MouseCursor cursor)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Mouse, MouseCursor>(0x00403FC0, this, cursor);
-#endif
+    if (m_currentCursor != cursor) {
+        if (m_cursorTextDisplayString != nullptr) {
+            Utf16String string = Utf16String::s_emptyString;
+            const RGBAColorInt *color = nullptr;
+            const RGBAColorInt *drop_color = nullptr;
+            const CursorInfo *info = &m_cursorInfo[cursor];
+
+            if (!info->cursor_text.Is_Empty()) {
+                color = &info->cursor_text_color;
+                drop_color = &info->cursor_text_drop_color;
+                string = g_theGameText->Fetch(info->cursor_text, nullptr);
+            }
+
+            Set_Mouse_Text(string, color, drop_color);
+        }
+    }
+}
+
+// 0x00403A80
+void Mouse::Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, const RGBAColorInt *drop_color)
+{
+    if (m_cursorTextDisplayString != nullptr) {
+        m_cursorTextDisplayString->Set_Text(text);
+
+        if (color != nullptr) {
+            m_cursorTextColor = *color;
+        }
+
+        if (drop_color != nullptr) {
+            m_cursorTextDropColor = *drop_color;
+        }
+    }
 }
 
 /**

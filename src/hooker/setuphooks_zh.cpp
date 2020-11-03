@@ -1062,4 +1062,6 @@ void Setup_Hooks()
 
     // win32Mouse.h
     Hook_Method(0x0073C170, &Win32Mouse::Add_Win32_Event);
+    Hook_Any(0x0073C320, Win32Mouse::Set_Cursor);
+    Hook_Any(0x0073C260, Win32Mouse::Init_Cursor_Resources);
 }

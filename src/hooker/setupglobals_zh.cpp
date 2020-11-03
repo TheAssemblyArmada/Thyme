@@ -427,3 +427,8 @@ MapObject *&MapObject::g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADD
 // rayeffect.cpp
 #include "rayeffect.h"
 RayEffectSystem *&g_theRayEffects = Make_Global<RayEffectSystem *>(PICK_ADDRESS(0x00A2F44C, 0x04CAB644));
+
+// win32mouse.cpp
+#include "win32mouse.h"
+Win32Mouse *&g_theWin32Mouse = Make_Global<Win32Mouse *>(PICK_ADDRESS(0x00A27B10, 0));
+ARRAY2D_DEF(PICK_ADDRESS(0x00A31F00, 0), HCURSOR, Win32Mouse::s_loadedCursors, CURSOR_COUNT, 8);

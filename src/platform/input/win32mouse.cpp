@@ -22,9 +22,9 @@
 #include <winuser.h>
 #endif
 
-#ifdef PLATFORM_WINDOWS
-// 0x00A31F00 (note first entry not used as it is CURSOR_NONE) 8 directions
-static HCURSOR g_LoadedCursors[CURSOR_COUNT][8];
+#ifndef GAME_DLL
+HCURSOR Win32Mouse::s_loadedCursors[CURSOR_COUNT][8];
+Win32Mouse *g_theWin32Mouse = nullptr;
 #endif
 
 // 0x0073C0A0
@@ -33,7 +33,7 @@ Win32Mouse::Win32Mouse() :
 {
     std::memset(m_eventBuffer, 0, sizeof(m_eventBuffer));
 #ifdef PLATFORM_WINDOWS
-    std::memset(g_LoadedCursors, 0, sizeof(g_LoadedCursors));
+    std::memset(s_loadedCursors, 0, sizeof(s_loadedCursors));
 #endif
 }
 
@@ -44,14 +44,14 @@ void Win32Mouse::Init()
     m_inputMovesAbsolute = 1;
 }
 
-static void Load_Cursor(const char *file_location, uint32_t load_index, uint32_t load_direction)
+void Win32Mouse::Load_Cursor(const char *file_location, uint32_t load_index, uint32_t load_direction) const
 {
 #ifdef PLATFORM_WINDOWS
-    if (g_LoadedCursors[load_index][load_direction] != NULL) {
+    if (s_loadedCursors[load_index][load_direction] != NULL) {
         // Cursor at this position already loaded. Ignoring subsequent load.
         return;
     }
-    g_LoadedCursors[load_index][load_direction] = LoadCursorFromFile(file_location);
+    s_loadedCursors[load_index][load_direction] = LoadCursorFromFile(file_location);
 #endif
 }
 
@@ -88,7 +88,7 @@ void Win32Mouse::Set_Cursor(MouseCursor cursor)
 #ifdef PLATFORM_WINDOWS
         HCURSOR hCursor = NULL;
         if (cursor != MouseCursor::CURSOR_NONE && m_visible != false) {
-            hCursor = g_LoadedCursors[cursor][m_cursorDirection];
+            hCursor = s_loadedCursors[cursor][m_cursorDirection];
         }
         SetCursor(hCursor);
 #endif

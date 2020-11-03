@@ -590,6 +590,9 @@ void Setup_Hooks()
     // mouse.h Mouse
     Hook_Method(0x004031F0, &Mouse::Hook_Create_Stream_Messages);
     Hook_Method(0x004024E0, &Mouse::Process_Mouse_Event);
+    Hook_Method(0x00403FC0, static_cast<void (Mouse::*)(const MouseCursor)>(&Mouse::Set_Mouse_Text));
+    Hook_Method(0x00403A80,
+        static_cast<void (Mouse::*)(const Utf16String, const RGBAColorInt *, const RGBAColorInt *)>(&Mouse::Set_Mouse_Text));
 
     // geometry.h
     Hook_Method(0x005CFAF0, &GeometryInfo::Hook_Xfer);

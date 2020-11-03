@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author tomsons26
@@ -58,10 +58,10 @@ class Display : public SubsystemInterface
     virtual unsigned Get_Bit_Depth() { return m_bitDepth; };
     virtual void Set_Windowed(int windowed) { m_windowed = windowed; }
     virtual int Get_Windowed() { return m_windowed; }
-    virtual bool Set_Display_Mode(unsigned, unsigned, unsigned, bool);
-    virtual int Get_Display_Mode_Count();
-    virtual void Get_Display_Mode_Description(int, int *, int *, int *);
-    virtual void Set_Gamma(float, float, float, bool);
+    virtual bool Set_Display_Mode(unsigned width, unsigned height, unsigned bits, bool windowed);
+    virtual int Get_Display_Mode_Count() { return 0; }
+    virtual void Get_Display_Mode_Description(int, int *, int *, int *) {}
+    virtual void Set_Gamma(float, float, float, bool) {}
     virtual bool Test_Min_Spec_Requirements(bool *a2, bool *a3, bool *a4, StaticGameLODLevel *lod_level, float *a6)
     {
         *a4 = 1;
@@ -92,7 +92,7 @@ class Display : public SubsystemInterface
     virtual void Play_Logo_Movie(Utf8String name, int a2, int a3);
     virtual void Play_Movie(Utf8String name);
     virtual void Stop_Movie();
-    virtual bool Is_Movie_Playing() { return m_videoStream && m_videoBuffer; }
+    virtual bool Is_Movie_Playing() { return m_videoStream != nullptr && m_videoBuffer != nullptr; }
     virtual void Set_Debug_Display_Callback(debugdisplaycallback_t func, void *data)
     {
         m_debugDisplayCallback = func;
@@ -134,11 +134,11 @@ protected:
     void *m_debugDisplayUserData;
     float m_letterBoxFadeLevel;
     bool m_letterBoxEnabled;
-    int m_letterBoxFadeStart;
+    int m_letterBoxFadeStartTime;
     int m_someLogoMovieInt1;
     int m_someLogoMovieInt2;
-    int m_someLogoMovieTime;
-    int m_unkInt;
+    unsigned m_someLogoMovieTime;
+    unsigned m_unkInt;
     DisplayString *m_unkDisplayString;
 };
 

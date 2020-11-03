@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author tomsons26
@@ -16,8 +16,11 @@
 #include "display.h"
 #include "displaystringmanager.h"
 #include "gamefont.h"
+#include "gametext.h"
 #include "mouse.h"
+#include "rtsutils.h"
 #include "videobuffer.h"
+#include "videoplayer.h"
 #include "videostream.h"
 #include "view.h"
 
@@ -36,13 +39,15 @@ Display::Display() :
     m_debugDisplayUserData(nullptr),
     m_letterBoxFadeLevel(0.0f),
     m_letterBoxEnabled(false),
-    m_letterBoxFadeStart(0),
+    m_letterBoxFadeStartTime(0),
     m_someLogoMovieInt1(-1),
     m_someLogoMovieInt2(-1),
     m_someLogoMovieTime(0),
     m_unkInt(0),
     m_unkDisplayString(nullptr)
 {
+    m_cinematicText = Utf8String::s_emptyString;
+    m_currentlyPlayingMovie.Clear();
 }
 
 /**
@@ -50,9 +55,8 @@ Display::Display() :
  */
 Display::~Display()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display>(PICK_ADDRESS(0x004211A0, 0x007BD4D7), this);
-#endif
+    Stop_Movie();
+    Delete_Views();
 }
 
 /**
@@ -74,9 +78,56 @@ void Display::Reset()
  */
 void Display::Update()
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display>(PICK_ADDRESS(0x00421870, 0x007BDB67), this);
-#endif
+    if (Is_Movie_Playing() && m_videoStream->Is_Frame_Ready()) {
+        m_videoStream->Decompress_Frame();
+        m_videoStream->Render_Frame(m_videoBuffer);
+
+        if (m_videoStream->Frame_Index() != m_videoStream->Frame_Count() - 1) {
+            m_videoStream->Next_Frame();
+        } else if (m_someLogoMovieInt2 < 0 && m_someLogoMovieInt1 < 0) {
+            Stop_Movie();
+        } else {
+            // some sort of text timing, we never see the text cause its color is black
+            if (!m_unkInt) {
+                if (m_unkDisplayString != nullptr) {
+                    Delete_Instance(m_unkDisplayString);
+                }
+
+                m_unkDisplayString = g_theDisplayStringManager->New_Display_String();
+                m_unkDisplayString->Set_Text(g_theGameText->Fetch("GUI:EACopyright"));
+
+                Utf8String font_name;
+                int point_size = 0;
+                bool bold = false;
+
+                if (g_theGlobalLanguage && g_theGlobalLanguage->Copyright_Font().Name().Is_Not_Empty()) {
+                    FontDesc cpy_fnt = g_theGlobalLanguage->Copyright_Font();
+                    font_name = cpy_fnt.Name();
+                    point_size = cpy_fnt.Point_Size();
+                    bold = cpy_fnt.Bold();
+                } else {
+                    font_name = "Courier";
+                    point_size = 12;
+                    bold = true;
+                }
+
+                int size = g_theGlobalLanguage->Adjust_Font_Size(point_size);
+                GameFont *font = g_theFontLibrary->Get_Font(font_name, size, bold);
+                m_unkDisplayString->Set_Font(font);
+
+                m_unkInt = rts::Get_Time();
+            }
+
+            if (m_someLogoMovieTime + m_someLogoMovieInt1 < rts::Get_Time()) {
+                if (m_unkInt + m_someLogoMovieInt2 < rts::Get_Time()) {
+                    m_someLogoMovieInt1 = -1;
+                    m_someLogoMovieTime = 0;
+                    m_unkInt = 0;
+                    m_someLogoMovieInt2 = -1;
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -106,50 +157,27 @@ void Display::Set_Height(unsigned height)
 /**
  * 0x00421390
  */
-bool Display::Set_Display_Mode(unsigned a2, unsigned a3, unsigned a4, bool a5)
+bool Display::Set_Display_Mode(unsigned width, unsigned height, unsigned bits, bool windowed)
 {
-// TODO Requires TacticalView
-#ifdef GAME_DLL
-    return Call_Method<bool, Display, unsigned, unsigned, unsigned, bool>(
-        PICK_ADDRESS(0x00421390, 0x007BD676), this, a2, a3, a4, a5);
-#else
-    return 0;
-#endif
-}
+    int old_width = Get_Width();
+    int old_height = Get_Height();
 
-/**
- * 0x0073C5D0
- */
-int Display::Get_Display_Mode_Count()
-{
-// TODO Requires WW3D
-#ifdef GAME_DLL
-    return Call_Method<int, Display>(PICK_ADDRESS(0x0073C5D0, 0x007BDEA0), this);
-#else
-    return 0;
-#endif
-}
+    int tactical_width = g_theTacticalView->Get_Width();
+    int tactical_height = g_theTacticalView->Get_Height();
 
-/**
- * 0x0073C650
- */
-void Display::Get_Display_Mode_Description(int a1, int *a2, int *a3, int *a4)
-{
-// TODO Requires WW3D
-#ifdef GAME_DLL
-    Call_Method<void, Display, int, int *, int *, int *>(PICK_ADDRESS(0x0073C650, 0x007BDEB0), this, a1, a2, a3, a4);
-#endif
-}
+    int origin_x;
+    int origin_y;
+    g_theTacticalView->Get_Origin(&origin_x, &origin_y);
 
-/**
- * 0x0073C650
- */
-void Display::Set_Gamma(float a1, float a2, float a3, bool a4)
-{
-// TODO Requires DX8Wrapper
-#ifdef GAME_DLL
-    Call_Method<void, Display, float, float, float, bool>(PICK_ADDRESS(0x0073C650, 0x007BDEC0), this, a1, a2, a3, a4);
-#endif
+    Set_Width(width);
+    Set_Height(height);
+
+    g_theTacticalView->Set_Width(tactical_width / old_width * width);
+    g_theTacticalView->Set_Height(tactical_height / old_height * height);
+
+    g_theTacticalView->Set_Origin(origin_x / old_width * width, origin_y / old_height * height);
+
+    return true;
 }
 
 /**
@@ -202,9 +230,20 @@ void Display::Update_Views()
  */
 void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display, Utf8String, int, int>(PICK_ADDRESS(0x00421500, 0x007BD836), this, name, a3, a4);
-#endif
+    Stop_Movie();
+    m_videoStream = g_theVideoPlayer->Open(name);
+    if (m_videoStream != nullptr) {
+        m_currentlyPlayingMovie = name;
+        m_someLogoMovieInt1 = a3;
+        m_someLogoMovieInt2 = a4;
+        m_someLogoMovieTime = rts::Get_Time();
+
+        m_videoBuffer = Create_VideoBuffer();
+
+        if (m_videoBuffer == nullptr || !m_videoBuffer->Allocate(m_videoStream->Width(), m_videoStream->Height())) {
+            Stop_Movie();
+        }
+    }
 }
 
 /**
@@ -212,9 +251,16 @@ void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
  */
 void Display::Play_Movie(Utf8String name)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Display, Utf8String>(PICK_ADDRESS(0x00421670, 0x007BD978), this, name);
-#endif
+    Stop_Movie();
+    m_videoStream = g_theVideoPlayer->Open(name);
+    if (m_videoStream != nullptr) {
+        m_currentlyPlayingMovie = name;
+        m_videoBuffer = Create_VideoBuffer();
+
+        if (m_videoBuffer == nullptr || !m_videoBuffer->Allocate(m_videoStream->Width(), m_videoStream->Height())) {
+            Stop_Movie();
+        }
+    }
 }
 
 /**

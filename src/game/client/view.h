@@ -245,3 +245,9 @@ protected:
     static uint32_t s_idNext;
 #endif
 };
+
+#ifdef GAME_DLL
+extern View *&g_theTacticalView;
+#else
+extern View *g_theTacticalView;
+#endif

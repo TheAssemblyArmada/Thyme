@@ -1069,6 +1069,16 @@ void Setup_Hooks()
     Hook_Method(0x005F9F80, &GameMessageParser::Add_Arg_Type);
 
     // display.h
+    Hook_Any(0x00421A00, Display::Reset);
+    Hook_Any(0x00421870, Display::Update);
+    Hook_Any(0x00421380, Display::Draw);
+    Hook_Any(0x00421390, Display::Set_Display_Mode);
+    Hook_Any(0x00421300, Display::Attach_View);
+    Hook_Any(0x004210A0, Display::Get_Next_View);
+    Hook_Any(0x00421320, Display::Draw_Views);
+    Hook_Any(0x00421350, Display::Update_Views);
+    Hook_Any(0x00421500, Display::Play_Logo_Movie);
+    Hook_Any(0x00421670, Display::Play_Movie);
     Hook_Any(0x004217D0, Display::Stop_Movie);
     Hook_Any(0x004212C0, Display::Delete_Views);
 

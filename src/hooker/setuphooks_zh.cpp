@@ -1064,7 +1064,10 @@ void Setup_Hooks()
     Hook_Any(0x004212C0, Display::Delete_Views);
 
     // win32Mouse.h
-    Hook_Method(0x0073C170, &Win32Mouse::Add_Win32_Event);
-    Hook_Any(0x0073C320, Win32Mouse::Set_Cursor);
+    Hook_Any(0x0073C130, Win32Mouse::Init);
     Hook_Any(0x0073C260, Win32Mouse::Init_Cursor_Resources);
+    Hook_Any(0x0073C320, Win32Mouse::Set_Cursor);
+    Hook_Any(0x0073C200, Win32Mouse::Set_Visibility);
+    Hook_Any(0x0073BE20, Win32Mouse::Get_Mouse_Event);
+    Hook_Method(0x0073C170, &Win32Mouse::Add_Win32_Event);
 }

@@ -30,6 +30,7 @@
 #include "ddsfile.h"
 #include "dict.h"
 #include "dinputkeybd.h"
+#include "display.h"
 #include "dx8caps.h"
 #include "dx8fvf.h"
 #include "dx8indexbuffer.h"
@@ -92,8 +93,8 @@
 #include "thumbnailmanager.h"
 #include "w3ddebugdisplay.h"
 #include "w3dfilesystem.h"
-#include "w3droadbuffer.h"
 #include "w3dpoly.h"
+#include "w3droadbuffer.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -958,10 +959,10 @@ void Setup_Hooks()
     // image.h
     Hook_Method(0x00519070, &Image::Hook_Ctor);
     Hook_Method(0x005191C0, &Image::Hook_Dtor);
-    //Hook_Method(0x00000000, &Image::Clear_Status);
+    // Hook_Method(0x00000000, &Image::Clear_Status);
     Hook_Method(0x00519260, &Image::Set_Status);
     Hook_Method(0x00518F10, &Image::Parse_Image_Coords);
-    //Hook_Method(0x00000000, &Image::Parse_Image_Status);
+    // Hook_Method(0x00000000, &Image::Parse_Image_Status);
 
     // w3droadbuffer.h
     Hook_Method(0x00795F90, &W3DRoadBuffer::Hook_Dtor);
@@ -1017,7 +1018,7 @@ void Setup_Hooks()
     // gamefont.h
     Hook_Method(0x0041FE60, &FontLibrary::Unlink_Font);
     Hook_Method(0x00420000, &FontLibrary::Get_Font);
-    
+
     // wininstancedata.h
     Hook_Method(0x006DF300, &WinInstanceData::Hook_Ctor);
     Hook_Method(0x006DF4C0, &WinInstanceData::Init);
@@ -1034,7 +1035,7 @@ void Setup_Hooks()
     Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Draw_Text);
     Hook_Method(0x00763A20, &W3DDebugDisplay::Init);
     Hook_Method(0x00763B50, &W3DDebugDisplay::Set_Font);
-    
+
     // w3dpoly.h
     Hook_Method(0x007A2BA0, &ClipPolyClass::Add_Vertex);
     Hook_Method(0x007A2C00, &ClipPolyClass::Clip);
@@ -1052,4 +1053,8 @@ void Setup_Hooks()
     Hook_Method(0x00842FA0, &FontCharsClass::Get_Char_Data);
     Hook_Method(0x00843750, &FontCharsClass::Grow_Unicode_Array);
     Hook_Method(0x00843860, &FontCharsClass::Free_Character_Arrays);
+
+    // display.h
+    Hook_Any(0x004217D0, Display::Stop_Movie);
+    Hook_Any(0x004212C0, Display::Delete_Views);
 }

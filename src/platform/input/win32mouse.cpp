@@ -67,12 +67,12 @@ void Win32Mouse::Init_Cursor_Resources()
 
         if (cursor_info.directions <= 1) {
             char buffer[256]{};
-            snprintf(buffer, 256, "data\\cursors\\%s.ANI", cursor_info.texture_name.Str());
+            snprintf(buffer, 256, "Data/Cursors/%s.ani", cursor_info.texture_name.Str());
             Load_Cursor(buffer, i, 0);
         } else {
             for (auto direction = 0; direction < cursor_info.directions; direction++) {
                 char buffer[256]{};
-                snprintf(buffer, 256, "data\\cursors\\%s%d.ANI", cursor_info.texture_name.Str(), direction);
+                snprintf(buffer, 256, "Data/Cursors/%s%d.ani", cursor_info.texture_name.Str(), direction);
                 Load_Cursor(buffer, i, direction);
             }
         }

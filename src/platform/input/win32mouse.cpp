@@ -23,7 +23,9 @@
 #endif
 
 #ifndef GAME_DLL
+#ifdef PLATFORM_WINDOWS
 HCURSOR Win32Mouse::s_loadedCursors[CURSOR_COUNT][8];
+#endif
 Win32Mouse *g_theWin32Mouse = nullptr;
 #endif
 

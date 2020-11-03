@@ -432,3 +432,11 @@ RayEffectSystem *&g_theRayEffects = Make_Global<RayEffectSystem *>(PICK_ADDRESS(
 #include "win32mouse.h"
 Win32Mouse *&g_theWin32Mouse = Make_Global<Win32Mouse *>(PICK_ADDRESS(0x00A27B10, 0));
 ARRAY2D_DEF(PICK_ADDRESS(0x00A31F00, 0), HCURSOR, Win32Mouse::s_loadedCursors, CURSOR_COUNT, 8);
+
+// globallanguage.cpp
+class FontLibrary;
+FontLibrary *&g_theFontLibrary = Make_Global<FontLibrary *>(PICK_ADDRESS(0x00A2A6C8, 0x00E239CC));
+
+// view.cpp
+class View;
+View *&g_theTacticalView = Make_Global<View *>(PICK_ADDRESS(0x00A2B684, 0x00E23AD8));

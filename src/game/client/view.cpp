@@ -17,6 +17,7 @@
 
 #ifndef GAME_DLL
 uint32_t View::s_idNext = 1;
+View *g_theTacticalView;
 #endif
 
 View::View() :

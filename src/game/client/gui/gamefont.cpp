@@ -15,6 +15,10 @@
  */
 #include "gamefont.h"
 
+#ifndef GAME_DLL
+FontLibrary *g_theFontLibrary;
+#endif
+
 FontLibrary::FontLibrary() : m_fontList(nullptr), m_count(0) {}
 
 FontLibrary::~FontLibrary()

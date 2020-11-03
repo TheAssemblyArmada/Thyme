@@ -60,3 +60,9 @@ private:
     GameFont *m_fontList;
     int m_count;
 };
+
+#ifdef GAME_DLL
+extern FontLibrary *&g_theFontLibrary;
+#else
+extern FontLibrary *g_theFontLibrary;
+#endif

@@ -52,7 +52,7 @@ void DX8TextureManagerClass::Release_Textures()
     MultiListIterator<DX8TextureTrackerClass> it(&s_managedTextures);
 
     for (it.First(); !it.Is_Done(); it.Next()) {
-        it.Peek_Obj()->m_texture->Release_Platform_Base_Texture();
+        it.Peek_Obj()->m_texture->Set_Platform_Base_Texture(W3D_TYPE_INVALID_TEXTURE);
     }
 }
 
@@ -62,7 +62,6 @@ void DX8TextureManagerClass::Recreate_Textures()
 
     for (it.First(); !it.Is_Done(); it.Next()) {
         DX8TextureTrackerClass *ttc = it.Peek_Obj();
-        captainslog_assert(ttc->m_texture->Peek_Platform_Base_Texture() != W3D_TYPE_INVALID_TEXTURE);
         ttc->Recreate();
         ttc->m_texture->Set_Dirty(true);
     }

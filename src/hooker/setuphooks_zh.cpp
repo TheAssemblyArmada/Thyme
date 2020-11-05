@@ -1100,5 +1100,10 @@ void Setup_Hooks()
     Hook_Any(0x008232E0, RenderInfoClass::Current_Override_Flags);
 
     // w3dmouse.h
+    Hook_Any(0x007AD600, W3DMouse::Init);
+    Hook_Any(0x007AD650, W3DMouse::Set_Cursor);
+    Hook_Any(0x007ADF60, W3DMouse::Set_Redraw_Mode);
+    Hook_Any(0x007AD2D0, W3DMouse::Free_D3D_Assets);
+    Hook_Any(0x007AD060, W3DMouse::Release_D3D_Cursor_Texture);
     Hook_Function(0x00775540, &Create_Mouse); // This is actually a W3DGameClient virtual method but this not used
 }

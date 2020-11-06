@@ -142,7 +142,9 @@ public:
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
     W3DErrorType Save_W3D(ChunkSaveClass &csave);
 
+#ifdef GAME_DLL
     virtual const PersistFactoryClass &Get_Factory() const override;
+#endif
     virtual bool Save(ChunkSaveClass &csave) override;
     virtual bool Load(ChunkLoadClass &cload) override;
 

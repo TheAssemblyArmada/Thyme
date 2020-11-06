@@ -98,6 +98,7 @@
 #include "w3dfilesystem.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
+#include "matpass.h"
 #include "w3droadbuffer.h"
 #include "weapon.h"
 #include "win32gameengine.h"
@@ -1106,4 +1107,12 @@ void Setup_Hooks()
     Hook_Any(0x007AD2D0, W3DMouse::Free_D3D_Assets);
     Hook_Any(0x007AD060, W3DMouse::Release_D3D_Cursor_Texture);
     Hook_Function(0x00775540, &Create_Mouse); // This is actually a W3DGameClient virtual method but this not used
+    
+    // matpass.h
+    Hook_Any(0x00833320, MaterialPassClass::Install_Materials);
+    Hook_Any(0x008333E0, MaterialPassClass::Set_Texture);
+    Hook_Any(0x00833410, MaterialPassClass::Set_Shader);
+    Hook_Any(0x00833430, MaterialPassClass::Set_Material);
+    Hook_Any(0x00833460, MaterialPassClass::Get_Texture);
+    Hook_Any(0x00833480, MaterialPassClass::Get_Material);
 }

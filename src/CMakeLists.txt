@@ -239,6 +239,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/mapper.cpp
     w3d/renderer/missing.cpp
+    w3d/renderer/matpass.cpp
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
     w3d/renderer/predlod.cpp

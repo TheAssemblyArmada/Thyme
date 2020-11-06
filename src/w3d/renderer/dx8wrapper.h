@@ -161,6 +161,7 @@ public:
     static void Set_Render_Target_With_Z(TextureClass *texture, ZTextureClass *z_texture);
     static void Set_Texture(unsigned stage, TextureClass *texture);
     static void Set_Material(const VertexMaterialClass *material);
+    static void Set_Shader(const ShaderClass &shader);
 
 #ifdef BUILD_WITH_D3D8
     static const char *Get_DX8_Render_State_Name(D3DRENDERSTATETYPE state);
@@ -498,8 +499,9 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
 #ifdef BUILD_WITH_D3D8
 inline void DX8Wrapper::Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value)
 {
-    if (s_renderStates[state] == value)
+    if (s_renderStates[state] == value) {
         return;
+    }
 
     s_renderStates[state] = value;
     DX8CALL(SetRenderState(state, value));
@@ -605,19 +607,30 @@ inline void DX8Wrapper::Handle_DX8_ErrorCode(unsigned error)
 
 inline void DX8Wrapper::Set_Texture(unsigned stage, TextureClass *texture)
 {
-    if (texture == s_renderState.Textures[stage])
+    if (texture == s_renderState.Textures[stage]) {
         return;
+    }
     Ref_Ptr_Set(texture, s_renderState.Textures[stage]);
     s_renderStateChanged |= (TEXTURE0_CHANGED << stage);
 }
 
 inline void DX8Wrapper::Set_Material(const VertexMaterialClass *material)
 {
-    if (material == s_renderState.material)
+    if (material == s_renderState.material) {
         return;
+    }
     VertexMaterialClass *v = const_cast<VertexMaterialClass *>(material);
     Ref_Ptr_Set(v, s_renderState.material);
     s_renderStateChanged |= MATERIAL_CHANGED;
+}
+
+inline void DX8Wrapper::Set_Shader(const ShaderClass &shader)
+{
+    if (!ShaderClass::s_shaderDirty && ((unsigned &)shader == (unsigned &)s_renderState.shader)) {
+        return;
+    }
+    s_renderState.shader = shader;
+    s_renderStateChanged |= SHADER_CHANGED;
 }
 
 #ifdef BUILD_WITH_D3D8

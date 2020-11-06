@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "rinfo.h"
-#include "refcount.h"
+#include "matpass.h"
 #include <captainslog.h>
 
 RenderInfoClass::RenderInfoClass(CameraClass &camera) :
@@ -50,8 +50,7 @@ void RenderInfoClass::Push_Material_Pass(MaterialPassClass *matpass)
 {
     if (m_additionalMaterialPassCount < ADDITIONAL_MATERIAL_PASSES - 1) {
         if (matpass != nullptr) {
-            // TODO temp until MaterialPassClass is in
-            ((RefCountClass *)matpass)->Add_Ref();
+            matpass->Add_Ref();
         }
         m_additionalMaterialPassArray[m_additionalMaterialPassCount++] = matpass;
     } else {
@@ -67,8 +66,7 @@ void RenderInfoClass::Pop_Material_Pass()
         captainslog_assert(m_additionalMaterialPassCount > 0);
         MaterialPassClass *matpass = m_additionalMaterialPassArray[--m_additionalMaterialPassCount];
         if (matpass != nullptr) {
-            // TODO temp until MaterialPassClass is in
-            ((RefCountClass *)matpass)->Release_Ref();
+            matpass->Release_Ref();
         }
     }
 }

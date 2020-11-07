@@ -33,16 +33,26 @@ public:
     // Methods
     void Clear_Status(uint32_t bit); // TODO not hooked or verified
     void Set_Status(uint32_t bit);
+    bool Is_Set_Status(uint32_t bit) const { return m_status & bit; }
+    TextureClass *Get_Raw_Texture_Data() { return m_rawTextureData; }
+    Utf8String Get_File_Name() { return m_filename; }
+    Region2D Get_UV_Region() const { return m_UVCoords; }
 
     // initFromINIMulti variants for Field Parsing Functions.
     static void Parse_Image_Coords(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data); // TODO not hooked or
-                                                                                                // verified
+    static void Parse_Image_Status(INI *ini, void *formal, void *store, const void *user_data);
 
 #ifdef GAME_DLL
     Image *Hook_Ctor() { return new (this) Image(); }
     void Hook_Dtor() { Image::~Image(); }
 #endif
+
+    enum ImageStatus // Note these are flags
+    {
+        IMAGE_STATUS_NONE = 0,
+        IMAGE_STATUS_ROTATED_90_CLOCKWISE = (1 << 0),
+        IMAGE_STATUS_RAW_TEXTURE = (1 << 1),
+    };
 
 private:
     Utf8String m_name;

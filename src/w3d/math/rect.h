@@ -68,12 +68,12 @@ public:
         return (rval.left != left) || (rval.right != right) || (rval.top != top) || (rval.bottom != bottom);
     }
 
-    void Set(float left, float top, float right, float bottom)
+    void Set(float _left, float _top, float _right, float _bottom)
     {
-        left = left;
-        top = top;
-        right = right;
-        bottom = bottom;
+        left = _left;
+        top = _top;
+        right = _right;
+        bottom = _bottom;
     }
 
     void Set(const Vector2 &top_left, const Vector2 &bottom_right)

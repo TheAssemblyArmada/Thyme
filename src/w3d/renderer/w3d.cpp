@@ -36,6 +36,11 @@ void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &w
     DX8Wrapper::Get_Device_Resolution(width, height, bit_depth, windowed);
 }
 
+void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed)
+{
+    DX8Wrapper::Get_Render_Target_Resolution(set_w, set_h, set_bits, set_windowed);
+}
+
 int W3D::Get_Texture_Bit_Depth()
 {
     return DX8Wrapper::Get_Texture_Bit_Depth();

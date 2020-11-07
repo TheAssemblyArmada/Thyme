@@ -56,6 +56,7 @@ public:
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
     bool Supports_DXTC() const { return m_supportDXTC; }
+    bool Supports_ZBias() const { return m_supportZBias; }
     bool Supports_Texture_Format(WW3DFormat format) const { return m_supportTextureFormat[format]; }
     bool Supports_Render_To_Texture_Format(WW3DFormat format) const { return m_supportRenderToTextureFormat[format]; }
     bool Use_TnL() const { return m_useTnL; }

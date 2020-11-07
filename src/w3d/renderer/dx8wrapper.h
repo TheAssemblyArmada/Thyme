@@ -171,6 +171,7 @@ public:
     static void Set_Viewport(CONST D3DVIEWPORT8 *pViewport);
     static void Set_Light(unsigned index, const D3DLIGHT8 *light);
     static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
+    static void Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix3D &m);
     static void Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value);
     static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
@@ -182,6 +183,7 @@ public:
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
+    static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
 #endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
@@ -215,6 +217,7 @@ public:
     static bool Has_Stencil();
     static WW3DFormat Get_Back_Buffer_Format();
     static void Get_Device_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
     static const w3dadapterid_t &Get_Current_Adapter_Identifier() { return s_currentAdapterIdentifier; }
 
 private:
@@ -237,7 +240,6 @@ private:
         bool resize_window = false,
         bool reset_device = false,
         bool restore_assets = true);
-    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,
         unsigned short start_index,
         unsigned short polygon_count,
@@ -570,6 +572,28 @@ inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Mat
     }
 }
 
+inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix3D &m)
+{
+    Matrix4 m2(m);
+    switch ((int)transform) {
+        case D3DTS_WORLD:
+            s_renderState.world = m2.Transpose();
+            s_renderStateChanged |= (unsigned)WORLD_CHANGED;
+            s_renderStateChanged &= ~(unsigned)WORLD_IDENTITY;
+            break;
+        case D3DTS_VIEW:
+            s_renderState.view = m2.Transpose();
+            s_renderStateChanged |= (unsigned)VIEW_CHANGED;
+            s_renderStateChanged &= ~(unsigned)VIEW_IDENTITY;
+            break;
+        default:
+            s_matrixChanges++;
+            m2 = m2.Transpose();
+            DX8CALL(SetTransform(transform, (D3DMATRIX *)&m2));
+            break;
+    }
+}
+
 inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m)
 {
     D3DMATRIX mat;
@@ -685,5 +709,23 @@ inline void DX8Wrapper::Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const
     s_DX8Transforms[transform] = m;
     s_matrixChanges++;
     DX8CALL(SetTransform(transform, (D3DMATRIX *)&m));
+}
+
+inline void DX8Wrapper::Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar)
+{
+    s_zFar = zfar;
+    s_zNear = znear;
+    s_projectionMatrix = matrix.Transpose();
+
+    if (!Get_Caps()->Supports_ZBias() && s_zNear != s_zFar) {
+        Matrix4 tmp = s_projectionMatrix;
+        float tmp_zbias = s_ZBias;
+        tmp_zbias *= (1.0f / 16.0f);
+        tmp_zbias *= 1.0f / (s_zFar - s_zNear);
+        tmp[2][2] -= tmp_zbias * tmp[3][2];
+        DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&tmp));
+    } else {
+        DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&s_projectionMatrix));
+    }
 }
 #endif

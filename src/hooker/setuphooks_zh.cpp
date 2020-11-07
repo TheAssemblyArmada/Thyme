@@ -20,6 +20,7 @@
 #include "binkvideoplayer.h"
 #include "binkvideostream.h"
 #include "bitmaphandler.h"
+#include "camera.h"
 #include "cavesystem.h"
 #include "chunkio.h"
 #include "commandline.h"
@@ -1115,4 +1116,26 @@ void Setup_Hooks()
     Hook_Any(0x00833430, MaterialPassClass::Set_Material);
     Hook_Any(0x00833460, MaterialPassClass::Get_Texture);
     Hook_Any(0x00833480, MaterialPassClass::Get_Material);
+
+    // camera.h
+    Hook_Any(0x00820C70, CameraClass::Clone);
+    Hook_Any(0x00820CD0, CameraClass::Get_Obj_Space_Bounding_Sphere);
+    Hook_Any(0x00820CF0, CameraClass::Get_Obj_Space_Bounding_Box);
+    Hook_Any(0x00820D20, CameraClass::Set_Transform);
+    Hook_Any(0x00820D40, CameraClass::Set_Position);
+    Hook_Method(
+        0x00820D60, static_cast<void (CameraClass::*)(const Vector2 &, const Vector2 &)>(&CameraClass::Set_View_Plane));
+    Hook_Method(0x00820DB0, static_cast<void (CameraClass::*)(float, float)>(&CameraClass::Set_View_Plane));
+    Hook_Any(0x00820E30, CameraClass::Set_Aspect_Ratio);
+    Hook_Any(0x00820EA0, CameraClass::Project);
+    Hook_Any(0x008210D0, CameraClass::Project_Camera_Space_Point);
+    Hook_Any(0x00821250, CameraClass::Un_Project);
+    Hook_Any(0x00821330, CameraClass::Transform_To_View_Space);
+    Hook_Any(0x008213E0, CameraClass::Cull_Box);
+    Hook_Any(0x00821410, CameraClass::Update_Frustum);
+    Hook_Any(0x00821830, CameraClass::Device_To_View_Space);
+    Hook_Any(0x008218F0, CameraClass::Device_To_World_Space);
+    Hook_Any(0x00821990, CameraClass::Apply);
+    Hook_Any(0x00821E90, CameraClass::Set_Clip_Planes);
+    Hook_Any(0x00821F50, CameraClass::Get_D3D_Projection_Matrix);
 }

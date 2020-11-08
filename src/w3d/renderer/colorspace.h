@@ -18,8 +18,12 @@
 #include "vector3.h"
 #include "vector4.h"
 
+void RGB_To_HSV(Vector3 &hsv, const Vector3 &rgb);
+void HSV_To_RGB(Vector3 &rgb, const Vector3 &hsv);
+
 void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba);
 void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv);
+
 void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj);
 
 /**

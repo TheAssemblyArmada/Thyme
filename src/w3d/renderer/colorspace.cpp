@@ -21,8 +21,32 @@
  */
 void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba)
 {
-    float min = std::min(rgba.X, std::min(rgba.Y, rgba.Z));
-    float max = std::max(rgba.X, std::max(rgba.Y, rgba.Z));
+    Vector3 rgb;
+    rgb.X = rgba.X;
+    rgb.Y = rgba.Y;
+    rgb.Z = rgba.Z;
+    RGB_To_HSV(hsv, rgb);
+}
+
+/**
+ * @brief Converts the HSV values to RGB, the alpha value is not altered.
+ */
+void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
+{
+    Vector3 rgb;
+    HSV_To_RGB(rgb, hsv);
+    rgba.X = rgb.X;
+    rgba.Y = rgb.Y;
+    rgba.Z = rgb.Z;
+}
+
+/**
+ * @brief Converts the RGB values to HSV.
+ */
+void RGB_To_HSV(Vector3 &hsv, const Vector3 &rgb)
+{
+    float min = std::min(rgb.X, std::min(rgb.Y, rgb.Z));
+    float max = std::max(rgb.X, std::max(rgb.Y, rgb.Z));
     float delta = max - min;
     hsv.Z = max; // V
 
@@ -35,12 +59,12 @@ void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba)
     }
 
     // H
-    if (rgba.X == max) {
-        hsv.X = (rgba.Y - rgba.Z) / delta;
-    } else if (rgba.Y == max) {
-        hsv.X = 2.0f + (rgba.Z - rgba.X) / delta;
+    if (rgb.X == max) {
+        hsv.X = (rgb.Y - rgb.Z) / delta;
+    } else if (rgb.Y == max) {
+        hsv.X = 2.0f + (rgb.Z - rgb.X) / delta;
     } else {
-        hsv.X = 4.0f + (rgba.X - rgba.Y) / delta;
+        hsv.X = 4.0f + (rgb.X - rgb.Y) / delta;
     }
 
     hsv.X *= 60.0f;
@@ -51,13 +75,13 @@ void RGBA_To_HSV(Vector3 &hsv, const Vector4 &rgba)
 }
 
 /**
- * @brief Converts the HSV values to RGB, the alpha value is not altered.
+ * @brief Converts the HSV values to RGB.
  */
-void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
+void HSV_To_RGB(Vector3 &rgb, const Vector3 &hsv)
 {
     if (hsv.Y == 0.0f) {
         // Grey scale
-        rgba.X = rgba.Y = rgba.Z = hsv.Z;
+        rgb.X = rgb.Y = rgb.Z = hsv.Z;
 
         return;
     }
@@ -71,35 +95,35 @@ void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
 
     switch (i) {
         case 0:
-            rgba.X = hsv.Z;
-            rgba.Y = t;
-            rgba.Z = p;
+            rgb.X = hsv.Z;
+            rgb.Y = t;
+            rgb.Z = p;
             break;
         case 1:
-            rgba.X = q;
-            rgba.Y = hsv.Z;
-            rgba.Z = p;
+            rgb.X = q;
+            rgb.Y = hsv.Z;
+            rgb.Z = p;
             break;
         case 2:
-            rgba.X = p;
-            rgba.Y = hsv.Z;
-            rgba.Z = t;
+            rgb.X = p;
+            rgb.Y = hsv.Z;
+            rgb.Z = t;
             break;
         case 3:
-            rgba.X = p;
-            rgba.Y = q;
-            rgba.Z = hsv.Z;
+            rgb.X = p;
+            rgb.Y = q;
+            rgb.Z = hsv.Z;
             break;
         case 4:
-            rgba.X = t;
-            rgba.Y = p;
-            rgba.Z = hsv.Z;
+            rgb.X = t;
+            rgb.Y = p;
+            rgb.Z = hsv.Z;
             break;
         case 5: // Fallthrough
         default:
-            rgba.X = hsv.Z;
-            rgba.Y = p;
-            rgba.Z = q;
+            rgb.X = hsv.Z;
+            rgb.Y = p;
+            rgb.Z = q;
             break;
     }
 }
@@ -109,7 +133,7 @@ void HSV_To_RGBA(Vector4 &rgba, const Vector3 &hsv)
  */
 void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj)
 {
-    Vector3 hsv(0.0f, 0.0f, 0.0f);
+    Vector3 hsv;
     RGBA_To_HSV(hsv, rgba);
 
     if (hsv.X > 0.0f) {

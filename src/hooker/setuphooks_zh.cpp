@@ -56,6 +56,7 @@
 #include "image.h"
 #include "ini.h"
 #include "keyboard.h"
+#include "lightenv.h"
 #include "main.h"
 #include "matpass.h"
 #include "messagestream.h"
@@ -1138,4 +1139,13 @@ void Setup_Hooks()
     Hook_Any(0x00821990, CameraClass::Apply);
     Hook_Any(0x00821E90, CameraClass::Set_Clip_Planes);
     Hook_Any(0x00821F50, CameraClass::Get_D3D_Projection_Matrix);
+
+    // lightenv.h
+    Hook_Any(0x00822130, LightEnvironmentClass::InputLightStruct::Init_From_Point_Or_Spot_Light);
+    Hook_Any(0x008224E0, LightEnvironmentClass::InputLightStruct::Init_From_Directional_Light);
+    Hook_Any(0x008225B0, LightEnvironmentClass::Reset);
+    Hook_Any(0x008225F0, LightEnvironmentClass::Add_Light);
+    Hook_Any(0x008229B0, LightEnvironmentClass::Pre_Render_Update);
+    Hook_Any(0x00822B60, LightEnvironmentClass::Add_Fill_Light);
+    Hook_Any(0x00822CF0, LightEnvironmentClass::Calculate_Fill_Light);
 }

@@ -85,7 +85,9 @@ int HAnimManagerClass::Load_Compressed_Anim(ChunkLoadClass &cload)
 HAnimClass *HAnimManagerClass::Get_Anim(const char *name)
 {
     HAnimClass *anim = Peek_Anim(name);
-    anim->Add_Ref();
+    if (anim != nullptr) {
+        anim->Add_Ref();
+    }
     return anim;
 }
 

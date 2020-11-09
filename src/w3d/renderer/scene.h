@@ -20,6 +20,7 @@
 
 class RenderObjClass;
 class RenderInfoClass;
+class RGBColor;
 
 class SceneIterator
 {
@@ -61,11 +62,11 @@ public:
     virtual void Remove_Render_Object(RenderObjClass *obj);
     virtual SceneIterator *Create_Iterator(bool onlyvisible) = 0;
     virtual void Destroy_Iterator(SceneIterator *it) = 0;
-    virtual void Set_Ambient_Light(const Vector3 &color);
+    virtual void Set_Ambient_Light(const RGBColor &color);
     virtual const Vector3 &Get_Ambient_Light();
     virtual void Set_Fog_Enable(bool set);
     virtual bool Get_Fog_Enable();
-    virtual void Set_Fog_Color(const Vector3 &color);
+    virtual void Set_Fog_Color(const RGBColor &color);
     virtual Vector3 &Get_Fog_Color();
     virtual void Set_Fog_Range(float start, float end);
     virtual void Get_Fog_Range(float *start, float *end);

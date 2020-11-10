@@ -45,8 +45,6 @@ public:
 #ifdef GAME_DLL
     Particle *Hook_Ctor(ParticleSystem *system, const ParticleInfo &info) { return new (this) Particle(system, info); }
     void Hook_Dtor() { Particle::~Particle(); }
-    void Hook_Xfer(Xfer *xfer) { Particle::Xfer_Snapshot(xfer); }
-    void Hook_LoadPP() { Particle::Load_Post_Process(); }
 #endif
 private:
     Particle *m_systemNext;

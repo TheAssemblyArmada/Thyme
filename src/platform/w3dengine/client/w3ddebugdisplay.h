@@ -36,9 +36,6 @@ public:
 
 #ifdef GAME_DLL
     W3DDebugDisplay *Hook_Ctor() { return new (this) W3DDebugDisplay(); }
-    void Hook_Printf(char *format, ...) { W3DDebugDisplay::Printf(format); }
-    void Hook_Reset() { W3DDebugDisplay::Reset(); }
-    void Hook_Draw_Text(int x, int y, char *text) { W3DDebugDisplay::Draw_Text(x, y, text); }
 #endif
 
 private:

@@ -48,10 +48,6 @@ public:
     static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    void Hook_Xfer_Snapshot(Xfer *xfer) { Script::Xfer_Snapshot(xfer); }
-#endif
-
 private:
     static Script *Parse_Script(DataChunkInput &input, uint16_t version);
 

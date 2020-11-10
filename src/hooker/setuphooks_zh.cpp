@@ -225,10 +225,10 @@ void Setup_Hooks()
     Hook_Method(0x00415530, &Utf8String::Trim);
 
     // Replace Win32GameEngine
-    Hook_Method(0x007420F0, &Win32GameEngine::Hook_Create_Local_File_System);
-    Hook_Method(0x00742150, &Win32GameEngine::Hook_Create_Archive_File_System);
-    Hook_Method(0x00741FA0, &Win32GameEngine::Hook_Create_Module_Factory);
-    Hook_Method(0x007424B0, &Win32GameEngine::Hook_Create_Audio_Manager);
+    Hook_Any(0x007420F0, Win32GameEngine::Create_Local_File_System);
+    Hook_Any(0x00742150, Win32GameEngine::Create_Archive_File_System);
+    Hook_Any(0x00741FA0, Win32GameEngine::Create_Module_Factory);
+    Hook_Any(0x007424B0, Win32GameEngine::Create_Audio_Manager);
 
     // Replace INI
     Hook_Method(0x0041D6E0, &INI::Get_Next_Token);
@@ -276,14 +276,14 @@ void Setup_Hooks()
     Hook_Method(0x0040A800, &GameMessage::Append_Int_Arg);
 
     // Replace GameMessageList
-    Hook_Method(0x0040D760, &GameMessageList::Hook_Append_Message);
-    Hook_Method(0x0040D7A0, &GameMessageList::Hook_Insert_Message);
-    Hook_Method(0x0040D7D0, &GameMessageList::Hook_Remove_Message);
-    Hook_Method(0x0040D820, &GameMessageList::Hook_Contains_Message_Of_Type);
+    Hook_Any(0x0040D760, GameMessageList::Append_Message);
+    Hook_Any(0x0040D7A0, GameMessageList::Insert_Message);
+    Hook_Any(0x0040D7D0, GameMessageList::Remove_Message);
+    Hook_Any(0x0040D820, GameMessageList::Contains_Message_Of_Type);
 
     // messagestream.h MessageStream
-    Hook_Method(0x0040D960, &MessageStream::Hook_Append_Message);
-    Hook_Method(0x0040DA00, &MessageStream::Hook_Insert_Message);
+    Hook_Any(0x0040D960, MessageStream::Append_Message);
+    Hook_Any(0x0040DA00, MessageStream::Insert_Message);
     Hook_Method(0x0040DAA0, &MessageStream::Attach_Translator);
     Hook_Method(0x0040DB60, &MessageStream::Find_Translator);
     Hook_Method(0x0040DB90, &MessageStream::Remove_Translator);
@@ -312,8 +312,8 @@ void Setup_Hooks()
     Hook_Function(0x004F8150, &Parse_Command_Line);
 
     // Replaces W3DFileSystem
-    Hook_Method(0x00763880, &W3DFileSystem::Hook_Get_File);
-    Hook_Method(0x00815370, &W3DFileSystem::Hook_Return_File);
+    Hook_Any(0x00763880, W3DFileSystem::Get_File);
+    Hook_Any(0x00815370, W3DFileSystem::Return_File);
 
     // Replace ChunkSaveClass
     Hook_Method(0x008A0F90, &ChunkSaveClass::Begin_Chunk);
@@ -410,15 +410,15 @@ void Setup_Hooks()
     // textureloadtask.h
     Hook_Method(0x0082FF20, &TextureLoadTaskClass::Hook_Ctor);
     Hook_Method(0x0082FF80, &TextureLoadTaskClass::Hook_Dtor);
-    Hook_Method(0x008301D0, &TextureLoadTaskClass::Hook_Destroy);
-    Hook_Method(0x00830210, &TextureLoadTaskClass::Hook_Init);
-    Hook_Method(0x00831160, &TextureLoadTaskClass::Hook_Deinit);
-    Hook_Method(0x008303B0, &TextureLoadTaskClass::Hook_Begin_Compressed_Load);
-    Hook_Method(0x00830950, &TextureLoadTaskClass::Hook_Begin_Uncompressed_Load);
-    Hook_Method(0x00830B30, &TextureLoadTaskClass::Hook_Load_Compressed_Mipmap);
-    Hook_Method(0x00830C40, &TextureLoadTaskClass::Hook_Load_Uncompressed_Mipmap);
-    Hook_Method(0x00830A80, &TextureLoadTaskClass::Hook_Lock_Surfaces);
-    Hook_Method(0x00830AE0, &TextureLoadTaskClass::Hook_Unlock_Surfaces);
+    Hook_Any(0x008301D0, TextureLoadTaskClass::Destroy);
+    Hook_Any(0x00830210, TextureLoadTaskClass::Init);
+    Hook_Any(0x00831160, TextureLoadTaskClass::Deinit);
+    Hook_Any(0x008303B0, TextureLoadTaskClass::Begin_Compressed_Load);
+    Hook_Any(0x00830950, TextureLoadTaskClass::Begin_Uncompressed_Load);
+    Hook_Any(0x00830B30, TextureLoadTaskClass::Load_Compressed_Mipmap);
+    Hook_Any(0x00830C40, TextureLoadTaskClass::Load_Uncompressed_Mipmap);
+    Hook_Any(0x00830A80, TextureLoadTaskClass::Lock_Surfaces);
+    Hook_Any(0x00830AE0, TextureLoadTaskClass::Unlock_Surfaces);
     Hook_Method(0x00830380, &TextureLoadTaskClass::Apply);
     Hook_Method(0x008302D0, &TextureLoadTaskClass::Begin_Load);
     Hook_Method(0x00830310, &TextureLoadTaskClass::Load);
@@ -550,20 +550,20 @@ void Setup_Hooks()
     Hook_Function(0x00521280, &ScriptAction::Parse_False_Action_Chunk);
 
     // script.h Script
-    Hook_Method(0x0051CD70, &Script::Hook_Xfer_Snapshot);
+    Hook_Any(0x0051CD70, Script::Xfer_Snapshot);
     Hook_Method(0x0051CDB0, &Script::Duplicate);
     Hook_Method(0x0051CFC0, &Script::Duplicate_And_Qualify);
     Hook_Function(0x0051D610, Script::Parse_Script_From_Group_Chunk);
     Hook_Function(0x0051D5B0, Script::Parse_Script_From_List_Chunk);
 
     // scriptgroup.h ScriptGroup
-    Hook_Method(0x0051C3B0, &ScriptGroup::Hook_Xfer_Snapshot);
+    Hook_Any(0x0051C3B0, ScriptGroup::Xfer_Snapshot);
     Hook_Method(0x0051C510, &ScriptGroup::Duplicate);
     Hook_Method(0x0051C670, &ScriptGroup::Duplicate_And_Qualify);
     Hook_Function(0x0051C860, ScriptGroup::Parse_Group_Chunk);
 
     // scriptlist.h ScriptList
-    Hook_Method(0x0051B920, &ScriptList::Hook_Xfer_Snapshot);
+    Hook_Any(0x0051B920, ScriptList::Xfer_Snapshot);
     Hook_Method(0x0051BC70, &ScriptList::Duplicate);
     Hook_Method(0x0051BD80, &ScriptList::Duplicate_And_Qualify);
     Hook_Function(0x0051C040, ScriptList::Get_Read_Scripts); // Must hooke with Parse_Scripts_Chunk
@@ -584,9 +584,9 @@ void Setup_Hooks()
     Hook_Function(0x004D62A0, &SidesList::Parse_Sides_Chunk);
 
     // keyboard.h Keyboard
-    Hook_Method(0x0040A120, &Keyboard::Hook_Init);
-    Hook_Method(0x0040A140, &Keyboard::Hook_Update);
-    Hook_Method(0x00407F50, &Keyboard::Hook_Create_Message_Stream);
+    Hook_Any(0x0040A120, Keyboard::Init);
+    Hook_Any(0x0040A140, Keyboard::Update);
+    Hook_Any(0x00407F50, Keyboard::Create_Stream_Messages);
     Hook_Method(0x0040A4A0, &Keyboard::Get_Printable_Key);
     Hook_Method(0x0040A150, &Keyboard::Reset_Keys);
     Hook_Method(0x0040A460, &Keyboard::Is_Shift);
@@ -594,14 +594,14 @@ void Setup_Hooks()
     Hook_Method(0x0040A490, &Keyboard::Is_Alt);
 
     // mouse.h Mouse
-    Hook_Method(0x004031F0, &Mouse::Hook_Create_Stream_Messages);
+    Hook_Any(0x004031F0, Mouse::Create_Stream_Messages);
     Hook_Method(0x004024E0, &Mouse::Process_Mouse_Event);
     Hook_Method(0x00403FC0, static_cast<void (Mouse::*)(const MouseCursor)>(&Mouse::Set_Mouse_Text));
     Hook_Method(0x00403A80,
         static_cast<void (Mouse::*)(const Utf16String, const RGBAColorInt *, const RGBAColorInt *)>(&Mouse::Set_Mouse_Text));
 
     // geometry.h
-    Hook_Method(0x005CFAF0, &GeometryInfo::Hook_Xfer);
+    Hook_Any(0x005CFAF0, GeometryInfo::Xfer_Snapshot);
     Hook_Method(0x005CF220, &GeometryInfo::Set);
     Hook_Method(0x005CFA60, &GeometryInfo::Calc_Bounding_Stuff);
     Hook_Method(0x005CF350, &GeometryInfo::Set_Max_Height_Above_Position);
@@ -633,9 +633,9 @@ void Setup_Hooks()
 
     // rankinfo.h
     Hook_Function(0x00489520, &RankInfoStore::Parse_Rank_Definition);
-    // Hook_Method(0x00489410, &RankInfoStore::Hook_Init); // Works, but shares function in binary with ScienceStore as
+    // Hook_Any(0x00489410, RankInfoStore::Init); // Works, but shares function in binary with ScienceStore as
     // compiles to same code.
-    Hook_Method(0x00489440, &RankInfoStore::Hook_Reset);
+    Hook_Any(0x00489440, RankInfoStore::Reset);
     Hook_Method(0x004894E0, &RankInfoStore::Get_Rank_Info);
     Hook_Method(0x004894D0, &RankInfoStore::Get_Rank_Level_Count);
 
@@ -648,22 +648,22 @@ void Setup_Hooks()
 
     // partsysinfo.h
     Hook_Method(0x004CD460, &ParticleSystemInfo::Hook_Ctor);
-    Hook_Method(0x004CD5D0, &ParticleSystemInfo::Hook_Xfer);
+    Hook_Any(0x004CD5D0, ParticleSystemInfo::Xfer_Snapshot);
     Hook_Method(0x004CD540, &ParticleSystemInfo::Tint_All_Colors);
 
     // particle.h
     Hook_Method(0x004CCC30, &Particle::Hook_Ctor);
     Hook_Method(0x004CD040, &Particle::Hook_Dtor);
-    Hook_Method(0x004CD2E0, &Particle::Hook_Xfer);
-    Hook_Method(0x004CD3F0, &Particle::Hook_LoadPP);
+    Hook_Any(0x004CD2E0, Particle::Xfer_Snapshot);
+    Hook_Any(0x004CD3F0, Particle::Load_Post_Process);
     Hook_Method(0x004CCB50, &Particle::Compute_Alpha_Rate);
     Hook_Method(0x004CCBA0, &Particle::Compute_Color_Rate);
 
     // particlesys.h
     Hook_Method(0x004CDA10, &ParticleSystem::Hook_Ctor);
     Hook_Method(0x004CE310, &ParticleSystem::Hook_Dtor);
-    Hook_Method(0x004D11E0, &ParticleSystem::Hook_Xfer);
-    Hook_Method(0x004D1430, &ParticleSystem::Hook_LoadPP);
+    Hook_Any(0x004D11E0, ParticleSystem::Xfer_Snapshot);
+    Hook_Any(0x004D1430, ParticleSystem::Load_Post_Process);
     Hook_Method(0x004CE500, &ParticleSystem::Destroy);
     Hook_Method(0x004CE530, &ParticleSystem::Get_Position);
     Hook_Method(0x004CE570, &ParticleSystem::Set_Position);
@@ -673,7 +673,7 @@ void Setup_Hooks()
     Hook_Method(0x004CE760, &ParticleSystem::Rotate_Local_Transform_Z);
     Hook_Method(0x004CE860, &ParticleSystem::Compute_Particle_Velocity);
     Hook_Method(0x004CEF60, &ParticleSystem::Compute_Particle_Position);
-    Hook_Method(0x004CF530, &ParticleSystem::Hook_Create_Particle);
+    Hook_Any(0x004CF530, ParticleSystem::Create_Particle);
     Hook_Method(0x004CF750, &ParticleSystem::Generate_Particle_Info);
     Hook_Method(0x004D0920, &ParticleSystem::Update_Wind_Motion);
     Hook_Function(0x004D0B30, &ParticleSystem::Merge_Related_Systems);
@@ -681,9 +681,9 @@ void Setup_Hooks()
     // particlesysmanager.h
     Hook_Method(0x004D1790, &ParticleSystemManager::Hook_Ctor);
     Hook_Method(0x004D18E0, &ParticleSystemManager::Hook_Dtor);
-    Hook_Method(0x004D1BA0, &ParticleSystemManager::Hook_Init);
-    Hook_Method(0x004D1C40, &ParticleSystemManager::Hook_Reset);
-    Hook_Method(0x004D2460, &ParticleSystemManager::Hook_Xfer);
+    Hook_Any(0x004D1BA0, ParticleSystemManager::Init);
+    Hook_Any(0x004D1C40, ParticleSystemManager::Reset);
+    Hook_Any(0x004D2460, ParticleSystemManager::Xfer_Snapshot);
     Hook_Method(0x004D1EB0, &ParticleSystemManager::Find_Template);
     Hook_Method(0x004D1EE0, &ParticleSystemManager::New_Template);
     Hook_Method(0x004D2130, &ParticleSystemManager::Find_Parent_Template);
@@ -694,20 +694,20 @@ void Setup_Hooks()
 
 #ifdef BUILD_WITH_BINK
     // binkvideostream.h
-    Hook_Method(0x007AAA20, &BinkVideoStream::Hook_Update);
-    Hook_Method(0x007AAA30, &BinkVideoStream::Hook_Is_Frame_Ready);
-    Hook_Method(0x007AAA40, &BinkVideoStream::Hook_Decompress_Frame);
-    Hook_Method(0x007AAA50, &BinkVideoStream::Hook_Render_Frame);
-    Hook_Method(0x007AAAD0, &BinkVideoStream::Hook_Next_Frame);
-    Hook_Method(0x007AAB00, &BinkVideoStream::Hook_Goto_Frame);
+    Hook_Any(0x007AAA20, BinkVideoStream::Update);
+    Hook_Any(0x007AAA30, BinkVideoStream::Is_Frame_Ready);
+    Hook_Any(0x007AAA40, BinkVideoStream::Decompress_Frame);
+    Hook_Any(0x007AAA50, BinkVideoStream::Render_Frame);
+    Hook_Any(0x007AAAD0, BinkVideoStream::Next_Frame);
+    Hook_Any(0x007AAB00, BinkVideoStream::Goto_Frame);
 
     // binkvideoplayer.h
-    Hook_Method(0x007AA550, &BinkVideoPlayer::Hook_Init);
-    Hook_Method(0x007AA570, &BinkVideoPlayer::Hook_Deinit);
-    Hook_Method(0x007AA6A0, &BinkVideoPlayer::Hook_Open);
-    Hook_Method(0x007AA8E0, &BinkVideoPlayer::Hook_Load);
-    Hook_Method(0x007AA970, &BinkVideoPlayer::Hook_Notify_Player_Of_New_Provider);
-    Hook_Method(0x007AA9A0, &BinkVideoPlayer::Hook_Initialise_Bink_With_Miles);
+    Hook_Any(0x007AA550, BinkVideoPlayer::Init);
+    Hook_Any(0x007AA570, BinkVideoPlayer::Deinit);
+    Hook_Any(0x007AA6A0, BinkVideoPlayer::Open);
+    Hook_Any(0x007AA8E0, BinkVideoPlayer::Load);
+    Hook_Any(0x007AA970, BinkVideoPlayer::Notify_Player_Of_New_Provider);
+    Hook_Any(0x007AA9A0, BinkVideoPlayer::Initialise_Bink_With_Miles);
     Hook_Method(0x007AA5B0, &BinkVideoPlayer::Create_Stream);
 #endif
 
@@ -722,54 +722,54 @@ void Setup_Hooks()
     Hook_Method(0x00445950, &AudioEventRTS::Get_Volume);
 
     // soundmanager.h SoundManager
-    Hook_Method(0x00445FF0, &SoundManager::Hook_Reset);
-    Hook_Method(0x00446010, &SoundManager::Hook_Add_Event);
-    // Hook_Method(0x00446120, &SoundManager::Hook_Can_Play_Now); // Not implemented.
-    Hook_Method(0x004462F0, &SoundManager::Hook_Violates_Voice);
-    Hook_Method(0x00446350, &SoundManager::Hook_Is_Interrupting);
+    Hook_Any(0x00445FF0, SoundManager::Reset);
+    Hook_Any(0x00446010, SoundManager::Add_Audio_Event);
+    // Hook_Any(0x00446120, SoundManager::Can_Play_Now); // Not implemented.
+    Hook_Any(0x004462F0, SoundManager::Violates_Voice);
+    Hook_Any(0x00446350, SoundManager::Is_Interrupting);
 
     /* These are all hooked via Win32Engine::Create_Audio_Manager.
     // audiomanager.h AudioManager
-    Hook_Method(0x00404C60, &AudioManager::Hook_Init);
-    Hook_Method(0x00404F30, &AudioManager::Hook_Reset);
-    // Hook_Method(0x00404F30, &AudioManager::Hook_Update); // Not Implemented.
-    Hook_Method(0x00406050, &AudioManager::Hook_Set_Listener_Position);
-    Hook_Method(0x00406090, &AudioManager::Hook_Allocate_Audio_Request);
-    Hook_Method(0x004061A0, &AudioManager::Hook_Release_Audio_Request);
-    Hook_Method(0x004061D0, &AudioManager::Hook_Append_Audio_Request);
-    Hook_Method(0x00406250, &AudioManager::Hook_New_Audio_Event_Info);
-    Hook_Method(0x004065D0, &AudioManager::Hook_Add_Audio_Event_Info);
-    Hook_Method(0x004067B0, &AudioManager::Hook_Find_Audio_Event_Info);
-    Hook_Method(0x00406920, &AudioManager::Hook_Refresh_Cached_Variables);
-    Hook_Method(0x00406970, &AudioManager::Hook_Get_Audio_Length_MS);
-    Hook_Method(0x00406A90, &AudioManager::Hook_Is_Music_Already_Loaded);
-    Hook_Method(0x00406C10, &AudioManager::Hook_Find_All_Audio_Events_Of_Type);
-    Hook_Method(0x005B9460, &AudioManager::Hook_Get_All_Audio_Events);
-    Hook_Method(0x00406D00, &AudioManager::Hook_Is_Current_Provider_Hardware_Accelerated);
-    Hook_Method(0x00406DE0, &AudioManager::Hook_Is_Current_Speaker_Type_Surround);
-    // Hook_Method(0x00406E00, &AudioManager::Hook_Should_Play_Locally); // Not Implemented.
-    Hook_Method(0x00406F00, &AudioManager::Hook_Allocate_New_Handle);
-    Hook_Method(0x00406860, &AudioManager::Hook_Remove_Level_Specific_Audio_Event_Infos);
+    Hook_Any(0x00404C60, AudioManager::Init);
+    Hook_Any(0x00404F30, AudioManager::Reset);
+    // Hook_Any(0x00404F30, AudioManager::Update); // Not Implemented.
+    Hook_Any(0x00406050, AudioManager::Set_Listener_Position);
+    Hook_Any(0x00406090, AudioManager::Allocate_Audio_Request);
+    Hook_Any(0x004061A0, AudioManager::Release_Audio_Request);
+    Hook_Any(0x004061D0, AudioManager::Append_Audio_Request);
+    Hook_Any(0x00406250, AudioManager::New_Audio_Event_Info);
+    Hook_Any(0x004065D0, AudioManager::Add_Audio_Event_Info);
+    Hook_Any(0x004067B0, AudioManager::Find_Audio_Event_Info);
+    Hook_Any(0x00406920, AudioManager::Refresh_Cached_Variables);
+    Hook_Any(0x00406970, AudioManager::Get_Audio_Length_MS);
+    Hook_Any(0x00406A90, AudioManager::Is_Music_Already_Loaded);
+    Hook_Any(0x00406C10, AudioManager::Find_All_Audio_Events_Of_Type);
+    Hook_Any(0x005B9460, AudioManager::Get_All_Audio_Events);
+    Hook_Any(0x00406D00, AudioManager::Is_Current_Provider_Hardware_Accelerated);
+    Hook_Any(0x00406DE0, AudioManager::Is_Current_Speaker_Type_Surround);
+    // Hook_Any(0x00406E00, AudioManager::Should_Play_Locally); // Not Implemented.
+    Hook_Any(0x00406F00, AudioManager::Allocate_New_Handle);
+    Hook_Any(0x00406860, AudioManager::Remove_Level_Specific_Audio_Event_Infos);
     Hook_Method(0x00406200, &AudioManager::Remove_All_Audio_Requests);
     Hook_Method(0x00405700, &AudioManager::Next_Track_Name);
     Hook_Method(0x004057D0, &AudioManager::Prev_Track_Name);
-    Hook_Method(0x00406F10, &AudioManager::Hook_Lose_Focus);
-    Hook_Method(0x00406F70, &AudioManager::Hook_Regain_Focus);
-    Hook_Method(0x00405390, &AudioManager::Hook_Add_Audio_Event);
-    Hook_Method(0x004058A0, &AudioManager::Hook_Remove_Audio_Event);
-    Hook_Method(0x00405C30, &AudioManager::Hook_Remove_Audio_Event_String);
-    Hook_Method(0x00405680, &AudioManager::Hook_Is_Valid_Const_Audio_Event);
-    Hook_Method(0x004058F0, &AudioManager::Hook_Set_Audio_Event_Enabled);
-    Hook_Method(0x00405990, &AudioManager::Hook_Set_Audio_Event_Volume_Override);
-    Hook_Method(0x00405CC0, &AudioManager::Hook_Remove_Disabled_Events);
-    Hook_Method(0x00405340, &AudioManager::Hook_Get_Info_For_Audio_Event);
-    Hook_Method(0x00405CD0, &AudioManager::Hook_Translate_From_Speaker_Type);
-    Hook_Method(0x00405DD0, &AudioManager::Hook_Translate_To_Speaker_Type);
-    Hook_Method(0x00405E50, &AudioManager::Hook_Is_On);
-    Hook_Method(0x00405E90, &AudioManager::Hook_Set_On);
-    Hook_Method(0x00405F20, &AudioManager::Hook_Set_Volume);
-    Hook_Method(0x00405FC0, &AudioManager::Hook_Get_Volume);
-    Hook_Method(0x00405FF0, &AudioManager::Hook_Set_3D_Volume_Adjustment);
+    Hook_Any(0x00406F10, AudioManager::Lose_Focus);
+    Hook_Any(0x00406F70, AudioManager::Regain_Focus);
+    Hook_Any(0x00405390, AudioManager::Add_Audio_Event);
+    Hook_Any(0x004058A0, AudioManager::Remove_Audio_Event);
+    Hook_Any(0x00405C30, AudioManager::Remove_Audio_Event_String);
+    Hook_Any(0x00405680, AudioManager::Is_Valid_Const_Audio_Event);
+    Hook_Any(0x004058F0, AudioManager::Set_Audio_Event_Enabled);
+    Hook_Any(0x00405990, AudioManager::Set_Audio_Event_Volume_Override);
+    Hook_Any(0x00405CC0, AudioManager::Remove_Disabled_Events);
+    Hook_Any(0x00405340, AudioManager::Get_Info_For_Audio_Event);
+    Hook_Any(0x00405CD0, AudioManager::Translate_From_Speaker_Type);
+    Hook_Any(0x00405DD0, AudioManager::Translate_To_Speaker_Type);
+    Hook_Any(0x00405E50, AudioManager::Is_On);
+    Hook_Any(0x00405E90, AudioManager::Set_On);
+    Hook_Any(0x00405F20, AudioManager::Set_Volume);
+    Hook_Any(0x00405FC0, AudioManager::Get_Volume);
+    Hook_Any(0x00405FF0, AudioManager::Set_3D_Volume_Adjustment);
 #ifdef BUILD_WITH_MILES
     // milesaudiofilecache.h MilesAudioFileCache
     Hook_Method(0x00780F80, &MilesAudioFileCache::Open_File);
@@ -800,51 +800,51 @@ void Setup_Hooks()
     Hook_Method(0x0077F330, &MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately);
     Hook_Method(0x0077F1C0, &MilesAudioManager::Find_Lowest_Priority_Sound);
     // Hook virtuals
-    Hook_Method(0x0077CCE0, &MilesAudioManager::Hook_Init);
-    Hook_Method(0x0077CD30, &MilesAudioManager::Hook_Reset);
-    Hook_Method(0x0077CD60, &MilesAudioManager::Hook_Update);
-    Hook_Method(0x0077CDA0, &MilesAudioManager::Hook_Stop_Audio);
-    Hook_Method(0x0077CEB0, &MilesAudioManager::Hook_Pause_Audio);
-    Hook_Method(0x0077CFC0, &MilesAudioManager::Hook_Resume_Audio);
-    Hook_Method(0x0077D780, &MilesAudioManager::Hook_Kill_Event_Immediately);
-    Hook_Method(0x0077DE80, &MilesAudioManager::Hook_Next_Music_Track);
-    Hook_Method(0x0077E020, &MilesAudioManager::Hook_Prev_Music_Track);
-    Hook_Method(0x0077E1C0, &MilesAudioManager::Hook_Is_Music_Playing);
-    Hook_Method(0x0077E200, &MilesAudioManager::Hook_Has_Music_Track_Completed);
-    Hook_Method(0x0077E2D0, &MilesAudioManager::Hook_Music_Track_Name);
-    Hook_Method(0x0077E5F0, &MilesAudioManager::Hook_Is_Currently_Playing);
-    Hook_Method(0x0077E3B0, &MilesAudioManager::Hook_Open_Device);
-    Hook_Method(0x0077E5D0, &MilesAudioManager::Hook_Close_Device);
-    Hook_Method(0x0077E6C0, &MilesAudioManager::Hook_Notify_Of_Audio_Completion);
-    Hook_Method(0x0077E900, &MilesAudioManager::Hook_Get_Provider_Name);
-    Hook_Method(0x0077E970, &MilesAudioManager::Hook_Get_Provider_Index);
-    Hook_Method(0x0077EA60, &MilesAudioManager::Hook_Select_Provider);
-    Hook_Method(0x0077ECB0, &MilesAudioManager::Hook_Unselect_Provider);
-    Hook_Method(0x0077ED40, &MilesAudioManager::Hook_Set_Speaker_Type);
-    Hook_Method(0x0077ED80, &MilesAudioManager::Hook_Get_Speaker_Type);
-    Hook_Method(0x0077EDD0, &MilesAudioManager::Hook_Does_Violate_Limit);
-    Hook_Method(0x0077F2A0, &MilesAudioManager::Hook_Is_Playing_Lower_Priority);
-    Hook_Method(0x0077F020, &MilesAudioManager::Hook_Is_Playing_Already);
-    Hook_Method(0x0077F130, &MilesAudioManager::Hook_Is_Object_Playing_Voice);
-    Hook_Method(0x0077F400, &MilesAudioManager::Hook_Adjust_Volume_Of_Playing_Audio);
-    Hook_Method(0x0077F6C0, &MilesAudioManager::Hook_Remove_Playing_Audio);
-    Hook_Method(0x0077F8F0, &MilesAudioManager::Hook_Remove_All_Disabled_Audio);
-    Hook_Method(0x0077FD80, &MilesAudioManager::Hook_Has_3D_Sensitive_Streams_Playing);
-    Hook_Method(0x00780820, &MilesAudioManager::Hook_Get_Bink_Handle);
-    Hook_Method(0x007809C0, &MilesAudioManager::Hook_Release_Bink_Handle);
-    Hook_Method(0x007809E0, &MilesAudioManager::Hook_Force_Play_Audio_Event);
-    Hook_Method(0x0077FA00, &MilesAudioManager::Hook_Process_Request_List);
-    Hook_Method(0x0077FF30, &MilesAudioManager::Hook_Set_Hardware_Accelerated);
-    Hook_Method(0x00780020, &MilesAudioManager::Hook_Set_Speaker_Surround);
-    Hook_Method(0x0077C970, &MilesAudioManager::Hook_Set_Preferred_3D_Provider);
-    Hook_Method(0x0077CA10, &MilesAudioManager::Hook_Set_Preferred_Speaker);
-    Hook_Method(0x00780090, &MilesAudioManager::Hook_Get_Audio_Length_MS);
-    Hook_Method(0x00780190, &MilesAudioManager::Hook_Close_Any_Sample_Using_File);
-    Hook_Method(0x00780230, &MilesAudioManager::Hook_Set_Device_Listener_Position);
-    Hook_Method(0x0077E860, &MilesAudioManager::Hook_Find_Playing_Audio_From);
-    Hook_Method(0x0077FB10, &MilesAudioManager::Hook_Process_Playing_List);
-    Hook_Method(0x0077FDE0, &MilesAudioManager::Hook_Process_Fading_List);
-    Hook_Method(0x0077FEE0, &MilesAudioManager::Hook_Process_Stopped_List);
+    Hook_Any(0x0077CCE0, MilesAudioManager::Init);
+    Hook_Any(0x0077CD30, MilesAudioManager::Reset);
+    Hook_Any(0x0077CD60, MilesAudioManager::Update);
+    Hook_Any(0x0077CDA0, MilesAudioManager::Stop_Audio);
+    Hook_Any(0x0077CEB0, MilesAudioManager::Pause_Audio);
+    Hook_Any(0x0077CFC0, MilesAudioManager::Resume_Audio);
+    Hook_Any(0x0077D780, MilesAudioManager::Kill_Event_Immediately);
+    Hook_Any(0x0077DE80, MilesAudioManager::Next_Music_Track);
+    Hook_Any(0x0077E020, MilesAudioManager::Prev_Music_Track);
+    Hook_Any(0x0077E1C0, MilesAudioManager::Is_Music_Playing);
+    Hook_Any(0x0077E200, MilesAudioManager::Has_Music_Track_Completed);
+    Hook_Any(0x0077E2D0, MilesAudioManager::Music_Track_Name);
+    Hook_Any(0x0077E5F0, MilesAudioManager::Is_Currently_Playing);
+    Hook_Any(0x0077E3B0, MilesAudioManager::Open_Device);
+    Hook_Any(0x0077E5D0, MilesAudioManager::Close_Device);
+    Hook_Any(0x0077E6C0, MilesAudioManager::Notify_Of_Audio_Completion);
+    Hook_Any(0x0077E900, MilesAudioManager::Get_Provider_Name);
+    Hook_Any(0x0077E970, MilesAudioManager::Get_Provider_Index);
+    Hook_Any(0x0077EA60, MilesAudioManager::Select_Provider);
+    Hook_Any(0x0077ECB0, MilesAudioManager::Unselect_Provider);
+    Hook_Any(0x0077ED40, MilesAudioManager::Set_Speaker_Type);
+    Hook_Any(0x0077ED80, MilesAudioManager::Get_Speaker_Type);
+    Hook_Any(0x0077EDD0, MilesAudioManager::Does_Violate_Limit);
+    Hook_Any(0x0077F2A0, MilesAudioManager::Is_Playing_Lower_Priority);
+    Hook_Any(0x0077F020, MilesAudioManager::Is_Playing_Already);
+    Hook_Any(0x0077F130, MilesAudioManager::Is_Object_Playing_Voice);
+    Hook_Any(0x0077F400, MilesAudioManager::Adjust_Volume_Of_Playing_Audio);
+    Hook_Any(0x0077F6C0, MilesAudioManager::Remove_Playing_Audio);
+    Hook_Any(0x0077F8F0, MilesAudioManager::Remove_All_Disabled_Audio);
+    Hook_Any(0x0077FD80, MilesAudioManager::Has_3D_Sensitive_Streams_Playing);
+    Hook_Any(0x00780820, MilesAudioManager::Get_Bink_Handle);
+    Hook_Any(0x007809C0, MilesAudioManager::Release_Bink_Handle);
+    Hook_Any(0x007809E0, MilesAudioManager::Force_Play_Audio_Event);
+    Hook_Any(0x0077FA00, MilesAudioManager::Process_Request_List);
+    Hook_Any(0x0077FF30, MilesAudioManager::Set_Hardware_Accelerated);
+    Hook_Any(0x00780020, MilesAudioManager::Set_Speaker_Surround);
+    Hook_Any(0x0077C970, MilesAudioManager::Set_Preferred_3D_Provider);
+    Hook_Any(0x0077CA10, MilesAudioManager::Set_Preferred_Speaker);
+    Hook_Any(0x00780090, MilesAudioManager::Get_Audio_Length_MS);
+    Hook_Any(0x00780190, MilesAudioManager::Close_Any_Sample_Using_File);
+    Hook_Any(0x00780230, MilesAudioManager::Set_Device_Listener_Position);
+    Hook_Any(0x0077E860, MilesAudioManager::Find_Playing_Audio_From);
+    Hook_Any(0x0077FB10, MilesAudioManager::Process_Playing_List);
+    Hook_Any(0x0077FDE0, MilesAudioManager::Process_Fading_List);
+    Hook_Any(0x0077FEE0, MilesAudioManager::Process_Stopped_List);
     Hook_Method(0x0077C700, &MilesAudioManager::Hook_Ctor);
     Hook_Method(0x0077CAD0, &MilesAudioManager::Hook_Dtor);
 #endif
@@ -875,7 +875,7 @@ void Setup_Hooks()
     Hook_Method(0x00809690, &Render2DClass::Enable_Texturing);
     Hook_Method(0x00809640, &Render2DClass::Enable_Additive);
     Hook_Method(0x008095F0, &Render2DClass::Enable_Alpha);
-    Hook_Method(0x008094E0, &Render2DClass::Reset);
+    Hook_Any(0x008094E0, Render2DClass::Reset);
     Hook_Method(0x008090C0, &Render2DClass::Hook_Ctor);
 
     // wwstring.h
@@ -1040,10 +1040,10 @@ void Setup_Hooks()
     Hook_Method(0x006DF700, &WinInstanceData::Set_VideoBuffer);
 
     // w3ddebugdisplay.h
-    Hook_Method(0x007F5CD0, &W3DDebugDisplay::Hook_Printf);
-    Hook_Method(0x007F5C70, &W3DDebugDisplay::Hook_Reset);
+    Hook_Any(0x007F5CD0, W3DDebugDisplay::Printf);
+    Hook_Any(0x007F5C70, W3DDebugDisplay::Reset);
     Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Ctor);
-    Hook_Method(0x00763A40, &W3DDebugDisplay::Hook_Draw_Text);
+    Hook_Any(0x00763A40, W3DDebugDisplay::Draw_Text);
     Hook_Method(0x00763A20, &W3DDebugDisplay::Init);
     Hook_Method(0x00763B50, &W3DDebugDisplay::Set_Font);
 
@@ -1066,7 +1066,7 @@ void Setup_Hooks()
     Hook_Method(0x00843860, &FontCharsClass::Free_Character_Arrays);
 
     // gameclient.h
-    Hook_Method(0x00613D10, &GameClientMessageDispatcher::Hook_Translate_Game_Message);
+    Hook_Any(0x00613D10, GameClientMessageDispatcher::Translate_Game_Message);
 
     // gamemessageparser.h
     Hook_Method(0x005F9C60, &GameMessageParser::Hook_Ctor);

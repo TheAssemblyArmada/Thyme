@@ -61,14 +61,6 @@ public:
     void Remove_Translator(unsigned id);
     void Propagate_Messages();
 
-#ifdef GAME_DLL
-    GameMessage *Hook_Append_Message(GameMessage::MessageType type) { return MessageStream::Append_Message(type); }
-    GameMessage *Hook_Insert_Message(GameMessage::MessageType type, GameMessage *msg)
-    {
-        return MessageStream::Insert_Message(type, msg);
-    }
-#endif
-
 private:
     MessageStream::TranslatorData *m_firstTranslator;
     MessageStream::TranslatorData *m_lastTranslator;

@@ -44,10 +44,6 @@ public:
 
     static bool Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    void Hook_Xfer_Snapshot(Xfer *xfer) { ScriptGroup::Xfer_Snapshot(xfer); }
-#endif
-
 private:
     Script *m_firstScript;
     Utf8String m_groupName;

@@ -60,10 +60,6 @@ public:
     static void Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, void *user_data);
     static void Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data);
 
-#ifdef GAME_DLL
-    void Hook_Xfer(Xfer *xfer) { GeometryInfo::Xfer_Snapshot(xfer); }
-#endif
-
 private:
     GeometryType m_type;
     bool m_isSmall;

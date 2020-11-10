@@ -38,15 +38,6 @@ public:
     virtual void Notify_Player_Of_New_Provider(bool unk) override;
     virtual void Initialise_Bink_With_Miles(); // Original has this virtual, unclear why though.
 
-#ifdef GAME_DLL
-    void Hook_Init() { BinkVideoPlayer::Init(); }
-    void Hook_Deinit() { BinkVideoPlayer::Deinit(); }
-    VideoStream *Hook_Open(Utf8String title) { return BinkVideoPlayer::Open(title); }
-    VideoStream *Hook_Load(Utf8String title) { return BinkVideoPlayer::Load(title); }
-    void Hook_Notify_Player_Of_New_Provider(bool unk) { BinkVideoPlayer::Notify_Player_Of_New_Provider(unk); };
-    void Hook_Initialise_Bink_With_Miles() { BinkVideoPlayer::Initialise_Bink_With_Miles(); }
-#endif
-
 private:
     VideoStream *Create_Stream(Bink *handle);
 };

@@ -159,7 +159,6 @@ public:
     void Tint_All_Colors(int tint);
 
 #ifdef GAME_DLL
-    void Hook_Xfer(Xfer *xfer) { ParticleSystemInfo::Xfer_Snapshot(xfer); }
     ParticleSystemInfo *Hook_Ctor() { return new (this) ParticleSystemInfo; }
 #endif
 

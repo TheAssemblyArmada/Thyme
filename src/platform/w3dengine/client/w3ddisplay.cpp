@@ -178,6 +178,28 @@ bool W3DDisplay::Set_Display_Mode(uint32_t width, uint32_t height, uint32_t bits
     }
 }
 
+static bool Is_Resolution_Valid(const ResolutionDescClass &res)
+{
+    if (res.Get_Depth() < 24) {
+        return false;
+    }
+
+    if (res.Get_Width() < 800) {
+        return false;
+    }
+
+    if (res.Get_Height() == 0) {
+        return false;
+    }
+
+    // Thyme Change: Aspect ratio check removed as users do not mind some aspect issues
+    // float aspect_ratio = fabs(static_cast<float>(res.Get_Width()) / res.Get_Height());
+    // if (aspect_ratio < 1.332f || aspect_ratio > 1.334f) {
+    //    return false;
+    //}
+    return true;
+}
+
 // 0x0073C5D0
 int W3DDisplay::Get_Display_Mode_Count()
 {
@@ -188,20 +210,7 @@ int W3DDisplay::Get_Display_Mode_Count()
     for (auto i = 0; i < resolutions.Count(); ++i) {
         auto &resolution = resolutions[i];
 
-        if (resolution.Get_Depth() < 24) {
-            continue;
-        }
-
-        if (resolution.Get_Width() < 800) {
-            continue;
-        }
-
-        if (resolution.Get_Height() == 0) {
-            continue;
-        }
-        // std::abs?
-        float aspect_ratio = static_cast<float>(resolution.Get_Width()) / resolution.Get_Height();
-        if (aspect_ratio < 1.332f || aspect_ratio > 1.334f) {
+        if (Is_Resolution_Valid(resolution) == false) {
             continue;
         }
 
@@ -221,20 +230,7 @@ void W3DDisplay::Get_Display_Mode_Description(int id, int *width, int *height, i
     for (auto i = 0; i < resolutions.Count(); ++i) {
         auto &resolution = resolutions[i];
 
-        if (resolution.Get_Depth() < 24) {
-            continue;
-        }
-
-        if (resolution.Get_Width() < 800) {
-            continue;
-        }
-
-        if (resolution.Get_Height() == 0) {
-            continue;
-        }
-        // std::abs?
-        float aspect_ratio = static_cast<float>(resolution.Get_Width()) / resolution.Get_Height();
-        if (aspect_ratio < 1.332f || aspect_ratio > 1.334f) {
+        if (Is_Resolution_Valid(resolution) == false) {
             continue;
         }
 

@@ -42,12 +42,6 @@ public:
     virtual AudioManager *Create_Audio_Manager() override;
     virtual Network *Create_Network() override;
 
-#ifdef GAME_DLL
-    LocalFileSystem *Hook_Create_Local_File_System() { return Win32GameEngine::Create_Local_File_System(); }
-    ArchiveFileSystem *Hook_Create_Archive_File_System() { return Win32GameEngine::Create_Archive_File_System(); }
-    ModuleFactory *Hook_Create_Module_Factory() { return Win32GameEngine::Create_Module_Factory(); }
-    AudioManager *Hook_Create_Audio_Manager() { return Win32GameEngine::Create_Audio_Manager(); }
-#endif
 private:
     unsigned int m_previousErrorMode;
 };

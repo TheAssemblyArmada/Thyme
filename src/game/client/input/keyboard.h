@@ -88,11 +88,6 @@ public:
     bool Is_Alt();
     uint16_t Get_Modifiers() { return m_modifiers; }
 
-#ifdef GAME_DLL
-    void Hook_Init() { Keyboard::Init(); }
-    void Hook_Update() { Keyboard::Update(); }
-    void Hook_Create_Message_Stream() { Keyboard::Create_Stream_Messages(); }
-#endif
 private:
     void Init_Key_Names();
     void Update_Keys();

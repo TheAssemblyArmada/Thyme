@@ -158,10 +158,6 @@ public:
     static void Parse_Mouse_Definitions(INI *ini);
     static void Parse_Cursor_Definitions(INI *ini);
 
-#ifdef GAME_DLL
-    void Hook_Create_Stream_Messages() { Mouse::Create_Stream_Messages(); }
-#endif
-
 protected:
     void Update_Mouse_Data();
     void Process_Mouse_Event(int event_num);

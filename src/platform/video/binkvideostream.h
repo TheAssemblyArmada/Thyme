@@ -39,15 +39,6 @@ public:
     virtual int Height() override;
     virtual int Width() override;
 
-#ifdef GAME_DLL
-    void Hook_Update() { BinkVideoStream::Update(); }
-    bool Hook_Is_Frame_Ready() { return BinkVideoStream::Is_Frame_Ready(); }
-    void Hook_Decompress_Frame() { BinkVideoStream::Decompress_Frame(); }
-    void Hook_Render_Frame(VideoBuffer *buffer) { BinkVideoStream::Render_Frame(buffer); }
-    void Hook_Next_Frame() { BinkVideoStream::Next_Frame(); }
-    void Hook_Goto_Frame(int frame) { BinkVideoStream::Goto_Frame(frame); }
-#endif
-
 private:
     Bink *m_binkHandle;
     uint32_t m_unk;

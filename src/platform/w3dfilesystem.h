@@ -35,11 +35,6 @@ public:
 
     virtual FileClass *Get_File(const char *filename) override;
     virtual void Return_File(FileClass *file) override;
-
-#ifdef GAME_DLL
-    FileClass *Hook_Get_File(const char *filename) { return W3DFileSystem::Get_File(filename); }
-    void Hook_Return_File(FileClass *file) { W3DFileSystem::Return_File(file); }
-#endif
 };
 
 class GameFileClass : public FileClass

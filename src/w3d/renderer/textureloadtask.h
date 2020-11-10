@@ -98,18 +98,6 @@ public:
 #ifdef GAME_DLL
     TextureLoadTaskClass *Hook_Ctor() { return new (this) TextureLoadTaskClass; }
     void Hook_Dtor() { TextureLoadTaskClass::~TextureLoadTaskClass(); }
-    void Hook_Destroy() { TextureLoadTaskClass::Destroy(); }
-    void Hook_Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
-    {
-        TextureLoadTaskClass::Init(texture, type, priority);
-    }
-    void Hook_Deinit() { TextureLoadTaskClass::Deinit(); }
-    bool Hook_Begin_Compressed_Load() { return TextureLoadTaskClass::Begin_Compressed_Load(); }
-    bool Hook_Begin_Uncompressed_Load() { return TextureLoadTaskClass::Begin_Uncompressed_Load(); }
-    bool Hook_Load_Compressed_Mipmap() { return TextureLoadTaskClass::Load_Compressed_Mipmap(); }
-    bool Hook_Load_Uncompressed_Mipmap() { return TextureLoadTaskClass::Load_Uncompressed_Mipmap(); }
-    void Hook_Lock_Surfaces() { TextureLoadTaskClass::Lock_Surfaces(); }
-    void Hook_Unlock_Surfaces() { TextureLoadTaskClass::Unlock_Surfaces(); }
 #endif
 
 private:

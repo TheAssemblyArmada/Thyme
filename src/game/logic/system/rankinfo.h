@@ -38,10 +38,6 @@ public:
 
     static void Parse_Rank_Definition(INI *ini);
 
-#ifdef GAME_DLL
-    void Hook_Init() { RankInfoStore::Init(); }
-    void Hook_Reset() { RankInfoStore::Reset(); }
-#endif
 private:
     std::vector<RankInfo *> m_infoStore;
 };

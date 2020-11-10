@@ -68,13 +68,6 @@ public:
         return new (this) ParticleSystem(temp, id, create_slaves);
     }
     void Hook_Dtor() { ParticleSystem::~ParticleSystem(); }
-    // void Hook_Update(int unk) { ParticleSystem::Update(unk); }
-    Particle *Hook_Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render)
-    {
-        return ParticleSystem::Create_Particle(info, priority, always_render);
-    }
-    void Hook_Xfer(Xfer *xfer) { ParticleSystem::Xfer_Snapshot(xfer); }
-    void Hook_LoadPP() { ParticleSystem::Load_Post_Process(); }
 #endif
 private:
     ParticleInfo *Generate_Particle_Info(int id, int count);

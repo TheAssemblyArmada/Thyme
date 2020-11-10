@@ -54,13 +54,6 @@ public:
     virtual bool Violates_Voice(AudioEventRTS *event);
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
-#ifdef GAME_DLL
-    void Hook_Reset() { SoundManager::Reset(); }
-    void Hook_Add_Event(AudioEventRTS *event) { SoundManager::Add_Audio_Event(event); }
-    bool Hook_Can_Play_Now(AudioEventRTS *event) { return SoundManager::Can_Play_Now(event); }
-    bool Hook_Violates_Voice(AudioEventRTS *event) { return SoundManager::Violates_Voice(event); }
-    bool Hook_Is_Interrupting(AudioEventRTS *event) { return SoundManager::Is_Interrupting(event); }
-#endif
 private:
     int m_2dSampleSlotCount;
     int m_3dSampleSlotCount;

@@ -116,11 +116,4 @@ public:
     GameClientMessageDispatcher() {}
     virtual GameMessageDisposition Translate_Game_Message(const GameMessage *msg);
     virtual ~GameClientMessageDispatcher() {}
-
-#ifdef GAME_DLL
-    GameMessageDisposition Hook_Translate_Game_Message(const GameMessage *msg)
-    {
-        return GameClientMessageDispatcher::Translate_Game_Message(msg);
-    }
-#endif
 };

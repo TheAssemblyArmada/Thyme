@@ -55,10 +55,6 @@ public:
     static bool Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
-#ifdef GAME_DLL
-    void Hook_Xfer_Snapshot(Xfer *xfer) { ScriptList::Xfer_Snapshot(xfer); }
-#endif
-
 private:
     ScriptGroup *m_firstGroup;
     Script *m_firstScript;

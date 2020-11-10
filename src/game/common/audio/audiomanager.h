@@ -173,65 +173,6 @@ public:
     AudioSettings *Get_Audio_Settings() const { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
 
-#ifdef GAME_DLL
-    void Hook_Init() { AudioManager::Init(); }
-    void Hook_Reset() { AudioManager::Reset(); }
-    void Hook_Update() { AudioManager::Update(); }
-
-    void Hook_Lose_Focus() { AudioManager::Lose_Focus(); }
-    void Hook_Regain_Focus() { AudioManager::Regain_Focus(); }
-    int Hook_Add_Audio_Event(const AudioEventRTS *event) { return AudioManager::Add_Audio_Event(event); }
-    void Hook_Remove_Audio_Event(unsigned event) { AudioManager::Remove_Audio_Event(event); }
-    void Hook_Remove_Audio_Event_String(Utf8String event) { AudioManager::Remove_Audio_Event(event); }
-    bool Hook_Is_Valid_Const_Audio_Event(const AudioEventRTS *event) { return AudioManager::Is_Valid_Audio_Event(event); }
-    void Hook_Set_Audio_Event_Enabled(Utf8String event, bool vol_override)
-    {
-        AudioManager::Set_Audio_Event_Enabled(event, vol_override);
-    }
-    void Hook_Set_Audio_Event_Volume_Override(Utf8String event, float vol_override)
-    {
-        AudioManager::Set_Audio_Event_Volume_Override(event, vol_override);
-    }
-    void Hook_Remove_Disabled_Events() { AudioManager::Remove_Disabled_Events(); }
-    void Hook_Get_Info_For_Audio_Event(const AudioEventRTS *event) { AudioManager::Get_Info_For_Audio_Event(event); }
-    unsigned Hook_Translate_From_Speaker_Type(const Utf8String &type)
-    {
-        return AudioManager::Translate_From_Speaker_Type(type);
-    }
-    Utf8String Hook_Translate_To_Speaker_Type(unsigned type) { return AudioManager::Translate_To_Speaker_Type(type); }
-    bool Hook_Is_On(AudioAffect affect) { return AudioManager::Is_On(affect); }
-    void Hook_Set_On(bool on, AudioAffect affect) { AudioManager::Set_On(on, affect); }
-    void Hook_Set_Volume(float volume, AudioAffect affect) { AudioManager::Set_Volume(volume, affect); }
-    float Hook_Get_Volume(AudioAffect affect) { return AudioManager::Get_Volume(affect); }
-    void Hook_Set_3D_Volume_Adjustment(float adj) { AudioManager::Set_3D_Volume_Adjustment(adj); }
-    void Hook_Set_Listener_Position(const Coord3D *position, const Coord3D *direction)
-    {
-        AudioManager::Set_Listener_Position(position, direction);
-    }
-    AudioRequest *Hook_Allocate_Audio_Request(bool is_add_request)
-    {
-        return AudioManager::Allocate_Audio_Request(is_add_request);
-    }
-    void Hook_Release_Audio_Request(AudioRequest *request) { AudioManager::Release_Audio_Request(request); }
-    void Hook_Append_Audio_Request(AudioRequest *request) { AudioManager::Append_Audio_Request(request); }
-    AudioEventInfo *Hook_New_Audio_Event_Info(Utf8String name) { return AudioManager::New_Audio_Event_Info(name); }
-    void Hook_Add_Audio_Event_Info(AudioEventInfo *info) { AudioManager::Add_Audio_Event_Info(info); }
-    AudioEventInfo *Hook_Find_Audio_Event_Info(Utf8String name) { return AudioManager::Find_Audio_Event_Info(name); }
-    void Hook_Refresh_Cached_Variables() { AudioManager::Refresh_Cached_Variables(); }
-    float Hook_Get_Audio_Length_MS(const AudioEventRTS *event) { return AudioManager::Get_Audio_Length_MS(event); }
-    bool Hook_Is_Music_Already_Loaded() { return AudioManager::Is_Music_Already_Loaded(); }
-    void Hook_Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list)
-    {
-        AudioManager::Find_All_Audio_Events_Of_Type(type, list);
-    }
-    const audioinfomap_t *Hook_Get_All_Audio_Events() { return AudioManager::Get_All_Audio_Events(); }
-    bool Hook_Is_Current_Provider_Hardware_Accelerated() { return AudioManager::Is_Current_Provider_Hardware_Accelerated(); }
-    bool Hook_Is_Current_Speaker_Type_Surround() { return AudioManager::Is_Current_Speaker_Type_Surround(); }
-    bool Hook_Should_Play_Locally(const AudioEventRTS *event) { return AudioManager::Should_Play_Locally(event); }
-    int Hook_Allocate_New_Handle() { return AudioManager::Allocate_New_Handle(); }
-    void Hook_Remove_Level_Specific_Audio_Event_Infos() { AudioManager::Remove_Level_Specific_Audio_Event_Infos(); }
-#endif
-
 protected:
     Utf8String Next_Track_Name(Utf8String track) const;
     Utf8String Prev_Track_Name(Utf8String track) const;

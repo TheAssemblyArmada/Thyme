@@ -85,9 +85,6 @@ public:
 #ifdef GAME_DLL
     ParticleSystemManager *Hook_Ctor() { return new (this) ParticleSystemManager(); }
     void Hook_Dtor() { ParticleSystemManager::~ParticleSystemManager(); }
-    void Hook_Xfer(Xfer *xfer) { ParticleSystemManager::Xfer_Snapshot(xfer); }
-    void Hook_Init() { ParticleSystemManager::Init(); }
-    void Hook_Reset() { ParticleSystemManager::Reset(); }
 #endif
 
 private:

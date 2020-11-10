@@ -35,16 +35,6 @@ public:
 
     GameMessage *Get_First_Message() { return m_firstMessage; }
 
-#ifdef GAME_DLL
-    // Duplicates to test functionality of virtual members with hooking.
-    void Hook_Append_Message(GameMessage *msg) { GameMessageList::Append_Message(msg); }
-    void Hook_Insert_Message(GameMessage *msg, GameMessage *at) { GameMessageList::Insert_Message(msg, at); }
-    void Hook_Remove_Message(GameMessage *msg) { GameMessageList::Remove_Message(msg); }
-    bool Hook_Contains_Message_Of_Type(GameMessage::MessageType type)
-    {
-        return GameMessageList::Contains_Message_Of_Type(type);
-    }
-#endif
 protected:
     GameMessage *m_firstMessage;
     GameMessage *m_lastMessage;

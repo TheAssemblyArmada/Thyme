@@ -104,6 +104,18 @@ public:
         ANIM_MODE_ONCE,
     };
 
+    enum
+    {
+        USER_DATA_MATERIAL_OVERRIDE = 0x1234567,
+    };
+
+    struct Material_Override
+    {
+        int m_structID;
+        Vector2 m_customUVOffset;
+        Material_Override() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
+    };
+
     RenderObjClass();
     RenderObjClass(const RenderObjClass &src);
     RenderObjClass &operator=(const RenderObjClass &that);
@@ -210,6 +222,7 @@ public:
     virtual void Scale(float scale) {}
     virtual void Scale(float scalex, float scaley, float scalez) {}
     virtual void Set_ObjectScale(float scale) { m_objectScale = scale; }
+    float Get_ObjectScale() { return m_objectScale; }
     virtual int Get_Sort_Level() const { return 0; }
     virtual void Set_Sort_Level(int level) {}
     virtual int Is_Really_Visible() { return ((m_bits & IS_REALLY_VISIBLE) == IS_REALLY_VISIBLE); }

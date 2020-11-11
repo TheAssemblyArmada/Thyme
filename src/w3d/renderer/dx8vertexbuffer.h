@@ -139,7 +139,6 @@ public:
         USAGE_DEFAULT = 0,
         USAGE_DYNAMIC = 1,
         USAGE_SOFTWAREPROCESSING = 2,
-        USAGE_NPATCHES = 4,
     };
     DX8VertexBufferClass(unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags);
     DX8VertexBufferClass(

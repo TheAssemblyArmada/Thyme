@@ -21,18 +21,20 @@ void SortingRendererClass::Insert_Triangles(
     unsigned short start_index, unsigned short polygon_count, unsigned short min_vertex_index, unsigned short vertex_count)
 {
 #ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x0080CC40, 0x00569CD0));
+    Call_Function<void, unsigned short, unsigned short, unsigned short, unsigned short>(
+        PICK_ADDRESS(0x0080CC40, 0x00569CD0), start_index, polygon_count, min_vertex_index, vertex_count);
 #endif
 }
 
-void SortingRendererClass::Insert_Triangles(class SphereClass &bounding_sphere,
+void SortingRendererClass::Insert_Triangles(const SphereClass &bounding_sphere,
     unsigned short start_index,
     unsigned short polygon_count,
     unsigned short min_vertex_index,
     unsigned short vertex_count)
 {
 #ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x0080C610, 0x00569570));
+    Call_Function<void, const SphereClass &, unsigned short, unsigned short, unsigned short, unsigned short>(
+        PICK_ADDRESS(0x0080C610, 0x00569570), bounding_sphere, start_index, polygon_count, min_vertex_index, vertex_count);
 #endif
 }
 
@@ -53,6 +55,6 @@ void SortingRendererClass::Deinit()
 void SortingRendererClass::SetMinVertexBufferSize(unsigned int val)
 {
 #ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x0080C570, 0x00569410));
+    Call_Function<void, unsigned int>(PICK_ADDRESS(0x0080C570, 0x00569410), val);
 #endif
 }

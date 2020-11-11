@@ -132,6 +132,7 @@ public:
     static void Set_Vertex_Buffer(const DynamicVBAccessClass &vba);
     static void Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
     static void Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
+    static void Set_Index_Buffer_Index_Offset(unsigned offset);
     static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
     static void Apply_Render_State_Changes();
@@ -185,6 +186,7 @@ public:
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
 #endif
+    static void Set_World_Identity();
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
     static const char *Get_DX8_Texture_Arg_Name(unsigned value);
@@ -205,41 +207,20 @@ public:
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
     static void Log_DX8_ErrorCode(unsigned error);
     static void Handle_DX8_ErrorCode(unsigned error);
-    static int Get_Texture_Bit_Depth() { return s_textureBitDepth; }
 
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
-    static const DX8Caps *Get_Caps()
+    static const DX8Caps *Get_Current_Caps()
     {
         captainslog_assert(s_currentCaps != nullptr);
         return s_currentCaps;
     }
-    static bool Supports_DXTC() { return s_currentCaps->Supports_DXTC(); }
     static bool Has_Stencil();
     static WW3DFormat Get_Back_Buffer_Format();
-    static void Get_Device_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
     static const w3dadapterid_t &Get_Current_Adapter_Identifier() { return s_currentAdapterIdentifier; }
+    static bool Reset_Device(bool reacquire);
+    static void Invalidate_Cached_Render_States();
 
 private:
-    static bool Create_Device();
-    static bool Reset_Device(bool reacquire);
-    static void Release_Device();
-    static void Reset_Statistics();
-    static void Enumerate_Devices();
-    static void Set_Default_Global_Render_States();
-    static void Invalidate_Cached_Render_States();
-    static int Get_Render_Device();
-    static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
-    static bool Set_Device_Resolution(
-        int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
-    static bool Set_Render_Device(int dev = -1,
-        int resx = -1,
-        int resy = -1,
-        int bits = -1,
-        int windowed = -1,
-        bool resize_window = false,
-        bool reset_device = false,
-        bool restore_assets = true);
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,
         unsigned short start_index,
         unsigned short polygon_count,
@@ -250,6 +231,27 @@ private:
         unsigned short polygon_count,
         unsigned short min_vertex_index = 0,
         unsigned short vertex_count = 0);
+
+protected:
+    static bool Create_Device();
+    static void Release_Device();
+    static void Reset_Statistics();
+    static void Enumerate_Devices();
+    static void Set_Default_Global_Render_States();
+    static int Get_Render_Device();
+    static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
+    static bool Set_Device_Resolution(
+        int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
+    static void Get_Device_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
+    static bool Set_Render_Device(int dev = -1,
+        int resx = -1,
+        int resy = -1,
+        int bits = -1,
+        int windowed = -1,
+        bool resize_window = false,
+        bool reset_device = false,
+        bool restore_assets = true);
 #ifdef BUILD_WITH_D3D8
     static bool Find_Color_And_Z_Mode(
         int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
@@ -260,7 +262,6 @@ private:
     static void Get_Format_Name(unsigned int format, StringClass *format_name);
 #endif
 
-private:
 #ifdef GAME_DLL
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *&s_d3dCreateFunction)(unsigned);
@@ -424,6 +425,9 @@ private:
     static bool s_DX8SingleThreaded;
     static DX8_CleanupHook *s_cleanupHook;
 #endif
+    friend class W3D;
+    friend class DX8IndexBufferClass;
+    friend class DX8VertexBufferClass;
 };
 
 inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)
@@ -620,6 +624,16 @@ inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &
 }
 #endif
 
+inline void DX8Wrapper::Set_World_Identity()
+{
+    if (s_renderStateChanged & (unsigned)WORLD_IDENTITY) {
+        return;
+    }
+
+    s_renderState.world.Make_Identity();
+    s_renderStateChanged |= (unsigned)WORLD_CHANGED | (unsigned)WORLD_IDENTITY;
+}
+
 inline void DX8Wrapper::Handle_DX8_ErrorCode(unsigned error)
 {
 #ifdef BUILD_WITH_D3D8
@@ -717,7 +731,7 @@ inline void DX8Wrapper::Set_Projection_Transform_With_Z_Bias(const Matrix4 &matr
     s_zNear = znear;
     s_projectionMatrix = matrix.Transpose();
 
-    if (!Get_Caps()->Supports_ZBias() && s_zNear != s_zFar) {
+    if (!Get_Current_Caps()->Supports_ZBias() && s_zNear != s_zFar) {
         Matrix4 tmp = s_projectionMatrix;
         float tmp_zbias = s_ZBias;
         tmp_zbias *= (1.0f / 16.0f);
@@ -727,5 +741,15 @@ inline void DX8Wrapper::Set_Projection_Transform_With_Z_Bias(const Matrix4 &matr
     } else {
         DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&s_projectionMatrix));
     }
+}
+
+inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)
+{
+    if (s_renderState.index_base_offset == offset) {
+        return;
+    }
+
+    s_renderState.index_base_offset = offset;
+    s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
 #endif

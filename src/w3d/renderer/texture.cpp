@@ -81,11 +81,11 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
     g_magTextureFilters[0][FILTER_TYPE_BEST] = D3DTEXF_POINT;
     g_mipMapFilters[0][FILTER_TYPE_BEST] = D3DTEXF_POINT;
 
-    if (DX8Wrapper::Get_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MAGFLINEAR) {
+    if (DX8Wrapper::Get_Current_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MAGFLINEAR) {
         g_magTextureFilters[0][FILTER_TYPE_BEST] = D3DTEXF_LINEAR;
     }
 
-    if (DX8Wrapper::Get_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MINFLINEAR) {
+    if (DX8Wrapper::Get_Current_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MINFLINEAR) {
         g_minTextureFilters[0][FILTER_TYPE_BEST] = D3DTEXF_LINEAR;
     }
 
@@ -94,15 +94,15 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
         case FILTER_MODE_ANISOTROPIC4X:
         case FILTER_MODE_ANISOTROPIC8X:
         case FILTER_MODE_ANISOTROPIC16X:
-            if (DX8Wrapper::Get_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MAGFANISOTROPIC) {
+            if (DX8Wrapper::Get_Current_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MAGFANISOTROPIC) {
                 g_magTextureFilters[0][FILTER_TYPE_BEST] = D3DTEXF_ANISOTROPIC;
             }
 
-            if (DX8Wrapper::Get_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MINFANISOTROPIC) {
+            if (DX8Wrapper::Get_Current_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MINFANISOTROPIC) {
                 g_minTextureFilters[0][FILTER_TYPE_BEST] = D3DTEXF_ANISOTROPIC;
             }
         case FILTER_MODE_TRILINEAR: // fall-through
-            if (DX8Wrapper::Get_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MIPFLINEAR) {
+            if (DX8Wrapper::Get_Current_Caps()->Get_Filter_Caps() & D3DPTFILTERCAPS_MIPFLINEAR) {
                 g_mipMapFilters[0][FILTER_TYPE_BEST] = D3DTEXF_LINEAR;
             }
         default:

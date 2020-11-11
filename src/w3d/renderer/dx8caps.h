@@ -60,7 +60,6 @@ public:
     bool Supports_Texture_Format(WW3DFormat format) const { return m_supportTextureFormat[format]; }
     bool Supports_Render_To_Texture_Format(WW3DFormat format) const { return m_supportRenderToTextureFormat[format]; }
     bool Use_TnL() const { return m_useTnL; }
-    bool Supports_NPatches() const { return m_supportNPatches; }
     uint32_t Max_Textures_Per_Pass() const { return m_maxTexturesPerPass; }
     w3dcaps_t Get_DX8_Caps() const { return m_caps; }
     bool Support_Gamma() const { return m_supportGamma; }

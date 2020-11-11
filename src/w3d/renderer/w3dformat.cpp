@@ -297,7 +297,7 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
 {
     WW3DFormat check_format = format;
 
-    if (!DX8Wrapper::Get_Caps()->Supports_DXTC() || !allow_compression) {
+    if (!DX8Wrapper::Get_Current_Caps()->Supports_DXTC() || !allow_compression) {
         if (format == WW3D_FORMAT_DXT1) {
             check_format = WW3D_FORMAT_X8R8G8B8;
         }
@@ -312,13 +312,13 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
     } else {
         if (format != WW3D_FORMAT_DXT1) {
             if (format > WW3D_FORMAT_DXT1 && format <= WW3D_FORMAT_DXT5
-                && !DX8Wrapper::Get_Caps()->Supports_Texture_Format(format)) {
+                && !DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(format)) {
                 check_format = WW3D_FORMAT_A8R8G8B8;
             } else if (check_format == WW3D_FORMAT_R8G8B8) {
                 check_format = WW3D_FORMAT_X8R8G8B8;
             }
-        } else if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT1)
-            && DX8Wrapper::Get_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT2)) {
+        } else if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT1)
+            && DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_DXT2)) {
             check_format = WW3D_FORMAT_DXT2;
         }
     }
@@ -343,13 +343,13 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
         }
     }
 
-    if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+    if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(check_format)) {
         check_format = WW3D_FORMAT_A8R8G8B8;
-        if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+        if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(check_format)) {
             check_format = WW3D_FORMAT_A4R4G4B4;
-            if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+            if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(check_format)) {
                 check_format = WW3D_FORMAT_X8R8G8B8;
-                if (!DX8Wrapper::Get_Caps()->Supports_Texture_Format(check_format)) {
+                if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(check_format)) {
                     check_format = WW3D_FORMAT_R5G6B5;
                 } else {
                     captainslog_dbgassert(false, "Get_Valid_Texture_Format - No valid texture format found");

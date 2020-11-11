@@ -209,11 +209,10 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(!m_vertexBuffer);
-    int d3dusage = ((usage & USAGE_NPATCHES) >= 1 ? D3DUSAGE_NPATCHES : 0)
-        | ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
+    int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
-    if (!DX8Wrapper::Get_Caps()->Use_TnL()) {
+    if (!DX8Wrapper::Get_Current_Caps()->Use_TnL()) {
         d3dusage |= D3DUSAGE_SOFTWAREPROCESSING;
     }
 
@@ -307,10 +306,6 @@ void DynamicVBAccessClass::Allocate_DX8_Dynamic_Buffer()
 
     if (!g_dynamicDX8VertexBuffer) {
         DX8VertexBufferClass::UsageType usage = DX8VertexBufferClass::USAGE_DYNAMIC;
-        if (DX8Wrapper::Get_Caps()->Supports_NPatches()) {
-            usage = (DX8VertexBufferClass::UsageType)(
-                DX8VertexBufferClass::USAGE_DYNAMIC | DX8VertexBufferClass::USAGE_NPATCHES);
-        }
         g_dynamicDX8VertexBuffer = new DX8VertexBufferClass(DX8_FVF_XYZNDUV2, g_dynamicDX8VertexBufferSize, usage, 0);
         g_dynamicDX8VertexBufferOffset = 0;
     }

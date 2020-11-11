@@ -26,6 +26,7 @@ bool W3D::s_texturingEnabled = true;
 bool W3D::s_thumbnailEnabled = true;
 int W3D::s_textureFilter;
 float W3D::s_defaultNativeScreenSize = 1;
+bool W3D::s_isSortingEnabled = true;
 #ifdef PLATFORM_WINDOWS
 HWND W3D::s_hwnd;
 #endif
@@ -43,7 +44,7 @@ void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bo
 
 int W3D::Get_Texture_Bit_Depth()
 {
-    return DX8Wrapper::Get_Texture_Bit_Depth();
+    return DX8Wrapper::s_textureBitDepth;
 }
 
 void W3D::Invalidate_Mesh_Cache()

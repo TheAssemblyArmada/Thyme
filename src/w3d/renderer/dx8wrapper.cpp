@@ -246,7 +246,7 @@ inline unsigned long F2DW(float f)
 void DX8Wrapper::Set_Default_Global_Render_States()
 {
 #ifdef BUILD_WITH_D3D8
-    const D3DCAPS8 &caps = Get_Caps()->Get_DX8_Caps();
+    const D3DCAPS8 &caps = Get_Current_Caps()->Get_DX8_Caps();
 
     Set_DX8_Render_State(D3DRS_RANGEFOGENABLE, (caps.RasterCaps & D3DPRASTERCAPS_FOGRANGE) ? TRUE : FALSE);
     Set_DX8_Render_State(D3DRS_FOGTABLEMODE, D3DFOG_NONE);
@@ -325,7 +325,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
 
     Ref_Ptr_Release(s_renderState.material);
 
-    for (unsigned int i = 0; i < Get_Caps()->Max_Textures_Per_Pass(); i++) {
+    for (unsigned int i = 0; i < Get_Current_Caps()->Max_Textures_Per_Pass(); i++) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
 

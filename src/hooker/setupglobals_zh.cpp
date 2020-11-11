@@ -369,6 +369,7 @@ bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00C
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
 int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
 float &W3D::s_defaultNativeScreenSize = Make_Global<float>(PICK_ADDRESS(0x00A16984, 0x00CC58A4));
+bool &W3D::s_isSortingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1697C, 0x00CC589C));
 HWND &W3D::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47FE0, 0x00DEE840));
 
 // dx8renderer.cpp

@@ -16,6 +16,8 @@
 #include "always.h"
 #include "w3dtypes.h"
 struct SortingNodeStruct;
+class SphereClass;
+
 class SortingRendererClass
 {
 public:
@@ -25,7 +27,7 @@ public:
         unsigned short polygon_count,
         unsigned short min_vertex_index,
         unsigned short vertex_count);
-    static void Insert_Triangles(class SphereClass &bounding_sphere,
+    static void Insert_Triangles(const SphereClass &bounding_sphere,
         unsigned short start_index,
         unsigned short polygon_count,
         unsigned short min_vertex_index,

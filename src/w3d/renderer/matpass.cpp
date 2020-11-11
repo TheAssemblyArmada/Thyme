@@ -40,7 +40,7 @@ void MaterialPassClass::Install_Materials()
 {
     DX8Wrapper::Set_Material(Peek_Material());
     DX8Wrapper::Set_Shader(Peek_Shader());
-    for (uint32_t i = 0; i < DX8Wrapper::Get_Caps()->Max_Textures_Per_Pass(); ++i) {
+    for (uint32_t i = 0; i < DX8Wrapper::Get_Current_Caps()->Max_Textures_Per_Pass(); ++i) {
         DX8Wrapper::Set_Texture(i, Peek_Texture(i));
     }
 }

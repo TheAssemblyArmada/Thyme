@@ -98,8 +98,7 @@ public:
     {
         USAGE_DEFAULT,
         USAGE_DYNAMIC,
-        USAGE_SOFTWAREPROCESSING,
-        USAGE_NPATCHES,
+        USAGE_SOFTWAREPROCESSING
     };
     DX8IndexBufferClass(unsigned short index_count_, UsageType usage);
     ~DX8IndexBufferClass();

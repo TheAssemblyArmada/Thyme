@@ -303,7 +303,7 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
 
     m_supportLargePointSize = m_caps.MaxPointSize > 1.0f;
     m_supportZBias = Has_Feature(m_caps.RasterCaps, D3DPRASTERCAPS_ZBIAS);
-    m_supportNPatches = Has_Feature(m_caps.DevCaps, D3DDEVCAPS_NPATCHES);
+    m_supportNPatches = false;
     m_supportGamma = Has_Feature(m_caps.Caps2, D3DCAPS2_FULLSCREENGAMMA);
     m_supportDot3Blend = Has_Feature(m_caps.TextureOpCaps, D3DTEXOPCAPS_DOTPRODUCT3);
     m_supportsModulateAlphaAddColor = Has_Feature(m_caps.TextureOpCaps, D3DTEXOPCAPS_MODULATEALPHA_ADDCOLOR);

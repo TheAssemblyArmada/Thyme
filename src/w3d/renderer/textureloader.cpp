@@ -147,16 +147,16 @@ void TextureLoader::Validate_Texture_Size(unsigned &width, unsigned &height, uns
     for (v = 1; v < volume; v *= 2);
     // clang-format on
 
-    if (DX8Wrapper::Get_Caps()->Get_Max_Tex_Width() < w) {
-        w = DX8Wrapper::Get_Caps()->Get_Max_Tex_Width();
+    if (DX8Wrapper::Get_Current_Caps()->Get_Max_Tex_Width() < w) {
+        w = DX8Wrapper::Get_Current_Caps()->Get_Max_Tex_Width();
     }
 
-    if (h > DX8Wrapper::Get_Caps()->Get_Max_Tex_Height()) {
-        h = DX8Wrapper::Get_Caps()->Get_Max_Tex_Height();
+    if (h > DX8Wrapper::Get_Current_Caps()->Get_Max_Tex_Height()) {
+        h = DX8Wrapper::Get_Current_Caps()->Get_Max_Tex_Height();
     }
 
-    if (v > DX8Wrapper::Get_Caps()->Get_Max_Vol_Extent()) {
-        v = DX8Wrapper::Get_Caps()->Get_Max_Vol_Extent();
+    if (v > DX8Wrapper::Get_Current_Caps()->Get_Max_Vol_Extent()) {
+        v = DX8Wrapper::Get_Current_Caps()->Get_Max_Vol_Extent();
     }
 
     if (w > h) {
@@ -397,7 +397,7 @@ bool TextureLoader::Is_Format_Compressed(WW3DFormat format, bool allow_compresse
         return true;
     }
 
-    if (format == WW3D_FORMAT_UNKNOWN && DX8Wrapper::Supports_DXTC() && allow_compressed) {
+    if (format == WW3D_FORMAT_UNKNOWN && DX8Wrapper::Get_Current_Caps()->Supports_DXTC() && allow_compressed) {
         return true;
     }
 

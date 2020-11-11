@@ -169,11 +169,10 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(m_indexCount);
-    int d3dusage = ((usage & USAGE_NPATCHES) >= 1 ? D3DUSAGE_NPATCHES : 0)
-        | ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
+    int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
-    if (!DX8Wrapper::Get_Caps()->Use_TnL()) {
+    if (!DX8Wrapper::Get_Current_Caps()->Use_TnL()) {
         d3dusage |= D3DUSAGE_SOFTWAREPROCESSING;
     }
 
@@ -284,12 +283,6 @@ void DynamicIBAccessClass::Allocate_DX8_Dynamic_Buffer()
 
     if (!g_dynamicDX8IndexBuffer) {
         DX8IndexBufferClass::UsageType usage = DX8IndexBufferClass::USAGE_DYNAMIC;
-
-        if (DX8Wrapper::Get_Caps()->Supports_NPatches()) {
-            usage =
-                (DX8IndexBufferClass::UsageType)(DX8IndexBufferClass::USAGE_DYNAMIC | DX8IndexBufferClass::USAGE_NPATCHES);
-        }
-
         g_dynamicDX8IndexBuffer = new DX8IndexBufferClass(g_dynamicDX8IndexBufferSize, usage);
         g_dynamicDX8IndexBufferOffset = 0;
     }

@@ -535,41 +535,10 @@ void DX8Caps::Check_Max_Texture_Support(const w3dcaps_t &caps)
  */
 void DX8Caps::Check_Driver_Version_Status()
 {
-#ifdef GAME_DLL
-    Call_Method<void, DX8Caps>(PICK_ADDRESS(0x00846960, 0x0055A8C0), this);
-#else
-    switch (m_vendorNumber) {
-        // The original code looks for specific files and driver versions which are outdated.
-        // Just assume if you have NVIDIA, AMD or Intel cards in this day and age you are good.
-        case VENDOR_NVIDIA:
-        case VENDOR_AMD: // fallthrough
-        case VENDOR_INTEL: // fallthrough
-            m_driverStatus = DRIVER_GOOD;
-            break;
-        case VENDOR_MATROX:
-            m_driverStatus = DRIVER_BAD;
-            break;
-        default:
-            m_driverStatus = DRIVER_UNKNOWN;
-    }
-
-    switch (m_driverStatus) {
-        case DRIVER_GOOD:
-            s_videoCardDetails = "Driver version status: Good\n";
-            break;
-        case DRIVER_OK:
-            s_videoCardDetails = "Driver version status: OK (No known problems)\n";
-            break;
-        case DRIVER_BAD:
-            s_videoCardDetails = "Driver version status: Bad (Driver update recommended)\n";
-            break;
-        default:
-            s_videoCardDetails = "Driver version status: Unknown\n";
-            break;
-    }
-
+    // Any modern GPU/driver qualifies as "good" for the purposes of this function.
+    m_driverStatus = DRIVER_GOOD;
+    s_videoCardDetails = "Driver version status: Good\n";
     m_videoCardSpecString += s_videoCardDetails;
-#endif
 }
 
 /**
@@ -579,11 +548,7 @@ void DX8Caps::Check_Driver_Version_Status()
  */
 void DX8Caps::Vendor_Specific_Hacks(const w3dadapterid_t &identifier)
 {
-#ifdef GAME_DLL
-    Call_Method<void, DX8Caps, const w3dadapterid_t &>(PICK_ADDRESS(0x00846FF0, 0x0055AFA0), this, identifier);
-#else
-    // TODO, do we want to implement this? Largely refers to hardware that was old when Generals was released.
-#endif
+    // none of the things that this function does matter for modern GPUs and drivers.
 }
 
 /**

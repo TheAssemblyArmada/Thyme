@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author tomsons26
  *
  * @brief Audio event information.
  *
@@ -15,6 +16,8 @@
 #pragma once
 
 #include "asciistring.h"
+#include "bitflags.h"
+#include "gametype.h"
 #include "ini.h"
 #include "mempoolobj.h"
 #include "randomvalue.h"
@@ -77,6 +80,11 @@ public:
     float Get_Volume_Shift() const { return Get_Audio_Random_Value_Real(m_volumeShift + 1.0f, 1.0f); }
     float Get_Delay() const { return Get_Audio_Random_Value_Real(m_delayLow, m_delayHigh); }
 
+    void Set_Control_Flag(AudioControlType ctrl) { m_control |= ctrl; }
+    void Clear_Control_Flag(AudioControlType ctrl) { m_control &= ~ctrl; }
+    void Set_Visibility_Flag(AudioVisibilityType vis) { m_visibility |= vis; }
+    void Clear_Visibility_Flag(AudioVisibilityType vis) { m_visibility &= ~vis; }
+
     size_t Sound_Count() const { return m_sounds.size(); }
     const Utf8String &Get_Sound(int index) const { return m_sounds[index]; }
     size_t Attack_Count() const { return m_attack.size(); }
@@ -120,4 +128,55 @@ protected:
 
 private:
     static FieldParse s_audioEventParseTable[];
+};
+
+class DynamicAudioEventInfo : public AudioEventInfo
+{
+    IMPLEMENT_POOL(DynamicAudioEventInfo);
+
+    enum OverriddenFields
+    {
+        OVERRIDE_NAME,
+        OVERRIDE_LOOP_FLAG,
+        OVERRIDE_LOOP_COUNT,
+        OVERRIDE_VOLUME,
+        OVERRIDE_MIN_VOLUME,
+        OVERRIDE_MIN_RANGE,
+        OVERRIDE_MAX_RANGE,
+        OVERRIDE_PRIORITY,
+        OVERRIDE_COUNT,
+    };
+
+public:
+    virtual ~DynamicAudioEventInfo() {}
+
+    bool Is_Level_Specific() override { return true; }
+    DynamicAudioEventInfo *Get_Dynamic_Event_Info() override { return this; }
+    const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const override { return this; }
+
+    void Override_Audio_Name(const Utf8String &name);
+    void Override_Loop_Flag(bool state);
+    void Override_Loop_Count(int count);
+    void Override_Volume(float volume);
+    void Override_Min_Volume(float volume);
+    void Override_Min_Range(float range);
+    void Override_Max_Range(float range);
+    void Override_Priority(PriorityType priority);
+
+    const Utf8String &Get_Original_Name();
+
+    void Xfer_NoName(Xfer *xfer);
+
+    bool Name_Overriden() const { return m_overrideFlags.Get(OVERRIDE_NAME); }
+    bool Loop_Flag_Overriden() const { return m_overrideFlags.Get(OVERRIDE_LOOP_FLAG); }
+    bool Loop_Count_Overriden() const { return m_overrideFlags.Get(OVERRIDE_LOOP_COUNT); }
+    bool Volume_Overriden() const { return m_overrideFlags.Get(OVERRIDE_VOLUME); }
+    bool Min_Volume_Overriden() const { return m_overrideFlags.Get(OVERRIDE_MIN_VOLUME); }
+    bool Min_Range_Overriden() const { return m_overrideFlags.Get(OVERRIDE_MIN_RANGE); }
+    bool Max_Range_Overriden() const { return m_overrideFlags.Get(OVERRIDE_MAX_RANGE); }
+    bool Priority_Overriden() const { return m_overrideFlags.Get(OVERRIDE_PRIORITY); }
+
+public:
+    BitFlags<OVERRIDE_COUNT> m_overrideFlags;
+    Utf8String m_originalName;
 };

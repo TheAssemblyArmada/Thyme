@@ -750,6 +750,8 @@ inline void DX8Wrapper::Set_DX8_Material(const D3DMATERIAL8 *mat)
     DX8CALL(SetMaterial(mat));
 }
 
+#endif
+
 inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)
 {
     if (s_renderState.index_base_offset == offset) {
@@ -759,4 +761,3 @@ inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)
     s_renderState.index_base_offset = offset;
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
-#endif

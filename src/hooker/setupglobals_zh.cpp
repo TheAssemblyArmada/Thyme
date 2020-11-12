@@ -398,6 +398,11 @@ MultiListClass<DX8TextureCategoryClass> &g_textureCategoryDeleteList =
     Make_Global<MultiListClass<DX8TextureCategoryClass>>(PICK_ADDRESS(0x00A4C438, 0x00DEEB48));
 MultiListClass<DX8FVFCategoryContainer> &g_fvfCategoryContainerDeleteList =
     Make_Global<MultiListClass<DX8FVFCategoryContainer>>(PICK_ADDRESS(0x00A4C480, 0x00DEEB90));
+MultiListClass<MeshModelClass> &g_registeredMeshList =
+    Make_Global<MultiListClass<MeshModelClass>>(PICK_ADDRESS(0x00A4C4C8, 0x00DEEBD8));
+bool &DX8TextureCategoryClass::s_forceMultiply = Make_Global<bool>(PICK_ADDRESS(0x00A4C500, 0x00DEEC10));
+HOOK_AUTOPOOL(PolyRenderTaskClass, 256, PICK_ADDRESS(0x00A4C450, 0x00DEEB60));
+HOOK_AUTOPOOL(MatPassTaskClass, 256, PICK_ADDRESS(0x00A4C468, 0x00DEEB78));
 
 // predlod.cpp
 #include "predlod.h"

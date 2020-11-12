@@ -35,6 +35,7 @@
 #include "dx8caps.h"
 #include "dx8fvf.h"
 #include "dx8indexbuffer.h"
+#include "dx8renderer.h"
 #include "dx8texman.h"
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
@@ -1108,6 +1109,35 @@ void Setup_Hooks()
     Hook_Any(0x008232B0, RenderInfoClass::Push_Override_Flags);
     Hook_Any(0x008232D0, RenderInfoClass::Pop_Override_Flags);
     Hook_Any(0x008232E0, RenderInfoClass::Current_Override_Flags);
+
+    // dx8renderer.h
+    Hook_Any(0x008237C0, DX8TextureCategoryClass::Add_Render_Task);
+    Hook_Any(0x008238F0, DX8TextureCategoryClass::Remove_Polygon_Renderer);
+    Hook_Any(0x00823990, DX8FVFCategoryContainer::Add_Visible_Material_Pass);
+    Hook_Any(0x00823AD0, DX8FVFCategoryContainer::Render_Procedural_Material_Passes);
+    Hook_Any(0x00823B70, DX8RigidFVFCategoryContainer::Add_Delayed_Visible_Material_Pass);
+    Hook_Any(0x00823CB0, DX8RigidFVFCategoryContainer::Render_Delayed_Procedural_Material_Passes);
+    Hook_Any(0x008240F0, DX8FVFCategoryContainer::Change_Polygon_Renderer_Texture);
+    Hook_Any(0x00824490, DX8FVFCategoryContainer::Define_FVF);
+    Hook_Any(0x00824620, DX8RigidFVFCategoryContainer::Render);
+    Hook_Any(0x008246A0, DX8RigidFVFCategoryContainer::Check_If_Mesh_Fits);
+    Hook_Any(0x00824740, DX8RigidFVFCategoryContainer::Add_Mesh);
+    Hook_Any(0x00824D50, DX8FVFCategoryContainer::Insert_To_Texture_Category);
+    Hook_Any(0x00824F00, DX8FVFCategoryContainer::Generate_Texture_Categories);
+    Hook_Any(0x00825460, DX8SkinFVFCategoryContainer::Render);
+    Hook_Any(0x00825830, DX8SkinFVFCategoryContainer::Check_If_Mesh_Fits);
+    Hook_Any(0x00825880, DX8SkinFVFCategoryContainer::Add_Visible_Skin);
+    Hook_Any(0x008258D0, DX8SkinFVFCategoryContainer::Add_Mesh);
+    Hook_Any(0x00825A10, DX8TextureCategoryClass::Add_Mesh);
+    Hook_Any(0x00825FB0, DX8TextureCategoryClass::Render);
+    Hook_Any(0x00826C60, DX8MeshRendererClass::Init);
+    Hook_Any(0x00826CB0, DX8MeshRendererClass::Shutdown);
+    Hook_Any(0x00826D70, DX8MeshRendererClass::Clear_Pending_Delete_Lists);
+    Hook_Any(0x00826DC0, DX8MeshRendererClass::Unregister_Mesh_Type);
+    Hook_Any(0x00826E20, DX8MeshRendererClass::Register_Mesh_Type);
+    Hook_Any(0x008271B0, DX8MeshRendererClass::Flush);
+    Hook_Any(0x00827350, DX8MeshRendererClass::Add_To_Render_List);
+    Hook_Any(0x00827390, DX8MeshRendererClass::Invalidate);
 
     // w3dmouse.h
     Hook_Any(0x007AD600, W3DMouse::Init);

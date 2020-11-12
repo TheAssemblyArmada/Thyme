@@ -18,6 +18,7 @@
 #include "gamemath.h"
 #include "iniclass.h"
 #include "matrix4.h"
+#include "meshmatdesc.h"
 #include "w3d.h"
 
 /**
@@ -25,9 +26,8 @@
  */
 TextureMapperClass::TextureMapperClass(uint32_t stage) : m_stage(stage)
 {
-    // TODO 2 is MeshMatDescClass::MAX_TEX_STAGES
-    if (m_stage >= 2) {
-        m_stage = 2 - 1;
+    if (m_stage >= MeshMatDescClass::MAX_TEX_STAGES) {
+        m_stage = MeshMatDescClass::MAX_TEX_STAGES - 1;
     }
 }
 

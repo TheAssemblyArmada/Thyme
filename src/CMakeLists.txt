@@ -190,6 +190,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
+    w3d/lib/buff.cpp
     w3d/lib/bufffileclass.cpp
     w3d/lib/chunkio.cpp
     w3d/lib/cpudetect.cpp
@@ -201,6 +202,7 @@ set(GAMEENGINE_SRC
     w3d/lib/multilist.cpp
     w3d/lib/nstrdup.cpp
     w3d/lib/mutex.cpp
+    w3d/lib/random.cpp
     w3d/lib/rawfileclass.cpp
     w3d/lib/readline.cpp
     w3d/lib/refcount.cpp
@@ -211,6 +213,7 @@ set(GAMEENGINE_SRC
     w3d/lib/threadtrack.cpp
     w3d/lib/wwstring.cpp
     w3d/lib/hash.cpp
+    w3d/lib/xstraw.cpp
     w3d/math/aabox.cpp
     w3d/math/colmath.cpp
     w3d/math/colmathaaplane.cpp

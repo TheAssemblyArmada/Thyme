@@ -97,6 +97,7 @@
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
+#include "vertmaterial.h"
 #include "w3ddebugdisplay.h"
 #include "w3dfilesystem.h"
 #include "w3dmouse.h"
@@ -1148,4 +1149,7 @@ void Setup_Hooks()
     Hook_Any(0x008229B0, LightEnvironmentClass::Pre_Render_Update);
     Hook_Any(0x00822B60, LightEnvironmentClass::Add_Fill_Light);
     Hook_Any(0x00822CF0, LightEnvironmentClass::Calculate_Fill_Light);
+
+    // vertmaterial.h
+    Hook_Any(0x00817ED0, VertexMaterialClass::Parse_Mapping_Args);
 }

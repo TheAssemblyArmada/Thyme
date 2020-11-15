@@ -13,9 +13,12 @@
  *            LICENSE
  */
 #pragma once
+
 #include "always.h"
+#include "mapper.h"
 #include "refcount.h"
 #include "vector3.h"
+#include "w3d_file.h"
 #include "w3dmpo.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
@@ -59,6 +62,9 @@ public:
     void Get_Diffuse(Vector3 *set_color) const;
     void Set_Diffuse(float r, float g, float b);
     TextureMapperClass *Peek_Mapper(int stage = 0) { return m_mapper[stage]; }
+    inline void Set_Mapper(TextureMapperClass *mapper, int stage = 0);
+
+    void Parse_Mapping_Args(W3dVertexMaterialStruct const &vmat, char *mapping0_arg_buffer, char *mapping1_arg_buffer);
 
 protected:
 #ifdef BUILD_WITH_D3D8
@@ -83,3 +89,9 @@ private:
     static void Apply_Null();
     unsigned long Compute_CRC(void) const;
 };
+
+inline void VertexMaterialClass::Set_Mapper(TextureMapperClass *mapper, int stage)
+{
+    m_CRCDirty = true;
+    Ref_Ptr_Set(mapper, m_mapper[stage]);
+}

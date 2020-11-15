@@ -185,6 +185,7 @@ public:
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
+    static void Set_DX8_Material(const D3DMATERIAL8 *mat);
 #endif
     static void Set_World_Identity();
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
@@ -741,6 +742,12 @@ inline void DX8Wrapper::Set_Projection_Transform_With_Z_Bias(const Matrix4 &matr
     } else {
         DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&s_projectionMatrix));
     }
+}
+
+inline void DX8Wrapper::Set_DX8_Material(const D3DMATERIAL8 *mat)
+{
+    s_materialChanges++;
+    DX8CALL(SetMaterial(mat));
 }
 
 inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)

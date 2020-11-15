@@ -1151,5 +1151,14 @@ void Setup_Hooks()
     Hook_Any(0x00822CF0, LightEnvironmentClass::Calculate_Fill_Light);
 
     // vertmaterial.h
+    Hook_Any(0x00817150, VertexMaterialClass::Hook_Ctor);
+    Hook_Any(0x00817320, VertexMaterialClass::Hook_Ctor2);
+    Hook_Any(0x00817520, VertexMaterialClass::Make_Unique);
+    Hook_Any(0x008175E0, VertexMaterialClass::operator=);
+    Hook_Any(0x00817750, VertexMaterialClass::Compute_CRC);
+    Hook_Any(0x00817AD0, VertexMaterialClass::Init_From_Material3);
+    Hook_Any(0x00817C20, VertexMaterialClass::Load_W3D);
+    Hook_Any(0x00817DB0, VertexMaterialClass::Parse_W3dVertexMaterialStruct);
     Hook_Any(0x00817ED0, VertexMaterialClass::Parse_Mapping_Args);
+    Hook_Any(0x008195E0, VertexMaterialClass::Get_Preset);
 }

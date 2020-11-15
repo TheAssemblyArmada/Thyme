@@ -34,6 +34,7 @@ public:
     static int Get_Texture_Filter() { return s_textureFilter; }
     static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
+    static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
@@ -59,6 +60,7 @@ private:
     static int &s_textureFilter;
     static float &s_defaultNativeScreenSize;
     static bool &s_isSortingEnabled;
+    static bool &s_isColoringEnabled;
 #ifdef PLATFORM_WINDOWS
     static HWND &s_hwnd;
 #endif
@@ -73,6 +75,7 @@ private:
     static int s_textureFilter;
     static float s_defaultNativeScreenSize;
     static bool s_isSortingEnabled;
+    static bool s_isColoringEnabled;
 #ifdef PLATFORM_WINDOWS
     static HWND s_hwnd;
 #endif

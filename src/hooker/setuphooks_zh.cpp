@@ -97,6 +97,7 @@
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
+#include "vertmaterial.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
@@ -1170,4 +1171,7 @@ void Setup_Hooks()
     Hook_Any(0x0073EDB0, W3DDisplay::Enable_LetterBox);
     Hook_Any(0x0073EC10, W3DDisplay::Is_LetterBox_Fading);
     Hook_Function(0x007751A0, &Create_Game_Display); // This is actually a W3DGameClient virtual method but this not used
+
+    // vertmaterial.h
+    Hook_Any(0x00817ED0, VertexMaterialClass::Parse_Mapping_Args);
 }

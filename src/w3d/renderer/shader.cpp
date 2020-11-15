@@ -15,32 +15,9 @@
  *            LICENSE
  */
 #include "shader.h"
+#include "w3d_file.h"
 #include "wwstring.h"
 #include <captainslog.h>
-
-// TODO move these to w3dfile once that file is written.
-struct W3dRGBStruct
-{
-    uint8_t r;
-    uint8_t g;
-    uint8_t b;
-    uint8_t pad;
-};
-
-struct W3dMaterial3Struct
-{
-    uint32_t attributes;
-    W3dRGBStruct diffuse_color;
-    W3dRGBStruct specular_color;
-    W3dRGBStruct emissive_coeffs;
-    W3dRGBStruct ambient_coeffs;
-    W3dRGBStruct diffuse_coeffs;
-    W3dRGBStruct specular_coeffs;
-    float shininess;
-    float opacity;
-    float translucency;
-    float fog_coeff;
-};
 
 // TODO these should be decoded into Shader_Const calls.
 ShaderClass ShaderClass::s_presetOpaqueShader(0x9441B);

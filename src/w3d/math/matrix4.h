@@ -47,6 +47,26 @@ public:
         Init(v0, v1, v2, v3);
     }
 
+    __forceinline explicit Matrix4(float f1,
+        float f2,
+        float f3,
+        float f4,
+        float f5,
+        float f6,
+        float f7,
+        float f8,
+        float f9,
+        float f10,
+        float f11,
+        float f12,
+        float f13,
+        float f14,
+        float f15,
+        float f16)
+    {
+        Init(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, f11, f12, f13, f14, f15, f16);
+    }
+
     __forceinline void Make_Identity()
     {
         Row[0].Set(1.0, 0.0, 0.0, 0.0);
@@ -69,6 +89,29 @@ public:
         Row[1] = v1;
         Row[2] = v2;
         Row[3] = v3;
+    }
+
+    __forceinline void Init(float f1,
+        float f2,
+        float f3,
+        float f4,
+        float f5,
+        float f6,
+        float f7,
+        float f8,
+        float f9,
+        float f10,
+        float f11,
+        float f12,
+        float f13,
+        float f14,
+        float f15,
+        float f16)
+    {
+        Row[0].Set(f1, f2, f3, f4);
+        Row[1].Set(f5, f6, f7, f8);
+        Row[2].Set(f9, f10, f11, f12);
+        Row[3].Set(f13, f14, f15, f16);
     }
 
     __forceinline void Init_Ortho(float left, float right, float bottom, float top, float znear, float zfar)

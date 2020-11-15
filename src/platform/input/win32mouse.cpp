@@ -16,6 +16,7 @@
 #include "win32mouse.h"
 #include "editmain.h"
 #include "gameclient.h"
+#include <cstdio>
 
 #ifdef PLATFORM_WINDOWS
 #include <windowsx.h>

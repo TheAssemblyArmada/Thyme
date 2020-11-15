@@ -28,6 +28,7 @@ public:
     SLNode<T> *Tail() const { return m_tailNode; }
 
     SLNode<T> *Find_Node(T *data) const;
+    SLNode<T> *Find_Prior_Node(T *data) const;
 
     virtual bool Add_Head(T *data);
     virtual bool Add_Head(SList<T> &list);
@@ -53,9 +54,19 @@ private:
 
 template<class T> inline SLNode<T> *SList<T>::Find_Node(T *data) const
 {
-    SLNode<T> *cur;
+    SLNode<T> *cur = nullptr;
 
     for (cur = m_headNode; cur != nullptr && cur->Data() != data; cur = cur->Next()) {
+    }
+
+    return cur;
+}
+
+template<class T> inline SLNode<T> *SList<T>::Find_Prior_Node(T *data) const
+{
+    SLNode<T> *cur = nullptr;
+
+    for (cur = m_headNode; cur->Next() && cur->Next()->Data() != data; cur = cur->Next()) {
     }
 
     return cur;
@@ -80,7 +91,7 @@ template<class T> inline bool SList<T>::Add_Head(T *data)
 
 template<class T> inline bool SList<T>::Add_Head(SList<T> &list)
 {
-    if (list.m_headNode == nullptr) {
+    if (list.Is_Empty()) {
         return false;
     }
 
@@ -109,7 +120,7 @@ template<class T> inline bool SList<T>::Add_Tail(T *data)
 
     SLNode<T> *temp = new SLNode<T>(data);
 
-    if (m_headNode == nullptr) {
+    if (Is_Empty()) {
         m_headNode = temp;
         m_tailNode = temp;
     } else {
@@ -122,7 +133,7 @@ template<class T> inline bool SList<T>::Add_Tail(T *data)
 
 template<class T> inline bool SList<T>::Add_Tail(SList<T> &list)
 {
-    if (list.m_headNode == nullptr) {
+    if (list.Is_Empty()) {
         return false;
     }
 
@@ -135,14 +146,14 @@ template<class T> inline bool SList<T>::Add_Tail(SList<T> &list)
 
 template<class T> inline T *SList<T>::Remove_Head()
 {
-    if (m_headNode == nullptr) {
+    if (Is_Empty()) {
         return nullptr;
     }
 
     SLNode<T> *temp = m_headNode;
     m_headNode = m_headNode->Next();
 
-    if (m_headNode == nullptr) {
+    if (Is_Empty()) {
         m_tailNode = nullptr;
     }
 
@@ -154,17 +165,17 @@ template<class T> inline T *SList<T>::Remove_Head()
 
 template<class T> inline T *SList<T>::Remove_Tail()
 {
-    if (m_headNode == nullptr) {
+    if (Is_Empty()) {
         return nullptr;
     }
 
     T *data = m_tailNode->Data();
-    return (Remove(data) ? data : nullptr);
+    return Remove(data) ? data : nullptr;
 }
 
 template<class T> inline bool SList<T>::Remove(T *element)
 {
-    if (element == nullptr || m_headNode == nullptr) {
+    if (element == nullptr || Is_Empty()) {
         return false;
     }
 
@@ -172,10 +183,7 @@ template<class T> inline bool SList<T>::Remove(T *element)
         return Remove_Head() != nullptr ? true : false;
     }
 
-    SLNode<T> *cur;
-
-    for (cur = m_headNode; cur->Next() && cur->Next()->Data() != element; cur = cur->Next()) {
-    }
+    SLNode<T> *cur = Find_Prior_Node(oldnode);
 
     if (cur->Next() != nullptr && cur->Next()->Data() == element) {
         SLNode<T> *temp = cur->Next();
@@ -212,14 +220,11 @@ template<class T> inline bool SList<T>::Insert_Before(T *newnode, T *oldnode)
         return false;
     }
 
-    if (oldnode == nullptr || m_headNode == nullptr || m_headNode->Data() == oldnode) {
+    if (oldnode == nullptr || Is_Empty() || m_headNode->Data() == oldnode) {
         return Add_Head(newnode);
     }
 
-    SLNode<T> *cur;
-
-    for (cur = m_headNode; cur->Next() && cur->Next()->Data() != oldnode; cur = cur->Next()) {
-    }
+    SLNode<T> *cur = Find_Prior_Node(oldnode);
 
     if (cur->Next() != nullptr && cur->Next()->Data() == oldnode) {
         SLNode<T> *temp = new SLNode<T>(newnode);
@@ -238,14 +243,11 @@ template<class T> inline bool SList<T>::Insert_After(T *newnode, T *oldnode)
         return false;
     }
 
-    if (oldnode == nullptr || m_headNode == nullptr) {
-        return (Add_Head(newnode));
+    if (oldnode == nullptr || Is_Empty()) {
+        return Add_Head(newnode);
     }
 
-    SLNode<T> *cur;
-
-    for (cur = m_headNode; cur != nullptr && cur->Data() != oldnode; cur = cur->Next()) {
-    }
+    SLNode<T> *cur = Find_Node(oldnode);
 
     if (cur != nullptr && cur->Data() == oldnode) {
         if (cur == m_tailNode) {

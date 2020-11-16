@@ -25,9 +25,11 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
     for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], point);
+
         if (res == OUTSIDE) {
             return OUTSIDE;
         }
+
         flags |= res;
     }
 
@@ -44,9 +46,11 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
     for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], tri);
+
         if (res == OUTSIDE) {
             return OUTSIDE;
         }
+
         flags |= res;
     }
 
@@ -63,9 +67,11 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
     for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], sphere);
+
         if (res == OUTSIDE) {
             return OUTSIDE;
         }
+
         flags |= res;
     }
 
@@ -82,10 +88,42 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
     for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], box);
+
         if (res == OUTSIDE) {
             return OUTSIDE;
         }
+
         flags |= res;
+    }
+
+    if (flags == INSIDE) {
+        return INSIDE;
+    }
+
+    return OVERLAPPED;
+}
+
+CollisionMath::OverlapType CollisionMath::Overlap_Test(
+    const FrustumClass &frustum, const AABoxClass &box, int &planes_passed)
+{
+    int flags = 0;
+
+    for (int i = 0; i < 6; i++) {
+        int plane_bit = (1 << i);
+
+        if ((planes_passed & plane_bit) == 0) {
+            OverlapType res = CollisionMath::Overlap_Test(frustum.m_planes[i], box);
+
+            if (res == OUTSIDE) {
+                return OUTSIDE;
+            } else if (res == INSIDE) {
+                planes_passed |= plane_bit;
+            }
+
+            flags |= res;
+        } else {
+            flags |= INSIDE;
+        }
     }
 
     if (flags == INSIDE) {

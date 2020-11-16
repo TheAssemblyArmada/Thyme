@@ -13,11 +13,5 @@
  *            LICENSE
  */
 #include "colmath.h"
-#include "aabox.h"
-#include "frustum.h"
-#include "plane.h"
-#include "sphere.h"
-#include "tri.h"
-#include "vector3.h"
 
 const float CollisionMath::COINCIDENCE_EPSILON = .000001f;

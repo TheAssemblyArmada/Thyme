@@ -23,6 +23,7 @@
 #include "camera.h"
 #include "cavesystem.h"
 #include "chunkio.h"
+#include "colmath.h"
 #include "commandline.h"
 #include "commandlist.h"
 #include "compressionmanager.h"
@@ -1185,6 +1186,53 @@ void Setup_Hooks()
     Hook_Any(0x008229B0, LightEnvironmentClass::Pre_Render_Update);
     Hook_Any(0x00822B60, LightEnvironmentClass::Add_Fill_Light);
     Hook_Any(0x00822CF0, LightEnvironmentClass::Calculate_Fill_Light);
+
+    // colmath.h
+    Hook_Function(
+        0x008E9F80, static_cast<bool (*)(AABoxClass const &, AABoxClass const &)>(&CollisionMath::Intersection_Test));
+    Hook_Function(0x008EA030,
+        static_cast<CollisionMath::OverlapType (*)(AABoxClass const &, LineSegClass const &)>(&CollisionMath::Overlap_Test));
+    Hook_Function(0x008EA410,
+        static_cast<bool (*)(AABoxClass const &, Vector3 const &, AABoxClass const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(0x008E7E20,
+        static_cast<bool (*)(AABoxClass const &, Vector3 const &, TriClass const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(0x007F9D90,
+        static_cast<CollisionMath::OverlapType (*)(FrustumClass const &, Vector3 const &)>(&CollisionMath::Overlap_Test));
+    Hook_Function(0x007F9E10,
+        static_cast<CollisionMath::OverlapType (*)(FrustumClass const &, SphereClass const &)>(
+            &CollisionMath::Overlap_Test));
+    Hook_Function(0x007F9E60,
+        static_cast<CollisionMath::OverlapType (*)(FrustumClass const &, AABoxClass const &)>(&CollisionMath::Overlap_Test));
+    Hook_Function(0x007F9540,
+        static_cast<bool (*)(LineSegClass const &, TriClass const &, CastResultStruct *)>(&CollisionMath::Collide));
+    Hook_Function(0x007F96D0,
+        static_cast<bool (*)(LineSegClass const &, AABoxClass const &, CastResultStruct *)>(&CollisionMath::Collide));
+    Hook_Function(0x007F9940,
+        static_cast<bool (*)(LineSegClass const &, OBBoxClass const &, CastResultStruct *)>(&CollisionMath::Collide));
+    Hook_Function(
+        0x008EB480, static_cast<bool (*)(OBBoxClass const &, OBBoxClass const &)>(&CollisionMath::Intersection_Test));
+    Hook_Function(
+        0x008EB550, static_cast<bool (*)(OBBoxClass const &, AABoxClass const &)>(&CollisionMath::Intersection_Test));
+    Hook_Function(
+        0x008EB6B0, static_cast<bool (*)(AABoxClass const &, OBBoxClass const &)>(&CollisionMath::Intersection_Test));
+    Hook_Function(0x008EEC20,
+        static_cast<bool (*)(OBBoxClass const &, Vector3 const &, OBBoxClass const &, Vector3 const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(0x008EED50,
+        static_cast<bool (*)(OBBoxClass const &, Vector3 const &, AABoxClass const &, Vector3 const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(0x008EEF30,
+        static_cast<bool (*)(AABoxClass const &, Vector3 const &, OBBoxClass const &, Vector3 const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(0x008E2DD0,
+        static_cast<bool (*)(OBBoxClass const &, Vector3 const &, TriClass const &, Vector3 const &, CastResultStruct *)>(
+            &CollisionMath::Collide));
+    Hook_Function(
+        0x008E6930, static_cast<bool (*)(OBBoxClass const &, TriClass const &)>(&CollisionMath::Intersection_Test));
+    Hook_Function(0x008003A0,
+        static_cast<CollisionMath::OverlapType (*)(PlaneClass const &, SphereClass const &)>(&CollisionMath::Overlap_Test));
 
     // w3ddisplay.h
     Hook_Any(0x0073D030, W3DDisplay::Reset);

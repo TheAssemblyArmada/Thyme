@@ -235,6 +235,7 @@ set(GAMEENGINE_SRC
     w3d/math/matrix4.cpp
     w3d/math/quaternion.cpp
     w3d/math/tri.cpp
+    w3d/math/v3_rnd.cpp
     w3d/math/vp.cpp
     w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
@@ -267,6 +268,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/render2dsentence.cpp
     w3d/renderer/rendobj.cpp
     w3d/renderer/rinfo.cpp
+    w3d/renderer/seglinerenderer.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp
     w3d/renderer/surfaceclass.cpp

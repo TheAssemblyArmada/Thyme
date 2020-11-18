@@ -84,6 +84,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "seglinerenderer.h"
 #include "setuphooks.h"
 #include "shader.h"
 #include "sidesinfo.h"
@@ -1217,4 +1218,13 @@ void Setup_Hooks()
 
     // hanimmgr.h
     Hook_Method(0x00831CE0, &HAnimManagerClass::Load_Anim);
+
+    // seglinerenderer.h
+    Hook_Any(0x008858F0, SegLineRendererClass::operator=);
+    Hook_Any(0x008859B0, SegLineRendererClass::Init);
+    Hook_Any(0x00885AB0, SegLineRendererClass::Set_Texture);
+    Hook_Any(0x00885AC0, SegLineRendererClass::Set_Texture_Tile_Factor);
+    Hook_Any(0x00885B10, SegLineRendererClass::Reset_Line);
+    Hook_Any(0x00885B30, SegLineRendererClass::Render);
+    Hook_Any(0x008898C0, SegLineRendererClass::Scale);
 }

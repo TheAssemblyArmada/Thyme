@@ -258,6 +258,32 @@ struct W3dVertexMaterialStruct
     float Translucency;
 };
 
+// clang-format off
+#define W3D_ELINE_MERGE_INTERSECTIONS        0x00000001
+#define W3D_ELINE_FREEZE_RANDOM              0x00000002
+#define W3D_ELINE_DISABLE_SORTING            0x00000004
+#define W3D_ELINE_END_CAPS                   0x00000008
+#define W3D_ELINE_TEXTURE_MAP_MODE_MASK      0xFF000000
+#define W3D_ELINE_TEXTURE_MAP_MODE_OFFSET    24
+#define W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP  0x00000000
+#define W3D_ELINE_UNIFORM_LENGTH_TEXTURE_MAP 0x00000001
+#define W3D_ELINE_TILED_TEXTURE_MAP          0x00000002
+#define W3D_ELINE_DEFAULT_BITS \
+    (W3D_ELINE_MERGE_INTERSECTIONS | (W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP << W3D_ELINE_TEXTURE_MAP_MODE_OFFSET))
+// clang-format on
+
+struct W3dEmitterLinePropertiesStruct
+{
+    uint32_t Flags;
+    uint32_t SubdivisionLevel;
+    float NoiseAmplitude;
+    float MergeAbortFactor;
+    float TextureTileFactor;
+    float UPerSec;
+    float VPerSec;
+    uint32_t Reserved[9];
+};
+
 struct W3dNullObjectStruct
 {
     uint32_t version;

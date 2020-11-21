@@ -2,8 +2,9 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
- * @brief Mesh Material Description Class
+ * @brief Class that holds mesh material data.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -17,9 +18,6 @@
 #include "shader.h"
 #include "sharebuf.h"
 #include "vector2.h"
-#include "vector3.h"
-#include "vector3i.h"
-#include "vector4.h"
 #include "vertmaterial.h"
 
 class TextureClass;
@@ -61,7 +59,7 @@ public:
     TexBufferClass(const TexBufferClass &that);
     ~TexBufferClass();
 
-    void Set_Element(int index, TextureClass *mat);
+    void Set_Element(int index, TextureClass *tex);
     TextureClass *Get_Element(int index);
     TextureClass *Peek_Element(int index);
 
@@ -182,7 +180,7 @@ protected:
     int m_polyCount;
     UVBufferClass *m_UV[MAX_UV_ARRAYS];
     int m_UVSource[MAX_PASSES][MAX_TEX_STAGES];
-    ShareBufferClass<unsigned> *m_colorArray[2];
+    ShareBufferClass<unsigned> *m_colorArray[MAX_COLOR_ARRAYS];
     VertexMaterialClass::ColorSourceType m_DCGSource[MAX_PASSES];
     VertexMaterialClass::ColorSourceType m_DIGSource[MAX_PASSES];
     TextureClass *m_texture[MAX_PASSES][MAX_TEX_STAGES];
@@ -239,52 +237,43 @@ inline unsigned *MeshMatDescClass::Get_DCG_Array(int pass)
 {
     switch (m_DCGSource[pass]) {
         case VertexMaterialClass::MATERIAL:
-            return nullptr;
             break;
         case VertexMaterialClass::COLOR1:
             if (m_colorArray[0]) {
                 return m_colorArray[0]->Get_Array();
-            } else {
-                return nullptr;
             }
             break;
         case VertexMaterialClass::COLOR2:
             if (m_colorArray[1]) {
                 return m_colorArray[1]->Get_Array();
-            } else {
-                return nullptr;
             }
             break;
         default:
-            return nullptr;
             break;
     };
+
+    return nullptr;
 }
 
 inline unsigned *MeshMatDescClass::Get_DIG_Array(int pass)
 {
     switch (m_DIGSource[pass]) {
         case VertexMaterialClass::MATERIAL:
-            return nullptr;
             break;
         case VertexMaterialClass::COLOR1:
             if (m_colorArray[0]) {
                 return m_colorArray[0]->Get_Array();
-            } else {
-                return nullptr;
             }
-            break;
         case VertexMaterialClass::COLOR2:
             if (m_colorArray[1]) {
                 return m_colorArray[1]->Get_Array();
-            } else {
-                return nullptr;
             }
             break;
         default:
-            return nullptr;
             break;
     };
+
+    return nullptr;
 }
 
 inline unsigned *MeshMatDescClass::Get_Color_Array(int index, bool create)
@@ -323,8 +312,8 @@ inline void MeshMatDescClass::Disable_Backface_Culling()
     for (int pass = 0; pass < m_passCount; pass++) {
         m_shader[pass].Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
         if (m_shaderArray[pass]) {
-            for (int tri = 0; tri < m_shaderArray[pass]->Get_Count(); tri++) {
-                m_shaderArray[pass]->Get_Element(tri).Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
+            for (int i = 0; i < m_shaderArray[pass]->Get_Count(); i++) {
+                m_shaderArray[pass]->Get_Element(i).Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
             }
         }
     }

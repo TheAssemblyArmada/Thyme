@@ -84,10 +84,11 @@ public:
     virtual ~ThingTemplate() {}
 
     bool Is_KindOf(KindOfType type) const { return m_kindOf.Get(type); }
+    Utf8String Get_Name() const { return m_nameString; }
 
 private:
     Utf16String m_displayName;
-    Utf8String m_unkAsciiString1;
+    Utf8String m_nameString;
     Utf8String m_side;
     Utf8String m_commandSet;
     Utf8String m_selectPortrait;
@@ -96,7 +97,7 @@ private:
     Utf8String m_shadowTexture;
     Utf8String m_unkAsciiString2;
     Utf8String m_unkAsciiString3;
-    Utf8String m_unkAsciiString4;
+    Utf8String m_LTAName;
     GeometryInfo m_geometryInfo;
     // int m_kindOf[4];
     BitFlags<KINDOF_COUNT> m_kindOf;
@@ -139,7 +140,7 @@ private:
     int m_displayColor;
     int m_occlusionDelay;
     int m_axSimultaneousLinkKey;
-    int16_t m_unkShort1;
+    int16_t m_templateID;
     int16_t m_buildCost;
     int16_t m_refundValue;
     int16_t m_threatValue;
@@ -147,7 +148,7 @@ private:
     uint8_t m_getMaxSimultaneousOfType256;
     bool m_isPrerequisite;
     bool m_isBridge;
-    bool m_unkBool1;
+    bool m_isBuildFacility;
     bool m_isTrainable;
     bool m_enterGuard;
     bool m_hijackGuard;

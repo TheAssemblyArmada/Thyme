@@ -140,13 +140,13 @@ bool SidesList::Validate_Sides()
         TeamsInfo *team_info = Find_Team_Info(team_name, nullptr);
 
         if (team_info != nullptr) {
-            if (team_info->dict.Get_AsciiString(g_teamOwnerKey) != player_name) {
-                team_info->dict.Set_AsciiString(g_teamOwnerKey, player_name);
+            if (team_info->Get_Dict()->Get_AsciiString(g_teamOwnerKey) != player_name) {
+                team_info->Get_Dict()->Set_AsciiString(g_teamOwnerKey, player_name);
                 modified = true;
             }
 
-            if (!team_info->dict.Get_Bool(g_teamIsSingletonKey)) {
-                team_info->dict.Set_Bool(g_teamIsSingletonKey, true);
+            if (!team_info->Get_Dict()->Get_Bool(g_teamIsSingletonKey)) {
+                team_info->Get_Dict()->Set_Bool(g_teamIsSingletonKey, true);
                 modified = true;
             }
         } else {
@@ -172,9 +172,9 @@ bool SidesList::Validate_Sides()
     }
 
     // Validates team names.
-    for (index = 0; index < m_teamRec.Count(); ++index) {
+    for (index = 0; index < m_teamRec.Get_Num_Teams(); ++index) {
         TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
-        Utf8String team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
+        Utf8String team_name = tinfo->Get_Dict()->Get_AsciiString(g_teamNameKey);
 
         if (Find_Side_Info(team_name) != nullptr) {
             captainslog_warn("Duplicate name '%s' between player and team, removing...", team_name.Str());
@@ -190,14 +190,14 @@ bool SidesList::Validate_Sides()
     }
 
     // Validates team owner
-    for (index = 0; index < m_teamRec.Count(); ++index) {
+    for (index = 0; index < m_teamRec.Get_Num_Teams(); ++index) {
         TeamsInfo *tinfo = m_teamRec.Get_Team_Info(index);
-        Utf8String team_name = tinfo->dict.Get_AsciiString(g_teamNameKey);
-        Utf8String team_owner = tinfo->dict.Get_AsciiString(g_teamOwnerKey);
+        Utf8String team_name = tinfo->Get_Dict()->Get_AsciiString(g_teamNameKey);
+        Utf8String team_owner = tinfo->Get_Dict()->Get_AsciiString(g_teamOwnerKey);
 
         if (Find_Side_Info(team_owner) == nullptr || team_name == team_owner) {
             captainslog_warn("Bad owner '%s', reset to neutral.", team_owner.Str());
-            tinfo->dict.Set_AsciiString(g_teamOwnerKey, Utf8String::s_emptyString);
+            tinfo->Get_Dict()->Set_AsciiString(g_teamOwnerKey, Utf8String::s_emptyString);
             modified = true;
         }
     }

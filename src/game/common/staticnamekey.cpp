@@ -25,6 +25,17 @@ StaticNameKey g_playerAlliesKey("playerAllies");
 StaticNameKey g_playerEnemiesKey("playerEnemies");
 StaticNameKey g_teamOwnerKey("teamOwner");
 StaticNameKey g_teamIsSingletonKey("teamIsSingleton");
+StaticNameKey g_objectInitialHealthKey("objectInitialHealth");
+StaticNameKey g_objectEnabledKey("objectEnabled");
+StaticNameKey g_objectIndestructibleKey("objectIndestructible");
+StaticNameKey g_objectUnsellableKey("objectUnsellable");
+StaticNameKey g_objectPoweredKey("objectPowered");
+StaticNameKey g_objectRecruitableAIKey("objectRecruitableAI");
+StaticNameKey g_objectTargetableKey("objectTargetable");
+StaticNameKey g_originalOwnerKey("originalOwner");
+StaticNameKey g_uniqueIDKey("uniqueID");
+StaticNameKey g_waypointIDKey("waypointID");
+StaticNameKey g_waypointNameKey("waypointName");
 #endif
 
 NameKeyType StaticNameKey::Key()

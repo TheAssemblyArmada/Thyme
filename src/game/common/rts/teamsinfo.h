@@ -20,10 +20,22 @@
 #include <captainslog.h>
 
 // Wrapper around dict with a default ctor.
-struct TeamsInfo
+class TeamsInfo
 {
-    TeamsInfo() : dict(0) {}
-    Dict dict;
+public:
+    TeamsInfo() : m_dict(0) {}
+    Dict *Get_Dict() { return &m_dict; }
+    void Init(const Dict *dict)
+    {
+        m_dict.Clear();
+        if (dict) {
+            m_dict = *dict;
+        }
+    }
+    void Clear() { Init(nullptr); }
+
+private:
+    Dict m_dict;
 };
 
 class TeamsInfoRec
@@ -42,7 +54,7 @@ public:
     void Remove_Team(int id);
     TeamsInfo *Find_Team(Utf8String name, int *id);
     void Clear();
-    int Count() { return m_numTeams; }
+    int Get_Num_Teams() { return m_numTeams; }
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
     TeamsInfo *Get_Team_Info(int index);
 
@@ -58,7 +70,7 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
         Clear();
 
         for (int i = 0; i < that.m_numTeams; ++i) {
-            Add_Team(&that.m_teams[i].dict);
+            Add_Team(that.m_teams[i].Get_Dict());
         }
     }
 

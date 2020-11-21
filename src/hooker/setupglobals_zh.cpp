@@ -112,6 +112,17 @@ StaticNameKey &g_playerAlliesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A
 StaticNameKey &g_playerEnemiesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32668, 0));
 StaticNameKey &g_teamOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32568, 0));
 StaticNameKey &g_teamIsSingletonKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A948, 0));
+StaticNameKey &g_objectInitialHealthKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A326A8, 0));
+StaticNameKey &g_objectEnabledKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8E0, 0));
+StaticNameKey &g_objectIndestructibleKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32598, 0));
+StaticNameKey &g_objectUnsellableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32650, 0));
+StaticNameKey &g_objectPoweredKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32628, 0));
+StaticNameKey &g_objectRecruitableAIKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A36720, 0));
+StaticNameKey &g_objectTargetableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32578, 0));
+StaticNameKey &g_originalOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32660, 0));
+StaticNameKey &g_uniqueIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A938, 0));
+StaticNameKey &g_waypointIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8B8, 0));
+StaticNameKey &g_waypointNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A960, 0));
 
 // terraintypes.cpp
 class TerrainTypeCollection;
@@ -424,7 +435,8 @@ BaseHeightMapRenderObjClass *&g_theTerrainRenderObject =
 
 // mapboject.cpp
 #include "mapobject.h"
-MapObject *&MapObject::g_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));
+MapObject *&MapObject::s_theMapObjectListPtr = Make_Global<MapObject *>(PICK_ADDRESS(0x00A3A968, 0x00E1A588));
+Dict &MapObject::s_theWorldDict = Make_Global<Dict>(PICK_ADDRESS(0x00A3A8A8, 0x00E1A4C8));
 
 // rayeffect.cpp
 #include "rayeffect.h"

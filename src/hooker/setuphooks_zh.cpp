@@ -58,6 +58,7 @@
 #include "keyboard.h"
 #include "lightenv.h"
 #include "main.h"
+#include "mapobject.h"
 #include "matpass.h"
 #include "messagestream.h"
 #include "milesaudiofilecache.h"
@@ -1183,4 +1184,12 @@ void Setup_Hooks()
     Hook_Any(0x00817DB0, VertexMaterialClass::Parse_W3dVertexMaterialStruct);
     Hook_Any(0x00817ED0, VertexMaterialClass::Parse_Mapping_Args);
     Hook_Any(0x008195E0, VertexMaterialClass::Get_Preset);
+
+    //mapobject.h
+    Hook_Any(0x00743B50, MapObject::Hook_Ctor);
+    Hook_Any(0x00743F60, MapObject::Set_Thing_Template);
+    Hook_Any(0x00743FB0, MapObject::Set_Name);
+    Hook_Any(0x00744050, MapObject::Get_Waypoint_ID);
+    Hook_Any(0x00744070, MapObject::Get_Waypoint_Name);
+    Hook_Any(0x007440A0, MapObject::Get_Thing_Template);
 }

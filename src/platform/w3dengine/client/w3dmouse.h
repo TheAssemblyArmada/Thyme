@@ -49,7 +49,7 @@ private:
     void Free_D3D_Assets();
     void Init_D3D_Assets();
     void Release_D3D_Cursor_Texture(MouseCursor cursor);
-    void Load_D3D_Cursor_Texture(MouseCursor cursor);
+    bool Load_D3D_Cursor_Texture(MouseCursor cursor);
     void Init_Polygon_Assets();
     void Set_Cursor_Direction(MouseCursor cursor);
 
@@ -63,7 +63,7 @@ private:
     int32_t m_D3DCursorLastDrawn;
     float unk7; // refersh rate related fps * 0.001
     bool m_setWinCursor;
-    int32_t m_camera;
+    CameraClass *m_camera;
     MouseCursor m_currentW3DCursor;
     MouseCursor m_currentPolyCursor;
 

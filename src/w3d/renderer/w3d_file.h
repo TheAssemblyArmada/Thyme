@@ -257,3 +257,11 @@ struct W3dVertexMaterialStruct
     float Opacity;
     float Translucency;
 };
+
+struct W3dNullObjectStruct
+{
+    uint32_t version;
+    uint32_t attributes;
+    uint32_t pad[2];
+    char name[32];
+};

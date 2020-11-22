@@ -52,6 +52,7 @@
 #include "gametext.h"
 #include "geometry.h"
 #include "globaldata.h"
+#include "hanimmgr.h"
 #include "hooker.h"
 #include "image.h"
 #include "ini.h"
@@ -1187,7 +1188,7 @@ void Setup_Hooks()
     Hook_Any(0x00817ED0, VertexMaterialClass::Parse_Mapping_Args);
     Hook_Any(0x008195E0, VertexMaterialClass::Get_Preset);
 
-    //mapobject.h
+    // mapobject.h
     Hook_Any(0x00743B50, MapObject::Hook_Ctor);
     Hook_Any(0x00743F60, MapObject::Set_Thing_Template);
     Hook_Any(0x00743FB0, MapObject::Set_Name);
@@ -1213,4 +1214,7 @@ void Setup_Hooks()
     Hook_Any(0x007823D0, TileData::Has_RGB_Data_For_Width);
     Hook_Any(0x00782420, TileData::Get_RGB_Data_For_Width);
     Hook_Any(0x00782480, TileData::Update_Mips);
+
+    // hanimmgr.h
+    Hook_Method(0x00831CE0, &HAnimManagerClass::Load_Anim);
 }

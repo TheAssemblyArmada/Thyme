@@ -24,9 +24,12 @@
 
 class W3DExclusionListClass;
 class HAnimClass;
+class HAnimManagerIterator;
 
 class HAnimManagerClass
 {
+    friend class HAnimManagerIterator;
+
 public:
     HAnimManagerClass();
     ~HAnimManagerClass();
@@ -39,7 +42,7 @@ public:
     void Free_All_Anims();
     void Free_All_Anims_With_Exclusion_List(const W3DExclusionListClass &exclude_list);
     void Create_Asset_List(DynamicVectorClass<StringClass> &list);
-    unsigned char Add_Anim(HAnimClass *new_anim);
+    bool Add_Anim(HAnimClass *new_anim);
     void Register_Missing(const char *name);
     unsigned char Is_Missing(const char *name);
     void Reset_Missing();
@@ -52,16 +55,11 @@ private:
 
 class HAnimManagerIterator : public HashTableIteratorClass
 {
+
 public:
     HAnimManagerIterator(HAnimManagerIterator &iterator) : HashTableIteratorClass(iterator) {}
+    HAnimManagerIterator(HAnimManagerClass &that) : HashTableIteratorClass(*that.m_animPtrTable) {}
     virtual ~HAnimManagerIterator() {}
 
-    HAnimClass *Get_Current_Anim()
-    {
-        if (Get_Current() != nullptr) {
-            return (HAnimClass *)Get_Current();
-        }
-
-        return nullptr;
-    }
+    HAnimClass *Get_Current_Anim();
 };

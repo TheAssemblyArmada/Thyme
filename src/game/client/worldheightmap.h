@@ -12,12 +12,15 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
+
 #include "always.h"
+#include "asciistring.h"
 #include "coord.h"
 #include "refcount.h"
+#include "tiledata.h"
 #include <vector>
 
-class TileData;
 class TerrainTextureClass;
 class AlphaTerrainTextureClass;
 class AlphaEdgeTextureClass;
@@ -53,8 +56,8 @@ struct TCliffInfo
     float v2;
     float u3;
     float v3;
-    int flip;
-    int mutant;
+    bool flip;
+    bool mutant;
     short tile_index;
 };
 
@@ -71,6 +74,9 @@ struct TXTextureClass
 
 class WorldHeightMap : public RefCountClass, public WorldHeightMapInterfaceClass
 {
+    friend class TerrainTextureClass;
+    friend class AlphaEdgeTextureClass;
+
 public:
     virtual ~WorldHeightMap();
     virtual int Get_Border_Size();
@@ -81,6 +87,34 @@ public:
     static int Get_Max_Height_Value() { return 255; }
 
 protected:
+    enum
+    {
+        TEXTURE_COUNT = 256,
+        TILE_COUNT = 1024,
+        BLEND_TILE_COUNT = 16192,
+        CLIFF_COUNT = 32384,
+    };
+
+    TileData *Get_Source_Tile(int tile)
+    {
+        if (tile > TILE_COUNT) {
+            return nullptr;
+        } else {
+            return m_sourceTiles[tile];
+        }
+    }
+
+    TileData *Get_Edge_Tile(int tile)
+    {
+        if (tile > TILE_COUNT) {
+            return nullptr;
+        } else {
+            return m_edgeTiles[tile];
+        }
+    }
+
+    unsigned char *Get_Pointer_To_Tile_Data(int x, int y, int width);
+
     int m_width;
     int m_height;
     int m_borderSize;
@@ -100,16 +134,16 @@ protected:
     int m_numBitmapTiles;
     int m_numEdgeTiles;
     int m_numBlendedTiles;
-    TileData *m_sourceTiles[1024];
-    TileData *m_edgeTiles[1024];
-    TBlendTileInfo m_blendedTiles[16192];
-    TBlendTileInfo m_extraBlendedTiles[16192];
-    TCliffInfo m_cliffInfo[32384];
+    TileData *m_sourceTiles[TILE_COUNT];
+    TileData *m_edgeTiles[TILE_COUNT];
+    TBlendTileInfo m_blendedTiles[BLEND_TILE_COUNT];
+    TBlendTileInfo m_extraBlendedTiles[BLEND_TILE_COUNT];
+    TCliffInfo m_cliffInfo[CLIFF_COUNT];
     int m_numCliffInfo;
     int m_numTextureClasses;
-    TXTextureClass m_textureClasses[256];
+    TXTextureClass m_textureClasses[TEXTURE_COUNT];
     int m_numEdgeTextureClasses;
-    TXTextureClass m_edgeTextureClasses[256];
+    TXTextureClass m_edgeTextureClasses[TEXTURE_COUNT];
     TerrainTextureClass *m_terrainTex;
     int m_terrainTexHeight;
     AlphaTerrainTextureClass *m_alphaTerrainTex;

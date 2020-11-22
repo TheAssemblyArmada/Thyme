@@ -66,7 +66,7 @@ extern const Array<float, SIN_TABLE_SIZE> _FastInvSinTable;
 
 inline float Normalize_Angle(float angle)
 {
-    captainslog_dbgassert(gm_isnanf(angle), "Angle is NAN in normalizeAngle!\n");
+    captainslog_dbgassert(!gm_isnanf(angle), "Angle is NAN in normalizeAngle!\n");
     if (gm_isnanf(angle)) {
         return 0.0f;
     }

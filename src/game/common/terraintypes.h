@@ -71,6 +71,7 @@ class TerrainType : public MemoryPoolObject
 public:
     TerrainType();
     virtual ~TerrainType() {}
+    Utf8String Get_Texture() { return m_texture; }
 
 private:
     Utf8String m_name;

@@ -91,6 +91,7 @@
 #include "surfaceclass.h"
 #include "targa.h"
 #include "teamsinfo.h"
+#include "terraintex.h"
 #include "texture.h"
 #include "texturebase.h"
 #include "textureloader.h"
@@ -98,6 +99,7 @@
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
+#include "tiledata.h"
 #include "vertmaterial.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
@@ -1192,4 +1194,23 @@ void Setup_Hooks()
     Hook_Any(0x00744050, MapObject::Get_Waypoint_ID);
     Hook_Any(0x00744070, MapObject::Get_Waypoint_Name);
     Hook_Any(0x007440A0, MapObject::Get_Thing_Template);
+
+    // terraintex.h
+    Hook_Any(0x00782630, TerrainTextureClass::Hook_Ctor1);
+    Hook_Any(0x007826C0, TerrainTextureClass::Hook_Ctor2);
+    Hook_Any(0x007826F0, TerrainTextureClass::Update);
+    Hook_Any(0x00782A20, TerrainTextureClass::Update_Flat);
+    Hook_Any(0x007829F0, TerrainTextureClass::Set_LOD);
+    Hook_Any(0x00782C20, AlphaTerrainTextureClass::Hook_Ctor);
+    Hook_Any(0x00783250, LightMapTerrainTextureClass::Hook_Ctor);
+    Hook_Any(0x00783360, AlphaEdgeTextureClass::Hook_Ctor);
+    Hook_Any(0x007833E0, AlphaEdgeTextureClass::Update);
+    Hook_Any(0x007835F0, CloudMapTerrainTextureClass::Hook_Ctor);
+    Hook_Any(0x007836C0, CloudMapTerrainTextureClass::Restore);
+    Hook_Any(0x00783880, ScorchTextureClass::Hook_Ctor);
+
+    // tiledata.h
+    Hook_Any(0x007823D0, TileData::Has_RGB_Data_For_Width);
+    Hook_Any(0x00782420, TileData::Get_RGB_Data_For_Width);
+    Hook_Any(0x00782480, TileData::Update_Mips);
 }

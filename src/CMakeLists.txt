@@ -5,6 +5,7 @@ set(GAMEENGINE_INCLUDES
     game/client
     game/client/gui
     game/client/input
+    game/client/shadow
     game/client/system
     game/client/system/particlesystem
     game/client/videoplayer
@@ -16,6 +17,7 @@ set(GAMEENGINE_INCLUDES
     game/common/rts
     game/common/system
     game/common/thing
+    game/logic/map
     game/logic/object
     game/logic/scriptengine
     game/logic/system
@@ -65,13 +67,17 @@ set(GAMEENGINE_SRC
     game/client/optionpreferences.cpp
     game/client/shadermanager.cpp
     game/client/terrainroads.cpp
+    game/client/terraintex.cpp
+    game/client/tiledata.cpp
     game/client/view.cpp
     game/client/water.cpp
+    game/client/worldheightmap.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/wininstancedata.cpp
     game/client/image.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/shadow/w3dshadow.cpp
     game/client/system/debugdisplay.cpp
     game/client/system/rayeffect.cpp
     game/client/system/particlesystem/particle.cpp
@@ -158,7 +164,9 @@ set(GAMEENGINE_SRC
     game/common/system/xfercrc.cpp
     game/common/thing/moduleinfo.cpp
     game/common/thing/thing.cpp
+    game/common/thing/thingfactory.cpp
     game/common/thing/thingtemplate.cpp
+    game/logic/map/polygontrigger.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp

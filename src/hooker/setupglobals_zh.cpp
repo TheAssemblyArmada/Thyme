@@ -123,6 +123,9 @@ StaticNameKey &g_originalOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00
 StaticNameKey &g_uniqueIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A938, 0));
 StaticNameKey &g_waypointIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8B8, 0));
 StaticNameKey &g_waypointNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A960, 0));
+StaticNameKey &g_weatherKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A890, 0));
+StaticNameKey &g_lightHeightAboveTerrainKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A850, 0));
+StaticNameKey &g_scorchTypeKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A808, 0));
 
 // terraintypes.cpp
 class TerrainTypeCollection;
@@ -472,3 +475,11 @@ SceneClass *&W3DDisplay::s_3DScene = Make_Global<SceneClass *>(0x00A3250C); // T
 SceneClass *&W3DDisplay::s_2DScene = Make_Global<SceneClass *>(0x00A32510); // TODO: Actual type is RTS2DScene
 SceneClass *&W3DDisplay::s_3DInterfaceScene =
     Make_Global<SceneClass *>(0x00A32514); // TODO: Actual type is RTS3DInterfaceScene
+
+// w3dshadow.cpp
+#include "w3dshadow.h"
+W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_ADDRESS(0x00A3AE4C, 0));
+
+// thingfactory.cpp
+#include "thingfactory.h"
+ThingFactory *&g_theThingFactory = Make_Global<ThingFactory *>(PICK_ADDRESS(0x00A2BC04, 0));

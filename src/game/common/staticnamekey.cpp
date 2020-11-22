@@ -36,6 +36,9 @@ StaticNameKey g_originalOwnerKey("originalOwner");
 StaticNameKey g_uniqueIDKey("uniqueID");
 StaticNameKey g_waypointIDKey("waypointID");
 StaticNameKey g_waypointNameKey("waypointName");
+StaticNameKey g_weatherKey("weather");
+StaticNameKey g_lightHeightAboveTerrainKey("lightHeightAboveTerrain");
+StaticNameKey g_scorchTypeKey("scorchType");
 #endif
 
 NameKeyType StaticNameKey::Key()

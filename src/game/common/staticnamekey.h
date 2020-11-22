@@ -54,6 +54,9 @@ extern StaticNameKey &g_originalOwnerKey;
 extern StaticNameKey &g_uniqueIDKey;
 extern StaticNameKey &g_waypointIDKey;
 extern StaticNameKey &g_waypointNameKey;
+extern StaticNameKey &g_weatherKey;
+extern StaticNameKey &g_lightHeightAboveTerrainKey;
+extern StaticNameKey &g_scorchTypeKey;
 #else
 extern StaticNameKey g_teamNameKey;
 extern StaticNameKey g_theInitialCameraPositionKey;
@@ -76,4 +79,7 @@ extern StaticNameKey g_originalOwnerKey;
 extern StaticNameKey g_uniqueIDKey;
 extern StaticNameKey g_waypointIDKey;
 extern StaticNameKey g_waypointNameKey;
+extern StaticNameKey g_weatherKey;
+extern StaticNameKey g_lightHeightAboveTerrainKey;
+extern StaticNameKey g_scorchTypeKey;
 #endif

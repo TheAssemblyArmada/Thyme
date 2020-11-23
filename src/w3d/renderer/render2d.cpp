@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "render2d.h"
+#include "assetmgr.h"
 #include "texture.h"
 #include "w3d.h"
 
@@ -93,10 +94,9 @@ void Render2DClass::Set_Coordinate_Range(const RectClass &range)
  */
 void Render2DClass::Set_Texture(const char *filename)
 {
-    // TODO Needs W3DAssetManager
-#ifdef GAME_DLL
-    Call_Method<void, Render2DClass, const char *>(PICK_ADDRESS(0x00809590, 0x004F3390), this, filename);
-#endif
+    auto *tex = W3DAssetManager::Get_Instance()->Get_Texture(filename, MIP_LEVELS_1);
+    Set_Texture(tex);
+    tex->Release_Ref();
 }
 
 /**

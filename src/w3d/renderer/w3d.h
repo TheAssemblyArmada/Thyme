@@ -39,6 +39,8 @@ public:
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
     static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
 
+    static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
+
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);

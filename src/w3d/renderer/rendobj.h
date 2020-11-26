@@ -342,6 +342,8 @@ public:
     Vector3 Get_Position() const;
     static const float AT_MIN_LOD;
     static const float AT_MAX_LOD;
+    RenderObjUnk *Get_Unknown() const { return m_unknown; }
+    bool Is_Unk_15() const { return (m_bits & IS_UNK_15) != 0; }
 
 protected:
     virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
@@ -359,6 +361,7 @@ protected:
         IS_FORCE_VISIBLE = 0x00000800,
         BOUNDING_VOLUMES_VALID = 0x00002000,
         IS_TRANSLUCENT = 0x00004000,
+        IS_UNK_15 = 0x00008000,
         SUBOBJ_TRANSFORMS_DIRTY = 0x00020000,
         IS_ALPHA = 0x00040000,
         IS_ADDITIVE = 0x00100000,

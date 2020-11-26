@@ -133,6 +133,7 @@ public:
     static void Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
     static void Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
     static void Set_Index_Buffer_Index_Offset(unsigned offset);
+    static void Set_Fog(bool enable, const Vector3 &color, float start, float end);
     static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
     static void Apply_Render_State_Changes();
@@ -759,6 +760,16 @@ inline void DX8Wrapper::Set_DX8_Material(const D3DMATERIAL8 *mat)
     DX8CALL(SetMaterial(mat));
 }
 
+inline void DX8Wrapper::Set_Fog(bool enable, const Vector3 &color, float start, float end)
+{
+    s_fogEnable = enable;
+    s_fogColor = Convert_Color(color, 0.0f);
+
+    ShaderClass::Invalidate();
+
+    Set_DX8_Render_State(D3DRS_FOGSTART, *(DWORD *)(&start));
+    Set_DX8_Render_State(D3DRS_FOGEND, *(DWORD *)(&end));
+}
 #endif
 
 inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)

@@ -46,12 +46,12 @@ public:
     static void Set_Lighting_LOD_Cutoff(float inten);
     static float Get_Lighting_LOD_Cutoff();
 
-protected:
     enum
     {
         MAX_LIGHTS = 4
     };
 
+protected:
     struct InputLightStruct
     {
         void Init(const LightClass &light, const Vector3 &object_center);

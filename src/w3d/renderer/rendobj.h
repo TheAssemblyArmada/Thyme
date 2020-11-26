@@ -328,6 +328,7 @@ public:
     bool Is_Transform_Identity() const;
     bool Is_Transform_Identity_No_Validity_Check() const;
     RenderObjClass *Get_Container() const { return m_container; }
+    void Set_House_Color(uint32_t color) { m_houseColor = color; }
 
     void Set_Sub_Object_Transforms_Dirty(bool onoff)
     {

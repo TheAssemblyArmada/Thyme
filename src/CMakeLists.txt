@@ -253,6 +253,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/hanimmgr.cpp
+    w3d/renderer/htreemgr.cpp
     w3d/renderer/light.cpp
     w3d/renderer/lightenv.cpp
     w3d/renderer/mapper.cpp

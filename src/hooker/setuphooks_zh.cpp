@@ -15,6 +15,7 @@
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
+#include "assetmgr.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "binkvideoplayer.h"
@@ -1257,4 +1258,37 @@ void Setup_Hooks()
     Hook_Any(0x00885B10, SegLineRendererClass::Reset_Line);
     Hook_Any(0x00885B30, SegLineRendererClass::Render);
     Hook_Any(0x008898C0, SegLineRendererClass::Scale);
+
+    // assetmgr.h
+    Hook_Any(0x008147C0, W3DAssetManager::Free_Assets);
+    Hook_Any(0x00814850, W3DAssetManager::Release_Unused_Assets);
+    // Hook_Any(0x00814870, W3DAssetManager::Free_Assets_With_Exclusion_List);
+    Hook_Any(0x00814A60, W3DAssetManager::Create_Asset_List);
+    Hook_Any(0x00814FC0, W3DAssetManager::Create_Render_Obj);
+    Hook_Any(0x008152C0, W3DAssetManager::Render_Obj_Exists);
+    Hook_Any(0x00815340, W3DAssetManager::Create_Render_Obj_Iterator);
+    // Can't hook due to reuse of address Hook_Any(0x00815370, W3DAssetManager::Release_Render_Obj_Iterator);
+    Hook_Any(0x00815390, W3DAssetManager::Create_HAnim_Iterator);
+    Hook_Any(0x008154F0, W3DAssetManager::Get_HAnim);
+    Hook_Any(0x00765FF0, W3DAssetManager::Add_Anim);
+    Hook_Any(0x00815920, W3DAssetManager::Get_Texture);
+    Hook_Any(0x00815C90, W3DAssetManager::Release_All_Textures);
+    Hook_Any(0x00815D90, W3DAssetManager::Release_Unused_Textures);
+    Hook_Any(0x00816090, W3DAssetManager::Release_Texture);
+    Hook_Any(0x008145A0, W3DAssetManager::Load_Procedural_Textures);
+    Hook_Any(0x00766010, W3DAssetManager::Peek_Metal_Map_Manager);
+    Hook_Any(0x008161A0, W3DAssetManager::Get_Font3DInstance);
+    Hook_Any(0x00816370, W3DAssetManager::Get_FontChars);
+    Hook_Any(0x00815440, W3DAssetManager::Create_HTree_Iterator);
+    Hook_Any(0x00815720, W3DAssetManager::Get_HTree);
+    Hook_Any(0x00816550, W3DAssetManager::Register_Prototype_Loader);
+    Hook_Any(0x00815460, W3DAssetManager::Create_Font3DData_Iterator);
+    Hook_Any(0x008162B0, W3DAssetManager::Add_Font3DData);
+    Hook_Any(0x008162D0, W3DAssetManager::Remove_Font3DData);
+    Hook_Any(0x00816210, W3DAssetManager::Get_Font3DData);
+    Hook_Any(0x00816300, W3DAssetManager::Release_All_Font3DDatas);
+    Hook_Any(0x00816330, W3DAssetManager::Release_Unused_Font3DDatas);
+    Hook_Any(0x008164C0, W3DAssetManager::Release_All_FontChars);
+
+    Hook_Method(0x00763D70, &GameAssetManager::Hook_Ctor);
 }

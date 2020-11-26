@@ -475,7 +475,7 @@ CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>
 
 // w3ddisplay.cpp
 #include "w3ddisplay.h"
-W3DAssetManager *&W3DDisplay::s_assetManager = Make_Global<W3DAssetManager *>(0x00A32518);
+GameAssetManager *&W3DDisplay::s_assetManager = Make_Global<GameAssetManager *>(0x00A32518);
 SceneClass *&W3DDisplay::s_3DScene = Make_Global<SceneClass *>(0x00A3250C); // TODO: Actual type is RTS2DScene
 SceneClass *&W3DDisplay::s_2DScene = Make_Global<SceneClass *>(0x00A32510); // TODO: Actual type is RTS2DScene
 SceneClass *&W3DDisplay::s_3DInterfaceScene =
@@ -488,3 +488,7 @@ W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_
 // thingfactory.cpp
 #include "thingfactory.h"
 ThingFactory *&g_theThingFactory = Make_Global<ThingFactory *>(PICK_ADDRESS(0x00A2BC04, 0));
+
+// assetmgr.cpp
+#include "assetmgr.h"
+NullPrototypeClass &s_nullPrototype = Make_Global<NullPrototypeClass>(0x00A4C1B8);

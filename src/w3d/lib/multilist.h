@@ -233,7 +233,7 @@ public:
         bool res = Internal_Remove(obj);
 
         if (res == true) {
-            obj->Add_Ref();
+            obj->Release_Ref();
         }
 
         return res;

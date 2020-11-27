@@ -488,3 +488,11 @@ W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_
 // thingfactory.cpp
 #include "thingfactory.h"
 ThingFactory *&g_theThingFactory = Make_Global<ThingFactory *>(PICK_ADDRESS(0x00A2BC04, 0));
+
+// gamelogic.cpp
+#include "gamelogic.h"
+GameLogic *&g_theGameLogic = Make_Global<GameLogic *>(PICK_ADDRESS(0x00A2BBEC, 0));
+
+// display.cpp
+#include "display.h"
+Display *&g_theDisplay = Make_Global<Display *>(PICK_ADDRESS(0x00A2A6D0, 0));

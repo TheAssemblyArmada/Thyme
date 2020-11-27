@@ -16,45 +16,17 @@
 
 #include "always.h"
 #include "ini.h"
+#include "module.h"
 #include "namekeygenerator.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
 #include <map>
 #include <vector>
 
-// TODO move/remove these as needed.
-enum ModuleType
-{
-    MODULE_FIRST,
-    MODULE_DEFAULT = 0,
-    MODULE_W3D = 1,
-    MODULE_UNK = 2,
-};
-
 class Module;
 class W3DModelDrawModuleData;
 class W3DTreeDrawModuleData;
 class Thing;
-
-// TODO possibly move to more appropriate location?
-class ModuleData : public SnapShot
-{
-    friend class ModuleFactory;
-
-public:
-    virtual void CRC_Snapshot(Xfer *xfer) {}
-    virtual void Xfer_Snapshot(Xfer *xfer) {}
-    virtual void Load_Post_Process() {}
-
-    virtual ~ModuleData() {}
-    virtual bool Is_AI_Module_Data() const { return false; }
-    virtual W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const { return nullptr; }
-    virtual W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
-    virtual void *Get_Minimum_Required_Game_LOD() const { return nullptr; } // Not sure what this actually returns.
-
-private:
-    NameKeyType m_tagKey;
-};
 
 typedef Module *(*modcreateproc_t)(Thing *, ModuleData *);
 typedef ModuleData *(*moddatacreateproc_t)(INI *);

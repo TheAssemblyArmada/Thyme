@@ -45,6 +45,7 @@
 #include "force_nocd.h"
 #include "functionlexicon.h"
 #include "gameclient.h"
+#include "gamelogic.h"
 #include "gamemath.h"
 #include "gamememory.h"
 #include "gamememoryinit.h"
@@ -1305,4 +1306,18 @@ void Setup_Hooks()
     Hook_Any(0x00885B10, SegLineRendererClass::Reset_Line);
     Hook_Any(0x00885B30, SegLineRendererClass::Render);
     Hook_Any(0x008898C0, SegLineRendererClass::Scale);
+
+    // gamelogic.h
+    Hook_Any(0x004A67B0, GameLogic::Is_Intro_Movie_Playing);
+    Hook_Any(0x004A6940, GameLogic::Rebalance_Parent_Sleepy_Update);
+    Hook_Any(0x004A6F30, GameLogic::Get_First_Object);
+    Hook_Any(0x004A6F40, GameLogic::Allocate_Object_ID);
+    Hook_Any(0x004A7900, GameLogic::Is_Game_Paused);
+    Hook_Any(0x004A7A30, GameLogic::Process_Progress_Complete);
+    Hook_Any(0x004A7A70, GameLogic::Time_Out_Game_Start);
+    Hook_Any(0x004A7BB0, GameLogic::Set_Buildable_Status_Override);
+    Hook_Any(0x004A7BD0, GameLogic::Find_Buildable_Status_Override);
+    Hook_Any(0x004A7C00, GameLogic::Set_Control_Bar_Override);
+    Hook_Any(0x004A7DA0, GameLogic::Find_Control_Bar_Override);
+    Hook_Any(0x004A7FA0, GameLogic::Add_TOC_Entry);
 }

@@ -84,7 +84,7 @@ public:
     virtual ~ThingTemplate() {}
 
     bool Is_KindOf(KindOfType type) const { return m_kindOf.Get(type); }
-    Utf8String Get_Name() const { return m_nameString; }
+    const Utf8String &Get_Name() const { return m_nameString; }
 
 private:
     Utf16String m_displayName;

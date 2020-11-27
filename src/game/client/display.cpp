@@ -24,6 +24,10 @@
 #include "videostream.h"
 #include "view.h"
 
+#ifndef GAME_DLL
+Display *g_theDisplay;
+#endif
+
 Display::Display() :
     m_width(0),
     m_height(0),

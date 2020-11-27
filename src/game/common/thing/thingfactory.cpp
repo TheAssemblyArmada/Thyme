@@ -17,7 +17,7 @@
 ThingFactory *g_theThingFactory = nullptr;
 #endif
 
-ThingTemplate *ThingFactory::Find_Template_Internal(Utf8String name)
+ThingTemplate *ThingFactory::Find_Template(Utf8String name)
 {
 #ifdef GAME_DLL
     return Call_Method<ThingTemplate *, ThingFactory, Utf8String>(PICK_ADDRESS(0x004B0B50, 0x00407DD0), this, name);

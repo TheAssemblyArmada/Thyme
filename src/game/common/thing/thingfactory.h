@@ -21,7 +21,7 @@
 class ThingFactory : public SubsystemInterface
 {
 public:
-    ThingTemplate *Find_Template_Internal(Utf8String name);
+    ThingTemplate *Find_Template(Utf8String name);
 };
 
 #ifdef GAME_DLL

@@ -147,4 +147,7 @@ protected:
 
 #ifdef GAME_DLL
 #include "hooker.h"
+extern Display *&g_theDisplay;
+#else
+extern Display *g_theDisplay;
 #endif

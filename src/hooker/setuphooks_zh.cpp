@@ -1301,7 +1301,7 @@ void Setup_Hooks()
     // seglinerenderer.h
     Hook_Any(0x008858F0, SegLineRendererClass::operator=);
     Hook_Any(0x008859B0, SegLineRendererClass::Init);
-    Hook_Any(0x00885AB0, SegLineRendererClass::Set_Texture);
+    Hook_Any(0x00885AB0, SegLineRendererClass::Get_Texture);
     Hook_Any(0x00885AC0, SegLineRendererClass::Set_Texture_Tile_Factor);
     Hook_Any(0x00885B10, SegLineRendererClass::Reset_Line);
     Hook_Any(0x00885B30, SegLineRendererClass::Render);

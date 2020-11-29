@@ -118,7 +118,7 @@ void SegLineRendererClass::Init(const W3dEmitterLinePropertiesStruct &props)
 
 void SegLineRendererClass::Set_Texture(TextureClass *texture)
 {
-    Ref_Ptr_Set(m_texture, texture);
+    Ref_Ptr_Set(texture, m_texture);
 }
 
 TextureClass *SegLineRendererClass::Get_Texture() const
@@ -840,6 +840,9 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
         if (base_color_v) {
             stack[0].start_color = base_color_v[input_index];
             stack[0].end_color = base_color_v[input_index + 1];
+        } else {
+            stack[0].start_color = Vector4(m_color.X, m_color.Y, m_color.Z, m_opacity);
+            stack[0].end_color = stack[0].start_color;
         }
 
         stack[0].rand = m_noiseAmplitude;
@@ -881,7 +884,7 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
     if (base_color_v) {
         subdiv_color_v[output_index] = base_color_v[point_cnt - 1];
     } else {
-        subdiv_color_v->Set(m_color.X, m_color.Y, m_color.Z, m_opacity);
+        subdiv_color_v[output_index].Set(m_color.X, m_color.Y, m_color.Z, m_opacity);
     }
 
     *p_sub_point_cnt = output_index + 1;

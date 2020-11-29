@@ -47,7 +47,7 @@ public:
 
 private:
     void Set_Action_Type(ScriptActionType type);
-    static ScriptAction *Parse_Action(DataChunkInput &input, DataChunkInfo *info);
+    static ScriptAction *Parse_Action(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 private:
     ScriptActionType m_actionType;

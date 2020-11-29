@@ -127,7 +127,7 @@ Script *Script::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &
     // Delete_Instance(new_script->m_condition);
     // Delete_Instance(new_script->m_action);
 
-    new_script->m_scriptName = m_scriptName;
+    new_script->m_scriptName = m_scriptName + str1;
     new_script->m_comment = m_comment;
     new_script->m_conditionComment = m_conditionComment;
     new_script->m_actionComment = m_actionComment;
@@ -164,6 +164,8 @@ bool Script::Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo 
     Script *script = Parse_Script(input, info->version);
     static_cast<ScriptGroup *>(data)->Add_Script(script, 0xFFFFFF);
 
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+
     return true;
 }
 
@@ -176,6 +178,8 @@ bool Script::Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *
 {
     Script *script = Parse_Script(input, info->version);
     static_cast<ScriptList *>(data)->Add_Script(script, 0xFFFFFF);
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
 
     return true;
 }
@@ -213,5 +217,11 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
     input.Register_Parser("ScriptAction", "Script", ScriptAction::Parse_Action_Chunk, nullptr);
     input.Register_Parser("ScriptActionFalse", "Script", ScriptAction::Parse_False_Action_Chunk, nullptr);
 
-    return input.Parse(new_script) ? new_script : nullptr;
+    if (!input.Parse(new_script)) {
+        return nullptr;
+    }
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+
+    return new_script;
 }

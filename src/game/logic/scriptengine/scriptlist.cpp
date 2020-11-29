@@ -171,6 +171,8 @@ void ScriptList::Add_Group(ScriptGroup *group, int index)
     ScriptGroup *position = nullptr;
     ScriptGroup *group_list = m_firstGroup;
 
+    captainslog_dbgassert(group->Get_Next() == nullptr, "Adding already linked group.");
+
     for (int i = index; i > 0; --i) {
         if (group_list == nullptr) {
             break;
@@ -196,6 +198,7 @@ void ScriptList::Add_Script(Script *script, int index)
 {
     Script *position = nullptr;
     Script *script_list = m_firstScript;
+    captainslog_dbgassert(script->Get_Next() == nullptr, "Adding already linked script.");
 
     for (int i = index; i > 0; --i) {
         if (script_list == nullptr) {
@@ -222,13 +225,13 @@ void ScriptList::Add_Script(Script *script, int index)
  */
 int ScriptList::Get_Read_Scripts(ScriptList **scripts)
 {
-    for (int i = 0; i < s_numInReadList; ++i) {
+    int retval = s_numInReadList;
+    s_numInReadList = 0;
+
+    for (int i = 0; i < retval; ++i) {
         scripts[i] = s_readLists[i];
         s_readLists[i] = nullptr;
     }
-
-    int retval = s_numInReadList;
-    s_numInReadList = 0;
 
     return retval;
 }
@@ -264,6 +267,8 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
 {
     input.Register_Parser("ScriptList", info->label, ScriptList::Parse_Script_List_Chunk, nullptr);
 
+    captainslog_dbgassert(s_numInReadList == 0, "Leftover scripts floating around.");
+
     for (int i = 0; i < s_numInReadList; ++i) {
         Delete_Instance(s_readLists[i]);
         s_readLists[i] = nullptr;
@@ -274,6 +279,7 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
     read_info.num_lists = 0;
 
     if (input.Parse(&read_info)) {
+        captainslog_dbgassert(read_info.num_lists < 16, "Read too many, overrun buffer.");
         s_numInReadList = read_info.num_lists;
 
         if (s_numInReadList > 0) {

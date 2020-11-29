@@ -63,7 +63,10 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
         ++script_count;
     }
 
+    auto dbg_script_count = script_count;
     xfer->xferUnsignedShort(&script_count);
+    captainslog_dbgassert(dbg_script_count != script_count,
+        "ScriptGroup::Xfer_Snapshot - Script list count has changed, attempting to recover.");
 
     for (Script *next = m_firstScript; next != nullptr; next = next->Get_Next()) {
         xfer->xferSnapshot(next);
@@ -74,6 +77,7 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
     }
 
     if (script_count > 0) {
+        captainslog_dbgassert(false, "Striping out extra scripts - Bad...");
         if (Script::s_emptyScript == nullptr) {
             Script::s_emptyScript = new Script;
         }
@@ -134,7 +138,7 @@ ScriptGroup *ScriptGroup::Duplicate_And_Qualify(const Utf8String &str1, const Ut
         new_script = duplicate;
     }
 
-    new_group->m_groupName = m_groupName;
+    new_group->m_groupName = m_groupName + str1;
     new_group->m_isGroupActive = m_isGroupActive;
     new_group->m_isGroupSubroutine = m_isGroupSubroutine;
     new_group->m_nextGroup = nullptr;
@@ -149,6 +153,7 @@ void ScriptGroup::Add_Script(Script *script, int index)
 {
     Script *position = nullptr;
     Script *script_list = m_firstScript;
+    captainslog_dbgassert(script->Get_Next() == nullptr, "Adding already linked group.");
 
     for (int i = index; i > 0; --i) {
         if (script_list == nullptr) {

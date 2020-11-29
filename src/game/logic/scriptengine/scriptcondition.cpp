@@ -39,7 +39,7 @@ Condition::Condition(ConditionType type) :
 Condition::~Condition()
 {
     // Clear our paramter instances.
-    for (int i = m_numParams; i < MAX_CONDITION_PARAMETERS; ++i) {
+    for (int i = 0; i < m_numParams; ++i) {
         Delete_Instance(m_params[i]);
         m_params[i] = nullptr;
     }
@@ -61,13 +61,13 @@ Condition::~Condition()
 Condition *Condition::Duplicate()
 {
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
-    Condition *new_cond = new Condition(m_conditionType);
+    Condition *head_cond = new Condition(m_conditionType);
 
     for (int i = 0; i < m_numParams; ++i) {
-        *new_cond->m_params[i] = *m_params[i];
+        *head_cond->m_params[i] = *m_params[i];
     }
 
-    Condition *retval = new_cond;
+    Condition *new_cond = head_cond;
 
     for (Condition *next = m_nextAndCondition; next != nullptr; next = next->m_nextAndCondition) {
         Condition *new_next = new Condition(next->m_conditionType);
@@ -80,7 +80,7 @@ Condition *Condition::Duplicate()
         }
     }
 
-    return retval;
+    return head_cond;
 }
 
 /**
@@ -181,13 +181,13 @@ OrCondition::~OrCondition()
  */
 OrCondition *OrCondition::Duplicate()
 {
-    OrCondition *new_or = new OrCondition;
+    OrCondition *head_or = new OrCondition;
 
     if (m_firstAnd != nullptr) {
-        new_or->m_firstAnd = m_firstAnd->Duplicate();
+        head_or->m_firstAnd = m_firstAnd->Duplicate();
     }
 
-    OrCondition *retval = new_or;
+    OrCondition *new_or = head_or;
 
     for (OrCondition *next = m_nextOr; next != nullptr; next = next->m_nextOr) {
         OrCondition *new_next = new OrCondition;
@@ -199,7 +199,7 @@ OrCondition *OrCondition::Duplicate()
         }
     }
 
-    return retval;
+    return head_or;
 }
 
 /**

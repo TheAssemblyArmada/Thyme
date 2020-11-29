@@ -30,7 +30,7 @@ ScriptAction::ScriptAction(ScriptActionType type) :
 ScriptAction::~ScriptAction()
 {
     // Clear our paramter instances.
-    for (int i = m_numParams; i < MAX_ACTION_PARAMETERS; ++i) {
+    for (int i = 0; i < m_numParams; ++i) {
         Delete_Instance(m_params[i]);
         m_params[i] = nullptr;
     }
@@ -40,7 +40,6 @@ ScriptAction::~ScriptAction()
         saved = next->m_nextAction;
         next->m_nextAction = nullptr; // Prevent trying to next object twice
         Delete_Instance(next);
-        next = saved;
     }
 }
 
@@ -136,7 +135,7 @@ Utf8String ScriptAction::Get_UI_Text()
  */
 bool ScriptAction::Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    ScriptAction *paction = Parse_Action(input, info);
+    ScriptAction *paction = Parse_Action(input, info, data);
     ScriptAction *saction = static_cast<Script *>(data)->Get_Action();
 
     for (ScriptAction *next = saction; next != nullptr; next = next->m_nextAction) {
@@ -149,6 +148,8 @@ bool ScriptAction::Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info
 
     static_cast<Script *>(data)->Set_Action(paction);
 
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
+
     return true;
 }
 
@@ -159,7 +160,7 @@ bool ScriptAction::Parse_Action_Chunk(DataChunkInput &input, DataChunkInfo *info
  */
 bool ScriptAction::Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    ScriptAction *paction = Parse_Action(input, info);
+    ScriptAction *paction = Parse_Action(input, info, data);
     ScriptAction *saction = static_cast<Script *>(data)->Get_False_Action();
 
     for (ScriptAction *next = saction; next != nullptr; next = next->m_nextAction) {
@@ -171,6 +172,8 @@ bool ScriptAction::Parse_False_Action_Chunk(DataChunkInput &input, DataChunkInfo
     }
 
     static_cast<Script *>(data)->Set_False_Action(paction);
+
+    captainslog_dbgassert(input.At_End_Of_Chunk(), "Unexpected data left over.");
 
     return true;
 }
@@ -193,11 +196,12 @@ void ScriptAction::Set_Action_Type(ScriptActionType type)
  *
  * 0x005208A0
  */
-ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *info)
+ScriptAction *ScriptAction::Parse_Action(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     // TODO Requires ScriptEngine vtable
 #ifdef GAME_DLL
-    return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *>(PICK_ADDRESS(0x005208A0, 0), input, info);
+    return Call_Function<ScriptAction *, DataChunkInput &, DataChunkInfo *, void *>(
+        PICK_ADDRESS(0x005208A0, 0), input, info, data);
 #else
     return nullptr;
 #endif

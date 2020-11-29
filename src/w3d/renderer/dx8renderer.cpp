@@ -623,7 +623,7 @@ void DX8TextureCategoryClass::Render()
                 if (mesh->Get_Alpha_Override() == 1.0f) {
                     renderer->Render(mesh->Get_Base_Vertex_Offset());
                 } else {
-                    ShaderClass shader2;
+                    ShaderClass shader2 = shader;
                     shader2.Set_Src_Blend_Func(ShaderClass::SRCBLEND_SRC_ALPHA);
                     shader2.Set_Dst_Blend_Func(ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA);
                     if (mesh->Is_Additive()) {
@@ -724,17 +724,26 @@ unsigned int DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
                     if (Compare_Materials(split_table.Peek_Material(i, pass), m_material)) {
                         if (split_table.Peek_Shader(i, pass) == m_shader) {
                             unsigned short index = vertex_offset + polys[i].I;
-                            std::clamp(index, vmin, vmax);
+
+                            vmin = std::min(index, vmin);
+                            vmax = std::max(index, vmax);
+
                             *indices = index;
                             indices++;
 
                             index = vertex_offset + polys[i].J;
-                            std::clamp(index, vmin, vmax);
+
+                            vmin = std::min(index, vmin);
+                            vmax = std::max(index, vmax);
+
                             *indices = index;
                             indices++;
 
                             index = vertex_offset + polys[i].K;
-                            std::clamp(index, vmin, vmax);
+
+                            vmin = std::min(index, vmin);
+                            vmax = std::max(index, vmax);
+
                             *indices = index;
                             indices++;
                         }

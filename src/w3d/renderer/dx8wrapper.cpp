@@ -1244,7 +1244,7 @@ void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number)
     }
 
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vb);
-    Ref_Ptr_Set(v, s_renderState.vertex_buffers[number]);
+    Ref_Ptr_Set(s_renderState.vertex_buffers[number], v);
 
     if (v) {
         v->Add_Engine_Ref();
@@ -1266,7 +1266,7 @@ void DX8Wrapper::Set_Index_Buffer(const IndexBufferClass *ib, unsigned short ind
     }
 
     IndexBufferClass *i = const_cast<IndexBufferClass *>(ib);
-    Ref_Ptr_Set(i, s_renderState.index_buffer);
+    Ref_Ptr_Set(s_renderState.index_buffer, i);
     s_renderState.index_base_offset = index_base_offset;
 
     if (i) {
@@ -1292,7 +1292,7 @@ void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba)
     s_renderState.vba_offset = vba.Get_Vertex_Offset();
     s_renderState.vba_count = vba.Get_Vertex_Count();
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vba.Get_Vertex_Buffer());
-    Ref_Ptr_Set(v, s_renderState.vertex_buffers[0]);
+    Ref_Ptr_Set(s_renderState.vertex_buffers[0], v);
     v->Add_Engine_Ref();
     s_renderStateChanged |= VERTEX_BUFFER_CHANGED;
 }
@@ -1308,7 +1308,7 @@ void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned shor
     s_renderState.index_buffer_type = iba.Get_Type();
     s_renderState.iba_offset = iba.Get_Index_Offset();
     IndexBufferClass *i = const_cast<IndexBufferClass *>(iba.Get_Index_Buffer());
-    Ref_Ptr_Set(i, s_renderState.index_buffer);
+    Ref_Ptr_Set(s_renderState.index_buffer, i);
     i->Add_Engine_Ref();
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }

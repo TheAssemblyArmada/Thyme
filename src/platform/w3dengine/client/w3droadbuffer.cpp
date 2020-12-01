@@ -334,7 +334,7 @@ void W3DRoadBuffer::Clear_All_Roads()
 
 void W3DRoadBuffer::Set_Map(WorldHeightMap *map)
 {
-    Ref_Ptr_Set(map, m_map);
+    Ref_Ptr_Set(m_map, map);
 }
 
 void W3DRoadBuffer::Update_Lighting()

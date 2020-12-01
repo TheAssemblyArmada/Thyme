@@ -66,8 +66,8 @@ SegLineRendererClass::SegLineRendererClass(const SegLineRendererClass &that) :
 SegLineRendererClass &SegLineRendererClass::operator=(const SegLineRendererClass &that)
 {
     if (this != &that) {
-        TextureClass *tex = (TextureClass *)that.m_texture;
-        Ref_Ptr_Set(tex, m_texture);
+        TextureClass *tex = const_cast<TextureClass *>(that.m_texture);
+        Ref_Ptr_Set(m_texture, tex);
         m_shader = that.m_shader;
         m_width = that.m_width;
         m_color = that.m_color;
@@ -118,7 +118,7 @@ void SegLineRendererClass::Init(const W3dEmitterLinePropertiesStruct &props)
 
 void SegLineRendererClass::Set_Texture(TextureClass *texture)
 {
-    Ref_Ptr_Set(texture, m_texture);
+    Ref_Ptr_Set(m_texture, texture);
 }
 
 TextureClass *SegLineRendererClass::Get_Texture() const

@@ -102,7 +102,7 @@ void TextureLoadTaskClass::Destroy()
 void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, PriorityType priority)
 {
     captainslog_assert(texture != nullptr);
-    Ref_Ptr_Set(texture, m_texture);
+    Ref_Ptr_Set(m_texture, texture);
     m_type = type;
     m_priority = priority;
     m_loadState = STATE_NONE;

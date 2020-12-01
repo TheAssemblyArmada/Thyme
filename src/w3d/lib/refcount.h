@@ -62,7 +62,7 @@ private:
     static int m_totalRefs;
 };
 
-template<typename T> void Ref_Ptr_Set(T *&src, T *&dst)
+template<typename T> void Ref_Ptr_Set(T *&dst, T *&src)
 {
     if (src != nullptr) {
         src->Add_Ref();

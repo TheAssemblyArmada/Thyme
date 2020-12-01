@@ -478,7 +478,7 @@ DX8TextureCategoryClass::DX8TextureCategoryClass(
     captainslog_assert(pass < DX8FVFCategoryContainer::MAX_PASSES);
 
     for (int i = 0; i < 2; i++) {
-        Ref_Ptr_Set(texs[i], m_textures[i]);
+        Ref_Ptr_Set(m_textures[i], texs[i]);
     }
 
     if (m_material) {

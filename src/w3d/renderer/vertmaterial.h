@@ -203,7 +203,7 @@ private:
 inline void VertexMaterialClass::Set_Mapper(TextureMapperClass *mapper, int stage)
 {
     m_CRCDirty = true;
-    Ref_Ptr_Set(mapper, m_mapper[stage]);
+    Ref_Ptr_Set(m_mapper[stage], mapper);
 }
 
 inline TextureMapperClass *VertexMaterialClass::Get_Mapper(int stage)

@@ -16,6 +16,8 @@
 
 #include "always.h"
 #include "dx8caps.h"
+#include "dx8indexbuffer.h"
+#include "dx8vertexbuffer.h"
 #include "matrix4.h"
 #include "refcount.h"
 #include "renderdevicedesc.h"
@@ -28,8 +30,6 @@
 #include "w3dtypes.h"
 #include "wwstring.h"
 #include <captainslog.h>
-class VertexBufferClass;
-class IndexBufferClass;
 class SurfaceClass;
 class DynamicVBAccessClass;
 class DynamicIBAccessClass;
@@ -434,35 +434,38 @@ protected:
 inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)
 {
     for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i)
-        Textures[i] = 0;
+        Textures[i] = nullptr;
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        vertex_buffers[i] = 0;
+        vertex_buffers[i] = nullptr;
     }
 }
 
 inline RenderStateStruct::~RenderStateStruct()
 {
-    // Ref_Ptr_Release(material);
+    Ref_Ptr_Release(material);
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        // Ref_Ptr_Release(vertex_buffers[i]);
+        Ref_Ptr_Release(vertex_buffers[i]);
     }
-    // Ref_Ptr_Release(index_buffer);
+    Ref_Ptr_Release(index_buffer);
     for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
-        // Ref_Ptr_Release(Textures[i]);
+        Ref_Ptr_Release(Textures[i]);
     }
 }
 
 inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &src)
 {
-    // Ref_Ptr_Set(material, src.material);
+    auto *mb = const_cast<VertexMaterialClass *>(src.material);
+    Ref_Ptr_Set(material, mb);
     for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        // Ref_Ptr_Set(vertex_buffers[i], src.vertex_buffers[i]);
+        auto *vb = const_cast<VertexBufferClass *>(src.vertex_buffers[i]);
+        Ref_Ptr_Set(vertex_buffers[i], vb);
     }
 
-    // Ref_Ptr_Set(index_buffer, src.index_buffer);
-
+    auto *ib = const_cast<IndexBufferClass *>(src.index_buffer);
+    Ref_Ptr_Set(index_buffer, ib);
     for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
-        // Ref_Ptr_Set(Textures[i], src.Textures[i]);
+        auto *t = const_cast<TextureClass *>(src.Textures[i]);
+        Ref_Ptr_Set(Textures[i], t);
     }
 
     LightEnable[0] = src.LightEnable[0];
@@ -649,7 +652,7 @@ inline void DX8Wrapper::Set_Texture(unsigned stage, TextureClass *texture)
     if (texture == s_renderState.Textures[stage]) {
         return;
     }
-    Ref_Ptr_Set(texture, s_renderState.Textures[stage]);
+    Ref_Ptr_Set(s_renderState.Textures[stage], texture);
     s_renderStateChanged |= (TEXTURE0_CHANGED << stage);
 }
 
@@ -659,7 +662,7 @@ inline void DX8Wrapper::Set_Material(const VertexMaterialClass *material)
         return;
     }
     VertexMaterialClass *v = const_cast<VertexMaterialClass *>(material);
-    Ref_Ptr_Set(v, s_renderState.material);
+    Ref_Ptr_Set(s_renderState.material, v);
     s_renderStateChanged |= MATERIAL_CHANGED;
 }
 

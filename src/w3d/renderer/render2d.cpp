@@ -106,7 +106,7 @@ void Render2DClass::Set_Texture(const char *filename)
  */
 void Render2DClass::Set_Texture(TextureClass *tex)
 {
-    Ref_Ptr_Set(tex, m_texture);
+    Ref_Ptr_Set(m_texture, tex);
 }
 
 /**

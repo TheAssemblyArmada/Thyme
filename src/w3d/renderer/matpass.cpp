@@ -47,7 +47,7 @@ void MaterialPassClass::Install_Materials()
 
 void MaterialPassClass::Set_Texture(TextureClass *texture, int stage)
 {
-    Ref_Ptr_Set(texture, m_texture[stage]);
+    Ref_Ptr_Set(m_texture[stage], texture);
 }
 
 void MaterialPassClass::Set_Shader(ShaderClass shader)
@@ -58,7 +58,7 @@ void MaterialPassClass::Set_Shader(ShaderClass shader)
 
 void MaterialPassClass::Set_Material(VertexMaterialClass *material)
 {
-    Ref_Ptr_Set(material, m_material);
+    Ref_Ptr_Set(m_material, material);
 }
 
 TextureClass *MaterialPassClass::Get_Texture(int stage)

@@ -86,13 +86,13 @@ MapObject *MapObject::Duplicate()
 
 void MapObject::Set_Render_Obj(RenderObjClass *obj)
 {
-    Ref_Ptr_Set(obj, m_renderObj);
+    Ref_Ptr_Set(m_renderObj, obj);
 }
 
 void MapObject::Set_Bridge_Render_Object(BridgeTowerType type, RenderObjClass *obj)
 {
     if (type >= BRIDGE_TOWER_FROM_LEFT && type < BRIDGE_MAX_TOWERS) {
-        Ref_Ptr_Set(obj, m_bridgeRenderObj[type]);
+        Ref_Ptr_Set(m_bridgeRenderObj[type], obj);
     }
 }
 

@@ -376,7 +376,8 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass &src) :
 
         if (src.m_mapper[i]) {
             TextureMapperClass *mapper = src.m_mapper[i]->Clone();
-            Ref_Ptr_Set(mapper, m_mapper[i]);
+            Set_Mapper(mapper, i);
+            mapper->Release_Ref();
         }
 
         m_UVSource[i] = src.m_UVSource[i];
@@ -418,7 +419,8 @@ VertexMaterialClass &VertexMaterialClass::operator=(const VertexMaterialClass &s
 
             if (src.m_mapper[i]) {
                 TextureMapperClass *mapper = src.m_mapper[i]->Clone();
-                Ref_Ptr_Set(mapper, m_mapper[i]);
+                Set_Mapper(mapper, i);
+                mapper->Release_Ref();
             }
 
             m_UVSource[i] = src.m_UVSource[i];

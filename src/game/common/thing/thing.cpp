@@ -20,9 +20,13 @@ using GameMath::Cos;
 using GameMath::Inv_Sqrt;
 using GameMath::Sin;
 
-Thing::Thing(const ThingTemplate *thing) : m_template()
+Thing::Thing(const ThingTemplate *templ) : m_template()
 {
-    if (thing != nullptr) {
+    if (templ != nullptr) {
+        m_template = const_cast<ThingTemplate *>(templ);
+#ifdef GAME_DEBUG_STRUCTS
+        m_templateName = templ->Get_Name();
+#endif
         m_transform.Make_Identity();
         m_cachedPos = { 0.0f, 0.0f, 0.0f };
         m_cachedAngle = 0.0f;
@@ -30,6 +34,8 @@ Thing::Thing(const ThingTemplate *thing) : m_template()
         m_cachedAltitudeAboveTerrain = 0.0f;
         m_cachedAltitudeAboveTerrainOrWater = 0.0f;
         m_cacheFlags = 0;
+    } else {
+        captainslog_debug("no template");
     }
 }
 
@@ -38,38 +44,31 @@ const ThingTemplate *Thing::Get_Template() const
     return *m_template;
 }
 
-const Coord3D &Thing::Get_Unit_Dir_Vector2D()
+const Coord3D *Thing::Get_Unit_Dir_Vector2D() const
 {
-    if (!(m_cacheFlags & CACHED_DIRECTION2D)) {
+    if (!(m_cacheFlags & VALID_DIRVECTOR)) {
         m_cachedDirVector.x = Cos(m_cachedAngle);
         m_cachedDirVector.y = Sin(m_cachedAngle);
         m_cachedDirVector.z = 0.0f;
-        m_cacheFlags |= CACHED_DIRECTION2D;
+        m_cacheFlags |= VALID_DIRVECTOR;
     }
 
-    return m_cachedDirVector;
+    return &m_cachedDirVector;
 }
 
-void Thing::Get_Unit_Dir_Vector2D(Coord3D &dst)
+void Thing::Get_Unit_Dir_Vector2D(Coord3D &dst) const
 {
-    dst = Get_Unit_Dir_Vector2D();
+    dst = *Get_Unit_Dir_Vector2D();
 }
 
-void Thing::Get_Unit_Dir_Vector3D(Coord3D &dst)
+void Thing::Get_Unit_Dir_Vector3D(Coord3D &dst) const
 {
-    float square_sum = float(m_transform[0].X * m_transform[0].X) + float(m_transform[1].X * m_transform[1].X)
-        + float(m_transform[2].X * m_transform[2].X);
+    Vector3 d = m_transform.Get_X_Vector();
+    d.Normalize();
 
-    if (square_sum == 0.0f) {
-        dst.x = m_transform[0].X;
-        dst.y = m_transform[1].X;
-        dst.z = m_transform[2].X;
-    } else {
-        float inv_sum = Inv_Sqrt(square_sum);
-        dst.x = inv_sum * m_transform[0].X;
-        dst.y = inv_sum * m_transform[1].X;
-        dst.z = inv_sum * m_transform[2].X;
-    }
+    dst.x = d.X;
+    dst.y = d.Y;
+    dst.z = d.Z;
 }
 
 void Thing::Set_Position_Z(float pos)
@@ -82,5 +81,15 @@ void Thing::Set_Position_Z(float pos)
 
     } else {
     }
+#endif
+}
+
+float Thing::Calculate_Height_Above_Terrain() const
+{
+    // TODO Requires TerrainLogic
+#ifdef GAME_DLL
+    return Call_Method<float, const Thing>(0x00543EB0, this);
+#else
+    return 0;
 #endif
 }

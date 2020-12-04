@@ -15,6 +15,7 @@
 #include "gamelogic.h"
 #include "display.h"
 #include "mapobject.h"
+#include "object.h"
 #include "thingfactory.h"
 #include "updatemodule.h"
 #include "xfer.h"

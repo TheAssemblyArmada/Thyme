@@ -71,6 +71,7 @@
 #include "mouse.h"
 #include "multilist.h"
 #include "namekeygenerator.h"
+#include "object.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
@@ -1340,4 +1341,6 @@ void Setup_Hooks()
     // w3dview.h
     Hook_Any(0x0076E2F0, W3DView::Set_Fade_Parameters);
     Hook_Any(0x0076E330, W3DView::Set_View_Filter_Pos);
+
+    static_assert(sizeof(Object) == 636, "Size of Object is wrong");
 }

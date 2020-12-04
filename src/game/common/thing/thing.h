@@ -14,11 +14,10 @@
  */
 #pragma once
 
-#ifndef THING_H
-#define THING_H
-
 #include "always.h"
+#include "bitflags.h"
 #include "coord.h"
+#include "kindof.h"
 #include "matrix3d.h"
 #include "mempoolobj.h"
 #include "thingtemplate.h"
@@ -32,41 +31,63 @@ class Thing : public MemoryPoolObject
 
     enum
     {
-        CACHED_DIRECTION2D = 1 << 0,
+        VALID_DIRVECTOR = 1 << 0,
+        VALID_ALTITUDE_TERRAIN = 1 << 1,
+        VALID_ALTITUDE_SEALEVEL = 1 << 2,
     };
 
 protected:
     virtual ~Thing() override {}
 
 public:
-    Thing(const ThingTemplate *thing = nullptr);
+    Thing(const ThingTemplate *templ = nullptr);
 
     // Thing interface virtual functions.
+    virtual float Calculate_Height_Above_Terrain() const;
     virtual Object *As_Object_Meth() { return nullptr; }
     virtual Drawable *As_Drawable_Meth() { return nullptr; }
     virtual const Object *As_Object_Meth() const { return nullptr; }
     virtual const Drawable *As_Drawable_Meth() const { return nullptr; }
-    virtual void React_To_Transform(const Matrix3D *matrix, const Coord3D *pos, float angle) = 0;
+    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) = 0;
 
     const ThingTemplate *Get_Template() const;
-    const Coord3D &Get_Unit_Dir_Vector2D();
-    void Get_Unit_Dir_Vector2D(Coord3D &dst);
-    void Get_Unit_Dir_Vector3D(Coord3D &dst);
+    const Coord3D *Get_Unit_Dir_Vector2D() const;
+    void Get_Unit_Dir_Vector2D(Coord3D &dst) const;
+    void Get_Unit_Dir_Vector3D(Coord3D &dst) const;
+
     void Set_Position_Z(float pos);
+    void Set_Position(const Coord3D *pos);
+    void Set_Orientation(float orientation);
+    void Set_Transform_Matrix(const Matrix3D *tm);
+
+    bool Is_Kind_Of(KindOfType type) const;
+    bool Is_Kind_Of_Multi(const BitFlags<KINDOF_COUNT> &flags1, const BitFlags<KINDOF_COUNT> &flags2) const;
+    bool Is_Any_Kind_Of(const BitFlags<KINDOF_COUNT> &flags) const;
+    bool Is_Significantly_Above_Terrain() const;
+
+    float Get_Height_Above_Terrain() const;
+    float Get_Height_Above_Terrain_Or_Water() const;
+
+    void Convert_Bone_Pos_To_World_Pos(
+        const Coord3D *bone_pos, const Matrix3D *bone_tm, Coord3D *world_pos, Matrix3D *world_tm) const;
+    void Transform_Point(const Coord3D *in, Coord3D *out);
+
+    const Matrix3D *Get_Transform_Matrix() const { return &m_transform; }
+    const Coord3D *Get_Position() const { return &m_cachedPos; }
+    float Get_Orientation() const { return m_cachedAngle; }
+
+    bool Is_Above_Terrain() const { return Get_Height_Above_Terrain() > 0.0f; }
 
 private:
     Override<ThingTemplate> m_template;
+#ifdef GAME_DEBUG_STRUCTS
+    Utf8String m_templateName;
+#endif
     Matrix3D m_transform;
     Coord3D m_cachedPos;
     float m_cachedAngle;
-    Coord3D m_cachedDirVector;
-    float m_cachedAltitudeAboveTerrain;
-    float m_cachedAltitudeAboveTerrainOrWater;
-    int m_cacheFlags;
+    mutable Coord3D m_cachedDirVector;
+    mutable float m_cachedAltitudeAboveTerrain;
+    mutable float m_cachedAltitudeAboveTerrainOrWater;
+    mutable int m_cacheFlags;
 };
-
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
-#endif // THING_H

@@ -40,7 +40,7 @@ public:
     virtual void Capture() override{};
     virtual void Release_Capture() override{};
     virtual void Set_Visibility(bool visibility) override;
-    virtual bool Get_Mouse_Event(MouseIO *io, int8_t unk) override;
+    virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) override;
 
     void Add_Win32_Event(uint32_t msg, uint32_t wParam, uint32_t lParam, uint32_t wheel_position);
 

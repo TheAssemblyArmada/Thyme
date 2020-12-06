@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author tomsons26
  *
  * @brief Base class for mouse input handlers.
  *
@@ -93,8 +94,12 @@ struct MouseIO
     int middle_frame;
 };
 
-struct CursorInfo
+class CursorInfo
 {
+public:
+    CursorInfo();
+
+public:
     Utf8String unk_string;
     Utf8String cursor_text;
     RGBAColorInt cursor_text_color;
@@ -105,7 +110,7 @@ struct CursorInfo
     Utf8String w3d_anim_name;
     float w3d_scale;
     bool loop;
-    Coord2D hot_spot;
+    ICoord2D hot_spot;
     int frames;
     float fps;
     int directions;
@@ -140,6 +145,8 @@ public:
     virtual void Init() override;
     virtual void Reset() override;
     virtual void Update() override;
+    virtual void Draw() override {}
+
     virtual void Parse_INI();
     virtual void Init_Cursor_Resources() = 0;
     virtual void Create_Stream_Messages();
@@ -151,12 +158,20 @@ public:
     virtual void Set_Redraw_Mode(RedrawMode mode) { m_currentRedrawMode = mode; }
     virtual RedrawMode Get_Redraw_Mode() { return m_currentRedrawMode; }
     virtual void Set_Visibility(bool visibility) { m_visible = visibility; }
-    virtual bool Get_Mouse_Event(MouseIO *io, int8_t unk) = 0;
+    virtual uint8_t Get_Mouse_Event(MouseIO *io, int8_t unk) = 0;
 
     void Notify_Resolution_Change();
 
+    MouseCursor Get_Mouse_Cursor() const { return m_currentCursor; }
+    MouseIO *Get_Mouse_Status() { return &m_currMouse; }
+
     static void Parse_Mouse_Definitions(INI *ini);
     static void Parse_Cursor_Definitions(INI *ini);
+
+    bool Is_Click(ICoord2D *click_1_coord, ICoord2D *click_2_coord, unsigned click_1_time, unsigned click_2_time) const;
+    void Check_For_Drag();
+    void Reset_Tooltip_Delay();
+    void Draw_Cursor_Text() const;
 
 protected:
     void Update_Mouse_Data();
@@ -171,7 +186,6 @@ protected:
     Utf8String m_tooltipFontName;
     int m_tooltipFontSize;
     bool m_tooltipFontIsBold;
-    // FontDesc m_tooltipFont;
     bool m_tooltipAnimateBackground;
     int m_tooltipFillTime;
     int m_tooltipDelayTime;
@@ -214,8 +228,8 @@ protected:
     RGBAColorInt m_cursorTextColor;
     RGBAColorInt m_cursorTextDropColor;
     int m_tooltipDelay;
-    int unkInt1;
-    int unkInt2;
+    int m_highlightPos;
+    int m_highlightUpdateStart;
     unsigned m_stillTime;
     RGBAColorInt m_tooltipColorTextCopy;
     RGBAColorInt m_tooltipColorBackgroundCopy;

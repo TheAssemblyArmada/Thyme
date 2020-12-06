@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author tomsons26
  *
  * @brief Base class for mouse input handlers.
  *
@@ -22,6 +23,8 @@
 #include "rtsutils.h"
 #include <algorithm>
 #include <cstddef>
+
+#include "display.h"
 
 using rts::Get_Time;
 
@@ -74,6 +77,24 @@ const char *Mouse::s_cursorNames[] = {
     nullptr,
 };
 
+CursorInfo::CursorInfo() :
+    cursor_text_color{ 0, 0, 0, 0 },
+    cursor_text_drop_color{ 0, 0, 0, 0 },
+    w3d_scale(1.0f),
+    loop(true),
+    hot_spot{ 16, 16 },
+    frames(1),
+    fps(20.0f),
+    directions(1)
+{
+    unk_string.Clear();
+    cursor_text.Clear();
+    texture_name.Clear();
+    image_name.Clear();
+    w3d_model_name.Clear();
+    w3d_anim_name.Clear();
+}
+
 /**
  * 0x004029D0
  */
@@ -121,8 +142,8 @@ Mouse::Mouse() :
     m_cursorTextColor{ 255, 255, 255, 255 },
     m_cursorTextDropColor{ 255, 255, 255, 255 },
     m_tooltipDelay(-1),
-    unkInt1(0),
-    unkInt2(0),
+    m_highlightPos(0),
+    m_highlightUpdateStart(0),
     m_stillTime(0),
     m_tooltipColorTextCopy{ 255, 255, 255, 255 },
     m_tooltipColorBackgroundCopy{ 0, 0, 0, 255 },
@@ -165,6 +186,7 @@ void Mouse::Init()
     m_forceFeedback = false;
     Notify_Resolution_Change();
     m_tooltipString.Clear();
+    m_stillTime = Get_Time(); // possible bugfix ported from BFME
     m_displayTooltip = false;
     memset(m_mouseEvents, 0, sizeof(m_mouseEvents));
     memset(&m_currMouse, 0, sizeof(m_currMouse));
@@ -175,7 +197,7 @@ void Mouse::Init()
     m_maxY = 599; // Height of default 800x600 res - 1;
     m_inputFrame = 0;
     m_deadInputFrame = 0;
-    m_inputMovesAbsolute = 0;
+    m_inputMovesAbsolute = false;
     m_eventCount = 0;
     m_currentCursor = CURSOR_ARROW;
     m_cursorTextDisplayString = g_theDisplayStringManager->New_Display_String();
@@ -200,6 +222,7 @@ void Mouse::Reset()
  */
 void Mouse::Update()
 {
+    ++m_inputFrame;
     Update_Mouse_Data();
 }
 
@@ -237,8 +260,8 @@ void Mouse::Create_Stream_Messages()
             m_displayTooltip = false;
         } else {
             if (!m_displayTooltip) {
-                unkInt1 = 0;
-                unkInt2 = Get_Time();
+                m_highlightPos = 0;
+                m_highlightUpdateStart = Get_Time();
             }
 
             m_displayTooltip = true;
@@ -370,10 +393,6 @@ void Mouse::Set_Position(int x, int y)
  */
 void Mouse::Set_Mouse_Limits()
 {
-    // TODO Requires Display
-#ifdef GAME_DLL
-    Call_Method<void, Mouse>(PICK_ADDRESS(0x00403B60, 0x00852876), this);
-#elif 0
     m_minX = 0;
     m_minY = 0;
 
@@ -381,7 +400,6 @@ void Mouse::Set_Mouse_Limits()
         m_maxX = g_theDisplay->Get_Width();
         m_maxY = g_theDisplay->Get_Height();
     }
-#endif
 }
 
 /**
@@ -391,17 +409,12 @@ void Mouse::Set_Mouse_Limits()
  */
 void Mouse::Notify_Resolution_Change()
 {
-    // TODO Requires FontLibrary
-#ifdef GAME_DLL
-    Call_Method<void, Mouse>(PICK_ADDRESS(0x00403090, 0x00851AEC), this);
-#elif 0
     if (m_tooltipDisplayString != nullptr) {
-        g_theDisplayStringManger->Free_Display_String(m_tooltipDisplayString);
+        g_theDisplayStringManager->Free_Display_String(m_tooltipDisplayString);
     }
 
-    m_tooltipDisplayString = g_theDisplayStringManger->New_Display_String();
+    m_tooltipDisplayString = g_theDisplayStringManager->New_Display_String();
 
-    // FontDesc font;
     Utf8String font_name;
     int font_size;
     bool font_bold;
@@ -418,7 +431,27 @@ void Mouse::Notify_Resolution_Change()
 
     m_tooltipDisplayString->Set_Font(g_theFontLibrary->Get_Font(font_name, font_size, font_bold));
     m_tooltipDisplayString->Set_Word_Wrap(TOOLTIP_WRAP);
-#endif
+}
+
+void Mouse::Check_For_Drag()
+{
+    if (m_currMouse.left_state != 0) {
+        if (m_prevMouse.left_event == 5 || m_prevMouse.left_event == 8) {
+            m_currMouse.left_event = 8;
+        }
+    }
+
+    if (m_currMouse.right_state != 0) {
+        if (m_prevMouse.right_event == 13 || m_prevMouse.right_event == 16) {
+            m_currMouse.right_event = 16;
+        }
+    }
+
+    if (m_currMouse.middle_state != 0) {
+        if (m_prevMouse.middle_event == 9 || m_prevMouse.middle_event == 12) {
+            m_currMouse.middle_event = 12;
+        }
+    }
 }
 
 /**
@@ -426,26 +459,24 @@ void Mouse::Notify_Resolution_Change()
  */
 void Mouse::Update_Mouse_Data()
 {
-    static bool _busy;
+    static bool _busy = false;
 
-    if (_busy) {
-        m_deadInputFrame = m_inputFrame;
-        return;
-    }
-
-    _busy = true;
-    int8_t tmp;
     int events = 0;
 
-    do {
+    if (!_busy) {
+        _busy = true;
+        uint8_t tmp = 0;
+
         do {
-            tmp = Get_Mouse_Event(&m_mouseEvents[events], 1);
-        } while (tmp == -1);
+            do {
+                tmp = Get_Mouse_Event(&m_mouseEvents[events], 1);
+            } while (tmp == UINT8_MAX);
 
-        ++events;
-    } while (tmp != 0 && events <= 255);
+            ++events;
+        } while (tmp != 0 && events < MAX_EVENTS);
 
-    _busy = false;
+        _busy = false;
+    }
 
     if (events > 0) {
         m_eventCount = events - 1;
@@ -472,23 +503,7 @@ void Mouse::Process_Mouse_Event(int event_num)
     m_currMouse.wheel_pos = m_mouseEvents[event_num].wheel_pos;
 
     if (event_num == 0) {
-        if (m_currMouse.left_state != 0) {
-            if (m_prevMouse.left_event == 5 || m_prevMouse.left_event == 8) {
-                m_currMouse.left_event = 8;
-            }
-        }
-
-        if (m_currMouse.right_state != 0) {
-            if (m_prevMouse.right_event == 13 || m_prevMouse.right_event == 16) {
-                m_currMouse.right_event = 16;
-            }
-        }
-
-        if (m_currMouse.middle_state != 0) {
-            if (m_prevMouse.middle_event == 9 || m_prevMouse.middle_event == 12) {
-                m_currMouse.middle_event = 12;
-            }
-        }
+        Check_For_Drag();
     }
 
     Move_Mouse(m_mouseEvents[event_num].pos.x, m_mouseEvents[event_num].pos.y, m_inputMovesAbsolute);
@@ -602,12 +617,17 @@ void Mouse::Move_Mouse(int x, int y, int absolute)
  */
 MouseCursor Mouse::Get_Cursor_Index(const Utf8String &name)
 {
+    if (name.Is_Empty()) {
+        return CURSOR_INVALID;
+    }
+
     for (MouseCursor i = CURSOR_NONE; i < CURSOR_COUNT; ++i) {
         if (name == s_cursorNames[i]) {
             return i;
         }
     }
 
+    captainslog_debug("Invalid cursor name '%s", name.Str());
     return CURSOR_INVALID;
 }
 
@@ -615,19 +635,24 @@ MouseCursor Mouse::Get_Cursor_Index(const Utf8String &name)
 void Mouse::Set_Mouse_Text(const MouseCursor cursor)
 {
     if (m_currentCursor != cursor) {
+
         if (m_cursorTextDisplayString != nullptr) {
-            Utf16String string = Utf16String::s_emptyString;
-            const RGBAColorInt *color = nullptr;
-            const RGBAColorInt *drop_color = nullptr;
-            const CursorInfo *info = &m_cursorInfo[cursor];
+            if (cursor < CURSOR_NONE || cursor >= CURSOR_COUNT) {
+                captainslog_debug("Bad cursor ID %d", cursor);
+            } else {
+                Utf16String string = Utf16String::s_emptyString;
+                const RGBAColorInt *color = nullptr;
+                const RGBAColorInt *drop_color = nullptr;
+                const CursorInfo *info = &m_cursorInfo[cursor];
 
-            if (!info->cursor_text.Is_Empty()) {
-                color = &info->cursor_text_color;
-                drop_color = &info->cursor_text_drop_color;
-                string = g_theGameText->Fetch(info->cursor_text, nullptr);
+                if (!info->cursor_text.Is_Empty()) {
+                    color = &info->cursor_text_color;
+                    drop_color = &info->cursor_text_drop_color;
+                    string = g_theGameText->Fetch(info->cursor_text, nullptr);
+                }
+
+                Set_Mouse_Text(string, color, drop_color);
             }
-
-            Set_Mouse_Text(string, color, drop_color);
         }
     }
 }
@@ -713,5 +738,33 @@ void Mouse::Parse_Cursor_Definitions(INI *ini)
 
     if (g_theMouse != nullptr && tok.Is_Not_Empty()) {
         ini->Init_From_INI(&g_theMouse->m_cursorInfo[g_theMouse->Get_Cursor_Index(tok)], _cursor_parsers);
+    }
+}
+
+bool Mouse::Is_Click(ICoord2D *click_1_coord, ICoord2D *click_2_coord, unsigned click_1_time, unsigned click_2_time) const
+{
+    return static_cast<unsigned>(abs(click_1_coord->x - click_2_coord->x)) <= m_dragTolerance
+        && static_cast<unsigned>(abs(click_1_coord->y - click_2_coord->y)) <= m_dragTolerance
+        && click_2_time - click_1_time <= m_dragToleranceMS;
+}
+
+void Mouse::Reset_Tooltip_Delay()
+{
+    m_stillTime = Get_Time();
+    m_displayTooltip = false;
+}
+
+void Mouse::Draw_Cursor_Text() const
+{
+    if (m_cursorTextDisplayString) {
+        uint32_t tcolor =
+            Make_Color(m_cursorTextColor.red, m_cursorTextColor.green, m_cursorTextColor.blue, m_cursorTextColor.alpha);
+        uint32_t dcolor = Make_Color(
+            m_cursorTextDropColor.red, m_cursorTextDropColor.green, m_cursorTextDropColor.blue, m_cursorTextDropColor.alpha);
+
+        int width;
+        int height;
+        m_cursorTextDisplayString->Get_Size(&width, &height);
+        m_cursorTextDisplayString->Draw(m_currMouse.pos.x - width / 2, m_currMouse.pos.y - height / 2, tcolor, dcolor);
     }
 }

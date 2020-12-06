@@ -108,7 +108,7 @@ void Win32Mouse::Set_Visibility(bool visibility)
 }
 
 // 0x0073BE20
-bool Win32Mouse::Get_Mouse_Event(MouseIO *io, int8_t unk)
+uint8_t Win32Mouse::Get_Mouse_Event(MouseIO *io, int8_t unk)
 {
     if (m_eventBuffer[m_nextGetIndex].msg == 0) {
         return false;

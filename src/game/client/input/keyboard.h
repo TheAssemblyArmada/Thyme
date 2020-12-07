@@ -49,13 +49,10 @@ protected:
         KEY_REPEAT_DELAY = 10,
         MODIFIER_LCTRL = 0x4,
         MODIFIER_RCTRL = 0x8,
-        MODIFIER_CTRL = MODIFIER_LCTRL | MODIFIER_RCTRL,
         MODIFIER_LSHIFT = 0x10,
         MODIFIER_RSHIFT = 0x20,
-        MODIFIER_SHIFT = MODIFIER_LSHIFT | MODIFIER_RSHIFT,
         MODIFIER_LALT = 0x40,
         MODIFIER_RALT = 0x80,
-        MODIFIER_ALT = MODIFIER_LALT | MODIFIER_RALT,
         KEY_STATE_AUTOREPEAT = 0x100,
         MODIFIER_CAPS = 0x200,
         MODIFIER_SHIFTEX = 0x400,
@@ -83,16 +80,24 @@ public:
 
     wchar_t Get_Printable_Key(uint8_t key, int key_type);
     void Reset_Keys();
-    bool Is_Shift();
-    bool Is_Ctrl();
-    bool Is_Alt();
-    uint16_t Get_Modifiers() { return m_modifiers; }
+    bool Is_Shift() const;
+    bool Is_Ctrl() const;
+    bool Is_Alt() const;
+
+    uint16_t Get_Modifiers() const { return m_modifiers; }
+    KeyboardIO *Get_First_Key() { return m_keys; }
+    int8_t Get_Key_Status(uint8_t index) const { return m_keyStatus[index].status; }
+    bool Get_Key_State_Bit(uint8_t index, uint16_t val) const { return (val & m_keyStatus[index].state) != 0; }
+    uint32_t Get_Key_Sequence(uint8_t index) const { return m_keyStatus[index].sequence; }
+
+    void Set_Key_Status(uint8_t index, KeyboardIO::StatusType stat) { m_keyStatus[index].status = stat; }
+    void Set_Key_State(uint8_t index, uint16_t stat) { m_keyStatus[index].state = stat; }
 
 private:
     void Init_Key_Names();
     void Update_Keys();
     wchar_t Translate_Key(wchar_t key);
-    int Check_Key_Repeat();
+    bool Check_Key_Repeat();
 
 protected:
     uint16_t m_modifiers;

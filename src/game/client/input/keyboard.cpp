@@ -134,16 +134,22 @@ void Keyboard::Create_Stream_Messages()
     if (g_theMessageStream != nullptr) {
         GameMessage *msg = nullptr;
 
-        for (int i = 0; m_keys[i].key != 0; ++i) {
-            if (m_keys[i].state & KEY_DOWN) {
+        for (KeyboardIO *keyio = Get_First_Key(); keyio->key != 0; ++keyio) {
+            if (keyio->state & KEY_DOWN) {
                 msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_KEY_DOWN);
-            } else if (m_keys[i].state & KEY_UP) {
+                captainslog_dbgassert(msg != nullptr, "Unable to append key down message to stream");
+
+            } else if (keyio->state & KEY_UP) {
                 msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_KEY_UP);
+                captainslog_dbgassert(msg != nullptr, "Unable to append key up message to stream");
+
+            } else {
+                captainslog_debug("Unknown key state when creating msg stream");
             }
 
             if (msg != nullptr) {
-                msg->Append_Int_Arg(m_keys[i].key);
-                msg->Append_Int_Arg(m_keys[i].state);
+                msg->Append_Int_Arg(keyio->key);
+                msg->Append_Int_Arg(keyio->state);
             }
         }
     }
@@ -157,7 +163,7 @@ void Keyboard::Create_Stream_Messages()
 wchar_t Keyboard::Get_Printable_Key(uint8_t key, int key_type)
 {
     // This should be impossible.
-    if (key >= 256) {
+    if (key >= KEY_COUNT) {
         return L'\0';
     }
 
@@ -194,25 +200,25 @@ void Keyboard::Reset_Keys()
 /**
  * 0x0040A460
  */
-bool Keyboard::Is_Shift()
+bool Keyboard::Is_Shift() const
 {
-    return m_modifiers & MODIFIER_SHIFT || m_modifiers & MODIFIER_SHIFTEX;
+    return m_modifiers & MODIFIER_LSHIFT || m_modifiers & MODIFIER_RSHIFT || m_modifiers & MODIFIER_SHIFTEX;
 }
 
 /**
  * 0x0040A480
  */
-bool Keyboard::Is_Ctrl()
+bool Keyboard::Is_Ctrl() const
 {
-    return m_modifiers & MODIFIER_CTRL;
+    return m_modifiers & MODIFIER_LCTRL || m_modifiers & MODIFIER_RCTRL;
 }
 
 /**
  * 0x0040A490
  */
-bool Keyboard::Is_Alt()
+bool Keyboard::Is_Alt() const
 {
-    return m_modifiers & MODIFIER_ALT;
+    return m_modifiers & MODIFIER_LALT || m_modifiers & MODIFIER_RALT;
 }
 
 /**
@@ -284,7 +290,7 @@ void Keyboard::Update_Keys()
  */
 wchar_t Keyboard::Translate_Key(wchar_t key)
 {
-    if (key > 256) {
+    if (key >= KEY_COUNT) {
         return key;
     }
 
@@ -354,7 +360,7 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
             } else {
                 if (m_modifiers & MODIFIER_SHIFTEX) {
                     return m_keyNames[key].shifted_ex;
-                } else if (m_modifiers & MODIFIER_SHIFT || Get_Caps_State() && iswalpha(m_keyNames[key].std_key)) {
+                } else if (Is_Shift() || Get_Caps_State() && iswalpha(m_keyNames[key].std_key)) {
                     return m_keyNames[key].shifted;
                 } else {
                     return m_keyNames[key].std_key;
@@ -372,7 +378,7 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
  *
  * 0x004080F0
  */
-int Keyboard::Check_Key_Repeat()
+bool Keyboard::Check_Key_Repeat()
 {
     // Find first KeyboardIO with 0 key.
     int i;
@@ -381,27 +387,21 @@ int Keyboard::Check_Key_Repeat()
     }
 
     // Check for repeat status.
-    int j;
-
-    for (j = 0; j < KEY_COUNT; ++j) {
+    for (int j = 0; j < KEY_COUNT; ++j) {
         if (m_keyStatus[j].state & KEY_DOWN && m_inputFrame - m_keyStatus[j].sequence > KEY_REPEAT_DELAY) {
-            break;
+            m_keys[i].key = j;
+            m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_DOWN;
+            m_keys[i].status = 0;
+            m_keys[i + 1].key = 0;
+
+            // Update key input frame data.
+            for (int k = 0; k < KEY_COUNT; ++k) {
+                m_keyStatus[k].sequence = m_inputFrame;
+            }
+            m_keyStatus[j].sequence = m_inputFrame - 12;
+            return true;
         }
     }
 
-    if (j == KEY_COUNT) {
-        return 0;
-    }
-
-    m_keys[i].key = j;
-    m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_DOWN;
-    m_keys[i].status = 0;
-    m_keys[i + 1].key = 0;
-
-    // Update key input frame data.
-    for (int k = 0; k < KEY_COUNT; ++k) {
-        m_keyStatus[k].sequence = m_inputFrame;
-    }
-
-    return 1;
+    return false;
 }

@@ -46,7 +46,7 @@ IndexBufferClass::~IndexBufferClass()
     g_indexBufferTotalSize -= 2 * m_indexCount;
 }
 
-void IndexBufferClass::Add_Engine_Ref()
+void IndexBufferClass::Add_Engine_Ref() const
 {
     m_engineRefs++;
 }

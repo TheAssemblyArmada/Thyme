@@ -70,7 +70,7 @@ unsigned int VertexBufferClass::Get_Total_Allocated_Memory()
     return g_vertexBufferTotalSize;
 }
 
-void VertexBufferClass::Add_Engine_Ref()
+void VertexBufferClass::Add_Engine_Ref() const
 {
     m_engineRefs++;
 }

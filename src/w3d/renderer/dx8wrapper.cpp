@@ -1246,9 +1246,9 @@ void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number)
     VertexBufferClass *v = const_cast<VertexBufferClass *>(vb);
     Ref_Ptr_Set(s_renderState.vertex_buffers[number], v);
 
-    if (v) {
-        v->Add_Engine_Ref();
-        s_renderState.vertex_buffer_types[number] = v->Type();
+    if (vb) {
+        vb->Add_Engine_Ref();
+        s_renderState.vertex_buffer_types[number] = vb->Type();
     } else {
         s_renderState.vertex_buffer_types[number] = VertexBufferClass::BUFFER_TYPE_INVALID;
     }
@@ -1269,9 +1269,9 @@ void DX8Wrapper::Set_Index_Buffer(const IndexBufferClass *ib, unsigned short ind
     Ref_Ptr_Set(s_renderState.index_buffer, i);
     s_renderState.index_base_offset = index_base_offset;
 
-    if (i) {
-        i->Add_Engine_Ref();
-        s_renderState.index_buffer_type = i->Type();
+    if (ib) {
+        ib->Add_Engine_Ref();
+        s_renderState.index_buffer_type = ib->Type();
     } else {
         s_renderState.index_buffer_type = IndexBufferClass::BUFFER_TYPE_INVALID;
     }

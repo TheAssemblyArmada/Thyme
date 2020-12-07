@@ -72,19 +72,19 @@ public:
 public:
     IndexBufferClass(unsigned int type_, unsigned short index_count_);
     ~IndexBufferClass();
-    void Add_Engine_Ref();
+    void Add_Engine_Ref() const;
     void Release_Engine_Ref();
     void Copy(unsigned short *indices, unsigned int first_index, unsigned int count);
     void Copy(unsigned int *indices, unsigned int first_index, unsigned int count);
     unsigned short Get_Index_Count() { return m_indexCount; }
-    unsigned int Type() { return m_type; }
-    unsigned int Engine_Refs() { return m_engineRefs; }
+    unsigned int Type() const { return m_type; }
+    unsigned int Engine_Refs() const { return m_engineRefs; }
     static unsigned int Get_Total_Buffer_Count();
     static unsigned int Get_Total_Allocated_Indices();
     static unsigned int Get_Total_Allocated_Memory();
 
 protected:
-    int m_engineRefs;
+    mutable int m_engineRefs;
     unsigned short m_indexCount;
     unsigned int m_type;
 };

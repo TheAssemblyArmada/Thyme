@@ -112,12 +112,12 @@ public:
 public:
     VertexBufferClass(unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size);
     ~VertexBufferClass();
-    void Add_Engine_Ref();
+    void Add_Engine_Ref() const;
     void Release_Engine_Ref();
     FVFInfoClass &FVF_Info() { return *m_fvfInfo; }
     unsigned short Get_Vertex_Count() { return m_vertexCount; }
-    unsigned int Type() { return m_type; }
-    unsigned int Engine_Refs() { return m_engineRefs; }
+    unsigned int Type() const { return m_type; }
+    unsigned int Engine_Refs() const { return m_engineRefs; }
     static unsigned int Get_Total_Buffer_Count();
     static unsigned int Get_Total_Allocated_Indices();
     static unsigned int Get_Total_Allocated_Memory();
@@ -125,7 +125,7 @@ public:
 protected:
     unsigned int m_type;
     unsigned short m_vertexCount;
-    int m_engineRefs;
+    mutable int m_engineRefs;
     FVFInfoClass *m_fvfInfo;
 };
 

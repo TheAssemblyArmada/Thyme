@@ -28,6 +28,7 @@
 
 using GameMath::Fabs;
 bool g_dynamic;
+bool g_warn_segments = false;
 
 enum
 {
@@ -2127,171 +2128,170 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
 
 void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
 {
-    TRoadPt *pt1 = nullptr;
-    TRoadPt *pt2 = nullptr;
-    TRoadPt *pt3 = nullptr;
-    TRoadPt *pt4 = nullptr;
-    TRoadPt *pt5 = nullptr;
-    TRoadPt *pt6 = nullptr;
-    TRoadPt *pt7 = nullptr;
-    TRoadPt *pt8 = nullptr;
+
+    TRoadPt *pr1 = nullptr;
+    TRoadPt *pr2 = nullptr;
+    TRoadPt *pr3 = nullptr;
+    TRoadPt *pr4 = nullptr;
+
+    TRoadPt *pc1 = nullptr;
+    TRoadPt *pc2 = nullptr;
+    TRoadPt *pc3 = nullptr;
+    TRoadPt *pc4 = nullptr;
 
     if (m_roads[index1].m_pt1.loc == loc) {
-        pt1 = &m_roads[index1].m_pt2;
-        pt5 = &m_roads[index1].m_pt1;
+        pr1 = &m_roads[index1].m_pt2;
+        pc1 = &m_roads[index1].m_pt1;
     } else {
-        pt1 = &m_roads[index1].m_pt1;
-        pt5 = &m_roads[index1].m_pt2;
+        pr1 = &m_roads[index1].m_pt1;
+        pc1 = &m_roads[index1].m_pt2;
     }
 
     for (int i = index1 + 1; i < m_numRoads; i++) {
         if (m_roads[i].m_pt1.loc == loc) {
             m_roads[i].m_pt1.count = -2;
 
-            if (pt2) {
-                if (pt3) {
-                    pt4 = &m_roads[i].m_pt2;
-                    pt8 = &m_roads[i].m_pt1;
-                } else {
-                    pt3 = &m_roads[i].m_pt2;
-                    pt7 = &m_roads[i].m_pt1;
-                }
+            if (!pr2) {
+                pr2 = &m_roads[i].m_pt2;
+                pc2 = &m_roads[i].m_pt1;
+            } else if (!pr3) {
+                pr3 = &m_roads[i].m_pt2;
+                pc3 = &m_roads[i].m_pt1;
             } else {
-                pt2 = &m_roads[i].m_pt2;
-                pt6 = &m_roads[i].m_pt1;
+                pr4 = &m_roads[i].m_pt2;
+                pc4 = &m_roads[i].m_pt1;
             }
         }
 
         if (m_roads[i].m_pt2.loc == loc) {
             m_roads[i].m_pt2.count = -2;
 
-            if (pt2) {
-                if (pt3) {
-                    pt4 = &m_roads[i].m_pt1;
-                    pt8 = &m_roads[i].m_pt2;
-                } else {
-                    pt3 = &m_roads[i].m_pt1;
-                    pt7 = &m_roads[i].m_pt2;
-                }
+            if (!pr2) {
+                pr2 = &m_roads[i].m_pt1;
+                pc2 = &m_roads[i].m_pt2;
+            } else if (!pr3) {
+                pr3 = &m_roads[i].m_pt1;
+                pc3 = &m_roads[i].m_pt2;
             } else {
-                pt2 = &m_roads[i].m_pt1;
-                pt6 = &m_roads[i].m_pt2;
+                pr4 = &m_roads[i].m_pt1;
+                pc4 = &m_roads[i].m_pt2;
             }
         }
     }
 
-    if (pt2) {
-        if (pt3) {
-            if (pt4) {
-                Vector2 v1 = pt1->loc - loc;
+    if (pr2) {
+        if (pr3) {
+            if (pr4) {
+                Vector2 v1 = pr1->loc - loc;
                 v1.Normalize();
-                Vector2 v2 = pt2->loc - loc;
+                Vector2 v2 = pr2->loc - loc;
                 v2.Normalize();
-                Vector2 v3 = pt3->loc - loc;
+                Vector2 v3 = pr3->loc - loc;
                 v3.Normalize();
-                Vector2 v4 = pt4->loc - loc;
+                Vector2 v4 = pr4->loc - loc;
                 v4.Normalize();
-                float f1 = Vector2::Dot_Product(v1, v2);
-                float f2 = Vector2::Dot_Product(v1, v3);
-                float f3 = Vector2::Dot_Product(v1, v4);
-                float f4 = Vector2::Dot_Product(v2, v3);
-                float f5 = Vector2::Dot_Product(v1, v4);
-                float f6 = Vector2::Dot_Product(v3, v4);
-                int i1 = 12;
-                float f7 = f1;
+                float dot12 = Vector2::Dot_Product(v1, v2);
+                float dot13 = Vector2::Dot_Product(v1, v3);
+                float dot14 = Vector2::Dot_Product(v1, v4);
+                float dot23 = Vector2::Dot_Product(v2, v3);
+                float dot24 = Vector2::Dot_Product(v2, v4);
+                float dot34 = Vector2::Dot_Product(v3, v4);
+                int dp = 12;
+                float dot = dot12;
 
-                if (f2 < f7) {
-                    i1 = 13;
-                    f7 = f2;
+                if (dot13 < dot12) {
+                    dp = 13;
+                    dot = dot13;
                 }
 
-                if (f3 < f7) {
-                    i1 = 14;
-                    f7 = f3;
+                if (dot14 < dot) {
+                    dp = 14;
+                    dot = dot14;
                 }
 
-                if (f4 < f7) {
-                    i1 = 23;
-                    f7 = f2;
+                if (dot23 < dot) {
+                    dp = 23;
+                    dot = dot23;
                 }
 
-                if (f5 < f7) {
-                    i1 = 24;
-                    f7 = f5;
+                if (dot24 < dot) {
+                    dp = 24;
+                    dot = dot24;
                 }
 
-                if (f6 < f7) {
-                    i1 = 34;
-                    f7 = f6;
+                if (dot34 < dot) {
+                    dp = 34;
+                    dot = dot34;
                 }
 
-                bool b1 = i1 == 12;
-                bool b2 = i1 == 13;
-                bool b3 = i1 == 14;
-                bool b4 = i1 == 23;
-                bool b5 = i1 == 24;
-                bool b6 = i1 == 34;
-                Vector2 v5;
+                bool do12 = dp == 12;
+                bool do13 = dp == 13;
+                bool do14 = dp == 14;
+                bool do23 = dp == 23;
+                bool do24 = dp == 24;
+                bool do34 = dp == 34;
 
-                if (b1) {
-                    v5 = v2 - v1;
+                Vector2 align_vector;
+
+                if (do12) {
+                    align_vector = v2 - v1;
                 }
 
-                if (b2) {
-                    v5 = v3 - v1;
+                if (do13) {
+                    align_vector = v3 - v1;
                 }
 
-                if (b3) {
-                    v5 = v4 - v1;
+                if (do14) {
+                    align_vector = v4 - v1;
                 }
 
-                if (b4) {
-                    v5 = v3 - v2;
+                if (do23) {
+                    align_vector = v3 - v2;
                 }
 
-                if (b5) {
-                    v5 = v4 - v2;
+                if (do24) {
+                    align_vector = v4 - v2;
                 }
 
-                if (b6) {
-                    v5 = v4 - v3;
+                if (do34) {
+                    align_vector = v4 - v3;
                 }
 
-                v5.Normalize();
-                v5 *= scale * 0.5f;
+                align_vector.Normalize();
+                align_vector *= scale * 0.5f;
 
-                if (b1) {
-                    Offset_4Way(pt5, pt6, pt7, pt3, pt8, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do12) {
+                    Offset_4Way(pc1, pc2, pc3, pr3, pc4, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (b2) {
-                    Offset_4Way(pt5, pt7, pt6, pt2, pt8, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do13) {
+                    Offset_4Way(pc1, pc3, pc2, pr2, pc4, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (b3) {
-                    Offset_4Way(pt5, pt8, pt7, pt3, pt6, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do14) {
+                    Offset_4Way(pc1, pc4, pc3, pr3, pc2, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (b4) {
-                    Offset_4Way(pt6, pt7, pt5, pt1, pt8, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do23) {
+                    Offset_4Way(pc2, pc3, pc1, pr1, pc4, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (b5) {
-                    Offset_4Way(pt6, pt8, pt5, pt1, pt7, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do24) {
+                    Offset_4Way(pc2, pc4, pc1, pr1, pc3, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (b6) {
-                    Offset_4Way(pt7, pt8, pt5, pt1, pt6, loc, v5, m_roads[index1].m_widthInTexture);
+                if (do34) {
+                    Offset_4Way(pc3, pc4, pc1, pr1, pc2, loc, align_vector, m_roads[index1].m_widthInTexture);
                 }
 
-                if (v5.X < 0.0f) {
-                    v5.X = -v5.X;
-                    v5.Y = -v5.Y;
+                if (align_vector.X < 0.0f) {
+                    align_vector.X = -align_vector.X;
+                    align_vector.Y = -align_vector.Y;
                 }
 
                 if (m_numRoads < m_maxRoadSegments) {
                     m_roads[m_numRoads].m_pt1.loc.Set(loc);
-                    m_roads[m_numRoads].m_pt2.loc.Set(loc + v5);
+                    m_roads[m_numRoads].m_pt2.loc.Set(loc + align_vector);
                     m_roads[m_numRoads].m_pt1.last = true;
                     m_roads[m_numRoads].m_pt2.last = true;
                     m_roads[m_numRoads].m_scale = m_roads[index1].m_scale;
@@ -2299,6 +2299,11 @@ void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
                     m_roads[m_numRoads].m_pt1.count = -4;
                     m_roads[m_numRoads].m_type = FOUR_WAY;
                     m_roads[m_numRoads++].m_uniqueID = m_roads[index1].m_uniqueID;
+                } else {
+                    if (g_warn_segments) {
+                        captainslog_debug("****** Too many road segments.  Need to increase ini values");
+                    }
+                    g_warn_segments = false;
                 }
             }
         }
@@ -2419,8 +2424,7 @@ void W3DRoadBuffer::Offset_3Way(
 
     up_vector *= width_in_texture;
 
-    if (Vector3::Cross_Product_Z(
-            Vector3(up_vector.X, up_vector.Y, 0.0f), Vector3(pc3->top.X - pc3->loc.X, pc3->top.Y - pc3->loc.Y, 0.0f))
+    if (Vector3::Cross_Product_Z(Vector3(v1.X, v1.Y, 0.0f), Vector3(pc3->top.X - pc3->loc.X, pc3->top.Y - pc3->loc.Y, 0.0f))
         < 0.0f) {
         pc3->bottom = pc3->loc - up_vector;
         pc3->top = pc3->loc + up_vector;

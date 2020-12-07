@@ -42,7 +42,8 @@ public:
     virtual void Draw(int x, int y, int w, int h) = 0;
     virtual void Get_Size(int *x, int *y) = 0;
     virtual int Get_Width(int char_count) = 0;
-    virtual void Set_Clip_Region(IRegion2D *region) = 0;
+    virtual void Set_Use_Hotkey(bool state, int val) = 0;
+    virtual void Set_Clip_Region(IRegion2D *region) {}
     virtual void Remove_Last_Char();
     virtual void Add_Char(wchar_t ch);
 

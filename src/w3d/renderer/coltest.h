@@ -16,10 +16,12 @@
 #include "always.h"
 #include "aabox.h"
 #include "castres.h"
+#include "colmath.h"
 #include "coltype.h"
 #include "obbox.h"
 #include "vector3.h"
 
+class TriClass;
 class RenderObjClass;
 
 class CollisionTestClass
@@ -35,13 +37,64 @@ public:
 };
 
 inline CollisionTestClass::CollisionTestClass(CastResultStruct *res, int collision_type) :
-    m_result(res), m_collisionType(collision_type), m_collidedRenderObj(NULL)
+    m_result(res), m_collisionType(collision_type), m_collidedRenderObj(nullptr)
 {
 }
 
 inline CollisionTestClass::CollisionTestClass(const CollisionTestClass &that) :
     m_result(that.m_result), m_collisionType(that.m_collisionType), m_collidedRenderObj(that.m_collidedRenderObj)
 {
+}
+
+class RayCollisionTestClass : public CollisionTestClass
+{
+public:
+    RayCollisionTestClass(const LineSegClass &ray,
+        CastResultStruct *res,
+        int collision_type = COLLISION_TYPE_0,
+        bool bool1 = false,
+        bool bool2 = false);
+    RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm);
+
+    bool Cull(const Vector3 &min, const Vector3 &max);
+    bool Cull(const AABoxClass &box);
+    bool Cast_To_Triangle(const TriClass &tri);
+
+public:
+    LineSegClass m_ray;
+    bool m_bool1;
+    bool m_bool2;
+
+private:
+    // not implemented
+    RayCollisionTestClass(const RayCollisionTestClass &);
+    RayCollisionTestClass &operator=(const RayCollisionTestClass &);
+};
+
+inline RayCollisionTestClass::RayCollisionTestClass(
+    const LineSegClass &ray, CastResultStruct *res, int collision_type, bool bool1, bool bool2) :
+    CollisionTestClass(res, collision_type), m_ray(ray), m_bool1(bool1), m_bool2(bool2)
+{
+}
+
+inline RayCollisionTestClass::RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm) :
+    CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_bool1(raytest.m_bool1), m_bool2(raytest.m_bool2)
+{
+}
+
+inline bool RayCollisionTestClass::Cull(const Vector3 &min, const Vector3 &max)
+{
+    return (CollisionMath::Overlap_Test(min, max, m_ray) == CollisionMath::POS);
+}
+
+inline bool RayCollisionTestClass::Cull(const AABoxClass &box)
+{
+    return (CollisionMath::Overlap_Test(box, m_ray) == CollisionMath::POS);
+}
+
+inline bool RayCollisionTestClass::Cast_To_Triangle(const TriClass &tri)
+{
+    return CollisionMath::Collide(m_ray, tri, m_result);
 }
 
 class AABoxCollisionTestClass : public CollisionTestClass

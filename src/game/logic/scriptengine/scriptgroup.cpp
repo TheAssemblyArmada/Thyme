@@ -65,7 +65,7 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
 
     auto dbg_script_count = script_count;
     xfer->xferUnsignedShort(&script_count);
-    captainslog_dbgassert(dbg_script_count != script_count,
+    captainslog_dbgassert(dbg_script_count == script_count,
         "ScriptGroup::Xfer_Snapshot - Script list count has changed, attempting to recover.");
 
     for (Script *next = m_firstScript; next != nullptr; next = next->Get_Next()) {

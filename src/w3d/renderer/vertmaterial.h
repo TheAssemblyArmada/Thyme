@@ -24,6 +24,10 @@
 #include "w3dtypes.h"
 #include "wwstring.h"
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 class ChunkLoadClass;
 class ChunkSaveClass;
 
@@ -197,7 +201,11 @@ private:
     static void Apply_Null();
     unsigned long Compute_CRC() const;
 
+#ifdef GAME_DLL
+    static ARRAY_DEC(VertexMaterialClass *, s_presets, PRESET_COUNT);
+#else
     static VertexMaterialClass *s_presets[PRESET_COUNT];
+#endif
 };
 
 inline void VertexMaterialClass::Set_Mapper(TextureMapperClass *mapper, int stage)

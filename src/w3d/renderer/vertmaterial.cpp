@@ -20,7 +20,9 @@
 #include "xstraw.h"
 #include <cstdio>
 
+#ifndef GAME_DLL
 VertexMaterialClass *VertexMaterialClass::s_presets[VertexMaterialClass::PRESET_COUNT];
+#endif
 
 void VertexMaterialClass::Init()
 {

@@ -496,3 +496,10 @@ GameLogic *&g_theGameLogic = Make_Global<GameLogic *>(PICK_ADDRESS(0x00A2BBEC, 0
 // display.cpp
 #include "display.h"
 Display *&g_theDisplay = Make_Global<Display *>(PICK_ADDRESS(0x00A2A6D0, 0));
+
+// vertmaterial.cpp
+#include "vertmaterial.h"
+ARRAY_DEF(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38),
+    VertexMaterialClass *,
+    VertexMaterialClass::s_presets,
+    VertexMaterialClass::PRESET_COUNT);

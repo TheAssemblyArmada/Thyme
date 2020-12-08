@@ -22,9 +22,27 @@
 #include <algorithm>
 #include <cstring>
 
+#ifdef GAME_DLL
+ARRAY2D_DEF(PICK_ADDRESS(0x00A4C284, 0x00DF68D8),
+    unsigned,
+    g_minTextureFilters,
+    MAX_TEXTURE_STAGES,
+    TextureFilterClass::FILTER_TYPE_COUNT);
+ARRAY2D_DEF(PICK_ADDRESS(0x00A4C304, 0x00DF6958),
+    unsigned,
+    g_magTextureFilters,
+    MAX_TEXTURE_STAGES,
+    TextureFilterClass::FILTER_TYPE_COUNT);
+ARRAY2D_DEF(PICK_ADDRESS(0x00A4C204, 0x00DF6858),
+    unsigned,
+    g_mipMapFilters,
+    MAX_TEXTURE_STAGES,
+    TextureFilterClass::FILTER_TYPE_COUNT);
+#else
 static unsigned g_minTextureFilters[MAX_TEXTURE_STAGES][TextureFilterClass::FILTER_TYPE_COUNT];
 static unsigned g_magTextureFilters[MAX_TEXTURE_STAGES][TextureFilterClass::FILTER_TYPE_COUNT];
 static unsigned g_mipMapFilters[MAX_TEXTURE_STAGES][TextureFilterClass::FILTER_TYPE_COUNT];
+#endif
 
 TextureFilterClass::TextureFilterClass(MipCountType mip_count) :
     m_minTextureFilter(FILTER_TYPE_DEFAULT),

@@ -15,6 +15,7 @@
 #include "scene.h"
 #include "camera.h"
 #include "chunkio.h"
+#include "coltest.h"
 #include "dx8wrapper.h"
 #include "light.h"
 #include "lightenv.h"
@@ -36,67 +37,13 @@ SceneClass::SceneClass() :
 // 0x00832710
 void SceneClass::Save(ChunkSaveClass &csave)
 {
-    csave.Begin_Chunk(0x42300);
-
-    csave.Begin_Micro_Chunk(0);
-    csave.Write(&m_ambientLight, sizeof(m_ambientLight));
-    csave.End_Micro_Chunk();
-
-    csave.Begin_Micro_Chunk(1);
-    csave.Write(&m_polyRenderMode, sizeof(m_polyRenderMode));
-    csave.End_Micro_Chunk();
-
-    csave.Begin_Micro_Chunk(2);
-    csave.Write(&m_fogColor, sizeof(m_fogColor));
-    csave.End_Micro_Chunk();
-
-    csave.Begin_Micro_Chunk(3);
-    csave.Write(&m_fogEnabled, sizeof(m_fogEnabled));
-    csave.End_Micro_Chunk();
-
-    csave.Begin_Micro_Chunk(4);
-    csave.Write(&m_fogStart, sizeof(m_fogStart));
-    csave.End_Micro_Chunk();
-
-    csave.Begin_Micro_Chunk(5);
-    csave.Write(&m_fogEnd, sizeof(m_fogEnd));
-    csave.End_Micro_Chunk();
-
-    csave.End_Chunk();
+    captainslog_dbgassert(false, "SceneClass::Save is not used");
 }
 
 // 0x008327E0
 void SceneClass::Load(ChunkLoadClass &cload)
 {
-    cload.Open_Chunk();
-    if (cload.Cur_Chunk_ID() == 0x42300) {
-        while (cload.Open_Micro_Chunk()) {
-            switch (cload.Cur_Micro_Chunk_ID()) {
-                case 0:
-                    cload.Read(&m_ambientLight, sizeof(m_ambientLight));
-                    break;
-                case 1:
-                    cload.Read(&m_polyRenderMode, sizeof(m_polyRenderMode));
-                    break;
-                case 2:
-                    cload.Read(&m_fogColor, sizeof(m_fogColor));
-                    break;
-                case 3:
-                    cload.Read(&m_fogEnabled, sizeof(m_fogEnabled));
-                    break;
-                case 4:
-                    cload.Read(&m_fogStart, sizeof(m_fogStart));
-                    break;
-                case 5:
-                    cload.Read(&m_fogEnd, sizeof(m_fogEnd));
-                    break;
-                default:
-                    break;
-            }
-            cload.Close_Micro_Chunk();
-        }
-    }
-    cload.Close_Chunk();
+    captainslog_dbgassert(false, "SceneClass::Load is not used");
 }
 
 // 0x00832550
@@ -207,14 +154,16 @@ void SimpleSceneClass::Unregister(RenderObjClass *obj, RegType for_what)
 // 0x00832DF0
 float SimpleSceneClass::Compute_Point_Visibility(RenderInfoClass &rinfo, const Vector3 &point)
 {
-    // auto camera_position = rinfo.m_camera.Get_Position();
-    // LineSegClass line{ camera_position, point };
-    // Requires RayCollisionTestClass
-#ifdef GAME_DLL
-    return Call_Method<float, SimpleSceneClass, RenderInfoClass &, const Vector3 &>(0x00832DF0, this, rinfo, point);
-#else
-    return 0.0f;
-#endif
+    CastResultStruct res;
+    auto camera_position = rinfo.m_camera.Get_Position();
+    LineSegClass ray{ camera_position, point };
+    RayCollisionTestClass raytest(ray, &res);
+
+    for (auto iter = m_renderList.Iterator(); iter; ++iter) {
+        auto *robj = iter.Peek_Obj();
+        robj->Cast_Ray(raytest);
+    }
+    return res.fraction == 1.0f ? 1.0f : 0.0f;
 }
 
 // 0x00832F40

@@ -1352,6 +1352,7 @@ void Setup_Hooks()
     Hook_Any(0x00833160, SimpleSceneClass::Create_Iterator);
     Hook_Any(0x00832BF0, SimpleSceneClass::Register);
     Hook_Any(0x00832C80, SimpleSceneClass::Unregister);
+    Hook_Any(0x00832DF0, SimpleSceneClass::Compute_Point_Visibility);
     Hook_Any(0x00832F40, SimpleSceneClass::Customized_Render);
     Hook_Any(0x008330E0, SimpleSceneClass::Post_Render_Processing);
     Hook_Any(0x00832D20, SimpleSceneClass::Visibility_Check);

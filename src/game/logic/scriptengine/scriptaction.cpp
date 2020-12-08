@@ -54,7 +54,7 @@ ScriptAction *ScriptAction::Duplicate()
 
     for (int i = 0; i < m_numParams; ++i) {
         if (new_action->m_params[i] != nullptr) {
-            new_action->m_params[i] = m_params[i];
+            *new_action->m_params[i] = *m_params[i];
         }
     }
 

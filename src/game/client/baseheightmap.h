@@ -77,6 +77,8 @@ public:
     float Get_Max_Cell_Height(float x, float y);
     void Set_Time_Of_Day(TimeOfDayType time);
 
+    W3DShroud *Get_Shroud() { return m_shroud; }
+
 protected:
     int m_x;
     int m_y;

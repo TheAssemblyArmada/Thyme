@@ -116,3 +116,18 @@ void FileSystem::Unload_Music_Files_From_CD()
 {
     // TODO Needs audio interface.
 }
+
+bool FileSystem::Get_File_Info(const Utf8String &filename, FileInfo *info)
+{
+    if (!info) {
+        return false;
+    }
+
+    memset(info, 0, sizeof(FileInfo));
+
+    if (g_theLocalFileSystem->Get_File_Info(filename, info)) {
+        return true;
+    } else {
+        return g_theArchiveFileSystem->Get_File_Info(filename, info);
+    }
+}

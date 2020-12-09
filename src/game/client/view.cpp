@@ -14,6 +14,8 @@
  *            LICENSE
  */
 #include "view.h"
+#include "globaldata.h"
+#include "xfer.h"
 
 #ifndef GAME_DLL
 uint32_t View::s_idNext = 1;
@@ -45,7 +47,7 @@ View::View() :
     m_cameraLockDrawable(nullptr),
     m_lockType(LOCK_FOLLOW),
     m_lockDist(0.0f),
-    m_FOV(0.87266463f),
+    m_FOV(DEG_TO_RADF(50)),
     m_mouseLocked(false),
     m_okToAdjustHeight(true),
     m_snapImmediate(false),
@@ -53,79 +55,163 @@ View::View() :
 {
 }
 
-void View::Init() {}
+void View::Init()
+{
+    m_width = 640;
+    m_height = 480;
+    m_originX = 0;
+    m_originY = 0;
+    m_pos.x = 0.0f;
+    m_pos.y = 0.0f;
+    m_angle = 0.0f;
+    m_cameraLock = OBJECT_UNK;
+    m_cameraLockDrawable = 0;
+    m_zoomLimited = true;
+    m_maxZoom = 1.3f;
+    m_minZoom = 0.2f;
+    m_zoom = 1.3f;
+    m_maxHeightAboveGround = g_theWriteableGlobalData->m_maxCameraHeight;
+    m_minHeightAboveGround = g_theWriteableGlobalData->m_minCameraHeight;
+    m_okToAdjustHeight = false;
+    m_defaultAngle = 0.0f;
+    m_defaultPitchAngle = 0.0f;
+}
 
 void View::CRC_Snapshot(Xfer *xfer) {}
 
-void View::Xfer_Snapshot(Xfer *xfer) {}
+void View::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
+    float angle = Get_Angle();
+    xfer->xferReal(&angle);
+    Set_Angle(angle);
+    Coord3D pos;
+    Get_Position(&pos);
+    xfer->xferReal(&pos.x);
+    xfer->xferReal(&pos.y);
+    xfer->xferReal(&pos.z);
+    Look_At(&pos);
+}
 
 void View::Load_Post_Process() {}
 
 uint32_t View::Get_ID()
 {
-    return uint32_t();
+    return m_id;
 }
 
-void View::Set_Zoom_Limited(bool) {}
+void View::Set_Zoom_Limited(bool b)
+{
+    m_zoomLimited = b;
+}
 
 bool View::Is_Zoom_Limited()
 {
-    return false;
+    return m_zoomLimited;
 }
 
-void View::Get_Screen_Corner_World_Points_At_Z(Coord3D *, Coord3D *, Coord3D *, Coord3D *, float) {}
+void View::Get_Screen_Corner_World_Points_At_Z(
+    Coord3D *top_left, Coord3D *top_right, Coord3D *bottom_left, Coord3D *bottom_right, float z)
+{
+    uint32_t width = Get_Width();
+    uint32_t height = Get_Height();
 
-void View::Set_Origin(int, int) {}
+    if (top_left && top_right && bottom_left && bottom_right) {
+        int32_t x;
+        int32_t y;
+        Get_Origin(&x, &y);
+        ICoord2D tl;
+        tl.x = x;
+        tl.y = y;
+        ICoord2D tr;
+        tr.x = width + x;
+        tr.y = y;
+        ICoord2D bl;
+        bl.x = width + x;
+        bl.y = height + y;
+        ICoord2D br;
+        br.x = x;
+        br.y = height + y;
+        Screen_To_World_At_Z(&tl, top_left, z);
+        Screen_To_World_At_Z(&tr, top_right, z);
+        Screen_To_World_At_Z(&bl, bottom_left, z);
+        Screen_To_World_At_Z(&br, bottom_right, z);
+    }
+}
 
-void View::Get_Origin(int32_t *, int32_t *) {}
+void View::Set_Origin(int32_t x, int32_t y)
+{
+    m_originX = x;
+    m_originY = y;
+}
 
-void View::Look_At(const Coord3D *) {}
+void View::Get_Origin(int32_t *x, int32_t *y)
+{
+    *x = m_originX;
+    *y = m_originY;
+}
+
+void View::Look_At(const Coord3D *pos)
+{
+    Coord3D c = Get_Position();
+    c.x = pos->x - (double)m_width * 0.5f;
+    c.y = pos->y - (double)m_height * 0.5f;
+    Set_Position(&c);
+}
 
 void View::Init_Height_For_Map() {}
 
-void View::Scroll_By(Coord2D *) {}
+void View::Scroll_By(Coord2D *pos)
+{
+    m_pos.x += pos->x;
+    m_pos.y += pos->y;
+}
 
-void View::Move_Camera_To(const Coord3D *, int, int, bool, float, float) {}
+void View::Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2)
+{
+    Look_At(o);
+}
 
-void View::Move_Camera_Along_Waypoint_Path(Waypoint *, int, int, char, float, float) {}
+void View::Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2) {}
 
 bool View::Is_Camera_Movement_Finished()
 {
-    return false;
+    return true;
 }
 
-void View::Camera_Mod_Final_Zoom(float, float, float) {}
+void View::Camera_Mod_Final_Zoom(float f1, float f2, float f3) {}
 
-void View::Camera_Mod_Rolling_Average(int) {}
+void View::Camera_Mod_Rolling_Average(int i) {}
 
-void View::Camera_Mod_Final_Time_Multiplier(int) {}
+void View::Camera_Mod_Final_Time_Multiplier(int i) {}
 
-void View::Camera_Mod_Final_Pitch(float, float, float) {}
+void View::Camera_Mod_Final_Pitch(float f1, float f2, float f3) {}
 
 void View::Camera_Mod_Freeze_Time() {}
 
 void View::Camera_Mod_Freeze_Angle() {}
 
-void View::Camera_Mod_Look_Toward(Coord3D *) {}
+void View::Camera_Mod_Look_Toward(Coord3D *o) {}
 
-void View::Camera_Mod_Final_Look_Toward(Coord3D *) {}
+void View::Camera_Mod_Final_Look_Toward(Coord3D *o) {}
 
-void View::Camera_Mod_Final_Move_To(Coord3D *) {}
+void View::Camera_Mod_Final_Move_To(Coord3D *o) {}
 
-void View::Camera_Enable_Slave_Mode(const Utf8String &, const Utf8String &) {}
+void View::Camera_Enable_Slave_Mode(const Utf8String &s1, const Utf8String &s2) {}
 
 void View::Camera_Disable_Slave_Mode() {}
 
-void View::Add_Camera_Shake(const Coord3D &, float, float, float) {}
+void View::Add_Camera_Shake(const Coord3D &o, float f1, float f2, float f3) {}
 
 FilterModes View::Get_View_Filter_Mode()
 {
-    return FilterModes();
+    return FM_NULL_MODE;
 }
 
 FilterTypes View::Get_View_Filter_Type()
 {
-    return FilterTypes();
+    return FT_NULL_FILTER;
 }
 
 bool View::Set_View_Filter_Mode(FilterModes mode)
@@ -140,17 +226,17 @@ bool View::Set_View_Filter(FilterTypes filter)
     return false;
 }
 
-void View::Set_Fade_Parameters(int, int) {}
+void View::Set_Fade_Parameters(int i1, int i2) {}
 
-void View::Set_3D_Wire_Frame_Mode(bool on) {}
+void View::Set_3D_Wireframe_Mode(bool on) {}
 
-void View::Reset_Camera(const Coord3D *, int, float, float) {}
+void View::Reset_Camera(const Coord3D *o, int i, float f1, float f2) {}
 
-void View::Rotate_Camera(float, int, float, float) {}
+void View::Rotate_Camera(float f1, int i, float f2, float f3) {}
 
-void View::Rotate_Camera_Toward_Object(ObjectID, int, int, float, float) {}
+void View::Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2) {}
 
-void View::Rotate_CameraTowardPosition(const Coord3D *, int, float, float, char) {}
+void View::Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b) {}
 
 bool View::Is_Time_Frozen()
 {
@@ -159,53 +245,89 @@ bool View::Is_Time_Frozen()
 
 int View::Get_Time_Multiplier()
 {
-    return 0;
+    return 1;
 }
 
 void View::Set_Time_Multiplier(int multiplier) {}
 
-void View::Set_Default_View(float, float, float) {}
+void View::Set_Default_View(float f1, float f2, float f3) {}
 
-void View::Zoom_Camera(float, int, float, float) {}
+void View::Zoom_Camera(float f1, int i, float f2, float f3) {}
 
-void View::Pitch_Camera(float, int, float, float) {}
+void View::Pitch_Camera(float f1, int i, float f2, float f3) {}
 
-void View::Set_Angle(float angle) {}
+void View::Set_Angle(float angle)
+{
+    m_angle = angle;
+}
 
 float View::Get_Angle()
 {
-    return 0.0f;
+    return m_angle;
 }
 
-void View::Set_Pitch(float pitch) {}
+void View::Set_Pitch(float pitch)
+{
+    m_pitchAngle = pitch;
+    std::clamp(m_pitchAngle, DEG_TO_RADF(-36), DEG_TO_RADF(36));
+}
 
 float View::Get_Pitch()
 {
-    return 0.0f;
+    return m_pitchAngle;
 }
 
-void View::Set_Angle_And_Pitch_To_Default() {}
+void View::Set_Angle_And_Pitch_To_Default()
+{
+    m_angle = m_defaultAngle;
+    m_pitchAngle = m_defaultPitchAngle;
+}
 
-void View::Get_Position(Coord3D *pos) {}
+void View::Get_Position(Coord3D *pos)
+{
+    *pos = m_pos;
+}
 
 float View::Get_Zoom()
 {
-    return 0.0f;
+    return m_zoom;
 }
 
 void View::Set_Zoom(float zoom) {}
 
 float View::Get_Height_Above_Ground()
 {
-    return 0.0f;
+    return m_heightAboveGround;
 }
 
-void View::Set_Height_Above_Ground(float height) {}
+void View::Set_Height_Above_Ground(float height)
+{
+    m_heightAboveGround = height;
+}
 
-void View::Zoom_In() {}
+void View::Zoom_In()
+{
+    Set_Height_Above_Ground(Get_Height_Above_Ground() - 10.0f);
+}
 
-void View::Zoom_Out() {}
+void View::Zoom_Out()
+{
+    Set_Height_Above_Ground(Get_Height_Above_Ground() + 10.0f);
+}
 
-void View::Get_Location(ViewLocation *location) {}
+void View::Get_Location(ViewLocation *location)
+{
+    Coord3D pos = Get_Position();
+    location->Init(pos.x, pos.y, pos.z, Get_Angle(), Get_Pitch(), Get_Zoom());
+}
 
-void View::Set_Location(ViewLocation *location) {}
+void View::Set_Location(const ViewLocation *location)
+{
+    if (location->m_valid) {
+        Set_Position(&location->m_pos);
+        Set_Angle(location->m_angle);
+        Set_Pitch(location->m_pitch);
+        Set_Zoom(location->m_zoom);
+        Force_Redraw();
+    }
+}

@@ -55,6 +55,7 @@ public:
     void Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier);
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
+    bool Supports_Dot3_Blend() const { return m_supportDot3Blend; }
     bool Supports_DXTC() const { return m_supportDXTC; }
     bool Supports_ZBias() const { return m_supportZBias; }
     bool Supports_Texture_Format(WW3DFormat format) const { return m_supportTextureFormat[format]; }

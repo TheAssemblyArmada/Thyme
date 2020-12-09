@@ -38,6 +38,7 @@ public:
         Utf8String const &filter,
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
         bool a5);
+    bool Get_File_Info(const Utf8String &filename, FileInfo *info);
 
     static bool Create_Dir(Utf8String name);
     static bool Are_Music_Files_On_CD();

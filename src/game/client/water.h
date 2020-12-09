@@ -74,6 +74,7 @@ private:
     Utf8String m_skyboxTextureT;
 
     static FieldParse m_waterTransparencySettingFieldParseTable[];
+    friend class W3DShaderManager;
 };
 
 #ifdef GAME_DLL

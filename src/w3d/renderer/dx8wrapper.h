@@ -183,6 +183,7 @@ public:
     static unsigned int Convert_Color(const Vector4 &color);
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
+    static void Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
     static void Set_DX8_Material(const D3DMATERIAL8 *mat);
@@ -719,6 +720,11 @@ inline void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT8 *light)
         s_currentLightEnables[index] = false;
         DX8CALL(LightEnable(index, FALSE));
     }
+}
+
+inline void DX8Wrapper::Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m)
+{
+    DX8CALL(GetTransform(transform, (D3DMATRIX *)&m));
 }
 
 inline void DX8Wrapper::Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)

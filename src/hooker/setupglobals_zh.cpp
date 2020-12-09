@@ -503,3 +503,7 @@ ARRAY_DEF(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38),
     VertexMaterialClass *,
     VertexMaterialClass::s_presets,
     VertexMaterialClass::PRESET_COUNT);
+
+// w3dsmudge.cpp
+#include "w3dsmudge.h"
+W3DSmudgeManager *&g_theSmudgeManager = Make_Global<W3DSmudgeManager *>(PICK_ADDRESS(0x00A3AE5C, 0));

@@ -24,19 +24,28 @@
 class Drawable;
 class Waypoint;
 
-// need to find these
 class ViewLocation
 {
 public:
-    ViewLocation() {} // needs to be found, likely source BFME2 WB
-    void Init(float, float, float, float, float, float) {} // needs to be found, likely source BFME2 WB
+    ViewLocation() : m_valid(false), m_zoom(0.0f), m_pitch(0.0f), m_angle(0.0f) {}
+    void Init(float x, float y, float z, float angle, float pitch, float zoom)
+    {
+        m_pos.x = x;
+        m_pos.y = y;
+        m_pos.z = z;
+        m_angle = angle;
+        m_pitch = pitch;
+        m_zoom = zoom;
+        m_valid = true;
+    }
 
 private:
-    int32_t m_valid;
+    bool m_valid;
     Coord3D m_pos;
     float m_angle;
     float m_pitch;
     float m_zoom;
+    friend class View;
 };
 
 enum FilterModes
@@ -45,14 +54,18 @@ enum FilterModes
     FM_VIEW_BW_BLACK_AND_WHITE,
     FM_VIEW_BW_RED_AND_WHITE,
     FM_VIEW_BW_GREEN_AND_WHITE,
+    FM_4,
+    FM_5,
     FM_VIEW_MB_IN_AND_OUT_ALPHA,
     FM_VIEW_MB_IN_AND_OUT_STATURATE,
-    FM_VIEW_MB_IN_ALPHA,
+    FM_8,
     FM_VIEW_MB_OUT_ALPHA,
     FM_VIEW_MB_IN_STATURATE,
     FM_VIEW_MB_OUT_STATURATE,
     FM_VIEW_MB_END_PAN_ALPHA,
+    FM_13,
     FM_VIEW_MB_PAN_ALPHA,
+    FM_15,
 };
 
 enum FilterTypes
@@ -60,18 +73,21 @@ enum FilterTypes
     FT_NULL_FILTER,
     FT_VIEW_BW_FILTER,
     FT_VIEW_MOTION_BLUR_FILTER,
+    FT_VIEW_CROSS_FADE_FILTER,
+    FT_VIEW_SCREEN_DEFAULT_FILTER,
     FT_MAX,
 };
 
 // dunno
 enum PickType
 {
-    PICKTYPE0,
+    PICKTYPE_UNK,
 };
 
 // wip
 class View : public SnapShot
 {
+public:
     enum CameraLockType
     {
         LOCK_FOLLOW = 0x0,
@@ -85,7 +101,6 @@ class View : public SnapShot
         SHAKE_SEVERE = 0x3,
     };
 
-public:
     View();
     virtual ~View() {}
 
@@ -94,58 +109,56 @@ public:
     virtual void Load_Post_Process() override;
 
     virtual void Init();
-    virtual void Reset() { m_zoomLimited = 1; };
+    virtual void Reset() { m_zoomLimited = true; };
     virtual uint32_t Get_ID();
-    virtual void Set_Zoom_Limited(bool);
+    virtual void Set_Zoom_Limited(bool b);
     virtual bool Is_Zoom_Limited();
-    virtual Drawable *Pick_Drawable(ICoord2D const *, bool, PickType) = 0;
-    virtual int Iterate_Drawables_In_Region(IRegion2D *, bool (*)(Drawable *, void *), void *) = 0;
-    virtual void Get_Screen_Corner_World_Points_At_Z(Coord3D *, Coord3D *, Coord3D *, Coord3D *, float);
-    virtual void Set_Width(uint32_t width) { m_width = width; }
-    virtual uint32_t Get_Width() { return m_width; }
-    virtual void Set_Height(uint32_t height) { m_height = height; }
-    virtual uint32_t Get_Height() { return m_height; }
-    virtual void Set_Origin(int, int);
-    virtual void Get_Origin(int32_t *, int32_t *);
+    virtual Drawable *Pick_Drawable(const ICoord2D *o, bool b, PickType type) = 0;
+    virtual int Iterate_Drawables_In_Region(IRegion2D *r, bool (*func)(Drawable *, void *), void *) = 0;
+    virtual void Get_Screen_Corner_World_Points_At_Z(
+        Coord3D *top_left, Coord3D *top_right, Coord3D *bottom_left, Coord3D *bottom_right, float z);
+    virtual void Set_Width(int32_t width) { m_width = width; }
+    virtual int32_t Get_Width() { return m_width; }
+    virtual void Set_Height(int32_t height) { m_height = height; }
+    virtual int32_t Get_Height() { return m_height; }
+    virtual void Set_Origin(int32_t x, int32_t y);
+    virtual void Get_Origin(int32_t *x, int32_t *y);
     virtual void Force_Redraw() = 0;
-    virtual void Look_At(const Coord3D *);
+    virtual void Look_At(const Coord3D *pos);
     virtual void Init_Height_For_Map();
-    virtual void Scroll_By(Coord2D *);
-    virtual void Move_Camera_To(
-        const Coord3D *, int, int, bool, float, float); // in mac, might be (const Coord3D *,int,int,bool) in pc
-    virtual void Move_Camera_Along_Waypoint_Path(
-        Waypoint *, int, int, char, float, float); // in mac, might be (Waypoint32_t*,int,int,bool)
+    virtual void Scroll_By(Coord2D *pos);
+    virtual void Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2);
+    virtual void Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2);
     virtual bool Is_Camera_Movement_Finished();
-    virtual void Camera_Mod_Final_Zoom(float, float, float); // in mac, might be (float)
-    virtual void Camera_Mod_Rolling_Average(int);
-    virtual void Camera_Mod_Final_Time_Multiplier(int);
-    virtual void Camera_Mod_Final_Pitch(float, float, float); // in mac, might be (float)
+    virtual void Camera_Mod_Final_Zoom(float f1, float f2, float f3);
+    virtual void Camera_Mod_Rolling_Average(int i);
+    virtual void Camera_Mod_Final_Time_Multiplier(int i);
+    virtual void Camera_Mod_Final_Pitch(float f1, float f2, float f3);
     virtual void Camera_Mod_Freeze_Time();
     virtual void Camera_Mod_Freeze_Angle();
-    virtual void Camera_Mod_Look_Toward(Coord3D *);
-    virtual void Camera_Mod_Final_Look_Toward(Coord3D *);
-    virtual void Camera_Mod_Final_Move_To(Coord3D *);
-    virtual void Camera_Enable_Slave_Mode(const Utf8String &, const Utf8String &); // return needs to be confirmed
-    virtual void Camera_Disable_Slave_Mode(); // return needs to be confirmed
-    virtual void Add_Camera_Shake(const Coord3D &, float, float, float); // return needs to be confirmed
+    virtual void Camera_Mod_Look_Toward(Coord3D *o);
+    virtual void Camera_Mod_Final_Look_Toward(Coord3D *o);
+    virtual void Camera_Mod_Final_Move_To(Coord3D *o);
+    virtual void Camera_Enable_Slave_Mode(const Utf8String &s1, const Utf8String &s2);
+    virtual void Camera_Disable_Slave_Mode();
+    virtual void Add_Camera_Shake(const Coord3D &o, float f1, float f2, float f3);
     virtual FilterModes Get_View_Filter_Mode();
     virtual FilterTypes Get_View_Filter_Type();
     virtual bool Set_View_Filter_Mode(FilterModes mode);
     virtual void Set_View_Filter_Pos(const Coord3D *pos);
     virtual bool Set_View_Filter(FilterTypes filter);
-    virtual void Set_Fade_Parameters(int, int);
-    virtual void Set_3D_Wire_Frame_Mode(bool on);
-    virtual void Reset_Camera(const Coord3D *, int, float, float); // in mac, might be (const Coord3D *,int)
-    virtual void Rotate_Camera(float, int, float, float); // in mac, might be (float,int)
-    virtual void Rotate_Camera_Toward_Object(ObjectID, int, int, float, float); // in mac, might be (ObjectID,int,int)
-    virtual void Rotate_CameraTowardPosition(
-        const Coord3D *, int, float, float, char); // in mac, might be (const Coord3D *,int)
+    virtual void Set_Fade_Parameters(int frames, int direction);
+    virtual void Set_3D_Wireframe_Mode(bool on);
+    virtual void Reset_Camera(const Coord3D *o, int i, float f1, float f2);
+    virtual void Rotate_Camera(float f1, int i, float f2, float f3);
+    virtual void Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2);
+    virtual void Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b);
     virtual bool Is_Time_Frozen();
     virtual int Get_Time_Multiplier();
     virtual void Set_Time_Multiplier(int multiplier);
-    virtual void Set_Default_View(float, float, float);
-    virtual void Zoom_Camera(float, int, float, float); // in mac, might be (float,int)
-    virtual void Pitch_Camera(float, int, float, float); // in mac, might be (float,int)
+    virtual void Set_Default_View(float f1, float f2, float f3);
+    virtual void Zoom_Camera(float f1, int i, float f2, float f3);
+    virtual void Pitch_Camera(float f1, int i, float f2, float f3);
     virtual void Set_Angle(float angle);
     virtual float Get_Angle();
     virtual void Set_Pitch(float pitch);
@@ -159,7 +172,7 @@ public:
     virtual void Set_Height_Above_Ground(float height);
     virtual void Zoom_In();
     virtual void Zoom_Out();
-    virtual void Set_Zoom_To_Default() = 0;
+    virtual void Set_Zoom_To_Default() {}
     virtual float Get_Max_Zoom() { return m_maxZoom; }
     virtual void Set_Ok_To_Adjust_Height(bool ok) { m_okToAdjustHeight = ok; }
     virtual float Get_Terrain_Height_Under_Camera() { return m_terrainHeightUnderCamera; }
@@ -168,12 +181,12 @@ public:
     virtual void Set_Current_Height_Above_Ground(float height) { m_currentHeightAboveGround = height; }
     virtual void Set_Field_Of_View(float fov) { m_FOV = fov; }
     virtual float Get_Field_Of_View() { return m_FOV; }
-    virtual void World_To_Screen_Tri_Return(const Coord3D *, ICoord2D *) = 0;
-    virtual void Screen_To_World(ICoord2D const *, Coord3D *) = 0;
-    virtual void Screen_To_Terrain(ICoord2D const *, Coord3D *) = 0;
-    virtual void Screen_To_World_At_Z(ICoord2D const *, Coord3D *, float) = 0;
-    virtual void Get_Location(ViewLocation *location); // need help with these
-    virtual void Set_Location(ViewLocation *location); // need help with these
+    virtual void World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
+    virtual void Screen_To_World(const ICoord2D *o1, Coord3D *o2) = 0;
+    virtual void Screen_To_Terrain(const ICoord2D *o1, Coord3D *o2) = 0;
+    virtual void Screen_To_World_At_Z(const ICoord2D *o1, Coord3D *o2, float f) = 0;
+    virtual void Get_Location(ViewLocation *location);
+    virtual void Set_Location(const ViewLocation *location);
     virtual void Draw_View() = 0;
     virtual void Update_View() = 0;
     virtual ObjectID Get_Camera_Lock() { return m_cameraLock; };
@@ -197,8 +210,8 @@ public:
     }
     virtual void Set_Mouse_Lock(bool locked) { m_mouseLocked = locked; }
     virtual bool Is_Mouse_Locked() { return m_mouseLocked; }
-    virtual void Shake(const Coord3D *, CameraShakeType) {}
-    virtual float Get_FX_Pitch() = 0;
+    virtual void Shake(const Coord3D *o, CameraShakeType type) {}
+    virtual float Get_FX_Pitch() { return 1.0f; }
     virtual void Force_Camera_Constraint_Recalc() {}
     virtual void Set_Guard_Band_Bias(Coord2D *) = 0;
     virtual View *Prepend_View_To_List(View *view)
@@ -206,14 +219,16 @@ public:
         m_next = view;
         return this;
     };
-    virtual View *Get_Next_View() { return m_next; };
+    virtual View *Get_Next_View() { return m_next; }
+    Coord3D &Get_Position() { return m_pos; }
+    void Set_Position(const Coord3D *pos) { m_pos = *pos; }
 
 protected:
     View *m_next;
     uint32_t m_id;
     Coord3D m_pos;
-    uint32_t m_width;
-    uint32_t m_height;
+    int32_t m_width;
+    int32_t m_height;
     int32_t m_originX;
     int32_t m_originY;
     float m_angle;

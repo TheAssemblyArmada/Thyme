@@ -156,7 +156,7 @@ float SimpleSceneClass::Compute_Point_Visibility(RenderInfoClass &rinfo, const V
 {
     CastResultStruct res;
     auto camera_position = rinfo.m_camera.Get_Position();
-    LineSegClass ray{ camera_position, point };
+    LineSegClass ray(camera_position, point);
     RayCollisionTestClass raytest(ray, &res);
 
     for (auto iter = m_renderList.Iterator(); iter; ++iter) {
@@ -187,15 +187,15 @@ void SimpleSceneClass::Customized_Render(RenderInfoClass &rinfo)
 #endif
 
     auto *light_environment = rinfo.m_lightEnvironment;
-    if (light_environment != nullptr) {
-        static LightEnvironmentClass s_lightEnv;
-        s_lightEnv.Reset({ 0, 0, 0 }, m_ambientLight);
+    captainslog_dbgassert(light_environment == nullptr, "Light Environment already exists");
+    if (light_environment == nullptr) {
+        static LightEnvironmentClass _light_env;
+        _light_env.Reset({ 0, 0, 0 }, m_ambientLight);
         for (auto iter = m_lightList.Iterator(); iter; ++iter) {
-            s_lightEnv.Add_Light(*(static_cast<LightClass *>(iter.Get_Obj())));
+            _light_env.Add_Light(*(static_cast<LightClass *>(iter.Get_Obj())));
         }
-        rinfo.m_camera.Restart();
-        s_lightEnv.Pre_Render_Update(rinfo.m_camera.Get_Transform_No_Validity_Check());
-        rinfo.m_lightEnvironment = &s_lightEnv;
+        _light_env.Pre_Render_Update(rinfo.m_camera.Get_Transform());
+        rinfo.m_lightEnvironment = &_light_env;
     }
 
     for (auto iter = m_renderList.Iterator(); iter; ++iter) {
@@ -233,7 +233,7 @@ void SimpleSceneClass::Post_Render_Processing(RenderInfoClass &rinfo)
 void SimpleSceneClass::Remove_All_Render_Objects()
 {
     for (auto *robj = m_renderList.Remove_Head(); robj != nullptr; robj = m_renderList.Remove_Head()) {
-        robj->Notify_Removed(this);
+        SceneClass::Remove_Render_Object(robj);
         robj->Release_Ref();
     }
 }

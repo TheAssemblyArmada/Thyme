@@ -16,6 +16,7 @@
 #include "cpudetect.h"
 #include "globaldata.h"
 #include "optionpreferences.h"
+#include "shadermanager.h"
 #include <cstddef>
 #include <cstdio>
 
@@ -36,11 +37,11 @@ void Test_Minimum_Requirements(
 {
     // This implementation just gives the "best" results for cpu and gpu type as modern hardware isn't recognised correctly.
     if (cpu != nullptr) {
-        *cpu = CPU_P3;
+        *cpu = CPU_P4;
     }
 
     if (gpu != nullptr) {
-        *gpu = GPU_GF4;
+        *gpu = W3DShaderManager::Get_Chipset();
     }
 
     if (cpu_speed != nullptr) {

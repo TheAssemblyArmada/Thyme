@@ -6,6 +6,7 @@ set(GAMEENGINE_INCLUDES
     game/client/gui
     game/client/input
     game/client/shadow
+    game/client/shader
     game/client/system
     game/client/system/particlesystem
     game/client/videoplayer
@@ -78,6 +79,17 @@ set(GAMEENGINE_SRC
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
     game/client/shadow/w3dshadow.cpp
+    game/client/shader/bwfilter.cpp
+    game/client/shader/cloudshader.cpp
+    game/client/shader/crossfadefilter.cpp
+    game/client/shader/defaultfilter.cpp
+    game/client/shader/flatshroudshader.cpp
+    game/client/shader/flatterrainshader.cpp
+    game/client/shader/motionblurfilter.cpp
+    game/client/shader/maskshader.cpp
+    game/client/shader/roadshader.cpp
+    game/client/shader/shroudshader.cpp
+    game/client/shader/terrainshader.cpp
     game/client/system/debugdisplay.cpp
     game/client/system/rayeffect.cpp
     game/client/system/particlesystem/particle.cpp
@@ -198,6 +210,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/client/w3dsmudge.cpp
+    platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/buff.cpp

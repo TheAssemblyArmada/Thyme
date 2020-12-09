@@ -90,6 +90,7 @@
 #include "seglinerenderer.h"
 #include "setuphooks.h"
 #include "shader.h"
+#include "shadermanager.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
 #include "soundmanager.h"
@@ -112,6 +113,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
+#include "w3dview.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -1320,4 +1322,22 @@ void Setup_Hooks()
     Hook_Any(0x004A7C00, GameLogic::Set_Control_Bar_Override);
     Hook_Any(0x004A7DA0, GameLogic::Find_Control_Bar_Override);
     Hook_Any(0x004A7FA0, GameLogic::Add_TOC_Entry);
+
+    // shadermanager.h
+    Hook_Any(0x0074DF20, W3DShaderManager::Init);
+    Hook_Any(0x0074E0A0, W3DShaderManager::Shutdown);
+    Hook_Any(0x0074E140, W3DShaderManager::Get_Shader_Passes);
+    Hook_Any(0x0074E150, W3DShaderManager::Set_Shader);
+    Hook_Any(0x0074E190, W3DShaderManager::Reset_Shader);
+    Hook_Any(0x0074E1C0, W3DShaderManager::Filter_Pre_Render);
+    Hook_Any(0x0074E1F0, W3DShaderManager::Filter_Post_Render);
+    Hook_Any(0x0074E230, W3DShaderManager::Filter_Setup);
+    Hook_Any(0x0074E700, W3DShaderManager::Get_Render_Texture);
+    Hook_Any(0x0074E710, W3DShaderManager::Get_Chipset);
+    Hook_Any(0x0074E990, W3DShaderManager::Load_And_Create_D3D_Shader);
+    Hook_Any(0x0074EC10, W3DShaderManager::Set_Shroud_Tex);
+
+    // w3dview.h
+    Hook_Any(0x0076E2F0, W3DView::Set_Fade_Parameters);
+    Hook_Any(0x0076E330, W3DView::Set_View_Filter_Pos);
 }

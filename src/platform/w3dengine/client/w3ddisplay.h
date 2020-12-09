@@ -20,7 +20,7 @@
 #include "render2d.h"
 #include "scene.h"
 
-class W3DAssetManager;
+class GameAssetManager;
 
 class W3DDisplay final : public Display
 {
@@ -72,7 +72,7 @@ public:
     virtual float Get_Average_FPS() override { return m_averageFps; }
     virtual int Get_Last_Frame_Draw_Calls() override;
 
-    static W3DAssetManager *Get_AssetManager() { return s_assetManager; }
+    static GameAssetManager *Get_AssetManager() { return s_assetManager; }
     static SceneClass *Get_3DInterfaceScene() { return s_3DInterfaceScene; }
 
 private:
@@ -90,12 +90,12 @@ private:
     uint32_t m_nativeDebugDisplay;
 
 #ifdef GAME_DLL
-    static W3DAssetManager *&s_assetManager; // TODO: Actual type is GameAssetManager
+    static GameAssetManager *&s_assetManager;
     static SceneClass *&s_3DScene; // TODO: Actual type is RTS2DScene
     static SceneClass *&s_2DScene; // TODO: Actual type is RTS2DScene
     static SceneClass *&s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
 #else
-    static W3DAssetManager *s_assetManager; // TODO: Actual type is GameAssetManager
+    static GameAssetManager *s_assetManager;
     static SceneClass *s_3DScene; // TODO: Actual type is RTS2DScene
     static SceneClass *s_2DScene; // TODO: Actual type is RTS2DScene
     static SceneClass *s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene

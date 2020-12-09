@@ -237,3 +237,8 @@ inline Utf8String &Utf8String::operator+=(Utf8String const &s)
 
     return *this;
 }
+
+// Windows to POSIX names
+// strcmpi = strcasecmp
+// strnicmp = strncasecmp
+// sprintf_s = snprintf

@@ -31,7 +31,7 @@
 #include "w3d.h"
 
 #ifndef GAME_DLL
-W3DAssetManager *W3DDisplay::s_assetManager; // TODO: Actual type is GameAssetManager
+GameAssetManager *W3DDisplay::s_assetManager;
 SceneClass *W3DDisplay::s_3DScene; // TODO: Actual type is RTS2DScene
 SceneClass *W3DDisplay::s_2DScene; // TODO: Actual type is RTS2DScene
 SceneClass *W3DDisplay::s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
@@ -99,7 +99,7 @@ W3DDisplay::~W3DDisplay()
 // 0x0073CA80
 void W3DDisplay::Init()
 {
-    // TODO: Requires RTS3DInterfaceScene, RTS2DScene, RTS3DScene, W3DAssetManager, ...
+    // TODO: Requires RTS3DInterfaceScene, RTS2DScene, RTS3DScene, GameAssetManager, ...
 #ifdef GAME_DLL
     Call_Method<void, W3DDisplay>(0x0073CA80, this);
 #endif

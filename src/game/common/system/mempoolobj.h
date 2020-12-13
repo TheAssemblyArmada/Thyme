@@ -26,7 +26,14 @@ class MemoryPoolObject
 {
 public:
     virtual ~MemoryPoolObject() {}
-    virtual MemoryPool *Get_Object_Pool() = 0;
+    virtual MemoryPool *Get_Object_Pool()
+    {
+        captainslog_error("This should be impossible to call (abstract base class)!");
+        return nullptr;
+    }
+
+    void operator delete(void *p, void *q) { captainslog_error("This should be impossible to call (abstract base class)!"); }
+    void operator delete(void *ptr) { captainslog_error("This should be impossible to call (abstract base class)!"); }
 
     // Class implementing Get_Object_Pool needs to provide these
     // use macros below to generated them.
@@ -102,25 +109,25 @@ inline void Delete_Instance(MemoryPoolObject *ptr)
 }
 
 //
-// Not much to go on for these, looks heavily inlined.
+// Class to hold the memory pool for a runtime of a function and if still held destroy it when the function is done.
 //
 class MemoryPoolObjectHolder
 {
 public:
-    MemoryPoolObjectHolder(MemoryPoolObject *obj) : Obj(obj) {}
+    MemoryPoolObjectHolder(MemoryPoolObject *obj = nullptr) : m_obj(obj) {}
 
-    ~MemoryPoolObjectHolder()
+    ~MemoryPoolObjectHolder() { Delete_Instance(m_obj); }
+
+    void Hold(MemoryPoolObject *obj)
     {
-        if (Obj != nullptr) {
-            MemoryPool *mp = Obj->Get_Object_Pool();
-            Obj->~MemoryPoolObject();
-            mp->Free_Block(Obj);
+        if (m_obj != nullptr) {
+            captainslog_debug("Already holding!");
         }
+        m_obj = obj;
     }
 
-    void Hold(MemoryPoolObject *obj) { Obj = obj; }
-    void Release() { Obj = nullptr; }
+    void Release() { m_obj = nullptr; }
 
 private:
-    MemoryPoolObject *Obj;
+    MemoryPoolObject *m_obj;
 };

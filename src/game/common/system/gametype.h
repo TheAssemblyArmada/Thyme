@@ -75,6 +75,11 @@ enum DrawableID : int32_t
     DRAWABLE_UNK,
 };
 
+enum PathfindLayerEnum
+{
+    LAYER_UNK,
+};
+
 enum BuildableStatus
 {
     BSTATUS_YES,

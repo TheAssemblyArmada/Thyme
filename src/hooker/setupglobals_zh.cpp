@@ -514,3 +514,7 @@ W3DSmudgeManager *&g_theSmudgeManager = Make_Global<W3DSmudgeManager *>(PICK_ADD
 // ai.cpp
 #include "ai.h"
 AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0));
+
+// terrainlogic.cpp
+#include "terrainlogic.h"
+TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00A2B680, 0));

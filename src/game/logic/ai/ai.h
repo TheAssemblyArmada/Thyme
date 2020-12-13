@@ -44,7 +44,7 @@ class AISideBuildList : public MemoryPoolObject
 
 public:
     AISideBuildList(Utf8String name);
-    ~AISideBuildList();
+    virtual ~AISideBuildList() override;
     void Add_Info(BuildListInfo *info);
 
 private:
@@ -141,8 +141,11 @@ public:
     AIGroup *Find_Group(GroupID id);
     void Destroy_Group(AIGroup *group);
     FormationID Get_Next_Formation_ID();
-    Object *Find_Closest_Enemy(
-        const Object *me, float range, unsigned int qualifiers, const AttackPriorityInfo *info, PartitionFilter *optional_filter);
+    Object *Find_Closest_Enemy(const Object *me,
+        float range,
+        unsigned int qualifiers,
+        const AttackPriorityInfo *info,
+        PartitionFilter *optional_filter);
     Object *Find_Closest_Ally(const Object *me, float range, unsigned int qualifiers);
     Object *Find_Closest_Repulsor(const Object *me, float range);
     void Add_Side_Info(AISideInfo *info);

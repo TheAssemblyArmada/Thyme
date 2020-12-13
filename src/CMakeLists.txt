@@ -18,6 +18,7 @@ set(GAMEENGINE_INCLUDES
     game/common/rts
     game/common/system
     game/common/thing
+    game/logic/ai
     game/logic/map
     game/logic/object
     game/logic/scriptengine
@@ -178,6 +179,7 @@ set(GAMEENGINE_SRC
     game/common/thing/thing.cpp
     game/common/thing/thingfactory.cpp
     game/common/thing/thingtemplate.cpp
+    game/logic/ai/ai.cpp
     game/logic/map/polygontrigger.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/weapon.cpp

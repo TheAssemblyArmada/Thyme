@@ -510,3 +510,7 @@ ARRAY_DEF(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38),
 // w3dsmudge.cpp
 #include "w3dsmudge.h"
 W3DSmudgeManager *&g_theSmudgeManager = Make_Global<W3DSmudgeManager *>(PICK_ADDRESS(0x00A3AE5C, 0));
+
+// ai.cpp
+#include "ai.h"
+AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0));

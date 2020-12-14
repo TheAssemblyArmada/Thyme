@@ -384,7 +384,7 @@ void Parameter::Set_Coord3D(Coord3D *coord)
 Parameter *Parameter::Read_Parameter(DataChunkInput &input)
 {
     ParameterType type = ParameterType(input.Read_Int32());
-    Parameter *param = new Parameter(type);
+    Parameter *param = NEW_POOL_OBJ(Parameter, type);
 
     if (param->m_type == COORD3D) {
         Coord3D tmp;

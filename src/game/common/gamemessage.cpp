@@ -35,7 +35,7 @@ GameMessage::~GameMessage()
     while (argobj != nullptr) {
         GameMessageArgument *tmp = argobj;
         argobj = argobj->m_next;
-        Delete_Instance(tmp);
+        tmp->Delete_Instance();
     }
 
     if (m_list != nullptr) {
@@ -45,7 +45,7 @@ GameMessage::~GameMessage()
 
 GameMessageArgument *GameMessage::Allocate_Arg()
 {
-    GameMessageArgument *arg = new GameMessageArgument;
+    GameMessageArgument *arg = NEW_POOL_OBJ(GameMessageArgument);
 
     if (m_argTail != nullptr) {
         m_argTail->m_next = arg;

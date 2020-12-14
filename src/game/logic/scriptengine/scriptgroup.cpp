@@ -32,14 +32,14 @@ ScriptGroup::ScriptGroup() :
 
 ScriptGroup::~ScriptGroup()
 {
-    Delete_Instance(m_firstScript);
+    m_firstScript->Delete_Instance();
     m_firstScript = nullptr;
 
     ScriptGroup *saved;
     for (ScriptGroup *next = m_nextGroup; next != nullptr; next = saved) {
         saved = next->m_nextGroup;
         next->m_nextGroup = nullptr;
-        Delete_Instance(next);
+        next->Delete_Instance();
         next = saved;
     }
 }
@@ -79,7 +79,7 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
     if (script_count > 0) {
         captainslog_dbgassert(false, "Striping out extra scripts - Bad...");
         if (Script::s_emptyScript == nullptr) {
-            Script::s_emptyScript = new Script;
+            Script::s_emptyScript = NEW_POOL_OBJ(Script);
         }
 
         while (script_count--) {
@@ -95,7 +95,7 @@ void ScriptGroup::Xfer_Snapshot(Xfer *xfer)
  */
 ScriptGroup *ScriptGroup::Duplicate()
 {
-    ScriptGroup *new_group = new ScriptGroup;
+    ScriptGroup *new_group = NEW_POOL_OBJ(ScriptGroup);
 
     for (Script *script = m_firstScript, *new_script = nullptr; script != nullptr; script = script->Get_Next()) {
         Script *duplicate = script->Duplicate();
@@ -124,7 +124,7 @@ ScriptGroup *ScriptGroup::Duplicate()
  */
 ScriptGroup *ScriptGroup::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
-    ScriptGroup *new_group = new ScriptGroup;
+    ScriptGroup *new_group = NEW_POOL_OBJ(ScriptGroup);
 
     for (Script *script = m_firstScript, *new_script = nullptr; script != nullptr; script = script->Get_Next()) {
         Script *duplicate = script->Duplicate_And_Qualify(str1, str2, str3);
@@ -180,7 +180,7 @@ void ScriptGroup::Add_Script(Script *script, int index)
  */
 bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    ScriptGroup *new_group = new ScriptGroup;
+    ScriptGroup *new_group = NEW_POOL_OBJ(ScriptGroup);
 
     new_group->m_groupName = input.Read_AsciiString();
     new_group->m_isGroupActive = input.Read_Byte();

@@ -27,9 +27,14 @@ class Particle : public MemoryPoolObject, public ParticleInfo
     friend class ParticleSystem;
     friend class ParticleSystemManager;
 
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+protected:
+    virtual ~Particle() override;
+
 public:
     Particle(ParticleSystem *system, const ParticleInfo &info);
-    virtual ~Particle();
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;

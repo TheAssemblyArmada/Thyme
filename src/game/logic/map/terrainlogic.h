@@ -59,10 +59,13 @@ public:
 class Bridge : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Bridge)
+
+protected:
+    virtual ~Bridge() override;
+
 public:
     Bridge(BridgeInfo &info, Dict *props, Utf8String bridge_template_name);
     Bridge(Object *obj);
-    virtual ~Bridge() override;
 
     Object *Create_Tower(
         Coord3D *world_pos, BridgeTowerType tower_type, const ThingTemplate *tower_template, Object *bridge);
@@ -93,6 +96,10 @@ private:
 class Waypoint : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Waypoint)
+
+protected:
+    virtual ~Waypoint() override;
+
 public:
     Waypoint(WaypointID id,
         Utf8String name,
@@ -101,7 +108,6 @@ public:
         Utf8String label2,
         Utf8String label3,
         bool bidirectional);
-    virtual ~Waypoint() override;
 
     void Set_Next(Waypoint *waypoint) { m_next = waypoint; }
     void Set_Link(int link, Waypoint *waypoint) { m_links[link] = waypoint; }

@@ -41,7 +41,7 @@ void *LocalFile::Read_All_And_Close()
 File *LocalFile::Convert_To_RAM()
 {
     captainslog_trace("Converting %s to RAMFile.\n", m_filename.Str());
-    RAMFile *ramfile = new RAMFile;
+    RAMFile *ramfile = NEW_POOL_OBJ(RAMFile);
 
     if (ramfile->Open(this)) {
         if (m_deleteOnClose) {
@@ -51,14 +51,14 @@ File *LocalFile::Convert_To_RAM()
             return ramfile;
         } else {
             Close();
-            Delete_Instance(this);
+            this->Delete_Instance();
 
             return ramfile;
         }
     }
 
     ramfile->Close();
-    Delete_Instance(ramfile);
+    ramfile->Delete_Instance();
 
     return this;
 }

@@ -60,9 +60,13 @@ private:
 
 class Module : public MemoryPoolObject, public SnapShot
 {
+    IMPLEMENT_ABSTRACT_POOL(Module)
+
+protected:
+    virtual ~Module() override;
+
 public:
     Module(ModuleData *module_data);
-    virtual ~Module() override;
 
     virtual NameKeyType Get_Module_Name_Key() const = 0;
     virtual void On_Object_Created();
@@ -84,9 +88,13 @@ private:
 
 class ObjectModule : public Module
 {
+    IMPLEMENT_ABSTRACT_POOL(ObjectModule)
+
+protected:
+    virtual ~ObjectModule() override;
+
 public:
     ObjectModule(Thing *thing, ModuleData *module_data);
-    virtual ~ObjectModule() override;
 
     virtual void On_Capture(Player *p1, Player *p2);
     virtual void On_Disabled_Edge(bool b);
@@ -103,9 +111,13 @@ private:
 
 class DrawableModule : public Module
 {
+    IMPLEMENT_ABSTRACT_POOL(DrawableModule)
+
+protected:
+    virtual ~DrawableModule() override;
+
 public:
     DrawableModule(Thing *thing, ModuleData *module_data);
-    virtual ~DrawableModule() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;

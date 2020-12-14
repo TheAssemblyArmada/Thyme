@@ -81,7 +81,7 @@ TerrainTypeCollection::~TerrainTypeCollection()
 {
     while (m_terrainList != nullptr) {
         TerrainType *next = m_terrainList->m_next;
-        Delete_Instance(m_terrainList);
+        m_terrainList->Delete_Instance();
         m_terrainList = next;
     }
 }
@@ -104,7 +104,7 @@ TerrainType *TerrainTypeCollection::Find_Terrain(Utf8String name)
 
 TerrainType *TerrainTypeCollection::New_Terrain(Utf8String name)
 {
-    TerrainType *retval = new TerrainType;
+    TerrainType *retval = NEW_POOL_OBJ(TerrainType);
     TerrainType *def = Find_Terrain("DefaultTerrain");
 
     if (def != nullptr) {

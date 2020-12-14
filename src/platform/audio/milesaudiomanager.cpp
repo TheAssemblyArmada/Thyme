@@ -178,7 +178,7 @@ void MilesAudioManager::Pause_Audio(AudioAffect affect)
 
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end();) {
         if (*it != nullptr && (*it)->m_requestType == REQUEST_MUSIC_ADD) {
-            Delete_Instance(*it);
+            (*it)->Delete_Instance();
             it = m_audioRequestList.erase(it);
         } else {
             ++it;
@@ -232,7 +232,7 @@ void MilesAudioManager::Kill_Event_Immediately(uintptr_t event)
     // Iterate the various lists until a matching handle is found.
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
         if (*it != nullptr && (*it)->Request_Type() == REQUEST_MUSIC_ADD && (*it)->Event_Handle() == event) {
-            Delete_Instance(*it);
+            (*it)->Delete_Instance();
             m_audioRequestList.erase(it);
 
             return;
@@ -1031,7 +1031,7 @@ void MilesAudioManager::Process_Request_List()
                     Process_Request(*it);
                 }
 
-                Delete_Instance(*it);
+                (*it)->Delete_Instance();
                 it = m_audioRequestList.erase(it);
             } else {
                 Adjust_Request(*it);

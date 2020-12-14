@@ -20,7 +20,7 @@ GameMessageList::~GameMessageList()
         GameMessage *current = data;
         data = data->m_next;
         current->m_list = nullptr;
-        Delete_Instance(current);
+        current->Delete_Instance();
     }
 }
 

@@ -27,13 +27,14 @@ public:
         INVALID_HANDLE = -1
     };
 
+protected:
+    virtual ~Win32LocalFile() override;
+
 private:
     // Only the factory class, Win32LocalFileSystem can create file instances.
     Win32LocalFile();
 
 public:
-    virtual ~Win32LocalFile();
-
     virtual bool Open(const char *filename, int mode) override;
     virtual int Read(void *dst, int bytes) override;
     virtual int Write(void const *src, int bytes) override;

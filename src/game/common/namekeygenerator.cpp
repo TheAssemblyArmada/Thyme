@@ -85,7 +85,7 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
         }
     }
 
-    bucket = new Bucket;
+    bucket = NEW_POOL_OBJ(Bucket);
     bucket->m_key = (NameKeyType)m_nextID++;
     bucket->m_nameString = name;
     bucket->m_nextInSocket = m_sockets[socket_hash];
@@ -118,7 +118,7 @@ NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
         }
     }
 
-    bucket = new Bucket;
+    bucket = NEW_POOL_OBJ(Bucket);
     bucket->m_key = (NameKeyType)m_nextID++;
     bucket->m_nameString = name;
     bucket->m_nextInSocket = m_sockets[socket_hash];
@@ -147,7 +147,7 @@ void NameKeyGenerator::Free_Sockets()
 
             do {
                 next = bucket->m_nextInSocket;
-                Delete_Instance(bucket);
+                bucket->Delete_Instance();
                 bucket = next;
             } while (next != nullptr);
         }

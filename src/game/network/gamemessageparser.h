@@ -41,10 +41,15 @@ class GameMessageParser : public MemoryPoolObject
 {
     IMPLEMENT_POOL(GameMessageParser);
 
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+protected:
+    virtual ~GameMessageParser() override;
+
 public:
     GameMessageParser();
     GameMessageParser(GameMessage *msg);
-    virtual ~GameMessageParser();
 
     GameMessageParserArgumentType *Get_First_Arg_Type() { return m_first; }
     void Add_Arg_Type(ArgumentDataType type, int arg_count);

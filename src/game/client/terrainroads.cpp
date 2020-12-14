@@ -171,20 +171,20 @@ TerrainRoadCollection::~TerrainRoadCollection()
 {
     while (m_roadList != nullptr) {
         TerrainRoadType *next = m_roadList->m_next;
-        Delete_Instance(m_roadList);
+        m_roadList->Delete_Instance();
         m_roadList = next;
     }
 
     while (m_bridgeList != nullptr) {
         TerrainRoadType *next = m_bridgeList->m_next;
-        Delete_Instance(m_bridgeList);
+        m_bridgeList->Delete_Instance();
         m_bridgeList = next;
     }
 }
 
 TerrainRoadType *TerrainRoadCollection::New_Road(Utf8String name)
 {
-    TerrainRoadType *retval = new TerrainRoadType;
+    TerrainRoadType *retval = NEW_POOL_OBJ(TerrainRoadType);
     TerrainRoadType *def = Find_Road("DefaultRoad");
 
     // Assign next id.
@@ -208,7 +208,7 @@ TerrainRoadType *TerrainRoadCollection::New_Road(Utf8String name)
 
 TerrainRoadType *TerrainRoadCollection::New_Bridge(Utf8String name)
 {
-    TerrainRoadType *retval = new TerrainRoadType;
+    TerrainRoadType *retval = NEW_POOL_OBJ(TerrainRoadType);
     TerrainRoadType *def = Find_Road("DefaultBridge");
 
     // Assign next id.

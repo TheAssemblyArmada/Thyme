@@ -698,7 +698,7 @@ GlobalData::GlobalData()
     m_normalSoloAIHealthBonus = 1.0f;
     m_hardSoloAIHealthBonus = 1.0f;
     m_defaultStructureRubbleHeight = 1.0f;
-    m_weaponBonusSet = new WeaponBonusSet;
+    m_weaponBonusSet = NEW_POOL_OBJ(WeaponBonusSet);
 
     for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; ++i) {
         for (int j = 0; j < WeaponBonus::COUNT; ++j) {

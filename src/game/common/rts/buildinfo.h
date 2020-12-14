@@ -34,9 +34,11 @@ class BuildListInfo : public MemoryPoolObject, public SnapShot
         UNLIMITED_REBUILDS = -1,
     };
 
+protected:
+    virtual ~BuildListInfo() override;
+
 public:
     BuildListInfo();
-    virtual ~BuildListInfo();
 
     // Snapshot interface methods.
     virtual void CRC_Snapshot(Xfer *xfer) override {}

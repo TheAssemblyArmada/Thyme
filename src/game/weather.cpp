@@ -54,12 +54,12 @@ WeatherSetting::WeatherSetting() :
 void WeatherSetting::Parse_Weather_Definition(INI *ini)
 {
     if (g_theWeatherSetting == nullptr) {
-        g_theWeatherSetting = new WeatherSetting;
+        g_theWeatherSetting = NEW_POOL_OBJ(WeatherSetting);
     } else {
         captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
             0xDEAD0006,
             "g_theWeatherSetting is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
-        WeatherSetting *new_ws = new WeatherSetting;
+        WeatherSetting *new_ws = NEW_POOL_OBJ(WeatherSetting);
         *new_ws = *g_theWeatherSetting;
         new_ws->m_isAllocated = true;
         g_theWeatherSetting->Add_Override(new_ws);

@@ -19,6 +19,11 @@
 
 class LocalFile : public File
 {
+    IMPLEMENT_ABSTRACT_POOL(LocalFile);
+
+protected:
+    virtual ~LocalFile() override {}
+
 public:
     virtual void *Read_All_And_Close() override;
     virtual File *Convert_To_RAM() override;

@@ -40,7 +40,7 @@ Condition::~Condition()
 {
     // Clear our paramter instances.
     for (int i = 0; i < m_numParams; ++i) {
-        Delete_Instance(m_params[i]);
+        m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
 
@@ -48,7 +48,7 @@ Condition::~Condition()
     for (Condition *next = m_nextAndCondition, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextAndCondition;
         next->m_nextAndCondition = nullptr; // Prevent trying to next object twice
-        Delete_Instance(next);
+        next->Delete_Instance();
         next = saved;
     }
 }
@@ -61,7 +61,7 @@ Condition::~Condition()
 Condition *Condition::Duplicate()
 {
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
-    Condition *head_cond = new Condition(m_conditionType);
+    Condition *head_cond = NEW_POOL_OBJ(Condition, m_conditionType);
 
     for (int i = 0; i < m_numParams; ++i) {
         *head_cond->m_params[i] = *m_params[i];
@@ -70,7 +70,7 @@ Condition *Condition::Duplicate()
     Condition *new_cond = head_cond;
 
     for (Condition *next = m_nextAndCondition; next != nullptr; next = next->m_nextAndCondition) {
-        Condition *new_next = new Condition(next->m_conditionType);
+        Condition *new_next = NEW_POOL_OBJ(Condition, next->m_conditionType);
 
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
@@ -93,7 +93,7 @@ Condition *Condition::Duplicate()
 Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
-    Condition *new_cond = new Condition(m_conditionType);
+    Condition *new_cond = NEW_POOL_OBJ(Condition, m_conditionType);
 
     for (int i = 0; i < m_numParams; ++i) {
         *new_cond->m_params[i] = *m_params[i];
@@ -103,7 +103,7 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
     Condition *retval = new_cond;
 
     for (Condition *next = m_nextAndCondition; next != nullptr; next = next->m_nextAndCondition) {
-        Condition *new_next = new Condition(next->m_conditionType);
+        Condition *new_next = NEW_POOL_OBJ(Condition, next->m_conditionType);
 
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
@@ -129,7 +129,7 @@ void Condition::Set_Condition_Type(ConditionType type)
 #else
     // Clear existing paramters.
     for (int i = 0; i < m_numParams; ++i) {
-        Delete_Instance(m_params[i]);
+        m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
 
@@ -148,7 +148,7 @@ bool Condition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, voi
 #ifdef GAME_DLL
     return Call_Function<bool, DataChunkInput &, DataChunkInfo *, void *>(PICK_ADDRESS(0x0051E540, 0), input, info, data);
 #else
-    Condition *new_condition = new Condition;
+    Condition *new_condition = NEW_POOL_OBJ(Condition);
 
     new_condition->m_conditionType = ConditionType(input.Read_Int32());
     // TODO, needs ScriptEngine
@@ -161,7 +161,7 @@ bool Condition::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info, voi
  */
 OrCondition::~OrCondition()
 {
-    Delete_Instance(m_firstAnd);
+    m_firstAnd->Delete_Instance();
     m_firstAnd = nullptr;
 
     // Clear our list of OrCondition instances.
@@ -169,7 +169,7 @@ OrCondition::~OrCondition()
     for (OrCondition *next = m_nextOr; next != nullptr; next = saved) {
         saved = next->m_nextOr;
         next->m_nextOr = nullptr;
-        Delete_Instance(next);
+        next->Delete_Instance();
         next = saved;
     }
 }
@@ -181,7 +181,7 @@ OrCondition::~OrCondition()
  */
 OrCondition *OrCondition::Duplicate()
 {
-    OrCondition *head_or = new OrCondition;
+    OrCondition *head_or = NEW_POOL_OBJ(OrCondition);
 
     if (m_firstAnd != nullptr) {
         head_or->m_firstAnd = m_firstAnd->Duplicate();
@@ -190,7 +190,7 @@ OrCondition *OrCondition::Duplicate()
     OrCondition *new_or = head_or;
 
     for (OrCondition *next = m_nextOr; next != nullptr; next = next->m_nextOr) {
-        OrCondition *new_next = new OrCondition;
+        OrCondition *new_next = NEW_POOL_OBJ(OrCondition);
         new_or->m_nextOr = new_next;
         new_or = new_next;
 
@@ -211,7 +211,7 @@ OrCondition *OrCondition::Duplicate()
  */
 OrCondition *OrCondition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
-    OrCondition *new_or = new OrCondition;
+    OrCondition *new_or = NEW_POOL_OBJ(OrCondition);
 
     if (m_firstAnd != nullptr) {
         new_or->m_firstAnd = m_firstAnd->Duplicate_And_Qualify(str1, str2, str3);
@@ -220,7 +220,7 @@ OrCondition *OrCondition::Duplicate_And_Qualify(const Utf8String &str1, const Ut
     OrCondition *retval = new_or;
 
     for (OrCondition *next = m_nextOr; next != nullptr; next = next->m_nextOr) {
-        OrCondition *new_next = new OrCondition;
+        OrCondition *new_next = NEW_POOL_OBJ(OrCondition);
         new_or->m_nextOr = new_next;
         new_or = new_next;
 
@@ -240,7 +240,7 @@ OrCondition *OrCondition::Duplicate_And_Qualify(const Utf8String &str1, const Ut
 bool OrCondition::Parse_OrCondition_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
     Script *script = static_cast<Script *>(data);
-    OrCondition *new_or = new OrCondition;
+    OrCondition *new_or = NEW_POOL_OBJ(OrCondition);
     OrCondition *script_or = script->Get_Condition();
 
     // Find the end of the list.

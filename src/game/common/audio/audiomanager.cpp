@@ -163,7 +163,7 @@ void AudioManager::Set_Listener_Position(const Coord3D *position, const Coord3D 
  */
 AudioRequest *AudioManager::Allocate_Audio_Request(bool is_add_request)
 {
-    return new AudioRequest(is_add_request);
+    return NEW_POOL_OBJ(AudioRequest, is_add_request);
 }
 
 /**
@@ -173,7 +173,7 @@ AudioRequest *AudioManager::Allocate_Audio_Request(bool is_add_request)
  */
 void AudioManager::Release_Audio_Request(AudioRequest *request)
 {
-    Delete_Instance(request);
+    request->Delete_Instance();
 }
 
 /**
@@ -196,7 +196,7 @@ AudioEventInfo *AudioManager::New_Audio_Event_Info(Utf8String name)
     AudioEventInfo *info = Find_Audio_Event_Info(name);
 
     if (info == nullptr) {
-        info = new AudioEventInfo;
+        info = NEW_POOL_OBJ(AudioEventInfo);
 
         m_audioInfoHashMap[name] = info;
     }
@@ -400,7 +400,7 @@ void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
         ++it;
 
         if (delete_it->second->Is_Level_Specific()) {
-            Delete_Instance(delete_it->second);
+            delete_it->second->Delete_Instance();
             m_audioInfoHashMap.erase(delete_it);
         }
     }

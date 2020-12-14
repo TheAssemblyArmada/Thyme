@@ -42,9 +42,11 @@ class AISideBuildList : public MemoryPoolObject
 {
     IMPLEMENT_POOL(AISideBuildList)
 
+protected:
+    virtual ~AISideBuildList() override;
+
 public:
     AISideBuildList(Utf8String name);
-    virtual ~AISideBuildList() override;
     void Add_Info(BuildListInfo *info);
 
 private:

@@ -35,9 +35,11 @@ class ScriptList : public MemoryPoolObject, public SnapShot
         ScriptList *read_lists[MAX_LIST_COUNT];
     };
 
+protected:
+    virtual ~ScriptList() override;
+
 public:
     ScriptList() : m_firstGroup(nullptr), m_firstScript(nullptr) {}
-    virtual ~ScriptList();
 
     // Snapshot interface methods.
     virtual void CRC_Snapshot(Xfer *xfer) override {}

@@ -66,7 +66,7 @@ MapObject::~MapObject()
         for (MapObject *m = m_nextMapObject; m; m = next) {
             next = m->Get_Next();
             m->Set_Next_Map(nullptr);
-            Delete_Instance(m);
+            m->Delete_Instance();
         }
     }
 
@@ -78,7 +78,7 @@ MapObject::~MapObject()
 // untested, worldbuilder only
 MapObject *MapObject::Duplicate()
 {
-    MapObject *m = new MapObject(m_location, m_objectName, m_angle, m_flags, &m_properties, m_thingTemplate);
+    MapObject *m = NEW_POOL_OBJ(MapObject, m_location, m_objectName, m_angle, m_flags, &m_properties, m_thingTemplate);
     Set_Color(m->Get_Color());
     m_runtimeFlags = m->m_runtimeFlags;
     return m;

@@ -32,10 +32,10 @@ SidesInfo::~SidesInfo()
  */
 void SidesInfo::Init(const Dict *dict)
 {
-    Delete_Instance(m_buildList);
+    m_buildList->Delete_Instance();
     m_buildList = nullptr;
     m_dict.Init(dict);
-    Delete_Instance(m_scripts);
+    m_scripts->Delete_Instance();
     m_scripts = nullptr;
 }
 
@@ -118,7 +118,7 @@ SidesInfo &SidesInfo::operator=(const SidesInfo &that)
 
         // Copy the build list.
         for (BuildListInfo *next = that.m_buildList, *last = nullptr; next != nullptr; next = next->Get_Next()) {
-            BuildListInfo *new_list = new BuildListInfo;
+            BuildListInfo *new_list = NEW_POOL_OBJ(BuildListInfo);
             *new_list = *next;
 
             if (last == nullptr) {

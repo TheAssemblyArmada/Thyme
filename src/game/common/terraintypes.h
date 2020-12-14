@@ -68,9 +68,11 @@ class TerrainType : public MemoryPoolObject
     IMPLEMENT_POOL(TerrainType);
     friend class TerrainTypeCollection;
 
+protected:
+    virtual ~TerrainType() override {}
+
 public:
     TerrainType();
-    virtual ~TerrainType() {}
     Utf8String Get_Texture() { return m_texture; }
 
 private:

@@ -26,7 +26,7 @@ DataChunkTableOfContents::~DataChunkTableOfContents()
 
     while (map != nullptr) {
         Mapping *next = map->m_next;
-        Delete_Instance(map);
+        map->Delete_Instance();
         map = next;
     }
 }
@@ -78,7 +78,7 @@ unsigned DataChunkTableOfContents::Allocate_ID(const Utf8String &name)
         return map->m_id;
     }
 
-    map = new Mapping;
+    map = NEW_POOL_OBJ(Mapping);
     map->m_name = name;
     map->m_id = m_nextID++;
     map->m_next = m_list;
@@ -105,7 +105,7 @@ void DataChunkTableOfContents::Read(ChunkInputStream &stream)
 
         // Process the entries in the TOC.
         for (int i = 0; i < count; ++i) {
-            Mapping *map = new Mapping;
+            Mapping *map = NEW_POOL_OBJ(Mapping);
             uint8_t name_len;
             stream.Read(&name_len, sizeof(name_len));
 

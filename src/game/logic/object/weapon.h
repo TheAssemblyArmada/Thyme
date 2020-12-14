@@ -69,9 +69,11 @@ struct WeaponBonus
 
 class WeaponBonusSet : public MemoryPoolObject
 {
+    IMPLEMENT_POOL(WeaponBonusSet);
     friend class GlobalData;
 
-    IMPLEMENT_POOL(WeaponBonusSet);
+protected:
+    virtual ~WeaponBonusSet() override {}
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);

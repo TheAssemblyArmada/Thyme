@@ -32,9 +32,14 @@ class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
     IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
     friend class ParticleSystemManager;
 
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+protected:
+    virtual ~ParticleSystem() override;
+
 public:
     ParticleSystem(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves);
-    virtual ~ParticleSystem();
 
     virtual void Update(int unk);
     virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);

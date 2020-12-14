@@ -25,9 +25,11 @@ class DisplayString : public MemoryPoolObject
     IMPLEMENT_POOL(DisplayString);
     friend class DisplayStringManager;
 
+protected:
+    virtual ~DisplayString() override;
+
 public:
     DisplayString();
-    virtual ~DisplayString();
 
     virtual void Set_Text(Utf16String text);
     virtual Utf16String Get_Text() { return m_textString; }

@@ -89,12 +89,12 @@ WaterTransparencySetting::WaterTransparencySetting() :
 void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
 {
     if (g_theWaterTransparency == nullptr) {
-        g_theWaterTransparency = new WaterTransparencySetting;
+        g_theWaterTransparency = NEW_POOL_OBJ(WaterTransparencySetting);
     } else {
         captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
             0xDEAD0006,
             "g_theWaterTransparency is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
-        WaterTransparencySetting *new_wts = new WaterTransparencySetting;
+        WaterTransparencySetting *new_wts = NEW_POOL_OBJ(WaterTransparencySetting);
         *new_wts = *g_theWaterTransparency;
         new_wts->m_isAllocated = true;
         g_theWaterTransparency->Add_Override(new_wts);

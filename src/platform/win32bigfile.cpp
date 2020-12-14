@@ -44,9 +44,9 @@ File *Win32BIGFile::Open_File(const char *filename, int mode)
     RAMFile *file = nullptr;
 
     if ((mode & File::READ) != 0) {
-        file = new StreamingArchiveFile;
+        file = NEW_POOL_OBJ(StreamingArchiveFile);
     } else {
-        file = new RAMFile;
+        file = NEW_POOL_OBJ(RAMFile);
     }
 
     file->Set_Del_On_Close(true);

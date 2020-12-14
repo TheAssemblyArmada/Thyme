@@ -57,9 +57,10 @@ class AudioEventInfo : public MemoryPoolObject
 {
     IMPLEMENT_POOL(AudioEventInfo);
 
-public:
-    virtual ~AudioEventInfo() {}
+protected:
+    virtual ~AudioEventInfo() override {}
 
+public:
     virtual bool Is_Level_Specific() { return false; }
     virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() { return nullptr; }
     virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }

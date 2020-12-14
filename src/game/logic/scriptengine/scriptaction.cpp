@@ -31,7 +31,7 @@ ScriptAction::~ScriptAction()
 {
     // Clear our paramter instances.
     for (int i = 0; i < m_numParams; ++i) {
-        Delete_Instance(m_params[i]);
+        m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
 
@@ -39,7 +39,7 @@ ScriptAction::~ScriptAction()
     for (ScriptAction *next = m_nextAction, *saved = nullptr; next != nullptr; next = saved) {
         saved = next->m_nextAction;
         next->m_nextAction = nullptr; // Prevent trying to next object twice
-        Delete_Instance(next);
+        next->Delete_Instance();
     }
 }
 
@@ -50,7 +50,7 @@ ScriptAction::~ScriptAction()
  */
 ScriptAction *ScriptAction::Duplicate()
 {
-    ScriptAction *new_action = new ScriptAction(m_actionType);
+    ScriptAction *new_action = NEW_POOL_OBJ(ScriptAction, m_actionType);
 
     for (int i = 0; i < m_numParams; ++i) {
         if (new_action->m_params[i] != nullptr) {
@@ -61,7 +61,7 @@ ScriptAction *ScriptAction::Duplicate()
     ScriptAction *retval = new_action;
 
     for (ScriptAction *next = m_nextAction; next != nullptr; next = next->m_nextAction) {
-        ScriptAction *new_next = new ScriptAction(next->m_actionType);
+        ScriptAction *new_next = NEW_POOL_OBJ(ScriptAction, next->m_actionType);
 
         new_action->m_nextAction = new_next;
         new_action = new_next;
@@ -85,7 +85,7 @@ ScriptAction *ScriptAction::Duplicate()
  */
 ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
-    ScriptAction *new_action = new ScriptAction(m_actionType);
+    ScriptAction *new_action = NEW_POOL_OBJ(ScriptAction, m_actionType);
 
     for (int i = 0; i < m_numParams; ++i) {
         if (new_action->m_params[i] != nullptr) {
@@ -97,7 +97,7 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
     ScriptAction *current_action = new_action;
 
     for (ScriptAction *next = m_nextAction; next != nullptr; next = next->m_nextAction) {
-        ScriptAction *new_next = new ScriptAction(next->m_actionType);
+        ScriptAction *new_next = NEW_POOL_OBJ(ScriptAction, next->m_actionType);
 
         current_action->m_nextAction = new_next;
         current_action = current_action->m_nextAction;

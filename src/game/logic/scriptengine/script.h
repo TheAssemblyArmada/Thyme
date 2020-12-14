@@ -25,9 +25,11 @@ class Script : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(Script);
 
+protected:
+    virtual ~Script() override;
+
 public:
     Script();
-    virtual ~Script();
 
     // Snapshot interface methods.
     virtual void CRC_Snapshot(Xfer *xfer) override {}

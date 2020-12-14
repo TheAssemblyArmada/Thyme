@@ -28,14 +28,18 @@ class Drawable;
 
 class Thing : public MemoryPoolObject
 {
+    IMPLEMENT_ABSTRACT_POOL(Thing)
+
     enum
     {
         CACHED_DIRECTION2D = 1 << 0,
     };
 
+protected:
+    virtual ~Thing() override {}
+
 public:
     Thing(const ThingTemplate *thing = nullptr);
-    virtual ~Thing() {}
 
     // Thing interface virtual functions.
     virtual Object *As_Object_Meth() { return nullptr; }

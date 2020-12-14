@@ -28,6 +28,8 @@ struct FileInfo
 
 class File : public MemoryPoolObject
 {
+    IMPLEMENT_ABSTRACT_POOL(File);
+
 public:
     enum SeekMode
     {
@@ -48,9 +50,10 @@ public:
         STREAMING = 0x100,
     };
 
-public:
-    virtual ~File();
+protected:
+    virtual ~File() override;
 
+public:
     virtual bool Open(const char *filename, int mode);
     virtual void Close();
     virtual int Read(void *dst, int bytes) = 0;

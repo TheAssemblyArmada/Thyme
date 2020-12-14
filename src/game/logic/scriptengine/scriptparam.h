@@ -127,9 +127,11 @@ private:
         NOT_EQUAL,
     };
 
+protected:
+    virtual ~Parameter() override {}
+
 public:
     Parameter(ParameterType type);
-    virtual ~Parameter() {}
 
     Parameter &operator=(const Parameter &that);
 

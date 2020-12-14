@@ -46,9 +46,13 @@ public:
 
 class UpdateModule : public BehaviorModule, public UpdateModuleInterface
 {
+    IMPLEMENT_ABSTRACT_POOL(UpdateModule)
+
+protected:
+    virtual ~UpdateModule() override;
+
 public:
     UpdateModule(Thing *thing, ModuleData *module_data);
-    virtual ~UpdateModule() override;
 
     virtual SleepyUpdatePhase Get_Update_Phase() const;
 

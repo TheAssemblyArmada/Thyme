@@ -71,7 +71,7 @@ void File::Close()
     m_access = false;
 
     if (m_deleteOnClose) {
-        Delete_Instance(this);
+        this->Delete_Instance();
     }
 }
 

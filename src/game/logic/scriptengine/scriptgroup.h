@@ -26,9 +26,11 @@ class ScriptGroup : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(ScriptGroup);
 
+protected:
+    virtual ~ScriptGroup() override;
+
 public:
     ScriptGroup();
-    ~ScriptGroup();
 
     // Snapshot interface methods.
     virtual void CRC_Snapshot(Xfer *xfer) override {}

@@ -33,7 +33,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
         return nullptr;
     }
 
-    Win32LocalFile *file = new Win32LocalFile;
+    Win32LocalFile *file = NEW_POOL_OBJ(Win32LocalFile);
 
     // If we need to write a file, ensure the needed directory exists.
     if ((mode & File::WRITE) != 0) {
@@ -58,7 +58,7 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
     if (file->Open(filename, mode)) {
         file->Set_Del_On_Close(true);
     } else {
-        Delete_Instance(file);
+        file->Delete_Instance();
         file = nullptr;
     }
 

@@ -36,7 +36,7 @@ class FXList;
 
 class ThingTemplate : public Overridable
 {
-    IMPLEMENT_POOL(ThingTemplate); // Implements standard functions for memory pool objects.
+    IMPLEMENT_NAMED_POOL(ThingTemplate, ThingTemplatePool);
 
     enum
     {
@@ -79,9 +79,11 @@ class ThingTemplate : public Overridable
         THING_SOUNDCOUNT,
     };
 
+protected:
+    virtual ~ThingTemplate() override {}
+
 public:
     ThingTemplate();
-    virtual ~ThingTemplate() {}
 
     bool Is_KindOf(KindOfType type) const { return m_kindOf.Get(type); }
     const Utf8String &Get_Name() const { return m_nameString; }

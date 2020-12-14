@@ -52,7 +52,7 @@ void DataChunkInput::Register_Parser(const Utf8String &label,
     bool (*parser)(DataChunkInput &, DataChunkInfo *, void *),
     void *user_data)
 {
-    UserParser *user_parser = new UserParser;
+    UserParser *user_parser = NEW_POOL_OBJ(UserParser);
     user_parser->label = label;
     user_parser->parent_label = parent_label;
     user_parser->parser = parser;
@@ -124,7 +124,7 @@ bool DataChunkInput::Parse(void *user_data)
  */
 Utf8String DataChunkInput::Open_Data_Chunk(uint16_t *version)
 {
-    InputChunk *chunk = new InputChunk;
+    InputChunk *chunk = NEW_POOL_OBJ(InputChunk);
     chunk->id = 0;
     chunk->version = 0;
     chunk->data_size = 0;

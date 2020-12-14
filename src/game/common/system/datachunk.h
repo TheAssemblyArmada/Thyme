@@ -40,6 +40,10 @@ class DataChunkInput
         IMPLEMENT_POOL(InputChunk);
         friend class DataChunkInput;
 
+    protected:
+        virtual ~InputChunk() override {}
+
+    private:
         InputChunk *next;
         uint32_t id;
         uint16_t version;
@@ -53,6 +57,10 @@ class DataChunkInput
         IMPLEMENT_POOL(UserParser);
         friend class DataChunkInput;
 
+    protected:
+        virtual ~UserParser() override {}
+
+    private:
         UserParser *next;
         bool (*parser)(DataChunkInput &, DataChunkInfo *, void *);
         Utf8String label;

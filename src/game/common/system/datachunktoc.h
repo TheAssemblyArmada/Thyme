@@ -27,8 +27,8 @@ class DataChunkTableOfContents
         IMPLEMENT_POOL(Mapping);
         friend class DataChunkTableOfContents;
 
-    public:
-        virtual ~Mapping() {}
+    protected:
+        virtual ~Mapping() override {}
 
     private:
         Mapping() : m_next(nullptr), m_name(), m_id(0) {}

@@ -43,7 +43,7 @@ void TunnelTracker::Load_Post_Process()
 void CaveSystem::Reset()
 {
     for (auto it = m_caves.begin(); it != m_caves.end(); ++it) {
-        Delete_Instance(*it);
+        (*it)->Delete_Instance();
     }
     m_caves.clear();
 }

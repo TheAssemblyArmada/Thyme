@@ -40,8 +40,14 @@ enum
 class MapObject : public MemoryPoolObject
 {
     IMPLEMENT_POOL(MapObject)
+
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+protected:
+    virtual ~MapObject() override;
+
 public:
-    virtual ~MapObject();
     static MapObject *Get_First_Map_Object() { return s_theMapObjectListPtr; }
     static Dict *Get_World_Dict() { return &s_theWorldDict; }
     MapObject *Get_Next() { return m_nextMapObject; }

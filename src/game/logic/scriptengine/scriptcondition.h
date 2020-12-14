@@ -34,10 +34,12 @@ public:
         DEFAULT = 0,
     };
 
+protected:
+    virtual ~Condition() override;
+
 public:
     Condition();
     Condition(ConditionType type);
-    virtual ~Condition();
 
     Condition *Duplicate();
     Condition *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
@@ -59,9 +61,11 @@ class OrCondition : public MemoryPoolObject
 {
     IMPLEMENT_POOL(OrCondition);
 
+protected:
+    virtual ~OrCondition() override;
+
 public:
     OrCondition() : m_nextOr(nullptr), m_firstAnd(nullptr) {}
-    virtual ~OrCondition();
 
     OrCondition *Duplicate();
     OrCondition *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);

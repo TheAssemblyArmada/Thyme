@@ -24,9 +24,9 @@ ScriptGroup *ScriptList::s_emptyGroup = nullptr;
 
 ScriptList::~ScriptList()
 {
-    Delete_Instance(m_firstGroup);
+    m_firstGroup->Delete_Instance();
     m_firstGroup = nullptr;
-    Delete_Instance(m_firstScript);
+    m_firstScript->Delete_Instance();
     m_firstScript = nullptr;
 }
 
@@ -57,7 +57,7 @@ void ScriptList::Xfer_Snapshot(Xfer *xfer)
 
     if (script_count > 0) {
         if (Script::s_emptyScript == nullptr) {
-            Script::s_emptyScript = new Script;
+            Script::s_emptyScript = NEW_POOL_OBJ(Script);
         }
 
         while (script_count--) {
@@ -82,7 +82,7 @@ void ScriptList::Xfer_Snapshot(Xfer *xfer)
 
     if (group_count > 0) {
         if (ScriptList::s_emptyGroup == nullptr) {
-            ScriptList::s_emptyGroup = new ScriptGroup;
+            ScriptList::s_emptyGroup = NEW_POOL_OBJ(ScriptGroup);
         }
 
         while (group_count--) {
@@ -98,7 +98,7 @@ void ScriptList::Xfer_Snapshot(Xfer *xfer)
  */
 ScriptList *ScriptList::Duplicate()
 {
-    ScriptList *new_list = new ScriptList;
+    ScriptList *new_list = NEW_POOL_OBJ(ScriptList);
 
     for (ScriptGroup *group = m_firstGroup, *new_group = nullptr; group != nullptr; group = group->Get_Next()) {
         ScriptGroup *duplicate = group->Duplicate();
@@ -134,7 +134,7 @@ ScriptList *ScriptList::Duplicate()
  */
 ScriptList *ScriptList::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
-    ScriptList *new_list = new ScriptList;
+    ScriptList *new_list = NEW_POOL_OBJ(ScriptList);
 
     for (ScriptGroup *group = m_firstGroup, *new_group = nullptr; group != nullptr; group = group->Get_Next()) {
         ScriptGroup *duplicate = group->Duplicate_And_Qualify(str1, str2, str3);
@@ -251,7 +251,7 @@ bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *i
         return false;
     }
 
-    read_info->read_lists[read_info->num_lists++] = new ScriptList;
+    read_info->read_lists[read_info->num_lists++] = NEW_POOL_OBJ(ScriptList);
     input.Register_Parser("Script", info->label, Script::Parse_Script_From_List_Chunk, nullptr);
     input.Register_Parser("ScriptGroup", info->label, ScriptGroup::Parse_Group_Chunk, nullptr);
 
@@ -270,7 +270,7 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
     captainslog_dbgassert(s_numInReadList == 0, "Leftover scripts floating around.");
 
     for (int i = 0; i < s_numInReadList; ++i) {
-        Delete_Instance(s_readLists[i]);
+        s_readLists[i]->Delete_Instance();
         s_readLists[i] = nullptr;
     }
 

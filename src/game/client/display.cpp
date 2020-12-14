@@ -94,7 +94,7 @@ void Display::Update()
             // some sort of text timing, we never see the text cause its color is black
             if (!m_unkInt) {
                 if (m_unkDisplayString != nullptr) {
-                    Delete_Instance(m_unkDisplayString);
+                    m_unkDisplayString->Delete_Instance();
                 }
 
                 m_unkDisplayString = g_theDisplayStringManager->New_Display_String();

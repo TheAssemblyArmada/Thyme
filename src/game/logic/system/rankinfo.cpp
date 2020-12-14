@@ -115,7 +115,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
             ini->Get_Filename().Str(),
             ini->Get_Line_Number());
 
-        RankInfo *new_info = new RankInfo;
+        RankInfo *new_info = NEW_POOL_OBJ(RankInfo);
         RankInfo *override_info = reinterpret_cast<RankInfo *>(current_info->Get_Final_Override());
         *new_info = *override_info;
         override_info->Add_Override(new_info);
@@ -128,7 +128,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
             ini->Get_Line_Number(),
             rank_level - 1);
 
-        RankInfo *new_info = new RankInfo;
+        RankInfo *new_info = NEW_POOL_OBJ(RankInfo);
         ini->Init_From_INI(new_info, _parse_table);
         g_theRankInfoStore->m_infoStore.push_back(new_info);
     }

@@ -21,9 +21,11 @@ class StreamingArchiveFile : public RAMFile
 {
     IMPLEMENT_POOL(StreamingArchiveFile);
 
+protected:
+    virtual ~StreamingArchiveFile() override;
+
 public:
     StreamingArchiveFile();
-    virtual ~StreamingArchiveFile();
 
     virtual bool Open(const char *filename, int mode) override;
     virtual void Close() override;

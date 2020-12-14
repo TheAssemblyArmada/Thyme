@@ -50,9 +50,11 @@ class ScienceInfo : public Overridable
 {
     IMPLEMENT_POOL(ScienceInfo);
 
+protected:
+    virtual ~ScienceInfo() override {}
+
 public:
     ScienceInfo();
-    virtual ~ScienceInfo() {}
 
     NameKeyType Get_Name_Key() { return m_nameKey; }
     bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }

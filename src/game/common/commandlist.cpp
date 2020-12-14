@@ -25,7 +25,7 @@ void CommandList::Destroy_All_Messages()
 
     for (GameMessage *msg = m_firstMessage; msg != nullptr; msg = next) {
         next = msg->Get_Next();
-        Delete_Instance(msg);
+        msg->Delete_Instance();
     }
 
     m_firstMessage = nullptr;

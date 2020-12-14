@@ -22,13 +22,14 @@
 
 class GameFont : public MemoryPoolObject
 {
-    IMPLEMENT_NAMED_POOL(GameFont, GameFont);
+    IMPLEMENT_POOL(GameFont);
+
+protected:
+    virtual ~GameFont() override {}
 
 public:
     GameFont() {}
-    virtual ~GameFont() {}
 
-public:
     GameFont *m_next;
     Utf8String m_nameString;
     int m_pointSize;

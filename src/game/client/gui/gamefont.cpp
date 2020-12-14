@@ -84,7 +84,7 @@ void FontLibrary::Delete_All_Fonts()
         GameFont *fnt = m_fontList;
         Unlink_Font(m_fontList);
         Release_Font_Data(fnt);
-        Delete_Instance(fnt);
+        fnt->Delete_Instance();
     }
 }
 
@@ -98,7 +98,7 @@ GameFont *FontLibrary::Get_Font(Utf8String name, int point_size, bool bold)
         }
     }
 
-    font = new GameFont;
+    font = NEW_POOL_OBJ(GameFont);
     if (font == nullptr) {
         captainslog_fatal("Unable to allocate new font list element");
         return nullptr;
@@ -112,7 +112,7 @@ GameFont *FontLibrary::Get_Font(Utf8String name, int point_size, bool bold)
     captainslog_debug("Loading font '%s' with %d point size", name.Str(), point_size);
     if (!Load_Font_Data(font)) {
         captainslog_fatal("Unable to load font data pointer '%s'", name.Str());
-        Delete_Instance(font);
+        font->Delete_Instance();
         return nullptr;
     }
 

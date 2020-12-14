@@ -80,7 +80,7 @@ void ParticleSystemManager::Reset()
         ParticleSystem *sys = *m_allParticleSystemList.begin();
 
         if (sys != nullptr) {
-            Delete_Instance(sys);
+            sys->Delete_Instance();
         }
     }
 
@@ -143,7 +143,7 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
                 ParticleSystemTemplate *temp = Find_Template(name);
                 captainslog_relassert(
                     temp != nullptr, 6, "Could not find a matching particle system template for '%s'.\n", name.Str());
-                ParticleSystem *sys = new ParticleSystem(temp, ++m_uniqueSystemID, false);
+                ParticleSystem *sys = NEW_POOL_OBJ(ParticleSystem, temp, ++m_uniqueSystemID, false);
                 captainslog_relassert(
                     sys != nullptr, 6, "Could not create particle system for '%s', allocation issue.\n", name.Str());
                 xfer->xferSnapshot(sys);
@@ -178,11 +178,11 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const Utf8String &na
     ParticleSystemTemplate *retval = Find_Template(name);
 
     if (retval == nullptr) {
-        retval = new ParticleSystemTemplate(name);
+        retval = NEW_POOL_OBJ(ParticleSystemTemplate, name);
         auto res = m_templateStore.insert({ name, retval });
 
         if (!res.second && retval != nullptr) {
-            delete retval;
+            retval->Delete_Instance();
             retval = nullptr;
         }
     }
@@ -219,7 +219,7 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
         return nullptr;
     }
 
-    return new ParticleSystem(temp, ++m_uniqueSystemID, create_slaves);
+    return NEW_POOL_OBJ(ParticleSystem, temp, ++m_uniqueSystemID, create_slaves);
 }
 
 /**
@@ -367,7 +367,7 @@ unsigned ParticleSystemManager::Remove_Oldest_Particles(unsigned count, Particle
     for (unsigned i = 0; i < count && m_particleCount != 0; ++i, --remaining) {
         for (ParticlePriorityType j = PARTICLE_PRIORITY_LOWEST; j < priority_cap; ++j) {
             if (m_allParticlesHead[j] != nullptr) {
-                Delete_Instance(m_allParticlesHead[j]);
+                m_allParticlesHead[j]->Delete_Instance();
                 break;
             }
         }

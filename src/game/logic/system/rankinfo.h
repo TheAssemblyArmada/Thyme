@@ -47,9 +47,10 @@ class RankInfo : public Overridable
     IMPLEMENT_POOL(RankInfo);
     friend void RankInfoStore::Parse_Rank_Definition(INI *);
 
-public:
-    virtual ~RankInfo() {}
+protected:
+    virtual ~RankInfo() override {}
 
+public:
     RankInfo *Get_Override()
     {
         return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this;

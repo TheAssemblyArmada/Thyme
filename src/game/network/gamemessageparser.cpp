@@ -49,7 +49,7 @@ GameMessageParser::~GameMessageParser()
 {
     while (m_first != nullptr) {
         GameMessageParserArgumentType *next = m_first->Get_Next();
-        Delete_Instance(m_first);
+        m_first->Delete_Instance();
         m_first = next;
     }
 }
@@ -57,10 +57,10 @@ GameMessageParser::~GameMessageParser()
 void GameMessageParser::Add_Arg_Type(ArgumentDataType type, int arg_count)
 {
     if (m_first == nullptr) {
-        m_first = new GameMessageParserArgumentType(type, arg_count);
+        m_first = NEW_POOL_OBJ(GameMessageParserArgumentType, type, arg_count);
         m_last = m_first;
     } else {
-        m_last->Set_Next(new GameMessageParserArgumentType(type, arg_count));
+        m_last->Set_Next(NEW_POOL_OBJ(GameMessageParserArgumentType, type, arg_count));
         m_last = m_last->Get_Next();
     }
 }

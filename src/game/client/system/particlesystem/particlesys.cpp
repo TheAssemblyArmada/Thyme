@@ -146,7 +146,7 @@ ParticleSystem::~ParticleSystem()
     Remove_Master();
 
     for (Particle *i = m_systemParticlesHead; i != nullptr; i = m_systemParticlesHead) {
-        Delete_Instance(i);
+        i->Delete_Instance();
     }
 
     m_attachedToDrawableID = DRAWABLE_UNK;
@@ -604,7 +604,7 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
 Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render)
 {
     if (always_render) {
-        return new Particle(this, info);
+        return NEW_POOL_OBJ(Particle, this, info);
     }
 
     if (!g_theWriteableGlobalData->m_useFX) {
@@ -629,7 +629,7 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
             return nullptr;
         }
     } else if (priority == PARTICLE_PRIORITY_ALWAYS_RENDER) {
-        return new Particle(this, info);
+        return NEW_POOL_OBJ(Particle, this, info);
     }
 
     int excess = g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
@@ -642,7 +642,7 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
         return nullptr;
     }
 
-    return new Particle(this, info);
+    return NEW_POOL_OBJ(Particle, this, info);
 }
 
 /**

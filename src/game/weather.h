@@ -23,9 +23,11 @@ class WeatherSetting : public Overridable
 {
     IMPLEMENT_POOL(WeatherSetting);
 
+protected:
+    virtual ~WeatherSetting() override {}
+
 public:
     WeatherSetting();
-    virtual ~WeatherSetting() {}
 
     WeatherSetting *Get_Override() { return m_next == nullptr ? this : (WeatherSetting *)Get_Final_Override(); }
 

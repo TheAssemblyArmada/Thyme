@@ -53,13 +53,13 @@ Script::~Script()
     for (Script *next = m_nextScript; next != nullptr; next = saved) {
         saved = next->m_nextScript;
         next->m_nextScript = nullptr;
-        Delete_Instance(next);
+        next->Delete_Instance();
         next = saved;
     }
 
-    Delete_Instance(m_condition);
-    Delete_Instance(m_action);
-    Delete_Instance(m_actionFalse);
+    m_condition->Delete_Instance();
+    m_action->Delete_Instance();
+    m_actionFalse->Delete_Instance();
 }
 
 /**
@@ -81,11 +81,11 @@ void Script::Xfer_Snapshot(Xfer *xfer)
  */
 Script *Script::Duplicate()
 {
-    Script *new_script = new Script;
+    Script *new_script = NEW_POOL_OBJ(Script);
 
     // Original calls these deletes here, but the ctor sets them null anyhow...
-    // Delete_Instance(new_script->m_condition);
-    // Delete_Instance(new_script->m_action);
+    // new_script->m_condition->Delete_Instance();
+    // new_script->m_action->Delete_Instance();
 
     new_script->m_scriptName = m_scriptName;
     new_script->m_comment = m_comment;
@@ -121,11 +121,11 @@ Script *Script::Duplicate()
  */
 Script *Script::Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3)
 {
-    Script *new_script = new Script;
+    Script *new_script = NEW_POOL_OBJ(Script);
 
     // Original calls these deletes here, but the ctor sets them null anyhow...
-    // Delete_Instance(new_script->m_condition);
-    // Delete_Instance(new_script->m_action);
+    // new_script->m_condition->Delete_Instance();
+    // new_script->m_action->Delete_Instance();
 
     new_script->m_scriptName = m_scriptName + str1;
     new_script->m_comment = m_comment;
@@ -196,7 +196,7 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
         captainslog_info("Parsing script chunk for version %d.", version);
     }
 
-    Script *new_script = new Script;
+    Script *new_script = NEW_POOL_OBJ(Script);
     new_script->m_scriptName = input.Read_AsciiString();
     new_script->m_comment = input.Read_AsciiString();
     new_script->m_conditionComment = input.Read_AsciiString();

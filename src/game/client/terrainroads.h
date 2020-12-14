@@ -35,9 +35,11 @@ class TerrainRoadType : public MemoryPoolObject
 
     IMPLEMENT_POOL(TerrainRoadType);
 
+protected:
+    virtual ~TerrainRoadType() override {}
+
 public:
     TerrainRoadType();
-    virtual ~TerrainRoadType() {}
 
     // TODO more setters and getters as needed.
     Utf8String Get_Name() { return m_name; }

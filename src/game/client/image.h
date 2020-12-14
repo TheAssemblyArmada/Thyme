@@ -26,9 +26,14 @@ class Image : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Image);
 
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+protected:
+    virtual ~Image() override;
+
 public:
     Image();
-    virtual ~Image();
 
     // Methods
     void Clear_Status(uint32_t bit); // TODO not hooked or verified

@@ -57,6 +57,9 @@ class GameMessageArgument : public MemoryPoolObject
 {
     IMPLEMENT_POOL(GameMessageArgument);
 
+protected:
+    virtual ~GameMessageArgument() override {}
+
 public:
     GameMessageArgument() {}
 
@@ -346,9 +349,11 @@ public:
         MSG_OBJECT_JOINED_TEAM = 2005,
     };
 
+protected:
+    virtual ~GameMessage() override;
+
 public:
     GameMessage(MessageType type);
-    virtual ~GameMessage();
 
     GameMessageArgument *Allocate_Arg();
     ArgumentType *Get_Argument(int arg);

@@ -33,10 +33,12 @@ public:
         DEFAULT = 5,
     };
 
+protected:
+    virtual ~ScriptAction() override;
+
 public:
     ScriptAction();
     ScriptAction(ScriptActionType type);
-    virtual ~ScriptAction();
 
     ScriptAction *Duplicate();
     ScriptAction *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);

@@ -27,9 +27,11 @@ class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInf
     friend class ParticleSystem;
     IMPLEMENT_NAMED_POOL(ParticleSystemTemplate, ParticleSystemTemplatePool);
 
+protected:
+    virtual ~ParticleSystemTemplate() override {}
+
 public:
     ParticleSystemTemplate(const Utf8String &name) : m_name(name), m_slaveTemplate(nullptr) {}
-    virtual ~ParticleSystemTemplate() {}
 
     static void Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data);

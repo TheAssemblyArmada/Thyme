@@ -23,6 +23,10 @@ class TunnelTracker : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(TunnelTracker);
 
+protected:
+    virtual ~TunnelTracker() override;
+
+public:
     // Snapshot interface methods
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;

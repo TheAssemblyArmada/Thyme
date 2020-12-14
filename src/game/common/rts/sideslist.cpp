@@ -354,7 +354,7 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
         int build_info_count = input.Read_Int32();
 
         for (int j = 0; j < build_info_count; ++j) {
-            BuildListInfo *build_info = new BuildListInfo;
+            BuildListInfo *build_info = NEW_POOL_OBJ(BuildListInfo);
             build_info->Parse_Data_Chunk(input, info);
             g_theSidesList->m_sides[i].Add_To_BuildList(build_info, j);
         }
@@ -379,11 +379,11 @@ bool SidesList::Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, vo
 
     for (int i = 0; i < script_count; ++i) {
         if (i >= g_theSidesList->m_numSides) {
-            Delete_Instance(scripts[i]);
+            scripts[i]->Delete_Instance();
             scripts[i] = nullptr;
         } else {
             if (g_theSidesList->m_sides[i].Get_ScriptList() != nullptr) {
-                Delete_Instance(g_theSidesList->m_sides[i].Get_ScriptList());
+                g_theSidesList->m_sides[i].Get_ScriptList()->Delete_Instance();
             }
 
             g_theSidesList->m_sides[i].Set_ScriptList(scripts[i]);

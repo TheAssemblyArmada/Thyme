@@ -102,9 +102,13 @@ public:
 
 class BehaviorModule : public ObjectModule, public BehaviorModuleInterface
 {
+    IMPLEMENT_ABSTRACT_POOL(BehaviorModule)
+
+protected:
+    virtual ~BehaviorModule() override;
+
 public:
     BehaviorModule(Thing *thing, ModuleData *module_data);
-    virtual ~BehaviorModule() override;
 
     virtual StealthUpdate *Get_Steath();
     virtual SpyVisionUpdate *Get_Spy_Vision_Update();

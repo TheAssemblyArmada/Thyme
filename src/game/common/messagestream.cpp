@@ -38,7 +38,7 @@ MessageStream::~MessageStream()
  */
 GameMessage *MessageStream::Append_Message(GameMessage::MessageType type)
 {
-    GameMessage *msg = new GameMessage(type);
+    GameMessage *msg = NEW_POOL_OBJ(GameMessage, type);
     GameMessageList::Append_Message(msg);
 
     return msg;
@@ -49,7 +49,7 @@ GameMessage *MessageStream::Append_Message(GameMessage::MessageType type)
  */
 GameMessage *MessageStream::Insert_Message(GameMessage::MessageType type, GameMessage *at)
 {
-    GameMessage *msg = new GameMessage(type);
+    GameMessage *msg = NEW_POOL_OBJ(GameMessage, type);
     GameMessageList::Insert_Message(msg, at);
 
     return msg;
@@ -163,7 +163,7 @@ void MessageStream::Propagate_Messages()
 
             if (translator != nullptr) {
                 if (translator->Translate_Game_Message(msg) == DESTROY_MESSAGE) {
-                    Delete_Instance(msg);
+                    msg->Delete_Instance();
                 }
             }
 

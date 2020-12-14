@@ -20,9 +20,11 @@ class RAMFile : public File
 {
     IMPLEMENT_POOL(RAMFile);
 
+protected:
+    virtual ~RAMFile() override;
+
 public:
     RAMFile();
-    virtual ~RAMFile();
 
     virtual bool Open(const char *filename, int mode) override;
     virtual void Close() override;

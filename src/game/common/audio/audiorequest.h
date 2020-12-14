@@ -37,9 +37,10 @@ class AudioRequest : public MemoryPoolObject
     friend class AudioManager;
     friend class MilesAudioManager;
 
-public:
-    virtual ~AudioRequest() {}
+protected:
+    virtual ~AudioRequest() override {}
 
+public:
     void Set_Music_Event_Object(AudioEventRTS *object)
     {
         m_event.object = object;

@@ -33,9 +33,11 @@ class Bucket : public MemoryPoolObject
 {
     IMPLEMENT_NAMED_POOL(Bucket, NameKeyBucketPool);
 
+protected:
+    virtual ~Bucket() override {}
+
 public:
     Bucket() : m_nextInSocket(nullptr), m_key(NAMEKEY_INVALID), m_nameString() {}
-    virtual ~Bucket() {}
 
 public:
     Bucket *m_nextInSocket;

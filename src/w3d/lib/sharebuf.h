@@ -25,7 +25,7 @@ public:
 #ifndef BUILD_EDITOR
     ShareBufferClass(int count) : m_count(count)
 #else
-    ShareBufferClass(const char *name, int count) : m_name(name), m_count(count)
+    ShareBufferClass(int count, const char *name) : m_name(name), m_count(count)
 #endif
     {
         m_array = new T[m_count];
@@ -58,7 +58,7 @@ public:
 
 protected:
 #ifdef BUILD_EDITOR
-    const char *m_Name;
+    const char *m_name;
 #endif
     T *m_array;
     int m_count;

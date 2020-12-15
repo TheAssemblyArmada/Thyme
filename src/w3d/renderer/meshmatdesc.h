@@ -30,7 +30,13 @@ class MatBufferClass : public ShareBufferClass<VertexMaterialClass *>
     IMPLEMENT_W3D_POOL(MatBufferClass);
 
 public:
+public:
+#ifndef BUILD_EDITOR
     MatBufferClass(int count) : ShareBufferClass<VertexMaterialClass *>(count) { Clear(); }
+#else
+    MatBufferClass(int count, const char *name) : ShareBufferClass<VertexMaterialClass *>(count, name) { Clear(); }
+#endif
+
     MatBufferClass(const MatBufferClass &that);
     ~MatBufferClass();
 
@@ -47,7 +53,11 @@ class TexBufferClass : public ShareBufferClass<TextureClass *>
     IMPLEMENT_W3D_POOL(TexBufferClass);
 
 public:
+#ifndef BUILD_EDITOR
     TexBufferClass(int count) : ShareBufferClass<TextureClass *>(count) { Clear(); }
+#else
+    TexBufferClass(int count, const char *name) : ShareBufferClass<TextureClass *>(count, name) { Clear(); }
+#endif
     TexBufferClass(const TexBufferClass &that);
     ~TexBufferClass();
 
@@ -64,7 +74,11 @@ class UVBufferClass : public ShareBufferClass<Vector2>
     IMPLEMENT_W3D_POOL(UVBufferClass);
 
 public:
+#ifndef BUILD_EDITOR
     UVBufferClass(int count) : ShareBufferClass<Vector2>(count), m_CRC(0xFFFFFFFF) {}
+#else
+    UVBufferClass(int count, const char *name) : ShareBufferClass<Vector2>(count, name), m_CRC(0xFFFFFFFF) {}
+#endif
     UVBufferClass(const UVBufferClass &that);
 
     bool operator==(const UVBufferClass &that);
@@ -207,7 +221,11 @@ inline int MeshMatDescClass::Get_UV_Array_Count()
 inline Vector2 *MeshMatDescClass::Get_UV_Array_By_Index(int index, bool create)
 {
     if (create && !m_UV[index]) {
+#ifndef BUILD_EDITOR
         m_UV[index] = new UVBufferClass(m_vertexCount);
+#else
+        m_UV[index] = new UVBufferClass(m_vertexCount, "MeshMatDescClass::UV");
+#endif
     }
 
     if (m_UV[index] != nullptr) {
@@ -272,7 +290,11 @@ inline unsigned *MeshMatDescClass::Get_DIG_Array(int pass)
 inline unsigned *MeshMatDescClass::Get_Color_Array(int index, bool create)
 {
     if (create && !m_colorArray[index]) {
+#ifndef BUILD_EDITOR
         m_colorArray[index] = new ShareBufferClass<unsigned>(m_vertexCount);
+#else
+        m_colorArray[index] = new ShareBufferClass<unsigned>(m_vertexCount, "MeshMatDescClass::ColorArray");
+#endif
     }
 
     if (m_colorArray[index]) {

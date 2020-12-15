@@ -17,7 +17,9 @@
 #include "gamemessage.h"
 #include "rayeffect.h"
 
-#ifndef GAME_DLL
+#ifdef GAME_DLL
+#include "hooker.h"
+#else
 GameClient *g_theGameClient;
 #endif
 
@@ -48,4 +50,14 @@ GameMessageDisposition GameClientMessageDispatcher::Translate_Game_Message(const
     }
 
     return DESTROY_MESSAGE;
+}
+
+GameMessageDisposition CommandTranslator::Translate_Game_Message(const GameMessage *msg)
+{
+#ifdef GAME_DLL
+    return Call_Method<GameMessageDisposition, CommandTranslator, const GameMessage *>(
+        PICK_ADDRESS(0x005EC8D0, 0x007ECAD8), this, msg);
+#else
+    return GameMessageDisposition();
+#endif
 }

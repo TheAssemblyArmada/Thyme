@@ -18,6 +18,9 @@
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
+#ifdef GAME_DEBUG_STRUCTS
+#include "globaldata.h"
+#endif
 
 int ShroudTextureShader::Set(int pass)
 {
@@ -34,7 +37,7 @@ int ShroudTextureShader::Set(int pass)
     if (!pass) {
 #ifdef GAME_DEBUG_STRUCTS
         if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-            DX8Wrapper::Set_Shader(ShaderClass::g_presetAlphaSpriteShader);
+            DX8Wrapper::Set_Shader(ShaderClass::s_presetAlphaSpriteShader);
         } else {
             DX8Wrapper::Set_Shader(ShaderClass::s_presetMultiplicativeSpriteShader);
         }

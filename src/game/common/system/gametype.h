@@ -70,7 +70,7 @@ enum ObjectID : int32_t
     OBJECT_UNK,
 };
 
-enum DrawableID : int32_t
+enum DrawableID : uint32_t
 {
     DRAWABLE_UNK,
 };

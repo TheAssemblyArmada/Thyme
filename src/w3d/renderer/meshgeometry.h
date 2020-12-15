@@ -179,7 +179,11 @@ inline void MeshGeometryClass::Set_Flag(FlagsType flag, bool onoff)
 inline uint32_t *MeshGeometryClass::Get_Shade_Indices(bool create)
 {
     if (create && !m_vertexShadeIdx) {
+#ifndef BUILD_EDITOR
         m_vertexShadeIdx = new ShareBufferClass<uint32_t>(m_vertexCount);
+#else
+        m_vertexShadeIdx = new ShareBufferClass<uint32_t>(m_vertexCount, "MeshGeometryClass::VertexShadeIdx");
+#endif
     }
 
     if (m_vertexShadeIdx) {
@@ -192,7 +196,11 @@ inline uint32_t *MeshGeometryClass::Get_Shade_Indices(bool create)
 inline uint16_t *MeshGeometryClass::Get_Bone_Links(bool create)
 {
     if (create && !m_vertexBoneLink) {
+#ifndef BUILD_EDITOR
         m_vertexBoneLink = new ShareBufferClass<uint16_t>(m_vertexCount);
+#else
+        m_vertexBoneLink = new ShareBufferClass<uint16_t>(m_vertexCount, "MeshGeometryClass::VertexBoneLink");
+#endif
     }
 
     if (m_vertexBoneLink) {

@@ -58,7 +58,7 @@ ScienceType ScienceStore::Lookup_Science(const char *name)
     NameKeyType key = g_theNameKeyGenerator->Name_To_Key(name);
 
     for (auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it) {
-        ScienceInfo *info = (*it)->Get_Override();
+        ScienceInfo *info = (ScienceInfo *)((*it)->Get_Final_Override());
 
         if (info->Check_Name_Key(key)) {
             return ScienceType(key);

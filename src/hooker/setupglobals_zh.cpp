@@ -22,8 +22,8 @@ WaypointMap *&g_waypoints = Make_Global<WaypointMap *>(PICK_ADDRESS(0x00945AD4, 
 MapCache *&g_theMapCache = Make_Global<MapCache *>(PICK_ADDRESS(0x00A2B974, 0x04CAA154));
 
 // weather.cpp
-class WeatherSetting;
-WeatherSetting *&g_theWeatherSetting = Make_Global<WeatherSetting *>(PICK_ADDRESS(0x00A2BF00, 0x00E25CF0));
+#include "weather.h"
+Override<WeatherSetting> &g_theWeatherSetting = Make_Global<Override<WeatherSetting>>(PICK_ADDRESS(0x00A2BF00, 0x00E25CF0));
 
 // displaystringmanager.cpp
 class DisplayStringManager;
@@ -49,11 +49,10 @@ TerrainRoadCollection *&g_theTerrainRoads = Make_Global<TerrainRoadCollection *>
 uint32_t &View::s_idNext = Make_Global<uint32_t>(PICK_ADDRESS(0x009D4178, 0));
 
 // water.cpp
-class WaterSetting;
-class WaterTransparencySetting;
+#include "water.h"
 WaterSetting *g_waterSettings = Make_Pointer<WaterSetting>(PICK_ADDRESS(0x00A2F0B8, 0x00A2F0B8));
-WaterTransparencySetting *&g_theWaterTransparency =
-    Make_Global<WaterTransparencySetting *>(PICK_ADDRESS(0x00A2F0B0, 0x00A2F0B0));
+Override<WaterTransparencySetting> &g_theWaterTransparency =
+    Make_Global<Override<WaterTransparencySetting>>(PICK_ADDRESS(0x00A2F0B0, 0x00A2F0B0));
 
 // keyboard.cpp
 class Keyboard;

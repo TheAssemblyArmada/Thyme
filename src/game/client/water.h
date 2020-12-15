@@ -55,11 +55,6 @@ protected:
 public:
     WaterTransparencySetting();
 
-    WaterTransparencySetting *Get_Override()
-    {
-        return m_next == nullptr ? this : (WaterTransparencySetting *)Get_Final_Override();
-    }
-
     static void Parse_Water_Transparency(INI *ini);
 
 private:
@@ -81,8 +76,8 @@ private:
 
 #ifdef GAME_DLL
 extern WaterSetting *g_waterSettings;
-extern WaterTransparencySetting *&g_theWaterTransparency;
+extern Override<WaterTransparencySetting> &g_theWaterTransparency;
 #else
 extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
-extern WaterTransparencySetting *g_theWaterTransparency;
+extern Override<WaterTransparencySetting> g_theWaterTransparency;
 #endif

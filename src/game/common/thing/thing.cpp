@@ -20,7 +20,7 @@ using GameMath::Cos;
 using GameMath::Inv_Sqrt;
 using GameMath::Sin;
 
-Thing::Thing(const ThingTemplate *thing) : m_template(nullptr)
+Thing::Thing(const ThingTemplate *thing) : m_template()
 {
     if (thing != nullptr) {
         m_transform.Make_Identity();
@@ -33,10 +33,9 @@ Thing::Thing(const ThingTemplate *thing) : m_template(nullptr)
     }
 }
 
-ThingTemplate *Thing::Get_Template()
+const ThingTemplate *Thing::Get_Template() const
 {
-    // TODO Should probably do dynamic, but not sure it would interpret ThingTemplates done by original game correctly.
-    return reinterpret_cast<ThingTemplate *>(m_template->Get_Final_Override());
+    return *m_template;
 }
 
 const Coord3D &Thing::Get_Unit_Dir_Vector2D()

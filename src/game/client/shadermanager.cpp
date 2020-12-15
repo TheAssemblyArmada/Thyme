@@ -332,7 +332,7 @@ void W3DShaderManager::Start_Render_To_Texture()
                             DX8Wrapper::Clear(true,
                                 false,
                                 Vector3(0.0f, 0.0f, 0.0f),
-                                g_theWaterTransparency->Get_Override()->m_transparentWaterMinOpacity);
+                                g_theWaterTransparency->m_transparentWaterMinOpacity);
                         } else {
                             DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 8);
                             ShaderClass s = ShaderClass::s_presetOpaqueShader;
@@ -347,8 +347,7 @@ void W3DShaderManager::Start_Render_To_Texture()
                             }
 
                             W3DShaderManager::Draw_Viewport(
-                                ((int)(g_theWaterTransparency->Get_Override()->m_transparentWaterMinOpacity * 255.0f)) << 24
-                                | 0xFFFFFF);
+                                ((int)(g_theWaterTransparency->m_transparentWaterMinOpacity * 255.0f)) << 24 | 0xFFFFFF);
                             DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
                         }
                     }

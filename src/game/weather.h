@@ -29,8 +29,6 @@ protected:
 public:
     WeatherSetting();
 
-    WeatherSetting *Get_Override() { return m_next == nullptr ? this : (WeatherSetting *)Get_Final_Override(); }
-
     static void Parse_Weather_Definition(INI *ini);
 
 private:
@@ -52,7 +50,7 @@ private:
 };
 
 #ifdef GAME_DLL
-extern WeatherSetting *&g_theWeatherSetting;
+extern Override<WeatherSetting> &g_theWeatherSetting;
 #else
-extern WeatherSetting *g_theWeatherSetting;
+extern Override<WeatherSetting> g_theWeatherSetting;
 #endif

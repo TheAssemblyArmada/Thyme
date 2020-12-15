@@ -16,7 +16,7 @@
 #include <captainslog.h>
 
 #ifndef GAME_DLL
-WeatherSetting *g_theWeatherSetting;
+Override<WeatherSetting> g_theWeatherSetting;
 #endif
 
 FieldParse WeatherSetting::s_weatherSettingParseTable[] = { { "SnowTexture", &INI::Parse_AsciiString, nullptr, 12 },
@@ -53,23 +53,26 @@ WeatherSetting::WeatherSetting() :
 
 void WeatherSetting::Parse_Weather_Definition(INI *ini)
 {
-    if (g_theWeatherSetting == nullptr) {
-        g_theWeatherSetting = NEW_POOL_OBJ(WeatherSetting);
-    } else {
-        captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
-            0xDEAD0006,
-            "g_theWeatherSetting is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
-        WeatherSetting *new_ws = NEW_POOL_OBJ(WeatherSetting);
-        *new_ws = *g_theWeatherSetting;
-        new_ws->m_isAllocated = true;
-        g_theWeatherSetting->Add_Override(new_ws);
-    }
-
-    ini->Init_From_INI(g_theWeatherSetting->Get_Override(), s_weatherSettingParseTable);
-
-    if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
-        if (g_theWeatherSetting != g_theWeatherSetting->Get_Override()) {
-            // TODO requires SnowManager virtual table layout implementing.
+    if (*g_theWeatherSetting) {
+        if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+            WeatherSetting *old_ws = g_theWeatherSetting;
+            WeatherSetting *new_ws = NEW_POOL_OBJ(WeatherSetting);
+            *new_ws = *old_ws;
+            new_ws->Set_Is_Allocated();
+            old_ws->Friend_Get_Final_Override()->Set_Next(new_ws);
+        } else {
+            throw CODE_06;
         }
+    } else {
+        g_theWeatherSetting = NEW_POOL_OBJ(WeatherSetting);
     }
+
+    Overridable *setting = g_theWeatherSetting;
+    setting = setting->Friend_Get_Final_Override();
+    ini->Init_From_INI(setting, s_weatherSettingParseTable);
+    // TODO requires SnowManager virtual table layout implementing.
+    // if (g_theSnowManager)
+    // {
+    //     g_theSnowManager->Update_INI_Settings();
+    // }
 }

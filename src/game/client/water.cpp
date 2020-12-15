@@ -19,7 +19,7 @@
 
 #ifndef GAME_DLL
 WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
-WaterTransparencySetting *g_theWaterTransparency = nullptr;
+Override<WaterTransparencySetting> g_theWaterTransparency;
 #endif
 
 FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
@@ -88,23 +88,42 @@ WaterTransparencySetting::WaterTransparencySetting() :
 
 void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
 {
-    if (g_theWaterTransparency == nullptr) {
-        g_theWaterTransparency = NEW_POOL_OBJ(WaterTransparencySetting);
+    if (*g_theWaterTransparency) {
+        if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+            WaterTransparencySetting *old_wts = g_theWaterTransparency;
+            WaterTransparencySetting *new_wts = NEW_POOL_OBJ(WaterTransparencySetting);
+            *new_wts = *old_wts;
+            new_wts->Set_Is_Allocated();
+            old_wts->Friend_Get_Final_Override()->Set_Next(new_wts);
+        } else {
+            throw CODE_06;
+        }
     } else {
-        captainslog_relassert(ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES,
-            0xDEAD0006,
-            "g_theWaterTransparency is not null, but m_loadType is not INI_LOAD_CREATE_OVERRIDES.");
-        WaterTransparencySetting *new_wts = NEW_POOL_OBJ(WaterTransparencySetting);
-        *new_wts = *g_theWaterTransparency;
-        new_wts->m_isAllocated = true;
-        g_theWaterTransparency->Add_Override(new_wts);
+        g_theWaterTransparency = NEW_POOL_OBJ(WaterTransparencySetting);
     }
 
-    ini->Init_From_INI(g_theWaterTransparency->Get_Override(), m_waterTransparencySettingFieldParseTable);
+    Overridable *setting = g_theWaterTransparency;
+    setting = setting->Friend_Get_Final_Override();
+    ini->Init_From_INI(setting, m_waterTransparencySettingFieldParseTable);
 
     if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
-        if (g_theWaterTransparency != g_theWaterTransparency->Get_Override()) {
+        WaterTransparencySetting *oldsetting = g_theWaterTransparency;
+        Override<WaterTransparencySetting> newsetting(g_theWaterTransparency);
+        if (oldsetting != *newsetting) {
+            const Utf8String *oldtex[5];
+            const Utf8String *newtex[5];
+            oldtex[0] = &oldsetting->m_skyboxTextureN;
+            newtex[0] = &newsetting->m_skyboxTextureN;
+            oldtex[1] = &oldsetting->m_skyboxTextureE;
+            newtex[1] = &newsetting->m_skyboxTextureE;
+            oldtex[2] = &oldsetting->m_skyboxTextureS;
+            newtex[2] = &newsetting->m_skyboxTextureS;
+            oldtex[3] = &oldsetting->m_skyboxTextureW;
+            newtex[3] = &newsetting->m_skyboxTextureW;
+            oldtex[4] = &oldsetting->m_skyboxTextureT;
+            newtex[4] = &newsetting->m_skyboxTextureT;
             // TODO requires TerrainVisual virtual table layout implementing.
+            // g_theTerrainVisual->Replace_Skybox_Textures(oldtex, newtex);
         }
     }
 }

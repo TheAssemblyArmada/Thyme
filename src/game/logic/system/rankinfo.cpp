@@ -61,7 +61,7 @@ RankInfo *RankInfoStore::Get_Rank_Info(int level)
         return nullptr;
     }
 
-    return m_infoStore[level - 1]->Get_Override();
+    return (RankInfo *)m_infoStore[level - 1]->Get_Final_Override();
 }
 
 /**
@@ -116,9 +116,10 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
             ini->Get_Line_Number());
 
         RankInfo *new_info = NEW_POOL_OBJ(RankInfo);
-        RankInfo *override_info = reinterpret_cast<RankInfo *>(current_info->Get_Final_Override());
+        RankInfo *override_info = (RankInfo *)(current_info->Get_Final_Override());
         *new_info = *override_info;
-        override_info->Add_Override(new_info);
+        override_info->Set_Next(new_info);
+        override_info->Set_Is_Allocated();
         ini->Init_From_INI(new_info, _parse_table);
     } else {
         captainslog_relassert(rank_level == g_theRankInfoStore->m_infoStore.size() + 1,

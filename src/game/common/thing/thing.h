@@ -21,8 +21,8 @@
 #include "coord.h"
 #include "matrix3d.h"
 #include "mempoolobj.h"
+#include "thingtemplate.h"
 
-class ThingTemplate;
 class Object;
 class Drawable;
 
@@ -48,14 +48,14 @@ public:
     virtual const Drawable *As_Drawable_Meth() const { return nullptr; }
     virtual void React_To_Transform(const Matrix3D *matrix, const Coord3D *pos, float angle) = 0;
 
-    ThingTemplate *Get_Template();
+    const ThingTemplate *Get_Template() const;
     const Coord3D &Get_Unit_Dir_Vector2D();
     void Get_Unit_Dir_Vector2D(Coord3D &dst);
     void Get_Unit_Dir_Vector3D(Coord3D &dst);
     void Set_Position_Z(float pos);
 
 private:
-    ThingTemplate *m_template;
+    Override<ThingTemplate> m_template;
     Matrix3D m_transform;
     Coord3D m_cachedPos;
     float m_cachedAngle;

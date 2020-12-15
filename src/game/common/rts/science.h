@@ -58,10 +58,6 @@ public:
 
     NameKeyType Get_Name_Key() { return m_nameKey; }
     bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
-    ScienceInfo *Get_Override()
-    {
-        return m_next != nullptr ? reinterpret_cast<ScienceInfo *>(m_next->Get_Final_Override()) : this;
-    }
 
 private:
     NameKeyType m_nameKey;

@@ -50,12 +50,6 @@ class RankInfo : public Overridable
 protected:
     virtual ~RankInfo() override {}
 
-public:
-    RankInfo *Get_Override()
-    {
-        return m_next != nullptr ? reinterpret_cast<RankInfo *>(m_next->Get_Final_Override()) : this;
-    }
-
 private:
     Utf16String m_rankName;
     int m_skillPointsNeeded;

@@ -1,0 +1,548 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief An executable launcher that will inject a dll into the launched process.
+ *
+ * @copyright SetSail is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include <cstdlib>
+#include <cstdio>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <stdint.h>
+#include <windows.h>
+
+using std::memcpy;
+using std::memset;
+using std::sprintf;
+
+/* When available, these headers can improve platform endianness detection */
+#ifdef __has_include // C++17, supported as extension to C++11 in clang, GCC 5+, vs2015
+#if __has_include(<endian.h>)
+#include <endian.h> // gnu libc normally provides, linux
+#elif __has_include(<machine/endian.h>)
+#include <machine/endian.h> //open bsd, macos
+#elif __has_include(<sys/param.h>)
+#include <sys/param.h> // mingw, some bsd (not open/macos)
+#elif __has_include(<sys/isadefs.h>)
+#include <sys/isadefs.h> // solaris
+#endif
+#endif
+
+#if !defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)
+#if (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)                                                \
+    || (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) || (defined(_BYTE_ORDER) && _BYTE_ORDER == _BIG_ENDIAN) \
+    || (defined(BYTE_ORDER) && BYTE_ORDER == BIG_ENDIAN)                                                               \
+    || (defined(__sun) && defined(__SVR4) && defined(_BIG_ENDIAN)) || defined(__ARMEB__) || defined(__THUMBEB__)       \
+    || defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__) || defined(_M_PPC)
+#define __BIG_ENDIAN__
+#elif (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || /* gcc */                              \
+    (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN)                  /* linux header */                     \
+    || (defined(_BYTE_ORDER) && _BYTE_ORDER == _LITTLE_ENDIAN)                                                         \
+    || (defined(BYTE_ORDER) && BYTE_ORDER == LITTLE_ENDIAN)              /* mingw header */                            \
+    || (defined(__sun) && defined(__SVR4) && defined(_LITTLE_ENDIAN)) || /* solaris */                                 \
+    defined(__ARMEL__) || defined(__THUMBEL__) || defined(__AARCH64EL__) || defined(_MIPSEL) || defined(__MIPSEL)      \
+    || defined(__MIPSEL__) || defined(_M_IX86) || defined(_M_X64) || defined(_M_IA64)                                  \
+    ||              /* msvc for intel processors */                                                                    \
+    defined(_M_ARM) /* msvc code on arm executes in little endian mode */
+#define __LITTLE_ENDIAN__
+#endif
+#endif
+
+// A SHA1 engine to check we are injecting into the correct binary.
+#define SHA_DIGEST_LENGTH 20
+#define SHA_BLOCK_LENGTH 64
+
+class SHAEngine
+{
+public:
+    struct SHADigest
+    {
+        uint32_t H0;
+        uint32_t H1;
+        uint32_t H2;
+        uint32_t H3;
+        uint32_t H4;
+    };
+
+    SHAEngine();
+    ~SHAEngine();
+
+    void Hash(const void *input, int length);
+    int Result(void *output);
+    int Print_Result(char *output);
+
+private:
+    void Process_Partial(const void *&data, int &length);
+    void Process_Block(const void *data, SHADigest &digest) const;
+    void Print(const void *buffer, char *stringbuff);
+    static uint32_t htobe32(uint32_t x)
+    {
+#ifdef __LITTLE_ENDIAN__
+        return (((x & 0xff000000u) >> 24) | ((x & 0x00ff0000u) >> 8) | ((x & 0x0000ff00u) << 8)
+                | ((x & 0x000000ffu) << 24));
+#else
+        return x;
+#endif
+    }
+    
+    static uint32_t rotl32(uint32_t a, unsigned b)
+    {
+        b &= 31;
+        return (a << b) | (a >> (32 - b));
+    }
+    
+private:
+    bool m_computed;
+    SHADigest m_finalDigest;
+    SHADigest m_digest;
+    uint32_t m_processedBytes;
+    uint32_t m_unprocessedBytes;
+    char m_messageBlock[SHA_BLOCK_LENGTH]; // this is also knows as 'bytes' in other implimentions
+};
+
+// Define the point to stall at while the DLL loads, normally the programs entry point.
+#define EXE_ENTRY @SETSAIL_ENTRYPOINT@
+
+// Define the EXE to launch and the DLL to inject.
+#define EXE_NAME "@SETSAIL_EXENAME@"
+#define DLL_NAME "@SETSAIL_DLLNAME@"
+
+// Define the hash to compare against.
+#define EXE_HASH "@SETSAIL_HASH@"
+
+char *Make_Args(const char *args)
+{
+    const char *argstart = args;
+    static char argstring[_MAX_PATH * 2];
+
+    // Stick the exe name on the front of the arg string.
+    std::snprintf(argstring, sizeof(argstring), "%s %s", EXE_NAME, argstart);
+
+    return argstring;
+}
+
+void Check_Hash()
+{
+    SHAEngine sha;
+    char buffer[1024];
+    char hash[41];
+    std::ifstream in(EXE_NAME, std::ifstream::in | std::ifstream::binary);
+    
+    // Get the hash of the binary.
+    do {
+        in.read(buffer, sizeof(buffer));
+        sha.Hash(buffer, in.gcount());
+    } while (in.gcount() == sizeof(buffer));
+    
+    sha.Print_Result(hash);
+    
+    // If we don't actually have a hash to compare against, let the user know what it should be.
+    // Intended to provide the hash for the developer to include in the top level CMakeLists.txt
+    // on the first build if the SHA1 hash isn't known by othre means.
+    if (strcmp(EXE_HASH, "") == 0) {
+        std::cout << hash << std::endl;
+        MessageBoxA(NULL, hash, "Define SETSAIL_HASH in CMakeLists.txt!", MB_OK | MB_SERVICE_NOTIFICATION);
+        std::exit(1);
+    }
+    
+    // Let the user know if the binary they have is not the expected version and then bail.
+    if(strcmp(EXE_HASH, hash) != 0) {
+        std::cout << hash << " does not match expected " << EXE_HASH << std::endl;
+        MessageBoxA(NULL, "Your " EXE_NAME " hash does not match expected.\nCheck you have the correct version.", "Hash mismatch!", MB_OK | MB_SERVICE_NOTIFICATION);
+        std::exit(1);
+    }
+}
+
+// Based on code from http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces
+bool Inject_Dll(const char *dllname, HANDLE hProcess)
+{
+    HANDLE hThread;
+    char szLibPath[_MAX_PATH]; // Buffer to hold the name of the DLL (including full path!)
+    void *pLibRemote; // The address (in the remote process) where szLibPath will be copied to.
+    DWORD hLibModule; // Base address of loaded module.
+    HMODULE hKernel32 = GetModuleHandleA("Kernel32"); // For the LoadLibraryA func.
+
+    GetFullPathNameA(dllname, _MAX_PATH, szLibPath, NULL);
+
+    std::ifstream in(dllname, std::ifstream::in | std::ifstream::binary);
+    IMAGE_NT_HEADERS exe_header;
+    in.seekg(offsetof(IMAGE_DOS_HEADER, e_lfanew), std::ifstream::cur); // seek to NE address pointer
+    DWORD neptr;
+    in.read(reinterpret_cast<char *>(&neptr), sizeof(neptr));
+    in.seekg(neptr, std::ifstream::beg);
+    in.read(reinterpret_cast<char *>(&exe_header), sizeof(exe_header));
+
+    if (!(exe_header.FileHeader.Characteristics & IMAGE_FILE_DLL)) {
+        // printf("NE char is %x",exe_header.FileHeader.Characteristics);
+        std::cout << "NE char is: " << std::hex << exe_header.FileHeader.Characteristics << std::endl;
+        throw "dll file does not have correct format";
+    }
+
+    // 1. Allocate memory in the remote process for szLibPath
+    // 2. Write szLibPath to the allocated memory
+    pLibRemote = VirtualAllocEx(hProcess, NULL, sizeof(szLibPath), MEM_COMMIT, PAGE_READWRITE);
+
+    WriteProcessMemory(hProcess, pLibRemote, (void *)szLibPath, sizeof(szLibPath), NULL);
+
+    // Load "dll" into the remote process by passing LoadLibraryA as the function
+    // to run as a thread with CreateRemoteThread. Pass copied name of DLL as
+    // the arguments to the function.
+    hThread = CreateRemoteThread(
+        hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)GetProcAddress(hKernel32, "LoadLibraryA"), pLibRemote, 0, NULL);
+
+    // Wait for the DLL to load and return.
+    WaitForSingleObject(hThread, INFINITE);
+
+    // Get handle of the loaded module
+    GetExitCodeThread(hThread, &hLibModule);
+
+    // Clean up
+    CloseHandle(hThread);
+    VirtualFreeEx(hProcess, pLibRemote, sizeof(szLibPath), MEM_RELEASE);
+
+    // LoadLibrary return is 0 on failure.
+    return hLibModule != 0;
+}
+
+// Based on code snippet from https://opcode0x90.wordpress.com/2011/01/15/injecting-dll-into-process-on-load/
+void Inject_Loader(const char *path, const char *dllname, char *args)
+{
+    STARTUPINFOA StartupInfo = {0};
+    PROCESS_INFORMATION ProcessInformation;
+    DWORD oldProtect;
+    DWORD oldProtect2;
+    char oldBytes[2];
+    char checkBytes[2];
+    static const char patchBytes[2] = {'\xEB', '\xFE'}; // JMP $-2
+    SIZE_T memwritten;
+    SIZE_T memread;
+
+    // initialize the structures
+    StartupInfo.cb = sizeof(StartupInfo);
+
+    // attempt to load the specified target in suspended state
+    if (CreateProcessA(path, args, NULL, NULL, FALSE, CREATE_SUSPENDED, NULL, NULL, &StartupInfo, &ProcessInformation)) {
+        HANDLE hProcess(ProcessInformation.hProcess);
+
+        // wait for the process to done
+        try {
+            // locate the entry point
+            LPVOID entry = (LPVOID)EXE_ENTRY;
+
+            // patch the entry point with infinite loop
+            VirtualProtectEx(hProcess, entry, 2, PAGE_EXECUTE_READWRITE, &oldProtect);
+            ReadProcessMemory(hProcess, entry, oldBytes, 2, &memread);
+            WriteProcessMemory(hProcess, entry, patchBytes, 2, &memwritten);
+            VirtualProtectEx(hProcess, entry, 2, oldProtect, &oldProtect2);
+
+            // resume the main thread
+            ResumeThread(ProcessInformation.hThread);
+
+            // wait until the thread stuck at entry point
+            CONTEXT context;
+            std::memset(&context, 0, sizeof(context));
+
+            for (unsigned int i = 0; i < 50 && context.Eip != (DWORD)entry; ++i) {
+                // patience.
+                Sleep(100);
+
+                // read the thread context
+                context.ContextFlags = CONTEXT_CONTROL;
+                GetThreadContext(ProcessInformation.hThread, &context);
+            }
+
+            if (context.Eip != (DWORD)entry) {
+                // wait timed out, we never got to the entry point :/
+                throw "entry point blockade timed out";
+            }
+
+            // inject DLL payload into remote process
+            if (!Inject_Dll(dllname, hProcess)) {
+                throw "dll failed to load";
+            }
+
+            // pause and restore original entry point unless DLL init overwrote
+            // it already.
+            SuspendThread(ProcessInformation.hThread);
+            VirtualProtectEx(hProcess, entry, 2, PAGE_EXECUTE_READWRITE, &oldProtect);
+            ReadProcessMemory(hProcess, entry, checkBytes, 2, &memread);
+
+            // Check entry point is still patched to infinite loop. We don't
+            // want to mess up any patching the DLL did.
+            if (std::memcmp(checkBytes, patchBytes, 2) == 0) {
+                WriteProcessMemory(hProcess, entry, oldBytes, 2, &memwritten);
+            }
+
+            VirtualProtectEx(hProcess, entry, 2, oldProtect, &oldProtect2);
+
+            // MessageBox(NULL, "Attach debugger or continue.", "game.dat Debug Time!", MB_OK|MB_SERVICE_NOTIFICATION);
+
+            // you are ready to go
+            ResumeThread(ProcessInformation.hThread);
+        } catch (...) {
+            // terminate the newly spawned process
+            TerminateProcess(hProcess, -1);
+
+            // rethrow the exception to top-level handler
+            throw;
+        }
+    } else {
+        // are you sure this is a valid target ?
+        throw "unable to load the specified executable";
+    }
+}
+
+int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+{
+#ifndef __WATCOMC__
+    AttachConsole(ATTACH_PARENT_PROCESS);
+#endif
+    Check_Hash();
+    Inject_Loader(EXE_NAME, DLL_NAME, Make_Args(lpCmdLine));
+    Sleep(1000);
+
+    return 0;
+}
+
+SHAEngine::SHAEngine() : m_computed(false), m_processedBytes(0), m_unprocessedBytes(0)
+{
+    // make sure that the data type is the right size
+    static_assert((sizeof(uint32_t) * 5) == SHA_DIGEST_LENGTH, "Data type used for holding the hash is not expected size.");
+
+    // initialize hash constants
+    m_digest.H0 = 0x67452301;
+    m_digest.H1 = 0xEFCDAB89;
+    m_digest.H2 = 0x98BADCFE;
+    m_digest.H3 = 0x10325476;
+    m_digest.H4 = 0xC3D2E1F0;
+}
+
+SHAEngine::~SHAEngine()
+{
+    // clear hash constants
+    m_digest.H0 = 0;
+    m_digest.H1 = 0;
+    m_digest.H2 = 0;
+    m_digest.H3 = 0;
+    m_digest.H4 = 0;
+}
+
+/**
+ * @brief Process data for the hash that doesn't fit into the 64bit processing block..
+ */
+void SHAEngine::Process_Partial(const void *&data, int &length)
+{
+    unsigned int bytestoprocess;
+
+    if (length && data) {
+        if (m_unprocessedBytes || length < SHA_BLOCK_LENGTH) {
+            bytestoprocess = SHA_BLOCK_LENGTH - m_unprocessedBytes;
+
+            if (length < (int)(SHA_BLOCK_LENGTH - m_unprocessedBytes)) {
+                bytestoprocess = length;
+            }
+
+            memcpy(m_messageBlock + m_unprocessedBytes, data, bytestoprocess);
+            data = static_cast<const char *>(data) + bytestoprocess;
+            m_unprocessedBytes += bytestoprocess;
+            length -= bytestoprocess;
+
+            if (m_unprocessedBytes == SHA_BLOCK_LENGTH) {
+                SHAEngine::Process_Block(m_messageBlock, m_digest);
+                m_processedBytes += SHA_BLOCK_LENGTH;
+                m_unprocessedBytes = 0;
+            }
+        }
+    }
+}
+
+/**
+ * @brief Process data for the hash.
+ */
+void SHAEngine::Hash(const void *data, int length)
+{
+    m_computed = false;
+    Process_Partial(data, length);
+
+    if (length) {
+        if (length / SHA_BLOCK_LENGTH > 0) {
+            int datablocks = length / SHA_BLOCK_LENGTH;
+
+            for (int i = 0; i < datablocks; ++i) {
+                SHAEngine::Process_Block(data, m_digest);
+                data = static_cast<const char *>(data) + SHA_BLOCK_LENGTH;
+                m_processedBytes += SHA_BLOCK_LENGTH;
+                length -= SHA_BLOCK_LENGTH;
+            }
+        }
+
+        Process_Partial(data, length);
+    }
+}
+
+/**
+ * @brief Finalise the hash and outputs it to the provided buffer.
+ */
+int SHAEngine::Result(void *output)
+{
+    int bytesremaining;
+    uint32_t *finalp;
+    SHADigest digest;
+    char msgblock[SHA_BLOCK_LENGTH];
+    char *mblockp;
+
+    // If we already computed the hash, don't waste time doing it again
+    if (m_computed) {
+        memcpy(output, &m_finalDigest, SHA_DIGEST_LENGTH);
+    } else {
+        // These copies allow us to continue hashing data if we want
+        memcpy(msgblock, m_messageBlock, SHA_BLOCK_LENGTH);
+        uint32_t totalbytes = m_unprocessedBytes + m_processedBytes;
+
+        // start padding with first bit set
+        msgblock[m_unprocessedBytes++] = -128;
+
+        // These copies allow us to continue hashing data if we want
+        memcpy(&digest, &m_digest, sizeof(digest));
+        bytesremaining = m_unprocessedBytes;
+
+        // Message block must have at least 8bytes after padding
+        // If it won't have enough space, pad with 0 and process
+        if ((SHA_BLOCK_LENGTH - m_unprocessedBytes) < 8) {
+            if (m_unprocessedBytes < SHA_BLOCK_LENGTH) {
+                mblockp = msgblock;
+                memset(mblockp + bytesremaining, 0, SHA_BLOCK_LENGTH - bytesremaining);
+                m_unprocessedBytes = SHA_BLOCK_LENGTH;
+            }
+
+            SHAEngine::Process_Block(msgblock, digest);
+            bytesremaining = 0;
+            m_unprocessedBytes = 0;
+        }
+
+        memset(msgblock + bytesremaining, 0, 56 - bytesremaining);
+        mblockp = &msgblock[56];
+        // pad total length of data into last 8 bytes
+        *reinterpret_cast<uint32_t *>(msgblock + 56) = htobe32(totalbytes >> 29);
+        *reinterpret_cast<uint32_t *>(msgblock + 60) = htobe32(totalbytes << 3);
+
+        m_unprocessedBytes = SHA_BLOCK_LENGTH;
+        SHAEngine::Process_Block(&msgblock[0], digest);
+        m_unprocessedBytes = 0;
+
+        // format the digest into the correct byte order, big endian
+        memcpy(&m_finalDigest, &digest, sizeof(m_finalDigest));
+        finalp = reinterpret_cast<uint32_t *>(&m_finalDigest.H0);
+
+        for (int i = 0; i < 5; ++i) {
+            finalp[i] = htobe32(finalp[i]);
+        }
+
+        m_computed = true;
+        memcpy(output, &m_finalDigest, SHA_DIGEST_LENGTH);
+    }
+
+    return 20;
+}
+
+/**
+ * @brief Processes a 64 byte block into the hash..
+ */
+void SHAEngine::Process_Block(const void *input, SHADigest &digest) const
+{
+    const uint8_t *data = static_cast<const uint8_t *>(input);
+    int t;
+    uint32_t a;
+    uint32_t b;
+    uint32_t c;
+    uint32_t d;
+    uint32_t e;
+    uint32_t K;
+    uint32_t f;
+    uint32_t W[80];
+
+    // Copy and expand the message block (Rounds 0 to 15?)
+    for (t = 0; t < 16; ++t) {
+        W[t] = (data[t * 4] << 24) + (data[t * 4 + 1] << 16) + (data[t * 4 + 2] << 8) + data[t * 4 + 3];
+    }
+
+    for (; t < 80; ++t) {
+        W[t] = rotl32(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
+    }
+
+    // Initialize registers with the previous intermediate value.
+    a = digest.H0;
+    b = digest.H1;
+    c = digest.H2;
+    d = digest.H3;
+    e = digest.H4;
+
+    // main loop
+    for (t = 0; t < 80; ++t) {
+        if (t < 20) {
+            K = 0x5A827999;
+            f = (b & c) | ((~b) & d);
+
+        } else if (t < 40) {
+            K = 0x6ED9EBA1;
+            f = b ^ c ^ d;
+
+        } else if (t < 60) {
+            K = 0x8F1BBCDC;
+            f = (b & c) | (b & d) | (c & d);
+
+        } else {
+            K = 0xCA62C1D6;
+            f = b ^ c ^ d;
+        }
+
+        uint32_t temp = rotl32(a, 5) + f + e + W[t] + K;
+        e = d;
+        d = c;
+        c = rotl32(b, 30);
+        b = a;
+        a = temp;
+    }
+
+    // Compute the current intermediate hash value.
+    digest.H0 += a;
+    digest.H1 += b;
+    digest.H2 += c;
+    digest.H3 += d;
+    digest.H4 += e;
+}
+
+/**
+ * @brief Formats the hash into a string for printing.
+ */
+void SHAEngine::Print(const void *buffer, char *output)
+{
+    for (int i = 0; i < 20; i++) {
+        sprintf(&output[2 * i], "%02x", *(static_cast<const uint8_t *>(buffer) + i));
+    }
+}
+
+/**
+ * @brief Prints the SHA1 hash to the provided buffer as a C string.
+ *
+ * @param output Pointer to the destination buffer.
+ * @return Length of the string in bytes.
+ */
+int SHAEngine::Print_Result(char *output)
+{
+    uint8_t buffer[20];
+
+    int retval = Result(buffer);
+    Print(buffer, output);
+    return retval;
+}

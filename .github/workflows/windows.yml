@@ -43,7 +43,7 @@ jobs:
         export ZIPNAME=thyme_${{ matrix.platform }}
         if [ ${{ matrix.standalone }} != "ON" ]; then export FEATURES=_dll export EXTENSION=dll; else export FEATURES=_standalone export EXTENSION=exe;fi
         7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.$EXTENSION
-        if [ ${{ matrix.standalone }} != "ON" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/launchthyme.exe; else 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymecrashhandler.exe; fi
+        if [ ${{ matrix.standalone }} != "ON" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymelauncher.exe; else 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymecrashhandler.exe; fi
         if [ Release == "Debug" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.pdb; fi
         
     - name: Upload artifact

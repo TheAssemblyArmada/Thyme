@@ -5,8 +5,8 @@ if(POLICY CMP0074)
 endif()
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    message(STATUS "No build type selected, default to Debug")
-    set(CMAKE_BUILD_TYPE "Debug")
+    message(STATUS "No build type selected, defaults to Debug")
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build, options are: Debug Release" FORCE)
 endif()
 
 if(MSVC)
@@ -148,15 +148,7 @@ if(ICU_FOUND)
 endif()
 
 if(NOT STANDALONE)
-    set(SETSAIL_ENTRY 0x008E0778)
-    set(SETSAIL_DLL "thyme.dll")
-    set(SETSAIL_EXE "game.dat")
-    set(SETSAIL_LAUNCHER launchthyme)
-    set(SETSAIL_HASH "5b805b4ecba79581fe8ec454b5acf7b7e13d4dd5")
-    message("Configuring launcher as ${SETSAIL_LAUNCHER} using entry at ${SETSAIL_ENTRY} to inject ${SETSAIL_DLL} into ${SETSAIL_EXE}")
-    # Build the launcher
-    add_subdirectory(launcher)
-    list(APPEND TO_INSTALL launchthyme)
+    add_subdirectory(deps/launcher)
 endif()
 
 # Build Thyme

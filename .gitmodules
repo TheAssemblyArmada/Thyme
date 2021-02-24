@@ -4,9 +4,6 @@
 [submodule "src/libs/baseconfig"]
 	path = src/libs/baseconfig
 	url = https://github.com/TheAssemblyArmada/Baseconfig.git
-[submodule "launcher"]
-	path = launcher
-	url = https://github.com/TheAssemblyArmada/SetSail.git
 [submodule "src/libs/captnlog"]
 	path = src/libs/captnlog
 	url = https://github.com/TheAssemblyArmada/CaptainsLog.git

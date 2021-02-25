@@ -143,6 +143,10 @@ endif()
 # Add base module
 add_subdirectory(src/libs/baseconfig EXCLUDE_FROM_ALL)
 
+if(ICU_FOUND)
+    target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
+endif()
+
 if(NOT STANDALONE)
     set(SETSAIL_ENTRY 0x008E0778)
     set(SETSAIL_DLL "thyme.dll")

@@ -162,6 +162,14 @@ public:
         bottom = (int)(bottom / u.Y + 0.5f) * u.Y;
     }
 
+    RectClass Intersect(const RectClass &other) const
+    {
+        return RectClass(std::max(left, other.left),
+            std::max(top, other.top),
+            std::min(right, other.right),
+            std::min(bottom, other.bottom));
+    }
+
 public:
     float left;
     float top;

@@ -566,11 +566,7 @@ void Render2DSentenceClass::Draw_Sentence(uint32_t color)
             if (screen_rect.right <= m_clipRect.left || screen_rect.bottom <= m_clipRect.top) {
                 add_quad = false;
             } else {
-                RectClass clipped_rect;
-                clipped_rect.left = std::max(screen_rect.left, m_clipRect.left);
-                clipped_rect.right = std::min(screen_rect.right, m_clipRect.right);
-                clipped_rect.top = std::max(screen_rect.top, m_clipRect.top);
-                clipped_rect.bottom = std::min(screen_rect.bottom, m_clipRect.bottom);
+                RectClass clipped_rect = screen_rect.Intersect(m_clipRect);
                 RectClass clipped_uv_rect;
                 float percent = ((clipped_rect.left - screen_rect.left) / screen_rect.Width());
                 clipped_uv_rect.left = uv_rect.left + (uv_rect.Width() * percent);

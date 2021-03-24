@@ -21,6 +21,7 @@
 #include "vector3.h"
 #include "w3dformat.h"
 #include "w3dtypes.h"
+#include <new>
 
 class TextureLoadTaskListClass;
 

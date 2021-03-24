@@ -18,6 +18,7 @@
 #include "memdynalloc.h"
 #include <cstdarg>
 #include <cstring>
+#include <new>
 
 // Using STLPort seems to screw up some of the C++11 header inclusions.
 #ifndef GAME_DLL

@@ -28,8 +28,8 @@ void DataChunkInput::Clear_Chunk_Stack()
 
     while (current != nullptr) {
         InputChunk *next = current->next;
-        delete next;
-        next = current;
+        current->Delete_Instance();
+        current = next;
     }
 
     m_chunkStack = nullptr;
@@ -42,7 +42,19 @@ DataChunkInput::DataChunkInput(ChunkInputStream *stream) :
     m_fileposOfFirstChunk = m_file->Tell();
 }
 
-DataChunkInput::~DataChunkInput() {}
+// 0x00572370
+DataChunkInput::~DataChunkInput()
+{
+    Clear_Chunk_Stack();
+
+    auto *current = m_parserList;
+    while (current != nullptr) {
+        auto *next = current->next;
+        current->Delete_Instance();
+        current = next;
+    }
+    m_parserList = nullptr;
+}
 
 /**
  * @brief Registers a chunk parsing function to handle chunks with the given label and parent label.
@@ -173,7 +185,7 @@ void DataChunkInput::Close_Data_Chunk()
 
     InputChunk *done = m_chunkStack;
     m_chunkStack = m_chunkStack->next;
-    delete done;
+    done->Delete_Instance();
 }
 
 /**

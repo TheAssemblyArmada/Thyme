@@ -142,6 +142,24 @@ if(ICU_FOUND)
     target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
 endif()
 
+# Enable Thyme debug logging.
+if(LOGGING)
+    set(CAPTNLOG_LEVEL $<$<CONFIG:Debug>:5>$<$<CONFIG:RelWithDebInfo>:3>$<$<CONFIG:Release>:3>$<$<CONFIG:MinSizeRel>:3>)
+else()
+    set(CAPTNLOG_LEVEL 0)
+endif()
+
+# Enable Thyme debug assertions.
+if(ASSERTIONS)
+    set(CAPTNASSERT_LEVEL $<$<CONFIG:Debug>:2>$<$<CONFIG:RelWithDebInfo>:1>$<$<CONFIG:Release>:1>$<$<CONFIG:MinSizeRel>:1>)
+else()
+    set(CAPTNASSERT_LEVEL 0)
+endif()
+
+# Setup various included libraries
+add_subdirectory(deps/captnlog EXCLUDE_FROM_ALL)
+
+# Build launchers for the various binaries we support
 if(NOT STANDALONE)
     add_subdirectory(deps/launcher)
 endif()

@@ -386,11 +386,6 @@ add_subdirectory(libs/captnlog EXCLUDE_FROM_ALL)
 # Gather needed link libraries and compile defintions
 list(APPEND GAME_LINK_LIBRARIES base captnlog)
 
-if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
-    add_subdirectory(libs/bink EXCLUDE_FROM_ALL)
-    add_subdirectory(libs/miles EXCLUDE_FROM_ALL)
-endif()
-
 if(USE_GAMEMATH)
     add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
     list(APPEND GAME_LINK_LIBRARIES gamemath_static_lib)

@@ -151,6 +151,12 @@ if(NOT STANDALONE)
     add_subdirectory(deps/launcher)
 endif()
 
+# Build miles and bink stubs if we don't have an alternative.
+if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+    add_subdirectory(deps/bink EXCLUDE_FROM_ALL)
+    add_subdirectory(deps/miles EXCLUDE_FROM_ALL)
+endif()
+
 # Build Thyme
 add_subdirectory(src)
 

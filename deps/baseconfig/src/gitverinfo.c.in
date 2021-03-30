@@ -1,0 +1,27 @@
+/**
+ * @file
+ *
+ * @author OmniBlade
+ *
+ * @brief Globals for accessing git version information from the build system.
+ *
+ * @copyright BaseConfig is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#include "gitverinfo.h"
+ 
+char g_gitBranch[] = "@GITINFO_BRANCH@";
+char g_gitSHA1[] = "@GITINFO_COMMIT_SHA1@";
+char g_gitShortSHA1[] = "@GITINFO_COMMIT_SHA1_SHORT@";
+char g_gitCommitTime[] = "@GITINFO_COMMIT_TIME@" "@GITINFO_COMMIT_TZONE@";
+char g_gitCommitDate[] = "@GITINFO_COMMIT_DATE@";
+char g_gitCommitAuthor[] = "@GITINFO_COMMIT_AUTHOR@";
+unsigned g_gitCommitCount = @GITINFO_COMMIT_COUNT@;
+time_t g_gitCommitTimeStamp = @GITINFO_COMMIT_TSTAMP@;
+unsigned g_majorVersion = @GITINFO_VERSION_MAJOR@;
+unsigned g_minorVersion = @GITINFO_VERSION_MINOR@;
+unsigned g_patchVersion = @GITINFO_VERSION_PATCH@;

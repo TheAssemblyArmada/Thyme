@@ -1,0 +1,63 @@
+/**
+ * @file
+ *
+ * @author CCHyper
+ * @author OmniBlade
+ *
+ * @brief Build system generated set of defines for discovered features.
+ *
+ * @copyright Baseconfig is free software: you can redistribute it and/or
+ *            modify it under the terms of the GNU General Public License
+ *            as published by the Free Software Foundation, either version
+ *            2 of the License, or (at your option) any later version.
+ *            A full copy of the GNU General Public License can be found in
+ *            LICENSE
+ */
+#ifndef BASE_CONFIG_H
+#define BASE_CONFIG_H
+
+#cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE__STRICMP
+#cmakedefine HAVE_STRNCASECMP
+#cmakedefine HAVE__STRNICMP
+#cmakedefine HAVE__RDTSC
+#cmakedefine HAVE__READEFLAGS
+#cmakedefine HAVE__WRITEEFLAGS
+#cmakedefine HAVE__CPUID_GCC
+#cmakedefine HAVE__CPUID_MSVC
+#cmakedefine HAVE__CPUIDEX
+#cmakedefine HAVE__CPUID_COUNT
+#cmakedefine HAVE__DEBUGBREAK
+#cmakedefine HAVE_STRLWR
+#cmakedefine HAVE_STRUPR
+#cmakedefine HAVE_STRLCAT
+#cmakedefine HAVE_STRLCPY
+#cmakedefine HAVE_NANOSLEEP
+#cmakedefine HAVE_USLEEP
+#cmakedefine HAVE_POSIX_TIMERS
+
+#cmakedefine HAVE_STD_CLAMP
+
+#cmakedefine HAVE_MSVC_ROTATE
+#cmakedefine HAVE_GCC_ROTATE
+
+#cmakedefine HAVE_INTRIN_H
+#cmakedefine HAVE_X86INTRIN_H
+#cmakedefine HAVE_CPUID_H
+#cmakedefine HAVE_STRINGS_H
+#cmakedefine HAVE_PTHREAD_H
+#cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_LIBGEN_H
+#cmakedefine HAVE_DIRENT_H
+#cmakedefine HAVE_FNMATCH_H
+#cmakedefine HAVE_PWD_H
+#cmakedefine HAVE_SCHED_H
+#cmakedefine HAVE_UTIME_H
+#cmakedefine HAVE_SYS_UTIME_H
+#cmakedefine HAVE_SYS_TIME_H
+#cmakedefine HAVE_SYS_STATVFS_H
+#cmakedefine HAVE_SYS_SYSINFO_H
+#cmakedefine HAVE_SYS_SELECT_H
+#cmakedefine HAVE_MACOS_GCD
+
+#endif // BASE_CONFIG_H

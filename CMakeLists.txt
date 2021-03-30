@@ -136,7 +136,11 @@ if(NOT STANDALONE)
 endif()
 
 # Add base module
-add_subdirectory(src/libs/baseconfig EXCLUDE_FROM_ALL)
+add_subdirectory(deps/baseconfig EXCLUDE_FROM_ALL)
+
+if(ICU_FOUND)
+    target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
+endif()
 
 if(ICU_FOUND)
     target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)

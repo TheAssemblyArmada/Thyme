@@ -23,11 +23,6 @@ if(MSVC)
     string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO})
     set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
     set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
-    
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4) # Only needs disabling for 32bit builds with old DirectX files.
-        set(CMAKE_EXE_LINKER_FLAGS "/SAFESEH:NO /NODEFAULTLIB:libci.lib")
-        set(CMAKE_SHARED_LINKER_FLAGS "/SAFESEH:NO /NODEFAULTLIB:libci.lib")
-    endif()
 
     # Disable Run Time Checking.
     foreach(flag_var
@@ -84,7 +79,6 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
-set(CMAKE_NO_SYSTEM_FROM_IMPORTED TRUE) # Needed to prevent FindDirectX screwing up a mingw build.
 
 # Set up a format target to do automated clang format checking.
 find_package(ClangFormat)
@@ -112,6 +106,7 @@ endif ()
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         set(D3D8_FOUND TRUE)
+        add_subdirectory(deps/olddx EXCLUDE_FROM_ALL)
     endif()
 
     # Assume DINPUT is fine and is found in windows sdk.

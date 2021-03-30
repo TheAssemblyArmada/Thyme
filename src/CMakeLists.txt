@@ -442,12 +442,7 @@ if(ICU_FOUND)
 endif()
 
 if(D3D8_FOUND)
-    list(APPEND GAME_LINK_LIBRARIES d3d8 d3dx8)
-    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_D3D8)
-
-    if(MSVC)
-        list(APPEND GAME_LINK_LIBRARIES legacy_stdio_definitions)
-    endif()
+    list(APPEND GAME_LINK_LIBRARIES d3d8)
 endif()
 
 if(DINPUT8_FOUND)
@@ -463,11 +458,6 @@ else()
     target_include_directories(thyme BEFORE PRIVATE libs/stlport)
     target_include_directories(thyme PRIVATE hooker ${GAMEENGINE_INCLUDES})
     target_compile_definitions(thyme PRIVATE -DGAME_DLL -D_USE_32BIT_TIME_T)
-endif()
-
-if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")    
-    target_link_directories(thyme BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/olddx)
-    target_include_directories(thyme PRIVATE libs/olddx)
 endif()
 
 target_link_libraries(thyme ${GAME_LINK_LIBRARIES})
@@ -487,11 +477,7 @@ if(BUILD_EDITOR)
         target_include_directories(thymeedit PRIVATE hooker ${GAMEENGINE_INCLUDES})
         target_compile_definitions(thymeedit PRIVATE -DGAME_DLL -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
     endif()
-    
-    if(MSVC AND CMAKE_SIZEOF_VOID_P EQUAL 4 AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")    
-        target_link_directories(thymeedit BEFORE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/libs/olddx)
-        target_include_directories(thymeedit PRIVATE libs/olddx)
-    endif()
+
     target_link_libraries(thymeedit ${GAME_LINK_LIBRARIES})
     target_compile_definitions(thymeedit PRIVATE ${GAME_COMPILE_OPTIONS})
     target_compile_definitions(thymeedit PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)

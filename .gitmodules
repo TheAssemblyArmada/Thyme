@@ -4,6 +4,3 @@
 [submodule "src/libs/captnlog"]
 	path = src/libs/captnlog
 	url = https://github.com/TheAssemblyArmada/CaptainsLog.git
-[submodule "src/libs/crashpad"]
-	path = src/libs/crashpad
-	url = https://github.com/TheAssemblyArmada/crashpad-cmake.git

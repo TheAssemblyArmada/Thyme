@@ -407,13 +407,15 @@ if(NOT STANDALONE)
 endif()
 
 if(USE_CRASHPAD)
-    add_subdirectory(libs/crashpad)
     # Rename the crash handler so it won't conflict with any other installs of crashpad.
     set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
     list(APPEND GAME_LINK_LIBRARIES crashpad_client)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_CRASHPAD)
     target_compile_options(crash_handler PRIVATE -DBUILD_WITH_CRASHPAD)
     target_link_libraries(crash_handler PRIVATE crashpad_client)
+
+    # Force the crashpad handler to be built if we are using crashpad.
+    add_dependencies(crash_handler crashpad_handler)
 endif()
 
 if (MSVC AND NOT STANDALONE)

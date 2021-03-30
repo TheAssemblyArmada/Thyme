@@ -170,6 +170,25 @@ if(USE_GAMEMATH)
     endif()
 endif()
 
+if(USE_CRASHPAD)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        crashpad_cmake
+        GIT_REPOSITORY https://github.com/TheAssemblyArmada/crashpad-cmake.git
+        GIT_TAG        6e89ec1542627d7955561c2955e9ff20d6f69f65
+    )
+
+    # We don't use FetchContent_MakeAvailable here because we don't want all crashpad targets including, just our dependencies.
+    FetchContent_GetProperties(crashpad_cmake)
+    if(NOT crashpad_cmake_POPULATED)
+        FetchContent_Populate(crashpad_cmake)
+        add_subdirectory(${crashpad_cmake_SOURCE_DIR} ${crashpad_cmake_BINARY_DIR} EXCLUDE_FROM_ALL)
+    endif()
+
+    set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
+endif()
+
 # Build Thyme
 add_subdirectory(src)
 

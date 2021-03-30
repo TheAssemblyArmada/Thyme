@@ -152,6 +152,24 @@ if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     add_subdirectory(deps/miles EXCLUDE_FROM_ALL)
 endif()
 
+# If we want to include our own math library for cross platform binary consistency, fetch it and add it.
+if(USE_GAMEMATH)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        gamemath_git
+        GIT_REPOSITORY https://github.com/TheAssemblyArmada/GameMath.git
+        GIT_TAG        e041ae49cdd097a2b8110a26d2bc20660d6c31fb
+    )
+
+    # We don't use FetchContent_MakeAvailable here because we don't want all gamemath targets including, just our dependencies.
+    FetchContent_GetProperties(gamemath_git)
+    if(NOT gamemath_git_POPULATED)
+        FetchContent_Populate(gamemath_git)
+        add_subdirectory(${gamemath_git_SOURCE_DIR} ${gamemath_git_BINARY_DIR} EXCLUDE_FROM_ALL)
+    endif()
+endif()
+
 # Build Thyme
 add_subdirectory(src)
 

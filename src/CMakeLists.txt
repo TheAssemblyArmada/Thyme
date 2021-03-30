@@ -387,7 +387,6 @@ add_subdirectory(libs/captnlog EXCLUDE_FROM_ALL)
 list(APPEND GAME_LINK_LIBRARIES base captnlog)
 
 if(USE_GAMEMATH)
-    add_subdirectory(libs/gamemath EXCLUDE_FROM_ALL)
     list(APPEND GAME_LINK_LIBRARIES gamemath_static_lib)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_GAMEMATH)
 endif()

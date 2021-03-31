@@ -3,10 +3,20 @@ name: linux
 on:
   pull_request:
   push:
-  release:
-    types: published
 
 jobs:
+  create_release:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Create Development release
+      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
+        prerelease: true
+        title: "Development Build"
+
   build_thyme_ubuntu_gcc:
     runs-on: ubuntu-18.04
     steps:

@@ -3,11 +3,9 @@ name: windows
 on:
   pull_request:
   push:
-  release:
-    types: published
 
 jobs:
-  build_thyme_msvc:
+  build_thyme_windows_msvc:
     runs-on: windows-2019
     strategy:
       matrix:
@@ -15,14 +13,18 @@ jobs:
         platform: [x86, amd64]
         exclude:
           - {standalone: "OFF", platform: amd64}
+          
     steps:
     - uses: actions/checkout@v2
       with:
-        submodules: 'recursive'     
+        submodules: 'recursive'   
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+        
     - uses: ilammy/msvc-dev-cmd@v1.4.1
       with:
         arch: ${{ matrix.platform }}
-      
+    
     - name: Install dependencies
       shell: bash
       run: |
@@ -38,6 +40,7 @@ jobs:
 
     - name: Create archives
       shell: bash
+      id: mkarc
       run: |
         mkdir artifact
         export ZIPNAME=thyme_${{ matrix.platform }}
@@ -51,3 +54,24 @@ jobs:
       with:
         name: thyme
         path: artifact
+        
+    - name: Upload development release
+      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Development Build
+        tag_name: "latest"
+        prerelease: true
+        files: |
+          artifact\*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload tagged release
+      if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          artifact\*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

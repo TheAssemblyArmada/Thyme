@@ -54,7 +54,7 @@ void Win32Mouse::Load_Cursor(const char *file_location, uint32_t load_index, uin
         // Cursor at this position already loaded. Ignoring subsequent load.
         return;
     }
-    s_loadedCursors[load_index][load_direction] = LoadCursorFromFile(file_location);
+    s_loadedCursors[load_index][load_direction] = LoadCursorFromFileA(file_location);
 #endif
 }
 

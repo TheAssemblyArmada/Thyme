@@ -27,6 +27,8 @@
 #include "w3dshroud.h"
 #include "w3dsmudge.h"
 #include "water.h"
+#include <captainslog.h>
+
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
@@ -410,7 +412,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     File *f = g_theFileSystem->Open(path, 65);
 
     if (f == nullptr) {
-        OutputDebugString("Could not find file \n");
+        captainslog_debug("Could not find file \n");
         return E_FAIL;
     }
 
@@ -419,7 +421,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     DWORD *buf = (DWORD *)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, info.file_size_low);
 
     if (!buf) {
-        OutputDebugString("Failed to allocate memory to load shader\n ");
+        captainslog_debug("Failed to allocate memory to load shader\n ");
         f->Close();
         return E_FAIL;
     }
@@ -439,7 +441,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     HeapFree(GetProcessHeap(), 0, buf);
 
     if (r < 0) {
-        OutputDebugString("Failed to create shader\n ");
+        captainslog_debug("Failed to create shader\n ");
         return E_FAIL;
     }
     return S_OK;

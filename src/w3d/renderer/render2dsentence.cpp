@@ -268,7 +268,7 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     m_oldGDIFont = (HFONT)SelectObject(m_memDC, m_gdiFont);
     SetBkColor(m_memDC, RGB(0, 0, 0));
     SetTextColor(m_memDC, RGB(255, 255, 255));
-    TEXTMETRIC text_metric = { 0 };
+    TEXTMETRICA text_metric = { 0 };
     GetTextMetricsA(m_memDC, &text_metric);
     m_ascent = text_metric.tmAscent;
     m_charHeight = text_metric.tmHeight;

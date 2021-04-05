@@ -26,9 +26,9 @@ If you wish to use our custom launcher without messing with patches or anything,
 
 If you don't have the disc version or just want to run an executable directly, you will need to generate `thyme.exe` using the exe patching guide on the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki).
 
-Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://github.com/TheAssemblyArmada/Thyme/releases). You will have to expand the Assets to dolwnload the latest thyme_x86_dll.zip. You could also [build Thyme yourself](#building-thyme-yourself).
+Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://github.com/TheAssemblyArmada/Thyme/releases). You will have to expand the assets to download the latest thyme_x86_dll.zip. You could also [build Thyme yourself](#building-thyme-yourself).
 
-The easiest way to get Thyme to actually run is to place `thyme.exe` or `launchthyme.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thyme.exe` or `launchthyme.exe` from that directory or create a shortcut to them.
+The easiest way to get Thyme to actually run is to place `thymelauncher.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thymelauncher.exe` from that directory or create a shortcut to them.
 
 ### Disclaimer
 

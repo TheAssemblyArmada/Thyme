@@ -22,13 +22,13 @@ Currently Thyme can only be run on Windows.
 
 To run Thyme, you first need to have Command & Conquer Generals: Zero Hour installed. If you don't have the original game disc, Generals: Zero Hour can currently be bought most easily as a downloadable version that is part of the Command & Conquer The Ultimate Collection from [Origin](https://www.origin.com/en-us/store/command-and-conquer/command-and-conquer-the-ultimate-collection/ultimate-collection) or a third-party like [Amazon](https://www.amazon.com/Command-Conquer-Ultimate-Collection-PC/dp/B0095C0I4W).
 
-If you wish to use our custom launcher without messing with patches or anything, only an install original Windows disc based English language version of Generals: Zero Hour (patched to version 1.04) is supported. That 1.04 patch can be downloaded [here](ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe) if your installation hasn't been updated yet.
+If you wish to use our custom launcher without messing with patches or anything, only an install original Windows disc based English language version of Generals: Zero Hour (patched to version 1.04) is supported. That 1.04 patch can be downloaded [here](https://web.archive.org/web/20170130195007/http://ftp.ea.com/pub/eapacific/generals/generalszh/DownloadablePatches/GeneralsZH-104-english.exe) if your installation hasn't been updated yet.
 
 If you don't have the disc version or just want to run an executable directly, you will need to generate `thyme.exe` using the exe patching guide on the [Thyme Wiki](https://github.com/TheAssemblyArmada/Thyme/wiki).
 
-Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://ci.appveyor.com/project/AssemblyArmarda/thyme/). You will have to click on one of the Job names and after that you can click on 'artefacts' to get the link to the downloadable zipped version of Thyme. You could also [build Thyme yourself](#building-thyme-yourself).
+Now you have the Generals: Zero Hour installation ready, you can [download the latest version](https://github.com/TheAssemblyArmada/Thyme/releases). You will have to expand the assets to download the latest thyme_x86_dll.zip. You could also [build Thyme yourself](#building-thyme-yourself).
 
-The easiest way to get Thyme to actually run is to place `thyme.exe` or `launchthyme.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thyme.exe` or `launchthyme.exe` from that directory or create a shortcut to them.
+The easiest way to get Thyme to actually run is to place `thymelauncher.exe` together with `thyme.dll` in the Generals: Zero Hour installation folder. You can then launch `thymelauncher.exe` from that directory or create a shortcut to them.
 
 ### Disclaimer
 
@@ -82,13 +82,15 @@ binary which will be in place until Thyme no longer relies on the original.
 
 Below is a list of similar projects and their respective original games:
 
- * [OpenRCT2](https://github.com/OpenRCT2/OpenRCT2) - RollerCoaster Tycoon 2
- * [OpenTTD](https://www.openttd.org) - Transport Tycoon Deluxe
- * [OpenMC2](https://github.com/LRFLEW/OpenMC2) - Midnight Club 2
+ * [Alive](https://github.com/AliveTeam/alive_reversing) - Abe's Exodus
+ * [dethrace](https://github.com/jeff-1amstudios/dethrace) - Carmageddon
+ * [Devilution](https://github.com/diasurgical/devilution) - Diablo
  * [OpenDUNE](https://github.com/OpenDUNE/OpenDUNE) - Dune 2
  * [OpenFodder](https://github.com/OpenFodder/openfodder) - Cannon Fodder
- * [Devilution](https://github.com/diasurgical/devilution) - Diablo
- * [Chronoshift](https://github.com/TheAssemblyArmada/Chronoshift) - Command & Conquer Red Alert
- * [Alive](https://github.com/AliveTeam/alive_reversing) - Abe's Exodus
+ * [OpenLoco](https://github.com/OpenLoco/OpenLoco) - Locomotion 
+ * [OpenMC2](https://github.com/LRFLEW/OpenMC2) - Midnight Club 2
+ * [OpenRCT2](https://github.com/OpenRCT2/OpenRCT2) - RollerCoaster Tycoon 2
+ * [OpenTTD](https://www.openttd.org) - Transport Tycoon Deluxe
+ * [Vanilla Conquer](https://github.com/TheAssemblyArmada/Vanilla-Conquer) - Tiberian Dawn & Red Alert
 
 There is also a [Wikipedia page for open source games](https://en.wikipedia.org/wiki/List_of_open-source_video_games).

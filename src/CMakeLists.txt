@@ -466,3 +466,7 @@ if(BUILD_EDITOR)
     target_compile_definitions(thymeedit PRIVATE ${GAME_COMPILE_OPTIONS})
     target_compile_definitions(thymeedit PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
 endif()
+
+if(BUILD_TOOLS)
+    add_subdirectory(tools)
+endif()

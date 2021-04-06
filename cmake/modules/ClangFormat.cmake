@@ -14,6 +14,8 @@ if(CLANG_FORMAT_FOUND)
         src/game/*.h
         src/platform/*.cpp
         src/platform/*.h
+        src/tools/*.cpp
+        src/tools/*.h
         src/w3d/*.cpp
         src/w3d/*.h
     )

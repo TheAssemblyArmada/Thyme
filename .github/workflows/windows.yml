@@ -24,18 +24,41 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1.4.1
       with:
         arch: ${{ matrix.platform }}
-    
-    - name: Install dependencies
-      shell: bash
+        
+    - name: Set variables
+      id: vars
       run: |
-        curl -L -O https://github.com/ninja-build/ninja/releases/download/v1.10.1/ninja-win.zip
-        7z x ninja-win.zip -o`pwd`/deps/ninja
-        export PATH=`pwd`/deps/ninja:$PATH
+        If ("${{ matrix.platform }}" -eq "x86") {
+          echo "::set-output name=build::x86"
+          echo "::set-output name=build_type::Win32"
+          echo "::set-output name=arc_path::i686"
+          echo "::set-output name=wxrc_path::vc_mswu"
+        } else {
+          echo "::set-output name=build::x64"
+          echo "::set-output name=build_type::x64"
+          echo "::set-output name=arc_path::x86_64"
+          echo "::set-output name=wxrc_path::vc_mswu_x64"
+        }
+        echo "::set-output name=wx_ver::wxWidgets-3.0.5"
+        
+    - name: Install dependencies
+      run: |
+        Invoke-WebRequest -Uri https://github.com/ninja-build/ninja/releases/download/v1.10.1/ninja-win.zip -OutFile $Env:TEMP\ninja-win.zip
+        Expand-Archive $Env:TEMP\ninja-win.zip -DestinationPath $Env:TEMP\ninja
+        echo "$Env:TEMP\ninja" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         ninja --version
+        git clone --branch v3.0.5 --depth 1 https://github.com/wxWidgets/wxWidgets.git D:\${{ steps.vars.outputs.wx_ver }}
+        Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup.h
+        Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\setup.h
+        cd D:\${{ steps.vars.outputs.wx_ver }}\build\msw
+        msbuild wx_vc12.sln /p:Configuration=Release /p:Platform=${{ steps.vars.outputs.build_type }} /p:PlatformToolset=v142 /target:adv,base,core,html,media,net,propgrid,qa,wxexpat,wxjpeg,wxpng,wxregex,wxtiff,wxzlib,xml,xrc
+        cd D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc
+        Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\setup.h
+        nmake /f makefile.vc TARGET_CPU=${{ matrix.platform }} BUILD=release
         
     - name: Build Thyme
       run: |
-        cmake -G Ninja -DSTANDALONE=${{ matrix.standalone }} -DUSE_CRASHPAD=${{ matrix.standalone }} -B build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON -DSTANDALONE=${{ matrix.standalone }} -DUSE_CRASHPAD=${{ matrix.standalone }} -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
         cmake --build build --config Release
 
     - name: Create archives
@@ -43,11 +66,10 @@ jobs:
       id: mkarc
       run: |
         mkdir artifact
-        export ZIPNAME=thyme_${{ matrix.platform }}
+        export ZIPNAME=thyme_${{ steps.vars.outputs.arc_path }}
         if [ ${{ matrix.standalone }} != "ON" ]; then export FEATURES=_dll export EXTENSION=dll; else export FEATURES=_standalone export EXTENSION=exe;fi
-        7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.$EXTENSION
+        7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.$EXTENSION ./build/DebugWindow.dll
         if [ ${{ matrix.standalone }} != "ON" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymelauncher.exe; else 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymecrashhandler.exe; fi
-        if [ Release == "Debug" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.pdb; fi
         
     - name: Upload artifact
       uses: actions/upload-artifact@v1

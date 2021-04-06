@@ -66,7 +66,8 @@ option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
-option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handing and reporting" OFF)
+option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
+option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 # Custom default install location.
 if(NOT STANDALONE)
@@ -119,6 +120,14 @@ if(NOT WIN32 OR NOT "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(NOT ICU_FOUND)
         message(FATAL_ERROR "ICU is required on non-windows platforms and was not found.")
     endif()
+endif()
+
+# Try and find wxWidgets which is used for some GUI tools.
+find_package(wxWidgets COMPONENTS core base xrc expat xml html adv)
+
+if(NOT wxWidgets_FOUND AND BUILD_TOOLS)
+    message(WARNING "Debug tools are enabled, but wxWidgets was not found.") 
+    message(WARNING "GUI tools will not be built.")
 endif()
 
 # Set where the build results will end up

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxFrame" name="DbgWinBaseFrame">
+		<style>wxCAPTION|wxCLOSE_BOX|wxFRAME_SHAPED|wxMINIMIZE_BOX|wxSYSTEM_MENU|wxTAB_TRAVERSAL</style>
+		<size>342,468</size>
+		<bg>#f0f0f0</bg>
+		<fg>#000000</fg>
+		<title>Script Debug</title>
+		<centered>1</centered>
+		<aui_managed>0</aui_managed>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxGridSizer">
+					<rows>2</rows>
+					<cols>3</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxToggleButton" name="m_pauseBtn">
+							<label>Pause</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_stepBtn">
+							<label>Step</label>
+							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_stepTenBtn">
+							<label>Step 10</label>
+							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>10</border>
+						<object class="wxStaticText" name="m_frameTxt">
+							<label>Frame 0</label>
+							<wrap>-1</wrap>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxToggleButton" name="m_runFastXTenBtn">
+							<label>Run Fast 10x</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_clearBtn">
+							<label>Clear</label>
+							<default>0</default>
+							<markup>0</markup>
+							<bitmap />
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>2</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxStaticBoxSizer">
+							<orient>wxVERTICAL</orient>
+							<label>Variables</label>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxListBox" name="m_variableList">
+									<content />
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>5</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxVERTICAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxStaticBoxSizer">
+							<orient>wxVERTICAL</orient>
+							<label>Messages</label>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxTextCtrl" name="m_msgTxt">
+									<style>wxTE_MULTILINE|wxTE_READONLY</style>
+									<value></value>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

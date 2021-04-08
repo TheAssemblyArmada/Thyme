@@ -13,6 +13,10 @@
 	#include <winres.h>
 #endif
 
+#ifdef INCLUDE_WX_MANIFEST
+#include <wx/msw/wx.rc>
+#endif
+
 #ifdef PRODUCT_ICON
 IDI_ICON1               ICON                    PRODUCT_ICON
 #endif

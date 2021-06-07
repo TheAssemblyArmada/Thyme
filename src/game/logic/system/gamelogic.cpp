@@ -64,7 +64,7 @@ bool GameLogic::Is_Intro_Movie_Playing()
 
 int GameLogic::Rebalance_Parent_Sleepy_Update(int update)
 {
-    captainslog_dbgassert(update >= 0 && update < m_sleepingUpdateModules.size(), "bad sleepy idx");
+    captainslog_dbgassert(update >= 0 && (unsigned)update < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
     for (int i = ((update + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
         if (!Compare_Update_Modules(m_sleepingUpdateModules[i], m_sleepingUpdateModules[update])) {

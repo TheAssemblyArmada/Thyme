@@ -108,7 +108,7 @@ public:
             return nullptr;
         }
 
-        if (id >= m_objectLookupTable.size()) {
+        if ((unsigned)id >= m_objectLookupTable.size()) {
             return nullptr;
         }
 

@@ -16,7 +16,7 @@
 #include "script.h"
 
 Condition::Condition() :
-    m_conditionType(DEFAULT),
+    m_conditionType(CONDITION_FALSE),
     m_numParams(0),
     m_nextAndCondition(nullptr),
     m_hasWarnings(false),

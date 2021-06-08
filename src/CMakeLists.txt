@@ -191,6 +191,7 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptaction.cpp
     game/logic/scriptengine/scriptactions.cpp
     game/logic/scriptengine/scriptcondition.cpp
+    game/logic/scriptengine/scriptconditions.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptgroup.cpp
     game/logic/scriptengine/scriptlist.cpp

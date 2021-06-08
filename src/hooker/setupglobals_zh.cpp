@@ -530,3 +530,10 @@ void *&ScriptEngine::s_particleDll = Make_Global<void *>(PICK_ADDRESS(0x00A2B650
 // scriptactions.cpp
 #include "scriptactions.h"
 ScriptActionsInterface *&g_theScriptActions = Make_Global<ScriptActionsInterface *>(PICK_ADDRESS(0x00A2C140, 0x04CA8740));
+
+// scriptconditions.cpp
+#include "scriptconditions.h"
+ScriptConditionsInterface *&g_theScriptConditions =
+    Make_Global<ScriptConditionsInterface *>(PICK_ADDRESS(0x00A2C10C, 0x04CA86E4));
+TransportStatus *&ScriptConditions::s_transportStatuses =
+    Make_Global<TransportStatus *>(PICK_ADDRESS(0x00A2C108, 0x04CA86E0));

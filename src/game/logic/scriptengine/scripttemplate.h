@@ -16,6 +16,7 @@
 
 #include "asciistring.h"
 #include "mempoolobj.h"
+#include "namekeygenerator.h"
 #include "scriptparam.h"
 
 class Template : public MemoryPoolObject
@@ -40,7 +41,7 @@ private:
     Utf8String m_uiName;
     Utf8String m_uiName2;
     Utf8String m_internalName;
-    int unkInt;
+    NameKeyType m_nameKey;
     int m_uiStringCount;
     Utf8String m_uiStrings[PARAMETER_COUNT];
     int m_numParameters;
@@ -50,12 +51,16 @@ private:
 
 class ActionTemplate : public Template
 {
+    friend class ScriptEngine;
+
 public:
     virtual ~ActionTemplate() override {}
 };
 
 class ConditionTemplate : public Template
 {
+    friend class ScriptEngine;
+
 public:
     virtual ~ConditionTemplate() override {}
 };

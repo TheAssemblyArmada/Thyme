@@ -20,6 +20,8 @@
 #include "globaldata.h"
 #include "mempoolobj.h"
 #include "science.h"
+#include "scriptaction.h"
+#include "scriptcondition.h"
 #include "scripttemplate.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
@@ -101,8 +103,6 @@ class ScriptEngine : public SubsystemInterface, public SnapShot
 
     enum
     {
-        MAX_CONDITIONS = 109,
-        MAX_ACTIONS = 344,
         MAX_COUNTERS = 256,
         MAX_FLAGS = 256,
         MAX_ATTACK_PRIORITIES = 256,
@@ -173,9 +173,13 @@ public:
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
 
 private:
+    void Init_Action_Templates();
+    void Init_Condition_Templates();
+
+private:
     std::vector<SequentialScript *> m_sequentialScripts;
-    ActionTemplate m_actionTemplates[344];
-    ConditionTemplate m_conditionTemplates[109];
+    ActionTemplate m_actionTemplates[ScriptAction::ACTION_COUNT];
+    ConditionTemplate m_conditionTemplates[Condition::CONDITION_COUNT];
     TCounter m_counters[MAX_COUNTERS];
     int m_numCounters;
     TFlag m_flags[MAX_FLAGS];

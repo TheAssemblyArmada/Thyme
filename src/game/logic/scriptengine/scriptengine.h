@@ -170,6 +170,7 @@ public:
     virtual Script *Find_Script_By_Name(const Utf8String &script_name);
 
     void Set_Global_Difficulty(GameDifficulty diff);
+    void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
 
 private:
     std::vector<SequentialScript *> m_sequentialScripts;

@@ -183,11 +183,13 @@ set(GAMEENGINE_SRC
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
+    game/logic/object/object.cpp
     game/logic/object/objecttypes.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptaction.cpp
+    game/logic/scriptengine/scriptactions.cpp
     game/logic/scriptengine/scriptcondition.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptgroup.cpp

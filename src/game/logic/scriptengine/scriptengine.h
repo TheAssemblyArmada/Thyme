@@ -60,7 +60,7 @@ struct TCounter
 
 struct TFlag
 {
-    int value;
+    bool value;
     Utf8String name;
 };
 
@@ -83,6 +83,8 @@ public:
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
+
+    void Reset();
 
 private:
     Utf8String m_name;
@@ -107,6 +109,7 @@ class ScriptEngine : public SubsystemInterface, public SnapShot
         MAX_FLAGS = 256,
         MAX_ATTACK_PRIORITIES = 256,
         MAX_PLAYER_COUNT = 16,
+        MAX_DEBUG_SCRIPTS = 10,
     };
 
 public:
@@ -175,6 +178,11 @@ public:
 private:
     void Init_Action_Templates();
     void Init_Condition_Templates();
+    std::vector<SequentialScript *>::iterator Cleanup_Sequential_Scripts(
+        std::vector<SequentialScript *>::iterator it, bool clean_danglers);
+    void Remove_Object_Types(ObjectTypes *obj);
+
+    static void Update_Current_Particle_Cap();
 
 private:
     std::vector<SequentialScript *> m_sequentialScripts;
@@ -221,7 +229,7 @@ private:
     BreezeInfo m_breezeInfo;
     GameDifficulty m_gameDifficulty;
     bool m_freezeByScript;
-    std::vector<ObjectTypes *> m_objectTypes;
+    std::vector<ObjectTypes *> m_allObjectTypeLists;
     bool m_useObjectDifficultyBonuses;
     bool m_unkBool1;
     bool m_hasShowMPLocalDefeatWindow;

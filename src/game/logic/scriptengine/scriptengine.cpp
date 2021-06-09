@@ -13,9 +13,17 @@
  *            LICENSE
  */
 #include "scriptengine.h"
+#include "gameengine.h"
+#include "gamemath.h"
 #include "globaldata.h"
+#include "objecttypes.h"
+#include "script.h"
 #include "scriptactions.h"
 #include "scriptconditions.h"
+#include "scriptlist.h"
+#include "sequentialscript.h"
+#include "sideslist.h"
+#include <captainslog.h>
 
 #ifndef GAME_DLL
 ScriptEngine *g_theScriptEngine;
@@ -29,6 +37,13 @@ void *ScriptEngine::s_particleDll;
 AttackPriorityInfo::~AttackPriorityInfo() {}
 
 void AttackPriorityInfo::Xfer_Snapshot(Xfer *xfer) {}
+
+void AttackPriorityInfo::Reset()
+{
+    m_name.Clear();
+    m_defaultPriority = 1;
+    delete m_priorityMap;
+}
 
 ScriptEngine::ScriptEngine() :
     m_numCounters(0),
@@ -183,7 +198,153 @@ void ScriptEngine::Init()
     Reset();
 }
 
-void ScriptEngine::Reset() {}
+void ScriptEngine::Reset()
+{
+    if (g_theGameEngine != nullptr && g_theWriteableGlobalData != nullptr) {
+        g_theGameEngine->Set_FPS_Limit(g_theWriteableGlobalData->m_framesPerSecondLimit);
+    }
+
+    g_theScriptActions->Reset();
+    g_theScriptConditions->Reset();
+
+    m_numCounters = 1;
+    m_numAttackInfo = 1;
+    m_numFlags = 1;
+    m_endGameTimer = -1;
+    m_closeWindowTimer = -1;
+    m_callingTeam = nullptr;
+    m_callingObject = nullptr;
+    m_conditionTeam = nullptr;
+    m_conditionObject = nullptr;
+    m_currentPlayer = nullptr;
+    m_unkInt1 = 0;
+    m_objectCreationDestructionFrame = 0;
+    m_hasShowMPLocalDefeatWindow = 0;
+
+    for (int i = 0; i < MAX_COUNTERS; ++i) {
+        m_counters[i].value = 0;
+        m_counters[i].is_countdown_timer = false;
+        m_counters[i].name.Clear();
+    }
+
+    for (int i = 0; i < MAX_FLAGS; ++i) {
+        m_flags[i].value = false;
+        m_flags[i].name.Clear();
+    }
+
+    m_breezeInfo.direction = 1.0471976f;
+    m_breezeInfo.sway_direction.x = GameMath::Sin(m_breezeInfo.direction);
+    m_breezeInfo.sway_direction.y = GameMath::Cos(m_breezeInfo.direction);
+    m_breezeInfo.intensity = 0.054977871f;
+    m_breezeInfo.lean = 0.054977871f;
+    m_breezeInfo.period = 150;
+    m_breezeInfo.randomness = 0.2;
+    m_breezeInfo.version = 0;
+    m_freezeByScript = false;
+    m_useObjectDifficultyBonuses = true;
+    m_unkBool1 = false;
+
+    // No point processing this section of code unless log levels can be debug or higher.
+#if LOGLEVEL_DEBUG <= LOGGING_LEVEL
+#ifdef GAME_DEBUG_STRUCTS
+    if (m_numFrames > 1.0) {
+        captainslog_debug("\n***SCRIPT ENGINE STATS %.0f frames:", m_numFrames);
+        captainslog_debug("Avg time to update %.3f milisec", 1000.0 * m_totalUpdateTime / m_numFrames);
+        captainslog_debug("  Max time to update %.3f miliseconds.", m_maxUpdateTime * 1000.0);
+    }
+
+    m_numFrames = 0.0;
+    m_totalUpdateTime = 0.0;
+    m_maxUpdateTime = 0.0;
+#endif
+
+    if (g_theSidesList != nullptr) {
+        // Evaluate the MAX_DEBUG_SCRIPTS slowest scripts to report on.
+        for (int j = 0; j < MAX_DEBUG_SCRIPTS; ++j) {
+            float longest_exec_time = 0.0f;
+            Script *longest_script = nullptr;
+
+            for (int i = 0; i < g_theSidesList->Get_Num_Sides(); ++i) {
+                ScriptList *script_list = g_theSidesList->Get_Sides_Info(i)->Get_ScriptList();
+
+                if (script_list != nullptr) {
+                    for (Script *script = script_list->Get_Scripts(); script != nullptr; script = script->Get_Next()) {
+                        if (script->Get_Total_Exec_Time() > longest_exec_time) {
+                            longest_exec_time = script->Get_Total_Exec_Time();
+                            longest_script = script;
+                        }
+                    }
+
+                    for (ScriptGroup *group = script_list->Get_Groups(); group != nullptr; group->Get_Next()) {
+                        for (Script *script = group->Get_Scripts(); script != nullptr; script = script->Get_Next()) {
+                            if (script->Get_Total_Exec_Time() > longest_exec_time) {
+                                longest_exec_time = script->Get_Total_Exec_Time();
+                                longest_script = script;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (longest_script != nullptr) {
+                captainslog_debug("   SCRIPT %s total time %f seconds,\n        evaluated %d times, avg execution %2.3f "
+                                  "msec (Goal less than 0.05)",
+                    longest_script->Get_Name().Str(),
+                    longest_script->Get_Total_Exec_Time(),
+                    longest_script->Get_Evalulation_Count(),
+                    longest_script->Get_Total_Exec_Time() * 1000.0 / longest_script->Get_Evalulation_Count());
+                longest_script->Update_Exec_Time(-2.0f * longest_exec_time);
+            }
+        }
+
+        captainslog_debug("***");
+    }
+#endif
+
+    Update_Current_Particle_Cap();
+
+    for (auto it = m_sequentialScripts.begin(); it != m_sequentialScripts.end(); ++it) {
+        Cleanup_Sequential_Scripts(it, true);
+    }
+
+    for (auto it = m_allObjectTypeLists.begin(); it != m_allObjectTypeLists.end(); it = m_allObjectTypeLists.begin()) {
+        if (*it != nullptr) {
+            Remove_Object_Types(*it);
+        } else {
+            m_allObjectTypeLists.erase(it);
+        }
+    }
+
+    captainslog_dbgassert(
+        m_allObjectTypeLists.empty(), "ScriptEngine::Reset - m_allObjectTypeLists should be empty but is not!");
+
+    m_namedReveals.clear();
+    m_namedObjects.clear();
+    m_completedVideo.clear();
+    m_completedSpeech.clear();
+    m_completedAudio.clear();
+    m_uiInteraction.clear();
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; ++i) {
+        m_triggeredSpecialPowers[i].clear();
+        m_midwaySpecialPowers[i].clear();
+        m_finishedSpecialPowers[i].clear();
+        m_acquiredSciences[i].clear();
+        m_completedUpgrades[i].clear();
+    }
+
+    ScriptList::Reset();
+
+    for (int i = 0; i < MAX_ATTACK_PRIORITIES; ++i) {
+        m_attackPriorityInfo[i].Reset();
+    }
+
+    for (int i = 0; i < MAX_PLAYER_COUNT; ++i) {
+        m_playerObjectCounts[i].clear();
+    }
+
+    m_toppleDirections.clear();
+}
 
 void ScriptEngine::Update() {}
 
@@ -4892,4 +5053,58 @@ void ScriptEngine::Init_Condition_Templates()
     m_conditionTemplates[Condition::PLAYER_LOST_OBJECT_TYPE].m_uiStrings[0] = " ";
     m_conditionTemplates[Condition::PLAYER_LOST_OBJECT_TYPE].m_uiStrings[1] = " has lost an object of type ";
     m_conditionTemplates[Condition::PLAYER_LOST_OBJECT_TYPE].m_uiStrings[2] = " (can be an object type list).";
+}
+
+std::vector<SequentialScript *>::iterator ScriptEngine::Cleanup_Sequential_Scripts(
+    std::vector<SequentialScript *>::iterator it, bool clean_danglers)
+{
+    SequentialScript *script = *it;
+
+    if (*it == nullptr) {
+        return it;
+    }
+
+    if (clean_danglers) {
+        while (script != nullptr) {
+            SequentialScript *to_delete = script;
+            script = script->m_nextScriptInSequence;
+            to_delete->Delete_Instance();
+        }
+
+        *it = nullptr;
+    } else {
+        *it = script->m_nextScriptInSequence;
+        script->Delete_Instance();
+    }
+
+    return *it != nullptr ? it : m_sequentialScripts.erase(it);
+}
+
+void ScriptEngine::Remove_Object_Types(ObjectTypes *obj)
+{
+    auto it = std::find(m_allObjectTypeLists.begin(), m_allObjectTypeLists.end(), obj);
+
+    if (it != m_allObjectTypeLists.end()) {
+        obj->Delete_Instance();
+        m_allObjectTypeLists.erase(it);
+    }
+}
+
+void ScriptEngine::Update_Current_Particle_Cap()
+{
+    static void (*UpdateCurrentParticleCap)(int);
+
+    if (s_particleDll != nullptr) {
+        if (UpdateCurrentParticleCap == nullptr) {
+#ifdef PLATFORM_WINDOWS
+            UpdateCurrentParticleCap = (void (*)(int))GetProcAddress((HMODULE)s_particleDll, "UpdateCurrentParticleCap");
+#else
+            // TODO
+#endif
+        }
+
+        if (UpdateCurrentParticleCap != nullptr) {
+            UpdateCurrentParticleCap(g_theWriteableGlobalData->m_maxParticleCount);
+        }
+    }
 }

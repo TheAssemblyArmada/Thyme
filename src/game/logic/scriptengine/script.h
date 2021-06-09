@@ -42,10 +42,14 @@ public:
     OrCondition *Get_Condition() { return m_condition; }
     ScriptAction *Get_Action() { return m_action; }
     ScriptAction *Get_False_Action() { return m_actionFalse; }
+    float Get_Total_Exec_Time() const { return m_totalExecTime; }
+    int Get_Evalulation_Count() const { return m_evalCount; }
+    Utf8String Get_Name() const { return m_scriptName; }
     void Set_Next(Script *next) { m_nextScript = next; }
     void Set_Condition(OrCondition *condition) { m_condition = condition; }
     void Set_Action(ScriptAction *action) { m_action = action; }
     void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
+    void Update_Exec_Time(float passed_time) { m_totalExecTime += passed_time; }
 
     static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
@@ -75,7 +79,7 @@ private:
     int m_unkInt2;
     bool m_hasWarnings;
     Utf8String m_conditionTeamName;
-    int m_unkInt3;
-    int m_unkInt4;
-    int m_unkInt5;
+    float m_totalExecTime;
+    int m_scriptTiming;
+    int m_evalCount;
 };

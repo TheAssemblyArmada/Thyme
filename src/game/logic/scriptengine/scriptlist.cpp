@@ -15,6 +15,7 @@
 #include "scriptlist.h"
 #include "script.h"
 #include "scriptgroup.h"
+#include "sideslist.h"
 #include "xfer.h"
 #include <captainslog.h>
 
@@ -290,4 +291,15 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
     }
 
     return false;
+}
+
+void ScriptList::Reset()
+{
+    if (g_theSidesList != nullptr) {
+        for (int i = 0; i < g_theSidesList->Get_Num_Sides(); ++i) {
+            ScriptList *list = g_theSidesList->Get_Sides_Info(i)->Get_ScriptList();
+            g_theSidesList->Get_Sides_Info(i)->Set_ScriptList(nullptr);
+            list->Delete_Instance();
+        }
+    }
 }

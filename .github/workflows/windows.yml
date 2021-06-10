@@ -51,7 +51,7 @@ jobs:
         Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup.h
         Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\setup.h
         cd D:\${{ steps.vars.outputs.wx_ver }}\build\msw
-        msbuild wx_vc12.sln /p:Configuration=Release /p:Platform=${{ steps.vars.outputs.build_type }} /p:PlatformToolset=v142 /target:adv,base,core,html,media,net,propgrid,qa,wxexpat,wxjpeg,wxpng,wxregex,wxtiff,wxzlib,xml,xrc
+        nmake /f makefile.vc TARGET_CPU=${{ matrix.platform }} BUILD=release
         cd D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc
         Copy-Item D:\${{ steps.vars.outputs.wx_ver }}\include\wx\msw\setup0.h -Destination D:\${{ steps.vars.outputs.wx_ver }}\include\wx\setup.h
         nmake /f makefile.vc TARGET_CPU=${{ matrix.platform }} BUILD=release

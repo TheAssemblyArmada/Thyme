@@ -423,9 +423,9 @@ void Render2DSentenceClass::Reset()
     }
     Ref_Ptr_Release(m_curSurface);
 
-    for (int i = 0; i < m_renderers.Count(); ++i) {
-        delete m_renderers[i].renderer;
-        m_renderers.Delete(i);
+    while (m_renderers.Count() > 0) {
+        delete m_renderers[0].renderer;
+        m_renderers.Delete(0);
     }
 
     m_cursor.Set(0, 0);
@@ -767,7 +767,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
             // Process a word in the sentence.
             for (unichar_t test_ch = *cur_text; *cur_text != u'\0'; test_ch = *cur_text) {
-                if (test_ch <= u' ' || test_ch == u'\n') {
+                if (test_ch <= u' ') {
                     break;
                 }
 
@@ -797,6 +797,16 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                 tracked_width = word_width + sentence_width;
 
                 if (tracked_width >= m_wrapWidth) {
+                    if (word_count_tracker == 0) {
+                        word_count_tracker = word_count - 1;
+                        sentence_width += word_width - spacing;
+
+                        if (*cur_text == u'\0') {
+                            breakout = true;
+                        }
+                    } else {
+                        --word_count_tracker;
+                    }
                     break;
                 }
             }
@@ -819,17 +829,6 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             word_width = m_font->Get_Char_Spacing(u' ');
             word_count = 0;
             sentence_width += word_width;
-        }
-
-        if (word_count_tracker == 0) {
-            word_count_tracker = word_count - 1;
-            sentence_width += word_width - spacing;
-
-            if (*cur_text == u'\0') {
-                breakout = true;
-            }
-        } else {
-            --word_count_tracker;
         }
 
         m_cursor.X = std::max((position.X - sentence_width) * 0.5f, 0.0f);
@@ -876,12 +875,12 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                         Allocate_New_Surface(text, false);
                     }
                 }
+            }
 
-                if (cur_ch != u'\n' && cur_ch != u' ') {
-                    if (m_lockedPtr == nullptr) {
-                        m_lockedPtr = static_cast<uint16_t *>(m_curSurface->Lock(&m_lockedStride));
-                        captainslog_assert(m_lockedPtr != nullptr);
-                    }
+            if (cur_ch != u'\n' && cur_ch != u' ') {
+                if (m_lockedPtr == nullptr) {
+                    m_lockedPtr = static_cast<uint16_t *>(m_curSurface->Lock(&m_lockedStride));
+                    captainslog_assert(m_lockedPtr != nullptr);
                 }
 
                 captainslog_assert(((m_textureOffset.I + char_spacing) < m_currTextureSize)

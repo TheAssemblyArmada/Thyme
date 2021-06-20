@@ -67,6 +67,8 @@ public:
     operator float() const { return Get_Value(); }
 
     void Set_Range(float min, float max, DistributionType type);
+    void Set_Min(float min) { m_low = min; }
+    void Set_Max(float max) { m_high = max; }
     float Get_Value() const;
     float Get_Min() const { return m_low; }
     float Get_Max() const { return m_high; }

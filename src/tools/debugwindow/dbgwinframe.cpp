@@ -63,7 +63,6 @@ void DbgWinFrame::On_Exit(wxCloseEvent &event)
 
 void DbgWinFrame::On_Thumb(wxScrollWinEvent &event)
 {
-    printf("Handling scroll thumb event.\n");
     if (!m_blockVariableUpdate) {
         m_blockVariableUpdate = true;
     }
@@ -71,7 +70,6 @@ void DbgWinFrame::On_Thumb(wxScrollWinEvent &event)
 
 void DbgWinFrame::On_Thumb_Release(wxScrollWinEvent &event)
 {
-    printf("Handling scroll thumb release event.\n");
     m_blockVariableUpdate = false;
 }
 

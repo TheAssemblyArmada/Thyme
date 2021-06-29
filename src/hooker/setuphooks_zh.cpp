@@ -72,6 +72,7 @@
 #include "multilist.h"
 #include "namekeygenerator.h"
 #include "object.h"
+#include "objecttypes.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
@@ -1368,4 +1369,7 @@ void Setup_Hooks()
     Hook_Any(0x00832F40, SimpleSceneClass::Customized_Render);
     Hook_Any(0x008330E0, SimpleSceneClass::Post_Render_Processing);
     Hook_Any(0x00832D20, SimpleSceneClass::Visibility_Check);
+
+    // objecttypes.h
+    Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);
 }

@@ -47,6 +47,7 @@ public:
     void Add_Side(const Dict *dict);
     void Add_Team(const Dict *dict) { m_teamRec.Add_Team(dict); }
     void Remove_Team(int index) { m_teamRec.Remove_Team(index); }
+    int Get_Num_Sides() const { return m_numSides; }
     int Get_Num_Teams() { return m_teamRec.Get_Num_Teams(); }
     TeamsInfo *Get_Team_Info(int index) { return m_teamRec.Get_Team_Info(index); }
     void Empty_Teams();

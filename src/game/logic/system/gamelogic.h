@@ -42,24 +42,6 @@ class ThingTemplate;
 class UpdateModule;
 class WindowLayout;
 
-enum GameMode
-{
-    GAME_SINGLE_PLAYER,
-    GAME_LAN,
-    GAME_SKIRMISH,
-    GAME_REPLAY,
-    GAME_SHELL,
-    GAME_INTERNET,
-    GAME_NONE,
-};
-
-enum GameDifficulty
-{
-    DIFFICULTY_EASY,
-    DIFFICULTY_NORMAL,
-    DIFFICULTY_HARD,
-};
-
 class GameLogic : public SubsystemInterface, public SnapShot
 {
 public:
@@ -126,7 +108,7 @@ public:
             return nullptr;
         }
 
-        if (id >= m_objectLookupTable.size()) {
+        if ((unsigned)id >= m_objectLookupTable.size()) {
             return nullptr;
         }
 

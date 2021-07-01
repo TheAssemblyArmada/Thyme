@@ -41,9 +41,9 @@ Script::Script() :
     m_unkInt2(0),
     m_hasWarnings(false),
     m_conditionTeamName(),
-    m_unkInt3(0),
-    m_unkInt4(0),
-    m_unkInt5(0)
+    m_totalExecTime(0.0f),
+    m_scriptTiming(0),
+    m_evalCount(0)
 {
 }
 

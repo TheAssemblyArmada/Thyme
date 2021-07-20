@@ -182,7 +182,7 @@ protected:
     int m_polyCount;
     UVBufferClass *m_UV[MAX_UV_ARRAYS];
     int m_UVSource[MAX_PASSES][MAX_TEX_STAGES];
-    ShareBufferClass<unsigned> *m_colorArray[2];
+    ShareBufferClass<unsigned> *m_colorArray[MAX_COLOR_ARRAYS];
     VertexMaterialClass::ColorSourceType m_DCGSource[MAX_PASSES];
     VertexMaterialClass::ColorSourceType m_DIGSource[MAX_PASSES];
     TextureClass *m_texture[MAX_PASSES][MAX_TEX_STAGES];

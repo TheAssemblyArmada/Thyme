@@ -2,6 +2,7 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
  * @brief Mesh Mat Desc Class
  *
@@ -14,9 +15,79 @@
  *            LICENSE
  */
 #include "meshmatdesc.h"
+#include "refcount.h"
+#include "texture.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
+
+MatBufferClass::MatBufferClass(const MatBufferClass &that) : ShareBufferClass<VertexMaterialClass *>(that)
+{
+    for (int i = 0; i < m_count; ++i) {
+        if (m_array[i]) {
+            m_array[i]->Add_Ref();
+        }
+    }
+}
+
+MatBufferClass::~MatBufferClass()
+{
+    for (int i = 0; i < m_count; ++i) {
+        Ref_Ptr_Release(m_array[i]);
+    }
+}
+
+TexBufferClass::TexBufferClass(const TexBufferClass &that) : ShareBufferClass<TextureClass *>(that)
+{
+    for (int i = 0; i < m_count; ++i) {
+        if (m_array[i]) {
+            m_array[i]->Add_Ref();
+        }
+    }
+}
+
+TexBufferClass::~TexBufferClass(void)
+{
+    for (int i = 0; i < m_count; ++i) {
+        Ref_Ptr_Release(m_array[i]);
+    }
+}
+
+void TexBufferClass::Set_Element(int index, TextureClass *tex)
+{
+    Ref_Ptr_Set(m_array[index], tex);
+}
+
+TextureClass *TexBufferClass::Get_Element(int index)
+{
+    if (m_array[index]) {
+        m_array[index]->Add_Ref();
+    }
+    return m_array[index];
+}
+
+TextureClass *TexBufferClass::Peek_Element(int index)
+{
+    return m_array[index];
+}
+
+void MatBufferClass::Set_Element(int index, VertexMaterialClass *mat)
+{
+    Ref_Ptr_Set(m_array[index], mat);
+}
+
+VertexMaterialClass *MatBufferClass::Get_Element(int index)
+{
+    if (m_array[index]) {
+        m_array[index]->Add_Ref();
+    }
+    return m_array[index];
+}
+
+VertexMaterialClass *MatBufferClass::Peek_Element(int index)
+{
+    return m_array[index];
+}
 
 ShaderClass MeshMatDescClass::Get_Shader(int pidx, int pass) const
 {
@@ -45,12 +116,40 @@ TextureClass *MeshMatDescClass::Peek_Texture(int pidx, int pass, int stage) cons
     return m_texture[pass][stage];
 }
 
-VertexMaterialClass *MatBufferClass::Peek_Element(int index)
+void MeshMatDescClass::Set_Single_Material(VertexMaterialClass *vmat, int pass)
 {
-    return m_array[index];
+    Ref_Ptr_Set(m_material[pass], vmat);
 }
 
-TextureClass *TexBufferClass::Peek_Element(int index)
+void MeshMatDescClass::Set_Single_Texture(TextureClass *tex, int pass, int stage)
 {
-    return m_array[index];
+    Ref_Ptr_Set(m_texture[pass][stage], tex);
+}
+
+void MeshMatDescClass::Set_Material(int vidx, VertexMaterialClass *vmat, int pass)
+{
+    MatBufferClass *mats = Get_Material_Array(pass, true);
+    mats->Set_Element(vidx, vmat);
+}
+
+void MeshMatDescClass::Set_Texture(int pidx, TextureClass *tex, int pass, int stage)
+{
+    TexBufferClass *textures = Get_Texture_Array(pass, stage, true);
+    textures->Set_Element(pidx, tex);
+}
+
+TexBufferClass *MeshMatDescClass::Get_Texture_Array(int pass, int stage, bool create)
+{
+    if (create && m_textureArray[pass][stage] == NULL) {
+        m_textureArray[pass][stage] = new TexBufferClass(m_polyCount);
+    }
+    return m_textureArray[pass][stage];
+}
+
+MatBufferClass *MeshMatDescClass::Get_Material_Array(int pass, bool create)
+{
+    if (create && m_materialArray[pass] == NULL) {
+        m_materialArray[pass] = new MatBufferClass(m_vertexCount);
+    }
+    return m_materialArray[pass];
 }

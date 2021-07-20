@@ -221,6 +221,7 @@ public:
 
     void Clear() { m_bits.reset(); }
     void Set(unsigned bit) { m_bits.set(bit); }
+    void Set(unsigned bit, int val) { m_bits.set(bit, val); }
     bool Get(unsigned bit) const { return m_bits.test(bit); }
     bool Any() const { return m_bits.any(); }
 

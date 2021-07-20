@@ -2,6 +2,7 @@
  * @file
  *
  * @author OmniBlade
+ * @author tomsons26
  *
  * @brief Audio event information.
  *
@@ -14,6 +15,7 @@
  */
 #include "audioeventinfo.h"
 #include "audiomanager.h"
+#include "xfer.h"
 #include <captainslog.h>
 #include <cstddef>
 
@@ -102,4 +104,119 @@ void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void
     captainslog_assert(lo >= 0.0f && hi >= lo);
     info->m_delayLow = lo;
     info->m_delayHigh = hi;
+}
+
+void DynamicAudioEventInfo::Override_Audio_Name(const Utf8String &name)
+{
+    m_originalName = m_eventName;
+    m_overrideFlags.Set(OVERRIDE_NAME);
+    m_eventName = name;
+}
+
+void DynamicAudioEventInfo::Override_Loop_Flag(bool state)
+{
+    m_overrideFlags.Set(OVERRIDE_LOOP_FLAG);
+    if (state) {
+        Set_Control_Flag(CONTROL_LOOP);
+    } else {
+        Clear_Control_Flag(CONTROL_LOOP);
+    }
+}
+
+void DynamicAudioEventInfo::Override_Loop_Count(int count)
+{
+    m_overrideFlags.Set(OVERRIDE_LOOP_COUNT);
+    m_loopCount = count;
+}
+
+void DynamicAudioEventInfo::Override_Volume(float volume)
+{
+    m_overrideFlags.Set(OVERRIDE_VOLUME);
+    m_volume = volume;
+}
+
+void DynamicAudioEventInfo::Override_Min_Volume(float volume)
+{
+    m_overrideFlags.Set(OVERRIDE_MIN_VOLUME);
+    m_minVolume = volume;
+}
+
+void DynamicAudioEventInfo::Override_Min_Range(float range)
+{
+    m_overrideFlags.Set(OVERRIDE_MIN_RANGE);
+    m_minRange = range;
+}
+
+void DynamicAudioEventInfo::Override_Max_Range(float range)
+{
+    m_overrideFlags.Set(OVERRIDE_MAX_RANGE);
+    m_maxRange = range;
+}
+
+void DynamicAudioEventInfo::Override_Priority(PriorityType priority)
+{
+    m_overrideFlags.Set(OVERRIDE_PRIORITY);
+    m_priority = priority;
+}
+
+const Utf8String &DynamicAudioEventInfo::Get_Original_Name()
+{
+    if (Name_Overriden()) {
+        return m_originalName;
+    }
+    return m_eventName;
+}
+
+void DynamicAudioEventInfo::Xfer_NoName(Xfer *xfer)
+{
+    uint8_t version = 1;
+    xfer->xferVersion(&version, true);
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        uint8_t flags;
+        xfer->xferUnsignedByte(&flags);
+        for (int i = 0; i < OVERRIDE_COUNT; ++i) {
+            m_overrideFlags.Set(i, ((1 << i) & flags) != 0);
+        }
+    } else {
+        uint8_t flags = 0;
+        for (int j = 0; j < OVERRIDE_COUNT; ++j) {
+            if (m_overrideFlags.Get(j)) {
+                flags |= 1 << j;
+            }
+        }
+
+        xfer->xferUnsignedByte(&flags);
+    }
+
+    if (Loop_Flag_Overriden()) {
+        bool state = (m_control & 1) != 0;
+        xfer->xferBool(&state);
+        if (state) {
+            Set_Control_Flag(CONTROL_LOOP);
+        } else {
+            Clear_Control_Flag(CONTROL_LOOP);
+        }
+    }
+
+    if (Loop_Count_Overriden()) {
+        xfer->xferInt(&m_loopCount);
+    }
+    if (Volume_Overriden()) {
+        xfer->xferReal(&m_volume);
+    }
+    if (Min_Volume_Overriden()) {
+        xfer->xferReal(&m_minVolume);
+    }
+    if (Min_Range_Overriden()) {
+        xfer->xferReal(&m_minRange);
+    }
+    if (Max_Range_Overriden()) {
+        xfer->xferReal(&m_maxRange);
+    }
+    if (Priority_Overriden()) {
+        uint8_t pri = m_priority;
+        xfer->xferUnsignedByte(&pri);
+        m_priority = pri;
+    }
 }

@@ -163,6 +163,24 @@ enum CellShroudStatus
     SHROUD_STATUS_SHROUD,
 };
 
+enum GameMode
+{
+    GAME_SINGLE_PLAYER,
+    GAME_LAN,
+    GAME_SKIRMISH,
+    GAME_REPLAY,
+    GAME_SHELL,
+    GAME_INTERNET,
+    GAME_NONE,
+};
+
+enum GameDifficulty
+{
+    DIFFICULTY_EASY,
+    DIFFICULTY_NORMAL,
+    DIFFICULTY_HARD,
+};
+
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];
 extern const char *g_weatherNames[WEATHER_COUNT + 1];
 extern const char *g_bodyDamageNames[BODY_COUNT + 1];

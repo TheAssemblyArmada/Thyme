@@ -183,14 +183,21 @@ set(GAMEENGINE_SRC
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
+    game/logic/object/object.cpp
+    game/logic/object/objecttypes.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptaction.cpp
+    game/logic/scriptengine/scriptactions.cpp
     game/logic/scriptengine/scriptcondition.cpp
+    game/logic/scriptengine/scriptconditions.cpp
+    game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptgroup.cpp
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
+    game/logic/scriptengine/scripttemplate.cpp
+    game/logic/scriptengine/sequentialscript.cpp
     game/logic/system/gamelogic.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp

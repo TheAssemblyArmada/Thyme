@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief Base class for game objects.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -26,9 +26,14 @@
 #include "weaponset.h"
 #include "weapontemplateset.h"
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 class AIGroup;
 class AIUpdateInterface;
 class BodyModuleInterface;
+class CommandButton;
 class ContainModuleInterface;
 class CountermeasuresBehaviorInterface;
 class DamageInfo;
@@ -61,7 +66,9 @@ class SpecialPowerUpdateInterface;
 class StatusDamageHelper;
 class StealthUpdate;
 class SubdualDamageHelper;
+class Team;
 class TempWeaponBonusHelper;
+class UpdateModule;
 class UpgradeTemplate;
 class Waypoint;
 

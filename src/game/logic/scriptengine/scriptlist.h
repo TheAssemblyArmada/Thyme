@@ -56,6 +56,7 @@ public:
     static int Get_Read_Scripts(ScriptList **scripts);
     static bool Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
+    static void Reset();
 
 private:
     ScriptGroup *m_firstGroup;

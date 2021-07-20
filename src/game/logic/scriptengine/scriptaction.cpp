@@ -15,7 +15,7 @@
 #include "scriptaction.h"
 #include "script.h"
 
-ScriptAction::ScriptAction() : m_actionType(DEFAULT), m_numParams(0), m_nextAction(nullptr), m_hasWarnings(false)
+ScriptAction::ScriptAction() : m_actionType(NO_OP), m_numParams(0), m_nextAction(nullptr), m_hasWarnings(false)
 {
     memset(m_params, 0, sizeof(m_params));
 }

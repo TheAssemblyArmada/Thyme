@@ -129,6 +129,7 @@
 #include "vertmaterial.h"
 #include "w3d.h"
 #include "w3dbridgebuffer.h"
+#include "w3dbuffermanager.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
@@ -1846,4 +1847,24 @@ void Setup_Hooks()
     Hook_Any(0x007A39F0, W3DShadowGeometryMesh::Build_Polygon_Normals);
     Hook_Any(0x007A7AF0, W3DShadowGeometryManager::Free_All_Geoms);
     Hook_Any(0x007A7B70, W3DShadowGeometryManager::Load_Geom);
+
+    // w3dbuffermanager.h
+    Hook_Any(0x007D5420, W3DBufferManager::Hook_Ctor);
+    Hook_Any(0x007D5470, W3DBufferManager::Hook_Dtor);
+    Hook_Any(0x007D5490, W3DBufferManager::Free_All_Slots);
+    Hook_Any(0x007D5550, W3DBufferManager::Free_All_Buffers);
+    Hook_Any(0x007D55E0, W3DBufferManager::Release_Resources);
+    Hook_Any(0x007D5650, W3DBufferManager::ReAcquire_Resources);
+    Hook_Any(0x007D57B0, W3DBufferManager::Hook_VB_Get_Slot);
+    Hook_Any(0x007D5800, W3DBufferManager::Hook_VB_Release_Slot);
+    Hook_Any(0x007D5840, W3DBufferManager::Hook_VB_Allocate_Slot_Storage);
+    Hook_Any(0x007D59F0, W3DBufferManager::Hook_IB_Get_Slot);
+    Hook_Any(0x007D5A40, W3DBufferManager::Hook_IB_Release_Slot);
+    Hook_Any(0x007D5A70, W3DBufferManager::Hook_IB_Allocate_Slot_Storage);
+
+    //for messing with buffer sizes
+    int *w3dbm_size = (int *)(0x007A762D + 1);
+    *w3dbm_size = sizeof(W3DBufferManager);
+
+    //static_assert(sizeof(W3DBufferManager) == 0x3AC5C, "Size of W3DBufferManager is wrong");
 }

@@ -93,6 +93,8 @@
 #include <windows.h>
 #include <winsock2.h>
 
+#include "w3dbuffermanager.h"
+
 void Null_Func(){};
 
 void Setup_Hooks()
@@ -855,4 +857,22 @@ void Setup_Hooks()
     Hook_Method(0x005004A0, &DX8Wrapper::Get_DX8_Render_State_Value_Name);
     Hook_Method(0x00500860, &DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name);
     Hook_Method(0x00501B10, &DX8Wrapper::Get_Back_Buffer_Format);
+
+    // w3dbuffermanager.h
+    Hook_Any(0x0069F09F, W3DBufferManager::Hook_Ctor);
+    Hook_Any(0x0069F195, W3DBufferManager::Hook_Dtor);
+    Hook_Any(0x0069F1B0, W3DBufferManager::Free_All_Slots);
+    Hook_Any(0x0069F3C1, W3DBufferManager::Free_All_Buffers);
+    Hook_Any(0x0069F5D6, W3DBufferManager::Release_Resources);
+    Hook_Any(0x0069F67D, W3DBufferManager::ReAcquire_Resources);
+    Hook_Any(0x0069F8F6, W3DBufferManager::Hook_VB_Get_Slot);
+    Hook_Any(0x0069F9C7, W3DBufferManager::Hook_VB_Release_Slot);
+    Hook_Any(0x0069FA4E, W3DBufferManager::Hook_VB_Allocate_Slot_Storage);
+    Hook_Any(0x0069FD96, W3DBufferManager::Hook_IB_Get_Slot);
+    Hook_Any(0x0069FE5B, W3DBufferManager::Hook_IB_Release_Slot);
+    Hook_Any(0x0069FEBE, W3DBufferManager::Hook_IB_Allocate_Slot_Storage);
+
+    // for messing with buffer sizes
+    int *w3dbm_size = (int *)(0x0067B205 + 1);
+    *w3dbm_size = sizeof(W3DBufferManager);
 }

@@ -175,6 +175,7 @@ add_subdirectory(deps/captnlog EXCLUDE_FROM_ALL)
 # Build launchers for the various binaries we support
 if(NOT STANDALONE)
     add_subdirectory(deps/launcher)
+    list(APPEND INSTALL_TARGETS thymelauncher)
 endif()
 
 # Build miles and bink stubs if we don't have an alternative.
@@ -222,10 +223,14 @@ endif()
 
 # Build Thyme
 add_subdirectory(src)
+list(APPEND INSTALL_TARGETS thyme)
 
 # Setup the install target destination
 if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
-    install(TARGETS ${TO_INSTALL} 
-        RUNTIME DESTINATION ${DLL_INSTALL_PREFIX}
-        LIBRARY DESTINATION ${DLL_INSTALL_PREFIX})
+    install(TARGETS ${INSTALL_TARGETS}
+        RUNTIME DESTINATION "${DLL_INSTALL_PREFIX}"
+        LIBRARY DESTINATION "${DLL_INSTALL_PREFIX}")
+    foreach(target IN LISTS INSTALL_TARGETS)
+        install(FILES $<TARGET_PDB_FILE:${target}> DESTINATION "${DLL_INSTALL_PREFIX}" OPTIONAL)
+    endforeach()
 endif()

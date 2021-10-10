@@ -40,7 +40,7 @@ void GameLogic::Set_Defaults(bool keep_obj_id)
     m_currentUpdateModule = nullptr;
 
     if (!keep_obj_id) {
-        m_nextObjID = 1;
+        m_nextObjID = ObjectID(1);
     }
 }
 
@@ -105,7 +105,7 @@ Object *GameLogic::Get_First_Object()
 
 ObjectID GameLogic::Allocate_Object_ID()
 {
-    ObjectID id = (ObjectID)m_nextObjID;
+    ObjectID id = m_nextObjID;
     m_nextObjID++;
     return id;
 }

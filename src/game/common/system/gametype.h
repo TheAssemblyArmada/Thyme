@@ -70,6 +70,8 @@ enum ObjectID : uint32_t
     OBJECT_UNK,
 };
 
+DEFINE_ENUMERATION_OPERATORS(ObjectID);
+
 enum DrawableID : uint32_t
 {
     DRAWABLE_UNK,

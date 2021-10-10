@@ -1,6 +1,7 @@
 *.user
 *.ncb
 /build*
+/.solution
 nbproject/
 project/
 doxygen/

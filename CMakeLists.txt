@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+set(FETCHCONTENT_QUIET off)
+
 if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
@@ -102,7 +104,7 @@ include(GNUInstallDirs)
 check_cxx_compiler_flag(-Wno-invalid-offsetof HAVE_NO_INVALID_OFFSETOF)
 
 if(HAVE_NO_INVALID_OFFSETOF)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -205,7 +207,22 @@ if(USE_GAMEMATH)
     FetchContent_GetProperties(gamemath_git)
     if(NOT gamemath_git_POPULATED)
         FetchContent_Populate(gamemath_git)
+        # disable warning C4146: unary minus operator applied to unsigned type, result still unsigned
+        # disable warning C4244: '=': conversion from 'const double' to 'int32_t', possible loss of data
+        # disable warning C4554: '^': check operator precedence for possible error; use parentheses to clarify precedence
+        # disable warning C4723: potential divide by 0
+        # disable warning C4756: overflow in constant arithmetic
+        if(MSVC)
+            set(gamemath_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+            set(CMAKE_C_FLAGS "${gamemath_CMAKE_C_FLAGS} /wd4146 /wd4244 /wd4554 /wd4723 /wd4756")
+        endif()
+
         add_subdirectory(${gamemath_git_SOURCE_DIR} ${gamemath_git_BINARY_DIR} EXCLUDE_FROM_ALL)
+        
+        # Revert flags to default
+        if(MSVC)
+            set(CMAKE_C_FLAGS ${gamemath_CMAKE_C_FLAGS})
+        endif()
     endif()
 endif()
 

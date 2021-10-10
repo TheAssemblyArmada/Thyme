@@ -82,7 +82,7 @@ public:
     virtual GhostObjectManager *Create_Ghost_Object_Manager();
 
     unsigned int Get_Frame() { return m_frame; }
-    int Get_Game_Mode() { return m_gameMode; }
+    GameMode Get_Game_Mode() { return m_gameMode; }
     short Get_Max_Simultaneous_Of_Type() { return m_maxSimultaneousOfType; }
     unsigned int Get_Sleepy_Module_Count() { return m_sleepingUpdateModules.size(); }
     int Get_Next_Obj_ID() { return m_nextObjID; }
@@ -101,8 +101,8 @@ public:
     void Set_Width(float width) { m_width = width; }
     void Set_Height(float height) { m_height = height; }
     void Set_Hulk_Lifetime_Override(int lifetime) { m_hulkLifetimeOverride = lifetime; }
-    void Set_Game_Mode(int mode) { m_gameMode = mode; }
-    void Set_Next_Obj_ID(int id) { m_nextObjID = id; }
+    void Set_Game_Mode(GameMode mode) { m_gameMode = mode; }
+    void Set_Next_Obj_ID(ObjectID id) { m_nextObjID = id; }
 
     void Set_Rank_Level_Limit(int limit)
     {
@@ -126,7 +126,7 @@ public:
             return nullptr;
         }
 
-        if (id >= m_objectLookupTable.size()) {
+        if (id >= static_cast<ObjectID>(m_objectLookupTable.size())) {
             return nullptr;
         }
 
@@ -256,8 +256,8 @@ private:
     std::vector<UpdateModule *> m_sleepingUpdateModules;
     UpdateModule *m_currentUpdateModule;
     std::list<Object *> m_objectsToDestroy;
-    int m_nextObjID;
-    int m_gameMode;
+    ObjectID m_nextObjID;
+    GameMode m_gameMode;
     int m_rankLevelLimit;
     short m_maxSimultaneousOfType;
     LoadScreen *m_loadScreen;

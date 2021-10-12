@@ -69,14 +69,25 @@ option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
+if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        option(BUILD_DLL "Build an injectable dll version." ON)
+    endif()
+endif()
+
 # Custom default install location.
-if(NOT STANDALONE)
+if(BUILD_DLL)
     get_filename_component(DLL_INSTALL_PREFIX  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Electronic Arts\\EA Games\\Command and Conquer Generals Zero Hour;InstallPath]" ABSOLUTE CACHE)
 endif()
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     # World builder will be Win32 only until enough is complete to port to other graphical toolkit.
     option(BUILD_EDITOR "Build World Builder." OFF)
+endif()
+
+# If no binary target is set to build, build standalone.
+if(NOT BUILD_DLL AND NOT STANDALONE AND NOT BUILD_TOOLS AND NOT BUILD_EDITOR)
+    set(STANDALONE ON)
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
@@ -140,16 +151,12 @@ set(GITINFO_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(GITINFO_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(GITINFO_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 
-if(NOT STANDALONE)
+if(BUILD_DLL)
     set(BASECONF_WINSOCK32 TRUE BOOL)
 endif()
 
 # Add base module
 add_subdirectory(deps/baseconfig EXCLUDE_FROM_ALL)
-
-if(ICU_FOUND)
-    target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
-endif()
 
 if(ICU_FOUND)
     target_compile_definitions(base PRIVATE -DBUILD_WITH_ICU)
@@ -173,13 +180,13 @@ endif()
 add_subdirectory(deps/captnlog EXCLUDE_FROM_ALL)
 
 # Build launchers for the various binaries we support
-if(NOT STANDALONE)
+if(BUILD_DLL)
     add_subdirectory(deps/launcher)
     list(APPEND INSTALL_TARGETS thymelauncher)
 endif()
 
 # Build miles and bink stubs if we don't have an alternative.
-if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     add_subdirectory(deps/bink EXCLUDE_FROM_ALL)
     add_subdirectory(deps/miles EXCLUDE_FROM_ALL)
 endif()
@@ -223,7 +230,14 @@ endif()
 
 # Build Thyme
 add_subdirectory(src)
-list(APPEND INSTALL_TARGETS thyme)
+
+if(STANDALONE)
+    list(APPEND INSTALL_TARGETS thyme)
+endif()
+
+if(BUILD_DLL)
+    list(APPEND INSTALL_TARGETS thyme_dll)
+endif()
 
 # Setup the install target destination
 if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")

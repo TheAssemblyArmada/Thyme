@@ -9,10 +9,7 @@ jobs:
     runs-on: windows-2019
     strategy:
       matrix:
-        standalone: [ON, OFF]
         platform: [x86, amd64]
-        exclude:
-          - {standalone: "OFF", platform: amd64}
           
     steps:
     - uses: actions/checkout@v2
@@ -58,19 +55,16 @@ jobs:
         
     - name: Build Thyme
       run: |
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_TOOLS=ON -DSTANDALONE=${{ matrix.standalone }} -DUSE_CRASHPAD=${{ matrix.standalone }} -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
-        cmake --build build --config Release
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TOOLS=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
+        cmake --build build --config RelWithDebInfo
 
     - name: Create archives
       shell: bash
       id: mkarc
       run: |
         mkdir artifact
-        export ZIPNAME=thyme_${{ steps.vars.outputs.arc_path }}
-        if [ ${{ matrix.standalone }} != "ON" ]; then export FEATURES=_dll export EXTENSION=dll; else export FEATURES=_standalone export EXTENSION=exe;fi
-        7z a artifact/$ZIPNAME$FEATURES.zip ./build/thyme.$EXTENSION ./build/DebugWindow.dll
-        if [ ${{ matrix.standalone }} != "ON" ]; then 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymelauncher.exe; else 7z a artifact/$ZIPNAME$FEATURES.zip ./build/thymecrashhandler.exe; fi
-        
+        7z a artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.exe ./build/thyme.pdb ./build/DebugWindow.dll ./build/DebugWindow.pdb ./build/thymecrashhandler.exe ./build/thymecrashhandler.pdb
+        if [ ${{ matrix.platform }} = "x86" ]; then 7z u artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.dll ./build/thymedll.pdb ./build/thymelauncher.exe ./build/thymelauncher.pdb ;fi
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:

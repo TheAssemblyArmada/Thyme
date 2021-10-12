@@ -206,6 +206,7 @@ set(GAMEENGINE_SRC
     platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp
     platform/win32bigfilesystem.cpp
+    platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
@@ -314,7 +315,6 @@ set(GAMEENGINE_SRC
 # Game binary only source
 set(GAMEENGINE_GAME_SRC
     game/main.cpp
-    platform/win32gameengine.cpp
 )
 
 set(GAMEENGINE_WB_SRC
@@ -322,12 +322,14 @@ set(GAMEENGINE_WB_SRC
 )
 
 # Don't try and build the miles sound system when not building to link to the original game.
-if(NOT STANDALONE AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
-    list(APPEND GAMEENGINE_SRC 
-    platform/audio/milesaudiofilecache.cpp
-    platform/audio/milesaudiomanager.cpp
-    platform/video/binkvideoplayer.cpp
-    platform/video/binkvideostream.cpp)
+if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+        list(APPEND GAMEENGINE_SRC 
+        platform/audio/milesaudiofilecache.cpp
+        platform/audio/milesaudiomanager.cpp
+        platform/video/binkvideoplayer.cpp
+        platform/video/binkvideostream.cpp)
+    endif()
 endif()
 
 if(DINPUT8_FOUND)
@@ -374,50 +376,25 @@ if(USE_GAMEMATH)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_GAMEMATH)
 endif()
 
-# Add this file as a library as a hack so that this file isn't compiled against STLPort
-add_library(crash_handler STATIC game/crashhandler.cpp)
-list(APPEND GAME_LINK_LIBRARIES crash_handler)
-target_include_directories(crash_handler PRIVATE hooker ${GAMEENGINE_INCLUDES})
-target_link_libraries(crash_handler PRIVATE base captnlog)
+if(BUILD_DLL)
+    # Duplicate that will never link to crashpad for dll injection purposes.
+    add_library(crash_handler STATIC game/crashhandler.cpp)
+    target_include_directories(crash_handler PRIVATE hooker ${GAMEENGINE_INCLUDES})
+    target_link_libraries(crash_handler PRIVATE base captnlog)
 
-if(ICU_FOUND)
-    target_link_libraries(crash_handler PRIVATE ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
-    target_compile_options(crash_handler PRIVATE -DBUILD_WITH_ICU)
-endif()
-
-if(NOT STANDALONE)
-    target_compile_options(crash_handler PRIVATE -DGAME_DLL)
-endif()
-
-if(USE_CRASHPAD)
-    # Rename the crash handler so it won't conflict with any other installs of crashpad.
-    set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
-    list(APPEND GAME_LINK_LIBRARIES crashpad_client)
-    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_CRASHPAD)
-    target_compile_options(crash_handler PRIVATE -DBUILD_WITH_CRASHPAD)
-    target_link_libraries(crash_handler PRIVATE crashpad_client)
-
-    # Force the crashpad handler to be built if we are using crashpad.
-    add_dependencies(crash_handler crashpad_handler)
-endif()
-
-if (MSVC AND NOT STANDALONE)
-    list(APPEND GAME_COMPILE_OPTIONS -DTHYME_USE_STLPORT)
-endif()
-
-if(STANDALONE)
-    list(APPEND GAME_COMPILE_OPTIONS "ALLOW_HOOKING=")
-else()
-    list(APPEND GAME_COMPILE_OPTIONS "ALLOW_HOOKING=friend void Setup_Hooks()\\\;" -DGAME_DLL)
-
-    if(NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
-        list(APPEND GAME_LINK_LIBRARIES binkstub milesstub)
-        list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_BINK -DBUILD_WITH_MILES)
+    if(ICU_FOUND)
+        target_link_libraries(crash_handler PRIVATE ICU::data ICU::i18n ICU::io ICU::tu ICU::uc)
+        target_compile_options(crash_handler PRIVATE -DBUILD_WITH_ICU)
     endif()
 endif()
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     list(APPEND GAME_LINK_LIBRARIES winmm)
+
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+        list(APPEND GAME_LINK_LIBRARIES binkstub milesstub)
+        list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_BINK -DBUILD_WITH_MILES)
+    endif()
 endif()
 
 if(ICU_FOUND)
@@ -434,37 +411,60 @@ if(DINPUT8_FOUND)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_DINPUT)
 endif()
 
-if(STANDALONE)
-    add_executable(thyme ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-    target_include_directories(thyme PRIVATE ${GAMEENGINE_INCLUDES})
-else()
-    add_library(thyme SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-    target_include_directories(thyme BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
-    target_include_directories(thyme PRIVATE hooker ${GAMEENGINE_INCLUDES})
-    target_compile_definitions(thyme PRIVATE -DGAME_DLL -D_USE_32BIT_TIME_T)
+# Static library for standalone builds and linking tools.
+if(STANDALONE OR BUILD_TOOLS)
+    add_library(thyme_lib STATIC ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS} game/crashhandler.cpp)
+    target_include_directories(thyme_lib PUBLIC ${GAMEENGINE_INCLUDES})
+    target_link_libraries(thyme_lib PUBLIC ${GAME_LINK_LIBRARIES})
+    target_compile_definitions(thyme_lib PUBLIC ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=")
+    target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)  
+
+    if(USE_CRASHPAD)
+        # Rename the crash handler so it won't conflict with any other installs of crashpad.
+        set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
+        target_compile_options(thyme_lib PUBLIC -DBUILD_WITH_CRASHPAD)
+        target_link_libraries(thyme_lib PUBLIC crashpad_client)
+
+        # Force the crashpad handler to be built if we are using crashpad.
+        add_dependencies(thyme_lib crashpad_handler)
+    endif()
 endif()
 
-target_link_libraries(thyme ${GAME_LINK_LIBRARIES})
-target_compile_definitions(thyme PRIVATE ${GAME_COMPILE_OPTIONS})
-target_compile_definitions(thyme PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
+if(STANDALONE)
+    add_executable(thyme ${GAMEENGINE_GAME_SRC})
+    target_link_libraries(thyme PRIVATE thyme_lib)
+endif()
+
+if(BUILD_DLL)
+    add_library(thyme_dll SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+    target_include_directories(thyme_dll BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
+    target_include_directories(thyme_dll PRIVATE hooker ${GAMEENGINE_INCLUDES})
+    target_compile_definitions(thyme_dll PRIVATE -DGAME_DLL -DTHYME_USE_STLPORT -D_USE_32BIT_TIME_T)
+    target_link_libraries(thyme_dll ${GAME_LINK_LIBRARIES} crash_handler)
+    target_compile_definitions(thyme_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+    target_compile_definitions(thyme_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
+    set_target_properties(thyme_dll PROPERTIES OUTPUT_NAME thyme PDB_NAME thymedll)
+endif()
 
 # Note that we don't care about which math lib we link against for worldbuilder.
 # Since worldbuilder isn't multiplayer we don't need to worry about sources of indeterminancy
 if(BUILD_EDITOR)
     set(CMAKE_MFC_FLAG 2) #Enable MFC
     if(STANDALONE)
-        add_executable(thymeedit ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-        target_include_directories(thymeedit PRIVATE ${GAMEENGINE_INCLUDES})
-    else()
-        add_library(thymeedit SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
-        target_include_directories(thymeedit BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
-        target_include_directories(thymeedit PRIVATE hooker ${GAMEENGINE_INCLUDES})
-        target_compile_definitions(thymeedit PRIVATE -DGAME_DLL -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
+        add_executable(thymeedit ${GAMEENGINE_WB_SRC})
+        target_link_libraries(thymeedit PRIVATE thyme_lib)
     endif()
 
-    target_link_libraries(thymeedit ${GAME_LINK_LIBRARIES})
-    target_compile_definitions(thymeedit PRIVATE ${GAME_COMPILE_OPTIONS})
-    target_compile_definitions(thymeedit PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
+    if(BUILD_DLL)
+        add_library(thymeedit_dll SHARED ${HOOKER_SRC} ${HOOKER_WB_SRC} ${GAMEENGINE_WB_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
+        target_include_directories(thymeedit_dll BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
+        target_include_directories(thymeedit_dll PRIVATE hooker ${GAMEENGINE_INCLUDES})
+        target_compile_definitions(thymeedit_dll PRIVATE -DGAME_DLL -DTHYME_USE_STLPORT -DGAME_DEBUG_STRUCTS -DBUILD_EDITOR -D_USE_32BIT_TIME_T)
+        target_link_libraries(thymeedit_dll ${GAME_LINK_LIBRARIES} crash_handler)
+        target_compile_definitions(thymeedit_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
+        target_compile_definitions(thymeedit_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
+        set_target_properties(thymeedit_dll PROPERTIES OUTPUT_NAME thymeedit PDB_NAME thymeeditdll)
+    endif()
 endif()
 
 if(BUILD_TOOLS)

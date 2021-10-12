@@ -30,7 +30,7 @@ jobs:
 
     - name: Build thyme
       run: |
-        cmake -DBUILD_TOOLS=ON -DSTANDALONE=TRUE -DCMAKE_BUILD_TYPE=Release -DUSE_CRASHPAD=ON -B build -G Ninja
+        cmake -DBUILD_TOOLS=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CRASHPAD=ON -B build -G Ninja
         cmake --build build --target format
         git diff --exit-code
         cmake --build build

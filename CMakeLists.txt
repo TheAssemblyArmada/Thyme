@@ -200,29 +200,14 @@ if(USE_GAMEMATH)
     FetchContent_Declare(
         gamemath_git
         GIT_REPOSITORY https://github.com/TheAssemblyArmada/GameMath.git
-        GIT_TAG        e041ae49cdd097a2b8110a26d2bc20660d6c31fb
+        GIT_TAG        f133b2cc8f85de6c2967ae77177daf0b8bbf39c0
     )
 
     # We don't use FetchContent_MakeAvailable here because we don't want all gamemath targets including, just our dependencies.
     FetchContent_GetProperties(gamemath_git)
     if(NOT gamemath_git_POPULATED)
         FetchContent_Populate(gamemath_git)
-        # disable warning C4146: unary minus operator applied to unsigned type, result still unsigned
-        # disable warning C4244: '=': conversion from 'const double' to 'int32_t', possible loss of data
-        # disable warning C4554: '^': check operator precedence for possible error; use parentheses to clarify precedence
-        # disable warning C4723: potential divide by 0
-        # disable warning C4756: overflow in constant arithmetic
-        if(MSVC)
-            set(gamemath_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
-            set(CMAKE_C_FLAGS "${gamemath_CMAKE_C_FLAGS} /wd4146 /wd4244 /wd4554 /wd4723 /wd4756")
-        endif()
-
         add_subdirectory(${gamemath_git_SOURCE_DIR} ${gamemath_git_BINARY_DIR} EXCLUDE_FROM_ALL)
-        
-        # Revert flags to default
-        if(MSVC)
-            set(CMAKE_C_FLAGS ${gamemath_CMAKE_C_FLAGS})
-        endif()
     endif()
 endif()
 

@@ -126,7 +126,7 @@ public:
             return nullptr;
         }
 
-        if (id >= static_cast<ObjectID>(m_objectLookupTable.size())) {
+        if (id >= m_objectLookupTable.size()) {
             return nullptr;
         }
 

@@ -3,6 +3,7 @@ set(GAMEENGINE_INCLUDES
     editor
     game
     game/client
+    game/client/draw
     game/client/gui
     game/client/input
     game/client/shadow
@@ -74,6 +75,7 @@ set(GAMEENGINE_SRC
     game/client/view.cpp
     game/client/water.cpp
     game/client/worldheightmap.cpp
+    game/client/draw/drawable.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/wininstancedata.cpp
     game/client/image.cpp
@@ -183,6 +185,7 @@ set(GAMEENGINE_SRC
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
+    game/logic/object/object.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp

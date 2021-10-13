@@ -65,7 +65,7 @@ enum PriorityType : int32_t
 };
 
 // Placeholder
-enum ObjectID : int32_t
+enum ObjectID : uint32_t
 {
     OBJECT_UNK,
 };
@@ -73,6 +73,17 @@ enum ObjectID : int32_t
 enum DrawableID : uint32_t
 {
     DRAWABLE_UNK,
+};
+
+enum DrawableStatus
+{
+    DRAWABLE_STATUS_UNK = 0,
+    DRAWABLE_STATUS_DRAWS_IN_MIRROR = 1 << 0, // draws in mirror reflections
+    DRAWABLE_STATUS_SHADOWS_ENABLED = 1 << 1, // shadows are enabled
+    DRAWABLE_STATUS_AMBIENT_LIGHT_LOCKED = 1 << 2, // ambient light is being used, if not set a tint envelope is applied
+    DRAWABLE_STATUS_8 = 1 << 3, // newDrawable called with this in handleBuildPlacements and placeBuildAvailable
+    DRAWABLE_STATUS_16 = 1 << 4, // set in showRallyPoint
+    DRAWABLE_STATUS_32 = 1 << 5, // may not exist
 };
 
 enum PathfindLayerEnum
@@ -161,6 +172,16 @@ enum CellShroudStatus
     SHROUD_STATUS_CLEAR,
     SHROUD_STATUS_FOG,
     SHROUD_STATUS_SHROUD,
+};
+
+enum TerrainDecalType
+{
+    TERRAIN_DECAL_0,
+};
+
+enum StealthLookType
+{
+    STEALTH_LOOK_0,
 };
 
 extern const char *g_timeOfDayNames[TIME_OF_DAY_COUNT + 1];

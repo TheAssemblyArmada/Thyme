@@ -33,6 +33,8 @@ enum ModuleType
     MODULE_DEFAULT = 0,
     MODULE_W3D = 1,
     MODULE_UNK = 2,
+
+    NUM_DRAWABLE_MODULE_TYPES = 2,
 };
 
 class ModuleData : public SnapShot

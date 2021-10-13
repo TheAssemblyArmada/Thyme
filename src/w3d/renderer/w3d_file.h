@@ -175,7 +175,7 @@ struct W3dRGBStruct
     uint8_t r;
     uint8_t g;
     uint8_t b;
-    uint8_t pad;
+    TYPE_PAD(uint8_t, 1);
 };
 
 struct W3dMaterial3Struct
@@ -288,6 +288,6 @@ struct W3dNullObjectStruct
 {
     uint32_t version;
     uint32_t attributes;
-    uint32_t pad[2];
+    TYPE_PAD(uint32_t, 2);
     char name[32];
 };

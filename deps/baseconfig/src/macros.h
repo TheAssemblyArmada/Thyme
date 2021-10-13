@@ -287,4 +287,13 @@
 #define DEFINE_ENUMERATION_OPERATORS(ENUMTYPE) // NOP, C allows these operators.
 #endif // __cplusplus
 
+#ifndef BYTE_PAD
+#define BYTE_PAD_TOKEN(a, b, c) a##_##b##_##c
+#define BYTE_PAD_TOKEN2(a, b, c) BYTE_PAD_TOKEN(a, b, c)
+#define BYTE_PAD(size) char BYTE_PAD_TOKEN2(pad, size, __LINE__)[size]
+#ifndef TYPE_PAD
+#define TYPE_PAD(type, size) type BYTE_PAD_TOKEN2(pad, size, __LINE__)[size]
+#endif // TYPE_PAD
+#endif // BYTE_PAD
+
 #endif // BASE_MACROS_H

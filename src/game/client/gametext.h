@@ -123,10 +123,10 @@ private:
     StringInfo *m_stringInfo;
     StringLookUp *m_stringLUT;
     bool m_initialized;
-    // pad 3 chars
+    BYTE_PAD(3);
     NoString *m_noStringList;
     bool m_useStringFile;
-    // pad 3 chars
+    BYTE_PAD(3);
     LanguageID m_language;
     Utf16String m_failed;
     StringInfo *m_mapStringInfo;

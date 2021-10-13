@@ -77,16 +77,16 @@ public:
     bool m_useHeatEffects;
     bool m_useFPSLimit;
     bool m_dumpAssetUsage;
-    // char pad[2]
+    BYTE_PAD(2);
     int32_t m_framesPerSecondLimit;
     int32_t m_chipsetType;
     bool m_windowed;
-    // char pad[3]
+    BYTE_PAD(3);
     int32_t m_xResolution;
     int32_t m_yResolution;
     int32_t m_maxShellScreens;
     bool m_useCloudMap;
-    // char pad[3]
+    BYTE_PAD(3);
     int32_t m_use3WayTerrainBlends; // Should be bool? m_if so, fix when all GlobalData reading code implemented.
     bool m_useLightMap;
     bool m_bilinearTerrainTexture;
@@ -99,7 +99,7 @@ public:
     TerrainLOD m_terrainLOD;
     bool m_dynamicLOD;
     bool m_useStaticLODLevels; // Controls if LOD levels are loaded from GameLOD.ini
-    // char pad[2]
+    BYTE_PAD(2);
     int32_t m_terrainLODTargetTimeMS;
     bool m_alternateMouseEnabled;
     bool m_retaliationModeEnabled;
@@ -111,7 +111,7 @@ public:
     bool m_shadowDecals;
     int32_t m_textureReductionFactor;
     bool m_useBehindBuildingMarker;
-    // char pad[3]
+    BYTE_PAD(3);
     float m_waterPositionX;
     float m_waterPositionY;
     float m_waterPositionZ;
@@ -121,7 +121,7 @@ public:
     bool m_showSoftWaterEdge;
     bool m_useWaveEditor;
     bool m_unsortedShoreLines;
-    // char pad[1]
+    BYTE_PAD(1);
     float m_featherWater;
     Utf8String m_vertexWaterAvailableMaps[4];
     float m_vertexWaterHeightClampLow[4];
@@ -140,7 +140,7 @@ public:
     float m_downWindAngle;
     float m_skyBoxPositionZ;
     bool m_drawSkyBox; // init code suggests this might be an int, old BOOL typedef?
-    // char pad[3]
+    BYTE_PAD(3);
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;
@@ -158,7 +158,7 @@ public:
     bool m_preloadAssets;
     bool m_preloadEverything;
     bool m_logAssets;
-    // char pad[1]
+    BYTE_PAD(1);
     float m_partitionCellSize;
     Coord3D m_ammoPipWorldOffset;
     Coord3D m_containerPipWorldOffset;
@@ -216,7 +216,7 @@ public:
     bool m_useFX;
     bool m_showClientPhysics;
     bool m_showTerrainNormals;
-    // char pad[2]
+    BYTE_PAD(2);
     int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int.
     int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
     bool m_logSupplyCenterPlacement;
@@ -235,7 +235,7 @@ public:
 #endif
     bool m_benchMark;
     bool m_writeBenchMarkFile;
-    // char pad[2]
+    BYTE_PAD(2);
     int32_t m_fixedSeed;
     float m_particleScale;
     Utf8String m_autoFireParticleSmallPrefix;
@@ -263,10 +263,10 @@ public:
     int32_t m_lanIPAddress;
     int32_t m_firewallBehaviour;
     bool m_sendDelay;
-    // char pad[3]
+    BYTE_PAD(3);
     int32_t m_firewallPortOverrides;
     int16_t m_firewallPortAllocationDelta;
-    // char pad[2]
+    BYTE_PAD(2);
     int32_t m_valuesPerSupplyBox;
     float m_buildSpeed;
     float m_minDistanceFromMapEdgeForBuild;
@@ -287,7 +287,7 @@ public:
     float m_cameraAdjustSpeed;
     bool m_enforceMaxCameraHeight;
     bool m_buildMapCache;
-    // char pad[2]
+    BYTE_PAD(2);
     Utf8String m_initialFile;
     Utf8String m_pendingFile;
     int32_t m_maxParticleCount;
@@ -305,7 +305,7 @@ public:
     bool m_afterIntro;
     bool m_unkBool16;
     bool m_unkBool17;
-    // char pad[2]
+    BYTE_PAD(2);
     float m_keyboardScrollFactor;
     float m_keyboardDefaultScrollFactor;
     float m_musicVolumeFactor; // not 100% sure, needs confirming
@@ -314,7 +314,7 @@ public:
     bool m_sound3DPref; // not 100% sure, needs confirming
     bool m_animateWindows;
     bool m_setMinVertextBufferSize; // not 100% sure, needs confirming
-    // char pad[1]
+    BYTE_PAD(1);
     uint32_t m_iniCRC;
     uint32_t m_gameCRC;
     BodyDamageType m_movementPenaltyDamageState;
@@ -324,7 +324,7 @@ public:
     int32_t m_maxUnitSelectSounds;
     float m_selectionFlashSaturationFactor;
     bool m_selectionFlashHouseColor;
-    // char pad[3]
+    BYTE_PAD(3);
     float m_cameraAudibleRadius;
     float m_groupMoveClickToGatherAreaFactor;
     int32_t m_antiAliasBoxValue; // could be float
@@ -333,7 +333,7 @@ public:
     bool m_demoToggleRender;
     bool m_saveCameraInReplays;
     bool m_useCameraInReplays;
-    // char pad[3]
+    BYTE_PAD(3);
     float m_shakeSubtleIntensity;
     float m_shakeNormalIntensity;
     float m_shakeStrongIntensity;
@@ -351,23 +351,23 @@ public:
     float m_standardMinefieldDensity;
     float m_standardMinefieldDistance;
     bool m_showMetrics;
-    // char pad[3]
+    BYTE_PAD(3);
     Money m_defaultStartingCash;
     bool m_showFrameRateBar;
-    // char pad[3]
+    BYTE_PAD(3);
     int32_t m_powerBarBase;
     float m_powerBarIntervals;
     int32_t m_powerBarYellowRange;
     float m_gammaValue;
     uint32_t m_unlookPersistDuration;
     bool m_updateTGAtoDDS;
-    // char pad[3]
+    BYTE_PAD(3);
     int32_t m_doubleClickTime;
     RGBColor m_shroudColor;
     uint8_t m_clearAlpha;
     uint8_t m_fogAlpha;
     uint8_t m_shroudAlpha;
-    // char pad[1]
+    BYTE_PAD(1);
     int32_t m_networkFPSHistoryLength;
     int32_t m_networkLatencyHistoryLength;
     int32_t m_networkCushionHistoryLength;
@@ -393,7 +393,7 @@ public:
     bool m_disableCameraFade;
     bool m_disableScriptedInputDisabling;
     bool m_disableMilitaryCaption;
-    // pad[3]
+    BYTE_PAD(3);
     int32_t m_benchmarkTimer; // Type to confirm.
     bool m_checkMemoryLeaks;
     bool m_vTune;
@@ -403,18 +403,18 @@ public:
     int32_t m_debugVisibilityTileWidth; // Type to confirm.
     int32_t m_debugVisibilityTileDuration; // Type to confirm.
     bool m_debugMapThreat;
-    // pad[3]
+    BYTE_PAD(3);
     int32_t m_maxDebugThreatMapValue; // Type to confirm.
     int32_t m_debugThreatMapTileDuration; // Type to confirm.
     bool m_debugMapCash;
-    // pad[3]
+    BYTE_PAD(3);
     int32_t m_maxDebugCashValueMapValue; // Type to confirm.
     int32_t m_debugCashValueMapTileDuration; // Type to confirm.
     RGBColor m_debugVisibilityTileTargettableColor;
     RGBColor m_debugVisibilityTileDeshroudColor;
     RGBColor m_debugVisibilityTileGapColor;
     bool m_debugProjectilePath;
-    // pad[3]
+    BYTE_PAD(3);
     int32_t m_debugProjectileTileWidth; // Type to confirm.
     int32_t m_debugProjectileTileDuration; // Type to confirm.
     RGBColor m_debugProjectileTileColor;
@@ -425,7 +425,7 @@ public:
     bool m_saveStats;
     bool m_saveAllStats;
     bool m_useLocalMOTD;
-    // pad[1]
+    BYTE_PAD(1);
     Utf8String m_baseStatsDir;
     Utf8String m_localMOTDPath;
     int32_t m_latencyAverage; // Type to confirm.
@@ -437,7 +437,7 @@ public:
 #endif
     bool m_unkBool25;
     bool m_unkBool26;
-    // char pad[1]
+    BYTE_PAD(1);
     Utf8String m_userModDirectory;
     Utf8String m_userModFile;
     Utf8String m_userDataDirectory;

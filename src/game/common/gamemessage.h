@@ -385,7 +385,7 @@ private:
     MessageType m_type;
     int m_playerIndex;
     int8_t m_argCount;
-    // 3 bytes padding
+    BYTE_PAD(3);
     GameMessageArgument *m_argList;
     GameMessageArgument *m_argTail;
 };

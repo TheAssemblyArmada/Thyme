@@ -2,7 +2,6 @@ setlocal
 
 @set ThisDir=%~dp0.
 @call "%ThisDir%\scripts\setup_folders.bat"
-
-"%CMakeDir%\bin\cmake-gui.exe" "%SolutionVS2017Dir%"
+@call "%ThisDir%\scripts\vs_open_cmake_gui.bat" "%SolutionVS2017Dir%"
 
 endlocal

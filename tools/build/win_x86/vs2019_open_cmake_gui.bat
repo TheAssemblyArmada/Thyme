@@ -1,7 +1,7 @@
-setlocal
+@setlocal
 
-@set ThisDir=%~dp0.
-@call "%ThisDir%\scripts\setup_folders.bat"
-@call "%ThisDir%\scripts\vs_open_cmake_gui.bat" "%SolutionVS2019Dir%"
+@set BuildDir=%~dp0..
+@call "%BuildDir%\win_scripts\setup_folders.bat"
+@call "%BuildDir%\win_scripts\vs_open_cmake_gui.bat" "%SolutionVS2019Dir%"
 
-endlocal
+@endlocal

@@ -2,6 +2,7 @@
  * @file
  *
  * @author Jonathan Wilson
+ * @author tomsons26
  *
  * @brief
  *
@@ -29,6 +30,7 @@
 class AIGroup;
 class AIUpdateInterface;
 class BodyModuleInterface;
+class CommandButton;
 class ContainModuleInterface;
 class CountermeasuresBehaviorInterface;
 class DamageInfo;
@@ -61,7 +63,9 @@ class SpecialPowerUpdateInterface;
 class StatusDamageHelper;
 class StealthUpdate;
 class SubdualDamageHelper;
+class Team;
 class TempWeaponBonusHelper;
+class UpdateModule;
 class UpgradeTemplate;
 class Waypoint;
 

@@ -35,11 +35,6 @@ enum Scorches
     SCORCHES_UNK,
 };
 
-enum DrawableStatus
-{
-    DRAWABLE_STATUS_UNK,
-};
-
 // Temp until class properly implemented.
 class CommandTranslator : public GameMessageTranslator
 {

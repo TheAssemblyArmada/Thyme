@@ -96,15 +96,15 @@ int TerrainShader2Stage::Set(int pass)
             if (W3DShaderManager::Get_Current_Shader() == W3DShaderManager::ST_TERRAIN_NOISE12) {
                 DX8Wrapper::Set_Texture(0, W3DShaderManager::Get_Shader_Texture(2));
                 Update_Noise_1(&m2, &m, true);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, (Matrix4 &)m2);
+                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE0, (Matrix4 &)m2);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
                 DX8Wrapper::Set_Texture(1, W3DShaderManager::Get_Shader_Texture(3));
                 Update_Noise_2(&m2, &m, true);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, (Matrix4 &)m2);
+                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, (Matrix4 &)m2);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_MINFILTER, D3DTEXF_POINT);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-                DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG1, D3DTEXF_LINEAR);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);

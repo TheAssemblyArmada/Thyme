@@ -117,7 +117,7 @@ int W3DShaderInterface::Shutdown()
 void W3DShaderManager::Init()
 {
 #ifdef BUILD_WITH_D3D8
-    if (Get_Chipset()) {
+    if (Get_Chipset() != GPU_UNKNOWN) {
         DX8Wrapper::Get_D3D_Device8()->GetRenderTarget(&s_oldRenderSurface);
         D3DSURFACE_DESC desc;
         s_oldRenderSurface->GetDesc(&desc);

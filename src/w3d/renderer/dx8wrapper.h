@@ -164,6 +164,9 @@ public:
     static void Set_Texture(unsigned stage, TextureClass *texture);
     static void Set_Material(const VertexMaterialClass *material);
     static void Set_Shader(const ShaderClass &shader);
+    static void Get_Render_State(RenderStateStruct &state);
+    static void Set_Render_State(const RenderStateStruct &state);
+    static void Release_Render_State();
 
 #ifdef BUILD_WITH_D3D8
     static const char *Get_DX8_Render_State_Name(D3DRENDERSTATETYPE state);
@@ -222,6 +225,8 @@ public:
     static const w3dadapterid_t &Get_Current_Adapter_Identifier() { return s_currentAdapterIdentifier; }
     static bool Reset_Device(bool reacquire);
     static void Invalidate_Cached_Render_States();
+    static void Enable_Triangle_Draw(bool enable) { s_EnableTriangleDraw = enable; }
+    static bool Is_Triangle_Draw_Enabled() { return s_EnableTriangleDraw; }
 
 private:
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,
@@ -780,4 +785,61 @@ inline void DX8Wrapper::Set_Index_Buffer_Index_Offset(unsigned offset)
 
     s_renderState.index_base_offset = offset;
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
+}
+
+inline void DX8Wrapper::Get_Render_State(RenderStateStruct &state)
+{
+    state = s_renderState;
+}
+
+inline void DX8Wrapper::Set_Render_State(const RenderStateStruct &state)
+{
+    if (s_renderState.index_buffer) {
+        s_renderState.index_buffer->Release_Engine_Ref();
+    }
+
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
+        }
+    }
+
+    s_renderState = state;
+    s_renderStateChanged = 0xffffffff;
+
+    if (s_renderState.index_buffer) {
+        s_renderState.index_buffer->Add_Engine_Ref();
+    }
+
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            s_renderState.vertex_buffers[i]->Add_Engine_Ref();
+        }
+    }
+}
+
+inline void DX8Wrapper::Release_Render_State()
+{
+    if (s_renderState.index_buffer) {
+        s_renderState.index_buffer->Release_Engine_Ref();
+    }
+
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
+        }
+    }
+
+    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        if (s_renderState.vertex_buffers[i]) {
+            Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
+        }
+    }
+
+    Ref_Ptr_Release(s_renderState.index_buffer);
+    Ref_Ptr_Release(s_renderState.material);
+
+    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+        Ref_Ptr_Release(s_renderState.Textures[i]);
+    }
 }

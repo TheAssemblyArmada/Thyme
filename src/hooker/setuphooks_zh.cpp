@@ -95,6 +95,7 @@
 #include "shadermanager.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
+#include "sortingrenderer.h"
 #include "soundmanager.h"
 #include "surfaceclass.h"
 #include "targa.h"
@@ -1368,4 +1369,15 @@ void Setup_Hooks()
     Hook_Any(0x00832F40, SimpleSceneClass::Customized_Render);
     Hook_Any(0x008330E0, SimpleSceneClass::Post_Render_Processing);
     Hook_Any(0x00832D20, SimpleSceneClass::Visibility_Check);
+
+    // sortingrenderer.h
+    Hook_Any(0x0080C570, SortingRendererClass::Set_Min_Vertex_Buffer_Size);
+    Hook_Function(0x0080C610,
+        static_cast<void (*)(const SphereClass &, unsigned short, unsigned short, unsigned short, unsigned short)>(
+            &SortingRendererClass::Insert_Triangles));
+    Hook_Function(0x0080CC40,
+        static_cast<void (*)(unsigned short, unsigned short, unsigned short, unsigned short)>(
+            &SortingRendererClass::Insert_Triangles));
+    Hook_Any(0x0080DBB0, SortingRendererClass::Flush);
+    Hook_Any(0x0080E1E0, SortingRendererClass::Deinit);
 }

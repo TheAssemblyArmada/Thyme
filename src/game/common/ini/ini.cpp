@@ -402,7 +402,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
     if (token != nullptr) {
         if (*token == '"') {
             if (strlen(token) > 1) {
-                strlcpy(buffer, token + 1, sizeof(buffer));
+                strlcpy_t(buffer, token + 1);
 
                 if (buffer[strlen(buffer) - 1] == '"') {
                     buffer[strlen(buffer) - 1] = '\0';
@@ -414,8 +414,8 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
             const char *next_tok = Get_Next_Token(m_sepsQuote);
 
             if (strlen(next_tok) > 1 && next_tok[1] != '\t') {
-                strlcat(buffer, " ", sizeof(buffer));
-                strlcat(buffer, next_tok, sizeof(buffer));
+                strlcat_t(buffer, " ");
+                strlcat_t(buffer, next_tok);
             }
 
             if (buffer[strlen(buffer) - 1] == '"') {

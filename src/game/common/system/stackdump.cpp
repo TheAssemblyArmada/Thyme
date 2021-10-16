@@ -603,10 +603,10 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
 
     for (int i = 32; i != 0; --i) {
         if (IsBadReadPtr(eip_pointer, 1)) {
-            strlcat(scratch, "?? ", sizeof(scratch));
+            strlcat_t(scratch, "?? ");
         } else {
             sprintf(bytestr, "%02X ", *eip_pointer);
-            strlcat(scratch, bytestr, sizeof(scratch));
+            strlcat_t(scratch, bytestr);
         }
 
         ++eip_pointer;
@@ -669,15 +669,15 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
             if (SymGetSymFromAddrPtr(GetCurrentProcess(), *esp_pointer, &disp, &sym) != 0) {
                 char sym_scratch[256];
                 snprintf(sym_scratch, sizeof(sym_scratch), " - %s + %" PRIPTRSIZE PRIXPTR "", sym.Name, disp);
-                strlcat(scratch, sym_scratch, sizeof(scratch));
+                strlcat_t(scratch, sym_scratch);
             } else {
-                strlcat(scratch, " *", sizeof(scratch));
+                strlcat_t(scratch, " *");
             }
         } else {
-            strlcat(scratch, " *", sizeof(scratch));
+            strlcat_t(scratch, " *");
         }
 
-        strlcat(scratch, "\n", sizeof(scratch));
+        strlcat_t(scratch, "\n");
         g_exceptionFileBuffer += scratch;
         ++esp_pointer;
     }

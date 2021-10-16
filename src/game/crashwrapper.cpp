@@ -26,7 +26,7 @@ CrashPrefWrapper::~CrashPrefWrapper()
 const char *CrashPrefWrapper::Get_Upload_URL()
 {
     static char path[512];
-    strlcpy(path, m_prefs->Get_Upload_URL().Str(), sizeof(path));
+    strlcpy_t(path, m_prefs->Get_Upload_URL().Str());
     return path;
 }
 

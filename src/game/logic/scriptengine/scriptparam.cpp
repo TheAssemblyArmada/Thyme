@@ -403,9 +403,9 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
         if (param->m_string.Starts_With("Fundamentalist")) {
             char new_name[256];
             char old_name[256];
-            strlcpy(old_name, param->m_string.Str(), sizeof(old_name));
-            strlcpy(new_name, "GLA", sizeof(new_name));
-            strlcat(new_name, &old_name[strlen("Fundamentalist")], sizeof(new_name));
+            strlcpy_t(old_name, param->m_string.Str());
+            strlcpy_t(new_name, "GLA");
+            strlcat_t(new_name, &old_name[strlen("Fundamentalist")]);
             param->m_string = new_name;
             captainslog_trace("Fixed up script reference from '%s' to '%s'.", old_name, new_name);
         }

@@ -40,7 +40,7 @@ void Register_Thread_ID(int id, const char *name, bool is_main)
 
     ThreadTracker *tt = new ThreadTracker;
     tt->id = id;
-    strlcpy(tt->name, name, sizeof(tt->name));
+    strlcpy_t(tt->name, name);
     tt->is_main = is_main;
     tt->unknown = -1;
     g_threadTracker.Add(tt);

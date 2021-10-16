@@ -57,6 +57,7 @@
 #include "globaldata.h"
 #include "hanimmgr.h"
 #include "hooker.h"
+#include "htree.h"
 #include "image.h"
 #include "ini.h"
 #include "keyboard.h"
@@ -1380,4 +1381,30 @@ void Setup_Hooks()
             &SortingRendererClass::Insert_Triangles));
     Hook_Any(0x0080DBB0, SortingRendererClass::Flush);
     Hook_Any(0x0080E1E0, SortingRendererClass::Deinit);
+
+    //htree.h
+    Hook_Any(0x0083E460, HTreeClass::Hook_Ctor);
+    Hook_Any(0x0083E690, HTreeClass::Hook_Ctor2);
+    Hook_Any(0x0083E4D0, HTreeClass::Init_Default);
+    Hook_Any(0x0083E7C0, HTreeClass::Load_W3D);
+    Hook_Any(0x0083E9A0, HTreeClass::Read_Pivots);
+    Hook_Method(0x0083ECF0,
+        static_cast<bool (HTreeClass::*)(HAnimClass *, int, float, Matrix3D const &, Matrix3D *)>(
+            &HTreeClass::Simple_Evaluate_Pivot));
+    Hook_Method(0x0083EF40,
+        static_cast<bool (HTreeClass::*)(int, Matrix3D const &, Matrix3D *)>(&HTreeClass::Simple_Evaluate_Pivot));
+    Hook_Any(0x0083F060, HTreeClass::Base_Update);
+    Hook_Method(
+        0x0083F120, static_cast<void (HTreeClass::*)(Matrix3D const &, HAnimClass *, float)>(&HTreeClass::Anim_Update));
+    Hook_Method(
+        0x0083F3E0, static_cast<void (HTreeClass::*)(Matrix3D const &, HRawAnimClass *, float)>(&HTreeClass::Anim_Update));
+    Hook_Any(0x0083F7C0, HTreeClass::Blend_Update);
+    Hook_Any(0x00840070, HTreeClass::Get_Bone_Index);
+    Hook_Any(0x008400C0, HTreeClass::Get_Bone_Name);
+    Hook_Any(0x008400E0, HTreeClass::Get_Parent_Index);
+    Hook_Any(0x00840110, HTreeClass::Scale);
+    Hook_Any(0x008401A0, HTreeClass::Capture_Bone);
+    Hook_Any(0x008401D0, HTreeClass::Release_Bone);
+    Hook_Any(0x00840200, HTreeClass::Is_Bone_Captured);
+    Hook_Any(0x00840220, HTreeClass::Control_Bone);
 }

@@ -280,6 +280,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/hanimmgr.cpp
+    w3d/renderer/htree.cpp
     w3d/renderer/htreemgr.cpp
     w3d/renderer/light.cpp
     w3d/renderer/lightenv.cpp
@@ -290,6 +291,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/meshmdl.cpp
     w3d/renderer/missing.cpp
     w3d/renderer/matpass.cpp
+    w3d/renderer/pivot.cpp
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
     w3d/renderer/predlod.cpp

@@ -34,13 +34,21 @@ HTreeManagerClass::~HTreeManagerClass()
 }
 
 // 0x00851C30
-bool HTreeManagerClass::Load_Tree(ChunkLoadClass &cload)
+int HTreeManagerClass::Load_Tree(ChunkLoadClass &cload)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, HTreeManagerClass, ChunkLoadClass &>(0x00851C30, this, cload);
-#else
+    HTreeClass *tree = new HTreeClass();
+
+    if (tree->Load_W3D(cload) || Get_Tree_ID(tree->Get_Name()) != -1) {
+        delete tree;
+        return 1;
+    }
+
+    m_treePtr[m_numTrees] = tree;
+    m_numTrees++;
+    StringClass str = tree->Get_Name();
+    str.To_Lower();
+    m_hashTable.Insert(str, tree);
     return 0;
-#endif
 }
 
 // 0x00851930

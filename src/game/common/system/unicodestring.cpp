@@ -109,7 +109,7 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
         if (m_data != nullptr && keep_data) {
             u_strcpy(new_data->Peek(), Peek());
         } else {
-            *new_data->Peek() = (unichar_t)u'\0';
+            *new_data->Peek() = U_CHAR('\0');
         }
 
         if (str_to_cpy != nullptr) {
@@ -145,12 +145,12 @@ unichar_t Utf16String::Get_Char(int index) const
         return m_data->Peek()[index];
     }
 
-    return u'\0';
+    return U_CHAR('\0');
 }
 
 const unichar_t *Utf16String::Str() const
 {
-    static const unichar_t *TheNullChr = (const unichar_t *)u"";
+    static const unichar_t *TheNullChr = U_CHAR("");
 
     if (m_data != nullptr) {
         return Peek();
@@ -207,7 +207,7 @@ void Utf16String::Translate(Utf8String const &string)
         if (string.m_data != nullptr) {
             c = string.Get_Char(i);
         } else {
-            c = (unichar_t)u'\0';
+            c = U_CHAR('\0');
         }
 
         Concat(c);
@@ -218,7 +218,7 @@ void Utf16String::Translate(const char *string)
 {
     Release_Buffer();
 
-#if defined BUILD_WITH_ICU // Use ICU convertors
+#if defined BUILD_WITH_ICU // Use ICU converters
     int32_t length;
     UErrorCode error = U_ZERO_ERROR;
     u_strFromUTF8(nullptr, 0, &length, string, -1, &error);
@@ -230,22 +230,22 @@ void Utf16String::Translate(const char *string)
             Clear();
         }
     }
-#elif defined PLATFORM_WINDOWS // Use WIN32 API convertors.
+#elif defined PLATFORM_WINDOWS // Use WIN32 API converters.
     int length = MultiByteToWideChar(CP_UTF8, 0, string, -1, nullptr, 0);
 
     if (length > 0) {
         MultiByteToWideChar(CP_UTF8, 0, string, -1, Get_Buffer_For_Read(length), length);
     }
 #else // Naive copy, this is what the original does.
-    int str_len = strlen(string);
+    size_t str_len = strlen(string);
 
-    for (int i = 0; i < str_len; ++i) {
+    for (size_t i = 0; i < str_len; ++i) {
         unichar_t c;
 
         if (string[i] != '\0') {
             c = string[i];
         } else {
-            c = (unichar_t)u'\0';
+            c = U_CHAR('\0');
         }
 
         Concat(c);
@@ -258,7 +258,7 @@ void Utf16String::Concat(unichar_t c)
     unichar_t str[2];
 
     str[0] = c;
-    str[1] = (unichar_t)u'\0';
+    str[1] = U_CHAR('\0');
     Concat(str);
 }
 
@@ -285,7 +285,7 @@ void Utf16String::Trim()
     unichar_t *str = Peek();
 
     // Find first none space in string if not the first.
-    for (char i = *str; i != '\0'; i = *(++str)) {
+    for (unichar_t i = *str; i != U_CHAR('\0'); i = *(++str)) {
         if (!u_isspace(i)) {
             break;
         }
@@ -301,7 +301,7 @@ void Utf16String::Trim()
         return;
     }
 
-    for (int i = u_strlen(Peek()) - 1; i >= 0; --i) {
+    for (int i = static_cast<int>(u_strlen(Peek())) - 1; i >= 0; --i) {
         if (!u_isspace(Get_Char(i))) {
             break;
         }
@@ -320,7 +320,7 @@ void Utf16String::To_Lower()
 
     u_strcpy(buf, Peek());
 
-    for (unichar_t *c = buf; *c != (unichar_t)u'\0'; ++c) {
+    for (unichar_t *c = buf; *c != U_CHAR('\0'); ++c) {
         //*c = towlower(*c);
         *c = u_tolower(*c);
     }
@@ -338,7 +338,7 @@ void Utf16String::Remove_Last_Char()
 
     if (len > 0) {
         Ensure_Unique_Buffer_Of_Size(len + 1, true);
-        Peek()[len] = (unichar_t)u'\0';
+        Peek()[len] = U_CHAR('\0');
     }
 }
 
@@ -382,26 +382,26 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
         return false;
     }
 
-    if (*Peek() == (unichar_t)u'\0' || this == tok) {
+    if (*Peek() == U_CHAR('\0') || this == tok) {
         return false;
     }
 
     // If no separators provided, default to white space.
     if (delims == nullptr) {
-        delims = (const unichar_t *)u" \n\r\t";
+        delims = U_CHAR(" \n\r\t");
     }
 
 #if BUILD_WITH_ICU
     unichar_t *start = Peek();
 
     // Find next instance of token or end of string
-    for (unichar_t c = *start; c != (unichar_t)u'\0'; c = *(++start)) {
+    for (unichar_t c = *start; c != U_CHAR('\0'); c = *(++start)) {
         if (u_strchr(delims, c) == nullptr) {
             break;
         }
     }
 
-    if (*start == (unichar_t)u'\0') {
+    if (*start == U_CHAR('\0')) {
         Release_Buffer();
         tok->Release_Buffer();
 
@@ -411,7 +411,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
     unichar_t *end = start;
 
     // Find next instance of token or end of string.
-    for (unichar_t c = *end; c != (unichar_t)u'\0'; c = *(++end)) {
+    for (unichar_t c = *end; c != U_CHAR('\0'); c = *(++end)) {
         if (u_strchr(delims, c) != nullptr) {
             break;
         }
@@ -428,7 +428,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
     // to start of next section.
     unichar_t *tokstr = tok->Get_Buffer_For_Read(end - start + 1);
     memcpy(tokstr, start, end - start);
-    tokstr[end - start] = (unichar_t)u'\0';
+    tokstr[end - start] = U_CHAR('\0');
     Set(end);
 
     return true;
@@ -441,7 +441,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
     if (&(Peek()[pos]) > Peek()) {
         unichar_t *read_buffer = tok->Get_Buffer_For_Read(pos + 1);
         memcpy(read_buffer, Peek(), pos);
-        read_buffer[pos] = (unichar_t)u'\0';
+        read_buffer[pos] = U_CHAR('\0');
         Set(&(Peek()[pos]));
 
         return true;

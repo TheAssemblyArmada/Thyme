@@ -16,9 +16,14 @@
 #define BASE_UNICHAR_H
 #include <wchar.h>
 
+#ifdef U_CHAR
+#error U_CHAR has been defined before
+#endif
+
 #ifdef BUILD_WITH_ICU
 #include <unicode/uchar.h>
 typedef UChar unichar_t;
+#define U_CHAR(str) (u##str)
 #elif defined _WIN32
 typedef wchar_t unichar_t;
 #define u_strlen wcslen
@@ -31,6 +36,7 @@ typedef wchar_t unichar_t;
 #define u_tolower towlower
 #define u_strchr(x, y) wcschr(x, y)
 #define U_COMPARE_CODE_POINT_ORDER 0x8000
+#define U_CHAR(str) (L##str)
 #else
 #error This platform requires ICU to support unichar.
 #endif

@@ -157,7 +157,7 @@ public:
 
     bool Is_None()
     {
-        return m_data != nullptr && u_strcasecmp(Peek(), (const unichar_t *)u"None", U_COMPARE_CODE_POINT_ORDER) == 0;
+        return m_data != nullptr && u_strcasecmp(Peek(), U_CHAR("None"), U_COMPARE_CODE_POINT_ORDER) == 0;
     }
     bool Is_Empty() { return Get_Length() <= 0; }
     bool Is_Not_Empty() { return !Is_Empty(); }

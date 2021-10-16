@@ -1722,7 +1722,7 @@ w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
 
         // If the initial file is tga and isn't available try the dds version.
         if (!fptr->Is_Available()) {
-            strlcpy(buf, name, sizeof(buf));
+            strlcpy_t(buf, name);
             char *ext = strchr(buf, '.');
 
             if (strlen(ext) == 4) {

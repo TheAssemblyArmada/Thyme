@@ -44,7 +44,7 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     m_totalSizeMaybe(0)
 {
     // Copy the name across and replace the extension with dds.
-    strlcpy(m_name, filename, sizeof(m_name));
+    strlcpy_t(m_name, filename);
     size_t name_len = strlen(m_name);
     m_name[name_len - 3] = 'd';
     m_name[name_len - 2] = 'd';

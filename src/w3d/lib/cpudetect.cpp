@@ -1414,7 +1414,7 @@ void CPUDetectClass::Init_Processor_Log()
 #define CPU_LOG(n, ...) \
     do { \
         snprintf(work, sizeof(work), n, ##__VA_ARGS__); \
-        strlcat(ProcessorLog, work, sizeof(ProcessorLog)); \
+        strlcat_t(ProcessorLog, work); \
     } while (false)
 
     char work[256];
@@ -1549,7 +1549,7 @@ void CPUDetectClass::Init_Compact_Log()
 #define COMPACT_LOG(n, ...) \
     do { \
         snprintf(work, sizeof(work), n, ##__VA_ARGS__); \
-        strlcat(CompactLog, work, sizeof(CompactLog)); \
+        strlcat_t(CompactLog, work); \
     } while (false)
 
     char work[256];

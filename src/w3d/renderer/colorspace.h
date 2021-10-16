@@ -42,6 +42,13 @@ inline void Color_To_RGBA(Vector4 &rgba, uint32_t color)
     rgba.W = ((color & 0xFF000000) >> 24) / 255.0f;
 }
 
+inline void Color_To_RGB(Vector3 &rgb, uint32_t color)
+{
+    rgb.X = ((color & 0xFF0000) >> 16) / 255.0f;
+    rgb.Y = ((color & 0xFF00) >> 8) / 255.0f;
+    rgb.Z = (color & 0xFF) / 255.0f;
+}
+
 inline void RGBA_To_Color(uint32_t &color, const Vector4 &rgba)
 {
     color = Make_Color(rgba.X * 255.0f, rgba.Y * 255.0f, rgba.Z * 255.0f, rgba.W * 255.0f);

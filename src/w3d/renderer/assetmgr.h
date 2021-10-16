@@ -45,6 +45,7 @@ class FontCharsClass;
 class PrototypeLoaderClass;
 class PrototypeClass;
 class TextureFileCache;
+class VertexMaterialClass;
 
 #ifdef GAME_DLL
 extern NullPrototypeClass &s_nullPrototype;
@@ -62,7 +63,11 @@ public:
     virtual bool Load_3D_Assets(FileClass &asset_file);
     virtual void Free_Assets();
     // 0x00814850
-    virtual void Release_Unused_Assets() { Release_Unused_Textures(); }
+    virtual void Release_Unused_Assets()
+    {
+        Release_Unused_Textures();
+        // Release_Unused_Font3DDatas(); Font3DData is not used
+    }
     virtual void Free_Assets_With_Exclusion_List(DynamicVectorClass<StringClass> const &list);
     virtual void Create_Asset_List(DynamicVectorClass<StringClass> &list);
     virtual RenderObjClass *Create_Render_Obj(const char *name);
@@ -91,6 +96,9 @@ public:
     virtual void Register_Prototype_Loader(PrototypeLoaderClass *loader) { m_prototypeLoaders.Add(loader); }
     static W3DAssetManager *Get_Instance(void) { return s_theInstance; }
 
+    bool Get_W3D_Load_On_Demand() const { return m_loadOnDemand; }
+    void Set_W3D_Load_On_Demand(bool state) { m_loadOnDemand = state; }
+
 protected:
     virtual AssetIterator *Create_Font3DData_Iterator();
     virtual void Add_Font3DData(Font3DDataClass *font);
@@ -106,6 +114,10 @@ protected:
     void Prototype_Hash_Table_Add(PrototypeClass *entry);
     PrototypeClass *Prototype_Hash_Table_Find(char const *key);
     int32_t Prototype_Hash_Table_Hash(char const *key);
+
+    void Add_Prototype(PrototypeClass *proto);
+    PrototypeLoaderClass *Find_Prototype_Loader(int chunk_id);
+    bool Load_Prototype(ChunkLoadClass &cload);
 
 protected:
     DynamicVectorClass<PrototypeLoaderClass *> m_prototypeLoaders;
@@ -150,11 +162,15 @@ public:
 
 private:
     void Make_Mesh_Unique(RenderObjClass *robj, bool geometry, bool colors);
+    void Make_HLOD_Unique(RenderObjClass *robj, bool geometry, bool colors);
     void Make_Unique(RenderObjClass *robj, bool geometry, bool colors);
+    void Recolor_Vertex_Material(VertexMaterialClass *vmat, uint32_t colour);
     bool Recolor_Mesh(RenderObjClass *robj, uint32_t colour);
     bool Recolor_HLOD(RenderObjClass *robj, uint32_t colour);
+    bool Recolour_Asset(RenderObjClass *robj, uint32_t colour);
     bool Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     bool Replace_Mesh_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
+    bool Replace_Asset_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     uint32_t m_grannyAnimManager; // Not used, only here to match original size
 };
 

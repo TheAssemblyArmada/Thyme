@@ -14,6 +14,7 @@
  */
 #include "assetmgr.h"
 #include "chunkio.h"
+#include "colorspace.h"
 #include "crc.h"
 #include "ffactory.h"
 #include "fileclass.h"
@@ -21,6 +22,7 @@
 #include "proto.h"
 #include "render2dsentence.h"
 #include "string.h"
+#include "vertmaterial.h"
 #include "w3d_file.h"
 #include <cmath>
 #include <stdio.h>
@@ -44,6 +46,7 @@ W3DAssetManager::~W3DAssetManager()
     Free_Assets();
     s_theInstance = nullptr;
     delete[] m_prototypeHashTable;
+    // FontCharsList and Font3DDatas previously
 }
 
 // 0x00814C30
@@ -54,14 +57,16 @@ bool W3DAssetManager::Load_3D_Assets(const char *filename)
         return false;
     }
 
-    if (file->Is_Available() == false) {
-        g_theFileFactory->Return_File(file);
-        return false;
+    bool res = false;
+    if (file->Is_Available()) {
+        res = Load_3D_Assets(*file);
+    } else {
+        captainslog_debug("Missing asset %s", filename);
     }
 
-    Load_3D_Assets(*file);
     g_theFileFactory->Return_File(file);
-    return true;
+
+    return res;
 }
 
 // 0x00814E10
@@ -82,33 +87,9 @@ bool W3DAssetManager::Load_3D_Assets(FileClass &asset_file)
             case W3D_CHUNK_HIERARCHY:
                 m_hTreeManager.Load_Tree(chunk);
                 break;
-            default: {
-                for (auto i = 0; i < m_prototypeLoaders.Count(); ++i) {
-                    auto *loader = m_prototypeLoaders[i];
-
-                    if (loader == nullptr) {
-                        continue;
-                    }
-
-                    if (loader->Chunk_Type() != chunk_id) {
-                        continue;
-                    }
-
-                    auto *prototype = loader->Load_W3D(chunk);
-                    if (prototype == nullptr) {
-                        continue;
-                    }
-
-                    const auto *name = prototype->Get_Name();
-                    if (Render_Obj_Exists(name)) {
-                        prototype->Delete_Self();
-                    } else {
-                        Prototype_Hash_Table_Add(prototype);
-                        m_prototypes.Add(prototype);
-                    }
-                }
+            default:
+                Load_Prototype(chunk);
                 break;
-            }
         }
     }
 
@@ -130,6 +111,7 @@ void W3DAssetManager::Free_Assets()
     m_hAnimManager.Free_All_Anims();
     m_hTreeManager.Free_All_Trees();
     Release_All_Textures();
+    // Release_All_Font3DDatas(); Font3DData is not used
     Release_All_FontChars();
 }
 
@@ -195,12 +177,7 @@ RenderObjClass *W3DAssetManager::Create_Render_Obj(const char *name)
 // 0x008152C0
 bool W3DAssetManager::Render_Obj_Exists(const char *name)
 {
-    if (strcasecmp(name, "NULL") == 0) {
-        return true;
-    }
-
-    auto proto = Prototype_Hash_Table_Find(name);
-    return proto != nullptr;
+    return Find_Prototype(name) != nullptr;
 }
 
 // 0x00815340
@@ -509,6 +486,54 @@ int32_t W3DAssetManager::Prototype_Hash_Table_Hash(char const *key)
     return (s_prototypeHashTableSize - 1) & CRC::Stringi(key, 0);
 }
 
+void W3DAssetManager::Add_Prototype(PrototypeClass *proto)
+{
+    captainslog_assert(proto != nullptr);
+    Prototype_Hash_Table_Add(proto);
+    m_prototypes.Add(proto);
+}
+
+PrototypeLoaderClass *W3DAssetManager::Find_Prototype_Loader(int chunk_id)
+{
+    for (auto i = 0; i < m_prototypeLoaders.Count(); ++i) {
+        auto *loader = m_prototypeLoaders[i];
+
+        if (loader == nullptr) {
+            continue;
+        }
+
+        if (loader->Chunk_Type() == chunk_id) {
+            return loader;
+        }
+    }
+    return nullptr;
+}
+
+bool W3DAssetManager::Load_Prototype(ChunkLoadClass &cload)
+{
+    auto *loader = Find_Prototype_Loader(cload.Cur_Chunk_ID());
+    if (loader == nullptr) {
+        captainslog_debug("Unknown chunk type encountered! Chunk Id = %d\r\n", cload.Cur_Chunk_ID());
+        return false;
+    }
+
+    auto *prototype = loader->Load_W3D(cload);
+    if (prototype == nullptr) {
+        captainslog_debug("Could not generate prototype! Cunk = %d\r\n", cload.Cur_Chunk_ID());
+        return false;
+    }
+
+    const auto *name = prototype->Get_Name();
+    if (Render_Obj_Exists(name)) {
+        captainslog_debug("Render Object Name Collision: %s\r\n", name);
+        prototype->Delete_Self();
+        return false;
+    }
+
+    Add_Prototype(prototype);
+    return true;
+}
+
 GameAssetManager::~GameAssetManager() {}
 
 // 0x00765CD0
@@ -561,6 +586,19 @@ TextureClass *GameAssetManager::Get_Texture(const char *filename,
         filename, mip_level_count, texture_format, allow_compression, asset_type, allow_reduction);
 }
 
+static void Create_Mangled_Name(char *mangled_name, const char *name, float scale, uint32_t colour, const char *new_texture)
+{
+    char new_name[256]{};
+    strcpy(new_name, name);
+    strlwr(new_name);
+    const char *tex = "";
+    if (new_texture != nullptr) {
+        tex = new_texture;
+    }
+
+    snprintf(mangled_name, 512, "#%d!%g!%s#%s", colour, scale, tex, new_name);
+}
+
 // 0x00765180
 RenderObjClass *GameAssetManager::Create_Render_Obj(
     const char *name, float scale, uint32_t colour, const char *old_texture, const char *new_texture)
@@ -569,115 +607,77 @@ RenderObjClass *GameAssetManager::Create_Render_Obj(
     bool has_colour = (colour & 0xFFFFFF) != 0;
     bool has_texture = old_texture != nullptr && new_texture != nullptr;
 
-    if (has_scaling || has_colour || has_texture) {
-        char new_name[256]{};
-        strcpy(new_name, name);
-        strlwr(new_name);
-        const char *tex = "";
-        if (new_texture != nullptr) {
-            tex = new_texture;
-        }
-
-        char buffer[512]{};
-        snprintf(buffer, 512, "#%d!%g!%s#%s", colour, scale, tex, new_name);
-        m_loadOnDemand = false;
-        auto *robj = W3DAssetManager::Create_Render_Obj(buffer);
-        if (robj != nullptr) {
-            robj->Set_House_Color(colour);
-            m_loadOnDemand = true;
-            return robj;
-        }
-
-        auto *proto = Find_Prototype(name);
-        m_loadOnDemand = true;
-        if (proto == nullptr) {
-            char asset_filename[256]{};
-            auto *period = strchr(name, '.');
-            if (period == nullptr) {
-                snprintf(asset_filename, 256, "%s.w3d", name);
-            } else {
-                snprintf(asset_filename, 256, "%s.w3d", period + 1);
-            }
-            if (Load_3D_Assets(asset_filename) == false) {
-                StringClass new_filename = StringClass{ "..\\", true } + asset_filename;
-                Load_3D_Assets(new_filename);
-            }
-            proto = Find_Prototype(name);
-        }
-
-        if (proto == nullptr) {
-            return nullptr;
-        }
-
-        robj = proto->Create();
-        if (robj == nullptr) {
-            return nullptr;
-        }
-
-        if (has_scaling) {
-            robj->Set_ObjectScale(scale);
-        }
-
-        switch (robj->Class_ID()) {
-            case RenderObjClass::CLASSID_MESH:
-                Make_Mesh_Unique(robj, has_scaling, has_colour);
-                break;
-            case RenderObjClass::CLASSID_HLOD:
-                Make_Unique(robj, has_scaling, has_colour);
-                break;
-            default:
-                break;
-        }
-        if (has_texture) {
-            auto *old_tex = Get_Texture(old_texture);
-            auto *new_tex = Get_Texture(new_texture);
-            switch (robj->Class_ID()) {
-                case RenderObjClass::CLASSID_MESH:
-                    Replace_Mesh_Texture(robj, old_tex, new_tex);
-                    break;
-                case RenderObjClass::CLASSID_HLOD:
-                    Replace_HLOD_Texture(robj, old_tex, new_tex);
-                    break;
-                default:
-                    break;
-            }
-            if (old_tex != nullptr) {
-                old_tex->Release_Ref();
-            }
-            if (new_tex != nullptr) {
-                new_tex->Release_Ref();
-            }
-        }
-        if (has_colour) {
-            switch (robj->Class_ID()) {
-                case RenderObjClass::CLASSID_MESH:
-                    Recolor_Mesh(robj, colour);
-                    break;
-                case RenderObjClass::CLASSID_HLOD: {
-                    bool recolored = false;
-                    for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
-                        auto *sobj = robj->Get_Sub_Object(i);
-                        recolored |= Recolor_HLOD(sobj, colour);
-                        if (sobj != nullptr) {
-                            sobj->Release_Ref();
-                        }
-                    }
-                    break;
-                }
-                default:
-                    break;
-            }
-        }
-
-        auto *w3d_proto = new W3DPrototypeClass(robj, buffer);
-        robj->Release_Ref();
-        Prototype_Hash_Table_Add(w3d_proto);
-        robj = w3d_proto->Create();
-        robj->Set_House_Color(colour);
-        return robj;
-    } else {
+    if (!has_scaling && !has_colour && !has_texture) {
         return W3DAssetManager::Create_Render_Obj(name);
     }
+
+    char mangled_name[512]{};
+    Create_Mangled_Name(mangled_name, name, scale, colour, new_texture);
+
+    Set_W3D_Load_On_Demand(false);
+    auto *robj = W3DAssetManager::Create_Render_Obj(mangled_name);
+    if (robj != nullptr) {
+        robj->Set_House_Color(colour);
+        Set_W3D_Load_On_Demand(true);
+        return robj;
+    }
+
+    auto *proto = Find_Prototype(name);
+    Set_W3D_Load_On_Demand(true);
+    if (m_loadOnDemand == true && proto == nullptr) {
+        char asset_filename[256]{};
+        auto *period = strchr(name, '.');
+        if (period == nullptr) {
+            snprintf(asset_filename, 256, "%s.w3d", name);
+        } else {
+            snprintf(asset_filename, 256, "%s.w3d", period + 1);
+        }
+        if (Load_3D_Assets(asset_filename) == false) {
+            StringClass new_filename = StringClass{ "..\\", true } + asset_filename;
+            Load_3D_Assets(new_filename);
+        }
+        proto = Find_Prototype(name);
+    }
+
+    if (proto == nullptr) {
+        captainslog_debug("Warning: Failed to create Render Object: %s\r\n", name);
+        return nullptr;
+    }
+
+    robj = proto->Create();
+    if (robj == nullptr) {
+        return nullptr;
+    }
+
+    if (has_scaling) {
+        robj->Set_ObjectScale(scale);
+    }
+
+    Make_Unique(robj, has_scaling, has_colour);
+
+    if (has_texture) {
+        auto *old_tex = Get_Texture(old_texture);
+        auto *new_tex = Get_Texture(new_texture);
+
+        Replace_Asset_Texture(robj, old_tex, new_tex);
+
+        if (old_tex != nullptr) {
+            old_tex->Release_Ref();
+        }
+        if (new_tex != nullptr) {
+            new_tex->Release_Ref();
+        }
+    }
+    if (has_colour) {
+        Recolour_Asset(robj, colour);
+    }
+
+    auto *w3d_proto = new W3DPrototypeClass(robj, mangled_name);
+    robj->Release_Ref();
+    Add_Prototype(w3d_proto);
+    robj = w3d_proto->Create();
+    robj->Set_House_Color(colour);
+    return robj;
 }
 
 // 0x00765DF0
@@ -689,28 +689,42 @@ void GameAssetManager::Make_Mesh_Unique(RenderObjClass *robj, bool geometry, boo
 #endif
 }
 
-// 0x00765D70
-void GameAssetManager::Make_Unique(RenderObjClass *robj, bool geometry, bool colors)
+void GameAssetManager::Make_HLOD_Unique(RenderObjClass *robj, bool geometry, bool colors)
 {
     for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
         auto *sub_robj = robj->Get_Sub_Object(i);
 
-        switch (sub_robj->Class_ID()) {
-            case RenderObjClass::CLASSID_MESH:
-                Make_Mesh_Unique(sub_robj, geometry, colors);
-                break;
-            case RenderObjClass::CLASSID_HLOD:
-                Make_Unique(sub_robj, geometry, colors);
-                break;
-
-            default:
-                break;
-        }
+        Make_Unique(sub_robj, geometry, colors);
 
         if (sub_robj != nullptr) {
             sub_robj->Release_Ref();
         }
     }
+}
+
+// 0x00765D70
+void GameAssetManager::Make_Unique(RenderObjClass *robj, bool geometry, bool colors)
+{
+    switch (robj->Class_ID()) {
+        case RenderObjClass::CLASSID_MESH:
+            Make_Mesh_Unique(robj, geometry, colors);
+            break;
+        case RenderObjClass::CLASSID_HLOD:
+            Make_HLOD_Unique(robj, geometry, colors);
+            break;
+
+        default:
+            break;
+    }
+}
+
+// 0x00765B27
+void GameAssetManager::Recolor_Vertex_Material(VertexMaterialClass *vmat, uint32_t colour)
+{
+    Vector3 rgb_color;
+    Color_To_RGB(rgb_color, colour);
+    vmat->Set_Ambient(rgb_color);
+    vmat->Set_Diffuse(rgb_color);
 }
 
 // 0x00765A40
@@ -724,23 +738,39 @@ bool GameAssetManager::Recolor_Mesh(RenderObjClass *robj, uint32_t colour)
 #endif
 }
 
-// 0x007659B0 maybe rename to Recolor_Asset
-bool GameAssetManager::Recolor_HLOD(RenderObjClass *robj, uint32_t colour)
+// 0x007659B0
+bool GameAssetManager::Recolour_Asset(RenderObjClass *robj, uint32_t colour)
 {
     switch (robj->Class_ID()) {
         case RenderObjClass::CLASSID_MESH:
             return Recolor_Mesh(robj, colour);
-        case RenderObjClass::CLASSID_HLOD: {
-            bool recolored = false;
-            for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
-                auto *sub_robj = robj->Get_Sub_Object(i);
-                recolored |= Recolor_HLOD(sub_robj, colour);
-                if (sub_robj != nullptr) {
-                    sub_robj->Release_Ref();
-                }
-            }
-            return recolored;
+        case RenderObjClass::CLASSID_HLOD:
+            return Recolor_HLOD(robj, colour);
+        default:
+            return false;
+    }
+}
+
+bool GameAssetManager::Recolor_HLOD(RenderObjClass *robj, uint32_t colour)
+{
+    bool recolored = false;
+    for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
+        auto *sub_robj = robj->Get_Sub_Object(i);
+        recolored |= Recolour_Asset(sub_robj, colour);
+        if (sub_robj != nullptr) {
+            sub_robj->Release_Ref();
         }
+    }
+    return recolored;
+}
+
+bool GameAssetManager::Replace_Asset_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture)
+{
+    switch (robj->Class_ID()) {
+        case RenderObjClass::CLASSID_MESH:
+            return Replace_Mesh_Texture(robj, old_texture, new_texture);
+        case RenderObjClass::CLASSID_HLOD:
+            return Replace_HLOD_Texture(robj, old_texture, new_texture);
         default:
             return false;
     }
@@ -753,17 +783,7 @@ bool GameAssetManager::Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *
     for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
         auto *sub_robj = robj->Get_Sub_Object(i);
 
-        switch (sub_robj->Class_ID()) {
-            case RenderObjClass::CLASSID_MESH:
-                replaced |= Replace_Mesh_Texture(sub_robj, old_texture, new_texture);
-                break;
-            case RenderObjClass::CLASSID_HLOD:
-                replaced |= Replace_HLOD_Texture(sub_robj, old_texture, new_texture);
-                break;
-
-            default:
-                break;
-        }
+        replaced |= Replace_Asset_Texture(sub_robj, old_texture, new_texture);
 
         if (sub_robj != nullptr) {
             sub_robj->Release_Ref();

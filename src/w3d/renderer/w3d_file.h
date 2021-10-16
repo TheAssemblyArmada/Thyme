@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "chunkio.h"
 
 // clang-format off
 enum {
@@ -170,6 +171,9 @@ enum {
 };
 // clang-format on
 
+typedef IOVector3Struct W3dVectorStruct;
+typedef IOQuaternionStruct W3dQuaternionStruct;
+
 struct W3dRGBStruct
 {
     uint8_t r;
@@ -290,4 +294,47 @@ struct W3dNullObjectStruct
     uint32_t attributes;
     uint32_t pad[2];
     char name[32];
+};
+
+struct W3dHierarchyStruct
+{
+    uint32_t Version;
+    char Name[16];
+    uint32_t NumPivots;
+    W3dVectorStruct Center;
+};
+
+struct W3dPivotStruct
+{
+    char Name[16];
+    uint32_t ParentIdx;
+    W3dVectorStruct Translation;
+    W3dVectorStruct EulerAngles;
+    W3dQuaternionStruct Rotation;
+};
+
+struct W3dPivotFixupStruct
+{
+    float TM[4][3];
+};
+
+enum
+{
+    ANIM_CHANNEL_X = 0,
+    ANIM_CHANNEL_Y,
+    ANIM_CHANNEL_Z,
+    ANIM_CHANNEL_XR,
+    ANIM_CHANNEL_YR,
+    ANIM_CHANNEL_ZR,
+    ANIM_CHANNEL_Q,
+
+    ANIM_CHANNEL_TIMECODED_X,
+    ANIM_CHANNEL_TIMECODED_Y,
+    ANIM_CHANNEL_TIMECODED_Z,
+    ANIM_CHANNEL_TIMECODED_Q,
+
+    ANIM_CHANNEL_ADAPTIVEDELTA_X,
+    ANIM_CHANNEL_ADAPTIVEDELTA_Y,
+    ANIM_CHANNEL_ADAPTIVEDELTA_Z,
+    ANIM_CHANNEL_ADAPTIVEDELTA_Q,
 };

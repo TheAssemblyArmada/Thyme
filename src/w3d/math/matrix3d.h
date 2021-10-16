@@ -672,6 +672,75 @@ public:
 
     int Is_Orthogonal() const;
 
+    void Post_Mul(const Matrix3D &that)
+    {
+        float f1 = that.Row[1].Y * Row[0].Y + Row[0].Z * that.Row[2].Y + that.Row[0].Y * Row[0].X;
+        float f2 = that.Row[1].Z * Row[0].Y + that.Row[2].Z * Row[0].Z + that.Row[0].Z * Row[0].X;
+        float f3 = that.Row[0].W * Row[0].X + Row[0].Z * that.Row[2].W + that.Row[1].W * Row[0].Y;
+        float f4 = that.Row[1].X * Row[0].Y + that.Row[0].X * Row[0].X;
+        float f5 = that.Row[2].X * Row[0].Z;
+
+        Row[0].Z = f2;
+        Row[0].X = f4 + f5;
+        Row[0].Y = f1;
+        Row[0].W = f3 + Row[0].W;
+
+        float f6 = Row[1].Y * that.Row[1].Y + Row[1].Z * that.Row[2].Y + that.Row[0].Y * Row[1].X;
+        float f7 = Row[1].Z * that.Row[2].Z + Row[1].Y * that.Row[1].Z + that.Row[0].Z * Row[1].X;
+        float f8 = Row[1].Z * that.Row[2].W + Row[1].Y * that.Row[1].W + Row[1].X * that.Row[0].W;
+
+        Row[1].X = Row[1].Z * that.Row[2].X + Row[1].Y * that.Row[1].X + Row[1].X * that.Row[0].X;
+        Row[1].Y = f6;
+        Row[1].Z = f7;
+        Row[1].W = f8 + Row[1].W;
+
+        float f9 = Row[2].Y * that.Row[1].Y + Row[2].Z * that.Row[2].Y + Row[2].X * that.Row[0].Y;
+        float f10 = Row[2].Z * that.Row[2].Z + Row[2].Y * that.Row[1].Z + that.Row[0].Z * Row[2].X;
+        float f11 = Row[2].Z * that.Row[2].W + Row[2].Y * that.Row[1].W + that.Row[0].W * Row[2].X;
+        float f12 = Row[2].Z * that.Row[2].X + Row[2].Y * that.Row[1].X;
+        float f13 = Row[2].X * that.Row[0].X;
+
+        Row[2].Z = f10;
+        Row[2].X = f12 + f13;
+        Row[2].Y = f9;
+        Row[2].W = f11 + Row[2].W;
+    }
+
+    void Mul(const Matrix3D &A, const Matrix3D &B)
+    {
+        float f1 = B.Row[0].X;
+        float f2 = B.Row[1].X;
+        float f3 = B.Row[2].X;
+
+        Row[0].X = f1 * A.Row[0].X + f3 * A.Row[0].Z + f2 * A.Row[0].Y;
+        Row[1].X = f3 * A.Row[1].Z + f2 * A.Row[1].Y + f1 * A.Row[1].X;
+        Row[2].X = f3 * A.Row[2].Z + f2 * A.Row[2].Y + f1 * A.Row[2].X;
+
+        float f4 = B.Row[0].Y;
+        float f5 = B.Row[1].Y;
+        float f6 = B.Row[2].Y;
+
+        Row[0].Y = f4 * A.Row[0].X + f6 * A.Row[0].Z + f5 * A.Row[0].Y;
+        Row[1].Y = f6 * A.Row[1].Z + f5 * A.Row[1].Y + f4 * A.Row[1].X;
+        Row[2].Y = f6 * A.Row[2].Z + f5 * A.Row[2].Y + f4 * A.Row[2].X;
+
+        float f7 = B.Row[0].Z;
+        float f8 = B.Row[1].Z;
+        float f9 = B.Row[2].Z;
+
+        Row[0].Z = f7 * A.Row[0].X + f9 * A.Row[0].Z + f8 * A.Row[0].Y;
+        Row[1].Z = f9 * A.Row[1].Z + f8 * A.Row[1].Y + f7 * A.Row[1].X;
+        Row[2].Z = f9 * A.Row[2].Z + f8 * A.Row[2].Y + f7 * A.Row[2].X;
+
+        float f10 = B.Row[0].W;
+        float f11 = B.Row[1].W;
+        float f12 = B.Row[2].W;
+
+        Row[0].W = f10 * A.Row[0].X + f12 * A.Row[0].Z + f11 * A.Row[0].Y + A.Row[0].W;
+        Row[1].W = f12 * A.Row[1].Z + f11 * A.Row[1].Y + f10 * A.Row[1].X + A.Row[1].W;
+        Row[2].W = f12 * A.Row[2].Z + f11 * A.Row[2].Y + f10 * A.Row[2].X + A.Row[2].W;
+    }
+
     static __forceinline void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;

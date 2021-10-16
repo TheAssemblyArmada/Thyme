@@ -26,7 +26,7 @@ class HTreeManagerClass
 public:
     HTreeManagerClass();
     ~HTreeManagerClass();
-    bool Load_Tree(ChunkLoadClass &cload);
+    int Load_Tree(ChunkLoadClass &cload);
     void Free_All_Trees();
     HTreeClass *Get_Tree(int id);
     HTreeClass *Get_Tree(const char *name);

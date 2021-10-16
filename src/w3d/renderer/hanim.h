@@ -47,10 +47,10 @@ public:
     virtual bool Has_Rotation(int pividx) { return true; }
     virtual bool Has_Visibility(int pividx) { return true; }
     virtual int Class_ID() { return -1 /*CLASSID_UNKNOWN*/; }
-    virtual bool Has_Embedded_Sounds() const { return (m_bitfield >> 31) ^ 1; }
-    virtual void Set_Embedded_Sound_Bone_Index(int index) { m_bitfield = index; };
-    virtual int Get_Embedded_Sound_Bone_Index() { return m_bitfield; }
+    virtual bool Has_Embedded_Sounds() const { return m_embeddedSoundBoneIndex >= 0; }
+    virtual void Set_Embedded_Sound_Bone_Index(int index) { m_embeddedSoundBoneIndex = index; };
+    virtual int Get_Embedded_Sound_Bone_Index() { return m_embeddedSoundBoneIndex; }
 
 protected:
-    unsigned int m_bitfield;
+    unsigned int m_embeddedSoundBoneIndex;
 };

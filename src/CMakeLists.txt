@@ -416,6 +416,14 @@ if(DINPUT8_FOUND)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_DINPUT)
 endif()
 
+if(THYME_FEATURES)
+    list(APPEND GAME_COMPILE_OPTIONS -DTHYME_FEATURES)
+endif()
+
+if(THYME_FIXES)
+    list(APPEND GAME_COMPILE_OPTIONS -DTHYME_FIXES)
+endif()
+
 # Static library for standalone builds and linking tools.
 if(STANDALONE OR BUILD_TOOLS)
     add_library(thyme_lib STATIC ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS} game/crashhandler.cpp)

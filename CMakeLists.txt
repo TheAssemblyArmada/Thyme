@@ -68,6 +68,8 @@ option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
+option(THYME_FEATURES "Enables features that extend the original game functionality." ON)
+option(THYME_FIXES "Enables fixes that get rid of original game issues." ON)
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)

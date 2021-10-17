@@ -25,7 +25,7 @@ size_t u_strlcpy(unichar_t *dst, const unichar_t *src, size_t dsize)
     /* Copy as many bytes as will fit. */
     if (nleft != 0) {
         while (--nleft != 0) {
-            if ((*dst++ = *src++) == '\0')
+            if ((*dst++ = *src++) == U_CHAR('\0'))
                 break;
         }
     }

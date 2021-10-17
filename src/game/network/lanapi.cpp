@@ -229,7 +229,7 @@ void LANAPI::Request_Game_Join_Direct(uint32_t addr)
         msg.message_type = LANMessage::MSG_REQUEST_GAME_INFO;
         Fill_In_Message(&msg);
         msg.direct_join.addr = Get_Local_IP();
-        u_strlcpy(msg.direct_join.name, (const unichar_t *)m_name.Str(), m_name.Get_Length() + 1);
+        u_strlcpy(msg.direct_join.name, m_name.Str(), m_name.Get_Length() + 1);
         Send_Message(&msg, addr);
         m_pendingAction = ACT_LEAVE;
         m_expiration = m_actionTimeout + rts::Get_Time();
@@ -435,7 +435,7 @@ void LANAPI::On_Game_Start_Timer(int time)
     }
 
     msg.Format(format, time);
-    On_Chat((const unichar_t *)u"SYSTEM", m_localIP, msg, LANCHAT_SYSTEM);
+    On_Chat(U_CHAR("SYSTEM"), m_localIP, msg, LANCHAT_SYSTEM);
 }
 
 void LANAPI::On_Game_Options(uint32_t player_addr, int player_slot, Utf8String options)
@@ -525,7 +525,7 @@ bool LANAPI::Am_I_Host()
  */
 void LANAPI::Fill_In_Message(LANMessage *msg)
 {
-    u_strlcpy(msg->name, (const unichar_t *)m_name.Str(), sizeof(msg->name));
+    u_strlcpy(msg->name, m_name.Str(), sizeof(msg->name));
     strlcpy(msg->user_name, m_userName, sizeof(msg->user_name));
     strlcpy(msg->host_name, m_hostName, sizeof(msg->host_name));
 }

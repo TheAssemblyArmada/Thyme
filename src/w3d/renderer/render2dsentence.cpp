@@ -485,10 +485,10 @@ Vector2 Render2DSentenceClass::Get_Text_Extents(const unichar_t *text)
 {
     Vector2 extent(0, (float)m_font->Get_Char_Height());
 
-    while (*text != u'\0') {
+    while (*text != U_CHAR('\0')) {
         unichar_t ch = *text++;
 
-        if (ch != u'\n') {
+        if (ch != U_CHAR('\n')) {
             extent.X += m_font->Get_Char_Spacing(ch);
         }
     }
@@ -507,7 +507,7 @@ void Render2DSentenceClass::Build_Sentence(const unichar_t *text, int *x, int *y
         return;
     }
 
-    if (m_centered && (m_wrapWidth > 0.0f || u_strchr(text, u'\n'))) {
+    if (m_centered && (m_wrapWidth > 0.0f || u_strchr(text, U_CHAR('\n')))) {
         Build_Sentence_Centered(text, x, y);
     } else {
         Build_Sentence_Not_Centered(text, x, y);
@@ -683,7 +683,7 @@ void Render2DSentenceClass::Allocate_New_Surface(const unichar_t *text, bool reu
 
     int text_width = 0;
 
-    for (int index = 0; text[index] != u'\0'; index++) {
+    for (int index = 0; text[index] != U_CHAR('\0'); index++) {
         text_width += m_font->Get_Char_Spacing(text[index]);
     }
 
@@ -766,14 +766,14 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             spacing = 0;
 
             // Process a word in the sentence.
-            for (unichar_t test_ch = *cur_text; *cur_text != u'\0'; test_ch = *cur_text) {
-                if (test_ch <= u' ') {
+            for (unichar_t test_ch = *cur_text; *cur_text != U_CHAR('\0'); test_ch = *cur_text) {
+                if (test_ch <= U_CHAR(' ')) {
                     break;
                 }
 
-                if (m_processAmpersand && test_ch == u'&') {
+                if (m_processAmpersand && test_ch == U_CHAR('&')) {
                     // Spaces before the ampersand also get disregarded?
-                    if (word_width != 0 && cur_text[-1] == u' ') {
+                    if (word_width != 0 && cur_text[-1] == U_CHAR(' ')) {
                         sentence_width -= word_width;
                     }
 
@@ -801,7 +801,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                         word_count_tracker = word_count - 1;
                         sentence_width += word_width - spacing;
 
-                        if (*cur_text == u'\0') {
+                        if (*cur_text == U_CHAR('\0')) {
                             breakout = true;
                         }
                     } else {
@@ -811,7 +811,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                 }
             }
 
-            if (*cur_text == u'\0') {
+            if (*cur_text == U_CHAR('\0')) {
                 word_count_tracker += word_count;
                 sentence_width += word_width;
                 breakout = true;
@@ -821,12 +821,12 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             word_count_tracker += word_count + 1;
             sentence_width += word_width;
 
-            if (*cur_text != u' ') {
+            if (*cur_text != U_CHAR(' ')) {
                 break;
             }
 
             ++cur_text;
-            word_width = m_font->Get_Char_Spacing(u' ');
+            word_width = m_font->Get_Char_Spacing(U_CHAR(' '));
             word_count = 0;
             sentence_width += word_width;
         }
@@ -843,9 +843,9 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             unichar_t cur_ch = *text++;
             bool ampersand_processed = false;
 
-            if (m_processAmpersand && cur_ch == u'&') {
+            if (m_processAmpersand && cur_ch == U_CHAR('&')) {
                 unichar_t next_ch = *text;
-                if (next_ch != u'\0' && next_ch > u' ') {
+                if (next_ch != U_CHAR('\0') && next_ch > U_CHAR(' ')) {
                     cur_ch = next_ch;
                     ++text;
                     ampersand_processed = true;
@@ -855,14 +855,14 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             float char_spacing = m_font->Get_Char_Spacing(cur_ch);
             bool tex_too_small = m_currTextureSize <= m_textureOffset.I + char_spacing;
 
-            if (tex_too_small || (cur_ch == u' ' || cur_ch == u'\n' || cur_ch == u'\0')) {
+            if (tex_too_small || (cur_ch == U_CHAR(' ') || cur_ch == U_CHAR('\n') || cur_ch == U_CHAR('\0'))) {
                 Record_Sentence_Chunk();
                 m_cursor.X += m_textureOffset.I - m_textureStartX;
                 m_textureStartX = m_textureOffset.I;
 
-                if (cur_ch == u' ') {
+                if (cur_ch == U_CHAR(' ')) {
                     m_cursor.X += char_spacing;
-                } else if (cur_ch == u'\n' || cur_ch == u'\0') {
+                } else if (cur_ch == U_CHAR('\n') || cur_ch == U_CHAR('\0')) {
                     break;
                 }
 
@@ -877,7 +877,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                 }
             }
 
-            if (cur_ch != u'\n' && cur_ch != u' ') {
+            if (cur_ch != U_CHAR('\n') && cur_ch != U_CHAR(' ')) {
                 if (m_lockedPtr == nullptr) {
                     m_lockedPtr = static_cast<uint16_t *>(m_curSurface->Lock(&m_lockedStride));
                     captainslog_assert(m_lockedPtr != nullptr);
@@ -891,7 +891,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                 if (ampersand_processed) {
                     x_increment = m_font->m_widthReduction + char_spacing;
 
-                    if (cur_ch == u'M') {
+                    if (cur_ch == U_CHAR('M')) {
                         x_increment += 1.0f;
                     }
                 } else {
@@ -951,10 +951,10 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
         unichar_t ch = *text++;
         bool unkbool_ampersand = false;
 
-        if (m_processAmpersand && ch == u'&') {
+        if (m_processAmpersand && ch == U_CHAR('&')) {
             unichar_t next_ch = *text;
 
-            if (next_ch != u'\0' && next_ch > u' ' && next_ch != u'\n') {
+            if (next_ch != U_CHAR('\0') && next_ch > U_CHAR(' ') && next_ch != U_CHAR('\n')) {
 
                 if (wrapped) {
                     x_pos = 0;
@@ -968,7 +968,7 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
 
         float char_spacing = (float)m_font->Get_Char_Spacing(ch);
         bool texture_width_exceeded = ((m_textureOffset.I + char_spacing) >= m_currTextureSize);
-        bool encountered_break_char = (ch == u' ' || ch == u'\n' || ch == u'\0');
+        bool encountered_break_char = (ch == U_CHAR(' ') || ch == U_CHAR('\n') || ch == U_CHAR('\0'));
         bool wrap_width_exceeded = false;
 
         if (m_partialWords && m_wrapWidth != 0.0f) {
@@ -991,17 +991,17 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
             m_textureStartX = m_textureOffset.I;
 
             switch (ch) {
-                case u' ':
+                case U_CHAR(' '):
                     if (m_wrapWidth > 0.0f) {
                         float spacing = char_spacing;
                         const unichar_t *tmp_text = text;
 
-                        while (*tmp_text != u'\0') {
-                            if (*tmp_text < u' ') {
+                        while (*tmp_text != U_CHAR('\0')) {
+                            if (*tmp_text < U_CHAR(' ')) {
                                 break;
                             }
 
-                            if (m_processAmpersand && *tmp_text == u'&') {
+                            if (m_processAmpersand && *tmp_text == U_CHAR('&')) {
                                 ++tmp_text;
                             }
 
@@ -1015,11 +1015,11 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
                         }
                     }
                     break;
-                case u'\n':
+                case U_CHAR('\n'):
                     m_cursor.X = 0.0f;
                     m_cursor.Y = char_height + m_cursor.Y;
                     break;
-                case u'\0':
+                case U_CHAR('\0'):
                     goto exit;
                     break;
                 default:
@@ -1041,7 +1041,7 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
             }
         }
 
-        if (ch != u'\n') {
+        if (ch != U_CHAR('\n')) {
             if (!reuse_surface && m_lockedPtr == nullptr) {
                 m_lockedPtr = static_cast<uint16_t *>(m_curSurface->Lock(&m_lockedStride));
                 captainslog_assert(m_lockedPtr != nullptr);

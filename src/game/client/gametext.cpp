@@ -203,22 +203,22 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
 
             switch (current) {
                 case '\\':
-                    *out++ = u'\\';
+                    *out++ = U_CHAR('\\');
                     break;
                 case '\'':
-                    *out++ = u'\'';
+                    *out++ = U_CHAR('\'');
                     break;
                 case '"':
-                    *out++ = u'"';
+                    *out++ = U_CHAR('"');
                     break;
                 case '?':
-                    *out++ = u'?';
+                    *out++ = U_CHAR('?');
                     break;
                 case 't':
-                    *out++ = u'\t';
+                    *out++ = U_CHAR('\t');
                     break;
                 case 'n':
-                    *out++ = u'\n';
+                    *out++ = U_CHAR('\n');
                     break;
                 case '\0':
                     return;
@@ -240,7 +240,7 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
     }
 
     // Null terminate.
-    *out = u'\0';
+    *out = U_CHAR('\0');
 }
 
 // Remove whitespace from the start and end of a ascii/utf8 string
@@ -276,19 +276,19 @@ void GameTextManager::Strip_Spaces(unichar_t *buffer)
     unichar_t *putp = buffer;
 
     unichar_t current = *getp++;
-    unichar_t last = '\0';
+    unichar_t last = U_CHAR('\0');
 
     bool prev_whitepsace = true;
 
-    while (current != '\0') {
-        if (current == ' ') {
-            if (last == ' ' || prev_whitepsace) {
+    while (current != U_CHAR('\0')) {
+        if (current == U_CHAR(' ')) {
+            if (last == U_CHAR(' ') || prev_whitepsace) {
                 current = *getp++;
 
                 continue;
             }
-        } else if (current == '\n' || current == '\t') {
-            if (last == ' ') {
+        } else if (current == U_CHAR('\n') || current == U_CHAR('\t')) {
+            if (last == U_CHAR(' ')) {
                 --putp;
             }
 
@@ -306,12 +306,12 @@ void GameTextManager::Strip_Spaces(unichar_t *buffer)
         current = *getp++;
     }
 
-    if (last == ' ') {
+    if (last == U_CHAR(' ')) {
         --putp;
     }
 
     // Ensure we null terminate after the last shuffled character.
-    *putp = '\0';
+    *putp = U_CHAR('\0');
 }
 
 // Reverses a word, appears to be unused in release, involved in jabberwocky setting
@@ -679,7 +679,7 @@ GameTextManager::GameTextManager() :
     m_noStringList(nullptr),
     m_useStringFile(true),
     m_language(LANGUAGE_ID_US),
-    m_failed((const unichar_t *)u"***FATAL*** String Manager failed to initialize properly"),
+    m_failed(U_CHAR("***FATAL*** String Manager failed to initialize properly")),
     m_mapStringInfo(nullptr),
     m_mapStringLUT(nullptr),
     m_mapTextCount(0),
@@ -759,7 +759,7 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     Utf8String ntitle;
-    Utf16String wtitle = (const unichar_t *)u"Thyme - ";
+    Utf16String wtitle = U_CHAR("Thyme - ");
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);
@@ -842,7 +842,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
     Utf16String missing;
     NoString *no_string;
 
-    missing.Format((const unichar_t *)u"MISSING: '%hs'", args);
+    missing.Format(U_CHAR("MISSING: '%hs'"), args);
 
     // Find missing string in NoString list if it already exists.
     for (no_string = m_noStringList; no_string != nullptr; no_string = no_string->next) {

@@ -75,17 +75,17 @@
 #if !defined HAVE_STD_CLAMP && defined __cplusplus
 #include <functional>
 
-template<size_t Size> size_t strlcat_t(char (&dst)[Size], const char *src)
+template<size_t Size> size_t strlcat_tpl(char (&dst)[Size], const char *src)
 {
     return strlcat(dst, src, Size);
 }
 
-template<size_t Size> size_t strlcpy_t(char (&dst)[Size], const char *src)
+template<size_t Size> size_t strlcpy_tpl(char (&dst)[Size], const char *src)
 {
     return strlcpy(dst, src, Size);
 }
 
-template<size_t Size> size_t u_strlcpy_t(unichar_t (&dst)[Size], const unichar_t *src)
+template<size_t Size> size_t u_strlcpy_tpl(unichar_t (&dst)[Size], const unichar_t *src)
 {
     return u_strlcpy(dst, src, Size);
 }

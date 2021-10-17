@@ -366,7 +366,7 @@ int TargaImage::Save(const char *name, int flags, bool add_extension)
     // Write the extension if required, if not just write the footer.
     if (add_extension) {
         m_extension.ext_size = sizeof(m_extension);
-        strlcpy_t(m_extension.software_id, "Thyme Game Engine");
+        strlcpy_tpl(m_extension.software_id, "Thyme Game Engine");
         m_extension.software_vers.number = 1;
         m_extension.software_vers.letter = '\0';
         footer.extension = File_Seek(0, FileSeekType::FS_SEEK_CURRENT);
@@ -380,7 +380,7 @@ int TargaImage::Save(const char *name, int flags, bool add_extension)
         footer.extension = 0;
     }
 
-    strlcpy_t(footer.signature, "TRUEVISION-XFILE");
+    strlcpy_tpl(footer.signature, "TRUEVISION-XFILE");
     footer.dot_char = '.';
     footer.null_char = '\0';
 

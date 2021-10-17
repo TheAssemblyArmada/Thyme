@@ -73,8 +73,8 @@ const char *GameFileClass::Set_Name(const char *filename)
     char buff[PATH_MAX];
     char ext[32];
 
-    strlcpy_t(m_filename, filename);
-    strlcpy_t(buff, filename);
+    strlcpy_tpl(m_filename, filename);
+    strlcpy_tpl(buff, filename);
 
     int count = 1;
     for (size_t i = strlen(buff) - 1; i > 0; --i) {
@@ -83,7 +83,7 @@ const char *GameFileClass::Set_Name(const char *filename)
         }
 
         if (buff[i] == '.') {
-            strlcpy_t(ext, &buff[i]);
+            strlcpy_tpl(ext, &buff[i]);
             buff[i] = '\0';
 
             break;
@@ -107,7 +107,7 @@ const char *GameFileClass::Set_Name(const char *filename)
     if (strcasecmp(ext, ".w3d") == 0) {
         file_type = GAME_FILE_W3D;
         snprintf(m_filePath, sizeof(m_filePath), "Data/%s/Art/W3D/", Get_Registry_Language().Str());
-        strlcat_t(m_filePath, filename);
+        strlcat_tpl(m_filePath, filename);
     } else {
         if (strcasecmp(ext, ".tga") == 0) {
             file_type = GAME_FILE_TGA;
@@ -120,7 +120,7 @@ const char *GameFileClass::Set_Name(const char *filename)
         if (file_type != GAME_FILE_UNK) {
             snprintf(m_filePath, sizeof(m_filePath), "Data/%s/Art/Textures/", Get_Registry_Language().Str());
 
-            strlcat_t(m_filePath, filename);
+            strlcat_tpl(m_filePath, filename);
         }
     }
 
@@ -129,16 +129,16 @@ const char *GameFileClass::Set_Name(const char *filename)
     if (!m_fileExists) {
         switch (file_type) {
             case GAME_FILE_W3D:
-                strlcpy_t(m_filePath, "Art/W3D/");
-                strlcat_t(m_filePath, filename);
+                strlcpy_tpl(m_filePath, "Art/W3D/");
+                strlcat_tpl(m_filePath, filename);
                 break;
             case GAME_FILE_TGA:
             case GAME_FILE_DDS: // Fallthrough
-                strlcpy_t(m_filePath, "Art/Textures/");
-                strlcat_t(m_filePath, filename);
+                strlcpy_tpl(m_filePath, "Art/Textures/");
+                strlcat_tpl(m_filePath, filename);
                 break;
             default:
-                strlcpy_t(m_filePath, filename);
+                strlcpy_tpl(m_filePath, filename);
                 break;
         }
 
@@ -150,8 +150,8 @@ const char *GameFileClass::Set_Name(const char *filename)
             case GAME_FILE_W3D:
             case GAME_FILE_TGA:
             case GAME_FILE_DDS: // Fallthrough
-                strlcpy_t(m_filePath, "../TestArt/");
-                strlcat_t(m_filePath, filename);
+                strlcpy_tpl(m_filePath, "../TestArt/");
+                strlcat_tpl(m_filePath, filename);
                 break;
             default:
                 break;
@@ -164,12 +164,12 @@ const char *GameFileClass::Set_Name(const char *filename)
         switch (file_type) {
             case GAME_FILE_W3D:
                 snprintf(m_filePath, sizeof(m_filePath), "%sW3D/", g_theWriteableGlobalData->m_userDataDirectory.Str());
-                strlcat_t(m_filePath, filename);
+                strlcat_tpl(m_filePath, filename);
                 break;
             case GAME_FILE_TGA:
             case GAME_FILE_DDS: // Fallthrough
                 snprintf(m_filePath, sizeof(m_filePath), "%sTextures/", g_theWriteableGlobalData->m_userDataDirectory.Str());
-                strlcat_t(m_filePath, filename);
+                strlcat_tpl(m_filePath, filename);
                 break;
             default:
                 break;
@@ -185,7 +185,7 @@ const char *GameFileClass::Set_Name(const char *filename)
                 // case GAME_FILE_DDS: //Fallthrough
                 snprintf(
                     m_filePath, sizeof(m_filePath), "%sMapPreviews/", g_theWriteableGlobalData->m_userDataDirectory.Str());
-                strlcat_t(m_filePath, filename);
+                strlcat_tpl(m_filePath, filename);
                 break;
             default:
                 break;

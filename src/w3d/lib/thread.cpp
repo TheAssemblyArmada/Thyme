@@ -58,7 +58,7 @@ ThreadClass::ThreadClass(const char *thread_name, except_t exception_handler) :
 {
     if (thread_name != nullptr) {
         // Safer copy, prevents buffer overrun
-        strlcpy_t(m_threadName, thread_name);
+        strlcpy_tpl(m_threadName, thread_name);
     } else {
         // We know this is safe for string "No Name" as buffer is 67.
         strcpy(m_threadName, "No Name");

@@ -219,17 +219,17 @@ inline Utf8String INI::Get_Next_Ascii_String()
             _buffer[0] = '\0';
 
             if (strlen(token) > 1) {
-                strlcpy_t(_buffer, token + 1);
+                strlcpy_tpl(_buffer, token + 1);
             }
 
             const char *next_token = Get_Next_Token_Or_Null(m_sepsQuote);
 
             if (next_token != nullptr) { // If we have another token, parse that too.
                 if (strlen(next_token) > 1 && next_token[1] != '\t') {
-                    strlcat_t(_buffer, " ");
+                    strlcat_tpl(_buffer, " ");
                 }
 
-                strlcat_t(_buffer, next_token);
+                strlcat_tpl(_buffer, next_token);
             } else { // Handle trailing ".
                 size_t length = strlen(_buffer);
 

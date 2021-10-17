@@ -98,7 +98,7 @@ void LANAPI::Init()
 
     if (!GetUserNameA(user_name, &un_size)) {
         if (getenv("USERNAME") != nullptr) {
-            strlcpy_t(user_name, getenv("USERNAME"));
+            strlcpy_tpl(user_name, getenv("USERNAME"));
         } else {
             strcpy(user_name, "unknown");
         }
@@ -108,7 +108,7 @@ void LANAPI::Init()
 
     if (getlogin_r(user_name, sizeof(user_name)) != 0) {
         if (getenv("USER") != nullptr) {
-            strlcpy_t(user_name, getenv("USER"));
+            strlcpy_tpl(user_name, getenv("USER"));
         } else {
             strcpy(user_name, "unknown");
         }
@@ -126,7 +126,7 @@ void LANAPI::Init()
 
     if (!GetComputerNameA(host_name, &hn_size)) {
         if (getenv("COMPUTERNAME") != nullptr) {
-            strlcpy_t(host_name, getenv("COMPUTERNAME"));
+            strlcpy_tpl(host_name, getenv("COMPUTERNAME"));
         } else {
             strcpy(host_name, "unknown");
         }
@@ -136,7 +136,7 @@ void LANAPI::Init()
 
     if (gethostname(host_name, sizeof(host_name)) != 0) {
         if (getenv("HOSTNAME") != nullptr) {
-            strlcpy_t(host_name, getenv("HOSTNAME"));
+            strlcpy_tpl(host_name, getenv("HOSTNAME"));
         } else {
             strcpy(host_name, "unknown");
         }
@@ -229,7 +229,7 @@ void LANAPI::Request_Game_Join_Direct(uint32_t addr)
         msg.message_type = LANMessage::MSG_REQUEST_GAME_INFO;
         Fill_In_Message(&msg);
         msg.direct_join.addr = Get_Local_IP();
-        u_strlcpy_t(msg.direct_join.name, m_name.Str());
+        u_strlcpy_tpl(msg.direct_join.name, m_name.Str());
         Send_Message(&msg, addr);
         m_pendingAction = ACT_LEAVE;
         m_expiration = m_actionTimeout + rts::Get_Time();
@@ -525,9 +525,9 @@ bool LANAPI::Am_I_Host()
  */
 void LANAPI::Fill_In_Message(LANMessage *msg)
 {
-    u_strlcpy_t(msg->name, m_name.Str());
-    strlcpy_t(msg->user_name, m_userName);
-    strlcpy_t(msg->host_name, m_hostName);
+    u_strlcpy_tpl(msg->name, m_name.Str());
+    strlcpy_tpl(msg->user_name, m_userName);
+    strlcpy_tpl(msg->host_name, m_hostName);
 }
 
 LANPlayer *LANAPI::Lookup_Player(uint32_t ip)

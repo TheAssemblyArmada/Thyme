@@ -329,6 +329,15 @@ set(GAMEENGINE_WB_SRC
     editor/editmain.cpp
 )
 
+
+set(GAMEENGINE_NATVIS "")
+
+if (MSVC_IDE)
+    list(APPEND GAMEENGINE_NATVIS
+        natvis/thyme.natvis
+    )
+endif()
+
 # Don't try and build the miles sound system when not building to link to the original game.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
@@ -421,11 +430,11 @@ endif()
 
 # Static library for standalone builds and linking tools.
 if(STANDALONE OR BUILD_TOOLS)
-    add_library(thyme_lib STATIC ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS} game/crashhandler.cpp)
+    add_library(thyme_lib STATIC ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS} ${GAMEENGINE_NATVIS} game/crashhandler.cpp)
     target_include_directories(thyme_lib PUBLIC ${GAMEENGINE_INCLUDES})
     target_link_libraries(thyme_lib PUBLIC ${GAME_LINK_LIBRARIES})
     target_compile_definitions(thyme_lib PUBLIC ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=")
-    target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)  
+    target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)
 
     if(USE_CRASHPAD)
         # Rename the crash handler so it won't conflict with any other installs of crashpad.

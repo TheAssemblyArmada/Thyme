@@ -86,15 +86,15 @@ public:
     GameTextManager();
     virtual ~GameTextManager();
 
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update() {}
+    virtual void Init() override;
+    virtual void Reset() override;
+    virtual void Update() override {}
 
-    virtual Utf16String Fetch(const char *args, bool *success = nullptr);
-    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr);
-    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label);
-    virtual void Init_Map_String_File(Utf8String const &filename);
-    virtual void Deinit();
+    virtual Utf16String Fetch(const char *args, bool *success = nullptr) override;
+    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) override;
+    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) override;
+    virtual void Init_Map_String_File(Utf8String const &filename) override;
+    virtual void Deinit() override;
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();

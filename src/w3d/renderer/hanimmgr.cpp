@@ -15,6 +15,8 @@
 
 #include "hanimmgr.h"
 #include "hanim.h"
+#include "hcanim.h"
+#include "hrawanim.h"
 #include "missing.h"
 #include "w3d_file.h"
 #ifdef GAME_DLL
@@ -56,29 +58,54 @@ int HAnimManagerClass::Load_Anim(ChunkLoadClass &cload)
 
 int HAnimManagerClass::Load_Morph_Anim(ChunkLoadClass &cload)
 {
-#ifdef GAME_DLL
-    return Call_Method<int, HAnimManagerClass, ChunkLoadClass &>(0x00831D30, this, cload);
-#else
+    captainslog_assert("Morph animations not supported");
     return 0;
-#endif
 }
 
 int HAnimManagerClass::Load_Raw_Anim(ChunkLoadClass &cload)
 {
-#ifdef GAME_DLL
-    return Call_Method<int, HAnimManagerClass, ChunkLoadClass &>(0x00831E20, this, cload);
-#else
+    HRawAnimClass *anim = new HRawAnimClass();
+
+    if (!anim) {
+        return 1;
+    }
+
+    if (anim->Load_W3D(cload)) {
+        anim->Release_Ref();
+        return 1;
+    }
+
+    if (Peek_Anim(anim->Get_Name())) {
+        anim->Release_Ref();
+        return 1;
+    }
+
+    Add_Anim(anim);
+    anim->Release_Ref();
     return 0;
-#endif
 }
 
 int HAnimManagerClass::Load_Compressed_Anim(ChunkLoadClass &cload)
 {
-#ifdef GAME_DLL
-    return Call_Method<int, HAnimManagerClass, ChunkLoadClass &>(0x00831F10, this, cload);
-#else
+    HCompressedAnimClass *anim = new HCompressedAnimClass();
+
+    if (!anim) {
+        return 1;
+    }
+
+    if (anim->Load_W3D(cload)) {
+        anim->Release_Ref();
+        return 1;
+    }
+
+    if (Peek_Anim(anim->Get_Name())) {
+        anim->Release_Ref();
+        return 1;
+    }
+
+    Add_Anim(anim);
+    anim->Release_Ref();
     return 0;
-#endif
 }
 
 // 0x00832000

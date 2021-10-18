@@ -762,7 +762,9 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     Utf8String ntitle;
-    Utf16String wtitle = U_CHAR("Thyme - ");
+    Utf16String wtitle;
+    // FEATURE: Add Thyme text to window name
+    wtitle = U_CHAR("Thyme - ");
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);

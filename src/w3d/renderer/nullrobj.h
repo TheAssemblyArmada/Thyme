@@ -22,13 +22,16 @@ class Null3DObjClass final : public RenderObjClass
 {
     char m_Name[32];
 
-    virtual int Class_ID() const override;
-    virtual RenderObjClass *Clone() const override;
-    virtual const char *Get_Name() const override;
-    virtual void Render(RenderInfoClass &rinfo) override;
-    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
-    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    virtual ~Null3DObjClass();
+    virtual int Class_ID() const override { return CLASSID_NULL; }
+    virtual RenderObjClass *Clone() const override { return new Null3DObjClass; }
+    virtual const char *Get_Name() const override { return m_Name; }
+    virtual void Render(RenderInfoClass &rinfo) override {}
+    virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override { sphere.Init(Vector3(0, 0, 0), 0.1f); }
+    virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override
+    {
+        box.Init(Vector3(0, 0, 0), Vector3(0.1f, 0.1f, 0.1f));
+    }
+    virtual ~Null3DObjClass() {}
 };
 
 class NullPrototypeClass final : public W3DMPO, public PrototypeClass

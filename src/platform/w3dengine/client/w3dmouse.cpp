@@ -352,7 +352,7 @@ void W3DMouse::Release_D3D_Cursor_Texture(MouseCursor cursor)
 // 0x007AD0E0
 void W3DMouse::Load_D3D_Cursor_Texture(MouseCursor cursor)
 {
-    // TODO: Requires WW3DAssetManager
+    // TODO: Requires W3DAssetManager
 #ifdef GAME_DLL
     Call_Method<void, W3DMouse>(0x007AD0E0, this);
 #endif

@@ -119,7 +119,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
     while (true) {
         char current;
 
-        // if in pointer is valid, read data from that, otherwise read from file.
+        // If in pointer is valid, read data from that, otherwise read from file.
         if (in != nullptr) {
             current = *in++;
 
@@ -141,7 +141,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
             state = 1;
         }
 
-        // state 1 read so long as its alphanumeric characters or underscore
+        // state 1 read so long as its alphanumeric characters or underscore.
         if (state == 1) {
             if ((current < 'a' || current > 'z') && (current < 'A' || current > 'Z') && (current < '0' || current > '9')
                 && current != '_') {
@@ -151,7 +151,7 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
             }
         }
 
-        // state 2 ignore everything and keep reading until a breaking condition is encountered
+        // state 2 ignore everything and keep reading until a breaking condition is encountered.
     }
 
     if (wave_pos > 0) {
@@ -243,7 +243,7 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
     *out = U_CHAR('\0');
 }
 
-// Remove whitespace from the start and end of a ascii/utf8 string
+// Remove whitespace from the start and end of a ascii/utf8 string.
 void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
 {
     int first = 0;
@@ -265,7 +265,7 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
         // Empty loop.
     }
 
-    // Null terminate after last none whitespace
+    // Null terminate after last none whitespace.
     buffer[pos + 1] = '\0';
 }
 
@@ -324,7 +324,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
         char s = *start;
         char e = *end;
 
-        // Swap the capitalisation for first char if its within standard alphabet.
+        // Swap the capitalization for first char if its within standard alphabet.
         if (first_char) {
             if (s >= 'A' && s <= 'Z' && e >= 'a' && e <= 'z') {
                 s += 32;
@@ -583,7 +583,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
     return true;
 }
 
-// Parse an additional string file for a map. Currently cannot be localised.
+// Parse an additional string file for a map. Currently cannot be localized.
 bool GameTextManager::Parse_Map_String_File(const char *filename)
 {
     captainslog_info("Parsing map string file '%s'.", filename);
@@ -729,7 +729,7 @@ void GameTextManager::Init()
         return;
     }
 
-    // Try and parse the relevant string file, cleanup if not
+    // Try and parse the relevant string file, cleanup if not.
     if (!use_csf) {
         if (!Parse_String_File("data/Generals.str")) {
             captainslog_error("Couldn't parse string file.");
@@ -795,7 +795,7 @@ Utf16String GameTextManager::Fetch(Utf8String args, bool *success)
     return Fetch(args.Str(), success);
 }
 
-// Find anr return the unicode string corresponding to the label provided.
+// Find and return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
 Utf16String GameTextManager::Fetch(const char *args, bool *success)
 {
@@ -851,7 +851,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
         }
     }
 
-    // If it wasn't found or the list was empty, add a new one.
+    // If it was not found or the list was empty, add a new one.
     if (no_string == nullptr) {
         no_string = new NoString;
         no_string->text = missing;
@@ -893,7 +893,7 @@ std::vector<Utf8String> *GameTextManager::Get_Strings_With_Prefix(Utf8String lab
     return &m_stringVector;
 }
 
-// Initialises a string file associated with a specific map. Resources
+// Initializes a string file associated with a specific map. Resources
 // allocated here are freed by GameTextManager::Reset()
 void GameTextManager::Init_Map_String_File(Utf8String const &filename)
 {
@@ -915,7 +915,7 @@ void GameTextManager::Init_Map_String_File(Utf8String const &filename)
     qsort(m_mapStringLUT, m_mapTextCount, sizeof(StringLookUp), Compare_LUT);
 }
 
-// Deinitialise the main string file, doesn't affect loaded map strings.
+// Destroys the main string file, doesn't affect loaded map strings.
 void GameTextManager::Deinit()
 {
     if (m_stringInfo != nullptr) {

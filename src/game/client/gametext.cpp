@@ -53,7 +53,7 @@ GameTextInterface *GameTextManager::Create_Game_Text_Interface()
 }
 
 // Get a char from a file.
-char GameTextManager::Read_Char(File *file)
+char GameTextFile::Read_Char(File *file)
 {
     char tmp;
 
@@ -64,8 +64,13 @@ char GameTextManager::Read_Char(File *file)
     return '\0';
 }
 
+char GameTextManager::Read_Char(File *file)
+{
+    return GameTextFile::Read_Char(file);
+}
+
 // Read a quoted string and also any extra data.
-void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len)
+void GameTextFile::Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len)
 {
     bool escape = false;
     int i;
@@ -163,8 +168,13 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
     wave[wave_pos] = '\0';
 }
 
+void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len)
+{
+    GameTextFile::Read_To_End_Of_Quote(file, in, out, wave, buff_len);
+}
+
 // Read a line from a str file into provided buffer.
-bool GameTextManager::Read_Line(char *buffer, int length, File *file)
+bool GameTextFile::Read_Line(char *buffer, int length, File *file)
 {
     bool ret = false;
     char *putp = buffer;
@@ -188,8 +198,13 @@ bool GameTextManager::Read_Line(char *buffer, int length, File *file)
     return ret;
 }
 
+bool GameTextManager::Read_Line(char *buffer, int length, File *file)
+{
+    return GameTextFile::Read_Line(buffer, length, file);
+}
+
 // Converts an ASCII string into a usc2/utf16 string.
-void GameTextManager::Translate_Copy(unichar_t *out, char *in)
+void GameTextFile::Translate_Copy(unichar_t *out, char *in)
 {
     // Unsigned allows handling latin extended code page.
     unsigned char *in_unsigned = reinterpret_cast<unsigned char *>(in);
@@ -243,8 +258,13 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
     *out = U_CHAR('\0');
 }
 
+void GameTextManager::Translate_Copy(unichar_t *out, char *in)
+{
+    GameTextFile::Translate_Copy(out, in);
+}
+
 // Remove whitespace from the start and end of a ascii/utf8 string.
-void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
+void GameTextFile::Remove_Leading_And_Trailing(char *buffer)
 {
     int first = 0;
 
@@ -269,8 +289,13 @@ void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
     buffer[pos + 1] = '\0';
 }
 
+void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
+{
+    GameTextFile::Remove_Leading_And_Trailing(buffer);
+}
+
 // Strip spaces from a ucs2/utf16 string.
-void GameTextManager::Strip_Spaces(unichar_t *buffer)
+void GameTextFile::Strip_Spaces(unichar_t *buffer)
 {
     unichar_t *getp = buffer;
     unichar_t *putp = buffer;
@@ -314,6 +339,11 @@ void GameTextManager::Strip_Spaces(unichar_t *buffer)
     *putp = U_CHAR('\0');
 }
 
+void GameTextManager::Strip_Spaces(unichar_t *buffer)
+{
+    GameTextFile::Strip_Spaces(buffer);
+}
+
 // Reverses a word, appears to be unused in release, involved in jabberwocky setting
 // in old dev builds its seems
 void GameTextManager::Reverse_Word(char *start, char *end)
@@ -340,7 +370,8 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 }
 
 // Get the count of strings in a str file.
-bool GameTextManager::Get_String_Count(const char *filename, int &count)
+bool GameTextFile::Get_String_Count(
+    const char *filename, int &count, BufferView<char> buffer_in, BufferView<char> buffer_out, BufferView<char> buffer_ex)
 {
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
     count = 0;
@@ -349,28 +380,37 @@ bool GameTextManager::Get_String_Count(const char *filename, int &count)
         return false;
     }
 
-    while (Read_Line(m_bufferIn, sizeof(m_bufferIn) - 1, file)) {
-        Remove_Leading_And_Trailing(m_bufferIn);
+    while (Read_Line(buffer_in, buffer_in.Size() - 1, file)) {
+        Remove_Leading_And_Trailing(buffer_in);
 
-        if (m_bufferIn[0] == '"') {
-            size_t len = strlen(m_bufferIn);
-            m_bufferIn[len] = '\n';
-            m_bufferIn[len + 1] = '\0';
-            Read_To_End_Of_Quote(file, &m_bufferIn[1], m_bufferOut, m_bufferEx, sizeof(m_bufferOut));
-        } else if (strcasecmp(m_bufferIn, "END") == 0) {
+        if (buffer_in[0] == '"') {
+            size_t len = strlen(buffer_in);
+            buffer_in[len] = '\n';
+            buffer_in[len + 1] = '\0';
+            Read_To_End_Of_Quote(file, &buffer_in[1], buffer_out, buffer_ex, buffer_out.Size());
+        } else if (strcasecmp(buffer_in, "END") == 0) {
             ++count;
         }
     }
 
-    count += 500;
+    count += 500; // #TODO Investigate
 
     file->Close();
 
     return true;
 }
 
+bool GameTextManager::Get_String_Count(const char *filename, int &count)
+{
+    return GameTextFile::Get_String_Count(filename,
+        count,
+        BufferView<char>::Create(m_bufferIn),
+        BufferView<char>::Create(m_bufferOut),
+        BufferView<char>::Create(m_bufferEx));
+}
+
 // Read info from a CSF file header.
-bool GameTextManager::Get_CSF_Info(const char *filename)
+bool GameTextFile::Get_CSF_Info(const char *filename, int &text_count, LanguageID &language)
 {
     static_assert(sizeof(CSFHeader) == 24, "CSFHeader struct not expected size.");
     CSFHeader header;
@@ -381,12 +421,12 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
         return false;
     }
 
-    m_textCount = le32toh(header.num_labels);
+    text_count = le32toh(header.num_labels);
 
     if (le32toh(header.version) <= 1) {
-        m_language = LANGUAGE_ID_US;
+        language = LANGUAGE_ID_US;
     } else {
-        m_language = static_cast<LanguageID>(le32toh(header.langid));
+        language = static_cast<LanguageID>(le32toh(header.langid));
     }
 
     file->Close();
@@ -394,8 +434,19 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
     return true;
 }
 
+bool GameTextManager::Get_CSF_Info(const char *filename)
+{
+    return GameTextFile::Get_CSF_Info(filename, m_textCount, m_language);
+}
+
 // Parses older format string files which only support ascii.
-bool GameTextManager::Parse_String_File(const char *filename)
+bool GameTextFile::Parse_String_File(const char *filename,
+    StringInfo *string_info,
+    int &max_label_len,
+    BufferView<unichar_t> translate,
+    BufferView<char> buffer_in,
+    BufferView<char> buffer_out,
+    BufferView<char> buffer_ex)
 {
     captainslog_info("Parsing string file '%s'.", filename);
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
@@ -407,12 +458,12 @@ bool GameTextManager::Parse_String_File(const char *filename)
     int index = 0;
     bool end = false;
 
-    while (Read_Line(m_bufferIn, sizeof(m_bufferIn), file)) {
-        Remove_Leading_And_Trailing(m_bufferIn);
+    while (Read_Line(buffer_in, buffer_in.Size(), file)) {
+        Remove_Leading_And_Trailing(buffer_in);
         captainslog_trace("We have '%s' buffered.", m_bufferIn);
         // If we got a "//" (which is 2F2F in hex) comment line or no string at all,
         // read next line
-        if (*reinterpret_cast<uint16_t *>(m_bufferIn) == 0x2F2F || m_bufferIn[0] == '\0') {
+        if (*reinterpret_cast<uint16_t *>(buffer_in.Get()) == 0x2F2F || buffer_in[0] == '\0') {
             captainslog_trace("Line started with // or empty line.");
             continue;
         }
@@ -422,44 +473,44 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #if ASSERT_LEVEL >= ASSERTS_DEBUG
         if (index > 0) {
             for (int i = 0; i < index; ++i) {
-                captainslog_dbgassert(strcasecmp(m_stringInfo[i].label.Str(), m_bufferIn) != 0,
+                captainslog_dbgassert(strcasecmp(string_info[i].label.Str(), buffer_in) != 0,
                     "String label '%s' is defined multiple times!",
-                    m_bufferIn);
+                    buffer_in);
             }
         }
 #endif
 
-        m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
+        string_info[index].label = buffer_in;
+        max_label_len = std::max<int>(strlen(buffer_in), max_label_len);
 
         bool read_string = false;
 
-        while (Read_Line(m_bufferIn, sizeof(m_bufferIn) - 1, file)) {
-            Remove_Leading_And_Trailing(m_bufferIn);
+        while (Read_Line(buffer_in, buffer_in.Size() - 1, file)) {
+            Remove_Leading_And_Trailing(buffer_in);
             captainslog_trace("We have '%s' buffered.", m_bufferIn);
 
-            if (m_bufferIn[0] == '"') {
-                size_t len = strlen(m_bufferIn);
-                m_bufferIn[len] = '\n';
-                m_bufferIn[len + 1] = '\0';
-                Read_To_End_Of_Quote(file, m_bufferIn + 1, m_bufferOut, m_bufferEx, sizeof(m_bufferOut));
+            if (buffer_in[0] == '"') {
+                size_t len = strlen(buffer_in);
+                buffer_in[len] = '\n';
+                buffer_in[len + 1] = '\0';
+                Read_To_End_Of_Quote(file, buffer_in + 1, buffer_out, buffer_ex, buffer_out.Size());
 
                 if (read_string) {
-                    captainslog_trace("String label '%s' has more than one string defined!", m_bufferIn);
+                    captainslog_trace("String label '%s' has more than one string defined!", buffer_in);
 
                     continue;
                 }
 
-                Translate_Copy(m_translateBuffer, m_bufferOut);
-                Strip_Spaces(m_translateBuffer);
+                Translate_Copy(translate, buffer_out);
+                Strip_Spaces(translate);
 
                 // TODO maybe Windows build does something extra here not done in mac version.
 
-                m_stringInfo[index].text = m_translateBuffer;
-                m_stringInfo[index].speech = m_bufferEx;
+                string_info[index].text = translate;
+                string_info[index].speech = buffer_ex;
 
                 read_string = true;
-            } else if (strcasecmp(m_bufferIn, "END") == 0) {
+            } else if (strcasecmp(buffer_in, "END") == 0) {
                 ++index;
                 end = true;
 
@@ -479,8 +530,23 @@ bool GameTextManager::Parse_String_File(const char *filename)
     return true;
 }
 
+bool GameTextManager::Parse_String_File(const char *filename)
+{
+    return GameTextFile::Parse_String_File(filename,
+        m_stringInfo,
+        m_maxLabelLen,
+        BufferView<unichar_t>::Create(m_translateBuffer),
+        BufferView<char>::Create(m_bufferIn),
+        BufferView<char>::Create(m_bufferOut),
+        BufferView<char>::Create(m_bufferEx));
+}
+
 // Parses CSF files which support UCS2 strings, essentially the BMP of unicode.
-bool GameTextManager::Parse_CSF_File(const char *filename)
+bool GameTextFile::Parse_CSF_File(const char *filename,
+    StringInfo *string_info,
+    int &max_label_len,
+    BufferView<unichar_t> translate,
+    BufferView<char> buffer_in)
 {
     captainslog_info("Parsing CSF file '%s'.", filename);
     CSFHeader header;
@@ -512,12 +578,12 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
         num_strings = le32toh(num_strings);
 
         if (length > 0) {
-            file->Read(m_bufferIn, length);
+            file->Read(buffer_in, length);
         }
 
-        m_bufferIn[length] = '\0';
-        m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max(length, m_maxLabelLen);
+        buffer_in[length] = '\0';
+        string_info[index].label = buffer_in;
+        max_label_len = std::max(length, max_label_len);
 
         // Read all strings associated with this label, Nox used multiple strings for
         // random variation, Generals only cares about first one.
@@ -534,24 +600,24 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
             length = le32toh(length);
 
             if (length > 0) {
-                file->Read(m_translateBuffer, sizeof(m_translateBuffer[0]) * length);
+                file->Read(translate, sizeof(translate[0]) * length);
             }
 
             // CSF format supports multiple strings per label, but we only care about
             // first string.
             if (i == 0) {
-                m_translateBuffer[length] = '\0';
+                translate[length] = '\0';
 
-                for (int j = 0; m_translateBuffer[j] != '\0'; ++j) {
+                for (int j = 0; translate[j] != '\0'; ++j) {
                     // Correct for big endian systems
-                    m_translateBuffer[j] = le16toh(m_translateBuffer[j]);
+                    translate[j] = le16toh(translate[j]);
 
                     // Binary NOT to decode
-                    m_translateBuffer[j] = ~m_translateBuffer[j];
+                    translate[j] = ~translate[j];
                 }
 
-                Strip_Spaces(m_translateBuffer);
-                m_stringInfo[index].text = m_translateBuffer;
+                Strip_Spaces(translate);
+                string_info[index].text = translate;
             }
 
             // FourCC of 'STRW' rather than 'STR ' indicates extra data.
@@ -560,13 +626,13 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
                 length = le32toh(length);
 
                 if (length > 0) {
-                    file->Read(m_bufferIn, length);
+                    file->Read(buffer_in, length);
                 }
 
-                m_bufferIn[length] = '\0';
+                buffer_in[length] = '\0';
 
                 if (i == 0) {
-                    m_stringInfo[index].speech = m_bufferIn;
+                    string_info[index].speech = buffer_in;
                 }
             }
         }
@@ -581,6 +647,15 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
     file->Close();
 
     return true;
+}
+
+bool GameTextManager::Parse_CSF_File(const char *filename)
+{
+    return GameTextFile::Parse_CSF_File(filename,
+        m_stringInfo,
+        m_maxLabelLen,
+        BufferView<unichar_t>::Create(m_translateBuffer),
+        BufferView<char>::Create(m_bufferIn));
 }
 
 // Parse an additional string file for a map. Currently cannot be localized.

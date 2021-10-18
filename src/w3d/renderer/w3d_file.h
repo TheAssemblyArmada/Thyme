@@ -318,6 +318,25 @@ struct W3dPivotFixupStruct
     float TM[4][3];
 };
 
+struct W3dAnimHeaderStruct
+{
+    uint32_t Version;
+    char Name[16];
+    char HierarchyName[16];
+    uint32_t NumFrames;
+    uint32_t FrameRate;
+};
+
+struct W3dCompressedAnimHeaderStruct
+{
+    uint32_t Version;
+    char Name[16];
+    char HierarchyName[16];
+    uint32_t NumFrames;
+    uint16_t FrameRate;
+    uint16_t Flavor;
+};
+
 enum
 {
     ANIM_CHANNEL_X = 0,
@@ -337,4 +356,66 @@ enum
     ANIM_CHANNEL_ADAPTIVEDELTA_Y,
     ANIM_CHANNEL_ADAPTIVEDELTA_Z,
     ANIM_CHANNEL_ADAPTIVEDELTA_Q,
+};
+
+enum
+{
+    ANIM_FLAVOR_TIMECODED = 0,
+    ANIM_FLAVOR_ADAPTIVE_DELTA,
+    ANIM_FLAVOR_VALID
+};
+
+struct W3dAnimChannelStruct
+{
+    uint16_t FirstFrame;
+    uint16_t LastFrame;
+    uint16_t VectorLen;
+    uint16_t Flags;
+    uint16_t Pivot;
+    uint16_t pad;
+    float Data[1];
+};
+
+enum
+{
+    BIT_CHANNEL_VIS = 0,
+    BIT_CHANNEL_TIMECODED_VIS,
+};
+
+struct W3dBitChannelStruct
+{
+    uint16_t FirstFrame;
+    uint16_t LastFrame;
+    uint16_t Flags;
+    uint16_t Pivot;
+    uint8_t DefaultVal;
+    uint8_t Data[1];
+};
+
+struct W3dTimeCodedAnimChannelStruct
+{
+    uint32_t NumTimeCodes;
+    uint16_t Pivot;
+    uint8_t VectorLen;
+    uint8_t Flags;
+    uint32_t Data[1];
+};
+
+struct W3dTimeCodedBitChannelStruct
+{
+    uint32_t NumTimeCodes;
+    uint16_t Pivot;
+    uint8_t Flags;
+    uint8_t DefaultVal;
+    uint32_t Data[1];
+};
+
+struct W3dAdaptiveDeltaAnimChannelStruct
+{
+    uint32_t NumFrames;
+    uint16_t Pivot;
+    uint8_t VectorLen;
+    uint8_t Flags;
+    float Scale;
+    uint32_t Data[1];
 };

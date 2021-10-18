@@ -27,7 +27,6 @@ public:
     virtual ~MotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    unsigned int Estimate_Size();
 
     int Get_Type() { return m_type; }
     int Get_Pivot() { return m_pivotIdx; }
@@ -69,8 +68,6 @@ public:
         }
     }
 
-    void Do_Data_Compression(int);
-
 private:
     unsigned long m_pivotIdx;
     unsigned long m_type;
@@ -81,6 +78,7 @@ private:
     float *m_data;
     int m_firstFrame;
     int m_lastFrame;
+    friend class HRawAnimClass;
 };
 
 class BitChannelClass : public W3DMPO
@@ -92,7 +90,6 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    unsigned int Estimate_Size();
     int Get_Type() { return m_type; }
     int Get_Pivot() { return m_pivotIdx; }
 
@@ -113,4 +110,80 @@ private:
     int m_firstFrame;
     int m_lastFrame;
     unsigned char *m_bits;
+    friend class HRawAnimClass;
+};
+
+class TimeCodedMotionChannelClass : W3DMPO
+{
+    IMPLEMENT_W3D_POOL(TimeCodedMotionChannelClass)
+public:
+    TimeCodedMotionChannelClass();
+    virtual ~TimeCodedMotionChannelClass() override;
+    void Free();
+    bool Load_W3D(ChunkLoadClass &cload);
+    int Get_Type() { return m_type; }
+    int Get_Pivot() { return m_pivotIdx; }
+    void Get_Vector(float frame, float *setvec);
+    Quaternion Get_Quat_Vector(float frame_idx);
+    void Set_Identity(float *setvec);
+    unsigned long Get_Index(unsigned int timecode);
+    unsigned long Binary_Search_Index(unsigned int timecode);
+
+private:
+    unsigned long m_pivotIdx;
+    unsigned long m_type;
+    int m_vectorLen;
+    unsigned int m_packetSize;
+    unsigned int m_numTimeCodes;
+    unsigned int m_lastTimeCodeIdx;
+    unsigned int m_cachedIdx;
+    unsigned int *m_data;
+};
+
+class TimeCodedBitChannelClass : W3DMPO
+{
+    IMPLEMENT_W3D_POOL(TimeCodedBitChannelClass)
+public:
+    TimeCodedBitChannelClass();
+    virtual ~TimeCodedBitChannelClass() override;
+    void Free();
+    bool Load_W3D(ChunkLoadClass &cload);
+    int Get_Type() { return m_type; }
+    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Bit(int frame);
+
+private:
+    unsigned long m_pivotIdx;
+    unsigned long m_type;
+    int m_defaultVal;
+    unsigned long m_numTimeCodes;
+    unsigned long m_cachedIdx;
+    unsigned long *m_bits;
+};
+
+class AdaptiveDeltaMotionChannelClass : W3DMPO
+{
+    IMPLEMENT_W3D_POOL(AdaptiveDeltaMotionChannelClass)
+public:
+    AdaptiveDeltaMotionChannelClass();
+    virtual ~AdaptiveDeltaMotionChannelClass() override;
+    void Free();
+    bool Load_W3D(ChunkLoadClass &cload);
+    int Get_Type() { return m_type; }
+    int Get_Pivot() { return m_pivotIdx; }
+    void Get_Vector(float frame, float *setvec);
+    Quaternion Get_Quat_Vector(float frame_idx);
+    float Get_Frame(unsigned int frame_idx, unsigned int vector_idx);
+    void Decompress(unsigned int src_idx, float *srcdata, unsigned int frame_idx, float *outdata);
+    void Decompress(unsigned int frame_idx, float *outdata);
+
+private:
+    unsigned int m_pivotIdx;
+    unsigned int m_type;
+    int m_vectorLen;
+    unsigned int m_numFrames;
+    float m_scale;
+    unsigned int *m_data;
+    unsigned int m_cacheFrame;
+    float *m_cacheData;
 };

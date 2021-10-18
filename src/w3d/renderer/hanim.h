@@ -26,6 +26,13 @@ class Matrix3D;
 class HAnimClass : public RefCountClass, public HashableClass
 {
 public:
+    enum
+    {
+        CLASSID_UNKNOWN = 0xFFFFFFFF,
+        CLASSID_RAW = 0,
+    };
+
+    HAnimClass() : m_embeddedSoundBoneIndex(-1) {}
     virtual ~HAnimClass(){};
     virtual const char *Get_Name() const = 0;
     virtual const char *Get_HName() const = 0;
@@ -46,7 +53,7 @@ public:
     virtual bool Has_Z_Translation(int pividx) { return true; }
     virtual bool Has_Rotation(int pividx) { return true; }
     virtual bool Has_Visibility(int pividx) { return true; }
-    virtual int Class_ID() { return -1 /*CLASSID_UNKNOWN*/; }
+    virtual int Class_ID() const { return CLASSID_UNKNOWN; }
     virtual bool Has_Embedded_Sounds() const { return m_embeddedSoundBoneIndex >= 0; }
     virtual void Set_Embedded_Sound_Bone_Index(int index) { m_embeddedSoundBoneIndex = index; };
     virtual int Get_Embedded_Sound_Bone_Index() { return m_embeddedSoundBoneIndex; }

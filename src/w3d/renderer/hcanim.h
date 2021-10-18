@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Raw Animation Class
+ * @brief Compressed Animation Class
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -17,39 +17,42 @@
 #include "hanim.h"
 #include "motchan.h"
 #include "w3d_file.h"
-
-struct NodeMotionStruct
+struct NodeCompressedMotionStruct
 {
-    MotionChannelClass *X;
-    MotionChannelClass *Y;
-    MotionChannelClass *Z;
-    MotionChannelClass *XR;
-    MotionChannelClass *YR;
-    MotionChannelClass *ZR;
-    MotionChannelClass *Q;
-    BitChannelClass *Vis;
-
-    NodeMotionStruct() : X(nullptr), Y(nullptr), Z(nullptr), XR(nullptr), YR(nullptr), ZR(nullptr), Q(nullptr), Vis(nullptr)
+    int Flavor;
+    union
     {
-    }
-
-    ~NodeMotionStruct()
-    {
-        delete X;
-        delete Y;
-        delete Z;
-        delete XR;
-        delete YR;
-        delete ZR;
-        delete Q;
-        delete Vis;
-    }
+        struct
+        {
+            TimeCodedMotionChannelClass *X;
+            TimeCodedMotionChannelClass *Y;
+            TimeCodedMotionChannelClass *Z;
+            TimeCodedMotionChannelClass *Q;
+        } tc;
+        struct
+        {
+            AdaptiveDeltaMotionChannelClass *X;
+            AdaptiveDeltaMotionChannelClass *Y;
+            AdaptiveDeltaMotionChannelClass *Z;
+            AdaptiveDeltaMotionChannelClass *Q;
+        } ad;
+        struct
+        {
+            void *X;
+            void *Y;
+            void *Z;
+            void *Q;
+        } vd;
+    };
+    TimeCodedBitChannelClass *Vis;
+    ~NodeCompressedMotionStruct();
+    void Set_Flavor(int flavor) { Flavor = flavor; }
 };
 
-class HRawAnimClass : public HAnimClass
+class HCompressedAnimClass : public HAnimClass
 {
 public:
-    virtual ~HRawAnimClass() override;
+    virtual ~HCompressedAnimClass() override;
     virtual const char *Get_Name() const override { return m_name; }
     virtual const char *Get_HName() const override { return m_hierarchyName; }
     virtual int Get_Num_Frames() override { return m_numFrames; }
@@ -66,22 +69,25 @@ public:
     virtual bool Has_Z_Translation(int pividx) override;
     virtual bool Has_Rotation(int pividx) override;
     virtual bool Has_Visibility(int pividx) override;
-    virtual int Class_ID() const override { return CLASSID_RAW; }
-    HRawAnimClass();
+
+    HCompressedAnimClass();
     int Load_W3D(ChunkLoadClass &cload);
     void Free();
-    bool Read_Channel(ChunkLoadClass &cload, MotionChannelClass **newchan, bool pre30);
-    void Add_Channel(MotionChannelClass *newchan);
-    bool Read_Bit_Channel(ChunkLoadClass &cload, BitChannelClass **newchan, bool pre30);
-    void Add_Bit_Channel(BitChannelClass *newchan);
+    bool read_channel(ChunkLoadClass &cload, AdaptiveDeltaMotionChannelClass **newchan);
+    bool read_channel(ChunkLoadClass &cload, TimeCodedMotionChannelClass **newchan);
+    void add_channel(AdaptiveDeltaMotionChannelClass *newchan);
+    void add_channel(TimeCodedMotionChannelClass *newchan);
+    bool read_bit_channel(ChunkLoadClass &cload, TimeCodedBitChannelClass **newchan);
+    void add_bit_channel(TimeCodedBitChannelClass *newchan);
 
-    NodeMotionStruct *Get_Node_Motion() { return m_nodeMotion; }
+    int Get_Flavor() { return m_flavor; }
 
 private:
     char m_name[32];
     char m_hierarchyName[16];
     int m_numFrames;
     int m_numNodes;
+    int m_flavor;
     float m_frameRate;
-    NodeMotionStruct *m_nodeMotion;
+    NodeCompressedMotionStruct *m_nodeMotion;
 };

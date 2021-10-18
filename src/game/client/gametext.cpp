@@ -661,88 +661,13 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
 // Parse an additional string file for a map. Currently cannot be localized.
 bool GameTextManager::Parse_Map_String_File(const char *filename)
 {
-    captainslog_info("Parsing map string file '%s'.", filename);
-    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
-
-    if (file == nullptr) {
-        return false;
-    }
-
-    int index = 0;
-    bool end = false;
-
-    while (Read_Line(m_bufferIn, sizeof(m_bufferIn), file)) {
-        Remove_Leading_And_Trailing(m_bufferIn);
-
-        // If we got a "//" (which is 2F2F in hex) comment line or no string at all,
-        // read next line
-        if (*reinterpret_cast<uint16_t *>(m_bufferIn) == 0x2F2F || m_bufferIn[0] == '\0') {
-            continue;
-        }
-
-        captainslog_trace("Read line '%s'.", m_bufferIn);
-
-        end = false;
-
-#if ASSERT_LEVEL >= ASSERTS_DEBUG
-        if (index > 0) {
-            for (int i = 0; i < index; ++i) {
-                captainslog_dbgassert(strcasecmp(m_mapStringInfo[i].label.Str(), m_bufferIn) != 0,
-                    "String label '%s' is defined multiple times!",
-                    m_bufferIn);
-            }
-        }
-#endif
-
-        m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
-
-        bool read_string = false;
-
-        while (Read_Line(m_bufferIn, sizeof(m_bufferIn) - 1, file)) {
-            Remove_Leading_And_Trailing(m_bufferIn);
-
-            captainslog_trace("Read line '%s'.", m_bufferIn);
-
-            if (m_bufferIn[0] == '"') {
-                size_t len = strlen(m_bufferIn);
-                m_bufferIn[len] = '\n';
-                m_bufferIn[len + 1] = '\0';
-                Read_To_End_Of_Quote(file, m_bufferIn + 1, m_bufferOut, m_bufferEx, sizeof(m_bufferOut));
-
-                if (read_string) {
-                    captainslog_warn("String label '%s' has more than one string defined!", m_bufferIn);
-
-                    continue;
-                }
-
-                Translate_Copy(m_translateBuffer, m_bufferOut);
-                Strip_Spaces(m_translateBuffer);
-
-                // TODO maybe Windows build does something extra here not done in mac version.
-
-                m_mapStringInfo[index].text = m_translateBuffer;
-                m_mapStringInfo[index].speech = m_bufferEx;
-
-                read_string = true;
-            } else if (strcasecmp(m_bufferIn, "END") == 0) {
-                ++index;
-                end = true;
-
-                break;
-            }
-        }
-    }
-
-    file->Close();
-
-    if (!end) {
-        captainslog_error("Unexpected end of string file '%s'.", filename);
-
-        return false;
-    }
-
-    return true;
+    return GameTextFile::Parse_String_File(filename,
+        m_mapStringInfo,
+        m_maxLabelLen,
+        BufferView<unichar_t>::Create(m_translateBuffer),
+        BufferView<char>::Create(m_bufferIn),
+        BufferView<char>::Create(m_bufferOut),
+        BufferView<char>::Create(m_bufferEx));
 }
 
 GameTextManager::GameTextManager() :

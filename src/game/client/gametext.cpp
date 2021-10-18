@@ -424,7 +424,7 @@ bool GameTextFile::Get_CSF_Info(const char *filename, int &text_count, LanguageI
     text_count = le32toh(header.num_labels);
 
     if (le32toh(header.version) <= 1) {
-        language = LANGUAGE_ID_US;
+        language = LanguageID::LANGUAGE_ID_US;
     } else {
         language = static_cast<LanguageID>(le32toh(header.langid));
     }
@@ -678,7 +678,7 @@ GameTextManager::GameTextManager() :
     m_initialized(false),
     m_noStringList(nullptr),
     m_useStringFile(true),
-    m_language(LANGUAGE_ID_US),
+    m_language(LanguageID::LANGUAGE_ID_US),
     m_failed(U_CHAR("***FATAL*** String Manager failed to initialize properly")),
     m_mapStringInfo(nullptr),
     m_mapStringLUT(nullptr),

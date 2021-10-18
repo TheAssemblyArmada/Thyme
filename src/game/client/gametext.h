@@ -21,7 +21,7 @@
 #include "unicodestring.h"
 
 // This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
-enum LanguageID : int32_t
+enum class LanguageID : int32_t
 {
     LANGUAGE_ID_US = 0,
     LANGUAGE_ID_UK,

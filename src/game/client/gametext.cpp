@@ -693,6 +693,9 @@ GameTextManager::GameTextManager() :
 GameTextManager::~GameTextManager()
 {
     Deinit();
+
+    // FEATURE: Perform full cleanup on destruction
+    Reset();
 }
 
 void GameTextManager::Init()

@@ -461,10 +461,10 @@ bool GameTextFile::Parse_String_File(const char *filename,
     while (Read_Line(buffer_in, buffer_in.Size(), file)) {
         Remove_Leading_And_Trailing(buffer_in);
         captainslog_trace("We have '%s' buffered.", m_bufferIn);
-        // If we got a "//" (which is 2F2F in hex) comment line or no string at all,
-        // read next line
-        if (*reinterpret_cast<uint16_t *>(buffer_in.Get()) == 0x2F2F || buffer_in[0] == '\0') {
-            captainslog_trace("Line started with // or empty line.");
+
+        // Skip line if it is empty or is a comment starting with "//".
+        if (buffer_in[0] == '\0' || (buffer_in[0] == '/' && buffer_in[1] == '/')) {
+            captainslog_trace("Line started with // or empty line. Skip.");
             continue;
         }
 

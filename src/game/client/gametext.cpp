@@ -386,7 +386,7 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
     if (le32toh(header.version) <= 1) {
         m_language = LANGUAGE_ID_US;
     } else {
-        m_language = (LanguageID)le32toh(header.langid);
+        m_language = static_cast<LanguageID>(le32toh(header.langid));
     }
 
     file->Close();
@@ -430,7 +430,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #endif
 
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max((int)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -620,7 +620,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 #endif
 
         m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max((int32_t)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 

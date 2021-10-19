@@ -241,6 +241,12 @@ if(BUILD_DLL)
     list(APPEND INSTALL_TARGETS thyme_dll)
 endif()
 
+# Add resources (optional)
+if (MSVC_IDE)
+    add_library(resources INTERFACE
+        resources/visualstudio/thyme.natvis)
+endif()
+
 # Setup the install target destination
 if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
     install(TARGETS ${INSTALL_TARGETS}

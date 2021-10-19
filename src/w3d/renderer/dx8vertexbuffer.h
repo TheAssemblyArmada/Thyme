@@ -205,7 +205,12 @@ public:
     public:
         WriteLockClass(DynamicVBAccessClass *dynamic_vb_access_);
         ~WriteLockClass();
-        VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array() { return m_vertices; }
+        VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array()
+        {
+            captainslog_assert(m_dynamicVBAccess->m_vertexBuffer->FVF_Info().Get_FVF()
+                == (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2 | D3DFVF_DIFFUSE));
+            return m_vertices;
+        }
 
     private:
 #ifdef GAME_DLL

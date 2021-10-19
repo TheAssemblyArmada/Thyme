@@ -14,7 +14,11 @@
  *            LICENSE
  */
 #include "w3d.h"
+#include "assetmgr.h"
+#include "dx8renderer.h"
 #include "dx8wrapper.h"
+#include "hashtemplate.h"
+#include "textureloader.h"
 
 #ifndef GAME_DLL
 unsigned W3D::s_syncTime;
@@ -55,16 +59,20 @@ int W3D::Get_Texture_Bit_Depth()
 
 void W3D::Invalidate_Mesh_Cache()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x00807840, 0x00503700));
-#endif
+    g_theDX8MeshRenderer.Invalidate(false);
 }
 
 void W3D::Invalidate_Textures()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x00807850, 0x00503710));
-#endif
+    if (W3DAssetManager::Get_Instance()) {
+        TextureLoader::Flush_Pending_Load_Tasks();
+        for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
+             textureIter;
+             ++textureIter) {
+            TextureClass *texture = textureIter.getValue();
+            texture->Invalidate();
+        }
+    }
 }
 
 W3DErrorType W3D::Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window)

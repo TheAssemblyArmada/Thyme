@@ -894,6 +894,7 @@ void Setup_Hooks()
     Hook_Method(0x008095F0, &Render2DClass::Enable_Alpha);
     Hook_Any(0x008094E0, Render2DClass::Reset);
     Hook_Method(0x008090C0, &Render2DClass::Hook_Ctor);
+    Hook_Method(0x0080AAC0, &Render2DClass::Render);
 
     // wwstring.h
     Hook_Method(0x0089D4E0, &StringClass::Format);
@@ -948,6 +949,7 @@ void Setup_Hooks()
     Hook_Method(0x00804D00, &DX8Wrapper::Get_DX8_Render_State_Value_Name);
     Hook_Method(0x00805520, &DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name);
     Hook_Method(0x00805B60, &DX8Wrapper::Get_Back_Buffer_Format);
+    Hook_Method(0x00804200, &DX8Wrapper::Set_Light_Environment);
 
     // dinputkeybd.h
     // Hooks all the virtual functions for DirectInputKeyboard.

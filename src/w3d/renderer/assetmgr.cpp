@@ -650,7 +650,7 @@ RenderObjClass *GameAssetManager::Create_Render_Obj(
     }
 
     if (has_scaling) {
-        robj->Set_ObjectScale(scale);
+        robj->Scale(scale);
     }
 
     Make_Unique(robj, has_scaling, has_colour);

@@ -14,7 +14,10 @@
  *            LICENSE
  */
 #include "rendobj.h"
+#include "camera.h"
+#include "coltest.h"
 #include "htree.h"
+#include "intersec.h"
 #include "predlod.h"
 #include "scene.h"
 #include "vector.h"
@@ -107,11 +110,22 @@ RenderObjClass &RenderObjClass::RenderObjClass::operator=(const RenderObjClass &
 
 float RenderObjClass::Get_Screen_Size(CameraClass &camera)
 {
-#ifdef GAME_DLL
-    return Call_Method<float, RenderObjClass, CameraClass &>(PICK_ADDRESS(0x0081BEA0, 0x004DF2A0), this, camera);
-#else
-    return 0;
-#endif
+    Vector3 cam = camera.Get_Position();
+    ViewportClass viewport = camera.Get_Viewport();
+    Vector2 vpr_min;
+    Vector2 vpr_max;
+    camera.Get_View_Plane(vpr_min, vpr_max);
+
+    float width_factor = (viewport.m_max.X - viewport.m_min.X) / (vpr_max.X - vpr_min.X);
+    float height_factor = (viewport.m_max.Y - viewport.m_min.Y) / (vpr_max.Y - vpr_min.Y);
+    float dist = (Get_Bounding_Sphere().Center - cam).Length();
+    float radius = 0.0f;
+
+    if (dist != 0.0f) { // todo FPU compare stuff
+        radius = Get_Bounding_Sphere().Radius / dist;
+    }
+
+    return GAMEMATH_PI * radius * radius * width_factor * height_factor;
 }
 
 SceneClass *RenderObjClass::Get_Scene()
@@ -344,32 +358,40 @@ void RenderObjClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 
 bool RenderObjClass::Intersect(IntersectionClass *intersect, IntersectionResultClass *res)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, RenderObjClass, IntersectionClass *, IntersectionResultClass *>(
-        PICK_ADDRESS(0x0081C700, 0x004DFBD0), this, intersect, res);
-#else
+    if (Intersect_Sphere_Quick(intersect, res)) {
+        CastResultStruct castresult;
+        LineSegClass lineseg;
+        Vector3 end = *intersect->m_rayLocation + *intersect->m_rayDirection * intersect->m_maxDistance;
+        lineseg.Set(*intersect->m_rayLocation, end);
+        RayCollisionTestClass ray(lineseg, &castresult);
+        ray.m_collisionType = COLLISION_TYPE_ALL;
+
+        if (Cast_Ray(ray)) {
+            lineseg.Compute_Point(ray.m_result->fraction, &(res->m_intersection));
+            res->m_intersects = true;
+            res->m_intersectionType = IntersectionResultClass::GENERIC;
+            if (intersect->m_intersectionNormal) {
+                *intersect->m_intersectionNormal = castresult.normal;
+            }
+            res->m_intersectedRenderObject = this;
+            res->m_modelMatrix = m_transform;
+            return true;
+        }
+    }
+    res->m_intersects = false;
     return false;
-#endif
 }
 
 bool RenderObjClass::Intersect_Sphere(IntersectionClass *intersect, IntersectionResultClass *res)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, RenderObjClass, IntersectionClass *, IntersectionResultClass *>(
-        PICK_ADDRESS(0x0081C980, 0x004DFE50), this, intersect, res);
-#else
-    return false;
-#endif
+    SphereClass sphere = Get_Bounding_Sphere();
+    return intersect->Intersect_Sphere(sphere, res);
 }
 
 bool RenderObjClass::Intersect_Sphere_Quick(IntersectionClass *intersect, IntersectionResultClass *res)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, RenderObjClass, IntersectionClass *, IntersectionResultClass *>(
-        PICK_ADDRESS(0x0081CAC0, 0x004DFF90), this, intersect, res);
-#else
-    return false;
-#endif
+    SphereClass sphere = Get_Bounding_Sphere();
+    return intersect->Intersect_Sphere_Quick(sphere, res);
 }
 
 bool RenderObjClass::Build_Dependency_List(DynamicVectorClass<StringClass> &file_list, bool recursive)

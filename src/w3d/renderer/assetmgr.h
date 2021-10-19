@@ -98,6 +98,7 @@ public:
 
     bool Get_W3D_Load_On_Demand() const { return m_loadOnDemand; }
     void Set_W3D_Load_On_Demand(bool state) { m_loadOnDemand = state; }
+    HashTemplateClass<StringClass, TextureClass *> &Texture_Hash() { return m_textureHash; }
 
 protected:
     virtual AssetIterator *Create_Font3DData_Iterator();

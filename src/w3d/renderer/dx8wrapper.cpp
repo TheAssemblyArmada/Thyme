@@ -19,6 +19,7 @@
 #include "dx8texman.h"
 #include "dx8vertexbuffer.h"
 #include "ffactory.h"
+#include "lightenv.h"
 #include "missing.h"
 #include "pointgr.h"
 #include "pot.h"
@@ -1531,7 +1532,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
 
         if (s_renderStateChanged & LIGHTS_CHANGED) {
             unsigned mask = LIGHT0_CHANGED;
-            for (unsigned index = 0; index < 4; ++index, mask <<= 1) {
+            for (unsigned index = 0; index < GFX_LIGHT_COUNT; ++index, mask <<= 1) {
                 if (s_renderStateChanged & mask) {
                     if (s_renderState.LightEnable[index]) {
                         Set_DX8_Light(index, &s_renderState.Lights[index]);
@@ -1751,8 +1752,54 @@ void DX8Wrapper::Compute_Caps(WW3DFormat display_format)
 
 void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
 {
-#ifdef GAME_DLL
-    return Call_Function<void, LightEnvironmentClass *>(PICK_ADDRESS(0x00804200, 0x004FEF90), light_env);
+#ifdef BUILD_WITH_D3D8
+    if (light_env) {
+
+        int light_count = light_env->Get_Light_Count();
+        Set_DX8_Render_State(D3DRS_AMBIENT, Convert_Color(light_env->Get_Equivalent_Ambient(), 0.0f));
+
+        D3DLIGHT8 light;
+        memset(&light, 0, sizeof(D3DLIGHT8));
+        light.Type = D3DLIGHT_DIRECTIONAL;
+        int light_index;
+
+        for (light_index = 0; light_index < light_count; ++light_index) {
+            (Vector3 &)light.Diffuse = light_env->Get_Light_Diffuse(light_index);
+            Vector3 dir = -light_env->Get_Light_Direction(light_index);
+            light.Direction = (const D3DVECTOR &)(dir);
+
+            if (!light_index) {
+                light.Specular.r = 1.0f;
+                light.Specular.g = 1.0f;
+                light.Specular.b = 1.0f;
+            }
+
+            if (light_env->Is_Point_Light(light_index)) {
+                light.Range = light_env->Get_Point_Outer_Radius(light_index);
+                (Vector3 &)light.Diffuse = light_env->Get_Point_Diffuse(light_index);
+                (Vector3 &)light.Ambient = light_env->Get_Point_Ambient(light_index);
+                (Vector3 &)light.Position = light_env->Get_Point_Center(light_index);
+                light.Type = D3DLIGHT_POINT;
+                light.Attenuation0 = 1.0f;
+
+                if (fabs(light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
+                    >= 0.00001f) {
+                    light.Attenuation1 = 0.1f / light_env->Get_Point_Inner_Radius(light_index);
+                } else {
+                    light.Attenuation1 = 0.0f;
+                }
+
+                light.Attenuation2 =
+                    8.0f / (light_env->Get_Point_Outer_Radius(light_index) * light_env->Get_Point_Outer_Radius(light_index));
+            }
+
+            Set_Light(light_index, &light);
+        }
+
+        for (; light_index < GFX_LIGHT_COUNT; ++light_index) {
+            Set_Light(light_index, nullptr);
+        }
+    }
 #endif
 }
 

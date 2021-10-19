@@ -229,6 +229,8 @@ void LANAPI::Request_Game_Join_Direct(uint32_t addr)
         msg.message_type = LANMessage::MSG_REQUEST_GAME_INFO;
         Fill_In_Message(&msg);
         msg.direct_join.addr = Get_Local_IP();
+        // BUGFIX: Originally the target buffer size came from the source string length, which could cause buffer overflow if
+        // the source string is longer than the target buffer.
         u_strlcpy_tpl(msg.direct_join.name, m_name.Str());
         Send_Message(&msg, addr);
         m_pendingAction = ACT_LEAVE;

@@ -425,7 +425,7 @@ if(STANDALONE OR BUILD_TOOLS)
     target_include_directories(thyme_lib PUBLIC ${GAMEENGINE_INCLUDES})
     target_link_libraries(thyme_lib PUBLIC ${GAME_LINK_LIBRARIES})
     target_compile_definitions(thyme_lib PUBLIC ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=")
-    target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)  
+    target_compile_definitions(thyme_lib PUBLIC $<$<CONFIG:DEBUG>:GAME_DEBUG> $<$<CONFIG:DEBUG>:GAME_DEBUG_STRUCTS>)
 
     if(USE_CRASHPAD)
         # Rename the crash handler so it won't conflict with any other installs of crashpad.

@@ -22,7 +22,7 @@
 #include "scene.h"
 #include "texture.h"
 #include "w3ddisplay.h"
-#include <stdio.h>
+#include <cstdio>
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
 #endif
@@ -34,7 +34,7 @@ MouseThreadClass W3DMouse::s_mouseThread("Thyme Mouse thread");
 bool W3DMouse::s_mouseThreadIsDrawing;
 HAnimClass *W3DMouse::s_W3DMouseAssets1[CURSOR_COUNT];
 RenderObjClass *W3DMouse::s_W3DMouseAssets2[CURSOR_COUNT];
-TextureBaseClass *W3DMouse::s_D3DMouseAssets[CURSOR_COUNT][21]; // TODO unsure on type
+TextureBaseClass *W3DMouse::s_D3DMouseAssets[CURSOR_COUNT][MAX_FRAMES]; // TODO unsure on type
 uint32_t W3DMouse::s_PolyMouseAssets[CURSOR_COUNT];
 CriticalSectionClass g_mouseCriticalSection;
 #endif
@@ -144,7 +144,7 @@ void W3DMouse::Set_Cursor(MouseCursor cursor)
 
             if (m_currentD3DCursor != cursor && s_mouseThreadIsDrawing == false) {
                 Release_D3D_Cursor_Texture(m_currentD3DCursor);
-                Load_D3D_Cursor_Texture(cursor);
+                Load_D3D_Cursor_Textures(cursor);
             }
 
             if (m_D3DCursorSurfaces[0] == nullptr) {
@@ -228,6 +228,7 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
 {
     const auto current_cursor = m_currentCursor;
     Set_Cursor(MouseCursor::CURSOR_NONE);
+    m_currentRedrawMode = mode;
 
     switch (mode) {
         case RedrawMode::RM_WINDOWS:
@@ -266,11 +267,11 @@ void W3DMouse::Set_Redraw_Mode(RedrawMode mode)
             Init_D3D_Assets();
             Free_W3D_Assets();
             memset(s_PolyMouseAssets, 0, sizeof(s_PolyMouseAssets));
-            m_currentW3DCursor = MouseCursor::CURSOR_NONE;
-            m_currentPolyCursor = MouseCursor::CURSOR_NONE;
             if (s_mouseThread.Is_Running()) {
                 s_mouseThread.Execute();
             }
+            m_currentW3DCursor = MouseCursor::CURSOR_NONE;
+            m_currentPolyCursor = MouseCursor::CURSOR_NONE;
             break;
         default:
             break;
@@ -293,7 +294,7 @@ void W3DMouse::Free_D3D_Assets()
     }
 
     for (auto i = 0; i < CURSOR_COUNT; ++i) {
-        for (auto j = 0; j < 21; ++j) {
+        for (auto j = 0; j < MAX_FRAMES; ++j) {
             auto *d3d_surface = s_D3DMouseAssets[i][j];
             if (d3d_surface == nullptr) {
                 continue;
@@ -326,7 +327,7 @@ void W3DMouse::Init_D3D_Assets()
     }
 
     for (auto i = 0; i < CURSOR_COUNT; ++i) {
-        for (auto j = 0; j < 21; ++j) {
+        for (auto j = 0; j < MAX_FRAMES; ++j) {
             s_D3DMouseAssets[i][j] = nullptr;
             m_D3DCursorSurfaces[j] = nullptr;
         }
@@ -340,24 +341,26 @@ void W3DMouse::Free_W3D_Assets()
         auto *interface_scene = W3DDisplay::Get_3DInterfaceScene();
         auto &hanim = s_W3DMouseAssets1[i];
         auto &robj = s_W3DMouseAssets2[i];
-        if (interface_scene != nullptr) {
+
+        if (interface_scene != nullptr && robj != nullptr) {
             interface_scene->Remove_Render_Object(robj);
         }
-        if (robj != nullptr) {
 
+        if (robj != nullptr) {
             robj->Release_Ref();
+            robj = nullptr;
         }
-        robj = nullptr;
+
         if (hanim != nullptr) {
             hanim->Release_Ref();
+            hanim = nullptr;
         }
-        hanim = nullptr;
     }
 
     if (m_camera != nullptr) {
         m_camera->Release_Ref();
+        m_camera = nullptr;
     }
-    m_camera = nullptr;
 }
 
 // 0x007AD330
@@ -421,7 +424,7 @@ void W3DMouse::Release_D3D_Cursor_Texture(MouseCursor cursor)
         return;
     }
 
-    for (auto i = 0; i < 21; ++i) {
+    for (auto i = 0; i < MAX_FRAMES; ++i) {
         auto &surface = m_D3DCursorSurfaces[i];
         if (surface != nullptr) {
             surface->Release_Ref();
@@ -436,7 +439,7 @@ void W3DMouse::Release_D3D_Cursor_Texture(MouseCursor cursor)
 }
 
 // 0x007AD0E0
-bool W3DMouse::Load_D3D_Cursor_Texture(MouseCursor cursor)
+bool W3DMouse::Load_D3D_Cursor_Textures(MouseCursor cursor)
 {
     if (cursor == MouseCursor::CURSOR_NONE) {
         return true;
@@ -452,25 +455,28 @@ bool W3DMouse::Load_D3D_Cursor_Texture(MouseCursor cursor)
     auto *asset_manager = W3DAssetManager::Get_Instance();
 
     auto *texture_name = m_cursorInfo[cursor].texture_name.Str();
-    auto frames = std::min(m_cursorInfo[cursor].frames, 21);
-    m_D3DCursorSurfaceCount = frames;
+    auto frames = std::min<int32_t>(m_cursorInfo[cursor].frames, MAX_FRAMES);
 
     if (frames == 1) {
         char file_name[64]{};
-        sprintf_s(file_name, "%s.tga", texture_name);
+        snprintf(file_name, ARRAY_SIZE(file_name), "%s.tga", texture_name);
         auto *texture = asset_manager->Get_Texture(file_name);
+
         s_D3DMouseAssets[cursor][0] = texture;
         m_D3DCursorSurfaces[0] = texture->Get_Surface_Level(0);
+        m_D3DCursorSurfaceCount = 1; // Note: This just assumes it loaded fine
         return true;
     }
 
     for (auto i = 0; i < frames; ++i) {
-        auto &asset = s_D3DMouseAssets[cursor][i];
         char file_name[64]{};
-        sprintf_s(file_name, "%s%04d.tga", texture_name, i);
+        snprintf(file_name, ARRAY_SIZE(file_name), "%s%04d.tga", texture_name, i);
         auto *texture = asset_manager->Get_Texture(file_name);
-        asset = texture;
-        m_D3DCursorSurfaces[i] = texture->Get_Surface_Level(0);
+
+        s_D3DMouseAssets[cursor][i] = texture;
+        if (texture != nullptr) {
+            m_D3DCursorSurfaces[m_D3DCursorSurfaceCount++] = texture->Get_Surface_Level(0);
+        }
     }
     return true;
 }

@@ -104,7 +104,7 @@ enum ObjectScriptStatusBit
     STATUS_TARGETABLE = 1 << 4,
 };
 
-enum DeathType
+enum DeathType : int32_t
 {
     DEATH_NORMAL,
     DEATH_NONE,

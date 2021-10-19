@@ -1925,4 +1925,8 @@ void Setup_Hooks()
     Hook_Any(0x0061B8F0, ExperienceTracker::Can_Gain_Exp_For_Level);
     Hook_Any(0x0061B910, ExperienceTracker::Add_Experience_Points);
     Hook_Any(0x0061B9D0, ExperienceTracker::Set_Experience_And_Level);
+
+    // weapon.h
+    Hook_Any(0x004C51B0, WeaponStore::Find_Weapon_Template);
+    Hook_Method(0x004C4DD0, &WeaponStore::Hook_Ctor);
 }

@@ -100,7 +100,7 @@ public:
     bool Is_Initialized() const { return m_initialized; }
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
 
-    static void Invalidate_Old_Unused_Textures(unsigned unk);
+    static void Invalidate_Old_Unused_Textures(unsigned age);
     static void Apply_Null(unsigned stage);
 
 protected:

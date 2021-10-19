@@ -15,6 +15,8 @@
  *            LICENSE
  */
 #include "texturebase.h"
+#include "assetmgr.h"
+#include "dx8wrapper.h"
 #include "missing.h"
 #include "textureloader.h"
 #include "textureloadtask.h"
@@ -227,12 +229,23 @@ void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
  *
  * 0x0081A620
  */
-void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
+void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned age)
 {
-    // TODO Needs W3DAssetManager
-#ifdef GAME_DLL
-    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A620, 0x005065C0), unk);
-#endif
+    if (W3D::Is_Thumbnail_Enabled()) {
+        unsigned int syncTime = W3D::Get_Sync_Time();
+
+        for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
+             textureIter;
+             ++textureIter) {
+            TextureClass *texture = textureIter.getValue();
+            if (texture->m_initialized && texture->m_inactivationTime != 0) {
+                if (syncTime - texture->m_lastAccess > (age ? age : texture->m_someTimeVal + texture->m_inactivationTime)) {
+                    texture->Invalidate();
+                    texture->m_startTime = syncTime;
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -242,8 +255,7 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned unk)
  */
 void TextureBaseClass::Apply_Null(unsigned stage)
 {
-    // TODO Needs more of DX8Wrapper
-#ifdef GAME_DLL
-    Call_Function<void, unsigned>(PICK_ADDRESS(0x0081A890, 0x00506930), stage);
+#ifdef BUILD_WITH_D3D8
+    DX8Wrapper::Set_DX8_Texture(stage, nullptr);
 #endif
 }

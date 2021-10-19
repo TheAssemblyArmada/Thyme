@@ -555,7 +555,11 @@ inline void DX8Wrapper::Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture
     }
 
     s_textures[stage] = texture;
-    s_textures[stage]->AddRef();
+
+    if (s_textures[stage]) {
+        s_textures[stage]->AddRef();
+    }
+
     DX8CALL(SetTexture(stage, texture));
     ++s_textureChanges;
 }

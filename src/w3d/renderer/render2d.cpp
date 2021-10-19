@@ -15,6 +15,10 @@
  */
 #include "render2d.h"
 #include "assetmgr.h"
+#include "dx8indexbuffer.h"
+#include "dx8vertexbuffer.h"
+#include "dx8wrapper.h"
+#include "matrix4.h"
 #include "texture.h"
 #include "w3d.h"
 
@@ -67,9 +71,101 @@ void Render2DClass::Reset()
  */
 void Render2DClass::Render()
 {
-    // TODO
-#ifdef GAME_DLL
-    Call_Method<void, Render2DClass>(PICK_ADDRESS(0x0080AAC0, 0x004F4980), this);
+#ifdef BUILD_WITH_D3D8
+    if (m_indices.Count() && !m_isHidden) {
+        Matrix4 proj;
+        Matrix4 view;
+        Matrix4 identity;
+        identity.Make_Identity();
+        DX8Wrapper::Get_Transform(D3DTS_PROJECTION, proj);
+        DX8Wrapper::Get_Transform(D3DTS_VIEW, view);
+
+        int width;
+        int height;
+        int bit_depth;
+        bool windowed;
+        W3D::Get_Device_Resolution(width, height, bit_depth, windowed);
+
+        D3DVIEWPORT8 vp;
+        vp.X = 0;
+        vp.Y = 0;
+        vp.Width = width;
+        vp.Height = height;
+        vp.MinZ = 0;
+        vp.MaxZ = 1.0f;
+        DX8Wrapper::Set_Viewport(&vp);
+
+        DX8Wrapper::Set_Texture(0, m_texture);
+
+        VertexMaterialClass *mat = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+        DX8Wrapper::Set_Material(mat);
+        mat->Release_Ref();
+
+        DX8Wrapper::Set_Transform(D3DTS_WORLD, identity);
+        DX8Wrapper::Set_Transform(D3DTS_VIEW, identity);
+        DX8Wrapper::Set_Transform(D3DTS_PROJECTION, identity);
+
+        DynamicVBAccessClass vb(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8,
+            (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2 | D3DFVF_DIFFUSE),
+            m_vertices.Count());
+
+        {
+            DynamicVBAccessClass::WriteLockClass lock(&vb);
+            VertexFormatXYZNDUV2 *vf = lock.Get_Formatted_Vertex_Array();
+
+            for (int i = 0; i < m_vertices.Count(); i++) {
+                vf[i].x = m_vertices[i].X;
+                vf[i].y = m_vertices[i].Y;
+                vf[i].z = m_zValue;
+                vf[i].diffuse = m_colors[i];
+                vf[i].u1 = m_uvCoordinates[i].X;
+                vf[i].v1 = m_uvCoordinates[i].Y;
+            }
+        }
+
+        DynamicIBAccessClass ib = DynamicIBAccessClass(2, (unsigned short)m_indices.Count());
+        {
+            DynamicIBAccessClass::WriteLockClass lock(&ib);
+            unsigned short *ind = lock.Get_Index_Array();
+            for (int i = 0; i < m_indices.Count(); i++) {
+                ind[i] = m_indices[i];
+            }
+        }
+
+        DX8Wrapper::Set_Vertex_Buffer(vb);
+        DX8Wrapper::Set_Index_Buffer(ib, 0);
+
+        if (m_greyScale) {
+            DX8Wrapper::Set_Shader(ShaderClass::s_presetOpaqueShader);
+            DX8Wrapper::Apply_Render_State_Changes();
+
+            if (DX8Wrapper::Get_Current_Caps()->Supports_Dot3_Blend()) {
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_TEXTUREFACTOR, D3DCOLOR_RGBA(128, 165, 202, 142));
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG0, D3DTA_ALPHAREPLICATE | D3DTA_TFACTOR);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG2, D3DTA_ALPHAREPLICATE | D3DTA_TFACTOR);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, D3DTOP_MULTIPLYADD);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLOROP, D3DTOP_DOTPRODUCT3);
+            } else {
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_TEXTUREFACTOR, D3DCOLOR_RGBA(96, 96, 96, 96));
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+            }
+        } else {
+            DX8Wrapper::Set_Shader(m_shader);
+        }
+
+        DX8Wrapper::Draw_Triangles(0, m_indices.Count() / 3, 0, m_vertices.Count());
+        DX8Wrapper::Set_Transform(D3DTS_VIEW, view);
+        DX8Wrapper::Set_Transform(D3DTS_PROJECTION, proj);
+
+        if (m_greyScale) {
+            ShaderClass::Invalidate();
+        }
+    }
 #endif
 }
 

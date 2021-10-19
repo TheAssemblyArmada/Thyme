@@ -244,7 +244,9 @@ endif()
 # Add resources (optional)
 if (MSVC_IDE)
     add_library(resources INTERFACE
-        resources/visualstudio/thyme.natvis)
+        resources/visualstudio/utf8string.natvis
+        resources/visualstudio/utf16string.natvis
+    )
 endif()
 
 # Setup the install target destination

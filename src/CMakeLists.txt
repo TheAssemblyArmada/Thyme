@@ -270,6 +270,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/camera.cpp
     w3d/renderer/coltest.cpp
     w3d/renderer/colorspace.cpp
+    w3d/renderer/composite.cpp
     w3d/renderer/ddsfile.cpp
     w3d/renderer/dx8caps.cpp
     w3d/renderer/dx8fvf.cpp
@@ -279,8 +280,8 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8texman.cpp
     w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8wrapper.cpp
-    w3d/renderer/hcanim.cpp
     w3d/renderer/hanimmgr.cpp
+    w3d/renderer/hcanim.cpp
     w3d/renderer/hrawanim.cpp
     w3d/renderer/htree.cpp
     w3d/renderer/htreemgr.cpp

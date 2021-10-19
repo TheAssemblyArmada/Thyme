@@ -12,8 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
-
 #include "drawable.h"
 #include "object.h"
 

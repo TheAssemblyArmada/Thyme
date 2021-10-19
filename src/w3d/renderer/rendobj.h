@@ -211,8 +211,8 @@ public:
 
     virtual bool Build_Dependency_List(DynamicVectorClass<StringClass> &file_list, bool recursive = true);
     virtual bool Build_Texture_List(DynamicVectorClass<StringClass> &texture_file_list, bool recursive = true);
-    virtual void Create_Decal(DecalGeneratorClass *generator) {}
-    virtual void Delete_Decal(unsigned long decal_id) {}
+    virtual void Create_Decal(DecalGeneratorClass *generator) { captainslog_dbgassert(0, "decals not supported"); }
+    virtual void Delete_Decal(unsigned long decal_id) { captainslog_dbgassert(0, "decals not supported"); }
     virtual MaterialInfoClass *Get_Material_Info() { return nullptr; }
     virtual void Set_User_Data(void *value, bool recursive = false) { m_userData = value; }
     virtual void *Get_User_Data() { return m_userData; }

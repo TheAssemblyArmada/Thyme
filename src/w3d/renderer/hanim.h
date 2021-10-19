@@ -59,5 +59,5 @@ public:
     virtual int Get_Embedded_Sound_Bone_Index() { return m_embeddedSoundBoneIndex; }
 
 protected:
-    unsigned int m_embeddedSoundBoneIndex;
+    int m_embeddedSoundBoneIndex;
 };

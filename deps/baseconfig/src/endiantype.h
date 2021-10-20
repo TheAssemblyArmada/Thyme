@@ -111,18 +111,31 @@ template <typename Type, size_t Size = sizeof(Type)> struct htoleHelper;
 template <typename Type, size_t Size = sizeof(Type)> struct betohHelper;
 template <typename Type, size_t Size = sizeof(Type)> struct letohHelper;
 
-template <typename Type> struct htobeHelper<Type, 2> { static inline Type swap(Type value) { SwapType16 v = htobe16(*reinterpret_cast<SwapType16*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct htobeHelper<Type, 4> { static inline Type swap(Type value) { SwapType32 v = htobe32(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct htobeHelper<Type, 8> { static inline Type swap(Type value) { SwapType64 v = htobe64(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct htoleHelper<Type, 2> { static inline Type swap(Type value) { SwapType16 v = htole16(*reinterpret_cast<SwapType16*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct htoleHelper<Type, 4> { static inline Type swap(Type value) { SwapType32 v = htole32(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct htoleHelper<Type, 8> { static inline Type swap(Type value) { SwapType64 v = htole64(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct betohHelper<Type, 2> { static inline Type swap(Type value) { SwapType16 v = be16toh(*reinterpret_cast<SwapType16*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct betohHelper<Type, 4> { static inline Type swap(Type value) { SwapType32 v = be32toh(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct betohHelper<Type, 8> { static inline Type swap(Type value) { SwapType64 v = be64toh(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct letohHelper<Type, 2> { static inline Type swap(Type value) { SwapType16 v = le16toh(*reinterpret_cast<SwapType16*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct letohHelper<Type, 4> { static inline Type swap(Type value) { SwapType32 v = le16toh(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<Type*>(&v); } };
-template <typename Type> struct letohHelper<Type, 8> { static inline Type swap(Type value) { SwapType64 v = le16toh(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<Type*>(&v); } };
+// 2 byte integer, enum
+template <typename Type> struct htobeHelper<Type, 2> { static inline Type swap(Type value) { return static_cast<Type>(htobe16(static_cast<SwapType16>(value))); } };
+template <typename Type> struct htoleHelper<Type, 2> { static inline Type swap(Type value) { return static_cast<Type>(htole16(static_cast<SwapType16>(value))); } };
+template <typename Type> struct betohHelper<Type, 2> { static inline Type swap(Type value) { return static_cast<Type>(be16toh(static_cast<SwapType16>(value))); } };
+template <typename Type> struct letohHelper<Type, 2> { static inline Type swap(Type value) { return static_cast<Type>(le16toh(static_cast<SwapType16>(value))); } };
+// 4 byte integer, enum
+template <typename Type> struct htobeHelper<Type, 4> { static inline Type swap(Type value) { return static_cast<Type>(htobe32(static_cast<SwapType32>(value))); } };
+template <typename Type> struct htoleHelper<Type, 4> { static inline Type swap(Type value) { return static_cast<Type>(htole32(static_cast<SwapType32>(value))); } };
+template <typename Type> struct betohHelper<Type, 4> { static inline Type swap(Type value) { return static_cast<Type>(be32toh(static_cast<SwapType32>(value))); } };
+template <typename Type> struct letohHelper<Type, 4> { static inline Type swap(Type value) { return static_cast<Type>(le16toh(static_cast<SwapType32>(value))); } };
+// 8 byte integer, enum
+template <typename Type> struct htobeHelper<Type, 8> { static inline Type swap(Type value) { return static_cast<Type>(htobe64(static_cast<SwapType64>(value))); } };
+template <typename Type> struct htoleHelper<Type, 8> { static inline Type swap(Type value) { return static_cast<Type>(htole64(static_cast<SwapType64>(value))); } };
+template <typename Type> struct betohHelper<Type, 8> { static inline Type swap(Type value) { return static_cast<Type>(be64toh(static_cast<SwapType64>(value))); } };
+template <typename Type> struct letohHelper<Type, 8> { static inline Type swap(Type value) { return static_cast<Type>(le16toh(static_cast<SwapType64>(value))); } };
+// float
+template <> struct htobeHelper<float, 4> { static inline float swap(float value) { SwapType32 v = htobe32(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<float*>(&v); } };
+template <> struct htoleHelper<float, 4> { static inline float swap(float value) { SwapType32 v = htole32(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<float*>(&v); } };
+template <> struct betohHelper<float, 4> { static inline float swap(float value) { SwapType32 v = be32toh(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<float*>(&v); } };
+template <> struct letohHelper<float, 4> { static inline float swap(float value) { SwapType32 v = le16toh(*reinterpret_cast<SwapType32*>(&value)); return *reinterpret_cast<float*>(&v); } };
+// double
+template <> struct htobeHelper<double, 8> { static inline double swap(double value) { SwapType64 v = htobe64(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<double*>(&v); } };
+template <> struct htoleHelper<double, 8> { static inline double swap(double value) { SwapType64 v = htole64(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<double*>(&v); } };
+template <> struct betohHelper<double, 8> { static inline double swap(double value) { SwapType64 v = be64toh(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<double*>(&v); } };
+template <> struct letohHelper<double, 8> { static inline double swap(double value) { SwapType64 v = le16toh(*reinterpret_cast<SwapType64*>(&value)); return *reinterpret_cast<double*>(&v); } };
 } // namespace Detail
 
 // c++ template functions, takes any 2, 4, 8 bytes, including float, double, enum

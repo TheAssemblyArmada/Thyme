@@ -102,6 +102,9 @@ public:
         ANIM_MODE_MANUAL = 0,
         ANIM_MODE_LOOP,
         ANIM_MODE_ONCE,
+        ANIM_MODE_LOOP_PINGPONG,
+        ANIM_MODE_LOOP_BACKWARDS,
+        ANIM_MODE_ONCE_BACKWARDS,
     };
 
     enum

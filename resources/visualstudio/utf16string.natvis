@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="Utf16String">
-    <DisplayString Condition="m_data != nullptr">{reinterpret_cast&lt;char *&gt;( &amp; m_data[1] )}</DisplayString>
+    <DisplayString Condition="m_data != nullptr">{reinterpret_cast&lt;unichar_t *&gt;( &amp; m_data[1] )}</DisplayString>
     <DisplayString Condition="m_data == nullptr">""</DisplayString>
     <Expand>
-      <Item Name="[str]" Condition="m_data != nullptr">reinterpret_cast&lt;char *&gt;( &amp; m_data[1] )</Item>
+      <Item Name="[str]" Condition="m_data != nullptr">reinterpret_cast&lt;unichar_t *&gt;( &amp; m_data[1] )</Item>
       <Item Name="[ref_count]" Condition="m_data != nullptr">m_data->ref_count</Item>
       <Item Name="[num_chars_allocated]" Condition="m_data != nullptr">m_data->num_chars_allocated</Item>
     </Expand>

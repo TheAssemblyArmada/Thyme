@@ -66,22 +66,21 @@ FontCharsClass::~FontCharsClass()
 const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch)
 {
     const CharDataStruct *retval = nullptr;
+    FontCharsClass *unicode_alt = this;
 
     if (ch < 256) {
         retval = m_asciiCharArray[ch];
     } else {
-        FontCharsClass *unicode_alt = this;
-
         while (unicode_alt->m_alternateUnicodeFont != nullptr && unicode_alt->m_alternateUnicodeFont != this) {
             unicode_alt = unicode_alt->m_alternateUnicodeFont;
         }
 
         unicode_alt->Grow_Unicode_Array(ch);
-        retval = m_unicodeCharArray[ch - m_firstUnicodeChar];
+        retval = unicode_alt->m_unicodeCharArray[ch - unicode_alt->m_firstUnicodeChar];
     }
 
     if (retval == nullptr) {
-        retval = Store_GDI_Char(ch);
+        retval = unicode_alt->Store_GDI_Char(ch);
     }
 
     captainslog_assert(retval->value == ch);

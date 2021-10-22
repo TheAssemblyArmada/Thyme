@@ -16,6 +16,8 @@
 
 #include "bittype.h"
 
+class INI;
+
 void Init_Random();
 void Init_Random(uint32_t initial);
 void Init_Game_Logic_Random(uint32_t initial);
@@ -71,6 +73,8 @@ public:
     float Get_Min() const { return m_low; }
     float Get_Max() const { return m_high; }
     DistributionType Get_Type() const { return m_type; }
+
+    static void Parse(INI *ini, void *, void *store, const void *);
 
 private:
     DistributionType m_type;

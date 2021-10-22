@@ -30,6 +30,7 @@
 #include "globallanguage.h"
 #include "mouse.h"
 #include "objectcreationlist.h"
+#include "particlesysmanager.h"
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
@@ -99,7 +100,7 @@ BlockParse TheTypeTable[] = {
     {"Object", (iniblockparse_t)(0x005048E0) /*&INI::parseObjectDefinition*/},
     {"ObjectCreationList", &ObjectCreationListStore::Parse_Object_Creation_List_Definition },
     {"ObjectReskin", (iniblockparse_t)(0x00504990) /*&INI::parseObjectReskinDefinition*/},
-    {"ParticleSystem", (iniblockparse_t)(0x005047E0) /*&INI::parseParticleSystemDefinition*/},
+    {"ParticleSystem", &ParticleSystemManager::Parse_Particle_System_Definition},
     //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
     {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definition},
     {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definition},

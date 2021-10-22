@@ -15,6 +15,7 @@
 #include "randomvalue.h"
 #include "crc.h"
 #include "gamemath.h"
+#include "ini.h"
 #include <captainslog.h>
 #include <ctime>
 
@@ -231,4 +232,25 @@ float GameClientRandomVariable::Get_Value() const
     }
 
     return 0.0f;
+}
+
+constexpr const char *_distributionTypeNames[] = {
+    "CONSTANT",
+    "UNIFORM",
+    // Additional types have not been included as they are not usable
+    nullptr,
+};
+
+// zh: 0x0041D9F0 wb: 0x007A4B4C
+void GameClientRandomVariable::Parse(INI *ini, void *, void *store, const void *)
+{
+    const auto min = ini->Scan_Real(ini->Get_Next_Token());
+    const auto max = ini->Scan_Real(ini->Get_Next_Token());
+
+    DistributionType type = DistributionType::UNIFORM;
+    auto *token = ini->Get_Next_Token_Or_Null();
+    if (token != nullptr) {
+        type = static_cast<DistributionType>(ini->Scan_IndexList(token, _distributionTypeNames));
+    }
+    static_cast<GameClientRandomVariable *>(store)->Set_Range(min, max, type);
 }

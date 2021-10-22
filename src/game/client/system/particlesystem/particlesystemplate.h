@@ -21,6 +21,7 @@
 
 class INI;
 class ParticleSystem;
+struct FieldParse;
 
 class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInfo
 {
@@ -38,10 +39,14 @@ public:
 
     Utf8String Get_Name() const { return m_name; }
 
+    static FieldParse *Get_Particle_System_Template_Field_Parse_Table() { return s_fieldParseTable; }
+
 private:
     ParticleSystem *Create_Slave_System(bool create_slaves) const;
 
 private:
     Utf8String m_name;
     mutable ParticleSystemTemplate *m_slaveTemplate;
+
+    static FieldParse s_fieldParseTable[];
 };

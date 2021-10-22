@@ -246,7 +246,7 @@ void Setup_Hooks()
     Hook_Method(0x00415980, &Utf8String::Starts_With_No_Case);
     Hook_Method(0x00404210, &Utf8String::Str);
     Hook_Method(0x00415630, &Utf8String::To_Lower);
-    Hook_Method(0x00415450, &Utf8String::Translate);
+    Hook_Method(0x00415450, static_cast<void (Utf8String::*)(Utf16String const &)>(&Utf8String::Translate));
     Hook_Method(0x00415530, &Utf8String::Trim);
 
     // Replace Win32GameEngine

@@ -128,8 +128,8 @@ public:
     void Set(const unichar_t *s);
     void Set(Utf16String const &string);
 
-    void Translate(Utf8String const &string);
-    void Translate(const char *string);
+    void Translate(Utf8String const &utf8_string);
+    void Translate(const char *utf8_string);
 
     void Concat(unichar_t c);
     void Concat(const unichar_t *s);
@@ -183,6 +183,8 @@ public:
     static Utf16String const s_emptyString;
 
 private:
+    void Translate_Internal(const char *utf8_string, const int utf8_len);
+
     UnicodeStringData *m_data;
 };
 

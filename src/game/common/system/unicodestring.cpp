@@ -212,62 +212,67 @@ void Utf16String::Set(Utf16String const &string)
     }
 }
 
-void Utf16String::Translate(Utf8String const &string)
+/**
+ * Converts a Utf8 string to Utf16
+ */
+void Utf16String::Translate_Internal(const char *utf8_string, const int utf8_len)
 {
     Release_Buffer();
 
-    int str_len = string.Get_Length();
+#if defined BUILD_WITH_ICU
+    // Use ICU converters.
+    if (utf8_len > 0) {
+        int32_t utf16_len;
+        UErrorCode error = U_ZERO_ERROR;
+        // Get utf16 string length.
+        u_strFromUTF8(nullptr, 0, &utf16_len, utf8_string, utf8_len, &error);
 
-    for (int i = 0; i < str_len; ++i) {
-        unichar_t c;
+        if (U_SUCCESS(error) && utf16_len > 0) {
+            // Allocate and fill new utf16 string.
+            unichar_t *utf16_buffer = Get_Buffer_For_Read(utf16_len);
+            u_strFromUTF8(utf16_buffer, utf16_len, nullptr, utf8_string, utf8_len, &error);
 
-        if (string.m_data != nullptr) {
-            c = string.Get_Char(i);
-        } else {
-            c = U_CHAR('\0');
-        }
-
-        Concat(c);
-    }
-}
-
-void Utf16String::Translate(const char *string)
-{
-    Release_Buffer();
-
-#if defined BUILD_WITH_ICU // Use ICU converters
-    int32_t length;
-    UErrorCode error = U_ZERO_ERROR;
-    u_strFromUTF8(nullptr, 0, &length, string, -1, &error);
-
-    if (U_SUCCESS(error) && length > 0) {
-        u_strFromUTF8(Get_Buffer_For_Read(length), length, nullptr, string, -1, &error);
-
-        if (U_FAILURE(error)) {
-            Clear();
+            if (U_FAILURE(error)) {
+                Clear();
+            } else {
+                // Add null terminator manually.
+                utf16_buffer[utf16_len] = U_CHAR('\0');
+            }
         }
     }
-#elif defined PLATFORM_WINDOWS // Use WIN32 API converters.
-    int length = MultiByteToWideChar(CP_UTF8, 0, string, -1, nullptr, 0);
+#elif defined PLATFORM_WINDOWS
+    // Use WIN32 API converters.
+    if (utf8_len > 0) {
+        // Get utf16 string length.
+        const int utf16_len = MultiByteToWideChar(CP_UTF8, 0, utf8_string, utf8_len, nullptr, 0);
 
-    if (length > 0) {
-        MultiByteToWideChar(CP_UTF8, 0, string, -1, Get_Buffer_For_Read(length), length);
-    }
-#else // Naive copy, this is what the original does.
-    size_t str_len = strlen(string);
+        if (utf16_len > 0) {
+            // Allocate and fill new utf16 string.
+            unichar_t *utf16_buffer = Get_Buffer_For_Read(utf16_len);
+            MultiByteToWideChar(CP_UTF8, 0, utf8_string, utf8_len, utf16_buffer, utf16_len);
 
-    for (size_t i = 0; i < str_len; ++i) {
-        unichar_t c;
-
-        if (string[i] != '\0') {
-            c = string[i];
-        } else {
-            c = U_CHAR('\0');
+            // Add null terminator manually.
+            utf16_buffer[utf16_len] = U_CHAR('\0');
         }
-
+    }
+#else
+    // Naive copy, this is what the original does.
+    for (int i = 0; i < utf8_len; ++i) {
+        unichar_t c = static_cast<unichar_t>(utf8_string[i]);
         Concat(c);
     }
 #endif
+}
+
+void Utf16String::Translate(Utf8String const &utf8_string)
+{
+    Translate_Internal(utf8_string.Str(), utf8_string.Get_Length());
+}
+
+void Utf16String::Translate(const char *utf8_string)
+{
+    int utf8_len = static_cast<int>(strlen(utf8_string));
+    Translate_Internal(utf8_string, utf8_len);
 }
 
 void Utf16String::Concat(unichar_t c)

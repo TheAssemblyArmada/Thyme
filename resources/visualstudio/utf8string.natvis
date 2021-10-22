@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="Utf8String">
-    <DisplayString Condition="m_data != nullptr">{reinterpret_cast&lt;char *&gt;( &amp; m_data[1] )}</DisplayString>
+    <DisplayString Condition="m_data != nullptr">UTF8: {reinterpret_cast&lt;char *&gt;( &amp; m_data[1] ),s8}</DisplayString>
     <DisplayString Condition="m_data == nullptr">""</DisplayString>
     <Expand>
       <Item Name="[str]" Condition="m_data != nullptr">reinterpret_cast&lt;char *&gt;( &amp; m_data[1] )</Item>

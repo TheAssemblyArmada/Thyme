@@ -39,8 +39,8 @@ class NullPrototypeClass final : public W3DMPO, public PrototypeClass
     IMPLEMENT_W3D_POOL(NullPrototypeClass);
 
 public:
-    virtual const char *Get_Name() override { return &m_definition.name[0]; }
-    virtual int32_t Get_Class_ID() override { return RenderObjClass::CLASSID_NULL; }
+    virtual const char *Get_Name() const override { return &m_definition.name[0]; }
+    virtual int32_t Get_Class_ID() const override { return RenderObjClass::CLASSID_NULL; }
     virtual RenderObjClass *Create() override { return new Null3DObjClass; };
     virtual void Delete_Self() override { delete this; };
     virtual ~NullPrototypeClass() override{};

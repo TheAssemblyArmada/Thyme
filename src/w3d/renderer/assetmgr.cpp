@@ -809,7 +809,7 @@ W3DPrototypeClass::W3DPrototypeClass(RenderObjClass *proto, const char *name) : 
     m_proto->Add_Ref();
 }
 
-int32_t W3DPrototypeClass::Get_Class_ID()
+int32_t W3DPrototypeClass::Get_Class_ID() const
 {
     return m_proto->Class_ID();
 }

@@ -159,7 +159,7 @@ public:
     virtual int Get_Num_Sub_Objects_On_Bone(int bone_index) const { return 0; }
     virtual RenderObjClass *Get_Sub_Object_On_Bone(int index, int bone_index) const { return nullptr; }
     virtual int Get_Sub_Object_Bone_Index(RenderObjClass *subobj) const { return 0; }
-    virtual int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) { return 0; }
+    virtual int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const { return 0; }
     virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index) { return 0; }
     virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, const char *bone_name);
     virtual int Remove_Sub_Objects_From_Bone(int bone_index);
@@ -348,6 +348,7 @@ public:
     static const float AT_MAX_LOD;
     RenderObjUnk *Get_Unknown() const { return m_unknown; }
     bool Is_Unk_15() const { return (m_bits & IS_UNK_15) != 0; }
+    bool Bounding_Volumes_Valid(void) const { return (m_bits & BOUNDING_VOLUMES_VALID) != 0; }
 
 protected:
     virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
@@ -355,6 +356,17 @@ protected:
     virtual void Update_Sub_Object_Bits();
     void Invalidate_Cached_Bounding_Volumes() const { m_bits &= ~BOUNDING_VOLUMES_VALID; }
     void Validate_Cached_Bounding_Volumes() const { m_bits |= BOUNDING_VOLUMES_VALID; }
+
+    void Set_Sub_Objects_Match_LOD(int onoff)
+    {
+        if (onoff) {
+            m_bits |= SUBOBJS_MATCH_LOD;
+        } else {
+            m_bits &= ~SUBOBJS_MATCH_LOD;
+        }
+    }
+
+    int Is_Sub_Objects_Match_LOD_Enabled() { return m_bits & SUBOBJS_MATCH_LOD; }
 
     enum
     {
@@ -366,6 +378,7 @@ protected:
         BOUNDING_VOLUMES_VALID = 0x00002000,
         IS_TRANSLUCENT = 0x00004000,
         IS_UNK_15 = 0x00008000,
+        SUBOBJS_MATCH_LOD = 0x00010000,
         SUBOBJ_TRANSFORMS_DIRTY = 0x00020000,
         IS_ALPHA = 0x00040000,
         IS_ADDITIVE = 0x00100000,

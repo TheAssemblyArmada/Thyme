@@ -68,8 +68,18 @@ public:
     void Get_Bone_Control(int boneindex, Matrix3D &relative_tm);
 
     int Num_Pivots() { return m_numPivots; }
-    const Matrix3D &Get_Transform(int pivot) { return m_pivot[pivot].transform; }
-    bool Get_Visibility(int pivot) { return m_pivot[pivot].is_visible; }
+    const Matrix3D &Get_Transform(int pivot)
+    {
+        captainslog_assert(pivot >= 0);
+        captainslog_assert(pivot < m_numPivots);
+        return m_pivot[pivot].transform;
+    }
+    bool Get_Visibility(int pivot)
+    {
+        captainslog_assert(pivot >= 0);
+        captainslog_assert(pivot < m_numPivots);
+        return m_pivot[pivot].is_visible;
+    }
     const Matrix3D &Get_Root_Transform() { return m_pivot[0].transform; }
     const char *Get_Name() const { return m_name; }
 

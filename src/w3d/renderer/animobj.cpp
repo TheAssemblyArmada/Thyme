@@ -118,7 +118,7 @@ void Animatable3DObjClass::Render(RenderInfoClass &rinfo)
             Single_Anim_Progress();
         }
 
-        if (!m_isTreeValid || Are_Sub_Object_Transforms_Dirty()) {
+        if (!Is_Hierarchy_Valid() || Are_Sub_Object_Transforms_Dirty()) {
             Update_Sub_Object_Transforms();
         }
     }
@@ -131,7 +131,7 @@ void Animatable3DObjClass::Special_Render(SpecialRenderInfoClass &rinfo)
             Single_Anim_Progress();
         }
 
-        if (!m_isTreeValid) {
+        if (!Is_Hierarchy_Valid()) {
             Update_Sub_Object_Transforms();
         }
     }
@@ -140,13 +140,13 @@ void Animatable3DObjClass::Special_Render(SpecialRenderInfoClass &rinfo)
 void Animatable3DObjClass::Set_Transform(const Matrix3D &m)
 {
     RenderObjClass::Set_Transform(m);
-    m_isTreeValid = false;
+    Set_Hierarchy_Valid(false);
 }
 
 void Animatable3DObjClass::Set_Position(const Vector3 &v)
 {
     RenderObjClass::Set_Position(v);
-    m_isTreeValid = false;
+    Set_Hierarchy_Valid(false);
 }
 
 int Animatable3DObjClass::Get_Num_Bones()
@@ -180,7 +180,7 @@ void Animatable3DObjClass::Set_Animation()
 {
     Release();
     m_curMotionMode = BASE_POSE;
-    m_isTreeValid = false;
+    Set_Hierarchy_Valid(false);
 }
 
 void Animatable3DObjClass::Set_Animation(HAnimClass *motion, float frame, int anim_mode)
@@ -208,7 +208,7 @@ void Animatable3DObjClass::Set_Animation(HAnimClass *motion, float frame, int an
         Release();
     }
 
-    m_isTreeValid = false;
+    Set_Hierarchy_Valid(false);
 }
 
 void Animatable3DObjClass::Set_Animation(
@@ -223,7 +223,7 @@ void Animatable3DObjClass::Set_Animation(
     m_modeInterp.m_frame0 = frame0;
     m_modeInterp.m_frame1 = frame1;
     m_modeInterp.m_percentage = percentage;
-    m_isTreeValid = false;
+    Set_Hierarchy_Valid(false);
 
     if (motion0) {
         motion0->Add_Ref();
@@ -266,7 +266,7 @@ const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(int boneindex)
         return m_transform;
     }
 
-    if (!m_isTreeValid) {
+    if (!Is_Hierarchy_Valid()) {
         Update_Sub_Object_Transforms();
     }
 
@@ -300,7 +300,7 @@ void Animatable3DObjClass::Control_Bone(int bindex, const Matrix3D &objtm, bool 
 {
     if (m_htree) {
         m_htree->Control_Bone(bindex, objtm, world_space_translation);
-        m_isTreeValid = false;
+        Set_Hierarchy_Valid(false);
     }
 }
 
@@ -311,7 +311,7 @@ void Animatable3DObjClass::Update_Sub_Object_Transforms()
     switch (m_curMotionMode) {
         case BASE_POSE:
             Base_Update(m_transform);
-            m_isTreeValid = true;
+            Set_Hierarchy_Valid(true);
             break;
         case SINGLE_ANIM:
             if (m_modeAnim.m_animMode != ANIM_MODE_MANUAL) {
@@ -333,7 +333,7 @@ void Animatable3DObjClass::Update_Sub_Object_Transforms()
             break;
     }
 
-    m_isTreeValid = true;
+    Set_Hierarchy_Valid(true);
 }
 
 bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, Matrix3D *tm) const
@@ -452,7 +452,7 @@ void Animatable3DObjClass::Single_Anim_Progress()
         }
 
         m_modeAnim.m_lastSyncTime = W3D::Get_Sync_Time();
-        m_isTreeValid = false;
+        Set_Hierarchy_Valid(false);
     }
 }
 

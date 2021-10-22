@@ -57,6 +57,7 @@
 #include "geometry.h"
 #include "globaldata.h"
 #include "hanimmgr.h"
+#include "hlod.h"
 #include "hooker.h"
 #include "htree.h"
 #include "image.h"
@@ -1385,7 +1386,7 @@ void Setup_Hooks()
     Hook_Any(0x0080DBB0, SortingRendererClass::Flush);
     Hook_Any(0x0080E1E0, SortingRendererClass::Deinit);
 
-    //htree.h
+    // htree.h
     Hook_Any(0x0083E460, HTreeClass::Hook_Ctor);
     Hook_Any(0x0083E690, HTreeClass::Hook_Ctor2);
     Hook_Any(0x0083E4D0, HTreeClass::Init_Default);
@@ -1444,4 +1445,9 @@ void Setup_Hooks()
 
     Hook_Method(0x00763D70, &GameAssetManager::Hook_Ctor);
 
+    // hlod.h
+    Hook_Any(0x0085A260, DistLODLoaderClass::Load_W3D);
+    Hook_Any(0x00861B80, CollectionLoaderClass::Load_W3D);
+    Hook_Any(0x00862CB0, HModelLoaderClass::Load_W3D);
+    Hook_Any(0x0085B580, HLodLoaderClass::Load_W3D);
 }

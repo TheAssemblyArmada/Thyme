@@ -28,3 +28,10 @@ void PredictiveLODOptimizerClass::Free()
     Call_Function<void>(0x00808FE0);
 #endif
 }
+
+void PredictiveLODOptimizerClass::Add_Object(RenderObjClass *robj)
+{
+#ifdef GAME_DLL
+    Call_Function<void>(0x00808F30);
+#endif
+}

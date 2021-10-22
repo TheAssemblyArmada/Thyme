@@ -419,3 +419,33 @@ struct W3dAdaptiveDeltaAnimChannelStruct
     float Scale;
     uint32_t Data[1];
 };
+
+#define NO_MAX_SCREEN_SIZE GAMEMATH_FLOAT_MAX
+struct W3dHLodHeaderStruct
+{
+    uint32_t Version;
+    uint32_t LodCount;
+    char Name[16];
+    char HierarchyName[16];
+};
+struct W3dHLodArrayHeaderStruct
+{
+    uint32_t ModelCount;
+    float MaxScreenSize;
+};
+
+struct W3dHLodSubObjectStruct
+{
+    uint32_t BoneIndex;
+    char Name[31];
+};
+
+struct W3dBoxStruct
+{
+    uint32_t Version;
+    uint32_t Attributes;
+    char Name[32];
+    W3dRGBStruct Color;
+    W3dVectorStruct Center;
+    W3dVectorStruct Extent;
+};

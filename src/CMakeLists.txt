@@ -283,6 +283,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8wrapper.cpp
     w3d/renderer/hanimmgr.cpp
     w3d/renderer/hcanim.cpp
+    w3d/renderer/hlod.cpp
     w3d/renderer/hrawanim.cpp
     w3d/renderer/htree.cpp
     w3d/renderer/htreemgr.cpp

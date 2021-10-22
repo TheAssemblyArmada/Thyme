@@ -55,11 +55,17 @@ Utf16String::~Utf16String()
 
 void Utf16String::Validate() {}
 
-unichar_t *Utf16String::Peek() const
+const unichar_t *Utf16String::Peek() const
 {
     captainslog_dbgassert(m_data != nullptr, "null string ptr");
 
-    // Actual string data is stored immediately after the UnicodeStringData header.
+    return m_data->Peek();
+}
+
+unichar_t *Utf16String::Peek()
+{
+    captainslog_dbgassert(m_data != nullptr, "null string ptr");
+
     return m_data->Peek();
 }
 
@@ -141,11 +147,22 @@ void Utf16String::Clear()
 
 unichar_t Utf16String::Get_Char(int index) const
 {
-    if (m_data != nullptr) {
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
+
+    if (m_data != nullptr) { // #TODO Remove condition if possible; Utf8String does not have it
         return m_data->Peek()[index];
     }
 
     return U_CHAR('\0');
+}
+
+unichar_t &Utf16String::Get_Char(int index)
+{
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
+
+    return m_data->Peek()[index];
 }
 
 const unichar_t *Utf16String::Str() const

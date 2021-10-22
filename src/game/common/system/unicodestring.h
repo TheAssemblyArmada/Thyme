@@ -49,12 +49,10 @@ public:
         uint16_t ref_count;
         uint16_t num_chars_allocated;
 
-        unichar_t *Peek()
-        {
-            // Actual string data is stored immediately after the UnicodeStringData header.
-            // wchar_a to avoid strict aliasing issues on gcc/clang
-            return reinterpret_cast<unichar_a *>(&this[1]);
-        }
+        // Actual string data is stored immediately after the UnicodeStringData header.
+        // wchar_a to avoid strict aliasing issues on gcc/clang
+        const unichar_t *Peek() const { return reinterpret_cast<const unichar_a *>(&this[1]); }
+        unichar_t *Peek() { return reinterpret_cast<unichar_a *>(&this[1]); }
     };
 
     Utf16String() : m_data(nullptr) {}
@@ -110,11 +108,12 @@ public:
 
     operator const unichar_t *() const { return Str(); }
 
-    // TODO
-    // unichar_t *operator[](int index) const { return m_data->Peek()[index]; }
+    unichar_t operator[](int index) const { return Get_Char(index); }
+    unichar_t &operator[](int index) { return Get_Char(index); }
 
     void Validate();
-    unichar_t *Peek() const;
+    const unichar_t *Peek() const;
+    unichar_t *Peek();
     void Release_Buffer();
     void Ensure_Unique_Buffer_Of_Size(int chars_needed,
         bool keep_data = false,
@@ -122,7 +121,8 @@ public:
         const unichar_t *str_to_cat = nullptr);
     int Get_Length() const;
     void Clear();
-    unichar_t Get_Char(int) const;
+    unichar_t Get_Char(int index) const;
+    unichar_t &Get_Char(int index);
     const unichar_t *Str() const;
     unichar_t *Get_Buffer_For_Read(int len);
     void Set(const unichar_t *s);

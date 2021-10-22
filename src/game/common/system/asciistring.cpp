@@ -54,7 +54,17 @@ Utf8String::Utf8String(const char *s) : m_data(nullptr)
 /**
  * A utility method to test nullptr on string content and log if that happens
  */
-char *Utf8String::Peek() const
+const char *Utf8String::Peek() const
+{
+    captainslog_dbgassert(m_data != nullptr, "null string ptr");
+
+    return m_data->Peek();
+}
+
+/**
+ * A utility method to test nullptr on string content and log if that happens
+ */
+char *Utf8String::Peek()
 {
     captainslog_dbgassert(m_data != nullptr, "null string ptr");
 
@@ -152,8 +162,16 @@ int Utf8String::Get_Length() const
 
 char Utf8String::Get_Char(int index) const
 {
-    captainslog_dbgassert(index >= 0, "bad index in getCharAt.");
-    captainslog_dbgassert(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
+
+    return Peek()[index];
+}
+
+char &Utf8String::Get_Char(int index)
+{
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
 
     return Peek()[index];
 }

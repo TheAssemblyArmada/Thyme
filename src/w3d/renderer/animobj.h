@@ -24,30 +24,31 @@ public:
     Animatable3DObjClass(const Animatable3DObjClass &src);
     Animatable3DObjClass &operator=(const Animatable3DObjClass &);
 
-    ~Animatable3DObjClass() override;
-    void Render(RenderInfoClass &rinfo) override;
-    void Special_Render(SpecialRenderInfoClass &rinfo) override;
+    virtual ~Animatable3DObjClass() override;
+    virtual void Render(RenderInfoClass &rinfo) override;
+    virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
 
-    void Set_Transform(const Matrix3D &m) override;
-    void Set_Position(const Vector3 &v) override;
+    virtual void Set_Transform(const Matrix3D &m) override;
+    virtual void Set_Position(const Vector3 &v) override;
 
-    void Set_Animation() override;
-    void Set_Animation(HAnimClass *motion, float frame, int anim_mode = ANIM_MODE_MANUAL) override;
-    void Set_Animation(HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) override;
-    void Set_Animation(HAnimComboClass *anim_combo) override;
-    HAnimClass *Peek_Animation() override;
+    virtual void Set_Animation() override;
+    virtual void Set_Animation(HAnimClass *motion, float frame, int anim_mode = ANIM_MODE_MANUAL) override;
+    virtual void Set_Animation(
+        HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) override;
+    virtual void Set_Animation(HAnimComboClass *anim_combo) override;
+    virtual HAnimClass *Peek_Animation() override;
 
-    int Get_Num_Bones() override;
-    const char *Get_Bone_Name(int bone_index) override;
-    int Get_Bone_Index(const char *bonename) override;
-    const Matrix3D &Get_Bone_Transform(const char *bonename) override;
-    const Matrix3D &Get_Bone_Transform(int boneindex) override;
-    void Capture_Bone(int boneindex) override;
-    void Release_Bone(int boneindex) override;
-    bool Is_Bone_Captured(int boneindex) const override;
-    void Control_Bone(int bindex, const Matrix3D &objtm, bool world_space_translation = false) override;
+    virtual int Get_Num_Bones() override;
+    virtual const char *Get_Bone_Name(int bone_index) override;
+    virtual int Get_Bone_Index(const char *bonename) override;
+    virtual const Matrix3D &Get_Bone_Transform(const char *bonename) override;
+    virtual const Matrix3D &Get_Bone_Transform(int boneindex) override;
+    virtual void Capture_Bone(int boneindex) override;
+    virtual void Release_Bone(int boneindex) override;
+    virtual bool Is_Bone_Captured(int boneindex) const override;
+    virtual void Control_Bone(int bindex, const Matrix3D &objtm, bool world_space_translation = false) override;
 
-    const HTreeClass *Get_HTree() const override { return m_htree; }
+    virtual const HTreeClass *Get_HTree() const override { return m_htree; }
     virtual void Set_Animation_Frame_Rate_Multiplier(float multiplier) { m_modeAnim.m_frameRateMultiplier = multiplier; }
     virtual HAnimClass *Peek_Animation_And_Info(float &frame, int &frames, int &mode, float &multiplier);
     virtual bool Is_Animation_Complete() const;

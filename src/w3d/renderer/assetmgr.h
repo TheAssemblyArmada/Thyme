@@ -181,8 +181,8 @@ class W3DPrototypeClass final : public W3DMPO, public PrototypeClass
 
 public:
     W3DPrototypeClass(RenderObjClass *proto, const char *name);
-    virtual const char *Get_Name() override { return m_name; }
-    virtual int32_t Get_Class_ID() override;
+    virtual const char *Get_Name() const override { return m_name; }
+    virtual int32_t Get_Class_ID() const override;
     virtual RenderObjClass *Create() override;
     virtual void Delete_Self() override { delete this; };
     virtual ~W3DPrototypeClass() override;

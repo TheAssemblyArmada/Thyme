@@ -15,12 +15,14 @@
 #pragma once
 
 #include "always.h"
+class RenderObjClass;
 
 class PredictiveLODOptimizerClass
 {
 public:
     static void Add_Cost(float cost) { s_TotalCost += cost; }
     static void Free();
+    static void Add_Object(RenderObjClass *robj);
 
 private:
 #ifdef GAME_DLL

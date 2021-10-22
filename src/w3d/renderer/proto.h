@@ -27,8 +27,8 @@ public:
 class PrototypeClass
 {
 public:
-    virtual const char *Get_Name() = 0;
-    virtual int32_t Get_Class_ID() = 0;
+    virtual const char *Get_Name() const = 0;
+    virtual int32_t Get_Class_ID() const = 0;
     virtual RenderObjClass *Create() = 0;
     virtual void Delete_Self() = 0;
     virtual ~PrototypeClass(){};

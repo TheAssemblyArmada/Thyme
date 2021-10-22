@@ -27,7 +27,7 @@ Utf8String const Utf8String::s_emptyString(nullptr);
 Utf8String::Utf8String() : m_data(nullptr) {}
 
 /**
- * Inits this string with an existing string (copy) and increments reference count
+ * Initializes this string with an existing string (copy) and increments reference count.
  */
 Utf8String::Utf8String(Utf8String const &string) : m_data(string.m_data)
 {
@@ -37,7 +37,7 @@ Utf8String::Utf8String(Utf8String const &string) : m_data(string.m_data)
 }
 
 /**
- * Inits this string with a reference to the start of a char array.
+ * Initializes this string with a reference to the start of a char array.
  */
 Utf8String::Utf8String(const char *s) : m_data(nullptr)
 {
@@ -219,7 +219,7 @@ void Utf8String::Translate(Utf16String const &string)
 {
     Release_Buffer();
 
-#if defined BUILD_WITH_ICU // Use ICU convertors
+#if defined BUILD_WITH_ICU // Use ICU converters.
     int32_t length;
     UErrorCode error = U_ZERO_ERROR;
     u_strToUTF8(nullptr, 0, &length, string, -1, &error);
@@ -231,7 +231,7 @@ void Utf8String::Translate(Utf16String const &string)
             Clear();
         }
     }
-#elif defined PLATFORM_WINDOWS // Use WIN32 API convertors.
+#elif defined PLATFORM_WINDOWS // Use WIN32 API converters.
     int length = WideCharToMultiByte(CP_UTF8, 0, string, -1, nullptr, 0, nullptr, nullptr);
 
     if (length > 0) {
@@ -351,7 +351,7 @@ void Utf8String::Trim()
  */
 void Utf8String::To_Lower()
 {
-    // Size specifically matches original code for compatability
+    // Size specifically matches original code for compatibility.
     char buf[MAX_TO_LOWER_BUF_LEN];
 
     if (m_data == nullptr) {
@@ -624,12 +624,12 @@ bool Utf8String::Next_Token(Utf8String *tok, const char *delims)
 
 void Utf8String::Validate()
 {
-    // TODO, doesnt seem to be implimented anywhere? It is called though...
+    // TODO, does not seem to be implemented anywhere? It is called though...
 }
 
 #ifdef GAME_DEBUG
 void Utf8String::Debug_Ignore_Leaks()
 {
-    // TODO, doesnt seem to be implimented anywhere? It is called though...
+    // TODO, does not seem to be implemented anywhere? It is called though...
 }
 #endif // GAME_DEBUG

@@ -124,7 +124,7 @@ public:
     void Format(const char *format, ...);
     void Format(Utf8String format, ...);
 
-    // Compare funcs should probably be private and operators should be friends and the
+    // Compare functions should probably be private and operators should be friends and the.
     // preferred interface.
     int Compare(const char *s) const { return strcmp(Str(), s); }
     int Compare(Utf8String const &string) const { return strcmp(Str(), string.Str()); }

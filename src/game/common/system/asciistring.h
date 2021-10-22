@@ -72,11 +72,9 @@ public:
 #endif
         }
 
-        char *Peek()
-        {
-            // Actual string data is stored immediately after the AsciiStringData header.
-            return reinterpret_cast<char *>(&this[1]);
-        }
+        // Actual string data is stored immediately after the AsciiStringData header.
+        const char *Peek() const { return reinterpret_cast<const char *>(&this[1]); }
+        char *Peek() { return reinterpret_cast<char *>(&this[1]); }
     };
 
     Utf8String();
@@ -97,13 +95,18 @@ public:
 
     operator const char *() const { return Str(); }
 
+    char operator[](int index) const { return Get_Char(index); }
+    char &operator[](int index) { return Get_Char(index); }
+
     void Validate();
-    char *Peek() const;
+    const char *Peek() const;
+    char *Peek();
     void Release_Buffer();
     int Get_Length() const;
 
     void Clear() { Release_Buffer(); }
     char Get_Char(int index) const;
+    char &Get_Char(int index);
     const char *Str() const;
     char *Get_Buffer_For_Read(int len);
     // These two should probably be private with the = operator being the preferred interface?

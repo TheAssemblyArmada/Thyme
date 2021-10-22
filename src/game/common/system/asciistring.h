@@ -113,7 +113,8 @@ public:
     void Set(const char *s);
     void Set(Utf8String const &string);
 
-    void Translate(Utf16String const &stringSrc);
+    void Translate(Utf16String const &utf16_string);
+    void Translate(const unichar_t *utf16_string);
 
     // Concat should probably be private and += used as the preferred interface.
     void Concat(char c);
@@ -188,6 +189,8 @@ public:
 #endif
 
 private:
+    void Translate_Internal(const unichar_t *utf16_string, const int utf16_len);
+
     // Probably supposed to be private
     void Ensure_Unique_Buffer_Of_Size(
         int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);

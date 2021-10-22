@@ -155,10 +155,13 @@ public:
 
     bool Next_Token(Utf16String *tok, Utf16String delims);
 
-    bool Is_None() { return m_data != nullptr && u_strcasecmp(Peek(), U_CHAR("None"), U_COMPARE_CODE_POINT_ORDER) == 0; }
-    bool Is_Empty() { return Get_Length() <= 0; }
-    bool Is_Not_Empty() { return !Is_Empty(); }
-    bool Is_Not_None() { return !Is_None(); }
+    bool Is_None() const
+    {
+        return m_data != nullptr && u_strcasecmp(Peek(), U_CHAR("None"), U_COMPARE_CODE_POINT_ORDER) == 0;
+    }
+    bool Is_Empty() const { return Get_Length() <= 0; }
+    bool Is_Not_Empty() const { return !Is_Empty(); }
+    bool Is_Not_None() const { return !Is_None(); }
 
     friend bool operator==(Utf16String const &left, Utf16String const &right) { return left.Compare(right) == 0; }
     friend bool operator==(Utf16String const &left, const unichar_t *right) { return left.Compare(right) == 0; }

@@ -36,6 +36,7 @@ public:
 
     static void Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse(INI *ini, void *, void *store, const void *);
 
     Utf8String Get_Name() const { return m_name; }
 

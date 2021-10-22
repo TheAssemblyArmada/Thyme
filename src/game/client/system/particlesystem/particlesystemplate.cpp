@@ -166,6 +166,18 @@ void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, vo
     INI::Parse_Int(ini, formal, &rkf->frame, user_data);
 }
 
+// zh: 0x0041CD00 wb: 0x007A3AE0
+void ParticleSystemTemplate::Parse(INI *ini, void *, void *store, const void *)
+{
+    Utf8String template_name = ini->Get_Next_Token();
+
+    auto *particle_template = g_theParticleSystemManager->Find_Template(template_name);
+
+    captainslog_dbgassert(particle_template != nullptr || template_name.Is_None(), "ParticleSystem %s not found!\n");
+
+    *static_cast<ParticleSystemTemplate **>(store) = particle_template;
+}
+
 /**
  * @brief Creates a new particle system from a slave template.
  */

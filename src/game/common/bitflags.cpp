@@ -16,7 +16,8 @@
 
 // TODO move this somewhere more appropriate?
 template<>
-const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = { "NONE",
+const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {
+    "NONE",
     "DESTROYED",
     "CAN_ATTACK",
     "UNDER_CONSTRUCTION",
@@ -61,10 +62,12 @@ const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = { "NONE",
     "IMMOBILE",
     "DISGUISED",
     "DEPLOYED",
-    nullptr };
+    nullptr,
+};
 
 template<>
-const char *BitFlags<DISABLED_TYPE_COUNT>::s_bitNamesList[] = { "DEFAULT",
+const char *BitFlags<DISABLED_TYPE_COUNT>::s_bitNamesList[] = {
+    "DEFAULT",
     "DISABLED_HACKED",
     "DISABLED_EMP",
     "DISABLED_HELD",
@@ -77,7 +80,8 @@ const char *BitFlags<DISABLED_TYPE_COUNT>::s_bitNamesList[] = { "DEFAULT",
     "DISABLED_SUBDUED",
     "DISABLED_SCRIPT_DISABLED",
     "DISABLED_SCRIPT_UNDERPOWERED",
-    nullptr };
+    nullptr,
+};
 
 // TODO Temp to force instantiation. Fixes issue with Parameter::Read_Parameter.
 // template class BitFlags<KIND_OF_COUNT>;

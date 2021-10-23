@@ -15,7 +15,8 @@
 #include "weapon.h"
 #include "ini.h"
 
-const char *TheWeaponBonusNames[] = { "GARRISONED",
+const char *TheWeaponBonusNames[] = {
+    "GARRISONED",
     "HORDE",
     "CONTINUOUS_FIRE_MEAN",
     "CONTINUOUS_FIRE_FAST",
@@ -42,9 +43,17 @@ const char *TheWeaponBonusNames[] = { "GARRISONED",
     "FRENZY_ONE",
     "FRENZY_TWO",
     "FRENZY_THREE",
-    nullptr };
+    nullptr,
+};
 
-const char *TheWeaponBonusFieldNames[] = { "DAMAGE", "RADIUS", "RANGE", "RATE_OF_FIRE", "PRE_ATTACK", nullptr };
+const char *TheWeaponBonusFieldNames[] = {
+    "DAMAGE",
+    "RADIUS",
+    "RANGE",
+    "RATE_OF_FIRE",
+    "PRE_ATTACK",
+    nullptr,
+};
 
 void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data)
 {

@@ -128,8 +128,7 @@ void W3DAssetManager::Create_Asset_List(DynamicVectorClass<StringClass> &list)
 {
     captainslog_dbgassert(false, "Create_Asset_List is not used");
     // Not used
-    for (auto i = 0; i < m_prototypes.Count(); ++i) {
-        auto *proto = m_prototypes[i];
+    for (auto *proto : m_prototypes) {
         if (proto == nullptr) {
             continue;
         }
@@ -495,9 +494,7 @@ void W3DAssetManager::Add_Prototype(PrototypeClass *proto)
 
 PrototypeLoaderClass *W3DAssetManager::Find_Prototype_Loader(int chunk_id)
 {
-    for (auto i = 0; i < m_prototypeLoaders.Count(); ++i) {
-        auto *loader = m_prototypeLoaders[i];
-
+    for (auto *loader : m_prototypeLoaders) {
         if (loader == nullptr) {
             continue;
         }

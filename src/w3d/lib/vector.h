@@ -240,6 +240,9 @@ public:
     int Growth_Step() { return m_growthStep; }
     T *Uninitialized_Add();
 
+    T *begin() { return &(*this)[0]; }
+    T *end() { return &(*this)[Count()]; }
+
 protected:
     int m_activeCount;
     int m_growthStep;

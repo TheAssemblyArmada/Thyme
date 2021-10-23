@@ -189,6 +189,9 @@ public:
         }
     }
 
+    T *begin() { return &(*this)[0]; }
+    T *end() { return &(*this)[Count()]; }
+
 protected:
     bool Grow(int new_size_hint)
     {

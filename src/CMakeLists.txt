@@ -270,6 +270,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
     w3d/renderer/boxrobj.cpp
+    w3d/renderer/bwrender.cpp
     w3d/renderer/camera.cpp
     w3d/renderer/coltest.cpp
     w3d/renderer/colorspace.cpp

@@ -25,11 +25,12 @@
 #include "macros.h"
 #include "platform.h"
 #include "stringex.h"
+#include "typeoperators.h"
 #include "unichar.h"
 
 #ifdef PLATFORM_WINDOWS
-#include <windef.h>
 #include "utf.h"
+#include <windef.h>
 #define NAME_MAX FILENAME_MAX
 
 #ifndef PATH_MAX
@@ -92,18 +93,16 @@ template<size_t Size> size_t u_strlcpy_tpl(unichar_t (&dst)[Size], const unichar
 
 namespace std
 {
-    template<class T, class Compare>
-    constexpr const T &clamp(const T &v, const T &lo, const T &hi, Compare comp)
-    {
-        return comp(v, lo) ? lo : comp(hi, v) ? hi : v;
-    }
-
-    template<class T>
-    constexpr const T &clamp(const T &v, const T &lo, const T &hi)
-    {
-        return clamp(v, lo, hi, std::less<T>());
-    }
+template<class T, class Compare> constexpr const T &clamp(const T &v, const T &lo, const T &hi, Compare comp)
+{
+    return comp(v, lo) ? lo : comp(hi, v) ? hi : v;
 }
+
+template<class T> constexpr const T &clamp(const T &v, const T &lo, const T &hi)
+{
+    return clamp(v, lo, hi, std::less<T>());
+}
+} // namespace std
 #endif
 
 #endif // BASE_ALWAYS_H

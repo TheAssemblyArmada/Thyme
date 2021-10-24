@@ -64,6 +64,8 @@ public:
     uint32_t Max_Textures_Per_Pass() const { return m_maxTexturesPerPass; }
     w3dcaps_t Get_DX8_Caps() const { return m_caps; }
     bool Support_Gamma() const { return m_supportGamma; }
+    bool Support_Bump_Envmap() const { return m_supportBumpEnvmap; }
+    bool Support_Bump_Envmap_Luminance() const { return m_supportBumpEnvmapLuminance; }
 
 #ifdef BUILD_WITH_D3D8
     unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }

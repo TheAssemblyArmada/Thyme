@@ -227,6 +227,7 @@ public:
     static void Invalidate_Cached_Render_States();
     static void Enable_Triangle_Draw(bool enable) { s_EnableTriangleDraw = enable; }
     static bool Is_Triangle_Draw_Enabled() { return s_EnableTriangleDraw; }
+    static bool Is_Initted(void) { return s_isInitialised; }
 
 private:
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,

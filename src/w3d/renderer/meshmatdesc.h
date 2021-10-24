@@ -156,7 +156,7 @@ public:
     bool Has_Texture_Array(int pass, int stage) const { return (m_textureArray[pass][stage] != nullptr); }
     bool Has_UV(int pass, int stage) { return m_UVSource[pass][stage] != -1; }
     bool Has_Color_Array(int array) { return m_colorArray[array] != nullptr; }
-    bool Has_Shader_Data(int pass) { return (m_shader[pass] != g_NullShader) || (m_shaderArray[pass] != nullptr); }
+    bool Has_Shader_Data(int pass) { return (m_shader[pass] != s_NullShader) || (m_shaderArray[pass] != nullptr); }
     bool Has_Material_Data(int pass) { return (m_material[pass] != nullptr) || (m_materialArray[pass] != nullptr); }
     bool Has_Texture_Data(int pass, int stage);
 
@@ -170,6 +170,9 @@ public:
     void Post_Load_Process(bool enable_lighting = true, MeshModelClass *parent = nullptr);
 
     bool Do_Mappers_Need_Normals();
+
+    MeshMatDescClass *Hook_Ctor() { return new (this) MeshMatDescClass; }
+    MeshMatDescClass *Hook_Ctor2(const MeshMatDescClass &src) { return new (this) MeshMatDescClass(src); }
 
 protected:
     void Configure_Material(VertexMaterialClass *mtl, int pass, bool lighting_enabled);
@@ -190,7 +193,11 @@ protected:
     MatBufferClass *m_materialArray[MAX_PASSES];
     ShareBufferClass<ShaderClass> *m_shaderArray[MAX_PASSES];
 
-    static ShaderClass g_NullShader;
+#ifdef GAME_DLL
+    static ShaderClass &s_NullShader;
+#else
+    static ShaderClass s_NullShader;
+#endif
 };
 
 inline Vector2 *MeshMatDescClass::Get_UV_Array(int pass, int stage)

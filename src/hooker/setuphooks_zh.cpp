@@ -67,6 +67,7 @@
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
+#include "meshmatdesc.h"
 #include "messagestream.h"
 #include "milesaudiofilecache.h"
 #include "milesaudiomanager.h"
@@ -1450,4 +1451,14 @@ void Setup_Hooks()
     Hook_Any(0x00861B80, CollectionLoaderClass::Load_W3D);
     Hook_Any(0x00862CB0, HModelLoaderClass::Load_W3D);
     Hook_Any(0x0085B580, HLodLoaderClass::Load_W3D);
+
+    // meshmatdesc.h
+    Hook_Method(0x0086B9C0, &MeshMatDescClass::Hook_Ctor);
+    Hook_Method(0x0086BAA0, &MeshMatDescClass::Hook_Ctor2);
+    Hook_Method(0x0086C0A0, &MeshMatDescClass::Reset);
+    Hook_Method(0x0086C1B0, &MeshMatDescClass::Init_Alternate);
+    Hook_Method(0x0086C630, &MeshMatDescClass::Is_Empty);
+    Hook_Method(0x0086CD00, &MeshMatDescClass::Install_UV_Array);
+    Hook_Method(0x0086CEC0, &MeshMatDescClass::Post_Load_Process);
+    Hook_Method(0x0086DFA0, &MeshMatDescClass::Do_Mappers_Need_Normals);
 }

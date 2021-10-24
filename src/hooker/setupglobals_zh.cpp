@@ -521,3 +521,7 @@ TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00
 // assetmgr.cpp
 #include "assetmgr.h"
 NullPrototypeClass &s_nullPrototype = Make_Global<NullPrototypeClass>(0x00A4C1B8);
+
+// meshmatdesc.cpp
+#include "meshmatdesc.h"
+ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(0x00A544C0);

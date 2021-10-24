@@ -241,7 +241,11 @@ public:
     T *Uninitialized_Add();
 
     T *begin() { return &(*this)[0]; }
+    const T *begin() const { return cbegin(); }
+    const T *cbegin() const { return &(*this)[0]; }
     T *end() { return &(*this)[Count()]; }
+    const T *end() const { return cend(); }
+    const T *cend() const { return &(*this)[Count()]; }
 
 protected:
     int m_activeCount;

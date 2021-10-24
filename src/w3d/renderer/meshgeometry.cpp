@@ -26,3 +26,12 @@ const Vector3 *MeshGeometryClass::Get_Vertex_Normal_Array()
     return nullptr;
 #endif
 }
+
+const char *MeshGeometryClass::Get_Name(void) const
+{
+    if (m_meshName) {
+        return m_meshName->Get_Array();
+    }
+
+    return nullptr;
+}

@@ -680,6 +680,9 @@ void User_Memory_Init_Pools()
     int initial_alloc;
     int overflow_alloc;
 
+    // CODEFIX: Zero terminate buffer.
+    pool_name[0] = (char)0;
+
 #ifdef PLATFORM_WINDOWS
     GetModuleFileNameA(0, path, PATH_MAX);
 #elif defined PLATFORM_LINUX // posix otherwise, really just linux currently
@@ -719,7 +722,8 @@ void User_Memory_Init_Pools()
     // table as needed. If a pool name is specified twice, last entry wins.
     if (fp != nullptr) {
         while (fgets(path, PATH_MAX, fp) != nullptr) {
-            if (*path != ';' && sscanf(path, "%s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3) {
+            // CODEFIX: Replace sscanf with sscanf_s to protect from buffer overflow.
+            if (*path != ';' && sscanf_s(path, "%s %d %d", pool_name, ARRAY_SIZE(pool_name), &initial_alloc, &overflow_alloc) == 3) {
                 for (PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr) {
                     if (strcasecmp(psr->pool_name, pool_name) == 0) {
                         psr->initial_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(initial_alloc));

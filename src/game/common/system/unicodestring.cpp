@@ -348,6 +348,7 @@ void Utf16String::Format(const unichar_t *format, ...)
 
     va_start(va, format);
     Format_VA(format, va);
+    va_end(va);
 }
 
 void Utf16String::Format(Utf16String format, ...)
@@ -356,6 +357,7 @@ void Utf16String::Format(Utf16String format, ...)
 
     va_start(va, format);
     Format_VA(format, va);
+    va_end(va);
 }
 
 void Utf16String::Format_VA(const unichar_t *format, va_list args)

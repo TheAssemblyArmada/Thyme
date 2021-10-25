@@ -43,7 +43,7 @@ ScienceInfo::ScienceInfo() :
 void ScienceStore::Reset()
 {
     // BUGFIX: Does no longer iterate with potentially invalidated iterator.
-    stl::erase_if(m_infoVec, [](ScienceInfo * science) {
+    stl::erase_if(m_infoVec, [](ScienceInfo *science) {
         if (science != nullptr) {
             science = static_cast<ScienceInfo *>(science->Delete_Overrides());
         }

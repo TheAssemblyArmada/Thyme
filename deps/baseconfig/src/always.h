@@ -26,6 +26,7 @@
 #include "macros.h"
 #include "platform.h"
 #include "stringex.h"
+#include "templates.h"
 #include "unichar.h"
 
 #ifdef PLATFORM_WINDOWS

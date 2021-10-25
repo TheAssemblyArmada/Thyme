@@ -38,16 +38,13 @@ void RankInfoStore::Init()
  */
 void RankInfoStore::Reset()
 {
-    auto it = m_infoStore.begin();
-    while (it != m_infoStore.end()) {
-        if (*it != nullptr) { // Original code has this check but result will be infinte loop if it is null?
-            if ((*it)->Delete_Overrides() == nullptr) {
-                m_infoStore.erase(it);
-            } else {
-                ++it;
-            }
+    // BUGFIX: Does no longer iterate with potentially invalidated iterator.
+    stl::erase_if(m_infoStore, [](RankInfo *rank) {
+        if (rank != nullptr) {
+            rank = static_cast<RankInfo *>(rank->Delete_Overrides());
         }
-    }
+        return (rank == nullptr);
+    });
 }
 
 /**

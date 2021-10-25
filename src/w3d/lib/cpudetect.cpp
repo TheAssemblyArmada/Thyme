@@ -1384,7 +1384,7 @@ bool CPUDetectClass::CPUID(uint32_t &u_eax_, uint32_t &u_ebx_, uint32_t &u_ecx_,
         return false;
     }
 
-    int32_t regs[4];
+    int32_t regs[4] = { 0 };
 
 #ifdef HAVE__CPUID
     __cpuidc(regs, cpuid_type);
@@ -1405,7 +1405,7 @@ bool CPUDetectClass::CPUID_Count(
         return false;
     }
 
-    int32_t regs[4];
+    int32_t regs[4] = { 0 };
 
 #ifdef HAVE__CPUIDEX
     __cpuidex(regs, cpuid_type, count);
@@ -1449,8 +1449,8 @@ void CPUDetectClass::Init_Processor_Log()
     CPU_LOG("\n");
 
 #if defined PLATFORM_WINDOWS
-    CPU_LOG("Operating system version: %d.%d\n", OSVersionNumberMajor, OSVersionNumberMinor);
-    CPU_LOG("Operating system build: %d.%d.%d\n",
+    CPU_LOG("Operating system version: %u.%u\n", OSVersionNumberMajor, OSVersionNumberMinor);
+    CPU_LOG("Operating system build: %u.%u.%u\n",
         (OSVersionBuildNumber & 0xFF000000) >> 24,
         (OSVersionBuildNumber & 0xFF0000) >> 16,
         (OSVersionBuildNumber & 0xFFFF));
@@ -1507,45 +1507,45 @@ void CPUDetectClass::Init_Processor_Log()
     CPU_LOG("\n");
 
     if (CPUDetectClass::Get_L1_Data_Cache_Size() > 0) {
-        CPU_LOG("L1 Data Cache: %d byte cache lines, %d way set associative, %dk\n",
+        CPU_LOG("L1 Data Cache: %u byte cache lines, %u way set associative, %u k\n",
             CPUDetectClass::Get_L1_Data_Cache_Line_Size(),
             CPUDetectClass::Get_L1_Data_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Data_Cache_Size() / 1024);
+            CPUDetectClass::Get_L1_Data_Cache_Size() / 1024u);
     } else {
         CPU_LOG("L1 Data Cache: None\n");
     }
 
     if (CPUDetectClass::Get_L1_Instruction_Cache_Size() > 0) {
-        CPU_LOG("L1 Instruction Cache: %d byte cache lines, %d way set associative, %dk\n",
+        CPU_LOG("L1 Instruction Cache: %u byte cache lines, %u way set associative, %u k\n",
             CPUDetectClass::Get_L1_Instruction_Cache_Line_Size(),
             CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024);
+            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024u);
     } else {
         CPU_LOG("L1 Instruction Cache: None\n");
     }
 
     if (CPUDetectClass::Get_L1_Instruction_Trace_Cache_Size() > 0) {
-        CPU_LOG("L1 Instruction Trace Cache: %d way set associative, %dk �OPs\n",
+        CPU_LOG("L1 Instruction Trace Cache: %u way set associative, %u k �OPs\n",
             CPUDetectClass::Get_L1_Instruction_Cache_Set_Associative(),
-            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024);
+            CPUDetectClass::Get_L1_Instruction_Cache_Size() / 1024u);
     } else {
         CPU_LOG("L1 Instruction Trace Cache: None\n");
     }
 
     if (CPUDetectClass::Get_L2_Cache_Size() > 0) {
-        CPU_LOG("L2 Cache: %d byte cache lines, %d way set associative, %dk\n",
+        CPU_LOG("L2 Cache: %u byte cache lines, %u way set associative, %u k\n",
             CPUDetectClass::Get_L2_Cache_Line_Size(),
             CPUDetectClass::Get_L2_Cache_Set_Associative(),
-            CPUDetectClass::Get_L2_Cache_Size() / 1024);
+            CPUDetectClass::Get_L2_Cache_Size() / 1024u);
     } else {
         CPU_LOG("L2 cache: None\n");
     }
 
     if (CPUDetectClass::Get_L3_Cache_Size() > 0) {
-        CPU_LOG("L3 Cache: %d byte cache lines, %d way set associative, %dk\n",
+        CPU_LOG("L3 Cache: %u byte cache lines, %u way set associative, %u k\n",
             CPUDetectClass::Get_L3_Cache_Line_Size(),
             CPUDetectClass::Get_L3_Cache_Set_Associative(),
-            CPUDetectClass::Get_L3_Cache_Size() / 1024);
+            CPUDetectClass::Get_L3_Cache_Size() / 1024u);
     } else {
         CPU_LOG("L3 cache: None\n");
     }
@@ -1575,7 +1575,7 @@ void CPUDetectClass::Init_Compact_Log()
     COMPACT_LOG("%s\t", os_info.Code);
 
     if (!strcasecmp(os_info.SubCode, "UNKNOWN")) {
-        COMPACT_LOG("%d\t", OSVersionBuildNumber & 0xFFFF);
+        COMPACT_LOG("%u\t", OSVersionBuildNumber & 0xFFFF);
     } else {
         COMPACT_LOG("%s\t", os_info.SubCode);
     }

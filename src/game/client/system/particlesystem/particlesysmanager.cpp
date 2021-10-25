@@ -353,6 +353,7 @@ void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
         if (*it == system) {
             m_allParticleSystemList.erase(it);
             --m_particleSystemCount;
+            break;
         }
     }
 }

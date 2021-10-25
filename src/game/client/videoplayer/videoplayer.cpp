@@ -110,6 +110,7 @@ void VideoPlayer::Remove_Video(Video *video)
     for (auto it = m_videosAvailableToPlay.begin(); it != m_videosAvailableToPlay.end(); ++it) {
         if (it->internal_name == video->internal_name) {
             m_videosAvailableToPlay.erase(it);
+            break;
         }
     }
 }

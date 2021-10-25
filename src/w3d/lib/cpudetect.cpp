@@ -1313,6 +1313,7 @@ void CPUDetectClass::Init_OS()
     HMODULE nt_lib = LoadLibraryExA("ntdll", NULL, 0);
     if (nt_lib != nullptr) {
         getinfoptr_t RtlGetVersion = (getinfoptr_t)::GetProcAddress(nt_lib, "RtlGetVersion");
+        bool done = false;
 
         if (RtlGetVersion != nullptr) {
             RTL_OSVERSIONINFOW os = { 0 };
@@ -1324,6 +1325,12 @@ void CPUDetectClass::Init_OS()
             OSVersionBuildNumber = os.dwBuildNumber;
             OSVersionPlatformId = os.dwPlatformId;
 
+            done = true;
+        }
+
+        FreeLibrary(nt_lib);
+
+        if (done) {
             return;
         }
     }

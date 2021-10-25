@@ -107,7 +107,9 @@ TextureLoadTaskClass *TextureLoadTaskListClass::Pop_Back()
  */
 void TextureLoadTaskListClass::Remove(TextureLoadTaskClass *task)
 {
-    if (task->m_parent == this) {
+    // BUGFIX: Avoid task null dereference.
+
+    if (task && task->m_parent == this) {
         task->m_listNode.prev->succ = task->m_listNode.succ;
         task->m_listNode.succ->prev = task->m_listNode.prev;
         task->m_listNode.succ = nullptr;

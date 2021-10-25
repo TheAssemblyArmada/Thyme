@@ -100,7 +100,7 @@ inline bool Point_In_Triangle_2D(const Vector3 &tri_point0,
         Vector2 pSpE, pSpT;
 
         if (p0p1dist2 > p1p2dist2) {
-            if (p0p1dist2 > p2p0dist2) {
+            if (p0p1dist2 > p2p0dist2) { // #TODO Inner condition is same as outer condition.
                 pSpE = p0p1;
                 pSpT.Set(test_point[axis_1] - tri_point0[axis_1], test_point[axis_2] - tri_point0[axis_2]);
                 max_dist2 = p0p1dist2;

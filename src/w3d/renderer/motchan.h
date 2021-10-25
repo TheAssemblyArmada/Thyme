@@ -54,6 +54,8 @@ public:
         }
     }
 
+    // #TODO Get_Vector function above is called for single floats, but this function writes to a
+    // sequence of floats. This will likely corrupt memory!
     void Set_Identity(float *setvec)
     {
         if (m_type == ANIM_CHANNEL_Q) {

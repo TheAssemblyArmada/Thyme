@@ -58,6 +58,7 @@ public:
     bool Is_Adding() const { return m_isAdding; }
 
 private:
+    // #TODO Add better constructor.
     AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false) {}
 
 private:

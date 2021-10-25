@@ -483,7 +483,7 @@ public:
     virtual void Apply(int uv_array_index);
 
 protected:
-    unsigned int m_lastUsedSyncTime;
+    unsigned int m_lastUsedSyncTime; // #TODO Parent LinearOffsetTextureMapperClass uses same variable name
     float m_currentAngle;
     float m_radiansPerSecond;
     float m_scaleFactor;

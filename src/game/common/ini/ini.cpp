@@ -22,6 +22,7 @@
 #include "file.h"
 #include "filesystem.h"
 #include "fpusetting.h"
+#include "fxlist.h"
 #include "gamelod.h"
 #include "gamemath.h"
 #include "gametext.h"
@@ -80,7 +81,7 @@ BlockParse TheTypeTable[] = {
     //{"DrawGroupInfo", (iniblockparse_t)(0x005145B0) /*&INI::parseDrawGroupNumberDefinition*/},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", (iniblockparse_t)(0x00512BE0) /*&INI::parseEvaEvent*/},
-    {"FXList", (iniblockparse_t)(0x004CC260) /*&INI::parseFXListDefinition*/},
+    {"FXList", &FXListStore::Parse_FXList_Definition},
     {"GameData", &GlobalData::Parse_Game_Data_Definition},
     {"InGameUI", (iniblockparse_t)(0x00508440) /*&INI::parseInGameUIDefinition*/},
     {"Locomotor", (iniblockparse_t)(0x004B8A70) /*&INI::parseLocomotorTemplateDefinition*/},

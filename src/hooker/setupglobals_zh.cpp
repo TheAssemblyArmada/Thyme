@@ -614,3 +614,7 @@ InGameUI *&g_theInGameUI = Make_Global<InGameUI *>(PICK_ADDRESS(0x00A2C088, 0x00
 // waterrenderobj.cpp
 class WaterRenderObjClass;
 WaterRenderObjClass *&g_theWaterRenderObj = Make_Global<WaterRenderObjClass *>(PICK_ADDRESS(0x00A3ABD8, 0x00E1A5D8));
+
+// fxlist.cpp
+#include "fxlist.h"
+FXListStore *&g_theFXListStore = Make_Global<FXListStore *>(PICK_ADDRESS(0x00A2BC64, 0x00E23F0C));

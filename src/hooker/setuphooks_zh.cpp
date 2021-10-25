@@ -53,6 +53,7 @@
 #include "force_nocd.h"
 #include "framemetrics.h"
 #include "functionlexicon.h"
+#include "fxlist.h"
 #include "gameclient.h"
 #include "gamelogic.h"
 #include "gamemath.h"
@@ -1945,4 +1946,7 @@ void Setup_Hooks()
     Hook_Any(0x00783B00, W3DSmudgeManager::Release_Resources);
     Hook_Any(0x00783B20, W3DSmudgeManager::Re_Acquire_Resources);
     Hook_Any(0x00784130, W3DSmudgeManager::Render);
+
+    // fxlist.h
+    Hook_Method(PICK_ADDRESS(0x004CC200, 0x0075F326), &FXListStore::Find_FXList);
 }

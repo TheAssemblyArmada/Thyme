@@ -1124,7 +1124,10 @@ void CPUDetectClass::Init_Processor_String()
         strtrim(ProcessorString);
     } else {
         char str[2048];
-        strcat(str, Get_Processor_Manufacturer_Name());
+        str[0] = '\0';
+        if (const char *name = Get_Processor_Manufacturer_Name()) {
+            strcat(str, name);
+        }
 
         if (ProcessorManufacturer == MANUFACTURER_INTEL) {
             strcat(str, " ");
@@ -1577,7 +1580,8 @@ void CPUDetectClass::Init_Compact_Log()
         COMPACT_LOG("%s\t", os_info.SubCode);
     }
 
-    COMPACT_LOG("%s\t%d\t", Get_Processor_Manufacturer_Name(), Get_Processor_Speed());
+    const char *processor_manufacturer_name = Get_Processor_Manufacturer_Name();
+    COMPACT_LOG("%s\t%d\t", processor_manufacturer_name ? processor_manufacturer_name : "", Get_Processor_Speed());
 
     COMPACT_LOG("%" PRIu64 "\t", Get_Total_Physical_Memory() / (1024 * 1024) + 1);
 

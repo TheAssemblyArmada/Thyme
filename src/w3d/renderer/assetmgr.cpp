@@ -693,10 +693,9 @@ void GameAssetManager::Make_HLOD_Unique(RenderObjClass *robj, bool geometry, boo
 {
     for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
         auto *sub_robj = robj->Get_Sub_Object(i);
-
-        Make_Unique(sub_robj, geometry, colors);
-
         if (sub_robj != nullptr) {
+            // BUGFIX: Guard pointer by check always.
+            Make_Unique(sub_robj, geometry, colors);
             sub_robj->Release_Ref();
         }
     }
@@ -756,8 +755,9 @@ bool GameAssetManager::Recolor_HLOD(RenderObjClass *robj, uint32_t colour)
     bool recolored = false;
     for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
         auto *sub_robj = robj->Get_Sub_Object(i);
-        recolored |= Recolour_Asset(sub_robj, colour);
         if (sub_robj != nullptr) {
+            // BUGFIX: Guard pointer by check always.
+            recolored |= Recolour_Asset(sub_robj, colour);
             sub_robj->Release_Ref();
         }
     }
@@ -782,10 +782,9 @@ bool GameAssetManager::Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *
     bool replaced = false;
     for (auto i = 0; i < robj->Get_Num_Sub_Objects(); ++i) {
         auto *sub_robj = robj->Get_Sub_Object(i);
-
-        replaced |= Replace_Asset_Texture(sub_robj, old_texture, new_texture);
-
         if (sub_robj != nullptr) {
+            // BUGFIX: Guard pointer by check always.
+            replaced |= Replace_Asset_Texture(sub_robj, old_texture, new_texture);
             sub_robj->Release_Ref();
         }
     }

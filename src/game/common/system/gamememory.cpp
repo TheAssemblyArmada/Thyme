@@ -28,7 +28,9 @@ bool g_theMainInitFlag = false;
 #include "hooker.h"
 #endif
 
+#ifndef NDEBUG
 int g_theLinkChecker = 0;
+#endif
 
 #ifdef GAME_DLL
 void *New_New(size_t bytes)
@@ -62,10 +64,11 @@ void Init_Memory_Manager()
         g_thePreMainInitFlag = false;
     }
 
+#ifndef NDEBUG
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
-    // captainslog_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
+    captainslog_info("Checking memory manager operators are linked, link checker at %d\n", g_theLinkChecker);
 
     char *tmp = new char;
     delete tmp;
@@ -78,6 +81,7 @@ void Init_Memory_Manager()
         captainslog_fatal("Not linked correct new and delete operators, checker has value %d\n", g_theLinkChecker);
         exit(-1);
     }
+#endif
 
     g_theMainInitFlag = true;
 }
@@ -118,7 +122,9 @@ void Shutdown_Memory_Manager()
 
 MemoryPool *Create_Named_Pool(const char *name, int size)
 {
+#ifndef NDEBUG
     ++g_theLinkChecker;
+#endif
     Init_Memory_Manager_Pre_Main();
     return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
 }
@@ -136,7 +142,9 @@ void Free_From_Pool(MemoryPool *pool, void *memory)
 // These all override the global news and deletes just by being linked.
 void *operator new(size_t bytes)
 {
+#ifndef NDEBUG
     ++g_theLinkChecker;
+#endif
     Init_Memory_Manager_Pre_Main();
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
@@ -144,7 +152,9 @@ void *operator new(size_t bytes)
 
 void *operator new[](size_t bytes)
 {
+#ifndef NDEBUG
     ++g_theLinkChecker;
+#endif
     Init_Memory_Manager_Pre_Main();
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
@@ -152,14 +162,18 @@ void *operator new[](size_t bytes)
 
 void operator delete(void *ptr)
 {
+#ifndef NDEBUG
     ++g_theLinkChecker;
+#endif
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
 
 void operator delete[](void *ptr)
 {
+#ifndef NDEBUG
     ++g_theLinkChecker;
+#endif
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }

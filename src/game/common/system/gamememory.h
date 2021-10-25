@@ -27,7 +27,9 @@ extern bool g_thePreMainInitFlag;
 extern bool g_theMainInitFlag;
 #endif
 
+#ifndef NDEBUG
 extern int g_theLinkChecker;
+#endif
 
 void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();

@@ -45,7 +45,7 @@ template<class Container, class UnaryPredicate>
 typename Container::size_type erase_if(Container &container, UnaryPredicate pred)
 {
     typename Container::iterator remove_at = ::stl::remove_if(container.begin(), container.end(), pred);
-    const ptrdiff_t count = ::std::distance(remove_at, container.end());
+    typename Container::size_type count = ::std::distance(remove_at, container.end());
     container.erase(remove_at, container.end());
     return count;
 }

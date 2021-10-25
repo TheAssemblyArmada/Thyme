@@ -40,7 +40,7 @@ enum INILoadMode
     INIC_LOAD_CREATE_OVERRIDES = 2
 };
 
-class INIEntry : public Node<INIEntry *>
+class INIEntry : public Node<INIEntry *>, NotCopyable
 {
 public:
     INIEntry(const char *name, const char *value) : m_key(strdup(name)), m_value(strdup(value)) {}
@@ -57,7 +57,7 @@ public:
     char *m_value;
 };
 
-class INISection : public Node<INISection *>
+class INISection : public Node<INISection *>, NotCopyable
 {
 public:
     INISection(const char *name) : m_sectionName(strdup(name)) {}

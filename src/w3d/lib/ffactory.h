@@ -25,7 +25,7 @@ public:
 };
 
 // Pointer wrapper from RAII style use of file classes.
-class auto_file_ptr
+class auto_file_ptr : NotCopyable
 {
 public:
     auto_file_ptr(FileFactoryClass *fact, const char *filename);

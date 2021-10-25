@@ -26,7 +26,7 @@ class W3DExclusionListClass;
 class HAnimClass;
 class HAnimManagerIterator;
 
-class HAnimManagerClass
+class HAnimManagerClass : NotCopyable
 {
     friend class HAnimManagerIterator;
 

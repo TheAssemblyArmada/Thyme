@@ -91,7 +91,7 @@ struct DDSHeader
     uint32_t dwReserved2;
 };
 
-class DDSFileClass
+class DDSFileClass : NotCopyable
 {
     ALLOW_HOOKING
     enum

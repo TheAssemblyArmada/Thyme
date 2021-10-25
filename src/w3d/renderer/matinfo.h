@@ -50,7 +50,7 @@ private:
     DynamicVectorClass<TextureClass *> m_textures;
 };
 
-class MaterialRemapperClass
+class MaterialRemapperClass : NotCopyable
 {
 public:
     MaterialRemapperClass(MaterialInfoClass *src, MaterialInfoClass *dest);

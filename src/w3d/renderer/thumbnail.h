@@ -22,7 +22,7 @@
 
 class ThumbnailManagerClass;
 
-class ThumbnailClass
+class ThumbnailClass : NotCopyable
 {
 public:
     ThumbnailClass(ThumbnailManagerClass *manager,

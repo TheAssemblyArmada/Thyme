@@ -143,7 +143,7 @@ private:
  * it automatically when the lock object goes out of scope or the destructor
  * is called manually as per RAII programming methodology.
  */
-class CriticalSectionClass
+class CriticalSectionClass : NotCopyable
 {
 public:
     CriticalSectionClass();

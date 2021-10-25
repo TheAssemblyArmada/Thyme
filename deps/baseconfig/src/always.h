@@ -20,6 +20,7 @@
 #include "targetver.h"
 
 #include "bittype.h"
+#include "classes.h"
 #include "compiler.h"
 #include "intrinsics.h"
 #include "macros.h"

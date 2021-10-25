@@ -29,7 +29,7 @@ private:
     HashableClass *m_nextHash;
 };
 
-class HashTableClass
+class HashTableClass : NotCopyable
 {
     friend class HashTableIteratorClass;
 

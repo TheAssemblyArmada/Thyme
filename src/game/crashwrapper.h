@@ -14,9 +14,11 @@
  */
 #pragma once
 
+#include "classes.h"
+
 class CrashPreferences;
 
-class CrashPrefWrapper
+class CrashPrefWrapper : NotCopyable
 {
 public:
     CrashPrefWrapper();

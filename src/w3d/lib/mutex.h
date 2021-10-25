@@ -30,7 +30,7 @@
 #error Threading implementation not detected in mutex.h
 #endif
 
-class SimpleMutexClass // Called CriticalSection in ZH 1.04 Mac,
+class SimpleMutexClass : NotCopyable // Called CriticalSection in ZH 1.04 Mac,
 {
     enum
     {
@@ -45,8 +45,6 @@ public:
     void Unlock();
 
 protected:
-    SimpleMutexClass &operator=(SimpleMutexClass const &that) { return *this; }
-
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_t m_handle;
 #elif defined PLATFORM_WINDOWS
@@ -127,7 +125,7 @@ private:
  * it automatically when the lock object goes out of scope or the destructor
  * is called manually as per RAII programming methodology.
  */
-class MutexClass
+class MutexClass : NotCopyable
 {
 public:
     enum
@@ -139,7 +137,7 @@ public:
     MutexClass(const char *name = nullptr);
     ~MutexClass();
 
-    class LockClass
+    class LockClass : NotCopyable
     {
     public:
         // In order to enter a critical section create a local instance of LockClass with critical section as a parameter.
@@ -155,7 +153,6 @@ public:
         bool Failed() const { return m_failed; }
 
     private:
-        LockClass &operator=(LockClass const &that) { return *this; }
         MutexClass &m_muxtex;
         bool m_failed;
     };

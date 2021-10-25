@@ -99,9 +99,9 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                 }
             }
         } while (FindNextFileW(hndl, &data));
-    }
 
-    FindClose(hndl);
+        FindClose(hndl);
+    }
 
     // Recurse into subdirectories if required.
     if (search_subdirs) {

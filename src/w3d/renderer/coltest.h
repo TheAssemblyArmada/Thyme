@@ -156,6 +156,7 @@ public:
 
     bool Cull(const AABoxClass &box);
     bool Cull(const Vector3 &min, const Vector3 &max);
+    bool Cast_To_Triangle(const TriClass &tri);
 
 public:
     OBBoxClass m_box;
@@ -182,4 +183,9 @@ inline bool OBBoxCollisionTestClass::Cull(const Vector3 &min, const Vector3 &max
         return true;
     }
     return false;
+}
+
+inline bool OBBoxCollisionTestClass::Cast_To_Triangle(const TriClass &tri)
+{
+    return CollisionMath::Collide(m_box, m_move, tri, Vector3(0, 0, 0), m_result);
 }

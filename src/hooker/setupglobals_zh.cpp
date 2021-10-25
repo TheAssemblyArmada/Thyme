@@ -525,3 +525,6 @@ NullPrototypeClass &s_nullPrototype = Make_Global<NullPrototypeClass>(0x00A4C1B8
 // meshmatdesc.cpp
 #include "meshmatdesc.h"
 ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(0x00A544C0);
+
+// meshgeometry.cpp
+SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(0x00A51E60);

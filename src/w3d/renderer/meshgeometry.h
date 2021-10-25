@@ -95,12 +95,20 @@ public:
     int Get_Polygon_Count() const { return m_polyCount; }
     int Get_Vertex_Count() const { return m_vertexCount; }
     const TriIndex *Get_Polygon_Array() { return Get_Polys(); }
-    Vector3 *Get_Vertex_Array() { return m_vertex->Get_Array(); }
+    Vector3 *Get_Vertex_Array()
+    {
+        captainslog_assert(m_vertex);
+        return m_vertex->Get_Array();
+    }
     const Vector3 *Get_Vertex_Normal_Array();
     const Vector4 *Get_Plane_Array(bool create = true);
     const uint32_t *Get_Vertex_Shade_Index_Array(bool create = true) { return Get_Shade_Indices(create); }
     const uint16_t *Get_Vertex_Bone_Links() { return Get_Bone_Links(); }
-    uint8_t *Get_Poly_Surface_Type_Array() { return m_polySurfaceType->Get_Array(); }
+    uint8_t *Get_Poly_Surface_Type_Array()
+    {
+        captainslog_assert(m_polySurfaceType);
+        return m_polySurfaceType->Get_Array();
+    }
     void Get_Bounding_Box(AABoxClass *set_box);
     void Get_Bounding_Sphere(SphereClass *set_sphere);
     uint8_t Get_Poly_Surface_Type(int poly_index) const;
@@ -111,7 +119,11 @@ public:
     void Set_Flag(FlagsType flag, bool onoff);
 
 protected:
-    TriIndex *Get_Polys() { return m_poly->Get_Array(); }
+    TriIndex *Get_Polys()
+    {
+        captainslog_assert(m_poly);
+        return m_poly->Get_Array();
+    }
     Vector3 *Get_Vert_Normals();
     Vector4 *Get_Planes(bool create = true);
     uint32_t *Get_Shade_Indices(bool create = true);
@@ -208,4 +220,12 @@ inline uint16_t *MeshGeometryClass::Get_Bone_Links(bool create)
     }
 
     return nullptr;
+}
+
+inline uint8_t MeshGeometryClass::Get_Poly_Surface_Type(int poly_index) const
+{
+    captainslog_assert(m_polySurfaceType);
+    captainslog_assert(poly_index >= 0 && poly_index < m_polyCount);
+    uint8_t *type = m_polySurfaceType->Get_Array();
+    return type[poly_index];
 }

@@ -410,11 +410,11 @@ int TimeCodedBitChannelClass::Get_Bit(int frame)
 
     unsigned int count = 0;
 
-    if (frame >= (m_bits[m_cachedIdx] & 0x7FFFFFFF)) {
+    if (frame >= int(m_bits[m_cachedIdx] & 0x7FFFFFFF)) {
         count = m_cachedIdx + 1;
     }
 
-    while (count < m_numTimeCodes && frame >= (m_bits[count] & 0x7FFFFFFF)) {
+    while (count < m_numTimeCodes && frame >= int(m_bits[count] & 0x7FFFFFFF)) {
         ++count;
     }
 

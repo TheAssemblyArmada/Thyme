@@ -380,7 +380,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
         Sort(index_array, &index_array[g_overlappingPolygonCount]);
         unsigned int polygonAllocCount = g_overlappingPolygonCount;
 
-        if (DynamicIBAccessClass::Get_Default_Index_Count() / 3 < g_defaultSortingPolyCount) {
+        if (DynamicIBAccessClass::Get_Default_Index_Count() / 3u < g_defaultSortingPolyCount) {
             polygonAllocCount = g_defaultSortingPolyCount;
         }
 

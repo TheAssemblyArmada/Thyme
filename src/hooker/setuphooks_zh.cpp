@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include "aabtree.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -67,6 +68,7 @@
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
+#include "meshgeometry.h"
 #include "meshmatdesc.h"
 #include "messagestream.h"
 #include "milesaudiofilecache.h"
@@ -1461,4 +1463,21 @@ void Setup_Hooks()
     Hook_Method(0x0086CD00, &MeshMatDescClass::Install_UV_Array);
     Hook_Method(0x0086CEC0, &MeshMatDescClass::Post_Load_Process);
     Hook_Method(0x0086DFA0, &MeshMatDescClass::Do_Mappers_Need_Normals);
+
+    // aabtree.h
+    Hook_Method(0x0088D170,
+        static_cast<void (AABTreeClass::*)(OBBoxClass const &, SimpleDynVecClass<uint32_t> &)>(&AABTreeClass::Generate_APT));
+    Hook_Method(0x0088D4B0,
+        static_cast<void (AABTreeClass::*)(OBBoxClass const &, Vector3 const &, SimpleDynVecClass<uint32_t> &)>(
+            &AABTreeClass::Generate_APT));
+    Hook_Any(0x0088D830, AABTreeClass::Cast_Ray_Recursive);
+    Hook_Any(0x0088D960, AABTreeClass::Cast_AABox_Recursive);
+    Hook_Any(0x0088DA10, AABTreeClass::Cast_OBBox_Recursive);
+    Hook_Any(0x0088DAC0, AABTreeClass::Intersect_OBBox_Recursive);
+
+    // meshgeometry.cpp
+    Hook_Any(0x0083C2D0, MeshGeometryClass::Scale);
+    Hook_Any(0x0083B8F0, MeshGeometryClass::Generate_Culling_Tree);
+    Hook_Any(0x0083C210, MeshGeometryClass::Read_AABTree);
+    Hook_Any(0x00839B90, MeshGeometryClass::operator=);
 }

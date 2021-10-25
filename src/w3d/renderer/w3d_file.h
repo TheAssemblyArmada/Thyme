@@ -449,3 +449,18 @@ struct W3dBoxStruct
     W3dVectorStruct Center;
     W3dVectorStruct Extent;
 };
+
+struct W3dMeshAABTreeHeader
+{
+    uint32_t NodeCount;
+    uint32_t PolyCount;
+    uint32_t Padding[6];
+};
+
+struct W3dMeshAABTreeNode
+{
+    W3dVectorStruct Min;
+    W3dVectorStruct Max;
+    uint32_t FrontOrPoly0;
+    uint32_t BackOrPolyCount;
+};

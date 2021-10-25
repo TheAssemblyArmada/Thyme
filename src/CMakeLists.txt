@@ -265,6 +265,8 @@ set(GAMEENGINE_SRC
     w3d/math/v3_rnd.cpp
     w3d/math/vp.cpp
     w3d/renderer/animobj.cpp
+    w3d/renderer/aabtree.cpp
+    w3d/renderer/aabtreebuilder.cpp
     w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
     w3d/renderer/boxrobj.cpp

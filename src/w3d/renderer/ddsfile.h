@@ -93,7 +93,10 @@ struct DDSHeader
 
 class DDSFileClass
 {
+    NOT_COPYABLE(DDSFileClass)
+
     ALLOW_HOOKING
+
     enum
     {
         TEXTURE,

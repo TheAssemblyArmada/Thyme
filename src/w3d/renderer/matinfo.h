@@ -71,6 +71,8 @@ private:
 
 class MaterialRemapperClass
 {
+    NOT_COPYABLE(MaterialRemapperClass)
+
 public:
     MaterialRemapperClass(MaterialInfoClass *src, MaterialInfoClass *dest);
     ~MaterialRemapperClass();

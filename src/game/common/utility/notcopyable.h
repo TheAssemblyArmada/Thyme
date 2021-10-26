@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @author OmniBlade
+ * @author xezon
  *
- * @brief Wrapper to mask STLPort ABI differences for config loader and crashpad init code.
+ * @brief Utility class that can be privately inherited from to avoid copies.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,21 +14,12 @@
  */
 #pragma once
 
-#include "macros.h"
-
-class CrashPreferences;
-
-class CrashPrefWrapper
+class NotCopyable
 {
-    NOT_COPYABLE(CrashPrefWrapper)
-
 public:
-    CrashPrefWrapper();
-    ~CrashPrefWrapper();
-
-    const char *Get_Upload_URL();
-    bool Upload_Allowed();
+    NotCopyable() = default;
 
 private:
-    CrashPreferences *m_prefs;
+    NotCopyable(const NotCopyable &) = delete;
+    NotCopyable &operator=(const NotCopyable &) = delete;
 };

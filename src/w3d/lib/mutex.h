@@ -32,6 +32,8 @@
 
 class SimpleMutexClass // Called CriticalSection in ZH 1.04 Mac,
 {
+    NOT_COPYABLE(SimpleMutexClass)
+
     enum
     {
         LOCK_WAIT = 500,
@@ -45,8 +47,6 @@ public:
     void Unlock();
 
 protected:
-    SimpleMutexClass &operator=(SimpleMutexClass const &that) { return *this; }
-
 #ifdef HAVE_PTHREAD_H
     pthread_mutex_t m_handle;
 #elif defined PLATFORM_WINDOWS
@@ -129,6 +129,8 @@ private:
  */
 class MutexClass
 {
+    NOT_COPYABLE(MutexClass)
+
 public:
     enum
     {
@@ -141,6 +143,8 @@ public:
 
     class LockClass
     {
+        NOT_COPYABLE(LockClass)
+
     public:
         // In order to enter a critical section create a local instance of LockClass with critical section as a parameter.
         LockClass(MutexClass &critical_section, int time = MutexClass::WAIT_INFINITE) : m_muxtex(critical_section)
@@ -155,7 +159,6 @@ public:
         bool Failed() const { return m_failed; }
 
     private:
-        LockClass &operator=(LockClass const &that) { return *this; }
         MutexClass &m_muxtex;
         bool m_failed;
     };

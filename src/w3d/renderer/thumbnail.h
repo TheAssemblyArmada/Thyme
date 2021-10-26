@@ -24,6 +24,8 @@ class ThumbnailManagerClass;
 
 class ThumbnailClass
 {
+    NOT_COPYABLE(ThumbnailClass)
+
 public:
     ThumbnailClass(ThumbnailManagerClass *manager,
         char const *texture,

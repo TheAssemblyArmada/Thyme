@@ -145,6 +145,8 @@ private:
  */
 class CriticalSectionClass
 {
+    NOT_COPYABLE(CriticalSectionClass)
+
 public:
     CriticalSectionClass();
     ~CriticalSectionClass();

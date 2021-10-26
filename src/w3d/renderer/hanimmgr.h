@@ -29,6 +29,8 @@ class HAnimManagerIterator;
 
 class HAnimManagerClass
 {
+    NOT_COPYABLE(HAnimManagerClass)
+
     friend class HAnimManagerIterator;
 
 public:

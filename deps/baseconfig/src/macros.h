@@ -176,4 +176,13 @@
 #define SIZE_OF(typ, id) sizeof(((typ *)0)->id)
 #endif // !SIZE_OF
 
+/**
+ * Deletes copy constructor and assignment operator in given class body.
+ */
+#ifndef NOT_COPYABLE
+#define NOT_COPYABLE(TypeName) \
+    TypeName(const TypeName &) = delete; \
+    TypeName &operator=(const TypeName &) = delete;
+#endif // !NOT_COPYABLE
+
 #endif // BASE_MACROS_H

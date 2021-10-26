@@ -42,6 +42,8 @@ enum INILoadMode
 
 class INIEntry : public Node<INIEntry *>
 {
+    NOT_COPYABLE(INIEntry)
+
 public:
     INIEntry(const char *name, const char *value) : m_key(strdup(name)), m_value(strdup(value)) {}
     ~INIEntry();
@@ -59,6 +61,8 @@ public:
 
 class INISection : public Node<INISection *>
 {
+    NOT_COPYABLE(INISection)
+
 public:
     INISection(const char *name) : m_sectionName(strdup(name)) {}
     ~INISection();

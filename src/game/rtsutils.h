@@ -17,6 +17,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "endiantype.h"
+#include <algorithm>
 #include <ctime>
 
 #ifdef PLATFORM_WINDOWS
@@ -119,6 +120,39 @@ inline void Sleep_Ms(int interval)
 #else
 #error Add sleep function in rtsutil.h
 #endif
+}
+
+// Moves all elements, where predicate is true, to the end of the container and returns iterator from where these moved
+// elements start.
+template<class ForwardIterator, class UnaryPredicate>
+ForwardIterator remove_if(ForwardIterator first, ForwardIterator last, UnaryPredicate pred)
+{
+    ForwardIterator result = first;
+    while (first != last) {
+        if (!pred(*first)) {
+            if (result != first)
+                *result = *first;
+            ++result;
+        }
+        ++first;
+    }
+    return result;
+}
+
+// Erases all elements from container where predicate is true.
+template<class Container, class UnaryPredicate>
+typename Container::size_type erase_if(Container &container, UnaryPredicate pred)
+{
+    typename Container::iterator remove_at = ::rts::remove_if(container.begin(), container.end(), pred);
+    typename Container::size_type count = std::distance(remove_at, container.end());
+    container.erase(remove_at, container.end());
+    return count;
+}
+
+// Fills whole array with a value.
+template<typename T, size_t Size> void fill(T (&array)[Size], const T &val)
+{
+    std::fill_n(array, Size, val);
 }
 
 } // namespace rts

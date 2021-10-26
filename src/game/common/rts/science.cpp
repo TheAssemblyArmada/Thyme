@@ -15,6 +15,7 @@
 #include "science.h"
 #include "ini.h"
 #include "namekeygenerator.h"
+#include "rtsutils.h"
 #include <algorithm>
 #include <captainslog.h>
 #include <cstddef>
@@ -61,15 +62,13 @@ void ScienceInfo::Add_Root_Sciences(std::vector<ScienceType> &rootScience) const
 
 void ScienceStore::Reset()
 {
-    for (auto it = m_infoVec.begin(); it != m_infoVec.end(); ++it) {
-        if (*it != nullptr) {
-            *it = reinterpret_cast<ScienceInfo *>((*it)->Delete_Overrides());
+    // #BUGFIX Does no longer iterate with invalidated iterator.
+    rts::erase_if(m_infoVec, [](ScienceInfo *science) {
+        if (science != nullptr) {
+            science = static_cast<ScienceInfo *>(science->Delete_Overrides());
         }
-
-        if (*it == nullptr) {
-            m_infoVec.erase(it);
-        }
-    }
+        return (science == nullptr);
+    });
 }
 
 ScienceType ScienceStore::Lookup_Science(const char *name)

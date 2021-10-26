@@ -95,7 +95,7 @@ inline bool Point_In_Triangle_2D(const Vector3 &tri_point0,
     } else {
         float p0p1dist2 = p0p1.Length2();
         float p1p2dist2 = p1p2.Length2();
-        float p2p0dist2 = p1p2.Length2();
+        float p2p0dist2 = p2p0.Length2(); // #BUGFIX Originally this distance was equal to the previous.
         float max_dist2;
         Vector2 pSpE, pSpT;
 

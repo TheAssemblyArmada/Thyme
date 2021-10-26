@@ -16,6 +16,9 @@
 #include "always.h"
 #include "refcount.h"
 #include "w3dmpo.h"
+#include <cstring>
+
+using std::memset;
 
 template<class T> class ShareBufferClass : public W3DMPO, public RefCountClass
 {

@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "coltest.h"
+#include "inttest.h"
 #include "multilist.h"
 #include "refcount.h"
 #include "sharebuf.h"
@@ -32,13 +33,13 @@ class ChunkLoadClass;
 class AABTreeClass;
 class HTreeClass;
 class RenderInfoClass;
-class RayCollisionTestClass;
-class OBBoxIntersectionTestClass;
 
 typedef Vector3i16 TriIndex;
 
 class MeshGeometryClass : public W3DMPO, public RefCountClass, public MultiListObjectClass
 {
+    IMPLEMENT_W3D_POOL(MeshGeometryClass);
+
 public:
     enum FlagsType
     {
@@ -67,7 +68,7 @@ public:
 
     MeshGeometryClass();
     MeshGeometryClass(const MeshGeometryClass &that);
-    virtual ~MeshGeometryClass();
+    virtual ~MeshGeometryClass() override;
 
     MeshGeometryClass &operator=(const MeshGeometryClass &that);
     void Reset_Geometry(int polycount, int vertcount);
@@ -118,6 +119,9 @@ public:
     void Set_Sort_Level(int level) { m_sortLevel = level; }
     void Set_Flag(FlagsType flag, bool onoff);
 
+    MeshGeometryClass *Hook_Ctor() { return new (this) MeshGeometryClass; }
+    MeshGeometryClass *Hook_Ctor2(const MeshGeometryClass &src) { return new (this) MeshGeometryClass(src); }
+
 protected:
     TriIndex *Get_Polys()
     {
@@ -144,11 +148,13 @@ protected:
     virtual void Compute_Bounds(Vector3 *verts);
     void Generate_Culling_Tree();
 
+public:
     void Get_Deformed_Vertices(Vector3 *dst_vert, Vector3 *dst_norm, const HTreeClass *htree);
     void Get_Deformed_Vertices(Vector3 *dst_vert, const HTreeClass *htree);
     void Get_Deformed_Screenspace_Vertices(
         Vector4 *dst_vert, const RenderInfoClass &rinfo, const Matrix3D &mesh_tm, const HTreeClass *htree);
 
+private:
     W3DErrorType Read_Chunks(ChunkLoadClass &cload);
     W3DErrorType Read_Vertices(ChunkLoadClass &cload);
     W3DErrorType Read_Vertex_Normals(ChunkLoadClass &cload);

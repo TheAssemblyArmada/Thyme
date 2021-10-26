@@ -114,7 +114,9 @@ public:
 
     bool Cull(const AABoxClass &box);
     bool Cull(const Vector3 &min, const Vector3 &max);
+    bool Cast_To_Triangle(const TriClass &tri);
 
+    void Translate(const Vector3 &translation);
     void Rotate(ROTATION_TYPE rotation);
     void Transform(const Matrix3D &tm);
 
@@ -128,6 +130,13 @@ private:
     // not implemented
     AABoxCollisionTestClass &operator=(const AABoxCollisionTestClass &);
 };
+
+inline void AABoxCollisionTestClass::Translate(const Vector3 &translation)
+{
+    m_box.m_center += translation;
+    m_sweepMin += translation;
+    m_sweepMax += translation;
+}
 
 inline bool AABoxCollisionTestClass::Cull(const Vector3 &min, const Vector3 &max)
 {
@@ -143,6 +152,11 @@ inline bool AABoxCollisionTestClass::Cull(const Vector3 &min, const Vector3 &max
         return true;
     }
     return false;
+}
+
+inline bool AABoxCollisionTestClass::Cast_To_Triangle(const TriClass &tri)
+{
+    return CollisionMath::Collide(m_box, m_move, tri, m_result);
 }
 
 class OBBoxCollisionTestClass : public CollisionTestClass

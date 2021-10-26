@@ -22,6 +22,7 @@ enum {
     W3D_CHUNK_MESH                                  = 0x00000000,    // Mesh definition 
         W3D_CHUNK_VERTICES                          = 0x00000002,    // array of vertices (array of W3dVectorStruct's)
         W3D_CHUNK_VERTEX_NORMALS                    = 0x00000003,    // array of normals (array of W3dVectorStruct's)
+        W3D_CHUNK_SURRENDER_NORMALS                 = 0x00000004,    // obsolete
         W3D_CHUNK_MESH_USER_TEXT                    = 0x0000000C,    // Text from the MAX comment field (Null terminated string)
         W3D_CHUNK_VERTEX_INFLUENCES                 = 0x0000000E,    // Mesh Deformation vertex connections (array of W3dVertInfStruct's)
         W3D_CHUNK_MESH_HEADER3                      = 0x0000001F,    //    mesh header contains general info about the mesh. (W3dMeshHeader3Struct)
@@ -463,4 +464,96 @@ struct W3dMeshAABTreeNode
     W3dVectorStruct Max;
     uint32_t FrontOrPoly0;
     uint32_t BackOrPolyCount;
+};
+
+#define SORT_LEVEL_NONE 0
+#define MAX_SORT_LEVEL 32
+#define SORT_LEVEL_BIN1 20
+#define SORT_LEVEL_BIN2 15
+#define SORT_LEVEL_BIN3 10
+
+struct W3dMeshHeader3Struct
+{
+    uint32_t Version;
+    uint32_t Attributes;
+
+    char MeshName[16];
+    char ContainerName[16];
+
+    uint32_t NumTris;
+    uint32_t NumVertices;
+    uint32_t NumMaterials;
+    uint32_t NumDamageStages;
+    int32_t SortLevel;
+    uint32_t PrelitVersion;
+    uint32_t FutureCounts[1];
+
+    uint32_t VertexChannels;
+    uint32_t FaceChannels;
+
+    W3dVectorStruct Min;
+    W3dVectorStruct Max;
+    W3dVectorStruct SphCenter;
+    float SphRadius;
+};
+
+// clang-format off
+#define W3D_MESH_FLAG_NONE                                      0x00000000
+#define W3D_MESH_FLAG_COLLISION_BOX                             0x00000001
+#define W3D_MESH_FLAG_SKIN                                      0x00000002
+#define W3D_MESH_FLAG_SHADOW                                    0x00000004
+#define W3D_MESH_FLAG_ALIGNED                                   0x00000008
+
+#define W3D_MESH_FLAG_COLLISION_TYPE_MASK                       0x00000FF0
+#define W3D_MESH_FLAG_COLLISION_TYPE_SHIFT                      4
+#define W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL                   0x00000010
+#define W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE                 0x00000020
+#define W3D_MESH_FLAG_COLLISION_TYPE_VIS                        0x00000040
+#define W3D_MESH_FLAG_COLLISION_TYPE_CAMERA                     0x00000080
+#define W3D_MESH_FLAG_COLLISION_TYPE_VEHICLE                    0x00000100
+
+#define W3D_MESH_FLAG_HIDDEN                                    0x00001000
+#define W3D_MESH_FLAG_TWO_SIDED                                 0x00002000
+#define OBSOLETE_W3D_MESH_FLAG_LIGHTMAPPED                      0x00004000
+#define W3D_MESH_FLAG_CAST_SHADOW                               0x00008000
+
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_MASK                        0x00FF0000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_NORMAL                      0x00000000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_CAMERA_ALIGNED              0x00010000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_SKIN                        0x00020000
+#define OBSOLETE_W3D_MESH_FLAG_GEOMETRY_TYPE_SHADOW             0x00030000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_AABOX                       0x00040000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_OBBOX                       0x00050000
+#define W3D_MESH_FLAG_GEOMETRY_TYPE_CAMERA_ORIENTED             0x00060000
+
+#define W3D_MESH_FLAG_PRELIT_MASK                               0x0F000000
+#define W3D_MESH_FLAG_PRELIT_UNLIT                              0x01000000
+#define W3D_MESH_FLAG_PRELIT_VERTEX                             0x02000000
+#define W3D_MESH_FLAG_PRELIT_LIGHTMAP_MULTI_PASS                0x04000000
+#define W3D_MESH_FLAG_PRELIT_LIGHTMAP_MULTI_TEXTURE             0x08000000
+
+#define W3D_MESH_FLAG_SHATTERABLE                               0x10000000
+#define W3D_MESH_FLAG_NPATCHABLE                                0x20000000
+
+#define W3D_VERTEX_CHANNEL_LOCATION                             0x00000001
+#define W3D_VERTEX_CHANNEL_NORMAL                               0x00000002
+#define W3D_VERTEX_CHANNEL_TEXCOORD                             0x00000004
+#define W3D_VERTEX_CHANNEL_COLOR                                0x00000008
+#define W3D_VERTEX_CHANNEL_BONEID                               0x00000010
+
+#define W3D_FACE_CHANNEL_FACE                                   0x00000001
+// clang-format on
+
+struct W3dTriStruct
+{
+    uint32_t Vindex[3];
+    uint32_t Attributes;
+    W3dVectorStruct Normal;
+    float Dist;
+};
+
+struct W3dVertInfStruct
+{
+    uint16_t BoneIdx;
+    uint8_t Pad[6];
 };

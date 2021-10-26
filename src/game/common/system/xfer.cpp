@@ -306,7 +306,7 @@ void Xfer::xferKindOf(KindOfType *thing)
 
     switch (Get_Mode()) {
         case XFER_SAVE:
-            if (*thing >= KINDOF_FIRST || *thing < KINDOF_COUNT) {
+            if (*thing >= KINDOF_FIRST && *thing < KINDOF_COUNT) {
                 kind = BitFlags<KINDOF_COUNT>::s_bitNamesList[*thing];
             }
 

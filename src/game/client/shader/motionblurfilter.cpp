@@ -108,7 +108,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     float f1 = 0.5f;
     float f2 = 0.5f;
     bool b1 = false;
-    bool b2;
+    bool b2 = true;
 
     if (mode < FM_VIEW_MB_PAN_ALPHA) {
         if (mode == FM_VIEW_MB_END_PAN_ALPHA) {

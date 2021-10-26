@@ -1480,4 +1480,43 @@ void Setup_Hooks()
     Hook_Any(0x0083B8F0, MeshGeometryClass::Generate_Culling_Tree);
     Hook_Any(0x0083C210, MeshGeometryClass::Read_AABTree);
     Hook_Any(0x00839B90, MeshGeometryClass::operator=);
+    Hook_Any(0x00839A10, MeshGeometryClass::Hook_Ctor);
+    Hook_Any(0x00839AC0, MeshGeometryClass::Hook_Ctor2);
+    Hook_Any(0x00839E90, MeshGeometryClass::Reset_Geometry);
+    Hook_Any(0x0083A290, MeshGeometryClass::Get_Name);
+    Hook_Any(0x0083A2A0, MeshGeometryClass::Set_Name);
+    Hook_Any(0x0083A3A0, MeshGeometryClass::Get_Bounding_Box);
+    Hook_Any(0x0083A440, MeshGeometryClass::Get_Bounding_Sphere);
+    Hook_Any(0x0083A780, MeshGeometryClass::Generate_Skin_APT);
+    Hook_Any(0x0083A8B0, MeshGeometryClass::Cast_Ray);
+    Hook_Any(0x0083A8E0, MeshGeometryClass::Cast_OBBox);
+    Hook_Any(0x0083A910, MeshGeometryClass::Intersect_OBBox);
+    Hook_Any(0x0083A940, MeshGeometryClass::Cast_World_Space_AABox);
+    Hook_Any(0x0083B1C0, MeshGeometryClass::Compute_Plane_Equations);
+    Hook_Any(0x0083B340, MeshGeometryClass::Compute_Vertex_Normals);
+    Hook_Any(0x0083B670, MeshGeometryClass::Compute_Bounds);
+    Hook_Any(0x0083B760, MeshGeometryClass::Get_Vertex_Normal_Array);
+    Hook_Any(0x0083B790, MeshGeometryClass::Compute_Plane);
+    Hook_Any(0x0083B9D0, MeshGeometryClass::Load_W3D);
+    Hook_Any(0x0083BEA0, MeshGeometryClass::Read_Vertices);
+    Hook_Any(0x0083BF10, MeshGeometryClass::Read_Vertex_Normals);
+    Hook_Any(0x0083BF80, MeshGeometryClass::Read_Triangles);
+    Hook_Any(0x0083C050, MeshGeometryClass::Read_User_Text);
+    Hook_Any(0x0083C140, MeshGeometryClass::Read_Vertex_Influences);
+    Hook_Any(0x0083C1B0, MeshGeometryClass::Read_Vertex_Shade_Indices);
+    Hook_Any(0x0083C7A0, MeshGeometryClass::Get_Deformed_Screenspace_Vertices);
+    Hook_Method(0x0083A460,
+        static_cast<void (MeshGeometryClass::*)(Vector3 const &, SimpleDynVecClass<uint32_t> &)>(
+            &MeshGeometryClass::Generate_Rigid_APT));
+    Hook_Method(0x0083A510,
+        static_cast<void (MeshGeometryClass::*)(OBBoxClass const &, SimpleDynVecClass<uint32_t> &)>(
+            &MeshGeometryClass::Generate_Rigid_APT));
+    Hook_Method(0x0083A630,
+        static_cast<void (MeshGeometryClass::*)(OBBoxClass const &, Vector3 const &, SimpleDynVecClass<uint32_t> &)>(
+            &MeshGeometryClass::Generate_Rigid_APT));
+    Hook_Method(0x0083C590,
+        static_cast<void (MeshGeometryClass::*)(Vector3 *, HTreeClass const *)>(&MeshGeometryClass::Get_Deformed_Vertices));
+    Hook_Method(0x0083C670,
+        static_cast<void (MeshGeometryClass::*)(Vector3 *, Vector3 *, HTreeClass const *)>(
+            &MeshGeometryClass::Get_Deformed_Vertices));
 }

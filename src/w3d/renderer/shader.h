@@ -66,17 +66,6 @@ class ShaderClass
 {
     friend class DX8Wrapper;
 
-    // Some internal constants for the guess sort level function.
-    // TODO, move somewhere else if required.
-    enum
-    {
-        SORT_LEVEL_NONE = 0,
-        SORT_LEVEL_BIN1 = 20,
-        SORT_LEVEL_BIN2 = 15,
-        SORT_LEVEL_BIN3 = 10,
-        MAX_SORT_LEVEL = 32,
-    };
-
 public:
     enum AlphaTestType
     {

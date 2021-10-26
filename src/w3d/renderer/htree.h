@@ -68,7 +68,7 @@ public:
     void Get_Bone_Control(int boneindex, Matrix3D &relative_tm);
 
     int Num_Pivots() { return m_numPivots; }
-    const Matrix3D &Get_Transform(int pivot)
+    const Matrix3D &Get_Transform(int pivot) const
     {
         captainslog_assert(pivot >= 0);
         captainslog_assert(pivot < m_numPivots);

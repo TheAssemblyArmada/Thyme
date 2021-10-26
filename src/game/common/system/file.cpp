@@ -77,6 +77,7 @@ void File::Close()
 
 bool File::Print(const char *format, ...)
 {
+    bool success = false;
     va_list va;
     char buffer[10240];
 
@@ -88,11 +89,13 @@ bool File::Print(const char *format, ...)
 
         // Only write if we didn't truncate due to buffer overrun.
         if (length < sizeof(buffer)) {
-            return Write(buffer, length) == length;
+            success = (Write(buffer, length) == length);
         }
     }
 
-    return false;
+    va_end(va);
+
+    return success;
 }
 
 int File::Size()

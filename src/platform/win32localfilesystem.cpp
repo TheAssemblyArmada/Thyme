@@ -98,10 +98,11 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                     filelist.insert(filepath);
                 }
             }
-        } while (FindNextFileW(hndl, &data));
-    }
+        } while (FindNextFileW(hndl, &data) != FALSE);
 
-    FindClose(hndl);
+        // #BUGFIX Moved into scope to avoid close call on invalid handle.
+        FindClose(hndl);
+    }
 
     // Recurse into subdirectories if required.
     if (search_subdirs) {
@@ -126,10 +127,11 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                         Get_File_List_From_Dir(filepath, dirpath, filter, filelist, search_subdirs);
                     }
                 }
-            } while (FindNextFileW(hndl, &data) != 0);
-        }
+            } while (FindNextFileW(hndl, &data) != FALSE);
 
-        FindClose(hndl);
+            // #BUGFIX Moved into scope to avoid close call on invalid handle.
+            FindClose(hndl);
+        }
     }
 #else
     // TODO Some combo of dirent and fnmatch to get same functionality for posix?

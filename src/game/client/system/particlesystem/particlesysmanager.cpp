@@ -307,6 +307,12 @@ void ParticleSystemManager::Add_Particle(Particle *particle, ParticlePriorityTyp
  */
 void ParticleSystemManager::Add_Particle_System(ParticleSystem *system)
 {
+#ifdef GAME_DEBUG
+    // Debug sanity check. Assert for duplicates.
+    for (const ParticleSystem *existing_system : m_allParticleSystemList)
+        captainslog_dbgassert(existing_system != system, "The same ParticleSystem was added twice!");
+#endif
+
     m_allParticleSystemList.push_back(system);
     ++m_particleSystemCount;
 }
@@ -353,6 +359,9 @@ void ParticleSystemManager::Remove_Particle_System(ParticleSystem *system)
         if (*it == system) {
             m_allParticleSystemList.erase(it);
             --m_particleSystemCount;
+            // #BUGFIX Fixes issue where loop would continue with invalidated iterator.
+            // Exiting loop is ok because we do not expect any duplicates in container.
+            break;
         }
     }
 }

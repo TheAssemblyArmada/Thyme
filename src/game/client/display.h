@@ -92,7 +92,7 @@ public:
     virtual void Draw_Image(
         Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) = 0;
     virtual void Draw_VideoBuffer(VideoBuffer *, int, int, int, int) = 0;
-    virtual void Play_Logo_Movie(Utf8String name, int a2, int a3);
+    virtual void Play_Logo_Movie(Utf8String name, int a3, int a4);
     virtual void Play_Movie(Utf8String name);
     virtual void Stop_Movie();
     virtual bool Is_Movie_Playing() { return m_videoStream != nullptr && m_videoBuffer != nullptr; }

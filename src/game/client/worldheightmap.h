@@ -97,7 +97,7 @@ protected:
 
     TileData *Get_Source_Tile(int tile)
     {
-        if (tile > TILE_COUNT) {
+        if (tile >= TILE_COUNT) {
             return nullptr;
         } else {
             return m_sourceTiles[tile];
@@ -106,7 +106,7 @@ protected:
 
     TileData *Get_Edge_Tile(int tile)
     {
-        if (tile > TILE_COUNT) {
+        if (tile >= TILE_COUNT) {
             return nullptr;
         } else {
             return m_edgeTiles[tile];

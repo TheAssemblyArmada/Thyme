@@ -28,10 +28,11 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
 
-    void Get_Vector(int frame, float *vector)
+    // Legacy method: prefer Get_Vector_Safe
+    void Get_Vector(int frame, float *vector) const
     {
         if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
             Set_Identity(vector);
@@ -44,7 +45,7 @@ public:
         }
     }
 
-    void Get_Vector_As_Quat(int frame, Quaternion &quat)
+    void Get_Vector_As_Quat(int frame, Quaternion &quat) const
     {
         if (frame >= m_firstFrame && frame <= m_lastFrame) {
             float *f = &m_data[m_vectorLen * (frame - m_firstFrame)];
@@ -54,7 +55,8 @@ public:
         }
     }
 
-    void Set_Identity(float *setvec)
+private:
+    void Set_Identity(float *setvec) const
     {
         if (m_type == ANIM_CHANNEL_Q) {
             setvec[0] = 0;
@@ -79,6 +81,65 @@ private:
     int m_firstFrame;
     int m_lastFrame;
     friend class HRawAnimClass;
+
+public:
+    // #FEATURE Add new Get_Vector versions to help avoid misuse.
+    void Get_Vector_Safe(int frame, float *x) const
+    {
+        captainslog_dbgassert(m_vectorLen >= 1, "Vector length must match requested size");
+
+        if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
+            *x = 0.0f;
+        } else if (m_data) {
+            frame -= m_firstFrame;
+            *x = m_data[0 + m_vectorLen * frame];
+        }
+    }
+    void Get_Vector_Safe(int frame, float *x, float *y)
+    {
+        captainslog_dbgassert(m_vectorLen >= 2, "Vector length must match requested size");
+
+        if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
+            *x = 0.0f;
+            *y = 0.0f;
+        } else if (m_data) {
+            frame -= m_firstFrame;
+            *x = m_data[0 + m_vectorLen * frame];
+            *y = m_data[1 + m_vectorLen * frame];
+        }
+    }
+    void Get_Vector_Safe(int frame, float *x, float *y, float *z)
+    {
+        captainslog_dbgassert(m_vectorLen >= 3, "Vector length must match requested size");
+
+        if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
+            *x = 0.0f;
+            *y = 0.0f;
+            *z = 0.0f;
+        } else if (m_data) {
+            frame -= m_firstFrame;
+            *x = m_data[0 + m_vectorLen * frame];
+            *y = m_data[1 + m_vectorLen * frame];
+            *z = m_data[2 + m_vectorLen * frame];
+        }
+    }
+    void Get_Vector_Safe(int frame, float *x, float *y, float *z, float *w)
+    {
+        captainslog_dbgassert(m_vectorLen >= 4, "Vector length must match requested size");
+
+        if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
+            *x = 0.0f;
+            *y = 0.0f;
+            *z = 0.0f;
+            *w = (m_type != ANIM_CHANNEL_Q) ? 0.0f : 1.0f;
+        } else if (m_data) {
+            frame -= m_firstFrame;
+            *x = m_data[0 + m_vectorLen * frame];
+            *y = m_data[1 + m_vectorLen * frame];
+            *z = m_data[2 + m_vectorLen * frame];
+            *w = m_data[3 + m_vectorLen * frame];
+        }
+    }
 };
 
 class BitChannelClass : public W3DMPO

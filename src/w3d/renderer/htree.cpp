@@ -300,15 +300,15 @@ void HTreeClass::Anim_Update(Matrix3D const &root, HRawAnimClass *motion, float 
             float z = 0;
 
             if (node->X) {
-                node->X->Get_Vector(fr, &x);
+                node->X->Get_Vector_Safe(fr, &x);
             }
 
             if (node->Y) {
-                node->Y->Get_Vector(fr, &y);
+                node->Y->Get_Vector_Safe(fr, &y);
             }
 
             if (node->Z) {
-                node->Z->Get_Vector(fr, &z);
+                node->Z->Get_Vector_Safe(fr, &z);
             }
 
             if (m_scaleFactor == 1.0f) {

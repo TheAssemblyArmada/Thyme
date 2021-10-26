@@ -192,15 +192,15 @@ void HRawAnimClass::Get_Translation(Vector3 &trans, int pividx, float frame) con
         Vector3 t0;
 
         if (motion->X) {
-            motion->X->Get_Vector(frame0, &t0.X);
+            motion->X->Get_Vector_Safe(frame0, &t0.X);
         }
 
         if (motion->Y) {
-            motion->Y->Get_Vector(frame0, &t0.Y);
+            motion->Y->Get_Vector_Safe(frame0, &t0.Y);
         }
 
         if (motion->Z) {
-            motion->Z->Get_Vector(frame0, &t0.Z);
+            motion->Z->Get_Vector_Safe(frame0, &t0.Z);
         }
 
         if (delta == 0) {
@@ -209,15 +209,15 @@ void HRawAnimClass::Get_Translation(Vector3 &trans, int pividx, float frame) con
             Vector3 t1;
 
             if (motion->X) {
-                motion->X->Get_Vector(frame1, &t1.X);
+                motion->X->Get_Vector_Safe(frame1, &t1.X);
             }
 
             if (motion->Y) {
-                motion->Y->Get_Vector(frame1, &t1.Y);
+                motion->Y->Get_Vector_Safe(frame1, &t1.Y);
             }
 
             if (motion->Z) {
-                motion->Z->Get_Vector(frame1, &t1.Z);
+                motion->Z->Get_Vector_Safe(frame1, &t1.Z);
             }
 
             Vector3::Lerp(t0, t1, delta, &trans);
@@ -279,15 +279,15 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
         mtx = Build_Matrix3D(q);
 
         if (mot->X) {
-            mot->X->Get_Vector(frame0, &mtx[0].W);
+            mot->X->Get_Vector_Safe(frame0, &mtx[0].W);
         }
 
         if (mot->Y) {
-            mot->Y->Get_Vector(frame0, &mtx[1].W);
+            mot->Y->Get_Vector_Safe(frame0, &mtx[1].W);
         }
 
         if (mot->Z) {
-            mot->Z->Get_Vector(frame0, &mtx[2].W);
+            mot->Z->Get_Vector_Safe(frame0, &mtx[2].W);
         }
     } else {
         Quaternion q1;
@@ -300,29 +300,29 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
         Vector3 v1(0, 0, 0);
 
         if (mot->X) {
-            mot->X->Get_Vector(frame0, &v1.X);
+            mot->X->Get_Vector_Safe(frame0, &v1.X);
         }
 
         if (mot->Y) {
-            mot->Y->Get_Vector(frame0, &v1.Y);
+            mot->Y->Get_Vector_Safe(frame0, &v1.Y);
         }
 
         if (mot->Z) {
-            mot->Z->Get_Vector(frame0, &v1.Z);
+            mot->Z->Get_Vector_Safe(frame0, &v1.Z);
         }
 
         Vector3 v2(0, 0, 0);
 
         if (mot->X) {
-            mot->X->Get_Vector(frame1, &v2.X);
+            mot->X->Get_Vector_Safe(frame1, &v2.X);
         }
 
         if (mot->Y) {
-            mot->Y->Get_Vector(frame1, &v2.Y);
+            mot->Y->Get_Vector_Safe(frame1, &v2.Y);
         }
 
         if (mot->Z) {
-            mot->Z->Get_Vector(frame1, &v2.Z);
+            mot->Z->Get_Vector_Safe(frame1, &v2.Z);
         }
 
         Vector3 v3;

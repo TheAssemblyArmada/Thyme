@@ -17,6 +17,8 @@
 #include "texture.h"
 #include "vertmaterial.h"
 
+bool MaterialPassClass::m_enablePerPolygonCulling = true;
+
 MaterialPassClass::MaterialPassClass() :
     m_shader(0), m_material(nullptr), m_enableOnTranslucentMeshes(true), m_cullVolume(nullptr)
 {

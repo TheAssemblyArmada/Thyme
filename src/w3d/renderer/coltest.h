@@ -52,8 +52,8 @@ public:
     RayCollisionTestClass(const LineSegClass &ray,
         CastResultStruct *res,
         int collision_type = COLLISION_TYPE_0,
-        bool bool1 = false,
-        bool bool2 = false);
+        bool ignore_translucent_meshes = false,
+        bool ignore_hidden_meshes = false);
     RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm);
 
     bool Cull(const Vector3 &min, const Vector3 &max);
@@ -62,8 +62,8 @@ public:
 
 public:
     LineSegClass m_ray;
-    bool m_bool1;
-    bool m_bool2;
+    bool m_ignoreTranslucentMeshes;
+    bool m_ignoreHiddenMeshes;
 
 private:
     // not implemented
@@ -71,14 +71,20 @@ private:
     RayCollisionTestClass &operator=(const RayCollisionTestClass &);
 };
 
-inline RayCollisionTestClass::RayCollisionTestClass(
-    const LineSegClass &ray, CastResultStruct *res, int collision_type, bool bool1, bool bool2) :
-    CollisionTestClass(res, collision_type), m_ray(ray), m_bool1(bool1), m_bool2(bool2)
+inline RayCollisionTestClass::RayCollisionTestClass(const LineSegClass &ray,
+    CastResultStruct *res,
+    int collision_type,
+    bool ignore_translucent_meshes,
+    bool ignore_hidden_meshes) :
+    CollisionTestClass(res, collision_type),
+    m_ray(ray),
+    m_ignoreTranslucentMeshes(ignore_translucent_meshes),
+    m_ignoreHiddenMeshes(ignore_hidden_meshes)
 {
 }
 
 inline RayCollisionTestClass::RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm) :
-    CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_bool1(raytest.m_bool1), m_bool2(raytest.m_bool2)
+    CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_ignoreTranslucentMeshes(raytest.m_ignoreTranslucentMeshes)
 {
 }
 

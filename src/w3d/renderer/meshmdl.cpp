@@ -513,11 +513,6 @@ W3DErrorType MeshModelClass::Read_Chunks(ChunkLoadClass &cload, MeshLoadContextC
             case W3D_CHUNK_MATERIAL_PASS:
                 error = Read_Material_Pass(cload, context);
                 break;
-            case W3D_CHUNK_DEFORM:
-                captainslog_warn(("Obsolete deform chunk encountered in mesh: %s.%s\r\n",
-                    context->m_header.ContainerName,
-                    context->m_header.MeshName));
-                break;
             case W3D_CHUNK_PRELIT_UNLIT:
             case W3D_CHUNK_PRELIT_VERTEX:
             case W3D_CHUNK_PRELIT_LIGHTMAP_MULTI_PASS:
@@ -528,6 +523,10 @@ W3DErrorType MeshModelClass::Read_Chunks(ChunkLoadClass &cload, MeshLoadContextC
                 Read_AABTree(cload);
                 break;
             default:
+                captainslog_warn("Obsolete/unsupported chunk %d encoutered in mesh: %s.%s",
+                    cload.Cur_Chunk_ID(),
+                    context->m_header.ContainerName,
+                    context->m_header.MeshName);
                 break;
         }
         cload.Close_Chunk();

@@ -204,6 +204,7 @@ TextureClass *Vertex_Split_Table::Peek_Texture(unsigned int pidx, unsigned int p
             return m_mmc->Peek_Texture(pidx, pass, stage);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
+            return nullptr;
         }
     } else {
         return m_mmc->Peek_Single_Texture(pass, stage);
@@ -217,6 +218,7 @@ VertexMaterialClass *Vertex_Split_Table::Peek_Material(unsigned int pidx, unsign
             return m_mmc->Peek_Material(m_mmc->Get_Polygon_Array()[pidx][0], pass);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
+            return nullptr;
         }
     } else {
         return m_mmc->Peek_Single_Material(pass);
@@ -230,6 +232,7 @@ ShaderClass Vertex_Split_Table::Peek_Shader(unsigned int pidx, unsigned int pass
             return m_mmc->Get_Shader(pidx, pass);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
+            return ShaderClass();
         }
     } else {
         return m_mmc->Get_Single_Shader(pass);

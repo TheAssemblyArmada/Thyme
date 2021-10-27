@@ -181,20 +181,11 @@ private:
 Vertex_Split_Table::Vertex_Split_Table(MeshModelClass *mmc) :
     m_mmc(mmc), m_npatchEnable(false), m_allocatedPolygonArray(false)
 {
-    const GapFillerClass *gapfiller = mmc->Get_Gap_Filler();
     m_polygonCount = mmc->Get_Polygon_Count();
-
-    if (gapfiller) {
-        m_polygonCount = gapfiller->Get_Polygon_Count() + mmc->Get_Polygon_Count();
-    }
 
     m_allocatedPolygonArray = true;
     m_polygonArray = new TriIndex[m_polygonCount];
     memcpy(m_polygonArray, mmc->Get_Polygon_Array(), m_mmc->Get_Polygon_Count() * sizeof(TriIndex));
-
-    if (gapfiller) {
-        memcpy(m_polygonArray + m_mmc->Get_Polygon_Count(), gapfiller->Get_Polygon_Array(), gapfiller->Get_Polygon_Count());
-    }
 }
 
 Vertex_Split_Table::~Vertex_Split_Table()
@@ -212,7 +203,7 @@ TextureClass *Vertex_Split_Table::Peek_Texture(unsigned int pidx, unsigned int p
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Texture(pidx, pass, stage);
         } else {
-            return m_mmc->Get_Gap_Filler()->Get_Texture_Array(pass, stage)[pidx - m_mmc->Get_Polygon_Count()];
+            captainslog_dbgassert(0, "GapFillerClass removed");
         }
     } else {
         return m_mmc->Peek_Single_Texture(pass, stage);
@@ -225,7 +216,7 @@ VertexMaterialClass *Vertex_Split_Table::Peek_Material(unsigned int pidx, unsign
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Material(m_mmc->Get_Polygon_Array()[pidx][0], pass);
         } else {
-            return m_mmc->Get_Gap_Filler()->Get_Material_Array(pass)[pidx - m_mmc->Get_Polygon_Count()];
+            captainslog_dbgassert(0, "GapFillerClass removed");
         }
     } else {
         return m_mmc->Peek_Single_Material(pass);
@@ -238,7 +229,7 @@ ShaderClass Vertex_Split_Table::Peek_Shader(unsigned int pidx, unsigned int pass
         if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Get_Shader(pidx, pass);
         } else {
-            return m_mmc->Get_Gap_Filler()->Get_Shader_Array(pass)[pidx - m_mmc->Get_Polygon_Count()];
+            captainslog_dbgassert(0, "GapFillerClass removed");
         }
     } else {
         return m_mmc->Get_Single_Shader(pass);
@@ -438,11 +429,6 @@ void DX8MeshRendererClass::Unregister_Mesh_Type(MeshModelClass *mmc)
     }
 
     g_registeredMeshList.Remove(mmc);
-
-    if (mmc->m_gapFiller) {
-        delete mmc->m_gapFiller;
-        mmc->m_gapFiller = nullptr;
-    }
 }
 
 void DX8MeshRendererClass::Add_To_Render_List(DecalMeshClass *decalmesh)
@@ -1366,10 +1352,6 @@ bool DX8RigidFVFCategoryContainer::Check_If_Mesh_Fits(MeshModelClass *mmc)
 
     int count = mmc->Get_Polygon_Count();
 
-    if (mmc->Get_Gap_Filler()) {
-        count += mmc->Get_Gap_Filler()->Get_Polygon_Count();
-    }
-
     return mmc->Get_Vertex_Count() <= m_vertexBuffer->Get_Vertex_Count() - m_usedVertices
         && 3 * count * mmc->Get_Pass_Count() <= m_indexBuffer->Get_Index_Count() - m_usedIndices;
 }
@@ -1473,10 +1455,6 @@ bool DX8SkinFVFCategoryContainer::Check_If_Mesh_Fits(MeshModelClass *mmc)
     }
 
     int count = mmc->Get_Polygon_Count();
-
-    if (mmc->Get_Gap_Filler()) {
-        count += mmc->Get_Gap_Filler()->Get_Polygon_Count();
-    }
 
     return 3 * count * mmc->Get_Pass_Count() <= m_indexBuffer->Get_Index_Count() - m_usedIndices;
 }

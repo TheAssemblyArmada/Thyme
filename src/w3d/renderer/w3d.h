@@ -24,6 +24,13 @@ class RenderDeviceDescClass;
 class W3D
 {
 public:
+    enum PrelitModeEnum
+    {
+        PRELIT_MODE_VERTEX,
+        PRELIT_MODE_LIGHTMAP_MULTI_PASS,
+        PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE
+    };
+
     // Timing functions.
     static unsigned Get_Sync_Time() { return s_syncTime; }
 
@@ -38,6 +45,8 @@ public:
     static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
     static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
+    static bool Is_Munge_Sort_On_Load_Enabled() { return s_mungeSortOnLoad; }
+    static bool Is_Overbright_Modify_On_Load_Enabled() { return s_overbrightModifyOnLoad; }
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
 
@@ -49,6 +58,7 @@ public:
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
     static W3DErrorType Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window);
+    static PrelitModeEnum Get_Prelit_Mode() { return (s_prelitMode); }
 
     // Platform functions.
 #ifdef PLATFORM_WINDOWS
@@ -68,6 +78,9 @@ private:
     static float &s_defaultNativeScreenSize;
     static bool &s_isSortingEnabled;
     static bool &s_isColoringEnabled;
+    static bool &s_mungeSortOnLoad;
+    static bool &s_overbrightModifyOnLoad;
+    static PrelitModeEnum &s_prelitMode;
 #ifdef PLATFORM_WINDOWS
     static HWND &s_hwnd;
 #endif
@@ -83,6 +96,9 @@ private:
     static float s_defaultNativeScreenSize;
     static bool s_isSortingEnabled;
     static bool s_isColoringEnabled;
+    static bool s_mungeSortOnLoad;
+    static bool s_overbrightModifyOnLoad;
+    static PrelitModeEnum s_prelitMode;
 #ifdef PLATFORM_WINDOWS
     static HWND s_hwnd;
 #endif

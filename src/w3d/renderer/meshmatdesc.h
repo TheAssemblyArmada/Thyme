@@ -198,6 +198,7 @@ protected:
 #else
     static ShaderClass s_NullShader;
 #endif
+    friend class MeshModelClass;
 };
 
 inline Vector2 *MeshMatDescClass::Get_UV_Array(int pass, int stage)
@@ -318,6 +319,7 @@ inline void MeshMatDescClass::Disable_Backface_Culling()
 {
     for (int pass = 0; pass < m_passCount; pass++) {
         m_shader[pass].Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
+
         if (m_shaderArray[pass]) {
             for (int i = 0; i < m_shaderArray[pass]->Get_Count(); i++) {
                 m_shaderArray[pass]->Get_Element(i).Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);

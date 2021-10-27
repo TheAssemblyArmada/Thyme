@@ -53,7 +53,7 @@ int MaterialInfoClass::Add_Texture(TextureClass *tex)
     return index;
 }
 
-int MaterialInfoClass::Get_Texture_Index(const char *name) const
+int MaterialInfoClass::Get_Texture_Index(const char *name)
 {
     for (int i = 0; i < m_textures.Count(); ++i) {
         if (strcasecmp(name, m_textures[i]->Get_Name()) == 0) {

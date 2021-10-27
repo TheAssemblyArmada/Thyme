@@ -384,6 +384,9 @@ int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C
 float &W3D::s_defaultNativeScreenSize = Make_Global<float>(PICK_ADDRESS(0x00A16984, 0x00CC58A4));
 bool &W3D::s_isSortingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1697C, 0x00CC589C));
 bool &W3D::s_isColoringEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47FDC, 0x00DEE83C));
+bool &W3D::s_mungeSortOnLoad = Make_Global<bool>(PICK_ADDRESS(0x00A47FB1, 0x00DEE811));
+bool &W3D::s_overbrightModifyOnLoad = Make_Global<bool>(PICK_ADDRESS(0x00A47FB2, 0x00DEE812));
+W3D::PrelitModeEnum &W3D::s_prelitMode = Make_Global<W3D::PrelitModeEnum>(PICK_ADDRESS(0x00A16988, 0x00CC58A8));
 HWND &W3D::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47FE0, 0x00DEE840));
 
 // dx8renderer.cpp
@@ -471,7 +474,8 @@ MouseThreadClass &W3DMouse::s_mouseThread = Make_Global<MouseThreadClass>(0x00A3
 bool &W3DMouse::s_mouseThreadIsDrawing = Make_Global<bool>(0x00A3B3C8);
 ARRAY_DEF(0x00A3B18C, HAnimClass *, W3DMouse::s_W3DMouseAssets1, CURSOR_COUNT);
 ARRAY_DEF(0x00A3B22C, RenderObjClass *, W3DMouse::s_W3DMouseAssets2, CURSOR_COUNT);
-ARRAY2D_DEF(0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, W3DMouse::MAX_FRAMES); // TODO unsure on type
+ARRAY2D_DEF(
+    0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, W3DMouse::MAX_FRAMES); // TODO unsure on type
 ARRAY_DEF(0x00A3B2CC, uint32_t, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
 CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>(0x00A3B3D0);
 

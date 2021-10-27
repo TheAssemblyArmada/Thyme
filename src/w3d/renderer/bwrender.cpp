@@ -100,7 +100,7 @@ void BWRenderClass::Render_Triangle(const Vector2 &c1, const Vector2 &c2, const 
     Render_Preprocessed_Triangle(x_corners, y_corners);
 }
 
-void BWRenderClass::Render_Triangles(unsigned int *indices, int index_count)
+void BWRenderClass::Render_Triangles(const unsigned int *indices, int index_count)
 {
     int count = index_count / 3;
 
@@ -119,7 +119,7 @@ void BWRenderClass::Render_Triangles(unsigned int *indices, int index_count)
     }
 }
 
-void BWRenderClass::Render_Triangle_Strip(unsigned int *indices, int index_count)
+void BWRenderClass::Render_Triangle_Strip(const unsigned int *indices, int index_count)
 {
     int count = index_count - 2;
 

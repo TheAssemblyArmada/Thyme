@@ -893,7 +893,7 @@ W3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass &cload)
     m_boundSphereCenter.Set(header.SphCenter.x, header.SphCenter.y, header.SphCenter.z);
     m_boundSphereRadius = header.SphRadius;
 
-    if (header.Version > 0x40000) {
+    if (header.Version >= 0x40001) {
         int geometry_type = header.Attributes & W3D_MESH_FLAG_GEOMETRY_TYPE_MASK;
         switch (geometry_type) {
             case W3D_MESH_FLAG_GEOMETRY_TYPE_NORMAL:

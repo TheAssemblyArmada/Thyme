@@ -18,6 +18,7 @@
 #include "colmath.h"
 #include "meshgeometry.h"
 #include "meshmatdesc.h"
+#include "rinfo.h"
 #include "shader.h"
 #include "sharebuf.h"
 #include "simplevec.h"
@@ -61,7 +62,7 @@ class MeshModelClass : public MeshGeometryClass
 public:
     MeshModelClass();
     MeshModelClass(const MeshModelClass &that);
-    ~MeshModelClass();
+    virtual ~MeshModelClass() override;
 
     MeshModelClass &operator=(const MeshModelClass &that);
     void Reset(int polycount, int vertcount, int passcount);
@@ -80,7 +81,6 @@ public:
     ShaderClass Get_Single_Shader(int pass = 0) const { return m_curMatDesc->Get_Single_Shader(pass); }
     VertexMaterialClass *Get_Material(int vidx, int pass = 0) const { return m_curMatDesc->Get_Material(vidx, pass); }
     ShaderClass Get_Shader(int pidx, int pass = 0) const { return m_curMatDesc->Get_Shader(pidx, pass); }
-    const GapFillerClass *Get_Gap_Filler() const { return m_gapFiller; }
     ShaderClass *Get_Shader_Array(int pass, bool create = true) { return m_curMatDesc->Get_Shader_Array(pass, create); }
 
     TexBufferClass *Get_Texture_Array(int pass, int stage, bool create = true)
@@ -149,7 +149,7 @@ public:
     void Make_UV_Array_Unique(int pass = 0, int stage = 0);
     void Make_Color_Array_Unique(int array_index = 0);
 
-    W3DErrorType Load_W3D(ChunkLoadClass &cload);
+    virtual W3DErrorType Load_W3D(ChunkLoadClass &cload) override;
 
     void Enable_Alternate_Material_Description(bool onoff);
     bool Is_Alternate_Material_Description_Enabled();
@@ -157,12 +157,11 @@ public:
     void Init_For_NPatch_Rendering();
     DX8FVFCategoryContainer *Peek_FVF_Category_Container();
 
+    MeshModelClass *Hook_Ctor() { return new (this) MeshModelClass; }
+    MeshModelClass *Hook_Ctor2(const MeshModelClass &src) { return new (this) MeshModelClass(src); }
+
 protected:
     W3DErrorType Read_Chunks(ChunkLoadClass &cload, MeshLoadContextClass *context);
-    W3DErrorType Read_Texcoords(ChunkLoadClass &cload, MeshLoadContextClass *context);
-    W3DErrorType Read_V3_Materials(ChunkLoadClass &cload, MeshLoadContextClass *context);
-    W3DErrorType Read_Per_Tri_Materials(ChunkLoadClass &cload, MeshLoadContextClass *context);
-    W3DErrorType Read_Vertex_Colors(ChunkLoadClass &cload, MeshLoadContextClass *context);
     W3DErrorType Read_Material_Info(ChunkLoadClass &cload, MeshLoadContextClass *context);
     W3DErrorType Read_Shaders(ChunkLoadClass &cload, MeshLoadContextClass *context);
     W3DErrorType Read_Vertex_Materials(ChunkLoadClass &cload, MeshLoadContextClass *context);
@@ -202,34 +201,4 @@ protected:
     friend class DX8SkinFVFCategoryContainer;
     friend class DX8MeshRendererClass;
     friend class DX8PolygonRendererClass;
-};
-
-class GapFillerClass : public W3DMPO
-{
-    IMPLEMENT_W3D_POOL(GapFillerClass);
-
-public:
-    GapFillerClass(MeshModelClass *mmc);
-    GapFillerClass(const GapFillerClass &that);
-    ~GapFillerClass();
-
-    const TriIndex *Get_Polygon_Array() const { return m_polygonArray; }
-    unsigned Get_Polygon_Count() const { return m_polygonCount; }
-    TextureClass **Get_Texture_Array(int pass, int stage) const { return m_textureArray[pass][stage]; }
-    VertexMaterialClass **Get_Material_Array(int pass) const { return m_materialArray[pass]; }
-    ShaderClass *Get_Shader_Array(int pass) const { return m_shaderArray[pass]; }
-
-    void Add_Polygon(unsigned polygon_index, unsigned vidx1, unsigned vidx2, unsigned vidx3);
-    void Shrink_Buffers();
-
-private:
-    GapFillerClass &operator=(const GapFillerClass &that) {}
-
-    TriIndex *m_polygonArray;
-    unsigned m_polygonCount;
-    unsigned m_arraySize;
-    TextureClass **m_textureArray[MeshMatDescClass::MAX_PASSES][MeshMatDescClass::MAX_TEX_STAGES];
-    VertexMaterialClass **m_materialArray[MeshMatDescClass::MAX_PASSES];
-    ShaderClass *m_shaderArray[MeshMatDescClass::MAX_PASSES];
-    MeshModelClass *m_mmc;
 };

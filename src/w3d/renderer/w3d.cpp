@@ -32,6 +32,9 @@ int W3D::s_textureFilter;
 float W3D::s_defaultNativeScreenSize = 1;
 bool W3D::s_isSortingEnabled = true;
 bool W3D::s_isColoringEnabled;
+bool W3D::s_mungeSortOnLoad;
+bool W3D::s_overbrightModifyOnLoad;
+W3D::PrelitModeEnum W3D::s_prelitMode;
 #ifdef PLATFORM_WINDOWS
 HWND W3D::s_hwnd;
 #endif

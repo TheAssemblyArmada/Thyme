@@ -23,6 +23,7 @@ enum {
         W3D_CHUNK_VERTICES                          = 0x00000002,    // array of vertices (array of W3dVectorStruct's)
         W3D_CHUNK_VERTEX_NORMALS                    = 0x00000003,    // array of normals (array of W3dVectorStruct's)
         W3D_CHUNK_SURRENDER_NORMALS                 = 0x00000004,    // obsolete
+        W3D_CHUNK_TEXCOORDS                         = 0x00000005,    // obsolete
         W3D_CHUNK_MESH_USER_TEXT                    = 0x0000000C,    // Text from the MAX comment field (Null terminated string)
         W3D_CHUNK_VERTEX_INFLUENCES                 = 0x0000000E,    // Mesh Deformation vertex connections (array of W3dVertInfStruct's)
         W3D_CHUNK_MESH_HEADER3                      = 0x0000001F,    //    mesh header contains general info about the mesh. (W3dMeshHeader3Struct)
@@ -556,4 +557,146 @@ struct W3dVertInfStruct
 {
     uint16_t BoneIdx;
     uint8_t Pad[6];
+};
+
+struct W3dTexCoordStruct
+{
+    float U;
+    float V;
+};
+
+struct W3dMaterialInfoStruct
+{
+    uint32_t PassCount;
+    uint32_t VertexMaterialCount;
+    uint32_t ShaderCount;
+    uint32_t TextureCount;
+};
+
+struct W3dShaderStruct
+{
+    uint8_t DepthCompare;
+    uint8_t DepthMask;
+    uint8_t ColorMask;
+    uint8_t DestBlend;
+    uint8_t FogFunc;
+    uint8_t PriGradient;
+    uint8_t SecGradient;
+    uint8_t SrcBlend;
+    uint8_t Texturing;
+    uint8_t DetailColorFunc;
+    uint8_t DetailAlphaFunc;
+    uint8_t ShaderPreset;
+    uint8_t AlphaTest;
+    uint8_t PostDetailColorFunc;
+    uint8_t PostDetailAlphaFunc;
+    uint8_t pad[1];
+};
+
+inline int W3d_Shader_Get_Depth_Compare(const W3dShaderStruct *s)
+{
+    return s->DepthCompare;
+}
+
+inline int W3d_Shader_Get_Depth_Mask(const W3dShaderStruct *s)
+{
+    return s->DepthMask;
+}
+
+inline int W3d_Shader_Get_Dest_Blend_Func(const W3dShaderStruct *s)
+{
+    return s->DestBlend;
+}
+
+inline int W3d_Shader_Get_Pri_Gradient(const W3dShaderStruct *s)
+{
+    return s->PriGradient;
+}
+
+inline int W3d_Shader_Get_Sec_Gradient(const W3dShaderStruct *s)
+{
+    return s->SecGradient;
+}
+
+inline int W3d_Shader_Get_Src_Blend_Func(const W3dShaderStruct *s)
+{
+    return s->SrcBlend;
+}
+
+inline int W3d_Shader_Get_Texturing(const W3dShaderStruct *s)
+{
+    return s->Texturing;
+}
+
+inline int W3d_Shader_Get_Detail_Color_Func(const W3dShaderStruct *s)
+{
+    return s->DetailColorFunc;
+}
+
+inline int W3d_Shader_Get_Detail_Alpha_Func(const W3dShaderStruct *s)
+{
+    return s->DetailAlphaFunc;
+}
+
+inline int W3d_Shader_Get_Alpha_Test(const W3dShaderStruct *s)
+{
+    return s->AlphaTest;
+}
+
+inline int W3d_Shader_Get_Post_Detail_Color_Func(const W3dShaderStruct *s)
+{
+    return s->PostDetailColorFunc;
+}
+
+inline int W3d_Shader_Get_Post_Detail_Alpha_Func(const W3dShaderStruct *s)
+{
+    return s->PostDetailAlphaFunc;
+}
+
+struct W3dTextureInfoStruct
+{
+    uint16_t Attributes;
+    uint16_t AnimType;
+    uint32_t FrameCount;
+    float FrameRate;
+};
+
+// clang-format off
+#define W3DTEXTURE_PUBLISH                    0x0001
+#define W3DTEXTURE_RESIZE_OBSOLETE            0x0002
+#define W3DTEXTURE_NO_LOD                     0x0004
+#define W3DTEXTURE_CLAMP_U                    0x0008
+#define W3DTEXTURE_CLAMP_V                    0x0010
+#define W3DTEXTURE_ALPHA_BITMAP               0x0020
+
+#define W3DTEXTURE_MIP_LEVELS_MASK            0x00c0
+#define W3DTEXTURE_MIP_LEVELS_ALL             0x0000
+#define W3DTEXTURE_MIP_LEVELS_2               0x0040
+#define W3DTEXTURE_MIP_LEVELS_3               0x0080
+#define W3DTEXTURE_MIP_LEVELS_4               0x00c0
+
+#define W3DTEXTURE_HINT_SHIFT                 8
+#define W3DTEXTURE_HINT_MASK                  0x0000ff00
+
+#define W3DTEXTURE_HINT_BASE                  0x0000
+#define W3DTEXTURE_HINT_EMISSIVE              0x0100
+#define W3DTEXTURE_HINT_ENVIRONMENT           0x0200
+#define W3DTEXTURE_HINT_SHINY_MASK            0x0300
+
+#define W3DTEXTURE_TYPE_MASK                  0x1000
+#define W3DTEXTURE_TYPE_COLORMAP              0x0000
+#define W3DTEXTURE_TYPE_BUMPMAP               0x1000
+
+#define W3DTEXTURE_ANIM_LOOP                  0x0000
+#define W3DTEXTURE_ANIM_PINGPONG              0x0001
+#define W3DTEXTURE_ANIM_ONCE                  0x0002
+#define W3DTEXTURE_ANIM_MANUAL                0x0003
+// clang-format on
+
+struct W3dRGBAStruct
+{
+    uint8_t R;
+    uint8_t G;
+    uint8_t B;
+    uint8_t A;
 };

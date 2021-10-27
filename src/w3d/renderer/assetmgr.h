@@ -98,6 +98,7 @@ public:
 
     bool Get_W3D_Load_On_Demand() const { return m_loadOnDemand; }
     void Set_W3D_Load_On_Demand(bool state) { m_loadOnDemand = state; }
+    bool Get_Activate_Fog_On_Load() { return m_activateFogOnLoad; }
     HashTemplateClass<StringClass, TextureClass *> &Texture_Hash() { return m_textureHash; }
 
 protected:

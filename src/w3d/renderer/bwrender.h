@@ -52,8 +52,8 @@ public:
     void Set_Vertex_Locations(Vector2 *vertices, int count);
 
     void Render_Triangle(const Vector2 &c1, const Vector2 &c2, const Vector2 &c3);
-    void Render_Triangles(unsigned int *indices, int index_count);
-    void Render_Triangle_Strip(unsigned int *indices, int index_count);
+    void Render_Triangles(const unsigned int *indices, int index_count);
+    void Render_Triangle_Strip(const unsigned int *indices, int index_count);
     void Render_Preprocessed_Triangle(Vector3 &x_corners, Vector3i &y_corners);
 
 protected:

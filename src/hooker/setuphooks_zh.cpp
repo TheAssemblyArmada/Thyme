@@ -70,6 +70,7 @@
 #include "matpass.h"
 #include "meshgeometry.h"
 #include "meshmatdesc.h"
+#include "meshmdl.h"
 #include "messagestream.h"
 #include "milesaudiofilecache.h"
 #include "milesaudiomanager.h"
@@ -1519,4 +1520,13 @@ void Setup_Hooks()
     Hook_Method(0x0083C670,
         static_cast<void (MeshGeometryClass::*)(Vector3 *, Vector3 *, HTreeClass const *)>(
             &MeshGeometryClass::Get_Deformed_Vertices));
+
+    // meshmdl.h
+    Hook_Any(0x00829100, MeshModelClass::Hook_Ctor);
+    Hook_Any(0x008292D0, MeshModelClass::Hook_Ctor2);
+    Hook_Any(0x008295E0, MeshModelClass::Register_For_Rendering);
+    Hook_Any(0x00829660, MeshModelClass::Replace_Texture);
+    Hook_Any(0x00829760, MeshModelClass::Shadow_Render);
+    Hook_Any(0x00829830, MeshModelClass::Make_Geometry_Unique);
+    Hook_Any(0x00829A90, MeshModelClass::Needs_Vertex_Normals);
 }

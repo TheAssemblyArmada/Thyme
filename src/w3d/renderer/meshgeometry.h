@@ -154,7 +154,7 @@ public:
     void Get_Deformed_Screenspace_Vertices(
         Vector4 *dst_vert, const RenderInfoClass &rinfo, const Matrix3D &mesh_tm, const HTreeClass *htree);
 
-private:
+protected:
     W3DErrorType Read_Chunks(ChunkLoadClass &cload);
     W3DErrorType Read_Vertices(ChunkLoadClass &cload);
     W3DErrorType Read_Vertex_Normals(ChunkLoadClass &cload);

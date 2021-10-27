@@ -22,7 +22,7 @@
 template<typename T> class SimpleVecClass
 {
 public:
-    SimpleVecClass(int size) : m_vector(nullptr), m_vectorMax(0)
+    SimpleVecClass(int size = 0) : m_vector(nullptr), m_vectorMax(0)
     {
         if (size > 0) {
             Resize(size);

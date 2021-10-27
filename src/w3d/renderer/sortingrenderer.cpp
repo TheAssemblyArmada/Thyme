@@ -19,6 +19,7 @@
 #include "dx8wrapper.h"
 #include "sphere.h"
 #include "w3d.h"
+#include <algorithm>
 #ifdef BUILD_WITH_D3D8
 #include <d3dx8.h>
 #endif
@@ -127,26 +128,29 @@ void Release_Refs(SortingNodeStruct *state)
     }
 }
 
-void InsertionSort(TempIndexStruct *begin, TempIndexStruct *end)
-{
-    /* This is a stripped down __insertion_sort from stl */
-    for (auto iter = begin + 1; iter < end; ++iter) {
-        /* This is __unguarded_linear_insert from stl */
-        auto val = *iter;
-        auto *next = iter - 1;
-        auto *cur = iter;
-        while (*next > val) {
-            *cur = *next;
-            cur = next;
-            --next;
-        }
-        *cur = val;
-    }
-}
+// void InsertionSort(TempIndexStruct *begin, TempIndexStruct *end)
+//{
+//    /* This is a stripped down __insertion_sort from stl */
+//    for (auto iter = begin + 1; iter < end; ++iter) {
+//        /* This is __unguarded_linear_insert from stl */
+//        auto val = *iter;
+//        auto *next = iter - 1;
+//        auto *cur = iter;
+//        while (*next > val) {
+//            *cur = *next;
+//            cur = next;
+//            --next;
+//        }
+//        *cur = val;
+//    }
+//}
 
 // zh: 0x0080D3C0 wb: 0x0056A9A0
 void Sort(TempIndexStruct *begin, TempIndexStruct *end)
 {
+    std::sort(begin, end);
+    // Vanilla used a specialised sort see below
+    /*
     // 16 is the __stl_threshold
     for (auto total_elements = end - begin; total_elements > 16; total_elements = end - begin) {
         auto *halfway = &begin[total_elements / 2];
@@ -190,7 +194,7 @@ void Sort(TempIndexStruct *begin, TempIndexStruct *end)
             end = pivot;
         }
     }
-    InsertionSort(begin, end);
+    InsertionSort(begin, end);*/
 }
 
 TempIndexStruct *Get_Temp_Index_Array(unsigned int count)

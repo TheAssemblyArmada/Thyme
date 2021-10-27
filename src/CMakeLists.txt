@@ -310,6 +310,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/rendobj.cpp
     w3d/renderer/rinfo.cpp
     w3d/renderer/scene.cpp
+    w3d/renderer/segline.cpp
     w3d/renderer/seglinerenderer.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp

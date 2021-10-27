@@ -97,6 +97,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "segline.h"
 #include "seglinerenderer.h"
 #include "setuphooks.h"
 #include "shader.h"
@@ -1535,4 +1536,15 @@ void Setup_Hooks()
     Hook_Any(0x00862B40, MeshLoaderClass::Load_W3D);
     Hook_Any(0x0082C050, MeshClass::Get_Model);
     Hook_Any(0x0082D630, MeshClass::Make_Unique);
+
+    // segline.h
+    Hook_Any(0x0083D6B0, SegmentedLineClass::Hook_Ctor);
+    Hook_Any(0x0083D870, SegmentedLineClass::Set_Points);
+    Hook_Any(0x0083D940, SegmentedLineClass::Set_Texture);
+    Hook_Any(0x0083D960, SegmentedLineClass::Set_Shader);
+    Hook_Any(0x0083D980, SegmentedLineClass::Set_Width);
+    Hook_Any(0x0083D9D0, SegmentedLineClass::Set_Color);
+    Hook_Any(0x0083DA00, SegmentedLineClass::Set_Texture_Mapping_Mode);
+    Hook_Any(0x0083DA20, SegmentedLineClass::Set_Texture_Tile_Factor);
+    Hook_Any(0x0083DA40, SegmentedLineClass::Set_UV_Offset_Rate);
 }

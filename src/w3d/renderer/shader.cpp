@@ -427,3 +427,12 @@ void ShaderClass::Apply()
     Call_Method<void, ShaderClass>(PICK_ADDRESS(0x00813590, 0x004E22D0), this);
 #endif
 }
+
+ShaderClass::StaticSortCategoryType ShaderClass::Get_SS_Category() const
+{
+#ifdef GAME_DLL
+    return Call_Method<ShaderClass::StaticSortCategoryType, const ShaderClass>(PICK_ADDRESS(0x00813F80, 0x004E2FD0), this);
+#else
+    return ShaderClass::SSCAT_OPAQUE;
+#endif
+}

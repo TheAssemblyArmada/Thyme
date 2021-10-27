@@ -388,6 +388,7 @@ public:
     static void Invalidate() { s_shaderDirty = true; }
     static void Invert_Backface_Culling(bool onoff);
     static bool Is_Backface_Culling_Inverted() { return s_polygonCullMode == 3; }
+    StaticSortCategoryType Get_SS_Category() const;
 
 protected:
     void Report_Unable_To_Fog(const char *source);

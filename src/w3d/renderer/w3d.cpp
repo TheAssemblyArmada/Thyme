@@ -19,6 +19,9 @@
 #include "dx8wrapper.h"
 #include "hashtemplate.h"
 #include "textureloader.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 unsigned W3D::s_syncTime;
@@ -35,6 +38,7 @@ bool W3D::s_isColoringEnabled;
 bool W3D::s_mungeSortOnLoad;
 bool W3D::s_overbrightModifyOnLoad;
 W3D::PrelitModeEnum W3D::s_prelitMode;
+bool W3D::s_areStaticSortListsEnabled;
 #ifdef PLATFORM_WINDOWS
 HWND W3D::s_hwnd;
 #endif
@@ -83,4 +87,11 @@ W3DErrorType W3D::Set_Device_Resolution(int width, int height, int bits, int win
     return DX8Wrapper::Set_Device_Resolution(width, height, bits, windowed, resize_window) != 0 ?
         W3D_ERROR_OK :
         W3D_ERROR_INITIALIZATION_FAILED;
+}
+
+void W3D::Add_To_Static_Sort_List(RenderObjClass *robj, unsigned int sort_level)
+{
+#ifdef GAME_DLL
+    Call_Function<void, RenderObjClass *, unsigned int>(PICK_ADDRESS(0x008082C0, 0x00504E90), robj, sort_level);
+#endif
 }

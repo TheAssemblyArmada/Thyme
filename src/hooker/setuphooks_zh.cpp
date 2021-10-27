@@ -68,6 +68,7 @@
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
+#include "mesh.h"
 #include "meshgeometry.h"
 #include "meshmatdesc.h"
 #include "meshmdl.h"
@@ -1529,4 +1530,9 @@ void Setup_Hooks()
     Hook_Any(0x00829760, MeshModelClass::Shadow_Render);
     Hook_Any(0x00829830, MeshModelClass::Make_Geometry_Unique);
     Hook_Any(0x00829A90, MeshModelClass::Needs_Vertex_Normals);
+
+    // mesh.h
+    Hook_Any(0x00862B40, MeshLoaderClass::Load_W3D);
+    Hook_Any(0x0082C050, MeshClass::Get_Model);
+    Hook_Any(0x0082D630, MeshClass::Make_Unique);
 }

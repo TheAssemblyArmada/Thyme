@@ -388,6 +388,7 @@ bool &W3D::s_mungeSortOnLoad = Make_Global<bool>(PICK_ADDRESS(0x00A47FB1, 0x00DE
 bool &W3D::s_overbrightModifyOnLoad = Make_Global<bool>(PICK_ADDRESS(0x00A47FB2, 0x00DEE812));
 W3D::PrelitModeEnum &W3D::s_prelitMode = Make_Global<W3D::PrelitModeEnum>(PICK_ADDRESS(0x00A16988, 0x00CC58A8));
 HWND &W3D::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47FE0, 0x00DEE840));
+bool &W3D::s_areStaticSortListsEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47FB0, 0x00DEE810));
 
 // dx8renderer.cpp
 #include "dx8renderer.h"

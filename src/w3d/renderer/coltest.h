@@ -52,8 +52,8 @@ public:
     RayCollisionTestClass(const LineSegClass &ray,
         CastResultStruct *res,
         int collision_type = COLLISION_TYPE_0,
-        bool bool1 = false,
-        bool bool2 = false);
+        bool check_alpha = false,
+        bool allow_hidden = false);
     RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm);
 
     bool Cull(const Vector3 &min, const Vector3 &max);
@@ -62,8 +62,8 @@ public:
 
 public:
     LineSegClass m_ray;
-    bool m_bool1;
-    bool m_bool2;
+    bool m_checkAlpha;
+    bool m_allowHidden;
 
 private:
     // not implemented
@@ -72,13 +72,13 @@ private:
 };
 
 inline RayCollisionTestClass::RayCollisionTestClass(
-    const LineSegClass &ray, CastResultStruct *res, int collision_type, bool bool1, bool bool2) :
-    CollisionTestClass(res, collision_type), m_ray(ray), m_bool1(bool1), m_bool2(bool2)
+    const LineSegClass &ray, CastResultStruct *res, int collision_type, bool check_alpha, bool allow_hidden) :
+    CollisionTestClass(res, collision_type), m_ray(ray), m_checkAlpha(check_alpha), m_allowHidden(allow_hidden)
 {
 }
 
 inline RayCollisionTestClass::RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm) :
-    CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_bool1(raytest.m_bool1), m_bool2(raytest.m_bool2)
+    CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_checkAlpha(raytest.m_checkAlpha)
 {
 }
 

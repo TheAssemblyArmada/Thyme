@@ -19,6 +19,7 @@
 #include "w3derr.h"
 
 class RenderDeviceDescClass;
+class RenderObjClass;
 
 // TODO This is a massive static class and is currently WIP to support implementing other classes.
 class W3D
@@ -47,8 +48,11 @@ public:
     static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
     static bool Is_Munge_Sort_On_Load_Enabled() { return s_mungeSortOnLoad; }
     static bool Is_Overbright_Modify_On_Load_Enabled() { return s_overbrightModifyOnLoad; }
+    static bool Are_Static_Sort_Lists_Enabled(void) { return s_areStaticSortListsEnabled; }
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
+
+    static void Add_To_Static_Sort_List(RenderObjClass *robj, unsigned int sort_level);
 
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
@@ -81,6 +85,7 @@ private:
     static bool &s_mungeSortOnLoad;
     static bool &s_overbrightModifyOnLoad;
     static PrelitModeEnum &s_prelitMode;
+    static bool &s_areStaticSortListsEnabled;
 #ifdef PLATFORM_WINDOWS
     static HWND &s_hwnd;
 #endif
@@ -99,6 +104,7 @@ private:
     static bool s_mungeSortOnLoad;
     static bool s_overbrightModifyOnLoad;
     static PrelitModeEnum s_prelitMode;
+    static bool s_areStaticSortListsEnabled;
 #ifdef PLATFORM_WINDOWS
     static HWND s_hwnd;
 #endif

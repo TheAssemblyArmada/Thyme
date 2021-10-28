@@ -20,6 +20,7 @@
 #include "wwstring.h"
 
 class ChunkLoadClass;
+class W3DExclusionListClass;
 
 class HTreeManagerClass
 {
@@ -31,6 +32,7 @@ public:
     HTreeClass *Get_Tree(int id);
     HTreeClass *Get_Tree(const char *name);
     int Get_Tree_ID(const char *name);
+    void Free_All_Trees_With_Exclusion_List(const W3DExclusionListClass &list);
 
 private:
     int m_numTrees;

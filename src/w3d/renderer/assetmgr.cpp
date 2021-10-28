@@ -13,17 +13,24 @@
  *            LICENSE
  */
 #include "assetmgr.h"
+#include "boxrobj.h"
 #include "chunkio.h"
 #include "colorspace.h"
 #include "crc.h"
+#include "dazzle.h"
+#include "dx8renderer.h"
 #include "ffactory.h"
 #include "fileclass.h"
+#include "hlod.h"
+#include "loaders.h"
 #include "mesh.h"
+#include "part_ldr.h"
 #include "proto.h"
 #include "render2dsentence.h"
 #include "string.h"
 #include "vertmaterial.h"
 #include "w3d_file.h"
+#include "w3dexclusionlist.h"
 #include <cmath>
 #include <stdio.h>
 
@@ -32,12 +39,43 @@ W3DAssetManager * ::W3DAssetManager::s_theInstance;
 NullPrototypeClass s_nullPrototype;
 #endif
 
+static AggregateLoaderClass s_aggregateLoader;
+static ParticleEmitterLoaderClass s_particleEmitterLoader;
+static BoxLoaderClass s_boxLoader;
+static DazzleLoaderClass s_dazzleLoader;
+static NullLoaderClass s_nullLoader;
+static SphereLoaderClass s_sphereLoader;
+static RingLoaderClass s_ringLoader;
+static DistLODLoaderClass s_distLODLoader;
+static HLodLoaderClass s_hLODLoader;
+static CollectionLoaderClass s_collectionLoader;
+static MeshLoaderClass s_meshLoader;
+static HModelLoaderClass s_hmodelLoader;
+
 // 0x00814090
-W3DAssetManager::W3DAssetManager()
+W3DAssetManager::W3DAssetManager() :
+    m_loadOnDemand(false),
+    m_activateFogOnLoad(false),
+    m_prototypeLoaders(PROTOLOADERS_VECTOR_SIZE),
+    m_prototypes(PROTOTYPES_VECTOR_SIZE)
 {
-#ifdef GAME_DLL
-    Call_Method<void, W3DAssetManager>(0x00814090, this);
-#endif
+    s_theInstance = this;
+    m_prototypeLoaders.Set_Growth_Step(PROTOLOADERS_GROWTH_RATE);
+    m_prototypes.Set_Growth_Step(PROTOTYPES_GROWTH_RATE);
+    Register_Prototype_Loader(&s_meshLoader);
+    Register_Prototype_Loader(&s_hmodelLoader);
+    Register_Prototype_Loader(&s_collectionLoader);
+    Register_Prototype_Loader(&s_boxLoader);
+    Register_Prototype_Loader(&s_hLODLoader);
+    Register_Prototype_Loader(&s_distLODLoader);
+    Register_Prototype_Loader(&s_aggregateLoader);
+    Register_Prototype_Loader(&s_nullLoader);
+    Register_Prototype_Loader(&s_dazzleLoader);
+    Register_Prototype_Loader(&s_ringLoader);
+    Register_Prototype_Loader(&s_sphereLoader);
+    Register_Prototype_Loader(&s_particleEmitterLoader);
+    m_prototypeHashTable = new PrototypeClass *[PROTOTYPE_HASH_TABLE_SIZE];
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
 }
 
 // 0x008143C0
@@ -107,7 +145,8 @@ void W3DAssetManager::Free_Assets()
             prototype->Delete_Self();
         }
     }
-    memset(m_prototypeHashTable, 0, s_prototypeHashTableSize * sizeof(uintptr_t));
+
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
     m_hAnimManager.Free_All_Anims();
     m_hTreeManager.Free_All_Trees();
     Release_All_Textures();
@@ -118,9 +157,32 @@ void W3DAssetManager::Free_Assets()
 // 0x00814870
 void W3DAssetManager::Free_Assets_With_Exclusion_List(DynamicVectorClass<StringClass> const &list)
 {
-#ifdef GAME_DLL
-    Call_Method<void, W3DAssetManager, DynamicVectorClass<StringClass> const &>(0x00814870, this, list);
-#endif
+    g_theDX8MeshRenderer.Invalidate(false);
+    W3DExclusionListClass exlist(list);
+    DynamicVectorClass<PrototypeClass *> vector(8000);
+
+    for (int i = 0; i < m_prototypes.Count(); i++) {
+        if (m_prototypes[i]) {
+            if (exlist.Is_Excluded(m_prototypes[i])) {
+                vector.Add(m_prototypes[i]);
+            } else {
+                m_prototypes[i]->Delete_Self();
+            }
+
+            m_prototypes[i] = nullptr;
+        }
+    }
+
+    m_prototypes.Reset_Active();
+    memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
+
+    for (int i = 0; i < vector.Count(); i++) {
+        Add_Prototype(vector[i]);
+    }
+
+    m_hAnimManager.Free_All_Anims_With_Exclusion_List(exlist);
+    m_hTreeManager.Free_All_Trees_With_Exclusion_List(exlist);
+    Release_Unused_Textures();
 }
 
 // 0x00814A60
@@ -483,7 +545,7 @@ PrototypeClass *W3DAssetManager::Prototype_Hash_Table_Find(char const *key)
 
 int32_t W3DAssetManager::Prototype_Hash_Table_Hash(char const *key)
 {
-    return (s_prototypeHashTableSize - 1) & CRC::Stringi(key, 0);
+    return (PROTOTYPE_HASH_TABLE_SIZE - 1) & CRC::Stringi(key, 0);
 }
 
 void W3DAssetManager::Add_Prototype(PrototypeClass *proto)

@@ -19,6 +19,7 @@
 #include "hrawanim.h"
 #include "missing.h"
 #include "w3d_file.h"
+#include "w3dexclusionlist.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -195,9 +196,16 @@ void HAnimManagerClass::Free_All_Anims()
 
 void HAnimManagerClass::Free_All_Anims_With_Exclusion_List(const W3DExclusionListClass &exclude_list)
 {
-#ifdef GAME_DLL
-    Call_Method<void, HAnimManagerClass, const W3DExclusionListClass &>(0x008320B0, this, exclude_list);
-#endif
+    HAnimManagerIterator it(*this);
+
+    for (it.First(); !it.Is_Done(); it.Next()) {
+        HAnimClass *hanim = it.Get_Current_Anim();
+
+        if (hanim->Num_Refs() == 1 && !exclude_list.Is_Excluded(hanim)) {
+            m_animPtrTable->Remove(hanim);
+            hanim->Release_Ref();
+        }
+    }
 }
 
 HAnimClass *HAnimManagerIterator::Get_Current_Anim()

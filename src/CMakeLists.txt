@@ -275,6 +275,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/coltest.cpp
     w3d/renderer/colorspace.cpp
     w3d/renderer/composite.cpp
+    w3d/renderer/dazzle.cpp
     w3d/renderer/ddsfile.cpp
     w3d/renderer/dx8caps.cpp
     w3d/renderer/dx8fvf.cpp
@@ -292,6 +293,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/htreemgr.cpp
     w3d/renderer/light.cpp
     w3d/renderer/lightenv.cpp
+    w3d/renderer/loaders.cpp
     w3d/renderer/matinfo.cpp
     w3d/renderer/mapper.cpp
     w3d/renderer/matpass.cpp
@@ -301,6 +303,8 @@ set(GAMEENGINE_SRC
     w3d/renderer/meshmdl.cpp
     w3d/renderer/missing.cpp
     w3d/renderer/motchan.cpp
+    w3d/renderer/nullrobj.cpp
+    w3d/renderer/part_ldr.cpp
     w3d/renderer/pivot.cpp
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
@@ -325,6 +329,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/thumbnailmanager.cpp
     w3d/renderer/vertmaterial.cpp
     w3d/renderer/w3d.cpp
+    w3d/renderer/w3dexclusionlist.cpp
     w3d/renderer/w3dformat.cpp
 )
 

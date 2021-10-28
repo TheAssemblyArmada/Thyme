@@ -3,7 +3,7 @@
  *
  * @author Duncans_pumpkin
  *
- * @brief Prototype Loader Interface
+ * @brief Null Render Object
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #pragma once
+#include "always.h"
 #include "proto.h"
 #include "rendobj.h"
 #include "w3d_file.h"
@@ -20,10 +21,13 @@
 
 class Null3DObjClass final : public RenderObjClass
 {
-    char m_Name[32];
+public:
+    Null3DObjClass(char *name);
+    Null3DObjClass(const Null3DObjClass &src);
+    Null3DObjClass &operator=(const Null3DObjClass &that);
 
     virtual int Class_ID() const override { return CLASSID_NULL; }
-    virtual RenderObjClass *Clone() const override { return new Null3DObjClass; }
+    virtual RenderObjClass *Clone() const override { return new Null3DObjClass(*this); }
     virtual const char *Get_Name() const override { return m_Name; }
     virtual void Render(RenderInfoClass &rinfo) override {}
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override { sphere.Init(Vector3(0, 0, 0), 0.1f); }
@@ -32,6 +36,9 @@ class Null3DObjClass final : public RenderObjClass
         box.Init(Vector3(0, 0, 0), Vector3(0.1f, 0.1f, 0.1f));
     }
     virtual ~Null3DObjClass() {}
+
+private:
+    char m_Name[32];
 };
 
 class NullPrototypeClass final : public W3DMPO, public PrototypeClass
@@ -39,12 +46,21 @@ class NullPrototypeClass final : public W3DMPO, public PrototypeClass
     IMPLEMENT_W3D_POOL(NullPrototypeClass);
 
 public:
-    virtual const char *Get_Name() const override { return &m_definition.name[0]; }
+    NullPrototypeClass();
+    NullPrototypeClass(const W3dNullObjectStruct &def);
+    virtual const char *Get_Name() const override { return m_definition.name; }
     virtual int32_t Get_Class_ID() const override { return RenderObjClass::CLASSID_NULL; }
-    virtual RenderObjClass *Create() override { return new Null3DObjClass; };
+    virtual RenderObjClass *Create() override { return new Null3DObjClass(m_definition.name); };
     virtual void Delete_Self() override { delete this; };
     virtual ~NullPrototypeClass() override{};
 
 private:
     W3dNullObjectStruct m_definition;
+};
+
+class NullLoaderClass : public PrototypeLoaderClass
+{
+public:
+    virtual int Chunk_Type() override { return W3D_CHUNK_NULL_OBJECT; }
+    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

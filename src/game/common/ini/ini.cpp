@@ -948,22 +948,6 @@ void INI::Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void 
     g_theAudio->Get_Info_For_Audio_Event(ev);
 }
 
-void INI::Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data)
-{
-    std::vector<ScienceType> *sci_vec = static_cast<std::vector<ScienceType> *>(store);
-    sci_vec->clear();
-
-    for (const char *token = ini->Get_Next_Token_Or_Null(); token != nullptr; token = ini->Get_Next_Token_Or_Null()) {
-        if (strcasecmp(token, "None") == 0) {
-            sci_vec->clear();
-
-            return;
-        }
-
-        sci_vec->push_back(g_theScienceStore->Lookup_Science(token));
-    }
-}
-
 void INI::Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data)
 {
     std::vector<Utf8String> *sound_vec = static_cast<std::vector<Utf8String> *>(store);

@@ -42,6 +42,8 @@ public:
 
     ScienceType Lookup_Science(const char *name);
 
+    static void Parse_Science_Vector(INI *ini, void *, void *store, const void *);
+
 private:
     std::vector<ScienceInfo *> m_infoVec;
 };

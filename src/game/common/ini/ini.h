@@ -155,7 +155,6 @@ public:
     static void Parse_Bitstring64(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Object_Definition(INI *ini);

@@ -725,8 +725,8 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             residual_top_points -= residual_points - 1;
             residual_bottom_points -= residual_points - 1;
             i += residual_points - 1;
-        } while ((top_int_idx < num_intersections[BOTTOM_EDGE] || residual_top_points != 1)
-            && (bottom_int_idx < num_intersections[TOP_EDGE] || residual_bottom_points != 1));
+        } while ((top_int_idx < num_intersections[TOP_EDGE] || residual_top_points != 1)
+            && (bottom_int_idx < num_intersections[BOTTOM_EDGE] || residual_bottom_points != 1));
 
         unsigned int color = DX8Wrapper::Convert_Color(m_color, m_opacity);
         bool b = color == 0xFFFFFFFF;

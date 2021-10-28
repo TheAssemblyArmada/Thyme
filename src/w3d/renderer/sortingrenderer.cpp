@@ -127,17 +127,70 @@ void Release_Refs(SortingNodeStruct *state)
     }
 }
 
-void InsertionSort(TempIndexStruct *array1, TempIndexStruct *array2)
+void InsertionSort(TempIndexStruct *begin, TempIndexStruct *end)
 {
-    // todo
+    /* This is a stripped down __insertion_sort from stl */
+    for (auto iter = begin + 1; iter < end; ++iter) {
+        /* This is __unguarded_linear_insert from stl */
+        auto val = *iter;
+        auto *next = iter - 1;
+        auto *cur = iter;
+        while (*next > val) {
+            *cur = *next;
+            cur = next;
+            --next;
+        }
+        *cur = val;
+    }
 }
 
-void Sort(TempIndexStruct *array1, TempIndexStruct *array2)
+// zh: 0x0080D3C0 wb: 0x0056A9A0
+void Sort(TempIndexStruct *begin, TempIndexStruct *end)
 {
-#ifdef GAME_DLL
-    Call_Function<void, TempIndexStruct *, TempIndexStruct *>(PICK_ADDRESS(0x0080D3C0, 0x0056A9A0), array1, array2);
-#endif
-    // todo
+    // 16 is the __stl_threshold
+    for (auto total_elements = end - begin; total_elements > 16; total_elements = end - begin) {
+        auto *halfway = &begin[total_elements / 2];
+        auto *next = begin + 1; // ebx
+        auto *last = end - 1;
+        std::swap(*halfway, *next);
+        if (*next > *last) {
+            std::swap(*next, *last);
+        }
+        if (*begin > *last) {
+            std::swap(*begin, *last);
+        }
+        if (*next > *begin) {
+            std::swap(*next, *begin);
+        }
+
+        auto *ptr = next; // ebp
+        auto *pivot = last; // esi
+        while (1) {
+            while (++ptr <= last && *ptr < *begin)
+                ;
+            while (--pivot > next && *pivot > *begin)
+                ;
+
+            if (pivot < ptr) {
+                break;
+            }
+            std::swap(*ptr, *pivot);
+        }
+
+        std::swap(*pivot, *begin);
+
+        auto right_num_elements = end - pivot - 1;
+        auto left_num_elements = pivot - begin;
+        // Sort the smallest side
+        if (left_num_elements <= right_num_elements) {
+            Sort(begin, pivot);
+            begin = pivot + 1;
+        } else {
+            Sort(pivot + 1, end);
+            end = pivot;
+        }
+    }
+    InsertionSort(begin, end);
 }
 
 TempIndexStruct *Get_Temp_Index_Array(unsigned int count)

@@ -15,6 +15,7 @@
 
 #include "htreemgr.h"
 #include "chunkio.h"
+#include "w3dexclusionlist.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -93,4 +94,31 @@ int HTreeManagerClass::Get_Tree_ID(const char *name)
         }
     }
     return -1;
+}
+
+void HTreeManagerClass::Free_All_Trees_With_Exclusion_List(const W3DExclusionListClass &list)
+{
+    int count = 0;
+
+    for (auto i = 0; i < m_numTrees; ++i) {
+        auto &tree = m_treePtr[i];
+
+        if (list.Is_Excluded(tree)) {
+            count++;
+        } else {
+            delete m_treePtr[i];
+            m_treePtr[i] = nullptr;
+        }
+    }
+
+    m_numTrees = count;
+    m_hashTable.Remove_All();
+
+    for (auto &tree : m_treePtr) {
+        if (tree != nullptr) {
+            StringClass str = tree->Get_Name();
+            str.To_Lower();
+            m_hashTable.Insert(str, tree);
+        }
+    }
 }

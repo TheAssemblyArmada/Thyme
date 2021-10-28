@@ -15,6 +15,7 @@
 #pragma once
 #include "aabox.h"
 #include "obbox.h"
+#include "proto.h"
 #include "rendobj.h"
 #include "vector3.h"
 #include "w3d_file.h"
@@ -137,4 +138,11 @@ public:
         Update_Cached_Box();
         return m_cachedBox;
     }
+};
+
+class BoxLoaderClass : public PrototypeLoaderClass
+{
+public:
+    virtual int Chunk_Type() override { return W3D_CHUNK_BOX; }
+    virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

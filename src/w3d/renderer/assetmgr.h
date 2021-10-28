@@ -93,7 +93,12 @@ public:
     virtual AssetIterator *Create_HTree_Iterator();
     virtual HTreeClass *Get_HTree(const char *name);
     // 0x00816550
-    virtual void Register_Prototype_Loader(PrototypeLoaderClass *loader) { m_prototypeLoaders.Add(loader); }
+    virtual void Register_Prototype_Loader(PrototypeLoaderClass *loader)
+    {
+        if (!Find_Prototype_Loader(loader->Chunk_Type())) {
+            m_prototypeLoaders.Add(loader);
+        }
+    }
     static W3DAssetManager *Get_Instance(void) { return s_theInstance; }
 
     bool Get_W3D_Load_On_Demand() const { return m_loadOnDemand; }
@@ -102,6 +107,22 @@ public:
     HashTemplateClass<StringClass, TextureClass *> &Texture_Hash() { return m_textureHash; }
 
 protected:
+    enum
+    {
+        PROTOLOADERS_VECTOR_SIZE = 32,
+        PROTOLOADERS_GROWTH_RATE = 16,
+
+        PROTOTYPES_VECTOR_SIZE = 256,
+        PROTOTYPES_GROWTH_RATE = 32,
+    };
+
+    enum
+    {
+        PROTOTYPE_HASH_TABLE_SIZE = 4096,
+        PROTOTYPE_HASH_BITS = 12,
+        PROTOTYPE_HASH_MASK = 0x00000FFF
+    };
+
     virtual AssetIterator *Create_Font3DData_Iterator();
     virtual void Add_Font3DData(Font3DDataClass *font);
     virtual void Remove_Font3DData(Font3DDataClass *font);
@@ -112,7 +133,6 @@ protected:
 
     PrototypeClass *Find_Prototype(const char *name);
 
-    static constexpr auto s_prototypeHashTableSize = 0x1000;
     void Prototype_Hash_Table_Add(PrototypeClass *entry);
     PrototypeClass *Prototype_Hash_Table_Find(char const *key);
     int32_t Prototype_Hash_Table_Hash(char const *key);

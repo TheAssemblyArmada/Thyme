@@ -17,6 +17,20 @@
 #include "hooker.h"
 #endif
 
+void DazzleRenderObjClass::Init_From_INI(const INIClass *ini)
+{
+#ifdef GAME_DLL
+    Call_Function<const INIClass *>(0x0084CB10, ini);
+#endif
+}
+
+void DazzleRenderObjClass::Deinit()
+{
+#ifdef GAME_DLL
+    Call_Function<const INIClass *>(0x0084D900);
+#endif
+}
+
 PrototypeClass *DazzleLoaderClass::Load_W3D(ChunkLoadClass &cload)
 {
 #ifdef GAME_DLL

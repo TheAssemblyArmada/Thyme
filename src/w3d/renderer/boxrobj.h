@@ -33,6 +33,7 @@ protected:
 public:
     static void Init();
     static void Shutdown();
+    static void Set_Box_Display_Mask(int mask);
 
     BoxRenderObjClass(const BoxRenderObjClass &src);
     BoxRenderObjClass(const W3dBoxStruct &src);

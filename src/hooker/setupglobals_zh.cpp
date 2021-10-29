@@ -374,10 +374,11 @@ ThumbnailManagerClass *&g_thumbnailManager = Make_Global<ThumbnailManagerClass *
 // w3d.cpp
 #include "w3d.h"
 unsigned &W3D::s_syncTime = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F9C, 0x00DEE7FC));
+unsigned &W3D::s_previousSyncTime = Make_Global<unsigned>(PICK_ADDRESS(0x00A47FA0, 0x00DEE800));
 unsigned &W3D::s_textureReduction = Make_Global<unsigned>(PICK_ADDRESS(0x00A47FE4, 0x00DEE844));
 unsigned &W3D::s_textureMinDimension = Make_Global<unsigned>(PICK_ADDRESS(0x00A1699C, 0x00CC58BC));
 bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(PICK_ADDRESS(0x00A47FE8, 0x00DEE848));
-bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0));
+bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0x00DEE80F));
 bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00CC58B8));
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
 int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
@@ -389,6 +390,14 @@ bool &W3D::s_overbrightModifyOnLoad = Make_Global<bool>(PICK_ADDRESS(0x00A47FB2,
 W3D::PrelitModeEnum &W3D::s_prelitMode = Make_Global<W3D::PrelitModeEnum>(PICK_ADDRESS(0x00A16988, 0x00CC58A8));
 HWND &W3D::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47FE0, 0x00DEE840));
 bool &W3D::s_areStaticSortListsEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47FB0, 0x00DEE810));
+bool &W3D::s_isInited = Make_Global<bool>(PICK_ADDRESS(0x00A47FAC, 0x00DEE80C));
+bool &W3D::s_isRendering = Make_Global<bool>(PICK_ADDRESS(0x00A47FAD, 0x00DEE80D));
+bool &W3D::s_lite = Make_Global<bool>(PICK_ADDRESS(0x00A47FF0, 0x00DEE850));
+int &W3D::s_frameCount = Make_Global<int>(PICK_ADDRESS(0x00A47FB8, 0x00DEE818));
+StaticSortListClass *&W3D::s_defaultStaticSortLists =
+    Make_Global<StaticSortListClass *>(PICK_ADDRESS(0x00A47FC8, 0x00DEE828));
+StaticSortListClass *&W3D::s_currentStaticSortLists =
+    Make_Global<StaticSortListClass *>(PICK_ADDRESS(0x00A47FCC, 0x00DEE82C));
 
 // dx8renderer.cpp
 #include "dx8renderer.h"

@@ -119,6 +119,7 @@
 #include "thumbnailmanager.h"
 #include "tiledata.h"
 #include "vertmaterial.h"
+#include "w3d.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
@@ -1547,4 +1548,30 @@ void Setup_Hooks()
     Hook_Any(0x0083DA00, SegmentedLineClass::Set_Texture_Mapping_Mode);
     Hook_Any(0x0083DA20, SegmentedLineClass::Set_Texture_Tile_Factor);
     Hook_Any(0x0083DA40, SegmentedLineClass::Set_UV_Offset_Rate);
+
+    // w3d.h
+    Hook_Any(0x008075E0, W3D::Init);
+    Hook_Any(0x00807700, W3D::Shutdown);
+    Hook_Any(0x00807760, W3D::Set_Render_Device);
+    Hook_Any(0x008077A0, W3D::Get_Window);
+    Hook_Any(0x008077B0, W3D::Get_Render_Device);
+    Hook_Any(0x008077C0, W3D::Get_Render_Device_Desc);
+    Hook_Any(0x008077D0, W3D::Set_Device_Resolution);
+    Hook_Any(0x00807800, W3D::Get_Render_Target_Resolution);
+    Hook_Any(0x00807850, W3D::Invalidate_Textures);
+    Hook_Any(0x008078F0, W3D::Begin_Render);
+    Hook_Method(
+        0x00807A40, static_cast<W3DErrorType (*)(SceneClass *, CameraClass *, bool, bool, Vector3 const &)>(&W3D::Render));
+    Hook_Method(0x00807DC0, static_cast<W3DErrorType (*)(RenderObjClass &, RenderInfoClass &)>(&W3D::Render));
+    Hook_Any(0x00807E50, W3D::Flush);
+    Hook_Any(0x00807E90, W3D::End_Render);
+    Hook_Any(0x00807EE0, W3D::Sync);
+    Hook_Any(0x00807F00, W3D::Set_Collision_Box_Display_Mask);
+    Hook_Any(0x00808170, W3D::Set_Texture_Reduction);
+    Hook_Any(0x00808240, W3D::Enable_Texturing);
+    Hook_Any(0x00808260, W3D::Enable_Coloring);
+    Hook_Any(0x00808270, W3D::Get_Texture_Reduction);
+    Hook_Any(0x008082A0, W3D::Set_Texture_Bit_Depth);
+    Hook_Any(0x008082C0, W3D::Add_To_Static_Sort_List);
+    Hook_Any(0x008082E0, W3D::Render_And_Clear_Static_Sort_Lists);
 }

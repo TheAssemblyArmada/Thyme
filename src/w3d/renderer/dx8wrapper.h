@@ -191,6 +191,7 @@ public:
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
     static void Set_DX8_Material(const D3DMATERIAL8 *mat);
+    static void Set_Ambient_Color(const Vector3 &color);
 #endif
     static void Set_World_Identity();
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
@@ -227,7 +228,12 @@ public:
     static void Invalidate_Cached_Render_States();
     static void Enable_Triangle_Draw(bool enable) { s_EnableTriangleDraw = enable; }
     static bool Is_Triangle_Draw_Enabled() { return s_EnableTriangleDraw; }
-    static bool Is_Initted(void) { return s_isInitialised; }
+    static bool Is_Initted() { return s_isInitialised; }
+    static void Set_Texture_Bitdepth(int depth)
+    {
+        captainslog_assert(depth == 16 || depth == 32);
+        s_textureBitDepth = depth;
+    }
 
 private:
     static void Draw_Sorting_IB_VB(unsigned int primitive_type,
@@ -779,6 +785,12 @@ inline void DX8Wrapper::Set_Fog(bool enable, const Vector3 &color, float start, 
 
     Set_DX8_Render_State(D3DRS_FOGSTART, *(DWORD *)(&start));
     Set_DX8_Render_State(D3DRS_FOGEND, *(DWORD *)(&end));
+}
+
+inline void DX8Wrapper::Set_Ambient_Color(const Vector3 &color)
+{
+    s_ambientColor = color;
+    Set_DX8_Render_State(D3DRS_AMBIENT, Convert_Color(color, 1.0f));
 }
 #endif
 

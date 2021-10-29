@@ -31,6 +31,13 @@ void BoxRenderObjClass::Shutdown()
 #endif
 }
 
+void BoxRenderObjClass::Set_Box_Display_Mask(int mask)
+{
+#ifdef GAME_DLL
+    Call_Function<void>(PICK_ADDRESS(0x00848BC0, 0x005041A0));
+#endif
+}
+
 PrototypeClass *BoxLoaderClass::Load_W3D(ChunkLoadClass &cload)
 {
 #ifdef GAME_DLL

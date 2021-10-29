@@ -542,3 +542,8 @@ ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(0x00A544C
 
 // meshgeometry.cpp
 SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(0x00A51E60);
+
+// objectcreationlist.cpp
+#include "objectcreationlist.h"
+ObjectCreationListStore *&g_theObjectCreationListStore =
+    Make_Global<ObjectCreationListStore *>(PICK_ADDRESS(0x00A2BC44, 0x00E23E3C));

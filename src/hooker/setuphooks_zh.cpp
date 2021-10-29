@@ -80,6 +80,7 @@
 #include "multilist.h"
 #include "namekeygenerator.h"
 #include "object.h"
+#include "objectcreationlist.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
@@ -1574,4 +1575,8 @@ void Setup_Hooks()
     Hook_Any(0x008082A0, W3D::Set_Texture_Bit_Depth);
     Hook_Any(0x008082C0, W3D::Add_To_Static_Sort_List);
     Hook_Any(0x008082E0, W3D::Render_And_Clear_Static_Sort_Lists);
+
+    // objectcreationlist.h
+    Hook_Any(PICK_ADDRESS(0x004C1280, 0x00756BBD), ObjectCreationListStore::Hook_Ctor);
+    Hook_Any(PICK_ADDRESS(0x004C1500, 0x00756CFB), ObjectCreationListStore::Find_Object_Creation_List);
 }

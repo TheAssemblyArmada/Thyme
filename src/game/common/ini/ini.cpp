@@ -28,6 +28,7 @@
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "mouse.h"
+#include "objectcreationlist.h"
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
@@ -95,7 +96,7 @@ BlockParse TheTypeTable[] = {
     {"MultiplayerSettings", (iniblockparse_t)(0x00504A90) /*&INI::parseMultiplayerSettingsDefinition*/},
     {"MusicTrack", (iniblockparse_t)(0x0044EAF0) /*&INI::parseMusicTrackDefinition*/},
     {"Object", (iniblockparse_t)(0x005048E0) /*&INI::parseObjectDefinition*/},
-    {"ObjectCreationList", (iniblockparse_t)(0x004C1570) /*&INI::parseObjectCreationListDefinition*/},
+    {"ObjectCreationList", &ObjectCreationListStore::Parse_Object_Creation_List_Definition },
     {"ObjectReskin", (iniblockparse_t)(0x00504990) /*&INI::parseObjectReskinDefinition*/},
     {"ParticleSystem", (iniblockparse_t)(0x005047E0) /*&INI::parseParticleSystemDefinition*/},
     //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },

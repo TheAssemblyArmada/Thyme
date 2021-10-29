@@ -119,7 +119,7 @@ unsigned TextureBaseClass::Get_Reduction() const
 
     // Should we further reduce a texture greater than 256 in some dimension?
     // Effect should be to reduce texture by half again after normal reduction is applied.
-    if (W3D::Large_Texture_Extra_Reduction_Enabled() && (m_width > 256 || m_height > 256)) {
+    if (W3D::Is_Large_Texture_Extra_Reduction_Enabled() && (m_width > 256 || m_height > 256)) {
         ++reduction;
     }
 

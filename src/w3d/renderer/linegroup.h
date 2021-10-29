@@ -78,8 +78,8 @@ public:
     TextureClass *Get_Texture() { return m_texture; }
     TextureClass *Peek_Texture() { return m_texture; }
 
-    void Set_Shader(const ShaderClass &shader){ m_shader = shader;}
-    ShaderClass Get_Shader() const {return  m_shader;}
+    void Set_Shader(const ShaderClass &shader) { m_shader = shader; }
+    ShaderClass Get_Shader() const { return m_shader; }
 
     void Set_Line_Mode(LineModeType mode) { m_mode = mode; }
     LineModeType Get_Line_Mode() const { return m_mode; }

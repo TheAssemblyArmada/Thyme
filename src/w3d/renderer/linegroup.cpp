@@ -53,13 +53,13 @@ LineGroupClass::~LineGroupClass()
 }
 
 void LineGroupClass::Set_Arrays(ShareBufferClass<Vector3> *start_locs,
-                                ShareBufferClass<Vector3> *end_locs,
-                                ShareBufferClass<Vector4> *diffuse,
-                                ShareBufferClass<Vector4> *tail_diffuse,
-                                ShareBufferClass<unsigned int> *alt,
-                                ShareBufferClass<float> *sizes,
-                                ShareBufferClass<float> *u_coords,
-                                int count)
+    ShareBufferClass<Vector3> *end_locs,
+    ShareBufferClass<Vector4> *diffuse,
+    ShareBufferClass<Vector4> *tail_diffuse,
+    ShareBufferClass<unsigned int> *alt,
+    ShareBufferClass<float> *sizes,
+    ShareBufferClass<float> *u_coords,
+    int count)
 {
     captainslog_assert(start_locs);
     captainslog_assert(end_locs);
@@ -100,6 +100,7 @@ void LineGroupClass::Set_Texture(TextureClass *texture)
 
 void LineGroupClass::Render(RenderInfoClass &rinfo)
 {
+#ifdef BUILD_WITH_D3D8
     if (m_lineCount > 0) {
         m_shader.Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
 
@@ -183,146 +184,149 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
 
         DynamicIBAccessClass index_buffer(
             sort ? IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, index_count);
-        DynamicIBAccessClass::WriteLockClass index_lock(&index_buffer);
+        { // added to control the lifetime of the WriteLockClass object
+            DynamicIBAccessClass::WriteLockClass index_lock(&index_buffer);
 
-        unsigned short *index = index_lock.Get_Index_Array();
+            unsigned short *index = index_lock.Get_Index_Array();
 
-        if (m_mode == TETRAHEDRON) {
-            for (int i = 0; i < m_lineCount; ++i) {
-                *index++ = short(4 * i + 0);
-                *index++ = short(4 * i + 2);
-                *index++ = short(4 * i + 1);
-                *index++ = short(4 * i + 0);
-                *index++ = short(4 * i + 3);
-                *index++ = short(4 * i + 2);
-                *index++ = short(4 * i + 0);
-                *index++ = short(4 * i + 1);
-                *index++ = short(4 * i + 3);
-                *index++ = short(4 * i + 1);
-                *index++ = short(4 * i + 2);
-                *index++ = short(4 * i + 3);
+            if (m_mode == TETRAHEDRON) {
+                for (int i = 0; i < m_lineCount; ++i) {
+                    *index++ = short(4 * i + 0);
+                    *index++ = short(4 * i + 2);
+                    *index++ = short(4 * i + 1);
+                    *index++ = short(4 * i + 0);
+                    *index++ = short(4 * i + 3);
+                    *index++ = short(4 * i + 2);
+                    *index++ = short(4 * i + 0);
+                    *index++ = short(4 * i + 1);
+                    *index++ = short(4 * i + 3);
+                    *index++ = short(4 * i + 1);
+                    *index++ = short(4 * i + 2);
+                    *index++ = short(4 * i + 3);
+                }
+
+            } else if (m_mode == PRISM) {
+                for (int i = 0; i < m_lineCount; ++i) {
+                    *index++ = short(6 * i + 0);
+                    *index++ = short(6 * i + 1);
+                    *index++ = short(6 * i + 2);
+                    *index++ = short(6 * i + 0);
+                    *index++ = short(6 * i + 3);
+                    *index++ = short(6 * i + 1);
+                    *index++ = short(6 * i + 1);
+                    *index++ = short(6 * i + 3);
+                    *index++ = short(6 * i + 4);
+                    *index++ = short(6 * i + 1);
+                    *index++ = short(6 * i + 4);
+                    *index++ = short(6 * i + 5);
+                    *index++ = short(6 * i + 1);
+                    *index++ = short(6 * i + 5);
+                    *index++ = short(6 * i + 2);
+                    *index++ = short(6 * i + 0);
+                    *index++ = short(6 * i + 2);
+                    *index++ = short(6 * i + 5);
+                    *index++ = short(6 * i + 0);
+                    *index++ = short(6 * i + 5);
+                    *index++ = short(6 * i + 3);
+                    *index++ = short(6 * i + 3);
+                    *index++ = short(6 * i + 5);
+                    *index++ = short(6 * i + 4);
+                }
+            } else {
+                captainslog_assert(0);
             }
-
-        } else if (m_mode == PRISM) {
-            for (int i = 0; i < m_lineCount; ++i) {
-                *index++ = short(6 * i + 0);
-                *index++ = short(6 * i + 1);
-                *index++ = short(6 * i + 2);
-                *index++ = short(6 * i + 0);
-                *index++ = short(6 * i + 3);
-                *index++ = short(6 * i + 1);
-                *index++ = short(6 * i + 1);
-                *index++ = short(6 * i + 3);
-                *index++ = short(6 * i + 4);
-                *index++ = short(6 * i + 1);
-                *index++ = short(6 * i + 4);
-                *index++ = short(6 * i + 5);
-                *index++ = short(6 * i + 1);
-                *index++ = short(6 * i + 5);
-                *index++ = short(6 * i + 2);
-                *index++ = short(6 * i + 0);
-                *index++ = short(6 * i + 2);
-                *index++ = short(6 * i + 5);
-                *index++ = short(6 * i + 0);
-                *index++ = short(6 * i + 5);
-                *index++ = short(6 * i + 3);
-                *index++ = short(6 * i + 3);
-                *index++ = short(6 * i + 5);
-                *index++ = short(6 * i + 4);
-            }
-        } else {
-            captainslog_assert(0);
         }
 
         DynamicVBAccessClass vertex_buffer(
             sort ? VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8,
             D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2,
             vertex_count);
+        { // added to control the lifetime of the WriteLockClass object
+            DynamicVBAccessClass::WriteLockClass vertex_lock(&vertex_buffer);
+            VertexFormatXYZNDUV2 *vertex = vertex_lock.Get_Formatted_Vertex_Array();
 
-        DynamicVBAccessClass::WriteLockClass vertex_lock(&vertex_buffer);
-        VertexFormatXYZNDUV2 *vertex = vertex_lock.Get_Formatted_Vertex_Array();
+            Vector3 vtx;
+            Vector3 start_vtx;
+            Vector3 end_vtx;
 
-        Vector3 vtx;
-        Vector3 start_vtx;
-        Vector3 end_vtx;
+            float size = m_defaultSize;
+            Vector4 diffuse(m_defaultColor.X, m_defaultColor.Y, m_defaultColor.Z, m_defaultAlpha);
+            float u_coord = m_defaultUCoord;
+            Vector4 tail_diffuse(m_defaultTailDiffuse);
 
-        float size = m_defaultSize;
-        Vector4 diffuse(m_defaultColor.X, m_defaultColor.Y, m_defaultColor.Z, m_defaultAlpha);
-        float u_coord = m_defaultUCoord;
-        Vector4 tail_diffuse(m_defaultTailDiffuse);
+            for (unsigned int i = 0; i < m_lineCount; ++i) {
 
-        for (unsigned int i = 0; i < m_lineCount; ++i) {
+                unsigned int idx = i;
 
-            unsigned int idx = i;
-
-            if (m_altBuffer != nullptr) {
-                idx = m_altBuffer->Get_Element(i);
-            }
-
-            if (m_sizeBuffer != nullptr) {
-                size = m_sizeBuffer->Get_Element(idx);
-            }
-
-            if (m_diffuseBuffer != nullptr) {
-                diffuse = m_diffuseBuffer->Get_Element(idx);
-            }
-
-            if (m_UCoordsBuffer != nullptr) {
-                u_coord = m_UCoordsBuffer->Get_Element(idx);
-            }
-
-            if (m_tailDiffuseBuffer != nullptr) {
-                tail_diffuse = m_tailDiffuseBuffer->Get_Element(idx);
-            }
-
-            end_vtx.Set(m_endLoc->Get_Element(idx));
-            start_vtx.Set(m_startLoc->Get_Element(idx));
-
-            if (m_mode == TETRAHEDRON) {
-
-                vertex->x = end_vtx.X;
-                vertex->y = end_vtx.Y;
-                vertex->z = end_vtx.Z;
-                vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
-                vertex->u1 = u_coord;
-                vertex->v1 = 1.0;
-                ++vertex;
-
-                for (int k = 0; k < 3; ++k) {
-                    vtx.Set(start_vtx + (size * _offset[k]));
-                    vertex->x = vtx.X;
-                    vertex->y = vtx.Y;
-                    vertex->z = vtx.Z;
-                    vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
-                    vertex->u1 = u_coord;
-                    vertex->v1 = 0.0;
-                    ++vertex;
-                }
-            } else if (m_mode == PRISM) {
-
-                for (int k = 0; k < 3; ++k) {
-                    vtx.Set(start_vtx + (size * _offset[k]));
-                    vertex->x = vtx.X;
-                    vertex->y = vtx.Y;
-                    vertex->z = vtx.Z;
-                    vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
-                    vertex->u1 = u_coord;
-                    vertex->v1 = 0.0;
-                    ++vertex;
+                if (m_altBuffer != nullptr) {
+                    idx = m_altBuffer->Get_Element(i);
                 }
 
-                for (int k = 0; k < 3; ++k) {
-                    vtx.Set(end_vtx + (size * _offset[k]));
-                    vertex->x = vtx.X;
-                    vertex->y = vtx.Y;
-                    vertex->z = vtx.Z;
+                if (m_sizeBuffer != nullptr) {
+                    size = m_sizeBuffer->Get_Element(idx);
+                }
+
+                if (m_diffuseBuffer != nullptr) {
+                    diffuse = m_diffuseBuffer->Get_Element(idx);
+                }
+
+                if (m_UCoordsBuffer != nullptr) {
+                    u_coord = m_UCoordsBuffer->Get_Element(idx);
+                }
+
+                if (m_tailDiffuseBuffer != nullptr) {
+                    tail_diffuse = m_tailDiffuseBuffer->Get_Element(idx);
+                }
+
+                end_vtx.Set(m_endLoc->Get_Element(idx));
+                start_vtx.Set(m_startLoc->Get_Element(idx));
+
+                if (m_mode == TETRAHEDRON) {
+
+                    vertex->x = end_vtx.X;
+                    vertex->y = end_vtx.Y;
+                    vertex->z = end_vtx.Z;
                     vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
                     vertex->u1 = u_coord;
-                    vertex->v1 = 1.0;
+                    vertex->v1 = 1.0f;
                     ++vertex;
+
+                    for (int k = 0; k < 3; ++k) {
+                        vtx.Set(start_vtx + (size * _offset[k]));
+                        vertex->x = vtx.X;
+                        vertex->y = vtx.Y;
+                        vertex->z = vtx.Z;
+                        vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
+                        vertex->u1 = u_coord;
+                        vertex->v1 = 0.0f;
+                        ++vertex;
+                    }
+                } else if (m_mode == PRISM) {
+
+                    for (int k = 0; k < 3; ++k) {
+                        vtx.Set(start_vtx + (size * _offset[k]));
+                        vertex->x = vtx.X;
+                        vertex->y = vtx.Y;
+                        vertex->z = vtx.Z;
+                        vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
+                        vertex->u1 = u_coord;
+                        vertex->v1 = 0.0f;
+                        ++vertex;
+                    }
+
+                    for (int k = 0; k < 3; ++k) {
+                        vtx.Set(end_vtx + (size * _offset[k]));
+                        vertex->x = vtx.X;
+                        vertex->y = vtx.Y;
+                        vertex->z = vtx.Z;
+                        vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
+                        vertex->u1 = u_coord;
+                        vertex->v1 = 1.0f;
+                        ++vertex;
+                    }
+                } else {
+                    captainslog_assert(0);
                 }
-            } else {
-                captainslog_assert(0);
             }
         }
 
@@ -337,6 +341,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
 
         DX8Wrapper::Set_Transform(D3DTS_VIEW, old_view);
     }
+#endif
 }
 
 int LineGroupClass::Get_Polygon_Count() const

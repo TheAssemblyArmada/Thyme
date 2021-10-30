@@ -442,6 +442,18 @@ struct W3dHLodSubObjectStruct
     char Name[31];
 };
 
+// clang-format off
+#define W3D_BOX_ATTRIBUTE_ORIENTED                      0x00000001
+#define W3D_BOX_ATTRIBUTE_ALIGNED                       0x00000002
+#define W3D_BOX_ATTRIBUTE_COLLISION_TYPE_MASK           0x00000FF0
+#define W3D_BOX_ATTRIBUTE_COLLISION_TYPE_SHIFT          4
+#define W3D_BOX_ATTRIBTUE_COLLISION_TYPE_PHYSICAL       0x00000010
+#define W3D_BOX_ATTRIBTUE_COLLISION_TYPE_PROJECTILE     0x00000020
+#define W3D_BOX_ATTRIBTUE_COLLISION_TYPE_VIS            0x00000040
+#define W3D_BOX_ATTRIBTUE_COLLISION_TYPE_CAMERA         0x00000080
+#define W3D_BOX_ATTRIBTUE_COLLISION_TYPE_VEHICLE        0x00000100
+// clang-format on
+
 struct W3dBoxStruct
 {
     uint32_t Version;

@@ -17,15 +17,6 @@
 #include "proto.h"
 #include "w3d_file.h"
 
-class INIClass;
-
-class DazzleRenderObjClass
-{
-public:
-    static void Init_From_INI(const INIClass *ini);
-    static void Deinit();
-};
-
 class DazzleLoaderClass : public PrototypeLoaderClass
 {
 public:

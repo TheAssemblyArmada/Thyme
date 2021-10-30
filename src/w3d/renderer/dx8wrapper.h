@@ -202,6 +202,8 @@ public:
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
     static void Set_DX8_Material(const D3DMATERIAL8 *mat);
     static void Set_Ambient_Color(const Vector3 &color);
+    static bool Get_Fog_Enable() { return s_fogEnable; }
+    static D3DCOLOR Get_Fog_Color() { return s_fogColor; }
 #endif
     static void Set_World_Identity();
     static const char *Get_DX8_Texture_Address_Name(unsigned value);

@@ -15,10 +15,13 @@
  *            LICENSE
  */
 #include "shader.h"
+#include "dx8wrapper.h"
+#include "w3d.h"
 #include "w3d_file.h"
 #include "wwstring.h"
 #include <captainslog.h>
 
+class DX8Caps;
 // TODO these should be decoded into Shader_Const calls.
 ShaderClass ShaderClass::s_presetOpaqueShader(0x9441B);
 ShaderClass ShaderClass::s_presetAdditiveShader(0x94433);
@@ -415,6 +418,37 @@ void ShaderClass::Report_Unable_To_Fog(const char *source)
     captainslog_warn("Unable to fog shader in %s with given blending mode.");
 }
 
+#if BUILD_WITH_D3D8
+struct Blend
+{
+    D3DBLEND func;
+    bool useAlpha;
+};
+static Blend _srcBlendLUT[] = {
+    { D3DBLEND_ZERO, false },
+    { D3DBLEND_ONE, false },
+    { D3DBLEND_SRCALPHA, true },
+    { D3DBLEND_DESTCOLOR, true },
+};
+
+static Blend _dstBlendLUT[] = {
+    { D3DBLEND_ZERO, false },
+    { D3DBLEND_ONE, false },
+    { D3DBLEND_SRCCOLOR, false },
+    { D3DBLEND_INVSRCCOLOR, false },
+    { D3DBLEND_SRCALPHA, true },
+    { D3DBLEND_INVSRCALPHA, true },
+};
+#endif
+
+inline unsigned long F2DW(float f)
+{
+    return *((unsigned *)&f);
+}
+
+// temp
+bool log_shader_warnings = true;
+
 /**
  * Applies shader.
  *
@@ -422,8 +456,575 @@ void ShaderClass::Report_Unable_To_Fog(const char *source)
  */
 void ShaderClass::Apply()
 {
-    // TODO Needs DX8Wrapper, DX8Caps.
-#ifdef GAME_DLL
-    Call_Method<void, ShaderClass>(PICK_ADDRESS(0x00813590, 0x004E22D0), this);
+    // TODO this needs a lot of very careful incrimental cleanup
+#if BUILD_WITH_D3D8
+    // to simplify usage of as MS used defines for these..
+    // enum class D3DTEXARG
+    enum D3DTEXARG
+    {
+        D3DTEXARG_SELECTMASK = 15,
+        D3DTEXARG_DIFFUSE = 0,
+        D3DTEXARG_CURRENT = 1,
+        D3DTEXARG_TEXTURE = 2,
+        D3DTEXARG_TFACTOR = 3,
+        D3DTEXARG_SPECULAR = 4,
+        D3DTEXARG_TEMP = 5,
+        D3DTEXARG_COMPLEMENT = 16,
+        D3DTEXARG_ALPHAREPLICATE = 32,
+    };
+    // to simplify usage of as MS used defines for these..
+    // enum class D3DTEXTUREOPCAPS
+    enum D3DTEXTUREOPCAPS
+    {
+        D3DTEXTUREOPCAPS_DISABLE = 0x00000001L,
+        D3DTEXTUREOPCAPS_SELECTARG1 = 0x00000002L,
+        D3DTEXTUREOPCAPS_SELECTARG2 = 0x00000004L,
+        D3DTEXTUREOPCAPS_MODULATE = 0x00000008L,
+        D3DTEXTUREOPCAPS_MODULATE2X = 0x00000010L,
+        D3DTEXTUREOPCAPS_MODULATE4X = 0x00000020L,
+        D3DTEXTUREOPCAPS_ADD = 0x00000040L,
+        D3DTEXTUREOPCAPS_ADDSIGNED = 0x00000080L,
+        D3DTEXTUREOPCAPS_ADDSIGNED2X = 0x00000100L,
+        D3DTEXTUREOPCAPS_SUBTRACT = 0x00000200L,
+        D3DTEXTUREOPCAPS_ADDSMOOTH = 0x00000400L,
+        D3DTEXTUREOPCAPS_BLENDDIFFUSEALPHA = 0x00000800L,
+        D3DTEXTUREOPCAPS_BLENDTEXTUREALPHA = 0x00001000L,
+        D3DTEXTUREOPCAPS_BLENDFACTORALPHA = 0x00002000L,
+        D3DTEXTUREOPCAPS_BLENDTEXTUREALPHAPM = 0x00004000L,
+        D3DTEXTUREOPCAPS_BLENDCURRENTALPHA = 0x00008000L,
+        D3DTEXTUREOPCAPS_PREMODULATE = 0x00010000L,
+        D3DTEXTUREOPCAPS_MODULATEALPHA_ADDCOLOR = 0x00020000L,
+        D3DTEXTUREOPCAPS_MODULATECOLOR_ADDALPHA = 0x00040000L,
+        D3DTEXTUREOPCAPS_MODULATEINVALPHA_ADDCOLOR = 0x00080000L,
+        D3DTEXTUREOPCAPS_MODULATEINVCOLOR_ADDALPHA = 0x00100000L,
+        D3DTEXTUREOPCAPS_BUMPENVMAP = 0x00200000L,
+        D3DTEXTUREOPCAPS_BUMPENVMAPLUMINANCE = 0x00400000L,
+        D3DTEXTUREOPCAPS_DOTPRODUCT3 = 0x00800000L,
+        D3DTEXTUREOPCAPS_MULTIPLYADD = 0x01000000L,
+        D3DTEXTUREOPCAPS_LERP = 0x02000000L,
+    };
+
+    const DX8Caps *caps = DX8Wrapper::Get_Current_Caps();
+
+    unsigned int texture_op_caps = caps->Get_Filter_Caps();
+
+    unsigned int shader_bits_1;
+    unsigned int shader_bits_2;
+
+    if (s_shaderDirty) {
+        shader_bits_1 = 0xFFFFFFFF;
+        shader_bits_2 = 0xFFFFFFFF;
+    } else {
+        shader_bits_1 = s_currentShader ^ m_shaderBits;
+        shader_bits_2 = s_currentShader ^ m_shaderBits;
+        if (shader_bits_2 == 0) {
+            return;
+        }
+    }
+
+    s_currentShader = m_shaderBits;
+
+    s_shaderDirty = false;
+
+    if (shader_bits_1 & 0x4C0F0) {
+
+        int src_blend;
+        int dst_blend;
+
+        if ((m_shaderBits & 0x10) == 0x10) {
+            src_blend = _srcBlendLUT[Get_Src_Blend_Func()].func;
+            dst_blend = _dstBlendLUT[Get_Dst_Blend_Func()].func;
+        } else {
+            src_blend = 1;
+            dst_blend = 2;
+        }
+
+        BOOL alpha_blend = FALSE;
+
+        if (src_blend != 2 || dst_blend != 1) {
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, src_blend);
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLEND, dst_blend);
+            alpha_blend = 1;
+        }
+
+        DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, alpha_blend);
+
+        BOOL alpha_test = FALSE;
+
+        if ((m_shaderBits & 0x40000) == 0x40000) {
+
+            if (src_blend == 6) {
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHAREF, 0x9F);
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHAFUNC, 4);
+            } else {
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHAREF, 0x60);
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHAFUNC, 7);
+            }
+            alpha_test = 1;
+        }
+
+        DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHATESTENABLE, alpha_test);
+        shader_bits_2 &= 0xFFFB3F0F;
+
+        if (!shader_bits_2) {
+            return;
+        }
+    }
+
+    if (!(shader_bits_2 & 0x300)) {
+        goto LABEL_37;
+    }
+
+    if (caps->Supports_Fog() && DX8Wrapper::Get_Fog_Enable()) {
+
+        D3DCOLOR fog_color = DX8Wrapper::Get_Fog_Color();
+        unsigned int fog = 0;
+
+        switch ((m_shaderBits >> 8) & 3) {
+            case 0u:
+                fog = 0;
+                break;
+            case 1u:
+                fog = 1;
+                break;
+            case 2u:
+                fog_color = 0;
+                fog = 1;
+                break;
+            case 3u:
+                fog_color = 0xFFFFFF;
+                fog = 1;
+                break;
+            default:
+                break;
+        }
+        DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE, fog);
+
+        if (fog) {
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGCOLOR, fog_color);
+        }
+
+    } else {
+        DX8Wrapper::Set_DX8_Render_State(D3DRS_FOGENABLE, 0);
+    }
+
+    shader_bits_2 &= 0xFFFFFCFF;
+
+    if (shader_bits_2) {
+    LABEL_37:
+        int color_op_1 = 2;
+        int color_op_1_arg_1 = 0;
+        int color_op_1_arg_2 = 0;
+        int color_op_1_alpha_op = 2;
+        int color_op_1_alpha_op_arg_1 = 0;
+        int color_op_1_alpha_op_arg_2 = 0;
+        int color_op_2 = 1;
+        int color_op_2_arg_1 = 2;
+        int color_op_2_arg_2 = 1;
+        int color_op_2_alpha_op = 1;
+        int color_op_2_alpha_op_arg_1 = 2;
+        int color_op_2_alpha_op_arg_2 = 1;
+
+        if (caps->Get_Vendor_Number() != 7) {
+            goto LABEL_182;
+        }
+
+        bool set_something = true;
+
+        if (caps->Get_Device_Number() != 2) {
+        LABEL_182:
+            set_something = false;
+        }
+
+        unsigned int shader_bits_4 = 0x11C00;
+        unsigned int shader_bits_5 = 0x7F10000;
+
+        if (set_something) {
+            shader_bits_4 = 0x7F11C00;
+            shader_bits_5 = 0x7F11C00;
+        }
+
+        unsigned int shader_bits_6 = shader_bits_2 & shader_bits_4;
+
+        int tex_op_flags;
+
+        if (shader_bits_2 & shader_bits_4) {
+
+            unsigned int shader_bits_7 = m_shaderBits;
+
+            if ((m_shaderBits & 0x10000) == 0x10000) {
+
+                switch ((shader_bits_7 >> 0xA) & 7) {
+                    case 0u:
+                        color_op_1 = 2;
+                        color_op_1_arg_1 = 2;
+                        color_op_1_arg_2 = 1;
+                        color_op_1_alpha_op = 2;
+                        goto LABEL_66;
+                    case 2u:
+                        tex_op_flags = (texture_op_caps & 0x40) != 0 ? 3 : 0;
+                        goto LABEL_53;
+                    case 3u:
+                        if (!(texture_op_caps & 0x200000)) {
+                            goto LABEL_57;
+                        }
+
+                        color_op_1 = 0x16;
+                        color_op_1_arg_1 = 2;
+                        color_op_1_arg_2 = 0;
+                        break;
+                    case 4u:
+                        if (!(texture_op_caps & 0x400000)) {
+                        LABEL_57:
+                            color_op_1 = 2;
+                            color_op_1_arg_1 = 0;
+                            color_op_1_arg_2 = 0;
+                            color_op_1_alpha_op = 2;
+                            color_op_1_alpha_op_arg_1 = 0;
+                            color_op_1_alpha_op_arg_2 = 0;
+                            goto LABEL_67;
+                        }
+                        color_op_1 = 0x17;
+                        color_op_1_arg_1 = 2;
+                        color_op_1_arg_2 = 0;
+                        break;
+                    case 5u:
+                        tex_op_flags = (texture_op_caps & 5) != 0;
+                    LABEL_53:
+                        color_op_1 = tex_op_flags + 4;
+                        goto LABEL_54;
+                    default:
+                        color_op_1 = 4;
+                    LABEL_54:
+                        color_op_1_arg_1 = 2;
+                        color_op_1_arg_2 = 0;
+                        color_op_1_alpha_op = 4;
+                        color_op_1_alpha_op_arg_1 = 2;
+                        color_op_1_alpha_op_arg_2 = 0;
+                        goto LABEL_67;
+                }
+
+            } else {
+
+                if ((shader_bits_7 >> 0xA) & 7) {
+                    color_op_1 = 3;
+                    color_op_1_arg_1 = 2;
+                    color_op_1_arg_2 = 0;
+                    color_op_1_alpha_op = 3;
+                    color_op_1_alpha_op_arg_1 = 2;
+                    color_op_1_alpha_op_arg_2 = 0;
+                    goto LABEL_67;
+                }
+
+                color_op_1 = 1;
+                color_op_1_arg_1 = 2;
+                color_op_1_arg_2 = 1;
+            }
+            color_op_1_alpha_op = 1;
+        LABEL_66:
+            color_op_1_alpha_op_arg_1 = 2;
+            color_op_1_alpha_op_arg_2 = 1;
+        }
+    LABEL_67:
+
+        if (shader_bits_2 & shader_bits_5) {
+
+            if ((m_shaderBits & 0x10000) == 0x10000) {
+
+                switch ((m_shaderBits >> 0x14) & 0xF) {
+                    case 1u:
+                        if (texture_op_caps & 2) {
+                            color_op_2 = 2;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: SELECTARG1\n");
+                        }
+                        break;
+                    case 2u:
+                        if (texture_op_caps & 8) {
+                            goto LABEL_115;
+                        }
+                        if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: MODULATE\n");
+                        }
+                        break;
+                    case 3u:
+                        if (texture_op_caps & 0x400) {
+                            color_op_2 = 0xB;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else {
+                            if (texture_op_caps & 0x40) {
+                                goto LABEL_109;
+                            }
+                            if (log_shader_warnings) {
+                                captainslog_warn("Warning: Using unsupported texture op: ADDSMOOTH\n");
+                            }
+                        }
+                        break;
+                    case 4u:
+                        if (texture_op_caps & 0x40) {
+                            goto LABEL_109;
+                        }
+                        if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: ADD\n");
+                        }
+                        break;
+                    case 5u:
+                        if (!(texture_op_caps & 0x200)) {
+                            goto LABEL_89;
+                        }
+                        color_op_2 = 0xA;
+                        color_op_2_arg_1 = 2;
+                        color_op_2_arg_2 = 1;
+                        break;
+                    case 6u:
+                        if (texture_op_caps & 0x200) {
+                            color_op_2 = 0xA;
+                            color_op_2_arg_1 = 1;
+                            color_op_2_arg_2 = 2;
+                        } else {
+                        LABEL_89:
+                            if (log_shader_warnings) {
+                                captainslog_warn("Warning: Using unsupported texture op: SUBTRACT\n");
+                            }
+                        }
+                        break;
+                    case 7u:
+                        if (texture_op_caps & 0x1000) {
+                            color_op_2 = 0xD;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: BLENDTEXTUREALPHA\n");
+                        }
+                        break;
+                    case 8u:
+                        if ((texture_op_caps & 0x8000) != 0) {
+                            color_op_2 = 0x10;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: BLENDCURRENTALPHA\n");
+                        }
+                        break;
+                    case 9u:
+                        if ((texture_op_caps & 0x80u) != 0) {
+                            color_op_2 = 8;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else {
+                            if (texture_op_caps & 0x40) {
+                                goto LABEL_109;
+                            }
+                            if (log_shader_warnings) {
+                                captainslog_warn("Warning: Using unsupported texture op: ADDSIGNED\n");
+                            }
+                        }
+                        break;
+                    case 10u:
+                        if (texture_op_caps & 0x100) {
+                            color_op_2 = 9;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if ((texture_op_caps & 0x80u) != 0) {
+                            color_op_2 = 8;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (texture_op_caps & 0x40) {
+                        LABEL_109:
+                            color_op_2 = 7;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: ADDSIGNED2X\n");
+                        }
+                        break;
+                    case 11u:
+                        if (texture_op_caps & 0x10) {
+                            color_op_2 = 5;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (texture_op_caps & 8) {
+                        LABEL_115:
+                            color_op_2 = 4;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: MODULATE2X\n");
+                        }
+                        break;
+                    case 12u:
+                        if (caps->Supports_Mod_Alpha_Add_Color()) {
+                            color_op_2 = 0x12;
+                            color_op_2_arg_1 = 1;
+                            color_op_2_arg_2 = 2;
+                        } else if (texture_op_caps & 0x40) {
+                            color_op_2 = 7;
+                            color_op_2_arg_1 = 2;
+                            color_op_2_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: MODULATEALPHA_ADDCOLOR\n");
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                switch ((m_shaderBits >> 0x18) & 7) {
+                    case 1u:
+                        if (texture_op_caps & 2) {
+                            color_op_2_alpha_op = 2;
+                            color_op_2_alpha_op_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: SELECTARG1\n");
+                        }
+                        break;
+                    case 2u:
+                        if (texture_op_caps & 8) {
+                            color_op_2_alpha_op = 4;
+                            color_op_2_alpha_op_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: MODULATE\n");
+                        }
+                        break;
+                    case 3u:
+                        if (texture_op_caps & 0x400) {
+                            color_op_2_alpha_op = 0xB;
+                            color_op_2_alpha_op_arg_2 = 1;
+                        } else if (log_shader_warnings) {
+                            captainslog_warn("Warning: Using unsupported texture op: ADDSMOOTH\n");
+                        }
+                        break;
+                }
+
+                if (color_op_2 == 1) {
+
+                    if (color_op_2_alpha_op != 1) {
+                        color_op_2 = 3;
+                        color_op_2_arg_2 = 1;
+                    }
+                } else if (color_op_2_alpha_op == 1) {
+                    color_op_2_alpha_op = 3;
+                    color_op_2_alpha_op_arg_2 = 1;
+                }
+            }
+        }
+
+        bool set_something_2 = false;
+        if (!shader_bits_6) {
+            goto LABEL_163;
+        }
+
+        if (set_something && !color_op_1_arg_2 && (color_op_2_alpha_op != 1 || color_op_2 != 1)) {
+
+            int color_arg_common = 1;
+
+            if ((m_shaderBits & 0x10000) == 0x10000) {
+                color_arg_common = 2;
+            }
+
+            if (color_op_1 != 2 || color_op_1_arg_1) {
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, 2);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, color_arg_common);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, 2);
+                DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAARG1, color_arg_common);
+                DX8CALL(SetTextureStageState(2, D3DTSS_COLOROP, color_op_1));
+                DX8CALL(SetTextureStageState(2, D3DTSS_COLORARG1, 1));
+                DX8CALL(SetTextureStageState(2, D3DTSS_COLORARG2, 0));
+                DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAOP, color_op_1_alpha_op));
+                DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAARG1, 1));
+                DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAARG2, 0));
+                DX8CALL(SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 0));
+                DX8CALL(SetTexture(2u, nullptr));
+                set_something_2 = false;
+                s_shaderDirty = true;
+            LABEL_162:
+                shader_bits_2 &= 0xFFFFE3FF;
+
+            LABEL_163:
+
+                if (shader_bits_2 & shader_bits_5) {
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLOROP, color_op_2);
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG1, color_op_2_arg_1);
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_COLORARG2, color_op_2_arg_2);
+
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAOP, color_op_2_alpha_op);
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAARG1, color_op_2_alpha_op_arg_1);
+                    DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAARG2, color_op_2_alpha_op_arg_2);
+
+                    shader_bits_2 &= 0xF80EFFFF;
+                }
+
+                if (set_something) {
+                    if (set_something_2) {
+                        if (color_op_2 != 1 && color_op_2_alpha_op != 1) {
+                            DX8CALL(SetTextureStageState(2, D3DTSS_COLOROP, 2));
+                            DX8CALL(SetTextureStageState(2, D3DTSS_COLORARG1, 1));
+                            DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAOP, 2));
+                            DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAARG1, 1));
+                        } else {
+                            DX8CALL(SetTextureStageState(2, D3DTSS_COLOROP, 1));
+                            DX8CALL(SetTextureStageState(2, D3DTSS_ALPHAOP, 1));
+                        }
+
+                        DX8CALL(SetTextureStageState(2, D3DTSS_TEXCOORDINDEX, 0));
+                        DX8CALL(SetTexture(2u, 0));
+                    }
+                }
+
+                if (!shader_bits_2) {
+                    return;
+                }
+
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_SPECULARENABLE, (m_shaderBits >> 0xD) & 1);
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ZFUNC, (m_shaderBits & 7) + 1);
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ZWRITEENABLE, (m_shaderBits >> 3) & 1);
+
+                int cull_mode = s_polygonCullMode;
+
+                if (!(m_shaderBits & 0x80000)) {
+                    cull_mode = 1;
+                }
+
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_CULLMODE, cull_mode);
+
+                // NPatches are not supported on modern systems
+#if 0
+                if (shader_bits_2 & 0x20000) {
+                    float level = 1.0;
+                    if (m_shaderBits & 0x20000) {
+                        level = (double)WW3D::NPatchesLevel;
+                    }
+                    DX8Wrapper::Set_DX8_Render_State(D3DRS_PATCHSEGMENTS, F2DW(level));
+                }
+#endif
+
+                DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHATESTENABLE, (m_shaderBits >> 0x12) & 1);
+                return;
+            }
+            captainslog_warn("Wasted Stage 0 in shader-vertex diffuse only");
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, 1);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, 1);
+
+            if (color_op_2_arg_2 == 1) {
+                color_op_2_arg_2 = 0;
+            }
+
+            color_op_2_alpha_op_arg_2 = 0;
+
+        } else {
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLOROP, color_op_1);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG1, color_op_1_arg_1);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_COLORARG2, color_op_1_arg_2);
+
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, color_op_1_alpha_op);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAARG1, color_op_1_alpha_op_arg_1);
+            DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAARG2, color_op_1_alpha_op_arg_2);
+        }
+        set_something_2 = true;
+        goto LABEL_162;
+    }
 #endif
 }

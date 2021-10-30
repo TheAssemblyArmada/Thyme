@@ -66,12 +66,17 @@ public:
     bool Support_Gamma() const { return m_supportGamma; }
     bool Support_Bump_Envmap() const { return m_supportBumpEnvmap; }
     bool Support_Bump_Envmap_Luminance() const { return m_supportBumpEnvmapLuminance; }
+    bool Supports_Fog() const { return m_supportFog; }
+    bool Supports_Mod_Alpha_Add_Color() const { return m_supportsModulateAlphaAddColor; }
+    int Get_Device_Number() const { return m_deviceNumber; }
+    int Get_Vendor_Number() const { return m_vendorNumber; }
 
 #ifdef BUILD_WITH_D3D8
     unsigned Get_Max_Tex_Width() const { return m_caps.MaxTextureWidth; }
     unsigned Get_Max_Tex_Height() const { return m_caps.MaxTextureHeight; }
     unsigned Get_Max_Vol_Extent() const { return m_caps.MaxVolumeExtent; }
     unsigned Get_Filter_Caps() const { return m_caps.TextureFilterCaps; }
+    unsigned Get_Op_Caps() const { return m_caps.TextureOpCaps; }
 #else
     unsigned Get_Max_Tex_Width() const { return 1024; }
     unsigned Get_Max_Tex_Height() const { return 1024; }

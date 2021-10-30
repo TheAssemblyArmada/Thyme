@@ -13,29 +13,10 @@
  *            LICENSE
  */
 #include "dazzle.h"
-#ifdef GAME_DLL
-#include "hooker.h"
-#endif
-
-void DazzleRenderObjClass::Init_From_INI(const INIClass *ini)
-{
-#ifdef GAME_DLL
-    Call_Function<const INIClass *>(0x0084CB10, ini);
-#endif
-}
-
-void DazzleRenderObjClass::Deinit()
-{
-#ifdef GAME_DLL
-    Call_Function<const INIClass *>(0x0084D900);
-#endif
-}
+#include "captainslog.h"
 
 PrototypeClass *DazzleLoaderClass::Load_W3D(ChunkLoadClass &cload)
 {
-#ifdef GAME_DLL
-    return Call_Method<PrototypeClass *, DazzleLoaderClass, ChunkLoadClass &>(0x0084F0A0, this, cload);
-#else
+    captainslog_assert("Dazzle not suported");
     return nullptr;
-#endif
 }

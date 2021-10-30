@@ -29,6 +29,8 @@ protected:
     Vector3 m_objSpaceCenter;
     Vector3 m_objSpaceExtent;
     float m_opacity;
+    static bool s_isInitted;
+    static int s_displayMask;
 
 public:
     static void Init();
@@ -41,10 +43,10 @@ public:
 
     BoxRenderObjClass &operator=(const BoxRenderObjClass &that);
 
-    virtual ~BoxRenderObjClass() override;
-    virtual const char *Get_Name() const override;
+    virtual ~BoxRenderObjClass() override {}
+    virtual const char *Get_Name() const override { return m_name; }
     virtual void Set_Name(const char *name) override;
-    virtual int Get_Num_Polys() const override;
+    virtual int Get_Num_Polys() const override { return 12; }
     virtual void Update_Cached_Box() = 0;
 
     void Set_Color(const Vector3 &color);
@@ -78,7 +80,7 @@ public:
 
     OBBoxRenderObjClass &operator=(const OBBoxRenderObjClass &that);
 
-    virtual ~OBBoxRenderObjClass() override;
+    virtual ~OBBoxRenderObjClass() override {}
     virtual RenderObjClass *Clone() const override;
     virtual int Class_ID() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
@@ -117,7 +119,7 @@ public:
 
     AABoxRenderObjClass &operator=(const AABoxRenderObjClass &that);
 
-    virtual ~AABoxRenderObjClass() override;
+    virtual ~AABoxRenderObjClass() override {}
     virtual RenderObjClass *Clone() const override;
     virtual int Class_ID() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
@@ -139,6 +141,35 @@ public:
         Update_Cached_Box();
         return m_cachedBox;
     }
+};
+
+class BoxPrototypeClass : public PrototypeClass
+{
+public:
+    W3dBoxStruct box;
+    BoxPrototypeClass(W3dBoxStruct &src) { box = src; }
+    virtual ~BoxPrototypeClass() override {}
+    virtual const char *Get_Name() const override { return box.Name; }
+
+    virtual int Get_Class_ID() const override
+    {
+        if (box.Attributes & W3D_BOX_ATTRIBUTE_ORIENTED) {
+            return RenderObjClass::CLASSID_OBBOX;
+        } else {
+            return RenderObjClass::CLASSID_AABOX;
+        }
+    }
+
+    virtual RenderObjClass *Create() override
+    {
+        if (box.Attributes & W3D_BOX_ATTRIBUTE_ORIENTED) {
+            return new OBBoxRenderObjClass(box);
+        } else {
+            return new AABoxRenderObjClass(box);
+        }
+    }
+
+    virtual void Delete_Self() override { delete this; };
 };
 
 class BoxLoaderClass : public PrototypeLoaderClass

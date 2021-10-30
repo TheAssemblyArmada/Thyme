@@ -17,7 +17,6 @@
 #include "assetmgr.h"
 #include "boxrobj.h"
 #include "camera.h"
-#include "dazzle.h"
 #include "dx8indexbuffer.h"
 #include "dx8renderer.h"
 #include "dx8texman.h"
@@ -192,16 +191,6 @@ W3DErrorType W3D::Init(void *hwnd, char *defaultpal, bool lite)
     MMRESULT r = timeBeginPeriod(1);
     captainslog_assert(r == TIMERR_NOERROR);
 
-    if (!lite) {
-        FileClass *file = g_theFileFactory->Get_File("DAZZLE.INI");
-
-        if (file) {
-            INIClass ini(*file);
-            DazzleRenderObjClass::Init_From_INI(&ini);
-            g_theFileFactory->Return_File(file);
-        }
-    }
-
     s_defaultStaticSortLists = new DefaultStaticSortListClass();
     Reset_Current_Static_Sort_Lists_To_Default();
 
@@ -221,10 +210,6 @@ W3DErrorType W3D::Shutdown()
     MMRESULT r = timeEndPeriod(1);
     captainslog_assert(r == TIMERR_NOERROR);
     PredictiveLODOptimizerClass::Free();
-
-    if (!s_lite) {
-        DazzleRenderObjClass::Deinit();
-    }
 
     if (W3DAssetManager::Get_Instance()) {
         W3DAssetManager::Get_Instance()->Free_Assets();

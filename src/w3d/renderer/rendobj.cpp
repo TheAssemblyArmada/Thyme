@@ -458,7 +458,12 @@ void RenderObjClass::Add_Dependencies_To_List(DynamicVectorClass<StringClass> &f
 #ifdef GAME_DLL
 const PersistFactoryClass &RenderObjClass::Get_Factory() const
 {
-    return Call_Method<PersistFactoryClass &, const RenderObjClass>(PICK_ADDRESS(0x0081C700, 0x004DFBD0), this);
+    // return _RenderObjFactory;
+    captainslog_dbgassert(false, "Unimplemented code called!");
+
+    // temp
+    static class PersistFactoryClass *p;
+    return *p;
 }
 #endif
 

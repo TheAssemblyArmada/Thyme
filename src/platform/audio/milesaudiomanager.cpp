@@ -1252,6 +1252,7 @@ void MilesAudioManager::Process_Playing_List()
                 if (current_pos != nullptr) {
                     if ((*it)->miles.audio_event->Get_Event_Type() == EVENT_UNKVAL3) {
                         Stop_Audio_Event((*it)->miles.audio_event->Get_Playing_Handle());
+                        ++it;
                     } else {
                         float sample_vol = Get_Effective_Volume((*it)->miles.audio_event);
                         // Is this conditional check incorrect? Original does this but makes no sense.

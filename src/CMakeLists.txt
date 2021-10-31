@@ -45,6 +45,7 @@ set(GAMEENGINE_INCLUDES
 set(HOOKER_SRC
     hooker/dllmain.cpp
     hooker/hooker.cpp
+    hooker/mapview.cpp
     hooker/setupglobals_zh.cpp
 )
 

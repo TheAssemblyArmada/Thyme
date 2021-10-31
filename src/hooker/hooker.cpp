@@ -22,19 +22,39 @@
  */
 
 #include "hooker.h"
+#include "captainslog.h"
+#include "mapview.h"
 
-static const int nBinarySize = 0x0062F000;  //Size of game binary
+DWORD OldProtect = 0;
 
-//HANDLE hProcess = GetCurrentProcess();
-DWORD OldProtect;
-
-void StartHooking()
+bool StartHooking()
 {
-	VirtualProtectEx(GetCurrentProcess(), (LPVOID)0x00401000, nBinarySize, PAGE_EXECUTE_READWRITE, &OldProtect);
+    bool success = false;
+    ImageSectionInfo info;
+
+    if (GetModuleSectionInfo(info)) {
+        HANDLE process = GetCurrentProcess();
+        success =
+            VirtualProtectEx(process, (LPVOID)info.BaseOfCode, (SIZE_T)info.SizeOfCode, PAGE_EXECUTE_READWRITE, &OldProtect)
+            != FALSE;
+    }
+
+    captainslog_dbgassert(success, "Unable to lift code page protection");
+    return success;
 }
 
-void StopHooking()
+bool StopHooking()
 {
-	DWORD OldProtect2;
-    VirtualProtectEx(GetCurrentProcess(), (LPVOID)0x00401000, nBinarySize, OldProtect, &OldProtect2);
+    bool success = false;
+    DWORD OldProtect2;
+    ImageSectionInfo info;
+
+    if (GetModuleSectionInfo(info)) {
+        HANDLE process = GetCurrentProcess();
+        success =
+            VirtualProtectEx(process, (LPVOID)info.BaseOfCode, (SIZE_T)info.SizeOfCode, OldProtect, &OldProtect2) != FALSE;
+    }
+
+    captainslog_dbgassert(success, "Unable to restore code page protection");
+    return success;
 }

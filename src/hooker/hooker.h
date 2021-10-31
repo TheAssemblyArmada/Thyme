@@ -179,8 +179,8 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
       __asm call Hook_Func     \
       __asm add esp, 8 }
 
-__declspec(dllexport) void StartHooking();
-__declspec(dllexport) void StopHooking();
+__declspec(dllexport) bool StartHooking();
+__declspec(dllexport) bool StopHooking();
 
 #define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
 #define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);

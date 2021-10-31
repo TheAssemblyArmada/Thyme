@@ -1861,7 +1861,6 @@ void MilesAudioManager::Stop_Audio_Event(uintptr_t handle)
                 }
 
                 m_streamList.erase(it);
-
                 break;
             }
         }
@@ -1872,18 +1871,21 @@ void MilesAudioManager::Stop_Audio_Event(uintptr_t handle)
             (*it)->miles.disable_loops = true;
             // Looks like it passes the miles stream pointer as a handle... not sure though.
             Notify_Of_Audio_Completion((uintptr_t)(*it)->miles.stream, 2);
+            break;
         }
     }
 
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
         if (*it != nullptr && (*it)->miles.audio_event->Get_Playing_Handle() == handle) {
             (*it)->miles.disable_loops = true;
+            break;
         }
     }
 
     for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
         if (*it != nullptr && (*it)->miles.audio_event->Get_Playing_Handle() == handle) {
             (*it)->miles.disable_loops = true;
+            break;
         }
     }
 }

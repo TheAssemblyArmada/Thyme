@@ -279,7 +279,7 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
     read_info.num_lists = 0;
 
     if (input.Parse(&read_info)) {
-        captainslog_dbgassert(read_info.num_lists < 16, "Read too many, overrun buffer.");
+        captainslog_dbgassert(read_info.num_lists <= MAX_LIST_COUNT, "Read too many, overrun buffer.");
         s_numInReadList = read_info.num_lists;
 
         if (s_numInReadList > 0) {

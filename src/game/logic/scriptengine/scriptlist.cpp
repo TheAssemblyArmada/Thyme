@@ -18,7 +18,7 @@
 #include "xfer.h"
 #include <captainslog.h>
 
-ScriptList *ScriptList::s_readLists[16];
+ScriptList *ScriptList::s_readLists[MAX_LIST_COUNT];
 int ScriptList::s_numInReadList = 0;
 ScriptGroup *ScriptList::s_emptyGroup = nullptr;
 
@@ -243,19 +243,27 @@ int ScriptList::Get_Read_Scripts(ScriptList **scripts)
  */
 bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data)
 {
-    captainslog_dbgassert(
-        static_cast<ScriptListReadInfo *>(data)->num_lists < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
     ScriptListReadInfo *read_info = static_cast<ScriptListReadInfo *>(data);
 
-    if (read_info->num_lists >= MAX_LIST_COUNT) {
+    // If possible, use current list size as insertion index for new element.
+    const int list_index = read_info->num_lists;
+
+    captainslog_dbgassert(list_index < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
+
+    if (list_index >= MAX_LIST_COUNT) {
         return false;
     }
 
-    read_info->read_lists[read_info->num_lists++] = NEW_POOL_OBJ(ScriptList);
+    // Add new element to the array at index.
+    read_info->read_lists[list_index] = NEW_POOL_OBJ(ScriptList);
+
+    // Increment used list size accordingly.
+    ++read_info->num_lists;
+
     input.Register_Parser("Script", info->label, Script::Parse_Script_From_List_Chunk, nullptr);
     input.Register_Parser("ScriptGroup", info->label, ScriptGroup::Parse_Group_Chunk, nullptr);
 
-    return input.Parse(read_info->read_lists[read_info->num_lists - 1]);
+    return input.Parse(read_info->read_lists[list_index]);
 }
 
 /**

@@ -68,8 +68,11 @@ bool GetModuleSectionInfo(ImageSectionInfo &info)
         PIMAGE_OPTIONAL_HEADER optionalHeader = mapView.GetOptionalHeader();
 
         if (optionalHeader != NULL) {
-            info.BaseOfCode = optionalHeader->ImageBase + optionalHeader->BaseOfCode;
-            info.SizeOfCode = optionalHeader->SizeOfCode;
+            info.BaseOfCode = LPVOID(optionalHeader->ImageBase + optionalHeader->BaseOfCode);
+            info.BaseOfData = LPVOID(optionalHeader->BaseOfData);
+            info.SizeOfCode = SIZE_T(optionalHeader->SizeOfCode);
+            info.SizeOfData = SIZE_T(optionalHeader->SizeOfInitializedData + optionalHeader->SizeOfUninitializedData);
+
             return true;
         }
     }

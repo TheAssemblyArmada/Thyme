@@ -41,8 +41,10 @@ private:
 
 struct ImageSectionInfo
 {
-    DWORD BaseOfCode;
-    DWORD SizeOfCode;
+    LPVOID BaseOfCode;
+    LPVOID BaseOfData;
+    SIZE_T SizeOfCode;
+    SIZE_T SizeOfData;
 };
 
 bool GetModuleSectionInfo(ImageSectionInfo &info);

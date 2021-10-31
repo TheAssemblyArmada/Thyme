@@ -25,7 +25,8 @@
 #include "captainslog.h"
 #include "mapview.h"
 
-DWORD OldProtect = 0;
+DWORD s_oldProtect1 = 0;
+DWORD s_oldProtect2 = 0;
 
 bool StartHooking()
 {
@@ -33,10 +34,12 @@ bool StartHooking()
     ImageSectionInfo info;
 
     if (GetModuleSectionInfo(info)) {
+        success = true;
         HANDLE process = GetCurrentProcess();
-        success =
-            VirtualProtectEx(process, (LPVOID)info.BaseOfCode, (SIZE_T)info.SizeOfCode, PAGE_EXECUTE_READWRITE, &OldProtect)
-            != FALSE;
+        if (VirtualProtectEx(process, info.BaseOfCode, info.SizeOfCode, PAGE_EXECUTE_READWRITE, &s_oldProtect1) == FALSE)
+            success = false;
+        if (VirtualProtectEx(process, info.BaseOfData, info.SizeOfData, PAGE_EXECUTE_READWRITE, &s_oldProtect2) == FALSE)
+            success = false;
     }
 
     captainslog_dbgassert(success, "Unable to lift code page protection");
@@ -46,13 +49,16 @@ bool StartHooking()
 bool StopHooking()
 {
     bool success = false;
-    DWORD OldProtect2;
+    DWORD old_protect;
     ImageSectionInfo info;
 
     if (GetModuleSectionInfo(info)) {
+        success = true;
         HANDLE process = GetCurrentProcess();
-        success =
-            VirtualProtectEx(process, (LPVOID)info.BaseOfCode, (SIZE_T)info.SizeOfCode, OldProtect, &OldProtect2) != FALSE;
+        if (VirtualProtectEx(process, info.BaseOfCode, info.SizeOfCode, s_oldProtect1, &old_protect) == FALSE)
+            success = false;
+        if (VirtualProtectEx(process, info.BaseOfData, info.SizeOfData, s_oldProtect2, &old_protect) == FALSE)
+            success = false;
     }
 
     captainslog_dbgassert(success, "Unable to restore code page protection");

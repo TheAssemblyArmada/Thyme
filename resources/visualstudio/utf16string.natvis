@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="Utf16String">
-    <DisplayString Condition="m_data != nullptr">UTF16: {reinterpret_cast&lt;unichar_t *&gt;( &amp; m_data[1] ),su}</DisplayString>
-    <DisplayString Condition="m_data == nullptr">""</DisplayString>
-    <Expand>
-      <Item Name="[str]" Condition="m_data != nullptr">reinterpret_cast&lt;unichar_t *&gt;( &amp; m_data[1] )</Item>
-      <Item Name="[ref_count]" Condition="m_data != nullptr">m_data->ref_count</Item>
-      <Item Name="[num_chars_allocated]" Condition="m_data != nullptr">m_data->num_chars_allocated</Item>
-    </Expand>
-  </Type>
+    <Type Name="Utf16String">
+        <DisplayString Condition="m_data != nullptr">UTF16: {(const unichar_t *)(&amp; m_data[1]),su}</DisplayString>
+        <DisplayString Condition="m_data == nullptr">""</DisplayString>
+        <Expand>
+            <Item Name="[data]" Optional="true" Condition="m_data != nullptr">m_data</Item>
+            <Item Name="[str]" Optional="true" Condition="m_data != nullptr">(const unichar_t *)(&amp; m_data[1])</Item>
+        </Expand>
+    </Type>
 </AutoVisualizer>

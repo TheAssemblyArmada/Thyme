@@ -255,6 +255,7 @@ set(GAMEENGINE_SRC
     w3d/math/colmathobbobb.cpp
     w3d/math/colmathobbtri.cpp
     w3d/math/colmathplane.cpp
+    w3d/math/cullsys.cpp
     w3d/math/frustum.cpp
     w3d/math/gamemath.cpp
     w3d/math/lineseg.cpp
@@ -299,6 +300,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/matinfo.cpp
     w3d/renderer/mapper.cpp
     w3d/renderer/matpass.cpp
+    w3d/renderer/matrixmapper.cpp
     w3d/renderer/mesh.cpp
     w3d/renderer/meshgeometry.cpp
     w3d/renderer/meshmatdesc.cpp
@@ -311,6 +313,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
     w3d/renderer/predlod.cpp
+    w3d/renderer/projector.cpp
     w3d/renderer/render2d.cpp
     w3d/renderer/render2dsentence.cpp
     w3d/renderer/rendobj.cpp
@@ -322,6 +325,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/sortingrenderer.cpp
     w3d/renderer/surfaceclass.cpp
     w3d/renderer/synctextureloadtasklist.cpp
+    w3d/renderer/texproject.cpp
     w3d/renderer/texture.cpp
     w3d/renderer/texturebase.cpp
     w3d/renderer/textureloader.cpp

@@ -20,6 +20,7 @@ class MaterialPassClass;
 class LightEnvironmentClass;
 class VisRasterizerClass;
 class BWRenderClass;
+class TexProjectClass;
 
 class RenderInfoClass
 {
@@ -61,7 +62,7 @@ public:
     float m_opacityOverride;
     float m_emissiveScale;
     LightEnvironmentClass *m_lightEnvironment;
-    int field_20; // shd mesh related
+    TexProjectClass *m_texProject;
 
 protected:
     MaterialPassClass *m_additionalMaterialPassArray[ADDITIONAL_MATERIAL_PASSES];

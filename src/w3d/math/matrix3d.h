@@ -821,6 +821,8 @@ public:
         out->Z = (A[0][2] * v->X + A[1][2] * v->Y + A[2][2] * v->Z);
     }
 
+    void Build_Transform_Matrix(Vector3 &p, Vector3 &dir);
+
     static bool Solve_Linear_System(Matrix3D &system);
     void Re_Orthogonalize();
 

@@ -25,7 +25,7 @@ RenderInfoClass::RenderInfoClass(CameraClass &camera) :
     m_opacityOverride(1.0f),
     m_emissiveScale(1.0f),
     m_lightEnvironment(nullptr),
-    field_20(0),
+    m_texProject(nullptr),
     m_additionalMaterialPassCount(0),
     field_A8(0),
     m_overrideFlagLevel(0)

@@ -112,6 +112,7 @@
 #include "targa.h"
 #include "teamsinfo.h"
 #include "terraintex.h"
+#include "texproject.h"
 #include "texture.h"
 #include "texturebase.h"
 #include "textureloader.h"
@@ -1576,6 +1577,17 @@ void Setup_Hooks()
     Hook_Any(0x008082A0, W3D::Set_Texture_Bit_Depth);
     Hook_Any(0x008082C0, W3D::Add_To_Static_Sort_List);
     Hook_Any(0x008082E0, W3D::Render_And_Clear_Static_Sort_Lists);
+
+    // texproject.h
+    Hook_Any(0x00827F70, TexProjectClass::Hook_Ctor);
+    Hook_Any(0x00828260, TexProjectClass::Set_Intensity);
+    Hook_Any(0x008284F0, TexProjectClass::Set_Texture);
+    Hook_Any(0x00828520, TexProjectClass::Peek_Material_Pass);
+    Hook_Method(0x008285F0,
+        static_cast<bool (TexProjectClass::*)(RenderObjClass *, const Vector3 &, float, float)>(
+            &TexProjectClass::Compute_Perspective_Projection));
+    Hook_Any(0x008289E0, TexProjectClass::Compute_Texture);
+    Hook_Any(0x00828AE0, TexProjectClass::Set_Render_Target);
 
     // line3d.h
     Hook_Any(0x008403C0, Line3DClass::Hook_Ctor);

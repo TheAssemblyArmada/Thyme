@@ -90,7 +90,23 @@ public:
         Matrix3::Multiply(tm, in.m_basis, &(out->m_basis));
     }
 
+    void Compute_Axis_Aligned_Extent(Vector3 *set_extent) const;
+
     Matrix3 m_basis;
     Vector3 m_center;
     Vector3 m_extent;
 };
+
+inline void OBBoxClass::Compute_Axis_Aligned_Extent(Vector3 *set_extent) const
+{
+    captainslog_assert(set_extent != nullptr);
+
+    set_extent->X = GameMath::Fabs(m_extent[0] * m_basis[0][0]) + GameMath::Fabs(m_extent[1] * m_basis[0][1])
+        + GameMath::Fabs(m_extent[2] * m_basis[0][2]);
+
+    set_extent->Y = GameMath::Fabs(m_extent[0] * m_basis[1][0]) + GameMath::Fabs(m_extent[1] * m_basis[1][1])
+        + GameMath::Fabs(m_extent[2] * m_basis[1][2]);
+
+    set_extent->Z = GameMath::Fabs(m_extent[0] * m_basis[2][0]) + GameMath::Fabs(m_extent[1] * m_basis[2][1])
+        + GameMath::Fabs(m_extent[2] * m_basis[2][2]);
+}

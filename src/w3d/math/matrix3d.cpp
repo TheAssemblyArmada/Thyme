@@ -410,6 +410,58 @@ void Matrix3D::Re_Orthogonalize()
     Row[2][2] = z.Z;
 }
 
+void Matrix3D::Build_Transform_Matrix(Vector3 &p, Vector3 &dir)
+{
+    float siny, cosy;
+    float tmp1, tmp2;
+
+    float len = GameMath::Sqrt(dir.X * dir.X + dir.Y * dir.Y);
+    float z = dir.Z;
+
+    if (len != 0.0f) {
+        float inv_len = 1.0f / len;
+        siny = dir.Y * inv_len;
+        cosy = dir.X * inv_len;
+    } else {
+        siny = 0.0f;
+        cosy = 1.0f;
+    }
+
+    Make_Identity();
+    Translate(p);
+
+    tmp1 = Row[0][0];
+    tmp2 = Row[0][1];
+    Row[0][0] = (float)(cosy * tmp1 + siny * tmp2);
+    Row[0][1] = (float)(cosy * tmp2 - siny * tmp1);
+
+    tmp1 = Row[1][0];
+    tmp2 = Row[1][1];
+    Row[1][0] = (float)(cosy * tmp1 + siny * tmp2);
+    Row[1][1] = (float)(cosy * tmp2 - siny * tmp1);
+
+    tmp1 = Row[2][0];
+    tmp2 = Row[2][1];
+    Row[2][0] = (float)(cosy * tmp1 + siny * tmp2);
+    Row[2][1] = (float)(cosy * tmp2 - siny * tmp1);
+
+    float inz = -z;
+
+    tmp1 = Row[0][0];
+    tmp2 = Row[0][2];
+    Row[0][0] = (float)(len * tmp1 - inz * tmp2);
+    Row[0][2] = (float)(inz * tmp1 + len * tmp2);
+
+    tmp1 = Row[1][0];
+    tmp2 = Row[1][2];
+    Row[1][0] = (float)(len * tmp1 - inz * tmp2);
+    Row[1][2] = (float)(inz * tmp1 + len * tmp2);
+
+    tmp1 = Row[2][0];
+    tmp2 = Row[2][2];
+    Row[2][0] = (float)(len * tmp1 - inz * tmp2);
+    Row[2][2] = (float)(inz * tmp1 + len * tmp2);
+}
 Matrix3D Lerp(const Matrix3D &A, const Matrix3D &B, float factor)
 {
     captainslog_assert(factor >= 0.0f);

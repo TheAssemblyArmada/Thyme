@@ -444,7 +444,7 @@ float VertexMaterialClass::Get_Shininess() const
 #endif
 }
 
-void VertexMaterialClass::VertexMaterialClass::Set_Shininess(float shin)
+void VertexMaterialClass::Set_Shininess(float shin)
 {
     m_CRCDirty = true;
 #ifdef BUILD_WITH_D3D8

@@ -54,6 +54,7 @@ public:
     static bool Is_Munge_Sort_On_Load_Enabled() { return s_mungeSortOnLoad; }
     static bool Is_Overbright_Modify_On_Load_Enabled() { return s_overbrightModifyOnLoad; }
     static bool Are_Static_Sort_Lists_Enabled() { return s_areStaticSortListsEnabled; }
+    static unsigned int Get_Frame_Time(void) { return s_syncTime - s_previousSyncTime; }
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
 

@@ -148,7 +148,7 @@ public:
 
     // Returns the section object if it exists.
     INISection *Find_Section(const char *section) const;
-    int Section_Count() { return m_sectionIndex->Count(); }
+    int Section_Count() const { return m_sectionIndex->Count(); }
 
     // Returns the entry object if it exists.
     INIEntry *Find_Entry(const char *section, const char *entry) const;

@@ -194,6 +194,7 @@ public:
     static void Set_Ambient_Color(const Vector3 &color);
 #endif
     static void Set_World_Identity();
+    static void Set_View_Identity();
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
     static const char *Get_DX8_Texture_Arg_Name(unsigned value);
@@ -229,6 +230,7 @@ public:
     static void Enable_Triangle_Draw(bool enable) { s_EnableTriangleDraw = enable; }
     static bool Is_Triangle_Draw_Enabled() { return s_EnableTriangleDraw; }
     static bool Is_Initted() { return s_isInitialised; }
+    static bool Is_Render_To_Texture(void) { return s_isRenderToTexture; }
     static void Set_Texture_Bitdepth(int depth)
     {
         captainslog_assert(depth == 16 || depth == 32);
@@ -654,6 +656,14 @@ inline void DX8Wrapper::Set_World_Identity()
 
     s_renderState.world.Make_Identity();
     s_renderStateChanged |= (unsigned)WORLD_CHANGED | (unsigned)WORLD_IDENTITY;
+}
+
+inline void DX8Wrapper::Set_View_Identity()
+{
+    if (s_renderStateChanged & (unsigned)VIEW_IDENTITY)
+        return;
+    s_renderState.view.Make_Identity();
+    s_renderStateChanged |= (unsigned)VIEW_CHANGED | (unsigned)VIEW_IDENTITY;
 }
 
 inline void DX8Wrapper::Handle_DX8_ErrorCode(unsigned error)

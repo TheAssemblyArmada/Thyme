@@ -686,7 +686,7 @@ inline void DX8Wrapper::Set_Material(const VertexMaterialClass *material)
 
 inline void DX8Wrapper::Set_Shader(const ShaderClass &shader)
 {
-    if (!ShaderClass::s_shaderDirty && ((unsigned &)shader == (unsigned &)s_renderState.shader)) {
+    if (!ShaderClass::s_shaderDirty && (shader == s_renderState.shader)) {
         return;
     }
     s_renderState.shader = shader;

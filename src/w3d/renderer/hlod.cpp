@@ -928,11 +928,11 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes()
             Matrix3D transform2 = m_htree->Get_Transform(Get_Sub_Object_Bone_Index(robj));
             SphereClass sphere;
             robj->Get_Obj_Space_Bounding_Sphere(sphere);
-            sphere.Transform(transform);
+            sphere.Transform(transform2);
             obj_sphere.Add_Sphere(sphere);
             AABoxClass box;
             robj->Get_Obj_Space_Bounding_Box(box);
-            box.Transform(transform);
+            box.Transform(transform2);
             new_box.Add_Box(box);
             robj->Release_Ref();
         }

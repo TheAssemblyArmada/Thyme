@@ -27,6 +27,7 @@
 #include "gametype.h"
 #include "globaldata.h"
 #include "globallanguage.h"
+#include "locomotor.h"
 #include "mouse.h"
 #include "playertemplate.h"
 #include "rankinfo.h"
@@ -77,7 +78,7 @@ BlockParse TheTypeTable[] = {
     {"FXList", (iniblockparse_t)(0x004CC260) /*&INI::parseFXListDefinition*/},
     {"GameData", &GlobalData::Parse_Game_Data_Definitions},
     {"InGameUI", (iniblockparse_t)(0x00508440) /*&INI::parseInGameUIDefinition*/},
-    {"Locomotor", (iniblockparse_t)(0x004B8A70) /*&INI::parseLocomotorTemplateDefinition*/},
+    {"Locomotor", &LocomotorStore::Parse_Locomotor_Template_Definition},
     {"Language", &GlobalLanguage::Parse_Language_Defintions},
     {"MapCache", (iniblockparse_t)(0x00506760) /*&INI::parseMapCacheDefinition*/},
     {"MapData", (iniblockparse_t)(0x0062D610) /*&INI::parseMapDataDefinition*/},

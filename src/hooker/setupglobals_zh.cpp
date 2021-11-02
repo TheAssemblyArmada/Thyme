@@ -542,3 +542,7 @@ ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(0x00A544C
 
 // meshgeometry.cpp
 SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(0x00A51E60);
+
+// objectcreationlist.cpp
+#include "locomotor.h"
+LocomotorStore *&g_theLocomotorStore = Make_Global<LocomotorStore *>(PICK_ADDRESS(0x00A2BC28, 0x00E23DE0));

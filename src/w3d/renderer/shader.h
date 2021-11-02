@@ -231,8 +231,8 @@ public:
     ShaderClass(const ShaderClass &that) : m_shaderBits(that.m_shaderBits) {}
     ShaderClass(const uint32_t bits) : m_shaderBits(bits) {}
 
-    bool operator==(const ShaderClass &that) { return m_shaderBits == that.m_shaderBits; }
-    bool operator!=(const ShaderClass &that) { return m_shaderBits != that.m_shaderBits; }
+    bool operator==(const ShaderClass &that) const { return m_shaderBits == that.m_shaderBits; }
+    bool operator!=(const ShaderClass &that) const { return m_shaderBits != that.m_shaderBits; }
 
     bool Uses_Alpha() const;
     bool Uses_Fog() const { return Get_Fog_Func() != FOG_DISABLE; }

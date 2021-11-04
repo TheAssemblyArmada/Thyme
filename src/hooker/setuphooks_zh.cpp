@@ -117,6 +117,7 @@
 #include "render2dsentence.h"
 #include "rinfo.h"
 #include "scene.h"
+#include "science.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -2125,6 +2126,7 @@ void Setup_Hooks()
     Hook_Any(0x0051A6F0, Anim2DCollection::Hook_Ctor);
     Hook_Any(0x0051A860, Anim2DCollection::Find_Template);
 
+<<<<<<< HEAD
     // physicsupdate.h
     Hook_Method(0x005CDB70, &PhysicsBehavior::Get_Forward_Speed_2D);
     Hook_Method(0x005CDBC0, &PhysicsBehavior::Get_Forward_Speed_3D);
@@ -2225,4 +2227,11 @@ void Setup_Hooks()
     Hook_Any(0x004E7FB0, ProjectileStreamUpdate::Friend_New_Module_Instance);
     Hook_Any(0x0061C410, ProjectileStreamUpdate::Add_Projectile);
     Hook_Any(0x0061C650, ProjectileStreamUpdate::Set_Position);
+
+    // science.h
+    Hook_Any(0x004887F0, ScienceStore::Get_Science_From_Internal_Name);
+    Hook_Any(0x00488820, ScienceStore::Get_Internal_Name_From_Science);
+    Hook_Any(0x00488C40, ScienceStore::Get_Science_Purchase_Cost);
+    Hook_Any(0x00488C90, ScienceStore::Is_Science_Grantable);
+    Hook_Any(0x00488CE0, ScienceStore::Get_Name_And_Description);
 }

@@ -110,7 +110,7 @@ const BlockParse TheTypeTable[] = {
     //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
     {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definition},
     {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definition},
-    {"Science", (iniblockparse_t)(0x00488EA0) /*&INI::parseScienceDefinition*/},
+    {"Science", &ScienceStore::Parse_Science_Definition},
     //{ "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
     {"Rank", &RankInfoStore::Parse_Rank_Definition},
     {"SpecialPower", (iniblockparse_t)(0x00504690) /*&INI::parseSpecialPowerDefinition*/},

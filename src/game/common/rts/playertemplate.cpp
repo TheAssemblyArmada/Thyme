@@ -151,17 +151,17 @@ int PlayerTemplateStore::Get_Template_Number_By_Name(Utf8String name)
  */
 PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
 {
-    static const NameKeyType _a0 = g_theNameKeyGenerator->Name_To_Key("FactionAmerica");
+    static const NameKeyType _american = g_theNameKeyGenerator->Name_To_Key("FactionAmerica");
     static const NameKeyType _a1 = g_theNameKeyGenerator->Name_To_Key("FactionAmericaChooseAGeneral");
     static const NameKeyType _a2 = g_theNameKeyGenerator->Name_To_Key("FactionAmericaTankCommand");
     static const NameKeyType _a3 = g_theNameKeyGenerator->Name_To_Key("FactionAmericaSpecialForces");
     static const NameKeyType _a4 = g_theNameKeyGenerator->Name_To_Key("FactionAmericaAirForce");
-    static const NameKeyType _c0 = g_theNameKeyGenerator->Name_To_Key("FactionChina");
+    static const NameKeyType _china = g_theNameKeyGenerator->Name_To_Key("FactionChina");
     static const NameKeyType _c1 = g_theNameKeyGenerator->Name_To_Key("FactionChinaChooseAGeneral");
     static const NameKeyType _c2 = g_theNameKeyGenerator->Name_To_Key("FactionChinaRedArmy");
     static const NameKeyType _c3 = g_theNameKeyGenerator->Name_To_Key("FactionChinaSpecialWeapons");
     static const NameKeyType _c4 = g_theNameKeyGenerator->Name_To_Key("FactionChinaSecretPolice");
-    static const NameKeyType _g0 = g_theNameKeyGenerator->Name_To_Key("FactionGLA");
+    static const NameKeyType _gla = g_theNameKeyGenerator->Name_To_Key("FactionGLA");
     static const NameKeyType _g1 = g_theNameKeyGenerator->Name_To_Key("FactionGLAChooseAGeneral");
     static const NameKeyType _g2 = g_theNameKeyGenerator->Name_To_Key("FactionGLATerrorCell");
     static const NameKeyType _g3 = g_theNameKeyGenerator->Name_To_Key("FactionGLABiowarCommand");
@@ -169,11 +169,11 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
 
     // Specialist sides are converted to base side for purposes of this lookup.
     if (key == _a1 || key == _a2 || key == _a3 || key == _a4) {
-        key = _a0;
+        key = _american;
     } else if (key == _c1 || key == _c2 || key == _c3 || key == _c4) {
-        key = _c0;
+        key = _china;
     } else if (key == _g1 || key == _g2 || key == _g3 || key == _g4) {
-        key = _g0;
+        key = _gla;
     }
 
     for (auto it = m_playerTemplates.begin(); it != m_playerTemplates.end(); ++it) {
@@ -234,74 +234,56 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
  */
 void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
 {
-    static FieldParse _parse_table[] = { { "Side", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_side) },
-        { "BaseSide", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_baseSide) },
-        { "PlayableSide", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_isPlayableSide) },
-        { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(PlayerTemplate, m_displayName) },
-        { "StartMoney", &PlayerTemplate::Parse_Start_Money, nullptr, offsetof(PlayerTemplate, m_money) },
-        { "PreferredColor", &INI::Parse_RGB_Color, nullptr, offsetof(PlayerTemplate, m_preferredColor) },
-        { "StartingBuilding", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingBuilding) },
-        { "StartingUnit0", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[0]) },
-        { "StartingUnit1", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[1]) },
-        { "StartingUnit2", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[2]) },
-        { "StartingUnit3", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[3]) },
-        { "StartingUnit4", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[4]) },
-        { "StartingUnit5", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[5]) },
-        { "StartingUnit6", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[6]) },
-        { "StartingUnit7", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[7]) },
-        { "StartingUnit8", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[8]) },
-        { "StartingUnit9", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_startingUnits[9]) },
-        { "ProductionCostChange", &PlayerTemplate::Parse_Production_Cost_Change, nullptr, 0 },
-        { "ProductionTimeChange", &PlayerTemplate::Parse_Production_Time_Change, nullptr, 0 },
-        { "ProductionVeterancyLevel", &PlayerTemplate::Parse_Production_Veterancy_Level, nullptr, 0 },
-        { "IntrinsicSciences", &INI::Parse_Science_Vector, nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
-        { "PurchaseScienceCommandSetRank1",
-            &INI::Parse_AsciiString,
-            nullptr,
-            offsetof(PlayerTemplate, m_purchaseCommandSetRankOne) },
-        { "PurchaseScienceCommandSetRank3",
-            &INI::Parse_AsciiString,
-            nullptr,
-            offsetof(PlayerTemplate, m_purchaseCommandSetRankThree) },
-        { "PurchaseScienceCommandSetRank8",
-            &INI::Parse_AsciiString,
-            nullptr,
-            offsetof(PlayerTemplate, m_purchaseCommandSetRankEight) },
-        { "SpecialPowerShortcutCommandSet",
-            &INI::Parse_AsciiString,
-            nullptr,
-            offsetof(PlayerTemplate, m_specialPowerShortcutCommandSet) },
-        { "SpecialPowerShortcutWinName",
-            &INI::Parse_AsciiString,
-            nullptr,
-            offsetof(PlayerTemplate, m_specialPowerShortcutWinName) },
-        { "SpecialPowerShortcutButtonCount",
-            &INI::Parse_Int,
-            nullptr,
-            offsetof(PlayerTemplate, m_specialPowerShortcutButtonCount) },
-        { "IsObserver", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_isObserver) },
-        { "OldFaction", &INI::Parse_Bool, nullptr, offsetof(PlayerTemplate, m_oldFaction) },
-        { "IntrinsicSciencePurchasePoints",
-            &INI::Parse_Int,
-            nullptr,
-            offsetof(PlayerTemplate, m_intrinsicSciencePurchasePoints) },
-        { "ScoreScreenImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_scoreScreenImage) },
-        { "LoadScreenImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_loadScreenImage) },
-        { "LoadScreenMusic", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_loadScreenMusic) },
-        { "ScoreScreenMusic", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_scoreScreenMusic) },
-        { "HeadWaterMark", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_headWaterMark) },
-        { "FlagWaterMark", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_flagWaterMark) },
-        { "EnabledImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_enabledImage) },
-        { "SideIconImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_sideIconImage) },
-        { "GeneralImage", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_generalImage) },
-        { "BeaconName", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_beaconName) },
-        { "ArmyTooltip", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_armyTooltip) },
-        { "Features", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_features) },
-        { "MedallionRegular", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionRegular) },
-        { "MedallionHilite", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionHilite) },
-        { "MedallionSelect", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_medallionSelect) },
-        { nullptr, nullptr, nullptr, 0 } };
-
+    // clang-format off
+    static FieldParse _parse_table[] = { 
+        { "Side",                           &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_side) },
+        { "BaseSide",                       &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_baseSide) },
+        { "PlayableSide",                   &INI::Parse_Bool,                                   nullptr, offsetof(PlayerTemplate, m_isPlayableSide) },
+        { "DisplayName",                    &INI::Parse_And_Translate_Label,                    nullptr, offsetof(PlayerTemplate, m_displayName) },
+        { "StartMoney",                     &PlayerTemplate::Parse_Start_Money,                 nullptr, offsetof(PlayerTemplate, m_money) },
+        { "PreferredColor",                 &INI::Parse_RGB_Color,                              nullptr, offsetof(PlayerTemplate, m_preferredColor) },
+        { "StartingBuilding",               &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingBuilding) },
+        { "StartingUnit0",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[0]) },
+        { "StartingUnit1",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[1]) },
+        { "StartingUnit2",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[2]) },
+        { "StartingUnit3",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[3]) },
+        { "StartingUnit4",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[4]) },
+        { "StartingUnit5",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[5]) },
+        { "StartingUnit6",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[6]) },
+        { "StartingUnit7",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[7]) },
+        { "StartingUnit8",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[8]) },
+        { "StartingUnit9",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_startingUnits[9]) },
+        { "ProductionCostChange",           &PlayerTemplate::Parse_Production_Cost_Change,      nullptr, 0 },
+        { "ProductionTimeChange",           &PlayerTemplate::Parse_Production_Time_Change,      nullptr, 0 },
+        { "ProductionVeterancyLevel",       &PlayerTemplate::Parse_Production_Veterancy_Level,  nullptr, 0 },
+        { "IntrinsicSciences",              &INI::Parse_Science_Vector,                         nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
+        { "PurchaseScienceCommandSetRank1", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankOne) },
+        { "PurchaseScienceCommandSetRank3", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankThree) },
+        { "PurchaseScienceCommandSetRank8", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankEight) },
+        { "SpecialPowerShortcutCommandSet", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutCommandSet) },
+        { "SpecialPowerShortcutWinName",    &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutWinName) },
+        { "SpecialPowerShortcutButtonCount",&INI::Parse_Int,                                    nullptr, offsetof(PlayerTemplate, m_specialPowerShortcutButtonCount) },
+        { "IsObserver",                     &INI::Parse_Bool,                                   nullptr, offsetof(PlayerTemplate, m_isObserver) },
+        { "OldFaction",                     &INI::Parse_Bool,                                   nullptr, offsetof(PlayerTemplate, m_oldFaction) },
+        { "IntrinsicSciencePurchasePoints", &INI::Parse_Int,                                    nullptr, offsetof(PlayerTemplate, m_intrinsicSciencePurchasePoints) },
+        { "ScoreScreenImage",               &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_scoreScreenImage) },
+        { "LoadScreenImage",                &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_loadScreenImage) },
+        { "LoadScreenMusic",                &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_loadScreenMusic) },
+        { "ScoreScreenMusic",               &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_scoreScreenMusic) },
+        { "HeadWaterMark",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_headWaterMark) },
+        { "FlagWaterMark",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_flagWaterMark) },
+        { "EnabledImage",                   &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_enabledImage) },
+        { "SideIconImage",                  &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_sideIconImage) },
+        { "GeneralImage",                   &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_generalImage) },
+        { "BeaconName",                     &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_beaconName) },
+        { "ArmyTooltip",                    &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_armyTooltip) },
+        { "Features",                       &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_features) },
+        { "MedallionRegular",               &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_medallionRegular) },
+        { "MedallionHilite",                &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_medallionHilite) },
+        { "MedallionSelect",                &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_medallionSelect) },
+        { nullptr,                          nullptr,                                            nullptr, 0 }, 
+    };
+    // clang-format on
     NameKeyType key = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());
     PlayerTemplate *temp = g_thePlayerTemplateStore->Find_Player_Template(key);
 

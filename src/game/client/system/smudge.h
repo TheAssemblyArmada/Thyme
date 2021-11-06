@@ -26,6 +26,7 @@ struct SmudgeCoords
 
 class Smudge : public DLNodeClass<Smudge>
 {
+    IMPLEMENT_W3D_POOL(Smudge)
 public:
     Smudge();
     virtual ~Smudge() override;
@@ -40,6 +41,7 @@ private:
 
 class SmudgeSet : public DLNodeClass<SmudgeSet>
 {
+    IMPLEMENT_W3D_POOL(SmudgeSet)
 public:
     SmudgeSet();
     virtual ~SmudgeSet() override;

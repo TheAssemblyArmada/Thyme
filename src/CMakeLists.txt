@@ -228,6 +228,7 @@ set(GAMEENGINE_SRC
     w3d/lib/ffactory.cpp
     w3d/lib/fileclass.cpp
     w3d/lib/filestraw.cpp
+    w3d/lib/gcd_lcm.cpp
     w3d/lib/iniclass.cpp
     w3d/lib/multilist.cpp
     w3d/lib/nstrdup.cpp
@@ -329,6 +330,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/thumbnailmanager.cpp
     w3d/renderer/vertmaterial.cpp
     w3d/renderer/w3d.cpp
+    w3d/renderer/w3d_util.cpp
     w3d/renderer/w3dexclusionlist.cpp
     w3d/renderer/w3dformat.cpp
 )

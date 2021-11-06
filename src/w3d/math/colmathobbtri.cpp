@@ -318,6 +318,8 @@ static void OBBTri_Compute_Contact_Normal(const OBBTCollisionStruct &context, Ve
 
             break;
     }
+
+    captainslog_assert(result->Length2() > 0.0f);
 }
 
 static float Eval_Side(float val, int side)
@@ -453,6 +455,7 @@ static void OBBTri_Compute_Contact_Point(OBBTCollisionStruct &context, CastResul
 
     switch (context.axis_id) {
         case 0:
+            captainslog_assert(0);
             return;
         case 1:
             for (int i = 0; i < 3; i++) {

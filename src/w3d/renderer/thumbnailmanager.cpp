@@ -59,8 +59,8 @@ ThumbnailManagerClass::~ThumbnailManagerClass()
 {
     Save(false);
 
-    for (HashTemplateIterator<StringClass, ThumbnailClass *> thumbnail(Hash); thumbnail; thumbnail.Reset()) {
-        delete thumbnail.getValue();
+    for (HashTemplateIterator<StringClass, ThumbnailClass *> thumbnail(Hash); !thumbnail.Is_Done(); thumbnail.Next()) {
+        delete thumbnail.Peek_Value();
     }
 
     delete[] m_bitmap;
@@ -88,7 +88,7 @@ void ThumbnailManagerClass::Insert_To_Hash(ThumbnailClass *thumbnail)
  */
 ThumbnailClass *ThumbnailManagerClass::Get_From_Hash(const StringClass &texture)
 {
-    return Hash.Get(Create_Texture_Hash_Name(texture), nullptr);
+    return Hash.Get(Create_Texture_Hash_Name(texture));
 }
 
 /**

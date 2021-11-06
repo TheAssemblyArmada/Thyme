@@ -17,6 +17,7 @@
 #include "crc.h"
 #include "dx8wrapper.h"
 #include "iniclass.h"
+#include "w3d_util.h"
 #include "xstraw.h"
 #include <cstdio>
 
@@ -694,36 +695,29 @@ W3DErrorType VertexMaterialClass::Save_W3D(ChunkSaveClass &csave)
     return W3D_ERROR_OK;
 }
 
-static void Convert_Color(const W3dRGBStruct *s, Vector3 *v)
-{
-    v->X = (float)s->r / 255;
-    v->Y = (float)s->g / 255;
-    v->Z = (float)s->b / 255;
-}
-
 void VertexMaterialClass::Init_From_Material3(const W3dMaterial3Struct &mat3)
 {
     Vector3 v1;
     Vector3 v2;
     Vector3 v3;
-    Convert_Color(&mat3.diffuse_color, &v1);
-    Convert_Color(&mat3.diffuse_coeffs, &v2);
+    W3dUtilityClass::Convert_Color(mat3.diffuse_color, &v1);
+    W3dUtilityClass::Convert_Color(mat3.diffuse_coeffs, &v2);
     v3.X = v2.X * v1.X;
     v3.Y = v2.Y * v1.Y;
     v3.Z = v2.Z * v1.Z;
     Set_Diffuse(v3);
 
-    Convert_Color(&mat3.specular_color, &v1);
-    Convert_Color(&mat3.specular_coeffs, &v2);
+    W3dUtilityClass::Convert_Color(mat3.specular_color, &v1);
+    W3dUtilityClass::Convert_Color(mat3.specular_coeffs, &v2);
     v3.X = v2.X * v1.X;
     v3.Y = v2.Y * v1.Y;
     v3.Z = v2.Z * v1.Z;
     Set_Specular(v3);
 
-    Convert_Color(&mat3.emissive_coeffs, &v1);
+    W3dUtilityClass::Convert_Color(mat3.emissive_coeffs, &v1);
     Set_Emissive(v1);
 
-    Convert_Color(&mat3.ambient_coeffs, &v1);
+    W3dUtilityClass::Convert_Color(mat3.ambient_coeffs, &v1);
     Set_Ambient(v1);
 
     Set_Shininess(mat3.shininess);
@@ -733,16 +727,16 @@ void VertexMaterialClass::Init_From_Material3(const W3dMaterial3Struct &mat3)
 void VertexMaterialClass::Parse_W3dVertexMaterialStruct(W3dVertexMaterialStruct const &vmat)
 {
     Vector3 v1;
-    Convert_Color(&vmat.Ambient, &v1);
+    W3dUtilityClass::Convert_Color(vmat.Ambient, &v1);
     Set_Ambient(v1);
 
-    Convert_Color(&vmat.Diffuse, &v1);
+    W3dUtilityClass::Convert_Color(vmat.Diffuse, &v1);
     Set_Diffuse(v1);
 
-    Convert_Color(&vmat.Specular, &v1);
+    W3dUtilityClass::Convert_Color(vmat.Specular, &v1);
     Set_Specular(v1);
 
-    Convert_Color(&vmat.Emissive, &v1);
+    W3dUtilityClass::Convert_Color(vmat.Emissive, &v1);
     Set_Emissive(v1);
 
     Set_Shininess(vmat.Shininess);

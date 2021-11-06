@@ -186,6 +186,8 @@ public:
     static Vector4 Convert_Color(unsigned color);
     static unsigned int Convert_Color(const Vector4 &color);
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
+    static void Clamp_Color(Vector4 &color);
+    static unsigned int Convert_Color_Clamp(const Vector4 &color);
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
     static void Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
@@ -712,6 +714,21 @@ inline unsigned int DX8Wrapper::Convert_Color(const Vector3 &color, const float 
 inline unsigned int DX8Wrapper::Convert_Color(const Vector4 &color)
 {
     return D3DCOLOR_COLORVALUE(color.X, color.Y, color.Z, color.W);
+}
+
+inline void DX8Wrapper::Clamp_Color(Vector4 &color)
+{
+    color.X = std::clamp(color.X, 0.f, 1.f);
+    color.Y = std::clamp(color.Y, 0.f, 1.f);
+    color.Z = std::clamp(color.Z, 0.f, 1.f);
+    color.W = std::clamp(color.W, 0.f, 1.f);
+}
+
+inline unsigned int DX8Wrapper::Convert_Color_Clamp(const Vector4 &color)
+{
+    Vector4 clamped_color = color;
+    DX8Wrapper::Clamp_Color(clamped_color);
+    return Convert_Color(reinterpret_cast<const Vector3 &>(clamped_color), clamped_color[3]);
 }
 
 inline void DX8Wrapper::Set_Light(unsigned index, const D3DLIGHT8 *light)

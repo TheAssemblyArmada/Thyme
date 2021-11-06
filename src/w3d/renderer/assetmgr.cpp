@@ -321,13 +321,15 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
 
     StringClass name = { filename };
     name.To_Lower();
-    auto *texture = m_textureHash.Get(name);
+    TextureClass *texture = m_textureHash.Get(name);
+
     if (texture != nullptr) {
-        (*texture)->Add_Ref();
-        return *texture;
+        texture->Add_Ref();
+        return texture;
     }
 
     TextureClass *new_texture = nullptr;
+
     switch (asset_type) {
         case TexAssetType::ASSET_STANDARD:
             new_texture =
@@ -342,9 +344,11 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
         default:
             break;
     }
+
     if (new_texture == nullptr) {
         return nullptr;
     }
+
     m_textureHash.Insert(new_texture->Get_Name(), new_texture);
 
     new_texture->Add_Ref();
@@ -354,24 +358,26 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
 // 0x00815C90
 void W3DAssetManager::Release_All_Textures()
 {
-    for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); texture; texture.Reset()) {
-        texture.getValue()->Release_Ref();
-        texture.Remove();
+    for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); !texture.Is_Done(); texture.Next()) {
+        texture.Peek_Value()->Release_Ref();
     }
+
     m_textureHash.Remove_All();
 }
 
 // 0x00815D90
 void W3DAssetManager::Release_Unused_Textures()
 {
-    constexpr auto unused_textures_size = 256;
+    constexpr int unused_textures_size = 256;
     TextureClass *unused_textures[unused_textures_size]{};
-    auto unused_textures_count = 0;
-    for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); texture; ++texture) {
-        if (texture.getValue()->Num_Refs() != 1) {
+    int unused_textures_count = 0;
+
+    for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); !texture.Is_Done(); texture.Next()) {
+        if (texture.Peek_Value()->Num_Refs() != 1) {
             continue;
         }
-        unused_textures[unused_textures_count++] = texture.getValue();
+
+        unused_textures[unused_textures_count++] = texture.Peek_Value();
 
         if (unused_textures_count < unused_textures_size) {
             continue;
@@ -383,8 +389,9 @@ void W3DAssetManager::Release_Unused_Textures()
             unused_texture->Release_Ref();
             unused_textures[i] = nullptr;
         }
+
         unused_textures_count = 0;
-        texture.Reset();
+        texture.First();
     }
 
     if (unused_textures_count != 0) {
@@ -734,7 +741,7 @@ RenderObjClass *GameAssetManager::Create_Render_Obj(
         Recolour_Asset(robj, colour);
     }
 
-    auto *w3d_proto = new W3DPrototypeClass(robj, mangled_name);
+    auto *w3d_proto = NEW_POOL_OBJ(W3DPrototypeClass, robj, mangled_name);
     robj->Release_Ref();
     Add_Prototype(w3d_proto);
     robj = w3d_proto->Create();

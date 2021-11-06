@@ -1484,8 +1484,6 @@ void Setup_Hooks()
     Hook_Any(0x0083B8F0, MeshGeometryClass::Generate_Culling_Tree);
     Hook_Any(0x0083C210, MeshGeometryClass::Read_AABTree);
     Hook_Any(0x00839B90, MeshGeometryClass::operator=);
-    Hook_Any(0x00839A10, MeshGeometryClass::Hook_Ctor);
-    Hook_Any(0x00839AC0, MeshGeometryClass::Hook_Ctor2);
     Hook_Any(0x00839E90, MeshGeometryClass::Reset_Geometry);
     Hook_Any(0x0083A290, MeshGeometryClass::Get_Name);
     Hook_Any(0x0083A2A0, MeshGeometryClass::Set_Name);

@@ -24,6 +24,7 @@
 #include "htree.h"
 #include "matinfo.h"
 #include "vp.h"
+#include "w3d_util.h"
 
 static DynamicVectorClass<Vector4> _TempTransformedVertexBuffer;
 
@@ -549,22 +550,6 @@ W3DErrorType MeshModelClass::Read_Material_Info(ChunkLoadClass &cload, MeshLoadC
     return W3D_ERROR_OK;
 }
 
-void Convert_Shader(const W3dShaderStruct &in, ShaderClass *out)
-{
-    out->Set_Depth_Compare((ShaderClass::DepthCompareType)W3d_Shader_Get_Depth_Compare(&in));
-    out->Set_Depth_Mask((ShaderClass::DepthMaskType)W3d_Shader_Get_Depth_Mask(&in));
-    out->Set_Color_Mask(ShaderClass::COLOR_WRITE_ENABLE);
-    out->Set_Dst_Blend_Func((ShaderClass::DstBlendFuncType)W3d_Shader_Get_Dest_Blend_Func(&in));
-    out->Set_Fog_Func(ShaderClass::FOG_DISABLE);
-    out->Set_Primary_Gradient((ShaderClass::PriGradientType)W3d_Shader_Get_Pri_Gradient(&in));
-    out->Set_Secondary_Gradient((ShaderClass::SecGradientType)W3d_Shader_Get_Sec_Gradient(&in));
-    out->Set_Src_Blend_Func((ShaderClass::SrcBlendFuncType)W3d_Shader_Get_Src_Blend_Func(&in));
-    out->Set_Texturing((ShaderClass::TexturingType)W3d_Shader_Get_Texturing(&in));
-    out->Set_Alpha_Test((ShaderClass::AlphaTestType)W3d_Shader_Get_Alpha_Test(&in));
-    out->Set_Post_Detail_Color_Func((ShaderClass::DetailColorFuncType)W3d_Shader_Get_Detail_Color_Func(&in));
-    out->Set_Post_Detail_Alpha_Func((ShaderClass::DetailAlphaFuncType)W3d_Shader_Get_Detail_Alpha_Func(&in));
-}
-
 W3DErrorType MeshModelClass::Read_Shaders(ChunkLoadClass &cload, MeshLoadContextClass *context)
 {
     W3dShaderStruct shader;
@@ -575,7 +560,7 @@ W3DErrorType MeshModelClass::Read_Shaders(ChunkLoadClass &cload, MeshLoadContext
         }
 
         ShaderClass newshader;
-        Convert_Shader(shader, &newshader);
+        W3dUtilityClass::Convert_Shader(shader, &newshader);
 
         int index = context->Add_Shader(newshader);
         captainslog_assert(index == (int)i);
@@ -798,14 +783,6 @@ W3DErrorType MeshModelClass::Read_Shader_Ids(ChunkLoadClass &cload, MeshLoadCont
     return W3D_ERROR_OK;
 }
 
-static void Convert_Color(const W3dRGBAStruct &s, Vector4 *v)
-{
-    v->X = (float)s.R / 255;
-    v->Y = (float)s.G / 255;
-    v->Z = (float)s.B / 255;
-    v->W = (float)s.A / 255;
-}
-
 W3DErrorType MeshModelClass::Read_DCG(ChunkLoadClass &cload, MeshLoadContextClass *context)
 {
 #ifdef BUILD_WITH_D3D8
@@ -822,7 +799,7 @@ W3DErrorType MeshModelClass::Read_DCG(ChunkLoadClass &cload, MeshLoadContextClas
         for (int i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&color, sizeof(color));
             Vector4 col;
-            Convert_Color(color, &col);
+            W3dUtilityClass::Convert_Color(color, &col);
             dcg[i] = DX8Wrapper::Convert_Color(col);
         }
     } else if (context->m_prelitChunkID == W3D_CHUNK_PRELIT_VERTEX) {

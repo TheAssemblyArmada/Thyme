@@ -196,9 +196,9 @@ private:
     uint32_t m_grannyAnimManager; // Not used, only here to match original size
 };
 
-class W3DPrototypeClass final : public W3DMPO, public PrototypeClass
+class W3DPrototypeClass final : public MemoryPoolObject, public PrototypeClass
 {
-    IMPLEMENT_W3D_POOL(W3DPrototypeClass);
+    IMPLEMENT_POOL(W3DPrototypeClass)
 
 public:
     W3DPrototypeClass(RenderObjClass *proto, const char *name);

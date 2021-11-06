@@ -24,7 +24,7 @@ CaveSystem *g_theCaveSystem = nullptr;
 void TunnelTracker::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, TunnelTracker, Xfer *>(PICK_ADDRESS(0x00587CC3, 0x009118AB), this, xfer);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x00587CC3, 0x009118AB), this, xfer);
 #else
     // TODO
 #endif
@@ -51,7 +51,7 @@ void CaveSystem::Reset()
 void CaveSystem::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, CaveSystem, Xfer *>(PICK_ADDRESS(0x004D58A2, 0x0076E80B), this, xfer);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x004D58A0, 0x0076E80B), this, xfer);
 #else
     // TODO
 #endif
@@ -83,7 +83,7 @@ bool CaveSystem::Can_Switch_Index_to_Index(size_t unk1, size_t unk2)
 TunnelTracker *CaveSystem::Register_New_Cave(int index)
 {
 #ifdef GAME_DLL
-    return Call_Method<TunnelTracker *, CaveSystem, int>(PICK_ADDRESS(0x004D58A2, 0x0076E69D), this, index);
+    return Call_Method<TunnelTracker *, CaveSystem, int>(PICK_ADDRESS(0x004D5790, 0x0076E69D), this, index);
 #else
     // TODO
     return nullptr;

@@ -548,8 +548,9 @@ void Setup_Hooks()
 
     // cave.h CaveSystem
     Hook_Method(0x004D5730, &CaveSystem::Can_Switch_Index_to_Index);
-    Hook_Method(0x004D5790, &CaveSystem::Register_New_Cave);
+    // Hook_Method(0x004D5790, &CaveSystem::Register_New_Cave);
     Hook_Method(0x004D5880, &CaveSystem::Get_Tunnel_Tracker_For_Cave_Index);
+    Hook_Method(PICK_ADDRESS(0x004D55D0, 0x0076E506), &CaveSystem::Hook_Ctor);
 
     // teamsinfo.h TeamsInfoRec
     Hook_Method(0x004D8F80, &TeamsInfoRec::Clear);

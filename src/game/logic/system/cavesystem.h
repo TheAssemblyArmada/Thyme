@@ -15,30 +15,36 @@
 
 #pragma once
 
+#include "gametype.h"
 #include "mempoolobj.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
+#include <list>
+
+class Object;
 
 class TunnelTracker : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(TunnelTracker);
 
 protected:
-    virtual ~TunnelTracker() override;
+    virtual ~TunnelTracker() override{};
 
 public:
+    TunnelTracker() : m_containListSize(0), m_tunnelCount(0), m_nemesisID(0), m_lastNemesisFrame(0) {}
+
     // Snapshot interface methods
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    int unk08; // Ptr uses new
-    int unk0C; // Ptr uses new
-    int unk10; // Ptr uses new
-    int unk14;
-    int unk18;
-    int unk1C;
-    int unk20;
+    std::list<ObjectID> m_tunnelIDs;
+    std::list<Object *> m_containList;
+    std::list<ObjectID> m_IDs;
+    int32_t m_containListSize;
+    uint32_t m_tunnelCount;
+    int m_nemesisID;
+    int m_lastNemesisFrame;
 };
 
 class CaveSystem : public SubsystemInterface, public SnapShot
@@ -64,7 +70,7 @@ public:
     CaveSystem *Hook_Ctor() { return new (this) CaveSystem; }
 
 private:
-    std::vector<TunnelTracker *> m_caves;
+    std::vector<TunnelTracker *> m_tunnelTrackerVector;
 };
 
 #ifdef GAME_DLL

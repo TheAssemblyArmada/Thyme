@@ -65,6 +65,7 @@
 #include "ini.h"
 #include "keyboard.h"
 #include "lightenv.h"
+#include "line3d.h"
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
@@ -1575,6 +1576,14 @@ void Setup_Hooks()
     Hook_Any(0x008082A0, W3D::Set_Texture_Bit_Depth);
     Hook_Any(0x008082C0, W3D::Add_To_Static_Sort_List);
     Hook_Any(0x008082E0, W3D::Render_And_Clear_Static_Sort_Lists);
+
+    // line3d.h
+    Hook_Any(0x008403C0, Line3DClass::Hook_Ctor);
+    Hook_Method(0x00840ED0, static_cast<void (Line3DClass::*)(Vector3 const &, Vector3 const &)>(&Line3DClass::Reset));
+    Hook_Method(
+        0x00840FF0, static_cast<void (Line3DClass::*)(Vector3 const &, Vector3 const &, float)>(&Line3DClass::Reset));
+    Hook_Any(0x00841130, Line3DClass::Re_Color);
+    Hook_Any(0x00841160, Line3DClass::Set_Opacity);
 
     // objectcreationlist.h
     Hook_Any(PICK_ADDRESS(0x004C1280, 0x00756BBD), ObjectCreationListStore::Hook_Ctor);

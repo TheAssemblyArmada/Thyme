@@ -457,3 +457,13 @@ unsigned TextureClass::Get_Texture_Memory_Usage()
 
     return usage;
 }
+
+void TextureClass::Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, unsigned int level)
+{
+    SurfaceClass *surface = Get_Surface_Level(level);
+
+    if (surface != nullptr) {
+        surface->Get_Description(surface_desc);
+        surface->Release_Ref();
+    }
+}

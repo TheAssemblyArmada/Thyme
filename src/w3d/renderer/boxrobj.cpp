@@ -22,6 +22,7 @@
 #include "shader.h"
 #include "vector3i.h"
 #include "vertmaterial.h"
+#include "w3d_util.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
@@ -71,20 +72,6 @@ static Vector3 g_boxVertexNormals[8] = {
     Vector3(0.57735026f, -0.57735026f, -0.57735026f),
 };
 
-static void Convert_Color(const W3dRGBStruct &s, Vector3 *v)
-{
-    v->X = (float)s.r / 255;
-    v->Y = (float)s.g / 255;
-    v->Z = (float)s.b / 255;
-}
-
-static void Convert_Vector(IOVector3Struct const &v, Vector3 *set)
-{
-    set->X = v.x;
-    set->Y = v.y;
-    set->Z = v.z;
-}
-
 void BoxRenderObjClass::Init()
 {
     captainslog_assert(s_isInitted == false);
@@ -122,9 +109,9 @@ BoxRenderObjClass::BoxRenderObjClass(const BoxRenderObjClass &src)
 BoxRenderObjClass::BoxRenderObjClass(const W3dBoxStruct &src) : m_opacity(0.25)
 {
     Set_Name(src.Name);
-    Convert_Color(src.Color, &m_color);
-    Convert_Vector(src.Center, &m_objSpaceCenter);
-    Convert_Vector(src.Extent, &m_objSpaceExtent);
+    W3dUtilityClass::Convert_Color(src.Color, &m_color);
+    W3dUtilityClass::Convert_Vector(src.Center, &m_objSpaceCenter);
+    W3dUtilityClass::Convert_Vector(src.Extent, &m_objSpaceExtent);
     Set_Collision_Type(
         2 * ((src.Attributes & W3D_BOX_ATTRIBUTE_COLLISION_TYPE_MASK) >> W3D_BOX_ATTRIBUTE_COLLISION_TYPE_SHIFT));
 }

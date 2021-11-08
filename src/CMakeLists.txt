@@ -186,6 +186,7 @@ set(GAMEENGINE_SRC
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/object.cpp
+    game/logic/object/objectcreationlist.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp

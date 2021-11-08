@@ -166,6 +166,8 @@ bool CollisionMath::Collide(const LineSegClass &line, const AABoxClass &box, Cas
 
     result->fraction = test.fraction;
 
+    captainslog_assert(test.side != BoxTestStruct::BOX_SIDE_MIDDLE);
+
     result->normal = g_boxNormal[test.side + 2 * test.axis];
 
     if (result->compute_contact_point) {
@@ -214,6 +216,8 @@ bool CollisionMath::Collide(const LineSegClass &line, const OBBoxClass &box, Cas
     }
 
     result->fraction = test.fraction;
+
+    captainslog_assert(test.side != BoxTestStruct::BOX_SIDE_MIDDLE);
 
     if (test.axis == 0) {
         result->normal.X = box.m_basis[0].X;

@@ -31,6 +31,7 @@ public:
 
 template<typename Key, typename Value> class HashTemplateClass
 {
+
     friend HashTemplateIterator<Key, Value>;
 
     struct Entry
@@ -41,148 +42,92 @@ template<typename Key, typename Value> class HashTemplateClass
     };
 
 public:
-    HashTemplateClass() : m_index(nullptr), m_table(nullptr), m_nextFree(-1), m_size(0) {}
+    HashTemplateClass() : m_hash(nullptr), m_table(nullptr), m_first(-1), m_size(0) {}
 
     ~HashTemplateClass()
     {
-        delete[] m_index;
+        delete[] m_hash;
         delete[] m_table;
     }
 
-    Value *Get(const Key &key) const
+    Value Get(const Key &key) const
     {
-        if (m_index != nullptr) {
-            for (unsigned index = m_index[Get_Hash_Val(key)]; index != -1; index = m_table[index].next) {
+        if (m_hash != nullptr) {
+            for (unsigned index = m_hash[Get_Hash_Val(key)]; index != -1; index = m_table[index].next) {
                 if (m_table[index].key == key) {
-                    return &m_table[index].value;
+                    return m_table[index].value;
                 }
             }
         }
 
-        return nullptr;
+        return 0;
     }
 
-    Value Get(const Key &key, Value def_val) const
-    {
-        Value *result = Get(key);
-        return result != nullptr ? *result : def_val;
-    }
-
-    bool Exists(const Key &key) const { return Get(key) != nullptr; }
+    bool Exists(const Key &key) const { return Get(key) != 0; }
 
     void Insert(const Key &key, const Value &value)
     {
-        // If all entries are in use, enlarge the table
-        if (m_nextFree == -1) {
-            Re_Hash();
-        }
+        int index = Alloc_Entry();
 
-        unsigned index = m_nextFree;
-        m_nextFree = m_table[index].next;
-
-        unsigned hash = Get_Hash_Val(key);
+        unsigned int hash = Get_Hash_Val(key);
         m_table[index].key = key;
         m_table[index].value = value;
-        m_table[index].next = m_index[hash];
-        m_index[hash] = index;
+        m_table[index].next = m_hash[hash];
+        m_hash[hash] = index;
     }
 
     void Remove(const Key &key)
     {
-        if (m_index != nullptr) {
-            unsigned hash = Get_Hash_Val(key);
-            int *last_next_entry = &m_index[hash];
+        unsigned int hash = Get_Hash_Val(key);
+        unsigned int index2 = -1;
 
-            for (unsigned index = m_index[hash]; index != -1; index = m_table[index].next) {
-                Entry &entry = m_table[index];
+        if (m_hash != nullptr) {
+            for (unsigned int index = m_hash[hash]; index != -1; index = m_table[index].next) {
 
-                if (entry.key == key) {
-                    *last_next_entry = entry.next;
-                    m_table[index].next = m_nextFree;
-                    m_nextFree = index;
+                if (m_table[index].key == key) {
+                    if (index2 == -1) {
+                        m_hash[hash] = m_table[index].next;
+                    } else {
+                        m_table[index2].next = m_table[index].next;
+                    }
 
+                    m_table[index].next = m_first;
+                    m_first = index;
                     break;
                 }
-
-                last_next_entry = &m_table[index].next;
-            }
-        }
-    }
-
-    // Remove if keys and values match
-    void Remove(const Key &key, const Value &value)
-    {
-        if (m_index != nullptr) {
-            unsigned hash = Get_Hash_Val(key);
-            int *lastEntryNext = &m_index[hash];
-
-            for (unsigned index = m_index[hash]; index != -1; index = m_table[index].next) {
-                Entry &entry = m_table[index];
-
-                if (entry.key == key && entry.value == value) {
-                    *lastEntryNext = entry.next;
-                    m_table[index].next = m_nextFree;
-                    m_nextFree = index;
-
-                    break;
-                }
-
-                lastEntryNext = &m_table[index].next;
+                index2 = index;
             }
         }
     }
 
     void Remove_All()
     {
-        for (unsigned hash = 0; hash < m_size; hash++) {
-            unsigned index = m_index[hash];
+        for (unsigned int hash = 0; hash < m_size; hash++) {
+            unsigned int index = m_hash[hash];
 
             if (index != -1) {
-                unsigned lastHash = index;
+                int new_index = m_hash[hash];
 
-                while (m_table[lastHash].next != -1) {
-                    lastHash = m_table[lastHash].next;
+                for (int j = m_table[index].next; j != -1; j = m_table[j].next) {
+                    new_index = j;
                 }
 
-                m_table[lastHash].next = m_nextFree;
-                m_nextFree = index;
-                m_index[hash] = -1;
+                m_table[new_index].next = m_first;
+                m_first = index;
+                m_hash[hash] = -1;
             }
         }
-    }
-
-    unsigned Get_Size() const
-    {
-        unsigned result = 0;
-
-        for (unsigned hash = 0; hash < m_size; hash++) {
-            unsigned index = m_index[hash];
-
-            while (index != -1) {
-                ++result;
-                index = m_table[index].next;
-            }
-        }
-
-        return result;
-    }
-
-    const Value Get(int index) const
-    {
-        Value value = m_table[index].value;
-
-        return value;
     }
 
 private:
-    static unsigned Get_Hash_Val(const Key &key, unsigned max_size)
+    static unsigned int Get_Hash_Val(const Key &key, unsigned int max_size)
     {
         // Make sure max_size is a power of two, or the fast modulo code below will not work
         captainslog_assert((max_size % 2) == 0);
         return HashTemplateKeyClass<Key>::Get_Hash_Value(key) & (max_size - 1);
     }
 
-    unsigned Get_Hash_Val(const Key &key) const { return Get_Hash_Val(key, m_size); }
+    unsigned int Get_Hash_Val(const Key &key) const { return Get_Hash_Val(key, m_size); }
 
     void Re_Hash()
     {
@@ -190,44 +135,56 @@ private:
 
         Entry *new_table = new Entry[new_size];
         int *new_index = new int[new_size];
-        m_nextFree = 0;
+        unsigned int new_first = 0;
 
         for (unsigned index = 0; index < new_size; ++index) {
+            new_table[index].next = -1;
             new_index[index] = -1;
         }
 
-        for (unsigned hash = 0; hash < m_size; ++hash) {
-            for (int index = m_index[hash]; index != -1; index = m_table[index].next) {
-                unsigned hash2 = Get_Hash_Val(m_table[index].key, new_size);
+        for (unsigned int hash = 0; hash < m_size; ++hash) {
+            for (int index = m_hash[hash]; index != -1; index = m_table[index].next) {
+                unsigned int hash2 = Get_Hash_Val(m_table[index].key, new_size);
 
-                new_table[m_nextFree].next = new_index[hash2];
-                new_table[m_nextFree].key = m_table[index].key;
-                new_table[m_nextFree].value = m_table[index].value;
+                new_table[new_first].next = new_index[hash2];
+                new_table[new_first].key = m_table[index].key;
+                new_table[new_first].value = m_table[index].value;
 
-                new_index[hash2] = m_nextFree;
-                m_nextFree++;
+                new_index[hash2] = new_first;
+                new_first++;
             }
         }
 
-        delete[] m_index;
+        delete[] m_hash;
         delete[] m_table;
 
-        for (unsigned i = m_nextFree; i < new_size - 1; ++i) {
+        for (unsigned int i = new_first; i < new_size - 1; ++i) {
             new_table[i].next = i + 1;
         }
 
         new_table[new_size - 1].next = -1;
 
-        m_index = new_index;
-        m_table = new_table;
         m_size = new_size;
+        m_first = new_first;
+        m_hash = new_index;
+        m_table = new_table;
     }
 
-private:
-    int *m_index;
+    int Alloc_Entry()
+    {
+        if (m_first == -1) {
+            Re_Hash();
+        }
+
+        int ret = m_first;
+        m_first = m_table[ret].next;
+        return ret;
+    }
+
+    int *m_hash;
     Entry *m_table;
-    int m_nextFree;
-    unsigned m_size;
+    int m_first;
+    unsigned int m_size;
 };
 
 template<typename Key, typename Value> class HashTemplateIterator
@@ -235,55 +192,44 @@ template<typename Key, typename Value> class HashTemplateIterator
 public:
     HashTemplateIterator(HashTemplateClass<Key, Value> &_table)
     {
-        m_table = &_table;
-        Reset();
+        m_hashTable = &_table;
+        First();
     }
 
-    void Reset()
+    void First()
     {
-        m_index = -1;
+        m_handle = -1;
+        int size = m_hashTable->m_size;
 
-        for (m_hash = 0; m_hash < m_table->m_size; m_hash++) {
-            m_index = m_table->m_index[m_hash];
+        for (m_hashIndex = 0; m_hashIndex < size; m_hashIndex++) {
+            m_handle = m_hashTable->m_hash[m_hashIndex];
 
-            if (m_index != -1) {
+            if (m_handle != -1) {
                 break;
             }
         }
     }
 
-    // Removes the current element and advances to the next element.
-    void Remove()
+    void Next()
     {
-        const Key &k = Get_Key();
-        Increment();
-        m_table->Remove(k);
-    }
+        m_handle = m_hashTable->m_table[m_handle].next;
+        int size = m_hashTable->m_size;
 
-    const Key &Get_Key() { return m_table->m_table[m_index].key; }
-    Value &getValue() { return m_table->m_table[m_index].value; }
+        for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
+            m_handle = m_hashTable->m_hash[m_hashIndex];
 
-    void operator++() { Increment(); }
-    operator bool() const { return m_index != -1; }
-
-private:
-    void Increment()
-    {
-        m_index = m_table->m_table[m_index].next;
-
-        if (m_index == -1) {
-            for (m_hash++; m_hash < m_table->m_size; m_hash++) {
-                m_index = m_table->m_index[m_hash];
-
-                if (m_index != -1) {
-                    break;
-                }
+            if (m_handle != -1) {
+                break;
             }
         }
     }
 
+    bool Is_Done() { return m_hashIndex == m_hashTable->m_size; }
+
+    Value &Peek_Value() { return m_hashTable->m_table[m_handle].value; }
+
 private:
-    uint32_t m_hash;
-    int m_index;
-    HashTemplateClass<Key, Value> *m_table;
+    int m_hashIndex;
+    int m_handle;
+    HashTemplateClass<Key, Value> *m_hashTable;
 };

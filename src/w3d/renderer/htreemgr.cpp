@@ -81,8 +81,7 @@ HTreeClass *HTreeManagerClass::Get_Tree(const char *name)
 {
     StringClass key{ name };
     key.To_Lower();
-    auto *value = m_hashTable.Get(key);
-    return value == nullptr ? nullptr : *value;
+    return m_hashTable.Get(key);
 }
 
 int HTreeManagerClass::Get_Tree_ID(const char *name)

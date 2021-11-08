@@ -734,7 +734,7 @@ RenderObjClass *GameAssetManager::Create_Render_Obj(
         Recolour_Asset(robj, colour);
     }
 
-    auto *w3d_proto = new W3DPrototypeClass(robj, mangled_name);
+    auto *w3d_proto = NEW_POOL_OBJ(W3DPrototypeClass, robj, mangled_name);
     robj->Release_Ref();
     Add_Prototype(w3d_proto);
     robj = w3d_proto->Create();

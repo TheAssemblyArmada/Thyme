@@ -264,5 +264,9 @@ bool CollisionMath::Collide(const AABoxClass &box, const Vector3 &move, const AA
     result->normal.Z = 0.0f;
     result->normal[context.axis_id] = (float)(-context.side);
 
+    if (result->compute_contact_point) {
+        captainslog_assert(0);
+    }
+
     return true;
 }

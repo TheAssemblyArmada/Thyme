@@ -274,6 +274,8 @@ static void AABTri_Compute_Contact_Normal(AABTCollisionStruct &CollisionContext,
             set_norm.Normalize();
             break;
     }
+
+    captainslog_assert(set_norm.Length2() > 0.0f);
 }
 
 bool CollisionMath::Collide(const AABoxClass &box, const Vector3 &move, const TriClass &tri, CastResultStruct *result)
@@ -463,6 +465,7 @@ bool CollisionMath::Collide(const AABoxClass &box, const Vector3 &move, const Tr
         if (GameMath::Fabs(CollisionContext.max_frac - result->fraction) > GAMEMATH_EPSILON
             || Vector3::Dot_Product(result->normal, move) > Vector3::Dot_Product(move2, move)) {
             result->normal = move2;
+            captainslog_assert(GameMath::Fabs(result->normal.Length() - 1.0f) < GAMEMATH_EPSILON);
         }
 
         result->fraction = CollisionContext.max_frac;

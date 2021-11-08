@@ -38,8 +38,6 @@ typedef Vector3i16 TriIndex;
 
 class MeshGeometryClass : public W3DMPO, public RefCountClass, public MultiListObjectClass
 {
-    IMPLEMENT_W3D_POOL(MeshGeometryClass);
-
 public:
     enum FlagsType
     {
@@ -118,9 +116,6 @@ public:
     void Set_User_Text(char *usertext);
     void Set_Sort_Level(int level) { m_sortLevel = level; }
     void Set_Flag(FlagsType flag, bool onoff);
-
-    MeshGeometryClass *Hook_Ctor() { return new (this) MeshGeometryClass; }
-    MeshGeometryClass *Hook_Ctor2(const MeshGeometryClass &src) { return new (this) MeshGeometryClass(src); }
 
 protected:
     TriIndex *Get_Polys()

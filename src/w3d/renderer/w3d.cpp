@@ -157,9 +157,9 @@ void W3D::Invalidate_Textures()
     if (W3DAssetManager::Get_Instance()) {
         TextureLoader::Flush_Pending_Load_Tasks();
         for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
-             textureIter;
-             ++textureIter) {
-            TextureClass *texture = textureIter.getValue();
+             !textureIter.Is_Done();
+             textureIter.Next()) {
+            TextureClass *texture = textureIter.Peek_Value();
             texture->Invalidate();
         }
     }

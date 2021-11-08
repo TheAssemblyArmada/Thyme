@@ -977,7 +977,7 @@ void MilesAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
     if (event->Get_Event_Info() == nullptr) {
         Get_Info_For_Audio_Event(event);
         if (event->Get_Event_Info() == nullptr) {
-            captainslog_warn("No info for forced audio event '%s'", event->Get_Event_Name());
+            captainslog_warn("No info for forced audio event '%s'", event->Get_Event_Name().Str());
             return;
         }
     }

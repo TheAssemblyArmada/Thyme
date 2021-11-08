@@ -16,12 +16,11 @@
 #pragma once
 
 #include "always.h"
+#include "surfaceclass.h"
 #include "texturebase.h"
 #include "w3dformat.h"
 #include "w3dmpo.h"
 #include <new>
-
-class SurfaceClass;
 
 class TextureFilterClass
 {
@@ -108,6 +107,7 @@ public:
 
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);
+    void Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, unsigned int level);
     WW3DFormat Texture_Format() const { return m_textureFormat; }
     TextureFilterClass *Get_Texture_Filter() { return &m_textureFilter; }
 

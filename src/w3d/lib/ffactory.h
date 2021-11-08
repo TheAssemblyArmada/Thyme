@@ -14,7 +14,9 @@
  */
 #pragma once
 
+#include "critsection.h"
 #include "fileclass.h"
+#include "wwstring.h"
 
 class FileFactoryClass
 {
@@ -46,6 +48,22 @@ class RawFileFactoryClass
 public:
     FileClass *Get_File(const char *filename);
     void Return_File(FileClass *file);
+};
+
+class SimpleFileFactoryClass : public FileFactoryClass
+{
+public:
+    SimpleFileFactoryClass();
+    virtual ~SimpleFileFactoryClass(){};
+    virtual FileClass *Get_File(const char *filename);
+    virtual void Return_File(FileClass *file);
+    void Set_Strip_Path(bool strip) { m_isStripPath = strip; }
+    bool Get_Strip_Path() const { return m_isStripPath; }
+
+private:
+    StringClass m_subDirectory;
+    bool m_isStripPath;
+    mutable CriticalSectionClass m_mutex;
 };
 
 #ifdef GAME_DLL

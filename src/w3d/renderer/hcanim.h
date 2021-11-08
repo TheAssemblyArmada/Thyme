@@ -45,6 +45,7 @@ struct NodeCompressedMotionStruct
         } vd;
     };
     TimeCodedBitChannelClass *Vis;
+    NodeCompressedMotionStruct() : Vis(nullptr), tc() {}
     ~NodeCompressedMotionStruct();
     void Set_Flavor(int flavor) { Flavor = flavor; }
 };

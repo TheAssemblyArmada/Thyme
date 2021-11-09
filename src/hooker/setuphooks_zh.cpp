@@ -107,6 +107,7 @@
 #include "physicsupdate.h"
 #include "playerlist.h"
 #include "playertemplate.h"
+#include "pointgr.h"
 #include "polygontrigger.h"
 #include "projectilestreamupdate.h"
 #include "randomvalue.h"
@@ -2264,4 +2265,18 @@ void Setup_Hooks()
     Hook_Any(0x00574E40, ScoreKeeper::Get_Total_Units_Destroyed);
     Hook_Any(0x00574E60, ScoreKeeper::Xfer_Object_Count_Map);
     Hook_Any(0x00575060, ScoreKeeper::Xfer_Snapshot);
+
+    // pointgr.cpp
+    Hook_Any(0x00834CE0, PointGroupClass::Hook_Ctor);
+    Hook_Any(0x00834E10, PointGroupClass::Set_Arrays);
+    Hook_Any(0x00834F20, PointGroupClass::Set_Point_Color);
+    Hook_Any(0x00834F40, PointGroupClass::Set_Point_Orientation);
+    Hook_Any(0x00834F50, PointGroupClass::Set_Point_Frame);
+    Hook_Any(0x00834F60, PointGroupClass::Set_Point_Mode);
+    Hook_Any(0x00834F70, PointGroupClass::Set_Flag);
+    Hook_Any(0x00834FA0, PointGroupClass::Set_Billboard);
+    Hook_Any(0x00834FB0, PointGroupClass::Get_Frame_Row_Column_Count_Log2);
+    Hook_Any(0x00834FC0, PointGroupClass::Set_Frame_Row_Column_Count_Log2);
+    Hook_Any(0x00835050, PointGroupClass::Render);
+    Hook_Any(0x00838180, PointGroupClass::Render_Volume_Particle);
 }

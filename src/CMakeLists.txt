@@ -198,6 +198,7 @@ set(GAMEENGINE_SRC
     game/logic/system/gamelogic.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
+    game/logic/system/partitionmanager.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp

@@ -86,6 +86,7 @@
 #include "particlesys.h"
 #include "particlesysinfo.h"
 #include "particlesysmanager.h"
+#include "partitionmanager.h"
 #include "playertemplate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
@@ -1599,4 +1600,7 @@ void Setup_Hooks()
     // objectcreationlist.h
     Hook_Any(PICK_ADDRESS(0x004C1280, 0x00756BBD), ObjectCreationListStore::Hook_Ctor);
     Hook_Any(PICK_ADDRESS(0x004C1500, 0x00756CFB), ObjectCreationListStore::Find_Object_Creation_List);
+
+    // partitionmanager.h
+    Hook_Any(PICK_ADDRESS(0x0053B550, 0x0081DE80), PartitionManager::Hook_Ctor);
 }

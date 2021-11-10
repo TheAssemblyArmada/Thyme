@@ -16,6 +16,34 @@
 #include <ctype.h>
 #include <string.h>
 
+/*Concatenates strings to a known size.*/
+size_t u_strlcat(unichar_t *dst, const unichar_t *src, size_t dsize)
+{
+    const unichar_t *odst = dst;
+    const unichar_t *osrc = src;
+    size_t n = dsize;
+    size_t dlen;
+
+    /* Find the end of dst and adjust bytes left but don't go past end. */
+    while (n-- != 0 && *dst != U_CHAR('\0'))
+        dst++;
+    dlen = dst - odst;
+    n = dsize - dlen;
+
+    if (n-- == 0)
+        return (dlen + u_strlen(src));
+    while (*src != U_CHAR('\0')) {
+        if (n != 0) {
+            *dst++ = *src;
+            n--;
+        }
+        src++;
+    }
+    *dst = U_CHAR('\0');
+
+    return (dlen + (src - osrc)); /* count does not include NUL */
+}
+
 /*Copies strings to a buffer of known size.*/
 size_t u_strlcpy(unichar_t *dst, const unichar_t *src, size_t dsize)
 {

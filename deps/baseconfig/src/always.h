@@ -90,6 +90,11 @@ template<size_t Size> size_t u_strlcpy_tpl(unichar_t (&dst)[Size], const unichar
     return u_strlcpy(dst, src, Size);
 }
 
+template<size_t Size> size_t u_strlcat_tpl(unichar_t (&dst)[Size], const unichar_t *src)
+{
+    return u_strlcat(dst, src, Size);
+}
+
 namespace std
 {
     template<class T, class Compare>

@@ -25,6 +25,7 @@ extern "C" {
 size_t ex_strlcat(char *dst, const char *src, size_t dsize);
 size_t ex_strlcpy(char *dst, const char *src, size_t dsize);
 size_t u_strlcpy(unichar_t *dst, const unichar_t *src, size_t dsize);
+size_t u_strlcat(unichar_t *dst, const unichar_t *src, size_t dsize);
 char *ex_strtrim(char *str);
 char *ex_strlwr(char *str);
 char *ex_strupr(char *str);

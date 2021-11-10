@@ -113,6 +113,12 @@ public:
     Coord3D() : x(0.0f), y(0.0f), z(0.0f) {}
     Coord3D(float x_val, float y_val, float z_val) : x(x_val), y(y_val), z(z_val) {}
     float Length() { return float(Sqrt(float(float(float(x * x) + float(y * y)) + float(z * z)))); }
+    static void Cross_Product(const Coord3D *a, const Coord3D *b, Coord3D *set_result)
+    {
+        set_result->x = a->y * b->z - a->z * b->y;
+        set_result->y = a->z * b->x - a->x * b->z;
+        set_result->z = a->x * b->y - a->y * b->x;
+    }
 
     void Zero()
     {

@@ -48,12 +48,12 @@ void Handle_Name_Change(MapObject *obj)
 {
     if (obj->Get_Name().Compare("AmericaTankLeopard") == 0) {
         obj->Set_Name("AmericaTankCrusader");
-        obj->Set_Thing_Template(g_theThingFactory->Find_Template(obj->Get_Name()));
+        obj->Set_Thing_Template(g_theThingFactory->Find_Template(obj->Get_Name(), true));
     }
 
     if (obj->Get_Name().Compare("AmericaVehicleHumVee") == 0) {
         obj->Set_Name("AmericaVehicleHumvee");
-        obj->Set_Thing_Template(g_theThingFactory->Find_Template(obj->Get_Name()));
+        obj->Set_Thing_Template(g_theThingFactory->Find_Template(obj->Get_Name(), true));
     }
 }
 

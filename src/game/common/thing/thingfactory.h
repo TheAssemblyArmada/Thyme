@@ -15,13 +15,57 @@
 #pragma once
 
 #include "always.h"
+#include "rtsutils.h"
 #include "subsysteminterface.h"
 #include "thingtemplate.h"
+
+#ifdef THYME_USE_STLPORT
+#include <hash_map>
+#else
+#include <unordered_map>
+#endif
+
+class Team;
+class Object;
+class Drawable;
 
 class ThingFactory : public SubsystemInterface
 {
 public:
-    ThingTemplate *Find_Template(Utf8String name);
+    ThingFactory();
+    virtual ~ThingFactory() override;
+    virtual void Init() override {}
+    virtual void PostProcessLoad() override;
+    virtual void Reset() override;
+    virtual void Update() override {}
+
+    ThingTemplate *New_Template(const Utf8String &name);
+    ThingTemplate *New_Override(ThingTemplate *thing_template);
+    const ThingTemplate *First_Template() { return m_firstTemplate; }
+    const ThingTemplate *Find_Template_Internal(const Utf8String &name, bool b);
+    const ThingTemplate *Find_Template(const Utf8String &name, bool b) { return Find_Template_Internal(name, b); }
+    static void Parse_Object_Definition(INI *ini, Utf8String name, Utf8String reskin_from);
+    void Add_Template(ThingTemplate *tmplate);
+    const ThingTemplate *Find_Template_By_ID(unsigned short id);
+    Object *New_Object(const ThingTemplate *tmplate, Team *team, BitFlags<OBJECT_STATUS_COUNT> status_bits);
+    Drawable *New_Drawable(const ThingTemplate *tmplate, DrawableStatus status_bits);
+    void Free_Database();
+
+private:
+    ThingTemplate *m_firstTemplate;
+    unsigned short m_nextTemplateID;
+#ifdef THYME_USE_STLPORT
+    std::hash_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> m_templateMap;
+#else
+    std::unordered_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> m_templateMap;
+#endif
+};
+
+class W3DThingFactory : public ThingFactory
+{
+#ifdef GAME_DLL
+    W3DThingFactory *Hook_Ctor() { return new (this) W3DThingFactory; }
+#endif
 };
 
 #ifdef GAME_DLL

@@ -95,14 +95,6 @@ enum WhichTurretType
     MAX_TURRETS,
 };
 
-enum RadarPriorityType
-{
-    RADAR_PRIORITY_NOT_ON_RADAR,
-    RADAR_PRIORITY_STRUCTURE,
-    RADAR_PRIORITY_UNIT,
-    RADAR_PRIORITY_NUM_PRIORITIES,
-};
-
 enum PrivateStatus
 {
     STATUS_EFFECTIVELY_DEAD = 1 << 0,

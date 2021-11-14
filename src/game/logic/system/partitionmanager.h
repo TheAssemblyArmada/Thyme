@@ -55,9 +55,15 @@ enum ShroudedStatusType : int32_t
 {
     SHROUDED_INVALID,
     SHROUDED_NONE,
-    SHROUDED_PARTIAL,
-    SHROUDED_ALL,
+    SHROUDED_UNK2,
+    SHROUDED_UNK3,
     SHROUDED_UNK4,
+};
+
+struct LookerShrouder
+{
+    int16_t looker;
+    int16_t shrouder;
 };
 
 class PartitionCell : public SnapShot
@@ -71,9 +77,9 @@ public:
 
 private:
     CellAndObjectIntersection *m_firstCoilInCell;
-    uint32_t unk1[16]; // some sort of 2 16bit structure
-    float unk2;
-    float unk3;
+    LookerShrouder m_shroudStatus[16];
+    float m_maxDist;
+    float m_minDist;
     uint32_t m_threat[16];
     uint32_t m_value[16];
     int16_t m_coiCount;
@@ -103,8 +109,8 @@ private:
     int32_t unk1;
     int32_t m_dirtyFlag;
     ShroudedStatusType m_shroudedness[16];
-    ShroudedStatusType m_ghostShroudedness[16];
-    bool m_unk4[16];
+    ShroudedStatusType m_previousShroudedness[16];
+    bool m_everSeen[16];
     PartitionCell *m_lastCell;
 };
 

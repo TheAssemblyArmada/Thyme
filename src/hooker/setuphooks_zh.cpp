@@ -69,6 +69,7 @@
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
+#include "memdynalloc.h"
 #include "mesh.h"
 #include "meshgeometry.h"
 #include "meshmatdesc.h"

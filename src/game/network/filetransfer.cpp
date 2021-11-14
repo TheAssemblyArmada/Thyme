@@ -14,6 +14,7 @@
  */
 #include "filetransfer.h"
 #include <algorithm>
+#include <captainslog.h>
 #include <cstddef>
 
 using std::ptrdiff_t;

@@ -14,9 +14,9 @@
  */
 #include "unicodestring.h"
 #include "asciistring.h"
-#include "critsection.h"
+#include "memdynalloc.h"
+#include <captainslog.h>
 #include <stdio.h>
-#include <string.h>
 
 #if !defined BUILD_WITH_ICU && defined PLATFORM_WINDOWS
 #include <wctype.h>

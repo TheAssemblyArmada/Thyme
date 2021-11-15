@@ -86,6 +86,7 @@
 #include "particlesys.h"
 #include "particlesysinfo.h"
 #include "particlesysmanager.h"
+#include "partitionmanager.h"
 #include "playertemplate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
@@ -117,6 +118,9 @@
 #include "texturebase.h"
 #include "textureloader.h"
 #include "textureloadtask.h"
+#include "thing.h"
+#include "thingfactory.h"
+#include "thingtemplate.h"
 #include "thread.h"
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
@@ -249,7 +253,7 @@ void Setup_Hooks()
     Hook_Method(0x00415980, &Utf8String::Starts_With_No_Case);
     Hook_Method(0x00404210, &Utf8String::Str);
     Hook_Method(0x00415630, &Utf8String::To_Lower);
-    Hook_Method(0x00415450, &Utf8String::Translate);
+    Hook_Method(0x00415450, static_cast<void (Utf8String::*)(Utf16String const &)>(&Utf8String::Translate));
     Hook_Method(0x00415530, &Utf8String::Trim);
 
     // Replace Win32GameEngine
@@ -551,8 +555,9 @@ void Setup_Hooks()
 
     // cave.h CaveSystem
     Hook_Method(0x004D5730, &CaveSystem::Can_Switch_Index_to_Index);
-    Hook_Method(0x004D5790, &CaveSystem::Register_New_Cave);
+    // Hook_Method(0x004D5790, &CaveSystem::Register_New_Cave);
     Hook_Method(0x004D5880, &CaveSystem::Get_Tunnel_Tracker_For_Cave_Index);
+    Hook_Method(PICK_ADDRESS(0x004D55D0, 0x0076E506), &CaveSystem::Hook_Ctor);
 
     // teamsinfo.h TeamsInfoRec
     Hook_Method(0x004D8F80, &TeamsInfoRec::Clear);
@@ -1598,4 +1603,38 @@ void Setup_Hooks()
     // objectcreationlist.h
     Hook_Any(PICK_ADDRESS(0x004C1280, 0x00756BBD), ObjectCreationListStore::Hook_Ctor);
     Hook_Any(PICK_ADDRESS(0x004C1500, 0x00756CFB), ObjectCreationListStore::Find_Object_Creation_List);
+
+    // partitionmanager.h
+    Hook_Any(PICK_ADDRESS(0x0053B550, 0x0081DE80), PartitionManager::Hook_Ctor);
+
+    // thingfactory.h
+    Hook_Any(0x00777420, W3DThingFactory::Hook_Ctor);
+    Hook_Any(0x004AFB50, ThingFactory::New_Template);
+    Hook_Any(0x004B0850, ThingFactory::New_Override);
+    Hook_Any(0x004B0B20, ThingFactory::Find_Template_By_ID);
+    Hook_Any(0x004B0B50, ThingFactory::Find_Template_Internal);
+    Hook_Any(0x004B0EE0, ThingFactory::New_Drawable);
+    Hook_Any(0x004B0850, ThingFactory::New_Override);
+
+    // thing.h
+    Hook_Any(0x00543470, Thing::Get_Template);
+    Hook_Any(0x00543540, Thing::Get_Unit_Dir_Vector3D);
+    Hook_Any(0x005435C0, Thing::Set_Position_Z);
+    Hook_Any(0x00543800, Thing::Set_Position);
+    Hook_Any(0x00543A10, Thing::Set_Orientation);
+    Hook_Any(0x00543BC0, Thing::Set_Transform_Matrix);
+    Hook_Any(0x00543CD0, Thing::Is_KindOf);
+    Hook_Any(0x00543EB0, Thing::Calculate_Height_Above_Terrain);
+    Hook_Any(0x00543ED0, Thing::Get_Height_Above_Terrain);
+    Hook_Any(0x00543EF0, Thing::Get_Height_Above_Terrain_Or_Water);
+    Hook_Any(0x00543F60, Thing::Is_Significantly_Above_Terrain);
+    Hook_Any(0x00543FA0, Thing::Convert_Bone_Pos_To_World_Pos);
+    Hook_Any(0x00544180, Thing::Transform_Point);
+
+    // thingtemplate.h
+    Hook_Any(0x0058B3F0, ThingTemplate::Copy_From);
+    Hook_Any(0x0058B4D0, ThingTemplate::Set_Copied_From_Default);
+    Hook_Any(0x0058C210, ThingTemplate::Get_Skill_Point_Value);
+    Hook_Any(0x0058C230, ThingTemplate::Get_Buildable);
+    Hook_Any(0x0058C440, ThingTemplate::Get_Max_Simultaneous_Of_Type);
 }

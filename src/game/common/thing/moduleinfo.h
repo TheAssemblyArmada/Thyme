@@ -36,6 +36,12 @@ class ModuleInfo
 public:
     ModuleInfo() {}
     ~ModuleInfo() {}
+    void Set_Copied_From_Default(bool b)
+    {
+        for (unsigned int i = 0; i < m_info.size(); i++) {
+            m_info[i].copied_from_default = b;
+        }
+    }
 
 private:
     std::vector<Nugget> m_info;

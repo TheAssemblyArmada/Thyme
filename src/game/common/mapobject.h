@@ -81,7 +81,7 @@ public:
     void Set_Is_Waypoint() { m_runtimeFlags |= MO_WAYPOINT; }
     void Set_Is_Scorch() { m_runtimeFlags |= MO_SCORCH; }
     RenderObjClass *Get_Render_Obj() { return m_renderObj; }
-    MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, ThingTemplate *thing);
+    MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing);
     MapObject *Duplicate();
     void Set_Render_Obj(RenderObjClass *obj);
     void Set_Bridge_Render_Object(BridgeTowerType type, RenderObjClass *obj);
@@ -90,17 +90,17 @@ public:
     void Verify_Valid_Team();
     void Verify_Valid_Unique_ID();
     static void Fast_Assign_All_Unique_IDs();
-    void Set_Thing_Template(ThingTemplate *thing);
+    void Set_Thing_Template(const ThingTemplate *thing);
     void Set_Name(Utf8String name);
     int Get_Waypoint_ID();
     Utf8String Get_Waypoint_Name();
     void Set_Waypoint_ID(int i);
     void Set_Waypoint_Name(Utf8String n);
     static int Count_Map_Objects_With_Owner(const Utf8String &n);
-    ThingTemplate *Get_Thing_Template();
+    const ThingTemplate *Get_Thing_Template();
 
 #ifdef GAME_DLL
-    MapObject *Hook_Ctor(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, ThingTemplate *thing)
+    MapObject *Hook_Ctor(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing)
     {
         return new (this) MapObject(loc, name, angle, flags, props, thing);
     }
@@ -117,7 +117,7 @@ private:
 
     Coord3D m_location;
     Utf8String m_objectName;
-    ThingTemplate *m_thingTemplate;
+    const ThingTemplate *m_thingTemplate;
     float m_angle;
     MapObject *m_nextMapObject;
     int m_flags;

@@ -49,12 +49,10 @@ public:
         uint16_t ref_count;
         uint16_t num_chars_allocated;
 
-        unichar_t *Peek()
-        {
-            // Actual string data is stored immediately after the UnicodeStringData header.
-            // wchar_a to avoid strict aliasing issues on gcc/clang
-            return reinterpret_cast<unichar_a *>(&this[1]);
-        }
+        // Actual string data is stored immediately after the UnicodeStringData header.
+        // wchar_a to avoid strict aliasing issues on gcc/clang
+        const unichar_t *Peek() const { return reinterpret_cast<const unichar_a *>(&this[1]); }
+        unichar_t *Peek() { return reinterpret_cast<unichar_a *>(&this[1]); }
     };
 
     Utf16String() : m_data(nullptr) {}
@@ -110,11 +108,12 @@ public:
 
     operator const unichar_t *() const { return Str(); }
 
-    // TODO
-    // unichar_t *operator[](int index) const { return m_data->Peek()[index]; }
+    unichar_t operator[](int index) const { return Get_Char(index); }
+    unichar_t &operator[](int index) { return Get_Char(index); }
 
     void Validate();
-    unichar_t *Peek() const;
+    const unichar_t *Peek() const;
+    unichar_t *Peek();
     void Release_Buffer();
     void Ensure_Unique_Buffer_Of_Size(int chars_needed,
         bool keep_data = false,
@@ -122,14 +121,15 @@ public:
         const unichar_t *str_to_cat = nullptr);
     int Get_Length() const;
     void Clear();
-    unichar_t Get_Char(int) const;
+    unichar_t Get_Char(int index) const;
+    unichar_t &Get_Char(int index);
     const unichar_t *Str() const;
     unichar_t *Get_Buffer_For_Read(int len);
     void Set(const unichar_t *s);
     void Set(Utf16String const &string);
 
-    void Translate(Utf8String const &string);
-    void Translate(const char *string);
+    void Translate(Utf8String const &utf8_string);
+    void Translate(const char *utf8_string);
 
     void Concat(unichar_t c);
     void Concat(const unichar_t *s);
@@ -155,10 +155,13 @@ public:
 
     bool Next_Token(Utf16String *tok, Utf16String delims);
 
-    bool Is_None() { return m_data != nullptr && u_strcasecmp(Peek(), U_CHAR("None"), U_COMPARE_CODE_POINT_ORDER) == 0; }
-    bool Is_Empty() { return Get_Length() <= 0; }
-    bool Is_Not_Empty() { return !Is_Empty(); }
-    bool Is_Not_None() { return !Is_None(); }
+    bool Is_None() const
+    {
+        return m_data != nullptr && u_strcasecmp(Peek(), U_CHAR("None"), U_COMPARE_CODE_POINT_ORDER) == 0;
+    }
+    bool Is_Empty() const { return Get_Length() <= 0; }
+    bool Is_Not_Empty() const { return !Is_Empty(); }
+    bool Is_Not_None() const { return !Is_None(); }
 
     friend bool operator==(Utf16String const &left, Utf16String const &right) { return left.Compare(right) == 0; }
     friend bool operator==(Utf16String const &left, const unichar_t *right) { return left.Compare(right) == 0; }
@@ -180,6 +183,8 @@ public:
     static Utf16String const s_emptyString;
 
 private:
+    void Translate_Internal(const char *utf8_string, const int utf8_len);
+
     UnicodeStringData *m_data;
 };
 

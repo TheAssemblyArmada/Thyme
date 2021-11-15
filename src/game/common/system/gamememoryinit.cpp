@@ -675,10 +675,11 @@ void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params)
 
 void User_Memory_Init_Pools()
 {
-    char path[PATH_MAX];
-    char pool_name[256];
-    int initial_alloc;
-    int overflow_alloc;
+    // #FIX Initialize variables.
+    char path[PATH_MAX] = { 0 };
+    char pool_name[256] = { 0 };
+    int initial_alloc = 0;
+    int overflow_alloc = 0;
 
 #ifdef PLATFORM_WINDOWS
     GetModuleFileNameA(0, path, PATH_MAX);
@@ -719,7 +720,8 @@ void User_Memory_Init_Pools()
     // table as needed. If a pool name is specified twice, last entry wins.
     if (fp != nullptr) {
         while (fgets(path, PATH_MAX, fp) != nullptr) {
-            if (*path != ';' && sscanf(path, "%s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3) {
+            // #FIX Scan up to 255 characters only to avoid buffer overflow.
+            if (*path != ';' && sscanf(path, "%255s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3) {
                 for (PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr) {
                     if (strcasecmp(psr->pool_name, pool_name) == 0) {
                         psr->initial_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(initial_alloc));

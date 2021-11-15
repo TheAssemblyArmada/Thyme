@@ -27,7 +27,7 @@ Utf8String const Utf8String::s_emptyString(nullptr);
 Utf8String::Utf8String() : m_data(nullptr) {}
 
 /**
- * Inits this string with an existing string (copy) and increments reference count
+ * Initializes this string with an existing string (copy) and increments reference count.
  */
 Utf8String::Utf8String(Utf8String const &string) : m_data(string.m_data)
 {
@@ -37,7 +37,7 @@ Utf8String::Utf8String(Utf8String const &string) : m_data(string.m_data)
 }
 
 /**
- * Inits this string with a reference to the start of a char array.
+ * Initializes this string with a reference to the start of a char array.
  */
 Utf8String::Utf8String(const char *s) : m_data(nullptr)
 {
@@ -54,7 +54,17 @@ Utf8String::Utf8String(const char *s) : m_data(nullptr)
 /**
  * A utility method to test nullptr on string content and log if that happens
  */
-char *Utf8String::Peek() const
+const char *Utf8String::Peek() const
+{
+    captainslog_dbgassert(m_data != nullptr, "null string ptr");
+
+    return m_data->Peek();
+}
+
+/**
+ * A utility method to test nullptr on string content and log if that happens
+ */
+char *Utf8String::Peek()
 {
     captainslog_dbgassert(m_data != nullptr, "null string ptr");
 
@@ -152,8 +162,16 @@ int Utf8String::Get_Length() const
 
 char Utf8String::Get_Char(int index) const
 {
-    captainslog_dbgassert(index >= 0, "bad index in getCharAt.");
-    captainslog_dbgassert(Get_Length() > 0, "strlen returned less than or equal to 0 in getCharAt.");
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
+
+    return Peek()[index];
+}
+
+char &Utf8String::Get_Char(int index)
+{
+    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
+    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
 
     return Peek()[index];
 }
@@ -215,69 +233,67 @@ void Utf8String::Set(Utf8String const &string)
 /**
  * Converts a Utf16 string to Utf8
  */
-void Utf8String::Translate(Utf16String const &string)
+void Utf8String::Translate_Internal(const unichar_t *utf16_string, const int utf16_len)
 {
     Release_Buffer();
 
-#if defined BUILD_WITH_ICU // Use ICU convertors
-    int32_t length;
-    UErrorCode error = U_ZERO_ERROR;
-    u_strToUTF8(nullptr, 0, &length, string, -1, &error);
+#if defined BUILD_WITH_ICU
+    // Use ICU converters.
+    if (utf16_len > 0) {
+        int32_t utf8_len;
+        UErrorCode error = U_ZERO_ERROR;
+        // Get utf8 string length.
+        u_strToUTF8(nullptr, 0, &utf8_len, utf16_string, utf16_len, &error);
 
-    if (U_SUCCESS(error) && length > 0) {
-        u_strToUTF8(Get_Buffer_For_Read(length), length, nullptr, string, -1, &error);
+        if (U_SUCCESS(error) && utf8_len > 0) {
+            // Allocate and fill new utf8 string.
+            char *utf8_buffer = Get_Buffer_For_Read(utf8_len);
+            u_strToUTF8(utf8_buffer, utf8_len, nullptr, utf16_string, utf16_len, &error);
 
-        if (U_FAILURE(error)) {
-            Clear();
-        }
-    }
-#elif defined PLATFORM_WINDOWS // Use WIN32 API convertors.
-    int length = WideCharToMultiByte(CP_UTF8, 0, string, -1, nullptr, 0, nullptr, nullptr);
-
-    if (length > 0) {
-        WideCharToMultiByte(CP_UTF8, 0, string, -1, Get_Buffer_For_Read(length), length, nullptr, nullptr);
-    }
-#else // Naive copy, this is what the original does.
-    int str_len = string.Get_Length();
-
-    for (int i = 0; i < str_len; ++i) {
-        // This is a debug assert from the look of it.
-        /*if ( v4 < 8 || (!stringSrc.m_data ? (v6 = 0) : (v5 = stringSrc.Peek(), v6 = wcslen(v5)), v3 >= v6) )
-        {
-            if ( `Utf16String::Get_Char'::`14'::allowCrash )
-            {
-                TheCurrentAllowCrashPtr = &`Utf16String::Get_Char'::`14'::allowCrash;
-                DebugCrash(aBadIndexInGetch);
-                TheCurrentAllowCrashPtr = 0;
+            if (U_FAILURE(error)) {
+                Clear();
+            } else {
+                // Add null terminator manually.
+                utf8_buffer[utf8_len] = '\0';
             }
-        }*/
-        wchar_t c;
-
-        if (string.m_data != nullptr) {
-            c = string.Get_Char(i);
-        } else {
-            c = L'\0';
         }
+    }
+#elif defined PLATFORM_WINDOWS
+    // Use WIN32 API converters.
+    if (utf16_len > 0) {
+        // Get utf8 string length.
+        const int utf8_len = WideCharToMultiByte(CP_UTF8, 0, utf16_string, utf16_len, nullptr, 0, nullptr, nullptr);
 
-        // null out the second byte so Concat only concatenates the first byte.
-        // prevents issues if unicode string contains none ascii chars.
-        // This will have endian issues on big endian.
-        c &= 0xFF;
+        if (utf8_len > 0) {
+            // Allocate and fill new utf8 string.
+            char *utf8_buffer = Get_Buffer_For_Read(utf8_len);
+            WideCharToMultiByte(CP_UTF8, 0, utf16_string, utf16_len, utf8_buffer, utf8_len, nullptr, nullptr);
 
-#ifdef SYSTEM_BIG_ENDIAN
-        // Byte swap if on big endian, only care about least significant byte
-        if (sizeof(wchar_t) == 2) {
-            c = htole16(c);
-        } else if (sizeof(wchar_t) == 4) {
-            c = htole32(c);
-        } else {
-            captainslog_dbgassert(false, "wchar_t is not an expected size.");
+            // Add null terminator manually.
+            utf8_buffer[utf8_len] = '\0';
         }
-#endif
-
-        Concat(reinterpret_cast<char *>(&c));
+    }
+#else
+    // Naive copy, this is what the original does.
+    for (int i = 0; i < utf16_len; ++i) {
+        unichar_t u = utf16_string[i];
+        // FEATURE: Append ? character for non ASCII characters
+        if (u > 127)
+            u = U_CHAR('?');
+        Concat(static_cast<char>(u));
     }
 #endif
+}
+
+void Utf8String::Translate(Utf16String const &utf16_string)
+{
+    Translate_Internal(utf16_string.Str(), utf16_string.Get_Length());
+}
+
+void Utf8String::Translate(const unichar_t *utf16_string)
+{
+    int utf16_len = static_cast<int>(u_strlen(utf16_string));
+    Translate_Internal(utf16_string, utf16_len);
 }
 
 /**
@@ -351,7 +367,7 @@ void Utf8String::Trim()
  */
 void Utf8String::To_Lower()
 {
-    // Size specifically matches original code for compatability
+    // Size specifically matches original code for compatibility.
     char buf[MAX_TO_LOWER_BUF_LEN];
 
     if (m_data == nullptr) {
@@ -459,7 +475,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    int res = vsnprintf(buf, sizeof(buf), format, args);
+    int res = vsnprintf(buf, ARRAY_SIZE(buf), format, args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
@@ -471,7 +487,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
 void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
-    int res = vsnprintf(buf, sizeof(buf), format.Str(), args);
+    int res = vsnprintf(buf, ARRAY_SIZE(buf), format.Str(), args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
@@ -624,12 +640,12 @@ bool Utf8String::Next_Token(Utf8String *tok, const char *delims)
 
 void Utf8String::Validate()
 {
-    // TODO, doesnt seem to be implimented anywhere? It is called though...
+    // TODO, does not seem to be implemented anywhere? It is called though...
 }
 
 #ifdef GAME_DEBUG
 void Utf8String::Debug_Ignore_Leaks()
 {
-    // TODO, doesnt seem to be implimented anywhere? It is called though...
+    // TODO, does not seem to be implemented anywhere? It is called though...
 }
 #endif // GAME_DEBUG

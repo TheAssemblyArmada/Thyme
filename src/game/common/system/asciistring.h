@@ -72,11 +72,9 @@ public:
 #endif
         }
 
-        char *Peek()
-        {
-            // Actual string data is stored immediately after the AsciiStringData header.
-            return reinterpret_cast<char *>(&this[1]);
-        }
+        // Actual string data is stored immediately after the AsciiStringData header.
+        const char *Peek() const { return reinterpret_cast<const char *>(&this[1]); }
+        char *Peek() { return reinterpret_cast<char *>(&this[1]); }
     };
 
     Utf8String();
@@ -97,20 +95,26 @@ public:
 
     operator const char *() const { return Str(); }
 
+    char operator[](int index) const { return Get_Char(index); }
+    char &operator[](int index) { return Get_Char(index); }
+
     void Validate();
-    char *Peek() const;
+    const char *Peek() const;
+    char *Peek();
     void Release_Buffer();
     int Get_Length() const;
 
     void Clear() { Release_Buffer(); }
     char Get_Char(int index) const;
+    char &Get_Char(int index);
     const char *Str() const;
     char *Get_Buffer_For_Read(int len);
     // These two should probably be private with the = operator being the preferred interface?
     void Set(const char *s);
     void Set(Utf8String const &string);
 
-    void Translate(Utf16String const &stringSrc);
+    void Translate(Utf16String const &utf16_string);
+    void Translate(const unichar_t *utf16_string);
 
     // Concat should probably be private and += used as the preferred interface.
     void Concat(char c);
@@ -124,7 +128,7 @@ public:
     void Format(const char *format, ...);
     void Format(Utf8String format, ...);
 
-    // Compare funcs should probably be private and operators should be friends and the
+    // Compare functions should probably be private and operators should be friends and the.
     // preferred interface.
     int Compare(const char *s) const { return strcmp(Str(), s); }
     int Compare(Utf8String const &string) const { return strcmp(Str(), string.Str()); }
@@ -185,6 +189,8 @@ public:
 #endif
 
 private:
+    void Translate_Internal(const unichar_t *utf16_string, const int utf16_len);
+
     // Probably supposed to be private
     void Ensure_Unique_Buffer_Of_Size(
         int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);

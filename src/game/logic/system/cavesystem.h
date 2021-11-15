@@ -60,6 +60,9 @@ public:
     TunnelTracker *Register_New_Cave(int index);
     TunnelTracker *Get_Tunnel_Tracker_For_Cave_Index(size_t index);
 
+    // zh: 0x004D55D0 wb: 0x0076E506
+    CaveSystem *Hook_Ctor() { return new (this) CaveSystem; }
+
 private:
     std::vector<TunnelTracker *> m_caves;
 };

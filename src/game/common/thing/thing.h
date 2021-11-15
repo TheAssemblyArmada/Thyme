@@ -40,7 +40,7 @@ protected:
     virtual ~Thing() override {}
 
 public:
-    Thing(const ThingTemplate *templ = nullptr);
+    Thing(const ThingTemplate *thing_template);
 
     // Thing interface virtual functions.
     virtual float Calculate_Height_Above_Terrain() const;
@@ -55,21 +55,21 @@ public:
     void Get_Unit_Dir_Vector2D(Coord3D &dst) const;
     void Get_Unit_Dir_Vector3D(Coord3D &dst) const;
 
-    void Set_Position_Z(float pos);
+    void Set_Position_Z(float z);
     void Set_Position(const Coord3D *pos);
-    void Set_Orientation(float orientation);
-    void Set_Transform_Matrix(const Matrix3D *tm);
+    void Set_Orientation(float angle);
+    void Set_Transform_Matrix(const Matrix3D *mx);
 
-    bool Is_Kind_Of(KindOfType type) const;
-    bool Is_Kind_Of_Multi(const BitFlags<KINDOF_COUNT> &flags1, const BitFlags<KINDOF_COUNT> &flags2) const;
-    bool Is_Any_Kind_Of(const BitFlags<KINDOF_COUNT> &flags) const;
+    bool Is_KindOf(KindOfType t) const;
+    bool Is_KindOf_Multi(const BitFlags<KINDOF_COUNT> &must_be_set, const BitFlags<KINDOF_COUNT> &must_be_clear) const;
+    bool Is_Any_KindOf(const BitFlags<KINDOF_COUNT> &any_kind_of) const;
     bool Is_Significantly_Above_Terrain() const;
 
     float Get_Height_Above_Terrain() const;
     float Get_Height_Above_Terrain_Or_Water() const;
 
     void Convert_Bone_Pos_To_World_Pos(
-        const Coord3D *bone_pos, const Matrix3D *bone_tm, Coord3D *world_pos, Matrix3D *world_tm) const;
+        const Coord3D *bone_pos, const Matrix3D *bone_transform, Coord3D *world_pos, Matrix3D *world_transform) const;
     void Transform_Point(const Coord3D *in, Coord3D *out);
 
     const Matrix3D *Get_Transform_Matrix() const { return &m_transform; }
@@ -77,6 +77,7 @@ public:
     float Get_Orientation() const { return m_cachedAngle; }
 
     bool Is_Above_Terrain() const { return Get_Height_Above_Terrain() > 0.0f; }
+    bool Is_Above_Terrain_Or_Water() const { return Get_Height_Above_Terrain_Or_Water() > 0.0f; }
 
 private:
     Override<ThingTemplate> m_template;

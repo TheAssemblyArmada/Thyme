@@ -534,12 +534,12 @@ public:
     void Handle_Partition_Cell_Maintenance();
 
 private:
-    struct DLINK_TeamMemberList
+    struct DlinkTeamMemberList
     {
         Object *m_prev;
         Object *m_next;
-        DLINK_TeamMemberList() : m_prev(nullptr), m_next(nullptr) {}
-        ~DLINK_TeamMemberList()
+        DlinkTeamMemberList() : m_prev(nullptr), m_next(nullptr) {}
+        ~DlinkTeamMemberList()
         {
             captainslog_dbgassert(!m_prev && !m_next, "destroying dlink still in a list TeamMemberList");
         }
@@ -594,7 +594,7 @@ private:
     Utf8String m_originalTeamName;
     unsigned int m_customIndicatorColor;
     Coord3D m_healthBoxOffset;
-    Object::DLINK_TeamMemberList m_dlink_TeamMemberList;
+    Object::DlinkTeamMemberList m_dlink_TeamMemberList;
     WeaponSet m_weaponSet;
     BitFlags<WEAPONSET_COUNT> m_curWeaponSetFlags;
     unsigned int m_weaponBonusCondition;

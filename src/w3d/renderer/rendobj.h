@@ -112,11 +112,11 @@ public:
         USER_DATA_MATERIAL_OVERRIDE = 0x1234567,
     };
 
-    struct Material_Override
+    struct MaterialOverride
     {
         int m_structID;
         Vector2 m_customUVOffset;
-        Material_Override() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
+        MaterialOverride() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
     };
 
     RenderObjClass();
@@ -322,7 +322,7 @@ public:
 #ifdef GAME_DLL
     virtual const PersistFactoryClass &Get_Factory() const;
 #endif
-    virtual bool Save(ChunkSaveClass &csave);
+    virtual bool Save(ChunkLoadClass &csave);
     virtual bool Load(ChunkLoadClass &cload);
     const Matrix3D &Get_Transform() const;
     const Matrix3D &Get_Transform(bool &is_transform_identity) const;

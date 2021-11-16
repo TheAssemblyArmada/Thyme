@@ -27,11 +27,11 @@ public:
 };
 
 // Pointer wrapper from RAII style use of file classes.
-class auto_file_ptr
+class AutoFilePtr
 {
 public:
-    auto_file_ptr(FileFactoryClass *fact, const char *filename);
-    ~auto_file_ptr() { m_factory->Return_File(m_file); }
+    AutoFilePtr(FileFactoryClass *fact, const char *filename);
+    ~AutoFilePtr() { m_factory->Return_File(m_file); }
 
     operator FileClass *() { return m_file; }
     FileClass &operator*() { return *m_file; }

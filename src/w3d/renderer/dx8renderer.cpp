@@ -55,9 +55,9 @@ bool Compare_Materials(const VertexMaterialClass *a, const VertexMaterialClass *
     return crc1 == crc2;
 }
 
-struct Textures_Material_And_Shader_Booking_Struct
+struct TexturesMaterialAndShaderBookingStruct
 {
-    Textures_Material_And_Shader_Booking_Struct() : m_addedTypeCount(0)
+    TexturesMaterialAndShaderBookingStruct() : m_addedTypeCount(0)
     {
         memset(m_addedMaterials, 0, sizeof(m_addedMaterials));
         memset(m_addedTextures, 0, sizeof(m_addedTextures));
@@ -70,7 +70,7 @@ struct Textures_Material_And_Shader_Booking_Struct
     unsigned int m_addedTypeCount;
 };
 
-bool Textures_Material_And_Shader_Booking_Struct::Add_Textures_Material_And_Shader(
+bool TexturesMaterialAndShaderBookingStruct::Add_Textures_Material_And_Shader(
     TextureClass **texs, VertexMaterialClass *mat, ShaderClass shd)
 {
     for (unsigned int i = 0; i < m_addedTypeCount; i++) {
@@ -586,7 +586,7 @@ void DX8TextureCategoryClass::Render()
                 renderer->Render_Sorted(mesh->Get_Base_Vertex_Offset(), mesh->Get_Bounding_Sphere());
             } else if (mesh->Get_Alpha_Override() != 1.0f
                 || (mesh->Get_User_Data()
-                    && ((RenderObjClass::Material_Override *)mesh->Get_User_Data())->m_structID
+                    && ((RenderObjClass::MaterialOverride *)mesh->Get_User_Data())->m_structID
                         == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE)) {
                 float opacity = m_material->Get_Opacity();
                 Vector3 diffuse;
@@ -596,10 +596,10 @@ void DX8TextureCategoryClass::Render()
                 Vector2 uv;
 
                 if (mesh->Get_User_Data()
-                    && ((RenderObjClass::Material_Override *)mesh->Get_User_Data())->m_structID
+                    && ((RenderObjClass::MaterialOverride *)mesh->Get_User_Data())->m_structID
                         == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE
                     && mapper && mapper->Mapper_ID() == TextureMapperClass::MAPPER_ID_LINEAR_OFFSET) {
-                    RenderObjClass::Material_Override *override = (RenderObjClass::Material_Override *)mesh->Get_User_Data();
+                    RenderObjClass::MaterialOverride *override = (RenderObjClass::MaterialOverride *)mesh->Get_User_Data();
                     LinearOffsetTextureMapperClass *l = (LinearOffsetTextureMapperClass *)mapper;
                     sync = l->Get_Sync_Time();
                     l->Set_Sync_Time(W3D::Get_Sync_Time());
@@ -1239,7 +1239,7 @@ void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &sp
     }
 
     for (unsigned int i = 0; i < split_table.Get_Pass_Count(); i++) {
-        Textures_Material_And_Shader_Booking_Struct booking;
+        TexturesMaterialAndShaderBookingStruct booking;
         int old_used_indices = m_usedIndices;
 
         for (int j = 0; j < polygon_count; j++) {

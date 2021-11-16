@@ -148,7 +148,7 @@ __forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types...
 // So long as the calling conventions and arguments for the replaced and
 // replacement functions are the same, everything should just work.
 #pragma pack(push, 1)
-struct x86_jump
+struct X86Jump
 {
     const uint8_t cmd = 0xE9;
     uintptr_t addr;
@@ -163,9 +163,9 @@ struct x86_jump
 inline void Hook_Func(uintptr_t in, uintptr_t out)
 {
 #ifdef GAME_DLL
-    static_assert(sizeof(x86_jump) == 5, "Jump struct not expected size.");
+    static_assert(sizeof(X86Jump) == 5, "Jump struct not expected size.");
 
-    x86_jump cmd;
+    X86Jump cmd;
     cmd.addr = out - in - 5;
     WriteProcessMemory(GetCurrentProcess(), (LPVOID)in, &cmd, 5, nullptr);
 #endif

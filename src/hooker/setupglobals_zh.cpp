@@ -237,7 +237,7 @@ StringClass &DX8Caps::s_videoCardDetails = Make_Global<StringClass>(PICK_ADDRESS
 
 // multilist.cpp
 #include "multilist.h"
-HOOK_AUTOPOOL(MultiListNodeClass, 256, PICK_ADDRESS(0x00A66288, 0x00E0BB30));
+template<> HOOK_AUTOPOOL(MultiListNodeClass, 256, PICK_ADDRESS(0x00A66288, 0x00E0BB30));
 
 // dx8wrapper.cpp
 #include "dx8wrapper.h"

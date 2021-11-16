@@ -66,6 +66,7 @@ static FieldParse s_theObjectCreationListFieldParse[] = {
 // clang-format on
 
 // zh: 0x004C1570, wb: 0x00756D92
+// Was originally called through INI::parseObjectCreationListDefinition
 void ObjectCreationListStore::Parse_Object_Creation_List_Definition(INI *ini)
 {
     const auto key = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());

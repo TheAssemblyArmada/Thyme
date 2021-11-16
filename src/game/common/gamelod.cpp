@@ -424,7 +424,8 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
     return m_staticLOD[STATLOD_LOW].texture_reduction_factor;
 }
 
-void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
+// Was originally INI::parseStaticGameLODDefinition
+void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
 {
     static FieldParse _static_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
@@ -460,7 +461,8 @@ void GameLODManager::Parse_Static_LOD_Definitions(INI *ini)
     }
 }
 
-void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
+// Was originally INI::parseDynamicGameLODDefinition
+void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
 {
     static const char *_particle_prioritiy_names[] = { "NONE",
         "WEAPON_EXPLOSION",
@@ -505,6 +507,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definitions(INI *ini)
     }
 }
 
+// Was originally INI::parseLODPreset
 void GameLODManager::Parse_LOD_Preset(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
@@ -532,7 +535,8 @@ void GameLODManager::Parse_LOD_Preset(INI *ini)
     }
 }
 
-void GameLODManager::Parse_Bench_Profiles(INI *ini)
+// Was originally INI::parseBenchProfile
+void GameLODManager::Parse_Bench_Profile(INI *ini)
 {
     if (g_theGameLODManager != nullptr) {
         int bench_count = g_theGameLODManager->m_benchProfileCount;
@@ -548,7 +552,8 @@ void GameLODManager::Parse_Bench_Profiles(INI *ini)
     }
 }
 
-void GameLODManager::Parse_Low_MHz(INI *ini)
+// Was originally parseReallyLowMHz
+void GameLODManager::Parse_Really_Low_MHz(INI *ini)
 {
     int mhz;
     INI::Parse_Int(ini, nullptr, &mhz, nullptr);

@@ -57,6 +57,7 @@ DrawGroupInfo::DrawGroupInfo() :
 
 /**
  * Custom int parser for DrawGroupInfo entries.
+ * Was originally parseInt
  */
 void DrawGroupInfo::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -71,6 +72,7 @@ void DrawGroupInfo::Parse_Int(INI *ini, void *formal, void *store, const void *u
 
 /**
  * Custom %age parser for DrawGroupInfo entries.
+ * Was originally parsePercentToReal
  */
 void DrawGroupInfo::Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void *user_data)
 {

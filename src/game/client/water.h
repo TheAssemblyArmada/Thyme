@@ -26,7 +26,7 @@ class WaterSetting
 public:
     virtual ~WaterSetting() {}
 
-    static void Parse_Water_Setting(INI *ini);
+    static void Parse_Water_Setting_Definition(INI *ini);
 
 private:
     Utf8String m_skyTextureFile;
@@ -55,7 +55,7 @@ protected:
 public:
     WaterTransparencySetting();
 
-    static void Parse_Water_Transparency(INI *ini);
+    static void Parse_Water_Transparency_Definition(INI *ini);
 
 private:
     float m_transparentWaterDepth;

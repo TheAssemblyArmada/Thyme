@@ -66,6 +66,7 @@ FieldParse MiscAudio::s_fieldParseTable[] = { { "RadarNotifyUnitUnderAttackSound
     { "AircraftWheelScreech", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_aircraftWheelScreech) },
     { nullptr, nullptr, nullptr, 0 } };
 
+// Was originally INI::parseMiscAudio
 void MiscAudio::Parse_Misc_Audio(INI *ini)
 {
     ini->Init_From_INI(g_theAudio->Get_Misc_Audio(), s_fieldParseTable);

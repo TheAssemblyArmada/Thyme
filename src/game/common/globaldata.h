@@ -63,7 +63,7 @@ public:
 
     bool Set_Time_Of_Day(TimeOfDayType time);
 
-    static void Parse_Game_Data_Definitions(INI *ini);
+    static void Parse_Game_Data_Definition(INI *ini);
     // Looks like members are likely public or there would have been a lot of
     // getters/setters.
     // pad indicates where padding will be added to keep 4 byte alignment

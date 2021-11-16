@@ -228,10 +228,11 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
 
 /**
  * @brief Parses player template definitions into the store from an ini file.
+ * Was originally called through INI::parsePlayerTemplateDefinition
  *
  * 0x004D3860
  */
-void PlayerTemplateStore::Parse_Player_Template_Definitions(INI *ini)
+void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
 {
     static FieldParse _parse_table[] = { { "Side", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_side) },
         { "BaseSide", &INI::Parse_AsciiString, nullptr, offsetof(PlayerTemplate, m_baseSide) },

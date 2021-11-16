@@ -41,9 +41,12 @@ FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { "MinSampleVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_minSampleVolume) },
     { "GlobalMinRange", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_globalMinRange) },
     { "GlobalMaxRange", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_globalMaxRange) },
-    { "TimeBetweenDrawableSounds", &INI::Parse_Duration_Int, nullptr, offsetof(AudioSettings, m_timeBetweenDrawableSounds) },
-    { "TimeToFadeAudio", &INI::Parse_Duration_Int, nullptr, offsetof(AudioSettings, m_timeToFadeAudio) },
-    { "AudioFootprintInBytes", &INI::Parse_Unsigned, nullptr, offsetof(AudioSettings, m_audioFootprintInBytes) },
+    { "TimeBetweenDrawableSounds",
+        &INI::Parse_Duration_Unsigned_Int,
+        nullptr,
+        offsetof(AudioSettings, m_timeBetweenDrawableSounds) },
+    { "TimeToFadeAudio", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(AudioSettings, m_timeToFadeAudio) },
+    { "AudioFootprintInBytes", &INI::Parse_Unsigned_Int, nullptr, offsetof(AudioSettings, m_audioFootprintInBytes) },
     { "Relative2DVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_relative2DVolume) },
     { "DefaultSoundVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_defaultSoundVolume) },
     { "Default3DSoundVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_default3DSoundVolume) },
@@ -66,7 +69,8 @@ FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
-void AudioSettings::Parse_Audio_Settings(INI *ini)
+// was originally INI::parseAudioSettingsDefinition
+void AudioSettings::Parse_Audio_Settings_Definition(INI *ini)
 {
     AudioSettings *as = g_theAudio->Get_Audio_Settings();
     ini->Init_From_INI(as, s_audioSettingsParseTable);

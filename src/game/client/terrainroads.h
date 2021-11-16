@@ -109,8 +109,8 @@ public:
     TerrainRoadType *Find_Road(Utf8String name);
     TerrainRoadType *Find_Bridge(Utf8String name);
 
-    static void Parse_Terrain_Road_Definitions(INI *ini);
-    static void Parse_Terrain_Bridge_Definitions(INI *ini);
+    static void Parse_Terrain_Road_Definition(INI *ini);
+    static void Parse_Terrain_Bridge_Definition(INI *ini);
 
     TerrainRoadType *First_Road() { return m_roadList; }
     TerrainRoadType *Next_Road(TerrainRoadType *road) { return road->Get_Next(); }

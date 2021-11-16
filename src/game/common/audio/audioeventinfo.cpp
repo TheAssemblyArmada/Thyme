@@ -38,12 +38,12 @@ FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority) },
     { "Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility) },
     { "Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control) },
-    { "Sounds", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_sounds) },
-    { "SoundsNight", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsNight) },
-    { "SoundsEvening", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsEvening) },
-    { "SoundsMorning", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
-    { "Attack", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_attack) },
-    { "Decay", &INI::Parse_Sounds_Vector, nullptr, offsetof(AudioEventInfo, m_decay) },
+    { "Sounds", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_sounds) },
+    { "SoundsNight", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsNight) },
+    { "SoundsEvening", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsEvening) },
+    { "SoundsMorning", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
+    { "Attack", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_attack) },
+    { "Decay", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_decay) },
     { "MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange) },
     { "MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange) },
     { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
@@ -54,8 +54,9 @@ FieldParse AudioEventInfo::s_audioEventParseTable[] = {
  * Parses audio event definition information from an INI instance.
  *
  * 0x0044ED70
+ * Was originally INI::parseAudioEventDefintion
  */
-void AudioEventInfo::Parse_Audio_Event(INI *ini)
+void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
 {
     Utf8String name = ini->Get_Next_Token();
     AudioEventInfo *new_event = g_theAudio->New_Audio_Event_Info(name);
@@ -75,6 +76,7 @@ void AudioEventInfo::Parse_Audio_Event(INI *ini)
 /**
  * Parses a pitch shift field from an INI file instance.
  *
+ * Was originally parsePitchShift
  * 0x0044F290
  */
 void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, const void *user_data)
@@ -91,6 +93,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
 /**
  * Parses a delay field from an INI file instance.
  *
+ * Was originally parseDelay
  * 0x0044F250
  */
 void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void *user_data)

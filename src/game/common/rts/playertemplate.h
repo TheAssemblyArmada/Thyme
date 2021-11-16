@@ -114,7 +114,7 @@ public:
     PlayerTemplate *Get_Nth_Player_Template(int index);
     void Get_All_Side_Strings(std::list<Utf8String> *list);
 
-    static void Parse_Player_Template_Definitions(INI *ini);
+    static void Parse_Player_Template_Definition(INI *ini);
 
 private:
     std::vector<PlayerTemplate> m_playerTemplates;

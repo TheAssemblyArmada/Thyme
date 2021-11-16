@@ -57,10 +57,19 @@ const char *TheWeaponBonusFieldNames[] = {
 
 void WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data)
 {
-    // We get passed a pointer to the global object plus an offsets so its a pointer to
-    // the weapon bonus set pointer in the global object.
     WeaponBonusSet *wbs = *static_cast<WeaponBonusSet **>(store);
+    wbs->Parse_Weapon_Bonus_Set(ini);
+}
+
+void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, void const *user_data)
+{
+    WeaponBonusSet *wbs = static_cast<WeaponBonusSet *>(store);
+    wbs->Parse_Weapon_Bonus_Set(ini);
+}
+
+void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini)
+{
     int set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
-    int field = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames);
-    wbs->m_bonus[set].field[field] = INI::Scan_PercentToReal(ini->Get_Next_Token());
+    WeaponBonus::Field field = WeaponBonus::Field(INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames));
+    m_bonus[set].Set_Field(field, INI::Scan_PercentToReal(ini->Get_Next_Token()));
 }

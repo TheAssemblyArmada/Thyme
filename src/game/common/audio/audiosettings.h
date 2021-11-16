@@ -67,7 +67,7 @@ public:
     int Get_Stream_Count() const { return m_streamCount; }
     int Get_Time_To_Fade() const { return m_timeToFadeAudio; }
 
-    static void Parse_Audio_Settings(INI *ini);
+    static void Parse_Audio_Settings_Definition(INI *ini);
 
 private:
     Utf8String m_audioRoot;

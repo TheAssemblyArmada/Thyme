@@ -118,6 +118,7 @@ TerrainType *TerrainTypeCollection::New_Terrain(Utf8String name)
     return retval;
 }
 
+// Was originally INI::parseTerrainDefinition
 void TerrainTypeCollection::Parse_Terrain_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();

@@ -117,7 +117,8 @@ int GlobalLanguage::Adjust_Font_Size(int size)
     return GameMath::Fast_To_Int_Floor(adjustment * size);
 }
 
-void GlobalLanguage::Parse_Language_Defintions(INI *ini)
+// Was originally INI::parseLanguageDefinition
+void GlobalLanguage::Parse_Language_Definition(INI *ini)
 {
     if (g_theGlobalLanguage != nullptr) {
         ini->Init_From_INI(g_theGlobalLanguage, s_languageParseTable);

@@ -154,11 +154,11 @@ public:
     ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
     ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
 
-    static void Parse_Static_LOD_Definitions(INI *ini);
-    static void Parse_Dynamic_LOD_Definitions(INI *ini);
+    static void Parse_Static_LOD_Definition(INI *ini);
+    static void Parse_Dynamic_LOD_Definition(INI *ini);
     static void Parse_LOD_Preset(INI *ini);
-    static void Parse_Bench_Profiles(INI *ini);
-    static void Parse_Low_MHz(INI *ini);
+    static void Parse_Bench_Profile(INI *ini);
+    static void Parse_Really_Low_MHz(INI *ini);
 
 private:
     enum

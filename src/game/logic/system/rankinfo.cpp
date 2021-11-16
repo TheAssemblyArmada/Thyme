@@ -76,6 +76,8 @@ int RankInfoStore::Get_Rank_Level_Count() const
 
 /**
  * @brief Parses rank information from an ini file.
+ * Was originally RankInfoStore::friend_parseRankDefinition
+ * Was originally called through INI::parseRankDefinition
  *
  * 0x00489520
  */
@@ -84,10 +86,9 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
     static FieldParse _parse_table[5] = {
         { "RankName", &INI::Parse_And_Translate_Label, nullptr, offsetof(RankInfo, m_rankName) },
         { "SkillPointsNeeded", &INI::Parse_Int, nullptr, offsetof(RankInfo, m_skillPointsNeeded) },
-        { "SciencesGranted", (inifieldparse_t)0x0041B2C0, nullptr, offsetof(RankInfo, m_sciencesGranted) },
-        // TODO { "SciencesGranted", INI::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
+        { "SciencesGranted", INI::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
         { "SciencePurchasePointsGranted",
-            &INI::Parse_Unsigned,
+            &INI::Parse_Unsigned_Int,
             nullptr,
             offsetof(RankInfo, m_sciencePurchasePointsGranted) },
         { nullptr, nullptr, nullptr, 0 }

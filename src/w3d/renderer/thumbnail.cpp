@@ -137,7 +137,7 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
             }
 
             {
-                auto_file_ptr ptr(g_theFileFactory, texture.Peek_Buffer());
+                AutoFilePtr ptr(g_theFileFactory, texture.Peek_Buffer());
                 ptr->Open(1);
                 m_time = ptr->Get_Date_Time();
                 ptr->Close();

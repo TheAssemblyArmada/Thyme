@@ -237,7 +237,7 @@ StringClass &DX8Caps::s_videoCardDetails = Make_Global<StringClass>(PICK_ADDRESS
 
 // multilist.cpp
 #include "multilist.h"
-template<> HOOK_AUTOPOOL(MultiListNodeClass, 256, PICK_ADDRESS(0x00A66288, 0x00E0BB30));
+HOOK_AUTOPOOL(MultiListNodeClass, 256, PICK_ADDRESS(0x00A66288, 0x00E0BB30));
 
 // dx8wrapper.cpp
 #include "dx8wrapper.h"
@@ -323,7 +323,7 @@ bool &DX8Wrapper::s_isRenderToTexture = Make_Global<bool>(PICK_ADDRESS(0x00A47F0
 unsigned int &DX8Wrapper::s_drawPolygonLowBoundLimit = Make_Global<unsigned int>(PICK_ADDRESS(0x00A47F34, 0x00DEE76C));
 unsigned long &DX8Wrapper::s_frameCount = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47F38, 0x00DEE770));
 bool &DX8Wrapper::s_DX8SingleThreaded = Make_Global<bool>(PICK_ADDRESS(0x00A47F3C, 0x00DEE774));
-DX8_CleanupHook *&DX8Wrapper::s_cleanupHook = Make_Global<DX8_CleanupHook *>(PICK_ADDRESS(0x00A47F74, 0x00DEE7AC));
+DX8CleanupHook *&DX8Wrapper::s_cleanupHook = Make_Global<DX8CleanupHook *>(PICK_ADDRESS(0x00A47F74, 0x00DEE7AC));
 
 // missing.cpp
 #include "missing.h"

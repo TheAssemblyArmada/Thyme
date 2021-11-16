@@ -1557,7 +1557,7 @@ void CPUDetectClass::Init_Compact_Log()
 #ifdef PLATFORM_WINDOWS
     TIME_ZONE_INFORMATION time_zone;
     GetTimeZoneInformation(&time_zone);
-    COMPACT_LOG("%ld\t", time_zone.Bias);
+    COMPACT_LOG("%d\t", time_zone.Bias);
 #endif
 
     OSInfoStruct os_info;

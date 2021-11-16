@@ -175,7 +175,7 @@ private:
         const unichar_t *text, int *x = nullptr, int *y = nullptr, bool reuse_surface = false);
 
 private:
-    DynamicVectorClass<RendererDataStruct> m_sentenceData;
+    DynamicVectorClass<SentenceDataStruct> m_sentenceData;
     DynamicVectorClass<PendingSurfaceStruct> m_pendingSurfaces;
     DynamicVectorClass<RendererDataStruct> m_renderers;
     FontCharsClass *m_font;

@@ -50,7 +50,7 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     m_name[name_len - 2] = 'd';
     m_name[name_len - 1] = 's';
 
-    auto_file_ptr fp(g_theFileFactory, m_name);
+    AutoFilePtr fp(g_theFileFactory, m_name);
 
     if (!fp->Is_Available() || !fp->Open(FM_READ)) {
         return;
@@ -576,7 +576,7 @@ bool DDSFileClass::Load()
         return false;
     }
 
-    auto_file_ptr fp(g_theFileFactory, m_name);
+    AutoFilePtr fp(g_theFileFactory, m_name);
 
     if (!fp->Is_Available()) {
         captainslog_warn("DDSFile '%s' is not available.", m_name);

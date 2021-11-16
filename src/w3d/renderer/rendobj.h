@@ -322,7 +322,7 @@ public:
 #ifdef GAME_DLL
     virtual const PersistFactoryClass &Get_Factory() const;
 #endif
-    virtual bool Save(ChunkLoadClass &csave);
+    virtual bool Save(ChunkSaveClass &csave);
     virtual bool Load(ChunkLoadClass &cload);
     const Matrix3D &Get_Transform() const;
     const Matrix3D &Get_Transform(bool &is_transform_identity) const;

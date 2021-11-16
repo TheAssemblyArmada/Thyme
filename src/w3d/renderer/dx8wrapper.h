@@ -440,7 +440,7 @@ protected:
     static unsigned int s_drawPolygonLowBoundLimit;
     static unsigned long s_frameCount;
     static bool s_DX8SingleThreaded;
-    static DX8_CleanupHook *s_cleanupHook;
+    static DX8CleanupHook *s_cleanupHook;
 #endif
     friend class W3D;
     friend class DX8IndexBufferClass;

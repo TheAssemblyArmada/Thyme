@@ -61,14 +61,14 @@ void LineGroupClass::Set_Arrays(ShareBufferClass<Vector3> *start_locs,
     ShareBufferClass<float> *u_coords,
     int count)
 {
-    captainslog_assert(start_locs);
-    captainslog_assert(end_locs);
+    captainslog_assert(start_locs != nullptr);
+    captainslog_assert(end_locs != nullptr);
     captainslog_assert(start_locs->Get_Count() == end_locs->Get_Count());
-    captainslog_assert(!diffuse || start_locs->Get_Count() == diffuse->Get_Count());
-    captainslog_assert(!alt || start_locs->Get_Count() == alt->Get_Count());
-    captainslog_assert(!sizes || start_locs->Get_Count() == sizes->Get_Count());
-    captainslog_assert(!u_coords || start_locs->Get_Count() == u_coords->Get_Count());
-    captainslog_assert(!tail_diffuse || start_locs->Get_Count() == tail_diffuse->Get_Count());
+    captainslog_assert(diffuse == nullptr || start_locs->Get_Count() == diffuse->Get_Count());
+    captainslog_assert(alt == nullptr || start_locs->Get_Count() == alt->Get_Count());
+    captainslog_assert(sizes == nullptr || start_locs->Get_Count() == sizes->Get_Count());
+    captainslog_assert(u_coords == nullptr || start_locs->Get_Count() == u_coords->Get_Count());
+    captainslog_assert(tail_diffuse == nullptr || start_locs->Get_Count() == tail_diffuse->Get_Count());
 
     Ref_Ptr_Set(m_startLoc, start_locs);
     Ref_Ptr_Set(m_endLoc, end_locs);
@@ -101,246 +101,258 @@ void LineGroupClass::Set_Texture(TextureClass *texture)
 void LineGroupClass::Render(RenderInfoClass &rinfo)
 {
 #ifdef BUILD_WITH_D3D8
-    if (m_lineCount > 0) {
-        m_shader.Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
+    if (m_lineCount <= 0) {
+        return;
+    }
 
-        float value_255 = 254.0f / 255.0f;
+    m_shader.Set_Cull_Mode(ShaderClass::CULL_MODE_ENABLE);
 
-        bool default_white_opaque = m_defaultColor.X > value_255 && m_defaultColor.Y > value_255
-            && m_defaultColor.Z > value_255 && m_defaultAlpha > value_255;
+    float value_255 = 254.0f / 255.0f;
 
-        if (m_diffuseBuffer != nullptr || !default_white_opaque || m_texture == nullptr) {
-            m_shader.Set_Primary_Gradient(ShaderClass::GRADIENT_MODULATE);
-        } else {
-            m_shader.Set_Primary_Gradient(ShaderClass::GRADIENT_DISABLE);
+    bool default_white_opaque = m_defaultColor.X > value_255 && m_defaultColor.Y > value_255 && m_defaultColor.Z > value_255
+        && m_defaultAlpha > value_255;
+
+    if (m_diffuseBuffer != nullptr || !default_white_opaque || m_texture == nullptr) {
+        m_shader.Set_Primary_Gradient(ShaderClass::GRADIENT_MODULATE);
+    } else {
+        m_shader.Set_Primary_Gradient(ShaderClass::GRADIENT_DISABLE);
+    }
+
+    if (m_texture != nullptr) {
+        m_shader.Set_Texturing(ShaderClass::TEXTURING_ENABLE);
+    } else {
+        m_shader.Set_Texturing(ShaderClass::TEXTURING_DISABLE);
+    }
+
+    VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+
+    DX8Wrapper::Set_Material(material);
+    DX8Wrapper::Set_Shader(m_shader);
+    DX8Wrapper::Set_Texture(0, m_texture);
+
+    if (material != nullptr) {
+        material->Release_Ref();
+    }
+
+    captainslog_assert(m_startLoc != nullptr && m_startLoc->Get_Array());
+    captainslog_assert(m_endLoc != nullptr && m_endLoc->Get_Array());
+
+    const bool sort = m_shader.Get_Dst_Blend_Func() != ShaderClass::DSTBLEND_ZERO
+        && m_shader.Get_Alpha_Test() == ShaderClass::ALPHATEST_DISABLE && W3D::Is_Sorting_Enabled();
+
+    static Vector3 _offset_a(GameMath::Cos(DEG_TO_RAD(90)), GameMath::Sin(DEG_TO_RAD(90)), 0);
+    static Vector3 _offset_b(GameMath::Cos(DEG_TO_RAD(210)), GameMath::Sin(DEG_TO_RAD(210)), 0);
+    static Vector3 _offset_c(GameMath::Cos(DEG_TO_RAD(330)), GameMath::Sin(DEG_TO_RAD(330)), 0);
+    static Vector3 _offset[3];
+
+    _offset[0].Set(_offset_a);
+    _offset[1].Set(_offset_b);
+    _offset[2].Set(_offset_c);
+
+    Matrix4 old_view;
+    DX8Wrapper::Get_Transform(D3DTS_VIEW, old_view);
+
+    Matrix4 identity(true);
+    DX8Wrapper::Set_Transform(D3DTS_WORLD, identity);
+
+    if (Get_Flag(TRANSFORM)) {
+        Matrix3D model_view;
+
+        model_view = rinfo.m_camera.Get_Transform();
+        model_view.Set_Translation(Vector3(0, 0, 0));
+        model_view.Get_Orthogonal_Inverse(model_view);
+
+        for (int i = 0; i < 3; ++i) {
+            Matrix3D::Transform_Vector(model_view, _offset[i], &_offset[i]);
         }
+    } else {
+        DX8Wrapper::Set_Transform(D3DTS_VIEW, identity);
+    }
 
-        if (m_texture != nullptr) {
-            m_shader.Set_Texturing(ShaderClass::TEXTURING_ENABLE);
-        } else {
-            m_shader.Set_Texturing(ShaderClass::TEXTURING_DISABLE);
-        }
+    int polygon_count = 0;
+    int index_count = 0;
+    int vertex_count = 0;
 
-        VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
+    if (m_mode == TETRAHEDRON) {
+        polygon_count = TETRAHEADRON_NUM_POLYGONS * m_lineCount;
+        index_count = TETRAHEADRON_NUM_INDEXES * polygon_count;
+        vertex_count = TETRAHEADRON_NUM_VERTEXES * m_lineCount;
+    } else if (m_mode == PRISM) {
+        polygon_count = PRISM_NUM_POLYGONS * m_lineCount;
+        index_count = PRISM_NUM_INDEXES * polygon_count;
+        vertex_count = PRISM_NUM_VERTEXES * m_lineCount;
+    } else {
+        captainslog_assert(0);
+    }
 
-        DX8Wrapper::Set_Material(material);
-        DX8Wrapper::Set_Shader(m_shader);
-        DX8Wrapper::Set_Texture(0, m_texture);
+    DynamicIBAccessClass index_buffer(
+        sort ? IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, index_count);
+    { // added to control the lifetime of the WriteLockClass object
+        DynamicIBAccessClass::WriteLockClass index_lock(&index_buffer);
 
-        if (material != nullptr) {
-            material->Release_Ref();
-        }
-
-        captainslog_assert(m_startLoc != nullptr && m_startLoc->Get_Array());
-        captainslog_assert(m_endLoc != nullptr && m_endLoc->Get_Array());
-
-        const bool sort = m_shader.Get_Dst_Blend_Func() != ShaderClass::DSTBLEND_ZERO
-            && m_shader.Get_Alpha_Test() == ShaderClass::ALPHATEST_DISABLE && W3D::Is_Sorting_Enabled();
-
-        static Vector3 _offset_a(GameMath::Cos(DEG_TO_RAD(90)), GameMath::Sin(DEG_TO_RAD(90)), 0);
-        static Vector3 _offset_b(GameMath::Cos(DEG_TO_RAD(210)), GameMath::Sin(DEG_TO_RAD(210)), 0);
-        static Vector3 _offset_c(GameMath::Cos(DEG_TO_RAD(330)), GameMath::Sin(DEG_TO_RAD(330)), 0);
-        static Vector3 _offset[3];
-
-        _offset[0].Set(_offset_a);
-        _offset[1].Set(_offset_b);
-        _offset[2].Set(_offset_c);
-
-        Matrix4 old_view;
-        DX8Wrapper::Get_Transform(D3DTS_VIEW, old_view);
-
-        Matrix4 identity(true);
-        DX8Wrapper::Set_Transform(D3DTS_WORLD, identity);
-
-        if (Get_Flag(TRANSFORM)) {
-            Matrix3D model_view;
-
-            model_view = rinfo.m_camera.Get_Transform();
-            model_view.Set_Translation(Vector3(0, 0, 0));
-            model_view.Get_Orthogonal_Inverse(model_view);
-
-            for (int i = 0; i < 3; ++i) {
-                Matrix3D::Transform_Vector(model_view, _offset[i], &_offset[i]);
-            }
-        } else {
-            DX8Wrapper::Set_Transform(D3DTS_VIEW, identity);
-        }
-
-        int polygon_count = 0;
-        int index_count = 0;
-        int vertex_count = 0;
+        uint16_t *index = index_lock.Get_Index_Array();
 
         if (m_mode == TETRAHEDRON) {
-            polygon_count = 4 * m_lineCount;
-            index_count = 3 * polygon_count;
-            vertex_count = 4 * m_lineCount;
+            for (int i = 0; i < m_lineCount; ++i) {
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 2);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 1);
+
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 3);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 2);
+
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 3);
+
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 2);
+                *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 3);
+            }
+
         } else if (m_mode == PRISM) {
-            polygon_count = 8 * m_lineCount;
-            index_count = 3 * polygon_count;
-            vertex_count = 6 * m_lineCount;
+            for (int i = 0; i < m_lineCount; ++i) {
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 2);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 3);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 3);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 4);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 4);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 5);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 5);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 2);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 2);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 5);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 0);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 5);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 3);
+
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 3);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 5);
+                *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 4);
+            }
         } else {
             captainslog_assert(0);
         }
+    }
 
-        DynamicIBAccessClass index_buffer(
-            sort ? IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, index_count);
-        { // added to control the lifetime of the WriteLockClass object
-            DynamicIBAccessClass::WriteLockClass index_lock(&index_buffer);
+    DynamicVBAccessClass vertex_buffer(
+        sort ? VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8,
+        D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2,
+        vertex_count);
+    { // added to control the lifetime of the WriteLockClass object
+        DynamicVBAccessClass::WriteLockClass vertex_lock(&vertex_buffer);
+        VertexFormatXYZNDUV2 *vertex = vertex_lock.Get_Formatted_Vertex_Array();
 
-            unsigned short *index = index_lock.Get_Index_Array();
+        Vector3 vtx;
+        Vector3 start_vtx;
+        Vector3 end_vtx;
+
+        float size = m_defaultSize;
+        Vector4 diffuse(m_defaultColor.X, m_defaultColor.Y, m_defaultColor.Z, m_defaultAlpha);
+        float u_coord = m_defaultUCoord;
+        Vector4 tail_diffuse(m_defaultTailDiffuse);
+
+        for (int i = 0; i < m_lineCount; ++i) {
+
+            int idx = i;
+
+            if (m_altBuffer != nullptr) {
+                idx = m_altBuffer->Get_Element(i);
+            }
+
+            if (m_sizeBuffer != nullptr) {
+                size = m_sizeBuffer->Get_Element(idx);
+            }
+
+            if (m_diffuseBuffer != nullptr) {
+                diffuse = m_diffuseBuffer->Get_Element(idx);
+            }
+
+            if (m_UCoordsBuffer != nullptr) {
+                u_coord = m_UCoordsBuffer->Get_Element(idx);
+            }
+
+            if (m_tailDiffuseBuffer != nullptr) {
+                tail_diffuse = m_tailDiffuseBuffer->Get_Element(idx);
+            }
+
+            end_vtx.Set(m_endLoc->Get_Element(idx));
+            start_vtx.Set(m_startLoc->Get_Element(idx));
 
             if (m_mode == TETRAHEDRON) {
-                for (int i = 0; i < m_lineCount; ++i) {
-                    *index++ = short(4 * i + 0);
-                    *index++ = short(4 * i + 2);
-                    *index++ = short(4 * i + 1);
-                    *index++ = short(4 * i + 0);
-                    *index++ = short(4 * i + 3);
-                    *index++ = short(4 * i + 2);
-                    *index++ = short(4 * i + 0);
-                    *index++ = short(4 * i + 1);
-                    *index++ = short(4 * i + 3);
-                    *index++ = short(4 * i + 1);
-                    *index++ = short(4 * i + 2);
-                    *index++ = short(4 * i + 3);
+
+                vertex->x = end_vtx.X;
+                vertex->y = end_vtx.Y;
+                vertex->z = end_vtx.Z;
+                vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
+                vertex->u1 = u_coord;
+                vertex->v1 = 1.0f;
+                ++vertex;
+
+                for (int k = 0; k < 3; ++k) {
+                    vtx.Set(start_vtx + (size * _offset[k]));
+                    vertex->x = vtx.X;
+                    vertex->y = vtx.Y;
+                    vertex->z = vtx.Z;
+                    vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
+                    vertex->u1 = u_coord;
+                    vertex->v1 = 0.0f;
+                    ++vertex;
+                }
+            } else if (m_mode == PRISM) {
+
+                for (int k = 0; k < 3; ++k) {
+                    vtx.Set(start_vtx + (size * _offset[k]));
+                    vertex->x = vtx.X;
+                    vertex->y = vtx.Y;
+                    vertex->z = vtx.Z;
+                    vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
+                    vertex->u1 = u_coord;
+                    vertex->v1 = 0.0f;
+                    ++vertex;
                 }
 
-            } else if (m_mode == PRISM) {
-                for (int i = 0; i < m_lineCount; ++i) {
-                    *index++ = short(6 * i + 0);
-                    *index++ = short(6 * i + 1);
-                    *index++ = short(6 * i + 2);
-                    *index++ = short(6 * i + 0);
-                    *index++ = short(6 * i + 3);
-                    *index++ = short(6 * i + 1);
-                    *index++ = short(6 * i + 1);
-                    *index++ = short(6 * i + 3);
-                    *index++ = short(6 * i + 4);
-                    *index++ = short(6 * i + 1);
-                    *index++ = short(6 * i + 4);
-                    *index++ = short(6 * i + 5);
-                    *index++ = short(6 * i + 1);
-                    *index++ = short(6 * i + 5);
-                    *index++ = short(6 * i + 2);
-                    *index++ = short(6 * i + 0);
-                    *index++ = short(6 * i + 2);
-                    *index++ = short(6 * i + 5);
-                    *index++ = short(6 * i + 0);
-                    *index++ = short(6 * i + 5);
-                    *index++ = short(6 * i + 3);
-                    *index++ = short(6 * i + 3);
-                    *index++ = short(6 * i + 5);
-                    *index++ = short(6 * i + 4);
+                for (int k = 0; k < 3; ++k) {
+                    vtx.Set(end_vtx + (size * _offset[k]));
+                    vertex->x = vtx.X;
+                    vertex->y = vtx.Y;
+                    vertex->z = vtx.Z;
+                    vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
+                    vertex->u1 = u_coord;
+                    vertex->v1 = 1.0f;
+                    ++vertex;
                 }
             } else {
                 captainslog_assert(0);
             }
         }
-
-        DynamicVBAccessClass vertex_buffer(
-            sort ? VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING : VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8,
-            D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2,
-            vertex_count);
-        { // added to control the lifetime of the WriteLockClass object
-            DynamicVBAccessClass::WriteLockClass vertex_lock(&vertex_buffer);
-            VertexFormatXYZNDUV2 *vertex = vertex_lock.Get_Formatted_Vertex_Array();
-
-            Vector3 vtx;
-            Vector3 start_vtx;
-            Vector3 end_vtx;
-
-            float size = m_defaultSize;
-            Vector4 diffuse(m_defaultColor.X, m_defaultColor.Y, m_defaultColor.Z, m_defaultAlpha);
-            float u_coord = m_defaultUCoord;
-            Vector4 tail_diffuse(m_defaultTailDiffuse);
-
-            for (unsigned int i = 0; i < m_lineCount; ++i) {
-
-                unsigned int idx = i;
-
-                if (m_altBuffer != nullptr) {
-                    idx = m_altBuffer->Get_Element(i);
-                }
-
-                if (m_sizeBuffer != nullptr) {
-                    size = m_sizeBuffer->Get_Element(idx);
-                }
-
-                if (m_diffuseBuffer != nullptr) {
-                    diffuse = m_diffuseBuffer->Get_Element(idx);
-                }
-
-                if (m_UCoordsBuffer != nullptr) {
-                    u_coord = m_UCoordsBuffer->Get_Element(idx);
-                }
-
-                if (m_tailDiffuseBuffer != nullptr) {
-                    tail_diffuse = m_tailDiffuseBuffer->Get_Element(idx);
-                }
-
-                end_vtx.Set(m_endLoc->Get_Element(idx));
-                start_vtx.Set(m_startLoc->Get_Element(idx));
-
-                if (m_mode == TETRAHEDRON) {
-
-                    vertex->x = end_vtx.X;
-                    vertex->y = end_vtx.Y;
-                    vertex->z = end_vtx.Z;
-                    vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
-                    vertex->u1 = u_coord;
-                    vertex->v1 = 1.0f;
-                    ++vertex;
-
-                    for (int k = 0; k < 3; ++k) {
-                        vtx.Set(start_vtx + (size * _offset[k]));
-                        vertex->x = vtx.X;
-                        vertex->y = vtx.Y;
-                        vertex->z = vtx.Z;
-                        vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
-                        vertex->u1 = u_coord;
-                        vertex->v1 = 0.0f;
-                        ++vertex;
-                    }
-                } else if (m_mode == PRISM) {
-
-                    for (int k = 0; k < 3; ++k) {
-                        vtx.Set(start_vtx + (size * _offset[k]));
-                        vertex->x = vtx.X;
-                        vertex->y = vtx.Y;
-                        vertex->z = vtx.Z;
-                        vertex->diffuse = DX8Wrapper::Convert_Color(diffuse);
-                        vertex->u1 = u_coord;
-                        vertex->v1 = 0.0f;
-                        ++vertex;
-                    }
-
-                    for (int k = 0; k < 3; ++k) {
-                        vtx.Set(end_vtx + (size * _offset[k]));
-                        vertex->x = vtx.X;
-                        vertex->y = vtx.Y;
-                        vertex->z = vtx.Z;
-                        vertex->diffuse = DX8Wrapper::Convert_Color(tail_diffuse);
-                        vertex->u1 = u_coord;
-                        vertex->v1 = 1.0f;
-                        ++vertex;
-                    }
-                } else {
-                    captainslog_assert(0);
-                }
-            }
-        }
-
-        DX8Wrapper::Set_Index_Buffer(index_buffer, 0);
-        DX8Wrapper::Set_Vertex_Buffer(vertex_buffer);
-
-        if (sort) {
-            SortingRendererClass::Insert_Triangles(0, polygon_count, 0, vertex_count);
-        } else {
-            DX8Wrapper::Draw_Triangles(0, polygon_count, 0, vertex_count);
-        }
-
-        DX8Wrapper::Set_Transform(D3DTS_VIEW, old_view);
     }
+
+    DX8Wrapper::Set_Index_Buffer(index_buffer, 0);
+    DX8Wrapper::Set_Vertex_Buffer(vertex_buffer);
+
+    if (sort) {
+        SortingRendererClass::Insert_Triangles(0, polygon_count, 0, vertex_count);
+    } else {
+        DX8Wrapper::Draw_Triangles(0, polygon_count, 0, vertex_count);
+    }
+
+    DX8Wrapper::Set_Transform(D3DTS_VIEW, old_view);
 #endif
 }
 
@@ -348,9 +360,9 @@ int LineGroupClass::Get_Polygon_Count() const
 {
     switch (m_mode) {
         case TETRAHEDRON:
-            return 4 * m_lineCount;
+            return TETRAHEADRON_NUM_POLYGONS * m_lineCount;
         case PRISM:
-            return 8 * m_lineCount;
+            return PRISM_NUM_POLYGONS * m_lineCount;
     }
 
     captainslog_assert(0);

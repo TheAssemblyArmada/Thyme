@@ -26,6 +26,17 @@ class TextureClass;
 class LineGroupClass
 {
 public:
+    enum
+    {
+        TETRAHEADRON_NUM_POLYGONS = 4,
+        TETRAHEADRON_NUM_VERTEXES = 4,
+        TETRAHEADRON_NUM_INDEXES = 3,
+
+        PRISM_NUM_POLYGONS = 8,
+        PRISM_NUM_VERTEXES = 6,
+        PRISM_NUM_INDEXES = 3,
+    };
+
     LineGroupClass();
     virtual ~LineGroupClass();
 

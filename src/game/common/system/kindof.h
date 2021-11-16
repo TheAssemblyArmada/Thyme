@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "bitflags.h"
 
 enum KindOfType : int32_t
 {
@@ -137,3 +138,5 @@ enum KindOfType : int32_t
     KINDOF_IGNORE_DOCKING_BONES,
     KINDOF_COUNT,
 };
+
+extern BitFlags<KINDOF_COUNT> KINDOFMASK_NONE;

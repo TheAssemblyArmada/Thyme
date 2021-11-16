@@ -108,7 +108,7 @@ public:
     virtual void Unload_Map(Utf8String name) {}
 
     virtual void Iterate_Drawables_In_Region(Region3D *region, void (*func)(Drawable *, void *), void *data);
-    virtual Drawable *Create_Drawable(ThingTemplate *temp, DrawableStatus status) = 0;
+    virtual Drawable *Create_Drawable(const ThingTemplate *temp, DrawableStatus status) = 0;
     virtual void Destroy_Drawable(Drawable *drawable);
     virtual void Set_Time_Of_Day(TimeOfDayType time);
     virtual void Select_Drawables_In_Group(int group) {}

@@ -198,6 +198,7 @@ set(GAMEENGINE_SRC
     game/logic/system/gamelogic.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
+    game/logic/system/partitionmanager.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp
@@ -295,6 +296,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/htree.cpp
     w3d/renderer/htreemgr.cpp
     w3d/renderer/light.cpp
+    w3d/renderer/linegroup.cpp
     w3d/renderer/lightenv.cpp
     w3d/renderer/line3d.cpp
     w3d/renderer/loaders.cpp

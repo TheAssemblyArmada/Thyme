@@ -235,9 +235,9 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned age)
         unsigned int syncTime = W3D::Get_Sync_Time();
 
         for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
-             textureIter;
-             ++textureIter) {
-            TextureClass *texture = textureIter.getValue();
+             !textureIter.Is_Done();
+             textureIter.Next()) {
+            TextureClass *texture = textureIter.Peek_Value();
             if (texture->m_initialized && texture->m_inactivationTime != 0) {
                 if (syncTime - texture->m_lastAccess > (age ? age : texture->m_someTimeVal + texture->m_inactivationTime)) {
                     texture->Invalidate();

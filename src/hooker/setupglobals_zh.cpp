@@ -547,3 +547,7 @@ SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(0
 #include "objectcreationlist.h"
 ObjectCreationListStore *&g_theObjectCreationListStore =
     Make_Global<ObjectCreationListStore *>(PICK_ADDRESS(0x00A2BC44, 0x00E23E3C));
+
+// partitionmanager.cpp
+#include "partitionmanager.h"
+PartitionManager *&g_thePartitionManager = Make_Global<PartitionManager *>(PICK_ADDRESS(0x00A2C150, 0x00E26308));

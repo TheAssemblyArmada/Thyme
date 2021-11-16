@@ -25,7 +25,7 @@ MapObject *MapObject::s_theMapObjectListPtr;
 Dict MapObject::s_theWorldDict;
 #endif
 
-MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, ThingTemplate *thing) :
+MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing) :
     m_properties(0),
     m_objectName(name),
     m_thingTemplate(thing),
@@ -248,7 +248,7 @@ void MapObject::Fast_Assign_All_Unique_IDs()
     }
 }
 
-void MapObject::Set_Thing_Template(ThingTemplate *thing)
+void MapObject::Set_Thing_Template(const ThingTemplate *thing)
 {
     m_thingTemplate = thing;
     m_objectName = thing->Get_Name();
@@ -293,10 +293,10 @@ int MapObject::Count_Map_Objects_With_Owner(const Utf8String &n)
     return count;
 }
 
-ThingTemplate *MapObject::Get_Thing_Template()
+const ThingTemplate *MapObject::Get_Thing_Template()
 {
     if (m_thingTemplate) {
-        return (ThingTemplate *)m_thingTemplate->Get_Final_Override();
+        return (const ThingTemplate *)m_thingTemplate->Get_Final_Override();
     } else {
         return nullptr;
     }

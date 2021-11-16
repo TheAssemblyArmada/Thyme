@@ -98,3 +98,20 @@ private:
     int m_playerIndex;
     int m_nextPlayPortion;
 };
+
+class DynamicAudioEventRTS : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(DynamicAudioEventRTS);
+
+public:
+    AudioEventRTS m_event;
+    DynamicAudioEventRTS() {}
+    DynamicAudioEventRTS(const DynamicAudioEventRTS &that) : m_event(that.m_event) {}
+    virtual ~DynamicAudioEventRTS() override {}
+    DynamicAudioEventRTS &operator=(const DynamicAudioEventRTS &that)
+    {
+        MemoryPoolObject::operator=(that);
+        m_event = that.m_event;
+        return *this;
+    }
+};

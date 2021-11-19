@@ -71,16 +71,6 @@ bool ScreenCrossFadeFilter::Pre_Render(bool &skip, CustomScenePassModes &mode)
 bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
-    {
-        D3DXVECTOR4 p;
-        unsigned long color;
-        float u1;
-        float v1;
-        float u2;
-        float v2;
-    };
-
     if (s_skipRender) {
         s_skipRender = false;
         b = true;
@@ -99,7 +89,7 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
         return false;
     }
 
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    TransformedTexture2Vertex vertex[4];
     float f1 = 0.0f;
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
 
@@ -145,8 +135,8 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX2 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture2Vertex::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture2Vertex));
     Reset();
     return true;
 #else

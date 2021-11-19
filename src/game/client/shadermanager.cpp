@@ -275,15 +275,7 @@ bool W3DShaderManager::Filter_Setup(FilterTypes filter, FilterModes mode)
 void W3DShaderManager::Draw_Viewport(unsigned int color)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
-    {
-        D3DXVECTOR4 p;
-        unsigned long color;
-        float u;
-        float v;
-    };
-
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    TransformedTexture1Vertex vertex[4];
 
     int32_t x;
     int32_t y;
@@ -310,8 +302,8 @@ void W3DShaderManager::Draw_Viewport(unsigned int color)
     vertex[2].color = color;
     vertex[3].color = color;
 
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
 #endif
 }
 

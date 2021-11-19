@@ -65,6 +65,30 @@ extern uint32_t g_numberOfDx8Calls;
     ++g_numberOfDx8Calls;
 #endif
 
+#ifdef BUILD_WITH_D3D8
+struct TransformedTexture1Vertex
+{
+    static constexpr uint32_t DX8FVF = D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW;
+
+    D3DXVECTOR4 p;
+    unsigned long color;
+    float u;
+    float v;
+};
+
+struct TransformedTexture2Vertex
+{
+    static constexpr uint32_t DX8FVF = D3DFVF_TEX2 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW;
+
+    D3DXVECTOR4 p;
+    unsigned long color;
+    float u1;
+    float v1;
+    float u2;
+    float v2;
+};
+#endif
+
 struct RenderStateStruct
 {
     ShaderClass shader;

@@ -49,14 +49,6 @@ bool ScreenMotionBlurFilter::Pre_Render(bool &skip, CustomScenePassModes &mode)
 bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
-    {
-        D3DXVECTOR4 p;
-        unsigned long color;
-        float u;
-        float v;
-    };
-
     w3dtexture_t tex = W3DShaderManager::End_Render_To_Texture();
     captainslog_dbgassert(tex, "Require rendered texture.");
 
@@ -68,7 +60,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
         return false;
     }
 
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    TransformedTexture1Vertex vertex[4];
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
     int32_t x;
     int32_t y;
@@ -104,7 +96,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
 
     DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, FALSE);
     DX8Wrapper::Apply_Render_State_Changes();
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
     float f1 = 0.5f;
     float f2 = 0.5f;
     bool b1 = false;
@@ -183,7 +175,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
     DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, TRUE);
     DX8Wrapper::Apply_Render_State_Changes();
     int count = m_maxCount;
@@ -224,7 +216,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
             vertex[j].v = (vertex[j].v - f2) * f3 + f2;
         }
 
-        DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+        DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
     }
 
     m_lastFrame = g_theGameLogic->Get_Frame();

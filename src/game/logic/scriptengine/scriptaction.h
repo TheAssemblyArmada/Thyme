@@ -30,7 +30,7 @@ class ScriptAction : public MemoryPoolObject
 public:
     enum ScriptActionType
     {
-        DEBUG_MESSAGE_BOX = 0,
+        DEBUG_MESSAGE_BOX,
         SET_FLAG,
         SET_COUNTER,
         VICTORY,
@@ -373,6 +373,7 @@ public:
         TEAM_SET_BOOBYTRAPPED,
         SHOW_WEATHER,
         AI_PLAYER_BUILD_TYPE_NEAREST_TEAM,
+        ACTION_COUNT,
     };
 
 protected:

@@ -38,7 +38,7 @@ public:
     CustomScenePassModes Get_Custom_Scene_Pass_Mode() { return m_customScenePassMode; }
 
 protected:
-    GenericMultiListClass m_dynamicLightList;
+    RefMultiListClass<RenderObjClass> m_dynamicLightList;
     bool m_drawTerrainOnly;
     LightClass *m_globalLight[4];
     LightClass *m_sceneLight;

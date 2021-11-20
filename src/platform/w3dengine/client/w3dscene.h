@@ -40,10 +40,10 @@ public:
 protected:
     RefMultiListClass<RenderObjClass> m_dynamicLightList;
     bool m_drawTerrainOnly;
-    LightClass *m_globalLight[4];
+    LightClass *m_globalLight[LightEnvironmentClass::MAX_LIGHTS];
     LightClass *m_sceneLight;
     Vector3 m_ambient;
-    LightClass *m_infantryLight[4];
+    LightClass *m_infantryLight[LightEnvironmentClass::MAX_LIGHTS];
     int m_numGlobalLights;
     LightEnvironmentClass m_globalLightEnv;
     LightEnvironmentClass m_sceneLightEnv;

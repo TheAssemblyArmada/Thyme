@@ -56,12 +56,12 @@ protected:
     CustomScenePassModes m_customScenePassMode;
     int m_translucentObjectsCount;
     RenderObjClass **m_translucentObjectsBuffer;
-    int m_occludedObjectsCount;
-    RenderObjClass **m_stencilObjects1;
+    int m_unkCount;
+    RenderObjClass **m_occludedBuildingsBuffer;
     RenderObjClass **m_occludedObjectsBuffer;
-    RenderObjClass **m_stencilObjects2;
-    int m_stencilCount1;
-    int m_stencilCount2;
-    int m_stencilCount3;
+    RenderObjClass **m_occludedOthersBuffer;
+    int m_occludedBuildingsCount;
+    int m_occludedObjectsCount;
+    int m_occludedOthersCount;
     CameraClass *m_camera;
 };

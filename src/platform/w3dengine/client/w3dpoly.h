@@ -27,7 +27,5 @@ public:
     void Reset();
     void Add_Vertex(const Vector3 &point);
     void Clip(const PlaneClass &plane, ClipPolyClass &dest);
-
-private:
     SimpleDynVecClass<Vector3> m_verts;
 };

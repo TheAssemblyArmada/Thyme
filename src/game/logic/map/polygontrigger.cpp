@@ -17,6 +17,10 @@
 #include "hooker.h"
 #endif
 
+#ifndef GAME_DLL
+PolygonTrigger *PolygonTrigger::s_thePolygonTriggerListPtr;
+#endif
+
 int PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *userdata)
 {
 #ifdef GAME_DLL
@@ -31,5 +35,14 @@ void PolygonTrigger::Delete_Triggers()
 {
 #ifdef GAME_DLL
     Call_Function<void>(PICK_ADDRESS(0x005714C0, 0x006CF080));
+#endif
+}
+
+bool PolygonTrigger::Point_In_Trigger(ICoord3D &point) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const PolygonTrigger, ICoord3D &>(PICK_ADDRESS(0x00571660, 0x006CF4D4), this, point);
+#else
+    return 0;
 #endif
 }

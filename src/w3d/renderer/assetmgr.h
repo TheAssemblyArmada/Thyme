@@ -178,6 +178,7 @@ public:
         bool allow_reduction = true);
     virtual RenderObjClass *Create_Render_Obj(
         const char *name, float scale, uint32_t colour, const char *old_texture, const char *new_texture);
+    bool Replace_Prototype_Texture(RenderObjClass *robj, const char *old_name, const char *new_name);
 
     // 0x00763D70
     GameAssetManager *Hook_Ctor() { return new (this) GameAssetManager; }

@@ -30,4 +30,5 @@ public:
 
 private:
     SimpleDynVecClass<Vector3> m_verts;
+    friend class WaterRenderObjClass;
 };

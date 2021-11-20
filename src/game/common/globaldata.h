@@ -139,7 +139,7 @@ public:
     float m_vertexWaterAttenuationRange[4];
     float m_downWindAngle;
     float m_skyBoxPositionZ;
-    float m_drawSkyBox;
+    float m_drawSkyBox; // is used as a bool and appears to be defined wrong
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;

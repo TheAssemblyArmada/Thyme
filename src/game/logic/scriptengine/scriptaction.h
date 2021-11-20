@@ -373,7 +373,7 @@ public:
         TEAM_SET_BOOBYTRAPPED,
         SHOW_WEATHER,
         AI_PLAYER_BUILD_TYPE_NEAREST_TEAM,
-        
+
         ACTION_COUNT,
     };
 

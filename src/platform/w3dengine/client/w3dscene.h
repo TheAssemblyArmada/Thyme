@@ -56,7 +56,7 @@ protected:
     CustomScenePassModes m_customScenePassMode;
     int m_translucentObjectsCount;
     RenderObjClass **m_translucentObjectsBuffer;
-    int m_unkCount;
+    int m_unkOccludedCount;
     RenderObjClass **m_occludedBuildingsBuffer;
     RenderObjClass **m_occludedObjectsBuffer;
     RenderObjClass **m_occludedOthersBuffer;

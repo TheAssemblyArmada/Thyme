@@ -845,10 +845,10 @@ bool GameAssetManager::Replace_Asset_Texture(RenderObjClass *robj, TextureClass 
     }
 }
 
-bool GameAssetManager::Replace_Prototype_Texture(RenderObjClass *robj, const char *oldname, const char *newname)
+bool GameAssetManager::Replace_Prototype_Texture(RenderObjClass *robj, const char *old_name, const char *new_name)
 {
-    TextureClass *old_texture = Get_Texture(oldname);
-    TextureClass *new_texture = Get_Texture(newname);
+    TextureClass *old_texture = Get_Texture(old_name);
+    TextureClass *new_texture = Get_Texture(new_name);
     bool ret = Replace_Asset_Texture(robj, old_texture, new_texture);
 
     if (old_texture) {

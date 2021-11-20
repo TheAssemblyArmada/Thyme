@@ -41,12 +41,12 @@ protected:
     GenericMultiListClass m_dynamicLightList;
     bool m_drawTerrainOnly;
     LightClass *m_globalLight[4];
-    LightClass *m_light;
+    LightClass *m_sceneLight;
     Vector3 m_ambient;
     LightClass *m_infantryLight[4];
     int m_numGlobalLights;
-    LightEnvironmentClass m_lightEnvironment1;
-    LightEnvironmentClass m_lightEnvironment2;
+    LightEnvironmentClass m_globalLightEnv;
+    LightEnvironmentClass m_sceneLightEnv;
     W3DShroudMaterialPassClass *m_shroudMaterialPass;
     W3DMaskMaterialPassClass *m_maskMaterialPass;
     MaterialPassClass *m_normalMatPass;

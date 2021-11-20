@@ -449,7 +449,7 @@ GlobalData::GlobalData()
     for (int i = 0; i < 4; ++i) {
         m_vertexWaterAvailableMaps[i].Clear();
         m_vertexWaterHeightClampLow[i] = 0.0f;
-        m_vertexWaterHeightClampLHigh[i] = 0.0f;
+        m_vertexWaterHeightClampHigh[i] = 0.0f;
         m_vertexWaterAngle[i] = 0.0f;
         m_vertexWaterXPos[i] = 0.0f;
         m_vertexWaterYPos[i] = 0.0f;

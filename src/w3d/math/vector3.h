@@ -192,6 +192,14 @@ public:
         set_result->Z = (a.X * b.Y - a.Y * b.X);
     }
 
+    __forceinline static void Normalized_Cross_Product(const Vector3 &a, const Vector3 &b, Vector3 *set_result)
+    {
+        set_result->X = (a.Y * b.Z - a.Z * b.Y);
+        set_result->Y = (a.Z * b.X - a.X * b.Z);
+        set_result->Z = (a.X * b.Y - a.Y * b.X);
+        set_result->Normalize();
+    }
+
     __forceinline static float Cross_Product_X(const Vector3 &a, const Vector3 &b) { return a.Y * b.Z - a.Z * b.Y; }
 
     __forceinline static float Cross_Product_Y(const Vector3 &a, const Vector3 &b) { return a.Z * b.X - a.X * b.Z; }

@@ -43,6 +43,7 @@ private:
     float m_vScrollPerMs;
 
     static FieldParse m_waterSettingFieldParseTable[];
+    friend class WaterRenderObjClass;
 };
 
 class WaterTransparencySetting : public Overridable
@@ -72,6 +73,7 @@ private:
 
     static FieldParse m_waterTransparencySettingFieldParseTable[];
     friend class W3DShaderManager;
+    friend class WaterRenderObjClass;
 };
 
 #ifdef GAME_DLL

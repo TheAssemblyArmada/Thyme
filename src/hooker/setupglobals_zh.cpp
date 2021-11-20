@@ -551,3 +551,13 @@ ObjectCreationListStore *&g_theObjectCreationListStore =
 // partitionmanager.cpp
 #include "partitionmanager.h"
 PartitionManager *&g_thePartitionManager = Make_Global<PartitionManager *>(PICK_ADDRESS(0x00A2C150, 0x00E26308));
+
+// w3dwatertracks.cpp
+#include "w3dwatertracks.h"
+WaterTracksRenderSystem *&g_theWaterTracksRenderSystem =
+    Make_Global<WaterTracksRenderSystem *>(PICK_ADDRESS(0x00A3AF08, 0x00E1AC04));
+
+// polygontrigger.cpp
+#include "polygontrigger.h"
+PolygonTrigger *&PolygonTrigger::s_thePolygonTriggerListPtr =
+    Make_Global<PolygonTrigger *>(PICK_ADDRESS(0x00A2C278, 0x00E1D53C));

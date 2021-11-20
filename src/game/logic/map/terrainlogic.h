@@ -21,7 +21,7 @@
 #include "subsysteminterface.h"
 #include "terrainroads.h"
 
-class DataChunkInfo;
+struct DataChunkInfo;
 class DataChunkInput;
 class Dict;
 class Drawable;

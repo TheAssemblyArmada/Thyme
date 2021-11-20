@@ -122,10 +122,10 @@ public:
     bool m_useWaveEditor;
     bool m_unsortedShoreLines;
     // char pad[1]
-    float m_featherWater;
+    int m_featherWater;
     Utf8String m_vertexWaterAvailableMaps[4];
     float m_vertexWaterHeightClampLow[4];
-    float m_vertexWaterHeightClampLHigh[4];
+    float m_vertexWaterHeightClampHigh[4];
     float m_vertexWaterAngle[4];
     float m_vertexWaterXPos[4];
     float m_vertexWaterYPos[4];
@@ -139,8 +139,7 @@ public:
     float m_vertexWaterAttenuationRange[4];
     float m_downWindAngle;
     float m_skyBoxPositionZ;
-    bool m_drawSkyBox; // init code suggests this might be an int, old BOOL typedef?
-    // char pad[3]
+    float m_drawSkyBox;
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;

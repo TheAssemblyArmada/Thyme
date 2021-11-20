@@ -43,7 +43,7 @@ protected:
     LightClass *m_globalLight[4];
     LightClass *m_light;
     Vector3 m_ambient;
-    LightClass *m_infantryLights[4];
+    LightClass *m_infantryLight[4];
     int m_numGlobalLights;
     LightEnvironmentClass m_lightEnvironment1;
     LightEnvironmentClass m_lightEnvironment2;
@@ -52,7 +52,7 @@ protected:
     MaterialPassClass *m_normalMatPass;
     MaterialPassClass *m_stealthDetectedMatPass;
     int m_unk;
-    MaterialPassClass *m_occludedmatpassesperplayer[16];
+    MaterialPassClass *m_occludedMatPassesPerPlayer[16];
     CustomScenePassModes m_customScenePassMode;
     int m_translucentObjectsCount;
     RenderObjClass **m_translucentObjectsBuffer;

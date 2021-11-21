@@ -96,18 +96,35 @@ bool ScreenBWFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     int32_t h = g_theTacticalView->Get_Height();
     int32_t w2 = g_theDisplay->Get_Width();
     int32_t h2 = g_theDisplay->Get_Height();
-    vertex[0].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[0].x = (float)(w + x) - 0.5f;
+    vertex[0].y = (float)(h + y) - 0.5f;
+    vertex[0].z = 0.0f;
+    vertex[0].w = 1.0f;
     vertex[0].u = (float)(w + x) / (float)w2;
     vertex[0].v = (float)(h + y) / (float)h2;
-    vertex[1].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[1].x = (float)(w + x) - 0.5f;
+    vertex[1].y = (float)y - 0.5f;
+    vertex[1].z = 0.0f;
+    vertex[1].w = 1.0f;
     vertex[1].u = (float)(w + x) / (float)w2;
     vertex[1].v = (float)y / (float)h2;
-    vertex[2].p = D3DXVECTOR4((float)x - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[2].x = (float)x - 0.5f;
+    vertex[2].y = (float)(h + y) - 0.5f;
+    vertex[2].z = 0.0f;
+    vertex[2].w = 1.0f;
     vertex[2].u = (float)x / (float)w2;
     vertex[2].v = (float)(h + y) / (float)h2;
-    vertex[3].p = D3DXVECTOR4((float)x - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[3].x = (float)x - 0.5f;
+    vertex[3].y = (float)y - 0.5f;
+    vertex[3].z = 0.0f;
+    vertex[3].w = 1.0f;
     vertex[3].u = (float)x / (float)w2;
     vertex[3].v = (float)y / (float)h2;
+
     vertex[0].color = 0xFFFFFFFF;
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
@@ -256,18 +273,35 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     int32_t h = g_theTacticalView->Get_Height();
     int32_t w2 = g_theDisplay->Get_Width();
     int32_t h2 = g_theDisplay->Get_Height();
-    vertex[0].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[0].x = (float)(w + x) - 0.5f;
+    vertex[0].y = (float)(h + y) - 0.5f;
+    vertex[0].z = 0.0f;
+    vertex[0].w = 1.0f;
     vertex[0].u = (float)(w + x) / (float)w2;
     vertex[0].v = (float)(h + y) / (float)h2;
-    vertex[1].p = D3DXVECTOR4((float)(w + x) - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[1].x = (float)(w + x) - 0.5f;
+    vertex[1].y = (float)y - 0.5f;
+    vertex[1].z = 0.0f;
+    vertex[1].w = 1.0f;
     vertex[1].u = (float)(w + x) / (float)w2;
     vertex[1].v = (float)y / (float)h2;
-    vertex[2].p = D3DXVECTOR4((float)x - 0.5f, (float)(h + y) - 0.5f, 0.0f, 1.0f);
+
+    vertex[2].x = (float)x - 0.5f;
+    vertex[2].y = (float)(h + y) - 0.5f;
+    vertex[2].z = 0.0f;
+    vertex[2].w = 1.0f;
     vertex[2].u = (float)x / (float)w2;
     vertex[2].v = (float)(h + y) / (float)h2;
-    vertex[3].p = D3DXVECTOR4((float)x - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
+
+    vertex[3].x = (float)x - 0.5f;
+    vertex[3].y = (float)y - 0.5f;
+    vertex[3].z = 0.0f;
+    vertex[3].w = 1.0f;
     vertex[3].u = (float)x / (float)w2;
     vertex[3].v = (float)y / (float)h2;
+
     unsigned int color = (unsigned int)((1.0f - ScreenBWFilter::s_curFadeValue) * 255.0f);
     vertex[0].color = (color << 24) | 0xFFFFFF;
     vertex[1].color = (color << 24) | 0xFFFFFF;

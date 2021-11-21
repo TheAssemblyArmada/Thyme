@@ -87,7 +87,7 @@ bool ScreenBWFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
         return false;
     }
 
-    TransformedTexture1Vertex vertex[4];
+    VertexFormatXYZWDUV1 vertex[4];
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
     int32_t x;
     int32_t y;
@@ -112,8 +112,8 @@ bool ScreenBWFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV1::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
     Reset();
     return true;
 #else
@@ -248,7 +248,7 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
         return false;
     }
 
-    TransformedTexture1Vertex vertex[4];
+    VertexFormatXYZWDUV1 vertex[4];
     int32_t x;
     int32_t y;
     g_theTacticalView->Get_Origin(&x, &y);
@@ -273,7 +273,7 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     vertex[1].color = (color << 24) | 0xFFFFFF;
     vertex[2].color = (color << 24) | 0xFFFFFF;
     vertex[3].color = (color << 24) | 0xFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV1::DX8FVF);
 
     if (DX8Wrapper::Get_Current_Caps()->Supports_Dot3_Blend()) {
         DX8Wrapper::Set_DX8_Render_State(D3DRS_TEXTUREFACTOR, D3DCOLOR_RGBA(128, 165, 202, 142));
@@ -292,14 +292,14 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     }
 
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
     ShaderClass::Invalidate();
     ShaderClass s = ShaderClass::s_presetAlphaShader;
     s.Set_Depth_Compare(ShaderClass::PASS_ALWAYS);
     DX8Wrapper::Set_Shader(s);
     DX8Wrapper::Apply_Render_State_Changes();
     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
     Reset();
     return true;
 #else

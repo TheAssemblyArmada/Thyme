@@ -66,7 +66,7 @@ extern uint32_t g_numberOfDx8Calls;
 #endif
 
 #ifdef BUILD_WITH_D3D8
-struct TransformedTexture1Vertex
+struct VertexFormatXYZWDUV1
 {
     static constexpr uint32_t DX8FVF = D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW;
 
@@ -76,7 +76,7 @@ struct TransformedTexture1Vertex
     float v;
 };
 
-struct TransformedTexture2Vertex
+struct VertexFormatXYZDUV2
 {
     static constexpr uint32_t DX8FVF = D3DFVF_TEX2 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW;
 

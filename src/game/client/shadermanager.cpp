@@ -275,7 +275,7 @@ bool W3DShaderManager::Filter_Setup(FilterTypes filter, FilterModes mode)
 void W3DShaderManager::Draw_Viewport(unsigned int color)
 {
 #ifdef BUILD_WITH_D3D8
-    TransformedTexture1Vertex vertex[4];
+    VertexFormatXYZWDUV1 vertex[4];
 
     int32_t x;
     int32_t y;
@@ -302,8 +302,8 @@ void W3DShaderManager::Draw_Viewport(unsigned int color)
     vertex[2].color = color;
     vertex[3].color = color;
 
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV1::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
 #endif
 }
 

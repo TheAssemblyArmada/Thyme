@@ -53,7 +53,7 @@ bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
         return false;
     }
 
-    TransformedTexture1Vertex vertex[4];
+    VertexFormatXYZWDUV1 vertex[4];
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
     int32_t x;
     int32_t y;
@@ -78,8 +78,8 @@ bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture1Vertex::DX8FVF);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture1Vertex));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZWDUV1::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZWDUV1));
     Reset();
     return true;
 #else

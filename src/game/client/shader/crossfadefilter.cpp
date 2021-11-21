@@ -89,7 +89,7 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
         return false;
     }
 
-    TransformedTexture2Vertex vertex[4];
+    VertexFormatXYZDUV2 vertex[4];
     float f1 = 0.0f;
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
 
@@ -135,8 +135,8 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
     vertex[1].color = 0xFFFFFFFF;
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
-    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(TransformedTexture2Vertex::DX8FVF);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransformedTexture2Vertex));
+    DX8Wrapper::Get_D3D_Device8()->SetVertexShader(VertexFormatXYZDUV2::DX8FVF);
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(VertexFormatXYZDUV2));
     Reset();
     return true;
 #else

@@ -1879,9 +1879,9 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
                     dest_verts->nz = 1.0f;
                     dest_verts++;
 
-                    dest_verts->x = p1.x;
-                    dest_verts->y = p1.y;
-                    dest_verts->z = p1.z;
+                    dest_verts->x = p2.x;
+                    dest_verts->y = p2.y;
+                    dest_verts->z = p2.z;
                     dest_verts->diffuse = color;
                     dest_verts->v1 = v;
                     dest_verts->u1 = 0.0f;

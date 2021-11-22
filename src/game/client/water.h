@@ -74,6 +74,7 @@ private:
     static FieldParse m_waterTransparencySettingFieldParseTable[];
     friend class W3DShaderManager;
     friend class WaterRenderObjClass;
+    friend class WaterTracksRenderSystem;
 };
 
 #ifdef GAME_DLL

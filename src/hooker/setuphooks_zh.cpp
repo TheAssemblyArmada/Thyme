@@ -190,6 +190,7 @@
 #include "w3dvolumetricshadow.h"
 #include "w3dwater.h"
 #include "w3dwaypointbuffer.h"
+#include "w3dsnow.h"
 #include "weapon.h"
 #include "weaponset.h"
 #include "weapontemplateset.h"
@@ -2628,4 +2629,16 @@ void Setup_Hooks()
     Hook_Any(0x007752C0, W3DGameClient::Create_FontLibrary);
     Hook_Any(0x007A9E70, W3DFontLibrary::Load_Font_Data);
     Hook_Any(0x007A9F30, W3DFontLibrary::Release_Font_Data);
+
+    // w3dsnow.h
+    Hook_Any(0x0079EAC0, W3DSnowManager::Hook_Ctor);
+    Hook_Any(0x0079EB90, W3DSnowManager::Init);
+    Hook_Any(0x0079EED0, W3DSnowManager::Reset);
+    Hook_Any(0x0079EEE0, W3DSnowManager::Update);
+    Hook_Any(0x0079EE20, W3DSnowManager::Update_INI_Settings);
+    Hook_Any(0x0079EBB0, W3DSnowManager::Release_Resources);
+    Hook_Any(0x0079EC00, W3DSnowManager::Re_Acquire_Resources);
+    Hook_Any(0x0079FCC0, W3DSnowManager::Render);
+    Hook_Any(0x0079EF20, W3DSnowManager::Render_Sub_Box);
+    Hook_Any(0x007A0210, W3DSnowManager::Render_As_Quads);
 }

@@ -21,6 +21,9 @@
 
 class WeatherSetting : public Overridable
 {
+    friend class SnowManager;
+    friend class W3DSnowManager;
+
     IMPLEMENT_POOL(WeatherSetting);
 
 protected:

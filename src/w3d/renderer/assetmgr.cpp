@@ -388,6 +388,7 @@ TextureClass *W3DAssetManager::Get_Texture(const char *filename,
     }
 
     if (new_texture == nullptr) {
+        captainslog_warn("Failed to get Texture %s", filename);
         return nullptr;
     }
 

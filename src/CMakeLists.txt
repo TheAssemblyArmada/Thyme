@@ -93,6 +93,7 @@ set(GAMEENGINE_SRC
     game/client/view.cpp
     game/client/water.cpp
     game/client/worldheightmap.cpp
+    game/client/snow.cpp
     game/client/draw/drawable.cpp
     game/client/draw/w3ddebrisdraw.cpp
     game/client/draw/w3ddefaultdraw.cpp

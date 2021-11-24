@@ -54,6 +54,15 @@ public:
     float Get_Road_Width_In_Texture() { return m_roadWidthInTexture; }
     float Get_Road_Width() { return m_roadWidth; }
 
+    float Get_Bridge_Scale() { return m_bridgeScale; }
+    Utf8String Get_Bridge_Model() { return m_bridgeModelName; }
+    Utf8String Get_Texture_Damaged() { return m_textureDamaged; }
+    Utf8String Get_Bridge_Model_Name_Damaged() { return m_bridgeModelNameDamaged; }
+    Utf8String Get_Texture_Really_Damaged() { return m_textureReallyDamaged; }
+    Utf8String Get_Bridge_Model_Name_Really_Damaged() { return m_bridgeModelNameReallyDamaged; }
+    Utf8String Get_Texture_Broken() { return m_textureBroken; }
+    Utf8String Get_Bridge_Model_Name_Broken() { return m_bridgeModelNameBroken; }
+
     void Set_Name(Utf8String name) { m_name = name; }
     void Set_Damaged_OCL(int dmg, int effect, Utf8String name) { m_damagedTransitionOCL[dmg][effect] = name; }
     void Set_Damaged_FX(int dmg, int effect, Utf8String name) { m_damagedTransitionFX[dmg][effect] = name; }

@@ -33,18 +33,7 @@ struct IDirect3DDevice8;
 struct IDirect3DVertexBuffer8;
 struct IDirect3DIndexBuffer8;
 struct IDirect3DTexture8;
-
-struct VertexFormatXYZDUV2
-{
-    float x;
-    float y;
-    float z;
-    unsigned int diffuse;
-    float u1;
-    float v1;
-    float u2;
-    float v2;
-};
+struct VertexFormatXYZDUV2;
 
 class WaterRenderObjClass : public SnapShot, public RenderObjClass
 {

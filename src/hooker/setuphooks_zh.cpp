@@ -127,6 +127,7 @@
 #include "tiledata.h"
 #include "vertmaterial.h"
 #include "w3d.h"
+#include "w3dbridgebuffer.h"
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
@@ -1660,8 +1661,8 @@ void Setup_Hooks()
     Hook_Any(0x0075C300, WaterRenderObjClass::Set_Grid_Change_Attenuation_Factors);
     Hook_Method(0x0075C340,
         static_cast<void (WaterRenderObjClass::*)(float, float, float, float)>(&WaterRenderObjClass::Set_Grid_Transform));
-    Hook_Method(0x0075C430,
-        static_cast<void (WaterRenderObjClass::*)(const Matrix3D *)>(&WaterRenderObjClass::Set_Grid_Transform));
+    Hook_Method(
+        0x0075C430, static_cast<void (WaterRenderObjClass::*)(const Matrix3D *)>(&WaterRenderObjClass::Set_Grid_Transform));
     Hook_Any(0x0075A980, WaterRenderObjClass::Render_Water);
     Hook_Any(0x0075B580, WaterRenderObjClass::Render_Water_Mesh);
     Hook_Any(0x007578F0, WaterRenderObjClass::Get_Obj_Space_Bounding_Sphere);
@@ -1671,4 +1672,14 @@ void Setup_Hooks()
     Hook_Any(0x0075D6C0, WaterRenderObjClass::Draw_Trapezoid_Water);
     Hook_Any(0x00758AF0, WaterRenderObjClass::Load_Setting);
     Hook_Any(0x00759230, WaterRenderObjClass::Render);
+
+    // w3dbridgebuffer.h
+    Hook_Any(0x0078C7E0, W3DBridgeBuffer::Hook_Dtor);
+    Hook_Any(0x0078C890, W3DBridgeBuffer::Hook_Ctor);
+    Hook_Any(0x0078CA60, W3DBridgeBuffer::Free_Bridge_Buffers);
+    Hook_Any(0x0078CAB0, W3DBridgeBuffer::Allocate_Bridge_Buffers);
+    Hook_Any(0x0078CBD0, W3DBridgeBuffer::Clear_All_Bridges);
+    Hook_Any(0x0078CC80, W3DBridgeBuffer::Load_Bridges);
+    Hook_Any(0x0078D010, W3DBridgeBuffer::Update_Center);
+    Hook_Any(0x0078D080, W3DBridgeBuffer::Draw_Bridges);
 }

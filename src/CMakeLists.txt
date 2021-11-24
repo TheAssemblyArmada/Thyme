@@ -11,6 +11,7 @@ set(GAMEENGINE_INCLUDES
     game/client/system
     game/client/system/particlesystem
     game/client/videoplayer
+    game/client/water
     game/common
     game/common/audio
     game/common/compression
@@ -104,6 +105,8 @@ set(GAMEENGINE_SRC
     game/client/videoplayer/videobuffer.cpp
     game/client/videoplayer/videoplayer.cpp
     game/client/videoplayer/videostream.cpp
+    game/client/water/w3dwater.cpp
+    game/client/water/w3dwatertracks.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

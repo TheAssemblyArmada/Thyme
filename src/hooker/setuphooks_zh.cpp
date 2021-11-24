@@ -134,6 +134,7 @@
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
 #include "w3dview.h"
+#include "w3dwater.h"
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
@@ -1637,4 +1638,37 @@ void Setup_Hooks()
     Hook_Any(0x0058C210, ThingTemplate::Get_Skill_Point_Value);
     Hook_Any(0x0058C230, ThingTemplate::Get_Buildable);
     Hook_Any(0x0058C440, ThingTemplate::Get_Max_Simultaneous_Of_Type);
+
+    // w3dwater.h
+    void Do_Sky_Box_Set(bool b);
+    Hook_Any(0x00756F60, Do_Sky_Box_Set);
+    Hook_Any(0x00757730, WaterRenderObjClass::Hook_Ctor);
+    Hook_Any(0x00757BF0, WaterRenderObjClass::Release_Resources);
+    Hook_Any(0x00757D10, WaterRenderObjClass::Re_Acquire_Resources);
+    Hook_Any(0x007580B0, WaterRenderObjClass::Load);
+    Hook_Any(0x007580C0, WaterRenderObjClass::Init);
+    Hook_Any(0x00758590, WaterRenderObjClass::Update_Map_Overrides);
+    Hook_Any(0x00758640, WaterRenderObjClass::Reset);
+    Hook_Any(0x007586A0, WaterRenderObjClass::Enable_Water_Grid);
+    Hook_Any(0x007587F0, WaterRenderObjClass::Update);
+    Hook_Any(0x00758A20, WaterRenderObjClass::Replace_Skybox_Texture);
+    Hook_Any(0x00758AC0, WaterRenderObjClass::Set_Time_Of_Day);
+    Hook_Any(0x00758C90, WaterRenderObjClass::Update_Render_Target_Textures);
+    Hook_Any(0x0075BDC0, WaterRenderObjClass::Set_Grid_Height_Clamps);
+    Hook_Any(0x0075BDE0, WaterRenderObjClass::Add_Velocity);
+    Hook_Any(0x0075BDE0, WaterRenderObjClass::Change_Grid_Height);
+    Hook_Any(0x0075C300, WaterRenderObjClass::Set_Grid_Change_Attenuation_Factors);
+    Hook_Method(0x0075C340,
+        static_cast<void (WaterRenderObjClass::*)(float, float, float, float)>(&WaterRenderObjClass::Set_Grid_Transform));
+    Hook_Method(0x0075C430,
+        static_cast<void (WaterRenderObjClass::*)(const Matrix3D *)>(&WaterRenderObjClass::Set_Grid_Transform));
+    Hook_Any(0x0075A980, WaterRenderObjClass::Render_Water);
+    Hook_Any(0x0075B580, WaterRenderObjClass::Render_Water_Mesh);
+    Hook_Any(0x007578F0, WaterRenderObjClass::Get_Obj_Space_Bounding_Sphere);
+    Hook_Any(0x00757920, WaterRenderObjClass::Get_Obj_Space_Bounding_Box);
+    Hook_Any(0x00757950, WaterRenderObjClass::Class_ID);
+    Hook_Any(0x0075D1E0, WaterRenderObjClass::Setup_Flat_Water_Shader);
+    Hook_Any(0x0075D6C0, WaterRenderObjClass::Draw_Trapezoid_Water);
+    Hook_Any(0x00758AF0, WaterRenderObjClass::Load_Setting);
+    Hook_Any(0x00759230, WaterRenderObjClass::Render);
 }

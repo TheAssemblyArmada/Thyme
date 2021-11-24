@@ -845,6 +845,23 @@ bool GameAssetManager::Replace_Asset_Texture(RenderObjClass *robj, TextureClass 
     }
 }
 
+bool GameAssetManager::Replace_Prototype_Texture(RenderObjClass *robj, const char *old_name, const char *new_name)
+{
+    TextureClass *old_texture = Get_Texture(old_name);
+    TextureClass *new_texture = Get_Texture(new_name);
+    bool ret = Replace_Asset_Texture(robj, old_texture, new_texture);
+
+    if (old_texture) {
+        old_texture->Release_Ref();
+    }
+
+    if (new_texture) {
+        new_texture->Release_Ref();
+    }
+
+    return ret;
+}
+
 // 0x00763EC0
 bool GameAssetManager::Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture)
 {

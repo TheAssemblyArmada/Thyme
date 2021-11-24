@@ -33,6 +33,17 @@ class ShorelineSortInfo;
 class WorldHeightMap;
 class DX8VertexBufferClass;
 class DX8IndexBufferClass;
+struct VertexFormatXYZDUV2
+{
+    float x;
+    float y;
+    float z;
+    unsigned int diffuse;
+    float u1;
+    float v1;
+    float u2;
+    float v2;
+};
 
 struct TScorch
 {
@@ -76,6 +87,12 @@ public:
     int Get_Static_Diffuse(int x, int y);
     float Get_Max_Cell_Height(float x, float y);
     void Set_Time_Of_Day(TimeOfDayType time);
+    void Do_The_Light(VertexFormatXYZDUV2 *vb,
+        Vector3 *light,
+        Vector3 *normal,
+        RefMultiListIterator<RenderObjClass> *lights,
+        unsigned char alpha);
+    float Get_Height_Map_Height(float x, float y, Coord3D *pos);
 
     W3DShroud *Get_Shroud() { return m_shroud; }
 

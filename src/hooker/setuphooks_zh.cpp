@@ -134,6 +134,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
+#include "w3dterraintracks.h"
 #include "w3dview.h"
 #include "w3dwater.h"
 #include "weapon.h"
@@ -1682,4 +1683,19 @@ void Setup_Hooks()
     Hook_Any(0x0078CC80, W3DBridgeBuffer::Load_Bridges);
     Hook_Any(0x0078D010, W3DBridgeBuffer::Update_Center);
     Hook_Any(0x0078D080, W3DBridgeBuffer::Draw_Bridges);
+
+    // w3dterraintracks.h
+    Hook_Any(0x0076B2A0, TerrainTracksRenderObjClassSystem::Hook_Dtor);
+    Hook_Any(0x0076B250, TerrainTracksRenderObjClassSystem::Hook_Ctor);
+    Hook_Any(0x0076A8D0, TerrainTracksRenderObjClass::Add_Cap_Edge_To_Track);
+    Hook_Any(0x0076AC10, TerrainTracksRenderObjClass::Add_Edge_To_Track);
+    Hook_Any(0x0076B010, TerrainTracksRenderObjClassSystem::Bind_Track);
+    Hook_Any(0x0076B230, TerrainTracksRenderObjClassSystem::Unbind_Track);
+    Hook_Any(0x0076B2C0, TerrainTracksRenderObjClassSystem::Re_Acquire_Resources);
+    Hook_Any(0x0076B470, TerrainTracksRenderObjClassSystem::Init);
+    Hook_Any(0x0076B6D0, TerrainTracksRenderObjClassSystem::Update);
+    Hook_Any(0x0076B8B0, TerrainTracksRenderObjClassSystem::Flush);
+    Hook_Any(0x0076BF30, TerrainTracksRenderObjClassSystem::Reset);
+    Hook_Any(0x0076C010, TerrainTracksRenderObjClassSystem::Set_Detail);
+    Hook_Any(0x0076B580, TerrainTracksRenderObjClassSystem::Shutdown);
 }

@@ -90,7 +90,23 @@ enum DrawableStatus
 
 enum PathfindLayerEnum
 {
-    LAYER_UNK,
+    LAYER_INVALID,
+    LAYER_GROUND,
+    LAYER_BRIDGE_1,
+    LAYER_BRIDGE_2,
+    LAYER_BRIDGE_3,
+    LAYER_BRIDGE_4,
+    LAYER_BRIDGE_5,
+    LAYER_BRIDGE_6,
+    LAYER_BRIDGE_7,
+    LAYER_BRIDGE_8,
+    LAYER_BRIDGE_9,
+    LAYER_BRIDGE_10,
+    LAYER_BRIDGE_11,
+    LAYER_BRIDGE_12,
+    LAYER_BRIDGE_13,
+    LAYER_WALLS,
+    LAYER_COUNT,
 };
 
 enum BuildableStatus

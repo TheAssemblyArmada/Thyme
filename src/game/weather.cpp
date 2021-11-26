@@ -51,6 +51,7 @@ WeatherSetting::WeatherSetting() :
 {
 }
 
+// Was originally INI::parseWeatherDefinition
 void WeatherSetting::Parse_Weather_Definition(INI *ini)
 {
     if (*g_theWeatherSetting) {

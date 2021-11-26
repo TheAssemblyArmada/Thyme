@@ -165,8 +165,8 @@ public:
     MouseCursor Get_Mouse_Cursor() const { return m_currentCursor; }
     MouseIO *Get_Mouse_Status() { return &m_currMouse; }
 
-    static void Parse_Mouse_Definitions(INI *ini);
-    static void Parse_Cursor_Definitions(INI *ini);
+    static void Parse_Mouse_Definition(INI *ini);
+    static void Parse_Cursor_Definition(INI *ini);
 
     bool Is_Click(ICoord2D *click_1_coord, ICoord2D *click_2_coord, unsigned click_1_time, unsigned click_2_time) const;
     void Check_For_Drag();

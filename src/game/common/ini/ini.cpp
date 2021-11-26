@@ -57,9 +57,9 @@ BlockParse TheTypeTable[] = {
     {"Animation", (iniblockparse_t)(0x00518DB0) /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     //{"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
-    {"AudioEvent", AudioEventInfo::Parse_Audio_Event},
-    {"AudioSettings", &AudioSettings::Parse_Audio_Settings},
-    {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definitions},
+    {"AudioEvent", AudioEventInfo::Parse_Audio_Event_Definition},
+    {"AudioSettings", &AudioSettings::Parse_Audio_Settings_Definition},
+    {"Bridge", &TerrainRoadCollection::Parse_Terrain_Bridge_Definition},
     {"Campaign", (iniblockparse_t)(0x00517490) /*&INI::parseCampaignDefinition*/},
     {"ChallengeGenerals", (iniblockparse_t)(0x005170B0) /*&INI::parseChallengeModeDefinition*/},
     {"CommandButton", (iniblockparse_t)(0x00516CE0) /*&INI::parseCommandButtonDefinition*/},
@@ -76,19 +76,19 @@ BlockParse TheTypeTable[] = {
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", (iniblockparse_t)(0x00512BE0) /*&INI::parseEvaEvent*/},
     {"FXList", (iniblockparse_t)(0x004CC260) /*&INI::parseFXListDefinition*/},
-    {"GameData", &GlobalData::Parse_Game_Data_Definitions},
+    {"GameData", &GlobalData::Parse_Game_Data_Definition},
     {"InGameUI", (iniblockparse_t)(0x00508440) /*&INI::parseInGameUIDefinition*/},
     {"Locomotor", (iniblockparse_t)(0x004B8A70) /*&INI::parseLocomotorTemplateDefinition*/},
-    {"Language", &GlobalLanguage::Parse_Language_Defintions},
+    {"Language", &GlobalLanguage::Parse_Language_Definition},
     {"MapCache", (iniblockparse_t)(0x00506760) /*&INI::parseMapCacheDefinition*/},
     {"MapData", (iniblockparse_t)(0x0062D610) /*&INI::parseMapDataDefinition*/},
     {"MappedImage", (iniblockparse_t)(0x00506510) /*&INI::parseMappedImageDefinition*/},
     //{ "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
     {"MiscAudio", &MiscAudio::Parse_Misc_Audio},
     //{ "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },
-    {"Mouse", &Mouse::Parse_Mouse_Definitions},
+    {"Mouse", &Mouse::Parse_Mouse_Definition},
     //{ "MouseCursor", (iniblockparse_t)(0x00404060)/*&INI::parseMouseCursorDefinition*/ },
-    {"MouseCursor", &Mouse::Parse_Cursor_Definitions},
+    {"MouseCursor", &Mouse::Parse_Cursor_Definition},
     {"MultiplayerColor", (iniblockparse_t)(0x00504B10) /*&INI::parseMultiplayerColorDefinition*/},
     {"MultiplayerStartingMoneyChoice",
         (iniblockparse_t)(0x00504C80) /*&INI::parseMultiplayerStartingMoneyChoiceDefinition*/},
@@ -100,8 +100,8 @@ BlockParse TheTypeTable[] = {
     {"ObjectReskin", (iniblockparse_t)(0x00504990) /*&INI::parseObjectReskinDefinition*/},
     {"ParticleSystem", (iniblockparse_t)(0x005047E0) /*&INI::parseParticleSystemDefinition*/},
     //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
-    {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definitions},
-    {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definitions},
+    {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definition},
+    {"Road", &TerrainRoadCollection::Parse_Terrain_Road_Definition},
     {"Science", (iniblockparse_t)(0x00488EA0) /*&INI::parseScienceDefinition*/},
     //{ "Rank", (iniblockparse_t)(0x00489800)/*&INI::parseRankDefinition*/ },
     {"Rank", &RankInfoStore::Parse_Rank_Definition},
@@ -110,17 +110,17 @@ BlockParse TheTypeTable[] = {
     {"Terrain", &TerrainTypeCollection::Parse_Terrain_Definition},
     {"Upgrade", (iniblockparse_t)(0x00503BA0) /*&INI::parseUpgradeDefinition*/},
     {"Video", (iniblockparse_t)(0x005039D0) /*&INI::parseVideoDefinition*/},
-    {"WaterSet", &WaterSetting::Parse_Water_Setting},
+    {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", (iniblockparse_t)(0x00503390) /*&INI::parseWaterTransparencyDefinition*/},
     {"Weather", (iniblockparse_t)(0x00502DF0) /*&INI::parseWeatherDefinition*/},
     {"Weapon", (iniblockparse_t)(0x00502B30) /*&INI::parseWeaponTemplateDefinition*/},
     {"WebpageURL", (iniblockparse_t)(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", (iniblockparse_t)(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},
-    {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definitions},
-    {"DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definitions},
+    {"StaticGameLOD", &GameLODManager::Parse_Static_LOD_Definition},
+    {"DynamicGameLOD", &GameLODManager::Parse_Dynamic_LOD_Definition},
     {"LODPreset", &GameLODManager::Parse_LOD_Preset},
-    {"BenchProfile", &GameLODManager::Parse_Bench_Profiles},
-    {"ReallyLowMHz", &GameLODManager::Parse_Low_MHz},
+    {"BenchProfile", &GameLODManager::Parse_Bench_Profile},
+    {"ReallyLowMHz", &GameLODManager::Parse_Really_Low_MHz},
     {"ScriptAction", (iniblockparse_t)(0x004221C0) /*&ScriptEngine::parseScriptAction*/},
     {"ScriptCondition", (iniblockparse_t)(0x00422680) /*&ScriptEngine::parseScriptCondition*/},
     {nullptr, nullptr}
@@ -520,7 +520,7 @@ void INI::Parse_Bool(INI *ini, void *formal, void *store, const void *user_data)
     *static_cast<bool *>(store) = Scan_Bool(ini->Get_Next_Token());
 }
 
-void INI::Parse_Byte(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Unsigned_Byte(INI *ini, void *formal, void *store, const void *user_data)
 {
     int tmp = Scan_Int(ini->Get_Next_Token());
 
@@ -534,7 +534,7 @@ void INI::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
     *static_cast<int32_t *>(store) = Scan_Int(ini->Get_Next_Token());
 }
 
-void INI::Parse_Unsigned(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<uint32_t *>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
 }
@@ -544,7 +544,7 @@ void INI::Parse_Real(INI *ini, void *formal, void *store, const void *user_data)
     *static_cast<float *>(store) = Scan_Real(ini->Get_Next_Token());
 }
 
-void INI::Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Positive_Non_Zero_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     float tmp = Scan_Real(ini->Get_Next_Token());
 
@@ -701,7 +701,7 @@ void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, const void *u
     *static_cast<float *>(store) = _DURATION_MULT * Scan_Real(ini->Get_Next_Token());
 }
 
-void INI::Parse_Duration_Int(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Duration_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<uint32_t *>(store) = Ceil(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
 }
@@ -864,6 +864,7 @@ void INI::Parse_Bitstring64(INI *ini, void *formal, void *store, const void *use
     }
 }
 
+// Was originally parseSpeakerType
 void INI::Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data)
 {
     Utf8String speaker;
@@ -899,7 +900,7 @@ void INI::Parse_Science_Vector(INI *ini, void *formal, void *store, const void *
     }
 }
 
-void INI::Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *user_data)
+void INI::Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data)
 {
     std::vector<Utf8String> *sound_vec = static_cast<std::vector<Utf8String> *>(store);
     sound_vec->clear();

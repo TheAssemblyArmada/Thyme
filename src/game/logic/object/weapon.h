@@ -51,8 +51,9 @@ enum WeaponBonusConditionType
     WEAPONBONUSCONDITION_COUNT,
 };
 
-struct WeaponBonus
+class WeaponBonus
 {
+public:
     enum Field
     {
         INVALID = -1,
@@ -64,7 +65,24 @@ struct WeaponBonus
         COUNT,
     };
 
-    float field[COUNT];
+    WeaponBonus() { Clear(); }
+    void Clear()
+    {
+        for (int i = 0; i < COUNT; i++) {
+            m_field[i] = 1.0f;
+        }
+    }
+    float Get_Field(Field f) { return m_field[f]; }
+    void Set_Field(Field f, float bonus) { m_field[f] = bonus; }
+    void Append_Bonuses(WeaponBonus &bonus)
+    {
+        for (int i = 0; i < COUNT; i++) {
+            bonus.m_field[i] = m_field[i] - 1.0f + bonus.m_field[i];
+        }
+    }
+
+private:
+    float m_field[COUNT];
 };
 
 class WeaponBonusSet : public MemoryPoolObject
@@ -77,6 +95,19 @@ protected:
 
 public:
     static void Parse_Weapon_Bonus_Set_Ptr(INI *ini, void *formal, void *store, void const *user_data);
+    static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, void const *user_data);
+    void Parse_Weapon_Bonus_Set(INI *ini);
+    WeaponBonusSet() {}
+    void Append_Bonuses(unsigned int flags, WeaponBonus &bonus)
+    {
+        if (flags) {
+            for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; i++) {
+                if ((1 << i & flags) != 0) {
+                    m_bonus[i].Append_Bonuses(bonus);
+                }
+            }
+        }
+    }
 
 private:
     WeaponBonus m_bonus[WEAPONBONUSCONDITION_COUNT];

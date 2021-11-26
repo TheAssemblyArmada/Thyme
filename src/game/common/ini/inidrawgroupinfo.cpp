@@ -15,6 +15,7 @@
 #include "drawgroupinfo.h"
 #include "ini.h"
 
+// Was originally INI::parseDrawGroupNumberDefinition
 void INI::Parse_Draw_Group_Info(INI *ini)
 {
     captainslog_relassert(g_theDrawGroupInfo != nullptr, 0xDEAD0006, "g_theDrawGroupInfo is null when attempting parse.");

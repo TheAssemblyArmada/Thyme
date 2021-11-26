@@ -121,11 +121,11 @@ public:
 
     // Field parsing functions
     static void Parse_Bool(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Byte(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Unsigned_Byte(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Int(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Unsigned(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Real(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Positive_None_Zero_Real(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Positive_Non_Zero_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Percent_To_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Angle_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Angular_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data);
@@ -141,7 +141,7 @@ public:
     static void Parse_ICoord3D(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Index_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Duration_Real(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Duration_Int(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Duration_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Acceleration_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, const void *user_data);
@@ -151,7 +151,7 @@ public:
     static void Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data);
-    static void Parse_Sounds_Vector(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data);
 
     // Block Parser functions
     static void Parse_Draw_Group_Info(INI *ini);

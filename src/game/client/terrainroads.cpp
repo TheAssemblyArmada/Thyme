@@ -287,7 +287,8 @@ TerrainRoadType *TerrainRoadCollection::Find_Bridge(Utf8String name)
     return retval;
 }
 
-void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
+// Was originally INI::parseTerrainRoadDefinition
+void TerrainRoadCollection::Parse_Terrain_Road_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 
@@ -300,7 +301,8 @@ void TerrainRoadCollection::Parse_Terrain_Road_Definitions(INI *ini)
     ini->Init_From_INI(g_theTerrainRoads->New_Road(token), s_terrainRoadFieldParseTable);
 }
 
-void TerrainRoadCollection::Parse_Terrain_Bridge_Definitions(INI *ini)
+// Was originally INI::parseTerrainBridgeDefinition
+void TerrainRoadCollection::Parse_Terrain_Bridge_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
 

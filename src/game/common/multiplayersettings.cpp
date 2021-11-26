@@ -41,6 +41,7 @@ void MultiplayerColorDefinition::Set_Night_Color(RGBColor rgb)
         | ((int)Floor(rgb.red * 255.0f) << 16) | 0xFF000000;
 }
 
+// Was originally INI::parseMultiplayerColorDefinition
 void MultiplayerColorDefinition::Parse_Color_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();

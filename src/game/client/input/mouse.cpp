@@ -676,10 +676,11 @@ void Mouse::Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, co
 /**
  * @brief Parses "Mouse" configuration sections from .ini files.
  * @see ini.cpp
+ * Was originally INI::parseMouseDefinition
  *
  * 0x004041F0
  */
-void Mouse::Parse_Mouse_Definitions(INI *ini)
+void Mouse::Parse_Mouse_Definition(INI *ini)
 {
     static FieldParse _static_mouse_parsers[] = {
         { "TooltipFontName", &INI::Parse_AsciiString, nullptr, offsetof(Mouse, m_tooltipFontName) },
@@ -700,9 +701,9 @@ void Mouse::Parse_Mouse_Definitions(INI *ini)
         { "AdjustTooltipAltColor", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_adjustTooltipAltColor) },
         { "OrthoCamera", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_orthoCamera) },
         { "OrthoZoom", &INI::Parse_Real, nullptr, offsetof(Mouse, m_orthoZoom) },
-        { "DragTolerance", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance) },
-        { "DragTolerance3D", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragTolerance3D) },
-        { "DragToleranceMS", &INI::Parse_Unsigned, nullptr, offsetof(Mouse, m_dragToleranceMS) }
+        { "DragTolerance", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance) },
+        { "DragTolerance3D", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance3D) },
+        { "DragToleranceMS", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragToleranceMS) }
     };
 
     if (g_theMouse != nullptr) {
@@ -713,10 +714,11 @@ void Mouse::Parse_Mouse_Definitions(INI *ini)
 /**
  * @brief Parses "MouseCursor" configuration sections from .ini files.
  * @see ini.cpp
+ * Was originally INI::parseMouseCursorDefinition
  *
  * 0x00404060
  */
-void Mouse::Parse_Cursor_Definitions(INI *ini)
+void Mouse::Parse_Cursor_Definition(INI *ini)
 {
     static FieldParse _cursor_parsers[] = {
         { "CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text) },

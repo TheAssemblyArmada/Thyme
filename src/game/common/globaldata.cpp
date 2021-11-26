@@ -148,7 +148,7 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "StructureStiffness", &INI::Parse_Real, nullptr, 400 }, //
     { "Gravity", &INI::Parse_Acceleration_Real, nullptr, 404 }, //
     { "StealthFriendlyOpacity", &INI::Parse_Percent_To_Real, nullptr, 408 }, //
-    { "DefaultOcclusionDelay", &INI::Parse_Duration_Int, nullptr, 412 }, //
+    { "DefaultOcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, 412 }, //
     { "PartitionCellSize", &INI::Parse_Real, nullptr, 420 }, //
     { "AmmoPipScaleFactor", &INI::Parse_Real, nullptr, 464 }, //
     { "ContainerPipScaleFactor", &INI::Parse_Real, nullptr, 468 }, //
@@ -156,7 +156,7 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "ContainerPipWorldOffset", &INI::Parse_Coord3D, nullptr, 436 }, //
     { "AmmoPipScreenOffset", &INI::Parse_Coord2D, nullptr, 448 }, //
     { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, 456 }, //
-    { "HistoricDamageLimit", &INI::Parse_Duration_Int, nullptr, 472 }, //
+    { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, 472 }, //
     { "MaxTerrainTracks", &INI::Parse_Int, nullptr, 476 }, //
     //{ "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
     //{ "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
@@ -352,20 +352,20 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "MaxShakeRange", &INI::Parse_Real, nullptr, 2188 }, //
     { "SellPercentage", &INI::Parse_Percent_To_Real, nullptr, 2192 }, //
     { "BaseRegenHealthPercentPerSecond", &INI::Parse_Percent_To_Real, nullptr, 2196 }, //
-    { "BaseRegenDelay", &INI::Parse_Duration_Int, nullptr, 2200 }, //
+    { "BaseRegenDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, 2200 }, //
     { "SpecialPowerViewObject", &INI::Parse_AsciiString, nullptr, 2208 }, //
     { "StandardPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, 2212 }, //
     { "ShowMetrics", &INI::Parse_Bool, nullptr, 2232 }, //
     { "DefaultStartingCash", &Money::Parse_Money_Amount, nullptr, 2236 }, //
     { "ShroudColor", &INI::Parse_RGB_Color, nullptr, 2280 }, //
-    { "ClearAlpha", &INI::Parse_Byte, nullptr, 2292 }, //
-    { "FogAlpha", &INI::Parse_Byte, nullptr, 2293 }, //
-    { "ShroudAlpha", &INI::Parse_Byte, nullptr, 2294 }, //
+    { "ClearAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2292 }, //
+    { "FogAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2293 }, //
+    { "ShroudAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2294 }, //
     { "HotKeyTextColor", &INI::Parse_Color_Int, nullptr, 2204 }, //
     { "PowerBarBase", &INI::Parse_Int, nullptr, 2252 }, //
     { "PowerBarIntervals", &INI::Parse_Real, nullptr, 2256 }, //
     { "PowerBarYellowRange", &INI::Parse_Int, nullptr, 2260 }, //
-    { "UnlookPersistDuration", &INI::Parse_Duration_Int, nullptr, 2268 }, //
+    { "UnlookPersistDuration", &INI::Parse_Duration_Unsigned_Int, nullptr, 2268 }, //
     { "NetworkFPSHistoryLength", &INI::Parse_Int, nullptr, 2296 }, //
     { "NetworkLatencyHistoryLength", &INI::Parse_Int, nullptr, 2300 }, //
     { "NetworkRunAheadMetricsTime", &INI::Parse_Int, nullptr, 2308 }, //
@@ -699,13 +699,6 @@ GlobalData::GlobalData()
     m_hardSoloAIHealthBonus = 1.0f;
     m_defaultStructureRubbleHeight = 1.0f;
     m_weaponBonusSet = NEW_POOL_OBJ(WeaponBonusSet);
-
-    for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; ++i) {
-        for (int j = 0; j < WeaponBonus::COUNT; ++j) {
-            m_weaponBonusSet->m_bonus[i].field[j] = 1.0f;
-        }
-    }
-
     m_shellMapName = "Maps/ShellMap1/ShellMap1.map";
     m_shellMapOn = true;
     m_playIntro = true;
@@ -812,7 +805,8 @@ bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
     return true;
 }
 
-void GlobalData::Parse_Game_Data_Definitions(INI *ini)
+// Was originally called through INI::parseGameDataDefinition
+void GlobalData::Parse_Game_Data_Definition(INI *ini)
 {
     captainslog_info("Parsing Global Data from '%s'.", ini->Get_Filename().Str());
 

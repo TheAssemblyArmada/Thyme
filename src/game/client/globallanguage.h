@@ -55,7 +55,7 @@ public:
     const FontDesc &Tooltip() const { return m_tooltipFont; }
     const FontDesc &Copyright_Font() const { return m_copyrightFont; }
 
-    static void Parse_Language_Defintions(INI *ini);
+    static void Parse_Language_Definition(INI *ini);
     static void Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_FontDesc(INI *ini, void *formal, void *store, void const *user_data);
 

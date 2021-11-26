@@ -276,11 +276,11 @@ void Setup_Hooks()
 
     // Field parsing functions
     Hook_Function(0x0041ADA0, &INI::Parse_Bool);
-    Hook_Function(0x0041A980, &INI::Parse_Byte);
+    Hook_Function(0x0041A980, &INI::Parse_Unsigned_Byte);
     Hook_Function(0x0041AAB0, &INI::Parse_Int);
-    Hook_Function(0x0041AB20, &INI::Parse_Unsigned);
+    Hook_Function(0x0041AB20, &INI::Parse_Unsigned_Int);
     Hook_Function(0x0041AB90, &INI::Parse_Real);
-    Hook_Function(0x0041AC00, &INI::Parse_Positive_None_Zero_Real);
+    Hook_Function(0x0041AC00, &INI::Parse_Positive_Non_Zero_Real);
     Hook_Function(0x0041BA50, &INI::Parse_Percent_To_Real);
     Hook_Function(0x0041ACA0, &INI::Parse_Angle_Real);
     Hook_Function(0x0041AD20, &INI::Parse_Angular_Velocity_Real);
@@ -292,7 +292,7 @@ void Setup_Hooks()
     Hook_Function(0x0041C2C0, &INI::Parse_Coord3D);
     Hook_Function(0x0041D140, &INI::Parse_Index_List);
     Hook_Function(0x0041DB50, &INI::Parse_Duration_Real);
-    Hook_Function(0x0041DBD0, &INI::Parse_Duration_Int);
+    Hook_Function(0x0041DBD0, &INI::Parse_Duration_Unsigned_Int);
     Hook_Function(0x0041DD10, &INI::Parse_Velocity_Real);
     Hook_Function(0x0041DD90, &INI::Parse_Acceleration_Real);
     Hook_Function(0x0041BB20, &INI::Parse_Bitstring32);
@@ -510,7 +510,7 @@ void Setup_Hooks()
     Hook_Function(0x004C9860, WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr);
 
     // globaldata.h GlobalData
-    Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definitions);
+    Hook_Function(0x00418090, GlobalData::Parse_Game_Data_Definition);
 
     // thread.h ThreadClass
     Hook_Method(0x0089CDC0, &ThreadClass::Execute);
@@ -680,7 +680,7 @@ void Setup_Hooks()
     Hook_Method(0x004D32D0, &PlayerTemplateStore::Find_Player_Template);
     Hook_Method(0x004D35E0, &PlayerTemplateStore::Get_Nth_Player_Template);
     Hook_Method(0x004D3630, &PlayerTemplateStore::Get_All_Side_Strings);
-    Hook_Function(0x004D3860, &PlayerTemplateStore::Parse_Player_Template_Definitions);
+    Hook_Function(0x004D3860, &PlayerTemplateStore::Parse_Player_Template_Definition);
 
     // partsysinfo.h
     Hook_Method(0x004CD460, &ParticleSystemInfo::Hook_Ctor);

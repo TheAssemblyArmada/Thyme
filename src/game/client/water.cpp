@@ -56,7 +56,8 @@ FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[]
     { nullptr, nullptr, nullptr, 0 }
 };
 
-void WaterSetting::Parse_Water_Setting(INI *ini)
+// Was originally INI::parseWaterSettingDefinition
+void WaterSetting::Parse_Water_Setting_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
     int tod;
@@ -86,7 +87,8 @@ WaterTransparencySetting::WaterTransparencySetting() :
 {
 }
 
-void WaterTransparencySetting::Parse_Water_Transparency(INI *ini)
+// Was originally INI::parseWaterTransparencyDefinition
+void WaterTransparencySetting::Parse_Water_Transparency_Definition(INI *ini)
 {
     if (*g_theWaterTransparency) {
         if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {

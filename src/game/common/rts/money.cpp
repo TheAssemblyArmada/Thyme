@@ -41,5 +41,5 @@ void Money::Deposit(unsigned amount, bool play_sound)
 
 void Money::Parse_Money_Amount(INI *ini, void *formal, void *store, void const *user_data)
 {
-    INI::Parse_Unsigned(ini, formal, &(static_cast<Money *>(store)->m_money), user_data);
+    INI::Parse_Unsigned_Int(ini, formal, &(static_cast<Money *>(store)->m_money), user_data);
 }

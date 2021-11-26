@@ -561,3 +561,8 @@ WaterTracksRenderSystem *&g_theWaterTracksRenderSystem =
 #include "polygontrigger.h"
 PolygonTrigger *&PolygonTrigger::s_thePolygonTriggerListPtr =
     Make_Global<PolygonTrigger *>(PICK_ADDRESS(0x00A2C278, 0x00E1D53C));
+
+// w3dterraintracks.cpp
+#include "w3dterraintracks.h"
+TerrainTracksRenderObjClassSystem *&g_theTerrainTracksRenderObjClassSystem =
+    Make_Global<TerrainTracksRenderObjClassSystem *>(PICK_ADDRESS(0x00A3AD5C, 0x00E1ACC0));

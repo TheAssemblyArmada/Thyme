@@ -217,6 +217,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/w3dengine/client/w3dbridgebuffer.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3ddisplay.cpp
     platform/w3dengine/client/w3dpoly.cpp
@@ -224,6 +225,8 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3dsmudge.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp
+    platform/w3dengine/client/w3dterrainlogic.cpp
+    platform/w3dengine/client/w3dterraintracks.cpp
     platform/w3dengine/common/thing/w3dmodulefactory.cpp
     w3d/lib/buff.cpp
     w3d/lib/bufffileclass.cpp

@@ -41,3 +41,29 @@ void BaseHeightMapRenderObjClass::Set_Time_Of_Day(TimeOfDayType time)
     Call_Method<void, BaseHeightMapRenderObjClass, TimeOfDayType>(0x007553B0, this, time);
 #endif
 }
+
+void BaseHeightMapRenderObjClass::Do_The_Light(VertexFormatXYZDUV2 *vb,
+    Vector3 *light,
+    Vector3 *normal,
+    RefMultiListIterator<RenderObjClass> *lights,
+    unsigned char alpha)
+{
+#ifdef GAME_DLL
+    Call_Method<void,
+        BaseHeightMapRenderObjClass,
+        VertexFormatXYZDUV2 *,
+        Vector3 *,
+        Vector3 *,
+        RefMultiListIterator<RenderObjClass> *,
+        unsigned char>(0x007512A0, this, vb, light, normal, lights, alpha);
+#endif
+}
+
+float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord3D *pos)
+{
+#ifdef GAME_DLL
+    return Call_Method<float, BaseHeightMapRenderObjClass, float, float, Coord3D *>(0x00752580, this, x, y, pos);
+#else
+    return 0.0f;
+#endif
+}

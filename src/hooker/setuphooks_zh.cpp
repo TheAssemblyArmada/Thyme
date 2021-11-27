@@ -134,6 +134,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
+#include "w3dshroud.h"
 #include "w3dterraintracks.h"
 #include "w3dview.h"
 #include "w3dwater.h"
@@ -1698,4 +1699,19 @@ void Setup_Hooks()
     Hook_Any(0x0076BF30, TerrainTracksRenderObjClassSystem::Reset);
     Hook_Any(0x0076C010, TerrainTracksRenderObjClassSystem::Set_Detail);
     Hook_Any(0x0076B580, TerrainTracksRenderObjClassSystem::Shutdown);
+
+    // w3dshroud.h
+    Hook_Any(0x00769AD0, W3DShroud::Hook_Ctor);
+    Hook_Any(0x00769B20, W3DShroud::Hook_Dtor);
+    Hook_Any(0x00769B70, W3DShroud::Init);
+    Hook_Any(0x00769DD0, W3DShroud::Reset);
+    Hook_Any(0x00769E20, W3DShroud::Release_Resources);
+    Hook_Any(0x00769E40, W3DShroud::Re_Acquire_Resources);
+    Hook_Any(0x00769F30, W3DShroud::Set_Shroud_Level);
+    Hook_Any(0x0076A320, W3DShroud::Set_Border_Shroud_Level);
+    Hook_Any(0x0076A330, W3DShroud::Render);
+    Hook_Any(0x0076A550, W3DShroudMaterialPassClass::Install_Materials);
+    Hook_Any(0x0076A580, W3DShroudMaterialPassClass::UnInstall_Materials);
+    Hook_Any(0x0076A590, W3DMaskMaterialPassClass::Install_Materials);
+    Hook_Any(0x0076A5A0, W3DMaskMaterialPassClass::UnInstall_Materials);
 }

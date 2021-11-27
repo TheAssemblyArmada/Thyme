@@ -85,6 +85,13 @@ public:
     virtual float Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y);
     static int Get_Min_Height_Value() { return 0; }
     static int Get_Max_Height_Value() { return 255; }
+    int Get_Width() { return m_width; }
+    int Get_Height() { return m_height; }
+    int Border_Size() { return m_borderSize; }
+    int Get_Draw_Width() { return m_drawWidthX; }
+    int Get_Draw_Height() { return m_drawHeightY; }
+    int Get_Draw_Origin_X() { return m_drawOriginX; }
+    int Get_Draw_Origin_Y() { return m_drawOriginY; }
 
 protected:
     enum

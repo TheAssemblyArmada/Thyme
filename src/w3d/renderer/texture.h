@@ -61,6 +61,7 @@ public:
     void Set_Default_Mip_Filter(FilterType type);
     void Set_U_Address_Mode(TxtAddrMode mode) { m_uAddressMode = mode; }
     void Set_V_Address_Mode(TxtAddrMode mode) { m_vAddressMode = mode; }
+    FilterType Get_Mag_Filter() { return m_magTextureFilter; }
 
     static void Init_Filters(TextureFilterMode mode);
 

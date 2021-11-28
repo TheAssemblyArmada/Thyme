@@ -549,7 +549,7 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
 
         vcount = Get_Model_Vertices(destination_vb,
             *cur_vertex,
-            (float)section_span_count * section_span_length + x_offset,
+            (float)(section_span_count - 1) * section_span_length + x_offset,
             vec,
             vec_normal,
             vec_z,

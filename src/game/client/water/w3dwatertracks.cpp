@@ -494,8 +494,8 @@ void WaterTracksRenderSystem::Flush(RenderInfoClass &rinfo)
                 float g = g_theWriteableGlobalData->m_terrainAmbient[0].green;
                 float b = g_theWriteableGlobalData->m_terrainAmbient[0].blue;
                 r = g_theWriteableGlobalData->m_terrainDiffuse[0].red / 2.0f + r;
-                g = g_theWriteableGlobalData->m_terrainDiffuse[0].red / 2.0f + g;
-                b = g_theWriteableGlobalData->m_terrainDiffuse[0].red / 2.0f + b;
+                g = g_theWriteableGlobalData->m_terrainDiffuse[0].green / 2.0f + g;
+                b = g_theWriteableGlobalData->m_terrainDiffuse[0].blue / 2.0f + b;
                 r = r * 255.0f;
                 g = g * 255.0f;
                 b = b * 255.0f;

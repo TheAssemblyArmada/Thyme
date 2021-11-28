@@ -1676,6 +1676,10 @@ void Setup_Hooks()
     Hook_Any(0x00759230, WaterRenderObjClass::Render);
 
     // w3dbridgebuffer.h
+    Hook_Any(0x0078BB60, W3DBridge::Get_Model_Vertices);
+    Hook_Any(0x0078C050, W3DBridge::Get_Model_Vertices_Fixed);
+    Hook_Any(0x0078C210, W3DBridge::Get_Indices_And_Vertices);
+    Hook_Any(0x0078C660, W3DBridge::Get_Model_Indices);
     Hook_Any(0x0078C7E0, W3DBridgeBuffer::Hook_Dtor);
     Hook_Any(0x0078C890, W3DBridgeBuffer::Hook_Ctor);
     Hook_Any(0x0078CA60, W3DBridgeBuffer::Free_Bridge_Buffers);

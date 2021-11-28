@@ -183,6 +183,11 @@ public:
     static void Set_DX8_Texture(unsigned stage, w3dbasetexture_t texture);
     static IDirect3DDevice8 *Get_D3D_Device8() { return s_d3dDevice; }
     static IDirect3DSurface8 *Get_DX8_Front_Buffer();
+    static void Copy_DX8_Rects(IDirect3DSurface8 *pSourceSurface,
+        CONST RECT *pSourceRectsArray,
+        UINT cRects,
+        IDirect3DSurface8 *pDestinationSurface,
+        CONST POINT *pDestPointsArray);
     static Vector4 Convert_Color(unsigned color);
     static unsigned int Convert_Color(const Vector4 &color);
     static unsigned int Convert_Color(const Vector3 &color, const float alpha);
@@ -808,6 +813,15 @@ inline void DX8Wrapper::Set_Ambient_Color(const Vector3 &color)
 {
     s_ambientColor = color;
     Set_DX8_Render_State(D3DRS_AMBIENT, Convert_Color(color, 1.0f));
+}
+
+inline void DX8Wrapper::Copy_DX8_Rects(IDirect3DSurface8 *pSourceSurface,
+    CONST RECT *pSourceRectsArray,
+    UINT cRects,
+    IDirect3DSurface8 *pDestinationSurface,
+    CONST POINT *pDestPointsArray)
+{
+    DX8CALL(CopyRects(pSourceSurface, pSourceRectsArray, cRects, pDestinationSurface, pDestPointsArray));
 }
 #endif
 

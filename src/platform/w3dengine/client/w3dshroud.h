@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief Shroud code
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "matpass.h"
 #include "texture.h"
 #include "w3dtypes.h"
 
@@ -37,17 +38,19 @@ public:
     void Init(WorldHeightMap *map, float worldx, float worldy);
     void Reset();
     void Release_Resources();
-    void Re_Acquire_Resources();
+    bool Re_Acquire_Resources();
     unsigned char Get_Shroud_Level(int x, int y);
-    void Set_Shroud_Level(int x, int y, unsigned char level, bool b);
+    void Set_Shroud_Level(int x, int y, unsigned char level, bool unk);
     void Fill_Shroud_Data(unsigned char level);
-    void Fill_Border_Shroud_Data(unsigned char level, w3dsurface_t surface);
+    void Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surface);
     void Set_Border_Shroud_Level(unsigned char level);
     void Render(CameraClass *cam);
-#ifdef BUILD_WITH_D3D8
-    void Interpolate_Fog_Levels(RECT *rect);
-#endif
     void Set_Shroud_Filter(bool enable);
+
+#ifdef GAME_DLL
+    W3DShroud *Hook_Ctor() { return new (this) W3DShroud(); }
+    void Hook_Dtor() { W3DShroud::~W3DShroud(); }
+#endif
 
 private:
     int m_numCellsX;
@@ -58,17 +61,43 @@ private:
     float m_cellHeight;
     char *m_shroudData;
     w3dsurface_t m_pSrcTexture;
-    void *m_srcTextureData;
+    unsigned char *m_srcTextureData;
     unsigned int m_srcTexturePitch;
     TextureClass *m_pDstTexture;
-    int m_dstTextureWidth;
-    int m_dstTextureHeight;
+    unsigned int m_dstTextureWidth;
+    unsigned int m_dstTextureHeight;
     TextureFilterClass::FilterType m_shroudFilter;
     float m_drawOriginX;
     float m_drawOriginY;
-    char m_drawFogOfWar;
-    char m_fillBorderShroudData;
-    char m_shroudAlpha;
-    unsigned char *m_fogArray1;
-    unsigned char *m_fogArray2;
+    bool m_drawFogOfWar;
+    bool m_fillBorderShroudData;
+    unsigned char m_shroudAlpha;
+    unsigned char *m_srcFogArray;
+    unsigned char *m_destFogArray;
+};
+
+class W3DShroudMaterialPassClass : public MaterialPassClass
+{
+public:
+    W3DShroudMaterialPassClass() : m_unk(false) {}
+    virtual ~W3DShroudMaterialPassClass() override {}
+    virtual void Install_Materials() override;
+    virtual void UnInstall_Materials() override;
+
+private:
+    bool m_unk;
+};
+
+class W3DMaskMaterialPassClass : public MaterialPassClass
+{
+public:
+    W3DMaskMaterialPassClass() : m_unk(false), m_resetShader(true) {}
+    virtual ~W3DMaskMaterialPassClass() override {}
+    virtual void Install_Materials() override;
+    virtual void UnInstall_Materials() override;
+    void Reset_Shader(bool b) { m_resetShader = b; }
+
+private:
+    bool m_unk;
+    bool m_resetShader;
 };

@@ -222,6 +222,7 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3ddisplay.cpp
     platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
+    platform/w3dengine/client/w3dshroud.cpp
     platform/w3dengine/client/w3dsmudge.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp

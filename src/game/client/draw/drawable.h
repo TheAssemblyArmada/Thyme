@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "module.h"
+#include "object.h"
 #include "thing.h"
 
 class DisplayString;
@@ -24,33 +25,286 @@ class DynamicAudioEventInfo;
 class DynamicAudioEventRTS;
 class DrawableLocoInfo;
 class DrawableIconInfo;
+class Drawable;
+class GhostObject;
+class Locomotor;
+class View;
+class ClientUpdateModule;
+class DrawModule;
+
+struct DrawableInfo
+{
+    ObjectID object_id;
+    Drawable *drawable;
+    GhostObject *ghost_object;
+    int flags;
+};
 
 class Drawable : public Thing, public SnapShot
 {
 public:
+    struct PhysicsXformInfo;
     enum FadingMode
     {
-        FADING_MODE_0,
-        FADING_MODE_1,
-        FADING_MODE_2,
+        FADING_MODE_OFF,
+        FADING_MODE_OUT,
+        FADING_MODE_IN,
     };
 
+    enum DrawableIconType
+    {
+        ICON_HEAL,
+        ICON_HEAL_STRUCTURE,
+        ICON_HEAL_VEHICLE,
+        ICON_DEMORALIZED_OBSOLETE,
+        ICON_BOMB_TIMED,
+        ICON_BOMB_REMOTE,
+        ICON_DISABLED,
+        ICON_BATTLEPLAN_BOMBARDMENT,
+        ICON_BATTLEPLAN_HOLDTHELINE,
+        ICON_BATTLEPLAN_SEARCHANDDESTROY,
+        ICON_EMOTICON,
+        ICON_ENTHUSIASTIC,
+        ICON_SUBLIMINAL,
+        ICON_CARBOMB,
+        MAX_ICONS,
+        ICON_INVALID = 0xFFFFFFFF,
+    };
+
+    Drawable(ThingTemplate const *thing_template, DrawableStatus status);
+    virtual ~Drawable() override;
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override;
+    virtual Drawable *As_Drawable_Meth() override { return this; }
+    virtual const Drawable *As_Drawable_Meth() const override { return this; }
+    virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
+
     const Object *Get_Object() const { return m_object; }
+    bool Is_Hidden() const { return m_hidden || m_stealthInvisible; }
+    StealthLookType Get_Stealth_Look() const { return m_stealthLook; }
+    void Set_Remain_Visible_Frames(int frames) { m_remainVisibleFrames = frames; }
+    int Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
     bool Is_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
 
-    const Matrix3D *Get_Transform_Matrix() const;
+    bool Get_Draws_In_Mirror() const
+    {
+        return m_status & DRAWABLE_STATUS_DRAWS_IN_MIRROR || Is_KindOf(KINDOF_CAN_CAST_REFLECTIONS);
+    }
+
+    float Get_Alpha_Override() const { return m_opacity * m_effectiveOpacity2; }
+    float Get_Stealth_Emissive_Scale() const { return m_stealthEmissiveScale; }
+    bool Recieves_Dynamic_Lights() const { return m_receivesDynamicLights; }
+    DrawableInfo *Get_Drawable_Info() { return &m_drawableInfo; }
+    bool Check_Status_Bit(DrawableStatus status) const { return (status & m_status) != 0; }
+    float Get_Instance_Scale() const { return m_instanceScale; }
+    const BitFlags<MODELCONDITION_COUNT> &Get_Condition_State() const { return m_conditionState; }
+
+    void Set_Model_Condition_State(ModelConditionFlagType set)
+    {
+        Clear_And_Set_Model_Condition_State(MODELCONDITION_INVALID, set);
+    }
+
+    void Clear_Model_Condition_State(ModelConditionFlagType clr)
+    {
+        Clear_And_Set_Model_Condition_State(clr, MODELCONDITION_INVALID);
+    }
+
+    void Set_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> &set)
+    {
+        BitFlags<MODELCONDITION_COUNT> b;
+        Clear_And_Set_Model_Condition_Flags(b, set);
+    }
+
+    void Clear_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> &clr)
+    {
+        BitFlags<MODELCONDITION_COUNT> b;
+        Clear_And_Set_Model_Condition_Flags(clr, b);
+    }
+
+    TerrainDecalType Get_Terrain_Decal() const { return m_terrainDecal; }
+    void Set_Recieves_Dynamic_Lights(bool enable) { m_receivesDynamicLights = enable; }
+    TintEnvelope *Get_Tint_Color_Envelope() const { return m_tintColorEnvelope; }
+    void Set_Tint_Color_Envelope(TintEnvelope *envelope); // needs TintEnvelope
+    Drawable *Get_Next() { return m_nextDrawable; }
+    void Set_Status_Bit(DrawableStatus status) { m_status |= status; }
+    void Clear_Status_Bit(DrawableStatus status) { m_status &= ~status; }
+    int Is_Selected() { return m_selected != false; }
+    void Set_Opacity(float opacity) { m_opacity = opacity; }
+    float Get_Effective_Opacity1() { return m_effectiveOpacity1; }
+    float Get_Opacity() { return m_opacity; }
+    float Get_Effective_Opacity2() { return m_effectiveOpacity2; }
+    void Clear_Draw_Bit(unsigned int bit) { m_drawBits &= ~bit; }
+    bool Check_Draw_Bit(unsigned int bit) { return (bit & m_drawBits) != 0; }
+    Matrix3D &Get_Instance_Matrix() { return m_instance; }
+    bool Is_Instance_Identity() { return m_instanceIsIdentity; }
+    void Kill_Icon(DrawableIconType icon); // needs DrawableIconInfo
+    bool Has_Drawable_Icon_Info() { return m_drawableIconInfo != nullptr; }
+    void Set_Draw_Bit(unsigned int bit) { m_drawBits |= bit; }
+    Drawable *Get_Previous() { return m_prevDrawable; }
+    void Set_Flash_Time(int time) { m_flashTime = time; }
+    void Set_Flash_Color(int color) { m_flashColor = color; }
+
+    void Allocate_Shadows();
+
+    void Apply_Physics_Xform(Matrix3D *mtx);
+    bool Calc_Physics_Xform(PhysicsXformInfo &xform);
+    void Calc_Physics_Xform_Hover_Or_Wings(Locomotor const *locomotor, PhysicsXformInfo &xform);
+    void Calc_Physics_Xform_Motorcycle(Locomotor const *locomotor, PhysicsXformInfo &xform);
+    void Calc_Physics_Xform_Thrust(Locomotor const *locomotor, PhysicsXformInfo &xform);
+    void Calc_Physics_Xform_Treads(Locomotor const *locomotor, PhysicsXformInfo &xform);
+    void Calc_Physics_Xform_Wheels(Locomotor const *locomotor, PhysicsXformInfo &xform);
+
+    void Changed_Team();
+    void Clear_And_Set_Model_Condition_Flags(
+        BitFlags<MODELCONDITION_COUNT> const &clr, BitFlags<MODELCONDITION_COUNT> const &set);
+    void Clear_And_Set_Model_Condition_State(ModelConditionFlagType clr, ModelConditionFlagType set);
+    void Clear_Caption_Text();
+    void Clear_Custom_Sound_Ambient(bool clear);
+    void Clear_Emoticon();
+
+    bool Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *radius, Matrix3D *transform);
+    void Color_Flash(RGBColor const *color, unsigned int unk1, unsigned int unk2, unsigned int unk3);
+    void Color_Tint(RGBColor const *color);
+
+    void Draw(View *view);
+    void Draw_Ammo(IRegion2D const *region);
+    void Draw_Battle_Plans(IRegion2D const *region);
+    void Draw_Bombed(IRegion2D const *region);
+    void Draw_Caption(IRegion2D const *region);
+    void Draw_Construct_Percent(IRegion2D const *region);
+    void Draw_Contained(IRegion2D const *region);
+    void Draw_Disabled(IRegion2D const *region);
+    void Draw_Emoticon(IRegion2D const *region);
+    void Draw_Enthusiastic(IRegion2D const *region);
+    void Draw_Healing(IRegion2D const *region);
+    void Draw_Health_Bar(IRegion2D const *region);
+    void Draw_Icon_UI();
+    void Draw_UI_Text();
+    void Draw_Veterancy(IRegion2D const *region);
+    bool Draws_Any_UI_Text();
+
+    void Enable_Ambient_Sound(bool enable);
+    void Enable_Ambient_Sound_From_Script(bool enable);
+
+    void Fade_In(unsigned int time);
+    void Fade_Out(unsigned int time);
+
+    ClientUpdateModule *findClientUpdateModule(NameKeyType key);
+    void Flash_As_Selected(RGBColor const *color);
+
+    void Friend_Bind_To_Object(Object *obj);
+    void Friend_Clear_Selected();
+    void Friend_Set_Selected();
+
+    AudioEventRTS *Get_Ambient_Sound_By_Damage(BodyDamageType damage);
+    int Get_Barrel_Count(WeaponSlotType slot) const;
+    const AudioEventInfo &Get_Base_Sound_Ambient_Info() const;
+    Utf16String Get_Caption_Text();
+    int Get_Current_Client_Bone_Positions(
+        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
+    bool Get_Current_Worldspace_Client_Bone_Positions(char const *none_name_prefix, Matrix3D &m) const;
+    DrawModule **Get_Draw_Modules();
+    DrawModule const **Get_Draw_Modules() const;
+    DrawModule **Get_Draw_Modules_Non_Dirty();
+    GeometryInfo const &Get_Drawable_Geometry_Info() const;
+    DrawableID Get_ID() const;
+    DrawableIconInfo *Get_Icon_Info();
+    int Get_Pristine_Bone_Positions(
+        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
+    bool Get_Projectile_Launch_Offset(WeaponSlotType wslot,
+        int ammo_index,
+        Matrix3D *launch_pos,
+        WhichTurretType tur,
+        Coord3D *turret_rot_pos,
+        Coord3D *turret_pitch_pos) const;
+    float const Get_Scale() const;
+    Vector3 const *Get_Selection_Color() const;
+    bool Get_Should_Animate(bool unk) const;
+    Vector3 const *Get_Tint_Color() const;
+    Matrix3D const *Get_Transform_Matrix() const;
+
+    bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
+        int specific_barrel_to_use,
+        FXList const *fxl,
+        float weapon_speed,
+        float recoil_amount,
+        float recoil_angle,
+        Coord3D const *victim_pos,
+        float unk);
+    void Imitate_Stealth_Look(Drawable &imitate);
+
+    bool Is_Mass_Selectable() const;
+    bool Is_Selectable() const;
+    bool Is_Visible();
+
+    void Mangle_Custom_Audio_Name(DynamicAudioEventInfo *info) const;
+    void Notify_Drawable_Dependency_Cleared();
+
+    void On_Destroy();
+    void On_Level_Start();
+    void On_Selected();
+    void On_Unselected();
+
+    void Preload_Assets(TimeOfDayType time_of_day);
+    void Prepend_To_List(Drawable **list);
+    void React_To_Body_Damage_State_Change(BodyDamageType damage);
+    void React_To_Geometry_Change();
+    void Release_Shadows();
+    void Remove_From_List(Drawable **list);
+    void Replace_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> const &flags, bool dirty);
+    void Saturate_RGB(RGBColor &color, float factor);
+
+    void Set_Animation_Completion_Time(unsigned int time);
+    void Set_Animation_Frame(int frame);
+    void Set_Animation_Loop_Duration(unsigned int num_frames);
+    void Set_Caption_Text(Utf16String const &caption);
+    void Set_Custom_Sound_Ambient_Info(DynamicAudioEventInfo *info);
+    void Set_Custom_Sound_Ambient_Off();
+    void Set_Drawable_Hidden(bool hidden);
+    void Set_Effective_Opacity(float opacity1, float opacity2);
+    void Set_Emoticon(Utf8String const &emoticon, int frames);
+    void Set_Fully_Obscured_By_Shroud(bool fully_obscured);
+    void Set_ID(DrawableID id);
+    void Set_Indicator_Color(int color);
+    void Set_Instance_Matrix(Matrix3D const *instance);
+    void Set_Position(Coord3D const *pos);
+    void Set_Selectable(bool selectable);
+    void Set_ShadowsEnabled(bool enable);
+    void Set_StealthLook(StealthLookType look);
+    void Set_Terrain_Decal(TerrainDecalType decal);
+    void Set_Terrain_Decal_Fade_Target(float target1, float target2);
+    void Set_Terrain_Decal_Size(float width, float height);
+    void Set_Time_Of_Day(TimeOfDayType tod);
+
+    void Show_Sub_Object(Utf8String const &sub_object, bool show);
+    void Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, bool unk);
+    void Start_Ambient_Sound();
+    void Stop_Ambient_Sound();
+
+    void Update_Drawable();
+    void Update_Drawable_Clip_Status(unsigned int unk, unsigned int unk2, WeaponSlotType slot);
+    void Update_Drawable_Supply_Status(int unk, int unk2);
+    void Update_Hidden_Status();
+    void Update_Sub_Objects();
+    void Xfer_Drawable_Modules(Xfer *xfer);
+
+    static void Friend_Lock_Dirty_Stuff_For_Iteration();
+    static void Friend_Unlock_Dirty_Stuff_For_Iteration();
+    static void Init_Static_Images();
+    static void Kill_Static_Images();
 
 private:
-    TintEnvelope *m_unk1;
-    TintEnvelope *m_unk2;
+    TintEnvelope *m_tintColorEnvelope;
+    TintEnvelope *m_selectionColorEnvelope;
 
     TerrainDecalType m_terrainDecal;
 
     float m_opacity;
-    float m_unk3;
-    float m_unk4;
-    float m_unk5;
-    float m_unk6;
+    float m_effectiveOpacity1;
+    float m_effectiveOpacity2;
+    float m_terrainDecalFadeTarget1;
+    float m_terrainDecalFadeTarget2;
     float m_terrainDecalOpacity;
 
     Object *m_object;
@@ -63,14 +317,14 @@ private:
 
     DrawableStatus m_status;
 
-    unsigned int m_unk7;
-    unsigned int m_unk8;
+    unsigned int m_drawBits;
+    unsigned int m_previousDrawBits;
 
     FadingMode m_fadingMode;
-    unsigned int m_unk9;
+    unsigned int m_curFadeFrame;
     unsigned int m_timeToFade;
 
-    unsigned int m_unk10;
+    unsigned int m_remainVisibleFrames;
 
     DrawableLocoInfo *m_drawableLocoInfo;
 
@@ -80,16 +334,13 @@ private:
 
     StealthLookType m_stealthLook;
 
-    int m_unk11;
-    int m_unk12;
+    int m_flashColor;
+    int m_flashTime;
 
     Matrix3D m_instance;
     float m_instanceScale;
 
-    int m_unk13; // TODO proper type, Xfer is done with xferObjectID but ctor inits this as [4]....
-    int m_unk14;
-    int m_unk15;
-    int m_unk16;
+    DrawableInfo m_drawableInfo;
 
     BitFlags<MODELCONDITION_COUNT> m_conditionState;
 
@@ -103,15 +354,15 @@ private:
 
     DrawableIconInfo *m_drawableIconInfo;
 
-    float m_unk17;
+    float m_stealthEmissiveScale;
 
     bool m_selected;
     bool m_hidden;
-    bool m_unk18;
+    bool m_stealthInvisible;
     bool m_instanceIsIdentity;
     bool m_fullyObscuredByShroud;
-    bool m_unk19;
-    bool m_unk20;
+    bool m_ambientSoundEnabled;
+    bool m_ambientSoundFromScriptEnabled;
     bool m_receivesDynamicLights;
     bool m_isModelDirty;
 };

@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "xfer.h"
+#include "bitflags.h"
 #include "endiantype.h"
 #include "gamestate.h"
 #include "matrix3d.h"
@@ -307,24 +308,24 @@ void Xfer::xferKindOf(KindOfType *thing)
     switch (Get_Mode()) {
         case XFER_SAVE:
             if (*thing >= KINDOF_FIRST && *thing < KINDOF_COUNT) {
-                kind = BitFlags<KINDOF_COUNT>::s_bitNamesList[*thing];
+                kind = BitFlags<KINDOF_COUNT>::Bit_As_String(*thing);
             }
 
             xferAsciiString(&kind);
 
             break;
-        case XFER_LOAD:
+        case XFER_LOAD: {
             xferAsciiString(&kind);
             kindc = kind.Str();
 
-            for (int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
-                if (strcasecmp(kindc, BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0) {
-                    *thing = (KindOfType)i;
-                    break;
-                }
+            int i = BitFlags<KINDOF_COUNT>::Get_Single_Bit_From_Name(kindc);
+
+            if (i != -1) {
+                *thing = (KindOfType)i;
             }
 
             break;
+        }
         case XFER_CRC:
             xferImplementation(thing, sizeof(*thing));
             break;

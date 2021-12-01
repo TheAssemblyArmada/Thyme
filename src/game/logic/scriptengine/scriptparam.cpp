@@ -223,7 +223,7 @@ Utf8String Parameter::Get_UI_Text()
             if (m_int < KINDOF_OBSTACLE || m_int >= KINDOF_COUNT) {
                 ui_text.Format("Kind is 'unknown kind'", ui_string.Str());
             } else {
-                ui_text.Format("Kind is '%s'", BitFlags<KINDOF_COUNT>::s_bitNamesList[m_int]);
+                ui_text.Format("Kind is '%s'", BitFlags<KINDOF_COUNT>::Bit_As_String(m_int));
             }
             break;
         case ATTACK_PRIORITY_SET:
@@ -424,19 +424,21 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
     // Read the object status into our bitflag struct.
     if (param->m_type == OBJECT_STATUS) {
         for (unsigned bit = 0; bit < OBJECT_STATUS_COUNT; ++bit) {
-            if (param->m_string.Compare_No_Case(BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[bit]) == 0) {
-                param->m_objStatus.Set(bit);
+            if (param->m_string.Compare_No_Case(BitFlags<OBJECT_STATUS_COUNT>::Get_Bit_Names_List()[bit]) == 0) {
+                param->Set_Status_Bits(BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, bit));
                 break;
             }
         }
     }
 
     if (param->m_type == KIND_OF_PARAM) {
+        const char **list = BitFlags<KINDOF_COUNT>::Get_Bit_Names_List();
+
         if (param->m_string.Is_Not_Empty()) {
             bool found = false; // For assertion check.
 
-            for (int i = 0; BitFlags<KINDOF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
-                if (param->m_string.Compare_No_Case(BitFlags<KINDOF_COUNT>::s_bitNamesList[i]) == 0) {
+            for (int i = 0; list[i] != nullptr; ++i) {
+                if (param->m_string.Compare_No_Case(list[i]) == 0) {
                     param->m_int = i;
 
                     return param;
@@ -470,7 +472,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
                 // until SMALL_MISSLE is encountered in the list...
                 if (param->m_string.Compare_No_Case("MISSILE") == 0) {
                     // param->m_string.Format("SMALL_MISSLE");
-                    // for (i = 0; BitFlags<KIND_OF_COUNT>::s_bitNamesList[i] != nullptr; ++i) {
+                    // for (i = 0; list[i] != nullptr; ++i) {
                     //    if (param->m_string.Compare_No_Case("SMALL_MISSILE")) {
                     //        param->m_int = i;
                     //        found = true;
@@ -488,7 +490,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
 
             captainslog_relassert(found, 0xDEAD0001, "Did not find parameter kind from string.");
         } else {
-            param->m_string = BitFlags<KINDOF_COUNT>::s_bitNamesList[param->m_int];
+            param->m_string = list[param->m_int];
         }
     }
 

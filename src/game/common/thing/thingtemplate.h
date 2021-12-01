@@ -175,8 +175,15 @@ public:
     FieldParse *Get_Field_Parse() const;
     FieldParse *Get_Reskin_Field_Parse() const;
 
-    bool Is_Any_Kind_Of(const BitFlags<KINDOF_COUNT> &any_kind_of) const;
-    bool Is_KindOf_Multi(const BitFlags<KINDOF_COUNT> &must_be_set, const BitFlags<KINDOF_COUNT> &must_be_clear) const;
+    bool Is_Any_KindOf(const BitFlags<KINDOF_COUNT> &any_kind_of) const
+    {
+        return m_kindOf.Any_Intersection_With(any_kind_of);
+    }
+
+    bool Is_KindOf_Multi(const BitFlags<KINDOF_COUNT> &must_be_set, const BitFlags<KINDOF_COUNT> &must_be_clear) const
+    {
+        return m_kindOf.Test_Set_And_Clear(must_be_set, must_be_clear);
+    }
 
     const AudioEventRTS *Get_Voice_Select() const { return Get_Audio(THING_VOICESELECT); }
     const AudioEventRTS *Get_Voice_Group_Select() const { return Get_Audio(THING_VOICEGROUPSELECT); }
@@ -290,7 +297,7 @@ public:
     bool Is_Prerequisite() const { return m_isPrerequisite; }
     bool Is_Enter_Guard() const { return m_enterGuard; }
     bool Is_Hijack_Guard() const { return m_hijackGuard; }
-    bool Is_KindOf(KindOfType t) const { return m_kindOf.Get(t); }
+    bool Is_KindOf(KindOfType t) const { return m_kindOf.Test(t); }
     bool Is_Bridge() const { return m_isBridge; }
     int Is_Buildable_Item() const { return m_buildCost != 0; }
 

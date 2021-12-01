@@ -36,7 +36,7 @@ void ArmorTemplateSet::Parse_Armor_Template_Set(INI *ini)
     // TODO Requires ArmorTemplate and DamageFX parsers.
 #ifdef GAME_DLL
     static FieldParse _parse_table[] = {
-        { "Conditions", BitFlags<ARMORSET_COUNT>::Parse_INI, nullptr, offsetof(ArmorTemplateSet, m_conditions) },
+        { "Conditions", BitFlags<ARMORSET_COUNT>::Parse_From_INI, nullptr, offsetof(ArmorTemplateSet, m_conditions) },
         // { "Armor", &INI::parseArmorTemplate, nullptr, offsetof(ArmorTemplateSet, m_template) },
         // { "DamageFX", &INI::parseDamageFX, nullptr, offsetof(ArmorTemplateSet, m_fx) },
         { "Armor", (inifieldparse_t)0x0041CBB0, nullptr, offsetof(ArmorTemplateSet, m_template) },

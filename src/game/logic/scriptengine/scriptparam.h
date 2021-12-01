@@ -140,6 +140,7 @@ public:
     Utf8String Get_UI_Text();
     void Get_Coord3D(Coord3D *coord);
     void Set_Coord3D(Coord3D *coord);
+    void Set_Status_Bits(BitFlags<OBJECT_STATUS_COUNT> bits) { m_objStatus.Set(bits); }
 
     static Parameter *Read_Parameter(DataChunkInput &input);
 

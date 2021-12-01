@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#pragma once
 #include "coord.h"
 #include "gametype.h"
 #include "mempoolobj.h"
@@ -51,11 +52,11 @@ enum ValueOrThreat : int32_t
     VOT_VALUE,
 };
 
-enum ShroudedStatusType : int32_t
+enum ObjectShroudStatus : int32_t
 {
     SHROUDED_INVALID,
     SHROUDED_NONE,
-    SHROUDED_UNK2,
+    SHROUDED_PARTIAL,
     SHROUDED_UNK3,
     SHROUDED_UNK4,
 };
@@ -108,8 +109,8 @@ private:
     CellAndObjectIntersection *m_coiArray;
     int32_t unk1;
     int32_t m_dirtyFlag;
-    ShroudedStatusType m_shroudedness[16];
-    ShroudedStatusType m_previousShroudedness[16];
+    ObjectShroudStatus m_shroudedness[16];
+    ObjectShroudStatus m_previousShroudedness[16];
     bool m_everSeen[16];
     PartitionCell *m_lastCell;
 };

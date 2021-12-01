@@ -17,6 +17,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "ini.h"
+#include "xfer.h"
 #include <bitset>
 
 // TODO move this somewhere more appropriate?
@@ -216,20 +217,218 @@ enum ModelConditionFlagType
 template<int bits> class BitFlags
 {
 public:
+    enum BogusInitType
+    {
+        kInit = 0,
+    };
+
+    BitFlags() {}
+    BitFlags(BogusInitType type, int flag) { m_bits.set(flag); }
+    BitFlags(BogusInitType type, int flag1, int flag2)
+    {
+        m_bits.set(flag1);
+        m_bits.set(flag2);
+    }
+
+    BitFlags(BogusInitType type, int flag1, int flag2, int flag3)
+    {
+        m_bits.set(flag1);
+        m_bits.set(flag2);
+        m_bits.set(flag3);
+    }
+
+    BitFlags(BogusInitType type, int flag1, int flag2, int flag3, int flag4)
+    {
+        m_bits.set(flag1);
+        m_bits.set(flag2);
+        m_bits.set(flag3);
+        m_bits.set(flag4);
+    }
+
+    BitFlags(BogusInitType type, int flag1, int flag2, int flag3, int flag4, int flag5)
+    {
+        m_bits.set(flag1);
+        m_bits.set(flag2);
+        m_bits.set(flag3);
+        m_bits.set(flag4);
+        m_bits.set(flag5);
+    }
+
     bool operator==(BitFlags &that) const { return m_bits == that.m_bits; }
     bool operator!=(BitFlags &that) const { return m_bits != that.m_bits; }
 
     void Clear() { m_bits.reset(); }
-    void Set(unsigned bit) { m_bits.set(bit); }
-    bool Get(unsigned bit) const { return m_bits.test(bit); }
+    void Set(int bit, int value) { m_bits.set(bit, value); }
+    bool Test(int bit) const { return m_bits.test(bit); }
     bool Any() const { return m_bits.any(); }
+    void Flip() { m_bits.flip(); }
+    int Count() { return m_bits.count(); }
+    int Size() { return m_bits.size(); }
+
+    void Clear(BitFlags const &clear) { m_bits &= ~clear.m_bits; }
+    void Set(BitFlags const &set) { m_bits |= set.m_bits; }
+    void Set_All()
+    {
+        Clear();
+        Flip();
+    }
+
+    void Clear_And_Set(BitFlags const &set, BitFlags const &clear)
+    {
+        m_bits &= ~clear.m_bits;
+        m_bits |= set.m_bits;
+    }
+
+    int Count_Intersection(BitFlags const &count)
+    {
+        std::bitset<bits> temp = m_bits;
+        temp &= count.m_bits;
+        return temp.count();
+    }
+
+    int Count_Inverse_Intersection(BitFlags const &count)
+    {
+        std::bitset<bits> temp = m_bits;
+        temp.flip();
+        temp &= count.m_bits;
+        return temp.count();
+    }
+
+    bool Test_Set_And_Clear(BitFlags const &set, BitFlags const &clear) const
+    {
+        std::bitset<bits> temp = m_bits;
+        temp &= clear.m_bits;
+
+        if (temp.any()) {
+            return false;
+        }
+
+        temp = m_bits;
+        temp.flip();
+        temp &= set.m_bits;
+        return temp.any() == false;
+    }
+
+    bool Any_Intersection_With(BitFlags const &set) const
+    {
+        std::bitset<bits> temp = m_bits;
+        temp &= set.m_bits;
+        return temp.any();
+    }
+
+    bool No_Intersection_With(BitFlags const &set) const
+    {
+        std::bitset<bits> temp = m_bits;
+        temp &= set.m_bits;
+        return !temp.any();
+    }
 
     void Parse(INI *ini, Utf8String *string = nullptr);
-    static void Parse_INI(INI *ini, void *formal, void *store, const void *user_data);
 
-    static const char *s_bitNamesList[bits + 1];
+    void Xfer(Xfer *xfer)
+    {
+        uint8_t version = 1;
+        xfer->xferVersion(&version, 1);
+
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            int count = Count();
+            xfer->xferInt(&count);
+
+            for (int i = 0; i < Size(); i++) {
+                const char *str = Get_Name_For_Bit(i);
+
+                if (str) {
+                    Utf8String s(str);
+                    xfer->xferAsciiString(&s);
+                }
+            }
+        } else if (xfer->Get_Mode() == XFER_LOAD) {
+            Clear();
+            int count;
+            xfer->xferInt(&count);
+            Utf8String str;
+
+            for (int i = 0; i < count; i++) {
+                xfer->xferAsciiString(&str);
+
+                if (!Set_Bit_By_Name(str)) {
+                    captainslog_error("invalid bit name %s", str);
+                    throw XFER_READ_ERROR;
+                }
+            }
+        } else if (xfer->Get_Mode() == XFER_CRC) {
+            xfer->xferUser(this, 4);
+        } else {
+            captainslog_error("BitFlagsXfer - Unknown xfer mode '%d'", xfer->Get_Mode());
+            throw XFER_UNKNOWN_XFER_MODE;
+        }
+    }
+
+    bool Test_For_All(BitFlags const &set)
+    {
+        captainslog_dbgassert(
+            set.Any(), "BitFlags::testForAll is always true if you ask about zero flags.  Did you mean that?");
+        std::bitset<bits> temp = m_bits;
+        temp.flip();
+        temp &= set.m_bits;
+        return !temp.any();
+    }
+
+    static int Get_Single_Bit_From_Name(const char *name);
+    bool Set_Bit_By_Name(const char *name);
+
+    const char *Get_Name_For_Bit(int bit)
+    {
+        if (Test(bit)) {
+            return s_bitNamesList[bit];
+        }
+
+        return nullptr;
+    }
+
+    void Get_Name_For_Bits(Utf8String *str)
+    {
+        if (str) {
+            for (int i = 0; i < Size(); i++) {
+                const char *c = Get_Name_For_Bit(i);
+
+                if (c) {
+                    str->Concat(c);
+                    str->Concat(",\n");
+                }
+            }
+        }
+    }
+
+    static void Parse_From_INI(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data);
+    static const char **Get_Bit_Names_List() { return s_bitNamesList; }
+
+    static BitFlags Set_Bit(int bit)
+    {
+        BitFlags flags;
+        flags.Set(bit, 1);
+        return flags;
+    }
+
+    static BitFlags Clear_Bit(int bit)
+    {
+        BitFlags flags;
+        flags.Set(bit, 1);
+        return flags;
+    }
+
+    static const char *Bit_As_String(int bit)
+    {
+        if (bit < 0 || bit >= bits) {
+            return nullptr;
+        } else {
+            return s_bitNamesList[bit];
+        }
+    }
 
 private:
+    static const char *s_bitNamesList[bits + 1];
     std::bitset<bits> m_bits;
 };
 
@@ -242,77 +441,88 @@ template<int bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
         string->Clear();
     }
 
-    const char *token = ini->Get_Next_Token_Or_Null();
-    bool adjust = false;
     bool set = false;
+    bool adjust = false;
 
-    if (token != nullptr) {
-        while (strcasecmp(token, "NONE") != 0) {
-            // If we have a passed in Utf8String, add the tokens to it as we parse them.
-            if (string != nullptr) {
-                if (string->Is_Not_Empty()) {
-                    *string += " ";
-                }
-
-                *string += token;
+    for (const char *token = ini->Get_Next_Token_Or_Null(); token; token = ini->Get_Next_Token_Or_Null()) {
+        if (string) {
+            if (string->Is_Not_Empty()) {
+                string->Concat(" ");
             }
 
-            // If we have a plus or minus as first char, then that decides if bit is set or cleared.
-            // Otherwise just set.
-            if (*token == '+') {
-                captainslog_relassert(!set,
-                    0xDEAD0006,
-                    "File: '%s', Line: %d Trying to adjust when we already set.",
-                    ini->Get_Filename().Str(),
-                    ini->Get_Line_Number());
-
-                m_bits.set(INI::Scan_IndexList(token + 1, s_bitNamesList));
-                adjust = true;
-            } else if (*token == '-') {
-                captainslog_relassert(!set,
-                    0xDEAD0006,
-                    "File: '%s', Line: %d Trying to adjust when we already set.",
-                    ini->Get_Filename().Str(),
-                    ini->Get_Line_Number());
-
-                m_bits.reset(INI::Scan_IndexList(token + 1, s_bitNamesList));
-                adjust = true;
-            } else {
-                captainslog_relassert(!adjust,
-                    0xDEAD0006,
-                    "File: '%s', Line: %d Trying to set when we already adjusted.",
-                    ini->Get_Filename().Str(),
-                    ini->Get_Line_Number());
-
-                // If we haven't started setting yet, 0 it out.
-                if (!set) {
-                    m_bits.reset();
-                }
-
-                m_bits.set(INI::Scan_IndexList(token, s_bitNamesList));
-                set = true;
-            }
-
-            token = ini->Get_Next_Token_Or_Null();
-
-            if (token == nullptr) {
-                return;
-            }
+            string->Concat(token);
         }
 
-        // If we encounter a "NONE" entry, set all bits to 0.
-        // We should never reach here if something has already been set.
-        captainslog_relassert(!adjust && !set,
-            0xDEAD0006,
-            "File: '%s', Line: %d Trying to clear when we already set or adjusted.",
-            ini->Get_Filename().Str(),
-            ini->Get_Line_Number());
+        if (!strcasecmp(token, "NONE")) {
+            if (set || adjust) {
+                captainslog_error("you may not mix normal and +- ops in bitstring lists");
+                throw 0xDEAD0006;
+            }
 
-        m_bits.reset();
+            Clear();
+            return;
+        }
+
+        if (*token == '+') {
+            if (set) {
+                captainslog_error("you may not mix normal and +- ops in bitstring lists");
+                throw 0xDEAD0006;
+            }
+
+            Set(INI::Scan_IndexList(token + 1, s_bitNamesList), 1);
+            adjust = true;
+        } else if (*token == '+') {
+            if (set) {
+                captainslog_error("you may not mix normal and +- ops in bitstring lists");
+                throw 0xDEAD0006;
+            }
+
+            Set(INI::Scan_IndexList(token + 1, s_bitNamesList), 0);
+            adjust = true;
+        } else {
+            if (adjust) {
+                captainslog_error("you may not mix normal and +- ops in bitstring lists");
+                throw 0xDEAD0006;
+            }
+
+            if (!set) {
+                Clear();
+            }
+
+            Set(INI::Scan_IndexList(token + 1, s_bitNamesList), 1);
+            set = true;
+        }
     }
 }
 
-template<int bits> void BitFlags<bits>::Parse_INI(INI *ini, void *formal, void *store, const void *user_data)
+template<int bits> void BitFlags<bits>::Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data)
+{
+    *(int *)store = INI::Scan_IndexList(ini->Get_Next_Token(), s_bitNamesList);
+}
+
+template<int bits> int BitFlags<bits>::Get_Single_Bit_From_Name(const char *name)
+{
+    for (int i = 0; s_bitNamesList[i] != nullptr; i++) {
+        if (!strcasecmp(s_bitNamesList[i], name)) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+template<int bits> bool BitFlags<bits>::Set_Bit_By_Name(const char *name)
+{
+    int bit = Get_Single_Bit_From_Name(name);
+    if (bit < 0) {
+        return false;
+    }
+
+    Set(bit, true);
+    return true;
+}
+
+template<int bits> void BitFlags<bits>::Parse_From_INI(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<BitFlags<bits> *>(store)->Parse(ini, nullptr);
 }

@@ -20,6 +20,7 @@
 #include "bitflags.h"
 #include "gametype.h"
 #include "geometry.h"
+#include "partitionmanager.h"
 #include "scriptparam.h"
 #include "snapshot.h"
 #include "thing.h"
@@ -72,11 +73,6 @@ class Waypoint;
 enum FormationID : int32_t
 {
     FORMATION_UNK,
-};
-
-enum ObjectShroudStatus
-{
-    SHROUDED_UNK,
 };
 
 struct TTriggerInfo
@@ -236,7 +232,7 @@ public:
     virtual void Load_Post_Process() override;
 
     ObjectID Get_ID() const { return m_id; }
-    bool Get_Status(ObjectStatusTypes status) const { return m_status.Get(status); }
+    bool Get_Status(ObjectStatusTypes status) const { return m_status.Test(status); }
     float Get_Construction_Percent() const { return m_constructionPercent; }
     AIUpdateInterface *Get_AI_Update_Interface() { return m_ai; }
     const AIUpdateInterface *Get_AI_Update_Interface() const { return m_ai; }
@@ -259,6 +255,7 @@ public:
     const ExperienceTracker *Get_Experience_Tracker() const { return m_experienceTracker; }
     ExperienceTracker *Get_Experience_Tracker() { return m_experienceTracker; }
     const BitFlags<WEAPONSET_COUNT> &Get_Weapon_Set_Flags() const { return m_curWeaponSetFlags; }
+    bool Test_Weapon_Set_Flag(WeaponSetType type) const { return m_curWeaponSetFlags.Test(type); }
     const Team *Get_Team() const { return m_team; }
     Team *Get_Team() { return m_team; }
     StealthUpdate *Get_Stealth_Update() const { return m_stealth; }
@@ -266,7 +263,7 @@ public:
     Object *Get_Next_Object() { return m_next; }
     const BitFlags<OBJECT_STATUS_COUNT> &Get_Status_Bits() const { return m_status; }
     BodyModuleInterface *Get_Body_Module() const { return m_body; }
-    bool Get_Disabled_State(DisabledType type) const { return m_disabledStates.Get(type); }
+    bool Get_Disabled_State(DisabledType type) const { return m_disabledStates.Test(type); }
     const BitFlags<DISABLED_TYPE_COUNT> &Get_Disabled_State_Bits() const { return m_disabledStates; }
     bool Get_Receiving_Difficulty_Bonus() { return m_receivingDifficultyBonus; }
     BitFlags<128> Get_Object_Upgrade_Mask() const { return m_objectUpgradesCompleted; }
@@ -284,9 +281,9 @@ public:
 
     bool Is_Effectively_Dead() const { return (m_privateStatus & STATUS_EFFECTIVELY_DEAD) != 0; }
     bool Is_Undetected_Defector() const { return (m_privateStatus & STATUS_UNDETECTED_DEFECTOR) != 0; }
-    bool Is_Airborne_Target() const { return m_status.Get(OBJECT_STATUS_AIRBORNE_TARGET); }
+    bool Is_Airborne_Target() const { return m_status.Test(OBJECT_STATUS_AIRBORNE_TARGET); }
     bool Is_Shared_Reload_Time() const { return m_weaponSet.Is_Shared_Reload_Time(); }
-    bool Is_Destroyed() const { return m_status.Get(OBJECT_STATUS_DESTROYED); }
+    bool Is_Destroyed() const { return m_status.Test(OBJECT_STATUS_DESTROYED); }
     bool Is_Outside_Map() const { return (m_privateStatus & STATUS_OUTSIDE_MAP) != 0; }
     bool Is_Disabled() const { return m_disabledStates.Any(); }
     bool Is_Contained() const { return m_containedBy != nullptr; }

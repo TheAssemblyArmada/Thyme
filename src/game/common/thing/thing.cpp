@@ -124,6 +124,16 @@ bool Thing::Is_KindOf(KindOfType t) const
     return Get_Template()->Is_KindOf(t);
 }
 
+bool Thing::Is_KindOf_Multi(const BitFlags<KINDOF_COUNT> &must_be_set, const BitFlags<KINDOF_COUNT> &must_be_clear) const
+{
+    return Get_Template()->Is_KindOf_Multi(must_be_set, must_be_clear);
+}
+
+bool Thing::Is_Any_KindOf(const BitFlags<KINDOF_COUNT> &any_kind_of) const
+{
+    return Get_Template()->Is_Any_KindOf(any_kind_of);
+}
+
 void Thing::Set_Orientation(float angle)
 {
     float old_angle = m_cachedAngle;

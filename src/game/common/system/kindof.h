@@ -15,7 +15,8 @@
 #pragma once
 
 #include "always.h"
-#include "bitflags.h"
+
+template<int bits> class BitFlags;
 
 enum KindOfType : int32_t
 {

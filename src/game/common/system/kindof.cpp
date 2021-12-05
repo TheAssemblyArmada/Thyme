@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "kindof.h"
+#include "bitflags.h"
 
 // Mapping of bits to names... probably not a great idea having it based
 // on the template param incase of collision if it needs extending later,

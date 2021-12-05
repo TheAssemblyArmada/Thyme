@@ -88,6 +88,8 @@ enum DrawableStatus
     DRAWABLE_STATUS_32 = 1 << 5, // may not exist
 };
 
+DEFINE_ENUMERATION_BITWISE_OPERATORS(DrawableStatus);
+
 enum PathfindLayerEnum
 {
     LAYER_INVALID,

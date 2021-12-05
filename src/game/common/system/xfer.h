@@ -15,7 +15,6 @@
 #pragma once
 
 #include "asciistring.h"
-#include "bitflags.h"
 #include "color.h"
 #include "coord.h"
 #include "gametype.h"
@@ -26,6 +25,8 @@
 #include "unicodestring.h"
 #include <list>
 #include <vector>
+
+template<int bits> class BitFlags;
 
 struct RealRange
 {
@@ -39,6 +40,28 @@ enum XferType
     XFER_SAVE,
     XFER_LOAD,
     XFER_CRC,
+};
+
+enum XferStatus
+{
+    XFER_STATUS_INVALID,
+    XFER_STATUS_OK,
+    XFER_STATUS_EOF,
+    XFER_STATUS_FILE_NOT_FOUND,
+    XFER_STATUS_FILE_NOT_OPEN,
+    XFER_STATUS_FILE_ALREADY_OPEN,
+    XFER_STATUS_READ_ERROR,
+    XFER_STATUS_WRITE_ERROR,
+    XFER_STATUS_UNKNOWN_XFER_MODE,
+    XFER_STATUS_FILE_SEEK_ERROR,
+    XFER_STATUS_NO_BEGIN_BLOCK,
+    XFER_STATUS_UNK11,
+    XFER_STATUS_STRING_TOO_LONG,
+    XFER_STATUS_UNKNOWN_VERSION,
+    XFER_STATUS_INVALID_PARAMETERS,
+    XFER_STATUS_NOT_EMPTY,
+    XFER_STATUS_NOT_FOUND,
+    NUM_XFER_STATUS,
 };
 
 class GameClientRandomVariable;

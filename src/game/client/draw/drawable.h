@@ -83,8 +83,8 @@ public:
     const Object *Get_Object() const { return m_object; }
     bool Is_Hidden() const { return m_hidden || m_stealthInvisible; }
     StealthLookType Get_Stealth_Look() const { return m_stealthLook; }
-    void Set_Remain_Visible_Frames(int frames) { m_remainVisibleFrames = frames; }
-    int Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
+    void Set_Remain_Visible_Frames(unsigned int frames) { m_remainVisibleFrames = frames; }
+    unsigned int Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
     bool Is_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
 
     bool Get_Draws_In_Mirror() const

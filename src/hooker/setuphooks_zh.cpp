@@ -134,6 +134,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
+#include "w3dscene.h"
 #include "w3dshroud.h"
 #include "w3dterraintracks.h"
 #include "w3dview.h"
@@ -716,8 +717,6 @@ void Setup_Hooks()
     Hook_Function(0x004D0B30, &ParticleSystem::Merge_Related_Systems);
 
     // particlesysmanager.h
-    Hook_Method(0x004D1790, &ParticleSystemManager::Hook_Ctor);
-    Hook_Method(0x004D18E0, &ParticleSystemManager::Hook_Dtor);
     Hook_Any(0x004D1BA0, ParticleSystemManager::Init);
     Hook_Any(0x004D1C40, ParticleSystemManager::Reset);
     Hook_Any(0x004D2460, ParticleSystemManager::Xfer_Snapshot);
@@ -1718,4 +1717,23 @@ void Setup_Hooks()
     Hook_Any(0x0076A580, W3DShroudMaterialPassClass::UnInstall_Materials);
     Hook_Any(0x0076A590, W3DMaskMaterialPassClass::Install_Materials);
     Hook_Any(0x0076A5A0, W3DMaskMaterialPassClass::UnInstall_Materials);
+
+    // w3dscene.cpp
+    Hook_Any(0x00766600, RTS3DScene::Hook_Ctor);
+    Hook_Any(0x00766C30, RTS3DScene::Set_Global_Light);
+    Hook_Any(0x00766C80, RTS3DScene::Cast_Ray);
+    Hook_Any(0x00766F10, RTS3DScene::Visibility_Check);
+    Hook_Any(0x00767360, RTS3DScene::Render_Specific_Drawables);
+    Hook_Any(0x00767430, RTS3DScene::Render_One_Object);
+    Hook_Any(0x00767B40, RTS3DScene::Flush);
+    Hook_Any(0x00767C00, RTS3DScene::Update_Fixed_Light_Environments);
+    Hook_Any(0x00768140, RTS3DScene::Render);
+    Hook_Any(0x00768530, RTS3DScene::Customized_Render);
+    Hook_Any(0x00768A50, RTS3DScene::Flush_Occluded_Objects_Into_Stencil);
+    Hook_Any(0x00769370, RTS3DScene::flush_Translucent_Objects);
+    Hook_Any(0x007694C0, RTS3DScene::Create_Lights_Iterator);
+    Hook_Any(0x007694F0, RTS3DScene::Destroy_Lights_Iterator);
+    Hook_Any(0x00769500, RTS3DScene::Get_A_Dynamic_Light);
+    Hook_Any(0x00769630, RTS3DScene::Do_Render);
+    Hook_Any(0x00769660, RTS3DScene::Draw);
 }

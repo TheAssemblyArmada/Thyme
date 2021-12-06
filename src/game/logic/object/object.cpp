@@ -18,7 +18,15 @@
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
 #ifdef GAME_DLL
-    return Call_Function<ObjectShroudStatus, int>(PICK_ADDRESS(0x00547D60, 0x007D12FB), index);
+    return Call_Method<ObjectShroudStatus, const Object, int>(PICK_ADDRESS(0x00547D60, 0x007D12FB), this, index);
 #endif
     return ObjectShroudStatus(0);
+}
+
+Player *Object::Get_Controlling_Player() const
+{
+#ifdef GAME_DLL
+    return Call_Method<Player *, const Object>(PICK_ADDRESS(0x00547A00, 0x007D0EAB), this);
+#endif
+    return nullptr;
 }

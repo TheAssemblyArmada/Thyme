@@ -196,9 +196,9 @@ public:
     float m_normalSoloAIHealthBonus;
     float m_hardSoloAIHealthBonus;
     int32_t m_maxTranslucencyObjects;
-    int32_t m_unkInt5; // These 3 are probably some kind of max and get set to 512
-    int32_t m_unkInt6;
-    int32_t m_unkInt7;
+    int32_t m_maxOccludedBuildings;
+    int32_t m_maxOccludedObjects;
+    int32_t m_maxOccludedOthers;
     float m_occludedColorLuminanceScale;
     int32_t m_numberGlobalLights;
     int32_t m_maxRoadSegments;

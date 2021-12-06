@@ -548,9 +548,9 @@ GlobalData::GlobalData()
     m_videoOn = true;
     m_disableCameraMovements = false;
     m_maxTranslucencyObjects = 512;
-    m_unkInt5 = 512;
-    m_unkInt6 = 512;
-    m_unkInt7 = 512;
+    m_maxOccludedBuildings = 512;
+    m_maxOccludedObjects = 512;
+    m_maxOccludedOthers = 512;
     m_occludedColorLuminanceScale = 0.5f;
     m_useFX = true;
     m_frameToJumpTo = 0;

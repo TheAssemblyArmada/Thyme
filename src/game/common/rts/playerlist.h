@@ -38,7 +38,11 @@ public:
     virtual void Load_Post_Process();
 
     // TODO implementations and none virtual functions.
-    Player *Get_Local_Player() { return m_local; }
+    Player *Get_Local_Player()
+    {
+        captainslog_dbgassert(m_local, "null m_local");
+        return m_local;
+    }
 
 private:
     Player *m_local;

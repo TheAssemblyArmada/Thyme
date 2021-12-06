@@ -271,6 +271,7 @@ public:
     PathfindLayerEnum Get_Destination_Layer() const { return m_destinationLayer; }
     void Get_Formation_Offset(Coord2D *c) { *c = m_formationOffset; }
     bool Get_Single_Use_Command() const { return m_singleUseCommand; }
+    unsigned int Get_Occlusion_Delay_Frame() const { return m_occlusionDelayFrame; }
 
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
     bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
@@ -599,7 +600,7 @@ private:
     FormationID m_formationID;
     Coord2D m_formationOffset;
     Utf8String m_cmmandSetStringOverride;
-    int m_occlusionDelayFrame;
+    unsigned int m_occlusionDelayFrame;
     bool m_isSelectable;
     bool m_applyBattlePlanBonuses;
 #ifdef GAME_DEBUG_STRUCTS

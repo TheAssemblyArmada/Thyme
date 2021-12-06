@@ -23,6 +23,7 @@ class Player : public SnapShot
 {
 public:
     int Get_Player_Index() { return m_playerIndex; }
+    int Get_Color() { return m_playerColor; }
 
 public:
     int unk1;
@@ -31,4 +32,6 @@ public:
     int unk3;
     int unk4;
     int m_playerIndex;
+    char unk[0xFC];
+    int m_playerColor;
 };

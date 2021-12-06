@@ -219,11 +219,14 @@ set(GAMEENGINE_SRC
     platform/win32localfilesystem.cpp
     platform/w3dengine/client/w3dbridgebuffer.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
+    platform/w3dengine/client/w3ddynamiclight.cpp
     platform/w3dengine/client/w3ddisplay.cpp
     platform/w3dengine/client/w3dpoly.cpp
+    platform/w3dengine/client/w3dparticlesys.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/client/w3dshroud.cpp
     platform/w3dengine/client/w3dsmudge.cpp
+    platform/w3dengine/client/w3dscene.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp
     platform/w3dengine/client/w3dterrainlogic.cpp

@@ -17,6 +17,7 @@
 #include "audiomanager.h"
 #include "audiosettings.h"
 #include "color.h"
+#include "colorspace.h"
 #include "coord.h"
 #include "file.h"
 #include "filesystem.h"

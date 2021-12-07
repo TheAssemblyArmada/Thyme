@@ -32,6 +32,7 @@ class Particle;
 class ParticleSystem;
 class ParticleSystemTemplate;
 class Object;
+class RenderInfoClass;
 
 #ifdef THYME_USE_STLPORT
 typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
@@ -61,6 +62,12 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
+    virtual int Get_On_Screen_Particle_Count() = 0;
+    virtual void Set_On_Screen_Particle_Count(int count) { m_onScreenParticleCount = count; };
+    virtual void Do_Particles(RenderInfoClass &rinfo) = 0;
+    virtual void Queue_Particle_Render() = 0;
+    virtual void Preload_Assets(TimeOfDayType time);
+
     ParticleSystemTemplate *Find_Template(const Utf8String &name);
     ParticleSystemTemplate *New_Template(const Utf8String &name);
     ParticleSystemTemplate *Find_Parent_Template(const Utf8String &name, int parent);
@@ -68,12 +75,10 @@ public:
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
     void Destroy_Particle_System_By_ID(ParticleSystemID id);
     void Destroy_Attached_Systems(Object *object);
-    void Preload_Assets(TimeOfDayType time);
     void Add_Particle(Particle *particle, ParticlePriorityType priority);
     void Add_Particle_System(ParticleSystem *system);
     void Remove_Particle(Particle *particle);
     void Remove_Particle_System(ParticleSystem *system);
-    void Set_On_Screen_Particle_Count(int count) { m_onScreenParticleCount = count; }
     int Particle_Count() const { return m_particleCount; }
     int Field_Particle_Count() const { return m_fieldParticleCount; }
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
@@ -81,11 +86,6 @@ public:
 
     static ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
-
-#ifdef GAME_DLL
-    ParticleSystemManager *Hook_Ctor() { return new (this) ParticleSystemManager(); }
-    void Hook_Dtor() { ParticleSystemManager::~ParticleSystemManager(); }
-#endif
 
 private:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];

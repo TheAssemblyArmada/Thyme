@@ -140,7 +140,7 @@ public:
     virtual void Remove_All_Render_Objects();
     virtual void Visibility_Check(CameraClass *);
 
-private:
+protected:
     bool m_visibilityChecked;
     RefMultiListClass<RenderObjClass> m_renderList;
     RefMultiListClass<RenderObjClass> m_updateList;

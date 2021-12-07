@@ -29,7 +29,7 @@ void Adjust_RGBA(Vector4 &rgba, const Vector3 &hsv_adj);
 /**
  * @brief Utility function to pack separate bytes into an RGBA pixel.
  */
-inline uint32_t Make_Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+inline constexpr uint32_t Make_Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     return b | (g << 8) | (r << 16) | (a << 24);
 }

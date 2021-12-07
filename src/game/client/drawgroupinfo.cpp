@@ -14,6 +14,7 @@
  */
 #include "drawgroupinfo.h"
 #include "color.h"
+#include "colorspace.h"
 #include "ini.h"
 #include <cstddef>
 

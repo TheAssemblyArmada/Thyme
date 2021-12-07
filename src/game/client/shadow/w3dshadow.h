@@ -14,10 +14,16 @@
  */
 #pragma once
 
+class RenderInfoClass;
+
 #include "always.h"
 class W3DShadowManager
 {
+public:
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
+    void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
+    unsigned int Get_Stencil_Mask() { return m_stencilMask; }
+    void Set_Stencil_Mask(unsigned int mask) { m_stencilMask = mask; }
 
 protected:
     bool m_isShadowScene;
@@ -32,3 +38,5 @@ extern W3DShadowManager *&g_theW3DShadowManager;
 #else
 extern W3DShadowManager *g_theW3DShadowManager;
 #endif
+
+void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass);

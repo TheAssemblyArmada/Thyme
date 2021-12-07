@@ -1,4 +1,5 @@
 /**
+/**
  * @file
  *
  * @author Jonathan Wilson
@@ -22,20 +23,47 @@
 class W3DShroudMaterialPassClass;
 class W3DMaskMaterialPassClass;
 class MaterialPassClass;
+class W3DDynamicLight;
 
 class RTS3DScene : public SimpleSceneClass, public SubsystemInterface
 {
 public:
+    RTS3DScene();
     virtual ~RTS3DScene() override;
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Customized_Render(RenderInfoClass &rinfo) override;
     virtual void Visibility_Check(CameraClass *camera);
-    virtual void Init() override;
-    virtual void Reset() override;
-    virtual void Update() override;
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
     virtual void Draw() override;
 
+    void Flush(RenderInfoClass &rinfo);
+    void Add_Dynamic_Light(W3DDynamicLight *obj);
+    bool Cast_Ray(RayCollisionTestClass &ray_test, bool test_all, int collision_type);
+    RefMultiListIterator<RenderObjClass> *Create_Lights_Iterator();
+    void Destroy_Lights_Iterator(RefMultiListIterator<RenderObjClass> *it);
+    void Do_Render(CameraClass *camera);
+    void Flag_Occluded_Objects(CameraClass *camera);
+    void Flush_Occluded_Objects(RenderInfoClass &rinfo);
+    void Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo);
+    void flush_Translucent_Objects(RenderInfoClass &rinfo);
+    W3DDynamicLight *Get_A_Dynamic_Light();
+    void Remove_Dynamic_Light(W3DDynamicLight *obj);
+    void Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj, int local_player_index);
+    void Render_Specific_Drawables(RenderInfoClass &rinfo, int num_drawables, Drawable **drawables);
+    void Set_Global_Light(LightClass *light, int light_index);
+    void Update_Fixed_Light_Environments(RenderInfoClass &rinfo);
+    void Update_Player_Color_Passes();
+
+    void Draw_Terrain_Only(bool draw) { m_drawTerrainOnly = draw; }
+    void setCustomScenePassMode(CustomScenePassModes mode) { m_customScenePassMode = mode; }
     CustomScenePassModes Get_Custom_Scene_Pass_Mode() { return m_customScenePassMode; }
+    RefMultiListClass<RenderObjClass> *Get_Dynamic_Lights() { return &m_dynamicLightList; }
+
+#ifdef GAME_DLL
+    RTS3DScene *Hook_Ctor() { return new (this) RTS3DScene(); }
+#endif
 
 protected:
     RefMultiListClass<RenderObjClass> m_dynamicLightList;
@@ -56,7 +84,7 @@ protected:
     CustomScenePassModes m_customScenePassMode;
     int m_translucentObjectsCount;
     RenderObjClass **m_translucentObjectsBuffer;
-    int m_unkOccludedCount;
+    int m_flaggedOccludedCount;
     RenderObjClass **m_occludedBuildingsBuffer;
     RenderObjClass **m_occludedObjectsBuffer;
     RenderObjClass **m_occludedOthersBuffer;

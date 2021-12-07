@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief W3D Particle System
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,14 +12,14 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "w3dshadow.h"
-#ifndef GAME_DLL
-W3DShadowManager *g_theW3DShadowManager = nullptr;
+#include "w3dparticlesys.h"
+#ifdef GAME_DLL
+#include "hooker.h"
 #endif
 
-void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass)
+void Do_Particles(RenderInfoClass &rinfo)
 {
 #ifdef GAME_DLL
-    Call_Function<void, RenderInfoClass &, bool>(PICK_ADDRESS(0x00781F40, 0x00605588), rinfo, stencil_pass);
+    Call_Function<void, RenderInfoClass &>(0x00778D20, rinfo);
 #endif
 }

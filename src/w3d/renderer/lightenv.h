@@ -29,6 +29,7 @@ public:
     void Pre_Render_Update(const Matrix3D &camera_tm);
 
     const Vector3 &Get_Equivalent_Ambient() const { return m_outputAmbient; }
+    void Set_Equivalent_Ambient(Vector3 &ambient) { m_outputAmbient = ambient; }
     int Get_Light_Count() const { return m_lightCount; }
     const Vector3 &Get_Light_Direction(int i) const { return m_inputLights[i].m_direction; }
     const Vector3 &Get_Light_Diffuse(int i) const { return m_inputLights[i].m_diffuse; }

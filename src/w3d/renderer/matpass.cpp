@@ -30,12 +30,10 @@ MaterialPassClass::MaterialPassClass() :
 MaterialPassClass::~MaterialPassClass()
 {
     for (int i = 0; i < MAX_TEX_STAGES; ++i) {
-        m_texture[i]->Release_Ref();
+        Ref_Ptr_Release(m_texture[i]);
     }
 
-    if (m_material != nullptr) {
-        m_material->Release_Ref();
-    }
+    Ref_Ptr_Release(m_material);
 }
 
 void MaterialPassClass::Install_Materials()

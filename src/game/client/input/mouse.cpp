@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "mouse.h"
+#include "colorspace.h"
 #include "displaystringmanager.h"
 #include "gametext.h"
 #include "globaldata.h"

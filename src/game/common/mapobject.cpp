@@ -14,6 +14,7 @@
  */
 #include "mapobject.h"
 #include "color.h"
+#include "colorspace.h"
 #include "rendobj.h"
 #include "sideslist.h"
 #include "staticnamekey.h"

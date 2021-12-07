@@ -151,3 +151,5 @@ extern BaseHeightMapRenderObjClass *&g_theTerrainRenderObject;
 #else
 extern BaseHeightMapRenderObjClass *g_theTerrainRenderObject;
 #endif
+
+void Do_Trees(RenderInfoClass &rinfo);

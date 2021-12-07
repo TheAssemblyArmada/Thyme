@@ -67,3 +67,10 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
     return 0.0f;
 #endif
 }
+
+void Do_Trees(RenderInfoClass &rinfo)
+{
+#ifdef GAME_DLL
+    Call_Function<void, RenderInfoClass &>(0x00750450, rinfo);
+#endif
+}

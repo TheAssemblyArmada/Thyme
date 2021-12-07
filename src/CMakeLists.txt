@@ -193,6 +193,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/scriptengine/script.cpp
+    game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp
     game/logic/scriptengine/scriptcondition.cpp
     game/logic/scriptengine/scriptgroup.cpp
@@ -221,11 +222,13 @@ set(GAMEENGINE_SRC
     platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3ddynamiclight.cpp
     platform/w3dengine/client/w3ddisplay.cpp
+    platform/w3dengine/client/w3dgameclient.cpp
     platform/w3dengine/client/w3dpoly.cpp
     platform/w3dengine/client/w3dparticlesys.cpp
     platform/w3dengine/client/w3droadbuffer.cpp
     platform/w3dengine/client/w3dshroud.cpp
     platform/w3dengine/client/w3dsmudge.cpp
+    platform/w3dengine/client/w3dstatuscircle.cpp
     platform/w3dengine/client/w3dscene.cpp
     platform/w3dengine/client/w3dview.cpp
     platform/w3dengine/client/w3dmouse.cpp

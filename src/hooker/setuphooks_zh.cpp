@@ -132,6 +132,7 @@
 #include "w3ddebugdisplay.h"
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
+#include "w3dgameclient.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3droadbuffer.h"
@@ -1188,7 +1189,6 @@ void Setup_Hooks()
     Hook_Any(0x007ADF60, W3DMouse::Set_Redraw_Mode);
     Hook_Any(0x007AD2D0, W3DMouse::Free_D3D_Assets);
     Hook_Any(0x007AD060, W3DMouse::Release_D3D_Cursor_Texture);
-    Hook_Function(0x00775540, &Create_Mouse); // This is actually a W3DGameClient virtual method but this not used
 
     // matpass.h
     Hook_Any(0x00833320, MaterialPassClass::Install_Materials);
@@ -1295,7 +1295,6 @@ void Setup_Hooks()
     Hook_Any(0x0073ED70, W3DDisplay::Toggle_LetterBox);
     Hook_Any(0x0073EDB0, W3DDisplay::Enable_LetterBox);
     Hook_Any(0x0073EC10, W3DDisplay::Is_LetterBox_Fading);
-    Hook_Function(0x007751A0, &Create_Game_Display); // This is actually a W3DGameClient virtual method but this not used
 
     // vertmaterial.h
     Hook_Any(0x00817150, VertexMaterialClass::Hook_Ctor);
@@ -1737,4 +1736,12 @@ void Setup_Hooks()
     Hook_Any(0x00769500, RTS3DScene::Get_A_Dynamic_Light);
     Hook_Any(0x00769630, RTS3DScene::Do_Render);
     Hook_Any(0x00769660, RTS3DScene::Draw);
+    Hook_Any(0x007696B0, RTS2DScene::Hook_Ctor);
+    Hook_Any(0x00769860, RTS2DScene::Do_Render);
+    Hook_Any(0x007698D0, RTS3DInterfaceScene::Hook_Ctor);
+
+    // w3dgameclient.cpp
+    Hook_Any(0x00775540, W3DGameClient::Create_Mouse);
+    Hook_Any(0x007751A0, W3DGameClient::Create_GameDisplay);
+    Hook_Any(0x00775050, W3DGameClient::Set_Team_Color);
 }

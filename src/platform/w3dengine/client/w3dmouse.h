@@ -85,7 +85,3 @@ private:
     static uint32_t s_PolyMouseAssets[CURSOR_COUNT];
 #endif
 };
-
-// TODO: Member function of W3DGameClient only here for hooking purposes
-// this not used so can be used without implementing W3DGameClient
-Win32Mouse *Create_Mouse();

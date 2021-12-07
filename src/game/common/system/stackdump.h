@@ -21,6 +21,7 @@
 #ifdef PLATFORM_WINDOWS
 // clang-format off
 // Headers must be in this order.
+#include <winbase.h>
 #include <winver.h>
 #include <dbghelp.h>
 #include <eh.h>

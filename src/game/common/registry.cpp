@@ -17,6 +17,7 @@
 #include <captainslog.h>
 
 #ifdef PLATFORM_WINDOWS
+#include <WinError.h>
 #include <winreg.h>
 
 static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8String &result)

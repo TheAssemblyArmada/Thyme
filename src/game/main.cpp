@@ -19,6 +19,7 @@
 #include "gamemain.h"
 #include "gamememory.h"
 #include "gitverinfo.h"
+#include "memdynalloc.h"
 #include "mempool.h"
 #include "stackdump.h"
 #include "unicodestring.h"

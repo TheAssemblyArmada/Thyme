@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "crashpreferences.h"
+#include <captainslog.h>
 #include <cstdio>
 #include <cstdlib>
 

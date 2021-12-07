@@ -128,7 +128,7 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
 
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-        Fill_Shroud_Data();
+        Fill_Shroud_Data(g_theWriteableGlobalData->m_shroudAlpha);
     }
 #endif
 

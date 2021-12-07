@@ -101,6 +101,3 @@ private:
     static SceneClass *s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
 #endif
 };
-
-// TODO: This is a member function of W3DGameClient
-W3DDisplay *Create_Game_Display();

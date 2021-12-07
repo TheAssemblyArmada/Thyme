@@ -566,3 +566,7 @@ PolygonTrigger *&PolygonTrigger::s_thePolygonTriggerListPtr =
 #include "w3dterraintracks.h"
 TerrainTracksRenderObjClassSystem *&g_theTerrainTracksRenderObjClassSystem =
     Make_Global<TerrainTracksRenderObjClassSystem *>(PICK_ADDRESS(0x00A3AD5C, 0x00E1ACC0));
+
+// scriptengine.cpp
+class ScriptEngine;
+ScriptEngine *&g_theScriptEngine = Make_Global<ScriptEngine *>(PICK_ADDRESS(0x00A2B668, 0x00E1E7AC));

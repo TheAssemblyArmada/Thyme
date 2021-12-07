@@ -498,11 +498,3 @@ void W3DMouse::Set_Cursor_Direction(MouseCursor cursor)
     Call_Method<void, W3DMouse, MouseCursor>(0x007AE0D0, this, cursor);
 #endif
 }
-
-// TODO: Member of W3DGameClient move when implemented
-Win32Mouse *Create_Mouse()
-{
-    Win32Mouse *mouse = new W3DMouse();
-    g_theWin32Mouse = mouse;
-    return mouse;
-}

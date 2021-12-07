@@ -29,6 +29,16 @@ class Drawable;
 class Object;
 struct RayEffectData;
 class ThingTemplate;
+class Display;
+class InGameUI;
+class GameWindowManager;
+class FontLibrary;
+class DisplayStringManager;
+class VideoPlayer;
+class TerrainVisual;
+class Mouse;
+class Keyboard;
+class SnowManager;
 
 enum Scorches
 {
@@ -129,16 +139,16 @@ public:
 
     virtual int Notify_Terrain_Object_Moved(Object *obj) = 0;
 
-    virtual void *Create_GameDisplay() = 0;
-    virtual void *Create_InGameUI() = 0;
-    virtual void *Create_WindowManager() = 0;
-    virtual void *Create_FontLibrary() = 0;
-    virtual void *Create_DisplayStringManager() = 0;
-    virtual void *Create_VideoPlayer() = 0;
-    virtual void *Create_TerrainVisual() = 0;
-    virtual void *Create_Keyboard() = 0;
-    virtual void *Create_Mouse() = 0;
-    virtual void *Create_SnowManager() = 0;
+    virtual Display *Create_GameDisplay() = 0;
+    virtual InGameUI *Create_InGameUI() = 0;
+    virtual GameWindowManager *Create_WindowManager() = 0;
+    virtual FontLibrary *Create_FontLibrary() = 0;
+    virtual DisplayStringManager *Create_DisplayStringManager() = 0;
+    virtual VideoPlayer *Create_VideoPlayer() = 0;
+    virtual TerrainVisual *Create_TerrainVisual() = 0;
+    virtual Keyboard *Create_Keyboard() = 0;
+    virtual Mouse *Create_Mouse() = 0;
+    virtual SnowManager *Create_SnowManager() = 0;
 
     virtual void Set_Frame_Rate(float fps) = 0;
 
@@ -162,7 +172,7 @@ protected:
     CommandTranslator *m_commandTranslator;
     int field_AC; // Dunno what this actually is yet.
     std::list<DrawableTOCEntry> m_drawableTOC;
-    std::list<void *> m_drawableTB; // Text Bearing drawables.
+    std::list<Drawable *> m_drawableTB; // Text Bearing drawables.
 };
 
 #ifdef GAME_DLL

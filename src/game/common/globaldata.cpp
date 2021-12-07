@@ -429,7 +429,7 @@ GlobalData::GlobalData()
     m_displayDebug = false;
     m_winCursors = true;
     m_constantDebugUpdate = false;
-    m_benchMark = false;
+    m_showTeamDot = false;
     m_fixedSeed = -1;
     m_horizontalScrollSpeedFactor = 1.0f;
     m_verticalScrollSpeedFactor = 1.0f;

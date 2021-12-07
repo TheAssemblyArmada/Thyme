@@ -1,5 +1,4 @@
 /**
-/**
  * @file
  *
  * @author Jonathan Wilson
@@ -92,4 +91,38 @@ protected:
     int m_occludedObjectsCount;
     int m_occludedOthersCount;
     CameraClass *m_camera;
+};
+
+class RTS2DScene : public SimpleSceneClass, public SubsystemInterface
+{
+public:
+    RTS2DScene();
+    virtual ~RTS2DScene() override;
+    virtual void Customized_Render(RenderInfoClass &rinfo) override;
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
+    virtual void Draw() override;
+
+    void Do_Render(CameraClass *camera);
+
+#ifdef GAME_DLL
+    RTS2DScene *Hook_Ctor() { return new (this) RTS2DScene(); }
+#endif
+
+private:
+    RenderObjClass *m_status;
+    CameraClass *m_camera;
+};
+
+class RTS3DInterfaceScene : public SimpleSceneClass
+{
+public:
+    RTS3DInterfaceScene();
+    virtual ~RTS3DInterfaceScene() override;
+    virtual void Customized_Render(RenderInfoClass &rinfo) override;
+
+#ifdef GAME_DLL
+    RTS3DInterfaceScene *Hook_Ctor() { return new (this) RTS3DInterfaceScene(); }
+#endif
 };

@@ -35,6 +35,7 @@
 #include "w3dparticlesys.h"
 #include "w3dshadow.h"
 #include "w3dshroud.h"
+#include "w3dstatuscircle.h"
 
 ShaderClass g_playerColorShader(0x84417);
 
@@ -1299,4 +1300,48 @@ void RTS3DScene::Draw()
     } else {
         captainslog_dbgassert(m_camera, "Null m_camera in RTS3DScene::draw");
     }
+}
+
+RTS2DScene::RTS2DScene()
+{
+    Set_Name("RTS2DScene");
+    m_status = new W3DStatusCircle();
+    Add_Render_Object(m_status);
+}
+
+RTS2DScene::~RTS2DScene()
+{
+    Remove_Render_Object(m_status);
+    Ref_Ptr_Release(m_status);
+}
+
+void RTS2DScene::Customized_Render(RenderInfoClass &rinfo)
+{
+    SimpleSceneClass::Customized_Render(rinfo);
+}
+
+void RTS2DScene::Draw()
+{
+    if (m_camera) {
+        W3D::Render(this, m_camera);
+    } else {
+        captainslog_dbgassert(m_camera, "Null m_camera in RTS2DScene::draw");
+    }
+}
+
+void RTS2DScene::Do_Render(CameraClass *camera)
+{
+    m_camera = camera;
+    // Calls some debug stuff in WB
+    Draw();
+    m_camera = nullptr;
+}
+
+RTS3DInterfaceScene::RTS3DInterfaceScene() {}
+
+RTS3DInterfaceScene::~RTS3DInterfaceScene() {}
+
+void RTS3DInterfaceScene::Customized_Render(RenderInfoClass &rinfo)
+{
+    SimpleSceneClass::Customized_Render(rinfo);
 }

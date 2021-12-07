@@ -226,13 +226,12 @@ public:
     bool m_displayDebug; // not 100% sure and needs confirming
     bool m_winCursors;
     bool m_constantDebugUpdate;
+    bool m_showTeamDot;
 #ifdef GAME_DEBUG_STRUCTS
     bool m_doStatDump;
     bool m_doStats;
-    bool m_altDoStats;
     uint32_t m_statsInterval;
 #endif
-    bool m_benchMark;
     bool m_writeBenchMarkFile;
     // char pad[2]
     int32_t m_fixedSeed;

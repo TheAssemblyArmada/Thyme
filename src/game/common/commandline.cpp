@@ -661,7 +661,7 @@ int Parse_Force_Benchmark(char **argv, int argc)
 {
     // Probably remove this at some point as the benchmark code is removed in Thyme.
     if (g_theWriteableGlobalData != nullptr) {
-        g_theWriteableGlobalData->m_benchMark = true;
+        g_theWriteableGlobalData->m_writeBenchMarkFile = true;
     }
 
     return 1;
@@ -877,7 +877,7 @@ int Parse_Stats(char **argv, int argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
-        g_theWriteableGlobalData->m_altDoStats = true;
+        g_theWriteableGlobalData->m_doStats = true;
         int32_t tmp;
         sscanf(argv[1], "%" PRId32, &tmp);
         g_theWriteableGlobalData->m_statsInterval = tmp;

@@ -939,9 +939,3 @@ int W3DDisplay::Get_Last_Frame_Draw_Calls()
     return 0;
 #endif
 }
-
-// 0x007751A0
-W3DDisplay *Create_Game_Display()
-{
-    return new W3DDisplay;
-}

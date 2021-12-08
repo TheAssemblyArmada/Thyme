@@ -187,7 +187,7 @@ private:
     int m_currTextureSize;
     int m_textureSizeHint;
     SurfaceClass *m_curSurface;
-    char m_monoSpaced;
+    bool m_monoSpaced;
     float m_wrapWidth;
     bool m_centered;
     RectClass m_clipRect;

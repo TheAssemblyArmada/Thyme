@@ -376,7 +376,7 @@ void FontCharsClass::Free_Character_Arrays()
 
 Render2DSentenceClass::Render2DSentenceClass() :
     m_font(nullptr),
-    m_baseLocation(0, 0),
+    m_baseLocation(0.0f, 0.0f),
     m_location(0.0f, 0.0f),
     m_cursor(0.0f, 0.0f),
     m_textureOffset(0, 0),
@@ -996,7 +996,7 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
                         const unichar_t *tmp_text = text;
 
                         while (*tmp_text != U_CHAR('\0')) {
-                            if (*tmp_text < U_CHAR(' ')) {
+                            if (*tmp_text <= U_CHAR(' ')) {
                                 break;
                             }
 
@@ -1020,7 +1020,6 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
                     break;
                 case U_CHAR('\0'):
                     goto exit;
-                    break;
                 default:
                     if (wrap_width_exceeded) {
                         m_cursor.X = 0.0f;

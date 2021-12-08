@@ -72,7 +72,7 @@ TextureBaseClass::~TextureBaseClass()
 #ifdef BUILD_WITH_D3D8
     if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
         m_d3dTexture->Release();
-        m_d3dTexture = nullptr;
+        m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
     }
 #endif
 
@@ -90,7 +90,7 @@ void TextureBaseClass::Invalidate()
 #ifdef BUILD_WITH_D3D8
         if (m_d3dTexture != W3D_TYPE_INVALID_TEXTURE) {
             m_d3dTexture->Release();
-            m_d3dTexture = nullptr;
+            m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
         }
 #endif
         m_initialized = false;
@@ -118,7 +118,7 @@ unsigned TextureBaseClass::Get_Reduction() const
         return 0;
     }
 
-    int reduction = W3D::Get_Texture_Reduction();
+    unsigned reduction = W3D::Get_Texture_Reduction();
 
     // Should we further reduce a texture greater than 256 in some dimension?
     // Effect should be to reduce texture by half again after normal reduction is applied.
@@ -127,7 +127,7 @@ unsigned TextureBaseClass::Get_Reduction() const
     }
 
     if (m_mipLevelCount != MIP_LEVELS_ALL) {
-        reduction = std::min<int>(reduction, m_mipLevelCount);
+        reduction = std::min<unsigned>(reduction, m_mipLevelCount);
     }
 
     return reduction;
@@ -142,9 +142,9 @@ void TextureBaseClass::Load_Locked_Surface()
 #ifdef BUILD_WITH_D3D8
         m_d3dTexture->Release();
 #endif
+        m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
     }
 
-    m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
     TextureLoader::Request_Thumbnail(this);
     m_initialized = false;
 }
@@ -259,6 +259,6 @@ void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned age)
 void TextureBaseClass::Apply_Null(unsigned stage)
 {
 #ifdef BUILD_WITH_D3D8
-    DX8Wrapper::Set_DX8_Texture(stage, nullptr);
+    DX8Wrapper::Set_DX8_Texture(stage, W3D_TYPE_INVALID_TEXTURE);
 #endif
 }

@@ -55,7 +55,7 @@ struct VertexFormatXYZDUV1
 class VertexBufferLockClass
 {
 public:
-    VertexBufferLockClass(VertexBufferClass *vertex_buffer) : m_vertexBuffer(vertex_buffer) {}
+    VertexBufferLockClass(VertexBufferClass *vertex_buffer) : m_vertexBuffer(vertex_buffer), m_vertices(nullptr) {}
     void *Get_Vertex_Array() const { return m_vertices; }
 
 protected:

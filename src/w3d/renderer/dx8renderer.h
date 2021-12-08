@@ -164,7 +164,7 @@ public:
 
     void Add_Visible_Texture_Category(DX8TextureCategoryClass *tex_category, int pass)
     {
-        captainslog_assert(pass < MAX_PASSES);
+        captainslog_assert(pass >= 0 && pass < MAX_PASSES);
         captainslog_assert(tex_category != nullptr);
         captainslog_assert(m_textureCategoryList[pass].Contains(tex_category));
         m_visibleTextureCategoryList[pass].Add(tex_category);

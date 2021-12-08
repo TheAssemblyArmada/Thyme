@@ -686,14 +686,15 @@ void Render2DSentenceClass::Allocate_New_Surface(const unichar_t *text, bool reu
         text_width += m_font->Get_Char_Spacing(text[index]);
     }
 
-    int char_height = m_font->Get_Char_Height() + 1;
+    const int char_height = m_font->Get_Char_Height() + 1;
+
     m_currTextureSize = 256;
     int best_tex_mem_usage = 999999999;
 
-    for (int pow2 = 6; pow2 <= 10; pow2++) {
+    for (int pow2 = 6; pow2 <= 8; pow2++) {
         int size = 1 << pow2;
         int row_count = (text_width / size) + 1;
-        int rows_per_texture = size / (char_height + 1);
+        int rows_per_texture = size / char_height;
 
         if (rows_per_texture > 0) {
             int texture_count = row_count / rows_per_texture;

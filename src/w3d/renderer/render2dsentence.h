@@ -168,7 +168,7 @@ private:
     void Reset_Sentence_Data();
     void Build_Textures();
     void Record_Sentence_Chunk();
-    void Allocate_New_Surface(const unichar_t *text, bool unk);
+    void Allocate_New_Surface(const unichar_t *text, bool reuse_surface);
     void Release_Pending_Surfaces();
     void Build_Sentence_Centered(const unichar_t *text, int *x = nullptr, int *y = nullptr);
     Vector2 Build_Sentence_Not_Centered(

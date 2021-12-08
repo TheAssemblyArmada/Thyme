@@ -542,7 +542,7 @@ void TextureLoadTaskClass::Apply(bool initialized)
     m_texture->Apply_New_Surface(m_d3dTexture, initialized, false);
 #ifdef BUILD_WITH_D3D8
     m_d3dTexture->Release();
-    m_d3dTexture = nullptr;
+    m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
 #endif
 }
 

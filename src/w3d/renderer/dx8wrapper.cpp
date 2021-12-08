@@ -436,7 +436,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     HRESULT res;
     DX8CALL_HRES(Reset(&s_presentParameters), res);
 
-    if (res) {
+    if (S_OK != res) {
         return false;
     }
 
@@ -976,7 +976,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
         *set_colorbuffer = format_table[format_index];
         *set_backbuffer = format_table[format_index];
         if (bitdepth == 32 && *set_colorbuffer == D3DFMT_X8R8G8B8
-            && !s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1)) {
+            && S_OK == s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1)) {
             *set_backbuffer = D3DFMT_A8R8G8B8;
         }
     }
@@ -1782,7 +1782,7 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
                 light.Type = D3DLIGHT_POINT;
                 light.Attenuation0 = 1.0f;
 
-                if (fabs(light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
+                if (fabsf(light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
                     >= 0.00001f) {
                     light.Attenuation1 = 0.1f / light_env->Get_Point_Inner_Radius(light_index);
                 } else {

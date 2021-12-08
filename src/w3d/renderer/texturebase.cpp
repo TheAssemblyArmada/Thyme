@@ -16,6 +16,7 @@
  */
 #include "texturebase.h"
 #include "assetmgr.h"
+#include "dx8texman.h"
 #include "dx8wrapper.h"
 #include "missing.h"
 #include "textureloader.h"
@@ -74,6 +75,8 @@ TextureBaseClass::~TextureBaseClass()
         m_d3dTexture = nullptr;
     }
 #endif
+
+    DX8TextureManagerClass::Remove(this);
 }
 
 /**

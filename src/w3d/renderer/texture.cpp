@@ -215,7 +215,6 @@ TextureClass::TextureClass(unsigned width,
 #endif
 
     if (pool == POOL_DEFAULT) {
-        captainslog_assert(m_pool == POOL_DEFAULT);
         m_dirty = true;
         DX8TextureManagerClass::Add(new DX8TextureTrackerClass(width, height, mip_count, this, format, render_target));
     }
@@ -342,9 +341,9 @@ void TextureClass::Init()
 void TextureClass::Apply_New_Surface(w3dbasetexture_t d3d_texture, bool initialized, bool reset)
 {
 #ifdef BUILD_WITH_D3D8
-    w3dbasetexture_t tex = Peek_Platform_Base_Texture();
-    if (tex != W3D_TYPE_INVALID_TEXTURE) {
-        tex->Release();
+    w3dbasetexture_t old = Peek_Platform_Base_Texture();
+    if (old != W3D_TYPE_INVALID_TEXTURE) {
+        old->Release();
     }
 
     m_d3dTexture = d3d_texture;

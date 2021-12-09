@@ -17,3 +17,12 @@
 #ifndef GAME_DLL
 ScriptEngine *g_theScriptEngine = nullptr;
 #endif
+
+bool ScriptEngine::Is_Time_Frozen_Debug()
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, ScriptEngine>(PICK_ADDRESS(0x00436FF0, 0x00712D9E), this);
+#else
+    return false;
+#endif
+}

@@ -196,7 +196,7 @@ int RoadSegment::Get_Indices(unsigned short *destination_ib, int num_to_copy, in
 
 void RoadSegment::Update_Seg_Lighting()
 {
-    int size = g_theTerrainRenderObject->Get_Map()->Get_Border_Size();
+    int size = g_theTerrainRenderObject->Get_Map()->Border_Size();
 
     for (int i = 0; i < m_numVertex; i++) {
         m_vb[i].diffuse = g_theTerrainRenderObject->Get_Static_Diffuse(

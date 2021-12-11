@@ -135,6 +135,7 @@
 #include "w3dgameclient.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
+#include "w3dprojectedshadow.h"
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"
@@ -1744,4 +1745,21 @@ void Setup_Hooks()
     Hook_Any(0x00775540, W3DGameClient::Create_Mouse);
     Hook_Any(0x007751A0, W3DGameClient::Create_GameDisplay);
     Hook_Any(0x00775050, W3DGameClient::Set_Team_Color);
+
+    // w3dprojectedshadow.cpp
+    Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);
+    Hook_Any(0x0075EF60, W3DProjectedShadowManager::Init);
+    Hook_Any(0x0075F090, W3DProjectedShadowManager::Re_Acquire_Resources);
+    Hook_Any(0x0075F130, W3DProjectedShadowManager::Release_Resources);
+    Hook_Any(0x0075F190, W3DProjectedShadowManager::Update_Render_Target_Textures);
+    Hook_Any(0x0075F8C0, W3DProjectedShadowManager::Flush_Decals);
+    Hook_Any(0x0075FB50, W3DProjectedShadowManager::Queue_Decal);
+    Hook_Any(0x00760880, W3DProjectedShadowManager::Render_Shadows);
+    Hook_Any(0x00762250, W3DProjectedShadow::Hook_Dtor);
+    Hook_Any(0x00762780, W3DProjectedShadow::Update);
+    Hook_Any(0x00762290, W3DProjectedShadow::Update_Texture);
+    Hook_Any(0x00762950, W3DShadowTexture::Update_Bounds);
+    Hook_Any(0x00762F90, W3DShadowTextureManager::Create_Texture);
+    Hook_Any(0x00762130, W3DProjectedShadowManager::Remove_Shadow);
+    Hook_Any(0x00761290, W3DProjectedShadow::Release);
 }

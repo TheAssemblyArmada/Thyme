@@ -570,3 +570,24 @@ TerrainTracksRenderObjClassSystem *&g_theTerrainTracksRenderObjClassSystem =
 // scriptengine.cpp
 class ScriptEngine;
 ScriptEngine *&g_theScriptEngine = Make_Global<ScriptEngine *>(PICK_ADDRESS(0x00A2B668, 0x00E1E7AC));
+
+// w3dprojectedshadow.cpp
+class W3DProjectedShadowManager;
+W3DProjectedShadowManager *&g_theW3DProjectedShadowManager =
+    Make_Global<W3DProjectedShadowManager *>(PICK_ADDRESS(0x00A3ACD4, 0x00E1AFC8));
+class FrustumClass;
+FrustumClass *&g_shadowCameraFrustum = Make_Global<FrustumClass *>(PICK_ADDRESS(0x00A3AE3C, 0x00E1A604));
+#ifdef BUILD_WITH_D3D8
+IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D = Make_Global<IDirect3DVertexBuffer8 *>(0x00A3ACE8);
+IDirect3DIndexBuffer8 *&g_shadowDecalIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(0x00A3ACEC);
+#endif
+int &g_nShadowDecalVertsInBuf = Make_Global<int>(0x00A3ACF0);
+int &g_nShadowDecalStartBatchVertex = Make_Global<int>(0x00A3ACF4);
+int &g_nShadowDecalIndicesInBuf = Make_Global<int>(0x00A3ACF8);
+int &g_nShadowDecalStartBatchIndex = Make_Global<int>(0x00A3ACFC);
+int &g_nShadowDecalPolysInBatch = Make_Global<int>(0x00A3AD00);
+int &g_nShadowDecalVertsInBatch = Make_Global<int>(0x00A3AD04);
+int &g_drawStartX = Make_Global<int>(0x00A3ACE0);
+int &g_drawEdgeX = Make_Global<int>(0x00A3ACD8);
+int &g_drawStartY = Make_Global<int>(0x00A3ACE4);
+int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);

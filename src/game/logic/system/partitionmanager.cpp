@@ -14,6 +14,7 @@
  */
 #include "partitionmanager.h"
 #include "object.h"
+#include "simpleobjectiterator.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #else

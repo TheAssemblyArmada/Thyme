@@ -120,7 +120,11 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
     /* If we have a file pointer set we are logging to a file */
     if (g_state.fp != NULL) {
         va_list args;  
-        fprintf(g_state.fp, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        if (file != NULL) {
+            fprintf(g_state.fp, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        } else {
+            fprintf(g_state.fp, "%s%-5s: ", buf, levels[level]);
+        }
         va_start(args, fmt);
         vfprintf(g_state.fp, fmt, args);
         fprintf(g_state.fp, "\n");
@@ -131,7 +135,11 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
     /* Log to stderr if log to console is set */
     if (g_state.console) {
         va_list args;
-        fprintf(stderr, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        if (file != NULL) {
+            fprintf(stderr, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        } else {
+            fprintf(stderr, "%s%-5s: ", buf, levels[level]);
+        }
         va_start(args, fmt);
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");

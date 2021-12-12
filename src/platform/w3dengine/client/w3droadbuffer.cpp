@@ -200,7 +200,7 @@ void RoadSegment::Update_Seg_Lighting()
 
     for (int i = 0; i < m_numVertex; i++) {
         m_vb[i].diffuse = g_theTerrainRenderObject->Get_Static_Diffuse(
-                              size + (int)(m_vb[i].x / 10.0f + 0.5), size + (int)(m_vb[i].x / 10.0f + 0.5))
+                              size + (int)(m_vb[i].x / 10.0f + 0.5), size + (int)(m_vb[i].y / 10.0f + 0.5))
             | 0xFF000000;
     }
 }

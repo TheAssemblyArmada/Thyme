@@ -1470,6 +1470,35 @@ void Setup_Hooks()
     Hook_Any(0x00862CB0, HModelLoaderClass::Load_W3D);
     Hook_Any(0x0085B580, HLodLoaderClass::Load_W3D);
 
+    // animobj.h
+    Hook_Any(0x008600D0, Animatable3DObjClass::Get_HTree);
+    Hook_Any(0x00898860, Animatable3DObjClass::Render);
+    Hook_Any(0x00898910, Animatable3DObjClass::Special_Render);
+    Hook_Any(0x008989A0, Animatable3DObjClass::Set_Transform);
+    Hook_Any(0x008989C0, Animatable3DObjClass::Set_Position);
+    Hook_Any(0x008989E0, Animatable3DObjClass::Get_Num_Bones);
+    Hook_Any(0x00898A00, Animatable3DObjClass::Get_Bone_Name);
+    Hook_Any(0x00898A20, Animatable3DObjClass::Get_Bone_Index);
+    //Hook_Any(0x00898A40, Animatable3DObjClass::Set_Animation);
+    //Hook_Any(0x00898AD0, Animatable3DObjClass::Set_Animation);
+    //Hook_Any(0x00898BF0, Animatable3DObjClass::Set_Animation);
+    //Hook_Any(0x00898D20, Animatable3DObjClass::Set_Animation);
+    Hook_Any(0x00898DF0, Animatable3DObjClass::Peek_Animation);
+    //Hook_Any(0x00898E10, Animatable3DObjClass::Get_Bone_Transform);
+    //Hook_Any(0x00898E50, Animatable3DObjClass::Get_Bone_Transform);
+    Hook_Any(0x00898EB0, Animatable3DObjClass::Capture_Bone);
+    Hook_Any(0x00898ED0, Animatable3DObjClass::Release_Bone);
+    Hook_Any(0x00898EF0, Animatable3DObjClass::Is_Bone_Captured);
+    Hook_Any(0x00898F10, Animatable3DObjClass::Control_Bone);
+    Hook_Any(0x00898F40, Animatable3DObjClass::Update_Sub_Object_Transforms);
+    //Hook_Any(0x008992B0, Animatable3DObjClass::Simple_Evaluate_Bone);
+    //Hook_Any(0x00899380, Animatable3DObjClass::Simple_Evaluate_Bone);
+    Hook_Any(0x00899450, Animatable3DObjClass::Compute_Current_Frame);
+    Hook_Any(0x00899730, Animatable3DObjClass::Is_Animation_Complete);
+    Hook_Any(0x00899790, Animatable3DObjClass::Peek_Animation_And_Info);
+    Hook_Any(0x008997F0, Animatable3DObjClass::Set_Animation_Frame_Rate_Multiplier);
+    Hook_Any(0x00899800, Animatable3DObjClass::Set_HTree);
+
     // meshmatdesc.h
     Hook_Method(0x0086B9C0, &MeshMatDescClass::Hook_Ctor);
     Hook_Method(0x0086BAA0, &MeshMatDescClass::Hook_Ctor2);

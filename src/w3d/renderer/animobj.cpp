@@ -19,13 +19,13 @@
 
 Animatable3DObjClass::Animatable3DObjClass(const char *tree) : m_isTreeValid(false), m_curMotionMode(BASE_POSE)
 {
-    m_modeInterp.m_motion1 = 0;
+    m_modeInterp.m_motion1 = nullptr;
     m_modeInterp.m_frame0 = 0;
     m_modeInterp.m_prevFrame0 = 0;
     m_modeInterp.m_prevFrame1 = 0;
     m_modeInterp.m_frame1 = 0;
     m_modeInterp.m_percentage = 0;
-    m_modeInterp.m_motion0 = 0;
+    m_modeInterp.m_motion0 = nullptr;
 
     if (!tree) {
         m_htree = nullptr;
@@ -48,15 +48,15 @@ Animatable3DObjClass::Animatable3DObjClass(const char *tree) : m_isTreeValid(fal
 }
 
 Animatable3DObjClass::Animatable3DObjClass(const Animatable3DObjClass &src) :
-    CompositeRenderObjClass(src), m_isTreeValid(false), m_htree(0), m_curMotionMode(BASE_POSE)
+    CompositeRenderObjClass(src), m_isTreeValid(false), m_htree(nullptr), m_curMotionMode(BASE_POSE)
 {
-    m_modeInterp.m_motion1 = 0;
+    m_modeInterp.m_motion1 = nullptr;
     m_modeInterp.m_frame0 = 0;
     m_modeInterp.m_prevFrame0 = 0;
     m_modeInterp.m_prevFrame1 = 0;
     m_modeInterp.m_frame1 = 0;
     m_modeInterp.m_percentage = 0;
-    m_modeInterp.m_motion0 = 0;
+    m_modeInterp.m_motion0 = nullptr;
 
     *this = src;
 }
@@ -84,13 +84,13 @@ Animatable3DObjClass &Animatable3DObjClass::operator=(const Animatable3DObjClass
 
         m_isTreeValid = false;
         m_curMotionMode = BASE_POSE;
-        m_modeInterp.m_motion1 = 0;
+        m_modeInterp.m_motion1 = nullptr;
         m_modeInterp.m_frame0 = 0;
         m_modeInterp.m_prevFrame0 = 0;
         m_modeInterp.m_prevFrame1 = 0;
         m_modeInterp.m_frame1 = 0;
         m_modeInterp.m_percentage = 0;
-        m_modeInterp.m_motion0 = 0;
+        m_modeInterp.m_motion0 = nullptr;
 
         m_htree = new HTreeClass(*that.m_htree);
     }
@@ -101,13 +101,10 @@ Animatable3DObjClass &Animatable3DObjClass::operator=(const Animatable3DObjClass
 void Animatable3DObjClass::Release()
 {
     if (m_curMotionMode == SINGLE_ANIM) {
-        m_modeAnim.m_motion->Release_Ref();
-        m_modeAnim.m_motion = nullptr;
+        Ref_Ptr_Release(m_modeAnim.m_motion);
     } else if (m_curMotionMode == DOUBLE_ANIM) {
-        m_modeInterp.m_motion0->Release_Ref();
-        m_modeInterp.m_motion0 = nullptr;
-        m_modeInterp.m_motion1->Release_Ref();
-        m_modeInterp.m_motion1 = nullptr;
+        Ref_Ptr_Release(m_modeInterp.m_motion0);
+        Ref_Ptr_Release(m_modeInterp.m_motion1);
     }
 }
 
@@ -253,24 +250,24 @@ const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(const char *bonename)
     if (m_htree) {
         captainslog_assert(bonename);
         return Get_Bone_Transform(m_htree->Get_Bone_Index(bonename));
-    } else {
-        return Get_Transform();
     }
+
+    return Get_Transform();
 }
 
 const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(int boneindex)
 {
     Validate_Transform();
 
-    if (!m_htree) {
-        return m_transform;
+    if (m_htree) {
+        if (!Is_Hierarchy_Valid()) {
+            Update_Sub_Object_Transforms();
+        }
+
+        return m_htree->Get_Transform(boneindex);
     }
 
-    if (!Is_Hierarchy_Valid()) {
-        Update_Sub_Object_Transforms();
-    }
-
-    return m_htree->Get_Transform(boneindex);
+    return m_transform;
 }
 
 void Animatable3DObjClass::Capture_Bone(int boneindex)
@@ -331,6 +328,8 @@ void Animatable3DObjClass::Update_Sub_Object_Transforms()
         case MULTIPLE_ANIM:
             captainslog_dbgassert(0, "HanimComboClass not supported");
             break;
+        default:
+            break;
     }
 
     Set_Hierarchy_Valid(true);
@@ -350,31 +349,32 @@ bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, Matrix3D *tm) con
 bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, float frame, Matrix3D *tm) const
 {
     if (m_htree) {
-        if (m_curMotionMode != SINGLE_ANIM) {
-            if (m_curMotionMode == NONE || m_curMotionMode == BASE_POSE) {
-                return m_htree->Simple_Evaluate_Pivot(boneindex, Get_Transform(), tm);
-            }
-            *tm = Get_Transform();
-            return false;
+        if (m_curMotionMode == SINGLE_ANIM) {
+            return m_htree->Simple_Evaluate_Pivot(m_modeAnim.m_motion, boneindex, frame, Get_Transform(), tm);
         }
-        return m_htree->Simple_Evaluate_Pivot(m_modeAnim.m_motion, boneindex, frame, Get_Transform(), tm);
+
+        if (m_curMotionMode == NONE || m_curMotionMode == BASE_POSE) {
+            return m_htree->Simple_Evaluate_Pivot(boneindex, Get_Transform(), tm);
+        }
     }
+
     *tm = Get_Transform();
+
     return false;
 }
 
 float Animatable3DObjClass::Compute_Current_Frame(float *new_direction) const
 {
     float direction = m_modeAnim.m_animDirection;
-    float frame = 0;
+    float frame = 0.0f;
     if (m_curMotionMode == SINGLE_ANIM) {
         frame = m_modeAnim.m_frame;
 
         if (m_modeAnim.m_animMode != ANIM_MODE_MANUAL) {
-            int time = W3D::Get_Sync_Time() - m_modeAnim.m_lastSyncTime;
-            frame = m_modeAnim.m_motion->Get_Frame_Rate() * m_modeAnim.m_frameRateMultiplier * time
-                    * m_modeAnim.m_animDirection * 0.001f
-                + frame;
+            float time = (float)(W3D::Get_Sync_Time() - m_modeAnim.m_lastSyncTime);
+
+            frame += m_modeAnim.m_motion->Get_Frame_Rate() * m_modeAnim.m_frameRateMultiplier * time
+                * m_modeAnim.m_animDirection / 1000.0f;
 
             switch (m_modeAnim.m_animMode) {
                 case ANIM_MODE_LOOP:
@@ -390,30 +390,30 @@ float Animatable3DObjClass::Compute_Current_Frame(float *new_direction) const
                     if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) <= frame) {
                         frame = (float)(m_modeAnim.m_motion->Get_Num_Frames() - 1);
                     }
+                    break;
                 case ANIM_MODE_LOOP_PINGPONG:
                     if (m_modeAnim.m_animDirection < 1.0f) {
-                        if (frame > 0.0f) {
-                            break;
+                        if (frame < 0.0f) {
+
+                            frame = -frame;
+
+                            if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) <= frame) {
+                                frame = 0.0f;
+                            }
+
+                            direction = m_modeAnim.m_animDirection * -1.0f;
                         }
 
-                        frame = -frame;
-
-                        if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) <= frame) {
-                            frame = 0.0f;
-                        }
-                    } else {
-                        if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) > frame) {
-                            break;
-                        }
+                    } else if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) <= frame) {
 
                         frame = (float)(2 * m_modeAnim.m_motion->Get_Num_Frames() - 2) - frame;
 
                         if ((float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) <= frame) {
                             frame = (float)(m_modeAnim.m_motion->Get_Num_Frames() - 1);
                         }
-                    }
 
-                    direction = m_modeAnim.m_animDirection * -1.0f;
+                        direction = m_modeAnim.m_animDirection * -1.0f;
+                    }
                     break;
                 case ANIM_MODE_LOOP_BACKWARDS:
                     if (frame < 0.0f) {
@@ -429,6 +429,8 @@ float Animatable3DObjClass::Compute_Current_Frame(float *new_direction) const
                         frame = 0.0f;
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -443,26 +445,25 @@ float Animatable3DObjClass::Compute_Current_Frame(float *new_direction) const
 void Animatable3DObjClass::Single_Anim_Progress()
 {
     if (m_curMotionMode == SINGLE_ANIM) {
-        int frame = m_modeAnim.m_prevFrame;
+        float frame = m_modeAnim.m_prevFrame;
         m_modeAnim.m_prevFrame = m_modeAnim.m_frame;
         m_modeAnim.m_frame = Compute_Current_Frame(&m_modeAnim.m_animDirection);
+
+        m_modeAnim.m_lastSyncTime = W3D::Get_Sync_Time();
 
         if (m_modeAnim.m_frame == m_modeAnim.m_prevFrame) {
             m_modeAnim.m_prevFrame = frame;
         }
 
-        m_modeAnim.m_lastSyncTime = W3D::Get_Sync_Time();
         Set_Hierarchy_Valid(false);
     }
 }
 
 bool Animatable3DObjClass::Is_Animation_Complete() const
 {
-    if (m_curMotionMode != SINGLE_ANIM) {
-        return false;
-    } else {
+    if (m_curMotionMode == SINGLE_ANIM) {
         if (m_modeAnim.m_animMode == ANIM_MODE_ONCE) {
-            return (m_modeAnim.m_motion->Get_Num_Frames() - 1) == m_modeAnim.m_frame;
+            return (float)(m_modeAnim.m_motion->Get_Num_Frames() - 1) == m_modeAnim.m_frame;
         }
 
         if (m_modeAnim.m_animMode == ANIM_MODE_ONCE_BACKWARDS) {
@@ -486,30 +487,30 @@ void Animatable3DObjClass::Set_HTree(HTreeClass *new_htree)
 
 HAnimClass *Animatable3DObjClass::Peek_Animation_And_Info(float &frame, int &frames, int &mode, float &multiplier)
 {
-    if (m_curMotionMode != SINGLE_ANIM) {
-        return nullptr;
+    if (m_curMotionMode == SINGLE_ANIM) {
+        frame = m_modeAnim.m_frame;
+
+        if (m_modeAnim.m_motion) {
+            frames = m_modeAnim.m_motion->Get_Num_Frames();
+        } else {
+            frames = 0;
+        }
+
+        mode = m_modeAnim.m_animMode;
+        multiplier = m_modeAnim.m_frameRateMultiplier;
+        return m_modeAnim.m_motion;
     }
 
-    frame = m_modeAnim.m_frame;
-
-    if (m_modeAnim.m_motion) {
-        frames = m_modeAnim.m_motion->Get_Num_Frames();
-    } else {
-        frames = 0;
-    }
-
-    mode = m_modeAnim.m_animMode;
-    multiplier = m_modeAnim.m_frameRateMultiplier;
-    return m_modeAnim.m_motion;
+    return nullptr;
 }
 
 void Animatable3DObjClass::Anim_Update(const Matrix3D &root, HAnimClass *motion, float frame)
 {
     if (motion && m_htree) {
-        if (motion->Class_ID()) {
-            m_htree->Anim_Update(root, motion, frame);
-        } else {
+        if (motion->Class_ID() == CLASSID_MESH) {
             m_htree->Anim_Update(root, (HRawAnimClass *)motion, frame);
+        } else {
+            m_htree->Anim_Update(root, motion, frame);
         }
     }
     Set_Hierarchy_Valid(true);

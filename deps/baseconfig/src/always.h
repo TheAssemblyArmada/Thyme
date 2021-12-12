@@ -73,8 +73,7 @@
 #define strtrim ex_strtrim
 #endif
 
-#if !defined HAVE_STD_CLAMP && defined __cplusplus
-#include <functional>
+#ifdef __cplusplus
 
 template<size_t Size> size_t strlcat_tpl(char (&dst)[Size], const char *src)
 {
@@ -96,6 +95,9 @@ template<size_t Size> size_t u_strlcat_tpl(unichar_t (&dst)[Size], const unichar
     return u_strlcat(dst, src, Size);
 }
 
+#ifndef HAVE_STD_CLAMP
+#include <functional>
+
 namespace std
 {
 template<class T, class Compare> constexpr const T &clamp(const T &v, const T &lo, const T &hi, Compare comp)
@@ -107,7 +109,11 @@ template<class T> constexpr const T &clamp(const T &v, const T &lo, const T &hi)
 {
     return clamp(v, lo, hi, std::less<T>());
 }
+
 } // namespace std
-#endif
+
+#endif // HAVE_STD_CLAMP
+
+#endif // __cplusplus
 
 #endif // BASE_ALWAYS_H

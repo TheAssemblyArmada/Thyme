@@ -28,7 +28,7 @@ public:
     {
         // If you hit the following assert, one or more objects were not freed.
         captainslog_dbgassert(
-            m_freeObjectCount != m_totalObjectCount, "Not all memory was returned to the pool before destruction.");
+            m_freeObjectCount == m_totalObjectCount, "Not all memory was returned to the pool before destruction.");
 
         void *block = m_blockListHead;
 

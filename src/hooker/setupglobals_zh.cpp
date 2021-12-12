@@ -1,4 +1,8 @@
-﻿#include "hooker.h"
+﻿#ifndef GAME_DLL
+#error This file must not be compiled into standalone binary
+#endif
+
+#include "hooker.h"
 #include "view.h"
 
 #pragma warning(push)

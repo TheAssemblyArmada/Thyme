@@ -83,6 +83,9 @@ public:
     virtual float Get_Seismic_Z_Velocity(int x, int y);
     virtual void Set_Seismic_Z_Velocity(int x, int y, float velocity);
     virtual float Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y);
+
+    bool Get_Flip_State(int x, int y);
+
     static int Get_Min_Height_Value() { return 0; }
     static int Get_Max_Height_Value() { return 255; }
     int Get_Width() { return m_width; }
@@ -92,6 +95,17 @@ public:
     int Get_Draw_Height() { return m_drawHeightY; }
     int Get_Draw_Origin_X() { return m_drawOriginX; }
     int Get_Draw_Origin_Y() { return m_drawOriginY; }
+
+    unsigned char Get_Height(int x, int y)
+    {
+        int i = x + this->m_width * y;
+
+        if (i >= 0 && i < m_dataSize && m_data) {
+            return m_data[i];
+        } else {
+            return 0;
+        }
+    }
 
 protected:
     enum
@@ -127,7 +141,7 @@ protected:
     int m_borderSize;
     std::vector<ICoord2D> m_boundaries;
     int m_dataSize;
-    char *m_data;
+    unsigned char *m_data;
     unsigned char *m_siesmicUpdateFlags;
     int m_siesmicUpdateWidth;
     float *m_siesmicZVelocity;

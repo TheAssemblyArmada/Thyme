@@ -57,3 +57,12 @@ const Vector3 *Drawable::Get_Selection_Color() const
     return nullptr;
 #endif
 }
+
+DrawModule **Drawable::Get_Draw_Modules()
+{
+#ifdef GAME_DLL
+    return Call_Method<DrawModule **, const Drawable>(PICK_ADDRESS(0x00475F40, 0x007C87E4), this);
+#else
+    return nullptr;
+#endif
+}

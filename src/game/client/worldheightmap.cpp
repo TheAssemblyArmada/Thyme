@@ -38,3 +38,12 @@ unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int x, int y, int width)
     return nullptr;
 #endif
 }
+
+bool WorldHeightMap::Get_Flip_State(int x, int y)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, WorldHeightMap, int, int>(PICK_ADDRESS(0x007449F0, 0x005EBE61), this, x, y);
+#else
+    return false;
+#endif
+}

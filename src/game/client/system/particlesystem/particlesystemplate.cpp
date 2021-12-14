@@ -79,7 +79,7 @@ FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "SlavePosOffset", &INI::Parse_Coord3D,  nullptr,  offsetof(ParticleSystemTemplate, m_slavePosOffset) },
      { "PerParticleAttachedSystem", &INI::Parse_AsciiString,  nullptr,  offsetof(ParticleSystemTemplate, m_attachedSystemName) },
      { "Lifetime", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_lifetime) },
-     { "SystemLifetime", &INI::Parse_Unsigned,  nullptr,  offsetof(ParticleSystemTemplate, m_systemLifetime) },
+     { "SystemLifetime", &INI::Parse_Unsigned_Int,  nullptr,  offsetof(ParticleSystemTemplate, m_systemLifetime) },
      { "Size", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_startSize) },
      { "StartSizeRate", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_startSizeRate) },
      { "SizeRate", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_sizeRate) },
@@ -173,7 +173,8 @@ void ParticleSystemTemplate::Parse(INI *ini, void *, void *store, const void *)
 
     auto *particle_template = g_theParticleSystemManager->Find_Template(template_name);
 
-    captainslog_dbgassert(particle_template != nullptr || template_name.Is_None(), "ParticleSystem %s not found!\n");
+    captainslog_dbgassert(
+        particle_template != nullptr || template_name.Is_None(), "ParticleSystem %s not found!\n", template_name.Str());
 
     *static_cast<ParticleSystemTemplate **>(store) = particle_template;
 }

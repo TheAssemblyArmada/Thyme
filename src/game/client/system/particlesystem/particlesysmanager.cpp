@@ -410,7 +410,7 @@ ParticleSystemID ParticleSystemManager::Create_Attached_Particle_System_ID(
 // zh: 0x005047E0 wb: 0x009B5160
 void ParticleSystemManager::Parse_Particle_System_Definition(INI *ini)
 {
-    auto particle_name = ini->Get_Next_Token();
+    auto *particle_name = ini->Get_Next_Token();
     auto *particle_template = g_theParticleSystemManager->Find_Template(particle_name);
     if (particle_template == nullptr) {
         particle_template = g_theParticleSystemManager->New_Template(particle_name);

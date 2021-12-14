@@ -136,6 +136,7 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3dprojectedshadow.h"
+#include "w3dvolumetricshadow.h"
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"
@@ -1835,4 +1836,14 @@ void Setup_Hooks()
     Hook_Any(0x00748170, WorldHeightMap::Get_Terrain_Name_At);
     Hook_Any(0x007482F0, WorldHeightMap::Get_Pointer_To_Tile_Data);
     Hook_Any(0x00748550, WorldHeightMap::Setup_Alpha_Tiles);
+
+    // w3dvolumetricshadow.cpp
+    Hook_Any(0x007A2FC0, W3DShadowGeometry::Init_From_HLOD);
+    Hook_Any(0x007A3460, W3DShadowGeometry::Init_From_Mesh);
+    Hook_Any(0x007A3630, W3DShadowGeometryMesh::Hook_Ctor);
+    Hook_Any(0x007A3650, W3DShadowGeometryMesh::~W3DShadowGeometryMesh);
+    Hook_Any(0x007A36A0, W3DShadowGeometryMesh::Build_Polygon_Neighbors);
+    Hook_Any(0x007A39F0, W3DShadowGeometryMesh::Build_Polygon_Normals);
+    Hook_Any(0x007A7AF0, W3DShadowGeometryManager::Free_All_Geoms);
+    Hook_Any(0x007A7B70, W3DShadowGeometryManager::Load_Geom);
 }

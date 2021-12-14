@@ -234,7 +234,7 @@ float GameClientRandomVariable::Get_Value() const
     return 0.0f;
 }
 
-constexpr const char *_distributionTypeNames[] = {
+constexpr const char *DistributionTypeNames[] = {
     "CONSTANT",
     "UNIFORM",
     // Additional types have not been included as they are not usable
@@ -250,7 +250,7 @@ void GameClientRandomVariable::Parse(INI *ini, void *, void *store, const void *
     DistributionType type = DistributionType::UNIFORM;
     auto *token = ini->Get_Next_Token_Or_Null();
     if (token != nullptr) {
-        type = static_cast<DistributionType>(ini->Scan_IndexList(token, _distributionTypeNames));
+        type = static_cast<DistributionType>(ini->Scan_IndexList(token, DistributionTypeNames));
     }
     static_cast<GameClientRandomVariable *>(store)->Set_Range(min, max, type);
 }

@@ -21,6 +21,7 @@
 
 class INI;
 class ParticleSystem;
+struct FieldParse;
 
 class ParticleSystemTemplate : public MemoryPoolObject, public ParticleSystemInfo
 {
@@ -35,8 +36,11 @@ public:
 
     static void Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse(INI *ini, void *, void *store, const void *);
 
     Utf8String Get_Name() const { return m_name; }
+
+    static FieldParse *Get_Particle_System_Template_Field_Parse_Table() { return s_fieldParseTable; }
 
 private:
     ParticleSystem *Create_Slave_System(bool create_slaves) const;
@@ -44,4 +48,6 @@ private:
 private:
     Utf8String m_name;
     mutable ParticleSystemTemplate *m_slaveTemplate;
+
+    static FieldParse s_fieldParseTable[];
 };

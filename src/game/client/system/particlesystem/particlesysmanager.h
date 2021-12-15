@@ -33,6 +33,7 @@ class ParticleSystem;
 class ParticleSystemTemplate;
 class Object;
 class RenderInfoClass;
+class INI;
 
 #ifdef THYME_USE_STLPORT
 typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
@@ -86,6 +87,7 @@ public:
 
     static ParticleSystemID Create_Attached_Particle_System_ID(
         const ParticleSystemTemplate *temp, Object *object, bool create_slaves);
+    static void Parse_Particle_System_Definition(INI *ini);
 
 private:
     Particle *m_allParticlesHead[PARTICLE_PRIORITY_COUNT];

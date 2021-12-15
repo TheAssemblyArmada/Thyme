@@ -87,10 +87,10 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
     m_cellHeight = world_cell_size_y;
 
     if (map != nullptr) {
-        m_numCellsX =
-            GameMath::Fast_To_Int_Ceil((float)(int)((map->Get_Width() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellWidth);
+        m_numCellsX = GameMath::Fast_To_Int_Ceil(
+            (float)(int)((map->Get_X_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellWidth);
         m_numCellsY = GameMath::Fast_To_Int_Ceil(
-            (float)(int)((map->Get_Height() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellHeight);
+            (float)(int)((map->Get_Y_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellHeight);
         m_numMaxVisibleCellsX = GameMath::Fast_To_Int_Floor((float)(map->Get_Draw_Width() - 1) * 10.0f / m_cellWidth) + 1;
         width = m_numMaxVisibleCellsX;
         m_numMaxVisibleCellsY = GameMath::Fast_To_Int_Floor((float)(map->Get_Draw_Height() - 1) * 10.0f / m_cellHeight) + 1;

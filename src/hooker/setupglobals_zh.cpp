@@ -591,3 +591,7 @@ int &g_drawStartX = Make_Global<int>(0x00A3ACE0);
 int &g_drawEdgeX = Make_Global<int>(0x00A3ACD8);
 int &g_drawStartY = Make_Global<int>(0x00A3ACE4);
 int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);
+
+// worldheightmap.cpp
+#include "worldheightmap.h"
+ARRAY_DEF(0x00A3A96C, TileData *, WorldHeightMap::s_alphaTiles, 12);

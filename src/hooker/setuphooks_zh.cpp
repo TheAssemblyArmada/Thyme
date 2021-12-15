@@ -147,6 +147,7 @@
 #include "win32localfilesystem.h"
 #include "win32mouse.h"
 #include "wininstancedata.h"
+#include "worldheightmap.h"
 #include "wwstring.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -1479,20 +1480,20 @@ void Setup_Hooks()
     Hook_Any(0x008989E0, Animatable3DObjClass::Get_Num_Bones);
     Hook_Any(0x00898A00, Animatable3DObjClass::Get_Bone_Name);
     Hook_Any(0x00898A20, Animatable3DObjClass::Get_Bone_Index);
-    //Hook_Any(0x00898A40, Animatable3DObjClass::Set_Animation);
-    //Hook_Any(0x00898AD0, Animatable3DObjClass::Set_Animation);
-    //Hook_Any(0x00898BF0, Animatable3DObjClass::Set_Animation);
-    //Hook_Any(0x00898D20, Animatable3DObjClass::Set_Animation);
+    // Hook_Any(0x00898A40, Animatable3DObjClass::Set_Animation);
+    // Hook_Any(0x00898AD0, Animatable3DObjClass::Set_Animation);
+    // Hook_Any(0x00898BF0, Animatable3DObjClass::Set_Animation);
+    // Hook_Any(0x00898D20, Animatable3DObjClass::Set_Animation);
     Hook_Any(0x00898DF0, Animatable3DObjClass::Peek_Animation);
-    //Hook_Any(0x00898E10, Animatable3DObjClass::Get_Bone_Transform);
-    //Hook_Any(0x00898E50, Animatable3DObjClass::Get_Bone_Transform);
+    // Hook_Any(0x00898E10, Animatable3DObjClass::Get_Bone_Transform);
+    // Hook_Any(0x00898E50, Animatable3DObjClass::Get_Bone_Transform);
     Hook_Any(0x00898EB0, Animatable3DObjClass::Capture_Bone);
     Hook_Any(0x00898ED0, Animatable3DObjClass::Release_Bone);
     Hook_Any(0x00898EF0, Animatable3DObjClass::Is_Bone_Captured);
     Hook_Any(0x00898F10, Animatable3DObjClass::Control_Bone);
     Hook_Any(0x00898F40, Animatable3DObjClass::Update_Sub_Object_Transforms);
-    //Hook_Any(0x008992B0, Animatable3DObjClass::Simple_Evaluate_Bone);
-    //Hook_Any(0x00899380, Animatable3DObjClass::Simple_Evaluate_Bone);
+    // Hook_Any(0x008992B0, Animatable3DObjClass::Simple_Evaluate_Bone);
+    // Hook_Any(0x00899380, Animatable3DObjClass::Simple_Evaluate_Bone);
     Hook_Any(0x00899450, Animatable3DObjClass::Compute_Current_Frame);
     Hook_Any(0x00899730, Animatable3DObjClass::Is_Animation_Complete);
     Hook_Any(0x00899790, Animatable3DObjClass::Peek_Animation_And_Info);
@@ -1791,4 +1792,47 @@ void Setup_Hooks()
     Hook_Any(0x00762F90, W3DShadowTextureManager::Create_Texture);
     Hook_Any(0x00762130, W3DProjectedShadowManager::Remove_Shadow);
     Hook_Any(0x00761290, W3DProjectedShadow::Release);
+
+    // worldheightmap.cpp
+    Hook_Any(0x007440C0, WorldHeightMap::Hook_Dtor);
+    Hook_Any(0x00744390, WorldHeightMap::Hook_Ctor2);
+    Hook_Any(0x00744340, WorldHeightMap::Free_List_Of_Map_Objects);
+    Hook_Any(0x007449F0, WorldHeightMap::Get_Flip_State);
+    Hook_Any(0x00744A40, WorldHeightMap::Set_Flip_State);
+    Hook_Any(0x00744AB0, WorldHeightMap::Clear_Flip_States);
+    Hook_Any(0x00744AE0, WorldHeightMap::Get_Seismic_Z_Velocity);
+    Hook_Any(0x00744B20, WorldHeightMap::Set_Seismic_Z_Velocity);
+    Hook_Any(0x00744B60, WorldHeightMap::Get_Bilinear_Sample_Seismic_Z_Velocity);
+    Hook_Any(0x00744C70, WorldHeightMap::Get_Cliff_State);
+    Hook_Any(0x00744CC0, WorldHeightMap::Parse_World_Dict_Data_Chunk);
+    Hook_Any(0x00744D50, WorldHeightMap::Parse_Lighting_Data_Chunk);
+    Hook_Any(0x00745150, WorldHeightMap::Parse_Objects_Data_Chunk);
+    Hook_Any(0x00745210, WorldHeightMap::Parse_Height_Map_Data_Chunk);
+    Hook_Any(0x00745230, WorldHeightMap::Parse_Height_Map_Data);
+    Hook_Any(0x007454A0, WorldHeightMap::Parse_Size_Only_In_Chunk);
+    Hook_Any(0x007454C0, WorldHeightMap::Parse_Size_Only);
+    Hook_Any(0x007456D0, WorldHeightMap::Parse_Blend_Tile_Data_Chunk);
+    Hook_Any(0x007456F0, WorldHeightMap::Read_Tex_Class);
+    Hook_Any(0x00745840, WorldHeightMap::Parse_Blend_Tile_Data);
+    Hook_Any(0x00745ED0, WorldHeightMap::Parse_Object_Data_Chunk);
+    Hook_Any(0x00745F00, WorldHeightMap::Parse_Object_Data);
+    Hook_Any(0x00746170, WorldHeightMap::Count_Tiles);
+    Hook_Any(0x00746310, WorldHeightMap::Read_Tiles);
+    Hook_Any(0x007465E0, WorldHeightMap::Update_Tile_Texture_Positions);
+    Hook_Any(0x00746A70, WorldHeightMap::Get_UV_For_Ndx);
+    Hook_Any(0x00746B70, WorldHeightMap::Is_Cliff_Mapped_Texture);
+    Hook_Any(0x00746BB0, WorldHeightMap::Get_UV_Data);
+    Hook_Any(0x00746C00, WorldHeightMap::Get_UV_For_Tile_Index);
+    Hook_Any(0x00747480, WorldHeightMap::Get_Extra_Alpha_UV_Data);
+    Hook_Any(0x00747610, WorldHeightMap::Get_Alpha_UV_Data);
+    Hook_Any(0x007478F0, WorldHeightMap::Set_Texture_LOD);
+    Hook_Any(0x00747910, WorldHeightMap::Get_Terrain_Texture);
+    Hook_Any(0x00747C50, WorldHeightMap::Get_Edge_Terrain_Texture);
+    Hook_Any(0x00747C70, WorldHeightMap::Get_Flat_Texture);
+    Hook_Any(0x00747D60, WorldHeightMap::Set_Draw_Origin);
+    Hook_Any(0x00747E30, WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights);
+    Hook_Any(0x00748030, WorldHeightMap::Get_Terrain_Color_At);
+    Hook_Any(0x00748170, WorldHeightMap::Get_Terrain_Name_At);
+    Hook_Any(0x007482F0, WorldHeightMap::Get_Pointer_To_Tile_Data);
+    Hook_Any(0x00748550, WorldHeightMap::Setup_Alpha_Tiles);
 }

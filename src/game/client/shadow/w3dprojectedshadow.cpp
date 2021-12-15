@@ -917,12 +917,12 @@ int W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
     g_drawEdgeY = hmap->Get_Draw_Origin_Y() + hmap->Get_Draw_Height() - 1;
     g_drawEdgeX = hmap->Get_Draw_Origin_X() + hmap->Get_Draw_Width() - 1;
 
-    if (g_drawEdgeX > hmap->Get_Width() - 1) {
-        g_drawEdgeX = hmap->Get_Width() - 1;
+    if (g_drawEdgeX > hmap->Get_X_Extent() - 1) {
+        g_drawEdgeX = hmap->Get_X_Extent() - 1;
     }
 
-    if (g_drawEdgeY > hmap->Get_Height() - 1) {
-        g_drawEdgeY = hmap->Get_Height() - 1;
+    if (g_drawEdgeY > hmap->Get_Y_Extent() - 1) {
+        g_drawEdgeY = hmap->Get_Y_Extent() - 1;
     }
 
     g_drawStartX = hmap->Get_Draw_Origin_X();

@@ -59,7 +59,7 @@ public:
 
     static PolygonTrigger *Get_First_Polygon_Trigger() { return s_thePolygonTriggerListPtr; }
 
-    static int Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *userdata);
+    static bool Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *userdata);
     static void Delete_Triggers();
 #ifdef GAME_DLL
     static PolygonTrigger *&s_thePolygonTriggerListPtr;

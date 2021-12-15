@@ -21,10 +21,10 @@
 PolygonTrigger *PolygonTrigger::s_thePolygonTriggerListPtr;
 #endif
 
-int PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *userdata)
+bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *userdata)
 {
 #ifdef GAME_DLL
-    return Call_Function<int, DataChunkInput &, DataChunkInfo *, void *>(
+    return Call_Function<bool, DataChunkInput &, DataChunkInfo *, void *>(
         PICK_ADDRESS(0x00570D60, 0x006CE6F6), file, info, userdata);
 #else
     return 0;

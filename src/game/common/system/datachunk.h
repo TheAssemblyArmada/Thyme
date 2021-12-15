@@ -108,4 +108,5 @@ private:
     InputChunk *m_chunkStack;
     void *m_currentObject;
     void *m_userData;
+    friend class WorldHeightMap;
 };

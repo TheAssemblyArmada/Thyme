@@ -88,7 +88,15 @@ FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "Shader", &INI::Parse_Index_List,  ParticleShaderTypeNames,  offsetof(ParticleSystemTemplate, m_shaderType) },
      { "Type", &INI::Parse_Index_List,  ParticleTypeNames,  offsetof(ParticleSystemTemplate, m_particleType) },
      { "ParticleName", &INI::Parse_AsciiString,  nullptr,  offsetof(ParticleSystemTemplate, m_particleTypeName) },
+#ifndef GAME_DLL
+     { "AngleX", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleX) },
+     { "AngleY", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleY) },
+#endif
      { "AngleZ", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angleZ) },
+#ifndef GAME_DLL
+     { "AngularRateX", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateX) },
+     { "AngularRateY", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateY) },
+#endif
      { "AngularRateZ", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularRateZ) },
      { "AngularDamping", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_angularDamping) },
      { "VelocityDamping", &GameClientRandomVariable::Parse,  nullptr,  offsetof(ParticleSystemTemplate, m_velDamping) },

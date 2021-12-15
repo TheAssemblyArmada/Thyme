@@ -238,4 +238,3 @@ extern const char *g_shakeIntensityNames[SHAKE_COUNT + 1];
 extern const char *g_weaponSlotNames[WEAPONSLOT_COUNT + 1];
 extern const char *g_commandSourceMaskNames[COMMANDSOURCE_COUNT + 1];
 extern const char *g_veterancyNames[VETERANCY_COUNT + 1];
-extern const char *g_particlePriorityNames[PARTICLE_PRIORITY_COUNT + 1];

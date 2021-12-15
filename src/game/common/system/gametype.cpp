@@ -103,21 +103,3 @@ const char *g_veterancyNames[VETERANCY_COUNT + 1] = {
     "HEROIC",
     nullptr,
 };
-
-const char *g_particlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
-    "NONE",
-    "WEAPON_EXPLOSION",
-    "SCORCHMARK",
-    "DUST_TRAIL",
-    "BUILDUP",
-    "DEBRIS_TRAIL",
-    "UNIT_DAMAGE_FX",
-    "DEATH_EXPLOSION",
-    "SEMI_CONSTANT",
-    "CONSTANT",
-    "WEAPON_TRAIL",
-    "AREA_EFFECT",
-    "CRITICAL",
-    "ALWAYS_RENDER",
-    nullptr,
-};

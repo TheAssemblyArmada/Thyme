@@ -16,6 +16,24 @@
 #include "ini.h"
 #include "particlesysmanager.h"
 
+constexpr const char *ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
+    "NONE",
+    "WEAPON_EXPLOSION",
+    "SCORCHMARK",
+    "DUST_TRAIL",
+    "BUILDUP",
+    "DEBRIS_TRAIL",
+    "UNIT_DAMAGE_FX",
+    "DEATH_EXPLOSION",
+    "SEMI_CONSTANT",
+    "CONSTANT",
+    "WEAPON_TRAIL",
+    "AREA_EFFECT",
+    "CRITICAL",
+    "ALWAYS_RENDER",
+    nullptr,
+};
+
 constexpr const char *ParticleShaderTypeNames[] = {
     "NONE",
     "ADDITIVE",
@@ -65,7 +83,7 @@ constexpr const char *WindMotionTypeNames[] = {
 
 // clang-format off
 FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
-     { "Priority", &INI::Parse_Index_List,  g_particlePriorityNames,  offsetof(ParticleSystemTemplate, m_priority) },
+     { "Priority", &INI::Parse_Index_List,  ParticlePriorityNames,  offsetof(ParticleSystemTemplate, m_priority) },
      { "IsOneShot", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isOneShot) },
      { "Shader", &INI::Parse_Index_List,  ParticleShaderTypeNames,  offsetof(ParticleSystemTemplate, m_shaderType) },
      { "Type", &INI::Parse_Index_List,  ParticleTypeNames,  offsetof(ParticleSystemTemplate, m_particleType) },

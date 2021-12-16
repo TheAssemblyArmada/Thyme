@@ -28,6 +28,7 @@ enum DeathType : int32_t;
 class INI;
 class ThingTemplate;
 class FXList;
+class ParticleSystemTemplate;
 class Weapon;
 
 enum WeaponBonusConditionType
@@ -227,7 +228,7 @@ private:
     uint32_t unk;
     Utf8String m_fireOCL[VETERANCY_COUNT];
     Utf8String m_projectileDetonationOCL[VETERANCY_COUNT];
-    VeterancyLevel m_projectileExhaust[VETERANCY_COUNT];
+    ParticleSystemTemplate *m_projectileExhaust[VETERANCY_COUNT];
     Utf8String m_projectileName[VETERANCY_COUNT];
     ThingTemplate *m_projectileTmpl[VETERANCY_COUNT];
     FXList *m_fireFX[VETERANCY_COUNT];

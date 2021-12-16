@@ -16,6 +16,7 @@
 #include "audiomanager.h"
 #include "gamelogic.h"
 #include "ini.h"
+#include "particlesystemplate.h"
 #include "thingfactory.h"
 #include <algorithm>
 
@@ -585,21 +586,26 @@ static void Parse_Per_Vet_Level_FXList(INI *ini, void *formal, void *store, cons
 // zh: 0x004C2BB0 wb: 0x006D3859
 static void Parse_All_Vet_Levels_Particle_System(INI *ini, void *formal, void *store, const void *user_data)
 {
-    // TODO requires ParticleSystem::Parse
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, void const *>(
-        PICK_ADDRESS(0x004C2BB0, 0x006D3859), ini, formal, store, user_data);
-#endif
+    ParticleSystemTemplate *particle_template = nullptr;
+    ParticleSystemTemplate::Parse(ini, nullptr, &particle_template, nullptr);
+
+    auto *particle_syst_vet_array = static_cast<ParticleSystemTemplate **>(store);
+    for (auto i = 0; i < VETERANCY_COUNT; ++i) {
+        particle_syst_vet_array[i] = particle_template;
+    }
 }
 
 // zh: 0x004C2B60 wb: 0x006D3807
 static void Parse_Per_Vet_Level_Particle_System(INI *ini, void *formal, void *store, const void *user_data)
 {
-    // TODO requires ParticleSystem::Parse
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, void const *>(
-        PICK_ADDRESS(0x004C2B60, 0x006D3807), ini, formal, store, user_data);
-#endif
+    const auto vet_level = ini->Scan_IndexList(ini->Get_Next_Token(), g_veterancyNames);
+
+    auto *particle_syst_vet_array = static_cast<ParticleSystemTemplate **>(store);
+
+    ParticleSystemTemplate *particle_template = nullptr;
+    ParticleSystemTemplate::Parse(ini, nullptr, &particle_template, nullptr);
+
+    particle_syst_vet_array[vet_level] = particle_template;
 }
 
 // zh: 0x004C5C30 wb: 0x006D6C7E

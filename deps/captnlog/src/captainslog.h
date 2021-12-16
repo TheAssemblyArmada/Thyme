@@ -26,15 +26,16 @@ extern "C" {
 #define LOGGING_LEVEL 5
 #endif
 
-#define LOGLEVEL_NONE  0
+#define LOGLEVEL_NONE 0
 #define LOGLEVEL_FATAL 1
 #define LOGLEVEL_ERROR 2
-#define LOGLEVEL_WARN  3
-#define LOGLEVEL_INFO  4
+#define LOGLEVEL_WARN 3
+#define LOGLEVEL_INFO 4
 #define LOGLEVEL_DEBUG 5
 #define LOGLEVEL_TRACE 6
 
-/* Conditionally define the function like macros for logging levels, allows only certain logging to be compiled into client program. */
+/* Conditionally define the function like macros for logging levels, allows only certain logging to be compiled into client
+ * program. */
 #if LOGLEVEL_TRACE <= LOGGING_LEVEL
 #define captainslog_trace(x, ...) captainslog_log(LOGLEVEL_TRACE, __FILE__, __LINE__, ##__VA_ARGS__)
 #else
@@ -58,7 +59,7 @@ extern "C" {
 #else
 #define captainslog_warn(x, ...) ((void)0)
 #endif
-  
+
 #if LOGLEVEL_ERROR <= LOGGING_LEVEL
 #define captainslog_error(x, ...) captainslog_log(LOGLEVEL_ERROR, __FILE__, __LINE__, x, ##__VA_ARGS__)
 #else
@@ -107,26 +108,26 @@ void captainslog_deinit();
 /* If we have GCC or compiler that tries to be compatible, use GCC inline assembly. */
 #elif defined __GNUC__ || defined __clang__
 #if defined(__i386__) || defined(__x86_64__)
-    trap_inline void captainslog_debugtrap(void)
-    {
-        __asm__ volatile("int $0x03");
+trap_inline void captainslog_debugtrap(void)
+{
+    __asm__ volatile("int $0x03");
 }
 #elif defined(__arm__)
-    trap_inline void captainslog_debugtrap(void)
-    {
-        __asm__ volatile("bkpt #3");
-    }
+trap_inline void captainslog_debugtrap(void)
+{
+    __asm__ volatile("bkpt #3");
+}
 #elif defined(__aarch64__)
-    trap_inline void captainslog_debugtrap(void)
-    {
-        /* same values as used by msvc __debugbreak on arm64 */
-        __asm__ volatile("brk #0xF000");
-    }
+trap_inline void captainslog_debugtrap(void)
+{
+    /* same values as used by msvc __debugbreak on arm64 */
+    __asm__ volatile("brk #0xF000");
+}
 #elif defined(__powerpc__)
-    trap_inline void captainslog_debugtrap(void)
-    {
-        __asm__ volatile(".4byte 0x7d821008");
-    }
+trap_inline void captainslog_debugtrap(void)
+{
+    __asm__ volatile(".4byte 0x7d821008");
+}
 #else
 #error captainslog_debugtrap not currently supported on this processor platform, see captntrap.h
 #endif /* CPU architectures on GCC like compilers */
@@ -150,9 +151,8 @@ void captainslog_debugtrap(void);
             static volatile bool _ignore_assert = false; \
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
-                captainslog_fatal( \
-                    "ASSERTION FAILED!\n" \
-                    "  Function:%s\n  Expression:%s\n\n", \
+                captainslog_fatal("ASSERTION FAILED!\n" \
+                                  "  Function:%s\n  Expression:%s\n\n", \
                     __CURRENT_FUNCTION__, \
                     #exp); \
                 captainslog_assertfail( \
@@ -170,9 +170,8 @@ void captainslog_debugtrap(void);
             static volatile bool _ignore_assert = false; \
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
-                captainslog_fatal( \
-                    "ASSERTION FAILED!\n" \
-                    "  Function:%s\n  Expression:%s\n\n", \
+                captainslog_fatal("ASSERTION FAILED!\n" \
+                                  "  Function:%s\n  Expression:%s\n\n", \
                     __CURRENT_FUNCTION__, \
                     #exp); \
                 captainslog_assertfail( \
@@ -189,13 +188,11 @@ void captainslog_debugtrap(void);
             static volatile bool _ignore_assert = false; \
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
-                captainslog_fatal( \
-                    "ASSERTION FAILED!\n" \
-                    "  Function:%s\n  Expression:%s\n\n", \
+                captainslog_fatal("ASSERTION FAILED!\n" \
+                                  "  Function:%s\n  Expression:%s\n\n", \
                     __CURRENT_FUNCTION__, \
                     #exp); \
-                captainslog_assertfail( \
-                    #exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, &_ignore_assert, &_break, NULL); \
+                captainslog_assertfail(#exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, &_ignore_assert, &_break, NULL); \
             } \
             if (_break) { \
                 captainslog_debugtrap(); \
@@ -223,8 +220,14 @@ void captainslog_debugtrap(void);
 #define captainslog_ignoreasserts(ignore) ((void)0)
 #define captainslog_allowpopups(allow) ((void)0)
 #else
-void captainslog_assertfail(const char *expr, const char *file, int line, const char *func, volatile bool *ignore,
-        volatile bool *allow_break, const char *msg, ...);
+void captainslog_assertfail(const char *expr,
+    const char *file,
+    int line,
+    const char *func,
+    volatile bool *ignore,
+    volatile bool *allow_break,
+    const char *msg,
+    ...);
 void captainslog_ignoreasserts(bool ignore);
 void captainslog_allowpopups(bool allow);
 #endif

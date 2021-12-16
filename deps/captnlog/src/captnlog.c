@@ -37,6 +37,7 @@ static struct
     bool console;
     bool syslog;
     bool print_time;
+    bool print_file;
     bool initialized;
 } g_state;
 
@@ -63,23 +64,20 @@ static void unlock()
 /**
  * Initialises the logging system.
  *
- * @param level Determines the max level of logging that will be carried out.
- * @param filename Sets the filename to log to, if this is NULL or the file cannot be opened, file logging is disabled.
- * @param console Does the logging system print to stderr?
- * @param syslog Does the logging system log to either syslog or the windows system logs?
- * @param print_time Does the logging system print the time on a log line?
+ * @param settings Takes all settings given by caller.
  */
-void captainslog_init(int level, const char *filename, bool console, bool syslog, bool print_time)
+void captainslog_init(const captains_settings_t *settings)
 {
     if (!g_state.initialized) {
-        if (filename != NULL) {
-            g_state.fp = fopen(filename, "w");
+        if (settings->filename != NULL) {
+            g_state.fp = fopen(settings->filename, "w");
         }
 
-        g_state.level = level;
-        g_state.console = console;
-        g_state.syslog = syslog;
-        g_state.print_time = print_time;
+        g_state.level = settings->level;
+        g_state.console = settings->console;
+        g_state.syslog = settings->syslog;
+        g_state.print_time = settings->print_time;
+        g_state.print_file = settings->print_file;
 
 #ifdef _WIN32
         InitializeCriticalSection(&g_state.mutex);
@@ -98,7 +96,8 @@ void captainslog_init(int level, const char *filename, bool console, bool syslog
  */
 void captainslog_log(int level, const char *file, int line, const char *fmt, ...)
 {
-    char buf[16];
+    char time_str[16];
+    char file_str[260];
 
     /* Don't log if the level is set lower than the level requested */
     if (level > g_state.level || !g_state.initialized) {
@@ -112,15 +111,22 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
     if (g_state.print_time) {
         time_t t = time(NULL);
         struct tm *lt = localtime(&t);
-        buf[strftime(buf, sizeof(buf), "%H:%M:%S ", lt)] = '\0';
+        time_str[strftime(time_str, sizeof(time_str), "%H:%M:%S ", lt)] = '\0';
     } else {
-        buf[0] = '\0';
+        time_str[0] = '\0';
+    }
+
+    /* Print file and line */
+    if (g_state.print_file) {
+        snprintf(file_str, sizeof(file_str), "%s:%d", file, line);
+    } else {
+        file_str[0] = '\0';
     }
 
     /* If we have a file pointer set we are logging to a file */
     if (g_state.fp != NULL) {
-        va_list args;  
-        fprintf(g_state.fp, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        va_list args;
+        fprintf(g_state.fp, "%s%-5s %s: ", time_str, levels[level], file_str);
         va_start(args, fmt);
         vfprintf(g_state.fp, fmt, args);
         fprintf(g_state.fp, "\n");
@@ -131,7 +137,7 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
     /* Log to stderr if log to console is set */
     if (g_state.console) {
         va_list args;
-        fprintf(stderr, "%s%-5s %s:%d: ", buf, levels[level], file, line);
+        fprintf(stderr, "%s%-5s %s: ", time_str, levels[level], file_str);
         va_start(args, fmt);
         vfprintf(stderr, fmt, args);
         fprintf(stderr, "\n");

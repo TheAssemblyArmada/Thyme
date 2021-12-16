@@ -331,7 +331,12 @@ int main(int argc, char **argv)
     rename(curbuf, prevbuf);
     logfile = curbuf;
 #endif
-    captainslog_init(LOGLEVEL_DEBUG, logfile, true, false, false);
+    captains_settings_t captains_settings = { 0 };
+    captains_settings.level = LOGLEVEL_DEBUG;
+    captains_settings.filename = logfile;
+    captains_settings.console = true;
+    captains_settings.print_file = true;
+    captainslog_init(&captains_settings);
 
     // Assign some critical sections for code sensitive to threaded calls.
     g_unicodeStringCriticalSection = &critSec1;

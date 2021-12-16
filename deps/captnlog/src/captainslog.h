@@ -37,7 +37,7 @@ extern "C" {
 /* Conditionally define the function like macros for logging levels, allows only certain logging to be compiled into client
  * program. */
 #if LOGLEVEL_TRACE <= LOGGING_LEVEL
-#define captainslog_trace(x, ...) captainslog_log(LOGLEVEL_TRACE, __FILE__, __LINE__, ##__VA_ARGS__)
+#define captainslog_trace(x, ...) captainslog_log(LOGLEVEL_TRACE, __FILE__, __LINE__, x, ##__VA_ARGS__)
 #else
 #define captainslog_trace(x, ...) ((void)0)
 #endif
@@ -73,15 +73,35 @@ extern "C" {
 #endif
 
 /**
+ * Logging system settings
+ *
+ * @param level Determines the max level of logging that will be carried out.
+ * @param filename Sets the filename to log to, if this is NULL or the file cannot be opened, file logging is disabled.
+ * @param console Does the logging system print to stderr?
+ * @param syslog Does the logging system log to either syslog or the windows system logs?
+ * @param print_time Does the logging system print the time on a log line?
+ * @param print_file Does the logging system print the file on a log line?
+ */
+typedef struct captains_settings_s
+{
+    int level;
+    const char *filename;
+    bool console;
+    bool syslog;
+    bool print_time;
+    bool print_file;
+} captains_settings_t;
+
+/**
  * Logging control functions.
  */
 #if LOGGING_LEVEL == LOGLEVEL_NONE
-#define captainslog_init(level, filename, console, syslog, print_time) ((void)0)
+#define captainslog_init(settings) ((void)0)
 #define captainslog_log(level, file, line, format, ...) ((void)0)
 #define captainslog_line(fmt, ...) ((void)0)
 #define captainslog_deinit() ((void)0)
 #else
-void captainslog_init(int level, const char *filename, bool console, bool syslog, bool print_time);
+void captainslog_init(const captains_settings_t *settings);
 void captainslog_log(int level, const char *file, int line, const char *fmt, ...);
 void captainslog_line(const char *fmt, ...);
 void captainslog_deinit();

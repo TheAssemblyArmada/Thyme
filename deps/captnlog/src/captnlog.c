@@ -14,8 +14,8 @@
  */
 #include "captainslog.h"
 #include <stdarg.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
@@ -40,7 +40,7 @@ static struct
     bool initialized;
 } g_state;
 
-static const char *levels[] = {"NONE", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE"};
+static const char *levels[] = { "NONE", "FATAL", "ERROR", "WARN", "INFO", "DEBUG", "TRACE" };
 
 static void lock()
 {

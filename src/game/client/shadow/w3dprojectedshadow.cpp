@@ -388,7 +388,7 @@ void W3DProjectedShadow::Gather_Draw_Stats(DebugDrawStats *stats)
     if (g_theWriteableGlobalData->m_shadowDecals) {
         if (m_isEnabled) {
             if (m_isInvisibleEnabled) {
-                unk->Add_Extra_Draw_Calls(1);
+                stats->Add_Extra_Draw_Calls(1);
             }
         }
     }

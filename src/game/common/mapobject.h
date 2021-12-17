@@ -134,4 +134,5 @@ private:
     static MapObject *s_theMapObjectListPtr;
     static Dict s_theWorldDict;
 #endif
+    friend class WorldHeightMap;
 };

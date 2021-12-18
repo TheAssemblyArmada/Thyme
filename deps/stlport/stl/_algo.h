@@ -12,6 +12,9 @@
  * Copyright (c) 1999 
  * Boris Fomitchev
  *
+ * Copyright (c) 2022
+ * Thyme Project - Code has been modified to add 'clamp' function from C++ 2017
+ * 
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
@@ -585,8 +588,7 @@ void inplace_merge(_BidirectionalIter __first,
 		   _BidirectionalIter __last, _Compare __comp);
 
 
-// compare functions.
-
+// **MODIFICATION C++17** clamp functions.
 
 template<class _Tp, class _Compare> constexpr const _Tp &clamp(const _Tp &__v, const _Tp &__lo, const _Tp &__hi, _Compare __comp)
 {

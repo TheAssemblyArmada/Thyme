@@ -12,7 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "setuphooks.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -32,7 +31,10 @@
 #include "dict.h"
 #include "dx8caps.h"
 #include "dx8fvf.h"
+#include "dx8indexbuffer.h"
+#include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
+#include "experiencetracker.h"
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -50,8 +52,8 @@
 #include "keyboard.h"
 #include "main.h"
 #include "messagestream.h"
-#include "milesaudiomanager.h"
 #include "milesaudiofilecache.h"
+#include "milesaudiomanager.h"
 #include "modulefactory.h"
 #include "mouse.h"
 #include "multilist.h"
@@ -69,6 +71,7 @@
 #include "scriptcondition.h"
 #include "scriptgroup.h"
 #include "scriptlist.h"
+#include "setuphooks.h"
 #include "shader.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
@@ -85,8 +88,6 @@
 #include "weapon.h"
 #include "win32gameengine.h"
 #include "win32localfilesystem.h"
-#include "dx8vertexbuffer.h"
-#include "dx8indexbuffer.h"
 #include "wwstring.h"
 #include <stdarg.h>
 #include <stdio.h>
@@ -99,7 +100,7 @@ void Null_Func(){};
 
 void Setup_Hooks()
 {
-	// TODO, update with world builder addresses.
+    // TODO, update with world builder addresses.
 #if 0
     // Code that checks the launcher is running, launcher does CD check.
     Hook_Function(0x00412420, CopyProtect::checkForMessage);
@@ -875,4 +876,16 @@ void Setup_Hooks()
     // for messing with buffer sizes
     int *w3dbm_size = (int *)(0x0067B205 + 1);
     *w3dbm_size = sizeof(W3DBufferManager);
+
+    // experiencetracker.cpp
+    Hook_Any(0x008A35F9, ExperienceTracker::Get_Experience_Value);
+    Hook_Any(0x008A3637, ExperienceTracker::Is_Trainable);
+    Hook_Any(0x008A3654, ExperienceTracker::Is_Accepting_Experience_Points);
+    Hook_Any(0x008A368E, ExperienceTracker::Set_Experience_Sink);
+    Hook_Any(0x008A36A4, ExperienceTracker::Set_Min_Veterency_Level);
+    Hook_Any(0x008A370D, ExperienceTracker::Set_Veterency_Level);
+    Hook_Any(0x008A377A, ExperienceTracker::Gain_Exp_For_Level);
+    Hook_Any(0x008A37E4, ExperienceTracker::Can_Gain_Exp_For_Level);
+    Hook_Any(0x008A381C, ExperienceTracker::Add_Experience_Points);
+    Hook_Any(0x008A3934, ExperienceTracker::Set_Experience_And_Level);
 }

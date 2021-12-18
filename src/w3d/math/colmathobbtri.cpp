@@ -16,6 +16,7 @@
 #include "obbox.h"
 #include "tri.h"
 #include "vector3.h"
+#include <algorithm>
 
 struct OBBTCollisionStruct
 {

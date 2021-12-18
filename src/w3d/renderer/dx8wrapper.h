@@ -29,6 +29,7 @@
 #include "vertmaterial.h"
 #include "w3dtypes.h"
 #include "wwstring.h"
+#include <algorithm>
 #include <captainslog.h>
 class SurfaceClass;
 class DynamicVBAccessClass;

@@ -584,6 +584,20 @@ void inplace_merge(_BidirectionalIter __first,
 		   _BidirectionalIter __middle,
 		   _BidirectionalIter __last, _Compare __comp);
 
+
+// compare functions.
+
+
+template<class _Tp, class _Compare> constexpr const _Tp &clamp(const _Tp &__v, const _Tp &__lo, const _Tp &__hi, _Compare __comp)
+{
+    return __comp(__v, __lo) ? __lo : __comp(__hi, __v) ? __hi : __v;
+}
+
+template<class _Tp> constexpr const _Tp &clamp(const _Tp &__v, const _Tp &__lo, const _Tp &__hi)
+{
+    return clamp(__v, __lo, __hi, less<_Tp>());
+}
+
 // Set algorithms: includes, set_union, set_intersection, set_difference,
 // set_symmetric_difference.  All of these algorithms have the precondition
 // that their input ranges are sorted and the postcondition that their output

@@ -16,6 +16,7 @@
 #include "view.h"
 #include "globaldata.h"
 #include "xfer.h"
+#include <algorithm>
 
 #ifndef GAME_DLL
 uint32_t View::s_idNext = 1;

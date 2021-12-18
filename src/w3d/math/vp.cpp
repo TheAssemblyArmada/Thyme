@@ -19,6 +19,7 @@
 #include "vector2.h"
 #include "vector3.h"
 #include "vector4.h"
+#include <algorithm>
 #include <cstring>
 
 using std::memcpy;

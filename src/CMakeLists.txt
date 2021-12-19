@@ -82,6 +82,7 @@ set(GAMEENGINE_SRC
     game/client/image.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
+    game/client/shadow/w3dbuffermanager.cpp
     game/client/shadow/w3dprojectedshadow.cpp
     game/client/shadow/w3dvolumetricshadow.cpp
     game/client/shadow/w3dshadow.cpp

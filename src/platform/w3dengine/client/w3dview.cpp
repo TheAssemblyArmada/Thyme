@@ -24,3 +24,12 @@ void W3DView::Set_View_Filter_Pos(const Coord3D *pos)
 {
     ScreenMotionBlurFilter::Set_Zoom_To_Pos(pos);
 }
+
+bool W3DView::Update_Camera_Movements()
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, W3DView>(PICK_ADDRESS(0x0076D680, 0x006A5728), this);
+#else
+    return false;
+#endif
+}

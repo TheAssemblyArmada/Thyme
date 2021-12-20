@@ -83,7 +83,7 @@ private:
     int m_indexInLogic;
 };
 
-bool Compare_Update_Modules(UpdateModule *a, UpdateModule *b)
+inline bool Compare_Update_Modules(UpdateModule *a, UpdateModule *b)
 {
     captainslog_dbgassert(a && b, "these may no longer be null");
     return b->Get_Update_Value() < a->Get_Update_Value();

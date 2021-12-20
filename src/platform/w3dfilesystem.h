@@ -63,3 +63,9 @@ private:
     char m_filePath[PATH_MAX];
     char m_filename[PATH_MAX];
 };
+
+#ifdef GAME_DLL
+extern W3DFileSystem *&g_theW3DFileSystem;
+#else
+extern W3DFileSystem *g_theW3DFileSystem;
+#endif

@@ -263,6 +263,7 @@ W3DErrorType W3D::Begin_Render(bool clear, bool clearz, const Vector3 &color, fl
         TextureLoader::Update(network_callback);
         DynamicVBAccessClass::Reset(true);
         DynamicIBAccessClass::Reset(true);
+        // Debug_Statistics::Begin_Statistics();
         captainslog_assert(!s_isRendering);
         s_isRendering = true;
 
@@ -366,6 +367,7 @@ W3DErrorType W3D::End_Render(bool flip_frame)
         s_isRendering = false;
         DX8Wrapper::End_Scene();
         s_frameCount++;
+        // Debug_Statistics::End_Statistics();
         DX8Wrapper::Invalidate_Cached_Render_States();
     }
 

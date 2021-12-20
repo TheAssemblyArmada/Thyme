@@ -212,3 +212,9 @@ protected:
     TimeOfDayType m_tod;
     Setting m_settings[TIME_OF_DAY_COUNT];
 };
+
+#ifdef GAME_DLL
+extern WaterRenderObjClass *&g_theWaterRenderObj;
+#else
+extern WaterRenderObjClass *g_theWaterRenderObj;
+#endif

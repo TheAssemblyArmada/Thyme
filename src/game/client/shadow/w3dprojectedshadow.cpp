@@ -580,6 +580,8 @@ void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowTy
             dev->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZ);
 
             if (DX8Wrapper::Is_Triangle_Draw_Enabled()) {
+                // Debug_Statistics::Record_DX8_Polys_And_Vertices(g_nShadowDecalPolysInBatch, g_nShadowDecalVertsInBatch,
+                // &ShaderClass::s_presetOpaqueShader);
                 dev->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,
                     0,
                     g_nShadowDecalVertsInBatch,

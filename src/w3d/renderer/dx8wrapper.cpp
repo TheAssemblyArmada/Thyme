@@ -1387,8 +1387,9 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type,
     DX8CALL(SetIndices(static_cast<DX8IndexBufferClass *>(dyn_ib_access.Get_Index_Buffer())->Get_DX8_Index_Buffer(),
         dyn_vb_access.Get_Vertex_Offset()));
     s_indexBufferChanges++;
-    s_drawCalls;
+    s_drawCalls++;
     DX8CALL(DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, vertex_count, dyn_ib_access.Get_Index_Offset(), polygon_count));
+    // Debug_Statistics::Record_DX8_Polys_And_Vertices(polygon_count, vertex_count, s_renderState.shader);
 #endif
 }
 
@@ -1428,6 +1429,7 @@ void DX8Wrapper::Draw(unsigned int primitive_type,
             switch (s_renderState.index_buffer_type) {
                 case IndexBufferClass::BUFFER_TYPE_DX8:
                 case IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8: {
+                    // Debug_Statistics::Record_DX8_Polys_And_Vertices(polygon_count, vertex_count, s_renderState.shader);
                     s_drawCalls++;
                     DX8CALL(DrawIndexedPrimitive((D3DPRIMITIVETYPE)primitive_type,
                         min_vertex_index,

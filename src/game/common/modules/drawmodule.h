@@ -21,10 +21,17 @@ class TracerDrawInterface;
 class RopeDrawInterface;
 class LaserDrawInterface;
 class Marix3D;
+class OBBoxClass;
 #ifdef GAME_DEBUG_STRUCTS
 class DebugDrawStats
 {
 public:
+    DebugDrawStats() : m_extraDrawCalls(0), m_skins(0), m_bones(0), m_sortMeshes(0), m_drawCalls(0) {}
+    void Get_Draw_Calls() { return m_drawCalls; }
+    void Get_Bones() { return m_bones; }
+    void Get_Skins() { return m_skins; }
+    void Get_Sort_Meshes() { return m_sortMeshes; }
+    void Get_Extra_Draw_Calls() { return m_extraDrawCalls; }
     void Add_Extra_Draw_Calls(int i) { m_extraDrawCalls += i; }
 
 private:

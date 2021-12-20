@@ -41,6 +41,10 @@
 #include <d3dx8.h>
 #endif
 
+#ifndef GAME_DLL
+WaterRenderObjClass *g_theWaterRenderObj;
+#endif
+
 ShaderClass g_zFillAlphaShader(0x184BB);
 
 void Do_Sky_Box_Set(bool b)
@@ -1504,6 +1508,8 @@ void WaterRenderObjClass::Render_Water_Mesh()
             DX8Wrapper::Get_D3D_Device8()->SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
             W3DShaderManager::Reset_Shader(W3DShaderManager::ST_SHROUD_TEXTURE);
         }
+
+        // Debug_Statistics::Record_DX8_Polys_And_Vertices(m_numIndices - 2, y * x, ShaderClass::s_presetOpaqueShader);
 
         if (m_trapezoidWaterPixelShader) {
             DX8Wrapper::Get_D3D_Device8()->SetPixelShader(0);

@@ -16,6 +16,7 @@
 #pragma once
 
 #include "always.h"
+#include "ai.h"
 #include "armortemplateset.h"
 #include "bitflags.h"
 #include "gametype.h"
@@ -69,11 +70,6 @@ class TempWeaponBonusHelper;
 class UpdateModule;
 class UpgradeTemplate;
 class Waypoint;
-
-enum FormationID : int32_t
-{
-    FORMATION_UNK,
-};
 
 struct TTriggerInfo
 {
@@ -239,7 +235,7 @@ public:
     PathfindLayerEnum Get_Layer() const { return m_layer; }
     const GeometryInfo &Get_Geometry_Info() const { return m_geometryInfo; }
     Drawable *Get_Drawable() const { return m_drawable; }
-    Utf8String Get_Name() { return m_name; }
+    Utf8String Get_Name() const { return m_name; }
     const PhysicsBehavior *Get_Physics() const { return m_physics; }
     PhysicsBehavior *Get_Physics() { return m_physics; }
     const ContainModuleInterface *Get_Contain() { return m_contain; }

@@ -251,6 +251,7 @@ void SortingRendererClass::Insert_Triangles(const SphereClass &bounding_sphere,
 {
 #ifdef BUILD_WITH_D3D8
     if (W3D::Is_Sorting_Enabled()) {
+        // Debug_Statistics::Record_Sorting_Polys_And_Vertices(polygon_count, vertex_count);
         SortingNodeStruct *state = Get_Sorting_Struct();
         DX8Wrapper::Get_Render_State(state->sorting_state);
 

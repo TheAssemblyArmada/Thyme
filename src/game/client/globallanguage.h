@@ -54,6 +54,7 @@ public:
 
     const FontDesc &Tooltip() const { return m_tooltipFont; }
     const FontDesc &Copyright_Font() const { return m_copyrightFont; }
+    const FontDesc &Debug_Display_Font() const { return m_nativeDebugDisplayFont; }
 
     static void Parse_Language_Definition(INI *ini);
     static void Parse_Font_Filename(INI *ini, void *formal, void *store, void const *user_data);

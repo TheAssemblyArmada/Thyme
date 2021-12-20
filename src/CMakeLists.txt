@@ -23,6 +23,7 @@ set(GAMEENGINE_INCLUDES
     game/logic/ai
     game/logic/map
     game/logic/object
+    game/logic/object/update
     game/logic/scriptengine
     game/logic/system
     game/network
@@ -68,6 +69,7 @@ set(GAMEENGINE_SRC
     game/client/gameclient.cpp
     game/client/gametext.cpp
     game/client/globallanguage.cpp
+    game/client/ingameui.cpp
     game/client/optionpreferences.cpp
     game/client/shadermanager.cpp
     game/client/terrainroads.cpp
@@ -210,6 +212,7 @@ set(GAMEENGINE_SRC
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp
     game/network/lanapiinterface.cpp
+    game/network/network.cpp
     game/network/transport.cpp
     game/network/udp.cpp
     platform/fpusetting.cpp

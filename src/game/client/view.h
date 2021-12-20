@@ -81,6 +81,7 @@ enum FilterTypes
 // dunno
 enum PickType
 {
+    PICKTYPE_UNK2 = -1,
     PICKTYPE_UNK,
 };
 

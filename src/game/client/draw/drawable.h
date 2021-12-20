@@ -23,7 +23,6 @@ class DisplayString;
 class TintEnvelope;
 class DynamicAudioEventInfo;
 class DynamicAudioEventRTS;
-class DrawableLocoInfo;
 class DrawableIconInfo;
 class Drawable;
 class GhostObject;
@@ -31,6 +30,40 @@ class Locomotor;
 class View;
 class ClientUpdateModule;
 class DrawModule;
+
+struct TWheelInfo
+{
+    float m_frontLeftHeightOffset;
+    float m_frontRightHeightOffset;
+    float m_rearLeftHeightOffset;
+    float m_rearRightHeightOffset;
+    float m_wheelAngle;
+    int m_framesAirborneCounter;
+    int m_framesAirborne;
+};
+
+class DrawableLocoInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(DrawableLocoInfo)
+
+public:
+    ~DrawableLocoInfo() override;
+    float m_pitch;
+    float m_pitchRate;
+    float m_roll;
+    float m_rollRate;
+    float m_thrustWobble;
+    float m_accelerationPitch;
+    float m_accelerationPitchRate;
+    float m_accelerationRoll;
+    float m_accelerationRollRate;
+    float m_overlapZVel;
+    float m_overlapZ;
+    float m_thrust;
+    float m_rudder;
+    float m_elevator;
+    TWheelInfo wheelinfo;
+};
 
 struct DrawableInfo
 {
@@ -144,6 +177,7 @@ public:
     Drawable *Get_Previous() { return m_prevDrawable; }
     void Set_Flash_Time(int time) { m_flashTime = time; }
     void Set_Flash_Color(int color) { m_flashColor = color; }
+    DrawableLocoInfo *Get_Loco_Info() { return m_drawableLocoInfo; }
 
     void Allocate_Shadows();
 

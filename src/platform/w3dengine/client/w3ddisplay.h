@@ -21,6 +21,11 @@
 #include "scene.h"
 
 class GameAssetManager;
+class RTS3DScene;
+class RTS2DScene;
+class RTS3DInterfaceScene;
+class W3DDebugDisplay;
+class W3DVideoBuffer;
 
 class W3DDisplay final : public Display
 {
@@ -43,7 +48,12 @@ public:
     virtual bool Is_Clipping_Enabled() override { return m_isClippedEnabled; }
     virtual void Enable_Clipping(bool isEnabled) override { m_isClippedEnabled = isEnabled; }
     virtual void Set_Time_Of_Day(TimeOfDayType time) override;
-    virtual void Create_Light_Pulse(const Coord3D *, const RGBColor *, float, float, unsigned, unsigned) override;
+    virtual void Create_Light_Pulse(const Coord3D *pos,
+        const RGBColor *color,
+        float far_start,
+        float far_dist,
+        unsigned frame_increase_time,
+        unsigned decay_frame_time) override;
     virtual void Draw_Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color) override;
     virtual void Draw_Line(
         int32_t x1, int32_t y1, int32_t x2, int32_t y2, float width, uint32_t color1, uint32_t color2) override;
@@ -71,9 +81,28 @@ public:
     virtual bool Is_LetterBoxed() override { return m_letterBoxEnabled; }
     virtual float Get_Average_FPS() override { return m_averageFps; }
     virtual int Get_Last_Frame_Draw_Calls() override;
+    void Init_Assets() {}
+    void Init_2D_Scene() {}
+    void Init_3D_Scene() {}
+    void Update_Average_FPS();
+    void Gather_Debug_Stats();
+    void Draw_Debug_Stats();
+    void Draw_Benchmark();
+    void Draw_Current_Debug_Display();
+    void Calculate_Terrain_LOD();
+    void Render_LetterBox(unsigned int current_time);
 
-    static GameAssetManager *Get_AssetManager() { return s_assetManager; }
-    static SceneClass *Get_3DInterfaceScene() { return s_3DInterfaceScene; }
+#ifdef GAME_DLL
+    static GameAssetManager *&s_assetManager;
+    static RTS3DScene *&s_3DScene;
+    static RTS2DScene *&s_2DScene;
+    static RTS3DInterfaceScene *&s_3DInterfaceScene;
+#else
+    static GameAssetManager *s_assetManager;
+    static RTS3DScene *s_3DScene;
+    static RTS2DScene *s_2DScene;
+    static RTS3DInterfaceScene *s_3DInterfaceScene;
+#endif
 
 private:
     bool m_initialized;
@@ -83,21 +112,9 @@ private:
     bool m_isClippedEnabled;
     float m_averageFps;
 #ifdef GAME_DEBUG_STRUCTS
-    uint64_t m_unknqword;
+    uint64_t m_performanceCounter;
 #endif
     DisplayString *m_displayStrings[16];
     DisplayString *m_benchmarkDisplayString;
-    uint32_t m_nativeDebugDisplay;
-
-#ifdef GAME_DLL
-    static GameAssetManager *&s_assetManager;
-    static SceneClass *&s_3DScene; // TODO: Actual type is RTS2DScene
-    static SceneClass *&s_2DScene; // TODO: Actual type is RTS2DScene
-    static SceneClass *&s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
-#else
-    static GameAssetManager *s_assetManager;
-    static SceneClass *s_3DScene; // TODO: Actual type is RTS2DScene
-    static SceneClass *s_2DScene; // TODO: Actual type is RTS2DScene
-    static SceneClass *s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
-#endif
+    W3DDebugDisplay *m_nativeDebugDisplay;
 };

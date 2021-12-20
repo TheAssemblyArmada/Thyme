@@ -492,10 +492,9 @@ CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>
 // w3ddisplay.cpp
 #include "w3ddisplay.h"
 GameAssetManager *&W3DDisplay::s_assetManager = Make_Global<GameAssetManager *>(0x00A32518);
-SceneClass *&W3DDisplay::s_3DScene = Make_Global<SceneClass *>(0x00A3250C); // TODO: Actual type is RTS2DScene
-SceneClass *&W3DDisplay::s_2DScene = Make_Global<SceneClass *>(0x00A32510); // TODO: Actual type is RTS2DScene
-SceneClass *&W3DDisplay::s_3DInterfaceScene =
-    Make_Global<SceneClass *>(0x00A32514); // TODO: Actual type is RTS3DInterfaceScene
+RTS3DScene *&W3DDisplay::s_3DScene = Make_Global<RTS3DScene *>(0x00A3250C);
+RTS2DScene *&W3DDisplay::s_2DScene = Make_Global<RTS2DScene *>(0x00A32510);
+RTS3DInterfaceScene *&W3DDisplay::s_3DInterfaceScene = Make_Global<RTS3DInterfaceScene *>(0x00A32514);
 
 // w3dshadow.cpp
 #include "w3dshadow.h"
@@ -595,3 +594,19 @@ int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);
 // worldheightmap.cpp
 #include "worldheightmap.h"
 ARRAY_DEF(0x00A3A96C, TileData *, WorldHeightMap::s_alphaTiles, 12);
+
+// w3dfilesystem.cpp
+class W3DFileSystem;
+W3DFileSystem *&g_theW3DFileSystem = Make_Global<W3DFileSystem *>(PICK_ADDRESS(0x00A3AD0C, 0x00E1A964));
+
+// network.cpp
+#include "network.h"
+Network *&g_theNetwork = Make_Global<Network *>(PICK_ADDRESS(0x00A2B92C, 0x00E268E8));
+
+// ingameui.cpp
+#include "ingameui.h"
+InGameUI *&g_theInGameUI = Make_Global<InGameUI *>(PICK_ADDRESS(0x00A2C088, 0x00E26268));
+
+// waterrenderobj.cpp
+class WaterRenderObjClass;
+WaterRenderObjClass *&g_theWaterRenderObj = Make_Global<WaterRenderObjClass *>(PICK_ADDRESS(0x00A3ABD8, 0x00E1A5D8));

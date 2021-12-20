@@ -39,7 +39,7 @@ public:
     virtual void Set_Font(GameFont *font) { m_font = font; }
     virtual GameFont *Get_Font() { return m_font; }
     virtual void Set_Word_Wrap(int length) = 0;
-    virtual void Set_Word_Wrap_Centered(char unk) = 0;
+    virtual void Set_Word_Wrap_Centered(bool unk) = 0;
     virtual void Draw(int x, int y, int w, int h, int unk1, int unk2) = 0;
     virtual void Draw(int x, int y, int w, int h) = 0;
     virtual void Get_Size(int *x, int *y) = 0;

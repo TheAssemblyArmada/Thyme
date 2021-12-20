@@ -18,24 +18,58 @@
 #include "baseheightmap.h"
 #include "displaystring.h"
 #include "displaystringmanager.h"
+#include "drawable.h"
+#include "drawmodule.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
+#include "gameclient.h"
+#include "gameengine.h"
+#include "gamelogic.h"
+#include "gametext.h"
 #include "globaldata.h"
+#include "globallanguage.h"
 #include "image.h"
+#include "ingameui.h"
+#include "keyboard.h"
+#include "main.h"
+#include "mouse.h"
+#include "network.h"
+#include "particlesysmanager.h"
+#include "physicsupdate.h"
 #include "predlod.h"
 #include "renderdevicedesc.h"
 #include "rtsutils.h"
+#include "scriptengine.h"
 #include "shadermanager.h"
+#include "sortingrenderer.h"
 #include "videobuffer.h"
-#include "view.h"
 #include "w3d.h"
+#include "w3ddebugdisplay.h"
+#include "w3ddynamiclight.h"
+#include "w3dfilesystem.h"
+#include "w3dprojectedshadow.h"
+#include "w3dscene.h"
+#include "w3dshroud.h"
+#include "w3dterraintracks.h"
+#include "w3dview.h"
+#include "w3dwater.h"
+#include "water.h"
+#include "worldheightmap.h"
+#ifdef BUILD_WITH_D3D8
+#include <io.h>
+#endif
+#include <stdio.h>
 
 #ifndef GAME_DLL
 GameAssetManager *W3DDisplay::s_assetManager;
-SceneClass *W3DDisplay::s_3DScene; // TODO: Actual type is RTS2DScene
-SceneClass *W3DDisplay::s_2DScene; // TODO: Actual type is RTS2DScene
-SceneClass *W3DDisplay::s_3DInterfaceScene; // TODO: Actual type is RTS3DInterfaceScene
+RTS3DScene *W3DDisplay::s_3DScene;
+RTS2DScene *W3DDisplay::s_2DScene;
+RTS3DInterfaceScene *W3DDisplay::s_3DInterfaceScene;
 #endif
+
+static int g_theW3DFrameLengthInMsec = 33;
+
+// PerfStatsClass PerfStats("StatisticsDump.txt");
 
 // 0x0073C3C0
 W3DDisplay::W3DDisplay() :
@@ -47,7 +81,7 @@ W3DDisplay::W3DDisplay() :
     s_3DInterfaceScene = nullptr;
     m_averageFps = g_theWriteableGlobalData->m_framesPerSecondLimit;
 #ifdef GAME_DEBUG_STRUCTS
-    m_unknqword = 0;
+    m_performanceCounter = 0;
 #endif
     for (auto &str : m_displayStrings) {
         str = nullptr;
@@ -60,67 +94,179 @@ W3DDisplay::W3DDisplay() :
 // 0x0073C453
 W3DDisplay::~W3DDisplay()
 {
-    // delete m_debugDisplay;
-    // for (auto &str : m_displayStrings) {
-    //    g_theDisplayStringManager->Free_Display_String(str);
-    //}
+    delete m_debugDisplay;
 
-    // delete m_2DRender;
-    // m_2DRender = nullptr;
-    // Delete_Views();
-    // s_3DScene->Release_Ref();
-    // s_3DScene = nullptr;
-    // s_2DScene->Release_Ref();
-    // s_2DScene = nullptr;
-    // s_3DInterfaceScene->Release_Ref();
-    // s_3DInterfaceScene = nullptr;
+    for (int i = 0; i < 16; i++) {
+        g_theDisplayStringManager->Free_Display_String(m_displayStrings[i]);
+    }
 
-    // for (auto &light : m_myLight) {
-    //    light->Release_Ref();
-    //    light = nullptr;
-    //}
+    delete m_2DRender;
+    m_2DRender = nullptr;
 
-    // PredictiveLODOptimizerClass::Free();
-    //// unk string 0xA48068 StringClass::Release_Resources();
-    // W3DShaderManager::Shutdown();
-    // s_assetManager->Free_Assets();
-    // delete s_assetManager;
-    //// WW3D::Shutdown();
-    //// WWMath::Shutdown();
-    //// Browser Shutdown();
-    //// delete g_theW3DFileSystem;
+    Delete_Views();
 
-    // TODO: Requires WW3D, WWMath, g_theW3DFileSystem, 0xA48068, Browser
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay>(0x0073C470, this);
-#endif
+    s_3DScene->Release_Ref();
+    s_3DScene = nullptr;
+
+    s_2DScene->Release_Ref();
+    s_2DScene = nullptr;
+
+    s_3DInterfaceScene->Release_Ref();
+    s_3DInterfaceScene = nullptr;
+
+    for (int i = 0; i < 4; i++) {
+        Ref_Ptr_Release(m_myLight[i]);
+    }
+
+    PredictiveLODOptimizerClass::Free();
+    // Debug_Statistics::Shutdown_Statistics
+    W3DShaderManager::Shutdown();
+    s_assetManager->Free_Assets();
+    delete s_assetManager;
+    W3D::Shutdown();
+    GameMath::Shutdown();
+    // DX8WebBrowser::Shutdown
+    delete g_theW3DFileSystem;
+}
+
+void Stat_Debug_Display(DebugDisplayInterface *dd, void *v, FILE *f)
+{
+    captainslog_dbgassert(false, "This should never be called directly, but is just a placeholder for drawDebugStats()");
 }
 
 // 0x0073CA80
 void W3DDisplay::Init()
 {
-    // TODO: Requires RTS3DInterfaceScene, RTS2DScene, RTS3DScene, GameAssetManager, ...
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay>(0x0073CA80, this);
+    Display::Init();
+
+    if (!m_initialized) {
+        g_theW3DFileSystem = new W3DFileSystem();
+        GameMath::Init();
+
+        s_3DInterfaceScene = new RTS3DInterfaceScene();
+        s_3DInterfaceScene->Set_Ambient_Light(Vector3(1.0f, 1.0f, 1.0f));
+
+        s_2DScene = new RTS2DScene();
+        s_2DScene->Set_Ambient_Light(Vector3(1.0f, 1.0f, 1.0f));
+
+        s_3DScene = new RTS3DScene();
+
+#ifdef GAME_DEBUG_STRUCTS
+        if (g_theWriteableGlobalData->m_wireframe) {
+            s_3DScene->Set_Polygon_Mode(SceneClass::LINE);
+        }
 #endif
+
+        for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+            m_myLight[i] = new LightClass(LightClass::DIRECTIONAL);
+        }
+
+        Set_Time_Of_Day(g_theWriteableGlobalData->m_timeOfDay);
+
+        for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+            s_3DScene->Set_Global_Light(m_myLight[i], i);
+        }
+
+        s_assetManager = new GameAssetManager();
+        s_assetManager->Set_W3D_Load_On_Demand(true);
+
+        if (g_theWriteableGlobalData->m_setMinVertextBufferSize) {
+            SortingRendererClass::Set_Min_Vertex_Buffer_Size(1);
+        }
+
+#ifdef BUILD_WITH_D3D8
+        if (W3D::Init(g_applicationHWnd)) {
+            throw CODE_07;
+        }
+#endif
+
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS);
+        W3D::Set_Collision_Box_Display_Mask(0);
+        W3D::Enable_Static_Sort_Lists(true);
+        W3D::Set_Thumbnail_Enabled(false);
+        W3D::Set_Screen_UV_Bias(true);
+        W3D::Set_Texture_Bit_Depth(32);
+
+        Set_Windowed(g_theWriteableGlobalData->m_windowed);
+
+        m_2DRender = new Render2DClass();
+        captainslog_dbgassert(m_2DRender, "Cannot create Render2DClass");
+
+        Set_Width(g_theWriteableGlobalData->m_xResolution);
+        Set_Height(g_theWriteableGlobalData->m_yResolution);
+        Set_Bit_Depth(32);
+
+        if (W3D::Set_Render_Device(0, Get_Width(), Get_Height(), Get_Bit_Depth(), Get_Windowed(), true, false, true)) {
+            Set_Bit_Depth(16);
+
+            if (W3D::Set_Render_Device(0, Get_Width(), Get_Height(), Get_Bit_Depth(), Get_Windowed(), true, false, true)) {
+                throw CODE_07;
+                captainslog_debug("Unable to set render device");
+            }
+        }
+
+        if (g_theGameLODManager->Get_Static_LOD_Level() == STATLOD_INVALID) {
+            g_theGameLODManager->Set_Static_LOD_Level(g_theGameLODManager->Find_Static_LOD_Level());
+        } else {
+            if (g_theWriteableGlobalData->m_textureReductionFactor) {
+                W3D::Set_Texture_Reduction(g_theWriteableGlobalData->m_textureReductionFactor, 32);
+                g_theGameLODManager->Set_Texture_Reduction_Factor(g_theWriteableGlobalData->m_textureReductionFactor);
+            }
+        }
+
+        if (g_theWriteableGlobalData->m_gammaValue) {
+            Set_Gamma(g_theWriteableGlobalData->m_gammaValue, 0.0f, 1.0f, false);
+        }
+
+        Init_Assets();
+        Init_2D_Scene();
+        Init_3D_Scene();
+        W3DShaderManager::Init();
+
+        m_nativeDebugDisplay = new W3DDebugDisplay();
+        m_debugDisplay = m_nativeDebugDisplay;
+
+        if (m_nativeDebugDisplay) {
+            m_nativeDebugDisplay->Init();
+            GameFont *font;
+
+            if (g_theGlobalLanguage && g_theGlobalLanguage->Debug_Display_Font().Name().Is_Not_Empty()) {
+                font = g_theFontLibrary->Get_Font(g_theGlobalLanguage->Debug_Display_Font().Name(),
+                    g_theGlobalLanguage->Debug_Display_Font().Point_Size(),
+                    g_theGlobalLanguage->Debug_Display_Font().Bold());
+            } else {
+                font = g_theFontLibrary->Get_Font("FixedSys", 8, false);
+            }
+
+            m_nativeDebugDisplay->Set_Font(font);
+            m_nativeDebugDisplay->Set_Font_Width(13);
+            m_nativeDebugDisplay->Set_Font_Height(9);
+        }
+
+        // DX8WebBrowser::Initialize
+        m_initialized = true;
+
+        if (g_theWriteableGlobalData->m_displayDebug) {
+            m_debugDisplayCallback = Stat_Debug_Display;
+        }
+    }
 }
 
 // 0x0073D030
 void W3DDisplay::Reset()
 {
     Display::Reset();
-
     auto *iter = s_3DScene->Create_Iterator(false);
+
     for (iter->First(); !iter->Is_Done(); iter->Next()) {
         auto *renderObj = iter->Current_Item();
         renderObj->Add_Ref();
         s_3DScene->Remove_Render_Object(renderObj);
         renderObj->Release_Ref();
     }
+
     s_3DScene->Destroy_Iterator(iter);
-
     m_isClippedEnabled = false;
-
     s_assetManager->Release_Unused_Assets();
 
     if (g_theWriteableGlobalData != nullptr) {
@@ -128,12 +274,277 @@ void W3DDisplay::Reset()
     }
 }
 
+void Draw_Graphical_Framerate_Bar()
+{
+    static int lastTime = rts::Get_Time();
+    int time = rts::Get_Time();
+    float f1 = 1000.0f / (float)(time - lastTime) / (1000.0f / (float)g_theWriteableGlobalData->m_framesPerSecondLimit);
+
+    if (f1 <= 1.0f) {
+        if (f1 < 0.0f) {
+            f1 = 0.0f;
+        }
+    } else {
+        f1 = 1.0f;
+    }
+
+    unsigned int red = GameMath::Fast_To_Int_Truncate((1.0f - f1) * 255.0f);
+    unsigned int green = GameMath::Fast_To_Int_Truncate(f1 * 255.0f);
+    unsigned int color = (127 << 24) | (red << 16) | (green << 8) | 0;
+    g_theDisplay->Draw_Fill_Rect(1, 1, GameMath::Fast_To_Int_Truncate((float)g_theDisplay->Get_Width() * f1), 15, color);
+    lastTime = time;
+}
+
 // 0x0073E360
 void W3DDisplay::Draw()
 {
-    // Requires GameLogic, GameClient, ...
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay>(0x0073E360, this);
+#ifdef BUILD_WITH_D3D8
+    if (g_applicationHWnd && IsIconic(g_applicationHWnd)) {
+        return;
+    }
+
+    static int lastFrame = -1;
+    static int syncTime;
+
+    Update_Average_FPS();
+
+    if (g_theWriteableGlobalData->m_dynamicLOD && g_theGameLogic->Get_Dynamic_LOD()) {
+        g_theGameLODManager->Set_Dynamic_LOD_Level(g_theGameLODManager->Find_Dynamic_LOD_Level(m_averageFps));
+    } else {
+        g_theGameLODManager->Set_Dynamic_LOD_Level(DYNLOD_VERYHIGH);
+    }
+
+    if (g_theWriteableGlobalData->m_terrainLOD == TERRAIN_LOD_AUTOMATIC) {
+        if (g_theTerrainRenderObject) {
+            Calculate_Terrain_LOD();
+        }
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theWriteableGlobalData->m_doStatDump) {
+        // PerfStats.Log(false, true);
+        g_theWriteableGlobalData->m_doStatDump = false;
+    } else if (g_theWriteableGlobalData->m_doStats && g_theGameLogic->Get_Game_Mode() <= GAME_REPLAY) {
+        if (g_theGameLogic->Get_Frame()) {
+            if (!g_theGameLogic->Get_Frame() % g_theWriteableGlobalData->m_statsInterval) {
+                // PerfStats.Log(true, true);
+                g_theInGameUI->Start_Game(L"-stats is running, at interval: %d.", g_theWriteableGlobalData->m_statsInterval);
+            }
+        }
+    }
+
+    if (m_debugDisplayCallback == Stat_Debug_Display || g_theWriteableGlobalData->m_benchmarkTimer > 0) {
+        Gather_Debug_Stats();
+    }
+#endif
+
+    bool b = g_theTacticalView->Is_Time_Frozen() && !g_theTacticalView->Is_Camera_Movement_Finished();
+    b |= g_theScriptEngine->Is_Time_Frozen_Debug() || g_theScriptEngine->Is_Time_Frozen_Script();
+    b |= g_theGameLogic->Is_Game_Paused();
+    b |= lastFrame == g_theGameClient->Get_Frame();
+    lastFrame = g_theGameClient->Get_Frame();
+
+    W3DView *view = (W3DView *)Get_First_View();
+
+    if (b && g_theScriptEngine->Is_Time_Fast()) {
+        view->Update_Camera_Movements();
+        syncTime += g_theW3DFrameLengthInMsec;
+        return;
+    }
+
+    // Debug_Statistics::Begin_Statistics();
+
+    if (!g_theWriteableGlobalData->m_unkBool17) {
+        if (g_theTerrainTracksRenderObjClassSystem) {
+            g_theTerrainTracksRenderObjClassSystem->Update();
+        }
+
+        if (g_theTerrainRenderObject) {
+            if (g_theTerrainRenderObject->Get_Map()) {
+                if (g_theTerrainRenderObject->Get_Shroud()) {
+                    g_theTerrainRenderObject->Get_Shroud()->Render(view->Get_3D_Camera());
+                }
+            }
+        }
+    }
+
+    if (!b) {
+        syncTime += g_theW3DFrameLengthInMsec;
+    }
+
+    W3D::Sync(syncTime);
+    int time = 30;
+    static unsigned int prevTime = rts::Get_Time();
+    static unsigned int now;
+    now = rts::Get_Time();
+
+    if (g_theTacticalView->Get_Time_Multiplier() <= 1) {
+        now = rts::Get_Time();
+        prevTime = now - time;
+
+        static bool couldRender;
+
+        for (;;) {
+        l1:
+            if (!g_theWriteableGlobalData->m_unkBool17) {
+                while (g_theWriteableGlobalData->m_useFPSLimit && (int)(now - prevTime) < time - 1) {
+                    now = rts::Get_Time();
+                }
+
+                prevTime = now;
+            }
+
+            if (DX8Wrapper::Get_D3D_Device8()) {
+                if (!DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel()) {
+                    Update_Views();
+                    g_theParticleSystemManager->Update();
+
+                    if (g_theWaterRenderObj) {
+                        if (g_theWriteableGlobalData->m_waterType == 2) {
+                            g_theWaterRenderObj->Update_Render_Target_Textures(view->Get_3D_Camera());
+                        }
+                    }
+
+                    if (g_theW3DProjectedShadowManager) {
+                        g_theW3DProjectedShadowManager->Update_Render_Target_Textures();
+                    }
+                }
+            }
+
+            // Debug_Statistics::End_Statistics();
+            int polys = 0;
+            // polys = Debug_Statistics::Get_DX8_Polygons();
+            int verts = 0;
+            // verts = Debug_Statistics::Get_DX8_Vertices();
+#ifdef GAME_DEBUG_STRUCTS
+            if (g_theGameLogic->Get_Frame() % 30 != 1 && !g_theGameLogic->Is_Game_Paused()
+                && g_theWriteableGlobalData->m_TiVOFastMode && g_theGameLogic->Is_In_Replay_Game()) {
+                goto l2;
+            }
+#else
+            if (g_theGameLogic->Get_Frame() % 30 != 1 && !g_theGameLogic->Is_Game_Paused()
+                && g_theWriteableGlobalData->m_demoToggleSpecialPowerDelays && g_theGameLogic->Is_In_Replay_Game()) {
+                goto l2;
+            }
+#endif
+
+            if (g_theWriteableGlobalData->m_unkBool26) {
+                break;
+            }
+
+            if (g_theWriteableGlobalData->m_demoToggleRender) {
+                break;
+            }
+
+            if (W3D::Begin_Render(
+                    true, true, Vector3(0.0f, 0.0f, 0.0f), g_theWaterTransparency->m_transparentWaterMinOpacity, nullptr)) {
+                break;
+            }
+
+            if (!g_theWriteableGlobalData->m_unkBool17) {
+                couldRender = true;
+
+                if (polys || verts) {
+                    // Debug_Statistics::Record_DX8_Polys_And_Vertices(polys, verts, &ShaderClass::s_presetOpaqueShader);
+                }
+
+                Draw_Views();
+                // Calls some debug stuff in WB
+                g_theInGameUI->Draw();
+
+                if (g_theMouse) {
+                    // Calls some debug stuff in WB
+                    g_theMouse->Draw();
+                }
+
+                if (m_videoStream) {
+                    if (m_videoBuffer) {
+                        Draw_VideoBuffer(m_videoBuffer, 0, 0, Get_Width(), Get_Height());
+                    }
+                }
+
+                if (m_unkDisplayString) {
+                    int x;
+                    int y;
+                    m_unkDisplayString->Get_Size(&x, &y);
+                    m_unkDisplayString->Draw((Get_Width() / 2) - x / 2, Get_Height() - y - 20, 0xFF000000, 0, 0, 0);
+                }
+
+                Render_LetterBox(now);
+
+                if (m_cinematicText != Utf8String::s_emptyString) {
+                    if (m_cinematicTextFrames) {
+                        DisplayString *d = g_theDisplayStringManager->New_Display_String();
+                        d->Set_Word_Wrap(g_theDisplay->Get_Width() - 20);
+                        d->Set_Word_Wrap_Centered(true);
+                        Utf16String str;
+                        str.Translate(m_cinematicText);
+                        d->Set_Text(str);
+                        d->Set_Font(m_cinematicFont);
+                        int h = (int)((float)g_theDisplay->Get_Height() * 0.9f);
+                        int w;
+
+                        if (d->Get_Width(-1) <= g_theDisplay->Get_Width()) {
+                            w = (g_theDisplay->Get_Width() - d->Get_Width(-1)) / 2;
+                        } else {
+                            w = 20;
+                        }
+
+                        d->Draw(w, h, 0xFFFFFFFF, 0);
+                        m_cinematicTextFrames--;
+                    }
+                }
+
+                if (m_debugDisplayCallback) {
+                    Draw_Current_Debug_Display();
+                }
+
+#ifdef GAME_DEBUG_STRUCTS
+                if (g_theWriteableGlobalData->m_benchmarkTimer) {
+                    Draw_Benchmark();
+                }
+#endif
+                if (g_theWriteableGlobalData->m_showFrameRateBar) {
+                    Draw_Graphical_Framerate_Bar();
+                }
+
+                W3D::End_Render(true);
+            l2:
+                if (g_theScriptEngine->Is_Time_Frozen_Debug() || g_theScriptEngine->Is_Time_Frozen_Script()
+                    || g_theGameLogic->Is_Game_Paused()) {
+                    b = false;
+                }
+                goto l3;
+            }
+
+            g_theInGameUI->Draw();
+
+            if (g_theMouse) {
+                g_theMouse->Draw();
+            }
+
+            W3D::End_Render(true);
+        l3:
+            if (!b || g_theTacticalView->Is_Camera_Movement_Finished()) {
+                return;
+            }
+        }
+
+        if (couldRender) {
+            couldRender = false;
+            captainslog_debug("Could not do WW3D::Begin_Render()!  Are we ALT-Tabbed out?\n");
+        }
+
+        goto l2;
+    }
+
+    static int timeMultiplierCounter = 1;
+    timeMultiplierCounter--;
+
+    if (timeMultiplierCounter <= 1) {
+        timeMultiplierCounter = g_theTacticalView->Get_Time_Multiplier();
+        goto l1;
+    }
 #endif
 }
 
@@ -286,12 +697,37 @@ void W3DDisplay::Do_Smart_Asset_Purge_And_Preload(const char *asset)
 // 0x00740B10
 VideoBuffer *W3DDisplay::Create_VideoBuffer()
 {
-    // TODO: Requires W3DVideoBuffer
-#ifdef GAME_DLL
-    return Call_Method<VideoBuffer *, W3DDisplay>(0x00740B10, this);
-#else
-    return nullptr;
-#endif
+    W3DVideoBuffer::Type type = W3DVideoBuffer::TYPE_UNKNOWN;
+    WW3DFormat format = DX8Wrapper::Get_Back_Buffer_Format();
+    if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(format)) {
+        type = W3DVideoBuffer::W3D_Format_To_Type(format);
+    }
+
+    if (type == W3DVideoBuffer::TYPE_UNKNOWN) {
+        if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_X8R8G8B8)) {
+            type = W3DVideoBuffer::TYPE_X8R8G8B8;
+        } else {
+            if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_R8G8B8)) {
+                type = W3DVideoBuffer::TYPE_R8G8B8;
+            } else {
+                if (DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_R5G6B5)) {
+                    type = W3DVideoBuffer::TYPE_R5G6B5;
+                } else {
+                    if (!DX8Wrapper::Get_Current_Caps()->Supports_Texture_Format(WW3D_FORMAT_X1R5G5B5)) {
+                        return nullptr;
+                    }
+
+                    type = W3DVideoBuffer::TYPE_X1R5G5B5;
+                }
+            }
+        }
+    }
+
+    if (!g_theWriteableGlobalData->m_playIntro) {
+        type = W3DVideoBuffer::TYPE_R5G6B5;
+    }
+
+    return new W3DVideoBuffer(type);
 }
 
 // 0x00740C80
@@ -334,14 +770,25 @@ void W3DDisplay::Set_Time_Of_Day(TimeOfDayType time)
 }
 
 // 0x0073EC50
-void W3DDisplay::Create_Light_Pulse(
-    const Coord3D *pos, const RGBColor *color, float unk1, float unk2, unsigned unk3, unsigned unk4)
+void W3DDisplay::Create_Light_Pulse(const Coord3D *pos,
+    const RGBColor *color,
+    float far_start,
+    float far_dist,
+    unsigned frame_increase_time,
+    unsigned decay_frame_time)
 {
-    // TODO: Requires 0x00772D00, 0x00769500
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay, const Coord3D *, const RGBColor *, float, float, unsigned, unsigned>(
-        0x0073EC50, this, pos, color, unk1, unk2, unk3, unk4);
-#endif
+    if (far_start + far_dist >= 21.0f) {
+        W3DDynamicLight *light = s_3DScene->Get_A_Dynamic_Light();
+        light->Set_Enabled(true);
+        light->Set_Ambient(Vector3(color->red, color->green, color->blue));
+        light->Set_Diffuse(Vector3(color->red, color->green, color->blue));
+        light->Set_Position(Vector3(pos->x, pos->y, pos->z));
+        light->Set_Far_Attenuation_Range(far_start, far_start + far_dist);
+        light->Set_Frame_Fade(frame_increase_time, decay_frame_time);
+        light->Set_Decay_Range();
+        light->Set_Decay_Color();
+        light->Set_Flag(LightClass::FAR_ATTENUATION, true);
+    }
 }
 
 // 0x0073EF90
@@ -366,15 +813,184 @@ void W3DDisplay::Draw_Line(int32_t x1, int32_t y1, int32_t x2, int32_t y2, float
     m_2DRender->Render();
 }
 
+bool Clip_Line_2D(ICoord2D *p1, ICoord2D *p2, ICoord2D *c1, ICoord2D *c2, IRegion2D *clip_region)
+{
+    int c_l_x = clip_region->lo.x;
+    int c_h_x = clip_region->hi.x;
+    int c_l_y = clip_region->lo.y;
+    int c_h_y = clip_region->hi.y;
+    int p1_x = p1->x;
+    int p1_y = p1->y;
+    int p2_x = p2->x;
+    int p2_y = p2->y;
+    int clipCode1 = 0;
+
+    if (p1->x >= clip_region->lo.x) {
+        if (p1_x > c_h_x) {
+            clipCode1 = 2;
+        }
+    } else {
+        clipCode1 = 1;
+    }
+
+    if (p1_y >= c_l_y) {
+        if (p1_y > c_h_y) {
+            clipCode1 |= 4u;
+        }
+    } else {
+        clipCode1 |= 8u;
+    }
+
+    int clipCode2 = 0;
+
+    if (p2_x >= c_l_x) {
+        if (p2_x > c_h_x) {
+            clipCode2 = 2;
+        }
+    } else {
+        clipCode2 = 1;
+    }
+
+    if (p2_y >= c_l_y) {
+        if (p2_y > c_h_y) {
+            clipCode2 |= 4u;
+        }
+    } else {
+        clipCode2 |= 8u;
+    }
+
+    if (!(clipCode2 | clipCode1)) {
+        c1->x = p1->x;
+        c1->y = p1->y;
+        c2->x = p2->x;
+        c2->y = p2->y;
+        return true;
+    }
+
+    if ((clipCode2 & clipCode1) != 0) {
+        return false;
+    }
+
+    if (clipCode1) {
+        if ((clipCode1 & 8) != 0) {
+            if (p2_y == p1_y) {
+                return false;
+            }
+
+            p1_x += (c_l_y - p1_y) * (p2_x - p1_x) / (p2_y - p1_y);
+            p1_y = clip_region->lo.y;
+        } else if ((clipCode1 & 4) != 0) {
+            if (p2_y == p1_y) {
+                return false;
+            }
+
+            p1_x += (c_h_y - p1_y) * (p2_x - p1_x) / (p2_y - p1_y);
+            p1_y = clip_region->hi.y;
+        }
+        if (p1_x <= c_h_x) {
+            if (p1_x < c_l_x) {
+                if (p2_x == p1_x) {
+                    return false;
+                }
+
+                p1_y += (c_l_x - p1_x) * (p2_y - p1_y) / (p2_x - p1_x);
+                p1_x = clip_region->lo.x;
+            }
+        } else {
+            if (p2_x == p1_x) {
+                return false;
+            }
+
+            p1_y += (c_h_x - p1_x) * (p2_y - p1_y) / (p2_x - p1_x);
+            p1_x = clip_region->hi.x;
+        }
+    }
+
+    if (clipCode2) {
+        if ((clipCode2 & 8) != 0) {
+            if (p2_y == p1_y) {
+                return false;
+            }
+
+            p2_x += (c_l_y - p2_y) * (p2_x - p1_x) / (p2_y - p1_y);
+            p2_y = clip_region->lo.y;
+        } else if ((clipCode2 & 4) != 0) {
+            if (p2_y == p1_y) {
+                return false;
+            }
+
+            p2_x += (c_h_y - p2_y) * (p2_x - p1_x) / (p2_y - p1_y);
+            p2_y = clip_region->hi.y;
+        }
+        if (p2_x <= c_h_x) {
+            if (p2_x < c_l_x) {
+                if (p2_x == p1_x) {
+                    return false;
+                }
+
+                p2_y += (c_l_x - p2_x) * (p2_y - p1_y) / (p2_x - p1_x);
+                p2_x = clip_region->lo.x;
+            }
+        } else {
+            if (p2_x == p1_x) {
+                return false;
+            }
+
+            p2_y += (c_h_x - p2_x) * (p2_y - p1_y) / (p2_x - p1_x);
+            p2_x = clip_region->hi.x;
+        }
+    }
+
+    c1->x = p1_x;
+    c1->y = p1_y;
+    c2->x = p2_x;
+    c2->y = p2_y;
+
+    return p1_x >= c_l_x && p1_x <= c_h_x && p1_y >= c_l_y && p1_y <= c_h_y && p2_x >= c_l_x && p2_x <= c_h_x
+        && p2_y >= c_l_y && p2_y <= c_h_y;
+}
+
 // 0x0073F070
 void W3DDisplay::Draw_Open_Rect(int32_t x, int32_t y, int32_t width, int32_t height, float border_width, uint32_t color)
 {
     if (m_isClippedEnabled) {
-        // Requires Clip_Line_2D
-#ifdef GAME_DLL
-        Call_Method<void, W3DDisplay, int32_t, int32_t, int32_t, int32_t, float, uint32_t>(
-            0x0073F070, this, x, y, width, height, border_width, color);
-#endif
+        ICoord2D p1;
+        ICoord2D p2;
+        ICoord2D c1;
+        ICoord2D c2;
+        p1.x = x;
+        p1.y = y;
+        p2.x = x;
+        p2.y = height + y;
+
+        if (Clip_Line_2D(&p1, &p2, &c1, &c2, &m_clipRegion)) {
+            Draw_Line(c1.x, c1.y, c2.x, c2.y, border_width, color);
+        }
+
+        p2.x = width + p1.x;
+        p2.y = p1.y;
+
+        if (Clip_Line_2D(&p1, &p2, &c1, &c2, &m_clipRegion)) {
+            Draw_Line(c1.x, c1.y, c2.x, c2.y, border_width, color);
+        }
+
+        p1.x = width + x;
+        p1.y = y;
+        p2.x = width + x;
+        p2.y = height + y;
+
+        if (Clip_Line_2D(&p1, &p2, &c1, &c2, &m_clipRegion)) {
+            Draw_Line(c1.x, c1.y, c2.x, c2.y, border_width, color);
+        }
+
+        p1.x = x;
+        p1.y = height + y;
+        p2.x = width + x;
+        p2.y = height + y;
+
+        if (Clip_Line_2D(&p1, &p2, &c1, &c2, &m_clipRegion)) {
+            Draw_Line(c1.x, c1.y, c2.x, c2.y, border_width, color);
+        }
     } else {
         m_2DRender->Reset();
         m_2DRender->Enable_Texturing(false);
@@ -835,31 +1451,48 @@ void W3DDisplay::Draw_Image(
 // 0x00740BF0
 void W3DDisplay::Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32_t x2, int32_t y2)
 {
-    // m_2DRender->Reset();
-    // m_2DRender->Enable_Texturing(true);
-    // TODO: Requries W3DVideoBuffer
-    // videoBuffer is actually a W3DVideoBuffer*
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay, VideoBuffer *, int32_t, int32_t, int32_t, int32_t>(0x00740BF0, this, vb, x1, y1, x2, y2);
-#endif
+    W3DVideoBuffer *buffer = (W3DVideoBuffer *)vb;
+    m_2DRender->Reset();
+    m_2DRender->Enable_Texturing(true);
+    m_2DRender->Set_Texture(buffer->Get_Texture());
+    RectClass r = buffer->Rect(0.0f, 0.0f, 1.0f, 1.0f);
+    m_2DRender->Add_Quad(RectClass((float)x1, (float)y1, (float)x2, (float)y2), r, 0xFFFFFFFF);
+    m_2DRender->Render();
 }
 
 // 0x00740CD0
-void W3DDisplay::Set_Shroud_Level(int unk1, int unk2, CellShroudStatus status)
+void W3DDisplay::Set_Shroud_Level(int x, int y, CellShroudStatus status)
 {
-    // TODO: Requires W3DShroud::Set_Shroud_Level
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay, int, int, CellShroudStatus>(0x00740CD0, this, unk1, unk2, status);
-#endif
+    if (g_theTerrainRenderObject) {
+        if (g_theTerrainRenderObject->Get_Shroud()) {
+            if (status == SHROUD_STATUS_SHROUD) {
+                g_theTerrainRenderObject->Get_Shroud()->Set_Shroud_Level(
+                    x, y, g_theWriteableGlobalData->m_shroudAlpha, false);
+            } else {
+                float alpha;
+
+                if (status == SHROUD_STATUS_FOG) {
+                    alpha = g_theWriteableGlobalData->m_fogAlpha;
+                } else {
+                    alpha = g_theWriteableGlobalData->m_clearAlpha;
+                }
+
+                g_theTerrainRenderObject->Get_Shroud()->Set_Shroud_Level(x, y, alpha, false);
+            }
+
+            g_theTerrainRenderObject->Notify_Shroud_Changed();
+        }
+    }
 }
 
 // 0x00740CB0
 void W3DDisplay::Set_Border_Shroud_Level(uint8_t level)
 {
-    // TODO: Requires W3DShroud::Set_Border_Shroud_Level
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay, uint8_t>(0x00740CB0, this, level);
-#endif
+    if (g_theTerrainRenderObject) {
+        if (g_theTerrainRenderObject->Get_Shroud()) {
+            g_theTerrainRenderObject->Get_Shroud()->Set_Border_Shroud_Level(level);
+        }
+    }
 }
 
 // 0x007411F0
@@ -881,21 +1514,128 @@ void W3DDisplay::Preload_Texture_Assets(Utf8String texture)
     }
 }
 
+void Create_Bmp_File(const char *filename, const char *data, int width, int height)
+{
+#ifdef BUILD_WITH_D3D8
+    BITMAPINFOHEADER *header = (BITMAPINFOHEADER *)LocalAlloc(LMEM_ZEROINIT, sizeof(BITMAPINFOHEADER));
+    header->biSize = sizeof(BITMAPINFOHEADER);
+    header->biWidth = width;
+    header->biHeight = height;
+    header->biPlanes = 1;
+    header->biBitCount = 24;
+    header->biCompression = 0;
+    header->biSizeImage = 24 * header->biHeight * ((header->biWidth + 7) / 8);
+    header->biClrImportant = 0;
+    HANDLE h = CreateFile(filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (h != INVALID_HANDLE_VALUE) {
+        BITMAPFILEHEADER fheader;
+        fheader.bfType = 0x4D42;
+        fheader.bfSize = header->biSizeImage + header->biSize + 4 * header->biClrUsed + 14;
+        fheader.bfReserved1 = 0;
+        fheader.bfReserved2 = 0;
+        fheader.bfOffBits = header->biSize + 4 * header->biClrUsed + 14;
+        ;
+        DWORD NumberOfBytesWritten;
+
+        if (WriteFile(h, &fheader, sizeof(BITMAPFILEHEADER), &NumberOfBytesWritten, 0)) {
+            if (WriteFile(h, header, 4 * header->biClrUsed + 40, &NumberOfBytesWritten, 0)) {
+                if (WriteFile(h, data, header->biSizeImage, &NumberOfBytesWritten, 0)) {
+                    if (CloseHandle(h)) {
+                        LocalFree(header);
+                    }
+                }
+            }
+        }
+    }
+#endif
+}
+
 // 0x00740D40
 void W3DDisplay::Take_ScreenShot()
 {
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay>(0x00740D40, this);
+#ifdef BUILD_WITH_D3D8
+    bool found = false;
+    static int currentShot = 1;
+    char fname[1024];
+    char buf[256];
+
+    while (!found) {
+        sprintf(buf, "%s%.3d.bmp", "sshot", currentShot);
+        currentShot++;
+        strcpy(fname, g_theWriteableGlobalData->m_userDataDirectory);
+        strcat(fname, buf);
+
+        if (_access(fname, 0) != -1) {
+            found = true;
+        }
+    }
+
+    IDirect3DSurface8 *surface = DX8Wrapper::Get_DX8_Front_Buffer();
+    D3DSURFACE_DESC desc;
+    surface->GetDesc(&desc);
+    RECT r;
+    POINT p;
+    GetClientRect(g_applicationHWnd, &r);
+
+    p.x = r.left;
+    p.y = r.top;
+    ClientToScreen(g_applicationHWnd, &p);
+    r.left = p.x;
+    r.top = p.y;
+
+    p.x = r.right;
+    p.y = r.bottom;
+    ClientToScreen(g_applicationHWnd, &p);
+    r.right = p.x;
+    r.bottom = p.y;
+
+    D3DLOCKED_RECT rect;
+    DX8Wrapper::Handle_DX8_ErrorCode(surface->LockRect(&rect, &r, D3DLOCK_READONLY));
+
+    unsigned int x = r.right - r.left;
+    unsigned int y = r.bottom - r.top;
+    char *data = new char[(r.bottom - r.top) * 3 * (r.right - r.left)];
+
+    for (unsigned int i = 0; i < y; i++) {
+        for (unsigned int j = 0; j < x; j++) {
+            int i1 = 3 * (x * i + j);
+            int i2 = rect.Pitch * i + 4 * j;
+            data[i1] = *((char *)rect.pBits + i2);
+            data[i1 + 1] = *((char *)rect.pBits + i2 + 1);
+            data[i1 + 2] = *((char *)rect.pBits + i2 + 2);
+        }
+    }
+
+    surface->Release();
+
+    for (unsigned int i = 0; i < y / 2; i++) {
+        char *c1 = &data[3 * i * x];
+        char *c2 = &data[3 * (y - 1) * x + -3 * i * x];
+
+        for (unsigned int j = 0; j < 3 * x; j++) {
+            char c3 = *c1;
+            char c4 = *c2;
+            *c1 = c4;
+            *c2 = c3;
+            ++c1;
+            ++c2;
+        }
+    }
+
+    Create_Bmp_File(fname, data, x, y);
+    delete[] data;
+    Utf8String str(buf);
+    Utf16String str2;
+    str2.Translate(str);
+    g_theInGameUI->Message(g_theGameText->Fetch("GUI:ScreenCapture"), str2.Str());
 #endif
 }
 
 // 0x007411DA
 void W3DDisplay::Toggle_Movie_Capture()
 {
-    // TODO: Requires Toggle_Movie_Capture
-#ifdef GAME_DLL
-    Call_Method<void, W3DDisplay>(0x007411DA, this);
-#endif
+    captainslog_dbgassert(false, "Movie capture not supported");
 }
 
 // 0x0073ED70
@@ -933,9 +1673,594 @@ bool W3DDisplay::Is_LetterBox_Fading()
 // 0x0073E350
 int W3DDisplay::Get_Last_Frame_Draw_Calls()
 {
-#ifdef GAME_DLL
-    return Call_Method<int, W3DDisplay>(0x0073E350, this);
-#else
+    // return Debug_Statistics::Get_Draw_Calls();
     return 0;
+}
+
+void W3DDisplay::Update_Average_FPS()
+{
+#ifdef PLATFORM_WINDOWS
+    static uint64_t lastUpdateTime64;
+    static int historyOffset;
+    static int numSamples;
+    static double fpsHistory[30];
+
+    LARGE_INTEGER PerformanceFrequency;
+    LARGE_INTEGER PerformanceCounter;
+    QueryPerformanceFrequency(&PerformanceFrequency);
+    QueryPerformanceCounter(&PerformanceCounter);
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theGameLogic->Get_Frame() == 15) {
+        m_performanceCounter = PerformanceCounter.QuadPart;
+    }
 #endif
+
+    double frameTime = (double)(PerformanceCounter.QuadPart - lastUpdateTime64) / (double)PerformanceFrequency.QuadPart;
+
+    if (frameTime <= 0.5f) {
+        if (historyOffset >= 30) {
+            historyOffset = 0;
+        }
+
+        fpsHistory[historyOffset] = 1.0 / frameTime;
+        historyOffset++;
+        numSamples++;
+
+        if (numSamples > 30) {
+            numSamples = 30;
+        }
+    }
+
+    if (numSamples) {
+        double average = 0.0;
+
+        for (int i1 = 0, i2 = historyOffset - 1; i1 < numSamples; i1++, i2--) {
+            if (i2 < 0) {
+                i2 = 29;
+            }
+
+            average += fpsHistory[i2];
+        }
+
+        m_averageFps = average / (double)numSamples;
+    }
+
+    lastUpdateTime64 = PerformanceCounter.QuadPart;
+#endif
+}
+
+void W3DDisplay::Gather_Debug_Stats()
+{
+#ifdef PLATFORM_WINDOWS
+    static uint64_t lastUpdateTime64;
+    static uint64_t frameTime;
+    static unsigned int frameCount;
+    static int drawCalls;
+    static int sortingPolygons;
+
+    if (!m_displayStrings[0]) {
+        GameFont *font;
+
+        if (g_theGlobalLanguage && g_theGlobalLanguage->Debug_Display_Font().Name().Is_Not_Empty()) {
+            font = g_theFontLibrary->Get_Font(g_theGlobalLanguage->Debug_Display_Font().Name(),
+                g_theGlobalLanguage->Debug_Display_Font().Point_Size(),
+                g_theGlobalLanguage->Debug_Display_Font().Bold());
+        } else {
+            font = g_theFontLibrary->Get_Font("FixedSys", 8, false);
+        }
+
+        for (int i = 0; i < 16; i++) {
+            if (!m_displayStrings[i]) {
+                m_displayStrings[i] = g_theDisplayStringManager->New_Display_String();
+                captainslog_dbgassert(m_displayStrings[i], "Failed to create DisplayString");
+                m_displayStrings[i]->Set_Font(font);
+            }
+        }
+    }
+
+    if (!m_benchmarkDisplayString) {
+        GameFont *font = g_theFontLibrary->Get_Font("FixedSys", 8, false);
+        m_benchmarkDisplayString = g_theDisplayStringManager->New_Display_String();
+        captainslog_dbgassert(m_benchmarkDisplayString, "Failed to create DisplayString");
+        m_benchmarkDisplayString->Set_Font(font);
+    }
+
+    frameCount++;
+    // drawCalls += Debug_Statistics::Get_Draw_Calls()
+    // sortingPolygons += Debug_Statistics::Get_Sorting_Polygons()
+
+    LARGE_INTEGER PerformanceFrequency;
+    LARGE_INTEGER PerformanceCounter;
+    QueryPerformanceFrequency(&PerformanceFrequency);
+    QueryPerformanceCounter(&PerformanceCounter);
+    frameTime = (double)(PerformanceCounter.QuadPart - lastUpdateTime64) / (double)PerformanceFrequency.QuadPart;
+
+    if (frameTime >= 2.0 || g_theWriteableGlobalData->m_constantDebugUpdate) {
+        Utf16String str1;
+        Utf16String str2;
+        Utf16String str3;
+        // Debug_Statistics::Record_Texture_Mode(RECORD_TEXTURE_SIMPLE);
+
+        double fps = frameCount / frameTime;
+        double draw_calls = 0;
+        // draw_calls = (double)Debug_Statistics::Get_Draw_Calls();
+        double sorting_polygons = 0;
+        // sorting_polygons = (double)Debug_Statistics::Get_Sorting_Polygons();
+        double dx8_skin_renders = 0;
+        // dx8_skin_renders = (double)Debug_Statistics::Get_DX8_Skin_Renders();
+
+        if (fps < 0.1) {
+            fps = 0.1;
+        }
+
+        double fps2 = 1000.0 / fps;
+#ifdef GAME_DEBUG_STRUCTS
+        double fps3 = (double)(PerformanceCounter.QuadPart - m_performanceCounter);
+
+        if (fps3 < 0.0) {
+            fps3 = 0.0;
+        }
+
+        int frame = g_theGameLogic->Get_Frame() - 15;
+        double fps4;
+
+        if (frame <= 0 || fps3 <= 0.0) {
+            fps4 = 0.0f;
+        } else {
+            fps4 = (double)frame / fps3;
+        }
+
+        double dx8_skin_polygons = 0;
+        // dx8_skin_polygons = (double)Debug_Statistics::Get_DX8_Skin_Polygons();
+
+        if (g_theWriteableGlobalData->m_useFPSLimit) {
+            str1.Format(L"%.2f/%d FPS, ", fps, g_theGameEngine->Get_FPS_Limit());
+        } else {
+            str1.Format(L"%.2f FPS, ", fps);
+        }
+
+        str2.Format(L"%.2fms [cumuFPS=%.2f] draws: %d skins: %d sortP: %d skinP: %d LOD %d",
+            fps2,
+            fps4,
+            (unsigned int)draw_calls,
+            (unsigned int)dx8_skin_renders,
+            (unsigned int)sorting_polygons,
+            (unsigned int)dx8_skin_polygons,
+            g_theWriteableGlobalData->m_terrainLOD);
+        str1.Concat(str3);
+#else
+        str1.Format(L"FPS: %.2f, %.2fms draws: %.2f skins: %.2f sort %.2f",
+            fps,
+            fps2,
+            draw_calls,
+            dx8_skin_renders,
+            sorting_polygons);
+
+        if (g_theWriteableGlobalData->m_useFPSLimit) {
+            str2.Format(L", FPSLock %d", g_theWriteableGlobalData->m_framesPerSecondLimit);
+        }
+
+        str1.Concat(str2);
+#endif
+
+        str3.Format(L"FPS: %.2f", fps);
+        m_benchmarkDisplayString->Set_Text(str3);
+
+        int dx8_polygons = 0;
+        // dx8_polygons = Debug_Statistics::Get_DX8_Polygons();
+        // obsolete stuff checking debug runtime registry key here
+        m_displayStrings[0]->Set_Text(str1);
+
+        str1.Format(L"Frame: %d", g_theGameLogic->Get_Frame());
+        m_displayStrings[1]->Set_Text(str1);
+
+        str1.Format(L"Polygons: per frame %d, per second %d", dx8_polygons, (unsigned int)((double)dx8_polygons * fps));
+        m_displayStrings[2]->Set_Text(str1);
+
+        int dx8_vertices = 0;
+        // dx8_vertices = Debug_Statistics::Get_DX8_Vertices();
+        str1.Format(L"Vertices: %d", dx8_vertices);
+        m_displayStrings[3]->Set_Text(str1);
+
+        int record_texture_size = 0;
+        // record_texture_size = Debug_Statistics::Get_Record_Texture_Size();
+        str1.Format(L"Video RAM: %d", record_texture_size - 0x150000);
+        m_displayStrings[4]->Set_Text(str1);
+
+        lastUpdateTime64 = PerformanceCounter.QuadPart;
+        frameTime = 0.0;
+        frameCount = 0;
+        drawCalls = 0;
+        sortingPolygons = 0;
+
+        str1.Format(L"3-Way Blends: %d/%d, Shoreline Blends: %d/%d",
+            g_theTerrainRenderObject->Get_Num_Extra_Blend_Tiles(true),
+            g_theTerrainRenderObject->Get_Num_Extra_Blend_Tiles(false),
+            g_theTerrainRenderObject->Get_Num_Water_Blend_Tiles(true),
+            g_theTerrainRenderObject->Get_Num_Water_Blend_Tiles(false));
+        m_displayStrings[15]->Set_Text(str1);
+
+        Coord3D pos;
+        g_theTacticalView->Get_Position(&pos);
+        str1.Format(L"Camera zoom: %g, pitch: %g/%g, yaw: %g, pos: %g, %g, %g, FOV: %g\n"
+                    L"       Height above ground: %g Terrain height: %g",
+            g_theTacticalView->Get_Zoom(),
+            g_theTacticalView->Get_Pitch(),
+            g_theTacticalView->Get_FX_Pitch(),
+            g_theTacticalView->Get_Angle(),
+            pos.x,
+            pos.y,
+            pos.z,
+            g_theTacticalView->Get_Field_Of_View(),
+            g_theTacticalView->Get_Current_Height_Above_Ground(),
+            g_theTacticalView->Get_Terrain_Height_Under_Camera());
+        m_displayStrings[5]->Set_Text(str1);
+
+        str1.Format(L"States: ");
+
+        if (g_theKeyboard->Is_Shift()) {
+            str1.Concat(L"Shift(");
+
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_LSHIFT) != 0) {
+                str1.Concat(L"L");
+            }
+
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_RSHIFT) != 0) {
+                str1.Concat(L"R");
+            }
+
+            str1.Concat(L") ");
+        }
+
+        if (g_theKeyboard->Is_Ctrl()) {
+            str1.Concat(L"Ctrl(");
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_LCTRL) != 0) {
+                str1.Concat(L"L");
+            }
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_RCTRL) != 0) {
+                str1.Concat(L"R");
+            }
+            str1.Concat(L") ");
+        }
+
+        if (g_theKeyboard->Is_Alt()) {
+            str1.Concat(L"Alt(");
+
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_LALT) != 0) {
+                str1.Concat(L"L");
+            }
+
+            if ((g_theKeyboard->Get_Modifiers() & Keyboard::MODIFIER_RALT) != 0) {
+                str1.Concat(L"R");
+            }
+            str1.Concat(L") ");
+        }
+
+        MouseIO *status = g_theMouse->Get_Mouse_Status();
+
+        if (status->left_state) {
+            str1.Concat(L"LMB ");
+        }
+
+        if (status->middle_state) {
+            str1.Concat(L"MMB ");
+        }
+
+        if (status->right_state) {
+            str1.Concat(L"RMB ");
+        }
+
+        const Object *object = nullptr;
+        Drawable *d;
+#ifdef GAME_DEBUG_STRUCTS
+        d = g_theTacticalView->Pick_Drawable((ICoord2D *)0x00E1B118, false, PICKTYPE_UNK2);
+
+#else
+        DrawableID id = g_theInGameUI->Get_Moused_Over_Drawable_ID();
+        d = g_theGameClient->Find_Drawable_By_ID(id);
+#endif
+        if (id) {
+            object = d->Get_Object();
+        }
+
+        if (object) {
+            str2.Format(L"Moused over object: %S (%d) ", object->Get_Template()->Get_Name().Str(), object->Get_ID());
+            str1.Concat(str2);
+        } else {
+            str1.Concat(L"Moused over object: TERRAIN ");
+        }
+
+        m_displayStrings[6]->Set_Text(str1);
+
+        MouseIO *status2 = g_theMouse->Get_Mouse_Status();
+        Coord3D pos2;
+        g_theTacticalView->Screen_To_Terrain(&status2->pos, &pos2);
+        str1.Format(L"Mouse position: screen: (%d, %d), world: (%g, %g, %g)",
+            status2->pos.x,
+            status2->pos.y,
+            pos2.x,
+            pos2.y,
+            pos2.z);
+        m_displayStrings[7]->Set_Text(str1);
+
+        str1.Format(L"Particles: %d in world, %d being displayed",
+            g_theParticleSystemManager->Particle_Count(),
+            g_theParticleSystemManager->Get_On_Screen_Particle_Count());
+        m_displayStrings[8]->Set_Text(str1);
+
+        str1.Format(L"Objects: %d in world, %d being displayed",
+            g_theGameLogic->Get_Object_Count(),
+            g_theGameClient->Get_Objects_On_Screen());
+        m_displayStrings[9]->Set_Text(str1);
+
+        if (g_theNetwork) {
+            str1.Format(L"IN: %.2f bytes/sec, %.2f packets/sec",
+                g_theNetwork->Get_Incoming_Bytes_Per_Second(),
+                g_theNetwork->Get_Incoming_Packets_Per_Second());
+            m_displayStrings[10]->Set_Text(str1);
+
+            str1.Format(L"OUT: %.2f bytes/sec, %.2f packets/sec",
+                g_theNetwork->Get_Outgoing_Bytes_Per_Second(),
+                g_theNetwork->Get_Outgoing_Packets_Per_Second());
+            m_displayStrings[11]->Set_Text(str1);
+
+            str1.Format(L"Run Ahead: %d, Net FPS: %d, Packet arrival cushion: %d",
+                g_theNetwork->Get_Run_Ahead(),
+                g_theNetwork->Get_Frame_Rate(),
+                g_theNetwork->Get_Packet_Arrival_Cushion());
+            m_displayStrings[12]->Set_Text(str1);
+
+            str1.Clear();
+            int count = g_theNetwork->Get_Num_Players();
+
+            for (int i = 0; i < count; i++) {
+                Utf16String str4;
+                str4.Format(L"%s: %d ", g_theNetwork->Get_Player_Name(i).Str(), g_theNetwork->Get_Slot_Average_FPS(i));
+                str1.Concat(str4);
+            }
+
+            m_displayStrings[13]->Set_Text(str1);
+        } else {
+            str1.Format(L"");
+            m_displayStrings[11]->Set_Text(str1);
+            m_displayStrings[10]->Set_Text(str1);
+            m_displayStrings[12]->Set_Text(str1);
+            m_displayStrings[13]->Set_Text(str1);
+        }
+
+        int count = g_theInGameUI->Get_Select_Count();
+        str1.Format(L"Select Info: '%d' drawables selected", count);
+
+        if (g_theInGameUI->Get_Select_Count() == 1) {
+            d = g_theInGameUI->Get_First_Selected_Drawable();
+        }
+
+        if (d) {
+            const Object *o = d->Get_Object();
+            Utf8String str4;
+            str4.Set("No-Name");
+
+            if (o) {
+                Utf8String name = o->Get_Name();
+
+                if (!name.Is_Empty()) {
+                    str4 = o->Get_Name();
+                }
+            }
+
+            str1.Format(L"Select Info: '%S'(%S) at (%.3f,%.3f,%.3f)",
+                d->Get_Template()->Get_Name().Str(),
+                str4.Str(),
+                d->Get_Position()->x,
+                d->Get_Position()->y,
+                d->Get_Position()->z);
+
+            const PhysicsBehavior *p = o->Get_Physics();
+
+            PhysicsTurningType turn;
+            if (p) {
+                turn = p->Get_Turning();
+            } else {
+                turn = TURN_NONE;
+            }
+
+            DrawableLocoInfo *info = d->Get_Loco_Info();
+            if (info) {
+                str2.Format(L"\nPhysics Info -- Turn: %d, Pitch(accel): %.3f(%.3f), Roll(accel): %.3f(%.3f)",
+                    turn,
+                    info->m_accelerationPitch,
+                    info->m_accelerationPitchRate,
+                    info->m_accelerationRoll,
+                    info->m_accelerationRollRate);
+                str1.Concat(str2);
+            }
+
+#ifdef GAME_DEBUG_STRUCTS
+            DebugDrawStats stats;
+
+            for (DrawModule **m = d->Get_Draw_Modules(); *m; m++) {
+                (*m)->Gather_Draw_Stats(&DebugDrawStats);
+            }
+
+            if (stats->Get_Draw_Calls() > 0) {
+                str2.Format(L"\ndraw calls: %d(+%d) sort meshes: %d skins: %d  bones: %d",
+                    stats->Get_Draw_Calls(),
+                    stats->Get_Extra_Draw_Calls(),
+                    stats->Get_Sort_Meshes(),
+                    stats->Get_Skins(),
+                    stats->Get_Bones());
+                str1.Concat(str2);
+            }
+#endif
+
+            const BitFlags<MODELCONDITION_COUNT> &flags = d->Get_Condition_State();
+            int newline = 0;
+
+            for (int i = 0; i < MODELCONDITION_COUNT; i++) {
+                if (flags.Test(i)) {
+                    str2.Format(L"%S ", BitFlags<MODELCONDITION_COUNT>::Get_Bit_Names_List()[i]);
+                    str1.Concat(str2);
+                    newline++;
+
+                    if (newline == 4) {
+                        newline = 0;
+                        str1.Concat(L"\n");
+                    }
+                }
+            }
+        }
+
+        m_displayStrings[14]->Set_Text(str1);
+    }
+#endif
+}
+
+void W3DDisplay::Draw_Debug_Stats()
+{
+    int size = 3;
+
+    for (int i = 0; i < 16; i++) {
+        m_displayStrings[i]->Draw(3, size, 0xFFFFFFFF, 0xFF000000);
+        int x;
+        int y;
+        m_displayStrings[i]->Get_Size(&x, &y);
+        size += y;
+    }
+}
+
+void W3DDisplay::Draw_Benchmark()
+{
+    m_benchmarkDisplayString->Draw(3, 20, 0xFFFFFFFF, 0xFF000000);
+}
+
+void W3DDisplay::Draw_Current_Debug_Display()
+{
+    if (m_debugDisplayCallback == Stat_Debug_Display) {
+        Draw_Debug_Stats();
+    } else if (m_debugDisplay) {
+        if (m_debugDisplayCallback) {
+            m_debugDisplay->Reset();
+            m_debugDisplayCallback(m_debugDisplay, m_debugDisplayUserData, nullptr);
+        }
+    }
+}
+
+void W3DDisplay::Calculate_Terrain_LOD()
+{
+#ifdef PLATFORM_WINDOWS
+    LARGE_INTEGER PerformanceFrequency;
+    QueryPerformanceFrequency(&PerformanceFrequency);
+    float time = 0.0f;
+    float target = (float)g_theWriteableGlobalData->m_terrainLODTargetTimeMS / 1000.0f;
+    TerrainLOD lod1 = TERRAIN_LOD_MIN;
+    TerrainLOD lod2 = TERRAIN_LOD_AUTOMATIC;
+    int count = 0;
+
+    do {
+        float time2 = 0.0f;
+        time = 0.0f;
+
+        switch (lod2) {
+            case TERRAIN_LOD_HALF_CLOUDS:
+                lod2 = TERRAIN_LOD_DISABLE;
+                break;
+            case TERRAIN_LOD_NO_WATER:
+                lod2 = TERRAIN_LOD_HALF_CLOUDS;
+                break;
+            case TERRAIN_LOD_MAX:
+                lod2 = TERRAIN_LOD_NO_WATER;
+                break;
+            case TERRAIN_LOD_AUTOMATIC:
+                lod2 = TERRAIN_LOD_MAX;
+                break;
+            default:
+                lod2 = TERRAIN_LOD_DISABLE;
+                break;
+        }
+
+        if (lod2 == TERRAIN_LOD_DISABLE) {
+            break;
+        }
+
+        g_theWriteableGlobalData->m_terrainLOD = lod2;
+        s_3DScene->Draw_Terrain_Only(true);
+        g_theTerrainRenderObject->Adjust_Terrain_LOD(0);
+        int i;
+        char buf[260];
+
+        for (i = 0; i < 20; i++) {
+            LARGE_INTEGER PerformanceCounter;
+            QueryPerformanceCounter(&PerformanceCounter);
+            Update_Views();
+
+            if (!W3D::Begin_Render(true)) {
+                Draw_Views();
+                W3D::End_Render();
+            }
+
+            LARGE_INTEGER PerformanceCounter2;
+            QueryPerformanceCounter(&PerformanceCounter2);
+            time2 =
+                (float)(PerformanceCounter2.QuadPart - PerformanceCounter.QuadPart) / (float)PerformanceFrequency.QuadPart;
+
+            sprintf(buf, "%.2fms ", time2 * 1000.0f);
+            OutputDebugString(buf);
+
+            if (i >= 5) {
+                time = time + time2;
+                if (i > 6 && 2.0 * target < time2 / (float)(i - 4)) {
+                    i++;
+                    break;
+                }
+            }
+        }
+
+        time = time / (float)(i - 5);
+        count++;
+        sprintf(buf, "\n LOD %d, time %.2fms\n", lod2, time * 1000.0f);
+        OutputDebugString(buf);
+
+        if (time < (float)target && lod1 < lod2) {
+            lod1 = lod2;
+        }
+
+    } while (time >= (float)target && count < 10);
+
+    g_theWriteableGlobalData->m_terrainLOD = lod1;
+    s_3DScene->Draw_Terrain_Only(false);
+    g_theTerrainRenderObject->Adjust_Terrain_LOD(0);
+#endif
+}
+
+void W3DDisplay::Render_LetterBox(unsigned int current_time)
+{
+    if (m_letterBoxEnabled) {
+        if (m_letterBoxFadeLevel != 1.0f) {
+            m_letterBoxFadeLevel = (float)(current_time - m_letterBoxFadeStartTime) / 1000.0f;
+
+            if (m_letterBoxFadeLevel > 1.0f) {
+                m_letterBoxFadeLevel = 1.0f;
+            }
+
+            unsigned int color = (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24;
+            Draw_Fill_Rect(0, 0, m_width, (int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f), color);
+            Draw_Fill_Rect(
+                0, (int)((float)m_height - (((float)m_height - (float)m_width * 0.5625f) * 0.5f)), m_width, m_height, color);
+        }
+    } else if (m_letterBoxFadeLevel == 0.0f) {
+        m_letterBoxEnabled = 0;
+    } else {
+        m_letterBoxFadeLevel = 1.0f - (float)(current_time - m_letterBoxFadeStartTime) / 1000.0f;
+
+        if (m_letterBoxFadeLevel < 0.0f) {
+            m_letterBoxFadeLevel = 0.0f;
+        }
+
+        Draw_Fill_Rect(0,
+            0,
+            m_width,
+            (unsigned int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f),
+            (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24);
+    }
 }

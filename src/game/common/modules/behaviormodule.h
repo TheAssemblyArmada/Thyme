@@ -100,6 +100,17 @@ public:
     virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const = 0;
 };
 
+class CollideModuleInterface
+{
+    virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) = 0;
+    virtual bool Would_Like_To_Collide_With(Object const *other) = 0;
+    virtual bool Is_Hijacked_Vehicle_Crate_Collide() = 0;
+    virtual bool Is_Sabotage_Building_Crate_Collide() = 0;
+    virtual bool Is_Car_Bomb_Crate_Collide() = 0;
+    virtual bool Is_Railroad() = 0;
+    virtual bool Is_Salvage_Crate_Collide() = 0;
+};
+
 class BehaviorModule : public ObjectModule, public BehaviorModuleInterface
 {
     IMPLEMENT_ABSTRACT_POOL(BehaviorModule)

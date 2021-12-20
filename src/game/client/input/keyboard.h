@@ -40,7 +40,7 @@ struct KeyboardKeyNames
 
 class Keyboard : public SubsystemInterface
 {
-protected:
+public:
     enum
     {
         KEY_COUNT = 256,
@@ -58,7 +58,6 @@ protected:
         MODIFIER_SHIFTEX = 0x400,
     };
 
-public:
     enum
     {
         STANDARD,
@@ -66,7 +65,6 @@ public:
         SHIFTEDEX,
     };
 
-public:
     Keyboard();
     virtual ~Keyboard() {}
 

@@ -200,3 +200,14 @@ void GameLogic::Add_TOC_Entry(Utf8String name, unsigned short id)
     entry.id = id;
     m_objectTOCEntries.push_back(entry);
 }
+
+unsigned int GameLogic::Get_Object_Count()
+{
+    int count = 0;
+
+    for (Object *o = Get_First_Object(); o != nullptr; o = o->Get_Next_Object()) {
+        count++;
+    }
+
+    return count;
+}

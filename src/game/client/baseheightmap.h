@@ -73,7 +73,7 @@ public:
     virtual void Static_Lighting_Changed();
     virtual void Oversize_Terrain(int tiles_to_oversize);
     virtual void Reset();
-    virtual int Get_Num_Extra_Blend_Tiles(char unk);
+    virtual int Get_Num_Extra_Blend_Tiles(bool b);
     virtual int Update_Block() = 0;
 
     virtual void Release_Resources();
@@ -93,8 +93,18 @@ public:
         RefMultiListIterator<RenderObjClass> *lights,
         unsigned char alpha);
     float Get_Height_Map_Height(float x, float y, Coord3D *pos);
+    void Notify_Shroud_Changed();
 
     W3DShroud *Get_Shroud() { return m_shroud; }
+
+    int Get_Num_Water_Blend_Tiles(bool b)
+    {
+        if (b) {
+            return m_shorelineTileBufferSize;
+        } else {
+            return m_shorelineTilesRendered;
+        }
+    }
 
 protected:
     int m_x;

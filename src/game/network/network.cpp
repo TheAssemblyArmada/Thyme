@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief Script engine
+ * @brief Network
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,26 +12,8 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "scriptengine.h"
+#include "network.h"
 
 #ifndef GAME_DLL
-ScriptEngine *g_theScriptEngine = nullptr;
+Network *g_theNetwork;
 #endif
-
-bool ScriptEngine::Is_Time_Frozen_Debug()
-{
-#ifdef GAME_DLL
-    return Call_Method<bool, ScriptEngine>(PICK_ADDRESS(0x00436FF0, 0x00712D9E), this);
-#else
-    return false;
-#endif
-}
-
-bool ScriptEngine::Is_Time_Fast()
-{
-#ifdef GAME_DLL
-    return Call_Method<bool, ScriptEngine>(PICK_ADDRESS(0x00437040, 0x00712E03), this);
-#else
-    return false;
-#endif
-}

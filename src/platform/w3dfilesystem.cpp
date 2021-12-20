@@ -19,6 +19,10 @@
 #include "registry.h"
 #include <cstdio>
 
+#ifndef GAME_DLL
+W3DFileSystem *g_theW3DFileSystem;
+#endif
+
 W3DFileSystem::W3DFileSystem()
 {
     g_theFileFactory = this;

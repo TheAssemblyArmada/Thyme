@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "view.h"
+class CameraClass;
 
 class W3DView : public View, public SubsystemInterface
 {
@@ -86,4 +87,9 @@ public:
     virtual bool Is_Camera_Movement_At_Waypoint_Along_Path();
     virtual void Camera_Enable_Real_Zoom_Mode();
     virtual void Camera_Disable_Real_Zoom_Mode();
+    bool Update_Camera_Movements();
+    CameraClass *Get_3D_Camera() { return m_3DCamera; }
+
+private:
+    CameraClass *m_3DCamera;
 };

@@ -74,3 +74,10 @@ void Do_Trees(RenderInfoClass &rinfo)
     Call_Function<void, RenderInfoClass &>(0x00750450, rinfo);
 #endif
 }
+
+void BaseHeightMapRenderObjClass::Notify_Shroud_Changed()
+{
+#ifdef GAME_DLL
+    Call_Method<void, BaseHeightMapRenderObjClass>(0x007552D0, this);
+#endif
+}

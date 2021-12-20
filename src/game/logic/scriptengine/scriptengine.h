@@ -180,6 +180,7 @@ public:
     BreezeInfo *Get_Breeze_Info() { return &m_breezeInfo; }
     bool Is_Time_Frozen_Script() { return m_freezeByScript; }
     bool Is_Time_Frozen_Debug();
+    bool Is_Time_Fast();
 
 private:
     void Init_Action_Templates();

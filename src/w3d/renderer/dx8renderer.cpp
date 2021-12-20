@@ -1504,6 +1504,8 @@ void DX8SkinFVFCategoryContainer::Render()
                                 mesh2 = mesh1->Peek_Next_Visible_Skin();
                             } else {
                                 captainslog_assert((vertex_offset + mesh_vertex_count) <= m_visibleVertexCount);
+                                // Debug_Statistics::Record_DX8_Skin_Polys_And_Vertices(mesh1->Get_Num_Polys(),
+                                // mesh_vertex_count);
 
                                 if (g_tempVertexBuffer.Length() < mesh_vertex_count) {
                                     g_tempVertexBuffer.Resize(mesh_vertex_count);

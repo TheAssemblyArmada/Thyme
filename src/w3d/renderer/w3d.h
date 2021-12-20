@@ -45,8 +45,10 @@ public:
     static unsigned Get_Texture_Min_Dimension() { return s_textureMinDimension; }
     static bool Is_Large_Texture_Extra_Reduction_Enabled() { return s_largeTextureExtraReduction; }
     static bool Is_Screen_UVBiased() { return s_isScreenUVBiased; }
+    static void Set_Screen_UV_Bias(bool bias) { s_isScreenUVBiased = bias; }
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
+    static void Set_Thumbnail_Enabled(bool enable) { s_thumbnailEnabled = enable; }
     static int Get_Texture_Filter() { return s_textureFilter; }
     static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
@@ -54,6 +56,7 @@ public:
     static bool Is_Munge_Sort_On_Load_Enabled() { return s_mungeSortOnLoad; }
     static bool Is_Overbright_Modify_On_Load_Enabled() { return s_overbrightModifyOnLoad; }
     static bool Are_Static_Sort_Lists_Enabled() { return s_areStaticSortListsEnabled; }
+    static void Enable_Static_Sort_Lists(bool enable) { s_areStaticSortListsEnabled = enable; }
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
 
@@ -68,6 +71,7 @@ public:
     static void Invalidate_Textures();
     static W3DErrorType Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window);
     static PrelitModeEnum Get_Prelit_Mode() { return (s_prelitMode); }
+    static void Set_Prelit_Mode(PrelitModeEnum mode) { s_prelitMode = mode; }
 
     static W3DErrorType Init(void *hwnd, char *defaultpal = nullptr, bool lite = false);
     static W3DErrorType Shutdown();

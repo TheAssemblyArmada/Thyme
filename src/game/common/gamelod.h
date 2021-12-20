@@ -146,6 +146,7 @@ public:
     void Apply_Dynamic_LOD_Level(DynamicGameLODLevel level);
     int Get_Recommended_Texture_Reduction();
     bool Did_Mem_Pass() { return m_didMemPass; }
+    void Set_Texture_Reduction_Factor(int factor) { m_textureReductionFactor = factor; }
 
     void Increment_Particle_Skip_Count() { ++m_particleSkipCount; }
     int Particle_Count() const { return m_particleSkipCount; }

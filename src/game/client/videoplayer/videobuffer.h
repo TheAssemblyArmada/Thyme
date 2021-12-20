@@ -16,6 +16,10 @@
 
 #include "always.h"
 #include "rect.h"
+#include "w3dformat.h"
+
+class TextureClass;
+class SurfaceClass;
 
 class VideoBuffer
 {
@@ -56,4 +60,24 @@ protected:
     unsigned m_textureHeight;
     unsigned m_pitch;
     Type m_format;
+};
+
+class W3DVideoBuffer : public VideoBuffer
+{
+public:
+    W3DVideoBuffer(Type type);
+    virtual ~W3DVideoBuffer() override;
+    virtual bool Allocate(unsigned width, unsigned height) override;
+    virtual void Free() override;
+    virtual void *Lock() override;
+    virtual void Unlock() override;
+    virtual bool Valid() override;
+
+    TextureClass *Get_Texture() { return m_texture; }
+    static WW3DFormat Type_To_W3D_Format(Type type);
+    static Type W3D_Format_To_Type(WW3DFormat format);
+
+private:
+    TextureClass *m_texture;
+    SurfaceClass *m_surface;
 };

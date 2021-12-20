@@ -161,6 +161,7 @@ public:
 
     DrawableID Get_Next_DrawableID() { return m_nextDrawableID; }
     void Set_Next_DrawableID(DrawableID id) { m_nextDrawableID = id; }
+    int Get_On_Screen_Object_Count() { return m_onScreenObjectCount; }
 
 protected:
     uint32_t m_frame;
@@ -170,7 +171,7 @@ protected:
     uint32_t m_translators[MAX_CLIENT_TRANSLATORS];
     uint32_t m_translatorCount;
     CommandTranslator *m_commandTranslator;
-    int field_AC; // Dunno what this actually is yet.
+    int m_onScreenObjectCount;
     std::list<DrawableTOCEntry> m_drawableTOC;
     std::list<Drawable *> m_drawableTB; // Text Bearing drawables.
 };

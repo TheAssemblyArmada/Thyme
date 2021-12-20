@@ -101,6 +101,7 @@ public:
     static void Render_And_Clear_Static_Sort_Lists(RenderInfoClass &rinfo);
     static void Reset_Current_Static_Sort_Lists_To_Default();
     static unsigned int Get_Frame_Time() { return s_syncTime - s_previousSyncTime; }
+    static bool Is_Initted() { return s_isInited; }
 
     // Platform functions.
 #ifdef PLATFORM_WINDOWS

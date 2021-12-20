@@ -390,7 +390,7 @@ GlobalData::GlobalData()
     m_next = nullptr;
     m_demoToggleSpecialPowerDelays = false;
     m_playerStats = -1;
-    m_setMinVertextBufferSize = false;
+    m_setMinVertexBufferSize = false;
     m_useTrees = false;
     m_useTreeSway = true;
     m_extraAnimationsDisabled = false;

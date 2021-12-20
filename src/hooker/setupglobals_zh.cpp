@@ -492,10 +492,9 @@ CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>
 // w3ddisplay.cpp
 #include "w3ddisplay.h"
 GameAssetManager *&W3DDisplay::s_assetManager = Make_Global<GameAssetManager *>(0x00A32518);
-SceneClass *&W3DDisplay::s_3DScene = Make_Global<SceneClass *>(0x00A3250C); // TODO: Actual type is RTS2DScene
-SceneClass *&W3DDisplay::s_2DScene = Make_Global<SceneClass *>(0x00A32510); // TODO: Actual type is RTS2DScene
-SceneClass *&W3DDisplay::s_3DInterfaceScene =
-    Make_Global<SceneClass *>(0x00A32514); // TODO: Actual type is RTS3DInterfaceScene
+RTS3DScene *&W3DDisplay::s_3DScene = Make_Global<RTS3DScene *>(0x00A3250C);
+RTS2DScene *&W3DDisplay::s_2DScene = Make_Global<RTS2DScene *>(0x00A32510);
+RTS3DInterfaceScene *&W3DDisplay::s_3DInterfaceScene = Make_Global<RTS3DInterfaceScene *>(0x00A32514);
 
 // w3dshadow.cpp
 #include "w3dshadow.h"

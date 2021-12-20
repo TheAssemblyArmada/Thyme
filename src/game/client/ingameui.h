@@ -20,6 +20,7 @@
 #include "drawable.h"
 #include "mouse.h"
 #include "object.h"
+#include "radiusdecal.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
 #include <list>
@@ -61,25 +62,6 @@ struct BuildProgress
     ThingTemplate *m_thingTemplate;
     float m_percentComplete;
     GameWindow *m_control;
-};
-
-class RadiusDecalTemplate
-{
-public:
-    Utf8String m_texture;
-    int m_style;
-    float m_opacityMin;
-    float m_opacityMax;
-    int m_opacityThrobTime;
-    int m_oolor;
-    bool m_onlyVisibleToOwningPlayer;
-};
-
-struct RadiusDecal
-{
-    RadiusDecalTemplate *m_template;
-    Shadow *m_shadow;
-    bool m_unk;
 };
 
 class InGameUI : public SubsystemInterface, public SnapShot

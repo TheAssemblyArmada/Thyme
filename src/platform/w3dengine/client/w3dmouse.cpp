@@ -22,6 +22,7 @@
 #include "scene.h"
 #include "texture.h"
 #include "w3ddisplay.h"
+#include "w3dscene.h"
 #include <cstdio>
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>
@@ -194,7 +195,7 @@ void W3DMouse::Set_Cursor(MouseCursor cursor)
 
             auto *current_w3d_asset = s_W3DMouseAssets2[m_currentW3DCursor];
 
-            auto *scene = W3DDisplay::Get_3DInterfaceScene();
+            auto *scene = W3DDisplay::s_3DInterfaceScene;
             if (current_w3d_asset != nullptr) {
                 scene->Remove_Render_Object(current_w3d_asset);
             }
@@ -338,7 +339,7 @@ void W3DMouse::Init_D3D_Assets()
 void W3DMouse::Free_W3D_Assets()
 {
     for (auto i = 0; i < CURSOR_COUNT; ++i) {
-        auto *interface_scene = W3DDisplay::Get_3DInterfaceScene();
+        auto *interface_scene = W3DDisplay::s_3DInterfaceScene;
         auto &hanim = s_W3DMouseAssets1[i];
         auto &robj = s_W3DMouseAssets2[i];
 
@@ -371,7 +372,7 @@ void W3DMouse::Init_W3D_Assets()
         return;
     }
 
-    auto *asset_manager = W3DDisplay::Get_AssetManager();
+    auto *asset_manager = W3DDisplay::s_assetManager;
     if (s_W3DMouseAssets2[CURSOR_NORMAL] == nullptr && asset_manager != nullptr) {
         for (auto i = 1; i < CURSOR_COUNT; ++i) {
             const auto &cursor_info = m_cursorInfo[i];

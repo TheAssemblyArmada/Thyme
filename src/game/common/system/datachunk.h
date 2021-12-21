@@ -25,6 +25,8 @@
 
 // Mac ZH also includes DataChunkOutput class, presumably for writing maps though it doesn't appear in the windows binary.
 
+class DataChunkOutput;
+
 struct DataChunkInfo
 {
     Utf8String label;

@@ -789,7 +789,7 @@ int Parse_Seed(char **argv, int argc)
 int Parse_Incr_AGP_Buf(char **argv, int argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
-        g_theWriteableGlobalData->m_setMinVertextBufferSize = true;
+        g_theWriteableGlobalData->m_setMinVertexBufferSize = true;
     }
 
     return 1;

@@ -82,6 +82,7 @@ public:
     VertexMaterialClass *Get_Material(int vidx, int pass = 0) const { return m_curMatDesc->Get_Material(vidx, pass); }
     ShaderClass Get_Shader(int pidx, int pass = 0) const { return m_curMatDesc->Get_Shader(pidx, pass); }
     ShaderClass *Get_Shader_Array(int pass, bool create = true) { return m_curMatDesc->Get_Shader_Array(pass, create); }
+    int Material_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
 
     TexBufferClass *Get_Texture_Array(int pass, int stage, bool create = true)
     {

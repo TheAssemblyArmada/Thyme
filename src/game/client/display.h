@@ -72,6 +72,9 @@ public:
         return true;
     };
     virtual void Do_Smart_Asset_Purge_And_Preload(const char *) = 0;
+#ifdef GAME_DEBUG_STRUCTS
+    virtual void Write_Asset_Usage(const char *str) = 0;
+#endif
     virtual void Attach_View(View *view);
     virtual View *Get_First_View();
     virtual View *Get_Next_View(View *view);
@@ -105,6 +108,9 @@ public:
     virtual void Set_Shroud_Level(int, int, CellShroudStatus) = 0;
     virtual void Clear_Shroud() = 0;
     virtual void Set_Border_Shroud_Level(uint8_t level) = 0;
+#ifdef GAME_DEBUG_STRUCTS
+    virtual void Write_Model_And_Texture_Usage(const char *filename) = 0;
+#endif
     virtual void Preload_Model_Assets(Utf8String model) = 0;
     virtual void Preload_Texture_Assets(Utf8String texture) = 0;
     virtual void Take_ScreenShot() = 0;

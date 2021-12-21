@@ -18,7 +18,7 @@
 
 class DynamicAudioEventRTS;
 
-enum PhysicsTurningType // not 100% identified yet
+enum PhysicsTurningType
 {
     TURN_NEGATIVE = 0xFF,
     TURN_NONE,

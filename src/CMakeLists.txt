@@ -61,6 +61,7 @@ set(GAMEENGINE_SRC
     game/maputil.cpp
     game/weather.cpp
     game/client/baseheightmap.cpp
+    game/client/line2d.cpp
     game/client/crashpreferences.cpp
     game/client/display.cpp
     game/client/displaystring.cpp

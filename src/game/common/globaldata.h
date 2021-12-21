@@ -311,7 +311,7 @@ public:
     float m_voiceVolumeFactor; // not 100% sure, needs confirming
     bool m_sound3DPref; // not 100% sure, needs confirming
     bool m_animateWindows;
-    bool m_setMinVertextBufferSize; // not 100% sure, needs confirming
+    bool m_setMinVertexBufferSize; // not 100% sure, needs confirming
     // char pad[1]
     uint32_t m_iniCRC;
     uint32_t m_gameCRC;

@@ -209,6 +209,7 @@ set(GAMEENGINE_SRC
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
     game/logic/system/partitionmanager.cpp
+    game/network/framemetrics.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp
     game/network/lanapi.cpp
@@ -216,6 +217,7 @@ set(GAMEENGINE_SRC
     game/network/network.cpp
     game/network/transport.cpp
     game/network/udp.cpp
+    game/network/networkutil.cpp
     platform/fpusetting.cpp
     platform/input/win32mouse.cpp
     platform/w3dfilesystem.cpp

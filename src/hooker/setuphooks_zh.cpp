@@ -89,6 +89,7 @@
 #include "particlesysmanager.h"
 #include "partitionmanager.h"
 #include "playertemplate.h"
+#include "polygontrigger.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "rayeffect.h"
@@ -137,12 +138,12 @@
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3dprojectedshadow.h"
-#include "w3dvolumetricshadow.h"
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"
 #include "w3dterraintracks.h"
 #include "w3dview.h"
+#include "w3dvolumetricshadow.h"
 #include "w3dwater.h"
 #include "weapon.h"
 #include "win32gameengine.h"
@@ -1862,9 +1863,18 @@ void Setup_Hooks()
     Hook_Any(0x007D5A40, W3DBufferManager::Hook_IB_Release_Slot);
     Hook_Any(0x007D5A70, W3DBufferManager::Hook_IB_Allocate_Slot_Storage);
 
-    //for messing with buffer sizes
+    // for messing with buffer sizes
     int *w3dbm_size = (int *)(0x007A762D + 1);
     *w3dbm_size = sizeof(W3DBufferManager);
 
-    //static_assert(sizeof(W3DBufferManager) == 0x3AC5C, "Size of W3DBufferManager is wrong");
+    // static_assert(sizeof(W3DBufferManager) == 0x3AC5C, "Size of W3DBufferManager is wrong");
+
+    // polygontrigger.h
+    Hook_Any(0x00570D40, PolygonTrigger::Get_Polygon_Trigger_By_ID);
+    Hook_Any(0x005714C0, PolygonTrigger::Delete_Triggers);
+    Hook_Any(0x00571500, PolygonTrigger::Set_Point);
+    Hook_Any(0x005715D0, PolygonTrigger::Get_Center_Point);
+    Hook_Any(0x00571640, PolygonTrigger::Get_Radius);
+    Hook_Any(0x00571660, PolygonTrigger::Point_In_Trigger);
+    Hook_Any(0x005717B0, PolygonTrigger::Get_Water_Handle);
 }

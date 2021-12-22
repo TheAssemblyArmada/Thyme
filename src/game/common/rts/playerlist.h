@@ -44,10 +44,20 @@ public:
         return m_local;
     }
 
+    Player *Get_Nth_Player(int i)
+    {
+        // TODO replace 16 with appropriate enum
+        if (i < 0 || i >= 16) {
+            return nullptr;
+        }
+
+        return m_players[i];
+    }
+
 private:
     Player *m_local;
     int m_playerCount;
-    Player *m_players;
+    Player *m_players[16];
 };
 
 #ifdef GAME_DLL

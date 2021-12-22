@@ -147,6 +147,7 @@ set(GAMEENGINE_SRC
     game/common/ini/inidrawgroupinfo.cpp
     game/common/modules/modulefactory.cpp
     game/common/rts/buildinfo.cpp
+    game/common/rts/energy.cpp
     game/common/rts/handicap.cpp
     game/common/rts/money.cpp
     game/common/rts/player.cpp

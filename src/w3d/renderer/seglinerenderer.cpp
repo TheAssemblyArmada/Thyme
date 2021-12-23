@@ -741,7 +741,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             shader.Set_Primary_Gradient(ShaderClass::GRADIENT_DISABLE);
             material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_NODIFFUSE);
         } else {
-            shader.Set_Primary_Gradient(ShaderClass::GRADIENT_MAX);
+            shader.Set_Primary_Gradient(ShaderClass::GRADIENT_MODULATE);
             material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
         }
 

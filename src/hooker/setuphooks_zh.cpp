@@ -143,6 +143,7 @@
 #include "thumbnail.h"
 #include "thumbnailmanager.h"
 #include "tiledata.h"
+#include "tintenvelope.h"
 #include "vertmaterial.h"
 #include "w3d.h"
 #include "w3dbridgebuffer.h"
@@ -2076,4 +2077,11 @@ void Setup_Hooks()
     Hook_Any(0x006F7F00, StateMachine::Xfer_Snapshot);
     Hook_Any(0x006F7650, State::Friend_Check_For_Sleep_Transitions);
     Hook_Any(0x006F74A0, State::Friend_Check_For_Transitions);
+
+    // tintenvelope.cpp
+    Hook_Any(0x004796B0, TintEnvelope::Play);
+    Hook_Any(0x004797E0, TintEnvelope::Set_Attack_Frames);
+    Hook_Any(0x00479850, TintEnvelope::Set_Decay_Frames);
+    Hook_Any(0x004798B0, TintEnvelope::Update);
+    Hook_Any(0x00479AA0, TintEnvelope::Xfer_Snapshot);
 }

@@ -36,6 +36,7 @@
 #include "science.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
+#include "thingfactory.h"
 #include "water.h"
 #include "xfer.h"
 #include <algorithm>
@@ -97,9 +98,9 @@ BlockParse TheTypeTable[] = {
     {"OnlineChatColors", (iniblockparse_t)(0x00504D10) /*&INI::parseOnlineChatColorDefinition*/},
     {"MultiplayerSettings", (iniblockparse_t)(0x00504A90) /*&INI::parseMultiplayerSettingsDefinition*/},
     {"MusicTrack", (iniblockparse_t)(0x0044EAF0) /*&INI::parseMusicTrackDefinition*/},
-    {"Object", (iniblockparse_t)(0x005048E0) /*&INI::parseObjectDefinition*/},
+    {"Object", &INI::Parse_Object_Definition},
     {"ObjectCreationList", &ObjectCreationListStore::Parse_Object_Creation_List_Definition },
-    {"ObjectReskin", (iniblockparse_t)(0x00504990) /*&INI::parseObjectReskinDefinition*/},
+    {"ObjectReskin", &INI::Parse_Object_Reskin_Definition},
     {"ParticleSystem", &ParticleSystemManager::Parse_Particle_System_Definition},
     //{ "PlayerTemplate", (iniblockparse_t)(0x004D3DC0)/*&INI::parsePlayerTemplateDefinition*/ },
     {"PlayerTemplate", &PlayerTemplateStore::Parse_Player_Template_Definition},
@@ -536,6 +537,15 @@ void INI::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
     *static_cast<int32_t *>(store) = Scan_Int(ini->Get_Next_Token());
 }
 
+void INI::Parse_Unsigned_Short(INI *ini, void *formal, void *store, const void *user_data)
+{
+    int tmp = Scan_Int(ini->Get_Next_Token());
+
+    captainslog_relassert(tmp >= 0 && tmp < 65535, 0xDEAD0001, "Value parsed outside range of a short.");
+
+    *static_cast<uint16_t *>(store) = tmp;
+}
+
 void INI::Parse_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<uint32_t *>(store) = Scan_UnsignedInt(ini->Get_Next_Token());
@@ -578,6 +588,17 @@ void INI::Parse_AsciiString(INI *ini, void *formal, void *store, const void *use
 void INI::Parse_Quoted_AsciiString(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<Utf8String *>(store) = ini->Get_Next_Quoted_Ascii_String();
+}
+
+void INI::Parse_AsciiString_Vector(INI *ini, void *formal, void *store, const void *user_data)
+{
+    // DEBUG_LOG("Appending Vector for ini %s.", ini->m_fileName.Str());
+    std::vector<Utf8String> *vec = static_cast<std::vector<Utf8String> *>(store);
+    vec->clear();
+
+    for (const char *i = ini->Get_Next_Token_Or_Null(); i != nullptr; i = ini->Get_Next_Token_Or_Null()) {
+        vec->push_back(Utf8String(i));
+    }
 }
 
 void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, const void *user_data)
@@ -698,6 +719,14 @@ void INI::Parse_Index_List(INI *ini, void *formal, void *store, const void *user
     *static_cast<int *>(store) = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
 }
 
+void INI::Parse_Byte_Sized_Index_List(INI *ini, void *formal, void *store, const void *user_data)
+{
+    int tmp = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
+
+    captainslog_relassert(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.");
+
+    *static_cast<unsigned char *>(store) = tmp;
+}
 void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<float *>(store) = _DURATION_MULT * Scan_Real(ini->Get_Next_Token());
@@ -734,6 +763,16 @@ void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, const v
 {
     Utf16String *str = static_cast<Utf16String *>(store);
     *str = g_theGameText->Fetch(ini->Get_Next_Token());
+}
+
+void INI::Parse_Bitstring8(INI *ini, void *formal, void *store, const void *user_data)
+{
+    int bits;
+    Parse_Bitstring32(ini, nullptr, &bits, user_data);
+
+    captainslog_relassert((bits & ~255) == 0, CODE_01, "Bad bitstring list INI::parseBitString8");
+
+    *static_cast<uint8_t *>(store) = bits;
 }
 
 void INI::Parse_Bitstring32(INI *ini, void *formal, void *store, const void *user_data)
@@ -911,4 +950,40 @@ void INI::Parse_Sounds_List(INI *ini, void *formal, void *store, const void *use
          token = ini->Get_Next_Token_Or_Null(" \t,=")) {
         sound_vec->push_back(token);
     }
+}
+
+void INI::Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *str = ini->Get_Next_Token();
+    DynamicAudioEventRTS **audio = static_cast<DynamicAudioEventRTS **>(store);
+
+    if (!strcasecmp(str, "NoSound")) {
+        if (*audio) {
+            (*audio)->Delete_Instance();
+            *audio = nullptr;
+        }
+    } else {
+        if (!*audio) {
+            *audio = NEW_POOL_OBJ(DynamicAudioEventRTS);
+        }
+
+        (*audio)->m_event.Set_Event_Name(str);
+    }
+
+    if (*audio) {
+        g_theAudio->Get_Info_For_Audio_Event(&(*audio)->m_event);
+    }
+}
+
+void INI::Parse_Object_Definition(INI *ini)
+{
+    Utf8String name = ini->Get_Next_Token();
+    ThingFactory::Parse_Object_Definition(ini, name, nullptr);
+}
+
+void INI::Parse_Object_Reskin_Definition(INI *ini)
+{
+    Utf8String name = ini->Get_Next_Token();
+    Utf8String reskin = ini->Get_Next_Token();
+    ThingFactory::Parse_Object_Definition(ini, name, reskin);
 }

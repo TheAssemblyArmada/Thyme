@@ -66,7 +66,7 @@
 #include <stdio.h>
 
 #ifdef GAME_DEBUG_STRUCTS
-ICoord2D &s_leftClickReleased = Make_Global<ICoord2D> 0x00E1B118;
+ICoord2D &s_leftClickReleased = Make_Global<ICoord2D>(0x00E1B118);
 #endif
 
 #ifndef GAME_DLL

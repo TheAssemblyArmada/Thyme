@@ -1653,7 +1653,6 @@ void Setup_Hooks()
     Hook_Any(0x004B0B20, ThingFactory::Find_Template_By_ID);
     Hook_Any(0x004B0B50, ThingFactory::Find_Template_Internal);
     Hook_Any(0x004B0EE0, ThingFactory::New_Drawable);
-    Hook_Any(0x004B0850, ThingFactory::New_Override);
 
     // thing.h
     Hook_Any(0x00543470, Thing::Get_Template);
@@ -1663,6 +1662,8 @@ void Setup_Hooks()
     Hook_Any(0x00543A10, Thing::Set_Orientation);
     Hook_Any(0x00543BC0, Thing::Set_Transform_Matrix);
     Hook_Any(0x00543CD0, Thing::Is_KindOf);
+    Hook_Any(0x00543D30, Thing::Is_KindOf_Multi);
+    Hook_Any(0x00543E30, Thing::Is_Any_KindOf);
     Hook_Any(0x00543EB0, Thing::Calculate_Height_Above_Terrain);
     Hook_Any(0x00543ED0, Thing::Get_Height_Above_Terrain);
     Hook_Any(0x00543EF0, Thing::Get_Height_Above_Terrain_Or_Water);
@@ -1676,6 +1677,10 @@ void Setup_Hooks()
     Hook_Any(0x0058C210, ThingTemplate::Get_Skill_Point_Value);
     Hook_Any(0x0058C230, ThingTemplate::Get_Buildable);
     Hook_Any(0x0058C440, ThingTemplate::Get_Max_Simultaneous_Of_Type);
+    Hook_Any(0x0058B210, ThingTemplate::Friend_Get_AI_Module_Info);
+    Hook_Any(0x0058C1D0, ThingTemplate::Can_Possibly_Have_Any_Weapon);
+    Hook_Any(0x0058C230, ThingTemplate::Get_Buildable);
+    Hook_Any(0x0058C470, ThingTemplate::Is_Equivalent_To);
 
     // w3dwater.h
     void Do_Sky_Box_Set(bool b);

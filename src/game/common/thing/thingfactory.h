@@ -41,12 +41,12 @@ public:
 
     ThingTemplate *New_Template(const Utf8String &name);
     ThingTemplate *New_Override(ThingTemplate *thing_template);
-    const ThingTemplate *First_Template() { return m_firstTemplate; }
-    const ThingTemplate *Find_Template_Internal(const Utf8String &name, bool b);
-    const ThingTemplate *Find_Template(const Utf8String &name, bool b) { return Find_Template_Internal(name, b); }
+    ThingTemplate *First_Template() { return m_firstTemplate; }
+    ThingTemplate *Find_Template_Internal(const Utf8String &name, bool b);
+    ThingTemplate *Find_Template(const Utf8String &name, bool b) { return Find_Template_Internal(name, b); }
     static void Parse_Object_Definition(INI *ini, Utf8String name, Utf8String reskin_from);
     void Add_Template(ThingTemplate *tmplate);
-    const ThingTemplate *Find_Template_By_ID(unsigned short id);
+    ThingTemplate *Find_Template_By_ID(unsigned short id);
     Object *New_Object(const ThingTemplate *tmplate, Team *team, BitFlags<OBJECT_STATUS_COUNT> status_bits);
     Drawable *New_Drawable(const ThingTemplate *tmplate, DrawableStatus status_bits);
     void Free_Database();

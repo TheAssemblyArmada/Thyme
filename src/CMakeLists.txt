@@ -199,6 +199,7 @@ set(GAMEENGINE_SRC
     game/logic/object/objectcreationlist.cpp
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
+    game/logic/object/update/aiupdate.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp

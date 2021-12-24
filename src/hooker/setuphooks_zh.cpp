@@ -45,6 +45,7 @@
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
+#include "framemetrics.h"
 #include "functionlexicon.h"
 #include "gameclient.h"
 #include "gamelogic.h"
@@ -1877,4 +1878,12 @@ void Setup_Hooks()
     Hook_Any(0x00571640, PolygonTrigger::Get_Radius);
     Hook_Any(0x00571660, PolygonTrigger::Point_In_Trigger);
     Hook_Any(0x005717B0, PolygonTrigger::Get_Water_Handle);
+
+    // framemetrics.cpp
+    Hook_Any(0x00716720, FrameMetrics::Hook_Ctor);
+    Hook_Any(0x00716820, FrameMetrics::Hook_Dtor);
+    Hook_Any(0x00716870, FrameMetrics::Init);
+    Hook_Any(0x007168F0, FrameMetrics::Do_Per_Frame_Metrics);
+    Hook_Any(0x007169B0, FrameMetrics::Process_Latency_Response);
+    Hook_Any(0x00716A40, FrameMetrics::Add_Cushion);
 }

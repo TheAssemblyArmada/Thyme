@@ -13,3 +13,10 @@
  *            LICENSE
  */
 #include "player.h"
+
+void Player::On_Power_Brown_Out_Change(bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, b);
+#endif
+}

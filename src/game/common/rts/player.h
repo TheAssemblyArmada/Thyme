@@ -25,6 +25,8 @@ public:
     int Get_Player_Index() { return m_playerIndex; }
     int Get_Color() { return m_playerColor; }
 
+    void On_Power_Brown_Out_Change(bool b);
+
 public:
     int unk1;
     int unk2;

@@ -42,6 +42,7 @@
 #include "dx8texman.h"
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
+#include "energy.h"
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -1886,4 +1887,16 @@ void Setup_Hooks()
     Hook_Any(0x007168F0, FrameMetrics::Do_Per_Frame_Metrics);
     Hook_Any(0x007169B0, FrameMetrics::Process_Latency_Response);
     Hook_Any(0x00716A40, FrameMetrics::Add_Cushion);
+
+    // energy.cpp
+    Hook_Any(0x00576EE0, Energy::Hook_Ctor);
+    Hook_Any(0x00576F00, Energy::Get_Production);
+    Hook_Any(0x00576F20, Energy::Get_Energy_Supply_Ratio);
+    Hook_Any(0x00576F50, Energy::Has_Sufficient_Power);
+    Hook_Any(0x00576F80, Energy::Adjust_Power);
+    Hook_Any(0x005770D0, Energy::Object_Entering_Influence);
+    Hook_Any(0x00577180, Energy::Object_Leaving_Influence);
+    Hook_Any(0x00577230, Energy::Add_Power_Bonus);
+    Hook_Any(0x00577290, Energy::Remove_Power_Bonus);
+    Hook_Any(0x005772F0, Energy::Xfer_Snapshot);
 }

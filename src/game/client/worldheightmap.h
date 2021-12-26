@@ -198,7 +198,7 @@ protected:
         FLAG_VAL = 0x7ADA0000,
     };
 
-    TileData *Get_Source_Tile(int tile) const
+    TileData *Get_Source_Tile(unsigned int tile) const
     {
         if (tile >= TILE_COUNT) {
             return nullptr;
@@ -207,7 +207,7 @@ protected:
         }
     }
 
-    TileData *Get_Edge_Tile(int tile) const
+    TileData *Get_Edge_Tile(unsigned int tile) const
     {
         if (tile >= TILE_COUNT) {
             return nullptr;

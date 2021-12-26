@@ -54,11 +54,11 @@ public:
     void Make_Random_Offset_In_Perimeter(Coord3D &offset) const;
     // TODO none virtual functions.
 
-    static void Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, void *user_data);
-    static void Parse_Geometry_MajorRadius(INI *ini, void *formal, void *store, void *user_data);
-    static void Parse_Geometry_Height(INI *ini, void *formal, void *store, void *user_data);
-    static void Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, void *user_data);
-    static void Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data);
+    static void Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Geometry_MajorRadius(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Geometry_Height(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Geometry_Type(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     GeometryType m_type;

@@ -132,6 +132,15 @@ protected:
     virtual ~ThingTemplate() override {}
 
 public:
+    // Not 100% clear on these values
+    enum ModuleParseState
+    {
+        MODULEPARSE_NORMAL,
+        MODULEPARSE_MODIFY_ON_COPY,
+        MODULEPARSE_KEEP_ON_COPY,
+        MODULEPARSE_REPLACE_BY_LIKE_KIND,
+    };
+
     ThingTemplate();
     ThingTemplate &operator=(const ThingTemplate &that);
 
@@ -147,7 +156,7 @@ public:
     static void Parse_Remove_Module(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Replace_Module(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Weapon_Template_Set(INI *ini, void *instance, void *store, const void *user_data);
-    static void Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data);
+    static void Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data);
 
     int Calc_Cost_To_Build(const Player *player) const;
     int Calc_Time_To_Build(const Player *player) const;
@@ -155,7 +164,7 @@ public:
     void Copy_From(const ThingTemplate *that);
     const ArmorTemplateSet *Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const;
     const WeaponTemplateSet *Find_Weapon_Template_Set(const BitFlags<WEAPONSET_COUNT> &t) const;
-    AIUpdateModuleData *const Friend_Get_AI_Module_Info() const;
+    AIUpdateModuleData *Friend_Get_AI_Module_Info() const;
     ThingTemplate *Get_Build_Facility_Template(const Player *player) const;
     BuildableStatus Get_Buildable() const;
     Utf8String Get_LTA_Name() const { return m_LTAName; }
@@ -172,8 +181,8 @@ public:
     void Validate();
     void Validate_Audio();
 
-    FieldParse *Get_Field_Parse() const;
-    FieldParse *Get_Reskin_Field_Parse() const;
+    static FieldParse *Get_Field_Parse();
+    static FieldParse *Get_Reskin_Field_Parse();
 
     bool Is_Any_KindOf(const BitFlags<KINDOF_COUNT> &any_kind_of) const
     {
@@ -252,10 +261,10 @@ public:
     float Get_Fence_X_Offset() { return m_fenceXOffset; }
     unsigned int Get_Display_Color() const { return m_displayColor; }
     const Utf16String &Get_Display_Name() const { return m_displayName; }
-    const ModuleInfo *Get_Module_Info_0() const { return &m_moduleInfo[0]; }
+    const ModuleInfo *Get_Body_Modules() const { return &m_body; }
     float Get_Asset_Scale() const { return m_assetScale; }
     float Get_Placement_View_Angle() const { return m_placementViewAngle; }
-    const ModuleInfo *Get_Module_Info_1() const { return &m_moduleInfo[1]; }
+    const ModuleInfo *Get_Draw_Modules() const { return &m_draws; }
     unsigned int Get_Shadow_Type() const { return m_shadowType; }
     float Get_Shadow_Size_X() const { return m_shadowSizeX; }
     float Get_Shadow_Size_Y() const { return m_shadowSizeY; }
@@ -264,7 +273,7 @@ public:
     const Utf8String &Get_Shadow_Texture_Name() const { return m_shadowTextureName; }
     unsigned short Get_Template_ID() const { return m_templateID; }
     const std::vector<Utf8String> &Get_Build_Variations() const { return m_buildVariations; }
-    const ModuleInfo *Get_Module_Info_2() const { return &m_moduleInfo[2]; }
+    const ModuleInfo *Get_Client_Update_Modules() const { return &m_clientUpdates; }
     int Get_Prereq_Count() const { return m_prerequisites.size(); }
     int Get_Build_Cost() const { return m_buildCost; }
     BuildCompletionType Get_Build_Completion() const { return (BuildCompletionType)m_buildCompletion; }
@@ -326,7 +335,9 @@ private:
     GeometryInfo m_geometryInfo;
     BitFlags<KINDOF_COUNT> m_kindOf;
     AudioArray m_audio;
-    ModuleInfo m_moduleInfo[3];
+    ModuleInfo m_body;
+    ModuleInfo m_draws;
+    ModuleInfo m_clientUpdates;
     int m_skillPointValues[4];
     int m_experienceValues[4];
     int m_experienceRequired[4];
@@ -367,7 +378,7 @@ private:
     unsigned short m_refundValue;
     unsigned short m_threatValue;
     unsigned short m_maxSimultaneousOfType;
-    bool m_determinedBySuperweaponRestriction;
+    bool m_determinedBySuperweaponRestriction; // if true GameLogic m_maxSimultaneousOfType is used instead of this
     bool m_isPrerequisite;
     bool m_isBridge;
     bool m_isBuildFacility;
@@ -388,8 +399,8 @@ private:
     unsigned char m_crusherLevel;
     unsigned char m_crushableLevel;
     static AudioEventRTS s_audioEventNoSound;
-    static const FieldParse *s_objectFieldParseTable;
-    static const FieldParse *s_objectReskinFieldParseTable;
+    static FieldParse s_objectFieldParseTable[];
+    static FieldParse s_objectReskinFieldParseTable[];
 };
 
 #endif // THINGTEMPLATE_H

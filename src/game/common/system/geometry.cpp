@@ -422,7 +422,7 @@ void GeometryInfo::Make_Random_Offset_In_Perimeter(Coord3D &offset) const
  *
  * 0x005CF200
  */
-void GeometryInfo::Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, void *user_data)
+void GeometryInfo::Parse_Geometry_MinorRadius(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_minorRadius = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
@@ -433,7 +433,7 @@ void GeometryInfo::Parse_Geometry_MinorRadius(INI *ini, void *formal, void *stor
  *
  * 0x005CF1E0
  */
-void GeometryInfo::Parse_Geometry_MajorRadius(INI *ini, void *formal, void *store, void *user_data)
+void GeometryInfo::Parse_Geometry_MajorRadius(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_majorRadius = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
@@ -444,7 +444,7 @@ void GeometryInfo::Parse_Geometry_MajorRadius(INI *ini, void *formal, void *stor
  *
  * 0x005CF1C0
  */
-void GeometryInfo::Parse_Geometry_Height(INI *ini, void *formal, void *store, void *user_data)
+void GeometryInfo::Parse_Geometry_Height(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_height = INI::Scan_Real(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
@@ -455,7 +455,7 @@ void GeometryInfo::Parse_Geometry_Height(INI *ini, void *formal, void *store, vo
  *
  * 0x005CF1A0
  */
-void GeometryInfo::Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, void *user_data)
+void GeometryInfo::Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<GeometryInfo *>(store)->m_isSmall = INI::Scan_Bool(ini->Get_Next_Token());
     static_cast<GeometryInfo *>(store)->Calc_Bounding_Stuff();
@@ -466,7 +466,7 @@ void GeometryInfo::Parse_Geometry_IsSmall(INI *ini, void *formal, void *store, v
  *
  * 0x005CF170
  */
-void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, void *user_data)
+void GeometryInfo::Parse_Geometry_Type(INI *ini, void *formal, void *store, const void *user_data)
 {
     static const char *_geometry_names[] = { "SPHERE", "CYLINDER", "BOX", nullptr };
 

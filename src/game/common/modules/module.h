@@ -18,6 +18,7 @@
 #include "gamelod.h"
 #include "namekeygenerator.h"
 #include "snapshot.h"
+#include "xfer.h"
 
 class Drawable;
 class Object;
@@ -68,21 +69,36 @@ protected:
     virtual ~Module() override;
 
 public:
-    Module(ModuleData *module_data);
+    Module(ModuleData *module_data) : m_moduleData(module_data) {}
 
     virtual NameKeyType Get_Module_Name_Key() const = 0;
-    virtual void On_Object_Created();
-    virtual void On_Drawable_Bound_To_Object();
-    virtual void Preload_Assets(TimeOfDayType time_of_day);
-    virtual void On_Delete();
+    virtual void On_Object_Created() {}
+    virtual void On_Drawable_Bound_To_Object() {}
+    virtual void Preload_Assets(TimeOfDayType time_of_day) {}
+    virtual void On_Delete() {}
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+
+    virtual void Xfer_Snapshot(Xfer *xfer) override
+    {
+        unsigned char version = 1;
+        xfer->xferVersion(&version, 1);
+    }
+
+    virtual void Load_Post_Process() override {}
 
     ModuleData *Get_Module_Data() { return m_moduleData; }
 
-    static ModuleData *New_Module_Data(INI *ini);
+    static ModuleData *Friend_New_Module_Data(INI *ini)
+    {
+        ModuleData *data = new ModuleData;
+
+        if (ini) {
+            ini->Init_From_INI(data, nullptr);
+        }
+
+        return data;
+    }
 
 private:
     ModuleData *m_moduleData;

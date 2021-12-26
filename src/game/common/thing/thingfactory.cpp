@@ -20,6 +20,10 @@
 ThingFactory *g_theThingFactory = nullptr;
 #endif
 
+#ifdef GAME_DEBUG_STRUCTS
+Utf8String &= Make_Global<Utf8String>(0x00E1D4F4);
+#endif
+
 ThingFactory::ThingFactory() : m_firstTemplate(nullptr), m_nextTemplateID(1) {}
 
 ThingFactory::~ThingFactory()
@@ -30,7 +34,7 @@ ThingFactory::~ThingFactory()
 ThingTemplate *ThingFactory::New_Template(const Utf8String &name)
 {
     ThingTemplate *new_template = NEW_POOL_OBJ(ThingTemplate);
-    const ThingTemplate *default_template = Find_Template("DefaultThingTemplate", false);
+    ThingTemplate *default_template = Find_Template("DefaultThingTemplate", false);
 
     if (default_template != nullptr) {
         *new_template = *default_template;
@@ -120,7 +124,7 @@ void ThingFactory::Add_Template(ThingTemplate *tmplate)
     m_templateMap[tmplate->Get_Name()] = tmplate;
 }
 
-const ThingTemplate *ThingFactory::Find_Template_By_ID(unsigned short id)
+ThingTemplate *ThingFactory::Find_Template_By_ID(unsigned short id)
 {
     for (ThingTemplate *t = m_firstTemplate; t != nullptr; t = t->Friend_Get_Next_Template()) {
         if (t->Get_Template_ID() == id) {
@@ -132,7 +136,7 @@ const ThingTemplate *ThingFactory::Find_Template_By_ID(unsigned short id)
     return nullptr;
 }
 
-const ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool b)
+ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool b)
 {
     auto i = m_templateMap.find(name);
 
@@ -178,4 +182,55 @@ Drawable *ThingFactory::New_Drawable(const ThingTemplate *tmplate, DrawableStatu
     }
 
     return g_theGameClient->Create_Drawable(tmplate, status_bits);
+}
+
+void ThingFactory::Parse_Object_Definition(INI *ini, Utf8String name, Utf8String reskin_from)
+{
+#ifdef GAME_DEBUG_STRUCTS
+    s_theThingTemplateBeingParsedName = name;
+#endif
+    ThingTemplate *tmplate = g_theThingFactory->Find_Template_Internal(name, false);
+
+    if (tmplate) {
+        if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+            tmplate = g_theThingFactory->New_Override(tmplate);
+        } else {
+            captainslog_debug("[LINE: %d in '%s'] Duplicate factionunit %s found!",
+                ini->Get_Line_Number(),
+                ini->Get_Filename().Str(),
+                name.Str());
+        }
+    } else {
+        tmplate = g_theThingFactory->New_Template(name);
+
+        if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+            tmplate->Set_Is_Allocated();
+        }
+    }
+
+    if (reskin_from.Is_Not_Empty()) {
+        ThingTemplate *that = g_theThingFactory->Find_Template(reskin_from, true);
+
+        if (that) {
+            tmplate->Copy_From(that);
+            tmplate->Set_Copied_From_Default();
+            tmplate->Friend_Set_Original_Skin_Template(that);
+            ini->Init_From_INI(tmplate, ThingTemplate::Get_Reskin_Field_Parse());
+        } else {
+            captainslog_debug("ObjectReskin must come after the original Object (%s, %s).\n", reskin_from.Str(), name.Str());
+            throw CODE_06;
+        }
+    } else {
+        ini->Init_From_INI(tmplate, ThingTemplate::Get_Field_Parse());
+    }
+
+    tmplate->Validate();
+
+    if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+        tmplate->Resolve_Names();
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    s_theThingTemplateBeingParsedName.Clear();
+#endif
 }

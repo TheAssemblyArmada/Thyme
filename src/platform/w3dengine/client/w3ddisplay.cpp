@@ -2102,14 +2102,14 @@ void W3DDisplay::Render_LetterBox(unsigned int current_time)
             if (m_letterBoxFadeLevel > 1.0f) {
                 m_letterBoxFadeLevel = 1.0f;
             }
-
-            unsigned int color = (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24;
-            Draw_Fill_Rect(0, 0, m_width, (int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f), color);
-            Draw_Fill_Rect(
-                0, (int)((float)m_height - (((float)m_height - (float)m_width * 0.5625f) * 0.5f)), m_width, m_height, color);
         }
+
+        unsigned int color = (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24;
+        Draw_Fill_Rect(0, 0, m_width, (int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f), color);
+        Draw_Fill_Rect(
+            0, (int)((float)m_height - (((float)m_height - (float)m_width * 0.5625f) * 0.5f)), m_width, m_height, color);
     } else if (m_letterBoxFadeLevel == 0.0f) {
-        m_letterBoxEnabled = 0;
+        m_letterBoxEnabled = false;
     } else {
         m_letterBoxFadeLevel = 1.0f - (float)(current_time - m_letterBoxFadeStartTime) / 1000.0f;
 

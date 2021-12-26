@@ -97,7 +97,7 @@ bool ModuleInfo::Clear_Module_Data_With_Tag(const Utf8String &tag, Utf8String &n
     while (nugget != m_info.end()) {
         if (nugget->tag_name == tag) {
             captainslog_dbgassert(
-                ret, "Hmm, multiple clears in ModuleInfo::clearModuleDataWithTag, should this be possible?");
+                !ret, "Hmm, multiple clears in ModuleInfo::clearModuleDataWithTag, should this be possible?");
             name = nugget->name;
             nugget = m_info.erase(nugget);
             ret = true;

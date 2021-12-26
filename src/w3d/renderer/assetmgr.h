@@ -206,7 +206,7 @@ public:
     virtual const char *Get_Name() const override { return m_name; }
     virtual int32_t Get_Class_ID() const override;
     virtual RenderObjClass *Create() override;
-    virtual void Delete_Self() override { delete this; };
+    virtual void Delete_Self() override { this->Delete_Instance(); };
     virtual ~W3DPrototypeClass() override;
 
 private:

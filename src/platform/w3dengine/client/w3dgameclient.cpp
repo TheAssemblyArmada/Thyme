@@ -32,5 +32,5 @@ Display *W3DGameClient::Create_GameDisplay()
 void W3DGameClient::Set_Team_Color(int red, int green, int blue)
 {
     W3DStatusCircle::g_needUpdate = true;
-    W3DStatusCircle::g_diffuse = blue + ((green + (red << 8)) << 8);
+    W3DStatusCircle::g_diffuse = (red << 16) + (green << 8) + blue;
 }

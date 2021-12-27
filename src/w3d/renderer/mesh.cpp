@@ -343,7 +343,10 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
 
         MultiListIterator<DX8PolygonRendererClass> it(&(m_model->m_polygonRendererList));
         while (!it.Is_Done()) {
-            it.Peek_Obj()->Render(m_baseVertexOffset);
+            if (!it.Peek_Obj()->Get_Pass()) {
+                it.Peek_Obj()->Render(m_baseVertexOffset);
+            }
+
             it.Next();
         }
 
@@ -443,11 +446,14 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
 
         pass->Install_Materials();
         DX8Wrapper::Set_Index_Buffer(ib, 0);
-        DX8Wrapper::Set_World_Identity();
+        DX8Wrapper::Set_Transform(D3DTS_WORLD, m_transform);
 
         MultiListIterator<DX8PolygonRendererClass> it(&(m_model->m_polygonRendererList));
         while (!it.Is_Done()) {
-            it.Peek_Obj()->Render(m_baseVertexOffset);
+            if (!it.Peek_Obj()->Get_Pass()) {
+                it.Peek_Obj()->Render(m_baseVertexOffset);
+            }
+
             it.Next();
         }
 

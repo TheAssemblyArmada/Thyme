@@ -44,6 +44,7 @@ public:
     unsigned int Get_Index_Offset() { return m_indexOffset; }
     MeshModelClass *Get_Mesh_Model_Class() { return m_mmc; }
     DX8TextureCategoryClass *Get_Texture_Category() { return m_textureCategory; }
+    unsigned int Get_Pass() { return m_pass; }
 
     void Log();
 
@@ -56,7 +57,7 @@ private:
     unsigned int m_minVertexIndex;
     unsigned int m_vertexIndexRange;
     bool m_strip;
-    int m_pass;
+    unsigned int m_pass;
 };
 
 inline void DX8PolygonRendererClass::Render(int offset)

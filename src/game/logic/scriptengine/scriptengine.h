@@ -176,7 +176,7 @@ public:
     void Set_Use_Object_Difficulty_Bonus(bool bonus) { m_useObjectDifficultyBonuses = bonus; }
 
     TFade Get_Fade() { return m_fade; }
-    int Get_Fade_Value() { return m_curFadeValue; }
+    float Get_Fade_Value() { return m_curFadeValue; }
     BreezeInfo *Get_Breeze_Info() { return &m_breezeInfo; }
     bool Is_Time_Frozen_Script() { return m_freezeByScript; }
     bool Is_Time_Frozen_Debug();

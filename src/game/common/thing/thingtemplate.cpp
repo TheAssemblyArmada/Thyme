@@ -208,7 +208,7 @@ AudioArray &AudioArray::operator=(const AudioArray &that)
             if (that.sound[i] == nullptr) {
                 sound[i] = nullptr;
             } else if (sound[i] != nullptr) {
-                sound[i] = that.sound[i];
+                *sound[i] = *that.sound[i];
             } else {
                 sound[i] = NEW_POOL_OBJ(DynamicAudioEventRTS, *that.sound[i]);
             }
@@ -318,8 +318,11 @@ ThingTemplate &ThingTemplate::operator=(const ThingTemplate &that)
         m_experienceRequired[i] = that.m_experienceRequired[i];
     }
 
+    m_prerequisites = that.m_prerequisites;
     m_buildVariations = that.m_buildVariations;
+    m_weaponTemplateSets = that.m_weaponTemplateSets;
     m_weaponTemplateSetFinder = that.m_weaponTemplateSetFinder;
+    m_armorTemplateSets = that.m_armorTemplateSets;
     m_armorTemplateSetFinder = that.m_armorTemplateSetFinder;
     m_perUnitSounds = that.m_perUnitSounds;
     m_perUnitEffects = that.m_perUnitEffects;

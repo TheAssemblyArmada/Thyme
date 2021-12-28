@@ -70,7 +70,7 @@ public:
 
 private:
     unsigned int m_pivotIdx; // Could be signed, but original uses unsigned, so we do same for now.
-    unsigned long m_type;
+    unsigned int m_type; // Could be signed, but original uses unsigned, so we do same for now.
     int m_vectorLen;
     int m_unusedFloat1;
     int m_unusedFloat2;
@@ -105,7 +105,7 @@ public:
 
 private:
     unsigned int m_pivotIdx;
-    unsigned long m_type;
+    unsigned int m_type;
     int m_defaultVal;
     int m_firstFrame;
     int m_lastFrame;
@@ -131,7 +131,7 @@ public:
 
 private:
     unsigned int m_pivotIdx;
-    unsigned long m_type;
+    unsigned int m_type;
     int m_vectorLen;
     unsigned int m_packetSize;
     unsigned int m_numTimeCodes;
@@ -154,7 +154,7 @@ public:
 
 private:
     unsigned int m_pivotIdx;
-    unsigned long m_type;
+    unsigned int m_type;
     int m_defaultVal;
     unsigned long m_numTimeCodes;
     unsigned long m_cachedIdx;
@@ -179,7 +179,7 @@ public:
 
 private:
     unsigned int m_pivotIdx;
-    unsigned long m_type;
+    unsigned int m_type;
     int m_vectorLen;
     unsigned int m_numFrames;
     float m_scale;

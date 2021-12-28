@@ -29,7 +29,7 @@ Vector3 &W3DShadowManager::Get_Light_Pos_World(int light_index)
 #ifdef GAME_DLL
     return Call_Method<Vector3 &, W3DShadowManager, int>(PICK_ADDRESS(0x007822A0, 0x00605AA4), this, light_index);
 #else
-    Vector3 *v;
-    return *v;
+    static Vector3 v(0.0f, 0.0f, 0.0f);
+    return v;
 #endif
 }

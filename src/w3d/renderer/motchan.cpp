@@ -550,7 +550,7 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
         return m_cacheData[vector_idx + m_vectorLen];
     } else {
 
-        captainslog_assert(m_vectorLen <= 4);
+        captainslog_assert(m_vectorLen < 4);
 
         memcpy(dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
         Decompress(m_cacheFrame, dst, frame_idx, m_cacheData);

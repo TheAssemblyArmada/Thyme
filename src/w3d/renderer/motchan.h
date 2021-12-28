@@ -28,10 +28,10 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
 
-    void Get_Vector(int frame, float *vector)
+    void Get_Vector(int frame, float *vector) const
     {
         if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
             Set_Identity(vector);
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    void Get_Vector_As_Quat(int frame, Quaternion &quat)
+    void Get_Vector_As_Quat(int frame, Quaternion &quat) const
     {
         if (frame >= m_firstFrame && frame <= m_lastFrame) {
             float *f = &m_data[m_vectorLen * (frame - m_firstFrame)];
@@ -54,7 +54,7 @@ public:
         }
     }
 
-    void Set_Identity(float *setvec)
+    void Set_Identity(float *setvec) const
     {
         if (m_type == ANIM_CHANNEL_Q) {
             setvec[0] = 0.0f;
@@ -90,10 +90,10 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
 
-    int Get_Bit(int frame)
+    int Get_Bit(int frame) const
     {
         if (frame < m_firstFrame || frame > m_lastFrame) {
             return m_defaultVal != 0;
@@ -121,13 +121,13 @@ public:
     virtual ~TimeCodedMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
     void Get_Vector(float frame, float *setvec);
     Quaternion Get_Quat_Vector(float frame_idx);
-    void Set_Identity(float *setvec);
+    void Set_Identity(float *setvec) const;
     unsigned long Get_Index(unsigned int timecode);
-    unsigned long Binary_Search_Index(unsigned int timecode);
+    unsigned long Binary_Search_Index(unsigned int timecode) const;
 
 private:
     unsigned long m_pivotIdx;
@@ -148,8 +148,8 @@ public:
     virtual ~TimeCodedBitChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
     int Get_Bit(int frame);
 
 private:
@@ -169,8 +169,8 @@ public:
     virtual ~AdaptiveDeltaMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() { return m_type; }
-    int Get_Pivot() { return m_pivotIdx; }
+    int Get_Type() const { return m_type; }
+    int Get_Pivot() const { return m_pivotIdx; }
     void Get_Vector(float frame, float *setvec);
     Quaternion Get_Quat_Vector(float frame_idx);
     float Get_Frame(unsigned int frame_idx, unsigned int vector_idx);

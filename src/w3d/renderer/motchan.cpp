@@ -285,7 +285,7 @@ Quaternion TimeCodedMotionChannelClass::Get_Quat_Vector(float frame_idx)
     }
 }
 
-void TimeCodedMotionChannelClass::Set_Identity(float *setvec)
+void TimeCodedMotionChannelClass::Set_Identity(float *setvec) const
 {
     if (m_type == ANIM_CHANNEL_Q) {
         setvec[0] = 0.0f;
@@ -331,7 +331,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
     return result;
 }
 
-unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode)
+unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode) const
 {
     int count2;
     int count = 0;

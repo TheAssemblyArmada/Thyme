@@ -134,6 +134,13 @@ public:
         z += c->z;
     }
 
+    void Sub(const Coord3D *c)
+    {
+        x -= c->x;
+        y -= c->y;
+        z -= c->z;
+    }
+
     void Scale(float scale)
     {
         x *= scale;

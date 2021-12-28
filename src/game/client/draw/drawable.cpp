@@ -90,3 +90,12 @@ void Drawable::Set_Position(Coord3D const *pos)
 {
     Thing::Set_Position(pos);
 }
+
+ClientUpdateModule *Drawable::Find_Client_Update_Module(NameKeyType key)
+{
+#ifdef GAME_DLL
+    return Call_Method<ClientUpdateModule *, const Drawable, NameKeyType>(PICK_ADDRESS(0x00477A80, 0x007C9F40), this, key);
+#else
+    return nullptr;
+#endif
+}

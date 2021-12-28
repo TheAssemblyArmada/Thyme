@@ -224,7 +224,7 @@ public:
     void Fade_In(unsigned int time);
     void Fade_Out(unsigned int time);
 
-    ClientUpdateModule *findClientUpdateModule(NameKeyType key);
+    ClientUpdateModule *Find_Client_Update_Module(NameKeyType key);
     void Flash_As_Selected(RGBColor const *color);
 
     void Friend_Bind_To_Object(Object *obj);

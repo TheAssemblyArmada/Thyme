@@ -526,7 +526,7 @@ Quaternion AdaptiveDeltaMotionChannelClass::Get_Quat_Vector(float frame_idx)
 
 float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigned int vector_idx)
 {
-    float Dst[4];
+    float dst[4];
 
     if (frame_idx >= m_numFrames) {
         frame_idx = m_numFrames - 1;
@@ -552,8 +552,8 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
 
         captainslog_assert(m_vectorLen <= 4);
 
-        memcpy(Dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
-        Decompress(m_cacheFrame, Dst, frame_idx, m_cacheData);
+        memcpy(dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
+        Decompress(m_cacheFrame, dst, frame_idx, m_cacheData);
         m_cacheFrame = frame_idx;
 
         if (frame_idx != m_numFrames - 1) {
@@ -567,7 +567,6 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
 void AdaptiveDeltaMotionChannelClass::Decompress(
     unsigned int src_idx, float *srcdata, unsigned int frame_idx, float *outdata)
 {
-
     char dst[4];
 
     captainslog_assert(src_idx < frame_idx);

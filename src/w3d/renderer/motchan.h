@@ -63,7 +63,7 @@ public:
             setvec[3] = 1.0f;
         } else {
             for (int i = 0; i < m_vectorLen; ++i) {
-                setvec[i] = 0;
+                setvec[i] = 0.0f;
             }
         }
     }

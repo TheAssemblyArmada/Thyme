@@ -2161,13 +2161,19 @@ void Reset_D3D_Device(bool restore_assets)
                         true,
                         true,
                         true);
-                    OSVERSIONINFOA VersionInformation;
 
-                    if (GetVersionEx(&VersionInformation)) {
+#if 0
+                    // Original code uses deprecated function.
+                    // VER_PLATFORM_WIN32_WINDOWS refers to Windows 95, 98, ME - none of which we support.
+                    OSVERSIONINFOA VersionInformation;
+                    ZeroMemory(&VersionInformation, sizeof(OSVERSIONINFOA));
+                    VersionInformation.dwOSVersionInfoSize = sizeof(OSVERSIONINFOA);
+                    if (GetVersionExA(&VersionInformation)) {
                         if (VersionInformation.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
                             W3D::Invalidate_Textures();
                         }
                     }
+#endif
                 } else {
                     W3D::Set_Render_Device(W3D::Get_Render_Device(),
                         g_theDisplay->Get_Width(),

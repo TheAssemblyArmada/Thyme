@@ -494,8 +494,11 @@ void W3DDisplay::Draw()
                         int h = (int)((float)g_theDisplay->Get_Height() * 0.9f);
                         int w;
 
-                        if (display_str->Get_Width(-1) <= g_theDisplay->Get_Width()) {
-                            w = (g_theDisplay->Get_Width() - display_str->Get_Width(-1)) / 2;
+                        const int str_width = display_str->Get_Width(-1);
+                        const int display_width = g_theDisplay->Get_Width();
+
+                        if (str_width <= display_width) {
+                            w = (display_width - str_width) / 2;
                         } else {
                             w = 20;
                         }

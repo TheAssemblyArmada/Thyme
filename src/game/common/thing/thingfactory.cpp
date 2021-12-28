@@ -16,12 +16,20 @@
 #include "gameclient.h"
 #include <cstring>
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 #ifndef GAME_DLL
 ThingFactory *g_theThingFactory = nullptr;
 #endif
 
 #ifdef GAME_DEBUG_STRUCTS
-Utf8String &= Make_Global<Utf8String>(0x00E1D4F4);
+#ifdef GAME_DLL
+Utf8String &s_theThingTemplateBeingParsedName = Make_Global<Utf8String>(0x00E1D4F4);
+#else
+Utf8String s_theThingTemplateBeingParsedName;
+#endif
 #endif
 
 ThingFactory::ThingFactory() : m_firstTemplate(nullptr), m_nextTemplateID(1) {}

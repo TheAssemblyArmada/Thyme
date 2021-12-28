@@ -66,6 +66,7 @@
 #include "image.h"
 #include "ini.h"
 #include "keyboard.h"
+#include "laserupdate.h"
 #include "lightenv.h"
 #include "line3d.h"
 #include "main.h"
@@ -1904,4 +1905,11 @@ void Setup_Hooks()
     Hook_Any(0x00577230, Energy::Add_Power_Bonus);
     Hook_Any(0x00577290, Energy::Remove_Power_Bonus);
     Hook_Any(0x005772F0, Energy::Xfer_Snapshot);
+
+    // laserupdate.cpp
+    Hook_Any(0x004E6320, LaserUpdate::Friend_New_Module_Instance);
+    Hook_Any(0x004E6400, LaserUpdate::Friend_New_Module_Data);
+    Hook_Any(0x0061CD90, LaserUpdate::Set_Decay_Frames);
+    Hook_Any(0x0061CDC0, LaserUpdate::Init_Laser);
+    Hook_Any(0x0061D110, LaserUpdate::Get_Current_Laser_Radius);
 }

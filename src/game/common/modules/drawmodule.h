@@ -14,8 +14,10 @@
  */
 #pragma once
 #include "always.h"
+#include "bitflags.h"
 #include "gametype.h"
 #include "module.h"
+#include "object.h"
 class DebrisDrawInterface;
 class TracerDrawInterface;
 class RopeDrawInterface;
@@ -78,34 +80,45 @@ class DrawModule : public DrawableModule
     IMPLEMENT_ABSTRACT_POOL(DrawModule);
 
 public:
-    virtual ~DrawModule() override;
+    DrawModule(Thing *thing, ModuleData *module_data) : DrawableModule(thing, module_data) {}
+    virtual ~DrawModule() override {}
     virtual void Do_Draw_Module(Marix3D *transform) = 0;
     virtual void Set_Shadows_Enabled(bool enable) = 0;
     virtual void Release_Shadows() = 0;
     virtual void Allocate_Shadows() = 0;
 #ifdef GAME_DEBUG_STRUCTS
-    virtual void Gather_Draw_Stats(DebugDrawStats *stats);
+    virtual void Gather_Draw_Stats(DebugDrawStats *stats) {}
 #endif
-    virtual void Set_Terrain_Decal(TerrainDecalType decal);
-    virtual void Set_Terrain_Decal_Size(float width, float height);
-    virtual void Set_Terrain_Decal_Opacity(float opacity);
-    virtual void Set_Fully_Obscured_By_Shroud(bool obscured);
-    virtual bool Is_Visible() const;
+    virtual void Set_Terrain_Decal(TerrainDecalType decal) {}
+    virtual void Set_Terrain_Decal_Size(float width, float height) {}
+    virtual void Set_Terrain_Decal_Opacity(float opacity) {}
+    virtual void Set_Fully_Obscured_By_Shroud(bool obscured) = 0;
+    virtual bool Is_Visible() const { return true; }
     virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) = 0;
     virtual void React_To_Geometry_Change() = 0;
-    virtual bool Is_Laser() const;
-    virtual ObjectDrawInterface *Get_Object_Draw_Interface();
-    virtual const ObjectDrawInterface *Get_Object_Draw_Interface() const;
-    virtual DebrisDrawInterface *Get_Debris_Draw_Interface();
-    virtual const DebrisDrawInterface *Get_Debris_Draw_Interface() const;
-    virtual TracerDrawInterface *Get_Tracer_Draw_Interface();
-    virtual const TracerDrawInterface *Get_Tracer_Draw_Interface() const;
-    virtual RopeDrawInterface *Get_Rope_Draw_Interface();
-    virtual const RopeDrawInterface *Get_Rope_Draw_Interface() const;
-    virtual LaserDrawInterface *Get_Laser_Draw_Interface();
-    virtual const LaserDrawInterface *Get_Laser_Draw_Interface() const;
+    virtual bool Is_Laser() const { return false; }
+    virtual ObjectDrawInterface *Get_Object_Draw_Interface() { return nullptr; }
+    virtual const ObjectDrawInterface *Get_Object_Draw_Interface() const { return nullptr; }
+    virtual DebrisDrawInterface *Get_Debris_Draw_Interface() { return nullptr; }
+    virtual const DebrisDrawInterface *Get_Debris_Draw_Interface() const { return nullptr; }
+    virtual TracerDrawInterface *Get_Tracer_Draw_Interface() { return nullptr; }
+    virtual const TracerDrawInterface *Get_Tracer_Draw_Interface() const { return nullptr; }
+    virtual RopeDrawInterface *Get_Rope_Draw_Interface() { return nullptr; }
+    virtual const RopeDrawInterface *Get_Rope_Draw_Interface() const { return nullptr; }
+    virtual LaserDrawInterface *Get_Laser_Draw_Interface() { return nullptr; }
+    virtual const LaserDrawInterface *Get_Laser_Draw_Interface() const { return nullptr; }
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void CRC_Snapshot(Xfer *xfer) override { DrawableModule::CRC_Snapshot(xfer); }
+
+    virtual void Xfer_Snapshot(Xfer *xfer) override
+    {
+        unsigned char version = 1;
+        xfer->xferVersion(&version, 1);
+        DrawableModule::Xfer_Snapshot(xfer);
+    }
+
+    virtual void Load_Post_Process() override { DrawableModule::Load_Post_Process(); }
+
+    static ModuleType Get_Module_Type() { return MODULE_DRAW; }
+    static int Get_Interface_Mask() { return MODULEINTERFACE_DRAW; }
 };

@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief
+ * @brief Module
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -32,8 +32,8 @@ enum ModuleType
 {
     MODULE_FIRST,
     MODULE_DEFAULT = 0,
-    MODULE_W3D = 1,
-    MODULE_UNK = 2,
+    MODULE_DRAW = 1,
+    MODULE_CLIENT_UPDATE = 2,
 
     NUM_DRAWABLE_MODULE_TYPES = 2,
 };
@@ -66,10 +66,10 @@ class Module : public MemoryPoolObject, public SnapShot
     IMPLEMENT_ABSTRACT_POOL(Module)
 
 protected:
-    virtual ~Module() override;
+    virtual ~Module() override {}
 
 public:
-    Module(ModuleData *module_data) : m_moduleData(module_data) {}
+    Module(const ModuleData *module_data) : m_moduleData(module_data) {}
 
     virtual NameKeyType Get_Module_Name_Key() const = 0;
     virtual void On_Object_Created() {}
@@ -87,7 +87,7 @@ public:
 
     virtual void Load_Post_Process() override {}
 
-    ModuleData *Get_Module_Data() { return m_moduleData; }
+    const ModuleData *Get_Module_Data() const { return m_moduleData; }
 
     static ModuleData *Friend_New_Module_Data(INI *ini)
     {
@@ -100,8 +100,11 @@ public:
         return data;
     }
 
+    static ModuleType Get_Module_Type() { return MODULE_DEFAULT; }
+    static int Get_Interface_Mask() { return 0; }
+
 private:
-    ModuleData *m_moduleData;
+    const ModuleData *m_moduleData;
 };
 
 class ObjectModule : public Module
@@ -112,7 +115,7 @@ protected:
     virtual ~ObjectModule() override;
 
 public:
-    ObjectModule(Thing *thing, ModuleData *module_data);
+    ObjectModule(Thing *thing, const ModuleData *module_data);
 
     virtual void On_Capture(Player *p1, Player *p2);
     virtual void On_Disabled_Edge(bool b);
@@ -132,16 +135,23 @@ class DrawableModule : public Module
     IMPLEMENT_ABSTRACT_POOL(DrawableModule)
 
 protected:
-    virtual ~DrawableModule() override;
+    virtual ~DrawableModule() override {}
 
 public:
-    DrawableModule(Thing *thing, ModuleData *module_data);
+    DrawableModule(Thing *thing, const ModuleData *module_data);
 
-    virtual void CRC_Snapshot(Xfer *xfer) override;
-    virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+
+    virtual void Xfer_Snapshot(Xfer *xfer) override
+    {
+        unsigned char version = 1;
+        xfer->xferVersion(&version, 1);
+    }
+
+    virtual void Load_Post_Process() override {}
 
     Drawable *Get_Drawable() { return m_drawable; }
+    const Drawable *Get_Drawable() const { return m_drawable; }
 
 private:
     Drawable *m_drawable;

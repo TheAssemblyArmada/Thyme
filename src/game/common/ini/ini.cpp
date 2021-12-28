@@ -339,11 +339,11 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
     }
 }
 
-void INI::Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *))
+void INI::Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse &))
 {
     MultiIniFieldParse p;
 
-    proc(&p);
+    proc(p);
     Init_From_INI_Multi(what, p);
 }
 

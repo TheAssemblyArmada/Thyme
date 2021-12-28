@@ -58,6 +58,7 @@ public:
     virtual bool Is_Railroad() override;
     virtual bool Is_Salvage_Crate_Collide() override;
     PhysicsTurningType Get_Turning() const { return m_turning; }
+    static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
 
 private:
     float m_yawRate;

@@ -80,6 +80,7 @@ set(GAMEENGINE_SRC
     game/client/water.cpp
     game/client/worldheightmap.cpp
     game/client/draw/drawable.cpp
+    game/client/draw/w3dlaserdraw.cpp
     game/client/gui/gamefont.cpp
     game/client/gui/wininstancedata.cpp
     game/client/image.cpp
@@ -145,6 +146,7 @@ set(GAMEENGINE_SRC
     game/common/compression/refpack.cpp
     game/common/ini/ini.cpp
     game/common/ini/inidrawgroupinfo.cpp
+    game/common/modules/module.cpp
     game/common/modules/modulefactory.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/energy.cpp
@@ -200,6 +202,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapon.cpp
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
+    game/logic/object/update/laserupdate.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp

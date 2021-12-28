@@ -120,6 +120,27 @@ public:
         set_result->z = a->x * b->y - a->y * b->x;
     }
 
+    void Set(const Coord3D *c)
+    {
+        x = c->x;
+        y = c->y;
+        z = c->z;
+    }
+
+    void Add(const Coord3D *c)
+    {
+        x += c->x;
+        y += c->y;
+        z += c->z;
+    }
+
+    void Scale(float scale)
+    {
+        x *= scale;
+        y *= scale;
+        z *= scale;
+    }
+
     void Zero()
     {
         x = 0.0f;
@@ -208,6 +229,8 @@ public:
 
         return *this;
     }
+
+    bool operator==(const Coord3D &that) { return x == that.x && y == that.y && z == that.z; }
 
 public:
     float x;

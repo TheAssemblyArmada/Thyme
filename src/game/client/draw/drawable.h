@@ -242,7 +242,7 @@ public:
     DrawModule const **Get_Draw_Modules() const;
     DrawModule **Get_Draw_Modules_Non_Dirty();
     GeometryInfo const &Get_Drawable_Geometry_Info() const;
-    DrawableID Get_ID() const;
+    DrawableID Get_ID() const { return m_id; }
     DrawableIconInfo *Get_Icon_Info();
     int Get_Pristine_Bone_Positions(
         char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;

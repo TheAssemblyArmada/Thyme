@@ -52,8 +52,8 @@ void SegmentedLineClass::Set_Points(unsigned int num_points, Vector3 *locs)
 {
     m_pointLocations.Delete_All();
     Invalidate_Cached_Bounding_Volumes();
-    if (num_points && locs != nullptr) {
-        for (int i = 0; i < num_points; ++i) {
+    if (num_points != 0 && locs != nullptr) {
+        for (unsigned int i = 0; i < num_points; ++i) {
             m_pointLocations.Add(locs[i]);
         }
     }
@@ -66,7 +66,7 @@ int SegmentedLineClass::Get_Num_Points()
 
 void SegmentedLineClass::Set_Point_Location(unsigned int point_idx, const Vector3 &location)
 {
-    if (point_idx < m_pointLocations.Count()) {
+    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
         m_pointLocations[point_idx] = location;
     }
 
@@ -75,7 +75,7 @@ void SegmentedLineClass::Set_Point_Location(unsigned int point_idx, const Vector
 
 void SegmentedLineClass::Get_Point_Location(unsigned int point_idx, Vector3 &loc)
 {
-    if (point_idx < m_pointLocations.Count()) {
+    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
         loc = m_pointLocations[point_idx];
     } else {
         loc = Vector3(0, 0, 0);
@@ -179,10 +179,10 @@ void SegmentedLineClass::Set_Shader(ShaderClass shader)
 
 void SegmentedLineClass::Set_Width(float width)
 {
-    if (width > 0.0) {
+    if (width > 0.0f) {
         m_lineRenderer.Set_Width(width);
     } else {
-        m_lineRenderer.Set_Width(0);
+        m_lineRenderer.Set_Width(0.0f);
     }
 
     Invalidate_Cached_Bounding_Volumes();
@@ -295,19 +295,19 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
             min_pos.Update_Min(m_pointLocations[i]);
         }
 
-        float width = m_lineRenderer.Get_Width() * 0.5;
+        float width = m_lineRenderer.Get_Width() * 0.5f;
 
         Vector3 scale_factor(width, width, width);
         max_pos += scale_factor;
         min_pos -= scale_factor;
 
         if (m_maxSubdivisionLevels) {
-            Vector3 midpoint = (m_pointLocations[0] + m_pointLocations[1]) * 0.5;
+            Vector3 midpoint = (m_pointLocations[0] + m_pointLocations[1]) * 0.5f;
             Vector3 max_pos_2 = midpoint;
             Vector3 min_pos_2 = midpoint;
 
             for (int i = 1; i < count - 1; ++i) {
-                midpoint = (m_pointLocations[i] + m_pointLocations[i + 1]) * 0.5;
+                midpoint = (m_pointLocations[i] + m_pointLocations[i + 1]) * 0.5f;
                 max_pos_2.Update_Max(midpoint);
                 min_pos_2.Update_Min(midpoint);
             }
@@ -388,7 +388,7 @@ float SegmentedLineClass::Get_Post_Increment_Value() const
 
     float poly = (float)Get_Num_Polys();
     float poly2 = poly + poly;
-    float p = (1.0 - 0.5 / (poly2 * poly2));
+    float p = (1.0f - 0.5f / (poly2 * poly2));
     return p * m_normalizedScreenArea / poly2;
 }
 
@@ -416,7 +416,7 @@ bool SegmentedLineClass::Cast_Ray(RayCollisionTestClass &raytest)
     if (Get_Collision_Type() & raytest.m_collisionType) {
 
         bool retval = false;
-        float fraction = 1.0;
+        float fraction = 1.0f;
 
         for (int i = 1; i < m_pointLocations.Count(); ++i) {
             Vector3 curr[2];
@@ -426,7 +426,7 @@ bool SegmentedLineClass::Cast_Ray(RayCollisionTestClass &raytest)
             Vector3 p1;
             Vector3 p2;
             if (raytest.m_ray.Find_Intersection(line_seg, &p1, &fraction, &p2, nullptr)) {
-                if (m_lineRenderer.Get_Width() >= (p1 - p2).Length() && fraction >= 0.0
+                if (m_lineRenderer.Get_Width() >= (p1 - p2).Length() && fraction >= 0.0f
                     && fraction < raytest.m_result->fraction) {
                     retval = true;
                     break;

@@ -138,7 +138,7 @@ bool HRawAnimClass::Read_Channel(ChunkLoadClass &cload, MotionChannelClass **new
 
 void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
 {
-    unsigned long pivot = newchan->Get_Pivot();
+    const int pivot = newchan->Get_Pivot();
 
     switch (newchan->m_type) {
         case ANIM_CHANNEL_X:

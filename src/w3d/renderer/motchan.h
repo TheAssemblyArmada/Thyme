@@ -69,7 +69,7 @@ public:
     }
 
 private:
-    unsigned long m_pivotIdx;
+    unsigned int m_pivotIdx; // Could be signed, but original uses unsigned, so we do same for now.
     unsigned long m_type;
     int m_vectorLen;
     int m_unusedFloat1;
@@ -104,7 +104,7 @@ public:
     }
 
 private:
-    unsigned long m_pivotIdx;
+    unsigned int m_pivotIdx;
     unsigned long m_type;
     int m_defaultVal;
     int m_firstFrame;
@@ -130,7 +130,7 @@ public:
     unsigned long Binary_Search_Index(unsigned int timecode) const;
 
 private:
-    unsigned long m_pivotIdx;
+    unsigned int m_pivotIdx;
     unsigned long m_type;
     int m_vectorLen;
     unsigned int m_packetSize;
@@ -153,7 +153,7 @@ public:
     int Get_Bit(int frame);
 
 private:
-    unsigned long m_pivotIdx;
+    unsigned int m_pivotIdx;
     unsigned long m_type;
     int m_defaultVal;
     unsigned long m_numTimeCodes;
@@ -179,7 +179,7 @@ public:
 
 private:
     unsigned int m_pivotIdx;
-    unsigned int m_type;
+    unsigned long m_type;
     int m_vectorLen;
     unsigned int m_numFrames;
     float m_scale;

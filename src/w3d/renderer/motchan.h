@@ -126,8 +126,8 @@ public:
     void Get_Vector(float frame, float *setvec);
     Quaternion Get_Quat_Vector(float frame_idx);
     void Set_Identity(float *setvec) const;
-    unsigned long Get_Index(unsigned int timecode);
-    unsigned long Binary_Search_Index(unsigned int timecode) const;
+    unsigned int Get_Index(unsigned int timecode);
+    unsigned int Binary_Search_Index(unsigned int timecode) const;
 
 private:
     unsigned int m_pivotIdx;
@@ -156,9 +156,9 @@ private:
     unsigned int m_pivotIdx;
     unsigned int m_type;
     int m_defaultVal;
-    unsigned long m_numTimeCodes;
-    unsigned long m_cachedIdx;
-    unsigned long *m_bits;
+    unsigned int m_numTimeCodes;
+    unsigned int m_cachedIdx;
+    unsigned int *m_bits;
 };
 
 class AdaptiveDeltaMotionChannelClass : W3DMPO

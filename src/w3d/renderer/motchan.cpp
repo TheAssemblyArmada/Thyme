@@ -297,12 +297,12 @@ void TimeCodedMotionChannelClass::Set_Identity(float *setvec) const
     }
 }
 
-unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
+unsigned int TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 {
     captainslog_assert(m_cachedIdx <= m_lastTimeCodeIdx);
 
     if (timecode < Get_Frame_From_Data(m_data[m_cachedIdx])) {
-        unsigned long result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
+        unsigned int result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
         m_cachedIdx = result;
         return result;
     }
@@ -311,7 +311,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
         return m_cachedIdx;
     }
 
-    unsigned long result = m_packetSize + m_cachedIdx;
+    unsigned int result = m_packetSize + m_cachedIdx;
 
     if (timecode < Get_Frame_From_Data(m_data[m_packetSize + m_cachedIdx])) {
         return m_cachedIdx;
@@ -331,12 +331,12 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
     return result;
 }
 
-unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode) const
+unsigned int TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode) const
 {
     int count2;
     int count = 0;
     int rightIdx = m_numTimeCodes - 2;
-    unsigned long result = m_lastTimeCodeIdx;
+    unsigned int result = m_lastTimeCodeIdx;
 
     if (timecode < Get_Frame_From_Data(m_data[m_lastTimeCodeIdx])) {
         while (true) {
@@ -387,7 +387,7 @@ bool TimeCodedBitChannelClass::Load_W3D(ChunkLoadClass &cload)
 {
     W3dTimeCodedBitChannelStruct chan;
     Free();
-    unsigned int chunk_size = cload.Cur_Chunk_Length();
+    const unsigned int chunk_size = cload.Cur_Chunk_Length();
 
     if (cload.Read(&chan, sizeof(chan)) != sizeof(chan)) {
         return false;
@@ -398,11 +398,11 @@ bool TimeCodedBitChannelClass::Load_W3D(ChunkLoadClass &cload)
     m_pivotIdx = chan.Pivot;
     m_defaultVal = chan.DefaultVal;
     m_cachedIdx = 0;
-    int bytesleft = 4 * m_numTimeCodes - 4;
+    const int bytesleft = 4 * m_numTimeCodes - 4;
 
     captainslog_assert((sizeof(chan) + bytesleft) == chunk_size);
 
-    m_bits = new unsigned long[m_numTimeCodes];
+    m_bits = new unsigned int[m_numTimeCodes];
 
     captainslog_assert(m_bits);
 

@@ -303,7 +303,13 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
         }
     } else {
         Quaternion q1;
-        mot->Q->Get_Vector_As_Quat(frame1, q1);
+
+        if (mot->Q) {
+            mot->Q->Get_Vector_As_Quat(frame1, q1);
+        } else {
+            // #BUGFIX Set to identity when there is no data.
+            q1.Make_Identity();
+        }
 
         Quaternion q2;
         Fast_Slerp(q2, q, q1, delta);

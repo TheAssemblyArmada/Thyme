@@ -65,8 +65,16 @@
 #endif
 #include <stdio.h>
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 #ifdef GAME_DEBUG_STRUCTS
+#ifdef GAME_DLL
 ICoord2D &s_leftClickReleased = Make_Global<ICoord2D>(0x00E1B118);
+#else
+ICoord2D s_leftClickReleased;
+#endif
 #endif
 
 #ifndef GAME_DLL
@@ -1812,7 +1820,7 @@ void W3DDisplay::Gather_Debug_Stats()
 
         const Object *object = nullptr;
 #ifdef GAME_DEBUG_STRUCTS
-        Drawable *drawable = g_theTacticalView->Pick_Drawable(s_leftClickReleased, false, PICKTYPE_UNK2);
+        Drawable *drawable = g_theTacticalView->Pick_Drawable(&s_leftClickReleased, false, PICKTYPE_UNK2);
 #else
         DrawableID id = g_theInGameUI->Get_Moused_Over_Drawable_ID();
         Drawable *drawable = g_theGameClient->Find_Drawable_By_ID(id);

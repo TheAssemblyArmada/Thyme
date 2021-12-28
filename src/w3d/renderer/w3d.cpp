@@ -98,7 +98,7 @@ void DefaultStaticSortListClass::Add_To_List(RenderObjClass *robj, unsigned int 
 
 void DefaultStaticSortListClass::Render_And_Clear(RenderInfoClass &rinfo)
 {
-    for (int i = m_maxLevel; i >= m_minLevel; i--) {
+    for (unsigned int i = m_maxLevel; i >= m_minLevel; i--) {
         bool rendered = false;
         RenderObjClass *robj = m_lists[i].Remove_Head();
 

@@ -511,7 +511,7 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
     m_body.Add_Module_Info(this,
         "W3DDefaultDraw",
         tag,
-        g_theModuleFactory->New_Module_Data_From_INI(nullptr, "W3DDefaultDraw", MODULE_W3D, tag),
+        g_theModuleFactory->New_Module_Data_From_INI(nullptr, "W3DDefaultDraw", MODULE_DRAW, tag),
         MODULEINTERFACE_DRAW,
         false,
         false);

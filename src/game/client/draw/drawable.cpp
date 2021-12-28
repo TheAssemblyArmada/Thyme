@@ -61,8 +61,32 @@ const Vector3 *Drawable::Get_Selection_Color() const
 DrawModule **Drawable::Get_Draw_Modules()
 {
 #ifdef GAME_DLL
-    return Call_Method<DrawModule **, const Drawable>(PICK_ADDRESS(0x00475F40, 0x007C87E4), this);
+    return Call_Method<DrawModule **, Drawable>(PICK_ADDRESS(0x00475F40, 0x007C87E4), this);
 #else
     return nullptr;
 #endif
+}
+
+const DrawModule **Drawable::Get_Draw_Modules() const
+{
+#ifdef GAME_DLL
+    return Call_Method<const DrawModule **, const Drawable>(PICK_ADDRESS(0x00475F40, 0x007C88A2), this);
+#else
+    return nullptr;
+#endif
+}
+
+bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *none_name_prefix, Matrix3D &m) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Drawable, char const *, Matrix3D &>(
+        PICK_ADDRESS(0x0046F190, 0x007C122A), this, none_name_prefix, m);
+#else
+    return false;
+#endif
+}
+
+void Drawable::Set_Position(Coord3D const *pos)
+{
+    Thing::Set_Position(pos);
 }

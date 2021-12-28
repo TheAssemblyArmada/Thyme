@@ -98,7 +98,7 @@ public:
 
     void Init_From_INI(void *what, FieldParse *parse_table);
     void Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_list);
-    void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse *));
+    void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse &));
 
     const char *Get_Next_Token_Or_Null(const char *seps = nullptr);
     const char *Get_Next_Token(const char *seps = nullptr);

@@ -77,6 +77,7 @@ public:
     UpdateSleepTime Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
 
     static ModuleData *New_Module_Data(INI *ini);
+    static int Get_Interface_Mask() { return MODULEINTERFACE_UPDATE; }
 
 private:
     unsigned int m_update;

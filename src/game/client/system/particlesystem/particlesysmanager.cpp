@@ -231,7 +231,7 @@ ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id)
 {
     if (id != PARTSYS_ID_NONE) {
         for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
-            if ((*it)->System_ID() == id) {
+            if ((*it)->Get_System_ID() == id) {
                 return *it;
             }
         }

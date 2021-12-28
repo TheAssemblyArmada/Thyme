@@ -123,7 +123,7 @@ void Particle::Xfer_Snapshot(Xfer *xfer)
     xfer->xferDrawableID(&drawable_id_fake);
 
     // This looks like it will save/process the value, but not restore it?
-    ParticleSystemID id = m_systemUnderControl != nullptr ? m_systemUnderControl->System_ID() : PARTSYS_ID_NONE;
+    ParticleSystemID id = m_systemUnderControl != nullptr ? m_systemUnderControl->Get_System_ID() : PARTSYS_ID_NONE;
     xfer->xferInt(reinterpret_cast<int32_t *>(&id));
 }
 

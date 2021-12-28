@@ -73,7 +73,7 @@ void PartitionManager::CRC_Snapshot(Xfer *xfer)
 void PartitionManager::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, SnapShot>(PICK_ADDRESS(0x0053FCF0, 0x00821EB9), this);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x0053FCF0, 0x00821EB9), this, xfer);
 #endif
 }
 
@@ -756,7 +756,7 @@ PartitionCell::~PartitionCell()
 void PartitionCell::CRC_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, SnapShot>(PICK_ADDRESS(0x005399A0, 0x0081DB8C), this);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x005399A0, 0x0081DB8C), this, xfer);
 #endif
 }
 
@@ -764,6 +764,6 @@ void PartitionCell::CRC_Snapshot(Xfer *xfer)
 void PartitionCell::Xfer_Snapshot(Xfer *xfer)
 {
 #ifdef GAME_DLL
-    Call_Method<void, SnapShot>(PICK_ADDRESS(0x005399F0, 0x0081BDE2), this);
+    Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x005399F0, 0x0081BDE2), this, xfer);
 #endif
 }

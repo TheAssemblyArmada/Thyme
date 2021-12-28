@@ -1952,7 +1952,7 @@ void WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights(int x_index, int y_index)
 void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 {
     int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(x / 10.0f);
+    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
     int i3 = m_borderSize + i1;
     int i4 = m_borderSize + i2;
     color->blue = 0.0f;
@@ -1992,7 +1992,7 @@ void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 Utf8String WorldHeightMap::Get_Terrain_Name_At(float x, float y)
 {
     int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(x / 10.0f);
+    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
     int i3 = m_borderSize + i1;
     int i4 = m_borderSize + i2;
 

@@ -170,12 +170,12 @@ int W3DStatusCircle::Update_Circle_VB()
 
 int W3DStatusCircle::Update_Screen_VB(int diffuse)
 {
-    if (!m_vertexBufferCircle) {
+    if (!m_vertexBufferScreen) {
         return -1;
     }
 
     g_needUpdate = false;
-    VertexBufferClass::WriteLockClass lock(m_vertexBufferCircle, 0);
+    VertexBufferClass::WriteLockClass lock(m_vertexBufferScreen, 0);
     VertexFormatXYZDUV1 *vertices = (VertexFormatXYZDUV1 *)lock.Get_Vertex_Array();
 
     vertices->x = -1.0;
@@ -253,8 +253,7 @@ void W3DStatusCircle::Render(RenderInfoClass &rinfo)
                 DX8Wrapper::Set_Vertex_Buffer(m_vertexBufferCircle, 0);
                 b = true;
                 m.Set_Translation(Vector3(0.95f, 0.67f, 0.0f));
-                Matrix4 m2(m);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_WORLD, m2);
+                DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
                 DX8Wrapper::Draw_Triangles(0, 20, 0, 3 * m_numTriangles);
             }
 
@@ -272,8 +271,7 @@ void W3DStatusCircle::Render(RenderInfoClass &rinfo)
                 int diffuse = fadevalue | (fadevalue << 8) | (fadevalue << 0x10) | 0xFF000000;
                 Update_Screen_VB(diffuse);
 
-                Matrix4 m2(m);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_WORLD, m2);
+                DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
 
                 // TODO resolve this
                 DX8Wrapper::Set_Shader(ShaderClass(0x94037));

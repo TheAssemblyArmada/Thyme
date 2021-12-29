@@ -30,7 +30,6 @@ class Utf8String
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
-    friend class Utf16String;
 
 public:
     enum

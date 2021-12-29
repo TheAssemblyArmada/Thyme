@@ -32,7 +32,6 @@ class Utf8String;
 class Utf16String
 {
 public:
-    friend class Utf8String;
 
     enum
     {

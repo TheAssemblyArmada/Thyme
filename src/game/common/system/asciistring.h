@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include <cstdarg>
+#include <cstddef>
 #include <cstring>
 #include <new>
 
@@ -32,6 +33,14 @@ class Utf8String
     friend void Setup_Hooks();
 
 public:
+    using value_type = char;
+    using size_type = int;
+    using difference_type = std::ptrdiff_t;
+    using reference = value_type &;
+    using const_reference = const value_type &;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
+
     enum
     {
         MAX_FORMAT_BUF_LEN = 2048,

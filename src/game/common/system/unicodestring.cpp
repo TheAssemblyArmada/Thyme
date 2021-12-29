@@ -31,7 +31,7 @@ Utf16String const Utf16String::s_emptyString;
 Utf16String::Utf16String(const unichar_t *s) : m_data(nullptr)
 {
     if (s != nullptr) {
-        size_t len = u_strlen(s);
+        const size_type len = static_cast<size_type>(u_strlen(s));
 
         if (len > 0) {
             Ensure_Unique_Buffer_Of_Size(len + 1, false, s, nullptr);
@@ -83,7 +83,7 @@ void Utf16String::Release_Buffer()
 }
 
 void Utf16String::Ensure_Unique_Buffer_Of_Size(
-    int chars_needed, bool keep_data, const unichar_t *str_to_cpy, const unichar_t *str_to_cat)
+    size_type chars_needed, bool keep_data, const unichar_t *str_to_cpy, const unichar_t *str_to_cat)
 {
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
@@ -101,7 +101,7 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
         // throw(&preserveData, &_TI1_AW4ErrorCode__);
         //}
 
-        int size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(
+        const size_type size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(
             sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData));
         UnicodeStringData *new_data =
             reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
@@ -131,10 +131,10 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
     }
 }
 
-int Utf16String::Get_Length() const
+Utf16String::size_type Utf16String::Get_Length() const
 {
     if (m_data != nullptr) {
-        return u_strlen(m_data->Peek());
+        return static_cast<size_type>(u_strlen(m_data->Peek()));
     }
 
     return 0;
@@ -145,7 +145,7 @@ void Utf16String::Clear()
     Release_Buffer();
 }
 
-unichar_t Utf16String::Get_Char(int index) const
+unichar_t Utf16String::Get_Char(size_type index) const
 {
     captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
     captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
@@ -157,7 +157,7 @@ unichar_t Utf16String::Get_Char(int index) const
     return U_CHAR('\0');
 }
 
-unichar_t &Utf16String::Get_Char(int index)
+unichar_t &Utf16String::Get_Char(size_type index)
 {
     captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
     captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
@@ -176,7 +176,7 @@ const unichar_t *Utf16String::Str() const
     return TheNullChr;
 }
 
-unichar_t *Utf16String::Get_Buffer_For_Read(int len)
+unichar_t *Utf16String::Get_Buffer_For_Read(size_type len)
 {
     captainslog_dbgassert(len > 0, "No need to allocate 0 len strings.");
 
@@ -188,9 +188,9 @@ unichar_t *Utf16String::Get_Buffer_For_Read(int len)
 void Utf16String::Set(const unichar_t *s)
 {
     if (m_data != nullptr || s != m_data->Peek()) {
-        size_t len;
+        size_type len;
 
-        if (s && (len = u_strlen(s) + 1, len != 1)) {
+        if (s && (len = static_cast<size_type>(u_strlen(s)) + 1, len != 1)) {
             Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
         } else {
             Release_Buffer();
@@ -215,7 +215,7 @@ void Utf16String::Set(Utf16String const &string)
 /**
  * Converts a Utf8 string to Utf16
  */
-void Utf16String::Translate_Internal(const char *utf8_string, const int utf8_len)
+void Utf16String::Translate_Internal(const char *utf8_string, const size_type utf8_len)
 {
     Release_Buffer();
 
@@ -244,7 +244,7 @@ void Utf16String::Translate_Internal(const char *utf8_string, const int utf8_len
     // Use WIN32 API converters.
     if (utf8_len > 0) {
         // Get utf16 string length.
-        const int utf16_len = MultiByteToWideChar(CP_UTF8, 0, utf8_string, utf8_len, nullptr, 0);
+        const size_type utf16_len = MultiByteToWideChar(CP_UTF8, 0, utf8_string, utf8_len, nullptr, 0);
 
         if (utf16_len > 0) {
             // Allocate and fill new utf16 string.
@@ -257,7 +257,7 @@ void Utf16String::Translate_Internal(const char *utf8_string, const int utf8_len
     }
 #else
     // Naive copy, this is what the original does.
-    for (int i = 0; i < utf8_len; ++i) {
+    for (size_type i = 0; i < utf8_len; ++i) {
         unichar_t c = static_cast<unichar_t>(utf8_string[i]);
         Concat(c);
     }
@@ -271,7 +271,7 @@ void Utf16String::Translate(Utf8String const &utf8_string)
 
 void Utf16String::Translate(const char *utf8_string)
 {
-    int utf8_len = static_cast<int>(strlen(utf8_string));
+    const size_type utf8_len = static_cast<size_type>(strlen(utf8_string));
     Translate_Internal(utf8_string, utf8_len);
 }
 
@@ -286,11 +286,12 @@ void Utf16String::Concat(unichar_t c)
 
 void Utf16String::Concat(const unichar_t *s)
 {
-    size_t len = u_strlen(s);
+    const size_type add_len = static_cast<size_type>(u_strlen(s));
 
-    if (len > 0) {
+    if (add_len > 0) {
         if (m_data != nullptr) {
-            Ensure_Unique_Buffer_Of_Size(u_strlen(Peek()) + len + 1, true, 0, s);
+            const size_type cur_len = static_cast<size_type>(u_strlen(Peek()));
+            Ensure_Unique_Buffer_Of_Size(cur_len + add_len + 1, true, 0, s);
         } else {
             Set(s);
         }
@@ -323,7 +324,9 @@ void Utf16String::Trim()
         return;
     }
 
-    for (int i = static_cast<int>(u_strlen(Peek())) - 1; i >= 0; --i) {
+    const size_type len = static_cast<size_type>(u_strlen(Peek()));
+
+    for (size_type i = len - 1; i >= 0; --i) {
         if (!u_isspace(Get_Char(i))) {
             break;
         }
@@ -356,7 +359,7 @@ void Utf16String::Remove_Last_Char()
         return;
     }
 
-    int len = u_strlen(Peek());
+    const size_type len = static_cast<size_type>(u_strlen(Peek()));
 
     if (len > 0) {
         Ensure_Unique_Buffer_Of_Size(len + 1, true);
@@ -385,7 +388,7 @@ void Utf16String::Format(Utf16String format, ...)
 void Utf16String::Format_VA(const unichar_t *format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
-    int res = u_vsnprintf_u(buf, ARRAY_SIZE(buf), format, args);
+    const size_type res = u_vsnprintf_u(buf, ARRAY_SIZE(buf), format, args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer.");
 
     Set(buf);
@@ -394,7 +397,7 @@ void Utf16String::Format_VA(const unichar_t *format, va_list args)
 void Utf16String::Format_VA(Utf16String &format, va_list args)
 {
     unichar_t buf[MAX_FORMAT_BUF_LEN];
-    int res = u_vsnprintf_u(buf, ARRAY_SIZE(buf), format.Str(), args);
+    const size_type res = u_vsnprintf_u(buf, ARRAY_SIZE(buf), format.Str(), args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
@@ -459,7 +462,7 @@ bool Utf16String::Next_Token(Utf16String *tok, Utf16String delims)
 #else
     const unichar_t *start = Str();
 
-    size_t pos = wcscspn(Peek(), delims.Str());
+    const size_type pos = static_cast<size_type>(wcscspn(Peek(), delims.Str()));
 
     // Check if the position of the next token is not the start of data anyway.
     if (&(Peek()[pos]) > Peek()) {

@@ -115,23 +115,23 @@ public:
 
     operator const unichar_t *() const { return Str(); }
 
-    unichar_t operator[](int index) const { return Get_Char(index); }
-    unichar_t &operator[](int index) { return Get_Char(index); }
+    unichar_t operator[](size_type index) const { return Get_Char(index); }
+    unichar_t &operator[](size_type index) { return Get_Char(index); }
 
     void Validate();
     const unichar_t *Peek() const;
     unichar_t *Peek();
     void Release_Buffer();
-    void Ensure_Unique_Buffer_Of_Size(int chars_needed,
+    void Ensure_Unique_Buffer_Of_Size(size_type chars_needed,
         bool keep_data = false,
         const unichar_t *str_to_cpy = nullptr,
         const unichar_t *str_to_cat = nullptr);
-    int Get_Length() const;
+    size_type Get_Length() const;
     void Clear();
-    unichar_t Get_Char(int index) const;
-    unichar_t &Get_Char(int index);
+    unichar_t Get_Char(size_type index) const;
+    unichar_t &Get_Char(size_type index);
     const unichar_t *Str() const;
-    unichar_t *Get_Buffer_For_Read(int len);
+    unichar_t *Get_Buffer_For_Read(size_type len);
     void Set(const unichar_t *s);
     void Set(Utf16String const &string);
 
@@ -151,11 +151,11 @@ public:
     void Format_VA(const unichar_t *format, va_list args);
     void Format_VA(Utf16String &format, va_list args);
 
-    int Compare(const unichar_t *s) const { return u_strcmp(Str(), s); };
-    int Compare(Utf16String const &string) const { return u_strcmp(Str(), string.Str()); };
+    size_type Compare(const unichar_t *s) const { return u_strcmp(Str(), s); };
+    size_type Compare(Utf16String const &string) const { return u_strcmp(Str(), string.Str()); };
 
-    int Compare_No_Case(const unichar_t *s) const { return u_strcasecmp(Str(), s, U_COMPARE_CODE_POINT_ORDER); };
-    int Compare_No_Case(Utf16String const &string) const
+    size_type Compare_No_Case(const unichar_t *s) const { return u_strcasecmp(Str(), s, U_COMPARE_CODE_POINT_ORDER); };
+    size_type Compare_No_Case(Utf16String const &string) const
     {
         return u_strcasecmp(Str(), string.Str(), U_COMPARE_CODE_POINT_ORDER);
     };
@@ -190,7 +190,7 @@ public:
     static Utf16String const s_emptyString;
 
 private:
-    void Translate_Internal(const char *utf8_string, const int utf8_len);
+    void Translate_Internal(const char *utf8_string, const size_type utf8_len);
 
     UnicodeStringData *m_data;
 };

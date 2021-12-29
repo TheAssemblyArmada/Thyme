@@ -44,7 +44,7 @@ Utf8String::Utf8String(const char *s) : m_data(nullptr)
 {
     if (s != nullptr) {
         // Get length of the string that was passed
-        int len = (int)strlen(s);
+        const size_type len = static_cast<size_type>(strlen(s));
         if (len > 0) {
             // Allocate a buffer
             Ensure_Unique_Buffer_Of_Size(len + 1, false, s);
@@ -98,7 +98,7 @@ void Utf8String::Free_Bytes()
  * Allocates a memory buffer for a string's content.
  */
 void Utf8String::Ensure_Unique_Buffer_Of_Size(
-    int chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
+    size_type chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
 {
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
@@ -116,7 +116,7 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(
         // throw(&preserveData, &_TI1_AW4ErrorCode__);
         //}
 
-        int size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
+        size_type size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
         AsciiStringData *new_data =
             reinterpret_cast<AsciiStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
 
@@ -149,10 +149,10 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(
 /**
  * Gets the length of the string
  */
-int Utf8String::Get_Length() const
+Utf8String::size_type Utf8String::Get_Length() const
 {
     if (m_data != nullptr) {
-        int len = strlen(Str());
+        const size_type len = static_cast<size_type>(strlen(Str()));
         captainslog_dbgassert(len > 0, "length of string is less than or equal to 0.");
 
         return len;
@@ -161,7 +161,7 @@ int Utf8String::Get_Length() const
     return 0;
 }
 
-char Utf8String::Get_Char(int index) const
+char Utf8String::Get_Char(size_type index) const
 {
     captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
     captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
@@ -169,7 +169,7 @@ char Utf8String::Get_Char(int index) const
     return Peek()[index];
 }
 
-char &Utf8String::Get_Char(int index)
+char &Utf8String::Get_Char(size_type index)
 {
     captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
     captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
@@ -194,7 +194,7 @@ const char *Utf8String::Str() const
 /**
  * Generates a buffer with the requested length for reading and returns it.
  */
-char *Utf8String::Get_Buffer_For_Read(int len)
+char *Utf8String::Get_Buffer_For_Read(size_type len)
 {
     Ensure_Unique_Buffer_Of_Size(len + 1, 0, 0, 0);
     return Peek();
@@ -203,13 +203,13 @@ char *Utf8String::Get_Buffer_For_Read(int len)
 /**
  * Set this string content to a new string
  */
-void Utf8String::Set(const char *c)
+void Utf8String::Set(const char *s)
 {
-    if (m_data == nullptr || c != m_data->Peek()) {
-        size_t len;
+    if (m_data == nullptr || s != m_data->Peek()) {
+        size_type len;
 
-        if (c && (len = strlen(c) + 1, len != 1)) {
-            Ensure_Unique_Buffer_Of_Size(len, false, c, nullptr);
+        if (s && (len = static_cast<size_type>(strlen(s)) + 1, len != 1)) {
+            Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
         } else {
             Release_Buffer();
         }
@@ -234,7 +234,7 @@ void Utf8String::Set(Utf8String const &string)
 /**
  * Converts a Utf16 string to Utf8
  */
-void Utf8String::Translate_Internal(const unichar_t *utf16_string, const int utf16_len)
+void Utf8String::Translate_Internal(const unichar_t *utf16_string, const size_type utf16_len)
 {
     Release_Buffer();
 
@@ -263,7 +263,7 @@ void Utf8String::Translate_Internal(const unichar_t *utf16_string, const int utf
     // Use WIN32 API converters.
     if (utf16_len > 0) {
         // Get utf8 string length.
-        const int utf8_len = WideCharToMultiByte(CP_UTF8, 0, utf16_string, utf16_len, nullptr, 0, nullptr, nullptr);
+        const size_type utf8_len = WideCharToMultiByte(CP_UTF8, 0, utf16_string, utf16_len, nullptr, 0, nullptr, nullptr);
 
         if (utf8_len > 0) {
             // Allocate and fill new utf8 string.
@@ -276,7 +276,7 @@ void Utf8String::Translate_Internal(const unichar_t *utf16_string, const int utf
     }
 #else
     // Naive copy, this is what the original does.
-    for (int i = 0; i < utf16_len; ++i) {
+    for (size_type i = 0; i < utf16_len; ++i) {
         unichar_t u = utf16_string[i];
         // FEATURE: Append ? character for non ASCII characters
         if (u > 127)
@@ -293,7 +293,7 @@ void Utf8String::Translate(Utf16String const &utf16_string)
 
 void Utf8String::Translate(const unichar_t *utf16_string)
 {
-    int utf16_len = static_cast<int>(u_strlen(utf16_string));
+    const size_type utf16_len = static_cast<size_type>(u_strlen(utf16_string));
     Translate_Internal(utf16_string, utf16_len);
 }
 
@@ -314,11 +314,12 @@ void Utf8String::Concat(char c)
  */
 void Utf8String::Concat(const char *s)
 {
-    int len = strlen(s);
+    const size_type add_len = static_cast<size_type>(strlen(s));
 
-    if (len > 0) {
+    if (add_len > 0) {
         if (m_data != nullptr) {
-            Ensure_Unique_Buffer_Of_Size(strlen(Peek()) + len + 1, true, 0, s);
+            const size_type cur_len = strlen(Peek());
+            Ensure_Unique_Buffer_Of_Size(cur_len + add_len + 1, true, 0, s);
         } else {
             Set(s);
         }
@@ -354,7 +355,9 @@ void Utf8String::Trim()
         return;
     }
 
-    for (int i = strlen(Peek()) - 1; i >= 0; --i) {
+    const size_type len = static_cast<size_type>(strlen(Peek()));
+
+    for (size_type i = len - 1; i >= 0; --i) {
         if (!isspace(Get_Char(i))) {
             break;
         }
@@ -437,7 +440,7 @@ void Utf8String::Remove_Last_Char()
         return;
     }
 
-    int len = strlen(Peek());
+    const size_type len = static_cast<size_type>(strlen(Peek()));
 
     if (len > 0) {
         Ensure_Unique_Buffer_Of_Size(len + 1, true);
@@ -476,7 +479,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
 
-    int res = vsnprintf(buf, ARRAY_SIZE(buf), format, args);
+    const size_type res = vsnprintf(buf, ARRAY_SIZE(buf), format, args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
@@ -488,7 +491,7 @@ void Utf8String::Format_VA(const char *format, va_list args)
 void Utf8String::Format_VA(Utf8String &format, va_list args)
 {
     char buf[MAX_FORMAT_BUF_LEN];
-    int res = vsnprintf(buf, ARRAY_SIZE(buf), format.Str(), args);
+    const size_type res = vsnprintf(buf, ARRAY_SIZE(buf), format.Str(), args);
     captainslog_relassert(res > 0, 0xDEAD0002, "Unable to format buffer");
 
     Set(buf);
@@ -503,8 +506,8 @@ bool Utf8String::Starts_With(const char *p) const
         return true;
     }
     // early out if our string is shorter than the input one
-    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
-    int thatlen = strlen(p);
+    const size_type thislen = m_data != nullptr ? static_cast<size_type>(strlen(Peek())) : 0;
+    const size_type thatlen = static_cast<size_type>(strlen(p));
 
     if (thislen < thatlen) {
         return false;
@@ -522,8 +525,8 @@ bool Utf8String::Ends_With(const char *p) const
         return true;
     }
     // early out if our string is shorter than the input one
-    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
-    int thatlen = strlen(p);
+    const size_type thislen = m_data != nullptr ? static_cast<size_type>(strlen(Peek())) : 0;
+    const size_type thatlen = static_cast<size_type>(strlen(p));
 
     if (thislen < thatlen) {
         return false;
@@ -541,8 +544,8 @@ bool Utf8String::Starts_With_No_Case(const char *p) const
         return true;
     }
     // early out if our string is shorter than the input one
-    int thislen = Get_Length();
-    int thatlen = strlen(p);
+    const size_type thislen = Get_Length();
+    const size_type thatlen = static_cast<size_type>(strlen(p));
 
     if (thislen < thatlen) {
         return false;
@@ -560,8 +563,8 @@ bool Utf8String::Ends_With_No_Case(const char *p) const
         return true;
     }
 
-    int thislen = m_data != nullptr ? strlen(Peek()) : 0;
-    int thatlen = strlen(p);
+    const size_type thislen = m_data != nullptr ? static_cast<size_type>(strlen(Peek())) : 0;
+    const size_type thatlen = static_cast<size_type>(strlen(p));
 
     if (thislen < thatlen) {
         return false;

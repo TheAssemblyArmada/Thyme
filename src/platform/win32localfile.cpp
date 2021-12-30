@@ -87,7 +87,7 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
     if ((m_openMode & (READ | WRITE)) == (READ | WRITE)) {
         openmode |= O_RDWR;
-    } else if ((m_openMode & 2) != 0) {
+    } else if ((m_openMode & WRITE) != 0) {
         openmode |= O_WRONLY | O_CREAT;
     }
 

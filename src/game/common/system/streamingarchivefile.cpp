@@ -16,7 +16,7 @@
 #include "filesystem.h"
 #include <algorithm>
 
-StreamingArchiveFile::StreamingArchiveFile() : ArchiveFile(nullptr), FileStart(0), FileSize(0), FilePos(0) {}
+StreamingArchiveFile::StreamingArchiveFile() : m_archiveFile(nullptr), m_fileStart(0), m_fileSize(0), m_filePos(0) {}
 
 StreamingArchiveFile::~StreamingArchiveFile()
 {
@@ -41,19 +41,19 @@ void StreamingArchiveFile::Close()
 
 int StreamingArchiveFile::Read(void *dst, int bytes)
 {
-    if (ArchiveFile == nullptr) {
+    if (m_archiveFile == nullptr) {
         return 0;
     }
 
-    ArchiveFile->Seek(FilePos + FileStart, START);
+    m_archiveFile->Seek(m_filePos + m_fileStart, START);
 
-    if (FilePos + bytes > FileSize) {
-        bytes = FileSize - FilePos;
+    if (m_filePos + bytes > m_fileSize) {
+        bytes = m_fileSize - m_filePos;
     }
 
-    int read_len = ArchiveFile->Read(dst, bytes);
+    int read_len = m_archiveFile->Read(dst, bytes);
 
-    FilePos += read_len;
+    m_filePos += read_len;
 
     return bytes;
 }
@@ -67,22 +67,22 @@ int StreamingArchiveFile::Seek(int offset, File::SeekMode mode)
 {
     switch (mode) {
         case START:
-            FilePos = std::clamp(offset, 0, FileSize);
+            m_filePos = std::clamp(offset, 0, m_fileSize);
             break;
 
         case CURRENT:
-            FilePos = std::clamp(FilePos + offset, 0, FileSize);
+            m_filePos = std::clamp(m_filePos + offset, 0, m_fileSize);
             break;
 
         case END:
-            FilePos = std::clamp(FileSize + offset, 0, FileSize);
+            m_filePos = std::clamp(m_fileSize + offset, 0, m_fileSize);
             break;
 
         default:
             return -1;
     }
 
-    return FilePos;
+    return m_filePos;
 }
 
 void StreamingArchiveFile::Next_Line(char *dst, int bytes) {}
@@ -118,15 +118,15 @@ bool StreamingArchiveFile::Open_From_Archive(File *file, Utf8String const &name,
         return false;
     }
 
-    ArchiveFile = file;
-    FileStart = pos;
-    FileSize = size;
-    FilePos = 0;
+    m_archiveFile = file;
+    m_fileStart = pos;
+    m_fileSize = size;
+    m_filePos = 0;
 
     // Check that the file start position and size are actually valid
-    if (ArchiveFile->Seek(FileStart, START) == FileStart) {
-        if (ArchiveFile->Seek(FileSize, CURRENT) == FileStart + FileSize) {
-            ArchiveFile->Seek(FileStart, START);
+    if (m_archiveFile->Seek(m_fileStart, START) == m_fileStart) {
+        if (m_archiveFile->Seek(m_fileSize, CURRENT) == m_fileStart + m_fileSize) {
+            m_archiveFile->Seek(m_fileStart, START);
 
             return true;
         }

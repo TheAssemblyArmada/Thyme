@@ -16,12 +16,12 @@
 #include "filesystem.h"
 #include <algorithm>
 
-RAMFile::RAMFile() : Data(nullptr), Pos(0), Size(0) {}
+RAMFile::RAMFile() : m_data(nullptr), m_pos(0), m_size(0) {}
 
 RAMFile::~RAMFile()
 {
-    if (Data != nullptr) {
-        delete[] Data;
+    if (m_data != nullptr) {
+        delete[] m_data;
     }
 }
 
@@ -41,9 +41,9 @@ bool RAMFile::Open(const char *filename, int mode)
 
 void RAMFile::Close()
 {
-    if (Data != nullptr) {
-        delete[] Data;
-        Data = nullptr;
+    if (m_data != nullptr) {
+        delete[] m_data;
+        m_data = nullptr;
     }
 
     File::Close();
@@ -56,13 +56,13 @@ int RAMFile::Read(void *dst, int bytes)
     }
 
     // Clip the amount to read to be within the data remaining.
-    bytes = std::min(bytes, Size - Pos);
+    bytes = std::min(bytes, m_size - m_pos);
 
     if (bytes > 0) {
-        memcpy(dst, Data + Pos, bytes);
+        memcpy(dst, m_data + m_pos, bytes);
     }
 
-    Pos += bytes;
+    m_pos += bytes;
 
     return bytes;
 }
@@ -77,15 +77,15 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
 {
     switch (mode) {
         case START:
-            Pos = offset;
+            m_pos = offset;
             break;
 
         case CURRENT:
-            Pos += offset;
+            m_pos += offset;
             break;
 
         case END:
-            Pos = offset + Size;
+            m_pos = offset + m_size;
             break;
 
         default:
@@ -93,9 +93,9 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
     }
 
     // Don't seek to outside the file.
-    Pos = std::clamp(Pos, 0, Size); // std::min(0, std::min(Pos, Size));
+    m_pos = std::clamp(m_pos, 0, m_size); // std::min(0, std::min(m_pos, m_size));
 
-    return Pos;
+    return m_pos;
 }
 
 void RAMFile::Next_Line(char *dst, int bytes)
@@ -103,8 +103,8 @@ void RAMFile::Next_Line(char *dst, int bytes)
     int i = 0;
 
     // Copy data until newline.
-    for (; Pos < Size; ++Pos) {
-        char tmp = Data[Pos];
+    for (; m_pos < m_size; ++m_pos) {
+        char tmp = m_data[m_pos];
 
         if (tmp == '\n') {
             break;
@@ -116,13 +116,13 @@ void RAMFile::Next_Line(char *dst, int bytes)
     }
 
     // If we broke on newline, increment past it.
-    if (Pos < Size) {
+    if (m_pos < m_size) {
         // Copy newline to destination if not full?
         if (dst != nullptr && i < bytes) {
-            dst[i++] = Data[Pos];
+            dst[i++] = m_data[m_pos];
         }
 
-        ++Pos;
+        ++m_pos;
     }
 
     // If we have a data pointer to copy to, make sure its null terminiated
@@ -135,7 +135,7 @@ void RAMFile::Next_Line(char *dst, int bytes)
     }
 
     // Make sure our position is still within data.
-    Pos = std::min(Pos, Size);
+    m_pos = std::min(m_pos, m_size);
 }
 
 bool RAMFile::Scan_Int(int &integer)
@@ -145,29 +145,29 @@ bool RAMFile::Scan_Int(int &integer)
 
     integer = 0;
 
-    if (Pos >= Size) {
-        Pos = Size;
+    if (m_pos >= m_size) {
+        m_pos = m_size;
 
         return false;
     }
 
     // Find first digit or '-' symbol.
     do {
-        tmp = Data[Pos];
+        tmp = m_data[m_pos];
 
         if (isdigit(tmp) || tmp == '-') {
             break;
         }
 
-    } while (++Pos < Size);
+    } while (++m_pos < m_size);
 
-    if (Pos >= Size) {
-        Pos = Size;
+    if (m_pos >= m_size) {
+        m_pos = m_size;
 
         return false;
     }
 
-    for (tmp = Data[Pos]; Pos < Size && isdigit(tmp); tmp = Data[++Pos]) {
+    for (tmp = m_data[m_pos]; m_pos < m_size && isdigit(tmp); tmp = m_data[++m_pos]) {
         number.Concat(tmp);
     }
 
@@ -183,32 +183,32 @@ bool RAMFile::Scan_Real(float &real)
 
     real = 0.0f;
 
-    if (Pos >= Size) {
-        Pos = Size;
+    if (m_pos >= m_size) {
+        m_pos = m_size;
 
         return false;
     }
 
     // Find first digit, '-' or '.' symbol.
     do {
-        tmp = Data[Pos];
+        tmp = m_data[m_pos];
 
         if (isdigit(tmp) || tmp == '-' || tmp == '.') {
             break;
         }
 
-    } while (++Pos < Size);
+    } while (++m_pos < m_size);
 
     // Check we are still in bounds
-    if (Pos >= Size) {
-        Pos = Size;
+    if (m_pos >= m_size) {
+        m_pos = m_size;
 
         return false;
     }
 
     bool have_point = false;
 
-    for (tmp = Data[Pos]; Pos < Size && (isdigit(tmp) || (tmp == '.' && !have_point)); tmp = Data[++Pos]) {
+    for (tmp = m_data[m_pos]; m_pos < m_size && (isdigit(tmp) || (tmp == '.' && !have_point)); tmp = m_data[++m_pos]) {
         number.Concat(tmp);
 
         if (tmp == '.') {
@@ -226,26 +226,26 @@ bool RAMFile::Scan_String(Utf8String &string)
     string.Clear();
 
     // Find first none space.
-    for (; Pos < Size; ++Pos) {
-        if (!isspace(Data[Pos])) {
+    for (; m_pos < m_size; ++m_pos) {
+        if (!isspace(m_data[m_pos])) {
             break;
         }
     }
 
     // Check we are still in bounds
-    if (Pos >= Size) {
-        Pos = Size;
+    if (m_pos >= m_size) {
+        m_pos = m_size;
 
         return false;
     }
 
     // Read into Utf8String
-    for (; Pos < Size; ++Pos) {
-        if (isspace(Data[Pos])) {
+    for (; m_pos < m_size; ++m_pos) {
+        if (isspace(m_data[m_pos])) {
             break;
         }
 
-        string.Concat(Data[Pos]);
+        string.Concat(m_data[m_pos]);
     }
 
     return true;
@@ -255,9 +255,9 @@ void *RAMFile::Read_All_And_Close()
 {
     char *data;
 
-    if (Data != nullptr) {
-        data = Data;
-        Data = nullptr;
+    if (m_data != nullptr) {
+        data = m_data;
+        m_data = nullptr;
         Close();
     } else {
         // Valid pointer return seems expected.
@@ -274,21 +274,21 @@ bool RAMFile::Open(File *file)
     }
 
     if (File::Open(file->Get_File_Name().Str(), file->Get_File_Mode())) {
-        Size = file->Size();
-        Data = new char[Size];
+        m_size = file->Size();
+        m_data = new char[m_size];
 
-        if (Data != nullptr) {
+        if (m_data != nullptr) {
             // Read the entire file into our buffer.
-            Size = file->Read(Data, Size);
+            m_size = file->Read(m_data, m_size);
 
             // If we didn't read any data into our buffer, abort.
-            if (Size >= 0) {
-                Pos = 0;
+            if (m_size >= 0) {
+                m_pos = 0;
 
                 return true;
             } else {
-                delete[] Data;
-                Data = nullptr;
+                delete[] m_data;
+                m_data = nullptr;
             }
         }
     }
@@ -303,16 +303,16 @@ bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int
     }
 
     if (File::Open(name.Str(), READ | BINARY)) {
-        if (Data != nullptr) {
-            delete[] Data;
-            Data = nullptr;
+        if (m_data != nullptr) {
+            delete[] m_data;
+            m_data = nullptr;
         }
 
-        Size = size;
-        Data = new char[size];
+        m_size = size;
+        m_data = new char[size];
 
         if (file->Seek(pos, START) == pos) {
-            if (file->Read(Data, Size) == size) {
+            if (file->Read(m_data, m_size) == size) {
                 m_filename = file->Get_File_Name();
 
                 return true;
@@ -325,5 +325,5 @@ bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int
 
 bool RAMFile::Copy_To_File(File *file)
 {
-    return file != nullptr && file->Write(Data, Size) == Size;
+    return file != nullptr && file->Write(m_data, m_size) == m_size;
 }

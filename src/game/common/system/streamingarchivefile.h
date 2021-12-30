@@ -44,8 +44,8 @@ public:
     virtual bool Copy_To_File(File *file) override { return false; }
 
 protected:
-    File *ArchiveFile;
-    int FileStart;
-    int FileSize;
-    int FilePos;
+    File *m_archiveFile;
+    int m_fileStart;
+    int m_fileSize;
+    int m_filePos;
 };

@@ -24,7 +24,7 @@ void *LocalFile::Read_All_And_Close()
     uint8_t *data;
 
     if (size > 0) {
-        captainslog_trace("Reading %s and closing.\n", m_filename.Str());
+        captainslog_trace("Reading %s and closing.", m_filename.Str());
         data = new uint8_t[size];
 
         Read(data, size);
@@ -40,25 +40,22 @@ void *LocalFile::Read_All_And_Close()
 
 File *LocalFile::Convert_To_RAM()
 {
-    captainslog_trace("Converting %s to RAMFile.\n", m_filename.Str());
+    captainslog_trace("Converting %s to RAMFile.", m_filename.Str());
+
     RAMFile *ramfile = NEW_POOL_OBJ(RAMFile);
 
     if (ramfile->Open(this)) {
         if (m_deleteOnClose) {
             ramfile->Set_Del_On_Close(true);
             Close();
-
-            return ramfile;
         } else {
             Close();
-            this->Delete_Instance();
-
-            return ramfile;
+            Delete_Instance();
         }
+        return ramfile;
+    } else {
+        ramfile->Close();
+        ramfile->Delete_Instance();
+        return this;
     }
-
-    ramfile->Close();
-    ramfile->Delete_Instance();
-
-    return this;
 }

@@ -43,7 +43,7 @@ public:
     virtual bool Copy_To_File(File *file);
 
 protected:
-    char *Data;
-    int Pos;
-    int Size;
+    char *m_data;
+    int m_pos;
+    int m_size;
 };

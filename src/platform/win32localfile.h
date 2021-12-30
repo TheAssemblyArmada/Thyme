@@ -45,5 +45,5 @@ public:
     virtual bool Scan_String(Utf8String &string) override;
 
 private:
-    int FileHandle;
+    int m_fileHandle;
 };

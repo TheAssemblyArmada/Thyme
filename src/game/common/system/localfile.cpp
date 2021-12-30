@@ -16,7 +16,7 @@
 #include "ramfile.h"
 #include <captainslog.h>
 
-int LocalFile::TotalOpen = 0;
+int LocalFile::s_totalOpen = 0;
 
 void *LocalFile::Read_All_And_Close()
 {

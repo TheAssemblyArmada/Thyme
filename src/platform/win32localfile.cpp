@@ -50,7 +50,7 @@ Win32LocalFile::~Win32LocalFile()
 {
     if (m_fileHandle != INVALID_HANDLE) {
         close(m_fileHandle);
-        m_fileHandle = -1;
+        m_fileHandle = INVALID_HANDLE;
         --s_totalOpen;
     }
 
@@ -65,41 +65,41 @@ bool Win32LocalFile::Open(const char *filename, int mode)
 
     int openmode = O_RDONLY;
 
-    if ((m_openMode & CREATE) != 0) {
+    if ((m_openMode & FileMode::CREATE) != 0) {
         openmode |= O_CREAT;
     }
 
-    if ((m_openMode & TRUNCATE) != 0) {
+    if ((m_openMode & FileMode::TRUNCATE) != 0) {
         openmode |= O_TRUNC;
     }
 
-    if ((m_openMode & APPEND) != 0) {
+    if ((m_openMode & FileMode::APPEND) != 0) {
         openmode |= O_APPEND;
     }
 
-    if ((m_openMode & TEXT) != 0) {
+    if ((m_openMode & FileMode::TEXT) != 0) {
         openmode |= O_TEXT;
     }
 
-    if ((m_openMode & BINARY) != 0) {
+    if ((m_openMode & FileMode::BINARY) != 0) {
         openmode |= O_BINARY;
     }
 
-    if ((m_openMode & (READ | WRITE)) == (READ | WRITE)) {
+    if ((m_openMode & (FileMode::READ | FileMode::WRITE)) == (FileMode::READ | FileMode::WRITE)) {
         openmode |= O_RDWR;
-    } else if ((m_openMode & WRITE) != 0) {
+    } else if ((m_openMode & FileMode::WRITE) != 0) {
         openmode |= O_WRONLY | O_CREAT;
     }
 
     m_fileHandle = open(filename, openmode, S_IREAD | S_IWRITE);
 
-    if (m_fileHandle == -1) {
+    if (m_fileHandle == INVALID_HANDLE) {
         return false;
     }
 
     ++s_totalOpen;
 
-    if ((m_openMode & APPEND) != 0 && Seek(0, END) < 0) {
+    if ((m_openMode & FileMode::APPEND) != 0 && Seek(0, SeekMode::END) < 0) {
         Close();
 
         return false;
@@ -117,7 +117,7 @@ int Win32LocalFile::Read(void *dst, int bytes)
     if (dst != nullptr) {
         return read(m_fileHandle, dst, bytes);
     } else {
-        lseek(m_fileHandle, bytes, CURRENT);
+        lseek(m_fileHandle, bytes, SeekMode::CURRENT);
     }
 
     return bytes;
@@ -135,9 +135,9 @@ int Win32LocalFile::Write(void const *src, int bytes)
 int Win32LocalFile::Seek(int offset, File::SeekMode mode)
 {
     switch (mode) {
-        case START:
-        case CURRENT:
-        case END:
+        case SeekMode::START:
+        case SeekMode::CURRENT:
+        case SeekMode::END:
             break;
         default:
             return -1;
@@ -189,18 +189,14 @@ bool Win32LocalFile::Scan_Int(int &integer)
     while (true) {
         number.Concat(tmp);
 
-        int bytes = read(m_fileHandle, &tmp, sizeof(tmp));
-
-        if (bytes == 0) {
+        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
             break;
         }
 
         if (!isdigit(tmp)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if (bytes) {
-                lseek(m_fileHandle, -1, CURRENT);
-            }
+            lseek(m_fileHandle, -1, SeekMode::CURRENT);
 
             break;
         }
@@ -236,18 +232,14 @@ bool Win32LocalFile::Scan_Real(float &real)
             have_point = true;
         }
 
-        int bytes = read(m_fileHandle, &tmp, sizeof(tmp));
-
-        if (bytes == 0) {
+        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
             break;
         }
 
         if (!isdigit(tmp) && (tmp != '.' || have_point)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if (bytes) {
-                lseek(m_fileHandle, -1, CURRENT);
-            }
+            lseek(m_fileHandle, -1, SeekMode::CURRENT);
 
             break;
         }
@@ -274,18 +266,14 @@ bool Win32LocalFile::Scan_String(Utf8String &string)
     while (true) {
         string.Concat(tmp);
 
-        int bytes = read(m_fileHandle, &tmp, sizeof(tmp));
-
-        if (bytes == 0) {
+        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
             break;
         }
 
         if (isspace(tmp)) {
             // If we read a byte, seek back that byte for the next read
             // as we are done with the current number.
-            if (bytes) {
-                lseek(m_fileHandle, -1, CURRENT);
-            }
+            lseek(m_fileHandle, -1, SeekMode::CURRENT);
 
             break;
         }

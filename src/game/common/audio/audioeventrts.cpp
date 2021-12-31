@@ -32,7 +32,6 @@ AudioEventRTS::AudioEventRTS() :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -47,6 +46,7 @@ AudioEventRTS::AudioEventRTS() :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
+    m_positionOfAudio.Zero();
 }
 
 /**
@@ -63,7 +63,6 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_priority(that.m_priority),
     m_volumeAdjustFactor(that.m_volumeAdjustFactor),
     m_timeOfDay(that.m_timeOfDay),
-    m_positionOfAudio(that.m_positionOfAudio),
     m_objectID(that.m_objectID),
     m_eventType(that.m_eventType),
     m_shouldFade(that.m_shouldFade),
@@ -78,6 +77,7 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_playerIndex(that.m_playerIndex),
     m_nextPlayPortion(that.m_nextPlayPortion)
 {
+    m_positionOfAudio.Set(&that.m_positionOfAudio);
 }
 
 /**
@@ -94,7 +94,6 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -109,6 +108,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
+    m_positionOfAudio.Zero();
 }
 
 /**
@@ -125,7 +125,6 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio{ 0.0f, 0.0f, 0.0f },
     m_objectID(id),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -159,7 +158,6 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_positionOfAudio(*pos),
     m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
@@ -174,6 +172,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
+    m_positionOfAudio.Set(pos);
 }
 
 /**
@@ -196,7 +195,7 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_priority = that.m_priority;
         m_volumeAdjustFactor = that.m_volumeAdjustFactor;
         m_timeOfDay = that.m_timeOfDay;
-        m_positionOfAudio = that.m_positionOfAudio;
+        m_positionOfAudio.Set(&that.m_positionOfAudio);
         m_objectID = that.m_objectID;
         m_eventType = that.m_eventType;
         m_shouldFade = that.m_shouldFade;

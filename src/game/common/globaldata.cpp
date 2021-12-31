@@ -484,12 +484,8 @@ GlobalData::GlobalData()
     m_forceModelsFollowTimeOfDay = true;
     m_forceModelsFollowWeather = true;
     m_partitionCellSize = 0.0f;
-    m_ammoPipWorldOffset.x = 0.0f;
-    m_ammoPipWorldOffset.y = 0.0f;
-    m_ammoPipWorldOffset.z = 0.0f;
-    m_containerPipWorldOffset.x = 0.0f;
-    m_containerPipWorldOffset.y = 0.0f;
-    m_containerPipWorldOffset.z = 0.0f;
+    m_ammoPipWorldOffset.Zero();
+    m_containerPipWorldOffset.Zero();
     m_ammoPipScreenOffset.x = 0.0f;
     m_ammoPipScreenOffset.y = 0.0f;
     m_containerPipScreenOffset.x = 0.0f;

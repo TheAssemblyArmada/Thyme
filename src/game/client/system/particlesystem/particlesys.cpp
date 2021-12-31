@@ -46,7 +46,6 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_startTimestamp(g_theGameClient->Get_Frame()),
     m_lastParticleID(0),
     m_accumulatedSizeBonus(0.0f),
-    m_velCoefficient(1.0f, 1.0f, 1.0f),
     m_countCoefficient(1.0f),
     m_delayCoefficient(1.0f),
     m_sizeCoefficient(1.0f),
@@ -65,6 +64,11 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_saveable(true),
     m_unkBool1(false)
 {
+    m_lastPos.Zero();
+    m_pos.Zero();
+    m_velCoefficient.x = 1.0f;
+    m_velCoefficient.y = 1.0f;
+    m_velCoefficient.z = 1.0f;
     m_slavePosOffset = temp->m_slavePosOffset;
     m_unkValue = 0;
     m_driftVelocity = temp->m_driftVelocity;
@@ -281,8 +285,13 @@ void ParticleSystem::Destroy()
  */
 void ParticleSystem::Get_Position(Coord3D *pos) const
 {
+    Vector3 trans;
+    m_localTransform.Get_Translation(&trans);
+
     if (pos != nullptr) {
-        *pos = { m_localTransform[0][3], m_localTransform[1][3], m_localTransform[2][3] };
+        pos->x = trans.X;
+        pos->y = trans.Y;
+        pos->z = trans.Z;
     }
 }
 
@@ -383,25 +392,22 @@ Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
             break;
         case EMISSION_VELOCITY_SPHERICAL: {
             float scale = m_emissionVelocity.spherical.Get_Value();
-            _vel = *Compute_Point_On_Sphere();
-            _vel *= scale;
+            Coord3D *point = Compute_Point_On_Sphere();
+            _vel = scale * (*point);
         } break;
         case EMISSION_VELOCITY_HEMISPHERICAL: {
             float scale = m_emissionVelocity.hemispherical.Get_Value();
+            Coord3D rand;
+
             // Randomize our point, only from 0.0 for Z as only half sphere.
             do {
-                _vel.x = Get_Client_Random_Value_Real(-1.0f, 1.0f);
-                _vel.y = Get_Client_Random_Value_Real(-1.0f, 1.0f);
-                _vel.z = Get_Client_Random_Value_Real(0.0f, 1.0f);
-            } while (_vel.x == 0.0f && _vel.y == 0.0f && _vel.z == 0.0f);
+                rand.x = Get_Client_Random_Value_Real(-1.0f, 1.0f);
+                rand.y = Get_Client_Random_Value_Real(-1.0f, 1.0f);
+                rand.z = Get_Client_Random_Value_Real(0.0f, 1.0f);
+            } while (rand.x == 0.0f && rand.y == 0.0f && rand.z == 0.0f);
 
-            float length = _vel.Length();
-
-            if (length != 0.0f) {
-                _vel /= length;
-            }
-
-            _vel *= scale;
+            rand.Normalize();
+            _vel = scale * rand;
         } break;
         case EMISSION_VELOCITY_CYLINDRICAL: {
             float radius = m_emissionVelocity.cylindrical.radial.Get_Value();
@@ -413,63 +419,46 @@ Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
         case EMISSION_VELOCITY_OUTWARD: {
             float speed = m_emissionVelocity.outward.outward.Get_Value();
             float other_speed = m_emissionVelocity.outward.other.Get_Value();
+            Coord3D zero;
+            zero.Zero();
 
             switch (m_emissionVolumeType) {
                 case EMISSION_VOLUME_POINT: {
-                    _vel = *Compute_Point_On_Sphere();
-                    _vel *= speed;
+                    Coord3D *point = Compute_Point_On_Sphere();
+                    _vel = speed * (*point);
                 } break;
                 case EMISSION_VOLUME_LINE: {
-                    Coord3D distance = m_emissionVolume.line.end - m_emissionVolume.line.start;
-                    float length = distance.Length();
+                    Coord3D distance;
+                    distance.x = m_emissionVolume.line.end.x - m_emissionVolume.line.start.x;
+                    distance.y = m_emissionVolume.line.end.y - m_emissionVolume.line.start.y;
+                    distance.z = m_emissionVolume.line.end.z - m_emissionVolume.line.start.z;
+                    distance.Normalize();
 
-                    if (length != 0.0f) {
-                        distance /= length;
-                    }
+                    Coord3D c1;
+                    c1.x = 0.0f;
+                    c1.y = 0.0f;
+                    c1.z = 1.0f;
 
-                    float tmp1 = 0.0f - distance.y;
-                    float tmp2 = distance.x - 0.0f;
-                    float tmp3 = float(0.0f * distance.y) - float(tmp2 * distance.z);
-                    float tmp4 = float(tmp1 * distance.z) - float(0.0f * distance.x);
+                    Coord3D c2;
+                    Coord3D::Cross_Product(&c1, &distance, &c2);
+                    Coord3D::Cross_Product(&distance, &c2, &c1);
 
-                    _vel.x = float(tmp1 * speed) + float(tmp3 * other_speed);
-                    _vel.y = float(tmp2 * speed) + float(tmp4 * other_speed);
-                    _vel.z = float(float(0.0f * speed) + float(float(distance.x * tmp2) - float(tmp1 - distance.y)))
-                        * other_speed;
+                    _vel = speed * c2 + other_speed * c1;
                 } break;
-                case EMISSION_VOLUME_BOX: {
-                    _vel = *pos;
-                    float length = _vel.Length();
-
-                    if (length != 0.0f) {
-                        _vel /= length;
-                    }
-
-                    _vel *= speed;
-                }
-
-                break;
+                case EMISSION_VOLUME_BOX:
                 case EMISSION_VOLUME_SPHERE: {
-                    _vel = *pos;
-                    float length = _vel.Length();
-
-                    if (length != 0.0f) {
-                        _vel /= length;
-                    }
-
+                    _vel = (*pos) - zero;
+                    _vel.Normalize();
                     _vel *= speed;
                 } break;
                 case EMISSION_VOLUME_CYLINDER: {
-                    Coord2D cyl_pos(pos->x, pos->y);
-                    float length = cyl_pos.Length();
+                    Coord2D cyl_pos;
+                    cyl_pos.x = pos->x - zero.x;
+                    cyl_pos.y = pos->y - zero.y;
+                    cyl_pos.Normalize();
 
-                    if (length != 0.0f) {
-                        cyl_pos /= length;
-                    }
-
-                    cyl_pos *= speed;
-                    _vel.x = cyl_pos.x;
-                    _vel.y = cyl_pos.y;
+                    _vel.x = speed * cyl_pos.x;
+                    _vel.y = speed * cyl_pos.y;
                     _vel.z = other_speed;
                 } break;
                 default:
@@ -483,9 +472,9 @@ Coord3D *ParticleSystem::Compute_Particle_Velocity(const Coord3D *pos)
             break;
     }
 
-    _vel.x *= float(float(float(g_theWriteableGlobalData->m_particleScale * 0.5f) + 0.5f) * m_velCoefficient.x);
-    _vel.y *= float(float(float(g_theWriteableGlobalData->m_particleScale * 0.5f) + 0.5f) * m_velCoefficient.y);
-    _vel.z *= float(float(float(g_theWriteableGlobalData->m_particleScale * 0.5f) + 0.5f) * m_velCoefficient.z);
+    _vel.x *= (g_theWriteableGlobalData->m_particleScale / 2.0f + 0.5f) * m_velCoefficient.x;
+    _vel.y *= (g_theWriteableGlobalData->m_particleScale / 2.0f + 0.5f) * m_velCoefficient.y;
+    _vel.z *= (g_theWriteableGlobalData->m_particleScale / 2.0f + 0.5f) * m_velCoefficient.z;
 
     return &_vel;
 }
@@ -502,12 +491,7 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
     switch (m_emissionVolumeType) {
         case EMISSION_VOLUME_LINE: {
             float scale = Get_Client_Random_Value_Real(0.0f, 1.0f);
-            _pos.x = float(scale * float(m_emissionVolume.line.end.x - m_emissionVolume.line.start.x))
-                + m_emissionVolume.line.start.x;
-            _pos.y = float(scale * float(m_emissionVolume.line.end.y - m_emissionVolume.line.start.y))
-                + m_emissionVolume.line.start.y;
-            _pos.z = float(scale * float(m_emissionVolume.line.end.z - m_emissionVolume.line.start.z))
-                + m_emissionVolume.line.start.z;
+            _pos = scale * (m_emissionVolume.line.end - m_emissionVolume.line.start) + m_emissionVolume.line.start;
         }
 
         break;
@@ -570,8 +554,8 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
         case EMISSION_VOLUME_SPHERE: {
             float radius = m_isEmissionVolumeHollow ? m_emissionVolume.sphere :
                                                       Get_Client_Random_Value_Real(0.0f, m_emissionVolume.sphere);
-            _pos = *Compute_Point_On_Sphere();
-            _pos *= radius;
+            Coord3D *point = Compute_Point_On_Sphere();
+            _pos = radius * (*point);
         } break;
 
         case EMISSION_VOLUME_CYLINDER: {
@@ -591,7 +575,7 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
             break;
     }
 
-    _pos *= float(float(g_theWriteableGlobalData->m_particleScale * 0.5f) + 0.5f);
+    _pos = (g_theWriteableGlobalData->m_particleScale / 2.0f + 0.5f) * _pos;
 
     return &_pos;
 }
@@ -659,40 +643,31 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
         _info.m_vel = *Compute_Particle_Velocity(&_info.m_pos);
 
         if (!m_isIdentity) {
+            Vector3 pos;
+            Vector3 transform;
+
             if (m_isFirstPos) {
                 m_lastPos = m_pos;
                 m_isFirstPos = false;
             }
 
-            float scale = 1.0f - float(float(id) / float(count));
+            pos.X = _info.m_pos.x;
+            pos.Y = _info.m_pos.y;
+            pos.Z = _info.m_pos.z;
+            transform = m_transform * pos;
+            _info.m_pos.x = transform.X - (1.0f - (float)id / (float)count) * (m_pos.x - m_lastPos.x);
+            _info.m_pos.y = transform.Y - (1.0f - (float)id / (float)count) * (m_pos.y - m_lastPos.y);
+            _info.m_pos.z = transform.Z - (1.0f - (float)id / (float)count) * (m_pos.z - m_lastPos.z);
 
-            Coord3D adjustment = m_pos - m_lastPos;
-            adjustment *= scale;
-
-            // Looks like a matrix transfom... original code perhaps casted Coord3D to Vector3?
-            Coord3D tmp = _info.m_pos;
-            _info.m_pos.x = float(float(float(float(tmp.x * m_transform[0].X) + float(tmp.y * m_transform[0].Y))
-                                      + float(tmp.z * m_transform[0].Z))
-                                + m_transform[0].W)
-                - adjustment.x;
-            _info.m_pos.y = float(float(float(float(tmp.x * m_transform[1].X) + float(tmp.y * m_transform[1].Y))
-                                      + float(tmp.z * m_transform[1].Z))
-                                + m_transform[1].W)
-                - adjustment.y;
-            _info.m_pos.z = float(float(float(float(tmp.x * m_transform[2].X) + float(tmp.y * m_transform[2].Y))
-                                      + float(tmp.z * m_transform[2].Z))
-                                + m_transform[2].W)
-                - adjustment.z;
-            _info.m_pos -= adjustment;
-
-            // Looks like a matrix rotate... original code perhaps casted Coord3D to Vector3?
-            tmp = _info.m_vel;
-            _info.m_vel.x =
-                float(float(tmp.x * m_transform[0].X) + float(tmp.y * m_transform[0].Y)) + float(tmp.z * m_transform[0].Z);
-            _info.m_vel.y =
-                float(float(tmp.x * m_transform[1].X) + float(tmp.y * m_transform[1].Y)) + float(tmp.z * m_transform[1].Z);
-            _info.m_vel.z =
-                float(float(tmp.x * m_transform[2].X) + float(tmp.y * m_transform[2].Y)) + float(tmp.z * m_transform[2].Z);
+            Vector3 vel;
+            Vector3 rotate;
+            vel.X = _info.m_vel.x;
+            vel.Y = _info.m_vel.y;
+            vel.Z = _info.m_vel.z;
+            Matrix3D::Rotate_Vector(m_transform, vel, &rotate);
+            _info.m_vel.x = rotate.X;
+            _info.m_vel.y = rotate.Y;
+            _info.m_vel.z = rotate.Z;
         }
 
         _info.m_velDamping = m_velDamping.Get_Value();
@@ -726,7 +701,13 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
         }
 
         _info.m_colorScale = m_colorScale.Get_Value();
-        _info.m_emitterPos = { m_transform[0].W, m_transform[1].W, m_transform[2].W };
+
+        Vector3 pos;
+        Vector3 trans(0.0f, 0.0f, 0.0f);
+        pos = m_transform * trans;
+        _info.m_emitterPos.x = pos.X;
+        _info.m_emitterPos.y = pos.Y;
+        _info.m_emitterPos.z = pos.Z;
 
         _info.m_particleUpTowardsEmitter = m_isParticleUpTowardsEmitter;
         _info.m_windRandomness = Get_Client_Random_Value_Real(0.7f, 1.3f);
@@ -801,11 +782,7 @@ Coord3D *ParticleSystem::Compute_Point_On_Sphere()
         _point.z = Get_Client_Random_Value_Real(-1.0f, 1.0f);
     } while (_point.x == 0.0f && _point.y == 0.0f && _point.z == 0.0f);
 
-    float length = _point.Length();
-
-    if (length != 0.0f) {
-        _point /= length;
-    }
+    _point.Normalize();
 
     return &_point;
 }

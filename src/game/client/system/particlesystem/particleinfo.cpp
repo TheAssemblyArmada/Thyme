@@ -39,6 +39,9 @@ ParticleInfo::ParticleInfo() :
     m_windRandomness(0.0f),
     m_particleUpTowardsEmitter(false)
 {
+    m_emitterPos.Zero();
+    m_pos.Zero();
+    m_vel.Zero();
 }
 
 void ParticleInfo::Xfer_Snapshot(Xfer *xfer)

@@ -15,7 +15,7 @@
 #include "always.h"
 #include "image.h"
 
-Image::Image() : m_name(), m_filename(), m_UVCoords(), m_textureSize(), m_imageSize(), m_rawTextureData(), m_status(0)
+Image::Image() : m_name(), m_filename(), m_textureSize(), m_imageSize(), m_rawTextureData(), m_status(0)
 {
     m_UVCoords.hi.x = 1.0;
     m_UVCoords.hi.y = 1.0;

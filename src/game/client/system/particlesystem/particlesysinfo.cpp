@@ -71,6 +71,8 @@ ParticleSystemInfo::ParticleSystemInfo() :
     m_windMotionEndAngleMax(6.283185f),
     m_windMotionMovingToEndAngle(true)
 {
+    m_driftVelocity.Zero();
+    m_slavePosOffset.Zero();
 }
 
 /**

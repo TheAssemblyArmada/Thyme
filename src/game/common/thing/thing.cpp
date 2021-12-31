@@ -30,9 +30,9 @@ Thing::Thing(const ThingTemplate *thing_template) : m_template()
         m_templateName = thing_template->Get_Name();
 #endif
         m_transform.Make_Identity();
-        m_cachedPos = { 0.0f, 0.0f, 0.0f };
+        m_cachedPos.Zero();
         m_cachedAngle = 0.0f;
-        m_cachedDirVector = { 0.0f, 0.0f, 0.0f };
+        m_cachedDirVector.Zero();
         m_cachedAltitudeAboveTerrain = 0.0f;
         m_cachedAltitudeAboveTerrainOrWater = 0.0f;
         m_cacheFlags = 0;
@@ -77,7 +77,10 @@ void Thing::Set_Position_Z(float z)
 {
     if (Get_Template()->Is_KindOf(KINDOF_STICK_TO_TERRAIN_SLOPE)) {
         Matrix3D tm;
-        Coord3D pos(m_cachedPos.x, m_cachedPos.y, z);
+        Coord3D pos;
+        pos.x = m_cachedPos.x;
+        pos.y = m_cachedPos.y;
+        pos.z = z;
         g_theTerrainLogic->Align_On_Terrain(Get_Orientation(), pos, true, tm);
         Set_Transform_Matrix(&tm);
     } else {
@@ -139,17 +142,30 @@ void Thing::Set_Orientation(float angle)
     float old_angle = m_cachedAngle;
     Coord3D old_pos = m_cachedPos;
     Matrix3D old_tm(m_transform);
-    Coord3D pos(m_transform.Get_X_Translation(), m_transform.Get_Y_Translation(), m_transform.Get_Z_Translation());
+    Coord3D pos;
+    pos.x = m_transform.Get_X_Translation();
+    pos.y = m_transform.Get_Y_Translation();
+    pos.z = m_transform.Get_Z_Translation();
 
     if (m_template->Is_KindOf(KINDOF_STICK_TO_TERRAIN_SLOPE)) {
         g_theTerrainLogic->Align_On_Terrain(angle, pos, true, m_transform);
     } else {
-        Coord3D pos1(0.0f, 0.0f, 1.0f);
-        Coord3D pos2(Cos(angle), Sin(angle), 0.0f);
+        Coord3D pos1;
+        pos1.x = 0.0f;
+        pos1.y = 0.0f;
+        pos1.z = 1.0f;
+
+        Coord3D pos2;
+        pos2.x = Cos(angle);
+        pos2.y = Sin(angle);
+        pos2.z = 0.0f;
+
         Coord3D pos3;
         Coord3D::Cross_Product(&pos1, &pos2, &pos3);
+
         Coord3D pos4;
         Coord3D::Cross_Product(&pos3, &pos1, &pos4);
+
         m_transform.Set(pos4.x, pos3.x, pos1.x, pos.x, pos4.y, pos3.y, pos1.y, pos.y, pos4.z, pos3.z, pos1.z, pos.z);
     }
 

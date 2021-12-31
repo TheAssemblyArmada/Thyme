@@ -22,15 +22,46 @@ using GameMath::Sqrt;
 class Coord2D
 {
 public:
-    Coord2D() : x(0.0f), y(0.0f) {}
-    Coord2D(float x_val, float y_val) : x(x_val), y(y_val) {}
-    float Length() { return float(Sqrt(float(float(x * x) + float(y * y)))); }
+    float Length() const { return Sqrt(x * x + y * y); }
+
+    void Normalize()
+    {
+        float len = Length();
+
+        if (len != 0.0f) {
+            x /= len;
+            y /= len;
+        }
+    }
+
+    float To_Angle() const
+    {
+        float len = Length();
+
+        if (len == 0.0f) {
+            return 0.0f;
+        }
+
+        float f = x / len;
+
+        if (f >= -1.0f) {
+            if (f > 1.0f)
+                f = 1.0f;
+        } else {
+            f = -1.0f;
+        }
+
+        if (y >= 0.0f) {
+            return GameMath::Acos(f);
+        } else {
+            return -GameMath::Acos(f);
+        }
+    }
 
     Coord2D &operator+=(const Coord2D &rhs)
     {
         x += rhs.x;
         y += rhs.y;
-
         return *this;
     }
 
@@ -42,55 +73,10 @@ public:
         return *this;
     }
 
-    Coord2D &operator/=(const Coord2D &rhs)
-    {
-        x /= rhs.x;
-        y /= rhs.y;
-
-        return *this;
-    }
-
-    Coord2D &operator*=(const Coord2D &rhs)
-    {
-        x *= rhs.x;
-        y *= rhs.y;
-
-        return *this;
-    }
-
-    friend Coord2D operator+(Coord2D lhs, const Coord2D &rhs)
-    {
-        lhs += rhs;
-
-        return lhs;
-    }
-
-    friend Coord2D operator-(Coord2D lhs, const Coord2D &rhs)
-    {
-        lhs -= rhs;
-
-        return lhs;
-    }
-
-    friend Coord2D operator/(Coord2D lhs, const Coord2D &rhs)
-    {
-        lhs /= rhs;
-
-        return lhs;
-    }
-
-    friend Coord2D operator*(Coord2D lhs, const Coord2D &rhs)
-    {
-        lhs *= rhs;
-
-        return lhs;
-    }
-
     Coord2D &operator/=(const float &rhs)
     {
         x /= rhs;
         y /= rhs;
-
         return *this;
     }
 
@@ -102,22 +88,66 @@ public:
         return *this;
     }
 
-public:
+    bool operator==(const Coord2D &that) const { return x == that.x && y == that.y; }
+    bool operator!=(const Coord2D &that) const { return x != that.x && y != that.y; }
+
     float x;
     float y;
 };
 
+inline Coord2D operator*(const Coord2D &a, float k)
+{
+    Coord2D ret = a;
+    ret *= k;
+    return ret;
+}
+
+inline Coord2D operator*(float k, const Coord2D &a)
+{
+    Coord2D ret = a;
+    ret *= k;
+    return ret;
+}
+
+inline Coord2D operator/(const Coord2D &a, float k)
+{
+    Coord2D ret = a;
+    ret /= k;
+    return ret;
+}
+
+inline Coord2D operator+(const Coord2D &a, const Coord2D &b)
+{
+    Coord2D ret = a;
+    ret += b;
+    return ret;
+}
+
+inline Coord2D operator-(const Coord2D &a, const Coord2D &b)
+{
+    Coord2D ret = a;
+    ret -= b;
+    return ret;
+}
+
 class Coord3D
 {
 public:
-    Coord3D() : x(0.0f), y(0.0f), z(0.0f) {}
-    Coord3D(float x_val, float y_val, float z_val) : x(x_val), y(y_val), z(z_val) {}
-    float Length() { return float(Sqrt(float(float(float(x * x) + float(y * y)) + float(z * z)))); }
+    float Length() const { return Sqrt(x * x + y * y + z * z); }
+    float Length2() const { return x * x + y * y + z * z; }
+
     static void Cross_Product(const Coord3D *a, const Coord3D *b, Coord3D *set_result)
     {
         set_result->x = a->y * b->z - a->z * b->y;
         set_result->y = a->z * b->x - a->x * b->z;
         set_result->z = a->x * b->y - a->y * b->x;
+    }
+
+    void Set(float set_x, float set_y, float set_z)
+    {
+        x = set_x;
+        y = set_y;
+        z = set_z;
     }
 
     void Set(const Coord3D *c)
@@ -155,6 +185,17 @@ public:
         z = 0.0f;
     }
 
+    void Normalize()
+    {
+        float len = Length();
+
+        if (len != 0.0f) {
+            x /= len;
+            y /= len;
+            z /= len;
+        }
+    }
+
     Coord3D &operator+=(const Coord3D &rhs)
     {
         x += rhs.x;
@@ -171,52 +212,6 @@ public:
         z -= rhs.z;
 
         return *this;
-    }
-
-    Coord3D &operator/=(const Coord3D &rhs)
-    {
-        x /= rhs.x;
-        y /= rhs.y;
-        z /= rhs.z;
-
-        return *this;
-    }
-
-    Coord3D &operator*=(const Coord3D &rhs)
-    {
-        x *= rhs.x;
-        y *= rhs.y;
-        z *= rhs.z;
-
-        return *this;
-    }
-
-    friend Coord3D operator+(Coord3D lhs, const Coord3D &rhs)
-    {
-        lhs += rhs;
-
-        return lhs;
-    }
-
-    friend Coord3D operator-(Coord3D lhs, const Coord3D &rhs)
-    {
-        lhs -= rhs;
-
-        return lhs;
-    }
-
-    friend Coord3D operator/(Coord3D lhs, const Coord3D &rhs)
-    {
-        lhs /= rhs;
-
-        return lhs;
-    }
-
-    friend Coord3D operator*(Coord3D lhs, const Coord3D &rhs)
-    {
-        lhs *= rhs;
-
-        return lhs;
     }
 
     Coord3D &operator/=(const float &rhs)
@@ -237,17 +232,54 @@ public:
         return *this;
     }
 
-    bool operator==(const Coord3D &that) { return x == that.x && y == that.y && z == that.z; }
+    bool operator==(const Coord3D &that) const { return x == that.x && y == that.y && z == that.z; }
+    bool operator!=(const Coord3D &that) const { return x != that.x && y != that.y && z != that.z; }
 
-public:
     float x;
     float y;
     float z;
 };
 
+inline Coord3D operator*(const Coord3D &a, float k)
+{
+    Coord3D ret = a;
+    ret *= k;
+    return ret;
+}
+
+inline Coord3D operator*(float k, const Coord3D &a)
+{
+    Coord3D ret = a;
+    ret *= k;
+    return ret;
+}
+
+inline Coord3D operator/(const Coord3D &a, float k)
+{
+    Coord3D ret = a;
+    ret /= k;
+    return ret;
+}
+
+inline Coord3D operator+(const Coord3D &a, const Coord3D &b)
+{
+    Coord3D ret = a;
+    ret += b;
+    return ret;
+}
+
+inline Coord3D operator-(const Coord3D &a, const Coord3D &b)
+{
+    Coord3D ret = a;
+    ret -= b;
+    return ret;
+}
+
 class ICoord2D
 {
 public:
+    // ICoord2D::Length may exist, haven't found an instance yet.
+
     int32_t x;
     int32_t y;
 };
@@ -255,6 +287,15 @@ public:
 class ICoord3D
 {
 public:
+    void Zero()
+    {
+        x = 0.0f;
+        y = 0.0f;
+        z = 0.0f;
+    }
+
+    // ICoord3D::Length may exist, haven't found an instance yet.
+
     int32_t x;
     int32_t y;
     int32_t z;
@@ -263,6 +304,9 @@ public:
 class Region2D
 {
 public:
+    float Height() const { return hi.y - lo.y; }
+    float Width() const { return hi.x - lo.x; }
+
     Coord2D lo;
     Coord2D hi;
 };
@@ -270,6 +314,9 @@ public:
 class IRegion2D
 {
 public:
+    int Height() const { return hi.y - lo.y; }
+    int Width() const { return hi.x - lo.x; }
+
     ICoord2D lo;
     ICoord2D hi;
 };
@@ -277,6 +324,22 @@ public:
 class Region3D
 {
 public:
+    void Zero()
+    {
+        lo.Zero();
+        hi.Zero();
+    }
+
+    float Height() const { return hi.y - lo.y; }
+    float Width() const { return hi.x - lo.x; }
+    float Depth() const { return hi.z - lo.z; }
+    bool Is_In_Region_No_Z(Coord3D *c) const { return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y; }
+
+    bool Is_In_Region_With_Z(Coord3D *c) const
+    {
+        return lo.x < c->x && c->x < hi.x && lo.y < c->y && c->y < hi.y && lo.z < c->z && c->z < hi.z;
+    }
+
     Coord3D lo;
     Coord3D hi;
 };

@@ -13,7 +13,38 @@
  *            LICENSE
  */
 #include "file.h"
+#include <algorithm>
 #include <cstdio>
+
+namespace Thyme
+{
+static_assert(File::FileMode::LASTMODE <= 0x10000, "Not enough room to encode buffer size");
+
+// Buffer size is encoded into the upper 16 bits of target integer value.
+// 0xFFFF0000
+//   ^^^^ buffer size
+// The encoded value itself is scaled up/down by 64 (6 bit shift),
+// therefore giving an effective range of 1 * 64 to 0xFFFF * 64.
+
+constexpr unsigned int LOCATOR = 16;
+constexpr unsigned int SCALER = 6;
+
+int Encode_Buffered_File_Mode(int mode, int buffer_size)
+{
+    buffer_size = std::clamp(buffer_size, (1 << SCALER), (0xFFFF << SCALER));
+
+    return mode | File::FileMode::BUFFERED | (static_cast<unsigned int>(buffer_size) >> SCALER << LOCATOR);
+}
+
+bool Decode_Buffered_File_Mode(int mode, int &buffer_size)
+{
+    if (mode & File::FileMode::BUFFERED) {
+        buffer_size = static_cast<unsigned int>(mode) >> LOCATOR << SCALER;
+        return true;
+    }
+    return false;
+}
+} // namespace Thyme
 
 File::~File()
 {
@@ -45,6 +76,7 @@ bool File::Open(const char *filename, int mode)
         open_mode = mode | READ;
     }
 
+    // Clear file if not read or appended.
     if ((mode & (READ | APPEND)) == 0) {
         open_mode |= TRUNCATE;
     }

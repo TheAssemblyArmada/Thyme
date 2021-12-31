@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "win32localfilesystem.h"
+#include "standardfile.h"
 #include "win32localfile.h"
 
 // Headers needed for posix open, close, read... etc.
@@ -29,11 +30,17 @@
 
 File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
 {
-    if (strlen(filename) <= 0) {
+    if (filename == nullptr || *filename == '\0') {
         return nullptr;
     }
 
-    Win32LocalFile *file = NEW_POOL_OBJ(Win32LocalFile);
+    File *file;
+
+    if (mode & File::BUFFERED) {
+        file = new Thyme::StandardFile;
+    } else {
+        file = new Win32LocalFile;
+    }
 
     // If we need to write a file, ensure the needed directory exists.
     if ((mode & File::WRITE) != 0) {

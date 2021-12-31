@@ -26,6 +26,18 @@ struct FileInfo
     int write_time_low;
 };
 
+namespace Thyme
+{
+// Thyme specific
+
+// Returns integer of given mode and BUFFERED flag and encoded buffer size.
+// Buffer size min: 0, max: 4194240, in 64 byte increments.
+int Encode_Buffered_File_Mode(int mode, int buffer_size);
+
+// Decodes buffer size from given mode.
+bool Decode_Buffered_File_Mode(int mode, int &buffer_size);
+} // namespace Thyme
+
 class File : public MemoryPoolObject
 {
     IMPLEMENT_ABSTRACT_POOL(File);
@@ -48,6 +60,11 @@ public:
         TEXT = 0x20,
         BINARY = 0x40,
         STREAMING = 0x100,
+        BUFFERED = 0x8000, // Thyme specific. When set, opens file with buffered read & write as opposed to instant file IO.
+                           // Optionally, the high 16 bits of FileMode can be used to specify the buffer size, otherwise uses
+                           // default buffer size.
+
+        LASTMODE, // Just marks the enum end.
     };
 
 protected:

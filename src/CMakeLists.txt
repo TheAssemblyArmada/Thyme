@@ -229,6 +229,7 @@ set(GAMEENGINE_SRC
     game/network/networkutil.cpp
     platform/fpusetting.cpp
     platform/input/win32mouse.cpp
+    platform/standardfile.cpp
     platform/w3dfilesystem.cpp
     platform/w3dfunctionlexicon.cpp
     platform/win32bigfile.cpp

@@ -105,7 +105,7 @@ int ModuleFactory::Find_Interface_Mask(const Utf8String &name, ModuleType type)
  *
  * 0x004F2DD0
  */
-Module *ModuleFactory::New_Module(Thing *thing, const Utf8String &name, ModuleData *data, ModuleType type)
+Module *ModuleFactory::New_Module(Thing *thing, const Utf8String &name, const ModuleData *data, ModuleType type)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);

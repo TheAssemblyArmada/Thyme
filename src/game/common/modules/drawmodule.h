@@ -80,7 +80,7 @@ class DrawModule : public DrawableModule
     IMPLEMENT_ABSTRACT_POOL(DrawModule);
 
 public:
-    DrawModule(Thing *thing, ModuleData *module_data) : DrawableModule(thing, module_data) {}
+    DrawModule(Thing *thing, const ModuleData *module_data) : DrawableModule(thing, module_data) {}
     virtual ~DrawModule() override {}
     virtual void Do_Draw_Module(Marix3D *transform) = 0;
     virtual void Set_Shadows_Enabled(bool enable) = 0;

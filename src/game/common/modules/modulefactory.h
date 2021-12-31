@@ -28,7 +28,7 @@ class W3DModelDrawModuleData;
 class W3DTreeDrawModuleData;
 class Thing;
 
-typedef Module *(*modcreateproc_t)(Thing *, ModuleData *);
+typedef Module *(*modcreateproc_t)(Thing *, const ModuleData *);
 typedef ModuleData *(*moddatacreateproc_t)(INI *);
 
 class ModuleFactory : public SubsystemInterface, public SnapShot
@@ -53,7 +53,7 @@ public:
     virtual void Load_Post_Process() override {}
 
     int Find_Interface_Mask(const Utf8String &name, ModuleType type);
-    Module *New_Module(Thing *thing, const Utf8String &name, ModuleData *data, ModuleType type);
+    Module *New_Module(Thing *thing, const Utf8String &name, const ModuleData *data, ModuleType type);
     ModuleData *New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag);
 
 protected:

@@ -21,22 +21,22 @@
 #include "unicodestring.h"
 
 // This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
-enum LanguageID : int32_t
+enum class LanguageID : int32_t
 {
-    LANGUAGE_ID_US = 0,
-    LANGUAGE_ID_UK,
-    LANGUAGE_ID_GERMAN,
-    LANGUAGE_ID_FRENCH,
-    LANGUAGE_ID_SPANISH,
-    LANGUAGE_ID_ITALIAN,
-    LANGUAGE_ID_JAPANSE,
-    LANGUAGE_ID_JABBER,
-    LANGUAGE_ID_KOREAN,
-    LANGUAGE_ID_CHINESE,
-    LANGUAGE_ID_UNK1,
-    LANGUAGE_ID_UNK2,
-    LANGUAGE_ID_POLISH,
-    LANGUAGE_ID_UNKNOWN,
+    US = 0,
+    UK,
+    GERMAN,
+    FRENCH,
+    SPANISH,
+    ITALIAN,
+    JAPANESE,
+    JABBER,
+    KOREAN,
+    CHINESE,
+    UNK1,
+    BRAZILIAN,
+    POLISH,
+    UNKNOWN,
 };
 
 struct CSFHeader
@@ -86,15 +86,15 @@ public:
     GameTextManager();
     virtual ~GameTextManager();
 
-    virtual void Init();
-    virtual void Reset();
-    virtual void Update() {}
+    virtual void Init() override;
+    virtual void Reset() override;
+    virtual void Update() override {}
 
-    virtual Utf16String Fetch(const char *args, bool *success = nullptr);
-    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr);
-    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label);
-    virtual void Init_Map_String_File(Utf8String const &filename);
-    virtual void Deinit();
+    virtual Utf16String Fetch(const char *args, bool *success = nullptr) override;
+    virtual Utf16String Fetch(Utf8String args, bool *success = nullptr) override;
+    virtual std::vector<Utf8String> *Get_Strings_With_Prefix(Utf8String label) override;
+    virtual void Init_Map_String_File(Utf8String const &filename) override;
+    virtual void Deinit() override;
 
     static int Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();

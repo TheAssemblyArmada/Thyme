@@ -191,7 +191,7 @@ bool GameTextManager::Read_Line(char *buffer, int length, File *file)
 // Converts an ASCII string into a usc2/utf16 string.
 void GameTextManager::Translate_Copy(unichar_t *out, char *in)
 {
-    // Unsigned allows handling latin extended code page.
+    // Unsigned allows handling Latin extended code page.
     unsigned char *in_unsigned = reinterpret_cast<unsigned char *>(in);
     unsigned char current = *in_unsigned++;
     bool escape = false;
@@ -243,7 +243,7 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
     *out = U_CHAR('\0');
 }
 
-// Remove whitespace from the start and end of a ascii/utf8 string
+// Remove whitespace from the start and end of a ascii/utf8 string.
 void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
 {
     int first = 0;
@@ -324,7 +324,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
         char s = *start;
         char e = *end;
 
-        // Swap the capitalisation for first char if its within standard alphabet.
+        // Swap the capitalization for first char if its within standard alphabet.
         if (first_char) {
             if (s >= 'A' && s <= 'Z' && e >= 'a' && e <= 'z') {
                 s += 32;
@@ -384,9 +384,9 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
     m_textCount = le32toh(header.num_labels);
 
     if (le32toh(header.version) <= 1) {
-        m_language = LANGUAGE_ID_US;
+        m_language = LanguageID::US;
     } else {
-        m_language = (LanguageID)le32toh(header.langid);
+        m_language = letoh<LanguageID>(header.langid);
     }
 
     file->Close();
@@ -430,7 +430,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #endif
 
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max((int)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -583,7 +583,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
     return true;
 }
 
-// Parse an additional string file for a map. Currently cannot be localised.
+// Parse an additional string file for a map. Currently cannot be localized.
 bool GameTextManager::Parse_Map_String_File(const char *filename)
 {
     captainslog_info("Parsing map string file '%s'.", filename);
@@ -620,7 +620,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 #endif
 
         m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max((int32_t)strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -678,7 +678,7 @@ GameTextManager::GameTextManager() :
     m_initialized(false),
     m_noStringList(nullptr),
     m_useStringFile(true),
-    m_language(LANGUAGE_ID_US),
+    m_language(LanguageID::US),
     m_failed(U_CHAR("***FATAL*** String Manager failed to initialize properly")),
     m_mapStringInfo(nullptr),
     m_mapStringLUT(nullptr),
@@ -692,12 +692,13 @@ GameTextManager::GameTextManager() :
 
 GameTextManager::~GameTextManager()
 {
+    Reset(); // #BUGFIX Full cleanup on destruction.
     Deinit();
 }
 
 void GameTextManager::Init()
 {
-    captainslog_info("Initialising GameTextManager.");
+    captainslog_info("Initializing GameTextManager.");
     if (m_initialized) {
         return;
     }
@@ -729,7 +730,7 @@ void GameTextManager::Init()
         return;
     }
 
-    // Try and parse the relevant string file, cleanup if not
+    // Try and parse the relevant string file, cleanup if not.
     if (!use_csf) {
         if (!Parse_String_File("data/Generals.str")) {
             captainslog_error("Couldn't parse string file.");
@@ -759,7 +760,8 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     Utf8String ntitle;
-    Utf16String wtitle = U_CHAR("Thyme - ");
+    Utf16String wtitle;
+    wtitle = U_CHAR("Thyme - "); // #FEATURE Add Thyme text to window name.
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);
@@ -769,14 +771,14 @@ void GameTextManager::Init()
         SetWindowTextA(g_applicationHWnd, ntitle.Str());
         SetWindowTextW(g_applicationHWnd, (const wchar_t *)wtitle.Str());
     }
-#else
-
 #endif
 }
 
 // Resets the map strings, main string file is left loaded.
 void GameTextManager::Reset()
 {
+    m_mapTextCount = 0; // #BUGFIX Reset map text count as well.
+
     if (m_mapStringInfo != nullptr) {
         delete[] m_mapStringInfo;
         m_mapStringInfo = nullptr;
@@ -795,7 +797,7 @@ Utf16String GameTextManager::Fetch(Utf8String args, bool *success)
     return Fetch(args.Str(), success);
 }
 
-// Find anr return the unicode string corresponding to the label provided.
+// Find and return the unicode string corresponding to the label provided.
 // Optionally can pass a bool pointer to determine if a string was found.
 Utf16String GameTextManager::Fetch(const char *args, bool *success)
 {
@@ -851,7 +853,7 @@ Utf16String GameTextManager::Fetch(const char *args, bool *success)
         }
     }
 
-    // If it wasn't found or the list was empty, add a new one.
+    // If it was not found or the list was empty, add a new one.
     if (no_string == nullptr) {
         no_string = new NoString;
         no_string->text = missing;
@@ -893,15 +895,12 @@ std::vector<Utf8String> *GameTextManager::Get_Strings_With_Prefix(Utf8String lab
     return &m_stringVector;
 }
 
-// Initialises a string file associated with a specific map. Resources
+// Initializes a string file associated with a specific map. Resources
 // allocated here are freed by GameTextManager::Reset()
 void GameTextManager::Init_Map_String_File(Utf8String const &filename)
 {
-    // Check if we can use a standard string file, if not, try the csf file.
     Get_String_Count(filename.Str(), m_mapTextCount);
-
     m_mapStringInfo = new StringInfo[m_mapTextCount];
-
     Parse_Map_String_File(filename.Str());
 
     // Generate the lookup table and sort it for efficient search.
@@ -915,7 +914,7 @@ void GameTextManager::Init_Map_String_File(Utf8String const &filename)
     qsort(m_mapStringLUT, m_mapTextCount, sizeof(StringLookUp), Compare_LUT);
 }
 
-// Deinitialise the main string file, doesn't affect loaded map strings.
+// Destroys the main string file, doesn't affect loaded map strings.
 void GameTextManager::Deinit()
 {
     if (m_stringInfo != nullptr) {
@@ -930,7 +929,6 @@ void GameTextManager::Deinit()
 
     m_textCount = 0;
 
-    // Cleanup NoString list.
     for (NoString *ns = m_noStringList; ns != nullptr;) {
         NoString *tmp = ns;
         ns = tmp->next;

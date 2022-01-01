@@ -692,12 +692,13 @@ GameTextManager::GameTextManager() :
 
 GameTextManager::~GameTextManager()
 {
+    Reset(); // #BUGFIX Full cleanup on destruction.
     Deinit();
 }
 
 void GameTextManager::Init()
 {
-    captainslog_info("Initialising GameTextManager.");
+    captainslog_info("Initializing GameTextManager.");
     if (m_initialized) {
         return;
     }
@@ -759,7 +760,8 @@ void GameTextManager::Init()
 
     // Fetch the GUI window title string and set it here.
     Utf8String ntitle;
-    Utf16String wtitle = U_CHAR("Thyme - ");
+    Utf16String wtitle;
+    wtitle = U_CHAR("Thyme - "); // #FEATURE Add Thyme text to window name.
     wtitle += Fetch("GUI:Command&ConquerGenerals");
 
     ntitle.Translate(wtitle);
@@ -769,14 +771,14 @@ void GameTextManager::Init()
         SetWindowTextA(g_applicationHWnd, ntitle.Str());
         SetWindowTextW(g_applicationHWnd, (const wchar_t *)wtitle.Str());
     }
-#else
-
 #endif
 }
 
 // Resets the map strings, main string file is left loaded.
 void GameTextManager::Reset()
 {
+    m_mapTextCount = 0; // #BUGFIX Reset map text count as well.
+
     if (m_mapStringInfo != nullptr) {
         delete[] m_mapStringInfo;
         m_mapStringInfo = nullptr;

@@ -21,22 +21,22 @@
 #include "unicodestring.h"
 
 // This enum applies to RA2/YR and Generals/ZH, BFME ID's are slightly different.
-enum LanguageID : int32_t
+enum class LanguageID : int32_t
 {
-    LANGUAGE_ID_US = 0,
-    LANGUAGE_ID_UK,
-    LANGUAGE_ID_GERMAN,
-    LANGUAGE_ID_FRENCH,
-    LANGUAGE_ID_SPANISH,
-    LANGUAGE_ID_ITALIAN,
-    LANGUAGE_ID_JAPANSE,
-    LANGUAGE_ID_JABBER,
-    LANGUAGE_ID_KOREAN,
-    LANGUAGE_ID_CHINESE,
-    LANGUAGE_ID_UNK1,
-    LANGUAGE_ID_UNK2,
-    LANGUAGE_ID_POLISH,
-    LANGUAGE_ID_UNKNOWN,
+    US = 0,
+    UK,
+    GERMAN,
+    FRENCH,
+    SPANISH,
+    ITALIAN,
+    JAPANESE,
+    JABBER,
+    KOREAN,
+    CHINESE,
+    UNK1,
+    BRAZILIAN,
+    POLISH,
+    UNKNOWN,
 };
 
 struct CSFHeader

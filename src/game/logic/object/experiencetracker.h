@@ -42,12 +42,12 @@ public:
     bool Is_Accepting_Experience_Points() const;
     // zh: 0x0061B810 wb: 0x008A368E
     void Set_Experience_Sink(ObjectID sink) { m_experienceSink = sink; }
-    void Set_Min_Veterency_Level(VeterancyLevel minLevel);
-    void Set_Veterency_Level(VeterancyLevel newLevel, bool unk);
-    bool Gain_Exp_For_Level(int32_t levelsToGain, bool applyMultiplier);
-    bool Can_Gain_Exp_For_Level(int32_t levelsToGain) const;
-    void Add_Experience_Points(int32_t experienceGain, bool applyMultiplier);
-    void Set_Experience_And_Level(int32_t experienceGain, bool unk);
+    void Set_Min_Veterency_Level(VeterancyLevel new_level);
+    void Set_Veterency_Level(VeterancyLevel new_level, bool unk);
+    bool Gain_Exp_For_Level(int32_t levels_to_gain, bool apply_multiplier);
+    bool Can_Gain_Exp_For_Level(int32_t levels_to_gain) const;
+    void Add_Experience_Points(int32_t experience_gain, bool apply_multiplier);
+    void Set_Experience_And_Level(int32_t experience_gain, bool unk);
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;

@@ -40,16 +40,16 @@ bool ExperienceTracker::Is_Accepting_Experience_Points() const
 }
 
 // zh: 0x0061B820 wb: 0x008A36A4
-void ExperienceTracker::Set_Min_Veterency_Level(VeterancyLevel newLevel)
+void ExperienceTracker::Set_Min_Veterency_Level(VeterancyLevel new_level)
 {
-    if (m_currentLevel >= newLevel) {
+    if (m_currentLevel >= new_level) {
         return;
     }
 
     captainslog_dbgassert(m_parent != nullptr, "Parent must not be nullptr!");
 
     const auto old_level = m_currentLevel;
-    m_currentLevel = newLevel;
+    m_currentLevel = new_level;
 
     m_currentExperience = m_parent->Get_Template()->Get_Experience_Required(m_currentLevel);
 
@@ -57,16 +57,16 @@ void ExperienceTracker::Set_Min_Veterency_Level(VeterancyLevel newLevel)
 }
 
 // zh: 0x0061B860 wb: 0x008A370D
-void ExperienceTracker::Set_Veterency_Level(VeterancyLevel newLevel, bool unk)
+void ExperienceTracker::Set_Veterency_Level(VeterancyLevel new_level, bool unk)
 {
-    if (m_currentLevel == newLevel) {
+    if (m_currentLevel == new_level) {
         return;
     }
 
     captainslog_dbgassert(m_parent != nullptr, "Parent must not be nullptr!");
 
     const auto old_level = m_currentLevel;
-    m_currentLevel = newLevel;
+    m_currentLevel = new_level;
 
     m_currentExperience = m_parent->Get_Template()->Get_Experience_Required(m_currentLevel);
 
@@ -74,9 +74,9 @@ void ExperienceTracker::Set_Veterency_Level(VeterancyLevel newLevel, bool unk)
 }
 
 // zh: 0x0061B8A0 wb: 0x008A377A
-bool ExperienceTracker::Gain_Exp_For_Level(int32_t levelsToGain, bool applyMultiplier)
+bool ExperienceTracker::Gain_Exp_For_Level(int32_t levels_to_gain, bool apply_multiplier)
 {
-    const auto new_level = std::min<VeterancyLevel>(m_currentLevel + levelsToGain, VeterancyLevel::VETERANCY_COUNT - 1);
+    const auto new_level = std::min<VeterancyLevel>(m_currentLevel + levels_to_gain, VeterancyLevel::VETERANCY_COUNT - 1);
 
     if (new_level <= m_currentLevel) {
         return false;
@@ -84,23 +84,24 @@ bool ExperienceTracker::Gain_Exp_For_Level(int32_t levelsToGain, bool applyMulti
 
     const auto exp_for_level_gain = m_parent->Get_Template()->Get_Experience_Required(new_level) - m_currentExperience;
 
-    Add_Experience_Points(exp_for_level_gain, applyMultiplier);
+    Add_Experience_Points(exp_for_level_gain, apply_multiplier);
     return true;
 }
 
 // zh: 0x0061B8F0 wb: 0x008A37E4
-bool ExperienceTracker::Can_Gain_Exp_For_Level(int32_t levelsToGain) const
+bool ExperienceTracker::Can_Gain_Exp_For_Level(int32_t levels_to_gain) const
 {
-    return m_currentLevel != std::min<VeterancyLevel>(m_currentLevel + levelsToGain, VeterancyLevel::VETERANCY_COUNT - 1);
+    return m_currentLevel != std::min<VeterancyLevel>(m_currentLevel + levels_to_gain, VeterancyLevel::VETERANCY_COUNT - 1);
 }
 
 // zh: 0x0061B910 wb: 0x008A381C
-void ExperienceTracker::Add_Experience_Points(int32_t experienceGain, bool applyMultiplier)
+void ExperienceTracker::Add_Experience_Points(int32_t experience_gain, bool apply_multiplier)
 {
     if (m_experienceSink != ObjectID::OBJECT_UNK) {
         auto *sink_object = g_theGameLogic->Find_Object_By_ID(m_experienceSink);
         if (sink_object != nullptr) {
-            sink_object->Get_Experience_Tracker()->Add_Experience_Points(experienceGain * m_experienceMultiplier, applyMultiplier);
+            sink_object->Get_Experience_Tracker()->Add_Experience_Points(
+                experience_gain * m_experienceMultiplier, apply_multiplier);
             return;
         }
     }
@@ -110,11 +111,11 @@ void ExperienceTracker::Add_Experience_Points(int32_t experienceGain, bool apply
     }
 
     const auto old_level = m_currentLevel;
-    if (applyMultiplier) {
-        experienceGain *= m_experienceMultiplier;
+    if (apply_multiplier) {
+        experience_gain *= m_experienceMultiplier;
     }
 
-    m_currentExperience += experienceGain;
+    m_currentExperience += experience_gain;
     VeterancyLevel new_level = VeterancyLevel::VETERANCY_REGULAR;
     // Loop until the penultimate VeterancyLevel as it reaches saturation
     for (; new_level < VeterancyLevel::VETERANCY_COUNT - 1; ++new_level) {
@@ -130,12 +131,12 @@ void ExperienceTracker::Add_Experience_Points(int32_t experienceGain, bool apply
 }
 
 // zh: 0x0061B9D0 wb: 0x008A3934
-void ExperienceTracker::Set_Experience_And_Level(int32_t experienceGain, bool unk)
+void ExperienceTracker::Set_Experience_And_Level(int32_t experience_gain, bool unk)
 {
     if (m_experienceSink != ObjectID::OBJECT_UNK) {
         auto *sink_object = g_theGameLogic->Find_Object_By_ID(m_experienceSink);
         if (sink_object != nullptr) {
-            sink_object->Get_Experience_Tracker()->Set_Experience_And_Level(experienceGain, unk);
+            sink_object->Get_Experience_Tracker()->Set_Experience_And_Level(experience_gain, unk);
             return;
         }
     }
@@ -146,7 +147,7 @@ void ExperienceTracker::Set_Experience_And_Level(int32_t experienceGain, bool un
 
     const auto old_level = m_currentLevel;
 
-    m_currentExperience = experienceGain;
+    m_currentExperience = experience_gain;
 
     VeterancyLevel new_level = VeterancyLevel::VETERANCY_REGULAR;
     // Loop until the penultimate VeterancyLevel as it reaches saturation

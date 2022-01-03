@@ -197,6 +197,7 @@ set(GAMEENGINE_SRC
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
+    game/logic/object/experiencetracker.cpp
     game/logic/object/object.cpp
     game/logic/object/objectcreationlist.cpp
     game/logic/object/weapon.cpp

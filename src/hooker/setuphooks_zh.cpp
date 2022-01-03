@@ -43,6 +43,7 @@
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
 #include "energy.h"
+#include "experiencetracker.h"
 #include "filesystem.h"
 #include "filetransfer.h"
 #include "force_nocd.h"
@@ -1912,4 +1913,16 @@ void Setup_Hooks()
     Hook_Any(0x0061CD90, LaserUpdate::Set_Decay_Frames);
     Hook_Any(0x0061CDC0, LaserUpdate::Init_Laser);
     Hook_Any(0x0061D110, LaserUpdate::Get_Current_Laser_Radius);
+
+    // experiencetracker.cpp
+    Hook_Any(0x0061B790, ExperienceTracker::Get_Experience_Value);
+    Hook_Any(0x0061B7D0, ExperienceTracker::Is_Trainable);
+    Hook_Any(0x0061B7E0, ExperienceTracker::Is_Accepting_Experience_Points);
+    Hook_Any(0x0061B810, ExperienceTracker::Set_Experience_Sink);
+    Hook_Any(0x0061B820, ExperienceTracker::Set_Min_Veterency_Level);
+    Hook_Any(0x0061B860, ExperienceTracker::Set_Veterency_Level);
+    Hook_Any(0x0061B8A0, ExperienceTracker::Gain_Exp_For_Level);
+    Hook_Any(0x0061B8F0, ExperienceTracker::Can_Gain_Exp_For_Level);
+    Hook_Any(0x0061B910, ExperienceTracker::Add_Experience_Points);
+    Hook_Any(0x0061B9D0, ExperienceTracker::Set_Experience_And_Level);
 }

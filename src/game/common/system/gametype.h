@@ -165,6 +165,7 @@ enum VeterancyLevel
     VETERANCY_HEROIC,
     VETERANCY_COUNT,
 };
+DEFINE_ENUMERATION_OPERATORS(VeterancyLevel);
 
 enum ParticlePriorityType : int32_t
 {

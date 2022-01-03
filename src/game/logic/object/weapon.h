@@ -248,7 +248,7 @@ private:
     int32_t m_antiMask;
     int32_t m_affectsMask;
     int32_t m_collideMask;
-    int32_t m_damageDealtAtSelfPosition;
+    bool m_damageDealtAtSelfPosition;
     AutoReloadsClip m_autoReloadsClip;
     AttackType m_preAttackType;
     uint32_t m_historicBonusTime;

@@ -57,6 +57,8 @@ LaserUpdate::LaserUpdate(Thing *thing, ModuleData const *module_data) :
     m_shrinkStartFrame(0),
     m_shrinkEndFrame(0)
 {
+    m_endPos.Zero();
+    m_startPos.Zero();
 }
 
 LaserUpdate::~LaserUpdate()

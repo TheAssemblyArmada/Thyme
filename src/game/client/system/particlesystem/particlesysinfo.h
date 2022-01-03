@@ -150,7 +150,7 @@ protected:
 
 public:
     ParticleSystemInfo();
-    ParticleSystemInfo(const ParticleSystemInfo &that);
+    ParticleSystemInfo(const ParticleSystemInfo &that) = delete;
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
@@ -220,6 +220,8 @@ protected:
     bool m_windMotionMovingToEndAngle;
 };
 
+// no evidence this function exists so we can't be sure its accurate
+#if 0
 inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
     m_isOneShot(that.m_isOneShot),
     m_shaderType(that.m_shaderType),
@@ -280,3 +282,4 @@ inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
         m_colorKey[i] = that.m_colorKey[i];
     }
 }
+#endif

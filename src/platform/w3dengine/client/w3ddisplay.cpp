@@ -760,13 +760,14 @@ void W3DDisplay::Set_Time_Of_Day(TimeOfDayType time)
         auto &light = *m_myLight[i];
         light.Set_Ambient({ 0.0f, 0.0f, 0.0f });
         const auto &lighting = g_theWriteableGlobalData->m_terrainObjectLighting[time][i];
-        const auto &diffuse = lighting.diffuse;
-        const auto &position = lighting.lightPos;
-        light.Set_Diffuse({ diffuse.red, diffuse.green, diffuse.blue });
-        light.Set_Specular({ 0.0f, 0.0f, 0.0f });
-        Matrix3D mat{
-            { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { position.x, position.y, position.z }, { 0.0f, 0.0f, 0.0f }
-        };
+        light.Set_Diffuse(Vector3(lighting.diffuse.red, lighting.diffuse.green, lighting.diffuse.blue));
+        light.Set_Specular(Vector3(0.0f, 0.0f, 0.0f));
+
+        Matrix3D mat;
+        mat.Set(Vector3(1.0f, 0.0f, 0.0f),
+            Vector3(0.0f, 1.0f, 0.0f),
+            Vector3(lighting.lightPos.x, lighting.lightPos.y, lighting.lightPos.z),
+            Vector3(0.0f, 0.0f, 0.0f));
         light.Set_Transform(mat);
     }
 

@@ -19,8 +19,9 @@
 #include <captainslog.h>
 
 Parameter::Parameter(ParameterType type) :
-    m_type(type), m_initialized(false), m_int(0), m_real(0.0f), m_string(), m_coord{ 0.0f, 0.0f, 0.0f }, m_objStatus()
+    m_type(type), m_initialized(false), m_int(0), m_real(0.0f), m_string(), m_objStatus()
 {
+    m_coord.Zero();
 }
 
 /**
@@ -361,6 +362,7 @@ Utf8String Parameter::Get_UI_Text()
 void Parameter::Get_Coord3D(Coord3D *coord)
 {
     captainslog_dbgassert(m_type == COORD3D, "Parameter is not a Coord3D.");
+    coord->Zero();
 
     if (m_type == COORD3D) {
         *coord = m_coord;

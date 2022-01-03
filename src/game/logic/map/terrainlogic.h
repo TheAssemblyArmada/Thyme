@@ -116,8 +116,7 @@ public:
     Waypoint *Get_Link(int link) const { return m_links[link]; }
     Utf8String Get_Name() const { return m_name; }
     WaypointID Get_ID() const { return m_id; }
-    const Coord3D Get_Location() const { return m_location; }
-    void Get_Location(Coord3D *loc) const { *loc = m_location; }
+    const Coord3D *Get_Location() const { return &m_location; }
     Utf8String Get_Path_Label_1() const { return m_pathLabel1; }
     Utf8String Get_Path_Label_2() const { return m_pathLabel2; }
     Utf8String Get_Path_Label_3() const { return m_pathLabel3; }

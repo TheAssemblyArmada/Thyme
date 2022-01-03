@@ -34,6 +34,8 @@ PartitionManager::PartitionManager() :
     m_updatedSinceLastReset(false),
     m_maxGcoRadius(0)
 {
+    m_worldExtents.hi.Zero();
+    m_worldExtents.lo.Zero();
 }
 
 // zh: 0x0053B930 wb: 0x0081E045

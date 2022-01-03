@@ -18,8 +18,6 @@
 BuildListInfo::BuildListInfo() :
     m_buildingName(),
     m_templateName(),
-    m_location{ 0.0f, 0.0f, 0.0f },
-    m_rallyPointOffset{ 0.0f, 0.0f },
     m_angle(0.0f),
     m_isInitiallyBuilt(false),
     m_numRebuilds(0),
@@ -41,6 +39,9 @@ BuildListInfo::BuildListInfo() :
     m_unkint2(0),
     m_unkbool4(false)
 {
+    m_location.Zero();
+    m_rallyPointOffset.x = 0.0f;
+    m_rallyPointOffset.y = 0.0f;
     memset(m_unkArray, 0, sizeof(m_unkArray));
 }
 

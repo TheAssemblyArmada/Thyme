@@ -29,8 +29,6 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_overallPrev(nullptr),
     m_system(system),
     m_particleID(0),
-    m_accel(),
-    m_lastPos(),
     m_lifetimeLeft(info.m_lifetime),
     m_createTimestamp(g_theGameClient->Get_Frame()),
     m_alpha(info.m_alphaKey[0].value),
@@ -42,6 +40,10 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_inOverallList(false),
     m_systemUnderControl(nullptr)
 {
+    m_accel.x = 0.0f;
+    m_accel.y = 0.0f;
+    m_accel.z = 0.0f;
+    m_lastPos.Zero();
     m_vel = info.m_vel;
     m_pos = info.m_pos;
     m_emitterPos = info.m_emitterPos;

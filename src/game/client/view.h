@@ -27,7 +27,7 @@ class Waypoint;
 class ViewLocation
 {
 public:
-    ViewLocation() : m_valid(false), m_zoom(0.0f), m_pitch(0.0f), m_angle(0.0f) {}
+    ViewLocation() : m_valid(false), m_zoom(0.0f), m_pitch(0.0f), m_angle(0.0f) { m_pos.Zero(); }
     void Init(float x, float y, float z, float angle, float pitch, float zoom)
     {
         m_pos.x = x;

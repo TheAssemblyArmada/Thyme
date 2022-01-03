@@ -34,7 +34,6 @@ AudioManager::AudioManager() :
     m_miscAudio(new MiscAudio),
     m_musicManager(nullptr),
     m_soundManager(nullptr),
-    m_listenerFacing(0.0f, 1.0f, 0.0f),
     m_audioHandleCounter(6),
     m_musicVolume(0.0f),
     m_soundVolume(0.0f),
@@ -53,6 +52,8 @@ AudioManager::AudioManager() :
     m_savedVolumes(nullptr),
     m_cachedVariables(0xF)
 {
+    m_listenerPosition.Zero();
+    m_listenerFacing.Set(0.0f, 1.0f, 0.0f);
 }
 
 AudioManager::~AudioManager()

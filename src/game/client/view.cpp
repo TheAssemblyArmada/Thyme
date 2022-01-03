@@ -26,7 +26,6 @@ View *g_theTacticalView;
 View::View() :
     m_next(nullptr),
     m_id(s_idNext++),
-    m_pos(),
     m_width(0),
     m_height(0),
     m_originX(0),
@@ -51,9 +50,12 @@ View::View() :
     m_FOV(DEG_TO_RADF(50)),
     m_mouseLocked(false),
     m_okToAdjustHeight(true),
-    m_snapImmediate(false),
-    m_guardBandBias()
+    m_snapImmediate(false)
 {
+    m_pos.x = 0.0f;
+    m_pos.y = 0.0f;
+    m_guardBandBias.x = 0.0;
+    m_guardBandBias.y = 0.0;
 }
 
 void View::Init()

@@ -2033,7 +2033,7 @@ float MilesAudioManager::Get_Effective_Volume(AudioEventRTS *event) const
     }
 
     // Get a vector representing the difference between listerner and sound.
-    difference -= *event_pos;
+    difference.Sub(event_pos);
     float min_dist;
     float max_dist;
 

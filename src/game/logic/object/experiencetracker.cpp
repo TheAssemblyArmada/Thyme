@@ -70,7 +70,7 @@ void ExperienceTracker::Set_Veterency_Level(VeterancyLevel new_level, bool unk)
 
     m_currentExperience = m_parent->Get_Template()->Get_Experience_Required(m_currentLevel);
 
-    m_parent->On_Veterancy_Level_Changed(old_level, m_currentLevel, true);
+    m_parent->On_Veterancy_Level_Changed(old_level, m_currentLevel, unk);
 }
 
 // zh: 0x0061B8A0 wb: 0x008A377A

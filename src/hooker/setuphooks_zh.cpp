@@ -1683,6 +1683,8 @@ void Setup_Hooks()
     Hook_Any(0x0058C1D0, ThingTemplate::Can_Possibly_Have_Any_Weapon);
     Hook_Any(0x0058C230, ThingTemplate::Get_Buildable);
     Hook_Any(0x0058C470, ThingTemplate::Is_Equivalent_To);
+    Hook_Any(0x0058BEF0, ThingTemplate::Find_Armor_Template_Set);
+    Hook_Any(0x0058C060, ThingTemplate::Find_Weapon_Template_Set);
 
     // w3dwater.h
     void Do_Sky_Box_Set(bool b);

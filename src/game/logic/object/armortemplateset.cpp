@@ -47,3 +47,10 @@ void ArmorTemplateSet::Parse_Armor_Template_Set(INI *ini)
     ini->Init_From_INI(this, _parse_table);
 #endif
 }
+
+void ArmorTemplateSet::Clear()
+{
+    m_conditions.Clear();
+    m_template = nullptr;
+    m_fx = nullptr;
+}

@@ -344,9 +344,9 @@ private:
     std::vector<ProductionPrerequisite> m_prerequisites;
     std::vector<Utf8String> m_buildVariations;
     std::vector<WeaponTemplateSet> m_weaponTemplateSets;
-    SparseMatchFinder<BitFlags<WEAPONSET_COUNT>, WeaponTemplateSet> m_weaponTemplateSetFinder;
+    SparseMatchFinder<WeaponTemplateSet, BitFlags<WEAPONSET_COUNT>> m_weaponTemplateSetFinder;
     std::vector<ArmorTemplateSet> m_armorTemplateSets;
-    SparseMatchFinder<BitFlags<ARMORSET_COUNT>, ArmorTemplateSet> m_armorTemplateSetFinder;
+    SparseMatchFinder<ArmorTemplateSet, BitFlags<ARMORSET_COUNT>> m_armorTemplateSetFinder;
     std::map<Utf8String, AudioEventRTS> m_perUnitSounds;
     std::map<Utf8String, FXList *> m_perUnitEffects;
     ThingTemplate *m_nextThingTemplate;

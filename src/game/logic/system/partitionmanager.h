@@ -119,10 +119,28 @@ class SightingInfo : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(SightingInfo);
 
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
 public:
     virtual ~SightingInfo() override{};
+    // zh: 0x00541930 wb: 0x00824207
+    SightingInfo() { Reset(); }
+
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override{};
+
+    void Reset();
+    // zh: 0x00541A20 wb: 0x008242C1
+    bool Is_Invalid() const { return m_radius == 0.0f; }
+
+#ifdef GAME_DLL
+    SightingInfo *Hook_Ctor() { return new (this) SightingInfo(); }
+#endif
 
 private:
+    // Data is likely public or users are friends
     Coord3D m_where;
     float m_radius;
     uint16_t m_playerIndex;

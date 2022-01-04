@@ -33,6 +33,8 @@ class ShorelineSortInfo;
 class WorldHeightMap;
 class DX8VertexBufferClass;
 class DX8IndexBufferClass;
+class W3DTreeDrawModuleData;
+
 struct VertexFormatXYZDUV2
 {
     float x;
@@ -94,6 +96,8 @@ public:
         unsigned char alpha);
     float Get_Height_Map_Height(float x, float y, Coord3D *pos);
     void Notify_Shroud_Changed();
+    void Add_Tree(
+        DrawableID drawable, Coord3D location, float scale, float angle, float random, W3DTreeDrawModuleData const *module);
 
     W3DShroud *Get_Shroud() { return m_shroud; }
 

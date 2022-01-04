@@ -81,3 +81,12 @@ void BaseHeightMapRenderObjClass::Notify_Shroud_Changed()
     Call_Method<void, BaseHeightMapRenderObjClass>(0x007552D0, this);
 #endif
 }
+
+void BaseHeightMapRenderObjClass::Add_Tree(
+    DrawableID drawable, Coord3D location, float scale, float angle, float random, W3DTreeDrawModuleData const *module)
+{
+#ifdef GAME_DLL
+    Call_Method<void, BaseHeightMapRenderObjClass, DrawableID, Coord3D, float, float, float, W3DTreeDrawModuleData const *>(
+        0x00755240, this, drawable, location, scale, angle, random, module);
+#endif
+}

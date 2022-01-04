@@ -252,7 +252,7 @@ public:
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const;
-    float const Get_Scale() const;
+    float const Get_Scale() const { return m_instanceScale; }
     Vector3 const *Get_Selection_Color() const;
     bool Get_Should_Animate(bool unk) const;
     Vector3 const *Get_Tint_Color() const;

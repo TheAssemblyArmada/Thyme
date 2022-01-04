@@ -28,15 +28,18 @@ LaserUpdateModuleData::~LaserUpdateModuleData() {}
 
 void LaserUpdateModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
-    static FieldParse dataFieldParse[] = { { "MuzzleParticleSystem",
-                                               &INI::Parse_AsciiString,
-                                               nullptr,
-                                               offsetof(LaserUpdateModuleData, m_muzzleParticleSystem) },
+    static FieldParse dataFieldParse[] = {
+        { "MuzzleParticleSystem",
+            &INI::Parse_AsciiString,
+            nullptr,
+            offsetof(LaserUpdateModuleData, m_muzzleParticleSystem) },
         { "TargetParticleSystem",
             &INI::Parse_AsciiString,
             nullptr,
             offsetof(LaserUpdateModuleData, m_targetParticleSystem) },
-        { "PunchThroughScalar", &INI::Parse_Real, nullptr, offsetof(LaserUpdateModuleData, m_punchThroughScalar) } };
+        { "PunchThroughScalar", &INI::Parse_Real, nullptr, offsetof(LaserUpdateModuleData, m_punchThroughScalar) },
+        { nullptr, nullptr, nullptr, 0 },
+    };
 
     ModuleData::Build_Field_Parse(p);
     p.Add(dataFieldParse, 0);

@@ -47,6 +47,8 @@ using GameMath::Ceil;
 
 #ifndef GAME_DLL
 Xfer *g_sXfer = nullptr;
+#else
+#include "hooker.h"
 #endif
 
 const float _SECONDS_PER_LOGICFRAME_REAL_74 = 1.0f / 30.0f;
@@ -986,4 +988,12 @@ void INI::Parse_Object_Reskin_Definition(INI *ini)
     Utf8String name = ini->Get_Next_Token();
     Utf8String reskin = ini->Get_Next_Token();
     ThingFactory::Parse_Object_Definition(ini, name, reskin);
+}
+
+void INI::Parse_FX_List(INI *ini, void *formal, void *store, const void *user_data)
+{
+#ifdef GAME_DLL
+    Call_Function<void, INI *, void *, void *, const void *>(
+        PICK_ADDRESS(0x0041CCB0, 0x007A3A51), ini, formal, store, user_data);
+#endif
 }

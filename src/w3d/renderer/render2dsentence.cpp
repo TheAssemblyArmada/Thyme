@@ -771,10 +771,6 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                     break;
                 }
 
-                if (test_ch == U_CHAR('\n')) {
-                    break;
-                }
-
                 if (m_processAmpersand && test_ch == U_CHAR('&')) {
                     // Spaces before the ampersand also get disregarded?
                     if (word_width != 0 && cur_text[-1] == U_CHAR(' ')) {
@@ -850,7 +846,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
             if (m_processAmpersand && cur_ch == U_CHAR('&')) {
                 unichar_t next_ch = *text;
-                if (next_ch != U_CHAR('\0') && next_ch > U_CHAR(' ') && next_ch != U_CHAR('\n')) {
+                if (next_ch > U_CHAR(' ')) {
                     cur_ch = next_ch;
                     ++text;
                     ampersand_processed = true;
@@ -921,6 +917,8 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
     if (x != nullptr) {
         *x = final_x_pos;
+    }
+    if (y != nullptr) {
         *y = 0;
     }
 }
@@ -1069,6 +1067,8 @@ exit:
 
     if (x != nullptr) {
         *x = x_pos;
+    }
+    if (y != nullptr) {
         *y = y_pos;
     }
 

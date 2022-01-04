@@ -47,8 +47,8 @@ public:
     virtual ~ModuleData() {}
 
     virtual bool Is_AI_Module_Data() const { return false; }
-    virtual W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const { return nullptr; }
-    virtual W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
+    virtual const W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const { return nullptr; }
+    virtual const W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
     virtual StaticGameLODLevel Get_Minimum_Required_Game_LOD() const { return STATLOD_LOW; }
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}

@@ -271,8 +271,7 @@ float View::Get_Angle()
 
 void View::Set_Pitch(float pitch)
 {
-    m_pitchAngle = pitch;
-    std::clamp(m_pitchAngle, DEG_TO_RADF(-36), DEG_TO_RADF(36));
+    m_pitchAngle = std::clamp(pitch, DEG_TO_RADF(-36), DEG_TO_RADF(36));
 }
 
 float View::Get_Pitch()

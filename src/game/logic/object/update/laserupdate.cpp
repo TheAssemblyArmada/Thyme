@@ -310,13 +310,13 @@ void LaserUpdate::Update_Start_Pos()
                 m_startPos.x = m.Get_X_Translation();
                 m_startPos.y = m.Get_Y_Translation();
                 m_startPos.z = m.Get_Z_Translation();
+            } else {
+                m_startPos = *drawable->Get_Position();
             }
-        } else {
-            m_startPos = *drawable->Get_Position();
-        }
 
-        if (!(m_startPos == oldpos)) {
-            m_dirty = true;
+            if (!(m_startPos == oldpos)) {
+                m_dirty = true;
+            }
         }
     }
 }

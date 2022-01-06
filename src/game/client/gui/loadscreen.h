@@ -22,9 +22,9 @@ class GameInfo;
 class LoadScreen
 {
 public:
-    virtual ~LoadScreen();
     // wb: 0x009C3EF0
     LoadScreen() : m_loadScreen(nullptr) {}
+    virtual ~LoadScreen();
 
     virtual void Init(GameInfo *game) = 0;
     virtual void Reset() = 0;

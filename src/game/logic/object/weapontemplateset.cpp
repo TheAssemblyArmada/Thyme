@@ -48,7 +48,7 @@ void WeaponTemplateSet::Clear()
 
     for (int i = 0; i < WEAPONSLOT_COUNT; ++i) {
         m_preferredAgainst[i].Clear();
-        m_autoChooseMask[i] = 0;
+        m_autoChooseMask[i] = 0xFFFFFFFF;
         m_template[i] = nullptr;
     }
 }

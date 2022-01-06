@@ -553,11 +553,26 @@ void ThingTemplate::Parse_Add_Module(INI *ini, void *instance, void *store, cons
 
 void ThingTemplate::Parse_Armor_Template_Set(INI *ini, void *instance, void *store, const void *user_data)
 {
-    // todo needs more of ArmorTemplateSet and SparseMatchFinder
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x0058A830, 0x006EA8DB), ini, instance, store, user_data);
-#endif
+    ThingTemplate *t = reinterpret_cast<ThingTemplate *>(instance);
+
+    if (t->m_armorCopiedFromDefault) {
+        t->m_armorCopiedFromDefault = false;
+        t->m_armorTemplateSets.clear();
+    }
+
+    ArmorTemplateSet set;
+    set.Parse_Armor_Template_Set(ini);
+
+    if (ini->Get_Load_Type() != INI_LOAD_CREATE_OVERRIDES) {
+        for (ArmorTemplateSet &i : t->m_armorTemplateSets) {
+            captainslog_dbgassert(!(i.Get_Conditions_Yes(0) == set.Get_Conditions_Yes(0)),
+                "dup armorset condition in %s",
+                t->Get_Name().Str());
+        }
+    }
+
+    t->m_armorTemplateSets.push_back(set);
+    t->m_armorTemplateSetFinder.Clear();
 }
 
 void ThingTemplate::Parse_Inheritable_Module(INI *ini, void *instance, void *store, const void *user_data)
@@ -636,7 +651,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
     captainslog_relassert(tag_name.Is_Not_Empty(),
         CODE_06,
         "[LINE: %d - FILE: '%s'] Module tag not found for module '%s' on thing template '%s'.  Module tags are required and "
-        "must be unique for all modules within an object definition\n",
+        "must be unique for all modules within an object definition",
         ini->Get_Line_Number(),
         ini->Get_Filename().Str(),
         name.Str(),
@@ -656,7 +671,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
     if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
         captainslog_relassert(tmplate->m_moduleParseState == MODULEPARSE_MODIFY_ON_COPY,
             CODE_06,
-            "[LINE: %d - FILE: '%s'] You must use AddModule to add modules in override INI files.\n",
+            "[LINE: %d - FILE: '%s'] You must use AddModule to add modules in override INI files.",
             ini->Get_Line_Number(),
             ini->Get_Filename().Str());
     } else {
@@ -669,7 +684,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
             || !tmplate->m_replacementModuleName.Is_Not_Empty() || tmplate->m_replacementModuleName == name,
         CODE_06,
         "[LINE: %d - FILE: '%s'] ReplaceModule must replace modules with another module of the same type, but you are "
-        "attempting to replace a %s with a %s for Object %s.\n",
+        "attempting to replace a %s with a %s for Object %s.",
         ini->Get_Line_Number(),
         ini->Get_Filename().Str(),
         tmplate->m_replacementModuleName.Str(),
@@ -680,7 +695,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
             || !tmplate->m_replacementModuleTag.Is_Not_Empty() || tmplate->m_replacementModuleTag != tag_name,
         CODE_06,
         "[LINE: %d - FILE: '%s'] ReplaceModule must specify a new, unique tag for the replaced module, but you are "
-        "attempting to replace a %s with a %s for Object %s.\n",
+        "attempting to replace a %s with a %s for Object %s.",
         ini->Get_Line_Number(),
         ini->Get_Filename().Str(),
         tmplate->m_replacementModuleName.Str(),
@@ -742,7 +757,7 @@ void ThingTemplate::Parse_Remove_Module(INI *ini, void *instance, void *store, c
     bool remove = tmplate->Remove_Module_Info(tag, name);
 
     captainslog_relassert(
-        remove, CODE_06, "RemoveModule %s was not found for %s. The game will crash now!\n", tag, tmplate->Get_Name().Str());
+        remove, CODE_06, "RemoveModule %s was not found for %s. The game will crash now!", tag, tmplate->Get_Name().Str());
 
     tmplate->m_moduleParseState = oldState;
 }
@@ -763,7 +778,7 @@ void ThingTemplate::Parse_Replace_Module(INI *ini, void *instance, void *store, 
 
     captainslog_relassert(remove,
         CODE_06,
-        "[LINE: %d - FILE: '%s'] ReplaceModule %s was not found for %s; cannot continue.\n",
+        "[LINE: %d - FILE: '%s'] ReplaceModule %s was not found for %s; cannot continue.",
         ini->Get_Line_Number(),
         ini->Get_Filename().Str(),
         tag,
@@ -779,11 +794,26 @@ void ThingTemplate::Parse_Replace_Module(INI *ini, void *instance, void *store, 
 
 void ThingTemplate::Parse_Weapon_Template_Set(INI *ini, void *instance, void *store, const void *user_data)
 {
-    // todo needs more of WeaponTemplateSet and SparseMatchFinder
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x0058A940, 0x006EA9F3), ini, instance, store, user_data);
-#endif
+    ThingTemplate *t = reinterpret_cast<ThingTemplate *>(instance);
+
+    if (t->m_weaponsCopiedFromDefault) {
+        t->m_weaponsCopiedFromDefault = false;
+        t->m_weaponTemplateSets.clear();
+    }
+
+    WeaponTemplateSet set;
+    set.Parse_Weapon_Template_Set(ini, t);
+
+    if (ini->Get_Load_Type() != INI_LOAD_CREATE_OVERRIDES) {
+        for (WeaponTemplateSet &i : t->m_weaponTemplateSets) {
+            captainslog_dbgassert(!(i.Get_Conditions_Yes(0) == set.Get_Conditions_Yes(0)),
+                "dup weaponset condition in %s",
+                t->Get_Name().Str());
+        }
+    }
+
+    t->m_weaponTemplateSets.push_back(set);
+    t->m_weaponTemplateSetFinder.Clear();
 }
 
 void ThingTemplate::Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data)
@@ -833,4 +863,14 @@ void ThingTemplate::Validate()
 #ifdef GAME_DLL
     Call_Method<void, ThingTemplate>(PICK_ADDRESS(0x0058B2F0, 0x006EC951), this);
 #endif
+}
+
+const ArmorTemplateSet *ThingTemplate::Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const
+{
+    return m_armorTemplateSetFinder.Find_Best_Info(m_armorTemplateSets, t);
+}
+
+const WeaponTemplateSet *ThingTemplate::Find_Weapon_Template_Set(const BitFlags<WEAPONSET_COUNT> &t) const
+{
+    return m_weaponTemplateSetFinder.Find_Best_Info(m_weaponTemplateSets, t);
 }

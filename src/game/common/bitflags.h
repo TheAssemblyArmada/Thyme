@@ -254,8 +254,8 @@ public:
         m_bits.set(flag5);
     }
 
-    bool operator==(BitFlags &that) const { return m_bits == that.m_bits; }
-    bool operator!=(BitFlags &that) const { return m_bits != that.m_bits; }
+    bool operator==(const BitFlags &that) const { return m_bits == that.m_bits; }
+    bool operator!=(const BitFlags &that) const { return m_bits != that.m_bits; }
 
     void Clear() { m_bits.reset(); }
     void Set(int bit, int value) { m_bits.set(bit, value); }
@@ -377,7 +377,7 @@ public:
     static int Get_Single_Bit_From_Name(const char *name);
     bool Set_Bit_By_Name(const char *name);
 
-    const char *Get_Name_For_Bit(int bit)
+    const char *Get_Name_For_Bit(int bit) const
     {
         if (Test(bit)) {
             return s_bitNamesList[bit];

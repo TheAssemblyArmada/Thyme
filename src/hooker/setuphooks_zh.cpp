@@ -113,6 +113,7 @@
 #include "shadermanager.h"
 #include "sidesinfo.h"
 #include "sideslist.h"
+#include "smudge.h"
 #include "sortingrenderer.h"
 #include "soundmanager.h"
 #include "surfaceclass.h"
@@ -145,6 +146,7 @@
 #include "w3droadbuffer.h"
 #include "w3dscene.h"
 #include "w3dshroud.h"
+#include "w3dsmudge.h"
 #include "w3dterraintracks.h"
 #include "w3dview.h"
 #include "w3dvolumetricshadow.h"
@@ -1927,4 +1929,16 @@ void Setup_Hooks()
     Hook_Any(0x0061B8F0, ExperienceTracker::Can_Gain_Exp_For_Level);
     Hook_Any(0x0061B910, ExperienceTracker::Add_Experience_Points);
     Hook_Any(0x0061B9D0, ExperienceTracker::Set_Experience_And_Level);
+
+    // smudge.cpp
+    Hook_Any(0x007F6250, SmudgeManager::Add_Smudge_Set);
+    Hook_Any(0x007F6640, SmudgeSet::Add_Smudge_To_Set);
+
+    // w3dsmudge.cpp
+    Hook_Any(0x00783A20, W3DSmudgeManager::Hook_Ctor);
+    Hook_Any(0x00783AD0, W3DSmudgeManager::Init);
+    Hook_Any(0x00783AF0, W3DSmudgeManager::Reset);
+    Hook_Any(0x00783B00, W3DSmudgeManager::Release_Resources);
+    Hook_Any(0x00783B20, W3DSmudgeManager::Re_Acquire_Resources);
+    Hook_Any(0x00784130, W3DSmudgeManager::Render);
 }

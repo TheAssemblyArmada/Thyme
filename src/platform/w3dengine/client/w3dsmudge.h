@@ -22,7 +22,15 @@ class RenderInfoClass;
 class W3DSmudgeManager : public SmudgeManager
 {
 public:
-    W3DSmudgeManager();
+    enum
+    {
+        NUM_SMUDGES = 500,
+        SMUDGE_INDEX_COUNT = 12,
+        SMUDGE_VERTEX_COUNT = 5,
+        SMUDGE_POLY_COUNT = 4,
+    };
+
+    W3DSmudgeManager() {}
     virtual ~W3DSmudgeManager() override;
     virtual void Init() override;
     virtual void Reset() override;
@@ -30,6 +38,7 @@ public:
     virtual void Re_Acquire_Resources() override;
     bool Test_Hardware_Support();
     void Render(RenderInfoClass &rinfo);
+    W3DSmudgeManager *Hook_Ctor() { return new (this) W3DSmudgeManager; }
 
 private:
     int unk1;

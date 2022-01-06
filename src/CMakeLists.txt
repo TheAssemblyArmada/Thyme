@@ -110,6 +110,7 @@ set(GAMEENGINE_SRC
     game/client/system/particlesystem/particlesysinfo.cpp
     game/client/system/particlesystem/particlesysmanager.cpp
     game/client/system/particlesystem/particlesystemplate.cpp
+    game/client/system/smudge.cpp
     game/client/videoplayer/videobuffer.cpp
     game/client/videoplayer/videoplayer.cpp
     game/client/videoplayer/videostream.cpp

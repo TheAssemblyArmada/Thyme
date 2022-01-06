@@ -19,9 +19,13 @@
 
 class ClientUpdateModule : public DrawableModule
 {
+    IMPLEMENT_ABSTRACT_POOL(ClientUpdateModule)
+
+protected:
+    virtual ~ClientUpdateModule() override {}
+
 public:
     ClientUpdateModule(Thing *thing, const ModuleData *module_data) : DrawableModule(thing, module_data) {}
-    virtual ~ClientUpdateModule() override {}
     virtual void Client_Update() = 0;
 
     static ModuleType Get_Module_Type() { return MODULE_CLIENT_UPDATE; }

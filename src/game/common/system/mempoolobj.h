@@ -41,8 +41,8 @@ protected:
     virtual ~MemoryPoolObject() {}
     virtual MemoryPool *Get_Object_Pool() = 0;
 
-    void *operator new(size_t);
-    void operator delete(void *) { captainslog_debug("This should be impossible"); }
+    void *operator new(size_t) = delete;
+    void operator delete(void *) { captainslog_dbgassert(0, "This should be impossible to call"); }
 
     // Class implementing Get_Object_Pool needs to provide these
     // use macros below to generated them.
@@ -56,18 +56,18 @@ protected:
 private: \
     static MemoryPool *Get_Class_Pool() \
     { \
-        captainslog_dbgassert(g_memoryPoolFactory, "TheMemoryPoolFactory is nullptr\n"); \
+        captainslog_dbgassert(g_memoryPoolFactory, "TheMemoryPoolFactory is nullptr"); \
         static MemoryPool *The##classname##Pool = \
             g_memoryPoolFactory->Create_Memory_Pool(#poolname, sizeof(classname), -1, -1); \
         captainslog_dbgassert( \
-            The##classname##Pool, "Pool \"%s\" not found (did you set it up in initMemoryPools?)\n", #poolname); \
+            The##classname##Pool, "Pool \"%s\" not found (did you set it up in initMemoryPools?)", #poolname); \
         captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() >= sizeof(classname), \
-            "Pool \"%s\" is too small for this class (currently %d, need %d)\n", \
+            "Pool \"%s\" is too small for this class (currently %d, need %d)", \
             #poolname, \
             sizeof(classname), \
             The##classname##Pool->Get_Alloc_Size()); \
         captainslog_dbgassert(The##classname##Pool->Get_Alloc_Size() <= sizeof(classname), \
-            "Pool \"%s\" is too large for this class (currently %d, need %d)\n", \
+            "Pool \"%s\" is too large for this class (currently %d, need %d)", \
             #poolname, \
             sizeof(classname), \
             The##classname##Pool->Get_Alloc_Size()); \
@@ -76,10 +76,9 @@ private: \
     virtual MemoryPool *Get_Object_Pool() override { return Get_Class_Pool(); } \
 \
 public: \
-    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED }; \
+    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 }; \
 \
-    void *operator new(size_t size); \
-    void *operator new(size_t size, classname##MagicEnum) \
+    void *operator new(size_t size, classname##MagicEnum = classname##_GLUE_NOT_IMPLEMENTED) \
     { \
         captainslog_dbgassert(size == sizeof(classname), \
             "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
@@ -88,33 +87,37 @@ public: \
     } \
     void operator delete(void *ptr) \
     { \
-        captainslog_debug("Please call deleteInstance instead of delete."); \
+        captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
         Get_Class_Pool()->Free_Block(ptr); \
     } \
-    void operator delete(void *ptr, classname##MagicEnum) { Get_Class_Pool()->Free_Block(ptr); }
+    void operator delete(void *ptr, classname##MagicEnum) \
+    { \
+        captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
+        Get_Class_Pool()->Free_Block(ptr); \
+    }
+
+/* NOTE: Operator delete above must exist because of the pairing operator new. However, it should never be called directly.
+ * Reason being, a pointer to a derived class of this class, must use the correct memory pool for deletion. This is possible
+ * by calling Get_Object_Pool function. However, operator delete is called after class destructor, and class destructor
+ * will destroy virtual table. Therefore operator delete cannot be used. */
 
 #define IMPLEMENT_POOL(classname) IMPLEMENT_NAMED_POOL(classname, classname);
 
 #define IMPLEMENT_ABSTRACT_POOL(classname) \
 private: \
     virtual MemoryPool *Get_Object_Pool() override { throw CODE_01; } \
-\
-    enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED }; \
-\
-protected: \
-    void *operator new(size_t size); \
-    void *operator new(size_t size, classname##MagicEnum); \
-    void operator delete(void *ptr) { captainslog_debug("this should be impossible to call (abstract base class)"); } \
-    void operator delete(void *ptr, classname##MagicEnum);
+    void *operator new(size_t size) = delete; \
+    void operator delete(void *ptr) { captainslog_dbgassert(0, "This should be impossible to call (abstract base class)"); }
 
-#define NEW_POOL_OBJ(classname, ...) new (classname::classname##_GLUE_NOT_IMPLEMENTED) classname(__VA_ARGS__)
+// NEW_POOL_OBJ is obsolete. Can be removed.
+#define NEW_POOL_OBJ(classname, ...) new classname(__VA_ARGS__)
 
 /**
  * @brief Delete an instance of a MemoryPoolObject, ensuring correct pool is used via virtual call.
  */
 inline void MemoryPoolObject::Delete_Instance()
 {
-    if (this) {
+    if (this != nullptr) {
         MemoryPool *pool = Get_Object_Pool();
         this->~MemoryPoolObject();
         pool->Free_Block(this);

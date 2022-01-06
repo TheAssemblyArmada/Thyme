@@ -20,11 +20,11 @@
 #include "hooker.h"
 #endif
 
-// zh: 0x00608620 wb: 0x009C3F31
+// zh: 0x00608620 wb: 0x009C3F11
 LoadScreen::~LoadScreen()
 {
 #ifdef GAME_DLL
-    Call_Method<void, LoadScreen>(PICK_ADDRESS(0x00608620, 0x009C3F31), this);
+    Call_Method<void, LoadScreen>(PICK_ADDRESS(0x00608620, 0x009C3F11), this);
 #else
     // TODO: Missing GameWindowManager
     if (m_loadScreen != nullptr) {

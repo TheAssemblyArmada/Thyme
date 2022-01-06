@@ -18,6 +18,7 @@
 #include "mempoolobj.h"
 #include "snapshot.h"
 #include "subsysteminterface.h"
+#include <new>
 #include <queue>
 
 struct FindPositionOptions;

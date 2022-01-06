@@ -90,6 +90,7 @@ set(GAMEENGINE_SRC
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/tintenvelope.cpp
     game/client/gui/gamefont.cpp
+    game/client/gui/gamewindow.cpp
     game/client/gui/loadscreen.cpp
     game/client/gui/wininstancedata.cpp
     game/client/image.cpp

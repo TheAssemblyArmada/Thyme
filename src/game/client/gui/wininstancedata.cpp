@@ -16,14 +16,7 @@
 #include "displaystringmanager.h"
 #include <captainslog.h>
 
-WinInstanceData::WinInstanceData() :
-    m_textLabelString(nullptr),
-    m_decoratedNameString(nullptr),
-    m_tooltipString(nullptr),
-    m_headerTemplateString(nullptr),
-    m_text(nullptr),
-    m_tooltip(nullptr),
-    m_videoBuffer(nullptr)
+WinInstanceData::WinInstanceData() : m_text(nullptr), m_tooltip(nullptr), m_videoBuffer(nullptr)
 {
     Init();
 }
@@ -54,10 +47,13 @@ void WinInstanceData::Init()
         m_hiliteDrawData[i].color = WIN_COLOR_UNDEFINED;
         m_hiliteDrawData[i].borderColor = WIN_COLOR_UNDEFINED;
     }
+
     m_enabledText.color = WIN_COLOR_UNDEFINED;
     m_enabledText.borderColor = WIN_COLOR_UNDEFINED;
+
     m_disabledText.color = WIN_COLOR_UNDEFINED;
     m_disabledText.borderColor = WIN_COLOR_UNDEFINED;
+
     m_hiliteText.color = WIN_COLOR_UNDEFINED;
     m_hiliteText.borderColor = WIN_COLOR_UNDEFINED;
 
@@ -83,10 +79,12 @@ void WinInstanceData::Init()
         g_theDisplayStringManager->Free_Display_String(m_text);
         m_text = nullptr;
     }
+
     if (m_tooltip != nullptr) {
         g_theDisplayStringManager->Free_Display_String(m_tooltip);
         m_tooltip = nullptr;
     }
+
     m_videoBuffer = nullptr;
 }
 
@@ -163,13 +161,7 @@ WinInstanceData &WinInstanceData::operator=(const WinInstanceData &that)
 
     for (int i = 0; i < MAX_DRAW_DATA; ++i) {
         m_enabledDrawData[i] = that.m_enabledDrawData[i];
-    }
-
-    for (int i = 0; i < MAX_DRAW_DATA; ++i) {
         m_disabledDrawData[i] = that.m_disabledDrawData[i];
-    }
-
-    for (int i = 0; i < MAX_DRAW_DATA; ++i) {
         m_hiliteDrawData[i] = that.m_hiliteDrawData[i];
     }
 
@@ -178,12 +170,16 @@ WinInstanceData &WinInstanceData::operator=(const WinInstanceData &that)
     m_hiliteText = that.m_hiliteText;
 
     m_imeCompositeText = that.m_imeCompositeText;
+
     m_imageOffset = that.m_imageOffset;
+
     m_font = that.m_font;
+
     m_textLabelString = that.m_textLabelString;
     m_decoratedNameString = that.m_decoratedNameString;
     m_tooltipString = that.m_tooltipString;
     m_headerTemplateString = that.m_headerTemplateString;
+
     m_tooltipDelay = that.m_tooltipDelay;
     m_text = that.m_text;
     m_tooltip = that.m_tooltip;

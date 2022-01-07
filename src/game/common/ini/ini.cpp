@@ -980,7 +980,7 @@ void INI::Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, con
 void INI::Parse_Object_Definition(INI *ini)
 {
     Utf8String name = ini->Get_Next_Token();
-    ThingFactory::Parse_Object_Definition(ini, name, nullptr);
+    ThingFactory::Parse_Object_Definition(ini, name, Utf8String::s_emptyString);
 }
 
 void INI::Parse_Object_Reskin_Definition(INI *ini)

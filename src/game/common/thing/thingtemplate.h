@@ -128,6 +128,11 @@ class ThingTemplate : public Overridable
 {
     IMPLEMENT_NAMED_POOL(ThingTemplate, ThingTemplatePool);
 
+    enum
+    {
+        RANK_LEVEL_COUNT = 4
+    };
+
 protected:
     virtual ~ThingTemplate() override {}
 
@@ -338,9 +343,9 @@ private:
     ModuleInfo m_body;
     ModuleInfo m_draws;
     ModuleInfo m_clientUpdates;
-    int m_skillPointValues[4];
-    int m_experienceValues[4];
-    int m_experienceRequired[4];
+    int m_skillPointValues[RANK_LEVEL_COUNT];
+    int m_experienceValues[RANK_LEVEL_COUNT];
+    int m_experienceRequired[RANK_LEVEL_COUNT];
     std::vector<ProductionPrerequisite> m_prerequisites;
     std::vector<Utf8String> m_buildVariations;
     std::vector<WeaponTemplateSet> m_weaponTemplateSets;
@@ -398,6 +403,7 @@ private:
     unsigned char m_moduleParseState;
     unsigned char m_crusherLevel;
     unsigned char m_crushableLevel;
+
 #ifdef GAME_DLL
     static AudioEventRTS &s_audioEventNoSound;
 #else

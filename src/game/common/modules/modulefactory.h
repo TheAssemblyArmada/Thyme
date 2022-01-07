@@ -52,7 +52,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    int Find_Interface_Mask(const Utf8String &name, ModuleType type);
+    int Find_Module_Interface_Mask(const Utf8String &name, ModuleType type);
     Module *New_Module(Thing *thing, const Utf8String &name, const ModuleData *data, ModuleType type);
     ModuleData *New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag);
 

@@ -678,7 +678,7 @@ void Setup_Hooks()
     // Virtual functions not hooked here, hook to create factory in Win32GameEngine handles vtable.
     Hook_Method(0x004F2D60, &ModuleFactory::Make_Decorated_Name_Key);
     Hook_Method(0x004F2E80, &ModuleFactory::Add_Module_Internal);
-    Hook_Method(0x004F2B80, &ModuleFactory::Find_Interface_Mask);
+    Hook_Method(0x004F2B80, &ModuleFactory::Find_Module_Interface_Mask);
     Hook_Method(0x004F2DD0, &ModuleFactory::New_Module);
     Hook_Method(0x004F2C20, &ModuleFactory::New_Module_Data_From_INI);
 

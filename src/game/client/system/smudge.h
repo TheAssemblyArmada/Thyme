@@ -28,8 +28,8 @@ class Smudge : public DLNodeClass<Smudge>
 {
     IMPLEMENT_W3D_POOL(Smudge)
 public:
-    Smudge();
-    virtual ~Smudge() override;
+    Smudge() {}
+    virtual ~Smudge() override {}
 
 private:
     Vector3 m_smudgePos;
@@ -37,6 +37,7 @@ private:
     float m_smudgeSize;
     float m_smudgeAlpha;
     SmudgeCoords m_smudgeStructs[5];
+    friend class W3DSmudgeManager;
 };
 
 class SmudgeSet : public DLNodeClass<SmudgeSet>
@@ -55,28 +56,38 @@ public:
 private:
     DLListClass<Smudge> m_smudgeList;
     int m_smudgeCount;
+    static DLListClass<Smudge> s_freeSmudgeList;
+    friend class SmudgeManager;
+    friend class W3DSmudgeManager;
 };
 
 class SmudgeManager
 {
 public:
+    enum HardwareTestResult
+    {
+        HARDWARE_TEST_NOT_RUN,
+        HARDWARE_TEST_FAIL,
+        HARDWARE_TEST_SUCCEED,
+    };
+
     SmudgeManager();
     virtual ~SmudgeManager();
 
-    virtual void Init();
+    virtual void Init() {}
     virtual void Reset();
-    virtual void Release_Resources();
-    virtual void Re_Acquire_Resources();
+    virtual void Release_Resources() {}
+    virtual void Re_Acquire_Resources() {}
 
     SmudgeSet *Add_Smudge_Set();
     void Remove_Smudge_Set(SmudgeSet &set);
 
     int Get_Heat_Haze_Count() { return m_heatHazeCount; }
     void Set_Heat_Haze_Count(int count) { m_heatHazeCount = count; }
-    int Get_Hardware_Test_Result() { return m_hardwareTestResult; }
+    HardwareTestResult Get_Hardware_Test_Result() { return m_hardwareTestResult; }
 
-private:
-    int m_hardwareTestResult;
+protected:
+    HardwareTestResult m_hardwareTestResult;
     DLListClass<SmudgeSet> m_smudgeList;
     DLListClass<SmudgeSet> m_freeSmudgeList;
     int m_heatHazeCount;

@@ -198,6 +198,8 @@ void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
     g_sXfer = xfer;
     Prep_File(filename, type);
 
+    captainslog_dbgassert(!m_endOfFile, "INI::load, EOF at the beginning!");
+
     while (!m_endOfFile) {
         Read_Line();
 
@@ -358,7 +360,7 @@ void INI::Read_Line()
     } else {
         // Read into our current block buffer.
         char *cb;
-        for (cb = m_currentBlock; cb != &m_blockEnd; ++cb) {
+        for (cb = m_currentBlock; cb != &m_currentBlock[INI_MAX_CHARS_PER_LINE]; ++cb) {
             // If the buffer is empty, refill it.
             if (m_bufferReadPos == m_bufferData) {
                 m_bufferReadPos = 0;
@@ -389,6 +391,10 @@ void INI::Read_Line()
         // Null terminate the buffer
         *cb = '\0';
         ++m_lineNumber;
+
+        captainslog_dbgassert(cb != &m_currentBlock[INI_MAX_CHARS_PER_LINE],
+            "Buffer too small (%d) and was truncated, increase INI_MAX_CHARS_PER_LINE",
+            INI_MAX_CHARS_PER_LINE);
     }
 
     // If we have a transfer object assigned, do the transfer.
@@ -401,7 +407,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
 {
     const char *token = Get_Next_Token_Or_Null();
     Utf8String next;
-    char buffer[MAX_LINE_LENGTH];
+    char buffer[INI_MAX_CHARS_PER_LINE];
 
     buffer[0] = '\0';
 

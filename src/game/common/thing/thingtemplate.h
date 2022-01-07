@@ -124,6 +124,10 @@ struct AudioArray
     AudioArray &operator=(const AudioArray &that);
 };
 
+#ifdef GAME_DLL
+#pragma pack(push, 2)
+#endif
+
 class ThingTemplate : public Overridable
 {
     IMPLEMENT_NAMED_POOL(ThingTemplate, ThingTemplatePool);
@@ -142,6 +146,7 @@ public:
     };
 
     ThingTemplate();
+
     ThingTemplate &operator=(const ThingTemplate &that);
 
     static void Parse_Add_Module(INI *ini, void *instance, void *store, const void *user_data);
@@ -398,9 +403,15 @@ private:
     unsigned char m_moduleParseState;
     unsigned char m_crusherLevel;
     unsigned char m_crushableLevel;
+
     static AudioEventRTS s_audioEventNoSound;
     static FieldParse s_objectFieldParseTable[];
     static FieldParse s_objectReskinFieldParseTable[];
 };
+
+#ifdef GAME_DLL
+#pragma pack(pop)
+static_assert(sizeof(ThingTemplate) == 0x23A);
+#endif
 
 #endif // THINGTEMPLATE_H

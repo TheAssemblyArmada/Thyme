@@ -86,8 +86,8 @@ class INI
 public:
     enum
     {
-        MAX_LINE_LENGTH = 1028,
-        MAX_BUFFER_SIZE = 8192,
+        INI_MAX_CHARS_PER_LINE = 1028,
+        INI_BUFFER_SIZE = 8192,
     };
 
     INI();
@@ -170,14 +170,13 @@ private:
     void Unprep_File();
 
     File *m_backingFile;
-    char m_buffer[MAX_BUFFER_SIZE];
+    char m_buffer[INI_BUFFER_SIZE];
     int m_bufferReadPos;
     int m_bufferData;
     Utf8String m_fileName;
     INILoadType m_loadType;
     int m_lineNumber;
-    char m_currentBlock[MAX_LINE_LENGTH];
-    char m_blockEnd;
+    char m_currentBlock[INI_MAX_CHARS_PER_LINE + 1];
     const char *m_seps;
     const char *m_sepsPercent;
     const char *m_sepsColon;
@@ -217,7 +216,7 @@ inline const char *INI::Get_Next_Sub_Token(const char *expected)
 
 inline Utf8String INI::Get_Next_Ascii_String()
 {
-    static char _buffer[MAX_LINE_LENGTH];
+    static char _buffer[INI_MAX_CHARS_PER_LINE];
     Utf8String next;
 
     const char *token = Get_Next_Token_Or_Null();

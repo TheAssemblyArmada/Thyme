@@ -52,9 +52,7 @@ ThingTemplate *ThingFactory::New_Template(const Utf8String &name)
     new_template->Friend_Set_Template_ID(m_nextTemplateID);
     m_nextTemplateID++;
 
-    if (m_nextTemplateID == 0) {
-        captainslog_dbgassert(0, "m_nextTemplateID wrapped to zero");
-    }
+    captainslog_dbgassert(m_nextTemplateID != 0, "m_nextTemplateID wrapped to zero");
 
     new_template->Friend_Set_Template_Name(name);
     Add_Template(new_template);
@@ -68,12 +66,12 @@ ThingTemplate *ThingFactory::New_Override(ThingTemplate *thing_template)
         "Thing template '%s' not in master list",
         thing_template->Get_Name().Str());
 
+    ThingTemplate *override_template = static_cast<ThingTemplate *>(thing_template->Friend_Get_Final_Override());
     ThingTemplate *new_template = NEW_POOL_OBJ(ThingTemplate);
-    ThingTemplate *overrid = (ThingTemplate *)thing_template->Get_Final_Override();
-    *new_template = *overrid;
+    *new_template = *override_template;
     new_template->Set_Copied_From_Default();
     new_template->Set_Is_Allocated();
-    overrid->Set_Next(new_template);
+    override_template->Set_Next(new_template);
     return new_template;
 }
 
@@ -152,7 +150,7 @@ ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool
         return i->second;
     }
 
-    if (!strncmp(name, "***TESTING", strlen("***TESTING"))) {
+    if (strncmp(name, "***TESTING", strlen("***TESTING")) == 0) {
         ThingTemplate *tmplate = New_Template("Un-namedTemplate");
         tmplate->Init_For_LTA(name);
         m_templateMap.erase("Un-namedTemplate");
@@ -225,7 +223,7 @@ void ThingFactory::Parse_Object_Definition(INI *ini, Utf8String name, Utf8String
             tmplate->Friend_Set_Original_Skin_Template(that);
             ini->Init_From_INI(tmplate, ThingTemplate::Get_Reskin_Field_Parse());
         } else {
-            captainslog_debug("ObjectReskin must come after the original Object (%s, %s).\n", reskin_from.Str(), name.Str());
+            captainslog_debug("ObjectReskin must come after the original Object (%s, %s).", reskin_from.Str(), name.Str());
             throw CODE_06;
         }
     } else {

@@ -79,6 +79,7 @@ const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const U
         return &it->second;
     }
 
+    captainslog_dbgassert(0, "Module name '%s' not found", name.Str());
     return nullptr;
 }
 
@@ -130,7 +131,7 @@ ModuleData *ModuleFactory::New_Module_Data_From_INI(INI *ini, const Utf8String &
 
         if (temp != nullptr) {
             ModuleData *data = temp->create_data_proc(ini);
-            data->m_tagKey = g_theNameKeyGenerator->Name_To_Key(tag);
+            data->m_tagKey = g_theNameKeyGenerator->Name_To_Key(tag.Str());
             m_moduleDataList.push_back(data);
 
             return data;
@@ -150,7 +151,7 @@ NameKeyType ModuleFactory::Make_Decorated_Name_Key(const Utf8String &name, Modul
     char tmp[256];
 
     tmp[0] = type + '0';
-    strlcpy(&tmp[1], name, sizeof(tmp) - 1);
+    strlcpy(&tmp[1], name.Str(), sizeof(tmp) - 1);
 
     return g_theNameKeyGenerator->Name_To_Key(tmp);
 }

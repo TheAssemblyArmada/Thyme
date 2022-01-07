@@ -192,7 +192,7 @@ Drawable *ThingFactory::New_Drawable(const ThingTemplate *tmplate, DrawableStatu
     return g_theGameClient->Create_Drawable(tmplate, status_bits);
 }
 
-void ThingFactory::Parse_Object_Definition(INI *ini, Utf8String name, Utf8String reskin_from)
+void ThingFactory::Parse_Object_Definition(INI *ini, const Utf8String &name, const Utf8String &reskin_from)
 {
 #ifdef GAME_DEBUG_STRUCTS
     s_theThingTemplateBeingParsedName = name;

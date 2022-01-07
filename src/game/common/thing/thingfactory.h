@@ -44,7 +44,7 @@ public:
     ThingTemplate *First_Template() { return m_firstTemplate; }
     ThingTemplate *Find_Template_Internal(const Utf8String &name, bool b);
     ThingTemplate *Find_Template(const Utf8String &name, bool b) { return Find_Template_Internal(name, b); }
-    static void Parse_Object_Definition(INI *ini, Utf8String name, Utf8String reskin_from);
+    static void Parse_Object_Definition(INI *ini, const Utf8String &name, const Utf8String &reskin_from);
     void Add_Template(ThingTemplate *tmplate);
     ThingTemplate *Find_Template_By_ID(unsigned short id);
     Object *New_Object(const ThingTemplate *tmplate, Team *team, BitFlags<OBJECT_STATUS_COUNT> status_bits);

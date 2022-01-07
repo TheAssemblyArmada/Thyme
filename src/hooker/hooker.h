@@ -34,8 +34,7 @@
 #define PICK_ADDRESS(a, b) (a)
 #endif
 
-template<typename T, const int size>
-class ArrayHelper
+template<typename T, const int size> class ArrayHelper
 {
 public:
     operator T *() { return (T *)this; };
@@ -49,8 +48,7 @@ protected:
     char _dummy[size * sizeof(T)];
 };
 
-template<typename T, const int y, const int x>
-class ArrayHelper2D
+template<typename T, const int y, const int x> class ArrayHelper2D
 {
 public:
     operator ArrayHelper<T, x> *() { return (ArrayHelper<T, x> *)this; };
@@ -74,14 +72,12 @@ protected:
 // #define SomeGlobalVar (Make_Global<bool>(0x00FF00FF))
 // allows you to use SomeGlobalVar as though it was a bool you declared, though
 // it will reflect the value the original exe sees at address 0x00FF00FF
-template<typename T>
-__forceinline T &Make_Global(const uintptr_t address)
+template<typename T> __forceinline T &Make_Global(const uintptr_t address)
 {
     return *reinterpret_cast<T *>(address);
 }
 
-template<typename T>
-__forceinline T *Make_Pointer(const uintptr_t address)
+template<typename T> __forceinline T *Make_Pointer(const uintptr_t address)
 {
     return reinterpret_cast<T *>(address);
 }
@@ -172,16 +168,14 @@ inline void Hook_Func(uintptr_t in, uintptr_t out)
 }
 
 // Hook regular functions and static methods.
-template<typename T>
-void Hook_Function(uintptr_t in, T out)
+template<typename T> void Hook_Function(uintptr_t in, T out)
 {
     Hook_Func(in, reinterpret_cast<uintptr_t>(out));
 }
 
 // Method pointers need funky syntax to get the underlying function address
 // hence the odd cast to void for the out pointer.
-template<typename T>
-void Hook_Method(uintptr_t in, T out)
+template<typename T> void Hook_Method(uintptr_t in, T out)
 {
     Hook_Func(in, reinterpret_cast<uintptr_t>((void *&)out));
 }
@@ -193,11 +187,11 @@ void Hook_Method(uintptr_t in, T out)
       __asm call Hook_Func     \
       __asm add esp, 8 }
 
-
 __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();
 
 #define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
 #define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);
 #define ARRAY2D_DEC(type, var, x, y) ArrayHelper2D<type, x, y> &var
-#define ARRAY2D_DEF(address, type, var, x, y) ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);
+#define ARRAY2D_DEF(address, type, var, x, y) \
+    ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);

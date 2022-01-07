@@ -87,7 +87,7 @@ const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const U
  *
  * 0x004F2B80
  */
-int ModuleFactory::Find_Interface_Mask(const Utf8String &name, ModuleType type)
+int ModuleFactory::Find_Module_Interface_Mask(const Utf8String &name, ModuleType type)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);

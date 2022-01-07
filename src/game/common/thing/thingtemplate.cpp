@@ -474,9 +474,9 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
     strncpy(buffer, name, ARRAY_SIZE(buffer));
     int i;
 
-    for (i = 0; buffer[i]; i++) {
+    for (i = 0; buffer[i]; ++i) {
         if (buffer[i] == '/') {
-            i++;
+            ++i;
             break;
         }
     }
@@ -496,7 +496,6 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
         false,
         false);
 
-    tag;
     tag.Format("LTA_%sInactiveBody", m_LTAName.Str());
     m_body.Add_Module_Info(this,
         "InactiveBody",
@@ -506,7 +505,6 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
         false,
         false);
 
-    tag;
     tag.Format("LTA_%sW3DDefaultDraw", m_LTAName.Str());
     m_body.Add_Module_Info(this,
         "W3DDefaultDraw",
@@ -661,10 +659,10 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 
     if (data == 999) {
         data = 0;
-        mask = g_theModuleFactory->Find_Interface_Mask(name, MODULE_DEFAULT);
+        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, MODULE_DEFAULT);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) != 0, CODE_06, "Only Body allowed here");
     } else {
-        mask = g_theModuleFactory->Find_Interface_Mask(name, (ModuleType)data);
+        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, (ModuleType)data);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) == 0, CODE_06, "No Body allowed here");
     }
 

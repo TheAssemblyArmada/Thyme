@@ -84,31 +84,31 @@ template<typename T> __forceinline T *Make_Pointer(const uintptr_t address)
 
 // Call_Function and Call_Method can be used to call functions from the original
 // binary where they are required and a replacement hasn't been written yet.
-template<typename T, typename... Types>
-__forceinline T Call_Function(const uintptr_t address, Types... args)
+template<typename ReturnType, typename... Arguments>
+__forceinline ReturnType Call_Function(const uintptr_t address, Arguments... args)
 {
 #ifdef GAME_DLL
-    return reinterpret_cast<T(__cdecl *)(Types...)>(address)(args...);
+    return reinterpret_cast<ReturnType(__cdecl *)(Arguments...)>(address)(args...);
 #else
     return T();
 #endif
 }
 
-template<typename T, typename... Types>
-__forceinline T Call__StdCall_Function(const uintptr_t address, Types... args)
+template<typename ReturnType, typename... Arguments>
+__forceinline ReturnType Call__StdCall_Function(const uintptr_t address, Arguments... args)
 {
 #ifdef GAME_DLL
-    return reinterpret_cast<T(__stdcall *)(Types...)>(address)(args...);
+    return reinterpret_cast<ReturnType(__stdcall *)(Arguments...)>(address)(args...);
 #else
     return T();
 #endif
 }
 
-template<typename T, typename X, typename... Types>
-__forceinline T Call_Method(const uintptr_t address, X *const self, Types... args)
+template<typename ReturnType, typename ThisType, typename... Arguments>
+__forceinline ReturnType Call_Method(const uintptr_t address, ThisType *const self, Arguments... args)
 {
 #ifdef GAME_DLL
-    return reinterpret_cast<T(__thiscall *)(X *, Types...)>(address)(self, args...);
+    return reinterpret_cast<ReturnType(__thiscall *)(ThisType *, Arguments...)>(address)(self, args...);
 #else
     return T();
 #endif
@@ -116,28 +116,28 @@ __forceinline T Call_Method(const uintptr_t address, X *const self, Types... arg
 
 // These create pointers to various types of function where the return,
 // parameters and calling convention are known.
-template<typename T, typename... Types>
-__forceinline T(__cdecl *Make_Function_Ptr(const uintptr_t address))(Types...)
+template<typename ReturnType, typename... Arguments>
+__forceinline ReturnType(__cdecl *Make_Function_Ptr(const uintptr_t address))(Arguments...)
 {
-    return reinterpret_cast<T(__cdecl *)(Types...)>(address);
+    return reinterpret_cast<ReturnType(__cdecl *)(Arguments...)>(address);
 }
 
-template<typename T, typename... Types>
-__forceinline T(__stdcall *Make_StdCall_Ptr(const uintptr_t address))(Types...)
+template<typename ReturnType, typename... Arguments>
+__forceinline ReturnType(__stdcall *Make_StdCall_Ptr(const uintptr_t address))(Arguments...)
 {
-    return reinterpret_cast<T(__stdcall *)(Types...)>(address);
+    return reinterpret_cast<ReturnType(__stdcall *)(Arguments...)>(address);
 }
 
-template<typename T, typename C, typename... Types>
-__forceinline T(__thiscall *Make_Method_Ptr(const uintptr_t address))(C *, Types...)
+template<typename ReturnType, typename ThisType, typename... Arguments>
+__forceinline ReturnType(__thiscall *Make_Method_Ptr(const uintptr_t address))(ThisType *, Arguments...)
 {
-    return reinterpret_cast<T(__thiscall *)(C *, Types...)>(address);
+    return reinterpret_cast<ReturnType(__thiscall *)(ThisType *, Arguments...)>(address);
 }
 
-template<typename T, typename... Types>
-__forceinline T(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Types..., ...)
+template<typename ReturnType, typename... Arguments>
+__forceinline ReturnType(__cdecl *Make_VA_Function_Ptr(const uintptr_t address))(Arguments..., ...)
 {
-    return reinterpret_cast<T(__cdecl *)(Types..., ...)>(address);
+    return reinterpret_cast<ReturnType(__cdecl *)(Arguments..., ...)>(address);
 }
 
 // A nice struct to pack the assembly in for jumping into replacement code.

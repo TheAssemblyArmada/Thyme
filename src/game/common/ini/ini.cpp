@@ -188,6 +188,9 @@ INI::INI() :
     m_endOfFile(false)
 {
     m_currentBlock[0] = '\0';
+#ifdef GAME_DEBUG_STRUCTS
+    m_curBlockStart[0] = '\0';
+#endif
 }
 
 INI::~INI() {}
@@ -212,14 +215,18 @@ void INI::Load(Utf8String filename, INILoadType type, Xfer *xfer)
         if (token != nullptr) {
             iniblockparse_t parser = Find_Block_Parse(token);
 
-            captainslog_relassert(parser != nullptr,
-                0xDEAD0006,
-                "[LINE: %d - FILE: '%s'] Unknown block '%s'",
-                m_lineNumber,
-                m_fileName.Str(),
-                token);
-
-            parser(this);
+            if (parser != nullptr) {
+#ifdef GAME_DEBUG_STRUCTS
+                strcpy(m_curBlockStart, m_currentBlock);
+#endif
+                parser(this);
+#ifdef GAME_DEBUG_STRUCTS
+                strcpy(m_curBlockStart, "NO_BLOCK");
+#endif
+            } else {
+                captainslog_relassert(
+                    0, 0xDEAD0006, "[LINE: %d - FILE: '%s'] Unknown block '%s'", m_lineNumber, m_fileName.Str(), token);
+            }
         }
     }
 

@@ -99,9 +99,9 @@ void GeometryInfo::Calc_Bounding_Stuff()
             m_boundingSphereRadius = std::max(m_height * GAMEMATH_TIGHT_CORNER_RADIUS, m_majorRadius);
             break;
         case GEOMETRY_BOX:
-            m_boundingCircleRadius = Sqrt(float(Square(m_minorRadius)) + float(Square(m_majorRadius)));
-            m_boundingSphereRadius = Sqrt(float(float(Square(m_minorRadius)) + float(Square(m_minorRadius)))
-                + float(float(m_height * GAMEMATH_TIGHT_CORNER_RADIUS) * float(m_height * GAMEMATH_TIGHT_CORNER_RADIUS)));
+            m_boundingCircleRadius = Sqrt(Square(m_minorRadius) + Square(m_majorRadius));
+            m_boundingSphereRadius =
+                Sqrt(Square(m_minorRadius) + Square(m_majorRadius) + Square(m_height * GAMEMATH_TIGHT_CORNER_RADIUS));
             break;
         default:
             break;
@@ -159,8 +159,15 @@ float GeometryInfo::Get_Max_Height_Above_Position() const
  */
 float GeometryInfo::Get_Max_Height_Below_Position() const
 {
-    if (m_type == GEOMETRY_SPHERE) {
-        return m_majorRadius;
+    switch (m_type) {
+        case GEOMETRY_SPHERE:
+            return m_majorRadius;
+        case GEOMETRY_CYLINDER: // Fallthrough
+        case GEOMETRY_BOX:
+            return 0.0f;
+        default:
+            captainslog_error("GeometryInfo::Get_Max_Height_Below_Position - should never get here");
+            break;
     }
 
     return 0.0f;

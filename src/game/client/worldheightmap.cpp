@@ -1830,7 +1830,7 @@ TextureClass *WorldHeightMap::Get_Terrain_Texture()
 
 TextureClass *WorldHeightMap::Get_Edge_Terrain_Texture()
 {
-    if (!m_alphaEdgeTex) {
+    if (m_alphaEdgeTex == nullptr) {
         Get_Terrain_Texture();
     }
 
@@ -2341,7 +2341,7 @@ void WorldHeightMap::Get_UV_For_Blend(int edge_class, Region2D *range)
 
 TextureClass *WorldHeightMap::Get_Alpha_Terrain_Texture()
 {
-    if (!m_alphaTerrainTex) {
+    if (m_alphaTerrainTex == nullptr) {
         Get_Terrain_Texture();
     }
 

@@ -1296,6 +1296,7 @@ void DX8Wrapper::Set_Vertex_Buffer(const DynamicVBAccessClass &vba)
     Ref_Ptr_Set(s_renderState.vertex_buffers[0], v);
     v->Add_Engine_Ref();
     s_renderStateChanged |= VERTEX_BUFFER_CHANGED;
+    s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
 
 void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset)

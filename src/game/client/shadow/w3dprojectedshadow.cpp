@@ -1225,6 +1225,8 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
         y = box.m_extent.Y + box.m_extent.Y;
     }
 
+    shadow->m_sizeY = 1.0f / y;
+
     if (offsetx != 0.0f) {
         offsetx = offsetx * shadow->m_sizeX;
     }

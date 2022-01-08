@@ -1434,19 +1434,18 @@ void Create_Bmp_File(const char *filename, const char *data, int width, int heig
 void W3DDisplay::Take_ScreenShot()
 {
 #ifdef BUILD_WITH_D3D8
-    bool found = false;
     static int currentShot = 1;
     char fname[1024];
     char buf[256];
 
-    while (!found) {
+    while (true) {
         sprintf(buf, "%s%.3d.bmp", "sshot", currentShot);
         currentShot++;
-        strcpy(fname, g_theWriteableGlobalData->m_userDataDirectory);
+        strcpy(fname, g_theWriteableGlobalData->Get_Path_User_Data().Str());
         strcat(fname, buf);
 
-        if (_access(fname, 0) != -1) {
-            found = true;
+        if (_access(fname, 0) == -1) {
+            break;
         }
     }
 

@@ -1843,7 +1843,7 @@ void Setup_Hooks()
     Hook_Any(0x00747610, WorldHeightMap::Get_Alpha_UV_Data);
     Hook_Any(0x007478F0, WorldHeightMap::Set_Texture_LOD);
     Hook_Any(0x00747910, WorldHeightMap::Get_Terrain_Texture);
-    Hook_Any(0x00747C50, WorldHeightMap::Get_Edge_Terrain_Texture);
+    Hook_Any(0x00747C50, WorldHeightMap::Get_Alpha_Terrain_Texture);
     Hook_Any(0x00747C70, WorldHeightMap::Get_Flat_Texture);
     Hook_Any(0x00747D60, WorldHeightMap::Set_Draw_Origin);
     Hook_Any(0x00747E30, WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights);

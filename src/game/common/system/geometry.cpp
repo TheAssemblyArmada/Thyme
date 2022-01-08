@@ -159,8 +159,15 @@ float GeometryInfo::Get_Max_Height_Above_Position() const
  */
 float GeometryInfo::Get_Max_Height_Below_Position() const
 {
-    if (m_type == GEOMETRY_SPHERE) {
-        return m_majorRadius;
+    switch (m_type) {
+        case GEOMETRY_SPHERE:
+            return m_majorRadius;
+        case GEOMETRY_CYLINDER: // Fallthrough
+        case GEOMETRY_BOX:
+            return 0.0f;
+        default:
+            captainslog_error("GeometryInfo::Get_Max_Height_Below_Position - should never get here");
+            break;
     }
 
     return 0.0f;

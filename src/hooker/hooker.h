@@ -72,14 +72,14 @@ protected:
 // #define SomeGlobalVar (Make_Global<bool>(0x00FF00FF))
 // allows you to use SomeGlobalVar as though it was a bool you declared, though
 // it will reflect the value the original exe sees at address 0x00FF00FF
-template<typename T> __forceinline T &Make_Global(const uintptr_t address)
+template<typename Type> __forceinline Type &Make_Global(const uintptr_t address)
 {
-    return *reinterpret_cast<T *>(address);
+    return *reinterpret_cast<Type *>(address);
 }
 
-template<typename T> __forceinline T *Make_Pointer(const uintptr_t address)
+template<typename Type> __forceinline Type *Make_Pointer(const uintptr_t address)
 {
-    return reinterpret_cast<T *>(address);
+    return reinterpret_cast<Type *>(address);
 }
 
 // Call_Function and Call_Method can be used to call functions from the original
@@ -90,7 +90,7 @@ __forceinline ReturnType Call_Function(const uintptr_t address, Arguments... arg
 #ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__cdecl *)(Arguments...)>(address)(args...);
 #else
-    return T();
+    return ReturnType();
 #endif
 }
 
@@ -100,7 +100,7 @@ __forceinline ReturnType Call__StdCall_Function(const uintptr_t address, Argumen
 #ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__stdcall *)(Arguments...)>(address)(args...);
 #else
-    return T();
+    return ReturnType();
 #endif
 }
 
@@ -110,7 +110,7 @@ __forceinline ReturnType Call_Method(const uintptr_t address, ThisType *const se
 #ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__thiscall *)(ThisType *, Arguments...)>(address)(self, args...);
 #else
-    return T();
+    return ReturnType();
 #endif
 }
 

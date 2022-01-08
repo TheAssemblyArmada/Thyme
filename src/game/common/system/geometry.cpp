@@ -99,9 +99,9 @@ void GeometryInfo::Calc_Bounding_Stuff()
             m_boundingSphereRadius = std::max(m_height * GAMEMATH_TIGHT_CORNER_RADIUS, m_majorRadius);
             break;
         case GEOMETRY_BOX:
-            m_boundingCircleRadius = Sqrt(float(Square(m_minorRadius)) + float(Square(m_majorRadius)));
-            m_boundingSphereRadius = Sqrt(float(float(Square(m_minorRadius)) + float(Square(m_minorRadius)))
-                + float(float(m_height * GAMEMATH_TIGHT_CORNER_RADIUS) * float(m_height * GAMEMATH_TIGHT_CORNER_RADIUS)));
+            m_boundingCircleRadius = Sqrt(Square(m_minorRadius) + Square(m_majorRadius));
+            m_boundingSphereRadius =
+                Sqrt(Square(m_minorRadius) + Square(m_majorRadius) + Square(m_height * GAMEMATH_TIGHT_CORNER_RADIUS));
             break;
         default:
             break;

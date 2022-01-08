@@ -119,7 +119,7 @@ void ExperienceTracker::Add_Experience_Points(int32_t experience_gain, bool appl
     VeterancyLevel new_level = VeterancyLevel::VETERANCY_REGULAR;
     // Loop until the penultimate VeterancyLevel as it reaches saturation
     for (; new_level < VeterancyLevel::VETERANCY_COUNT - 1; ++new_level) {
-        if (m_currentExperience < m_parent->Get_Template()->Get_Experience_Required(new_level)) {
+        if (m_currentExperience < m_parent->Get_Template()->Get_Experience_Required(new_level + 1)) {
             break;
         }
     }
@@ -152,7 +152,7 @@ void ExperienceTracker::Set_Experience_And_Level(int32_t experience_gain, bool u
     VeterancyLevel new_level = VeterancyLevel::VETERANCY_REGULAR;
     // Loop until the penultimate VeterancyLevel as it reaches saturation
     for (; new_level < VeterancyLevel::VETERANCY_COUNT - 1; ++new_level) {
-        if (m_currentExperience < m_parent->Get_Template()->Get_Experience_Required(new_level)) {
+        if (m_currentExperience < m_parent->Get_Template()->Get_Experience_Required(new_level + 1)) {
             break;
         }
     }

@@ -63,6 +63,8 @@ public:
 
     bool Set_Time_Of_Day(TimeOfDayType time);
 
+    Utf8String Get_Path_User_Data() const { return m_userDataDirectory; }
+
     static void Parse_Game_Data_Definition(INI *ini);
     // Looks like members are likely public or there would have been a lot of
     // getters/setters.

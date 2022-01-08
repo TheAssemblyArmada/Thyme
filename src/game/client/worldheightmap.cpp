@@ -645,7 +645,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     if (info->version >= 6) {
         file.Read_Byte_Array((unsigned char *)m_extraBlendTileNdxes, 2 * m_dataSize);
 
-        if (g_theWriteableGlobalData->m_use3WayTerrainBlends) {
+        if (!g_theWriteableGlobalData->m_use3WayTerrainBlends) {
             memset(m_extraBlendTileNdxes, 0, 2 * m_dataSize);
         }
     }

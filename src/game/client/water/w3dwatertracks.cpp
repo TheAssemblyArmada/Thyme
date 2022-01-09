@@ -16,16 +16,20 @@
 #include "assetmgr.h"
 #include "baseheightmap.h"
 #include "camera.h"
+#include "display.h"
 #include "dx8indexbuffer.h"
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
 #include "filesystem.h"
 #include "globaldata.h"
+#include "ingameui.h"
+#include "main.h"
 #include "rinfo.h"
 #include "rtsutils.h"
 #include "shadermanager.h"
 #include "terrainlogic.h"
 #include "vertmaterial.h"
+#include "view.h"
 #include "w3dshroud.h"
 #include "water.h"
 #ifdef GAME_DLL
@@ -325,9 +329,213 @@ int WaterTracksObj::Update(int ms_elapsed)
 
 void Test_Water_Update()
 {
-    // todo needs InGameUI
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x007A22C0, 0x0064DC2D));
+#ifdef BUILD_WITH_D3D8
+    static bool pause_waves = false;
+    static POINT mouse_anchor;
+    static Coord3D terrain_point_start;
+    static Coord3D terrain_point_end;
+    static WaterTracksObj *track = nullptr;
+    static WaterTracksObj *track2 = nullptr;
+    static bool track_edit_mode = false;
+    static bool have_start = false;
+    static bool have_end = false;
+    static bool do_init = true;
+    static WaveType current_wave_type = WAVE_TYPE_OCEAN;
+    static bool track_edit_mode_reset = true;
+    static bool add_point_reset = true;
+    static bool delete_track_reset = true;
+    static bool save_tracks_reset = true;
+    static bool load_tracks_reset = true;
+    static bool change_type_reset = true;
+
+    pause_waves = false;
+
+    if (do_init == true) {
+        do_init = false;
+    }
+
+    if ((GetAsyncKeyState(VK_F5) & 0x8001) != 0) {
+        if (track_edit_mode_reset == true) {
+            if (track_edit_mode == true) {
+                Utf16String str;
+                str.Format(L"Leaving Water Track Edit Mode");
+                g_theInGameUI->Message(str);
+            } else {
+                Utf16String str;
+                str.Format(L"Entering Water Track Edit Mode");
+                g_theInGameUI->Message(str);
+                str.Format(L"Wave Type: %hs", s_waveTypeInfo[current_wave_type].wave_name);
+                g_theInGameUI->Message(str);
+            }
+
+            track_edit_mode = !track_edit_mode;
+
+            if (track_edit_mode == false) {
+                have_start = false;
+                have_end = false;
+            }
+
+            track_edit_mode_reset = false;
+        }
+    } else {
+        track_edit_mode_reset = true;
+    }
+
+    if (track_edit_mode == true) {
+        POINT point;
+
+        if (GetCursorPos(&point)) {
+            ScreenToClient(g_applicationHWnd, &point);
+
+            if ((GetAsyncKeyState(VK_F6) & 0x8001) != 0) {
+                if (add_point_reset == true) {
+                    if (have_start == false) {
+                        mouse_anchor = point;
+                        ICoord2D coord;
+                        coord.x = point.x;
+                        coord.y = point.y;
+                        g_theTacticalView->Screen_To_Terrain(&coord, &terrain_point_start);
+                        have_start = true;
+                        Utf16String str;
+                        str.Format(L"Added Start");
+                        g_theInGameUI->Message(str);
+                    } else {
+                        ICoord2D coord;
+                        coord.x = point.x;
+                        coord.y = point.y;
+                        g_theTacticalView->Screen_To_Terrain(&coord, &terrain_point_end);
+                        have_end = true;
+                        track = g_theWaterTracksRenderSystem->Bind_Track(current_wave_type);
+
+                        if (track != nullptr) {
+                            Vector2 start(terrain_point_start.x, terrain_point_start.y);
+                            Vector2 end(terrain_point_end.x, terrain_point_end.y);
+                            Vector2 trackstart = end - start;
+                            Vector2 rot = trackstart;
+                            rot.Rotate(GAMEMATH_PI / 2);
+                            rot.Normalize();
+                            trackstart = start + (trackstart * 0.5f);
+                            Vector2 trackend = trackstart + rot;
+                            track->Init(s_waveTypeInfo[current_wave_type].final_height,
+                                s_waveTypeInfo[current_wave_type].final_width,
+                                Vector2(trackstart.X, trackstart.Y),
+                                Vector2(trackend.X, trackend.Y),
+                                s_waveTypeInfo[current_wave_type].texture_name,
+                                0);
+
+                            if (s_waveTypeInfo[current_wave_type].time_offset_second_wave != 0) {
+                                track2 = g_theWaterTracksRenderSystem->Bind_Track(current_wave_type);
+
+                                if (track2 != nullptr) {
+                                    track2->Init(s_waveTypeInfo[current_wave_type].final_height,
+                                        s_waveTypeInfo[current_wave_type].final_width,
+                                        Vector2(trackstart.X, trackstart.Y),
+                                        Vector2(trackend.X, trackend.Y),
+                                        s_waveTypeInfo[current_wave_type].texture_name,
+                                        s_waveTypeInfo[current_wave_type].time_offset_second_wave);
+                                }
+                            }
+
+                            Utf16String str;
+                            str.Format(L"Added End");
+                            g_theInGameUI->Message(str);
+                        }
+
+                        have_start = false;
+                        have_end = false;
+                    }
+
+                    add_point_reset = false;
+                }
+            } else {
+                add_point_reset = true;
+            }
+
+            if ((GetAsyncKeyState(VK_DELETE) & 0x8001) != 0) {
+                if (delete_track_reset == true && track != nullptr) {
+                    delete_track_reset = false;
+                    g_theWaterTracksRenderSystem->Un_Bind_Track(track);
+
+                    if (track2 != nullptr) {
+                        g_theWaterTracksRenderSystem->Un_Bind_Track(track2);
+                    }
+
+                    have_start = false;
+                    have_end = false;
+                    track = nullptr;
+                    track2 = nullptr;
+                }
+            } else {
+                delete_track_reset = true;
+            }
+
+            if ((GetAsyncKeyState(VK_INSERT) & 0x8001) != 0) {
+                if (change_type_reset == true) {
+                    change_type_reset = false;
+                    current_wave_type++;
+
+                    if (current_wave_type > WAVE_TYPE_RADIAL) {
+                        current_wave_type = WAVE_TYPE_POND;
+                    }
+
+                    Utf16String str;
+                    str.Format(L"Wave Type: %hs", s_waveTypeInfo[current_wave_type].wave_name);
+                    g_theInGameUI->Message(str);
+                }
+            } else {
+                change_type_reset = true;
+            }
+
+            if ((GetAsyncKeyState(VK_F7) & 0x8001) != 0) {
+                if (save_tracks_reset == true) {
+                    g_theWaterTracksRenderSystem->Save_Tracks();
+                    have_start = false;
+                    have_end = false;
+                    track = nullptr;
+                    track2 = nullptr;
+                    Utf16String str;
+                    str.Format(L"Saved Tracks");
+                    g_theInGameUI->Message(str);
+                }
+            } else {
+                save_tracks_reset = true;
+            }
+
+            if ((GetAsyncKeyState(VK_F8) & 0x8001) != 0) {
+                if (load_tracks_reset == true) {
+                    load_tracks_reset = false;
+                    g_theWaterTracksRenderSystem->Reset();
+                    g_theWaterTracksRenderSystem->Load_Tracks();
+                    have_start = false;
+                    have_end = false;
+                    track = nullptr;
+                    track2 = nullptr;
+                    Utf16String str;
+                    str.Format(L"Loaded Tracks");
+                    g_theInGameUI->Message(str);
+                }
+            } else {
+                save_tracks_reset = true;
+            }
+        }
+
+        if (have_start == true && have_end == true) {
+            ICoord2D coord;
+            coord.x = point.x;
+            coord.y = point.y;
+            g_theTacticalView->Screen_To_Terrain(&coord, &terrain_point_end);
+            int x = terrain_point_end.x - terrain_point_start.x;
+            int y = terrain_point_end.y - terrain_point_start.y;
+
+            if (s_waveTypeInfo[current_wave_type].final_width >= GameMath::Sqrt(x * x + y * y)) {
+                g_theDisplay->Draw_Line(mouse_anchor.x, mouse_anchor.y, point.x, point.y, 1.0f, 0xFFCCCCFF);
+                DX8Wrapper::Invalidate_Cached_Render_States();
+                ShaderClass::Invalidate();
+            }
+
+            pause_waves = true;
+        }
+    }
 #endif
 }
 

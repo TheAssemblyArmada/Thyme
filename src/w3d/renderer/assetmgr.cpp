@@ -23,11 +23,14 @@
 #include "fileclass.h"
 #include "hlod.h"
 #include "loaders.h"
+#include "matinfo.h"
 #include "mesh.h"
+#include "meshmdl.h"
 #include "part_ldr.h"
 #include "proto.h"
 #include "render2dsentence.h"
 #include "string.h"
+#include "textureloader.h"
 #include "vertmaterial.h"
 #include "w3d_file.h"
 #include "w3dexclusionlist.h"
@@ -746,13 +749,62 @@ RenderObjClass *GameAssetManager::Create_Render_Obj(
     return robj;
 }
 
+bool Get_Mesh_Color_Methods(MeshClass *mesh, bool *housecolor, bool *zhc)
+{
+    *housecolor = false;
+    *zhc = false;
+    MaterialInfoClass *matinfo = mesh->Get_Material_Info();
+
+    if (matinfo != nullptr) {
+        for (int i = 0; i < matinfo->Texture_Count(); i++) {
+
+            if (!strncasecmp(matinfo->Peek_Texture(i)->Get_Name(), "ZHC", 3)) {
+                *zhc = true;
+                break;
+            }
+        }
+
+        matinfo->Release_Ref();
+    }
+
+    const char *str = strchr(mesh->Get_Name(), '.');
+    const char *str2 = str == nullptr ? str + 1 : mesh->Get_Name();
+
+    if (str2 != nullptr) {
+        if (!strncasecmp(str2, "HOUSECOLOR", 10)) {
+            *housecolor = true;
+        }
+    }
+
+    return *housecolor || *zhc;
+}
+
 // 0x00765DF0
 void GameAssetManager::Make_Mesh_Unique(RenderObjClass *robj, bool geometry, bool colors)
 {
-    // Uses MeshClass requires MaterialInfoClass
-#ifdef GAME_DLL
-    Call_Method<void, W3DAssetManager, RenderObjClass *, bool, bool>(0x00765DF0, this, robj, geometry, colors);
-#endif
+    MeshClass *mesh = static_cast<MeshClass *>(robj);
+    bool housecolor;
+    bool zhc;
+
+    if ((colors && Get_Mesh_Color_Methods(mesh, &housecolor, &zhc)) || geometry) {
+        if (!geometry) {
+            mesh->Make_Unique(false);
+        }
+
+        MeshModelClass *model = mesh->Get_Model();
+
+        if (colors && housecolor) {
+            MaterialInfoClass *matinfo = mesh->Get_Material_Info();
+
+            for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
+                matinfo->Peek_Vertex_Material(i)->Make_Unique();
+            }
+
+            Ref_Ptr_Release(matinfo);
+        }
+
+        Ref_Ptr_Release(model);
+    }
 }
 
 void GameAssetManager::Make_HLOD_Unique(RenderObjClass *robj, bool geometry, bool colors)
@@ -795,12 +847,40 @@ void GameAssetManager::Recolor_Vertex_Material(VertexMaterialClass *vmat, uint32
 // 0x00765A40
 bool GameAssetManager::Recolor_Mesh(RenderObjClass *robj, uint32_t colour)
 {
-    // Uses MeshClass requires MaterialInfoClass
-#ifdef GAME_DLL
-    return Call_Method<bool, W3DAssetManager, RenderObjClass *, uint32_t>(0x00765A40, this, robj, colour);
-#else
-    return false;
-#endif
+    bool recolored = false;
+    MeshClass *mesh = static_cast<MeshClass *>(robj);
+    MeshModelClass *model = mesh->Get_Model();
+    MaterialInfoClass *matinfo = mesh->Get_Material_Info();
+    const char *str = strchr(mesh->Get_Name(), '.');
+    const char *str2 = str == nullptr ? str + 1 : mesh->Get_Name();
+
+    if (str2 != nullptr) {
+        if (!strncasecmp(str2, "HOUSECOLOR", 10)) {
+            for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
+                Recolor_Vertex_Material(matinfo->Peek_Vertex_Material(i), colour);
+            }
+
+            recolored = true;
+        }
+    }
+
+    for (int i = 0; i < matinfo->Texture_Count(); i++) {
+        TextureClass *texture = matinfo->Peek_Texture(i);
+        if (!strncasecmp(texture->Get_Name(), "ZHC", 3)) {
+            TextureClass *new_texture = Recolor_Texture(texture, colour);
+
+            if (new_texture != nullptr) {
+                model->Replace_Texture(texture, new_texture);
+                matinfo->Replace_Texture(i, new_texture);
+                new_texture->Release_Ref();
+                recolored = true;
+            }
+        }
+    }
+
+    Ref_Ptr_Release(matinfo);
+    Ref_Ptr_Release(model);
+    return recolored;
 }
 
 // 0x007659B0
@@ -814,6 +894,91 @@ bool GameAssetManager::Recolour_Asset(RenderObjClass *robj, uint32_t colour)
         default:
             return false;
     }
+}
+
+TextureClass *GameAssetManager::Recolor_Texture(TextureClass *texture, int color)
+{
+    TextureClass *new_texture = Find_Texture(texture->Get_Name(), color);
+
+    if (new_texture != nullptr) {
+        return new_texture;
+    } else {
+        return Recolor_Texture_One_Time(texture, color);
+    }
+}
+
+void Create_Color_Texture_Name(char *buffer, const char *name, int color)
+{
+    char new_name[256];
+    strcpy(new_name, name);
+    strlwr(new_name);
+    sprintf(buffer, "#%d#%s", color, new_name);
+}
+
+TextureClass *GameAssetManager::Find_Texture(const char *name, int color)
+{
+    char buffer[512];
+    Create_Color_Texture_Name(buffer, name, color);
+    TextureClass *texture = m_textureHash.Get(buffer);
+
+    if (texture) {
+        texture->Add_Ref();
+    }
+
+    return texture;
+}
+
+TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, int color)
+{
+    const char *name = texture->Get_Name();
+
+    if (name && name[0] == '!') {
+        return nullptr;
+    }
+
+    if (!texture->Is_Initialized()) {
+        TextureLoader::Request_Foreground_Loading(texture);
+    }
+
+    SurfaceClass::SurfaceDescription desc;
+    texture->Get_Level_Description(desc, 0);
+    captainslog_dbgassert(
+        SurfaceClass::Pixel_Size(desc) == 2 || SurfaceClass::Pixel_Size(desc) == 4, "Can't Recolor Texture %s", name);
+    SurfaceClass *surface = texture->Get_Surface_Level(0);
+    SurfaceClass *new_surface = new SurfaceClass(desc.width, desc.height, desc.format);
+    new_surface->Copy(0, 0, 0, 0, desc.width, desc.height, surface);
+
+    if (name[3] == 'D' || name[3] == 'd') {
+        // Do Palette Only
+        Remap_Palette(new_surface, color, true, false);
+    } else if (name[3] == 'A' || name[3] == 'a') {
+        // Use Alpha
+        Remap_Palette(new_surface, color, false, true);
+    }
+
+    TextureClass *new_texture = new TextureClass(new_surface, texture->Get_Mip_Level_Count());
+    new_texture->Get_Texture_Filter()->Set_Mag_Filter(texture->Get_Texture_Filter()->Get_Mag_Filter());
+    new_texture->Get_Texture_Filter()->Set_Min_Filter(texture->Get_Texture_Filter()->Get_Min_Filter());
+    new_texture->Get_Texture_Filter()->Set_Mip_Mapping(texture->Get_Texture_Filter()->Get_Mip_Mapping());
+    new_texture->Get_Texture_Filter()->Set_U_Address_Mode(texture->Get_Texture_Filter()->Get_U_Address_Mode());
+    new_texture->Get_Texture_Filter()->Set_V_Address_Mode(texture->Get_Texture_Filter()->Get_V_Address_Mode());
+
+    char buffer[512];
+    Create_Color_Texture_Name(buffer, name, color);
+    new_texture->Set_Texture_Name(buffer);
+    m_textureHash.Insert(new_texture->Get_Name(), new_texture);
+    new_texture->Add_Ref();
+    Ref_Ptr_Release(surface);
+    Ref_Ptr_Release(new_surface);
+    return new_texture;
+}
+
+void GameAssetManager::Remap_Palette(SurfaceClass *surface, int color, bool do_palette_only, bool use_alpha)
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameAssetManager, SurfaceClass *, int, bool, bool>(
+        PICK_ADDRESS(0x007642F0, 0x0061675A), this, surface, color, do_palette_only, use_alpha);
+#endif
 }
 
 bool GameAssetManager::Recolor_HLOD(RenderObjClass *robj, uint32_t colour)
@@ -848,11 +1013,11 @@ bool GameAssetManager::Replace_Prototype_Texture(RenderObjClass *robj, const cha
     TextureClass *new_texture = Get_Texture(new_name);
     bool ret = Replace_Asset_Texture(robj, old_texture, new_texture);
 
-    if (old_texture) {
+    if (old_texture != nullptr) {
         old_texture->Release_Ref();
     }
 
-    if (new_texture) {
+    if (new_texture != nullptr) {
         new_texture->Release_Ref();
     }
 
@@ -877,13 +1042,22 @@ bool GameAssetManager::Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *
 // 0x00763F70
 bool GameAssetManager::Replace_Mesh_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture)
 {
-    // Uses MeshClass requires MaterialInfoClass
-#ifdef GAME_DLL
-    return Call_Method<bool, W3DAssetManager, RenderObjClass *, TextureClass *, TextureClass *>(
-        0x00763F70, this, robj, old_texture, new_texture);
-#else
-    return false;
-#endif
+    bool replaced = false;
+    MeshClass *mesh = static_cast<MeshClass *>(robj);
+    MeshModelClass *model = mesh->Get_Model();
+    MaterialInfoClass *matinfo = mesh->Get_Material_Info();
+
+    for (int i = 0; i < matinfo->Texture_Count(); i++) {
+        if (matinfo->Peek_Texture(i) == old_texture) {
+            model->Replace_Texture(old_texture, new_texture);
+            matinfo->Replace_Texture(i, new_texture);
+            replaced = true;
+        }
+    }
+
+    Ref_Ptr_Release(matinfo);
+    Ref_Ptr_Release(model);
+    return replaced;
 }
 
 W3DPrototypeClass::W3DPrototypeClass(RenderObjClass *proto, const char *name) : m_proto(proto), m_name(name)

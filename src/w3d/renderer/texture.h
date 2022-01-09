@@ -61,7 +61,11 @@ public:
     void Set_Default_Mip_Filter(FilterType type);
     void Set_U_Address_Mode(TxtAddrMode mode) { m_uAddressMode = mode; }
     void Set_V_Address_Mode(TxtAddrMode mode) { m_vAddressMode = mode; }
-    FilterType Get_Mag_Filter() { return m_magTextureFilter; }
+    FilterType Get_Mag_Filter() const { return m_magTextureFilter; }
+    FilterType Get_Min_Filter() const { return m_minTextureFilter; }
+    FilterType Get_Mip_Mapping() const { return m_mipMapFilter; }
+    TxtAddrMode Get_U_Address_Mode() const { return m_uAddressMode; }
+    TxtAddrMode Get_V_Address_Mode() const { return m_vAddressMode; }
 
     static void Init_Filters(TextureFilterMode mode);
 

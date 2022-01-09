@@ -13,13 +13,14 @@
  *            LICENSE
  */
 #include "w3dparticlesys.h"
+#include "particlesysmanager.h"
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
 
 void Do_Particles(RenderInfoClass &rinfo)
 {
-#ifdef GAME_DLL
-    Call_Function<void, RenderInfoClass &>(0x00778D20, rinfo);
-#endif
+    if (g_theParticleSystemManager) {
+        g_theParticleSystemManager->Do_Particles(rinfo);
+    }
 }

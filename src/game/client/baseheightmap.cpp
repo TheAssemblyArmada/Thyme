@@ -20,7 +20,7 @@ BaseHeightMapRenderObjClass *g_theTerrainRenderObject;
 int BaseHeightMapRenderObjClass::Get_Static_Diffuse(int x, int y)
 {
 #ifdef GAME_DLL
-    return Call_Method<int, BaseHeightMapRenderObjClass, int, int>(PICK_ADDRESS(0x00754E70, 0x00613479), this, x, y);
+    return Call_Method<int, BaseHeightMapRenderObjClass, int, int>(PICK_ADDRESS(0x00754E70, 0x006017D2), this, x, y);
 #else
     return 0;
 #endif
@@ -38,7 +38,7 @@ float BaseHeightMapRenderObjClass::Get_Max_Cell_Height(float x, float y)
 void BaseHeightMapRenderObjClass::Set_Time_Of_Day(TimeOfDayType time)
 {
 #ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass, TimeOfDayType>(0x007553B0, this, time);
+    Call_Method<void, BaseHeightMapRenderObjClass, TimeOfDayType>(PICK_ADDRESS(0x007553B0, 0x00601F0B), this, time);
 #endif
 }
 
@@ -55,14 +55,15 @@ void BaseHeightMapRenderObjClass::Do_The_Light(VertexFormatXYZDUV2 *vb,
         Vector3 *,
         Vector3 *,
         RefMultiListIterator<RenderObjClass> *,
-        unsigned char>(0x007512A0, this, vb, light, normal, lights, alpha);
+        unsigned char>(PICK_ADDRESS(0x007512A0, 0x005FD3A8), this, vb, light, normal, lights, alpha);
 #endif
 }
 
 float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord3D *pos)
 {
 #ifdef GAME_DLL
-    return Call_Method<float, BaseHeightMapRenderObjClass, float, float, Coord3D *>(0x00752580, this, x, y, pos);
+    return Call_Method<float, BaseHeightMapRenderObjClass, float, float, Coord3D *>(
+        PICK_ADDRESS(0x00752580, 0x005FE5B6), this, x, y, pos);
 #else
     return 0.0f;
 #endif
@@ -71,14 +72,14 @@ float BaseHeightMapRenderObjClass::Get_Height_Map_Height(float x, float y, Coord
 void Do_Trees(RenderInfoClass &rinfo)
 {
 #ifdef GAME_DLL
-    Call_Function<void, RenderInfoClass &>(0x00750450, rinfo);
+    Call_Function<void, RenderInfoClass &>(PICK_ADDRESS(0x00750450, 0x005FC2EE), rinfo);
 #endif
 }
 
 void BaseHeightMapRenderObjClass::Notify_Shroud_Changed()
 {
 #ifdef GAME_DLL
-    Call_Method<void, BaseHeightMapRenderObjClass>(0x007552D0, this);
+    Call_Method<void, BaseHeightMapRenderObjClass>(PICK_ADDRESS(0x007552D0, 0x00601DDA), this);
 #endif
 }
 
@@ -87,6 +88,6 @@ void BaseHeightMapRenderObjClass::Add_Tree(
 {
 #ifdef GAME_DLL
     Call_Method<void, BaseHeightMapRenderObjClass, DrawableID, Coord3D, float, float, float, W3DTreeDrawModuleData const *>(
-        0x00755240, this, drawable, location, scale, angle, random, module);
+        PICK_ADDRESS(0x00755240, 0x00601C53), this, drawable, location, scale, angle, random, module);
 #endif
 }

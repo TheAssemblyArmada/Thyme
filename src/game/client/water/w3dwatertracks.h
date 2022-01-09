@@ -35,6 +35,7 @@ enum WaveType
     WAVE_TYPE_RADIAL,
     WAVE_TYPE_UNK,
 };
+DEFINE_ENUMERATION_OPERATORS(WaveType);
 
 struct WaveInfo
 {

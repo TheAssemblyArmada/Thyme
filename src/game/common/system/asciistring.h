@@ -44,7 +44,7 @@ public:
     enum
     {
         MAX_FORMAT_BUF_LEN = 2048,
-        MAX_LEN = 32767,
+        MAX_LEN = 0x7FFF,
         MAX_TO_LOWER_BUF_LEN = 2060,
     };
 
@@ -90,7 +90,6 @@ public:
     // Utf8String(Utf16String const &stringSrc);
     ~Utf8String() { Release_Buffer(); }
 
-    Utf8String &operator=(char *s);
     Utf8String &operator=(const char *s);
     Utf8String &operator=(Utf8String const &stringSrc);
     // Utf8String &operator=(Utf16String const &stringSrc);
@@ -207,13 +206,6 @@ private:
 
     AsciiStringData *m_data;
 };
-
-inline Utf8String &Utf8String::operator=(char *s)
-{
-    Set(s);
-
-    return *this;
-}
 
 inline Utf8String &Utf8String::operator=(const char *s)
 {

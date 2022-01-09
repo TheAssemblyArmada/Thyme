@@ -44,7 +44,7 @@ public:
     enum
     {
         MAX_FORMAT_BUF_LEN = 2048,
-        MAX_LEN = 32767,
+        MAX_LEN = 0x7FFF,
     };
 
     struct UnicodeStringData

@@ -20,33 +20,25 @@
 #ifdef __cplusplus
 extern "C++" {
 
-template<size_t S> struct IntegerForSize;
+// clang-format off
 
-template<> struct IntegerForSize<1>
-{
-    typedef int8_t type;
-};
+template<size_t Size> struct SignedIntegerForSize;
+template<size_t Size> struct UnsignedIntegerForSize;
 
-template<> struct IntegerForSize<2>
-{
-    typedef int16_t type;
-};
+template<> struct SignedIntegerForSize<1>{ typedef int8_t  type; };
+template<> struct SignedIntegerForSize<2>{ typedef int16_t type; };
+template<> struct SignedIntegerForSize<4>{ typedef int32_t type; };
+template<> struct SignedIntegerForSize<8>{ typedef int64_t type; };
 
-template<> struct IntegerForSize<4>
-{
-    typedef int32_t type;
-};
+template<> struct UnsignedIntegerForSize<1>{ typedef uint8_t  type; };
+template<> struct UnsignedIntegerForSize<2>{ typedef uint16_t type; };
+template<> struct UnsignedIntegerForSize<4>{ typedef uint32_t type; };
+template<> struct UnsignedIntegerForSize<8>{ typedef uint64_t type; };
 
-template<> struct IntegerForSize<8>
-{
-    typedef int64_t type;
-};
+template<class T> struct SignedInteger{ typedef typename SignedIntegerForSize<sizeof(T)>::type type; };
+template<class T> struct UnsignedInteger{ typedef typename UnsignedIntegerForSize<sizeof(T)>::type type; };
 
-// Used as an approximation of std::underlying_type<T>
-template<class T> struct SizedInteger
-{
-    typedef typename IntegerForSize<sizeof(T)>::type type;
-};
+// clang-format on
 }
 #endif // __cplusplus
 

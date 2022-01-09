@@ -248,10 +248,16 @@ float GeometryInfo::Is_Intersected_By_Line_Segment(Coord3D &loc, Coord3D &from, 
 void GeometryInfo::Calc_Pitches(
     const Coord3D &coord1, const GeometryInfo &info, const Coord3D &coord2, float &f1, float &f2) const
 {
-    float z = Get_ZDelta_To_Center_Position() + coord1.z;
-    float xy = Sqrt(Square(coord2.y - coord1.y) + Square(coord2.x - coord1.x));
-    f2 = Atan2(xy, float(coord2.z + info.Get_Max_Height_Above_Position()) - z);
-    f1 = Atan2(xy, float(coord2.z - info.Get_Max_Height_Below_Position()) - z);
+    Coord3D coord3;
+    Get_Center_Position(coord1, coord3);
+
+    float adj = Sqrt(Square(coord2.y - coord3.y) + Square(coord2.x - coord3.x));
+
+    float opp_above = coord2.z + info.Get_Max_Height_Above_Position() - coord3.z;
+    f2 = Atan2(opp_above, adj);
+
+    float opp_below = coord2.z - info.Get_Max_Height_Below_Position() - coord3.z;
+    f1 = Atan2(opp_below, adj);
 }
 
 /**
@@ -270,31 +276,38 @@ void GeometryInfo::Get_2D_Bounds(const Coord3D &pos, float angle, Region2D &regi
             region.hi.y = pos.y + m_majorRadius;
             break;
         case GEOMETRY_BOX: {
-            float sin_theta = Sin(angle);
             float cos_theta = Cos(angle);
+            float sin_theta = Sin(angle);
+
             float adj_major = cos_theta * m_majorRadius;
             float adj_minor = cos_theta * m_minorRadius;
+
             float opp_major = sin_theta * m_majorRadius;
             float opp_minor = sin_theta * m_minorRadius;
-            region.lo.x = region.hi.x = float(pos.x - adj_major) - opp_minor;
-            region.lo.y = region.hi.y = float(pos.y + adj_minor) - opp_major;
 
-            float tmp_x = float(adj_major + pos.x) - opp_minor;
-            float tmp_y = float(opp_major + pos.y) + adj_minor;
+            float tmp_x = (pos.x - adj_major) - opp_minor;
+            float tmp_y = (pos.y + adj_minor) - opp_major;
+            region.lo.x = tmp_x;
+            region.lo.y = tmp_y;
+            region.hi.x = tmp_x;
+            region.hi.y = tmp_y;
+
+            tmp_x = (pos.x + adj_major) - opp_minor;
+            tmp_y = (pos.y + adj_minor) + opp_major;
             region.lo.x = std::min(region.lo.x, tmp_x);
             region.lo.y = std::min(region.lo.y, tmp_y);
             region.hi.x = std::max(region.hi.x, tmp_x);
             region.hi.y = std::max(region.hi.y, tmp_y);
 
-            tmp_x = float(opp_minor + pos.x) + adj_major;
-            tmp_y = float(pos.y - adj_minor) + opp_major;
+            tmp_x = (pos.x + adj_major) + opp_minor;
+            tmp_y = (pos.y - adj_minor) + opp_major;
             region.lo.x = std::min(region.lo.x, tmp_x);
             region.lo.y = std::min(region.lo.y, tmp_y);
             region.hi.x = std::max(region.hi.x, tmp_x);
             region.hi.y = std::max(region.hi.y, tmp_y);
 
-            tmp_x = float(opp_minor + pos.x) - adj_major;
-            tmp_y = float(pos.y - adj_minor) - opp_major;
+            tmp_x = (pos.x - adj_major) + opp_minor;
+            tmp_y = (pos.y - adj_minor) - opp_major;
             region.lo.x = std::min(region.lo.x, tmp_x);
             region.lo.y = std::min(region.lo.y, tmp_y);
             region.hi.x = std::max(region.hi.x, tmp_x);
@@ -321,7 +334,7 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
 
             if (hyp > m_majorRadius) {
                 point.x = float(float(m_majorRadius / hyp) * x_diff) + pos.x;
-                point.x = float(float(m_majorRadius / hyp) * y_diff) + pos.y;
+                point.y = float(float(m_majorRadius / hyp) * y_diff) + pos.y;
             }
         } break;
         case GEOMETRY_BOX:
@@ -332,6 +345,11 @@ void GeometryInfo::Clip_Point_To_Footprint(const Coord3D &pos, Coord3D &point) c
         default:
             break;
     }
+}
+
+inline bool Is_Point_In_Range(float min, float val, float max)
+{
+    return min <= val && val <= max;
 }
 
 /**
@@ -346,8 +364,9 @@ bool GeometryInfo::Is_Point_In_Footprint(const Coord3D &pos, const Coord3D &poin
         case GEOMETRY_CYLINDER:
             return Sqrt(Square(point.y - pos.y) + Square(point.x - pos.x)) <= m_majorRadius;
         case GEOMETRY_BOX:
-            return pos.x - m_majorRadius <= point.x && point.x <= pos.x + m_majorRadius && pos.y - m_minorRadius <= point.y
-                && point.y <= m_minorRadius + pos.y;
+            return Is_Point_In_Range(pos.x - m_majorRadius, point.x, pos.x + m_majorRadius)
+                && Is_Point_In_Range(pos.y - m_minorRadius, point.y, pos.y + m_minorRadius);
+
         default:
             break;
     }

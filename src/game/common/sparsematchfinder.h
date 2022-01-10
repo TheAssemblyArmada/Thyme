@@ -66,31 +66,37 @@ public:
 private:
     const Type *Find_Best_Info_Slow(std::vector<Type> const &vector, Key const &key) const
     {
-        const Type *ret = nullptr;
-        int intersection_count = 0;
-        int inverse_intersection_count = 999;
+        const Type *best_match = nullptr;
+        // The higher the intersection count the better the match
+        int best_match_count = 0;
+        // The lower the inverse intersection count the better the match
+        int best_match_inv_count = 999;
         int extramatches = 0;
-        Utf8String definition;
-        Utf8String definition2;
+        Utf8String best_match_definition;
+        Utf8String ambiguous_match_definition;
 
-        for (auto &i : vector) {
-            for (int j = i.Unk() - 1; j >= 0; j--) {
-                const Key &conditions = i.Get_Conditions_Yes(j);
-                int int_count = Count_Condition_Intersection(key, conditions);
-                int invintcount = Count_Condition_Inverse_Intersection(key, conditions);
+        for (auto &template_set : vector) {
+            for (int condition_idx = template_set.Get_Conditions_Count() - 1; condition_idx >= 0; condition_idx--) {
+                const Key &conditions = template_set.Get_Conditions_Yes(condition_idx);
+                int intersection_count = Count_Condition_Intersection(key, conditions);
+                int inverse_intersection_count = Count_Condition_Inverse_Intersection(key, conditions);
 
-                if (int_count == intersection_count && invintcount == inverse_intersection_count) {
+                if (intersection_count == best_match_count && inverse_intersection_count == best_match_inv_count) {
+                    // We have at least two equally good matches!
+                    // This is bad as it is ambiguous, hopefully there is a better match later in the search
                     extramatches++;
-                    definition2 = i.Get_Definition();
+                    ambiguous_match_definition = template_set.Get_Definition();
                 }
 
-                if (int_count > intersection_count
-                    || int_count >= intersection_count && invintcount < inverse_intersection_count) {
-                    ret = &i;
-                    intersection_count = int_count;
-                    inverse_intersection_count = invintcount;
+                // The higher the intersection count the better the match
+                // If of equal intersections then the lowest inverse intersections the better the match
+                if (intersection_count > best_match_count
+                    || (intersection_count >= best_match_count && inverse_intersection_count < best_match_inv_count)) {
+                    best_match = &template_set;
+                    best_match_count = intersection_count;
+                    best_match_inv_count = inverse_intersection_count;
                     extramatches = 0;
-                    definition = i.Get_Definition();
+                    best_match_definition = template_set.Get_Definition();
                 }
             }
         }
@@ -100,13 +106,13 @@ private:
             key.Get_Name_For_Bits(&bits);
             captainslog_debug("ambiguous model match in findBestInfoSlow \n\nbetween \n(%s)\n<and>\n(%s)\n\n(%d extra "
                               "matches found)\n\ncurrent bits are (\n%s)",
-                definition.Str(),
-                definition2.Str(),
+                best_match_definition.Str(),
+                ambiguous_match_definition.Str(),
                 extramatches,
                 bits.Str());
         }
 
-        return ret;
+        return best_match;
     }
 
     std::map<Key const, const Type *, MapHelper> m_bestMatches;

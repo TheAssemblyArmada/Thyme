@@ -72,8 +72,8 @@ public:
     static void Parse_Auto_Choose(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Preferred_Against(INI *ini, void *formal, void *store, const void *user_data);
 
-    const BitFlags<WEAPONSET_COUNT> &Get_Conditions_Yes(int unk) const { return m_conditions; }
-    int Unk() const { return 1; }
+    const BitFlags<WEAPONSET_COUNT> &Get_Conditions_Yes(int condition_idx) const { return m_conditions; }
+    int Get_Conditions_Count() const { return 1; }
     // BUGFIX : Original returned ArmorTemplateSet here, clearly a bug
     Utf8String Get_Definition() const { return "WeaponTemplateSet"; }
 

@@ -22,7 +22,7 @@ template<typename Type, typename Key> class SparseMatchFinder
     class MapHelper
     {
     public:
-        bool operator()(const Key &left, const Key &right) const { return left == right; }
+        bool operator()(const Key &left, const Key &right) const { return left != right; }
     };
 
     static int Count_Condition_Intersection(const Key &key1, const Key &key2) { return key1.Count_Intersection(key2); }

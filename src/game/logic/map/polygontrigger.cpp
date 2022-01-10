@@ -39,7 +39,7 @@ PolygonTrigger::PolygonTrigger(int initial_allocation) :
     m_isShownInLayer(true),
     m_isSelected(false),
     m_bounds{},
-    m_radius(0),
+    m_radius(0.0f),
     m_boundsNeedsUpdate(false)
 {
     if (initial_allocation < 2) {
@@ -104,10 +104,10 @@ void PolygonTrigger::Reallocate()
 
 void PolygonTrigger::Update_Bounds() const
 {
-    m_bounds.lo.y = 8388592;
-    m_bounds.lo.x = 8388592;
-    m_bounds.hi.y = -8388592;
-    m_bounds.hi.x = -8388592;
+    m_bounds.lo.y = 0x7FFFF0;
+    m_bounds.lo.x = 0x7FFFF0;
+    m_bounds.hi.y = -0x7FFFF0;
+    m_bounds.hi.x = -0x7FFFF0;
 
     for (int i = 0; i < m_numPoints; i++) {
         if (m_points[i].x < m_bounds.lo.x) {
@@ -128,8 +128,11 @@ void PolygonTrigger::Update_Bounds() const
     }
 
     m_boundsNeedsUpdate = false;
-    float x = (float)(m_bounds.hi.x - m_bounds.lo.x) / 2.0f;
-    float y = (float)(m_bounds.lo.y + m_bounds.hi.y) / 2.0f;
+
+    // #BUGFIX Calculate correct height value here.
+    float x = (float)(m_bounds.Width()) / 2.0f;
+    float y = (float)(m_bounds.Height()) / 2.0f;
+
     m_radius = GameMath::Sqrt(x * x + y * y);
 }
 

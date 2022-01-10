@@ -82,8 +82,8 @@ __forceinline constexpr ENUMTYPE operator/(ENUMTYPE const a, ENUMTYPE const b) {
 __forceinline constexpr ENUMTYPE operator%(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) % ((SizedInteger<ENUMTYPE>::type)b)); } \
 __forceinline ENUMTYPE &operator+=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) + ((ENUMTYPE)b)); } \
 __forceinline ENUMTYPE &operator-=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) - ((ENUMTYPE)b)); } \
-__forceinline ENUMTYPE operator++(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(++((SizedInteger<ENUMTYPE>::type &)a)); } \
-__forceinline ENUMTYPE operator--(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(--((SizedInteger<ENUMTYPE>::type &)a)); } \
+__forceinline ENUMTYPE operator++(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type &)a)++); } \
+__forceinline ENUMTYPE operator--(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type &)a)--); } \
 __forceinline constexpr ENUMTYPE operator+(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) + ((SizedInteger<ENUMTYPE>::type)b)); } \
 __forceinline constexpr ENUMTYPE operator-(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) - ((SizedInteger<ENUMTYPE>::type)b)); } \
 __forceinline constexpr ENUMTYPE operator*(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) * ((SizedInteger<ENUMTYPE>::type)b)); } \

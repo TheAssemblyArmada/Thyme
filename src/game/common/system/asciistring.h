@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include <cstdarg>
+#include <cstddef>
 #include <cstring>
 #include <new>
 
@@ -30,9 +31,16 @@ class Utf8String
 {
     // So we can hook functions we think should be private.
     friend void Setup_Hooks();
-    friend class Utf16String;
 
 public:
+    using value_type = char;
+    using size_type = int;
+    using difference_type = std::ptrdiff_t;
+    using reference = value_type &;
+    using const_reference = const value_type &;
+    using pointer = value_type *;
+    using const_pointer = const value_type *;
+
     enum
     {
         MAX_FORMAT_BUF_LEN = 2048,
@@ -94,20 +102,20 @@ public:
 
     operator const char *() const { return Str(); }
 
-    char operator[](int index) const { return Get_Char(index); }
-    char &operator[](int index) { return Get_Char(index); }
+    char operator[](size_type index) const { return Get_Char(index); }
+    char &operator[](size_type index) { return Get_Char(index); }
 
     void Validate();
     const char *Peek() const;
     char *Peek();
     void Release_Buffer();
-    int Get_Length() const;
+    size_type Get_Length() const;
 
     void Clear() { Release_Buffer(); }
-    char Get_Char(int index) const;
-    char &Get_Char(int index);
+    char Get_Char(size_type index) const;
+    char &Get_Char(size_type index);
     const char *Str() const;
-    char *Get_Buffer_For_Read(int len);
+    char *Get_Buffer_For_Read(size_type len);
     // These two should probably be private with the = operator being the preferred interface?
     void Set(const char *s);
     void Set(Utf8String const &string);
@@ -129,11 +137,11 @@ public:
 
     // Compare functions should probably be private and operators should be friends and the.
     // preferred interface.
-    int Compare(const char *s) const { return strcmp(Str(), s); }
-    int Compare(Utf8String const &string) const { return strcmp(Str(), string.Str()); }
+    size_type Compare(const char *s) const { return strcmp(Str(), s); }
+    size_type Compare(Utf8String const &string) const { return strcmp(Str(), string.Str()); }
 
-    int Compare_No_Case(const char *s) const { return strcasecmp(Str(), s); }
-    int Compare_No_Case(Utf8String const &string) const { return strcasecmp(Str(), string.Str()); }
+    size_type Compare_No_Case(const char *s) const { return strcasecmp(Str(), s); }
+    size_type Compare_No_Case(Utf8String const &string) const { return strcasecmp(Str(), string.Str()); }
 
     // I assume these do this, though have no examples in binaries.
     char *Find(char c) { return strchr(Peek(), c); }
@@ -188,11 +196,11 @@ public:
 #endif
 
 private:
-    void Translate_Internal(const unichar_t *utf16_string, const int utf16_len);
+    void Translate_Internal(const unichar_t *utf16_string, const size_type utf16_len);
 
     // Probably supposed to be private
     void Ensure_Unique_Buffer_Of_Size(
-        int chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
+        size_type chars_needed, bool keep_data = false, const char *str_to_copy = nullptr, const char *str_to_cat = nullptr);
     void Free_Bytes();
     void Format_VA(const char *format, va_list args);
     void Format_VA(Utf8String &format, va_list args);

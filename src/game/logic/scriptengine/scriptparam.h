@@ -27,13 +27,6 @@ struct BorderColor
     uint32_t border_color;
 };
 
-enum Relationship
-{
-    ENEMIES,
-    NEUTRAL,
-    ALLIES,
-};
-
 enum AIMood
 {
     AI_MOOD_SLEEP = -2,

@@ -98,6 +98,7 @@
 #include "particlesysinfo.h"
 #include "particlesysmanager.h"
 #include "partitionmanager.h"
+#include "playerlist.h"
 #include "playertemplate.h"
 #include "polygontrigger.h"
 #include "randomvalue.h"
@@ -1957,4 +1958,15 @@ void Setup_Hooks()
     // parabolicease.cpp
     Hook_Method(0x007F5D70, &ParabolicEase::Set_Ease_Times);
     Hook_Method(0x007F5E50, &ParabolicEase::operator());
+
+    // playerlist.h
+    Hook_Any(0x0045A7C0, PlayerList::Hook_Ctor);
+    Hook_Any(0x0045A9E0, PlayerList::Find_Player_With_NameKey);
+    Hook_Any(0x0045B0A0, PlayerList::Team_About_To_Be_Deleted);
+    Hook_Any(0x0045B0D0, PlayerList::Update_Team_States);
+    Hook_Any(0x0045B170, PlayerList::Set_Local_Player);
+    Hook_Any(0x0045B1B0, PlayerList::Get_Player_From_Mask);
+    Hook_Any(0x0045B1F0, PlayerList::Get_Each_Player_From_Mask);
+    Hook_Any(0x0045B250, PlayerList::Get_Players_With_Relationship);
+    Hook_Any(0x0045A9C0, PlayerList::Get_Nth_Player);
 }

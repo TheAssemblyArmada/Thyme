@@ -22,7 +22,23 @@ template<typename Type, typename Key> class SparseMatchFinder
     class MapHelper
     {
     public:
-        bool operator()(const Key &left, const Key &right) const { return left == right; }
+        // std::map requires a < operation to compare keys
+        // This class implements a < operation for BitFlags
+        bool operator()(const Key &left, const Key &right) const
+        {
+            if (left.Size() < right.Size()) {
+                return true;
+            }
+            for (auto bit = 0; bit < left.Size(); ++bit) {
+                const auto left_bit = left.Test(bit);
+                const auto right_bit = right.Test(bit);
+                if ((left_bit && right_bit) || (!left_bit && !right_bit)) {
+                    continue;
+                }
+                return !left_bit;
+            }
+            return false;
+        }
     };
 
     static int Count_Condition_Intersection(const Key &key1, const Key &key2) { return key1.Count_Intersection(key2); }

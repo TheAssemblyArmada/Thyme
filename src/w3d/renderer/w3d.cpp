@@ -252,7 +252,8 @@ W3DErrorType W3D::Begin_Render(bool clear, bool clearz, const Vector3 &color, fl
 
     HRESULT res;
 
-    if (DX8Wrapper::Get_D3D_Device8() && (res = DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel()) != S_OK) {
+    if (DX8Wrapper::Get_D3D_Device8() != nullptr
+        && (res = DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel()) != D3D_OK) {
         if (res == D3DERR_DEVICELOST) {
             return W3D_ERROR_GENERIC;
         } else if (res == D3DERR_DEVICENOTRESET) {

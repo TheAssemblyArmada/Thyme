@@ -121,7 +121,7 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
     D3DLOCKED_RECT r;
     HRESULT res = m_pSrcTexture->LockRect(&r, nullptr, D3DLOCK_NO_DIRTY_UPDATE);
     m_pSrcTexture->UnlockRect();
-    captainslog_dbgassert(!res, "Failed to lock shroud src surface");
+    captainslog_dbgassert(res == D3D_OK, "Failed to lock shroud src surface");
     m_srcTextureData = (unsigned char *)r.pBits;
     m_srcTexturePitch = r.Pitch;
     memset(m_srcTextureData, 0, y * m_srcTexturePitch);
@@ -428,7 +428,7 @@ void W3DShroud::Render(CameraClass *cam)
 {
 #ifdef BUILD_WITH_D3D8
     if (m_pSrcTexture != nullptr) {
-        if (!DX8Wrapper::Get_D3D_Device8() || !DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel()) {
+        if (DX8Wrapper::Get_D3D_Device8() == nullptr || DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel() == D3D_OK) {
 #ifdef GAME_DEBUG_STRUCTS
             if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn != m_drawFogOfWar) {
                 Reset();

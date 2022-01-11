@@ -24,19 +24,19 @@ void FrustumClass::Init(const Matrix3D &camera, const Vector2 &vpmin, const Vect
         zfar = -zfar;
     }
 
-    m_corners[0].Set(vpmin.X, vpmax.Y, 1.0);
+    m_corners[0].Set(vpmin.X, vpmax.Y, 1.0f);
     m_corners[4] = m_corners[0];
     m_corners[0] *= znear;
     m_corners[4] *= zfar;
-    m_corners[1].Set(vpmax.X, vpmax.Y, 1.0);
+    m_corners[1].Set(vpmax.X, vpmax.Y, 1.0f);
     m_corners[5] = m_corners[1];
     m_corners[1] *= znear;
     m_corners[5] *= zfar;
-    m_corners[2].Set(vpmin.X, vpmin.Y, 1.0);
+    m_corners[2].Set(vpmin.X, vpmin.Y, 1.0f);
     m_corners[6] = m_corners[2];
     m_corners[2] *= znear;
     m_corners[6] *= zfar;
-    m_corners[3].Set(vpmax.X, vpmin.Y, 1.0);
+    m_corners[3].Set(vpmax.X, vpmin.Y, 1.0f);
     m_corners[7] = m_corners[3];
     m_corners[3] *= znear;
     m_corners[7] *= zfar;

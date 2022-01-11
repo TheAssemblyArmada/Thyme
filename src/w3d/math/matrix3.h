@@ -35,9 +35,9 @@ public:
     __forceinline explicit Matrix3(bool identity)
     {
         if (identity) {
-            Row[0].Set(1.0, 0.0, 0.0);
-            Row[1].Set(0.0, 1.0, 0.0);
-            Row[2].Set(0.0, 0.0, 1.0);
+            Row[0].Set(1.0f, 0.0f, 0.0f);
+            Row[1].Set(0.0f, 1.0f, 0.0f);
+            Row[2].Set(0.0f, 0.0f, 1.0f);
         }
     }
 
@@ -239,19 +239,19 @@ public:
 
     __forceinline float Get_X_Rotation() const
     {
-        Vector3 v = (*this) * Vector3(0.0, 1.0, 0.0);
+        Vector3 v = (*this) * Vector3(0.0f, 1.0f, 0.0f);
         return GameMath::Atan2(v[2], v[1]);
     }
 
     __forceinline float Get_Y_Rotation() const
     {
-        Vector3 v = (*this) * Vector3(0.0, 0.0, 1.0);
+        Vector3 v = (*this) * Vector3(0.0f, 0.0f, 1.0f);
         return GameMath::Atan2(v[0], v[2]);
     }
 
     __forceinline float Get_Z_Rotation() const
     {
-        Vector3 v = (*this) * Vector3(1.0, 0.0, 0.0);
+        Vector3 v = (*this) * Vector3(1.0f, 0.0f, 0.0f);
         return GameMath::Atan2(v[1], v[0]);
     }
 

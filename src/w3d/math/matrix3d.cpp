@@ -24,7 +24,7 @@ using GameMath::Fabs;
 using GameMath::Inv_Sqrt;
 using GameMath::Sqrt;
 
-const Matrix3D Matrix3D::Identity(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+const Matrix3D Matrix3D::Identity(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
 int Matrix3D::Is_Orthogonal() const
 {

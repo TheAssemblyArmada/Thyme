@@ -157,8 +157,8 @@ int W3DStatusCircle::Update_Circle_VB()
             }
 
             vertices->diffuse = diffuse;
-            vertices->u1 = 0.0;
-            vertices->v1 = 0.0;
+            vertices->u1 = 0.0f;
+            vertices->v1 = 0.0f;
             vertices++;
         }
 
@@ -178,52 +178,52 @@ int W3DStatusCircle::Update_Screen_VB(int diffuse)
     VertexBufferClass::WriteLockClass lock(m_vertexBufferScreen, 0);
     VertexFormatXYZDUV1 *vertices = (VertexFormatXYZDUV1 *)lock.Get_Vertex_Array();
 
-    vertices->x = -1.0;
-    vertices->y = -1.0;
-    vertices->z = 0.0;
+    vertices->x = -1.0f;
+    vertices->y = -1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
-    vertices->x = 1.0;
-    vertices->y = 1.0;
-    vertices->z = 0.0;
+    vertices->x = 1.0f;
+    vertices->y = 1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
-    vertices->x = -1.0;
-    vertices->y = 1.0;
-    vertices->z = 0.0;
+    vertices->x = -1.0f;
+    vertices->y = 1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
-    vertices->x = -1.0;
-    vertices->y = -1.0;
-    vertices->z = 0.0;
+    vertices->x = -1.0f;
+    vertices->y = -1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
-    vertices->x = 1.0;
-    vertices->y = -1.0;
-    vertices->z = 0.0;
+    vertices->x = 1.0f;
+    vertices->y = -1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
-    vertices->x = 1.0;
-    vertices->y = 1.0;
-    vertices->z = 0.0;
+    vertices->x = 1.0f;
+    vertices->y = 1.0f;
+    vertices->z = 0.0f;
     vertices->diffuse = diffuse;
-    vertices->u1 = 0.0;
-    vertices->v1 = 0.0;
+    vertices->u1 = 0.0f;
+    vertices->v1 = 0.0f;
     vertices++;
 
     return 0;

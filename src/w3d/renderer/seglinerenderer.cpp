@@ -323,7 +323,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         intersection[0][0].next_segment_id = 0;
         intersection[0][0].direction = Vector3(1, 0, 0);
         intersection[0][0].point = Vector3(0, 0, 0);
-        intersection[0][0].texv = 0.0;
+        intersection[0][0].texv = 0.0f;
         intersection[0][0].color = Vector4(0, 0, 0, 0);
         intersection[0][0].fold = true;
         intersection[0][0].parallel = false;
@@ -332,7 +332,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         intersection[0][1].next_segment_id = 0;
         intersection[0][1].direction = Vector3(1, 0, 0);
         intersection[0][1].point = Vector3(0, 0, 0);
-        intersection[0][1].texv = 0.0;
+        intersection[0][1].texv = 0.0f;
         intersection[0][1].color = Vector4(0, 0, 0, 0);
         intersection[0][1].fold = true;
         intersection[0][1].parallel = false;

@@ -200,7 +200,7 @@ void RoadSegment::Update_Seg_Lighting()
 
     for (int i = 0; i < m_numVertex; i++) {
         m_vb[i].diffuse = g_theTerrainRenderObject->Get_Static_Diffuse(
-                              size + (int)(m_vb[i].x / 10.0f + 0.5), size + (int)(m_vb[i].y / 10.0f + 0.5))
+                              size + (int)(m_vb[i].x / 10.0f + 0.5f), size + (int)(m_vb[i].y / 10.0f + 0.5f))
             | 0xFF000000;
     }
 }
@@ -1046,7 +1046,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
     VertexFormatXYZDUV1 vb[MAX_SEG_VERTEX];
     unsigned short ib[MAX_SEG_INDEX];
     float f1 = 0.078125f;
-    float f2 = 0.6875;
+    float f2 = 0.6875f;
     int numVertex = 0;
     int numIndex = 0;
     TRoadSegInfo segment;
@@ -1202,7 +1202,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
                 float f13 = Vector2::Dot_Product(road_normal, v1);
                 float f14 = Vector2::Dot_Product(road_vector, v1);
                 vb[numVertex].u1 = f14 / (uscale * 4.0f) + uoffset;
-                vb[numVertex].v1 = voffset - f13 / (vscale * 4.0);
+                vb[numVertex].v1 = voffset - f13 / (vscale * 4.0f);
                 vb[numVertex].x = column2.vtx[j].X;
                 vb[numVertex].y = column2.vtx[j].Y;
                 vb[numVertex].z = f1 + column2.vtx[j].Z;
@@ -1578,9 +1578,9 @@ int W3DRoadBuffer::Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector
                 if (m_roads[i].m_scale * 0.55f > Vector3::Distance(v9, v8)) {
                     Vector2 v10 = v3 - v2;
                     if (xp_sign(v10, *join_vector) == 1) {
-                        v10.Rotate(DEG_TO_RAD(90));
+                        v10.Rotate(DEG_TO_RADF(90.f));
                     } else {
-                        v10.Rotate(DEG_TO_RAD(-90));
+                        v10.Rotate(DEG_TO_RADF(-90.f));
                     }
 
                     v1 = v10;
@@ -1827,7 +1827,7 @@ void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
                 v4.Normalize();
 
                 if (Fabs(Vector2::Dot_Product(v4, v5)) <= 0.5f) {
-                    float f4 = DEG_TO_RAD(90);
+                    float f4 = DEG_TO_RADF(90.f);
 
                     if (Vector3::Cross_Product_Z(Vector3(v4.X, v4.Y, 0.0f), Vector3(v5.X, v5.Y, 0.0f)) < 0.0f) {
                         f4 = -f4;
@@ -1870,7 +1870,7 @@ void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
                         m_numRoads++;
                     }
                 } else {
-                    float f4 = DEG_TO_RAD(90);
+                    float f4 = DEG_TO_RADF(90.f);
                     bool mirror = false;
 
                     if (Vector3::Cross_Product_Z(Vector3(v4.X, v4.Y, 0.0f), Vector3(v5.X, v5.Y, 0.0f)) < 0.0f) {
@@ -2076,7 +2076,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
     v5.Normalize();
     v5 *= scale * 0.5f;
     Vector2 v6(v5);
-    v6.Rotate(DEG_TO_RAD(-90));
+    v6.Rotate(DEG_TO_RADF(-90.f));
 
     if (b1) {
         if (xp_sign(v3, v1) == -1) {
@@ -2322,7 +2322,7 @@ void W3DRoadBuffer::Offset_4Way(TRoadPt *pc1,
     pc1->loc = loc - align_vector;
     pc2->loc = loc + align_vector;
     Vector2 v1 = pr3->loc - loc;
-    float f1 = DEG_TO_RAD(90);
+    float f1 = DEG_TO_RADF(90.f);
 
     if (Vector3::Cross_Product_Z(Vector3(align_vector.X, align_vector.Y, 0.0f), Vector3(v1.X, v1.Y, 0.0f)) < 0.0f) {
         f1 = -f1;
@@ -2333,7 +2333,7 @@ void W3DRoadBuffer::Offset_4Way(TRoadPt *pc1,
     pc3->loc = loc + v2;
     pc4->loc = loc - v2;
     Vector2 v3(align_vector);
-    v3.Rotate(DEG_TO_RAD(90));
+    v3.Rotate(DEG_TO_RADF(90.f));
     v3 *= width_in_texture;
 
     if (Vector3::Cross_Product_Z(
@@ -2441,7 +2441,7 @@ void W3DRoadBuffer::Offset_Y(
     pc3->top += up_vector * 0.55f;
     pc3->bottom += up_vector * 0.55f;
     Vector2 v1(up_vector);
-    v1.Rotate(DEG_TO_RADF(135));
+    v1.Rotate(DEG_TO_RADF(135.f));
     Vector2 v2(-v1.Y, v1.X);
     v2 *= width_in_texture;
     pc2->loc += v1 * 1.1f;
@@ -2455,7 +2455,7 @@ void W3DRoadBuffer::Offset_Y(
     }
 
     v1 = up_vector;
-    v1.Rotate(DEG_TO_RADF(-135));
+    v1.Rotate(DEG_TO_RADF(-135.f));
     v2.Set(-v1.Y, v1.X);
     v2 *= width_in_texture;
     pc1->loc += v1 * 1.1f;
@@ -2519,9 +2519,9 @@ void W3DRoadBuffer::Offset_H(TRoadPt *pc1,
 
     Vector2 v2(tee_vector);
     if (flip) {
-        v2.Rotate(DEG_TO_RAD(45));
+        v2.Rotate(DEG_TO_RADF(45.f));
     } else {
-        v2.Rotate(DEG_TO_RAD(-45));
+        v2.Rotate(DEG_TO_RADF(-45.f));
     }
 
     Vector2 v3(-v2.Y, v2.X);
@@ -2578,8 +2578,8 @@ void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
 
         Vector3 v2 = f1 * line1.Get_Dir();
         Vector3 v3 = f1 * line2.Get_Dir();
-        v2.Rotate_Z(DEG_TO_RAD(-90));
-        v3.Rotate_Z(DEG_TO_RAD(-90));
+        v2.Rotate_Z(DEG_TO_RADF(-90.f));
+        v3.Rotate_Z(DEG_TO_RADF(-90.f));
         Vector3 v4 = Vector3(pt4->loc.X, pt4->loc.Y, 0.0f) + v2;
         Vector3 v5 = Vector3(pt3->loc.X, pt3->loc.Y, 0.0f) + v2;
         LineSegClass line3(v4, v5);
@@ -2613,7 +2613,7 @@ void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
             }
 
             pt1->loc = Vector2(p1.X, p1.Y);
-            float angle = DEG_TO_RAD(-30);
+            float angle = DEG_TO_RADF(-30.f);
             Vector2 v6 = pt1->loc;
             Vector2 v7 = pt2->loc;
             Vector2 v8(v7.X - v6.X, v7.Y - v6.Y);

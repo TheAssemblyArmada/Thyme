@@ -1318,7 +1318,7 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
         if (b) {
             float f1 = (float)m_textureClasses[i].position_in_texture.x;
             float f2 = (float)((m_textureClasses[i].width * TILE_PIXEL_EXTENT) + m_textureClasses[i].position_in_texture.y);
-            float f3 = f1 / 2048.0;
+            float f3 = f1 / 2048.0f;
             float f4 = f2 / (float)m_terrainTexHeight;
             float f5 = (float)(2048 / m_terrainTexHeight);
             u[0] = cliff.u0 + f3;
@@ -1522,16 +1522,16 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
             v[3] = min_v;
 
             float f21 = (float)(i4 - i3) * HEIGHT_SCALE;
-            float f22 = GameMath::Sqrt(f21 * f21 + 1.0);
+            float f22 = GameMath::Sqrt(f21 * f21 + 1.0f);
             float f23 = (float)(i5 - i4) * HEIGHT_SCALE;
-            float f24 = GameMath::Sqrt(f23 * f23 + 1.0);
+            float f24 = GameMath::Sqrt(f23 * f23 + 1.0f);
 
             if (f22 < (float)STRETCH_LIMIT) {
-                f22 = 1.0;
+                f22 = 1.0f;
             }
 
             if (f24 < (float)STRETCH_LIMIT) {
-                f24 = 1.0;
+                f24 = 1.0f;
             }
 
             if (f22 > (float)TILE_LIMIT) {

@@ -17,12 +17,12 @@
 
 Image::Image() : m_name(), m_filename(), m_textureSize(), m_imageSize(), m_rawTextureData(), m_status(0)
 {
-    m_UVCoords.hi.x = 1.0;
-    m_UVCoords.hi.y = 1.0;
+    m_UVCoords.hi.x = 1.0f;
+    m_UVCoords.hi.y = 1.0f;
     m_textureSize.x = 0;
     m_textureSize.y = 0;
-    m_UVCoords.lo.x = 0.0;
-    m_UVCoords.lo.y = 0.0;
+    m_UVCoords.lo.x = 0.0f;
+    m_UVCoords.lo.y = 0.0f;
     m_imageSize.x = 0;
     m_imageSize.y = 0;
     m_rawTextureData = nullptr;

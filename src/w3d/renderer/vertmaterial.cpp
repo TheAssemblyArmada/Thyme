@@ -72,11 +72,11 @@ void VertexMaterialClass::Apply() const
 void VertexMaterialClass::Apply_Null()
 {
 #ifdef BUILD_WITH_D3D8
-    static D3DMATERIAL8 default_settings = { { { 1.0 }, { 1.0 }, { 1.0 }, { 1.0 } },
-        { { 1.0 }, { 1.0 }, { 1.0 }, { 1.0 } },
-        { { 0.0 }, { 0.0 }, { 0.0 }, { 0.0 } },
-        { { 0.0 }, { 0.0 }, { 0.0 }, { 0.0 } },
-        1.0 };
+    static D3DMATERIAL8 default_settings = { { { 1.0f }, { 1.0f }, { 1.0f }, { 1.0f } },
+        { { 1.0f }, { 1.0f }, { 1.0f }, { 1.0f } },
+        { { 0.0f }, { 0.0f }, { 0.0f }, { 0.0f } },
+        { { 0.0f }, { 0.0f }, { 0.0f }, { 0.0f } },
+        1.0f };
 
     DX8Wrapper::Set_DX8_Render_State(D3DRS_LIGHTING, 0);
     DX8Wrapper::Set_DX8_Material(&default_settings);

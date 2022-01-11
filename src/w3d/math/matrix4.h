@@ -69,10 +69,10 @@ public:
 
     __forceinline void Make_Identity()
     {
-        Row[0].Set(1.0, 0.0, 0.0, 0.0);
-        Row[1].Set(0.0, 1.0, 0.0, 0.0);
-        Row[2].Set(0.0, 0.0, 1.0, 0.0);
-        Row[3].Set(0.0, 0.0, 0.0, 1.0);
+        Row[0].Set(1.0f, 0.0f, 0.0f, 0.0f);
+        Row[1].Set(0.0f, 1.0f, 0.0f, 0.0f);
+        Row[2].Set(0.0f, 0.0f, 1.0f, 0.0f);
+        Row[3].Set(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     __forceinline void Init(const Matrix3D &m)
@@ -80,7 +80,7 @@ public:
         Row[0] = m[0];
         Row[1] = m[1];
         Row[2] = m[2];
-        Row[3] = Vector4(0.0, 0.0, 0.0, 1.0);
+        Row[3] = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
     }
 
     __forceinline void Init(const Vector4 &v0, const Vector4 &v1, const Vector4 &v2, const Vector4 &v3)
@@ -186,7 +186,7 @@ public:
     {
         float s = Determinant();
 
-        if (s == 0.0) {
+        if (s == 0.0f) {
             return Matrix4();
         }
 

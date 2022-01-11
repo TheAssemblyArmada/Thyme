@@ -751,20 +751,20 @@ void WaterRenderObjClass::Update()
     m_riverXOffset += 33.0f / 400000;
     m_riverYOffset += 33.0f / 200000;
 
-    if (m_riverXOffset > 1.0) {
-        m_riverXOffset -= 1.0;
+    if (m_riverXOffset > 1.0f) {
+        m_riverXOffset -= 1.0f;
     }
 
-    if (m_riverYOffset > 1.0) {
-        m_riverYOffset -= 1.0;
+    if (m_riverYOffset > 1.0f) {
+        m_riverYOffset -= 1.0f;
     }
 
-    if (m_riverXOffset < -1.0) {
-        m_riverXOffset += 1.0;
+    if (m_riverXOffset < -1.0f) {
+        m_riverXOffset += 1.0f;
     }
 
-    if (m_riverYOffset < -1.0) {
-        m_riverYOffset += 1.0;
+    if (m_riverYOffset < -1.0f) {
+        m_riverYOffset += 1.0f;
     }
 
     m_iBumpFrame++;
@@ -1165,10 +1165,10 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
 
         D3DXMATRIX patch;
         memset(&patch, 0, sizeof(patch));
-        patch.m[0][0] = 40.0;
-        patch.m[1][1] = 1.0;
-        patch.m[2][2] = 40.0;
-        patch.m[3][3] = 1.0;
+        patch.m[0][0] = 40.0f;
+        patch.m[1][1] = 1.0f;
+        patch.m[2][2] = 40.0f;
+        patch.m[3][3] = 1.0f;
         m_pDev->SetStreamSource(0, m_vertexBufferD3D, sizeof(VertexFormatXYZDUV1));
         m_pDev->SetIndices(m_indexBufferD3D, 0);
 

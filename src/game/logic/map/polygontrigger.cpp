@@ -128,8 +128,8 @@ void PolygonTrigger::Update_Bounds() const
     }
 
     m_boundsNeedsUpdate = false;
-    float x = (float)(m_bounds.hi.x - m_bounds.lo.x) / 2.0;
-    float y = (float)(m_bounds.lo.y + m_bounds.hi.y) / 2.0;
+    float x = (float)(m_bounds.hi.x - m_bounds.lo.x) / 2.0f;
+    float y = (float)(m_bounds.lo.y + m_bounds.hi.y) / 2.0f;
     m_radius = GameMath::Sqrt(x * x + y * y);
 }
 

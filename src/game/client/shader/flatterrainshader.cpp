@@ -250,7 +250,7 @@ int FlatTerrainShaderPixelShader::Set(int pass)
         D3DXMatrixTranslation(&m4, x, y, 0.0f);
         sx = 1.0f / ((float)shroud->Get_Texture_Width() * sx);
         sy = 1.0f / ((float)shroud->Get_Texture_Height() * sy);
-        D3DXMatrixScaling(&m3, sx, sy, 1.0);
+        D3DXMatrixScaling(&m3, sx, sy, 1.0f);
         m = m2 * m4 * m3;
         DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(i + D3DTS_TEXTURE0), (Matrix4 &)m);
         DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);

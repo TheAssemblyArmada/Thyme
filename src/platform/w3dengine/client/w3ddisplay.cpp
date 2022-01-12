@@ -616,11 +616,13 @@ static bool Is_Resolution_Valid(const ResolutionDescClass &res)
         return false;
     }
 
-    // Thyme Change: Aspect ratio check removed as users do not mind some aspect issues
-    // float aspect_ratio = fabs(static_cast<float>(res.Get_Width()) / res.Get_Height());
-    // if (aspect_ratio < 1.332f || aspect_ratio > 1.334f) {
-    //    return false;
-    //}
+    // #FEATURE Aspect ratio check removed as users do not mind some aspect issues
+#if 0
+     float aspect_ratio = GameMath::Fabs(static_cast<float>(res.Get_Width()) / res.Get_Height());
+     if (aspect_ratio < 1.332f || aspect_ratio > 1.334f) {
+        return false;
+    }
+#endif
     return true;
 }
 

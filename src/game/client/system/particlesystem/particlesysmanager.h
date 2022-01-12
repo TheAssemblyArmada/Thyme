@@ -36,10 +36,10 @@ class RenderInfoClass;
 class INI;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+typedef std::hash_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, std::equal_to<Utf8String>>
     partsystempmap_t;
 #else
-typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash<Utf8String>, std::equal_to<Utf8String>>
     partsystempmap_t;
 #endif
 

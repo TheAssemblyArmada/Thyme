@@ -55,9 +55,9 @@ private:
     ThingTemplate *m_firstTemplate;
     unsigned short m_nextTemplateID;
 #ifdef THYME_USE_STLPORT
-    std::hash_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> m_templateMap;
+    std::hash_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, std::equal_to<Utf8String>> m_templateMap;
 #else
-    std::unordered_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> m_templateMap;
+    std::unordered_map<const Utf8String, ThingTemplate *, rts::hash<Utf8String>, std::equal_to<Utf8String>> m_templateMap;
 #endif
 };
 

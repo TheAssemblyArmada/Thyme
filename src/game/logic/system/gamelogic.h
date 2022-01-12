@@ -206,13 +206,13 @@ public:
 
 private:
 #ifdef THYME_USE_STLPORT
-    std::hash_map<Utf8String, BuildableStatus, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+    std::hash_map<Utf8String, BuildableStatus, rts::hash<Utf8String>, std::equal_to<Utf8String>>
         m_thingTemplateBuildableOverrides;
-    std::hash_map<Utf8String, CommandButton const *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> m_controlBarOverrides;
+    std::hash_map<Utf8String, CommandButton const *, rts::hash<Utf8String>, std::equal_to<Utf8String>> m_controlBarOverrides;
 #else
-    std::unordered_map<Utf8String, BuildableStatus, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+    std::unordered_map<Utf8String, BuildableStatus, rts::hash<Utf8String>, std::equal_to<Utf8String>>
         m_thingTemplateBuildableOverrides;
-    std::unordered_map<Utf8String, CommandButton const *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+    std::unordered_map<Utf8String, CommandButton const *, rts::hash<Utf8String>, std::equal_to<Utf8String>>
         m_controlBarOverrides;
 #endif
     float m_width;

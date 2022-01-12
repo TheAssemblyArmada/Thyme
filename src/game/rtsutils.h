@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "asciistring.h"
 #include "endiantype.h"
 #include <ctime>
 
@@ -58,14 +59,14 @@ template<typename T> struct less_than_nocase
     bool operator()(const T &left, const T &right) const { return (left.Compare_No_Case(right) < 0); }
 };
 
-template<typename T> struct equal_to
-{
-    bool operator()(const T &left, const T &right) const { return (left.Compare(right) == 0); }
-};
-
 template<typename T> struct hash
 {
-    size_t operator()(const T &object) const
+    size_t operator()(const T &object) const { return static_cast<size_t>(object); }
+};
+
+template<> struct hash<Utf8String>
+{
+    size_t operator()(const Utf8String &object) const
     {
         const char *c = reinterpret_cast<const char *>(object.Str());
         size_t hash = 0;

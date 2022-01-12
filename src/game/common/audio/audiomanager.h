@@ -62,9 +62,9 @@ class MusicManager;
 class SoundManager;
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>> audioinfomap_t;
+typedef std::hash_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, std::equal_to<Utf8String>> audioinfomap_t;
 #else
-typedef std::unordered_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, rts::equal_to<Utf8String>>
+typedef std::unordered_map<const Utf8String, AudioEventInfo *, rts::hash<Utf8String>, std::equal_to<Utf8String>>
     audioinfomap_t;
 #endif
 

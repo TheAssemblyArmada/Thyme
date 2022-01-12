@@ -76,6 +76,8 @@ set(GAMEENGINE_SRC
     game/client/fxlist.cpp
     game/client/gameclient.cpp
     game/client/gametext.cpp
+    game/client/gametextcommon.cpp
+    game/client/gametextfile.cpp
     game/client/globallanguage.cpp
     game/client/ingameui.cpp
     game/client/languagefilter.cpp

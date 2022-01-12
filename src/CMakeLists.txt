@@ -20,6 +20,7 @@ set(GAMEENGINE_INCLUDES
     game/common/rts
     game/common/system
     game/common/thing
+    #game/common/utility # contains non standard header files
     game/logic/ai
     game/logic/map
     game/logic/object

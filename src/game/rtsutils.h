@@ -68,13 +68,13 @@ template<> struct hash<Utf8String>
 {
     size_t operator()(const Utf8String &object) const
     {
-        const char *c = reinterpret_cast<const char *>(object.Str());
+        const char *c = object.Str();
+        // This is the same implementation as STL Ports const char* hashing function
+        // We do not call the STL Ports version as it is non C++ standard
         size_t hash = 0;
-
-        do {
+        for (; *c != '\0'; ++c) {
             hash = *c + 5 * hash;
-            ++c;
-        } while (*c != '\0');
+        }
 
         return hash;
     }

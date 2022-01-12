@@ -194,6 +194,11 @@ private:
     bool Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     bool Replace_Mesh_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     bool Replace_Asset_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
+    TextureClass *Recolor_Texture(TextureClass *texture, int color);
+    TextureClass *Find_Texture(const char *name, int color);
+    TextureClass *Recolor_Texture_One_Time(TextureClass *texture, int color);
+    void Remap_Palette(SurfaceClass *surface, int color, bool do_palette_only, bool use_alpha);
+
     uint32_t m_grannyAnimManager; // Not used, only here to match original size
 };
 

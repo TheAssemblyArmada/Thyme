@@ -173,9 +173,5 @@ FileSystem *GameEngine::Create_File_System()
 
 MessageStream *GameEngine::Create_Message_Stream()
 {
-#ifdef GAME_DLL
-    return Call_Method<MessageStream *, GameEngine>(PICK_ADDRESS(0x0040FF00, 0x0084B361), this);
-#else
-    return nullptr;
-#endif
+    return new MessageStream;
 }

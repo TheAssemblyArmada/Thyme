@@ -99,7 +99,8 @@ public:
     const Vector3 &Get_HSV_Shift() const { return m_hsvShift; }
     bool Is_Initialized() const { return m_initialized; }
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
-    unsigned Get_Width() { return m_width; }
+    unsigned Get_Width() const { return m_width; }
+    MipCountType Get_Mip_Level_Count() const { return m_mipLevelCount; }
 
     static void Invalidate_Old_Unused_Textures(unsigned age);
     static void Apply_Null(unsigned stage);

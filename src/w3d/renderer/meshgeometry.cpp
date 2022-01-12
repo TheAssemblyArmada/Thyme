@@ -811,10 +811,10 @@ void MeshGeometryClass::Compute_Vertex_Normals(Vector3 *vnorm)
 
 void MeshGeometryClass::Compute_Bounds(Vector3 *verts)
 {
-    m_boundBoxMin.Set(0, 0, 0);
-    m_boundBoxMax.Set(0, 0, 0);
-    m_boundSphereCenter.Set(0, 0, 0);
-    m_boundSphereRadius = 0.0;
+    m_boundBoxMin.Set(0.0f, 0.0f, 0.0f);
+    m_boundBoxMax.Set(0.0f, 0.0f, 0.0f);
+    m_boundSphereCenter.Set(0.0f, 0.0f, 0.0f);
+    m_boundSphereRadius = 0.0f;
 
     if (m_vertexCount == 0) {
         return;

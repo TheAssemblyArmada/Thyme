@@ -106,7 +106,7 @@ void LightEnvironmentClass::Add_Fill_Light()
 // matches zh/bfme2?
 void LightEnvironmentClass::Calculate_Fill_Light()
 {
-    if (m_lightCount > 0 && m_intensity != 0.0) {
+    if (m_lightCount > 0 && m_intensity != 0.0f) {
         float c0 = m_inputLights[0].Contribution();
 
         InputLightStruct input = m_inputLights[0];
@@ -194,7 +194,7 @@ void LightEnvironmentClass::InputLightStruct::Init_From_Point_Or_Spot_Light(
             atten = 1.0f - (dist - atten_start) / (atten_end - atten_start);
             atten = std::clamp(atten, 0.0f, 1.0f);
         } else if (dist > atten_start) {
-            atten = 0.0;
+            atten = 0.0f;
         }
     }
 

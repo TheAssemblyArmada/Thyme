@@ -16,7 +16,7 @@
 #include "matrix3.h"
 #include "quaternion.h"
 
-const Matrix3 Matrix3::Identity(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0);
+const Matrix3 Matrix3::Identity(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 
 Matrix3::Matrix3(const Matrix3D &m)
 {

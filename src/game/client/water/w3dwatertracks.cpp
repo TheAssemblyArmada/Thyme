@@ -83,7 +83,7 @@ void WaterTracksObj::Init(float width, Vector2 const &start, Vector2 const &end,
     m_startPos = start + m_perpDir * 0.5f;
     m_perpDir *= 1.0f / m_perpDir.Length();
     m_waveDir = m_perpDir;
-    m_waveDir.Rotate(DEG_TO_RADF(90));
+    m_waveDir.Rotate(DEG_TO_RADF(90.f));
     m_startPos -= m_waveDir * width;
     m_waveDir *= 13.0f;
     m_startPos -= m_waveDir;
@@ -113,10 +113,10 @@ void WaterTracksObj::Init(
     m_startPos = start;
     m_waveDir = end - start;
     m_perpDir = m_waveDir;
-    m_perpDir.Rotate(DEG_TO_RADF(-90));
+    m_perpDir.Rotate(DEG_TO_RADF(-90.f));
     m_perpDir.Normalize();
     m_waveDir = m_perpDir;
-    m_waveDir.Rotate(DEG_TO_RADF(90));
+    m_waveDir.Rotate(DEG_TO_RADF(90.f));
 
     m_distanceFromShore = s_waveTypeInfo[m_type].distance_from_shore;
     m_waveDir *= m_distanceFromShore;

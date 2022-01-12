@@ -180,7 +180,7 @@ void TerrainShader2Stage::Update_Noise_1(D3DXMATRIX *dest_matrix, D3DXMATRIX *cu
     m_xOffset = (float)tick * m_xSlidePerSecond / 1000.0f + m_xOffset;
     m_yOffset = (float)tick * m_ySlidePerSecond / 1000.0f + m_yOffset;
 
-    while (m_xOffset > 1.0) {
+    while (m_xOffset > 1.0f) {
         m_xOffset = m_xOffset - 1.0f;
     }
 

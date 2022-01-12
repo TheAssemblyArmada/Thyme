@@ -71,7 +71,7 @@ public:
 
     bool Is_Valid() const;
     __forceinline void Make_Identity() { Set(); }
-    __forceinline void Set(float a = 0.0, float b = 0.0, float c = 0.0, float d = 1.0)
+    __forceinline void Set(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 1.0f)
     {
         X = a;
         Y = b;

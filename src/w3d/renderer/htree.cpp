@@ -414,7 +414,7 @@ int HTreeClass::Get_Parent_Index(int boneidx)
 
 void HTreeClass::Scale(float factor)
 {
-    if (factor != 1.0) {
+    if (factor != 1.0f) {
         int count = 0;
 
         if (m_numPivots > 0) {

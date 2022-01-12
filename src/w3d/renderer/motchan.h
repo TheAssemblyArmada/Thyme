@@ -57,10 +57,10 @@ public:
     void Set_Identity(float *setvec)
     {
         if (m_type == ANIM_CHANNEL_Q) {
-            setvec[0] = 0;
-            setvec[1] = 0;
-            setvec[2] = 0;
-            setvec[3] = 1.0;
+            setvec[0] = 0.0f;
+            setvec[1] = 0.0f;
+            setvec[2] = 0.0f;
+            setvec[3] = 1.0f;
         } else {
             for (int i = 0; i < m_vectorLen; ++i) {
                 setvec[i] = 0;

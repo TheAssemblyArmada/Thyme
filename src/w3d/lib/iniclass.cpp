@@ -419,7 +419,7 @@ float INIClass::Get_Float(const char *section, const char *entry, float defvalue
 
         // Is this actually a percentage? if so, divide it by 100
         if (strchr(entryptr->Get_Value(), '%')) {
-            return defvalue / (float)100.0;
+            return defvalue / 100.0f;
         }
     }
 

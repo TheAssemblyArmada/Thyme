@@ -55,7 +55,7 @@ bool TriClass::Contains_Point(const Vector3 &ipoint) const
         int i1 = (i + 1) % 3;
         v1.Set((*V[i1])[axis1] - (*V[i])[axis1], (*V[i1])[axis2] - (*V[i])[axis2]);
         v2.Set(ipoint[axis1] - (*V[i])[axis1], ipoint[axis2] - (*V[i])[axis2]);
-        side[i] = (v1.X * v2.Y - v1.Y * v2.X) >= 0.0;
+        side[i] = (v1.X * v2.Y - v1.Y * v2.X) >= 0.0f;
     }
     return side[0] == side[1] && side[1] == side[2];
 }

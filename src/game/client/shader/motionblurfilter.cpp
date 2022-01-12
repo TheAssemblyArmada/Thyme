@@ -114,7 +114,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
         if (mode == FM_VIEW_MB_END_PAN_ALPHA) {
             float f3 = GameMath::Sqrt(m_priorDelta.x * m_priorDelta.x + m_priorDelta.y * m_priorDelta.y);
             f1 = m_priorDelta.x / f3 * 0.5f + f1;
-            f2 = f2 - m_priorDelta.y / f3 * 0.5;
+            f2 = f2 - m_priorDelta.y / f3 * 0.5f;
             m_decrement = false;
 
             if (--m_maxCount < 2) {

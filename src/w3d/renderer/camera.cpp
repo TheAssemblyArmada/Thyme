@@ -30,7 +30,7 @@ CameraClass::CameraClass() :
     m_frustumValid(false)
 {
     Set_Transform(Matrix3D(true));
-    Set_View_Plane(DEG_TO_RADF(50));
+    Set_View_Plane(DEG_TO_RADF(50.f));
 }
 
 CameraClass::CameraClass(const CameraClass &src) :
@@ -113,13 +113,13 @@ void CameraClass::Set_View_Plane(const Vector2 &vmin, const Vector2 &vmax)
 
 void CameraClass::Set_View_Plane(float hfov, float vfov)
 {
-    float width_half = GameMath::Tan(hfov / 2.0);
+    float width_half = GameMath::Tan(hfov / 2.0f);
     float height_half = 0.0f;
 
     if (vfov == -1) {
         height_half = (1.0f / m_aspectRatio) * width_half;
     } else {
-        height_half = GameMath::Tan(vfov / 2.0);
+        height_half = GameMath::Tan(vfov / 2.0f);
         m_aspectRatio = width_half / height_half;
     }
 

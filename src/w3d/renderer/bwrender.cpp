@@ -68,7 +68,7 @@ bool Edge_Function(const Vector2 &corner_1, const Vector2 &corner_2, const Vecto
     // 2D cross product
     float cross = a.X * b.Y - a.Y * b.X;
 
-    return cross >= 0.0;
+    return cross >= 0.0f;
 }
 
 void BWRenderClass::Render_Triangle(const Vector2 &c1, const Vector2 &c2, const Vector2 &c3)
@@ -167,7 +167,7 @@ void BWRenderClass::Render_Preprocessed_Triangle(Vector3 &x_corners, Vector3i &y
         slope_right = (x_corners[2] - x_corners[0]) / (float)right_height;
 
         if (slope_left > slope_right) {
-            std::swap<float>(slope_left, slope_right);
+            std::swap(slope_left, slope_right);
         }
 
         while (left_height > 0) {

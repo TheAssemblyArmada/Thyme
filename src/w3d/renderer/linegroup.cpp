@@ -140,9 +140,9 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
     const bool sort = m_shader.Get_Dst_Blend_Func() != ShaderClass::DSTBLEND_ZERO
         && m_shader.Get_Alpha_Test() == ShaderClass::ALPHATEST_DISABLE && W3D::Is_Sorting_Enabled();
 
-    static Vector3 _offset_a(GameMath::Cos(DEG_TO_RADF(90)), GameMath::Sin(DEG_TO_RADF(90)), 0);
-    static Vector3 _offset_b(GameMath::Cos(DEG_TO_RADF(210)), GameMath::Sin(DEG_TO_RADF(210)), 0);
-    static Vector3 _offset_c(GameMath::Cos(DEG_TO_RADF(330)), GameMath::Sin(DEG_TO_RADF(330)), 0);
+    static Vector3 _offset_a(GameMath::Cos(DEG_TO_RADF(90.f)), GameMath::Sin(DEG_TO_RADF(90.f)), 0);
+    static Vector3 _offset_b(GameMath::Cos(DEG_TO_RADF(210.f)), GameMath::Sin(DEG_TO_RADF(210.f)), 0);
+    static Vector3 _offset_c(GameMath::Cos(DEG_TO_RADF(330.f)), GameMath::Sin(DEG_TO_RADF(330.f)), 0);
     static Vector3 _offset[3];
 
     _offset[0].Set(_offset_a);

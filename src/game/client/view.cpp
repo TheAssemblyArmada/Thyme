@@ -47,15 +47,15 @@ View::View() :
     m_cameraLockDrawable(nullptr),
     m_lockType(LOCK_FOLLOW),
     m_lockDist(0.0f),
-    m_FOV(DEG_TO_RADF(50)),
+    m_FOV(DEG_TO_RADF(50.f)),
     m_mouseLocked(false),
     m_okToAdjustHeight(true),
     m_snapImmediate(false)
 {
     m_pos.x = 0.0f;
     m_pos.y = 0.0f;
-    m_guardBandBias.x = 0.0;
-    m_guardBandBias.y = 0.0;
+    m_guardBandBias.x = 0.0f;
+    m_guardBandBias.y = 0.0f;
 }
 
 void View::Init()
@@ -271,7 +271,7 @@ float View::Get_Angle()
 
 void View::Set_Pitch(float pitch)
 {
-    m_pitchAngle = std::clamp(pitch, DEG_TO_RADF(-36), DEG_TO_RADF(36));
+    m_pitchAngle = std::clamp(pitch, DEG_TO_RADF(-36.f), DEG_TO_RADF(36.f));
 }
 
 float View::Get_Pitch()

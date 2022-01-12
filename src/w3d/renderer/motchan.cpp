@@ -271,10 +271,10 @@ void TimeCodedMotionChannelClass::Set_Identity(float *setvec)
 {
     setvec[0] = 0;
     if (m_type == 6) {
-        setvec[0] = 0;
-        setvec[1] = 0;
-        setvec[2] = 0;
-        setvec[3] = 1.0;
+        setvec[0] = 0.0f;
+        setvec[1] = 0.0f;
+        setvec[2] = 0.0f;
+        setvec[3] = 1.0f;
     }
 }
 

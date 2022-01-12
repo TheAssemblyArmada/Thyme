@@ -648,6 +648,7 @@ static PoolSizeRec UserMemoryPools[] = {
     { "ThumbnailManagerClass", 32, 32 },
     { "SmudgeSet", 32, 32 },
     { "Smudge", 128, 32 },
+    { "StandardFile", 32, 32 }, // Thyme specific.
     { nullptr, 0, 0 } // Last entry always null.
 };
 

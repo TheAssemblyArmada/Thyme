@@ -21,9 +21,7 @@ FXListStore *g_theFXListStore = nullptr;
 // zh: 0x004CC200 wb: 0x0075F326
 FXList *FXListStore::Find_FXList(const char *name)
 {
-    Utf8String str(name);
-
-    if (str.Is_None()) {
+    if (strcasecmp(name, "None") == 0) {
         return nullptr;
     }
     const auto key = g_theNameKeyGenerator->Name_To_Key(name);
@@ -63,10 +61,10 @@ void FXListStore::Parse_FXList_Definition(INI *ini)
 // zh: 0x0041CCB0 wb: 0x007A3A51
 void FXList::Parse(INI *ini, void *, void *store, const void *)
 {
-    Utf8String fx_name(ini->Get_Next_Token());
-    auto *fx_list = g_theFXListStore->Find_FXList(fx_name.Str());
+    const auto *fx_name = ini->Get_Next_Token();
+    auto *fx_list = g_theFXListStore->Find_FXList(fx_name);
 
-    captainslog_dbgassert(fx_list != nullptr || fx_name.Is_None(), "FXList %s not found!\n", fx_name.Str());
+    captainslog_dbgassert(fx_list != nullptr || strcasecmp(fx_name, "None") == 0, "FXList %s not found!\n", fx_name);
 
     *static_cast<FXList **>(store) = fx_list;
 }

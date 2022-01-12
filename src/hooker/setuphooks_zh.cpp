@@ -12,6 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#ifndef GAME_DLL
+#error This file must not be compiled into standalone binary
+#endif
+
 #include "aabtree.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"

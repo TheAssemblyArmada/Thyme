@@ -29,6 +29,7 @@ struct FileInfo
 namespace Thyme
 {
 // Thyme specific
+template<typename> class FileRefT;
 
 // Returns integer of given mode and BUFFERED flag and encoded buffer size.
 // Buffer size min: 0, max: 4194240, in 64 byte increments.
@@ -38,8 +39,12 @@ int Encode_Buffered_File_Mode(int mode, int buffer_size);
 bool Decode_Buffered_File_Mode(int mode, int &buffer_size);
 } // namespace Thyme
 
+// Game file class. Can read and write file data. When using File*, then call Close() function when done with it. Prefer
+// wrapping File* in FileRef when writing new feature code to avoid misuse.
 class File : public MemoryPoolObject
 {
+    template<typename> friend class Thyme::FileRefT;
+
     IMPLEMENT_ABSTRACT_POOL(File);
 
 public:
@@ -89,10 +94,14 @@ public:
 
     bool Eof();
 
-    const char *Get_Name() { return m_name.Str(); }
+    const char *Get_Name() const { return m_name.Str(); }
     void Set_Name(const char *name) { m_name = name; }
-    int Get_Access() { return m_access; }
+    int Get_Access() const { return m_access; }
     void Delete_On_Close() { m_deleteOnClose = true; }
+
+    // Thyme specific
+    void Delete_On_Close(bool del) { m_deleteOnClose = del; }
+    const Utf8String &Get_File_Name() { return m_name; }
 
 protected:
     File() : m_access(0), m_open(false), m_deleteOnClose(false) { Set_Name("<no file>"); }

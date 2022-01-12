@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "version.h"
-#include "gametext.h"
+#include "gametextinterface.h"
 
 #ifndef GAME_DLL
 Version *g_theVersion = nullptr;

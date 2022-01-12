@@ -16,7 +16,7 @@
 #include "display.h"
 #include "displaystringmanager.h"
 #include "gamefont.h"
-#include "gametext.h"
+#include "gametextinterface.h"
 #include "mouse.h"
 #include "rtsutils.h"
 #include "videobuffer.h"

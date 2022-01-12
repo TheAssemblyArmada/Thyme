@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "gametext.h"
+#include "file.h"
 #include "filesystem.h"
 #include "main.h" // For g_applicationHWnd
 #include "registry.h"
@@ -33,11 +34,9 @@
 #include "hookcrt.h"
 #endif
 
+namespace Legacy
+{
 using rts::FourCC;
-
-#ifndef GAME_DLL
-GameTextInterface *g_theGameText = nullptr;
-#endif
 
 // Comparison function used for sorting and searching StringLookUp arrays.
 int GameTextManager::Compare_LUT(void const *a, void const *b)
@@ -940,3 +939,4 @@ void GameTextManager::Deinit()
     m_noStringList = nullptr;
     m_initialized = false;
 }
+} // namespace Legacy

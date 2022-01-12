@@ -68,7 +68,7 @@
 #include "gamemessage.h"
 #include "gamemessageparser.h"
 #include "gamestate.h"
-#include "gametext.h"
+#include "gametext_impl.h"
 #include "geometry.h"
 #include "globaldata.h"
 #include "hanimmgr.h"

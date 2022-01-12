@@ -16,7 +16,7 @@
 #include "mouse.h"
 #include "colorspace.h"
 #include "displaystringmanager.h"
-#include "gametext.h"
+#include "gametextinterface.h"
 #include "globaldata.h"
 #include "ini.h"
 #include "keyboard.h"

@@ -13,7 +13,7 @@
  *            LICENSE
  */
 #include "lanapi.h"
-#include "gametext.h"
+#include "gametextinterface.h"
 #include "rtsutils.h"
 #include "transport.h"
 #include <cctype>

@@ -123,20 +123,21 @@ void W3DShaderManager::Init()
         s_oldRenderSurface->GetDesc(&desc);
 
         if (DX8Wrapper::Get_D3D_Device8()->CreateTexture(
-                desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &s_renderTexture)) {
+                desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &s_renderTexture)
+            != D3D_OK) {
             if (s_oldRenderSurface) {
                 s_oldRenderSurface->Release();
             }
             s_oldRenderSurface = nullptr;
             s_renderTexture = nullptr;
-        } else if (s_renderTexture->GetSurfaceLevel(0, &s_newRenderSurface)) {
+        } else if (s_renderTexture->GetSurfaceLevel(0, &s_newRenderSurface) != D3D_OK) {
             if (s_renderTexture) {
                 s_renderTexture->Release();
             }
             s_renderTexture = nullptr;
             s_newRenderSurface = nullptr;
         } else {
-            if (DX8Wrapper::Get_D3D_Device8()->GetDepthStencilSurface(&s_oldDepthSurface)) {
+            if (DX8Wrapper::Get_D3D_Device8()->GetDepthStencilSurface(&s_oldDepthSurface) != D3D_OK) {
                 if (s_newRenderSurface) {
                     s_newRenderSurface->Release();
                 }
@@ -409,9 +410,9 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     if (W3DShaderManager::Get_Chipset() < GPU_PS11) {
         return E_FAIL;
     }
-    File *f = g_theFileSystem->Open(path, 65);
+    File *file = g_theFileSystem->Open(path, File::BINARY | File::READ);
 
-    if (f == nullptr) {
+    if (file == nullptr) {
         captainslog_debug("Could not find file \n");
         return E_FAIL;
     }
@@ -422,28 +423,29 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
 
     if (!buf) {
         captainslog_debug("Failed to allocate memory to load shader\n ");
-        f->Close();
+        file->Close();
         return E_FAIL;
     }
 
-    f->Read(buf, info.file_size_low);
-    f->Close();
-    f = nullptr;
+    file->Read(buf, info.file_size_low);
+    file->Close();
+    file = nullptr;
 
-    HRESULT r = S_FALSE;
+    HRESULT res;
 
     if (type) {
-        r = DX8Wrapper::Get_D3D_Device8()->CreateVertexShader(decleration, buf, handle, usage);
+        res = DX8Wrapper::Get_D3D_Device8()->CreateVertexShader(decleration, buf, handle, usage);
     } else if (!type) {
-        r = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(buf, handle);
+        res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(buf, handle);
     }
 
     HeapFree(GetProcessHeap(), 0, buf);
 
-    if (r < 0) {
+    if (FAILED(res)) {
         captainslog_debug("Failed to create shader\n ");
         return E_FAIL;
     }
+
     return S_OK;
 #else
     return 0;

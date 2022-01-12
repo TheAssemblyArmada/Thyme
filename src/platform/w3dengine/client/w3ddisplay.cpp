@@ -403,8 +403,8 @@ void W3DDisplay::Draw()
                 prevTime = now;
             }
 
-            if (DX8Wrapper::Get_D3D_Device8()) {
-                if (!DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel()) {
+            if (DX8Wrapper::Get_D3D_Device8() != nullptr) {
+                if (DX8Wrapper::Get_D3D_Device8()->TestCooperativeLevel() == D3D_OK) {
                     Update_Views();
                     g_theParticleSystemManager->Update();
 

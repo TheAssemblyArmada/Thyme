@@ -477,22 +477,20 @@ bool W3DProjectedShadowManager::Re_Acquire_Resources()
     captainslog_dbgassert(dev, "Trying to ReAquireResources on W3DProjectedShadowManager without device");
     captainslog_dbgassert(!g_shadowDecalIndexBufferD3D, "ReAquireResources not released in W3DProjectedShadowManager");
 
-    if (dev->CreateIndexBuffer(2 * g_shadowDecalIndexSize,
+    if (FAILED(dev->CreateIndexBuffer(2 * g_shadowDecalIndexSize,
             D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
             D3DFMT_INDEX16,
             D3DPOOL_DEFAULT,
-            &g_shadowDecalIndexBufferD3D)
-        < S_OK) {
+            &g_shadowDecalIndexBufferD3D))) {
         return false;
     }
 
     return g_shadowDecalVertexBufferD3D
-        || dev->CreateVertexBuffer(24 * g_shadowDecalVertexSize,
-               D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
-               0,
-               D3DPOOL_DEFAULT,
-               &g_shadowDecalVertexBufferD3D)
-        >= S_OK;
+        || SUCCEEDED(dev->CreateVertexBuffer(24 * g_shadowDecalVertexSize,
+            D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
+            0,
+            D3DPOOL_DEFAULT,
+            &g_shadowDecalVertexBufferD3D));
 #else
     return true;
 #endif
@@ -623,7 +621,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
     RenderObjClass *robj = shadow->m_robj;
 
     if (g_theTerrainRenderObject) {
-        if (DX8Wrapper::Get_D3D_Device8()) {
+        if (DX8Wrapper::Get_D3D_Device8() != nullptr) {
             WorldHeightMap *hmap = g_theTerrainRenderObject->Get_Map();
             int size = hmap->Border_Size();
 

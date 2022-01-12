@@ -352,14 +352,14 @@ bool DX8Wrapper::Create_Device()
     D3DCAPS8 caps;
     captainslog_assert(s_d3dDevice == nullptr);
 
-    if (s_d3dInterface->GetDeviceCaps(s_currentRenderDevice, D3DDEVTYPE_HAL, &caps) < 0) {
+    if (FAILED(s_d3dInterface->GetDeviceCaps(s_currentRenderDevice, D3DDEVTYPE_HAL, &caps))) {
         return false;
     }
 
     memset(&s_currentAdapterIdentifier, 0, sizeof(s_currentAdapterIdentifier));
 
-    if (s_d3dInterface->GetAdapterIdentifier(s_currentRenderDevice, D3DENUM_NO_WHQL_LEVEL, &s_currentAdapterIdentifier)
-        < 0) {
+    if (FAILED(s_d3dInterface->GetAdapterIdentifier(
+            s_currentRenderDevice, D3DENUM_NO_WHQL_LEVEL, &s_currentAdapterIdentifier))) {
         return false;
     }
 
@@ -370,9 +370,12 @@ bool DX8Wrapper::Create_Device()
         s_vertexProcessingBehavior |= D3DCREATE_FPU_PRESERVE;
     }
 
-    if (s_d3dInterface->CreateDevice(
-            s_currentRenderDevice, D3DDEVTYPE_HAL, s_hwnd, s_vertexProcessingBehavior, &s_presentParameters, &s_d3dDevice)
-        >= 0) {
+    if (SUCCEEDED(s_d3dInterface->CreateDevice(s_currentRenderDevice,
+            D3DDEVTYPE_HAL,
+            s_hwnd,
+            s_vertexProcessingBehavior,
+            &s_presentParameters,
+            &s_d3dDevice))) {
         Do_Onetime_Device_Dependent_Inits();
         return true;
     }
@@ -387,9 +390,12 @@ bool DX8Wrapper::Create_Device()
 
     s_presentParameters.AutoDepthStencilFormat = D3DFMT_D16;
 
-    if (s_d3dInterface->CreateDevice(
-            s_currentRenderDevice, D3DDEVTYPE_HAL, s_hwnd, s_vertexProcessingBehavior, &s_presentParameters, &s_d3dDevice)
-        < 0) {
+    if (FAILED(s_d3dInterface->CreateDevice(s_currentRenderDevice,
+            D3DDEVTYPE_HAL,
+            s_hwnd,
+            s_vertexProcessingBehavior,
+            &s_presentParameters,
+            &s_d3dDevice))) {
         return false;
     }
 
@@ -436,7 +442,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     HRESULT res;
     DX8CALL_HRES(Reset(&s_presentParameters), res);
 
-    if (S_OK != res) {
+    if (res != D3D_OK) {
         return false;
     }
 
@@ -767,7 +773,7 @@ bool DX8Wrapper::Set_Render_Device(
             case D3DFMT_A8R8G8B8:
             case D3DFMT_R8G8B8:
                 s_bitDepth = 32;
-                if (s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, mode.Format, D3DFMT_A8R8G8B8, true) == 0) {
+                if (s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, mode.Format, D3DFMT_A8R8G8B8, true) == D3D_OK) {
                     s_presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;
                 }
                 break;
@@ -976,7 +982,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
         *set_colorbuffer = format_table[format_index];
         *set_backbuffer = format_table[format_index];
         if (bitdepth == 32 && *set_colorbuffer == D3DFMT_X8R8G8B8
-            && S_OK == s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1)) {
+            && s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1) == D3D_OK) {
             *set_backbuffer = D3DFMT_A8R8G8B8;
         }
     }
@@ -1079,14 +1085,13 @@ bool DX8Wrapper::Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFOR
 
 bool DX8Wrapper::Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode)
 {
-    if (s_d3dInterface->CheckDeviceFormat(
-            D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, colorbuffer, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, zmode)
-        < 0) {
+    if (FAILED(s_d3dInterface->CheckDeviceFormat(
+            D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, colorbuffer, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, zmode))) {
         captainslog_warn("CheckDeviceFormat failed.  Colorbuffer format = %d  Zbufferformat = %d", colorbuffer, zmode);
         return false;
     }
 
-    if (s_d3dInterface->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, colorbuffer, backbuffer, zmode) < 0) {
+    if (FAILED(s_d3dInterface->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, colorbuffer, backbuffer, zmode))) {
         captainslog_warn(
             "CheckDepthStencilMatch failed.  Colorbuffer format = %d  Backbuffer format = %d Zbufferformat = %d",
             colorbuffer,
@@ -1166,7 +1171,7 @@ void DX8Wrapper::End_Scene(bool flip_frames)
         HRESULT hr;
         DX8CALL_HRES(Present(nullptr, nullptr, nullptr, nullptr), hr);
 
-        if (hr < 0) {
+        if (FAILED(hr)) {
             s_isDeviceLost = true;
         } else {
             s_isDeviceLost = false;
@@ -1628,7 +1633,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
             hr = D3DXCreateTexture(
                 s_d3dDevice, width, height, mip_level_count, 0, (D3DFORMAT)WW3DFormat_To_D3DFormat(format), pool, &texture);
 
-            if (hr < 0) {
+            if (FAILED(hr)) {
                 StringClass str;
                 Get_WW3D_Format_Name(format, str);
                 captainslog_warn(
@@ -1666,7 +1671,7 @@ w3dtexture_t DX8Wrapper::Create_Texture(
             pool,
             &texture);
 
-        if (hr < 0) {
+        if (FAILED(hr)) {
             captainslog_warn("...Render target creation failed.");
         } else {
             captainslog_warn("...Render target creation succesful.");

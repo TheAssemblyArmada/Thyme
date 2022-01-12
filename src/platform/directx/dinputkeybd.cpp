@@ -63,14 +63,14 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
     DIDEVICEOBJECTDATA data;
     DWORD data_fetched = 1; // Initial value is how many data objects we are filling.
 
-    if (res == DI_OK || res == DI_NOTATTACHED) {
+    if (res == DI_OK || res == S_FALSE) {
         res = m_inputDevice->GetDeviceData(sizeof(data), &data, &data_fetched, 0);
     }
 
     if (res == DIERR_INPUTLOST || res == DIERR_NOTACQUIRED) {
         res = m_inputDevice->Acquire();
 
-        if (res == DI_OK || res == DI_NOTATTACHED) {
+        if (res == DI_OK || res == S_FALSE) {
             io->key = 0xFF;
         }
     } else if (res == DI_OK && data_fetched != 0) {

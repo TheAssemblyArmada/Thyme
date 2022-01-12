@@ -306,7 +306,7 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
     if (!m_vertexBufferD3D) {
         HRESULT res = m_pDev->CreateVertexBuffer(vertex_size * m_numVertices, usage, fvf, pool, &m_vertexBufferD3D);
 
-        if (res < 0) {
+        if (FAILED(res)) {
             return res;
         }
     }
@@ -320,7 +320,7 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
     SEA_PATCH_VERTEX *vertices;
     HRESULT res = m_vertexBufferD3D->Lock(0, m_numVertices * sizeof(SEA_PATCH_VERTEX), (BYTE **)&vertices, 0);
 
-    if (res < 0) {
+    if (FAILED(0)) {
         return res;
     }
 
@@ -338,10 +338,11 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
 
     res = m_vertexBufferD3D->Unlock();
 
-    if (res < 0) {
+    if (FAILED(res)) {
         return res;
     }
-    return 0;
+
+    return D3D_OK;
 }
 #endif
 
@@ -352,14 +353,14 @@ HRESULT WaterRenderObjClass::Generate_Index_Buffer(int size_x, int size_y)
     HRESULT res = m_pDev->CreateIndexBuffer(
         2 * m_numIndices + 4, D3DUSAGE_WRITEONLY, D3DFMT_INDEX16, D3DPOOL_MANAGED, &m_indexBufferD3D);
 
-    if (res < 0) {
+    if (FAILED(res)) {
         return res;
     }
 
     unsigned short *indices;
     res = m_indexBufferD3D->Lock(0, 2 * m_numIndices, (BYTE **)&indices, 0);
 
-    if (res < 0) {
+    if (FAILED(res)) {
         return res;
     }
 
@@ -385,10 +386,11 @@ HRESULT WaterRenderObjClass::Generate_Index_Buffer(int size_x, int size_y)
 
     res = m_indexBufferD3D->Unlock();
 
-    if (res < 0) {
+    if (FAILED(res)) {
         return res;
     }
-    return 0;
+
+    return D3D_OK;
 }
 #endif
 
@@ -459,20 +461,20 @@ void WaterRenderObjClass::Re_Acquire_Resources()
     m_pDev = DX8Wrapper::Get_D3D_Device8();
 
     if (m_meshData) {
-        if (Generate_Index_Buffer(m_gridCellsX + 1, m_gridCellsY + 1) < 0
-            || Generate_Vertex_Buffer(m_gridCellsX + 1, m_gridCellsY + 1, 32, 0) < 0) {
+        if (FAILED(Generate_Index_Buffer(m_gridCellsX + 1, m_gridCellsY + 1))
+            || FAILED(Generate_Vertex_Buffer(m_gridCellsX + 1, m_gridCellsY + 1, 32, 0))) {
             return;
         }
     } else if (m_waterType == WATER_TYPE_2_PVSHADER) {
         HRESULT res = Generate_Index_Buffer(15, 15);
 
-        if (res < 0) {
+        if (FAILED(res)) {
             return;
         }
 
         res = Generate_Vertex_Buffer(15, 15, 24, true);
 
-        if (res < 0) {
+        if (FAILED(res)) {
             return;
         }
 
@@ -483,13 +485,13 @@ void WaterRenderObjClass::Re_Acquire_Resources()
             D3DVSD_END() };
         res = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\wave.pso", decl, 0, false, &m_dwWavePixelShader);
 
-        if (res < 0) {
+        if (FAILED(res)) {
             return;
         }
 
         res = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\wave.vso", decl, 0, true, &m_dwWaveVertexShader);
 
-        if (res < 0) {
+        if (FAILED(res)) {
             return;
         }
 
@@ -514,7 +516,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\tadd r0.rgb, r0, r1\n";
         HRESULT res = D3DXAssembleShader(ps1, strlen(ps1), 0, nullptr, &shader, nullptr);
 
-        if (res == 0) {
+        if (res == D3D_OK) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
                 (DWORD *)shader->GetBufferPointer(), &m_riverWaterPixelShader);
             shader->Release();
@@ -529,7 +531,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\tadd r0.rgb, r0, r1";
         res = D3DXAssembleShader(ps2, strlen(ps2), 0, nullptr, &shader, nullptr);
 
-        if (res == 0) {
+        if (res == D3D_OK) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader((DWORD *)shader->GetBufferPointer(), &m_waterPixelShader);
             shader->Release();
         }
@@ -545,7 +547,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\t;\n";
         res = D3DXAssembleShader(ps3, strlen(ps3), 0, nullptr, &shader, nullptr);
 
-        if (res == 0) {
+        if (res == D3D_OK) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
                 (DWORD *)shader->GetBufferPointer(), &m_trapezoidWaterPixelShader);
             shader->Release();
@@ -729,7 +731,7 @@ void WaterRenderObjClass::Enable_Water_Grid(bool state)
             m_indexBufferD3D = nullptr;
         }
 
-        if (Generate_Index_Buffer(m_gridCellsX + 1, m_gridCellsY + 1) >= 0) {
+        if (SUCCEEDED(Generate_Index_Buffer(m_gridCellsX + 1, m_gridCellsY + 1))) {
             Generate_Vertex_Buffer(m_gridCellsX + 1, m_gridCellsY + 1, 32, false);
         }
     }

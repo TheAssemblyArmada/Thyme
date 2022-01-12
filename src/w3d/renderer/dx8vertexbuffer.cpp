@@ -224,7 +224,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
                      &m_vertexBuffer),
         res);
 
-    if (res < 0) {
+    if (FAILED(res)) {
         captainslog_warn("Vertex buffer creation failed, trying to release assets...");
         TextureBaseClass::Invalidate_Old_Unused_Textures(5000);
         W3D::Invalidate_Mesh_Cache();

@@ -251,10 +251,10 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
                     | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
             } else {
                 float c = (float)level;
-                int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-                int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
+                int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+                int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
                 int b =
-                    (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+                    (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
                 if (level == 0xFF) {
                     b = 0xFF;
@@ -267,9 +267,9 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
             }
 #else
             float c = (float)level;
-            int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-            int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
-            int b = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+            int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+            int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+            int b = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
             if (level == 0xFF) {
                 b = 0xFF;
@@ -299,9 +299,9 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
             | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
     } else {
         float c = (float)level;
-        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
-        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
         if (level == 0xFF) {
             b = 0xFF;
@@ -313,9 +313,9 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
     }
 #else
     float c = (float)level;
-    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
-    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
     if (level == 0xFF) {
         b = 0xFF;
@@ -354,9 +354,9 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
             | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
     } else {
         float c = (float)level;
-        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
-        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
         if (level == 0xFF) {
             b = 0xFF;
@@ -368,9 +368,9 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
     }
 #else
     float c = (float)level;
-    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0 * c);
-    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0 * c);
-    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0 * c);
+    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
     if (level == 0xFF) {
         b = 0xFF;

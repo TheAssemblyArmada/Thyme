@@ -767,13 +767,12 @@ bool Get_Mesh_Color_Methods(MeshClass *mesh, bool *housecolor, bool *zhc)
         matinfo->Release_Ref();
     }
 
-    const char *str = strchr(mesh->Get_Name(), '.');
-    const char *str2 = str == nullptr ? str + 1 : mesh->Get_Name();
+    captainslog_assert(mesh->Get_Name() != nullptr);
+    const char *word = strchr(mesh->Get_Name(), '.');
+    word = (word != nullptr) ? word + 1 : mesh->Get_Name();
 
-    if (str2 != nullptr) {
-        if (!strncasecmp(str2, "HOUSECOLOR", 10)) {
-            *housecolor = true;
-        }
+    if (!strncasecmp(word, "HOUSECOLOR", 10)) {
+        *housecolor = true;
     }
 
     return *housecolor || *zhc;
@@ -851,17 +850,17 @@ bool GameAssetManager::Recolor_Mesh(RenderObjClass *robj, uint32_t colour)
     MeshClass *mesh = static_cast<MeshClass *>(robj);
     MeshModelClass *model = mesh->Get_Model();
     MaterialInfoClass *matinfo = mesh->Get_Material_Info();
-    const char *str = strchr(mesh->Get_Name(), '.');
-    const char *str2 = str == nullptr ? str + 1 : mesh->Get_Name();
 
-    if (str2 != nullptr) {
-        if (!strncasecmp(str2, "HOUSECOLOR", 10)) {
-            for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
-                Recolor_Vertex_Material(matinfo->Peek_Vertex_Material(i), colour);
-            }
+    captainslog_assert(mesh->Get_Name() != nullptr);
+    const char *word = strchr(mesh->Get_Name(), '.');
+    word = (word != nullptr) ? word + 1 : mesh->Get_Name();
 
-            recolored = true;
+    if (!strncasecmp(word, "HOUSECOLOR", 10)) {
+        for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
+            Recolor_Vertex_Material(matinfo->Peek_Vertex_Material(i), colour);
         }
+
+        recolored = true;
     }
 
     for (int i = 0; i < matinfo->Texture_Count(); i++) {

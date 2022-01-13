@@ -22,6 +22,7 @@
 #include "file.h"
 #include "filesystem.h"
 #include "fpusetting.h"
+#include "fxlist.h"
 #include "gamelod.h"
 #include "gamemath.h"
 #include "gametext.h"
@@ -80,7 +81,7 @@ BlockParse TheTypeTable[] = {
     //{"DrawGroupInfo", (iniblockparse_t)(0x005145B0) /*&INI::parseDrawGroupNumberDefinition*/},
     {"DrawGroupInfo", &INI::Parse_Draw_Group_Info },
     {"EvaEvent", (iniblockparse_t)(0x00512BE0) /*&INI::parseEvaEvent*/},
-    {"FXList", (iniblockparse_t)(0x004CC260) /*&INI::parseFXListDefinition*/},
+    {"FXList", &FXListStore::Parse_FXList_Definition},
     {"GameData", &GlobalData::Parse_Game_Data_Definition},
     {"InGameUI", (iniblockparse_t)(0x00508440) /*&INI::parseInGameUIDefinition*/},
     {"Locomotor", (iniblockparse_t)(0x004B8A70) /*&INI::parseLocomotorTemplateDefinition*/},
@@ -1001,12 +1002,4 @@ void INI::Parse_Object_Reskin_Definition(INI *ini)
     Utf8String name = ini->Get_Next_Token();
     Utf8String reskin = ini->Get_Next_Token();
     ThingFactory::Parse_Object_Definition(ini, name, reskin);
-}
-
-void INI::Parse_FX_List(INI *ini, void *formal, void *store, const void *user_data)
-{
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x0041CCB0, 0x007A3A51), ini, formal, store, user_data);
-#endif
 }

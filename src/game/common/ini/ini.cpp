@@ -1003,11 +1003,3 @@ void INI::Parse_Object_Reskin_Definition(INI *ini)
     Utf8String reskin = ini->Get_Next_Token();
     ThingFactory::Parse_Object_Definition(ini, name, reskin);
 }
-
-void INI::Parse_FX_List(INI *ini, void *formal, void *store, const void *user_data)
-{
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x0041CCB0, 0x007A3A51), ini, formal, store, user_data);
-#endif
-}

@@ -15,6 +15,7 @@
 #include "w3dtreedraw.h"
 #include "baseheightmap.h"
 #include "drawable.h"
+#include "fxlist.h"
 
 W3DTreeDrawModuleData::W3DTreeDrawModuleData() :
     m_moveOutwardTime(1),
@@ -45,8 +46,8 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "MoveInwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveInwardTime) },
         { "MoveOutwardDistanceFactor", &INI::Parse_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_moveOutwardDistanceFactor) },
         { "DarkeningFactor", &INI::Parse_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_darkeningFactor) },
-        { "ToppleFX", &INI::Parse_FX_List, nullptr, offsetof(W3DTreeDrawModuleData, m_toppleFX) },
-        { "BounceFX", &INI::Parse_FX_List, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceFX) },
+        { "ToppleFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_toppleFX) },
+        { "BounceFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceFX) },
         { "StumpName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_stumpName) },
         { "KillWhenFinishedToppling", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_killWhenFinishedToppling) },
         { "DoTopple", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_doTopple) },

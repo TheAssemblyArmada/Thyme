@@ -1927,7 +1927,8 @@ void W3DDisplay::Gather_Debug_Stats()
                 drawable->Get_Position()->y,
                 drawable->Get_Position()->z);
 
-            const PhysicsBehavior *phys = object->Get_Physics();
+            // #BUGFIX Test object before getting physics.
+            const PhysicsBehavior *phys = object ? object->Get_Physics() : nullptr;
 
             PhysicsTurningType turn;
             if (phys) {

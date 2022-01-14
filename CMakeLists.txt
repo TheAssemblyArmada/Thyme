@@ -35,21 +35,23 @@ if(MSVC)
         #message("Processing flags ${flag_var}")
         string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
     endforeach(flag_var)
+    
+    # Use x87 floating point instructions
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:IA32")
 
     # Set warning level 3
     # disable C4244: conversion from 'double' to 'float', possible loss of data
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244")
 
-if (MSVC_VERSION LESS 1920)
-    # MSVC lower than 19
-    # disable C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800")
-else()
-    # newer MSVC
-    # make C4800 error: Implicit conversion from 'type' to bool. Possible information loss
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /we4800")
-endif()
-
+    if (MSVC_VERSION LESS 1920)
+        # MSVC lower than 19
+        # disable C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800")
+    else()
+        # newer MSVC
+        # make C4800 error: Implicit conversion from 'type' to bool. Possible information loss
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /we4800")
+    endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 17)

@@ -1654,6 +1654,7 @@ void Setup_Hooks()
 
     // partitionmanager.h
     Hook_Any(PICK_ADDRESS(0x0053B550, 0x0081DE80), PartitionManager::Hook_Ctor);
+    Hook_Any(0x00541A20, SightingInfo::Is_Invalid);
 
     // thingfactory.h
     Hook_Any(0x00777420, W3DThingFactory::Hook_Ctor);

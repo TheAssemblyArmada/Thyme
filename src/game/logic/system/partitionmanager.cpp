@@ -769,3 +769,23 @@ void PartitionCell::Xfer_Snapshot(Xfer *xfer)
     Call_Method<void, SnapShot, Xfer *>(PICK_ADDRESS(0x005399F0, 0x0081BDE2), this, xfer);
 #endif
 }
+
+// zh: 0x00541A40 wb: 0x008242E7
+void SightingInfo::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
+    xfer->xferCoord3D(&m_where);
+    xfer->xferReal(&m_radius);
+    xfer->xferUser(&m_playerIndex, sizeof(m_playerIndex));
+    xfer->xferUnsignedInt(&m_frame);
+}
+
+// zh: 0x00541A00 wb: 0x00824274
+void SightingInfo::Reset()
+{
+    m_where.Zero();
+    m_radius = 0.0f;
+    m_playerIndex = 0;
+    m_frame = 0;
+}

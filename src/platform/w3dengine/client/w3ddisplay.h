@@ -121,3 +121,5 @@ private:
     DisplayString *m_benchmarkDisplayString[1];
     W3DDebugDisplay *m_nativeDebugDisplay;
 };
+
+void Reset_D3D_Device(bool restore_assets);

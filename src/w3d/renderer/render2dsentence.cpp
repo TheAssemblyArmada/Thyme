@@ -752,7 +752,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
         Allocate_New_Surface(text, false);
     }
 
-    bool breakout = false;
+    bool sentence_done = false;
     bool ampersand_handled = false;
 
     while (true) {
@@ -781,7 +781,8 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                     ampersand_handled = true;
                 }
 
-                unichar_t cur_ch = *cur_text++;
+                unichar_t cur_ch = *cur_text;
+                ++cur_text;
                 spacing = m_font->Get_Char_Spacing(cur_ch);
                 word_width += spacing;
                 ++word_count;
@@ -802,7 +803,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
                         sentence_width += word_width - spacing;
 
                         if (*cur_text == U_CHAR('\0')) {
-                            breakout = true;
+                            sentence_done = true;
                         }
                     } else {
                         --word_count_tracker;
@@ -814,7 +815,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             if (*cur_text == U_CHAR('\0')) {
                 word_count_tracker += word_count;
                 sentence_width += word_width;
-                breakout = true;
+                sentence_done = true;
                 break;
             }
 
@@ -831,7 +832,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             sentence_width += word_width;
         }
 
-        m_cursor.X = std::max((position.X - sentence_width) * 0.5f, 0.0f);
+        m_cursor.X = (int)std::max((position.X - sentence_width) * 0.5f, 0.0f);
 
         if (ampersand_handled) {
             ampersand_handled = false;
@@ -845,7 +846,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
             if (m_processAmpersand && cur_ch == U_CHAR('&')) {
                 unichar_t next_ch = *text;
-                if (next_ch != U_CHAR('\0') && next_ch > U_CHAR(' ')) {
+                if (next_ch > U_CHAR(' ')) {
                     cur_ch = next_ch;
                     ++text;
                     ampersand_processed = true;
@@ -862,7 +863,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
                 if (cur_ch == U_CHAR(' ')) {
                     m_cursor.X += char_spacing;
-                } else if (cur_ch == U_CHAR('\n') || cur_ch == U_CHAR('\0')) {
+                } else if (cur_ch == U_CHAR('\0') || cur_ch == U_CHAR('\n')) {
                     break;
                 }
 
@@ -906,7 +907,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
         m_cursor.X = 0.0f;
         m_cursor.Y += char_height;
 
-        if (breakout) {
+        if (sentence_done) {
             break;
         }
 
@@ -916,10 +917,9 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
 
     if (x != nullptr) {
         *x = final_x_pos;
-
-        if (y != nullptr) {
-            *y = 0;
-        }
+    }
+    if (y != nullptr) {
+        *y = 0;
     }
 }
 
@@ -955,6 +955,8 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
             unichar_t next_ch = *text;
 
             if (next_ch != U_CHAR('\0') && next_ch > U_CHAR(' ') && next_ch != U_CHAR('\n')) {
+
+                y_pos = m_cursor.Y;
 
                 if (wrapped) {
                     x_pos = 0;
@@ -1005,7 +1007,8 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
                                 ++tmp_text;
                             }
 
-                            spacing += m_font->Get_Char_Spacing(*tmp_text++);
+                            spacing += m_font->Get_Char_Spacing(*tmp_text);
+                            ++tmp_text;
                         }
 
                         if (spacing + m_cursor.X >= m_wrapWidth) {
@@ -1058,14 +1061,16 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
     }
 
 exit:
-    Vector2 retval(m_font->m_widthReduction + width, char_height + m_cursor.Y);
+    Vector2 result(m_font->m_widthReduction + width, char_height + m_cursor.Y);
     m_cursor.Set(initial_cursor_x, initial_cursor_y);
     m_textureOffset.Set(initial_tex_i, initial_tex_j);
 
     if (x != nullptr) {
         *x = x_pos;
+    }
+    if (y != nullptr) {
         *y = y_pos;
     }
 
-    return retval;
+    return result;
 }

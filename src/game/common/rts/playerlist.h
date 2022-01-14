@@ -22,6 +22,14 @@ class Team;
 
 constexpr int32_t MAX_PLAYER_COUNT = 16;
 
+enum PlayerRelationshipFlags : uint16_t
+{
+    PLAYER_RELATIONSHIP_FLAGS_INCLUDE_SELF = (1U << 0),
+    PLAYER_RELATIONSHIP_FLAGS_ALLIES = (1U << 1),
+    PLAYER_RELATIONSHIP_FLAGS_ENEMIES = (1U << 2),
+    PLAYER_RELATIONSHIP_FLAGS_NEUTRALS = (1U << 3),
+};
+
 class PlayerList : public SubsystemInterface, public SnapShot
 {
 public:
@@ -48,7 +56,8 @@ public:
     void Set_Local_Player(Player *player);
     Player *Get_Player_From_Mask(uint16_t mask);
     Player *Get_Each_Player_From_Mask(uint16_t &mask);
-    uint16_t Get_Players_With_Relationship(int32_t player_idx, uint16_t relationship_mask);
+    uint16_t Get_Players_With_Relationship(
+        int32_t player_idx, uint16_t relationship_mask); // Uses PlayerRelationshipFlags for mask
 
     // wb: 0x0061D780
     Player *Get_Local_Player()

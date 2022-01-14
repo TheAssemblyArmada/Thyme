@@ -31,7 +31,7 @@ PlayerList::PlayerList() : m_local(nullptr), m_playerCount(0)
 // zh: 0x0045A8D0 wb: 0x007BEEFD
 PlayerList::~PlayerList()
 {
-    Init();
+    Init(); // TODO: Investigate why destructor calls init
     for (auto *player : m_players) {
         delete player;
     }
@@ -216,7 +216,7 @@ uint16_t PlayerList::Get_Players_With_Relationship(int32_t player_idx, uint16_t 
         return 0;
     }
 
-    if (relationship_mask & (1ULL << 0)) {
+    if (relationship_mask & PLAYER_RELATIONSHIP_FLAGS_INCLUDE_SELF) {
         player_mask |= target_player->Get_Player_Mask();
     }
 
@@ -229,17 +229,17 @@ uint16_t PlayerList::Get_Players_With_Relationship(int32_t player_idx, uint16_t 
         const auto relationship = target_player->Get_Relationship(player->Get_Default_Team());
         switch (relationship) {
             case Relationship::ENEMIES:
-                if (relationship_mask & (1ULL << 2)) {
+                if (relationship_mask & PLAYER_RELATIONSHIP_FLAGS_ENEMIES) {
                     player_mask |= player->Get_Player_Mask();
                 }
                 break;
             case Relationship::NEUTRAL:
-                if (relationship_mask & (1ULL << 3)) {
+                if (relationship_mask & PLAYER_RELATIONSHIP_FLAGS_NEUTRALS) {
                     player_mask |= player->Get_Player_Mask();
                 }
                 break;
             case Relationship::ALLIES:
-                if (relationship_mask & (1ULL << 1)) {
+                if (relationship_mask & PLAYER_RELATIONSHIP_FLAGS_ALLIES) {
                     player_mask |= player->Get_Player_Mask();
                 }
                 break;

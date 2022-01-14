@@ -1312,6 +1312,8 @@ void Setup_Hooks()
     Hook_Any(0x0073EDB0, W3DDisplay::Enable_LetterBox);
     Hook_Any(0x0073EC10, W3DDisplay::Is_LetterBox_Fading);
 
+    Hook_Function(0x0073C740, Reset_D3D_Device);
+
     // vertmaterial.h
     Hook_Any(0x00817150, VertexMaterialClass::Hook_Ctor);
     Hook_Any(0x00817320, VertexMaterialClass::Hook_Ctor2);

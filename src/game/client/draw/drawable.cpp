@@ -99,3 +99,50 @@ ClientUpdateModule *Drawable::Find_Client_Update_Module(NameKeyType key)
     return nullptr;
 #endif
 }
+
+int Drawable::Get_Pristine_Bone_Positions(
+    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+{
+#ifdef GAME_DLL
+    return Call_Method<int, const Drawable, char const *, int, Coord3D *, Matrix3D *, int>(
+        PICK_ADDRESS(0x0046EFD0, 0x007C109A), this, bone_name_prefix, start_index, positions, transforms, max_bones);
+#else
+    return 0;
+#endif
+}
+
+bool Drawable::Get_Should_Animate(bool should) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Drawable, bool>(PICK_ADDRESS(0x0046EB90, 0x007C0D05), this, should);
+#else
+    return false;
+#endif
+}
+
+void Drawable::Clear_And_Set_Model_Condition_State(ModelConditionFlagType clr, ModelConditionFlagType set)
+{
+    BitFlags<MODELCONDITION_COUNT> c;
+    BitFlags<MODELCONDITION_COUNT> s;
+
+    if (clr != -1) {
+        c.Set(clr, 1);
+    }
+
+    if (set != -1) {
+        s.Set(set, 1);
+    }
+
+    Clear_And_Set_Model_Condition_Flags(c, s);
+}
+
+void Drawable::Clear_And_Set_Model_Condition_Flags(
+    BitFlags<MODELCONDITION_COUNT> const &clr, BitFlags<MODELCONDITION_COUNT> const &set)
+{
+    BitFlags<MODELCONDITION_COUNT> state = m_conditionState;
+    m_conditionState.Clear_And_Set(clr, set);
+
+    if (!(m_conditionState == state)) {
+        m_isModelDirty = true;
+    }
+}

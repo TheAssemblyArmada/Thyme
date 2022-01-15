@@ -104,6 +104,7 @@ public:
             m_lightEnvironment = &m_localLightEnv;
         }
     }
+    int Get_Draw_Call_Count();
     void Set_Next_Visible_Skin(MeshClass *next_visible) { m_nextVisibleSkin = next_visible; }
     void Set_Base_Vertex_Offset(int base) { m_baseVertexOffset = base; }
 

@@ -98,7 +98,7 @@ void W3DTreeDraw::React_To_Transform_Change(const Matrix3D *matrix, const Coord3
 
     if (!m_transformSet && (drawable->Get_Position()->x != 0.0f || drawable->Get_Position()->y != 0.0f)) {
         m_transformSet = true;
-        const W3DTreeDrawModuleData *data = Get_Module_Data();
+        const W3DTreeDrawModuleData *data = Get_W3D_Tree_Draw_Module_Data();
 
         if (data != nullptr) {
             g_theTerrainRenderObject->Add_Tree(drawable->Get_ID(),

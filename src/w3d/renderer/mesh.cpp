@@ -799,3 +799,26 @@ PrototypeClass *MeshLoaderClass::Load_W3D(ChunkLoadClass &cload)
     mesh->Release_Ref();
     return proto;
 }
+
+int MeshClass::Get_Draw_Call_Count()
+{
+    if (!m_model) {
+        return 0;
+    }
+
+    int count = m_model->m_polygonRendererList.Count();
+
+    if (count <= 0) {
+        if (!m_model->m_matInfo) {
+            return 1;
+        }
+
+        count = m_model->m_matInfo->Texture_Count();
+
+        if (count <= 0) {
+            return 1;
+        }
+    }
+
+    return count;
+}

@@ -62,7 +62,10 @@ public:
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
     bool Is_Dirty() const { return m_dirty; }
     float Get_Width() const { return m_width; }
-    const LaserUpdateModuleData *Get_Module_Data() const { return (LaserUpdateModuleData *)Module::Get_Module_Data(); }
+    const LaserUpdateModuleData *Get_Laser_Update_Module_Data() const
+    {
+        return (LaserUpdateModuleData *)Module::Get_Module_Data();
+    }
 
 private:
     Coord3D m_startPos;

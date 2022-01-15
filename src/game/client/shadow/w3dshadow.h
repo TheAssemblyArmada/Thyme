@@ -19,6 +19,8 @@
 class RenderInfoClass;
 class ThingTemplate;
 class DebugDrawStats;
+class RenderObjClass;
+class Drawable;
 
 enum ShadowType
 {
@@ -36,7 +38,7 @@ class Shadow
 {
 
 public:
-    // B?UGFIX init all members
+    // BUGFIX init all members
     Shadow() :
         m_opacity(0xFF),
         m_color1(0xFFFFFFFF),
@@ -71,6 +73,41 @@ public:
         ThingTemplate *m_thing;
     };
 
+    void Enable_Shadow_Render(bool enable) { m_isEnabled = enable; }
+    void Enable_Shadow_Invisible(bool enable) { m_isInvisibleEnabled = enable; }
+
+    void Set_Size(float x, float y)
+    {
+        m_decalOffsetU = x;
+        m_decalOffsetV = y;
+
+        if (x == 0.0f) {
+            m_sizeX = 0.0f;
+        } else {
+            m_sizeX = 1.0f / x;
+        }
+
+        if (y == 0.0f) {
+            m_sizeY = 0.0f;
+        } else {
+            m_sizeY = 1.0f / y;
+        }
+    }
+
+    void Set_Opacity(int opacity)
+    {
+        m_opacity = opacity;
+
+        if ((m_type & SHADOW_ALPHA_DECAL) != 0) {
+            m_color2 = (opacity << 24) + (m_color1 & 0xFFFFFF);
+        } else if ((m_type & SHADOW_ADDITIVE_DECAL) != 0) {
+            float o = m_opacity / 255.0f;
+            m_color2 = GameMath::Fast_To_Int_Truncate(((m_color1 >> 16) & 0xFF) * o)
+                | GameMath::Fast_To_Int_Truncate(((m_color1 >> 8) & 0xFF) * o)
+                | GameMath::Fast_To_Int_Truncate((m_color1 & 0xFF) * o);
+        }
+    }
+
 protected:
     bool m_isEnabled;
     bool m_isInvisibleEnabled;
@@ -89,6 +126,7 @@ protected:
 class W3DShadowManager
 {
 public:
+    void Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
     void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
     unsigned int Get_Stencil_Mask() { return m_stencilMask; }

@@ -36,7 +36,7 @@ class FXNugget : public MemoryPoolObject
 
 public:
     virtual ~FXNugget(){};
-    virtual void Do_FX_Pos(Coord3D *primary, Matrix3D *primaryMtx, float primarySpeed, Coord3D *secondary) = 0;
+    virtual void Do_FX_Pos(Coord3D *primary, Matrix3D *primaryMtx, float primarySpeed, Coord3D *secondary, float radius) = 0;
     virtual void Do_FX_Obj(Object *primary, Object *secondary);
 };
 
@@ -48,7 +48,7 @@ public:
     FXList() {}
 
     void Clear() { m_nuggets.clear(); }
-    void Do_FX_Pos(Coord3D *primary, Matrix3D *primaryMtx, float primarySpeed, Coord3D *secondary);
+    void Do_FX_Pos(Coord3D *primary, Matrix3D *primaryMtx, float primarySpeed, Coord3D *secondary, float radius);
     void Do_FX_Obj(Object *primary, Object *secondary);
 
     static void Parse(INI *ini, void *, void *store, const void *);

@@ -83,7 +83,7 @@ W3DLaserDraw::W3DLaserDraw(Thing *thing, ModuleData const *module_data) :
     m_textureAspectRatio(1.0f),
     m_setLaserPosition(true)
 {
-    const W3DLaserDrawModuleData *data = Get_Module_Data();
+    const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
     m_texture = W3DAssetManager::Get_Instance()->Get_Texture(data->m_textureName);
 
     if (m_texture) {
@@ -156,7 +156,7 @@ W3DLaserDraw::W3DLaserDraw(Thing *thing, ModuleData const *module_data) :
 
 W3DLaserDraw::~W3DLaserDraw()
 {
-    const W3DLaserDrawModuleData *data = Get_Module_Data();
+    const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
 
     for (unsigned int i = 0; i < data->m_segments * data->m_numBeams; i++) {
         W3DDisplay::s_3DScene->Remove_Render_Object(m_line3D[i]);
@@ -168,7 +168,7 @@ W3DLaserDraw::~W3DLaserDraw()
 
 float W3DLaserDraw::Get_Laser_Template_Width() const
 {
-    return Get_Module_Data()->m_outerBeamWidth * 0.5f;
+    return Get_W3D_Laser_Draw_Module_Data()->m_outerBeamWidth * 0.5f;
 }
 
 ModuleData *W3DLaserDraw::Friend_New_Module_Data(INI *ini)
@@ -195,7 +195,7 @@ NameKeyType W3DLaserDraw::Get_Module_Name_Key() const
 
 void W3DLaserDraw::Do_Draw_Module(Marix3D *transform)
 {
-    const W3DLaserDrawModuleData *data = Get_Module_Data();
+    const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
     Drawable *drawable = Get_Drawable();
     static NameKeyType key_LaserUpdate = g_theNameKeyGenerator->Name_To_Key("LaserUpdate");
     LaserUpdate *update = static_cast<LaserUpdate *>(drawable->Find_Client_Update_Module(key_LaserUpdate));

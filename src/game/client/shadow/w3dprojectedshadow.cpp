@@ -1005,7 +1005,7 @@ int W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
 
                                 if (intf) {
                                     W3DModelDraw *model = (W3DModelDraw *)intf;
-                                    RenderObjClass *robj = model->getRenderObject();
+                                    RenderObjClass *robj = model->Get_Render_Object();
 
                                     if (robj) {
                                         if ((!robj->Is_Alpha() || !o->Is_KindOf(KINDOF_IMMOBILE))

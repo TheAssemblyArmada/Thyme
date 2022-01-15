@@ -559,7 +559,7 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
         } break;
 
         case EMISSION_VOLUME_CYLINDER: {
-            float two_pi = Get_Client_Random_Value_Real(0.0f, GAMEMATH_PI * 2);
+            float two_pi = Get_Client_Random_Value_Real(0.0f, GAMEMATH_PI * 2.0f);
             float radius = m_isEmissionVolumeHollow ? m_emissionVolume.cylinder.radius :
                                                       Get_Client_Random_Value_Real(0.0f, m_emissionVolume.cylinder.radius);
             float height = m_emissionVolume.cylinder.length * 0.5f;

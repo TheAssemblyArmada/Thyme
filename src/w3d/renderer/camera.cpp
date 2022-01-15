@@ -371,7 +371,7 @@ void CameraClass::Get_D3D_Projection_Matrix(Matrix4 *set_tm)
 
     *set_tm = m_projectionTransform;
 
-    float oozdiff = 1.0 / (m_zFar - m_zNear);
+    float oozdiff = 1.0 / (m_zFar - m_zNear); // Original uses double.
     if (m_projection == PERSPECTIVE) {
         (*set_tm)[2][2] = -(m_zFar)*oozdiff;
         (*set_tm)[2][3] = -(m_zFar * m_zNear) * oozdiff;

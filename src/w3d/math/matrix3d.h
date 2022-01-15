@@ -145,19 +145,19 @@ public:
     __forceinline void Set(const Vector3 &axis, float s, float c)
     {
         captainslog_assert(GameMath::Fabs(axis.Length2() - 1.0f) < 0.001f);
-        Row[0].Set((float)(axis[0] * axis[0] + c * (1.0f - axis[0] * axis[0])),
-            (float)(axis[0] * axis[1] * (1.0f - c) - axis[2] * s),
-            (float)(axis[2] * axis[0] * (1.0f - c) + axis[1] * s),
+        Row[0].Set((axis[0] * axis[0] + c * (1.0f - axis[0] * axis[0])),
+            (axis[0] * axis[1] * (1.0f - c) - axis[2] * s),
+            (axis[2] * axis[0] * (1.0f - c) + axis[1] * s),
             0.0f);
 
-        Row[1].Set((float)(axis[0] * axis[1] * (1.0f - c) + axis[2] * s),
-            (float)(axis[1] * axis[1] + c * (1.0f - axis[1] * axis[1])),
-            (float)(axis[1] * axis[2] * (1.0f - c) - axis[0] * s),
+        Row[1].Set((axis[0] * axis[1] * (1.0f - c) + axis[2] * s),
+            (axis[1] * axis[1] + c * (1.0f - axis[1] * axis[1])),
+            (axis[1] * axis[2] * (1.0f - c) - axis[0] * s),
             0.0f);
 
-        Row[2].Set((float)(axis[2] * axis[0] * (1.0f - c) - axis[1] * s),
-            (float)(axis[1] * axis[2] * (1.0f - c) + axis[0] * s),
-            (float)(axis[2] * axis[2] + c * (1 - axis[2] * axis[2])),
+        Row[2].Set((axis[2] * axis[0] * (1.0f - c) - axis[1] * s),
+            (axis[1] * axis[2] * (1.0f - c) + axis[0] * s),
+            (axis[2] * axis[2] + c * (1 - axis[2] * axis[2])),
             0.0f);
     }
 
@@ -210,9 +210,9 @@ public:
 
     __forceinline void Translate(float x, float y, float z)
     {
-        Row[0][3] += (float)(Row[0][0] * x + Row[0][1] * y + Row[0][2] * z);
-        Row[1][3] += (float)(Row[1][0] * x + Row[1][1] * y + Row[1][2] * z);
-        Row[2][3] += (float)(Row[2][0] * x + Row[2][1] * y + Row[2][2] * z);
+        Row[0][3] += (Row[0][0] * x + Row[0][1] * y + Row[0][2] * z);
+        Row[1][3] += (Row[1][0] * x + Row[1][1] * y + Row[1][2] * z);
+        Row[2][3] += (Row[2][0] * x + Row[2][1] * y + Row[2][2] * z);
     }
 
     __forceinline void Translate(const Vector3 &t)
@@ -224,23 +224,23 @@ public:
 
     __forceinline void Translate_X(float x)
     {
-        Row[0][3] += (float)(Row[0][0] * x);
-        Row[1][3] += (float)(Row[1][0] * x);
-        Row[2][3] += (float)(Row[2][0] * x);
+        Row[0][3] += (Row[0][0] * x);
+        Row[1][3] += (Row[1][0] * x);
+        Row[2][3] += (Row[2][0] * x);
     }
 
     __forceinline void Translate_Y(float y)
     {
-        Row[0][3] += (float)(Row[0][1] * y);
-        Row[1][3] += (float)(Row[1][1] * y);
-        Row[2][3] += (float)(Row[2][1] * y);
+        Row[0][3] += (Row[0][1] * y);
+        Row[1][3] += (Row[1][1] * y);
+        Row[2][3] += (Row[2][1] * y);
     }
 
     __forceinline void Translate_Z(float z)
     {
-        Row[0][3] += (float)(Row[0][2] * z);
-        Row[1][3] += (float)(Row[1][2] * z);
-        Row[2][3] += (float)(Row[2][2] * z);
+        Row[0][3] += (Row[0][2] * z);
+        Row[1][3] += (Row[1][2] * z);
+        Row[2][3] += (Row[2][2] * z);
     }
 
     __forceinline void Rotate_X(float theta)
@@ -251,18 +251,18 @@ public:
         c = GameMath::Cos(theta);
         tmp1 = Row[0][1];
         tmp2 = Row[0][2];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[0][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[0][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[1][2];
-        Row[1][1] = (float)(c * tmp1 + s * tmp2);
-        Row[1][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 + s * tmp2);
+        Row[1][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][1];
         tmp2 = Row[2][2];
-        Row[2][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[2][1] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Rotate_Y(float theta)
@@ -273,18 +273,18 @@ public:
         c = GameMath::Cos(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[0][2];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[0][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[0][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][0];
         tmp2 = Row[1][2];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][0];
         tmp2 = Row[2][2];
-        Row[2][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[2][0] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void Rotate_Z(float theta)
@@ -295,18 +295,18 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[0][1];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[0][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[0][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][0];
         tmp2 = Row[1][1];
-        Row[1][0] = (float)(c * tmp1 + s * tmp2);
-        Row[1][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 + s * tmp2);
+        Row[1][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][0];
         tmp2 = Row[2][1];
-        Row[2][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[2][0] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Rotate_X(float s, float c)
@@ -314,18 +314,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][1];
         tmp2 = Row[0][2];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[0][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[0][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[1][2];
-        Row[1][1] = (float)(c * tmp1 + s * tmp2);
-        Row[1][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 + s * tmp2);
+        Row[1][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][1];
         tmp2 = Row[2][2];
-        Row[2][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[2][1] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Rotate_Y(float s, float c)
@@ -333,18 +333,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[0][2];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[0][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[0][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][0];
         tmp2 = Row[1][2];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][0];
         tmp2 = Row[2][2];
-        Row[2][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[2][0] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void Rotate_Z(float s, float c)
@@ -352,18 +352,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[0][1];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[0][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[0][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][0];
         tmp2 = Row[1][1];
-        Row[1][0] = (float)(c * tmp1 + s * tmp2);
-        Row[1][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 + s * tmp2);
+        Row[1][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[2][0];
         tmp2 = Row[2][1];
-        Row[2][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[2][0] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Scale(float scale)
@@ -402,23 +402,23 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[1][0];
         tmp2 = Row[2][0];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][0] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[2][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[2][1];
-        Row[1][1] = (float)(c * tmp1 - s * tmp2);
-        Row[2][1] = (float)(s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 - s * tmp2);
+        Row[2][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][2];
         tmp2 = Row[2][2];
-        Row[1][2] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][2] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][3];
         tmp2 = Row[2][3];
-        Row[1][3] = (float)(c * tmp1 - s * tmp2);
-        Row[2][3] = (float)(s * tmp1 + c * tmp2);
+        Row[1][3] = (c * tmp1 - s * tmp2);
+        Row[2][3] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void Pre_Rotate_Y(float theta)
@@ -429,23 +429,23 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[2][0];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][0] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[2][0] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[2][1];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[2][2];
-        Row[0][2] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][3];
         tmp2 = Row[2][3];
-        Row[0][3] = (float)(c * tmp1 + s * tmp2);
-        Row[2][3] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][3] = (c * tmp1 + s * tmp2);
+        Row[2][3] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Pre_Rotate_Z(float theta)
@@ -456,23 +456,23 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[1][0];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][0] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[1][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[1][1];
-        Row[0][1] = (float)(c * tmp1 - s * tmp2);
-        Row[1][1] = (float)(s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 - s * tmp2);
+        Row[1][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[1][2];
-        Row[0][2] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][3];
         tmp2 = Row[1][3];
-        Row[0][3] = (float)(c * tmp1 - s * tmp2);
-        Row[1][3] = (float)(s * tmp1 + c * tmp2);
+        Row[0][3] = (c * tmp1 - s * tmp2);
+        Row[1][3] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void Pre_Rotate_X(float s, float c)
@@ -480,23 +480,23 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[1][0];
         tmp2 = Row[2][0];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][0] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[2][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[2][1];
-        Row[1][1] = (float)(c * tmp1 - s * tmp2);
-        Row[2][1] = (float)(s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 - s * tmp2);
+        Row[2][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][2];
         tmp2 = Row[2][2];
-        Row[1][2] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][2] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][3];
         tmp2 = Row[2][3];
-        Row[1][3] = (float)(c * tmp1 - s * tmp2);
-        Row[2][3] = (float)(s * tmp1 + c * tmp2);
+        Row[1][3] = (c * tmp1 - s * tmp2);
+        Row[2][3] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void Pre_Rotate_Y(float s, float c)
@@ -504,23 +504,23 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[2][0];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][0] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[2][0] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[2][1];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[2][2];
-        Row[0][2] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][3];
         tmp2 = Row[2][3];
-        Row[0][3] = (float)(c * tmp1 + s * tmp2);
-        Row[2][3] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][3] = (c * tmp1 + s * tmp2);
+        Row[2][3] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void Pre_Rotate_Z(float s, float c)
@@ -528,23 +528,23 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[1][0];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][0] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[1][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[1][1];
-        Row[0][1] = (float)(c * tmp1 - s * tmp2);
-        Row[1][1] = (float)(s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 - s * tmp2);
+        Row[1][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[1][2];
-        Row[0][2] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][3];
         tmp2 = Row[1][3];
-        Row[0][3] = (float)(c * tmp1 - s * tmp2);
-        Row[1][3] = (float)(s * tmp1 + c * tmp2);
+        Row[0][3] = (c * tmp1 - s * tmp2);
+        Row[1][3] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_X(float theta)
@@ -555,18 +555,18 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[1][0];
         tmp2 = Row[2][0];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][0] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[2][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[2][1];
-        Row[1][1] = (float)(c * tmp1 - s * tmp2);
-        Row[2][1] = (float)(s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 - s * tmp2);
+        Row[2][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][2];
         tmp2 = Row[2][2];
-        Row[1][2] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][2] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_Y(float theta)
@@ -577,18 +577,18 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[2][0];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][0] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[2][0] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[2][1];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[2][2];
-        Row[0][2] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_Z(float theta)
@@ -599,18 +599,18 @@ public:
         s = GameMath::Sin(theta);
         tmp1 = Row[0][0];
         tmp2 = Row[1][0];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][0] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[1][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[1][1];
-        Row[0][1] = (float)(c * tmp1 - s * tmp2);
-        Row[1][1] = (float)(s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 - s * tmp2);
+        Row[1][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[1][2];
-        Row[0][2] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_X(float s, float c)
@@ -618,18 +618,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[1][0];
         tmp2 = Row[2][0];
-        Row[1][0] = (float)(c * tmp1 - s * tmp2);
-        Row[2][0] = (float)(s * tmp1 + c * tmp2);
+        Row[1][0] = (c * tmp1 - s * tmp2);
+        Row[2][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][1];
         tmp2 = Row[2][1];
-        Row[1][1] = (float)(c * tmp1 - s * tmp2);
-        Row[2][1] = (float)(s * tmp1 + c * tmp2);
+        Row[1][1] = (c * tmp1 - s * tmp2);
+        Row[2][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[1][2];
         tmp2 = Row[2][2];
-        Row[1][2] = (float)(c * tmp1 - s * tmp2);
-        Row[2][2] = (float)(s * tmp1 + c * tmp2);
+        Row[1][2] = (c * tmp1 - s * tmp2);
+        Row[2][2] = (s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_Y(float s, float c)
@@ -637,18 +637,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[2][0];
-        Row[0][0] = (float)(c * tmp1 + s * tmp2);
-        Row[2][0] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 + s * tmp2);
+        Row[2][0] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[2][1];
-        Row[0][1] = (float)(c * tmp1 + s * tmp2);
-        Row[2][1] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 + s * tmp2);
+        Row[2][1] = (-s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[2][2];
-        Row[0][2] = (float)(c * tmp1 + s * tmp2);
-        Row[2][2] = (float)(-s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 + s * tmp2);
+        Row[2][2] = (-s * tmp1 + c * tmp2);
     }
 
     __forceinline void In_Place_Pre_Rotate_Z(float s, float c)
@@ -656,18 +656,18 @@ public:
         float tmp1, tmp2;
         tmp1 = Row[0][0];
         tmp2 = Row[1][0];
-        Row[0][0] = (float)(c * tmp1 - s * tmp2);
-        Row[1][0] = (float)(s * tmp1 + c * tmp2);
+        Row[0][0] = (c * tmp1 - s * tmp2);
+        Row[1][0] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][1];
         tmp2 = Row[1][1];
-        Row[0][1] = (float)(c * tmp1 - s * tmp2);
-        Row[1][1] = (float)(s * tmp1 + c * tmp2);
+        Row[0][1] = (c * tmp1 - s * tmp2);
+        Row[1][1] = (s * tmp1 + c * tmp2);
 
         tmp1 = Row[0][2];
         tmp2 = Row[1][2];
-        Row[0][2] = (float)(c * tmp1 - s * tmp2);
-        Row[1][2] = (float)(s * tmp1 + c * tmp2);
+        Row[0][2] = (c * tmp1 - s * tmp2);
+        Row[1][2] = (s * tmp1 + c * tmp2);
     }
 
     int Is_Orthogonal() const;
@@ -840,27 +840,27 @@ __forceinline Matrix3D operator*(const Matrix3D &A, const Matrix3D &B)
     tmp1 = B[0][0];
     tmp2 = B[1][0];
     tmp3 = B[2][0];
-    C[0][0] = (float)(A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
-    C[1][0] = (float)(A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
-    C[2][0] = (float)(A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
+    C[0][0] = (A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
+    C[1][0] = (A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
+    C[2][0] = (A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
     tmp1 = B[0][1];
     tmp2 = B[1][1];
     tmp3 = B[2][1];
-    C[0][1] = (float)(A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
-    C[1][1] = (float)(A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
-    C[2][1] = (float)(A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
+    C[0][1] = (A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
+    C[1][1] = (A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
+    C[2][1] = (A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
     tmp1 = B[0][2];
     tmp2 = B[1][2];
     tmp3 = B[2][2];
-    C[0][2] = (float)(A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
-    C[1][2] = (float)(A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
-    C[2][2] = (float)(A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
+    C[0][2] = (A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3);
+    C[1][2] = (A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3);
+    C[2][2] = (A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3);
     tmp1 = B[0][3];
     tmp2 = B[1][3];
     tmp3 = B[2][3];
-    C[0][3] = (float)(A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3 + A[0][3]);
-    C[1][3] = (float)(A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3 + A[1][3]);
-    C[2][3] = (float)(A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3 + A[2][3]);
+    C[0][3] = (A[0][0] * tmp1 + A[0][1] * tmp2 + A[0][2] * tmp3 + A[0][3]);
+    C[1][3] = (A[1][0] * tmp1 + A[1][1] * tmp2 + A[1][2] * tmp3 + A[1][3]);
+    C[2][3] = (A[2][0] * tmp1 + A[2][1] * tmp2 + A[2][2] * tmp3 + A[2][3]);
     return C;
 }
 

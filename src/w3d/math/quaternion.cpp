@@ -463,17 +463,17 @@ Matrix3 Build_Matrix3(const Quaternion &q)
 {
     Matrix3 m;
 
-    m[0][0] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
-    m[0][1] = (float)(2.0 * (q[0] * q[1] - q[2] * q[3]));
-    m[0][2] = (float)(2.0 * (q[2] * q[0] + q[1] * q[3]));
+    m[0][0] = (float)(1.0 - TWICE(q[1] * q[1] + q[2] * q[2]));
+    m[0][1] = (float)(TWICE(q[0] * q[1] - q[2] * q[3]));
+    m[0][2] = (float)(TWICE(q[2] * q[0] + q[1] * q[3]));
 
-    m[1][0] = (float)(2.0 * (q[0] * q[1] + q[2] * q[3]));
-    m[1][1] = (float)(1.0 - 2.0f * (q[2] * q[2] + q[0] * q[0]));
-    m[1][2] = (float)(2.0 * (q[1] * q[2] - q[0] * q[3]));
+    m[1][0] = (float)(TWICE(q[0] * q[1] + q[2] * q[3]));
+    m[1][1] = (float)(1.0 - TWICE(q[2] * q[2] + q[0] * q[0]));
+    m[1][2] = (float)(TWICE(q[1] * q[2] - q[0] * q[3]));
 
-    m[2][0] = (float)(2.0 * (q[2] * q[0] - q[1] * q[3]));
-    m[2][1] = (float)(2.0 * (q[1] * q[2] + q[0] * q[3]));
-    m[2][2] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
+    m[2][0] = (float)(TWICE(q[2] * q[0] - q[1] * q[3]));
+    m[2][1] = (float)(TWICE(q[1] * q[2] + q[0] * q[3]));
+    m[2][2] = (float)(1.0 - TWICE(q[1] * q[1] + q[0] * q[0]));
 
     return m;
 }
@@ -483,17 +483,17 @@ Matrix3D Build_Matrix3D(const Quaternion &q)
     Matrix3D m;
 
     // initialize the rotation sub-matrix
-    m[0][0] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
-    m[0][1] = (float)(2.0 * (q[0] * q[1] - q[2] * q[3]));
-    m[0][2] = (float)(2.0 * (q[2] * q[0] + q[1] * q[3]));
+    m[0][0] = (float)(1.0 - TWICE(q[1] * q[1] + q[2] * q[2]));
+    m[0][1] = (float)(TWICE(q[0] * q[1] - q[2] * q[3]));
+    m[0][2] = (float)(TWICE(q[2] * q[0] + q[1] * q[3]));
 
-    m[1][0] = (float)(2.0 * (q[0] * q[1] + q[2] * q[3]));
-    m[1][1] = (float)(1.0 - 2.0f * (q[2] * q[2] + q[0] * q[0]));
-    m[1][2] = (float)(2.0 * (q[1] * q[2] - q[0] * q[3]));
+    m[1][0] = (float)(TWICE(q[0] * q[1] + q[2] * q[3]));
+    m[1][1] = (float)(1.0 - TWICE(q[2] * q[2] + q[0] * q[0]));
+    m[1][2] = (float)(TWICE(q[1] * q[2] - q[0] * q[3]));
 
-    m[2][0] = (float)(2.0 * (q[2] * q[0] - q[1] * q[3]));
-    m[2][1] = (float)(2.0 * (q[1] * q[2] + q[0] * q[3]));
-    m[2][2] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
+    m[2][0] = (float)(TWICE(q[2] * q[0] - q[1] * q[3]));
+    m[2][1] = (float)(TWICE(q[1] * q[2] + q[0] * q[3]));
+    m[2][2] = (float)(1.0 - TWICE(q[1] * q[1] + q[0] * q[0]));
 
     // no translation
     m[0][3] = m[1][3] = m[2][3] = 0.0f;
@@ -506,17 +506,17 @@ Matrix4 Build_Matrix4(const Quaternion &q)
     Matrix4 m;
 
     // initialize the rotation sub-matrix
-    m[0][0] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
-    m[0][1] = (float)(2.0 * (q[0] * q[1] - q[2] * q[3]));
-    m[0][2] = (float)(2.0 * (q[2] * q[0] + q[1] * q[3]));
+    m[0][0] = (float)(1.0 - TWICE(q[1] * q[1] + q[2] * q[2]));
+    m[0][1] = (float)(TWICE(q[0] * q[1] - q[2] * q[3]));
+    m[0][2] = (float)(TWICE(q[2] * q[0] + q[1] * q[3]));
 
-    m[1][0] = (float)(2.0 * (q[0] * q[1] + q[2] * q[3]));
-    m[1][1] = (float)(1.0 - 2.0f * (q[2] * q[2] + q[0] * q[0]));
-    m[1][2] = (float)(2.0 * (q[1] * q[2] - q[0] * q[3]));
+    m[1][0] = (float)(TWICE(q[0] * q[1] + q[2] * q[3]));
+    m[1][1] = (float)(1.0 - TWICE(q[2] * q[2] + q[0] * q[0]));
+    m[1][2] = (float)(TWICE(q[1] * q[2] - q[0] * q[3]));
 
-    m[2][0] = (float)(2.0 * (q[2] * q[0] - q[1] * q[3]));
-    m[2][1] = (float)(2.0 * (q[1] * q[2] + q[0] * q[3]));
-    m[2][2] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
+    m[2][0] = (float)(TWICE(q[2] * q[0] - q[1] * q[3]));
+    m[2][1] = (float)(TWICE(q[1] * q[2] + q[0] * q[3]));
+    m[2][2] = (float)(1.0 - TWICE(q[1] * q[1] + q[0] * q[0]));
 
     // no translation
     m[0][3] = m[1][3] = m[2][3] = 0.0f;

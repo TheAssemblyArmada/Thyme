@@ -193,15 +193,15 @@ Vector3 Matrix3D::Inverse_Rotate_Vector(const Vector3 &vect) const
 
 void Matrix3D::Set_Rotation(const Quaternion &q)
 {
-    Row[0][0] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
-    Row[0][1] = (float)(2.0 * (q[0] * q[1] - q[2] * q[3]));
-    Row[0][2] = (float)(2.0 * (q[2] * q[0] + q[1] * q[3]));
-    Row[1][0] = (float)(2.0 * (q[0] * q[1] + q[2] * q[3]));
-    Row[1][1] = (float)(1.0 - 2.0f * (q[2] * q[2] + q[0] * q[0]));
-    Row[1][2] = (float)(2.0 * (q[1] * q[2] - q[0] * q[3]));
-    Row[2][0] = (float)(2.0 * (q[2] * q[0] - q[1] * q[3]));
-    Row[2][1] = (float)(2.0 * (q[1] * q[2] + q[0] * q[3]));
-    Row[2][2] = (float)(1.0 - 2.0 * (q[1] * q[1] + q[0] * q[0]));
+    Row[0][0] = (float)(1.0 - TWICE(q[1] * q[1] + q[2] * q[2]));
+    Row[0][1] = (float)(TWICE(q[0] * q[1] - q[2] * q[3]));
+    Row[0][2] = (float)(TWICE(q[2] * q[0] + q[1] * q[3]));
+    Row[1][0] = (float)(TWICE(q[0] * q[1] + q[2] * q[3]));
+    Row[1][1] = (float)(1.0 - TWICE(q[2] * q[2] + q[0] * q[0]));
+    Row[1][2] = (float)(TWICE(q[1] * q[2] - q[0] * q[3]));
+    Row[2][0] = (float)(TWICE(q[2] * q[0] - q[1] * q[3]));
+    Row[2][1] = (float)(TWICE(q[1] * q[2] + q[0] * q[3]));
+    Row[2][2] = (float)(1.0 - TWICE(q[1] * q[1] + q[0] * q[0]));
 }
 
 void Matrix3D::Set_Rotation(const Matrix3 &m)

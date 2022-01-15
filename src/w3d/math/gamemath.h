@@ -56,6 +56,8 @@
 #define DEG_TO_RADF(x) (((float)x) * GAMEMATH_PI / 180.0f)
 #endif
 
+#define TWICE(x) ((x) + (x))
+
 const int ARC_TABLE_SIZE = 1024;
 const int SIN_TABLE_SIZE = 1024;
 

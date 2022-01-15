@@ -35,6 +35,7 @@
 #define GAMEMATH_EPSILON2 GAMEMATH_EPSILON *GAMEMATH_EPSILON
 #define GAMEMATH_PI 3.141592654f
 #define GAMEMATH_PI2 6.2831855f
+#define GAMEMATH_PI_DBL 3.141592741012573
 #define GAMEMATH_FLOAT_MAX (FLT_MAX)
 #define GAMEMATH_FLOAT_MIN (FLT_MIN)
 #define GAMEMATH_FLOAT_TINY (1.0e-37f)
@@ -45,10 +46,10 @@
 #define GAMEMATH_TIGHT_CORNER_RADIUS 0.5f
 
 #ifndef RAD_TO_DEG
-#define RAD_TO_DEG(x) (((double)x) * 180.0 / GAMEMATH_PI)
+#define RAD_TO_DEG(x) (((double)x) * 180.0 / GAMEMATH_PI_DBL)
 #endif
 #ifndef DEG_TO_RAD
-#define DEG_TO_RAD(x) (((double)x) * GAMEMATH_PI / 180.0)
+#define DEG_TO_RAD(x) (((double)x) * GAMEMATH_PI_DBL / 180.0)
 #endif
 #ifndef RAD_TO_DEGF
 #define RAD_TO_DEGF(x) (((float)x) * 180.0f / GAMEMATH_PI)

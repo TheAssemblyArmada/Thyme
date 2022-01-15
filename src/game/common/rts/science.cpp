@@ -53,7 +53,7 @@ void ScienceInfo::Add_Root_Sciences(std::vector<ScienceType> &rootScience) const
         }
     } else {
         for (auto science : m_prerequisites) {
-            auto *info = g_theScienceStore->Get_Science_Info(science);
+            const auto *info = g_theScienceStore->Get_Science_Info(science);
             info->Add_Root_Sciences(rootScience);
         }
     }
@@ -113,21 +113,21 @@ std::vector<Utf8String> ScienceStore::Get_All_Science() const
 // zh: 0x00488C40 wb: 0x00727753
 int32_t ScienceStore::Get_Science_Purchase_Cost(ScienceType science) const
 {
-    auto *info = Get_Science_Info(science);
+    const auto *info = Get_Science_Info(science);
     return info != nullptr ? info->Get_Purchase_Cost() : 0;
 }
 
 // zh: 0x00488C90 wb: 0x00727781
 bool ScienceStore::Is_Science_Grantable(ScienceType science) const
 {
-    auto *info = Get_Science_Info(science);
+    const auto *info = Get_Science_Info(science);
     return info != nullptr ? info->Is_Grantable() : false;
 }
 
 // zh: 0x00488CE0 wb: 0x007277AF
 void ScienceStore::Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description)
 {
-    auto *info = Get_Science_Info(science);
+    const auto *info = Get_Science_Info(science);
     if (info == nullptr) {
         return;
     }

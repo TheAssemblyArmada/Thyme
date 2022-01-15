@@ -83,7 +83,10 @@ public:
     virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override {}
     virtual void Set_Shadows_Enabled(bool enable) override {}
 
-    const W3DLaserDrawModuleData *Get_Module_Data() const { return (W3DLaserDrawModuleData *)Module::Get_Module_Data(); }
+    const W3DLaserDrawModuleData *Get_W3D_Laser_Draw_Module_Data() const
+    {
+        return (W3DLaserDrawModuleData *)Module::Get_Module_Data();
+    }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

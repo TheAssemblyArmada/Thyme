@@ -769,6 +769,7 @@ public:
     void Transform_Min_Max_AABox(const Vector3 &min, const Vector3 &max, Vector3 *set_min, Vector3 *set_max) const;
     void Transform_Center_Extent_AABox(
         const Vector3 &center, const Vector3 &extent, Vector3 *set_center, Vector3 *set_extent) const;
+    void Mul(Matrix3D const &m) { Mul(m, *this); }
     static void Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_result);
 
     static __forceinline void Rotate_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)

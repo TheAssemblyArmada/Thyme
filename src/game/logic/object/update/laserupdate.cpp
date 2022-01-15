@@ -175,7 +175,7 @@ void LaserUpdate::Init_Laser(Object const *source_obj,
     Utf8String master_bone,
     int width)
 {
-    const LaserUpdateModuleData *data = Get_Module_Data();
+    const LaserUpdateModuleData *data = Get_Laser_Update_Module_Data();
 
     if (width > 0) {
         m_grow = true;
@@ -323,7 +323,7 @@ void LaserUpdate::Update_Start_Pos()
 
 void LaserUpdate::Update_End_Pos()
 {
-    const LaserUpdateModuleData *data = Get_Module_Data();
+    const LaserUpdateModuleData *data = Get_Laser_Update_Module_Data();
     Coord3D oldpos = m_endPos;
 
     if (m_victimDrawableID) {

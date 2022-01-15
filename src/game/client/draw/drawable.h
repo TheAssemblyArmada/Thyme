@@ -113,6 +113,7 @@ public:
     virtual const Drawable *As_Drawable_Meth() const override { return this; }
     virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
 
+    Object *Get_Object() { return m_object; }
     const Object *Get_Object() const { return m_object; }
     bool Is_Hidden() const { return m_hidden || m_stealthInvisible; }
     StealthLookType Get_Stealth_Look() const { return m_stealthLook; }
@@ -254,7 +255,7 @@ public:
         Coord3D *turret_pitch_pos) const;
     float const Get_Scale() const { return m_instanceScale; }
     Vector3 const *Get_Selection_Color() const;
-    bool Get_Should_Animate(bool unk) const;
+    bool Get_Should_Animate(bool should) const;
     Vector3 const *Get_Tint_Color() const;
     Matrix3D const *Get_Transform_Matrix() const;
 

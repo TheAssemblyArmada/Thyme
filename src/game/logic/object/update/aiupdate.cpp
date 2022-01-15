@@ -25,3 +25,13 @@ void AIUpdateModuleData::Parse_Locomotor_Set(INI *ini, void *formal, void *store
         PICK_ADDRESS(0x005CFEF0, 0x007F35AD), ini, formal, store, user_data);
 #endif
 }
+
+bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, AIUpdateInterface, WhichTurretType, float *, float *>(
+        PICK_ADDRESS(0x007F4BCB, 0x007F4BCB), this, tur, turret_angle, turret_pitch);
+#else
+    return false;
+#endif
+}

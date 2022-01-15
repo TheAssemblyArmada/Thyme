@@ -69,7 +69,10 @@ public:
     }
     virtual void Load_Post_Process() override { DrawModule::Load_Post_Process(); }
 
-    const W3DTreeDrawModuleData *Get_Module_Data() const { return (W3DTreeDrawModuleData *)Module::Get_Module_Data(); }
+    const W3DTreeDrawModuleData *Get_W3D_Tree_Draw_Module_Data() const
+    {
+        return (W3DTreeDrawModuleData *)Module::Get_Module_Data();
+    }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

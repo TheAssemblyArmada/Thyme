@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief AI update
+ * @brief W3D Model Draw Module
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,19 +12,4 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#pragma once
-#include "always.h"
-#include "object.h"
-#include "updatemodule.h"
-class INI;
-
-class AIUpdateModuleData
-{
-public:
-    static void Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data);
-};
-
-class AIUpdateInterface
-{
-    bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
-};
+#include "w3dmodeldraw.h"

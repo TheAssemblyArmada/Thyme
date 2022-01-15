@@ -48,3 +48,21 @@ void Object::On_Veterancy_Level_Changed(VeterancyLevel v1, VeterancyLevel v2, bo
     Call_Method<void, Object, VeterancyLevel, VeterancyLevel, bool>(PICK_ADDRESS(0x00549BD0, 0x007D370C), this, v1, v2, b);
 #endif
 }
+
+int Object::Get_Night_Indicator_Color() const
+{
+#ifdef GAME_DLL
+    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AF0, 0x007D0FEC), this);
+#else
+    return 0;
+#endif
+}
+
+int Object::Get_Indicator_Color() const
+{
+#ifdef GAME_DLL
+    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AC0, 0x007D0F89), this);
+#else
+    return 0;
+#endif
+}

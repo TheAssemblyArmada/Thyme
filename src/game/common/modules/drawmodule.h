@@ -34,6 +34,10 @@ public:
     int Get_Skins() const { return m_skins; }
     int Get_Sort_Meshes() const { return m_sortMeshes; }
     int Get_Extra_Draw_Calls() const { return m_extraDrawCalls; }
+    void Add_Draw_Calls(int i) { m_drawCalls += i; }
+    void Add_bones(int i) { m_bones += i; }
+    void Add_Skins(int i) { m_skins += i; }
+    void Add_Sort_Meshes(int i) { m_sortMeshes += i; }
     void Add_Extra_Draw_Calls(int i) { m_extraDrawCalls += i; }
 
 private:
@@ -48,31 +52,46 @@ private:
 class ObjectDrawInterface
 {
 public:
-    virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *, float *, Matrix3D *) = 0;
-    virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *) = 0;
-    virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &, Matrix3D *) = 0;
-    virtual int Get_Pristine_Bone_Positions_For_Condition_State(
-        BitFlags<MODELCONDITION_COUNT> const &, char const *, int, Coord3D *, Matrix3D *, int) = 0;
-    virtual int Get_Current_Bone_Positions(char const *, int, Coord3D *, Matrix3D *, int) = 0;
-    virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *, Matrix3D &) = 0;
-    virtual bool Get_Projectile_Launch_Offset(
-        BitFlags<MODELCONDITION_COUNT> const &, WeaponSlotType, int, Matrix3D *, WhichTurretType, Coord3D *, Coord3D *) = 0;
-    virtual void Update_Projectile_Clip_Status(unsigned int, unsigned int, WeaponSlotType) = 0;
-    virtual void Update_Draw_Module_Supply_Status(int, int) = 0;
+    virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const = 0;
+    virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const = 0;
+    virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const = 0;
+    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c,
+        char const *bone_name,
+        int,
+        Coord3D *positions,
+        Matrix3D *transforms,
+        int max_bones) const = 0;
+    virtual int Get_Current_Bone_Positions(
+        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const = 0;
+    virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transforms) const = 0;
+    virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &c,
+        WeaponSlotType wslot,
+        int ammo_index,
+        Matrix3D *launch_pos,
+        WhichTurretType tur,
+        Coord3D *turret_rot_pos,
+        Coord3D *turret_pitch_pos) const = 0;
+    virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) = 0;
+    virtual void Update_Draw_Module_Supply_Status(int status1, int status2) = 0;
     virtual void Notify_Draw_Module_Dependency_Cleared() = 0;
-    virtual void Set_Hidden(bool) = 0;
-    virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &) = 0;
-    virtual void Replace_Indicator_Color(int) = 0;
-    virtual bool Handle_Weapon_Fire_FX(WeaponSlotType, int, FXList const *, float, Coord3D const *, float) = 0;
-    virtual int Get_Barrel_Count(WeaponSlotType) = 0;
-    virtual void Set_Selectable(bool) = 0;
-    virtual void Set_Animation_Loop_Duration(unsigned int) = 0;
-    virtual void Set_Animation_Completion_Time(unsigned int) = 0;
+    virtual void Set_Hidden(bool hidden) = 0;
+    virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c) = 0;
+    virtual void Replace_Indicator_Color(int color) = 0;
+    virtual bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
+        int specific_barrel_to_use,
+        FXList const *fxl,
+        float weapon_speed,
+        Coord3D const *victim_pos,
+        float radius) = 0;
+    virtual int Get_Barrel_Count(WeaponSlotType wslot) const = 0;
+    virtual void Set_Selectable(bool selectable) = 0;
+    virtual void Set_Animation_Loop_Duration(unsigned int num_frames) = 0;
+    virtual void Set_Animation_Completion_Time(unsigned int num_frames) = 0;
     virtual bool Update_Bones_For_Client_Particle_Systems() = 0;
-    virtual void Set_Animation_Frame(int) = 0;
-    virtual void Set_Pause_Animation(bool) = 0;
+    virtual void Set_Animation_Frame(int frame) = 0;
+    virtual void Set_Pause_Animation(bool pause) = 0;
     virtual void Update_Sub_Objects() = 0;
-    virtual void Show_Sub_Object(Utf8String const &, bool) = 0;
+    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visbile) = 0;
 };
 
 class DrawModule : public DrawableModule

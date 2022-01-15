@@ -64,6 +64,7 @@ public:
     void Remove_Particle(Particle *particle);
     ParticlePriorityType Get_Priority() const { return m_priority; }
     void Set_Lifetime_Range(float min, float max) { m_lifetime.Set_Range(min, max, GameClientRandomVariable::UNIFORM); }
+    void Set_Unk(bool set) { m_unkBool1 = set; }
 
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 

@@ -60,6 +60,13 @@ public:
     PhysicsTurningType Get_Turning() const { return m_turning; }
     static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
 
+    void Recalc_Vel_Mag()
+    {
+        if (m_velMag == -1.0f) {
+            m_velMag = GameMath::Sqrt(GameMath::Square(m_vel.x) + GameMath::Square(m_vel.y) + GameMath::Square(m_vel.z));
+        }
+    }
+
 private:
     float m_yawRate;
     float m_rollRate;

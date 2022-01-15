@@ -37,8 +37,8 @@ class FXNugget : public MemoryPoolObject
 public:
     virtual ~FXNugget(){};
     virtual void Do_FX_Pos(const Coord3D *primary,
-        const Matrix3D *primaryMtx,
-        float primarySpeed,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
         const Coord3D *secondary,
         float radius) const = 0;
     virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const;
@@ -53,11 +53,13 @@ public:
 
     void Clear() { m_nuggets.clear(); }
     void Do_FX_Pos(const Coord3D *primary,
-        const Matrix3D *primaryMtx,
-        float primarySpeed,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
         const Coord3D *secondary,
         float radius) const;
     void Do_FX_Obj(const Object *primary, const Object *secondary) const;
+
+    void Add_FXNugget(FXNugget *nugget) { m_nuggets.push_back(nugget); }
 
     static void Parse(INI *ini, void *, void *store, const void *);
 
@@ -93,3 +95,24 @@ extern FXListStore *&g_theFXListStore;
 #else
 extern FXListStore *g_theFXListStore;
 #endif
+
+class SoundFXNugget : public FXNugget
+{
+    IMPLEMENT_POOL(SoundFXNugget);
+
+public:
+    SoundFXNugget(){};
+    virtual ~SoundFXNugget() override{};
+
+    virtual void Do_FX_Pos(const Coord3D *primary,
+        const Matrix3D *primary_mtx,
+        float primary_speed,
+        const Coord3D *secondary,
+        float radius) const override;
+    virtual void Do_FX_Obj(const Object *primary, const Object *secondary) const override;
+
+    static void Parse(INI *ini, void *formal, void *, const void *);
+
+private:
+    Utf8String m_soundName;
+};

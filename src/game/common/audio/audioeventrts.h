@@ -47,6 +47,13 @@ public:
     void Set_Next_Play_Portion(int portion) { m_nextPlayPortion = portion; }
     void Set_Handle_To_Kill(int handle) { m_handleToKill = handle; }
     void Set_Time_Of_Day(TimeOfDayType tod) { m_timeOfDay = tod; }
+    void Set_Position(Coord3D const *position)
+    {
+        if (position != nullptr && (m_eventType == AudioType::EVENT_MUSIC || m_eventType == AudioType::EVENT_UNKVAL4)) {
+            m_positionOfAudio = *position;
+            m_eventType = AudioType::EVENT_MUSIC;
+        }
+    }
 
     const Utf8String &Get_File_Name() const { return m_filename; }
     const Utf8String &Get_Attack_Name() const { return m_filenameAttack; }

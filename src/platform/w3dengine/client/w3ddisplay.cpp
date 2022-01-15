@@ -1248,7 +1248,7 @@ void W3DDisplay::Draw_Image(
         if (file_name.Is_Empty()) {
             file_name = Utf8String::s_emptyString;
         }
-        m_2DRender->Set_Texture(file_name);
+        m_2DRender->Set_Texture(file_name.Str());
     }
 
     float f_left = static_cast<float>(left);
@@ -1257,7 +1257,7 @@ void W3DDisplay::Draw_Image(
     float f_bottom = static_cast<float>(bottom);
     RectClass rect{ f_left, f_top, f_right, f_bottom };
     auto uv = image->Get_UV_Region();
-    RectClass UVrect{ uv.lo.x, uv.lo.y, uv.hi.x, uv.hi.y };
+    RectClass uv_rect{ uv.lo.x, uv.lo.y, uv.hi.x, uv.hi.y };
     if (m_isClippedEnabled == true) {
         if (right <= m_clipRegion.lo.x) {
             return;
@@ -1274,23 +1274,24 @@ void W3DDisplay::Draw_Image(
         float width = rect.Width();
         float height = rect.Height();
 
-        float uv_width = UVrect.Width();
-        float uv_height = UVrect.Height();
+        float uv_width = uv_rect.Width();
+        float uv_height = uv_rect.Height();
 
-        float uv_left = UVrect.left;
-        float uv_top = UVrect.top;
+        float uv_left = uv_rect.left;
+        float uv_right = uv_rect.right;
+        float uv_top = uv_rect.top;
 
         if (image->Is_Set_Status(Image::IMAGE_STATUS_ROTATED_90_CLOCKWISE)) {
-            UVrect.top = ((f_left - rect.left) / width) * uv_height + uv_top;
-            UVrect.bottom = ((f_right - rect.left) / width) * uv_height + uv_top;
-            UVrect.left = ((f_top - rect.top) / height) * uv_width + uv_left;
-            UVrect.right = ((f_bottom - rect.top) / height) * uv_width + uv_left;
+            uv_rect.top = ((f_left - rect.left) / width) * uv_height + uv_top;
+            uv_rect.bottom = ((f_right - rect.left) / width) * uv_height + uv_top;
+            uv_rect.right = uv_right - ((f_top - rect.top) / height) * uv_width;
+            uv_rect.left = uv_right - ((f_bottom - rect.top) / height) * uv_width;
             rect.Set(f_left, f_top, f_right, f_bottom);
         } else {
-            UVrect.left = ((f_left - rect.left) / width) * uv_width + uv_left;
-            UVrect.right = ((f_right - rect.left) / width) * uv_width + uv_left;
-            UVrect.top = ((f_top - rect.top) / height) * uv_height + uv_top;
-            UVrect.bottom = ((f_bottom - rect.top) / height) * uv_height + uv_top;
+            uv_rect.left = ((f_left - rect.left) / width) * uv_width + uv_left;
+            uv_rect.right = ((f_right - rect.left) / width) * uv_width + uv_left;
+            uv_rect.top = ((f_top - rect.top) / height) * uv_height + uv_top;
+            uv_rect.bottom = ((f_bottom - rect.top) / height) * uv_height + uv_top;
             rect.Set(f_left, f_top, f_right, f_bottom);
         }
     }
@@ -1299,19 +1300,19 @@ void W3DDisplay::Draw_Image(
         m_2DRender->Add_Tri(rect.Upper_Left(),
             rect.Lower_Left(),
             rect.Upper_Right(),
-            UVrect.Upper_Right(),
-            UVrect.Upper_Left(),
-            UVrect.Lower_Right(),
+            uv_rect.Upper_Right(),
+            uv_rect.Upper_Left(),
+            uv_rect.Lower_Right(),
             color);
-        m_2DRender->Add_Tri(rect.Upper_Right(),
-            rect.Lower_Right(),
+        m_2DRender->Add_Tri(rect.Lower_Right(),
+            rect.Upper_Right(),
             rect.Lower_Left(),
-            UVrect.Lower_Left(),
-            UVrect.Lower_Right(),
-            UVrect.Upper_Left(),
+            uv_rect.Lower_Left(),
+            uv_rect.Lower_Right(),
+            uv_rect.Upper_Left(),
             color);
     } else {
-        m_2DRender->Add_Quad(rect, UVrect, color);
+        m_2DRender->Add_Quad(rect, uv_rect, color);
     }
 
     m_2DRender->Render();

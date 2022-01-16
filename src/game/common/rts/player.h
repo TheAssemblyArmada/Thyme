@@ -73,5 +73,8 @@ public:
     int m_playerColor;
     uint8_t unk5[0x160 - 0x128];
     Team *m_defaultTeam;
-    uint8_t unk6[0x44C - 0x164]; // There is a size 4 field specific to WB in here
+    uint8_t unk6[0x44C - 0x164];
+#ifdef GAME_DEBUG_STRUCTS
+    uint8_t unk7[0x4]; // Unsure of location of 4 extra bytes in WB
+#endif
 };

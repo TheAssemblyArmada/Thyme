@@ -204,7 +204,7 @@ Player *PlayerList::Get_Each_Player_From_Mask(uint16_t &mask)
 }
 
 // zh: 0x0045B250 wb: 0x007BF914
-uint16_t PlayerList::Get_Players_With_Relationship(int32_t player_idx, uint16_t relationship_mask)
+uint16_t PlayerList::Get_Players_With_Relationship(int32_t player_idx, PlayerRelationshipFlags relationship_mask)
 {
     if (relationship_mask == 0) {
         return 0;

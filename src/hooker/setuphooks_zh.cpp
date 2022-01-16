@@ -147,6 +147,7 @@
 #include "w3ddisplay.h"
 #include "w3dfilesystem.h"
 #include "w3dgameclient.h"
+#include "w3dmodeldraw.h"
 #include "w3dmouse.h"
 #include "w3dpoly.h"
 #include "w3dprojectedshadow.h"
@@ -1969,4 +1970,15 @@ void Setup_Hooks()
     Hook_Any(0x0045B1F0, PlayerList::Get_Each_Player_From_Mask);
     Hook_Any(0x0045B250, PlayerList::Get_Players_With_Relationship);
     Hook_Any(0x0045A9C0, PlayerList::Get_Nth_Player);
+
+    // w3dmodeldraw.cpp
+    Hook_Any(0x007AF130, ModelConditionInfo::Add_Public_Bone);
+    Hook_Any(0x007AF240, ModelConditionInfo::Validate_Cached_Bones);
+    Hook_Any(0x007AFCA0, ModelConditionInfo::Validate_Weapon_Barrel_Info);
+    Hook_Any(0x007B0260, ModelConditionInfo::Validate_Turret_Info);
+    Hook_Any(0x007B0320, ModelConditionInfo::Find_Pristine_Bone);
+    Hook_Any(0x007B0580, W3DModelDrawModuleData::Hook_Ctor);
+    Hook_Any(0x007B07E0, W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather);
+    Hook_Any(0x007B0C90, W3DModelDrawModuleData::Get_Best_Model_Name_For_WB);
+    Hook_Any(0x007B0E70, W3DModelDrawModuleData::Build_Field_Parse);
 }

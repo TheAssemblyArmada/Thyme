@@ -562,3 +562,18 @@ void GameLODManager::Parse_Really_Low_MHz(INI *ini)
         g_theGameLODManager->m_reallyLowMHz = mhz;
     }
 }
+
+void GameLODManager::Parse_Static_Game_LOD_Level(INI *ini, void *formal, void *store, const void *user_data)
+{
+    const char *str = ini->Get_Next_Token();
+
+    for (unsigned int i = 0; i < ARRAY_SIZE(g_staticGameLODNames); i++) {
+        if (!strcasecmp(str, g_staticGameLODNames[i])) {
+            *((unsigned int *)store) = i;
+            return;
+        }
+    }
+
+    captainslog_debug("invalid GameLODLevel token %s -- expected LOW/MEDIUM/HIGH", str);
+    throw CODE_06;
+}

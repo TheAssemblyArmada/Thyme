@@ -160,6 +160,7 @@ public:
     static void Parse_LOD_Preset(INI *ini);
     static void Parse_Bench_Profile(INI *ini);
     static void Parse_Really_Low_MHz(INI *ini);
+    static void Parse_Static_Game_LOD_Level(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     enum

@@ -30,15 +30,15 @@ public:
     {
     }
 
-    HAnimClass *Get_Anim_Handle();
-    float Get_Distance_Covered() { return m_distanceCovered; }
-    float Get_Frames_Per_Second() { return m_framesPerSecond; }
-    float Is_Idle_Anim() { return m_isIdleAnim; }
+    HAnimClass *Get_Anim_Handle() const;
+    float Get_Distance_Covered() const { return m_distanceCovered; }
+    float Get_Frames_Per_Second() const { return m_framesPerSecond; }
+    float Is_Idle_Anim() const { return m_isIdleAnim; }
 
 private:
     Utf8String m_name;
     float m_distanceCovered;
-    float m_framesPerSecond;
+    mutable float m_framesPerSecond;
     bool m_isIdleAnim;
 };
 
@@ -81,7 +81,7 @@ enum ValidateFlags
 {
     PRISTINE_BONES_VALID = 1,
     TURRET_VALID = 2,
-    UNK_VALID = 4,
+    LAUNCH_BONES_VALID = 4,
     WEAPON_BARREL_INFO_VALID = 8,
     PUBLIC_BONES_VALID = 0x10,
 };
@@ -90,6 +90,11 @@ struct ParticleSysBoneInfo
 {
     Utf8String bone_name;
     ParticleSystemTemplate *particle_system_template;
+};
+
+enum
+{
+    BONE_COUNT = 3,
 };
 
 struct ModelConditionInfo
@@ -132,14 +137,18 @@ struct ModelConditionInfo
             m_weaponFireFXBone = 0;
             m_weaponMuzzleFlashBone = 0;
             m_weaponLaunchBoneTransform.Make_Identity();
+#ifdef GAME_DEBUG_STRUCTS
             m_weaponMuzzleFlashBoneName.Clear();
+#endif
         }
 
         int m_weaponRecoilBone;
         int m_weaponFireFXBone;
         int m_weaponMuzzleFlashBone;
         Matrix3D m_weaponLaunchBoneTransform;
+#ifdef GAME_DEBUG_STRUCTS
         Utf8String m_weaponMuzzleFlashBoneName;
+#endif
     };
 
     ModelConditionInfo() { Clear(); }
@@ -161,18 +170,24 @@ struct ModelConditionInfo
     }
 
     int Get_Conditions_Count() const { return m_conditionsYesVec.size(); }
+#ifdef GAME_DEBUG_STRUCTS
     Utf8String Get_Definition() const { return m_description; }
+#else
+    Utf8String Get_Definition() const { return "ModelConditionInfo"; }
+#endif
 
+#ifdef GAME_DEBUG_STRUCTS
     Utf8String m_description;
+#endif
     std::vector<BitFlags<MODELCONDITION_COUNT>> m_conditionsYesVec;
     Utf8String m_modelName;
     std::vector<HideShowSubObjInfo> m_hideShowVec;
-    std::vector<Utf8String> m_publicBones;
-    Utf8String m_weaponFireFXBoneName[3];
-    Utf8String m_weaponRecoilBoneName[3];
-    Utf8String m_weaponMuzzleFlashName[3];
-    Utf8String m_weaponLaunchBoneName[3];
-    Utf8String m_weaponHideShowBoneName[3];
+    mutable std::vector<Utf8String> m_publicBones;
+    Utf8String m_weaponFireFXBoneName[BONE_COUNT];
+    Utf8String m_weaponRecoilBoneName[BONE_COUNT];
+    Utf8String m_weaponMuzzleFlashName[BONE_COUNT];
+    Utf8String m_weaponLaunchBoneName[BONE_COUNT];
+    Utf8String m_weaponHideShowBoneName[BONE_COUNT];
     std::vector<W3DAnimationInfo> m_animations;
     NameKeyType m_transitionKey;
     NameKeyType m_allowToFinishKey;
@@ -183,16 +198,27 @@ struct ModelConditionInfo
     uint64_t m_transition;
     float m_animationSpeedFactorMin;
     float m_animationSpeedFactorMax;
-    std::map<NameKeyType, PristineBoneInfo> m_boneMap;
-    TurretInfo m_turretInfo[2];
-    std::vector<WeaponBarrelInfo> m_weaponBarrelInfoVec[3];
-    bool m_hasWeaponBone[3];
-    char m_validStuff;
+    mutable std::map<NameKeyType, PristineBoneInfo> m_boneMap;
+    mutable TurretInfo m_turretInfo[2];
+    mutable std::vector<WeaponBarrelInfo> m_weaponBarrelInfoVec[BONE_COUNT];
+    mutable bool m_hasWeaponBone[BONE_COUNT];
+    mutable char m_validStuff;
 };
 
 class W3DModelDrawModuleData : public ModuleData
 {
 public:
+    enum
+    {
+        TIMEANDWEATHER_DAY = 1,
+        TIMEANDWEATHER_NIGHT = 2,
+        TIMEANDWEATHER_SNOW = 4,
+        TIMEANDWEATHER_NIGHTSNOW = 8,
+    };
+
+#ifdef GAME_DLL
+    W3DModelDrawModuleData *Hook_Ctor() { return new (this) W3DModelDrawModuleData(); }
+#endif
     W3DModelDrawModuleData();
     virtual ~W3DModelDrawModuleData() override;
     virtual void CRC_Snapshot(Xfer *xfer) override { Xfer_Snapshot(xfer); }
@@ -203,10 +229,10 @@ public:
 
     static void Build_Field_Parse(MultiIniFieldParse &p);
     const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &c) const;
-    Vector3 &Get_Attach_To_Drawable_Bone_Offset(Drawable const *drawable) const;
+    Vector3 *Get_Attach_To_Drawable_Bone_Offset(Drawable const *drawable) const;
     Utf8String Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &c) const;
     static void Parse_Condition_State(INI *ini, void *formal, void *store, void const *user_data);
-    void Preload_Assets(TimeOfDayType time_of_day, float scale) const;
+    void Preload_Assets(TimeOfDayType time_of_day, float scale);
     void Validate_Stuff_For_Time_And_Weather(Drawable const *drawable, bool night, bool snow) const;
 
 private:
@@ -216,7 +242,7 @@ private:
     std::vector<Utf8String> m_extraPublicBone;
     Utf8String m_trackFile;
     Utf8String m_attachToBoneInAnotherModule;
-    Vector3 m_attachToDrawableBoneOffset;
+    mutable Vector3 m_attachToDrawableBoneOffset;
     int m_stateCount;
     int m_projectileBoneFeedbackEnabledSlots;
     float m_initialRecoil;
@@ -227,8 +253,8 @@ private:
     BitFlags<MODELCONDITION_COUNT> m_ignoreConditionStates;
     bool m_okToChangeModelColor;
     bool m_animationsRequirePower;
-    bool m_attachToDrawableBoneOffsetSet;
-    char m_timeAndWeatherFlags;
+    mutable bool m_attachToDrawableBoneOffsetSet;
+    mutable char m_timeAndWeatherFlags;
     bool m_particlesAttachedToAnimatedBones;
     bool m_recievesDynamicLights;
 };

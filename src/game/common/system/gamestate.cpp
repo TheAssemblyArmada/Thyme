@@ -22,17 +22,6 @@
 GameState *g_theGameState = nullptr;
 #endif
 
-// TODO This is currently a skeleton of the class to allow virtual calls against a pointer from the original.
-GameState::GameState() {}
-
-GameState::~GameState() {}
-
-void GameState::Init() {}
-
-void GameState::Reset() {}
-
-void GameState::Xfer_Snapshot(Xfer *xfer) {}
-
 Utf8String GameState::Get_Save_Dir()
 {
     Utf8String ret = g_theWriteableGlobalData->m_userDataDirectory;

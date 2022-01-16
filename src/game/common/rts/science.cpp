@@ -190,7 +190,7 @@ void ScienceStore::Parse_Science_Definition(INI *ini)
         }
         found_info = override_info;
     } else {
-        captainslog_dbgassert(found_info == nullptr, "Duplicate Science %s!\n", name);
+        captainslog_dbgassert(found_info == nullptr, "Duplicate Science %s!", name);
         found_info = NEW_POOL_OBJ(ScienceInfo);
         g_theScienceStore->m_infoVec.push_back(found_info);
     }

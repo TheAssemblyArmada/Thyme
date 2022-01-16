@@ -73,23 +73,23 @@ protected:
 public:
     ScienceInfo();
 
-    ScienceType Get_Name_Key() const { return m_nameKey; }
-    void Set_Science_Type(ScienceType key) { m_nameKey = key; }
-    bool Check_Name_Key(ScienceType key) const { return key == m_nameKey; }
+    ScienceType Get_Science_Type() const { return m_scienceType; }
+    void Set_Science_Type(ScienceType science) { m_scienceType = science; }
+    bool Check_Science_Type(ScienceType science) const { return science == m_scienceType; }
     int32_t Get_Purchase_Cost() const { return m_purchaseCost; }
     bool Is_Grantable() const { return m_isGrantable; }
     const Utf16String &Get_Name() const { return m_displayName; }
     const Utf16String &Get_Description() const { return m_description; }
-    std::vector<ScienceType> &Get_Root_Science() { return m_rootScience; }
-    void Add_Root_Sciences(std::vector<ScienceType> &rootScience) const;
+    std::vector<ScienceType> &Get_Root_Sciences() { return m_rootSciences; }
+    void Add_Root_Sciences(std::vector<ScienceType> &rootSciences) const;
 
     static const FieldParse *Get_Field_Parse() { return s_scienceFieldParseTable; }
 
 private:
-    ScienceType m_nameKey;
+    ScienceType m_scienceType;
     Utf16String m_displayName;
     Utf16String m_description;
-    std::vector<ScienceType> m_rootScience;
+    std::vector<ScienceType> m_rootSciences;
     std::vector<ScienceType> m_prerequisites;
     int m_purchaseCost;
     bool m_isGrantable;

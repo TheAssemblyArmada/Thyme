@@ -33,10 +33,10 @@ const FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
 };
 
 ScienceInfo::ScienceInfo() :
-    m_nameKey(ScienceType::SCIENCE_INVALID),
+    m_scienceType(ScienceType::SCIENCE_INVALID),
     m_displayName(),
     m_description(),
-    m_rootScience(),
+    m_rootSciences(),
     m_prerequisites(),
     m_purchaseCost(0),
     m_isGrantable(true)
@@ -47,9 +47,9 @@ ScienceInfo::ScienceInfo() :
 void ScienceInfo::Add_Root_Sciences(std::vector<ScienceType> &rootScience) const
 {
     if (m_prerequisites.empty()) {
-        auto res = std::find(rootScience.begin(), rootScience.end(), m_nameKey);
+        auto res = std::find(rootScience.begin(), rootScience.end(), m_scienceType);
         if (res == rootScience.end()) {
-            rootScience.push_back(m_nameKey);
+            rootScience.push_back(m_scienceType);
         }
     } else {
         for (auto science : m_prerequisites) {
@@ -104,7 +104,7 @@ std::vector<Utf8String> ScienceStore::Get_All_Science() const
 {
     std::vector<Utf8String> all_science;
     for (const auto *science : m_infoVec) {
-        const auto key = static_cast<const ScienceInfo *>(science->Get_Final_Override())->Get_Name_Key();
+        const auto key = static_cast<const ScienceInfo *>(science->Get_Final_Override())->Get_Science_Type();
         all_science.push_back(g_theNameKeyGenerator->Key_To_Name(static_cast<NameKeyType>(key)));
     }
     return all_science;
@@ -171,7 +171,7 @@ void ScienceStore::Parse_Science_Definition(INI *ini)
 
     ScienceInfo *found_info = nullptr;
     for (auto *info : g_theScienceStore->m_infoVec) {
-        if (info->Check_Name_Key(key)) {
+        if (info->Check_Science_Type(key)) {
             found_info = info;
             break;
         }
@@ -197,7 +197,7 @@ void ScienceStore::Parse_Science_Definition(INI *ini)
 
     ini->Init_From_INI(found_info, ScienceInfo::Get_Field_Parse());
     found_info->Set_Science_Type(key);
-    found_info->Add_Root_Sciences(found_info->Get_Root_Science());
+    found_info->Add_Root_Sciences(found_info->Get_Root_Sciences());
 }
 
 // wb: 0x007274D2
@@ -205,7 +205,7 @@ const ScienceInfo *ScienceStore::Get_Science_Info(ScienceType science) const
 {
     auto res = std::find_if(m_infoVec.begin(), m_infoVec.end(), [=](const ScienceInfo *info) {
         info = static_cast<const ScienceInfo *>(info->Get_Final_Override());
-        return info->Check_Name_Key(science);
+        return info->Check_Science_Type(science);
     });
 
     return res != m_infoVec.end() ? *res : nullptr;

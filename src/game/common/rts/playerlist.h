@@ -20,8 +20,6 @@
 
 class Team;
 
-constexpr int32_t MAX_PLAYER_COUNT = 16;
-
 enum PlayerRelationshipFlags : uint16_t
 {
     PLAYER_RELATIONSHIP_FLAGS_INCLUDE_SELF = (1U << 0),

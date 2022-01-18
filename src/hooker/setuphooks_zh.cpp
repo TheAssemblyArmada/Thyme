@@ -92,6 +92,7 @@
 #include "namekeygenerator.h"
 #include "object.h"
 #include "objectcreationlist.h"
+#include "parabolicease.h"
 #include "particle.h"
 #include "particlesys.h"
 #include "particlesysinfo.h"
@@ -1952,4 +1953,8 @@ void Setup_Hooks()
 
     // fxlist.h
     Hook_Method(PICK_ADDRESS(0x004CC200, 0x0075F326), &FXListStore::Find_FXList);
+
+    // parabolicease.cpp
+    Hook_Method(0x007F5D70, &ParabolicEase::Set_Ease_Times);
+    Hook_Method(0x007F5E50, &ParabolicEase::operator());
 }

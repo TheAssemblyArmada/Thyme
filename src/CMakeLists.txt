@@ -73,6 +73,7 @@ set(GAMEENGINE_SRC
     game/client/globallanguage.cpp
     game/client/ingameui.cpp
     game/client/optionpreferences.cpp
+    game/client/parabolicease.cpp
     game/client/shadermanager.cpp
     game/client/terrainroads.cpp
     game/client/terraintex.cpp

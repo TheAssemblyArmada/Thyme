@@ -66,7 +66,7 @@ public:
     int unk1;
     int unk2;
     Handicap m_handicap;
-    int unk3;
+    Utf8String m_playerName;
     NameKeyType m_playerNameKey;
     int m_playerIndex;
     char unk4[0xFC];

@@ -65,7 +65,7 @@ public:
         captainslog_dbgassert(ret, "no suitable match for criteria was found!");
 
         if (ret != nullptr) {
-            const_cast<std::map<Key const, const Type *, MapHelper> &>(m_bestMatches)[key] = ret;
+            m_bestMatches[key] = ret;
         }
 
         return ret;
@@ -131,5 +131,5 @@ private:
         return best_match;
     }
 
-    std::map<Key const, const Type *, MapHelper> m_bestMatches;
+    mutable std::map<Key const, const Type *, MapHelper> m_bestMatches;
 };

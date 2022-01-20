@@ -120,6 +120,8 @@ set(GAMEENGINE_SRC
     game/client/videoplayer/videostream.cpp
     game/client/water/w3dwater.cpp
     game/client/water/w3dwatertracks.cpp
+    game/common/bezfwditerator.cpp
+    game/common/beziersegment.cpp
     game/common/bitflags.cpp
     game/common/commandline.cpp
     game/common/commandlist.cpp

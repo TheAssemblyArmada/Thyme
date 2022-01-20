@@ -23,6 +23,8 @@
 #include "assetmgr.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
+#include "bezfwditerator.h"
+#include "beziersegment.h"
 #include "binkvideoplayer.h"
 #include "binkvideostream.h"
 #include "bitmaphandler.h"
@@ -1981,4 +1983,18 @@ void Setup_Hooks()
     Hook_Any(0x007B07E0, W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather);
     Hook_Any(0x007B0C90, W3DModelDrawModuleData::Get_Best_Model_Name_For_WB);
     Hook_Any(0x007B0E70, W3DModelDrawModuleData::Build_Field_Parse);
+
+    // bezfwditerator.cpp
+    Hook_Method(0x00736100, &BezFwdIterator::Start);
+    Hook_Method(0x00736280, &BezFwdIterator::Done);
+    Hook_Method(0x007362A0, &BezFwdIterator::Get_Current);
+    Hook_Method(0x007362B0, &BezFwdIterator::Next);
+
+    // beziersegment.cpp
+    Hook_Method(0x0072BFD0, &BezierSegment::Hook_Ctor1);
+    Hook_Method(0x0072BFF0, &BezierSegment::Hook_Ctor5);
+    Hook_Method(0x0072C060, &BezierSegment::Evaluate_Bez_Segment_At_T);
+    Hook_Method(0x0072C180, &BezierSegment::Get_Segment_Points);
+    Hook_Method(0x0072C2A0, &BezierSegment::Get_Approximate_Length);
+    Hook_Method(0x0072C440, &BezierSegment::Split_Segment_At_T);
 }

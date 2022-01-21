@@ -211,7 +211,7 @@ enum ModelConditionFlagType
     MODELCONDITION_USER_2,
     MODELCONDITION_DISGUISED,
     MODELCONDITION_COUNT,
-    MODELCONDITION_INVALID = 0xFF,
+    MODELCONDITION_INVALID = -1,
 };
 
 template<int bits> class BitFlags

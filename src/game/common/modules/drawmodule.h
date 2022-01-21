@@ -22,7 +22,7 @@ class DebrisDrawInterface;
 class TracerDrawInterface;
 class RopeDrawInterface;
 class LaserDrawInterface;
-class Marix3D;
+class Matrix3D;
 class OBBoxClass;
 #ifdef GAME_DEBUG_STRUCTS
 class DebugDrawStats
@@ -35,7 +35,7 @@ public:
     int Get_Sort_Meshes() const { return m_sortMeshes; }
     int Get_Extra_Draw_Calls() const { return m_extraDrawCalls; }
     void Add_Draw_Calls(int i) { m_drawCalls += i; }
-    void Add_bones(int i) { m_bones += i; }
+    void Add_Bones(int i) { m_bones += i; }
     void Add_Skins(int i) { m_skins += i; }
     void Add_Sort_Meshes(int i) { m_sortMeshes += i; }
     void Add_Extra_Draw_Calls(int i) { m_extraDrawCalls += i; }
@@ -57,13 +57,13 @@ public:
     virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const = 0;
     virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c,
         char const *bone_name,
-        int,
+        int start_index,
         Coord3D *positions,
         Matrix3D *transforms,
         int max_bones) const = 0;
     virtual int Get_Current_Bone_Positions(
         char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const = 0;
-    virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transforms) const = 0;
+    virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const = 0;
     virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &c,
         WeaponSlotType wslot,
         int ammo_index,
@@ -91,7 +91,7 @@ public:
     virtual void Set_Animation_Frame(int frame) = 0;
     virtual void Set_Pause_Animation(bool pause) = 0;
     virtual void Update_Sub_Objects() = 0;
-    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visbile) = 0;
+    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) = 0;
 };
 
 class DrawModule : public DrawableModule
@@ -101,7 +101,7 @@ class DrawModule : public DrawableModule
 public:
     DrawModule(Thing *thing, const ModuleData *module_data) : DrawableModule(thing, module_data) {}
     virtual ~DrawModule() override {}
-    virtual void Do_Draw_Module(Marix3D *transform) = 0;
+    virtual void Do_Draw_Module(const Matrix3D *transform) = 0;
     virtual void Set_Shadows_Enabled(bool enable) = 0;
     virtual void Release_Shadows() = 0;
     virtual void Allocate_Shadows() = 0;

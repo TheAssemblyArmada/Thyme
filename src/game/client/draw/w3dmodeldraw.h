@@ -15,6 +15,7 @@
 #pragma once
 #include "always.h"
 #include "drawmodule.h"
+#include "particlesysmanager.h"
 
 class RenderObjClass;
 class Shadow;
@@ -92,17 +93,12 @@ struct ParticleSysBoneInfo
     ParticleSystemTemplate *particle_system_template;
 };
 
-enum
-{
-    BONE_COUNT = 3,
-};
-
 struct ModelConditionInfo
 {
     struct HideShowSubObjInfo
     {
-        Utf8String name;
-        bool visible;
+        Utf8String sub_obj_name;
+        bool hide;
     };
 
     struct TurretInfo
@@ -183,11 +179,11 @@ struct ModelConditionInfo
     Utf8String m_modelName;
     std::vector<HideShowSubObjInfo> m_hideShowVec;
     mutable std::vector<Utf8String> m_publicBones;
-    Utf8String m_weaponFireFXBoneName[BONE_COUNT];
-    Utf8String m_weaponRecoilBoneName[BONE_COUNT];
-    Utf8String m_weaponMuzzleFlashName[BONE_COUNT];
-    Utf8String m_weaponLaunchBoneName[BONE_COUNT];
-    Utf8String m_weaponHideShowBoneName[BONE_COUNT];
+    Utf8String m_weaponFireFXBoneName[WEAPONSLOT_COUNT];
+    Utf8String m_weaponRecoilBoneName[WEAPONSLOT_COUNT];
+    Utf8String m_weaponMuzzleFlashName[WEAPONSLOT_COUNT];
+    Utf8String m_weaponLaunchBoneName[WEAPONSLOT_COUNT];
+    Utf8String m_weaponHideShowBoneName[WEAPONSLOT_COUNT];
     std::vector<W3DAnimationInfo> m_animations;
     NameKeyType m_transitionKey;
     NameKeyType m_allowToFinishKey;
@@ -199,9 +195,9 @@ struct ModelConditionInfo
     float m_animationSpeedFactorMin;
     float m_animationSpeedFactorMax;
     mutable std::map<NameKeyType, PristineBoneInfo> m_boneMap;
-    mutable TurretInfo m_turretInfo[2];
-    mutable std::vector<WeaponBarrelInfo> m_weaponBarrelInfoVec[BONE_COUNT];
-    mutable bool m_hasWeaponBone[BONE_COUNT];
+    mutable TurretInfo m_turretInfo[MAX_TURRETS];
+    mutable std::vector<WeaponBarrelInfo> m_weaponBarrelInfoVec[WEAPONSLOT_COUNT];
+    mutable bool m_hasWeaponBone[WEAPONSLOT_COUNT];
     mutable char m_validStuff;
 };
 
@@ -218,6 +214,7 @@ public:
 
 #ifdef GAME_DLL
     W3DModelDrawModuleData *Hook_Ctor() { return new (this) W3DModelDrawModuleData(); }
+    void Hook_Dtor() { W3DModelDrawModuleData::~W3DModelDrawModuleData(); }
 #endif
     W3DModelDrawModuleData();
     virtual ~W3DModelDrawModuleData() override;
@@ -228,9 +225,9 @@ public:
     virtual const W3DModelDrawModuleData *Get_As_W3D_Model_Draw_Module_Data() const override { return this; }
 
     static void Build_Field_Parse(MultiIniFieldParse &p);
-    const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &c) const;
+    const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const;
     Vector3 *Get_Attach_To_Drawable_Bone_Offset(Drawable const *drawable) const;
-    Utf8String Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &c) const;
+    Utf8String Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &flags) const;
     static void Parse_Condition_State(INI *ini, void *formal, void *store, void const *user_data);
     void Preload_Assets(TimeOfDayType time_of_day, float scale);
     void Validate_Stuff_For_Time_And_Weather(Drawable const *drawable, bool night, bool snow) const;
@@ -257,11 +254,15 @@ private:
     mutable char m_timeAndWeatherFlags;
     bool m_particlesAttachedToAnimatedBones;
     bool m_recievesDynamicLights;
+    friend class W3DModelDraw;
 };
 
 class W3DModelDraw : public DrawModule, public ObjectDrawInterface
 {
     IMPLEMENT_POOL(W3DModelDraw);
+
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
 
 public:
     struct RecoilInfo
@@ -288,13 +289,26 @@ public:
         float m_recoilRate;
     };
 
+    struct ParticleSysTrackerType
+    {
+        ParticleSystemID id;
+        int index;
+    };
+
+#ifdef GAME_DLL
+    W3DModelDraw *Hook_Ctor(Thing *thing, ModuleData const *module_data)
+    {
+        return new (this) W3DModelDraw(thing, module_data);
+    }
+    void Hook_Dtor() { W3DModelDraw::~W3DModelDraw(); }
+#endif
     W3DModelDraw(Thing *thing, ModuleData const *module_data);
 
     virtual ~W3DModelDraw() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
     virtual void On_Drawable_Bound_To_Object() override;
     virtual void Preload_Assets(TimeOfDayType time_of_day) override;
-    virtual void Do_Draw_Module(Marix3D *transform) override;
+    virtual void Do_Draw_Module(const Matrix3D *transform) override;
     virtual void Set_Shadows_Enabled(bool enable) override;
     virtual void Release_Shadows() override;
     virtual void Allocate_Shadows() override;
@@ -320,9 +334,9 @@ public:
     virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const override;
     virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const override;
     virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const override;
-    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c,
+    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
         char const *bone_name,
-        int,
+        int start_index,
         Coord3D *positions,
         Matrix3D *transforms,
         int max_bones) const override;
@@ -332,10 +346,10 @@ public:
         Matrix3D *transforms,
         int max_bones) const override;
     virtual bool Get_Current_Worldspace_Client_Bone_Positions(
-        char const *bone_name_prefix, Matrix3D &transforms) const override;
-    virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &c,
+        char const *bone_name_prefix, Matrix3D &transform) const override;
+    virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
         WeaponSlotType wslot,
-        int ammo_index,
+        int specific_barrel_to_use,
         Matrix3D *launch_pos,
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
@@ -344,7 +358,7 @@ public:
     virtual void Update_Draw_Module_Supply_Status(int status1, int status2) override;
     virtual void Notify_Draw_Module_Dependency_Cleared() override;
     virtual void Set_Hidden(bool hidden) override;
-    virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c) override;
+    virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags) override;
     virtual void Replace_Indicator_Color(int color) override;
     virtual bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
         int specific_barrel_to_use,
@@ -360,17 +374,17 @@ public:
     virtual void Set_Animation_Frame(int frame) override;
     virtual void Set_Pause_Animation(bool pause) override;
     virtual void Update_Sub_Objects() override;
-    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visbile) override;
+    virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) override;
 
     void Adjust_Anim_Speed_To_Movement_Speed();
 #ifdef GAME_DEBUG_STRUCTS
     void Gather_Draw_Stats_For_Render_Object(DebugDrawStats *stats, RenderObjClass *robj);
 #endif
-    void Adjust_Animation(ModelConditionInfo const *prev_state, float);
+    void Adjust_Animation(ModelConditionInfo const *prev_state, float f);
     void Do_Hide_Show_Projectile_Objects(unsigned int show, unsigned int count, WeaponSlotType wslot);
     void Do_Hide_Show_Sub_Objs(std::vector<ModelConditionInfo::HideShowSubObjInfo> const *vec);
     void Do_Start_Or_Stop_Particle_Sys();
-    ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &c) const;
+    const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const;
     const ModelConditionInfo *Find_Transition_For_Sig(uint64_t sig) const;
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);
@@ -395,20 +409,20 @@ public:
     }
 
 private:
-    ModelConditionInfo *m_curState;
-    ModelConditionInfo *m_nextState;
+    const ModelConditionInfo *m_curState;
+    const ModelConditionInfo *m_nextState;
     int m_loopDuration;
     int m_hexColor;
     int m_whichAnimInCurState;
-    std::vector<RecoilInfo> m_weaponRecoilInfoVec[3];
+    std::vector<RecoilInfo> m_weaponRecoilInfoVec[WEAPONSLOT_COUNT];
     bool m_recalcBones;
     bool m_fullyObscuredByShroud;
-    bool m_shadowState;
+    bool m_hidden;
     RenderObjClass *m_renderObject;
     Shadow *m_shadow;
     Shadow *m_decalShadow;
     TerrainTracksRenderObjClass *m_trackRenderObject;
-    std::vector<unsigned int> m_particleSystemIDs;
+    std::vector<ParticleSysTrackerType> m_particleSystemIDs;
     std::vector<ModelConditionInfo::HideShowSubObjInfo> m_subObjects;
     bool m_isDaytime;
     bool m_pauseAnimation;

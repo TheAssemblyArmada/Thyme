@@ -13,25 +13,48 @@
  *            LICENSE
  */
 #include "w3dmodeldraw.h"
+#include "aiupdate.h"
 #include "assetmgr.h"
 #include "drawable.h"
 #include "fpusetting.h"
+#include "fxlist.h"
 #include "gamelod.h"
 #include "gamelogic.h"
 #include "gamestate.h"
 #include "globaldata.h"
 #include "hanim.h"
 #include "hlod.h"
+#include "htree.h"
+#include "mesh.h"
+#include "meshmdl.h"
+#include "obbox.h"
+#include "particlesys.h"
 #include "particlesystemplate.h"
+#include "physicsupdate.h"
+#include "randomvalue.h"
 #include "rendobj.h"
 #include "w3ddisplay.h"
+#include "w3dprojectedshadow.h"
+#include "w3dscene.h"
+#include "w3dshadow.h"
+#include "w3dterraintracks.h"
+#include <cctype>
+#include <cstring>
 #include <stdio.h>
+using std::strcpy;
+using std::strstr;
+using std::tolower;
+#define MSEC_PER_LOGICFRAME_REAL (1000.0f / 30.0f)
 
 #ifdef GAME_DEBUG_STRUCTS
 #ifdef GAME_DLL
 extern Utf8String &s_theThingTemplateBeingParsedName;
+float &s_skateDistanceOverride = Make_Global<float>(0x00E260C8);
+unsigned int &s_theObjectIDToDebug = Make_Global<unsigned int>(0x00E25EF0);
 #else
 extern Utf8String s_theThingTemplateBeingParsedName;
+float s_skateDistanceOverride;
+unsigned int s_theObjectIDToDebug;
 #endif
 #endif
 
@@ -43,7 +66,7 @@ HAnimClass *W3DAnimationInfo::Get_Anim_Handle() const
     captainslog_dbgassert(anim, "*** ASSET ERROR: animation %s not found", m_name.Str());
 #endif
 
-    if (anim && m_framesPerSecond < 0.0f) {
+    if (anim != nullptr && m_framesPerSecond < 0.0f) {
         m_framesPerSecond = (anim->Get_Num_Frames() * 1000.0f) / anim->Get_Frame_Rate();
     }
 
@@ -52,10 +75,10 @@ HAnimClass *W3DAnimationInfo::Get_Anim_Handle() const
 
 void ModelConditionInfo::WeaponBarrelInfo::Set_Muzzle_Flash_Hidden(RenderObjClass *robj, bool hidden) const
 {
-    if (robj) {
+    if (robj != nullptr) {
         RenderObjClass *child_object = robj->Get_Sub_Object_On_Bone(0, m_weaponMuzzleFlashBone);
 
-        if (child_object) {
+        if (child_object != nullptr) {
             child_object->Set_Hidden(hidden);
             child_object->Release_Ref();
         } else {
@@ -149,7 +172,7 @@ bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matr
 
     RenderObjClass *subobj = r->Get_Sub_Object_By_Name(sub_obj_name, nullptr);
 
-    if (!subobj) {
+    if (subobj == nullptr) {
         return false;
     }
 
@@ -165,7 +188,7 @@ bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matr
             captainslog_dbgassert(robj && robj == subobj, "*** ASSET ERROR: Hmm, bone problem");
         }
 
-        if (robj) {
+        if (robj != nullptr) {
             robj->Release_Ref();
         }
     }
@@ -240,14 +263,17 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
 
     if (robj == nullptr && !m_modelName.Is_Empty()) {
         robj = W3DDisplay::s_assetManager->Create_Render_Obj(m_modelName, scale, 0, nullptr, nullptr);
+        // assert disabled, the game tries to load pmlitpol01_d which doesn't exist and therefore triggers the assert
+#if 0
         captainslog_dbgassert(robj, "*** ASSET ERROR: Model %s not found!", m_modelName.Str());
+#endif
 
-        if (robj) {
+        if (robj != nullptr) {
             ref = true;
         }
     }
 
-    if (robj) {
+    if (robj != nullptr) {
         Matrix3D m(robj->Get_Transform());
         HLodClass *hlod = nullptr;
         HAnimClass *anim = nullptr;
@@ -267,12 +293,12 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
         } else {
             first_anim = anim;
 
-            if (first_anim) {
+            if (first_anim != nullptr) {
                 first_anim->Add_Ref();
             }
         }
 
-        if (first_anim) {
+        if (first_anim != nullptr) {
             int fr;
 
             if (Test_Animation_Flag(m_flags, PRISTINE_BONE_POS_IN_FINAL_FRAME)) {
@@ -289,7 +315,7 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
         m2.Scale(scale);
         robj->Set_Transform(m2);
 
-        if (g_theWriteableGlobalData) {
+        if (g_theWriteableGlobalData != nullptr) {
             for (auto &bone_name : g_theWriteableGlobalData->m_standardPublicBones) {
                 Do_Single_Bone_Name(robj, bone_name, m_boneMap);
             }
@@ -305,7 +331,7 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
 
         robj->Set_Transform(m);
 
-        if (anim) {
+        if (anim != nullptr) {
             robj->Set_Animation(anim, frame, mode);
             captainslog_assert(hlod != nullptr);
             hlod->Set_Animation_Frame_Rate_Multiplier(multiplier);
@@ -322,7 +348,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
     if ((m_validStuff & WEAPON_BARREL_INFO_VALID) == 0 && Should_Validate()) {
         Set_FP_Mode();
 
-        for (int i = 0; i < BONE_COUNT; i++) {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
             m_weaponBarrelInfoVec[i].clear();
             m_hasWeaponBone[i] = false;
             const Utf8String &weaponfirefxbonename = m_weaponFireFXBoneName[i];
@@ -376,7 +402,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                         const Matrix3D *m =
                             Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(bone_id), &weaponlaunchbone);
 
-                        if (m) {
+                        if (m != nullptr) {
                             info.m_weaponLaunchBoneTransform = *m;
                         }
                     }
@@ -422,7 +448,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                         m = Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(weaponlaunchbonename), nullptr);
                     }
 
-                    if (m) {
+                    if (m != nullptr) {
                         info.m_weaponLaunchBoneTransform = *m;
                     } else {
                         info.m_weaponLaunchBoneTransform.Make_Identity();
@@ -433,7 +459,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                             g_theNameKeyGenerator->Name_To_Key(weaponfirefxbonename), &info.m_weaponFireFXBone);
                     }
 
-                    if (info.m_weaponFireFXBone || info.m_weaponRecoilBone || info.m_weaponMuzzleFlashBone || m) {
+                    if (info.m_weaponFireFXBone || info.m_weaponRecoilBone || info.m_weaponMuzzleFlashBone || m != nullptr) {
                         m_weaponBarrelInfoVec[i].push_back(info);
 
                         if (info.m_weaponRecoilBone || info.m_weaponMuzzleFlashBone) {
@@ -462,7 +488,7 @@ void ModelConditionInfo::Validate_Turret_Info() const
     if ((m_validStuff & TURRET_VALID) == 0) {
         Set_FP_Mode();
 
-        for (int i = 0; i < ARRAY_SIZE(m_turretInfo); i++) {
+        for (int i = 0; i < MAX_TURRETS; i++) {
             TurretInfo *info = &m_turretInfo[i];
 
             if (!Should_Validate() || m_modelName.Is_Empty()) {
@@ -508,7 +534,7 @@ Matrix3D const *ModelConditionInfo::Find_Pristine_Bone(NameKeyType key, int *ind
             auto i = m_boneMap.find(key);
 
             if (i != m_boneMap.end()) {
-                if (index) {
+                if (index != nullptr) {
                     *index = i->second.index;
                 }
 
@@ -517,7 +543,7 @@ Matrix3D const *ModelConditionInfo::Find_Pristine_Bone(NameKeyType key, int *ind
         }
     }
 
-    if (index) {
+    if (index != nullptr) {
         *index = 0;
     }
 
@@ -528,7 +554,7 @@ bool ModelConditionInfo::Find_Pristine_Bone_Pos(NameKeyType key, Coord3D &pos) c
 {
     const Matrix3D *bone = Find_Pristine_Bone(key, nullptr);
 
-    if (bone) {
+    if (bone != nullptr) {
         Vector3 v = bone->Get_Translation();
         pos.x = v.X;
         pos.y = v.Y;
@@ -548,13 +574,13 @@ void ModelConditionInfo::Clear()
     m_conditionsYesVec.clear();
     m_modelName.Clear();
 
-    for (int i = 0; i < ARRAY_SIZE(m_turretInfo); i++) {
+    for (int i = 0; i < MAX_TURRETS; i++) {
         m_turretInfo[i].Clear();
     }
 
     m_hideShowVec.clear();
 
-    for (int i = 0; i < BONE_COUNT; i++) {
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
         m_weaponFireFXBoneName[i].Clear();
         m_weaponRecoilBoneName[i].Clear();
         m_weaponMuzzleFlashName[i].Clear();
@@ -659,11 +685,11 @@ void W3DModelDrawModuleData::Preload_Assets(TimeOfDayType time_of_day, float sca
     }
 }
 
-Utf8String W3DModelDrawModuleData::Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &c) const
+Utf8String W3DModelDrawModuleData::Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &flags) const
 {
-    const ModelConditionInfo *info = Find_Best_Info(c);
+    const ModelConditionInfo *info = Find_Best_Info(flags);
 
-    if (info) {
+    if (info != nullptr) {
         return info->m_modelName;
     } else {
         return Utf8String::s_emptyString;
@@ -693,11 +719,11 @@ Vector3 *W3DModelDrawModuleData::Get_Attach_To_Drawable_Bone_Offset(Drawable con
     return &m_attachToDrawableBoneOffset;
 }
 
-const ModelConditionInfo *W3DModelDrawModuleData::Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &c) const
+const ModelConditionInfo *W3DModelDrawModuleData::Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const
 {
-    BitFlags<MODELCONDITION_COUNT> flags = c;
-    flags.Clear(m_ignoreConditionStates);
-    return m_conditionStateMap.Find_Best_Info(m_conditionStates, flags);
+    BitFlags<MODELCONDITION_COUNT> set_flags = flags;
+    set_flags.Clear(m_ignoreConditionStates);
+    return m_conditionStateMap.Find_Best_Info(m_conditionStates, set_flags);
 }
 
 static const char *s_theWeaponSlotTypeNames[] = { "PRIMARY", "SECONDARY", "TERTIARY", nullptr };
@@ -755,12 +781,12 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
                 xfer->xferUser((void *)&bone_pair.second.transform, sizeof(bone_pair.second.transform));
             }
 
-            for (int j = 0; j < ARRAY_SIZE(model_condition.m_turretInfo); j++) {
+            for (int j = 0; j < MAX_TURRETS; j++) {
                 xfer->xferInt(&model_condition.m_turretInfo[j].m_turretAngleBone);
                 xfer->xferInt(&model_condition.m_turretInfo[j].m_turretPitchBone);
             }
 
-            for (int j = 0; j < BONE_COUNT; j++) {
+            for (int j = 0; j < WEAPONSLOT_COUNT; j++) {
                 for (auto &weapon_barrel : model_condition.m_weaponBarrelInfoVec[j]) {
                     xfer->xferUser((void *)&weapon_barrel.m_weaponLaunchBoneTransform,
                         sizeof(weapon_barrel.m_weaponLaunchBoneTransform));
@@ -770,11 +796,11 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
     }
 }
 
-bool Does_State_Exist(std::vector<ModelConditionInfo> const &v, BitFlags<MODELCONDITION_COUNT> const &f)
+bool Does_State_Exist(std::vector<ModelConditionInfo> const &v, BitFlags<MODELCONDITION_COUNT> const &flags)
 {
     for (auto &model_condition : v) {
         for (int count = model_condition.Get_Conditions_Count() - 1; count >= 0; count--) {
-            if (f == model_condition.Get_Conditions_Yes(count)) {
+            if (flags == model_condition.Get_Conditions_Yes(count)) {
                 return true;
             }
         }
@@ -793,7 +819,7 @@ void Parse_Bone_Name_Key(INI *ini, void *instance, void *store, void const *user
     Utf8String str(ini->Get_Next_Token());
     str.To_Lower();
 
-    if (instance) {
+    if (instance != nullptr) {
         ((ModelConditionInfo *)instance)->Add_Public_Bone(str);
     }
 
@@ -817,16 +843,16 @@ void Parse_Show_Hide_Sub_Object(INI *ini, void *instance, void *store, void cons
             bool found = false;
 
             for (auto &i : *v) {
-                if (!strcasecmp(i.name, str)) {
-                    i.visible = (uintptr_t)user_data != 0;
+                if (!strcasecmp(i.sub_obj_name, str)) {
+                    i.hide = (uintptr_t)user_data != 0;
                     found = true;
                 }
             }
 
             if (!found) {
                 ModelConditionInfo::HideShowSubObjInfo info;
-                info.name = str;
-                info.visible = (uintptr_t)user_data != 0;
+                info.sub_obj_name = str;
+                info.hide = (uintptr_t)user_data != 0;
                 v->push_back(info);
             }
 
@@ -847,7 +873,7 @@ void Parse_Weapon_Bone_Name(INI *ini, void *instance, void *store, void const *u
         str[index].Clear();
     }
 
-    if (instance) {
+    if (instance != nullptr) {
         ((ModelConditionInfo *)instance)->Add_Public_Bone(str[index]);
     }
 }
@@ -860,7 +886,7 @@ void Parse_Animation(INI *ini, void *instance, void *store, void const *user_dat
     const char *str = ini->Get_Next_Token_Or_Null();
     float distance;
 
-    if (str) {
+    if (str != nullptr) {
         distance = ini->Scan_Real(str);
     } else {
         distance = 0.0f;
@@ -1128,7 +1154,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
 
     info.m_validStuff &= ~LAUNCH_BONES_VALID;
 
-    for (int i = 0; i < BONE_COUNT; i++) {
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
         if (info.m_weaponLaunchBoneName[i].Is_Not_Empty()) {
             info.m_validStuff |= LAUNCH_BONES_VALID;
             break;
@@ -1153,4 +1179,1919 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     } else {
         data->m_conditionStates.push_back(info);
     }
+}
+
+W3DModelDraw::W3DModelDraw(Thing *thing, ModuleData const *module_data) :
+    DrawModule(thing, module_data),
+    m_animMode(RenderObjClass::ANIM_MODE_LOOP),
+    m_isDaytime(true),
+    m_pauseAnimation(false),
+    m_curState(nullptr),
+    m_hexColor(0),
+    m_renderObject(nullptr),
+    m_shadow(nullptr),
+    m_hidden(true),
+    m_decalShadow(nullptr),
+    m_trackRenderObject(nullptr),
+    m_whichAnimInCurState(-1),
+    m_nextState(nullptr),
+    m_loopDuration(-1),
+    m_recalcBones(false),
+    m_fullyObscuredByShroud(false)
+{
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        m_weaponRecoilInfoVec[i].clear();
+    }
+
+    Get_W3D_Model_Draw_Module_Data()->Validate_Stuff_For_Time_And_Weather(Get_Drawable(),
+        g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT,
+        g_theWriteableGlobalData->m_weather == WEATHER_SNOWY);
+
+    BitFlags<MODELCONDITION_COUNT> flags;
+    const ModelConditionInfo *idle = Find_Best_Info(flags);
+    captainslog_relassert(idle, CODE_06, "*** ASSET ERROR: all draw modules must have an IDLE state");
+
+    Drawable *drawable = Get_Drawable();
+
+    if (drawable != nullptr) {
+        Object *object = drawable->Get_Object();
+
+        if (object != nullptr) {
+            if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
+                m_hexColor = object->Get_Night_Indicator_Color();
+            } else {
+                m_hexColor = object->Get_Indicator_Color();
+            }
+        }
+
+        if (!Get_W3D_Model_Draw_Module_Data()->m_recievesDynamicLights) {
+            drawable->Set_Recieves_Dynamic_Lights(false);
+            captainslog_debug("Set_Recieves_Dynamic_Lights = FALSE: %s", drawable->Get_Template()->Get_Name().Str());
+        }
+    }
+
+    Set_Model_State(idle);
+}
+
+W3DModelDraw::~W3DModelDraw()
+{
+    if (m_trackRenderObject != nullptr && g_theTerrainTracksRenderObjClassSystem != nullptr) {
+        g_theTerrainTracksRenderObjClassSystem->Unbind_Track(m_trackRenderObject);
+        m_trackRenderObject = nullptr;
+    }
+
+    Nuke_Current_Render(nullptr);
+}
+
+void W3DModelDraw::On_Drawable_Bound_To_Object()
+{
+    Get_W3D_Model_Draw_Module_Data()->Validate_Stuff_For_Time_And_Weather(Get_Drawable(),
+        g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT,
+        g_theWriteableGlobalData->m_weather == WEATHER_SNOWY);
+}
+
+void W3DModelDraw::Do_Start_Or_Stop_Particle_Sys()
+{
+    Drawable *drawable = Get_Drawable();
+    bool hidden = drawable->Is_Hidden() || m_fullyObscuredByShroud;
+
+    for (auto &tracker : m_particleSystemIDs) {
+        ParticleSystem *psys = g_theParticleSystemManager->Find_Particle_System(tracker.id);
+
+        if (psys != nullptr) {
+            if (hidden) {
+                psys->Stop();
+            } else {
+                psys->Start();
+            }
+        }
+    }
+}
+
+void W3DModelDraw::Set_Hidden(bool hidden)
+{
+    if (m_renderObject != nullptr) {
+        m_renderObject->Set_Hidden(hidden);
+    }
+
+    if (m_shadow != nullptr) {
+        m_shadow->Enable_Shadow_Render(!hidden);
+    }
+
+    m_hidden = hidden;
+
+    if (m_decalShadow != nullptr) {
+        m_decalShadow->Enable_Shadow_Render(!hidden);
+    }
+
+    if (m_trackRenderObject != nullptr && hidden) {
+        const Coord3D *pos = Get_Drawable()->Get_Position();
+        m_trackRenderObject->Add_Cap_Edge_To_Track(pos->x, pos->y);
+    }
+
+    Do_Start_Or_Stop_Particle_Sys();
+}
+
+void W3DModelDraw::Release_Shadows()
+{
+    if (m_shadow != nullptr) {
+        m_shadow->Release();
+        m_shadow = nullptr;
+    }
+}
+
+void W3DModelDraw::Allocate_Shadows()
+{
+    Shadow::ShadowTypeInfo info;
+    info.m_thing = Get_Drawable()->Get_Template();
+
+    if (m_shadow == nullptr && m_renderObject != nullptr && g_theW3DShadowManager != nullptr
+        && info.m_thing->Get_Shadow_Type() != SHADOW_NONE) {
+
+        strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name());
+        captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
+
+        info.m_allowUpdates = false;
+        info.m_allowWorldAlign = true;
+        info.m_type = (ShadowType)info.m_thing->Get_Shadow_Type();
+        info.m_sizeX = info.m_thing->Get_Shadow_Size_X();
+        info.m_sizeY = info.m_thing->Get_Shadow_Size_Y();
+        info.m_offsetX = info.m_thing->Get_Shadow_Offset_X();
+        info.m_offsetY = info.m_thing->Get_Shadow_Offset_Y();
+
+        m_shadow = g_theW3DShadowManager->Add_Shadow(m_renderObject, &info, nullptr);
+
+        if (m_shadow != nullptr) {
+            m_shadow->Enable_Shadow_Invisible(m_fullyObscuredByShroud);
+
+            if (m_renderObject->Is_Hidden() || !m_hidden) {
+                m_shadow->Enable_Shadow_Render(false);
+            }
+        }
+    }
+}
+
+void W3DModelDraw::Set_Shadows_Enabled(bool enable)
+{
+    if (m_shadow != nullptr) {
+        m_shadow->Enable_Shadow_Render(enable);
+    }
+
+    m_hidden = enable;
+}
+
+#ifdef GAME_DEBUG_STRUCTS
+void W3DModelDraw::Gather_Draw_Stats(DebugDrawStats *stats)
+{
+    Gather_Draw_Stats_For_Render_Object(stats, m_renderObject);
+
+    if (m_shadow != nullptr) {
+        m_shadow->Gather_Draw_Stats(stats);
+    }
+}
+#endif
+
+void W3DModelDraw::Set_Fully_Obscured_By_Shroud(bool obscured)
+{
+    if (m_fullyObscuredByShroud != obscured) {
+        m_fullyObscuredByShroud = obscured;
+
+        if (m_shadow != nullptr) {
+            m_shadow->Enable_Shadow_Invisible(m_fullyObscuredByShroud);
+        }
+
+        if (m_decalShadow != nullptr) {
+            m_decalShadow->Enable_Shadow_Invisible(m_fullyObscuredByShroud);
+        }
+
+        Do_Start_Or_Stop_Particle_Sys();
+    }
+}
+
+void W3DModelDraw::Adjust_Transform_Mtx(Matrix3D &transform) const
+{
+    Vector3 *offset = Get_W3D_Model_Draw_Module_Data()->Get_Attach_To_Drawable_Bone_Offset(Get_Drawable());
+
+    if (offset != nullptr) {
+        Vector3 v = transform.Rotate_Vector(*offset);
+        transform.Adjust_X_Translation(v.X);
+        transform.Adjust_Y_Translation(v.Y);
+        transform.Adjust_Z_Translation(v.Z);
+    }
+
+    if ((m_curState->m_flags & 1 << ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT) != 0) {
+        const Object *object = Get_Drawable()->Get_Object();
+
+        if (object != nullptr) {
+            float percent = object->Get_Construction_Percent();
+
+            if (percent >= 0.0f) {
+                float height = object->Get_Geometry_Info().Get_Max_Height_Above_Position();
+                transform.Translate_Z(height * percent / 100.0f - height);
+            }
+        }
+    }
+}
+
+bool Is_Animation_Complete(RenderObjClass *r)
+{
+    if (r != nullptr && r->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+        return static_cast<HLodClass *>(r)->Is_Animation_Complete();
+    } else {
+        return true;
+    }
+}
+
+void W3DModelDraw::Do_Draw_Module(const Matrix3D *transform)
+{
+    Set_Pause_Animation(Get_Drawable()->Get_Should_Animate(Get_W3D_Model_Draw_Module_Data()->m_animationsRequirePower));
+
+    if (Get_Drawable()->Get_Instance_Scale() != 1.0f) {
+        Matrix3D m;
+        m = *transform;
+        m.Scale(Get_Drawable()->Get_Instance_Scale());
+        transform = &m;
+
+        if (m_renderObject != nullptr) {
+            m_renderObject->Set_ObjectScale(Get_Drawable()->Get_Instance_Scale());
+        }
+    }
+
+    if (Is_Animation_Complete(m_renderObject)) {
+        if (m_curState != nullptr) {
+            if (m_nextState != nullptr) {
+                const ModelConditionInfo *info = m_nextState;
+                int loop = m_loopDuration;
+                m_nextState = nullptr;
+                m_loopDuration = -1;
+                Set_Model_State(info);
+
+                if (loop != -1) {
+                    Set_Animation_Loop_Duration(loop);
+                }
+            }
+        }
+
+        if (m_renderObject != nullptr) {
+            if (m_curState != nullptr) {
+                if (m_whichAnimInCurState != -1) {
+                    if (m_curState->m_animations[m_whichAnimInCurState].Is_Idle_Anim()
+                        || Test_Animation_Flag(m_curState->m_flags, RESTART_ANIM_WHEN_COMPLETE)) {
+                        Adjust_Animation(m_curState, -1.0f);
+                    }
+                }
+            }
+        }
+    }
+
+    Adjust_Anim_Speed_To_Movement_Speed();
+
+    if (m_renderObject != nullptr) {
+        Matrix3D m = *transform;
+        Adjust_Transform_Mtx(m);
+        m_renderObject->Set_Transform(m);
+    }
+
+    Handle_Client_Turret_Positioning();
+    Recalc_Bones_For_Client_Particle_Systems();
+
+    if (Get_W3D_Model_Draw_Module_Data()->m_particlesAttachedToAnimatedBones) {
+        Update_Bones_For_Client_Particle_Systems();
+    }
+
+    Handle_Client_Recoil();
+}
+
+const ModelConditionInfo *W3DModelDraw::Find_Transition_For_Sig(uint64_t sig) const
+{
+    auto trans = Get_W3D_Model_Draw_Module_Data()->m_transitionMap.find(sig);
+
+    if (trans != Get_W3D_Model_Draw_Module_Data()->m_transitionMap.end()) {
+        return &trans->second;
+    } else {
+        return nullptr;
+    }
+}
+
+bool Maintain_Frame_Across_States(int flags)
+{
+    return (flags & 0x3A0) != 0;
+}
+
+bool Maintain_Frame_Across_States_2(int flags, int flags2)
+{
+    return (flags2 & 0x3A0 & flags & 0x3A0) != 0;
+}
+
+float W3DModelDraw::Get_Current_Anim_Fraction() const
+{
+    if (m_curState == nullptr || !Maintain_Frame_Across_States(m_curState->m_flags) || !m_renderObject
+        || m_renderObject->Class_ID() != RenderObjClass::CLASSID_HLOD) {
+        return -1.0f;
+    }
+
+    HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+
+    float frame;
+    int frames;
+    int mode;
+    float multiplier;
+    hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
+
+    if (frame < 0.0f) {
+        return 0.0f;
+    }
+
+    if (frames > frame) {
+        return frame / (frames - 1.0f);
+    }
+
+    return 1.0f;
+}
+
+void W3DModelDraw::Adjust_Animation(ModelConditionInfo const *prev_state, float f)
+{
+    if (m_curState != nullptr) {
+        int count = m_curState->m_animations.size();
+
+        if (count > 0) {
+            if (count == 1) {
+                m_whichAnimInCurState = 0;
+            } else if (prev_state == m_curState) {
+                int which = m_whichAnimInCurState;
+
+                while (m_whichAnimInCurState == which) {
+                    m_whichAnimInCurState = Get_Client_Random_Value(0, count - 1);
+                }
+            } else {
+                m_whichAnimInCurState = Get_Client_Random_Value(0, count - 1);
+            }
+
+            // TODO possible leak here
+            HAnimClass *anim = m_curState->m_animations[m_whichAnimInCurState].Get_Anim_Handle();
+
+            if (m_renderObject != nullptr && anim != nullptr) {
+                int frame = 0;
+
+                if (m_curState->m_mode == RenderObjClass::ANIM_MODE_ONCE_BACKWARDS
+                    || m_curState->m_mode == RenderObjClass::ANIM_MODE_LOOP_BACKWARDS) {
+                    frame = anim->Get_Num_Frames() - 1;
+                }
+
+                if (Test_Animation_Flag(m_curState->m_flags, RANDOMSTART)) {
+                    frame = Get_Client_Random_Value(0, anim->Get_Num_Frames() - 1);
+                } else if (Test_Animation_Flag(m_curState->m_flags, START_FRAME_FIRST)) {
+                    frame = 0;
+                } else if (Test_Animation_Flag(m_curState->m_flags, START_FRAME_LAST)) {
+                    frame = anim->Get_Num_Frames() - 1;
+                } else if (Maintain_Frame_Across_States(m_curState->m_flags) && prev_state != nullptr
+                    && prev_state != m_curState && Maintain_Frame_Across_States(prev_state->m_flags)
+                    && Maintain_Frame_Across_States_2(m_curState->m_flags, prev_state->m_flags) && f >= 0.0f) {
+                    frame = GameMath::Fast_To_Int_Truncate(anim->Get_Num_Frames() * f - 1.0f);
+                }
+
+                m_renderObject->Set_Animation(anim, frame, m_curState->m_mode);
+                anim->Release_Ref();
+
+                if (m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+                    HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+                    hlod->Set_Animation_Frame_Rate_Multiplier(Get_Client_Random_Value_Real(
+                        m_curState->m_animationSpeedFactorMin, m_curState->m_animationSpeedFactorMax));
+                }
+            }
+        } else {
+            m_whichAnimInCurState = -1;
+        }
+    }
+}
+
+bool W3DModelDraw::Set_Cur_Anim_Duration_In_Msec(float desired_duration_in_msec)
+{
+    if (m_renderObject == nullptr || m_renderObject->Class_ID() != RenderObjClass::CLASSID_HLOD) {
+        return false;
+    }
+
+    HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+    HAnimClass *anim = hlod->Peek_Animation();
+
+    if (anim == nullptr) {
+        return false;
+    }
+
+    float f = (anim->Get_Num_Frames() * 1000.0f) / anim->Get_Frame_Rate();
+
+    if (f > 0.0f && desired_duration_in_msec > 0.0f) {
+        hlod->Set_Animation_Frame_Rate_Multiplier(f / desired_duration_in_msec);
+        return true;
+    }
+
+    return false;
+}
+
+float W3DModelDraw::Get_Cur_Anim_Distance_Covered() const
+{
+    if (m_curState == nullptr || m_whichAnimInCurState < 0) {
+        return 0.0f;
+    }
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (s_skateDistanceOverride != 0.0f) {
+        return s_skateDistanceOverride;
+    } else {
+        return m_curState->m_animations[m_whichAnimInCurState].Get_Distance_Covered();
+    }
+#else
+    return m_curState->m_animations[m_whichAnimInCurState].Get_Distance_Covered();
+#endif
+}
+
+void Do_Hide_Show_Bone_Sub_Objs(
+    bool state, int num_sub_objects, int bone_idx, RenderObjClass *full_object, HTreeClass const *htree)
+{
+    for (int i = 0; i < num_sub_objects; i++) {
+        bool found = false;
+        int index = full_object->Get_Sub_Object_Bone_Index(0, i);
+
+        while (index != 0) {
+            index = htree->Get_Parent_Index(index);
+
+            if (index == bone_idx) {
+                found = true;
+                break;
+            }
+        }
+
+        if (found) {
+            RenderObjClass *robj = full_object->Get_Sub_Object(i);
+            robj->Set_Hidden(state);
+            robj->Release_Ref();
+        }
+    }
+}
+
+void W3DModelDraw::Do_Hide_Show_Sub_Objs(std::vector<ModelConditionInfo::HideShowSubObjInfo> const *vec)
+{
+    if (m_renderObject != nullptr) {
+        if (!vec->empty()) {
+            for (auto &info : *vec) {
+                int index;
+                RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
+
+                if (robj != nullptr) {
+                    robj->Set_Hidden(info.hide);
+                    const HTreeClass *tree = m_renderObject->Get_HTree();
+
+                    if (tree != nullptr) {
+                        Do_Hide_Show_Bone_Sub_Objs(info.hide,
+                            m_renderObject->Get_Num_Sub_Objects(),
+                            m_renderObject->Get_Sub_Object_Bone_Index(0, index),
+                            m_renderObject,
+                            tree);
+                    }
+
+                    robj->Release_Ref();
+                } else {
+                    captainslog_dbgassert(robj == nullptr,
+                        "*** ASSET ERROR: SubObject %s not found (%s)!",
+                        info.sub_obj_name.Str(),
+                        Get_Drawable()->Get_Template()->Get_Name().Str());
+                }
+            }
+        }
+
+        if (!m_subObjects.empty()) {
+            Update_Sub_Objects();
+        }
+    }
+}
+
+void W3DModelDraw::Stop_Client_Particle_Systems()
+{
+    for (auto &tracker : m_particleSystemIDs) {
+        ParticleSystem *psys = g_theParticleSystemManager->Find_Particle_System(tracker.id);
+
+        if (psys != nullptr) {
+            psys->Destroy();
+        }
+    }
+
+    m_particleSystemIDs.clear();
+}
+
+void W3DModelDraw::Handle_Client_Turret_Positioning()
+{
+    if (m_curState != nullptr && (m_curState->m_validStuff & TURRET_VALID) != 0) {
+        for (int i = 0; i < MAX_TURRETS; i++) {
+            ModelConditionInfo::TurretInfo *info = &m_curState->m_turretInfo[i];
+            float turret_angle = 0.0f;
+            float turret_pitch = 0.0f;
+
+            if (info->m_turretAngleBone != 0 || info->m_turretPitchBone != 0) {
+                Object *object = Get_Drawable()->Get_Object();
+
+                if (object != nullptr) {
+                    AIUpdateInterface *ai = object->Get_AI_Update_Interface();
+
+                    if (ai != nullptr) {
+                        ai->Get_Turret_Rot_And_Pitch((WhichTurretType)i, &turret_angle, &turret_pitch);
+                    }
+                }
+
+                if (info->m_turretAngleBone != 0) {
+                    if (m_curState != nullptr) {
+                        turret_angle += info->m_turretArtAngle;
+                    }
+
+                    Matrix3D m(true);
+                    m.Rotate_Z(turret_angle);
+
+                    if (m_renderObject != nullptr) {
+                        m_renderObject->Capture_Bone(info->m_turretAngleBone);
+                        m_renderObject->Control_Bone(info->m_turretAngleBone, m);
+                    }
+                }
+
+                if (info->m_turretPitchBone != 0) {
+                    if (m_curState != nullptr) {
+                        turret_pitch += info->m_turretArtPitch;
+                    }
+
+                    Matrix3D m(true);
+                    m.Rotate_Y(-turret_pitch);
+
+                    if (m_renderObject != nullptr) {
+                        m_renderObject->Capture_Bone(info->m_turretPitchBone);
+                        m_renderObject->Control_Bone(info->m_turretPitchBone, m);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void W3DModelDraw::Handle_Client_Recoil()
+{
+    W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+
+    if ((m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+            if (m_curState->m_hasWeaponBone[i]) {
+                std::vector<ModelConditionInfo::WeaponBarrelInfo> &barrel_vec = m_curState->m_weaponBarrelInfoVec[i];
+                std::vector<RecoilInfo> &recoil_vec = m_weaponRecoilInfoVec[i];
+                int barrel_count = barrel_vec.size();
+                int recoil_count = recoil_vec.size();
+                captainslog_dbgassert(barrel_count == recoil_count, "Barrel count != recoil count!");
+
+                if (barrel_count > recoil_count) {
+                    barrel_count = recoil_count;
+                }
+
+                for (int j = 0; j < barrel_count; j++) {
+                    if (barrel_vec[j].m_weaponMuzzleFlashBone) {
+                        barrel_vec[j].Set_Muzzle_Flash_Hidden(
+                            m_renderObject, recoil_vec[j].m_state != RecoilInfo::RECOIL_START);
+                    }
+
+                    float f = 0.01f;
+
+                    if (barrel_vec[j].m_weaponRecoilBone) {
+                        int state = recoil_vec[j].m_state;
+                        if (state > RecoilInfo::IDLE) {
+                            if (state <= RecoilInfo::RECOIL) {
+                                recoil_vec[j].m_shift += recoil_vec[j].m_recoilRate;
+                                recoil_vec[j].m_recoilRate *= data->m_recoilDamping;
+
+                                if (recoil_vec[j].m_shift < data->m_maxRecoil) {
+                                    if (f > GameMath::Fabs(recoil_vec[j].m_recoilRate)) {
+                                        recoil_vec[j].m_state = RecoilInfo::SETTLE;
+                                    }
+                                } else {
+                                    recoil_vec[j].m_shift = data->m_maxRecoil;
+                                    recoil_vec[j].m_state = RecoilInfo::SETTLE;
+                                }
+                            } else if (state == RecoilInfo::SETTLE) {
+                                recoil_vec[j].m_shift -= data->m_recoilSettle;
+                                if (recoil_vec[j].m_shift <= 0.0f) {
+                                    recoil_vec[j].m_shift = 0.0f;
+                                    recoil_vec[j].m_state = RecoilInfo::IDLE;
+                                }
+                            }
+                        }
+
+                        Matrix3D m;
+                        m.Make_Identity();
+                        m.Translate_X(-recoil_vec[j].m_shift);
+
+                        if (m_renderObject != nullptr) {
+                            m_renderObject->Capture_Bone(barrel_vec[j].m_weaponRecoilBone);
+                            m_renderObject->Control_Bone(barrel_vec[j].m_weaponRecoilBone, m);
+                        }
+                    } else {
+                        recoil_vec[j].m_state = RecoilInfo::IDLE;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void W3DModelDraw::Recalc_Bones_For_Client_Particle_Systems()
+{
+    if (m_recalcBones) {
+        Drawable *drawable = Get_Drawable();
+
+        if (drawable != nullptr && m_curState != nullptr && !drawable->Check_Status_Bit(DRAWABLE_STATUS_8)) {
+            for (auto &bone : m_curState->m_ParticleSysBones) {
+                ParticleSystem *psys =
+                    g_theParticleSystemManager->Create_Particle_System(bone.particle_system_template, true);
+
+                if (psys != nullptr) {
+                    Coord3D pos;
+                    pos.Zero();
+                    float rot = 0.0f;
+                    int index;
+
+                    if (m_renderObject != nullptr) {
+                        index = m_renderObject->Get_Bone_Index(bone.bone_name);
+                    } else {
+                        index = 0;
+                    }
+
+                    if (index != 0) {
+                        Matrix3D m(m_renderObject->Get_Transform());
+                        Matrix3D m2(true);
+                        m2.Scale(Get_Drawable()->Get_Scale());
+                        m_renderObject->Set_Transform(m2);
+                        Matrix3D m3(m_renderObject->Get_Bone_Transform(index));
+                        Vector3 v = m3.Get_Translation();
+                        rot = m3.Get_Z_Rotation();
+                        m_renderObject->Set_Transform(m);
+                        pos.x = v.X;
+                        pos.y = v.Y;
+                        pos.z = v.Z;
+                    }
+
+                    psys->Set_Position(pos);
+                    psys->Rotate_Local_Transform_Z(rot);
+                    psys->Attach_To_Drawable(drawable);
+                    psys->Set_Saveable(false);
+
+                    if (drawable->Is_Hidden() || m_fullyObscuredByShroud) {
+                        psys->Stop();
+                    }
+
+                    ParticleSysTrackerType tracker;
+                    tracker.id = psys->Get_System_ID();
+                    tracker.index = index;
+                    m_particleSystemIDs.push_back(tracker);
+                }
+            }
+        }
+
+        m_recalcBones = false;
+    }
+}
+
+bool W3DModelDraw::Update_Bones_For_Client_Particle_Systems()
+{
+    if (Get_Drawable() && m_curState != nullptr && m_renderObject != nullptr) {
+        for (auto &tracker : m_particleSystemIDs) {
+            ParticleSystem *psys = g_theParticleSystemManager->Find_Particle_System(tracker.id);
+            int index = tracker.index;
+
+            if (psys != nullptr) {
+                if (index != 0) {
+                    Matrix3D m(m_renderObject->Get_Bone_Transform(index));
+                    Vector3 v = m.Get_Translation();
+                    Coord3D pos;
+                    pos.x = v.X;
+                    pos.y = v.Y;
+                    pos.z = v.Z;
+                    psys->Set_Position(pos);
+                    psys->Rotate_Local_Transform_Z(m.Get_Z_Rotation());
+                    psys->Set_Local_Transform(m);
+                    psys->Set_Unk(true);
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+char *s_terrainDecalTextureName[] = { "TERRAIN_DECAL_DEMORALIZED_OBSOLETE",
+    "EXHorde",
+    "EXHorde_UP",
+    "EXHordeB",
+    "EXHordeB_UP",
+    "EXJunkCrate",
+    "EXHordeC_UP",
+    "EXChemSuit",
+    "",
+    "" };
+
+void W3DModelDraw::Set_Terrain_Decal(TerrainDecalType decal)
+{
+    if (m_decalShadow != nullptr) {
+        m_decalShadow->Release();
+        m_decalShadow = nullptr;
+    }
+
+    if (decal != TERRAIN_DECAL_8 && decal < TERRAIN_DECAL_COUNT) {
+        const ThingTemplate *tmplate = Get_Drawable()->Get_Template();
+        Shadow::ShadowTypeInfo info;
+        info.m_allowUpdates = false;
+        info.m_allowWorldAlign = true;
+        info.m_type = SHADOW_ALPHA_DECAL;
+
+        if (decal == TERRAIN_DECAL_9) {
+            strcpy(info.m_shadowName, tmplate->Get_Shadow_Texture_Name());
+        } else {
+            strcpy(info.m_shadowName, s_terrainDecalTextureName[decal]);
+        }
+
+        info.m_sizeX = tmplate->Get_Shadow_Size_X();
+        info.m_sizeY = tmplate->Get_Shadow_Size_Y();
+        info.m_offsetX = tmplate->Get_Shadow_Offset_X();
+        info.m_offsetY = tmplate->Get_Shadow_Offset_Y();
+
+        if (g_theW3DProjectedShadowManager != nullptr) {
+            m_decalShadow = g_theW3DProjectedShadowManager->Add_Decal(m_renderObject, &info);
+        }
+
+        if (m_decalShadow != nullptr) {
+            m_decalShadow->Enable_Shadow_Invisible(m_fullyObscuredByShroud);
+            m_decalShadow->Enable_Shadow_Render(m_hidden);
+        }
+    }
+}
+
+void W3DModelDraw::Set_Terrain_Decal_Size(float width, float height)
+{
+    if (m_decalShadow != nullptr) {
+        m_decalShadow->Set_Size(width, height);
+    }
+}
+
+void W3DModelDraw::Set_Terrain_Decal_Opacity(float opacity)
+{
+    if (m_decalShadow != nullptr) {
+        m_decalShadow->Set_Opacity((int)(255.0f * opacity));
+    }
+}
+
+void W3DModelDraw::Nuke_Current_Render(Matrix3D *xform)
+{
+    m_pauseAnimation = false;
+
+    if (m_shadow != nullptr) {
+        m_shadow->Release();
+        m_shadow = nullptr;
+    }
+
+    if (m_decalShadow != nullptr) {
+        m_decalShadow->Release();
+        m_decalShadow = nullptr;
+    }
+
+    if (m_renderObject != nullptr) {
+        if (xform != nullptr) {
+            *xform = m_renderObject->Get_Transform();
+        }
+
+        W3DDisplay::s_3DScene->Remove_Render_Object(m_renderObject);
+        Ref_Ptr_Release(m_renderObject);
+    } else if (xform != nullptr) {
+        *xform = *Get_Drawable()->Get_Transform_Matrix();
+    }
+}
+
+void W3DModelDraw::Hide_All_Garrison_Flags(bool hide)
+{
+    if (m_renderObject != nullptr) {
+        int index;
+        RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name("POLE", &index);
+
+        if (robj != nullptr) {
+            robj->Set_Hidden(hide);
+            const HTreeClass *tree = m_renderObject->Get_HTree();
+
+            if (tree != nullptr) {
+                Do_Hide_Show_Bone_Sub_Objs(hide,
+                    m_renderObject->Get_Num_Sub_Objects(),
+                    m_renderObject->Get_Sub_Object_Bone_Index(0, index),
+                    m_renderObject,
+                    tree);
+            }
+
+            robj->Release_Ref();
+        }
+    }
+}
+
+void W3DModelDraw::Hide_All_Headlights(bool hide)
+{
+    if (m_renderObject != nullptr) {
+        for (int i = 0; i < m_renderObject->Get_Num_Sub_Objects(); i++) {
+            RenderObjClass *robj = m_renderObject->Get_Sub_Object(i);
+
+            if (strstr(robj->Get_Name(), "HEADLIGHT") != nullptr) {
+                robj->Set_Hidden(hide);
+            }
+
+            robj->Release_Ref();
+        }
+    }
+}
+
+void W3DModelDraw::Hide_All_Muzzle_Flashes(ModelConditionInfo const *condition, RenderObjClass *robj)
+{
+    if (condition != nullptr && robj != nullptr && (condition->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+            if (condition->m_hasWeaponBone[i]) {
+                for (auto &barrel : condition->m_weaponBarrelInfoVec[i]) {
+                    if (barrel.m_weaponMuzzleFlashBone != 0) {
+                        barrel.Set_Muzzle_Flash_Hidden(robj, true);
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool Turret_Names_Differ(ModelConditionInfo const *state1, ModelConditionInfo const *state2)
+{
+    if ((state1->m_validStuff & TURRET_VALID) == 0 || (state2->m_validStuff & TURRET_VALID) == 0) {
+        return true;
+    }
+
+    for (int i = 0; i < MAX_TURRETS; i++) {
+        if (state1->m_turretInfo[i].m_turretAngleName != state2->m_turretInfo[i].m_turretAngleName
+            || state1->m_turretInfo[i].m_turretPitchName != state2->m_turretInfo[i].m_turretPitchName) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
+{
+    captainslog_dbgassert(new_state, "invalid state in W3DModelDraw::setModelState");
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (Get_Drawable() != nullptr) {
+        if (Get_Drawable()->Get_Object() != nullptr) {
+            if (Get_Drawable()->Get_Object()->Get_ID() == s_theObjectIDToDebug) {
+                captainslog_debug("REQUEST switching to state %s for obj %s %d",
+                    new_state->m_description.Str(),
+                    Get_Drawable()->Get_Object()->Get_Template()->Get_Name().Str(),
+                    Get_Drawable()->Get_Object()->Get_ID());
+            }
+        }
+    }
+#endif
+
+    const ModelConditionInfo *next = nullptr;
+
+    if (m_curState != nullptr && new_state != nullptr) {
+        if (m_curState == new_state && m_nextState == nullptr || m_curState != nullptr && m_nextState == new_state) {
+#ifdef GAME_DEBUG_STRUCTS
+            if (Get_Drawable() != nullptr) {
+                if (Get_Drawable()->Get_Object() != nullptr) {
+                    if (Get_Drawable()->Get_Object()->Get_ID() == s_theObjectIDToDebug) {
+                        captainslog_debug("IGNORE duplicate state %s for obj %s %d",
+                            new_state->m_description.Str(),
+                            Get_Drawable()->Get_Object()->Get_Template()->Get_Name().Str(),
+                            Get_Drawable()->Get_Object()->Get_ID());
+                    }
+                }
+            }
+#endif
+
+            return;
+        }
+
+        if (new_state != m_curState && new_state->m_allowToFinishKey != NAMEKEY_INVALID
+            && new_state->m_allowToFinishKey == m_curState->m_transitionKey && m_renderObject != nullptr
+            && !Is_Animation_Complete(m_renderObject)) {
+#ifdef GAME_DEBUG_STRUCTS
+            if (Get_Drawable() != nullptr) {
+                if (Get_Drawable()->Get_Object() != nullptr) {
+                    if (Get_Drawable()->Get_Object()->Get_ID() == s_theObjectIDToDebug) {
+                        captainslog_debug("ALLOW_TO_FINISH state %s for obj %s %d",
+                            new_state->m_description.Str(),
+                            Get_Drawable()->Get_Object()->Get_Template()->Get_Name().Str(),
+                            Get_Drawable()->Get_Object()->Get_ID());
+                    }
+                }
+            }
+#endif
+
+            m_nextState = new_state;
+            m_loopDuration = -1;
+            return;
+        }
+
+        if (new_state != m_curState) {
+            if (m_curState->m_transitionKey != NAMEKEY_INVALID) {
+                if (new_state->m_transitionKey != NAMEKEY_INVALID) {
+                    const ModelConditionInfo *state =
+                        Find_Transition_For_Sig(Make_Transition(m_curState->m_transitionKey, new_state->m_transitionKey));
+
+                    if (state) {
+#ifdef GAME_DEBUG_STRUCTS
+                        if (Get_Drawable() != nullptr) {
+                            if (Get_Drawable()->Get_Object() != nullptr) {
+                                if (Get_Drawable()->Get_Object()->Get_ID() == s_theObjectIDToDebug) {
+                                    captainslog_debug("using TRANSITION state %s before requested state %s for obj %s %d",
+                                        state->m_description.Str(),
+                                        new_state->m_description.Str(),
+                                        Get_Drawable()->Get_Object()->Get_Template()->Get_Name().Str(),
+                                        Get_Drawable()->Get_Object()->Get_ID());
+                                }
+                            }
+                        }
+#endif
+                        next = new_state;
+                        new_state = state;
+                    }
+                }
+            }
+        }
+    }
+
+    float fraction = Get_Current_Anim_Fraction();
+
+    if (!Get_Drawable()->Check_Status_Bit(DRAWABLE_STATUS_8)) {
+        m_recalcBones = true;
+    }
+
+    Stop_Client_Particle_Systems();
+    Hide_All_Muzzle_Flashes(new_state, m_renderObject);
+
+    if (m_curState == nullptr || new_state->m_modelName != m_curState->m_modelName
+        || Turret_Names_Differ(new_state, m_curState)) {
+        Matrix3D tm;
+        Nuke_Current_Render(&tm);
+        Drawable *drawable = Get_Drawable();
+
+        if (new_state->m_modelName.Is_Empty()) {
+            m_renderObject = nullptr;
+        } else {
+            m_renderObject = W3DDisplay::s_assetManager->Create_Render_Obj(
+                new_state->m_modelName, drawable->Get_Scale(), m_hexColor, nullptr, nullptr);
+            captainslog_dbgassert(m_renderObject, "*** ASSET ERROR: Model %s not found!", new_state->m_modelName.Str());
+        }
+
+        new_state->Validate_Stuff(
+            m_renderObject, drawable->Get_Scale(), Get_W3D_Model_Draw_Module_Data()->m_extraPublicBone);
+        Rebuild_Weapon_RecoilInfo(new_state);
+        Do_Hide_Show_Sub_Objs(&new_state->m_hideShowVec);
+
+#ifdef GAME_DEBUG_STRUCTS
+        if (g_theWriteableGlobalData->m_hideGarrisonFlags && drawable->Is_KindOf(KINDOF_STRUCTURE)) {
+            Hide_All_Garrison_Flags(true);
+        }
+#endif
+
+        Shadow::ShadowTypeInfo info;
+        info.m_thing = Get_Drawable()->Get_Template();
+
+        if (m_renderObject != nullptr) {
+            if (g_theWriteableGlobalData->m_makeTrackMarks && m_trackRenderObject == nullptr) {
+                if (g_theTerrainTracksRenderObjClassSystem != nullptr) {
+                    if (!Get_W3D_Model_Draw_Module_Data()->m_trackFile.Is_Empty()) {
+                        m_trackRenderObject = g_theTerrainTracksRenderObjClassSystem->Bind_Track(
+                            m_renderObject, 10.0f, Get_W3D_Model_Draw_Module_Data()->m_trackFile);
+
+                        if (drawable != nullptr) {
+                            if (m_trackRenderObject != nullptr) {
+                                m_trackRenderObject->Set_Bound_Drawable(drawable);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (m_renderObject != nullptr && g_theW3DShadowManager != nullptr && info.m_thing->Get_Shadow_Type()) {
+            strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name());
+            captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
+            info.m_allowUpdates = false;
+            info.m_allowWorldAlign = true;
+            info.m_type = (ShadowType)info.m_thing->Get_Shadow_Type();
+            info.m_sizeX = info.m_thing->Get_Shadow_Size_X();
+            info.m_sizeY = info.m_thing->Get_Shadow_Size_Y();
+            info.m_offsetX = info.m_thing->Get_Shadow_Offset_X();
+            info.m_offsetY = info.m_thing->Get_Shadow_Offset_Y();
+            m_shadow = g_theW3DShadowManager->Add_Shadow(m_renderObject, &info, nullptr);
+
+            if (m_shadow != nullptr) {
+                m_shadow->Enable_Shadow_Invisible(m_fullyObscuredByShroud);
+                m_shadow->Enable_Shadow_Render(m_hidden);
+            }
+        }
+
+        if (m_renderObject != nullptr) {
+            if (info.m_thing->Is_KindOf(KINDOF_SELECTABLE)) {
+                m_renderObject->Set_Collision_Type(COLLISION_TYPE_1);
+            }
+
+            if (info.m_thing->Is_KindOf(KINDOF_SHRUBBERY)) {
+                m_renderObject->Set_Collision_Type(COLLISION_TYPE_2);
+            }
+
+            if (info.m_thing->Is_KindOf(KINDOF_MINE)) {
+                m_renderObject->Set_Collision_Type(COLLISION_TYPE_3);
+            }
+
+            if (info.m_thing->Is_KindOf(KINDOF_FORCEATTACKABLE)) {
+                m_renderObject->Set_Collision_Type(COLLISION_TYPE_4);
+            }
+
+            if (info.m_thing->Is_KindOf(KINDOF_CLICK_THROUGH)) {
+                m_renderObject->Set_Collision_Type(0);
+            }
+
+            Object *object = drawable->Get_Object();
+
+            if (object != nullptr) {
+                if (!object->Is_KindOf(KINDOF_BRIDGE) && !object->Is_KindOf(KINDOF_BRIDGE_TOWER)) {
+                    if (object->Is_KindOf(KINDOF_STRUCTURE)
+                        && (drawable->Get_Condition_State().Test(MODELCONDITION_RUBBLE))) {
+                        m_renderObject->Set_Collision_Type(0);
+                    } else if (object->Is_Effectively_Dead()) {
+                        m_renderObject->Set_Collision_Type(0);
+                    }
+                }
+            }
+
+            W3DDisplay::s_3DScene->Add_Render_Object(m_renderObject);
+            m_renderObject->Set_User_Data(drawable->Get_Drawable_Info());
+            Set_Terrain_Decal(drawable->Get_Terrain_Decal());
+
+            if (drawable->Is_Hidden()) {
+                m_renderObject->Set_Hidden(true);
+
+                if (m_shadow != nullptr) {
+                    m_shadow->Enable_Shadow_Render(false);
+                }
+
+                m_hidden = false;
+            }
+
+            m_renderObject->Set_Transform(tm);
+            On_Render_Obj_Recreated();
+        }
+    } else {
+        new_state->Validate_Stuff(
+            m_renderObject, Get_Drawable()->Get_Scale(), Get_W3D_Model_Draw_Module_Data()->m_extraPublicBone);
+        Rebuild_Weapon_RecoilInfo(new_state);
+        Do_Hide_Show_Sub_Objs(&new_state->m_hideShowVec);
+    }
+
+    Hide_All_Headlights(m_isDaytime);
+    const ModelConditionInfo *old_state = m_curState;
+    m_curState = new_state;
+    m_nextState = next;
+    m_loopDuration = -1;
+    Adjust_Animation(old_state, fraction);
+}
+
+void W3DModelDraw::Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags)
+{
+    m_isDaytime = !flags.Test(MODELCONDITION_NIGHT);
+    const ModelConditionInfo *info = Find_Best_Info(flags);
+
+    if (info != nullptr) {
+        Set_Model_State(info);
+    }
+
+    Hide_All_Headlights(m_isDaytime);
+}
+
+void W3DModelDraw::Set_Selectable(bool selectable)
+{
+    if (m_renderObject != nullptr) {
+        if (selectable) {
+            m_renderObject->Set_Collision_Type(m_renderObject->Get_Collision_Type() | COLLISION_TYPE_1);
+        } else {
+            m_renderObject->Set_Collision_Type(m_renderObject->Get_Collision_Type() & ~COLLISION_TYPE_1);
+        }
+    }
+}
+
+void W3DModelDraw::Replace_Indicator_Color(int color)
+{
+    if (Get_W3D_Model_Draw_Module_Data()->m_okToChangeModelColor && Get_Render_Object()) {
+        int new_color;
+
+        if (color) {
+            new_color = color | 0xFF000000;
+        } else {
+            new_color = 0;
+        }
+
+        if (new_color != m_hexColor) {
+            m_hexColor = new_color;
+            const ModelConditionInfo *state = m_curState;
+            m_curState = nullptr;
+            m_nextState = nullptr;
+            m_loopDuration = -1;
+            Set_Model_State(state);
+        }
+    }
+}
+
+bool W3DModelDraw::Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const
+{
+    if (m_renderObject == nullptr) {
+        return false;
+    }
+
+    Vector3 v = m_renderObject->Get_Position();
+    pos->x = v.X;
+    pos->y = v.Y;
+    pos->z = v.Z;
+    *transform = m_renderObject->Get_Transform();
+    *radius = m_renderObject->Get_Bounding_Sphere().Radius;
+    return true;
+}
+
+bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
+    WeaponSlotType wslot,
+    int specific_barrel_to_use,
+    Matrix3D *launch_pos,
+    WhichTurretType tur,
+    Coord3D *turret_rot_pos,
+    Coord3D *turret_pitch_pos) const
+{
+    const ModelConditionInfo *info = Find_Best_Info(flags);
+
+    if (info) {
+        W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+        info->Validate_Stuff(nullptr, Get_Drawable()->Get_Scale(), data->m_extraPublicBone);
+        captainslog_dbgassert(info->m_transition == 0,
+            "It is never legal to Get_Projectile_Launch_Offset from a Transition state (they vary on a per-client basis)... "
+            "however, we can fix this");
+        captainslog_dbgassert(specific_barrel_to_use >= 0, "specific_barrel_to_use should now always be explicit");
+        std::vector<ModelConditionInfo::WeaponBarrelInfo> &barrel_vec = info->m_weaponBarrelInfoVec[wslot];
+
+        if (barrel_vec.empty()) {
+            launch_pos = nullptr;
+        } else {
+            if (specific_barrel_to_use < 0 || specific_barrel_to_use >= (int)barrel_vec.size()) {
+                specific_barrel_to_use = 0;
+            }
+
+            if (launch_pos) {
+                *launch_pos = barrel_vec[specific_barrel_to_use].m_weaponLaunchBoneTransform;
+
+                if (tur != TURRET_INVALID) {
+                    launch_pos->Pre_Rotate_Z(info->m_turretInfo[tur].m_turretArtAngle);
+                    launch_pos->Pre_Rotate_Y(-info->m_turretInfo[tur].m_turretArtPitch);
+                }
+            }
+        }
+
+        if (turret_rot_pos) {
+            turret_rot_pos->Zero();
+        }
+
+        if (turret_pitch_pos) {
+            turret_pitch_pos->Zero();
+        }
+
+        if (tur != TURRET_INVALID) {
+            Vector3 *offset = data->Get_Attach_To_Drawable_Bone_Offset(Get_Drawable());
+            ModelConditionInfo::TurretInfo &tinfo = info->m_turretInfo[tur];
+
+            if (turret_rot_pos) {
+                bool b = tinfo.m_turretAngleName && !info->Find_Pristine_Bone_Pos(tinfo.m_turretAngleName, *turret_rot_pos);
+                captainslog_dbgassert(!b,
+                    "*** ASSET ERROR: TurretBone %s not found!",
+                    g_theNameKeyGenerator->Key_To_Name(tinfo.m_turretAngleName).Str());
+
+                if (offset) {
+                    turret_rot_pos->x += offset->X;
+                    turret_rot_pos->y += offset->Y;
+                    turret_rot_pos->z += offset->Z;
+                }
+            }
+
+            if (turret_pitch_pos) {
+                bool b = tinfo.m_turretPitchName && !info->Find_Pristine_Bone_Pos(tinfo.m_turretPitchName, *turret_rot_pos);
+                captainslog_dbgassert(!b,
+                    "*** ASSET ERROR: TurretBone %s not found!",
+                    g_theNameKeyGenerator->Key_To_Name(tinfo.m_turretPitchName).Str());
+
+                if (offset) {
+                    turret_pitch_pos->x += offset->X;
+                    turret_pitch_pos->y += offset->Y;
+                    turret_pitch_pos->z += offset->Z;
+                }
+            }
+        }
+
+        return launch_pos != nullptr;
+    } else {
+        return false;
+    }
+}
+
+int W3DModelDraw::Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
+    char const *bone_name,
+    int start_index,
+    Coord3D *positions,
+    Matrix3D *transforms,
+    int max_bones) const
+{
+    const ModelConditionInfo *info = Find_Best_Info(flags);
+
+    if (info == nullptr) {
+        return 0;
+    }
+
+    RenderObjClass *robj;
+
+    if (info == m_curState) {
+        robj = m_renderObject;
+    } else {
+        robj = nullptr;
+    }
+
+    info->Validate_Stuff(robj, Get_Drawable()->Get_Scale(), Get_W3D_Model_Draw_Module_Data()->m_extraPublicBone);
+    Matrix3D t[64];
+
+    if (max_bones > 64) {
+        max_bones = 64;
+    }
+
+    if (!transforms) {
+        transforms = t;
+    }
+
+    int current = 0;
+    int count = start_index != 0 ? 99 : 0;
+
+    for (int i = start_index; i <= count; i++) {
+        char bone_id[256];
+
+        if (i) {
+            sprintf(bone_id, "%s%02d", bone_name, i);
+        } else {
+            strcpy(bone_id, bone_name);
+        }
+
+        for (char *j = bone_id; j && *j; j++) {
+            *j = tolower(*j);
+        }
+
+        const Matrix3D *bone = info->Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(bone_id), nullptr);
+
+        if (bone == nullptr) {
+            const Object *object = Get_Drawable()->Get_Object();
+
+            if (object) {
+                transforms[current] = *object->Get_Transform_Matrix();
+            } else {
+                transforms[current].Make_Identity();
+            }
+
+            break;
+        }
+
+        transforms[current] = *bone;
+        current++;
+
+        if (current >= max_bones) {
+            break;
+        }
+    }
+
+    if (positions != nullptr && transforms != nullptr) {
+        for (int i = 0; i < current; i++) {
+            Vector3 v = transforms[i].Get_Translation();
+            positions[i].x = v.X;
+            positions[i].y = v.Y;
+            positions[i].z = v.Z;
+        }
+    }
+
+    return current;
+}
+
+bool W3DModelDraw::Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const
+{
+    if (m_renderObject == nullptr) {
+        return false;
+    }
+
+    AABoxClass aabox;
+    m_renderObject->Get_Obj_Space_Bounding_Box(aabox);
+    Matrix3D m = m_renderObject->Get_Transform();
+    OBBoxClass obbox(aabox.m_center, aabox.m_extent);
+    OBBoxClass::Transform(m, obbox, box);
+    return true;
+}
+
+bool W3DModelDraw::Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const
+{
+    if (m_renderObject == nullptr) {
+        return false;
+    }
+
+    int index = m_renderObject->Get_Bone_Index(bone);
+
+    if (index == 0) {
+        transform->Make_Identity();
+        return false;
+    } else {
+        *transform = m_renderObject->Get_Bone_Transform(index);
+        return true;
+    }
+}
+
+bool W3DModelDraw::Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const
+{
+    if (m_renderObject == nullptr) {
+        return false;
+    }
+
+    int index = m_renderObject->Get_Bone_Index(bone_name_prefix);
+
+    if (!index) {
+        return false;
+    }
+
+    transform = m_renderObject->Get_Bone_Transform(index);
+    return true;
+}
+
+int W3DModelDraw::Get_Current_Bone_Positions(
+    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+{
+    Matrix3D t[64];
+
+    if (max_bones > 64) {
+        max_bones = 64;
+    }
+
+    if (!transforms) {
+        transforms = t;
+    }
+
+    if (!m_renderObject) {
+        return 0;
+    }
+
+    Matrix3D m(m_renderObject->Get_Transform());
+    Matrix3D m2;
+    m.Get_Orthogonal_Inverse(m2);
+    m2.Scale(Get_Drawable()->Get_Scale());
+
+    int current = 0;
+    int count = start_index != 0 ? 99 : 0;
+
+    for (int i = start_index; i <= count; i++) {
+        char bone_id[256];
+
+        if (i) {
+            sprintf(bone_id, "%s%02d", bone_name_prefix, i);
+        } else {
+            strcpy(bone_id, bone_name_prefix);
+        }
+
+        int index = m_renderObject->Get_Bone_Index(bone_id);
+
+        if (!index) {
+            break;
+        }
+
+        transforms[current] = m_renderObject->Get_Bone_Transform(index);
+        transforms[current].Mul(m2);
+        current++;
+
+        if (current >= max_bones) {
+            break;
+        }
+    }
+
+    if (positions && transforms) {
+        for (int i = 0; i < current; i++) {
+            Vector3 v = transforms[i].Get_Translation();
+            positions[i].x = v.X;
+            positions[i].y = v.Y;
+            positions[i].z = v.Z;
+        }
+    }
+
+    return current;
+}
+
+void W3DModelDraw::React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle)
+{
+    if (m_renderObject) {
+        Matrix3D m(Get_Drawable()->Get_Transform_Matrix());
+        Adjust_Transform_Mtx(m);
+        m_renderObject->Set_Transform(m);
+    }
+
+    if (m_trackRenderObject) {
+        const Object *object = Get_Drawable()->Get_Object();
+        const Coord3D *position = Get_Drawable()->Get_Position();
+
+        if (m_fullyObscuredByShroud || object->Get_Status(OBJECT_STATUS_STEALTHED)) {
+            m_trackRenderObject->Add_Cap_Edge_To_Track(position->x, position->y);
+        } else {
+            if (object) {
+                if (object->Is_Significantly_Above_Terrain()) {
+                    m_trackRenderObject->Set_Above_Terrain();
+                }
+            }
+
+            m_trackRenderObject->Add_Edge_To_Track(position->x, position->y);
+        }
+    }
+}
+
+const ModelConditionInfo *W3DModelDraw::Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const
+{
+    return Get_W3D_Model_Draw_Module_Data()->Find_Best_Info(flags);
+}
+
+int W3DModelDraw::Get_Barrel_Count(WeaponSlotType wslot) const
+{
+    if (m_curState != nullptr && (m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
+        return m_curState->m_weaponBarrelInfoVec[wslot].size();
+    } else {
+        return 0;
+    }
+}
+
+void Do_FX_Pos(FXList const *list,
+    const Coord3D *primary,
+    const Matrix3D *primary_mtx,
+    float primary_speed,
+    const Coord3D *secondary,
+    float radius)
+{
+    if (list) {
+        list->Do_FX_Pos(primary, primary_mtx, primary_speed, secondary, radius);
+    }
+}
+
+bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
+    int specific_barrel_to_use,
+    FXList const *fxl,
+    float weapon_speed,
+    Coord3D const *victim_pos,
+    float radius)
+{
+    captainslog_dbgassert(specific_barrel_to_use >= 0, "specific_barrel_to_use should now always be explicit");
+
+    if (m_curState == nullptr || (m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) == 0) {
+        return false;
+    }
+
+    std::vector<ModelConditionInfo::WeaponBarrelInfo> &barrel_vec = m_curState->m_weaponBarrelInfoVec[wslot];
+
+    if (barrel_vec.empty()) {
+        return false;
+    }
+
+    bool ret = false;
+
+    if (specific_barrel_to_use < 0 || specific_barrel_to_use > (int)barrel_vec.size()) {
+        specific_barrel_to_use = 0;
+    }
+
+    ModelConditionInfo::WeaponBarrelInfo &info = barrel_vec[specific_barrel_to_use];
+
+    if (fxl != nullptr) {
+        if (info.m_weaponFireFXBone && m_renderObject != nullptr) {
+            const Object *object = Get_Drawable()->Get_Object();
+
+            if (!m_renderObject->Is_Hidden() || object == nullptr) {
+                Matrix3D m(m_renderObject->Get_Bone_Transform(info.m_weaponFireFXBone));
+                Coord3D c;
+                c.x = m.Get_X_Translation();
+                c.y = m.Get_Y_Translation();
+                c.z = m.Get_Z_Translation();
+                Do_FX_Pos(fxl, &c, &m, weapon_speed, victim_pos, radius);
+            } else {
+                Do_FX_Pos(fxl, object->Get_Position(), object->Get_Transform_Matrix(), weapon_speed, victim_pos, radius);
+            }
+        } else {
+            captainslog_debug("*** no FXBone found for a non-null FXL");
+        }
+    }
+
+    if (info.m_weaponRecoilBone || info.m_weaponMuzzleFlashBone) {
+        RecoilInfo &recoil = m_weaponRecoilInfoVec[wslot][specific_barrel_to_use];
+        recoil.m_state = RecoilInfo::RECOIL_START;
+        recoil.m_recoilRate = Get_W3D_Model_Draw_Module_Data()->m_initialRecoil;
+
+        if (info.m_weaponMuzzleFlashBone) {
+            info.Set_Muzzle_Flash_Hidden(m_renderObject, false);
+        }
+    }
+
+    return ret;
+}
+
+void W3DModelDraw::Set_Animation_Loop_Duration(unsigned int num_frames)
+{
+    m_loopDuration = -1;
+    Set_Cur_Anim_Duration_In_Msec(GameMath::Ceil(num_frames * MSEC_PER_LOGICFRAME_REAL));
+}
+
+void W3DModelDraw::Set_Animation_Completion_Time(unsigned int num_frames)
+{
+    if (m_curState != nullptr && m_curState->m_transition && m_curState->m_animations.size() && m_nextState != nullptr
+        && m_nextState->m_transition && m_nextState->m_animations.size()) {
+        float cur_fps = m_curState->m_animations.front().Get_Frames_Per_Second();
+        float next_fps = m_nextState->m_animations.front().Get_Frames_Per_Second();
+        int duration = GameMath::Fast_To_Int_Floor(num_frames * cur_fps / (cur_fps + next_fps));
+        Set_Animation_Loop_Duration(duration);
+        m_loopDuration = num_frames - duration;
+    } else {
+        Set_Animation_Loop_Duration(num_frames);
+    }
+}
+
+void W3DModelDraw::Set_Animation_Frame(int frame)
+{
+    if (m_renderObject != nullptr && m_whichAnimInCurState >= 0) {
+        HAnimClass *anim = m_curState->m_animations[m_whichAnimInCurState].Get_Anim_Handle();
+        m_renderObject->Set_Animation(anim, frame);
+
+        if (anim) {
+            anim->Release_Ref();
+        }
+    }
+}
+
+void W3DModelDraw::Set_Pause_Animation(bool pause)
+{
+    if (m_pauseAnimation != pause) {
+        m_pauseAnimation = pause;
+
+        if (m_renderObject != nullptr) {
+            if (m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+                HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+                float frame;
+                int frames;
+                int mode;
+                float multiplier;
+                HAnimClass *anim = hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
+
+                if (anim) {
+                    if (m_pauseAnimation) {
+                        m_animMode = mode;
+                        hlod->Set_Animation(anim, frame, RenderObjClass::ANIM_MODE_MANUAL);
+                    } else {
+                        hlod->Set_Animation(anim, frame, m_animMode);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void W3DModelDraw::Rebuild_Weapon_RecoilInfo(ModelConditionInfo const *state)
+{
+    if (state != nullptr) {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+            unsigned int barrel_size = state->m_weaponBarrelInfoVec[i].size();
+            unsigned int recoil_size = m_weaponRecoilInfoVec[i].size();
+
+            if (recoil_size != barrel_size) {
+                RecoilInfo info;
+                m_weaponRecoilInfoVec[i].resize(barrel_size, info);
+            }
+
+            for (auto &recoil : m_weaponRecoilInfoVec[i]) {
+                recoil.Clear();
+            }
+        }
+    } else {
+        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+            m_weaponRecoilInfoVec[i].clear();
+        }
+    }
+}
+
+void W3DModelDraw::Preload_Assets(TimeOfDayType time_of_day)
+{
+    W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+
+    if (data) {
+        data->Preload_Assets(time_of_day, Get_Drawable()->Get_Scale());
+    }
+}
+
+bool W3DModelDraw::Is_Visible() const
+{
+    return m_renderObject != nullptr && m_renderObject->Is_Really_Visible();
+}
+
+void W3DModelDraw::Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot)
+{
+    if (((1 << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
+        Do_Hide_Show_Projectile_Objects(show, count, wslot);
+    }
+}
+
+void W3DModelDraw::Update_Draw_Module_Supply_Status(int status1, int status2)
+{
+    if (status2 > 0) {
+        Get_Drawable()->Set_Model_Condition_State(MODELCONDITION_CARRYING);
+    } else {
+        Get_Drawable()->Clear_Model_Condition_State(MODELCONDITION_CARRYING);
+    }
+}
+
+void W3DModelDraw::Do_Hide_Show_Projectile_Objects(unsigned int show, unsigned int count, WeaponSlotType wslot)
+{
+    if (count < show) {
+        captainslog_dbgassert(count >= show, "Someone is trying to show more projectiles than they have.");
+    } else {
+        int val = count - show;
+        std::vector<ModelConditionInfo::HideShowSubObjInfo> vector;
+        ModelConditionInfo::HideShowSubObjInfo info;
+
+        if (m_curState->m_weaponHideShowBoneName[wslot].Is_Empty()) {
+            for (unsigned int i = 0; i < count; i++) {
+                info.sub_obj_name.Format("%s%02d", m_curState->m_weaponLaunchBoneName[wslot], i + 1);
+                info.hide = (int)(i + 1) <= val;
+                vector.push_back(info);
+            }
+        } else {
+            info.sub_obj_name = m_curState->m_weaponHideShowBoneName[wslot];
+            info.hide = val > 0;
+            vector.push_back(info);
+        }
+
+        Do_Hide_Show_Sub_Objs(&vector);
+    }
+}
+
+void W3DModelDraw::Update_Sub_Objects()
+{
+    if (m_renderObject != nullptr && !m_subObjects.empty()) {
+        for (auto &info : m_subObjects) {
+            int index;
+            RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
+
+            if (robj) {
+                robj->Set_Hidden(info.hide);
+
+                const HTreeClass *tree = m_renderObject->Get_HTree();
+
+                if (tree) {
+                    Do_Hide_Show_Bone_Sub_Objs(info.hide,
+                        m_renderObject->Get_Num_Sub_Objects(),
+                        m_renderObject->Get_Sub_Object_Bone_Index(0, index),
+                        m_renderObject,
+                        tree);
+                }
+
+                robj->Release_Ref();
+            } else {
+                captainslog_dbgassert(robj,
+                    "*** ASSET ERROR: SubObject %s not found (%s)!",
+                    info.sub_obj_name.Str(),
+                    Get_Drawable()->Get_Template()->Get_Name().Str());
+            }
+        }
+    }
+}
+
+void W3DModelDraw::CRC_Snapshot(Xfer *xfer)
+{
+    DrawModule::CRC_Snapshot(xfer);
+}
+
+void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t ver = 2;
+    xfer->xferVersion(&ver, 2);
+    DrawModule::Xfer_Snapshot(xfer);
+    RecoilInfo recoilinfo;
+    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        unsigned char size = (unsigned char)m_weaponRecoilInfoVec[i].size();
+        xfer->xferUnsignedByte(&size);
+
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            for (auto &info : m_weaponRecoilInfoVec[i]) {
+                recoilinfo.m_state = info.m_state;
+                xfer->xferUser(&recoilinfo.m_state, sizeof(recoilinfo.m_state));
+                recoilinfo.m_shift = info.m_shift;
+                xfer->xferReal(&recoilinfo.m_shift);
+                recoilinfo.m_recoilRate = info.m_recoilRate;
+                xfer->xferReal(&recoilinfo.m_recoilRate);
+            }
+        } else {
+            m_weaponRecoilInfoVec[i].clear();
+            for (int j = 0; j < size; j++) {
+                xfer->xferUser(&recoilinfo.m_state, sizeof(recoilinfo.m_state));
+                xfer->xferReal(&recoilinfo.m_shift);
+                xfer->xferReal(&recoilinfo.m_recoilRate);
+                m_weaponRecoilInfoVec[i].push_back(recoilinfo);
+            }
+        }
+    }
+
+    unsigned char size = (unsigned char)m_subObjects.size();
+    xfer->xferUnsignedByte(&size);
+    ModelConditionInfo::HideShowSubObjInfo subobj;
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto &info : m_subObjects) {
+            subobj.sub_obj_name = info.sub_obj_name;
+            xfer->xferAsciiString(&subobj.sub_obj_name);
+            subobj.hide = info.hide;
+            xfer->xferBool(&subobj.hide);
+        }
+    } else {
+        m_subObjects.clear();
+        for (int j = 0; j < size; j++) {
+            xfer->xferAsciiString(&subobj.sub_obj_name);
+            xfer->xferBool(&subobj.hide);
+            m_subObjects.push_back(subobj);
+        }
+    }
+
+    if (ver >= 2) {
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            if (m_renderObject != nullptr && m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD
+                && m_curState != nullptr && m_curState->m_transition) {
+                HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+                float frame;
+                int frames;
+                int mode;
+                float multiplier;
+                HAnimClass *anim = hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
+                bool b = anim != nullptr;
+                xfer->xferBool(&b);
+
+                if (anim) {
+                    xfer->xferInt(&mode);
+                    float f = frame / (anim->Get_Num_Frames() - 1);
+                    xfer->xferReal(&f);
+                }
+            } else {
+                bool b = false;
+                xfer->xferBool(&b);
+            }
+        } else {
+            bool b;
+            xfer->xferBool(&b);
+
+            if (b) {
+                int mode;
+                float newframe;
+                xfer->xferInt(&mode);
+                xfer->xferReal(&newframe);
+
+                if (m_renderObject != nullptr) {
+                    if (m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+                        HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
+                        HAnimClass *anim = hlod->Peek_Animation();
+
+                        if (anim) {
+                            float frame;
+                            int frames;
+                            int mode;
+                            float multiplier;
+                            hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
+                            hlod->Set_Animation(anim, (anim->Get_Num_Frames() - 1) / newframe, mode);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (xfer->Get_Mode() == XFER_LOAD && !m_subObjects.empty()) {
+        Update_Sub_Objects();
+    }
+}
+
+void W3DModelDraw::Load_Post_Process()
+{
+    DrawModule::Load_Post_Process();
+}
+
+NameKeyType W3DModelDraw::Get_Module_Name_Key() const
+{
+    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DModelDraw");
+    return nk;
+}
+
+void W3DModelDraw::Show_Sub_Object(Utf8String const &sub_obj_name, bool visible)
+{
+    if (sub_obj_name.Is_Not_Empty()) {
+        bool found = false;
+
+        for (auto &info : m_subObjects) {
+            if (!strcasecmp(sub_obj_name, info.sub_obj_name)) {
+                info.hide = visible == 0;
+                found = true;
+            }
+        }
+
+        if (!found) {
+            ModelConditionInfo::HideShowSubObjInfo info;
+            info.sub_obj_name = sub_obj_name;
+            info.hide = visible == 0;
+            m_subObjects.push_back(info);
+        }
+    }
+}
+
+void W3DModelDraw::Adjust_Anim_Speed_To_Movement_Speed()
+{
+    float distance = Get_Cur_Anim_Distance_Covered();
+
+    if (distance > 0.0f) {
+        Object *object = Get_Drawable()->Get_Object();
+
+        if (object) {
+            PhysicsBehavior *phys = object->Get_Physics();
+
+            if (phys) {
+                float vel = phys->Get_Velocity_Magnitude();
+
+                if (vel > 0.0f) {
+                    Set_Cur_Anim_Duration_In_Msec(distance / vel * MSEC_PER_LOGICFRAME_REAL);
+                }
+            }
+        }
+    }
+}
+
+void W3DModelDraw::React_To_Geometry_Change() {}
+
+void W3DModelDraw::Notify_Draw_Module_Dependency_Cleared() {}
+
+void W3DModelDraw::On_Render_Obj_Recreated() {}
+
+#ifdef GAME_DEBUG_STRUCTS
+void W3DModelDraw::Gather_Draw_Stats_For_Render_Object(DebugDrawStats *stats, RenderObjClass *robj)
+{
+    if (robj != nullptr) {
+        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+            RenderObjClass *subobj = robj->Get_Sub_Object(i);
+            Gather_Draw_Stats_For_Render_Object(stats, subobj);
+
+            if (subobj) {
+                subobj->Release_Ref();
+            }
+        }
+
+        if (robj->Is_Not_Hidden_At_All()) {
+            if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
+                MeshClass *mesh = static_cast<MeshClass *>(robj);
+                MeshModelClass *model = mesh->Peek_Model();
+
+                if (model) {
+                    if (model->Get_Flag(MeshGeometryClass::SORT)) {
+                        stats->Add_Sort_Meshes(1);
+                    }
+
+                    if (model->Get_Flag(MeshGeometryClass::SKIN)) {
+                        stats->Add_Skins(1);
+                    }
+                }
+
+                stats->Add_Draw_Calls(mesh->Get_Draw_Call_Count());
+            }
+        }
+
+        const HTreeClass *tree = robj->Get_HTree();
+
+        if (tree) {
+            stats->Add_Bones(tree->Num_Pivots());
+        }
+    }
+}
+#endif
+
+ModuleData *W3DModelDraw::Friend_New_Module_Data(INI *ini)
+{
+    W3DModelDrawModuleData *data = new W3DModelDrawModuleData();
+
+    if (ini) {
+        ini->Init_From_INI_Multi_Proc(data, W3DModelDrawModuleData::Build_Field_Parse);
+    }
+
+    return data;
+}
+
+Module *W3DModelDraw::Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data)
+{
+    return NEW_POOL_OBJ(W3DModelDraw, thing, module_data);
 }

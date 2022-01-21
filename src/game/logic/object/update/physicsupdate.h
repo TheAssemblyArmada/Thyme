@@ -60,11 +60,13 @@ public:
     PhysicsTurningType Get_Turning() const { return m_turning; }
     static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
 
-    void Recalc_Vel_Mag()
+    float Get_Velocity_Magnitude() const
     {
         if (m_velMag == -1.0f) {
             m_velMag = GameMath::Sqrt(GameMath::Square(m_vel.x) + GameMath::Square(m_vel.y) + GameMath::Square(m_vel.z));
         }
+
+        return m_velMag;
     }
 
 private:
@@ -86,6 +88,6 @@ private:
     float m_extraBounciness; // not 100% identified yet
     float m_extraFriction;
     ProjectileUpdateInterface *m_projectileUpdateInterface; // not 100% identified yet
-    float m_velMag;
+    mutable float m_velMag;
     bool m_canBounce; // not 100% identified yet
 };

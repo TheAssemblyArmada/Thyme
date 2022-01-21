@@ -53,7 +53,7 @@ public:
     W3DTreeDraw(Thing *thing, ModuleData const *module_data);
     virtual ~W3DTreeDraw() override {}
     virtual NameKeyType Get_Module_Name_Key() const override;
-    virtual void Do_Draw_Module(Marix3D *transform) override {}
+    virtual void Do_Draw_Module(const Matrix3D *transform) override {}
     virtual void Set_Shadows_Enabled(bool enable) override {}
     virtual void Release_Shadows() override {}
     virtual void Allocate_Shadows() override {}

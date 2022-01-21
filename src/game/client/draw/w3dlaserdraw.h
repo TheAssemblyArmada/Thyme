@@ -73,7 +73,7 @@ public:
     }
     virtual float Get_Laser_Template_Width() const override;
     virtual void Allocate_Shadows() override {}
-    virtual void Do_Draw_Module(Marix3D *transform) override;
+    virtual void Do_Draw_Module(const Matrix3D *transform) override;
     virtual LaserDrawInterface *Get_Laser_Draw_Interface() override { return this; }
     virtual const LaserDrawInterface *Get_Laser_Draw_Interface() const override { return this; }
     virtual bool Is_Laser() const override { return true; }

@@ -30,7 +30,7 @@ bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *tur
 {
 #ifdef GAME_DLL
     return Call_Method<bool, AIUpdateInterface, WhichTurretType, float *, float *>(
-        PICK_ADDRESS(0x007F4BCB, 0x007F4BCB), this, tur, turret_angle, turret_pitch);
+        PICK_ADDRESS(0x005D13F0, 0x007F4BCB), this, tur, turret_angle, turret_pitch);
 #else
     return false;
 #endif

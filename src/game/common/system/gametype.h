@@ -195,9 +195,19 @@ enum CellShroudStatus
     SHROUD_STATUS_SHROUD,
 };
 
-enum TerrainDecalType
+enum TerrainDecalType // names not 100% confirmed yet
 {
-    TERRAIN_DECAL_0,
+    TERRAIN_DECAL_DEMORALIZED_OBSOLETE,
+    TERRAIN_DECAL_HORDE_INFANTRY, // references EXHorde texture
+    TERRAIN_DECAL_NATIONALISM, // references EXHorde_UP texture
+    TERRAIN_DECAL_HORDE_VEHICLE, // references EXHordeB texture
+    TERRAIN_DECAL_4, // unknown, references EXHordeB_UP texture
+    TERRAIN_DECAL_JUNK_CRATE, // references EXJunkCrate texture
+    TERRAIN_DECAL_FANATICISM, // references EXHordeC_UP texture
+    TERRAIN_DECAL_CHEMICAL_SUITS, // references EXChemSuit texture
+    TERRAIN_DECAL_8, // unknown, references blank texture
+    TERRAIN_DECAL_9, // unknown, references blank texture
+    TERRAIN_DECAL_COUNT,
 };
 
 enum StealthLookType

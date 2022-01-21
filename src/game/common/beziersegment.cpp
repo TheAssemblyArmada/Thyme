@@ -13,18 +13,12 @@
  *            LICENSE
  */
 #include "beziersegment.h"
+
 #include "bezfwditerator.h"
+#include "vector4.h"
 
-const D3DXMATRIX BezierSegment::s_bezBasisMatrix =
-    D3DXMATRIX(-1.0f, 3.0f, -3.0f, 1.0f, 3.0f, -6.0f, 3.0f, 0.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
-
-namespace
-{
-float Dot_Product(const D3DXVECTOR4 &a, const D3DXVECTOR4 &b)
-{
-    return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
-}
-} // namespace
+const Matrix4 BezierSegment::s_bezBasisMatrix =
+    Matrix4(-1.0f, 3.0f, -3.0f, 1.0f, 3.0f, -6.0f, 3.0f, 0.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 
 BezierSegment::BezierSegment()
 {
@@ -104,17 +98,17 @@ void BezierSegment::Evaluate_Bez_Segment_At_T(float t, Coord3D *point)
         float sqr = t * t;
         float cub = t * t * t;
 
-        D3DXVECTOR4 vecW(cub, sqr, t, 1.0f);
-        D3DXVECTOR4 vecX(m_points[0].x, m_points[1].x, m_points[2].x, m_points[3].x);
-        D3DXVECTOR4 vecY(m_points[0].y, m_points[1].y, m_points[2].y, m_points[3].y);
-        D3DXVECTOR4 vecZ(m_points[0].z, m_points[1].z, m_points[2].z, m_points[3].z);
+        Vector4 vecW(cub, sqr, t, 1.0f);
+        Vector4 vecX(m_points[0].x, m_points[1].x, m_points[2].x, m_points[3].x);
+        Vector4 vecY(m_points[0].y, m_points[1].y, m_points[2].y, m_points[3].y);
+        Vector4 vecZ(m_points[0].z, m_points[1].z, m_points[2].z, m_points[3].z);
 
-        D3DXVECTOR4 vecF;
-        D3DXVec4Transform(&vecF, &vecW, &BezierSegment::s_bezBasisMatrix);
+        Vector4 vecF;
+        Matrix4::Transform_Vector(s_bezBasisMatrix, vecW, &vecF);
 
-        point->x = Dot_Product(vecX, vecF);
-        point->y = Dot_Product(vecY, vecF);
-        point->z = Dot_Product(vecZ, vecF);
+        point->x = Vector4::Dot_Product(vecX, vecF);
+        point->y = Vector4::Dot_Product(vecY, vecF);
+        point->z = Vector4::Dot_Product(vecZ, vecF);
     }
 }
 

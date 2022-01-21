@@ -15,7 +15,7 @@
 #pragma once
 
 #include "coord.h"
-#include <d3dx8math.h>
+#include "matrix4.h"
 #include <vector>
 
 class BezFwdIterator;
@@ -88,5 +88,5 @@ public:
 private:
     Coord3D m_points[4];
 
-    static const D3DXMATRIX s_bezBasisMatrix;
+    static const Matrix4 s_bezBasisMatrix;
 };

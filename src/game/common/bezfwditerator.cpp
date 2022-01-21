@@ -14,6 +14,9 @@
  */
 #include "bezfwditerator.h"
 
+#include "matrix4.h"
+#include "vector4.h"
+
 BezFwdIterator::BezFwdIterator()
 {
     m_index = 0;
@@ -44,14 +47,14 @@ void BezFwdIterator::Start()
         const float sqr_distance = distance * distance;
         const float cub_distance = distance * distance * distance;
 
-        D3DXVECTOR4 xvec(m_segment.m_points[0].x, m_segment.m_points[1].x, m_segment.m_points[2].x, m_segment.m_points[3].x);
-        D3DXVECTOR4 yvec(m_segment.m_points[0].y, m_segment.m_points[1].y, m_segment.m_points[2].y, m_segment.m_points[3].y);
-        D3DXVECTOR4 zvec(m_segment.m_points[0].z, m_segment.m_points[1].z, m_segment.m_points[2].z, m_segment.m_points[3].z);
+        Vector4 xvec(m_segment.m_points[0].x, m_segment.m_points[1].x, m_segment.m_points[2].x, m_segment.m_points[3].x);
+        Vector4 yvec(m_segment.m_points[0].y, m_segment.m_points[1].y, m_segment.m_points[2].y, m_segment.m_points[3].y);
+        Vector4 zvec(m_segment.m_points[0].z, m_segment.m_points[1].z, m_segment.m_points[2].z, m_segment.m_points[3].z);
 
-        D3DXVECTOR4 vectors[3];
-        D3DXVec4Transform(&vectors[0], &xvec, &BezierSegment::s_bezBasisMatrix);
-        D3DXVec4Transform(&vectors[1], &yvec, &BezierSegment::s_bezBasisMatrix);
-        D3DXVec4Transform(&vectors[2], &zvec, &BezierSegment::s_bezBasisMatrix);
+        Vector4 vectors[3];
+        Matrix4::Transform_Vector(BezierSegment::s_bezBasisMatrix, xvec, &vectors[0]);
+        Matrix4::Transform_Vector(BezierSegment::s_bezBasisMatrix, yvec, &vectors[1]);
+        Matrix4::Transform_Vector(BezierSegment::s_bezBasisMatrix, zvec, &vectors[2]);
 
         m_point = m_segment.m_points[0];
 
@@ -60,9 +63,9 @@ void BezFwdIterator::Start()
         float *f3;
         int idx = 3;
 
-        while (idx-- != 0) {
-            const float x = vectors[idx].x;
-            const float y = vectors[idx].y;
+        while (--idx >= 0) {
+            const float x = vectors[idx].X;
+            const float y = vectors[idx].Y;
             switch (idx) {
                 case 0:
                     f1 = &m_add0.x;
@@ -80,7 +83,7 @@ void BezFwdIterator::Start()
                     f3 = &m_add2.z;
                     break;
             }
-            *f1 = x * cub_distance + y * sqr_distance + vectors[idx].z * distance;
+            *f1 = x * cub_distance + y * sqr_distance + vectors[idx].Z * distance;
             *f2 = 6.0f * x * cub_distance + 2.0f * y * sqr_distance;
             *f3 = 6.0f * x * cub_distance;
         }

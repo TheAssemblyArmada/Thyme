@@ -351,7 +351,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
 
 #ifdef GAME_DEBUG_STRUCTS
                         if (info.m_weaponMuzzleFlashBone) {
-                            info.m_weaponMuzzleFlashBoneName = buf;
+                            info.m_weaponMuzzleFlashBoneName = bone_id;
                         }
 #endif
                     }
@@ -1050,8 +1050,8 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
             Utf8String str;
             flags.Parse(ini, &str);
 #ifdef GAME_DEBUG_STRUCTS
-            info2.m_descrption.Concat("\nAKA: ");
-            info2.m_descrption += str;
+            info2.m_description.Concat("\nAKA: ");
+            info2.m_description += str;
 #endif
 
             if (flags.Any_Intersection_With(data->m_ignoreConditionStates)) {

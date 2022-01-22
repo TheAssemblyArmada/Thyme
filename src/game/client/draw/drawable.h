@@ -170,7 +170,7 @@ public:
     float Get_Effective_Opacity2() { return m_effectiveOpacity2; }
     void Clear_Draw_Bit(unsigned int bit) { m_drawBits &= ~bit; }
     bool Check_Draw_Bit(unsigned int bit) { return (bit & m_drawBits) != 0; }
-    Matrix3D &Get_Instance_Matrix() { return m_instance; }
+    const Matrix3D &Get_Instance_Matrix() const { return m_instance; }
     bool Is_Instance_Identity() { return m_instanceIsIdentity; }
     void Kill_Icon(DrawableIconType icon); // needs DrawableIconInfo
     bool Has_Drawable_Icon_Info() { return m_drawableIconInfo != nullptr; }
@@ -271,7 +271,7 @@ public:
 
     bool Is_Mass_Selectable() const;
     bool Is_Selectable() const;
-    bool Is_Visible();
+    bool Is_Visible() const;
 
     void Mangle_Custom_Audio_Name(DynamicAudioEventInfo *info) const;
     void Notify_Drawable_Dependency_Cleared();
@@ -302,7 +302,7 @@ public:
     void Set_Fully_Obscured_By_Shroud(bool fully_obscured);
     void Set_ID(DrawableID id);
     void Set_Indicator_Color(int color);
-    void Set_Instance_Matrix(Matrix3D const *instance);
+    void Set_Instance_Matrix(Matrix3D const *matrix);
     void Set_Position(Coord3D const *pos);
     void Set_Selectable(bool selectable);
     void Set_ShadowsEnabled(bool enable);

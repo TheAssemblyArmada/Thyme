@@ -76,6 +76,8 @@ private:
     NameKeyType m_nextID;
 };
 
+NameKeyType Name_To_Key(const char *name);
+
 #ifdef GAME_DLL
 extern NameKeyGenerator *&g_theNameKeyGenerator;
 #else

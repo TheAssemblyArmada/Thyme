@@ -981,7 +981,7 @@ void Setup_Hooks()
     Hook_Method(
         0x00803E90, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x00803EE0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::Create_Surface));
-    Hook_Method(0x008041B0, &DX8Wrapper::Set_Light);
+    Hook_Method(0x008041B0, static_cast<void (*)(unsigned, const D3DLIGHT8 *)>(&DX8Wrapper::Set_Light));
     Hook_Method(0x008044B0, &DX8Wrapper::Get_DX8_Front_Buffer);
     Hook_Method(0x00804520, &DX8Wrapper::Get_DX8_Back_Buffer);
     Hook_Method(0x008045E0, &DX8Wrapper::Create_Render_Target);

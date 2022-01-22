@@ -74,12 +74,12 @@ void SwayClientUpdate::Client_Update()
         Drawable *drawable = Get_Drawable();
         const BreezeInfo *breeze = g_theScriptEngine->Get_Breeze_Info();
 
-        if (m_curVersion == breeze->version) {
+        if (m_curVersion != breeze->version) {
+            Update_Sway();
+        } else {
             if (drawable == nullptr || !drawable->Is_Visible()) {
                 return;
             }
-        } else {
-            Update_Sway();
         }
 
         m_curValue = m_curValue + m_curDelta;

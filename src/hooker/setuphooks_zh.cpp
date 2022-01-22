@@ -2001,7 +2001,6 @@ void Setup_Hooks()
 
     // swayclientupdate.h
     Hook_Method(0x006885A0, &SwayClientUpdate::Hook_Ctor);
-    Hook_Any(0x00688660, SwayClientUpdate::~SwayClientUpdate);
     Hook_Any(0x006889C0, SwayClientUpdate::Xfer_Snapshot);
     Hook_Any(0x00688A40, SwayClientUpdate::Load_Post_Process);
     Hook_Any(0x00688630, SwayClientUpdate::Get_Module_Name_Key);

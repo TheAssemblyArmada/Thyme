@@ -72,6 +72,4 @@ private:
     int16_t m_curVersion;
     bool m_swaying;
     bool m_unused;
-
-    static NameKeyType s_swayClientUpdateKey;
 };

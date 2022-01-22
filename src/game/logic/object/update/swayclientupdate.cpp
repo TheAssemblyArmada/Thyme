@@ -19,8 +19,6 @@
 #include "randomvalue.h"
 #include "scriptengine.h"
 
-NameKeyType SwayClientUpdate::s_swayClientUpdateKey = NAMEKEY_INVALID;
-
 SwayClientUpdate::SwayClientUpdate(Thing *thing, const ModuleData *module_data) :
     ClientUpdateModule(thing, module_data),
     m_curValue(0.0f),
@@ -41,7 +39,7 @@ SwayClientUpdate *SwayClientUpdate::Friend_New_Module_Instance(Thing *thing, con
 
 void SwayClientUpdate::CRC_Snapshot(Xfer *xfer)
 {
-    DrawableModule::CRC_Snapshot(xfer);
+    ClientUpdateModule::CRC_Snapshot(xfer);
 }
 
 void SwayClientUpdate::Xfer_Snapshot(Xfer *xfer)
@@ -66,9 +64,7 @@ void SwayClientUpdate::Load_Post_Process()
 
 NameKeyType SwayClientUpdate::Get_Module_Name_Key() const
 {
-    if (s_swayClientUpdateKey == NAMEKEY_INVALID) {
-        s_swayClientUpdateKey = Name_To_Key("SwayClientUpdate");
-    }
+    static NameKeyType s_swayClientUpdateKey = Name_To_Key("SwayClientUpdate");
     return s_swayClientUpdateKey;
 }
 

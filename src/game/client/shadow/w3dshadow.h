@@ -64,13 +64,13 @@ public:
     {
         char m_shadowName[64];
         ShadowType m_type;
-        char m_allowUpdates;
-        char m_allowWorldAlign;
+        bool m_allowUpdates;
+        bool m_allowWorldAlign;
         float m_sizeX;
         float m_sizeY;
         float m_offsetX;
         float m_offsetY;
-        ThingTemplate *m_thing;
+        const ThingTemplate *m_thing;
     };
 
     void Enable_Shadow_Render(bool enable) { m_isEnabled = enable; }
@@ -126,7 +126,7 @@ protected:
 class W3DShadowManager
 {
 public:
-    void Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
+    Shadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
     void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
     unsigned int Get_Stencil_Mask() { return m_stencilMask; }

@@ -81,8 +81,8 @@ struct TTriggerInfo
 
 enum WhichTurretType
 {
-    TURRET_INVALID = 0xff,
-    TURRET_MAIN,
+    TURRET_INVALID = -1,
+    TURRET_MAIN = 0,
     TURRET_ALT,
     MAX_TURRETS,
 };

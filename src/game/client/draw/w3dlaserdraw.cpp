@@ -193,7 +193,7 @@ NameKeyType W3DLaserDraw::Get_Module_Name_Key() const
     return nk;
 }
 
-void W3DLaserDraw::Do_Draw_Module(Marix3D *transform)
+void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)
 {
     const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
     Drawable *drawable = Get_Drawable();

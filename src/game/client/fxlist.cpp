@@ -68,3 +68,12 @@ void FXList::Parse(INI *ini, void *, void *store, const void *)
 
     *static_cast<FXList **>(store) = fx_list;
 }
+
+void FXList::Do_FX_Pos(
+    const Coord3D *primary, const Matrix3D *primaryMtx, float primarySpeed, const Coord3D *secondary, float radius) const
+{
+#ifdef GAME_DLL
+    Call_Method<void, const FXList, const Coord3D *, const Matrix3D *, float, const Coord3D *, float>(
+        0x004CBE70, this, primary, primaryMtx, primarySpeed, secondary, radius);
+#endif
+}

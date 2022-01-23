@@ -403,7 +403,7 @@ char *HTreeClass::Get_Bone_Name(int boneidx)
     return m_pivot[boneidx].name;
 }
 
-int HTreeClass::Get_Parent_Index(int boneidx)
+int HTreeClass::Get_Parent_Index(int boneidx) const
 {
     if (m_pivot[boneidx].parent) {
         return m_pivot[boneidx].parent->index;

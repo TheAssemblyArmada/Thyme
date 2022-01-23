@@ -34,10 +34,12 @@ Vector3 &W3DShadowManager::Get_Light_Pos_World(int light_index)
 #endif
 }
 
-void W3DShadowManager::Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable)
+Shadow *W3DShadowManager::Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable)
 {
 #ifdef GAME_DLL
-    Call_Method<void, W3DShadowManager, RenderObjClass *, Shadow::ShadowTypeInfo *, Drawable *>(
+    return Call_Method<Shadow *, W3DShadowManager, RenderObjClass *, Shadow::ShadowTypeInfo *, Drawable *>(
         PICK_ADDRESS(0x00782230, 0x0060599A), this, robj, shadow_info, drawable);
+#else
+    return nullptr;
 #endif
 }

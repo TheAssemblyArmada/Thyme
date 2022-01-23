@@ -26,5 +26,6 @@ public:
 
 class AIUpdateInterface
 {
+public:
     bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
 };

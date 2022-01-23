@@ -56,7 +56,7 @@ public:
 
     int Get_Bone_Index(char const *name);
     char *Get_Bone_Name(int boneidx);
-    int Get_Parent_Index(int boneidx);
+    int Get_Parent_Index(int boneidx) const;
 
     void Scale(float factor);
 
@@ -67,7 +67,7 @@ public:
     void Control_Bone(int boneindex, Matrix3D const &relative_tm, bool world_space_translation);
     void Get_Bone_Control(int boneindex, Matrix3D &relative_tm);
 
-    int Num_Pivots() { return m_numPivots; }
+    int Num_Pivots() const { return m_numPivots; }
     const Matrix3D &Get_Transform(int pivot) const
     {
         captainslog_assert(pivot >= 0);

@@ -15,6 +15,7 @@
 #include "w3dmodulefactory.h"
 #include "moduleinfo.h"
 #include "w3dlaserdraw.h"
+#include "w3dmodeldraw.h"
 #include "w3dtreedraw.h"
 /**
  * @brief Initialises W3D specific modules on top of those handled by the base factory class.
@@ -34,8 +35,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DDebrisDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00775E50,
-        (moddatacreateproc_t)0x00775F40,
+    Add_Module_Internal(&W3DModelDraw::Friend_New_Module_Instance,
+        &W3DModelDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DModelDraw",
         DrawModule::Get_Interface_Mask());

@@ -21,9 +21,7 @@ enum NameKeyType;
 class Thing;
 class ModuleData;
 
-// This class can be tested with some trees on Seaside Mutiny (2) map. Interestingly not all trees use this module. In Retail
-// game, some trees move faster with higher framerate, while trees using this module do not: They sway in consistent speeds
-// regardless of the framerate (good).
+// This class can be tested with some trees on Seaside Mutiny (2) map. Not all trees use this module.
 
 class SwayClientUpdate : public ClientUpdateModule
 {

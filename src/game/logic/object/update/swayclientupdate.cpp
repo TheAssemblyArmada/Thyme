@@ -89,6 +89,7 @@ void SwayClientUpdate::Client_Update()
         const float angle = GameMath::Cos(m_curValue);
         const float new_angle = angle * m_curAngleLimit + m_leanAngle;
         const float delta_angle = new_angle - m_curAngle;
+        // #TODO Negate -delta_angle to make trees sway in same direction as trees not using this module.
         const float rotx = -delta_angle * breeze->sway_direction.x;
         const float roty = delta_angle * breeze->sway_direction.y;
 

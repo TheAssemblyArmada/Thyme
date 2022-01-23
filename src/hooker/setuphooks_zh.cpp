@@ -126,6 +126,7 @@
 #include "sortingrenderer.h"
 #include "soundmanager.h"
 #include "surfaceclass.h"
+#include "swayclientupdate.h"
 #include "targa.h"
 #include "teamsinfo.h"
 #include "terraintex.h"
@@ -1997,4 +1998,12 @@ void Setup_Hooks()
     Hook_Method(0x0072C180, &BezierSegment::Get_Segment_Points);
     Hook_Method(0x0072C2A0, &BezierSegment::Get_Approximate_Length);
     Hook_Method(0x0072C440, &BezierSegment::Split_Segment_At_T);
+
+    // swayclientupdate.h
+    Hook_Method(0x006885A0, &SwayClientUpdate::Hook_Ctor);
+    Hook_Any(0x006889C0, SwayClientUpdate::Xfer_Snapshot);
+    Hook_Any(0x00688A40, SwayClientUpdate::Load_Post_Process);
+    Hook_Any(0x00688630, SwayClientUpdate::Get_Module_Name_Key);
+    Hook_Any(0x006886C0, SwayClientUpdate::Client_Update);
+
 }

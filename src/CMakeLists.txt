@@ -212,6 +212,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/laserupdate.cpp
+    game/logic/object/update/swayclientupdate.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
     game/logic/scriptengine/scriptaction.cpp

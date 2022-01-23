@@ -155,3 +155,8 @@ void NameKeyGenerator::Free_Sockets()
         m_sockets[i] = nullptr;
     }
 }
+
+NameKeyType Name_To_Key(const char *name)
+{
+    return g_theNameKeyGenerator->Name_To_Key(name);
+}

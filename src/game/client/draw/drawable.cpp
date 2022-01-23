@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "drawable.h"
+
+#include "drawmodule.h"
 #include "object.h"
 
 const Matrix3D *Drawable::Get_Transform_Matrix() const
@@ -24,6 +26,18 @@ const Matrix3D *Drawable::Get_Transform_Matrix() const
     }
 
     return Thing::Get_Transform_Matrix();
+}
+
+bool Drawable::Is_Visible() const
+{
+    const DrawModule **draw_modules = Get_Draw_Modules();
+
+    for (const DrawModule *draw_module = draw_modules[0]; draw_modules != nullptr; ++draw_module) {
+        if (draw_module->Is_Visible()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 void Drawable::Friend_Lock_Dirty_Stuff_For_Iteration()
@@ -84,6 +98,17 @@ bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *none_nam
 #else
     return false;
 #endif
+}
+
+void Drawable::Set_Instance_Matrix(Matrix3D const *matrix)
+{
+    if (matrix != nullptr) {
+        m_instance = *matrix;
+        m_instanceIsIdentity = false;
+    } else {
+        m_instance.Make_Identity();
+        m_instanceIsIdentity = true;
+    }
 }
 
 void Drawable::Set_Position(Coord3D const *pos)

@@ -93,8 +93,8 @@ void SwayClientUpdate::Client_Update()
         const float roty = delta_angle * breeze->sway_direction.y;
 
         Matrix3D new_matrix = drawable->Get_Instance_Matrix();
-        new_matrix.Rotate_X(rotx);
-        new_matrix.Rotate_Y(roty);
+        new_matrix.In_Place_Pre_Rotate_X(rotx);
+        new_matrix.In_Place_Pre_Rotate_Y(roty);
 
         drawable->Set_Instance_Matrix(&new_matrix);
         m_curAngle = new_angle;

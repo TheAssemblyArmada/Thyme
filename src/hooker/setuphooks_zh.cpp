@@ -125,6 +125,7 @@
 #include "smudge.h"
 #include "sortingrenderer.h"
 #include "soundmanager.h"
+#include "statemachine.h"
 #include "surfaceclass.h"
 #include "swayclientupdate.h"
 #include "targa.h"
@@ -2057,4 +2058,22 @@ void Setup_Hooks()
     Hook_Any(0x00688630, SwayClientUpdate::Get_Module_Name_Key);
     Hook_Any(0x006886C0, SwayClientUpdate::Client_Update);
 
+    // statemachine.cpp
+    Hook_Any(0x006F7760, StateMachine::Hook_Ctor);
+    Hook_Any(0x006F78F0, StateMachine::Hook_Dtor);
+    Hook_Any(0x006F7AB0, StateMachine::Clear);
+    Hook_Any(0x006F7AE0, StateMachine::Reset_To_Default_State);
+    Hook_Any(0x006F7B30, StateMachine::Update_State_Machine);
+    Hook_Any(0x006F7BB0, StateMachine::Define_State);
+    Hook_Any(0x006F7C70, StateMachine::Internal_Get_State);
+    Hook_Any(0x006F7CF0, StateMachine::Set_State);
+    Hook_Any(0x006F7D10, StateMachine::Internal_Set_State);
+    Hook_Any(0x006F7DF0, StateMachine::Init_Default_State);
+    Hook_Any(0x006F7E10, StateMachine::Set_Goal_Object);
+    Hook_Any(0x006F7E50, StateMachine::Is_Goal_Object_Destroyed);
+    Hook_Any(0x006F7E90, StateMachine::Halt);
+    Hook_Any(0x006F7ED0, StateMachine::Set_Goal_Position);
+    Hook_Any(0x006F7F00, StateMachine::Xfer_Snapshot);
+    Hook_Any(0x006F7650, State::Friend_Check_For_Sleep_Transitions);
+    Hook_Any(0x006F74A0, State::Friend_Check_For_Transitions);
 }

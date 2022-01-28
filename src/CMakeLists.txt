@@ -140,6 +140,7 @@ set(GAMEENGINE_SRC
     game/common/randomvalue.cpp
     game/common/registry.cpp
     game/common/staticnamekey.cpp
+    game/common/statemachine.cpp
     game/common/terraintypes.cpp
     game/common/userpreferences.cpp
     game/common/version.cpp

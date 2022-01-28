@@ -1404,7 +1404,7 @@ bool Is_Animation_Complete(RenderObjClass *r)
 
 void W3DModelDraw::Do_Draw_Module(const Matrix3D *transform)
 {
-    Set_Pause_Animation(Get_Drawable()->Get_Should_Animate(Get_W3D_Model_Draw_Module_Data()->m_animationsRequirePower));
+    Set_Pause_Animation(!Get_Drawable()->Get_Should_Animate(Get_W3D_Model_Draw_Module_Data()->m_animationsRequirePower));
 
     if (Get_Drawable()->Get_Instance_Scale() != 1.0f) {
         Matrix3D m;

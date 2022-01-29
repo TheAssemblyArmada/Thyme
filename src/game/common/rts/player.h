@@ -246,7 +246,7 @@ public:
 
     // void Friend_Apply_Difficulty_Bonuses_For_Object(Object *, bool);
 
-    bool Has_Science(ScienceType t) const;
+    bool Has_Science(ScienceType science_type) const;
     // bool Has_Prereqs_For_Science(ScienceType) const;
     // bool Is_Capable_Of_Purchasing_Science(ScienceType) const;
     // bool Is_Science_Hidden(ScienceType) const;

@@ -23,6 +23,8 @@ class File;
 class Xfer;
 class INI;
 
+enum ScienceType : int32_t;
+
 extern const float _SECONDS_PER_LOGICFRAME_REAL_74;
 extern const float _ANGLE_MULTIPLIER;
 
@@ -157,10 +159,12 @@ public:
     static void Parse_Bitstring64(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Speaker_Type(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Science(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Dynamic_Audio_Event_RTS(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Object_Definition(INI *ini);
     static void Parse_Object_Reskin_Definition(INI *ini);
+    static void Parse_SpecialPowerTemplate(INI *ini, void *formal, void *store, const void *user_data);
 
     // Block Parser functions
     static void Parse_Draw_Group_Info(INI *ini);

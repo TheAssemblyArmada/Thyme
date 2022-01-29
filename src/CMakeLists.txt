@@ -242,6 +242,9 @@ set(GAMEENGINE_SRC
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/laserupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
+    game/logic/object/update/specialpowertemplate.cpp
+    game/logic/object/update/specialpowerupdatemodule.cpp
+    game/logic/object/update/spectregunshipdeploymentupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp
@@ -251,10 +254,11 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
     game/logic/scriptengine/sequentialscript.cpp
-    game/logic/system/gamelogic.cpp
-    game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp
+    game/logic/system/gamelogic.cpp
     game/logic/system/partitionmanager.cpp
+    game/logic/system/rankinfo.cpp
+    game/logic/system/specialpowerstore.cpp
     game/network/framemetrics.cpp
     game/network/filetransfer.cpp
     game/network/gamemessageparser.cpp

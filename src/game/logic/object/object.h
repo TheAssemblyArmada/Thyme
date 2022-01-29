@@ -329,7 +329,7 @@ public:
     float Get_Vision_Range() const;
     float Get_Shroud_Clearing_Range() const;
     float Get_Shroud_Range() const;
-    SpecialPowerModuleInterface *Get_Special_Power_Module(const SpecialPowerTemplate *t) const;
+    SpecialPowerModuleInterface *Get_Special_Power_Module(const SpecialPowerTemplate *sptemplate) const;
     ProductionUpdateInterface *Get_Production_Update_Interface();
     DockUpdateInterface *Get_Dock_Update_Interface();
     SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() const;

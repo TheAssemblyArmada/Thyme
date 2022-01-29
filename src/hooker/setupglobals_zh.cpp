@@ -226,6 +226,9 @@ CaveSystem *&g_theCaveSystem = Make_Global<CaveSystem *>(PICK_ADDRESS(0x00A2BDF8
 class RankInfoStore;
 RankInfoStore *&g_theRankInfoStore = Make_Global<RankInfoStore *>(PICK_ADDRESS(0x00A2B97C, 0x00E241B4));
 
+class SpecialPowerStore;
+SpecialPowerStore *&TheSpecialPowerStore = Make_Global<SpecialPowerStore *>(PICK_ADDRESS(0, 0)); // TODO
+
 // lanapiinterface.cpp
 class LANAPIInterface;
 LANAPIInterface *&g_theLAN = Make_Global<LANAPIInterface *>(PICK_ADDRESS(0x00A2E0EC, 0));

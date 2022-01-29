@@ -27,6 +27,7 @@ public:
     AudioEventRTS(const AudioEventRTS &that);
     AudioEventRTS(const Utf8String &name);
     AudioEventRTS(const Utf8String &name, ObjectID id);
+    AudioEventRTS(const Utf8String &name, DrawableID id);
     AudioEventRTS(const Utf8String &name, const Coord3D *pos);
     virtual ~AudioEventRTS() {}
 
@@ -45,12 +46,24 @@ public:
     void Set_Player_Index(int index) { m_playerIndex = index; }
     void Set_Next_Play_Portion(int portion) { m_nextPlayPortion = portion; }
     void Set_Handle_To_Kill(int handle) { m_handleToKill = handle; }
+    void Set_Time_Of_Day(TimeOfDayType tod) { m_timeOfDay = tod; }
 
     const Utf8String &Get_File_Name() const { return m_filename; }
     const Utf8String &Get_Attack_Name() const { return m_filenameAttack; }
     const Utf8String &Get_Decay_Name() const { return m_filenameDecay; }
     const Utf8String &Get_Event_Name() const { return m_eventName; }
-    const AudioEventInfo *Get_Event_Info() const { return m_eventInfo; }
+    const AudioEventInfo *Get_Event_Info() const
+    {
+        if (m_eventInfo) {
+            if (m_eventInfo->m_eventName == m_eventName) {
+                return m_eventInfo;
+            }
+
+            m_eventInfo = nullptr;
+        }
+
+        return m_eventInfo;
+    }
     uintptr_t Get_Handle_To_Kill() const { return m_handleToKill; }
     Coord3D *Get_Current_Pos();
     AudioType Get_Event_Type() const { return m_eventType; }
@@ -64,8 +77,26 @@ public:
     uintptr_t Get_Playing_Handle() const { return m_playingHandle; }
     int Get_Next_Play_Portion() const { return m_nextPlayPortion; }
     bool Has_More_Loops() const { return m_loopCount >= 0; }
-    ObjectID Get_Object_ID() const { return m_objectID; }
+    ObjectID Get_Object_ID() const
+    {
+        if (m_eventType == EVENT_SOUND) {
+            return m_objectID;
+        } else {
+            return OBJECT_UNK;
+        }
+    }
+    DrawableID Get_Drawable_ID() const
+    {
+        if (m_eventType == EVENT_SPEECH) {
+            return m_drawableID;
+        } else {
+            return DRAWABLE_UNK;
+        }
+    }
     void Decrement_Delay(float amount) { m_delay -= amount; }
+    bool Is_Currently_Playing();
+    void Set_Object_ID(ObjectID id);
+    void Set_Drawable_ID(DrawableID id);
 
 private:
     Utf8String Generate_Filename_Prefix(AudioType type, bool localize);
@@ -84,7 +115,11 @@ private:
     float m_volumeAdjustFactor;
     TimeOfDayType m_timeOfDay;
     Coord3D m_positionOfAudio;
-    ObjectID m_objectID;
+    union
+    {
+        ObjectID m_objectID;
+        DrawableID m_drawableID;
+    };
     AudioType m_eventType;
     bool m_shouldFade;
     bool m_isLogical;

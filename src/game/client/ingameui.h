@@ -181,6 +181,11 @@ public:
 #endif
     virtual View *Create_View() = 0;
 
+    bool Get_Drawable_Caption_Bold() const { return m_drawableCaptionBold; }
+    int Get_Drawable_Caption_Size() const { return m_drawableCaptionPointSize; }
+    Utf8String Get_Drawable_Caption_Font() const { return m_drawableCaptionFont; }
+    int Get_Drawable_Caption_Color() const { return m_drawableCaptionColor; }
+
 protected:
     struct MoveHintStruct
     {

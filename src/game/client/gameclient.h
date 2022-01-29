@@ -162,6 +162,9 @@ public:
     DrawableID Get_Next_DrawableID() { return m_nextDrawableID; }
     void Set_Next_DrawableID(DrawableID id) { m_nextDrawableID = id; }
     int Get_On_Screen_Object_Count() { return m_onScreenObjectCount; }
+    void Add_Text_Bearing_Drawable(Drawable *drawable);
+    void Remove_Drawable_From_Lookup_Table(Drawable *drawable);
+    void Add_Drawable_To_Lookup_Table(Drawable *drawable);
 
 protected:
     uint32_t m_frame;

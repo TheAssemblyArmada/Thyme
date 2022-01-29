@@ -182,7 +182,7 @@ public:
     virtual void Set_Current_Height_Above_Ground(float height) { m_currentHeightAboveGround = height; }
     virtual void Set_Field_Of_View(float fov) { m_FOV = fov; }
     virtual float Get_Field_Of_View() { return m_FOV; }
-    virtual void World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
+    virtual int World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
     virtual void Screen_To_World(const ICoord2D *o1, Coord3D *o2) = 0;
     virtual void Screen_To_Terrain(const ICoord2D *o1, Coord3D *o2) = 0;
     virtual void Screen_To_World_At_Z(const ICoord2D *o1, Coord3D *o2, float f) = 0;

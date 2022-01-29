@@ -14,6 +14,7 @@
  *            LICENSE
  */
 #include "gameclient.h"
+#include "drawable.h"
 #include "gamemessage.h"
 #include "rayeffect.h"
 
@@ -60,4 +61,31 @@ GameMessageDisposition CommandTranslator::Translate_Game_Message(const GameMessa
 #else
     return GameMessageDisposition();
 #endif
+}
+
+void GameClient::Add_Text_Bearing_Drawable(Drawable *drawable)
+{
+    if (drawable) {
+        m_drawableTB.push_back(drawable);
+    }
+}
+
+void GameClient::Remove_Drawable_From_Lookup_Table(Drawable *drawable)
+{
+    if (drawable != nullptr) {
+        m_drawableLUT[drawable->Get_ID()] = nullptr;
+    }
+}
+
+void GameClient::Add_Drawable_To_Lookup_Table(Drawable *drawable)
+{
+    if (drawable != nullptr) {
+        DrawableID id = drawable->Get_ID();
+
+        while (id >= m_drawableLUT.size()) {
+            m_drawableLUT.resize(2 * m_drawableLUT.size(), nullptr);
+        }
+
+        m_drawableLUT[id] = drawable;
+    }
 }

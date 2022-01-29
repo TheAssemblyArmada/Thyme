@@ -46,6 +46,8 @@ public:
 
     void Set_Idle_State() { m_state = STATE_IDLE; }
     void Set_Decay_State() { m_state = STATE_DECAY; }
+    bool Is_Tinted() { return m_isTinted; }
+    Vector3 &Get_Idle_Color() { return m_idleColor; }
 
 private:
     void Set_Attack_Frames(unsigned int attack_frames);

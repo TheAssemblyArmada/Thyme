@@ -73,12 +73,13 @@ public:
     int Get_Rank_Points_To_Add_At_Game_Start() { return m_rankPointsToAddAtGameStart; }
     int Get_Unk_Frame() { return m_unkFrame; }
 
-    bool Get_Occlusion_Enabled() { return m_occlusionEnabled; }
-    bool Get_In_Game_Logic_Update() { return m_inGameLogicUpdate; }
-    bool Get_Dynamic_LOD() { return m_dynamicLOD; }
-    bool Get_Start_New_Game() { return m_startNewGame; }
-    bool Get_Draw_Icon_UI() { return m_drawIconUI; }
-    bool Get_Enable_Scoring() { return m_scoringEnabled; }
+    bool Get_Occlusion_Enabled() const { return m_occlusionEnabled; }
+    bool Get_In_Game_Logic_Update() const { return m_inGameLogicUpdate; }
+    bool Get_Dynamic_LOD() const { return m_dynamicLOD; }
+    bool Get_Start_New_Game() const { return m_startNewGame; }
+    bool Get_Draw_Icon_UI() const { return m_drawIconUI; }
+    bool Get_Enable_Scoring() const { return m_scoringEnabled; }
+    bool Get_Prepare_New_Game() const { return m_prepareNewGame; }
 
     void Set_Width(float width) { m_width = width; }
     void Set_Height(float height) { m_height = height; }

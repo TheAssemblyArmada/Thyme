@@ -72,7 +72,7 @@ public:
     virtual void Set_Height_Above_Ground(float height) override;
     virtual void Set_Zoom_To_Default() override;
     virtual void Set_Field_Of_View(float fov) override;
-    virtual void World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) override;
+    virtual int World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) override;
     virtual void Screen_To_World(const ICoord2D *o1, Coord3D *o2) override;
     virtual void Screen_To_Terrain(const ICoord2D *o1, Coord3D *o2) override;
     virtual void Screen_To_World_At_Z(const ICoord2D *o1, Coord3D *o2, float f) override;
@@ -89,6 +89,8 @@ public:
     virtual void Camera_Disable_Real_Zoom_Mode();
     bool Update_Camera_Movements();
     CameraClass *Get_3D_Camera() { return m_3DCamera; }
+
+    bool World_To_Screen_Tri(const Coord3D *o1, ICoord2D *o2) { return World_To_Screen_Tri_Return(o1, o2) == 0; }
 
 private:
     CameraClass *m_3DCamera;

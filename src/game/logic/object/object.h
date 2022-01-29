@@ -268,6 +268,7 @@ public:
     void Get_Formation_Offset(Coord2D *c) { *c = m_formationOffset; }
     bool Get_Single_Use_Command() const { return m_singleUseCommand; }
     unsigned int Get_Occlusion_Delay_Frame() const { return m_occlusionDelayFrame; }
+    FormationID Get_Formation_ID() const { return m_formationID; }
 
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
     bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
@@ -305,7 +306,7 @@ public:
     float Get_Largest_Weapon_Range() const;
     const Weapon *Get_Current_Weapon(WeaponSlotType *wslot) const;
     Weapon *Get_Current_Weapon(WeaponSlotType *wslot);
-    bool Get_Ammo_Pip_Showing_Info(int &i1, int &i2) const;
+    bool Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const;
     CanAttackResult Get_Able_To_Attack_Specific_Object(
         AbleToAttackType type, const Object *obj, CommandSourceType source, WeaponSlotType slot) const;
     CanAttackResult Get_Able_To_Use_Weapon_Against_Target(
@@ -322,7 +323,7 @@ public:
     ExitInterface *Get_Object_Exit_Interface() const;
     VeterancyLevel Get_Veterancy_Level() const;
     void Get_Health_Box_Position(Coord3D &pos) const;
-    bool Get_Health_Box_Dimensions(float &width, float &hegith) const;
+    bool Get_Health_Box_Dimensions(float &width, float &height) const;
     float Get_Vision_Range() const;
     float Get_Shroud_Clearing_Range() const;
     float Get_Shroud_Range() const;

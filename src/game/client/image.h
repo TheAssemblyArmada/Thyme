@@ -18,6 +18,8 @@
 #include "coord.h"
 #include "ini.h"
 #include "mempoolobj.h"
+#include "subsysteminterface.h"
+#include <map>
 
 class Utf8String;
 class TextureClass;
@@ -39,8 +41,10 @@ public:
     void Clear_Status(uint32_t bit); // TODO not hooked or verified
     void Set_Status(uint32_t bit);
     bool Is_Set_Status(uint32_t bit) const { return m_status & bit; }
-    TextureClass *Get_Raw_Texture_Data() { return m_rawTextureData; }
+    TextureClass *Get_Raw_Texture_Data() const { return m_rawTextureData; }
     Utf8String Get_File_Name() { return m_filename; }
+    Utf8String Get_Name() { return m_name; }
+    void Set_Name(Utf8String str) { m_name = str; }
     Region2D Get_UV_Region() const { return m_UVCoords; }
 
     // initFromINIMulti variants for Field Parsing Functions.
@@ -59,6 +63,8 @@ public:
         IMAGE_STATUS_RAW_TEXTURE = (1 << 1),
     };
 
+    static FieldParse *Get_Field_Parse() { return s_imageFieldParseTable; }
+
 private:
     Utf8String m_name;
     Utf8String m_filename;
@@ -67,4 +73,34 @@ private:
     ICoord2D m_imageSize;
     TextureClass *m_rawTextureData;
     uint32_t m_status;
+    static FieldParse s_imageFieldParseTable[];
 };
+
+class ImageCollection : public SubsystemInterface
+{
+public:
+    ImageCollection() {}
+    virtual ~ImageCollection() override;
+    virtual void Init() override {}
+    virtual void Reset() override {}
+    virtual void Update() override {}
+
+    void Add_Image(Image *image);
+    void Load(int texture_size);
+    Image *Find_Image_By_Name(const Utf8String &name);
+    static void Parse_Mapped_Image_Definition(INI *ini);
+    static void Parse_Mapped_Image(INI *ini, void *formal, void *store, const void *user_data);
+
+#ifdef GAME_DLL
+    ImageCollection *Hook_Ctor() { return new (this) ImageCollection(); }
+#endif
+
+private:
+    std::map<unsigned int, Image *> m_imageMap;
+};
+
+#ifdef GAME_DLL
+extern ImageCollection *&g_theMappedImageCollection;
+#else
+extern ImageCollection *g_theMappedImageCollection;
+#endif

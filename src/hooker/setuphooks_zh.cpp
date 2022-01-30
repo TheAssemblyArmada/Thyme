@@ -150,6 +150,7 @@
 #include "thumbnailmanager.h"
 #include "tiledata.h"
 #include "tintenvelope.h"
+#include "updatemodule.h"
 #include "vertmaterial.h"
 #include "w3d.h"
 #include "w3dbridgebuffer.h"
@@ -1387,6 +1388,8 @@ void Setup_Hooks()
     // gamelogic.h
     Hook_Any(0x004A67B0, GameLogic::Is_Intro_Movie_Playing);
     Hook_Any(0x004A6940, GameLogic::Rebalance_Parent_Sleepy_Update);
+    Hook_Any(0x004A6980, GameLogic::Rebalance_Child_Sleepy_Update);
+    Hook_Method(0x004A6A10, &GameLogic::Friend_Awaken_Update_Module);
     Hook_Any(0x004A6F30, GameLogic::Get_First_Object);
     Hook_Any(0x004A6F40, GameLogic::Allocate_Object_ID);
     Hook_Any(0x004A7900, GameLogic::Is_Game_Paused);
@@ -2170,4 +2173,9 @@ void Setup_Hooks()
     Hook_Any(0x00471BE0, Drawable::Calc_Physics_Xform_Wheels);
     Hook_Any(0x00471370, Drawable::Calc_Physics_Xform_Treads);
     Hook_Any(0x00472550, Drawable::Calc_Physics_Xform_Motorcycle);
+
+    // updatemodule.h
+    Hook_Method(0x006F5760, &UpdateModule::Get_Wake_Frame);
+    Hook_Method(0x006F5780, &UpdateModule::Set_Wake_Frame);
+    Hook_Any(0x006F57A0, UpdateModule::Xfer_Snapshot);
 }

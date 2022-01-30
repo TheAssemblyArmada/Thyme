@@ -16,24 +16,24 @@
 
 #include "always.h"
 #include "behaviormodule.h"
-#include "bitflags.h"
+#include "disabledtypes.h"
 #include "moduleinfo.h"
 
-enum SleepyUpdatePhase
+enum SleepyUpdatePhase : uint32_t
 {
-    UPDATE_UNK,
+    SLEEPY_UPDATE_PHASE_2 = 2u,
 };
 
-enum UpdateSleepTime
+enum UpdateSleepTime : uint32_t
 {
-    SLEEPTIME_UNK,
+    UPDATE_SLEEP_TIME_MAX = (~0u >> SLEEPY_UPDATE_PHASE_2),
 };
 
 class UpdateModuleData : public BehaviorModuleData
 {
 public:
     UpdateModuleData() {}
-    virtual ~UpdateModuleData() {}
+    virtual ~UpdateModuleData() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
 };
@@ -42,51 +42,60 @@ class UpdateModuleInterface
 {
 public:
     virtual UpdateSleepTime Update() = 0;
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const = 0;
+    virtual DisabledBitFlags Get_Disabled_Types_To_Process() const = 0;
 };
 
 class UpdateModule : public BehaviorModule, public UpdateModuleInterface
 {
     IMPLEMENT_ABSTRACT_POOL(UpdateModule)
 
+    enum : uint32_t
+    {
+        UPDATE_PHASE_FRAME_MASK = (~(1u << SLEEPY_UPDATE_PHASE_2) + 1u)
+    };
+
 protected:
-    virtual ~UpdateModule() override;
+    UpdateModule(Thing *thing, const ModuleData *module_data);
+    virtual ~UpdateModule() override {}
 
 public:
-    UpdateModule(Thing *thing, ModuleData *module_data);
-
     virtual SleepyUpdatePhase Get_Update_Phase() const;
 
+    // Snapshot
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
+    //~Snapshot
 
+    // BehaviorModule
     virtual UpdateModuleInterface *Get_Update() override;
+    //~BehaviorModule
 
-    virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
+    // UpdateModuleInterface
+    virtual DisabledBitFlags Get_Disabled_Types_To_Process() const override;
+    //~UpdateModuleInterface
 
-    void Set_Index_In_Logic(int index) { m_indexInLogic = index; }
-    int Get_Index_In_Logic() { return m_indexInLogic; }
+    // Indexing is currently used by GameLogic class.
+    void Set_Index_In_Logic(int index);
+    int Get_Index_In_Logic();
 
-    unsigned int Get_Sleep_Time() { return m_update >> 2; }
-    void Set_Sleep_Time(unsigned int sleep);
+    void Encode_Frame(unsigned int frame);
+    unsigned int Decode_Frame() const;
 
-    unsigned int Get_Update_Value() { return m_update; }
-
+    // #TODO Uses enum here for some reason. Could probably just be primitive type.
     UpdateSleepTime Get_Wake_Frame() const;
-    void Set_Wake_Frame(Object *obj, UpdateSleepTime sleep);
-    UpdateSleepTime Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
+    void Set_Wake_Frame(Object *object, UpdateSleepTime frame);
 
-    static ModuleData *New_Module_Data(INI *ini);
-    static int Get_Interface_Mask() { return MODULEINTERFACE_UPDATE; }
+    unsigned int Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
+
+    static ModuleData *Friend_New_Module_Data(INI *ini);
+    static int Get_Interface_Mask();
+    static bool Compare_Update_Modules(UpdateModule *a, UpdateModule *b);
 
 private:
-    unsigned int m_update;
+    unsigned int Get_Raw_Update_Value() const;
+
+private:
+    unsigned int m_updatePhase;
     int m_indexInLogic;
 };
-
-inline bool Compare_Update_Modules(UpdateModule *a, UpdateModule *b)
-{
-    captainslog_dbgassert(a && b, "these may no longer be null");
-    return b->Get_Update_Value() < a->Get_Update_Value();
-}

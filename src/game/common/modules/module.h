@@ -30,7 +30,7 @@ class W3DTreeDrawModuleData;
 // TODO move/remove these as needed.
 enum ModuleType
 {
-    MODULE_FIRST,
+    MODULE_FIRST = 0,
     MODULE_DEFAULT = 0,
     MODULE_DRAW = 1,
     MODULE_CLIENT_UPDATE = 2,
@@ -51,15 +51,17 @@ public:
     virtual const W3DTreeDrawModuleData *Get_As_W3D_Tree_Draw_Module_Data() const { return nullptr; }
     virtual StaticGameLODLevel Get_Minimum_Required_Game_LOD() const { return STATLOD_LOW; }
 
+    // Snapshot
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override {}
     virtual void Load_Post_Process() override {}
+    //~Snapshot
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
     NameKeyType Get_Tag_Key() const { return m_tagKey; }
 
 private:
-    NameKeyType m_tagKey;
+    NameKeyType m_tagKey = NAMEKEY_INVALID; // #BUGFIX Default initialized member.
 };
 
 class Module : public MemoryPoolObject, public SnapShot
@@ -67,44 +69,28 @@ class Module : public MemoryPoolObject, public SnapShot
     IMPLEMENT_ABSTRACT_POOL(Module)
 
 protected:
+    Module(const ModuleData *module_data) : m_moduleData(module_data) {}
     virtual ~Module() override {}
 
 public:
-    Module(const ModuleData *module_data) : m_moduleData(module_data) {}
-
     virtual NameKeyType Get_Module_Name_Key() const = 0;
     virtual void On_Object_Created() {}
     virtual void On_Drawable_Bound_To_Object() {}
     virtual void Preload_Assets(TimeOfDayType time_of_day) {}
     virtual void On_Delete() {}
 
+    // Snapshot
     virtual void CRC_Snapshot(Xfer *xfer) override {}
-
-    virtual void Xfer_Snapshot(Xfer *xfer) override
-    {
-        unsigned char version = 1;
-        xfer->xferVersion(&version, 1);
-    }
-
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
+    //~Snapshot
 
-    const ModuleData *Get_Module_Data() const { return m_moduleData; }
+    const ModuleData *Get_Module_Data() const;
+    NameKeyType Get_Tag_Key() const;
 
-    static ModuleData *Friend_New_Module_Data(INI *ini)
-    {
-        ModuleData *data = new ModuleData;
-
-        if (ini) {
-            ini->Init_From_INI(data, nullptr);
-        }
-
-        return data;
-    }
-
-    NameKeyType Get_Tag_Key() const { return Get_Module_Data()->Get_Tag_Key(); }
-
-    static ModuleType Get_Module_Type() { return MODULE_DEFAULT; }
-    static int Get_Interface_Mask() { return 0; }
+    static ModuleData *Friend_New_Module_Data(INI *ini);
+    static ModuleType Get_Module_Type();
+    static int Get_Interface_Mask();
 
 private:
     const ModuleData *m_moduleData;
@@ -115,17 +101,18 @@ class ObjectModule : public Module
     IMPLEMENT_ABSTRACT_POOL(ObjectModule)
 
 protected:
-    virtual ~ObjectModule() override;
+    ObjectModule(Thing *thing, const ModuleData *module_data);
+    virtual ~ObjectModule() override {}
 
 public:
-    ObjectModule(Thing *thing, const ModuleData *module_data);
+    virtual void On_Capture(Player *player1, Player *player2) {}
+    virtual void On_Disabled_Edge(bool b) {}
 
-    virtual void On_Capture(Player *p1, Player *p2);
-    virtual void On_Disabled_Edge(bool b);
-
+    // Snapshot
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
+    //~Snapshot
 
     Object *Get_Object() { return m_object; }
     const Object *Get_Object() const { return m_object; }
@@ -139,20 +126,15 @@ class DrawableModule : public Module
     IMPLEMENT_ABSTRACT_POOL(DrawableModule)
 
 protected:
+    DrawableModule(Thing *thing, const ModuleData *module_data);
     virtual ~DrawableModule() override {}
 
 public:
-    DrawableModule(Thing *thing, const ModuleData *module_data);
-
-    virtual void CRC_Snapshot(Xfer *xfer) override {}
-
-    virtual void Xfer_Snapshot(Xfer *xfer) override
-    {
-        unsigned char version = 1;
-        xfer->xferVersion(&version, 1);
-    }
-
-    virtual void Load_Post_Process() override {}
+    // Snapshot
+    virtual void CRC_Snapshot(Xfer *xfer) override;
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override;
+    //~Snapshot
 
     Drawable *Get_Drawable() { return m_drawable; }
     const Drawable *Get_Drawable() const { return m_drawable; }

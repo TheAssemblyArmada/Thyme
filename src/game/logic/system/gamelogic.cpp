@@ -62,40 +62,117 @@ bool GameLogic::Is_Intro_Movie_Playing()
     return m_startNewGame && g_theDisplay->Is_Movie_Playing();
 }
 
-int GameLogic::Rebalance_Parent_Sleepy_Update(int update)
+int GameLogic::Rebalance_Parent_Sleepy_Update(int index)
 {
-    captainslog_dbgassert(update >= 0 && (unsigned)update < m_sleepingUpdateModules.size(), "bad sleepy idx");
+    captainslog_dbgassert(index >= 0 && (unsigned)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
-    for (int i = ((update + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
-        if (!Compare_Update_Modules(m_sleepingUpdateModules[i], m_sleepingUpdateModules[update])) {
+    for (int i = ((index + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
+
+        UpdateModule *a = m_sleepingUpdateModules[i];
+        UpdateModule *b = m_sleepingUpdateModules[index];
+
+        if (!UpdateModule::Compare_Update_Modules(a, b)) {
             break;
         }
 
-        UpdateModule *a = m_sleepingUpdateModules[i];
-        UpdateModule *b = m_sleepingUpdateModules[update];
-        m_sleepingUpdateModules[update] = a;
+        m_sleepingUpdateModules[index] = a;
         m_sleepingUpdateModules[i] = b;
-        a->Set_Index_In_Logic(update);
+        a->Set_Index_In_Logic(index);
         b->Set_Index_In_Logic(i);
-        update = i;
+        index = i;
     }
 
-    return update;
+    return index;
 }
 
-void GameLogic::Push_Sleepy_Update(UpdateModule *update)
+int GameLogic::Rebalance_Child_Sleepy_Update(int index)
 {
-    captainslog_dbgassert(update, "You may not pass null for sleepy update info");
-    m_sleepingUpdateModules.push_back(update);
-    update->Set_Index_In_Logic(m_sleepingUpdateModules.size() - 1);
+    captainslog_dbgassert(index >= 0 && (unsigned)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
+
+    int next_index = 2 * index + 1;
+    UpdateModule **curr = &m_sleepingUpdateModules[index];
+    UpdateModule **next = &m_sleepingUpdateModules[next_index];
+    UpdateModule **end = &m_sleepingUpdateModules[0] + m_sleepingUpdateModules.size();
+
+    while (next < end) {
+        if (next < end - 1 && UpdateModule::Compare_Update_Modules(next[0], next[1])) {
+            ++next;
+            ++next_index;
+        }
+        if (!UpdateModule::Compare_Update_Modules(*curr, *next)) {
+            break;
+        }
+        UpdateModule *n = *next;
+        UpdateModule *c = *curr;
+        *curr = n;
+        *next = c;
+        n->Set_Index_In_Logic(index);
+        c->Set_Index_In_Logic(next_index);
+
+        index = next_index;
+        curr = next;
+        next_index = 2 * next_index + 1;
+        next = &m_sleepingUpdateModules[next_index];
+    }
+    return index;
+}
+
+void GameLogic::Rebalance_Sleepy_Update(int index)
+{
+    int parent_index = Rebalance_Parent_Sleepy_Update(index);
+    Rebalance_Child_Sleepy_Update(parent_index);
+}
+
+void GameLogic::Push_Sleepy_Update(UpdateModule *module)
+{
+    captainslog_dbgassert(module != nullptr, "You may not pass null for sleepy update info");
+
+    m_sleepingUpdateModules.push_back(module);
+    module->Set_Index_In_Logic(m_sleepingUpdateModules.size() - 1);
     Rebalance_Parent_Sleepy_Update(m_sleepingUpdateModules.size() - 1);
 }
 
 UpdateModule *GameLogic::Peek_Sleepy_Update()
 {
-    UpdateModule *a = m_sleepingUpdateModules.front();
-    captainslog_dbgassert(a->Get_Index_In_Logic(), "index mismatch: expected %d, got %d\n", 0, a->Get_Index_In_Logic());
-    return a;
+    UpdateModule *module = m_sleepingUpdateModules.front();
+    captainslog_dbgassert(
+        0 != module->Get_Index_In_Logic(), "index mismatch: expected %d, got %d", 0, module->Get_Index_In_Logic());
+    return module;
+}
+
+void GameLogic::Friend_Awaken_Update_Module(Object *object, UpdateModule *module, unsigned int wakeup_frame)
+{
+    unsigned int cur_frame = g_theGameLogic->Get_Frame();
+
+    captainslog_dbgassert(wakeup_frame >= cur_frame, "Set_Wake_Frame frame is in the past");
+
+    if (module == m_currentUpdateModule) {
+        captainslog_dbgassert(0,
+            "Set_Wake_Frame() should not be called from inside the Update(), because it will be ignored, in favor "
+            "of the return code from update");
+
+    } else if (wakeup_frame != module->Decode_Frame()
+        && (0 == cur_frame || module->Decode_Frame() != cur_frame || wakeup_frame != cur_frame + 1)) {
+
+        int index = module->Get_Index_In_Logic();
+
+        if (object->Is_In_List(&m_objList)) {
+            if (index >= 0 && static_cast<size_t>(index) < m_sleepingUpdateModules.size()) {
+                if (m_sleepingUpdateModules[index] == module) {
+                    module->Encode_Frame(wakeup_frame);
+                    Rebalance_Sleepy_Update(index);
+                } else {
+                    captainslog_fatal("fatal error! sleepy update module index mismatch.");
+                }
+            } else {
+                captainslog_fatal("fatal error! sleepy update module illegal index.");
+            }
+        } else if (index == -1) {
+            module->Encode_Frame(wakeup_frame);
+        } else {
+            captainslog_fatal("fatal error! sleepy update module index mismatch.");
+        }
+    }
 }
 
 Object *GameLogic::Get_First_Object()

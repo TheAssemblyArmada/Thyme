@@ -56,7 +56,7 @@ class BehaviorModuleData : public ModuleData
 {
 public:
     BehaviorModuleData() {}
-    virtual ~BehaviorModuleData() {}
+    virtual ~BehaviorModuleData() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
 };
@@ -97,7 +97,7 @@ public:
     virtual PowerPlantUpdateInterface *Get_Power_Plant_Update_Interface() = 0;
     virtual SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() = 0;
     virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() = 0;
-    virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const = 0;
+    virtual const CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const = 0;
 };
 
 class CollideModuleInterface
@@ -116,18 +116,20 @@ class BehaviorModule : public ObjectModule, public BehaviorModuleInterface
     IMPLEMENT_ABSTRACT_POOL(BehaviorModule)
 
 protected:
+    BehaviorModule(Thing *thing, const ModuleData *module_data);
     virtual ~BehaviorModule() override;
 
 public:
-    BehaviorModule(Thing *thing, ModuleData *module_data);
-
     virtual StealthUpdate *Get_Steath();
     virtual SpyVisionUpdate *Get_Spy_Vision_Update();
 
+    // Snapshot
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
+    //~Snapshot
 
+    // BehaviorModuleInterface
     virtual BodyModuleInterface *Get_Body() override;
     virtual CollideModuleInterface *Get_Collide() override;
     virtual ContainModuleInterface *Get_Contain() override;
@@ -161,5 +163,6 @@ public:
     virtual PowerPlantUpdateInterface *Get_Power_Plant_Update_Interface() override;
     virtual SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() override;
     virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() override;
-    virtual CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const override;
+    virtual const CountermeasuresBehaviorInterface *Get_Countermeasures_Behavior_Interface() const override;
+    //~BehaviorModuleInterface
 };

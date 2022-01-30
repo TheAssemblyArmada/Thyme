@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "gamelogic.h"
 #include "updatemodule.h"
 
 class DynamicAudioEventRTS;
@@ -59,6 +60,11 @@ public:
     virtual bool Is_Salvage_Crate_Collide() override;
     PhysicsTurningType Get_Turning() const { return m_turning; }
     static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
+    const Coord3D &Get_Prev_Accel() const { return m_prevAccel; }
+    const Coord3D &Get_Velocity() const { return m_vel; }
+    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < m_motiveForceApplied; }
+    ObjectID Get_Current_Overlap() const { return m_currentOverlap; }
+    ObjectID Get_Previous_Overlap() const { return m_previousOverlap; }
 
     float Get_Velocity_Magnitude() const
     {
@@ -67,6 +73,39 @@ public:
         }
 
         return m_velMag;
+    }
+
+    // TODO investigate doesn't account for diagonal movement
+    float Get_Forward_Speed_2D() const
+    {
+        const Coord3D *dir = Get_Object()->Get_Unit_Dir_Vector2D();
+        float x = m_vel.x * dir->x;
+        float y = m_vel.y * dir->y;
+        float xy = x + y;
+        float len = GameMath::Sqrt(x * x + y * y);
+
+        if (xy < 0.0f) {
+            return -len;
+        } else {
+            return len;
+        }
+    }
+
+    // TODO investigate doesn't account for diagonal movement
+    float Get_Forward_Speed_3D() const
+    {
+        Vector3 xv = Get_Object()->Get_Transform_Matrix()->Get_X_Vector();
+        float x = xv.X * m_vel.x;
+        float y = xv.Y * m_vel.y;
+        float z = xv.Z * m_vel.z;
+        float xyz = x + y + z;
+        float len = GameMath::Sqrt(x * x + y * y + z * z);
+
+        if (xyz < 0.0f) {
+            return -len;
+        } else {
+            return len;
+        }
     }
 
 private:

@@ -1,4 +1,5 @@
 ﻿/**
+/**
  * @file
  *
  * @author OmniBlade
@@ -21,6 +22,7 @@
 #include "archivefilesystem.h"
 #include "asciistring.h"
 #include "assetmgr.h"
+#include "audioeventinfo.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "bezfwditerator.h"
@@ -1038,6 +1040,11 @@ void Setup_Hooks()
     Hook_Method(0x00519260, &Image::Set_Status);
     Hook_Method(0x00518F10, &Image::Parse_Image_Coords);
     Hook_Method(0x00519030, &Image::Parse_Image_Status);
+    Hook_Method(0x00519280, &ImageCollection::Hook_Ctor);
+    Hook_Method(0x005194F0, &ImageCollection::Add_Image);
+    Hook_Method(0x00519610, &ImageCollection::Find_Image_By_Name);
+    Hook_Method(0x0041B980, &ImageCollection::Parse_Mapped_Image);
+    Hook_Method(0x00519680, &ImageCollection::Load);
 
     // w3droadbuffer.h
     Hook_Method(0x00795F90, &W3DRoadBuffer::Hook_Dtor);
@@ -2084,4 +2091,18 @@ void Setup_Hooks()
     Hook_Any(0x00479850, TintEnvelope::Set_Decay_Frames);
     Hook_Any(0x004798B0, TintEnvelope::Update);
     Hook_Any(0x00479AA0, TintEnvelope::Xfer_Snapshot);
+
+    // audioeventinfo.cpp
+    Hook_Any(0x005DA460, DynamicAudioEventInfo::Hook_Ctor);
+    Hook_Any(0x005DA5D0, DynamicAudioEventInfo::Hook_Ctor2);
+    Hook_Any(0x005DA7B0, DynamicAudioEventInfo::Override_Audio_Name);
+    Hook_Any(0x005DA840, DynamicAudioEventInfo::Override_Loop_Flag);
+    Hook_Any(0x005DA870, DynamicAudioEventInfo::Override_Loop_Count);
+    Hook_Any(0x005DA890, DynamicAudioEventInfo::Override_Volume);
+    Hook_Any(0x005DA8B0, DynamicAudioEventInfo::Override_Min_Volume);
+    Hook_Any(0x005DA8D0, DynamicAudioEventInfo::Override_Min_Range);
+    Hook_Any(0x005DA8F0, DynamicAudioEventInfo::Override_Max_Range);
+    Hook_Any(0x005DA910, DynamicAudioEventInfo::Override_Priority);
+    Hook_Any(0x005DA930, DynamicAudioEventInfo::Get_Original_Name);
+    Hook_Any(0x005DA950, DynamicAudioEventInfo::Xfer_No_Name);
 }

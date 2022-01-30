@@ -48,6 +48,7 @@ public:
     bool Can_Gain_Exp_For_Level(int32_t levels_to_gain) const;
     void Add_Experience_Points(int32_t experience_gain, bool apply_multiplier);
     void Set_Experience_And_Level(int32_t experience_gain, bool unk);
+    VeterancyLevel Get_Current_Level() const { return m_currentLevel; }
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;

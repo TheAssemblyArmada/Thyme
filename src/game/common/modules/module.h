@@ -56,6 +56,7 @@ public:
     virtual void Load_Post_Process() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
+    NameKeyType Get_Tag_Key() const { return m_tagKey; }
 
 private:
     NameKeyType m_tagKey;
@@ -100,6 +101,8 @@ public:
         return data;
     }
 
+    NameKeyType Get_Tag_Key() const { return Get_Module_Data()->Get_Tag_Key(); }
+
     static ModuleType Get_Module_Type() { return MODULE_DEFAULT; }
     static int Get_Interface_Mask() { return 0; }
 
@@ -125,6 +128,7 @@ public:
     virtual void Load_Post_Process() override;
 
     Object *Get_Object() { return m_object; }
+    const Object *Get_Object() const { return m_object; }
 
 private:
     Object *m_object;

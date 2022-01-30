@@ -32,7 +32,6 @@ AudioEventRTS::AudioEventRTS() :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
@@ -63,7 +62,6 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_priority(that.m_priority),
     m_volumeAdjustFactor(that.m_volumeAdjustFactor),
     m_timeOfDay(that.m_timeOfDay),
-    m_objectID(that.m_objectID),
     m_eventType(that.m_eventType),
     m_shouldFade(that.m_shouldFade),
     m_isLogical(that.m_isLogical),
@@ -77,7 +75,13 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_playerIndex(that.m_playerIndex),
     m_nextPlayPortion(that.m_nextPlayPortion)
 {
-    m_positionOfAudio.Set(&that.m_positionOfAudio);
+    if (m_eventType == EVENT_MUSIC || m_eventType == EVENT_UNKVAL3) {
+        m_positionOfAudio.Set(&that.m_positionOfAudio);
+    } else if (m_eventType == EVENT_SPEECH) {
+        m_drawableID = that.m_drawableID;
+    } else if (m_eventType == EVENT_SOUND) {
+        m_objectID = that.m_objectID;
+    }
 }
 
 /**
@@ -94,7 +98,6 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_objectID(),
     m_eventType(EVENT_UNKVAL4),
     m_shouldFade(false),
     m_isLogical(false),
@@ -144,6 +147,36 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     }
 }
 
+AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
+    m_filename(),
+    m_eventInfo(nullptr),
+    m_playingHandle(0),
+    m_handleToKill(0),
+    m_eventName(name),
+    m_filenameAttack(),
+    m_filenameDecay(),
+    m_priority(PRIORITY_NORMAL),
+    m_volumeAdjustFactor(-1.0f),
+    m_timeOfDay(TIME_OF_DAY_AFTERNOON),
+    m_drawableID(id),
+    m_eventType(EVENT_UNKVAL4),
+    m_shouldFade(false),
+    m_isLogical(false),
+    m_shouldPlayLocally(false),
+    m_pitchShift(1.0f),
+    m_volumeShift(0.0f),
+    m_delay(0.0f),
+    m_loopCount(1),
+    m_currentSoundIndex(-1),
+    m_soundListPos(0),
+    m_playerIndex(-1),
+    m_nextPlayPortion()
+{
+    if (m_drawableID != OBJECT_UNK) {
+        m_eventType = EVENT_SPEECH;
+    }
+}
+
 /**
  * 0x00444A10
  */
@@ -158,8 +191,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_objectID(),
-    m_eventType(EVENT_UNKVAL4),
+    m_eventType(EVENT_MUSIC),
     m_shouldFade(false),
     m_isLogical(false),
     m_shouldPlayLocally(false),
@@ -180,10 +212,6 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
  */
 AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
 {
-    // Original contitionally copied objectID and positionOFAudio
-    // based on eventType, but I see no harm in just copying
-    // everything if the conditional stuff isn't used on certain
-    // eventTypes.
     if (this != &that) {
         m_filename = that.m_filename;
         m_eventInfo = that.m_eventInfo;
@@ -195,8 +223,6 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_priority = that.m_priority;
         m_volumeAdjustFactor = that.m_volumeAdjustFactor;
         m_timeOfDay = that.m_timeOfDay;
-        m_positionOfAudio.Set(&that.m_positionOfAudio);
-        m_objectID = that.m_objectID;
         m_eventType = that.m_eventType;
         m_shouldFade = that.m_shouldFade;
         m_isLogical = that.m_isLogical;
@@ -209,6 +235,14 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_soundListPos = that.m_soundListPos;
         m_playerIndex = that.m_playerIndex;
         m_nextPlayPortion = that.m_nextPlayPortion;
+
+        if (m_eventType == EVENT_MUSIC || m_eventType == EVENT_UNKVAL3) {
+            m_positionOfAudio.Set(&that.m_positionOfAudio);
+        } else if (m_eventType == EVENT_SPEECH) {
+            m_drawableID = that.m_drawableID;
+        } else if (m_eventType == EVENT_SOUND) {
+            m_objectID = that.m_objectID;
+        }
     }
 
     return *this;
@@ -475,4 +509,25 @@ float AudioEventRTS::Get_Volume() const
     }
 
     return m_volumeAdjustFactor;
+}
+
+bool AudioEventRTS::Is_Currently_Playing()
+{
+    return g_theAudio->Is_Currently_Playing(m_playingHandle);
+}
+
+void AudioEventRTS::Set_Object_ID(ObjectID id)
+{
+    if (m_eventType == EVENT_SOUND || m_eventType == EVENT_UNKVAL4) {
+        m_objectID = id;
+        m_eventType = EVENT_SOUND;
+    }
+}
+
+void AudioEventRTS::Set_Drawable_ID(DrawableID id)
+{
+    if (m_eventType == EVENT_SPEECH || m_eventType == EVENT_UNKVAL4) {
+        m_drawableID = id;
+        m_eventType = EVENT_SPEECH;
+    }
 }

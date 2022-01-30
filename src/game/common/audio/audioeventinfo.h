@@ -15,6 +15,7 @@
 #pragma once
 
 #include "asciistring.h"
+#include "bitflags.h"
 #include "ini.h"
 #include "mempoolobj.h"
 #include "randomvalue.h"
@@ -61,7 +62,7 @@ protected:
     virtual ~AudioEventInfo() override {}
 
 public:
-    virtual bool Is_Level_Specific() { return false; }
+    virtual bool Is_Level_Specific() const { return false; }
     virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() { return nullptr; }
     virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }
 
@@ -77,6 +78,7 @@ public:
     float Get_Pitch_Shift() const { return Get_Audio_Random_Value_Real(m_pitchShiftLow, m_pitchShiftHigh); }
     float Get_Volume_Shift() const { return Get_Audio_Random_Value_Real(m_volumeShift + 1.0f, 1.0f); }
     float Get_Delay() const { return Get_Audio_Random_Value_Real(m_delayLow, m_delayHigh); }
+    bool Is_Looping() const { return (m_control & CONTROL_LOOP) != 0 && m_loopCount == 0; }
 
     size_t Sound_Count() const { return m_sounds.size(); }
     const Utf8String &Get_Sound(int index) const { return m_sounds[index]; }
@@ -121,4 +123,72 @@ protected:
 
 private:
     static FieldParse s_audioEventParseTable[];
+    friend class AudioEventRTS;
+};
+
+class DynamicAudioEventInfo : public AudioEventInfo
+{
+    IMPLEMENT_POOL(DynamicAudioEventInfo);
+
+    void *operator new(size_t size, void *dst) { return dst; }
+    void operator delete(void *p, void *q) {}
+
+public:
+    enum OverriddenFields
+    {
+        OVERRIDE_NAME,
+        OVERRIDE_LOOP_FLAG,
+        OVERRIDE_LOOP_COUNT,
+        OVERRIDE_VOLUME,
+        OVERRIDE_MIN_VOLUME,
+        OVERRIDE_MIN_RANGE,
+        OVERRIDE_MAX_RANGE,
+        OVERRIDE_PRIORITY,
+        OVERRIDE_COUNT
+    };
+
+#ifdef GAME_DLL
+    DynamicAudioEventInfo *Hook_Ctor() { return new (this) DynamicAudioEventInfo(); }
+    DynamicAudioEventInfo *Hook_Ctor2(const AudioEventInfo &audio) { return new (this) DynamicAudioEventInfo(audio); }
+#endif
+
+    DynamicAudioEventInfo() {}
+    DynamicAudioEventInfo(const AudioEventInfo &audio) : AudioEventInfo(audio) {}
+
+    virtual ~DynamicAudioEventInfo() override {}
+    virtual bool Is_Level_Specific() const override { return true; }
+    virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() override { return this; }
+    virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const override { return this; }
+
+    bool Name_Overridden() const { return m_overrideFlags.Test(OVERRIDE_NAME); }
+    bool Loop_Flag_Overridden() const { return m_overrideFlags.Test(OVERRIDE_LOOP_FLAG); }
+    bool Loop_Count_Overridden() const { return m_overrideFlags.Test(OVERRIDE_LOOP_COUNT); }
+    bool Volume_Overridden() const { return m_overrideFlags.Test(OVERRIDE_VOLUME); }
+    bool Min_Volume_Overridden() const { return m_overrideFlags.Test(OVERRIDE_MIN_VOLUME); }
+    bool Max_Range_Overridden() const { return m_overrideFlags.Test(OVERRIDE_MAX_RANGE); }
+    bool Min_Range_Overridden() const { return m_overrideFlags.Test(OVERRIDE_MIN_RANGE); }
+    bool Priority_Overridden() const { return m_overrideFlags.Test(OVERRIDE_PRIORITY); }
+
+    Utf8String &Get_Original_Name()
+    {
+        if (Name_Overridden()) {
+            return m_overrideName;
+        } else {
+            return m_eventName;
+        }
+    }
+
+    void Override_Audio_Name(const Utf8String &name);
+    void Override_Loop_Flag(bool loop);
+    void Override_Loop_Count(int loop_count);
+    void Override_Volume(float volume);
+    void Override_Min_Volume(float volume);
+    void Override_Max_Range(float range);
+    void Override_Min_Range(float range);
+    void Override_Priority(int priority);
+    void Xfer_No_Name(Xfer *xfer);
+
+private:
+    BitFlags<OVERRIDE_COUNT> m_overrideFlags;
+    Utf8String m_overrideName;
 };

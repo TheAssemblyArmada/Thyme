@@ -14,6 +14,9 @@
  *            LICENSE
  */
 #include "object.h"
+#include "experiencetracker.h"
+#include "module.h"
+#include "playerlist.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
@@ -65,4 +68,93 @@ int Object::Get_Indicator_Color() const
 #else
     return 0;
 #endif
+}
+
+bool Object::Is_Locally_Controlled() const
+{
+    return g_thePlayerList->Get_Local_Player() == Get_Controlling_Player();
+}
+
+void Object::Get_Health_Box_Position(Coord3D &pos) const
+{
+    pos = *Get_Position();
+    pos.z += Get_Geometry_Info().Get_Max_Height_Above_Position() + 10.0f;
+    pos.Add(&m_healthBoxOffset);
+
+    if (Is_KindOf(KINDOF_MOB_NEXUS)) {
+        pos.z += 20.0f;
+    }
+}
+
+bool Object::Get_Health_Box_Dimensions(float &width, float &height) const
+{
+    if (Is_KindOf(KINDOF_IGNORED_IN_GUI)) {
+        width = 0.0f;
+        height = 0.0f;
+        return false;
+    }
+
+    float f1;
+
+    if (Get_Geometry_Info().Get_Minor_Radius() + Get_Geometry_Info().Get_Major_Radius() > 150.0f) {
+        f1 = 150.0f;
+    } else {
+        f1 = Get_Geometry_Info().Get_Minor_Radius() + Get_Geometry_Info().Get_Major_Radius();
+    }
+
+    float f2 = std::max(f1, 20.0f);
+
+    width = 3.0f;
+
+    if (f2 + f2 < 20.0f) {
+        height = 20.0f;
+    } else {
+        height = f2 + f2;
+    }
+
+    return true;
+}
+
+bool Object::Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Object, int &, int &>(
+        PICK_ADDRESS(0x00547760, 0x007D0A7F), this, clip_size, ammo_in_clip);
+#else
+    return false;
+#endif
+}
+
+Module *Object::Find_Module(NameKeyType type) const
+{
+    for (Module **module = m_allModules; *module != nullptr; module++) {
+        if ((*module)->Get_Module_Name_Key() == type) {
+            return *module;
+        }
+    }
+
+    return nullptr;
+}
+
+VeterancyLevel Object::Get_Veterancy_Level() const
+{
+    if (m_experienceTracker) {
+        return m_experienceTracker->Get_Current_Level();
+    } else {
+        return VETERANCY_REGULAR;
+    }
+}
+
+bool Object::Is_Selectable() const
+{
+    if (Get_Template()->Is_KindOf(KINDOF_ALWAYS_SELECTABLE)) {
+        return true;
+    }
+
+    return m_isSelectable && !Get_Status(OBJECT_STATUS_UNSELECTABLE) && !Is_Effectively_Dead();
+}
+
+bool Object::Is_Mass_Selectable() const
+{
+    return Is_Selectable() && !Is_KindOf(KINDOF_STRUCTURE);
 }

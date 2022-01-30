@@ -29,6 +29,7 @@
 #include "gametype.h"
 #include "globaldata.h"
 #include "globallanguage.h"
+#include "image.h"
 #include "mouse.h"
 #include "objectcreationlist.h"
 #include "particlesysmanager.h"
@@ -88,7 +89,7 @@ BlockParse TheTypeTable[] = {
     {"Language", &GlobalLanguage::Parse_Language_Definition},
     {"MapCache", (iniblockparse_t)(0x00506760) /*&INI::parseMapCacheDefinition*/},
     {"MapData", (iniblockparse_t)(0x0062D610) /*&INI::parseMapDataDefinition*/},
-    {"MappedImage", (iniblockparse_t)(0x00506510) /*&INI::parseMappedImageDefinition*/},
+    {"MappedImage", &ImageCollection::Parse_Mapped_Image_Definition},
     //{ "MiscAudio", (iniblockparse_t)(0x005064F0)/*&INI::parseMiscAudio*/ },
     {"MiscAudio", &MiscAudio::Parse_Misc_Audio},
     //{ "Mouse", (iniblockparse_t)(0x004041F0)/*&INI::parseMouseDefinition*/ },

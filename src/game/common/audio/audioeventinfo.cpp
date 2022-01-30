@@ -106,3 +106,119 @@ void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void
     info->m_delayLow = lo;
     info->m_delayHigh = hi;
 }
+
+void DynamicAudioEventInfo::Override_Audio_Name(const Utf8String &name)
+{
+    m_overrideName = m_eventName;
+    m_overrideFlags.Set(OVERRIDE_NAME, 1);
+    m_eventName = name;
+}
+
+void DynamicAudioEventInfo::Override_Loop_Flag(bool loop)
+{
+    m_overrideFlags.Set(OVERRIDE_LOOP_FLAG, 1);
+
+    if (loop) {
+        m_control |= CONTROL_LOOP;
+    } else {
+        m_control &= ~CONTROL_LOOP;
+    }
+}
+
+void DynamicAudioEventInfo::Override_Loop_Count(int loop_count)
+{
+    m_overrideFlags.Set(OVERRIDE_LOOP_COUNT, 1);
+    m_loopCount = loop_count;
+}
+
+void DynamicAudioEventInfo::Override_Volume(float volume)
+{
+    m_overrideFlags.Set(OVERRIDE_VOLUME, 1);
+    m_volume = volume;
+}
+
+void DynamicAudioEventInfo::Override_Min_Volume(float volume)
+{
+    m_overrideFlags.Set(OVERRIDE_MIN_VOLUME, 1);
+    m_minVolume = volume;
+}
+
+void DynamicAudioEventInfo::Override_Max_Range(float range)
+{
+    m_overrideFlags.Set(OVERRIDE_MAX_RANGE, 1);
+    m_maxRange = range;
+}
+
+void DynamicAudioEventInfo::Override_Min_Range(float range)
+{
+    m_overrideFlags.Set(OVERRIDE_MIN_RANGE, 1);
+    m_minRange = range;
+}
+
+void DynamicAudioEventInfo::Override_Priority(int priority)
+{
+    m_overrideFlags.Set(OVERRIDE_PRIORITY, 1);
+    m_priority = priority;
+}
+
+void DynamicAudioEventInfo::Xfer_No_Name(Xfer *xfer)
+{
+    unsigned char version = 1;
+    xfer->xferVersion(&version, 1);
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        unsigned char flags;
+        xfer->xferUnsignedByte(&flags);
+
+        for (int i = 0; i < OVERRIDE_COUNT; i++) {
+            m_overrideFlags.Set(i, ((1 << i) & flags) != 0);
+        }
+    } else {
+
+        unsigned char flags = 0;
+        for (int i = 0; i < OVERRIDE_COUNT; i++) {
+            if (m_overrideFlags.Test(i)) {
+                flags |= 1 << i;
+            }
+        }
+
+        xfer->xferUnsignedByte(&flags);
+    }
+
+    if (Loop_Flag_Overridden()) {
+        bool b = (m_control & CONTROL_LOOP) != 0;
+        xfer->xferBool(&b);
+
+        if (b) {
+            m_control |= CONTROL_LOOP;
+        } else {
+            m_control &= ~CONTROL_LOOP;
+        }
+    }
+
+    if (Loop_Count_Overridden()) {
+        xfer->xferInt(&m_loopCount);
+    }
+
+    if (Volume_Overridden()) {
+        xfer->xferReal(&m_volume);
+    }
+
+    if (Min_Volume_Overridden()) {
+        xfer->xferReal(&m_minVolume);
+    }
+
+    if (Min_Range_Overridden()) {
+        xfer->xferReal(&m_minRange);
+    }
+
+    if (Max_Range_Overridden()) {
+        xfer->xferReal(&m_maxRange);
+    }
+
+    if (Priority_Overridden()) {
+        unsigned char priority = m_priority;
+        xfer->xferUnsignedByte(&priority);
+        m_priority = priority;
+    }
+}

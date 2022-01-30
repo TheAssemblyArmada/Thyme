@@ -47,7 +47,24 @@ class DrawableLocoInfo : public MemoryPoolObject
     IMPLEMENT_POOL(DrawableLocoInfo)
 
 public:
-    ~DrawableLocoInfo() override;
+    DrawableLocoInfo() :
+        m_pitch(0.0f),
+        m_pitchRate(0.0f),
+        m_roll(0.0f),
+        m_rollRate(0.0f),
+        m_thrustWobble(0.0f),
+        m_accelerationPitch(0.0f),
+        m_accelerationPitchRate(0.0f),
+        m_accelerationRoll(0.0f),
+        m_accelerationRollRate(0.0f),
+        m_overlapZVel(0.0f),
+        m_overlapZ(0.0f),
+        m_thrust(1.0f),
+        m_rudder(0.0f),
+        m_elevator(0.0f)
+    {
+    }
+    virtual ~DrawableLocoInfo() override {}
     float m_pitch;
     float m_pitchRate;
     float m_roll;
@@ -62,7 +79,7 @@ public:
     float m_thrust; // not 100% identified yet
     float m_rudder; // not 100% identified yet
     float m_elevator; // not 100% identified yet
-    TWheelInfo wheelinfo;
+    TWheelInfo m_wheelInfo;
 };
 
 struct DrawableInfo
@@ -126,6 +143,15 @@ public:
         return m_status & DRAWABLE_STATUS_DRAWS_IN_MIRROR || Is_KindOf(KINDOF_CAN_CAST_REFLECTIONS);
     }
 
+    TWheelInfo *Get_Wheel_Info() const
+    {
+        if (m_drawableLocoInfo) {
+            return &m_drawableLocoInfo->m_wheelInfo;
+        } else {
+            return nullptr;
+        }
+    }
+
     float Get_Alpha_Override() const { return m_opacity * m_effectiveOpacity2; }
     float Get_Stealth_Emissive_Scale() const { return m_stealthEmissiveScale; }
     bool Recieves_Dynamic_Lights() const { return m_receivesDynamicLights; }
@@ -133,6 +159,18 @@ public:
     bool Check_Status_Bit(DrawableStatus status) const { return (status & m_status) != 0; }
     float Get_Instance_Scale() const { return m_instanceScale; }
     const BitFlags<MODELCONDITION_COUNT> &Get_Condition_State() const { return m_conditionState; }
+    Module **Get_Modules(ModuleType type)
+    {
+        captainslog_assert(type != MODULE_DEFAULT);
+        return m_modules[type - 1];
+    }
+    Module **Get_Modules(ModuleType type) const
+    {
+        captainslog_assert(type != MODULE_DEFAULT);
+        return m_modules[type - 1];
+    }
+    ClientUpdateModule **Get_Client_Update_Modules() { return (ClientUpdateModule **)Get_Modules(MODULE_CLIENT_UPDATE); }
+    DrawModule **Get_Draw_Modules_Non_Dirty() { return (DrawModule **)Get_Modules(MODULE_DRAW); }
 
     void Set_Model_Condition_State(ModelConditionFlagType set)
     {
@@ -199,7 +237,7 @@ public:
     void Clear_Emoticon();
 
     bool Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *radius, Matrix3D *transform);
-    void Color_Flash(RGBColor const *color, unsigned int unk1, unsigned int unk2, unsigned int unk3);
+    void Color_Flash(RGBColor const *color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames);
     void Color_Tint(RGBColor const *color);
 
     void Draw(View *view);
@@ -241,7 +279,6 @@ public:
     bool Get_Current_Worldspace_Client_Bone_Positions(char const *none_name_prefix, Matrix3D &m) const;
     DrawModule **Get_Draw_Modules();
     DrawModule const **Get_Draw_Modules() const;
-    DrawModule **Get_Draw_Modules_Non_Dirty();
     GeometryInfo const &Get_Drawable_Geometry_Info() const;
     DrawableID Get_ID() const { return m_id; }
     DrawableIconInfo *Get_Icon_Info();
@@ -266,7 +303,7 @@ public:
         float recoil_amount,
         float recoil_angle,
         Coord3D const *victim_pos,
-        float unk);
+        float radius);
     void Imitate_Stealth_Look(Drawable &imitate);
 
     bool Is_Mass_Selectable() const;
@@ -318,8 +355,8 @@ public:
     void Stop_Ambient_Sound();
 
     void Update_Drawable();
-    void Update_Drawable_Clip_Status(unsigned int unk, unsigned int unk2, WeaponSlotType slot);
-    void Update_Drawable_Supply_Status(int unk, int unk2);
+    void Update_Drawable_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType slot);
+    void Update_Drawable_Supply_Status(int status1, int status2);
     void Update_Hidden_Status();
     void Update_Sub_Objects();
     void Xfer_Drawable_Modules(Xfer *xfer);

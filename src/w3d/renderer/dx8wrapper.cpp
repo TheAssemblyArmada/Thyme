@@ -19,6 +19,7 @@
 #include "dx8texman.h"
 #include "dx8vertexbuffer.h"
 #include "ffactory.h"
+#include "light.h"
 #include "lightenv.h"
 #include "missing.h"
 #include "pointgr.h"
@@ -1758,6 +1759,77 @@ void DX8Wrapper::Compute_Caps(WW3DFormat display_format)
 }
 #endif
 
+void DX8Wrapper::Set_Light(unsigned index, const LightClass &light)
+{
+#ifdef BUILD_WITH_D3D8
+    D3DLIGHT8 dlight;
+    Vector3 temp;
+    memset(&dlight, 0, sizeof(D3DLIGHT8));
+
+    switch (light.Get_Type()) {
+        case LightClass::POINT: {
+            dlight.Type = D3DLIGHT_POINT;
+            break;
+        }
+        case LightClass::DIRECTIONAL: {
+            dlight.Type = D3DLIGHT_DIRECTIONAL;
+            break;
+        }
+        case LightClass::SPOT: {
+            dlight.Type = D3DLIGHT_SPOT;
+            break;
+        }
+    }
+
+    light.Get_Diffuse(&temp);
+    temp *= light.Get_Intensity();
+    dlight.Diffuse.r = temp.X;
+    dlight.Diffuse.g = temp.Y;
+    dlight.Diffuse.b = temp.Z;
+    dlight.Diffuse.a = 1.0f;
+
+    light.Get_Specular(&temp);
+    temp *= light.Get_Intensity();
+    dlight.Specular.r = temp.X;
+    dlight.Specular.g = temp.Y;
+    dlight.Specular.b = temp.Z;
+    dlight.Specular.a = 1.0f;
+
+    light.Get_Ambient(&temp);
+    temp *= light.Get_Intensity();
+    dlight.Ambient.r = temp.X;
+    dlight.Ambient.g = temp.Y;
+    dlight.Ambient.b = temp.Z;
+    dlight.Ambient.a = 1.0f;
+
+    temp = light.Get_Position();
+    dlight.Position = *(D3DVECTOR *)&temp;
+
+    light.Get_Spot_Direction(temp);
+    dlight.Direction = *(D3DVECTOR *)&temp;
+
+    dlight.Range = light.Get_Attenuation_Range();
+    dlight.Falloff = light.Get_Spot_Exponent();
+    dlight.Theta = light.Get_Spot_Angle();
+    dlight.Phi = light.Get_Spot_Angle();
+
+    double a, b;
+    light.Get_Far_Attenuation_Range(a, b);
+
+    dlight.Attenuation0 = 1.0f;
+
+    if (fabs(a - b) < 1e-5) {
+        dlight.Attenuation1 = 0.0f;
+    } else {
+        dlight.Attenuation1 = (float)(1.0 / a);
+    }
+
+    dlight.Attenuation2 = 0.0f;
+
+    Set_DX8_Light(index, &dlight);
+#endif
+}
+
 void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
 {
 #ifdef BUILD_WITH_D3D8
@@ -1791,10 +1863,10 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
                 light.Attenuation0 = 1.0f;
 
                 if (fabsf(light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
-                    >= 0.00001f) {
-                    light.Attenuation1 = 0.1f / light_env->Get_Point_Inner_Radius(light_index);
-                } else {
+                    < 1e-5) {
                     light.Attenuation1 = 0.0f;
+                } else {
+                    light.Attenuation1 = 0.1f / light_env->Get_Point_Inner_Radius(light_index);
                 }
 
                 light.Attenuation2 =

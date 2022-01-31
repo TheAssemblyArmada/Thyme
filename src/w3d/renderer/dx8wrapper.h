@@ -31,6 +31,7 @@
 #include "wwstring.h"
 #include <algorithm>
 #include <captainslog.h>
+class LightClass;
 class SurfaceClass;
 class DynamicVBAccessClass;
 class DynamicIBAccessClass;
@@ -136,6 +137,7 @@ public:
     static void Set_Index_Buffer_Index_Offset(unsigned offset);
     static void Set_Fog(bool enable, const Vector3 &color, float start, float end);
     static void Set_Gamma(float gamma, float bright, float contrast, bool calibrate = true, bool uselimit = true);
+    static void Set_Light(unsigned index, const LightClass &light);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
     static void Apply_Render_State_Changes();
     static void Draw_Triangles(unsigned int buffer_type,

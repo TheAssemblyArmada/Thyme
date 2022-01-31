@@ -90,6 +90,7 @@ set(GAMEENGINE_SRC
     game/client/gui/loadscreen.cpp
     game/client/gui/wininstancedata.cpp
     game/client/image.cpp
+    game/client/anim2d.cpp
     game/client/input/keyboard.cpp
     game/client/input/mouse.cpp
     game/client/shadow/w3dbuffermanager.cpp

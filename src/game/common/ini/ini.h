@@ -145,6 +145,7 @@ public:
     static void Parse_Byte_Sized_Index_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Duration_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Duration_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Duration_Unsigned_Short(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Acceleration_Real(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Bit_In_Int32(INI *ini, void *formal, void *store, const void *user_data);

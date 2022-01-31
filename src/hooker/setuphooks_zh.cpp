@@ -18,6 +18,7 @@
 #endif
 
 #include "aabtree.h"
+#include "anim2d.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -2105,4 +2106,13 @@ void Setup_Hooks()
     Hook_Any(0x005DA910, DynamicAudioEventInfo::Override_Priority);
     Hook_Any(0x005DA930, DynamicAudioEventInfo::Get_Original_Name);
     Hook_Any(0x005DA950, DynamicAudioEventInfo::Xfer_No_Name);
+
+    // anim2d.cpp
+    Hook_Any(0x0051A180, Anim2D::Hook_Ctor);
+    Hook_Any(0x0051A3E0, Anim2D::Reset);
+    Hook_Any(0x0051A590, Anim2D::Get_Current_Frame_Width);
+    Hook_Any(0x0051A5C0, Anim2D::Get_Current_Frame_Height);
+    Hook_Any(0x0051A5F0, Anim2D::Draw);
+    Hook_Any(0x0051A6F0, Anim2DCollection::Hook_Ctor);
+    Hook_Any(0x0051A860, Anim2DCollection::Find_Template);
 }

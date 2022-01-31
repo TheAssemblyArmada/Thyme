@@ -622,3 +622,7 @@ FXListStore *&g_theFXListStore = Make_Global<FXListStore *>(PICK_ADDRESS(0x00A2B
 // image.cpp
 class ImageCollection;
 ImageCollection *&g_theMappedImageCollection = Make_Global<ImageCollection *>(PICK_ADDRESS(0x00A2C0A4, 0x00E27F50));
+
+// anim2d.cpp
+class Anim2DCollection;
+Anim2DCollection *&g_theAnim2DCollection = Make_Global<Anim2DCollection *>(PICK_ADDRESS(0x00A2C0A8, 0x00E23974));

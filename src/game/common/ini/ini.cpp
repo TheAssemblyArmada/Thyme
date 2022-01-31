@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "ini.h"
+#include "anim2d.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
 #include "audiosettings.h"
@@ -61,7 +62,7 @@ const float _DURATION_MULT = 0.029999999f;
 // clang-format off
 BlockParse TheTypeTable[] = {
 	{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
-    {"Animation", (iniblockparse_t)(0x00518DB0) /*&INI::parseAnim2DDefinition*/},
+    {"Animation", &Anim2DCollection::Parse_Anim2D_Definition /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     //{"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
     {"AudioEvent", AudioEventInfo::Parse_Audio_Event_Definition},
@@ -752,6 +753,11 @@ void INI::Parse_Duration_Real(INI *ini, void *formal, void *store, const void *u
 void INI::Parse_Duration_Unsigned_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
     *static_cast<uint32_t *>(store) = Ceil(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
+}
+
+void INI::Parse_Duration_Unsigned_Short(INI *ini, void *formal, void *store, const void *user_data)
+{
+    *static_cast<uint16_t *>(store) = Ceil(_DURATION_MULT * Scan_UnsignedInt(ini->Get_Next_Token()));
 }
 
 void INI::Parse_Velocity_Real(INI *ini, void *formal, void *store, const void *user_data)

@@ -46,6 +46,9 @@ public:
     Utf8String Get_Name() { return m_name; }
     void Set_Name(Utf8String str) { m_name = str; }
     Region2D Get_UV_Region() const { return m_UVCoords; }
+    int Get_Image_Width() const { return m_imageSize.x; }
+    int Get_Image_Height() const { return m_imageSize.y; }
+    const ICoord2D *Get_Image_Size() const { return &m_imageSize; }
 
     // initFromINIMulti variants for Field Parsing Functions.
     static void Parse_Image_Coords(INI *ini, void *formal, void *store, const void *user_data);

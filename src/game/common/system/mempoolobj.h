@@ -78,28 +78,28 @@ private: \
 public: \
     enum classname##MagicEnum{ classname##_GLUE_NOT_IMPLEMENTED = 0 }; \
 \
-    void *operator new(size_t size, classname##MagicEnum = classname##_GLUE_NOT_IMPLEMENTED) \
+    void *operator new(size_t size) { return operator new(size, classname##_GLUE_NOT_IMPLEMENTED); } \
+    void *operator new(size_t size, classname##MagicEnum) \
     { \
         captainslog_dbgassert(size == sizeof(classname), \
             "The wrong operator new is being called; ensure all objects in the hierarchy have MemoryPoolGlue set up " \
             "correctly"); \
         return Get_Class_Pool()->Allocate_Block(); \
     } \
-    void operator delete(void *ptr) \
-    { \
-        captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
-        Get_Class_Pool()->Free_Block(ptr); \
-    } \
+    void operator delete(void *ptr) { operator delete(ptr, classname##_GLUE_NOT_IMPLEMENTED); } \
     void operator delete(void *ptr, classname##MagicEnum) \
     { \
         captainslog_dbgassert(0, "Please call Delete_Instance instead of delete."); \
         Get_Class_Pool()->Free_Block(ptr); \
-    }
+    } \
+    void *operator new(size_t size, void *where) { return where; } \
+    void operator delete(void *ptr, void *where) {}
 
 /* NOTE: Operator delete above must exist because of the pairing operator new. However, it should never be called directly.
  * Reason being, a pointer to a derived class of this class, must use the correct memory pool for deletion. This is possible
  * by calling Get_Object_Pool function. However, operator delete is called after class destructor, and class destructor
- * will destroy virtual table. Therefore operator delete cannot be used. */
+ * will destroy virtual table. Therefore operator delete cannot be used.
+ */
 
 #define IMPLEMENT_POOL(classname) IMPLEMENT_NAMED_POOL(classname, classname);
 

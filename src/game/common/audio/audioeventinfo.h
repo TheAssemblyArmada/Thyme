@@ -131,9 +131,6 @@ class DynamicAudioEventInfo : public AudioEventInfo
 {
     IMPLEMENT_POOL(DynamicAudioEventInfo);
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 public:
     enum OverriddenFields
     {

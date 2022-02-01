@@ -32,9 +32,6 @@ class ParticleSystem : public MemoryPoolObject, public ParticleSystemInfo
     IMPLEMENT_NAMED_POOL(ParticleSystem, ParticleSystemPool);
     friend class ParticleSystemManager;
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 protected:
     virtual ~ParticleSystem() override;
 

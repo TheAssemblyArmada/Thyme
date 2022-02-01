@@ -41,9 +41,6 @@ class MapObject : public MemoryPoolObject
 {
     IMPLEMENT_POOL(MapObject)
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 protected:
     virtual ~MapObject() override;
 

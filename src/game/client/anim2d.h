@@ -79,9 +79,6 @@ class Anim2D : public MemoryPoolObject, public SnapShot
         STATUS_ANIM_COMPLETE = 4,
     };
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 public:
     Anim2D(Anim2DTemplate *tmplate, Anim2DCollection *collection);
     virtual ~Anim2D() override;

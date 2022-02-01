@@ -24,7 +24,7 @@ unsigned StringClass::m_reserveMask = 0;
 #endif
 char StringClass::m_tempStrings[StringClass::MAX_TEMP_STRING][StringClass::MAX_TEMP_BYTES];
 
-void StringClass::Get_String(size_t length, bool is_temp)
+void StringClass::Get_String(int length, bool is_temp)
 {
     if (!is_temp && length == 0) {
         m_buffer = m_emptyString;
@@ -69,9 +69,9 @@ void StringClass::Resize(int new_len)
     }
 }
 
-void StringClass::Uninitialised_Grow(size_t new_len)
+void StringClass::Uninitialised_Grow(int new_len)
 {
-    size_t allocated_len = Get_Allocated_Length();
+    int allocated_len = Get_Allocated_Length();
 
     if (new_len > allocated_len) {
         char *new_buffer = Allocate_Buffer(new_len);

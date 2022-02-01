@@ -125,8 +125,8 @@ void W3DDebugIcons::Render(RenderInfoClass &rinfo)
 
                         int fade_start = 100;
 
-                        int frame = (int)g_theGameLogic->Get_Frame();
-                        int frame_delta = icon->endFrame - frame;
+                        int frame = static_cast<int>(g_theGameLogic->Get_Frame());
+                        int frame_delta = static_cast<int>(icon->endFrame - frame);
 
                         if (frame_delta < 1) {
                             any_ended = true;

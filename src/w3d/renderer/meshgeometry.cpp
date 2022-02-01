@@ -262,7 +262,8 @@ void MeshGeometryClass::Set_Name(const char *newname)
     }
 
     if (newname) {
-        m_meshName = new ShareBufferClass<char>(strlen(newname) + 1);
+        int count = strlen(newname) + 1;
+        m_meshName = new ShareBufferClass<char>(count);
         strcpy(m_meshName->Get_Array(), newname);
     }
 }
@@ -283,7 +284,8 @@ void MeshGeometryClass::Set_User_Text(char *usertext)
     }
 
     if (usertext) {
-        m_userText = new ShareBufferClass<char>(strlen(usertext) + 1);
+        int count = strlen(usertext) + 1;
+        m_userText = new ShareBufferClass<char>(count);
         strcpy(m_userText->Get_Array(), usertext);
     }
 }

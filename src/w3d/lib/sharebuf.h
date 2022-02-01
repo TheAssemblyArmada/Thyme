@@ -26,7 +26,7 @@ template<class T> class ShareBufferClass : public W3DMPO, public RefCountClass
 
 public:
 #ifndef BUILD_EDITOR
-    ShareBufferClass(int count) : m_count(count)
+    explicit ShareBufferClass(int count) : m_count(count)
 #else
     ShareBufferClass(int count, const char *name) : m_name(name), m_count(count)
 #endif

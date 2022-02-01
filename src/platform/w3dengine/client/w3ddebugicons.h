@@ -27,7 +27,7 @@ struct DebugIcon
     Coord3D position;
     float width;
     RGBColor color;
-    int endFrame;
+    unsigned int endFrame;
 };
 
 class W3DDebugIcons : public RenderObjClass

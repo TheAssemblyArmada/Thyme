@@ -123,7 +123,7 @@ private:
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;
     ObjectID m_collided; // not 100% identified yet
-    int m_motiveForceApplied;
+    unsigned int m_motiveForceApplied;
     float m_extraBounciness; // not 100% identified yet
     float m_extraFriction;
     ProjectileUpdateInterface *m_projectileUpdateInterface; // not 100% identified yet

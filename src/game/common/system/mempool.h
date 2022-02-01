@@ -49,7 +49,7 @@ public:
     void Remove_From_List(MemoryPool **head);
     int Get_Alloc_Size() { return m_allocationSize; }
 
-    void *operator new(size_t size) throw() { return Raw_Allocate(size); }
+    void *operator new(size_t size) throw() { return Raw_Allocate(static_cast<int>(size)); }
     void operator delete(void *obj) { Raw_Free(obj); }
 
 private:

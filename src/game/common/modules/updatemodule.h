@@ -17,6 +17,7 @@
 #include "always.h"
 #include "behaviormodule.h"
 #include "bitflags.h"
+#include "moduleinfo.h"
 
 enum SleepyUpdatePhase
 {

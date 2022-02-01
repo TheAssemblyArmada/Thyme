@@ -103,6 +103,7 @@
 #include "particlesysinfo.h"
 #include "particlesysmanager.h"
 #include "partitionmanager.h"
+#include "physicsupdate.h"
 #include "playerlist.h"
 #include "playertemplate.h"
 #include "polygontrigger.h"
@@ -2115,4 +2116,8 @@ void Setup_Hooks()
     Hook_Any(0x0051A5F0, Anim2D::Draw);
     Hook_Any(0x0051A6F0, Anim2DCollection::Hook_Ctor);
     Hook_Any(0x0051A860, Anim2DCollection::Find_Template);
+
+    // physicsupdate.h
+    Hook_Method(0x005CDB70, &PhysicsBehavior::Get_Forward_Speed_2D);
+    Hook_Method(0x005CDBC0, &PhysicsBehavior::Get_Forward_Speed_3D);
 }

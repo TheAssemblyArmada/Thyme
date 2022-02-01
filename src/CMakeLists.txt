@@ -23,6 +23,8 @@ set(GAMEENGINE_INCLUDES
     game/logic/ai
     game/logic/map
     game/logic/object
+    game/logic/object/body
+    game/logic/object/contain
     game/logic/object/update
     game/logic/scriptengine
     game/logic/system
@@ -72,6 +74,7 @@ set(GAMEENGINE_SRC
     game/client/gametext.cpp
     game/client/globallanguage.cpp
     game/client/ingameui.cpp
+    game/client/languagefilter.cpp
     game/client/optionpreferences.cpp
     game/client/parabolicease.cpp
     game/client/shadermanager.cpp

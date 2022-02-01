@@ -13,9 +13,13 @@
  *            LICENSE
  */
 #include "drawable.h"
-
+#include "bodymodule.h"
 #include "drawmodule.h"
+#include "locomotor.h"
 #include "object.h"
+#include "opencontain.h"
+#include "stealthupdate.h"
+#include "stickybombupdate.h"
 
 const Matrix3D *Drawable::Get_Transform_Matrix() const
 {

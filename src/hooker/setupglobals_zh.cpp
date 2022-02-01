@@ -626,3 +626,7 @@ ImageCollection *&g_theMappedImageCollection = Make_Global<ImageCollection *>(PI
 // anim2d.cpp
 class Anim2DCollection;
 Anim2DCollection *&g_theAnim2DCollection = Make_Global<Anim2DCollection *>(PICK_ADDRESS(0x00A2C0A8, 0x00E23974));
+
+// languagefilter.cpp
+class LanguageFilter;
+LanguageFilter *&g_theLanguageFilter = Make_Global<LanguageFilter *>(PICK_ADDRESS(0x00A2BEF8, 0x04CA87CC));

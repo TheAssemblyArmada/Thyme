@@ -35,20 +35,21 @@
 #ifdef __cplusplus
 #if !defined(DEFINE_ENUMERATION_BITWISE_OPERATORS)
 // clang-format off
-#define DEFINE_ENUMERATION_BITWISE_OPERATORS(ENUMTYPE) \
+#define DEFINE_ENUMERATION_BITWISE_OPERATORS_T(ENUMTYPE, UNDERLYING) \
 extern "C++" { \
-__forceinline constexpr ENUMTYPE operator|(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((SizedInteger<ENUMTYPE>::type)a) | ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator&(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((SizedInteger<ENUMTYPE>::type)a) & ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator~(ENUMTYPE const a) { return ENUMTYPE(~((SizedInteger<ENUMTYPE>::type)a)); } \
-__forceinline constexpr ENUMTYPE operator^(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((SizedInteger<ENUMTYPE>::type)a) ^ ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator^=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((SizedInteger<ENUMTYPE>::type &)a) ^= ((SizedInteger<ENUMTYPE>::type &)b)); } \
-__forceinline ENUMTYPE &operator&=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((SizedInteger<ENUMTYPE>::type &)a) &= ((SizedInteger<ENUMTYPE>::type &)b)); } \
-__forceinline ENUMTYPE &operator|=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((SizedInteger<ENUMTYPE>::type &)a) |= ((SizedInteger<ENUMTYPE>::type &)b)); } \
-__forceinline constexpr ENUMTYPE operator<<(ENUMTYPE a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) << ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator>>(ENUMTYPE a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) >> ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator<<=(ENUMTYPE &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) << ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator>>=(ENUMTYPE &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) >> ((SizedInteger<ENUMTYPE>::type)b)); } \
+constexpr ENUMTYPE operator|(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((UNDERLYING)a) | ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator&(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((UNDERLYING)a) & ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator~(ENUMTYPE const a) { return ENUMTYPE(~((UNDERLYING)a)); } \
+constexpr ENUMTYPE operator^(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((UNDERLYING)a) ^ ((UNDERLYING)b)); } \
+constexpr ENUMTYPE &operator^=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) ^= ((UNDERLYING &)b)); } \
+constexpr ENUMTYPE &operator&=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) &= ((UNDERLYING &)b)); } \
+constexpr ENUMTYPE &operator|=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) |= ((UNDERLYING &)b)); } \
+constexpr ENUMTYPE operator<<(ENUMTYPE a, size_t const b) { return (ENUMTYPE)(((UnsignedInteger<ENUMTYPE>::type)a) << b); } \
+constexpr ENUMTYPE operator>>(ENUMTYPE a, size_t const b) { return (ENUMTYPE)(((UnsignedInteger<ENUMTYPE>::type)a) >> b); } \
+constexpr ENUMTYPE &operator<<=(ENUMTYPE &a, size_t const b) { return (ENUMTYPE &)((UnsignedInteger<ENUMTYPE>::type &)a <<= b); } \
+constexpr ENUMTYPE &operator>>=(ENUMTYPE &a, size_t const b) { return (ENUMTYPE &)((UnsignedInteger<ENUMTYPE>::type &)a >>= b); } \
 }
+#define DEFINE_ENUMERATION_BITWISE_OPERATORS(ENUMTYPE) DEFINE_ENUMERATION_BITWISE_OPERATORS_T(ENUMTYPE, SignedInteger<ENUMTYPE>::type)
 // clang-format on
 #endif // !DEFINE_ENUMERATION_BITWISE_OPERATORS
 #else
@@ -71,27 +72,28 @@ __forceinline ENUMTYPE &operator>>=(ENUMTYPE &a, SizedInteger<ENUMTYPE>::type co
 #ifdef __cplusplus
 #if !defined(DEFINE_ENUMERATION_OPERATORS)
 // clang-format off
-#define DEFINE_ENUMERATION_OPERATORS(ENUMTYPE) \
+#define DEFINE_ENUMERATION_OPERATORS_T(ENUMTYPE, UNDERLYING) \
 extern "C++" { \
-__forceinline ENUMTYPE operator++(ENUMTYPE const &a) { return (ENUMTYPE)(++((SizedInteger<ENUMTYPE>::type &)a)); } \
-__forceinline ENUMTYPE operator--(ENUMTYPE const &a) { return (ENUMTYPE)(--((SizedInteger<ENUMTYPE>::type &)a)); } \
-__forceinline constexpr ENUMTYPE operator+(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) + ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator-(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) - ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator*(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) * ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator/(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) / ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator%(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) % ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator+=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) + ((ENUMTYPE)b)); } \
-__forceinline ENUMTYPE &operator-=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) - ((ENUMTYPE)b)); } \
-__forceinline ENUMTYPE operator++(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type &)a)++); } \
-__forceinline ENUMTYPE operator--(ENUMTYPE const &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type &)a)--); } \
-__forceinline constexpr ENUMTYPE operator+(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) + ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator-(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) - ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator*(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) * ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator/(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) / ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline constexpr ENUMTYPE operator%(ENUMTYPE const a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE)(((SizedInteger<ENUMTYPE>::type)a) % ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator+=(ENUMTYPE &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) + ((SizedInteger<ENUMTYPE>::type)b)); } \
-__forceinline ENUMTYPE &operator-=(ENUMTYPE &a, SizedInteger<ENUMTYPE>::type const b) { return (ENUMTYPE &)((SizedInteger<ENUMTYPE>::type &)a = ((SizedInteger<ENUMTYPE>::type &)a) - ((SizedInteger<ENUMTYPE>::type)b)); } \
+constexpr ENUMTYPE operator++(ENUMTYPE const &a) { return (ENUMTYPE)(++((UNDERLYING &)a)); } \
+constexpr ENUMTYPE operator--(ENUMTYPE const &a) { return (ENUMTYPE)(--((UNDERLYING &)a)); } \
+constexpr ENUMTYPE operator+(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) + ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator-(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) - ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator*(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) * ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator/(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) / ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator%(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) % ((UNDERLYING)b)); } \
+constexpr ENUMTYPE &operator+=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) + ((ENUMTYPE)b)); } \
+constexpr ENUMTYPE &operator-=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) - ((ENUMTYPE)b)); } \
+constexpr ENUMTYPE operator++(ENUMTYPE const &a, int) { return (ENUMTYPE)(((UNDERLYING &)a)++); } \
+constexpr ENUMTYPE operator--(ENUMTYPE const &a, int) { return (ENUMTYPE)(((UNDERLYING &)a)--); } \
+constexpr ENUMTYPE operator+(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) + ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator-(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) - ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator*(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) * ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator/(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) / ((UNDERLYING)b)); } \
+constexpr ENUMTYPE operator%(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) % ((UNDERLYING)b)); } \
+constexpr ENUMTYPE &operator+=(ENUMTYPE &a, UNDERLYING const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) + ((UNDERLYING)b)); } \
+constexpr ENUMTYPE &operator-=(ENUMTYPE &a, UNDERLYING const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) - ((UNDERLYING)b)); } \
 }
+#define DEFINE_ENUMERATION_OPERATORS(ENUMTYPE) DEFINE_ENUMERATION_OPERATORS_T(ENUMTYPE, SignedInteger<ENUMTYPE>::type)
 // clang-format on
 #endif // !DEFINE_ENUMERATION_OPERATORS
 #else

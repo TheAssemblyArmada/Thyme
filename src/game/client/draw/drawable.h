@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "anim2d.h"
 #include "module.h"
 #include "object.h"
 #include "thing.h"
@@ -30,6 +31,7 @@ class Locomotor;
 class View;
 class ClientUpdateModule;
 class DrawModule;
+class Anim2D;
 
 struct TWheelInfo
 {
@@ -82,6 +84,66 @@ public:
     TWheelInfo m_wheelInfo;
 };
 
+enum DrawableIconType
+{
+    ICON_HEAL,
+    ICON_HEAL_STRUCTURE,
+    ICON_HEAL_VEHICLE,
+    ICON_DEMORALIZED_OBSOLETE,
+    ICON_BOMB_TIMED,
+    ICON_BOMB_REMOTE,
+    ICON_DISABLED,
+    ICON_BATTLEPLAN_BOMBARDMENT,
+    ICON_BATTLEPLAN_HOLDTHELINE,
+    ICON_BATTLEPLAN_SEARCHANDDESTROY,
+    ICON_EMOTICON,
+    ICON_ENTHUSIASTIC,
+    ICON_SUBLIMINAL,
+    ICON_CARBOMB,
+    MAX_ICONS,
+    ICON_INVALID = -1,
+};
+
+class DrawableIconInfo : public MemoryPoolObject
+{
+    IMPLEMENT_POOL(DrawableIconInfo)
+
+public:
+    DrawableIconInfo()
+    {
+        for (int i = 0; i < MAX_ICONS; i++) {
+            anims[i] = nullptr;
+            timings[i] = 0;
+        }
+    }
+
+    void Kill_Icon(DrawableIconType icon)
+    {
+        if (anims[icon] != nullptr) {
+            anims[icon]->Delete_Instance();
+            anims[icon] = nullptr;
+            timings[icon] = 0;
+        }
+    }
+
+    void Reset()
+    {
+        for (int i = 0; i < MAX_ICONS; i++) {
+            if (anims[i] != nullptr) {
+                anims[i]->Delete_Instance();
+                anims[i] = nullptr;
+            }
+
+            timings[i] = 0;
+        }
+    }
+    virtual ~DrawableIconInfo() override { Reset(); }
+
+private:
+    Anim2D *anims[MAX_ICONS];
+    unsigned int timings[MAX_ICONS];
+};
+
 struct DrawableInfo
 {
     ObjectID object_id;
@@ -93,7 +155,14 @@ struct DrawableInfo
 class Drawable : public Thing, public SnapShot
 {
 public:
-    struct PhysicsXformInfo;
+    struct PhysicsXformInfo
+    {
+        float m_totalPitch;
+        float m_pitchRate;
+        float m_yaw;
+        float m_totalZ;
+    };
+
     enum FadingMode
     {
         FADING_MODE_OFF,
@@ -242,7 +311,6 @@ public:
 
     void Draw(View *view);
     void Draw_Ammo(IRegion2D const *region);
-    void Draw_Battle_Plans(IRegion2D const *region);
     void Draw_Bombed(IRegion2D const *region);
     void Draw_Caption(IRegion2D const *region);
     void Draw_Construct_Percent(IRegion2D const *region);

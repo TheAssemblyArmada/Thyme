@@ -61,6 +61,7 @@ public:
     bool Remove_Team_Relationship(Team *team);
     void Update_Team_States();
     void Becoming_Local_Player(bool b);
+    int Get_Squad_Number_For_Object(const Object *obj) const;
 
 public:
     int unk1;

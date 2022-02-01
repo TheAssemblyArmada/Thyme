@@ -35,3 +35,12 @@ bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *tur
     return false;
 #endif
 }
+
+float AIUpdateInterface::Get_Cur_Locomotor_Speed() const
+{
+#ifdef GAME_DLL
+    return Call_Method<float, AIUpdateInterface const>(PICK_ADDRESS(0x005D1500, 0x007F4D62), this);
+#else
+    return 0.0f;
+#endif
+}

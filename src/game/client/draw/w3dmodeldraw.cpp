@@ -145,7 +145,7 @@ void ModelConditionInfo::Validate_Stuff(RenderObjClass *robj, float scale, std::
 
 bool Test_Animation_Flag(int flags, char flag)
 {
-    return ((1 << flags) & flag) != 0;
+    return ((1 << flag) & flags) != 0;
 }
 
 bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &transform, int &index)
@@ -2141,7 +2141,10 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
         } else {
             m_renderObject = W3DDisplay::s_assetManager->Create_Render_Obj(
                 new_state->m_modelName, drawable->Get_Scale(), m_hexColor, nullptr, nullptr);
+            // assert disabled, the game tries to load pscarrapt_d1b which doesn't exist and therefore triggers the assert
+#if 0
             captainslog_dbgassert(m_renderObject, "*** ASSET ERROR: Model %s not found!", new_state->m_modelName.Str());
+#endif
         }
 
         new_state->Validate_Stuff(
@@ -2683,6 +2686,8 @@ bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
             } else {
                 Do_FX_Pos(fxl, object->Get_Position(), object->Get_Transform_Matrix(), weapon_speed, victim_pos, radius);
             }
+
+            ret = true;
         } else {
             captainslog_debug("*** no FXBone found for a non-null FXL");
         }

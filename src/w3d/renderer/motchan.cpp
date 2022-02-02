@@ -18,17 +18,35 @@
 
 using std::memcpy;
 
-// clang-format off
-static float g_filterTable[256] =
-{
-	1.0e-08f, 1.0e-07f, 1.0e-06f, 1.0e-05f,
-		0.0001f, 0.001f, 0.01f, 0.1f,
-		1.0f, 10.0f, 100.0f, 1000.0f,
-		10000.0f, 100000.0f, 1000000.0f, 10000000.0f
-};
-// clang-format on
+static float g_filterTable[256] = { 1.0e-08f,
+    1.0e-07f,
+    1.0e-06f,
+    1.0e-05f,
+    0.0001f,
+    0.001f,
+    0.01f,
+    0.1f,
+    1.0f,
+    10.0f,
+    100.0f,
+    1000.0f,
+    10000.0f,
+    100000.0f,
+    1000000.0f,
+    10000000.0f };
 
 bool g_tableValid;
+
+// Helper function for getting the Frame (timecode) out of m_data/m_bits
+constexpr uint32_t Get_Frame_From_Data(uint32_t data)
+{
+    return data & 0x7FFFFFFF;
+}
+// Helper function for getting the Flag (???Can be interpolated???) out of m_data/m_bits
+constexpr bool Get_Flag_From_Data(uint32_t data)
+{
+    return data & (1ULL << 31);
+}
 
 MotionChannelClass::MotionChannelClass() :
     m_pivotIdx(0),
@@ -210,15 +228,15 @@ void TimeCodedMotionChannelClass::Get_Vector(float frame, float *setvec)
         int index2 = m_packetSize + index;
         unsigned int val = m_data[index2];
 
-        if (GameMath::Fast_Is_Float_Positive(val)) {
-            float f1 = (m_data[index] & 0x7FFFFFFF);
+        if (Get_Flag_From_Data(val)) {
+            float frame_1 = Get_Frame_From_Data(m_data[index]);
             float *data1 = (float *)&m_data[index + 1];
             float *data2 = (float *)&m_data[index2 + 1];
-            float f2 = (val & 0x7FFFFFFF);
-            float f3 = (frame - f1) / (f2 - f1);
+            float frame_2 = Get_Frame_From_Data(val);
+            float t = (frame - frame_1) / (frame_2 - frame_1);
 
             for (int k = 0; k < m_vectorLen; ++k) {
-                setvec[k] = GameMath::Lerp(data1[k], data2[k], f3);
+                setvec[k] = GameMath::Lerp(data1[k], data2[k], t);
             }
         } else {
             float *data3 = (float *)&m_data[index + 1];
@@ -245,10 +263,10 @@ Quaternion TimeCodedMotionChannelClass::Get_Quat_Vector(float frame_idx)
         int index2 = m_packetSize + index;
         unsigned int val = m_data[index2];
 
-        if (GameMath::Fast_Is_Float_Positive(val)) {
-            float f1 = (m_data[index] & 0x7FFFFFFF);
-            float f2 = (val & 0x7FFFFFFF);
-            float alpha = (frame_idx - f1) / (f2 - f1);
+        if (Get_Flag_From_Data(val)) {
+            float frame_1 = Get_Frame_From_Data(m_data[index]);
+            float frame_2 = Get_Frame_From_Data(val);
+            float alpha = (frame_idx - frame_1) / (frame_2 - frame_1);
 
             Quaternion *dq3 = (Quaternion *)&m_data[index + 1];
             Quaternion *dq4 = (Quaternion *)&m_data[index2 + 1];
@@ -284,7 +302,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 
     captainslog_assert(m_cachedIdx <= m_lastTimeCodeIdx);
 
-    if (timecode < (m_data[m_cachedIdx] & 0x7FFFFFFF)) {
+    if (timecode < Get_Frame_From_Data(m_data[m_cachedIdx])) {
         result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
         m_cachedIdx = result;
         return result;
@@ -296,7 +314,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 
     result = m_packetSize + m_cachedIdx;
 
-    if (timecode < (m_data[m_packetSize + m_cachedIdx] & 0x7FFFFFFF)) {
+    if (timecode < Get_Frame_From_Data(m_data[m_packetSize + m_cachedIdx])) {
         return m_cachedIdx;
     }
 
@@ -305,7 +323,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
     if (result != m_lastTimeCodeIdx) {
         int index = result + m_packetSize;
 
-        if (timecode >= (m_data[index] & 0x7FFFFFFF)) {
+        if (timecode >= Get_Frame_From_Data(m_data[index])) {
             result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
             m_cachedIdx = result;
         }
@@ -322,21 +340,21 @@ unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int time
     int count = 0;
     int rightIdx = m_numTimeCodes - 2;
 
-    if (timecode >= (m_data[m_lastTimeCodeIdx] & 0x7FFFFFFF)) {
+    if (timecode >= Get_Frame_From_Data(m_data[m_lastTimeCodeIdx])) {
         result = m_lastTimeCodeIdx;
     } else {
         for (;;) {
             for (;;) {
                 count2 = m_packetSize * (count + ((rightIdx - count) >> 1));
 
-                if (timecode >= (m_data[count2] & 0x7FFFFFFF)) {
+                if (timecode >= Get_Frame_From_Data(m_data[count2])) {
                     break;
                 }
 
                 rightIdx = count + ((rightIdx - count) >> 1);
             }
 
-            if (timecode < (m_data[m_packetSize + count2] & 0x7FFFFFFF)) {
+            if (timecode < Get_Frame_From_Data(m_data[m_packetSize + count2])) {
                 break;
             }
 
@@ -410,11 +428,11 @@ int TimeCodedBitChannelClass::Get_Bit(int frame)
 
     unsigned int count = 0;
 
-    if (frame >= (m_bits[m_cachedIdx] & 0x7FFFFFFF)) {
+    if (frame >= static_cast<int>(Get_Frame_From_Data(m_bits[m_cachedIdx]))) {
         count = m_cachedIdx + 1;
     }
 
-    while (count < m_numTimeCodes && frame >= (m_bits[count] & 0x7FFFFFFF)) {
+    while (count < m_numTimeCodes && frame >= static_cast<int>(Get_Frame_From_Data(m_bits[count]))) {
         ++count;
     }
 
@@ -424,7 +442,7 @@ int TimeCodedBitChannelClass::Get_Bit(int frame)
     }
 
     m_cachedIdx = index;
-    return (m_bits[index] & 0x80000000) == 0x80000000;
+    return Get_Flag_From_Data(m_bits[index]);
 }
 
 AdaptiveDeltaMotionChannelClass::AdaptiveDeltaMotionChannelClass() :
@@ -441,7 +459,7 @@ AdaptiveDeltaMotionChannelClass::AdaptiveDeltaMotionChannelClass() :
         for (int i = 0; i < 240; ++i) {
             g_filterTable[i + 16] = 1.0 - GameMath::Sin(i / 240.0 * DEG_TO_RAD(90.0));
         }
-        g_tableValid = 1;
+        g_tableValid = true;
     }
 }
 

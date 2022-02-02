@@ -238,7 +238,7 @@ public:
     Utf8String Get_Name() const { return m_name; }
     const PhysicsBehavior *Get_Physics() const { return m_physics; }
     PhysicsBehavior *Get_Physics() { return m_physics; }
-    const ContainModuleInterface *Get_Contain() { return m_contain; }
+    ContainModuleInterface *Get_Contain() { return m_contain; }
     const Object *Get_Contained_By() const { return m_containedBy; }
     Object *Get_Contained_By() { return m_containedBy; }
     Module **Get_All_Modules() { return m_allModules; }

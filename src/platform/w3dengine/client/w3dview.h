@@ -90,8 +90,6 @@ public:
     bool Update_Camera_Movements();
     CameraClass *Get_3D_Camera() { return m_3DCamera; }
 
-    bool World_To_Screen_Tri(const Coord3D *o1, ICoord2D *o2) { return World_To_Screen_Tri_Return(o1, o2) == 0; }
-
 private:
     CameraClass *m_3DCamera;
 };

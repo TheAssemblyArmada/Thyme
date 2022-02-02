@@ -142,6 +142,7 @@ public:
 private:
     Anim2D *anims[MAX_ICONS];
     unsigned int timings[MAX_ICONS];
+    friend class Drawable;
 };
 
 struct DrawableInfo
@@ -168,26 +169,6 @@ public:
         FADING_MODE_OFF,
         FADING_MODE_OUT,
         FADING_MODE_IN,
-    };
-
-    enum DrawableIconType
-    {
-        ICON_HEAL,
-        ICON_HEAL_STRUCTURE,
-        ICON_HEAL_VEHICLE,
-        ICON_DEMORALIZED_OBSOLETE,
-        ICON_BOMB_TIMED,
-        ICON_BOMB_REMOTE,
-        ICON_DISABLED,
-        ICON_BATTLEPLAN_BOMBARDMENT,
-        ICON_BATTLEPLAN_HOLDTHELINE,
-        ICON_BATTLEPLAN_SEARCHANDDESTROY,
-        ICON_EMOTICON,
-        ICON_ENTHUSIASTIC,
-        ICON_SUBLIMINAL,
-        ICON_CARBOMB,
-        MAX_ICONS,
-        ICON_INVALID = 0xFFFFFFFF,
     };
 
     Drawable(ThingTemplate const *thing_template, DrawableStatus status);
@@ -279,7 +260,14 @@ public:
     bool Check_Draw_Bit(unsigned int bit) { return (bit & m_drawBits) != 0; }
     const Matrix3D &Get_Instance_Matrix() const { return m_instance; }
     bool Is_Instance_Identity() { return m_instanceIsIdentity; }
-    void Kill_Icon(DrawableIconType icon); // needs DrawableIconInfo
+
+    void Kill_Icon(DrawableIconType icon)
+    {
+        if (m_drawableIconInfo) {
+            m_drawableIconInfo->Kill_Icon(icon);
+        }
+    }
+
     bool Has_Drawable_Icon_Info() { return m_drawableIconInfo != nullptr; }
     void Set_Draw_Bit(unsigned int bit) { m_drawBits |= bit; }
     Drawable *Get_Previous() { return m_prevDrawable; }
@@ -505,4 +493,12 @@ private:
     bool m_ambientSoundFromScriptEnabled;
     bool m_receivesDynamicLights;
     bool m_isModelDirty;
+
+    static bool s_staticImagesInited;
+    static Image *s_veterancyImage[4];
+    static Image *s_fullAmmo;
+    static Image *s_emptyAmmo;
+    static Image *s_fullContainer;
+    static Image *s_emptyContainer;
+    static Anim2DTemplate **s_animationTemplates;
 };

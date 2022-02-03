@@ -44,6 +44,7 @@
 #include "dict.h"
 #include "dinputkeybd.h"
 #include "display.h"
+#include "drawable.h"
 #include "dx8caps.h"
 #include "dx8fvf.h"
 #include "dx8indexbuffer.h"
@@ -2124,4 +2125,11 @@ void Setup_Hooks()
 
     // objecttypes.h
     Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);
+
+    // drawable.cpp
+    Hook_Any(0x0046DAB0, Drawable::Init_Static_Images);
+    Hook_Any(0x0046E100, Drawable::Kill_Static_Images);
+    Hook_Any(0x00473320, Drawable::Draw_Icon_UI);
+    Hook_Any(0x004735D0, Drawable::Set_Emoticon);
+    Hook_Any(0x00473DB0, Drawable::Draw_UI_Text);
 }

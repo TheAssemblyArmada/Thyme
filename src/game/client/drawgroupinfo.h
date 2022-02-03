@@ -54,6 +54,7 @@ private:
     bool m_drawPositionYAbsolute;
 
     static FieldParse s_parseTable[];
+    friend class Drawable;
 };
 
 #ifdef GAME_DLL

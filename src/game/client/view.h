@@ -223,6 +223,7 @@ public:
     virtual View *Get_Next_View() { return m_next; }
     Coord3D &Get_Position() { return m_pos; }
     void Set_Position(const Coord3D *pos) { m_pos = *pos; }
+    bool World_To_Screen_Tri(const Coord3D *o1, ICoord2D *o2) { return World_To_Screen_Tri_Return(o1, o2) == 0; }
 
 protected:
     View *m_next;

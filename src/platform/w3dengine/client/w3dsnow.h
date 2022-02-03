@@ -72,3 +72,9 @@ private:
     int m_currentParticleCount;
     float m_unk9;
 };
+
+#ifdef GAME_DLL
+extern W3DSnowManager *&g_theSnowManager;
+#else
+extern W3DSnowManager *g_theSnowManager;
+#endif

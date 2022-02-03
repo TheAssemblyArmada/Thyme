@@ -18,18 +18,18 @@
 
 SnowManager::SnowManager() :
     m_dimensionsBuffer(nullptr),
-    m_elapsedTime(0),
-    m_velocity(0),
-    m_lifetime(0),
-    m_freqScaleX(0),
-    m_freqScaleY(0),
-    m_amplitude(0),
-    m_pointSize(0),
-    m_maxPointSize(0),
-    m_minPointSize(0),
-    m_particleSize(0),
-    m_boxDimensions(0),
-    m_boxDensity(0),
+    m_elapsedTime(0.0f),
+    m_velocity(0.0f),
+    m_lifetime(0.0f),
+    m_freqScaleX(0.0f),
+    m_freqScaleY(0.0f),
+    m_amplitude(0.0f),
+    m_pointSize(0.0f),
+    m_maxPointSize(0.0f),
+    m_minPointSize(0.0f),
+    m_particleSize(0.0f),
+    m_boxDimensions(0.0f),
+    m_boxDensity(0.0f),
     m_isVisible(true)
 {
 }

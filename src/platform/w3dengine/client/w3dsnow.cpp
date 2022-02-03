@@ -26,8 +26,16 @@
 #include "weather.h"
 #include <cmath>
 
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
 class FrustumClass;
 class Coord3D;
+
+#ifndef GAME_DLL
+W3DSnowManager *g_theSnowManager;
+#endif
 
 W3DSnowManager::W3DSnowManager() :
     m_indexBuffer(nullptr),
@@ -40,10 +48,10 @@ W3DSnowManager::W3DSnowManager() :
     m_maxParticleCount(0),
     m_numVertices(0),
     m_unk5(0),
-    m_unk6(0),
-    m_unk7(0),
+    m_unk6(0.0f),
+    m_unk7(0.0f),
     m_currentParticleCount(0),
-    m_unk9(0)
+    m_unk9(0.0f)
 {
 }
 
@@ -85,7 +93,7 @@ bool W3DSnowManager::Re_Acquire_Resources()
         IDirect3DDevice8 *device = DX8Wrapper::Get_D3D_Device8();
         captainslog_dbgassert(device != nullptr, "Trying to ReAquireResources on W3DSnowManager without device");
 
-        if (!m_vertexBuffer
+        if (m_vertexBuffer == nullptr
             && device->CreateVertexBuffer(VERTEX_COUNT * sizeof(Vector3),
                 D3DUSAGE_DYNAMIC | D3DUSAGE_POINTS | D3DUSAGE_WRITEONLY,
                 DX8_FVF_XYZ,
@@ -142,7 +150,10 @@ void W3DSnowManager::Render(RenderInfoClass &rinfo)
         Coord3D cam_coord = g_theTacticalView->Get_3D_Camera_Position();
 
         Vector3 cam_pos(cam_coord.x, cam_coord.y, cam_coord.z);
-        int dist = (int)floor(m_boxDimensions / m_boxDensity * 0.5);
+
+        captainslog_assert((abs(m_boxDensity) >= FLT_EPSILON));
+
+        int dist = (int)floor(m_boxDimensions / m_boxDensity * 0.5f);
         int cam_x = (int)floor(cam_pos.X / m_boxDensity);
         int cam_y = (int)floor(cam_pos.Y / m_boxDensity);
 
@@ -188,13 +199,11 @@ void W3DSnowManager::Render(RenderInfoClass &rinfo)
             DX8Wrapper::Set_Material(material);
             Ref_Ptr_Release(material);
 
-            if (use_point_sprites) {
-                if (!m_vertexBuffer) {
-                    Re_Acquire_Resources();
-                }
+            if (use_point_sprites && m_vertexBuffer == nullptr) {
+                Re_Acquire_Resources();
             }
 
-            if (!use_point_sprites && !m_indexBuffer) {
+            if (!use_point_sprites && m_indexBuffer == nullptr) {
                 Re_Acquire_Resources();
             }
 
@@ -235,6 +244,7 @@ void W3DSnowManager::Render(RenderInfoClass &rinfo)
 #endif
 }
 
+#if 1
 inline void W3DSnowManager::Render_Sub_Box_Internal(
     RenderInfoClass &rinfo, MinMaxAABoxClass &minmax_aabox, int x1, int y1, int x2, int y2)
 {
@@ -261,8 +271,8 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
     int x_delta = x2 - x1;
     int y_delta = y2 - y1;
 
-    int x_offset = GameMath::Fast_To_Int_Ceil((x2 - x1) * 0.5);
-    int y_offset = GameMath::Fast_To_Int_Ceil((y2 - y1) * 0.5);
+    int x_offset = GameMath::Fast_To_Int_Ceil(float(x2 - x1) / 2.0f);
+    int y_offset = GameMath::Fast_To_Int_Ceil(float(y2 - y1) / 2.0f);
 
     MinMaxAABoxClass minmax_aabox;
 
@@ -291,16 +301,17 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
 
     } else {
         int count = (x2 - x1) * (y2 - y1);
-        if (count) {
-            int y = y1;
-            int x = x1;
+
+        if (count != 0) {
+            int start_y = y1;
+            int start_x = x1;
 
             Vector3 vertex;
             Vector3 *points;
 
             m_currentParticleCount += count;
 
-            while (count) {
+            while (count != 0) {
                 int point_count = count;
 
                 if (count > m_maxParticleCount) {
@@ -314,17 +325,16 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
                 if (m_vertexBuffer->Lock(m_vertexBufferOffset * sizeof(Vector3),
                         point_count * sizeof(Vector3),
                         (BYTE **)&points,
-                        m_vertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_NOOVERWRITE)) {
+                        m_vertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD)) {
                     break;
                 }
 
                 int points_written = 0;
 
-                while (y < y2) {
-                    while (x < x2) {
-                        if (points_written >= point_count) {
-                            goto breakout;
-                        }
+                int y = start_y;
+                while (y < y2 && points_written < point_count) {
+                    int x = start_x;
+                    while (x < x2 && points_written < point_count) {
 
                         int buffer_index = Get_Dimension_Buffer_Index(x, y);
 
@@ -352,10 +362,9 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
                         ++points_written;
                         ++x;
                     }
-                    x = x1;
                     ++y;
                 }
-            breakout:
+
                 m_vertexBuffer->Unlock();
                 if (points_written) {
                     DX8Wrapper::Get_D3D_Device8()->DrawPrimitive(D3DPT_POINTLIST, m_vertexBufferOffset, points_written);
@@ -367,8 +376,9 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
     }
 #endif
 }
+#endif
 
-// original code of function above
+// unrefactored code of function above in case if something goes wrong
 #if 0
 void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int x2, int y2)
 {
@@ -376,8 +386,8 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
     int x_delta = x2 - x1;
     int y_delta = y2 - y1;
 
-    int x_offset = GameMath::Fast_To_Int_Ceil((x2 - x1) * 0.5);
-    int y_offset = GameMath::Fast_To_Int_Ceil((y2 - y1) * 0.5);
+    int x_offset = GameMath::Fast_To_Int_Ceil(float(x2 - x1) / 2.0f);
+    int y_offset = GameMath::Fast_To_Int_Ceil(float(y2 - y1) / 2.0f);
 
     CameraClass &camera = rinfo.m_camera;
 
@@ -502,18 +512,18 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
     } else {
         int count = (x2 - x1) * (y2 - y1);
         if (count) {
-            int y = y1;
-            int x = x1;
+            int start_y = y1;
+            int start_x = x1;
 
             Vector3 vertex;
             Vector3 *points;
 
-            m_particleCount += count;
+            m_currentParticleCount += count;
 
             while (count) {
                 int point_count = count;
-                if (count > m_particleLimit) {
-                    point_count = m_particleLimit;
+                if (count > m_currentParticleCount) {
+                    point_count = m_currentParticleCount;
                 }
 
                 if (m_vertexBufferOffset + point_count > m_numVertices) {
@@ -523,17 +533,16 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
                 if (m_vertexBuffer->Lock(m_vertexBufferOffset * sizeof(Vector3),
                         point_count * sizeof(Vector3),
                         (BYTE **)&points,
-                        m_vertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_NOOVERWRITE)) {
+                        m_vertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD)) {
                     break;
                 }
 
                 int points_written = 0;
 
-                while (y < y2) {
-                    while (x < x2) {
-                        if (points_written >= point_count) {
-                            goto breakout;
-                        }
+                int y = start_y;
+                while (y < y2 && points_written < point_count) {
+                    int x = start_x;
+                    while (x < x2 && points_written < point_count) {
 
                         int buffer_index = Get_Dimension_Buffer_Index(x, y);
 
@@ -561,10 +570,9 @@ void W3DSnowManager::Render_Sub_Box(RenderInfoClass &rinfo, int x1, int y1, int 
                         ++points_written;
                         ++x;
                     }
-                    x = x1;
                     ++y;
                 }
-            breakout:
+
                 m_vertexBuffer->Unlock();
                 if (points_written) {
                     DX8Wrapper::Get_D3D_Device8()->DrawPrimitive(D3DPT_POINTLIST, m_vertexBufferOffset, points_written);
@@ -590,17 +598,17 @@ void W3DSnowManager::Render_As_Quads(RenderInfoClass &rinfo, int x1, int y1, int
     rinfo.m_camera.Get_Projection_Matrix(&proj);
 
     Vector3 corners[4]{
-        { -0.5, 0.5, 0.0 },
-        { -0.5, -0.5, 0.0 },
-        { 0.5, -0.5, 0.0 },
-        { 0.5, 0.5, 0.0 },
+        { -0.5f, 0.5f, 0.0f },
+        { -0.5f, -0.5f, 0.0f },
+        { 0.5f, -0.5f, 0.0f },
+        { 0.5f, 0.5f, 0.0f },
     };
 
     Vector2 uv[4]{
-        { 0.0, 0.0 },
-        { 0.0, 1.0 },
-        { 1.0, 1.0 },
-        { 1.0, 0.0 },
+        { 0.0f, 0.0f },
+        { 0.0f, 1.0f },
+        { 1.0f, 1.0f },
+        { 1.0f, 0.0f },
     };
 
     for (int i = 0; i < 4; ++i) {
@@ -612,8 +620,8 @@ void W3DSnowManager::Render_As_Quads(RenderInfoClass &rinfo, int x1, int y1, int
 
     DX8Wrapper::Set_Index_Buffer(m_indexBuffer, 0);
 
-    int y = y1;
-    int x = x1;
+    int start_y = y1;
+    int start_x = x1;
 
     int count = (x2 - x1) * (y2 - y1);
     m_currentParticleCount += count;
@@ -625,18 +633,17 @@ void W3DSnowManager::Render_As_Quads(RenderInfoClass &rinfo, int x1, int y1, int
             quad_count = MAX_PARTICLE_COUNT;
         }
 
-        int written = 0;
+        int quads_written = 0;
         DynamicVBAccessClass dynamic_vb_access(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, DX8_FVF_XYZNDUV2, 4 * quad_count);
         {
             DynamicVBAccessClass::WriteLockClass lock(&dynamic_vb_access);
 
             VertexFormatXYZNDUV2 *vertexes = lock.Get_Formatted_Vertex_Array();
-            while (y < y2) {
-                while (x < x2) {
 
-                    if (written >= quad_count) {
-                        goto breakout;
-                    }
+            int y = start_y;
+            while (y < y2 && quads_written < quad_count) {
+                int x = start_x;
+                while (x < x2 && quads_written < quad_count) {
 
                     int buffer_index = Get_Dimension_Buffer_Index(x, y);
 
@@ -672,30 +679,27 @@ void W3DSnowManager::Render_As_Quads(RenderInfoClass &rinfo, int x1, int y1, int
                         vertexes->x = vertex.X;
                         vertexes->y = vertex.Y;
                         vertexes->z = vertex.Z;
-                        vertexes->nx = 0.0;
-                        vertexes->ny = 0.0;
-                        vertexes->nz = 0.0;
+                        vertexes->nx = 0.0f;
+                        vertexes->ny = 0.0f;
+                        vertexes->nz = 0.0f;
                         vertexes->diffuse = 0xFFFFFFFF;
                         vertexes->u1 = uv[k].X;
                         vertexes->v1 = uv[k].Y;
-                        vertexes->u2 = 0.0;
-                        vertexes->v2 = 0.0;
+                        vertexes->u2 = 0.0f;
+                        vertexes->v2 = 0.0f;
                         ++vertexes;
                     }
-                    ++written;
+                    ++quads_written;
                     ++x;
                 }
-                x = x1;
                 ++y;
             }
         }
 
-    breakout:
-
-        if (written) {
+        if (quads_written) {
             DX8Wrapper::Set_Vertex_Buffer(dynamic_vb_access);
-            DX8Wrapper::Draw_Triangles(0, 2 * written, 0, 4 * written);
-            count -= written;
+            DX8Wrapper::Draw_Triangles(0, 2 * quads_written, 0, 4 * quads_written);
+            count -= quads_written;
         }
     }
 #endif

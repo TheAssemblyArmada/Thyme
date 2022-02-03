@@ -97,6 +97,7 @@
 #include "namekeygenerator.h"
 #include "object.h"
 #include "objectcreationlist.h"
+#include "objecttypes.h"
 #include "parabolicease.h"
 #include "particle.h"
 #include "particlesys.h"
@@ -2120,4 +2121,7 @@ void Setup_Hooks()
     // physicsupdate.h
     Hook_Method(0x005CDB70, &PhysicsBehavior::Get_Forward_Speed_2D);
     Hook_Method(0x005CDBC0, &PhysicsBehavior::Get_Forward_Speed_3D);
+
+    // objecttypes.h
+    Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);
 }

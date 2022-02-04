@@ -124,6 +124,7 @@ protected:
 private:
     static FieldParse s_audioEventParseTable[];
     friend class AudioEventRTS;
+    friend class Drawable;
 };
 
 class DynamicAudioEventInfo : public AudioEventInfo
@@ -191,4 +192,5 @@ public:
 private:
     BitFlags<OVERRIDE_COUNT> m_overrideFlags;
     Utf8String m_overrideName;
+    friend class Drawable;
 };

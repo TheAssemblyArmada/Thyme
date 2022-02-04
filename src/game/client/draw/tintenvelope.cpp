@@ -20,7 +20,7 @@ TintEnvelope::TintEnvelope() :
     m_attackColor(0.0f, 0.0f, 0.0f),
     m_decayColor(0.0f, 0.0f, 0.0f),
     m_peakColor(0.0f, 0.0f, 0.0f),
-    m_idleColor(0.0f, 0.0f, 0.0f),
+    m_tintColor(0.0f, 0.0f, 0.0f),
     m_peakWaitFrames(0),
     m_state(STATE_IDLE),
     m_isTinted(false)
@@ -42,7 +42,7 @@ void TintEnvelope::Play(
     m_isTinted = true;
 
     Vector3 delta;
-    Vector3::Subtract(m_idleColor, m_peakColor, &delta);
+    Vector3::Subtract(m_tintColor, m_peakColor, &delta);
     if (delta.Length() <= 0.001f) {
         m_state = STATE_PEAK;
     }
@@ -56,7 +56,7 @@ void TintEnvelope::Set_Attack_Frames(unsigned int attack_frames)
 
     float f1 = 1.0f / (float)attack_frames;
 
-    m_attackColor = m_idleColor;
+    m_attackColor = m_tintColor;
 
     Vector3::Subtract(m_peakColor, m_attackColor, &m_attackColor);
 
@@ -81,17 +81,17 @@ void TintEnvelope::Update()
     switch (m_state) {
 
         case STATE_IDLE: {
-            m_idleColor.Set(0.0f, 0.0f, 0.0f);
+            m_tintColor.Set(0.0f, 0.0f, 0.0f);
             m_isTinted = false;
             break;
         }
 
         case STATE_ATTACK: {
             Vector3 v1;
-            Vector3::Subtract(m_idleColor, m_peakColor, &v1);
+            Vector3::Subtract(m_tintColor, m_peakColor, &v1);
 
             if (v1.Length() >= m_attackColor.Length() && v1.Length() > 0.001f) {
-                Vector3::Add(m_attackColor, m_idleColor, &m_idleColor);
+                Vector3::Add(m_attackColor, m_tintColor, &m_tintColor);
                 m_isTinted = true;
             } else if (m_peakWaitFrames != 0) {
                 m_state = STATE_PEAK;
@@ -102,8 +102,8 @@ void TintEnvelope::Update()
         }
 
         case STATE_DECAY: {
-            if (m_idleColor.Length() >= m_decayColor.Length() && m_idleColor.Length() > 0.001f) {
-                Vector3::Add(m_decayColor, m_idleColor, &m_idleColor);
+            if (m_tintColor.Length() >= m_decayColor.Length() && m_tintColor.Length() > 0.001f) {
+                Vector3::Add(m_decayColor, m_tintColor, &m_tintColor);
                 m_isTinted = true;
             } else {
                 m_state = STATE_IDLE;
@@ -139,7 +139,7 @@ void TintEnvelope::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUser(&m_attackColor, sizeof(m_attackColor));
     xfer->xferUser(&m_decayColor, sizeof(m_decayColor));
     xfer->xferUser(&m_peakColor, sizeof(m_peakColor));
-    xfer->xferUser(&m_idleColor, sizeof(m_idleColor));
+    xfer->xferUser(&m_tintColor, sizeof(m_tintColor));
 
     xfer->xferUnsignedInt(&m_peakWaitFrames);
 

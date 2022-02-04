@@ -56,6 +56,10 @@ static const char *s_theShadowNames[] = { "SHADOW_DECAL",
     "SHADOW_ADDITIVE_DECAL",
     nullptr };
 
+#ifndef GAME_DLL
+AudioEventRTS ThingTemplate::s_audioEventNoSound;
+#endif
+
 // clang-format off
 FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},

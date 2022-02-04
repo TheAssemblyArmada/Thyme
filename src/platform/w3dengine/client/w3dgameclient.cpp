@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "w3dgameclient.h"
+#include "drawable.h"
 #include "w3ddisplay.h"
 #include "w3dmouse.h"
 #include "w3dstatuscircle.h"
@@ -33,4 +34,13 @@ void W3DGameClient::Set_Team_Color(int red, int green, int blue)
 {
     W3DStatusCircle::g_needUpdate = true;
     W3DStatusCircle::g_diffuse = (red << 16) + (green << 8) + blue;
+}
+
+Drawable *W3DGameClient::Create_Drawable(const ThingTemplate *temp, DrawableStatus status)
+{
+    if (temp == nullptr) {
+        return nullptr;
+    }
+
+    return new Drawable(temp, status);
 }

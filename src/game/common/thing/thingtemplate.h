@@ -398,7 +398,11 @@ private:
     unsigned char m_moduleParseState;
     unsigned char m_crusherLevel;
     unsigned char m_crushableLevel;
+#ifdef GAME_DLL
+    static AudioEventRTS &s_audioEventNoSound;
+#else
     static AudioEventRTS s_audioEventNoSound;
+#endif
     static FieldParse s_objectFieldParseTable[];
     static FieldParse s_objectReskinFieldParseTable[];
 };

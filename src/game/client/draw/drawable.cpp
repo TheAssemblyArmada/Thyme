@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "drawable.h"
+#include "audiomanager.h"
 #include "bodymodule.h"
 #include "colorspace.h"
 #include "displaystring.h"
@@ -20,11 +21,17 @@
 #include "drawgroupinfo.h"
 #include "drawmodule.h"
 #include "gameclient.h"
+#include "gamefont.h"
 #include "gamelogic.h"
+#include "gamestate.h"
 #include "gametext.h"
 #include "globaldata.h"
+#include "globallanguage.h"
 #include "ingameui.h"
 #include "locomotor.h"
+#include "module.h"
+#include "modulefactory.h"
+#include "moduleinfo.h"
 #include "object.h"
 #include "opencontain.h"
 #include "player.h"
@@ -32,6 +39,7 @@
 #include "scriptengine.h"
 #include "stealthupdate.h"
 #include "stickybombupdate.h"
+#include "tintenvelope.h"
 #include "w3ddisplay.h"
 #include "w3dview.h"
 
@@ -45,7 +53,7 @@ Anim2DTemplate **Drawable::s_animationTemplates;
 
 static const char *s_theDrawableIconNames[] = { "DefaultHeal",
     "StructureHeal",
-    "VehicleHeal"
+    "VehicleHeal",
     "Demoralized_OBSOLETE",
     "BombTimed",
     "BombRemote",
@@ -98,20 +106,20 @@ void Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration()
 
 const Vector3 *Drawable::Get_Tint_Color() const
 {
-#ifdef GAME_DLL
-    return Call_Method<Vector3 *, const Drawable>(PICK_ADDRESS(0x0046FA60, 0x007C16BF), this);
-#else
-    return nullptr;
-#endif
+    if (m_tintColorEnvelope != nullptr && m_tintColorEnvelope->Is_Tinted()) {
+        return m_tintColorEnvelope->Get_Tint_Color();
+    } else {
+        return nullptr;
+    }
 }
 
 const Vector3 *Drawable::Get_Selection_Color() const
 {
-#ifdef GAME_DLL
-    return Call_Method<Vector3 *, const Drawable>(PICK_ADDRESS(0x0046FA80, 0x007C16F6), this);
-#else
-    return nullptr;
-#endif
+    if (m_selectionColorEnvelope != nullptr && m_selectionColorEnvelope->Is_Tinted()) {
+        return m_selectionColorEnvelope->Get_Tint_Color();
+    } else {
+        return nullptr;
+    }
 }
 
 DrawModule **Drawable::Get_Draw_Modules()
@@ -225,20 +233,29 @@ void Drawable::Init_Static_Images()
         s_emptyAmmo = g_theMappedImageCollection->Find_Image_By_Name("SCPAmmoEmpty");
         s_fullContainer = g_theMappedImageCollection->Find_Image_By_Name("SCPPipFull");
         s_emptyContainer = g_theMappedImageCollection->Find_Image_By_Name("SCPPipEmpty");
-        s_animationTemplates = new Anim2DTemplate *[14];
-        s_animationTemplates[0] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[0]);
-        s_animationTemplates[1] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[1]);
-        s_animationTemplates[2] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[2]);
-        s_animationTemplates[4] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[4]);
-        s_animationTemplates[5] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[5]);
-        s_animationTemplates[6] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[6]);
-        s_animationTemplates[7] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[7]);
-        s_animationTemplates[8] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[8]);
-        s_animationTemplates[9] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[9]);
-        s_animationTemplates[10] = nullptr;
-        s_animationTemplates[11] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[11]);
-        s_animationTemplates[12] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[12]);
-        s_animationTemplates[13] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[13]);
+        s_animationTemplates = new Anim2DTemplate *[MAX_ICONS];
+        s_animationTemplates[ICON_HEAL] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_HEAL]);
+        s_animationTemplates[ICON_HEAL_STRUCTURE] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_HEAL_STRUCTURE]);
+        s_animationTemplates[ICON_HEAL_VEHICLE] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_HEAL_VEHICLE]);
+        s_animationTemplates[ICON_BOMB_TIMED] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_BOMB_TIMED]);
+        s_animationTemplates[ICON_BOMB_REMOTE] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_BOMB_REMOTE]);
+        s_animationTemplates[ICON_DISABLED] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_DISABLED]);
+        s_animationTemplates[ICON_BATTLEPLAN_BOMBARDMENT] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_BATTLEPLAN_BOMBARDMENT]);
+        s_animationTemplates[ICON_BATTLEPLAN_HOLDTHELINE] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_BATTLEPLAN_HOLDTHELINE]);
+        s_animationTemplates[ICON_BATTLEPLAN_SEARCHANDDESTROY] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_BATTLEPLAN_SEARCHANDDESTROY]);
+        s_animationTemplates[ICON_EMOTICON] = nullptr;
+        s_animationTemplates[ICON_ENTHUSIASTIC] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_ENTHUSIASTIC]);
+        s_animationTemplates[ICON_SUBLIMINAL] =
+            g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_SUBLIMINAL]);
+        s_animationTemplates[ICON_CARBOMB] = g_theAnim2DCollection->Find_Template(s_theDrawableIconNames[ICON_CARBOMB]);
         s_staticImagesInited = true;
     }
 }
@@ -621,13 +638,13 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             Get_Icon_Info()->anims[ICON_CARBOMB] = new Anim2D(s_animationTemplates[ICON_CARBOMB], g_theAnim2DCollection);
         }
 
-        if (Get_Icon_Info()->anims[ICON_CARBOMB] != nullptr) {
+        if (Get_Icon_Info()->anims[ICON_CARBOMB] != nullptr && region != nullptr) {
             int fwidth = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Width();
             int fheight = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Height();
             int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.5f);
             int height = GameMath::Fast_To_Int_Truncate((float)width / (float)(fwidth) * (float(fheight)));
-            int x = GameMath::Fast_To_Int_Truncate(region->lo.x * (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-            int y = GameMath::Fast_To_Int_Truncate(region->lo.y * (region->hi.y - region->lo.y) * 0.5f) + 5;
+            int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+            int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
             Get_Icon_Info()->anims[ICON_CARBOMB]->Draw(x, y, width, height);
             Get_Icon_Info()->timings[ICON_CARBOMB] = 0x3FFFFFFF;
         }
@@ -638,13 +655,16 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
     static const NameKeyType key_StickyBombUpdate = g_theNameKeyGenerator->Name_To_Key("StickyBombUpdate");
     StickyBombUpdate *update = (StickyBombUpdate *)object->Find_Update_Module(key_StickyBombUpdate);
 
-    if (update && update->Get_Target_Object()) {
+    if (update != nullptr && update->Get_Target_Object() != nullptr) {
         if (update->Has_Die_Frame()) {
             if (Get_Icon_Info()->anims[ICON_BOMB_TIMED] == nullptr) {
-                Get_Icon_Info()->anims[ICON_BOMB_TIMED] =
-                    new Anim2D(s_animationTemplates[ICON_BOMB_REMOTE], g_theAnim2DCollection);
+                captainslog_dbgassert(
+                    Get_Icon_Info()->anims[ICON_BOMB_REMOTE] == nullptr, "Must be null, otherwise would leak here");
 
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE] =
+                    new Anim2D(s_animationTemplates[ICON_BOMB_REMOTE], g_theAnim2DCollection);
+
+                Get_Icon_Info()->anims[ICON_BOMB_TIMED] =
                     new Anim2D(s_animationTemplates[ICON_BOMB_TIMED], g_theAnim2DCollection);
 
                 int i1 = GameMath::Fast_To_Int_Ceil((update->Get_Die_Frame() - frame) * (1.0f / 30.0f));
@@ -663,8 +683,8 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
                 int fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
                 int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
                 int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x * (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y * (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
                 Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Draw(x, y, width, height);
@@ -677,12 +697,12 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             }
 
             if (Get_Icon_Info()->anims[ICON_BOMB_REMOTE] != nullptr && region != nullptr) {
-                int fwidth = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Width();
-                int fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
+                int fwidth = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Width();
+                int fheight = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Height();
                 int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
                 int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x * (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y * (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
             }
@@ -982,6 +1002,831 @@ void Drawable::Draw_UI_Text()
                     }
                 }
             }
+        }
+    }
+}
+
+Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
+    Thing(thing_template),
+    m_status(status),
+    m_nextDrawable(nullptr),
+    m_prevDrawable(nullptr),
+    m_customSoundAmbientInfo(nullptr),
+    m_flashColor(0),
+    m_selected(false),
+    m_expirationDate(0),
+    m_lastConstructDisplayed(-1.0f),
+    m_ambientSound(nullptr),
+    m_ambientSoundEnabled(true),
+    m_ambientSoundFromScriptEnabled(true),
+    m_terrainDecalFadeTarget1(0.0f),
+    m_terrainDecalFadeTarget2(0.0f),
+    m_terrainDecalOpacity(0.0f),
+    m_opacity(1.0f),
+    m_effectiveOpacity1(1.0f),
+    m_effectiveOpacity2(1.0f),
+    m_terrainDecal(TERRAIN_DECAL_8),
+    m_fadingMode(FADING_MODE_OFF),
+    m_curFadeFrame(0),
+    m_timeToFade(0),
+    m_remainVisibleFrames(0),
+    m_stealthLook(STEALTHLOOK_NONE),
+    m_flashTime(0),
+    m_drawableLocoInfo(nullptr)
+{
+    g_theGameClient->Register_Drawable(this);
+    m_constructDisplayString = g_theDisplayStringManager->New_Display_String();
+    m_constructDisplayString->Set_Font(g_theFontLibrary->Get_Font(g_theInGameUI->Get_Drawable_Caption_Font(),
+        g_theGlobalLanguage->Adjust_Font_Size(g_theInGameUI->Get_Drawable_Caption_Size()),
+        g_theInGameUI->Get_Drawable_Caption_Bold()));
+
+    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+        m_modules[i] = nullptr;
+    }
+
+    if (g_theGameClient != nullptr && thing_template != nullptr) {
+        m_instance.Make_Identity();
+        m_instanceIsIdentity = true;
+        m_instanceScale = thing_template->Get_Asset_Scale();
+        m_object = nullptr;
+        m_drawBits = 0;
+        m_previousDrawBits = 0;
+        m_isModelDirty = true;
+        m_hidden = false;
+        m_stealthInvisible = false;
+        m_stealthEmissiveScale = 0.0f;
+        m_fullyObscuredByShroud = false;
+        m_receivesDynamicLights = true;
+        const ModuleInfo *draw = thing_template->Get_Draw_Modules();
+        m_modules[0] = new Module *[draw->Get_Count() + 1];
+
+        for (unsigned int i = 0; i < draw->Get_Count(); i++) {
+            const ModuleData *data = draw->Get_Nth_Data(i);
+
+            if (g_theWriteableGlobalData->m_extraAnimationsDisabled) {
+                if (data->Get_Minimum_Required_Game_LOD() > g_theGameLODManager->Get_Static_LOD_Level()) {
+                    continue;
+                }
+            }
+
+            m_modules[0][i] = g_theModuleFactory->New_Module(this, draw->Get_Nth_Name(i), data, MODULE_DRAW);
+        }
+
+        m_modules[0][draw->Get_Count()] = nullptr;
+
+        const ModuleInfo *update = thing_template->Get_Client_Update_Modules();
+
+        if (update->Get_Count() != 0) {
+            m_modules[1] = new Module *[update->Get_Count() + 1];
+
+            for (unsigned int i = 0; i < update->Get_Count(); i++) {
+                const ModuleData *data = update->Get_Nth_Data(i);
+
+                if (thing_template->Is_KindOf(KINDOF_SHRUBBERY) && !g_theWriteableGlobalData->m_useTreeSway) {
+                    if (update->Get_Nth_Name(i) == "SwayClientUpdate") {
+                        continue;
+                    }
+                }
+
+                m_modules[1][i] = g_theModuleFactory->New_Module(this, update->Get_Nth_Name(i), data, MODULE_CLIENT_UPDATE);
+            }
+
+            m_modules[1][update->Get_Count()] = nullptr;
+        }
+
+        for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+            for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
+                (*j)->On_Object_Created();
+            }
+        }
+
+        m_groupString = nullptr;
+        m_captionText = nullptr;
+        m_drawableInfo.drawable = this;
+        m_drawableInfo.ghost_object = nullptr;
+        m_drawableIconInfo = nullptr;
+        m_selectionColorEnvelope = nullptr;
+        m_tintColorEnvelope = nullptr;
+        Init_Static_Images();
+
+        if (g_theGameLogic && !g_theGameLogic->Get_Prepare_New_Game() && g_theGameState && !g_theGameState->Is_Loading()) {
+            Start_Ambient_Sound(false);
+        }
+    }
+}
+
+void Drawable::Start_Ambient_Sound(bool unk)
+{
+    if (m_ambientSoundEnabled && m_ambientSoundFromScriptEnabled) {
+        Stop_Ambient_Sound();
+        BodyDamageType damage = BODY_PRISTINE;
+        Object *object = Get_Object();
+
+        if (object) {
+            damage = object->Get_Body_Module()->Get_Damage_State();
+        }
+
+        Start_Ambient_Sound(damage, g_theWriteableGlobalData->m_timeOfDay, unk);
+    }
+}
+
+void Drawable::Stop_Ambient_Sound()
+{
+    if (m_ambientSound) {
+        g_theAudio->Remove_Audio_Event(m_ambientSound->m_event.Get_Playing_Handle());
+    }
+}
+
+DynamicAudioEventInfo *Get_No_Sound_Marker()
+{
+    static DynamicAudioEventInfo *marker = nullptr;
+
+    if (!marker) {
+        marker = new DynamicAudioEventInfo();
+    }
+
+    return marker;
+}
+
+void Drawable::Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, bool unk)
+{
+    Stop_Ambient_Sound();
+    bool play = false;
+
+    if (damage != BODY_RUBBLE && m_customSoundAmbientInfo != nullptr) {
+        if (m_customSoundAmbientInfo != Get_No_Sound_Marker()) {
+            if (!m_ambientSound) {
+                m_ambientSound = new DynamicAudioEventRTS();
+            }
+
+            m_ambientSound->m_event.Set_Event_Name(m_customSoundAmbientInfo->m_eventName);
+            m_ambientSound->m_event.Set_Event_Info(m_customSoundAmbientInfo);
+            play = true;
+        }
+    } else {
+        const AudioEventRTS *sound = Get_Ambient_Sound_By_Damage(damage);
+
+        if (sound->Get_Event_Name().Is_Not_Empty()) {
+            if (!m_ambientSound) {
+                m_ambientSound = new DynamicAudioEventRTS();
+            }
+
+            m_ambientSound->m_event = *sound;
+            play = true;
+        } else if (damage != BODY_PRISTINE) {
+            if (damage != BODY_RUBBLE) {
+                const AudioEventRTS *sound = Get_Ambient_Sound_By_Damage(BODY_PRISTINE);
+                if (sound->Get_Event_Name().Is_Not_Empty()) {
+                    if (!m_ambientSound) {
+                        m_ambientSound = new DynamicAudioEventRTS();
+                    }
+
+                    m_ambientSound->m_event = *sound;
+                    play = true;
+                }
+            }
+        }
+    }
+
+    if (play && m_ambientSound != nullptr) {
+        const AudioEventInfo *info = m_ambientSound->m_event.Get_Event_Info();
+
+        if (info != nullptr) {
+            if (!unk || info->Is_Looping()) {
+                if ((info->m_visibility & VISIBILITY_GLOBAL) != 0 || info->m_priority == 4) {
+                    m_ambientSound->m_event.Set_Drawable_ID(Get_ID());
+                    m_ambientSound->m_event.Set_Time_Of_Day(tod);
+                    m_ambientSound->m_event.Set_Playing_Handle(g_theAudio->Add_Audio_Event(&m_ambientSound->m_event));
+                } else {
+                    Coord3D pos = *Get_Position();
+                    pos.Sub(g_theAudio->Get_Listener_Position());
+
+                    if (GameMath::Square(info->m_maxRange) > pos.Length2()) {
+                        m_ambientSound->m_event.Set_Drawable_ID(Get_ID());
+                        m_ambientSound->m_event.Set_Time_Of_Day(tod);
+                        m_ambientSound->m_event.Set_Playing_Handle(g_theAudio->Add_Audio_Event(&m_ambientSound->m_event));
+                    }
+                }
+            }
+        } else {
+            captainslog_debug("Ambient sound %s missing! Skipping...", m_ambientSound->m_event.Get_Event_Name());
+            m_ambientSound->Delete_Instance();
+            m_ambientSound = nullptr;
+        }
+    }
+}
+
+const AudioEventRTS *Drawable::Get_Ambient_Sound_By_Damage(BodyDamageType damage)
+{
+    if (damage == BODY_DAMAGED) {
+        return Get_Template()->Get_Sound_Ambient_Damaged();
+    } else if (damage == BODY_REALLYDAMAGED) {
+        return Get_Template()->Get_Sound_Ambient_Really_Damaged();
+    } else if (damage == BODY_RUBBLE) {
+        return Get_Template()->Get_Sound_Ambient_Rubble();
+    } else {
+        return Get_Template()->Get_Sound_Ambient();
+    }
+}
+
+void Drawable::Set_Custom_Sound_Ambient_Info(DynamicAudioEventInfo *info)
+{
+    Clear_Custom_Sound_Ambient(false);
+    captainslog_dbgassert(info != Get_No_Sound_Marker(), "No sound marker passed as custom ambient");
+    m_customSoundAmbientInfo = info;
+    Start_Ambient_Sound(false);
+}
+
+void Drawable::Set_Custom_Sound_Ambient_Off()
+{
+    Clear_Custom_Sound_Ambient(false);
+    m_customSoundAmbientInfo = Get_No_Sound_Marker();
+}
+
+void Drawable::Enable_Ambient_Sound(bool enable)
+{
+    if (m_ambientSoundEnabled != enable) {
+        m_ambientSoundEnabled = enable;
+
+        if (enable) {
+            if (m_ambientSoundFromScriptEnabled) {
+                Start_Ambient_Sound(false);
+            }
+        } else {
+            Stop_Ambient_Sound();
+        }
+    }
+}
+
+void Drawable::Enable_Ambient_Sound_From_Script(bool enable)
+{
+    m_ambientSoundFromScriptEnabled = enable;
+
+    if (enable) {
+        if (m_ambientSoundEnabled) {
+            Start_Ambient_Sound(false);
+        }
+    } else {
+        Stop_Ambient_Sound();
+    }
+}
+
+void Drawable::Clear_Custom_Sound_Ambient(bool restart)
+{
+    if (m_ambientSound != nullptr) {
+        m_ambientSound->m_event.Set_Event_Info(nullptr);
+    }
+
+    Stop_Ambient_Sound();
+    m_customSoundAmbientInfo = nullptr;
+
+    if (restart) {
+        Start_Ambient_Sound(false);
+    }
+}
+
+const AudioEventInfo *Drawable::Get_Base_Sound_Ambient_Info() const
+{
+    const AudioEventRTS *audio = Get_Template()->Get_Sound_Ambient();
+
+    if (audio != nullptr) {
+        return audio->Get_Event_Info();
+    } else {
+        return nullptr;
+    }
+}
+
+void Drawable::Mangle_Custom_Audio_Name(DynamicAudioEventInfo *info) const
+{
+    Utf8String str;
+    str.Format(" CUSTOM %d ", Get_ID());
+    str += info->m_eventName;
+    info->Override_Audio_Name(str);
+}
+
+Drawable::~Drawable()
+{
+    if (m_constructDisplayString != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_constructDisplayString);
+        m_constructDisplayString = nullptr;
+    }
+
+    if (m_captionText != nullptr) {
+        g_theDisplayStringManager->Free_Display_String(m_captionText);
+        m_captionText = nullptr;
+    }
+
+    m_groupString = nullptr;
+
+    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+        for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
+            (*j)->Delete_Instance();
+            *j = nullptr;
+        }
+
+        delete[] m_modules[i];
+        m_modules[i] = nullptr;
+    }
+
+    Stop_Ambient_Sound();
+
+    if (m_ambientSound != nullptr) {
+        m_ambientSound->Delete_Instance();
+        m_ambientSound = nullptr;
+    }
+
+    Clear_Custom_Sound_Ambient(false);
+    g_theGameClient->Remove_From_Ray_Effects(this);
+    m_object = nullptr;
+
+    if (m_drawableIconInfo != nullptr) {
+        m_drawableIconInfo->Delete_Instance();
+    }
+
+    if (m_selectionColorEnvelope != nullptr) {
+        m_selectionColorEnvelope->Delete_Instance();
+    }
+
+    if (m_tintColorEnvelope != nullptr) {
+        m_tintColorEnvelope->Delete_Instance();
+    }
+
+    if (m_drawableLocoInfo != nullptr) {
+        m_drawableLocoInfo->Delete_Instance();
+        m_drawableLocoInfo = nullptr;
+    }
+}
+
+const char *Drawable_Icon_Index_To_Name(DrawableIconType index)
+{
+    captainslog_dbgassert(
+        index >= ICON_FIRST && index < MAX_ICONS, "Drawable_Icon_Index_To_Name - Illegal index '%d'", index);
+    return s_theDrawableIconNames[index];
+}
+
+DrawableIconType Drawable_Icon_Name_To_Index(const char *name)
+{
+    captainslog_dbgassert(name != nullptr, "drawableIconNameToIndex - Illegal name");
+
+    for (int i = ICON_FIRST; i < MAX_ICONS; i++) {
+        if (!strcasecmp(s_theDrawableIconNames[i], name)) {
+            return (DrawableIconType)i;
+        }
+    }
+
+    return ICON_INVALID;
+}
+
+void Drawable::Xfer_Snapshot(Xfer *xfer)
+{
+    unsigned char version = 7;
+    xfer->xferVersion(&version, 7);
+
+    if (xfer->Get_Mode() == XFER_LOAD && m_ambientSound != nullptr) {
+        g_theAudio->Kill_Event_Immediately(m_ambientSound->m_event.Get_Playing_Handle());
+        m_ambientSound->Delete_Instance();
+        m_ambientSound = nullptr;
+    }
+
+    DrawableID id = Get_ID();
+    xfer->xferDrawableID(&id);
+    Set_ID(id);
+
+    if (version >= 2) {
+        m_conditionState.Xfer(xfer);
+
+        if (xfer->Get_Mode() == XFER_LOAD) {
+            Replace_Model_Condition_Flags(m_conditionState, true);
+        }
+    }
+
+    if (version >= 3) {
+        if (version >= 5) {
+            Matrix3D m = *Get_Transform_Matrix();
+            xfer->xferMatrix3D(&m);
+            Set_Transform_Matrix(&m);
+        } else {
+            Coord3D pos = *Get_Position();
+            xfer->xferCoord3D(&pos);
+            Set_Position(&pos);
+            float angle = Get_Orientation();
+            xfer->xferReal(&angle);
+            Set_Orientation(angle);
+        }
+    }
+
+    bool has_selection_color = m_selectionColorEnvelope != nullptr;
+    xfer->xferBool(&has_selection_color);
+
+    if (has_selection_color) {
+        if (m_selectionColorEnvelope == nullptr) {
+            m_selectionColorEnvelope = new TintEnvelope();
+        }
+
+        xfer->xferSnapshot(m_selectionColorEnvelope);
+    }
+
+    bool has_tint_color = m_tintColorEnvelope != nullptr;
+    xfer->xferBool(&has_tint_color);
+
+    if (has_tint_color) {
+        if (m_tintColorEnvelope == nullptr) {
+            m_tintColorEnvelope = new TintEnvelope();
+        }
+
+        xfer->xferSnapshot(m_tintColorEnvelope);
+    }
+
+    TerrainDecalType decal = Get_Terrain_Decal();
+    xfer->xferUser(&decal, sizeof(decal));
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        Set_Terrain_Decal(decal);
+    }
+
+    xfer->xferReal(&m_opacity);
+    xfer->xferReal(&m_effectiveOpacity1);
+    xfer->xferReal(&m_effectiveOpacity2);
+    xfer->xferReal(&m_terrainDecalFadeTarget1);
+    xfer->xferReal(&m_terrainDecalFadeTarget2);
+    xfer->xferReal(&m_terrainDecalOpacity);
+
+    ObjectID object_id;
+    if (m_object != nullptr) {
+        object_id = m_object->Get_ID();
+    } else {
+        object_id = OBJECT_UNK;
+    }
+
+    xfer->xferObjectID(&object_id);
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        if (m_object != nullptr) {
+            captainslog_relassert(object_id == m_object->Get_ID(),
+                6,
+                "Drawable::Xfer_Snapshot - Drawable '%s' is attached to wrong object '%s'",
+                Get_Template()->Get_Name().Str(),
+                m_object->Get_Template()->Get_Name().Str());
+        } else if (object_id != OBJECT_UNK) {
+            Object *object = g_theGameLogic->Find_Object_By_ID(object_id);
+            captainslog_relassert(0,
+                6,
+                "Drawable::Xfer_Snapshot - Drawable '%s' is not attached to an object but should be attached to object '%s' "
+                "with id '%d'",
+                Get_Template()->Get_Name().Str(),
+                object != nullptr ? object->Get_Template()->Get_Name().Str() : "Unknown",
+                object_id);
+        }
+    }
+
+    xfer->xferUnsignedInt(&m_status);
+    xfer->xferUnsignedInt(&m_drawBits);
+    xfer->xferUnsignedInt(&m_previousDrawBits);
+    xfer->xferUser(&m_fadingMode, sizeof(m_fadingMode));
+    xfer->xferUnsignedInt(&m_curFadeFrame);
+    xfer->xferUnsignedInt(&m_timeToFade);
+
+    bool has_loco_info = m_drawableLocoInfo != nullptr;
+    xfer->xferBool(&has_loco_info);
+
+    if (has_loco_info) {
+        if (xfer->Get_Mode() == XFER_LOAD && m_drawableLocoInfo == nullptr) {
+            m_drawableLocoInfo = new DrawableLocoInfo();
+        }
+
+        xfer->xferReal(&m_drawableLocoInfo->m_pitch);
+        xfer->xferReal(&m_drawableLocoInfo->m_pitchRate);
+        xfer->xferReal(&m_drawableLocoInfo->m_roll);
+        xfer->xferReal(&m_drawableLocoInfo->m_rollRate);
+        xfer->xferReal(&m_drawableLocoInfo->m_thrustWobble);
+        xfer->xferReal(&m_drawableLocoInfo->m_accelerationPitch);
+        xfer->xferReal(&m_drawableLocoInfo->m_accelerationPitchRate);
+        xfer->xferReal(&m_drawableLocoInfo->m_accelerationRoll);
+        xfer->xferReal(&m_drawableLocoInfo->m_accelerationRollRate);
+        xfer->xferReal(&m_drawableLocoInfo->m_overlapZVel);
+        xfer->xferReal(&m_drawableLocoInfo->m_overlapZ);
+        xfer->xferReal(&m_drawableLocoInfo->m_thrust);
+        xfer->xferReal(&m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset);
+        xfer->xferReal(&m_drawableLocoInfo->m_wheelInfo.m_frontRightHeightOffset);
+        xfer->xferReal(&m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset);
+        xfer->xferReal(&m_drawableLocoInfo->m_wheelInfo.m_rearRightHeightOffset);
+        xfer->xferReal(&m_drawableLocoInfo->m_wheelInfo.m_wheelAngle);
+        xfer->xferInt(&m_drawableLocoInfo->m_wheelInfo.m_framesAirborneCounter);
+        xfer->xferInt(&m_drawableLocoInfo->m_wheelInfo.m_framesAirborne);
+    }
+
+    Xfer_Drawable_Modules(xfer);
+    xfer->xferUser(&m_stealthLook, sizeof(m_stealthLook));
+    xfer->xferInt(&m_flashTime);
+    xfer->xferColor(&m_flashColor);
+    xfer->xferBool(&m_hidden);
+    xfer->xferBool(&m_stealthInvisible);
+    xfer->xferReal(&m_stealthEmissiveScale);
+    xfer->xferBool(&m_instanceIsIdentity);
+    xfer->xferUser(&m_instance, sizeof(m_instance));
+    xfer->xferReal(&m_instanceScale);
+    xfer->xferObjectID(&m_drawableInfo.object_id);
+
+    if (version < 2) {
+        captainslog_dbgassert(xfer->Get_Mode() == XFER_LOAD, "Drawable::Xfer_Snapshot - Writing an old format!!!");
+        m_conditionState.Xfer(xfer);
+
+        if (xfer->Get_Mode() == XFER_LOAD) {
+            Replace_Model_Condition_Flags(m_conditionState, true);
+        }
+    }
+
+    xfer->xferUnsignedInt(&m_expirationDate);
+
+    unsigned char count = 0;
+
+    if (Has_Drawable_Icon_Info()) {
+        for (int i = 0; i < MAX_ICONS; i++) {
+            if (Get_Icon_Info()->anims[i] != nullptr) {
+                count++;
+            }
+        }
+    }
+
+    xfer->xferUnsignedByte(&count);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (int i = 0; i < MAX_ICONS; i++) {
+            if (Has_Drawable_Icon_Info()) {
+                if (Get_Icon_Info()->anims[i] != nullptr) {
+                    Utf8String str = Drawable_Icon_Index_To_Name((DrawableIconType)i);
+                    xfer->xferAsciiString(&str);
+                    unsigned int timing = Get_Icon_Info()->timings[i];
+                    xfer->xferUnsignedInt(&timing);
+                    Utf8String name = Get_Icon_Info()->anims[i]->Get_Template()->Get_Name();
+                    xfer->xferAsciiString(&name);
+                    xfer->xferSnapshot(Get_Icon_Info()->anims[i]);
+                }
+            }
+        }
+    } else {
+        if (Has_Drawable_Icon_Info()) {
+            Get_Icon_Info()->Reset();
+        }
+
+        for (int j = 0; j < count; j++) {
+            Utf8String str;
+            xfer->xferAsciiString(&str);
+            DrawableIconType index = Drawable_Icon_Name_To_Index(str);
+            unsigned int timing;
+            xfer->xferUnsignedInt(&timing);
+            Get_Icon_Info()->timings[index] = timing;
+            Utf8String name;
+            xfer->xferAsciiString(&name);
+            Anim2DTemplate *tmplate = g_theAnim2DCollection->Find_Template(name);
+            captainslog_relassert(tmplate, 6, "Drawable::Xfer_Snapshot - Unknown icon template '%s'", name.Str());
+            Get_Icon_Info()->anims[index] = new Anim2D(tmplate, g_theAnim2DCollection);
+            xfer->xferSnapshot(Get_Icon_Info()->anims[index]);
+        }
+    }
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        m_stealthLook = STEALTHLOOK_NONE;
+
+        if (m_hidden || m_stealthInvisible) {
+            Update_Hidden_Status();
+        }
+    }
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        captainslog_dbgassert(!m_isModelDirty, "Drawble::Xfer_Snapshot - m_isModelDirty is not FALSE!");
+    } else {
+        m_isModelDirty = true;
+    }
+
+    if (xfer->Get_Mode() == XFER_LOAD) {
+        Stop_Ambient_Sound();
+    }
+
+    if (version >= 4) {
+        xfer->xferBool(&m_ambientSoundEnabled);
+    }
+
+    if (version >= 6) {
+        xfer->xferBool(&m_ambientSoundFromScriptEnabled);
+    }
+
+    if (version >= 7) {
+        bool sound = m_customSoundAmbientInfo != nullptr;
+        xfer->xferBool(&sound);
+
+        if (sound) {
+            bool nosound = m_customSoundAmbientInfo == Get_No_Sound_Marker();
+            xfer->xferBool(&nosound);
+
+            if (xfer->Get_Mode() == XFER_LOAD) {
+                if (nosound) {
+                    Set_Custom_Sound_Ambient_Off();
+                } else {
+                    Utf8String str;
+                    xfer->xferAsciiString(&str);
+                    AudioEventInfo *info = g_theAudio->Find_Audio_Event_Info(str);
+                    DynamicAudioEventInfo *event;
+
+                    bool add = true;
+
+                    if (info == nullptr) {
+                        captainslog_debug(
+                            "Load failed to load customized ambient sound because sound '%s' no longer exists", str.Str());
+                        event = new DynamicAudioEventInfo();
+                        add = false;
+                    } else {
+                        event = new DynamicAudioEventInfo(*info);
+                    }
+
+                    Mangle_Custom_Audio_Name(event);
+                    event->Xfer_No_Name(xfer);
+
+                    if (add) {
+                        g_theAudio->Add_Audio_Event_Info(event);
+                        Clear_Custom_Sound_Ambient(false);
+                        m_customSoundAmbientInfo = event;
+                    } else {
+                        event->Delete_Instance();
+                    }
+                }
+            } else if (!nosound) {
+                Utf8String str = m_customSoundAmbientInfo->Get_Original_Name();
+                xfer->xferAsciiString(&str);
+                m_customSoundAmbientInfo->Xfer_No_Name(xfer);
+            }
+        }
+    }
+}
+
+void Drawable::Replace_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> const &flags, bool dirty)
+{
+    if (dirty || !(m_conditionState == flags)) {
+        m_conditionState = flags;
+
+        if (dirty == true) {
+            for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+                ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+                if (draw) {
+                    draw->Replace_Model_Condition_State(m_conditionState);
+                }
+            }
+
+            m_isModelDirty = false;
+        } else {
+            m_isModelDirty = true;
+        }
+    }
+}
+
+void Drawable::Set_ID(DrawableID id)
+{
+    if (m_id != id) {
+        if (m_id != DRAWABLE_UNK) {
+            g_theGameClient->Remove_Drawable_From_Lookup_Table(this);
+        }
+
+        m_id = id;
+
+        if (m_id != DRAWABLE_UNK) {
+            g_theGameClient->Add_Drawable_To_Lookup_Table(this);
+
+            if (m_ambientSound != nullptr) {
+                m_ambientSound->m_event.Set_Drawable_ID(m_id);
+            }
+        }
+    }
+}
+
+void Drawable::Set_Terrain_Decal(TerrainDecalType decal)
+{
+    if (m_terrainDecal != decal) {
+        m_terrainDecal = decal;
+
+        DrawModule **modules = Get_Draw_Modules();
+
+        if (*modules != nullptr) {
+            (*modules)->Set_Terrain_Decal(decal);
+        }
+    }
+}
+
+void Drawable::Load_Post_Process()
+{
+    if (m_object != nullptr) {
+        Set_Transform_Matrix(m_object->Get_Transform_Matrix());
+    }
+
+    if (m_ambientSoundEnabled && m_ambientSoundFromScriptEnabled) {
+        Start_Ambient_Sound(true);
+    } else {
+        Stop_Ambient_Sound();
+    }
+}
+
+void Drawable::React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->React_To_Transform_Change(matrix, pos, angle);
+    }
+}
+
+void Drawable::Update_Hidden_Status()
+{
+    bool hidden = m_hidden || m_stealthInvisible;
+
+    if (hidden) {
+        g_theInGameUI->Deselect_Drawable(this);
+    }
+
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Set_Hidden(hidden);
+        }
+    }
+}
+
+void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
+{
+    unsigned char version = 1;
+    xfer->xferVersion(&version, 1);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        Get_Draw_Modules();
+    }
+
+    unsigned short count = 2;
+    xfer->xferUnsignedShort(&count);
+    Utf8String str;
+
+    for (int i = 0; i < count; i++) {
+        unsigned short module_count = 0;
+
+        for (Module **j = m_modules[i]; j && *j; j++) {
+            module_count++;
+        }
+
+        xfer->xferUnsignedShort(&module_count);
+
+        if (xfer->Get_Mode() == XFER_SAVE) {
+            for (Module **j = m_modules[i]; j && *j; j++) {
+                str = g_theNameKeyGenerator->Key_To_Name((*j)->Get_Tag_Key());
+                captainslog_dbgassert(str != Utf8String::s_emptyString,
+                    "Drawable::Xfer_Drawable_Modules - module name key does not translate to a string!");
+                xfer->xferAsciiString(&str);
+                xfer->Begin_Block();
+                xfer->xferSnapshot(*j);
+                xfer->End_Block();
+            }
+        } else {
+            for (int k = 0; k < module_count; k++) {
+                xfer->xferAsciiString(&str);
+                NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str);
+                Module *module = nullptr;
+
+                for (Module **j = m_modules[i]; j && *j; j++) {
+                    if ((*j)->Get_Tag_Key() == key) {
+                        module = *j;
+                    }
+                }
+
+                int size = xfer->Begin_Block();
+
+                if (module != nullptr) {
+                    xfer->xferSnapshot(module);
+                } else {
+                    captainslog_dbgassert(0,
+                        "Drawable::xferDrawableModules - Module '%s' was indicated in file, but not found on Drawable %s "
+                        "%d",
+                        str.Str(),
+                        Get_Template()->Get_Name().Str(),
+                        Get_ID());
+                    xfer->Skip(size);
+                }
+
+                xfer->End_Block();
+            }
+        }
+    }
+}
+
+void Drawable::Set_Tint_Color_Envelope(const TintEnvelope *envelope)
+{
+    if (m_tintColorEnvelope != nullptr) {
+        *m_tintColorEnvelope = *envelope;
+    }
+}
+
+void Drawable::Set_Animation_Frame(int frame)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Set_Animation_Frame(frame);
         }
     }
 }

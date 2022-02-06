@@ -511,7 +511,7 @@ void AdaptiveDeltaMotionChannelClass::Get_Vector(float frame, float *setvec)
 {
     float value1 = AdaptiveDeltaMotionChannelClass::Get_Frame(frame, 0);
     float value2 = AdaptiveDeltaMotionChannelClass::Get_Frame(frame + 1, 0);
-    *setvec = GameMath::Lerp(value1, value2, frame - frame);
+    *setvec = GameMath::Lerp(value1, value2, frame - (unsigned int)frame);
 }
 
 Quaternion AdaptiveDeltaMotionChannelClass::Get_Quat_Vector(float frame_idx)

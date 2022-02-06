@@ -36,23 +36,23 @@ void HRawAnimClass::Free()
     delete[] m_nodeMotion;
 }
 
-int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
+W3DErrorType HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
 {
     bool pre30 = false;
     Free();
 
     if (!cload.Open_Chunk()) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     if (cload.Cur_Chunk_ID() != W3D_CHUNK_ANIMATION_HEADER) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     W3dAnimHeaderStruct header;
 
     if (cload.Read(&header, sizeof(header)) != sizeof(header)) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     cload.Close_Chunk();
@@ -72,7 +72,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
 
     if (!tree) {
         Free();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     m_frameRate = header.FrameRate;
@@ -88,7 +88,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
 
             if (!Read_Bit_Channel(cload, &channel, pre30)) {
                 Free();
-                return 1;
+                return W3D_ERROR_GENERIC;
             }
 
             if (channel->Get_Pivot() >= m_numNodes) {
@@ -103,7 +103,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
 
             if (!Read_Channel(cload, &channel, pre30)) {
                 Free();
-                return 1;
+                return W3D_ERROR_GENERIC;
             }
 
             if (channel->Get_Pivot() >= m_numNodes) {
@@ -117,7 +117,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
         cload.Close_Chunk();
     }
 
-    return 0;
+    return W3D_ERROR_OK;
 }
 
 bool HRawAnimClass::Read_Channel(ChunkLoadClass &cload, MotionChannelClass **newchan, bool pre30)

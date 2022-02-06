@@ -218,7 +218,7 @@ PrototypeClass *HLodLoaderClass::Load_W3D(ChunkLoadClass &cload)
     HLodDefClass *def = new HLodDefClass();
 
     if (def) {
-        if (def->Load_W3D(cload)) {
+        if (def->Load_W3D(cload) != W3D_ERROR_OK) {
             delete def;
             return nullptr;
         } else {

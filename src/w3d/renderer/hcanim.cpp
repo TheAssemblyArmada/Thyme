@@ -55,22 +55,22 @@ void HCompressedAnimClass::Free()
     delete[] m_nodeMotion;
 }
 
-int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
+W3DErrorType HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 {
     Free();
 
     if (!cload.Open_Chunk()) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     if (cload.Cur_Chunk_ID() != W3D_CHUNK_COMPRESSED_ANIMATION_HEADER) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     W3dCompressedAnimHeaderStruct header;
 
     if (cload.Read(&header, sizeof(header)) != sizeof(header)) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     cload.Close_Chunk();
@@ -87,7 +87,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
     if (!tree) {
         Free();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     m_numNodes = tree->Num_Pivots();
@@ -101,7 +101,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
     if (!m_nodeMotion) {
         Free();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     for (int i = 0; i < m_numNodes; i++) {
@@ -116,7 +116,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
             if (!read_bit_channel(cload, &channel)) {
                 Free();
-                return 1;
+                return W3D_ERROR_GENERIC;
             }
 
             if (channel->Get_Pivot() >= m_numNodes) {
@@ -132,7 +132,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
                 if (!read_channel(cload, &channel)) {
                     Free();
-                    return 1;
+                    return W3D_ERROR_GENERIC;
                 }
 
                 if (channel->Get_Pivot() >= m_numNodes) {
@@ -147,7 +147,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
                 if (!read_channel(cload, &channel)) {
                     Free();
-                    return 1;
+                    return W3D_ERROR_GENERIC;
                 }
 
                 if (channel->Get_Pivot() >= m_numNodes) {
@@ -163,7 +163,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
         cload.Close_Chunk();
     }
 
-    return 0;
+    return W3D_ERROR_OK;
 }
 
 bool HCompressedAnimClass::read_channel(ChunkLoadClass &cload, TimeCodedMotionChannelClass **newchan)

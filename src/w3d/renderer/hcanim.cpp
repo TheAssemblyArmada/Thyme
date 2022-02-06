@@ -154,14 +154,26 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
 bool HCompressedAnimClass::read_channel(ChunkLoadClass &cload, TimeCodedMotionChannelClass **newchan)
 {
-    *newchan = new TimeCodedMotionChannelClass();
-    return (*newchan)->Load_W3D(cload);
+    auto *p = new TimeCodedMotionChannelClass();
+    if (p->Load_W3D(cload)) {
+        *newchan = p;
+        return true;
+    }
+    // #BUGFIX Do not leak memory when loading failed.
+    delete p;
+    return false;
 }
 
 bool HCompressedAnimClass::read_channel(ChunkLoadClass &cload, AdaptiveDeltaMotionChannelClass **newchan)
 {
-    *newchan = new AdaptiveDeltaMotionChannelClass();
-    return (*newchan)->Load_W3D(cload);
+    auto *p = new AdaptiveDeltaMotionChannelClass();
+    if (p->Load_W3D(cload)) {
+        *newchan = p;
+        return true;
+    }
+    // #BUGFIX Do not leak memory when loading failed.
+    delete p;
+    return false;
 }
 
 void HCompressedAnimClass::add_channel(TimeCodedMotionChannelClass *newchan)
@@ -202,8 +214,14 @@ void HCompressedAnimClass::add_channel(AdaptiveDeltaMotionChannelClass *newchan)
 
 bool HCompressedAnimClass::read_bit_channel(ChunkLoadClass &cload, TimeCodedBitChannelClass **newchan)
 {
-    *newchan = new TimeCodedBitChannelClass();
-    return (*newchan)->Load_W3D(cload);
+    auto *p = new TimeCodedBitChannelClass();
+    if (p->Load_W3D(cload)) {
+        *newchan = p;
+        return true;
+    }
+    // #BUGFIX Do not leak memory when loading failed.
+    delete p;
+    return false;
 }
 
 void HCompressedAnimClass::add_bit_channel(TimeCodedBitChannelClass *newchan)

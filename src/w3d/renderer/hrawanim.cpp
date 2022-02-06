@@ -61,11 +61,13 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
         pre30 = true;
     }
 
-    strcpy(m_name, header.HierarchyName);
-    strcat(m_name, ".");
-    strcat(m_name, header.Name);
+    static_assert(sizeof(m_name) >= sizeof(header.HierarchyName));
+    strlcpy_tpl(m_name, header.HierarchyName);
+    strlcat_tpl(m_name, ".");
+    strlcat_tpl(m_name, header.Name);
 
-    strlcpy(m_hierarchyName, header.HierarchyName, sizeof(m_hierarchyName));
+    static_assert(sizeof(m_hierarchyName) >= sizeof(header.HierarchyName));
+    strlcpy_tpl(m_hierarchyName, header.HierarchyName);
     HTreeClass *tree = W3DAssetManager::Get_Instance()->Get_HTree(m_hierarchyName);
 
     if (!tree) {

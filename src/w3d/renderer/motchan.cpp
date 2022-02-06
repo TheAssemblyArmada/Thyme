@@ -196,14 +196,14 @@ bool TimeCodedMotionChannelClass::Load_W3D(ChunkLoadClass &cload)
         return false;
     }
 
-    m_numTimeCodes = chan.NumTimeCodes;
-    m_vectorLen = chan.VectorLen;
     m_type = chan.Flags;
+    m_vectorLen = chan.VectorLen;
+    m_numTimeCodes = chan.NumTimeCodes;
+    m_packetSize = chan.VectorLen + 1;
+    m_lastTimeCodeIdx = (chan.VectorLen + 1) * (m_numTimeCodes - 1);
     m_pivotIdx = chan.Pivot;
-    m_packetSize = m_vectorLen + 1;
     m_cachedIdx = 0;
-    m_lastTimeCodeIdx = m_packetSize * (m_numTimeCodes - 1);
-    m_data = new unsigned int[((chunk_size / 4) + 1)];
+    m_data = new unsigned int[((chunk_size / sizeof(unsigned int)) + 1)];
     m_data[0] = chan.Data[0];
 
     if (cload.Read(&m_data[1], chunk_size) != chunk_size) {
@@ -287,23 +287,22 @@ Quaternion TimeCodedMotionChannelClass::Get_Quat_Vector(float frame_idx)
 
 void TimeCodedMotionChannelClass::Set_Identity(float *setvec)
 {
-    setvec[0] = 0;
-    if (m_type == 6) {
+    if (m_type == ANIM_CHANNEL_Q) {
         setvec[0] = 0.0f;
         setvec[1] = 0.0f;
         setvec[2] = 0.0f;
         setvec[3] = 1.0f;
+    } else {
+        setvec[0] = 0.0f;
     }
 }
 
 unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 {
-    unsigned long result;
-
     captainslog_assert(m_cachedIdx <= m_lastTimeCodeIdx);
 
     if (timecode < Get_Frame_From_Data(m_data[m_cachedIdx])) {
-        result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
+        unsigned long result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
         m_cachedIdx = result;
         return result;
     }
@@ -312,7 +311,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
         return m_cachedIdx;
     }
 
-    result = m_packetSize + m_cachedIdx;
+    unsigned long result = m_packetSize + m_cachedIdx;
 
     if (timecode < Get_Frame_From_Data(m_data[m_packetSize + m_cachedIdx])) {
         return m_cachedIdx;
@@ -334,38 +333,34 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 
 unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode)
 {
-    int result;
     int count2;
-
     int count = 0;
     int rightIdx = m_numTimeCodes - 2;
+    unsigned long result = m_lastTimeCodeIdx;
 
-    if (timecode >= Get_Frame_From_Data(m_data[m_lastTimeCodeIdx])) {
-        result = m_lastTimeCodeIdx;
-    } else {
-        for (;;) {
-            for (;;) {
-                count2 = m_packetSize * (count + ((rightIdx - count) >> 1));
+    if (timecode < Get_Frame_From_Data(m_data[m_lastTimeCodeIdx])) {
+        while (true) {
+            while (true) {
+                count2 = count + ((rightIdx - count) >> 1);
+                result = count2 * m_packetSize;
 
-                if (timecode >= Get_Frame_From_Data(m_data[count2])) {
+                if (timecode >= Get_Frame_From_Data(m_data[result])) {
                     break;
                 }
 
                 rightIdx = count + ((rightIdx - count) >> 1);
             }
 
-            if (timecode < Get_Frame_From_Data(m_data[m_packetSize + count2])) {
+            if (timecode < Get_Frame_From_Data(m_data[result + m_packetSize])) {
                 break;
             }
 
-            if (count + ((rightIdx - count) >> 1) == count) {
+            if (count == count2) {
                 ++count;
             } else {
                 count += (rightIdx - count) >> 1;
             }
         }
-
-        result = m_packetSize * (count + ((rightIdx - count) >> 1));
     }
 
     return result;
@@ -405,7 +400,7 @@ bool TimeCodedBitChannelClass::Load_W3D(ChunkLoadClass &cload)
     m_cachedIdx = 0;
     int bytesleft = 4 * m_numTimeCodes - 4;
 
-    captainslog_assert((sizeof(chan) + bytesleft) == (unsigned)chunk_size);
+    captainslog_assert((sizeof(chan) + bytesleft) == chunk_size);
 
     m_bits = new unsigned long[m_numTimeCodes];
 
@@ -496,7 +491,7 @@ bool AdaptiveDeltaMotionChannelClass::Load_W3D(ChunkLoadClass &cload)
     m_scale = chan.Scale;
     m_cacheFrame = 0x7FFFFFFF;
     m_cacheData = new float[2 * m_vectorLen];
-    m_data = new unsigned int[((chunk_size / 4) + 1)];
+    m_data = new unsigned int[((chunk_size / sizeof(unsigned int)) + 1)];
     m_data[0] = chan.Data[0];
 
     if (cload.Read(&m_data[1], chunk_size) != chunk_size) {

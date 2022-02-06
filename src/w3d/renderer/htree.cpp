@@ -86,7 +86,8 @@ int HTreeClass::Load_W3D(ChunkLoadClass &cload)
         ++header.NumPivots;
     }
 
-    memcpy(m_name, header.Name, sizeof(m_name));
+    static_assert(sizeof(m_name) >= sizeof(header.Name));
+    strlcpy_tpl(m_name, header.Name);
     m_numPivots = header.NumPivots;
 
     if (m_numPivots > 0) {
@@ -167,7 +168,6 @@ bool HTreeClass::Read_Pivots(ChunkLoadClass &cload, bool pre30)
 }
 
 void HTreeClass::Free()
-
 {
     if (m_pivot) {
         delete[] m_pivot;

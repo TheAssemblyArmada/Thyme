@@ -81,7 +81,9 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
     m_nodeMotion = new NodeMotionStruct[m_numNodes];
 
     while (cload.Open_Chunk()) {
-        if (cload.Cur_Chunk_ID() == W3D_CHUNK_BIT_CHANNEL) {
+        const auto chunk_id = cload.Cur_Chunk_ID();
+
+        if (chunk_id == W3D_CHUNK_BIT_CHANNEL) {
             BitChannelClass *channel;
 
             if (!Read_Bit_Channel(cload, &channel, pre30)) {
@@ -90,13 +92,12 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
             }
 
             if (channel->Get_Pivot() >= m_numNodes) {
+                captainslog_error("Animation %s referring to missing Bone! Please re-export.", m_name);
                 delete channel;
             } else {
                 Add_Bit_Channel(channel);
             }
-        }
-
-        if (cload.Cur_Chunk_ID() == W3D_CHUNK_ANIMATION_CHANNEL) {
+        } else if (chunk_id == W3D_CHUNK_ANIMATION_CHANNEL) {
 
             MotionChannelClass *channel;
 
@@ -106,6 +107,7 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
             }
 
             if (channel->Get_Pivot() >= m_numNodes) {
+                captainslog_error("Animation %s referring to missing Bone! Please re-export.", m_name);
                 delete channel;
             } else {
                 Add_Channel(channel);

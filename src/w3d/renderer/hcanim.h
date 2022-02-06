@@ -17,6 +17,7 @@
 #include "hanim.h"
 #include "motchan.h"
 #include "w3d_file.h"
+
 struct NodeCompressedMotionStruct
 {
     int Flavor;
@@ -45,7 +46,15 @@ struct NodeCompressedMotionStruct
         } vd;
     };
     TimeCodedBitChannelClass *Vis;
-    NodeCompressedMotionStruct() : Vis(nullptr), tc() {}
+
+    // #BUGFIX: Initialize all members
+    NodeCompressedMotionStruct() : Flavor(0), Vis(nullptr)
+    {
+        vd.X = nullptr;
+        vd.Y = nullptr;
+        vd.Z = nullptr;
+        vd.Q = nullptr;
+    }
     ~NodeCompressedMotionStruct();
     void Set_Flavor(int flavor) { Flavor = flavor; }
 };

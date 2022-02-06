@@ -89,6 +89,7 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
     m_numNodes = tree->Num_Pivots();
     m_numFrames = header.NumFrames;
     m_flavor = header.Flavor;
+    m_frameRate = header.FrameRate;
 
     captainslog_assert((m_flavor == ANIM_FLAVOR_TIMECODED) || (m_flavor == ANIM_FLAVOR_ADAPTIVE_DELTA));
 

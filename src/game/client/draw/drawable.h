@@ -86,7 +86,8 @@ public:
 
 enum DrawableIconType
 {
-    ICON_HEAL,
+    ICON_FIRST = 0,
+    ICON_HEAL = 0,
     ICON_HEAL_STRUCTURE,
     ICON_HEAL_VEHICLE,
     ICON_DEMORALIZED_OBSOLETE,
@@ -155,6 +156,8 @@ struct DrawableInfo
 
 class Drawable : public Thing, public SnapShot
 {
+    IMPLEMENT_POOL(Drawable);
+
 public:
     struct PhysicsXformInfo
     {
@@ -179,6 +182,7 @@ public:
     virtual Drawable *As_Drawable_Meth() override { return this; }
     virtual const Drawable *As_Drawable_Meth() const override { return this; }
     virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
+    virtual void Set_Animation_Frame(int frame);
 
     Object *Get_Object() { return m_object; }
     const Object *Get_Object() const { return m_object; }
@@ -247,7 +251,7 @@ public:
     TerrainDecalType Get_Terrain_Decal() const { return m_terrainDecal; }
     void Set_Recieves_Dynamic_Lights(bool enable) { m_receivesDynamicLights = enable; }
     TintEnvelope *Get_Tint_Color_Envelope() const { return m_tintColorEnvelope; }
-    void Set_Tint_Color_Envelope(TintEnvelope *envelope); // needs TintEnvelope
+    void Set_Tint_Color_Envelope(const TintEnvelope *envelope);
     Drawable *Get_Next() { return m_nextDrawable; }
     void Set_Status_Bit(DrawableStatus status) { m_status |= status; }
     void Clear_Status_Bit(DrawableStatus status) { m_status &= ~status; }
@@ -290,7 +294,7 @@ public:
         BitFlags<MODELCONDITION_COUNT> const &clr, BitFlags<MODELCONDITION_COUNT> const &set);
     void Clear_And_Set_Model_Condition_State(ModelConditionFlagType clr, ModelConditionFlagType set);
     void Clear_Caption_Text();
-    void Clear_Custom_Sound_Ambient(bool clear);
+    void Clear_Custom_Sound_Ambient(bool restart);
     void Clear_Emoticon();
 
     bool Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *radius, Matrix3D *transform);
@@ -326,9 +330,9 @@ public:
     void Friend_Clear_Selected();
     void Friend_Set_Selected();
 
-    AudioEventRTS *Get_Ambient_Sound_By_Damage(BodyDamageType damage);
+    const AudioEventRTS *Get_Ambient_Sound_By_Damage(BodyDamageType damage);
     int Get_Barrel_Count(WeaponSlotType slot) const;
-    const AudioEventInfo &Get_Base_Sound_Ambient_Info() const;
+    const AudioEventInfo *Get_Base_Sound_Ambient_Info() const;
     Utf16String Get_Caption_Text();
     int Get_Current_Client_Bone_Positions(
         char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
@@ -336,7 +340,11 @@ public:
     DrawModule **Get_Draw_Modules();
     DrawModule const **Get_Draw_Modules() const;
     GeometryInfo const &Get_Drawable_Geometry_Info() const;
-    DrawableID Get_ID() const { return m_id; }
+    DrawableID Get_ID() const
+    {
+        captainslog_dbgassert(m_id != DRAWABLE_UNK, "Drawable::getID - Using ID before it was assigned!!!!");
+        return m_id;
+    }
     DrawableIconInfo *Get_Icon_Info();
     int Get_Pristine_Bone_Positions(
         char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
@@ -372,7 +380,7 @@ public:
     void On_Destroy();
     void On_Level_Start();
     void On_Selected();
-    void On_Unselected();
+    void On_Unselected() {}
 
     void Preload_Assets(TimeOfDayType time_of_day);
     void Prepend_To_List(Drawable **list);
@@ -384,7 +392,6 @@ public:
     void Saturate_RGB(RGBColor &color, float factor);
 
     void Set_Animation_Completion_Time(unsigned int time);
-    void Set_Animation_Frame(int frame);
     void Set_Animation_Loop_Duration(unsigned int num_frames);
     void Set_Caption_Text(Utf16String const &caption);
     void Set_Custom_Sound_Ambient_Info(DynamicAudioEventInfo *info);
@@ -398,8 +405,8 @@ public:
     void Set_Instance_Matrix(Matrix3D const *matrix);
     void Set_Position(Coord3D const *pos);
     void Set_Selectable(bool selectable);
-    void Set_ShadowsEnabled(bool enable);
-    void Set_StealthLook(StealthLookType look);
+    void Set_Shadows_Enabled(bool enable);
+    void Set_Stealth_Look(StealthLookType look);
     void Set_Terrain_Decal(TerrainDecalType decal);
     void Set_Terrain_Decal_Fade_Target(float target1, float target2);
     void Set_Terrain_Decal_Size(float width, float height);
@@ -407,7 +414,7 @@ public:
 
     void Show_Sub_Object(Utf8String const &sub_object, bool show);
     void Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, bool unk);
-    void Start_Ambient_Sound();
+    void Start_Ambient_Sound(bool unk);
     void Stop_Ambient_Sound();
 
     void Update_Drawable();
@@ -423,8 +430,8 @@ public:
     static void Kill_Static_Images();
 
 private:
-    TintEnvelope *m_tintColorEnvelope;
     TintEnvelope *m_selectionColorEnvelope;
+    TintEnvelope *m_tintColorEnvelope;
 
     TerrainDecalType m_terrainDecal;
 
@@ -443,7 +450,7 @@ private:
 
     DynamicAudioEventInfo *m_customSoundAmbientInfo;
 
-    DrawableStatus m_status;
+    unsigned int m_status;
 
     unsigned int m_drawBits;
     unsigned int m_previousDrawBits;

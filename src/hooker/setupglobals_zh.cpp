@@ -630,3 +630,7 @@ Anim2DCollection *&g_theAnim2DCollection = Make_Global<Anim2DCollection *>(PICK_
 // languagefilter.cpp
 class LanguageFilter;
 LanguageFilter *&g_theLanguageFilter = Make_Global<LanguageFilter *>(PICK_ADDRESS(0x00A2BEF8, 0x04CA87CC));
+
+// thingtemplate.cpp
+#include "thingtemplate.h"
+AudioEventRTS &ThingTemplate::s_audioEventNoSound = Make_Global<AudioEventRTS>(PICK_ADDRESS(0x00A2C318, 0x00E1D690));

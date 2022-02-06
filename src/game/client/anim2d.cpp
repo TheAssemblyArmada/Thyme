@@ -329,7 +329,6 @@ void Anim2D::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUnsignedByte(&m_status);
     xfer->xferUnsignedShort(&m_firstFrame);
     xfer->xferUnsignedShort(&m_lastFrame);
-    xfer->xferUnsignedShort(&m_lastFrame);
     xfer->xferUnsignedInt(&m_animDelay);
     xfer->xferReal(&m_alpha);
 }

@@ -273,7 +273,7 @@ public:
         Flip();
     }
 
-    void Clear_And_Set(BitFlags const &set, BitFlags const &clear)
+    void Clear_And_Set(BitFlags const &clear, BitFlags const &set)
     {
         m_bits &= ~clear.m_bits;
         m_bits |= set.m_bits;

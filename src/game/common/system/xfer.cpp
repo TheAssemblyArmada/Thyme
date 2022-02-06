@@ -164,9 +164,9 @@ void Xfer::xferRealRange(RealRange *thing)
     xferReal(&thing->hi);
 }
 
-void Xfer::xferColor(int32_t thing)
+void Xfer::xferColor(int32_t *thing)
 {
-    xferInt(&thing);
+    xferInt(thing);
 }
 
 void Xfer::xferRGBColor(RGBColor *thing)

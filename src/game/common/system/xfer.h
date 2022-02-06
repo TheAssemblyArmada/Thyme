@@ -107,7 +107,7 @@ public:
     virtual void xferRegion2D(Region2D *thing);
     virtual void xferIRegion2D(IRegion2D *thing);
     virtual void xferRealRange(RealRange *thing);
-    virtual void xferColor(int32_t thing);
+    virtual void xferColor(int32_t *thing);
     virtual void xferRGBColor(RGBColor *thing);
     virtual void xferRGBAColorReal(RGBAColorReal *thing);
     virtual void xferRGBAColorInt(RGBAColorInt *thing);

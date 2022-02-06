@@ -1818,6 +1818,7 @@ void Setup_Hooks()
     Hook_Any(0x00775540, W3DGameClient::Create_Mouse);
     Hook_Any(0x007751A0, W3DGameClient::Create_GameDisplay);
     Hook_Any(0x00775050, W3DGameClient::Set_Team_Color);
+    Hook_Any(0x00774EA0, W3DGameClient::Create_Drawable);
 
     // w3dprojectedshadow.cpp
     Hook_Any(0x0075ECC0, W3DProjectedShadowManager::Hook_Ctor);
@@ -2132,4 +2133,22 @@ void Setup_Hooks()
     Hook_Any(0x00473320, Drawable::Draw_Icon_UI);
     Hook_Any(0x004735D0, Drawable::Set_Emoticon);
     Hook_Any(0x00473DB0, Drawable::Draw_UI_Text);
+    Hook_Method(
+        0x00477050, static_cast<void (Drawable::*)(BodyDamageType, TimeOfDayType, bool)>(&Drawable::Start_Ambient_Sound));
+    Hook_Any(0x00477570, Drawable::Stop_Ambient_Sound);
+    Hook_Any(0x00476A50, Drawable::Get_Transform_Matrix);
+    Hook_Any(0x0046EB10, Drawable::Is_Visible);
+    Hook_Any(0x00476970, Drawable::Set_Instance_Matrix);
+    Hook_Any(0x004766C0, Drawable::Set_Position);
+    Hook_Any(0x00475DC0, Drawable::Clear_And_Set_Model_Condition_State);
+    Hook_Any(0x00475FA0, Drawable::Clear_And_Set_Model_Condition_Flags);
+    Hook_Any(0x00476F90, Drawable::Set_Custom_Sound_Ambient_Info);
+    Hook_Any(0x00476E40, Drawable::Set_Custom_Sound_Ambient_Off);
+    Hook_Any(0x004775A0, Drawable::Enable_Ambient_Sound);
+    Hook_Any(0x00477650, Drawable::Enable_Ambient_Sound_From_Script);
+    Hook_Any(0x00476D20, Drawable::Get_Base_Sound_Ambient_Info);
+    Hook_Any(0x00476D50, Drawable::Mangle_Custom_Audio_Name);
+    Hook_Any(0x00476090, Drawable::Replace_Model_Condition_Flags);
+    Hook_Any(0x00476220, Drawable::Set_ID);
+    Hook_Any(0x0046F220, Drawable::Set_Terrain_Decal);
 }

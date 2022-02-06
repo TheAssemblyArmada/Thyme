@@ -2151,4 +2151,20 @@ void Setup_Hooks()
     Hook_Any(0x00476090, Drawable::Replace_Model_Condition_Flags);
     Hook_Any(0x00476220, Drawable::Set_ID);
     Hook_Any(0x0046F220, Drawable::Set_Terrain_Decal);
+    Hook_Any(0x0046F190, Drawable::Get_Current_Worldspace_Client_Bone_Positions);
+    Hook_Any(0x0046EFD0, Drawable::Get_Pristine_Bone_Positions);
+    Hook_Any(0x0046EB90, Drawable::Get_Should_Animate);
+    Hook_Any(0x0046F430, Drawable::Allocate_Shadows);
+    Hook_Any(0x0046EC00, Drawable::Client_Only_Get_First_Render_Obj_Info);
+    Hook_Any(0x0046ED40, Drawable::Set_Animation_Loop_Duration);
+    Hook_Any(0x0046EDC0, Drawable::Set_Animation_Completion_Time);
+    Hook_Any(0x0046EEC0, Drawable::Update_Sub_Objects);
+    Hook_Any(0x0046EF40, Drawable::Show_Sub_Object);
+    Hook_Any(0x0046F290, Drawable::Set_Terrain_Decal_Size);
+    Hook_Any(0x0046F330, Drawable::Set_Shadows_Enabled);
+    Hook_Any(0x0046F3C0, Drawable::Release_Shadows);
+    Hook_Any(0x0046F0C0, Drawable::Get_Current_Client_Bone_Positions);
+    Hook_Any(0x0046F300, Drawable::Set_Terrain_Decal_Fade_Target);
+    Hook_Any(0x0046FCE0, Drawable::Imitate_Stealth_Look);
+    Hook_Any(0x00472E10, Drawable::Set_Stealth_Look);
 }

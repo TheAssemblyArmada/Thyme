@@ -99,12 +99,19 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
     m_nodeMotion = new NodeCompressedMotionStruct[m_numNodes];
 
+    if (!m_nodeMotion) {
+        Free();
+        return 1;
+    }
+
     for (int i = 0; i < m_numNodes; i++) {
         m_nodeMotion[i].Set_Flavor(m_flavor);
     }
 
     while (cload.Open_Chunk()) {
-        if (cload.Cur_Chunk_ID() == W3D_CHUNK_COMPRESSED_BIT_CHANNEL) {
+        const auto chunk_id = cload.Cur_Chunk_ID();
+
+        if (chunk_id == W3D_CHUNK_COMPRESSED_BIT_CHANNEL) {
             TimeCodedBitChannelClass *channel;
 
             if (!read_bit_channel(cload, &channel)) {
@@ -114,12 +121,11 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
             if (channel->Get_Pivot() >= m_numNodes) {
                 delete channel;
+                captainslog_error("ERROR! animation %s indexes a bone not present in the model. Please re-export!", m_name);
             } else {
                 add_bit_channel(channel);
             }
-        }
-
-        if (cload.Cur_Chunk_ID() == W3D_CHUNK_COMPRESSED_ANIMATION_CHANNEL) {
+        } else if (chunk_id == W3D_CHUNK_COMPRESSED_ANIMATION_CHANNEL) {
 
             if (m_flavor == ANIM_FLAVOR_TIMECODED) {
                 TimeCodedMotionChannelClass *channel;
@@ -131,6 +137,8 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
                 if (channel->Get_Pivot() >= m_numNodes) {
                     delete channel;
+                    captainslog_error(
+                        "ERROR! animation %s indexes a bone not present in the model. Please re-export!", m_name);
                 } else {
                     add_channel(channel);
                 }
@@ -144,6 +152,8 @@ int HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
 
                 if (channel->Get_Pivot() >= m_numNodes) {
                     delete channel;
+                    captainslog_error(
+                        "ERROR! animation %s indexes a bone not present in the model. Please re-export!", m_name);
                 } else {
                     add_channel(channel);
                 }

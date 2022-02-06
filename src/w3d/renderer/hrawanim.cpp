@@ -118,14 +118,18 @@ int HRawAnimClass::Load_W3D(ChunkLoadClass &cload)
 
 bool HRawAnimClass::Read_Channel(ChunkLoadClass &cload, MotionChannelClass **newchan, bool pre30)
 {
-    *newchan = new MotionChannelClass();
-    bool result = (*newchan)->Load_W3D(cload);
+    auto *p = new MotionChannelClass();
 
-    if (result && pre30) {
-        (*newchan)->m_pivotIdx++;
+    if (p->Load_W3D(cload)) {
+        if (pre30) {
+            p->m_pivotIdx++;
+        }
+        *newchan = p;
+        return true;
     }
-
-    return result;
+    // #BUGFIX Do not leak memory when loading failed.
+    delete p;
+    return false;
 }
 
 void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
@@ -159,14 +163,18 @@ void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
 
 bool HRawAnimClass::Read_Bit_Channel(ChunkLoadClass &cload, BitChannelClass **newchan, bool pre30)
 {
-    *newchan = new BitChannelClass();
-    bool result = (*newchan)->Load_W3D(cload);
+    auto *p = new BitChannelClass();
 
-    if (result && pre30) {
-        (*newchan)->m_pivotIdx++;
+    if (p->Load_W3D(cload)) {
+        if (pre30) {
+            p->m_pivotIdx++;
+        }
+        *newchan = p;
+        return true;
     }
-
-    return result;
+    // #BUGFIX Do not leak memory when loading failed.
+    delete p;
+    return false;
 }
 
 void HRawAnimClass::Add_Bit_Channel(BitChannelClass *newchan)

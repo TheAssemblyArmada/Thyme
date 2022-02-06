@@ -20,6 +20,7 @@
 #include "hash.h"
 #include "missing.h"
 #include "vector.h"
+#include "w3derr.h"
 #include "wwstring.h"
 
 class W3DExclusionListClass;
@@ -34,10 +35,10 @@ public:
     HAnimManagerClass();
     ~HAnimManagerClass();
 
-    int Load_Anim(ChunkLoadClass &cload);
-    int Load_Morph_Anim(ChunkLoadClass &cload);
-    int Load_Raw_Anim(ChunkLoadClass &cload);
-    int Load_Compressed_Anim(ChunkLoadClass &cload);
+    W3DErrorType Load_Anim(ChunkLoadClass &cload);
+    W3DErrorType Load_Morph_Anim(ChunkLoadClass &cload);
+    W3DErrorType Load_Raw_Anim(ChunkLoadClass &cload);
+    W3DErrorType Load_Compressed_Anim(ChunkLoadClass &cload);
     HAnimClass *Get_Anim(const char *name);
     void Free_All_Anims();
     void Free_All_Anims_With_Exclusion_List(const W3DExclusionListClass &exclude_list);

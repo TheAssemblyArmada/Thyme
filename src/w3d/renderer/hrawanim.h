@@ -17,6 +17,7 @@
 #include "hanim.h"
 #include "motchan.h"
 #include "w3d_file.h"
+#include "w3derr.h"
 
 struct NodeMotionStruct
 {
@@ -68,7 +69,7 @@ public:
     virtual bool Has_Visibility(int pividx) override;
     virtual int Class_ID() const override { return CLASSID_RAW; }
     HRawAnimClass();
-    int Load_W3D(ChunkLoadClass &cload);
+    W3DErrorType Load_W3D(ChunkLoadClass &cload);
     void Free();
     bool Read_Channel(ChunkLoadClass &cload, MotionChannelClass **newchan, bool pre30);
     void Add_Channel(MotionChannelClass *newchan);

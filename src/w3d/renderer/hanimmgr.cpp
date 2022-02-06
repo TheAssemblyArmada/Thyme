@@ -43,7 +43,7 @@ HAnimManagerClass::~HAnimManagerClass()
 }
 
 // 0x00831CE0
-int HAnimManagerClass::Load_Anim(ChunkLoadClass &cload)
+W3DErrorType HAnimManagerClass::Load_Anim(ChunkLoadClass &cload)
 {
     switch (cload.Cur_Chunk_ID()) {
         case W3D_CHUNK_ANIMATION:
@@ -53,60 +53,60 @@ int HAnimManagerClass::Load_Anim(ChunkLoadClass &cload)
         case W3D_CHUNK_MORPH_ANIMATION:
             return Load_Morph_Anim(cload);
         default:
-            return 0;
+            return W3D_ERROR_OK;
     }
 }
 
-int HAnimManagerClass::Load_Morph_Anim(ChunkLoadClass &cload)
+W3DErrorType HAnimManagerClass::Load_Morph_Anim(ChunkLoadClass &cload)
 {
     captainslog_assert("Morph animations not supported");
-    return 0;
+    return W3D_ERROR_OK;
 }
 
-int HAnimManagerClass::Load_Raw_Anim(ChunkLoadClass &cload)
+W3DErrorType HAnimManagerClass::Load_Raw_Anim(ChunkLoadClass &cload)
 {
     HRawAnimClass *anim = new HRawAnimClass();
 
     if (!anim) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
-    if (anim->Load_W3D(cload)) {
+    if (anim->Load_W3D(cload) != W3D_ERROR_OK) {
         anim->Release_Ref();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
-    if (Peek_Anim(anim->Get_Name())) {
+    if (Peek_Anim(anim->Get_Name()) != nullptr) {
         anim->Release_Ref();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     Add_Anim(anim);
     anim->Release_Ref();
-    return 0;
+    return W3D_ERROR_OK;
 }
 
-int HAnimManagerClass::Load_Compressed_Anim(ChunkLoadClass &cload)
+W3DErrorType HAnimManagerClass::Load_Compressed_Anim(ChunkLoadClass &cload)
 {
     HCompressedAnimClass *anim = new HCompressedAnimClass();
 
     if (!anim) {
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
-    if (anim->Load_W3D(cload)) {
+    if (anim->Load_W3D(cload) != W3D_ERROR_OK) {
         anim->Release_Ref();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
-    if (Peek_Anim(anim->Get_Name())) {
+    if (Peek_Anim(anim->Get_Name()) != nullptr) {
         anim->Release_Ref();
-        return 1;
+        return W3D_ERROR_GENERIC;
     }
 
     Add_Anim(anim);
     anim->Release_Ref();
-    return 0;
+    return W3D_ERROR_OK;
 }
 
 // 0x00832000

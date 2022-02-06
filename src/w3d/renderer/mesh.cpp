@@ -792,7 +792,7 @@ PrototypeClass *MeshLoaderClass::Load_W3D(ChunkLoadClass &cload)
 
     if (mesh->Load_W3D(cload) != W3D_ERROR_OK) {
         mesh->Release_Ref();
-        return 0;
+        return nullptr;
     }
 
     PrimitivePrototypeClass *proto = new PrimitivePrototypeClass(mesh);

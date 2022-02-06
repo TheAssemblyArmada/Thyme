@@ -17,6 +17,7 @@
 #include "hanim.h"
 #include "motchan.h"
 #include "w3d_file.h"
+#include "w3derr.h"
 
 struct NodeCompressedMotionStruct
 {
@@ -81,7 +82,7 @@ public:
     virtual bool Has_Visibility(int pividx) override;
 
     HCompressedAnimClass();
-    int Load_W3D(ChunkLoadClass &cload);
+    W3DErrorType Load_W3D(ChunkLoadClass &cload);
     void Free();
     bool read_channel(ChunkLoadClass &cload, AdaptiveDeltaMotionChannelClass **newchan);
     bool read_channel(ChunkLoadClass &cload, TimeCodedMotionChannelClass **newchan);

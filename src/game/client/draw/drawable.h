@@ -336,7 +336,7 @@ public:
     Utf16String Get_Caption_Text();
     int Get_Current_Client_Bone_Positions(
         char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
-    bool Get_Current_Worldspace_Client_Bone_Positions(char const *none_name_prefix, Matrix3D &m) const;
+    bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const;
     DrawModule **Get_Draw_Modules();
     DrawModule const **Get_Draw_Modules() const;
     GeometryInfo const &Get_Drawable_Geometry_Info() const;
@@ -356,7 +356,7 @@ public:
         Coord3D *turret_pitch_pos) const;
     float const Get_Scale() const { return m_instanceScale; }
     Vector3 const *Get_Selection_Color() const;
-    bool Get_Should_Animate(bool should) const;
+    bool Get_Should_Animate(bool when_powered) const;
     Vector3 const *Get_Tint_Color() const;
     Matrix3D const *Get_Transform_Matrix() const;
 
@@ -412,7 +412,7 @@ public:
     void Set_Terrain_Decal_Size(float width, float height);
     void Set_Time_Of_Day(TimeOfDayType tod);
 
-    void Show_Sub_Object(Utf8String const &sub_object, bool show);
+    void Show_Sub_Object(Utf8String const &sub_object, bool visible);
     void Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, bool unk);
     void Start_Ambient_Sound(bool unk);
     void Stop_Ambient_Sound();

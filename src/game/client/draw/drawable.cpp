@@ -140,14 +140,17 @@ const DrawModule **Drawable::Get_Draw_Modules() const
 #endif
 }
 
-bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *none_name_prefix, Matrix3D &m) const
+bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Drawable, char const *, Matrix3D &>(
-        PICK_ADDRESS(0x0046F190, 0x007C122A), this, none_name_prefix, m);
-#else
+    for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw && draw->Get_Current_Worldspace_Client_Bone_Positions(bone_name_prefix, transform)) {
+            return true;
+        }
+    }
+
     return false;
-#endif
 }
 
 void Drawable::Set_Instance_Matrix(Matrix3D const *matrix)
@@ -178,21 +181,62 @@ ClientUpdateModule *Drawable::Find_Client_Update_Module(NameKeyType key)
 int Drawable::Get_Pristine_Bone_Positions(
     char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
 {
-#ifdef GAME_DLL
-    return Call_Method<int, const Drawable, char const *, int, Coord3D *, Matrix3D *, int>(
-        PICK_ADDRESS(0x0046EFD0, 0x007C109A), this, bone_name_prefix, start_index, positions, transforms, max_bones);
-#else
-    return 0;
-#endif
+    int ret = 0;
+    for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr && max_bones > 0; i++) {
+        const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            int val = draw->Get_Pristine_Bone_Positions_For_Condition_State(
+                m_conditionState, bone_name_prefix, start_index, positions, transforms, max_bones);
+
+            if (val > 0) {
+                ret += val;
+
+                if (positions) {
+                    positions += val;
+                }
+                if (transforms) {
+                    transforms += val;
+                }
+
+                max_bones -= val;
+            }
+        }
+    }
+
+    return ret;
 }
 
-bool Drawable::Get_Should_Animate(bool should) const
+bool Drawable::Get_Should_Animate(bool when_powered) const
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, const Drawable, bool>(PICK_ADDRESS(0x0046EB90, 0x007C0D05), this, should);
-#else
-    return false;
-#endif
+    const Object *object = Get_Object();
+
+    if (object == nullptr) {
+        return true;
+    }
+
+    if (when_powered && object->Get_Script_Status(STATUS_POWERED)) {
+        return false;
+    }
+
+    if (!object->Is_Disabled()) {
+        return true;
+    }
+
+    if (!object->Is_KindOf(KINDOF_PRODUCED_AT_HELIPAD)
+        && (object->Get_Disabled_State(DISABLED_TYPE_DISABLED_HACKED)
+            || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_PARALYZED)
+            || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_EMP)
+            || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_SUBDUED)
+            || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_UNMANNED))) {
+        return false;
+    }
+
+    if (when_powered || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_UNDERPOWERED)) {
+        return false;
+    }
+
+    return true;
 }
 
 void Drawable::Clear_And_Set_Model_Condition_State(ModelConditionFlagType clr, ModelConditionFlagType set)
@@ -1668,7 +1712,7 @@ void Drawable::Replace_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> cons
             for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
                 ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
-                if (draw) {
+                if (draw != nullptr) {
                     draw->Replace_Model_Condition_State(m_conditionState);
                 }
             }
@@ -1743,7 +1787,7 @@ void Drawable::Update_Hidden_Status()
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
-        if (draw) {
+        if (draw != nullptr) {
             draw->Set_Hidden(hidden);
         }
     }
@@ -1825,8 +1869,232 @@ void Drawable::Set_Animation_Frame(int frame)
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
-        if (draw) {
+        if (draw != nullptr) {
             draw->Set_Animation_Frame(frame);
         }
+    }
+}
+
+void Drawable::Allocate_Shadows()
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->Allocate_Shadows();
+    }
+}
+
+bool Drawable::Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *radius, Matrix3D *transform)
+{
+    DrawModule **modules = Get_Draw_Modules();
+    ObjectDrawInterface *draw;
+
+    if (modules != nullptr && *modules != nullptr) {
+        draw = (*modules)->Get_Object_Draw_Interface();
+    } else {
+        draw = nullptr;
+    }
+
+    return draw && draw->Client_Only_Get_Render_Obj_Info(position, radius, transform);
+}
+
+void Drawable::Set_Animation_Loop_Duration(unsigned int num_frames)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            draw->Set_Animation_Loop_Duration(num_frames);
+        }
+    }
+}
+
+void Drawable::Set_Animation_Completion_Time(unsigned int time)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            draw->Set_Animation_Completion_Time(time);
+        }
+    }
+}
+
+void Drawable::Update_Sub_Objects()
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            draw->Update_Sub_Objects();
+        }
+    }
+}
+
+void Drawable::Show_Sub_Object(Utf8String const &sub_object, bool visible)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            draw->Show_Sub_Object(sub_object, visible);
+        }
+    }
+}
+
+void Drawable::Set_Terrain_Decal_Size(float width, float height)
+{
+    DrawModule **modules = Get_Draw_Modules();
+
+    if (*modules != nullptr) {
+        (*modules)->Set_Terrain_Decal_Size(width, height);
+    }
+}
+
+void Drawable::Set_Shadows_Enabled(bool enable)
+{
+    if (enable) {
+        Set_Status_Bit(DRAWABLE_STATUS_SHADOWS_ENABLED);
+    } else {
+        Clear_Status_Bit(DRAWABLE_STATUS_SHADOWS_ENABLED);
+    }
+
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->Set_Shadows_Enabled(enable);
+    }
+}
+
+void Drawable::Release_Shadows()
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->Release_Shadows();
+    }
+}
+
+int Drawable::Get_Current_Client_Bone_Positions(
+    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+{
+    int ret = 0;
+    for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr && max_bones > 0; i++) {
+        const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            int val = draw->Get_Current_Bone_Positions(bone_name_prefix, start_index, positions, transforms, max_bones);
+
+            if (val > 0) {
+                ret += val;
+
+                if (positions) {
+                    positions += val;
+                }
+                if (transforms) {
+                    transforms += val;
+                }
+
+                max_bones -= val;
+            }
+        }
+    }
+
+    return ret;
+}
+
+void Drawable::Set_Terrain_Decal_Fade_Target(float target1, float target2)
+{
+    if (m_terrainDecalFadeTarget1 != target1) {
+        m_terrainDecalFadeTarget1 = target1;
+        m_terrainDecalFadeTarget2 = target2;
+    }
+}
+
+void Drawable::Imitate_Stealth_Look(Drawable &imitate)
+{
+    m_effectiveOpacity1 = imitate.Get_Effective_Opacity1();
+    m_opacity = imitate.Get_Opacity();
+    m_effectiveOpacity2 = imitate.Get_Effective_Opacity2();
+    m_hidden = imitate.Is_Hidden();
+    m_stealthInvisible = imitate.Is_Hidden();
+    m_stealthLook = imitate.Get_Stealth_Look();
+    m_stealthEmissiveScale = imitate.Get_Stealth_Emissive_Scale();
+}
+
+void Drawable::Set_Stealth_Look(StealthLookType look)
+{
+    if (look != m_stealthLook) {
+        m_effectiveOpacity1 = 1.0f;
+
+        switch (look) {
+            case STEALTHLOOK_NONE:
+                m_stealthInvisible = false;
+                m_stealthEmissiveScale = 0.0f;
+                break;
+            case STEALTHLOOK_VISIBLE_FRIENDLY:
+            case STEALTHLOOK_VISIBLE_DETECTED_FRIENDLY: {
+                float opacity = g_theWriteableGlobalData->m_stealthFriendlyOpacity;
+                Object *object = Get_Object();
+
+                if (object == nullptr) {
+                    m_effectiveOpacity1 = opacity;
+                    m_stealthInvisible = false;
+
+                    if (look == STEALTHLOOK_VISIBLE_DETECTED_FRIENDLY && !Is_KindOf(KINDOF_MINE)) {
+                        m_stealthEmissiveScale = 1.0f;
+                    } else {
+                        m_stealthEmissiveScale = 0.0f;
+                    }
+
+                    break;
+                }
+
+                StealthUpdate *update = object->Get_Stealth_Update();
+
+                if (update == nullptr) {
+                    m_effectiveOpacity1 = opacity;
+                    m_stealthInvisible = false;
+
+                    if (look == STEALTHLOOK_VISIBLE_DETECTED_FRIENDLY && !Is_KindOf(KINDOF_MINE)) {
+                        m_stealthEmissiveScale = 1.0f;
+                    } else {
+                        m_stealthEmissiveScale = 0.0f;
+                    }
+                }
+
+                if (update->Has_Disguised_Template()) {
+                    m_stealthInvisible = false;
+                } else {
+                    if (update->Get_Friendly_Opacity() != -1.0f) {
+                        opacity = update->Get_Friendly_Opacity();
+                    }
+
+                    m_effectiveOpacity1 = opacity;
+                    m_stealthInvisible = false;
+
+                    if (look == STEALTHLOOK_VISIBLE_DETECTED_FRIENDLY && !Is_KindOf(KINDOF_MINE)) {
+                        m_stealthEmissiveScale = 1.0f;
+                    } else {
+                        m_stealthEmissiveScale = 0.0f;
+                    }
+                }
+            } break;
+            case STEALTHLOOK_DISGUISED:
+                m_stealthInvisible = false;
+                m_stealthEmissiveScale = 0.0f;
+                break;
+            case STEALTHLOOK_VISIBLE_DETECTED:
+                m_stealthInvisible = false;
+                if (Is_KindOf(KINDOF_MINE)) {
+                    m_stealthEmissiveScale = 0.0f;
+                } else {
+                    m_stealthEmissiveScale = 1.0f;
+                }
+                break;
+            case STEALTHLOOK_INVISIBLE:
+                m_stealthInvisible = true;
+                m_stealthEmissiveScale = 0.0f;
+                break;
+            default:
+                break;
+        }
+
+        m_stealthLook = look;
+        Update_Hidden_Status();
     }
 }

@@ -325,7 +325,7 @@ void HTreeClass::Anim_Update(Matrix3D const &root, HRawAnimClass *motion, float 
             }
 
             if (node->Vis) {
-                pivot2->is_visible = node->Vis->Get_Bit(fr);
+                pivot2->is_visible = node->Vis->Get_Bit(fr) != 0;
             }
         }
 

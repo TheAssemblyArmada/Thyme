@@ -183,10 +183,10 @@ bool ScriptGroup::Parse_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, 
     ScriptGroup *new_group = NEW_POOL_OBJ(ScriptGroup);
 
     new_group->m_groupName = input.Read_AsciiString();
-    new_group->m_isGroupActive = input.Read_Byte();
+    new_group->m_isGroupActive = input.Read_Byte() != 0;
 
     if (info->version >= 2) {
-        new_group->m_isGroupSubroutine = input.Read_Byte();
+        new_group->m_isGroupSubroutine = input.Read_Byte() != 0;
     }
 
     static_cast<ScriptList *>(data)->Add_Group(new_group, 0xFFFFFF);

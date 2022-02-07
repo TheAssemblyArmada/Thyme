@@ -201,12 +201,12 @@ Script *Script::Parse_Script(DataChunkInput &input, uint16_t version)
     new_script->m_comment = input.Read_AsciiString();
     new_script->m_conditionComment = input.Read_AsciiString();
     new_script->m_actionComment = input.Read_AsciiString();
-    new_script->m_isActive = input.Read_Byte();
-    new_script->m_isOneShot = input.Read_Byte();
-    new_script->m_easy = input.Read_Byte();
-    new_script->m_normal = input.Read_Byte();
-    new_script->m_hard = input.Read_Byte();
-    new_script->m_isSubroutine = input.Read_Byte();
+    new_script->m_isActive = input.Read_Byte() != 0;
+    new_script->m_isOneShot = input.Read_Byte() != 0;
+    new_script->m_easy = input.Read_Byte() != 0;
+    new_script->m_normal = input.Read_Byte() != 0;
+    new_script->m_hard = input.Read_Byte() != 0;
+    new_script->m_isSubroutine = input.Read_Byte() != 0;
 
     // Scripts version 2 and above appear to have this extra integer.
     if (version >= 2) {

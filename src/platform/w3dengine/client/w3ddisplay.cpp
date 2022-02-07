@@ -596,7 +596,7 @@ bool W3DDisplay::Set_Display_Mode(uint32_t width, uint32_t height, uint32_t bits
         RectClass rect = { { 0.0f, 0.0f }, { static_cast<float>(Get_Width()), static_cast<float>(Get_Height()) } };
         m_2DRender->Set_Screen_Resolution(rect);
 
-        Display::Set_Display_Mode(Get_Width(), Get_Height(), Get_Bit_Depth(), Get_Windowed());
+        Display::Set_Display_Mode(Get_Width(), Get_Height(), Get_Bit_Depth(), Get_Windowed() != 0);
 
         return false;
     }

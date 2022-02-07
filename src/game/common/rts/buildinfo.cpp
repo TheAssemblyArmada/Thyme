@@ -133,14 +133,14 @@ void BuildListInfo::Parse_Data_Chunk(DataChunkInput &input, DataChunkInfo *info)
     m_location.y = input.Read_Real32();
     m_location.z = input.Read_Real32();
     m_angle = input.Read_Real32();
-    m_isInitiallyBuilt = input.Read_Byte();
+    m_isInitiallyBuilt = input.Read_Byte() != 0;
     m_numRebuilds = input.Read_Int32();
 
     if (info->version >= 3) {
         m_script = input.Read_AsciiString();
         m_health = input.Read_Int32();
-        m_whiner = input.Read_Byte();
-        m_repairable = input.Read_Byte();
-        m_sellable = input.Read_Byte();
+        m_whiner = input.Read_Byte() != 0;
+        m_repairable = input.Read_Byte() != 0;
+        m_sellable = input.Read_Byte() != 0;
     }
 }

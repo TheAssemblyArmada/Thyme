@@ -422,7 +422,7 @@ void MilesAudioManager::Open_Device()
     atexit(Exit_Shutdown); // Mac build doesn't set this.
     AIL_startup();
     m_speakerType = Translate_From_Speaker_Type(m_preferredSpeaker);
-    bool quick_start = AIL_quick_startup(m_audioSettings->Use_Digital(),
+    bool quick_start = (bool)AIL_quick_startup(m_audioSettings->Use_Digital(),
         m_audioSettings->Use_Midi(),
         m_audioSettings->Output_Rate(),
         m_audioSettings->Output_Bits(),

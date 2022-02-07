@@ -21,7 +21,7 @@ class DynamicAudioEventRTS;
 
 enum PhysicsTurningType
 {
-    TURN_NEGATIVE = 0xFF,
+    TURN_NEGATIVE = -1,
     TURN_NONE,
     TURN_POSITIVE,
 };
@@ -62,7 +62,7 @@ public:
     static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
     const Coord3D &Get_Prev_Accel() const { return m_prevAccel; }
     const Coord3D &Get_Velocity() const { return m_vel; }
-    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < m_motiveForceApplied; }
+    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < (unsigned int)m_motiveForceApplied; }
     ObjectID Get_Current_Overlap() const { return m_currentOverlap; }
     ObjectID Get_Previous_Overlap() const { return m_previousOverlap; }
 

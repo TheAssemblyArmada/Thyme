@@ -162,7 +162,7 @@ public:
     struct PhysicsXformInfo
     {
         float m_totalPitch;
-        float m_pitchRate;
+        float m_totalRoll;
         float m_yaw;
         float m_totalZ;
     };

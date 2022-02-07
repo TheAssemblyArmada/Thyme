@@ -258,7 +258,7 @@ public:
     bool operator!=(const BitFlags &that) const { return m_bits != that.m_bits; }
 
     void Clear() { m_bits.reset(); }
-    void Set(int bit, int value) { m_bits.set(bit, value); }
+    void Set(int bit, bool value) { m_bits.set(bit, value); }
     bool Test(int bit) const { return m_bits.test(bit); }
     bool Any() const { return m_bits.any(); }
     void Flip() { m_bits.flip(); }

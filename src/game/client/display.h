@@ -57,7 +57,7 @@ public:
     virtual unsigned Get_Height() { return m_height; }
     virtual void Set_Bit_Depth(unsigned bitDepth) { m_bitDepth = bitDepth; }
     virtual unsigned Get_Bit_Depth() { return m_bitDepth; };
-    virtual void Set_Windowed(int windowed) { m_windowed = windowed; }
+    virtual void Set_Windowed(int windowed) { m_windowed = windowed != 0; }
     virtual int Get_Windowed() { return m_windowed; }
     virtual bool Set_Display_Mode(unsigned width, unsigned height, unsigned bits, bool windowed);
     virtual int Get_Display_Mode_Count() { return 0; }

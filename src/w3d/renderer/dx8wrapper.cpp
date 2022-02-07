@@ -127,7 +127,7 @@ bool DX8Wrapper::s_isRenderToTexture;
 unsigned int DX8Wrapper::s_drawPolygonLowBoundLimit;
 unsigned long DX8Wrapper::s_frameCount;
 bool DX8Wrapper::s_DX8SingleThreaded;
-DX8_CleanupHook *DX8Wrapper::s_cleanupHook;
+DX8CleanupHook *DX8Wrapper::s_cleanupHook;
 #endif
 
 #ifdef PLATFORM_WINDOWS
@@ -1726,8 +1726,8 @@ w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
 {
     char buf[PATH_MAX];
 
-    { // auto_file_ptr scope.
-        auto_file_ptr fptr(g_theFileFactory, name);
+    { // AutoFilePtr scope.
+        AutoFilePtr fptr(g_theFileFactory, name);
 
         // If the initial file is tga and isn't available try the dds version.
         if (!fptr->Is_Available()) {
@@ -1740,7 +1740,7 @@ w3dsurface_t DX8Wrapper::Create_Surface(const char *name)
                 }
             }
 
-            auto_file_ptr altptr(g_theFileFactory, buf);
+            AutoFilePtr altptr(g_theFileFactory, buf);
 
             if (!altptr->Is_Available()) {
                 return MissingTexture::Create_Missing_Surface();

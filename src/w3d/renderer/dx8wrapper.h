@@ -37,7 +37,7 @@ class DynamicVBAccessClass;
 class DynamicIBAccessClass;
 class LightEnvironmentClass;
 class ZTextureClass;
-class DX8_CleanupHook
+class DX8CleanupHook
 {
 public:
     virtual void ReleaseResources() = 0;
@@ -367,7 +367,7 @@ protected:
     static unsigned int &s_drawPolygonLowBoundLimit;
     static unsigned long &s_frameCount;
     static bool &s_DX8SingleThreaded;
-    static DX8_CleanupHook *&s_cleanupHook;
+    static DX8CleanupHook *&s_cleanupHook;
 #else
 #ifdef BUILD_WITH_D3D8
     static IDirect3D8 *(__stdcall *s_d3dCreateFunction)(unsigned);
@@ -448,7 +448,7 @@ protected:
     static unsigned int s_drawPolygonLowBoundLimit;
     static unsigned long s_frameCount;
     static bool s_DX8SingleThreaded;
-    static DX8_CleanupHook *s_cleanupHook;
+    static DX8CleanupHook *s_cleanupHook;
 #endif
     friend class W3D;
     friend class DX8IndexBufferClass;

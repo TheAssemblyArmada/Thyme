@@ -112,11 +112,11 @@ public:
         USER_DATA_MATERIAL_OVERRIDE = 0x1234567,
     };
 
-    struct Material_Override
+    struct MaterialOverride
     {
         int m_structID;
         Vector2 m_customUVOffset;
-        Material_Override() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
+        MaterialOverride() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
     };
 
     RenderObjClass();

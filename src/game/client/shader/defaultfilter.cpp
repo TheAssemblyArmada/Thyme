@@ -42,7 +42,7 @@ bool ScreenDefaultFilter::Pre_Render(bool &skip, CustomScenePassModes &mode)
 bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
+    struct TransLitTexVertex
     {
         D3DXVECTOR4 p;
         unsigned long color;
@@ -61,7 +61,7 @@ bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
         return false;
     }
 
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    TransLitTexVertex vertex[4];
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
     int32_t x;
     int32_t y;
@@ -87,7 +87,7 @@ bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     vertex[2].color = 0xFFFFFFFF;
     vertex[3].color = 0xFFFFFFFF;
     DX8Wrapper::Get_D3D_Device8()->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransLitTexVertex));
     Reset();
     return true;
 #else

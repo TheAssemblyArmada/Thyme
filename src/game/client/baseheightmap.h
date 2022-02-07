@@ -54,7 +54,7 @@ struct TScorch
     int m_scorchType;
 };
 
-class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHook, public SnapShot
+class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8CleanupHook, public SnapShot
 {
 public:
     virtual ~BaseHeightMapRenderObjClass();

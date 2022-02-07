@@ -49,7 +49,7 @@ bool ScreenMotionBlurFilter::Pre_Render(bool &skip, CustomScenePassModes &mode)
 bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 {
 #ifdef BUILD_WITH_D3D8
-    struct _TRANS_LIT_TEX_VERTEX
+    struct TransLitTexVertex
     {
         D3DXVECTOR4 p;
         unsigned long color;
@@ -68,7 +68,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
         return false;
     }
 
-    _TRANS_LIT_TEX_VERTEX vertex[4];
+    TransLitTexVertex vertex[4];
     DX8Wrapper::Get_D3D_Device8()->SetTexture(0, tex);
     int32_t x;
     int32_t y;
@@ -183,7 +183,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_CURRENT);
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
     DX8Wrapper::Get_D3D_Device8()->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+    DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransLitTexVertex));
     DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, TRUE);
     DX8Wrapper::Apply_Render_State_Changes();
     int count = m_maxCount;
@@ -224,7 +224,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
             vertex[j].v = (vertex[j].v - f2) * f3 + f2;
         }
 
-        DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
+        DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(TransLitTexVertex));
     }
 
     m_lastFrame = g_theGameLogic->Get_Frame();

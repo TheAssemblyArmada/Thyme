@@ -2596,9 +2596,10 @@ int W3DModelDraw::Get_Current_Bone_Positions(
 void W3DModelDraw::React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle)
 {
     if (m_renderObject) {
-        Matrix3D m(Get_Drawable()->Get_Transform_Matrix());
-        Adjust_Transform_Mtx(m);
-        m_renderObject->Set_Transform(m);
+        const Matrix3D *dtm = Get_Drawable()->Get_Transform_Matrix();
+        Matrix3D rtm(*dtm);
+        Adjust_Transform_Mtx(rtm);
+        m_renderObject->Set_Transform(rtm);
     }
 
     if (m_trackRenderObject) {

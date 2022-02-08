@@ -26,6 +26,7 @@ enum SleepyUpdatePhase : uint32_t
 
 enum UpdateSleepTime : uint32_t
 {
+    UPDATE_SLEEP_TIME_MIN = 1u,
     UPDATE_SLEEP_TIME_MAX = (~0u >> SLEEPY_UPDATE_PHASE_2),
 };
 
@@ -56,7 +57,7 @@ class UpdateModule : public BehaviorModule, public UpdateModuleInterface
 
 protected:
     UpdateModule(Thing *thing, const ModuleData *module_data);
-    virtual ~UpdateModule() override {}
+    virtual ~UpdateModule() override;
 
 public:
     virtual SleepyUpdatePhase Get_Update_Phase() const;
@@ -86,7 +87,7 @@ public:
     UpdateSleepTime Get_Wake_Frame() const;
     void Set_Wake_Frame(Object *object, UpdateSleepTime frame);
 
-    unsigned int Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
+    UpdateSleepTime Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static int Get_Interface_Mask();

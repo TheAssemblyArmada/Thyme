@@ -16,10 +16,16 @@
 
 #include "gamelogic.h"
 #include "thing.h"
+#include <captainslog.h>
 
 UpdateModule::UpdateModule(Thing *thing, const ModuleData *module_data) :
     BehaviorModule(thing, module_data), m_updatePhase(0u), m_indexInLogic(-1)
 {
+}
+
+UpdateModule::~UpdateModule()
+{
+    captainslog_dbgassert(m_indexInLogic == -1, "Destroying an UpdateModule still in the logic list");
 }
 
 SleepyUpdatePhase UpdateModule::Get_Update_Phase() const
@@ -100,7 +106,7 @@ UpdateSleepTime UpdateModule::Get_Wake_Frame() const
         return UpdateSleepTime(wake_frame - cur_frame);
     }
 
-    return UpdateSleepTime(1u);
+    return UPDATE_SLEEP_TIME_MIN;
 }
 
 void UpdateModule::Set_Wake_Frame(Object *object, UpdateSleepTime frame)
@@ -109,7 +115,7 @@ void UpdateModule::Set_Wake_Frame(Object *object, UpdateSleepTime frame)
     g_theGameLogic->Friend_Awaken_Update_Module(object, this, frame + cur_frame);
 }
 
-unsigned int UpdateModule::Frame_To_Sleep_Time(
+UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(
     unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4)
 {
     captainslog_dbgassert(
@@ -130,15 +136,15 @@ unsigned int UpdateModule::Frame_To_Sleep_Time(
     unsigned int cur_frame = g_theGameLogic->Get_Frame();
 
     if (frame1 > cur_frame) {
-        return frame1 - cur_frame;
+        return static_cast<UpdateSleepTime>(frame1 - cur_frame);
     }
 
     if (frame1 == cur_frame) {
-        return 1u;
+        return UPDATE_SLEEP_TIME_MIN;
     }
 
     captainslog_dbgassert(0, "Frame_To_Sleep_Time: frame is in the past");
-    return 1u;
+    return UPDATE_SLEEP_TIME_MIN;
 }
 
 ModuleData *UpdateModule::Friend_New_Module_Data(INI *ini)

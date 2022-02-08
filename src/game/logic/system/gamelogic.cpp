@@ -64,9 +64,11 @@ bool GameLogic::Is_Intro_Movie_Playing()
 
 int GameLogic::Rebalance_Parent_Sleepy_Update(int index)
 {
-    captainslog_dbgassert(index >= 0 && (unsigned)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
+    captainslog_dbgassert(index >= 0 && (size_t)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
     for (int i = ((index + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
+
+        captainslog_dbgassert((size_t)i < m_sleepingUpdateModules.size(), "bad idx");
 
         UpdateModule *a = m_sleepingUpdateModules[i];
         UpdateModule *b = m_sleepingUpdateModules[index];
@@ -87,11 +89,16 @@ int GameLogic::Rebalance_Parent_Sleepy_Update(int index)
 
 int GameLogic::Rebalance_Child_Sleepy_Update(int index)
 {
-    captainslog_dbgassert(index >= 0 && (unsigned)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
+    captainslog_assert(!m_sleepingUpdateModules.empty());
+
+    captainslog_dbgassert(index >= 0 && (size_t)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
     int next_index = 2 * index + 1;
-    UpdateModule **curr = &m_sleepingUpdateModules[index];
-    UpdateModule **next = &m_sleepingUpdateModules[next_index];
+
+    // #BUGFIX Original dereferenced elements past end, which is undefined behavior.
+    // Here we calculate pointers which are safe to go past the end and beyond.
+    UpdateModule **curr = &m_sleepingUpdateModules[0] + index;
+    UpdateModule **next = &m_sleepingUpdateModules[0] + next_index;
     UpdateModule **end = &m_sleepingUpdateModules[0] + m_sleepingUpdateModules.size();
 
     while (next < end) {
@@ -112,7 +119,7 @@ int GameLogic::Rebalance_Child_Sleepy_Update(int index)
         index = next_index;
         curr = next;
         next_index = 2 * next_index + 1;
-        next = &m_sleepingUpdateModules[next_index];
+        next = &m_sleepingUpdateModules[0] + next_index;
     }
     return index;
 }
@@ -157,20 +164,20 @@ void GameLogic::Friend_Awaken_Update_Module(Object *object, UpdateModule *module
         int index = module->Get_Index_In_Logic();
 
         if (object->Is_In_List(&m_objList)) {
-            if (index >= 0 && static_cast<size_t>(index) < m_sleepingUpdateModules.size()) {
-                if (m_sleepingUpdateModules[index] == module) {
+            if (index < 0 || static_cast<size_t>(index) >= m_sleepingUpdateModules.size()) {
+                captainslog_fatal("fatal error! sleepy update module illegal index.");
+            } else {
+                if (m_sleepingUpdateModules[index] != module) {
+                    captainslog_fatal("fatal error! sleepy update module index mismatch.");
+                } else {
                     module->Encode_Frame(wakeup_frame);
                     Rebalance_Sleepy_Update(index);
-                } else {
-                    captainslog_fatal("fatal error! sleepy update module index mismatch.");
                 }
-            } else {
-                captainslog_fatal("fatal error! sleepy update module illegal index.");
             }
-        } else if (index == -1) {
-            module->Encode_Frame(wakeup_frame);
-        } else {
+        } else if (index != -1) {
             captainslog_fatal("fatal error! sleepy update module index mismatch.");
+        } else {
+            module->Encode_Frame(wakeup_frame);
         }
     }
 }

@@ -17,7 +17,7 @@
 #include "bitflags.h"
 
 template<>
-const char *DisabledBitFlags::s_bitNamesList[] = {
+const char *DisabledBitFlags::s_bitNamesList[DISABLED_TYPE_COUNT + 1] = {
     "DEFAULT",
     "DISABLED_HACKED",
     "DISABLED_EMP",

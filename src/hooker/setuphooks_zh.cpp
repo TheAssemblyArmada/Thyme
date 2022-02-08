@@ -2168,4 +2168,5 @@ void Setup_Hooks()
     Hook_Any(0x0046FCE0, Drawable::Imitate_Stealth_Look);
     Hook_Any(0x00472E10, Drawable::Set_Stealth_Look);
     Hook_Any(0x00471BE0, Drawable::Calc_Physics_Xform_Wheels);
+    Hook_Any(0x00471370, Drawable::Calc_Physics_Xform_Treads);
 }

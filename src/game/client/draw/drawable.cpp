@@ -2393,3 +2393,189 @@ void Drawable::Calc_Physics_Xform_Wheels(Locomotor const *locomotor, PhysicsXfor
         }
     }
 }
+
+void Drawable::Calc_Physics_Xform_Treads(Locomotor const *locomotor, PhysicsXformInfo &xform)
+{
+    if (m_drawableLocoInfo == nullptr) {
+        m_drawableLocoInfo = new DrawableLocoInfo();
+    }
+
+    float f1 = 0.8f;
+    float f2 = 0.5f;
+    float f3 = 0.024543693f;
+    float f4 = 5.0f;
+    float f5 = 0.5f;
+
+    float accel_pitch_limit = locomotor->Get_Accel_Pitch_Limit();
+    float deacel_pitch_limit = locomotor->Get_Deaccel_Pitch_Limit();
+    float pitch_stiffness = locomotor->Get_Pitch_Stiffness();
+    float roll_stiffness = locomotor->Get_Roll_Stiffness();
+    float pitch_damping = locomotor->Get_Pitch_Damping();
+    float roll_damping = locomotor->Get_Roll_Damping();
+    float forward_accel_coef = locomotor->Get_Foward_Accel_Coef();
+    float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
+    float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
+    Object *object = Get_Object();
+
+    if (object != nullptr) {
+        if (object->Get_AI_Update_Interface()) {
+            PhysicsBehavior *physics = object->Get_Physics();
+
+            if (physics != nullptr) {
+                const Coord3D *position = Get_Position();
+                const Coord3D *direction = Get_Unit_Dir_Vector2D();
+                const Coord3D &prev_accel = physics->Get_Prev_Accel();
+                const Coord3D &velocity = physics->Get_Velocity();
+                float diry = -direction->y;
+                float dirx = direction->x;
+                PathfindLayerEnum layer = object->Get_Layer();
+
+                Coord3D n;
+                g_theTerrainLogic->Get_Layer_Height(position->x, position->y, layer, &n, true);
+                float overlap_z = 0.0f;
+                Object *overlap = g_theGameLogic->Find_Object_By_ID(physics->Get_Current_Overlap());
+
+                if (overlap != nullptr && overlap->Is_KindOf(KINDOF_SHRUBBERY)) {
+                    overlap = nullptr;
+                }
+
+                if (overlap != nullptr) {
+                    const Coord3D *overlap_pos = overlap->Get_Position();
+                    float overlap_offset_x = overlap_pos->x - position->x;
+                    float overlap_offset_y = overlap_pos->y - position->y;
+                    float overlap_dist_sqr = GameMath::Square(overlap_offset_y) + GameMath::Square(overlap_offset_x);
+                    float radius = Get_Drawable_Geometry_Info().Get_Bounding_Circle_Radius();
+                    float radius2 = overlap->Get_Geometry_Info().Get_Bounding_Circle_Radius();
+                    float dist_threshold = (radius2 + radius) * f1;
+
+                    if (GameMath::Square(dist_threshold) > overlap_dist_sqr) {
+                        float overlap_dist = GameMath::Sqrt(overlap_dist_sqr);
+                        float overlap_speed = 1.0f - overlap_dist / dist_threshold;
+
+                        if (overlap_speed < 0.0f) {
+                            overlap_speed = 0.0f;
+                        } else if (overlap_speed > 1.0f) {
+                            overlap_speed = 1.0f;
+                        }
+
+                        float max_velocity = (velocity.x * velocity.x + velocity.y * velocity.y) * f4;
+
+                        if (max_velocity > f5) {
+                            max_velocity = f5;
+                        }
+
+                        overlap_z = overlap->Get_Geometry_Info().Get_Max_Height_Above_Position();
+
+                        bool low = false;
+
+                        if (overlap->Is_KindOf(KINDOF_LOW_OVERLAPPABLE) || overlap->Is_KindOf(KINDOF_INFANTRY)
+                            || (overlap->Get_Body_Module()->Get_Front_Crushed()
+                                && overlap->Get_Body_Module()->Get_Back_Crushed())) {
+                            low = true;
+                            overlap_z = f2;
+                        }
+
+                        if (overlap_speed < f2 && !low) {
+                            overlap_z = (overlap_z + overlap_z) * overlap_speed;
+                            Coord3D a;
+                            a.x = overlap_offset_x / overlap_dist;
+                            a.y = overlap_offset_y / overlap_dist;
+                            a.z = 0.2f;
+
+                            Coord3D a2;
+                            a2.x = Get_Client_Random_Value_Real(-max_velocity, max_velocity);
+                            a2.y = Get_Client_Random_Value_Real(-max_velocity, max_velocity);
+                            a2.z = 1.0f;
+                            a2.Normalize();
+
+                            Coord3D a3;
+                            Coord3D::Cross_Product(&a, &a2, &a3);
+                            Coord3D::Cross_Product(&a3, &a, &n);
+                            n.Normalize();
+                        } else {
+                            n.x = Get_Client_Random_Value_Real(-max_velocity, max_velocity);
+                            n.y = Get_Client_Random_Value_Real(-max_velocity, max_velocity);
+                            n.z = 1.0f;
+                            n.Normalize();
+                        }
+                    }
+                } else if (physics->Get_Previous_Overlap() != OBJECT_UNK && m_drawableLocoInfo->m_overlapZ > 0.0f) {
+                    m_drawableLocoInfo->m_pitchRate += f3;
+                }
+
+                float pitch = (n.x * direction->x + n.y * direction->y) * DEG_TO_RADF(90.0f);
+                float roll = (n.x * diry + n.y * dirx) * DEG_TO_RADF(90.0f);
+
+                if (overlap != nullptr || m_drawableLocoInfo->m_overlapZ <= 0.0f) {
+                    m_drawableLocoInfo->m_pitchRate = -pitch_stiffness * (m_drawableLocoInfo->m_pitch - pitch)
+                        + -pitch_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitchRate;
+
+                    if (m_drawableLocoInfo->m_pitchRate > 0.0f) {
+                        m_drawableLocoInfo->m_pitchRate = m_drawableLocoInfo->m_pitchRate * 0.5f;
+                    }
+
+                    m_drawableLocoInfo->m_rollRate = -roll_stiffness * (m_drawableLocoInfo->m_roll - roll)
+                        + -roll_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_rollRate;
+                }
+
+                m_drawableLocoInfo->m_pitch =
+                    uniform_axial_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitch;
+                m_drawableLocoInfo->m_roll =
+                    uniform_axial_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_roll;
+
+                m_drawableLocoInfo->m_accelerationPitchRate = -pitch_stiffness * m_drawableLocoInfo->m_accelerationPitch
+                    + -pitch_damping * m_drawableLocoInfo->m_accelerationPitchRate
+                    + m_drawableLocoInfo->m_accelerationPitchRate;
+                m_drawableLocoInfo->m_accelerationPitch =
+                    m_drawableLocoInfo->m_accelerationPitch + m_drawableLocoInfo->m_accelerationPitchRate;
+
+                m_drawableLocoInfo->m_accelerationRollRate = -roll_stiffness * m_drawableLocoInfo->m_accelerationRoll
+                    + -roll_damping * m_drawableLocoInfo->m_accelerationRollRate
+                    + m_drawableLocoInfo->m_accelerationRollRate;
+                m_drawableLocoInfo->m_accelerationRoll =
+                    m_drawableLocoInfo->m_accelerationRoll + m_drawableLocoInfo->m_accelerationRollRate;
+
+                xform.m_totalPitch = m_drawableLocoInfo->m_pitch + m_drawableLocoInfo->m_accelerationPitch;
+                xform.m_totalRoll = m_drawableLocoInfo->m_roll + m_drawableLocoInfo->m_accelerationRoll;
+
+                if (physics->Is_Motive()) {
+                    m_drawableLocoInfo->m_accelerationPitchRate = m_drawableLocoInfo->m_accelerationPitchRate
+                        - forward_accel_coef * (direction->x * prev_accel.x + direction->y * prev_accel.y);
+                    m_drawableLocoInfo->m_accelerationRollRate = m_drawableLocoInfo->m_accelerationRollRate
+                        - lateral_accel_coef * (-direction->y * prev_accel.x + direction->x * prev_accel.y);
+                }
+
+                if (m_drawableLocoInfo->m_accelerationPitch > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationPitch = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationPitch) {
+                    m_drawableLocoInfo->m_accelerationPitch = -accel_pitch_limit;
+                }
+
+                if (m_drawableLocoInfo->m_accelerationRoll > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationRoll = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationRoll) {
+                    m_drawableLocoInfo->m_accelerationRoll = -accel_pitch_limit;
+                }
+
+                if (overlap_z > m_drawableLocoInfo->m_overlapZ) {
+                    m_drawableLocoInfo->m_overlapZ = overlap_z;
+                    m_drawableLocoInfo->m_overlapZVel = 0.0f;
+                }
+
+                float total_z = m_drawableLocoInfo->m_overlapZ / 2.0f;
+
+                if (m_drawableLocoInfo->m_overlapZ > 0.0f) {
+                    m_drawableLocoInfo->m_overlapZVel = m_drawableLocoInfo->m_overlapZVel - 0.2f;
+                    m_drawableLocoInfo->m_overlapZ = m_drawableLocoInfo->m_overlapZ + m_drawableLocoInfo->m_overlapZVel;
+                }
+
+                if (m_drawableLocoInfo->m_overlapZ <= 0.0f) {
+                    m_drawableLocoInfo->m_overlapZ = 0.0f;
+                    m_drawableLocoInfo->m_overlapZVel = 0.0f;
+                }
+
+                xform.m_totalZ = total_z;
+            }
+        }
+    }
+}

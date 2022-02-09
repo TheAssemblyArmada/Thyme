@@ -2579,3 +2579,254 @@ void Drawable::Calc_Physics_Xform_Treads(Locomotor const *locomotor, PhysicsXfor
         }
     }
 }
+
+void Drawable::Calc_Physics_Xform_Motorcycle(Locomotor const *locomotor, PhysicsXformInfo &xform)
+{
+    if (m_drawableLocoInfo == nullptr) {
+        m_drawableLocoInfo = new DrawableLocoInfo();
+    }
+
+    float accel_pitch_limit = locomotor->Get_Accel_Pitch_Limit();
+    float deacel_pitch_limit = locomotor->Get_Deaccel_Pitch_Limit();
+    float bounce_kick = locomotor->Get_Bounce_Kick();
+    float pitch_stiffness = locomotor->Get_Pitch_Stiffness();
+    float roll_stiffness = locomotor->Get_Roll_Stiffness();
+    float pitch_damping = locomotor->Get_Pitch_Damping();
+    float roll_damping = locomotor->Get_Roll_Damping();
+    float forward_accel_coef = locomotor->Get_Foward_Accel_Coef();
+    float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
+    float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
+    float max_wheel_extension = locomotor->Get_Max_Wheel_Extension();
+    float wheel_turn_angle = locomotor->Get_Wheel_Turn_Angle();
+    bool has_suspension = locomotor->Has_Suspension();
+    Object *object = Get_Object();
+
+    if (object != nullptr) {
+        AIUpdateInterface *update = object->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            PhysicsBehavior *physics = object->Get_Physics();
+
+            if (physics != nullptr) {
+                const Coord3D *position = Get_Position();
+                const Coord3D *direction = Get_Unit_Dir_Vector2D();
+                const Coord3D &prev_accel = physics->Get_Prev_Accel();
+                float diry = -direction->y;
+                float dirx = direction->x;
+                PathfindLayerEnum layer = object->Get_Layer();
+
+                Coord3D n;
+                float height = g_theTerrainLogic->Get_Layer_Height(position->x, position->y, layer, &n, true);
+                float pitch = (n.x * direction->x + n.y * direction->y) * DEG_TO_RADF(90.0f);
+                float roll = (n.x * diry + n.y * dirx) * DEG_TO_RADF(90.0f);
+                bool is_significantly_above_terrain = object->Is_Significantly_Above_Terrain();
+
+                if (is_significantly_above_terrain) {
+                    if (has_suspension) {
+                        m_drawableLocoInfo->m_wheelInfo.m_framesAirborne = 0;
+                        m_drawableLocoInfo->m_wheelInfo.m_framesAirborneCounter++;
+
+                        if (-max_wheel_extension < position->z - height) {
+                            m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset =
+                                (max_wheel_extension - m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset) / 2.0f
+                                + m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset;
+                        } else {
+                            m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset =
+                                (0.0f - m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset) / 2.0f
+                                + m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset;
+                        }
+
+                        m_drawableLocoInfo->m_wheelInfo.m_rearRightHeightOffset =
+                            m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset;
+                    }
+
+                    float major_radius = object->Get_Geometry_Info().Get_Major_Radius();
+                    float pitch2 = m_drawableLocoInfo->m_pitch + m_drawableLocoInfo->m_accelerationPitch - pitch;
+                    float pitch3 = GameMath::Sin(pitch2) * major_radius;
+                    xform.m_totalZ = GameMath::Fabs(pitch3) / 4.0f;
+                }
+
+                float velocity_magnitude = physics->Get_Velocity_Magnitude();
+                float cur_locomotor_speed = update->Get_Cur_Locomotor_Speed();
+
+                if (!is_significantly_above_terrain && cur_locomotor_speed / 10.0f < velocity_magnitude) {
+                    float ratio = velocity_magnitude / cur_locomotor_speed;
+
+                    if (ratio * bounce_kick / 4.0f > GameMath::Fabs(m_drawableLocoInfo->m_pitchRate)) {
+                        if (ratio * bounce_kick / 8.0f > GameMath::Fabs(m_drawableLocoInfo->m_rollRate)) {
+                            switch (Get_Client_Random_Value(0, 3)) {
+                                case 0:
+                                    m_drawableLocoInfo->m_pitchRate = m_drawableLocoInfo->m_pitchRate - bounce_kick * ratio;
+                                    m_drawableLocoInfo->m_rollRate =
+                                        m_drawableLocoInfo->m_rollRate - bounce_kick * ratio / 2.0f;
+                                    break;
+                                case 1:
+                                    m_drawableLocoInfo->m_pitchRate = bounce_kick * ratio + m_drawableLocoInfo->m_pitchRate;
+                                    m_drawableLocoInfo->m_rollRate =
+                                        m_drawableLocoInfo->m_rollRate - bounce_kick * ratio / 2.0f;
+                                    break;
+                                case 2:
+                                    m_drawableLocoInfo->m_pitchRate = m_drawableLocoInfo->m_pitchRate - bounce_kick * ratio;
+                                    m_drawableLocoInfo->m_rollRate =
+                                        bounce_kick * ratio / 2.0f + m_drawableLocoInfo->m_rollRate;
+                                    break;
+                                case 3:
+                                    m_drawableLocoInfo->m_pitchRate = bounce_kick * ratio + m_drawableLocoInfo->m_pitchRate;
+                                    m_drawableLocoInfo->m_rollRate =
+                                        bounce_kick * ratio / 2.0f + m_drawableLocoInfo->m_rollRate;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                if (!is_significantly_above_terrain) {
+                    m_drawableLocoInfo->m_pitchRate = -pitch_stiffness * (m_drawableLocoInfo->m_pitch - pitch)
+                        + -pitch_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitchRate;
+
+                    m_drawableLocoInfo->m_rollRate = -roll_stiffness * (m_drawableLocoInfo->m_roll - roll)
+                        + -roll_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_rollRate;
+                } else {
+                    m_drawableLocoInfo->m_pitchRate = -pitch_stiffness * m_drawableLocoInfo->m_pitch
+                        + -pitch_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitchRate;
+
+                    m_drawableLocoInfo->m_rollRate = -roll_stiffness * m_drawableLocoInfo->m_roll
+                        + -roll_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_rollRate;
+                }
+
+                m_drawableLocoInfo->m_pitch =
+                    uniform_axial_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitch;
+                m_drawableLocoInfo->m_roll =
+                    uniform_axial_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_roll;
+                m_drawableLocoInfo->m_accelerationPitchRate = -pitch_stiffness * m_drawableLocoInfo->m_accelerationPitch
+                    + -pitch_damping * m_drawableLocoInfo->m_accelerationPitchRate
+                    + m_drawableLocoInfo->m_accelerationPitchRate;
+                m_drawableLocoInfo->m_accelerationPitch =
+                    m_drawableLocoInfo->m_accelerationPitch + m_drawableLocoInfo->m_accelerationPitchRate;
+                m_drawableLocoInfo->m_accelerationRollRate = -roll_stiffness * m_drawableLocoInfo->m_accelerationRoll
+                    + -roll_damping * m_drawableLocoInfo->m_accelerationRollRate
+                    + m_drawableLocoInfo->m_accelerationRollRate;
+                m_drawableLocoInfo->m_accelerationRoll =
+                    m_drawableLocoInfo->m_accelerationRoll + m_drawableLocoInfo->m_accelerationRollRate;
+                xform.m_totalPitch = m_drawableLocoInfo->m_pitch + m_drawableLocoInfo->m_accelerationPitch;
+
+                float roll2 = m_drawableLocoInfo->m_roll + m_drawableLocoInfo->m_accelerationRoll;
+
+                if (roll2 > 0.5f && roll2 < -0.5f) {
+                    xform.m_totalRoll = roll2;
+                } else {
+                    xform.m_totalRoll = 0.0f;
+                }
+
+                if (physics->Is_Motive()) {
+                    m_drawableLocoInfo->m_accelerationPitchRate = m_drawableLocoInfo->m_accelerationPitchRate
+                        - forward_accel_coef * (direction->x * prev_accel.x + direction->y * prev_accel.y);
+                    m_drawableLocoInfo->m_accelerationRollRate = m_drawableLocoInfo->m_accelerationRollRate
+                        - lateral_accel_coef * (-direction->y * prev_accel.x + direction->x * prev_accel.y);
+                }
+
+                if (m_drawableLocoInfo->m_accelerationPitch > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationPitch = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationPitch) {
+                    m_drawableLocoInfo->m_accelerationPitch = -accel_pitch_limit;
+                }
+
+                if (m_drawableLocoInfo->m_accelerationRoll > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationRoll = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationRoll) {
+                    m_drawableLocoInfo->m_accelerationRoll = -accel_pitch_limit;
+                }
+
+                xform.m_totalZ = 0.0f;
+                float major_radius = object->Get_Geometry_Info().Get_Major_Radius();
+                float minor_radius = object->Get_Geometry_Info().Get_Minor_Radius();
+                float pitch_offset = GameMath::Sin(xform.m_totalPitch - pitch) * major_radius;
+                float roll_offset = GameMath::Sin(xform.m_totalRoll - roll) * minor_radius;
+
+                if (has_suspension) {
+                    m_drawableLocoInfo->m_wheelInfo.m_framesAirborne =
+                        m_drawableLocoInfo->m_wheelInfo.m_framesAirborneCounter;
+                    m_drawableLocoInfo->m_wheelInfo.m_framesAirborneCounter = 0;
+                    TWheelInfo wheel_info = m_drawableLocoInfo->m_wheelInfo;
+                    PhysicsTurningType turning = physics->Get_Turning();
+
+                    if (turning == TURN_NEGATIVE) {
+                        wheel_info.m_wheelAngle = -wheel_turn_angle;
+                    } else if (turning == TURN_POSITIVE) {
+                        wheel_info.m_wheelAngle = wheel_turn_angle;
+                    } else {
+                        wheel_info.m_wheelAngle = 0.0f;
+                    }
+
+                    if (physics->Get_Forward_Speed_2D() < 0.0f) {
+                        wheel_info.m_wheelAngle = -wheel_info.m_wheelAngle;
+                    }
+
+                    m_drawableLocoInfo->m_wheelInfo.m_wheelAngle =
+                        (wheel_info.m_wheelAngle - m_drawableLocoInfo->m_wheelInfo.m_wheelAngle) / 10.0f
+                        + m_drawableLocoInfo->m_wheelInfo.m_wheelAngle;
+                    float offset_mult = 0.9f;
+
+                    if (pitch_offset < 0.0f) {
+                        wheel_info.m_frontLeftHeightOffset = (pitch_offset / 3.0f + pitch_offset / 2.0f) * offset_mult;
+                        wheel_info.m_rearLeftHeightOffset = -pitch_offset / 2.0f + pitch_offset / 4.0f;
+                    } else {
+                        wheel_info.m_frontLeftHeightOffset = -pitch_offset / 4.0f + pitch_offset / 2.0f;
+                        wheel_info.m_rearLeftHeightOffset = (-pitch_offset / 2.0f + -pitch_offset / 3.0f) * offset_mult;
+                    }
+
+                    wheel_info.m_frontRightHeightOffset = wheel_info.m_frontLeftHeightOffset;
+                    wheel_info.m_rearRightHeightOffset = wheel_info.m_rearLeftHeightOffset;
+
+                    if (wheel_info.m_frontLeftHeightOffset < m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset) {
+                        m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset =
+                            (wheel_info.m_frontLeftHeightOffset - m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset)
+                                / 2.0f
+                            + m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset;
+                        m_drawableLocoInfo->m_wheelInfo.m_frontRightHeightOffset =
+                            m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset;
+                    } else {
+                        m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset = wheel_info.m_frontLeftHeightOffset;
+                        m_drawableLocoInfo->m_wheelInfo.m_frontRightHeightOffset = wheel_info.m_frontLeftHeightOffset;
+                    }
+
+                    if (wheel_info.m_rearLeftHeightOffset < m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset) {
+                        m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset =
+                            (wheel_info.m_rearLeftHeightOffset - m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset)
+                                / 2.0f
+                            + m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset;
+                        m_drawableLocoInfo->m_wheelInfo.m_rearRightHeightOffset =
+                            m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset;
+                    } else {
+                        m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset = wheel_info.m_rearLeftHeightOffset;
+                        m_drawableLocoInfo->m_wheelInfo.m_rearRightHeightOffset = wheel_info.m_rearLeftHeightOffset;
+                    }
+
+                    if (m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset < max_wheel_extension) {
+                        m_drawableLocoInfo->m_wheelInfo.m_frontLeftHeightOffset = max_wheel_extension;
+                        m_drawableLocoInfo->m_wheelInfo.m_frontRightHeightOffset = max_wheel_extension;
+                    }
+
+                    if (m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset < max_wheel_extension) {
+                        m_drawableLocoInfo->m_wheelInfo.m_rearLeftHeightOffset = max_wheel_extension;
+                        m_drawableLocoInfo->m_wheelInfo.m_rearRightHeightOffset = max_wheel_extension;
+                    }
+                }
+
+                float z_mult = 4.0f;
+                float pitch4 = GameMath::Fabs(xform.m_totalPitch - pitch);
+
+                if (pitch4 > DEG_TO_RADF(22.5f)) {
+                    z_mult = ((pitch4 - DEG_TO_RADF(22.5f)) * 1.0f + DEG_TO_RADF(90.0f)) / pitch4;
+                }
+
+                if (!is_significantly_above_terrain) {
+                    xform.m_totalZ = GameMath::Fabs(pitch_offset) / z_mult + xform.m_totalZ;
+                    xform.m_totalZ = GameMath::Fabs(roll_offset) / z_mult + xform.m_totalZ;
+                }
+            }
+        }
+    }
+}

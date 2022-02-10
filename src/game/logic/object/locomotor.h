@@ -148,9 +148,9 @@ public:
     float Get_Roll_Damping() const { return m_template->m_rollDamping; }
     float Get_Pitch_In_Direction_Of_Z_Vel_Factor() const { return m_template->m_pitchInDirectionOfZVelFactor; }
 
-    float Get_Foward_Vel_Coef() const { return m_template->m_forwardVelCoef; }
+    float Get_Forward_Vel_Coef() const { return m_template->m_forwardVelCoef; }
     float Get_Lateral_Vel_Coef() const { return m_template->m_lateralVelCoef; }
-    float Get_Foward_Accel_Coef() const { return m_template->m_forwardAccelCoef; }
+    float Get_Forward_Accel_Coef() const { return m_template->m_forwardAccelCoef; }
     float Get_Lateral_Accel_Coef() const { return m_template->m_lateralAccelCoef; }
     float Get_Uniform_Axial_Damping() const { return m_template->m_uniformAxialDamping; }
     float Get_Rudder_Correction_Degree() const { return m_template->m_rudderCorrectionDegree; }

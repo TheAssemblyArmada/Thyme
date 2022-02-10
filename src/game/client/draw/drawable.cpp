@@ -2115,7 +2115,7 @@ void Drawable::Calc_Physics_Xform_Wheels(Locomotor const *locomotor, PhysicsXfor
     float roll_stiffness = locomotor->Get_Roll_Stiffness();
     float pitch_damping = locomotor->Get_Pitch_Damping();
     float roll_damping = locomotor->Get_Roll_Damping();
-    float forward_accel_coef = locomotor->Get_Foward_Accel_Coef();
+    float forward_accel_coef = locomotor->Get_Forward_Accel_Coef();
     float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
     float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
     float max_wheel_extension = locomotor->Get_Max_Wheel_Extension();
@@ -2412,7 +2412,7 @@ void Drawable::Calc_Physics_Xform_Treads(Locomotor const *locomotor, PhysicsXfor
     float roll_stiffness = locomotor->Get_Roll_Stiffness();
     float pitch_damping = locomotor->Get_Pitch_Damping();
     float roll_damping = locomotor->Get_Roll_Damping();
-    float forward_accel_coef = locomotor->Get_Foward_Accel_Coef();
+    float forward_accel_coef = locomotor->Get_Forward_Accel_Coef();
     float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
     float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
     Object *object = Get_Object();
@@ -2593,7 +2593,7 @@ void Drawable::Calc_Physics_Xform_Motorcycle(Locomotor const *locomotor, Physics
     float roll_stiffness = locomotor->Get_Roll_Stiffness();
     float pitch_damping = locomotor->Get_Pitch_Damping();
     float roll_damping = locomotor->Get_Roll_Damping();
-    float forward_accel_coef = locomotor->Get_Foward_Accel_Coef();
+    float forward_accel_coef = locomotor->Get_Forward_Accel_Coef();
     float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
     float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
     float max_wheel_extension = locomotor->Get_Max_Wheel_Extension();
@@ -2826,6 +2826,245 @@ void Drawable::Calc_Physics_Xform_Motorcycle(Locomotor const *locomotor, Physics
                     xform.m_totalZ = GameMath::Fabs(pitch_offset) / z_mult + xform.m_totalZ;
                     xform.m_totalZ = GameMath::Fabs(roll_offset) / z_mult + xform.m_totalZ;
                 }
+            }
+        }
+    }
+}
+
+void Drawable::Calc_Physics_Xform_Hover_Or_Wings(Locomotor const *locomotor, PhysicsXformInfo &xform)
+{
+    if (m_drawableLocoInfo == nullptr) {
+        m_drawableLocoInfo = new DrawableLocoInfo();
+    }
+
+    float accel_pitch_limit = locomotor->Get_Accel_Pitch_Limit();
+    float deacel_pitch_limit = locomotor->Get_Deaccel_Pitch_Limit();
+    float pitch_stiffness = locomotor->Get_Pitch_Stiffness();
+    float roll_stiffness = locomotor->Get_Roll_Stiffness();
+    float pitch_damping = locomotor->Get_Pitch_Damping();
+    float roll_damping = locomotor->Get_Roll_Damping();
+    float pitch_in_direction_of_z_vel_factor = locomotor->Get_Pitch_In_Direction_Of_Z_Vel_Factor();
+    float forward_vel_coef = locomotor->Get_Forward_Vel_Coef();
+    float lateral_vel_coef = locomotor->Get_Lateral_Vel_Coef();
+    float forward_accel_coef = locomotor->Get_Forward_Accel_Coef();
+    float lateral_accel_coef = locomotor->Get_Lateral_Accel_Coef();
+    float uniform_axial_damping = locomotor->Get_Uniform_Axial_Damping();
+
+    Object *object = Get_Object();
+
+    if (object != nullptr) {
+        if (object->Get_AI_Update_Interface()) {
+            PhysicsBehavior *physics = object->Get_Physics();
+
+            if (physics != nullptr) {
+                const Coord3D *direction = Get_Unit_Dir_Vector2D();
+                const Coord3D &prev_accel = physics->Get_Prev_Accel();
+                const Coord3D &velocity = physics->Get_Velocity();
+
+                m_drawableLocoInfo->m_pitchRate = -pitch_stiffness * m_drawableLocoInfo->m_pitch
+                    + -pitch_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitchRate;
+                m_drawableLocoInfo->m_rollRate = -roll_stiffness * m_drawableLocoInfo->m_roll
+                    + -roll_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_rollRate;
+
+                m_drawableLocoInfo->m_pitch =
+                    uniform_axial_damping * m_drawableLocoInfo->m_pitchRate + m_drawableLocoInfo->m_pitch;
+                m_drawableLocoInfo->m_roll =
+                    uniform_axial_damping * m_drawableLocoInfo->m_rollRate + m_drawableLocoInfo->m_roll;
+
+                m_drawableLocoInfo->m_accelerationPitchRate = -pitch_stiffness * m_drawableLocoInfo->m_accelerationPitch
+                    + -pitch_damping * m_drawableLocoInfo->m_accelerationPitchRate
+                    + m_drawableLocoInfo->m_accelerationPitchRate;
+                m_drawableLocoInfo->m_accelerationPitch =
+                    m_drawableLocoInfo->m_accelerationPitch + m_drawableLocoInfo->m_accelerationPitchRate;
+
+                m_drawableLocoInfo->m_accelerationRollRate = -roll_stiffness * m_drawableLocoInfo->m_accelerationRoll
+                    + -roll_damping * m_drawableLocoInfo->m_accelerationRollRate
+                    + m_drawableLocoInfo->m_accelerationRollRate;
+                m_drawableLocoInfo->m_accelerationRoll =
+                    m_drawableLocoInfo->m_accelerationRoll + m_drawableLocoInfo->m_accelerationRollRate;
+
+                xform.m_totalPitch = m_drawableLocoInfo->m_pitch + m_drawableLocoInfo->m_accelerationPitch;
+                xform.m_totalRoll = m_drawableLocoInfo->m_roll + m_drawableLocoInfo->m_accelerationRoll;
+
+                if (physics->Is_Motive()) {
+                    if (pitch_in_direction_of_z_vel_factor != 0.0f && GameMath::Fabs(velocity.z) > 0.001f) {
+                        m_drawableLocoInfo->m_pitch = m_drawableLocoInfo->m_pitch
+                            - pitch_in_direction_of_z_vel_factor
+                                * GameMath::Atan2(
+                                    velocity.z, GameMath::Sqrt(GameMath::Square(velocity.y) + GameMath::Square(velocity.x)));
+                    }
+
+                    m_drawableLocoInfo->m_pitch = m_drawableLocoInfo->m_pitch
+                        - forward_vel_coef * (direction->x * velocity.x + direction->y * velocity.y);
+                    m_drawableLocoInfo->m_roll = m_drawableLocoInfo->m_roll
+                        - lateral_vel_coef * (-direction->y * velocity.x + direction->x * velocity.y);
+
+                    m_drawableLocoInfo->m_accelerationPitchRate = m_drawableLocoInfo->m_accelerationPitchRate
+                        - forward_accel_coef * (direction->x * prev_accel.x + direction->y * prev_accel.y);
+                    m_drawableLocoInfo->m_accelerationRollRate = m_drawableLocoInfo->m_accelerationRollRate
+                        - lateral_accel_coef * (-direction->y * prev_accel.x + direction->x * prev_accel.y);
+                }
+
+                if (m_drawableLocoInfo->m_accelerationPitch > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationPitch = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationPitch) {
+                    m_drawableLocoInfo->m_accelerationPitch = -accel_pitch_limit;
+                }
+
+                if (m_drawableLocoInfo->m_accelerationRoll > deacel_pitch_limit) {
+                    m_drawableLocoInfo->m_accelerationRoll = deacel_pitch_limit;
+                } else if (-accel_pitch_limit > m_drawableLocoInfo->m_accelerationRoll) {
+                    m_drawableLocoInfo->m_accelerationRoll = -accel_pitch_limit;
+                }
+
+                float rudder_correction_degree = locomotor->Get_Rudder_Correction_Degree();
+                float rudder_correction_rate = locomotor->Get_Rudder_Correction_Rate();
+                float elevator_correction_degree = locomotor->Get_Elevator_Correction_Degree();
+                float elevator_correction_rate = locomotor->Get_Elevator_Correction_Rate();
+
+                m_drawableLocoInfo->m_rudder = rudder_correction_rate + m_drawableLocoInfo->m_rudder;
+                xform.m_yaw = GameMath::Sin(m_drawableLocoInfo->m_rudder) * rudder_correction_degree;
+
+                m_drawableLocoInfo->m_elevator = elevator_correction_rate + m_drawableLocoInfo->m_elevator;
+                xform.m_totalPitch =
+                    GameMath::Cos(m_drawableLocoInfo->m_elevator) * elevator_correction_degree + xform.m_totalPitch;
+                xform.m_totalZ = 0.0f;
+            }
+        }
+    }
+}
+
+void Drawable::Calc_Physics_Xform_Thrust(Locomotor const *locomotor, PhysicsXformInfo &xform)
+{
+    if (m_drawableLocoInfo == nullptr) {
+        m_drawableLocoInfo = new DrawableLocoInfo();
+    }
+
+    float thrust_roll = locomotor->Get_Thrust_Roll();
+    float thrust_wobble_rate = locomotor->Get_Thrust_Wobble_Rate();
+    float thrust_max_wobble = locomotor->Get_Thrust_Max_Wobble();
+    float thrust_min_wobble = locomotor->Get_Thrust_Min_Wobble();
+
+    if (thrust_wobble_rate != 0.0f) {
+        if (m_drawableLocoInfo->m_thrust >= 1.0f) {
+            if (thrust_max_wobble - (thrust_wobble_rate + thrust_wobble_rate) > m_drawableLocoInfo->m_pitch) {
+                m_drawableLocoInfo->m_pitch = thrust_wobble_rate + m_drawableLocoInfo->m_pitch;
+                m_drawableLocoInfo->m_thrustWobble = thrust_wobble_rate + m_drawableLocoInfo->m_thrustWobble;
+            } else {
+                m_drawableLocoInfo->m_pitch = thrust_wobble_rate / 2.0f + m_drawableLocoInfo->m_pitch;
+                m_drawableLocoInfo->m_thrustWobble = thrust_wobble_rate / 2.0f + m_drawableLocoInfo->m_thrustWobble;
+            }
+
+            if (m_drawableLocoInfo->m_pitch >= thrust_max_wobble) {
+                m_drawableLocoInfo->m_thrust = -1.0f;
+            }
+        } else {
+            if (thrust_wobble_rate + thrust_wobble_rate + thrust_min_wobble <= m_drawableLocoInfo->m_pitch) {
+                m_drawableLocoInfo->m_pitch = m_drawableLocoInfo->m_pitch - thrust_wobble_rate;
+                m_drawableLocoInfo->m_thrustWobble = m_drawableLocoInfo->m_thrustWobble - thrust_wobble_rate;
+            } else {
+                m_drawableLocoInfo->m_pitch = m_drawableLocoInfo->m_pitch - thrust_wobble_rate / 2.0f;
+                m_drawableLocoInfo->m_thrustWobble = m_drawableLocoInfo->m_thrustWobble - thrust_wobble_rate / 2.0f;
+            }
+
+            if (m_drawableLocoInfo->m_pitch <= thrust_min_wobble) {
+                m_drawableLocoInfo->m_thrust = 1.0f;
+            }
+        }
+
+        xform.m_totalPitch = m_drawableLocoInfo->m_pitch;
+        xform.m_yaw = m_drawableLocoInfo->m_thrustWobble;
+    }
+
+    if (thrust_roll != 0.0f) {
+        m_drawableLocoInfo->m_roll = thrust_roll + m_drawableLocoInfo->m_roll;
+        xform.m_totalRoll = m_drawableLocoInfo->m_roll;
+    }
+}
+
+bool Drawable::Calc_Physics_Xform(PhysicsXformInfo &xform)
+{
+    Object *object = Get_Object();
+    AIUpdateInterface *update;
+
+    if (object) {
+        update = object->Get_AI_Update_Interface();
+    } else {
+        update = nullptr;
+    }
+
+    bool did_calculate = false;
+
+    if (update) {
+        const Locomotor *locomotor = update->Get_Locomotor();
+
+        if (locomotor) {
+            switch (locomotor->Get_Appearance()) {
+                case LOCO_WHEELS_FOUR:
+                    Calc_Physics_Xform_Wheels(locomotor, xform);
+                    did_calculate = 1;
+                    break;
+                case LOCO_TREADS:
+                    Calc_Physics_Xform_Treads(locomotor, xform);
+                    did_calculate = 1;
+                    break;
+                case LOCO_HOVER:
+                case LOCO_WINGS:
+                    Calc_Physics_Xform_Hover_Or_Wings(locomotor, xform);
+                    did_calculate = 1;
+                    break;
+                case LOCO_THRUST:
+                    Calc_Physics_Xform_Thrust(locomotor, xform);
+                    did_calculate = 1;
+                    break;
+                case LOCO_MOTORCYCLE:
+                    Calc_Physics_Xform_Motorcycle(locomotor, xform);
+                    did_calculate = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (did_calculate) {
+        if (xform.m_totalPitch > -9.9999997e-21f && xform.m_totalPitch < 9.9999997e-21f) {
+            xform.m_totalPitch = 0.0;
+        }
+
+        if (xform.m_totalRoll > -9.9999997e-21f && xform.m_totalRoll < 9.9999997e-21f) {
+            xform.m_totalRoll = 0.0;
+        }
+
+        if (xform.m_yaw > -9.9999997e-21f && xform.m_yaw < 9.9999997e-21f) {
+            xform.m_yaw = 0.0;
+        }
+
+        if (xform.m_totalZ > -9.9999997e-21f && xform.m_totalZ < 9.9999997e-21f) {
+            xform.m_totalZ = 0.0;
+        }
+    }
+
+    return did_calculate;
+}
+
+void Drawable::Apply_Physics_Xform(Matrix3D *mtx)
+{
+    Object *object = Get_Object();
+
+    if (object && !object->Get_Disabled_State(DISABLED_TYPE_DISABLED_HELD)
+        && g_theWriteableGlobalData->m_showClientPhysics) {
+
+        bool frozen = g_theTacticalView->Is_Time_Frozen() && !g_theTacticalView->Is_Camera_Movement_Finished();
+
+        if (!frozen && !g_theScriptEngine->Is_Time_Frozen_Debug() && !g_theScriptEngine->Is_Time_Frozen_Script()) {
+            PhysicsXformInfo xform;
+
+            if (Calc_Physics_Xform(xform)) {
+                mtx->Translate(0.0f, 0.0f, xform.m_totalZ);
+                mtx->Rotate_Y(xform.m_totalPitch);
+                mtx->Rotate_X(-xform.m_totalRoll);
+                mtx->Rotate_Z(xform.m_yaw);
             }
         }
     }

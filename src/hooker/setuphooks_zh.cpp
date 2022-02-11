@@ -2175,6 +2175,14 @@ void Setup_Hooks()
     Hook_Any(0x00472550, Drawable::Calc_Physics_Xform_Motorcycle);
     Hook_Any(0x004708E0, Drawable::Apply_Physics_Xform);
 
+    Hook_Any(0x00477A80, Drawable::Find_Client_Update_Module);
+    Hook_Any(0x0046F4A0, Drawable::Set_Fully_Obscured_By_Shroud);
+    Hook_Any(0x0046FD60, Drawable::Update_Drawable);
+    Hook_Any(0x0046F580, Drawable::Color_Flash);
+    Hook_Any(0x00472F90, Drawable::Draw);
+    Hook_Any(0x00476180, Drawable::Set_Indicator_Color);
+    Hook_Any(0x0046F850, Drawable::Color_Tint);
+
     // updatemodule.h
     Hook_Method(0x006F5760, &UpdateModule::Get_Wake_Frame);
     Hook_Method(0x006F5780, &UpdateModule::Set_Wake_Frame);

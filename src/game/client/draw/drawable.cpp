@@ -16,6 +16,7 @@
 #include "aiupdate.h"
 #include "audiomanager.h"
 #include "bodymodule.h"
+#include "clientupdatemodule.h"
 #include "colorspace.h"
 #include "displaystring.h"
 #include "displaystringmanager.h"
@@ -69,6 +70,11 @@ static const char *s_theDrawableIconNames[] = { "DefaultHeal",
     "Subliminal",
     "CarBomb",
     nullptr };
+
+const RGBColor s_darkGreyDisabledColor = RGBColor{ -0.5f, -0.5f, -0.5f };
+const RGBColor s_subdualDamageColor = RGBColor{ -0.2f, -0.2f, 0.80000001f };
+const RGBColor s_frenzyColor = RGBColor{ 0.2f, -0.2f, -0.2f };
+const RGBColor s_frenzyColorInfantry = RGBColor{ 0.0f, -0.69999999f, -0.69999999f };
 
 const Matrix3D *Drawable::Get_Transform_Matrix() const
 {
@@ -174,11 +180,19 @@ void Drawable::Set_Position(Coord3D const *pos)
 
 ClientUpdateModule *Drawable::Find_Client_Update_Module(NameKeyType key)
 {
-#ifdef GAME_DLL
-    return Call_Method<ClientUpdateModule *, const Drawable, NameKeyType>(PICK_ADDRESS(0x00477A80, 0x007C9F40), this, key);
-#else
+    ClientUpdateModule **modules = Get_Client_Update_Modules();
+
+    if (modules != nullptr) {
+        while (*modules != nullptr) {
+            if ((*modules)->Get_Module_Name_Key() == key) {
+                return *modules;
+            }
+
+            modules++; // BUGFIX taken from BFME2
+        }
+    }
+
     return nullptr;
-#endif
 }
 
 int Drawable::Get_Pristine_Bone_Positions(
@@ -3002,24 +3016,24 @@ bool Drawable::Calc_Physics_Xform(PhysicsXformInfo &xform)
             switch (locomotor->Get_Appearance()) {
                 case LOCO_WHEELS_FOUR:
                     Calc_Physics_Xform_Wheels(locomotor, xform);
-                    did_calculate = 1;
+                    did_calculate = true;
                     break;
                 case LOCO_TREADS:
                     Calc_Physics_Xform_Treads(locomotor, xform);
-                    did_calculate = 1;
+                    did_calculate = true;
                     break;
                 case LOCO_HOVER:
                 case LOCO_WINGS:
                     Calc_Physics_Xform_Hover_Or_Wings(locomotor, xform);
-                    did_calculate = 1;
+                    did_calculate = true;
                     break;
                 case LOCO_THRUST:
                     Calc_Physics_Xform_Thrust(locomotor, xform);
-                    did_calculate = 1;
+                    did_calculate = true;
                     break;
                 case LOCO_MOTORCYCLE:
                     Calc_Physics_Xform_Motorcycle(locomotor, xform);
-                    did_calculate = 1;
+                    did_calculate = true;
                     break;
                 default:
                     break;
@@ -3028,20 +3042,22 @@ bool Drawable::Calc_Physics_Xform(PhysicsXformInfo &xform)
     }
 
     if (did_calculate) {
-        if (xform.m_totalPitch > -9.9999997e-21f && xform.m_totalPitch < 9.9999997e-21f) {
-            xform.m_totalPitch = 0.0;
+        const float epsilon = 0.00000000000000000001f;
+
+        if (xform.m_totalPitch > -epsilon && xform.m_totalPitch < epsilon) {
+            xform.m_totalPitch = 0.0f;
         }
 
-        if (xform.m_totalRoll > -9.9999997e-21f && xform.m_totalRoll < 9.9999997e-21f) {
-            xform.m_totalRoll = 0.0;
+        if (xform.m_totalRoll > -epsilon && xform.m_totalRoll < epsilon) {
+            xform.m_totalRoll = 0.0f;
         }
 
-        if (xform.m_yaw > -9.9999997e-21f && xform.m_yaw < 9.9999997e-21f) {
-            xform.m_yaw = 0.0;
+        if (xform.m_yaw > -epsilon && xform.m_yaw < epsilon) {
+            xform.m_yaw = 0.0f;
         }
 
-        if (xform.m_totalZ > -9.9999997e-21f && xform.m_totalZ < 9.9999997e-21f) {
-            xform.m_totalZ = 0.0;
+        if (xform.m_totalZ > -epsilon && xform.m_totalZ < epsilon) {
+            xform.m_totalZ = 0.0f;
         }
     }
 
@@ -3067,5 +3083,209 @@ void Drawable::Apply_Physics_Xform(Matrix3D *mtx)
                 mtx->Rotate_Z(xform.m_yaw);
             }
         }
+    }
+}
+
+void Drawable::Set_Fully_Obscured_By_Shroud(bool fully_obscured)
+{
+    if (m_fullyObscuredByShroud != fully_obscured) {
+        for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+            (*i)->Set_Fully_Obscured_By_Shroud(fully_obscured);
+        }
+
+        m_fullyObscuredByShroud = fully_obscured;
+    }
+}
+
+void Drawable::Update_Drawable()
+{
+    unsigned int frame = g_theGameLogic->Get_Frame();
+    Object *object = Get_Object();
+
+    for (ClientUpdateModule **i = Get_Client_Update_Modules(); i != nullptr && *i != nullptr; i++) {
+        (*i)->Client_Update();
+    }
+
+    if (m_fadingMode != FADING_MODE_OFF) {
+        Set_Opacity(
+            (float)(m_fadingMode == FADING_MODE_OUT ? m_curFadeFrame : m_timeToFade - m_curFadeFrame) / (float)m_timeToFade);
+        m_curFadeFrame++;
+
+        if (m_curFadeFrame > m_timeToFade) {
+            m_fadingMode = FADING_MODE_OFF;
+        }
+    }
+
+    if (Get_Terrain_Decal() == TERRAIN_DECAL_8) {
+        m_terrainDecalOpacity = 0.0f;
+    } else {
+        DrawModule **modules = Get_Draw_Modules();
+
+        if (*modules != nullptr) {
+            if (m_terrainDecalFadeTarget2 != 0.0f) {
+                (*modules)->Set_Terrain_Decal_Opacity(m_terrainDecalOpacity);
+            }
+
+            if (m_terrainDecalFadeTarget2 < 0.0f || m_terrainDecalOpacity <= 0.0f) {
+                m_terrainDecalFadeTarget2 = 0.0f;
+                m_terrainDecalOpacity = 0.0f;
+                Set_Terrain_Decal(TERRAIN_DECAL_8);
+            } else if (m_terrainDecalFadeTarget2 > 0.0f && m_terrainDecalOpacity >= 1.0f) {
+                m_terrainDecalOpacity = 1.0f;
+                m_terrainDecalFadeTarget2 = 0.0f;
+                (*modules)->Set_Terrain_Decal_Opacity(m_terrainDecalOpacity);
+            }
+        }
+    }
+
+    if (m_expirationDate && frame >= m_expirationDate) {
+        captainslog_dbgassert(object == nullptr, "Drawables with Objects should not have expiration dates!");
+        g_theGameClient->Destroy_Drawable(this);
+        return;
+    }
+
+    if (m_flashTime > 0 && (g_theGameClient->Get_Frame() % 15) == 0) {
+        RGBColor color;
+        color.Set_From_Int(m_flashColor);
+        Color_Flash(&color, 4, 0, 0);
+        m_flashTime--;
+    }
+
+    if (m_previousDrawBits != m_drawBits) {
+        if (Check_Draw_Bit(DRAW_BIT_DISABLED)) {
+            if (m_tintColorEnvelope == nullptr) {
+                m_tintColorEnvelope = new TintEnvelope();
+            }
+
+            m_tintColorEnvelope->Play(&s_darkGreyDisabledColor, 30, 30, 0xFFFFFFFE);
+        } else if (Check_Draw_Bit(DRAW_BIT_DAMAGED)) {
+            if (m_tintColorEnvelope == nullptr) {
+                m_tintColorEnvelope = new TintEnvelope();
+            }
+
+            m_tintColorEnvelope->Play(&s_subdualDamageColor, 150, 150, 0xFFFFFFFE);
+        } else if (Check_Draw_Bit(DRAW_BIT_WEAPON_BONUS)) {
+            if (m_tintColorEnvelope == nullptr) {
+                m_tintColorEnvelope = new TintEnvelope();
+            }
+
+            if (Is_KindOf(KINDOF_INFANTRY)) {
+                m_tintColorEnvelope->Play(&s_frenzyColorInfantry, 30, 30, 0xFFFFFFFE);
+            } else {
+                m_tintColorEnvelope->Play(&s_frenzyColor, 30, 30, 0xFFFFFFFE);
+            }
+        } else {
+            if (m_tintColorEnvelope == nullptr) {
+                m_tintColorEnvelope = new TintEnvelope();
+            }
+
+            m_tintColorEnvelope->Set_Decay_State();
+        }
+    }
+
+    m_previousDrawBits = m_drawBits;
+
+    if (object != nullptr && !object->Is_Effectively_Dead()) {
+        Clear_Draw_Bit(DRAW_BIT_DEAD);
+    }
+
+    if (m_tintColorEnvelope != nullptr) {
+        m_tintColorEnvelope->Update();
+    }
+
+    if (m_selectionColorEnvelope != nullptr) {
+        m_selectionColorEnvelope->Update();
+    }
+
+    if (m_ambientSound != nullptr && m_ambientSoundEnabled && m_ambientSoundFromScriptEnabled) {
+        if (!m_ambientSound->m_event.Get_Event_Name().Is_Empty() && !m_ambientSound->m_event.Is_Currently_Playing()) {
+            const AudioEventInfo *info = m_ambientSound->m_event.Get_Event_Info();
+
+            if (info == nullptr && g_theAudio != nullptr) {
+                g_theAudio->Get_Info_For_Audio_Event(&m_ambientSound->m_event);
+                info = m_ambientSound->m_event.Get_Event_Info();
+            }
+
+            if (info == nullptr || info->Is_Looping()) {
+                Start_Ambient_Sound(false);
+            }
+        }
+    }
+}
+
+void Drawable::Color_Flash(
+    RGBColor const *color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames)
+{
+    if (m_tintColorEnvelope == nullptr) {
+        m_tintColorEnvelope = new TintEnvelope();
+    }
+
+    if (color) {
+        m_tintColorEnvelope->Play(color, attack_frames, decay_frames, peak_frames);
+    } else {
+        RGBColor c;
+        c.Set_From_Int(0xFFFFFFFF);
+        m_tintColorEnvelope->Play(&c, 1, 4, 1);
+    }
+
+    Clear_Status_Bit(DRAWABLE_STATUS_AMBIENT_LIGHT_LOCKED);
+}
+
+void Drawable::Draw(View *view)
+{
+    if (!Check_Draw_Bit(DRAW_BIT_WEAPON_BONUS)) {
+        if (Get_Object() != nullptr && Get_Object()->Is_Effectively_Dead()) {
+            m_stealthEmissiveScale = 0.0f;
+        } else if (m_stealthEmissiveScale > 0.001f) {
+            m_stealthEmissiveScale = m_stealthEmissiveScale * 0.80000001f;
+        } else {
+            m_stealthEmissiveScale = 0.0f;
+        }
+    }
+
+    if (!m_hidden && !m_stealthInvisible && !Is_Fully_Obscured_By_Shroud()) {
+        if (Get_Object() != nullptr) {
+            if (!Get_Object()->Is_Effectively_Dead()) {
+                Set_Shadows_Enabled(m_stealthLook != STEALTHLOOK_VISIBLE_DETECTED);
+            }
+        }
+
+        Matrix3D m = *Get_Transform_Matrix();
+
+        if (!Is_Instance_Identity()) {
+            m.Post_Mul(Get_Instance_Matrix());
+        }
+
+        Apply_Physics_Xform(&m);
+
+        for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+            (*i)->Do_Draw_Module(&m);
+        }
+    }
+}
+
+void Drawable::Set_Indicator_Color(int color)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Replace_Indicator_Color(color);
+        }
+    }
+}
+
+void Drawable::Color_Tint(RGBColor const *color)
+{
+    if (color) {
+        Color_Flash(color, 0, 0, 1);
+        Set_Status_Bit(DRAWABLE_STATUS_AMBIENT_LIGHT_LOCKED);
+    } else {
+        if (m_tintColorEnvelope == nullptr) {
+            m_tintColorEnvelope = new TintEnvelope();
+        }
+
+        m_tintColorEnvelope->Set_Idle_State();
+        Clear_Status_Bit(DRAWABLE_STATUS_AMBIENT_LIGHT_LOCKED);
     }
 }

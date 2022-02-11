@@ -26,6 +26,12 @@ public:
     {
         return ((unsigned int)(int)(green * 255.0f) << 8) | ((unsigned int)(int)(red * 255.0f) << 16) | (int)(blue * 255.0f);
     }
+    void Set_From_Int(int color)
+    {
+        red = (float)((color & 0xFF0000) >> 16) / 255.0f;
+        green = (float)((color & 0xFF00) >> 8) / 255.0f;
+        blue = (float)(unsigned char)color / 255.0f;
+    }
 };
 
 class RGBAColorReal

@@ -167,6 +167,15 @@ public:
         float m_totalZ;
     };
 
+    enum DrawBits
+    {
+        DRAW_BIT_DISABLED = 1,
+        DRAW_BIT_DEAD = 2,
+        DRAW_BIT_POISONED = 4,
+        DRAW_BIT_DAMAGED = 8,
+        DRAW_BIT_WEAPON_BONUS = 16,
+    };
+
     enum FadingMode
     {
         FADING_MODE_OFF,

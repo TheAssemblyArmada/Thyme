@@ -2173,6 +2173,7 @@ void Setup_Hooks()
     Hook_Any(0x00471BE0, Drawable::Calc_Physics_Xform_Wheels);
     Hook_Any(0x00471370, Drawable::Calc_Physics_Xform_Treads);
     Hook_Any(0x00472550, Drawable::Calc_Physics_Xform_Motorcycle);
+    Hook_Any(0x004708E0, Drawable::Apply_Physics_Xform);
 
     // updatemodule.h
     Hook_Method(0x006F5760, &UpdateModule::Get_Wake_Frame);

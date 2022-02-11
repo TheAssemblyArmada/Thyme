@@ -160,8 +160,10 @@ set(GAMEENGINE_SRC
     game/common/compression/refpack.cpp
     game/common/ini/ini.cpp
     game/common/ini/inidrawgroupinfo.cpp
+    game/common/modules/behaviormodule.cpp
     game/common/modules/module.cpp
     game/common/modules/modulefactory.cpp
+    game/common/modules/updatemodule.cpp
     game/common/rts/buildinfo.cpp
     game/common/rts/energy.cpp
     game/common/rts/handicap.cpp
@@ -180,6 +182,7 @@ set(GAMEENGINE_SRC
     game/common/system/cachedfileinputstream.cpp
     game/common/system/datachunk.cpp
     game/common/system/datachunktoc.cpp
+    game/common/system/disabledtypes.cpp
     game/common/system/file.cpp
     game/common/system/filesystem.cpp
     game/common/system/functionlexicon.cpp

@@ -189,15 +189,15 @@ public:
     void Prepare_For_Object_Load();
     Object *Get_First_Object();
 
-    void Erase_Sleepy_Update(int update);
-    int Rebalance_Parent_Sleepy_Update(int update);
-    int Rebalance_Child_Sleepy_Update(int update);
-    void Rebalance_Sleepy_Update(int update);
+    void Erase_Sleepy_Update(int index);
+    int Rebalance_Parent_Sleepy_Update(int index);
+    int Rebalance_Child_Sleepy_Update(int index);
+    void Rebalance_Sleepy_Update(int index);
     void Remake_Sleepy_Update();
-    void Push_Sleepy_Update(UpdateModule *update);
+    void Push_Sleepy_Update(UpdateModule *module);
     UpdateModule *Peek_Sleepy_Update();
     void Pop_Sleepy_Update();
-    void Friend_Awaken_Update_Module(Object *obj, UpdateModule *update, unsigned int i);
+    void Friend_Awaken_Update_Module(Object *object, UpdateModule *module, unsigned int wakeup_frame);
 
     // per Mac, these are in gamelogicdispatch.cpp
     void Close_Windows();

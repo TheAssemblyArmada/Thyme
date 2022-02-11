@@ -20,6 +20,8 @@
 #include "xfer.h"
 #include <bitset>
 
+template<int> class BitFlags;
+
 // TODO move this somewhere more appropriate?
 // Don't add or remove anything to these until all code accessing the BitFlags type
 // for these enums have been reimplemented.
@@ -70,26 +72,11 @@ enum ObjectStatusTypes
     OBJECT_STATUS_IMMOBILE,
     OBJECT_STATUS_DISGUISED,
     OBJECT_STATUS_DEPLOYED,
-    OBJECT_STATUS_COUNT,
+
+    OBJECT_STATUS_COUNT
 };
 
-enum DisabledType
-{
-    DISABLED_TYPE_DEFAULT,
-    DISABLED_TYPE_DISABLED_HACKED,
-    DISABLED_TYPE_DISABLED_EMP,
-    DISABLED_TYPE_DISABLED_HELD,
-    DISABLED_TYPE_DISABLED_PARALYZED,
-    DISABLED_TYPE_DISABLED_UNMANNED,
-    DISABLED_TYPE_DISABLED_UNDERPOWERED,
-    DISABLED_TYPE_DISABLED_FREEFALL,
-    DISABLED_TYPE_DISABLED_AWESTRUCK,
-    DISABLED_TYPE_DISABLED_BRAINWASHED,
-    DISABLED_TYPE_DISABLED_SUBDUED,
-    DISABLED_TYPE_DISABLED_SCRIPT_DISABLED,
-    DISABLED_TYPE_DISABLED_SCRIPT_UNDERPOWERED,
-    DISABLED_TYPE_COUNT,
-};
+using ObjectStatusBitFlags = BitFlags<OBJECT_STATUS_COUNT>;
 
 enum ModelConditionFlagType
 {
@@ -210,9 +197,12 @@ enum ModelConditionFlagType
     MODELCONDITION_USER_1,
     MODELCONDITION_USER_2,
     MODELCONDITION_DISGUISED,
+
     MODELCONDITION_COUNT,
     MODELCONDITION_INVALID = -1,
 };
+
+using ModelConditionBitFlags = BitFlags<MODELCONDITION_COUNT>;
 
 template<int bits> class BitFlags
 {

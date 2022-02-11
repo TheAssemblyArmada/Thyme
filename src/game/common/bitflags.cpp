@@ -66,24 +66,6 @@ const char *BitFlags<OBJECT_STATUS_COUNT>::s_bitNamesList[] = {
 };
 
 template<>
-const char *BitFlags<DISABLED_TYPE_COUNT>::s_bitNamesList[] = {
-    "DEFAULT",
-    "DISABLED_HACKED",
-    "DISABLED_EMP",
-    "DISABLED_HELD",
-    "DISABLED_PARALYZED",
-    "DISABLED_UNMANNED",
-    "DISABLED_UNDERPOWERED",
-    "DISABLED_FREEFALL",
-    "DISABLED_AWESTRUCK",
-    "DISABLED_BRAINWASHED",
-    "DISABLED_SUBDUED",
-    "DISABLED_SCRIPT_DISABLED",
-    "DISABLED_SCRIPT_UNDERPOWERED",
-    nullptr,
-};
-
-template<>
 const char *BitFlags<MODELCONDITION_COUNT>::s_bitNamesList[] = {
     "TOPPLED",
     "FRONTCRUSHED",

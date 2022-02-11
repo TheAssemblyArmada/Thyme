@@ -44,6 +44,11 @@ Player *Object::Get_Controlling_Player() const
     return nullptr;
 }
 
+bool Object::Is_In_List(Object **list) const
+{
+    return m_prev != nullptr || m_next != nullptr || *list == this;
+}
+
 // zh: 0x00549BD0 wb: 0x007D370C
 void Object::On_Veterancy_Level_Changed(VeterancyLevel v1, VeterancyLevel v2, bool b)
 {

@@ -19,6 +19,7 @@
 #include "ai.h"
 #include "armortemplateset.h"
 #include "bitflags.h"
+#include "disabledtypes.h"
 #include "gametype.h"
 #include "geometry.h"
 #include "partitionmanager.h"
@@ -393,7 +394,7 @@ public:
     bool Is_Hero() const;
     bool Is_Salvage_Crate() const;
     bool Is_Inside(const PolygonTrigger *trigger) const;
-    bool Is_In_List(Object **list) const;
+    bool Is_In_List(Object **list) const; // Returns true if this object is in any list, or head of argument list.
     bool Is_Mobile() const;
     bool Is_Selectable() const;
     bool Is_Mass_Selectable() const;

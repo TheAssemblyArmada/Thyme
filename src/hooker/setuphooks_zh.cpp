@@ -118,6 +118,7 @@
 #include "rinfo.h"
 #include "scene.h"
 #include "science.h"
+#include "scorekeeper.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -2234,4 +2235,21 @@ void Setup_Hooks()
     Hook_Any(0x00488C40, ScienceStore::Get_Science_Purchase_Cost);
     Hook_Any(0x00488C90, ScienceStore::Is_Science_Grantable);
     Hook_Any(0x00488CE0, ScienceStore::Get_Name_And_Description);
+
+    // scorekeeper.cpp
+    Hook_Any(0x00574480, ScoreKeeper::Reset);
+    Hook_Any(0x00574630, ScoreKeeper::Add_Object_Built);
+    Hook_Method(0x00574760,
+        static_cast<int (ScoreKeeper::*)(BitFlags<KINDOF_COUNT>, BitFlags<KINDOF_COUNT>)>(
+            &ScoreKeeper::Get_Total_Units_Built));
+    Hook_Any(0x00574880, ScoreKeeper::Get_Total_Objects_Built);
+    Hook_Any(0x00574900, ScoreKeeper::Remove_Object_Built);
+    Hook_Any(0x00574A30, ScoreKeeper::Add_Object_Captured);
+    Hook_Any(0x00574B00, ScoreKeeper::Add_Object_Destroyed);
+    Hook_Any(0x00574C60, ScoreKeeper::Add_Object_Lost);
+    Hook_Any(0x00574DD0, ScoreKeeper::Calculate_Score);
+    Hook_Any(0x00574E20, ScoreKeeper::Get_Total_Buildings_Destroyed);
+    Hook_Any(0x00574E40, ScoreKeeper::Get_Total_Units_Destroyed);
+    Hook_Any(0x00574E60, ScoreKeeper::Xfer_Object_Count_Map);
+    Hook_Any(0x00575060, ScoreKeeper::Xfer_Snapshot);
 }

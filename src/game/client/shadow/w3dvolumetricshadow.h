@@ -49,8 +49,6 @@ struct PolyNeighbor
 };
 #pragma pack(pop)
 
-static_assert(sizeof(PolyNeighbor) == 0x16, "PolyNeighbor size incorrect!");
-
 class W3DShadowGeometryMesh
 {
     friend W3DShadowGeometry;

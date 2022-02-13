@@ -14,6 +14,7 @@
  */
 #include "w3dmodulefactory.h"
 #include "moduleinfo.h"
+#include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
 #include "w3dtreedraw.h"
@@ -85,8 +86,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DSupplyDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00775FB0,
-        (moddatacreateproc_t)0x007760A0,
+    Add_Module_Internal(W3DDependencyModelDraw::Friend_New_Module_Instance,
+        W3DDependencyModelDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DDependencyModelDraw",
         DrawModule::Get_Interface_Mask());

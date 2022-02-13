@@ -508,7 +508,7 @@ private:
     bool m_ambientSoundEnabled;
     bool m_ambientSoundFromScriptEnabled;
     bool m_receivesDynamicLights;
-    bool m_isModelDirty;
+    mutable bool m_isModelDirty;
 
     static bool s_staticImagesInited;
     static Image *s_veterancyImage[4];
@@ -517,4 +517,9 @@ private:
     static Image *s_fullContainer;
     static Image *s_emptyContainer;
     static Anim2DTemplate **s_animationTemplates;
+#ifdef GAME_DLL
+    static int &s_modelLockCount;
+#else
+    static int s_modelLockCount;
+#endif
 };

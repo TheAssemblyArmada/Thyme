@@ -634,3 +634,7 @@ LanguageFilter *&g_theLanguageFilter = Make_Global<LanguageFilter *>(PICK_ADDRES
 // thingtemplate.cpp
 #include "thingtemplate.h"
 AudioEventRTS &ThingTemplate::s_audioEventNoSound = Make_Global<AudioEventRTS>(PICK_ADDRESS(0x00A2C318, 0x00E1D690));
+
+// drawable.cpp
+#include "drawable.h"
+int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00E25D70));

@@ -30,6 +30,7 @@
 #include "globaldata.h"
 #include "globallanguage.h"
 #include "ingameui.h"
+#include "languagefilter.h"
 #include "locomotor.h"
 #include "module.h"
 #include "modulefactory.h"
@@ -54,6 +55,10 @@ Image *Drawable::s_emptyAmmo;
 Image *Drawable::s_fullContainer;
 Image *Drawable::s_emptyContainer;
 Anim2DTemplate **Drawable::s_animationTemplates;
+
+#ifndef GAME_DLL
+int Drawable::s_modelLockCount;
+#endif
 
 static const char *s_theDrawableIconNames[] = { "DefaultHeal",
     "StructureHeal",
@@ -101,16 +106,20 @@ bool Drawable::Is_Visible() const
 
 void Drawable::Friend_Lock_Dirty_Stuff_For_Iteration()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x004794C0, 0x007CB858));
-#endif
+    if (s_modelLockCount != 0 && g_theGameClient != nullptr) {
+        for (Drawable *draw = g_theGameClient->First_Drawable(); draw != nullptr; draw = draw->Get_Next()) {
+            draw->Get_Draw_Modules();
+        }
+    }
+
+    s_modelLockCount++;
 }
 
 void Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration()
 {
-#ifdef GAME_DLL
-    Call_Function<void>(PICK_ADDRESS(0x00479550, 0x007CB8AF));
-#endif
+    if (s_modelLockCount > 0) {
+        s_modelLockCount--;
+    }
 }
 
 const Vector3 *Drawable::Get_Tint_Color() const
@@ -133,20 +142,50 @@ const Vector3 *Drawable::Get_Selection_Color() const
 
 DrawModule **Drawable::Get_Draw_Modules()
 {
-#ifdef GAME_DLL
-    return Call_Method<DrawModule **, Drawable>(PICK_ADDRESS(0x00475F40, 0x007C87E4), this);
-#else
-    return nullptr;
-#endif
+    DrawModule **modules = (DrawModule **)Get_Modules(MODULE_DRAW);
+
+    if (m_isModelDirty) {
+        if (s_modelLockCount > 0) {
+            captainslog_debug("Should not need to update dirty stuff while locked-for-iteration. Ignoring.");
+            return modules;
+        }
+
+        for (DrawModule **i = modules; *i != nullptr; i++) {
+            ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+            if (draw) {
+                draw->Replace_Model_Condition_State(m_conditionState);
+            }
+        }
+
+        m_isModelDirty = false;
+    }
+
+    return modules;
 }
 
 const DrawModule **Drawable::Get_Draw_Modules() const
 {
-#ifdef GAME_DLL
-    return Call_Method<const DrawModule **, const Drawable>(PICK_ADDRESS(0x00475F40, 0x007C88A2), this);
-#else
-    return nullptr;
-#endif
+    const DrawModule **modules = (const DrawModule **)Get_Modules(MODULE_DRAW);
+
+    if (m_isModelDirty) {
+        if (s_modelLockCount > 0) {
+            captainslog_debug("Should not need to update dirty stuff while locked-for-iteration. Ignoring.");
+            return modules;
+        }
+
+        for (const DrawModule **i = modules; *i != nullptr; i++) {
+            ObjectDrawInterface *draw = ((DrawModule *)*i)->Get_Object_Draw_Interface();
+
+            if (draw) {
+                draw->Replace_Model_Condition_State(m_conditionState);
+            }
+        }
+
+        m_isModelDirty = false;
+    }
+
+    return modules;
 }
 
 bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const
@@ -3287,5 +3326,480 @@ void Drawable::Color_Tint(RGBColor const *color)
 
         m_tintColorEnvelope->Set_Idle_State();
         Clear_Status_Bit(DRAWABLE_STATUS_AMBIENT_LIGHT_LOCKED);
+    }
+}
+
+void Drawable::Changed_Team()
+{
+    Object *object = Get_Object();
+
+    if (object != nullptr) {
+        Set_Indicator_Color(g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT ?
+                object->Get_Night_Indicator_Color() :
+                object->Get_Indicator_Color());
+
+        if (object->Is_KindOf(KINDOF_FS_FAKE)) {
+            Relationship relationship = g_thePlayerList->Get_Local_Player()->Get_Relationship(object->Get_Team());
+
+            if (relationship == ALLIES || relationship == NEUTRAL) {
+                Set_Terrain_Decal(TERRAIN_DECAL_9);
+            } else {
+                Set_Terrain_Decal(TERRAIN_DECAL_8);
+            }
+        }
+    }
+}
+
+void Drawable::Clear_Caption_Text()
+{
+    if (m_captionText) {
+        g_theDisplayStringManager->Free_Display_String(m_captionText);
+        m_captionText = nullptr;
+    }
+}
+
+void Drawable::Fade_In(unsigned int time)
+{
+    Set_Opacity(1.0f);
+    m_fadingMode = FADING_MODE_IN;
+    m_timeToFade = time;
+    m_curFadeFrame = 0;
+}
+
+void Drawable::Fade_Out(unsigned int time)
+{
+    Set_Opacity(0.0f);
+    m_fadingMode = FADING_MODE_OUT;
+    m_timeToFade = time;
+    m_curFadeFrame = 0;
+}
+
+void Drawable::Flash_As_Selected(RGBColor const *color)
+{
+    if (m_selectionColorEnvelope == nullptr) {
+        m_selectionColorEnvelope = new TintEnvelope();
+    }
+
+    if (color != nullptr) {
+        m_selectionColorEnvelope->Play(color, 0, 4, 1);
+    } else {
+        Object *object = Get_Object();
+
+        if (object != nullptr) {
+            RGBColor new_color;
+
+            if (g_theWriteableGlobalData->m_selectionFlashHouseColor) {
+                new_color.Set_From_Int(object->Get_Indicator_Color());
+            } else {
+                new_color.Set_From_Int(0xFFFFFFFF);
+            }
+
+            Saturate_RGB(new_color, g_theWriteableGlobalData->m_selectionFlashSaturationFactor);
+            m_selectionColorEnvelope->Play(&new_color, 0, 4, 1);
+        }
+    }
+}
+
+void Drawable::Friend_Bind_To_Object(Object *obj)
+{
+    m_object = obj;
+
+    if (Get_Object() != nullptr) {
+        int color;
+
+        if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
+            color = Get_Object()->Get_Night_Indicator_Color();
+        } else {
+            color = Get_Object()->Get_Indicator_Color();
+        }
+
+        Set_Indicator_Color(color);
+
+        if (Get_Object()->Is_KindOf(KINDOF_FS_FAKE)) {
+            Relationship relationship = g_thePlayerList->Get_Local_Player()->Get_Relationship(Get_Object()->Get_Team());
+
+            if (relationship == ALLIES || relationship == NEUTRAL) {
+                Set_Terrain_Decal(TERRAIN_DECAL_9);
+            } else {
+                Set_Terrain_Decal(TERRAIN_DECAL_8);
+            }
+        }
+    }
+
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->On_Drawable_Bound_To_Object();
+    }
+}
+
+void Drawable::Friend_Clear_Selected()
+{
+    if (Is_Selected()) {
+        m_selected = false;
+        On_Unselected();
+    }
+}
+
+void Drawable::Friend_Set_Selected()
+{
+    if (!Is_Selected()) {
+        m_selected = true;
+        On_Selected();
+    }
+}
+
+void Drawable::On_Selected()
+{
+    Flash_As_Selected(nullptr);
+
+    Object *object = Get_Object();
+
+    if (object != nullptr) {
+        ContainModuleInterface *contain = object->Get_Contain();
+
+        if (contain != nullptr) {
+            contain->Client_Visible_Contained_Flash_As_Selected();
+        }
+    }
+}
+
+void Drawable::Saturate_RGB(RGBColor &color, float factor)
+{
+    color.red *= factor;
+    color.green *= factor;
+    color.blue *= factor;
+    float mult = factor * 0.5f;
+    color.red -= mult;
+    color.green -= mult;
+    color.blue -= mult;
+}
+
+int Drawable::Get_Barrel_Count(WeaponSlotType slot) const
+{
+    for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        int count;
+
+        if (draw != nullptr) {
+            count = draw->Get_Barrel_Count(slot);
+        } else {
+            count = 0;
+        }
+
+        if (count) {
+            return count;
+        }
+    }
+
+    return 0;
+}
+
+Utf16String Drawable::Get_Caption_Text()
+{
+    if (m_captionText != nullptr) {
+        return m_captionText->Get_Text();
+    } else {
+        return Utf16String::s_emptyString;
+    }
+}
+
+bool Drawable::Get_Projectile_Launch_Offset(WeaponSlotType wslot,
+    int ammo_index,
+    Matrix3D *launch_pos,
+    WhichTurretType tur,
+    Coord3D *turret_rot_pos,
+    Coord3D *turret_pitch_pos) const
+{
+    for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr
+            && draw->Get_Projectile_Launch_Offset(
+                m_conditionState, wslot, ammo_index, launch_pos, tur, turret_rot_pos, turret_pitch_pos)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Drawable::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
+    int specific_barrel_to_use,
+    FXList const *fxl,
+    float weapon_speed,
+    float recoil_amount,
+    float recoil_angle,
+    Coord3D const *victim_pos,
+    float radius)
+{
+    if (recoil_amount != 0.0f) {
+        if (Get_Object() != nullptr) {
+            recoil_angle -= Get_Object()->Get_Orientation();
+        }
+
+        float f1 = recoil_angle + GAMEMATH_PI;
+
+        if (m_drawableLocoInfo != nullptr) {
+            m_drawableLocoInfo->m_accelerationPitchRate =
+                GameMath::Cos(f1) * recoil_amount + m_drawableLocoInfo->m_accelerationPitchRate;
+            m_drawableLocoInfo->m_accelerationRollRate =
+                GameMath::Sin(f1) * recoil_amount + m_drawableLocoInfo->m_accelerationRollRate;
+        }
+    }
+
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr
+            && draw->Handle_Weapon_Fire_FX(wslot, specific_barrel_to_use, fxl, weapon_speed, victim_pos, radius)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Drawable::Is_Mass_Selectable() const
+{
+    if (Get_Object() != nullptr) {
+        if (Get_Object()->Is_Mass_Selectable()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Drawable::Is_Selectable() const
+{
+    if (Get_Object() != nullptr) {
+        if (Get_Object()->Is_Selectable()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void Drawable::Notify_Drawable_Dependency_Cleared()
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw != nullptr) {
+            draw->Notify_Draw_Module_Dependency_Cleared();
+        }
+    }
+}
+
+void Drawable::On_Destroy()
+{
+    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+        for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
+            (*j)->On_Delete();
+        }
+    }
+}
+
+void Drawable::On_Level_Start()
+{
+    if (m_ambientSoundEnabled && m_ambientSoundFromScriptEnabled) {
+        if (m_ambientSound == nullptr
+            || (!m_ambientSound->m_event.Get_Event_Name().Is_Empty() && !m_ambientSound->m_event.Is_Currently_Playing())) {
+            Start_Ambient_Sound(false);
+        }
+    }
+}
+
+void Drawable::Preload_Assets(TimeOfDayType time_of_day)
+{
+    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+        for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
+            (*j)->Preload_Assets(time_of_day);
+        }
+    }
+}
+
+void Drawable::Prepend_To_List(Drawable **list)
+{
+    m_prevDrawable = nullptr;
+    m_nextDrawable = *list;
+
+    if (*list != nullptr) {
+        (*list)->m_prevDrawable = this;
+    }
+
+    *list = this;
+}
+
+void Drawable::Remove_From_List(Drawable **list)
+{
+    if (m_nextDrawable != nullptr) {
+        m_nextDrawable->m_prevDrawable = m_prevDrawable;
+    }
+
+    if (m_prevDrawable != nullptr) {
+        m_prevDrawable->m_nextDrawable = m_nextDrawable;
+    } else {
+        *list = m_nextDrawable;
+    }
+}
+
+void Drawable::React_To_Body_Damage_State_Change(BodyDamageType damage)
+{
+    BitFlags<MODELCONDITION_COUNT> flags;
+
+    static ModelConditionFlagType s_theDamageMap[] = {
+        MODELCONDITION_INVALID, MODELCONDITION_DAMAGED, MODELCONDITION_REALLYDAMAGED, MODELCONDITION_RUBBLE
+    };
+
+    if (s_theDamageMap[damage] != MODELCONDITION_INVALID) {
+        flags.Set(s_theDamageMap[damage], true);
+    }
+
+    Clear_And_Set_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT>(BitFlags<MODELCONDITION_COUNT>::kInit,
+                                            MODELCONDITION_DAMAGED,
+                                            MODELCONDITION_REALLYDAMAGED,
+                                            MODELCONDITION_RUBBLE),
+        flags);
+
+    if (!g_theGameLogic->Get_Prepare_New_Game()) {
+        Start_Ambient_Sound(damage, g_theWriteableGlobalData->m_timeOfDay, false);
+    }
+}
+
+void Drawable::React_To_Geometry_Change()
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        (*i)->React_To_Geometry_Change();
+    }
+}
+
+void Drawable::Set_Caption_Text(Utf16String const &caption)
+{
+    if (caption.Is_Empty()) {
+        Clear_Caption_Text();
+    } else {
+        Utf16String str(caption);
+        g_theLanguageFilter->Filter_Line(str);
+
+        if (m_captionText == nullptr) {
+            m_captionText = g_theDisplayStringManager->New_Display_String();
+            m_captionText->Set_Font(g_theFontLibrary->Get_Font(g_theInGameUI->Get_Drawable_Caption_Font(),
+                g_theGlobalLanguage->Adjust_Font_Size(g_theInGameUI->Get_Drawable_Caption_Size()),
+                g_theInGameUI->Get_Drawable_Caption_Bold()));
+            m_captionText->Set_Text(str);
+        } else {
+            if (m_captionText->Get_Text().Compare(str) != 0) {
+                m_captionText->Set_Text(str);
+            }
+        }
+    }
+}
+
+void Drawable::Set_Drawable_Hidden(bool hidden)
+{
+    if (hidden != m_hidden) {
+        m_hidden = hidden;
+        Update_Hidden_Status();
+    }
+}
+
+void Drawable::Set_Effective_Opacity(float opacity1, float opacity2)
+{
+    if (opacity2 != -1.0f) {
+        float f1;
+
+        if (opacity2 < 0.0f) {
+            f1 = 0.0;
+        } else {
+            f1 = opacity2;
+        }
+
+        float f2;
+
+        if (f1 > 1.0f) {
+            f2 = 1.0f;
+        } else if (opacity2 < 0.0f) {
+            f2 = 0.0f;
+        } else {
+            f2 = opacity2;
+        }
+
+        m_effectiveOpacity1 = f2;
+    }
+
+    float f3;
+
+    if (opacity1 < 0.0f) {
+        f3 = 0.0f;
+    } else {
+        f3 = opacity1;
+    }
+
+    float f4;
+
+    if (f3 > 1.0f) {
+        f4 = 1.0f;
+    } else if (opacity1 < 0.0f) {
+        f4 = 0.0f;
+    } else {
+        f4 = opacity1;
+    }
+
+    m_effectiveOpacity2 = (1.0f - m_effectiveOpacity1) * f4 + m_effectiveOpacity1;
+}
+
+void Drawable::Set_Selectable(bool selectable)
+{
+    if (!selectable) {
+        g_theInGameUI->Deselect_Drawable(this);
+    }
+
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Set_Selectable(selectable);
+        }
+    }
+}
+
+void Drawable::Set_Time_Of_Day(TimeOfDayType tod)
+{
+    BodyDamageType damage = BODY_PRISTINE;
+
+    if (Get_Object() != nullptr) {
+        if (Get_Object()->Get_Body_Module() != nullptr) {
+            damage = Get_Object()->Get_Body_Module()->Get_Damage_State();
+        }
+    }
+
+    Start_Ambient_Sound(damage, tod, false);
+    BitFlags<MODELCONDITION_COUNT> flags;
+    flags = m_conditionState;
+    flags.Set(MODELCONDITION_NIGHT, tod == TIME_OF_DAY_NIGHT);
+    Replace_Model_Condition_Flags(flags, false);
+}
+
+void Drawable::Update_Drawable_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType slot)
+{
+    for (DrawModule **i = Get_Draw_Modules_Non_Dirty(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Update_Projectile_Clip_Status(show, count, slot);
+        }
+    }
+}
+
+void Drawable::Update_Drawable_Supply_Status(int status1, int status2)
+{
+    for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
+        ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
+
+        if (draw) {
+            draw->Update_Draw_Module_Supply_Status(status1, status2);
+        }
     }
 }

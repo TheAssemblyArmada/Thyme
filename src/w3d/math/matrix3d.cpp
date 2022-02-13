@@ -102,7 +102,7 @@ void Matrix3D::Look_At(const Vector3 &p, const Vector3 &t, float roll)
     dy = (t[1] - p[1]);
     dz = (t[2] - p[2]);
     float rad2 = dx * dx + dy * dy;
-    float len = (float)Sqrt(rad2);
+    float len = Sqrt(rad2);
 
     if (rad2 != 0.0f) {
         float inv_len = 1.0f / len;
@@ -116,7 +116,7 @@ void Matrix3D::Look_At(const Vector3 &p, const Vector3 &t, float roll)
     rad2 += dz * dz;
 
     if (rad2 != 0.0f) {
-        float inv_len2 = (float)Inv_Sqrt(rad2);
+        float inv_len2 = Inv_Sqrt(rad2);
         sinp = dz * inv_len2;
         cosp = len * inv_len2;
     } else {
@@ -151,8 +151,8 @@ void Matrix3D::Obj_Look_At(const Vector3 &p, const Vector3 &t, float roll)
     dx = (t[0] - p[0]);
     dy = (t[1] - p[1]);
     dz = (t[2] - p[2]);
-    len1 = (float)Sqrt(dx * dx + dy * dy + dz * dz);
-    len2 = (float)Sqrt(dx * dx + dy * dy);
+    len1 = Sqrt(dx * dx + dy * dy + dz * dz);
+    len2 = Sqrt(dx * dx + dy * dy);
 
     if (len1 != 0.0f) {
         sinp = dz / len1;
@@ -432,35 +432,35 @@ void Matrix3D::Build_Transform_Matrix(Vector3 &p, Vector3 &dir)
 
     tmp1 = Row[0][0];
     tmp2 = Row[0][1];
-    Row[0][0] = (float)(cosy * tmp1 + siny * tmp2);
-    Row[0][1] = (float)(cosy * tmp2 - siny * tmp1);
+    Row[0][0] = cosy * tmp1 + siny * tmp2;
+    Row[0][1] = cosy * tmp2 - siny * tmp1;
 
     tmp1 = Row[1][0];
     tmp2 = Row[1][1];
-    Row[1][0] = (float)(cosy * tmp1 + siny * tmp2);
-    Row[1][1] = (float)(cosy * tmp2 - siny * tmp1);
+    Row[1][0] = cosy * tmp1 + siny * tmp2;
+    Row[1][1] = cosy * tmp2 - siny * tmp1;
 
     tmp1 = Row[2][0];
     tmp2 = Row[2][1];
-    Row[2][0] = (float)(cosy * tmp1 + siny * tmp2);
-    Row[2][1] = (float)(cosy * tmp2 - siny * tmp1);
+    Row[2][0] = cosy * tmp1 + siny * tmp2;
+    Row[2][1] = cosy * tmp2 - siny * tmp1;
 
     float inz = -z;
 
     tmp1 = Row[0][0];
     tmp2 = Row[0][2];
-    Row[0][0] = (float)(len * tmp1 - inz * tmp2);
-    Row[0][2] = (float)(inz * tmp1 + len * tmp2);
+    Row[0][0] = len * tmp1 - inz * tmp2;
+    Row[0][2] = inz * tmp1 + len * tmp2;
 
     tmp1 = Row[1][0];
     tmp2 = Row[1][2];
-    Row[1][0] = (float)(len * tmp1 - inz * tmp2);
-    Row[1][2] = (float)(inz * tmp1 + len * tmp2);
+    Row[1][0] = len * tmp1 - inz * tmp2;
+    Row[1][2] = inz * tmp1 + len * tmp2;
 
     tmp1 = Row[2][0];
     tmp2 = Row[2][2];
-    Row[2][0] = (float)(len * tmp1 - inz * tmp2);
-    Row[2][2] = (float)(inz * tmp1 + len * tmp2);
+    Row[2][0] = len * tmp1 - inz * tmp2;
+    Row[2][2] = inz * tmp1 + len * tmp2;
 }
 Matrix3D Lerp(const Matrix3D &A, const Matrix3D &B, float factor)
 {

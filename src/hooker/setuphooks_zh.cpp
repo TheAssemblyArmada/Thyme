@@ -2174,14 +2174,45 @@ void Setup_Hooks()
     Hook_Any(0x00471370, Drawable::Calc_Physics_Xform_Treads);
     Hook_Any(0x00472550, Drawable::Calc_Physics_Xform_Motorcycle);
     Hook_Any(0x004708E0, Drawable::Apply_Physics_Xform);
-
     Hook_Any(0x00477A80, Drawable::Find_Client_Update_Module);
     Hook_Any(0x0046F4A0, Drawable::Set_Fully_Obscured_By_Shroud);
     Hook_Any(0x0046FD60, Drawable::Update_Drawable);
     Hook_Any(0x0046F580, Drawable::Color_Flash);
     Hook_Any(0x00472F90, Drawable::Draw);
     Hook_Any(0x00476180, Drawable::Set_Indicator_Color);
+
     Hook_Any(0x0046F850, Drawable::Color_Tint);
+    Hook_Any(0x004794C0, Drawable::Friend_Lock_Dirty_Stuff_For_Iteration);
+    Hook_Any(0x00479550, Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration);
+    Hook_Any(0x00476490, Drawable::Changed_Team);
+    Hook_Any(0x00476BF0, Drawable::Clear_Caption_Text);
+    Hook_Any(0x0046FAA0, Drawable::Fade_In);
+    Hook_Any(0x0046FAD0, Drawable::Fade_Out);
+    Hook_Any(0x004705D0, Drawable::Flash_As_Selected);
+    Hook_Any(0x00476290, Drawable::Friend_Bind_To_Object);
+    Hook_Any(0x0046F560, Drawable::Friend_Clear_Selected);
+    Hook_Any(0x0046F520, Drawable::Friend_Set_Selected);
+    Hook_Any(0x0046FA30, Drawable::On_Selected);
+    Hook_Any(0x004768E0, Drawable::Get_Barrel_Count);
+    Hook_Any(0x00476C20, Drawable::Get_Caption_Text);
+    Hook_Any(0x0046EC90, Drawable::Get_Projectile_Launch_Offset);
+    Hook_Any(0x004767C0, Drawable::Handle_Weapon_Fire_FX);
+    Hook_Any(0x00477A20, Drawable::Is_Mass_Selectable);
+    Hook_Any(0x00477A00, Drawable::Is_Selectable);
+    Hook_Any(0x004778F0, Drawable::Notify_Drawable_Dependency_Cleared);
+    Hook_Any(0x00470520, Drawable::On_Level_Start);
+    Hook_Any(0x00477A40, Drawable::Preload_Assets);
+    Hook_Any(0x004776F0, Drawable::Prepend_To_List);
+    Hook_Any(0x00477720, Drawable::Remove_From_List);
+    Hook_Any(0x0046FB00, Drawable::React_To_Body_Damage_State_Change);
+    Hook_Any(0x00476750, Drawable::React_To_Geometry_Change);
+    Hook_Any(0x00476A70, Drawable::Set_Caption_Text);
+    Hook_Any(0x00477760, Drawable::Set_Drawable_Hidden);
+    Hook_Any(0x0046FC40, Drawable::Set_Effective_Opacity);
+    Hook_Any(0x00477970, Drawable::Set_Selectable);
+    Hook_Any(0x00476C60, Drawable::Set_Time_Of_Day);
+    Hook_Any(0x00477820, Drawable::Update_Drawable_Clip_Status);
+    Hook_Any(0x00477860, Drawable::Update_Drawable_Supply_Status);
 
     // updatemodule.h
     Hook_Method(0x006F5760, &UpdateModule::Get_Wake_Frame);

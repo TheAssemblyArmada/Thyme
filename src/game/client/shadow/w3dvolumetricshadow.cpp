@@ -139,7 +139,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
 
                                     const float epsilon = 1.0f / 100.0f;
 
-                                    if (fabsf((*other_normal * *normal) + 1.0f) > epsilon) {
+                                    if (GameMath::Fabs((*other_normal * *normal) + 1.0f) > epsilon) {
                                         index2 = poly[k];
                                     }
                                 }

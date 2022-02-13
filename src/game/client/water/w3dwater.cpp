@@ -1271,7 +1271,7 @@ void WaterRenderObjClass::Render_Water()
                         points[2].Set(pt2.x, pt2.y, pt2.z);
                         points[3].Set(pt3.x, pt3.y, pt3.z);
 
-                        if (g_theWriteableGlobalData->m_featherWater) {
+                        if (g_theWriteableGlobalData->m_featherWater != 0) {
                             for (int k = 0; k < g_theWriteableGlobalData->m_featherWater; k++) {
                                 Draw_Trapezoid_Water(points);
                                 points[0].Z = 4.0f / (float)g_theWriteableGlobalData->m_featherWater + points[0].Z;
@@ -1297,8 +1297,8 @@ void WaterRenderObjClass::Render_Sky()
     m_vOffset = (float)time * s->v_scroll_per_ms * s->sky_texels_per_unit + m_vOffset;
     m_uOffset = m_uOffset - (float)(int)m_uOffset;
     m_vOffset = m_vOffset - (float)(int)m_vOffset;
-    float u = 7680.0 * s->sky_texels_per_unit + m_uOffset;
-    float v = 7680.0 * s->sky_texels_per_unit + m_vOffset;
+    float u = 7680.0f * s->sky_texels_per_unit + m_uOffset;
+    float v = 7680.0f * s->sky_texels_per_unit + m_vOffset;
     VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
     DX8Wrapper::Set_Material(material);
     Ref_Ptr_Release(material);
@@ -1729,7 +1729,7 @@ float WaterRenderObjClass::Get_Water_Height(float x, float y)
 
 bool WaterRenderObjClass::World_To_Grid_Space(float wx, float wy, float &gx, float &gy)
 {
-    float f1 = 1.0 / m_gridCellSize;
+    float f1 = 1.0f / m_gridCellSize;
     float f2 = wx - m_gridOrigin.X;
     float f3 = wy - m_gridOrigin.Y;
     gx = (f2 * m_gridDirectionX.X + f3 * m_gridDirectionX.Y) * f1;
@@ -1877,7 +1877,7 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
                     dest_verts->y = p1.y;
                     dest_verts->z = p1.z;
                     dest_verts->diffuse = color;
-                    float v = GameMath::Fast_Sin(i * f7 * 6.2831855f - f8) / 22.0f + i * f7 - m_riverVOrigin;
+                    float v = GameMath::Fast_Sin(i * f7 * (GAMEMATH_PI * 2.0f) - f8) / 22.0f + i * f7 - m_riverVOrigin;
                     dest_verts->v1 = v;
                     dest_verts->u1 = 0.5f;
                     dest_verts->v2 = v;
@@ -2145,37 +2145,37 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2 | D3DFVF_DIFFUSE),
         2 * size + 2);
 
-    if (g_theWriteableGlobalData->m_featherWater) {
+    if (g_theWriteableGlobalData->m_featherWater != 0) {
         {
             DynamicVBAccessClass::WriteLockClass lock(&dyn_vb_access);
             VertexFormatXYZNDUV2 *dest_verts = lock.Get_Formatted_Vertex_Array();
             float f1 = 0.0f;
-            float f2 = GAMEMATH_PI / 40;
+            float f2 = GAMEMATH_PI / 40.f;
             float f3 = 0.0f;
             float f4 = 0.5f;
-            int i4 = 0;
+            int alpha = 0;
 
             if (g_theWriteableGlobalData->m_featherWater == 5) {
-                i4 = 80;
+                alpha = 80;
             }
 
             if (g_theWriteableGlobalData->m_featherWater == 4) {
-                i4 = 110;
+                alpha = 110;
             }
 
             if (g_theWriteableGlobalData->m_featherWater == 3) {
-                i4 = 140;
+                alpha = 140;
             }
 
             if (g_theWriteableGlobalData->m_featherWater == 2) {
-                i4 = 200;
+                alpha = 200;
             }
 
             if (g_theWriteableGlobalData->m_featherWater == 1) {
-                i4 = 255;
+                alpha = 255;
             }
 
-            int color2 = (i4 << 24) | color & 0xFFFFFF;
+            int color2 = (alpha << 24) | color & 0xFFFFFF;
 
             for (int i = 0; i < height; i++) {
                 float f5 = i;
@@ -2194,10 +2194,10 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
                     f3 = (GameMath::Sin(f1) - 1.0f) * f4;
                     dest_verts->z = pos.Z + f3;
                     dest_verts->diffuse = color2;
-                    dest_verts->u1 = GameMath::Cos(11.0 * m_riverVOrigin) * 0.02f * f3 + pos.X / 150.0f;
-                    dest_verts->v1 = GameMath::Cos(5.0 * m_riverVOrigin) * 0.02f * f3 + pos.Y / 150.0f;
+                    dest_verts->u1 = GameMath::Cos(11.0f * m_riverVOrigin) * double(0.02) * f3 + pos.X / 150.0f;
+                    dest_verts->v1 = GameMath::Cos(5.0f * m_riverVOrigin) * double(0.02) * f3 + pos.Y / 150.0f;
                     dest_verts->u2 = pos.X / 50.0f;
-                    dest_verts->v2 = 0.30000001 * pos.X / 50.0f + pos.Y / 50.0f;
+                    dest_verts->v2 = 0.30000001f * pos.X / 50.0f + pos.Y / 50.0f;
                     dest_verts->nx = 0.0f;
                     dest_verts->ny = 0.0f;
                     dest_verts->nz = 1.0f;
@@ -2209,13 +2209,13 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         {
             DynamicVBAccessClass::WriteLockClass lock(&dyn_vb_access);
             VertexFormatXYZNDUV2 *dest_verts = lock.Get_Formatted_Vertex_Array();
-            float f1 = cos(11.0f * m_riverVOrigin) * 0.02f;
-            float f2 = cos(5.0f * m_riverVOrigin) * 0.02f;
+            float f1 = GameMath::Cos(11.0f * m_riverVOrigin) * double(0.02);
+            float f2 = GameMath::Cos(5.0f * m_riverVOrigin) * double(0.02);
             float f3 = 25.0f * m_riverVOrigin;
             float f4 = 1.0f / 150.0f;
-            float f5 = GAMEMATH_PI / 40;
+            float f5 = GAMEMATH_PI / 40.f;
             float f6 = 1.0f / (float)(height - 1);
-            float f7 = 1.0 / (float)(width - 1);
+            float f7 = 1.0f / (float)(width - 1);
 
             for (int i = 0; i < height; i++) {
                 float f8 = (float)i * f6;

@@ -1615,7 +1615,7 @@ void W3DDisplay::Gather_Debug_Stats()
 {
 #ifdef PLATFORM_WINDOWS
     static uint64_t lastUpdateTime64 = 0;
-    static uint64_t frameTime = 0;
+    static double frameTime = 0.0;
     static unsigned int frameCount = 0;
     static int drawCalls = 0;
     static int sortingPolygons = 0;
@@ -1679,7 +1679,7 @@ void W3DDisplay::Gather_Debug_Stats()
         double fps4;
 
         if (frame <= 0 || fps3 <= 0.0) {
-            fps4 = 0.0f;
+            fps4 = 0.0;
         } else {
             fps4 = (double)frame / fps3;
         }
@@ -2077,14 +2077,14 @@ void W3DDisplay::Calculate_Terrain_LOD()
             LARGE_INTEGER PerformanceCounter2;
             QueryPerformanceCounter(&PerformanceCounter2);
             time_for_frame =
-                (float)(PerformanceCounter2.QuadPart - PerformanceCounter.QuadPart) / (float)PerformanceFrequency.QuadPart;
+                (double)(PerformanceCounter2.QuadPart - PerformanceCounter.QuadPart) / (double)PerformanceFrequency.QuadPart;
 
             sprintf(buf, "%.2fms ", time_for_frame * 1000.0f);
             OutputDebugString(buf);
 
-            if (i >= 5) {
-                frame_time = frame_time + time_for_frame;
-                if (i > 6 && 2.0 * max_time_limit < time_for_frame / (float)(i - 4)) {
+            if (i > 4) {
+                frame_time += time_for_frame;
+                if (i > 6 && (max_time_limit + max_time_limit) < time_for_frame / (float)(i - 4)) {
                     i++;
                     break;
                 }

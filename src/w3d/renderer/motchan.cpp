@@ -285,7 +285,7 @@ Quaternion TimeCodedMotionChannelClass::Get_Quat_Vector(float frame_idx)
     }
 }
 
-void TimeCodedMotionChannelClass::Set_Identity(float *setvec)
+void TimeCodedMotionChannelClass::Set_Identity(float *setvec) const
 {
     if (m_type == ANIM_CHANNEL_Q) {
         setvec[0] = 0.0f;
@@ -297,12 +297,12 @@ void TimeCodedMotionChannelClass::Set_Identity(float *setvec)
     }
 }
 
-unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
+unsigned int TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
 {
     captainslog_assert(m_cachedIdx <= m_lastTimeCodeIdx);
 
     if (timecode < Get_Frame_From_Data(m_data[m_cachedIdx])) {
-        unsigned long result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
+        unsigned int result = TimeCodedMotionChannelClass::Binary_Search_Index(timecode);
         m_cachedIdx = result;
         return result;
     }
@@ -311,7 +311,7 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
         return m_cachedIdx;
     }
 
-    unsigned long result = m_packetSize + m_cachedIdx;
+    unsigned int result = m_packetSize + m_cachedIdx;
 
     if (timecode < Get_Frame_From_Data(m_data[m_packetSize + m_cachedIdx])) {
         return m_cachedIdx;
@@ -331,12 +331,12 @@ unsigned long TimeCodedMotionChannelClass::Get_Index(unsigned int timecode)
     return result;
 }
 
-unsigned long TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode)
+unsigned int TimeCodedMotionChannelClass::Binary_Search_Index(unsigned int timecode) const
 {
     int count2;
     int count = 0;
     int rightIdx = m_numTimeCodes - 2;
-    unsigned long result = m_lastTimeCodeIdx;
+    unsigned int result = m_lastTimeCodeIdx;
 
     if (timecode < Get_Frame_From_Data(m_data[m_lastTimeCodeIdx])) {
         while (true) {
@@ -387,7 +387,7 @@ bool TimeCodedBitChannelClass::Load_W3D(ChunkLoadClass &cload)
 {
     W3dTimeCodedBitChannelStruct chan;
     Free();
-    unsigned int chunk_size = cload.Cur_Chunk_Length();
+    const unsigned int chunk_size = cload.Cur_Chunk_Length();
 
     if (cload.Read(&chan, sizeof(chan)) != sizeof(chan)) {
         return false;
@@ -398,11 +398,11 @@ bool TimeCodedBitChannelClass::Load_W3D(ChunkLoadClass &cload)
     m_pivotIdx = chan.Pivot;
     m_defaultVal = chan.DefaultVal;
     m_cachedIdx = 0;
-    int bytesleft = 4 * m_numTimeCodes - 4;
+    const int bytesleft = 4 * m_numTimeCodes - 4;
 
     captainslog_assert((sizeof(chan) + bytesleft) == chunk_size);
 
-    m_bits = new unsigned long[m_numTimeCodes];
+    m_bits = new unsigned int[m_numTimeCodes];
 
     captainslog_assert(m_bits);
 
@@ -526,7 +526,7 @@ Quaternion AdaptiveDeltaMotionChannelClass::Get_Quat_Vector(float frame_idx)
 
 float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigned int vector_idx)
 {
-    float Dst[4];
+    float dst[4];
 
     if (frame_idx >= m_numFrames) {
         frame_idx = m_numFrames - 1;
@@ -550,10 +550,10 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
         return m_cacheData[vector_idx + m_vectorLen];
     } else {
 
-        captainslog_assert(m_vectorLen <= 4);
+        captainslog_assert(m_vectorLen < 4);
 
-        memcpy(Dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
-        Decompress(m_cacheFrame, Dst, frame_idx, m_cacheData);
+        memcpy(dst, &m_cacheData[m_vectorLen], 4 * m_vectorLen);
+        Decompress(m_cacheFrame, dst, frame_idx, m_cacheData);
         m_cacheFrame = frame_idx;
 
         if (frame_idx != m_numFrames - 1) {
@@ -567,7 +567,6 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(unsigned int frame_idx, unsigne
 void AdaptiveDeltaMotionChannelClass::Decompress(
     unsigned int src_idx, float *srcdata, unsigned int frame_idx, float *outdata)
 {
-
     char dst[4];
 
     captainslog_assert(src_idx < frame_idx);

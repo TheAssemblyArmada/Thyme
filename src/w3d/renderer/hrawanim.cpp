@@ -138,7 +138,7 @@ bool HRawAnimClass::Read_Channel(ChunkLoadClass &cload, MotionChannelClass **new
 
 void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
 {
-    unsigned long pivot = newchan->Get_Pivot();
+    const int pivot = newchan->Get_Pivot();
 
     switch (newchan->m_type) {
         case ANIM_CHANNEL_X:
@@ -303,7 +303,13 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
         }
     } else {
         Quaternion q1;
-        mot->Q->Get_Vector_As_Quat(frame1, q1);
+
+        if (mot->Q) {
+            mot->Q->Get_Vector_As_Quat(frame1, q1);
+        } else {
+            // #BUGFIX Set to identity when there is no data.
+            q1.Make_Identity();
+        }
 
         Quaternion q2;
         Fast_Slerp(q2, q, q1, delta);
@@ -345,8 +351,8 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
 
 bool HRawAnimClass::Get_Visibility(int pividx, float frame)
 {
-    if (!m_nodeMotion[pividx].Vis) {
-        return 1;
+    if (m_nodeMotion[pividx].Vis == nullptr) {
+        return true;
     }
 
     return m_nodeMotion[pividx].Vis->Get_Bit(frame) == 1;
@@ -384,30 +390,30 @@ bool HRawAnimClass::Is_Node_Motion_Present(int pividx)
         return true;
     }
 
-    return mot->Vis != 0;
+    return mot->Vis != nullptr;
 }
 
 bool HRawAnimClass::Has_X_Translation(int pividx)
 {
-    return m_nodeMotion[pividx].X != 0;
+    return m_nodeMotion[pividx].X != nullptr;
 }
 
 bool HRawAnimClass::Has_Y_Translation(int pividx)
 {
-    return m_nodeMotion[pividx].Y != 0;
+    return m_nodeMotion[pividx].Y != nullptr;
 }
 
 bool HRawAnimClass::Has_Z_Translation(int pividx)
 {
-    return m_nodeMotion[pividx].Z != 0;
+    return m_nodeMotion[pividx].Z != nullptr;
 }
 
 bool HRawAnimClass::Has_Rotation(int pividx)
 {
-    return m_nodeMotion[pividx].Q != 0;
+    return m_nodeMotion[pividx].Q != nullptr;
 }
 
 bool HRawAnimClass::Has_Visibility(int pividx)
 {
-    return m_nodeMotion[pividx].Vis != 0;
+    return m_nodeMotion[pividx].Vis != nullptr;
 }

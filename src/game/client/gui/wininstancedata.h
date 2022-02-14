@@ -41,13 +41,13 @@ struct TextDrawData
 
 class WinInstanceData
 {
+public:
     enum
     {
         MAX_DRAW_DATA = 9,
         WIN_COLOR_UNDEFINED = 0xFFFFFF,
     };
 
-public:
     WinInstanceData();
     virtual ~WinInstanceData();
 

@@ -256,7 +256,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
         { "ProductionCostChange",           &PlayerTemplate::Parse_Production_Cost_Change,      nullptr, 0 },
         { "ProductionTimeChange",           &PlayerTemplate::Parse_Production_Time_Change,      nullptr, 0 },
         { "ProductionVeterancyLevel",       &PlayerTemplate::Parse_Production_Veterancy_Level,  nullptr, 0 },
-        { "IntrinsicSciences",              &INI::Parse_Science_Vector,                         nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
+        { "IntrinsicSciences",              &ScienceStore::Parse_Science_Vector,                nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
         { "PurchaseScienceCommandSetRank1", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankOne) },
         { "PurchaseScienceCommandSetRank3", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankThree) },
         { "PurchaseScienceCommandSetRank8", &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_purchaseCommandSetRankEight) },

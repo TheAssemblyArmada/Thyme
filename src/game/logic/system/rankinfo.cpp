@@ -83,16 +83,15 @@ int RankInfoStore::Get_Rank_Level_Count() const
  */
 void RankInfoStore::Parse_Rank_Definition(INI *ini)
 {
+    // clang-format off
     static FieldParse _parse_table[5] = {
         { "RankName", &INI::Parse_And_Translate_Label, nullptr, offsetof(RankInfo, m_rankName) },
         { "SkillPointsNeeded", &INI::Parse_Int, nullptr, offsetof(RankInfo, m_skillPointsNeeded) },
-        { "SciencesGranted", INI::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
-        { "SciencePurchasePointsGranted",
-            &INI::Parse_Unsigned_Int,
-            nullptr,
-            offsetof(RankInfo, m_sciencePurchasePointsGranted) },
+        { "SciencesGranted", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
+        { "SciencePurchasePointsGranted", &INI::Parse_Unsigned_Int, nullptr, offsetof(RankInfo, m_sciencePurchasePointsGranted) },
         { nullptr, nullptr, nullptr, 0 }
     };
+    // clang-format on
 
     if (g_theRankInfoStore == nullptr) {
         return;

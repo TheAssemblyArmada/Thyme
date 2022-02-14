@@ -672,7 +672,7 @@ static void Create_Mangled_Name(char *mangled_name, const char *name, float scal
 RenderObjClass *GameAssetManager::Create_Render_Obj(
     const char *name, float scale, uint32_t colour, const char *old_texture, const char *new_texture)
 {
-    bool has_scaling = fabs(scale - 1.0) >= 0.001f;
+    bool has_scaling = GameMath::Fabs(scale - 1.0f) >= 0.001f;
     bool has_colour = (colour & 0xFFFFFF) != 0;
     bool has_texture = old_texture != nullptr && new_texture != nullptr;
 

@@ -1862,7 +1862,8 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
                 light.Type = D3DLIGHT_POINT;
                 light.Attenuation0 = 1.0f;
 
-                if (fabsf(light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
+                if (GameMath::Fabs(
+                        light_env->Get_Point_Inner_Radius(light_index) - light_env->Get_Point_Outer_Radius(light_index))
                     < 1e-5) {
                     light.Attenuation1 = 0.0f;
                 } else {

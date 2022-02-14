@@ -26,14 +26,13 @@ namespace
 // Utility function used in Trackball
 float Project_To_Sphere(float r, float x, float y)
 {
-    const float SQRT2 = 1.41421356f;
     float t, z;
     float d = GameMath::Sqrt(x * x + y * y);
 
-    if (d < r * (SQRT2 / (2.0f))) { // inside sphere
+    if (d < r * (GAMEMATH_SQRT2 / (2.0f))) { // inside sphere
         z = GameMath::Sqrt(r * r - d * d);
     } else { // on hyperbola
-        t = r / SQRT2;
+        t = r / GAMEMATH_SQRT2;
         z = t * t / d;
     }
 
@@ -54,17 +53,17 @@ Quaternion::Quaternion(const Vector3 &axis, float angle)
 
 void Quaternion::Rotate_X(float theta)
 {
-    *this = (*this) * Quaternion(Vector3(1, 0, 0), theta);
+    *this = (*this) * Quaternion(Vector3(1.0f, 0.0f, 0.0f), theta);
 }
 
 void Quaternion::Rotate_Y(float theta)
 {
-    *this = (*this) * Quaternion(Vector3(0, 1, 0), theta);
+    *this = (*this) * Quaternion(Vector3(0.0f, 1.0f, 0.0f), theta);
 }
 
 void Quaternion::Rotate_Z(float theta)
 {
-    *this = (*this) * Quaternion(Vector3(0, 0, 1), theta);
+    *this = (*this) * Quaternion(Vector3(0.0f, 0.0f, 1.0f), theta);
 }
 
 void Quaternion::Normalize()
@@ -299,7 +298,6 @@ Quaternion Build_Quaternion(const Matrix4 &mat)
     return q;
 }
 
-#define SLERP_EPSILON 0.001f
 void Slerp_Setup(const Quaternion &p, const Quaternion &q, SlerpInfoStruct *slerpinfo)
 {
     float cos_t;
@@ -313,7 +311,9 @@ void Slerp_Setup(const Quaternion &p, const Quaternion &q, SlerpInfoStruct *sler
         slerpinfo->flip = false;
     }
 
-    if (1.0f - cos_t < SLERP_EPSILON) {
+    constexpr double slerp_epsilon = 0.001;
+
+    if (1.0f - cos_t < slerp_epsilon) {
         slerpinfo->linear = true;
         slerpinfo->theta = 0.0f;
         slerpinfo->sin_theta = 0.0f;
@@ -375,7 +375,7 @@ void Cached_Slerp(const Quaternion &p, const Quaternion &q, float alpha, SlerpIn
 
 void Fast_Slerp(Quaternion &res, const Quaternion &p, const Quaternion &q, float alpha)
 {
-    float beta; // complementary interploation parameter
+    float beta; // complementary interpolation parameter
     float theta; // angle between p and q
     float cos_t; // sine, cosine of theta
     float oo_sin_t;

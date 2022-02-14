@@ -127,6 +127,7 @@ class W3DShadowManager
 {
 public:
     Shadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
+    void Remove_Shadow(Shadow *shadow);
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
     void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
     unsigned int Get_Stencil_Mask() { return m_stencilMask; }

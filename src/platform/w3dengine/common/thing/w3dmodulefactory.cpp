@@ -14,6 +14,7 @@
  */
 #include "w3dmodulefactory.h"
 #include "moduleinfo.h"
+#include "w3ddefaultdraw.h"
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
@@ -26,8 +27,8 @@
 void W3DModuleFactory::Init()
 {
     ModuleFactory::Init();
-    Add_Module_Internal((modcreateproc_t)0x00775D70,
-        (moddatacreateproc_t)0x0061D5D0,
+    Add_Module_Internal(W3DDefaultDraw::Friend_New_Module_Instance,
+        W3DDefaultDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DDefaultDraw",
         DrawModule::Get_Interface_Mask());

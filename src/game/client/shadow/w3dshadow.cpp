@@ -43,3 +43,8 @@ Shadow *W3DShadowManager::Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInf
     return nullptr;
 #endif
 }
+
+void W3DShadowManager::Remove_Shadow(Shadow *shadow)
+{
+    shadow->Release();
+}

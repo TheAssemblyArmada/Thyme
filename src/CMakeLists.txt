@@ -85,6 +85,7 @@ set(GAMEENGINE_SRC
     game/client/water.cpp
     game/client/worldheightmap.cpp
     game/client/draw/drawable.cpp
+    game/client/draw/w3ddefaultdraw.cpp
     game/client/draw/w3ddependencymodeldraw.cpp
     game/client/draw/w3dlaserdraw.cpp
     game/client/draw/w3dmodeldraw.cpp

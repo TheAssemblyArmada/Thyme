@@ -224,52 +224,77 @@ AudioArray &AudioArray::operator=(const AudioArray &that)
 
 ThingTemplate::ThingTemplate() :
     m_geometryInfo(GEOMETRY_SPHERE, false, 1.0f, 1.0f, 1.0f),
-    m_moduleParseState(0),
-    m_originalSkinTemplate(nullptr),
-    m_radarPriority(RADAR_PRIORITY_NOT_ON_RADAR),
-    m_nextThingTemplate(nullptr),
-    m_transportSlotCount(0),
-    m_fenceWidth(0.0f),
-    m_fenceXOffset(0.0f),
-    m_visionRange(0.0f),
-    m_shroudClearingRange(-1.0f),
-    m_shroudRevealToAllRange(-1.0f),
-    m_buildCost(0),
-    m_buildTime(1.0f),
-    m_refundValue(0),
-    m_energyProduction(0),
-    m_energyBonus(0),
-    m_buildCompletion(BC_APPEARS_AT_RALLY_POINT),
-    m_experienceValues{ 0, 0, 0, 0 },
-    m_experienceRequired{ 0, 0, 0, 0 },
-    m_skillPointValues{ -999, -999, -999, -999 },
-    m_isTrainable(false),
-    m_enterGuard(false),
-    m_hijackGuard(false),
-    m_templateID(0),
-    m_kindOf(KINDOFMASK_NONE),
-    m_isBuildFacility(false),
-    m_isPrerequisite(false),
-    m_placementViewAngle(0.0f),
-    m_factoryExitWidth(0.0f),
-    m_factoryExtraBibWidth(0.0f),
-    m_selectedPortraitImage(nullptr),
-    m_buttonImage(nullptr),
-    m_shadowType(0),
-    m_shadowSizeX(0.0f),
-    m_shadowSizeY(0.0f),
-    m_shadowOffsetX(0.0f),
-    m_shadowOffsetY(0.0f),
-    m_occlusionDelay(g_theWriteableGlobalData->m_defaultOcclusionDelay),
-    m_structureRubbleHeight(0),
-    m_instanceScaleFuzziness(0.0f),
-    m_threatValue(0),
-    m_maxSimultaneousOfType(0),
-    m_maxSimultaneousLinkKey(NAMEKEY_INVALID),
-    m_determinedBySuperweaponRestriction(false),
-    m_crusherLevel(0),
-    m_crushableLevel(255)
+    m_kindOf(),
+    m_audio(),
+    m_body(),
+    m_draws(),
+    m_clientUpdates(),
+    m_prerequisites(),
+    m_buildVariations(),
+    m_weaponTemplateSets(),
+    m_weaponTemplateSetFinder(),
+    m_armorTemplateSets(),
+    m_armorTemplateSetFinder(),
+    m_perUnitSounds(),
+    m_perUnitEffects()
 {
+    m_moduleParseState = 0;
+    m_originalSkinTemplate = nullptr;
+    m_radarPriority = RADAR_PRIORITY_NOT_ON_RADAR;
+    m_nextThingTemplate = nullptr;
+    m_transportSlotCount = 0;
+    m_fenceWidth = 0.0f;
+    m_fenceXOffset = 0.0f;
+    m_visionRange = 0.0f;
+    m_shroudClearingRange = -1.0f;
+    m_shroudRevealToAllRange = -1.0f;
+    m_buildCost = 0;
+    m_buildTime = 1.0f;
+    m_refundValue = 0;
+    m_energyProduction = 0;
+    m_energyBonus = 0;
+    m_buildCompletion = BC_APPEARS_AT_RALLY_POINT;
+    for (int i = 0; i < RANK_LEVEL_COUNT; ++i) {
+        m_experienceValues[i] = 0;
+        m_experienceRequired[i] = 0;
+        m_skillPointValues[i] = -999;
+    }
+    m_isTrainable = false;
+    m_enterGuard = false;
+    m_hijackGuard = false;
+    m_templateID = 0;
+    m_kindOf = KINDOFMASK_NONE;
+    m_isBuildFacility = false;
+    m_isPrerequisite = false;
+    m_placementViewAngle = 0.0f;
+    m_factoryExitWidth = 0.0f;
+    m_factoryExtraBibWidth = 0.0f;
+    m_selectedPortraitImage = nullptr;
+    m_buttonImage = nullptr;
+    m_shadowType = 0;
+    m_shadowSizeX = 0.0f;
+    m_shadowSizeY = 0.0f;
+    m_shadowOffsetX = 0.0f;
+    m_shadowOffsetY = 0.0f;
+    m_occlusionDelay = g_theWriteableGlobalData->m_defaultOcclusionDelay;
+    m_structureRubbleHeight = 0;
+    m_instanceScaleFuzziness = 0.0f;
+    m_threatValue = 0;
+    m_maxSimultaneousOfType = 0;
+    m_maxSimultaneousLinkKey = NAMEKEY_INVALID;
+    m_determinedBySuperweaponRestriction = false;
+    m_crusherLevel = 0;
+    m_crushableLevel = 255;
+
+    // #BUGFIX Initialize all members.
+    m_assetScale = 1.0f;
+    m_displayColor = 0xFFFFFFFF;
+    m_isBridge = false;
+    m_isForbidden = false;
+    m_armorCopiedFromDefault = false;
+    m_weaponsCopiedFromDefault = false;
+    m_buildable = 0;
+    m_editorSorting = 0;
 }
 
 void ThingTemplate::Copy_From(const ThingTemplate *that)

@@ -475,7 +475,7 @@ public:
         bool clamp_fix,
         const Vector2 &scale,
         unsigned int stage);
-    BumpEnvTextureMapperClass(INIClass &ini, char *section, unsigned int stage);
+    BumpEnvTextureMapperClass(INIClass &ini, const char *section, unsigned int stage);
     BumpEnvTextureMapperClass(const BumpEnvTextureMapperClass &src);
     virtual ~BumpEnvTextureMapperClass() {}
     virtual int Mapper_ID() const { return MAPPER_ID_BUMPENV; }

@@ -201,6 +201,8 @@ W3DErrorType W3D::Init(void *hwnd, char *defaultpal, bool lite)
     captainslog_debug("WW3D Init completed");
 
     return W3D_ERROR_OK;
+#else
+    return W3D_ERROR_INITIALIZATION_FAILED;
 #endif
 }
 
@@ -226,6 +228,8 @@ W3DErrorType W3D::Shutdown()
     }
 
     s_isInited = false;
+    return W3D_ERROR_OK;
+#else
     return W3D_ERROR_OK;
 #endif
 }

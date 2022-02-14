@@ -728,22 +728,24 @@ GlobalData::GlobalData()
     }
 
     // crc the skirmish and multiplayer scripts.
-    File *scriptfile = g_theFileSystem->Open("Data/Scripts/SkirmishScripts.scb", File::BINARY | File::READ);
-    uint8_t buffer[CRC_BUFFER_SIZE];
     int read = 0;
+    uint8_t buffer[CRC_BUFFER_SIZE];
+    File *scriptfile = g_theFileSystem->Open("Data/Scripts/SkirmishScripts.scb", File::BINARY | File::READ);
+    if (scriptfile) {
+        while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
+            crc.Compute_CRC(buffer, read);
+        }
 
-    while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
-        crc.Compute_CRC(buffer, read);
+        scriptfile->Close();
     }
-
-    scriptfile->Close();
     scriptfile = g_theFileSystem->Open("Data/Scripts/MultiplayerScripts.scb", File::BINARY | File::READ);
+    if (scriptfile) {
+        while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
+            crc.Compute_CRC(buffer, read);
+        }
 
-    while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
-        crc.Compute_CRC(buffer, read);
+        scriptfile->Close();
     }
-
-    scriptfile->Close();
 
     m_gameCRC = crc.Get_CRC();
     m_movementPenaltyDamageState = BODY_REALLYDAMAGED;

@@ -15,6 +15,7 @@
 #include "ramfile.h"
 #include "filesystem.h"
 #include <algorithm>
+#include <cctype>
 
 RAMFile::RAMFile() : m_data(nullptr), m_pos(0), m_size(0) {}
 

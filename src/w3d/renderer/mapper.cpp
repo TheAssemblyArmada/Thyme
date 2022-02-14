@@ -864,7 +864,7 @@ BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(float rad_per_sec,
 {
 }
 
-BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(INIClass &ini, char *section, unsigned int stage) :
+BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(INIClass &ini, const char *section, unsigned int stage) :
     LinearOffsetTextureMapperClass(ini, section, stage), m_lastUsedSyncTime(W3D::Get_Sync_Time()), m_currentAngle(0.0f)
 {
     m_radiansPerSecond = 2 * GAMEMATH_PI * ini.Get_Float(section, "BumpRotation", 0.0f);

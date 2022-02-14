@@ -207,8 +207,10 @@ public:
         ~WriteLockClass();
         VertexFormatXYZNDUV2 *Get_Formatted_Vertex_Array()
         {
+#ifdef BUILD_WITH_D3D8
             captainslog_assert(m_dynamicVBAccess->m_vertexBuffer->FVF_Info().Get_FVF()
                 == (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX2 | D3DFVF_DIFFUSE));
+#endif
             return m_vertices;
         }
 

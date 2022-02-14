@@ -48,8 +48,8 @@ struct WaveInfo
     float initial_height_fraction;
     int time_to_compress;
     int time_offset_second_wave;
-    char *texture_name;
-    char *wave_name;
+    const char *texture_name;
+    const char *wave_name;
 };
 
 class WaterTracksObj
@@ -63,8 +63,8 @@ public:
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const;
 
     int Free_Water_Tracks_Resources();
-    void Init(float width, Vector2 const &start, Vector2 const &end, char *texture);
-    void Init(float width, float length, Vector2 const &start, Vector2 const &end, char *texture, int time_offset);
+    void Init(float width, Vector2 const &start, Vector2 const &end, const char *texture);
+    void Init(float width, float length, Vector2 const &start, Vector2 const &end, const char *texture, int time_offset);
     int Render(DX8VertexBufferClass *vertex_buffer, int batch_start);
     int Update(int msElapsed);
 

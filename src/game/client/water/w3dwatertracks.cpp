@@ -74,7 +74,7 @@ int WaterTracksObj::Free_Water_Tracks_Resources()
     return 0;
 }
 
-void WaterTracksObj::Init(float width, Vector2 const &start, Vector2 const &end, char *texture)
+void WaterTracksObj::Init(float width, Vector2 const &start, Vector2 const &end, const char *texture)
 {
     Free_Water_Tracks_Resources();
     m_boundingSphere.Init(Vector3(0.0f, 0.0f, 0.0f), 400.0f);
@@ -98,7 +98,7 @@ void WaterTracksObj::Init(float width, Vector2 const &start, Vector2 const &end,
 }
 
 void WaterTracksObj::Init(
-    float width, float length, Vector2 const &start, Vector2 const &end, char *texture, int time_offset)
+    float width, float length, Vector2 const &start, Vector2 const &end, const char *texture, int time_offset)
 {
     Free_Water_Tracks_Resources();
     m_initialStart = start;

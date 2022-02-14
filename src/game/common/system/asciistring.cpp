@@ -77,6 +77,8 @@ char *Utf8String::Peek()
  */
 void Utf8String::Release_Buffer()
 {
+    Validate();
+
     if (m_data != nullptr) {
         m_data->Dec_Ref_Count();
         if (m_data->ref_count == 0) {
@@ -84,6 +86,8 @@ void Utf8String::Release_Buffer()
         }
         m_data = nullptr;
     }
+
+    Validate();
 }
 
 /**
@@ -100,29 +104,31 @@ void Utf8String::Free_Bytes()
 void Utf8String::Ensure_Unique_Buffer_Of_Size(
     size_type chars_needed, bool keep_data, const char *str_to_cpy, const char *str_to_cat)
 {
+    Validate();
+
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
             strcpy(Peek(), str_to_cpy);
         }
 
         if (str_to_cat != nullptr) {
-            strcpy(Peek() + strlen(Peek()), str_to_cat);
+            strcat(Peek(), str_to_cat);
         }
 
     } else {
-        // this block would have been a macro like DEBUG_CRASH(numCharsNeeded + 8 > MAX_LEN, THROW_02); (see cl_debug.h)
-        // if ( numCharsNeeded + 8 > MAX_LEN ) {
-        // *&preserveData = 0xDEAD0002;
-        // throw(&preserveData, &_TI1_AW4ErrorCode__);
-        //}
+#ifdef GAME_DLL
+        static_assert(sizeof(AsciiStringData) == 4);
+#endif
+        const int required_size = chars_needed + sizeof(AsciiStringData);
 
-        size_type size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(chars_needed + sizeof(AsciiStringData));
+        captainslog_relassert(required_size <= MAX_LEN, CODE_02, "Size exceeds max len");
+
+        const int alloc_size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(required_size);
         AsciiStringData *new_data =
-            reinterpret_cast<AsciiStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
+            reinterpret_cast<AsciiStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(alloc_size));
 
         new_data->ref_count = 1;
-        new_data->num_chars_allocated = size - sizeof(AsciiStringData);
-        // new_data->num_chars_allocated = numCharsNeeded;
+        new_data->num_chars_allocated = alloc_size - sizeof(AsciiStringData);
 #ifdef GAME_DEBUG_STRUCTS
         new_data->debug_ptr = new_data->Peek();
 #endif
@@ -143,6 +149,7 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(
 
         Release_Buffer();
         m_data = new_data;
+        Validate();
     }
 }
 
@@ -203,13 +210,13 @@ char *Utf8String::Get_Buffer_For_Read(size_type len)
 /**
  * Set this string content to a new string
  */
-void Utf8String::Set(const char *s)
+void Utf8String::Set(const char *str)
 {
-    if (m_data == nullptr || s != m_data->Peek()) {
-        size_type len;
+    if (m_data == nullptr || str != m_data->Peek()) {
+        const size_type len = str ? static_cast<size_type>(strlen(str)) : 0;
 
-        if (s && (len = static_cast<size_type>(strlen(s)) + 1, len != 1)) {
-            Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
+        if (len != 0) {
+            Ensure_Unique_Buffer_Of_Size(len + 1, false, str, nullptr);
         } else {
             Release_Buffer();
         }

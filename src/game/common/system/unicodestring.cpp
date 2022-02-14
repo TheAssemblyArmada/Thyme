@@ -73,6 +73,8 @@ void Utf16String::Release_Buffer()
 {
     ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
+    Validate();
+
     if (m_data != nullptr) {
         if (--m_data->ref_count == 0) {
             g_dynamicMemoryAllocator->Free_Bytes(m_data);
@@ -85,6 +87,8 @@ void Utf16String::Release_Buffer()
 void Utf16String::Ensure_Unique_Buffer_Of_Size(
     size_type chars_needed, bool keep_data, const unichar_t *str_to_cpy, const unichar_t *str_to_cat)
 {
+    Validate();
+
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
             u_strcpy(Peek(), str_to_cpy);
@@ -95,19 +99,19 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
         }
 
     } else {
-        // this block would have been a macro like DEBUG_CRASH(numCharsNeeded + 8 > MAX_LEN, THROW_02);
-        // if ( numCharsNeeded + 8 > MAX_LEN ) {
-        // *&preserveData = 0xDEAD0002;
-        // throw(&preserveData, &_TI1_AW4ErrorCode__);
-        //}
+#ifdef GAME_DLL
+        static_assert(sizeof(UnicodeStringData) == 4);
+#endif
+        const int required_size = sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData);
 
-        const size_type size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(
-            sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData));
+        captainslog_relassert(required_size <= MAX_LEN, CODE_02, "Size exceeds max len");
+
+        const int alloc_size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(required_size);
         UnicodeStringData *new_data =
-            reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(size));
+            reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(alloc_size));
 
         new_data->ref_count = 1;
-        new_data->num_chars_allocated = (size - sizeof(UnicodeStringData)) / sizeof(unichar_t);
+        new_data->num_chars_allocated = (alloc_size - sizeof(UnicodeStringData)) / sizeof(unichar_t);
 #ifdef GAME_DEBUG_STRUCTS
         new_data->debug_ptr = new_data->Peek();
 #endif
@@ -128,6 +132,7 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
 
         Release_Buffer();
         m_data = new_data;
+        Validate();
     }
 }
 
@@ -185,13 +190,13 @@ unichar_t *Utf16String::Get_Buffer_For_Read(size_type len)
     return Peek();
 }
 
-void Utf16String::Set(const unichar_t *s)
+void Utf16String::Set(const unichar_t *str)
 {
-    if (m_data != nullptr || s != m_data->Peek()) {
-        size_type len;
+    if (m_data != nullptr || str != m_data->Peek()) {
+        const size_type len = str ? static_cast<size_type>(u_strlen(str)) : 0;
 
-        if (s && (len = static_cast<size_type>(u_strlen(s)) + 1, len != 1)) {
-            Ensure_Unique_Buffer_Of_Size(len, false, s, nullptr);
+        if (len != 0) {
+            Ensure_Unique_Buffer_Of_Size(len + 1, false, str, nullptr);
         } else {
             Release_Buffer();
         }

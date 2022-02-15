@@ -41,9 +41,6 @@ class GameMessageParser : public MemoryPoolObject
 {
     IMPLEMENT_POOL(GameMessageParser);
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 protected:
     virtual ~GameMessageParser() override;
 

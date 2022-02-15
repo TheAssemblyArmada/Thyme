@@ -126,10 +126,7 @@ private:
 
 class StateMachine : public MemoryPoolObject, public SnapShot
 {
-    IMPLEMENT_ABSTRACT_POOL(StateMachine);
-
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
+    IMPLEMENT_POOL(StateMachine);
 
 public:
 #ifdef GAME_DLL

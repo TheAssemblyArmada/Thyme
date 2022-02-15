@@ -28,9 +28,6 @@ class Image : public MemoryPoolObject
 {
     IMPLEMENT_POOL(Image);
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 protected:
     virtual ~Image() override;
 

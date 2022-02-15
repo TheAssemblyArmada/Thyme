@@ -27,9 +27,6 @@ class Particle : public MemoryPoolObject, public ParticleInfo
     friend class ParticleSystem;
     friend class ParticleSystemManager;
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 protected:
     virtual ~Particle() override;
 

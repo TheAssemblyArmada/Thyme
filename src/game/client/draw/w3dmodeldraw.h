@@ -261,9 +261,6 @@ class W3DModelDraw : public DrawModule, public ObjectDrawInterface
 {
     IMPLEMENT_POOL(W3DModelDraw);
 
-    void *operator new(size_t size, void *dst) { return dst; }
-    void operator delete(void *p, void *q) {}
-
 public:
     struct RecoilInfo
     {

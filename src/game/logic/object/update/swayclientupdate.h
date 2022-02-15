@@ -50,10 +50,6 @@ private:
     void Stop_Sway();
 
 #ifdef GAME_DLL
-private:
-    void *operator new(size_t size, void *where) { return where; }
-    void operator delete(void *ptr, void *where) {}
-
 public:
     SwayClientUpdate *Hook_Ctor(Thing *thing, const ModuleData *module_data)
     {

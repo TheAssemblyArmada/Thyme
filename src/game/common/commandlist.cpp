@@ -19,6 +19,27 @@
 CommandList *g_theCommandList = nullptr;
 #endif
 
+CommandList::~CommandList()
+{
+    Destroy_All_Messages();
+}
+
+void CommandList::Init()
+{
+    GameMessageList::Init();
+}
+
+void CommandList::Reset()
+{
+    GameMessageList::Reset();
+    Destroy_All_Messages();
+}
+
+void CommandList::Update()
+{
+    GameMessageList::Update();
+}
+
 void CommandList::Destroy_All_Messages()
 {
     GameMessage *next = nullptr;
@@ -39,14 +60,4 @@ void CommandList::Append_Message_List(GameMessage *list)
         Append_Message(msg);
         msg = next;
     }
-}
-
-CommandList::~CommandList()
-{
-    Destroy_All_Messages();
-}
-
-void CommandList::Reset()
-{
-    Destroy_All_Messages();
 }

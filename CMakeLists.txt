@@ -65,6 +65,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DEFAULT_STANDALONE OFF)
     set(DEFAULT_STDFS OFF)
     set(DEFAULT_FFMPEG OFF)
+    set(DEFAULT_SDL2 OFF)
 else()
     set(DEFAULT_STANDALONE ON)
     include(CheckIncludeFileCXX)
@@ -75,6 +76,7 @@ else()
         set(DEFAULT_STDFS OFF)
     endif()
     set(DEFAULT_FFMPEG ON)
+    set(DEFAULT_SDL2 ON)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -90,6 +92,7 @@ option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
 option(USE_ZLIB "Use zlib to support deflate compression." ON)
+option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -257,6 +260,17 @@ endif()
 
 if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
+endif()
+if(USE_SDL2)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        SDL2
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG        release-2.0.20
+    )
+
+    FetchContent_MakeAvailable(SDL2)
 endif()
 
 if(USE_ZLIB)

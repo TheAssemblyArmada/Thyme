@@ -20,11 +20,13 @@ class CommandList : public GameMessageList
 {
     ALLOW_HOOKING
 public:
+    CommandList() {}
+
     // SubsystemInterface implementations
     virtual ~CommandList();
-    virtual void Init() override {}
+    virtual void Init() override;
     virtual void Reset() override;
-    virtual void Update() override {}
+    virtual void Update() override;
 
     void Append_Message_List(GameMessage *list);
 

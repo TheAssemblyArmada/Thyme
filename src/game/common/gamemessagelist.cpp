@@ -26,14 +26,16 @@ GameMessageList::~GameMessageList()
 
 void GameMessageList::Append_Message(GameMessage *msg)
 {
+    msg->m_next = nullptr;
+
     if (m_lastMessage != nullptr) {
         m_lastMessage->m_next = msg;
         msg->m_prev = m_lastMessage;
         m_lastMessage = msg;
     } else {
         m_firstMessage = msg;
-        msg->m_prev = nullptr;
         m_lastMessage = msg;
+        msg->m_prev = nullptr;
     }
 
     msg->m_list = this;
@@ -46,12 +48,11 @@ void GameMessageList::Insert_Message(GameMessage *msg, GameMessage *at)
 
     if (at->m_next) {
         at->m_next->m_prev = msg;
-        at->m_next = msg;
     } else {
         m_lastMessage = msg;
-        at->m_next = msg;
     }
 
+    at->m_next = msg;
     msg->m_list = this;
 }
 

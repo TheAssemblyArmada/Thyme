@@ -58,6 +58,8 @@ elseif(GTK3_FOUND)
     message("Building GTK3 version.")
     target_link_libraries(captnlog ${GTK3_LIBRARIES})
     target_include_directories(captnlog PRIVATE ${GTK3_INCLUDE_DIRS})
+else()
+    message(FATAL_ERROR "Missing captnlog messagebox backend")
 endif()
 
 # Set the max logging level to debug by default. See captnlog.h for possible levels.

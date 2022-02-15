@@ -19,6 +19,7 @@
 #include "rtsutils.h"
 #include <algorithm>
 #include <captainslog.h>
+#include <cctype>
 
 #ifdef PLATFORM_WINDOWS
 #include <winuser.h>

@@ -172,7 +172,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
     m_playerIndex(-1),
     m_nextPlayPortion()
 {
-    if (m_drawableID != OBJECT_UNK) {
+    if (m_drawableID != DRAWABLE_UNK) {
         m_eventType = EVENT_SPEECH;
     }
 }

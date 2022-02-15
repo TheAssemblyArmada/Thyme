@@ -431,7 +431,7 @@ void DX8Caps::Check_Render_To_Texture_Support(WW3DFormat format, const w3dcaps_t
  */
 void DX8Caps::Check_Depth_Stencil_Support(WW3DFormat format, const w3dcaps_t &caps)
 {
-    if (format == WW3DZ_FORMAT_UNKNOWN) {
+    if (format == WW3D_FORMAT_UNKNOWN) {
         memset(m_supportDepthStencilFormat, 0, sizeof(m_supportDepthStencilFormat));
 
         return;

@@ -133,7 +133,9 @@ protected:
     int m_cursorY;
     void *m_userData;
     WinInstanceData m_instData;
+#ifdef GAME_DEBUG_STRUCTS
     void *m_inputData;
+#endif
     WindowCallbackFunc m_input;
     WindowCallbackFunc m_system;
     WindowDrawFunc m_draw;

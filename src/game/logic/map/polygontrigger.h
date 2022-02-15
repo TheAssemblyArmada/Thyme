@@ -39,7 +39,7 @@ public:
     bool Is_Shown_In_Layer() const { return m_isShownInLayer; }
     Utf8String Get_Trigger_Name() const { return m_triggerName; }
     void Set_Layer_Name(Utf8String name) { m_layerName = name; }
-    bool Set_Is_Shown_In_Layer(bool shown) { m_isShownInLayer = shown; }
+    void Set_Is_Shown_In_Layer(bool shown) { m_isShownInLayer = shown; }
     bool Is_Selected() { return m_isSelected; }
     void Set_Selected(bool selected) { m_isSelected = selected; }
     void Set_Trigger_Name(Utf8String name) { m_triggerName = name; }

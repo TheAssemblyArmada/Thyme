@@ -104,10 +104,15 @@ public: \
 #define IMPLEMENT_POOL(classname) IMPLEMENT_NAMED_POOL(classname, classname);
 
 #define IMPLEMENT_ABSTRACT_POOL(classname) \
-private: \
+protected: \
     virtual MemoryPool *Get_Object_Pool() override { throw CODE_01; } \
     void *operator new(size_t size) = delete; \
-    void operator delete(void *ptr) { captainslog_dbgassert(0, "This should be impossible to call (abstract base class)"); }
+    void operator delete(void *ptr) \
+    { \
+        captainslog_dbgassert(0, "This should be impossible to call (abstract base class)"); \
+    } \
+\
+private:
 
 // NEW_POOL_OBJ is obsolete. Can be removed.
 #define NEW_POOL_OBJ(classname, ...) new classname(__VA_ARGS__)

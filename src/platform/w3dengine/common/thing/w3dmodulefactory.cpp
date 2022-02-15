@@ -18,6 +18,7 @@
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
+#include "w3dprojectilestreamdraw.h"
 #include "w3dtreedraw.h"
 /**
  * @brief Initialises W3D specific modules on top of those handled by the base factory class.
@@ -62,8 +63,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DOverlordAircraftDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776A30,
-        (moddatacreateproc_t)0x00776B10,
+    Add_Module_Internal(W3DProjectileStreamDraw::Friend_New_Module_Instance,
+        W3DProjectileStreamDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DProjectileStreamDraw",
         DrawModule::Get_Interface_Mask());

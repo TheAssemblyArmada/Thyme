@@ -89,6 +89,7 @@ set(GAMEENGINE_SRC
     game/client/draw/w3ddependencymodeldraw.cpp
     game/client/draw/w3dlaserdraw.cpp
     game/client/draw/w3dmodeldraw.cpp
+    game/client/draw/w3dprojectilestreamdraw.cpp
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/tintenvelope.cpp
     game/client/gui/gamefont.cpp
@@ -227,6 +228,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/laserupdate.cpp
+    game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
     game/logic/scriptengine/script.cpp
     game/logic/scriptengine/scriptengine.cpp

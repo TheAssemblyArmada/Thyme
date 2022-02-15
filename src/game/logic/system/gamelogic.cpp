@@ -295,3 +295,10 @@ unsigned int GameLogic::Get_Object_Count()
 
     return count;
 }
+
+void GameLogic::Destroy_Object(Object *obj)
+{
+#ifdef GAME_DLL
+    Call_Method<void, GameLogic, Object *>(PICK_ADDRESS(0x004A7370, 0x007B30B7), this, obj);
+#endif
+}

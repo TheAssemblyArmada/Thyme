@@ -56,6 +56,10 @@ using std::rename;
 #include <pwd.h>
 #endif
 
+#ifdef BUILD_WITH_SDL2
+#include <SDL.h>
+#endif
+
 #ifdef PLATFORM_WINDOWS
 #include <direct.h>
 #include <shellapi.h>
@@ -374,7 +378,26 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
 
 void Create_Window()
 {
-#if defined PLATFORM_WINDOWS && defined GAME_DLL
+    const int window_width = 800;
+    const int window_height = 600;
+    const char *window_title = "Thyme RTS Engine";
+#if defined BUILD_WITH_SDL2
+    SDL_Window *window = NULL;
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        captainslog_error("SDL could not initialize!");
+        return;
+    }
+
+    g_creatingWindow = true;
+
+    window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, 0);
+
+    SDL_RaiseWindow(window);
+    SDL_ShowWindow(window);
+
+    g_creatingWindow = false;
+#elif defined PLATFORM_WINDOWS && defined GAME_DLL
     WNDCLASSA WndClass;
     RECT Rect;
     HINSTANCE app_hinstance = GetModuleHandle(nullptr);
@@ -406,8 +429,8 @@ void Create_Window()
 
     RegisterClassA(&WndClass);
 
-    Rect.right = 800;
-    Rect.bottom = 600;
+    Rect.right = window_width;
+    Rect.bottom = window_height;
     Rect.left = 0;
     Rect.top = 0;
 
@@ -432,16 +455,16 @@ void Create_Window()
     // WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST
 
     if (g_xPos == c_invalidPos) {
-        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - 400;
+        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - (window_width / 2);
     }
 
     if (g_yPos == c_invalidPos) {
-        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - 300;
+        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - (window_height / 2);
     }
 
     HWND app_hwnd = CreateWindowExA(0,
         "Game Window",
-        "Thyme RTS Engine",
+        window_title,
         style,
         g_xPos,
         g_yPos,

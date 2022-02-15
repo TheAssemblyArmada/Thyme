@@ -1879,7 +1879,7 @@ bool W3DModelDraw::Update_Bones_For_Client_Particle_Systems()
     return true;
 }
 
-const char *s_terrainDecalTextureName[] = { "TERRAIN_DECAL_DEMORALIZED_OBSOLETE",
+const char *const s_terrainDecalTextureName[] = { "TERRAIN_DECAL_DEMORALIZED_OBSOLETE",
     "EXHorde",
     "EXHorde_UP",
     "EXHordeB",

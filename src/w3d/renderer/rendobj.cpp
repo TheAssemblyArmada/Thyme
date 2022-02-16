@@ -36,7 +36,7 @@ StringClass Filename_From_Asset_Name(const char *asset_name)
 
     if (asset_name != NULL) {
         strcpy(filename.Get_Buffer(strlen(asset_name) + 5), asset_name);
-        char *suffix = (char *)strchr(filename, '.');
+        char *suffix = strchr(filename.Peek_Buffer(), '.');
 
         if (suffix != NULL) {
             suffix[0] = 0;

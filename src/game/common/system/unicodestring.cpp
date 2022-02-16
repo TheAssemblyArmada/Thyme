@@ -42,6 +42,8 @@ Utf16String::Utf16String(const unichar_t *s) : m_data(nullptr)
 
 Utf16String::Utf16String(Utf16String const &string) : m_data(string.m_data)
 {
+    // #TODO Remove critical section and put atomic reference counter when standalone.
+
     ScopedCriticalSectionClass cs(g_unicodeStringCriticalSection);
 
     if (m_data != nullptr) {

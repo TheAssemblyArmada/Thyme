@@ -18,6 +18,7 @@
 #include "drawable.h"
 #include "experiencetracker.h"
 #include "playerlist.h"
+#include "updatemodule.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
@@ -142,6 +143,21 @@ BehaviorModule *Object::Find_Module(NameKeyType type) const
     }
 
     return nullptr;
+}
+
+// #TODO This will cause compile error as soon as DamageModule is properly implemented elsewhere. Delete this then.
+class DamageModule : public BehaviorModule
+{
+};
+
+DamageModule *Object::Find_Damage_Module(NameKeyType type) const
+{
+    return static_cast<DamageModule *>(Find_Module(type));
+}
+
+UpdateModule *Object::Find_Update_Module(NameKeyType type) const
+{
+    return static_cast<UpdateModule *>(Find_Module(type));
 }
 
 VeterancyLevel Object::Get_Veterancy_Level() const

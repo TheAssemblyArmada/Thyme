@@ -283,8 +283,8 @@ public:
     bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
 
     BehaviorModule *Find_Module(NameKeyType type) const;
-    DamageModule *Find_Damage_Module(NameKeyType type) const { return (DamageModule *)Find_Module(type); }
-    UpdateModule *Find_Update_Module(NameKeyType type) const { return (UpdateModule *)Find_Module(type); }
+    DamageModule *Find_Damage_Module(NameKeyType type) const;
+    UpdateModule *Find_Update_Module(NameKeyType type) const;
 
     bool Is_Effectively_Dead() const { return (m_privateStatus & STATUS_EFFECTIVELY_DEAD) != 0; }
     bool Is_Undetected_Defector() const { return (m_privateStatus & STATUS_UNDETECTED_DEFECTOR) != 0; }

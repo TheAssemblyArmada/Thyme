@@ -37,8 +37,10 @@ public:
         captainslog_assert(V[1] != nullptr);
         captainslog_assert(V[2] != nullptr);
 
-        Vector3::Cross_Product(*(V[1]) - *(V[0]), *(V[2]) - *(V[0]), (Vector3 *)N);
-        ((Vector3 *)N)->Normalize();
+        // #TODO This is a bad const_cast and should be fixed.
+
+        Vector3::Cross_Product(*(V[1]) - *(V[0]), *(V[2]) - *(V[0]), const_cast<Vector3 *>(N));
+        const_cast<Vector3 *>(N)->Normalize();
     }
 
     bool Contains_Point(const Vector3 &ipoint) const;

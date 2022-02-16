@@ -19,6 +19,8 @@
 #include "autopool.h"
 #include <captainslog.h>
 
+// #TODO investigate C casts in this file.
+
 class GenericMultiListClass;
 class MultiListObjectClass;
 class GenericMultiListIterator;

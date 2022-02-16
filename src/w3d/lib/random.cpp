@@ -158,7 +158,7 @@ int Random4Class::operator()()
     y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
     y ^= TEMPERING_SHIFT_L(y);
 
-    int *x = (int *)&y;
+    int *x = reinterpret_cast<int *>(&y);
 
     return *x;
 }
@@ -171,7 +171,7 @@ int Random4Class::operator()(int minval, int maxval)
 float Random4Class::Get_Float()
 {
     int x = (*this)();
-    unsigned int *y = (unsigned int *)&x;
+    unsigned int *y = reinterpret_cast<unsigned int *>(&x);
 
     return (*y) * 2.3283064370807973754314699618685e-10f;
 }

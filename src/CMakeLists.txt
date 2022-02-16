@@ -547,7 +547,7 @@ endif()
 # Gather needed link libraries and compile defintions
 list(APPEND GAME_LINK_LIBRARIES base captnlog)
 
-if(USE_GAMEMATH)
+if(USE_SDL2)
     list(APPEND GAME_LINK_LIBRARIES SDL2::SDL2 SDL2::SDL2main)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_SDL2)
 endif()

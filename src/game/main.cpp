@@ -384,42 +384,10 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
 
 void Create_Window()
 {
-    bool is_windowed = g_gameIsWindowed;
-#ifdef PLATFORM_WINDOWS
-    // Get module handle when on windows
-    HINSTANCE app_hinstance = GetModuleHandle(nullptr);
-    g_applicationHInstance = app_hinstance;
-#endif
-#ifdef BUILD_WITH_SDL2
-    SDL_Window *window = NULL;
-
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        captainslog_error("SDL could not initialize!");
-        return;
-    }
-
-    g_creatingWindow = true;
-
-    window = SDL_CreateWindow(WIN_TITLE,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
-        WIN_WIDTH,
-        WIN_HEIGHT,
-        is_windowed ? 0 : SDL_WINDOW_FULLSCREEN);
-
-    SDL_RaiseWindow(window);
-    SDL_ShowWindow(window);
-
-    g_creatingWindow = false;
-#ifdef PLATFORM_WINDOWS
-    SDL_SysWMinfo wmInfo;
-    SDL_VERSION(&wmInfo.version);
-    SDL_GetWindowWMInfo(window, &wmInfo);
-    g_applicationHWnd = wmInfo.info.win.window;
-#endif
-#elif defined PLATFORM_WINDOWS && defined GAME_DLL
+#if defined PLATFORM_WINDOWS && defined GAME_DLL
     WNDCLASSA WndClass;
     RECT Rect;
+    HINSTANCE app_hinstance = GetModuleHandle(nullptr);
     STARTUPINFOA sinfo;
     int show_cmd;
 
@@ -433,6 +401,7 @@ void Create_Window()
     }
 
     g_splashImage = LoadImageA(app_hinstance, "Install_Final.bmp", 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);
+    bool is_windowed = g_gameIsWindowed;
 
     WndClass.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
     WndClass.lpfnWndProc = &Wnd_Proc;
@@ -447,8 +416,8 @@ void Create_Window()
 
     RegisterClassA(&WndClass);
 
-    Rect.right = window_width;
-    Rect.bottom = window_height;
+    Rect.right = 800;
+    Rect.bottom = 600;
     Rect.left = 0;
     Rect.top = 0;
 
@@ -473,16 +442,16 @@ void Create_Window()
     // WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST
 
     if (g_xPos == c_invalidPos) {
-        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - (window_width / 2);
+        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - 400;
     }
 
     if (g_yPos == c_invalidPos) {
-        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - (window_height / 2);
+        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - 300;
     }
 
     HWND app_hwnd = CreateWindowExA(0,
         "Game Window",
-        window_title,
+        "Thyme RTS Engine",
         style,
         g_xPos,
         g_yPos,
@@ -504,6 +473,7 @@ void Create_Window()
     ShowWindow(app_hwnd, show_cmd);
     UpdateWindow(app_hwnd);
 
+    g_applicationHInstance = app_hinstance;
     g_applicationHWnd = app_hwnd;
 
     g_creatingWindow = false;
@@ -516,6 +486,43 @@ void Create_Window()
         DeleteObject(g_splashImage);
         g_splashImage = 0;
     }
+#endif
+}
+
+void Create_Window_SDL2()
+{
+#ifdef BUILD_WITH_SDL2
+    bool is_windowed = g_gameIsWindowed;
+    SDL_Window *window = NULL;
+
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        captainslog_error("SDL could not initialize!");
+        return;
+    }
+
+    g_creatingWindow = true;
+
+    window = SDL_CreateWindow(WIN_TITLE,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        WIN_WIDTH,
+        WIN_HEIGHT,
+        is_windowed ? 0 : SDL_WINDOW_FULLSCREEN);
+
+    SDL_RaiseWindow(window);
+    SDL_ShowWindow(window);
+
+    g_creatingWindow = false;
+#ifdef PLATFORM_WINDOWS
+    // Get module handle when on windows
+    HINSTANCE app_hinstance = GetModuleHandle(nullptr);
+    g_applicationHInstance = app_hinstance;
+    // Get native window handle
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(window, &wmInfo);
+    g_applicationHWnd = wmInfo.info.win.window;
+#endif
 #endif
 }
 
@@ -603,8 +610,12 @@ int main(int argc, char **argv)
     Check_Windowed(argc, argv);
 
     // Create the window
-    // DEBUG_LOG("Creating Window.\n");
+    captainslog_info("Creating window");
+#ifdef BUILD_WITH_SDL2
+    Create_Window_SDL2();
+#else
     Create_Window();
+#endif
 
     // DEBUG_LOG("Initialising memory manager.\n");
     Init_Memory_Manager();

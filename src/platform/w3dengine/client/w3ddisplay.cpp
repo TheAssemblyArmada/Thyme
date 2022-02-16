@@ -1393,47 +1393,51 @@ void W3DDisplay::Preload_Texture_Assets(Utf8String texture)
     }
 }
 
-#define BFT_BITMAP 0x4d42 // BM
-
-#define DibNumColors(lpbi) \
-    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int)(1 << (int)(lpbi)->biBitCount) : (int)(lpbi)->biClrUsed)
-
-#define DibSize(lpbi) ((lpbi)->biSize + (lpbi)->biSizeImage + (int)(lpbi)->biClrUsed * sizeof(RGBQUAD))
-
-#define DibPaletteSize(lpbi) (DibNumColors(lpbi) * sizeof(RGBQUAD))
 void Create_Bmp_File(const char *filename, const char *data, int width, int height)
 {
 #ifdef BUILD_WITH_D3D8
-    BITMAPINFOHEADER *header = (BITMAPINFOHEADER *)LocalAlloc(LMEM_ZEROINIT, sizeof(BITMAPINFOHEADER));
-    header->biSize = sizeof(BITMAPINFOHEADER);
-    header->biWidth = width;
-    header->biHeight = height;
-    header->biPlanes = 1;
-    header->biBitCount = 24;
-    header->biCompression = 0;
-    header->biSizeImage = 24 * header->biHeight * ((header->biWidth + 7) / 8);
-    header->biClrImportant = 0;
-    HANDLE h = CreateFile(filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+#define BFT_BITMAP 0x4d42 // 'BM'
+#define DibNumColors(lpbi) \
+    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int)(1 << (int)(lpbi)->biBitCount) : (int)(lpbi)->biClrUsed)
+#define DibSize(lpbi) ((lpbi)->biSize + (lpbi)->biSizeImage + (int)(lpbi)->biClrUsed * sizeof(RGBQUAD))
+#define DibPaletteSize(lpbi) (DibNumColors(lpbi) * sizeof(RGBQUAD))
+
+    // #BUGFIX Simplify code and avoid LocalAlloc. Use the stack.
+    BITMAPINFOHEADER iheader = { 0 };
+    iheader.biSize = sizeof(BITMAPINFOHEADER);
+    iheader.biWidth = width;
+    iheader.biHeight = height;
+    iheader.biPlanes = 1;
+    iheader.biBitCount = 24;
+    iheader.biCompression = BI_RGB;
+    iheader.biSizeImage = 3 * iheader.biHeight * iheader.biWidth;
+    iheader.biClrImportant = 0;
+    HANDLE h =
+        CreateFileA(filename, GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 
     if (h != INVALID_HANDLE_VALUE) {
         BITMAPFILEHEADER fheader;
         fheader.bfType = BFT_BITMAP;
-        fheader.bfSize = DibSize(header) + sizeof(BITMAPFILEHEADER);
+        fheader.bfSize = DibSize(&iheader) + sizeof(BITMAPFILEHEADER);
         fheader.bfReserved1 = 0;
         fheader.bfReserved2 = 0;
-        fheader.bfOffBits = header->biSize + DibPaletteSize(header) + sizeof(BITMAPFILEHEADER);
+        fheader.bfOffBits = iheader.biSize + DibPaletteSize(&iheader) + sizeof(BITMAPFILEHEADER);
         DWORD NumberOfBytesWritten;
 
         if (WriteFile(h, &fheader, sizeof(BITMAPFILEHEADER), &NumberOfBytesWritten, 0)) {
-            if (WriteFile(h, header, 4 * header->biClrUsed + sizeof(BITMAPINFOHEADER), &NumberOfBytesWritten, 0)) {
-                WriteFile(h, data, header->biSizeImage, &NumberOfBytesWritten, 0);
+            if (WriteFile(h, &iheader, 4 * iheader.biClrUsed + sizeof(BITMAPINFOHEADER), &NumberOfBytesWritten, 0)) {
+                WriteFile(h, data, iheader.biSizeImage, &NumberOfBytesWritten, 0);
             }
         }
         CloseHandle(h);
     }
 
-    // BUGFIX prevent memory leak;
-    LocalFree(header);
+#undef BFT_BITMAP
+#undef DibNumColors
+#undef DibSize
+#undef DibPaletteSize
+
 #endif
 }
 

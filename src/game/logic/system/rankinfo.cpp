@@ -55,13 +55,13 @@ void RankInfoStore::Reset()
  *
  * 0x004894E0
  */
-RankInfo *RankInfoStore::Get_Rank_Info(int level)
+const RankInfo *RankInfoStore::Get_Rank_Info(int level) const
 {
     if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level - 1] == nullptr) {
         return nullptr;
     }
 
-    return (RankInfo *)m_infoStore[level - 1]->Get_Final_Override();
+    return static_cast<const RankInfo *>(m_infoStore[level - 1]->Get_Final_Override());
 }
 
 /**
@@ -116,7 +116,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
             ini->Get_Line_Number());
 
         RankInfo *new_info = NEW_POOL_OBJ(RankInfo);
-        RankInfo *override_info = (RankInfo *)(current_info->Get_Final_Override());
+        RankInfo *override_info = static_cast<RankInfo *>(current_info->Friend_Get_Final_Override());
         *new_info = *override_info;
         override_info->Set_Next(new_info);
         override_info->Set_Is_Allocated();

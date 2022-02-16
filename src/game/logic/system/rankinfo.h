@@ -33,7 +33,7 @@ public:
     virtual void Reset() override;
     virtual void Update() override {}
 
-    RankInfo *Get_Rank_Info(int level);
+    const RankInfo *Get_Rank_Info(int level) const;
     int Get_Rank_Level_Count() const;
 
     static void Parse_Rank_Definition(INI *ini);

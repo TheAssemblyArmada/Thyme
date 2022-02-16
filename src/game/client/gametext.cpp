@@ -770,7 +770,7 @@ void GameTextManager::Init()
 #ifdef PLATFORM_WINDOWS
     if (g_applicationHWnd != 0) {
         SetWindowTextA(g_applicationHWnd, ntitle.Str());
-        SetWindowTextW(g_applicationHWnd, (const wchar_t *)wtitle.Str());
+        SetWindowTextW(g_applicationHWnd, wtitle.Str());
     }
 #endif
 }

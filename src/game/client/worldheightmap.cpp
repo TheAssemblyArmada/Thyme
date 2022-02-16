@@ -504,7 +504,7 @@ bool WorldHeightMap::Parse_Objects_Data_Chunk(DataChunkInput &file, DataChunkInf
 
 bool WorldHeightMap::Parse_Height_Map_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    return ((WorldHeightMap *)user_data)->Parse_Height_Map_Data(file, info, user_data);
+    return static_cast<WorldHeightMap *>(user_data)->Parse_Height_Map_Data(file, info, user_data);
 }
 
 bool WorldHeightMap::Parse_Height_Map_Data(DataChunkInput &file, DataChunkInfo *info, void *user_data)
@@ -563,7 +563,7 @@ bool WorldHeightMap::Parse_Height_Map_Data(DataChunkInput &file, DataChunkInfo *
 
 bool WorldHeightMap::Parse_Size_Only_In_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    return ((WorldHeightMap *)user_data)->Parse_Size_Only(file, info, user_data);
+    return static_cast<WorldHeightMap *>(user_data)->Parse_Size_Only(file, info, user_data);
 }
 
 bool WorldHeightMap::Parse_Size_Only(DataChunkInput &file, DataChunkInfo *info, void *user_data)
@@ -618,7 +618,7 @@ bool WorldHeightMap::Parse_Size_Only(DataChunkInput &file, DataChunkInfo *info, 
 
 bool WorldHeightMap::Parse_Blend_Tile_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    return ((WorldHeightMap *)user_data)->Parse_Blend_Tile_Data(file, info, user_data);
+    return static_cast<WorldHeightMap *>(user_data)->Parse_Blend_Tile_Data(file, info, user_data);
 }
 
 bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *info, void *user_data)
@@ -639,11 +639,11 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     memset(m_cellFlipState, 0, m_height * m_flipStateWidth);
     memset(m_cliffState, 0, m_height * m_flipStateWidth);
 
-    file.Read_Byte_Array((unsigned char *)m_tileNdxes, 2 * m_dataSize);
-    file.Read_Byte_Array((unsigned char *)m_blendTileNdxes, 2 * m_dataSize);
+    file.Read_Byte_Array(reinterpret_cast<uint8_t *>(m_tileNdxes), 2 * m_dataSize);
+    file.Read_Byte_Array(reinterpret_cast<uint8_t *>(m_blendTileNdxes), 2 * m_dataSize);
 
     if (info->version >= 6) {
-        file.Read_Byte_Array((unsigned char *)m_extraBlendTileNdxes, 2 * m_dataSize);
+        file.Read_Byte_Array(reinterpret_cast<uint8_t *>(m_extraBlendTileNdxes), 2 * m_dataSize);
 
         if (!g_theWriteableGlobalData->m_use3WayTerrainBlends) {
             memset(m_extraBlendTileNdxes, 0, 2 * m_dataSize);
@@ -651,7 +651,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     }
 
     if (info->version >= 5) {
-        file.Read_Byte_Array((unsigned char *)m_cliffInfoNdxes, 2 * m_dataSize);
+        file.Read_Byte_Array(reinterpret_cast<uint8_t *>(m_cliffInfoNdxes), 2 * m_dataSize);
     }
 
     if (info->version >= 7) {
@@ -825,12 +825,12 @@ void WorldHeightMap::Read_Tex_Class(TXTextureClass *tex_class, TileData **tile_d
 
 bool WorldHeightMap::Parse_Object_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    return ((WorldHeightMap *)file.m_userData)->Parse_Object_Data(file, info, user_data, info->version >= 2);
+    return static_cast<WorldHeightMap *>(file.m_userData)->Parse_Object_Data(file, info, user_data, info->version >= 2);
 }
 
 bool WorldHeightMap::Parse_Object_Data(DataChunkInput &file, DataChunkInfo *info, void *user_data, bool read_dict)
 {
-    MapObject *pPrevious = (MapObject *)file.m_currentObject;
+    MapObject *pPrevious = static_cast<MapObject *>(file.m_currentObject);
     Coord3D loc;
     loc.x = file.Read_Real32();
     loc.y = file.Read_Real32();

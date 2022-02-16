@@ -71,7 +71,7 @@ void W3DDependencyModelDraw::Adjust_Transform_Mtx(Matrix3D &transform) const
     const Drawable *drawable = Get_Drawable();
     const Object *object = drawable->Get_Object();
 
-    W3DDependencyModelDrawModuleData *data = Get_W3D_Dependency_Model_Draw_Module_Data();
+    const W3DDependencyModelDrawModuleData *data = Get_W3D_Dependency_Model_Draw_Module_Data();
 
     if (data->m_attachToDrawableBoneInContainer.Is_Not_Empty()) {
         if (object != nullptr) {

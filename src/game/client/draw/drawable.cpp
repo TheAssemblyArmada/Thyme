@@ -142,7 +142,7 @@ const Vector3 *Drawable::Get_Selection_Color() const
 
 DrawModule **Drawable::Get_Draw_Modules()
 {
-    DrawModule **modules = (DrawModule **)Get_Modules(MODULE_DRAW);
+    DrawModule **modules = reinterpret_cast<DrawModule **>(Get_Modules(MODULE_DRAW));
 
     if (m_isModelDirty) {
         if (s_modelLockCount > 0) {
@@ -166,16 +166,16 @@ DrawModule **Drawable::Get_Draw_Modules()
 
 const DrawModule **Drawable::Get_Draw_Modules() const
 {
-    const DrawModule **modules = (const DrawModule **)Get_Modules(MODULE_DRAW);
+    DrawModule **modules = reinterpret_cast<DrawModule **>(Get_Modules(MODULE_DRAW));
 
     if (m_isModelDirty) {
         if (s_modelLockCount > 0) {
             captainslog_debug("Should not need to update dirty stuff while locked-for-iteration. Ignoring.");
-            return modules;
+            return const_cast<const DrawModule **>(modules);
         }
 
-        for (const DrawModule **i = modules; *i != nullptr; i++) {
-            ObjectDrawInterface *draw = ((DrawModule *)*i)->Get_Object_Draw_Interface();
+        for (DrawModule **i = modules; *i != nullptr; i++) {
+            ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
             if (draw) {
                 draw->Replace_Model_Condition_State(m_conditionState);
@@ -185,7 +185,7 @@ const DrawModule **Drawable::Get_Draw_Modules() const
         m_isModelDirty = false;
     }
 
-    return modules;
+    return const_cast<const DrawModule **>(modules);
 }
 
 bool Drawable::Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const
@@ -753,7 +753,7 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
     }
 
     static const NameKeyType key_StickyBombUpdate = g_theNameKeyGenerator->Name_To_Key("StickyBombUpdate");
-    StickyBombUpdate *update = (StickyBombUpdate *)object->Find_Update_Module(key_StickyBombUpdate);
+    StickyBombUpdate *update = static_cast<StickyBombUpdate *>(object->Find_Update_Module(key_StickyBombUpdate));
 
     if (update != nullptr && update->Get_Target_Object() != nullptr) {
         if (update->Has_Die_Frame()) {

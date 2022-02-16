@@ -154,7 +154,7 @@ struct ModelConditionInfo
     bool Find_Pristine_Bone_Pos(NameKeyType key, Coord3D &pos) const;
     void Load_Animations() const {}
     bool Matches_Mode(bool night, bool snow) const;
-    void Preload_Assets(TimeOfDayType time_of_day, float scale);
+    void Preload_Assets(TimeOfDayType time_of_day, float scale) const;
     void Validate_Cached_Bones(RenderObjClass *robj, float scale) const;
     void Validate_Stuff(RenderObjClass *robj, float scale, std::vector<Utf8String> const &bones) const;
     void Validate_Turret_Info() const;
@@ -198,7 +198,7 @@ struct ModelConditionInfo
     mutable TurretInfo m_turretInfo[MAX_TURRETS];
     mutable std::vector<WeaponBarrelInfo> m_weaponBarrelInfoVec[WEAPONSLOT_COUNT];
     mutable bool m_hasWeaponBone[WEAPONSLOT_COUNT];
-    mutable char m_validStuff;
+    mutable int8_t m_validStuff;
 };
 
 class W3DModelDrawModuleData : public ModuleData
@@ -229,7 +229,7 @@ public:
     Vector3 *Get_Attach_To_Drawable_Bone_Offset(Drawable const *drawable) const;
     Utf8String Get_Best_Model_Name_For_WB(BitFlags<MODELCONDITION_COUNT> const &flags) const;
     static void Parse_Condition_State(INI *ini, void *formal, void *store, void const *user_data);
-    void Preload_Assets(TimeOfDayType time_of_day, float scale);
+    void Preload_Assets(TimeOfDayType time_of_day, float scale) const;
     void Validate_Stuff_For_Time_And_Weather(Drawable const *drawable, bool night, bool snow) const;
 
 private:
@@ -401,9 +401,9 @@ public:
 
     RenderObjClass *Get_Render_Object() { return m_renderObject; }
     bool Get_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
-    W3DModelDrawModuleData *Get_W3D_Model_Draw_Module_Data() const
+    const W3DModelDrawModuleData *Get_W3D_Model_Draw_Module_Data() const
     {
-        return (W3DModelDrawModuleData *)Module::Get_Module_Data();
+        return static_cast<const W3DModelDrawModuleData *>(Module::Get_Module_Data());
     }
 
 private:

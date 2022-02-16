@@ -49,9 +49,9 @@ public:
 
     virtual void Notify_Draw_Module_Dependency_Cleared() override { m_doDrawModule = true; }
 
-    W3DDependencyModelDrawModuleData *Get_W3D_Dependency_Model_Draw_Module_Data() const
+    const W3DDependencyModelDrawModuleData *Get_W3D_Dependency_Model_Draw_Module_Data() const
     {
-        return (W3DDependencyModelDrawModuleData *)Module::Get_Module_Data();
+        return static_cast<const W3DDependencyModelDrawModuleData *>(Module::Get_Module_Data());
     }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);

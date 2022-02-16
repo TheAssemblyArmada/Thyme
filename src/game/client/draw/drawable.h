@@ -232,8 +232,13 @@ public:
         captainslog_assert(type != MODULE_DEFAULT);
         return m_modules[type - 1];
     }
-    ClientUpdateModule **Get_Client_Update_Modules() { return (ClientUpdateModule **)Get_Modules(MODULE_CLIENT_UPDATE); }
-    DrawModule **Get_Draw_Modules_Non_Dirty() { return (DrawModule **)Get_Modules(MODULE_DRAW); }
+
+    ClientUpdateModule **Get_Client_Update_Modules()
+    {
+        return reinterpret_cast<ClientUpdateModule **>(Get_Modules(MODULE_CLIENT_UPDATE));
+    }
+
+    DrawModule **Get_Draw_Modules_Non_Dirty() { return reinterpret_cast<DrawModule **>(Get_Modules(MODULE_DRAW)); }
 
     void Set_Model_Condition_State(ModelConditionFlagType set)
     {

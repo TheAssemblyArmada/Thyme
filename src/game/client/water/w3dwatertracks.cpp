@@ -158,13 +158,15 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     if (batch_start < 4000 - m_y * m_x) {
         if (vertex_buffer->Get_DX8_Vertex_Buffer()->Lock(vertex_buffer->FVF_Info().Get_FVF_Size() * batch_start,
                 vertex_buffer->FVF_Info().Get_FVF_Size() * m_y * m_x,
-                (BYTE **)&verts,
+                reinterpret_cast<BYTE **>(&verts),
                 D3DLOCK_NOOVERWRITE)) {
             return batch_start;
         }
     } else {
-        if (vertex_buffer->Get_DX8_Vertex_Buffer()->Lock(
-                0, vertex_buffer->FVF_Info().Get_FVF_Size() * m_y * m_x, (BYTE **)&verts, D3DLOCK_DISCARD)) {
+        if (vertex_buffer->Get_DX8_Vertex_Buffer()->Lock(0,
+                vertex_buffer->FVF_Info().Get_FVF_Size() * m_y * m_x,
+                reinterpret_cast<BYTE **>(&verts),
+                D3DLOCK_DISCARD)) {
             return batch_start;
         }
 

@@ -177,7 +177,7 @@ int ScreenBWFilter::Set(FilterModes mode)
     DX8Wrapper::Apply_Render_State_Changes();
     DX8Wrapper::Get_D3D_Device8()->SetPixelShader(m_dwBWPixelShader);
     D3DXVECTOR4 v(0.30000001f, 0.58999997f, 0.11f, 1.0f);
-    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, (float *)v, 1);
+    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, static_cast<CONST FLOAT *>(v), 1);
     D3DXVECTOR4 v2(1.0f, 1.0f, 1.0f, 1.0f);
 
     if (mode == FM_VIEW_BW_BLACK_AND_WHITE) {
@@ -198,9 +198,9 @@ int ScreenBWFilter::Set(FilterModes mode)
         v2.z = 0.0f;
     }
 
-    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(1, (float *)v2, 1);
+    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(1, static_cast<CONST FLOAT *>(v2), 1);
     D3DXVECTOR4 v3(s_curFadeValue, s_curFadeValue, s_curFadeValue, 1.0f);
-    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(2, (float *)v3, 1);
+    DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(2, static_cast<CONST FLOAT *>(v3), 1);
 #endif
     return 1;
 }

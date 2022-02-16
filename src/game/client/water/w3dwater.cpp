@@ -1156,10 +1156,10 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
         m_pDev->SetVertexShaderConstant(6, &mat, 4);
 
         D3DXVECTOR4 v2(0.0f, 0.0f, 0.0f, 0.0f);
-        m_pDev->SetVertexShaderConstant(0, (float *)v2, 1);
+        m_pDev->SetVertexShaderConstant(0, static_cast<CONST FLOAT *>(v2), 1);
 
         D3DXVECTOR4 v3(1.0f, 1.0f, 1.0f, 1.0f);
-        m_pDev->SetVertexShaderConstant(0, (float *)v3, 1);
+        m_pDev->SetVertexShaderConstant(0, static_cast<CONST FLOAT *>(v3), 1);
 
         m_pDev->SetVertexShader(m_dwWaveVertexShader);
         m_pDev->SetPixelShader(m_dwWavePixelShader);
@@ -2039,7 +2039,8 @@ void WaterRenderObjClass::Setup_Flat_Water_Shader()
     m_pDev->SetTextureStageState(2u, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 
     if (m_trapezoidWaterPixelShader) {
-        DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, (float *)D3DXVECTOR4(0.1f, 0.1f, 0.1f, 1.0f), 1);
+        D3DXVECTOR4 vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, static_cast<CONST FLOAT *>(vec4), 1);
         DX8Wrapper::Get_D3D_Device8()->SetPixelShader(m_trapezoidWaterPixelShader);
     }
 #endif
@@ -2408,7 +2409,8 @@ void WaterRenderObjClass::Setup_Jba_Water_Shader()
     m_pDev->SetTextureStageState(3, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
 
     if (m_riverWaterPixelShader) {
-        DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, (float *)D3DXVECTOR4(0.1f, 0.1f, 0.1f, 1.0f), 1);
+        D3DXVECTOR4 vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        DX8Wrapper::Get_D3D_Device8()->SetPixelShaderConstant(0, static_cast<CONST FLOAT *>(vec4), 1);
         DX8Wrapper::Get_D3D_Device8()->SetPixelShader(m_riverWaterPixelShader);
     }
 #endif

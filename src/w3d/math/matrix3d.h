@@ -744,13 +744,13 @@ public:
     static __forceinline void Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z + A[0][3]);
@@ -775,13 +775,13 @@ public:
     static __forceinline void Rotate_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z);
@@ -792,13 +792,13 @@ public:
     static __forceinline void Inverse_Transform_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         Vector3 diff(v->X - A[0][3], v->Y - A[1][3], v->Z - A[2][3]);
@@ -808,13 +808,13 @@ public:
     static __forceinline void Inverse_Rotate_Vector(const Matrix3D &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[1][0] * v->Y + A[2][0] * v->Z);

@@ -335,13 +335,13 @@ public:
     static __forceinline void Transform_Vector(const Matrix4 &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z + A[0][3]);
@@ -360,13 +360,13 @@ public:
     static __forceinline void Transform_Vector(const Matrix4 &A, const Vector4 &in, Vector4 *out)
     {
         Vector4 tmp;
-        Vector4 *v;
+        const Vector4 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector4 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z + A[0][3] * v->W);

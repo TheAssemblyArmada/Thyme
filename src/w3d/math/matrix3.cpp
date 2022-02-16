@@ -128,14 +128,14 @@ Matrix3 operator*(const Matrix3 &a, const Matrix3D &b)
 void Matrix3::Multiply(const Matrix3 &A, const Matrix3 &B, Matrix3 *set_res)
 {
     Matrix3 tmp;
-    Matrix3 *Aptr;
+    const Matrix3 *Aptr;
     float tmp1, tmp2, tmp3;
 
     if (set_res == &A) {
         tmp = A;
         Aptr = &tmp;
     } else {
-        Aptr = (Matrix3 *)&A;
+        Aptr = &A;
     }
 
     tmp1 = B[0][0];

@@ -1309,7 +1309,7 @@ void Drawable::Start_Ambient_Sound(BodyDamageType damage, TimeOfDayType tod, boo
                 }
             }
         } else {
-            captainslog_debug("Ambient sound %s missing! Skipping...", m_ambientSound->m_event.Get_Event_Name());
+            captainslog_debug("Ambient sound %s missing! Skipping...", m_ambientSound->m_event.Get_Event_Name().Str());
             m_ambientSound->Delete_Instance();
             m_ambientSound = nullptr;
         }

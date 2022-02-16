@@ -41,13 +41,8 @@ constexpr ENUMTYPE operator|(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTY
 constexpr ENUMTYPE operator&(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((UNDERLYING)a) & ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator~(ENUMTYPE const a) { return ENUMTYPE(~((UNDERLYING)a)); } \
 constexpr ENUMTYPE operator^(ENUMTYPE const a, ENUMTYPE const b) { return ENUMTYPE(((UNDERLYING)a) ^ ((UNDERLYING)b)); } \
-constexpr ENUMTYPE &operator^=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) ^= ((UNDERLYING &)b)); } \
-constexpr ENUMTYPE &operator&=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) &= ((UNDERLYING &)b)); } \
-constexpr ENUMTYPE &operator|=(ENUMTYPE &a, ENUMTYPE const &b) { return (ENUMTYPE &)(((UNDERLYING &)a) |= ((UNDERLYING &)b)); } \
 constexpr ENUMTYPE operator<<(ENUMTYPE a, size_t const b) { return (ENUMTYPE)(((UnsignedInteger<ENUMTYPE>::type)a) << b); } \
 constexpr ENUMTYPE operator>>(ENUMTYPE a, size_t const b) { return (ENUMTYPE)(((UnsignedInteger<ENUMTYPE>::type)a) >> b); } \
-constexpr ENUMTYPE &operator<<=(ENUMTYPE &a, size_t const b) { return (ENUMTYPE &)((UnsignedInteger<ENUMTYPE>::type &)a <<= b); } \
-constexpr ENUMTYPE &operator>>=(ENUMTYPE &a, size_t const b) { return (ENUMTYPE &)((UnsignedInteger<ENUMTYPE>::type &)a >>= b); } \
 }
 #define DEFINE_ENUMERATION_BITWISE_OPERATORS(ENUMTYPE) DEFINE_ENUMERATION_BITWISE_OPERATORS_T(ENUMTYPE, SignedInteger<ENUMTYPE>::type)
 // clang-format on
@@ -74,24 +69,16 @@ constexpr ENUMTYPE &operator>>=(ENUMTYPE &a, size_t const b) { return (ENUMTYPE 
 // clang-format off
 #define DEFINE_ENUMERATION_OPERATORS_T(ENUMTYPE, UNDERLYING) \
 extern "C++" { \
-constexpr ENUMTYPE operator++(ENUMTYPE const &a) { return (ENUMTYPE)(++((UNDERLYING &)a)); } \
-constexpr ENUMTYPE operator--(ENUMTYPE const &a) { return (ENUMTYPE)(--((UNDERLYING &)a)); } \
 constexpr ENUMTYPE operator+(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) + ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator-(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) - ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator*(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) * ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator/(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) / ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator%(ENUMTYPE const a, ENUMTYPE const b) { return (ENUMTYPE)(((UNDERLYING)a) % ((UNDERLYING)b)); } \
-constexpr ENUMTYPE &operator+=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) + ((ENUMTYPE)b)); } \
-constexpr ENUMTYPE &operator-=(ENUMTYPE &a, ENUMTYPE const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) - ((ENUMTYPE)b)); } \
-constexpr ENUMTYPE operator++(ENUMTYPE const &a, int) { return (ENUMTYPE)(((UNDERLYING &)a)++); } \
-constexpr ENUMTYPE operator--(ENUMTYPE const &a, int) { return (ENUMTYPE)(((UNDERLYING &)a)--); } \
 constexpr ENUMTYPE operator+(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) + ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator-(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) - ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator*(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) * ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator/(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) / ((UNDERLYING)b)); } \
 constexpr ENUMTYPE operator%(ENUMTYPE const a, UNDERLYING const b) { return (ENUMTYPE)(((UNDERLYING)a) % ((UNDERLYING)b)); } \
-constexpr ENUMTYPE &operator+=(ENUMTYPE &a, UNDERLYING const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) + ((UNDERLYING)b)); } \
-constexpr ENUMTYPE &operator-=(ENUMTYPE &a, UNDERLYING const b) { return (ENUMTYPE &)((UNDERLYING &)a = ((UNDERLYING &)a) - ((UNDERLYING)b)); } \
 }
 #define DEFINE_ENUMERATION_OPERATORS(ENUMTYPE) DEFINE_ENUMERATION_OPERATORS_T(ENUMTYPE, SignedInteger<ENUMTYPE>::type)
 // clang-format on

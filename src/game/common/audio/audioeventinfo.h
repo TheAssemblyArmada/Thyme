@@ -115,7 +115,7 @@ protected:
     int m_delayLow;
     int m_delayHigh;
     int m_limit;
-    int m_loopCount;
+    int32_t m_loopCount;
     int m_priority;
     int32_t m_visibility;
     int32_t m_control;

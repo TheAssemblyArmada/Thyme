@@ -44,15 +44,15 @@ void ProjectileStreamUpdate::CRC_Snapshot(Xfer *xfer)
 
 void ProjectileStreamUpdate::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char ver = 2;
-    xfer->xferVersion(&ver, 2);
+    uint8_t version = 2;
+    xfer->xferVersion(&version, 2);
     UpdateModule::Xfer_Snapshot(xfer);
     xfer->xferUser(m_projectileIDs, sizeof(m_projectileIDs));
     xfer->xferInt(&m_nextFreeIndex);
     xfer->xferInt(&m_firstValidIndex);
     xfer->xferObjectID(&m_owningObject);
 
-    if (ver >= 2) {
+    if (version >= 2) {
         xfer->xferObjectID(&m_targetID);
         xfer->xferCoord3D(&m_targetPos);
     }

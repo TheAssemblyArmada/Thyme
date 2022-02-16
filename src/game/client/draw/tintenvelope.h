@@ -59,7 +59,7 @@ private:
     Vector3 m_decayColor;
     Vector3 m_peakColor;
     Vector3 m_tintColor;
-    unsigned int m_peakWaitFrames;
+    uint32_t m_peakWaitFrames;
     TintState m_state;
     bool m_isTinted;
 };

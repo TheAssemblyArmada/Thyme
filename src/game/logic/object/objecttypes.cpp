@@ -20,10 +20,8 @@ ObjectTypes::ObjectTypes(const Utf8String &list_name) : m_listName(list_name) {}
 
 void ObjectTypes::Xfer_Snapshot(Xfer *xfer)
 {
-    static constexpr uint8_t CURRENT_VERSION = 1;
-    uint8_t version = CURRENT_VERSION;
-
-    xfer->xferVersion(&version, CURRENT_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     xfer->xferAsciiString(&m_listName);
 
     uint16_t count = uint16_t(m_objectTypes.size());

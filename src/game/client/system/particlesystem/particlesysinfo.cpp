@@ -88,9 +88,8 @@ ParticleSystemInfo::ParticleSystemInfo() :
  */
 void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
 {
-#define PARTICLESYS_XFER_VERSION 1
-    uint8_t version = PARTICLESYS_XFER_VERSION;
-    xfer->xferVersion(&version, PARTICLESYS_XFER_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     xfer->xferBool(&m_isOneShot);
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_shaderType)); // Original calls xferUser, endianness issues.
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_particleType)); // Original calls xferUser, endianness issues.

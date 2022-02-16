@@ -97,6 +97,6 @@ private:
     unsigned int Get_Raw_Update_Value() const;
 
 private:
-    unsigned int m_updatePhase;
+    uint32_t m_updatePhase;
     int m_indexInLogic;
 };

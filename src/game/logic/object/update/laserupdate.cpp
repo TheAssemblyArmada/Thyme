@@ -112,7 +112,7 @@ void LaserUpdate::CRC_Snapshot(Xfer *xfer)
 
 void LaserUpdate::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
     DrawableModule::Xfer_Snapshot(xfer);
     xfer->xferCoord3D(&m_startPos);

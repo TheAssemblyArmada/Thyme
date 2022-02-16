@@ -2322,10 +2322,10 @@ void WaterRenderObjClass::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
     xfer->xferVersion(&version, 1);
-    int x = m_gridCellsX;
+    int32_t x = m_gridCellsX;
     xfer->xferInt(&x);
     captainslog_dbgassert(x == m_gridCellsX, "WaterRenderObjClass::xfer - cells X mismatch");
-    int y = m_gridCellsY;
+    int32_t y = m_gridCellsY;
     xfer->xferInt(&y);
     captainslog_dbgassert(y == m_gridCellsY, "WaterRenderObjClass::xfer - cells Y mismatch");
 

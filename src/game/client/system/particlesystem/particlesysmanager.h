@@ -43,11 +43,11 @@ typedef std::unordered_map<const Utf8String, ParticleSystemTemplate *, rts::hash
     partsystempmap_t;
 #endif
 
-enum ParticleSystemID : int32_t
+enum ParticleSystemID : int32_t // Is Xfer serialized type.
 {
     PARTSYS_ID_NONE,
 };
-DEFINE_ENUMERATION_OPERATORS(ParticleSystemID);
+DEFINE_ENUMERATION_OPERATORS_T(ParticleSystemID, int32_t);
 
 class ParticleSystemManager : public SubsystemInterface, public SnapShot
 {

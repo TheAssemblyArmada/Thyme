@@ -108,13 +108,13 @@ public:
 #endif
 
 private:
-    unsigned short m_currentFrame;
-    unsigned int m_gameFrame;
+    uint16_t m_currentFrame;
+    uint32_t m_gameFrame;
     Anim2DTemplate *m_template;
-    unsigned char m_status;
-    unsigned short m_firstFrame;
-    unsigned short m_lastFrame;
-    unsigned int m_animDelay;
+    uint8_t m_status;
+    uint16_t m_firstFrame;
+    uint16_t m_lastFrame;
+    uint32_t m_animDelay;
     float m_alpha;
     Anim2DCollection *m_collection;
     Anim2D *m_collectionSystemNext;

@@ -181,7 +181,7 @@ void Energy::Xfer_Snapshot(Xfer *xfer)
         xfer->xferInt(&m_energyConsumption);
     }
 
-    int index;
+    int32_t index;
 
     if (xfer->Get_Mode() == XFER_SAVE) {
         index = m_player->Get_Player_Index();

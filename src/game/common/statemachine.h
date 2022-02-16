@@ -180,8 +180,8 @@ public:
 private:
     std::map<unsigned int, State *> m_stateMap;
     Object *m_owner;
-    unsigned int m_updateFrame;
-    unsigned int m_defaultStateID;
+    uint32_t m_updateFrame;
+    uint32_t m_defaultStateID;
     State *m_currentState;
     ObjectID m_goalObjectID;
     Coord3D m_goalPosition;

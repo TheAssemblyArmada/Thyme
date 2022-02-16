@@ -52,9 +52,8 @@ ParticleInfo::ParticleInfo() :
 
 void ParticleInfo::Xfer_Snapshot(Xfer *xfer)
 {
-#define PARTICLEINFO_XFER_VERSION 1
-    uint8_t version = PARTICLEINFO_XFER_VERSION;
-    xfer->xferVersion(&version, PARTICLEINFO_XFER_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     xfer->xferCoord3D(&m_vel);
     xfer->xferCoord3D(&m_pos);
     xfer->xferCoord3D(&m_emitterPos);

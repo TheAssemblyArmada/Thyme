@@ -63,7 +63,7 @@ public:
     virtual void CRC_Snapshot(Xfer *xfer) override { DrawModule::CRC_Snapshot(xfer); }
     virtual void Xfer_Snapshot(Xfer *xfer) override
     {
-        unsigned char version = 1;
+        uint8_t version = 1;
         xfer->xferVersion(&version, 1);
         DrawModule::Xfer_Snapshot(xfer);
     }

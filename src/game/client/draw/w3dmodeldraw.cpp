@@ -767,8 +767,8 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
 {
-    uint8_t ver = 1;
-    xfer->xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
 
     for (auto &model_condition : m_conditionStates) {
         xfer->xferByte(&model_condition.m_validStuff);
@@ -2884,12 +2884,12 @@ void W3DModelDraw::CRC_Snapshot(Xfer *xfer)
 
 void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
 {
-    uint8_t ver = 2;
-    xfer->xferVersion(&ver, 2);
+    uint8_t version = 2;
+    xfer->xferVersion(&version, 2);
     DrawModule::Xfer_Snapshot(xfer);
     RecoilInfo recoilinfo;
     for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
-        unsigned char size = (unsigned char)m_weaponRecoilInfoVec[i].size();
+        uint8_t size = (uint8_t)m_weaponRecoilInfoVec[i].size();
         xfer->xferUnsignedByte(&size);
 
         if (xfer->Get_Mode() == XFER_SAVE) {
@@ -2912,7 +2912,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
         }
     }
 
-    unsigned char size = (unsigned char)m_subObjects.size();
+    uint8_t size = (uint8_t)m_subObjects.size();
     xfer->xferUnsignedByte(&size);
     ModelConditionInfo::HideShowSubObjInfo subobj;
 
@@ -2932,7 +2932,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
         }
     }
 
-    if (ver >= 2) {
+    if (version >= 2) {
         if (xfer->Get_Mode() == XFER_SAVE) {
             if (m_renderObject != nullptr && m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD
                 && m_curState != nullptr && m_curState->m_transition) {
@@ -2959,7 +2959,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
             xfer->xferBool(&b);
 
             if (b) {
-                int mode;
+                int32_t mode;
                 float newframe;
                 xfer->xferInt(&mode);
                 xfer->xferReal(&newframe);
@@ -2972,7 +2972,6 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
                         if (anim) {
                             float frame;
                             int frames;
-                            int mode;
                             float multiplier;
                             hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
                             hlod->Set_Animation(anim, (anim->Get_Num_Frames() - 1) / newframe, mode);

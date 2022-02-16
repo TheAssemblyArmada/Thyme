@@ -20,6 +20,18 @@
 #include "randomvalue.h"
 #include <captainslog.h>
 
+// Some Xfer user code serializes with standard primitive types as opposed to int8_t, int16_t, etc. Static assert here to
+// make sure that this is ok for as long as that is the case. If one of these is hit, please investigate if any Xfer uses
+// handle types incorrectly. In most cases there should be a compile error if a type size mismatches, unless someone uses
+// reinterpret_cast to go around it.
+
+static_assert(sizeof(char) == sizeof(int8_t), "Remove this and check if all Xfer users use int8_t and not char");
+static_assert(sizeof(short) == sizeof(int16_t), "Remove this and check if all Xfer users use int16_t and not short");
+static_assert(sizeof(int) == sizeof(int32_t), "Remove this and check if all Xfer users use int32_t and not int");
+// static_assert(sizeof(long) == sizeof(int32_t), "Remove this and check if all Xfer users use int32_t and not long");
+static_assert(sizeof(long long) == sizeof(int64_t), "Remove this and check if all Xfer users use int64_t and not long long");
+static_assert(sizeof(XferType) == 4, "Remove this and check if all Xfer users use enum with 4 bytes only");
+
 void Xfer::Open(Utf8String filename)
 {
     m_filename = filename;
@@ -194,18 +206,22 @@ void Xfer::xferRGBAColorInt(RGBAColorInt *thing)
 
 void Xfer::xferObjectID(ObjectID *thing)
 {
+    static_assert(sizeof(ObjectID) == sizeof(int32_t));
+
     xferInt(reinterpret_cast<int32_t *>(thing));
 }
 
 void Xfer::xferDrawableID(DrawableID *thing)
 {
+    static_assert(sizeof(DrawableID) == sizeof(int32_t));
+
     xferInt(reinterpret_cast<int32_t *>(thing));
 }
 
 void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
 {
-    uint8_t ver = 1;
-    xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xferVersion(&version, 1);
 
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
@@ -229,8 +245,8 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
 
 void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
 {
-    uint8_t ver = 1;
-    xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xferVersion(&version, 1);
 
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
@@ -258,8 +274,8 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
         return;
     }
 
-    uint8_t ver = 1;
-    xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xferVersion(&version, 1);
 
     uint16_t count = (uint16_t)thing->size();
     xferUnsignedShort(&count);
@@ -299,8 +315,8 @@ void Xfer::xferScienceVec(std::vector<ScienceType> *thing)
 
 void Xfer::xferKindOf(KindOfType *thing)
 {
-    uint8_t ver = 1;
-    xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xferVersion(&version, 1);
 
     Utf8String kind;
     const char *kindc;

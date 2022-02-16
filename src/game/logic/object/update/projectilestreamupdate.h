@@ -47,8 +47,8 @@ public:
 
 private:
     ObjectID m_projectileIDs[MAX_SEGMENT_COUNT];
-    int m_nextFreeIndex;
-    int m_firstValidIndex;
+    int32_t m_nextFreeIndex;
+    int32_t m_firstValidIndex;
     ObjectID m_owningObject;
     ObjectID m_targetID;
     Coord3D m_targetPos;

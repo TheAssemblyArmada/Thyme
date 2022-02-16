@@ -105,9 +105,8 @@ Particle::~Particle()
  */
 void Particle::Xfer_Snapshot(Xfer *xfer)
 {
-#define PARTICLE_XFER_VERSION 1
-    uint8_t version = PARTICLE_XFER_VERSION;
-    xfer->xferVersion(&version, PARTICLE_XFER_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     ParticleInfo::Xfer_Snapshot(xfer);
     xfer->xferUnsignedInt(&m_particleID);
     xfer->xferCoord3D(&m_accel);

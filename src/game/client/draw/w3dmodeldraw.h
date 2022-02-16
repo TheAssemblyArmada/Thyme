@@ -46,7 +46,7 @@ private:
 struct PristineBoneInfo
 {
     Matrix3D transform;
-    int index;
+    int32_t index;
 };
 
 enum ParseCondStateType
@@ -117,8 +117,8 @@ struct ModelConditionInfo
         NameKeyType m_turretPitchName;
         float m_turretArtAngle;
         float m_turretArtPitch;
-        int m_turretAngleBone;
-        int m_turretPitchBone;
+        int32_t m_turretAngleBone;
+        int32_t m_turretPitchBone;
     };
 
     struct WeaponBarrelInfo

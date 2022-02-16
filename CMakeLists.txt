@@ -264,13 +264,13 @@ endif()
 if(USE_SDL2)
     include(FetchContent)
 
-    set(SDL_ATOMIC OFF)
-    set(SDL_AUDIO OFF)
-    set(SDL_RENDER OFF)
-    set(SDL_HAPTIC OFF)
-    set(SDL_FILE OFF)
-    set(SDL_FILESYSTEM OFF)
-    set(SDL_THREADS OFF)
+    set(SDL_ATOMIC OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_AUDIO OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_RENDER OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_HAPTIC OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_FILE OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_FILESYSTEM OFF CACHE INTERNAL "Turn off subsystem")
+    set(SDL_THREADS OFF CACHE INTERNAL "Turn off subsystem")
     FetchContent_Declare(
         SDL2
         GIT_REPOSITORY https://github.com/libsdl-org/SDL.git

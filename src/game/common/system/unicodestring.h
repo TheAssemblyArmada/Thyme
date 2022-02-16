@@ -53,7 +53,7 @@ public:
         unichar_t *debug_ptr;
 #endif // GAME_DEBUG_STRUCTS
 
-        uint16_t ref_count;
+        volatile int16_t ref_count;
         uint16_t num_chars_allocated;
 
         // Actual string data is stored immediately after the UnicodeStringData header.

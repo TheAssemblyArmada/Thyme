@@ -55,9 +55,9 @@ public:
 #endif // GAME_DEBUG_STRUCTS
 
 #ifndef GAME_DLL
-        std::atomic<uint16_t> ref_count;
+        std::atomic<int16_t> ref_count;
 #else
-        uint16_t ref_count;
+        volatile int16_t ref_count;
 #endif
         uint16_t num_chars_allocated;
 
@@ -66,7 +66,7 @@ public:
 #ifndef GAME_DLL
             ++ref_count;
 #elif defined PLATFORM_WINDOWS
-            InterlockedIncrement16((volatile short *)&ref_count);
+            InterlockedIncrement16(&ref_count);
 #endif
         }
 
@@ -75,7 +75,7 @@ public:
 #ifndef GAME_DLL
             --ref_count;
 #elif defined PLATFORM_WINDOWS
-            InterlockedDecrement16((volatile short *)&ref_count);
+            InterlockedDecrement16(&ref_count);
 #endif
         }
 

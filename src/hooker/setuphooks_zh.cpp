@@ -109,6 +109,7 @@
 #include "playerlist.h"
 #include "playertemplate.h"
 #include "polygontrigger.h"
+#include "projectilestreamupdate.h"
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "rayeffect.h"
@@ -2218,4 +2219,9 @@ void Setup_Hooks()
     Hook_Method(0x006F5760, &UpdateModule::Get_Wake_Frame);
     Hook_Method(0x006F5780, &UpdateModule::Set_Wake_Frame);
     Hook_Any(0x006F57A0, UpdateModule::Xfer_Snapshot);
+
+    // projectilestreamupdate.cpp
+    Hook_Any(0x004E7FB0, ProjectileStreamUpdate::Friend_New_Module_Instance);
+    Hook_Any(0x0061C410, ProjectileStreamUpdate::Add_Projectile);
+    Hook_Any(0x0061C650, ProjectileStreamUpdate::Set_Position);
 }

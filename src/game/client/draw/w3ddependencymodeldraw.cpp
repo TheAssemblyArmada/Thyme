@@ -87,8 +87,8 @@ void W3DDependencyModelDraw::Adjust_Transform_Mtx(Matrix3D &transform) const
                             transform = m;
                         } else {
                             transform = *contained_drawable->Get_Transform_Matrix();
-                            captainslog_debug(
-                                "m_attachToDrawableBoneInContainer %s not found", data->m_attachToDrawableBoneInContainer);
+                            captainslog_debug("m_attachToDrawableBoneInContainer %s not found",
+                                data->m_attachToDrawableBoneInContainer.Str());
                         }
                     }
                 }

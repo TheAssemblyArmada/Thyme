@@ -342,7 +342,7 @@ public:
                 xfer->xferAsciiString(&str);
 
                 if (!Set_Bit_By_Name(str)) {
-                    captainslog_error("invalid bit name %s", str);
+                    captainslog_error("invalid bit name %s", str.Str());
                     throw XFER_STATUS_READ_ERROR;
                 }
             }

@@ -86,7 +86,7 @@ FileClass *SimpleFileFactoryClass::Get_File(const char *filename)
 
             if (strchr(subdir, ';')) {
                 for (const char *token = strtok(subdir.Peek_Buffer(), ";"); token; token = strtok(nullptr, ";")) {
-                    new_name.Format("%s%s", token, stripped_name);
+                    new_name.Format("%s%s", token, stripped_name.Peek_Buffer());
                     file->Set_Name(new_name);
 
                     if (file->Open(1)) {
@@ -95,7 +95,7 @@ FileClass *SimpleFileFactoryClass::Get_File(const char *filename)
                     }
                 }
             } else {
-                new_name.Format("%s%s", m_subDirectory, stripped_name);
+                new_name.Format("%s%s", m_subDirectory.Peek_Buffer(), stripped_name.Peek_Buffer());
             }
         }
     }

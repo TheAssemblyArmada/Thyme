@@ -229,7 +229,7 @@ if(USE_CRASHPAD)
     FetchContent_Declare(
         crashpad_cmake
         GIT_REPOSITORY https://github.com/TheAssemblyArmada/crashpad-cmake.git
-        GIT_TAG        6e89ec1542627d7955561c2955e9ff20d6f69f65
+        GIT_TAG        80573ad
     )
 
     # We don't use FetchContent_MakeAvailable here because we don't want all crashpad targets including, just our dependencies.

@@ -138,7 +138,7 @@ void SegLineRendererClass::Set_Texture_Tile_Factor(float factor)
 {
     if (factor > 50.0f) {
         captainslog_debug("Texture (%s) Tile Factor (%.2f) too large in SegLineRendererClass!\r\n",
-            Get_Texture()->Get_Name(),
+            Get_Texture()->Get_Name().Peek_Buffer(),
             m_textureTileFactor);
         m_textureTileFactor = 50.0f;
     } else {

@@ -83,8 +83,8 @@ void ModelConditionInfo::WeaponBarrelInfo::Set_Muzzle_Flash_Hidden(RenderObjClas
             child_object->Release_Ref();
         } else {
 #ifdef GAME_DEBUG_STRUCTS
-            captainslog_debug(
-                "*** ASSET ERROR: child_object %s not found in Set_Muzzle_Flash_Hidden()", m_weaponMuzzleFlashBoneName);
+            captainslog_debug("*** ASSET ERROR: child_object %s not found in Set_Muzzle_Flash_Hidden()",
+                m_weaponMuzzleFlashBoneName.Str());
 #endif
         }
     }
@@ -982,7 +982,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
             if (flags.Any_Intersection_With(data->m_ignoreConditionStates)) {
 #ifdef GAME_DEBUG_STRUCTS
                 captainslog_debug("You should not specify bits in a state once they are used in IgnoreConditionStates (%s)",
-                    s_theThingTemplateBeingParsedName);
+                    s_theThingTemplateBeingParsedName.Str());
 #endif
                 throw CODE_06;
             }
@@ -991,7 +991,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
 #ifdef GAME_DEBUG_STRUCTS
                 captainslog_debug("*** ASSET ERROR: when not using DefaultConditionState, the first ConditionState must be "
                                   "for NONE (%s)",
-                    s_theThingTemplateBeingParsedName);
+                    s_theThingTemplateBeingParsedName.Str());
 #endif
                 throw CODE_06;
             }
@@ -1003,7 +1003,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
             if (Does_State_Exist(data->m_conditionStates, flags)) {
 #ifdef GAME_DEBUG_STRUCTS
                 captainslog_debug(
-                    "*** ASSET ERROR: duplicate condition states are not currently allowed (%s)", info.m_description);
+                    "*** ASSET ERROR: duplicate condition states are not currently allowed (%s)", info.m_description.Str());
 #endif
                 throw CODE_06;
             }
@@ -1023,7 +1023,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
 #ifdef GAME_DEBUG_STRUCTS
                 captainslog_debug(
                     "*** ASSET ERROR: when using DefaultConditionState, it must be the first state listed (%s)",
-                    s_theThingTemplateBeingParsedName);
+                    s_theThingTemplateBeingParsedName.Str());
 #endif
                 throw CODE_06;
             }
@@ -1083,7 +1083,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
             if (flags.Any_Intersection_With(data->m_ignoreConditionStates)) {
 #ifdef GAME_DEBUG_STRUCTS
                 captainslog_debug("You should not specify bits in a state once they are used in IgnoreConditionStates (%s)",
-                    s_theThingTemplateBeingParsedName);
+                    s_theThingTemplateBeingParsedName.Str());
 #endif
                 throw CODE_06;
             }
@@ -1146,8 +1146,8 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     if ((info.m_iniReadFlags & INIREAD_IDLE_ANIMS) != 0 && info.m_mode != RenderObjClass::ANIM_MODE_ONCE
         && info.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS) {
 #ifdef GAME_DEBUG_STRUCTS
-        captainslog_debug(
-            "*** ASSET ERROR: Idle Anims should always use ONCE or ONCE_BACKWARDS (%s)", s_theThingTemplateBeingParsedName);
+        captainslog_debug("*** ASSET ERROR: Idle Anims should always use ONCE or ONCE_BACKWARDS (%s)",
+            s_theThingTemplateBeingParsedName.Str());
 #endif
         throw CODE_06;
     }
@@ -2830,7 +2830,7 @@ void W3DModelDraw::Do_Hide_Show_Projectile_Objects(unsigned int show, unsigned i
 
         if (m_curState->m_weaponHideShowBoneName[wslot].Is_Empty()) {
             for (unsigned int i = 0; i < count; i++) {
-                info.sub_obj_name.Format("%s%02d", m_curState->m_weaponLaunchBoneName[wslot], i + 1);
+                info.sub_obj_name.Format("%s%02d", m_curState->m_weaponLaunchBoneName[wslot].Str(), i + 1);
                 info.hide = (int)(i + 1) <= val;
                 vector.push_back(info);
             }

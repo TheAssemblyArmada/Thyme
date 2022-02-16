@@ -16,8 +16,8 @@
 
 #include "bittype.h"
 #include "clientupdatemodule.h"
+#include "namekeygenerator.h"
 
-enum NameKeyType;
 class Thing;
 class ModuleData;
 

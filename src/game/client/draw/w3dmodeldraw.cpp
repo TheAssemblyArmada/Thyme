@@ -83,8 +83,8 @@ void ModelConditionInfo::WeaponBarrelInfo::Set_Muzzle_Flash_Hidden(RenderObjClas
             child_object->Release_Ref();
         } else {
 #ifdef GAME_DEBUG_STRUCTS
-            captainslog_debug(
-                "*** ASSET ERROR: child_object %s not found in Set_Muzzle_Flash_Hidden()", m_weaponMuzzleFlashBoneName.Str());
+            captainslog_debug("*** ASSET ERROR: child_object %s not found in Set_Muzzle_Flash_Hidden()",
+                m_weaponMuzzleFlashBoneName.Str());
 #endif
         }
     }
@@ -1146,8 +1146,8 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     if ((info.m_iniReadFlags & INIREAD_IDLE_ANIMS) != 0 && info.m_mode != RenderObjClass::ANIM_MODE_ONCE
         && info.m_mode != RenderObjClass::ANIM_MODE_ONCE_BACKWARDS) {
 #ifdef GAME_DEBUG_STRUCTS
-        captainslog_debug(
-            "*** ASSET ERROR: Idle Anims should always use ONCE or ONCE_BACKWARDS (%s)", s_theThingTemplateBeingParsedName.Str());
+        captainslog_debug("*** ASSET ERROR: Idle Anims should always use ONCE or ONCE_BACKWARDS (%s)",
+            s_theThingTemplateBeingParsedName.Str());
 #endif
         throw CODE_06;
     }

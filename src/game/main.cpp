@@ -154,6 +154,10 @@ constexpr const char *WIN_TITLE = "Thyme RTS Engine";
  */
 void Check_Windowed(int argc, char *argv[])
 {
+#ifdef PLATFORM_WINDOWS
+    RECT Res;
+    GetWindowRect(GetDesktopWindow(), &Res);
+#endif
     for (int i = 0; i < argc && i < 20; ++i) {
         // DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
 
@@ -168,19 +172,19 @@ void Check_Windowed(int argc, char *argv[])
         if (strcasecmp(argv[i], "-xpos") == 0) {
             ++i;
             g_xPos = atoi(argv[i]);
+#ifdef PLATFORM_WINDOWS
+            g_xPos = std::clamp(g_xPos, 0, (int)(Res.right - WIN_WIDTH)); // Prevent negative values
+#endif
         }
 
         if (strcasecmp(argv[i], "-ypos") == 0) {
             ++i;
             g_yPos = atoi(argv[i]);
+#ifdef PLATFORM_WINDOWS
+            g_yPos = std::clamp(g_yPos, 0, (int)(Res.bottom - WIN_HEIGHT)); // Prevent negative values
+#endif
         }
     }
-#ifdef PLATFORM_WINDOWS
-    RECT Res;
-    GetWindowRect(GetDesktopWindow(), &Res);
-    g_xPos = std::clamp(g_xPos, 0, (int)(Res.right - WIN_WIDTH)); // Prevent negative values
-    g_yPos = std::clamp(g_yPos, 0, (int)(Res.bottom - WIN_HEIGHT)); // Prevent negative values
-#endif
 }
 
 #if defined PLATFORM_WINDOWS && defined GAME_DLL
@@ -442,11 +446,11 @@ void Create_Window()
     // WS_POPUP | WS_VISIBLE | WS_EX_LAYERED | WS_EX_TOPMOST
 
     if (g_xPos == c_invalidPos) {
-        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - 400;
+        g_xPos = GetSystemMetrics(SM_CXSCREEN) / 2 - (WIN_WIDTH / 2);
     }
 
     if (g_yPos == c_invalidPos) {
-        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - 300;
+        g_yPos = GetSystemMetrics(SM_CYSCREEN) / 2 - (WIN_HEIGHT / 2);
     }
 
     HWND app_hwnd = CreateWindowExA(0,
@@ -489,19 +493,19 @@ void Create_Window()
 #endif
 }
 
-void Create_Window_SDL2()
+bool Create_Window_SDL2()
 {
 #ifdef BUILD_WITH_SDL2
-    bool is_windowed = g_gameIsWindowed;
     SDL_Window *window = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         captainslog_error("SDL could not initialize!");
-        return;
+        return false;
     }
 
     g_creatingWindow = true;
 
+    bool is_windowed = g_gameIsWindowed;
     window = SDL_CreateWindow(WIN_TITLE,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
@@ -524,6 +528,7 @@ void Create_Window_SDL2()
     g_applicationHWnd = wmInfo.info.win.window;
 #endif
 #endif
+    return true;
 }
 
 /**
@@ -612,7 +617,8 @@ int main(int argc, char **argv)
     // Create the window
     captainslog_info("Creating window");
 #ifdef BUILD_WITH_SDL2
-    Create_Window_SDL2();
+    if (!Create_Window_SDL2())
+        return 1;
 #else
     Create_Window();
 #endif

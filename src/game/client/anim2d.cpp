@@ -434,7 +434,7 @@ void Anim2DCollection::Parse_Anim2D_Definition(INI *ini)
             tmplate = g_theAnim2DCollection->New_Template(str);
             captainslog_dbgassert(tmplate != nullptr,
                 "Anim2DCollection::Parse_Anim2D_Definition -  unable to allocate animation template for '%s'",
-                str);
+                str.Str());
         }
 
         ini->Init_From_INI(tmplate, Anim2DTemplate::Get_Field_Parse());

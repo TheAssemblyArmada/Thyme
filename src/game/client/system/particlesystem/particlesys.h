@@ -62,6 +62,8 @@ public:
     ParticlePriorityType Get_Priority() const { return m_priority; }
     void Set_Lifetime_Range(float min, float max) { m_lifetime.Set_Range(min, max, GameClientRandomVariable::UNIFORM); }
     void Set_Unk(bool set) { m_unkBool1 = set; }
+    void Set_Velocity_Multiplier(Coord3D *mul) { m_velCoefficient = *mul; }
+    void Set_Burst_Count_Multiplier(float mul) { m_countCoefficient = mul; }
 
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 

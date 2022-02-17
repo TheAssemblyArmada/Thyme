@@ -89,7 +89,9 @@ set(GAMEENGINE_SRC
     game/client/draw/w3ddependencymodeldraw.cpp
     game/client/draw/w3dlaserdraw.cpp
     game/client/draw/w3dmodeldraw.cpp
+    game/client/draw/w3doverlordtankdraw.cpp
     game/client/draw/w3dprojectilestreamdraw.cpp
+    game/client/draw/w3dtankdraw.cpp
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/tintenvelope.cpp
     game/client/gui/gamefont.cpp

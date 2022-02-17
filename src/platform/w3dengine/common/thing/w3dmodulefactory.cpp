@@ -18,6 +18,7 @@
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
+#include "w3doverlordtankdraw.h"
 #include "w3dprojectilestreamdraw.h"
 #include "w3dtreedraw.h"
 /**
@@ -48,8 +49,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DLaserDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x007763C0,
-        (moddatacreateproc_t)0x007764B0,
+    Add_Module_Internal(W3DOverlordTankDraw::Friend_New_Module_Instance,
+        W3DOverlordTankDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DOverlordTankDraw",
         DrawModule::Get_Interface_Mask());
@@ -93,8 +94,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DDependencyModelDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776260,
-        (moddatacreateproc_t)0x00776350,
+    Add_Module_Internal(W3DTankDraw::Friend_New_Module_Instance,
+        W3DTankDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DTankDraw",
         DrawModule::Get_Interface_Mask());

@@ -119,7 +119,7 @@ void *W3DVideoBuffer::Lock()
     m_surface = m_texture->Get_Surface_Level(0);
 
     if (m_surface != nullptr) {
-        return m_surface->Lock((int *)&m_pitch);
+        return m_surface->Lock(reinterpret_cast<int *>(&m_pitch));
     }
 
     return ptr;

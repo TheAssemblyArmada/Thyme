@@ -201,7 +201,7 @@ void W3DShadowTextureManager::Free_All_Textures()
 
 W3DShadowTexture *W3DShadowTextureManager::Peek_Texture(char const *name)
 {
-    return (W3DShadowTexture *)m_texturePtrTable->Find(name);
+    return static_cast<W3DShadowTexture *>(m_texturePtrTable->Find(name));
 }
 
 W3DShadowTexture *W3DShadowTextureManager::Get_Texture(char const *name)
@@ -630,8 +630,11 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 objXform = robj->Get_Transform();
 
                 if (robj->Get_User_Data()) {
-                    if (((DrawableInfo *)robj->Get_User_Data())->drawable) {
-                        const Object *obj = ((DrawableInfo *)robj->Get_User_Data())->drawable->Get_Object();
+                    const DrawableInfo *info = static_cast<DrawableInfo *>(robj->Get_User_Data());
+                    const Drawable *drawable = info->drawable;
+
+                    if (drawable != nullptr) {
+                        const Object *obj = drawable->Get_Object();
 
                         if (obj) {
                             PathfindLayerEnum layer = obj->Get_Layer();
@@ -771,15 +774,17 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 if (g_nShadowDecalVertsInBuf <= g_shadowDecalVertexSize - i10 * i9) {
                     if (g_shadowDecalVertexBufferD3D->Lock(sizeof(SHADOW_DECAL_VERTEX) * g_nShadowDecalVertsInBuf,
                             sizeof(SHADOW_DECAL_VERTEX) * numVerts,
-                            (BYTE **)&pvVertices,
+                            reinterpret_cast<BYTE **>(&pvVertices),
                             D3DLOCK_NOOVERWRITE)) {
                         return;
                     }
                 } else {
                     Flush_Decals(shadow->m_shadowTexture[0], shadow->m_type);
 
-                    if (g_shadowDecalVertexBufferD3D->Lock(
-                            0, sizeof(SHADOW_DECAL_VERTEX) * numVerts, (BYTE **)&pvVertices, D3DLOCK_DISCARD)) {
+                    if (g_shadowDecalVertexBufferD3D->Lock(0,
+                            sizeof(SHADOW_DECAL_VERTEX) * numVerts,
+                            reinterpret_cast<BYTE **>(&pvVertices),
+                            D3DLOCK_DISCARD)) {
                         return;
                     }
 
@@ -839,14 +844,17 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 unsigned short *pvIndices;
 
                 if (g_nShadowDecalIndicesInBuf <= g_shadowDecalIndexSize - numIndex) {
-                    if (g_shadowDecalIndexBufferD3D->Lock(
-                            2 * g_nShadowDecalIndicesInBuf, 2 * numIndex, (BYTE **)&pvIndices, D3DLOCK_NOOVERWRITE)) {
+                    if (g_shadowDecalIndexBufferD3D->Lock(2 * g_nShadowDecalIndicesInBuf,
+                            2 * numIndex,
+                            reinterpret_cast<BYTE **>(&pvIndices),
+                            D3DLOCK_NOOVERWRITE)) {
                         return;
                     }
                 } else {
                     Flush_Decals(shadow->m_shadowTexture[0], shadow->m_type);
 
-                    if (g_shadowDecalIndexBufferD3D->Lock(0, 2 * numIndex, (BYTE **)&pvIndices, D3DLOCK_DISCARD)) {
+                    if (g_shadowDecalIndexBufferD3D->Lock(
+                            0, 2 * numIndex, reinterpret_cast<BYTE **>(&pvIndices), D3DLOCK_DISCARD)) {
                         return;
                     }
 
@@ -994,8 +1002,14 @@ int W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
                         }
 
                         projector->Peek_Material_Pass()->UnInstall_Materials();
+
+                        Coord3D sphere_pos;
+                        sphere_pos.x = sphere.Center.X;
+                        sphere_pos.y = sphere.Center.Y;
+                        sphere_pos.z = sphere.Center.Z;
+
                         SimpleObjectIterator *iter = g_thePartitionManager->Iterate_Objects_In_Range(
-                            (const Coord3D *)&sphere, sphere.Radius, FROM_CENTER_3D, nullptr, ITER_FASTEST);
+                            &sphere_pos, sphere.Radius, FROM_CENTER_3D, nullptr, ITER_FASTEST);
                         MemoryPoolObjectHolder holder(iter);
                         AABoxIntersectionTestClass intersect(aaBox, COLLISION_TYPE_ALL);
 
@@ -1004,7 +1018,7 @@ int W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
                                 ObjectDrawInterface *intf = (*d)->Get_Object_Draw_Interface();
 
                                 if (intf) {
-                                    W3DModelDraw *model = (W3DModelDraw *)intf;
+                                    W3DModelDraw *model = static_cast<W3DModelDraw *>(intf);
                                     RenderObjClass *robj = model->Get_Render_Object();
 
                                     if (robj) {

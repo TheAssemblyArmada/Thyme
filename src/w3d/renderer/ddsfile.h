@@ -182,3 +182,13 @@ inline uint32_t DDSFileClass::Decode_Line_Code(uint8_t *packed)
 {
     return uint32_t(packed[0]) | (uint32_t(packed[1]) << 8) | (uint32_t(packed[2]) << 16) | (uint32_t(packed[3]) << 24);
 }
+
+namespace Thyme
+{
+void Change_Texture_File_Extension(char *str, size_t str_capacity, const char *new_ext);
+
+template<size_t StrCapacity> inline void Change_Texture_File_Extension(char (&str)[StrCapacity], const char *new_ext)
+{
+    Change_Texture_File_Extension(str, StrCapacity, new_ext);
+}
+} // namespace Thyme

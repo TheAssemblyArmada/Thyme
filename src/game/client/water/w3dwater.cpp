@@ -1090,17 +1090,16 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
         ww3d.m[2][1] = 1.0f;
         ww3d.m[1][2] = 1.0f;
         ww3d.m[3][3] = 1.0f;
-        Matrix3D m4(m_transform);
 
-        DX8Wrapper::Set_Transform(D3DTS_WORLD, m4);
+        DX8Wrapper::Set_Transform(D3DTS_WORLD, m_transform);
         DX8Wrapper::Set_Texture(0, nullptr);
         DX8Wrapper::Set_Texture(1, nullptr);
         DX8Wrapper::Apply_Render_State_Changes();
 
         Vector3 v;
         rinfo.m_camera.Get_Transform().Get_Translation(&v);
-        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)view);
-        DX8Wrapper::Get_DX8_Transform(D3DTS_PROJECTION, (Matrix4 &)proj);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, view);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_PROJECTION, proj);
 
         m_pDev->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
         m_pDev->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
@@ -1217,8 +1216,8 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
         m_pDev->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
         m_pDev->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
-        DX8Wrapper::Set_DX8_Transform(D3DTS_VIEW, (Matrix4 &)view);
-        DX8Wrapper::Set_DX8_Transform(D3DTS_PROJECTION, (Matrix4 &)proj);
+        DX8Wrapper::Set_DX8_Transform(D3DTS_VIEW, view);
+        DX8Wrapper::Set_DX8_Transform(D3DTS_PROJECTION, proj);
         m_pDev->SetPixelShader(0);
         m_pDev->SetVertexShader(DX8_FVF_XYZDUV1);
         DX8Wrapper::Invalidate_Cached_Render_States();
@@ -1239,7 +1238,7 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
                     m10.m[3][0] = (float)(14 * j) * 40.0f;
                     m10.m[3][2] = (float)(14 * i) * 40.0f;
                     D3DXMatrixMultiply(&m10, &patch, &ww3d);
-                    DX8Wrapper::Set_DX8_Transform(D3DTS_WORLD, (Matrix4 &)m10);
+                    DX8Wrapper::Set_DX8_Transform(D3DTS_WORLD, m10);
                     m_pDev->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, m_numVertices, 0, m_numIndices);
                 }
             }
@@ -1487,8 +1486,7 @@ void WaterRenderObjClass::Render_Water_Mesh()
         }
 
         m_vertexBufferD3D->Unlock();
-        Matrix3D m(m_transform);
-        DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
+        DX8Wrapper::Set_Transform(D3DTS_WORLD, m_transform);
         DX8Wrapper::Set_Material(m_meshVertexMaterialClass);
         ShaderClass::CullModeType cull = m_shaderClass.Get_Cull_Mode();
         ShaderClass::DepthMaskType mask = m_shaderClass.Get_Depth_Mask();
@@ -2020,7 +2018,7 @@ void WaterRenderObjClass::Setup_Flat_Water_Shader()
         DX8Wrapper::Set_DX8_Texture_Stage_State(2, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
         D3DXMATRIX m;
         D3DXMATRIX m2;
-        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m2);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m2);
         float f;
         D3DXMatrixInverse(&m, &f, &m2);
         D3DXMATRIX m3;
@@ -2028,7 +2026,7 @@ void WaterRenderObjClass::Setup_Flat_Water_Shader()
         D3DXMATRIX m4 = m * m3;
         D3DXMatrixTranslation(&m3, m_riverVOrigin, m_riverVOrigin, 0.0f);
         m4 = m4 * m3;
-        DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, (Matrix4 &)m4);
+        DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, m4);
     }
 
     m_pDev->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
@@ -2388,7 +2386,7 @@ void WaterRenderObjClass::Setup_Jba_Water_Shader()
 
         D3DXMATRIX m;
         D3DXMATRIX m2;
-        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m2);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m2);
         float f;
         D3DXMatrixInverse(&m, &f, &m2);
         D3DXMATRIX m3;
@@ -2396,7 +2394,7 @@ void WaterRenderObjClass::Setup_Jba_Water_Shader()
         D3DXMATRIX m4 = m * m3;
         D3DXMatrixTranslation(&m3, m_riverVOrigin, m_riverVOrigin, 0.0f);
         m4 = m4 * m3;
-        DX8Wrapper::Set_Transform(D3DTS_TEXTURE2, (Matrix4 &)m4);
+        DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, m4);
     }
 
     m_pDev->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);

@@ -17,8 +17,15 @@
 #include "bezfwditerator.h"
 #include "vector4.h"
 
-const Matrix4 BezierSegment::s_bezBasisMatrix =
-    Matrix4(-1.0f, 3.0f, -3.0f, 1.0f, 3.0f, -6.0f, 3.0f, 0.0f, -3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+// clang-format off
+// Symmetrical matrix. Identical when transposed, thus equally compatible for D3DMATRIX and Matrix4.
+const Matrix4 BezierSegment::s_bezBasisMatrix = Matrix4(
+    -1.0f,  3.0f, -3.0f, 1.0f,
+     3.0f, -6.0f,  3.0f, 0.0f,
+    -3.0f,  3.0f,  0.0f, 0.0f,
+     1.0f,  0.0f,  0.0f, 0.0f
+);
+// clang-format on
 
 BezierSegment::BezierSegment()
 {

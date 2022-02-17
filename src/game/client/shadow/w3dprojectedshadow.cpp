@@ -35,6 +35,9 @@
 #include "w3dmodeldraw.h"
 #include "worldheightmap.h"
 #include <cstring>
+#ifdef BUILD_WITH_D3D8
+#include <d3dx8math.h>
+#endif
 
 using std::memset;
 using std::strcpy;
@@ -564,7 +567,7 @@ int W3DProjectedShadowManager::Render_Projected_Terrain_Shadow(W3DProjectedShado
 void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowType type)
 {
 #ifdef BUILD_WITH_D3D8
-    static Matrix4 mWorld(true);
+    static D3DXMATRIX mWorld = *D3DXMatrixIdentity(&mWorld);
 
     if (g_nShadowDecalVertsInBatch || g_nShadowDecalPolysInBatch) {
         IDirect3DDevice8 *dev = DX8Wrapper::Get_D3D_Device8();
@@ -589,7 +592,7 @@ void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowTy
 
             DX8Wrapper::Apply_Render_State_Changes();
             dev->SetIndices(g_shadowDecalIndexBufferD3D, g_nShadowDecalStartBatchVertex);
-            dev->SetTransform(D3DTS_WORLD, (D3DMATRIX *)&mWorld);
+            dev->SetTransform(D3DTS_WORLD, &mWorld);
             dev->SetStreamSource(0, g_shadowDecalVertexBufferD3D, sizeof(SHADOW_DECAL_VERTEX));
             dev->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZ);
 

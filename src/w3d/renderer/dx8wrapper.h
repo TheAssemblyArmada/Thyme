@@ -31,6 +31,10 @@
 #include "wwstring.h"
 #include <algorithm>
 #include <captainslog.h>
+#ifdef BUILD_WITH_D3D8
+#include <d3dx8math.h>
+#endif
+
 class LightClass;
 class SurfaceClass;
 class DynamicVBAccessClass;
@@ -76,8 +80,13 @@ struct RenderStateStruct
     D3DLIGHT8 Lights[GFX_LIGHT_COUNT];
 #endif
     bool LightEnable[GFX_LIGHT_COUNT];
+#ifdef BUILD_WITH_D3D8
+    D3DXMATRIX world;
+    D3DXMATRIX view;
+#else
     Matrix4 world;
     Matrix4 view;
+#endif
     unsigned vertex_buffer_types[VERTEX_BUFFERS];
     unsigned index_buffer_type;
     unsigned short vba_offset;
@@ -197,15 +206,15 @@ public:
     static void Clamp_Color(Vector4 &color);
     static unsigned int Convert_Color_Clamp(const Vector4 &color);
     static void Set_DX8_Light(int index, D3DLIGHT8 *light);
-    static void Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
-    static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
+    static void Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, D3DMATRIX &m);
+    static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const D3DMATRIX &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
     static void Set_DX8_Material(const D3DMATERIAL8 *mat);
     static void Set_Ambient_Color(const Vector3 &color);
     static bool Get_Fog_Enable() { return s_fogEnable; }
     static D3DCOLOR Get_Fog_Color() { return s_fogColor; }
-#endif
     static void Set_World_Identity();
+#endif
     static const char *Get_DX8_Texture_Address_Name(unsigned value);
     static const char *Get_DX8_Texture_Filter_Name(unsigned value);
     static const char *Get_DX8_Texture_Arg_Name(unsigned value);
@@ -322,7 +331,11 @@ protected:
     static unsigned &s_renderStateChanged;
     static float &s_zNear;
     static float &s_zFar;
+#ifdef BUILD_WITH_D3D8
+    static D3DMATRIX &s_projectionMatrix;
+#else
     static Matrix4 &s_projectionMatrix;
+#endif
     static int &s_mainThreadID;
     static int &s_currentRenderDevice;
     static DX8Caps *&s_currentCaps;
@@ -354,7 +367,11 @@ protected:
     static DynamicVectorClass<StringClass> &s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> &s_renderDeviceDescriptionTable;
     static w3dadapterid_t &s_currentAdapterIdentifier;
+#ifdef BUILD_WITH_D3D8
+    static ARRAY_DEC(D3DMATRIX, s_DX8Transforms, D3DTS_WORLD1);
+#else
     static ARRAY_DEC(Matrix4, s_DX8Transforms, 257);
+#endif
     static bool &s_EnableTriangleDraw;
     static int &s_ZBias;
     static Vector3 &s_ambientColor;
@@ -403,7 +420,11 @@ protected:
     static unsigned s_renderStateChanged;
     static float s_zNear;
     static float s_zFar;
+#ifdef BUILD_WITH_D3D8
+    static D3DMATRIX s_projectionMatrix;
+#else
     static Matrix4 s_projectionMatrix;
+#endif
     static int s_mainThreadID;
     static int s_currentRenderDevice;
     static DX8Caps *s_currentCaps;
@@ -435,7 +456,11 @@ protected:
     static DynamicVectorClass<StringClass> s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> s_renderDeviceDescriptionTable;
     static w3dadapterid_t s_currentAdapterIdentifier;
+#ifdef BUILD_WITH_D3D8
+    static D3DMATRIX s_DX8Transforms[D3DTS_WORLD1];
+#else
     static Matrix4 s_DX8Transforms[257];
+#endif
     static bool s_EnableTriangleDraw;
     static int s_ZBias;
     static Vector3 s_ambientColor;
@@ -463,22 +488,27 @@ protected:
 
 inline RenderStateStruct::RenderStateStruct() : shader(), material(nullptr), index_buffer(nullptr)
 {
-    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         Textures[i] = nullptr;
     }
-    for (unsigned i = 0; i < VERTEX_BUFFERS; ++i) {
+    for (int i = 0; i < VERTEX_BUFFERS; ++i) {
         vertex_buffers[i] = nullptr;
     }
     // #BUGFIX Initialize all members
-    for (unsigned i = 0; i < GFX_LIGHT_COUNT; ++i) {
-#ifdef BUILD_WITH_D3D8
-        Lights[i] = D3DLIGHT8{};
-#endif
+    for (int i = 0; i < GFX_LIGHT_COUNT; ++i) {
         LightEnable[i] = false;
     }
+#ifdef BUILD_WITH_D3D8
+    for (int i = 0; i < GFX_LIGHT_COUNT; ++i) {
+        Lights[i] = D3DLIGHT8{};
+    }
+    D3DXMatrixIdentity(&world);
+    D3DXMatrixIdentity(&view);
+#else
     world.Make_Identity();
     view.Make_Identity();
-    for (unsigned i = 0; i < VERTEX_BUFFERS; ++i) {
+#endif
+    for (int i = 0; i < VERTEX_BUFFERS; ++i) {
         vertex_buffer_types[i] = 0;
     }
     index_buffer_type = 0;
@@ -495,7 +525,7 @@ inline RenderStateStruct::~RenderStateStruct()
         Ref_Ptr_Release(vertex_buffers[i]);
     }
     Ref_Ptr_Release(index_buffer);
-    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         Ref_Ptr_Release(Textures[i]);
     }
 }
@@ -609,76 +639,76 @@ inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Mat
 {
     switch (transform) {
         case D3DTS_WORLD:
-            s_renderState.world = m.Transpose();
+            Thyme::To_D3DMATRIX(s_renderState.world, m);
             s_renderStateChanged |= WORLD_CHANGED;
             s_renderStateChanged &= ~WORLD_IDENTITY;
             break;
         case D3DTS_VIEW:
-            s_renderState.view = m.Transpose();
+            Thyme::To_D3DMATRIX(s_renderState.view, m);
             s_renderStateChanged |= VIEW_CHANGED;
             s_renderStateChanged &= ~VIEW_IDENTITY;
             break;
         case D3DTS_PROJECTION: {
-            Matrix4 ProjectionMatrix = m.Transpose();
+            D3DMATRIX dxm;
+            Thyme::To_D3DMATRIX(dxm, m);
             s_zFar = 0.0f;
             s_zNear = 0.0f;
-            DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&ProjectionMatrix));
+            DX8CALL(SetTransform(D3DTS_PROJECTION, &dxm));
         } break;
         default:
             s_matrixChanges++;
-            Matrix4 m2 = m.Transpose();
-            DX8CALL(SetTransform(transform, (D3DMATRIX *)&m2));
+            D3DMATRIX dxm;
+            Thyme::To_D3DMATRIX(dxm, m);
+            DX8CALL(SetTransform(transform, &dxm));
             break;
     }
 }
 
 inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix3D &m)
 {
-    Matrix4 m2(m);
-    switch ((int)transform) {
+    Matrix4 m4(m);
+    switch (transform) {
         case D3DTS_WORLD:
-            s_renderState.world = m2.Transpose();
+            Thyme::To_D3DMATRIX(s_renderState.world, m4);
             s_renderStateChanged |= (unsigned)WORLD_CHANGED;
             s_renderStateChanged &= ~(unsigned)WORLD_IDENTITY;
             break;
         case D3DTS_VIEW:
-            s_renderState.view = m2.Transpose();
+            Thyme::To_D3DMATRIX(s_renderState.view, m4);
             s_renderStateChanged |= (unsigned)VIEW_CHANGED;
             s_renderStateChanged &= ~(unsigned)VIEW_IDENTITY;
             break;
         default:
             s_matrixChanges++;
-            m2 = m2.Transpose();
-            DX8CALL(SetTransform(transform, (D3DMATRIX *)&m2));
+            D3DMATRIX dxm;
+            Thyme::To_D3DMATRIX(dxm, m4);
+            DX8CALL(SetTransform(transform, &dxm));
             break;
     }
 }
 
 inline void DX8Wrapper::Get_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m)
 {
-    D3DMATRIX mat;
-
     switch (transform) {
         case D3DTS_WORLD:
             if (s_renderStateChanged & WORLD_IDENTITY)
                 m.Make_Identity();
             else
-                m = s_renderState.world.Transpose();
+                Thyme::To_Matrix4(m, s_renderState.world);
             break;
         case D3DTS_VIEW:
             if (s_renderStateChanged & VIEW_IDENTITY)
                 m.Make_Identity();
             else
-                m = s_renderState.view.Transpose();
+                Thyme::To_Matrix4(m, s_renderState.view);
             break;
         default:
-            DX8CALL(GetTransform(transform, &mat));
-            m = *(Matrix4 *)&mat;
-            m = m.Transpose();
+            D3DMATRIX dxm;
+            DX8CALL(GetTransform(transform, &dxm));
+            Thyme::To_Matrix4(m, dxm);
             break;
     }
 }
-#endif
 
 inline void DX8Wrapper::Set_World_Identity()
 {
@@ -686,11 +716,10 @@ inline void DX8Wrapper::Set_World_Identity()
         return;
     }
 
-    s_renderState.world.Make_Identity();
+    D3DXMatrixIdentity(&s_renderState.world);
     s_renderStateChanged |= (unsigned)WORLD_CHANGED | (unsigned)WORLD_IDENTITY;
 }
 
-#ifdef BUILD_WITH_D3D8
 inline void DX8Wrapper::Handle_DX8_ErrorCode(HRESULT error)
 {
     if (FAILED(error)) {
@@ -788,34 +817,34 @@ inline void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT8 *light)
     }
 }
 
-inline void DX8Wrapper::Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m)
+inline void DX8Wrapper::Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, D3DMATRIX &m)
 {
-    DX8CALL(GetTransform(transform, (D3DMATRIX *)&m));
+    DX8CALL(GetTransform(transform, &m));
 }
 
-inline void DX8Wrapper::Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m)
+inline void DX8Wrapper::Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const D3DMATRIX &m)
 {
     captainslog_assert(transform <= D3DTS_WORLD);
     s_DX8Transforms[transform] = m;
     s_matrixChanges++;
-    DX8CALL(SetTransform(transform, (D3DMATRIX *)&m));
+    DX8CALL(SetTransform(transform, &m));
 }
 
 inline void DX8Wrapper::Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar)
 {
     s_zFar = zfar;
     s_zNear = znear;
-    s_projectionMatrix = matrix.Transpose();
+    Thyme::To_D3DMATRIX(s_projectionMatrix, matrix);
 
     if (!Get_Current_Caps()->Supports_ZBias() && s_zNear != s_zFar) {
-        Matrix4 tmp = s_projectionMatrix;
+        D3DMATRIX tmp = s_projectionMatrix;
         float tmp_zbias = s_ZBias;
         tmp_zbias *= (1.0f / 16.0f);
         tmp_zbias *= 1.0f / (s_zFar - s_zNear);
-        tmp[2][2] -= tmp_zbias * tmp[3][2];
-        DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&tmp));
+        tmp.m[2][2] -= tmp_zbias * tmp.m[3][2];
+        DX8CALL(SetTransform(D3DTS_PROJECTION, &tmp));
     } else {
-        DX8CALL(SetTransform(D3DTS_PROJECTION, (D3DMATRIX *)&s_projectionMatrix));
+        DX8CALL(SetTransform(D3DTS_PROJECTION, &s_projectionMatrix));
     }
 }
 
@@ -914,7 +943,7 @@ inline void DX8Wrapper::Release_Render_State()
     Ref_Ptr_Release(s_renderState.index_buffer);
     Ref_Ptr_Release(s_renderState.material);
 
-    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
 }

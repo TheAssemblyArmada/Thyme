@@ -41,7 +41,7 @@ int MaskTextureShader::Set(int pass)
     DX8Wrapper::Set_Shader(s);
     DX8Wrapper::Apply_Render_State_Changes();
     D3DXMATRIX m1;
-    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m1);
+    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m1);
     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEPOSITION);
     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
     D3DXMATRIX m2;
@@ -74,7 +74,7 @@ int MaskTextureShader::Set(int pass)
         m1 = m2 * m4 * m3;
     }
 
-    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE0, (Matrix4 &)m1);
+    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE0, m1);
 #endif
     return 1;
 }

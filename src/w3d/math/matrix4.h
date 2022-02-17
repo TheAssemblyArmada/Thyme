@@ -377,7 +377,7 @@ public:
 
     static const Matrix4 IDENTITY;
 
-protected:
+public:
     Vector4 Row[4];
 };
 
@@ -476,3 +476,21 @@ __forceinline Vector4 operator*(const Matrix4 &a, const Vector4 &v)
         a[2][0] * v[0] + a[2][1] * v[1] + a[2][2] * v[2] + a[2][3] * v[3],
         a[3][0] * v[0] + a[3][1] * v[1] + a[3][2] * v[2] + a[3][3] * v[3]);
 }
+
+#ifdef BUILD_WITH_D3D8
+struct _D3DMATRIX;
+
+namespace Thyme
+{
+// When converting Matrix4 to D3DMATRIX or vice versa always use conversion function below.
+// Reason being, D3DMATRIX is row major matrix, and Matrix4 is column major matrix.
+// Thus copying from one to another will always require a transpose (or invert).
+
+void To_D3DMATRIX(_D3DMATRIX &dxm, const Matrix4 &m);
+[[nodiscard]] _D3DMATRIX To_D3DMATRIX(const Matrix4 &m);
+
+void To_Matrix4(Matrix4 &m, const _D3DMATRIX &dxm);
+[[nodiscard]] Matrix4 To_Matrix4(const _D3DMATRIX &dxm);
+
+} // namespace Thyme
+#endif

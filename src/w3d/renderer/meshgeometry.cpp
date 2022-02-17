@@ -313,7 +313,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const Vector3 &view_dir, SimpleDynVec
         tri.V[0] = &(loc[polys[poly_counter][0]]);
         tri.V[1] = &(loc[polys[poly_counter][1]]);
         tri.V[2] = &(loc[polys[poly_counter][2]]);
-        tri.N = (Vector3 *)&(norms[poly_counter]);
+        tri.N = Thyme::To_Vector3_Ptr(&(norms[poly_counter]));
 
         if (Vector3::Dot_Product(*tri.N, view_dir) < 0.0f) {
             apt.Add(poly_counter);
@@ -335,7 +335,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const OBBoxClass &local_box, SimpleDy
             tri.V[0] = &(loc[polys[poly_counter][0]]);
             tri.V[1] = &(loc[polys[poly_counter][1]]);
             tri.V[2] = &(loc[polys[poly_counter][2]]);
-            tri.N = (Vector3 *)&(norms[poly_counter]);
+            tri.N = Thyme::To_Vector3_Ptr(&(norms[poly_counter]));
 
             if (CollisionMath::Intersection_Test(local_box, tri)) {
                 apt.Add(poly_counter);
@@ -359,7 +359,7 @@ void MeshGeometryClass::Generate_Rigid_APT(
             tri.V[0] = &(loc[polys[poly_counter][0]]);
             tri.V[1] = &(loc[polys[poly_counter][1]]);
             tri.V[2] = &(loc[polys[poly_counter][2]]);
-            tri.N = (Vector3 *)&(norms[poly_counter]);
+            tri.N = Thyme::To_Vector3_Ptr(&(norms[poly_counter]));
 
             if (Vector3::Dot_Product(*tri.N, viewdir) < 0.0f) {
                 if (CollisionMath::Intersection_Test(local_box, tri)) {
@@ -634,7 +634,7 @@ bool MeshGeometryClass::Intersect_OBBox_Brute_Force(OBBoxIntersectionTestClass &
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
-        tri.N = (Vector3 *)&(norms[i]);
+        tri.N = Thyme::To_Vector3_Ptr(&(norms[i]));
 
         if (CollisionMath::Intersection_Test(localtest.m_box, tri)) {
             return true;
@@ -656,7 +656,7 @@ bool MeshGeometryClass::Cast_Ray_Brute_Force(RayCollisionTestClass &raytest)
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
-        tri.N = (Vector3 *)&(norms[i]);
+        tri.N = Thyme::To_Vector3_Ptr(&(norms[i]));
 
         hit = hit | CollisionMath::Collide(raytest.m_ray, tri, raytest.m_result);
         if (hit) {
@@ -682,7 +682,7 @@ bool MeshGeometryClass::Cast_AABox_Brute_Force(AABoxCollisionTestClass &boxtest)
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
-        tri.N = (Vector3 *)&(norms[i]);
+        tri.N = Thyme::To_Vector3_Ptr(&(norms[i]));
 
         if (CollisionMath::Collide(boxtest.m_box, boxtest.m_move, tri, boxtest.m_result)) {
             polyhit = i;
@@ -712,7 +712,7 @@ bool MeshGeometryClass::Cast_OBBox_Brute_Force(OBBoxCollisionTestClass &boxtest)
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
-        tri.N = (Vector3 *)&(norms[i]);
+        tri.N = Thyme::To_Vector3_Ptr(&(norms[i]));
 
         if (CollisionMath::Collide(boxtest.m_box, boxtest.m_move, tri, Vector3(0, 0, 0), boxtest.m_result)) {
             polyhit = i;

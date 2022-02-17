@@ -236,3 +236,20 @@ __forceinline Vector4 Lerp(const Vector4 &a, const Vector4 &b, float alpha)
     return Vector4(
         (a.X + (b.X - a.X) * alpha), (a.Y + (b.Y - a.Y) * alpha), (a.Z + (b.Z - a.Z) * alpha), (a.W + (b.W - a.W) * alpha));
 }
+
+class Vector3;
+
+namespace Thyme
+{
+// Casting from Vector4 pointer to Vector3 pointer is considered safe.
+
+inline const Vector3 *To_Vector3_Ptr(const Vector4 *vector)
+{
+    return reinterpret_cast<const Vector3 *>(vector);
+}
+
+inline Vector3 *To_Vector3_Ptr(Vector4 *vector)
+{
+    return reinterpret_cast<Vector3 *>(vector);
+}
+} // namespace Thyme

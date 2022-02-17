@@ -327,6 +327,7 @@ set(GAMEENGINE_SRC
     w3d/math/quaternion.cpp
     w3d/math/tri.cpp
     w3d/math/v3_rnd.cpp
+    w3d/math/vector4.cpp
     w3d/math/vp.cpp
     w3d/renderer/animobj.cpp
     w3d/renderer/aabtree.cpp

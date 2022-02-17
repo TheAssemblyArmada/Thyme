@@ -226,10 +226,10 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
     }
 
     if (is_generals) {
-        font_width = ((double)-font_height / 2.5);
+        font_width = ((float)-font_height / 2.5f);
     }
 
-    m_widthReduction = std::clamp(font_height / ~7, 0, 4);
+    m_widthReduction = std::clamp(-(font_height / 8), 0, 4);
 
     m_gdiFont = CreateFontA(font_height,
         font_width,
@@ -246,20 +246,22 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
         VARIABLE_PITCH,
         font_name);
 
-    BITMAPINFOHEADER bitmap_info = { 0 };
-    bitmap_info.biSize = sizeof(BITMAPINFOHEADER);
-    bitmap_info.biWidth = m_pointSize * 2;
-    bitmap_info.biHeight = m_pointSize * ~2;
-    bitmap_info.biPlanes = 1;
-    bitmap_info.biBitCount = 24;
-    bitmap_info.biCompression = BI_RGB;
-    bitmap_info.biSizeImage = 12 * m_pointSize * m_pointSize;
-    bitmap_info.biXPelsPerMeter = 0;
-    bitmap_info.biYPelsPerMeter = 0;
-    bitmap_info.biClrUsed = 0;
-    bitmap_info.biClrImportant = 0;
-    m_gdiBitmap = CreateDIBSection(
-        screen_dc, (const BITMAPINFO *)&bitmap_info, DIB_RGB_COLORS, (void **)&m_gdiBitmapBits, nullptr, 0L);
+    // #BUGFIX Do not pass a BITMAPINFOHEADER* for BITMAPINFO* into CreateDIBSection function.
+
+    BITMAPINFO bitmap_info = { 0 };
+    bitmap_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bitmap_info.bmiHeader.biWidth = m_pointSize * 2;
+    bitmap_info.bmiHeader.biHeight = -(m_pointSize * 2);
+    bitmap_info.bmiHeader.biPlanes = 1;
+    bitmap_info.bmiHeader.biBitCount = 24;
+    bitmap_info.bmiHeader.biCompression = BI_RGB;
+    bitmap_info.bmiHeader.biSizeImage = 12 * m_pointSize * m_pointSize;
+    bitmap_info.bmiHeader.biXPelsPerMeter = 0;
+    bitmap_info.bmiHeader.biYPelsPerMeter = 0;
+    bitmap_info.bmiHeader.biClrUsed = 0;
+    bitmap_info.bmiHeader.biClrImportant = 0;
+    m_gdiBitmap =
+        CreateDIBSection(screen_dc, &bitmap_info, DIB_RGB_COLORS, reinterpret_cast<void **>(&m_gdiBitmapBits), nullptr, 0L);
 
     m_memDC = CreateCompatibleDC(screen_dc);
     ReleaseDC(W3D::Get_Window(), screen_dc);

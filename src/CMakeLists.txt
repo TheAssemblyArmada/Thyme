@@ -174,6 +174,7 @@ set(GAMEENGINE_SRC
     game/common/rts/energy.cpp
     game/common/rts/handicap.cpp
     game/common/rts/money.cpp
+    game/common/rts/missionstats.cpp
     game/common/rts/player.cpp
     game/common/rts/playerlist.cpp
     game/common/rts/playertemplate.cpp

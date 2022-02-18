@@ -356,7 +356,7 @@ VertexMaterialClass::VertexMaterialClass() :
 
 #ifdef BUILD_WITH_D3D8
     m_material = new DynD3DMATERIAL8;
-    memset(((D3DMATERIAL8 *)m_material), 0, sizeof(D3DMATERIAL8));
+    memset(static_cast<D3DMATERIAL8 *>(m_material), 0, sizeof(D3DMATERIAL8));
     Set_Ambient(1.0f, 1.0f, 1.0f);
     Set_Diffuse(1.0f, 1.0f, 1.0f);
     Set_Opacity(1.0f);
@@ -388,7 +388,7 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass &src) :
 
 #ifdef BUILD_WITH_D3D8
     m_material = new DynD3DMATERIAL8;
-    memcpy(((D3DMATERIAL8 *)m_material), ((D3DMATERIAL8 *)src.m_material), sizeof(D3DMATERIAL8));
+    memcpy(static_cast<D3DMATERIAL8 *>(m_material), static_cast<D3DMATERIAL8 *>(src.m_material), sizeof(D3DMATERIAL8));
 #endif
 }
 
@@ -430,7 +430,7 @@ VertexMaterialClass &VertexMaterialClass::operator=(const VertexMaterialClass &s
         }
 
 #ifdef BUILD_WITH_D3D8
-        memcpy(((D3DMATERIAL8 *)m_material), ((D3DMATERIAL8 *)src.m_material), sizeof(D3DMATERIAL8));
+        memcpy(static_cast<D3DMATERIAL8 *>(m_material), static_cast<D3DMATERIAL8 *>(src.m_material), sizeof(D3DMATERIAL8));
 #endif
     }
     return *this;

@@ -808,8 +808,8 @@ inline void DX8Wrapper::Set_Fog(bool enable, const Vector3 &color, float start, 
 
     ShaderClass::Invalidate();
 
-    Set_DX8_Render_State(D3DRS_FOGSTART, *(DWORD *)(&start));
-    Set_DX8_Render_State(D3DRS_FOGEND, *(DWORD *)(&end));
+    Set_DX8_Render_State(D3DRS_FOGSTART, *reinterpret_cast<DWORD *>(&start));
+    Set_DX8_Render_State(D3DRS_FOGEND, *reinterpret_cast<DWORD *>(&end));
 }
 
 inline void DX8Wrapper::Set_Ambient_Color(const Vector3 &color)

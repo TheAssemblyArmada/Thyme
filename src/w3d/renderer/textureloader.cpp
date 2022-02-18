@@ -223,7 +223,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
     int width = targa.Get_Header().width;
     int height = targa.Get_Header().height;
     uint8_t *dest_surface = 0;
-    uint8_t *src_surface = (uint8_t *)targa.Get_Image();
+    uint8_t *src_surface = reinterpret_cast<uint8_t *>(targa.Get_Image());
 
     if (src_format == WW3D_FORMAT_A1R5G5B5 || src_format == WW3D_FORMAT_R5G6B5 || src_format == WW3D_FORMAT_A4R4G4B4
         || src_format == WW3D_FORMAT_P8 || src_format == WW3D_FORMAT_L8) {
@@ -239,7 +239,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
             height,
             src_bpp * width,
             src_format,
-            (uint8_t *)targa.Get_Palette(),
+            reinterpret_cast<uint8_t *>(targa.Get_Palette()),
             targa.Get_Header().cmap_depth >> 3,
             false,
             Vector3(0.0f, 0.0f, 0.0f));
@@ -252,7 +252,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT rect;
     surface->LockRect(&rect, 0, 0);
-    BitmapHandlerClass::Copy_Image((uint8_t *)rect.pBits,
+    BitmapHandlerClass::Copy_Image(reinterpret_cast<uint8_t *>(rect.pBits),
         width,
         height,
         rect.Pitch,
@@ -262,7 +262,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
         height,
         src_bpp * width,
         src_format,
-        (uint8_t *)targa.Get_Palette(),
+        reinterpret_cast<uint8_t *>(targa.Get_Palette()),
         targa.Get_Header().cmap_depth >> 3,
         false,
         Vector3(0.0f, 0.0f, 0.0f));

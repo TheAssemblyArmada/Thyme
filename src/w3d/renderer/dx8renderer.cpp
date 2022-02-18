@@ -530,6 +530,7 @@ void DX8TextureCategoryClass::Render()
     while (task) {
         DX8PolygonRendererClass *renderer = task->Peek_Polygon_Renderer();
         MeshClass *mesh = task->Peek_Mesh();
+        captainslog_assert(mesh != nullptr);
 
         if (mesh->Get_Base_Vertex_Offset() == 0xFFFF) {
             task2 = task;
@@ -582,12 +583,13 @@ void DX8TextureCategoryClass::Render()
 #endif
             }
 
+            RenderObjClass::Material_Override *mat_override =
+                static_cast<RenderObjClass::Material_Override *>(mesh->Get_User_Data());
+
             if (mmc->Get_Flag(MeshGeometryClass::SORT) && W3D::Is_Sorting_Enabled()) {
                 renderer->Render_Sorted(mesh->Get_Base_Vertex_Offset(), mesh->Get_Bounding_Sphere());
             } else if (mesh->Get_Alpha_Override() != 1.0f
-                || (mesh->Get_User_Data()
-                    && ((RenderObjClass::Material_Override *)mesh->Get_User_Data())->m_structID
-                        == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE)) {
+                || (mat_override != nullptr && mat_override->m_structID == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE)) {
                 float opacity = m_material->Get_Opacity();
                 Vector3 diffuse;
                 m_material->Get_Diffuse(&diffuse);
@@ -595,16 +597,13 @@ void DX8TextureCategoryClass::Render()
                 unsigned int sync;
                 Vector2 uv;
 
-                if (mesh->Get_User_Data()
-                    && ((RenderObjClass::Material_Override *)mesh->Get_User_Data())->m_structID
-                        == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE
-                    && mapper && mapper->Mapper_ID() == TextureMapperClass::MAPPER_ID_LINEAR_OFFSET) {
-                    RenderObjClass::Material_Override *override = (RenderObjClass::Material_Override *)mesh->Get_User_Data();
-                    LinearOffsetTextureMapperClass *l = (LinearOffsetTextureMapperClass *)mapper;
+                if (mat_override != nullptr && mat_override->m_structID == RenderObjClass::USER_DATA_MATERIAL_OVERRIDE
+                    && mapper != nullptr && mapper->Mapper_ID() == TextureMapperClass::MAPPER_ID_LINEAR_OFFSET) {
+                    LinearOffsetTextureMapperClass *l = static_cast<LinearOffsetTextureMapperClass *>(mapper);
                     sync = l->Get_Sync_Time();
                     l->Set_Sync_Time(W3D::Get_Sync_Time());
                     uv = l->Get_Current_UV_Offset();
-                    l->Set_Current_UV_Offset(override->m_customUVOffset);
+                    l->Set_Current_UV_Offset(mat_override->m_customUVOffset);
                 } else {
                     mapper = nullptr;
                 }
@@ -636,7 +635,7 @@ void DX8TextureCategoryClass::Render()
                 }
 
                 if (mapper) {
-                    LinearOffsetTextureMapperClass *l = (LinearOffsetTextureMapperClass *)mapper;
+                    LinearOffsetTextureMapperClass *l = static_cast<LinearOffsetTextureMapperClass *>(mapper);
                     l->Set_Sync_Time(sync);
                     l->Set_Current_UV_Offset(uv);
                 }
@@ -926,11 +925,8 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Texture(MultiListClass<DX8
                             tmp_textures[0] = texcat->Peek_Texture(0);
                             tmp_textures[1] = texcat->Peek_Texture(1);
                             tmp_textures[stage] = new_texture;
-                            tc = new DX8TextureCategoryClass(this,
-                                tmp_textures,
-                                texcat->Get_Shader(),
-                                (VertexMaterialClass *)texcat->Peek_Material(),
-                                pass);
+                            tc = new DX8TextureCategoryClass(
+                                this, tmp_textures, texcat->Get_Shader(), texcat->Peek_Material(), pass);
                             bool b = false;
                             MultiListIterator<DX8TextureCategoryClass> tc_it(&m_textureCategoryList[pass]);
 
@@ -1292,7 +1288,7 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
 
     VertexBufferClass::AppendLockClass lock(m_vertexBuffer, m_usedVertices, split.Get_Vertex_Count());
     FVFInfoClass f = m_vertexBuffer->FVF_Info();
-    char *outverts = (char *)lock.Get_Vertex_Array();
+    char *outverts = static_cast<char *>(lock.Get_Vertex_Array());
     const Vector3 *verts = split.Get_Vertex_Array();
     const Vector3 *normals = split.Get_Vertex_Normal_Array();
     const unsigned int *diffuse = split.Get_Color_Array(0);
@@ -1300,23 +1296,24 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
 
 #ifdef BUILD_WITH_D3D8
     for (unsigned int i = 0; i < split.Get_Vertex_Count(); i++) {
-        *((Vector3 *)(&outverts[f.Get_Location_Offset()])) = verts[i];
+
+        *reinterpret_cast<Vector3 *>(&outverts[f.Get_Location_Offset()]) = verts[i];
 
         if (m_FVF & D3DFVF_NORMAL) {
             if (normals) {
-                *((Vector3 *)(&outverts[f.Get_Normal_Offset()])) = normals[i];
+                *reinterpret_cast<Vector3 *>(&outverts[f.Get_Normal_Offset()]) = normals[i];
             }
         }
 
         if (m_FVF & D3DFVF_DIFFUSE) {
             if (diffuse) {
-                *((unsigned int *)(&outverts[f.Get_Diffuse_Offset()])) = diffuse[i];
+                *reinterpret_cast<unsigned int *>(&outverts[f.Get_Diffuse_Offset()]) = diffuse[i];
             }
         }
 
         if (m_FVF & D3DFVF_SPECULAR) {
             if (specular) {
-                *((unsigned int *)(&outverts[f.Get_Specular_Offset()])) = specular[i];
+                *reinterpret_cast<unsigned int *>(&outverts[f.Get_Specular_Offset()]) = specular[i];
             }
         }
 
@@ -1326,12 +1323,12 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
     int texcount = (m_FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
 
     for (int i = 0; i < texcount; i++) {
-        char *outverts2 = (char *)lock.Get_Vertex_Array();
+        char *outverts2 = static_cast<char *>(lock.Get_Vertex_Array());
         const Vector2 *uv = split.Get_UV_Array(i);
 
         if (uv) {
             for (unsigned int j = 0; j < split.Get_Vertex_Count(); j++) {
-                *((Vector2 *)(&outverts2[f.Get_Tex_Offset(i)])) = uv[j];
+                *reinterpret_cast<Vector2 *>(&outverts2[f.Get_Tex_Offset(i)]) = uv[j];
                 outverts2 += f.Get_FVF_Size();
             }
         }

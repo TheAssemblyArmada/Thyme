@@ -242,7 +242,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Inits()
 
 inline unsigned long F2DW(float f)
 {
-    return *((unsigned *)&f);
+    return *reinterpret_cast<unsigned long *>(&f);
 }
 
 void DX8Wrapper::Set_Default_Global_Render_States()
@@ -1341,8 +1341,8 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type,
         VertexFormatXYZNDUV2 *dest = lock.Get_Formatted_Vertex_Array();
         src += s_renderState.vba_offset + s_renderState.index_base_offset + min_vertex_index;
         unsigned size = dyn_vb_access.FVF_Info().Get_FVF_Size() * vertex_count / sizeof(unsigned);
-        unsigned *dest_u = (unsigned *)dest;
-        unsigned *src_u = (unsigned *)src;
+        unsigned *dest_u = reinterpret_cast<unsigned *>(dest);
+        unsigned *src_u = reinterpret_cast<unsigned *>(src);
 
         for (unsigned i = 0; i < size; ++i) {
             *dest_u++ = *src_u++;
@@ -2380,7 +2380,7 @@ void DX8Wrapper::Get_DX8_Render_State_Value_Name(StringClass &name, D3DRENDERSTA
         case D3DRS_PATCHSEGMENTS:
         case D3DRS_POINTSIZE_MAX:
         case D3DRS_TWEENFACTOR:
-            name.Format("%f", *(float *)&value);
+            name.Format("%f", *reinterpret_cast<float *>(&value));
             break;
 
         case D3DRS_ZBIAS:
@@ -2491,7 +2491,7 @@ void DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name(StringClass &name, D3DTE
         case D3DTSS_BUMPENVMAT11:
         case D3DTSS_BUMPENVLSCALE:
         case D3DTSS_BUMPENVLOFFSET:
-            name.Format("%f", *(float *)&value);
+            name.Format("%f", *reinterpret_cast<float *>(&value));
             break;
 
         case D3DTSS_TEXCOORDINDEX:

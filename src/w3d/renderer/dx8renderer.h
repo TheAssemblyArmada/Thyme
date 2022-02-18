@@ -90,7 +90,7 @@ public:
     void Clear_Render_List() { m_renderTaskHead = nullptr; }
 
     TextureClass *Peek_Texture(int stage) { return m_textures[stage]; }
-    const VertexMaterialClass *Peek_Material() { return m_material; }
+    VertexMaterialClass *Peek_Material() { return m_material; }
 
     ShaderClass Get_Shader() { return m_shader; }
     DX8FVFCategoryContainer *Get_Container() { return m_container; }

@@ -155,13 +155,13 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
                 m_height,
                 2 * m_width,
                 WW3D_FORMAT_A4R4G4B4,
-                (uint8_t *)targa.Get_Image(),
+                reinterpret_cast<uint8_t *>(targa.Get_Image()),
                 targa.Get_Header().width,
                 targa.Get_Header().height,
                 src_bpp * targa.Get_Header().width,
                 dest_format,
-                (uint8_t *)targa.Get_Palette(),
-                (uint8_t)targa.Get_Header().cmap_depth / 8,
+                reinterpret_cast<uint8_t *>(targa.Get_Palette()),
+                static_cast<uint8_t>(targa.Get_Header().cmap_depth) / 8,
                 false,
                 Vector3(0.0f, 0.0f, 0.0f));
         }

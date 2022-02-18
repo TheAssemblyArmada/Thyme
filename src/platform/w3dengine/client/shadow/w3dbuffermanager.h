@@ -107,15 +107,15 @@ public:
 
     enum
     {
-        MAX_NUMBER_SLOTS = 4096,
+        // #BUGFIX Double the original sizes to avoid crash when many 3D shadows are drawn on screen.
+        // #TODO Investigate crash further by reducing sizes and make it work even if sizes are exceeded.
+        MAX_NUMBER_SLOTS = 4096 * 2,
+        MAX_VERTEX_BUFFERS_CREATED = 32 * 2,
+        MAX_INDEX_BUFFERS_CREATED = 32 * 2,
 
-        // Don't change these two
-        // Changing these breaks shadows so something elsewhere relies on them
+        // Don't change these two yet. Changing these breaks shadows, meaning something elsewhere relies on them.
         MAX_VB_SIZES = 128,
         MAX_IB_SIZES = 128,
-
-        MAX_VERTEX_BUFFERS_CREATED = 32,
-        MAX_INDEX_BUFFERS_CREATED = 32,
     };
 
     W3DBufferManager();

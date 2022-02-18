@@ -1980,8 +1980,34 @@ void Setup_Hooks()
     Hook_Any(0x007A3650, W3DShadowGeometryMesh::~W3DShadowGeometryMesh);
     Hook_Any(0x007A36A0, W3DShadowGeometryMesh::Build_Polygon_Neighbors);
     Hook_Any(0x007A39F0, W3DShadowGeometryMesh::Build_Polygon_Normals);
+    //Hook_Any(0x007A3BA0, W3DVolumetricShadow::Update_Optimal_Extrusion_Padding);
+    //Hook_Any(0x007A4110, W3DVolumetricShadow::Render_Volume);
+    //Hook_Any(0x007A41A0, W3DVolumetricShadow::Render_MeshVolume);
+    //Hook_Any(0x007A43D0, W3DVolumetricShadow::Render_Dynamic_Mesh_Volume);
+    Hook_Any(0x007A4760, W3DVolumetricShadow::Hook_Ctor);
+    Hook_Any(0x007A4880, W3DVolumetricShadow::Hook_Dtor);
+    //Hook_Any(0x007A4970, W3DVolumetricShadow::Update);
+    //Hook_Any(0x007A4C10, W3DVolumetricShadow::Update_Volumes);
+    //Hook_Any(0x007A4F10, W3DVolumetricShadow::Update_Mesh_Volume);
+    Hook_Any(0x007A5B20, W3DVolumetricShadow::Add_Silhouette_Edge);
+    Hook_Any(0x007A5C30, W3DVolumetricShadow::Add_Neighborless_Edges);
+    Hook_Any(0x007A5D30, W3DVolumetricShadow::Build_Silhouette);
+    //Hook_Any(0x007A5F50, W3DVolumetricShadow::Construct_Volume);
+    //Hook_Any(0x007A6530, W3DVolumetricShadow::Construct_Volume_VB);
+    Hook_Any(0x007A6B20, W3DVolumetricShadow::Allocate_Shadow_Volume);
+    Hook_Any(0x007A6C50, W3DVolumetricShadow::Reset_Shadow_Volume);
+    Hook_Any(0x007A6D00, W3DVolumetricShadow::Allocate_Silhouette);
+    Hook_Any(0x007A6D50, W3DVolumetricShadowManager::Render_Stencil_Shadows);
+    //Hook_Any(0x007A6FB0, W3DVolumetricShadowManager::Render_Shadows);
+    Hook_Any(0x007A7590, W3DVolumetricShadowManager::Hook_Ctor);
+    Hook_Any(0x007A7680, W3DVolumetricShadowManager::Hook_Dtor);
+    Hook_Any(0x007A7760, W3DVolumetricShadowManager::Release_Resources);
+    Hook_Any(0x007A77D0, W3DVolumetricShadowManager::Re_Acquire_Resources);
+    Hook_Any(0x007A78B0, W3DVolumetricShadowManager::Reset);
+    //Hook_Any(0x007A78D0, W3DShadowGeometryManager::Add_Shadow);
     Hook_Any(0x007A7AF0, W3DShadowGeometryManager::Free_All_Geoms);
     Hook_Any(0x007A7B70, W3DShadowGeometryManager::Load_Geom);
+    Hook_Any(0x007A7DB0, W3DVolumetricShadow::Release);
 
     // w3dbuffermanager.h
     Hook_Any(0x007D5420, W3DBufferManager::Hook_Ctor);

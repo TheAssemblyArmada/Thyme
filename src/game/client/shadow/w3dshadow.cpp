@@ -17,6 +17,16 @@
 W3DShadowManager *g_theW3DShadowManager = nullptr;
 #endif
 
+#ifdef BUILD_WITH_D3D8
+#include "dx8wrapper.h"
+
+#ifndef GAME_DLL
+IDirect3DVertexBuffer8 *g_shadowVertexBufferD3D;
+IDirect3DIndexBuffer8 *g_shadowIndexBufferD3D;
+#endif
+
+#endif
+
 void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass)
 {
 #ifdef GAME_DLL

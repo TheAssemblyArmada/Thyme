@@ -18,8 +18,9 @@
 #include "dx8vertexbuffer.h"
 #include <algorithm>
 
-// TODO need general cleanup advice
-// TODO what is going on with count
+#ifndef GAME_DLL
+W3DBufferManager *g_theW3DBufferManager;
+#endif
 
 static const int FVFTypeIndexList[W3DBufferManager::MAX_FVF] = {
     DX8_FVF_XYZ,

@@ -22,6 +22,13 @@ class DebugDrawStats;
 class RenderObjClass;
 class Drawable;
 
+enum
+{
+    // these were globals but theres little point in having them as such
+    SHADOW_VERTEX_SIZE = 4096,
+    SHADOW_INDEX_SIZE = 8192,
+};
+
 enum ShadowType
 {
     SHADOW_NONE = 0,
@@ -162,4 +169,16 @@ extern W3DShadowManager *&g_theW3DShadowManager;
 extern W3DShadowManager *g_theW3DShadowManager;
 #endif
 
+#ifdef BUILD_WITH_D3D8
+#include "dx8wrapper.h"
+
+#ifndef GAME_DLL
+extern IDirect3DVertexBuffer8 *g_shadowVertexBufferD3D;
+extern IDirect3DIndexBuffer8 *g_shadowIndexBufferD3D;
+#else
+extern IDirect3DVertexBuffer8 *&g_shadowVertexBufferD3D;
+extern IDirect3DIndexBuffer8 *&g_shadowIndexBufferD3D;
+#endif
+
+#endif
 void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass);

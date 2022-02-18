@@ -745,3 +745,12 @@ GameWindowManager *&g_theWindowManager = Make_Global<GameWindowManager *>(PICK_A
 // terrainvisual.cpp
 class TerrainVisual;
 TerrainVisual *&g_theTerrainVisual = Make_Global<TerrainVisual *>(PICK_ADDRESS(0x00A2C27C, 0x00E25D10));
+
+// w3dbuffermanager.cpp
+#include "w3dbuffermanager.h"
+W3DBufferManager *&g_theW3DBufferManager = Make_Global<W3DBufferManager *>(PICK_ADDRESS(0x00A3C2B8, 0x00E1B298));
+
+#ifdef BUILD_WITH_D3D8
+IDirect3DVertexBuffer8 *&g_shadowVertexBufferD3D = Make_Global<IDirect3DVertexBuffer8 *>(0x00A3B0F4);
+IDirect3DIndexBuffer8 *&g_shadowIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(0x00A3B0F8);
+#endif

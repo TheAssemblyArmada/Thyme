@@ -18,10 +18,13 @@
 #include "aabox.h"
 #include "colmath.h"
 #include "hash.h"
+#include "matrix4.h"
 #include "refcount.h"
 #include "sphere.h"
 #include "vector3.h"
 #include "vector3i.h"
+#include "w3dbuffermanager.h"
+#include "w3dshadow.h"
 #include <new>
 
 class RenderObjClass;
@@ -55,6 +58,7 @@ struct PolyNeighbor
 class W3DShadowGeometryMesh
 {
     friend W3DShadowGeometry;
+    friend class W3DVolumetricShadow;
 
 public:
     W3DShadowGeometryMesh();
@@ -70,8 +74,8 @@ public:
     int Get_Num_Polygon() const { return m_numPolygons; }
 
     void Build_Polygon_Normals();
+    void Build_Polygon_Normal(int index, Vector3 *normal) const;
 
-    void Get_Polygon_Normal(int index, Vector3 *normal) const;
     void Get_Polygon_Index(int polygon_index, short *index_list) const;
 
     Vector3 *Get_Vertex(int index) const { return &m_verts[index]; }
@@ -243,4 +247,129 @@ private:
     SphereClass m_boundingSphere;
 
     VisibleState m_visibleState;
+};
+
+struct W3DRenderTask
+{
+    W3DRenderTask *m_nextTask;
+};
+
+struct W3DVolumetricShadowRenderTask : W3DRenderTask
+{
+    class W3DVolumetricShadow *m_parentShadow;
+    unsigned char m_meshIndex;
+    unsigned char m_lightIndex;
+};
+
+class W3DVolumetricShadow : public Shadow
+{
+    friend class W3DVolumetricShadowManager;
+
+public:
+    W3DVolumetricShadow();
+    ~W3DVolumetricShadow();
+
+    void Release() override;
+
+#ifdef GAME_DEBUG_STRUCTS
+    virtual void Gather_Draw_Stats(DebugDrawStats *stats);
+#endif
+
+#ifdef GAME_DLL
+    W3DVolumetricShadow *Hook_Ctor() { return ::new (this) W3DVolumetricShadow; }
+    void Hook_Dtor() { W3DVolumetricShadow::~W3DVolumetricShadow(); }
+#endif
+
+    void Set_Geometry(W3DShadowGeometry *geo);
+
+    void Add_Silhouette_Edge(int mesh_index, PolyNeighbor *visible, PolyNeighbor *hidden);
+    void Add_Neighborless_Edges(int mesh_index, PolyNeighbor *us);
+
+    void Add_Silhouette_Indices(int index, short start, short end);
+
+    void Build_Silhouette(int mesh_index, Vector3 *light_pos);
+
+    bool Allocate_Shadow_Volume(int volume_index, int mesh_index);
+    void Delete_Shadow_Volume(int volume_index);
+    void Reset_Shadow_Volume(int volume_index, int mesh_index);
+
+    bool Allocate_Silhouette(int index, int count);
+    void Delete_Silhouette(int index);
+    void Reset_Silhouette(int index);
+
+    void Set_Light_Pos_History(int volume_index, int mesh_index, const Vector3 &pos)
+    {
+        m_lightPosHistory[volume_index][mesh_index] = pos;
+    }
+
+    void Set_Shadow_Length_Scale(float scale) { m_shadowLengthScale = scale; }
+
+    void Set_Optimal_Extrusion_Padding(float padding) { m_optimalExtrusionPadding = padding; }
+
+    void Set_Render_Object(RenderObjClass *robj);
+
+    void Set_Bounds_Radius(float radius) { m_boundsRadius = radius; }
+
+private:
+    W3DVolumetricShadow *m_next;
+
+    W3DShadowGeometry *m_geometry;
+    RenderObjClass *m_robj;
+    float m_shadowLengthScale;
+    float m_boundsRadius;
+    float m_optimalExtrusionPadding;
+
+    Geometry *m_shadowVolume[1][MAX_SHADOW_CASTER_MESHES];
+
+    W3DBufferManager::W3DVertexBufferSlot *m_shadowVolumeVB[1][MAX_SHADOW_CASTER_MESHES];
+    W3DBufferManager::W3DIndexBufferSlot *m_shadowVolumeIB[1][MAX_SHADOW_CASTER_MESHES];
+
+    W3DVolumetricShadowRenderTask m_shadowVolumeRenderTask[1][MAX_SHADOW_CASTER_MESHES];
+
+    int m_shadowVolumeCount[MAX_SHADOW_CASTER_MESHES];
+
+    Vector3 m_lightPosHistory[1][MAX_SHADOW_CASTER_MESHES];
+    Matrix4 m_objectXformHistory[1][MAX_SHADOW_CASTER_MESHES];
+
+    short *m_silhouetteIndex[MAX_SHADOW_CASTER_MESHES];
+
+    short m_numSilhouetteIndices[MAX_SHADOW_CASTER_MESHES];
+    short m_maxSilhouetteEntries[MAX_SHADOW_CASTER_MESHES];
+
+    int m_numIndicesPerMesh[MAX_SHADOW_CASTER_MESHES];
+};
+
+class W3DVolumetricShadowManager
+{
+public:
+    W3DVolumetricShadowManager();
+    ~W3DVolumetricShadowManager();
+
+    int Init();
+    void Reset();
+
+    void Release_Resources();
+    int Re_Acquire_Resources();
+
+    W3DVolumetricShadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
+
+    void Remove_Shadow(W3DVolumetricShadow *shadow);
+    void Remove_All_Shadows();
+
+    void Add_Dynamic_Shadow_Task(W3DVolumetricShadowRenderTask *task);
+
+    void Render_Stencil_Shadows();
+    // void Render_Shadows(bool force_stencil_fill);
+
+    void Invalidate_Cached_Light_Positions();
+
+#ifdef GAME_DLL
+    W3DVolumetricShadowManager *Hook_Ctor() { return ::new (this) W3DVolumetricShadowManager; }
+    void Hook_Dtor() { W3DVolumetricShadowManager::~W3DVolumetricShadowManager(); }
+#endif
+
+private:
+    W3DVolumetricShadow *m_shadowList;
+    W3DVolumetricShadowRenderTask *m_dynamicShadowVolumesToRender;
+    W3DShadowGeometryManager *m_W3DShadowGeometryManager;
 };

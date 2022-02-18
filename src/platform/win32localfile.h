@@ -21,6 +21,7 @@ class Win32LocalFile : public LocalFile
     IMPLEMENT_POOL(Win32LocalFile);
 
     friend class Win32LocalFileSystem;
+    friend class StdLocalFileSystem;
 
 public:
     enum

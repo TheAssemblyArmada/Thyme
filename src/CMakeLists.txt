@@ -404,6 +404,14 @@ set(GAMEENGINE_SRC
     w3d/renderer/w3dformat.cpp
 )
 
+if(USE_STDFS)
+    list(APPEND GAMEENGINE_SRC
+        platform/stdlocalfilesystem.cpp
+    )
+
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_STDFS)
+endif()
+
 # Game binary only source
 set(GAMEENGINE_GAME_SRC
     game/main.cpp

@@ -27,6 +27,10 @@
 #include <winuser.h>
 #endif
 
+#ifdef BUILD_WITH_STDFS
+#include "stdlocalfilesystem.h"
+#endif
+
 Win32GameEngine::Win32GameEngine()
 {
 #ifdef PLATFORM_WINDOWS
@@ -60,7 +64,11 @@ void Win32GameEngine::Service_Windows_OS()
 
 LocalFileSystem *Win32GameEngine::Create_Local_File_System()
 {
+#ifdef BUILD_WITH_STDFS
+    return new StdLocalFileSystem;
+#else
     return new Win32LocalFileSystem;
+#endif
 }
 
 ArchiveFileSystem *Win32GameEngine::Create_Archive_File_System()

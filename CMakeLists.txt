@@ -63,8 +63,10 @@ endif()
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DEFAULT_STANDALONE OFF)
+    set(DEFAULT_STDFS OFF)
 else()
     set(DEFAULT_STANDALONE ON)
+    set(DEFAULT_STDFS ON)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -78,6 +80,7 @@ endif()
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
+option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)

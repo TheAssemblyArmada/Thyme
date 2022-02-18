@@ -19,6 +19,7 @@
 #include <cstdio>
 
 class Win32LocalFileSystem;
+class StdLocalFileSystem;
 
 namespace Thyme
 {
@@ -28,6 +29,7 @@ class StandardFile : public LocalFile
     IMPLEMENT_POOL(StandardFile);
 
     friend class ::Win32LocalFileSystem;
+    friend class ::StdLocalFileSystem;
 
 protected:
     virtual ~StandardFile() override;

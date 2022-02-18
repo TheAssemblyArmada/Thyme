@@ -400,6 +400,7 @@ public:
     void Stop_Client_Particle_Systems();
 
     RenderObjClass *Get_Render_Object() { return m_renderObject; }
+    bool Get_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
     W3DModelDrawModuleData *Get_W3D_Model_Draw_Module_Data() const
     {
         return (W3DModelDrawModuleData *)Module::Get_Module_Data();

@@ -255,14 +255,14 @@ void Matrix3D::Multiply(const Matrix3D &A, const Matrix3D &B, Matrix3D *set_res)
 {
     captainslog_assert(set_res != nullptr);
     Matrix3D tmp;
-    Matrix3D *Aptr;
+    const Matrix3D *Aptr;
     float tmp1, tmp2, tmp3;
 
     if (set_res == &A) {
         tmp = A;
         Aptr = &tmp;
     } else {
-        Aptr = (Matrix3D *)&A;
+        Aptr = &A;
     }
 
     tmp1 = B[0][0];

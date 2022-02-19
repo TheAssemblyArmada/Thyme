@@ -307,13 +307,13 @@ public:
     __forceinline static void Rotate_Vector(const Matrix3 &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[0][1] * v->Y + A[0][2] * v->Z);
@@ -324,13 +324,13 @@ public:
     __forceinline static void Transpose_Rotate_Vector(const Matrix3 &A, const Vector3 &in, Vector3 *out)
     {
         Vector3 tmp;
-        Vector3 *v;
+        const Vector3 *v;
 
         if (out == &in) {
             tmp = in;
             v = &tmp;
         } else {
-            v = (Vector3 *)&in;
+            v = &in;
         }
 
         out->X = (A[0][0] * v->X + A[1][0] * v->Y + A[2][0] * v->Z);

@@ -28,7 +28,7 @@ public:
     const T *operator->() const
     {
         if (m_ptr) {
-            return (const T *)(m_ptr->Get_Final_Override());
+            return static_cast<const T *>(m_ptr->Get_Final_Override());
         } else {
             return nullptr;
         }
@@ -37,7 +37,7 @@ public:
     const T *Get_Final_Override() const
     {
         if (m_ptr) {
-            return (const T *)(m_ptr->Get_Final_Override());
+            return static_cast<const T *>(m_ptr->Get_Final_Override());
         } else {
             return nullptr;
         }

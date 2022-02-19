@@ -58,8 +58,8 @@ protected:
 public:
     ScienceInfo();
 
-    NameKeyType Get_Name_Key() { return m_nameKey; }
-    bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
+    NameKeyType Get_Name_Key() const { return m_nameKey; }
+    bool Check_Name_Key(NameKeyType key) const { return key == m_nameKey; }
 
 private:
     NameKeyType m_nameKey;

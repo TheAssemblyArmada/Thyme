@@ -297,7 +297,7 @@ int MapObject::Count_Map_Objects_With_Owner(const Utf8String &n)
 const ThingTemplate *MapObject::Get_Thing_Template()
 {
     if (m_thingTemplate) {
-        return (const ThingTemplate *)m_thingTemplate->Get_Final_Override();
+        return static_cast<const ThingTemplate *>(m_thingTemplate->Get_Final_Override());
     } else {
         return nullptr;
     }

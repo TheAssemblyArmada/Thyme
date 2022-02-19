@@ -64,6 +64,13 @@ public:
     void Set_Unk(bool set) { m_unkBool1 = set; }
     void Set_Velocity_Multiplier(Coord3D *mul) { m_velCoefficient = *mul; }
     void Set_Burst_Count_Multiplier(float mul) { m_countCoefficient = mul; }
+    void Set_Size_Multiplier(float mul) { m_sizeCoefficient = mul; }
+
+    void Reset_Delay()
+    {
+        m_burstDelayLeft = 0;
+        m_delayLeft = 0;
+    }
 
     static ParticleInfo Merge_Related_Systems(ParticleSystem *master, ParticleSystem *slave, bool promote_slave);
 

@@ -86,8 +86,11 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
  */
 void DirectInputKeyboard::Open_Keyboard()
 {
-    if (DirectInput8Create(
-            GetModuleHandleA(nullptr), DIRECTINPUT_VERSION, IID_IDirectInput8A, (LPVOID *)&m_inputInterface, 0)
+    if (DirectInput8Create(GetModuleHandleA(nullptr),
+            DIRECTINPUT_VERSION,
+            IID_IDirectInput8A,
+            reinterpret_cast<LPVOID *>(&m_inputInterface),
+            0)
         < 0) {
         captainslog_error("DirectInput8Create failed.");
         Close_Keyboard();

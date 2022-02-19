@@ -105,7 +105,7 @@ class W3DShadowTextureManagerIterator : public HashTableIteratorClass
 {
 public:
     W3DShadowTextureManagerIterator(W3DShadowTextureManager &manager) : HashTableIteratorClass(*manager.m_texturePtrTable) {}
-    W3DShadowTexture *Get_Current_Texture() { return (W3DShadowTexture *)Get_Current(); }
+    W3DShadowTexture *Get_Current_Texture() { return static_cast<W3DShadowTexture *>(Get_Current()); }
     virtual ~W3DShadowTextureManagerIterator() override {}
 };
 

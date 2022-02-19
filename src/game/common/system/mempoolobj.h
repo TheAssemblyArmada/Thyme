@@ -122,9 +122,11 @@ private:
  */
 inline void MemoryPoolObject::Delete_Instance()
 {
-    MemoryPool *pool = Get_Object_Pool();
-    this->~MemoryPoolObject();
-    pool->Free_Block(this);
+    if (this != nullptr) {
+        MemoryPool *pool = Get_Object_Pool();
+        this->~MemoryPoolObject();
+        pool->Free_Block(this);
+    }
 }
 
 //

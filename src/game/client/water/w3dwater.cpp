@@ -198,16 +198,16 @@ long WaterRenderObjClass::Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *b
         SurfaceClass *l = bump_source->Get_Surface_Level(level);
         l->Get_Description(surface_desc);
         int lSrcPitch;
-        unsigned char *pSrc = (unsigned char *)l->Lock(&lSrcPitch);
+        BYTE *pSrc = reinterpret_cast<BYTE *>(l->Lock(&lSrcPitch));
         D3DLOCKED_RECT r;
         (*tex)->LockRect(level, &r, nullptr, 0);
         int lDstPitch = r.Pitch;
-        unsigned char *pDst = (unsigned char *)r.pBits;
+        BYTE *pDst = reinterpret_cast<BYTE *>(r.pBits);
 
         // this loop is from bumpearth.cpp in DirectX SDK
         for (DWORD y = 0; y < surface_desc.height; y++) {
             BYTE *pDstT = pDst;
-            BYTE *pSrcB0 = (BYTE *)pSrc;
+            BYTE *pSrcB0 = pSrc;
             BYTE *pSrcB1 = (pSrcB0 + lSrcPitch);
             BYTE *pSrcB2 = (pSrcB0 - lSrcPitch);
 
@@ -257,16 +257,16 @@ long WaterRenderObjClass::Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *b
                         break;
 
                     case D3DFMT_L6V5U5:
-                        *(WORD *)pDstT = (iDu >> 3) & 0x1f;
-                        *(WORD *)pDstT |= ((iDv >> 3) & 0x1f) << 5;
-                        *(WORD *)pDstT |= ((uL >> 2) & 0x3f) << 10;
+                        *reinterpret_cast<WORD *>(pDstT) = (iDu >> 3) & 0x1f;
+                        *reinterpret_cast<WORD *>(pDstT) |= ((iDv >> 3) & 0x1f) << 5;
+                        *reinterpret_cast<WORD *>(pDstT) |= ((uL >> 2) & 0x3f) << 10;
                         pDstT += 2;
                         break;
 
                     case D3DFMT_X8L8V8U8:
-                        *pDstT++ = (BYTE)iDu;
-                        *pDstT++ = (BYTE)iDv;
-                        *pDstT++ = (BYTE)uL;
+                        *pDstT++ = static_cast<BYTE>(iDu);
+                        *pDstT++ = static_cast<BYTE>(iDv);
+                        *pDstT++ = static_cast<BYTE>(uL);
                         *pDstT++ = 0; // change to sample code
                         break;
                 }
@@ -318,7 +318,8 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
     }
 
     SEA_PATCH_VERTEX *vertices;
-    HRESULT res = m_vertexBufferD3D->Lock(0, m_numVertices * sizeof(SEA_PATCH_VERTEX), (BYTE **)&vertices, 0);
+    HRESULT res =
+        m_vertexBufferD3D->Lock(0, m_numVertices * sizeof(SEA_PATCH_VERTEX), reinterpret_cast<BYTE **>(&vertices), 0);
 
     if (FAILED(0)) {
         return res;
@@ -358,7 +359,7 @@ HRESULT WaterRenderObjClass::Generate_Index_Buffer(int size_x, int size_y)
     }
 
     unsigned short *indices;
-    res = m_indexBufferD3D->Lock(0, 2 * m_numIndices, (BYTE **)&indices, 0);
+    res = m_indexBufferD3D->Lock(0, 2 * m_numIndices, reinterpret_cast<BYTE **>(&indices), 0);
 
     if (FAILED(res)) {
         return res;
@@ -518,7 +519,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
 
         if (res == D3D_OK) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
-                (DWORD *)shader->GetBufferPointer(), &m_riverWaterPixelShader);
+                static_cast<DWORD *>(shader->GetBufferPointer()), &m_riverWaterPixelShader);
             shader->Release();
         }
 
@@ -532,7 +533,8 @@ void WaterRenderObjClass::Re_Acquire_Resources()
         res = D3DXAssembleShader(ps2, strlen(ps2), 0, nullptr, &shader, nullptr);
 
         if (res == D3D_OK) {
-            res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader((DWORD *)shader->GetBufferPointer(), &m_waterPixelShader);
+            res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
+                static_cast<DWORD *>(shader->GetBufferPointer()), &m_waterPixelShader);
             shader->Release();
         }
 
@@ -549,7 +551,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
 
         if (res == D3D_OK) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
-                (DWORD *)shader->GetBufferPointer(), &m_trapezoidWaterPixelShader);
+                static_cast<DWORD *>(shader->GetBufferPointer()), &m_trapezoidWaterPixelShader);
             shader->Release();
         }
     }
@@ -639,11 +641,11 @@ int WaterRenderObjClass::Init(float water_level, float dx, float dy, SceneClass 
     m_shaderClass = g_zFillAlphaShader;
     m_shaderClass.Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
     m_alphaClippingTexture = W3DAssetManager::Get_Instance()->Get_Texture("TSMoonLarg.tga");
-    m_skyBox = ((GameAssetManager *)W3DAssetManager::Get_Instance())
+    m_skyBox = static_cast<GameAssetManager *>(W3DAssetManager::Get_Instance())
                    ->Create_Render_Obj("new_skybox", g_theWriteableGlobalData->m_skyBoxScale, 0, nullptr, nullptr);
 
     if (m_skyBox && m_skyBox->Class_ID() == RenderObjClass::CLASSID_MESH) {
-        MeshClass *mesh = (MeshClass *)m_skyBox;
+        MeshClass *mesh = static_cast<MeshClass *>(m_skyBox);
         MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
         for (int i = 0; i < matinfo->Texture_Count(); i++) {
@@ -817,10 +819,11 @@ void WaterRenderObjClass::Update()
 
 void WaterRenderObjClass::Replace_Skybox_Texture(Utf8String const &oldname, Utf8String const &newname)
 {
-    ((GameAssetManager *)W3DAssetManager::Get_Instance())->Replace_Prototype_Texture(m_skyBox, oldname, newname);
+    GameAssetManager *manager = static_cast<GameAssetManager *>(W3DAssetManager::Get_Instance());
+    manager->Replace_Prototype_Texture(m_skyBox, oldname, newname);
 
     if (m_skyBox && m_skyBox->Class_ID() == RenderObjClass::CLASSID_MESH) {
-        MeshClass *mesh = (MeshClass *)m_skyBox;
+        MeshClass *mesh = static_cast<MeshClass *>(m_skyBox);
         MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
         for (int i = 0; i < matinfo->Texture_Count(); i++) {
@@ -957,9 +960,9 @@ void WaterRenderObjClass::Render(RenderInfoClass &rinfo)
 {
 #ifdef BUILD_WITH_D3D8
     if (!g_theTerrainRenderObject || g_theTerrainRenderObject->Get_Map()) {
-        if (((RTS3DScene *)rinfo.m_camera.Get_User_Data())->Get_Custom_Scene_Pass_Mode() != MODE_MASK) {
-            if (((RTS3DScene *)rinfo.m_camera.Get_User_Data())->Get_Extra_Pass_Polygon_Mode()
-                    != SceneClass::EXTRA_PASS_CLEAR_LINE
+        RTS3DScene *scene = static_cast<RTS3DScene *>(rinfo.m_camera.Get_User_Data());
+        if (scene->Get_Custom_Scene_Pass_Mode() != MODE_MASK) {
+            if (scene->Get_Extra_Pass_Polygon_Mode() != SceneClass::EXTRA_PASS_CLEAR_LINE
                 && !ShaderClass::Is_Backface_Culling_Inverted()) {
                 int sort = Get_Sort_Level();
 
@@ -1069,7 +1072,7 @@ bool WaterRenderObjClass::Get_Clipped_Water_Plane(CameraClass *cam, AABoxClass *
 
 inline unsigned long F2DW(float f)
 {
-    return *((unsigned *)&f);
+    return *(reinterpret_cast<unsigned long *>(&f));
 }
 
 void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
@@ -1440,11 +1443,12 @@ void WaterRenderObjClass::Render_Water_Mesh()
         VertexFormatXYZDUV2 *verts;
 
         if (m_vertexBufferD3DOffset > m_numVertices) {
-            if (m_vertexBufferD3D->Lock(0, 32 * y * x, (BYTE **)&verts, D3DLOCK_DISCARD)) {
+            if (m_vertexBufferD3D->Lock(0, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_DISCARD)) {
                 return;
             }
             m_vertexBufferD3DOffset = 0;
-        } else if (m_vertexBufferD3D->Lock(32 * m_vertexBufferD3DOffset, 32 * y * x, (BYTE **)&verts, D3DLOCK_NOOVERWRITE)) {
+        } else if (m_vertexBufferD3D->Lock(
+                       32 * m_vertexBufferD3DOffset, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_NOOVERWRITE)) {
             return;
         }
 

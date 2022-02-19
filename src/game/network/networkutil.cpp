@@ -12,6 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#include <cstdint>
 
 int32_t MAX_FRAMES_AHEAD = 128;
 int32_t MIN_RUNAHEAD = 10;

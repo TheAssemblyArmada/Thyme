@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #pragma once
+#include <cstdint>
 
 class CopyProtect
 {

@@ -783,7 +783,8 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
                 int32_t fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
                 int32_t width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
                 int32_t height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int32_t x =
+                    GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
                 int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
@@ -801,7 +802,8 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
                 int32_t fheight = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Height();
                 int32_t width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
                 int32_t height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int32_t x =
+                    GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
                 int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
@@ -3252,8 +3254,7 @@ void Drawable::Update_Drawable()
     }
 }
 
-void Drawable::Color_Flash(
-    RGBColor const *color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
+void Drawable::Color_Flash(RGBColor const *color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
 {
     if (m_tintColorEnvelope == nullptr) {
         m_tintColorEnvelope = new TintEnvelope();

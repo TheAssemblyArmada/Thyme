@@ -84,7 +84,8 @@ public:
     virtual void Private_Guard_Retaliate(Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
     virtual void Private_Attack_Team(Team const *team, int32_t max_shots_to_fire, CommandSourceType cmd_source);
     virtual void Private_Attack_Position(Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Attack_Move_To_Position(Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Attack_Move_To_Position(
+        Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
     virtual void Private_Attack_Follow_Waypoint_Path(
         Waypoint const *way, int32_t max_shots_to_fire, bool as_team, CommandSourceType cmd_source);
 

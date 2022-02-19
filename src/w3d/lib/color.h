@@ -24,7 +24,8 @@ public:
     float blue;
     int32_t Get_As_Int()
     {
-        return ((uint32_t)(int32_t)(green * 255.0f) << 8) | ((uint32_t)(int32_t)(red * 255.0f) << 16) | (int32_t)(blue * 255.0f);
+        return ((uint32_t)(int32_t)(green * 255.0f) << 8) | ((uint32_t)(int32_t)(red * 255.0f) << 16)
+            | (int32_t)(blue * 255.0f);
     }
     void Set_From_Int(int32_t color)
     {

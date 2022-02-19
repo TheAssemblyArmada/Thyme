@@ -69,14 +69,21 @@ public:
     static int32_t Get_Texture_Bit_Depth();
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
-    static W3DErrorType Set_Device_Resolution(int32_t width, int32_t height, int32_t bits, int32_t windowed, bool resize_window);
+    static W3DErrorType Set_Device_Resolution(
+        int32_t width, int32_t height, int32_t bits, int32_t windowed, bool resize_window);
     static PrelitModeEnum Get_Prelit_Mode() { return (s_prelitMode); }
     static void Set_Prelit_Mode(PrelitModeEnum mode) { s_prelitMode = mode; }
 
     static W3DErrorType Init(void *hwnd, char *defaultpal = nullptr, bool lite = false);
     static W3DErrorType Shutdown();
-    static W3DErrorType Set_Render_Device(
-        int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets);
+    static W3DErrorType Set_Render_Device(int32_t dev,
+        int32_t resx,
+        int32_t resy,
+        int32_t bits,
+        int32_t windowed,
+        bool resize_window,
+        bool reset_device,
+        bool restore_assets);
     static int32_t Get_Render_Device();
     static W3DErrorType Begin_Render(bool clear = false,
         bool clearz = true,

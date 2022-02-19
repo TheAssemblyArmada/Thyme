@@ -97,7 +97,8 @@ public:
     const ThingTemplate *Get_Thing_Template();
 
 #ifdef GAME_DLL
-    MapObject *Hook_Ctor(Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing)
+    MapObject *Hook_Ctor(
+        Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing)
     {
         return new (this) MapObject(loc, name, angle, flags, props, thing);
     }

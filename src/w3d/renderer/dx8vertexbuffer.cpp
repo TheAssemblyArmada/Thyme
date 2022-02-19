@@ -31,8 +31,7 @@ DX8VertexBufferClass *g_dynamicDX8VertexBuffer;
 unsigned short g_dynamicDX8VertexBufferSize = 5000;
 unsigned short g_dynamicDX8VertexBufferOffset;
 
-VertexBufferClass::VertexBufferClass(
-    uint32_t type_, uint32_t fvf, unsigned short vertex_count_, uint32_t vertex_size) :
+VertexBufferClass::VertexBufferClass(uint32_t type_, uint32_t fvf, unsigned short vertex_count_, uint32_t vertex_size) :
     m_type(type_), m_vertexCount(vertex_count_), m_engineRefs(0)
 {
     captainslog_assert(m_vertexCount);
@@ -187,8 +186,7 @@ SortingVertexBufferClass::~SortingVertexBufferClass()
     delete[] m_vertexBuffer;
 }
 
-DX8VertexBufferClass::DX8VertexBufferClass(
-    uint32_t fvf, unsigned short vertex_count_, UsageType usage, uint32_t flags) :
+DX8VertexBufferClass::DX8VertexBufferClass(uint32_t fvf, unsigned short vertex_count_, UsageType usage, uint32_t flags) :
     VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count_, flags)
 #ifdef BUILD_WITH_D3D8
     ,

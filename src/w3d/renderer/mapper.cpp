@@ -84,8 +84,7 @@ LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(
     m_uvOffsetDeltaPerMS = offset_per_sec * -0.001f;
 }
 
-LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(
-    const INIClass &ini, const char *section, uint32_t stage) :
+LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
 
     ScaleTextureMapperClass(ini, section, stage), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {

@@ -503,7 +503,8 @@ bool MeshGeometryClass::Cast_World_Space_AABox(AABoxCollisionTestClass &boxtest,
     return hit;
 }
 
-int32_t MeshGeometryClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
+int32_t MeshGeometryClass::Cast_Semi_Infinite_Axis_Aligned_Ray(
+    const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
 {
     int32_t count = 0;
 

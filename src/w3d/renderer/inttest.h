@@ -33,7 +33,8 @@ public:
 class AABoxIntersectionTestClass : public IntersectionTestClass
 {
 public:
-    AABoxIntersectionTestClass(const AABoxClass &box, int32_t collision_type) : IntersectionTestClass(collision_type), m_box(box)
+    AABoxIntersectionTestClass(const AABoxClass &box, int32_t collision_type) :
+        IntersectionTestClass(collision_type), m_box(box)
     {
     }
 

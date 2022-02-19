@@ -176,7 +176,8 @@ public:
 protected:
     void Update_Mouse_Data();
     void Process_Mouse_Event(int32_t event_num);
-    void Move_Mouse(int32_t x, int32_t y, int32_t absolute); // TODO Should be bool absolute, fix after verifying correctness.
+    void Move_Mouse(
+        int32_t x, int32_t y, int32_t absolute); // TODO Should be bool absolute, fix after verifying correctness.
     MouseCursor Get_Cursor_Index(const Utf8String &name);
     void Set_Mouse_Text(const MouseCursor cursor);
     void Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, const RGBAColorInt *drop_color);

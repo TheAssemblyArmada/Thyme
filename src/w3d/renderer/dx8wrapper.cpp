@@ -682,8 +682,14 @@ void DX8Wrapper::Get_Format_Name(uint32_t format, StringClass *format_name)
 }
 #endif
 
-bool DX8Wrapper::Set_Render_Device(
-    int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets)
+bool DX8Wrapper::Set_Render_Device(int32_t dev,
+    int32_t resx,
+    int32_t resy,
+    int32_t bits,
+    int32_t windowed,
+    bool resize_window,
+    bool reset_device,
+    bool restore_assets)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_isInitialised);
@@ -947,8 +953,12 @@ void DX8Wrapper::Get_Render_Target_Resolution(int32_t &set_w, int32_t &set_h, in
 }
 
 #ifdef BUILD_WITH_D3D8
-bool DX8Wrapper::Find_Color_And_Z_Mode(
-    int32_t resx, int32_t resy, int32_t bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode)
+bool DX8Wrapper::Find_Color_And_Z_Mode(int32_t resx,
+    int32_t resy,
+    int32_t bitdepth,
+    D3DFORMAT *set_colorbuffer,
+    D3DFORMAT *set_backbuffer,
+    D3DFORMAT *set_zmode)
 {
     static D3DFORMAT _formats16[] = { D3DFMT_R5G6B5, D3DFMT_X1R5G5B5, D3DFMT_A1R5G5B5 };
     static D3DFORMAT _formats32[] = {
@@ -1199,8 +1209,7 @@ void DX8Wrapper::End_Scene(bool flip_frames)
 #endif
 }
 
-void DX8Wrapper::Clear(
-    bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z, uint32_t stencil)
+void DX8Wrapper::Clear(bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z, uint32_t stencil)
 {
 #ifdef BUILD_WITH_D3D8
     bool has_stencil = false;
@@ -1938,8 +1947,7 @@ TextureClass *DX8Wrapper::Create_Render_Target(int32_t width, int32_t height, WW
         if (f2 > caps.MaxTextureHeight) {
             f2 = caps.MaxTextureHeight;
         }
-        TextureClass *texture =
-            new TextureClass((uint32_t)f2, (uint32_t)f2, format, MIP_LEVELS_1, POOL_DEFAULT, true, true);
+        TextureClass *texture = new TextureClass((uint32_t)f2, (uint32_t)f2, format, MIP_LEVELS_1, POOL_DEFAULT, true, true);
         if (!texture->Peek_Platform_Base_Texture()) {
             captainslog_warn("DX8Wrapper - Render target creation failed!");
             Ref_Ptr_Release(texture);

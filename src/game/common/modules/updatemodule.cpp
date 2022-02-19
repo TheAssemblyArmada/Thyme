@@ -115,8 +115,7 @@ void UpdateModule::Set_Wake_Frame(Object *object, UpdateSleepTime frame)
     g_theGameLogic->Friend_Awaken_Update_Module(object, this, frame + cur_frame);
 }
 
-UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(
-    uint32_t frame1, uint32_t frame2, uint32_t frame3, uint32_t frame4)
+UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(uint32_t frame1, uint32_t frame2, uint32_t frame3, uint32_t frame4)
 {
     captainslog_dbgassert(
         frame1 != 0 && frame2 != 0 && frame3 != 0 && frame4 != 0, "Frame_To_Sleep_Time: Should not pass zero frames");

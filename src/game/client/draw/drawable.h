@@ -343,8 +343,11 @@ public:
     int32_t Get_Barrel_Count(WeaponSlotType slot) const;
     const AudioEventInfo *Get_Base_Sound_Ambient_Info() const;
     Utf16String Get_Caption_Text();
-    int32_t Get_Current_Client_Bone_Positions(
-        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const;
+    int32_t Get_Current_Client_Bone_Positions(char const *bone_name_prefix,
+        int32_t start_index,
+        Coord3D *positions,
+        Matrix3D *transforms,
+        int32_t max_bones) const;
     bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const;
     DrawModule **Get_Draw_Modules();
     DrawModule const **Get_Draw_Modules() const;
@@ -355,8 +358,11 @@ public:
         return m_id;
     }
     DrawableIconInfo *Get_Icon_Info();
-    int32_t Get_Pristine_Bone_Positions(
-        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const;
+    int32_t Get_Pristine_Bone_Positions(char const *bone_name_prefix,
+        int32_t start_index,
+        Coord3D *positions,
+        Matrix3D *transforms,
+        int32_t max_bones) const;
     bool Get_Projectile_Launch_Offset(WeaponSlotType wslot,
         int32_t ammo_index,
         Matrix3D *launch_pos,

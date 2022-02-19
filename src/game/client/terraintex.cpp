@@ -68,7 +68,8 @@ int32_t TerrainTextureClass::Update(WorldHeightMap *ht_map)
                         unsigned short *data3 = (unsigned short *)((char *)rect.pBits + 2 * desc.Width * (j + y) + 2 * x);
 
                         for (int32_t k = 0; k < width; k++) {
-                            *data3 = ((int32_t)*data2 >> 3) + ((int32_t)data2[2] >> 3 << 10) + 0x20 * ((int32_t)data2[1] >> 3) + 0x8000;
+                            *data3 = ((int32_t)*data2 >> 3) + ((int32_t)data2[2] >> 3 << 10)
+                                + 0x20 * ((int32_t)data2[1] >> 3) + 0x8000;
                             data3++;
                             data2 += 4;
                         }
@@ -118,7 +119,8 @@ int32_t TerrainTextureClass::Update(WorldHeightMap *ht_map)
 #endif
 }
 
-bool TerrainTextureClass::Update_Flat(WorldHeightMap *ht_map, int32_t x, int32_t y, int32_t pixels_per_cell, uint32_t cell_width)
+bool TerrainTextureClass::Update_Flat(
+    WorldHeightMap *ht_map, int32_t x, int32_t y, int32_t pixels_per_cell, uint32_t cell_width)
 {
 #ifdef BUILD_WITH_D3D8
     w3dsurface_t surf = nullptr;
@@ -147,8 +149,8 @@ bool TerrainTextureClass::Update_Flat(WorldHeightMap *ht_map, int32_t x, int32_t
                                 + 2 * cell_width * i];
 
                             for (int32_t l = 0; l < (int32_t)cell_width; l++) {
-                                *data2 =
-                                    ((int32_t)*data >> 3) + ((int32_t)data[2] >> 3 << 0xA) + 0x20 * ((int32_t)data[1] >> 3) + 0x8000;
+                                *data2 = ((int32_t)*data >> 3) + ((int32_t)data[2] >> 3 << 0xA)
+                                    + 0x20 * ((int32_t)data[1] >> 3) + 0x8000;
                                 data2++;
                                 data += 4;
                             }

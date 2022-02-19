@@ -169,7 +169,8 @@ inline bool AABTreeClass::Cast_Ray(RayCollisionTestClass &raytest)
     return Cast_Ray_Recursive(&(m_nodes[0]), raytest);
 }
 
-inline int32_t AABTreeClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
+inline int32_t AABTreeClass::Cast_Semi_Infinite_Axis_Aligned_Ray(
+    const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
 {
     static const int32_t axis_r[6] = { 0, 0, 1, 1, 2, 2 };
     static const int32_t axis_1[6] = { 1, 1, 2, 2, 0, 0 };

@@ -27,8 +27,7 @@ TintEnvelope::TintEnvelope() :
 {
 }
 
-void TintEnvelope::Play(
-    RGBColor const *peak_color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
+void TintEnvelope::Play(RGBColor const *peak_color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
 {
     Set_Peak_Color(peak_color);
 

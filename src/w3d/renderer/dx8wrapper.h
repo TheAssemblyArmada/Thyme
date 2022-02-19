@@ -278,8 +278,12 @@ protected:
         bool reset_device = false,
         bool restore_assets = true);
 #ifdef BUILD_WITH_D3D8
-    static bool Find_Color_And_Z_Mode(
-        int32_t resx, int32_t resy, int32_t bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
+    static bool Find_Color_And_Z_Mode(int32_t resx,
+        int32_t resy,
+        int32_t bitdepth,
+        D3DFORMAT *set_colorbuffer,
+        D3DFORMAT *set_backbuffer,
+        D3DFORMAT *set_zmode);
     static bool Find_Color_Mode(D3DFORMAT colorbuffer, int32_t resx, int32_t resy, UINT *mode);
     static bool Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
     static bool Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);

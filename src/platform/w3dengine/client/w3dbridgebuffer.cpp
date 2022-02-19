@@ -346,7 +346,8 @@ void W3DBridge::Render_Bridge(bool wireframe)
     }
 }
 
-int32_t W3DBridge::Get_Model_Indices(unsigned short *destination_ib, int32_t cur_index, int32_t vertex_offset, MeshClass *mesh)
+int32_t W3DBridge::Get_Model_Indices(
+    unsigned short *destination_ib, int32_t cur_index, int32_t vertex_offset, MeshClass *mesh)
 {
     if (mesh == nullptr) {
         return 0;

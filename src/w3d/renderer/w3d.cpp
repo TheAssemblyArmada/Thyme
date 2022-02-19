@@ -234,8 +234,14 @@ W3DErrorType W3D::Shutdown()
 #endif
 }
 
-W3DErrorType W3D::Set_Render_Device(
-    int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets)
+W3DErrorType W3D::Set_Render_Device(int32_t dev,
+    int32_t resx,
+    int32_t resy,
+    int32_t bits,
+    int32_t windowed,
+    bool resize_window,
+    bool reset_device,
+    bool restore_assets)
 {
     return DX8Wrapper::Set_Render_Device(dev, resx, resy, bits, windowed, resize_window, reset_device, restore_assets) != 0 ?
         W3D_ERROR_OK :

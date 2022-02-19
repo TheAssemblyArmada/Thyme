@@ -135,8 +135,11 @@ public:
 
     uint32_t Get_CRC(int32_t i, Utf8String s);
 #ifdef GAME_DEBUG_STRUCTS
-    void Get_AI_Stats(
-        int32_t *objects, int32_t *moving_objects, int32_t *attacking_objects, int32_t *waiting_objects, int32_t *failed_pathfinds);
+    void Get_AI_Stats(int32_t *objects,
+        int32_t *moving_objects,
+        int32_t *attacking_objects,
+        int32_t *waiting_objects,
+        int32_t *failed_pathfinds);
 #endif
 
     ObjectTOCEntry *Find_TOC_Entry_By_Name(Utf8String name);

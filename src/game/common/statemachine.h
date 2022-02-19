@@ -56,8 +56,7 @@ struct StateConditionInfo
     bool (*test)(State *, void *);
     uint32_t to_state_id;
     void *user_data;
-    StateConditionInfo(bool (*func)(State *, void *), uint32_t id, void *data) :
-        test(func), to_state_id(id), user_data(data)
+    StateConditionInfo(bool (*func)(State *, void *), uint32_t id, void *data) : test(func), to_state_id(id), user_data(data)
     {
     }
 };
@@ -100,8 +99,7 @@ public:
 
     StateReturnType Friend_Check_For_Sleep_Transitions(StateReturnType status);
     StateReturnType Friend_Check_For_Transitions(StateReturnType status);
-    void Friend_On_Condition(
-        bool (*test)(State *, void *), uint32_t to_state_id, void *user_data, char const *description);
+    void Friend_On_Condition(bool (*test)(State *, void *), uint32_t to_state_id, void *user_data, char const *description);
     Object *Get_Machine_Owner();
     const Object *Get_Machine_Owner() const;
     void Friend_On_Failure(uint32_t id) { m_failureStateID = id; }
@@ -147,11 +145,8 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Define_State(uint32_t id,
-        State *state,
-        uint32_t success_id,
-        uint32_t failure_id,
-        StateConditionInfo const *conditions);
+    void Define_State(
+        uint32_t id, State *state, uint32_t success_id, uint32_t failure_id, StateConditionInfo const *conditions);
     Object *Get_Goal_Object();
     Object const *Get_Goal_Object() const;
     void Internal_Clear();

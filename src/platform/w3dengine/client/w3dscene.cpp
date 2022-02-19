@@ -1022,9 +1022,9 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
         for (int32_t i = 0; i < m_occludedObjectsCount; i++) {
             RenderObjClass *robj = m_occludedObjectsBuffer[i];
             int32_t playerindex = ((DrawableInfo *)robj->Get_User_Data())
-                                  ->drawable->Get_Object()
-                                  ->Get_Controlling_Player()
-                                  ->Get_Player_Index();
+                                      ->drawable->Get_Object()
+                                      ->Get_Controlling_Player()
+                                      ->Get_Player_Index();
 
             if (objectptrs[playerindex] - objects[playerindex] < 512) {
                 *objectptrs[playerindex]++ = robj;
@@ -1049,9 +1049,9 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
                 if (references[i] == 0xFFFFFFFF) {
                     references[i] = Player_Index_To_Color_Index(i1++);
                     int32_t color = ((DrawableInfo *)objects[i][0]->Get_User_Data())
-                                    ->drawable->Get_Object()
-                                    ->Get_Controlling_Player()
-                                    ->Get_Color();
+                                        ->drawable->Get_Object()
+                                        ->Get_Controlling_Player()
+                                        ->Get_Color();
                     float blue = (color & 0xFF) / 255.0f;
                     float green = ((color >> 8) & 0xFF) / 255.0f;
                     float red = ((color >> 16) & 0xFF) / 255.0f;

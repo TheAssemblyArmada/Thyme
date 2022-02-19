@@ -726,7 +726,8 @@ void User_Memory_Init_Pools()
                 for (PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr) {
                     if (strcasecmp(psr->pool_name, pool_name) == 0) {
                         psr->initial_allocation_count = std::max((int32_t)sizeof(void *), Round_Up_Word_Size(initial_alloc));
-                        psr->overflow_allocation_count = std::max((int32_t)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
+                        psr->overflow_allocation_count =
+                            std::max((int32_t)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
                     }
                 }
             }

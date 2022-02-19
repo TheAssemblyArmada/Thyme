@@ -20,7 +20,8 @@ BaseHeightMapRenderObjClass *g_theTerrainRenderObject;
 int32_t BaseHeightMapRenderObjClass::Get_Static_Diffuse(int32_t x, int32_t y)
 {
 #ifdef GAME_DLL
-    return Call_Method<int32_t, BaseHeightMapRenderObjClass, int32_t, int32_t>(PICK_ADDRESS(0x00754E70, 0x006017D2), this, x, y);
+    return Call_Method<int32_t, BaseHeightMapRenderObjClass, int32_t, int32_t>(
+        PICK_ADDRESS(0x00754E70, 0x006017D2), this, x, y);
 #else
     return 0;
 #endif

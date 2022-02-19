@@ -1174,7 +1174,8 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
         m_pDev->SetStreamSource(0, m_vertexBufferD3D, sizeof(VertexFormatXYZDUV1));
         m_pDev->SetIndices(m_indexBufferD3D, 0);
 
-        for (int32_t i = ((box.m_center.Y - box.m_extent.Y) / 560.0f); box.m_center.Y + box.m_extent.Y > (float)(14 * i) * 40.0f;
+        for (int32_t i = ((box.m_center.Y - box.m_extent.Y) / 560.0f);
+             box.m_center.Y + box.m_extent.Y > (float)(14 * i) * 40.0f;
              i++) {
             for (int32_t j = ((box.m_center.X - box.m_extent.X) / 560.0f);
                  box.m_center.X + box.m_extent.X > (float)(14 * j) * 40.0f;

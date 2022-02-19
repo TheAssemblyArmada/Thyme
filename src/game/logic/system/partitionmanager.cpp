@@ -712,15 +712,20 @@ int32_t PartitionManager::Iterate_Cells_Along_Line(
     Coord3D const &pos, Coord3D const &posOther, int32_t (*proc)(PartitionCell *, void *), void *userData)
 {
 #ifdef GAME_DLL
-    return Call_Method<int32_t, PartitionManager, Coord3D const &, Coord3D const &, int32_t (*)(PartitionCell *, void *), void *>(
-        PICK_ADDRESS(0x0053EF40, 0x008216D8), this, pos, posOther, proc, userData);
+    return Call_Method<int32_t,
+        PartitionManager,
+        Coord3D const &,
+        Coord3D const &,
+        int32_t (*)(PartitionCell *, void *),
+        void *>(PICK_ADDRESS(0x0053EF40, 0x008216D8), this, pos, posOther, proc, userData);
 #else
     return 0;
 #endif
 }
 
 // zh: 0x0053F190 wb: 0x008218DE
-int32_t PartitionManager::Iterate_Cells_Breadth_First(Coord3D const *pos, int32_t (*proc)(PartitionCell *, void *), void *userData)
+int32_t PartitionManager::Iterate_Cells_Breadth_First(
+    Coord3D const *pos, int32_t (*proc)(PartitionCell *, void *), void *userData)
 {
 #ifdef GAME_DLL
     return Call_Method<int32_t, PartitionManager, Coord3D const *, int32_t (*)(PartitionCell *, void *), void *>(

@@ -323,7 +323,8 @@ const char *INIClass::Get_Entry(const char *section, int32_t index) const
     return nullptr;
 }
 
-int32_t INIClass::Enumerate_Entries(const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number)
+int32_t INIClass::Enumerate_Entries(
+    const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number)
 {
     char buffer[256];
     uint32_t i = start_number;
@@ -505,7 +506,8 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
     return false;
 }
 
-int32_t INIClass::Get_String(const char *section, const char *entry, const char *defvalue, char *buffer, int32_t length) const
+int32_t INIClass::Get_String(
+    const char *section, const char *entry, const char *defvalue, char *buffer, int32_t length) const
 {
     INIEntry *entryptr;
     const char *value = defvalue;

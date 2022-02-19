@@ -79,7 +79,10 @@ public:
     VertexMaterialClass::ColorSourceType Get_DIG_Source(int32_t pass) { return m_curMatDesc->Get_DIG_Source(pass); }
     VertexMaterialClass *Get_Single_Material(int32_t pass = 0) const { return m_curMatDesc->Get_Single_Material(pass); }
     ShaderClass Get_Single_Shader(int32_t pass = 0) const { return m_curMatDesc->Get_Single_Shader(pass); }
-    VertexMaterialClass *Get_Material(int32_t vidx, int32_t pass = 0) const { return m_curMatDesc->Get_Material(vidx, pass); }
+    VertexMaterialClass *Get_Material(int32_t vidx, int32_t pass = 0) const
+    {
+        return m_curMatDesc->Get_Material(vidx, pass);
+    }
     ShaderClass Get_Shader(int32_t pidx, int32_t pass = 0) const { return m_curMatDesc->Get_Shader(pidx, pass); }
     ShaderClass *Get_Shader_Array(int32_t pass, bool create = true) { return m_curMatDesc->Get_Shader_Array(pass, create); }
     int32_t Material_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
@@ -112,7 +115,10 @@ public:
     void Set_Pass_Count(int32_t passes) { m_curMatDesc->Set_Pass_Count(passes); }
     void Set_Single_Material(VertexMaterialClass *vmat, int32_t pass = 0) { m_curMatDesc->Set_Single_Material(vmat, pass); }
     void Set_Single_Shader(ShaderClass shader, int32_t pass = 0) { m_curMatDesc->Set_Single_Shader(shader, pass); }
-    void Set_Material(int32_t vidx, VertexMaterialClass *vmat, int32_t pass = 0) { m_curMatDesc->Set_Material(vidx, vmat, pass); }
+    void Set_Material(int32_t vidx, VertexMaterialClass *vmat, int32_t pass = 0)
+    {
+        m_curMatDesc->Set_Material(vidx, vmat, pass);
+    }
     void Set_Shader(int32_t pidx, ShaderClass shader, int32_t pass = 0) { m_curMatDesc->Set_Shader(pidx, shader, pass); }
 
     void Set_Single_Texture(TextureClass *tex, int32_t pass = 0, int32_t stage = 0)
@@ -136,7 +142,10 @@ public:
     bool Has_Shader_Array(int32_t pass) const { return m_curMatDesc->Has_Shader_Array(pass); }
     bool Has_Texture_Array(int32_t pass, int32_t stage) const { return m_curMatDesc->Has_Texture_Array(pass, stage); }
 
-    VertexMaterialClass *Peek_Material(int32_t vidx, int32_t pass = 0) const { return m_curMatDesc->Peek_Material(vidx, pass); }
+    VertexMaterialClass *Peek_Material(int32_t vidx, int32_t pass = 0) const
+    {
+        return m_curMatDesc->Peek_Material(vidx, pass);
+    }
 
     TextureClass *Peek_Texture(int32_t pidx, int32_t pass = 0, int32_t stage = 0) const
     {

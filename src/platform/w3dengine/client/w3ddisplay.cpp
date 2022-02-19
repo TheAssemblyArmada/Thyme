@@ -1392,7 +1392,8 @@ void W3DDisplay::Preload_Texture_Assets(Utf8String texture)
 #define BFT_BITMAP 0x4d42 // BM
 
 #define DibNumColors(lpbi) \
-    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int32_t)(1 << (int32_t)(lpbi)->biBitCount) : (int32_t)(lpbi)->biClrUsed)
+    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int32_t)(1 << (int32_t)(lpbi)->biBitCount) : \
+                                                         (int32_t)(lpbi)->biClrUsed)
 
 #define DibSize(lpbi) ((lpbi)->biSize + (lpbi)->biSizeImage + (int32_t)(lpbi)->biClrUsed * sizeof(RGBQUAD))
 

@@ -45,7 +45,8 @@ public:
     int32_t Load_W3D(ChunkLoadClass &cload);
     bool Read_Pivots(ChunkLoadClass &cload, bool pre30);
 
-    bool Simple_Evaluate_Pivot(HAnimClass *motion, int32_t pivot_index, float frame, Matrix3D const &obj_tm, Matrix3D *end_tm);
+    bool Simple_Evaluate_Pivot(
+        HAnimClass *motion, int32_t pivot_index, float frame, Matrix3D const &obj_tm, Matrix3D *end_tm);
     bool Simple_Evaluate_Pivot(int32_t pivot_index, Matrix3D const &obj_tm, Matrix3D *end_tm);
 
     void Base_Update(Matrix3D const &root);

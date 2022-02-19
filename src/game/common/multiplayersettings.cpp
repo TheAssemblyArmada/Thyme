@@ -31,8 +31,8 @@ FieldParse MultiplayerColorDefinition::s_colorFieldParsetable[] = {
 
 void MultiplayerColorDefinition::Set_Color(RGBColor rgb)
 {
-    m_color = (int32_t)Floor(rgb.blue * 255.0f) | ((int32_t)Floor(rgb.green * 255.0f) << 8) | ((int32_t)Floor(rgb.red * 255.0f) << 16)
-        | 0xFF000000;
+    m_color = (int32_t)Floor(rgb.blue * 255.0f) | ((int32_t)Floor(rgb.green * 255.0f) << 8)
+        | ((int32_t)Floor(rgb.red * 255.0f) << 16) | 0xFF000000;
 }
 
 void MultiplayerColorDefinition::Set_Night_Color(RGBColor rgb)

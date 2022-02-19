@@ -119,10 +119,20 @@ public:
     int32_t Get_Texture_Class(int32_t x_index, int32_t y_index, bool base_class);
     TXTextureClass Get_Texture_From_Index(int32_t index);
 
-    void Get_Alpha_UV_Data(
-        int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *flip, bool full_tile);
-    bool Get_Extra_Alpha_UV_Data(
-        int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool *cliff);
+    void Get_Alpha_UV_Data(int32_t x_index,
+        int32_t y_index,
+        float *const u,
+        float *const v,
+        unsigned char *const alpha,
+        bool *flip,
+        bool full_tile);
+    bool Get_Extra_Alpha_UV_Data(int32_t x_index,
+        int32_t y_index,
+        float *const u,
+        float *const v,
+        unsigned char *const alpha,
+        bool *need_flip,
+        bool *cliff);
     bool Get_UV_Data(int32_t x_index, int32_t y_index, float *const u, float *const v, bool full_tile);
     void Get_UV_For_Blend(int32_t edge_class, Region2D *range);
 

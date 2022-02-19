@@ -1581,8 +1581,13 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int32_t ndx, short tile_ndx, float *c
     return true;
 }
 
-bool WorldHeightMap::Get_Extra_Alpha_UV_Data(
-    int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool *cliff)
+bool WorldHeightMap::Get_Extra_Alpha_UV_Data(int32_t x_index,
+    int32_t y_index,
+    float *const u,
+    float *const v,
+    unsigned char *const alpha,
+    bool *need_flip,
+    bool *cliff)
 {
     int32_t ndx = x_index + m_width * y_index;
     *need_flip = false;
@@ -1669,8 +1674,13 @@ bool WorldHeightMap::Get_Extra_Alpha_UV_Data(
     return true;
 }
 
-void WorldHeightMap::Get_Alpha_UV_Data(
-    int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool full_tile)
+void WorldHeightMap::Get_Alpha_UV_Data(int32_t x_index,
+    int32_t y_index,
+    float *const u,
+    float *const v,
+    unsigned char *const alpha,
+    bool *need_flip,
+    bool full_tile)
 {
     int32_t i1 = m_drawOriginX + x_index;
     int32_t i2 = m_drawOriginY + y_index;

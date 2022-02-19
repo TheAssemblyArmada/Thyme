@@ -100,11 +100,8 @@ class LinearOffsetTextureMapperClass : public ScaleTextureMapperClass
 {
     IMPLEMENT_W3D_POOL(LinearOffsetTextureMapperClass)
 public:
-    LinearOffsetTextureMapperClass(const Vector2 &offset_per_sec,
-        const Vector2 &initial_offset,
-        bool clamp_fix,
-        const Vector2 &scale,
-        uint32_t stage);
+    LinearOffsetTextureMapperClass(
+        const Vector2 &offset_per_sec, const Vector2 &initial_offset, bool clamp_fix, const Vector2 &scale, uint32_t stage);
     LinearOffsetTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage);
     LinearOffsetTextureMapperClass(const LinearOffsetTextureMapperClass &that);
 
@@ -144,8 +141,7 @@ class GridTextureMapperClass : public TextureMapperClass
 {
     IMPLEMENT_W3D_POOL(GridTextureMapperClass)
 public:
-    GridTextureMapperClass(
-        float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t frame_offset, uint32_t stage);
+    GridTextureMapperClass(float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t frame_offset, uint32_t stage);
     GridTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage);
     GridTextureMapperClass(const GridTextureMapperClass &src);
     virtual ~GridTextureMapperClass() {}
@@ -376,8 +372,7 @@ class GridClassicEnvironmentMapperClass : public GridTextureMapperClass
 {
     IMPLEMENT_W3D_POOL(GridClassicEnvironmentMapperClass)
 public:
-    GridClassicEnvironmentMapperClass(
-        float fps, uint32_t gridwidth, uint32_t last_frame, uint32_t offset, uint32_t stage) :
+    GridClassicEnvironmentMapperClass(float fps, uint32_t gridwidth, uint32_t last_frame, uint32_t offset, uint32_t stage) :
         GridTextureMapperClass(fps, gridwidth, last_frame, offset, stage)
     {
     }
@@ -398,8 +393,7 @@ class GridEnvironmentMapperClass : public GridTextureMapperClass
 {
     IMPLEMENT_W3D_POOL(GridEnvironmentMapperClass)
 public:
-    GridEnvironmentMapperClass(
-        float fps, uint32_t gridwidth, uint32_t last_frame, uint32_t offset, uint32_t stage) :
+    GridEnvironmentMapperClass(float fps, uint32_t gridwidth, uint32_t last_frame, uint32_t offset, uint32_t stage) :
         GridTextureMapperClass(fps, gridwidth, last_frame, offset, stage)
     {
     }
@@ -420,11 +414,8 @@ class ScreenMapperClass : public LinearOffsetTextureMapperClass
 {
     IMPLEMENT_W3D_POOL(ScreenMapperClass)
 public:
-    ScreenMapperClass(const Vector2 &offset_per_sec,
-        const Vector2 &initial_offset,
-        bool clamp_fix,
-        const Vector2 &scale,
-        uint32_t stage) :
+    ScreenMapperClass(
+        const Vector2 &offset_per_sec, const Vector2 &initial_offset, bool clamp_fix, const Vector2 &scale, uint32_t stage) :
         LinearOffsetTextureMapperClass(offset_per_sec, initial_offset, clamp_fix, scale, stage)
     {
     }
@@ -499,12 +490,8 @@ public:
         AXIS_Z = 2,
     };
     GridWSEnvMapperClass(const INIClass &ini, const char *section, uint32_t stage);
-    GridWSEnvMapperClass(float fps,
-        uint32_t gridwidth_log2,
-        uint32_t last_frame,
-        uint32_t offset,
-        AxisType axis,
-        uint32_t stage) :
+    GridWSEnvMapperClass(
+        float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t offset, AxisType axis, uint32_t stage) :
         GridTextureMapperClass(fps, gridwidth_log2, last_frame, offset, stage), m_axis(AXIS_Z)
     {
     }
@@ -520,12 +507,8 @@ protected:
 class GridWSClassicEnvironmentMapperClass : public GridWSEnvMapperClass
 {
 public:
-    GridWSClassicEnvironmentMapperClass(float fps,
-        uint32_t gridwidth_log2,
-        uint32_t last_frame,
-        uint32_t offset,
-        AxisType axis,
-        uint32_t stage) :
+    GridWSClassicEnvironmentMapperClass(
+        float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t offset, AxisType axis, uint32_t stage) :
         GridWSEnvMapperClass(fps, gridwidth_log2, last_frame, offset, axis, stage)
     {
     }
@@ -541,12 +524,8 @@ public:
 class GridWSEnvironmentMapperClass : public GridWSEnvMapperClass
 {
 public:
-    GridWSEnvironmentMapperClass(float fps,
-        uint32_t gridwidth_log2,
-        uint32_t last_frame,
-        uint32_t offset,
-        AxisType axis,
-        uint32_t stage) :
+    GridWSEnvironmentMapperClass(
+        float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t offset, AxisType axis, uint32_t stage) :
         GridWSEnvMapperClass(fps, gridwidth_log2, last_frame, offset, axis, stage)
     {
     }

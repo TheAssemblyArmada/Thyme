@@ -640,7 +640,7 @@ void W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather(Drawable const 
 {
     if (Should_Validate()) {
         int32_t flags = night ? (snow ? TIMEANDWEATHER_NIGHTSNOW : TIMEANDWEATHER_NIGHT) :
-                            (snow ? TIMEANDWEATHER_SNOW : TIMEANDWEATHER_DAY);
+                                (snow ? TIMEANDWEATHER_SNOW : TIMEANDWEATHER_DAY);
 
         if ((flags & m_timeAndWeatherFlags) == 0) {
             m_timeAndWeatherFlags |= flags;

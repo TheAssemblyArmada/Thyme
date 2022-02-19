@@ -564,8 +564,7 @@ float AdaptiveDeltaMotionChannelClass::Get_Frame(uint32_t frame_idx, uint32_t ve
     }
 }
 
-void AdaptiveDeltaMotionChannelClass::Decompress(
-    uint32_t src_idx, float *srcdata, uint32_t frame_idx, float *outdata)
+void AdaptiveDeltaMotionChannelClass::Decompress(uint32_t src_idx, float *srcdata, uint32_t frame_idx, float *outdata)
 {
     char dst[4];
 
@@ -588,7 +587,7 @@ void AdaptiveDeltaMotionChannelClass::Decompress(
             while (i1 < 0x10) {
                 int32_t v9 = i1 >> 1;
                 if (i1 & 1) {
-                    *(int32_t *)dst = (int32_t)*((char *)f3 + v9) >> 4;
+                    *(int32_t *)dst = (int32_t) * ((char *)f3 + v9) >> 4;
                 } else {
                     dst[0] = *((char *)f3 + v9);
                 }
@@ -643,7 +642,7 @@ void AdaptiveDeltaMotionChannelClass::Decompress(uint32_t frame_idx, float *outd
                 int32_t i3 = j >> 1;
 
                 if (j & 1) {
-                    *(int32_t *)dst = (int32_t)*((char *)f3 + i3) >> 4;
+                    *(int32_t *)dst = (int32_t) * ((char *)f3 + i3) >> 4;
                 } else {
                     dst[0] = *((char *)f3 + i3);
                 }

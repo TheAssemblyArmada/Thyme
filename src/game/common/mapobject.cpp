@@ -26,7 +26,8 @@ MapObject *MapObject::s_theMapObjectListPtr;
 Dict MapObject::s_theWorldDict;
 #endif
 
-MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing) :
+MapObject::MapObject(
+    Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing) :
     m_properties(0),
     m_objectName(name),
     m_thingTemplate(thing),

@@ -61,8 +61,11 @@ public:
         Coord3D *positions,
         Matrix3D *transforms,
         int32_t max_bones) const = 0;
-    virtual int32_t Get_Current_Bone_Positions(
-        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const = 0;
+    virtual int32_t Get_Current_Bone_Positions(char const *bone_name_prefix,
+        int32_t start_index,
+        Coord3D *positions,
+        Matrix3D *transforms,
+        int32_t max_bones) const = 0;
     virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const = 0;
     virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &c,
         WeaponSlotType wslot,

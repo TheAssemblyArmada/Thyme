@@ -166,7 +166,8 @@ public:
         int32_t player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
     virtual bool Is_Special_Power_Complete(
         int32_t player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
-    virtual bool Is_Upgrade_Complete(int32_t player_idx, const Utf8String &upgrade_name, bool remove_from_list, ObjectID source);
+    virtual bool Is_Upgrade_Complete(
+        int32_t player_idx, const Utf8String &upgrade_name, bool remove_from_list, ObjectID source);
     virtual bool Is_Science_Acquired(int32_t player_idx, ScienceType science, bool remove_from_list);
     virtual void Adjust_Topple_Direction(Object *obj, Coord2D *direction);
     virtual void Adjust_Topple_Direction(Object *obj, Coord3D *direction);

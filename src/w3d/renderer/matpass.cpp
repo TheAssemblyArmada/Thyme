@@ -22,14 +22,14 @@ bool MaterialPassClass::m_enablePerPolygonCulling = true;
 MaterialPassClass::MaterialPassClass() :
     m_shader(0), m_material(nullptr), m_enableOnTranslucentMeshes(true), m_cullVolume(nullptr)
 {
-    for (int i = 0; i < MAX_TEX_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEX_STAGES; ++i) {
         m_texture[i] = nullptr;
     }
 }
 
 MaterialPassClass::~MaterialPassClass()
 {
-    for (int i = 0; i < MAX_TEX_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEX_STAGES; ++i) {
         Ref_Ptr_Release(m_texture[i]);
     }
 
@@ -45,7 +45,7 @@ void MaterialPassClass::Install_Materials()
     }
 }
 
-void MaterialPassClass::Set_Texture(TextureClass *texture, int stage)
+void MaterialPassClass::Set_Texture(TextureClass *texture, int32_t stage)
 {
     Ref_Ptr_Set(m_texture[stage], texture);
 }
@@ -61,7 +61,7 @@ void MaterialPassClass::Set_Material(VertexMaterialClass *material)
     Ref_Ptr_Set(m_material, material);
 }
 
-TextureClass *MaterialPassClass::Get_Texture(int stage)
+TextureClass *MaterialPassClass::Get_Texture(int32_t stage)
 {
     if (m_texture[stage] != nullptr) {
         m_texture[stage]->Add_Ref();
@@ -79,7 +79,7 @@ VertexMaterialClass *MaterialPassClass::Get_Material()
     return m_material;
 }
 
-TextureClass *MaterialPassClass::Peek_Texture(int stage)
+TextureClass *MaterialPassClass::Peek_Texture(int32_t stage)
 {
     captainslog_assert(stage >= 0);
     captainslog_assert(stage < MAX_TEX_STAGES);

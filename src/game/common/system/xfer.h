@@ -26,7 +26,7 @@
 #include <list>
 #include <vector>
 
-template<int bits> class BitFlags;
+template<int32_t bits> class BitFlags;
 
 struct RealRange
 {
@@ -80,9 +80,9 @@ public:
 
     virtual void Open(Utf8String filename);
     virtual void Close() = 0;
-    virtual int Begin_Block() = 0;
+    virtual int32_t Begin_Block() = 0;
     virtual void End_Block() = 0;
-    virtual void Skip(int offset) = 0;
+    virtual void Skip(int32_t offset) = 0;
 
     virtual void xferSnapshot(SnapShot *thing) = 0;
     virtual void xferVersion(uint8_t *thing, uint8_t check);
@@ -120,10 +120,10 @@ public:
     virtual void xferScienceVec(std::vector<ScienceType> *thing);
     virtual void xferKindOf(KindOfType *thing);
     virtual void xferUpgradeMask(BitFlags<128> *thing);
-    virtual void xferUser(void *thing, int size);
+    virtual void xferUser(void *thing, int32_t size);
     virtual void xferMatrix3D(Matrix3D *thing);
     virtual void xferMapName(Utf8String *thing);
-    virtual void xferImplementation(void *thing, int size) = 0;
+    virtual void xferImplementation(void *thing, int32_t size) = 0;
 
     void Xfer_Client_Random_Var(GameClientRandomVariable *thing);
     void Xfer_Logic_Random_Var(GameLogicRandomVariable *thing);

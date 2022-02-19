@@ -24,7 +24,7 @@ bool CopyProtect::notifyLauncher()
     return true;
 }
 
-void CopyProtect::checkForMessage(unsigned int msg, int handle) {}
+void CopyProtect::checkForMessage(uint32_t msg, int32_t handle) {}
 
 bool CopyProtect::validate()
 {

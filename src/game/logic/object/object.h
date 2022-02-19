@@ -244,7 +244,7 @@ public:
     Object *Get_Contained_By() { return m_containedBy; }
     Module **Get_All_Modules() { return m_allModules; }
     ObjectID Get_Producer_ID() const { return m_producerID; }
-    unsigned int Get_Weapon_Bonus_Condition() const { return m_weaponBonusCondition; }
+    uint32_t Get_Weapon_Bonus_Condition() const { return m_weaponBonusCondition; }
     const Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType type) const
     {
         return m_weaponSet.Get_Weapon_In_Weapon_Slot(type);
@@ -268,7 +268,7 @@ public:
     PathfindLayerEnum Get_Destination_Layer() const { return m_destinationLayer; }
     void Get_Formation_Offset(Coord2D *c) { *c = m_formationOffset; }
     bool Get_Single_Use_Command() const { return m_singleUseCommand; }
-    unsigned int Get_Occlusion_Delay_Frame() const { return m_occlusionDelayFrame; }
+    uint32_t Get_Occlusion_Delay_Frame() const { return m_occlusionDelayFrame; }
     FormationID Get_Formation_ID() const { return m_formationID; }
 
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
@@ -300,27 +300,27 @@ public:
         return ((1 << type) & m_weaponBonusCondition) != 0;
     }
 
-    int Get_Transport_Slot_Count() const;
+    int32_t Get_Transport_Slot_Count() const;
     char Get_Crusher_Level() const;
     char Get_Crushable_Level() const;
-    unsigned int Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
+    uint32_t Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
     float Get_Largest_Weapon_Range() const;
     const Weapon *Get_Current_Weapon(WeaponSlotType *wslot) const;
     Weapon *Get_Current_Weapon(WeaponSlotType *wslot);
-    bool Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const;
+    bool Get_Ammo_Pip_Showing_Info(int32_t &clip_size, int32_t &ammo_in_clip) const;
     CanAttackResult Get_Able_To_Attack_Specific_Object(
         AbleToAttackType type, const Object *obj, CommandSourceType source, WeaponSlotType slot) const;
     CanAttackResult Get_Able_To_Use_Weapon_Against_Target(
         AbleToAttackType type, const Object *obj, const Coord3D *pos, CommandSourceType source, WeaponSlotType slot) const;
-    unsigned int Get_Last_Shot_Fired_Frame() const;
+    uint32_t Get_Last_Shot_Fired_Frame() const;
     ObjectID Get_Last_Victim_ID() const;
     Relationship Get_Relationship(const Object *that) const;
     Player *Get_Controlling_Player() const;
-    int Get_Indicator_Color() const;
-    int Get_Night_Indicator_Color() const;
-    ObjectShroudStatus Get_Shrouded_Status(int index) const;
+    int32_t Get_Indicator_Color() const;
+    int32_t Get_Night_Indicator_Color() const;
+    ObjectShroudStatus Get_Shrouded_Status(int32_t index) const;
     ObjectID Get_Sole_Healing_Benefactor() const;
-    unsigned int Get_Disabled_Until(DisabledType type) const;
+    uint32_t Get_Disabled_Until(DisabledType type) const;
     ExitInterface *Get_Object_Exit_Interface() const;
     VeterancyLevel Get_Veterancy_Level() const;
     void Get_Health_Box_Position(Coord3D &pos) const;
@@ -333,11 +333,11 @@ public:
     DockUpdateInterface *Get_Dock_Update_Interface();
     SpawnBehaviorInterface *Get_Spawn_Behavior_Interface() const;
     ProjectileUpdateInterface *Get_Projectile_Update_Interface() const;
-    int Get_Num_Consecutive_Shots_Fired_At_Target(const Object *target) const;
+    int32_t Get_Num_Consecutive_Shots_Fired_At_Target(const Object *target) const;
     bool Get_Single_Logical_Bone_Position(const char *bone, Coord3D *pos, Matrix3D *tm) const;
     bool Get_Single_Logical_Bone_Position_On_Turret(
         WhichTurretType type, const char *bone, Coord3D *pos, Matrix3D *tm) const;
-    int Get_Multi_Logical_Bone_Position(const char *bone, int i, Coord3D *pos, Matrix3D *tm, bool b) const;
+    int32_t Get_Multi_Logical_Bone_Position(const char *bone, int32_t i, Coord3D *pos, Matrix3D *tm, bool b) const;
     const Utf8String &Get_Command_Set_String() const;
     RadarPriorityType Get_Radar_Priority() const;
     AIGroup *Get_Group();
@@ -364,15 +364,15 @@ public:
     void Set_Firing_Condition_For_Current_Weapon() const;
     void Set_Model_Condition_State(ModelConditionFlagType a);
     void Set_Model_Condition_Flags(const BitFlags<MODELCONDITION_COUNT> &set);
-    void Set_Special_Model_Condition_State(ModelConditionFlagType type, unsigned int i);
+    void Set_Special_Model_Condition_State(ModelConditionFlagType type, uint32_t i);
     void Set_Producer(const Object *obj);
     void Set_Builder(const Object *obj);
-    void Set_Custom_Indicator_Color(int color);
+    void Set_Custom_Indicator_Color(int32_t color);
     void Set_Effectively_Dead(bool dead);
     void Set_Captured(bool captured);
     void Set_Receiving_Difficulty_Bonus(bool bonus);
     void Set_Disabled(DisabledType type);
-    void Set_Disabled_Until(DisabledType type, unsigned int i);
+    void Set_Disabled_Until(DisabledType type, uint32_t i);
     void Set_Trigger_Area_Flags_For_Change_In_Position();
     void Set_Layer(PathfindLayerEnum layer);
     void Set_Destination_Layer(PathfindLayerEnum layer);
@@ -383,7 +383,7 @@ public:
     void Set_Vision_Range(float range);
     void Set_Shroud_Clearing_Range(float range);
     void Set_Shroud_Range(float range);
-    void Set_Vision_Spied(bool b, int i);
+    void Set_Vision_Spied(bool b, int32_t i);
 
     bool Is_Out_Of_Ammo() const;
     bool Is_Locally_Controlled() const;
@@ -414,11 +414,11 @@ public:
     void Clear_Leech_Range_Mode_For_All_Weapons();
 
     void Do_Status_Damage(ObjectStatusTypes status, float f);
-    void Do_Temp_Weapon_Bonus(WeaponBonusConditionType type, unsigned int i);
-    void Do_Special_Power(const SpecialPowerTemplate *t, unsigned int i, bool b);
-    void Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, unsigned int i, bool b);
-    void Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, unsigned int i, bool b);
-    void Do_Special_Power_Using_Waypoints(const SpecialPowerTemplate *t, const Waypoint *wp, unsigned int i, bool b);
+    void Do_Temp_Weapon_Bonus(WeaponBonusConditionType type, uint32_t i);
+    void Do_Special_Power(const SpecialPowerTemplate *t, uint32_t i, bool b);
+    void Do_Special_Power_At_Object(const SpecialPowerTemplate *t, Object *obj, uint32_t i, bool b);
+    void Do_Special_Power_At_Location(const SpecialPowerTemplate *t, const Coord3D *pos, float f, uint32_t i, bool b);
+    void Do_Special_Power_Using_Waypoints(const SpecialPowerTemplate *t, const Waypoint *wp, uint32_t i, bool b);
     void Do_Command_Button(const CommandButton *button, CommandSourceType type);
     void Do_Command_Button_At_Object(const CommandButton *button, Object *obj, CommandSourceType type);
     void Do_Command_Button_At_Position(const CommandButton *button, const Coord3D *pos, CommandSourceType type);
@@ -475,7 +475,7 @@ public:
 
     void Attempt_Damage(DamageInfo *info);
     void Attempt_Healing(float f, const Object *obj);
-    bool Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, unsigned int i);
+    bool Attempt_Healing_From_Sole_Benefactor(float f, const Object *obj, uint32_t i);
 
     bool Affected_By_Upgrade(const UpgradeTemplate *upgrade) const;
     void Update_Upgrade_Modules();
@@ -493,7 +493,7 @@ public:
     void Leave_Group();
 
     void Restore_Original_Team();
-    void Defect(Team *team, unsigned int i);
+    void Defect(Team *team, uint32_t i);
 
     bool Reload_All_Ammo(bool now);
     bool Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source);
@@ -505,13 +505,13 @@ public:
     void Notify_Subdual_Damage(float f);
     bool Can_Crush_Or_Squish(Object *obj);
     void Heal_Completely();
-    void Go_Invulnerable(unsigned int i);
+    void Go_Invulnerable(uint32_t i);
 
     bool Check_And_Detonate_Booby_Trap(Object *obj);
     void Check_Disabled_Status();
 
     void Init_Object();
-    void Topple(const Coord3D dir, float speed, int options);
+    void Topple(const Coord3D dir, float speed, int32_t options);
     bool Test_Armor_Set_Flag(ArmorSetType type) const;
     void Remove_Custom_Indicator_Color();
     void Pause_All_Special_Powers(bool pause);
@@ -545,7 +545,7 @@ private:
     AIGroup *m_aiGroup;
     SightingInfo *m_friendlyLookSighting;
     SightingInfo *m_allLookSighting;
-    unsigned int m_spiedOnByPlayer[16];
+    uint32_t m_spiedOnByPlayer[16];
     unsigned short m_spiedOnPlayers;
     SightingInfo *m_shroudSighting;
     SightingInfo *m_threatSighting;
@@ -554,8 +554,8 @@ private:
     float m_shroudClearingRange;
     float m_shroudRange;
     BitFlags<DISABLED_TYPE_COUNT> m_disabledStates;
-    unsigned int m_disabledStateFrames[13];
-    unsigned int m_specialModelConditionSleepFrame;
+    uint32_t m_disabledStateFrames[13];
+    uint32_t m_specialModelConditionSleepFrame;
     ObjectRepulsorHelper *m_objectRepulsorHelper;
     ObjectSMCHelper *m_objectSMCHelper;
     ObjectWeaponStatusHelper *m_objectWeaponStatusHelper;
@@ -575,30 +575,30 @@ private:
     ExperienceTracker *m_experienceTracker;
     Object *m_containedBy;
     ObjectID m_containedByID;
-    unsigned int m_containedByFrame;
+    uint32_t m_containedByFrame;
     float m_constructionPercent;
     BitFlags<128> m_objectUpgradesCompleted;
     Team *m_team;
     Utf8String m_originalTeamName;
-    unsigned int m_customIndicatorColor;
+    uint32_t m_customIndicatorColor;
     Coord3D m_healthBoxOffset;
     Object::DLINK_TeamMemberList m_dlink_TeamMemberList;
     WeaponSet m_weaponSet;
     BitFlags<WEAPONSET_COUNT> m_curWeaponSetFlags;
-    unsigned int m_weaponBonusCondition;
+    uint32_t m_weaponBonusCondition;
     char m_weaponSetConditions[WEAPONSLOT_COUNT];
     BitFlags<SPECIAL_POWER_COUNT> m_specialPowers;
     ObjectID m_soleHealingBenefactor;
-    unsigned int m_soleHealingEndFrame;
+    uint32_t m_soleHealingEndFrame;
     TTriggerInfo m_triggerInfo[MAX_TRIGGER_AREA_INFOS];
-    unsigned int m_enteredOrExited;
+    uint32_t m_enteredOrExited;
     ICoord3D m_iPos;
     PathfindLayerEnum m_layer;
     PathfindLayerEnum m_destinationLayer;
     FormationID m_formationID;
     Coord2D m_formationOffset;
     Utf8String m_cmmandSetStringOverride;
-    unsigned int m_occlusionDelayFrame;
+    uint32_t m_occlusionDelayFrame;
     bool m_isSelectable;
     bool m_applyBattlePlanBonuses;
 #ifdef GAME_DEBUG_STRUCTS

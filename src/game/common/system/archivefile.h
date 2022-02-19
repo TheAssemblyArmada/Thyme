@@ -28,8 +28,8 @@ struct ArchivedFileInfo
 {
     Utf8String file_name;
     Utf8String archive_name;
-    int position;
-    int size;
+    int32_t position;
+    int32_t size;
 };
 
 struct DetailedArchiveDirectoryInfo
@@ -46,11 +46,11 @@ public:
     virtual ~ArchiveFile() {}
 
     virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) = 0;
-    virtual File *Open_File(const char *filename, int mode) = 0;
+    virtual File *Open_File(const char *filename, int32_t mode) = 0;
     virtual void Close_All_Files() = 0;
     virtual Utf8String Get_Name() = 0;
     virtual Utf8String Get_Path() = 0;
-    virtual void Set_Search_Priority(int priority) = 0;
+    virtual void Set_Search_Priority(int32_t priority) = 0;
     virtual void Close() = 0;
 
     ArchivedFileInfo *Get_Archived_File_Info(Utf8String const &filename);

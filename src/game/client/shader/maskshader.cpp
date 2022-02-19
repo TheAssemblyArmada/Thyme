@@ -17,7 +17,7 @@
 #include <d3dx8.h>
 #endif
 
-int MaskTextureShader::Set(int pass)
+int32_t MaskTextureShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     float f1 = ScreenCrossFadeFilter::Get_Current_Fade_Value();
@@ -54,8 +54,8 @@ int MaskTextureShader::Set(int pass)
 
     if (g_theTacticalView) {
         ICoord2D c2;
-        c2.x = (int)((float)g_theTacticalView->Get_Width() * 0.5f);
-        c2.y = (int)((float)g_theTacticalView->Get_Height() * 0.5f);
+        c2.x = (int32_t)((float)g_theTacticalView->Get_Width() * 0.5f);
+        c2.y = (int32_t)((float)g_theTacticalView->Get_Height() * 0.5f);
         g_theTacticalView->Screen_To_Terrain(&c2, &c);
     }
 
@@ -88,7 +88,7 @@ void MaskTextureShader::Reset()
 #endif
 }
 
-int MaskTextureShader::Init()
+int32_t MaskTextureShader::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_MASK_TEXTURE] = &g_maskTextureShader;
     g_w3dShadersPassCount[W3DShaderManager::ST_MASK_TEXTURE] = 1;

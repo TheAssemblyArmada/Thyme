@@ -31,7 +31,7 @@ void ModuleInfo::Add_Module_Info(ThingTemplate *thing_template,
     const Utf8String &module_name,
     const Utf8String &tag_name,
     ModuleData *mod_data,
-    int interface_mask,
+    int32_t interface_mask,
     bool inherited,
     bool like_kind_override)
 {
@@ -109,7 +109,7 @@ bool ModuleInfo::Clear_Module_Data_With_Tag(const Utf8String &tag, Utf8String &n
     return ret;
 }
 
-bool ModuleInfo::Clear_Copied_From_Default_Entries(int interface_mask, Utf8String const &name, ThingTemplate *tmplate)
+bool ModuleInfo::Clear_Copied_From_Default_Entries(int32_t interface_mask, Utf8String const &name, ThingTemplate *tmplate)
 {
     static BitFlags<KINDOF_COUNT> ImmuneToGPSScramblerMask;
     ImmuneToGPSScramblerMask.Set(KINDOF_AIRCRAFT, true);

@@ -46,26 +46,26 @@ public:
     void Clear();
     void Add_Side(const Dict *dict);
     void Add_Team(const Dict *dict) { m_teamRec.Add_Team(dict); }
-    void Remove_Team(int index) { m_teamRec.Remove_Team(index); }
-    int Get_Num_Sides() const { return m_numSides; }
-    int Get_Num_Teams() { return m_teamRec.Get_Num_Teams(); }
-    TeamsInfo *Get_Team_Info(int index) { return m_teamRec.Get_Team_Info(index); }
+    void Remove_Team(int32_t index) { m_teamRec.Remove_Team(index); }
+    int32_t Get_Num_Sides() const { return m_numSides; }
+    int32_t Get_Num_Teams() { return m_teamRec.Get_Num_Teams(); }
+    TeamsInfo *Get_Team_Info(int32_t index) { return m_teamRec.Get_Team_Info(index); }
     void Empty_Teams();
     void Empty_Sides();
     bool Validate_Sides();
     bool Validate_Ally_Enemy_List(const Utf8String &team, Utf8String &allies);
     void Add_Player_By_Template(Utf8String template_name);
-    SidesInfo *Find_Side_Info(Utf8String name, int *index = nullptr);
-    SidesInfo *Find_Skirmish_Side_Info(Utf8String name, int *index = nullptr);
-    SidesInfo *Get_Sides_Info(int index);
-    TeamsInfo *Find_Team_Info(Utf8String name, int *index) { return m_teamRec.Find_Team(name, index); }
+    SidesInfo *Find_Side_Info(Utf8String name, int32_t *index = nullptr);
+    SidesInfo *Find_Skirmish_Side_Info(Utf8String name, int32_t *index = nullptr);
+    SidesInfo *Get_Sides_Info(int32_t index);
+    TeamsInfo *Find_Team_Info(Utf8String name, int32_t *index) { return m_teamRec.Find_Team(name, index); }
 
     static bool Parse_Sides_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
 
 private:
-    int m_numSides;
+    int32_t m_numSides;
     SidesInfo m_sides[MAX_SIDE_COUNT];
-    int m_numSkirmishSides;
+    int32_t m_numSkirmishSides;
     SidesInfo m_skirmishSides[MAX_SIDE_COUNT];
     TeamsInfoRec m_teamRec;
     TeamsInfoRec m_skirmishTeamsRec;

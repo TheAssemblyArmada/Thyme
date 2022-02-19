@@ -169,9 +169,9 @@ Quaternion Trackball(float x0, float y0, float x1, float y1, float sphsize)
 
 Quaternion Build_Quaternion(const Matrix3D &mat)
 {
-    static int _nxt[3] = { 1, 2, 0 };
+    static int32_t _nxt[3] = { 1, 2, 0 };
     float tr, s;
-    int i, j, k;
+    int32_t i, j, k;
     Quaternion q;
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
@@ -212,9 +212,9 @@ Quaternion Build_Quaternion(const Matrix3D &mat)
 
 Quaternion Build_Quaternion(const Matrix3 &mat)
 {
-    static int _nxt[3] = { 1, 2, 0 };
+    static int32_t _nxt[3] = { 1, 2, 0 };
     float tr, s;
-    int i, j, k;
+    int32_t i, j, k;
     Quaternion q;
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
@@ -257,9 +257,9 @@ Quaternion Build_Quaternion(const Matrix3 &mat)
 
 Quaternion Build_Quaternion(const Matrix4 &mat)
 {
-    static int _nxt[3] = { 1, 2, 0 };
+    static int32_t _nxt[3] = { 1, 2, 0 };
     float tr, s;
-    int i, j, k;
+    int32_t i, j, k;
     Quaternion q;
     tr = mat[0][0] + mat[1][1] + mat[2][2];
 
@@ -379,7 +379,7 @@ void Fast_Slerp(Quaternion &res, const Quaternion &p, const Quaternion &q, float
     float theta; // angle between p and q
     float cos_t; // sine, cosine of theta
     float oo_sin_t;
-    int qflip; // use flip of q?
+    int32_t qflip; // use flip of q?
 
     // cos theta = dot product of p and q
     cos_t = p.X * q.X + p.Y * q.Y + p.Z * q.Z + p.W * q.W;
@@ -422,7 +422,7 @@ void Slerp(Quaternion &res, const Quaternion &p, const Quaternion &q, float alph
     // float sin_t
     float cos_t; // sine, cosine of theta
     float oo_sin_t;
-    int qflip; // use flip of q?
+    int32_t qflip; // use flip of q?
 
     // cos theta = dot product of p and q
     cos_t = p.X * q.X + p.Y * q.Y + p.Z * q.Z + p.W * q.W;

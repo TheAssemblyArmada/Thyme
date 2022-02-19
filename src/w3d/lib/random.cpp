@@ -17,13 +17,13 @@
 
 RandomClass::RandomClass(unsigned seed) : m_seed(seed) {}
 
-int RandomClass::operator()()
+int32_t RandomClass::operator()()
 {
     m_seed = (m_seed * MULT_CONSTANT) + ADD_CONSTANT;
     return (m_seed >> THROW_AWAY_BITS) & (~((~0) << SIGNIFICANT_BITS));
 }
 
-int RandomClass::operator()(int minval, int maxval)
+int32_t RandomClass::operator()(int32_t minval, int32_t maxval)
 {
     return Pick_Random_Number(*this, minval, maxval);
 }
@@ -32,15 +32,15 @@ Random2Class::Random2Class(unsigned seed) : m_index1(0), m_index2(103)
 {
     Random3Class random(seed);
 
-    for (int index = 0; index < ARRAY_SIZE(m_table); index++) {
+    for (int32_t index = 0; index < ARRAY_SIZE(m_table); index++) {
         m_table[index] = random;
     }
 }
 
-int Random2Class::operator()()
+int32_t Random2Class::operator()()
 {
     m_table[m_index1] ^= m_table[m_index2];
-    int val = m_table[m_index1];
+    int32_t val = m_table[m_index1];
     m_index1++;
     m_index2++;
 
@@ -55,13 +55,13 @@ int Random2Class::operator()()
     return val;
 }
 
-int Random2Class::operator()(int minval, int maxval)
+int32_t Random2Class::operator()(int32_t minval, int32_t maxval)
 {
     return Pick_Random_Number(*this, minval, maxval);
 }
 
 // clang-format off
-unsigned int Random3Class::s_mix1[20] = {
+uint32_t Random3Class::s_mix1[20] = {
     0x0baa96887, 0x01e17d32c, 0x003bcdc3c, 0x00f33d1b2,
     0x076a6491d, 0x0c570d85d, 0x0e382b1e3, 0x078db4362,
     0x07439a9d4, 0x09cea8ac5, 0x089537c5c, 0x02588f55d,
@@ -69,7 +69,7 @@ unsigned int Random3Class::s_mix1[20] = {
     0x03ea5cc8c, 0x0d26a0f74, 0x0f3a9222b, 0x048aad7e4
 };
 
-unsigned int Random3Class::s_mix2[20] = {
+uint32_t Random3Class::s_mix2[20] = {
     0x04b0f3b58, 0x0e874f0c3, 0x06955c5a6, 0x055a7ca46,
     0x04d9a9d86, 0x0fe28a195, 0x0b1ca7865, 0x06b235751,
     0x09a997a61, 0x0aa6e95c8, 0x0aaa98ee1, 0x05af9154c,
@@ -80,16 +80,16 @@ unsigned int Random3Class::s_mix2[20] = {
 
 Random3Class::Random3Class(unsigned seed1, unsigned seed2) : m_seed(seed1), m_index(seed2) {}
 
-int Random3Class::operator()()
+int32_t Random3Class::operator()()
 {
-    int loword = m_seed;
-    int hiword = m_index++;
+    int32_t loword = m_seed;
+    int32_t hiword = m_index++;
 
-    for (int i = 0; i < 4; i++) {
-        int hihold = hiword;
-        int temp = hihold ^ s_mix1[i];
-        int itmpl = temp & 0xffff;
-        int itmph = temp >> 16;
+    for (int32_t i = 0; i < 4; i++) {
+        int32_t hihold = hiword;
+        int32_t temp = hihold ^ s_mix1[i];
+        int32_t itmpl = temp & 0xffff;
+        int32_t itmph = temp >> 16;
         temp = itmpl * itmpl + ~(itmph * itmph);
         temp = (temp >> 16) | (temp << 16);
         hiword = loword ^ ((temp ^ s_mix2[i]) + itmpl * itmph);
@@ -99,7 +99,7 @@ int Random3Class::operator()()
     return hiword;
 }
 
-int Random3Class::operator()(int minval, int maxval)
+int32_t Random3Class::operator()(int32_t minval, int32_t maxval)
 {
     return Pick_Random_Number(*this, minval, maxval);
 }
@@ -117,7 +117,7 @@ int Random3Class::operator()(int minval, int maxval)
 #define TEMPERING_SHIFT_T(y) (y << 15)
 #define TEMPERING_SHIFT_L(y) (y >> 18)
 
-Random4Class::Random4Class(unsigned int seed)
+Random4Class::Random4Class(uint32_t seed)
 {
     if (!seed) {
         seed = 4375;
@@ -130,13 +130,13 @@ Random4Class::Random4Class(unsigned int seed)
     }
 }
 
-int Random4Class::operator()()
+int32_t Random4Class::operator()()
 {
-    unsigned int y;
-    static unsigned int mag01[2] = { 0x0, MATRIX_A };
+    uint32_t y;
+    static uint32_t mag01[2] = { 0x0, MATRIX_A };
 
     if (m_mti >= N) {
-        int kk;
+        int32_t kk;
 
         for (kk = 0; kk < N - M; kk++) {
             y = (m_mt[kk] & UPPER_MASK) | (m_mt[kk + 1] & LOWER_MASK);
@@ -158,20 +158,20 @@ int Random4Class::operator()()
     y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
     y ^= TEMPERING_SHIFT_L(y);
 
-    int *x = (int *)&y;
+    int32_t *x = (int32_t *)&y;
 
     return *x;
 }
 
-int Random4Class::operator()(int minval, int maxval)
+int32_t Random4Class::operator()(int32_t minval, int32_t maxval)
 {
     return Pick_Random_Number(*this, minval, maxval);
 }
 
 float Random4Class::Get_Float()
 {
-    int x = (*this)();
-    unsigned int *y = (unsigned int *)&x;
+    int32_t x = (*this)();
+    uint32_t *y = (uint32_t *)&x;
 
     return (*y) * 2.3283064370807973754314699618685e-10f;
 }

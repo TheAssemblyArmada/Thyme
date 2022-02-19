@@ -16,7 +16,7 @@
 #include "memblock.h"
 #include "mempool.h"
 
-void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
+void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int32_t count)
 {
     captainslog_dbgassert(
         m_blockData == nullptr, "Init called on blob with none null data for pool '%s'.", owning_pool->m_poolName);
@@ -25,11 +25,11 @@ void MemoryPoolBlob::Init_Blob(MemoryPool *owning_pool, int count)
     m_totalBlocksInBlob = count;
     m_usedBlocksInBlob = 0;
 
-    int alloc_size = Round_Up_Word_Size(owning_pool->m_allocationSize) + sizeof(MemoryPoolSingleBlock);
+    int32_t alloc_size = Round_Up_Word_Size(owning_pool->m_allocationSize) + sizeof(MemoryPoolSingleBlock);
     m_blockData = static_cast<char *>(Raw_Allocate_No_Zero(alloc_size * m_totalBlocksInBlob));
     char *current_block = m_blockData;
 
-    for (int i = m_totalBlocksInBlob - 1; i >= 0; --i) {
+    for (int32_t i = m_totalBlocksInBlob - 1; i >= 0; --i) {
         MemoryPoolSingleBlock *block_header = reinterpret_cast<MemoryPoolSingleBlock *>(current_block);
         block_header->Init_Block(0, this, owning_pool->m_factory);
 

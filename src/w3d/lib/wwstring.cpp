@@ -36,7 +36,7 @@ void StringClass::Get_String(size_t length, bool is_temp)
     if (is_temp && length <= MAX_TEMP_LEN && m_reserveMask != ALL_TEMP_STRINGS_USED_MASK) {
         FastCriticalSectionClass::LockClass m(m_mutex);
 
-        for (int i = 0; i < MAX_TEMP_STRING; ++i) {
+        for (int32_t i = 0; i < MAX_TEMP_STRING; ++i) {
             unsigned mask = 1 << i;
 
             if (!(m_reserveMask & mask)) {
@@ -58,9 +58,9 @@ void StringClass::Get_String(size_t length, bool is_temp)
     }
 }
 
-void StringClass::Resize(int new_len)
+void StringClass::Resize(int32_t new_len)
 {
-    int allocated_len = Get_Allocated_Length();
+    int32_t allocated_len = Get_Allocated_Length();
 
     if (new_len > allocated_len) {
         char *new_buffer = Allocate_Buffer(new_len);
@@ -102,22 +102,22 @@ void StringClass::Free_String()
     }
 }
 
-int StringClass::Format_Args(const char *format, va_list &arg_list)
+int32_t StringClass::Format_Args(const char *format, va_list &arg_list)
 {
     char temp_buffer[512] = { 0 };
-    int retval = vsnprintf(temp_buffer, 512, format, arg_list);
+    int32_t retval = vsnprintf(temp_buffer, 512, format, arg_list);
 
     *this = temp_buffer;
 
     return retval;
 }
 
-int StringClass::Format(const char *format, ...)
+int32_t StringClass::Format(const char *format, ...)
 {
     va_list arg_list;
     va_start(arg_list, format);
 
-    int retval = Format_Args(format, arg_list);
+    int32_t retval = Format_Args(format, arg_list);
 
     va_end(arg_list);
 
@@ -141,7 +141,7 @@ bool StringClass::Copy_Wide(const unichar_t *source)
         }
 #elif defined PLATFORM_WINDOWS
         BOOL unmapped;
-        int length = WideCharToMultiByte(CP_UTF8, 0, source, -1, nullptr, 0, nullptr, &unmapped);
+        int32_t length = WideCharToMultiByte(CP_UTF8, 0, source, -1, nullptr, 0, nullptr, &unmapped);
 
         if (length > 0) {
             WideCharToMultiByte(CP_UTF8, 0, source, -1, Get_Buffer(length), length, nullptr, nullptr);

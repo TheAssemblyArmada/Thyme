@@ -21,12 +21,12 @@ class BufferStraw : public Straw
 {
 public:
     BufferStraw(Buffer const &buffer) : m_bufferPtr(buffer), m_index(0) {}
-    BufferStraw(void const *buffer, int length) : m_bufferPtr((void *)buffer, length), m_index(0) {}
-    virtual int Get(void *source, int slen);
+    BufferStraw(void const *buffer, int32_t length) : m_bufferPtr((void *)buffer, length), m_index(0) {}
+    virtual int32_t Get(void *source, int32_t slen);
 
 private:
     Buffer m_bufferPtr;
-    int m_index;
+    int32_t m_index;
 
     bool Is_Valid() { return (m_bufferPtr.Is_Valid()); }
     BufferStraw(BufferStraw &rvalue);

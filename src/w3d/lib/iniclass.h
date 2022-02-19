@@ -66,7 +66,7 @@ public:
     INIEntry *Find_Entry(const char *entry) const;
     const char *Get_Name() const { return m_sectionName; }
     void Set_Name(const char *str);
-    int Get_Entry_Count() const { return m_entryIndex.Count(); }
+    int32_t Get_Entry_Count() const { return m_entryIndex.Count(); }
     int32_t CRC(const char *value) const { return CRC::String(value, 0); }
 
 public:
@@ -108,7 +108,7 @@ public:
  *    Example usage:
  *        INIClass INIClass("somefile.ini");
  *
- *        int rating;
+ *        int32_t rating;
  *        if(iniFile.ReadEntryFormatted("User", "Rating", "%d", &rating) > 0)
  *            DEBUG_SAY("User rating is %d.", rating);
  *
@@ -140,38 +140,38 @@ public:
     bool Clear(const char *section = nullptr, const char *entry = nullptr);
     bool Is_Loaded() const { return m_sectionList->First()->Is_Valid(); }
 
-    int Load(FileClass &file);
-    int Load(Straw &straw);
+    int32_t Load(FileClass &file);
+    int32_t Load(Straw &straw);
 
     List<INISection *> &Get_Section_List() { return *m_sectionList; }
     IndexClass<int32_t, INISection *> &Get_Section_Index() { return *m_sectionIndex; }
 
     // Returns the section object if it exists.
     INISection *Find_Section(const char *section) const;
-    int Section_Count() { return m_sectionIndex->Count(); }
+    int32_t Section_Count() { return m_sectionIndex->Count(); }
 
     // Returns the entry object if it exists.
     INIEntry *Find_Entry(const char *section, const char *entry) const;
-    int Entry_Count(const char *section) const;
-    const char *Get_Entry(const char *section, int index) const;
+    int32_t Entry_Count(const char *section) const;
+    const char *Get_Entry(const char *section, int32_t index) const;
 
     // Enumerate_Entries()
     //   Enumerates all entries (key/value pairs) of a given section.
     //   Returns the number of entries present or -1 upon error.
-    int Enumerate_Entries(const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number);
-    bool Put_Int(const char *section, const char *entry, int value, int format = INIINTEGER_AS_DECIMAL);
-    int Get_Int(const char *section, const char *entry, int defvalue = 0) const;
+    int32_t Enumerate_Entries(const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number);
+    bool Put_Int(const char *section, const char *entry, int32_t value, int32_t format = INIINTEGER_AS_DECIMAL);
+    int32_t Get_Int(const char *section, const char *entry, int32_t defvalue = 0) const;
     bool Put_Bool(const char *section, const char *entry, bool value);
     bool Get_Bool(const char *section, const char *entry, bool defvalue = false) const;
-    bool Put_Hex(const char *section, const char *entry, int value);
-    int Get_Hex(const char *section, const char *entry, int defvalue = 0) const;
+    bool Put_Hex(const char *section, const char *entry, int32_t value);
+    int32_t Get_Hex(const char *section, const char *entry, int32_t defvalue = 0) const;
     bool Put_Float(const char *section, const char *entry, double value);
     float Get_Float(const char *section, const char *entry, float defvalue = 0) const;
     bool Put_Double(const char *section, const char *entry, double value);
     double Get_Double(const char *section, const char *entry, double defvalue = 0) const;
     bool Put_String(const char *section, const char *entry, const char *string);
-    int Get_String(
-        const char *section, const char *entry, const char *defvalue = "", char *buffer = nullptr, int length = 0) const;
+    int32_t Get_String(
+        const char *section, const char *entry, const char *defvalue = "", char *buffer = nullptr, int32_t length = 0) const;
 
 private:
     static void Strip_Comments(char *line);

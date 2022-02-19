@@ -97,7 +97,7 @@ MeshModelClass &MeshModelClass::operator=(const MeshModelClass &that)
     return *this;
 }
 
-void MeshModelClass::Reset(int polycount, int vertcount, int passcount)
+void MeshModelClass::Reset(int32_t polycount, int32_t vertcount, int32_t passcount)
 {
     Reset_Geometry(polycount, vertcount);
     g_theDX8MeshRenderer.Unregister_Mesh_Type(this);
@@ -123,10 +123,10 @@ void MeshModelClass::Replace_Texture(TextureClass *texture, TextureClass *new_te
     captainslog_assert(texture);
     captainslog_assert(new_texture);
 
-    for (int stage = 0; stage < MeshMatDescClass::MAX_TEX_STAGES; ++stage) {
-        for (int pass = 0; pass < Get_Pass_Count(); ++pass) {
+    for (int32_t stage = 0; stage < MeshMatDescClass::MAX_TEX_STAGES; ++stage) {
+        for (int32_t pass = 0; pass < Get_Pass_Count(); ++pass) {
             if (Has_Texture_Array(pass, stage)) {
-                for (int i = 0; i < Get_Polygon_Count(); ++i) {
+                for (int32_t i = 0; i < Get_Polygon_Count(); ++i) {
                     if (Peek_Texture(i, pass, stage) == texture) {
                         Set_Texture(i, new_texture, pass, stage);
                     }
@@ -151,9 +151,9 @@ void MeshModelClass::Replace_VertexMaterial(VertexMaterialClass *vmat, VertexMat
     captainslog_assert(vmat);
     captainslog_assert(new_vmat);
 
-    for (int pass = 0; pass < Get_Pass_Count(); ++pass) {
+    for (int32_t pass = 0; pass < Get_Pass_Count(); ++pass) {
         if (Has_Material_Array(pass)) {
-            for (int i = 0; i < Get_Vertex_Count(); ++i) {
+            for (int32_t i = 0; i < Get_Vertex_Count(); ++i) {
                 if (Peek_Material(i, pass) == vmat) {
                     Set_Material(i, new_vmat, pass);
                 }
@@ -185,12 +185,12 @@ void MeshModelClass::Shadow_Render(SpecialRenderInfoClass &rinfo, const Matrix3D
         Vector2 *tptr = reinterpret_cast<Vector2 *>(transf_ptr);
         Vector4 *optr = transf_ptr;
 
-        for (int a = 0; a < m_vertexCount; ++a, ++optr) {
+        for (int32_t a = 0; a < m_vertexCount; ++a, ++optr) {
             *tptr++ = Vector2((*optr)[0], -(*optr)[1]);
         }
 
         rinfo.m_bwRenderer->Set_Vertex_Locations(reinterpret_cast<Vector2 *>(transf_ptr), m_vertexCount);
-        rinfo.m_bwRenderer->Render_Triangles(reinterpret_cast<const unsigned int *>(m_poly->Get_Array()), m_polyCount * 3);
+        rinfo.m_bwRenderer->Render_Triangles(reinterpret_cast<const uint32_t *>(m_poly->Get_Array()), m_polyCount * 3);
     }
 }
 
@@ -207,12 +207,12 @@ void MeshModelClass::Make_Geometry_Unique()
     Ref_Ptr_Release(norms);
 }
 
-void MeshModelClass::Make_UV_Array_Unique(int pass, int stage)
+void MeshModelClass::Make_UV_Array_Unique(int32_t pass, int32_t stage)
 {
     m_curMatDesc->Make_UV_Array_Unique(pass, stage);
 }
 
-void MeshModelClass::Make_Color_Array_Unique(int array_index)
+void MeshModelClass::Make_Color_Array_Unique(int32_t array_index)
 {
     m_curMatDesc->Make_Color_Array_Unique(array_index);
 }
@@ -276,23 +276,23 @@ private:
 
     W3dTexCoordStruct *Get_Texcoord_Array();
 
-    int Add_Shader(ShaderClass shader);
-    int Add_Vertex_Material(VertexMaterialClass *vmat);
-    int Add_Texture(TextureClass *tex);
+    int32_t Add_Shader(ShaderClass shader);
+    int32_t Add_Vertex_Material(VertexMaterialClass *vmat);
+    int32_t Add_Texture(TextureClass *tex);
 
-    ShaderClass Peek_Shader(int index) { return m_shaders[index]; }
-    VertexMaterialClass *Peek_Vertex_Material(int index) { return m_vertexMaterials[index]; }
-    TextureClass *Peek_Texture(int index) { return m_textures[index]; }
+    ShaderClass Peek_Shader(int32_t index) { return m_shaders[index]; }
+    VertexMaterialClass *Peek_Vertex_Material(int32_t index) { return m_vertexMaterials[index]; }
+    TextureClass *Peek_Texture(int32_t index) { return m_textures[index]; }
 
-    int Shader_Count(void) { return m_shaders.Count(); }
-    int Vertex_Material_Count(void) { return m_vertexMaterials.Count(); }
-    int Texture_Count(void) { return m_textures.Count(); }
+    int32_t Shader_Count(void) { return m_shaders.Count(); }
+    int32_t Vertex_Material_Count(void) { return m_vertexMaterials.Count(); }
+    int32_t Texture_Count(void) { return m_textures.Count(); }
 
-    ShaderClass Peek_Legacy_Shader(int legacy_material_index);
-    VertexMaterialClass *Peek_Legacy_Vertex_Material(int legacy_material_index);
-    TextureClass *Peek_Legacy_Texture(int legacy_material_index);
+    ShaderClass Peek_Legacy_Shader(int32_t legacy_material_index);
+    VertexMaterialClass *Peek_Legacy_Vertex_Material(int32_t legacy_material_index);
+    TextureClass *Peek_Legacy_Texture(int32_t legacy_material_index);
 
-    Vector2 *Get_Temporary_UV_Array(int elementcount);
+    Vector2 *Get_Temporary_UV_Array(int32_t elementcount);
 
     void Notify_Loaded_DIG_Chunk(bool onoff = true) { m_loadedDIG = onoff; }
     bool Already_Loaded_DIG(void) { return m_loadedDIG; }
@@ -305,9 +305,9 @@ private:
         void Set_Name(const char *name) { m_name = name; }
 
         StringClass m_name;
-        int m_vertexMaterialIdx;
-        int m_shaderIdx;
-        int m_textureIdx;
+        int32_t m_vertexMaterialIdx;
+        int32_t m_shaderIdx;
+        int32_t m_textureIdx;
     };
 
     W3dMeshHeader3Struct m_header;
@@ -316,8 +316,8 @@ private:
 
     uint32_t m_prelitChunkID;
 
-    int m_curPass;
-    int m_curTexStage;
+    int32_t m_curPass;
+    int32_t m_curTexStage;
 
     DynamicVectorClass<LegacyMaterialClass *> m_legacyMaterials;
     DynamicVectorClass<ShaderClass> m_shaders;
@@ -352,7 +352,7 @@ W3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass &cload)
     cload.Close_Chunk();
 
     char *tmpname;
-    int namelen;
+    int32_t namelen;
 
     Reset(context->m_header.NumTris, context->m_header.NumVertices, 1);
 
@@ -386,7 +386,7 @@ W3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass &cload)
     m_boundSphereRadius = context->m_header.SphRadius;
 
     if (context->m_header.Version >= 0x40001) {
-        int geometry_type = context->m_header.Attributes & W3D_MESH_FLAG_GEOMETRY_TYPE_MASK;
+        int32_t geometry_type = context->m_header.Attributes & W3D_MESH_FLAG_GEOMETRY_TYPE_MASK;
 
         switch (geometry_type) {
             case W3D_MESH_FLAG_GEOMETRY_TYPE_NORMAL:
@@ -453,7 +453,7 @@ W3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass &cload)
         uint16_t *links = Get_Bone_Links();
         captainslog_assert(links);
 
-        for (int bi = 0; bi < Get_Vertex_Count(); bi++) {
+        for (int32_t bi = 0; bi < Get_Vertex_Count(); bi++) {
             links[bi] += 1;
         }
     }
@@ -554,7 +554,7 @@ W3DErrorType MeshModelClass::Read_Shaders(ChunkLoadClass &cload, MeshLoadContext
 {
     W3dShaderStruct shader;
 
-    for (unsigned int i = 0; i < context->m_matInfo.ShaderCount; i++) {
+    for (uint32_t i = 0; i < context->m_matInfo.ShaderCount; i++) {
         if (cload.Read(&shader, sizeof(shader)) != sizeof(shader)) {
             return W3D_ERROR_LOAD_FAILED;
         }
@@ -562,8 +562,8 @@ W3DErrorType MeshModelClass::Read_Shaders(ChunkLoadClass &cload, MeshLoadContext
         ShaderClass newshader;
         W3dUtilityClass::Convert_Shader(shader, &newshader);
 
-        int index = context->Add_Shader(newshader);
-        captainslog_assert(index == (int)i);
+        int32_t index = context->Add_Shader(newshader);
+        captainslog_assert(index == (int32_t)i);
     }
     return W3D_ERROR_OK;
 }
@@ -599,7 +599,7 @@ TextureClass *Load_Texture(ChunkLoadClass &cload)
     char name[256];
 
     while (cload.Open_Chunk()) {
-        int id = cload.Cur_Chunk_ID();
+        int32_t id = cload.Cur_Chunk_ID();
         if (id == W3D_CHUNK_TEXTURE_NAME) {
             cload.Read(name, cload.Cur_Chunk_Length());
         } else if (id == W3D_CHUNK_TEXTURE_INFO) {
@@ -739,7 +739,7 @@ W3DErrorType MeshModelClass::Read_Vertex_Material_Ids(ChunkLoadClass &cload, Mes
         cload.Read(&vmat, sizeof(uint32_t));
         matdesc->Set_Single_Material(context->Peek_Vertex_Material(vmat), context->m_curPass);
     } else {
-        for (int i = 0; i < Get_Vertex_Count(); i++) {
+        for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&vmat, sizeof(uint32_t));
             matdesc->Set_Material(i, context->Peek_Vertex_Material(vmat), context->m_curPass);
         }
@@ -768,7 +768,7 @@ W3DErrorType MeshModelClass::Read_Shader_Ids(ChunkLoadClass &cload, MeshLoadCont
             Set_Flag(SORT, true);
         }
     } else {
-        for (int i = 0; i < Get_Polygon_Count(); i++) {
+        for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
             cload.Read(&shaderid, sizeof(uint32_t));
             ShaderClass shader = context->Peek_Shader(shaderid);
             matdesc->Set_Shader(i, shader, context->m_curPass);
@@ -794,9 +794,9 @@ W3DErrorType MeshModelClass::Read_DCG(ChunkLoadClass &cload, MeshLoadContextClas
 
     if (matdesc->Has_Color_Array(0) == false) {
         W3dRGBAStruct color;
-        unsigned int *dcg = matdesc->Get_Color_Array(0);
+        uint32_t *dcg = matdesc->Get_Color_Array(0);
 
-        for (int i = 0; i < Get_Vertex_Count(); i++) {
+        for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&color, sizeof(color));
             Vector4 col;
             W3dUtilityClass::Convert_Color(color, &col);
@@ -805,9 +805,9 @@ W3DErrorType MeshModelClass::Read_DCG(ChunkLoadClass &cload, MeshLoadContextClas
     } else if (context->m_prelitChunkID == W3D_CHUNK_PRELIT_VERTEX) {
 
         W3dRGBAStruct color;
-        unsigned int *dcg = matdesc->Get_Color_Array(0);
+        uint32_t *dcg = matdesc->Get_Color_Array(0);
 
-        for (int i = 0; i < Get_Vertex_Count(); i++) {
+        for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&color, sizeof(color));
             Vector4 col;
             col = DX8Wrapper::Convert_Color(dcg[i]);
@@ -836,7 +836,7 @@ W3DErrorType MeshModelClass::Read_DIG(ChunkLoadClass &cload, MeshLoadContextClas
     if (matdesc->Has_Color_Array(0) == false) {
         unsigned *dcg = matdesc->Get_Color_Array(0);
 
-        for (int i = 0; i < Get_Vertex_Count(); i++) {
+        for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&color, sizeof(color));
             Vector4 col;
             col.X = float(color.R) / 255.0f;
@@ -848,7 +848,7 @@ W3DErrorType MeshModelClass::Read_DIG(ChunkLoadClass &cload, MeshLoadContextClas
     } else {
         unsigned *dcg = matdesc->Get_Color_Array(0);
 
-        for (int i = 0; i < Get_Vertex_Count(); i++) {
+        for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
             cload.Read(&color, sizeof(color));
             Vector4 col = DX8Wrapper::Convert_Color(dcg[i]);
             col.X *= float(color.R) / 255.0f;
@@ -902,8 +902,8 @@ W3DErrorType MeshModelClass::Read_Texture_Stage(ChunkLoadClass &cload, MeshLoadC
 W3DErrorType MeshModelClass::Read_Texture_Ids(ChunkLoadClass &cload, MeshLoadContextClass *context)
 {
     uint32_t texid;
-    int pass = context->m_curPass;
-    int stage = context->m_curTexStage;
+    int32_t pass = context->m_curPass;
+    int32_t stage = context->m_curTexStage;
     MeshMatDescClass *matdesc = m_defMatDesc;
 
     if (m_defMatDesc->Has_Texture_Data(pass, stage)) {
@@ -914,7 +914,7 @@ W3DErrorType MeshModelClass::Read_Texture_Ids(ChunkLoadClass &cload, MeshLoadCon
         cload.Read(&texid, sizeof(texid));
         matdesc->Set_Single_Texture(context->Peek_Texture(texid), pass, stage);
     } else {
-        for (int i = 0; i < Get_Polygon_Count(); i++) {
+        for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
             cload.Read(&texid, sizeof(uint32_t));
 
             if (texid != 0xffffffff) {
@@ -954,7 +954,7 @@ W3DErrorType MeshModelClass::Read_Stage_Texcoords(ChunkLoadClass &cload, MeshLoa
 
 W3DErrorType MeshModelClass::Read_Per_Face_Texcoord_Ids(ChunkLoadClass &cload, MeshLoadContextClass *context)
 {
-    unsigned int size;
+    uint32_t size;
     size = sizeof(Vector3i) * Get_Polygon_Count();
 
     if (cload.Cur_Chunk_Length() == size) {
@@ -1057,14 +1057,14 @@ void MeshModelClass::Post_Process_Fog()
                     if (!m_defMatDesc->m_textureArray[0][0]) {
                         m_defMatDesc->m_textureArray[0][0] = new TexBufferClass(m_polyCount);
 
-                        for (int i = 0; i < m_polyCount; i++) {
+                        for (int32_t i = 0; i < m_polyCount; i++) {
                             m_defMatDesc->m_textureArray[0][0]->Set_Element(
                                 i, m_defMatDesc->m_textureArray[1][0]->Peek_Element(i));
                         }
                     }
                 }
 
-                int uv_source = 0;
+                int32_t uv_source = 0;
 
                 if (m_defMatDesc->m_materialArray[1]) {
                     uv_source = m_defMatDesc->m_materialArray[1]->Peek_Element(0)->Get_UV_Source(0);
@@ -1073,7 +1073,7 @@ void MeshModelClass::Post_Process_Fog()
                 }
 
                 if (m_defMatDesc->m_materialArray[0]) {
-                    for (int i = 0; i < m_vertexCount; i++) {
+                    for (int32_t i = 0; i < m_vertexCount; i++) {
                         m_defMatDesc->m_materialArray[0]->Peek_Element(i)->Set_UV_Source(0, uv_source);
                     }
                 } else {
@@ -1097,24 +1097,24 @@ void MeshModelClass::Post_Process_Fog()
         }
     }
 
-    for (int pass = 0; pass < m_defMatDesc->m_passCount; pass++) {
+    for (int32_t pass = 0; pass < m_defMatDesc->m_passCount; pass++) {
         m_defMatDesc->m_shader[pass].Enable_Fog(Get_Name());
 
         if (m_defMatDesc->m_shaderArray[pass]) {
-            for (int i = 0; i < m_defMatDesc->m_shaderArray[pass]->Get_Count(); i++) {
+            for (int32_t i = 0; i < m_defMatDesc->m_shaderArray[pass]->Get_Count(); i++) {
                 m_defMatDesc->m_shaderArray[pass]->Get_Element(i).Enable_Fog(Get_Name());
             }
         }
     }
 }
 
-unsigned int MeshModelClass::Get_Sort_Flags(int pass) const
+uint32_t MeshModelClass::Get_Sort_Flags(int32_t pass) const
 {
-    unsigned int flags = 0;
+    uint32_t flags = 0;
     ShaderClass::StaticSortCategoryType scat;
 
     if (Has_Shader_Array(pass)) {
-        for (int tri = 0; tri < m_curMatDesc->m_shaderArray[pass]->Get_Count(); tri++) {
+        for (int32_t tri = 0; tri < m_curMatDesc->m_shaderArray[pass]->Get_Count(); tri++) {
             scat = m_curMatDesc->m_shaderArray[pass]->Get_Element(tri).Get_Static_Sort_Category();
             flags |= (1 << scat);
         }
@@ -1126,11 +1126,11 @@ unsigned int MeshModelClass::Get_Sort_Flags(int pass) const
     return flags;
 }
 
-unsigned int MeshModelClass::Get_Sort_Flags() const
+uint32_t MeshModelClass::Get_Sort_Flags() const
 {
-    unsigned int flags = 0;
+    uint32_t flags = 0;
 
-    for (int pass = 0; pass < Get_Pass_Count(); pass++) {
+    for (int32_t pass = 0; pass < Get_Pass_Count(); pass++) {
         flags |= Get_Sort_Flags(pass);
     }
 
@@ -1170,7 +1170,7 @@ void MeshModelClass::Compute_Static_Sort_Levels()
 
 void MeshModelClass::Install_Materials(MeshLoadContextClass *context)
 {
-    int i;
+    int32_t i;
     Install_Alternate_Material_Desc(context);
     bool lighting_enabled = true;
 
@@ -1224,7 +1224,7 @@ MeshLoadContextClass::MeshLoadContextClass()
 
 MeshLoadContextClass::~MeshLoadContextClass(void)
 {
-    int i;
+    int32_t i;
 
     if (m_texCoords != nullptr) {
         delete m_texCoords;
@@ -1253,44 +1253,44 @@ W3dTexCoordStruct *MeshLoadContextClass::Get_Texcoord_Array()
     return m_texCoords;
 }
 
-int MeshLoadContextClass::Add_Shader(ShaderClass shader)
+int32_t MeshLoadContextClass::Add_Shader(ShaderClass shader)
 {
-    int index = m_shaders.Count();
+    int32_t index = m_shaders.Count();
     m_shaders.Add(shader);
     return index;
 }
 
-int MeshLoadContextClass::Add_Vertex_Material(VertexMaterialClass *vmat)
+int32_t MeshLoadContextClass::Add_Vertex_Material(VertexMaterialClass *vmat)
 {
     captainslog_assert(vmat != nullptr);
     vmat->Add_Ref();
-    int index = m_vertexMaterials.Count();
+    int32_t index = m_vertexMaterials.Count();
     m_vertexMaterials.Add(vmat);
     return index;
 }
 
-int MeshLoadContextClass::Add_Texture(TextureClass *tex)
+int32_t MeshLoadContextClass::Add_Texture(TextureClass *tex)
 {
     captainslog_assert(tex != nullptr);
     tex->Add_Ref();
-    int index = m_textures.Count();
+    int32_t index = m_textures.Count();
     m_textures.Add(tex);
     return index;
 }
 
-ShaderClass MeshLoadContextClass::Peek_Legacy_Shader(int legacy_material_index)
+ShaderClass MeshLoadContextClass::Peek_Legacy_Shader(int32_t legacy_material_index)
 {
     captainslog_assert(legacy_material_index >= 0);
     captainslog_assert(legacy_material_index < m_legacyMaterials.Count());
-    int si = m_legacyMaterials[legacy_material_index]->m_shaderIdx;
+    int32_t si = m_legacyMaterials[legacy_material_index]->m_shaderIdx;
     return Peek_Shader(si);
 }
 
-VertexMaterialClass *MeshLoadContextClass::Peek_Legacy_Vertex_Material(int legacy_material_index)
+VertexMaterialClass *MeshLoadContextClass::Peek_Legacy_Vertex_Material(int32_t legacy_material_index)
 {
     captainslog_assert(legacy_material_index >= 0);
     captainslog_assert(legacy_material_index < m_legacyMaterials.Count());
-    int vi = m_legacyMaterials[legacy_material_index]->m_vertexMaterialIdx;
+    int32_t vi = m_legacyMaterials[legacy_material_index]->m_vertexMaterialIdx;
 
     if (vi != -1) {
         return Peek_Vertex_Material(vi);
@@ -1299,11 +1299,11 @@ VertexMaterialClass *MeshLoadContextClass::Peek_Legacy_Vertex_Material(int legac
     }
 }
 
-TextureClass *MeshLoadContextClass::Peek_Legacy_Texture(int legacy_material_index)
+TextureClass *MeshLoadContextClass::Peek_Legacy_Texture(int32_t legacy_material_index)
 {
     captainslog_assert(legacy_material_index >= 0);
     captainslog_assert(legacy_material_index < m_legacyMaterials.Count());
-    int ti = m_legacyMaterials[legacy_material_index]->m_textureIdx;
+    int32_t ti = m_legacyMaterials[legacy_material_index]->m_textureIdx;
 
     if (ti != -1) {
         return Peek_Texture(ti);
@@ -1312,7 +1312,7 @@ TextureClass *MeshLoadContextClass::Peek_Legacy_Texture(int legacy_material_inde
     }
 }
 
-Vector2 *MeshLoadContextClass::Get_Temporary_UV_Array(int elementcount)
+Vector2 *MeshLoadContextClass::Get_Temporary_UV_Array(int32_t elementcount)
 {
     m_tempUVArray.Uninitialised_Grow(elementcount);
     return &(m_tempUVArray[0]);
@@ -1320,7 +1320,7 @@ Vector2 *MeshLoadContextClass::Get_Temporary_UV_Array(int elementcount)
 
 void MeshModelClass::Modify_For_Overbright()
 {
-    for (int i = 0; i < m_curMatDesc->Get_Pass_Count(); i++) {
+    for (int32_t i = 0; i < m_curMatDesc->Get_Pass_Count(); i++) {
         ShaderClass shader = m_curMatDesc->Get_Single_Shader(i);
 
         if (shader.Get_Primary_Gradient() == ShaderClass::GRADIENT_MODULATE) {
@@ -1329,7 +1329,7 @@ void MeshModelClass::Modify_For_Overbright()
         }
 
         if (m_curMatDesc->Get_Shader_Array(i)) {
-            for (int j = 0; j < m_polyCount; j++) {
+            for (int32_t j = 0; j < m_polyCount; j++) {
                 shader = m_curMatDesc->Get_Shader(j, i);
 
                 if (shader.Get_Primary_Gradient() == ShaderClass::GRADIENT_MODULATE) {

@@ -53,21 +53,21 @@ public:
     virtual ~HRawAnimClass() override;
     virtual const char *Get_Name() const override { return m_name; }
     virtual const char *Get_HName() const override { return m_hierarchyName; }
-    virtual int Get_Num_Frames() override { return m_numFrames; }
+    virtual int32_t Get_Num_Frames() override { return m_numFrames; }
     virtual float Get_Frame_Rate() override { return m_frameRate; }
     virtual float Get_Total_Time() override { return (float)m_numFrames / m_frameRate; }
-    virtual void Get_Translation(Vector3 &trans, int pividx, float frame) const override;
-    virtual void Get_Orientation(Quaternion &q, int pividx, float frame) const override;
-    virtual void Get_Transform(Matrix3D &mtx, int pividx, float frame) const override;
-    virtual bool Get_Visibility(int pividx, float frame) override;
-    virtual int Get_Num_Pivots() const override { return m_numNodes; }
-    virtual bool Is_Node_Motion_Present(int pividx) override;
-    virtual bool Has_X_Translation(int pividx) override;
-    virtual bool Has_Y_Translation(int pividx) override;
-    virtual bool Has_Z_Translation(int pividx) override;
-    virtual bool Has_Rotation(int pividx) override;
-    virtual bool Has_Visibility(int pividx) override;
-    virtual int Class_ID() const override { return CLASSID_RAW; }
+    virtual void Get_Translation(Vector3 &trans, int32_t pividx, float frame) const override;
+    virtual void Get_Orientation(Quaternion &q, int32_t pividx, float frame) const override;
+    virtual void Get_Transform(Matrix3D &mtx, int32_t pividx, float frame) const override;
+    virtual bool Get_Visibility(int32_t pividx, float frame) override;
+    virtual int32_t Get_Num_Pivots() const override { return m_numNodes; }
+    virtual bool Is_Node_Motion_Present(int32_t pividx) override;
+    virtual bool Has_X_Translation(int32_t pividx) override;
+    virtual bool Has_Y_Translation(int32_t pividx) override;
+    virtual bool Has_Z_Translation(int32_t pividx) override;
+    virtual bool Has_Rotation(int32_t pividx) override;
+    virtual bool Has_Visibility(int32_t pividx) override;
+    virtual int32_t Class_ID() const override { return CLASSID_RAW; }
     HRawAnimClass();
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
     void Free();
@@ -81,8 +81,8 @@ public:
 private:
     char m_name[32];
     char m_hierarchyName[16];
-    int m_numFrames;
-    int m_numNodes;
+    int32_t m_numFrames;
+    int32_t m_numNodes;
     float m_frameRate;
     NodeMotionStruct *m_nodeMotion;
 };

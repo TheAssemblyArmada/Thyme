@@ -75,12 +75,12 @@ void ParticleInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->xferReal(&m_sizeRate);
     xfer->xferReal(&m_sizeRateDamping);
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         xfer->xferReal(&m_alphaKey[i].value);
         xfer->xferUnsignedInt(&m_alphaKey[i].frame);
     }
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         xfer->xferRGBColor(&m_colorKey[i].color);
         xfer->xferUnsignedInt(&m_colorKey[i].frame);
     }

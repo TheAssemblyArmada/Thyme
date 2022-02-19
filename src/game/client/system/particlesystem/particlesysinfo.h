@@ -156,7 +156,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Tint_All_Colors(int tint);
+    void Tint_All_Colors(int32_t tint);
 
 #ifdef GAME_DLL
     ParticleSystemInfo *Hook_Ctor() { return new (this) ParticleSystemInfo; }
@@ -277,7 +277,7 @@ inline ParticleSystemInfo::ParticleSystemInfo(const ParticleSystemInfo &that) :
     m_windMotionEndAngleMax(that.m_windMotionEndAngleMax),
     m_windMotionMovingToEndAngle(that.m_windMotionMovingToEndAngle)
 {
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         m_alphaKey[i] = that.m_alphaKey[i];
         m_colorKey[i] = that.m_colorKey[i];
     }

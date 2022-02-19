@@ -39,9 +39,9 @@ private:
     Team *m_teamToExecOn;
     ObjectID m_objectID;
     Script *m_scriptToExecuteSequentially;
-    int m_currentInstruction;
-    int m_timesToLoop;
-    int m_framesToWait;
+    int32_t m_currentInstruction;
+    int32_t m_timesToLoop;
+    int32_t m_framesToWait;
     bool m_unkbool1; // Used in ScriptEngine::evaluateAndProgressAllSequentialScripts
     SequentialScript *m_nextScriptInSequence;
 };

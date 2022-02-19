@@ -97,7 +97,7 @@ public:
         }
     }
 
-    int Get_Flag(FlagsType flag) { return (m_flags >> flag) & 0x1; }
+    int32_t Get_Flag(FlagsType flag) { return (m_flags >> flag) & 0x1; }
 
     unsigned long Get_CRC() const
     {
@@ -147,12 +147,12 @@ public:
     void Set_Diffuse_Color_Source(ColorSourceType src);
     ColorSourceType Get_Diffuse_Color_Source();
 
-    void Set_UV_Source(int stage, int array_index);
-    int Get_UV_Source(int stage);
+    void Set_UV_Source(int32_t stage, int32_t array_index);
+    int32_t Get_UV_Source(int32_t stage);
 
-    void Set_Mapper(TextureMapperClass *mapper, int stage = 0);
-    TextureMapperClass *Get_Mapper(int stage = 0);
-    TextureMapperClass *Peek_Mapper(int stage = 0);
+    void Set_Mapper(TextureMapperClass *mapper, int32_t stage = 0);
+    TextureMapperClass *Get_Mapper(int32_t stage = 0);
+    TextureMapperClass *Peek_Mapper(int32_t stage = 0);
     void Reset_Mappers();
 
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
@@ -184,14 +184,14 @@ protected:
 #else
     w3dmat_t *m_material;
 #endif
-    unsigned int m_flags;
-    unsigned int m_ambientColorSource;
-    unsigned int m_emissiveColorSource;
-    unsigned int m_diffuseColorSource;
+    uint32_t m_flags;
+    uint32_t m_ambientColorSource;
+    uint32_t m_emissiveColorSource;
+    uint32_t m_diffuseColorSource;
     StringClass m_name;
     TextureMapperClass *m_mapper[MAX_STAGES];
-    unsigned int m_UVSource[MAX_STAGES];
-    unsigned int m_uniqueID;
+    uint32_t m_UVSource[MAX_STAGES];
+    uint32_t m_uniqueID;
     mutable unsigned long m_CRC;
     mutable bool m_CRCDirty;
     bool m_useLighting;
@@ -208,13 +208,13 @@ private:
 #endif
 };
 
-inline void VertexMaterialClass::Set_Mapper(TextureMapperClass *mapper, int stage)
+inline void VertexMaterialClass::Set_Mapper(TextureMapperClass *mapper, int32_t stage)
 {
     m_CRCDirty = true;
     Ref_Ptr_Set(m_mapper[stage], mapper);
 }
 
-inline TextureMapperClass *VertexMaterialClass::Get_Mapper(int stage)
+inline TextureMapperClass *VertexMaterialClass::Get_Mapper(int32_t stage)
 {
     if (m_mapper[stage]) {
         m_mapper[stage]->Add_Ref();
@@ -223,14 +223,14 @@ inline TextureMapperClass *VertexMaterialClass::Get_Mapper(int stage)
     return m_mapper[stage];
 }
 
-inline TextureMapperClass *VertexMaterialClass::Peek_Mapper(int stage)
+inline TextureMapperClass *VertexMaterialClass::Peek_Mapper(int32_t stage)
 {
     return m_mapper[stage];
 }
 
 inline void VertexMaterialClass::Reset_Mappers()
 {
-    for (int stage = 0; stage < 8; stage++) {
+    for (int32_t stage = 0; stage < 8; stage++) {
         if (m_mapper[stage]) {
             m_mapper[stage]->Reset();
         }
@@ -239,7 +239,7 @@ inline void VertexMaterialClass::Reset_Mappers()
 
 inline bool VertexMaterialClass::Do_Mappers_Need_Normals() const
 {
-    for (int stage = 0; stage < 8; stage++) {
+    for (int32_t stage = 0; stage < 8; stage++) {
         if (m_mapper[stage] && (m_mapper[stage]->Needs_Normals()))
             return true;
     }
@@ -248,7 +248,7 @@ inline bool VertexMaterialClass::Do_Mappers_Need_Normals() const
 
 inline bool VertexMaterialClass::Are_Mappers_Time_Variant() const
 {
-    for (int stage = 0; stage < 8; stage++) {
+    for (int32_t stage = 0; stage < 8; stage++) {
         if (m_mapper[stage] && (m_mapper[stage]->Is_Time_Variant()))
             return true;
     }

@@ -41,7 +41,7 @@ void WaypointMap::Update()
 
         m_numStartSpots = 0;
 
-        for (int i = 1; i <= 8; ++i) {
+        for (int32_t i = 1; i <= 8; ++i) {
             key_name.Format("Player_%d_Start", i);
             it = g_waypoints->find(key_name);
 

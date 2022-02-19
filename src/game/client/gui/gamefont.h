@@ -32,8 +32,8 @@ public:
 
     GameFont *m_next;
     Utf8String m_nameString;
-    int m_pointSize;
-    int m_height;
+    int32_t m_pointSize;
+    int32_t m_height;
     void *m_fontData;
     bool m_bold;
 };
@@ -55,11 +55,11 @@ public:
     void Unlink_Font(GameFont *font);
     void Delete_All_Fonts();
 
-    GameFont *Get_Font(Utf8String name, int point_size, bool bold);
+    GameFont *Get_Font(Utf8String name, int32_t point_size, bool bold);
 
 private:
     GameFont *m_fontList;
-    int m_count;
+    int32_t m_count;
 };
 
 #ifdef GAME_DLL

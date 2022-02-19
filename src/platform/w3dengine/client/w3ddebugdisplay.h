@@ -27,12 +27,12 @@ public:
     W3DDebugDisplay() : m_font(nullptr), m_fontWidth(0), m_fontHeight(0), m_displayString(nullptr) {}
     virtual ~W3DDebugDisplay();
 
-    virtual void Draw_Text(int x, int y, char *text) override;
+    virtual void Draw_Text(int32_t x, int32_t y, char *text) override;
 
     void Init();
     void Set_Font(GameFont *font);
-    void Set_Font_Width(int width) { m_fontWidth = width; }
-    void Set_Font_Height(int height) { m_fontHeight = height; }
+    void Set_Font_Width(int32_t width) { m_fontWidth = width; }
+    void Set_Font_Height(int32_t height) { m_fontHeight = height; }
 
 #ifdef GAME_DLL
     W3DDebugDisplay *Hook_Ctor() { return new (this) W3DDebugDisplay(); }
@@ -40,7 +40,7 @@ public:
 
 private:
     GameFont *m_font;
-    int m_fontWidth;
-    int m_fontHeight;
+    int32_t m_fontWidth;
+    int32_t m_fontHeight;
     DisplayString *m_displayString;
 };

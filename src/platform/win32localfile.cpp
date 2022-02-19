@@ -57,13 +57,13 @@ Win32LocalFile::~Win32LocalFile()
     File::Close();
 }
 
-bool Win32LocalFile::Open(const char *filename, int mode)
+bool Win32LocalFile::Open(const char *filename, int32_t mode)
 {
     if (!File::Open(filename, mode)) {
         return false;
     }
 
-    int openmode = O_RDONLY;
+    int32_t openmode = O_RDONLY;
 
     if ((m_openMode & FileMode::CREATE) != 0) {
         openmode |= O_CREAT;
@@ -108,7 +108,7 @@ bool Win32LocalFile::Open(const char *filename, int mode)
     return true;
 }
 
-int Win32LocalFile::Read(void *dst, int bytes)
+int32_t Win32LocalFile::Read(void *dst, int32_t bytes)
 {
     if (!m_access) {
         return -1;
@@ -123,7 +123,7 @@ int Win32LocalFile::Read(void *dst, int bytes)
     return bytes;
 }
 
-int Win32LocalFile::Write(void const *src, int bytes)
+int32_t Win32LocalFile::Write(void const *src, int32_t bytes)
 {
     if (!m_access || src == nullptr) {
         return -1;
@@ -132,7 +132,7 @@ int Win32LocalFile::Write(void const *src, int bytes)
     return write(m_fileHandle, src, bytes);
 }
 
-int Win32LocalFile::Seek(int offset, File::SeekMode mode)
+int32_t Win32LocalFile::Seek(int32_t offset, File::SeekMode mode)
 {
     switch (mode) {
         case SeekMode::START:
@@ -146,15 +146,15 @@ int Win32LocalFile::Seek(int offset, File::SeekMode mode)
     return lseek(m_fileHandle, offset, mode);
 }
 
-void Win32LocalFile::Next_Line(char *dst, int bytes)
+void Win32LocalFile::Next_Line(char *dst, int32_t bytes)
 {
     captainslog_trace("Seeking getting next line from Win32LocalFile %s.", m_filename.Str());
 
-    int i;
+    int32_t i;
 
     for (i = 0; i < bytes - 1; ++i) {
         char tmp;
-        int ret = read(m_fileHandle, &tmp, sizeof(tmp));
+        int32_t ret = read(m_fileHandle, &tmp, sizeof(tmp));
 
         if (ret <= 0 || tmp == '\n') {
             break;
@@ -170,7 +170,7 @@ void Win32LocalFile::Next_Line(char *dst, int bytes)
     }
 }
 
-bool Win32LocalFile::Scan_Int(int &integer)
+bool Win32LocalFile::Scan_Int(int32_t &integer)
 {
     captainslog_trace("Scanning Int from Win32LocalFile %s.", m_filename.Str());
     char tmp;

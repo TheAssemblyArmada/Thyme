@@ -151,10 +151,10 @@ void Player::Becoming_Local_Player(bool b)
 #endif
 }
 
-int Player::Get_Squad_Number_For_Object(const Object *obj) const
+int32_t Player::Get_Squad_Number_For_Object(const Object *obj) const
 {
 #ifdef GAME_DLL
-    return Call_Method<int, const Player, const Object *>(PICK_ADDRESS(0x00457650, 0x008616BA), this, obj);
+    return Call_Method<int32_t, const Player, const Object *>(PICK_ADDRESS(0x00457650, 0x008616BA), this, obj);
 #else
     return false;
 #endif

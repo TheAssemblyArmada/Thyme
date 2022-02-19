@@ -51,26 +51,26 @@ class FVFInfoClass : public W3DMPO
     IMPLEMENT_W3D_POOL(FVFInfoClass);
 
 public:
-    FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_);
-    unsigned int Get_Location_Offset() const { return m_locationOffset; }
-    unsigned int Get_Normal_Offset() const { return m_normalOffset; }
-    unsigned int Get_Tex_Offset(unsigned int texture) const { return m_texcoordOffset[texture]; }
-    unsigned int Get_Diffuse_Offset() const { return m_diffuseOffset; }
-    unsigned int Get_Specular_Offset() const { return m_specularOffset; }
-    unsigned int Get_FVF() const { return m_FVF; }
-    unsigned int Get_FVF_Size() const { return m_fvfSize; }
+    FVFInfoClass(uint32_t fvf_, uint32_t fvf_size_);
+    uint32_t Get_Location_Offset() const { return m_locationOffset; }
+    uint32_t Get_Normal_Offset() const { return m_normalOffset; }
+    uint32_t Get_Tex_Offset(uint32_t texture) const { return m_texcoordOffset[texture]; }
+    uint32_t Get_Diffuse_Offset() const { return m_diffuseOffset; }
+    uint32_t Get_Specular_Offset() const { return m_specularOffset; }
+    uint32_t Get_FVF() const { return m_FVF; }
+    uint32_t Get_FVF_Size() const { return m_fvfSize; }
     void Get_FVF_Name(StringClass &fvfname) const;
 
 private:
 #ifdef GAME_DLL
-    FVFInfoClass *Hook_Ctor(unsigned int fvf_, unsigned int fvf_size_) { return new (this) FVFInfoClass(fvf_, fvf_size_); }
+    FVFInfoClass *Hook_Ctor(uint32_t fvf_, uint32_t fvf_size_) { return new (this) FVFInfoClass(fvf_, fvf_size_); }
 #endif
-    unsigned int m_FVF;
-    unsigned int m_fvfSize;
-    unsigned int m_locationOffset;
-    unsigned int m_normalOffset;
-    unsigned int m_blendOffset;
-    unsigned int m_texcoordOffset[8];
-    unsigned int m_diffuseOffset;
-    unsigned int m_specularOffset;
+    uint32_t m_FVF;
+    uint32_t m_fvfSize;
+    uint32_t m_locationOffset;
+    uint32_t m_normalOffset;
+    uint32_t m_blendOffset;
+    uint32_t m_texcoordOffset[8];
+    uint32_t m_diffuseOffset;
+    uint32_t m_specularOffset;
 };

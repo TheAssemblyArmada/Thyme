@@ -29,23 +29,23 @@ class DebugDrawStats
 {
 public:
     DebugDrawStats() : m_extraDrawCalls(0), m_skins(0), m_bones(0), m_sortMeshes(0), m_drawCalls(0) {}
-    int Get_Draw_Calls() const { return m_drawCalls; }
-    int Get_Bones() const { return m_bones; }
-    int Get_Skins() const { return m_skins; }
-    int Get_Sort_Meshes() const { return m_sortMeshes; }
-    int Get_Extra_Draw_Calls() const { return m_extraDrawCalls; }
-    void Add_Draw_Calls(int i) { m_drawCalls += i; }
-    void Add_Bones(int i) { m_bones += i; }
-    void Add_Skins(int i) { m_skins += i; }
-    void Add_Sort_Meshes(int i) { m_sortMeshes += i; }
-    void Add_Extra_Draw_Calls(int i) { m_extraDrawCalls += i; }
+    int32_t Get_Draw_Calls() const { return m_drawCalls; }
+    int32_t Get_Bones() const { return m_bones; }
+    int32_t Get_Skins() const { return m_skins; }
+    int32_t Get_Sort_Meshes() const { return m_sortMeshes; }
+    int32_t Get_Extra_Draw_Calls() const { return m_extraDrawCalls; }
+    void Add_Draw_Calls(int32_t i) { m_drawCalls += i; }
+    void Add_Bones(int32_t i) { m_bones += i; }
+    void Add_Skins(int32_t i) { m_skins += i; }
+    void Add_Sort_Meshes(int32_t i) { m_sortMeshes += i; }
+    void Add_Extra_Draw_Calls(int32_t i) { m_extraDrawCalls += i; }
 
 private:
-    int m_drawCalls;
-    int m_sortMeshes;
-    int m_skins;
-    int m_bones;
-    int m_extraDrawCalls;
+    int32_t m_drawCalls;
+    int32_t m_sortMeshes;
+    int32_t m_skins;
+    int32_t m_bones;
+    int32_t m_extraDrawCalls;
 };
 #endif
 
@@ -55,40 +55,40 @@ public:
     virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const = 0;
     virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const = 0;
     virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const = 0;
-    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c,
+    virtual int32_t Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c,
         char const *bone_name,
-        int start_index,
+        int32_t start_index,
         Coord3D *positions,
         Matrix3D *transforms,
-        int max_bones) const = 0;
-    virtual int Get_Current_Bone_Positions(
-        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const = 0;
+        int32_t max_bones) const = 0;
+    virtual int32_t Get_Current_Bone_Positions(
+        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const = 0;
     virtual bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const = 0;
     virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &c,
         WeaponSlotType wslot,
-        int ammo_index,
+        int32_t ammo_index,
         Matrix3D *launch_pos,
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const = 0;
-    virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) = 0;
-    virtual void Update_Draw_Module_Supply_Status(int status1, int status2) = 0;
+    virtual void Update_Projectile_Clip_Status(uint32_t show, uint32_t count, WeaponSlotType wslot) = 0;
+    virtual void Update_Draw_Module_Supply_Status(int32_t status1, int32_t status2) = 0;
     virtual void Notify_Draw_Module_Dependency_Cleared() = 0;
     virtual void Set_Hidden(bool hidden) = 0;
     virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c) = 0;
-    virtual void Replace_Indicator_Color(int color) = 0;
+    virtual void Replace_Indicator_Color(int32_t color) = 0;
     virtual bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
-        int specific_barrel_to_use,
+        int32_t specific_barrel_to_use,
         FXList const *fxl,
         float weapon_speed,
         Coord3D const *victim_pos,
         float radius) = 0;
-    virtual int Get_Barrel_Count(WeaponSlotType wslot) const = 0;
+    virtual int32_t Get_Barrel_Count(WeaponSlotType wslot) const = 0;
     virtual void Set_Selectable(bool selectable) = 0;
-    virtual void Set_Animation_Loop_Duration(unsigned int num_frames) = 0;
-    virtual void Set_Animation_Completion_Time(unsigned int num_frames) = 0;
+    virtual void Set_Animation_Loop_Duration(uint32_t num_frames) = 0;
+    virtual void Set_Animation_Completion_Time(uint32_t num_frames) = 0;
     virtual bool Update_Bones_For_Client_Particle_Systems() = 0;
-    virtual void Set_Animation_Frame(int frame) = 0;
+    virtual void Set_Animation_Frame(int32_t frame) = 0;
     virtual void Set_Pause_Animation(bool pause) = 0;
     virtual void Update_Sub_Objects() = 0;
     virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) = 0;
@@ -139,5 +139,5 @@ public:
     virtual void Load_Post_Process() override { DrawableModule::Load_Post_Process(); }
 
     static ModuleType Get_Module_Type() { return MODULE_DRAW; }
-    static int Get_Interface_Mask() { return MODULEINTERFACE_DRAW; }
+    static int32_t Get_Interface_Mask() { return MODULEINTERFACE_DRAW; }
 };

@@ -49,12 +49,12 @@ public:
     virtual bool Delete() override;
     virtual bool Is_Available(bool forced = false) override;
     virtual bool Is_Open() override;
-    virtual bool Open(const char *filename, int rights = FM_READ) override;
-    virtual bool Open(int rights = FM_READ) override;
-    virtual int Read(void *buffer, int length) override;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    virtual bool Open(const char *filename, int32_t rights = FM_READ) override;
+    virtual bool Open(int32_t rights = FM_READ) override;
+    virtual int32_t Read(void *buffer, int32_t length) override;
+    virtual off_t Seek(off_t offset, int32_t whence = FS_SEEK_CURRENT) override;
     virtual off_t Size() override;
-    virtual int Write(void const *buffer, int size) override;
+    virtual int32_t Write(void const *buffer, int32_t size) override;
     virtual void Close() override;
 
 private:

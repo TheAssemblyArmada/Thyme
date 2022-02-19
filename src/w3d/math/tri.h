@@ -42,7 +42,7 @@ public:
     }
 
     bool Contains_Point(const Vector3 &ipoint) const;
-    void Find_Dominant_Plane(int *axis1, int *axis2) const;
+    void Find_Dominant_Plane(int32_t *axis1, int32_t *axis2) const;
 
     const Vector3 *N;
     const Vector3 *V[3];
@@ -52,8 +52,8 @@ inline bool Point_In_Triangle_2D(const Vector3 &tri_point0,
     const Vector3 &tri_point1,
     const Vector3 &tri_point2,
     const Vector3 &test_point,
-    int axis_1,
-    int axis_2,
+    int32_t axis_1,
+    int32_t axis_2,
     unsigned char &flags)
 {
     Vector2 p0p1(tri_point1[axis_1] - tri_point0[axis_1], tri_point1[axis_2] - tri_point0[axis_2]);
@@ -150,10 +150,10 @@ inline bool Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(const Vector3 &tri_p
     const Vector3 &tri_point2,
     const Vector4 &tri_plane,
     const Vector3 &ray_start,
-    int axis_r,
-    int axis_1,
-    int axis_2,
-    int direction,
+    int32_t axis_r,
+    int32_t axis_1,
+    int32_t axis_2,
+    int32_t direction,
     unsigned char &flags)
 {
     bool retval = false;

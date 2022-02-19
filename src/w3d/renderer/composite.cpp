@@ -33,7 +33,7 @@ CompositeRenderObjClass::~CompositeRenderObjClass() {}
 
 void CompositeRenderObjClass::Restart()
 {
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         robj->Restart();
@@ -61,11 +61,11 @@ void CompositeRenderObjClass::Set_Base_Model_Name(const char *name)
     m_baseModelName = name;
 }
 
-int CompositeRenderObjClass::Get_Num_Polys() const
+int32_t CompositeRenderObjClass::Get_Num_Polys() const
 {
-    int polys = 0;
+    int32_t polys = 0;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         polys += robj->Get_Num_Polys();
@@ -79,7 +79,7 @@ void CompositeRenderObjClass::Notify_Added(SceneClass *scene)
 {
     RenderObjClass::Notify_Added(scene);
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         robj->Notify_Added(scene);
@@ -89,7 +89,7 @@ void CompositeRenderObjClass::Notify_Added(SceneClass *scene)
 
 void CompositeRenderObjClass::Notify_Removed(SceneClass *scene)
 {
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         robj->Notify_Removed(scene);
@@ -103,7 +103,7 @@ bool CompositeRenderObjClass::Cast_Ray(RayCollisionTestClass &raytest)
 {
     bool collides = false;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         collides = (robj->Cast_Ray(raytest) | collides) != 0;
@@ -117,7 +117,7 @@ bool CompositeRenderObjClass::Cast_AABox(AABoxCollisionTestClass &boxtest)
 {
     bool collides = false;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         collides = (robj->Cast_AABox(boxtest) | collides) != 0;
@@ -131,7 +131,7 @@ bool CompositeRenderObjClass::Cast_OBBox(OBBoxCollisionTestClass &boxtest)
 {
     bool collides = false;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         collides = (robj->Cast_OBBox(boxtest) | collides) != 0;
@@ -145,7 +145,7 @@ bool CompositeRenderObjClass::Intersect_AABox(AABoxIntersectionTestClass &boxtes
 {
     bool intersects = false;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         intersects = (robj->Intersect_AABox(boxtest) | intersects) != 0;
@@ -159,7 +159,7 @@ bool CompositeRenderObjClass::Intersect_OBBox(OBBoxIntersectionTestClass &boxtes
 {
     bool intersects = false;
 
-    for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
         captainslog_assert(robj);
         intersects = (robj->Intersect_OBBox(boxtest) | intersects) != 0;
@@ -190,7 +190,7 @@ void CompositeRenderObjClass::Update_Obj_Space_Bounding_Volumes()
         robj->Release_Ref();
         MinMaxAABoxClass box(obj_aabox);
 
-        for (int index = 1; index < Get_Num_Sub_Objects(); index++) {
+        for (int32_t index = 1; index < Get_Num_Sub_Objects(); index++) {
             robj = Get_Sub_Object(index);
             captainslog_assert(robj);
             SphereClass sphere;
@@ -227,7 +227,7 @@ void CompositeRenderObjClass::Set_User_Data(void *value, bool recursive)
     m_userData = value;
 
     if (recursive) {
-        for (int i = 0; i < Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 0; i < Get_Num_Sub_Objects(); i++) {
             RenderObjClass *robj = Get_Sub_Object(i);
             captainslog_assert(robj);
             robj->Set_User_Data(value, recursive);

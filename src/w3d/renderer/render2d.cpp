@@ -80,9 +80,9 @@ void Render2DClass::Render()
         DX8Wrapper::Get_Transform(D3DTS_PROJECTION, proj);
         DX8Wrapper::Get_Transform(D3DTS_VIEW, view);
 
-        int width;
-        int height;
-        int bit_depth;
+        int32_t width;
+        int32_t height;
+        int32_t bit_depth;
         bool windowed;
         W3D::Get_Device_Resolution(width, height, bit_depth, windowed);
 
@@ -113,7 +113,7 @@ void Render2DClass::Render()
             DynamicVBAccessClass::WriteLockClass lock(&vb);
             VertexFormatXYZNDUV2 *vf = lock.Get_Formatted_Vertex_Array();
 
-            for (int i = 0; i < m_vertices.Count(); i++) {
+            for (int32_t i = 0; i < m_vertices.Count(); i++) {
                 vf[i].x = m_vertices[i].X;
                 vf[i].y = m_vertices[i].Y;
                 vf[i].z = m_zValue;
@@ -127,7 +127,7 @@ void Render2DClass::Render()
         {
             DynamicIBAccessClass::WriteLockClass lock(&ib);
             unsigned short *ind = lock.Get_Index_Array();
-            for (int i = 0; i < m_indices.Count(); i++) {
+            for (int32_t i = 0; i < m_indices.Count(); i++) {
                 ind[i] = m_indices[i];
             }
         }
@@ -395,7 +395,7 @@ void Render2DClass::Add_Tri(const Vector2 &v0,
     const Vector2 &uv2,
     uint32_t color)
 {
-    int startindex = m_vertices.Count();
+    int32_t startindex = m_vertices.Count();
     Convert_Vert(*m_vertices.Uninitialized_Add(), v0);
     Convert_Vert(*m_vertices.Uninitialized_Add(), v1);
     Convert_Vert(*m_vertices.Uninitialized_Add(), v2);
@@ -514,7 +514,7 @@ void Render2DClass::Move(const Vector2 &a)
     Vector2 scaled_move = a;
     scaled_move.Scale(m_coordinateScale);
 
-    for (int i = 0; i < m_vertices.Count(); i++) {
+    for (int32_t i = 0; i < m_vertices.Count(); i++) {
         m_vertices[i] += scaled_move;
     }
 }
@@ -535,10 +535,10 @@ void Render2DClass::Force_Alpha(float alpha)
     }
 
     alpha *= 255;
-    int alphaval = (int)alpha;
+    int32_t alphaval = (int32_t)alpha;
 
     // Renegade does some bitwise operations with this value.
-    for (int i = 0; i < m_colors.Count(); i++) {
+    for (int32_t i = 0; i < m_colors.Count(); i++) {
         m_colors[i] = alphaval;
     }
 }
@@ -548,9 +548,9 @@ void Render2DClass::Force_Alpha(float alpha)
  *
  * Optimised out
  */
-void Render2DClass::Force_Color(int color)
+void Render2DClass::Force_Color(int32_t color)
 {
-    for (int i = 0; i < m_colors.Count(); i++) {
+    for (int32_t i = 0; i < m_colors.Count(); i++) {
         m_colors[i] = color;
     }
 }
@@ -706,7 +706,7 @@ void Render2DClass::Internal_Add_Quad_HColors(uint32_t color1, uint32_t color2)
  *
  * 0x008098B0
  */
-void Render2DClass::Internal_Add_Quad_Indicies(int start_vert_index, bool backfaced)
+void Render2DClass::Internal_Add_Quad_Indicies(int32_t start_vert_index, bool backfaced)
 {
     if (m_coordinateScale.X * m_coordinateScale.Y <= 0.0f) {
         backfaced = !backfaced;

@@ -33,8 +33,8 @@ public:
     virtual void Reset() override;
     virtual void Update() override {}
 
-    RankInfo *Get_Rank_Info(int level);
-    int Get_Rank_Level_Count() const;
+    RankInfo *Get_Rank_Info(int32_t level);
+    int32_t Get_Rank_Level_Count() const;
 
     static void Parse_Rank_Definition(INI *ini);
 
@@ -52,7 +52,7 @@ protected:
 
 private:
     Utf16String m_rankName;
-    int m_skillPointsNeeded;
+    int32_t m_skillPointsNeeded;
     unsigned m_sciencePurchasePointsGranted;
     std::vector<ScienceType> m_sciencesGranted;
 };

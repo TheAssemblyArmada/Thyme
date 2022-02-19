@@ -53,16 +53,16 @@ void LightEnvironmentClass::Add_Light(const LightClass &light)
         m_outputAmbient += new_light.m_ambient;
 
         if (!new_light.m_diffuseRejected || new_light.m_isPoint) {
-            for (int i = 0; i < m_lightCount; i++) {
+            for (int32_t i = 0; i < m_lightCount; i++) {
                 if (new_light.Contribution() > m_inputLights[i].Contribution()) {
-                    for (int j = m_lightCount; j > i; --j) {
+                    for (int32_t j = m_lightCount; j > i; --j) {
                         if (j < MAX_LIGHTS) {
                             m_inputLights[j] = m_inputLights[j - 1];
                         }
                     }
 
                     m_inputLights[i] = new_light;
-                    m_lightCount = std::min<int>(m_lightCount + 1, MAX_LIGHTS);
+                    m_lightCount = std::min<int32_t>(m_lightCount + 1, MAX_LIGHTS);
                     return;
                 }
             }
@@ -79,7 +79,7 @@ void LightEnvironmentClass::Pre_Render_Update(const Matrix3D &camera_tm)
 {
     Calculate_Fill_Light();
 
-    for (int i = 0; i < m_lightCount; i++) {
+    for (int32_t i = 0; i < m_lightCount; i++) {
         m_outputLights[i].Init(m_inputLights[i], camera_tm);
     }
 
@@ -91,7 +91,7 @@ void LightEnvironmentClass::Pre_Render_Update(const Matrix3D &camera_tm)
 void LightEnvironmentClass::Add_Fill_Light()
 {
     if (m_fillLight.m_diffuse[0] >= 0.05f || m_fillLight.m_diffuse[1] >= 0.05f || m_fillLight.m_diffuse[2] >= 0.05f) {
-        int i = m_lightCount;
+        int32_t i = m_lightCount;
         if (i == MAX_LIGHTS) {
             i = MAX_LIGHTS - 1;
         } else {
@@ -111,7 +111,7 @@ void LightEnvironmentClass::Calculate_Fill_Light()
 
         InputLightStruct input = m_inputLights[0];
 
-        for (int i = 1; i < std::min(m_lightCount, MAX_LIGHTS - 1); ++i) {
+        for (int32_t i = 1; i < std::min(m_lightCount, MAX_LIGHTS - 1); ++i) {
             float ci = m_inputLights[i].Contribution() / c0;
 
             input.m_direction += m_inputLights[i].m_direction * ci;

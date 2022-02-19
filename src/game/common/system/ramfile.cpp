@@ -26,7 +26,7 @@ RAMFile::~RAMFile()
     }
 }
 
-bool RAMFile::Open(const char *filename, int mode)
+bool RAMFile::Open(const char *filename, int32_t mode)
 {
     File *basefile = g_theFileSystem->Open(filename, mode);
 
@@ -50,7 +50,7 @@ void RAMFile::Close()
     File::Close();
 }
 
-int RAMFile::Read(void *dst, int bytes)
+int32_t RAMFile::Read(void *dst, int32_t bytes)
 {
     if (dst == nullptr) {
         return -1;
@@ -68,13 +68,13 @@ int RAMFile::Read(void *dst, int bytes)
     return bytes;
 }
 
-int RAMFile::Write(void const *src, int bytes)
+int32_t RAMFile::Write(void const *src, int32_t bytes)
 {
     // No writing to RAM files.
     return -1;
 }
 
-int RAMFile::Seek(int offset, File::SeekMode mode)
+int32_t RAMFile::Seek(int32_t offset, File::SeekMode mode)
 {
     switch (mode) {
         case START:
@@ -99,9 +99,9 @@ int RAMFile::Seek(int offset, File::SeekMode mode)
     return m_pos;
 }
 
-void RAMFile::Next_Line(char *dst, int bytes)
+void RAMFile::Next_Line(char *dst, int32_t bytes)
 {
-    int i = 0;
+    int32_t i = 0;
 
     // Copy data until newline.
     for (; m_pos < m_size; ++m_pos) {
@@ -139,7 +139,7 @@ void RAMFile::Next_Line(char *dst, int bytes)
     m_pos = std::min(m_pos, m_size);
 }
 
-bool RAMFile::Scan_Int(int &integer)
+bool RAMFile::Scan_Int(int32_t &integer)
 {
     char tmp;
     Utf8String number;
@@ -297,7 +297,7 @@ bool RAMFile::Open(File *file)
     return false;
 }
 
-bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int size)
+bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int32_t pos, int32_t size)
 {
     if (file == nullptr) {
         return false;

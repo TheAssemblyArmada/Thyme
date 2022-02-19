@@ -156,10 +156,10 @@ public:
 
     void Snap_To_Units(const Vector2 &u)
     {
-        left = (int)(left / u.X + 0.5f) * u.X;
-        right = (int)(right / u.X + 0.5f) * u.X;
-        top = (int)(top / u.Y + 0.5f) * u.Y;
-        bottom = (int)(bottom / u.Y + 0.5f) * u.Y;
+        left = (int32_t)(left / u.X + 0.5f) * u.X;
+        right = (int32_t)(right / u.X + 0.5f) * u.X;
+        top = (int32_t)(top / u.Y + 0.5f) * u.Y;
+        bottom = (int32_t)(bottom / u.Y + 0.5f) * u.Y;
     }
 
     RectClass Intersect(const RectClass &other) const

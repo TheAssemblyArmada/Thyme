@@ -49,7 +49,7 @@ public:
     Coord3D from_right;
     Coord3D to_left;
     Coord3D to_right;
-    int bridge_index;
+    int32_t bridge_index;
     BodyDamageType cur_damage_state;
     ObjectID bridge_object_id;
     ObjectID tower_object_id[BRIDGE_MAX_TOWERS];
@@ -110,10 +110,10 @@ public:
         bool bidirectional);
 
     void Set_Next(Waypoint *waypoint) { m_next = waypoint; }
-    void Set_Link(int link, Waypoint *waypoint) { m_links[link] = waypoint; }
+    void Set_Link(int32_t link, Waypoint *waypoint) { m_links[link] = waypoint; }
     Waypoint *Get_Next() const { return m_next; }
-    int Get_Num_Links() const { return m_numLinks; }
-    Waypoint *Get_Link(int link) const { return m_links[link]; }
+    int32_t Get_Num_Links() const { return m_numLinks; }
+    Waypoint *Get_Link(int32_t link) const { return m_links[link]; }
     Utf8String Get_Name() const { return m_name; }
     WaypointID Get_ID() const { return m_id; }
     const Coord3D *Get_Location() const { return &m_location; }
@@ -134,7 +134,7 @@ private:
     Coord3D m_location;
     Waypoint *m_next;
     Waypoint *m_links[MAX_LINKS];
-    int m_numLinks;
+    int32_t m_numLinks;
     Utf8String m_pathLabel1;
     Utf8String m_pathLabel2;
     Utf8String m_pathLabel3;
@@ -192,8 +192,8 @@ public:
     virtual Bridge *Get_First_Bridge() const;
     virtual Bridge *Find_Bridge_At(const Coord3D *loc) const;
     virtual Bridge *Find_Bridge_Layer_At(const Coord3D *loc, PathfindLayerEnum layer, bool b) const;
-    virtual bool Object_Interacts_With_Bridge_Layer(Object *obj, int layer, bool b) const;
-    virtual bool Object_Interacts_With_Bridge_End(Object *obj, int layer) const;
+    virtual bool Object_Interacts_With_Bridge_Layer(Object *obj, int32_t layer, bool b) const;
+    virtual bool Object_Interacts_With_Bridge_End(Object *obj, int32_t layer) const;
     virtual Drawable *Pick_Bridge(const Vector3 &from, const Vector3 &to, Vector3 *pos);
     virtual void Add_Bridge_To_Logic(BridgeInfo *info, Dict *props, Utf8String bridge_template_name);
     virtual void Add_Landmark_Bridge_To_Logic(Object *obj);
@@ -204,10 +204,10 @@ public:
     bool Is_Bridge_Broken(const Object *bridge);
     void Get_Bridge_Attack_Points(const Object *bridge, TBridgeAttackInfo *attack_info);
     void Enable_Water_Grid(bool enable);
-    void Set_Active_Boundary(int new_active_boundary);
+    void Set_Active_Boundary(int32_t new_active_boundary);
     bool Parse_Waypoint_Data(DataChunkInput &file, DataChunkInfo *info, void *user_data);
     void Add_Waypoint(MapObject *map_obj);
-    void Add_Waypoint_Link(int id1, int id2);
+    void Add_Waypoint_Link(int32_t id1, int32_t id2);
     void Delete_Waypoints();
     void Delete_Bridges();
     void Find_Axis_Aligned_Bounding_Rect(const WaterHandle *water, Region3D *region);
@@ -236,17 +236,17 @@ protected:
     };
 
     unsigned char *m_mapData;
-    int m_mapDX;
-    int m_mapDY;
+    int32_t m_mapDX;
+    int32_t m_mapDY;
     std::vector<ICoord2D> m_boundaries;
-    int m_activeBoundary;
+    int32_t m_activeBoundary;
     Waypoint *m_waypointListHead;
     Bridge *m_bridgeListHead;
     bool m_bridgeDamageStatesChanged;
     Utf8String m_filenameString;
     bool m_waterGridEnabled;
     DynamicWaterEntry m_waterToUpdate[MAX_DYNAMIC_WATER];
-    int m_numWaterToUpdate;
+    int32_t m_numWaterToUpdate;
 };
 
 #ifdef GAME_DLL

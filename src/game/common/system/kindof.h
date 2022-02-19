@@ -16,7 +16,7 @@
 
 #include "always.h"
 
-template<int bits> class BitFlags;
+template<int32_t bits> class BitFlags;
 
 enum KindOfType : int32_t
 {

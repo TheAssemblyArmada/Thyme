@@ -42,7 +42,7 @@ MemoryPool *MemoryPoolFactory::Create_Memory_Pool(PoolInitRec const *params)
         params->pool_name, params->allocation_size, params->initial_allocation_count, params->overflow_allocation_count);
 }
 
-MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int size, int count, int overflow)
+MemoryPool *MemoryPoolFactory::Create_Memory_Pool(const char *name, int32_t size, int32_t count, int32_t overflow)
 {
     MemoryPool *pool = Find_Memory_Pool(name);
 
@@ -91,7 +91,7 @@ MemoryPool *MemoryPoolFactory::Find_Memory_Pool(const char *name)
     return pool;
 }
 
-DynamicMemoryAllocator *MemoryPoolFactory::Create_Dynamic_Memory_Allocator(int subpools, PoolInitRec const *const params)
+DynamicMemoryAllocator *MemoryPoolFactory::Create_Dynamic_Memory_Allocator(int32_t subpools, PoolInitRec const *const params)
 {
     DynamicMemoryAllocator *allocator = new DynamicMemoryAllocator;
     allocator->Init(this, subpools, params);

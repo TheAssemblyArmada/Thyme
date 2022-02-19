@@ -82,8 +82,8 @@ public:
         Row[2] = m.Row[2];
     }
 
-    __forceinline Vector4 &operator[](int i) { return Row[i]; }
-    __forceinline const Vector4 &operator[](int i) const { return Row[i]; }
+    __forceinline Vector4 &operator[](int32_t i) { return Row[i]; }
+    __forceinline const Vector4 &operator[](int32_t i) const { return Row[i]; }
 
     __forceinline Matrix3D &operator=(const Matrix3D &m)
     {
@@ -670,7 +670,7 @@ public:
         Row[1][2] = (s * tmp1 + c * tmp2);
     }
 
-    int Is_Orthogonal() const;
+    int32_t Is_Orthogonal() const;
 
     void Post_Mul(const Matrix3D &that)
     {

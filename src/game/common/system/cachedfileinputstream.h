@@ -28,7 +28,7 @@ public:
     CachedFileInputStream() : m_cachedSize(0), m_cachedData(nullptr), m_cachePos(0) {}
     ~CachedFileInputStream();
 
-    virtual int Read(void *dst, int size) override;
+    virtual int32_t Read(void *dst, int32_t size) override;
     virtual unsigned Tell() override;
     virtual bool Absolute_Seek(unsigned pos) override;
     virtual bool Eof() override;

@@ -20,11 +20,11 @@ class RadiusDecalTemplate
 {
 public:
     Utf8String m_texture;
-    int m_style;
+    int32_t m_style;
     float m_opacityMin;
     float m_opacityMax;
-    int m_opacityThrobTime;
-    int m_oolor;
+    int32_t m_opacityThrobTime;
+    int32_t m_oolor;
     bool m_onlyVisibleToOwningPlayer;
 };
 

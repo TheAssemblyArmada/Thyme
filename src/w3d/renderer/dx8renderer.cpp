@@ -37,8 +37,8 @@ bool DX8TextureCategoryClass::s_forceMultiply;
 
 bool Compare_Materials(const VertexMaterialClass *a, const VertexMaterialClass *b)
 {
-    int crc1;
-    int crc2;
+    int32_t crc1;
+    int32_t crc2;
 
     if (a) {
         crc1 = a->Get_CRC();
@@ -67,16 +67,16 @@ struct Textures_Material_And_Shader_Booking_Struct
     TextureClass *m_addedTextures[2][64];
     VertexMaterialClass *m_addedMaterials[64];
     ShaderClass m_addedShaders[64];
-    unsigned int m_addedTypeCount;
+    uint32_t m_addedTypeCount;
 };
 
 bool Textures_Material_And_Shader_Booking_Struct::Add_Textures_Material_And_Shader(
     TextureClass **texs, VertexMaterialClass *mat, ShaderClass shd)
 {
-    for (unsigned int i = 0; i < m_addedTypeCount; i++) {
+    for (uint32_t i = 0; i < m_addedTypeCount; i++) {
         bool b = true;
 
-        for (int j = 0; j < 2; j++) {
+        for (int32_t j = 0; j < 2; j++) {
             b = b && texs[j] == m_addedTextures[j][i];
         }
 
@@ -86,7 +86,7 @@ bool Textures_Material_And_Shader_Booking_Struct::Add_Textures_Material_And_Shad
     }
 
     captainslog_assert(m_addedTypeCount < 64);
-    for (int k = 0; k < 2; k++) {
+    for (int32_t k = 0; k < 2; k++) {
         m_addedTextures[k][m_addedTypeCount] = texs[k];
     }
 
@@ -158,22 +158,22 @@ public:
 
     const Vector3 *Get_Vertex_Array() { return m_mmc->Get_Vertex_Array(); }
     const Vector3 *Get_Vertex_Normal_Array() { return m_mmc->Get_Vertex_Normal_Array(); }
-    const unsigned int *Get_Color_Array(unsigned int array_index) { return m_mmc->Get_Color_Array(array_index); }
-    const Vector2 *Get_UV_Array(unsigned int array_index) { return m_mmc->Get_UV_Array(array_index); }
-    unsigned int Get_Vertex_Count() { return m_mmc->Get_Vertex_Count(); }
-    unsigned int Get_Polygon_Count() { return m_polygonCount; }
-    unsigned int Get_Pass_Count() { return m_mmc->Get_Pass_Count(); }
+    const uint32_t *Get_Color_Array(uint32_t array_index) { return m_mmc->Get_Color_Array(array_index); }
+    const Vector2 *Get_UV_Array(uint32_t array_index) { return m_mmc->Get_UV_Array(array_index); }
+    uint32_t Get_Vertex_Count() { return m_mmc->Get_Vertex_Count(); }
+    uint32_t Get_Polygon_Count() { return m_polygonCount; }
+    uint32_t Get_Pass_Count() { return m_mmc->Get_Pass_Count(); }
     MeshModelClass *Get_Mesh_Model_Class() { return m_mmc; }
-    TriIndex *Get_Polygon_Array(unsigned int) { return m_polygonArray; }
+    TriIndex *Get_Polygon_Array(uint32_t) { return m_polygonArray; }
 
-    TextureClass *Peek_Texture(unsigned int pidx, unsigned int pass, unsigned int stage);
-    VertexMaterialClass *Peek_Material(unsigned int pidx, unsigned int pass);
-    ShaderClass Peek_Shader(unsigned int pidx, unsigned int pass);
+    TextureClass *Peek_Texture(uint32_t pidx, uint32_t pass, uint32_t stage);
+    VertexMaterialClass *Peek_Material(uint32_t pidx, uint32_t pass);
+    ShaderClass Peek_Shader(uint32_t pidx, uint32_t pass);
 
 private:
     MeshModelClass *m_mmc;
     bool m_npatchEnable;
-    unsigned int m_polygonCount;
+    uint32_t m_polygonCount;
     TriIndex *m_polygonArray;
     bool m_allocatedPolygonArray;
 };
@@ -197,10 +197,10 @@ Vertex_Split_Table::~Vertex_Split_Table()
     }
 }
 
-TextureClass *Vertex_Split_Table::Peek_Texture(unsigned int pidx, unsigned int pass, unsigned int stage)
+TextureClass *Vertex_Split_Table::Peek_Texture(uint32_t pidx, uint32_t pass, uint32_t stage)
 {
     if (m_mmc->Has_Texture_Array(pass, stage)) {
-        if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
+        if (pidx < (uint32_t)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Texture(pidx, pass, stage);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
@@ -211,10 +211,10 @@ TextureClass *Vertex_Split_Table::Peek_Texture(unsigned int pidx, unsigned int p
     }
 }
 
-VertexMaterialClass *Vertex_Split_Table::Peek_Material(unsigned int pidx, unsigned int pass)
+VertexMaterialClass *Vertex_Split_Table::Peek_Material(uint32_t pidx, uint32_t pass)
 {
     if (m_mmc->Has_Material_Array(pass)) {
-        if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
+        if (pidx < (uint32_t)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Peek_Material(m_mmc->Get_Polygon_Array()[pidx][0], pass);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
@@ -225,10 +225,10 @@ VertexMaterialClass *Vertex_Split_Table::Peek_Material(unsigned int pidx, unsign
     }
 }
 
-ShaderClass Vertex_Split_Table::Peek_Shader(unsigned int pidx, unsigned int pass)
+ShaderClass Vertex_Split_Table::Peek_Shader(uint32_t pidx, uint32_t pass)
 {
     if (m_mmc->Has_Shader_Array(pass)) {
-        if (pidx < (unsigned int)m_mmc->Get_Polygon_Count()) {
+        if (pidx < (uint32_t)m_mmc->Get_Polygon_Count()) {
             return m_mmc->Get_Shader(pidx, pass);
         } else {
             captainslog_dbgassert(0, "GapFillerClass removed");
@@ -265,7 +265,7 @@ void DX8MeshRendererClass::Invalidate(bool shutdown)
 {
     g_registeredMeshList.Reset_List();
 
-    for (int i = 0; i < m_textureCategoryContainerListsRigid.Count(); ++i) {
+    for (int32_t i = 0; i < m_textureCategoryContainerListsRigid.Count(); ++i) {
         Invalidate_FVF_Category_Container_List(*m_textureCategoryContainerListsRigid[i]);
         delete m_textureCategoryContainerListsRigid[i];
     }
@@ -334,14 +334,14 @@ void DX8MeshRendererClass::Flush()
     if (m_camera) {
         Log_Statistics_String(true);
 
-        for (int i = 0; i < m_textureCategoryContainerListsRigid.Count(); i++) {
+        for (int32_t i = 0; i < m_textureCategoryContainerListsRigid.Count(); i++) {
             Render_FVF_Category_Container_List(*m_textureCategoryContainerListsRigid[i]);
         }
 
         Render_FVF_Category_Container_List(*m_textureCategoryContainerListSkin);
         Render_Decal_Meshes();
 
-        for (int i = 0; i < m_textureCategoryContainerListsRigid.Count(); i++) {
+        for (int32_t i = 0; i < m_textureCategoryContainerListsRigid.Count(); i++) {
             Render_FVF_Category_Container_List_Delayed_Passes(*m_textureCategoryContainerListsRigid[i]);
         }
 
@@ -356,7 +356,7 @@ void DX8MeshRendererClass::Log_Statistics_String(bool only_visible)
 }
 
 void Add_Rigid_Mesh_To_Container(
-    MultiListClass<DX8FVFCategoryContainer> *container_list, unsigned int fvf, class MeshModelClass *mmc)
+    MultiListClass<DX8FVFCategoryContainer> *container_list, uint32_t fvf, class MeshModelClass *mmc)
 {
     captainslog_assert(container_list);
     bool sorting = W3D::Is_Sorting_Enabled() && mmc->Get_Flag(MeshGeometryClass::SORT) && mmc->Get_Sort_Level() == 0;
@@ -398,9 +398,9 @@ void DX8MeshRendererClass::Register_Mesh_Type(MeshModelClass *mmc)
         captainslog_assert(g_registeredMeshList.Contains(mmc) == false);
         if (!g_registeredMeshList.Contains(mmc)) {
 
-            unsigned int fvf = DX8FVFCategoryContainer::Define_FVF(mmc, m_enableLighting);
+            uint32_t fvf = DX8FVFCategoryContainer::Define_FVF(mmc, m_enableLighting);
 
-            for (int i = 0; i < m_textureCategoryContainerListsRigid.Count(); ++i) {
+            for (int32_t i = 0; i < m_textureCategoryContainerListsRigid.Count(); ++i) {
                 MultiListClass<DX8FVFCategoryContainer> *list = m_textureCategoryContainerListsRigid[i];
                 captainslog_assert(list);
                 DX8FVFCategoryContainer *container = list->Get_Head();
@@ -460,13 +460,13 @@ void DX8MeshRendererClass::Render_Decal_Meshes()
 }
 
 DX8TextureCategoryClass::DX8TextureCategoryClass(
-    DX8FVFCategoryContainer *container, TextureClass **texs, ShaderClass shd, VertexMaterialClass *mat, int pass) :
+    DX8FVFCategoryContainer *container, TextureClass **texs, ShaderClass shd, VertexMaterialClass *mat, int32_t pass) :
     m_pass(pass), m_shader(shd), m_material(mat), m_container(container), m_renderTaskHead(0)
 {
     captainslog_assert(pass >= 0);
     captainslog_assert(pass < DX8FVFCategoryContainer::MAX_PASSES);
 
-    for (int i = 0; i < 2; i++) {
+    for (int32_t i = 0; i < 2; i++) {
         Ref_Ptr_Set(m_textures[i], texs[i]);
     }
 
@@ -487,7 +487,7 @@ DX8TextureCategoryClass::~DX8TextureCategoryClass()
         g_theDX8MeshRenderer.Unregister_Mesh_Type(r->Get_Mesh_Model_Class());
     }
 
-    for (int i = 0; i < 2; i++) {
+    for (int32_t i = 0; i < 2; i++) {
         Ref_Ptr_Release(m_textures[i]);
     }
 
@@ -504,7 +504,7 @@ void DX8TextureCategoryClass::Add_Render_Task(DX8PolygonRendererClass *p_rendere
 
 void DX8TextureCategoryClass::Render()
 {
-    for (int i = 0; i < 2; i++) {
+    for (int32_t i = 0; i < 2; i++) {
         DX8Wrapper::Set_Texture(i, Peek_Texture(i));
     }
 
@@ -592,7 +592,7 @@ void DX8TextureCategoryClass::Render()
                 Vector3 diffuse;
                 m_material->Get_Diffuse(&diffuse);
                 TextureMapperClass *mapper = m_material->Peek_Mapper(0);
-                unsigned int sync;
+                uint32_t sync;
                 Vector2 uv;
 
                 if (mesh->Get_User_Data()
@@ -674,17 +674,17 @@ void DX8TextureCategoryClass::Render()
     }
 }
 
-unsigned int DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
-    unsigned int vertex_offset,
-    unsigned int index_offset,
+uint32_t DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
+    uint32_t vertex_offset,
+    uint32_t index_offset,
     IndexBufferClass *index_buffer,
-    unsigned int pass)
+    uint32_t pass)
 {
-    int polycount = split_table.Get_Polygon_Count();
-    unsigned int index_count = 0;
-    int polygons = 0;
+    int32_t polycount = split_table.Get_Polygon_Count();
+    uint32_t index_count = 0;
+    int32_t polygons = 0;
 
-    for (int i = 0; i < polycount; i++) {
+    for (int32_t i = 0; i < polycount; i++) {
         if (split_table.Peek_Texture(i, pass, 0) == m_textures[0]) {
             if (split_table.Peek_Texture(i, pass, 1) == m_textures[1]) {
                 if (Compare_Materials(split_table.Peek_Material(i, pass), m_material)) {
@@ -707,7 +707,7 @@ unsigned int DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
         unsigned short vmax = 0;
         unsigned short vmin = 0xFFFF;
 
-        for (int i = 0; i < polycount; i++) {
+        for (int32_t i = 0; i < polycount; i++) {
             if (split_table.Peek_Texture(i, pass, 0) == m_textures[0]) {
                 if (split_table.Peek_Texture(i, pass, 1) == m_textures[1]) {
                     if (Compare_Materials(split_table.Peek_Material(i, pass), m_material)) {
@@ -780,7 +780,7 @@ void DX8TextureCategoryClass::Add_Polygon_Renderer(
     p_renderer->Set_Texture_Category(this);
 }
 
-DX8FVFCategoryContainer::DX8FVFCategoryContainer(unsigned int FVF, bool sorting) :
+DX8FVFCategoryContainer::DX8FVFCategoryContainer(uint32_t FVF, bool sorting) :
     m_visibleMatpassHead(nullptr),
     m_visibleMatpassTail(nullptr),
     m_indexBuffer(nullptr),
@@ -823,7 +823,7 @@ DX8FVFCategoryContainer::DX8FVFCategoryContainer(unsigned int FVF, bool sorting)
 DX8FVFCategoryContainer::~DX8FVFCategoryContainer()
 {
     Ref_Ptr_Release(m_indexBuffer);
-    for (unsigned int i = 0; i < m_passes; i++) {
+    for (uint32_t i = 0; i < m_passes; i++) {
         for (DX8TextureCategoryClass *j = m_textureCategoryList->Remove_Head(); j;
              j = m_textureCategoryList->Remove_Head()) {
             delete j;
@@ -831,14 +831,14 @@ DX8FVFCategoryContainer::~DX8FVFCategoryContainer()
     }
 }
 
-unsigned int DX8FVFCategoryContainer::Define_FVF(MeshModelClass *mmc, bool enable_lighting)
+uint32_t DX8FVFCategoryContainer::Define_FVF(MeshModelClass *mmc, bool enable_lighting)
 {
 #ifdef BUILD_WITH_D3D8
     if (mmc->Get_Flag(MeshGeometryClass::SORT) && W3D::Is_Sorting_Enabled()) {
         return DX8_FVF_XYZNDUV2;
     }
 
-    int fvf = D3DFVF_XYZ;
+    int32_t fvf = D3DFVF_XYZ;
 
     if (mmc->Get_Color_Array(0, false)) {
         fvf |= D3DFVF_DIFFUSE;
@@ -896,8 +896,8 @@ public:
 void DX8FVFCategoryContainer::Change_Polygon_Renderer_Texture(MultiListClass<DX8PolygonRendererClass> &polygon_renderer_list,
     TextureClass *texture,
     TextureClass *new_texture,
-    unsigned int pass,
-    unsigned int stage)
+    uint32_t pass,
+    uint32_t stage)
 {
     captainslog_assert(pass < m_passes);
     MultiListClass<PolyRemover> prl;
@@ -980,7 +980,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
     MultiListClass<DX8PolygonRendererClass> &polygon_renderer_list,
     VertexMaterialClass *vmat,
     VertexMaterialClass *new_vmat,
-    unsigned int pass)
+    uint32_t pass)
 {
     captainslog_assert(pass < m_passes);
     MultiListClass<PolyRemover> prl;
@@ -1056,11 +1056,11 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
 
 void DX8FVFCategoryContainer::Remove_Texture_Category(DX8TextureCategoryClass *tex_category)
 {
-    for (unsigned int i = 0; i < m_passes; i++) {
+    for (uint32_t i = 0; i < m_passes; i++) {
         m_textureCategoryList[i].Remove(tex_category);
     }
 
-    for (unsigned int i = 0; i < m_passes; i++) {
+    for (uint32_t i = 0; i < m_passes; i++) {
         if (m_textureCategoryList[i].Peek_Head()) {
             return;
         }
@@ -1115,7 +1115,7 @@ void DX8FVFCategoryContainer::Render_Procedural_Material_Passes()
 }
 
 DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category(
-    VertexMaterialClass *vmat, unsigned int pass, DX8TextureCategoryClass *ref_category)
+    VertexMaterialClass *vmat, uint32_t pass, DX8TextureCategoryClass *ref_category)
 {
     MultiListIterator<DX8TextureCategoryClass> dest_it(&m_textureCategoryList[pass]);
 
@@ -1124,7 +1124,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
             DX8TextureCategoryClass *tc = dest_it.Peek_Obj();
             bool b = true;
 
-            for (int i = 0; i < 2; i++) {
+            for (int32_t i = 0; i < 2; i++) {
                 b = b & (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
             }
 
@@ -1142,7 +1142,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
 }
 
 DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category(
-    TextureClass *texture, unsigned int pass, unsigned int stage, DX8TextureCategoryClass *ref_category)
+    TextureClass *texture, uint32_t pass, uint32_t stage, DX8TextureCategoryClass *ref_category)
 {
     MultiListIterator<DX8TextureCategoryClass> dest_it(&m_textureCategoryList[pass]);
 
@@ -1151,7 +1151,7 @@ DX8TextureCategoryClass *DX8FVFCategoryContainer::Find_Matching_Texture_Category
             DX8TextureCategoryClass *tc = dest_it.Peek_Obj();
             bool b = true;
 
-            for (int i = 0; i < 2; i++) {
+            for (int32_t i = 0; i < 2; i++) {
                 if (stage != i) {
                     b = b & (tc->Peek_Texture(i) == ref_category->Peek_Texture(i));
                 }
@@ -1176,8 +1176,8 @@ void DX8FVFCategoryContainer::Insert_To_Texture_Category(Vertex_Split_Table &spl
     TextureClass **texs,
     VertexMaterialClass *mat,
     ShaderClass shader,
-    int pass,
-    unsigned int vertex_offset)
+    int32_t pass,
+    uint32_t vertex_offset)
 {
     bool b = false;
     MultiListIterator<DX8TextureCategoryClass> dst_it(&m_textureCategoryList[pass]);
@@ -1221,10 +1221,10 @@ void DX8FVFCategoryContainer::Insert_To_Texture_Category(Vertex_Split_Table &spl
     }
 }
 
-void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &split_table, unsigned int vertex_offset)
+void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &split_table, uint32_t vertex_offset)
 {
-    int polygon_count = split_table.Get_Polygon_Count();
-    int index_count = split_table.Get_Pass_Count() * 3 * polygon_count;
+    int32_t polygon_count = split_table.Get_Polygon_Count();
+    int32_t index_count = split_table.Get_Pass_Count() * 3 * polygon_count;
 
     if (!m_indexBuffer) {
         if (index_count < 12000) {
@@ -1238,11 +1238,11 @@ void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &sp
         }
     }
 
-    for (unsigned int i = 0; i < split_table.Get_Pass_Count(); i++) {
+    for (uint32_t i = 0; i < split_table.Get_Pass_Count(); i++) {
         Textures_Material_And_Shader_Booking_Struct booking;
-        int old_used_indices = m_usedIndices;
+        int32_t old_used_indices = m_usedIndices;
 
-        for (int j = 0; j < polygon_count; j++) {
+        for (int32_t j = 0; j < polygon_count; j++) {
             TextureClass *texs[2];
             texs[0] = split_table.Peek_Texture(j, i, 0);
             texs[1] = split_table.Peek_Texture(j, i, 1);
@@ -1256,7 +1256,7 @@ void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &sp
     }
 }
 
-DX8RigidFVFCategoryContainer::DX8RigidFVFCategoryContainer(unsigned int FVF, bool sorting) :
+DX8RigidFVFCategoryContainer::DX8RigidFVFCategoryContainer(uint32_t FVF, bool sorting) :
     DX8FVFCategoryContainer(FVF, sorting),
     m_vertexBuffer(nullptr),
     m_usedVertices(0),
@@ -1274,7 +1274,7 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
 {
     captainslog_assert(Check_If_Mesh_Fits(mmc));
     Vertex_Split_Table split(mmc);
-    int count = split.Get_Vertex_Count();
+    int32_t count = split.Get_Vertex_Count();
     if (!m_vertexBuffer) {
         unsigned short size = 4000;
 
@@ -1295,11 +1295,11 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
     char *outverts = (char *)lock.Get_Vertex_Array();
     const Vector3 *verts = split.Get_Vertex_Array();
     const Vector3 *normals = split.Get_Vertex_Normal_Array();
-    const unsigned int *diffuse = split.Get_Color_Array(0);
-    const unsigned int *specular = split.Get_Color_Array(1);
+    const uint32_t *diffuse = split.Get_Color_Array(0);
+    const uint32_t *specular = split.Get_Color_Array(1);
 
 #ifdef BUILD_WITH_D3D8
-    for (unsigned int i = 0; i < split.Get_Vertex_Count(); i++) {
+    for (uint32_t i = 0; i < split.Get_Vertex_Count(); i++) {
         *((Vector3 *)(&outverts[f.Get_Location_Offset()])) = verts[i];
 
         if (m_FVF & D3DFVF_NORMAL) {
@@ -1310,27 +1310,27 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
 
         if (m_FVF & D3DFVF_DIFFUSE) {
             if (diffuse) {
-                *((unsigned int *)(&outverts[f.Get_Diffuse_Offset()])) = diffuse[i];
+                *((uint32_t *)(&outverts[f.Get_Diffuse_Offset()])) = diffuse[i];
             }
         }
 
         if (m_FVF & D3DFVF_SPECULAR) {
             if (specular) {
-                *((unsigned int *)(&outverts[f.Get_Specular_Offset()])) = specular[i];
+                *((uint32_t *)(&outverts[f.Get_Specular_Offset()])) = specular[i];
             }
         }
 
         outverts += f.Get_FVF_Size();
     }
 
-    int texcount = (m_FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
+    int32_t texcount = (m_FVF & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
 
-    for (int i = 0; i < texcount; i++) {
+    for (int32_t i = 0; i < texcount; i++) {
         char *outverts2 = (char *)lock.Get_Vertex_Array();
         const Vector2 *uv = split.Get_UV_Array(i);
 
         if (uv) {
-            for (unsigned int j = 0; j < split.Get_Vertex_Count(); j++) {
+            for (uint32_t j = 0; j < split.Get_Vertex_Count(); j++) {
                 *((Vector2 *)(&outverts2[f.Get_Tex_Offset(i)])) = uv[j];
                 outverts2 += f.Get_FVF_Size();
             }
@@ -1353,7 +1353,7 @@ bool DX8RigidFVFCategoryContainer::Check_If_Mesh_Fits(MeshModelClass *mmc)
         return true;
     }
 
-    int count = mmc->Get_Polygon_Count();
+    int32_t count = mmc->Get_Polygon_Count();
 
     return mmc->Get_Vertex_Count() <= m_vertexBuffer->Get_Vertex_Count() - m_usedVertices
         && 3 * count * mmc->Get_Pass_Count() <= m_indexBuffer->Get_Index_Count() - m_usedIndices;
@@ -1366,7 +1366,7 @@ void DX8RigidFVFCategoryContainer::Render()
         DX8Wrapper::Set_Vertex_Buffer(m_vertexBuffer, 0);
         DX8Wrapper::Set_Index_Buffer(m_indexBuffer, 0);
 
-        for (unsigned int i = 0; i < m_passes; i++) {
+        for (uint32_t i = 0; i < m_passes; i++) {
             for (DX8TextureCategoryClass *t = m_visibleTextureCategoryList[i].Remove_Head(); t;
                  t = m_visibleTextureCategoryList[i].Remove_Head()) {
                 t->Render();
@@ -1457,7 +1457,7 @@ bool DX8SkinFVFCategoryContainer::Check_If_Mesh_Fits(MeshModelClass *mmc)
         return true;
     }
 
-    int count = mmc->Get_Polygon_Count();
+    int32_t count = mmc->Get_Polygon_Count();
 
     return 3 * count * mmc->Get_Pass_Count() <= m_indexBuffer->Get_Index_Count() - m_usedIndices;
 }
@@ -1467,7 +1467,7 @@ void DX8SkinFVFCategoryContainer::Render()
     if (Anything_To_Render()) {
         m_anythingToRender = false;
         DX8Wrapper::Set_Vertex_Buffer(nullptr, 0);
-        unsigned int vertcount = m_visibleVertexCount;
+        uint32_t vertcount = m_visibleVertexCount;
 
         if (vertcount > 65535) {
             vertcount = 65535;
@@ -1475,12 +1475,12 @@ void DX8SkinFVFCategoryContainer::Render()
 
         DynamicVBAccessClass vb(m_sorting + 2, DX8_FVF_XYZNDUV2, vertcount);
         MeshClass *mesh1 = m_visibleSkinHead;
-        unsigned int renderedvertexcount = 0;
+        uint32_t renderedvertexcount = 0;
 
         if (m_visibleVertexCount) {
             for (;;) {
                 MeshClass *mesh2 = mesh1;
-                unsigned int vertex_offset = 0;
+                uint32_t vertex_offset = 0;
                 MeshClass *mesh4 = nullptr;
                 MeshClass *mesh3 = nullptr;
 
@@ -1491,8 +1491,8 @@ void DX8SkinFVFCategoryContainer::Render()
                     if (mesh1) {
                         for (;;) {
                             MeshModelClass *mmc = mesh1->Peek_Model();
-                            int mesh_vertex_count = mmc->Get_Vertex_Count();
-                            unsigned int offset = mesh_vertex_count + vertex_offset;
+                            int32_t mesh_vertex_count = mmc->Get_Vertex_Count();
+                            uint32_t offset = mesh_vertex_count + vertex_offset;
 
                             if (mesh_vertex_count + vertex_offset > vertcount || mesh3) {
                                 mesh1->Set_Base_Vertex_Offset(0xFFFF);
@@ -1519,9 +1519,9 @@ void DX8SkinFVFCategoryContainer::Render()
                                 Vector3 *normals = &g_tempNormalBuffer[0];
                                 const Vector2 *uv1 = mmc->Get_UV_Array_By_Index(0);
                                 const Vector2 *uv2 = mmc->Get_UV_Array_By_Index(1);
-                                unsigned int *colors = mmc->Get_Color_Array(0);
+                                uint32_t *colors = mmc->Get_Color_Array(0);
                                 mesh2->Get_Deformed_Vertices(verts, normals);
-                                int vertcount3 = mesh_vertex_count;
+                                int32_t vertcount3 = mesh_vertex_count;
 
                                 if (mesh_vertex_count > 0) {
                                     do {
@@ -1583,7 +1583,7 @@ void DX8SkinFVFCategoryContainer::Render()
                 DX8Wrapper::Set_Vertex_Buffer(vb);
                 DX8Wrapper::Set_Index_Buffer(m_indexBuffer, 0);
 
-                for (unsigned int i = 0; i < m_passes; i++) {
+                for (uint32_t i = 0; i < m_passes; i++) {
                     MultiListIterator<DX8TextureCategoryClass> tex_it(&m_visibleTextureCategoryList[i]);
 
                     while (!tex_it.Is_Done()) {
@@ -1602,7 +1602,7 @@ void DX8SkinFVFCategoryContainer::Render()
             }
         }
 
-        for (unsigned int i = 0; i < m_passes; i++) {
+        for (uint32_t i = 0; i < m_passes; i++) {
             while (m_visibleTextureCategoryList[i].Remove_Head()) {
             }
         }
@@ -1626,7 +1626,7 @@ void DX8SkinFVFCategoryContainer::Reset()
 {
     Clear_Visible_Skin_List();
 
-    for (unsigned int i = 0; i < m_passes; i++) {
+    for (uint32_t i = 0; i < m_passes; i++) {
         for (;;) {
             DX8TextureCategoryClass *t = m_textureCategoryList[i].Peek_Head();
 

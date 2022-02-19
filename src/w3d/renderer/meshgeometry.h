@@ -69,8 +69,8 @@ public:
     virtual ~MeshGeometryClass() override;
 
     MeshGeometryClass &operator=(const MeshGeometryClass &that);
-    void Reset_Geometry(int polycount, int vertcount);
-    void Compute_Plane(int pidx, PlaneClass *set_plane) const;
+    void Reset_Geometry(int32_t polycount, int32_t vertcount);
+    void Compute_Plane(int32_t pidx, PlaneClass *set_plane) const;
     bool Has_Cull_Tree() { return m_cullTree != nullptr; }
     virtual W3DErrorType Load_W3D(ChunkLoadClass &cload);
     void Scale(const Vector3 &sc);
@@ -89,10 +89,10 @@ public:
 
     const char *Get_Name() const;
     const char *Get_User_Text();
-    int Get_Flag(FlagsType flag) { return m_flags & flag; }
-    int Get_Sort_Level() const { return m_sortLevel; }
-    int Get_Polygon_Count() const { return m_polyCount; }
-    int Get_Vertex_Count() const { return m_vertexCount; }
+    int32_t Get_Flag(FlagsType flag) { return m_flags & flag; }
+    int32_t Get_Sort_Level() const { return m_sortLevel; }
+    int32_t Get_Polygon_Count() const { return m_polyCount; }
+    int32_t Get_Vertex_Count() const { return m_vertexCount; }
     const TriIndex *Get_Polygon_Array() { return Get_Polys(); }
     Vector3 *Get_Vertex_Array()
     {
@@ -110,11 +110,11 @@ public:
     }
     void Get_Bounding_Box(AABoxClass *set_box);
     void Get_Bounding_Sphere(SphereClass *set_sphere);
-    uint8_t Get_Poly_Surface_Type(int poly_index) const;
+    uint8_t Get_Poly_Surface_Type(int32_t poly_index) const;
 
     void Set_Name(const char *newname);
     void Set_User_Text(char *usertext);
-    void Set_Sort_Level(int level) { m_sortLevel = level; }
+    void Set_Sort_Level(int32_t level) { m_sortLevel = level; }
     void Set_Flag(FlagsType flag, bool onoff);
 
 protected:
@@ -128,7 +128,7 @@ protected:
     uint32_t *Get_Shade_Indices(bool create = true);
     uint16_t *Get_Bone_Links(bool create = true);
 
-    int Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int axis_dir, unsigned char &flags);
+    int32_t Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int32_t axis_dir, unsigned char &flags);
     bool Cast_AABox_Identity(AABoxCollisionTestClass &boxtest, const Vector3 &trans);
     bool Cast_AABox_Z90(AABoxCollisionTestClass &boxtest, const Vector3 &trans);
     bool Cast_AABox_Z180(AABoxCollisionTestClass &boxtest, const Vector3 &trans);
@@ -161,11 +161,11 @@ protected:
 
     ShareBufferClass<char> *m_meshName;
     ShareBufferClass<char> *m_userText;
-    int m_flags;
+    int32_t m_flags;
     char m_sortLevel;
     uint32_t m_w3dAttributes;
-    int m_polyCount;
-    int m_vertexCount;
+    int32_t m_polyCount;
+    int32_t m_vertexCount;
     ShareBufferClass<TriIndex> *m_poly;
     ShareBufferClass<Vector3> *m_vertex;
     ShareBufferClass<Vector3> *m_vertexNorm;
@@ -223,7 +223,7 @@ inline uint16_t *MeshGeometryClass::Get_Bone_Links(bool create)
     return nullptr;
 }
 
-inline uint8_t MeshGeometryClass::Get_Poly_Surface_Type(int poly_index) const
+inline uint8_t MeshGeometryClass::Get_Poly_Surface_Type(int32_t poly_index) const
 {
     captainslog_assert(m_polySurfaceType);
     captainslog_assert(poly_index >= 0 && poly_index < m_polyCount);

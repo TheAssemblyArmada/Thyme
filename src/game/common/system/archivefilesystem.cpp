@@ -21,7 +21,7 @@
 ArchiveFileSystem *g_theArchiveFileSystem = nullptr;
 #endif
 
-File *ArchiveFileSystem::Open_File(const char *filename, int mode)
+File *ArchiveFileSystem::Open_File(const char *filename, int32_t mode)
 {
     Utf8String archive = Get_Archive_Filename_For_File(filename);
 

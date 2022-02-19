@@ -32,17 +32,17 @@ void ClipPolyClass::Clip(const PlaneClass &plane, ClipPolyClass &dest)
 {
     dest.Reset();
 
-    int vcount = m_verts.Count();
+    int32_t vcount = m_verts.Count();
 
     if (vcount > 2) {
-        int j = 0;
-        int k = vcount - 1;
+        int32_t j = 0;
+        int32_t k = vcount - 1;
         float alpha;
 
         Vector3 int_point;
         bool prev_point_behind = !plane.In_Front(m_verts[k]);
 
-        for (int i = 0; i < vcount; ++i) {
+        for (int32_t i = 0; i < vcount; ++i) {
             bool point_behind = !plane.In_Front(m_verts[j]);
 
             if (prev_point_behind) {

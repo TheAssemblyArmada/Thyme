@@ -88,7 +88,7 @@ void FontLibrary::Delete_All_Fonts()
     }
 }
 
-GameFont *FontLibrary::Get_Font(Utf8String name, int point_size, bool bold)
+GameFont *FontLibrary::Get_Font(Utf8String name, int32_t point_size, bool bold)
 {
     GameFont *font = nullptr;
 

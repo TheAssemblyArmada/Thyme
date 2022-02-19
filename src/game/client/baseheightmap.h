@@ -40,7 +40,7 @@ struct VertexFormatXYZDUV2
     float x;
     float y;
     float z;
-    unsigned int diffuse;
+    uint32_t diffuse;
     float u1;
     float v1;
     float u2;
@@ -51,7 +51,7 @@ struct TScorch
 {
     Vector3 m_location;
     float m_radius;
-    int m_scorchType;
+    int32_t m_scorchType;
 };
 
 class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHook, public SnapShot
@@ -59,24 +59,24 @@ class BaseHeightMapRenderObjClass : public RenderObjClass, public DX8_CleanupHoo
 public:
     virtual ~BaseHeightMapRenderObjClass();
     virtual RenderObjClass *Clone();
-    virtual int Class_ID() const;
+    virtual int32_t Class_ID() const;
     virtual void On_Frame_Update();
     virtual void Notify_Added(SceneClass *scene);
     virtual bool Cast_Ray(RayCollisionTestClass &raytest);
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const;
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const;
-    virtual int Init_Height_Data(
-        int x, int y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights, bool update_shoreline);
-    virtual int Free_Map_Resources();
+    virtual int32_t Init_Height_Data(
+        int32_t x, int32_t y, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights, bool update_shoreline);
+    virtual int32_t Free_Map_Resources();
     virtual void Update_Center(CameraClass *camera, RefMultiListIterator<RenderObjClass> *lights);
-    virtual void Adjust_Terrain_LOD(int adj);
+    virtual void Adjust_Terrain_LOD(int32_t adj);
     virtual void Do_Partial_Update(
         IRegion2D &partial_range, WorldHeightMap *map, RefMultiListIterator<RenderObjClass> *lights) = 0;
     virtual void Static_Lighting_Changed();
-    virtual void Oversize_Terrain(int tiles_to_oversize);
+    virtual void Oversize_Terrain(int32_t tiles_to_oversize);
     virtual void Reset();
-    virtual int Get_Num_Extra_Blend_Tiles(bool b);
-    virtual int Update_Block() = 0;
+    virtual int32_t Get_Num_Extra_Blend_Tiles(bool b);
+    virtual int32_t Update_Block() = 0;
 
     virtual void Release_Resources();
     virtual void ReAcquire_Resources();
@@ -86,7 +86,7 @@ public:
     virtual void Load_Post_Process();
 
     WorldHeightMap *Get_Map() { return m_map; }
-    int Get_Static_Diffuse(int x, int y);
+    int32_t Get_Static_Diffuse(int32_t x, int32_t y);
     float Get_Max_Cell_Height(float x, float y);
     void Set_Time_Of_Day(TimeOfDayType time);
     void Do_The_Light(VertexFormatXYZDUV2 *vb,
@@ -101,7 +101,7 @@ public:
 
     W3DShroud *Get_Shroud() { return m_shroud; }
 
-    int Get_Num_Water_Blend_Tiles(bool b)
+    int32_t Get_Num_Water_Blend_Tiles(bool b)
     {
         if (b) {
             return m_shorelineTileBufferSize;
@@ -111,16 +111,16 @@ public:
     }
 
 protected:
-    int m_x;
-    int m_y;
+    int32_t m_x;
+    int32_t m_y;
     DX8VertexBufferClass *m_vertexScorch;
     DX8IndexBufferClass *m_indexScorch;
     TextureClass *m_scorchTexture;
-    int m_curNumScorchVertices;
-    int m_curNumScorchIndices;
+    int32_t m_curNumScorchVertices;
+    int32_t m_curNumScorchIndices;
     TScorch m_scorches[500];
-    int m_numScorches;
-    int m_scorchesInBuffer;
+    int32_t m_numScorches;
+    int32_t m_scorchesInBuffer;
     float m_cliffAngle;
     WorldHeightMap *m_map;
     bool m_useDepthFade;
@@ -142,22 +142,22 @@ protected:
     Utf8String m_macroTextureName;
     TextureClass *m_destAlphaLUT;
     W3DTreeBuffer *m_treeBuffer;
-    int m_propBuffer;
-    int m_bibBuffer;
+    int32_t m_propBuffer;
+    int32_t m_bibBuffer;
     W3DWaypointBuffer *m_waypointBuffer;
     W3DRoadBuffer *m_roadBuffer;
     W3DBridgeBuffer *m_bridgeBuffer;
     W3DShroud *m_shroud;
     ShorelineTile *m_shorelineTiles;
-    int m_shorelineTileCount;
-    int m_shorelineTilesRendered;
-    int m_shorelineTileBufferSize;
+    int32_t m_shorelineTileCount;
+    int32_t m_shorelineTilesRendered;
+    int32_t m_shorelineTileBufferSize;
     float m_transparentWaterMinOpacity;
     ShorelineSortInfo *m_shorlineSortInfos;
-    int m_shorlineSortInfoCount;
-    int m_sortAxis;
-    int m_endCell;
-    int m_startCell;
+    int32_t m_shorlineSortInfoCount;
+    int32_t m_sortAxis;
+    int32_t m_endCell;
+    int32_t m_startCell;
 };
 
 #ifdef GAME_DLL

@@ -33,7 +33,7 @@ public:
     float m_alpha;
     float m_beta;
     bool m_intersects;
-    int m_CollisionType;
+    int32_t m_CollisionType;
 
     enum INTERSECTION_TYPE
     {

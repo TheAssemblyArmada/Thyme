@@ -59,7 +59,7 @@ public:
 
     bool Has_Valid() const
     {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
             if (m_template[i] != nullptr) {
                 return true;
             }
@@ -72,8 +72,8 @@ public:
     static void Parse_Auto_Choose(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Preferred_Against(INI *ini, void *formal, void *store, const void *user_data);
 
-    const BitFlags<WEAPONSET_COUNT> &Get_Conditions_Yes(int condition_idx) const { return m_conditions; }
-    int Get_Conditions_Count() const { return 1; }
+    const BitFlags<WEAPONSET_COUNT> &Get_Conditions_Yes(int32_t condition_idx) const { return m_conditions; }
+    int32_t Get_Conditions_Count() const { return 1; }
     // BUGFIX : Original returned ArmorTemplateSet here, clearly a bug
     Utf8String Get_Definition() const { return "WeaponTemplateSet"; }
 

@@ -25,15 +25,15 @@ bool Clip_Line_2D(ICoord2D *p1, ICoord2D *p2, ICoord2D *c1, ICoord2D *c2, IRegio
         CODE_TOP = 8, // 1000
     };
 
-    int x_min = clip_region->lo.x;
-    int x_max = clip_region->hi.x;
-    int y_min = clip_region->lo.y;
-    int y_max = clip_region->hi.y;
-    int x0 = p1->x;
-    int y0 = p1->y;
-    int x1 = p2->x;
-    int y1 = p2->y;
-    int out_code0 = CODE_INSIDE;
+    int32_t x_min = clip_region->lo.x;
+    int32_t x_max = clip_region->hi.x;
+    int32_t y_min = clip_region->lo.y;
+    int32_t y_max = clip_region->hi.y;
+    int32_t x0 = p1->x;
+    int32_t y0 = p1->y;
+    int32_t x1 = p2->x;
+    int32_t y1 = p2->y;
+    int32_t out_code0 = CODE_INSIDE;
 
     if (x0 < x_min) {
         out_code0 = CODE_LEFT;
@@ -47,7 +47,7 @@ bool Clip_Line_2D(ICoord2D *p1, ICoord2D *p2, ICoord2D *c1, ICoord2D *c2, IRegio
         out_code0 |= CODE_BOTTOM;
     }
 
-    int out_code1 = CODE_INSIDE;
+    int32_t out_code1 = CODE_INSIDE;
 
     if (x1 < x_min) {
         out_code1 = CODE_LEFT;

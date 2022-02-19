@@ -50,14 +50,14 @@ public:
 
     const ValueType &operator[](const KeyType &id) const;
     ValueType Fetch_Index(const KeyType &id) const;
-    ValueType &Fetch_Data_By_Index(int index) { return m_indexTable[index].m_data; }
-    KeyType Fetch_ID_By_Index(int index) { return m_indexTable[index].m_id; }
+    ValueType &Fetch_Data_By_Index(int32_t index) { return m_indexTable[index].m_data; }
+    KeyType Fetch_ID_By_Index(int32_t index) { return m_indexTable[index].m_id; }
     bool Is_Present(const KeyType &id) const;
     bool Add_Index(const KeyType &id, const ValueType &data);
     bool Remove_Index(const KeyType &id);
     void Clear();
-    int Count() const { return m_indexCount; }
-    bool Increase_Table_Size(int amount);
+    int32_t Count() const { return m_indexCount; }
+    bool Increase_Table_Size(int32_t amount);
     void Set_Archive(NodeElement *archive) const { m_archive = archive; }
     bool Is_Archive_Same(const KeyType &id) const { return m_archive != nullptr && m_archive->m_id == id; }
     void Invalidate_Archive() const { m_archive = nullptr; }
@@ -65,12 +65,12 @@ public:
 
 private:
     // Comparator function for qsort to sort an array and bsearch to search it.
-    static int Search_Compare(void const *a, void const *b);
+    static int32_t Search_Compare(void const *a, void const *b);
 
 private:
     NodeElement *m_indexTable;
-    int m_indexCount;
-    int m_indexSize;
+    int32_t m_indexCount;
+    int32_t m_indexSize;
     mutable bool m_isSorted;
     mutable NodeElement *m_archive;
 };
@@ -126,7 +126,7 @@ bool IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueTyp
         return true;
     }
 
-    int size = m_indexSize;
+    int32_t size = m_indexSize;
 
     if (size <= 0) {
         size = 10;
@@ -146,8 +146,8 @@ bool IndexClass<KeyType, ValueType>::Add_Index(const KeyType &id, const ValueTyp
 
 template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Remove_Index(const KeyType &id)
 {
-    int pos = -1;
-    for (int i = 0; i < m_indexCount; ++i) {
+    int32_t pos = -1;
+    for (int32_t i = 0; i < m_indexCount; ++i) {
         if (m_indexTable[i].m_id == id) {
             pos = i;
             break;
@@ -158,7 +158,7 @@ template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>:
         return false;
     }
 
-    for (int i = pos; i < m_indexCount - 1; ++i) {
+    for (int32_t i = pos; i < m_indexCount - 1; ++i) {
         m_indexTable[i] = m_indexTable[i + 1];
     }
 
@@ -185,18 +185,18 @@ template<typename KeyType, class ValueType> void IndexClass<KeyType, ValueType>:
     Invalidate_Archive();
 }
 
-template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int amount)
+template<typename KeyType, class ValueType> bool IndexClass<KeyType, ValueType>::Increase_Table_Size(int32_t amount)
 {
     captainslog_assert(amount > 0);
 
     if (amount >= 0) {
-        int newsize = m_indexSize + amount;
+        int32_t newsize = m_indexSize + amount;
         NodeElement *newindex = new NodeElement[newsize];
 
         if (newindex != nullptr) {
             captainslog_assert(m_indexCount < newsize);
 
-            for (int i = 0; i < m_indexCount; ++i) {
+            for (int32_t i = 0; i < m_indexCount; ++i) {
                 newindex[i].m_id = m_indexTable[i].m_id;
                 newindex[i].m_data = m_indexTable[i].m_data;
             }
@@ -238,7 +238,7 @@ typename IndexClass<KeyType, ValueType>::NodeElement *IndexClass<KeyType, ValueT
 }
 
 template<typename KeyType, class ValueType>
-int IndexClass<KeyType, ValueType>::Search_Compare(void const *ptr1, void const *ptr2)
+int32_t IndexClass<KeyType, ValueType>::Search_Compare(void const *ptr1, void const *ptr2)
 {
     if (static_cast<const NodeElement *>(ptr1)->m_id < static_cast<const NodeElement *>(ptr2)->m_id) {
         return -1;

@@ -34,7 +34,7 @@ WinInstanceData::~WinInstanceData()
 
 void WinInstanceData::Init()
 {
-    for (int i = 0; i < MAX_DRAW_DATA; ++i) {
+    for (int32_t i = 0; i < MAX_DRAW_DATA; ++i) {
         m_enabledDrawData[i].image = nullptr;
         m_enabledDrawData[i].color = WIN_COLOR_UNDEFINED;
         m_enabledDrawData[i].borderColor = WIN_COLOR_UNDEFINED;
@@ -108,7 +108,7 @@ Utf16String WinInstanceData::Get_Text()
     return Utf16String(Utf16String::s_emptyString);
 }
 
-int WinInstanceData::Get_Text_Length()
+int32_t WinInstanceData::Get_Text_Length()
 {
     if (m_text != nullptr) {
         return m_text->Get_Text_Length();
@@ -137,7 +137,7 @@ Utf16String WinInstanceData::Get_Tooltip_Text()
     return Utf16String::s_emptyString;
 }
 
-int WinInstanceData::Get_Tooltip_Text_Length()
+int32_t WinInstanceData::Get_Tooltip_Text_Length()
 {
     if (m_tooltip != nullptr) {
         return m_tooltip->Get_Text_Length();
@@ -159,7 +159,7 @@ WinInstanceData &WinInstanceData::operator=(const WinInstanceData &that)
     m_status = that.m_status;
     m_owner = that.m_owner;
 
-    for (int i = 0; i < MAX_DRAW_DATA; ++i) {
+    for (int32_t i = 0; i < MAX_DRAW_DATA; ++i) {
         m_enabledDrawData[i] = that.m_enabledDrawData[i];
         m_disabledDrawData[i] = that.m_disabledDrawData[i];
         m_hiliteDrawData[i] = that.m_hiliteDrawData[i];

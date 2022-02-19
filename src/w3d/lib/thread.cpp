@@ -126,7 +126,7 @@ void ThreadClass::Execute()
 /**
  * @brief Set thread priority where supported by the platform.
  */
-void ThreadClass::Set_Priority(int priority)
+void ThreadClass::Set_Priority(int32_t priority)
 {
     m_priority = priority;
 
@@ -140,11 +140,11 @@ void ThreadClass::Set_Priority(int priority)
 /**
  * @brief Stop the thread, giving it a specified time to complete.
  */
-void ThreadClass::Stop(unsigned int ms)
+void ThreadClass::Stop(uint32_t ms)
 {
     captainslog_trace("Stopping thread '%s'.", m_threadName);
     m_isRunning = false;
-    unsigned int time = g_theSysTimer.Get();
+    uint32_t time = g_theSysTimer.Get();
 
     while (m_handle != 0) {
         if (g_theSysTimer.Get() - time > ms) {
@@ -172,7 +172,7 @@ void ThreadClass::Stop(unsigned int ms)
 /**
  * @brief Wrapper around the platform sleep function.
  */
-void ThreadClass::Sleep_Ms(unsigned int ms)
+void ThreadClass::Sleep_Ms(uint32_t ms)
 {
     rts::Sleep_Ms(ms);
 }
@@ -194,7 +194,7 @@ void ThreadClass::Switch_Thread()
 /**
  * @brief Get an integral value that identifies the thread.
  */
-int ThreadClass::Get_Current_Thread_ID()
+int32_t ThreadClass::Get_Current_Thread_ID()
 {
 #ifdef PLATFORM_WINDOWS
     return GetCurrentThreadId();

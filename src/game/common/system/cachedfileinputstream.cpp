@@ -27,7 +27,7 @@ CachedFileInputStream::~CachedFileInputStream()
 /**
  * @brief Read data from the cached file.
  */
-int CachedFileInputStream::Read(void *dst, int size)
+int32_t CachedFileInputStream::Read(void *dst, int32_t size)
 {
     if (m_cachedData != nullptr) {
         if (m_cachePos + size > m_cachedSize) {
@@ -96,7 +96,7 @@ bool CachedFileInputStream::Open(Utf8String filename)
 
     // Handle compressed data.
     if (CompressionManager::Is_Data_Compressed(m_cachedData, m_cachedSize)) {
-        int decomp_size = CompressionManager::Get_Uncompressed_Size(m_cachedData, m_cachedSize);
+        int32_t decomp_size = CompressionManager::Get_Uncompressed_Size(m_cachedData, m_cachedSize);
         uint8_t *decomp_data = new uint8_t[decomp_size];
 
         if (CompressionManager::Decompress_Data(m_cachedData, m_cachedSize, decomp_data, decomp_size) == decomp_size) {

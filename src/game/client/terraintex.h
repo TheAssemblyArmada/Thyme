@@ -23,15 +23,15 @@ class TerrainTextureClass : public TextureClass
 {
     IMPLEMENT_W3D_POOL(TerrainTextureClass)
 public:
-    TerrainTextureClass(int height);
-    TerrainTextureClass(int width, int height);
+    TerrainTextureClass(int32_t height);
+    TerrainTextureClass(int32_t width, int32_t height);
 #ifdef GAME_DLL
-    TerrainTextureClass *Hook_Ctor1(int height) { return new (this) TerrainTextureClass(height); }
-    TerrainTextureClass *Hook_Ctor2(int width, int height) { return new (this) TerrainTextureClass(width, height); }
+    TerrainTextureClass *Hook_Ctor1(int32_t height) { return new (this) TerrainTextureClass(height); }
+    TerrainTextureClass *Hook_Ctor2(int32_t width, int32_t height) { return new (this) TerrainTextureClass(width, height); }
 #endif
-    int Update(WorldHeightMap *ht_map);
-    bool Update_Flat(WorldHeightMap *ht_map, int x, int y, int pixels_per_cell, unsigned int cell_width);
-    void Set_LOD(int lod);
+    int32_t Update(WorldHeightMap *ht_map);
+    bool Update_Flat(WorldHeightMap *ht_map, int32_t x, int32_t y, int32_t pixels_per_cell, uint32_t cell_width);
+    void Set_LOD(int32_t lod);
     void Apply(unsigned stage) override;
 };
 
@@ -64,15 +64,15 @@ class AlphaEdgeTextureClass : public TextureClass
 {
     IMPLEMENT_W3D_POOL(AlphaEdgeTextureClass)
 public:
-    AlphaEdgeTextureClass(int height, MipCountType mips);
+    AlphaEdgeTextureClass(int32_t height, MipCountType mips);
 #ifdef GAME_DLL
-    AlphaEdgeTextureClass *Hook_Ctor(int height, MipCountType mips)
+    AlphaEdgeTextureClass *Hook_Ctor(int32_t height, MipCountType mips)
     {
         return new (this) AlphaEdgeTextureClass(height, mips);
     }
 #endif
     void Apply(unsigned stage) override;
-    int Update(WorldHeightMap *ht_map);
+    int32_t Update(WorldHeightMap *ht_map);
 };
 
 class CloudMapTerrainTextureClass : public TextureClass
@@ -89,7 +89,7 @@ public:
 protected:
     float m_xSlidePerSecond;
     float m_ySlidePerSecond;
-    int m_curTick;
+    int32_t m_curTick;
     float m_xOffset;
     float m_yOffset;
 };

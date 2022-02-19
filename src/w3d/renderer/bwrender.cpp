@@ -20,12 +20,12 @@
 using GameMath::Float_To_Int_Floor;
 using std::memset;
 
-BWRenderClass::Buffer::Buffer(unsigned char *buffer, int scale) :
+BWRenderClass::Buffer::Buffer(unsigned char *buffer, int32_t scale) :
     m_buffer(buffer), m_scale(scale), m_minv(3), m_maxv(scale - m_minv)
 {
 }
 
-void BWRenderClass::Buffer::Set_H_Line(int start_x, int end_x, int y)
+void BWRenderClass::Buffer::Set_H_Line(int32_t start_x, int32_t end_x, int32_t y)
 {
     if (y >= m_minv && y < m_maxv && end_x >= m_minv && start_x < m_maxv) {
         if (start_x < m_minv) {
@@ -44,7 +44,7 @@ void BWRenderClass::Buffer::Fill(unsigned char color)
     memset(m_buffer, color, m_scale * 2);
 }
 
-BWRenderClass::BWRenderClass(unsigned char *buffer, int scale) : m_pixelBuffer(buffer, scale), m_vertices(nullptr) {}
+BWRenderClass::BWRenderClass(unsigned char *buffer, int32_t scale) : m_pixelBuffer(buffer, scale), m_vertices(nullptr) {}
 
 BWRenderClass::~BWRenderClass() {}
 
@@ -53,7 +53,7 @@ void BWRenderClass::Fill(unsigned char color)
     m_pixelBuffer.Fill(color);
 }
 
-void BWRenderClass::Set_Vertex_Locations(Vector2 *vertices, int count)
+void BWRenderClass::Set_Vertex_Locations(Vector2 *vertices, int32_t count)
 {
     m_vertices = vertices;
     float half_scale = (float)m_pixelBuffer.Scale() / 2.0f;
@@ -100,17 +100,17 @@ void BWRenderClass::Render_Triangle(const Vector2 &c1, const Vector2 &c2, const 
     Render_Preprocessed_Triangle(x_corners, y_corners);
 }
 
-void BWRenderClass::Render_Triangles(const unsigned int *indices, int index_count)
+void BWRenderClass::Render_Triangles(const uint32_t *indices, int32_t index_count)
 {
-    int count = index_count / 3;
+    int32_t count = index_count / 3;
 
-    for (int i = 0; i < count; ++i) {
+    for (int32_t i = 0; i < count; ++i) {
 
-        unsigned int idx_0 = indices[0];
+        uint32_t idx_0 = indices[0];
         ++indices;
-        unsigned int idx_1 = indices[0];
+        uint32_t idx_1 = indices[0];
         ++indices;
-        unsigned int idx_2 = indices[0];
+        uint32_t idx_2 = indices[0];
         ++indices;
 
         if (Edge_Function(m_vertices[idx_0], m_vertices[idx_1], m_vertices[idx_2]) == false) {
@@ -119,19 +119,19 @@ void BWRenderClass::Render_Triangles(const unsigned int *indices, int index_coun
     }
 }
 
-void BWRenderClass::Render_Triangle_Strip(const unsigned int *indices, int index_count)
+void BWRenderClass::Render_Triangle_Strip(const uint32_t *indices, int32_t index_count)
 {
-    int count = index_count - 2;
+    int32_t count = index_count - 2;
 
     bool bool1 = false;
 
-    for (int i = 0; i < count; ++i) {
+    for (int32_t i = 0; i < count; ++i) {
 
         bool1 = bool1 == false;
 
-        unsigned int idx_0 = indices[0];
-        unsigned int idx_1 = indices[1];
-        unsigned int idx_2 = indices[2];
+        uint32_t idx_0 = indices[0];
+        uint32_t idx_1 = indices[1];
+        uint32_t idx_2 = indices[2];
 
         ++indices;
 
@@ -155,10 +155,10 @@ void BWRenderClass::Render_Preprocessed_Triangle(Vector3 &x_corners, Vector3i &y
     float right = left;
 
     // left_height represents the height of the flat top triangle
-    int left_height = y_corners[1] - y_corners[0];
-    int right_height = y_corners[2] - y_corners[0];
+    int32_t left_height = y_corners[1] - y_corners[0];
+    int32_t right_height = y_corners[2] - y_corners[0];
 
-    int y = y_corners[0];
+    int32_t y = y_corners[0];
 
     // Flat Top Triangle Draw
     if (left_height) {
@@ -190,7 +190,7 @@ void BWRenderClass::Render_Preprocessed_Triangle(Vector3 &x_corners, Vector3i &y
     }
 
     // This represents the height of the flat bottom triangle
-    int height = y_corners[2] - y_corners[1];
+    int32_t height = y_corners[2] - y_corners[1];
     y = y_corners[1];
 
     // Flat bottom Triangle Draw

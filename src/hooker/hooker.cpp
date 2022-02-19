@@ -23,7 +23,7 @@
 
 #include "hooker.h"
 
-static const int nBinarySize = 0x0062F000;  //Size of game binary
+static const int32_t nBinarySize = 0x0062F000;  //Size of game binary
 
 //HANDLE hProcess = GetCurrentProcess();
 DWORD OldProtect;

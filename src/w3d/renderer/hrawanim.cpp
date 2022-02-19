@@ -138,7 +138,7 @@ bool HRawAnimClass::Read_Channel(ChunkLoadClass &cload, MotionChannelClass **new
 
 void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
 {
-    const int pivot = newchan->Get_Pivot();
+    const int32_t pivot = newchan->Get_Pivot();
 
     switch (newchan->m_type) {
         case ANIM_CHANNEL_X:
@@ -188,13 +188,13 @@ void HRawAnimClass::Add_Bit_Channel(BitChannelClass *newchan)
     }
 }
 
-void HRawAnimClass::Get_Translation(Vector3 &trans, int pividx, float frame) const
+void HRawAnimClass::Get_Translation(Vector3 &trans, int32_t pividx, float frame) const
 {
     auto motion = &m_nodeMotion[pividx];
 
     if (motion->X || motion->Y || motion->Z) {
-        int frame0 = frame - 0.49999899f;
-        int frame1 = frame0 + 1;
+        int32_t frame0 = frame - 0.49999899f;
+        int32_t frame1 = frame0 + 1;
         float delta = frame - (float)frame0;
 
         if (frame1 >= m_numFrames) {
@@ -239,10 +239,10 @@ void HRawAnimClass::Get_Translation(Vector3 &trans, int pividx, float frame) con
     }
 }
 
-void HRawAnimClass::Get_Orientation(Quaternion &q, int pividx, float frame) const
+void HRawAnimClass::Get_Orientation(Quaternion &q, int32_t pividx, float frame) const
 {
-    int frame0 = frame - 0.49999899f;
-    int frame1 = frame0 + 1;
+    int32_t frame0 = frame - 0.49999899f;
+    int32_t frame1 = frame0 + 1;
     float delta = frame - (float)frame0;
 
     if (frame1 >= m_numFrames) {
@@ -269,10 +269,10 @@ void HRawAnimClass::Get_Orientation(Quaternion &q, int pividx, float frame) cons
     }
 }
 
-void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
+void HRawAnimClass::Get_Transform(Matrix3D &mtx, int32_t pividx, float frame) const
 {
-    int frame0 = frame - 0.49999899f;
-    int frame1 = frame0 + 1;
+    int32_t frame0 = frame - 0.49999899f;
+    int32_t frame1 = frame0 + 1;
     float delta = frame - (float)frame0;
     NodeMotionStruct *mot = &m_nodeMotion[pividx];
 
@@ -349,7 +349,7 @@ void HRawAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
     }
 }
 
-bool HRawAnimClass::Get_Visibility(int pividx, float frame)
+bool HRawAnimClass::Get_Visibility(int32_t pividx, float frame)
 {
     if (m_nodeMotion[pividx].Vis == nullptr) {
         return true;
@@ -358,7 +358,7 @@ bool HRawAnimClass::Get_Visibility(int pividx, float frame)
     return m_nodeMotion[pividx].Vis->Get_Bit(frame) == 1;
 }
 
-bool HRawAnimClass::Is_Node_Motion_Present(int pividx)
+bool HRawAnimClass::Is_Node_Motion_Present(int32_t pividx)
 {
     NodeMotionStruct *mot = &m_nodeMotion[pividx];
 
@@ -393,27 +393,27 @@ bool HRawAnimClass::Is_Node_Motion_Present(int pividx)
     return mot->Vis != nullptr;
 }
 
-bool HRawAnimClass::Has_X_Translation(int pividx)
+bool HRawAnimClass::Has_X_Translation(int32_t pividx)
 {
     return m_nodeMotion[pividx].X != nullptr;
 }
 
-bool HRawAnimClass::Has_Y_Translation(int pividx)
+bool HRawAnimClass::Has_Y_Translation(int32_t pividx)
 {
     return m_nodeMotion[pividx].Y != nullptr;
 }
 
-bool HRawAnimClass::Has_Z_Translation(int pividx)
+bool HRawAnimClass::Has_Z_Translation(int32_t pividx)
 {
     return m_nodeMotion[pividx].Z != nullptr;
 }
 
-bool HRawAnimClass::Has_Rotation(int pividx)
+bool HRawAnimClass::Has_Rotation(int32_t pividx)
 {
     return m_nodeMotion[pividx].Q != nullptr;
 }
 
-bool HRawAnimClass::Has_Visibility(int pividx)
+bool HRawAnimClass::Has_Visibility(int32_t pividx)
 {
     return m_nodeMotion[pividx].Vis != nullptr;
 }

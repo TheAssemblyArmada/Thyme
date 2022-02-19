@@ -46,8 +46,8 @@ public:
     void Push_Material_Pass(MaterialPassClass *matpass);
     void Pop_Material_Pass();
 
-    int Additional_Pass_Count() { return m_additionalMaterialPassCount; }
-    MaterialPassClass *Peek_Additional_Pass(int i) const;
+    int32_t Additional_Pass_Count() { return m_additionalMaterialPassCount; }
+    MaterialPassClass *Peek_Additional_Pass(int32_t i) const;
 
     void Push_Override_Flags(RINFO_OVERRIDE_FLAGS flags);
     void Pop_Override_Flags();
@@ -55,9 +55,9 @@ public:
 
 public:
     CameraClass &m_camera;
-    int field_4; // possibly float - fog_scale, fog_start, fog_end or according to BFME2 Vector3 FogColor
-    int field_8;
-    int field_C;
+    int32_t field_4; // possibly float - fog_scale, fog_start, fog_end or according to BFME2 Vector3 FogColor
+    int32_t field_8;
+    int32_t field_C;
     float m_alphaOverride;
     float m_opacityOverride;
     float m_emissiveScale;
@@ -66,10 +66,10 @@ public:
 
 protected:
     MaterialPassClass *m_additionalMaterialPassArray[ADDITIONAL_MATERIAL_PASSES];
-    unsigned int m_additionalMaterialPassCount;
-    int field_A8; // some delay for pushes
+    uint32_t m_additionalMaterialPassCount;
+    int32_t field_A8; // some delay for pushes
     RINFO_OVERRIDE_FLAGS m_overrideFlag[MAX_OVERRIDE_FLAG_LEVEL];
-    unsigned int m_overrideFlagLevel;
+    uint32_t m_overrideFlagLevel;
 };
 
 class SpecialRenderInfoClass : public RenderInfoClass

@@ -32,7 +32,7 @@ private:
     float m_width;
     float m_tileFactor;
     float m_scrollRate;
-    int m_maxSegments;
+    int32_t m_maxSegments;
     friend class W3DProjectileStreamDraw;
 };
 
@@ -57,7 +57,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    void Make_Or_Update_Line(Vector3 *points, unsigned int point_count, int line_index);
+    void Make_Or_Update_Line(Vector3 *points, uint32_t point_count, int32_t line_index);
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);
@@ -70,5 +70,5 @@ public:
 private:
     TextureClass *m_texture;
     SegmentedLineClass *m_allLines[MAX_SEGMENT_COUNT];
-    int m_linesValid;
+    int32_t m_linesValid;
 };

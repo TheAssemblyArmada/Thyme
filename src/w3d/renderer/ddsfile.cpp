@@ -71,7 +71,7 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
             "DDS file '%s' does not have the correct FourCC value in the first 4 bytes, has '%s'.", m_name, fourcc_debug);
     }
 
-    int header_size = fp->Read(&m_fileHeader, sizeof(m_fileHeader));
+    int32_t header_size = fp->Read(&m_fileHeader, sizeof(m_fileHeader));
 
     // Check that we read the header correctly, if not, return?
     if (header_size != sizeof(m_fileHeader) || header_size != m_fileHeader.dwSize) {
@@ -380,7 +380,7 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
     // Gen and ZH only handle DXT1 and DXT5
     switch (m_format) {
         case WW3D_FORMAT_DXT1: {
-            int offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
+            int32_t offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[8 * offset];
             uint32_t color_a = Decode_Packed_565(block_mem);
@@ -398,11 +398,11 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
                     RGBA_To_Color(color_b, rgba);
                 }
 
-                for (int j = 0; j < 4; ++j) {
+                for (int32_t j = 0; j < 4; ++j) {
                     uint8_t *putp = dst_ptr;
                     dst_ptr += dst_pitch;
 
-                    for (int i = 0; i < 4; ++i) {
+                    for (int32_t i = 0; i < 4; ++i) {
                         uint32_t final_color = 0;
 
                         switch (block_mem[j + 4] & 3) {
@@ -440,11 +440,11 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
                     RGBA_To_Color(color_b, rgba);
                 }
 
-                for (int j = 0; j < 4; ++j) {
+                for (int32_t j = 0; j < 4; ++j) {
                     uint8_t *putp = dst_ptr;
                     dst_ptr += dst_pitch;
 
-                    for (int i = 0; i < 4; ++i) {
+                    for (int32_t i = 0; i < 4; ++i) {
                         uint32_t final_color = 0;
 
                         switch (block_mem[j + 4] & 3) {
@@ -477,7 +477,7 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
         }
             return has_alpha;
         case WW3D_FORMAT_DXT5: {
-            int offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
+            int32_t offset = (src_x / 4) + (src_y / 4) * (Get_Width(level) / 4);
             unsigned dst_pixel = 0;
             uint8_t *block_mem = &Get_Memory_Pointer(level)[16 * offset];
 
@@ -508,27 +508,27 @@ bool DDSFileClass::Get_4x4_Block(uint8_t *dst_ptr,
             uint32_t color_b = Decode_Packed_565(block_mem + 10);
             unsigned alpha_indices[16];
 
-            for (int i = 0; i < 2; ++i) {
+            for (int32_t i = 0; i < 2; ++i) {
                 // grab 3 bytes
-                int value = 0;
+                int32_t value = 0;
 
-                for (int j = 0; j < 3; ++j) {
-                    int byte = block_mem[2 + j];
+                for (int32_t j = 0; j < 3; ++j) {
+                    int32_t byte = block_mem[2 + j];
                     value |= (byte << 8 * j);
                 }
 
                 // unpack 8 3-bit values from it
-                for (int j = 0; j < 8; ++j) {
+                for (int32_t j = 0; j < 8; ++j) {
                     unsigned index = (value >> 3 * j) & 0x7;
                     alpha_indices[i * 8 + j] = index;
                 }
             }
 
-            for (int j = 0; j < 4; j++) {
+            for (int32_t j = 0; j < 4; j++) {
                 uint8_t *putp = dst_ptr;
                 dst_ptr += dst_pitch;
 
-                for (int i = 0; i < 4; i++) {
+                for (int32_t i = 0; i < 4; i++) {
                     unsigned alpha = alphas[alpha_indices[j * 4 + i]];
                     has_alpha = alpha < 255;
                     uint32_t final_color = 0;

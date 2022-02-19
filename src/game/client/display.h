@@ -57,11 +57,11 @@ public:
     virtual unsigned Get_Height() { return m_height; }
     virtual void Set_Bit_Depth(unsigned bitDepth) { m_bitDepth = bitDepth; }
     virtual unsigned Get_Bit_Depth() { return m_bitDepth; };
-    virtual void Set_Windowed(int windowed) { m_windowed = windowed != 0; }
-    virtual int Get_Windowed() { return m_windowed; }
+    virtual void Set_Windowed(int32_t windowed) { m_windowed = windowed != 0; }
+    virtual int32_t Get_Windowed() { return m_windowed; }
     virtual bool Set_Display_Mode(unsigned width, unsigned height, unsigned bits, bool windowed);
-    virtual int Get_Display_Mode_Count() { return 0; }
-    virtual void Get_Display_Mode_Description(int, int *, int *, int *) {}
+    virtual int32_t Get_Display_Mode_Count() { return 0; }
+    virtual void Get_Display_Mode_Description(int32_t, int32_t *, int32_t *, int32_t *) {}
     virtual void Set_Gamma(float, float, float, bool) {}
     virtual bool Test_Min_Spec_Requirements(bool *a2, bool *a3, bool *a4, StaticGameLODLevel *lod_level, float *a6)
     {
@@ -85,16 +85,16 @@ public:
     virtual void Enable_Clipping(bool) = 0;
     virtual void Set_Time_Of_Day(TimeOfDayType) = 0;
     virtual void Create_Light_Pulse(const Coord3D *, const RGBColor *, float, float, unsigned, unsigned) = 0;
-    virtual void Draw_Line(int, int, int, int, float, unsigned) = 0;
-    virtual void Draw_Line(int, int, int, int, float, unsigned, unsigned) = 0;
-    virtual void Draw_Open_Rect(int, int, int, int, float, unsigned) = 0;
-    virtual void Draw_Fill_Rect(int, int, int, int, unsigned) = 0;
-    virtual void Draw_Rect_Clock(int, int, int, int, int, unsigned) = 0;
-    virtual void Draw_Remaining_Rect_Clock(int, int, int, int, int, unsigned) = 0;
+    virtual void Draw_Line(int32_t, int32_t, int32_t, int32_t, float, unsigned) = 0;
+    virtual void Draw_Line(int32_t, int32_t, int32_t, int32_t, float, unsigned, unsigned) = 0;
+    virtual void Draw_Open_Rect(int32_t, int32_t, int32_t, int32_t, float, unsigned) = 0;
+    virtual void Draw_Fill_Rect(int32_t, int32_t, int32_t, int32_t, unsigned) = 0;
+    virtual void Draw_Rect_Clock(int32_t, int32_t, int32_t, int32_t, int32_t, unsigned) = 0;
+    virtual void Draw_Remaining_Rect_Clock(int32_t, int32_t, int32_t, int32_t, int32_t, unsigned) = 0;
     virtual void Draw_Image(
         Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) = 0;
-    virtual void Draw_VideoBuffer(VideoBuffer *, int, int, int, int) = 0;
-    virtual void Play_Logo_Movie(Utf8String name, int a3, int a4);
+    virtual void Draw_VideoBuffer(VideoBuffer *, int32_t, int32_t, int32_t, int32_t) = 0;
+    virtual void Play_Logo_Movie(Utf8String name, int32_t a3, int32_t a4);
     virtual void Play_Movie(Utf8String name);
     virtual void Stop_Movie();
     virtual bool Is_Movie_Playing() { return m_videoStream != nullptr && m_videoBuffer != nullptr; }
@@ -104,7 +104,7 @@ public:
         m_debugDisplayUserData = data;
     }
     virtual debugdisplaycallback_t Get_Debug_Display_Callback() { return m_debugDisplayCallback; }
-    virtual void Set_Shroud_Level(int, int, CellShroudStatus) = 0;
+    virtual void Set_Shroud_Level(int32_t, int32_t, CellShroudStatus) = 0;
     virtual void Clear_Shroud() = 0;
     virtual void Set_Border_Shroud_Level(uint8_t level) = 0;
 #ifdef GAME_DEBUG_STRUCTS
@@ -120,9 +120,9 @@ public:
     virtual bool Is_LetterBoxed() { return 0; }
     virtual void Set_Cinematic_Text(Utf8String text) { m_cinematicText = text; }
     virtual void Set_Cinematic_Font(GameFont *font) { m_cinematicFont = font; }
-    virtual void Set_Cinematic_Text_Frames(int frames) { m_cinematicTextFrames = frames; }
+    virtual void Set_Cinematic_Text_Frames(int32_t frames) { m_cinematicTextFrames = frames; }
     virtual float Get_Average_FPS() = 0;
-    virtual int Get_Last_Frame_Draw_Calls() = 0;
+    virtual int32_t Get_Last_Frame_Draw_Calls() = 0;
     virtual void Delete_Views();
 
 protected:
@@ -133,7 +133,7 @@ protected:
     View *m_viewList;
     Utf8String m_cinematicText;
     GameFont *m_cinematicFont;
-    int m_cinematicTextFrames;
+    int32_t m_cinematicTextFrames;
     VideoBuffer *m_videoBuffer;
     VideoStream *m_videoStream;
     Utf8String m_currentlyPlayingMovie;
@@ -142,9 +142,9 @@ protected:
     void *m_debugDisplayUserData;
     float m_letterBoxFadeLevel;
     bool m_letterBoxEnabled;
-    int m_letterBoxFadeStartTime;
-    int m_someLogoMovieInt1;
-    int m_someLogoMovieInt2;
+    int32_t m_letterBoxFadeStartTime;
+    int32_t m_someLogoMovieInt1;
+    int32_t m_someLogoMovieInt2;
     unsigned m_someLogoMovieTime;
     unsigned m_unkInt;
     DisplayString *m_unkDisplayString;

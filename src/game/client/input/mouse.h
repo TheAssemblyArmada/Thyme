@@ -80,18 +80,18 @@ struct MouseIO
         MOUSE_STATE_DBLCLICK,
     };
     ICoord2D pos;
-    int wheel_pos;
-    int wheel_delta;
+    int32_t wheel_pos;
+    int32_t wheel_delta;
     ICoord2D delta_pos;
-    int left_state;
-    int left_event;
-    int left_frame;
-    int right_state;
-    int right_event;
-    int right_frame;
-    int middle_state;
-    int middle_event;
-    int middle_frame;
+    int32_t left_state;
+    int32_t left_event;
+    int32_t left_frame;
+    int32_t right_state;
+    int32_t right_event;
+    int32_t right_frame;
+    int32_t middle_state;
+    int32_t middle_event;
+    int32_t middle_frame;
 };
 
 class CursorInfo
@@ -111,9 +111,9 @@ public:
     float w3d_scale;
     bool loop;
     ICoord2D hot_spot;
-    int frames;
+    int32_t frames;
     float fps;
-    int directions;
+    int32_t directions;
 };
 
 class INI;
@@ -150,7 +150,7 @@ public:
     virtual void Parse_INI();
     virtual void Init_Cursor_Resources() = 0;
     virtual void Create_Stream_Messages();
-    virtual void Set_Position(int x, int y);
+    virtual void Set_Position(int32_t x, int32_t y);
     virtual void Set_Cursor(MouseCursor cursor) = 0;
     virtual void Capture() = 0;
     virtual void Release_Capture() = 0;
@@ -175,8 +175,8 @@ public:
 
 protected:
     void Update_Mouse_Data();
-    void Process_Mouse_Event(int event_num);
-    void Move_Mouse(int x, int y, int absolute); // TODO Should be bool absolute, fix after verifying correctness.
+    void Process_Mouse_Event(int32_t event_num);
+    void Move_Mouse(int32_t x, int32_t y, int32_t absolute); // TODO Should be bool absolute, fix after verifying correctness.
     MouseCursor Get_Cursor_Index(const Utf8String &name);
     void Set_Mouse_Text(const MouseCursor cursor);
     void Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, const RGBAColorInt *drop_color);
@@ -184,11 +184,11 @@ protected:
 protected:
     CursorInfo m_cursorInfo[CURSOR_COUNT];
     Utf8String m_tooltipFontName;
-    int m_tooltipFontSize;
+    int32_t m_tooltipFontSize;
     bool m_tooltipFontIsBold;
     bool m_tooltipAnimateBackground;
-    int m_tooltipFillTime;
-    int m_tooltipDelayTime;
+    int32_t m_tooltipFillTime;
+    int32_t m_tooltipDelayTime;
     float m_tooltipWidth;
     float unkFloat;
     RGBAColorInt m_tooltipColorText;
@@ -215,25 +215,25 @@ protected:
     MouseIO m_mouseEvents[MAX_EVENTS];
     MouseIO m_currMouse;
     MouseIO m_prevMouse;
-    int m_minX;
-    int m_maxX;
-    int m_minY;
-    int m_maxY;
-    int m_inputFrame;
-    int m_deadInputFrame;
+    int32_t m_minX;
+    int32_t m_maxX;
+    int32_t m_minY;
+    int32_t m_maxY;
+    int32_t m_inputFrame;
+    int32_t m_deadInputFrame;
     bool m_inputMovesAbsolute;
     bool m_visible;
     MouseCursor m_currentCursor;
     DisplayString *m_cursorTextDisplayString;
     RGBAColorInt m_cursorTextColor;
     RGBAColorInt m_cursorTextDropColor;
-    int m_tooltipDelay;
-    int m_highlightPos;
-    int m_highlightUpdateStart;
+    int32_t m_tooltipDelay;
+    int32_t m_highlightPos;
+    int32_t m_highlightUpdateStart;
     unsigned m_stillTime;
     RGBAColorInt m_tooltipColorTextCopy;
     RGBAColorInt m_tooltipColorBackgroundCopy;
-    int m_eventCount;
+    int32_t m_eventCount;
 
 private:
     static const char *s_cursorNames[];

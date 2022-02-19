@@ -30,19 +30,19 @@ public:
 
     const Vector3 &Get_Equivalent_Ambient() const { return m_outputAmbient; }
     void Set_Equivalent_Ambient(Vector3 &ambient) { m_outputAmbient = ambient; }
-    int Get_Light_Count() const { return m_lightCount; }
-    const Vector3 &Get_Light_Direction(int i) const { return m_inputLights[i].m_direction; }
-    const Vector3 &Get_Light_Diffuse(int i) const { return m_inputLights[i].m_diffuse; }
+    int32_t Get_Light_Count() const { return m_lightCount; }
+    const Vector3 &Get_Light_Direction(int32_t i) const { return m_inputLights[i].m_direction; }
+    const Vector3 &Get_Light_Diffuse(int32_t i) const { return m_inputLights[i].m_diffuse; }
 
     void Add_Fill_Light();
     void Calculate_Fill_Light();
 
-    bool Is_Point_Light(int i) { return m_inputLights[i].m_isPoint; }
-    float Get_Point_Inner_Radius(int i) { return m_inputLights[i].m_pointInnerRadius; }
-    float Get_Point_Outer_Radius(int i) { return m_inputLights[i].m_pointOuterRadius; }
-    const Vector3 &Get_Point_Diffuse(int i) { return m_inputLights[i].m_pointDiffuse; }
-    const Vector3 &Get_Point_Ambient(int i) { return m_inputLights[i].m_pointAmbient; }
-    const Vector3 &Get_Point_Center(int i) { return m_inputLights[i].m_pointCenter; }
+    bool Is_Point_Light(int32_t i) { return m_inputLights[i].m_isPoint; }
+    float Get_Point_Inner_Radius(int32_t i) { return m_inputLights[i].m_pointInnerRadius; }
+    float Get_Point_Outer_Radius(int32_t i) { return m_inputLights[i].m_pointOuterRadius; }
+    const Vector3 &Get_Point_Diffuse(int32_t i) { return m_inputLights[i].m_pointDiffuse; }
+    const Vector3 &Get_Point_Ambient(int32_t i) { return m_inputLights[i].m_pointAmbient; }
+    const Vector3 &Get_Point_Center(int32_t i) { return m_inputLights[i].m_pointCenter; }
 
     static void Set_Lighting_LOD_Cutoff(float inten);
     static float Get_Lighting_LOD_Cutoff();
@@ -81,7 +81,7 @@ protected:
         Vector3 m_diffuse; // diffuse color * attenuation
     };
 
-    int m_lightCount; // number of lights this environment has
+    int32_t m_lightCount; // number of lights this environment has
     Vector3 m_objectCenter; // center of the object to be lit
     InputLightStruct m_inputLights[MAX_LIGHTS]; // input lights
     Vector3 m_outputAmbient; // scene ambient + lights ambients

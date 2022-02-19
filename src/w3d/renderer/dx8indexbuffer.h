@@ -34,13 +34,13 @@ public:
     {
         ALLOW_HOOKING
     public:
-        WriteLockClass(IndexBufferClass *index_buffer_, unsigned int flags);
+        WriteLockClass(IndexBufferClass *index_buffer_, uint32_t flags);
         ~WriteLockClass();
         unsigned short *Get_Index_Array() { return m_indices; }
 
     private:
 #ifdef GAME_DLL
-        WriteLockClass *Hook_Ctor(IndexBufferClass *index_buffer_, int Flags)
+        WriteLockClass *Hook_Ctor(IndexBufferClass *index_buffer_, int32_t Flags)
         {
             return new (this) WriteLockClass(index_buffer_, Flags);
         }
@@ -53,13 +53,13 @@ public:
     {
         ALLOW_HOOKING
     public:
-        AppendLockClass(IndexBufferClass *index_buffer_, unsigned int start_index, unsigned int index_range);
+        AppendLockClass(IndexBufferClass *index_buffer_, uint32_t start_index, uint32_t index_range);
         ~AppendLockClass();
         unsigned short *Get_Index_Array() { return m_indices; }
 
     private:
 #ifdef GAME_DLL
-        AppendLockClass *Hook_Ctor(IndexBufferClass *index_buffer_, unsigned int start_index, unsigned int index_range)
+        AppendLockClass *Hook_Ctor(IndexBufferClass *index_buffer_, uint32_t start_index, uint32_t index_range)
         {
             return new (this) AppendLockClass(index_buffer_, start_index, index_range);
         }
@@ -70,23 +70,23 @@ public:
     };
 
 public:
-    IndexBufferClass(unsigned int type_, unsigned short index_count_);
+    IndexBufferClass(uint32_t type_, unsigned short index_count_);
     ~IndexBufferClass();
     void Add_Engine_Ref() const;
     void Release_Engine_Ref();
-    void Copy(unsigned short *indices, unsigned int first_index, unsigned int count);
-    void Copy(unsigned int *indices, unsigned int first_index, unsigned int count);
+    void Copy(unsigned short *indices, uint32_t first_index, uint32_t count);
+    void Copy(uint32_t *indices, uint32_t first_index, uint32_t count);
     unsigned short Get_Index_Count() { return m_indexCount; }
-    unsigned int Type() const { return m_type; }
-    unsigned int Engine_Refs() const { return m_engineRefs; }
-    static unsigned int Get_Total_Buffer_Count();
-    static unsigned int Get_Total_Allocated_Indices();
-    static unsigned int Get_Total_Allocated_Memory();
+    uint32_t Type() const { return m_type; }
+    uint32_t Engine_Refs() const { return m_engineRefs; }
+    static uint32_t Get_Total_Buffer_Count();
+    static uint32_t Get_Total_Allocated_Indices();
+    static uint32_t Get_Total_Allocated_Memory();
 
 protected:
-    mutable int m_engineRefs;
+    mutable int32_t m_engineRefs;
     unsigned short m_indexCount;
-    unsigned int m_type;
+    uint32_t m_type;
 };
 
 class DX8IndexBufferClass : public IndexBufferClass
@@ -168,7 +168,7 @@ public:
     static void Reset(bool frame_changed);
     static unsigned short Get_Default_Index_Count();
     static unsigned short Get_Next_Index();
-    unsigned int Get_Type() const { return m_type; }
+    uint32_t Get_Type() const { return m_type; }
     unsigned short Get_Index_Offset() const { return m_indexBufferOffset; }
     IndexBufferClass *Get_Index_Buffer() const { return m_indexBuffer; }
 
@@ -180,7 +180,7 @@ private:
     }
     void Hook_Dtor() { DynamicIBAccessClass::~DynamicIBAccessClass(); }
 #endif
-    unsigned int m_type;
+    uint32_t m_type;
     unsigned short m_indexCount;
     unsigned short m_indexBufferOffset;
     IndexBufferClass *m_indexBuffer;

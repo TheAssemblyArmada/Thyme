@@ -41,8 +41,8 @@ template<typename Type, typename Key> class SparseMatchFinder
         }
     };
 
-    static int Count_Condition_Intersection(const Key &key1, const Key &key2) { return key1.Count_Intersection(key2); }
-    static int Count_Condition_Inverse_Intersection(const Key &key1, const Key &key2)
+    static int32_t Count_Condition_Intersection(const Key &key1, const Key &key2) { return key1.Count_Intersection(key2); }
+    static int32_t Count_Condition_Inverse_Intersection(const Key &key1, const Key &key2)
     {
         return key1.Count_Inverse_Intersection(key2);
     }
@@ -84,18 +84,18 @@ private:
     {
         const Type *best_match = nullptr;
         // The higher the intersection count the better the match
-        int best_match_count = 0;
+        int32_t best_match_count = 0;
         // The lower the inverse intersection count the better the match
-        int best_match_inv_count = 999;
-        int extramatches = 0;
+        int32_t best_match_inv_count = 999;
+        int32_t extramatches = 0;
         Utf8String best_match_definition;
         Utf8String ambiguous_match_definition;
 
         for (auto &template_set : vector) {
-            for (int condition_idx = template_set.Get_Conditions_Count() - 1; condition_idx >= 0; condition_idx--) {
+            for (int32_t condition_idx = template_set.Get_Conditions_Count() - 1; condition_idx >= 0; condition_idx--) {
                 const Key &conditions = template_set.Get_Conditions_Yes(condition_idx);
-                int intersection_count = Count_Condition_Intersection(key, conditions);
-                int inverse_intersection_count = Count_Condition_Inverse_Intersection(key, conditions);
+                int32_t intersection_count = Count_Condition_Intersection(key, conditions);
+                int32_t inverse_intersection_count = Count_Condition_Inverse_Intersection(key, conditions);
 
                 if (intersection_count == best_match_count && inverse_intersection_count == best_match_inv_count) {
                     // We have at least two equally good matches!

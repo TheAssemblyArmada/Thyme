@@ -35,8 +35,8 @@ public:
     TexProjectClass();
     virtual ~TexProjectClass() override;
 
-    void Set_Texture_Size(int size);
-    int Get_Texture_Size();
+    void Set_Texture_Size(int32_t size);
+    int32_t Get_Texture_Size();
     void Init_Multiplicative();
     void Init_Additive();
     void Set_Intensity(float intensity, bool immediate = false);

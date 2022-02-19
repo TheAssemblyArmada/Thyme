@@ -43,5 +43,5 @@ public:
     virtual Network *Create_Network() override;
 
 private:
-    unsigned int m_previousErrorMode;
+    uint32_t m_previousErrorMode;
 };

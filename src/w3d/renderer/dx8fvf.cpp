@@ -18,7 +18,7 @@
 #include <d3dx8.h>
 #endif
 
-unsigned int Get_FVF_Vertex_Size(unsigned int fvf)
+uint32_t Get_FVF_Vertex_Size(uint32_t fvf)
 {
 #ifdef BUILD_WITH_D3D8
     return D3DXGetFVFVertexSize(fvf);
@@ -27,7 +27,7 @@ unsigned int Get_FVF_Vertex_Size(unsigned int fvf)
 #endif
 }
 
-FVFInfoClass::FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_)
+FVFInfoClass::FVFInfoClass(uint32_t fvf_, uint32_t fvf_size_)
 {
 #ifdef BUILD_WITH_D3D8
     m_FVF = fvf_;
@@ -67,11 +67,11 @@ FVFInfoClass::FVFInfoClass(unsigned int fvf_, unsigned int fvf_size_)
         m_texcoordOffset[0] = m_specularOffset + 4;
     }
 
-    int a = 1;
+    int32_t a = 1;
 
-    for (unsigned int i = 0x0F; (i - 0xE) < 8; i++) {
+    for (uint32_t i = 0x0F; (i - 0xE) < 8; i++) {
         m_texcoordOffset[a] = m_texcoordOffset[a - 1];
-        if ((m_FVF & (3 << i)) == (unsigned int)(3 << i)) {
+        if ((m_FVF & (3 << i)) == (uint32_t)(3 << i)) {
             m_texcoordOffset[a] = m_texcoordOffset[a - 1] + 4;
         } else {
             m_texcoordOffset[a] = m_texcoordOffset[a - 1] + 8;

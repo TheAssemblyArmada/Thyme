@@ -48,44 +48,44 @@ void BitmapHandlerClass::Read_B8G8R8A8(uint8_t *dest_surface,
             return;
         case WW3D_FORMAT_A4R4G4B4: {
             uint16_t sh2 = *reinterpret_cast<const uint16_t *>(src_surface);
-            int a = Scale_Bits(sh2 >> 12, 4, 8);
-            int r = Scale_Bits(sh2 >> 8, 4, 8);
-            int g = Scale_Bits(sh2 >> 4, 4, 8);
-            int b = Scale_Bits(sh2, 4, 8);
+            int32_t a = Scale_Bits(sh2 >> 12, 4, 8);
+            int32_t r = Scale_Bits(sh2 >> 8, 4, 8);
+            int32_t g = Scale_Bits(sh2 >> 4, 4, 8);
+            int32_t b = Scale_Bits(sh2, 4, 8);
             *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, a);
             return;
         }
 
         case WW3D_FORMAT_R5G6B5: {
             uint16_t sh2 = *reinterpret_cast<const uint16_t *>(src_surface);
-            int r = Scale_Bits(sh2 >> 11, 5, 8);
-            int g = Scale_Bits(sh2 >> 5, 6, 8);
-            int b = Scale_Bits(sh2, 5, 8);
+            int32_t r = Scale_Bits(sh2 >> 11, 5, 8);
+            int32_t g = Scale_Bits(sh2 >> 5, 6, 8);
+            int32_t b = Scale_Bits(sh2, 5, 8);
             *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, 0xFF);
             return;
         }
 
         case WW3D_FORMAT_A1R5G5B5: {
             uint16_t sh2 = *reinterpret_cast<const uint16_t *>(src_surface);
-            int a = Scale_Bits(sh2 >> 15, 1, 8);
-            int r = Scale_Bits(sh2 >> 10, 5, 8);
-            int g = Scale_Bits(sh2 >> 5, 5, 8);
-            int b = Scale_Bits(sh2, 5, 8);
+            int32_t a = Scale_Bits(sh2 >> 15, 1, 8);
+            int32_t r = Scale_Bits(sh2 >> 10, 5, 8);
+            int32_t g = Scale_Bits(sh2 >> 5, 5, 8);
+            int32_t b = Scale_Bits(sh2, 5, 8);
             *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, a);
             return;
         }
 
         case WW3D_FORMAT_R3G3B2: {
             uint8_t sh3 = *src_surface;
-            int r = Scale_Bits(sh3 >> 5, 3, 8);
-            int g = Scale_Bits(sh3 >> 2, 3, 8);
-            int b = Scale_Bits(sh3, 2, 8);
+            int32_t r = Scale_Bits(sh3 >> 5, 3, 8);
+            int32_t g = Scale_Bits(sh3 >> 2, 3, 8);
+            int32_t b = Scale_Bits(sh3, 2, 8);
             *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(r, g, b, 0xff);
             return;
         }
 
         case WW3D_FORMAT_L8: {
-            int l = *src_surface;
+            int32_t l = *src_surface;
             *reinterpret_cast<uint32_t *>(dest_surface) = Make_Color(l, l, l, 0xff);
             return;
         }
@@ -176,7 +176,7 @@ void BitmapHandlerClass::Create_Mipmap_B8G8R8A8(uint8_t *dest_surface,
     unsigned width,
     unsigned height)
 {
-    int pitch = src_surface_pitch >> 2;
+    int32_t pitch = src_surface_pitch >> 2;
 
     for (unsigned i = 0; i < height; i += 2) {
         uint32_t *dest = reinterpret_cast<uint32_t *>(dest_surface);
@@ -212,8 +212,8 @@ void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width,
     bool recolor = adjust.X != 0.0f || adjust.Y != 0.0f || adjust.Z != 0.0f;
 
     if (src_format != dest_format || dest_format != WW3D_FORMAT_A8R8G8B8) {
-        int bpp1 = Get_Bytes_Per_Pixel(src_format);
-        int bpp2 = Get_Bytes_Per_Pixel(dest_format);
+        int32_t bpp1 = Get_Bytes_Per_Pixel(src_format);
+        int32_t bpp2 = Get_Bytes_Per_Pixel(dest_format);
 
         for (unsigned i = 0; i < (height >> 1); ++i) {
             uint8_t *dest = &dest_surface[2 * dest_pitch * i];
@@ -250,9 +250,9 @@ void BitmapHandlerClass::Copy_Image_Generate_Mipmap(unsigned width,
             }
         }
     } else {
-        int pitch1 = dest_pitch >> 2;
-        int pitch2 = src_pitch >> 2;
-        int pitch3 = mip_pitch >> 2;
+        int32_t pitch1 = dest_pitch >> 2;
+        int32_t pitch2 = src_pitch >> 2;
+        int32_t pitch3 = mip_pitch >> 2;
 
         for (unsigned j = 0; j < (height >> 1); j++) {
             uint32_t *dest2 = reinterpret_cast<uint32_t *>(&dest_surface[8 * pitch1 * j]);
@@ -310,7 +310,7 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
 {
     if (dest_surface_format == WW3D_FORMAT_U8V8 || dest_surface_format == WW3D_FORMAT_L6V5U5
         || dest_surface_format == WW3D_FORMAT_X8L8V8U8) {
-        int bytes_per_pixel = Get_Bytes_Per_Pixel(src_surface_format);
+        int32_t bytes_per_pixel = Get_Bytes_Per_Pixel(src_surface_format);
 
         for (unsigned y = 0; y < dest_surface_height; ++y) {
             uint8_t *dest_pixel = &dest_surface[dest_surface_pitch * y];
@@ -358,8 +358,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
                 Write_B8G8R8A8(&src_pixel_up_l, WW3D_FORMAT_L8, src_pixel_up_bgra);
                 Write_B8G8R8A8(&src_pixel_down_l, WW3D_FORMAT_L8, src_pixel_down_bgra);
 
-                int dest_pixel_u = src_pixel_left_l - src_pixel_right_l;
-                int dest_pixel_v = src_pixel_down_l - src_pixel_up_l;
+                int32_t dest_pixel_u = src_pixel_left_l - src_pixel_right_l;
+                int32_t dest_pixel_v = src_pixel_down_l - src_pixel_up_l;
 
                 uint16_t dst_pixel_l = 63;
                 if (src_pixel_l <= 1) {
@@ -401,8 +401,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
 
         if (src_surface_format != dest_surface_format
             || (src_surface_format != WW3D_FORMAT_A8R8G8B8 && src_surface_format != WW3D_FORMAT_X8R8G8B8)) {
-            int bpp1 = Get_Bytes_Per_Pixel(dest_surface_format);
-            int bpp2 = Get_Bytes_Per_Pixel(src_surface_format);
+            int32_t bpp1 = Get_Bytes_Per_Pixel(dest_surface_format);
+            int32_t bpp2 = Get_Bytes_Per_Pixel(src_surface_format);
 
             if (dest_surface_width != src_surface_width || dest_surface_height != src_surface_height) {
                 for (unsigned i = 0; i < dest_surface_height; i++) {
@@ -515,8 +515,8 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
                 }
             }
         } else {
-            int dest_quarter_pitch = dest_surface_pitch >> 2;
-            int src_quarter_pitch = src_surface_pitch >> 2;
+            int32_t dest_quarter_pitch = dest_surface_pitch >> 2;
+            int32_t src_quarter_pitch = src_surface_pitch >> 2;
 
             if (dest_surface_width != src_surface_width || dest_surface_height != src_surface_height) {
                 for (unsigned i = 0; i < dest_surface_height; i++) {

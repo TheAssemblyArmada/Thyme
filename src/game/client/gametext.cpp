@@ -40,7 +40,7 @@ GameTextInterface *g_theGameText = nullptr;
 #endif
 
 // Comparison function used for sorting and searching StringLookUp arrays.
-int GameTextManager::Compare_LUT(void const *a, void const *b)
+int32_t GameTextManager::Compare_LUT(void const *a, void const *b)
 {
     const char *ac = static_cast<StringLookUp const *>(a)->label->Str();
     const char *bc = static_cast<StringLookUp const *>(b)->label->Str();
@@ -66,10 +66,10 @@ char GameTextManager::Read_Char(File *file)
 }
 
 // Read a quoted string and also any extra data.
-void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len)
+void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int32_t buff_len)
 {
     bool escape = false;
-    int i;
+    int32_t i;
 
     for (i = 0; i < buff_len; ++i) {
         char current;
@@ -114,8 +114,8 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
 
     out[i] = '\0';
 
-    int wave_pos = 0;
-    int state = 0;
+    int32_t wave_pos = 0;
+    int32_t state = 0;
 
     while (true) {
         char current;
@@ -165,12 +165,12 @@ void GameTextManager::Read_To_End_Of_Quote(File *file, char *in, char *out, char
 }
 
 // Read a line from a str file into provided buffer.
-bool GameTextManager::Read_Line(char *buffer, int length, File *file)
+bool GameTextManager::Read_Line(char *buffer, int32_t length, File *file)
 {
     bool ret = false;
     char *putp = buffer;
 
-    for (int i = 0; i < length; ++i) {
+    for (int32_t i = 0; i < length; ++i) {
         if (file->Read(putp, sizeof(*putp)) != sizeof(*putp)) {
             break;
         }
@@ -247,14 +247,14 @@ void GameTextManager::Translate_Copy(unichar_t *out, char *in)
 // Remove whitespace from the start and end of a ascii/utf8 string.
 void GameTextManager::Remove_Leading_And_Trailing(char *buffer)
 {
-    int first = 0;
+    int32_t first = 0;
 
     // Find first none whitespace char.
     while (buffer[first] != '\0' && isspace(uint8_t(buffer[first]))) {
         ++first;
     }
 
-    int pos = 0;
+    int32_t pos = 0;
 
     // Move data down to start of buffer.
     while (buffer[first] != '\0') {
@@ -341,7 +341,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 }
 
 // Get the count of strings in a str file.
-bool GameTextManager::Get_String_Count(const char *filename, int &count)
+bool GameTextManager::Get_String_Count(const char *filename, int32_t &count)
 {
     File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
     count = 0;
@@ -405,7 +405,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
         return false;
     }
 
-    int index = 0;
+    int32_t index = 0;
     bool end = false;
 
     while (Read_Line(m_bufferIn, sizeof(m_bufferIn), file)) {
@@ -422,7 +422,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 
 #if ASSERT_LEVEL >= ASSERTS_DEBUG
         if (index > 0) {
-            for (int i = 0; i < index; ++i) {
+            for (int32_t i = 0; i < index; ++i) {
                 captainslog_dbgassert(strcasecmp(m_stringInfo[i].label.Str(), m_bufferIn) != 0,
                     "String label '%s' is defined multiple times!",
                     m_bufferIn);
@@ -431,7 +431,7 @@ bool GameTextManager::Parse_String_File(const char *filename)
 #endif
 
         m_stringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int32_t>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -492,7 +492,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
     }
 
     uint32_t id;
-    int index = 0;
+    int32_t index = 0;
 
     if (file->Read(&id, sizeof(id)) != sizeof(id)) {
         file->Close();
@@ -522,7 +522,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
 
         // Read all strings associated with this label, Nox used multiple strings for
         // random variation, Generals only cares about first one.
-        for (int i = 0; i < num_strings; ++i) {
+        for (int32_t i = 0; i < num_strings; ++i) {
             file->Read(&id, sizeof(id));
 
             if (id != FourCC<' ', 'R', 'T', 'S'>::value && id != FourCC<'W', 'R', 'T', 'S'>::value) {
@@ -543,7 +543,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
             if (i == 0) {
                 m_translateBuffer[length] = '\0';
 
-                for (int j = 0; m_translateBuffer[j] != '\0'; ++j) {
+                for (int32_t j = 0; m_translateBuffer[j] != '\0'; ++j) {
                     // Correct for big endian systems
                     m_translateBuffer[j] = le16toh(m_translateBuffer[j]);
 
@@ -594,7 +594,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
         return false;
     }
 
-    int index = 0;
+    int32_t index = 0;
     bool end = false;
 
     while (Read_Line(m_bufferIn, sizeof(m_bufferIn), file)) {
@@ -612,7 +612,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 
 #if ASSERT_LEVEL >= ASSERTS_DEBUG
         if (index > 0) {
-            for (int i = 0; i < index; ++i) {
+            for (int32_t i = 0; i < index; ++i) {
                 captainslog_dbgassert(strcasecmp(m_mapStringInfo[i].label.Str(), m_bufferIn) != 0,
                     "String label '%s' is defined multiple times!",
                     m_bufferIn);
@@ -621,7 +621,7 @@ bool GameTextManager::Parse_Map_String_File(const char *filename)
 #endif
 
         m_mapStringInfo[index].label = m_bufferIn;
-        m_maxLabelLen = std::max<int>(strlen(m_bufferIn), m_maxLabelLen);
+        m_maxLabelLen = std::max<int32_t>(strlen(m_bufferIn), m_maxLabelLen);
 
         bool read_string = false;
 
@@ -752,7 +752,7 @@ void GameTextManager::Init()
     // Generate the lookup table and sort it for efficient search.
     m_stringLUT = new StringLookUp[m_textCount];
 
-    for (int i = 0; i < m_textCount; ++i) {
+    for (int32_t i = 0; i < m_textCount; ++i) {
         m_stringLUT[i].info = &m_stringInfo[i];
         m_stringLUT[i].label = &m_stringInfo[i].label;
     }
@@ -874,7 +874,7 @@ std::vector<Utf8String> *GameTextManager::Get_Strings_With_Prefix(Utf8String lab
 
     // Search all string labels that start with the substring provided.
     if (m_stringLUT != nullptr) {
-        for (int i = 0; i < m_textCount; ++i) {
+        for (int32_t i = 0; i < m_textCount; ++i) {
             const char *lut_label = m_stringLUT[i].label->Str();
 
             if (strstr(lut_label, label.Str()) == lut_label) {
@@ -885,7 +885,7 @@ std::vector<Utf8String> *GameTextManager::Get_Strings_With_Prefix(Utf8String lab
 
     // Same again for map strings.
     if (m_mapStringLUT != nullptr) {
-        for (int i = 0; i < m_mapTextCount; ++i) {
+        for (int32_t i = 0; i < m_mapTextCount; ++i) {
             const char *lut_label = m_mapStringLUT[i].label->Str();
             if (strstr(lut_label, label.Str()) == lut_label) {
                 m_stringVector.push_back(*m_mapStringLUT[i].label);
@@ -907,7 +907,7 @@ void GameTextManager::Init_Map_String_File(Utf8String const &filename)
     // Generate the lookup table and sort it for efficient search.
     m_mapStringLUT = new StringLookUp[m_mapTextCount];
 
-    for (int i = 0; i < m_mapTextCount; ++i) {
+    for (int32_t i = 0; i < m_mapTextCount; ++i) {
         m_mapStringLUT[i].info = &m_mapStringInfo[i];
         m_mapStringLUT[i].label = &m_mapStringInfo[i].label;
     }

@@ -65,80 +65,80 @@ public:
     virtual ~MeshModelClass() override;
 
     MeshModelClass &operator=(const MeshModelClass &that);
-    void Reset(int polycount, int vertcount, int passcount);
+    void Reset(int32_t polycount, int32_t vertcount, int32_t passcount);
     void Register_For_Rendering();
     void Shadow_Render(SpecialRenderInfoClass &rinfo, const Matrix3D &tm, const HTreeClass *htree);
 
-    int Get_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
-    const Vector2 *Get_UV_Array(int pass = 0, int stage = 0) { return m_curMatDesc->Get_UV_Array(pass, stage); }
-    int Get_UV_Array_Count() { return m_curMatDesc->Get_UV_Array_Count(); }
-    const Vector2 *Get_UV_Array_By_Index(int index) { return m_curMatDesc->Get_UV_Array_By_Index(index, false); }
-    unsigned *Get_DCG_Array(int pass) { return m_curMatDesc->Get_DCG_Array(pass); }
-    unsigned *Get_DIG_Array(int pass) { return m_curMatDesc->Get_DIG_Array(pass); }
-    VertexMaterialClass::ColorSourceType Get_DCG_Source(int pass) { return m_curMatDesc->Get_DCG_Source(pass); }
-    VertexMaterialClass::ColorSourceType Get_DIG_Source(int pass) { return m_curMatDesc->Get_DIG_Source(pass); }
-    VertexMaterialClass *Get_Single_Material(int pass = 0) const { return m_curMatDesc->Get_Single_Material(pass); }
-    ShaderClass Get_Single_Shader(int pass = 0) const { return m_curMatDesc->Get_Single_Shader(pass); }
-    VertexMaterialClass *Get_Material(int vidx, int pass = 0) const { return m_curMatDesc->Get_Material(vidx, pass); }
-    ShaderClass Get_Shader(int pidx, int pass = 0) const { return m_curMatDesc->Get_Shader(pidx, pass); }
-    ShaderClass *Get_Shader_Array(int pass, bool create = true) { return m_curMatDesc->Get_Shader_Array(pass, create); }
-    int Material_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
+    int32_t Get_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
+    const Vector2 *Get_UV_Array(int32_t pass = 0, int32_t stage = 0) { return m_curMatDesc->Get_UV_Array(pass, stage); }
+    int32_t Get_UV_Array_Count() { return m_curMatDesc->Get_UV_Array_Count(); }
+    const Vector2 *Get_UV_Array_By_Index(int32_t index) { return m_curMatDesc->Get_UV_Array_By_Index(index, false); }
+    unsigned *Get_DCG_Array(int32_t pass) { return m_curMatDesc->Get_DCG_Array(pass); }
+    unsigned *Get_DIG_Array(int32_t pass) { return m_curMatDesc->Get_DIG_Array(pass); }
+    VertexMaterialClass::ColorSourceType Get_DCG_Source(int32_t pass) { return m_curMatDesc->Get_DCG_Source(pass); }
+    VertexMaterialClass::ColorSourceType Get_DIG_Source(int32_t pass) { return m_curMatDesc->Get_DIG_Source(pass); }
+    VertexMaterialClass *Get_Single_Material(int32_t pass = 0) const { return m_curMatDesc->Get_Single_Material(pass); }
+    ShaderClass Get_Single_Shader(int32_t pass = 0) const { return m_curMatDesc->Get_Single_Shader(pass); }
+    VertexMaterialClass *Get_Material(int32_t vidx, int32_t pass = 0) const { return m_curMatDesc->Get_Material(vidx, pass); }
+    ShaderClass Get_Shader(int32_t pidx, int32_t pass = 0) const { return m_curMatDesc->Get_Shader(pidx, pass); }
+    ShaderClass *Get_Shader_Array(int32_t pass, bool create = true) { return m_curMatDesc->Get_Shader_Array(pass, create); }
+    int32_t Material_Pass_Count() const { return m_curMatDesc->Get_Pass_Count(); }
 
-    TexBufferClass *Get_Texture_Array(int pass, int stage, bool create = true)
+    TexBufferClass *Get_Texture_Array(int32_t pass, int32_t stage, bool create = true)
     {
         return m_curMatDesc->Get_Texture_Array(pass, stage, create);
     }
 
-    MatBufferClass *Get_Material_Array(int pass, bool create = true)
+    MatBufferClass *Get_Material_Array(int32_t pass, bool create = true)
     {
         return m_curMatDesc->Get_Material_Array(pass, create);
     }
 
-    unsigned *Get_Color_Array(int array_index, bool create = true)
+    unsigned *Get_Color_Array(int32_t array_index, bool create = true)
     {
         return m_curMatDesc->Get_Color_Array(array_index, create);
     }
 
-    TextureClass *Get_Single_Texture(int pass = 0, int stage = 0) const
+    TextureClass *Get_Single_Texture(int32_t pass = 0, int32_t stage = 0) const
     {
         return m_curMatDesc->Get_Single_Texture(pass, stage);
     }
 
-    TextureClass *Get_Texture(int pidx, int pass = 0, int stage = 0) const
+    TextureClass *Get_Texture(int32_t pidx, int32_t pass = 0, int32_t stage = 0) const
     {
         return m_curMatDesc->Get_Texture(pidx, pass, stage);
     }
 
-    void Set_Pass_Count(int passes) { m_curMatDesc->Set_Pass_Count(passes); }
-    void Set_Single_Material(VertexMaterialClass *vmat, int pass = 0) { m_curMatDesc->Set_Single_Material(vmat, pass); }
-    void Set_Single_Shader(ShaderClass shader, int pass = 0) { m_curMatDesc->Set_Single_Shader(shader, pass); }
-    void Set_Material(int vidx, VertexMaterialClass *vmat, int pass = 0) { m_curMatDesc->Set_Material(vidx, vmat, pass); }
-    void Set_Shader(int pidx, ShaderClass shader, int pass = 0) { m_curMatDesc->Set_Shader(pidx, shader, pass); }
+    void Set_Pass_Count(int32_t passes) { m_curMatDesc->Set_Pass_Count(passes); }
+    void Set_Single_Material(VertexMaterialClass *vmat, int32_t pass = 0) { m_curMatDesc->Set_Single_Material(vmat, pass); }
+    void Set_Single_Shader(ShaderClass shader, int32_t pass = 0) { m_curMatDesc->Set_Single_Shader(shader, pass); }
+    void Set_Material(int32_t vidx, VertexMaterialClass *vmat, int32_t pass = 0) { m_curMatDesc->Set_Material(vidx, vmat, pass); }
+    void Set_Shader(int32_t pidx, ShaderClass shader, int32_t pass = 0) { m_curMatDesc->Set_Shader(pidx, shader, pass); }
 
-    void Set_Single_Texture(TextureClass *tex, int pass = 0, int stage = 0)
+    void Set_Single_Texture(TextureClass *tex, int32_t pass = 0, int32_t stage = 0)
     {
         m_curMatDesc->Set_Single_Texture(tex, pass, stage);
     }
 
-    void Set_Texture(int pidx, TextureClass *tex, int pass = 0, int stage = 0)
+    void Set_Texture(int32_t pidx, TextureClass *tex, int32_t pass = 0, int32_t stage = 0)
     {
         m_curMatDesc->Set_Texture(pidx, tex, pass, stage);
     }
 
-    VertexMaterialClass *Peek_Single_Material(int pass = 0) const { return m_curMatDesc->Peek_Single_Material(pass); }
+    VertexMaterialClass *Peek_Single_Material(int32_t pass = 0) const { return m_curMatDesc->Peek_Single_Material(pass); }
 
-    TextureClass *Peek_Single_Texture(int pass = 0, int stage = 0) const
+    TextureClass *Peek_Single_Texture(int32_t pass = 0, int32_t stage = 0) const
     {
         return m_curMatDesc->Peek_Single_Texture(pass, stage);
     }
 
-    bool Has_Material_Array(int pass) const { return m_curMatDesc->Has_Material_Array(pass); }
-    bool Has_Shader_Array(int pass) const { return m_curMatDesc->Has_Shader_Array(pass); }
-    bool Has_Texture_Array(int pass, int stage) const { return m_curMatDesc->Has_Texture_Array(pass, stage); }
+    bool Has_Material_Array(int32_t pass) const { return m_curMatDesc->Has_Material_Array(pass); }
+    bool Has_Shader_Array(int32_t pass) const { return m_curMatDesc->Has_Shader_Array(pass); }
+    bool Has_Texture_Array(int32_t pass, int32_t stage) const { return m_curMatDesc->Has_Texture_Array(pass, stage); }
 
-    VertexMaterialClass *Peek_Material(int vidx, int pass = 0) const { return m_curMatDesc->Peek_Material(vidx, pass); }
+    VertexMaterialClass *Peek_Material(int32_t vidx, int32_t pass = 0) const { return m_curMatDesc->Peek_Material(vidx, pass); }
 
-    TextureClass *Peek_Texture(int pidx, int pass = 0, int stage = 0) const
+    TextureClass *Peek_Texture(int32_t pidx, int32_t pass = 0, int32_t stage = 0) const
     {
         return m_curMatDesc->Peek_Texture(pidx, pass, stage);
     }
@@ -147,8 +147,8 @@ public:
     void Replace_VertexMaterial(VertexMaterialClass *vmat, VertexMaterialClass *new_vmat);
 
     void Make_Geometry_Unique();
-    void Make_UV_Array_Unique(int pass = 0, int stage = 0);
-    void Make_Color_Array_Unique(int array_index = 0);
+    void Make_UV_Array_Unique(int32_t pass = 0, int32_t stage = 0);
+    void Make_Color_Array_Unique(int32_t array_index = 0);
 
     virtual W3DErrorType Load_W3D(ChunkLoadClass &cload) override;
 
@@ -179,8 +179,8 @@ protected:
     W3DErrorType Read_Per_Face_Texcoord_Ids(ChunkLoadClass &cload, MeshLoadContextClass *context);
     W3DErrorType Read_Prelit_Material(ChunkLoadClass &cload, MeshLoadContextClass *context);
 
-    unsigned int Get_Sort_Flags(int pass) const;
-    unsigned int Get_Sort_Flags() const;
+    uint32_t Get_Sort_Flags(int32_t pass) const;
+    uint32_t Get_Sort_Flags() const;
 
     void Post_Process();
     void Post_Process_Fog();

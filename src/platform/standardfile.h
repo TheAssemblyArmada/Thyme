@@ -36,12 +36,12 @@ private:
     StandardFile();
 
 public:
-    virtual bool Open(const char *filename, int mode) override;
-    virtual int Read(void *dst, int bytes) override;
-    virtual int Write(void const *src, int bytes) override;
-    virtual int Seek(int offset, File::SeekMode mode) override;
-    virtual void Next_Line(char *dst, int bytes) override;
-    virtual bool Scan_Int(int &integer) override;
+    virtual bool Open(const char *filename, int32_t mode) override;
+    virtual int32_t Read(void *dst, int32_t bytes) override;
+    virtual int32_t Write(void const *src, int32_t bytes) override;
+    virtual int32_t Seek(int32_t offset, File::SeekMode mode) override;
+    virtual void Next_Line(char *dst, int32_t bytes) override;
+    virtual bool Scan_Int(int32_t &integer) override;
     virtual bool Scan_Real(float &real) override;
     virtual bool Scan_String(Utf8String &string) override;
 

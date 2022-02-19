@@ -25,7 +25,7 @@ public:
     AABoxClass() {}
     AABoxClass(const Vector3 &center, const Vector3 &extent) : m_center(center), m_extent(extent) {}
     AABoxClass(const MinMaxAABoxClass &minmaxbox) { Init(minmaxbox); }
-    AABoxClass(Vector3 *points, int num) { Init(points, num); }
+    AABoxClass(Vector3 *points, int32_t num) { Init(points, num); }
     bool operator==(const AABoxClass &src) { return (m_center == src.m_center) && (m_extent == src.m_extent); }
     bool operator!=(const AABoxClass &src) { return (m_center != src.m_center) || (m_extent != src.m_extent); }
 
@@ -35,12 +35,12 @@ public:
         m_extent = extent;
     }
 
-    void Init(Vector3 *points, int num)
+    void Init(Vector3 *points, int32_t num)
     {
         Vector3 Min = points[0];
         Vector3 Max = points[0];
 
-        for (int i = 1; i < num; i++) {
+        for (int32_t i = 1; i < num; i++) {
             if (Min.X > points[i].X) {
                 Min.X = points[i].X;
             }
@@ -190,15 +190,15 @@ public:
     MinMaxAABoxClass(const Vector3 &min_corner, const Vector3 &max_corner) : m_minCorner(min_corner), m_maxCorner(max_corner)
     {
     }
-    MinMaxAABoxClass(Vector3 *points, int num) { Init(points, num); }
+    MinMaxAABoxClass(Vector3 *points, int32_t num) { Init(points, num); }
     MinMaxAABoxClass(const AABoxClass &that) { Init(that); }
 
-    void Init(Vector3 *points, int num)
+    void Init(Vector3 *points, int32_t num)
     {
         m_minCorner = points[0];
         m_maxCorner = points[0];
 
-        for (int i = 0; i < num; i++) {
+        for (int32_t i = 0; i < num; i++) {
             m_minCorner.Update_Min(points[i]);
             m_maxCorner.Update_Max(points[i]);
         }

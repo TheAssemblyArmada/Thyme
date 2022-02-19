@@ -25,18 +25,18 @@ class FontDesc
 
 public:
     FontDesc() : m_name("Arial Unicode MS"), m_pointSize(12), m_bold(false) {}
-    FontDesc(const char *name, int size = 12, bool bold = false) : m_name(name), m_pointSize(size), m_bold(bold) {}
+    FontDesc(const char *name, int32_t size = 12, bool bold = false) : m_name(name), m_pointSize(size), m_bold(bold) {}
 
     const Utf8String &Name() const { return m_name; }
-    int Point_Size() const { return m_pointSize; }
+    int32_t Point_Size() const { return m_pointSize; }
     bool Bold() const { return m_bold; }
     void Set_Name(Utf8String name) { m_name = name; }
-    void Set_Point_Size(int size) { m_pointSize = size; }
+    void Set_Point_Size(int32_t size) { m_pointSize = size; }
     void Set_Bold(bool bold) { m_bold = bold; }
 
 private:
     Utf8String m_name;
-    int m_pointSize;
+    int32_t m_pointSize;
     bool m_bold;
 };
 
@@ -50,7 +50,7 @@ public:
     virtual void Reset() override {}
     virtual void Update() override {}
 
-    int Adjust_Font_Size(int size);
+    int32_t Adjust_Font_Size(int32_t size);
 
     const FontDesc &Tooltip() const { return m_tooltipFont; }
     const FontDesc &Copyright_Font() const { return m_copyrightFont; }
@@ -64,8 +64,8 @@ private:
     Utf8String m_unicodeFontName;
     Utf8String m_unkAsciiString;
     bool m_useHardWordWrap;
-    int m_militaryCaptionSpeed;
-    int m_militaryCaptionDelayMs;
+    int32_t m_militaryCaptionSpeed;
+    int32_t m_militaryCaptionDelayMs;
     FontDesc m_copyrightFont;
     FontDesc m_messageFont;
     FontDesc m_militaryCaptionTitleFont;

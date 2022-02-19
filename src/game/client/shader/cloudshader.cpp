@@ -17,7 +17,7 @@
 #include <d3dx8.h>
 #endif
 
-int CloudTextureShader::Set(int pass)
+int32_t CloudTextureShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     D3DXMATRIX m;
@@ -57,7 +57,7 @@ void CloudTextureShader::Reset()
 #endif
 }
 
-int CloudTextureShader::Init()
+int32_t CloudTextureShader::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_CLOUD_TEXTURE] = &g_cloudTextureShader;
     g_w3dShadersPassCount[W3DShaderManager::ST_CLOUD_TEXTURE] = 1;

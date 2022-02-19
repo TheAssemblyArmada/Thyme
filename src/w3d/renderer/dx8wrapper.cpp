@@ -77,13 +77,13 @@ unsigned DX8Wrapper::s_renderStateChanged;
 float DX8Wrapper::s_zNear;
 float DX8Wrapper::s_zFar;
 Matrix4 DX8Wrapper::s_projectionMatrix;
-int DX8Wrapper::s_mainThreadID;
-int DX8Wrapper::s_currentRenderDevice = -1;
+int32_t DX8Wrapper::s_mainThreadID;
+int32_t DX8Wrapper::s_currentRenderDevice = -1;
 DX8Caps *DX8Wrapper::s_currentCaps;
-int DX8Wrapper::s_resolutionWidth;
-int DX8Wrapper::s_resolutionHeight;
-int DX8Wrapper::s_bitDepth;
-int DX8Wrapper::s_textureBitDepth;
+int32_t DX8Wrapper::s_resolutionWidth;
+int32_t DX8Wrapper::s_resolutionHeight;
+int32_t DX8Wrapper::s_bitDepth;
+int32_t DX8Wrapper::s_textureBitDepth;
 bool DX8Wrapper::s_currentLightEnables[4];
 unsigned DX8Wrapper::s_matrixChanges;
 unsigned DX8Wrapper::s_materialChanges;
@@ -110,10 +110,10 @@ DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionT
 w3dadapterid_t DX8Wrapper::s_currentAdapterIdentifier;
 Matrix4 DX8Wrapper::s_DX8Transforms[257];
 bool DX8Wrapper::s_EnableTriangleDraw;
-int DX8Wrapper::s_ZBias;
+int32_t DX8Wrapper::s_ZBias;
 Vector3 DX8Wrapper::s_ambientColor;
 bool DX8Wrapper::s_isDeviceLost;
-int DX8Wrapper::s_FPUPreserve;
+int32_t DX8Wrapper::s_FPUPreserve;
 unsigned long DX8Wrapper::s_vertexShader;
 unsigned long DX8Wrapper::s_pixelShader;
 LightEnvironmentClass *DX8Wrapper::s_lightEnvironment;
@@ -124,7 +124,7 @@ w3dsurface_t DX8Wrapper::s_currentDepthBuffer;
 w3dsurface_t DX8Wrapper::s_defaultRenderTarget;
 w3dsurface_t DX8Wrapper::s_defaultDepthBuffer;
 bool DX8Wrapper::s_isRenderToTexture;
-unsigned int DX8Wrapper::s_drawPolygonLowBoundLimit;
+uint32_t DX8Wrapper::s_drawPolygonLowBoundLimit;
 unsigned long DX8Wrapper::s_frameCount;
 bool DX8Wrapper::s_DX8SingleThreaded;
 DX8_CleanupHook *DX8Wrapper::s_cleanupHook;
@@ -204,7 +204,7 @@ void DX8Wrapper::Shutdown()
     }
 
     if (s_currentCaps) {
-        for (unsigned int i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
+        for (uint32_t i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
             if (s_textures[i]) {
                 s_textures[i]->Release();
                 s_textures[i] = nullptr;
@@ -268,12 +268,12 @@ void DX8Wrapper::Set_Default_Global_Render_States()
 void DX8Wrapper::Invalidate_Cached_Render_States()
 {
 #ifdef BUILD_WITH_D3D8
-    for (int i = 0; i < sizeof(s_renderStates) / sizeof(unsigned); i++) {
+    for (int32_t i = 0; i < sizeof(s_renderStates) / sizeof(unsigned); i++) {
         s_renderStates[i] = 0x12345678;
     }
 
-    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
-        for (int j = 0; j < 32; j++) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; i++) {
+        for (int32_t j = 0; j < 32; j++) {
             s_textureStageStates[i][j] = 0x12345678;
         }
 
@@ -289,7 +289,7 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
 
     ShaderClass::Invalidate();
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
         }
@@ -303,7 +303,7 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
 
     Ref_Ptr_Release(s_renderState.material);
 
-    for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; i++) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
 
@@ -313,7 +313,7 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
 
 void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
 {
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
         }
@@ -327,7 +327,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
 
     Ref_Ptr_Release(s_renderState.material);
 
-    for (unsigned int i = 0; i < Get_Current_Caps()->Max_Textures_Per_Pass(); i++) {
+    for (uint32_t i = 0; i < Get_Current_Caps()->Max_Textures_Per_Pass(); i++) {
         Ref_Ptr_Release(s_renderState.Textures[i]);
     }
 
@@ -419,7 +419,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
 
     W3D::Invalidate_Textures();
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         Set_Vertex_Buffer(nullptr, i);
     }
 
@@ -467,14 +467,14 @@ void DX8Wrapper::Release_Device()
 {
 #ifdef BUILD_WITH_D3D8
     if (s_d3dDevice) {
-        for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
+        for (int32_t i = 0; i < MAX_TEXTURE_STAGES; i++) {
             DX8CALL(SetTexture(i, nullptr));
         }
 
         DX8CALL(SetStreamSource(0, nullptr, 0));
         DX8CALL(SetIndices(nullptr, 0));
 
-        for (int i = 0; i < VERTEX_BUFFERS; i++) {
+        for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
             if (s_renderState.vertex_buffers[i]) {
                 s_renderState.vertex_buffers[i]->Release_Engine_Ref();
             }
@@ -496,9 +496,9 @@ void DX8Wrapper::Release_Device()
 void DX8Wrapper::Enumerate_Devices()
 {
 #ifdef BUILD_WITH_D3D8
-    int adapter_count = s_d3dInterface->GetAdapterCount();
+    int32_t adapter_count = s_d3dInterface->GetAdapterCount();
 
-    for (int i = 0; i < adapter_count; i++) {
+    for (int32_t i = 0; i < adapter_count; i++) {
         D3DADAPTER_IDENTIFIER8 id;
         memset(&id, 0, sizeof(id));
         HRESULT res = s_d3dInterface->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &id);
@@ -522,15 +522,15 @@ void DX8Wrapper::Enumerate_Devices()
 
             DX8Caps dx8caps(s_d3dInterface, desc.m_caps, WW3D_FORMAT_UNKNOWN, desc.m_adapterID);
             desc.m_resArray.Delete_All();
-            int mode_count = s_d3dInterface->GetAdapterModeCount(i);
+            int32_t mode_count = s_d3dInterface->GetAdapterModeCount(i);
 
-            for (int j = 0; j < mode_count; j++) {
+            for (int32_t j = 0; j < mode_count; j++) {
                 D3DDISPLAYMODE d3dmode;
                 memset(&d3dmode, 0, sizeof(d3dmode));
                 res = s_d3dInterface->EnumAdapterModes(i, j, &d3dmode);
 
                 if (res == D3D_OK) {
-                    int bits = 0;
+                    int32_t bits = 0;
 
                     switch (d3dmode.Format) {
                         case D3DFMT_R8G8B8:
@@ -567,7 +567,7 @@ void DX8Wrapper::Enumerate_Devices()
 }
 
 #ifdef BUILD_WITH_D3D8
-void DX8Wrapper::Get_Format_Name(unsigned int format, StringClass *format_name)
+void DX8Wrapper::Get_Format_Name(uint32_t format, StringClass *format_name)
 {
     switch (format) {
         case D3DFMT_DXT5:
@@ -683,7 +683,7 @@ void DX8Wrapper::Get_Format_Name(unsigned int format, StringClass *format_name)
 #endif
 
 bool DX8Wrapper::Set_Render_Device(
-    int dev, int resx, int resy, int bits, int windowed, bool resize_window, bool reset_device, bool restore_assets)
+    int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_isInitialised);
@@ -850,12 +850,12 @@ bool DX8Wrapper::Has_Stencil()
 #endif
 }
 
-int DX8Wrapper::Get_Render_Device()
+int32_t DX8Wrapper::Get_Render_Device()
 {
     return s_currentRenderDevice;
 }
 
-const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int deviceidx)
+const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int32_t deviceidx)
 {
     captainslog_assert(s_isInitialised);
 
@@ -874,7 +874,7 @@ const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int deviceidx)
     return s_renderDeviceDescriptionTable[deviceidx];
 }
 
-bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window)
+bool DX8Wrapper::Set_Device_Resolution(int32_t width, int32_t height, int32_t bits, int32_t windowed, bool resize_window)
 {
 #ifdef BUILD_WITH_D3D8
     if (!s_d3dDevice) {
@@ -920,7 +920,7 @@ bool DX8Wrapper::Set_Device_Resolution(int width, int height, int bits, int wind
 #endif
 }
 
-void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
+void DX8Wrapper::Get_Device_Resolution(int32_t &width, int32_t &height, int32_t &bit_depth, bool &windowed)
 {
     width = s_resolutionWidth;
     height = s_resolutionHeight;
@@ -928,7 +928,7 @@ void DX8Wrapper::Get_Device_Resolution(int &width, int &height, int &bit_depth, 
     windowed = s_isWindowed;
 }
 
-void DX8Wrapper::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed)
+void DX8Wrapper::Get_Render_Target_Resolution(int32_t &set_w, int32_t &set_h, int32_t &set_bits, bool &set_windowed)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_isInitialised);
@@ -948,7 +948,7 @@ void DX8Wrapper::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_b
 
 #ifdef BUILD_WITH_D3D8
 bool DX8Wrapper::Find_Color_And_Z_Mode(
-    int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode)
+    int32_t resx, int32_t resy, int32_t bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode)
 {
     static D3DFORMAT _formats16[] = { D3DFMT_R5G6B5, D3DFMT_X1R5G5B5, D3DFMT_A1R5G5B5 };
     static D3DFORMAT _formats32[] = {
@@ -957,7 +957,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
         D3DFMT_R8G8B8,
     };
     D3DFORMAT *format_table = nullptr;
-    int format_count = 0;
+    int32_t format_count = 0;
 
     if (s_bitDepth == 16) {
         format_table = _formats16;
@@ -968,8 +968,8 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
     }
 
     bool found = false;
-    unsigned int mode = 0;
-    int format_index;
+    uint32_t mode = 0;
+    int32_t format_index;
 
     for (format_index = 0; format_index < format_count; format_index++) {
         found |= Find_Color_Mode(format_table[format_index], resx, resy, &mode);
@@ -991,14 +991,14 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
     return Find_Z_Mode(*set_colorbuffer, *set_colorbuffer, set_zmode);
 }
 
-bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode)
+bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int32_t resx, int32_t resy, UINT *mode)
 {
     UINT i, j, modemax;
     UINT rx, ry;
     D3DDISPLAYMODE dmode;
     memset(&dmode, 0, sizeof(D3DDISPLAYMODE));
-    rx = (unsigned int)resx;
-    ry = (unsigned int)resy;
+    rx = (uint32_t)resx;
+    ry = (uint32_t)resy;
     bool found = false;
     modemax = s_d3dInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT);
     i = 0;
@@ -1191,7 +1191,7 @@ void DX8Wrapper::End_Scene(bool flip_frames)
     Set_Vertex_Buffer(nullptr, 0);
     Set_Index_Buffer(nullptr, 0);
 
-    for (unsigned int i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
+    for (uint32_t i = 0; i < s_currentCaps->Max_Textures_Per_Pass(); i++) {
         Set_Texture(i, nullptr);
     }
 
@@ -1200,7 +1200,7 @@ void DX8Wrapper::End_Scene(bool flip_frames)
 }
 
 void DX8Wrapper::Clear(
-    bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z, unsigned int stencil)
+    bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z, uint32_t stencil)
 {
 #ifdef BUILD_WITH_D3D8
     bool has_stencil = false;
@@ -1240,7 +1240,7 @@ void DX8Wrapper::Set_Viewport(CONST D3DVIEWPORT8 *pViewport)
 }
 #endif
 
-void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int number)
+void DX8Wrapper::Set_Vertex_Buffer(const VertexBufferClass *vb, int32_t number)
 {
     s_renderState.vba_offset = 0;
     s_renderState.vba_count = 0;
@@ -1321,7 +1321,7 @@ void DX8Wrapper::Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned shor
     s_renderStateChanged |= INDEX_BUFFER_CHANGED;
 }
 
-void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type,
+void DX8Wrapper::Draw_Sorting_IB_VB(uint32_t primitive_type,
     unsigned short start_index,
     unsigned short polygon_count,
     unsigned short min_vertex_index,
@@ -1400,7 +1400,7 @@ void DX8Wrapper::Draw_Sorting_IB_VB(unsigned int primitive_type,
 #endif
 }
 
-void DX8Wrapper::Draw(unsigned int primitive_type,
+void DX8Wrapper::Draw(uint32_t primitive_type,
     unsigned short start_index,
     unsigned short polygon_count,
     unsigned short min_vertex_index,
@@ -1477,7 +1477,7 @@ void DX8Wrapper::Draw(unsigned int primitive_type,
 #endif
 }
 
-void DX8Wrapper::Draw_Triangles(unsigned int buffer_type,
+void DX8Wrapper::Draw_Triangles(uint32_t buffer_type,
     unsigned short start_index,
     unsigned short polygon_count,
     unsigned short min_vertex_index,
@@ -1561,7 +1561,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
         }
 
         if (s_renderStateChanged & VERTEX_BUFFER_CHANGED) {
-            for (int i = 0; i < VERTEX_BUFFERS; i++) {
+            for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
                 if (s_renderState.vertex_buffers[i]) {
                     switch (s_renderState.vertex_buffer_types[i]) {
                         case VertexBufferClass::BUFFER_TYPE_DX8:
@@ -1835,13 +1835,13 @@ void DX8Wrapper::Set_Light_Environment(LightEnvironmentClass *light_env)
 #ifdef BUILD_WITH_D3D8
     if (light_env) {
 
-        int light_count = light_env->Get_Light_Count();
+        int32_t light_count = light_env->Get_Light_Count();
         Set_DX8_Render_State(D3DRS_AMBIENT, Convert_Color(light_env->Get_Equivalent_Ambient(), 0.0f));
 
         D3DLIGHT8 light;
         memset(&light, 0, sizeof(D3DLIGHT8));
         light.Type = D3DLIGHT_DIRECTIONAL;
-        int light_index;
+        int32_t light_index;
 
         for (light_index = 0; light_index < light_count; ++light_index) {
             (Vector3 &)light.Diffuse = light_env->Get_Light_Diffuse(light_index);
@@ -1896,7 +1896,7 @@ IDirect3DSurface8 *DX8Wrapper::Get_DX8_Front_Buffer()
 }
 #endif
 
-SurfaceClass *DX8Wrapper::Get_DX8_Back_Buffer(unsigned int num)
+SurfaceClass *DX8Wrapper::Get_DX8_Back_Buffer(uint32_t num)
 {
 #ifdef BUILD_WITH_D3D8
     IDirect3DSurface8 *bb;
@@ -1914,7 +1914,7 @@ SurfaceClass *DX8Wrapper::Get_DX8_Back_Buffer(unsigned int num)
 #endif
 }
 
-TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat format)
+TextureClass *DX8Wrapper::Create_Render_Target(int32_t width, int32_t height, WW3DFormat format)
 {
 #ifdef BUILD_WITH_D3D8
     g_numberOfDx8Calls++;
@@ -1931,7 +1931,7 @@ TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat
         if (height > 0 && height < width) {
             f = height;
         }
-        float f2 = (float)Find_POT((int)f);
+        float f2 = (float)Find_POT((int32_t)f);
         if (f2 > caps.MaxTextureWidth) {
             f2 = caps.MaxTextureWidth;
         }
@@ -1939,7 +1939,7 @@ TextureClass *DX8Wrapper::Create_Render_Target(int width, int height, WW3DFormat
             f2 = caps.MaxTextureHeight;
         }
         TextureClass *texture =
-            new TextureClass((unsigned int)f2, (unsigned int)f2, format, MIP_LEVELS_1, POOL_DEFAULT, true, true);
+            new TextureClass((uint32_t)f2, (uint32_t)f2, format, MIP_LEVELS_1, POOL_DEFAULT, true, true);
         if (!texture->Peek_Platform_Base_Texture()) {
             captainslog_warn("DX8Wrapper - Render target creation failed!");
             Ref_Ptr_Release(texture);
@@ -2045,7 +2045,7 @@ void DX8Wrapper::Set_Gamma(float gamma, float bright, float contrast, bool calib
         limit = 0.0f;
     }
 
-    for (int i = 0; i < 256; i++) {
+    for (int32_t i = 0; i < 256; i++) {
         float in, out;
         in = i / 256.0f;
         float x = in - limit;

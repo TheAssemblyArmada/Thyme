@@ -51,16 +51,16 @@ public:
     ~TeamsInfoRec();
 
     void Add_Team(const Dict *team);
-    void Remove_Team(int id);
-    TeamsInfo *Find_Team(Utf8String name, int *id);
+    void Remove_Team(int32_t id);
+    TeamsInfo *Find_Team(Utf8String name, int32_t *id);
     void Clear();
-    int Get_Num_Teams() { return m_numTeams; }
+    int32_t Get_Num_Teams() { return m_numTeams; }
     TeamsInfoRec &operator=(const TeamsInfoRec &that);
-    TeamsInfo *Get_Team_Info(int index);
+    TeamsInfo *Get_Team_Info(int32_t index);
 
 private:
-    int m_numTeams;
-    int m_numTeamsAllocated;
+    int32_t m_numTeams;
+    int32_t m_numTeamsAllocated;
     TeamsInfo *m_teams;
 };
 
@@ -69,7 +69,7 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
     if (this != &that) {
         Clear();
 
-        for (int i = 0; i < that.m_numTeams; ++i) {
+        for (int32_t i = 0; i < that.m_numTeams; ++i) {
             Add_Team(that.m_teams[i].Get_Dict());
         }
     }
@@ -77,7 +77,7 @@ inline TeamsInfoRec &TeamsInfoRec::operator=(const TeamsInfoRec &that)
     return *this;
 }
 
-inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int index)
+inline TeamsInfo *TeamsInfoRec::Get_Team_Info(int32_t index)
 {
     captainslog_relassert(index >= 0 && index < m_numTeams, 0xDEAD0003, "Out of range.");
     return &m_teams[index];

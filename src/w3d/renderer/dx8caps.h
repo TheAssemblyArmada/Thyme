@@ -53,7 +53,7 @@ public:
     void Shutdown();
     void Init_Caps(w3ddevice_t device);
     void Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier);
-    bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
+    bool Is_Valid_Display_Format(int32_t w, int32_t h, WW3DFormat format);
 
     bool Supports_Dot3_Blend() const { return m_supportDot3Blend; }
     bool Supports_DXTC() const { return m_supportDXTC; }
@@ -89,15 +89,15 @@ private:
     void Check_Max_Texture_Support(const w3dcaps_t &caps);
     void Check_Driver_Version_Status();
     void Vendor_Specific_Hacks(const w3dadapterid_t &identifier);
-    int Define_Vendor(unsigned vendor_id);
-    int Get_NVidia_Device(unsigned device_id);
-    int Get_AMD_Device(unsigned device_id);
-    int Get_Intel_Device(unsigned device_id);
-    int Get_S3_Device(unsigned device_id);
-    int Get_PowerVR_Device(unsigned device_id);
-    int Get_Matrox_Device(unsigned device_id);
-    int Get_3Dfx_Device(unsigned device_id);
-    int Get_3DLabs_Device(unsigned device_id);
+    int32_t Define_Vendor(unsigned vendor_id);
+    int32_t Get_NVidia_Device(unsigned device_id);
+    int32_t Get_AMD_Device(unsigned device_id);
+    int32_t Get_Intel_Device(unsigned device_id);
+    int32_t Get_S3_Device(unsigned device_id);
+    int32_t Get_PowerVR_Device(unsigned device_id);
+    int32_t Get_Matrox_Device(unsigned device_id);
+    int32_t Get_3Dfx_Device(unsigned device_id);
+    int32_t Get_3DLabs_Device(unsigned device_id);
     static bool Has_Feature(unsigned caps, unsigned feature) { return (caps & feature) == feature; }
 
 #ifdef GAME_DLL
@@ -115,8 +115,8 @@ public:
 #endif
 
 private:
-    int m_widthLimit;
-    int m_heightLimit;
+    int32_t m_widthLimit;
+    int32_t m_heightLimit;
     w3dcaps_t m_caps;
     bool m_useTnL;
     bool m_supportDXTC;
@@ -139,10 +139,10 @@ private:
     uint32_t m_vertexShaderVersion;
     uint32_t m_pixelShaderVersion;
     uint32_t m_maxSupportedTextures;
-    int m_deviceNumber;
-    int m_driverBuildNum;
-    int m_driverStatus;
-    int m_vendorNumber;
+    int32_t m_deviceNumber;
+    int32_t m_driverBuildNum;
+    int32_t m_driverStatus;
+    int32_t m_vendorNumber;
     StringClass m_driverFilename;
     w3dhandle_t m_d3dInterface;
     StringClass m_videoCardSpecString;

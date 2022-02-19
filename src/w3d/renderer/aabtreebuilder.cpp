@@ -46,7 +46,7 @@ void AABTreeBuilderClass::Reset()
     }
 }
 
-void AABTreeBuilderClass::Build_AABTree(int polycount, TriIndex *polys, int vertcount, Vector3 *verts)
+void AABTreeBuilderClass::Build_AABTree(int32_t polycount, TriIndex *polys, int32_t vertcount, Vector3 *verts)
 {
     captainslog_assert(polycount > 0);
     captainslog_assert(vertcount > 0);
@@ -60,17 +60,17 @@ void AABTreeBuilderClass::Build_AABTree(int polycount, TriIndex *polys, int vert
     m_verts = new Vector3[m_vertCount];
     m_polys = new TriIndex[m_polyCount];
 
-    for (int vi = 0; vi < m_vertCount; vi++) {
+    for (int32_t vi = 0; vi < m_vertCount; vi++) {
         m_verts[vi] = verts[vi];
     }
 
-    for (int pi = 0; pi < m_polyCount; pi++) {
+    for (int32_t pi = 0; pi < m_polyCount; pi++) {
         m_polys[pi] = polys[pi];
     }
 
-    int *polyindices = new int[m_polyCount];
+    int32_t *polyindices = new int32_t[m_polyCount];
 
-    for (int i = 0; i < m_polyCount; i++) {
+    for (int32_t i = 0; i < m_polyCount; i++) {
         polyindices[i] = i;
     }
 
@@ -82,7 +82,7 @@ void AABTreeBuilderClass::Build_AABTree(int polycount, TriIndex *polys, int vert
     Assign_Index(m_root, 0);
 }
 
-void AABTreeBuilderClass::Build_AABTree(int polycount, Vector3i *polys, int vertcount, Vector3 *verts)
+void AABTreeBuilderClass::Build_AABTree(int32_t polycount, Vector3i *polys, int32_t vertcount, Vector3 *verts)
 {
     captainslog_assert(polycount > 0);
     captainslog_assert(vertcount > 0);
@@ -96,19 +96,19 @@ void AABTreeBuilderClass::Build_AABTree(int polycount, Vector3i *polys, int vert
     m_verts = new Vector3[m_vertCount];
     m_polys = new TriIndex[m_polyCount];
 
-    for (int vi = 0; vi < m_vertCount; vi++) {
+    for (int32_t vi = 0; vi < m_vertCount; vi++) {
         m_verts[vi] = verts[vi];
     }
 
-    for (int pi = 0; pi < m_polyCount; pi++) {
+    for (int32_t pi = 0; pi < m_polyCount; pi++) {
         m_polys[pi].I = polys[pi].I;
         m_polys[pi].J = polys[pi].J;
         m_polys[pi].K = polys[pi].K;
     }
 
-    int *polyindices = new int[m_polyCount];
+    int32_t *polyindices = new int32_t[m_polyCount];
 
-    for (int i = 0; i < m_polyCount; i++) {
+    for (int32_t i = 0; i < m_polyCount; i++) {
         polyindices[i] = i;
     }
 
@@ -120,7 +120,7 @@ void AABTreeBuilderClass::Build_AABTree(int polycount, Vector3i *polys, int vert
     Assign_Index(m_root, 0);
 }
 
-void AABTreeBuilderClass::Build_Tree(CullNodeStruct *node, int polycount, int *polyindices)
+void AABTreeBuilderClass::Build_Tree(CullNodeStruct *node, int32_t polycount, int32_t *polyindices)
 {
     if (polycount <= MIN_POLYS_PER_NODE) {
         node->m_polyCount = polycount;
@@ -158,20 +158,20 @@ void AABTreeBuilderClass::Build_Tree(CullNodeStruct *node, int polycount, int *p
     }
 }
 
-AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Select_Splitting_Plane(int polycount, int *polyindices)
+AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Select_Splitting_Plane(int32_t polycount, int32_t *polyindices)
 {
     captainslog_assert(polyindices != nullptr);
 
-    const int NUM_TRYS = 50;
+    const int32_t NUM_TRYS = 50;
 
     SplitChoiceStruct best_plane_stats;
     SplitChoiceStruct considered_plane_stats;
 
-    for (int trys = 0; trys < GameMath::Min(NUM_TRYS, polycount); trys++) {
+    for (int32_t trys = 0; trys < GameMath::Min(NUM_TRYS, polycount); trys++) {
         AAPlaneClass plane;
 
-        int poly_index = polyindices[rand() % polycount];
-        int vert_index = rand() % 3;
+        int32_t poly_index = polyindices[rand() % polycount];
+        int32_t vert_index = rand() % 3;
         const TriIndex *polyverts = m_polys + poly_index;
         const Vector3 *vert = m_verts + (*polyverts)[vert_index];
 
@@ -198,12 +198,12 @@ AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Select_Splitting_Pla
 }
 
 AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Compute_Plane_Score(
-    int polycount, int *polyindices, const AAPlaneClass &plane)
+    int32_t polycount, int32_t *polyindices, const AAPlaneClass &plane)
 {
     SplitChoiceStruct sc;
     sc.m_plane = plane;
 
-    for (int i = 0; i < polycount; i++) {
+    for (int32_t i = 0; i < polycount; i++) {
         switch (Which_Side(plane, polyindices[i])) {
             case FRONT:
             case ON:
@@ -236,10 +236,10 @@ AABTreeBuilderClass::SplitChoiceStruct AABTreeBuilderClass::Compute_Plane_Score(
     return sc;
 }
 
-AABTreeBuilderClass::OverlapType AABTreeBuilderClass::Which_Side(const AAPlaneClass &plane, int poly_index)
+AABTreeBuilderClass::OverlapType AABTreeBuilderClass::Which_Side(const AAPlaneClass &plane, int32_t poly_index)
 {
-    int mask = 0;
-    for (int vi = 0; vi < 3; vi++) {
+    int32_t mask = 0;
+    for (int32_t vi = 0; vi < 3; vi++) {
 
         const Vector3 &point = m_verts[m_polys[poly_index][vi]];
         float delta = point[plane.m_normal] - plane.m_dist;
@@ -271,20 +271,20 @@ AABTreeBuilderClass::OverlapType AABTreeBuilderClass::Which_Side(const AAPlaneCl
 }
 
 void AABTreeBuilderClass::Split_Polys(
-    int polycount, int *polyindices, const SplitChoiceStruct &sc, SplitArraysStruct *arrays)
+    int32_t polycount, int32_t *polyindices, const SplitChoiceStruct &sc, SplitArraysStruct *arrays)
 {
     if (sc.m_frontCount > 0) {
-        arrays->m_frontPolys = new int[sc.m_frontCount];
+        arrays->m_frontPolys = new int32_t[sc.m_frontCount];
     }
 
     if (sc.m_backCount > 0) {
-        arrays->m_backPolys = new int[sc.m_backCount];
+        arrays->m_backPolys = new int32_t[sc.m_backCount];
     }
 
     arrays->m_frontCount = 0;
     arrays->m_backCount = 0;
 
-    for (int i = 0; i < polycount; i++) {
+    for (int32_t i = 0; i < polycount; i++) {
         switch (Which_Side(sc.m_plane, polyindices[i])) {
             case FRONT:
             case ON:
@@ -316,7 +316,7 @@ void AABTreeBuilderClass::Compute_Bounding_Box(CullNodeStruct *node)
     node->m_min.Set(really_big, really_big, really_big);
     node->m_max.Set(-really_big, -really_big, -really_big);
 
-    for (int poly_index = 0; poly_index < node->m_polyCount; poly_index++) {
+    for (int32_t poly_index = 0; poly_index < node->m_polyCount; poly_index++) {
         Update_Min_Max(node->m_polyIndices[poly_index], node->m_min, node->m_max);
     }
 
@@ -380,7 +380,7 @@ void AABTreeBuilderClass::Compute_Bounding_Box(CullNodeStruct *node)
     captainslog_assert(node->m_max.Z != -really_big);
 }
 
-int AABTreeBuilderClass::Assign_Index(CullNodeStruct *node, int index)
+int32_t AABTreeBuilderClass::Assign_Index(CullNodeStruct *node, int32_t index)
 {
     captainslog_assert(node);
     node->m_index = index;
@@ -397,7 +397,7 @@ int AABTreeBuilderClass::Assign_Index(CullNodeStruct *node, int index)
     return index;
 }
 
-int AABTreeBuilderClass::Node_Count()
+int32_t AABTreeBuilderClass::Node_Count()
 {
     if (m_root) {
         return Node_Count_Recursive(m_root, 0);
@@ -406,12 +406,12 @@ int AABTreeBuilderClass::Node_Count()
     }
 }
 
-int AABTreeBuilderClass::Poly_Count()
+int32_t AABTreeBuilderClass::Poly_Count()
 {
     return m_polyCount;
 }
 
-int AABTreeBuilderClass::Node_Count_Recursive(CullNodeStruct *node, int curcount)
+int32_t AABTreeBuilderClass::Node_Count_Recursive(CullNodeStruct *node, int32_t curcount)
 {
     curcount++;
 
@@ -426,9 +426,9 @@ int AABTreeBuilderClass::Node_Count_Recursive(CullNodeStruct *node, int curcount
     return curcount;
 }
 
-void AABTreeBuilderClass::Update_Min(int poly_index, Vector3 &min)
+void AABTreeBuilderClass::Update_Min(int32_t poly_index, Vector3 &min)
 {
-    for (int vert_index = 0; vert_index < 3; vert_index++) {
+    for (int32_t vert_index = 0; vert_index < 3; vert_index++) {
 
         const TriIndex *polyverts = m_polys + poly_index;
         const Vector3 *point = m_verts + (*polyverts)[vert_index];
@@ -447,9 +447,9 @@ void AABTreeBuilderClass::Update_Min(int poly_index, Vector3 &min)
     }
 }
 
-void AABTreeBuilderClass::Update_Max(int poly_index, Vector3 &max)
+void AABTreeBuilderClass::Update_Max(int32_t poly_index, Vector3 &max)
 {
-    for (int vert_index = 0; vert_index < 3; vert_index++) {
+    for (int32_t vert_index = 0; vert_index < 3; vert_index++) {
 
         const TriIndex *polyverts = m_polys + poly_index;
         const Vector3 *point = m_verts + (*polyverts)[vert_index];
@@ -468,9 +468,9 @@ void AABTreeBuilderClass::Update_Max(int poly_index, Vector3 &max)
     }
 }
 
-void AABTreeBuilderClass::Update_Min_Max(int poly_index, Vector3 &min, Vector3 &max)
+void AABTreeBuilderClass::Update_Min_Max(int32_t poly_index, Vector3 &min, Vector3 &max)
 {
-    for (int vert_index = 0; vert_index < 3; vert_index++) {
+    for (int32_t vert_index = 0; vert_index < 3; vert_index++) {
 
         const TriIndex *polyverts = m_polys + poly_index;
         const Vector3 *point = m_verts + (*polyverts)[vert_index];
@@ -508,8 +508,8 @@ void AABTreeBuilderClass::Export(ChunkSaveClass &csave)
     W3dMeshAABTreeNode *nodes = new W3dMeshAABTreeNode[Node_Count()];
     uint32_t *poly_indices = new uint32_t[Poly_Count()];
 
-    int cur_node = 0;
-    int cur_poly = 0;
+    int32_t cur_node = 0;
+    int32_t cur_poly = 0;
     Build_W3D_AABTree_Recursive(m_root, nodes, poly_indices, cur_node, cur_poly);
 
     csave.Begin_Chunk(W3D_CHUNK_AABTREE_HEADER);
@@ -526,7 +526,7 @@ void AABTreeBuilderClass::Export(ChunkSaveClass &csave)
 
     csave.Begin_Chunk(W3D_CHUNK_AABTREE_NODES);
 
-    for (int ni = 0; ni < Node_Count(); ni++) {
+    for (int32_t ni = 0; ni < Node_Count(); ni++) {
         csave.Write(&(nodes[ni]), sizeof(W3dMeshAABTreeNode));
     }
 
@@ -538,8 +538,8 @@ void AABTreeBuilderClass::Export(ChunkSaveClass &csave)
 void AABTreeBuilderClass::Build_W3D_AABTree_Recursive(AABTreeBuilderClass::CullNodeStruct *node,
     W3dMeshAABTreeNode *w3d_nodes,
     uint32_t *poly_indices,
-    int &cur_node,
-    int &cur_poly)
+    int32_t &cur_node,
+    int32_t &cur_poly)
 {
     W3dMeshAABTreeNode *newnode = &(w3d_nodes[node->m_index]);
     newnode->Min.x = node->m_min.X;
@@ -558,7 +558,7 @@ void AABTreeBuilderClass::Build_W3D_AABTree_Recursive(AABTreeBuilderClass::CullN
         newnode->BackOrPolyCount = node->m_polyCount;
     }
 
-    for (int pcounter = 0; pcounter < node->m_polyCount; pcounter++) {
+    for (int32_t pcounter = 0; pcounter < node->m_polyCount; pcounter++) {
         poly_indices[cur_poly++] = node->m_polyIndices[pcounter];
     }
 

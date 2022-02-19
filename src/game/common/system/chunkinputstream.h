@@ -20,7 +20,7 @@
 class ChunkInputStream : public InputStream
 {
 public:
-    virtual unsigned int Tell() = 0;
-    virtual bool Absolute_Seek(unsigned int pos) = 0;
+    virtual uint32_t Tell() = 0;
+    virtual bool Absolute_Seek(uint32_t pos) = 0;
     virtual bool Eof() = 0;
 };

@@ -86,9 +86,9 @@ SimpleCriticalSectionClass critSec2;
 SimpleCriticalSectionClass critSec3;
 
 // New globals for extra features
-int const c_invalidPos = -1000000;
-int g_xPos = c_invalidPos;
-int g_yPos = c_invalidPos;
+int32_t const c_invalidPos = -1000000;
+int32_t g_xPos = c_invalidPos;
+int32_t g_yPos = c_invalidPos;
 bool g_noBorder = false;
 
 /**
@@ -118,7 +118,7 @@ inline void Set_Working_Directory()
 
 #elif defined(PLATFORM_OSX) // osx otherwise
     char path[PATH_MAX];
-    int size = PATH_MAX;
+    int32_t size = PATH_MAX;
     _NSGetExecutablePath(path, &size);
     chdir(dirname(path));
 
@@ -130,13 +130,13 @@ inline void Set_Working_Directory()
 /**
  * @brief Check the command line for early startup related flags.
  */
-void Check_Windowed(int argc, char *argv[])
+void Check_Windowed(int32_t argc, char *argv[])
 {
 #ifdef PLATFORM_WINDOWS
     RECT Res;
     GetWindowRect(GetDesktopWindow(), &Res);
 
-    for (int i = 0; i < argc && i < 20; ++i) {
+    for (int32_t i = 0; i < argc && i < 20; ++i) {
         // DEBUG_LOG("Argument %d was %s\n", i, argv[i]);
 
         if (strcasecmp(argv[i], "-win") == 0) {
@@ -150,13 +150,13 @@ void Check_Windowed(int argc, char *argv[])
         if (strcasecmp(argv[i], "-xpos") == 0) {
             ++i;
             g_xPos = atoi(argv[i]);
-            g_xPos = std::clamp(g_xPos, 0, (int)(Res.right - 800)); // Prevent negative values
+            g_xPos = std::clamp(g_xPos, 0, (int32_t)(Res.right - 800)); // Prevent negative values
         }
 
         if (strcasecmp(argv[i], "-ypos") == 0) {
             ++i;
             g_yPos = atoi(argv[i]);
-            g_yPos = std::clamp(g_yPos, 0, (int)(Res.bottom - 600)); // Prevent negative values
+            g_yPos = std::clamp(g_yPos, 0, (int32_t)(Res.bottom - 600)); // Prevent negative values
         }
     }
 #endif
@@ -169,7 +169,7 @@ void Create_Window()
     RECT Rect;
     HINSTANCE app_hinstance = GetModuleHandle(nullptr);
     STARTUPINFOA sinfo;
-    int show_cmd;
+    int32_t show_cmd;
 
     sinfo.dwFlags = 0;
     GetStartupInfoA(&sinfo);
@@ -272,7 +272,7 @@ void Create_Window()
 /**
  * @brief Entry point for the game engine.
  */
-int main(int argc, char **argv)
+int32_t main(int32_t argc, char **argv)
 {
     // Windows main can't take arguments as UTF8, so we need to overwrite them with the correct content.
     Handle_Win32_Args(&argc, &argv);
@@ -406,10 +406,10 @@ int main(int argc, char **argv)
 /**
  * @brief Wrapper for main to hook original entry point
  */
-int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+int32_t __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int32_t nCmdShow)
 {
     // Windows code will replace the arguments to main anyway so it doesn't matter what we do here.
-    int ret = main(0, nullptr);
+    int32_t ret = main(0, nullptr);
 
     return ret;
 }

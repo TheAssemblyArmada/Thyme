@@ -40,7 +40,7 @@
 #include "w3d_file.h"
 #include "w3derr.h"
 
-static unsigned int g_meshDebugIdCount;
+static uint32_t g_meshDebugIdCount;
 static SimpleDynVecClass<uint32_t> g_tempApt;
 
 MeshClass::MeshClass() :
@@ -216,12 +216,12 @@ void MeshClass::Delete_Decal(unsigned long decal_id)
     captainslog_dbgassert(0, "decals not supported");
 }
 
-int MeshClass::Get_Num_Polys() const
+int32_t MeshClass::Get_Num_Polys() const
 {
     if (m_model != nullptr) {
-        int num_passes = m_model->Get_Pass_Count();
+        int32_t num_passes = m_model->Get_Pass_Count();
         captainslog_assert(num_passes > 0);
-        int poly_count = m_model->Get_Polygon_Count();
+        int32_t poly_count = m_model->Get_Polygon_Count();
         return num_passes * poly_count;
     } else {
         return 0;
@@ -234,7 +234,7 @@ void MeshClass::Render(RenderInfoClass &rinfo)
         return;
     }
 
-    unsigned int sort_level = (unsigned int)m_model->Get_Sort_Level();
+    uint32_t sort_level = (uint32_t)m_model->Get_Sort_Level();
 
     if (W3D::Are_Static_Sort_Lists_Enabled() && sort_level != SORT_LEVEL_NONE) {
         Set_Lighting_Environment(rinfo.m_lightEnvironment);
@@ -285,7 +285,7 @@ void MeshClass::Render(RenderInfoClass &rinfo)
                 rendered_something = true;
             }
 
-            for (int i = 0; i < rinfo.Additional_Pass_Count(); i++) {
+            for (int32_t i = 0; i < rinfo.Additional_Pass_Count(); i++) {
 
                 MaterialPassClass *matpass = rinfo.Peek_Additional_Pass(i);
 
@@ -382,13 +382,13 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
 
         if (g_tempApt.Count() > 0) {
 
-            int buftype = DX8IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8;
+            int32_t buftype = DX8IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8;
             if (m_model->Get_Flag(MeshGeometryClass::SORT) && W3D::Is_Sorting_Enabled()) {
                 buftype = DX8IndexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING;
             }
 
-            int min_v = m_model->Get_Vertex_Count();
-            int max_v = 0;
+            int32_t min_v = m_model->Get_Vertex_Count();
+            int32_t max_v = 0;
 
             DynamicIBAccessClass dynamic_ib(buftype, g_tempApt.Count() * 3);
             {
@@ -396,7 +396,7 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
                 unsigned short *indices = lock.Get_Index_Array();
                 const TriIndex *polys = m_model->Get_Polygon_Array();
 
-                for (int i = 0; i < g_tempApt.Count(); i++) {
+                for (int32_t i = 0; i < g_tempApt.Count(); i++) {
                     unsigned v0 = polys[g_tempApt[i]].I;
                     unsigned v1 = polys[g_tempApt[i]].J;
                     unsigned v2 = polys[g_tempApt[i]].K;
@@ -415,7 +415,7 @@ void MeshClass::Render_Material_Pass(MaterialPassClass *pass, IndexBufferClass *
                 }
             }
 
-            int vertex_offset = m_model->m_polygonRendererList.Peek_Head()->Get_Vertex_Offset();
+            int32_t vertex_offset = m_model->m_polygonRendererList.Peek_Head()->Get_Vertex_Offset();
             pass->Install_Materials();
 
             DX8Wrapper::Set_Transform(D3DTS_WORLD, Get_Transform());
@@ -527,16 +527,16 @@ W3DErrorType MeshClass::Load_W3D(ChunkLoadClass &cload)
         return W3D_ERROR_LOAD_FAILED;
     }
 
-    int col_bits = (m_model->m_w3dAttributes & W3D_MESH_FLAG_COLLISION_TYPE_MASK) >> W3D_MESH_FLAG_COLLISION_TYPE_SHIFT;
+    int32_t col_bits = (m_model->m_w3dAttributes & W3D_MESH_FLAG_COLLISION_TYPE_MASK) >> W3D_MESH_FLAG_COLLISION_TYPE_SHIFT;
     Set_Collision_Type(col_bits << 1);
     Set_Hidden(m_model->m_w3dAttributes & W3D_MESH_FLAG_HIDDEN);
 
-    int is_translucent = m_model->Get_Flag(MeshModelClass::SORT);
-    int is_alpha = 0;
-    int is_additive = 0;
+    int32_t is_translucent = m_model->Get_Flag(MeshModelClass::SORT);
+    int32_t is_alpha = 0;
+    int32_t is_additive = 0;
 
     if (m_model->Has_Shader_Array(0)) {
-        for (int i = 0; i < m_model->Get_Polygon_Count(); i++) {
+        for (int32_t i = 0; i < m_model->Get_Polygon_Count(); i++) {
             ShaderClass shader = m_model->Get_Shader(i, 0);
             is_translucent |= (shader.Get_Alpha_Test() == ShaderClass::ALPHATEST_ENABLE);
             is_alpha |= (shader.Get_Dst_Blend_Func() != ShaderClass::DSTBLEND_ZERO
@@ -719,7 +719,7 @@ void MeshClass::Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_l
 {
     MaterialInfoClass *material = Get_Material_Info();
     if (material != nullptr) {
-        for (int index = 0; index < material->Texture_Count(); index++) {
+        for (int32_t index = 0; index < material->Texture_Count(); index++) {
             TextureClass *texture = material->Peek_Texture(index);
 
             if (texture != nullptr) {
@@ -751,7 +751,7 @@ void MeshClass::Update_Cached_Bounding_Volumes() const
     Validate_Cached_Bounding_Volumes();
 }
 
-int MeshClass::Get_Sort_Level() const
+int32_t MeshClass::Get_Sort_Level() const
 {
     if (m_model != nullptr) {
         return (m_model->Get_Sort_Level());
@@ -760,20 +760,20 @@ int MeshClass::Get_Sort_Level() const
     return SORT_LEVEL_NONE;
 }
 
-void MeshClass::Set_Sort_Level(int level)
+void MeshClass::Set_Sort_Level(int32_t level)
 {
     if (m_model != nullptr) {
         m_model->Set_Sort_Level(level);
     }
 }
 
-int MeshClass::Get_Draw_Call_Count() const
+int32_t MeshClass::Get_Draw_Call_Count() const
 {
     if (m_model == nullptr) {
         return 0;
     }
 
-    int count = m_model->m_polygonRendererList.Count();
+    int32_t count = m_model->m_polygonRendererList.Count();
 
     if (count <= 0) {
         if (m_model->m_matInfo && m_model->m_matInfo->Texture_Count() > 0) {
@@ -800,13 +800,13 @@ PrototypeClass *MeshLoaderClass::Load_W3D(ChunkLoadClass &cload)
     return proto;
 }
 
-int MeshClass::Get_Draw_Call_Count()
+int32_t MeshClass::Get_Draw_Call_Count()
 {
     if (!m_model) {
         return 0;
     }
 
-    int count = m_model->m_polygonRendererList.Count();
+    int32_t count = m_model->m_polygonRendererList.Count();
 
     if (count <= 0) {
         if (!m_model->m_matInfo) {

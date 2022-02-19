@@ -109,7 +109,7 @@ void GlobalLanguage::Init()
     ini.Load(file, INI_LOAD_OVERWRITE, nullptr);
 }
 
-int GlobalLanguage::Adjust_Font_Size(int size)
+int32_t GlobalLanguage::Adjust_Font_Size(int32_t size)
 {
     float adjustment = std::clamp(
         (((g_theWriteableGlobalData->m_xResolution / 800) - 1.0f) * m_resolutionFontAdjustment) + 1.0f, 1.0f, 2.0f);

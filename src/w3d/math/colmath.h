@@ -106,8 +106,8 @@ public:
     static OverlapType Overlap_Test(const FrustumClass &frustum, const AABoxClass &box);
     static OverlapType Overlap_Test(const FrustumClass &frustum, const OBBoxClass &obbox);
 
-    static OverlapType Overlap_Test(const FrustumClass &frustum, const AABoxClass &box, int &planes_passed);
-    static OverlapType Overlap_Test(const FrustumClass &frustum, const OBBoxClass &box, int &planes_passed);
+    static OverlapType Overlap_Test(const FrustumClass &frustum, const AABoxClass &box, int32_t &planes_passed);
+    static OverlapType Overlap_Test(const FrustumClass &frustum, const OBBoxClass &box, int32_t &planes_passed);
 
     // Misc tests
     static OverlapType Overlap_Test(const Vector3 &min, const Vector3 &max, const LineSegClass &line);
@@ -139,13 +139,13 @@ public:
         const OBBoxClass &box, const Vector3 &move, const OBBoxClass &box2, const Vector3 &move2, CastResultStruct *result);
 
 private:
-    static OverlapType Eval_Overlap_Mask(int mask);
+    static OverlapType Eval_Overlap_Mask(int32_t mask);
     static OverlapType Eval_Overlap_Collision(const CastResultStruct &res);
 
     static const float COINCIDENCE_EPSILON;
 };
 
-inline CollisionMath::OverlapType CollisionMath::Eval_Overlap_Mask(int mask)
+inline CollisionMath::OverlapType CollisionMath::Eval_Overlap_Mask(int32_t mask)
 {
     if (mask == ON) {
         return ON;

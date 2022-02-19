@@ -70,9 +70,9 @@ public:
 
     float m_structureSeconds;
     float m_teamSeconds;
-    int m_resourcesWealthy;
-    int m_resourcesPoor;
-    unsigned int m_forceIdleMSEC;
+    int32_t m_resourcesWealthy;
+    int32_t m_resourcesPoor;
+    uint32_t m_forceIdleMSEC;
     float m_structuresWealthyMod;
     float m_teamWealthyMod;
     float m_structuresPoorMod;
@@ -82,8 +82,8 @@ public:
     float m_guardOuterModifierAI;
     float m_guardInnerModifierHuman;
     float m_guardOuterModifierHuman;
-    unsigned int m_guardChaseUnitsDuration;
-    unsigned int m_guardEnemyScanRate;
+    uint32_t m_guardChaseUnitsDuration;
+    uint32_t m_guardEnemyScanRate;
     float m_guardEnemyReturnScanRate;
     float m_wallHeight;
     float m_alertRangeModifier;
@@ -98,14 +98,14 @@ public:
     bool m_rotateSkirmishBases;
     bool m_attackUsesLineOfSight;
     bool m_attackIgnoreInsignificantBuildings;
-    int m_minInfantryForGroup;
-    int m_minVehiclesForGroup;
+    int32_t m_minInfantryForGroup;
+    int32_t m_minVehiclesForGroup;
     float m_minDistanceForGroup;
     float m_distanceRequiresGroup;
     float m_minClumpDensity;
-    int m_infantryPathfindDiameter;
-    int m_vehiclePathfindDiameter;
-    int m_rebuildDelayTimeSeconds;
+    int32_t m_infantryPathfindDiameter;
+    int32_t m_vehiclePathfindDiameter;
+    int32_t m_rebuildDelayTimeSeconds;
     float m_supplyCenterSafeRadius;
     float m_aiDozerBoredRadiusModifier;
     bool m_aiCrushesInfantry;
@@ -135,7 +135,7 @@ public:
     static void Parse_Science(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Skirmish_Build_List(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_AI_Data_Definition(INI *ini);
-    static float Get_Adjusted_Vision_Range_For_Object(Object *obj, int factors_to_consider);
+    static float Get_Adjusted_Vision_Range_For_Object(Object *obj, int32_t factors_to_consider);
 
     void New_Override();
 
@@ -145,10 +145,10 @@ public:
     FormationID Get_Next_Formation_ID();
     Object *Find_Closest_Enemy(const Object *me,
         float range,
-        unsigned int qualifiers,
+        uint32_t qualifiers,
         const AttackPriorityInfo *info,
         PartitionFilter *optional_filter);
-    Object *Find_Closest_Ally(const Object *me, float range, unsigned int qualifiers);
+    Object *Find_Closest_Ally(const Object *me, float range, uint32_t qualifiers);
     Object *Find_Closest_Repulsor(const Object *me, float range);
     void Add_Side_Info(AISideInfo *info);
 
@@ -160,8 +160,8 @@ private:
     Pathfinder *m_pathfinder;
     std::list<AIGroup *> m_groupList;
     TAiData *m_aiData;
-    int m_groupID;
-    int m_formationID;
+    int32_t m_groupID;
+    int32_t m_formationID;
 };
 
 #ifdef GAME_DLL

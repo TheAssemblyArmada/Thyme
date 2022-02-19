@@ -40,7 +40,7 @@ typedef void (*iniblockparse_t)(INI *);
 struct LookupListRec
 {
     const char *name;
-    int value;
+    int32_t value;
 };
 
 struct BlockParse
@@ -61,7 +61,7 @@ struct MultiIniFieldParse
 {
     MultiIniFieldParse() : count(0) { memset(extra_offsets, 0, sizeof(extra_offsets)); }
 
-    void Add(FieldParse *field_parse, unsigned int extra_offset)
+    void Add(FieldParse *field_parse, uint32_t extra_offset)
     {
         captainslog_relassert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
 
@@ -76,8 +76,8 @@ struct MultiIniFieldParse
     };
 
     FieldParse *field_parsers[MAX_MULTI_FIELDS];
-    unsigned int extra_offsets[MAX_MULTI_FIELDS];
-    int count;
+    uint32_t extra_offsets[MAX_MULTI_FIELDS];
+    int32_t count;
 };
 
 class INI
@@ -107,17 +107,17 @@ public:
     Utf8String Get_Next_Quoted_Ascii_String();
     Utf8String Get_Filename() { return m_fileName; }
     INILoadType Get_Load_Type() { return m_loadType; }
-    int Get_Line_Number() { return m_lineNumber; }
+    int32_t Get_Line_Number() { return m_lineNumber; }
 
     // Scan functions
-    static int Scan_Science(const char *token);
+    static int32_t Scan_Science(const char *token);
     static float Scan_PercentToReal(const char *token);
     static float Scan_Real(const char *token);
-    static unsigned int Scan_UnsignedInt(const char *token);
-    static int Scan_Int(const char *token);
+    static uint32_t Scan_UnsignedInt(const char *token);
+    static int32_t Scan_Int(const char *token);
     static bool Scan_Bool(const char *token);
-    static int Scan_IndexList(const char *token, const char *const *list);
-    static int Scan_LookupList(const char *token, const LookupListRec *list);
+    static int32_t Scan_IndexList(const char *token, const char *const *list);
+    static int32_t Scan_LookupList(const char *token, const LookupListRec *list);
 
     // Field parsing functions
     static void Parse_Bool(INI *ini, void *formal, void *store, const void *user_data);
@@ -170,11 +170,11 @@ private:
 
     File *m_backingFile;
     char m_buffer[INI_BUFFER_SIZE];
-    int m_bufferReadPos;
-    int m_bufferData;
+    int32_t m_bufferReadPos;
+    int32_t m_bufferData;
     Utf8String m_fileName;
     INILoadType m_loadType;
-    int m_lineNumber;
+    int32_t m_lineNumber;
     char m_currentBlock[INI_MAX_CHARS_PER_LINE + 1];
     const char *m_seps;
     const char *m_sepsPercent;

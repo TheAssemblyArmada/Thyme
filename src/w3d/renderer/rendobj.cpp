@@ -183,9 +183,9 @@ Vector3 RenderObjClass::Get_Position() const
     return m_transform.Get_Translation();
 }
 
-RenderObjClass *RenderObjClass::Get_Sub_Object_By_Name(const char *name, int *index) const
+RenderObjClass *RenderObjClass::Get_Sub_Object_By_Name(const char *name, int32_t *index) const
 {
-    int i;
+    int32_t i;
 
     for (i = 0; i < Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = Get_Sub_Object(i);
@@ -229,18 +229,18 @@ RenderObjClass *RenderObjClass::Get_Sub_Object_By_Name(const char *name, int *in
     return nullptr;
 }
 
-int RenderObjClass::Add_Sub_Object_To_Bone(RenderObjClass *subobj, const char *bone_name)
+int32_t RenderObjClass::Add_Sub_Object_To_Bone(RenderObjClass *subobj, const char *bone_name)
 {
-    int bindex = Get_Bone_Index(bone_name);
+    int32_t bindex = Get_Bone_Index(bone_name);
     return Add_Sub_Object_To_Bone(subobj, bindex);
 }
 
-int RenderObjClass::Remove_Sub_Objects_From_Bone(int bone_index)
+int32_t RenderObjClass::Remove_Sub_Objects_From_Bone(int32_t bone_index)
 {
-    int count = Get_Num_Sub_Objects_On_Bone(bone_index);
-    int remove_count = 0;
+    int32_t count = Get_Num_Sub_Objects_On_Bone(bone_index);
+    int32_t remove_count = 0;
 
-    for (int i = count - 1; i >= 0; i--) {
+    for (int32_t i = count - 1; i >= 0; i--) {
         RenderObjClass *robj = Get_Sub_Object_On_Bone(i, bone_index);
 
         if (robj) {
@@ -252,9 +252,9 @@ int RenderObjClass::Remove_Sub_Objects_From_Bone(int bone_index)
     return remove_count;
 }
 
-int RenderObjClass::Remove_Sub_Objects_From_Bone(const char *bone_name)
+int32_t RenderObjClass::Remove_Sub_Objects_From_Bone(const char *bone_name)
 {
-    int bindex = Get_Bone_Index(bone_name);
+    int32_t bindex = Get_Bone_Index(bone_name);
     return Remove_Sub_Objects_From_Bone(bindex);
 }
 
@@ -265,12 +265,12 @@ void RenderObjClass::Prepare_LOD(CameraClass &camera)
 
 float RenderObjClass::Get_Cost() const
 {
-    int polycount = Get_Num_Polys();
+    int32_t polycount = Get_Num_Polys();
     float cost = (polycount != 0) ? polycount : 0.000001f;
     return cost;
 }
 
-int RenderObjClass::Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const
+int32_t RenderObjClass::Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const
 {
     values[0] = AT_MIN_LOD;
     values[1] = AT_MAX_LOD;
@@ -284,12 +284,12 @@ void RenderObjClass::Update_Sub_Object_Bits()
         return;
     }
 
-    int coltype = 0;
-    int istrans = 0;
-    int isalpha = 0;
-    int isadd = 0;
+    int32_t coltype = 0;
+    int32_t istrans = 0;
+    int32_t isalpha = 0;
+    int32_t isadd = 0;
 
-    for (int ni = 0; ni < Get_Num_Sub_Objects(); ni++) {
+    for (int32_t ni = 0; ni < Get_Num_Sub_Objects(); ni++) {
         RenderObjClass *robj = Get_Sub_Object(ni);
         coltype |= robj->Get_Collision_Type();
         istrans |= robj->Is_Translucent();
@@ -397,9 +397,9 @@ bool RenderObjClass::Intersect_Sphere_Quick(IntersectionClass *intersect, Inters
 bool RenderObjClass::Build_Dependency_List(DynamicVectorClass<StringClass> &file_list, bool recursive)
 {
     if (recursive) {
-        int subobj_count = Get_Num_Sub_Objects();
+        int32_t subobj_count = Get_Num_Sub_Objects();
 
-        for (int index = 0; index < subobj_count; index++) {
+        for (int32_t index = 0; index < subobj_count; index++) {
             RenderObjClass *psub_obj = Get_Sub_Object(index);
 
             if (psub_obj != NULL) {
@@ -416,9 +416,9 @@ bool RenderObjClass::Build_Dependency_List(DynamicVectorClass<StringClass> &file
 bool RenderObjClass::Build_Texture_List(DynamicVectorClass<StringClass> &texture_file_list, bool recursive)
 {
     if (recursive) {
-        int subobj_count = Get_Num_Sub_Objects();
+        int32_t subobj_count = Get_Num_Sub_Objects();
 
-        for (int index = 0; index < subobj_count; index++) {
+        for (int32_t index = 0; index < subobj_count; index++) {
             RenderObjClass *sub_obj = Get_Sub_Object(index);
 
             if (sub_obj != NULL) {

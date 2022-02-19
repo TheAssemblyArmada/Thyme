@@ -140,14 +140,14 @@ bool RawFileClass::Delete()
     return false;
 }
 
-bool RawFileClass::Open(const char *filename, int rights)
+bool RawFileClass::Open(const char *filename, int32_t rights)
 {
     Set_Name(filename);
 
     return Open(rights);
 }
 
-bool RawFileClass::Open(int rights)
+bool RawFileClass::Open(int32_t rights)
 {
     // close the file if it is already open.
     RawFileClass::Close();
@@ -285,7 +285,7 @@ void RawFileClass::Close()
     }
 }
 
-int RawFileClass::Read(void *buffer, int length)
+int32_t RawFileClass::Read(void *buffer, int32_t length)
 {
     bool opened = false; // have we opened the file to allow us to read?
 
@@ -298,7 +298,7 @@ int RawFileClass::Read(void *buffer, int length)
     }
 
     if (m_biasLength != -1) {
-        int tmplen = m_biasLength - Seek(0, FS_SEEK_CURRENT);
+        int32_t tmplen = m_biasLength - Seek(0, FS_SEEK_CURRENT);
 
         if (tmplen > length) {
             tmplen = length;
@@ -307,11 +307,11 @@ int RawFileClass::Read(void *buffer, int length)
         length = tmplen;
     }
 
-    int totalread = 0;
+    int32_t totalread = 0;
 
     while (length > 0) {
 #ifdef PLATFORM_WINDOWS
-        int readlen;
+        int32_t readlen;
         SetErrorMode(SEM_FAILCRITICALERRORS);
 
         if (ReadFile(m_handle, buffer, length, reinterpret_cast<LPDWORD>(&readlen), 0)) {
@@ -331,7 +331,7 @@ int RawFileClass::Read(void *buffer, int length)
             break;
         }
 #else
-        int readlen = read(m_handle, buffer, length);
+        int32_t readlen = read(m_handle, buffer, length);
 
         if (readlen >= 0) {
             length -= readlen;
@@ -354,7 +354,7 @@ int RawFileClass::Read(void *buffer, int length)
     return totalread;
 }
 
-off_t RawFileClass::Seek(off_t offset, int whence)
+off_t RawFileClass::Seek(off_t offset, int32_t whence)
 {
     if (m_biasLength == -1) {
         return Raw_Seek(offset, whence);
@@ -397,7 +397,7 @@ off_t RawFileClass::Seek(off_t offset, int whence)
 
 off_t RawFileClass::Size()
 {
-    int size = 0;
+    int32_t size = 0;
 
     if (m_biasLength == -1) {
         if (Is_Open()) {
@@ -430,9 +430,9 @@ off_t RawFileClass::Size()
     return m_biasLength;
 }
 
-int RawFileClass::Write(void const *buffer, int length)
+int32_t RawFileClass::Write(void const *buffer, int32_t length)
 {
-    int writelen = 0; // total bytes written to file.
+    int32_t writelen = 0; // total bytes written to file.
     bool opened = false; // have we opened the file to allow us to write?
 
     if (!Is_Open()) {
@@ -458,7 +458,7 @@ int RawFileClass::Write(void const *buffer, int length)
     }
 #endif
 
-    if (m_biasLength != -1 && Raw_Seek(0, FS_SEEK_CURRENT) > (int)(m_biasLength + m_biasStart)) {
+    if (m_biasLength != -1 && Raw_Seek(0, FS_SEEK_CURRENT) > (int32_t)(m_biasLength + m_biasStart)) {
         m_biasLength = Raw_Seek(0, FS_SEEK_CURRENT) - m_biasStart;
     }
 
@@ -512,16 +512,16 @@ bool RawFileClass::Set_Date_Time(time_t datetime)
     return false;
 }
 
-void RawFileClass::Error(int error, bool can_retry, const char *filename)
+void RawFileClass::Error(int32_t error, bool can_retry, const char *filename)
 {
     // Nothing in SAGE
     captainslog_error("Triggered error %d for file '%s'.", error, filename);
 }
 
-void RawFileClass::Bias(int offset, int length)
+void RawFileClass::Bias(int32_t offset, int32_t length)
 {
     if (offset) {
-        int fsize = RawFileClass::Size();
+        int32_t fsize = RawFileClass::Size();
 
         m_biasLength = fsize;
         m_biasStart += offset;
@@ -546,7 +546,7 @@ void RawFileClass::Bias(int offset, int length)
     }
 }
 
-off_t RawFileClass::Raw_Seek(off_t offset, int whence)
+off_t RawFileClass::Raw_Seek(off_t offset, int32_t whence)
 {
     // if the file is not open, raise an error.
     if (!Is_Open()) {
@@ -554,7 +554,7 @@ off_t RawFileClass::Raw_Seek(off_t offset, int whence)
         return 0;
     }
 #ifdef PLATFORM_WINDOWS
-    int retval = 0;
+    int32_t retval = 0;
 
     // seek to the offset specified, return the position.
     // and if fseek returned with a error, raise an error too.
@@ -564,7 +564,7 @@ off_t RawFileClass::Raw_Seek(off_t offset, int whence)
         return 0;
     }
 #else
-    int retval = lseek(m_handle, offset, whence);
+    int32_t retval = lseek(m_handle, offset, whence);
 
     // seek to the offset specified, return the position.
     // and if lseek returned with a error, raise an error too.
@@ -577,9 +577,9 @@ off_t RawFileClass::Raw_Seek(off_t offset, int whence)
 }
 
 #ifdef PLATFORM_WINDOWS
-void RawFileClass::Attach(HANDLE handle, int rights)
+void RawFileClass::Attach(HANDLE handle, int32_t rights)
 #else
-void RawFileClass::Attach(int handle, int rights)
+void RawFileClass::Attach(int32_t handle, int32_t rights)
 #endif
 {
     Reset();

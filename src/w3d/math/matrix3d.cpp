@@ -26,7 +26,7 @@ using GameMath::Sqrt;
 
 const Matrix3D Matrix3D::Identity(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
 
-int Matrix3D::Is_Orthogonal() const
+int32_t Matrix3D::Is_Orthogonal() const
 {
     Vector3 x(Row[0].X, Row[0].Y, Row[0].Z);
     Vector3 y(Row[1].X, Row[1].Y, Row[1].Z);
@@ -300,8 +300,8 @@ void Matrix3D::Transform_Min_Max_AABox(const Vector3 &min, const Vector3 &max, V
     set_min->Y = set_max->Y = Row[1][3];
     set_min->Z = set_max->Z = Row[2][3];
 
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
+    for (int32_t i = 0; i < 3; i++) {
+        for (int32_t j = 0; j < 3; j++) {
             tmp0 = Row[i][j] * min[j];
             tmp1 = Row[i][j] * max[j];
 
@@ -322,11 +322,11 @@ void Matrix3D::Transform_Center_Extent_AABox(
     captainslog_assert(set_center != &center);
     captainslog_assert(set_extent != &extent);
 
-    for (int i = 0; i < 3; i++) {
+    for (int32_t i = 0; i < 3; i++) {
         (*set_center)[i] = Row[i][3];
         (*set_extent)[i] = 0.0f;
 
-        for (int j = 0; j < 3; j++) {
+        for (int32_t j = 0; j < 3; j++) {
             (*set_center)[i] += Row[i][j] * center[j];
             (*set_extent)[i] += Fabs(Row[i][j] * extent[j]);
         }

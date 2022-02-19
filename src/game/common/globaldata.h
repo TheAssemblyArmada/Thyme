@@ -124,7 +124,7 @@ public:
     bool m_useWaveEditor;
     bool m_unsortedShoreLines;
     // char pad[1]
-    int m_featherWater;
+    int32_t m_featherWater;
     Utf8String m_vertexWaterAvailableMaps[4];
     float m_vertexWaterHeightClampLow[4];
     float m_vertexWaterHeightClampHigh[4];
@@ -218,8 +218,8 @@ public:
     bool m_showClientPhysics;
     bool m_showTerrainNormals;
     // char pad[2]
-    int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int.
-    int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
+    int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int32_t.
+    int32_t m_debugAI; // Possibly old BOOL typedef for int32_t?, keep int32_t for ABI compat until sure
     bool m_logSupplyCenterPlacement;
     bool m_debugObstacleAI;
     bool m_showObjectHealth;

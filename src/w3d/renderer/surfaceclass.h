@@ -44,10 +44,10 @@ public:
     void FindBB(Vector2i *min, Vector2i *max);
     bool Is_Transparent_Column(unsigned column);
     void Get_Description(SurfaceDescription &surface_desc);
-    void *Lock(int *pitch);
-    void *Lock(int *pitch, bool discard);
-    void *Lock_Rect(int *pitch, int left, int top, int right, int bottom);
-    void *Lock_ReadOnly(int *pitch);
+    void *Lock(int32_t *pitch);
+    void *Lock(int32_t *pitch, bool discard);
+    void *Lock_Rect(int32_t *pitch, int32_t left, int32_t top, int32_t right, int32_t bottom);
+    void *Lock_ReadOnly(int32_t *pitch);
     void Unlock();
     void Clear();
     void Copy(Vector2i &min, Vector2i &max, unsigned char *other);
@@ -66,7 +66,7 @@ public:
     WW3DFormat Get_Surface_Format() const { return m_surfaceFormat; }
     w3dsurface_t Get_D3D_Surface() const { return m_d3dSurface; }
 
-    static int Pixel_Size(const SurfaceDescription &sd);
+    static int32_t Pixel_Size(const SurfaceDescription &sd);
 
 #ifdef GAME_DLL
     SurfaceClass *Hook_Ctor1(unsigned width, unsigned height, WW3DFormat format)

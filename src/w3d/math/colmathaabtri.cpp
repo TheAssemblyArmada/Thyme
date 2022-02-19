@@ -21,12 +21,12 @@ struct AABTCollisionStruct
 {
     bool start_bad;
     float max_frac;
-    int axis_id;
-    int side;
-    int point;
-    int test_axis_id;
-    int test_side;
-    int test_point;
+    int32_t axis_id;
+    int32_t side;
+    int32_t point;
+    int32_t test_axis_id;
+    int32_t test_side;
+    int32_t test_point;
     Vector3 test_axis;
     Vector3 d;
     Vector3 move;
@@ -154,7 +154,7 @@ static bool AABTri_Check_Axis(AABTCollisionStruct &CollisionContext)
     return AABTri_Separation_Test(CollisionContext, lp, leb0, leb1);
 }
 
-static bool AABTri_Check_Cross_Axis(AABTCollisionStruct &CollisionContext, float unk1, int testpoint, float unk2)
+static bool AABTri_Check_Cross_Axis(AABTCollisionStruct &CollisionContext, float unk1, int32_t testpoint, float unk2)
 {
     float dp1 = Vector3::Dot_Product(CollisionContext.d, CollisionContext.test_axis);
     float dp2 = Vector3::Dot_Product(CollisionContext.move, CollisionContext.test_axis);

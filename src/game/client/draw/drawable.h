@@ -40,8 +40,8 @@ struct TWheelInfo
     float m_rearLeftHeightOffset;
     float m_rearRightHeightOffset;
     float m_wheelAngle;
-    int m_framesAirborneCounter;
-    int m_framesAirborne;
+    int32_t m_framesAirborneCounter;
+    int32_t m_framesAirborne;
 };
 
 class DrawableLocoInfo : public MemoryPoolObject
@@ -112,7 +112,7 @@ class DrawableIconInfo : public MemoryPoolObject
 public:
     DrawableIconInfo()
     {
-        for (int i = 0; i < MAX_ICONS; i++) {
+        for (int32_t i = 0; i < MAX_ICONS; i++) {
             anims[i] = nullptr;
             timings[i] = 0;
         }
@@ -129,7 +129,7 @@ public:
 
     void Reset()
     {
-        for (int i = 0; i < MAX_ICONS; i++) {
+        for (int32_t i = 0; i < MAX_ICONS; i++) {
             if (anims[i] != nullptr) {
                 anims[i]->Delete_Instance();
                 anims[i] = nullptr;
@@ -142,7 +142,7 @@ public:
 
 private:
     Anim2D *anims[MAX_ICONS];
-    unsigned int timings[MAX_ICONS];
+    uint32_t timings[MAX_ICONS];
     friend class Drawable;
 };
 
@@ -151,7 +151,7 @@ struct DrawableInfo
     ObjectID object_id;
     Drawable *drawable;
     GhostObject *ghost_object;
-    int flags;
+    int32_t flags;
 };
 
 class Drawable : public Thing, public SnapShot
@@ -191,14 +191,14 @@ public:
     virtual Drawable *As_Drawable_Meth() override { return this; }
     virtual const Drawable *As_Drawable_Meth() const override { return this; }
     virtual void React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle) override;
-    virtual void Set_Animation_Frame(int frame);
+    virtual void Set_Animation_Frame(int32_t frame);
 
     Object *Get_Object() { return m_object; }
     const Object *Get_Object() const { return m_object; }
     bool Is_Hidden() const { return m_hidden || m_stealthInvisible; }
     StealthLookType Get_Stealth_Look() const { return m_stealthLook; }
-    void Set_Remain_Visible_Frames(unsigned int frames) { m_remainVisibleFrames = frames; }
-    unsigned int Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
+    void Set_Remain_Visible_Frames(uint32_t frames) { m_remainVisibleFrames = frames; }
+    uint32_t Get_Remain_Visible_Frames() const { return m_remainVisibleFrames; }
     bool Is_Fully_Obscured_By_Shroud() const { return m_fullyObscuredByShroud; }
 
     bool Get_Draws_In_Mirror() const
@@ -264,13 +264,13 @@ public:
     Drawable *Get_Next() { return m_nextDrawable; }
     void Set_Status_Bit(DrawableStatus status) { m_status |= status; }
     void Clear_Status_Bit(DrawableStatus status) { m_status &= ~status; }
-    int Is_Selected() { return m_selected != false; }
+    int32_t Is_Selected() { return m_selected != false; }
     void Set_Opacity(float opacity) { m_opacity = opacity; }
     float Get_Effective_Opacity1() { return m_effectiveOpacity1; }
     float Get_Opacity() { return m_opacity; }
     float Get_Effective_Opacity2() { return m_effectiveOpacity2; }
-    void Clear_Draw_Bit(unsigned int bit) { m_drawBits &= ~bit; }
-    bool Check_Draw_Bit(unsigned int bit) { return (bit & m_drawBits) != 0; }
+    void Clear_Draw_Bit(uint32_t bit) { m_drawBits &= ~bit; }
+    bool Check_Draw_Bit(uint32_t bit) { return (bit & m_drawBits) != 0; }
     const Matrix3D &Get_Instance_Matrix() const { return m_instance; }
     bool Is_Instance_Identity() { return m_instanceIsIdentity; }
 
@@ -282,10 +282,10 @@ public:
     }
 
     bool Has_Drawable_Icon_Info() { return m_drawableIconInfo != nullptr; }
-    void Set_Draw_Bit(unsigned int bit) { m_drawBits |= bit; }
+    void Set_Draw_Bit(uint32_t bit) { m_drawBits |= bit; }
     Drawable *Get_Previous() { return m_prevDrawable; }
-    void Set_Flash_Time(int time) { m_flashTime = time; }
-    void Set_Flash_Color(int color) { m_flashColor = color; }
+    void Set_Flash_Time(int32_t time) { m_flashTime = time; }
+    void Set_Flash_Color(int32_t color) { m_flashColor = color; }
     DrawableLocoInfo *Get_Loco_Info() { return m_drawableLocoInfo; }
 
     void Allocate_Shadows();
@@ -307,7 +307,7 @@ public:
     void Clear_Emoticon();
 
     bool Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *radius, Matrix3D *transform);
-    void Color_Flash(RGBColor const *color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames);
+    void Color_Flash(RGBColor const *color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames);
     void Color_Tint(RGBColor const *color);
 
     void Draw(View *view);
@@ -329,8 +329,8 @@ public:
     void Enable_Ambient_Sound(bool enable);
     void Enable_Ambient_Sound_From_Script(bool enable);
 
-    void Fade_In(unsigned int time);
-    void Fade_Out(unsigned int time);
+    void Fade_In(uint32_t time);
+    void Fade_Out(uint32_t time);
 
     ClientUpdateModule *Find_Client_Update_Module(NameKeyType key);
     void Flash_As_Selected(RGBColor const *color);
@@ -340,11 +340,11 @@ public:
     void Friend_Set_Selected();
 
     const AudioEventRTS *Get_Ambient_Sound_By_Damage(BodyDamageType damage);
-    int Get_Barrel_Count(WeaponSlotType slot) const;
+    int32_t Get_Barrel_Count(WeaponSlotType slot) const;
     const AudioEventInfo *Get_Base_Sound_Ambient_Info() const;
     Utf16String Get_Caption_Text();
-    int Get_Current_Client_Bone_Positions(
-        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
+    int32_t Get_Current_Client_Bone_Positions(
+        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const;
     bool Get_Current_Worldspace_Client_Bone_Positions(char const *bone_name_prefix, Matrix3D &transform) const;
     DrawModule **Get_Draw_Modules();
     DrawModule const **Get_Draw_Modules() const;
@@ -355,10 +355,10 @@ public:
         return m_id;
     }
     DrawableIconInfo *Get_Icon_Info();
-    int Get_Pristine_Bone_Positions(
-        char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const;
+    int32_t Get_Pristine_Bone_Positions(
+        char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const;
     bool Get_Projectile_Launch_Offset(WeaponSlotType wslot,
-        int ammo_index,
+        int32_t ammo_index,
         Matrix3D *launch_pos,
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
@@ -370,7 +370,7 @@ public:
     Matrix3D const *Get_Transform_Matrix() const;
 
     bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
-        int specific_barrel_to_use,
+        int32_t specific_barrel_to_use,
         FXList const *fxl,
         float weapon_speed,
         float recoil_amount,
@@ -400,17 +400,17 @@ public:
     void Replace_Model_Condition_Flags(BitFlags<MODELCONDITION_COUNT> const &flags, bool dirty);
     void Saturate_RGB(RGBColor &color, float factor);
 
-    void Set_Animation_Completion_Time(unsigned int time);
-    void Set_Animation_Loop_Duration(unsigned int num_frames);
+    void Set_Animation_Completion_Time(uint32_t time);
+    void Set_Animation_Loop_Duration(uint32_t num_frames);
     void Set_Caption_Text(Utf16String const &caption);
     void Set_Custom_Sound_Ambient_Info(DynamicAudioEventInfo *info);
     void Set_Custom_Sound_Ambient_Off();
     void Set_Drawable_Hidden(bool hidden);
     void Set_Effective_Opacity(float opacity1, float opacity2);
-    void Set_Emoticon(Utf8String const &emoticon, int frames);
+    void Set_Emoticon(Utf8String const &emoticon, int32_t frames);
     void Set_Fully_Obscured_By_Shroud(bool fully_obscured);
     void Set_ID(DrawableID id);
-    void Set_Indicator_Color(int color);
+    void Set_Indicator_Color(int32_t color);
     void Set_Instance_Matrix(Matrix3D const *matrix);
     void Set_Position(Coord3D const *pos);
     void Set_Selectable(bool selectable);
@@ -427,8 +427,8 @@ public:
     void Stop_Ambient_Sound();
 
     void Update_Drawable();
-    void Update_Drawable_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType slot);
-    void Update_Drawable_Supply_Status(int status1, int status2);
+    void Update_Drawable_Clip_Status(uint32_t show, uint32_t count, WeaponSlotType slot);
+    void Update_Drawable_Supply_Status(int32_t status1, int32_t status2);
     void Update_Hidden_Status();
     void Update_Sub_Objects();
     void Xfer_Drawable_Modules(Xfer *xfer);
@@ -459,16 +459,16 @@ private:
 
     DynamicAudioEventInfo *m_customSoundAmbientInfo;
 
-    unsigned int m_status;
+    uint32_t m_status;
 
-    unsigned int m_drawBits;
-    unsigned int m_previousDrawBits;
+    uint32_t m_drawBits;
+    uint32_t m_previousDrawBits;
 
     FadingMode m_fadingMode;
-    unsigned int m_curFadeFrame;
-    unsigned int m_timeToFade;
+    uint32_t m_curFadeFrame;
+    uint32_t m_timeToFade;
 
-    unsigned int m_remainVisibleFrames;
+    uint32_t m_remainVisibleFrames;
 
     DrawableLocoInfo *m_drawableLocoInfo;
 
@@ -478,8 +478,8 @@ private:
 
     StealthLookType m_stealthLook;
 
-    int m_flashColor;
-    int m_flashTime;
+    int32_t m_flashColor;
+    int32_t m_flashTime;
 
     Matrix3D m_instance;
     float m_instanceScale;
@@ -494,7 +494,7 @@ private:
     DisplayString *m_captionText;
     DisplayString *m_groupString;
 
-    unsigned int m_expirationDate;
+    uint32_t m_expirationDate;
 
     DrawableIconInfo *m_drawableIconInfo;
 
@@ -518,8 +518,8 @@ private:
     static Image *s_emptyContainer;
     static Anim2DTemplate **s_animationTemplates;
 #ifdef GAME_DLL
-    static int &s_modelLockCount;
+    static int32_t &s_modelLockCount;
 #else
-    static int s_modelLockCount;
+    static int32_t s_modelLockCount;
 #endif
 };

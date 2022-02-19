@@ -48,7 +48,7 @@ MemoryPool::~MemoryPool()
     }
 }
 
-void MemoryPool::Init(MemoryPoolFactory *factory, const char *name, int size, int count, int overflow)
+void MemoryPool::Init(MemoryPoolFactory *factory, const char *name, int32_t size, int32_t count, int32_t overflow)
 {
     m_factory = factory;
     m_poolName = name;
@@ -64,7 +64,7 @@ void MemoryPool::Init(MemoryPoolFactory *factory, const char *name, int size, in
     Create_Blob(count);
 }
 
-MemoryPoolBlob *MemoryPool::Create_Blob(int count)
+MemoryPoolBlob *MemoryPool::Create_Blob(int32_t count)
 {
     MemoryPoolBlob *blob = new MemoryPoolBlob;
     blob->Init_Blob(this, count);
@@ -78,7 +78,7 @@ MemoryPoolBlob *MemoryPool::Create_Blob(int count)
     return blob;
 }
 
-int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
+int32_t MemoryPool::Free_Blob(MemoryPoolBlob *blob)
 {
     captainslog_dbgassert(blob->m_owningPool == this, "Blob does not belong to this pool");
 
@@ -88,7 +88,7 @@ int MemoryPool::Free_Blob(MemoryPoolBlob *blob)
         m_firstBlobWithFreeBlocks = m_firstBlob;
     }
 
-    int blob_alloc = blob->m_totalBlocksInBlob * m_allocationSize + sizeof(*blob);
+    int32_t blob_alloc = blob->m_totalBlocksInBlob * m_allocationSize + sizeof(*blob);
     m_usedBlocksInPool -= blob->m_usedBlocksInBlob;
     m_totalBlocksInPool -= blob->m_totalBlocksInBlob;
 
@@ -154,9 +154,9 @@ void MemoryPool::Free_Block(void *block)
     }
 }
 
-int MemoryPool::Count_Blobs()
+int32_t MemoryPool::Count_Blobs()
 {
-    int count = 0;
+    int32_t count = 0;
 
     for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
         ++count;
@@ -165,9 +165,9 @@ int MemoryPool::Count_Blobs()
     return count;
 }
 
-int MemoryPool::Release_Empties()
+int32_t MemoryPool::Release_Empties()
 {
-    int count = 0;
+    int32_t count = 0;
 
     for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
         if (i->m_usedBlocksInBlob == 0) {

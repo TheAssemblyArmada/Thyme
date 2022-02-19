@@ -65,12 +65,12 @@ public:
     };
 
 private:
-    int m_objective;
+    int32_t m_objective;
     bool m_teamExists;
     ICoord2D m_clickDownCoord;
     ICoord2D m_clickUpCoord;
-    int m_clickDownTime;
-    int m_clickUpTime;
+    int32_t m_clickDownTime;
+    int32_t m_clickUpTime;
 };
 
 class GameClient : public SubsystemInterface, public SnapShot
@@ -121,14 +121,14 @@ public:
     virtual Drawable *Create_Drawable(const ThingTemplate *temp, DrawableStatus status) = 0;
     virtual void Destroy_Drawable(Drawable *drawable);
     virtual void Set_Time_Of_Day(TimeOfDayType time);
-    virtual void Select_Drawables_In_Group(int group) {}
-    virtual void Assign_Selected_Drawables_To_Group(int group) {}
+    virtual void Select_Drawables_In_Group(int32_t group) {}
+    virtual void Assign_Selected_Drawables_To_Group(int32_t group) {}
 
     virtual uint32_t Get_Frame() { return m_frame; }
 
-    virtual void Set_Team_Color(int red, int blue, int green) = 0;
+    virtual void Set_Team_Color(int32_t red, int32_t blue, int32_t green) = 0;
 
-    virtual void Adjust_LOD(int lod) = 0;
+    virtual void Adjust_LOD(int32_t lod) = 0;
 
     virtual void Release_Shadows();
     virtual void Allocate_Shadows();
@@ -137,7 +137,7 @@ public:
 
     virtual Drawable *Get_Drawable_List() { return m_drawableList; }
 
-    virtual int Notify_Terrain_Object_Moved(Object *obj) = 0;
+    virtual int32_t Notify_Terrain_Object_Moved(Object *obj) = 0;
 
     virtual Display *Create_GameDisplay() = 0;
     virtual InGameUI *Create_InGameUI() = 0;
@@ -161,7 +161,7 @@ public:
 
     DrawableID Get_Next_DrawableID() { return m_nextDrawableID; }
     void Set_Next_DrawableID(DrawableID id) { m_nextDrawableID = id; }
-    int Get_On_Screen_Object_Count() { return m_onScreenObjectCount; }
+    int32_t Get_On_Screen_Object_Count() { return m_onScreenObjectCount; }
     void Add_Text_Bearing_Drawable(Drawable *drawable);
     void Remove_Drawable_From_Lookup_Table(Drawable *drawable);
     void Add_Drawable_To_Lookup_Table(Drawable *drawable);
@@ -174,7 +174,7 @@ protected:
     uint32_t m_translators[MAX_CLIENT_TRANSLATORS];
     uint32_t m_translatorCount;
     CommandTranslator *m_commandTranslator;
-    int m_onScreenObjectCount;
+    int32_t m_onScreenObjectCount;
     std::list<DrawableTOCEntry> m_drawableTOC;
     std::list<Drawable *> m_drawableTB; // Text Bearing drawables.
 };

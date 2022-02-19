@@ -32,7 +32,7 @@ public:
     virtual void Update();
 
     // Filesystem
-    File *Open(const char *filename, int mode);
+    File *Open(const char *filename, int32_t mode);
     bool Does_File_Exist(const char *filename);
     void Get_File_List_From_Dir(Utf8String const &dir,
         Utf8String const &filter,
@@ -46,7 +46,7 @@ public:
     static void Unload_Music_Files_From_CD();
 
 private:
-    std::map<unsigned int, bool> m_availableFiles;
+    std::map<uint32_t, bool> m_availableFiles;
 };
 
 #ifdef GAME_DLL

@@ -39,7 +39,7 @@ ParticleSystemManager::ParticleSystemManager() :
     m_unkInt2(0),
     m_templateStore()
 {
-    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
+    for (int32_t i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -63,7 +63,7 @@ void ParticleSystemManager::Init()
     INI ini;
     ini.Load("Data/INI/ParticleSystem.ini", INI_LOAD_OVERWRITE, nullptr);
 
-    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
+    for (int32_t i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -84,7 +84,7 @@ void ParticleSystemManager::Reset()
         }
     }
 
-    for (int i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
+    for (int32_t i = 0; i < PARTICLE_PRIORITY_COUNT; ++i) {
         m_allParticlesHead[i] = nullptr;
         m_allParticlesTail[i] = nullptr;
     }
@@ -195,7 +195,7 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const Utf8String &na
  *
  * 0x004D2130
  */
-ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const Utf8String &name, int parent)
+ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const Utf8String &name, int32_t parent)
 {
     if (name.Is_Not_Empty()) {
         for (auto it = m_templateStore.begin(); it != m_templateStore.end(); ++it) {

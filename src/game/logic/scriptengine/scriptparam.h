@@ -140,7 +140,7 @@ public:
 private:
     ParameterType m_type;
     bool m_initialized;
-    int m_int;
+    int32_t m_int;
     float m_real;
     Utf8String m_string;
     Coord3D m_coord;

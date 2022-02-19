@@ -90,7 +90,7 @@ struct LANMessage
         struct
         {
             unichar_t game_name[17];
-            int map_name_crc;
+            int32_t map_name_crc;
             bool has_map;
         } map;
 
@@ -170,12 +170,12 @@ public:
     virtual void On_Has_Map(uint32_t player_ip, bool status) = 0;
     virtual void On_Chat(Utf16String player, uint32_t ip, Utf16String message, ChatType format) = 0;
     virtual void On_Game_Start() = 0;
-    virtual void On_Game_Start_Timer(int time) = 0;
-    virtual void On_Game_Options(uint32_t player_addr, int player_slot, Utf8String options) = 0;
+    virtual void On_Game_Start_Timer(int32_t time) = 0;
+    virtual void On_Game_Options(uint32_t player_addr, int32_t player_slot, Utf8String options) = 0;
     virtual void On_Game_Create(ReturnType type) = 0;
     virtual void On_Name_Change(uint32_t ip, Utf16String name) = 0;
     virtual LANGameInfo *Lookup_Game(Utf16String name) = 0;
-    virtual LANGameInfo *Lookup_Game_By_Offset(int offset) = 0;
+    virtual LANGameInfo *Lookup_Game_By_Offset(int32_t offset) = 0;
     virtual void Set_Local_IP(uint32_t address) = 0;
     virtual void Set_Local_IP(Utf8String address) = 0;
     virtual bool Am_I_Host() = 0;

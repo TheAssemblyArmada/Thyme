@@ -26,7 +26,7 @@ public:
     Null3DObjClass(const Null3DObjClass &src);
     Null3DObjClass &operator=(const Null3DObjClass &that);
 
-    virtual int Class_ID() const override { return CLASSID_NULL; }
+    virtual int32_t Class_ID() const override { return CLASSID_NULL; }
     virtual RenderObjClass *Clone() const override { return new Null3DObjClass(*this); }
     virtual const char *Get_Name() const override { return m_Name; }
     virtual void Render(RenderInfoClass &rinfo) override {}
@@ -61,6 +61,6 @@ private:
 class NullLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_NULL_OBJECT; }
+    virtual int32_t Chunk_Type() override { return W3D_CHUNK_NULL_OBJECT; }
     virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

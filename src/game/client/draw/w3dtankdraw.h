@@ -91,6 +91,6 @@ private:
     ParticleSystem *m_treadDebrisRight;
     RenderObjClass *m_prevRenderObj;
     TreadObjectInfo m_treads[MAX_TREADS_PER_TANK];
-    int m_treadCount;
+    int32_t m_treadCount;
     Coord3D m_treadDirection;
 };

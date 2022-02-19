@@ -46,7 +46,7 @@ void WeaponTemplateSet::Clear()
     m_weaponLockSharedAcrossSets = false;
     m_conditions.Clear();
 
-    for (int i = 0; i < WEAPONSLOT_COUNT; ++i) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; ++i) {
         m_preferredAgainst[i].Clear();
         m_autoChooseMask[i] = 0xFFFFFFFF;
         m_template[i] = nullptr;
@@ -60,7 +60,7 @@ void WeaponTemplateSet::Clear()
  */
 bool WeaponTemplateSet::Has_Any_Weapon()
 {
-    for (int i = 0; i < WEAPONSLOT_COUNT; ++i) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; ++i) {
         if (m_template[i] != nullptr) {
             return true;
         }
@@ -124,7 +124,7 @@ void WeaponTemplateSet::Parse_Weapon(INI *ini, void *formal, void *store, const 
  */
 void WeaponTemplateSet::Parse_Auto_Choose(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
+    int32_t index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
     INI::Parse_Bitstring32(
         ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_autoChooseMask[index], g_commandSourceMaskNames);
 }
@@ -136,7 +136,7 @@ void WeaponTemplateSet::Parse_Auto_Choose(INI *ini, void *formal, void *store, c
  */
 void WeaponTemplateSet::Parse_Preferred_Against(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
+    int32_t index = INI::Scan_IndexList(ini->Get_Next_Token(), g_weaponSlotNames);
     BitFlags<KINDOF_COUNT>::Parse_From_INI(
         ini, formal, &static_cast<WeaponTemplateSet *>(formal)->m_preferredAgainst[index], user_data);
 }

@@ -76,7 +76,7 @@ public:
     virtual void Create_Stream_Messages();
     virtual void Get_Key(KeyboardIO *io) = 0;
 
-    wchar_t Get_Printable_Key(uint8_t key, int key_type);
+    wchar_t Get_Printable_Key(uint8_t key, int32_t key_type);
     void Reset_Keys();
     bool Is_Shift() const;
     bool Is_Ctrl() const;

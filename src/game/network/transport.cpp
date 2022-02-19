@@ -59,7 +59,7 @@ bool Transport::Init(uint32_t address, uint16_t port)
     }
 
     uint32_t start_time = rts::Get_Time();
-    int socket_result = SOCKET_ERROR;
+    int32_t socket_result = SOCKET_ERROR;
 
     while (rts::Get_Time() - start_time < 1000) {
         if ((socket_result = m_udpsock->Bind(address, port)) == UDP::OK) {
@@ -74,12 +74,12 @@ bool Transport::Init(uint32_t address, uint16_t port)
         return false;
     }
 
-    for (int i = 0; i < BUFFER_COUNT; ++i) {
+    for (int32_t i = 0; i < BUFFER_COUNT; ++i) {
         m_inBuffer[i].length = 0;
         m_outBuffer[i].length = 0;
     }
 
-    for (int i = 0; i < STATS_COUNT; ++i) {
+    for (int32_t i = 0; i < STATS_COUNT; ++i) {
         m_incomingBytes[i] = 0;
         m_unknownBytes[i] = 0;
         m_outgoingBytes[i] = 0;
@@ -159,7 +159,7 @@ bool Transport::Do_Send()
         m_unknownBytes[m_statisticsSlot] = 0;
     }
 
-    for (int i = 0; i < BUFFER_COUNT; ++i) {
+    for (int32_t i = 0; i < BUFFER_COUNT; ++i) {
         if (m_outBuffer[i].length != 0) {
             // Send the packet and free up the buffer if it succeeds, otherwise return that not all packets sent.
             if (m_udpsock->Write(reinterpret_cast<uint8_t *>(&m_outBuffer[i]),
@@ -188,8 +188,8 @@ bool Transport::Do_Recv()
 {
     sockaddr_in from;
     TransportMessage incoming;
-    int now = rts::Get_Time();
-    int len;
+    int32_t now = rts::Get_Time();
+    int32_t len;
 
     for (len = m_udpsock->Read(reinterpret_cast<uint8_t *>(&incoming), 1024, &from); len > 0;
          len = m_udpsock->Read(reinterpret_cast<uint8_t *>(&incoming), sizeof(incoming), &from)) {
@@ -206,7 +206,7 @@ bool Transport::Do_Recv()
 
         ++m_incomingPackets[m_statisticsSlot];
         m_incomingBytes[m_statisticsSlot] += len;
-        int free_slot = 0;
+        int32_t free_slot = 0;
 
         // Find a free slot
         while (m_outBuffer[free_slot++].length != 0) {
@@ -234,13 +234,13 @@ bool Transport::Do_Recv()
  *
  * 0x00717060
  */
-bool Transport::Queue_Send(uint32_t addr, uint16_t port, const char *buf, int len)
+bool Transport::Queue_Send(uint32_t addr, uint16_t port, const char *buf, int32_t len)
 {
     if (len < 1 || len > 476) {
         return false;
     }
 
-    int free_slot = 0;
+    int32_t free_slot = 0;
 
     while (m_outBuffer[free_slot++].length != 0) {
         if (free_slot == BUFFER_COUNT) {
@@ -261,8 +261,8 @@ bool Transport::Queue_Send(uint32_t addr, uint16_t port, const char *buf, int le
     m_outBuffer[free_slot].header.crc = crc.Get_CRC();
 
     /*// This appears to obfuscate the packets message, presumably to frustrate attempts to sniff it or interfere with it.
-    int count = len + sizeof(TransportMessageHeader) / 4;
-    int mix_magic = 0xFADE;
+    int32_t count = len + sizeof(TransportMessageHeader) / 4;
+    int32_t mix_magic = 0xFADE;
 
     // Treat the entire buffer including the header as a block of integers.
     uint32_a *block = reinterpret_cast<uint32_a *>(&m_outBuffer[free_slot].header);
@@ -282,10 +282,10 @@ bool Transport::Queue_Send(uint32_t addr, uint16_t port, const char *buf, int le
 /**
  * Obfuscates data to be sent.
  */
-void Transport::Obfuscate(void *data, int len)
+void Transport::Obfuscate(void *data, int32_t len)
 {
-    int count = len / 4;
-    int mix_magic = OBFUSCATE_NUM;
+    int32_t count = len / 4;
+    int32_t mix_magic = OBFUSCATE_NUM;
     uint32_a *block = static_cast<uint32_a *>(data); // Using aliasing type to keep GCC/Clang from doing the wrong thing.
 
     while (count--) {
@@ -298,10 +298,10 @@ void Transport::Obfuscate(void *data, int len)
 /**
  * Deobfuscates data that has been received.
  */
-void Transport::Reveal(void *data, int len)
+void Transport::Reveal(void *data, int32_t len)
 {
-    int count = len / 4;
-    int mix_magic = OBFUSCATE_NUM;
+    int32_t count = len / 4;
+    int32_t mix_magic = OBFUSCATE_NUM;
     uint32_a *block = static_cast<uint32_a *>(data); // Using aliasing type to keep GCC/Clang from doing the wrong thing.
 
     while (count--) {

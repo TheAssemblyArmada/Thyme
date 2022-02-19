@@ -33,11 +33,11 @@ public:
     virtual void Render_Frame(VideoBuffer *buffer) override;
     virtual void Next_Frame() override;
     // bool Is_Done();
-    virtual int Frame_Index() override;
-    virtual int Frame_Count() override;
-    virtual void Goto_Frame(int frame) override;
-    virtual int Height() override;
-    virtual int Width() override;
+    virtual int32_t Frame_Index() override;
+    virtual int32_t Frame_Count() override;
+    virtual void Goto_Frame(int32_t frame) override;
+    virtual int32_t Height() override;
+    virtual int32_t Width() override;
 
 private:
     Bink *m_binkHandle;

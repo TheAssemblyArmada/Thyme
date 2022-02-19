@@ -49,7 +49,7 @@ public:
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
     static void Set_Thumbnail_Enabled(bool enable) { s_thumbnailEnabled = enable; }
-    static int Get_Texture_Filter() { return s_textureFilter; }
+    static int32_t Get_Texture_Filter() { return s_textureFilter; }
     static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
     static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
@@ -60,24 +60,24 @@ public:
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
 
-    static void Add_To_Static_Sort_List(RenderObjClass *robj, unsigned int sort_level);
+    static void Add_To_Static_Sort_List(RenderObjClass *robj, uint32_t sort_level);
 
     // Calls to the graphics wrapper.
-    static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
-    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static const RenderDeviceDescClass Get_Render_Device_Desc(int deviceidx);
-    static int Get_Texture_Bit_Depth();
+    static void Get_Device_Resolution(int32_t &width, int32_t &height, int32_t &bit_depth, bool &windowed);
+    static void Get_Render_Target_Resolution(int32_t &set_w, int32_t &set_h, int32_t &set_bits, bool &set_windowed);
+    static const RenderDeviceDescClass Get_Render_Device_Desc(int32_t deviceidx);
+    static int32_t Get_Texture_Bit_Depth();
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
-    static W3DErrorType Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window);
+    static W3DErrorType Set_Device_Resolution(int32_t width, int32_t height, int32_t bits, int32_t windowed, bool resize_window);
     static PrelitModeEnum Get_Prelit_Mode() { return (s_prelitMode); }
     static void Set_Prelit_Mode(PrelitModeEnum mode) { s_prelitMode = mode; }
 
     static W3DErrorType Init(void *hwnd, char *defaultpal = nullptr, bool lite = false);
     static W3DErrorType Shutdown();
     static W3DErrorType Set_Render_Device(
-        int dev, int resx, int resy, int bits, int windowed, bool resize_window, bool reset_device, bool restore_assets);
-    static int Get_Render_Device();
+        int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets);
+    static int32_t Get_Render_Device();
     static W3DErrorType Begin_Render(bool clear = false,
         bool clearz = true,
         const Vector3 &color = Vector3(0, 0, 0),
@@ -91,16 +91,16 @@ public:
     static W3DErrorType Render(RenderObjClass &obj, RenderInfoClass &rinfo);
     static void Flush(RenderInfoClass &rinfo);
     static W3DErrorType End_Render(bool flip_frame = true);
-    static void Sync(unsigned int sync_time);
-    static void Set_Collision_Box_Display_Mask(int mask);
-    static void Set_Texture_Reduction(int value, int min_dim);
-    static void Enable_Coloring(unsigned int enable);
+    static void Sync(uint32_t sync_time);
+    static void Set_Collision_Box_Display_Mask(int32_t mask);
+    static void Set_Texture_Reduction(int32_t value, int32_t min_dim);
+    static void Enable_Coloring(uint32_t enable);
     static void Allocate_Debug_Resources();
     static void Release_Debug_Resources();
-    static void Set_Texture_Bit_Depth(int bitdepth);
+    static void Set_Texture_Bit_Depth(int32_t bitdepth);
     static void Render_And_Clear_Static_Sort_Lists(RenderInfoClass &rinfo);
     static void Reset_Current_Static_Sort_Lists_To_Default();
-    static unsigned int Get_Frame_Time() { return s_syncTime - s_previousSyncTime; }
+    static uint32_t Get_Frame_Time() { return s_syncTime - s_previousSyncTime; }
     static bool Is_Initted() { return s_isInited; }
 
     // Platform functions.
@@ -118,7 +118,7 @@ private:
     static bool &s_isScreenUVBiased;
     static bool &s_texturingEnabled;
     static bool &s_thumbnailEnabled;
-    static int &s_textureFilter;
+    static int32_t &s_textureFilter;
     static float &s_defaultNativeScreenSize;
     static bool &s_isSortingEnabled;
     static bool &s_isColoringEnabled;
@@ -129,7 +129,7 @@ private:
     static bool &s_isInited;
     static bool &s_isRendering;
     static bool &s_lite;
-    static int &s_frameCount;
+    static int32_t &s_frameCount;
     static StaticSortListClass *&s_defaultStaticSortLists;
     static StaticSortListClass *&s_currentStaticSortLists;
 #ifdef PLATFORM_WINDOWS
@@ -144,7 +144,7 @@ private:
     static bool s_isScreenUVBiased;
     static bool s_texturingEnabled;
     static bool s_thumbnailEnabled;
-    static int s_textureFilter;
+    static int32_t s_textureFilter;
     static float s_defaultNativeScreenSize;
     static bool s_isSortingEnabled;
     static bool s_isColoringEnabled;
@@ -155,7 +155,7 @@ private:
     static bool s_isInited;
     static bool s_isRendering;
     static bool s_lite;
-    static int s_frameCount;
+    static int32_t s_frameCount;
     static StaticSortListClass *s_defaultStaticSortLists;
     static StaticSortListClass *s_currentStaticSortLists;
 #ifdef PLATFORM_WINDOWS

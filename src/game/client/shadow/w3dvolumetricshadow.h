@@ -59,22 +59,22 @@ public:
     W3DShadowGeometryMesh();
     ~W3DShadowGeometryMesh();
 
-    PolyNeighbor *Get_Poly_Neighbor(int index);
+    PolyNeighbor *Get_Poly_Neighbor(int32_t index);
     void Build_Polygon_Neighbors();
-    bool Allocate_Neighbors(int num_polys);
+    bool Allocate_Neighbors(int32_t num_polys);
     void Delete_Neighbors();
 
-    Vector3 *Get_Polygon_Normal(int index) const;
+    Vector3 *Get_Polygon_Normal(int32_t index) const;
 
-    int Get_Num_Polygon() const { return m_numPolygons; }
+    int32_t Get_Num_Polygon() const { return m_numPolygons; }
 
     void Build_Polygon_Normals();
 
-    void Get_Polygon_Normal(int index, Vector3 *normal) const;
-    void Get_Polygon_Index(int polygon_index, short *index_list) const;
+    void Get_Polygon_Normal(int32_t index, Vector3 *normal) const;
+    void Get_Polygon_Index(int32_t polygon_index, short *index_list) const;
 
-    Vector3 *Get_Vertex(int index) const { return &m_verts[index]; }
-    int Get_Num_Vertex() const { return m_numVerts; }
+    Vector3 *Get_Vertex(int32_t index) const { return &m_verts[index]; }
+    int32_t Get_Num_Vertex() const { return m_numVerts; }
 
 #ifdef GAME_DLL
     W3DShadowGeometryMesh *Hook_Ctor() { return new (this) W3DShadowGeometryMesh(); }
@@ -82,15 +82,15 @@ public:
 
 private:
     MeshClass *m_mesh;
-    int m_modelIndex;
+    int32_t m_modelIndex;
     Vector3 *m_verts;
     Vector3 *m_polygonNormals;
-    int m_numVerts;
-    int m_numPolygons;
+    int32_t m_numVerts;
+    int32_t m_numPolygons;
     const TriIndex *m_polygons;
     unsigned short *m_parentVerts;
     PolyNeighbor *m_polyNeighbors;
-    int m_numPolyNeighbors;
+    int32_t m_numPolyNeighbors;
     W3DShadowGeometry *m_parentGeometry;
 };
 
@@ -106,20 +106,20 @@ public:
 
     void Set_Name(const char *name);
 
-    int Init(RenderObjClass *robj);
-    int Init_From_HLOD(RenderObjClass *robj);
-    int Init_From_Mesh(RenderObjClass *robj);
+    int32_t Init(RenderObjClass *robj);
+    int32_t Init_From_HLOD(RenderObjClass *robj);
+    int32_t Init_From_Mesh(RenderObjClass *robj);
 
     const char *Get_Name() const { return m_name; }
-    W3DShadowGeometryMesh *Get_Mesh(int index) { return &m_meshList[index]; }
-    int Get_Mesh_Count() const { return m_meshCount; }
-    int Get_Num_Total_Vertex() const { return m_numTotalsVerts; }
+    W3DShadowGeometryMesh *Get_Mesh(int32_t index) { return &m_meshList[index]; }
+    int32_t Get_Mesh_Count() const { return m_meshCount; }
+    int32_t Get_Num_Total_Vertex() const { return m_numTotalsVerts; }
 
 protected:
     char m_name[32];
     W3DShadowGeometryMesh m_meshList[MAX_SHADOW_CASTER_MESHES];
-    int m_meshCount;
-    int m_numTotalsVerts;
+    int32_t m_meshCount;
+    int32_t m_numTotalsVerts;
 };
 
 class W3DShadowGeometryManager
@@ -140,7 +140,7 @@ public:
     void Register_Missing(const char *name);
     bool Is_Missing(const char *name) const;
 
-    int Load_Geom(RenderObjClass *robj, const char *name);
+    int32_t Load_Geom(RenderObjClass *robj, const char *name);
 
 protected:
     HashTableClass *m_geomPtrTable;

@@ -84,7 +84,7 @@ RTS2DScene *W3DDisplay::s_2DScene;
 RTS3DInterfaceScene *W3DDisplay::s_3DInterfaceScene;
 #endif
 
-static int g_theW3DFrameLengthInMsec = 33;
+static int32_t g_theW3DFrameLengthInMsec = 33;
 
 // PerfStatsClass PerfStats("StatisticsDump.txt");
 
@@ -113,7 +113,7 @@ W3DDisplay::~W3DDisplay()
 {
     delete m_debugDisplay;
 
-    for (int i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
+    for (int32_t i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
         g_theDisplayStringManager->Free_Display_String(m_displayStrings[i]);
     }
 
@@ -126,7 +126,7 @@ W3DDisplay::~W3DDisplay()
     Ref_Ptr_Release(s_2DScene);
     Ref_Ptr_Release(s_3DInterfaceScene);
 
-    for (int i = 0; i < ARRAY_SIZE(m_myLight); i++) {
+    for (int32_t i = 0; i < ARRAY_SIZE(m_myLight); i++) {
         Ref_Ptr_Release(m_myLight[i]);
     }
 
@@ -171,13 +171,13 @@ void W3DDisplay::Init()
         static_assert(LIGHT_COUNT <= ARRAY_SIZE(m_myLight), "Error");
         captainslog_assert(g_theWriteableGlobalData->m_numberGlobalLights <= ARRAY_SIZE(m_myLight));
 
-        for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+        for (int32_t i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
             m_myLight[i] = new LightClass(LightClass::DIRECTIONAL);
         }
 
         Set_Time_Of_Day(g_theWriteableGlobalData->m_timeOfDay);
 
-        for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+        for (int32_t i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
             s_3DScene->Set_Global_Light(m_myLight[i], i);
         }
 
@@ -292,14 +292,14 @@ void W3DDisplay::Reset()
 
 void Draw_Graphical_Framerate_Bar()
 {
-    static int lastTime = rts::Get_Time();
-    int time = rts::Get_Time();
+    static int32_t lastTime = rts::Get_Time();
+    int32_t time = rts::Get_Time();
     float f1 = 1000.0f / (float)(time - lastTime) / (1000.0f / (float)g_theWriteableGlobalData->m_framesPerSecondLimit);
     f1 = std::clamp(f1, 0.0f, 1.0f);
 
-    unsigned int red = GameMath::Fast_To_Int_Truncate((1.0f - f1) * 255.0f);
-    unsigned int green = GameMath::Fast_To_Int_Truncate(f1 * 255.0f);
-    unsigned int color = Make_Color(red, green, 0, 127);
+    uint32_t red = GameMath::Fast_To_Int_Truncate((1.0f - f1) * 255.0f);
+    uint32_t green = GameMath::Fast_To_Int_Truncate(f1 * 255.0f);
+    uint32_t color = Make_Color(red, green, 0, 127);
     g_theDisplay->Draw_Fill_Rect(1, 1, GameMath::Fast_To_Int_Truncate((float)g_theDisplay->Get_Width() * f1), 15, color);
     lastTime = time;
 }
@@ -314,8 +314,8 @@ void W3DDisplay::Draw()
         return;
     }
 
-    static int lastFrame = -1;
-    static int syncTime = 0;
+    static int32_t lastFrame = -1;
+    static int32_t syncTime = 0;
 
     Update_Average_FPS();
 
@@ -384,9 +384,9 @@ void W3DDisplay::Draw()
     }
 
     W3D::Sync(syncTime);
-    int time = 30;
-    static unsigned int prevTime = rts::Get_Time();
-    unsigned int now = rts::Get_Time();
+    int32_t time = 30;
+    static uint32_t prevTime = rts::Get_Time();
+    uint32_t now = rts::Get_Time();
 
     if (g_theTacticalView->Get_Time_Multiplier() <= 1) {
         prevTime = now - time;
@@ -396,7 +396,7 @@ void W3DDisplay::Draw()
         for (;;) {
         l1:
             if (!g_theWriteableGlobalData->m_unkBool17) {
-                while (g_theWriteableGlobalData->m_useFPSLimit && (int)(now - prevTime) < time - 1) {
+                while (g_theWriteableGlobalData->m_useFPSLimit && (int32_t)(now - prevTime) < time - 1) {
                     now = rts::Get_Time();
                 }
 
@@ -421,9 +421,9 @@ void W3DDisplay::Draw()
             }
 
             // Debug_Statistics::End_Statistics();
-            int polys = 0;
+            int32_t polys = 0;
             // polys = Debug_Statistics::Get_DX8_Polygons();
-            int verts = 0;
+            int32_t verts = 0;
             // verts = Debug_Statistics::Get_DX8_Vertices();
 #ifdef GAME_DEBUG_STRUCTS
             if (g_theGameLogic->Get_Frame() % 30 != 1 && !g_theGameLogic->Is_Game_Paused()
@@ -473,8 +473,8 @@ void W3DDisplay::Draw()
                 }
 
                 if (m_unkDisplayString) {
-                    int x;
-                    int y;
+                    int32_t x;
+                    int32_t y;
                     m_unkDisplayString->Get_Size(&x, &y);
                     m_unkDisplayString->Draw(
                         (Get_Width() / 2) - x / 2, Get_Height() - y - 20, Make_Color(0, 0, 0, 0), Make_Color(0, 0, 0, 0xFF));
@@ -491,11 +491,11 @@ void W3DDisplay::Draw()
                         str.Translate(m_cinematicText);
                         display_str->Set_Text(str);
                         display_str->Set_Font(m_cinematicFont);
-                        int h = (int)((float)g_theDisplay->Get_Height() * 0.9f);
-                        int w;
+                        int32_t h = (int32_t)((float)g_theDisplay->Get_Height() * 0.9f);
+                        int32_t w;
 
-                        const int str_width = display_str->Get_Width(-1);
-                        const int display_width = g_theDisplay->Get_Width();
+                        const int32_t str_width = display_str->Get_Width(-1);
+                        const int32_t display_width = g_theDisplay->Get_Width();
 
                         if (str_width <= display_width) {
                             w = (display_width - str_width) / 2;
@@ -551,7 +551,7 @@ void W3DDisplay::Draw()
         goto l2;
     }
 
-    static int timeMultiplierCounter = 1;
+    static int32_t timeMultiplierCounter = 1;
     timeMultiplierCounter--;
 
     if (timeMultiplierCounter <= 1) {
@@ -627,12 +627,12 @@ static bool Is_Resolution_Valid(const ResolutionDescClass &res)
 }
 
 // 0x0073C5D0
-int W3DDisplay::Get_Display_Mode_Count()
+int32_t W3DDisplay::Get_Display_Mode_Count()
 {
     auto &desc = W3D::Get_Render_Device_Desc(0);
     auto &resolutions = desc.Get_Resolution_Array();
 
-    int valid_resolutions = 0;
+    int32_t valid_resolutions = 0;
     for (auto i = 0; i < resolutions.Count(); ++i) {
         auto &resolution = resolutions[i];
 
@@ -646,13 +646,13 @@ int W3DDisplay::Get_Display_Mode_Count()
 }
 
 // 0x0073C650
-void W3DDisplay::Get_Display_Mode_Description(int id, int *width, int *height, int *bit_depth)
+void W3DDisplay::Get_Display_Mode_Description(int32_t id, int32_t *width, int32_t *height, int32_t *bit_depth)
 {
     auto &desc = W3D::Get_Render_Device_Desc(0);
     auto &resolutions = desc.Get_Resolution_Array();
 
     // Id passed into function is in reference to valid resolutions
-    int valid_resolutions = 0;
+    int32_t valid_resolutions = 0;
     for (auto i = 0; i < resolutions.Count(); ++i) {
         auto &resolution = resolutions[i];
 
@@ -886,7 +886,7 @@ void W3DDisplay::Draw_Fill_Rect(int32_t x, int32_t y, int32_t width, int32_t hei
 }
 
 // 0x0073F320 Draws the percentage ontop of a rectangle
-void W3DDisplay::Draw_Rect_Clock(int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color)
+void W3DDisplay::Draw_Rect_Clock(int32_t x, int32_t y, int32_t width, int32_t height, int32_t percentage, uint32_t color)
 {
     // TODO: Function maybe not used at all
     if (percentage < 1 || percentage > 100) {
@@ -1056,7 +1056,7 @@ void W3DDisplay::Draw_Rect_Clock(int32_t x, int32_t y, int32_t width, int32_t he
 
 // 0x0073FD40 Draws the percentage remaining ontop of a rectangle
 void W3DDisplay::Draw_Remaining_Rect_Clock(
-    int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color)
+    int32_t x, int32_t y, int32_t width, int32_t height, int32_t percentage, uint32_t color)
 {
     if (percentage < 0 || percentage > 99) {
         return;
@@ -1336,7 +1336,7 @@ void W3DDisplay::Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32
 }
 
 // 0x00740CD0
-void W3DDisplay::Set_Shroud_Level(int x, int y, CellShroudStatus status)
+void W3DDisplay::Set_Shroud_Level(int32_t x, int32_t y, CellShroudStatus status)
 {
     if (g_theTerrainRenderObject) {
         if (g_theTerrainRenderObject->Get_Shroud()) {
@@ -1392,12 +1392,12 @@ void W3DDisplay::Preload_Texture_Assets(Utf8String texture)
 #define BFT_BITMAP 0x4d42 // BM
 
 #define DibNumColors(lpbi) \
-    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int)(1 << (int)(lpbi)->biBitCount) : (int)(lpbi)->biClrUsed)
+    ((lpbi)->biClrUsed == 0 && (lpbi)->biBitCount <= 8 ? (int32_t)(1 << (int32_t)(lpbi)->biBitCount) : (int32_t)(lpbi)->biClrUsed)
 
-#define DibSize(lpbi) ((lpbi)->biSize + (lpbi)->biSizeImage + (int)(lpbi)->biClrUsed * sizeof(RGBQUAD))
+#define DibSize(lpbi) ((lpbi)->biSize + (lpbi)->biSizeImage + (int32_t)(lpbi)->biClrUsed * sizeof(RGBQUAD))
 
 #define DibPaletteSize(lpbi) (DibNumColors(lpbi) * sizeof(RGBQUAD))
-void Create_Bmp_File(const char *filename, const char *data, int width, int height)
+void Create_Bmp_File(const char *filename, const char *data, int32_t width, int32_t height)
 {
 #ifdef BUILD_WITH_D3D8
     BITMAPINFOHEADER *header = (BITMAPINFOHEADER *)LocalAlloc(LMEM_ZEROINIT, sizeof(BITMAPINFOHEADER));
@@ -1437,7 +1437,7 @@ void Create_Bmp_File(const char *filename, const char *data, int width, int heig
 void W3DDisplay::Take_ScreenShot()
 {
 #ifdef BUILD_WITH_D3D8
-    static int currentShot = 1;
+    static int32_t currentShot = 1;
     char fname[1024];
     char buf[256];
 
@@ -1474,14 +1474,14 @@ void W3DDisplay::Take_ScreenShot()
     D3DLOCKED_RECT locked_rect;
     DX8Wrapper::Handle_DX8_ErrorCode(surface->LockRect(&locked_rect, &rect, D3DLOCK_READONLY));
 
-    unsigned int x = rect.right - rect.left;
-    unsigned int y = rect.bottom - rect.top;
+    uint32_t x = rect.right - rect.left;
+    uint32_t y = rect.bottom - rect.top;
     char *data = new char[(rect.bottom - rect.top) * 3 * (rect.right - rect.left)];
 
-    for (unsigned int i = 0; i < y; i++) {
-        for (unsigned int j = 0; j < x; j++) {
-            int i1 = 3 * (x * i + j);
-            int i2 = locked_rect.Pitch * i + 4 * j;
+    for (uint32_t i = 0; i < y; i++) {
+        for (uint32_t j = 0; j < x; j++) {
+            int32_t i1 = 3 * (x * i + j);
+            int32_t i2 = locked_rect.Pitch * i + 4 * j;
             data[i1] = *((char *)locked_rect.pBits + i2);
             data[i1 + 1] = *((char *)locked_rect.pBits + i2 + 1);
             data[i1 + 2] = *((char *)locked_rect.pBits + i2 + 2);
@@ -1490,11 +1490,11 @@ void W3DDisplay::Take_ScreenShot()
 
     surface->Release();
 
-    for (unsigned int i = 0; i < y / 2; i++) {
+    for (uint32_t i = 0; i < y / 2; i++) {
         char *c1 = &data[3 * i * x];
         char *c2 = &data[3 * (y - 1) * x + -3 * i * x];
 
-        for (unsigned int j = 0; j < 3 * x; j++) {
+        for (uint32_t j = 0; j < 3 * x; j++) {
             char c3 = *c1;
             char c4 = *c2;
             *c1 = c4;
@@ -1552,7 +1552,7 @@ bool W3DDisplay::Is_LetterBox_Fading()
 }
 
 // 0x0073E350
-int W3DDisplay::Get_Last_Frame_Draw_Calls()
+int32_t W3DDisplay::Get_Last_Frame_Draw_Calls()
 {
     // return Debug_Statistics::Get_Draw_Calls();
     return 0;
@@ -1562,8 +1562,8 @@ void W3DDisplay::Update_Average_FPS()
 {
 #ifdef PLATFORM_WINDOWS
     static uint64_t lastUpdateTime64 = 0;
-    static int historyOffset = 0;
-    static int numSamples = 0;
+    static int32_t historyOffset = 0;
+    static int32_t numSamples = 0;
     static double fpsHistory[30] = {};
 
     LARGE_INTEGER PerformanceFrequency;
@@ -1596,7 +1596,7 @@ void W3DDisplay::Update_Average_FPS()
     if (numSamples) {
         double average = 0.0;
 
-        for (int i1 = 0, i2 = historyOffset - 1; i1 < numSamples; i1++, i2--) {
+        for (int32_t i1 = 0, i2 = historyOffset - 1; i1 < numSamples; i1++, i2--) {
             if (i2 < 0) {
                 i2 = 29;
             }
@@ -1616,9 +1616,9 @@ void W3DDisplay::Gather_Debug_Stats()
 #ifdef PLATFORM_WINDOWS
     static uint64_t lastUpdateTime64 = 0;
     static double frameTime = 0.0;
-    static unsigned int frameCount = 0;
-    static int drawCalls = 0;
-    static int sortingPolygons = 0;
+    static uint32_t frameCount = 0;
+    static int32_t drawCalls = 0;
+    static int32_t sortingPolygons = 0;
 
     if (!m_displayStrings[0]) {
         GameFont *font;
@@ -1631,7 +1631,7 @@ void W3DDisplay::Gather_Debug_Stats()
             font = g_theFontLibrary->Get_Font("FixedSys", 8, false);
         }
 
-        for (int i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
+        for (int32_t i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
             if (!m_displayStrings[i]) {
                 m_displayStrings[i] = g_theDisplayStringManager->New_Display_String();
                 captainslog_dbgassert(m_displayStrings[i], "Failed to create DisplayString");
@@ -1675,7 +1675,7 @@ void W3DDisplay::Gather_Debug_Stats()
 #ifdef GAME_DEBUG_STRUCTS
         double fps3 = (double)(PerformanceCounter.QuadPart - m_performanceCounter);
         fps = std::max(0.1, fps);
-        int frame = g_theGameLogic->Get_Frame() - 15;
+        int32_t frame = g_theGameLogic->Get_Frame() - 15;
         double fps4;
 
         if (frame <= 0 || fps3 <= 0.0) {
@@ -1696,10 +1696,10 @@ void W3DDisplay::Gather_Debug_Stats()
         str2.Format(L"%.2fms [cumuFPS=%.2f] draws: %d skins: %d sortP: %d skinP: %d LOD %d",
             fps2,
             fps4,
-            (unsigned int)draw_calls,
-            (unsigned int)dx8_skin_renders,
-            (unsigned int)sorting_polygons,
-            (unsigned int)dx8_skin_polygons,
+            (uint32_t)draw_calls,
+            (uint32_t)dx8_skin_renders,
+            (uint32_t)sorting_polygons,
+            (uint32_t)dx8_skin_polygons,
             g_theWriteableGlobalData->m_terrainLOD);
         str1.Concat(str3);
 #else
@@ -1720,7 +1720,7 @@ void W3DDisplay::Gather_Debug_Stats()
         str3.Format(L"FPS: %.2f", fps);
         m_benchmarkDisplayString[0]->Set_Text(str3);
 
-        int dx8_polygons = 0;
+        int32_t dx8_polygons = 0;
         // dx8_polygons = Debug_Statistics::Get_DX8_Polygons();
         // obsolete stuff checking debug runtime registry key here
         m_displayStrings[0]->Set_Text(str1);
@@ -1728,15 +1728,15 @@ void W3DDisplay::Gather_Debug_Stats()
         str1.Format(L"Frame: %d", g_theGameLogic->Get_Frame());
         m_displayStrings[1]->Set_Text(str1);
 
-        str1.Format(L"Polygons: per frame %d, per second %d", dx8_polygons, (unsigned int)((double)dx8_polygons * fps));
+        str1.Format(L"Polygons: per frame %d, per second %d", dx8_polygons, (uint32_t)((double)dx8_polygons * fps));
         m_displayStrings[2]->Set_Text(str1);
 
-        int dx8_vertices = 0;
+        int32_t dx8_vertices = 0;
         // dx8_vertices = Debug_Statistics::Get_DX8_Vertices();
         str1.Format(L"Vertices: %d", dx8_vertices);
         m_displayStrings[3]->Set_Text(str1);
 
-        int record_texture_size = 0;
+        int32_t record_texture_size = 0;
         // record_texture_size = Debug_Statistics::Get_Record_Texture_Size();
         str1.Format(L"Video RAM: %d", record_texture_size - 0x150000);
         m_displayStrings[4]->Set_Text(str1);
@@ -1884,9 +1884,9 @@ void W3DDisplay::Gather_Debug_Stats()
             m_displayStrings[12]->Set_Text(str1);
 
             str1.Clear();
-            int count = g_theNetwork->Get_Num_Players();
+            int32_t count = g_theNetwork->Get_Num_Players();
 
-            for (int i = 0; i < count; i++) {
+            for (int32_t i = 0; i < count; i++) {
                 Utf16String str4;
                 str4.Format(L"%s: %d ", g_theNetwork->Get_Player_Name(i).Str(), g_theNetwork->Get_Slot_Average_FPS(i));
                 str1.Concat(str4);
@@ -1901,7 +1901,7 @@ void W3DDisplay::Gather_Debug_Stats()
             m_displayStrings[13]->Set_Text(str1);
         }
 
-        int count = g_theInGameUI->Get_Select_Count();
+        int32_t count = g_theInGameUI->Get_Select_Count();
         str1.Format(L"Select Info: '%d' drawables selected", count);
 
         if (g_theInGameUI->Get_Select_Count() == 1) {
@@ -1968,9 +1968,9 @@ void W3DDisplay::Gather_Debug_Stats()
 #endif
 
             const BitFlags<MODELCONDITION_COUNT> &flags = drawable->Get_Condition_State();
-            int newline = 0;
+            int32_t newline = 0;
 
-            for (int i = 0; i < MODELCONDITION_COUNT; i++) {
+            for (int32_t i = 0; i < MODELCONDITION_COUNT; i++) {
                 if (flags.Test(i)) {
                     str2.Format(L"%S ", BitFlags<MODELCONDITION_COUNT>::Get_Bit_Names_List()[i]);
                     str1.Concat(str2);
@@ -1991,12 +1991,12 @@ void W3DDisplay::Gather_Debug_Stats()
 
 void W3DDisplay::Draw_Debug_Stats()
 {
-    int y_pos = 3;
+    int32_t y_pos = 3;
 
-    for (int i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
+    for (int32_t i = 0; i < ARRAY_SIZE(m_displayStrings); i++) {
         m_displayStrings[i]->Draw(3, y_pos, Make_Color(0xFF, 0xFF, 0xFF, 0xFF), Make_Color(0, 0, 0, 0xFF));
-        int x;
-        int y;
+        int32_t x;
+        int32_t y;
         m_displayStrings[i]->Get_Size(&x, &y);
         y_pos += y;
     }
@@ -2004,7 +2004,7 @@ void W3DDisplay::Draw_Debug_Stats()
 
 void W3DDisplay::Draw_Benchmark()
 {
-    for (int i = 0; i < ARRAY_SIZE(m_benchmarkDisplayString); i++) {
+    for (int32_t i = 0; i < ARRAY_SIZE(m_benchmarkDisplayString); i++) {
         m_benchmarkDisplayString[i]->Draw(3, 20, Make_Color(0xFF, 0xFF, 0xFF, 0xFF), Make_Color(0, 0, 0, 0xFF));
     }
 }
@@ -2030,7 +2030,7 @@ void W3DDisplay::Calculate_Terrain_LOD()
     float max_time_limit = (float)g_theWriteableGlobalData->m_terrainLODTargetTimeMS / 1000.0f;
     TerrainLOD good_lod = TERRAIN_LOD_MIN;
     TerrainLOD lod = TERRAIN_LOD_AUTOMATIC;
-    int count = 0;
+    int32_t count = 0;
 
     do {
         float time_for_frame = 0.0f;
@@ -2061,7 +2061,7 @@ void W3DDisplay::Calculate_Terrain_LOD()
         g_theWriteableGlobalData->m_terrainLOD = lod;
         s_3DScene->Draw_Terrain_Only(true);
         g_theTerrainRenderObject->Adjust_Terrain_LOD(0);
-        int i;
+        int32_t i;
         char buf[260];
 
         for (i = 0; i < 20; i++) {
@@ -2108,7 +2108,7 @@ void W3DDisplay::Calculate_Terrain_LOD()
 #endif
 }
 
-void W3DDisplay::Render_LetterBox(unsigned int current_time)
+void W3DDisplay::Render_LetterBox(uint32_t current_time)
 {
     if (m_letterBoxEnabled) {
         if (m_letterBoxFadeLevel != 1.0f) {
@@ -2119,10 +2119,10 @@ void W3DDisplay::Render_LetterBox(unsigned int current_time)
             }
         }
 
-        unsigned int color = (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24;
-        Draw_Fill_Rect(0, 0, m_width, (int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f), color);
+        uint32_t color = (uint32_t)(m_letterBoxFadeLevel * 255.0f) << 24;
+        Draw_Fill_Rect(0, 0, m_width, (int32_t)(((float)m_height - (float)m_width * 0.5625f) * 0.5f), color);
         Draw_Fill_Rect(
-            0, (int)((float)m_height - (((float)m_height - (float)m_width * 0.5625f) * 0.5f)), m_width, m_height, color);
+            0, (int32_t)((float)m_height - (((float)m_height - (float)m_width * 0.5625f) * 0.5f)), m_width, m_height, color);
     } else if (m_letterBoxFadeLevel == 0.0f) {
         m_letterBoxEnabled = false;
     } else {
@@ -2135,8 +2135,8 @@ void W3DDisplay::Render_LetterBox(unsigned int current_time)
         Draw_Fill_Rect(0,
             0,
             m_width,
-            (unsigned int)(((float)m_height - (float)m_width * 0.5625f) * 0.5f),
-            (unsigned int)(m_letterBoxFadeLevel * 255.0f) << 24);
+            (uint32_t)(((float)m_height - (float)m_width * 0.5625f) * 0.5f),
+            (uint32_t)(m_letterBoxFadeLevel * 255.0f) << 24);
     }
 }
 
@@ -2195,7 +2195,7 @@ void W3DDisplay::Write_Asset_Usage(const char *str)
         }
 
         char buf[256];
-        for (int i = 1;; i++) {
+        for (int32_t i = 1;; i++) {
             sprintf(buf, "AssetUsage_%s_%04d.txt", c, i);
             if (_access(buf, 0) != 0) {
                 break;
@@ -2205,7 +2205,7 @@ void W3DDisplay::Write_Asset_Usage(const char *str)
         FILE *f = fopen(buf, "w");
 
         if (f) {
-            for (int i = 0; i < list.Count(); i++) {
+            for (int32_t i = 0; i < list.Count(); i++) {
                 fprintf(f, "%s\n", list[i].Peek_Buffer());
             }
 
@@ -2222,10 +2222,10 @@ void Write_Mesh_Model_And_Texture_Usage(MeshClass *mesh)
     if (mesh) {
         MeshModelClass *model = mesh->Get_Model();
 
-        for (int stage = 0; stage < 2; stage++) {
-            for (int pass = 0; pass < model->Material_Pass_Count(); pass++) {
+        for (int32_t stage = 0; stage < 2; stage++) {
+            for (int32_t pass = 0; pass < model->Material_Pass_Count(); pass++) {
                 if (model->Has_Texture_Array(pass, stage)) {
-                    for (int poly = 0; poly < model->Get_Polygon_Count(); poly++) {
+                    for (int32_t poly = 0; poly < model->Get_Polygon_Count(); poly++) {
                         TextureClass *t = model->Peek_Texture(poly, pass, stage);
 
                         if (t) {
@@ -2247,7 +2247,7 @@ void Write_Mesh_Model_And_Texture_Usage(MeshClass *mesh)
 void Write_Subobject_Model_And_Texture_Usage(HLodClass *hlod)
 {
     if (hlod) {
-        for (int i = 0; i < hlod->Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 0; i < hlod->Get_Num_Sub_Objects(); i++) {
             RenderObjClass *robj = hlod->Get_Sub_Object(i);
 
             if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {

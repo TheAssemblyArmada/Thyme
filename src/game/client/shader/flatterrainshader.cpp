@@ -20,7 +20,7 @@
 #include <d3dx8.h>
 #endif
 
-int FlatTerrainShader2Stage::Set(int pass)
+int32_t FlatTerrainShader2Stage::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Apply_Render_State_Changes();
@@ -182,7 +182,7 @@ void FlatTerrainShader2Stage::Reset()
 #endif
 }
 
-int FlatTerrainShader2Stage::Init()
+int32_t FlatTerrainShader2Stage::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_FLAT_TERRAIN] = &g_flatTerrainShader2Stage;
     g_w3dShadersPassCount[W3DShaderManager::ST_FLAT_TERRAIN] = 1;
@@ -195,10 +195,10 @@ int FlatTerrainShader2Stage::Init()
     return 1;
 }
 
-int FlatTerrainShaderPixelShader::Set(int pass)
+int32_t FlatTerrainShaderPixelShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
-    int i = 1;
+    int32_t i = 1;
     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
     DX8Wrapper::Set_Texture(0, W3DShaderManager::Get_Shader_Texture(2));
@@ -349,7 +349,7 @@ void FlatTerrainShaderPixelShader::Reset()
 #endif
 }
 
-int FlatTerrainShaderPixelShader::Init()
+int32_t FlatTerrainShaderPixelShader::Init()
 {
 #ifdef BUILD_WITH_D3D8
     if (W3DShaderManager::Get_Chipset() < GPU_PS11) {
@@ -363,7 +363,7 @@ int FlatTerrainShaderPixelShader::Init()
         D3DVSD_REG(3, D3DVSDT_FLOAT2),
         D3DVSD_END() };
 
-    int i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\fterrain.pso", decl, 0, false, &m_dwBase1PixelShader);
+    int32_t i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\fterrain.pso", decl, 0, false, &m_dwBase1PixelShader);
 
     if (i < 0) {
         return 0;
@@ -401,7 +401,7 @@ int FlatTerrainShaderPixelShader::Init()
     return 1;
 }
 
-int FlatTerrainShaderPixelShader::Shutdown()
+int32_t FlatTerrainShaderPixelShader::Shutdown()
 {
 #ifdef BUILD_WITH_D3D8
     if (m_dwBase1PixelShader) {

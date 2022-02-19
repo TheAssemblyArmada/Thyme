@@ -63,17 +63,17 @@ enum
 bool SortingRendererClass::s_EnableTriangleDraw = true;
 
 static TempIndexStruct *g_tempIndexArray;
-static unsigned int g_tempIndexArrayCount;
+static uint32_t g_tempIndexArrayCount;
 
-static unsigned int g_defaultSortingPolyCount = 0x4000;
-static unsigned int g_defaultSortingVertexCount = 0x8000;
+static uint32_t g_defaultSortingPolyCount = 0x4000;
+static uint32_t g_defaultSortingVertexCount = 0x8000;
 
 static SortingNodeStruct *g_overlappingNodes[MAX_NODES];
-static unsigned int g_overlappingVertexCount;
-static unsigned int g_overlappingNodeCount;
-static unsigned int g_overlappingPolygonCount;
+static uint32_t g_overlappingVertexCount;
+static uint32_t g_overlappingNodeCount;
+static uint32_t g_overlappingPolygonCount;
 
-static unsigned int g_totalSortingVertices;
+static uint32_t g_totalSortingVertices;
 static DLListClass<SortingNodeStruct> g_cleanList;
 static DLListClass<SortingNodeStruct> g_sortedList;
 
@@ -116,14 +116,14 @@ SortingNodeStruct *Get_Sorting_Struct()
 
 void Release_Refs(SortingNodeStruct *state)
 {
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         Ref_Ptr_Release(state->sorting_state.vertex_buffers[i]);
     }
 
     Ref_Ptr_Release(state->sorting_state.index_buffer);
     Ref_Ptr_Release(state->sorting_state.material);
 
-    for (unsigned int i = 0; i < DX8Wrapper::Get_Current_Caps()->Max_Textures_Per_Pass(); i++) {
+    for (uint32_t i = 0; i < DX8Wrapper::Get_Current_Caps()->Max_Textures_Per_Pass(); i++) {
         Ref_Ptr_Release(state->sorting_state.Textures[i]);
     }
 }
@@ -197,7 +197,7 @@ void Sort(TempIndexStruct *begin, TempIndexStruct *end)
     InsertionSort(begin, end);*/
 }
 
-TempIndexStruct *Get_Temp_Index_Array(unsigned int count)
+TempIndexStruct *Get_Temp_Index_Array(uint32_t count)
 {
     if (count < g_defaultSortingPolyCount) {
         count = g_defaultSortingPolyCount;
@@ -217,13 +217,13 @@ void Apply_Render_State(RenderStateStruct &render_state)
     DX8Wrapper::Set_Shader(render_state.shader);
     DX8Wrapper::Set_Material(render_state.material);
 
-    for (unsigned int i = 0; i < DX8Wrapper::Get_Current_Caps()->Max_Textures_Per_Pass(); ++i) {
+    for (uint32_t i = 0; i < DX8Wrapper::Get_Current_Caps()->Max_Textures_Per_Pass(); ++i) {
         DX8Wrapper::Set_Texture(i, render_state.Textures[i]);
     }
 
 #ifdef BUILD_WITH_D3D8
     if (render_state.material->Get_Lighting()) {
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             if (!render_state.LightEnable[i]) {
                 DX8Wrapper::Set_DX8_Light(i, nullptr);
                 break;
@@ -237,7 +237,7 @@ void Apply_Render_State(RenderStateStruct &render_state)
 #endif
 }
 
-void SortingRendererClass::Set_Min_Vertex_Buffer_Size(unsigned int val)
+void SortingRendererClass::Set_Min_Vertex_Buffer_Size(uint32_t val)
 {
     g_defaultSortingVertexCount = val;
     g_defaultSortingPolyCount = val >> 1;
@@ -326,7 +326,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
 #ifdef BUILD_WITH_D3D8
     if (g_overlappingNodeCount) {
         TempIndexStruct *index_array = Get_Temp_Index_Array(g_overlappingPolygonCount);
-        unsigned int vertexAllocCount = g_overlappingVertexCount;
+        uint32_t vertexAllocCount = g_overlappingVertexCount;
 
         if (DynamicVBAccessClass::Get_Default_Vertex_Count() < g_defaultSortingVertexCount) {
             vertexAllocCount = g_defaultSortingVertexCount;
@@ -345,10 +345,10 @@ void SortingRendererClass::Flush_Sorting_Pool()
         {
             DynamicVBAccessClass::WriteLockClass lock(&dyn_vb_access);
             VertexFormatXYZNDUV2 *dest_verts = lock.Get_Formatted_Vertex_Array();
-            unsigned int polygon_array_offset = 0;
-            unsigned int vertex_array_offset = 0;
+            uint32_t polygon_array_offset = 0;
+            uint32_t vertex_array_offset = 0;
 
-            for (unsigned int node_id = 0; node_id < g_overlappingNodeCount; node_id++) {
+            for (uint32_t node_id = 0; node_id < g_overlappingNodeCount; node_id++) {
                 SortingNodeStruct *state = g_overlappingNodes[node_id];
                 VertexFormatXYZNDUV2 *src_verts = nullptr;
                 SortingVertexBufferClass *vertex_buffer = (SortingVertexBufferClass *)state->sorting_state.vertex_buffers[0];
@@ -374,7 +374,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
 
                 if (d3d_mtx.m[0][2] == 0.0f && d3d_mtx.m[1][2] == 0.0f && d3d_mtx.m[3][2] == 0.0f
                     && d3d_mtx.m[2][2] == 1.0f) {
-                    for (int i = 0; i < state->polygon_count; i++) {
+                    for (int32_t i = 0; i < state->polygon_count; i++) {
                         unsigned short idx1 = indices[3 * i] - state->min_vertex_index;
                         unsigned short idx2 = indices[3 * i + 1] - state->min_vertex_index;
                         unsigned short idx3 = indices[3 * i + 2] - state->min_vertex_index;
@@ -386,7 +386,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
                         VertexFormatXYZNDUV2 *vert1 = &src_verts[idx1];
                         VertexFormatXYZNDUV2 *vert2 = &src_verts[idx2];
                         VertexFormatXYZNDUV2 *vert3 = &src_verts[idx3];
-                        unsigned int array_index = polygon_array_offset + i;
+                        uint32_t array_index = polygon_array_offset + i;
                         captainslog_assert(array_index < g_overlappingPolygonCount);
 
                         TempIndexStruct *tis_ptr = &index_array[array_index];
@@ -399,7 +399,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
                         // captainslog_assert((!_isnan(tis_ptr->z) && _finite(tis_ptr->z)));
                     }
                 } else {
-                    for (int i = 0; i < state->polygon_count; i++) {
+                    for (int32_t i = 0; i < state->polygon_count; i++) {
                         unsigned short idx1 = indices[3 * i] - state->min_vertex_index;
                         unsigned short idx2 = indices[3 * i + 1] - state->min_vertex_index;
                         unsigned short idx3 = indices[3 * i + 2] - state->min_vertex_index;
@@ -411,7 +411,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
                         VertexFormatXYZNDUV2 *vert1 = &src_verts[idx1];
                         VertexFormatXYZNDUV2 *vert2 = &src_verts[idx2];
                         VertexFormatXYZNDUV2 *vert3 = &src_verts[idx3];
-                        unsigned int array_index = polygon_array_offset + i;
+                        uint32_t array_index = polygon_array_offset + i;
                         captainslog_assert(array_index < g_overlappingPolygonCount);
 
                         TempIndexStruct *tis_ptr = &index_array[array_index];
@@ -436,7 +436,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
         }
 
         Sort(index_array, &index_array[g_overlappingPolygonCount]);
-        unsigned int polygonAllocCount = g_overlappingPolygonCount;
+        uint32_t polygonAllocCount = g_overlappingPolygonCount;
 
         if (DynamicIBAccessClass::Get_Default_Index_Count() / 3u < g_defaultSortingPolyCount) {
             polygonAllocCount = g_defaultSortingPolyCount;
@@ -452,7 +452,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
         {
             DynamicIBAccessClass::WriteLockClass lock(&dyn_ib_access);
             unsigned short *dest_indices = lock.Get_Index_Array();
-            for (unsigned int i = 0; i < g_overlappingPolygonCount; i++) {
+            for (uint32_t i = 0; i < g_overlappingPolygonCount; i++) {
                 dest_indices[3 * i] = index_array[i].tri.i;
                 dest_indices[3 * i + 1] = index_array[i].tri.j;
                 dest_indices[3 * i + 2] = index_array[i].tri.k;
@@ -462,11 +462,11 @@ void SortingRendererClass::Flush_Sorting_Pool()
         DX8Wrapper::Set_Index_Buffer(dyn_ib_access, 0);
         DX8Wrapper::Set_Vertex_Buffer(dyn_vb_access);
         DX8Wrapper::Apply_Render_State_Changes();
-        int polygon_count = 1;
+        int32_t polygon_count = 1;
         unsigned short start_index = 0;
-        unsigned int idx = index_array->idx;
+        uint32_t idx = index_array->idx;
 
-        for (unsigned int i = 1; i < g_overlappingPolygonCount; i++) {
+        for (uint32_t i = 1; i < g_overlappingPolygonCount; i++) {
             if (idx != index_array[i].idx) {
                 Apply_Render_State(g_overlappingNodes[idx]->sorting_state);
                 DX8Wrapper::Draw_Triangles(3 * start_index,
@@ -489,7 +489,7 @@ void SortingRendererClass::Flush_Sorting_Pool()
                 g_overlappingNodes[idx]->vertex_count);
         }
 
-        for (unsigned int i = 0; i < g_overlappingNodeCount; i++) {
+        for (uint32_t i = 0; i < g_overlappingNodeCount; i++) {
             Release_Refs(g_overlappingNodes[i]);
             g_cleanList.Add_Head(g_overlappingNodes[i]);
         }

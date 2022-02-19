@@ -25,7 +25,7 @@ public:
     SphereClass() {}
     SphereClass(const Vector3 &center, float radius) { Init(center, radius); }
     SphereClass(const Vector3 &center, const SphereClass &s0);
-    SphereClass(const Vector3 *Position, const int VertCount);
+    SphereClass(const Vector3 *Position, const int32_t VertCount);
 
     void Init(const Vector3 &pos, float radius);
     void Re_Center(const Vector3 &center);
@@ -48,9 +48,9 @@ inline SphereClass::SphereClass(const Vector3 &center, const SphereClass &s0)
     Radius = s0.Radius + dist;
 }
 
-inline SphereClass::SphereClass(const Vector3 *Position, const int VertCount)
+inline SphereClass::SphereClass(const Vector3 *Position, const int32_t VertCount)
 {
-    int i;
+    int32_t i;
     float dx, dy, dz;
     Vector3 xmin(Position[0].X, Position[0].Y, Position[0].Z);
     Vector3 xmax(Position[0].X, Position[0].Y, Position[0].Z);

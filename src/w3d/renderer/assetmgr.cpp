@@ -164,7 +164,7 @@ void W3DAssetManager::Free_Assets_With_Exclusion_List(DynamicVectorClass<StringC
     W3DExclusionListClass exlist(list);
     DynamicVectorClass<PrototypeClass *> vector(8000);
 
-    for (int i = 0; i < m_prototypes.Count(); i++) {
+    for (int32_t i = 0; i < m_prototypes.Count(); i++) {
         if (m_prototypes[i]) {
             if (exlist.Is_Excluded(m_prototypes[i])) {
                 vector.Add(m_prototypes[i]);
@@ -179,7 +179,7 @@ void W3DAssetManager::Free_Assets_With_Exclusion_List(DynamicVectorClass<StringC
     m_prototypes.Reset_Active();
     memset(m_prototypeHashTable, 0, PROTOTYPE_HASH_TABLE_SIZE * sizeof(uintptr_t));
 
-    for (int i = 0; i < vector.Count(); i++) {
+    for (int32_t i = 0; i < vector.Count(); i++) {
         Add_Prototype(vector[i]);
     }
 
@@ -370,9 +370,9 @@ void W3DAssetManager::Release_All_Textures()
 // 0x00815D90
 void W3DAssetManager::Release_Unused_Textures()
 {
-    constexpr int unused_textures_size = 256;
+    constexpr int32_t unused_textures_size = 256;
     TextureClass *unused_textures[unused_textures_size]{};
-    int unused_textures_count = 0;
+    int32_t unused_textures_count = 0;
 
     for (HashTemplateIterator<StringClass, TextureClass *> texture(m_textureHash); !texture.Is_Done(); texture.Next()) {
         if (texture.Peek_Value()->Num_Refs() != 1) {
@@ -434,7 +434,7 @@ Font3DInstanceClass *W3DAssetManager::Get_Font3DInstance(const char *name)
 }
 
 // 0x00816370
-FontCharsClass *W3DAssetManager::Get_FontChars(const char *name, int point_size, bool is_bold)
+FontCharsClass *W3DAssetManager::Get_FontChars(const char *name, int32_t point_size, bool is_bold)
 {
     for (auto i = 0; i < m_fontCharsList.Count(); ++i) {
         auto *font = m_fontCharsList[i];
@@ -537,7 +537,7 @@ PrototypeClass *W3DAssetManager::Find_Prototype(const char *name)
 
 void W3DAssetManager::Prototype_Hash_Table_Add(PrototypeClass *entry)
 {
-    unsigned int hash = Prototype_Hash_Table_Hash(entry->Get_Name());
+    uint32_t hash = Prototype_Hash_Table_Hash(entry->Get_Name());
     entry->Set_Next_Hash(m_prototypeHashTable[hash]);
     m_prototypeHashTable[hash] = entry;
 }
@@ -564,7 +564,7 @@ void W3DAssetManager::Add_Prototype(PrototypeClass *proto)
     m_prototypes.Add(proto);
 }
 
-PrototypeLoaderClass *W3DAssetManager::Find_Prototype_Loader(int chunk_id)
+PrototypeLoaderClass *W3DAssetManager::Find_Prototype_Loader(int32_t chunk_id)
 {
     for (auto *loader : m_prototypeLoaders) {
         if (loader == nullptr) {
@@ -756,7 +756,7 @@ bool Get_Mesh_Color_Methods(MeshClass *mesh, bool *housecolor, bool *zhc)
     MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
     if (matinfo != nullptr) {
-        for (int i = 0; i < matinfo->Texture_Count(); i++) {
+        for (int32_t i = 0; i < matinfo->Texture_Count(); i++) {
 
             if (!strncasecmp(matinfo->Peek_Texture(i)->Get_Name(), "ZHC", 3)) {
                 *zhc = true;
@@ -795,7 +795,7 @@ void GameAssetManager::Make_Mesh_Unique(RenderObjClass *robj, bool geometry, boo
         if (colors && housecolor) {
             MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
-            for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
+            for (int32_t i = 0; i < matinfo->Vertex_Material_Count(); i++) {
                 matinfo->Peek_Vertex_Material(i)->Make_Unique();
             }
 
@@ -856,14 +856,14 @@ bool GameAssetManager::Recolor_Mesh(RenderObjClass *robj, uint32_t colour)
     word = (word != nullptr) ? word + 1 : mesh->Get_Name();
 
     if (!strncasecmp(word, "HOUSECOLOR", 10)) {
-        for (int i = 0; i < matinfo->Vertex_Material_Count(); i++) {
+        for (int32_t i = 0; i < matinfo->Vertex_Material_Count(); i++) {
             Recolor_Vertex_Material(matinfo->Peek_Vertex_Material(i), colour);
         }
 
         recolored = true;
     }
 
-    for (int i = 0; i < matinfo->Texture_Count(); i++) {
+    for (int32_t i = 0; i < matinfo->Texture_Count(); i++) {
         TextureClass *texture = matinfo->Peek_Texture(i);
         if (!strncasecmp(texture->Get_Name(), "ZHC", 3)) {
             TextureClass *new_texture = Recolor_Texture(texture, colour);
@@ -895,7 +895,7 @@ bool GameAssetManager::Recolour_Asset(RenderObjClass *robj, uint32_t colour)
     }
 }
 
-TextureClass *GameAssetManager::Recolor_Texture(TextureClass *texture, int color)
+TextureClass *GameAssetManager::Recolor_Texture(TextureClass *texture, int32_t color)
 {
     TextureClass *new_texture = Find_Texture(texture->Get_Name(), color);
 
@@ -906,7 +906,7 @@ TextureClass *GameAssetManager::Recolor_Texture(TextureClass *texture, int color
     }
 }
 
-void Create_Color_Texture_Name(char *buffer, const char *name, int color)
+void Create_Color_Texture_Name(char *buffer, const char *name, int32_t color)
 {
     char new_name[256];
     strcpy(new_name, name);
@@ -914,7 +914,7 @@ void Create_Color_Texture_Name(char *buffer, const char *name, int color)
     sprintf(buffer, "#%d#%s", color, new_name);
 }
 
-TextureClass *GameAssetManager::Find_Texture(const char *name, int color)
+TextureClass *GameAssetManager::Find_Texture(const char *name, int32_t color)
 {
     char buffer[512];
     Create_Color_Texture_Name(buffer, name, color);
@@ -927,7 +927,7 @@ TextureClass *GameAssetManager::Find_Texture(const char *name, int color)
     return texture;
 }
 
-TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, int color)
+TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, int32_t color)
 {
     const char *name = texture->Get_Name();
 
@@ -972,10 +972,10 @@ TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, 
     return new_texture;
 }
 
-void GameAssetManager::Remap_Palette(SurfaceClass *surface, int color, bool do_palette_only, bool use_alpha)
+void GameAssetManager::Remap_Palette(SurfaceClass *surface, int32_t color, bool do_palette_only, bool use_alpha)
 {
 #ifdef GAME_DLL
-    Call_Method<void, GameAssetManager, SurfaceClass *, int, bool, bool>(
+    Call_Method<void, GameAssetManager, SurfaceClass *, int32_t, bool, bool>(
         PICK_ADDRESS(0x007642F0, 0x0061675A), this, surface, color, do_palette_only, use_alpha);
 #endif
 }
@@ -1046,7 +1046,7 @@ bool GameAssetManager::Replace_Mesh_Texture(RenderObjClass *robj, TextureClass *
     MeshModelClass *model = mesh->Get_Model();
     MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
-    for (int i = 0; i < matinfo->Texture_Count(); i++) {
+    for (int32_t i = 0; i < matinfo->Texture_Count(); i++) {
         if (matinfo->Peek_Texture(i) == old_texture) {
             model->Replace_Texture(old_texture, new_texture);
             matinfo->Replace_Texture(i, new_texture);

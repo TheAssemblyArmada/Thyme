@@ -94,7 +94,7 @@ inline ParticleInfo::ParticleInfo(const ParticleInfo &that) :
     m_windRandomness(that.m_windRandomness),
     m_particleUpTowardsEmitter(that.m_particleUpTowardsEmitter)
 {
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         m_alphaKey[i] = that.m_alphaKey[i];
         m_colorKey[i] = that.m_colorKey[i];
     }

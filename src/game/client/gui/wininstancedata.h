@@ -29,14 +29,14 @@ class GameFont;
 struct WinDrawData
 {
     Image *image;
-    int color;
-    int borderColor;
+    int32_t color;
+    int32_t borderColor;
 };
 
 struct TextDrawData
 {
-    int color;
-    int borderColor;
+    int32_t color;
+    int32_t borderColor;
 };
 
 class WinInstanceData
@@ -55,12 +55,12 @@ public:
 
     void Set_Text(Utf16String text);
     Utf16String Get_Text();
-    int Get_Text_Length();
+    int32_t Get_Text_Length();
     DisplayString *Get_Text_DisplayString() { return m_text; }
 
     void Set_Tooltip_Text(Utf16String tip);
     Utf16String Get_Tooltip_Text();
-    int Get_Tooltip_Text_Length();
+    int32_t Get_Tooltip_Text_Length();
     DisplayString *Get_Tooltip_DisplayString() { return m_tooltip; }
 
     unsigned Get_State() { return m_state; }
@@ -77,8 +77,8 @@ public:
 #endif
 
 public:
-    int m_id;
-    int m_state;
+    int32_t m_id;
+    int32_t m_state;
     unsigned m_style;
     unsigned m_status;
     GameWindow *m_owner;
@@ -95,7 +95,7 @@ public:
     Utf8String m_decoratedNameString;
     Utf8String m_tooltipString;
     Utf8String m_headerTemplateString;
-    int m_tooltipDelay;
+    int32_t m_tooltipDelay;
     DisplayString *m_text;
     DisplayString *m_tooltip;
     VideoBuffer *m_videoBuffer;

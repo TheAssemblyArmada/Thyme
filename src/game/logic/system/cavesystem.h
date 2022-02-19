@@ -43,8 +43,8 @@ public:
     std::list<ObjectID> m_IDs;
     int32_t m_containListSize;
     uint32_t m_tunnelCount;
-    int m_nemesisID;
-    int m_lastNemesisFrame;
+    int32_t m_nemesisID;
+    int32_t m_lastNemesisFrame;
 };
 
 class CaveSystem : public SubsystemInterface, public SnapShot
@@ -63,7 +63,7 @@ public:
     virtual void Load_Post_Process() override {}
 
     bool Can_Switch_Index_to_Index(size_t unk1, size_t unk2);
-    TunnelTracker *Register_New_Cave(int index);
+    TunnelTracker *Register_New_Cave(int32_t index);
     TunnelTracker *Get_Tunnel_Tracker_For_Cave_Index(size_t index);
 
     // zh: 0x004D55D0 wb: 0x0076E506

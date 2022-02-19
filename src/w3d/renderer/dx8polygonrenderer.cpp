@@ -16,13 +16,13 @@
 #include "dx8renderer.h"
 #include "meshmdl.h"
 
-DX8PolygonRendererClass::DX8PolygonRendererClass(unsigned int index_count,
+DX8PolygonRendererClass::DX8PolygonRendererClass(uint32_t index_count,
     MeshModelClass *mmc,
     DX8TextureCategoryClass *tex_cat,
-    unsigned int vertex_offset,
-    unsigned int index_offset,
+    uint32_t vertex_offset,
+    uint32_t index_offset,
     bool strip,
-    unsigned int pass) :
+    uint32_t pass) :
     m_mmc(mmc),
     m_textureCategory(tex_cat),
     m_indexOffset(index_offset),

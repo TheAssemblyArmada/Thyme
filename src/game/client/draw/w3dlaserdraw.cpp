@@ -23,7 +23,7 @@
 #include "w3ddisplay.h"
 #include "w3dscene.h"
 
-void Get_Color_Components_Real(int color, float *red, float *green, float *blue, float *alpha)
+void Get_Color_Components_Real(int32_t color, float *red, float *green, float *blue, float *alpha)
 {
     *alpha = (float)((color & 0xFF000000) >> 24) / 255.0f;
     *red = (float)((color & 0xFF0000) >> 16) / 255.0f;
@@ -108,9 +108,9 @@ W3DLaserDraw::W3DLaserDraw(Thing *thing, ModuleData const *module_data) :
     Get_Color_Components_Real(data->m_outerColor, &outerred, &outergreen, &outerblue, &outeralpha);
     m_line3D = new SegmentedLineClass *[data->m_segments * data->m_numBeams];
 
-    for (unsigned int i = 0; i < data->m_segments; i++) {
-        for (int j = (int)data->m_numBeams - 1; j >= 0; j--) {
-            int index = j + data->m_numBeams * i;
+    for (uint32_t i = 0; i < data->m_segments; i++) {
+        for (int32_t j = (int32_t)data->m_numBeams - 1; j >= 0; j--) {
+            int32_t index = j + data->m_numBeams * i;
 
             float beamwidth;
             float red;
@@ -158,7 +158,7 @@ W3DLaserDraw::~W3DLaserDraw()
 {
     const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
 
-    for (unsigned int i = 0; i < data->m_segments * data->m_numBeams; i++) {
+    for (uint32_t i = 0; i < data->m_segments * data->m_numBeams; i++) {
         W3DDisplay::s_3DScene->Remove_Render_Object(m_line3D[i]);
         Ref_Ptr_Release(m_line3D[i]);
     }
@@ -212,7 +212,7 @@ void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)
         m_setLaserPosition = false;
         Vector3 points[2];
 
-        for (unsigned int i = 0; i < data->m_segments; i++) {
+        for (uint32_t i = 0; i < data->m_segments; i++) {
             if (data->m_arcHeight > 0.0f && data->m_segments > 1) {
                 Coord3D start;
                 start.Set(&update->Get_Start_Pos());
@@ -300,8 +300,8 @@ void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)
             Get_Color_Components_Real(data->m_innerColor, &innerred, &innergreen, &innerblue, &inneralpha);
             Get_Color_Components_Real(data->m_outerColor, &outerred, &outergreen, &outerblue, &outeralpha);
 
-            for (int j = (int)data->m_numBeams - 1; j >= 0; j--) {
-                int index = j + data->m_numBeams * i;
+            for (int32_t j = (int32_t)data->m_numBeams - 1; j >= 0; j--) {
+                int32_t index = j + data->m_numBeams * i;
 
                 float width;
                 float alpha;

@@ -14,7 +14,7 @@
  */
 #include "w3dview.h"
 #include "shadermanager.h"
-void W3DView::Set_Fade_Parameters(int frames, int direction)
+void W3DView::Set_Fade_Parameters(int32_t frames, int32_t direction)
 {
     ScreenBWFilter::Set_Fade_Parameters(frames, direction);
     ScreenCrossFadeFilter::Set_Fade_Parameters(frames, direction);

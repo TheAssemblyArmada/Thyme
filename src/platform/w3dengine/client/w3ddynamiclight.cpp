@@ -20,7 +20,7 @@ void W3DDynamicLight::On_Frame_Update()
 
         if (m_curIncreaseFrameCount && m_increaseFrameCount) {
             m_curIncreaseFrameCount--;
-            k = (float)(unsigned int)(m_increaseFrameCount - m_curIncreaseFrameCount) / (float)m_increaseFrameCount;
+            k = (float)(uint32_t)(m_increaseFrameCount - m_curIncreaseFrameCount) / (float)m_increaseFrameCount;
         } else if (!m_decayFrameCount) {
             k = 1.0f;
         } else {
@@ -29,7 +29,7 @@ void W3DDynamicLight::On_Frame_Update()
                 return;
             }
 
-            k = (float)(unsigned int)m_curDecayFrameCount / (float)m_decayFrameCount;
+            k = (float)(uint32_t)m_curDecayFrameCount / (float)m_decayFrameCount;
         }
 
         if (m_decayRange) {
@@ -47,7 +47,7 @@ void W3DDynamicLight::On_Frame_Update()
     }
 }
 
-void W3DDynamicLight::Set_Frame_Fade(unsigned int frame_increase_time, unsigned int decay_frame_time)
+void W3DDynamicLight::Set_Frame_Fade(uint32_t frame_increase_time, uint32_t decay_frame_time)
 {
     m_decayFrameCount = decay_frame_time;
     m_curDecayFrameCount = decay_frame_time;

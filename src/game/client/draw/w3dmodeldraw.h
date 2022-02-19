@@ -46,7 +46,7 @@ private:
 struct PristineBoneInfo
 {
     Matrix3D transform;
-    int index;
+    int32_t index;
 };
 
 enum ParseCondStateType
@@ -117,8 +117,8 @@ struct ModelConditionInfo
         NameKeyType m_turretPitchName;
         float m_turretArtAngle;
         float m_turretArtPitch;
-        int m_turretAngleBone;
-        int m_turretPitchBone;
+        int32_t m_turretAngleBone;
+        int32_t m_turretPitchBone;
     };
 
     struct WeaponBarrelInfo
@@ -138,9 +138,9 @@ struct ModelConditionInfo
 #endif
         }
 
-        int m_weaponRecoilBone;
-        int m_weaponFireFXBone;
-        int m_weaponMuzzleFlashBone;
+        int32_t m_weaponRecoilBone;
+        int32_t m_weaponFireFXBone;
+        int32_t m_weaponMuzzleFlashBone;
         Matrix3D m_weaponLaunchBoneTransform;
 #ifdef GAME_DEBUG_STRUCTS
         Utf8String m_weaponMuzzleFlashBoneName;
@@ -150,7 +150,7 @@ struct ModelConditionInfo
     ModelConditionInfo() { Clear(); }
     void Add_Public_Bone(Utf8String const &bone) const;
     void Clear();
-    Matrix3D const *Find_Pristine_Bone(NameKeyType key, int *index) const;
+    Matrix3D const *Find_Pristine_Bone(NameKeyType key, int32_t *index) const;
     bool Find_Pristine_Bone_Pos(NameKeyType key, Coord3D &pos) const;
     void Load_Animations() const {}
     bool Matches_Mode(bool night, bool snow) const;
@@ -160,12 +160,12 @@ struct ModelConditionInfo
     void Validate_Turret_Info() const;
     void Validate_Weapon_Barrel_Info() const;
 
-    const BitFlags<MODELCONDITION_COUNT> &Get_Conditions_Yes(int condition_idx) const
+    const BitFlags<MODELCONDITION_COUNT> &Get_Conditions_Yes(int32_t condition_idx) const
     {
         return m_conditionsYesVec[condition_idx];
     }
 
-    int Get_Conditions_Count() const { return m_conditionsYesVec.size(); }
+    int32_t Get_Conditions_Count() const { return m_conditionsYesVec.size(); }
 #ifdef GAME_DEBUG_STRUCTS
     Utf8String Get_Definition() const { return m_description; }
 #else
@@ -187,9 +187,9 @@ struct ModelConditionInfo
     std::vector<W3DAnimationInfo> m_animations;
     NameKeyType m_transitionKey;
     NameKeyType m_allowToFinishKey;
-    int m_flags;
-    int m_iniReadFlags;
-    int m_mode;
+    int32_t m_flags;
+    int32_t m_iniReadFlags;
+    int32_t m_mode;
     std::vector<ParticleSysBoneInfo> m_ParticleSysBones;
     uint64_t m_transition;
     float m_animationSpeedFactorMin;
@@ -240,8 +240,8 @@ private:
     Utf8String m_trackFile;
     Utf8String m_attachToBoneInAnotherModule;
     mutable Vector3 m_attachToDrawableBoneOffset;
-    int m_stateCount;
-    int m_projectileBoneFeedbackEnabledSlots;
+    int32_t m_stateCount;
+    int32_t m_projectileBoneFeedbackEnabledSlots;
     float m_initialRecoil;
     float m_maxRecoil;
     float m_recoilDamping;
@@ -289,7 +289,7 @@ public:
     struct ParticleSysTrackerType
     {
         ParticleSystemID id;
-        int index;
+        int32_t index;
     };
 
 #ifdef GAME_DLL
@@ -331,44 +331,44 @@ public:
     virtual bool Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, Matrix3D *transform) const override;
     virtual bool Client_Only_Get_Render_Obj_Bound_Box(OBBoxClass *box) const override;
     virtual bool Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &bone, Matrix3D *transform) const override;
-    virtual int Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
+    virtual int32_t Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
         char const *bone_name,
-        int start_index,
+        int32_t start_index,
         Coord3D *positions,
         Matrix3D *transforms,
-        int max_bones) const override;
-    virtual int Get_Current_Bone_Positions(char const *bone_name_prefix,
-        int start_index,
+        int32_t max_bones) const override;
+    virtual int32_t Get_Current_Bone_Positions(char const *bone_name_prefix,
+        int32_t start_index,
         Coord3D *positions,
         Matrix3D *transforms,
-        int max_bones) const override;
+        int32_t max_bones) const override;
     virtual bool Get_Current_Worldspace_Client_Bone_Positions(
         char const *bone_name_prefix, Matrix3D &transform) const override;
     virtual bool Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
         WeaponSlotType wslot,
-        int specific_barrel_to_use,
+        int32_t specific_barrel_to_use,
         Matrix3D *launch_pos,
         WhichTurretType tur,
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const override;
-    virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) override;
-    virtual void Update_Draw_Module_Supply_Status(int status1, int status2) override;
+    virtual void Update_Projectile_Clip_Status(uint32_t show, uint32_t count, WeaponSlotType wslot) override;
+    virtual void Update_Draw_Module_Supply_Status(int32_t status1, int32_t status2) override;
     virtual void Notify_Draw_Module_Dependency_Cleared() override;
     virtual void Set_Hidden(bool hidden) override;
     virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags) override;
-    virtual void Replace_Indicator_Color(int color) override;
+    virtual void Replace_Indicator_Color(int32_t color) override;
     virtual bool Handle_Weapon_Fire_FX(WeaponSlotType wslot,
-        int specific_barrel_to_use,
+        int32_t specific_barrel_to_use,
         FXList const *fxl,
         float weapon_speed,
         Coord3D const *victim_pos,
         float radius) override;
-    virtual int Get_Barrel_Count(WeaponSlotType wslot) const override;
+    virtual int32_t Get_Barrel_Count(WeaponSlotType wslot) const override;
     virtual void Set_Selectable(bool selectable) override;
-    virtual void Set_Animation_Loop_Duration(unsigned int num_frames) override;
-    virtual void Set_Animation_Completion_Time(unsigned int num_frames) override;
+    virtual void Set_Animation_Loop_Duration(uint32_t num_frames) override;
+    virtual void Set_Animation_Completion_Time(uint32_t num_frames) override;
     virtual bool Update_Bones_For_Client_Particle_Systems() override;
-    virtual void Set_Animation_Frame(int frame) override;
+    virtual void Set_Animation_Frame(int32_t frame) override;
     virtual void Set_Pause_Animation(bool pause) override;
     virtual void Update_Sub_Objects() override;
     virtual void Show_Sub_Object(Utf8String const &sub_obj_name, bool visible) override;
@@ -378,7 +378,7 @@ public:
     void Gather_Draw_Stats_For_Render_Object(DebugDrawStats *stats, RenderObjClass *robj);
 #endif
     void Adjust_Animation(ModelConditionInfo const *prev_state, float f);
-    void Do_Hide_Show_Projectile_Objects(unsigned int show, unsigned int count, WeaponSlotType wslot);
+    void Do_Hide_Show_Projectile_Objects(uint32_t show, uint32_t count, WeaponSlotType wslot);
     void Do_Hide_Show_Sub_Objs(std::vector<ModelConditionInfo::HideShowSubObjInfo> const *vec);
     void Do_Start_Or_Stop_Particle_Sys();
     const ModelConditionInfo *Find_Best_Info(BitFlags<MODELCONDITION_COUNT> const &flags) const;
@@ -409,9 +409,9 @@ public:
 private:
     const ModelConditionInfo *m_curState;
     const ModelConditionInfo *m_nextState;
-    int m_loopDuration;
-    int m_hexColor;
-    int m_whichAnimInCurState;
+    int32_t m_loopDuration;
+    int32_t m_hexColor;
+    int32_t m_whichAnimInCurState;
     std::vector<RecoilInfo> m_weaponRecoilInfoVec[WEAPONSLOT_COUNT];
     bool m_recalcBones;
     bool m_fullyObscuredByShroud;
@@ -424,5 +424,5 @@ private:
     std::vector<ModelConditionInfo::HideShowSubObjInfo> m_subObjects;
     bool m_isDaytime;
     bool m_pauseAnimation;
-    int m_animMode;
+    int32_t m_animMode;
 };

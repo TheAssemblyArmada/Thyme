@@ -58,7 +58,7 @@ void Anim2DTemplate::Allocate_Images(unsigned short count)
     m_numFrames = count;
     m_images = new Image *[m_numFrames];
 
-    for (int i = 0; i < m_numFrames; i++) {
+    for (int32_t i = 0; i < m_numFrames; i++) {
         m_images[i] = nullptr;
     }
 }
@@ -79,7 +79,7 @@ Image *Anim2DTemplate::Get_Frame(unsigned short frame)
 void Anim2DTemplate::Store_Image(Image *image)
 {
     if (image) {
-        for (int i = 0; i < m_numFrames; i++) {
+        for (int32_t i = 0; i < m_numFrames; i++) {
             if (m_images[i] == nullptr) {
                 m_images[i] = image;
                 return;
@@ -114,7 +114,7 @@ void Anim2DTemplate::Parse_Image_Sequence(INI *ini, void *instance, void *store,
     Utf8String str = ini->Get_Next_Ascii_String();
     Utf8String str2;
 
-    for (int i = 0; i < tmplate->Get_Num_Frames(); i++) {
+    for (int32_t i = 0; i < tmplate->Get_Num_Frames(); i++) {
         str2.Format("%s%03d", str.Str(), i);
         Image *image = g_theMappedImageCollection->Find_Image_By_Name(str2);
         captainslog_relassert(image != nullptr,
@@ -130,7 +130,7 @@ void Anim2DTemplate::Parse_Image_Sequence(INI *ini, void *instance, void *store,
 void Anim2DTemplate::Parse_Num_Images(INI *ini, void *instance, void *store, const void *user_data)
 {
     Anim2DTemplate *tmplate = static_cast<Anim2DTemplate *>(instance);
-    unsigned int count;
+    uint32_t count;
     ini->Parse_Unsigned_Int(ini, instance, &count, user_data);
     captainslog_relassert(count,
         CODE_06,
@@ -283,7 +283,7 @@ void Anim2D::Try_Next_Frame()
     }
 }
 
-int Anim2D::Get_Current_Frame_Width()
+int32_t Anim2D::Get_Current_Frame_Width()
 {
     Image *image = m_template->Get_Frame(m_currentFrame);
 
@@ -294,7 +294,7 @@ int Anim2D::Get_Current_Frame_Width()
     }
 }
 
-int Anim2D::Get_Current_Frame_Height()
+int32_t Anim2D::Get_Current_Frame_Height()
 {
     Image *image = m_template->Get_Frame(m_currentFrame);
 
@@ -305,14 +305,14 @@ int Anim2D::Get_Current_Frame_Height()
     }
 }
 
-void Anim2D::Draw(int x, int y, int width, int height)
+void Anim2D::Draw(int32_t x, int32_t y, int32_t width, int32_t height)
 {
     Image *image = m_template->Get_Frame(m_currentFrame);
     captainslog_dbgassert(image,
         "Anim2D::draw - Image not found for frame '%d' on animation '%s'",
         m_currentFrame,
         m_template->Get_Name().Str());
-    int color = Make_Color(0xFF, 0xFF, 0xFF, (255.0f * m_alpha));
+    int32_t color = Make_Color(0xFF, 0xFF, 0xFF, (255.0f * m_alpha));
     g_theDisplay->Draw_Image(image, x, y, width + x, height + y, color, Display::DRAWIMAGE_ADDITIVE);
 
     if (m_collection == nullptr && (m_status & STATUS_NO_UPDATE) == 0) {

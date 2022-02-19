@@ -160,7 +160,7 @@ void Keyboard::Create_Stream_Messages()
  *
  * 0x0040A4A0
  */
-wchar_t Keyboard::Get_Printable_Key(uint8_t key, int key_type)
+wchar_t Keyboard::Get_Printable_Key(uint8_t key, int32_t key_type)
 {
     // This should be impossible.
     if (key >= KEY_COUNT) {
@@ -241,7 +241,7 @@ void Keyboard::Init_Key_Names()
 void Keyboard::Update_Keys()
 {
     // Get the position of the first unused key.
-    int pos = 0;
+    int32_t pos = 0;
     while (true) {
         Get_Key(&m_keys[pos]);
 
@@ -257,7 +257,7 @@ void Keyboard::Update_Keys()
         }
     }
 
-    for (int i = 0; m_keys[i].key != 0; ++i) {
+    for (int32_t i = 0; m_keys[i].key != 0; ++i) {
         m_keyStatus[m_keys[i].key].state = m_keys[i].state;
         m_keyStatus[m_keys[i].key].status = m_keys[i].status;
         m_keyStatus[m_keys[i].key].sequence = m_inputFrame;
@@ -277,7 +277,7 @@ void Keyboard::Update_Keys()
     Check_Key_Repeat();
 
     if (m_modifiers != 0) {
-        for (int i = 0; m_keys[i].key != 0; ++i) {
+        for (int32_t i = 0; m_keys[i].key != 0; ++i) {
             m_keys[i].state |= m_modifiers;
         }
     }
@@ -381,13 +381,13 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
 bool Keyboard::Check_Key_Repeat()
 {
     // Find first KeyboardIO with 0 key.
-    int i;
+    int32_t i;
 
     for (i = 0; m_keys[i].key != 0; ++i) {
     }
 
     // Check for repeat status.
-    for (int j = 0; j < KEY_COUNT; ++j) {
+    for (int32_t j = 0; j < KEY_COUNT; ++j) {
         if (m_keyStatus[j].state & KEY_DOWN && m_inputFrame - m_keyStatus[j].sequence > KEY_REPEAT_DELAY) {
             m_keys[i].key = j;
             m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_DOWN;
@@ -395,7 +395,7 @@ bool Keyboard::Check_Key_Repeat()
             m_keys[i + 1].key = 0;
 
             // Update key input frame data.
-            for (int k = 0; k < KEY_COUNT; ++k) {
+            for (int32_t k = 0; k < KEY_COUNT; ++k) {
                 m_keyStatus[k].sequence = m_inputFrame;
             }
             m_keyStatus[j].sequence = m_inputFrame - 12;

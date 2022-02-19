@@ -79,7 +79,7 @@ const char *g_errorCodes[22] = {
     "Error code: ?????\r\r\nDescription: Unknown exception.",
 };
 
-unsigned int g_errorValues[] = { 0xC0000005,
+uint32_t g_errorValues[] = { 0xC0000005,
     0xC000008C,
     0x80000003,
     0x80000002,
@@ -192,7 +192,7 @@ static void Init_DbgHelp()
     HMODULE dll_handle = LoadLibraryA("dbghelp.dll");
 
     if (dll_handle) {
-        for (int i = 0; i < ARRAY_SIZE(_sym_pointers); ++i) {
+        for (int32_t i = 0; i < ARRAY_SIZE(_sym_pointers); ++i) {
             *_sym_pointers[i] = GetProcAddress(dll_handle, _sym_functions[i]);
 
             if (*_sym_pointers[i] == nullptr) {
@@ -330,7 +330,7 @@ BOOL Init_Symbol_Info()
 }
 
 void Make_Stack_Trace(
-    uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skip_frames, void(__cdecl *callback)(char const *))
+    uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int32_t skip_frames, void(__cdecl *callback)(char const *))
 {
     BOOL carry_on = true;
     STACKFRAME stack_frame;
@@ -369,7 +369,7 @@ void Make_Stack_Trace(
             }
         }
 
-        for (int i = 0; carry_on && i < STACK_DEPTH_MAX; ++i) {
+        for (int32_t i = 0; carry_on && i < STACK_DEPTH_MAX; ++i) {
             carry_on = StackWalkPtr(IMAGE_FILE_MACHINE_I386,
                 process,
                 thread,
@@ -392,11 +392,11 @@ void __cdecl Stack_Dump_Handler(const char *data)
     g_exceptionFileBuffer += data;
 }
 
-void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info)
+void __cdecl Dump_Exception_Info(uint32_t u, struct _EXCEPTION_POINTERS *e_info)
 {
     Utf8String tmp;
     g_exceptionFileBuffer.Clear();
-    unsigned int e_code = e_info->ExceptionRecord->ExceptionCode;
+    uint32_t e_code = e_info->ExceptionRecord->ExceptionCode;
 
     if (e_code == EXCEPTION_ACCESS_VIOLATION) {
         tmp = "Exception is access violation\n";
@@ -410,7 +410,7 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
     g_exceptionFileBuffer += tmp;
 #endif
 
-    int error_index = 0;
+    int32_t error_index = 0;
 
     while (g_errorValues[error_index] != 0xFFFFFFFF) {
         if (g_errorValues[error_index] == e_code) {
@@ -573,11 +573,11 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
 #endif
 
 #if defined PROCESSOR_X86
-    for (int i = 0; i < 8; ++i) {
+    for (int32_t i = 0; i < 8; ++i) {
         tmp.Format("ST%d : ", i);
         g_exceptionFileBuffer += tmp;
 
-        for (int j = 0; j < 10; ++j) {
+        for (int32_t j = 0; j < 10; ++j) {
             tmp.Format("%02X", ctext->FloatSave.RegisterArea[i * 10 + j]);
             g_exceptionFileBuffer += tmp;
         }
@@ -601,7 +601,7 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
     eip_pointer = reinterpret_cast<uint8_t *>(ctext->Eip);
 #endif
 
-    for (int i = 32; i != 0; --i) {
+    for (int32_t i = 32; i != 0; --i) {
         if (IsBadReadPtr(eip_pointer, 1)) {
             strlcat_tpl(scratch, "?? ");
         } else {
@@ -624,7 +624,7 @@ void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_i
     esp_pointer = reinterpret_cast<uintptr_t *>(ctext->Esp);
 #endif
 
-    for (int i = 0; i < 2048; ++i) {
+    for (int32_t i = 0; i < 2048; ++i) {
         // If we can't read the address we don't know where we are.
         if (IsBadReadPtr(esp_pointer, 4)) {
             snprintf(scratch, sizeof(scratch), "%" PRIPTRSIZE PRIXPTR ": ????????\n", (uintptr_t)esp_pointer);

@@ -65,7 +65,7 @@ public:
 
     virtual RenderObjClass *Clone() const;
 
-    virtual int Class_ID() const { return CLASSID_CAMERA; }
+    virtual int32_t Class_ID() const { return CLASSID_CAMERA; }
 
     // Rendering
     virtual void Render(RenderInfoClass &rinfo) {}
@@ -227,7 +227,7 @@ inline bool CameraClass::Cull_Sphere_On_Frustum_Sides(const SphereClass &sphere)
 
     bool is_visible = true;
 
-    for (int i = 1; i < ARRAY_SIZE(frustum.m_planes) - 1; i++) {
+    for (int32_t i = 1; i < ARRAY_SIZE(frustum.m_planes) - 1; i++) {
         is_visible =
             is_visible && (CollisionMath::Overlap_Test(planes[i], sphere) & (CollisionMath::INSIDE | CollisionMath::BOTH));
     }

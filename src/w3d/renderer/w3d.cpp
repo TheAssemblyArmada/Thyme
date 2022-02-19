@@ -46,7 +46,7 @@ bool W3D::s_largeTextureExtraReduction;
 bool W3D::s_isScreenUVBiased;
 bool W3D::s_texturingEnabled = true;
 bool W3D::s_thumbnailEnabled = true;
-int W3D::s_textureFilter;
+int32_t W3D::s_textureFilter;
 float W3D::s_defaultNativeScreenSize = 1;
 bool W3D::s_isSortingEnabled = true;
 bool W3D::s_isColoringEnabled;
@@ -57,7 +57,7 @@ bool W3D::s_areStaticSortListsEnabled;
 bool W3D::s_isInited;
 bool W3D::s_isRendering;
 bool W3D::s_lite;
-int W3D::s_frameCount;
+int32_t W3D::s_frameCount;
 StaticSortListClass *W3D::s_defaultStaticSortLists;
 StaticSortListClass *W3D::s_currentStaticSortLists;
 #ifdef PLATFORM_WINDOWS
@@ -69,7 +69,7 @@ class StaticSortListClass
 {
 public:
     virtual ~StaticSortListClass() {}
-    virtual void Add_To_List(RenderObjClass *robj, unsigned int sort_level) = 0;
+    virtual void Add_To_List(RenderObjClass *robj, uint32_t sort_level) = 0;
     virtual void Render_And_Clear(RenderInfoClass &rinfo) = 0;
 };
 
@@ -78,16 +78,16 @@ class DefaultStaticSortListClass : public StaticSortListClass
 public:
     DefaultStaticSortListClass() : m_minLevel(1), m_maxLevel(32) {}
     virtual ~DefaultStaticSortListClass() override {}
-    virtual void Add_To_List(RenderObjClass *robj, unsigned int sort_level) override;
+    virtual void Add_To_List(RenderObjClass *robj, uint32_t sort_level) override;
     virtual void Render_And_Clear(RenderInfoClass &rinfo) override;
 
 private:
-    unsigned int m_minLevel;
-    unsigned int m_maxLevel;
+    uint32_t m_minLevel;
+    uint32_t m_maxLevel;
     RefMultiListClass<RenderObjClass> m_lists[33];
 };
 
-void DefaultStaticSortListClass::Add_To_List(RenderObjClass *robj, unsigned int sort_level)
+void DefaultStaticSortListClass::Add_To_List(RenderObjClass *robj, uint32_t sort_level)
 {
     if (sort_level >= 1 && sort_level <= 32) {
         m_lists[sort_level].Add_Tail(robj, false);
@@ -98,7 +98,7 @@ void DefaultStaticSortListClass::Add_To_List(RenderObjClass *robj, unsigned int 
 
 void DefaultStaticSortListClass::Render_And_Clear(RenderInfoClass &rinfo)
 {
-    for (unsigned int i = m_maxLevel; i >= m_minLevel; i--) {
+    for (uint32_t i = m_maxLevel; i >= m_minLevel; i--) {
         bool rendered = false;
         RenderObjClass *robj = m_lists[i].Remove_Head();
 
@@ -127,22 +127,22 @@ void DefaultStaticSortListClass::Render_And_Clear(RenderInfoClass &rinfo)
     }
 }
 
-void W3D::Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed)
+void W3D::Get_Device_Resolution(int32_t &width, int32_t &height, int32_t &bit_depth, bool &windowed)
 {
     DX8Wrapper::Get_Device_Resolution(width, height, bit_depth, windowed);
 }
 
-void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed)
+void W3D::Get_Render_Target_Resolution(int32_t &set_w, int32_t &set_h, int32_t &set_bits, bool &set_windowed)
 {
     DX8Wrapper::Get_Render_Target_Resolution(set_w, set_h, set_bits, set_windowed);
 }
 
-const RenderDeviceDescClass W3D::Get_Render_Device_Desc(int deviceidx)
+const RenderDeviceDescClass W3D::Get_Render_Device_Desc(int32_t deviceidx)
 {
     return DX8Wrapper::Get_Render_Device_Desc(deviceidx);
 }
 
-int W3D::Get_Texture_Bit_Depth()
+int32_t W3D::Get_Texture_Bit_Depth()
 {
     return DX8Wrapper::s_textureBitDepth;
 }
@@ -165,14 +165,14 @@ void W3D::Invalidate_Textures()
     }
 }
 
-W3DErrorType W3D::Set_Device_Resolution(int width, int height, int bits, int windowed, bool resize_window)
+W3DErrorType W3D::Set_Device_Resolution(int32_t width, int32_t height, int32_t bits, int32_t windowed, bool resize_window)
 {
     return DX8Wrapper::Set_Device_Resolution(width, height, bits, windowed, resize_window) != 0 ?
         W3D_ERROR_OK :
         W3D_ERROR_INITIALIZATION_FAILED;
 }
 
-void W3D::Add_To_Static_Sort_List(RenderObjClass *robj, unsigned int sort_level)
+void W3D::Add_To_Static_Sort_List(RenderObjClass *robj, uint32_t sort_level)
 {
     s_currentStaticSortLists->Add_To_List(robj, sort_level);
 }
@@ -235,14 +235,14 @@ W3DErrorType W3D::Shutdown()
 }
 
 W3DErrorType W3D::Set_Render_Device(
-    int dev, int resx, int resy, int bits, int windowed, bool resize_window, bool reset_device, bool restore_assets)
+    int32_t dev, int32_t resx, int32_t resy, int32_t bits, int32_t windowed, bool resize_window, bool reset_device, bool restore_assets)
 {
     return DX8Wrapper::Set_Render_Device(dev, resx, resy, bits, windowed, resize_window, reset_device, restore_assets) != 0 ?
         W3D_ERROR_OK :
         W3D_ERROR_INITIALIZATION_FAILED;
 }
 
-int W3D::Get_Render_Device()
+int32_t W3D::Get_Render_Device()
 {
     return DX8Wrapper::Get_Render_Device();
 }
@@ -273,9 +273,9 @@ W3DErrorType W3D::Begin_Render(bool clear, bool clearz, const Vector3 &color, fl
         s_isRendering = true;
 
         if (clear || clearz) {
-            int width;
-            int height;
-            int depth;
+            int32_t width;
+            int32_t height;
+            int32_t depth;
             bool windowed;
             DX8Wrapper::Get_Render_Target_Resolution(width, height, depth, windowed);
             D3DVIEWPORT8 vp;
@@ -379,18 +379,18 @@ W3DErrorType W3D::End_Render(bool flip_frame)
     return W3D_ERROR_OK;
 }
 
-void W3D::Sync(unsigned int sync_time)
+void W3D::Sync(uint32_t sync_time)
 {
     s_previousSyncTime = s_syncTime;
     s_syncTime = sync_time;
 }
 
-void W3D::Set_Collision_Box_Display_Mask(int mask)
+void W3D::Set_Collision_Box_Display_Mask(int32_t mask)
 {
     BoxRenderObjClass::Set_Box_Display_Mask(mask);
 }
 
-void W3D::Set_Texture_Reduction(int value, int min_dim)
+void W3D::Set_Texture_Reduction(int32_t value, int32_t min_dim)
 {
     if (s_textureReduction != value || s_textureMinDimension != min_dim) {
         s_textureReduction = value;
@@ -399,7 +399,7 @@ void W3D::Set_Texture_Reduction(int value, int min_dim)
     }
 }
 
-void W3D::Enable_Coloring(unsigned int enable)
+void W3D::Enable_Coloring(uint32_t enable)
 {
     s_isColoringEnabled = enable != 0;
 }
@@ -408,7 +408,7 @@ void W3D::Allocate_Debug_Resources() {}
 
 void W3D::Release_Debug_Resources() {}
 
-void W3D::Set_Texture_Bit_Depth(int bitdepth)
+void W3D::Set_Texture_Bit_Depth(int32_t bitdepth)
 {
     DX8Wrapper::Set_Texture_Bitdepth(bitdepth);
 }

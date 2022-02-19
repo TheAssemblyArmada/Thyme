@@ -68,8 +68,8 @@ public:
     }
 
     // array access operators
-    __forceinline float &operator[](int i) { return (&X)[i]; }
-    __forceinline const float &operator[](int i) const { return (&X)[i]; }
+    __forceinline float &operator[](int32_t i) { return (&X)[i]; }
+    __forceinline const float &operator[](int32_t i) const { return (&X)[i]; }
 
     __forceinline void Normalize()
     {

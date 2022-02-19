@@ -38,7 +38,7 @@ protected:
 public:
     ParticleSystem(const ParticleSystemTemplate *temp, ParticleSystemID id, bool create_slaves);
 
-    virtual void Update(int unk);
+    virtual void Update(int32_t unk);
     virtual Particle *Create_Particle(const ParticleInfo &info, ParticlePriorityType priority, bool always_render);
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
@@ -75,7 +75,7 @@ public:
     void Hook_Dtor() { ParticleSystem::~ParticleSystem(); }
 #endif
 private:
-    ParticleInfo *Generate_Particle_Info(int id, int count);
+    ParticleInfo *Generate_Particle_Info(int32_t id, int32_t count);
     Coord3D *Compute_Particle_Velocity(const Coord3D *pos);
     Coord3D *Compute_Particle_Position();
     void Update_Wind_Motion();

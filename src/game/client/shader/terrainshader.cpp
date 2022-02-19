@@ -18,7 +18,7 @@
 #include <d3dx8.h>
 #endif
 
-int TerrainShader2Stage::Set(int pass)
+int32_t TerrainShader2Stage::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Apply_Render_State_Changes();
@@ -148,7 +148,7 @@ void TerrainShader2Stage::Reset()
 #endif
 }
 
-int TerrainShader2Stage::Init()
+int32_t TerrainShader2Stage::Init()
 {
     m_xSlidePerSecond = -0.02f;
     m_ySlidePerSecond = 1.5f * m_xSlidePerSecond;
@@ -174,7 +174,7 @@ void TerrainShader2Stage::Update_Noise_1(D3DXMATRIX *dest_matrix, D3DXMATRIX *cu
     D3DXMatrixScaling(&m, 0.0031746032f, 0.0031746032f, 1.0f);
     *dest_matrix = *cur_view_inverse * m;
     D3DXMATRIX m2;
-    int tick = m_curTick;
+    int32_t tick = m_curTick;
     m_curTick = W3D::Get_Sync_Time();
     tick = m_curTick - tick;
     m_xOffset = (float)tick * m_xSlidePerSecond / 1000.0f + m_xOffset;
@@ -208,7 +208,7 @@ void TerrainShader2Stage::Update_Noise_2(D3DXMATRIX *dest_matrix, D3DXMATRIX *cu
 }
 #endif
 
-int TerrainShader8Stage::Set(int pass)
+int32_t TerrainShader8Stage::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     if (pass) {
@@ -330,7 +330,7 @@ void TerrainShader8Stage::Reset()
 #endif
 }
 
-int TerrainShader8Stage::Init()
+int32_t TerrainShader8Stage::Init()
 {
     if (!g_terrainShader2Stage.Init()) {
         return 0;
@@ -351,7 +351,7 @@ int TerrainShader8Stage::Init()
     return 1;
 }
 
-int TerrainShaderPixelShader::Set(int pass)
+int32_t TerrainShaderPixelShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Apply_Render_State_Changes();
@@ -459,7 +459,7 @@ void TerrainShaderPixelShader::Reset()
 #endif
 }
 
-int TerrainShaderPixelShader::Init()
+int32_t TerrainShaderPixelShader::Init()
 {
 #ifdef BUILD_WITH_D3D8
     if (W3DShaderManager::Get_Chipset() < GPU_PS11) {
@@ -473,7 +473,7 @@ int TerrainShaderPixelShader::Init()
         D3DVSD_REG(3, D3DVSDT_FLOAT2),
         D3DVSD_END() };
 
-    int i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\terrain.pso", decl, 0, false, &m_dwBasePixelShader);
+    int32_t i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\terrain.pso", decl, 0, false, &m_dwBasePixelShader);
 
     if (i < 0) {
         return 0;
@@ -505,7 +505,7 @@ int TerrainShaderPixelShader::Init()
     return 1;
 }
 
-int TerrainShaderPixelShader::Shutdown()
+int32_t TerrainShaderPixelShader::Shutdown()
 {
 #ifdef BUILD_WITH_D3D8
     if (m_dwBasePixelShader) {

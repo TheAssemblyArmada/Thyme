@@ -20,7 +20,7 @@
 #include "xfer.h"
 #include <bitset>
 
-template<int> class BitFlags;
+template<int32_t> class BitFlags;
 
 // TODO move this somewhere more appropriate?
 // Don't add or remove anything to these until all code accessing the BitFlags type
@@ -204,7 +204,7 @@ enum ModelConditionFlagType
 
 using ModelConditionBitFlags = BitFlags<MODELCONDITION_COUNT>;
 
-template<int bits> class BitFlags
+template<int32_t bits> class BitFlags
 {
 public:
     enum BogusInitType
@@ -213,21 +213,21 @@ public:
     };
 
     BitFlags() {}
-    BitFlags(BogusInitType type, int flag) { m_bits.set(flag); }
-    BitFlags(BogusInitType type, int flag1, int flag2)
+    BitFlags(BogusInitType type, int32_t flag) { m_bits.set(flag); }
+    BitFlags(BogusInitType type, int32_t flag1, int32_t flag2)
     {
         m_bits.set(flag1);
         m_bits.set(flag2);
     }
 
-    BitFlags(BogusInitType type, int flag1, int flag2, int flag3)
+    BitFlags(BogusInitType type, int32_t flag1, int32_t flag2, int32_t flag3)
     {
         m_bits.set(flag1);
         m_bits.set(flag2);
         m_bits.set(flag3);
     }
 
-    BitFlags(BogusInitType type, int flag1, int flag2, int flag3, int flag4)
+    BitFlags(BogusInitType type, int32_t flag1, int32_t flag2, int32_t flag3, int32_t flag4)
     {
         m_bits.set(flag1);
         m_bits.set(flag2);
@@ -235,7 +235,7 @@ public:
         m_bits.set(flag4);
     }
 
-    BitFlags(BogusInitType type, int flag1, int flag2, int flag3, int flag4, int flag5)
+    BitFlags(BogusInitType type, int32_t flag1, int32_t flag2, int32_t flag3, int32_t flag4, int32_t flag5)
     {
         m_bits.set(flag1);
         m_bits.set(flag2);
@@ -248,12 +248,12 @@ public:
     bool operator!=(const BitFlags &that) const { return m_bits != that.m_bits; }
 
     void Clear() { m_bits.reset(); }
-    void Set(int bit, bool value) { m_bits.set(bit, value); }
-    bool Test(int bit) const { return m_bits.test(bit); }
+    void Set(int32_t bit, bool value) { m_bits.set(bit, value); }
+    bool Test(int32_t bit) const { return m_bits.test(bit); }
     bool Any() const { return m_bits.any(); }
     void Flip() { m_bits.flip(); }
-    int Count() const { return m_bits.count(); }
-    int Size() const { return m_bits.size(); }
+    int32_t Count() const { return m_bits.count(); }
+    int32_t Size() const { return m_bits.size(); }
 
     void Clear(BitFlags const &clear) { m_bits &= ~clear.m_bits; }
     void Set(BitFlags const &set) { m_bits |= set.m_bits; }
@@ -269,14 +269,14 @@ public:
         m_bits |= set.m_bits;
     }
 
-    int Count_Intersection(BitFlags const &count) const
+    int32_t Count_Intersection(BitFlags const &count) const
     {
         std::bitset<bits> temp = m_bits;
         temp &= count.m_bits;
         return temp.count();
     }
 
-    int Count_Inverse_Intersection(BitFlags const &count) const
+    int32_t Count_Inverse_Intersection(BitFlags const &count) const
     {
         std::bitset<bits> temp = m_bits;
         temp.flip();
@@ -321,10 +321,10 @@ public:
         xfer->xferVersion(&version, 1);
 
         if (xfer->Get_Mode() == XFER_SAVE) {
-            int count = Count();
+            int32_t count = Count();
             xfer->xferInt(&count);
 
-            for (int i = 0; i < Size(); i++) {
+            for (int32_t i = 0; i < Size(); i++) {
                 const char *str = Get_Name_For_Bit(i);
 
                 if (str != nullptr) {
@@ -334,11 +334,11 @@ public:
             }
         } else if (xfer->Get_Mode() == XFER_LOAD) {
             Clear();
-            int count;
+            int32_t count;
             xfer->xferInt(&count);
             Utf8String str;
 
-            for (int i = 0; i < count; i++) {
+            for (int32_t i = 0; i < count; i++) {
                 xfer->xferAsciiString(&str);
 
                 if (!Set_Bit_By_Name(str)) {
@@ -364,10 +364,10 @@ public:
         return !temp.any();
     }
 
-    static int Get_Single_Bit_From_Name(const char *name);
+    static int32_t Get_Single_Bit_From_Name(const char *name);
     bool Set_Bit_By_Name(const char *name);
 
-    const char *Get_Name_For_Bit(int bit) const
+    const char *Get_Name_For_Bit(int32_t bit) const
     {
         if (Test(bit)) {
             return s_bitNamesList[bit];
@@ -379,7 +379,7 @@ public:
     void Get_Name_For_Bits(Utf8String *str) const
     {
         if (str != nullptr) {
-            for (int i = 0; i < Size(); i++) {
+            for (int32_t i = 0; i < Size(); i++) {
                 const char *name = Get_Name_For_Bit(i);
 
                 if (name != nullptr) {
@@ -394,19 +394,19 @@ public:
     static void Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data);
     static const char **Get_Bit_Names_List() { return s_bitNamesList; }
 
-    static BitFlags Set_Bit(BitFlags &flags, int bit)
+    static BitFlags Set_Bit(BitFlags &flags, int32_t bit)
     {
         flags.Set(bit, 1);
         return flags;
     }
 
-    static BitFlags Clear_Bit(BitFlags &flags, int bit)
+    static BitFlags Clear_Bit(BitFlags &flags, int32_t bit)
     {
         flags.Set(bit, 0);
         return flags;
     }
 
-    static const char *Bit_As_String(int bit)
+    static const char *Bit_As_String(int32_t bit)
     {
         if (bit < 0 || bit >= bits) {
             return nullptr;
@@ -420,10 +420,10 @@ private:
     std::bitset<bits> m_bits;
 };
 
-// template<int bits>
+// template<int32_t bits>
 // const char *BitFlags<bits>::s_bitNamesList[bits + 1];
 
-template<int bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
+template<int32_t bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
 {
     if (string != nullptr) {
         string->Clear();
@@ -484,14 +484,14 @@ template<int bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
     }
 }
 
-template<int bits> void BitFlags<bits>::Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data)
+template<int32_t bits> void BitFlags<bits>::Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *(int *)store = INI::Scan_IndexList(ini->Get_Next_Token(), s_bitNamesList);
+    *(int32_t *)store = INI::Scan_IndexList(ini->Get_Next_Token(), s_bitNamesList);
 }
 
-template<int bits> int BitFlags<bits>::Get_Single_Bit_From_Name(const char *name)
+template<int32_t bits> int32_t BitFlags<bits>::Get_Single_Bit_From_Name(const char *name)
 {
-    for (int i = 0; s_bitNamesList[i] != nullptr; i++) {
+    for (int32_t i = 0; s_bitNamesList[i] != nullptr; i++) {
         if (!strcasecmp(s_bitNamesList[i], name)) {
             return i;
         }
@@ -500,9 +500,9 @@ template<int bits> int BitFlags<bits>::Get_Single_Bit_From_Name(const char *name
     return -1;
 }
 
-template<int bits> bool BitFlags<bits>::Set_Bit_By_Name(const char *name)
+template<int32_t bits> bool BitFlags<bits>::Set_Bit_By_Name(const char *name)
 {
-    int bit = Get_Single_Bit_From_Name(name);
+    int32_t bit = Get_Single_Bit_From_Name(name);
     if (bit < 0) {
         return false;
     }
@@ -511,7 +511,7 @@ template<int bits> bool BitFlags<bits>::Set_Bit_By_Name(const char *name)
     return true;
 }
 
-template<int bits> void BitFlags<bits>::Parse_From_INI(INI *ini, void *formal, void *store, const void *user_data)
+template<int32_t bits> void BitFlags<bits>::Parse_From_INI(INI *ini, void *formal, void *store, const void *user_data)
 {
     static_cast<BitFlags<bits> *>(store)->Parse(ini, nullptr);
 }

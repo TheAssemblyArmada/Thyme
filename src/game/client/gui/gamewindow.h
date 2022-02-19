@@ -101,10 +101,10 @@ enum GameWindowStyle
 };
 
 typedef WindowMsgHandledType(__cdecl *WindowCallbackFunc)(
-    GameWindow *window, unsigned int message, unsigned int data_1, unsigned int data_2);
+    GameWindow *window, uint32_t message, uint32_t data_1, uint32_t data_2);
 
 typedef void(__cdecl *WindowDrawFunc)(GameWindow *window, WinInstanceData *instance);
-typedef void(__cdecl *WindowTooltipFunc)(GameWindow *window, WinInstanceData *instance, unsigned int mouse);
+typedef void(__cdecl *WindowTooltipFunc)(GameWindow *window, WinInstanceData *instance, uint32_t mouse);
 
 struct GameWindowEditData
 {
@@ -126,62 +126,62 @@ public:
 
     virtual void Win_Draw_Border() = 0;
 
-    virtual int Win_Set_Text(Utf16String new_text);
+    virtual int32_t Win_Set_Text(Utf16String new_text);
     virtual void Win_Set_Font(GameFont *font);
 
     void Normalize_Window_Region();
 
-    int Win_Next_Tab();
-    int Win_Prev_Tab();
+    int32_t Win_Next_Tab();
+    int32_t Win_Prev_Tab();
 
-    int Win_Set_Position(int x, int y);
-    int Win_Get_Position(int *x, int *y);
+    int32_t Win_Set_Position(int32_t x, int32_t y);
+    int32_t Win_Get_Position(int32_t *x, int32_t *y);
 
-    int Win_Set_Cursor_Position(int x, int y);
-    int Win_Get_Cursor_Position(int *x, int *y);
+    int32_t Win_Set_Cursor_Position(int32_t x, int32_t y);
+    int32_t Win_Get_Cursor_Position(int32_t *x, int32_t *y);
 
-    int Win_Get_Screen_Position(int *x, int *y);
+    int32_t Win_Get_Screen_Position(int32_t *x, int32_t *y);
 
-    int Win_Get_Region(IRegion2D *region);
+    int32_t Win_Get_Region(IRegion2D *region);
 
-    bool Win_Point_In_Window(int x, int y);
+    bool Win_Point_In_Window(int32_t x, int32_t y);
 
-    int Win_Get_Size(int *width, int *height);
+    int32_t Win_Get_Size(int32_t *width, int32_t *height);
 
-    int Win_Enable(bool enable);
+    int32_t Win_Enable(bool enable);
     bool Win_Is_Enabled();
 
     bool Win_Is_Hidden();
 
-    int Win_Set_Status(int status);
-    int Win_Clear_Status(int status);
-    int Win_Get_Status();
+    int32_t Win_Set_Status(int32_t status);
+    int32_t Win_Clear_Status(int32_t status);
+    int32_t Win_Get_Status();
 
     unsigned Win_Get_Style();
 
     void Win_Set_Hilite_State(bool state);
 
-    void Win_Set_Draw_Offset(int x, int y);
-    void Win_Get_Draw_Offset(int *x, int *y);
+    void Win_Set_Draw_Offset(int32_t x, int32_t y);
+    void Win_Get_Draw_Offset(int32_t *x, int32_t *y);
 
     Utf16String Win_Get_Text();
-    int Win_Get_Text_Length();
+    int32_t Win_Get_Text_Length();
 
     GameFont *Win_Get_Font();
 
-    int Win_Get_Enabled_Text_Color();
-    int Win_Get_Enabled_Text_Border_Color();
+    int32_t Win_Get_Enabled_Text_Color();
+    int32_t Win_Get_Enabled_Text_Border_Color();
 
-    int Win_Get_IME_Composite_Text_Color();
-    int Win_Get_IME_Composite_Text_Border_Color();
+    int32_t Win_Get_IME_Composite_Text_Color();
+    int32_t Win_Get_IME_Composite_Text_Border_Color();
 
-    int Win_Get_Disabled_Text_Color();
-    int Win_Get_Disabled_Text_Border_Color();
+    int32_t Win_Get_Disabled_Text_Color();
+    int32_t Win_Get_Disabled_Text_Border_Color();
 
-    int Win_Get_Hilite_Text_Color();
-    int Win_Get_Hilite_Text_Border_Color();
+    int32_t Win_Get_Hilite_Text_Color();
+    int32_t Win_Get_Hilite_Text_Border_Color();
 
-    int Win_Set_Instance_Data(WinInstanceData *instance);
+    int32_t Win_Set_Instance_Data(WinInstanceData *instance);
     WinInstanceData *Win_Get_Instance_Data();
 
     void *Win_Get_User_Data();
@@ -189,15 +189,15 @@ public:
 
     void Win_Set_Tooltip(Utf16String tooltip);
 
-    int Win_Set_Window_Id(int id);
-    int Win_Get_Window_Id();
+    int32_t Win_Set_Window_Id(int32_t id);
+    int32_t Win_Get_Window_Id();
 
     GameWindow *Win_Get_Parent();
 
     bool Win_Is_Child(GameWindow *window);
     GameWindow *Win_Get_Child();
 
-    int Win_Set_Owner(GameWindow *owner);
+    int32_t Win_Set_Owner(GameWindow *owner);
     GameWindow *Win_Get_Owner();
 
     void Win_Set_Next(GameWindow *window);
@@ -214,24 +214,24 @@ public:
     GameWindow *Win_Get_Next_In_Layout();
     GameWindow *Win_Get_Prev_In_Layout();
 
-    int Win_Set_Tooltip_Func(WindowTooltipFunc tooltip);
+    int32_t Win_Set_Tooltip_Func(WindowTooltipFunc tooltip);
 
-    int Win_Draw_Window();
+    int32_t Win_Draw_Window();
 
-    GameWindow *Win_Point_In_Child(int x, int y, bool ignore_enable_check, bool audio_event);
-    GameWindow *Win_Point_In_Any_Child(int x, int y, bool ignore_hidden, bool ignore_enable_check);
+    GameWindow *Win_Point_In_Child(int32_t x, int32_t y, bool ignore_enable_check, bool audio_event);
+    GameWindow *Win_Point_In_Any_Child(int32_t x, int32_t y, bool ignore_hidden, bool ignore_enable_check);
 
-    int Win_Set_Enabled_Image(int index, Image *image);
-    int Win_Set_Enabled_Color(int index, int color);
-    int Win_Set_Enabled_Border_Color(int index, int color);
+    int32_t Win_Set_Enabled_Image(int32_t index, Image *image);
+    int32_t Win_Set_Enabled_Color(int32_t index, int32_t color);
+    int32_t Win_Set_Enabled_Border_Color(int32_t index, int32_t color);
 
-    int Win_Set_Disabled_Image(int index, Image *image);
-    int Win_Set_Disabled_Color(int index, int color);
-    int Win_Set_Disabled_Border_Color(int index, int color);
+    int32_t Win_Set_Disabled_Image(int32_t index, Image *image);
+    int32_t Win_Set_Disabled_Color(int32_t index, int32_t color);
+    int32_t Win_Set_Disabled_Border_Color(int32_t index, int32_t color);
 
-    int Win_Set_Hilite_Image(int index, Image *image);
-    int Win_Set_Hilite_Color(int index, int color);
-    int Win_Set_Hilite_Border_Color(int index, int color);
+    int32_t Win_Set_Hilite_Image(int32_t index, Image *image);
+    int32_t Win_Set_Hilite_Color(int32_t index, int32_t color);
+    int32_t Win_Set_Hilite_Border_Color(int32_t index, int32_t color);
 
     WindowCallbackFunc Win_Get_Input_Func();
     WindowCallbackFunc Win_Get_System_Func();
@@ -242,11 +242,11 @@ public:
     GameWindowEditData *Win_Get_Edit_Data();
 
 protected:
-    int m_status;
+    int32_t m_status;
     ICoord2D m_size;
     IRegion2D m_region;
-    int m_cursorX;
-    int m_cursorY;
+    int32_t m_cursorX;
+    int32_t m_cursorY;
     void *m_userData;
     WinInstanceData m_instData;
 #ifdef GAME_DEBUG_STRUCTS

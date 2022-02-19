@@ -34,15 +34,15 @@ typedef D3DMATERIAL8 w3dmat_t;
 #define W3D_TYPE_INVALID_SURFACE nullptr
 #else
 // TODO for alternate 3D frameworks such as OpenGL or later D3D
-typedef int w3dtexture_t;
-typedef int w3dbasetexture_t;
-typedef int w3dsurface_t;
-typedef int w3dcaps_t;
-typedef int w3dhandle_t;
-typedef int w3dadapterid_t;
-typedef int w3ddevice_t;
-typedef int w3dpool_t;
-typedef int w3dmat_t;
+typedef int32_t w3dtexture_t;
+typedef int32_t w3dbasetexture_t;
+typedef int32_t w3dsurface_t;
+typedef int32_t w3dcaps_t;
+typedef int32_t w3dhandle_t;
+typedef int32_t w3dadapterid_t;
+typedef int32_t w3ddevice_t;
+typedef int32_t w3dpool_t;
+typedef int32_t w3dmat_t;
 
 #define W3D_TYPE_INVALID_TEXTURE 0
 #define W3D_TYPE_INVALID_SURFACE 0

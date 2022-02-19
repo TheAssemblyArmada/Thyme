@@ -20,7 +20,7 @@
 #include <captainslog.h>
 
 ScriptList *ScriptList::s_readLists[MAX_LIST_COUNT];
-int ScriptList::s_numInReadList = 0;
+int32_t ScriptList::s_numInReadList = 0;
 ScriptGroup *ScriptList::s_emptyGroup = nullptr;
 
 ScriptList::~ScriptList()
@@ -167,14 +167,14 @@ ScriptList *ScriptList::Duplicate_And_Qualify(const Utf8String &str1, const Utf8
 /**
  * @brief Adds a script group at the requested point in the list, or at the end if the index is larger than the script count.
  */
-void ScriptList::Add_Group(ScriptGroup *group, int index)
+void ScriptList::Add_Group(ScriptGroup *group, int32_t index)
 {
     ScriptGroup *position = nullptr;
     ScriptGroup *group_list = m_firstGroup;
 
     captainslog_dbgassert(group->Get_Next() == nullptr, "Adding already linked group.");
 
-    for (int i = index; i > 0; --i) {
+    for (int32_t i = index; i > 0; --i) {
         if (group_list == nullptr) {
             break;
         }
@@ -195,13 +195,13 @@ void ScriptList::Add_Group(ScriptGroup *group, int index)
 /**
  * @brief Adds a script at the requested point in the list, or at the end if the index is larger than the script count.
  */
-void ScriptList::Add_Script(Script *script, int index)
+void ScriptList::Add_Script(Script *script, int32_t index)
 {
     Script *position = nullptr;
     Script *script_list = m_firstScript;
     captainslog_dbgassert(script->Get_Next() == nullptr, "Adding already linked script.");
 
-    for (int i = index; i > 0; --i) {
+    for (int32_t i = index; i > 0; --i) {
         if (script_list == nullptr) {
             break;
         }
@@ -224,12 +224,12 @@ void ScriptList::Add_Script(Script *script, int index)
  *
  * 0x0051C040
  */
-int ScriptList::Get_Read_Scripts(ScriptList **scripts)
+int32_t ScriptList::Get_Read_Scripts(ScriptList **scripts)
 {
-    int retval = s_numInReadList;
+    int32_t retval = s_numInReadList;
     s_numInReadList = 0;
 
-    for (int i = 0; i < retval; ++i) {
+    for (int32_t i = 0; i < retval; ++i) {
         scripts[i] = s_readLists[i];
         s_readLists[i] = nullptr;
     }
@@ -247,7 +247,7 @@ bool ScriptList::Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *i
     ScriptListReadInfo *read_info = static_cast<ScriptListReadInfo *>(data);
 
     // If possible, use current list size as insertion index for new element.
-    const int list_index = read_info->num_lists;
+    const int32_t list_index = read_info->num_lists;
 
     captainslog_dbgassert(list_index < MAX_LIST_COUNT, "Attempting to parse too many script lists.");
 
@@ -278,7 +278,7 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
 
     captainslog_dbgassert(s_numInReadList == 0, "Leftover scripts floating around.");
 
-    for (int i = 0; i < s_numInReadList; ++i) {
+    for (int32_t i = 0; i < s_numInReadList; ++i) {
         s_readLists[i]->Delete_Instance();
         s_readLists[i] = nullptr;
     }
@@ -304,7 +304,7 @@ bool ScriptList::Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info,
 void ScriptList::Reset()
 {
     if (g_theSidesList != nullptr) {
-        for (int i = 0; i < g_theSidesList->Get_Num_Sides(); ++i) {
+        for (int32_t i = 0; i < g_theSidesList->Get_Num_Sides(); ++i) {
             ScriptList *list = g_theSidesList->Get_Sides_Info(i)->Get_ScriptList();
             g_theSidesList->Get_Sides_Info(i)->Set_ScriptList(nullptr);
             list->Delete_Instance();

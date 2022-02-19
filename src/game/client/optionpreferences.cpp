@@ -23,21 +23,21 @@ OptionPreferences::OptionPreferences()
     Load("Options.ini");
 }
 
-int OptionPreferences::Get_Campaign_Difficulty()
+int32_t OptionPreferences::Get_Campaign_Difficulty()
 {
 #ifdef GAME_DLL
     // TODO, needs script engine member.
-    return Call_Method<int, OptionPreferences>(PICK_ADDRESS(0x00462BA0, 0x0087E225), this);
+    return Call_Method<int32_t, OptionPreferences>(PICK_ADDRESS(0x00462BA0, 0x0087E225), this);
 #else
     return 0;
 #endif
 }
 
-void OptionPreferences::Set_Campaign_Difficulty(int difficulty)
+void OptionPreferences::Set_Campaign_Difficulty(int32_t difficulty)
 {
 #ifdef GAME_DLL
     // TODO, needs script engine member.
-    return Call_Method<void, OptionPreferences, int>(PICK_ADDRESS(0x00462CB0, 0x0087E2FA), this, difficulty);
+    return Call_Method<void, OptionPreferences, int32_t>(PICK_ADDRESS(0x00462CB0, 0x0087E2FA), this, difficulty);
 #endif
 }
 
@@ -82,7 +82,7 @@ float OptionPreferences::Get_Scroll_Factor()
         return g_theWriteableGlobalData->m_keyboardDefaultScrollFactor;
     }
 
-    int factor = std::clamp(atoi(it->second.Str()), 0, 100);
+    int32_t factor = std::clamp(atoi(it->second.Str()), 0, 100);
 
     return (float)(factor / 100.0f);
 }
@@ -120,7 +120,7 @@ bool OptionPreferences::Use_Camera_In_Replays()
     return strcasecmp(it->second.Str(), "yes") == 0;
 }
 
-int OptionPreferences::Get_Ideal_Static_Game_Detail()
+int32_t OptionPreferences::Get_Ideal_Static_Game_Detail()
 {
     auto it = find("IdealStaticGameLOD");
 
@@ -131,7 +131,7 @@ int OptionPreferences::Get_Ideal_Static_Game_Detail()
     return g_theGameLODManager->Get_Static_LOD_Index(it->second);
 }
 
-int OptionPreferences::Get_Static_Game_Detail()
+int32_t OptionPreferences::Get_Static_Game_Detail()
 {
     auto it = find("StaticGameLOD");
 
@@ -359,7 +359,7 @@ bool OptionPreferences::Get_Building_Occlusion_Enabled()
     return strcasecmp(it->second.Str(), "yes") == 0;
 }
 
-int OptionPreferences::Get_Particle_Cap()
+int32_t OptionPreferences::Get_Particle_Cap()
 {
     auto it = find("MaxParticleCount");
 
@@ -367,12 +367,12 @@ int OptionPreferences::Get_Particle_Cap()
         return g_theWriteableGlobalData->m_maxParticleCount;
     }
 
-    int ret = atoi(it->second.Str());
+    int32_t ret = atoi(it->second.Str());
 
     return std::min(ret, 100);
 }
 
-int OptionPreferences::Get_Texture_Reduction()
+int32_t OptionPreferences::Get_Texture_Reduction()
 {
     auto it = find("TextureReduction");
 
@@ -380,7 +380,7 @@ int OptionPreferences::Get_Texture_Reduction()
         return -1;
     }
 
-    int ret = atoi(it->second.Str());
+    int32_t ret = atoi(it->second.Str());
 
     return std::max(ret, 2);
 }
@@ -396,7 +396,7 @@ float OptionPreferences::Get_Gamma_Value()
     return float(atoi(it->second.Str()));
 }
 
-void OptionPreferences::Get_Resolution(int *x, int *y)
+void OptionPreferences::Get_Resolution(int32_t *x, int32_t *y)
 {
     *x = g_theWriteableGlobalData->m_xResolution;
     *y = g_theWriteableGlobalData->m_yResolution;
@@ -407,8 +407,8 @@ void OptionPreferences::Get_Resolution(int *x, int *y)
         return;
     }
 
-    int tmpx;
-    int tmpy;
+    int32_t tmpx;
+    int32_t tmpy;
 
     if (sscanf(it->second.Str(), "%d%d", &tmpx, &tmpy) != 2) {
         return;
@@ -429,7 +429,7 @@ bool OptionPreferences::Get_Send_Delay()
     return strcasecmp(it->second.Str(), "yes") == 0;
 }
 
-int OptionPreferences::Get_Firewall_Behavior()
+int32_t OptionPreferences::Get_Firewall_Behavior()
 {
     auto it = find("FirewallBehaviour");
 
@@ -437,7 +437,7 @@ int OptionPreferences::Get_Firewall_Behavior()
         return g_theWriteableGlobalData->m_firewallBehaviour;
     }
 
-    int ret = atoi(it->second.Str());
+    int32_t ret = atoi(it->second.Str());
 
     return std::max(ret, 0);
 }

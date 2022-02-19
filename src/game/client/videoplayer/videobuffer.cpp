@@ -71,7 +71,7 @@ bool W3DVideoBuffer::Allocate(unsigned width, unsigned height)
     m_height = height;
     m_textureWidth = width;
     m_textureHeight = height;
-    unsigned int volume = 1;
+    uint32_t volume = 1;
     TextureLoader::Validate_Texture_Size(m_textureWidth, m_textureHeight, volume);
     WW3DFormat format = Type_To_W3D_Format(m_format);
 
@@ -119,7 +119,7 @@ void *W3DVideoBuffer::Lock()
     m_surface = m_texture->Get_Surface_Level(0);
 
     if (m_surface != nullptr) {
-        return m_surface->Lock((int *)&m_pitch);
+        return m_surface->Lock((int32_t *)&m_pitch);
     }
 
     return ptr;

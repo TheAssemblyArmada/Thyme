@@ -43,13 +43,13 @@ public:
 
     // TODO more setters and getters as needed.
     Utf8String Get_Name() { return m_name; }
-    Utf8String Get_Damaged_OCL(int dmg, int effect) { return m_damagedTransitionOCL[dmg][effect]; }
-    Utf8String Get_Damaged_FX(int dmg, int effect) { return m_damagedTransitionFX[dmg][effect]; }
-    Utf8String Get_Repaired_OCL(int dmg, int effect) { return m_repairedTransitionOCL[dmg][effect]; }
-    Utf8String Get_Repaired_FX(int dmg, int effect) { return m_repairedTransitionFX[dmg][effect]; }
+    Utf8String Get_Damaged_OCL(int32_t dmg, int32_t effect) { return m_damagedTransitionOCL[dmg][effect]; }
+    Utf8String Get_Damaged_FX(int32_t dmg, int32_t effect) { return m_damagedTransitionFX[dmg][effect]; }
+    Utf8String Get_Repaired_OCL(int32_t dmg, int32_t effect) { return m_repairedTransitionOCL[dmg][effect]; }
+    Utf8String Get_Repaired_FX(int32_t dmg, int32_t effect) { return m_repairedTransitionFX[dmg][effect]; }
 
     TerrainRoadType *Get_Next() { return m_next; }
-    int Get_ID() { return m_id; }
+    int32_t Get_ID() { return m_id; }
     Utf8String Get_Texture() { return m_texture; }
     float Get_Road_Width_In_Texture() { return m_roadWidthInTexture; }
     float Get_Road_Width() { return m_roadWidth; }
@@ -64,10 +64,10 @@ public:
     Utf8String Get_Bridge_Model_Name_Broken() { return m_bridgeModelNameBroken; }
 
     void Set_Name(Utf8String name) { m_name = name; }
-    void Set_Damaged_OCL(int dmg, int effect, Utf8String name) { m_damagedTransitionOCL[dmg][effect] = name; }
-    void Set_Damaged_FX(int dmg, int effect, Utf8String name) { m_damagedTransitionFX[dmg][effect] = name; }
-    void Set_Repaired_OCL(int dmg, int effect, Utf8String name) { m_repairedTransitionOCL[dmg][effect] = name; }
-    void Set_Repaired_FX(int dmg, int effect, Utf8String name) { m_repairedTransitionFX[dmg][effect] = name; }
+    void Set_Damaged_OCL(int32_t dmg, int32_t effect, Utf8String name) { m_damagedTransitionOCL[dmg][effect] = name; }
+    void Set_Damaged_FX(int32_t dmg, int32_t effect, Utf8String name) { m_damagedTransitionFX[dmg][effect] = name; }
+    void Set_Repaired_OCL(int32_t dmg, int32_t effect, Utf8String name) { m_repairedTransitionOCL[dmg][effect] = name; }
+    void Set_Repaired_FX(int32_t dmg, int32_t effect, Utf8String name) { m_repairedTransitionFX[dmg][effect] = name; }
 
     static void Parse_Transition_To_OCL(INI *ini, void *formal, void *store, void const *user_data);
     static void Parse_Transition_To_FX(INI *ini, void *formal, void *store, void const *user_data);
@@ -75,7 +75,7 @@ public:
 private:
     Utf8String m_name;
     bool m_isBridge;
-    int m_id;
+    int32_t m_id;
     TerrainRoadType *m_next;
     float m_roadWidth;
     float m_roadWidthInTexture;
@@ -99,7 +99,7 @@ private:
     Utf8String m_repairedTransitionOCL[BODY_COUNT][3];
     Utf8String m_repairedTransitionFX[BODY_COUNT][3];
     float m_transitionEffectsHeight;
-    int m_numFXPerType;
+    int32_t m_numFXPerType;
 };
 
 class TerrainRoadCollection : public SubsystemInterface
@@ -128,7 +128,7 @@ private:
     TerrainRoadType *m_roadList;
     TerrainRoadType *m_bridgeList;
 
-    static int s_idCounter;
+    static int32_t s_idCounter;
     static FieldParse s_terrainRoadFieldParseTable[];
     static FieldParse s_terrainBridgeFieldParseTable[];
 };

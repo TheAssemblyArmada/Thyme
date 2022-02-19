@@ -39,7 +39,7 @@ void FileSystem::Update()
     g_theArchiveFileSystem->Update();
 }
 
-File *FileSystem::Open(const char *filename, int mode)
+File *FileSystem::Open(const char *filename, int32_t mode)
 {
     File *file = nullptr;
 

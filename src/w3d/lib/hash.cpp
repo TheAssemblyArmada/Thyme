@@ -23,7 +23,7 @@
 /**
  * 0x008A0900
  */
-HashTableClass::HashTableClass(int size)
+HashTableClass::HashTableClass(int32_t size)
 {
     m_hashTableSize = size;
     captainslog_assert((m_hashTableSize & (m_hashTableSize - 1)) == 0);
@@ -49,7 +49,7 @@ HashTableClass::~HashTableClass()
  */
 void HashTableClass::Reset()
 {
-    for (int i = 0; i < m_hashTableSize; ++i) {
+    for (int32_t i = 0; i < m_hashTableSize; ++i) {
         m_hashTable[i] = nullptr;
     }
 }
@@ -62,7 +62,7 @@ void HashTableClass::Reset()
 void HashTableClass::Add(HashableClass *entry)
 {
     captainslog_assert(entry != nullptr);
-    unsigned int hash = Hash(entry->Get_Key());
+    uint32_t hash = Hash(entry->Get_Key());
     entry->m_nextHash = m_hashTable[hash];
     m_hashTable[hash] = entry;
 }
@@ -75,7 +75,7 @@ void HashTableClass::Add(HashableClass *entry)
 bool HashTableClass::Remove(HashableClass *entry)
 {
     captainslog_assert(entry != nullptr);
-    int hash = Hash(entry->Get_Key());
+    int32_t hash = Hash(entry->Get_Key());
 
     if (!m_hashTable[hash]) {
         return false;
@@ -111,7 +111,7 @@ HashableClass *HashTableClass::Find(const char *key)
 /**
  * Generate a checksum from the specified string.
  */
-int HashTableClass::Hash(const char *key)
+int32_t HashTableClass::Hash(const char *key)
 {
     return (m_hashTableSize - 1) & CRC::Stringi(key, 0);
 }

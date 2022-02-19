@@ -23,7 +23,7 @@ StreamingArchiveFile::~StreamingArchiveFile()
     File::Close();
 }
 
-bool StreamingArchiveFile::Open(const char *filename, int mode)
+bool StreamingArchiveFile::Open(const char *filename, int32_t mode)
 {
     File *basefile = g_theFileSystem->Open(filename, mode);
 
@@ -39,7 +39,7 @@ void StreamingArchiveFile::Close()
     File::Close();
 }
 
-int StreamingArchiveFile::Read(void *dst, int bytes)
+int32_t StreamingArchiveFile::Read(void *dst, int32_t bytes)
 {
     if (m_archiveFile == nullptr) {
         return 0;
@@ -51,19 +51,19 @@ int StreamingArchiveFile::Read(void *dst, int bytes)
         bytes = m_fileSize - m_filePos;
     }
 
-    int read_len = m_archiveFile->Read(dst, bytes);
+    int32_t read_len = m_archiveFile->Read(dst, bytes);
 
     m_filePos += read_len;
 
     return bytes;
 }
 
-int StreamingArchiveFile::Write(void const *src, int bytes)
+int32_t StreamingArchiveFile::Write(void const *src, int32_t bytes)
 {
     return -1;
 }
 
-int StreamingArchiveFile::Seek(int offset, File::SeekMode mode)
+int32_t StreamingArchiveFile::Seek(int32_t offset, File::SeekMode mode)
 {
     switch (mode) {
         case START:
@@ -85,9 +85,9 @@ int StreamingArchiveFile::Seek(int offset, File::SeekMode mode)
     return m_filePos;
 }
 
-void StreamingArchiveFile::Next_Line(char *dst, int bytes) {}
+void StreamingArchiveFile::Next_Line(char *dst, int32_t bytes) {}
 
-bool StreamingArchiveFile::Scan_Int(int &integer)
+bool StreamingArchiveFile::Scan_Int(int32_t &integer)
 {
     return false;
 }
@@ -112,7 +112,7 @@ bool StreamingArchiveFile::Open(File *file)
     return true;
 }
 
-bool StreamingArchiveFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int size)
+bool StreamingArchiveFile::Open_From_Archive(File *file, Utf8String const &name, int32_t pos, int32_t size)
 {
     if (file == nullptr || !File::Open(name.Str(), READ | BINARY | STREAMING)) {
         return false;

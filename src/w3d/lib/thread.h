@@ -25,7 +25,7 @@ typedef void _EXCEPTION_POINTERS; // TODO set this to something appropriate, voi
 #error Threading API not detected.
 #endif
 
-typedef int (*except_t)(int, _EXCEPTION_POINTERS *);
+typedef int32_t (*except_t)(int32_t, _EXCEPTION_POINTERS *);
 
 class ThreadClass
 {
@@ -36,12 +36,12 @@ public:
 
     virtual void Thread_Function() = 0;
     void Execute();
-    void Stop(unsigned int ms);
+    void Stop(uint32_t ms);
     bool Is_Running() { return m_handle != 0; }
-    void Set_Priority(int priority);
+    void Set_Priority(int32_t priority);
 
-    static void Sleep_Ms(unsigned int ms);
-    static int Get_Current_Thread_ID();
+    static void Sleep_Ms(uint32_t ms);
+    static int32_t Get_Current_Thread_ID();
     static void Switch_Thread();
 
 private:
@@ -62,5 +62,5 @@ protected:
 #elif defined PLATFORM_WINDOWS
     HANDLE m_handle;
 #endif
-    int m_priority;
+    int32_t m_priority;
 };

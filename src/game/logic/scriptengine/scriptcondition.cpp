@@ -39,7 +39,7 @@ Condition::Condition(ConditionType type) :
 Condition::~Condition()
 {
     // Clear our paramter instances.
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
@@ -63,7 +63,7 @@ Condition *Condition::Duplicate()
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
     Condition *head_cond = NEW_POOL_OBJ(Condition, m_conditionType);
 
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         *head_cond->m_params[i] = *m_params[i];
     }
 
@@ -75,7 +75,7 @@ Condition *Condition::Duplicate()
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
 
-        for (int i = 0; i < next->m_numParams; ++i) {
+        for (int32_t i = 0; i < next->m_numParams; ++i) {
             *new_cond->m_params[i] = *next->m_params[i];
         }
     }
@@ -95,7 +95,7 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
     // Parameters are allocated in Set_Condition_Type which the ctor calls.
     Condition *new_cond = NEW_POOL_OBJ(Condition, m_conditionType);
 
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         *new_cond->m_params[i] = *m_params[i];
         new_cond->m_params[i]->Qualify(str1, str2, str3);
     }
@@ -108,7 +108,7 @@ Condition *Condition::Duplicate_And_Qualify(const Utf8String &str1, const Utf8St
         new_cond->m_nextAndCondition = new_next;
         new_cond = new_next;
 
-        for (int i = 0; i < next->m_numParams; ++i) {
+        for (int32_t i = 0; i < next->m_numParams; ++i) {
             *new_cond->m_params[i] = *next->m_params[i];
             new_cond->m_params[i]->Qualify(str1, str2, str3);
         }
@@ -128,7 +128,7 @@ void Condition::Set_Condition_Type(ConditionType type)
     Call_Method<void, Condition, ConditionType>(PICK_ADDRESS(0x0051DB90, 0), this, type);
 #else
     // Clear existing paramters.
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }

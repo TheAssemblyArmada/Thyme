@@ -112,13 +112,13 @@ void BezierSegment::Evaluate_Bez_Segment_At_T(float t, Coord3D *point)
     }
 }
 
-void BezierSegment::Get_Segment_Points(int count, std::vector<Coord3D> *points)
+void BezierSegment::Get_Segment_Points(int32_t count, std::vector<Coord3D> *points)
 {
     if (points != nullptr) {
         points->clear();
         points->resize(count);
         BezFwdIterator it(count, this);
-        int k = 0;
+        int32_t k = 0;
         for (it.Start(); !it.Done(); it.Next()) {
             (*points)[k++] = it.Get_Current();
         }

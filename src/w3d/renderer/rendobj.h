@@ -114,7 +114,7 @@ public:
 
     struct Material_Override
     {
-        int m_structID;
+        int32_t m_structID;
         Vector2 m_customUVOffset;
         Material_Override() : m_structID(USER_DATA_MATERIAL_OVERRIDE), m_customUVOffset(0, 0) {}
     };
@@ -131,12 +131,12 @@ public:
     }
 
     virtual RenderObjClass *Clone() const = 0;
-    virtual int Class_ID() const { return CLASSID_UNKNOWN; }
+    virtual int32_t Class_ID() const { return CLASSID_UNKNOWN; }
     virtual const char *Get_Name() const { return "UNNAMED"; }
     virtual void Set_Name(const char *name) {}
     virtual const char *Get_Base_Model_Name() const { return nullptr; }
     virtual void Set_Base_Model_Name(const char *name) {}
-    virtual int Get_Num_Polys() const { return 0; }
+    virtual int32_t Get_Num_Polys() const { return 0; }
     virtual void Render(RenderInfoClass &rinfo) = 0;
     virtual void Special_Render(SpecialRenderInfoClass &rinfo) {}
     virtual void On_Frame_Update() {}
@@ -151,34 +151,34 @@ public:
     virtual void Set_Position(const Vector3 &v);
     virtual void Notify_Added(SceneClass *scene);
     virtual void Notify_Removed(SceneClass *scene);
-    virtual int Get_Num_Sub_Objects() const { return 0; }
-    virtual RenderObjClass *Get_Sub_Object(int index) const { return nullptr; }
-    virtual int Add_Sub_Object(RenderObjClass *subobj) { return 0; }
-    virtual int Remove_Sub_Object(RenderObjClass *subobj) { return 0; }
-    virtual RenderObjClass *Get_Sub_Object_By_Name(const char *name, int *index) const;
-    virtual int Get_Num_Sub_Objects_On_Bone(int bone_index) const { return 0; }
-    virtual RenderObjClass *Get_Sub_Object_On_Bone(int index, int bone_index) const { return nullptr; }
-    virtual int Get_Sub_Object_Bone_Index(RenderObjClass *subobj) const { return 0; }
-    virtual int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const { return 0; }
-    virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index) { return 0; }
-    virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, const char *bone_name);
-    virtual int Remove_Sub_Objects_From_Bone(int bone_index);
-    virtual int Remove_Sub_Objects_From_Bone(const char *bone_name);
+    virtual int32_t Get_Num_Sub_Objects() const { return 0; }
+    virtual RenderObjClass *Get_Sub_Object(int32_t index) const { return nullptr; }
+    virtual int32_t Add_Sub_Object(RenderObjClass *subobj) { return 0; }
+    virtual int32_t Remove_Sub_Object(RenderObjClass *subobj) { return 0; }
+    virtual RenderObjClass *Get_Sub_Object_By_Name(const char *name, int32_t *index) const;
+    virtual int32_t Get_Num_Sub_Objects_On_Bone(int32_t bone_index) const { return 0; }
+    virtual RenderObjClass *Get_Sub_Object_On_Bone(int32_t index, int32_t bone_index) const { return nullptr; }
+    virtual int32_t Get_Sub_Object_Bone_Index(RenderObjClass *subobj) const { return 0; }
+    virtual int32_t Get_Sub_Object_Bone_Index(int32_t lodindex, int32_t modelindex) const { return 0; }
+    virtual int32_t Add_Sub_Object_To_Bone(RenderObjClass *subobj, int32_t bone_index) { return 0; }
+    virtual int32_t Add_Sub_Object_To_Bone(RenderObjClass *subobj, const char *bone_name);
+    virtual int32_t Remove_Sub_Objects_From_Bone(int32_t bone_index);
+    virtual int32_t Remove_Sub_Objects_From_Bone(const char *bone_name);
     virtual void Update_Sub_Object_Transforms();
     virtual void Set_Animation() {}
-    virtual void Set_Animation(HAnimClass *motion, float frame, int anim_mode = ANIM_MODE_MANUAL) {}
+    virtual void Set_Animation(HAnimClass *motion, float frame, int32_t anim_mode = ANIM_MODE_MANUAL) {}
     virtual void Set_Animation(HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) {}
     virtual void Set_Animation(HAnimComboClass *anim_combo) {}
     virtual HAnimClass *Peek_Animation() { return nullptr; }
-    virtual int Get_Num_Bones() { return 0; }
-    virtual const char *Get_Bone_Name(int bone_index) { return nullptr; }
-    virtual int Get_Bone_Index(const char *bone_name) { return 0; }
+    virtual int32_t Get_Num_Bones() { return 0; }
+    virtual const char *Get_Bone_Name(int32_t bone_index) { return nullptr; }
+    virtual int32_t Get_Bone_Index(const char *bone_name) { return 0; }
     virtual const Matrix3D &Get_Bone_Transform(const char *bone_name) { return Get_Transform(); }
-    virtual const Matrix3D &Get_Bone_Transform(int bone_index) { return Get_Transform(); }
-    virtual void Capture_Bone(int bone_index) {}
-    virtual void Release_Bone(int bone_index) {}
-    virtual bool Is_Bone_Captured(int bone_index) const { return false; }
-    virtual void Control_Bone(int bone_index, const Matrix3D &obj_tm, bool world_space_translation = false) {}
+    virtual const Matrix3D &Get_Bone_Transform(int32_t bone_index) { return Get_Transform(); }
+    virtual void Capture_Bone(int32_t bone_index) {}
+    virtual void Release_Bone(int32_t bone_index) {}
+    virtual bool Is_Bone_Captured(int32_t bone_index) const { return false; }
+    virtual void Control_Bone(int32_t bone_index, const Matrix3D &obj_tm, bool world_space_translation = false) {}
     virtual const HTreeClass *Get_HTree() const { return nullptr; }
     virtual bool Cast_Ray(RayCollisionTestClass &raytest) { return false; }
     virtual bool Cast_AABox(AABoxCollisionTestClass &boxtest) { return false; }
@@ -200,11 +200,11 @@ public:
     virtual float Get_Cost() const;
     virtual float Get_Value() const { return AT_MIN_LOD; }
     virtual float Get_Post_Increment_Value() const { return AT_MAX_LOD; }
-    virtual void Set_LOD_Level(int lod) {}
-    virtual int Get_LOD_Level() const { return 0; }
-    virtual int Get_LOD_Count() const { return 1; }
+    virtual void Set_LOD_Level(int32_t lod) {}
+    virtual int32_t Get_LOD_Level() const { return 0; }
+    virtual int32_t Get_LOD_Count() const { return 1; }
     virtual void Set_LOD_Bias(float bias) {}
-    virtual int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const;
+    virtual int32_t Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const;
 
     virtual RenderObjClass *Get_Current_LOD()
     {
@@ -219,20 +219,20 @@ public:
     virtual MaterialInfoClass *Get_Material_Info() { return nullptr; }
     virtual void Set_User_Data(void *value, bool recursive = false) { m_userData = value; }
     virtual void *Get_User_Data() { return m_userData; }
-    virtual int Get_Num_Snap_Points() { return 0; }
-    virtual void Get_Snap_Point(int index, Vector3 *set) {}
+    virtual int32_t Get_Num_Snap_Points() { return 0; }
+    virtual void Get_Snap_Point(int32_t index, Vector3 *set) {}
     virtual float Get_Screen_Size(CameraClass &camera);
     virtual void Scale(float scale) {}
     virtual void Scale(float scalex, float scaley, float scalez) {}
     virtual void Set_ObjectScale(float scale) { m_objectScale = scale; }
     float Get_ObjectScale() { return m_objectScale; }
-    virtual int Get_Sort_Level() const { return 0; }
-    virtual void Set_Sort_Level(int level) {}
-    virtual int Is_Really_Visible() { return ((m_bits & IS_REALLY_VISIBLE) == IS_REALLY_VISIBLE); }
-    virtual int Is_Not_Hidden_At_All() { return ((m_bits & IS_NOT_HIDDEN_AT_ALL) == IS_NOT_HIDDEN_AT_ALL); }
-    virtual int Is_Visible() const { return (m_bits & IS_VISIBLE); }
+    virtual int32_t Get_Sort_Level() const { return 0; }
+    virtual void Set_Sort_Level(int32_t level) {}
+    virtual int32_t Is_Really_Visible() { return ((m_bits & IS_REALLY_VISIBLE) == IS_REALLY_VISIBLE); }
+    virtual int32_t Is_Not_Hidden_At_All() { return ((m_bits & IS_NOT_HIDDEN_AT_ALL) == IS_NOT_HIDDEN_AT_ALL); }
+    virtual int32_t Is_Visible() const { return (m_bits & IS_VISIBLE); }
 
-    virtual void Set_Visible(int onoff)
+    virtual void Set_Visible(int32_t onoff)
     {
         if (onoff) {
             m_bits |= IS_VISIBLE;
@@ -241,9 +241,9 @@ public:
         }
     }
 
-    virtual int Is_Hidden() const { return !(m_bits & IS_NOT_HIDDEN); }
+    virtual int32_t Is_Hidden() const { return !(m_bits & IS_NOT_HIDDEN); }
 
-    virtual void Set_Hidden(int onoff)
+    virtual void Set_Hidden(int32_t onoff)
     {
         if (onoff) {
             m_bits &= ~IS_NOT_HIDDEN;
@@ -252,9 +252,9 @@ public:
         }
     }
 
-    virtual int Is_Animation_Hidden() const { return !(m_bits & IS_NOT_ANIMATION_HIDDEN); }
+    virtual int32_t Is_Animation_Hidden() const { return !(m_bits & IS_NOT_ANIMATION_HIDDEN); }
 
-    virtual void Set_Animation_Hidden(int onoff)
+    virtual void Set_Animation_Hidden(int32_t onoff)
     {
         if (onoff) {
             m_bits &= ~IS_NOT_ANIMATION_HIDDEN;
@@ -263,9 +263,9 @@ public:
         }
     }
 
-    virtual int Is_Force_Visible() const { return m_bits & IS_FORCE_VISIBLE; }
+    virtual int32_t Is_Force_Visible() const { return m_bits & IS_FORCE_VISIBLE; }
 
-    virtual void Set_Force_Visible(int onoff)
+    virtual void Set_Force_Visible(int32_t onoff)
     {
         if (onoff) {
             m_bits |= IS_FORCE_VISIBLE;
@@ -274,9 +274,9 @@ public:
         }
     }
 
-    virtual int Is_Translucent() const { return m_bits & IS_TRANSLUCENT; }
+    virtual int32_t Is_Translucent() const { return m_bits & IS_TRANSLUCENT; }
 
-    virtual void Set_Translucent(int onoff)
+    virtual void Set_Translucent(int32_t onoff)
     {
         if (onoff) {
             m_bits |= IS_TRANSLUCENT;
@@ -285,9 +285,9 @@ public:
         }
     }
 
-    virtual int Is_Alpha() const { return m_bits & IS_ALPHA; }
+    virtual int32_t Is_Alpha() const { return m_bits & IS_ALPHA; }
 
-    virtual void Set_Alpha(int onoff)
+    virtual void Set_Alpha(int32_t onoff)
     {
         if (onoff) {
             m_bits |= IS_ALPHA;
@@ -296,9 +296,9 @@ public:
         }
     }
 
-    virtual int Is_Additive() const { return m_bits & IS_ADDITIVE; }
+    virtual int32_t Is_Additive() const { return m_bits & IS_ADDITIVE; }
 
-    virtual void Set_Additive(int onoff)
+    virtual void Set_Additive(int32_t onoff)
     {
         if (onoff) {
             m_bits |= IS_ADDITIVE;
@@ -307,9 +307,9 @@ public:
         }
     }
 
-    virtual int Get_Collision_Type() const { return (m_bits & COLLISION_TYPE_MASK); }
+    virtual int32_t Get_Collision_Type() const { return (m_bits & COLLISION_TYPE_MASK); }
 
-    virtual void Set_Collision_Type(int type)
+    virtual void Set_Collision_Type(int32_t type)
     {
         m_bits &= ~COLLISION_TYPE_MASK;
         m_bits |= (type & COLLISION_TYPE_MASK) | COLLISION_TYPE_ALL;
@@ -357,7 +357,7 @@ protected:
     void Invalidate_Cached_Bounding_Volumes() const { m_bits &= ~BOUNDING_VOLUMES_VALID; }
     void Validate_Cached_Bounding_Volumes() const { m_bits |= BOUNDING_VOLUMES_VALID; }
 
-    void Set_Sub_Objects_Match_LOD(int onoff)
+    void Set_Sub_Objects_Match_LOD(int32_t onoff)
     {
         if (onoff) {
             m_bits |= SUBOBJS_MATCH_LOD;
@@ -366,7 +366,7 @@ protected:
         }
     }
 
-    int Is_Sub_Objects_Match_LOD_Enabled() { return m_bits & SUBOBJS_MATCH_LOD; }
+    int32_t Is_Sub_Objects_Match_LOD_Enabled() { return m_bits & SUBOBJS_MATCH_LOD; }
 
     enum
     {
@@ -390,7 +390,7 @@ protected:
     mutable unsigned long m_bits;
     Matrix3D m_transform;
     float m_objectScale;
-    int m_houseColor;
+    int32_t m_houseColor;
     mutable SphereClass m_cachedBoundingSphere;
     mutable AABoxClass m_cachedBoundingBox;
     float m_nativeScreenSize;

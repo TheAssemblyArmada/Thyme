@@ -21,7 +21,7 @@
 #include "scriptengine.h"
 #include "vertmaterial.h"
 
-int W3DStatusCircle::g_diffuse = 0xFF;
+int32_t W3DStatusCircle::g_diffuse = 0xFF;
 bool W3DStatusCircle::g_needUpdate;
 
 W3DStatusCircle::W3DStatusCircle() :
@@ -65,7 +65,7 @@ void W3DStatusCircle::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
     box.Init(Vector3(0.0f, 0.0f, 0.0f), Vector3(1000.0f, 1000.0f, 1000.0f));
 }
 
-int W3DStatusCircle::Class_ID() const
+int32_t W3DStatusCircle::Class_ID() const
 {
     return CLASSID_UNKNOWN;
 }
@@ -75,7 +75,7 @@ RenderObjClass *W3DStatusCircle::Clone() const
     return new W3DStatusCircle(*this);
 }
 
-int W3DStatusCircle::Free_Map_Resources()
+int32_t W3DStatusCircle::Free_Map_Resources()
 {
     Ref_Ptr_Release(m_indexBuffer);
     Ref_Ptr_Release(m_vertexBufferScreen);
@@ -84,7 +84,7 @@ int W3DStatusCircle::Free_Map_Resources()
     return 0;
 }
 
-int W3DStatusCircle::Init_Data()
+int32_t W3DStatusCircle::Init_Data()
 {
     g_needUpdate = true;
     Free_Map_Resources();
@@ -93,7 +93,7 @@ int W3DStatusCircle::Init_Data()
     IndexBufferClass::WriteLockClass lock(m_indexBuffer, 0);
     unsigned short *indices = lock.Get_Index_Array();
 
-    for (int i = 0; i < 3 * m_numTriangles; i += 3) {
+    for (int32_t i = 0; i < 3 * m_numTriangles; i += 3) {
         indices[0] = i;
         indices[1] = i + 1;
         indices[2] = i + 2;
@@ -110,7 +110,7 @@ int W3DStatusCircle::Init_Data()
     return 0;
 }
 
-int W3DStatusCircle::Update_Circle_VB()
+int32_t W3DStatusCircle::Update_Circle_VB()
 {
     if (!m_vertexBufferCircle) {
         return -1;
@@ -121,13 +121,13 @@ int W3DStatusCircle::Update_Circle_VB()
     VertexFormatXYZDUV1 *vertices = (VertexFormatXYZDUV1 *)lock.Get_Vertex_Array();
     float z = 0.0f;
     float x = 0.02f;
-    int diffuse = g_diffuse + 0x7F000000;
-    int count = m_numTriangles;
+    int32_t diffuse = g_diffuse + 0x7F000000;
+    int32_t count = m_numTriangles;
     float angle = 0.0f;
     float delta_angle = (GAMEMATH_PI * 2) / (float)count;
 
-    for (int i = 0; i < count; i++) {
-        for (int j = 0; j < 3; j++) {
+    for (int32_t i = 0; i < count; i++) {
+        for (int32_t j = 0; j < 3; j++) {
             vertices->z = z;
 
             switch (j) {
@@ -168,7 +168,7 @@ int W3DStatusCircle::Update_Circle_VB()
     return 0;
 }
 
-int W3DStatusCircle::Update_Screen_VB(int diffuse)
+int32_t W3DStatusCircle::Update_Screen_VB(int32_t diffuse)
 {
     if (!m_vertexBufferScreen) {
         return -1;
@@ -267,8 +267,8 @@ void W3DStatusCircle::Render(RenderInfoClass &rinfo)
                 }
 
                 m.Make_Identity();
-                int fadevalue = (int)(g_theScriptEngine->Get_Fade_Value() * 255.0f);
-                int diffuse = fadevalue | (fadevalue << 8) | (fadevalue << 0x10) | 0xFF000000;
+                int32_t fadevalue = (int32_t)(g_theScriptEngine->Get_Fade_Value() * 255.0f);
+                int32_t diffuse = fadevalue | (fadevalue << 8) | (fadevalue << 0x10) | 0xFF000000;
                 Update_Screen_VB(diffuse);
 
                 DX8Wrapper::Set_Transform(D3DTS_WORLD, m);

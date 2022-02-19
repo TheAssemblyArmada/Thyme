@@ -22,7 +22,7 @@ class Vector3i
 public:
     Vector3i() {}
 
-    Vector3i(int i, int j, int k)
+    Vector3i(int32_t i, int32_t j, int32_t k)
     {
         I = i;
         J = j;
@@ -31,8 +31,8 @@ public:
 
     bool operator==(const Vector3i &v) const { return I == v.I && J == v.J && K == v.K; }
     bool operator!=(const Vector3i &v) const { return !(I == v.I && J == v.J && K == v.K); }
-    const int &operator[](int n) const { return ((int *)this)[n]; }
-    int &operator[](int n) { return ((int *)this)[n]; }
+    const int32_t &operator[](int32_t n) const { return ((int32_t *)this)[n]; }
+    int32_t &operator[](int32_t n) { return ((int32_t *)this)[n]; }
 
     int32_t I;
     int32_t J;
@@ -53,8 +53,8 @@ public:
 
     bool operator==(const Vector3i16 &v) const { return I == v.I && J == v.J && K == v.K; }
     bool operator!=(const Vector3i16 &v) const { return !(I == v.I && J == v.J && K == v.K); }
-    const unsigned short &operator[](int n) const { return ((unsigned short *)this)[n]; }
-    unsigned short &operator[](int n) { return ((unsigned short *)this)[n]; }
+    const unsigned short &operator[](int32_t n) const { return ((unsigned short *)this)[n]; }
+    unsigned short &operator[](int32_t n) { return ((unsigned short *)this)[n]; }
 
     uint16_t I;
     uint16_t J;

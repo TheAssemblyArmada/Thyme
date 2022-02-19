@@ -56,13 +56,13 @@ public:
     FontCharsClass();
     virtual ~FontCharsClass();
 
-    void Initialize_GDI_Font(const char *font_name, int point_size, bool is_bold);
-    bool Is_Font(const char *font_name, int point_size, bool is_bold);
+    void Initialize_GDI_Font(const char *font_name, int32_t point_size, bool is_bold);
+    bool Is_Font(const char *font_name, int32_t point_size, bool is_bold);
     const char *Get_Name() { return m_name; }
-    int Get_Char_Height() { return m_charHeight; }
-    int Get_Char_Width(unichar_t ch);
-    int Get_Char_Spacing(unichar_t ch);
-    void Blit_Char(unichar_t ch, uint16_t *dest_ptr, int dest_stride, int x, int y);
+    int32_t Get_Char_Height() { return m_charHeight; }
+    int32_t Get_Char_Width(unichar_t ch);
+    int32_t Get_Char_Spacing(unichar_t ch);
+    void Blit_Char(unichar_t ch, uint16_t *dest_ptr, int32_t dest_stride, int32_t x, int32_t y);
 
 #ifdef GAME_DLL
     FontCharsClass *Hook_Ctor() { return new (this) FontCharsClass; }
@@ -73,7 +73,7 @@ private:
     void Create_GDI_Font(const char *font_name);
     void Free_GDI_Font();
     const CharDataStruct *Store_GDI_Char(unichar_t ch);
-    void Update_Current_Buffer(int char_width);
+    void Update_Current_Buffer(int32_t char_width);
     const CharDataStruct *Get_Char_Data(unichar_t ch);
     void Grow_Unicode_Array(unichar_t ch);
     void Free_Character_Arrays();
@@ -82,12 +82,12 @@ private:
     FontCharsClass *m_alternateUnicodeFont;
     StringClass m_name;
     DynamicVectorClass<FontCharsBuffer *> m_bufferList;
-    int m_currPixelOffset;
-    int m_charHeight;
-    int m_ascent;
-    int m_overhang;
-    int m_widthReduction;
-    int m_pointSize;
+    int32_t m_currPixelOffset;
+    int32_t m_charHeight;
+    int32_t m_ascent;
+    int32_t m_overhang;
+    int32_t m_widthReduction;
+    int32_t m_pointSize;
     StringClass m_gdiFontName;
 #ifdef PLATFORM_WINDOWS
     HFONT m_oldGDIFont;
@@ -158,10 +158,10 @@ public:
     const RectClass &Get_Draw_Extents() { return m_drawExtents; }
     Vector2 Get_Text_Extents(const unichar_t *text);
     Vector2 Get_Formatted_Text_Extents(const unichar_t *text);
-    void Build_Sentence(const unichar_t *text, int *x = nullptr, int *y = nullptr);
+    void Build_Sentence(const unichar_t *text, int32_t *x = nullptr, int32_t *y = nullptr);
     void Draw_Sentence(uint32_t color = 0xFFFFFFFF);
-    void Set_Texture_Size_Hint(int hint) { m_textureSizeHint = hint; }
-    int Get_Texture_Size_Hint() const { return m_textureSizeHint; }
+    void Set_Texture_Size_Hint(int32_t hint) { m_textureSizeHint = hint; }
+    int32_t Get_Texture_Size_Hint() const { return m_textureSizeHint; }
     void Set_Mono_Spaced(bool onoff) { m_monoSpaced = onoff; }
 
 private:
@@ -170,9 +170,9 @@ private:
     void Record_Sentence_Chunk();
     void Allocate_New_Surface(const unichar_t *text, bool reuse_surface);
     void Release_Pending_Surfaces();
-    void Build_Sentence_Centered(const unichar_t *text, int *x = nullptr, int *y = nullptr);
+    void Build_Sentence_Centered(const unichar_t *text, int32_t *x = nullptr, int32_t *y = nullptr);
     Vector2 Build_Sentence_Not_Centered(
-        const unichar_t *text, int *x = nullptr, int *y = nullptr, bool reuse_surface = false);
+        const unichar_t *text, int32_t *x = nullptr, int32_t *y = nullptr, bool reuse_surface = false);
 
 private:
     DynamicVectorClass<SentenceDataStruct> m_sentenceData;
@@ -183,9 +183,9 @@ private:
     Vector2 m_location;
     Vector2 m_cursor;
     Vector2i m_textureOffset;
-    int m_textureStartX;
-    int m_currTextureSize;
-    int m_textureSizeHint;
+    int32_t m_textureStartX;
+    int32_t m_currTextureSize;
+    int32_t m_textureSizeHint;
     SurfaceClass *m_curSurface;
     bool m_monoSpaced;
     float m_wrapWidth;
@@ -196,7 +196,7 @@ private:
     bool m_processAmpersand;
     bool m_partialWords;
     uint16_t *m_lockedPtr;
-    int m_lockedStride;
+    int32_t m_lockedStride;
     TextureClass *m_curTexture;
     ShaderClass m_shader;
 };

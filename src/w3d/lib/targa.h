@@ -136,10 +136,10 @@ public:
     TargaImage();
     ~TargaImage();
 
-    int Open(const char *name, int mode);
+    int32_t Open(const char *name, int32_t mode);
     void Close();
-    int Load(const char *name, int flags, bool invert_image);
-    int Save(const char *name, int flags, bool add_extension);
+    int32_t Load(const char *name, int32_t flags, bool invert_image);
+    int32_t Save(const char *name, int32_t flags, bool add_extension);
     char *Set_Image(char *buffer);
     char *Get_Image() { return m_image; }
     char *Set_Palette(char *buffer);
@@ -151,21 +151,21 @@ public:
     void Toggle_Flip_Y() { m_header.image_descriptor ^= 0x20; }
     const TGAHeader &Get_Header() const { return m_header; }
 
-    static int Error_Handler(int load_err, const char *filename);
+    static int32_t Error_Handler(int32_t load_err, const char *filename);
 
 private:
-    int Load(const char *name, char *palette, char *image, bool invert_image);
-    int Decode_Image();
-    int Encode_Image();
+    int32_t Load(const char *name, char *palette, char *image, bool invert_image);
+    int32_t Decode_Image();
+    int32_t Encode_Image();
     void Invert_Image();
     void X_Flip();
     void Y_Flip();
     bool File_Open_Read(const char *name);
     bool File_Open_Write(const char *name);
     bool File_Open_ReadWrite(const char *name);
-    int File_Seek(int pos, int dir) { return m_TGAFile->Seek(pos, dir); }
-    int File_Read(void *buffer, int size) { return m_TGAFile->Read(buffer, size); }
-    int File_Write(void *buffer, int size) { return m_TGAFile->Write(buffer, size); }
+    int32_t File_Seek(int32_t pos, int32_t dir) { return m_TGAFile->Seek(pos, dir); }
+    int32_t File_Read(void *buffer, int32_t size) { return m_TGAFile->Read(buffer, size); }
+    int32_t File_Write(void *buffer, int32_t size) { return m_TGAFile->Write(buffer, size); }
 
     static void Header_To_Host(TGAHeader &header);
     static void Header_To_File(TGAHeader &header);
@@ -174,8 +174,8 @@ private:
 
     TGAHeader m_header;
     FileClass *m_TGAFile;
-    int m_access;
-    int m_flags;
+    int32_t m_access;
+    int32_t m_flags;
     char *m_image;
     char *m_palette;
     TGA2Extension m_extension;

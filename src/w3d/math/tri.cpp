@@ -14,9 +14,9 @@
  */
 #include "tri.h"
 
-void TriClass::Find_Dominant_Plane(int *axis1, int *axis2) const
+void TriClass::Find_Dominant_Plane(int32_t *axis1, int32_t *axis2) const
 {
-    int side = 0;
+    int32_t side = 0;
     float x = GameMath::Fabs(N->X);
     float y = GameMath::Fabs(N->Y);
     float z = GameMath::Fabs(N->Z);
@@ -45,14 +45,14 @@ void TriClass::Find_Dominant_Plane(int *axis1, int *axis2) const
 bool TriClass::Contains_Point(const Vector3 &ipoint) const
 {
     bool side[3];
-    int axis1;
-    int axis2;
+    int32_t axis1;
+    int32_t axis2;
     Find_Dominant_Plane(&axis1, &axis2);
     Vector2 v1;
     Vector2 v2;
 
-    for (int i = 0; i < 3; i++) {
-        int i1 = (i + 1) % 3;
+    for (int32_t i = 0; i < 3; i++) {
+        int32_t i1 = (i + 1) % 3;
         v1.Set((*V[i1])[axis1] - (*V[i])[axis1], (*V[i1])[axis2] - (*V[i])[axis2]);
         v2.Set(ipoint[axis1] - (*V[i])[axis1], ipoint[axis2] - (*V[i])[axis2]);
         side[i] = (v1.X * v2.Y - v1.Y * v2.X) >= 0.0f;

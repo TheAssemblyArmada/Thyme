@@ -16,8 +16,8 @@
 
 #include <wx/app.h>
 
-extern const int CMD_SHOW_WINDOW;
-extern const int CMD_TERMINATE;
+extern const int32_t CMD_SHOW_WINDOW;
+extern const int32_t CMD_TERMINATE;
 class DbgWinFrame;
 
 class DbgWinApp : public wxApp

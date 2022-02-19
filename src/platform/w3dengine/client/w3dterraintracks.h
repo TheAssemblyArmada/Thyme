@@ -35,11 +35,11 @@ public:
     TerrainTracksRenderObjClass();
     virtual ~TerrainTracksRenderObjClass() override {}
     virtual RenderObjClass *Clone() const override { return nullptr; }
-    virtual int Class_ID() const override { return CLASSID_TERRAINTRACKS; }
+    virtual int32_t Class_ID() const override { return CLASSID_TERRAINTRACKS; }
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    int Free_Terrain_Tracks_Resources();
+    int32_t Free_Terrain_Tracks_Resources();
     void Add_Cap_Edge_To_Track(float x, float y);
     void Add_Edge_To_Track(float x, float y);
     void Init(float width, float length, char const *texture_name);
@@ -52,20 +52,20 @@ private:
     {
         Vector3 end_point_pos[2];
         Vector2 end_point_uv[2];
-        int time_added;
+        int32_t time_added;
         float alpha;
     };
 
     TextureClass *m_stageZeroTexture;
     SphereClass m_boundingSphere;
     AABoxClass m_boundingBox;
-    int m_activeEdgeCount;
-    int m_totalEdgesAdded;
+    int32_t m_activeEdgeCount;
+    int32_t m_totalEdgesAdded;
     Drawable *m_boundDrawable;
     EdgeInfo m_edges[100];
     Vector3 m_lastAnchor;
-    int m_bottomIndex;
-    int m_topIndex;
+    int32_t m_bottomIndex;
+    int32_t m_topIndex;
     bool m_haveAnchor;
     bool m_bound;
     float m_width;
@@ -108,10 +108,10 @@ private:
     TerrainTracksRenderObjClass *m_usedModules;
     TerrainTracksRenderObjClass *m_freeModules;
     SceneClass *m_TerrainTracksScene;
-    int m_edgesToFlush;
-    int m_maxTankTrackEdges;
-    int m_maxTankTrackOpaqueEdges;
-    int m_maxTankTrackFadeDelay;
+    int32_t m_edgesToFlush;
+    int32_t m_maxTankTrackEdges;
+    int32_t m_maxTankTrackOpaqueEdges;
+    int32_t m_maxTankTrackFadeDelay;
     friend class TerrainTracksRenderObjClass;
 };
 

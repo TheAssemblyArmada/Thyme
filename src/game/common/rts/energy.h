@@ -35,13 +35,13 @@ public:
 
     void Init(Player *player);
 
-    int Get_Production() const;
+    int32_t Get_Production() const;
 
     float Get_Energy_Supply_Ratio() const;
 
     bool Has_Sufficient_Power() const;
 
-    void Adjust_Power(int amount, bool positive);
+    void Adjust_Power(int32_t amount, bool positive);
 
     void Object_Entering_Influence(Object *obj);
     void Object_Leaving_Influence(Object *obj);
@@ -49,21 +49,21 @@ public:
     void Add_Power_Bonus(Object *obj);
     void Remove_Power_Bonus(Object *obj);
 
-    void Add_Production(int amount);
-    void Add_Consumption(int amount);
+    void Add_Production(int32_t amount);
+    void Add_Consumption(int32_t amount);
 
-    int Get_Consumption() const { return m_energyConsumption; }
+    int32_t Get_Consumption() const { return m_energyConsumption; }
 
-    void Set_Frame(unsigned int frame) { m_frame = frame; }
-    unsigned int Get_Frame() const { return m_frame; }
+    void Set_Frame(uint32_t frame) { m_frame = frame; }
+    uint32_t Get_Frame() const { return m_frame; }
 
 #ifdef GAME_DLL
     Energy *Hook_Ctor() { return new (this) Energy; }
 #endif
 
 private:
-    int m_energyProduction;
-    int m_energyConsumption;
-    unsigned int m_frame;
+    int32_t m_energyProduction;
+    int32_t m_energyConsumption;
+    uint32_t m_frame;
     Player *m_player;
 };

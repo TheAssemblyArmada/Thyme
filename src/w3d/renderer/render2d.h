@@ -96,7 +96,7 @@ public:
     void Move(const Vector2 &a);
     DynamicVectorClass<uint32_t> &Get_Color_Array() { return m_colors; }
     void Force_Alpha(float alpha);
-    void Force_Color(int color);
+    void Force_Color(int32_t color);
 
     static void Set_Screen_Resolution(const RectClass &rect) { s_screenResolution = rect; }
     static RectClass Get_Screen_Resolution() { return s_screenResolution; }
@@ -116,7 +116,7 @@ protected:
     void Internal_Add_Quad_Colors(uint32_t color);
     void Internal_Add_Quad_VColors(uint32_t color1, uint32_t color2);
     void Internal_Add_Quad_HColors(uint32_t color1, uint32_t color2);
-    void Internal_Add_Quad_Indicies(int start_vert_index, bool backfaced = false);
+    void Internal_Add_Quad_Indicies(int32_t start_vert_index, bool backfaced = false);
 
 protected:
     Vector2 m_coordinateScale;

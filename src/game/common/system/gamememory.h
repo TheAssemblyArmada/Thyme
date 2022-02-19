@@ -28,14 +28,14 @@ extern bool g_theMainInitFlag;
 #endif
 
 #ifdef GAME_DEBUG
-extern int g_theLinkChecker;
+extern int32_t g_theLinkChecker;
 #endif
 
 void Init_Memory_Manager();
 void Init_Memory_Manager_Pre_Main();
 void Shutdown_Memory_Manager();
-MemoryPool *Create_Named_Pool(const char *name, int size);
-void *Allocate_From_Pool(MemoryPool *pool, int size);
+MemoryPool *Create_Named_Pool(const char *name, int32_t size);
+void *Allocate_From_Pool(MemoryPool *pool, int32_t size);
 void Free_From_Pool(MemoryPool *pool, void *memory);
 
 #ifdef GAME_DLL

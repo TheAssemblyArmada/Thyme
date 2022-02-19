@@ -68,19 +68,19 @@ struct BoxTestStruct
     Vector3 dp;
     float fraction;
     bool inside;
-    int axis;
-    int side;
+    int32_t axis;
+    int32_t side;
 };
 
 static bool Test_Aligned_Box(BoxTestStruct *test)
 {
-    int collisionSides[3];
+    int32_t collisionSides[3];
     float closestCorners[3];
     float fractions[3];
 
     bool startedBad = true;
 
-    for (int x = 0; x < 3; x++) {
+    for (int32_t x = 0; x < 3; x++) {
         if (test->p0[x] >= test->min[x]) {
             if (test->p0[x] <= test->max[x]) {
                 collisionSides[x] = BoxTestStruct::BOX_SIDE_MIDDLE;
@@ -102,7 +102,7 @@ static bool Test_Aligned_Box(BoxTestStruct *test)
         return true;
     }
 
-    for (int x = 0; x < 3; x++) {
+    for (int32_t x = 0; x < 3; x++) {
         if (collisionSides[x] == BoxTestStruct::BOX_SIDE_MIDDLE || test->dp[x] == 0.0f) {
             fractions[x] = -1.0f;
         } else {
@@ -110,9 +110,9 @@ static bool Test_Aligned_Box(BoxTestStruct *test)
         }
     }
 
-    int biggestFractionIndex = 0;
+    int32_t biggestFractionIndex = 0;
 
-    for (int x = 1; x < 3; x++) {
+    for (int32_t x = 1; x < 3; x++) {
         if (fractions[x] > fractions[biggestFractionIndex]) {
             biggestFractionIndex = x;
         }
@@ -123,7 +123,7 @@ static bool Test_Aligned_Box(BoxTestStruct *test)
     } else {
         Vector3 contactPoint;
 
-        for (int x = 0; x < 3; x++) {
+        for (int32_t x = 0; x < 3; x++) {
             if (biggestFractionIndex == x) {
                 contactPoint[x] = closestCorners[x];
             } else {

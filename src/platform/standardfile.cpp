@@ -33,9 +33,9 @@ StandardFile::~StandardFile()
     File::Close();
 }
 
-bool StandardFile::Open(const char *filename, int mode)
+bool StandardFile::Open(const char *filename, int32_t mode)
 {
-    int buffer_size;
+    int32_t buffer_size;
 
     if (!Decode_Buffered_File_Mode(mode, buffer_size)) {
         return false;
@@ -108,7 +108,7 @@ bool StandardFile::Open(const char *filename, int mode)
     return true;
 }
 
-int StandardFile::Read(void *dst, int bytes)
+int32_t StandardFile::Read(void *dst, int32_t bytes)
 {
     if (!m_access) {
         return -1;
@@ -123,7 +123,7 @@ int StandardFile::Read(void *dst, int bytes)
     return bytes;
 }
 
-int StandardFile::Write(void const *src, int bytes)
+int32_t StandardFile::Write(void const *src, int32_t bytes)
 {
     if (!m_access || src == nullptr) {
         return -1;
@@ -132,9 +132,9 @@ int StandardFile::Write(void const *src, int bytes)
     return fwrite(src, 1, bytes, m_file);
 }
 
-int StandardFile::Seek(int offset, File::SeekMode mode)
+int32_t StandardFile::Seek(int32_t offset, File::SeekMode mode)
 {
-    int fmode;
+    int32_t fmode;
     switch (mode) {
         case SeekMode::START:
             fmode = SEEK_SET;
@@ -152,11 +152,11 @@ int StandardFile::Seek(int offset, File::SeekMode mode)
     return fseek(m_file, (long)offset, fmode);
 }
 
-void StandardFile::Next_Line(char *dst, int bytes)
+void StandardFile::Next_Line(char *dst, int32_t bytes)
 {
     captainslog_trace("Seeking getting next line from StandardFile %s.", m_filename.Str());
 
-    int i;
+    int32_t i;
 
     for (i = 0; i < bytes - 1; ++i) {
         char tmp;
@@ -176,7 +176,7 @@ void StandardFile::Next_Line(char *dst, int bytes)
     }
 }
 
-bool StandardFile::Scan_Int(int &integer)
+bool StandardFile::Scan_Int(int32_t &integer)
 {
     captainslog_trace("Scanning Int from StandardFile %s.", m_filename.Str());
     char tmp;

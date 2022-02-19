@@ -34,7 +34,7 @@ public:
     {
     }
 
-    OBBoxClass(const Vector3 *points, int num_points);
+    OBBoxClass(const Vector3 *points, int32_t num_points);
 
     bool operator==(const OBBoxClass &src)
     {
@@ -46,7 +46,7 @@ public:
         return (m_center != src.m_center) || (m_extent != src.m_extent) && (m_basis == src.m_basis);
     }
 
-    void Init_From_Box_Points(Vector3 *points, int num_points);
+    void Init_From_Box_Points(Vector3 *points, int32_t num_points);
     void Init_Random(float min_extent = 0.5f, float max_extent = 1.0f);
 
     float Project_To_Axis(const Vector3 &axis) const

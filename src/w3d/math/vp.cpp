@@ -30,58 +30,58 @@ void VectorProcessorClass::Prefetch(void *address)
     // Nothing in checked binaries, if found fill it in
 }
 
-void VectorProcessorClass::TransformNoW(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int count)
+void VectorProcessorClass::TransformNoW(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = mtx.Rotate_Vector(src[i]);
     }
 }
 
-void VectorProcessorClass::Transform(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int count)
+void VectorProcessorClass::Transform(Vector3 *dst, const Vector3 *src, const Matrix3D &mtx, int32_t count)
 {
     while (count--) {
         dst[count] = mtx * src[count];
     }
 }
 
-void VectorProcessorClass::Transform(Vector4 *dst, const Vector3 *src, const Matrix4 &mtx, int count)
+void VectorProcessorClass::Transform(Vector4 *dst, const Vector3 *src, const Matrix4 &mtx, int32_t count)
 {
     while (count--) {
         dst[count] = mtx * src[count];
     }
 }
 
-void VectorProcessorClass::Copy(Vector2 *dst, const Vector2 *src, int count)
+void VectorProcessorClass::Copy(Vector2 *dst, const Vector2 *src, int32_t count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector2) * count);
     }
 }
 
-void VectorProcessorClass::Copy(unsigned *dst, const unsigned *src, int count)
+void VectorProcessorClass::Copy(unsigned *dst, const unsigned *src, int32_t count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(unsigned) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector3 *dst, const Vector3 *src, int count)
+void VectorProcessorClass::Copy(Vector3 *dst, const Vector3 *src, int32_t count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector3) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, const Vector4 *src, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector4 *src, int32_t count)
 {
     if (count > 0) {
         memcpy(dst, src, sizeof(Vector4) * count);
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, const float *srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, const float *srca, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i].X = src[i].X;
         dst[i].Y = src[i].Y;
         dst[i].Z = src[i].Z;
@@ -89,9 +89,9 @@ void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, const float *s
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, float srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, float srca, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i].X = src[i].X;
         dst[i].Y = src[i].Y;
         dst[i].Z = src[i].Z;
@@ -99,9 +99,9 @@ void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 *src, float srca, in
     }
 }
 
-void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 &src, const float *srca, int count)
+void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 &src, const float *srca, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i].X = src.X;
         dst[i].Y = src.Y;
         dst[i].Z = src.Z;
@@ -109,54 +109,54 @@ void VectorProcessorClass::Copy(Vector4 *dst, const Vector3 &src, const float *s
     }
 }
 
-void VectorProcessorClass::CopyIndexed(unsigned *dst, const unsigned *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(unsigned *dst, const unsigned *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector2 *dst, const Vector2 *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector2 *dst, const Vector2 *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector3 *dst, const Vector3 *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector3 *dst, const Vector3 *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
 // i think this is right
-void VectorProcessorClass::CopyIndexed(Vector4 *dst, const Vector4 *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(Vector4 *dst, const Vector4 *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-void VectorProcessorClass::CopyIndexed(unsigned char *dst, unsigned char *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(unsigned char *dst, unsigned char *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-void VectorProcessorClass::CopyIndexed(float *dst, float *src, const unsigned *index, int count)
+void VectorProcessorClass::CopyIndexed(float *dst, float *src, const unsigned *index, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = src[index[i]];
     }
 }
 
-void VectorProcessorClass::Clamp(Vector4 *dst, const Vector4 *src, float min, float max, int count)
+void VectorProcessorClass::Clamp(Vector4 *dst, const Vector4 *src, float min, float max, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i].X = std::clamp(src[i].X, min, max);
         dst[i].Y = std::clamp(src[i].Y, min, max);
         dst[i].Z = std::clamp(src[i].Z, min, max);
@@ -164,58 +164,58 @@ void VectorProcessorClass::Clamp(Vector4 *dst, const Vector4 *src, float min, fl
     }
 }
 
-void VectorProcessorClass::Clear(Vector3 *dst, int count)
+void VectorProcessorClass::Clear(Vector3 *dst, int32_t count)
 {
     if (count > 0) {
         memset(dst, 0, sizeof(Vector3) * count);
     }
 }
 
-void VectorProcessorClass::Normalize(Vector3 *dst, int count)
+void VectorProcessorClass::Normalize(Vector3 *dst, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i].Normalize();
     }
 }
 
 // This has a bugfix where it always set minf value only dunno what consequences fixing this could cause
-void VectorProcessorClass::MinMax(Vector3 *src, Vector3 &min, Vector3 &max, int count)
+void VectorProcessorClass::MinMax(Vector3 *src, Vector3 &min, Vector3 &max, int32_t count)
 {
     if (count > 0) {
         min = src[0];
         max = src[0];
 
-        for (int i = 1; i < count; ++i) {
+        for (int32_t i = 1; i < count; ++i) {
             min.Update_Min(src[i]);
             max.Update_Max(src[i]);
         }
     }
 }
 
-void VectorProcessorClass::MulAdd(float *dest, float multiplier, float add, int count)
+void VectorProcessorClass::MulAdd(float *dest, float multiplier, float add, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dest[i] = (dest[i] * multiplier) + add;
     }
 }
 
-void VectorProcessorClass::DotProduct(float *dst, const Vector3 &a, const Vector3 *b, int count)
+void VectorProcessorClass::DotProduct(float *dst, const Vector3 &a, const Vector3 *b, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = a * b[i];
     }
 }
 
-void VectorProcessorClass::ClampMin(float *dst, float *src, float min, int count)
+void VectorProcessorClass::ClampMin(float *dst, float *src, float min, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = GameMath::Max(src[i], min);
     }
 }
 
-void VectorProcessorClass::Power(float *dst, float *src, float pow, int count)
+void VectorProcessorClass::Power(float *dst, float *src, float pow, int32_t count)
 {
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         dst[i] = GameMath::Pow(src[i], pow);
     }
 }

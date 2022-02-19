@@ -23,17 +23,17 @@
 class IntersectionTestClass
 {
 public:
-    IntersectionTestClass(int collision_type) : m_collisionType(collision_type) {}
+    IntersectionTestClass(int32_t collision_type) : m_collisionType(collision_type) {}
     IntersectionTestClass(const IntersectionTestClass &that) : m_collisionType(that.m_collisionType) {}
 
 public:
-    int m_collisionType;
+    int32_t m_collisionType;
 };
 
 class AABoxIntersectionTestClass : public IntersectionTestClass
 {
 public:
-    AABoxIntersectionTestClass(const AABoxClass &box, int collision_type) : IntersectionTestClass(collision_type), m_box(box)
+    AABoxIntersectionTestClass(const AABoxClass &box, int32_t collision_type) : IntersectionTestClass(collision_type), m_box(box)
     {
     }
 
@@ -96,7 +96,7 @@ inline bool AABoxIntersectionTestClass::Intersect_Triangle(const TriClass &tri)
 class OBBoxIntersectionTestClass : public IntersectionTestClass
 {
 public:
-    OBBoxIntersectionTestClass(const OBBoxClass &box, int collision_type);
+    OBBoxIntersectionTestClass(const OBBoxClass &box, int32_t collision_type);
     OBBoxIntersectionTestClass(const OBBoxIntersectionTestClass &that);
     OBBoxIntersectionTestClass(const OBBoxIntersectionTestClass &that, const Matrix3D &tm);
     OBBoxIntersectionTestClass(const AABoxIntersectionTestClass &that, const Matrix3D &tm);
@@ -113,7 +113,7 @@ public:
     AABoxClass m_boundingBox;
 };
 
-inline OBBoxIntersectionTestClass::OBBoxIntersectionTestClass(const OBBoxClass &box, int collision_type) :
+inline OBBoxIntersectionTestClass::OBBoxIntersectionTestClass(const OBBoxClass &box, int32_t collision_type) :
     IntersectionTestClass(collision_type), m_box(box)
 {
     update_bounding_box();

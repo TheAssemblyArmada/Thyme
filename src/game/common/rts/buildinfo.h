@@ -66,7 +66,7 @@ private:
     unsigned m_numRebuilds;
     BuildListInfo *m_nextBuildList;
     Utf8String m_script;
-    int m_health;
+    int32_t m_health;
     bool m_whiner;
     bool m_repairable;
     bool m_sellable;
@@ -77,9 +77,9 @@ private:
     ObjectID m_objectID;
     unsigned m_objectTimestamp;
     bool m_underConstruction;
-    int m_unkArray[10];
+    int32_t m_unkArray[10];
     bool m_unkbool3;
-    int m_unkint1;
-    int m_unkint2;
+    int32_t m_unkint1;
+    int32_t m_unkint2;
     bool m_unkbool4;
 };

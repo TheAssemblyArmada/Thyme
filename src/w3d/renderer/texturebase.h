@@ -66,7 +66,7 @@ public:
     TextureBaseClass(
         unsigned width, unsigned height, MipCountType mip_count, PoolType pool, bool render_target, bool allow_reduction);
     virtual ~TextureBaseClass();
-    virtual int Get_Asset_Type() = 0;
+    virtual int32_t Get_Asset_Type() = 0;
     virtual unsigned Get_Texture_Memory_Usage() = 0;
     virtual void Init() = 0;
     virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) = 0;

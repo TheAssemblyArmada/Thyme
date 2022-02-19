@@ -55,7 +55,7 @@ void RoadType::Apply_Texture()
     DX8Wrapper::Set_Vertex_Buffer(m_vertexRoad, 0);
 }
 
-void RoadType::Load_Texture(Utf8String path, int ID)
+void RoadType::Load_Texture(Utf8String path, int32_t ID)
 {
     m_roadTexture = W3DAssetManager::Get_Instance()->Get_Texture(path, MIP_LEVELS_3);
     m_roadTexture->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_BEST);
@@ -117,7 +117,7 @@ RoadSegment::~RoadSegment()
     }
 }
 
-void RoadSegment::Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex)
+void RoadSegment::Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int32_t num_vertex)
 {
     if (m_vb != nullptr) {
         delete[] m_vb;
@@ -134,7 +134,7 @@ void RoadSegment::Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex)
             m_numVertex = num_vertex;
             memcpy(m_vb, vb, num_vertex * sizeof(VertexFormatXYZDUV1));
 
-            for (int i = 0; i < num_vertex; i++) {
+            for (int32_t i = 0; i < num_vertex; i++) {
                 pos[i].X = m_vb[i].x;
                 pos[i].Y = m_vb[i].y;
                 pos[i].Z = m_vb[i].z;
@@ -145,7 +145,7 @@ void RoadSegment::Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex)
     }
 }
 
-void RoadSegment::Set_Index_Buffer(unsigned short *ib, int num_index)
+void RoadSegment::Set_Index_Buffer(unsigned short *ib, int32_t num_index)
 {
     if (m_ib != nullptr) {
         delete[] m_ib;
@@ -163,7 +163,7 @@ void RoadSegment::Set_Index_Buffer(unsigned short *ib, int num_index)
     }
 }
 
-int RoadSegment::Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int num_to_copy)
+int32_t RoadSegment::Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int32_t num_to_copy)
 {
     if (m_vb == nullptr || num_to_copy < 1) {
         return 0;
@@ -177,7 +177,7 @@ int RoadSegment::Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int num_to_co
     return num_to_copy;
 }
 
-int RoadSegment::Get_Indices(unsigned short *destination_ib, int num_to_copy, int offset)
+int32_t RoadSegment::Get_Indices(unsigned short *destination_ib, int32_t num_to_copy, int32_t offset)
 {
     if (m_ib == nullptr || num_to_copy < 1) {
         return 0;
@@ -187,7 +187,7 @@ int RoadSegment::Get_Indices(unsigned short *destination_ib, int num_to_copy, in
         return 0;
     }
 
-    for (int i = 0; i < num_to_copy; i++) {
+    for (int32_t i = 0; i < num_to_copy; i++) {
         destination_ib[i] = offset + m_ib[i];
     }
 
@@ -196,11 +196,11 @@ int RoadSegment::Get_Indices(unsigned short *destination_ib, int num_to_copy, in
 
 void RoadSegment::Update_Seg_Lighting()
 {
-    int size = g_theTerrainRenderObject->Get_Map()->Border_Size();
+    int32_t size = g_theTerrainRenderObject->Get_Map()->Border_Size();
 
-    for (int i = 0; i < m_numVertex; i++) {
+    for (int32_t i = 0; i < m_numVertex; i++) {
         m_vb[i].diffuse = g_theTerrainRenderObject->Get_Static_Diffuse(
-                              size + (int)(m_vb[i].x / 10.0f + 0.5f), size + (int)(m_vb[i].y / 10.0f + 0.5f))
+                              size + (int32_t)(m_vb[i].x / 10.0f + 0.5f), size + (int32_t)(m_vb[i].y / 10.0f + 0.5f))
             | 0xFF000000;
     }
 }
@@ -238,11 +238,11 @@ void W3DRoadBuffer::Allocate_Road_Buffers()
     m_curNumRoadIndices = 0;
     m_roads = new RoadSegment[m_maxRoadSegments];
     m_roadTypes = new RoadType[m_maxRoadTypes];
-    int count = 0;
+    int32_t count = 0;
 
     for (TerrainRoadType *road = g_theTerrainRoads->First_Road(); road; road = g_theTerrainRoads->Next_Road(road)) {
         if (count < m_maxRoadTypes) {
-            int ID = road->Get_ID();
+            int32_t ID = road->Get_ID();
             m_roadTypes[count++].Load_Texture(road->Get_Texture(), ID);
             if (m_maxUID < ID) {
                 m_maxUID = ID;
@@ -276,7 +276,7 @@ void W3DRoadBuffer::Load_Tee(RoadSegment *road, Vector2 loc1, Vector2 loc2, bool
     Vector2 v1(loc2.X - loc1.X, loc2.Y - loc1.Y);
     Vector2 v2(-v1.Y, v1.X);
 
-    if ((float)abs((int)v1.X) >= 0.25f || (float)abs((int)v1.Y) >= 0.25f) {
+    if ((float)abs((int32_t)v1.X) >= 0.25f || (float)abs((int32_t)v1.Y) >= 0.25f) {
         v1.Normalize();
         v2.Normalize();
     } else {
@@ -316,7 +316,7 @@ void W3DRoadBuffer::Load_Roads()
 void W3DRoadBuffer::Clear_All_Roads()
 {
     if (m_roads) {
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             m_roads[i].Set_Index_Buffer(nullptr, 0);
             m_roads[i].Set_Vertex_Buffer(nullptr, 0);
         }
@@ -325,7 +325,7 @@ void W3DRoadBuffer::Clear_All_Roads()
     m_numRoads = 0;
 
     if (m_roadTypes) {
-        for (int i = 0; i < m_maxRoadTypes; i++) {
+        for (int32_t i = 0; i < m_maxRoadTypes; i++) {
             m_roadTypes[i].Set_Stacking(false);
             m_roadTypes[i].Set_Num_Vertices(0);
             m_roadTypes[i].Set_Num_Indices(0);
@@ -341,7 +341,7 @@ void W3DRoadBuffer::Set_Map(WorldHeightMap *map)
 void W3DRoadBuffer::Update_Lighting()
 {
     if (m_roads) {
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             m_roads[i].Update_Seg_Lighting();
         }
         m_dirty = true;
@@ -357,20 +357,20 @@ void W3DRoadBuffer::Draw_Roads(CameraClass *camera,
     TextureClass *cloud_texture,
     TextureClass *noise_texture,
     bool wireframe,
-    int minx,
-    int maxx,
-    int miny,
-    int maxy,
+    int32_t minx,
+    int32_t maxx,
+    int32_t miny,
+    int32_t maxy,
     RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator)
 {
     IRegion2D region;
-    region.lo.x = (int)((float)minx * 10.0f);
-    region.hi.x = (int)((float)maxx * 10.0f);
-    region.lo.y = (int)((float)miny * 10.0f);
-    region.hi.y = (int)((float)maxy * 10.0f);
-    int stacking = 0;
+    region.lo.x = (int32_t)((float)minx * 10.0f);
+    region.hi.x = (int32_t)((float)maxx * 10.0f);
+    region.lo.y = (int32_t)((float)miny * 10.0f);
+    region.hi.y = (int32_t)((float)maxy * 10.0f);
+    int32_t stacking = 0;
 
-    for (int i = 0; i < m_maxRoadTypes; i++) {
+    for (int32_t i = 0; i < m_maxRoadTypes; i++) {
         if (m_roadTypes[i].Get_Stacking() > stacking) {
             stacking = m_roadTypes[i].Get_Stacking();
         }
@@ -388,7 +388,7 @@ void W3DRoadBuffer::Draw_Roads(CameraClass *camera,
         shader = W3DShaderManager::ST_ROAD_NOISE2;
     }
 
-    int passes = W3DShaderManager::Get_Shader_Passes(shader);
+    int32_t passes = W3DShaderManager::Get_Shader_Passes(shader);
     W3DShaderManager::Set_Texture(1, cloud_texture);
     W3DShaderManager::Set_Texture(2, noise_texture);
     bool loadroads = false;
@@ -401,8 +401,8 @@ void W3DRoadBuffer::Draw_Roads(CameraClass *camera,
 
     m_dirty = false;
 
-    for (int i = 0; i <= stacking; i++) {
-        for (int j = 0; j < m_maxRoadTypes; j++) {
+    for (int32_t i = 0; i <= stacking; i++) {
+        for (int32_t j = 0; j < m_maxRoadTypes; j++) {
             if (i == m_roadTypes[j].Get_Stacking()) {
                 m_curUniqueID = m_roadTypes[j].Get_Unique_ID();
                 m_curRoadType = j;
@@ -421,7 +421,7 @@ void W3DRoadBuffer::Draw_Roads(CameraClass *camera,
                         m_roadTypes[j].Apply_Texture();
                     }
 
-                    for (int k = 0; k < passes; k++) {
+                    for (int32_t k = 0; k < passes; k++) {
                         if (!wireframe) {
                             W3DShaderManager::Set_Shader(shader, k);
                         }
@@ -461,7 +461,7 @@ bool W3DRoadBuffer::Visibility_Changed(const IRegion2D &region)
 
     bool changed = false;
 
-    for (int i = 0; i < m_numRoads; i++) {
+    for (int32_t i = 0; i < m_numRoads; i++) {
         bool visible = true;
         float scale = m_roads[i].m_scale / 2.0f;
 
@@ -526,7 +526,7 @@ void W3DRoadBuffer::Add_Map_Objects()
                 }
 
                 if (!b) {
-                    for (int i = 0; i < m_maxRoadTypes; i++) {
+                    for (int32_t i = 0; i < m_maxRoadTypes; i++) {
                         if (o->Get_Name() == m_roadTypes[i].Get_Path()) {
                             segment.m_scale = 30.0f;
                             segment.m_uniqueID = m_roadTypes[i].Get_Unique_ID();
@@ -563,9 +563,9 @@ void W3DRoadBuffer::Add_Map_Objects()
         }
     }
 
-    int count = m_numRoads;
+    int32_t count = m_numRoads;
     m_numRoads = 0;
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         RoadSegment segment(m_roads[i]);
         Add_Map_Object(&segment, false);
     }
@@ -596,7 +596,7 @@ void W3DRoadBuffer::Add_Map_Object(RoadSegment *road, bool update_the_counts)
         bool b2 = false;
         bool b3 = false;
         bool b4 = false;
-        int i;
+        int32_t i;
         for (i = 0; i < m_numRoads; i++) {
             b4 = false;
 
@@ -636,7 +636,7 @@ void W3DRoadBuffer::Add_Map_Object(RoadSegment *road, bool update_the_counts)
         }
 
         if (!b4) {
-            int ndx = i;
+            int32_t ndx = i;
 
             if (b3) {
                 ndx++;
@@ -665,16 +665,16 @@ void W3DRoadBuffer::Add_Map_Object(RoadSegment *road, bool update_the_counts)
     }
 }
 
-void W3DRoadBuffer::Check_Link_Before(int ndx)
+void W3DRoadBuffer::Check_Link_Before(int32_t ndx)
 {
     if (m_roads[ndx].m_pt2.count == 1) {
         Vector2 v1(m_roads[ndx].m_pt2.loc);
-        int i;
+        int32_t i;
 
         for (i = ndx + 1; i < m_numRoads - 1 && !(m_roads[i].m_pt1.loc != m_roads[i + 1].m_pt2.loc); i++) {
         }
 
-        int fromNdx = i + 1;
+        int32_t fromNdx = i + 1;
 
         while (fromNdx < m_numRoads) {
             if (m_roads[fromNdx].m_pt1.loc == v1) {
@@ -707,11 +707,11 @@ void W3DRoadBuffer::Check_Link_Before(int ndx)
     }
 }
 
-void W3DRoadBuffer::Check_Link_After(int ndx)
+void W3DRoadBuffer::Check_Link_After(int32_t ndx)
 {
     if (m_roads[ndx].m_pt1.count == 1 && ndx < m_numRoads - 1) {
         Vector2 v1(m_roads[ndx].m_pt1.loc);
-        int fromNdx = ndx + 1;
+        int32_t fromNdx = ndx + 1;
 
         while (fromNdx < m_numRoads && ndx < m_numRoads - 1) {
             if (m_roads[fromNdx].m_pt2.loc == v1) {
@@ -738,28 +738,28 @@ void W3DRoadBuffer::Check_Link_After(int ndx)
     }
 }
 
-void W3DRoadBuffer::Adjust_Stacking(int top_unique_id, int bottom_unique_id)
+void W3DRoadBuffer::Adjust_Stacking(int32_t top_unique_id, int32_t bottom_unique_id)
 {
-    int i;
+    int32_t i;
 
     for (i = 0; i < m_maxRoadTypes && m_roadTypes[i].Get_Unique_ID() != top_unique_id; i++) {
     }
 
     if (i < m_maxRoadTypes) {
-        int j;
+        int32_t j;
 
         for (j = 0; j < m_maxRoadTypes && m_roadTypes[j].Get_Unique_ID() != bottom_unique_id; j++) {
         }
 
         if (j < m_maxRoadTypes) {
-            int i1 = m_roadTypes[i].Get_Stacking();
+            int32_t i1 = m_roadTypes[i].Get_Stacking();
 
             if (i1 <= m_roadTypes[j].Get_Stacking()) {
-                int i2 = m_roadTypes[j].Get_Stacking();
+                int32_t i2 = m_roadTypes[j].Get_Stacking();
 
-                for (int k = 0; k < m_maxRoadTypes; k++) {
+                for (int32_t k = 0; k < m_maxRoadTypes; k++) {
                     if (m_roadTypes[k].Get_Stacking() > i2) {
-                        int i3 = m_roadTypes[k].Get_Stacking();
+                        int32_t i3 = m_roadTypes[k].Get_Stacking();
                         m_roadTypes[k].Set_Stacking(i3 + 1);
                     }
                 }
@@ -770,7 +770,7 @@ void W3DRoadBuffer::Adjust_Stacking(int top_unique_id, int bottom_unique_id)
     }
 }
 
-int xp_sign(const Vector2 &v1, const Vector2 &v2)
+int32_t xp_sign(const Vector2 &v1, const Vector2 &v2)
 {
     float f = v1.X * v2.Y - v1.Y * v2.X;
     if (f >= 0) {
@@ -785,7 +785,7 @@ void W3DRoadBuffer::Load_Alpha_Join(RoadSegment *road, Vector2 loc1, Vector2 loc
     Vector2 v1(loc2.X - loc1.X, loc2.Y - loc1.Y);
     Vector2 v2(-v1.Y, v1.X);
 
-    if ((float)abs((int)v1.X) >= 0.25f || (float)abs((int)v1.Y) >= 0.25f) {
+    if ((float)abs((int32_t)v1.X) >= 0.25f || (float)abs((int32_t)v1.Y) >= 0.25f) {
         v1.Normalize();
         v2.Normalize();
     } else {
@@ -814,7 +814,7 @@ void W3DRoadBuffer::Load_Y(RoadSegment *road, Vector2 loc1, Vector2 loc2, float 
     Vector2 v1(loc2.X - loc1.X, loc2.Y - loc1.Y);
     Vector2 v2(-v1.Y, v1.X);
 
-    if ((float)abs((int)v1.X) >= 0.25f || (float)abs((int)v1.Y) >= 0.25f) {
+    if ((float)abs((int32_t)v1.X) >= 0.25f || (float)abs((int32_t)v1.Y) >= 0.25f) {
         v1.Normalize();
         v2.Normalize();
     } else {
@@ -840,17 +840,17 @@ void W3DRoadBuffer::Load_Y(RoadSegment *road, Vector2 loc1, Vector2 loc2, float 
     Load_Float_4Pt_Section(road, loc1, v2, v1, corners, uOffset, vOffset, scale, scale);
 }
 
-void W3DRoadBuffer::Move_Road_Seg_To(int fromndx, int tondx)
+void W3DRoadBuffer::Move_Road_Seg_To(int32_t fromndx, int32_t tondx)
 {
     if (fromndx >= 0 && fromndx < m_numRoads && tondx >= 0 && tondx < m_numRoads && fromndx != tondx) {
         RoadSegment road(m_roads[fromndx]);
 
         if (fromndx >= tondx) {
-            for (int i = fromndx; i > tondx; i--) {
+            for (int32_t i = fromndx; i > tondx; i--) {
                 m_roads[i] = m_roads[i - 1];
             }
         } else {
-            for (int i = fromndx; i < tondx; i++) {
+            for (int32_t i = fromndx; i < tondx; i++) {
                 m_roads[i] = m_roads[i + 1];
             }
         }
@@ -861,8 +861,8 @@ void W3DRoadBuffer::Move_Road_Seg_To(int fromndx, int tondx)
 
 void W3DRoadBuffer::Insert_Tee_Intersections()
 {
-    int count = m_numRoads;
-    for (int i = 0; i < count; i++) {
+    int32_t count = m_numRoads;
+    for (int32_t i = 0; i < count; i++) {
         if (m_roads[i].m_type == SEGMENT) {
             if (m_roads[i].m_pt1.count == 2) {
                 Insert_Tee(m_roads[i].m_pt1.loc, i, m_roads[i].m_scale);
@@ -885,10 +885,10 @@ void W3DRoadBuffer::Insert_Tee_Intersections()
 
 void W3DRoadBuffer::Insert_Curve_Segments()
 {
-    int count = m_numRoads;
-    int ndx2 = -1;
+    int32_t count = m_numRoads;
+    int32_t ndx2 = -1;
 
-    for (int ndx1 = 0; ndx1 < count; ndx1++) {
+    for (int32_t ndx1 = 0; ndx1 < count; ndx1++) {
         if (ndx1 < count - 1 && m_roads[ndx1].m_pt1.loc == m_roads[ndx1 + 1].m_pt2.loc) {
             if (m_roads[ndx1 + 1].m_pt2.count == 1 && m_roads[ndx1].m_pt1.count == 1) {
                 Insert_Curve_Segment_At(ndx1, ndx1 + 1);
@@ -923,8 +923,8 @@ void W3DRoadBuffer::Load_Roads_In_Vertex_And_Index_Buffers()
             VertexFormatXYZDUV1 *vb = (VertexFormatXYZDUV1 *)vblock.Get_Vertex_Array();
             unsigned short *ib = iblock.Get_Index_Array();
 
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < m_numRoads; j++) {
+            for (int32_t i = 0; i < 8; i++) {
+                for (int32_t j = 0; j < m_numRoads; j++) {
                     if (m_roads[j].m_type == i) {
                         Load_Road_Segment(ib, vb, &m_roads[j]);
                     }
@@ -946,7 +946,7 @@ void W3DRoadBuffer::Load_Road_Segment(unsigned short *ib, VertexFormatXYZDUV1 *v
 {
     if (road->m_uniqueID == m_curUniqueID) {
         if (road->m_isVisible) {
-            int count = m_curNumRoadVertices;
+            int32_t count = m_curNumRoadVertices;
             if (road->Get_Num_Vertex() + count < m_maxRoadVertex
                 && road->Get_Num_Index() + m_curNumRoadIndices < m_maxRoadIndex) {
                 m_curNumRoadVertices += road->Get_Vertices(&vb[count], road->Get_Num_Vertex());
@@ -959,25 +959,25 @@ void W3DRoadBuffer::Load_Road_Segment(unsigned short *ib, VertexFormatXYZDUV1 *v
 void W3DRoadBuffer::Preload_Roads_In_Vertex_And_Index_Buffers()
 {
     if (m_initialized) {
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == SEGMENT) {
                 Preload_Road_Segment(&m_roads[i]);
             }
         }
 
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == CURVE) {
                 Load_Curve(&m_roads[i], m_roads[i].m_pt1.loc, m_roads[i].m_pt2.loc, m_roads[i].m_scale);
             }
         }
 
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == THREE_WAY_Y) {
                 Load_Y(&m_roads[i], m_roads[i].m_pt1.loc, m_roads[i].m_pt2.loc, m_roads[i].m_scale);
             }
         }
 
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == THREE_WAY_H || m_roads[i].m_type == THREE_WAY_H_FLIP) {
                 Load_H(&m_roads[i],
                     m_roads[i].m_pt1.loc,
@@ -987,7 +987,7 @@ void W3DRoadBuffer::Preload_Roads_In_Vertex_And_Index_Buffers()
             }
         }
 
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == TEE || m_roads[i].m_type == FOUR_WAY) {
                 Load_Tee(&m_roads[i],
                     m_roads[i].m_pt1.loc,
@@ -997,7 +997,7 @@ void W3DRoadBuffer::Preload_Roads_In_Vertex_And_Index_Buffers()
             }
         }
 
-        for (int i = 0; i < m_numRoads; i++) {
+        for (int32_t i = 0; i < m_numRoads; i++) {
             if (m_roads[i].m_type == ALPHA_JOIN) {
                 Load_Alpha_Join(&m_roads[i], m_roads[i].m_pt1.loc, m_roads[i].m_pt2.loc, m_roads[i].m_scale);
             }
@@ -1038,17 +1038,17 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
         bool collapsed;
         bool deleted;
         Vector3 vtx[100];
-        int diffuse_red;
+        int32_t diffuse_red;
         bool light_gradient;
-        int vertex_index[100];
+        int32_t vertex_index[100];
         float u_index;
     };
     VertexFormatXYZDUV1 vb[MAX_SEG_VERTEX];
     unsigned short ib[MAX_SEG_INDEX];
     float f1 = 0.078125f;
     float f2 = 0.6875f;
-    int numVertex = 0;
-    int numIndex = 0;
+    int32_t numVertex = 0;
+    int32_t numIndex = 0;
     TRoadSegInfo segment;
     segment.loc = loc;
     segment.road_normal = road_normal;
@@ -1066,13 +1066,13 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
     road_normal.Normalize();
     road_vector.Normalize();
     Vector2 v1;
-    int i1 = (int)(f3 / 10.0f + 1.0f);
+    int32_t i1 = (int32_t)(f3 / 10.0f + 1.0f);
 
     if (i1 < 2) {
         i1 = 2;
     }
 
-    int i2 = (int)(2.0f * f4 / 10.0f + 1.0f);
+    int32_t i2 = (int32_t)(2.0f * f4 / 10.0f + 1.0f);
 
     if (i2 < 2) {
         i2 = 2;
@@ -1106,7 +1106,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
     Vector3 v13 = v10 - v12;
     v7 += v13;
 
-    for (int i = 0; i <= i1; i++) {
+    for (int32_t i = 0; i <= i1; i++) {
         float f5 = (float)i / (float)(i1 - 1);
         float f6 = 1.0f - f5;
 
@@ -1118,7 +1118,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
             float f7 = (float)WorldHeightMap::Get_Max_Height_Value() * 0.625f;
             float f8 = (float)WorldHeightMap::Get_Min_Height_Value() * 0.625f;
 
-            for (int j = 0; j < i2; j++) {
+            for (int32_t j = 0; j < i2; j++) {
                 float f9 = (float)j / (float)(i2 - 1);
                 float f10 = 1.0f - f9;
                 Vector3 v14 = v12 * f5;
@@ -1146,7 +1146,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
 
                 column3.vertex_index[j] = -1;
                 column3.vtx[j].Z = height;
-                int i3 = 0;
+                int32_t i3 = 0;
 
                 if (j) {
                     if (abs((unsigned char)i3 - column3.diffuse_red) > 25) {
@@ -1193,7 +1193,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
         }
 
         if (!column2.deleted && i != 1) {
-            for (int j = 0; j < i2; j++) {
+            for (int32_t j = 0; j < i2; j++) {
                 if (numVertex >= 2000) {
                     break;
                 }
@@ -1225,8 +1225,8 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
                     column1 = column2;
                 }
             } else {
-                int i4 = 0;
-                int i5 = 0;
+                int32_t i4 = 0;
+                int32_t i5 = 0;
 
                 while (i4 < i2 - 1) {
                     if (i5 >= i2 - 1) {
@@ -1250,7 +1250,7 @@ void W3DRoadBuffer::Load_Float_4Pt_Section(RoadSegment *road,
                     }
 
                     if (!i4 || !column2.collapsed) {
-                        int i6 = 1;
+                        int32_t i6 = 1;
 
                         if (column2.collapsed) {
                             if (!column1.collapsed) {
@@ -1300,7 +1300,7 @@ void W3DRoadBuffer::Load_H(RoadSegment *road, Vector2 loc1, Vector2 loc2, bool f
     Vector2 v1(loc2.X - loc1.X, loc2.Y - loc1.Y);
     Vector2 v2(-v1.Y, v1.X);
 
-    if ((float)abs((int)v1.X) >= 0.25f || (float)abs((int)v1.Y) >= 0.25f) {
+    if ((float)abs((int32_t)v1.X) >= 0.25f || (float)abs((int32_t)v1.Y) >= 0.25f) {
         v1.Normalize();
         v2.Normalize();
     } else {
@@ -1400,7 +1400,7 @@ void W3DRoadBuffer::Load_Curve(RoadSegment *road, Vector2 loc1, Vector2 loc2, fl
     v1.Normalize();
     v1 *= scale;
     v2.Normalize();
-    v2 *= (float)abs((int)(scale * road->m_widthInTexture / 2.0f));
+    v2 *= (float)abs((int32_t)(scale * road->m_widthInTexture / 2.0f));
     Vector2 corners[4];
     corners[0] = loc1 - v2;
     corners[1] = corners[0];
@@ -1458,7 +1458,7 @@ void W3DRoadBuffer::Update_Counts(RoadSegment *road)
     v1 = road->m_pt1.loc;
     v2 = road->m_pt2.loc;
 
-    for (int i = 0; i < m_numRoads; i++) {
+    for (int32_t i = 0; i < m_numRoads; i++) {
         if (m_roads[i].m_uniqueID == road->m_uniqueID) {
             if (m_roads[i].m_pt1.loc == v1) {
                 m_roads[i].m_pt1.count++;
@@ -1491,20 +1491,20 @@ void W3DRoadBuffer::Update_Counts(RoadSegment *road)
 
 void W3DRoadBuffer::Update_Counts_And_Flags()
 {
-    for (int i = 0; i < m_numRoads; i++) {
+    for (int32_t i = 0; i < m_numRoads; i++) {
         m_roads[i].m_pt1.last = true;
         m_roads[i].m_pt2.last = true;
         m_roads[i].m_pt1.count = 0;
         m_roads[i].m_pt2.count = 0;
     }
 
-    for (int i = m_numRoads - 1; i > 0; i--) {
+    for (int32_t i = m_numRoads - 1; i > 0; i--) {
         Vector2 v1;
         Vector2 v2;
         v1 = m_roads[i].m_pt1.loc;
         v2 = m_roads[i].m_pt2.loc;
 
-        for (int j = 0; j < i; j++) {
+        for (int32_t j = 0; j < i; j++) {
             if (m_roads[j].m_uniqueID == m_roads[i].m_uniqueID) {
                 if (m_roads[j].m_pt1.loc == v1) {
                     m_roads[j].m_pt1.last = false;
@@ -1534,11 +1534,11 @@ void W3DRoadBuffer::Update_Counts_And_Flags()
     }
 }
 
-int W3DRoadBuffer::Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector, int unique_id)
+int32_t W3DRoadBuffer::Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector, int32_t unique_id)
 {
     Vector2 v1 = *join_vector;
-    int count = m_numRoads;
-    for (int i = 0; i < count; i++) {
+    int32_t count = m_numRoads;
+    for (int32_t i = 0; i < count; i++) {
         if (m_roads[i].m_uniqueID != unique_id && m_roads[i].m_type == SEGMENT) {
             Vector2 v2;
             Vector2 v3;
@@ -1595,8 +1595,8 @@ int W3DRoadBuffer::Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector
 
 void W3DRoadBuffer::Insert_Cross_Type_Joins()
 {
-    int count = m_numRoads;
-    for (int i = 0; i < count; i++) {
+    int32_t count = m_numRoads;
+    for (int32_t i = 0; i < count; i++) {
         Vector2 v1;
         Vector2 v2;
         bool b = false;
@@ -1617,7 +1617,7 @@ void W3DRoadBuffer::Insert_Cross_Type_Joins()
         Vector2 v4(v2.X - v1.X, v2.Y - v1.Y);
         v4.Normalize();
         v3 = v4;
-        int bottomUniqueID = Find_Cross_Type_Join_Vector(v1, &v3, m_roads[i].m_uniqueID);
+        int32_t bottomUniqueID = Find_Cross_Type_Join_Vector(v1, &v3, m_roads[i].m_uniqueID);
 
         if (!bottomUniqueID) {
             v3 *= 100.0f;
@@ -1698,7 +1698,7 @@ void W3DRoadBuffer::Insert_Cross_Type_Joins()
     }
 }
 
-void W3DRoadBuffer::Miter(int ndx1, int ndx2)
+void W3DRoadBuffer::Miter(int32_t ndx1, int32_t ndx2)
 {
     LineSegClass line1(Vector3(m_roads[ndx1].m_pt1.top.X, m_roads[ndx1].m_pt1.top.Y, 0.0f),
         Vector3(m_roads[ndx1].m_pt2.top.X, m_roads[ndx1].m_pt2.top.Y, 0.0f));
@@ -1728,7 +1728,7 @@ void W3DRoadBuffer::Miter(int ndx1, int ndx2)
     }
 }
 
-void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
+void W3DRoadBuffer::Insert_Tee(Vector2 loc, int32_t index1, float scale)
 {
     if (!Insert_Y(loc, index1, scale)) {
         TRoadPt *pt1 = nullptr;
@@ -1746,10 +1746,10 @@ void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
             pt4 = &m_roads[index1].m_pt2;
         }
 
-        int i1 = 0;
-        int i2 = 0;
+        int32_t i1 = 0;
+        int32_t i2 = 0;
 
-        for (int i = index1 + 1; i < m_numRoads; i++) {
+        for (int32_t i = index1 + 1; i < m_numRoads; i++) {
             if (m_roads[i].m_pt1.loc == loc) {
                 m_roads[i].m_pt1.count = -2;
 
@@ -1925,7 +1925,7 @@ void W3DRoadBuffer::Insert_Tee(Vector2 loc, int index1, float scale)
     }
 }
 
-bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
+bool W3DRoadBuffer::Insert_Y(Vector2 loc, int32_t index1, float scale)
 {
     TRoadPt *pt1 = nullptr;
     TRoadPt *pt2 = nullptr;
@@ -1942,10 +1942,10 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         pt4 = &m_roads[index1].m_pt2;
     }
 
-    int i1;
-    int i2;
+    int32_t i1;
+    int32_t i2;
 
-    for (int i = index1 + 1; i < m_numRoads; i++) {
+    for (int32_t i = index1 + 1; i < m_numRoads; i++) {
         if (m_roads[i].m_pt1.loc == loc) {
             m_roads[i].m_pt1.count = -2;
 
@@ -2007,9 +2007,9 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
         return false;
     }
 
-    int i3 = 0;
-    int i4 = xp_sign(v1, v2);
-    int i5 = xp_sign(v1, v3);
+    int32_t i3 = 0;
+    int32_t i4 = xp_sign(v1, v2);
+    int32_t i5 = xp_sign(v1, v3);
 
     if (i4 != i5 && !(i5 + i4)) {
         Vector2 v4(-v1.Y, v1.X);
@@ -2126,7 +2126,7 @@ bool W3DRoadBuffer::Insert_Y(Vector2 loc, int index1, float scale)
     return true;
 }
 
-void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
+void W3DRoadBuffer::Insert_4Way(Vector2 loc, int32_t index1, float scale)
 {
 
     TRoadPt *pr1 = nullptr;
@@ -2147,7 +2147,7 @@ void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
         pc1 = &m_roads[index1].m_pt2;
     }
 
-    for (int i = index1 + 1; i < m_numRoads; i++) {
+    for (int32_t i = index1 + 1; i < m_numRoads; i++) {
         if (m_roads[i].m_pt1.loc == loc) {
             m_roads[i].m_pt1.count = -2;
 
@@ -2196,7 +2196,7 @@ void W3DRoadBuffer::Insert_4Way(Vector2 loc, int index1, float scale)
                 float dot23 = Vector2::Dot_Product(v2, v3);
                 float dot24 = Vector2::Dot_Product(v2, v4);
                 float dot34 = Vector2::Dot_Product(v3, v4);
-                int dp = 12;
+                int32_t dp = 12;
                 float dot = dot12;
 
                 if (dot13 < dot12) {
@@ -2537,7 +2537,7 @@ void W3DRoadBuffer::Offset_H(TRoadPt *pc1,
     }
 }
 
-void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
+void W3DRoadBuffer::Insert_Curve_Segment_At(int32_t ndx1, int32_t ndx2)
 {
     float f1 = m_roads[ndx1].m_curveRadius * m_roads[ndx1].m_scale;
     Vector2 v1(m_roads[ndx1].m_pt1.loc);
@@ -2641,7 +2641,7 @@ void W3DRoadBuffer::Insert_Curve_Segment_At(int ndx1, int ndx2)
             m_numRoads++;
 
             if (f4 > 2.0f) {
-                for (int i = 2; (float)i < f4; i++) {
+                for (int32_t i = 2; (float)i < f4; i++) {
                     v8.Rotate(angle);
                     Rotate_About(&v6, v9, angle);
                     v7 = v6 + v8;

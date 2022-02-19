@@ -30,7 +30,7 @@ public:
     virtual void Update() override {}
 
     // LocalFileSystem interface implementations.
-    virtual File *Open_File(const char *filename, int mode) override;
+    virtual File *Open_File(const char *filename, int32_t mode) override;
     virtual bool Does_File_Exist(const char *filename) override;
     virtual void Get_File_List_From_Dir(Utf8String const &subdir,
         Utf8String const &dirpath,

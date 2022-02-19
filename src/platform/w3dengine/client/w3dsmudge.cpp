@@ -64,9 +64,9 @@ void W3DSmudgeManager::Re_Acquire_Resources()
 
     IndexBufferClass::WriteLockClass lock(m_indexBuffer, 0);
     unsigned short *indices = lock.Get_Index_Array();
-    int index = 0;
+    int32_t index = 0;
 
-    for (int i = 0; i < NUM_SMUDGES; i++) {
+    for (int32_t i = 0; i < NUM_SMUDGES; i++) {
         indices[0] = index;
         indices[1] = index + 4;
         indices[2] = index + 3;
@@ -85,12 +85,12 @@ void W3DSmudgeManager::Re_Acquire_Resources()
 #endif
 }
 
-int Copy_Rect(unsigned char *dest_buffer, int size, int x, int y, int width, int height)
+int32_t Copy_Rect(unsigned char *dest_buffer, int32_t size, int32_t x, int32_t y, int32_t width, int32_t height)
 {
 #ifdef BUILD_WITH_D3D8
     IDirect3DSurface8 *source = nullptr;
     IDirect3DSurface8 *dest = nullptr;
-    int ret_size = 0;
+    int32_t ret_size = 0;
     IDirect3DDevice8 *device = DX8Wrapper::Get_D3D_Device8();
 
     if (device != nullptr) {
@@ -122,7 +122,7 @@ int Copy_Rect(unsigned char *dest_buffer, int size, int x, int y, int width, int
                     if (SUCCEEDED(res)) {
                         dest->GetDesc(&desc);
 
-                        if (desc.Size < (unsigned int)size) {
+                        if (desc.Size < (uint32_t)size) {
                             size = desc.Size;
                         }
 
@@ -208,7 +208,7 @@ bool W3DSmudgeManager::Test_Hardware_Support()
         device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (char *)vertices, sizeof(HardwareTestVertex));
         unsigned char dest[256];
         memset(dest, 0, sizeof(dest));
-        unsigned int size = Copy_Rect(dest, 256, 0, 0, 8, 8);
+        uint32_t size = Copy_Rect(dest, 256, 0, 0, 8, 8);
 
         if (!size) {
             m_hardwareTestResult = HARDWARE_TEST_FAIL;
@@ -257,7 +257,7 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
         };
         static_assert(ARRAY_SIZE(v3) <= ARRAY_SIZE(Smudge::m_smudgeStructs));
 
-        unsigned int color[SMUDGE_VERTEX_COUNT] = { 0xFFEEDD, 0xFFEEDD, 0xFFEEDD, 0xFFEEDD, 0xFFEEDD };
+        uint32_t color[SMUDGE_VERTEX_COUNT] = { 0xFFEEDD, 0xFFEEDD, 0xFFEEDD, 0xFFEEDD, 0xFFEEDD };
         Matrix4 m1;
         Matrix3D m2;
         camera.Get_View_Matrix(&m2);
@@ -268,14 +268,14 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
             if (W3DShaderManager::Get_Render_To_Texture()) {
                 D3DSURFACE_DESC desc;
                 texture->GetLevelDesc(0, &desc);
-                int width = desc.Width;
-                int height = desc.Height;
+                int32_t width = desc.Width;
+                int32_t height = desc.Height;
                 float f1 = (float)g_theTacticalView->Get_Width() / (float)width;
                 float f2 = (float)g_theTacticalView->Get_Height() / (float)height;
                 float f3 = f1 * 0.5f;
                 float f4 = f2 * 0.5f;
                 SmudgeSet *set = m_smudgeList.Head();
-                int count = 0;
+                int32_t count = 0;
 
                 if (set != nullptr) {
                     SortingRendererClass::Flush();
@@ -288,7 +288,7 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
                         Matrix3D::Transform_Vector(m2, smudge->m_smudgePos, &v1);
                         smudge->m_smudgeStructs[4].m_position = v1;
 
-                        for (int i = 0; i < ARRAY_SIZE(v3); i++) {
+                        for (int32_t i = 0; i < ARRAY_SIZE(v3); i++) {
                             smudge->m_smudgeStructs[i].m_position = v1 + (v3[i] * smudge->m_smudgeSize);
                             v2 = m1 * smudge->m_smudgeStructs[i].m_position;
                             v2 *= 1.0f / v2.W;
@@ -341,7 +341,7 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
 
                     DX8Wrapper::Apply_Render_State_Changes();
                     DX8Wrapper::Set_DX8_Texture_Stage_State(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-                    int count2 = count;
+                    int32_t count2 = count;
 
                     set = m_smudgeList.Head();
                     Smudge *smudge = set->Get_Smudge_List().Head();
@@ -353,7 +353,7 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
                             count = NUM_SMUDGES;
                         }
 
-                        int count3 = 0;
+                        int32_t count3 = 0;
                         DynamicVBAccessClass vb(
                             VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, DX8_FVF_XYZNDUV2, SMUDGE_VERTEX_COUNT * count);
 
@@ -370,9 +370,9 @@ void W3DSmudgeManager::Render(RenderInfoClass &rinfo)
                                         goto done;
                                     }
 
-                                    color[4] = ((unsigned int)(s->m_smudgeAlpha * 255.0f) << 24) | 0xFFEEDD;
+                                    color[4] = ((uint32_t)(s->m_smudgeAlpha * 255.0f) << 24) | 0xFFEEDD;
 
-                                    for (int k = 0; k < SMUDGE_VERTEX_COUNT; k++) {
+                                    for (int32_t k = 0; k < SMUDGE_VERTEX_COUNT; k++) {
                                         vertices->x = c->m_position.X;
                                         vertices->y = c->m_position.Y;
                                         vertices->z = c->m_position.Z;

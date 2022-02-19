@@ -26,7 +26,7 @@ class LocalFileSystem : public SubsystemInterface
 public:
     virtual ~LocalFileSystem() {}
 
-    virtual File *Open_File(const char *filename, int mode) = 0;
+    virtual File *Open_File(const char *filename, int32_t mode) = 0;
     virtual bool Does_File_Exist(const char *filename) = 0;
     virtual void Get_File_List_From_Dir(Utf8String const &subdir,
         Utf8String const &dirpath,

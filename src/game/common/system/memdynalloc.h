@@ -29,15 +29,15 @@ class DynamicMemoryAllocator
 
 public:
     DynamicMemoryAllocator();
-    void Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params);
+    void Init(MemoryPoolFactory *factory, int32_t subpools, PoolInitRec const *const params);
     ~DynamicMemoryAllocator();
-    MemoryPool *Find_Pool_For_Size(int size);
+    MemoryPool *Find_Pool_For_Size(int32_t size);
     void Add_To_List(DynamicMemoryAllocator **head);
     void Remove_From_List(DynamicMemoryAllocator **head);
-    void *Allocate_Bytes_No_Zero(int bytes);
-    void *Allocate_Bytes(int bytes);
+    void *Allocate_Bytes_No_Zero(int32_t bytes);
+    void *Allocate_Bytes(int32_t bytes);
     void Free_Bytes(void *block);
-    int Get_Actual_Allocation_Size(int bytes);
+    int32_t Get_Actual_Allocation_Size(int32_t bytes);
     void Reset();
 
     void *operator new(size_t size) { return Raw_Allocate_No_Zero(size); }
@@ -46,8 +46,8 @@ public:
 private:
     MemoryPoolFactory *m_factory;
     DynamicMemoryAllocator *m_nextDmaInFactory;
-    int m_poolCount;
-    int m_usedBlocksInDma;
+    int32_t m_poolCount;
+    int32_t m_usedBlocksInDma;
     MemoryPool *m_pools[8];
     MemoryPoolSingleBlock *m_rawBlocks;
 };

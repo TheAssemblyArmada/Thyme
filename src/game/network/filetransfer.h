@@ -30,4 +30,4 @@ Utf8String Get_Solo_INI_From_Map(Utf8String path);
 Utf8String Get_Asset_Usage_From_Map(Utf8String path);
 Utf8String Get_Readme_From_Map(Utf8String path);
 bool Do_Any_File_Transfers(GameInfo *gameinfo);
-bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int unkbool);
+bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int32_t unkbool);

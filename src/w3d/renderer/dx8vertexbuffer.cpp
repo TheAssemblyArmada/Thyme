@@ -19,9 +19,9 @@
 #include "w3d.h"
 
 FVFInfoClass g_dynamicFVFInfo(DX8_FVF_XYZNDUV2, 0);
-unsigned int g_vertexBufferCount;
-unsigned int g_vertexBufferTotalVertices;
-unsigned int g_vertexBufferTotalSize;
+uint32_t g_vertexBufferCount;
+uint32_t g_vertexBufferTotalVertices;
+uint32_t g_vertexBufferTotalSize;
 bool g_dynamicSortingVertexArrayInUse;
 SortingVertexBufferClass *g_dynamicSortingVertexArray;
 unsigned short g_dynamicSortingVertexArraySize;
@@ -32,7 +32,7 @@ unsigned short g_dynamicDX8VertexBufferSize = 5000;
 unsigned short g_dynamicDX8VertexBufferOffset;
 
 VertexBufferClass::VertexBufferClass(
-    unsigned int type_, unsigned int fvf, unsigned short vertex_count_, unsigned int vertex_size) :
+    uint32_t type_, uint32_t fvf, unsigned short vertex_count_, uint32_t vertex_size) :
     m_type(type_), m_vertexCount(vertex_count_), m_engineRefs(0)
 {
     captainslog_assert(m_vertexCount);
@@ -55,17 +55,17 @@ VertexBufferClass::~VertexBufferClass()
     }
 }
 
-unsigned int VertexBufferClass::Get_Total_Buffer_Count()
+uint32_t VertexBufferClass::Get_Total_Buffer_Count()
 {
     return g_vertexBufferCount;
 }
 
-unsigned int VertexBufferClass::Get_Total_Allocated_Indices()
+uint32_t VertexBufferClass::Get_Total_Allocated_Indices()
 {
     return g_vertexBufferTotalVertices;
 }
 
-unsigned int VertexBufferClass::Get_Total_Allocated_Memory()
+uint32_t VertexBufferClass::Get_Total_Allocated_Memory()
 {
     return g_vertexBufferTotalSize;
 }
@@ -81,7 +81,7 @@ void VertexBufferClass::Release_Engine_Ref()
     captainslog_assert(m_engineRefs >= 0);
 }
 
-VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buffer, int flags) :
+VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buffer, int32_t flags) :
     VertexBufferLockClass(vertex_buffer)
 {
     captainslog_assert(vertex_buffer);
@@ -127,7 +127,7 @@ VertexBufferClass::WriteLockClass::~WriteLockClass()
 }
 
 VertexBufferClass::AppendLockClass::AppendLockClass(
-    VertexBufferClass *vertex_buffer, unsigned int start_index, unsigned int index_range) :
+    VertexBufferClass *vertex_buffer, uint32_t start_index, uint32_t index_range) :
     VertexBufferLockClass(vertex_buffer)
 {
     captainslog_assert(vertex_buffer);
@@ -188,7 +188,7 @@ SortingVertexBufferClass::~SortingVertexBufferClass()
 }
 
 DX8VertexBufferClass::DX8VertexBufferClass(
-    unsigned int fvf, unsigned short vertex_count_, UsageType usage, unsigned int flags) :
+    uint32_t fvf, unsigned short vertex_count_, UsageType usage, uint32_t flags) :
     VertexBufferClass(BUFFER_TYPE_DX8, fvf, vertex_count_, flags)
 #ifdef BUILD_WITH_D3D8
     ,
@@ -209,7 +209,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(!m_vertexBuffer);
-    int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
+    int32_t d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
     if (!DX8Wrapper::Get_Current_Caps()->Use_TnL()) {
@@ -240,7 +240,7 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 #endif
 }
 
-DynamicVBAccessClass::DynamicVBAccessClass(unsigned int t, unsigned int fvf, unsigned short vertex_count_) :
+DynamicVBAccessClass::DynamicVBAccessClass(uint32_t t, uint32_t fvf, unsigned short vertex_count_) :
     m_type(t), m_fvfInfo(g_dynamicFVFInfo), m_vertexCount(vertex_count_), m_vertexBuffer(nullptr)
 {
     captainslog_assert(fvf == dynamic_fvf_type);
@@ -324,7 +324,7 @@ void DynamicVBAccessClass::Allocate_Sorting_Dynamic_Buffer()
 {
     captainslog_assert(!g_dynamicSortingVertexArrayInUse);
     g_dynamicSortingVertexArrayInUse = true;
-    int new_vertex_count = g_dynamicSortingVertexArrayOffset + m_vertexCount;
+    int32_t new_vertex_count = g_dynamicSortingVertexArrayOffset + m_vertexCount;
     captainslog_assert(new_vertex_count < 65536);
 
     if (new_vertex_count > g_dynamicSortingVertexArraySize) {
@@ -399,10 +399,10 @@ unsigned short DynamicVBAccessClass::Get_Default_Vertex_Count()
 // *diffuse, Vector2 *tex_coords, unsigned short VertexCount, UsageType usage)
 // DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector4 *diffuse, Vector2 *tex_coords, unsigned short
 // VertexCount, UsageType usage) DX8VertexBufferClass::DX8VertexBufferClass(Vector3 *vertices, Vector2 *tex_coords, unsigned
-// short VertexCount, UsageType usage) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, unsigned int
-// first_vertex, unsigned int count) void DX8VertexBufferClass::Copy(Vector3 *loc, unsigned int first_vertex, unsigned int
-// count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, unsigned int first_vertex, unsigned int count) void
-// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, unsigned int first_vertex, unsigned int count) void
-// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex, unsigned
-// int count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, unsigned int first_vertex,
-// unsigned int count)
+// short VertexCount, UsageType usage) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, uint32_t
+// first_vertex, uint32_t count) void DX8VertexBufferClass::Copy(Vector3 *loc, uint32_t first_vertex, uint32_t
+// count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, uint32_t first_vertex, uint32_t count) void
+// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, uint32_t first_vertex, uint32_t count) void
+// DX8VertexBufferClass::Copy(Vector3 *loc, Vector3 *norm, Vector2 *uv, Vector4 *diffuse, uint32_t first_vertex, unsigned
+// int32_t count) void DX8VertexBufferClass::Copy(Vector3 *loc, Vector2 *uv, Vector4 *diffuse, uint32_t first_vertex,
+// uint32_t count)

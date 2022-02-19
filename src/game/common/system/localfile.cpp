@@ -16,11 +16,11 @@
 #include "ramfile.h"
 #include <captainslog.h>
 
-int LocalFile::s_totalOpen = 0;
+int32_t LocalFile::s_totalOpen = 0;
 
 void *LocalFile::Read_All_And_Close()
 {
-    int size = Size();
+    int32_t size = Size();
     uint8_t *data;
 
     if (size > 0) {

@@ -34,7 +34,7 @@ class Utf16String
 {
 public:
     using value_type = unichar_t;
-    using size_type = int;
+    using size_type = int32_t;
     using difference_type = std::ptrdiff_t;
     using reference = value_type &;
     using const_reference = const value_type &;

@@ -40,16 +40,16 @@ union ArgumentType
 {
     ArgumentType() {}
 
-    int integer;
+    int32_t integer;
     float real;
     bool boolean;
-    unsigned int objectID;
-    unsigned int drawableID;
-    unsigned int teamID;
+    uint32_t objectID;
+    uint32_t drawableID;
+    uint32_t teamID;
     Coord3D position;
     ICoord2D pixel;
     IRegion2D region;
-    unsigned int timestamp;
+    uint32_t timestamp;
     wchar_t widechar;
 };
 
@@ -356,21 +356,21 @@ public:
     GameMessage(MessageType type);
 
     GameMessageArgument *Allocate_Arg();
-    ArgumentType *Get_Argument(int arg);
-    int Get_Argument_Count() { return m_argCount; }
-    ArgumentDataType Get_Argument_Type(int arg);
+    ArgumentType *Get_Argument(int32_t arg);
+    int32_t Get_Argument_Count() { return m_argCount; }
+    ArgumentDataType Get_Argument_Type(int32_t arg);
     Utf8String Get_Command_As_Ascii(MessageType command);
 
-    void Append_Int_Arg(int arg);
+    void Append_Int_Arg(int32_t arg);
     void Append_Real_Arg(float arg);
     void Append_Bool_Arg(bool arg);
-    void Append_ObjectID_Arg(unsigned int arg);
-    void Append_DrawableID_Arg(unsigned int arg);
-    void Append_TeamID_Arg(unsigned int arg);
+    void Append_ObjectID_Arg(uint32_t arg);
+    void Append_DrawableID_Arg(uint32_t arg);
+    void Append_TeamID_Arg(uint32_t arg);
     void Append_Location_Arg(Coord3D const &arg);
     void Append_Pixel_Arg(ICoord2D const &arg);
     void Append_Region_Arg(IRegion2D const &arg);
-    void Append_Time_Stamp_Arg(unsigned int arg);
+    void Append_Time_Stamp_Arg(uint32_t arg);
     void Append_Wide_Char_Arg(wchar_t arg);
 
     GameMessage *Get_Next() { return m_next; }
@@ -383,7 +383,7 @@ private:
     GameMessage *m_prev;
     GameMessageList *m_list;
     MessageType m_type;
-    int m_playerIndex;
+    int32_t m_playerIndex;
     int8_t m_argCount;
     // 3 bytes padding
     GameMessageArgument *m_argList;

@@ -69,7 +69,7 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
     // Try loading a dds version of a texture first, then fall back to looking for targa.
     if (mips != 0 && dds.Load()) {
         m_time = dds.Get_Time();
-        int len = m_filename.Get_Length();
+        int32_t len = m_filename.Get_Length();
         m_filename[len - 3] = 'd';
         m_filename[len - 2] = 'd';
         m_filename[len - 1] = 's';
@@ -110,8 +110,8 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
             m_height = (uint16_t)targa.Get_Header().height / 8;
             m_mipLevels = 1;
 
-            int i;
-            int j;
+            int32_t i;
+            int32_t j;
             for (i = 1, j = 1; i < m_maxWidth && j < m_maxHeight; i *= 2, j *= 2) {
                 m_mipLevels++;
             }
@@ -119,11 +119,11 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
             for (; m_height > 0x20 && m_width > 0x20; m_height >>= 2, m_width >>= 2) {
             }
 
-            int height;
+            int32_t height;
             for (height = 1; height < m_height; height *= 2) {
             }
 
-            int width;
+            int32_t width;
             for (width = 1; width < m_width; width *= 2) {
             }
 
@@ -143,7 +143,7 @@ ThumbnailClass::ThumbnailClass(ThumbnailManagerClass *manager, const StringClass
                 ptr->Close();
             }
 
-            int len = m_filename.Get_Length();
+            int32_t len = m_filename.Get_Length();
             m_filename[len - 3] = 't';
             m_filename[len - 2] = 'g';
             m_filename[len - 1] = 'a';

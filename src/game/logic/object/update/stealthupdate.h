@@ -34,14 +34,14 @@ private:
     float m_friendlyOpacityMin;
     float m_friendlyOpacityMax;
     float m_revealDistanceFromTarget;
-    unsigned int m_disguiseTransitionTime;
-    unsigned int m_disguiseRevealTransitionTime;
-    unsigned int m_pulseFrequency;
-    unsigned int m_stealthDelay;
-    int m_stealthLevel;
-    unsigned int m_blackMarketCheckDelay;
-    int m_enemyDetectionEvaEvent;
-    int m_ownDetectionEvaEvent;
+    uint32_t m_disguiseTransitionTime;
+    uint32_t m_disguiseRevealTransitionTime;
+    uint32_t m_pulseFrequency;
+    uint32_t m_stealthDelay;
+    int32_t m_stealthLevel;
+    uint32_t m_blackMarketCheckDelay;
+    int32_t m_enemyDetectionEvaEvent;
+    int32_t m_ownDetectionEvaEvent;
     bool m_innateStealth;
     bool m_orderIdleEnemiesToAttackMeUponReveal;
     bool m_disguisesAsTeam;
@@ -72,19 +72,19 @@ public:
     bool Has_Disguised_Template() const { return m_disguisedTemplate != nullptr; }
 
 private:
-    unsigned int m_framesTillStealthAllowed;
-    unsigned int m_framesTillDetectionExpires;
-    unsigned int m_blackMarketCheckFrame;
+    uint32_t m_framesTillStealthAllowed;
+    uint32_t m_framesTillDetectionExpires;
+    uint32_t m_blackMarketCheckFrame;
     bool m_unk4;
     float m_unk5;
     float m_unk6;
-    unsigned int m_playerIndex;
+    uint32_t m_playerIndex;
     ThingTemplate *m_disguisedTemplate;
-    unsigned int m_disguiseTransitionTime;
+    uint32_t m_disguiseTransitionTime;
     bool m_disguised;
     bool m_disguising;
     bool m_revealDisguise;
-    unsigned int m_receiveGrantTime;
+    uint32_t m_receiveGrantTime;
     bool m_unk7;
-    int m_unk8;
+    int32_t m_unk8;
 };

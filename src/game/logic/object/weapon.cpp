@@ -69,7 +69,7 @@ void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store,
 
 void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini)
 {
-    int set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
+    int32_t set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
     WeaponBonus::Field field = WeaponBonus::Field(INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames));
     m_bonus[set].Set_Field(field, INI::Scan_PercentToReal(ini->Get_Next_Token()));
 }

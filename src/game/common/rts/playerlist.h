@@ -88,7 +88,7 @@ public:
 
 private:
     Player *m_local;
-    int m_playerCount;
+    int32_t m_playerCount;
     Player *m_players[MAX_PLAYER_COUNT];
 };
 

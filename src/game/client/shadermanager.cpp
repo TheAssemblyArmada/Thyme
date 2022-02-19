@@ -79,7 +79,7 @@ W3DShaderInterface **g_masterShaderList[] = { g_terrainShaderList,
     g_flatTerrainShaderList,
     nullptr };
 
-int W3DShaderManager::s_currentShaderPass;
+int32_t W3DShaderManager::s_currentShaderPass;
 FilterTypes W3DShaderManager::s_currentFilter;
 w3dsurface_t W3DShaderManager::s_oldRenderSurface;
 w3dtexture_t W3DShaderManager::s_renderTexture;
@@ -88,7 +88,7 @@ w3dsurface_t W3DShaderManager::s_oldDepthSurface;
 
 W3DFilterInterface *g_w3dFilters[FT_MAX];
 W3DShaderInterface *g_w3dShaders[W3DShaderManager::ST_MAX];
-int g_w3dShadersPassCount[W3DShaderManager::ST_MAX];
+int32_t g_w3dShadersPassCount[W3DShaderManager::ST_MAX];
 
 #ifndef GAME_DLL
 TextureClass *W3DShaderManager::s_textures[MAX_TEXTURE_STAGES];
@@ -96,7 +96,7 @@ bool W3DShaderManager::s_renderingToTexture;
 W3DShaderManager::ShaderTypes W3DShaderManager::s_currentShader;
 #endif
 
-int W3DShaderInterface::Set(int pass)
+int32_t W3DShaderInterface::Set(int32_t pass)
 {
     return 1;
 }
@@ -109,7 +109,7 @@ void W3DShaderInterface::Reset()
 #endif
 }
 
-int W3DShaderInterface::Shutdown()
+int32_t W3DShaderInterface::Shutdown()
 {
     return 1;
 }
@@ -150,17 +150,17 @@ void W3DShaderManager::Init()
             }
         }
 
-        for (int i = 0; g_masterShaderList[i]; i++) {
+        for (int32_t i = 0; g_masterShaderList[i]; i++) {
             W3DShaderInterface **list = g_masterShaderList[i];
 
-            for (int j = 0; list[j] && !list[j]->Init(); j++) {
+            for (int32_t j = 0; list[j] && !list[j]->Init(); j++) {
             }
         }
 
-        for (int i = 0; g_masterFilterList[i]; i++) {
+        for (int32_t i = 0; g_masterFilterList[i]; i++) {
             W3DFilterInterface **list = g_masterFilterList[i];
 
-            for (int j = 0; list[j] && !list[j]->Init(); j++) {
+            for (int32_t j = 0; list[j] && !list[j]->Init(); j++) {
             }
         }
     }
@@ -193,13 +193,13 @@ void W3DShaderManager::Shutdown()
     s_currentShader = ST_INVALID;
     s_currentFilter = FT_NULL_FILTER;
 
-    for (int i = 0; i < ST_MAX; i++) {
+    for (int32_t i = 0; i < ST_MAX; i++) {
         if (g_w3dShaders[i]) {
             g_w3dShaders[i]->Shutdown();
         }
     }
 
-    for (int i = 0; i < FT_MAX; i++) {
+    for (int32_t i = 0; i < FT_MAX; i++) {
         if (g_w3dFilters[i]) {
             g_w3dFilters[i]->Shutdown();
         }
@@ -207,12 +207,12 @@ void W3DShaderManager::Shutdown()
 #endif
 }
 
-int W3DShaderManager::Get_Shader_Passes(ShaderTypes shader)
+int32_t W3DShaderManager::Get_Shader_Passes(ShaderTypes shader)
 {
     return g_w3dShadersPassCount[shader];
 }
 
-int W3DShaderManager::Set_Shader(ShaderTypes shader, int pass)
+int32_t W3DShaderManager::Set_Shader(ShaderTypes shader, int32_t pass)
 {
     if (shader == s_currentShader && pass == s_currentShaderPass) {
         return 1;
@@ -273,7 +273,7 @@ bool W3DShaderManager::Filter_Setup(FilterTypes filter, FilterModes mode)
     }
 }
 
-void W3DShaderManager::Draw_Viewport(unsigned int color)
+void W3DShaderManager::Draw_Viewport(uint32_t color)
 {
 #ifdef BUILD_WITH_D3D8
     struct _TRANS_LIT_TEX_VERTEX
@@ -350,7 +350,7 @@ void W3DShaderManager::Start_Render_To_Texture()
                             }
 
                             W3DShaderManager::Draw_Viewport(
-                                ((int)(g_theWaterTransparency->m_transparentWaterMinOpacity * 255.0f)) << 24 | 0xFFFFFF);
+                                ((int32_t)(g_theWaterTransparency->m_transparentWaterMinOpacity * 255.0f)) << 24 | 0xFFFFFF);
                             DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE, 7);
                         }
                     }
@@ -452,7 +452,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
 #endif
 }
 
-bool W3DShaderManager::Set_Shroud_Tex(int stage)
+bool W3DShaderManager::Set_Shroud_Tex(int32_t stage)
 {
 #ifdef BUILD_WITH_D3D8
     W3DShroud *shroud = g_theTerrainRenderObject->Get_Shroud();

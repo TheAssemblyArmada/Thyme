@@ -51,14 +51,14 @@ public:
 
     void Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Node_Count() { return m_nodeCount; }
-    int Get_Poly_Count() { return m_polyCount; }
-    int Compute_Ram_Size();
+    int32_t Get_Node_Count() { return m_nodeCount; }
+    int32_t Get_Poly_Count() { return m_polyCount; }
+    int32_t Compute_Ram_Size();
     void Generate_APT(const OBBoxClass &box, SimpleDynVecClass<uint32_t> &apt);
     void Generate_APT(const OBBoxClass &box, const Vector3 &viewdir, SimpleDynVecClass<uint32_t> &apt);
 
     bool Cast_Ray(RayCollisionTestClass &raytest);
-    int Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int axis_dir, unsigned char &flags);
+    int32_t Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int32_t axis_dir, unsigned char &flags);
     bool Cast_AABox(AABoxCollisionTestClass &boxtest);
     bool Cast_OBBox(OBBoxCollisionTestClass &boxtest);
     bool Intersect_OBBox(OBBoxIntersectionTestClass &boxtest);
@@ -70,11 +70,11 @@ private:
     void Read_Poly_Indices(ChunkLoadClass &cload);
     void Read_Nodes(ChunkLoadClass &cload);
 
-    void Build_Tree_Recursive(AABTreeBuilderClass::CullNodeStruct *node, int &curpolyindex);
+    void Build_Tree_Recursive(AABTreeBuilderClass::CullNodeStruct *node, int32_t &curpolyindex);
     void Reset();
     void Set_Mesh(MeshGeometryClass *mesh);
     void Update_Bounding_Boxes();
-    void Update_Min_Max(int index, Vector3 &min, Vector3 &max);
+    void Update_Min_Max(int32_t index, Vector3 &min, Vector3 &max);
 
     struct CullNodeStruct
     {
@@ -86,10 +86,10 @@ private:
 
         inline bool Is_Leaf();
 
-        inline int Get_Back_Child();
-        inline int Get_Front_Child();
-        inline int Get_Poly0();
-        inline int Get_Poly_Count();
+        inline int32_t Get_Back_Child();
+        inline int32_t Get_Front_Child();
+        inline int32_t Get_Poly0();
+        inline int32_t Get_Poly_Count();
 
         inline void Set_Front_Child(uint32_t index);
         inline void Set_Back_Child(uint32_t index);
@@ -121,24 +121,24 @@ private:
     void Generate_OBBox_APT_Recursive(CullNodeStruct *node, OBBoxRayAPTContextStruct &context);
 
     bool Cast_Ray_Recursive(CullNodeStruct *node, RayCollisionTestClass &raytest);
-    int Cast_Semi_Infinite_Axis_Aligned_Ray_Recursive(CullNodeStruct *node,
+    int32_t Cast_Semi_Infinite_Axis_Aligned_Ray_Recursive(CullNodeStruct *node,
         const Vector3 &start_point,
-        int axis_r,
-        int axis_1,
-        int axis_2,
-        int direction,
+        int32_t axis_r,
+        int32_t axis_1,
+        int32_t axis_2,
+        int32_t direction,
         unsigned char &flags);
     bool Cast_AABox_Recursive(CullNodeStruct *node, AABoxCollisionTestClass &boxtest);
     bool Cast_OBBox_Recursive(CullNodeStruct *node, OBBoxCollisionTestClass &boxtest);
     bool Intersect_OBBox_Recursive(CullNodeStruct *node, OBBoxIntersectionTestClass &boxtest);
 
     bool Cast_Ray_To_Polys(CullNodeStruct *node, RayCollisionTestClass &raytest);
-    int Cast_Semi_Infinite_Axis_Aligned_Ray_To_Polys(CullNodeStruct *node,
+    int32_t Cast_Semi_Infinite_Axis_Aligned_Ray_To_Polys(CullNodeStruct *node,
         const Vector3 &start_point,
-        int axis_r,
-        int axis_1,
-        int axis_2,
-        int direction,
+        int32_t axis_r,
+        int32_t axis_1,
+        int32_t axis_2,
+        int32_t direction,
         unsigned char &flags);
     bool Cast_AABox_To_Polys(CullNodeStruct *node, AABoxCollisionTestClass &boxtest);
     bool Cast_OBBox_To_Polys(CullNodeStruct *node, OBBoxCollisionTestClass &boxtest);
@@ -146,9 +146,9 @@ private:
 
     void Update_Bounding_Boxes_Recursive(CullNodeStruct *node);
 
-    int m_nodeCount;
+    int32_t m_nodeCount;
     CullNodeStruct *m_nodes;
-    int m_polyCount;
+    int32_t m_polyCount;
     uint32_t *m_polyIndices;
     MeshGeometryClass *m_mesh;
 
@@ -158,9 +158,9 @@ private:
     friend class AABTreeBuilderClass;
 };
 
-inline int AABTreeClass::Compute_Ram_Size()
+inline int32_t AABTreeClass::Compute_Ram_Size()
 {
-    return m_nodeCount * sizeof(CullNodeStruct) + m_polyCount * sizeof(int) + sizeof(AABTreeClass);
+    return m_nodeCount * sizeof(CullNodeStruct) + m_polyCount * sizeof(int32_t) + sizeof(AABTreeClass);
 }
 
 inline bool AABTreeClass::Cast_Ray(RayCollisionTestClass &raytest)
@@ -169,12 +169,12 @@ inline bool AABTreeClass::Cast_Ray(RayCollisionTestClass &raytest)
     return Cast_Ray_Recursive(&(m_nodes[0]), raytest);
 }
 
-inline int AABTreeClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int axis_dir, unsigned char &flags)
+inline int32_t AABTreeClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
 {
-    static const int axis_r[6] = { 0, 0, 1, 1, 2, 2 };
-    static const int axis_1[6] = { 1, 1, 2, 2, 0, 0 };
-    static const int axis_2[6] = { 2, 2, 0, 0, 1, 1 };
-    static const int direction[6] = { 1, 0, 1, 0, 1, 0 };
+    static const int32_t axis_r[6] = { 0, 0, 1, 1, 2, 2 };
+    static const int32_t axis_1[6] = { 1, 1, 2, 2, 0, 0 };
+    static const int32_t axis_2[6] = { 2, 2, 0, 0, 1, 1 };
+    static const int32_t direction[6] = { 1, 0, 1, 0, 1, 0 };
     captainslog_assert(m_nodes != nullptr);
     captainslog_assert(axis_dir >= 0);
     captainslog_assert(axis_dir < 6);
@@ -214,25 +214,25 @@ inline bool AABTreeClass::CullNodeStruct::Is_Leaf()
     return ((m_frontOrPoly0 & AABTREE_LEAF_FLAG) != 0);
 }
 
-inline int AABTreeClass::CullNodeStruct::Get_Front_Child()
+inline int32_t AABTreeClass::CullNodeStruct::Get_Front_Child()
 {
     captainslog_assert(!Is_Leaf());
     return m_frontOrPoly0;
 }
 
-inline int AABTreeClass::CullNodeStruct::Get_Back_Child()
+inline int32_t AABTreeClass::CullNodeStruct::Get_Back_Child()
 {
     captainslog_assert(!Is_Leaf());
     return m_backOrPolyCount;
 }
 
-inline int AABTreeClass::CullNodeStruct::Get_Poly0()
+inline int32_t AABTreeClass::CullNodeStruct::Get_Poly0()
 {
     captainslog_assert(Is_Leaf());
     return (m_frontOrPoly0 & ~AABTREE_LEAF_FLAG);
 }
 
-inline int AABTreeClass::CullNodeStruct::Get_Poly_Count()
+inline int32_t AABTreeClass::CullNodeStruct::Get_Poly_Count()
 {
     captainslog_assert(Is_Leaf());
     return m_backOrPolyCount;

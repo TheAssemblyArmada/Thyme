@@ -335,7 +335,7 @@ bool MilesAudioManager::Is_Music_Playing()
  *
  * 0x0077E200
  */
-bool MilesAudioManager::Has_Music_Track_Completed(const Utf8String &name, int loops)
+bool MilesAudioManager::Has_Music_Track_Completed(const Utf8String &name, int32_t loops)
 {
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr && (*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
@@ -536,7 +536,7 @@ Utf8String MilesAudioManager::Get_Provider_Name(unsigned provider) const
  */
 unsigned MilesAudioManager::Get_Provider_Index(Utf8String name)
 {
-    for (int i = 0; i < m_milesMaxProviderIndex; ++i) {
+    for (int32_t i = 0; i < m_milesMaxProviderIndex; ++i) {
         if (name == m_milesProviderList[i].name) {
             return i;
         }
@@ -651,14 +651,14 @@ unsigned MilesAudioManager::Get_Speaker_Type()
  */
 bool MilesAudioManager::Does_Violate_Limit(AudioEventRTS *event) const
 {
-    int limit;
+    int32_t limit;
 
     if ((limit = event->Get_Event_Info()->Get_Limit()) == 0) {
         return false;
     }
 
-    int playing_matches = 0;
-    int request_matches = 0;
+    int32_t playing_matches = 0;
+    int32_t request_matches = 0;
 
     if (event->Is_Positional_Audio()) {
         for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
@@ -713,7 +713,7 @@ bool MilesAudioManager::Does_Violate_Limit(AudioEventRTS *event) const
  */
 bool MilesAudioManager::Is_Playing_Lower_Priority(AudioEventRTS *event) const
 {
-    int priority;
+    int32_t priority;
 
     if ((priority = event->Get_Event_Info()->Get_Priority()) == 0) {
         return false;
@@ -1060,7 +1060,7 @@ void MilesAudioManager::Set_Hardware_Accelerated(bool accelerated)
         // If we are accelerated, try and choose best/available driver.
         // These calls call g_theAudio global rather than calling on this instance in original.
         if (m_hardwareAccelerated) {
-            for (int i = 0; i < DRIVER_SOFTWARE; ++i) {
+            for (int32_t i = 0; i < DRIVER_SOFTWARE; ++i) {
                 unsigned index = Get_Provider_Index(Get_Audio_Settings()->Get_Preferred_Driver(i));
                 Select_Provider(index);
 
@@ -1657,7 +1657,7 @@ void MilesAudioManager::Init_Sample_Pools()
         return;
     }
 
-    for (int i = 0; i < Get_Audio_Settings()->Get_2D_Sample_Count(); ++i) {
+    for (int32_t i = 0; i < Get_Audio_Settings()->Get_2D_Sample_Count(); ++i) {
         HSAMPLE handle = AIL_allocate_sample_handle(m_milesDigitalDriver);
         captainslog_dbgassert(handle != nullptr, "Couldn't get %d 2D samples", i + 1);
 
@@ -1669,7 +1669,7 @@ void MilesAudioManager::Init_Sample_Pools()
         }
     }
 
-    for (int i = 0; i < Get_Audio_Settings()->Get_3D_Sample_Count(); ++i) {
+    for (int32_t i = 0; i < Get_Audio_Settings()->Get_3D_Sample_Count(); ++i) {
         H3DSAMPLE handle = AIL_allocate_3D_sample_handle(m_milesProviderList[m_milesCurrentProvider].provider);
         captainslog_dbgassert(handle != nullptr, "Couldn't get %d 3D samples", i + 1);
 
@@ -2107,7 +2107,7 @@ bool MilesAudioManager::Kill_Lowest_Priority_Sound_Immediately(AudioEventRTS *ev
 AudioEventRTS *MilesAudioManager::Find_Lowest_Priority_Sound(AudioEventRTS *event)
 {
     captainslog_assert(event != nullptr);
-    int target_priority = event->Get_Event_Info()->Get_Priority();
+    int32_t target_priority = event->Get_Event_Info()->Get_Priority();
 
     // Nothing can be lower than this so can't return anything.
     if (target_priority == 0) {
@@ -2118,8 +2118,8 @@ AudioEventRTS *MilesAudioManager::Find_Lowest_Priority_Sound(AudioEventRTS *even
 
     if (event->Is_Positional_Audio()) {
         for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
-            int list_priority = (*it)->miles.audio_event->Get_Event_Info()->Get_Priority();
-            int lowest_priority = target_priority;
+            int32_t list_priority = (*it)->miles.audio_event->Get_Event_Info()->Get_Priority();
+            int32_t lowest_priority = target_priority;
 
             if (list_priority < target_priority && (lowest_event == nullptr || lowest_priority > list_priority)) {
                 lowest_event = (*it)->miles.audio_event;
@@ -2132,8 +2132,8 @@ AudioEventRTS *MilesAudioManager::Find_Lowest_Priority_Sound(AudioEventRTS *even
         }
     } else {
         for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
-            int list_priority = (*it)->miles.audio_event->Get_Event_Info()->Get_Priority();
-            int lowest_priority = target_priority;
+            int32_t list_priority = (*it)->miles.audio_event->Get_Event_Info()->Get_Priority();
+            int32_t lowest_priority = target_priority;
 
             if (list_priority < target_priority && (lowest_event == nullptr || lowest_priority > list_priority)) {
                 lowest_event = (*it)->miles.audio_event;
@@ -2237,7 +2237,7 @@ bool MilesAudioManager::Check_For_Sample(AudioRequest *request)
  */
 void MilesAudioManager::Build_Provider_List()
 {
-    int max_provider = 0;
+    int32_t max_provider = 0;
     uint32_t provider_type = 0;
     char *provider_name = nullptr;
 
@@ -2292,7 +2292,7 @@ void MilesAudioManager::Create_Listener()
  *
  * 0x00780C90
  */
-int __stdcall MilesAudioManager::Streaming_File_Open(const char *name, uintptr_t *handle)
+int32_t __stdcall MilesAudioManager::Streaming_File_Open(const char *name, uintptr_t *handle)
 {
     *handle = reinterpret_cast<uintptr_t>(g_theFileSystem->Open(name, File::READ | File::STREAMING));
 

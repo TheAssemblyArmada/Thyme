@@ -15,7 +15,7 @@
 #include "matrixmapper.h"
 #include "dx8wrapper.h"
 
-MatrixMapperClass::MatrixMapperClass(int stage) :
+MatrixMapperClass::MatrixMapperClass(int32_t stage) :
     TextureMapperClass(stage),
     m_flags(0),
     m_type(ORTHO_PROJECTION),
@@ -54,7 +54,7 @@ TextureMapperClass *MatrixMapperClass::Clone() const
     return 0;
 }
 
-void MatrixMapperClass::Apply(int uv_array_index)
+void MatrixMapperClass::Apply(int32_t uv_array_index)
 {
 #ifdef BUILD_WITH_D3D8
     Matrix4 matrix;

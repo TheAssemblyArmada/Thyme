@@ -19,7 +19,7 @@
 #include <d3dx8.h>
 #endif
 
-int FlatShroudTextureShader::Set(int pass)
+int32_t FlatShroudTextureShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     TextureClass *tex = W3DShaderManager::Get_Shader_Texture(pass);
@@ -82,7 +82,7 @@ void FlatShroudTextureShader::Reset()
 #endif
 }
 
-int FlatShroudTextureShader::Init()
+int32_t FlatShroudTextureShader::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_FLAT_SHROUD_TEXTURE] = &g_flatShroudTextureShader;
     g_w3dShadersPassCount[W3DShaderManager::ST_FLAT_SHROUD_TEXTURE] = 1;

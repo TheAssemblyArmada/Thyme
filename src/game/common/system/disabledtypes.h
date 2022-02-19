@@ -14,7 +14,7 @@
  */
 #pragma once
 
-template<int> class BitFlags;
+template<int32_t> class BitFlags;
 
 enum DisabledType
 {

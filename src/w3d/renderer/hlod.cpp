@@ -21,9 +21,9 @@
 
 W3DErrorType SnapPointsClass::Load_W3D(ChunkLoadClass &cload)
 {
-    int count = cload.Cur_Chunk_Length() / sizeof(Vector3);
+    int32_t count = cload.Cur_Chunk_Length() / sizeof(Vector3);
     Resize(count);
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         Vector3 vec;
 
         if (cload.Read(&vec, sizeof(vec)) == sizeof(vec)) {
@@ -79,9 +79,9 @@ bool HLodDefClass::SubObjectArrayClass::Load_W3D(ChunkLoadClass &cload)
     m_modelCount = header.ModelCount;
     m_maxScreenSize = header.MaxScreenSize;
     m_modelName = new char *[m_modelCount];
-    m_boneIndex = new int[m_modelCount];
+    m_boneIndex = new int32_t[m_modelCount];
 
-    for (int i = 0; i < m_modelCount; i++) {
+    for (int32_t i = 0; i < m_modelCount; i++) {
         if (!cload.Open_Chunk()) {
             return false;
         }
@@ -115,7 +115,7 @@ W3DErrorType HLodDefClass::Load_W3D(ChunkLoadClass &cload)
         return W3D_ERROR_LOAD_FAILED;
     }
 
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         if (!cload.Open_Chunk()) {
             return W3D_ERROR_LOAD_FAILED;
         }
@@ -188,7 +188,7 @@ bool HLodDefClass::Read_Proxy_Array(ChunkLoadClass &cload)
 
     m_proxyArray = new ProxyArrayClass(header.ModelCount);
 
-    for (int i = 0; i < m_proxyArray->Length(); i++) {
+    for (int32_t i = 0; i < m_proxyArray->Length(); i++) {
         if (!cload.Open_Chunk()) {
             return false;
         }
@@ -293,10 +293,10 @@ HLodClass::HLodClass(const HLodDefClass &src) :
     m_cost = new float[m_lodCount];
     m_value = new float[m_lodCount + 1];
 
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         m_lod[i].m_maxScreenSize = src.m_lod[i].m_maxScreenSize;
 
-        for (int j = 0; j < src.m_lod[i].m_modelCount; j++) {
+        for (int32_t j = 0; j < src.m_lod[i].m_modelCount; j++) {
             RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(src.m_lod[i].m_modelName[j]);
 
             if (robj) {
@@ -308,7 +308,7 @@ HLodClass::HLodClass(const HLodDefClass &src) :
 
     Recalculate_Static_LOD_Factors();
 
-    for (int i = 0; i < src.m_aggregates.m_modelCount; i++) {
+    for (int32_t i = 0; i < src.m_aggregates.m_modelCount; i++) {
         RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(src.m_aggregates.m_modelName[i]);
 
         if (robj) {
@@ -320,7 +320,7 @@ HLodClass::HLodClass(const HLodDefClass &src) :
     ProxyArrayClass *array = const_cast<ProxyArrayClass *>(src.m_proxyArray);
     Ref_Ptr_Set(m_proxyArray, array);
 
-    int cost = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
+    int32_t cost = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
 
     if (m_curLod < cost) {
         Set_LOD_Level(cost);
@@ -345,11 +345,11 @@ HLodClass &HLodClass::operator=(const HLodClass &that)
         m_cost = new float[m_lodCount];
         m_value = new float[m_lodCount + 1];
 
-        for (int i = 0; i < m_lodCount; i++) {
+        for (int32_t i = 0; i < m_lodCount; i++) {
             m_lod[i].Resize(that.m_lod[i].Count());
             m_lod[i].m_maxScreenSize = that.m_lod[i].m_maxScreenSize;
 
-            for (int j = 0; j < that.m_lod[i].Count(); j++) {
+            for (int32_t j = 0; j < that.m_lod[i].Count(); j++) {
                 ModelNodeClass node;
                 node.m_boneIndex = that.m_lod[i][j].m_boneIndex;
                 node.m_model = that.m_lod[i][j].m_model->Clone();
@@ -365,7 +365,7 @@ HLodClass &HLodClass::operator=(const HLodClass &that)
 
         m_additionalModels.Resize(that.m_additionalModels.Count());
 
-        for (int j = 0; j < that.m_additionalModels.Count(); j++) {
+        for (int32_t j = 0; j < that.m_additionalModels.Count(); j++) {
             ModelNodeClass node;
             node.m_boneIndex = that.m_additionalModels[j].m_boneIndex;
             node.m_model = that.m_additionalModels[j].m_model->Clone();
@@ -382,7 +382,7 @@ HLodClass &HLodClass::operator=(const HLodClass &that)
     }
 
     Recalculate_Static_LOD_Factors();
-    int cost = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
+    int32_t cost = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
 
     if (m_curLod < cost) {
         Set_LOD_Level(cost);
@@ -404,22 +404,22 @@ RenderObjClass *HLodClass::Clone() const
     return new HLodClass(*this);
 }
 
-int HLodClass::Class_ID() const
+int32_t HLodClass::Class_ID() const
 {
     return CLASSID_HLOD;
 }
 
-int HLodClass::Get_Num_Polys() const
+int32_t HLodClass::Get_Num_Polys() const
 {
-    int polys = 0;
+    int32_t polys = 0;
 
-    for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+    for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
         if (m_lod[m_curLod][i].m_model->Is_Not_Hidden_At_All()) {
             polys += m_lod[m_curLod][i].m_model->Get_Num_Polys();
         }
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         if (m_additionalModels[i].m_model->Is_Not_Hidden_At_All()) {
             polys += m_additionalModels[i].m_model->Get_Num_Polys();
         }
@@ -444,33 +444,33 @@ void HLodClass::Notify_Added(SceneClass *scene)
 {
     RenderObjClass::Notify_Added(scene);
 
-    for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+    for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
         m_lod[m_curLod][i].m_model->Notify_Added(scene);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         m_additionalModels[i].m_model->Notify_Added(scene);
     }
 }
 
 void HLodClass::Notify_Removed(SceneClass *scene)
 {
-    for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+    for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
         m_lod[m_curLod][i].m_model->Notify_Removed(scene);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         m_additionalModels[i].m_model->Notify_Removed(scene);
     }
 
     RenderObjClass::Notify_Removed(scene);
 }
 
-int HLodClass::Get_Num_Sub_Objects() const
+int32_t HLodClass::Get_Num_Sub_Objects() const
 {
-    int count = 0;
+    int32_t count = 0;
 
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         count += m_lod[i].Count();
     }
 
@@ -483,7 +483,7 @@ void HLodClass::Set_Animation()
     Set_Sub_Object_Transforms_Dirty(true);
 }
 
-void HLodClass::Set_Animation(HAnimClass *anim, float frame, int anim_mode)
+void HLodClass::Set_Animation(HAnimClass *anim, float frame, int32_t anim_mode)
 {
     Animatable3DObjClass::Set_Animation(anim, frame, anim_mode);
     Set_Sub_Object_Transforms_Dirty(true);
@@ -510,11 +510,11 @@ bool HLodClass::Cast_AABox(AABoxCollisionTestClass &boxtest)
     ModelArrayClass *lod = &m_lod[m_lodCount - 1];
     bool result = false;
 
-    for (int i = 0; i < lod->Count(); i++) {
+    for (int32_t i = 0; i < lod->Count(); i++) {
         result |= (*lod)[i].m_model->Cast_AABox(boxtest);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         result |= m_additionalModels[i].m_model->Cast_AABox(boxtest);
     }
 
@@ -530,11 +530,11 @@ bool HLodClass::Cast_OBBox(OBBoxCollisionTestClass &boxtest)
     ModelArrayClass *lod = &m_lod[m_lodCount - 1];
     bool result = false;
 
-    for (int i = 0; i < lod->Count(); i++) {
+    for (int32_t i = 0; i < lod->Count(); i++) {
         result |= (*lod)[i].m_model->Cast_OBBox(boxtest);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         result |= m_additionalModels[i].m_model->Cast_OBBox(boxtest);
     }
 
@@ -550,11 +550,11 @@ bool HLodClass::Intersect_AABox(AABoxIntersectionTestClass &boxtest)
     ModelArrayClass *lod = &m_lod[m_lodCount - 1];
     bool result = false;
 
-    for (int i = 0; i < lod->Count(); i++) {
+    for (int32_t i = 0; i < lod->Count(); i++) {
         result |= (*lod)[i].m_model->Intersect_AABox(boxtest);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         result |= m_additionalModels[i].m_model->Intersect_AABox(boxtest);
     }
 
@@ -570,11 +570,11 @@ bool HLodClass::Intersect_OBBox(OBBoxIntersectionTestClass &boxtest)
     ModelArrayClass *lod = &m_lod[m_lodCount - 1];
     bool result = false;
 
-    for (int i = 0; i < lod->Count(); i++) {
+    for (int32_t i = 0; i < lod->Count(); i++) {
         result |= (*lod)[i].m_model->Intersect_OBBox(boxtest);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         result |= m_additionalModels[i].m_model->Intersect_OBBox(boxtest);
     }
 
@@ -591,7 +591,7 @@ void HLodClass::Delete_Decal(unsigned long decal_id)
     captainslog_dbgassert(0, "decals not supported");
 }
 
-int HLodClass::Get_Num_Snap_Points()
+int32_t HLodClass::Get_Num_Snap_Points()
 {
     if (m_snapPoints) {
         return m_snapPoints->Count();
@@ -600,7 +600,7 @@ int HLodClass::Get_Num_Snap_Points()
     }
 }
 
-void HLodClass::Get_Snap_Point(int point, Vector3 *set)
+void HLodClass::Get_Snap_Point(int32_t point, Vector3 *set)
 {
     captainslog_assert(set != nullptr);
 
@@ -618,11 +618,11 @@ void HLodClass::Set_HTree(HTreeClass *htree)
     Animatable3DObjClass::Set_HTree(htree);
 }
 
-RenderObjClass *HLodClass::Get_Sub_Object(int index) const
+RenderObjClass *HLodClass::Get_Sub_Object(int32_t index) const
 {
     captainslog_assert(index >= 0);
 
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         if (index < m_lod[i].Count()) {
             m_lod[i][index].m_model->Add_Ref();
             return m_lod[i][index].m_model;
@@ -636,12 +636,12 @@ RenderObjClass *HLodClass::Get_Sub_Object(int index) const
     return m_additionalModels[index].m_model;
 }
 
-int HLodClass::Add_Sub_Object(RenderObjClass *subobj)
+int32_t HLodClass::Add_Sub_Object(RenderObjClass *subobj)
 {
     return Add_Sub_Object_To_Bone(subobj, 0);
 }
 
-int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
+int32_t HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
 {
     if (!subobj) {
         return 0;
@@ -650,8 +650,8 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
     bool deleted = false;
     bool iscurrent = false;
 
-    for (int i = 0; i < m_lodCount && !deleted; i++) {
-        for (int j = 0; j < m_lod[i].Count() && !deleted; j++) {
+    for (int32_t i = 0; i < m_lodCount && !deleted; i++) {
+        for (int32_t j = 0; j < m_lod[i].Count() && !deleted; j++) {
             if (m_lod[i][j].m_model == subobj) {
                 m_lod[i].Delete(j);
                 deleted = true;
@@ -663,7 +663,7 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
         }
     }
 
-    for (int i = 0; i < m_additionalModels.Count() && !deleted; i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count() && !deleted; i++) {
         if (m_additionalModels[i].m_model == subobj) {
             m_additionalModels.Delete(i);
             deleted = true;
@@ -689,19 +689,19 @@ int HLodClass::Remove_Sub_Object(RenderObjClass *subobj)
     return 1;
 }
 
-int HLodClass::Get_Num_Sub_Objects_On_Bone(int bone_index) const
+int32_t HLodClass::Get_Num_Sub_Objects_On_Bone(int32_t bone_index) const
 {
-    int count = 0;
+    int32_t count = 0;
 
-    for (int i = 0; i < m_lodCount; i++) {
-        for (int j = 0; j < m_lod[i].Count(); j++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
+        for (int32_t j = 0; j < m_lod[i].Count(); j++) {
             if (m_lod[i][j].m_boneIndex == bone_index) {
                 count++;
             }
         }
     }
 
-    for (int k = 0; k < m_additionalModels.Count(); k++) {
+    for (int32_t k = 0; k < m_additionalModels.Count(); k++) {
         if (m_additionalModels[k].m_boneIndex == bone_index) {
             count++;
         }
@@ -710,11 +710,11 @@ int HLodClass::Get_Num_Sub_Objects_On_Bone(int bone_index) const
     return count;
 }
 
-RenderObjClass *HLodClass::Get_Sub_Object_On_Bone(int index, int bone_index) const
+RenderObjClass *HLodClass::Get_Sub_Object_On_Bone(int32_t index, int32_t bone_index) const
 {
-    int count = 0;
-    for (int i = 0; i < m_lodCount; i++) {
-        for (int j = 0; j < m_lod[i].Count(); j++) {
+    int32_t count = 0;
+    for (int32_t i = 0; i < m_lodCount; i++) {
+        for (int32_t j = 0; j < m_lod[i].Count(); j++) {
             if (m_lod[i][j].m_boneIndex == bone_index) {
                 if (count == index) {
                     m_lod[i][j].m_model->Add_Ref();
@@ -726,7 +726,7 @@ RenderObjClass *HLodClass::Get_Sub_Object_On_Bone(int index, int bone_index) con
         }
     }
 
-    for (int k = 0; k < m_additionalModels.Count(); k++) {
+    for (int32_t k = 0; k < m_additionalModels.Count(); k++) {
         if (m_additionalModels[k].m_boneIndex == bone_index) {
             if (count == index) {
                 m_additionalModels[k].m_model->Add_Ref();
@@ -740,17 +740,17 @@ RenderObjClass *HLodClass::Get_Sub_Object_On_Bone(int index, int bone_index) con
     return nullptr;
 }
 
-int HLodClass::Get_Sub_Object_Bone_Index(RenderObjClass *object) const
+int32_t HLodClass::Get_Sub_Object_Bone_Index(RenderObjClass *object) const
 {
-    for (int i = 0; i < m_lodCount; i++) {
-        for (int j = 0; j < m_lod[i].Count(); j++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
+        for (int32_t j = 0; j < m_lod[i].Count(); j++) {
             if (m_lod[i][j].m_model == object) {
                 return m_lod[i][j].m_boneIndex;
             }
         }
     }
 
-    for (int k = 0; k < m_additionalModels.Count(); k++) {
+    for (int32_t k = 0; k < m_additionalModels.Count(); k++) {
         if (m_additionalModels[k].m_model == object) {
             return m_additionalModels[k].m_boneIndex;
         }
@@ -759,12 +759,12 @@ int HLodClass::Get_Sub_Object_Bone_Index(RenderObjClass *object) const
     return 0;
 }
 
-int HLodClass::Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const
+int32_t HLodClass::Get_Sub_Object_Bone_Index(int32_t lodindex, int32_t modelindex) const
 {
     return m_lod[lodindex][modelindex].m_boneIndex;
 }
 
-int HLodClass::Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index)
+int32_t HLodClass::Add_Sub_Object_To_Bone(RenderObjClass *subobj, int32_t bone_index)
 {
     captainslog_assert(subobj);
 
@@ -777,7 +777,7 @@ int HLodClass::Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index)
         ModelNodeClass node;
         node.m_model = subobj;
         node.m_boneIndex = bone_index;
-        int res = m_additionalModels.Add(node);
+        int32_t res = m_additionalModels.Add(node);
 
         Update_Sub_Object_Bits();
         Update_Obj_Space_Bounding_Volumes();
@@ -798,11 +798,11 @@ void HLodClass::Update_Sub_Object_Transforms()
 {
     Animatable3DObjClass::Update_Sub_Object_Transforms();
 
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         ModelArrayClass &lod = m_lod[i];
-        for (int m = 0; m < lod.Count(); ++m) {
+        for (int32_t m = 0; m < lod.Count(); ++m) {
             RenderObjClass *model = lod[m].m_model;
-            int bone_index = lod[m].m_boneIndex;
+            int32_t bone_index = lod[m].m_boneIndex;
 
             model->Set_Transform(m_htree->Get_Transform(bone_index));
             model->Set_Animation_Hidden(!m_htree->Get_Visibility(bone_index));
@@ -810,9 +810,9 @@ void HLodClass::Update_Sub_Object_Transforms()
         }
     }
 
-    for (int m = 0; m < m_additionalModels.Count(); ++m) {
+    for (int32_t m = 0; m < m_additionalModels.Count(); ++m) {
         RenderObjClass *model = m_additionalModels[m].m_model;
-        int bone_index = m_additionalModels[m].m_boneIndex;
+        int32_t bone_index = m_additionalModels[m].m_boneIndex;
 
         model->Set_Transform(m_htree->Get_Transform(bone_index));
         model->Set_Animation_Hidden(!m_htree->Get_Visibility(bone_index));
@@ -886,7 +886,7 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes()
         m_boundingBoxIndex = -1;
     }
 
-    for (int i = lod.Count() - 1; i >= 0 && m_boundingBoxIndex == -1; i--) {
+    for (int32_t i = lod.Count() - 1; i >= 0 && m_boundingBoxIndex == -1; i--) {
         RenderObjClass *model = lod[i].m_model;
 
         if (model->Class_ID() == CLASSID_OBBOX) {
@@ -920,7 +920,7 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes()
         new_box.Transform(transform);
         robj->Release_Ref();
 
-        for (int i = 1; i < Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 1; i < Get_Num_Sub_Objects(); i++) {
             RenderObjClass *robj = Get_Sub_Object(i);
 
             captainslog_assert(robj);
@@ -955,13 +955,13 @@ void HLodClass::Update_Obj_Space_Bounding_Volumes()
 void HLodClass::Scale(float scale)
 {
     if (scale != 1.0f) {
-        for (int i = 0; i < m_lodCount; i++) {
-            for (int j = 0; j < m_lod[i].Count(); j++) {
+        for (int32_t i = 0; i < m_lodCount; i++) {
+            for (int32_t j = 0; j < m_lod[i].Count(); j++) {
                 m_lod[i][j].m_model->Scale(scale);
             }
         }
 
-        for (int k = 0; k < m_additionalModels.Count(); k++) {
+        for (int32_t k = 0; k < m_additionalModels.Count(); k++) {
             m_additionalModels[k].m_model->Scale(scale);
         }
 
@@ -974,9 +974,9 @@ void HLodClass::Scale(float scale)
     }
 }
 
-void HLodClass::Set_Hidden(int hidden)
+void HLodClass::Set_Hidden(int32_t hidden)
 {
-    for (int k = 0; k < m_additionalModels.Count(); k++) {
+    for (int32_t k = 0; k < m_additionalModels.Count(); k++) {
         RenderObjClass *model = m_additionalModels[k].m_model;
         if (model->Class_ID() == CLASSID_PARTICLEEMITTER) {
             model->Set_Hidden(hidden);
@@ -990,7 +990,7 @@ void HLodClass::Include_NULL_Lod(bool include)
 {
     if (!include) {
         if (Is_NULL_Lod_Included()) {
-            for (int i = 0; i < m_lod[0].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[0].Count(); i++) {
                 RenderObjClass *robj = m_lod[0][i].m_model;
                 m_lod[0][i].m_model = nullptr;
 
@@ -1005,7 +1005,7 @@ void HLodClass::Include_NULL_Lod(bool include)
 
             ModelArrayClass *lods = new ModelArrayClass[m_lodCount];
 
-            for (int j = 0; j < m_lodCount; j++) {
+            for (int32_t j = 0; j < m_lodCount; j++) {
                 lods[j] = m_lod[j + 1];
             }
 
@@ -1032,7 +1032,7 @@ void HLodClass::Include_NULL_Lod(bool include)
         if (null_object) {
             ModelArrayClass *lods = new ModelArrayClass[m_lodCount + 1];
 
-            for (int m = 0; m < m_lodCount; m++) {
+            for (int32_t m = 0; m < m_lodCount; m++) {
                 lods[m + 1] = m_lod[m];
             }
 
@@ -1054,14 +1054,14 @@ void HLodClass::Include_NULL_Lod(bool include)
         }
     }
 
-    int lod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
+    int32_t lod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
 
     if (m_curLod < lod) {
         Set_LOD_Level(lod);
     }
 }
 
-int HLodClass::Get_Proxy_Count()
+int32_t HLodClass::Get_Proxy_Count()
 {
     if (m_proxyArray) {
         return m_proxyArray->Length();
@@ -1069,7 +1069,7 @@ int HLodClass::Get_Proxy_Count()
     return 0;
 }
 
-bool HLodClass::Get_Proxy(int index, ProxyClass &proxy)
+bool HLodClass::Get_Proxy(int32_t index, ProxyClass &proxy)
 {
     if (m_proxyArray) {
         m_htree->Base_Update(Get_Transform());
@@ -1085,7 +1085,7 @@ bool HLodClass::Get_Proxy(int index, ProxyClass &proxy)
     return false;
 }
 
-void HLodClass::Add_Lod_Model(int lod, RenderObjClass *robj, int bone_index)
+void HLodClass::Add_Lod_Model(int32_t lod, RenderObjClass *robj, int32_t bone_index)
 {
     captainslog_assert(robj);
 
@@ -1107,7 +1107,7 @@ void HLodClass::Special_Render(SpecialRenderInfoClass &rinfo)
 {
     if (Is_Not_Hidden_At_All()) {
         Animatable3DObjClass::Special_Render(rinfo);
-        int lod = m_curLod;
+        int32_t lod = m_curLod;
 
         if (rinfo.m_renderType == SpecialRenderInfoClass::RENDER_SHADOW) {
             lod = m_lodCount - 1;
@@ -1115,11 +1115,11 @@ void HLodClass::Special_Render(SpecialRenderInfoClass &rinfo)
 
         ModelArrayClass *mlod = &m_lod[lod];
 
-        for (int pos = 0; pos < mlod->Count(); pos++) {
+        for (int32_t pos = 0; pos < mlod->Count(); pos++) {
             (*mlod)[pos].m_model->Special_Render(rinfo);
         }
 
-        for (int pos = 0; pos < m_additionalModels.Count(); pos++) {
+        for (int32_t pos = 0; pos < m_additionalModels.Count(); pos++) {
             m_additionalModels[pos].m_model->Special_Render(rinfo);
         }
     }
@@ -1131,18 +1131,18 @@ void HLodClass::Render(RenderInfoClass &rinfo)
         Animatable3DObjClass::Render(rinfo);
         ModelArrayClass *mlod = &m_lod[m_curLod];
 
-        for (int pos = 0; pos < mlod->Count(); pos++) {
+        for (int32_t pos = 0; pos < mlod->Count(); pos++) {
             if ((*mlod)[pos].m_model->Class_ID() != CLASSID_OBBOX) {
                 (*mlod)[pos].m_model->Render(rinfo);
             }
         }
 
         if (!Is_Sub_Objects_Match_LOD_Enabled()) {
-            for (int pos = 0; pos < m_additionalModels.Count(); pos++) {
+            for (int32_t pos = 0; pos < m_additionalModels.Count(); pos++) {
                 m_additionalModels[pos].m_model->Render(rinfo);
             }
         } else {
-            for (int pos = 0; pos < m_additionalModels.Count(); pos++) {
+            for (int32_t pos = 0; pos < m_additionalModels.Count(); pos++) {
                 m_additionalModels[pos].m_model->Set_LOD_Level(Get_LOD_Level());
                 m_additionalModels[pos].m_model->Render(rinfo);
             }
@@ -1150,7 +1150,7 @@ void HLodClass::Render(RenderInfoClass &rinfo)
     }
 }
 
-void HLodClass::Set_Max_Screen_Size(int lod_index, float size)
+void HLodClass::Set_Max_Screen_Size(int32_t lod_index, float size)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1159,7 +1159,7 @@ void HLodClass::Set_Max_Screen_Size(int lod_index, float size)
         if (lod_index < m_lodCount) {
             m_lod[lod_index].m_maxScreenSize = size;
             Recalculate_Static_LOD_Factors();
-            int lod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
+            int32_t lod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
 
             if (m_curLod < lod) {
                 Set_LOD_Level(lod);
@@ -1168,7 +1168,7 @@ void HLodClass::Set_Max_Screen_Size(int lod_index, float size)
     }
 }
 
-float HLodClass::Get_Max_Screen_Size(int lod_index)
+float HLodClass::Get_Max_Screen_Size(int32_t lod_index)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1181,7 +1181,7 @@ float HLodClass::Get_Max_Screen_Size(int lod_index)
     return NO_MAX_SCREEN_SIZE;
 }
 
-int HLodClass::Get_Lod_Count()
+int32_t HLodClass::Get_Lod_Count()
 {
     return m_lodCount;
 }
@@ -1200,12 +1200,12 @@ void HLodClass::Set_LOD_Bias(float bias)
 
     m_lodBias = newbias;
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         m_additionalModels[i].m_model->Set_LOD_Bias(newbias);
     }
 }
 
-int HLodClass::Get_Lod_Model_Count(int lod_index)
+int32_t HLodClass::Get_Lod_Model_Count(int32_t lod_index)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1218,7 +1218,7 @@ int HLodClass::Get_Lod_Model_Count(int lod_index)
     return 0;
 }
 
-RenderObjClass *HLodClass::Peek_Lod_Model(int lod_index, int model_index)
+RenderObjClass *HLodClass::Peek_Lod_Model(int32_t lod_index, int32_t model_index)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1234,7 +1234,7 @@ RenderObjClass *HLodClass::Peek_Lod_Model(int lod_index, int model_index)
     return nullptr;
 }
 
-RenderObjClass *HLodClass::Get_Lod_Model(int lod_index, int model_index)
+RenderObjClass *HLodClass::Get_Lod_Model(int32_t lod_index, int32_t model_index)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1251,7 +1251,7 @@ RenderObjClass *HLodClass::Get_Lod_Model(int lod_index, int model_index)
     return nullptr;
 }
 
-int HLodClass::Get_Lod_Model_Bone(int lod_index, int model_index)
+int32_t HLodClass::Get_Lod_Model_Bone(int32_t lod_index, int32_t model_index)
 {
     captainslog_assert(lod_index >= 0);
     captainslog_assert(lod_index < m_lodCount);
@@ -1267,12 +1267,12 @@ int HLodClass::Get_Lod_Model_Bone(int lod_index, int model_index)
     return 0;
 }
 
-int HLodClass::Get_Additional_Model_Count()
+int32_t HLodClass::Get_Additional_Model_Count()
 {
     return m_additionalModels.Count();
 }
 
-RenderObjClass *HLodClass::Peek_Additional_Model(int model_index)
+RenderObjClass *HLodClass::Peek_Additional_Model(int32_t model_index)
 {
     if (model_index >= 0) {
         if (model_index < m_additionalModels.Count()) {
@@ -1282,7 +1282,7 @@ RenderObjClass *HLodClass::Peek_Additional_Model(int model_index)
     return nullptr;
 }
 
-RenderObjClass *HLodClass::Get_Additional_Model(int model_index)
+RenderObjClass *HLodClass::Get_Additional_Model(int32_t model_index)
 {
     if (model_index >= 0) {
         if (model_index < m_additionalModels.Count()) {
@@ -1293,7 +1293,7 @@ RenderObjClass *HLodClass::Get_Additional_Model(int model_index)
     return nullptr;
 }
 
-int HLodClass::Get_Additional_Model_Bone(int model_index)
+int32_t HLodClass::Get_Additional_Model_Bone(int32_t model_index)
 {
     if (model_index >= 0) {
         if (model_index < m_additionalModels.Count()) {
@@ -1322,7 +1322,7 @@ void HLodClass::Prepare_LOD(CameraClass &camera)
         if (m_lodCount <= 1) {
             PredictiveLODOptimizerClass::Add_Cost(Get_Cost());
         } else {
-            int lod = Calculate_Cost_Value_Arrays(sz, m_value, m_cost);
+            int32_t lod = Calculate_Cost_Value_Arrays(sz, m_value, m_cost);
             if (m_curLod < lod) {
                 Set_LOD_Level(lod);
             }
@@ -1330,7 +1330,7 @@ void HLodClass::Prepare_LOD(CameraClass &camera)
             PredictiveLODOptimizerClass::Add_Object(this);
         }
 
-        for (int i = 0; i < m_additionalModels.Count(); i++) {
+        for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
             if (m_additionalModels[i].m_model->Is_Not_Hidden_At_All()) {
                 m_additionalModels[i].m_model->Prepare_LOD(camera);
             }
@@ -1340,11 +1340,11 @@ void HLodClass::Prepare_LOD(CameraClass &camera)
 
 void HLodClass::Recalculate_Static_LOD_Factors()
 {
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         m_lod[i].m_pixelCostPerArea = 0;
-        int polycount = 0;
+        int32_t polycount = 0;
 
-        for (int j = 0; j < m_lod[i].Count(); j++) {
+        for (int32_t j = 0; j < m_lod[i].Count(); j++) {
             if (m_lod[i][j].m_model->Is_Not_Hidden_At_All()) {
                 polycount += m_lod[i][j].m_model->Get_Num_Polys();
             }
@@ -1368,7 +1368,7 @@ void HLodClass::Increment_LOD()
 {
     if (m_curLod < m_lodCount - 1) {
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Removed(m_scene);
             }
         }
@@ -1376,7 +1376,7 @@ void HLodClass::Increment_LOD()
         m_curLod++;
 
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Added(m_scene);
             }
         }
@@ -1387,7 +1387,7 @@ void HLodClass::Decrement_LOD()
 {
     if (m_curLod > 0) {
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Removed(m_scene);
             }
         }
@@ -1395,7 +1395,7 @@ void HLodClass::Decrement_LOD()
         m_curLod--;
 
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Added(m_scene);
             }
         }
@@ -1417,9 +1417,9 @@ float HLodClass::Get_Post_Increment_Value() const
     return m_value[m_curLod + 1];
 }
 
-void HLodClass::Set_LOD_Level(int lod)
+void HLodClass::Set_LOD_Level(int32_t lod)
 {
-    int newlod = lod < 0 ? 0 : lod;
+    int32_t newlod = lod < 0 ? 0 : lod;
 
     if (newlod >= m_lodCount - 1) {
         newlod = m_lodCount - 1;
@@ -1427,7 +1427,7 @@ void HLodClass::Set_LOD_Level(int lod)
 
     if (newlod != m_curLod) {
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Removed(m_scene);
             }
         }
@@ -1435,30 +1435,30 @@ void HLodClass::Set_LOD_Level(int lod)
         m_curLod = newlod;
 
         if (Is_In_Scene()) {
-            for (int i = 0; i < m_lod[m_curLod].Count(); i++) {
+            for (int32_t i = 0; i < m_lod[m_curLod].Count(); i++) {
                 m_lod[m_curLod][i].m_model->Notify_Added(m_scene);
             }
         }
     }
 }
 
-int HLodClass::Get_LOD_Level() const
+int32_t HLodClass::Get_LOD_Level() const
 {
     return m_curLod;
 }
 
-int HLodClass::Get_LOD_Count() const
+int32_t HLodClass::Get_LOD_Count() const
 {
     return m_lodCount;
 }
 
-int HLodClass::Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const
+int32_t HLodClass::Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const
 {
-    for (int i = 0; i < m_lodCount; i++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
         costs[i] = screen_area * m_lod[i].m_pixelCostPerArea + m_lod[i].m_nonPixelCost;
     }
 
-    int lod = 0;
+    int32_t lod = 0;
 
     for (lod = 0; lod < m_lodCount; lod++) {
         if (m_lod[lod].m_maxScreenSize >= screen_area) {
@@ -1473,7 +1473,7 @@ int HLodClass::Calculate_Cost_Value_Arrays(float screen_area, float *values, flo
         lod = m_lodCount - 1;
     }
 
-    for (int i = lod + 1; i < m_lodCount; i++) {
+    for (int32_t i = lod + 1; i < m_lodCount; i++) {
         values[i] = screen_area * m_lod[i].m_benefitFactor * m_lodBias / costs[i];
     }
 
@@ -1500,11 +1500,11 @@ bool HLodClass::Cast_Ray(RayCollisionTestClass &raytest)
     ModelArrayClass *lod = &m_lod[m_lodCount - 1];
     bool result = false;
 
-    for (int i = 0; i < lod->Count(); i++) {
+    for (int32_t i = 0; i < lod->Count(); i++) {
         result |= (*lod)[i].m_model->Cast_Ray(raytest);
     }
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         result |= m_additionalModels[i].m_model->Cast_Ray(raytest);
     }
 
@@ -1513,8 +1513,8 @@ bool HLodClass::Cast_Ray(RayCollisionTestClass &raytest)
 
 void HLodClass::Free()
 {
-    for (int i = 0; i < m_lodCount; i++) {
-        for (int j = 0; j < m_lod[i].Count(); j++) {
+    for (int32_t i = 0; i < m_lodCount; i++) {
+        for (int32_t j = 0; j < m_lod[i].Count(); j++) {
             RenderObjClass *robj = m_lod[i][j].m_model;
             m_lod[i][j].m_model = nullptr;
 
@@ -1531,7 +1531,7 @@ void HLodClass::Free()
     delete[] m_cost;
     delete[] m_value;
 
-    for (int i = 0; i < m_additionalModels.Count(); i++) {
+    for (int32_t i = 0; i < m_additionalModels.Count(); i++) {
         RenderObjClass *robj = m_additionalModels[i].m_model;
         m_additionalModels[i].m_model = nullptr;
 

@@ -25,7 +25,7 @@ void SysTimeClass::Reset()
     m_negTime = -m_startTime;
 }
 
-int SysTimeClass::Get()
+int32_t SysTimeClass::Get()
 {
 #ifdef GAME_DLL
 #define _is_init (Make_Global<bool>(0x00A66B30))
@@ -38,7 +38,7 @@ int SysTimeClass::Get()
         _is_init = true;
     }
 
-    int time = rts::Get_Time();
+    int32_t time = rts::Get_Time();
 
     if (time < m_startTime) {
         return m_negTime + time;

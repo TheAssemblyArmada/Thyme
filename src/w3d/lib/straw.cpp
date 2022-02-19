@@ -49,7 +49,7 @@ void Straw::Get_From(Straw *straw)
     }
 }
 
-int Straw::Get(void *source, int length)
+int32_t Straw::Get(void *source, int32_t length)
 {
     if (m_chainTo != nullptr) {
         return m_chainTo->Get(source, length);

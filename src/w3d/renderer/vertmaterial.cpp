@@ -27,7 +27,7 @@ VertexMaterialClass *VertexMaterialClass::s_presets[VertexMaterialClass::PRESET_
 
 void VertexMaterialClass::Init()
 {
-    for (int i = 0; i < PRESET_COUNT; i++) {
+    for (int32_t i = 0; i < PRESET_COUNT; i++) {
         s_presets[i] = new VertexMaterialClass();
     }
 
@@ -38,7 +38,7 @@ void VertexMaterialClass::Init()
 
 void VertexMaterialClass::Shutdown()
 {
-    for (int i = 0; i < PRESET_COUNT; i++) {
+    for (int32_t i = 0; i < PRESET_COUNT; i++) {
         delete s_presets[i];
     }
 }
@@ -58,7 +58,7 @@ void VertexMaterialClass::Apply() const
     DX8Wrapper::Set_DX8_Render_State(D3DRS_DIFFUSEMATERIALSOURCE, m_diffuseColorSource);
     DX8Wrapper::Set_DX8_Render_State(D3DRS_EMISSIVEMATERIALSOURCE, m_emissiveColorSource);
 
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         if (m_mapper[i]) {
             m_mapper[i]->Apply(m_UVSource[i]);
         } else {
@@ -84,7 +84,7 @@ void VertexMaterialClass::Apply_Null()
     DX8Wrapper::Set_DX8_Render_State(D3DRS_DIFFUSEMATERIALSOURCE, 0);
     DX8Wrapper::Set_DX8_Render_State(D3DRS_EMISSIVEMATERIALSOURCE, 0);
 
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_TEXCOORDINDEX, i);
         DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_TEXTURETRANSFORMFLAGS, 0);
     }
@@ -111,7 +111,7 @@ void VertexMaterialClass::Get_Diffuse(Vector3 *set_color) const
 
 unsigned long VertexMaterialClass::Compute_CRC() const
 {
-    unsigned int crc = 0;
+    uint32_t crc = 0;
 #ifdef BUILD_WITH_D3D8
     D3DMATERIAL8 *mat = m_material;
     crc = CRC::Memory(mat, sizeof(*mat), crc);
@@ -123,7 +123,7 @@ unsigned long VertexMaterialClass::Compute_CRC() const
     crc = CRC::Memory(&m_UVSource, sizeof(m_UVSource), crc);
     crc = CRC::Memory(&m_useLighting, sizeof(m_useLighting), crc);
     crc = CRC::Memory(&m_uniqueID, sizeof(m_uniqueID), crc);
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         crc = CRC::Memory(&m_mapper[i], sizeof(*m_mapper[i]), crc);
     }
     return crc;
@@ -152,19 +152,19 @@ void VertexMaterialClass::Parse_Mapping_Args(
 {
     INIClass mapping0_arg_ini;
     if (mapping0_arg_buffer) {
-        unsigned int mapping0_arg_len = strlen(mapping0_arg_buffer);
+        uint32_t mapping0_arg_len = strlen(mapping0_arg_buffer);
         char *c = new char[mapping0_arg_len + 10];
         snprintf(c, mapping0_arg_len + 10, "[Args]\n%s", mapping0_arg_buffer);
-        BufferStraw map_arg_buf_straw(c, (int)strlen(c));
+        BufferStraw map_arg_buf_straw(c, (int32_t)strlen(c));
         mapping0_arg_ini.Load(map_arg_buf_straw);
         delete[] c;
     }
     INIClass mapping1_arg_ini;
     if (mapping1_arg_buffer) {
-        unsigned int mapping1_arg_len = strlen(mapping1_arg_buffer);
+        uint32_t mapping1_arg_len = strlen(mapping1_arg_buffer);
         char *c = new char[mapping1_arg_len + 20];
         snprintf(c, mapping1_arg_len + 20, "[Args]\n%s", mapping1_arg_buffer);
-        BufferStraw map_arg_buf_straw(c, (int)strlen(c));
+        BufferStraw map_arg_buf_straw(c, (int32_t)strlen(c));
         mapping1_arg_ini.Load(map_arg_buf_straw);
         delete[] c;
     }
@@ -349,7 +349,7 @@ VertexMaterialClass::VertexMaterialClass() :
     m_CRCDirty(true),
     m_useLighting(false)
 {
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         m_mapper[i] = nullptr;
         m_UVSource[i] = 0;
     }
@@ -374,7 +374,7 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass &src) :
     m_CRCDirty(true),
     m_useLighting(src.m_useLighting)
 {
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         m_mapper[i] = 0;
 
         if (src.m_mapper[i]) {
@@ -394,7 +394,7 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass &src) :
 
 VertexMaterialClass::~VertexMaterialClass()
 {
-    for (int i = 0; i < MAX_STAGES; i++) {
+    for (int32_t i = 0; i < MAX_STAGES; i++) {
         Ref_Ptr_Release(m_mapper[i]);
     }
 
@@ -417,7 +417,7 @@ VertexMaterialClass &VertexMaterialClass::operator=(const VertexMaterialClass &s
         m_uniqueID = src.m_uniqueID;
         m_CRCDirty = src.m_CRCDirty;
 
-        for (int i = 0; i < MAX_STAGES; i++) {
+        for (int32_t i = 0; i < MAX_STAGES; i++) {
             Ref_Ptr_Release(m_mapper[i]);
 
             if (src.m_mapper[i]) {
@@ -622,7 +622,7 @@ VertexMaterialClass::ColorSourceType VertexMaterialClass::Get_Diffuse_Color_Sour
     }
 }
 
-void VertexMaterialClass::Set_UV_Source(int stage, int array_index)
+void VertexMaterialClass::Set_UV_Source(int32_t stage, int32_t array_index)
 {
     captainslog_assert(stage >= 0);
     captainslog_assert(stage < MAX_STAGES);
@@ -632,7 +632,7 @@ void VertexMaterialClass::Set_UV_Source(int stage, int array_index)
     m_UVSource[stage] = array_index;
 }
 
-int VertexMaterialClass::Get_UV_Source(int stage)
+int32_t VertexMaterialClass::Get_UV_Source(int32_t stage)
 {
     captainslog_assert(stage >= 0);
     captainslog_assert(stage < MAX_STAGES);
@@ -646,8 +646,8 @@ W3DErrorType VertexMaterialClass::Load_W3D(ChunkLoadClass &cload)
     char *mapping0_arg_buffer = nullptr;
     char *mapping1_arg_buffer = nullptr;
     W3dVertexMaterialStruct vmat;
-    unsigned int mapping0_arg_len = 0;
-    unsigned int mapping1_arg_len = 0;
+    uint32_t mapping0_arg_len = 0;
+    uint32_t mapping1_arg_len = 0;
     while (cload.Open_Chunk()) {
         switch (cload.Cur_Chunk_ID()) {
             case W3D_CHUNK_VERTEX_MATERIAL_NAME:
@@ -758,7 +758,7 @@ VertexMaterialClass *VertexMaterialClass::Get_Preset(PresetType type)
     return s_presets[type];
 }
 
-unsigned int g_unique = 1;
+uint32_t g_unique = 1;
 void VertexMaterialClass::Make_Unique()
 {
     m_CRCDirty = true;

@@ -90,7 +90,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
     ArchivedFileInfo *info = new ArchivedFileInfo;
 
     // Process each file info found in the Big file header.
-    for (unsigned int i = 0; i < file_count; ++i) {
+    for (uint32_t i = 0; i < file_count; ++i) {
         int32_t file_size = 0;
         int32_t file_pos = 0;
         char namebuf[BIG_PATH_MAX];
@@ -105,7 +105,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         info->position = file_pos;
         info->archive_name = filename;
 
-        int strlen = 0;
+        int32_t strlen = 0;
         char *putp = namebuf;
 
         for (; strlen < BIG_PATH_MAX; ++strlen) {
@@ -124,7 +124,7 @@ ArchiveFile *Win32BIGFileSystem::Open_Archive_File(const char *filename)
         // file_pos);
 
         // Find the start of the file name
-        int name_start = strlen;
+        int32_t name_start = strlen;
 
         for (; name_start >= 0; --name_start) {
             if (namebuf[name_start] == '\\' || namebuf[name_start] == '/') {

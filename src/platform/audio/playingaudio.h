@@ -32,13 +32,13 @@ struct MilesPlayingAudio
     HSAMPLE sample;
     H3DSAMPLE sample_3d;
     HSTREAM stream;
-    int playing_type;
-    int stopped;
+    int32_t playing_type;
+    int32_t stopped;
     AudioEventRTS *audio_event;
     void *file_handle;
     bool disable_loops;
     bool release_event;
-    int time_fading;
+    int32_t time_fading;
 };
 
 #endif
@@ -50,6 +50,6 @@ struct PlayingAudio
 #ifdef BUILD_WITH_MILES
         MilesPlayingAudio miles;
 #endif
-        int unused;
+        int32_t unused;
     };
 };

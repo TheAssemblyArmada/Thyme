@@ -96,26 +96,26 @@ public:
     virtual void Init_Map_String_File(Utf8String const &filename) override;
     virtual void Deinit() override;
 
-    static int Compare_LUT(void const *a, void const *b);
+    static int32_t Compare_LUT(void const *a, void const *b);
     static GameTextInterface *Create_Game_Text_Interface();
 
 private:
-    void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int buff_len);
+    void Read_To_End_Of_Quote(File *file, char *in, char *out, char *wave, int32_t buff_len);
     void Translate_Copy(unichar_t *out, char *in);
     void Remove_Leading_And_Trailing(char *buffer);
     void Strip_Spaces(unichar_t *buffer);
     void Reverse_Word(char *start, char *end);
     char Read_Char(File *file);
-    bool Read_Line(char *buffer, int length, File *file);
-    bool Get_String_Count(const char *filename, int &count);
+    bool Read_Line(char *buffer, int32_t length, File *file);
+    bool Get_String_Count(const char *filename, int32_t &count);
     bool Get_CSF_Info(const char *filename);
     bool Parse_String_File(const char *filename);
     bool Parse_CSF_File(const char *filename);
     bool Parse_Map_String_File(const char *filename);
 
 private:
-    int m_textCount;
-    int m_maxLabelLen;
+    int32_t m_textCount;
+    int32_t m_maxLabelLen;
     char m_bufferIn[10240];
     char m_bufferOut[10240];
     char m_bufferEx[10240];
@@ -131,7 +131,7 @@ private:
     Utf16String m_failed;
     StringInfo *m_mapStringInfo;
     StringLookUp *m_mapStringLUT;
-    int m_mapTextCount;
+    int32_t m_mapTextCount;
     std::vector<Utf8String> m_stringVector;
 };
 

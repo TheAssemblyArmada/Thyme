@@ -33,8 +33,8 @@ struct OpenAudioFile
 {
     AILSOUNDINFO info;
     void *wave_data;
-    int ref_count;
-    int data_size;
+    int32_t ref_count;
+    int32_t data_size;
     bool miles_allocated;
     const AudioEventInfo *audio_event_info;
 };

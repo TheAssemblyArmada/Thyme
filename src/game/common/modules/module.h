@@ -90,7 +90,7 @@ public:
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
     static ModuleType Get_Module_Type();
-    static int Get_Interface_Mask();
+    static int32_t Get_Interface_Mask();
 
 private:
     const ModuleData *m_moduleData;

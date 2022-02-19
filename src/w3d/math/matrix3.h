@@ -102,8 +102,8 @@ public:
     }
 
     void Set(const Quaternion &q);
-    __forceinline Vector3 &operator[](int i) { return Row[i]; }
-    __forceinline const Vector3 &operator[](int i) const { return Row[i]; }
+    __forceinline Vector3 &operator[](int32_t i) { return Row[i]; }
+    __forceinline const Vector3 &operator[](int32_t i) const { return Row[i]; }
 
     __forceinline Matrix3 Transpose() const
     {
@@ -276,8 +276,8 @@ public:
     friend Matrix3 operator*(const Matrix3 &a, const Matrix3 &b);
     friend Matrix3 operator*(const Matrix3D &a, const Matrix3 &b);
     friend Matrix3 operator*(const Matrix3 &a, const Matrix3D &b);
-    friend int operator==(const Matrix3 &a, const Matrix3 &b);
-    friend int operator!=(const Matrix3 &a, const Matrix3 &b);
+    friend int32_t operator==(const Matrix3 &a, const Matrix3 &b);
+    friend int32_t operator!=(const Matrix3 &a, const Matrix3 &b);
     friend void Swap(Matrix3 &a, Matrix3 &b);
     friend Vector3 operator*(const Matrix3 &a, const Vector3 &v);
 
@@ -301,7 +301,7 @@ public:
     static void Multiply(const Matrix3D &a, const Matrix3 &b, Matrix3 *res);
     static void Multiply(const Matrix3 &a, const Matrix3D &b, Matrix3 *res);
 
-    int Is_Orthogonal() const;
+    int32_t Is_Orthogonal() const;
     void Re_Orthogonalize();
 
     __forceinline static void Rotate_Vector(const Matrix3 &A, const Vector3 &in, Vector3 *out)
@@ -340,10 +340,10 @@ public:
 
     __forceinline void Rotate_AABox_Extent(const Vector3 &extent, Vector3 *new_extent)
     {
-        for (int i = 0; i < 3; i++) {
+        for (int32_t i = 0; i < 3; i++) {
             (*new_extent)[i] = 0.0f;
 
-            for (int j = 0; j < 3; j++) {
+            for (int32_t j = 0; j < 3; j++) {
                 (*new_extent)[i] += GameMath::Fabs(Row[i][j] * extent[j]);
             }
         }
@@ -353,7 +353,7 @@ public:
     {
         Matrix3 a(*this); // As a evolves from original mat into identity
         Matrix3 b(true); // b evolves from identity into inverse(a)
-        int i, j, i1;
+        int32_t i, j, i1;
 
         // Loop over cols of a from left to right, eliminating above and below diagonal
         for (j = 0; j < 3; j++) {
@@ -443,12 +443,12 @@ __forceinline Vector3 operator*(const Matrix3 &a, const Vector3 &v)
         a[2][0] * v[0] + a[2][1] * v[1] + a[2][2] * v[2]);
 }
 
-__forceinline int operator==(const Matrix3 &a, const Matrix3 &b)
+__forceinline int32_t operator==(const Matrix3 &a, const Matrix3 &b)
 {
     return ((a[0] == b[0]) && (a[1] == b[1]) && (a[2] == b[2]));
 }
 
-__forceinline int operator!=(const Matrix3 &a, const Matrix3 &b)
+__forceinline int32_t operator!=(const Matrix3 &a, const Matrix3 &b)
 {
     return (!(a == b));
 }

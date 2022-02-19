@@ -81,7 +81,7 @@ class DX8TextureCategoryClass : public MultiListObjectClass
 {
 public:
     DX8TextureCategoryClass(
-        DX8FVFCategoryContainer *container, TextureClass **texs, ShaderClass shd, VertexMaterialClass *mat, int pass);
+        DX8FVFCategoryContainer *container, TextureClass **texs, ShaderClass shd, VertexMaterialClass *mat, int32_t pass);
     ~DX8TextureCategoryClass() override;
 
     void Add_Render_Task(DX8PolygonRendererClass *p_renderer, MeshClass *p_mesh);
@@ -89,18 +89,18 @@ public:
     bool Anything_To_Render() { return m_renderTaskHead != nullptr; }
     void Clear_Render_List() { m_renderTaskHead = nullptr; }
 
-    TextureClass *Peek_Texture(int stage) { return m_textures[stage]; }
+    TextureClass *Peek_Texture(int32_t stage) { return m_textures[stage]; }
     const VertexMaterialClass *Peek_Material() { return m_material; }
 
     ShaderClass Get_Shader() { return m_shader; }
     DX8FVFCategoryContainer *Get_Container() { return m_container; }
     MultiListClass<DX8PolygonRendererClass> &Get_Polygon_Renderer_List() { return m_polygonRendererList; }
 
-    unsigned int Add_Mesh(Vertex_Split_Table &split_table,
-        unsigned int vertex_offset,
-        unsigned int index_offset,
+    uint32_t Add_Mesh(Vertex_Split_Table &split_table,
+        uint32_t vertex_offset,
+        uint32_t index_offset,
         IndexBufferClass *index_buffer,
-        unsigned int pass);
+        uint32_t pass);
 
     void Log(bool only_visible);
 
@@ -110,7 +110,7 @@ public:
     static void SetForceMultiply(bool multiply) { s_forceMultiply = multiply; }
 
 private:
-    int m_pass;
+    int32_t m_pass;
     TextureClass *m_textures[2];
     ShaderClass m_shader;
     VertexMaterialClass *m_material;
@@ -132,7 +132,7 @@ public:
         MAX_PASSES = 4
     };
 
-    DX8FVFCategoryContainer(unsigned int FVF, bool sorting);
+    DX8FVFCategoryContainer(uint32_t FVF, bool sorting);
     ~DX8FVFCategoryContainer() override;
 
     virtual void Render() = 0;
@@ -151,18 +151,18 @@ public:
     void Change_Polygon_Renderer_Texture(MultiListClass<DX8PolygonRendererClass> &polygon_renderer_list,
         TextureClass *texture,
         TextureClass *new_texture,
-        unsigned int pass,
-        unsigned int stage);
+        uint32_t pass,
+        uint32_t stage);
     void Change_Polygon_Renderer_Material(MultiListClass<DX8PolygonRendererClass> &polygon_renderer_list,
         VertexMaterialClass *vmat,
         VertexMaterialClass *new_vmat,
-        unsigned int pass);
+        uint32_t pass);
 
     void Remove_Texture_Category(DX8TextureCategoryClass *tex_category);
 
-    unsigned int Get_FVF() { return m_FVF; }
+    uint32_t Get_FVF() { return m_FVF; }
 
-    void Add_Visible_Texture_Category(DX8TextureCategoryClass *tex_category, int pass)
+    void Add_Visible_Texture_Category(DX8TextureCategoryClass *tex_category, int32_t pass)
     {
         captainslog_assert(pass >= 0 && pass < MAX_PASSES);
         captainslog_assert(tex_category != nullptr);
@@ -173,7 +173,7 @@ public:
 
     void Add_Visible_Material_Pass(MaterialPassClass *pass, MeshClass *mesh);
 
-    static unsigned int Define_FVF(MeshModelClass *mmc, bool enable_lighting);
+    static uint32_t Define_FVF(MeshModelClass *mmc, bool enable_lighting);
 
 protected:
     bool Anything_To_Render() { return m_anythingToRender; }
@@ -182,28 +182,28 @@ protected:
     void Render_Procedural_Material_Passes();
 
     DX8TextureCategoryClass *Find_Matching_Texture_Category(
-        VertexMaterialClass *vmat, unsigned int pass, DX8TextureCategoryClass *ref_category);
+        VertexMaterialClass *vmat, uint32_t pass, DX8TextureCategoryClass *ref_category);
     DX8TextureCategoryClass *Find_Matching_Texture_Category(
-        TextureClass *texture, unsigned int pass, unsigned int stage, DX8TextureCategoryClass *ref_category);
+        TextureClass *texture, uint32_t pass, uint32_t stage, DX8TextureCategoryClass *ref_category);
 
     void Insert_To_Texture_Category(Vertex_Split_Table &split_table,
         TextureClass **texs,
         VertexMaterialClass *mat,
         ShaderClass shader,
-        int pass,
-        unsigned int vertex_offset);
+        int32_t pass,
+        uint32_t vertex_offset);
 
-    void Generate_Texture_Categories(Vertex_Split_Table &split_table, unsigned int vertex_offset);
+    void Generate_Texture_Categories(Vertex_Split_Table &split_table, uint32_t vertex_offset);
 
     MultiListClass<DX8TextureCategoryClass> m_textureCategoryList[4];
     MultiListClass<DX8TextureCategoryClass> m_visibleTextureCategoryList[4];
     MatPassTaskClass *m_visibleMatpassHead;
     MatPassTaskClass *m_visibleMatpassTail;
     IndexBufferClass *m_indexBuffer;
-    int m_usedIndices;
-    unsigned int m_FVF;
-    unsigned int m_passes;
-    unsigned int m_uvCoordinateChannels;
+    int32_t m_usedIndices;
+    uint32_t m_FVF;
+    uint32_t m_passes;
+    uint32_t m_uvCoordinateChannels;
     bool m_sorting;
     bool m_anythingToRender;
     bool m_anyDelayedPassesToRender;
@@ -212,7 +212,7 @@ protected:
 class DX8RigidFVFCategoryContainer : public DX8FVFCategoryContainer
 {
 public:
-    DX8RigidFVFCategoryContainer(unsigned int FVF, bool sorting);
+    DX8RigidFVFCategoryContainer(uint32_t FVF, bool sorting);
     ~DX8RigidFVFCategoryContainer() override;
 
     void Add_Mesh(MeshModelClass *mmc) override;
@@ -228,7 +228,7 @@ public:
 
 protected:
     VertexBufferClass *m_vertexBuffer;
-    int m_usedVertices;
+    int32_t m_usedVertices;
     MatPassTaskClass *m_delayedVisibleMatpassHead;
     MatPassTaskClass *m_delayedVisibleMatpassTail;
 };
@@ -256,7 +256,7 @@ private:
     void Reset();
     void Clear_Visible_Skin_List();
 
-    unsigned int m_visibleVertexCount;
+    uint32_t m_visibleVertexCount;
     MeshClass *m_visibleSkinHead;
     MeshClass *m_visibleSkinTail;
 };

@@ -41,7 +41,7 @@ class GDIFileStream : public InputStream
 {
 public:
     GDIFileStream(File *file) : m_file(file) {}
-    int Read(void *dst, int size) override { return m_file->Read(dst, size); }
+    int32_t Read(void *dst, int32_t size) override { return m_file->Read(dst, size); }
 
 private:
     File *m_file;
@@ -73,7 +73,7 @@ WorldHeightMap::WorldHeightMap() :
     m_drawWidthX(129),
     m_drawHeightY(129)
 {
-    for (int i = 0; i < TILE_COUNT; i++) {
+    for (int32_t i = 0; i < TILE_COUNT; i++) {
         m_sourceTiles[i] = nullptr;
         m_edgeTiles[i] = nullptr;
     }
@@ -108,7 +108,7 @@ WorldHeightMap::WorldHeightMap(ChunkInputStream *strm, bool logical_data_only) :
     m_drawWidthX(129),
     m_drawHeightY(129)
 {
-    for (int i = 0; i < TILE_COUNT; i++) {
+    for (int32_t i = 0; i < TILE_COUNT; i++) {
         m_sourceTiles[i] = nullptr;
         m_edgeTiles[i] = nullptr;
     }
@@ -142,7 +142,7 @@ WorldHeightMap::WorldHeightMap(ChunkInputStream *strm, bool logical_data_only) :
     }
 
     if (!logical_data_only) {
-        for (int i = 0; i < m_dataSize; i++) {
+        for (int32_t i = 0; i < m_dataSize; i++) {
             if (m_cliffInfoNdxes[i] < 0 || m_cliffInfoNdxes[i] >= m_numCliffInfo) {
                 m_cliffInfoNdxes[i] = 0;
             }
@@ -223,12 +223,12 @@ WorldHeightMap::~WorldHeightMap()
         m_cliffState = nullptr;
     }
 
-    for (int i = 0; i < TILE_COUNT; i++) {
+    for (int32_t i = 0; i < TILE_COUNT; i++) {
         Ref_Ptr_Release(m_sourceTiles[i]);
         Ref_Ptr_Release(m_edgeTiles[i]);
     }
 
-    for (int i = 0; i < 12; i++) {
+    for (int32_t i = 0; i < 12; i++) {
         Ref_Ptr_Release(s_alphaTiles[i]);
     }
 
@@ -246,7 +246,7 @@ void WorldHeightMap::Free_List_Of_Map_Objects()
     MapObject::Get_World_Dict()->Clear();
 }
 
-bool WorldHeightMap::Get_Flip_State(int x, int y) const
+bool WorldHeightMap::Get_Flip_State(int32_t x, int32_t y) const
 {
     if (x < 0 || y < 0) {
         return false;
@@ -267,7 +267,7 @@ bool WorldHeightMap::Get_Flip_State(int x, int y) const
     return false;
 }
 
-void WorldHeightMap::Set_Flip_State(int x_index, int y_index, bool state)
+void WorldHeightMap::Set_Flip_State(int32_t x_index, int32_t y_index, bool state)
 {
     if (x_index >= 0 && y_index >= 0 && y_index < m_height && x_index < m_width) {
         if (m_cellFlipState) {
@@ -288,7 +288,7 @@ void WorldHeightMap::Clear_Flip_States()
     }
 }
 
-float WorldHeightMap::Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y)
+float WorldHeightMap::Get_Bilinear_Sample_Seismic_Z_Velocity(int32_t x, int32_t y)
 {
     if (x < 0 || y < 0) {
         return 0.0f;
@@ -352,7 +352,7 @@ float WorldHeightMap::Get_Bilinear_Sample_Seismic_Z_Velocity(int x, int y)
     return f1 / f2;
 }
 
-float WorldHeightMap::Get_Seismic_Z_Velocity(int x, int y) const
+float WorldHeightMap::Get_Seismic_Z_Velocity(int32_t x, int32_t y) const
 {
     if (x < 0 || y < 0) {
         return 0.0f;
@@ -373,7 +373,7 @@ float WorldHeightMap::Get_Seismic_Z_Velocity(int x, int y) const
     return 0.0f;
 }
 
-void WorldHeightMap::Set_Seismic_Z_Velocity(int x, int y, float velocity)
+void WorldHeightMap::Set_Seismic_Z_Velocity(int32_t x, int32_t y, float velocity)
 {
     if (x >= 0 && y >= 0 && y < m_height && x < m_width) {
         if (m_seismicZVelocities) {
@@ -382,7 +382,7 @@ void WorldHeightMap::Set_Seismic_Z_Velocity(int x, int y, float velocity)
     }
 }
 
-bool WorldHeightMap::Get_Cliff_State(int x_index, int y_index) const
+bool WorldHeightMap::Get_Cliff_State(int32_t x_index, int32_t y_index) const
 {
     if (x_index < 0 || y_index < 0) {
         return false;
@@ -425,14 +425,14 @@ bool WorldHeightMap::Parse_Lighting_Data_Chunk(DataChunkInput &file, DataChunkIn
     memset(&initLightValues, 0, sizeof(initLightValues));
     initLightValues.lightPos.z = -1.0f;
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT - 1; i++) {
-        for (int j = 0; j < 3; j++) {
+    for (int32_t i = 0; i < TIME_OF_DAY_COUNT - 1; i++) {
+        for (int32_t j = 0; j < 3; j++) {
             g_theWriteableGlobalData->m_terrainObjectLighting[i + 1][j] = initLightValues;
             g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][j] = initLightValues;
         }
     }
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT - 1; i++) {
+    for (int32_t i = 0; i < TIME_OF_DAY_COUNT - 1; i++) {
         g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][0].ambient.red = file.Read_Real32();
         g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][0].ambient.green = file.Read_Real32();
         g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][0].ambient.blue = file.Read_Real32();
@@ -455,7 +455,7 @@ bool WorldHeightMap::Parse_Lighting_Data_Chunk(DataChunkInput &file, DataChunkIn
         g_theWriteableGlobalData->m_terrainObjectLighting[i + 1][0].lightPos.z = file.Read_Real32();
 
         if (info->version >= 2) {
-            for (int j = 1; j < LIGHT_COUNT; j++) {
+            for (int32_t j = 1; j < LIGHT_COUNT; j++) {
                 g_theWriteableGlobalData->m_terrainObjectLighting[i + 1][j].ambient.red = file.Read_Real32();
                 g_theWriteableGlobalData->m_terrainObjectLighting[i + 1][j].ambient.green = file.Read_Real32();
                 g_theWriteableGlobalData->m_terrainObjectLighting[i + 1][j].ambient.blue = file.Read_Real32();
@@ -469,7 +469,7 @@ bool WorldHeightMap::Parse_Lighting_Data_Chunk(DataChunkInput &file, DataChunkIn
         }
 
         if (info->version >= 3) {
-            for (int j = 1; j < LIGHT_COUNT; j++) {
+            for (int32_t j = 1; j < LIGHT_COUNT; j++) {
                 g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][j].ambient.red = file.Read_Real32();
                 g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][j].ambient.green = file.Read_Real32();
                 g_theWriteableGlobalData->m_terrainPlaneLighting[i + 1][j].ambient.blue = file.Read_Real32();
@@ -484,7 +484,7 @@ bool WorldHeightMap::Parse_Lighting_Data_Chunk(DataChunkInput &file, DataChunkIn
     }
 
     if (!file.At_End_Of_Chunk()) {
-        int color = file.Read_Int32();
+        int32_t color = file.Read_Int32();
 
         if (g_theW3DShadowManager) {
             g_theW3DShadowManager->Set_Shadow_Color(color);
@@ -519,10 +519,10 @@ bool WorldHeightMap::Parse_Height_Map_Data(DataChunkInput &file, DataChunkInfo *
     }
 
     if (info->version >= 4) {
-        int size = file.Read_Int32();
+        int32_t size = file.Read_Int32();
         m_boundaries.resize(size);
 
-        for (int i = 0; i < size; i++) {
+        for (int32_t i = 0; i < size; i++) {
             m_boundaries[i].x = file.Read_Int32();
             m_boundaries[i].y = file.Read_Int32();
         }
@@ -547,11 +547,11 @@ bool WorldHeightMap::Parse_Height_Map_Data(DataChunkInput &file, DataChunkInfo *
     file.Read_Byte_Array(m_data, m_dataSize);
 
     if (info->version == 1) {
-        int x = (m_width + 1) / 2;
-        int y = (m_height + 1) / 2;
+        int32_t x = (m_width + 1) / 2;
+        int32_t y = (m_height + 1) / 2;
 
-        for (int i = 0; i < y; i++) {
-            for (int j = 0; j < x; j++) {
+        for (int32_t i = 0; i < y; i++) {
+            for (int32_t j = 0; j < x; j++) {
                 m_data[j + y * i] = m_data[2 * j + m_width * 2 * i];
             }
         }
@@ -578,10 +578,10 @@ bool WorldHeightMap::Parse_Size_Only(DataChunkInput &file, DataChunkInfo *info, 
     }
 
     if (info->version >= 4) {
-        int size = file.Read_Int32();
+        int32_t size = file.Read_Int32();
         m_boundaries.resize(size);
 
-        for (int i = 0; i < size; i++) {
+        for (int32_t i = 0; i < size; i++) {
             m_boundaries[i].x = file.Read_Int32();
             m_boundaries[i].y = file.Read_Int32();
         }
@@ -601,11 +601,11 @@ bool WorldHeightMap::Parse_Size_Only(DataChunkInput &file, DataChunkInfo *info, 
     file.Read_Byte_Array(m_data, m_dataSize);
 
     if (info->version == 1) {
-        int x = (m_width + 1) / 2;
-        int y = (m_height + 1) / 2;
+        int32_t x = (m_width + 1) / 2;
+        int32_t y = (m_height + 1) / 2;
 
-        for (int i = 0; i < y; i++) {
-            for (int j = 0; j < x; j++) {
+        for (int32_t i = 0; i < y; i++) {
+            for (int32_t j = 0; j < x; j++) {
                 m_data[j + y * i] = m_data[2 * j + m_width * 2 * i];
             }
         }
@@ -623,7 +623,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data_Chunk(DataChunkInput &file, DataChunk
 
 bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    int size = file.Read_Int32();
+    int32_t size = file.Read_Int32();
 
     if (m_dataSize != size) {
         throw CODE_05;
@@ -656,12 +656,12 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
 
     if (info->version >= 7) {
         if (info->version == 7) {
-            int w = (m_width + 1) / 8;
+            int32_t w = (m_width + 1) / 8;
             unsigned char *c = new unsigned char[w * m_height];
             file.Read_Byte_Array(c, w * m_height);
 
-            for (int i = 0; i < m_height; i++) {
-                for (int j = 0; j < w; j++) {
+            for (int32_t i = 0; i < m_height; i++) {
+                for (int32_t j = 0; j < w; j++) {
                     m_cliffState[j + m_flipStateWidth * i] = c[j + w * i];
                 }
             }
@@ -688,7 +688,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     m_numTextureClasses = file.Read_Int32();
     captainslog_dbgassert(m_numTextureClasses > 0 || m_numTextureClasses < 16193, "Unlikely m_numTextureClasses.");
 
-    for (int i = 0; i < m_numTextureClasses; i++) {
+    for (int32_t i = 0; i < m_numTextureClasses; i++) {
         m_textureClasses[i].global_texture_class = 0xFFFFFFFF;
         m_textureClasses[i].first_tile = file.Read_Int32();
         m_textureClasses[i].num_tiles = file.Read_Int32();
@@ -705,7 +705,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         m_numEdgeTiles = file.Read_Int32();
         m_numEdgeTextureClasses = file.Read_Int32();
 
-        for (int i = 0; i < m_numEdgeTextureClasses; i++) {
+        for (int32_t i = 0; i < m_numEdgeTextureClasses; i++) {
             m_edgeTextureClasses[i].global_texture_class = 0xFFFFFFFF;
             m_edgeTextureClasses[i].first_tile = file.Read_Int32();
             m_edgeTextureClasses[i].num_tiles = file.Read_Int32();
@@ -715,7 +715,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
         }
     }
 
-    for (int i = 1; i < m_numBlendedTiles; i++) {
+    for (int32_t i = 1; i < m_numBlendedTiles; i++) {
         m_blendedTiles[i].blend_ndx = file.Read_Int32();
         m_blendedTiles[i].horiz = file.Read_Byte();
         m_blendedTiles[i].vert = file.Read_Byte();
@@ -739,7 +739,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
             m_blendedTiles[i].custom_blend_edge_class = 0xFFFFFFFF;
         }
 
-        int flag = file.Read_Int32();
+        int32_t flag = file.Read_Int32();
         captainslog_dbgassert(flag == FLAG_VAL, "Invalid format.");
 
         if (flag != FLAG_VAL) {
@@ -748,7 +748,7 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     }
 
     if (info->version >= 5) {
-        for (int i = 1; i < m_numCliffInfo; i++) {
+        for (int32_t i = 1; i < m_numCliffInfo; i++) {
             m_cliffInfo[i].tile_index = file.Read_Int32();
             m_cliffInfo[i].u0 = file.Read_Real32();
             m_cliffInfo[i].v0 = file.Read_Real32();
@@ -764,11 +764,11 @@ bool WorldHeightMap::Parse_Blend_Tile_Data(DataChunkInput &file, DataChunkInfo *
     }
 
     if (info->version == 1) {
-        int x = (m_width + 1) / 2;
-        int y = (m_height + 1) / 2;
+        int32_t x = (m_width + 1) / 2;
+        int32_t y = (m_height + 1) / 2;
 
-        for (int i = 0; i < y; i++) {
-            for (int j = 0; j < x; j++) {
+        for (int32_t i = 0; i < y; i++) {
+            for (int32_t j = 0; j < x; j++) {
                 m_tileNdxes[j + x * i] = m_tileNdxes[2 * j + m_width * 2 * i];
                 m_blendTileNdxes[j + x * i] = 0;
                 m_extraBlendTileNdxes[j + x * i] = 0;
@@ -802,12 +802,12 @@ void WorldHeightMap::Read_Tex_Class(TXTextureClass *tex_class, TileData **tile_d
 
     if (file) {
         GDIFileStream stream(file);
-        int numTiles = Count_Tiles(&stream, nullptr);
+        int32_t numTiles = Count_Tiles(&stream, nullptr);
         file->Seek(0, File::START);
 
         if (numTiles >= tex_class->num_tiles) {
             numTiles = tex_class->num_tiles;
-            int i;
+            int32_t i;
 
             for (i = 10; i >= 1; i--) {
                 if (numTiles >= i * i) {
@@ -843,7 +843,7 @@ bool WorldHeightMap::Parse_Object_Data(DataChunkInput &file, DataChunkInfo *info
     }
 
     float angle = file.Read_Real32();
-    int flags = file.Read_Int32();
+    int32_t flags = file.Read_Int32();
     Utf8String name = file.Read_AsciiString();
     Dict d(0);
 
@@ -883,7 +883,7 @@ bool WorldHeightMap::Parse_Object_Data(DataChunkInput &file, DataChunkInfo *info
     return true;
 }
 
-int WorldHeightMap::Count_Tiles(InputStream *str, bool *b)
+int32_t WorldHeightMap::Count_Tiles(InputStream *str, bool *b)
 {
     TGAHeader hdr;
 
@@ -895,8 +895,8 @@ int WorldHeightMap::Count_Tiles(InputStream *str, bool *b)
         return 0;
     }
 
-    int w = hdr.width / TILE_PIXEL_EXTENT;
-    int h = hdr.height / TILE_PIXEL_EXTENT;
+    int32_t w = hdr.width / TILE_PIXEL_EXTENT;
+    int32_t h = hdr.height / TILE_PIXEL_EXTENT;
 
     if (hdr.cmap_type) {
         return 0;
@@ -918,7 +918,7 @@ int WorldHeightMap::Count_Tiles(InputStream *str, bool *b)
         return 0;
     }
 
-    for (int i = 10; i > 0; --i) {
+    for (int32_t i = 10; i > 0; --i) {
         if (w >= i && h >= i) {
             return i * i;
         }
@@ -932,7 +932,7 @@ int WorldHeightMap::Count_Tiles(InputStream *str, bool *b)
     return 1;
 }
 
-bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int num_rows)
+bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int32_t num_rows)
 {
     TGAHeader hdr;
 
@@ -940,8 +940,8 @@ bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int num_rows
         return 0;
     }
 
-    int w = hdr.width / TILE_PIXEL_EXTENT;
-    int h = hdr.height / TILE_PIXEL_EXTENT;
+    int32_t w = hdr.width / TILE_PIXEL_EXTENT;
+    int32_t h = hdr.height / TILE_PIXEL_EXTENT;
 
     if (hdr.height == 32) {
         h = 1;
@@ -956,7 +956,7 @@ bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int num_rows
     }
 
     bool compressed = (hdr.image_type & 8) != 0;
-    int bytesPerPixel = (hdr.pixel_depth + 7) / 8;
+    int32_t bytesPerPixel = (hdr.pixel_depth + 7) / 8;
 
     if (bytesPerPixel < 3) {
         return false;
@@ -966,17 +966,17 @@ bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int num_rows
         return false;
     }
 
-    for (int i = 0; i < num_rows * num_rows; i++) {
+    for (int32_t i = 0; i < num_rows * num_rows; i++) {
         if (!tiles[i]) {
             tiles[i] = new TileData();
         }
     }
 
-    int repeatCount = 0;
+    int32_t repeatCount = 0;
     bool running = false;
 
-    for (int i = 0; i < num_rows * TILE_PIXEL_EXTENT; i++) {
-        for (int j = 0; j < hdr.width; j++) {
+    for (int32_t i = 0; i < num_rows * TILE_PIXEL_EXTENT; i++) {
+        for (int32_t j = 0; j < hdr.width; j++) {
             unsigned char a;
             unsigned char r;
             unsigned char g;
@@ -1035,48 +1035,48 @@ bool WorldHeightMap::Read_Tiles(InputStream *str, TileData **tiles, int num_rows
         captainslog_dbgassert(!repeatCount, "Invalid tga.");
     }
 
-    for (int i = 0; i < num_rows * num_rows; i++) {
+    for (int32_t i = 0; i < num_rows * num_rows; i++) {
         tiles[i]->Update_Mips();
     }
 
     return true;
 }
 
-int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
+int32_t WorldHeightMap::Update_Tile_Texture_Positions(int32_t *edge_height)
 {
     bool available_grid[28][28];
-    int max_height = 0;
+    int32_t max_height = 0;
 
-    for (int i = 0; i < 28; i++) {
-        for (int j = 0; j < 28; j++) {
+    for (int32_t i = 0; i < 28; i++) {
+        for (int32_t j = 0; j < 28; j++) {
             available_grid[i][j] = true;
         }
     }
 
-    for (int i = 0; i < m_numBitmapTiles; i++) {
+    for (int32_t i = 0; i < m_numBitmapTiles; i++) {
         if (m_sourceTiles[i]) {
             m_sourceTiles[i]->m_tileLocationInTexture.x = 0;
             m_sourceTiles[i]->m_tileLocationInTexture.y = 0;
         }
     }
 
-    for (int width = 28; width > 0; width--) {
-        for (int tex_class = 0; tex_class < m_numTextureClasses; tex_class++) {
-            int tex_class_width = m_textureClasses[tex_class].width;
+    for (int32_t width = 28; width > 0; width--) {
+        for (int32_t tex_class = 0; tex_class < m_numTextureClasses; tex_class++) {
+            int32_t tex_class_width = m_textureClasses[tex_class].width;
 
             if (tex_class_width == width) {
                 bool b = 0;
 
-                int i;
-                int j;
+                int32_t i;
+                int32_t j;
                 for (i = 0; i < 28 - tex_class_width + 1; i++) {
 
                     for (j = 0; j < 28 - tex_class_width + 1; j++) {
                         if (available_grid[i][j]) {
                             bool b2 = true;
 
-                            for (int k = 0; k < tex_class_width && b2; k++) {
-                                for (int l = 0; l < tex_class_width && b2; l++) {
+                            for (int32_t k = 0; k < tex_class_width && b2; k++) {
+                                for (int32_t l = 0; l < tex_class_width && b2; l++) {
                                     if (!available_grid[i + l][j + k]) {
                                         b2 = false;
                                     }
@@ -1096,8 +1096,8 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
                 }
 
                 if (b) {
-                    int x = 72 * j + 4;
-                    int y = 72 * i + 4;
+                    int32_t x = 72 * j + 4;
+                    int32_t y = 72 * i + 4;
                     m_textureClasses[tex_class].position_in_texture.x = x;
                     m_textureClasses[tex_class].position_in_texture.y = y;
 
@@ -1105,10 +1105,10 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
                         max_height = y + (tex_class_width * TILE_PIXEL_EXTENT) + 4;
                     }
 
-                    for (int k = 0; k < tex_class_width; k++) {
-                        for (int l = 0; l < tex_class_width; l++) {
+                    for (int32_t k = 0; k < tex_class_width; k++) {
+                        for (int32_t l = 0; l < tex_class_width; l++) {
                             available_grid[i + l][j + k] = 0;
-                            int src_tile_index = tex_class_width * l + k + m_textureClasses[tex_class].first_tile;
+                            int32_t src_tile_index = tex_class_width * l + k + m_textureClasses[tex_class].first_tile;
 
                             if (m_sourceTiles[src_tile_index]) {
                                 m_sourceTiles[src_tile_index]->m_tileLocationInTexture.x = (k * TILE_PIXEL_EXTENT) + x;
@@ -1125,34 +1125,34 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
         }
     }
 
-    for (int bmp_tile_index = 0; bmp_tile_index < m_numBitmapTiles; bmp_tile_index++) {
+    for (int32_t bmp_tile_index = 0; bmp_tile_index < m_numBitmapTiles; bmp_tile_index++) {
         if (m_edgeTiles[bmp_tile_index]) {
             m_edgeTiles[bmp_tile_index]->m_tileLocationInTexture.x = 0;
             m_edgeTiles[bmp_tile_index]->m_tileLocationInTexture.y = 0;
         }
     }
 
-    int max_edge_height = 0;
+    int32_t max_edge_height = 0;
 
-    for (int i = 0; i < 28; i++) {
-        for (int j = 0; j < 28; j++) {
+    for (int32_t i = 0; i < 28; i++) {
+        for (int32_t j = 0; j < 28; j++) {
             available_grid[i][j] = true;
         }
     }
 
-    for (int tex_class = 0; tex_class < m_numEdgeTextureClasses; tex_class++) {
-        int tex_class_width = m_edgeTextureClasses[tex_class].width;
+    for (int32_t tex_class = 0; tex_class < m_numEdgeTextureClasses; tex_class++) {
+        int32_t tex_class_width = m_edgeTextureClasses[tex_class].width;
         bool b = 0;
 
-        int i;
-        int j;
+        int32_t i;
+        int32_t j;
         for (i = 0; i < 28 - tex_class_width + 1; i++) {
             for (j = 0; j < 28 - tex_class_width + 1; j++) {
                 if (available_grid[i][j]) {
                     bool b2 = true;
 
-                    for (int k = 0; k < tex_class_width && b2; ++k) {
-                        for (int l = 0; l < tex_class_width && b2; l++) {
+                    for (int32_t k = 0; k < tex_class_width && b2; ++k) {
+                        for (int32_t l = 0; l < tex_class_width && b2; l++) {
                             if (!available_grid[i + l][j + k]) {
                                 b2 = false;
                             }
@@ -1172,8 +1172,8 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
         }
 
         if (b) {
-            int x = 72 * j + 4;
-            int y = 72 * i + 4;
+            int32_t x = 72 * j + 4;
+            int32_t y = 72 * i + 4;
             m_edgeTextureClasses[tex_class].position_in_texture.x = x;
             m_edgeTextureClasses[tex_class].position_in_texture.y = y;
 
@@ -1181,10 +1181,10 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
                 max_edge_height = y + (tex_class_width * TILE_PIXEL_EXTENT) + 4;
             }
 
-            for (int k = 0; k < tex_class_width; k++) {
-                for (int l = 0; l < tex_class_width; l++) {
+            for (int32_t k = 0; k < tex_class_width; k++) {
+                for (int32_t l = 0; l < tex_class_width; l++) {
                     available_grid[i + l][j + k] = 0;
-                    int edge_tile_index = tex_class_width * l + k + m_edgeTextureClasses[tex_class].first_tile;
+                    int32_t edge_tile_index = tex_class_width * l + k + m_edgeTextureClasses[tex_class].first_tile;
 
                     if (m_edgeTiles[edge_tile_index]) {
                         m_edgeTiles[edge_tile_index]->m_tileLocationInTexture.x = (k * TILE_PIXEL_EXTENT) + x;
@@ -1206,7 +1206,7 @@ int WorldHeightMap::Update_Tile_Texture_Positions(int *edge_height)
     return max_height;
 }
 
-void WorldHeightMap::Get_UV_For_Ndx(int tile_ndx, float *min_u, float *min_v, float *max_u, float *max_v, bool full_tile)
+void WorldHeightMap::Get_UV_For_Ndx(int32_t tile_ndx, float *min_u, float *min_v, float *max_u, float *max_v, bool full_tile)
 {
     if (!m_sourceTiles[tile_ndx / 4]) {
         *max_v = 0.0f;
@@ -1243,15 +1243,15 @@ void WorldHeightMap::Get_UV_For_Ndx(int tile_ndx, float *min_u, float *min_v, fl
     }
 }
 
-bool WorldHeightMap::Is_Cliff_Mapped_Texture(int x, int y)
+bool WorldHeightMap::Is_Cliff_Mapped_Texture(int32_t x, int32_t y)
 {
-    int i = (m_drawOriginY + y) * m_width + m_drawOriginX + x;
+    int32_t i = (m_drawOriginY + y) * m_width + m_drawOriginX + x;
     return i >= 0 && i < m_dataSize && m_cliffInfoNdxes[i] != 0;
 }
 
-bool WorldHeightMap::Get_UV_Data(int x_index, int y_index, float *const u, float *const v, bool full_tile)
+bool WorldHeightMap::Get_UV_Data(int32_t x_index, int32_t y_index, float *const u, float *const v, bool full_tile)
 {
-    int i = m_drawOriginX + x_index + m_width * (m_drawOriginY + y_index);
+    int32_t i = m_drawOriginX + x_index + m_width * (m_drawOriginY + y_index);
 
     if (i < m_dataSize && m_tileNdxes) {
         return Get_UV_For_Tile_Index(i, m_tileNdxes[i], u, v, full_tile);
@@ -1260,7 +1260,7 @@ bool WorldHeightMap::Get_UV_Data(int x_index, int y_index, float *const u, float
     }
 }
 
-bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const u, float *const v, bool full_tile)
+bool WorldHeightMap::Get_UV_For_Tile_Index(int32_t ndx, short tile_ndx, float *const u, float *const v, bool full_tile)
 {
     static float STRETCH_LIMIT = 1.5f;
     static float TILE_LIMIT = 4.0f;
@@ -1302,9 +1302,9 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
     if (m_cliffInfoNdxes[ndx]) {
         TCliffInfo cliff = m_cliffInfo[m_cliffInfoNdxes[ndx]];
         bool b = false;
-        int i1 = tile_ndx / 4;
-        int i2 = cliff.tile_index / 4;
-        int i;
+        int32_t i1 = tile_ndx / 4;
+        int32_t i2 = cliff.tile_index / 4;
+        int32_t i;
 
         for (i = 0; i < m_numTextureClasses; i++) {
             if (i1 >= m_textureClasses[i].first_tile
@@ -1356,12 +1356,12 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
     }
 
     if (ndx < m_dataSize - m_width - 1) {
-        int i3 = m_data[ndx];
-        int i4 = m_data[ndx + 1];
-        int i5 = m_data[m_width + 1 + ndx];
-        int i6 = m_data[m_width + ndx];
-        int i7 = i3;
-        int i8 = i3;
+        int32_t i3 = m_data[ndx];
+        int32_t i4 = m_data[ndx + 1];
+        int32_t i5 = m_data[m_width + 1 + ndx];
+        int32_t i6 = m_data[m_width + ndx];
+        int32_t i7 = i3;
+        int32_t i8 = i3;
 
         if (i3 > i4) {
             i8 = m_data[ndx + 1];
@@ -1429,7 +1429,7 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
             return false;
         }
 
-        int j;
+        int32_t j;
         for (j = 0; j < m_numTextureClasses
              && (m_textureClasses[j].first_tile < 0 || (tile_ndx / 4) < m_textureClasses[j].first_tile
                  || (tile_ndx / 4) >= m_textureClasses[j].first_tile + m_textureClasses[j].num_tiles);
@@ -1551,19 +1551,19 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
         float f27 = 0.0f;
         float f28 = 0.0f;
 
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             if (f10 - v[i] > f28) {
                 f28 = f10 - v[i];
             }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             v[i] = f28 + v[i];
         }
 
         float f29 = 0.0f;
 
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             if (u[i] - f11 > f27) {
                 f27 = u[i] - f11;
             }
@@ -1572,7 +1572,7 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
             }
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             u[i] = u[i] - f27;
             v[i] = v[i] - f29;
         }
@@ -1582,9 +1582,9 @@ bool WorldHeightMap::Get_UV_For_Tile_Index(int ndx, short tile_ndx, float *const
 }
 
 bool WorldHeightMap::Get_Extra_Alpha_UV_Data(
-    int x_index, int y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool *cliff)
+    int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool *cliff)
 {
-    int ndx = x_index + m_width * y_index;
+    int32_t ndx = x_index + m_width * y_index;
     *need_flip = false;
     *cliff = false;
 
@@ -1670,11 +1670,11 @@ bool WorldHeightMap::Get_Extra_Alpha_UV_Data(
 }
 
 void WorldHeightMap::Get_Alpha_UV_Data(
-    int x_index, int y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool full_tile)
+    int32_t x_index, int32_t y_index, float *const u, float *const v, unsigned char *const alpha, bool *need_flip, bool full_tile)
 {
-    int i1 = m_drawOriginX + x_index;
-    int i2 = m_drawOriginY + y_index;
-    int ndx = i1 + m_width * i2;
+    int32_t i1 = m_drawOriginX + x_index;
+    int32_t i2 = m_drawOriginY + y_index;
+    int32_t ndx = i1 + m_width * i2;
     bool cliff = false;
     bool flip = false;
 
@@ -1768,18 +1768,18 @@ void WorldHeightMap::Get_Alpha_UV_Data(
     }
 
     if (cliff) {
-        int h1 = Get_Height(i1, i2);
-        int h2 = Get_Height(i1 + 1, i2);
-        int h3 = Get_Height(i1 + 1, i2 + 1);
-        int h4 = Get_Height(i1, i2 + 1);
-        int h5 = abs(h1 - h3);
+        int32_t h1 = Get_Height(i1, i2);
+        int32_t h2 = Get_Height(i1 + 1, i2);
+        int32_t h3 = Get_Height(i1 + 1, i2 + 1);
+        int32_t h4 = Get_Height(i1, i2 + 1);
+        int32_t h5 = abs(h1 - h3);
         flip = h5 > abs(h2 - h4);
     }
 
     *need_flip = flip;
 }
 
-void WorldHeightMap::Set_Texture_LOD(int lod)
+void WorldHeightMap::Set_Texture_LOD(int32_t lod)
 {
     if (m_terrainTex) {
         m_terrainTex->Set_LOD(lod);
@@ -1789,9 +1789,9 @@ void WorldHeightMap::Set_Texture_LOD(int lod)
 TextureClass *WorldHeightMap::Get_Terrain_Texture()
 {
     if (!m_terrainTex) {
-        int edge_height;
-        int max_height = Update_Tile_Texture_Positions(&edge_height);
-        int height;
+        int32_t edge_height;
+        int32_t max_height = Update_Tile_Texture_Positions(&edge_height);
+        int32_t height;
 
         for (height = 1; height < max_height; height *= 2) {
             ;
@@ -1812,8 +1812,8 @@ TextureClass *WorldHeightMap::Get_Terrain_Texture()
         m_alphaEdgeTex = new AlphaEdgeTextureClass(height, MIP_LEVELS_3);
         m_alphaEdgeHeight = m_alphaEdgeTex->Update(this);
 
-        for (int y = 0; y < m_height - 1; y++) {
-            for (int x = 0; x < m_width - 1; x++) {
+        for (int32_t y = 0; y < m_height - 1; y++) {
+            for (int32_t x = 0; x < m_width - 1; x++) {
                 float u[4];
                 float v[4];
                 unsigned char alpha[4];
@@ -1837,7 +1837,7 @@ TextureClass *WorldHeightMap::Get_Edge_Terrain_Texture()
     return m_alphaEdgeTex;
 }
 
-TextureClass *WorldHeightMap::Get_Flat_Texture(int x, int y, int pixels_per_cell, int cell_width)
+TextureClass *WorldHeightMap::Get_Flat_Texture(int32_t x, int32_t y, int32_t pixels_per_cell, int32_t cell_width)
 {
     if (g_theWriteableGlobalData->m_textureReductionFactor) {
         if (g_theWriteableGlobalData->m_textureReductionFactor > 1) {
@@ -1847,7 +1847,7 @@ TextureClass *WorldHeightMap::Get_Flat_Texture(int x, int y, int pixels_per_cell
         }
     }
 
-    int height;
+    int32_t height;
 
     for (height = 1; height < cell_width * pixels_per_cell; height *= 2) {
         ;
@@ -1858,10 +1858,10 @@ TextureClass *WorldHeightMap::Get_Flat_Texture(int x, int y, int pixels_per_cell
     return tex;
 }
 
-bool WorldHeightMap::Set_Draw_Origin(int x_origin, int y_origin)
+bool WorldHeightMap::Set_Draw_Origin(int32_t x_origin, int32_t y_origin)
 {
-    int width = m_drawWidthX;
-    int height = m_drawHeightY;
+    int32_t width = m_drawWidthX;
+    int32_t height = m_drawHeightY;
 
     if (g_theWriteableGlobalData) {
         if (g_theWriteableGlobalData->m_stretchTerrain) {
@@ -1912,7 +1912,7 @@ bool WorldHeightMap::Set_Draw_Origin(int x_origin, int y_origin)
     return true;
 }
 
-void WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights(int x_index, int y_index)
+void WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights(int32_t x_index, int32_t y_index)
 {
     float f1 = (float)Get_Height(x_index, y_index) * HEIGHTMAP_SCALE;
     float f2 = (float)Get_Height(x_index + 1, y_index) * HEIGHTMAP_SCALE;
@@ -1951,10 +1951,10 @@ void WorldHeightMap::Set_Cell_Cliff_Flag_From_Heights(int x_index, int y_index)
 
 void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 {
-    int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
-    int i3 = m_borderSize + i1;
-    int i4 = m_borderSize + i2;
+    int32_t i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
+    int32_t i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
+    int32_t i3 = m_borderSize + i1;
+    int32_t i4 = m_borderSize + i2;
     color->blue = 0.0f;
     color->green = 0.0f;
     color->red = 0.0f;
@@ -1975,7 +1975,7 @@ void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
         i4 = m_height - 1;
     }
 
-    int i5 = i3 + m_width * i4;
+    int32_t i5 = i3 + m_width * i4;
 
     if (i5 >= 0 && i5 < m_dataSize) {
         TileData *tile = Get_Source_Tile(m_tileNdxes[i5] / 4);
@@ -1991,10 +1991,10 @@ void WorldHeightMap::Get_Terrain_Color_At(float x, float y, RGBColor *color)
 
 Utf8String WorldHeightMap::Get_Terrain_Name_At(float x, float y)
 {
-    int i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
-    int i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
-    int i3 = m_borderSize + i1;
-    int i4 = m_borderSize + i2;
+    int32_t i1 = GameMath::Fast_To_Int_Floor(x / 10.0f);
+    int32_t i2 = GameMath::Fast_To_Int_Floor(y / 10.0f);
+    int32_t i3 = m_borderSize + i1;
+    int32_t i4 = m_borderSize + i2;
 
     if (i3 < 0) {
         i3 = 0;
@@ -2012,12 +2012,12 @@ Utf8String WorldHeightMap::Get_Terrain_Name_At(float x, float y)
         i4 = m_height - 1;
     }
 
-    int i5 = i3 + m_width * i4;
+    int32_t i5 = i3 + m_width * i4;
 
     if (i5 >= 0 && i5 < m_dataSize) {
-        int i6 = m_tileNdxes[i5] / 4;
+        int32_t i6 = m_tileNdxes[i5] / 4;
 
-        for (int i = 0; i < m_numTextureClasses; i++) {
+        for (int32_t i = 0; i < m_numTextureClasses; i++) {
             if (i6 >= m_textureClasses[i].first_tile
                 && i6 < m_textureClasses[i].first_tile + m_textureClasses[i].num_tiles) {
                 return m_textureClasses[i].name;
@@ -2031,10 +2031,10 @@ Utf8String WorldHeightMap::Get_Terrain_Name_At(float x, float y)
 void WorldHeightMap::Setup_Alpha_Tiles()
 {
     if (!s_alphaTiles[0]) {
-        for (int i = 0; i < 12; i++) {
+        for (int32_t i = 0; i < 12; i++) {
             bool b[16];
             memset(b, false, 16);
-            int i2 = i;
+            int32_t i2 = i;
 
             if (i >= 6) {
                 b[8] = true;
@@ -2069,11 +2069,11 @@ void WorldHeightMap::Setup_Alpha_Tiles()
             s_alphaTiles[i] = new TileData();
             unsigned char *ptr = s_alphaTiles[i]->Get_Data_Ptr();
 
-            for (int j = 0; j < TILE_PIXEL_EXTENT; j++) {
-                for (int k = 0; k < TILE_PIXEL_EXTENT; k++) {
-                    int i3 = k;
-                    int i4 = j;
-                    int i5 = 255;
+            for (int32_t j = 0; j < TILE_PIXEL_EXTENT; j++) {
+                for (int32_t k = 0; k < TILE_PIXEL_EXTENT; k++) {
+                    int32_t i3 = k;
+                    int32_t i4 = j;
+                    int32_t i5 = 255;
 
                     if (b[4]) {
                         if (!b[8]) {
@@ -2092,7 +2092,7 @@ void WorldHeightMap::Setup_Alpha_Tiles()
                             i4 = TILE_PIXEL_EXTENT - j - 1;
                         }
 
-                        int i6 = TILE_PIXEL_EXTENT - k - 1 + i4;
+                        int32_t i6 = TILE_PIXEL_EXTENT - k - 1 + i4;
 
                         if (b[9]) {
                             i6 -= TILE_PIXEL_EXTENT;
@@ -2104,7 +2104,7 @@ void WorldHeightMap::Setup_Alpha_Tiles()
                             i4 = TILE_PIXEL_EXTENT - j - 1;
                         }
 
-                        int i7 = k + i4;
+                        int32_t i7 = k + i4;
                         if (b[9]) {
                             i7 -= TILE_PIXEL_EXTENT;
                         }
@@ -2129,7 +2129,7 @@ void WorldHeightMap::Setup_Alpha_Tiles()
     }
 }
 
-bool WorldHeightMap::Get_Raw_Tile_Data(short tile_ndx, int width, unsigned char *buffer, int size)
+bool WorldHeightMap::Get_Raw_Tile_Data(short tile_ndx, int32_t width, unsigned char *buffer, int32_t size)
 {
     TileData *tile = nullptr;
 
@@ -2146,8 +2146,8 @@ bool WorldHeightMap::Get_Raw_Tile_Data(short tile_ndx, int width, unsigned char 
     }
 
     unsigned char *rgb = tile->Get_RGB_Data_For_Width(2 * width);
-    int i1 = 0;
-    int i2 = 0;
+    int32_t i1 = 0;
+    int32_t i2 = 0;
 
     if ((tile_ndx & 1) != 0) {
         i1 = width;
@@ -2157,7 +2157,7 @@ bool WorldHeightMap::Get_Raw_Tile_Data(short tile_ndx, int width, unsigned char 
         i2 = width;
     }
 
-    for (int i = 0; i < width; i++) {
+    for (int32_t i = 0; i < width; i++) {
         // TODO investigate this more?
         memcpy(&buffer[4 * width * i], &rgb[8 * width * (i2 + i) + 4 * i1], 4 * width);
     }
@@ -2165,9 +2165,9 @@ bool WorldHeightMap::Get_Raw_Tile_Data(short tile_ndx, int width, unsigned char 
     return true;
 }
 
-unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int x, int y, int width)
+unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int32_t x, int32_t y, int32_t width)
 {
-    int tile_ndx = x + m_width * y;
+    int32_t tile_ndx = x + m_width * y;
 
     if (y < 0 || x < 0 || x >= m_width || y >= m_height) {
         return nullptr;
@@ -2181,7 +2181,7 @@ unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int x, int y, int width)
         return nullptr;
     }
 
-    int blend_ndx = m_blendTileNdxes[tile_ndx];
+    int32_t blend_ndx = m_blendTileNdxes[tile_ndx];
 
     if (blend_ndx > 0 && blend_ndx < 16192
         && Get_Raw_Tile_Data(m_blendedTiles[blend_ndx].blend_ndx, width, s_blendBuffer, sizeof(s_blendBuffer))) {
@@ -2189,13 +2189,13 @@ unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int x, int y, int width)
         unsigned char *blendbuf = s_blendBuffer;
         unsigned char *buf = s_buffer;
 
-        for (int i = 0; i < width * width; i++) {
-            int i3 = *blendbuf;
+        for (int32_t i = 0; i < width * width; i++) {
+            int32_t i3 = *blendbuf;
             unsigned char *blendbuf2 = blendbuf + 1;
-            int i4 = *blendbuf2++;
-            int i5 = *blendbuf2;
+            int32_t i4 = *blendbuf2++;
+            int32_t i5 = *blendbuf2;
             blendbuf = blendbuf2 + 2;
-            int i6 = *alpha;
+            int32_t i6 = *alpha;
             alpha += 4;
             *buf = (255 - i6) * *buf / 255 + i6 * i3 / 255;
             unsigned char *buf2 = buf + 1;
@@ -2210,9 +2210,9 @@ unsigned char *WorldHeightMap::Get_Pointer_To_Tile_Data(int x, int y, int width)
     return s_buffer;
 }
 
-unsigned char *WorldHeightMap::Get_RGB_Alpha_Data_For_Width(int width, TBlendTileInfo *info)
+unsigned char *WorldHeightMap::Get_RGB_Alpha_Data_For_Width(int32_t width, TBlendTileInfo *info)
 {
-    int index = 0;
+    int32_t index = 0;
 
     if (info->horiz) {
         index = 0;
@@ -2247,7 +2247,7 @@ void WorldHeightMap::Clear_Seismic_Update_Flags()
 void WorldHeightMap::Fill_Seismic_Z_Velocities(float value)
 {
     if (m_seismicZVelocities) {
-        for (int i = 0; i < m_height * m_width; i++) {
+        for (int32_t i = 0; i < m_height * m_width; i++) {
             m_seismicZVelocities[i] = value;
         }
     }
@@ -2255,18 +2255,18 @@ void WorldHeightMap::Fill_Seismic_Z_Velocities(float value)
 
 void WorldHeightMap::Init_Cliff_Flags_From_Heights()
 {
-    for (int w = 0; w < m_width - 1; ++w) {
-        for (int h = 0; h < m_height - 1; ++h) {
+    for (int32_t w = 0; w < m_width - 1; ++w) {
+        for (int32_t h = 0; h < m_height - 1; ++h) {
             Set_Cell_Cliff_Flag_From_Heights(w, h);
         }
     }
 }
 
-int WorldHeightMap::Get_Texture_Class_From_Ndx(int tile_ndx)
+int32_t WorldHeightMap::Get_Texture_Class_From_Ndx(int32_t tile_ndx)
 {
-    int i1 = tile_ndx / 4;
+    int32_t i1 = tile_ndx / 4;
 
-    for (int i = 0; i < m_numTextureClasses; ++i) {
+    for (int32_t i = 0; i < m_numTextureClasses; ++i) {
         if (m_textureClasses[i].first_tile >= 0 && i1 >= m_textureClasses[i].first_tile
             && i1 < m_textureClasses[i].first_tile + m_textureClasses[i].num_tiles) {
             return m_textureClasses[i].global_texture_class;
@@ -2276,7 +2276,7 @@ int WorldHeightMap::Get_Texture_Class_From_Ndx(int tile_ndx)
     return -1;
 }
 
-void WorldHeightMap::Set_Cliff_State(int x_index, int y_index, bool state)
+void WorldHeightMap::Set_Cliff_State(int32_t x_index, int32_t y_index, bool state)
 {
     if (x_index >= 0 && y_index >= 0 && y_index < m_height && x_index < m_width) {
         if (m_cliffState) {
@@ -2293,7 +2293,7 @@ void WorldHeightMap::Set_Cliff_State(int x_index, int y_index, bool state)
     }
 }
 
-bool WorldHeightMap::Get_Seismic_Update_Flag(int x_index, int y_index) const
+bool WorldHeightMap::Get_Seismic_Update_Flag(int32_t x_index, int32_t y_index) const
 {
     if (x_index < 0 || y_index < 0) {
         return false;
@@ -2314,7 +2314,7 @@ bool WorldHeightMap::Get_Seismic_Update_Flag(int x_index, int y_index) const
     return false;
 }
 
-void WorldHeightMap::Set_Seismic_Update_Flag(int x_index, int y_index, bool flag)
+void WorldHeightMap::Set_Seismic_Update_Flag(int32_t x_index, int32_t y_index, bool flag)
 {
     if (x_index >= 0 && y_index >= 0 && y_index < m_height && x_index < m_width) {
         if (m_seismicUpdateFlag) {
@@ -2328,11 +2328,11 @@ void WorldHeightMap::Set_Seismic_Update_Flag(int x_index, int y_index, bool flag
     }
 }
 
-void WorldHeightMap::Get_UV_For_Blend(int edge_class, Region2D *range)
+void WorldHeightMap::Get_UV_For_Blend(int32_t edge_class, Region2D *range)
 {
-    int x = m_edgeTextureClasses[edge_class].position_in_texture.x;
-    int y = m_edgeTextureClasses[edge_class].position_in_texture.y;
-    int width = m_edgeTextureClasses[edge_class].width;
+    int32_t x = m_edgeTextureClasses[edge_class].position_in_texture.x;
+    int32_t y = m_edgeTextureClasses[edge_class].position_in_texture.y;
+    int32_t width = m_edgeTextureClasses[edge_class].width;
     range->lo.x = (float)x / 2048.0f;
     range->lo.y = (float)y / (float)m_alphaEdgeHeight;
     range->hi.x = ((float)x + (float)(width * TILE_PIXEL_EXTENT)) / 2048.0f;
@@ -2348,9 +2348,9 @@ TextureClass *WorldHeightMap::Get_Alpha_Terrain_Texture()
     return m_alphaTerrainTex;
 }
 
-int WorldHeightMap::Get_Texture_Class(int x_index, int y_index, bool base_class)
+int32_t WorldHeightMap::Get_Texture_Class(int32_t x_index, int32_t y_index, bool base_class)
 {
-    int i = x_index + m_width * y_index;
+    int32_t i = x_index + m_width * y_index;
     captainslog_dbgassert((i > 0 && i < m_dataSize), "oops");
 
     if (i < 0 || i >= m_dataSize) {
@@ -2364,7 +2364,7 @@ int WorldHeightMap::Get_Texture_Class(int x_index, int y_index, bool base_class)
     return Get_Texture_Class_From_Ndx(m_tileNdxes[i]);
 }
 
-TXTextureClass WorldHeightMap::Get_Texture_From_Index(int index)
+TXTextureClass WorldHeightMap::Get_Texture_From_Index(int32_t index)
 {
     return m_textureClasses[index];
 }

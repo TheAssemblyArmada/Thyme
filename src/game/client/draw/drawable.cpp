@@ -57,7 +57,7 @@ Image *Drawable::s_emptyContainer;
 Anim2DTemplate **Drawable::s_animationTemplates;
 
 #ifndef GAME_DLL
-int Drawable::s_modelLockCount;
+int32_t Drawable::s_modelLockCount;
 #endif
 
 static const char *s_theDrawableIconNames[] = { "DefaultHeal",
@@ -234,15 +234,15 @@ ClientUpdateModule *Drawable::Find_Client_Update_Module(NameKeyType key)
     return nullptr;
 }
 
-int Drawable::Get_Pristine_Bone_Positions(
-    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+int32_t Drawable::Get_Pristine_Bone_Positions(
+    char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const
 {
-    int ret = 0;
+    int32_t ret = 0;
     for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr && max_bones > 0; i++) {
         const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
         if (draw != nullptr) {
-            int val = draw->Get_Pristine_Bone_Positions_For_Condition_State(
+            int32_t val = draw->Get_Pristine_Bone_Positions_For_Condition_State(
                 m_conditionState, bone_name_prefix, start_index, positions, transforms, max_bones);
 
             if (val > 0) {
@@ -382,7 +382,7 @@ bool Drawable::Draws_Any_UI_Text()
     }
 
     Player *player = object->Get_Controlling_Player();
-    int squad = player->Get_Squad_Number_For_Object(object);
+    int32_t squad = player->Get_Squad_Number_For_Object(object);
 
     if (squad > -1 && squad < 10) {
         return true;
@@ -468,11 +468,11 @@ void Drawable::Draw_Icon_UI()
 void Drawable::Draw_Emoticon(IRegion2D const *region)
 {
     if (Has_Drawable_Icon_Info() && Get_Icon_Info()->anims[ICON_EMOTICON] != nullptr) {
-        unsigned int frame = g_theGameLogic->Get_Frame();
+        uint32_t frame = g_theGameLogic->Get_Frame();
 
         if (region && Get_Icon_Info()->timings[ICON_EMOTICON] >= frame) {
-            int width = Get_Icon_Info()->anims[ICON_EMOTICON]->Get_Current_Frame_Width();
-            int height = Get_Icon_Info()->anims[ICON_EMOTICON]->Get_Current_Frame_Height();
+            int32_t width = Get_Icon_Info()->anims[ICON_EMOTICON]->Get_Current_Frame_Width();
+            int32_t height = Get_Icon_Info()->anims[ICON_EMOTICON]->Get_Current_Frame_Height();
             Get_Icon_Info()->anims[ICON_EMOTICON]->Draw(
                 region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f, region->hi.y - height, width, height);
         } else {
@@ -506,14 +506,14 @@ void Drawable::Draw_Ammo(IRegion2D const *region)
             Player *player = object->Get_Controlling_Player();
 
             if (player == g_thePlayerList->Get_Local_Player()) {
-                int clip_size;
-                int ammo_in_clip;
+                int32_t clip_size;
+                int32_t ammo_in_clip;
 
                 if (object->Get_Ammo_Pip_Showing_Info(clip_size, ammo_in_clip)) {
                     if (s_fullAmmo != nullptr && s_emptyAmmo != nullptr) {
                         float scale = 1.0f;
-                        int width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
-                        int height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
+                        int32_t width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
+                        int32_t height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
                         Coord3D pos = *object->Get_Position();
                         pos.x += g_theWriteableGlobalData->m_ammoPipWorldOffset.x;
                         pos.y += g_theWriteableGlobalData->m_ammoPipWorldOffset.y;
@@ -523,12 +523,12 @@ void Drawable::Draw_Ammo(IRegion2D const *region)
 
                         if (g_theTacticalView->World_To_Screen_Tri(&pos, &screen)) {
                             float radius = object->Get_Geometry_Info().Get_Bounding_Sphere_Radius() * scale;
-                            int left = region->lo.x;
-                            int top =
+                            int32_t left = region->lo.x;
+                            int32_t top =
                                 GameMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_ammoPipScreenOffset.y)
                                 + screen.y;
 
-                            for (int i = 0; i < clip_size; i++) {
+                            for (int32_t i = 0; i < clip_size; i++) {
                                 if (i < ammo_in_clip) {
                                     g_theDisplay->Draw_Image(s_fullAmmo,
                                         left,
@@ -566,12 +566,12 @@ void Drawable::Draw_Contained(IRegion2D const *region)
         if (g_theWriteableGlobalData->m_showObjectHealth) {
             if (Is_Selected() || (g_theInGameUI && g_theInGameUI->Get_Moused_Over_Drawable_ID() == Get_ID())) {
                 Player *player = object->Get_Controlling_Player();
-                int max;
-                int count;
+                int32_t max;
+                int32_t count;
 
                 if (player == g_thePlayerList->Get_Local_Player() && contain->Get_Container_Pips_To_Show(max, count)
                     && count != 0) {
-                    int infantry_count = 0;
+                    int32_t infantry_count = 0;
                     const std::list<Object *> *list = contain->Get_Contained_Items_List();
 
                     if (list) {
@@ -583,8 +583,8 @@ void Drawable::Draw_Contained(IRegion2D const *region)
                     }
 
                     float scale = 1.0f;
-                    int width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
-                    int height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
+                    int32_t width = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Width() * scale);
+                    int32_t height = GameMath::Fast_To_Int_Truncate(s_emptyAmmo->Get_Image_Height() * scale);
                     Coord3D pos = *object->Get_Position();
                     pos.x += g_theWriteableGlobalData->m_containerPipWorldOffset.x;
                     pos.y += g_theWriteableGlobalData->m_containerPipWorldOffset.y;
@@ -594,14 +594,14 @@ void Drawable::Draw_Contained(IRegion2D const *region)
 
                     if (g_theTacticalView->World_To_Screen_Tri(&pos, &screen)) {
                         float radius = object->Get_Geometry_Info().Get_Bounding_Sphere_Radius() * scale;
-                        int left = region->lo.x;
-                        int top =
+                        int32_t left = region->lo.x;
+                        int32_t top =
                             GameMath::Fast_To_Int_Truncate(radius * g_theWriteableGlobalData->m_containerPipScreenOffset.y)
                             + screen.y;
 
-                        for (int i = 0; i < max; i++) {
-                            int infantry = Make_Color(0, 255, 0, 255);
-                            int vehicle = Make_Color(0, 0, 255, 255);
+                        for (int32_t i = 0; i < max; i++) {
+                            int32_t infantry = Make_Color(0, 255, 0, 255);
+                            int32_t vehicle = Make_Color(0, 0, 255, 255);
 
                             if (i < count) {
                                 if (i < infantry_count) {
@@ -674,11 +674,11 @@ void Drawable::Draw_Healing(IRegion2D const *region)
                     }
 
                     if (Get_Icon_Info()->anims[icon] != nullptr) {
-                        int width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width();
-                        int height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height();
-                        int x = GameMath::Fast_To_Int_Truncate(
+                        int32_t width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width();
+                        int32_t height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height();
+                        int32_t x = GameMath::Fast_To_Int_Truncate(
                             region->lo.x + (region->hi.x - region->lo.x) * 0.75f - width * 0.5f);
-                        int y = GameMath::Fast_To_Int_Truncate(region->lo.y - height);
+                        int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y - height);
                         Get_Icon_Info()->anims[icon]->Draw(x, y, width, height);
                     }
                 }
@@ -715,10 +715,10 @@ void Drawable::Draw_Enthusiastic(IRegion2D const *region)
                 scale = 0.5f;
             }
 
-            int width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width() * scale;
-            int height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height() * scale;
-            int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.25f - width * 0.5f);
-            int y = region->hi.y + height * 0.25f;
+            int32_t width = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Width() * scale;
+            int32_t height = Get_Icon_Info()->anims[icon]->Get_Current_Frame_Height() * scale;
+            int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.25f - width * 0.5f);
+            int32_t y = region->hi.y + height * 0.25f;
             Get_Icon_Info()->anims[icon]->Draw(x, y, width, height);
         }
     } else {
@@ -730,7 +730,7 @@ void Drawable::Draw_Enthusiastic(IRegion2D const *region)
 void Drawable::Draw_Bombed(IRegion2D const *region)
 {
     Object *object = Get_Object();
-    unsigned int frame = g_theGameLogic->Get_Frame();
+    uint32_t frame = g_theGameLogic->Get_Frame();
 
     if (object->Test_Weapon_Set_Flag(WEAPONSET_CARBOMB)
         && object->Get_Controlling_Player() == g_thePlayerList->Get_Local_Player()) {
@@ -739,12 +739,12 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
         }
 
         if (Get_Icon_Info()->anims[ICON_CARBOMB] != nullptr && region != nullptr) {
-            int fwidth = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Width();
-            int fheight = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Height();
-            int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.5f);
-            int height = GameMath::Fast_To_Int_Truncate((float)width / (float)(fwidth) * (float(fheight)));
-            int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-            int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+            int32_t fwidth = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Width();
+            int32_t fheight = Get_Icon_Info()->anims[ICON_CARBOMB]->Get_Current_Frame_Height();
+            int32_t width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.5f);
+            int32_t height = GameMath::Fast_To_Int_Truncate((float)width / (float)(fwidth) * (float(fheight)));
+            int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+            int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
             Get_Icon_Info()->anims[ICON_CARBOMB]->Draw(x, y, width, height);
             Get_Icon_Info()->timings[ICON_CARBOMB] = 0x3FFFFFFF;
         }
@@ -767,7 +767,7 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
                 Get_Icon_Info()->anims[ICON_BOMB_TIMED] =
                     new Anim2D(s_animationTemplates[ICON_BOMB_TIMED], g_theAnim2DCollection);
 
-                int i1 = GameMath::Fast_To_Int_Ceil((update->Get_Die_Frame() - frame) * (1.0f / 30.0f));
+                int32_t i1 = GameMath::Fast_To_Int_Ceil((update->Get_Die_Frame() - frame) * (1.0f / 30.0f));
                 unsigned short frames = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Template()->Get_Num_Frames();
 
                 if (i1 > frames - 1) {
@@ -779,12 +779,12 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             }
 
             if (Get_Icon_Info()->anims[ICON_BOMB_TIMED] != nullptr && region != nullptr) {
-                int fwidth = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Width();
-                int fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
-                int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
-                int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int32_t fwidth = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Width();
+                int32_t fheight = Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Get_Current_Frame_Height();
+                int32_t width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
+                int32_t height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
+                int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
                 Get_Icon_Info()->anims[ICON_BOMB_TIMED]->Draw(x, y, width, height);
@@ -797,12 +797,12 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             }
 
             if (Get_Icon_Info()->anims[ICON_BOMB_REMOTE] != nullptr && region != nullptr) {
-                int fwidth = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Width();
-                int fheight = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Height();
-                int width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
-                int height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
-                int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
-                int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
+                int32_t fwidth = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Width();
+                int32_t fheight = Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Get_Current_Frame_Height();
+                int32_t width = GameMath::Fast_To_Int_Truncate((region->hi.x - region->lo.x) * 0.65f);
+                int32_t height = GameMath::Fast_To_Int_Truncate((float)width / (float)fwidth * (float)fheight);
+                int32_t x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
+                int32_t y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
                 Get_Icon_Info()->anims[ICON_BOMB_REMOTE]->Draw(x, y, width, height);
                 Get_Icon_Info()->timings[ICON_BOMB_REMOTE] = frame + 1;
             }
@@ -833,10 +833,10 @@ void Drawable::Draw_Disabled(IRegion2D const *region)
         }
 
         if (region != nullptr) {
-            int width = Get_Icon_Info()->anims[ICON_DISABLED]->Get_Current_Frame_Width();
-            int height = Get_Icon_Info()->anims[ICON_DISABLED]->Get_Current_Frame_Height();
-            int y = region->hi.y - ((region->hi.y - region->lo.y) + height);
-            int x = region->lo.x;
+            int32_t width = Get_Icon_Info()->anims[ICON_DISABLED]->Get_Current_Frame_Width();
+            int32_t height = Get_Icon_Info()->anims[ICON_DISABLED]->Get_Current_Frame_Height();
+            int32_t y = region->hi.y - ((region->hi.y - region->lo.y) + height);
+            int32_t x = region->lo.x;
             Get_Icon_Info()->anims[ICON_DISABLED]->Draw(x, y, width, height);
         }
     } else {
@@ -898,8 +898,8 @@ void Drawable::Draw_Caption(IRegion2D const *region)
         g_theTacticalView->World_To_Screen_Tri(&center, &screen);
         screen.x -= m_captionText->Get_Width(-1) / 2;
 
-        int x;
-        int y;
+        int32_t x;
+        int32_t y;
         m_captionText->Get_Size(&x, &y);
         g_theDisplay->Draw_Fill_Rect(screen.x - 1, screen.y - 1, x + 2, y + 2, Make_Color(0, 0, 0, 125));
         g_theDisplay->Draw_Open_Rect(screen.x - 1, screen.y - 1, x + 2, y + 2, 1.0f, Make_Color(20, 20, 20, 255));
@@ -957,8 +957,8 @@ void Drawable::Draw_Health_Bar(IRegion2D const *region)
 
                         if (max_health != 0.0f && health != 0.0f) {
                             float health_percent = health / max_health;
-                            int bar_color;
-                            int outline_color;
+                            int32_t bar_color;
+                            int32_t outline_color;
 
                             if (object->Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION)
                                 || (object->Is_Disabled() && !object->Get_Disabled_State(DISABLED_TYPE_DISABLED_HELD))) {
@@ -995,8 +995,8 @@ void Drawable::Draw_Health_Bar(IRegion2D const *region)
                                     outline_color_r * 255.0f, outline_color_g * 255.0f, outline_color_b * 255.0f, 255);
                             }
 
-                            int width = region->hi.x - region->lo.x;
-                            int height = std::max(3, region->hi.y - region->lo.y);
+                            int32_t width = region->hi.x - region->lo.x;
+                            int32_t height = std::max(3, region->hi.y - region->lo.y);
                             g_theDisplay->Draw_Open_Rect(region->lo.x, region->lo.y, width, height, 1.0f, outline_color);
                             g_theDisplay->Draw_Fill_Rect(region->lo.x + 1,
                                 region->lo.y + 1,
@@ -1011,7 +1011,7 @@ void Drawable::Draw_Health_Bar(IRegion2D const *region)
     }
 }
 
-void Drawable::Set_Emoticon(Utf8String const &emoticon, int frames)
+void Drawable::Set_Emoticon(Utf8String const &emoticon, int32_t frames)
 {
     Clear_Emoticon();
     Anim2DTemplate *tmplate = g_theAnim2DCollection->Find_Template(emoticon);
@@ -1045,8 +1045,8 @@ void Drawable::Draw_UI_Text()
     if (region) {
         Object *object = Get_Object();
         Player *player = object->Get_Controlling_Player();
-        int squad = player->Get_Squad_Number_For_Object(object);
-        int color;
+        int32_t squad = player->Get_Squad_Number_For_Object(object);
+        int32_t color;
 
         if (g_theDrawGroupInfo->m_usePlayerColor) {
             color = player->Get_Color();
@@ -1055,8 +1055,8 @@ void Drawable::Draw_UI_Text()
         }
 
         if (squad > -1 && squad < 10) {
-            int x = region->lo.x;
-            int y = region->lo.y;
+            int32_t x = region->lo.x;
+            int32_t y = region->lo.y;
 
             if (g_theDrawGroupInfo->m_drawPositionXAbsolute) {
                 x += g_theDrawGroupInfo->m_drawPositionX.absolute;
@@ -1140,7 +1140,7 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         g_theGlobalLanguage->Adjust_Font_Size(g_theInGameUI->Get_Drawable_Caption_Size()),
         g_theInGameUI->Get_Drawable_Caption_Bold()));
 
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+    for (int32_t i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
         m_modules[i] = nullptr;
     }
 
@@ -1160,7 +1160,7 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         const ModuleInfo *draw = thing_template->Get_Draw_Modules();
         m_modules[0] = new Module *[draw->Get_Count() + 1];
 
-        for (unsigned int i = 0; i < draw->Get_Count(); i++) {
+        for (uint32_t i = 0; i < draw->Get_Count(); i++) {
             const ModuleData *data = draw->Get_Nth_Data(i);
 
             if (g_theWriteableGlobalData->m_extraAnimationsDisabled) {
@@ -1179,7 +1179,7 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         if (update->Get_Count() != 0) {
             m_modules[1] = new Module *[update->Get_Count() + 1];
 
-            for (unsigned int i = 0; i < update->Get_Count(); i++) {
+            for (uint32_t i = 0; i < update->Get_Count(); i++) {
                 const ModuleData *data = update->Get_Nth_Data(i);
 
                 if (thing_template->Is_KindOf(KINDOF_SHRUBBERY) && !g_theWriteableGlobalData->m_useTreeSway) {
@@ -1194,7 +1194,7 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
             m_modules[1][update->Get_Count()] = nullptr;
         }
 
-        for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+        for (int32_t i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
             for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
                 (*j)->On_Object_Created();
             }
@@ -1418,7 +1418,7 @@ Drawable::~Drawable()
 
     m_groupString = nullptr;
 
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+    for (int32_t i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
         for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
             (*j)->Delete_Instance();
             *j = nullptr;
@@ -1468,7 +1468,7 @@ DrawableIconType Drawable_Icon_Name_To_Index(const char *name)
 {
     captainslog_dbgassert(name != nullptr, "drawableIconNameToIndex - Illegal name");
 
-    for (int i = ICON_FIRST; i < MAX_ICONS; i++) {
+    for (int32_t i = ICON_FIRST; i < MAX_ICONS; i++) {
         if (!strcasecmp(s_theDrawableIconNames[i], name)) {
             return (DrawableIconType)i;
         }
@@ -1641,7 +1641,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
     unsigned char count = 0;
 
     if (Has_Drawable_Icon_Info()) {
-        for (int i = 0; i < MAX_ICONS; i++) {
+        for (int32_t i = 0; i < MAX_ICONS; i++) {
             if (Get_Icon_Info()->anims[i] != nullptr) {
                 count++;
             }
@@ -1651,12 +1651,12 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
     xfer->xferUnsignedByte(&count);
 
     if (xfer->Get_Mode() == XFER_SAVE) {
-        for (int i = 0; i < MAX_ICONS; i++) {
+        for (int32_t i = 0; i < MAX_ICONS; i++) {
             if (Has_Drawable_Icon_Info()) {
                 if (Get_Icon_Info()->anims[i] != nullptr) {
                     Utf8String str = Drawable_Icon_Index_To_Name((DrawableIconType)i);
                     xfer->xferAsciiString(&str);
-                    unsigned int timing = Get_Icon_Info()->timings[i];
+                    uint32_t timing = Get_Icon_Info()->timings[i];
                     xfer->xferUnsignedInt(&timing);
                     Utf8String name = Get_Icon_Info()->anims[i]->Get_Template()->Get_Name();
                     xfer->xferAsciiString(&name);
@@ -1669,11 +1669,11 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
             Get_Icon_Info()->Reset();
         }
 
-        for (int j = 0; j < count; j++) {
+        for (int32_t j = 0; j < count; j++) {
             Utf8String str;
             xfer->xferAsciiString(&str);
             DrawableIconType index = Drawable_Icon_Name_To_Index(str);
-            unsigned int timing;
+            uint32_t timing;
             xfer->xferUnsignedInt(&timing);
             Get_Icon_Info()->timings[index] = timing;
             Utf8String name;
@@ -1862,7 +1862,7 @@ void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
     xfer->xferUnsignedShort(&count);
     Utf8String str;
 
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         unsigned short module_count = 0;
 
         for (Module **j = m_modules[i]; j && *j; j++) {
@@ -1882,7 +1882,7 @@ void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
                 xfer->End_Block();
             }
         } else {
-            for (int k = 0; k < module_count; k++) {
+            for (int32_t k = 0; k < module_count; k++) {
                 xfer->xferAsciiString(&str);
                 NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str);
                 Module *module = nullptr;
@@ -1893,7 +1893,7 @@ void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
                     }
                 }
 
-                int size = xfer->Begin_Block();
+                int32_t size = xfer->Begin_Block();
 
                 if (module != nullptr) {
                     xfer->xferSnapshot(module);
@@ -1920,7 +1920,7 @@ void Drawable::Set_Tint_Color_Envelope(const TintEnvelope *envelope)
     }
 }
 
-void Drawable::Set_Animation_Frame(int frame)
+void Drawable::Set_Animation_Frame(int32_t frame)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
@@ -1952,7 +1952,7 @@ bool Drawable::Client_Only_Get_First_Render_Obj_Info(Coord3D *position, float *r
     return draw && draw->Client_Only_Get_Render_Obj_Info(position, radius, transform);
 }
 
-void Drawable::Set_Animation_Loop_Duration(unsigned int num_frames)
+void Drawable::Set_Animation_Loop_Duration(uint32_t num_frames)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
@@ -1963,7 +1963,7 @@ void Drawable::Set_Animation_Loop_Duration(unsigned int num_frames)
     }
 }
 
-void Drawable::Set_Animation_Completion_Time(unsigned int time)
+void Drawable::Set_Animation_Completion_Time(uint32_t time)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
@@ -2025,15 +2025,15 @@ void Drawable::Release_Shadows()
     }
 }
 
-int Drawable::Get_Current_Client_Bone_Positions(
-    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+int32_t Drawable::Get_Current_Client_Bone_Positions(
+    char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const
 {
-    int ret = 0;
+    int32_t ret = 0;
     for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr && max_bones > 0; i++) {
         const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
         if (draw != nullptr) {
-            int val = draw->Get_Current_Bone_Positions(bone_name_prefix, start_index, positions, transforms, max_bones);
+            int32_t val = draw->Get_Current_Bone_Positions(bone_name_prefix, start_index, positions, transforms, max_bones);
 
             if (val > 0) {
                 ret += val;
@@ -3138,7 +3138,7 @@ void Drawable::Set_Fully_Obscured_By_Shroud(bool fully_obscured)
 
 void Drawable::Update_Drawable()
 {
-    unsigned int frame = g_theGameLogic->Get_Frame();
+    uint32_t frame = g_theGameLogic->Get_Frame();
     Object *object = Get_Object();
 
     for (ClientUpdateModule **i = Get_Client_Update_Modules(); i != nullptr && *i != nullptr; i++) {
@@ -3253,7 +3253,7 @@ void Drawable::Update_Drawable()
 }
 
 void Drawable::Color_Flash(
-    RGBColor const *color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames)
+    RGBColor const *color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
 {
     if (m_tintColorEnvelope == nullptr) {
         m_tintColorEnvelope = new TintEnvelope();
@@ -3303,7 +3303,7 @@ void Drawable::Draw(View *view)
     }
 }
 
-void Drawable::Set_Indicator_Color(int color)
+void Drawable::Set_Indicator_Color(int32_t color)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
@@ -3358,7 +3358,7 @@ void Drawable::Clear_Caption_Text()
     }
 }
 
-void Drawable::Fade_In(unsigned int time)
+void Drawable::Fade_In(uint32_t time)
 {
     Set_Opacity(1.0f);
     m_fadingMode = FADING_MODE_IN;
@@ -3366,7 +3366,7 @@ void Drawable::Fade_In(unsigned int time)
     m_curFadeFrame = 0;
 }
 
-void Drawable::Fade_Out(unsigned int time)
+void Drawable::Fade_Out(uint32_t time)
 {
     Set_Opacity(0.0f);
     m_fadingMode = FADING_MODE_OUT;
@@ -3405,7 +3405,7 @@ void Drawable::Friend_Bind_To_Object(Object *obj)
     m_object = obj;
 
     if (Get_Object() != nullptr) {
-        int color;
+        int32_t color;
 
         if (g_theWriteableGlobalData->m_timeOfDay == TIME_OF_DAY_NIGHT) {
             color = Get_Object()->Get_Night_Indicator_Color();
@@ -3473,12 +3473,12 @@ void Drawable::Saturate_RGB(RGBColor &color, float factor)
     color.blue -= mult;
 }
 
-int Drawable::Get_Barrel_Count(WeaponSlotType slot) const
+int32_t Drawable::Get_Barrel_Count(WeaponSlotType slot) const
 {
     for (const DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         const ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
-        int count;
+        int32_t count;
 
         if (draw != nullptr) {
             count = draw->Get_Barrel_Count(slot);
@@ -3504,7 +3504,7 @@ Utf16String Drawable::Get_Caption_Text()
 }
 
 bool Drawable::Get_Projectile_Launch_Offset(WeaponSlotType wslot,
-    int ammo_index,
+    int32_t ammo_index,
     Matrix3D *launch_pos,
     WhichTurretType tur,
     Coord3D *turret_rot_pos,
@@ -3524,7 +3524,7 @@ bool Drawable::Get_Projectile_Launch_Offset(WeaponSlotType wslot,
 }
 
 bool Drawable::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
-    int specific_barrel_to_use,
+    int32_t specific_barrel_to_use,
     FXList const *fxl,
     float weapon_speed,
     float recoil_amount,
@@ -3594,7 +3594,7 @@ void Drawable::Notify_Drawable_Dependency_Cleared()
 
 void Drawable::On_Destroy()
 {
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+    for (int32_t i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
         for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
             (*j)->On_Delete();
         }
@@ -3613,7 +3613,7 @@ void Drawable::On_Level_Start()
 
 void Drawable::Preload_Assets(TimeOfDayType time_of_day)
 {
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
+    for (int32_t i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
         for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
             (*j)->Preload_Assets(time_of_day);
         }
@@ -3782,7 +3782,7 @@ void Drawable::Set_Time_Of_Day(TimeOfDayType tod)
     Replace_Model_Condition_Flags(flags, false);
 }
 
-void Drawable::Update_Drawable_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType slot)
+void Drawable::Update_Drawable_Clip_Status(uint32_t show, uint32_t count, WeaponSlotType slot)
 {
     for (DrawModule **i = Get_Draw_Modules_Non_Dirty(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
@@ -3793,7 +3793,7 @@ void Drawable::Update_Drawable_Clip_Status(unsigned int show, unsigned int count
     }
 }
 
-void Drawable::Update_Drawable_Supply_Status(int status1, int status2)
+void Drawable::Update_Drawable_Supply_Status(int32_t status1, int32_t status2)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();

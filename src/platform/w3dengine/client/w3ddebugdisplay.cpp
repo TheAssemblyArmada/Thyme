@@ -24,7 +24,7 @@ W3DDebugDisplay::~W3DDebugDisplay()
     }
 }
 
-void W3DDebugDisplay::Draw_Text(int x, int y, char *text)
+void W3DDebugDisplay::Draw_Text(int32_t x, int32_t y, char *text)
 {
     if (m_font != nullptr && m_displayString != nullptr) {
         Utf16String unicode;

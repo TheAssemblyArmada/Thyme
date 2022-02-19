@@ -104,7 +104,7 @@ void DataChunkTableOfContents::Read(ChunkInputStream &stream)
         count = le32toh(count);
 
         // Process the entries in the TOC.
-        for (int i = 0; i < count; ++i) {
+        for (int32_t i = 0; i < count; ++i) {
             Mapping *map = NEW_POOL_OBJ(Mapping);
             uint8_t name_len;
             stream.Read(&name_len, sizeof(name_len));

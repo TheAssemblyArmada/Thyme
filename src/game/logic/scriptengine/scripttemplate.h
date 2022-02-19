@@ -34,17 +34,17 @@ public:
     virtual ~Template() override{};
 
     void Get_UI_Strings(Utf8String *strings) const;
-    Parameter::ParameterType Get_Parameter_Type(int parameter) const;
-    int Get_Num_Parameters() const { return m_numParameters; }
+    Parameter::ParameterType Get_Parameter_Type(int32_t parameter) const;
+    int32_t Get_Num_Parameters() const { return m_numParameters; }
 
 private:
     Utf8String m_uiName;
     Utf8String m_uiName2;
     Utf8String m_internalName;
     NameKeyType m_nameKey;
-    int m_numUiStrings;
+    int32_t m_numUiStrings;
     Utf8String m_uiStrings[PARAMETER_COUNT];
-    int m_numParameters;
+    int32_t m_numParameters;
     Parameter::ParameterType m_parameters[PARAMETER_COUNT];
     Utf8String m_helpString;
 };

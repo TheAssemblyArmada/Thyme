@@ -114,7 +114,7 @@ public:
     bool Is_Empty() const { return !m_firstNode.Next()->Is_Valid(); }
     void Add_Head(GenericNode *node) { m_firstNode.Link(node); }
     void Add_Tail(GenericNode *node) { m_lastNode.Prev()->Link(node); }
-    int Get_Valid_Count() const;
+    int32_t Get_Valid_Count() const;
     // Removes all nodes from the list.
     // void Delete() { while ( m_firstNode.Next()->Is_Valid() ) delete m_firstNode.Next(); }
 
@@ -148,9 +148,9 @@ inline GenericNode *GenericList::First_Valid() const
     return (node->Next() != nullptr ? node : nullptr);
 }
 
-inline int GenericList::Get_Valid_Count() const
+inline int32_t GenericList::Get_Valid_Count() const
 {
-    int counter = 0;
+    int32_t counter = 0;
     GenericNode *node = First_Valid();
 
     while (node) {

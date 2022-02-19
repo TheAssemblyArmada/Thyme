@@ -47,7 +47,7 @@ HTreeClass::HTreeClass(HTreeClass const &src)
 
     m_pivot = new PivotClass[m_numPivots];
 
-    for (int i = 0; i < m_numPivots; ++i) {
+    for (int32_t i = 0; i < m_numPivots; ++i) {
         PivotClass &pivot = m_pivot[i];
         pivot = src.m_pivot[i];
 
@@ -59,7 +59,7 @@ HTreeClass::HTreeClass(HTreeClass const &src)
     m_scaleFactor = src.m_scaleFactor;
 }
 
-int HTreeClass::Load_W3D(ChunkLoadClass &cload)
+int32_t HTreeClass::Load_W3D(ChunkLoadClass &cload)
 {
     Free();
 
@@ -112,7 +112,7 @@ int HTreeClass::Load_W3D(ChunkLoadClass &cload)
 
 bool HTreeClass::Read_Pivots(ChunkLoadClass &cload, bool pre30)
 {
-    int pidx = 0;
+    int32_t pidx = 0;
 
     if (pre30) {
         m_pivot[0].index = 0;
@@ -124,7 +124,7 @@ bool HTreeClass::Read_Pivots(ChunkLoadClass &cload, bool pre30)
         pidx = 1;
     }
 
-    for (int i = pidx; i < m_numPivots; i++) {
+    for (int32_t i = pidx; i < m_numPivots; i++) {
         W3dPivotStruct pivot_data;
 
         if (cload.Read(&pivot_data, sizeof(pivot_data)) != sizeof(pivot_data)) {
@@ -179,7 +179,7 @@ void HTreeClass::Free()
 }
 
 bool HTreeClass::Simple_Evaluate_Pivot(
-    HAnimClass *motion, int pivot_index, float frame, Matrix3D const &obj_tm, Matrix3D *end_tm)
+    HAnimClass *motion, int32_t pivot_index, float frame, Matrix3D const &obj_tm, Matrix3D *end_tm)
 {
     end_tm->Make_Identity();
 
@@ -205,7 +205,7 @@ bool HTreeClass::Simple_Evaluate_Pivot(
     return true;
 }
 
-bool HTreeClass::Simple_Evaluate_Pivot(int pivot_index, Matrix3D const &obj_tm, Matrix3D *end_tm)
+bool HTreeClass::Simple_Evaluate_Pivot(int32_t pivot_index, Matrix3D const &obj_tm, Matrix3D *end_tm)
 {
     end_tm->Make_Identity();
 
@@ -234,7 +234,7 @@ void HTreeClass::Base_Update(Matrix3D const &root)
     m_pivot->transform = root;
     m_pivot->is_visible = true;
 
-    for (int i = 1; i < m_numPivots; i++) {
+    for (int32_t i = 1; i < m_numPivots; i++) {
         captainslog_assert(m_pivot[i].parent != nullptr);
         Matrix3D::Multiply(m_pivot[i].parent->transform, m_pivot[i].base_transform, &m_pivot[i].transform);
         m_pivot[i].is_visible = true;
@@ -249,9 +249,9 @@ void HTreeClass::Anim_Update(Matrix3D const &root, HAnimClass *motion, float fra
 {
     m_pivot[0].transform = root;
     m_pivot[0].is_visible = true;
-    int num_anim_pivots = motion->Get_Num_Pivots();
+    int32_t num_anim_pivots = motion->Get_Num_Pivots();
 
-    for (int i = 1; i < m_numPivots; i++) {
+    for (int32_t i = 1; i < m_numPivots; i++) {
         PivotClass *pivot = &m_pivot[i];
         Matrix3D::Multiply(pivot->parent->transform, pivot->base_transform, &pivot->transform);
 
@@ -277,9 +277,9 @@ void HTreeClass::Anim_Update(Matrix3D const &root, HRawAnimClass *motion, float 
 {
     m_pivot[0].transform = root;
     m_pivot[0].is_visible = true;
-    int num_anim_pivots = motion->Get_Num_Pivots();
+    int32_t num_anim_pivots = motion->Get_Num_Pivots();
 
-    int fr = frame;
+    int32_t fr = frame;
 
     if (frame >= motion->Get_Num_Frames()) {
         fr = 0;
@@ -343,13 +343,13 @@ void HTreeClass::Blend_Update(
 {
     m_pivot->transform = root;
     m_pivot->is_visible = true;
-    int num_anim_pivots = motion0->Get_Num_Pivots();
+    int32_t num_anim_pivots = motion0->Get_Num_Pivots();
 
     if (num_anim_pivots >= motion1->Get_Num_Pivots()) {
         num_anim_pivots = motion1->Get_Num_Pivots();
     }
 
-    for (int i = 1; i < m_numPivots; i++) {
+    for (int32_t i = 1; i < m_numPivots; i++) {
         PivotClass *pivot = &m_pivot[i];
         Matrix3D::Multiply(pivot->parent->transform, pivot->base_transform, &pivot->transform);
 
@@ -383,12 +383,12 @@ void HTreeClass::Blend_Update(
     }
 }
 
-int HTreeClass::Get_Bone_Index(char const *name)
+int32_t HTreeClass::Get_Bone_Index(char const *name)
 {
     if (m_numPivots <= 0) {
         return 0;
     } else {
-        for (int i = 0; i < m_numPivots; i++) {
+        for (int32_t i = 0; i < m_numPivots; i++) {
             if (!strcasecmp(this->m_pivot[i].name, name)) {
                 return i;
             }
@@ -398,12 +398,12 @@ int HTreeClass::Get_Bone_Index(char const *name)
     return 0;
 }
 
-char *HTreeClass::Get_Bone_Name(int boneidx)
+char *HTreeClass::Get_Bone_Name(int32_t boneidx)
 {
     return m_pivot[boneidx].name;
 }
 
-int HTreeClass::Get_Parent_Index(int boneidx) const
+int32_t HTreeClass::Get_Parent_Index(int32_t boneidx) const
 {
     if (m_pivot[boneidx].parent) {
         return m_pivot[boneidx].parent->index;
@@ -415,7 +415,7 @@ int HTreeClass::Get_Parent_Index(int boneidx) const
 void HTreeClass::Scale(float factor)
 {
     if (factor != 1.0f) {
-        int count = 0;
+        int32_t count = 0;
 
         if (m_numPivots > 0) {
             do {
@@ -428,28 +428,28 @@ void HTreeClass::Scale(float factor)
     }
 }
 
-void HTreeClass::Capture_Bone(int boneindex)
+void HTreeClass::Capture_Bone(int32_t boneindex)
 {
     m_pivot[boneindex].is_captured = true;
 }
 
-void HTreeClass::Release_Bone(int boneindex)
+void HTreeClass::Release_Bone(int32_t boneindex)
 {
     m_pivot[boneindex].is_captured = false;
 }
 
-bool HTreeClass::Is_Bone_Captured(int boneindex)
+bool HTreeClass::Is_Bone_Captured(int32_t boneindex)
 {
     return m_pivot[boneindex].is_captured;
 }
 
-void HTreeClass::Control_Bone(int boneindex, Matrix3D const &relative_tm, bool world_space_translation)
+void HTreeClass::Control_Bone(int32_t boneindex, Matrix3D const &relative_tm, bool world_space_translation)
 {
     m_pivot[boneindex].world_space_translation = world_space_translation;
     m_pivot[boneindex].cap_transform = relative_tm;
 }
 
-void HTreeClass::Get_Bone_Control(int boneindex, Matrix3D &relative_tm)
+void HTreeClass::Get_Bone_Control(int32_t boneindex, Matrix3D &relative_tm)
 {
     if (m_pivot[boneindex].is_captured) {
         relative_tm = m_pivot[boneindex].cap_transform;

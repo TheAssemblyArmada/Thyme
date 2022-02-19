@@ -64,17 +64,17 @@ void GameWindow::Normalize_Window_Region()
     std::swap(m_region.lo.y, m_region.hi.y);
 }
 
-int GameWindow::Win_Next_Tab()
+int32_t GameWindow::Win_Next_Tab()
 {
     return 0;
 }
 
-int GameWindow::Win_Prev_Tab()
+int32_t GameWindow::Win_Prev_Tab()
 {
     return 0;
 }
 
-int GameWindow::Win_Set_Position(int x, int y)
+int32_t GameWindow::Win_Set_Position(int32_t x, int32_t y)
 {
     m_region.lo.x = x;
     m_region.lo.y = y;
@@ -86,7 +86,7 @@ int GameWindow::Win_Set_Position(int x, int y)
     return 0;
 }
 
-int GameWindow::Win_Get_Position(int *x, int *y)
+int32_t GameWindow::Win_Get_Position(int32_t *x, int32_t *y)
 {
     if (x == nullptr || y == nullptr) {
         // TODO figure out what -3 means
@@ -99,7 +99,7 @@ int GameWindow::Win_Get_Position(int *x, int *y)
     return 0;
 }
 
-int GameWindow::Win_Set_Cursor_Position(int x, int y)
+int32_t GameWindow::Win_Set_Cursor_Position(int32_t x, int32_t y)
 {
     m_cursorX = x;
     m_cursorY = y;
@@ -107,7 +107,7 @@ int GameWindow::Win_Set_Cursor_Position(int x, int y)
     return 0;
 }
 
-int GameWindow::Win_Get_Cursor_Position(int *x, int *y)
+int32_t GameWindow::Win_Get_Cursor_Position(int32_t *x, int32_t *y)
 {
     if (x != nullptr) {
         *x = m_cursorX;
@@ -119,7 +119,7 @@ int GameWindow::Win_Get_Cursor_Position(int *x, int *y)
     return 0;
 }
 
-int GameWindow::Win_Get_Screen_Position(int *x, int *y)
+int32_t GameWindow::Win_Get_Screen_Position(int32_t *x, int32_t *y)
 {
     // BUGFIX make sure its not nullptr
     if (x == nullptr || y == nullptr) {
@@ -141,7 +141,7 @@ int GameWindow::Win_Get_Screen_Position(int *x, int *y)
     return 0;
 }
 
-int GameWindow::Win_Get_Region(IRegion2D *region)
+int32_t GameWindow::Win_Get_Region(IRegion2D *region)
 {
     if (region != nullptr) {
         *region = m_region;
@@ -150,12 +150,12 @@ int GameWindow::Win_Get_Region(IRegion2D *region)
     return 0;
 }
 
-bool GameWindow::Win_Point_In_Window(int x, int y)
+bool GameWindow::Win_Point_In_Window(int32_t x, int32_t y)
 {
-    int win_x;
-    int win_y;
-    int width;
-    int height;
+    int32_t win_x;
+    int32_t win_y;
+    int32_t width;
+    int32_t height;
 
     Win_Get_Screen_Position(&win_x, &win_y);
     Win_Get_Size(&width, &height);
@@ -163,7 +163,7 @@ bool GameWindow::Win_Point_In_Window(int x, int y)
     return x >= win_x && x <= width + win_x && y >= win_y && y <= height + win_y;
 }
 
-int GameWindow::Win_Get_Size(int *width, int *height)
+int32_t GameWindow::Win_Get_Size(int32_t *width, int32_t *height)
 {
     if (!width || !height) {
         return -3;
@@ -175,7 +175,7 @@ int GameWindow::Win_Get_Size(int *width, int *height)
     return 0;
 }
 
-int GameWindow::Win_Enable(bool enable)
+int32_t GameWindow::Win_Enable(bool enable)
 {
     if (enable) {
         m_status |= WIN_STATUS_ENABLED;
@@ -201,30 +201,30 @@ bool GameWindow::Win_Is_Hidden()
     return (m_status & WIN_STATUS_HIDDEN) != 0;
 }
 
-int GameWindow::Win_Set_Status(int status)
+int32_t GameWindow::Win_Set_Status(int32_t status)
 {
-    int old = m_status;
+    int32_t old = m_status;
 
     m_status |= ~status;
 
     return old;
 }
 
-int GameWindow::Win_Clear_Status(int status)
+int32_t GameWindow::Win_Clear_Status(int32_t status)
 {
-    int old = m_status;
+    int32_t old = m_status;
 
     m_status &= ~status;
 
     return old;
 }
 
-int GameWindow::Win_Get_Status()
+int32_t GameWindow::Win_Get_Status()
 {
     return m_status;
 }
 
-unsigned int GameWindow::Win_Get_Style()
+uint32_t GameWindow::Win_Get_Style()
 {
     return m_instData.m_style;
 }
@@ -239,13 +239,13 @@ void GameWindow::Win_Set_Hilite_State(bool state)
     }
 }
 
-void GameWindow::Win_Set_Draw_Offset(int x, int y)
+void GameWindow::Win_Set_Draw_Offset(int32_t x, int32_t y)
 {
     m_instData.m_imageOffset.x = x;
     m_instData.m_imageOffset.y = y;
 }
 
-void GameWindow::Win_Get_Draw_Offset(int *x, int *y)
+void GameWindow::Win_Get_Draw_Offset(int32_t *x, int32_t *y)
 {
     if (x != nullptr && y != nullptr) {
         *x = m_instData.m_imageOffset.x;
@@ -253,7 +253,7 @@ void GameWindow::Win_Get_Draw_Offset(int *x, int *y)
     }
 }
 
-int GameWindow::Win_Set_Text(Utf16String new_text)
+int32_t GameWindow::Win_Set_Text(Utf16String new_text)
 {
     m_instData.Set_Text(new_text);
 
@@ -265,7 +265,7 @@ Utf16String GameWindow::Win_Get_Text()
     return m_instData.Get_Text();
 }
 
-int GameWindow::Win_Get_Text_Length()
+int32_t GameWindow::Win_Get_Text_Length()
 {
     return m_instData.Get_Text_Length();
 }
@@ -283,47 +283,47 @@ void GameWindow::Win_Set_Font(GameFont *font)
 #endif
 }
 
-int GameWindow::Win_Get_Enabled_Text_Color()
+int32_t GameWindow::Win_Get_Enabled_Text_Color()
 {
     return m_instData.m_enabledText.color;
 }
 
-int GameWindow::Win_Get_Enabled_Text_Border_Color()
+int32_t GameWindow::Win_Get_Enabled_Text_Border_Color()
 {
     return m_instData.m_enabledText.borderColor;
 }
 
-int GameWindow::Win_Get_IME_Composite_Text_Color()
+int32_t GameWindow::Win_Get_IME_Composite_Text_Color()
 {
     return m_instData.m_imeCompositeText.color;
 }
 
-int GameWindow::Win_Get_IME_Composite_Text_Border_Color()
+int32_t GameWindow::Win_Get_IME_Composite_Text_Border_Color()
 {
     return m_instData.m_imeCompositeText.borderColor;
 }
 
-int GameWindow::Win_Get_Disabled_Text_Color()
+int32_t GameWindow::Win_Get_Disabled_Text_Color()
 {
     return m_instData.m_disabledText.color;
 }
 
-int GameWindow::Win_Get_Disabled_Text_Border_Color()
+int32_t GameWindow::Win_Get_Disabled_Text_Border_Color()
 {
     return m_instData.m_disabledText.borderColor;
 }
 
-int GameWindow::Win_Get_Hilite_Text_Color()
+int32_t GameWindow::Win_Get_Hilite_Text_Color()
 {
     return m_instData.m_hiliteText.color;
 }
 
-int GameWindow::Win_Get_Hilite_Text_Border_Color()
+int32_t GameWindow::Win_Get_Hilite_Text_Border_Color()
 {
     return m_instData.m_hiliteText.borderColor;
 }
 
-int GameWindow::Win_Set_Instance_Data(WinInstanceData *instance)
+int32_t GameWindow::Win_Set_Instance_Data(WinInstanceData *instance)
 {
     DisplayString *text = m_instData.m_text;
     DisplayString *tooltip = m_instData.m_tooltip;
@@ -365,14 +365,14 @@ void GameWindow::Win_Set_Tooltip(Utf16String tooltip)
     m_instData.Set_Tooltip_Text(tooltip);
 }
 
-int GameWindow::Win_Set_Window_Id(int id)
+int32_t GameWindow::Win_Set_Window_Id(int32_t id)
 {
     m_instData.m_id = id;
 
     return 0;
 }
 
-int GameWindow::Win_Get_Window_Id()
+int32_t GameWindow::Win_Get_Window_Id()
 {
     return m_instData.m_id;
 }
@@ -398,7 +398,7 @@ GameWindow *GameWindow::Win_Get_Child()
     return m_child;
 }
 
-int GameWindow::Win_Set_Owner(GameWindow *owner)
+int32_t GameWindow::Win_Set_Owner(GameWindow *owner)
 {
     if (owner != nullptr) {
         m_instData.m_owner = owner;
@@ -464,14 +464,14 @@ GameWindow *GameWindow::Win_Get_Prev_In_Layout()
     return m_prevLayout;
 }
 
-int GameWindow::Win_Set_Tooltip_Func(WindowTooltipFunc tooltip)
+int32_t GameWindow::Win_Set_Tooltip_Func(WindowTooltipFunc tooltip)
 {
     m_tooltip = tooltip;
 
     return 0;
 }
 
-int GameWindow::Win_Draw_Window()
+int32_t GameWindow::Win_Draw_Window()
 {
     if (!Win_Is_Hidden()) {
         if (m_draw != nullptr) {
@@ -482,11 +482,11 @@ int GameWindow::Win_Draw_Window()
     return 0;
 }
 
-GameWindow *GameWindow::Win_Point_In_Child(int x, int y, bool ignore_enable_check, bool audio_event)
+GameWindow *GameWindow::Win_Point_In_Child(int32_t x, int32_t y, bool ignore_enable_check, bool audio_event)
 {
     for (GameWindow *window = m_child; window != nullptr; window = window->m_next) {
-        int r_x = window->m_region.lo.x;
-        int r_y = window->m_region.lo.y;
+        int32_t r_x = window->m_region.lo.x;
+        int32_t r_y = window->m_region.lo.y;
 
         for (GameWindow *j = window->Win_Get_Parent(); j != nullptr; j = j->m_parent) {
             r_x += j->m_region.lo.x;
@@ -518,11 +518,11 @@ GameWindow *GameWindow::Win_Point_In_Child(int x, int y, bool ignore_enable_chec
     return this;
 }
 
-GameWindow *GameWindow::Win_Point_In_Any_Child(int x, int y, bool ignore_hidden, bool ignore_enable_check)
+GameWindow *GameWindow::Win_Point_In_Any_Child(int32_t x, int32_t y, bool ignore_hidden, bool ignore_enable_check)
 {
     for (GameWindow *window = m_child; window != nullptr; window = window->m_next) {
-        int r_x = window->m_region.lo.x;
-        int r_y = window->m_region.lo.y;
+        int32_t r_x = window->m_region.lo.x;
+        int32_t r_y = window->m_region.lo.y;
 
         for (GameWindow *parent_window = window->m_parent; parent_window != nullptr;
              parent_window = parent_window->m_parent) {
@@ -540,7 +540,7 @@ GameWindow *GameWindow::Win_Point_In_Any_Child(int x, int y, bool ignore_hidden,
     return this;
 }
 
-int GameWindow::Win_Set_Enabled_Image(int index, Image *image)
+int32_t GameWindow::Win_Set_Enabled_Image(int32_t index, Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set enabled image, index out of range '%d'", index);
@@ -551,7 +551,7 @@ int GameWindow::Win_Set_Enabled_Image(int index, Image *image)
     return 0;
 }
 
-int GameWindow::Win_Set_Enabled_Color(int index, int color)
+int32_t GameWindow::Win_Set_Enabled_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set enabled color, index out of range '%d'", index);
@@ -562,7 +562,7 @@ int GameWindow::Win_Set_Enabled_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Enabled_Border_Color(int index, int color)
+int32_t GameWindow::Win_Set_Enabled_Border_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set enabled border color, index out of range '%d'", index);
@@ -573,7 +573,7 @@ int GameWindow::Win_Set_Enabled_Border_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Disabled_Image(int index, Image *image)
+int32_t GameWindow::Win_Set_Disabled_Image(int32_t index, Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set disabled image, index out of range '%d'", index);
@@ -584,7 +584,7 @@ int GameWindow::Win_Set_Disabled_Image(int index, Image *image)
     return 0;
 }
 
-int GameWindow::Win_Set_Disabled_Color(int index, int color)
+int32_t GameWindow::Win_Set_Disabled_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set disabled color, index out of range '%d'", index);
@@ -595,7 +595,7 @@ int GameWindow::Win_Set_Disabled_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Disabled_Border_Color(int index, int color)
+int32_t GameWindow::Win_Set_Disabled_Border_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set disabled border color, index out of range '%d'", index);
@@ -606,7 +606,7 @@ int GameWindow::Win_Set_Disabled_Border_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Hilite_Image(int index, Image *image)
+int32_t GameWindow::Win_Set_Hilite_Image(int32_t index, Image *image)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set hilite image, index out of range '%d'", index);
@@ -617,7 +617,7 @@ int GameWindow::Win_Set_Hilite_Image(int index, Image *image)
     return 0;
 }
 
-int GameWindow::Win_Set_Hilite_Color(int index, int color)
+int32_t GameWindow::Win_Set_Hilite_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set hilite color, index out of range '%d'", index);
@@ -628,7 +628,7 @@ int GameWindow::Win_Set_Hilite_Color(int index, int color)
     return 0;
 }
 
-int GameWindow::Win_Set_Hilite_Border_Color(int index, int color)
+int32_t GameWindow::Win_Set_Hilite_Border_Color(int32_t index, int32_t color)
 {
     if (index < 0 || index >= WinInstanceData::MAX_DRAW_DATA) {
         captainslog_debug("Set hilite border color, index out of range '%d'", index);

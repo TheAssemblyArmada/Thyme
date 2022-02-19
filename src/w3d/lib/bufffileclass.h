@@ -24,9 +24,9 @@ public:
     BufferedFileClass(const char *filename);
     virtual ~BufferedFileClass();
 
-    virtual int Write(void const *buffer, int size) override;
-    virtual int Read(void *buffer, int size) override;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) override;
+    virtual int32_t Write(void const *buffer, int32_t size) override;
+    virtual int32_t Read(void *buffer, int32_t size) override;
+    virtual off_t Seek(off_t offset, int32_t whence = FS_SEEK_CURRENT) override;
     virtual void Close() override;
 
     void Reset_Buffer();
@@ -35,9 +35,9 @@ public:
 
 protected:
     uint8_t *m_buffer;
-    int m_bufferSize;
-    int m_bufferAvailable;
-    int m_bufferOffset;
+    int32_t m_bufferSize;
+    int32_t m_bufferAvailable;
+    int32_t m_bufferOffset;
 
 private:
     static unsigned m_desiredBufferSize;

@@ -28,7 +28,7 @@
 #include <unistd.h>
 #endif
 
-File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
+File *Win32LocalFileSystem::Open_File(const char *filename, int32_t mode)
 {
     if (filename == nullptr || *filename == '\0') {
         return nullptr;
@@ -166,7 +166,7 @@ bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *i
     return true;
 #else
     struct stat data;
-    int rc = stat(filename, &data);
+    int32_t rc = stat(filename, &data);
 
     if (rc != 0) {
         return false;

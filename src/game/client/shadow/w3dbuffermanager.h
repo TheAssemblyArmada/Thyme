@@ -65,8 +65,8 @@ public:
     {
         VBM_FVF_TYPES m_format;
         W3DVertexBufferSlot *m_usedSlots;
-        int m_startFreeIndex;
-        int m_size;
+        int32_t m_startFreeIndex;
+        int32_t m_size;
         W3DVertexBuffer *m_nextVB;
         DX8VertexBufferClass *m_DX8VertexBuffer;
         W3DRenderTask *m_renderTaskList;
@@ -74,8 +74,8 @@ public:
 
     struct W3DVertexBufferSlot
     {
-        int m_size;
-        int m_start;
+        int32_t m_size;
+        int32_t m_start;
         W3DVertexBuffer *m_VB;
         W3DVertexBufferSlot *m_prevSameSize;
         W3DVertexBufferSlot *m_nextSameSize;
@@ -88,16 +88,16 @@ public:
     struct W3DIndexBuffer
     {
         W3DIndexBufferSlot *m_usedSlots;
-        int m_startFreeIndex;
-        int m_size;
+        int32_t m_startFreeIndex;
+        int32_t m_size;
         W3DIndexBuffer *m_nextIB;
         DX8IndexBufferClass *m_DX8IndexBuffer;
     };
 
     struct W3DIndexBufferSlot
     {
-        int m_size;
-        int m_start;
+        int32_t m_size;
+        int32_t m_start;
         W3DIndexBuffer *m_IB;
         W3DIndexBufferSlot *m_prevSameSize;
         W3DIndexBufferSlot *m_nextSameSize;
@@ -127,33 +127,33 @@ public:
     void Release_Resources();
     bool ReAcquire_Resources();
 
-    W3DVertexBufferSlot *Get_Slot(VBM_FVF_TYPES fvf_type, int size);
+    W3DVertexBufferSlot *Get_Slot(VBM_FVF_TYPES fvf_type, int32_t size);
     void Release_Slot(W3DVertexBufferSlot *vb_slot);
-    W3DVertexBufferSlot *Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int size);
+    W3DVertexBufferSlot *Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int32_t size);
 
-    W3DIndexBufferSlot *Get_Slot(int size);
+    W3DIndexBufferSlot *Get_Slot(int32_t size);
     void Release_Slot(W3DIndexBufferSlot *ib_slot);
-    W3DIndexBufferSlot *Allocate_Slot_Storage(int size);
+    W3DIndexBufferSlot *Allocate_Slot_Storage(int32_t size);
 
     W3DVertexBuffer *Get_Next_Vertex_Buffer(W3DVertexBuffer *vb, VBM_FVF_TYPES fvf_type);
     W3DIndexBuffer *Get_Next_Index_Buffer(W3DIndexBuffer *ib);
 
-    static int Get_DX8_Format(VBM_FVF_TYPES fvf_type);
+    static int32_t Get_DX8_Format(VBM_FVF_TYPES fvf_type);
 
 #ifdef GAME_DLL
     W3DBufferManager *Hook_Ctor() { return new (this) W3DBufferManager; }
     void Hook_Dtor() { W3DBufferManager::~W3DBufferManager(); }
 
-    W3DVertexBufferSlot *Hook_VB_Get_Slot(VBM_FVF_TYPES fvf_type, int size) { return Get_Slot(fvf_type, size); }
+    W3DVertexBufferSlot *Hook_VB_Get_Slot(VBM_FVF_TYPES fvf_type, int32_t size) { return Get_Slot(fvf_type, size); }
     void Hook_VB_Release_Slot(W3DVertexBufferSlot *vb_slot) { Release_Slot(vb_slot); }
-    W3DVertexBufferSlot *Hook_VB_Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int size)
+    W3DVertexBufferSlot *Hook_VB_Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int32_t size)
     {
         return Allocate_Slot_Storage(fvf_type, size);
     }
 
-    W3DIndexBufferSlot *Hook_IB_Get_Slot(int size) { return Get_Slot(size); }
+    W3DIndexBufferSlot *Hook_IB_Get_Slot(int32_t size) { return Get_Slot(size); }
     void Hook_IB_Release_Slot(W3DIndexBufferSlot *ib_slot) { Release_Slot(ib_slot); }
-    W3DIndexBufferSlot *Hook_IB_Allocate_Slot_Storage(int size) { return Allocate_Slot_Storage(size); }
+    W3DIndexBufferSlot *Hook_IB_Allocate_Slot_Storage(int32_t size) { return Allocate_Slot_Storage(size); }
 #endif
 
 private:
@@ -161,15 +161,15 @@ private:
     W3DVertexBuffer *m_W3DVertexBuffers[MAX_FVF];
 
     W3DVertexBufferSlot m_W3DVertexBufferEmptySlots[MAX_NUMBER_SLOTS];
-    int m_numEmptyVertexSlotsAllocated;
+    int32_t m_numEmptyVertexSlotsAllocated;
     W3DVertexBuffer m_W3DEmptyVertexBuffers[MAX_VERTEX_BUFFERS_CREATED];
-    int m_numEmptyVertexBuffersAllocated;
+    int32_t m_numEmptyVertexBuffersAllocated;
 
     W3DIndexBufferSlot *m_W3DIndexBufferSlots[MAX_IB_SIZES];
     W3DIndexBuffer *m_W3DIndexBuffers;
 
     W3DIndexBufferSlot m_W3DIndexBufferEmptySlots[MAX_NUMBER_SLOTS];
-    int m_numEmptyIndexSlotsAllocated;
+    int32_t m_numEmptyIndexSlotsAllocated;
     W3DIndexBuffer m_W3DEmptyIndexBuffers[MAX_INDEX_BUFFERS_CREATED];
-    int m_numEmptyIndexBuffersAllocated;
+    int32_t m_numEmptyIndexBuffersAllocated;
 };

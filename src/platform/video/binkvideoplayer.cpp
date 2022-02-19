@@ -149,7 +149,7 @@ VideoStream *BinkVideoPlayer::Create_Stream(Bink *handle)
     m_firstStream = stream;
 
     float vol = g_theAudio->Get_Volume(AUDIOAFFECT_SPEECH);
-    BinkSetVolume(stream->m_binkHandle, 0, (((int((vol / 1.25f) * 100.0f)) + 1) << 0xF) / 100);
+    BinkSetVolume(stream->m_binkHandle, 0, (((int32_t((vol / 1.25f) * 100.0f)) + 1) << 0xF) / 100);
 
     return stream;
 }

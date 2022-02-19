@@ -114,13 +114,13 @@ WaterRenderObjClass::~WaterRenderObjClass()
     Ref_Ptr_Release(m_riverAlphaEdge);
     Ref_Ptr_Release(m_waterSparklesTexture);
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT; i++) {
+    for (int32_t i = 0; i < TIME_OF_DAY_COUNT; i++) {
         Ref_Ptr_Release(m_settings[i].sky_texture);
         Ref_Ptr_Release(m_settings[i].water_texture);
     }
 
 #ifdef BUILD_WITH_D3D8
-    for (int i = 0; i < 32; i++) {
+    for (int32_t i = 0; i < 32; i++) {
         if (m_pBumpTexture[i]) {
             m_pBumpTexture[i]->Release();
             m_pBumpTexture[i] = nullptr;
@@ -140,7 +140,7 @@ WaterRenderObjClass::~WaterRenderObjClass()
     m_meshData = nullptr;
     m_meshDataCount = 0;
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT; i++) {
+    for (int32_t i = 0; i < TIME_OF_DAY_COUNT; i++) {
         g_waterSettings[i].m_skyTextureFile.Clear();
         g_waterSettings[i].m_waterTextureFile.Clear();
     }
@@ -165,7 +165,7 @@ void WaterRenderObjClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
     box.Init(Vector3(0.0f, 0.0f, 0.0f), Vector3(50000.0f, 50000.0f, 0.001f * m_dx));
 }
 
-int WaterRenderObjClass::Class_ID() const
+int32_t WaterRenderObjClass::Class_ID() const
 {
     return CLASSID_UNKNOWN;
 }
@@ -190,18 +190,18 @@ long WaterRenderObjClass::Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *b
     }
 
     IDirect3DBaseTexture8 *base = bump_source->Peek_Platform_Base_Texture();
-    int levels = base->GetLevelCount();
+    int32_t levels = base->GetLevelCount();
     *tex = DX8Wrapper::Create_Texture(
         surface_desc.width, surface_desc.height, WW3D_FORMAT_U8V8, MIP_LEVELS_ALL, D3DPOOL_MANAGED, false);
 
-    for (int level = 0; level < levels; level++) {
+    for (int32_t level = 0; level < levels; level++) {
         SurfaceClass *l = bump_source->Get_Surface_Level(level);
         l->Get_Description(surface_desc);
-        int lSrcPitch;
+        int32_t lSrcPitch;
         unsigned char *pSrc = (unsigned char *)l->Lock(&lSrcPitch);
         D3DLOCKED_RECT r;
         (*tex)->LockRect(level, &r, nullptr, 0);
-        int lDstPitch = r.Pitch;
+        int32_t lDstPitch = r.Pitch;
         unsigned char *pDst = (unsigned char *)r.pBits;
 
         // this loop is from bumpearth.cpp in DirectX SDK
@@ -248,7 +248,7 @@ long WaterRenderObjClass::Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *b
                 WORD uL = v00 <= 1 ? 127 : 63;
 
                 // change to sample code
-                int format = D3DFMT_V8U8;
+                int32_t format = D3DFMT_V8U8;
 
                 switch (format) {
                     case D3DFMT_V8U8:
@@ -289,7 +289,7 @@ long WaterRenderObjClass::Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *b
 }
 
 #ifdef BUILD_WITH_D3D8
-HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int vertex_size, bool do_static)
+HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int32_t size_x, int32_t size_y, int32_t vertex_size, bool do_static)
 {
     m_numVertices = size_y * size_x;
     Setting *setting = &m_settings[m_tod];
@@ -324,8 +324,8 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
         return res;
     }
 
-    for (int i = 0; i < size_y; i++) {
-        for (int j = 0; j < size_x; j++) {
+    for (int32_t i = 0; i < size_y; i++) {
+        for (int32_t j = 0; j < size_x; j++) {
             vertices->x = j;
             vertices->y = m_level;
             vertices->z = i;
@@ -347,7 +347,7 @@ HRESULT WaterRenderObjClass::Generate_Vertex_Buffer(int size_x, int size_y, int 
 #endif
 
 #ifdef BUILD_WITH_D3D8
-HRESULT WaterRenderObjClass::Generate_Index_Buffer(int size_x, int size_y)
+HRESULT WaterRenderObjClass::Generate_Index_Buffer(int32_t size_x, int32_t size_y)
 {
     m_numIndices = (2 * size_x + 2) * (size_y - 1) - 2;
     HRESULT res = m_pDev->CreateIndexBuffer(
@@ -364,9 +364,9 @@ HRESULT WaterRenderObjClass::Generate_Index_Buffer(int size_x, int size_y)
         return res;
     }
 
-    int i1 = 0;
-    int i2 = 0;
-    int i3 = 0;
+    int32_t i1 = 0;
+    int32_t i2 = 0;
+    int32_t i3 = 0;
 
     while (i1 < m_numIndices) {
         while (i3 < (i2 + 1) * size_x) {
@@ -596,7 +596,7 @@ void WaterRenderObjClass::Load()
     }
 }
 
-int WaterRenderObjClass::Init(float water_level, float dx, float dy, SceneClass *parent_scene, WaterType type)
+int32_t WaterRenderObjClass::Init(float water_level, float dx, float dy, SceneClass *parent_scene, WaterType type)
 {
     m_iBumpFrame = 0;
     m_fBumpScale = 0.06f;
@@ -646,7 +646,7 @@ int WaterRenderObjClass::Init(float water_level, float dx, float dy, SceneClass 
         MeshClass *mesh = (MeshClass *)m_skyBox;
         MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
-        for (int i = 0; i < matinfo->Texture_Count(); i++) {
+        for (int32_t i = 0; i < matinfo->Texture_Count(); i++) {
             if (matinfo->Peek_Texture(i)) {
                 matinfo->Peek_Texture(i)->Get_Texture_Filter()->Set_U_Address_Mode(
                     TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
@@ -686,12 +686,12 @@ void WaterRenderObjClass::Update_Map_Overrides()
 void WaterRenderObjClass::Reset()
 {
     if (m_meshData) {
-        int x = m_gridCellsX + 1;
-        int y = m_gridCellsY + 1;
+        int32_t x = m_gridCellsX + 1;
+        int32_t y = m_gridCellsY + 1;
         WaterMeshData *m = m_meshData;
 
-        for (int i = 0; i < y + 2; i++) {
-            for (int j = 0; j < x + 2; j++) {
+        for (int32_t i = 0; i < y + 2; i++) {
+            for (int32_t j = 0; j < x + 2; j++) {
                 m->velocity = 0.0f;
                 m->height = 0.0f;
                 m->preferred_height = 0;
@@ -740,8 +740,8 @@ void WaterRenderObjClass::Enable_Water_Grid(bool state)
 
 void WaterRenderObjClass::Update()
 {
-    unsigned int frame = 0;
-    static unsigned int lastLogicFrame;
+    uint32_t frame = 0;
+    static uint32_t lastLogicFrame;
 
     if (g_theGameLogic) {
         frame = g_theGameLogic->Get_Frame();
@@ -778,13 +778,13 @@ void WaterRenderObjClass::Update()
     if (lastLogicFrame != frame) {
         if (m_doWaterGrid) {
             if (m_meshInMotion) {
-                int x = m_gridCellsX + 1;
-                int y = m_gridCellsY + 1;
+                int32_t x = m_gridCellsX + 1;
+                int32_t y = m_gridCellsY + 1;
                 m_meshInMotion = false;
                 WaterMeshData *m = m_meshData;
 
-                for (int i = 0; i < y + 2; i++) {
-                    for (int j = 0; j < x + 2; j++) {
+                for (int32_t i = 0; i < y + 2; i++) {
+                    for (int32_t j = 0; j < x + 2; j++) {
                         if ((m->status & 1) != 0) {
                             m->velocity = 0.93f * m->velocity;
 
@@ -823,7 +823,7 @@ void WaterRenderObjClass::Replace_Skybox_Texture(Utf8String const &oldname, Utf8
         MeshClass *mesh = (MeshClass *)m_skyBox;
         MaterialInfoClass *matinfo = mesh->Get_Material_Info();
 
-        for (int i = 0; i < matinfo->Texture_Count(); i++) {
+        for (int32_t i = 0; i < matinfo->Texture_Count(); i++) {
             if (matinfo->Peek_Texture(i)) {
                 matinfo->Peek_Texture(i)->Get_Texture_Filter()->Set_U_Address_Mode(
                     TextureFilterClass::TEXTURE_ADDRESS_CLAMP);
@@ -961,7 +961,7 @@ void WaterRenderObjClass::Render(RenderInfoClass &rinfo)
             if (((RTS3DScene *)rinfo.m_camera.Get_User_Data())->Get_Extra_Pass_Polygon_Mode()
                     != SceneClass::EXTRA_PASS_CLEAR_LINE
                 && !ShaderClass::Is_Backface_Culling_Inverted()) {
-                int sort = Get_Sort_Level();
+                int32_t sort = Get_Sort_Level();
 
                 if (W3D::Are_Static_Sort_Lists_Enabled() && sort) {
                     W3D::Add_To_Static_Sort_List(this, sort);
@@ -1054,7 +1054,7 @@ bool WaterRenderObjClass::Get_Clipped_Water_Plane(CameraClass *cam, AABoxClass *
     poly2.Clip(f.m_planes[3], poly1);
     poly1.Clip(f.m_planes[4], poly2);
     poly2.Clip(f.m_planes[5], poly1);
-    int count = poly1.m_verts.Count();
+    int32_t count = poly1.m_verts.Count();
 
     if (count >= 3) {
         if (box) {
@@ -1174,9 +1174,9 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
         m_pDev->SetStreamSource(0, m_vertexBufferD3D, sizeof(VertexFormatXYZDUV1));
         m_pDev->SetIndices(m_indexBufferD3D, 0);
 
-        for (int i = ((box.m_center.Y - box.m_extent.Y) / 560.0f); box.m_center.Y + box.m_extent.Y > (float)(14 * i) * 40.0f;
+        for (int32_t i = ((box.m_center.Y - box.m_extent.Y) / 560.0f); box.m_center.Y + box.m_extent.Y > (float)(14 * i) * 40.0f;
              i++) {
-            for (int j = ((box.m_center.X - box.m_extent.X) / 560.0f);
+            for (int32_t j = ((box.m_center.X - box.m_extent.X) / 560.0f);
                  box.m_center.X + box.m_extent.X > (float)(14 * j) * 40.0f;
                  j++) {
                 D3DXMATRIX worldviewproj;
@@ -1226,10 +1226,10 @@ void WaterRenderObjClass::Draw_Sea(RenderInfoClass &rinfo)
             m_pDev->SetStreamSource(0, m_vertexBufferD3D, sizeof(VertexFormatXYZDUV1));
             m_pDev->SetIndices(m_indexBufferD3D, 0);
 
-            for (int i = ((box.m_center.Y - box.m_extent.Y) / 560.0f);
+            for (int32_t i = ((box.m_center.Y - box.m_extent.Y) / 560.0f);
                  box.m_center.Y + box.m_extent.Y > (float)(14 * i) * 40.0f;
                  i++) {
-                for (int j = ((box.m_center.X - box.m_extent.X) / 560.0f);
+                for (int32_t j = ((box.m_center.X - box.m_extent.X) / 560.0f);
                      box.m_center.X + box.m_extent.X > (float)(14 * j) * 40.0f;
                      j++) {
                     D3DXMATRIX m10;
@@ -1255,7 +1255,7 @@ void WaterRenderObjClass::Render_Water()
                 if (i->Is_River()) {
                     Draw_River_Water(i);
                 } else {
-                    for (int j = 1; j < i->Get_Num_Points() - 1; j += 2) {
+                    for (int32_t j = 1; j < i->Get_Num_Points() - 1; j += 2) {
                         ICoord3D pt3 = *i->Get_Point(0);
                         ICoord3D pt2 = *i->Get_Point(j);
                         ICoord3D pt1 = *i->Get_Point(j + 1);
@@ -1272,7 +1272,7 @@ void WaterRenderObjClass::Render_Water()
                         points[3].Set(pt3.x, pt3.y, pt3.z);
 
                         if (g_theWriteableGlobalData->m_featherWater != 0) {
-                            for (int k = 0; k < g_theWriteableGlobalData->m_featherWater; k++) {
+                            for (int32_t k = 0; k < g_theWriteableGlobalData->m_featherWater; k++) {
                                 Draw_Trapezoid_Water(points);
                                 points[0].Z = 4.0f / (float)g_theWriteableGlobalData->m_featherWater + points[0].Z;
                             }
@@ -1290,13 +1290,13 @@ void WaterRenderObjClass::Render_Sky()
 {
 #ifdef BUILD_WITH_D3D8
     Setting *s = &m_settings[m_tod];
-    int newtime = rts::Get_Time();
-    int time = newtime - m_lastUpdateTime;
+    int32_t newtime = rts::Get_Time();
+    int32_t time = newtime - m_lastUpdateTime;
     m_lastUpdateTime = newtime;
     m_uOffset = (float)time * s->u_scroll_per_ms * s->sky_texels_per_unit + m_uOffset;
     m_vOffset = (float)time * s->v_scroll_per_ms * s->sky_texels_per_unit + m_vOffset;
-    m_uOffset = m_uOffset - (float)(int)m_uOffset;
-    m_vOffset = m_vOffset - (float)(int)m_vOffset;
+    m_uOffset = m_uOffset - (float)(int32_t)m_uOffset;
+    m_vOffset = m_vOffset - (float)(int32_t)m_vOffset;
     float u = 7680.0f * s->sky_texels_per_unit + m_uOffset;
     float v = 7680.0f * s->sky_texels_per_unit + m_vOffset;
     VertexMaterialClass *material = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
@@ -1430,8 +1430,8 @@ void WaterRenderObjClass::Render_Water_Mesh()
     if (m_doWaterGrid) {
         m_vertexBufferD3DOffset = 0xFFFF;
         Setting *s = &m_settings[m_tod];
-        int x = m_gridCellsX + 1;
-        int y = m_gridCellsY + 1;
+        int32_t x = m_gridCellsX + 1;
+        int32_t y = m_gridCellsY + 1;
         float u = (float)s->water_repeat_count / 128.0f * m_gridCellSize / 10.0f * 0.2f;
         float v = (float)s->water_repeat_count / 128.0f * m_gridCellSize / 10.0f * 0.2f;
         Vector3 v1(m_gridCellSize * m_gridCellSize, 0.0f, 0.0f);
@@ -1448,8 +1448,8 @@ void WaterRenderObjClass::Render_Water_Mesh()
             return;
         }
 
-        unsigned int color = s->water_diffuse & 0xFFFFFF;
-        unsigned int color2 = (s->water_diffuse & 0xFF000000) >> 24;
+        uint32_t color = s->water_diffuse & 0xFFFFFF;
+        uint32_t color2 = (s->water_diffuse & 0xFF000000) >> 24;
         color2 -= 32;
         color |= color2 << 24;
         float f1 = GameMath::Cos(3.0f * m_riverVOrigin) * 0.02f;
@@ -1457,7 +1457,7 @@ void WaterRenderObjClass::Render_Water_Mesh()
         float f3 = m_riverVOrigin / v;
         WaterMeshData *mesh = &m_meshData[x + 3];
 
-        for (int i = 0; i < y; i++) {
+        for (int32_t i = 0; i < y; i++) {
             float f4 = (float)i * m_gridCellSize;
             float f5 = (float)i * v + m_riverVOrigin;
             float f6 = f4 * GAMEMATH_PI / 80.0f + f2;
@@ -1466,7 +1466,7 @@ void WaterRenderObjClass::Render_Water_Mesh()
             float f9 = m_gridCellSize / 50.0f;
             float f10 = ((float)i + f3) * f9 + (float)i * f8;
 
-            for (int j = 0; j < x; j++) {
+            for (int32_t j = 0; j < x; j++) {
                 verts->x = (float)j * m_gridCellSize;
                 verts->y = f4;
                 verts->z = mesh->height;
@@ -1565,8 +1565,8 @@ void WaterRenderObjClass::Add_Velocity(float world_x, float world_y, float z_vel
                 maxy = m_gridCellsY;
             }
 
-            for (int i = miny; i < maxy; i++) {
-                for (int j = minx; j < maxx; j++) {
+            for (int32_t i = miny; i < maxy; i++) {
+                for (int32_t j = minx; j < maxx; j++) {
                     WaterMeshData *mesh = &m_meshData[(m_gridCellsX + 3) * (i + 1) + j + 1];
                     mesh->preferred_height = preferred_height;
                     mesh->velocity += z_velocity;
@@ -1609,8 +1609,8 @@ void WaterRenderObjClass::Change_Grid_Height(float wx, float wy, float delta)
             maxy = m_gridCellsY;
         }
 
-        for (int i = miny; i < maxy; i++) {
-            for (int j = minx; j < maxx; j++) {
+        for (int32_t i = miny; i < maxy; i++) {
+            for (int32_t j = minx; j < maxx; j++) {
                 WaterMeshData *mesh = &m_meshData[(m_gridCellsX + 3) * (i + 1) + j + 1];
                 float dist = GameMath::Sqrt((gx - j) * (gx - j) + (gy - i) * (gy - i));
                 float height = 1.0f / (dist * m_gridChangeAtt1 + m_gridChangeAtt0 + dist * dist * m_gridChangeAtt2) * delta
@@ -1760,7 +1760,7 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Invalidate_Cached_Render_States();
-    int count = ptrig->Get_Num_Points() / 2 - 1;
+    int32_t count = ptrig->Get_Num_Points() / 2 - 1;
 
     if (!m_disableRiver) {
         m_drawingRiver = true;
@@ -1770,7 +1770,7 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
             DynamicIBAccessClass::WriteLockClass lock(&dyn_ib_access);
             unsigned short *indices = lock.Get_Index_Array();
 
-            for (int i = 0; i < count; i++) {
+            for (int32_t i = 0; i < count; i++) {
                 indices[0] = 2 * i;
                 indices[1] = 2 * i + 1;
                 indices[2] = 2 * i + 3;
@@ -1790,7 +1790,7 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
             green = g_theWriteableGlobalData->m_terrainAmbient[0].green;
             blue = g_theWriteableGlobalData->m_terrainAmbient[0].blue;
 
-            for (int l = 0; l < g_theWriteableGlobalData->m_numberGlobalLights; l++) {
+            for (int32_t l = 0; l < g_theWriteableGlobalData->m_numberGlobalLights; l++) {
                 if (-g_theWriteableGlobalData->m_terrainLightPos[l].z > 0.0f) {
                     red =
                         -g_theWriteableGlobalData->m_terrainLightPos[l].z * g_theWriteableGlobalData->m_terrainDiffuse[l].red
@@ -1803,11 +1803,11 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
                         + blue;
                 }
             }
-            int r1 = (m_settings[m_tod].water_diffuse & 0xFF);
+            int32_t r1 = (m_settings[m_tod].water_diffuse & 0xFF);
             float r2 = r1 / 255.0f;
-            int g1 = ((m_settings[m_tod].water_diffuse >> 8) & 0xFF);
+            int32_t g1 = ((m_settings[m_tod].water_diffuse >> 8) & 0xFF);
             float g2 = g1 / 255.0f;
-            int b1 = ((m_settings[m_tod].water_diffuse >> 16) & 0xFF);
+            int32_t b1 = ((m_settings[m_tod].water_diffuse >> 16) & 0xFF);
             float b2 = b1 / 255.0f;
             red = red * r2 * 255.0f;
             green = green * g2 * 255.0f;
@@ -1824,16 +1824,16 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
             }
         }
 
-        int color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
+        int32_t color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
             | GameMath::Fast_To_Int_Truncate(blue);
         color |= m_settings[m_tod].water_diffuse & 0xFF000000;
 
-        int inner = ptrig->Get_River_Start();
-        int outer = inner + 1;
+        int32_t inner = ptrig->Get_River_Start();
+        int32_t outer = inner + 1;
         float f1 = 0.0f;
         float f2 = 0.0f;
 
-        for (int i = 0; i < ptrig->Get_Num_Points() - 1; i++) {
+        for (int32_t i = 0; i < ptrig->Get_Num_Points() - 1; i++) {
             ICoord3D p1 = *ptrig->Get_Point(i);
             ICoord3D p2 = *ptrig->Get_Point(i + 1);
             float f3 = p1.x - p2.x;
@@ -1859,7 +1859,7 @@ void WaterRenderObjClass::Draw_River_Water(PolygonTrigger *ptrig)
                 VertexFormatXYZNDUV2 *dest_verts = lock.Get_Formatted_Vertex_Array();
                 float f8 = 3.0f * m_riverVOrigin;
 
-                for (int i = 0; i < ptrig->Get_Num_Points() / 2; i++) {
+                for (int32_t i = 0; i < ptrig->Get_Num_Points() / 2; i++) {
                     ICoord3D p1 = *ptrig->Get_Point(outer);
                     ICoord3D p2 = *ptrig->Get_Point(inner);
                     outer++;
@@ -2053,13 +2053,13 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
     u4 -= u1;
     u1 -= origin;
     u2 -= origin;
-    int width = (u1.Length() + u3.Length()) / 80.0f;
+    int32_t width = (u1.Length() + u3.Length()) / 80.0f;
 
     if (width < 1) {
         width = 1;
     }
 
-    int height = (u2.Length() + u4.Length()) / 80.0f;
+    int32_t height = (u2.Length() + u4.Length()) / 80.0f;
 
     if (height < 1) {
         height = 1;
@@ -2073,7 +2073,7 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         height = 50;
     }
 
-    int size = height * width;
+    int32_t size = height * width;
     width++;
     height++;
     DynamicIBAccessClass dyn_ib_access(IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, 3 * (2 * size + 2));
@@ -2082,8 +2082,8 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         DynamicIBAccessClass::WriteLockClass lock(&dyn_ib_access);
         unsigned short *indices = lock.Get_Index_Array();
 
-        for (int i = 0; i < height - 1; i++) {
-            for (int j = 0; j < width - 1; j++) {
+        for (int32_t i = 0; i < height - 1; i++) {
+            for (int32_t j = 0; j < width - 1; j++) {
                 indices[0] = j + width * i;
                 indices[1] = width * (i + 1) + j + 1;
                 indices[2] = j + width * (i + 1);
@@ -2104,7 +2104,7 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         green = g_theWriteableGlobalData->m_terrainAmbient[0].green;
         blue = g_theWriteableGlobalData->m_terrainAmbient[0].blue;
 
-        for (int l = 0; l < g_theWriteableGlobalData->m_numberGlobalLights; l++) {
+        for (int32_t l = 0; l < g_theWriteableGlobalData->m_numberGlobalLights; l++) {
             if (-g_theWriteableGlobalData->m_terrainLightPos[l].z > 0.0f) {
                 red = -g_theWriteableGlobalData->m_terrainLightPos[l].z * g_theWriteableGlobalData->m_terrainDiffuse[l].red
                     + red;
@@ -2116,11 +2116,11 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
             }
         }
 
-        int r1 = (m_settings[m_tod].water_diffuse & 0xFF);
+        int32_t r1 = (m_settings[m_tod].water_diffuse & 0xFF);
         float r2 = r1 / 255.0f;
-        int g1 = ((m_settings[m_tod].water_diffuse >> 8) & 0xFF);
+        int32_t g1 = ((m_settings[m_tod].water_diffuse >> 8) & 0xFF);
         float g2 = g1 / 255.0f;
-        int b1 = ((m_settings[m_tod].water_diffuse >> 16) & 0xFF);
+        int32_t b1 = ((m_settings[m_tod].water_diffuse >> 16) & 0xFF);
         float b2 = b1 / 255.0f;
         red = red * r2 * 255.0f;
         green = green * g2 * 255.0f;
@@ -2137,7 +2137,7 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
         }
     }
 
-    int color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
+    int32_t color = (GameMath::Fast_To_Int_Truncate(red) << 16) | (GameMath::Fast_To_Int_Truncate(green) << 8)
         | GameMath::Fast_To_Int_Truncate(blue);
     color |= m_settings[m_tod].water_diffuse & 0xFF000000;
 
@@ -2153,7 +2153,7 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
             float f2 = GAMEMATH_PI / 40.f;
             float f3 = 0.0f;
             float f4 = 0.5f;
-            int alpha = 0;
+            int32_t alpha = 0;
 
             if (g_theWriteableGlobalData->m_featherWater == 5) {
                 alpha = 80;
@@ -2175,13 +2175,13 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
                 alpha = 255;
             }
 
-            int color2 = (alpha << 24) | color & 0xFFFFFF;
+            int32_t color2 = (alpha << 24) | color & 0xFFFFFF;
 
-            for (int i = 0; i < height; i++) {
+            for (int32_t i = 0; i < height; i++) {
                 float f5 = i;
                 f5 = f5 / (float)(height - 1);
 
-                for (int j = 0; j < width; j++) {
+                for (int32_t j = 0; j < width; j++) {
                     float f6 = j;
                     f6 = f6 / (float)(width - 1);
                     Vector3 pos(origin);
@@ -2217,10 +2217,10 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
             float f6 = 1.0f / (float)(height - 1);
             float f7 = 1.0f / (float)(width - 1);
 
-            for (int i = 0; i < height; i++) {
+            for (int32_t i = 0; i < height; i++) {
                 float f8 = (float)i * f6;
 
-                for (int j = -0; j < width; j++) {
+                for (int32_t j = -0; j < width; j++) {
                     float f9 = (float)j * f7;
                     Vector3 pos(origin);
                     pos += u1 * f9;
@@ -2303,12 +2303,12 @@ void WaterRenderObjClass::Draw_Trapezoid_Water(Vector3 *const points)
 #endif
 }
 
-int WaterRenderObjClass::Get_Sort_Level() const
+int32_t WaterRenderObjClass::Get_Sort_Level() const
 {
     return m_sortLevel;
 }
 
-void WaterRenderObjClass::Set_Sort_Level(int level)
+void WaterRenderObjClass::Set_Sort_Level(int32_t level)
 {
     m_sortLevel = level;
 }
@@ -2317,14 +2317,14 @@ void WaterRenderObjClass::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
     xfer->xferVersion(&version, 1);
-    int x = m_gridCellsX;
+    int32_t x = m_gridCellsX;
     xfer->xferInt(&x);
     captainslog_dbgassert(x == m_gridCellsX, "WaterRenderObjClass::xfer - cells X mismatch");
-    int y = m_gridCellsY;
+    int32_t y = m_gridCellsY;
     xfer->xferInt(&y);
     captainslog_dbgassert(y == m_gridCellsY, "WaterRenderObjClass::xfer - cells Y mismatch");
 
-    for (int i = 0; i < m_meshDataCount; i++) {
+    for (int32_t i = 0; i < m_meshDataCount; i++) {
         xfer->xferReal(&m_meshData[i].height);
         xfer->xferReal(&m_meshData[i].velocity);
         xfer->xferUnsignedByte(&m_meshData[i].status);

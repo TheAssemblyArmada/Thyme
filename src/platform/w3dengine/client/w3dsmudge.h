@@ -41,13 +41,13 @@ public:
     W3DSmudgeManager *Hook_Ctor() { return new (this) W3DSmudgeManager; }
 
 private:
-    int unk1;
-    int unk2;
-    int unk3;
-    int unk4;
+    int32_t unk1;
+    int32_t unk2;
+    int32_t unk3;
+    int32_t unk4;
     IndexBufferClass *m_indexBuffer;
-    unsigned int m_surfaceWidth;
-    unsigned int m_surfaceHeight;
+    uint32_t m_surfaceWidth;
+    uint32_t m_surfaceHeight;
 };
 
 #ifdef GAME_DLL

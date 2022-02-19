@@ -60,7 +60,7 @@ FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[]
 void WaterSetting::Parse_Water_Setting_Definition(INI *ini)
 {
     Utf8String token = ini->Get_Next_Token();
-    int tod;
+    int32_t tod;
 
     for (tod = 0; tod < TIME_OF_DAY_COUNT; ++tod) {
         if (strcasecmp(g_timeOfDayNames[tod], token.Str()) == 0) {

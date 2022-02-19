@@ -55,7 +55,7 @@ private:
 
 private:
     Mapping *m_list;
-    int m_listLength;
+    int32_t m_listLength;
     unsigned m_nextID;
     bool m_headerOpened;
 };

@@ -43,23 +43,23 @@ public:
     UDP() : m_fd(0) {}
     ~UDP();
 
-    int Bind(uint32_t address, uint16_t port);
-    int Write(const uint8_t *buffer, int length, uint32_t address, uint16_t port);
-    int Read(const uint8_t *buffer, int length, sockaddr_in *from);
-    int Get_Status();
+    int32_t Bind(uint32_t address, uint16_t port);
+    int32_t Write(const uint8_t *buffer, int32_t length, uint32_t address, uint16_t port);
+    int32_t Read(const uint8_t *buffer, int32_t length, sockaddr_in *from);
+    int32_t Get_Status();
     void Clear_Status() { m_status = 0; }
     bool Allow_Broadcasts(bool allow);
-    int Set_Blocking(bool block);
+    int32_t Set_Blocking(bool block);
     bool Set_Input_Buffer(uint32_t size);
     bool Set_Output_Buffer(uint32_t size);
     uint32_t Get_Input_Buffer();
     uint32_t Get_Output_Buffer();
-    int Get_Local_Addr(uint32_t &address, uint16_t &port);
+    int32_t Get_Local_Addr(uint32_t &address, uint16_t &port);
 
 private:
     SOCKET m_fd;
     uint32_t m_myIP;
     uint16_t m_myPort;
     sockaddr_in m_addr;
-    int m_status;
+    int32_t m_status;
 };

@@ -143,7 +143,7 @@ public:
     {
     public:
         // In order to enter a critical section create a local instance of LockClass with critical section as a parameter.
-        LockClass(MutexClass &critical_section, int time = MutexClass::WAIT_INFINITE) : m_muxtex(critical_section)
+        LockClass(MutexClass &critical_section, int32_t time = MutexClass::WAIT_INFINITE) : m_muxtex(critical_section)
         {
             m_failed = !m_muxtex.Lock(time);
         }
@@ -165,7 +165,7 @@ public:
 private:
     // Lock and unlock are private, you have to create a
     // MutexClass::LockClass object to call them instead.
-    bool Lock(int time);
+    bool Lock(int32_t time);
     void Unlock();
     bool Is_Locked() { return m_locked > 0; }
 
@@ -174,5 +174,5 @@ private:
 #elif defined PLATFORM_WINDOWS
     HANDLE m_handle;
 #endif
-    unsigned int m_locked;
+    uint32_t m_locked;
 };

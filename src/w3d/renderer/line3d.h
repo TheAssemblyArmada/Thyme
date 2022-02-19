@@ -24,13 +24,13 @@ class Line3DClass : public W3DMPO, public RenderObjClass
 public:
     virtual ~Line3DClass() override {}
     virtual Line3DClass *Clone() const override { return new Line3DClass(*this); }
-    virtual int Class_ID() const override { return CLASSID_LINE3D; }
-    virtual int Get_Num_Polys() const override { return 12; }
+    virtual int32_t Class_ID() const override { return CLASSID_LINE3D; }
+    virtual int32_t Get_Num_Polys() const override { return 12; }
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    virtual int Get_Sort_Level() const override { return m_sortLevel; }
-    virtual void Set_Sort_Level(int level) override { m_sortLevel = level; }
+    virtual int32_t Get_Sort_Level() const override { return m_sortLevel; }
+    virtual void Set_Sort_Level(int32_t level) override { m_sortLevel = level; }
     virtual void Scale(float scale) override;
     virtual void Scale(float scalex, float scaley, float scalez) override;
 

@@ -80,7 +80,7 @@ const char *GameFileClass::Set_Name(const char *filename)
     strlcpy_tpl(m_filename, filename);
     strlcpy_tpl(buff, filename);
 
-    int count = 1;
+    int32_t count = 1;
     for (size_t i = strlen(buff) - 1; i > 0; --i) {
         if (count >= 32) {
             break;
@@ -96,8 +96,8 @@ const char *GameFileClass::Set_Name(const char *filename)
     }
 
     // Strip spaces.
-    int put = 0;
-    for (int get = 0; buff[get] != '\0'; ++get) {
+    int32_t put = 0;
+    for (int32_t get = 0; buff[get] != '\0'; ++get) {
         if (buff[get] != ' ') {
             buff[put++] = buff[get];
         }
@@ -221,7 +221,7 @@ bool GameFileClass::Is_Open()
     return m_theFile != nullptr;
 }
 
-bool GameFileClass::Open(const char *filename, int rights)
+bool GameFileClass::Open(const char *filename, int32_t rights)
 {
     Set_Name(filename);
 
@@ -232,7 +232,7 @@ bool GameFileClass::Open(const char *filename, int rights)
     return Open(rights);
 }
 
-bool GameFileClass::Open(int rights)
+bool GameFileClass::Open(int32_t rights)
 {
     if (rights != FM_READ) {
         return false;
@@ -243,7 +243,7 @@ bool GameFileClass::Open(int rights)
     return m_theFile != nullptr;
 }
 
-int GameFileClass::Read(void *buffer, int length)
+int32_t GameFileClass::Read(void *buffer, int32_t length)
 {
     if (m_theFile == nullptr) {
         return 0;
@@ -252,7 +252,7 @@ int GameFileClass::Read(void *buffer, int length)
     return m_theFile->Read(buffer, length);
 }
 
-off_t GameFileClass::Seek(off_t offset, int whence)
+off_t GameFileClass::Seek(off_t offset, int32_t whence)
 {
     File::SeekMode file_whence;
 
@@ -285,7 +285,7 @@ off_t GameFileClass::Size()
     return m_theFile->Size();
 }
 
-int GameFileClass::Write(void const *buffer, int size)
+int32_t GameFileClass::Write(void const *buffer, int32_t size)
 {
     return 0;
 }

@@ -30,7 +30,7 @@ ScriptAction::ScriptAction(ScriptActionType type) :
 ScriptAction::~ScriptAction()
 {
     // Clear our paramter instances.
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         m_params[i]->Delete_Instance();
         m_params[i] = nullptr;
     }
@@ -52,7 +52,7 @@ ScriptAction *ScriptAction::Duplicate()
 {
     ScriptAction *new_action = NEW_POOL_OBJ(ScriptAction, m_actionType);
 
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         if (new_action->m_params[i] != nullptr) {
             *new_action->m_params[i] = *m_params[i];
         }
@@ -66,7 +66,7 @@ ScriptAction *ScriptAction::Duplicate()
         new_action->m_nextAction = new_next;
         new_action = new_next;
 
-        for (int i = 0; i < next->m_numParams; ++i) {
+        for (int32_t i = 0; i < next->m_numParams; ++i) {
             if (new_action->m_params[i] != nullptr && next->m_params[i] != nullptr) {
                 *new_action->m_params[i] = *next->m_params[i];
             }
@@ -87,7 +87,7 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
 {
     ScriptAction *new_action = NEW_POOL_OBJ(ScriptAction, m_actionType);
 
-    for (int i = 0; i < m_numParams; ++i) {
+    for (int32_t i = 0; i < m_numParams; ++i) {
         if (new_action->m_params[i] != nullptr) {
             *new_action->m_params[i] = *m_params[i];
             new_action->m_params[i]->Qualify(str1, str2, str3);
@@ -102,7 +102,7 @@ ScriptAction *ScriptAction::Duplicate_And_Qualify(const Utf8String &str1, const 
         current_action->m_nextAction = new_next;
         current_action = current_action->m_nextAction;
 
-        for (int i = 0; i < next->m_numParams; ++i) {
+        for (int32_t i = 0; i < next->m_numParams; ++i) {
             if (current_action->m_params[i] != nullptr && next->m_params[i] != nullptr) {
                 *current_action->m_params[i] = *next->m_params[i];
                 current_action->m_params[i]->Qualify(str1, str2, str3);

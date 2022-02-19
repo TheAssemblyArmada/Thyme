@@ -36,5 +36,5 @@ public:
 
 protected:
     unsigned m_money;
-    int m_playerIndex;
+    int32_t m_playerIndex;
 };

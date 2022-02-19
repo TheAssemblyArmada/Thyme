@@ -652,7 +652,7 @@ static PoolSizeRec UserMemoryPools[] = {
     { nullptr, 0, 0 } // Last entry always null.
 };
 
-void User_Memory_Adjust_Pool_Size(const char *name, int &initial_alloc, int &overflow_alloc)
+void User_Memory_Adjust_Pool_Size(const char *name, int32_t &initial_alloc, int32_t &overflow_alloc)
 {
     if (initial_alloc > 0) {
         return;
@@ -666,7 +666,7 @@ void User_Memory_Adjust_Pool_Size(const char *name, int &initial_alloc, int &ove
     }
 }
 
-void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params)
+void User_Memory_Get_DMA_Params(int32_t *count, PoolInitRec const **params)
 {
     // DEBUG_LOG("Retrieving user DynamicMemoryAllocator parameters.\n");
 
@@ -679,8 +679,8 @@ void User_Memory_Init_Pools()
     // #FIX Initialize variables.
     char path[PATH_MAX] = { 0 };
     char pool_name[256] = { 0 };
-    int initial_alloc = 0;
-    int overflow_alloc = 0;
+    int32_t initial_alloc = 0;
+    int32_t overflow_alloc = 0;
 
 #ifdef PLATFORM_WINDOWS
     GetModuleFileNameA(0, path, PATH_MAX);
@@ -689,7 +689,7 @@ void User_Memory_Init_Pools()
     readlink("/proc/self/exe", path, PATH_MAX);
     dirname(path);
 #elif defined(PLATFORM_OSX) // osx otherwise
-    int size = PATH_MAX;
+    int32_t size = PATH_MAX;
     _NSGetExecutablePath(path, &size);
     dirname(path);
 #else //
@@ -725,8 +725,8 @@ void User_Memory_Init_Pools()
             if (*path != ';' && sscanf(path, "%255s %d %d", pool_name, &initial_alloc, &overflow_alloc) == 3) {
                 for (PoolSizeRec *psr = UserMemoryPools; psr->pool_name != nullptr; ++psr) {
                     if (strcasecmp(psr->pool_name, pool_name) == 0) {
-                        psr->initial_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(initial_alloc));
-                        psr->overflow_allocation_count = std::max((int)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
+                        psr->initial_allocation_count = std::max((int32_t)sizeof(void *), Round_Up_Word_Size(initial_alloc));
+                        psr->overflow_allocation_count = std::max((int32_t)sizeof(void *), Round_Up_Word_Size(overflow_alloc));
                     }
                 }
             }

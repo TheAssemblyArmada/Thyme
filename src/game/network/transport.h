@@ -53,7 +53,7 @@ public:
     void Reset();
     bool Do_Send();
     bool Do_Recv();
-    bool Queue_Send(uint32_t addr, uint16_t port, const char *buf, int len);
+    bool Queue_Send(uint32_t addr, uint16_t port, const char *buf, int32_t len);
     void Allow_Broadcast(bool allow)
     {
         if (m_udpsock != nullptr)
@@ -61,8 +61,8 @@ public:
     }
 
 private:
-    static void Obfuscate(void *data, int len);
-    static void Reveal(void *data, int len);
+    static void Obfuscate(void *data, int32_t len);
+    static void Reveal(void *data, int32_t len);
     static bool Is_Thyme_Packet(const TransportMessage *msg);
 
 private:

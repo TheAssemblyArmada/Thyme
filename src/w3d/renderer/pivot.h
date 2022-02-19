@@ -24,7 +24,7 @@ struct PivotClass
     Matrix3D base_transform;
     Matrix3D transform;
     Matrix3D cap_transform;
-    int index;
+    int32_t index;
     bool is_visible;
     bool world_space_translation;
     bool is_captured;

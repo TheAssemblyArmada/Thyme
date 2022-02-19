@@ -28,10 +28,10 @@ public:
     ~MemoryPoolFactory();
     void Init() {}
     MemoryPool *Create_Memory_Pool(PoolInitRec const *params);
-    MemoryPool *Create_Memory_Pool(const char *name, int size, int count, int overflow);
+    MemoryPool *Create_Memory_Pool(const char *name, int32_t size, int32_t count, int32_t overflow);
     MemoryPool *Find_Memory_Pool(const char *name);
     void Destroy_Memory_Pool(MemoryPool *pool);
-    DynamicMemoryAllocator *Create_Dynamic_Memory_Allocator(int subpools, PoolInitRec const *const params);
+    DynamicMemoryAllocator *Create_Dynamic_Memory_Allocator(int32_t subpools, PoolInitRec const *const params);
     void Destroy_Dynamic_Memory_Allocator(DynamicMemoryAllocator *allocator);
     void Reset();
 

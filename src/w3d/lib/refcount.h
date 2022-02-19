@@ -36,7 +36,7 @@ public:
     }
 
     void Add_Ref() { m_numRefs++; }
-    int Num_Refs() { return m_numRefs; }
+    int32_t Num_Refs() { return m_numRefs; }
 
     void Release_Ref()
     {
@@ -58,8 +58,8 @@ protected:
 private:
     static void Inc_Total_Refs(RefCountClass *obj) { m_totalRefs++; }
     static void Dec_Total_Refs(RefCountClass *obj) { m_totalRefs--; }
-    int m_numRefs;
-    static int m_totalRefs;
+    int32_t m_numRefs;
+    static int32_t m_totalRefs;
 };
 
 template<typename T> void Ref_Ptr_Set(T *&dst, T *&src)

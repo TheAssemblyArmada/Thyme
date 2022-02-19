@@ -62,7 +62,7 @@ public:
 
     virtual ~SceneClass() {}
 
-    virtual int Get_Scene_ID() { return 0; }
+    virtual int32_t Get_Scene_ID() { return 0; }
 
     virtual void Add_Render_Object(RenderObjClass *obj) { obj->Notify_Added(this); }
     virtual void Remove_Render_Object(RenderObjClass *obj) { obj->Notify_Removed(this); }
@@ -121,7 +121,7 @@ public:
     SimpleSceneClass();
     virtual ~SimpleSceneClass() override {}
 
-    virtual int Get_Scene_ID() const { return 1; }
+    virtual int32_t Get_Scene_ID() const { return 1; }
 
     virtual void Add_Render_Object(RenderObjClass *obj) override;
     virtual void Remove_Render_Object(RenderObjClass *obj) override;

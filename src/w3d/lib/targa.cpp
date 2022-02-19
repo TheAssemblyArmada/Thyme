@@ -47,7 +47,7 @@ TargaImage::~TargaImage()
     }
 }
 
-int TargaImage::Open(const char *name, int mode)
+int32_t TargaImage::Open(const char *name, int32_t mode)
 {
     if (Is_File_Open() && m_access == mode) {
         return 0;
@@ -68,7 +68,7 @@ int TargaImage::Open(const char *name, int mode)
             }
 
             // If we can't read enough data for a footer, not a TGA file.
-            if (File_Seek(-((int)sizeof(footer)), FileSeekType::FS_SEEK_END) == -1
+            if (File_Seek(-((int32_t)sizeof(footer)), FileSeekType::FS_SEEK_END) == -1
                 || File_Read(&footer, sizeof(footer)) != sizeof(footer)) {
                 Close();
 
@@ -165,7 +165,7 @@ void TargaImage::Close()
     }
 }
 
-int TargaImage::Load(const char *name, int flags, bool invert_image)
+int32_t TargaImage::Load(const char *name, int32_t flags, bool invert_image)
 {
     if (Open(name, TARGA_READ) != TGA_RET_OK) {
         return TGA_RET_UNABLE_TO_LOAD;
@@ -215,23 +215,23 @@ int TargaImage::Load(const char *name, int flags, bool invert_image)
         }
     }
 
-    int ret = Load(name, m_palette, m_image, invert_image);
+    int32_t ret = Load(name, m_palette, m_image, invert_image);
     Close();
 
     return ret;
 }
 
-int TargaImage::Load(const char *name, char *palette, char *image, bool invert_image)
+int32_t TargaImage::Load(const char *name, char *palette, char *image, bool invert_image)
 {
     if (Open(name, TARGA_READ) != TGA_RET_OK) {
         return TGA_RET_UNABLE_TO_LOAD;
     }
 
     if (m_header.cmap_type == 1) {
-        int pixel_bytes = m_header.cmap_depth / 8;
+        int32_t pixel_bytes = m_header.cmap_depth / 8;
 
         if (palette != nullptr && m_header.cmap_length > 0) {
-            int read_bytes = File_Read(&palette[pixel_bytes * m_header.cmap_start], pixel_bytes * m_header.cmap_length);
+            int32_t read_bytes = File_Read(&palette[pixel_bytes * m_header.cmap_start], pixel_bytes * m_header.cmap_length);
 
             if (read_bytes != pixel_bytes * m_header.cmap_length) {
                 Close();
@@ -246,7 +246,7 @@ int TargaImage::Load(const char *name, char *palette, char *image, bool invert_i
     }
 
     if (image != nullptr) {
-        int total_bytes = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
+        int32_t total_bytes = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
 
         switch (m_header.image_type) {
             case TGA_TYPE_MAPPED:
@@ -260,7 +260,7 @@ int TargaImage::Load(const char *name, char *palette, char *image, bool invert_i
                 break;
             case TGA_TYPE_RLE_MAPPED:
             case TGA_TYPE_RLE_COLOR: {
-                int ret = Decode_Image();
+                int32_t ret = Decode_Image();
 
                 if (ret != TGA_RET_OK) {
                     return ret;
@@ -290,7 +290,7 @@ int TargaImage::Load(const char *name, char *palette, char *image, bool invert_i
     return TGA_RET_OK;
 }
 
-int TargaImage::Save(const char *name, int flags, bool add_extension)
+int32_t TargaImage::Save(const char *name, int32_t flags, bool add_extension)
 {
     if (Open(name, TARGA_WRITE) != TGA_RET_OK) {
         return TGA_RET_UNABLE_TO_LOAD;
@@ -324,8 +324,8 @@ int TargaImage::Save(const char *name, int flags, bool add_extension)
     // Write palette if we have one.
     if ((flags & TGA_FLAG_PAL_ALLOC) != 0) {
         if (m_palette != nullptr && m_header.cmap_length > 0) {
-            int pal_depth = m_header.cmap_depth / 8;
-            int pal_size = pal_depth * m_header.cmap_length;
+            int32_t pal_depth = m_header.cmap_depth / 8;
+            int32_t pal_size = pal_depth * m_header.cmap_length;
 
             if (File_Write(&m_palette[pal_depth * m_header.cmap_start], pal_size) != pal_size) {
                 Close();
@@ -347,7 +347,7 @@ int TargaImage::Save(const char *name, int flags, bool add_extension)
         if ((flags & TGA_FLAG_COMPRESS) != 0) {
             Encode_Image();
         } else {
-            int img_size = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
+            int32_t img_size = m_header.width * m_header.height * ((m_header.pixel_depth + 7) / 8);
 
             if (File_Write(m_image, img_size) != img_size) {
                 Close();
@@ -397,7 +397,7 @@ int TargaImage::Save(const char *name, int flags, bool add_extension)
 
 void TargaImage::X_Flip()
 {
-    int pixel_size = (m_header.pixel_depth + 7) / 8;
+    int32_t pixel_size = (m_header.pixel_depth + 7) / 8;
 
     // Must have at least one row of pixels.
     if (m_header.height <= 0) {
@@ -407,16 +407,16 @@ void TargaImage::X_Flip()
 
     // Iterate over the image and move bytes from start of a row to the
     // end and vice versa, keeping the order of bytes within the pixel.
-    for (int y = 0; y < m_header.height; ++y) {
+    for (int32_t y = 0; y < m_header.height; ++y) {
         char *startp = &m_image[y * m_header.width * pixel_size];
         char *endp = &startp[pixel_size * (m_header.width - 1)];
 
-        for (int x = 0; x < (m_header.width / 2); ++x) {
+        for (int32_t x = 0; x < (m_header.width / 2); ++x) {
             if (pixel_size > 0) {
                 char *modp = endp;
                 ptrdiff_t diff = startp - endp;
 
-                for (int i = pixel_size; i > 0; --i) {
+                for (int32_t i = pixel_size; i > 0; --i) {
                     char tmp = modp[diff];
                     modp[diff] = modp[0];
                     modp[0] = tmp;
@@ -432,15 +432,15 @@ void TargaImage::X_Flip()
 
 void TargaImage::Y_Flip()
 {
-    int pixel_size = (m_header.pixel_depth + 7) / 8;
+    int32_t pixel_size = (m_header.pixel_depth + 7) / 8;
 
-    for (int y = 0; y < (m_header.height / 2); ++y) {
+    for (int32_t y = 0; y < (m_header.height / 2); ++y) {
         // Set pointers to the start and end rows.
         char *startp = &m_image[m_header.width * pixel_size * y];
         char *endp = &m_image[m_header.width * pixel_size * (m_header.height - 1)] - (m_header.width * pixel_size * y);
 
         // Iterate over the rows, swapping bytes between them.
-        for (int x = 0; x < (pixel_size * m_header.width); ++x) {
+        for (int32_t x = 0; x < (pixel_size * m_header.width); ++x) {
             char tmp = startp[x];
             startp[x] = endp[x];
             endp[x] = tmp;
@@ -476,10 +476,10 @@ char *TargaImage::Set_Palette(char *buffer)
     return old_pal;
 }
 
-int TargaImage::Decode_Image()
+int32_t TargaImage::Decode_Image()
 {
-    int pixel_bytes = (m_header.pixel_depth + 7) / 8;
-    int pixel_count = m_header.width * m_header.height;
+    int32_t pixel_bytes = (m_header.pixel_depth + 7) / 8;
+    int32_t pixel_count = m_header.width * m_header.height;
     char *putp = m_image;
 
     while (pixel_count) {
@@ -499,13 +499,13 @@ int TargaImage::Decode_Image()
 
             putp += pixel_bytes;
 
-            for (int i = 1; i < count; ++i) {
+            for (int32_t i = 1; i < count; ++i) {
                 memcpy(putp, getp, pixel_bytes);
                 putp += pixel_bytes;
             }
         } else {
             ++count;
-            int read_size = pixel_bytes * count;
+            int32_t read_size = pixel_bytes * count;
 
             if (File_Read(putp, read_size) != read_size) {
                 return TGA_RET_NOT_TGA;
@@ -520,7 +520,7 @@ int TargaImage::Decode_Image()
     return TGA_RET_OK;
 }
 
-int TargaImage::Encode_Image()
+int32_t TargaImage::Encode_Image()
 {
     // TODO
     return 0;
@@ -528,18 +528,18 @@ int TargaImage::Encode_Image()
 
 void TargaImage::Invert_Image()
 {
-    int pixel_bytes = (m_header.pixel_depth + 7) / 8;
-    int pixel_count = m_header.width * m_header.height;
+    int32_t pixel_bytes = (m_header.pixel_depth + 7) / 8;
+    int32_t pixel_count = m_header.width * m_header.height;
 
     if (pixel_bytes <= 2) {
         return;
     }
 
-    int half_pixel = pixel_bytes / 2;
+    int32_t half_pixel = pixel_bytes / 2;
     char *curr_pixel = m_image;
 
     while (pixel_count--) {
-        for (int i = 0; i < half_pixel; ++i) {
+        for (int32_t i = 0; i < half_pixel; ++i) {
             char tmp = curr_pixel[i];
             curr_pixel[i] = curr_pixel[pixel_bytes - 1 - i];
             curr_pixel[pixel_bytes - 1 - i] = tmp;
@@ -592,7 +592,7 @@ bool TargaImage::File_Open_ReadWrite(const char *name)
     return false;
 }
 
-int TargaImage::Error_Handler(int load_err, const char *filename)
+int32_t TargaImage::Error_Handler(int32_t load_err, const char *filename)
 {
     switch (load_err) {
         case TGA_RET_OK:

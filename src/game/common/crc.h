@@ -22,7 +22,7 @@ class CRC
 {
 public:
     CRC() : m_crc(0) {}
-    void Compute_CRC(void const *data, int bytes);
+    void Compute_CRC(void const *data, int32_t bytes);
     uint32_t Get_CRC() { return m_crc; }
 
     static uint32_t Memory(void const *data, size_t bytes, uint32_t crc);

@@ -31,7 +31,7 @@ public:
 private:
     Utf8String m_skyTextureFile;
     Utf8String m_waterTextureFile;
-    int m_waterRepeatCount;
+    int32_t m_waterRepeatCount;
     float m_skyTexelsPerUnit;
     RGBAColorInt m_vertex00Diffuse;
     RGBAColorInt m_vertex10Diffuse;

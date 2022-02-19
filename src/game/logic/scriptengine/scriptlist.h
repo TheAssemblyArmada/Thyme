@@ -31,7 +31,7 @@ class ScriptList : public MemoryPoolObject, public SnapShot
 
     struct ScriptListReadInfo
     {
-        int num_lists;
+        int32_t num_lists;
         ScriptList *read_lists[MAX_LIST_COUNT];
     };
 
@@ -48,12 +48,12 @@ public:
 
     ScriptList *Duplicate();
     ScriptList *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
-    void Add_Group(ScriptGroup *group, int index);
-    void Add_Script(Script *script, int index);
+    void Add_Group(ScriptGroup *group, int32_t index);
+    void Add_Script(Script *script, int32_t index);
     Script *Get_Scripts() { return m_firstScript; }
     ScriptGroup *Get_Groups() { return m_firstGroup; }
 
-    static int Get_Read_Scripts(ScriptList **scripts);
+    static int32_t Get_Read_Scripts(ScriptList **scripts);
     static bool Parse_Script_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Scripts_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static void Reset();
@@ -62,6 +62,6 @@ private:
     ScriptGroup *m_firstGroup;
     Script *m_firstScript;
     static ScriptList *s_readLists[MAX_LIST_COUNT];
-    static int s_numInReadList;
+    static int32_t s_numInReadList;
     static ScriptGroup *s_emptyGroup;
 };

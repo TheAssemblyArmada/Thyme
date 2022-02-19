@@ -244,7 +244,7 @@ public:
     void Init_From_Material3(const W3dMaterial3Struct &material);
     void Enable_Fog(const char *source);
     StaticSortCategoryType Get_Static_Sort_Category() const;
-    int Guess_Sort_Level() const;
+    int32_t Guess_Sort_Level() const;
     void Get_Description(StringClass &desc); // new function in ZH
 
     uint32_t Get_Bits() const { return m_shaderBits; }

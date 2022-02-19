@@ -84,7 +84,7 @@ Utf8String UserPreferences::Get_AsciiString(Utf8String key, Utf8String def_arg)
     return it->second;
 }
 
-int UserPreferences::Get_Int(Utf8String key, int def_arg)
+int32_t UserPreferences::Get_Int(Utf8String key, int32_t def_arg)
 {
     Utf8String value = Get_AsciiString(key);
 
@@ -130,7 +130,7 @@ void UserPreferences::Set_AsciiString(Utf8String key, Utf8String value)
     (*this)[key] = value;
 }
 
-void UserPreferences::Set_Int(Utf8String key, int value)
+void UserPreferences::Set_Int(Utf8String key, int32_t value)
 {
     Utf8String val;
     val.Format("%d", value);

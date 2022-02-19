@@ -39,7 +39,7 @@ static uint32_t RefPack_Matchlen(const uint8_t *s, const uint8_t *d, uint32_t ma
 /**
  * Compresses data using refpack LZ method
  */
-static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, bool quick)
+static int32_t RefPack_Encode(const void *src, int32_t src_len, void *dst, int32_t dst_len, bool quick)
 {
     int32_t len;
     uint32_t tlen;
@@ -55,14 +55,14 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
     const uint8_t *runp;
     uint8_t *putp;
 
-    int countliterals = 0;
-    int countshort = 0;
-    int countlong = 0;
-    int countvlong = 0;
+    int32_t countliterals = 0;
+    int32_t countshort = 0;
+    int32_t countlong = 0;
+    int32_t countvlong = 0;
     int32_t hash;
     int32_t hoffset;
     int32_t minhoffset;
-    int i;
+    int32_t i;
     int32_t *link;
     int32_t *hashtbl;
     int32_t *hashptr;
@@ -167,7 +167,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
                 hashtbl[hash] = hoffset;
                 getp += blen;
             } else {
-                for (i = 0; i < (int)blen; ++i) {
+                for (i = 0; i < (int32_t)blen; ++i) {
                     hash = 0x10 * getp[1] ^ (uint16_t)(getp[2] | ((uint16_t)getp[0] << 8));
                     hoffset = (getp - static_cast<const uint8_t *>(src));
                     link[hoffset & 131071] = hashtbl[hash];
@@ -206,7 +206,7 @@ static int RefPack_Encode(const void *src, int src_len, void *dst, int dst_len, 
 /**
  * Decompresses EA's proprietary "RefPack" format.
  */
-int RefPack_Uncompress(void *dst, const void *src, int *size)
+int32_t RefPack_Uncompress(void *dst, const void *src, int32_t *size)
 {
     const uint8_t *getp;
     uint8_t *ref;
@@ -217,7 +217,7 @@ int RefPack_Uncompress(void *dst, const void *src, int *size)
     uint8_t forth;
     uint16_t flags;
     uint32_t run;
-    int out_length = 0;
+    int32_t out_length = 0;
 
     if (src == nullptr) {
         if (size != nullptr) {
@@ -347,10 +347,10 @@ int RefPack_Uncompress(void *dst, const void *src, int *size)
 /**
  * Compresses EA's proprietary "RefPack" format.
  */
-int RefPack_Compress(void *dst, const void *src, int size, bool quick)
+int32_t RefPack_Compress(void *dst, const void *src, int32_t size, bool quick)
 {
     uint8_t *putp = static_cast<uint8_t *>(dst);
-    int header_len = 0;
+    int32_t header_len = 0;
 
     if (size < 0xFFFFFF) {
         putp[0] = 0x10;

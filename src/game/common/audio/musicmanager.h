@@ -22,9 +22,9 @@ class MusicManager
 public:
     virtual ~MusicManager() {}
     virtual void Add_Audio_Event(AudioEventRTS *event);
-    virtual void Remove_Audio_Event(unsigned int handle);
+    virtual void Remove_Audio_Event(uint32_t handle);
 
 private:
     void Play_Track(AudioEventRTS *event);
-    void Stop_Track(unsigned int handle);
+    void Stop_Track(uint32_t handle);
 };

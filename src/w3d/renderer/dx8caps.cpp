@@ -353,7 +353,7 @@ void DX8Caps::Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier)
  *
  * 0x00846FC0
  */
-bool DX8Caps::Is_Valid_Display_Format(int w, int h, WW3DFormat format)
+bool DX8Caps::Is_Valid_Display_Format(int32_t w, int32_t h, WW3DFormat format)
 {
     return (m_widthLimit == 0 && m_heightLimit == 0) || (m_widthLimit >= w && m_heightLimit >= h);
 }
@@ -554,7 +554,7 @@ void DX8Caps::Vendor_Specific_Hacks(const w3dadapterid_t &identifier)
 /**
  * Determines the vendor from the PCI vendor ID.
  */
-int DX8Caps::Define_Vendor(unsigned vendor_id)
+int32_t DX8Caps::Define_Vendor(unsigned vendor_id)
 {
     switch (vendor_id) {
         case 0x109D: // Zida
@@ -590,7 +590,7 @@ int DX8Caps::Define_Vendor(unsigned vendor_id)
  *
  * 0x00844550
  */
-int DX8Caps::Get_NVidia_Device(unsigned device_id)
+int32_t DX8Caps::Get_NVidia_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x171:
@@ -687,7 +687,7 @@ int DX8Caps::Get_NVidia_Device(unsigned device_id)
  *
  * 0x00844220
  */
-int DX8Caps::Get_AMD_Device(unsigned device_id)
+int32_t DX8Caps::Get_AMD_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x514C:
@@ -790,7 +790,7 @@ int DX8Caps::Get_AMD_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_Intel_Device(unsigned device_id)
+int32_t DX8Caps::Get_Intel_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x7123:
@@ -809,7 +809,7 @@ int DX8Caps::Get_Intel_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_S3_Device(unsigned device_id)
+int32_t DX8Caps::Get_S3_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x8C10:
@@ -828,7 +828,7 @@ int DX8Caps::Get_S3_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_PowerVR_Device(unsigned device_id)
+int32_t DX8Caps::Get_PowerVR_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x10:
@@ -843,7 +843,7 @@ int DX8Caps::Get_PowerVR_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_Matrox_Device(unsigned device_id)
+int32_t DX8Caps::Get_Matrox_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x521:
@@ -880,7 +880,7 @@ int DX8Caps::Get_Matrox_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_3Dfx_Device(unsigned device_id)
+int32_t DX8Caps::Get_3Dfx_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x1:
@@ -906,7 +906,7 @@ int DX8Caps::Get_3Dfx_Device(unsigned device_id)
 /**
  * Determins device number from PCI device ID.
  */
-int DX8Caps::Get_3DLabs_Device(unsigned device_id)
+int32_t DX8Caps::Get_3DLabs_Device(unsigned device_id)
 {
     switch (device_id) {
         case 0x1:

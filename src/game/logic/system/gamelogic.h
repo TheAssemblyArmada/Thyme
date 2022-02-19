@@ -63,15 +63,15 @@ public:
     virtual TerrainLogic *Create_Terrain_Logic();
     virtual GhostObjectManager *Create_Ghost_Object_Manager();
 
-    unsigned int Get_Frame() { return m_frame; }
+    uint32_t Get_Frame() { return m_frame; }
     GameMode Get_Game_Mode() { return m_gameMode; }
     short Get_Max_Simultaneous_Of_Type() { return m_maxSimultaneousOfType; }
-    unsigned int Get_Sleepy_Module_Count() { return m_sleepingUpdateModules.size(); }
-    int Get_Next_Obj_ID() { return m_nextObjID; }
-    int Get_Rank_Level_Limit() { return m_rankLevelLimit; }
-    int Get_Hulk_Lifetime_Override() { return m_hulkLifetimeOverride; }
-    int Get_Rank_Points_To_Add_At_Game_Start() { return m_rankPointsToAddAtGameStart; }
-    int Get_Unk_Frame() { return m_unkFrame; }
+    uint32_t Get_Sleepy_Module_Count() { return m_sleepingUpdateModules.size(); }
+    int32_t Get_Next_Obj_ID() { return m_nextObjID; }
+    int32_t Get_Rank_Level_Limit() { return m_rankLevelLimit; }
+    int32_t Get_Hulk_Lifetime_Override() { return m_hulkLifetimeOverride; }
+    int32_t Get_Rank_Points_To_Add_At_Game_Start() { return m_rankPointsToAddAtGameStart; }
+    int32_t Get_Unk_Frame() { return m_unkFrame; }
 
     bool Get_Occlusion_Enabled() const { return m_occlusionEnabled; }
     bool Get_In_Game_Logic_Update() const { return m_inGameLogicUpdate; }
@@ -83,11 +83,11 @@ public:
 
     void Set_Width(float width) { m_width = width; }
     void Set_Height(float height) { m_height = height; }
-    void Set_Hulk_Lifetime_Override(int lifetime) { m_hulkLifetimeOverride = lifetime; }
+    void Set_Hulk_Lifetime_Override(int32_t lifetime) { m_hulkLifetimeOverride = lifetime; }
     void Set_Game_Mode(GameMode mode) { m_gameMode = mode; }
     void Set_Next_Obj_ID(ObjectID id) { m_nextObjID = id; }
 
-    void Set_Rank_Level_Limit(int limit)
+    void Set_Rank_Level_Limit(int32_t limit)
     {
         if (limit < 1) {
             limit = 1;
@@ -133,10 +133,10 @@ public:
     bool Is_In_Single_Player_Game();
     bool Is_Intro_Movie_Playing();
 
-    unsigned int Get_CRC(int i, Utf8String s);
+    uint32_t Get_CRC(int32_t i, Utf8String s);
 #ifdef GAME_DEBUG_STRUCTS
     void Get_AI_Stats(
-        int *objects, int *moving_objects, int *attacking_objects, int *waiting_objects, int *failed_pathfinds);
+        int32_t *objects, int32_t *moving_objects, int32_t *attacking_objects, int32_t *waiting_objects, int32_t *failed_pathfinds);
 #endif
 
     ObjectTOCEntry *Find_TOC_Entry_By_Name(Utf8String name);
@@ -149,16 +149,16 @@ public:
     void Set_Buildable_Status_Override(ThingTemplate const *thing, BuildableStatus status);
     bool Find_Buildable_Status_Override(ThingTemplate const *thing, BuildableStatus &status) const;
 
-    void Set_Control_Bar_Override(Utf8String const &s, int i, CommandButton const *button);
-    bool Find_Control_Bar_Override(Utf8String const &s, int i, CommandButton const *&button) const;
+    void Set_Control_Bar_Override(Utf8String const &s, int32_t i, CommandButton const *button);
+    bool Find_Control_Bar_Override(Utf8String const &s, int32_t i, CommandButton const *&button) const;
 
     LoadScreen *Get_Load_Screen(bool b);
-    void Update_Load_Progress(int percentage);
+    void Update_Load_Progress(int32_t percentage);
     void Delete_Load_Screen();
-    void Process_Progress(int player_id, int percentage);
-    void Process_Progress_Complete(int player_id);
+    void Process_Progress(int32_t player_id, int32_t percentage);
+    void Process_Progress_Complete(int32_t player_id);
     bool Is_Progress_Complete();
-    void Last_Heard_From(int player_id);
+    void Last_Heard_From(int32_t player_id);
 
     void Test_Time_Out();
     void Time_Out_Game_Start();
@@ -185,24 +185,24 @@ public:
     void Send_Object_Created(Object *obj);
     void Bind_Object_And_Drawable(Object *obj, Drawable *d);
     void Send_Object_Destroyed(Object *obj);
-    unsigned int Get_Object_Count();
+    uint32_t Get_Object_Count();
     void Prepare_For_Object_Load();
     Object *Get_First_Object();
 
-    void Erase_Sleepy_Update(int index);
-    int Rebalance_Parent_Sleepy_Update(int index);
-    int Rebalance_Child_Sleepy_Update(int index);
-    void Rebalance_Sleepy_Update(int index);
+    void Erase_Sleepy_Update(int32_t index);
+    int32_t Rebalance_Parent_Sleepy_Update(int32_t index);
+    int32_t Rebalance_Child_Sleepy_Update(int32_t index);
+    void Rebalance_Sleepy_Update(int32_t index);
     void Remake_Sleepy_Update();
     void Push_Sleepy_Update(UpdateModule *module);
     UpdateModule *Peek_Sleepy_Update();
     void Pop_Sleepy_Update();
-    void Friend_Awaken_Update_Module(Object *object, UpdateModule *module, unsigned int wakeup_frame);
+    void Friend_Awaken_Update_Module(Object *object, UpdateModule *module, uint32_t wakeup_frame);
 
     // per Mac, these are in gamelogicdispatch.cpp
     void Close_Windows();
     void Clear_Game_Data(bool b);
-    void Prepare_New_Game(int mode, GameDifficulty difficulty, int rank_points);
+    void Prepare_New_Game(int32_t mode, GameDifficulty difficulty, int32_t rank_points);
     void Logic_Message_Dispatcher(GameMessage *msg, void *user_data);
 
 private:
@@ -218,20 +218,20 @@ private:
 #endif
     float m_width;
     float m_height;
-    unsigned int m_frame;
-    unsigned int m_crc;
-    std::map<int, std::pair<int const, unsigned int>> m_crcCheckList;
+    uint32_t m_frame;
+    uint32_t m_crc;
+    std::map<int32_t, std::pair<int32_t const, uint32_t>> m_crcCheckList;
     bool m_checkCRCs;
     bool m_prepareNewGame;
     bool m_loadingGameStateMap;
     bool m_clearingGameData;
     bool m_inGameLogicUpdate;
-    int m_rankPointsToAddAtGameStart;
+    int32_t m_rankPointsToAddAtGameStart;
     bool m_scoringEnabled;
     bool m_occlusionEnabled;
     bool m_drawIconUI;
     bool m_dynamicLOD;
-    int m_hulkLifetimeOverride;
+    int32_t m_hulkLifetimeOverride;
     bool m_startNewGame;
     WindowLayout *m_background;
     Object *m_objList;
@@ -241,19 +241,19 @@ private:
     std::list<Object *> m_objectsToDestroy;
     ObjectID m_nextObjID;
     GameMode m_gameMode;
-    int m_rankLevelLimit;
+    int32_t m_rankLevelLimit;
     short m_maxSimultaneousOfType;
     LoadScreen *m_loadScreen;
     bool m_gamePaused;
     bool m_inputEnabled;
     bool m_mouseVisible;
     bool m_progressComplete[8];
-    int m_progressCompleteTimeout[8];
+    int32_t m_progressCompleteTimeout[8];
     bool m_forceGameStartByTimeOut;
 #ifdef GAME_DEBUG_STRUCTS
-    int m_failedPathFinds;
+    int32_t m_failedPathFinds;
 #endif
-    int m_unkFrame;
+    int32_t m_unkFrame;
     std::list<ObjectTOCEntry> m_objectTOCEntries;
 };
 

@@ -30,12 +30,12 @@ protected:
     Vector3 m_objSpaceExtent;
     float m_opacity;
     static bool s_isInitted;
-    static int s_displayMask;
+    static int32_t s_displayMask;
 
 public:
     static void Init();
     static void Shutdown();
-    static void Set_Box_Display_Mask(int mask);
+    static void Set_Box_Display_Mask(int32_t mask);
 
     BoxRenderObjClass(const BoxRenderObjClass &src);
     BoxRenderObjClass(const W3dBoxStruct &src);
@@ -46,7 +46,7 @@ public:
     virtual ~BoxRenderObjClass() override {}
     virtual const char *Get_Name() const override { return m_name; }
     virtual void Set_Name(const char *name) override;
-    virtual int Get_Num_Polys() const override { return 12; }
+    virtual int32_t Get_Num_Polys() const override { return 12; }
     virtual void Update_Cached_Box() = 0;
 
     void Set_Color(const Vector3 &color);
@@ -82,7 +82,7 @@ public:
 
     virtual ~OBBoxRenderObjClass() override {}
     virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
+    virtual int32_t Class_ID() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
     virtual void Set_Transform(const Matrix3D &tm) override;
@@ -121,7 +121,7 @@ public:
 
     virtual ~AABoxRenderObjClass() override {}
     virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
+    virtual int32_t Class_ID() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
     virtual void Set_Transform(const Matrix3D &tm) override;
@@ -152,7 +152,7 @@ public:
     virtual ~BoxPrototypeClass() override {}
     virtual const char *Get_Name() const override { return box.Name; }
 
-    virtual int Get_Class_ID() const override
+    virtual int32_t Get_Class_ID() const override
     {
         if (box.Attributes & W3D_BOX_ATTRIBUTE_ORIENTED) {
             return RenderObjClass::CLASSID_OBBOX;
@@ -176,6 +176,6 @@ public:
 class BoxLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_BOX; }
+    virtual int32_t Chunk_Type() override { return W3D_CHUNK_BOX; }
     virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

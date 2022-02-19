@@ -88,7 +88,7 @@ const ModuleFactory::ModuleTemplate *ModuleFactory::Find_Module_Template(const U
  *
  * 0x004F2B80
  */
-int ModuleFactory::Find_Module_Interface_Mask(const Utf8String &name, ModuleType type)
+int32_t ModuleFactory::Find_Module_Interface_Mask(const Utf8String &name, ModuleType type)
 {
     if (name.Is_Not_Empty()) {
         const ModuleTemplate *temp = Find_Module_Template(name, type);
@@ -162,7 +162,7 @@ NameKeyType ModuleFactory::Make_Decorated_Name_Key(const Utf8String &name, Modul
  * 0x004F2E80
  */
 void ModuleFactory::Add_Module_Internal(
-    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int iface)
+    modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int32_t iface)
 {
     ModuleTemplate &data = m_moduleTemplateMap[Make_Decorated_Name_Key(name, type)];
     data.create_proc = proc;

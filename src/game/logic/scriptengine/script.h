@@ -43,7 +43,7 @@ public:
     ScriptAction *Get_Action() { return m_action; }
     ScriptAction *Get_False_Action() { return m_actionFalse; }
     float Get_Total_Exec_Time() const { return m_totalExecTime; }
-    int Get_Evalulation_Count() const { return m_evalCount; }
+    int32_t Get_Evalulation_Count() const { return m_evalCount; }
     Utf8String Get_Name() const { return m_scriptName; }
     void Set_Next(Script *next) { m_nextScript = next; }
     void Set_Condition(OrCondition *condition) { m_condition = condition; }
@@ -76,10 +76,10 @@ private:
     ScriptAction *m_action;
     ScriptAction *m_actionFalse;
     Script *m_nextScript;
-    int m_unkInt2;
+    int32_t m_unkInt2;
     bool m_hasWarnings;
     Utf8String m_conditionTeamName;
     float m_totalExecTime;
-    int m_scriptTiming;
-    int m_evalCount;
+    int32_t m_scriptTiming;
+    int32_t m_evalCount;
 };

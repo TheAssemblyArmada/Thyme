@@ -18,7 +18,7 @@
 #include <d3dx8.h>
 #endif
 
-int RoadShaderPixelShader::Set(int pass)
+int32_t RoadShaderPixelShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Set_Texture(0, W3DShaderManager::Get_Shader_Texture(0));
@@ -83,7 +83,7 @@ void RoadShaderPixelShader::Reset()
 #endif
 }
 
-int RoadShaderPixelShader::Init()
+int32_t RoadShaderPixelShader::Init()
 {
 #ifdef BUILD_WITH_D3D8
     if (!g_roadShader2Stage.Init()) {
@@ -100,7 +100,7 @@ int RoadShaderPixelShader::Init()
         D3DVSD_REG(2, D3DVSDT_FLOAT2),
         D3DVSD_END() };
 
-    int i =
+    int32_t i =
         W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\roadnoise2.pso", decl, 0, false, &m_dwBaseNoise2PixelShader);
 
     if (i < 0) {
@@ -113,7 +113,7 @@ int RoadShaderPixelShader::Init()
     return 1;
 }
 
-int RoadShaderPixelShader::Shutdown()
+int32_t RoadShaderPixelShader::Shutdown()
 {
 #ifdef BUILD_WITH_D3D8
     if (m_dwBaseNoise2PixelShader) {
@@ -125,7 +125,7 @@ int RoadShaderPixelShader::Shutdown()
     return 1;
 }
 
-int RoadShader2Stage::Set(int pass)
+int32_t RoadShader2Stage::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     DX8Wrapper::Set_Texture(0, W3DShaderManager::Get_Shader_Texture(0));
@@ -246,7 +246,7 @@ void RoadShader2Stage::Reset()
 #endif
 }
 
-int RoadShader2Stage::Init()
+int32_t RoadShader2Stage::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_ROAD] = &g_roadShader2Stage;
     g_w3dShadersPassCount[W3DShaderManager::ST_ROAD] = 1;

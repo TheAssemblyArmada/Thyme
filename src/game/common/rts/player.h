@@ -43,9 +43,9 @@ public:
     virtual void Repair_Structure(ObjectID obj_id);
 
     NameKeyType Get_Player_NameKey() { return m_playerNameKey; }
-    int Get_Player_Index() { return m_playerIndex; }
+    int32_t Get_Player_Index() { return m_playerIndex; }
     uint16_t Get_Player_Mask() { return 1ULL << m_playerIndex; }
-    int Get_Color() { return m_playerColor; }
+    int32_t Get_Color() { return m_playerColor; }
     // wb: 0x006DA8F0
     Team *Get_Default_Team()
     {
@@ -61,17 +61,17 @@ public:
     bool Remove_Team_Relationship(Team *team);
     void Update_Team_States();
     void Becoming_Local_Player(bool b);
-    int Get_Squad_Number_For_Object(const Object *obj) const;
+    int32_t Get_Squad_Number_For_Object(const Object *obj) const;
 
 public:
-    int unk1;
-    int unk2;
+    int32_t unk1;
+    int32_t unk2;
     Handicap m_handicap;
     Utf8String m_playerName;
     NameKeyType m_playerNameKey;
-    int m_playerIndex;
+    int32_t m_playerIndex;
     char unk4[0xFC];
-    int m_playerColor;
+    int32_t m_playerColor;
     uint8_t unk5[0x160 - 0x128];
     Team *m_defaultTeam;
     uint8_t unk6[0x44C - 0x164];

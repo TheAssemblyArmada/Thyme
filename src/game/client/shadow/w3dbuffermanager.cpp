@@ -21,7 +21,7 @@
 // TODO need general cleanup advice
 // TODO what is going on with count
 
-static const int FVFTypeIndexList[W3DBufferManager::MAX_FVF] = {
+static const int32_t FVFTypeIndexList[W3DBufferManager::MAX_FVF] = {
     DX8_FVF_XYZ,
     DX8_FVF_XYZD,
 
@@ -50,7 +50,7 @@ static const int FVFTypeIndexList[W3DBufferManager::MAX_FVF] = {
     DX8_FVF_XYZRHWDUV2,
 };
 
-int W3DBufferManager::Get_DX8_Format(VBM_FVF_TYPES fvf_type)
+int32_t W3DBufferManager::Get_DX8_Format(VBM_FVF_TYPES fvf_type)
 {
     return FVFTypeIndexList[fvf_type];
 }
@@ -63,18 +63,18 @@ W3DBufferManager::W3DBufferManager()
     m_numEmptyIndexSlotsAllocated = 0;
     m_numEmptyIndexBuffersAllocated = 0;
 
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
         m_W3DVertexBuffers[i] = nullptr;
     }
 
-    for (int i = 0; i < MAX_FVF; ++i) {
-        for (int j = 0; j < MAX_VB_SIZES; ++j) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
+        for (int32_t j = 0; j < MAX_VB_SIZES; ++j) {
             m_W3DVertexBufferSlots[i][j] = nullptr;
         }
     }
 
     // bugfix from BFME2, clear the buffers
-    for (int i = 0; i < MAX_NUMBER_SLOTS; ++i) {
+    for (int32_t i = 0; i < MAX_NUMBER_SLOTS; ++i) {
         m_W3DVertexBufferEmptySlots[i].m_size = 0;
         m_W3DVertexBufferEmptySlots[i].m_start = 0;
         m_W3DVertexBufferEmptySlots[i].m_VB = nullptr;
@@ -84,7 +84,7 @@ W3DBufferManager::W3DBufferManager()
         m_W3DVertexBufferEmptySlots[i].m_nextSameVB = nullptr;
     }
 
-    for (int i = 0; i < MAX_VERTEX_BUFFERS_CREATED; ++i) {
+    for (int32_t i = 0; i < MAX_VERTEX_BUFFERS_CREATED; ++i) {
         m_W3DEmptyVertexBuffers[i].m_format = VBM_FVF_XYZ;
         m_W3DEmptyVertexBuffers[i].m_usedSlots = nullptr;
         m_W3DEmptyVertexBuffers[i].m_startFreeIndex = 0;
@@ -94,12 +94,12 @@ W3DBufferManager::W3DBufferManager()
         m_W3DEmptyVertexBuffers[i].m_renderTaskList = nullptr;
     }
 
-    for (int i = 0; i < MAX_IB_SIZES; ++i) {
+    for (int32_t i = 0; i < MAX_IB_SIZES; ++i) {
         m_W3DIndexBufferSlots[i] = nullptr;
     }
 
     // bugfix from BFME2, clear the buffers
-    for (int i = 0; i < MAX_NUMBER_SLOTS; ++i) {
+    for (int32_t i = 0; i < MAX_NUMBER_SLOTS; ++i) {
         m_W3DIndexBufferEmptySlots[i].m_size = 0;
         m_W3DIndexBufferEmptySlots[i].m_start = 0;
         m_W3DIndexBufferEmptySlots[i].m_IB = nullptr;
@@ -109,7 +109,7 @@ W3DBufferManager::W3DBufferManager()
         m_W3DIndexBufferEmptySlots[i].m_nextSameIB = nullptr;
     }
 
-    for (int i = 0; i < MAX_INDEX_BUFFERS_CREATED; ++i) {
+    for (int32_t i = 0; i < MAX_INDEX_BUFFERS_CREATED; ++i) {
         m_W3DEmptyIndexBuffers[i].m_usedSlots = nullptr;
         m_W3DEmptyIndexBuffers[i].m_startFreeIndex = 0;
         m_W3DEmptyIndexBuffers[i].m_size = 0;
@@ -126,9 +126,9 @@ W3DBufferManager::~W3DBufferManager()
 
 void W3DBufferManager::Free_All_Slots()
 {
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
 
-        for (int j = 0; j < MAX_VB_SIZES; ++j) {
+        for (int32_t j = 0; j < MAX_VB_SIZES; ++j) {
             W3DVertexBufferSlot *vb_slot = m_W3DVertexBufferSlots[i][j];
             while (vb_slot != nullptr) {
                 if (vb_slot->m_prevSameVB != nullptr) {
@@ -148,7 +148,7 @@ void W3DBufferManager::Free_All_Slots()
             m_W3DVertexBufferSlots[i][j] = nullptr;
         }
     }
-    for (int k = 0; k < MAX_IB_SIZES; ++k) {
+    for (int32_t k = 0; k < MAX_IB_SIZES; ++k) {
         W3DIndexBufferSlot *ib_slot = m_W3DIndexBufferSlots[k];
         while (ib_slot != nullptr) {
             if (ib_slot->m_prevSameIB != nullptr) {
@@ -176,7 +176,7 @@ void W3DBufferManager::Free_All_Buffers()
 {
     Free_All_Slots();
 
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
         for (W3DVertexBuffer *vb = m_W3DVertexBuffers[i]; vb != nullptr; vb = vb->m_nextVB) {
             captainslog_dbgassert(vb->m_usedSlots == nullptr, "Freeing Non-Empty Vertex Buffer");
 
@@ -204,7 +204,7 @@ void W3DBufferManager::Free_All_Buffers()
 
 void W3DBufferManager::Release_Resources()
 {
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
         for (W3DVertexBuffer *vb = m_W3DVertexBuffers[i]; vb != nullptr; vb = vb->m_nextVB) {
             Ref_Ptr_Release(vb->m_DX8VertexBuffer);
         }
@@ -217,7 +217,7 @@ void W3DBufferManager::Release_Resources()
 
 bool W3DBufferManager::ReAcquire_Resources()
 {
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (int32_t i = 0; i < MAX_FVF; ++i) {
         for (W3DVertexBuffer *vb = m_W3DVertexBuffers[i]; vb != nullptr; vb = vb->m_nextVB) {
 
             captainslog_dbgassert(vb->m_DX8VertexBuffer == nullptr, "ReAcquire of existing vertex buffer");
@@ -249,10 +249,10 @@ bool W3DBufferManager::ReAcquire_Resources()
     return true;
 }
 
-W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Get_Slot(VBM_FVF_TYPES fvf_type, int size)
+W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Get_Slot(VBM_FVF_TYPES fvf_type, int32_t size)
 {
     size = (size + 31) & ~31;
-    int size_index = (size / 32) - 1;
+    int32_t size_index = (size / 32) - 1;
 
     captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large vertex buffer slot");
 
@@ -273,7 +273,7 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Get_Slot(VBM_FVF_TYPES 
 
 void W3DBufferManager::Release_Slot(W3DVertexBufferSlot *vb_slot)
 {
-    int size_index = (vb_slot->m_size / 32) - 1;
+    int32_t size_index = (vb_slot->m_size / 32) - 1;
 
     vb_slot->m_nextSameSize = m_W3DVertexBufferSlots[vb_slot->m_VB->m_format][size_index];
 
@@ -284,7 +284,7 @@ void W3DBufferManager::Release_Slot(W3DVertexBufferSlot *vb_slot)
     m_W3DVertexBufferSlots[vb_slot->m_VB->m_format][size_index] = vb_slot;
 }
 
-W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int size)
+W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(VBM_FVF_TYPES fvf_type, int32_t size)
 {
     captainslog_dbgassert(m_numEmptyVertexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more VB Slots");
 
@@ -328,7 +328,7 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(V
         // TODO investigate
         // We allocate count for vertex buffer but size and start index is set by the original size
         // As it stands this doesn't seem to make any sense, i'd understand a 4 byte alignement on the buffer but this...
-        int vb_size = std::max(8192, size);
+        int32_t vb_size = std::max(8192, size);
 
         buf->m_DX8VertexBuffer =
             new DX8VertexBufferClass(Get_DX8_Format(fvf_type), vb_size, DX8VertexBufferClass::USAGE_DEFAULT, 0);
@@ -355,10 +355,10 @@ W3DBufferManager::W3DVertexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(V
     return nullptr;
 }
 
-W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Get_Slot(int size)
+W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Get_Slot(int32_t size)
 {
     size = (size + 31) & ~31;
-    int size_index = (size / 32) - 1;
+    int32_t size_index = (size / 32) - 1;
 
     captainslog_dbgassert(size_index < MAX_IB_SIZES && size, "Allocating too large index buffer slot");
 
@@ -378,7 +378,7 @@ W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Get_Slot(int size)
 
 void W3DBufferManager::Release_Slot(W3DIndexBufferSlot *ib_slot)
 {
-    int size_index = (ib_slot->m_size / 32) - 1;
+    int32_t size_index = (ib_slot->m_size / 32) - 1;
 
     ib_slot->m_nextSameSize = m_W3DIndexBufferSlots[size_index];
 
@@ -389,7 +389,7 @@ void W3DBufferManager::Release_Slot(W3DIndexBufferSlot *ib_slot)
     m_W3DIndexBufferSlots[size_index] = ib_slot;
 }
 
-W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(int size)
+W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(int32_t size)
 {
     captainslog_dbgassert(m_numEmptyIndexSlotsAllocated < MAX_NUMBER_SLOTS, "Nore more IB Slots");
 
@@ -433,7 +433,7 @@ W3DBufferManager::W3DIndexBufferSlot *W3DBufferManager::Allocate_Slot_Storage(in
         // TODO investigate
         // We allocate count for vertex buffer but size and start index is set by the original size
         // As it stands this doesn't seem to make any sense, i'd understand a 4 byte alignement on the buffer but this...
-        int ib_size = std::max(32768, size);
+        int32_t ib_size = std::max(32768, size);
 
         buf->m_DX8IndexBuffer = new DX8IndexBufferClass(ib_size, DX8IndexBufferClass::USAGE_DEFAULT);
         buf->m_startFreeIndex = size;

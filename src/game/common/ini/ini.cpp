@@ -149,7 +149,7 @@ inline iniblockparse_t Find_Block_Parse(const char *token)
 }
 
 // Helper function for Init_From_INI_Multi
-inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int &offset, const void *&data)
+inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int32_t &offset, const void *&data)
 {
     FieldParse *tblptr;
 
@@ -325,12 +325,12 @@ void INI::Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_
             done = true;
         } else {
             inifieldparse_t parsefunc;
-            int offset;
+            int32_t offset;
             const void *data;
-            int exoffset = 0;
+            int32_t exoffset = 0;
 
             // Find an appropriate parser function from the parse table
-            for (int i = 0;; ++i) {
+            for (int32_t i = 0;; ++i) {
                 captainslog_relassert(i < parse_table_list.count,
                     0xDEAD0006,
                     "[LINE: %d - FILE: '%s'] Unknown field '%s' in block '%s'",
@@ -453,7 +453,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String()
     return next;
 }
 
-int INI::Scan_Science(const char *token)
+int32_t INI::Scan_Science(const char *token)
 {
     return g_theScienceStore->Lookup_Science(token);
 }
@@ -461,7 +461,7 @@ int INI::Scan_Science(const char *token)
 float INI::Scan_PercentToReal(const char *token)
 {
     float value;
-    int res = sscanf(token, "%f", &value);
+    int32_t res = sscanf(token, "%f", &value);
     captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse percentage from token %s.", token);
 
     return (value / 100.0f);
@@ -470,26 +470,26 @@ float INI::Scan_PercentToReal(const char *token)
 float INI::Scan_Real(const char *token)
 {
     float value;
-    int res = sscanf(token, "%f", &value);
+    int32_t res = sscanf(token, "%f", &value);
     captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse float from token %s.", token);
 
     return value;
 }
 
-unsigned int INI::Scan_UnsignedInt(const char *token)
+uint32_t INI::Scan_UnsignedInt(const char *token)
 {
-    unsigned int value;
-    int res = sscanf(token, "%u", &value);
-    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse unsigned int from token %s.", token);
+    uint32_t value;
+    int32_t res = sscanf(token, "%u", &value);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse uint32_t from token %s.", token);
 
     return value;
 }
 
-int INI::Scan_Int(const char *token)
+int32_t INI::Scan_Int(const char *token)
 {
-    int value;
-    int res = sscanf(token, "%d", &value);
-    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse int from token %s.", token);
+    int32_t value;
+    int32_t res = sscanf(token, "%d", &value);
+    captainslog_relassert(res == 1, 0xDEAD0006, "Unable to parse int32_t from token %s.", token);
 
     return value;
 }
@@ -505,12 +505,12 @@ bool INI::Scan_Bool(const char *token)
     return false;
 }
 
-int INI::Scan_IndexList(const char *token, const char *const *list)
+int32_t INI::Scan_IndexList(const char *token, const char *const *list)
 {
     captainslog_relassert(
         list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
 
-    int list_count = 0;
+    int32_t list_count = 0;
 
     while (strcasecmp(list[list_count], token) != 0) {
         ++list_count;
@@ -520,12 +520,12 @@ int INI::Scan_IndexList(const char *token, const char *const *list)
     return list_count;
 }
 
-int INI::Scan_LookupList(const char *token, const LookupListRec *list)
+int32_t INI::Scan_LookupList(const char *token, const LookupListRec *list)
 {
     captainslog_relassert(
         list != nullptr && list->name != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_LookupList");
 
-    int list_count = 0;
+    int32_t list_count = 0;
 
     while (strcasecmp(list[list_count].name, token) != 0) {
         ++list_count;
@@ -543,7 +543,7 @@ void INI::Parse_Bool(INI *ini, void *formal, void *store, const void *user_data)
 
 void INI::Parse_Unsigned_Byte(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int tmp = Scan_Int(ini->Get_Next_Token());
+    int32_t tmp = Scan_Int(ini->Get_Next_Token());
 
     captainslog_relassert(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.");
 
@@ -557,7 +557,7 @@ void INI::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)
 
 void INI::Parse_Unsigned_Short(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int tmp = Scan_Int(ini->Get_Next_Token());
+    int32_t tmp = Scan_Int(ini->Get_Next_Token());
 
     captainslog_relassert(tmp >= 0 && tmp < 65535, 0xDEAD0001, "Value parsed outside range of a short.");
 
@@ -631,11 +631,11 @@ void INI::Parse_AsciiString_Vector_Append(INI *ini, void *formal, void *store, c
 
 void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int colors[3];
+    int32_t colors[3];
     const char *names[3] = { "R", "G", "B" };
     RGBColor *rgb = static_cast<RGBColor *>(store);
 
-    for (int i = 0; i < 3; ++i) {
+    for (int32_t i = 0; i < 3; ++i) {
         const char *token = ini->Get_Next_Sub_Token(names[i]);
         colors[i] = std::clamp(Scan_Int(token), 0, 255);
     }
@@ -647,11 +647,11 @@ void INI::Parse_RGB_Color(INI *ini, void *formal, void *store, const void *user_
 
 void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int colors[4];
+    int32_t colors[4];
     const char *names[4] = { "R", "G", "B", "A" };
     RGBAColorInt *rgba = static_cast<RGBAColorInt *>(store);
 
-    for (int i = 0; i < 4; ++i) {
+    for (int32_t i = 0; i < 4; ++i) {
         const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if (token != nullptr) {
@@ -675,11 +675,11 @@ void INI::Parse_RGBA_Color_Int(INI *ini, void *formal, void *store, const void *
 
 void INI::Parse_Color_Int(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int colors[4];
+    int32_t colors[4];
     const char *names[4] = { "R", "G", "B", "A" };
     uint32_t *rgba = static_cast<uint32_t *>(store);
 
-    for (int i = 0; i < 4; ++i) {
+    for (int32_t i = 0; i < 4; ++i) {
         const char *token = ini->Get_Next_Token_Or_Null(ini->m_sepsColon);
 
         if (token != nullptr) {
@@ -734,12 +734,12 @@ void INI::Parse_ICoord3D(INI *ini, void *formal, void *store, const void *user_d
 
 void INI::Parse_Index_List(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *static_cast<int *>(store) = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
+    *static_cast<int32_t *>(store) = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
 }
 
 void INI::Parse_Byte_Sized_Index_List(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int tmp = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
+    int32_t tmp = Scan_IndexList(ini->Get_Next_Token(), static_cast<const char *const *>(user_data));
 
     captainslog_relassert(tmp >= 0 && tmp < 256, 0xDEAD0001, "Value parsed outside range of a byte.");
 
@@ -790,7 +790,7 @@ void INI::Parse_And_Translate_Label(INI *ini, void *formal, void *store, const v
 
 void INI::Parse_Bitstring8(INI *ini, void *formal, void *store, const void *user_data)
 {
-    int bits;
+    int32_t bits;
     Parse_Bitstring32(ini, nullptr, &bits, user_data);
 
     captainslog_relassert((bits & ~255) == 0, CODE_01, "Bad bitstring list INI::parseBitString8");

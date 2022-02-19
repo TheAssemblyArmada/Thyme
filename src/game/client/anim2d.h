@@ -86,9 +86,9 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Draw(int x, int y, int width, int height);
-    int Get_Current_Frame_Height();
-    int Get_Current_Frame_Width();
+    void Draw(int32_t x, int32_t y, int32_t width, int32_t height);
+    int32_t Get_Current_Frame_Height();
+    int32_t Get_Current_Frame_Width();
     void Randomize_Current_Frame();
     void Reset();
     void Set_Current_Frame(unsigned short frame);
@@ -109,12 +109,12 @@ public:
 
 private:
     unsigned short m_currentFrame;
-    unsigned int m_gameFrame;
+    uint32_t m_gameFrame;
     Anim2DTemplate *m_template;
     unsigned char m_status;
     unsigned short m_firstFrame;
     unsigned short m_lastFrame;
-    unsigned int m_animDelay;
+    uint32_t m_animDelay;
     float m_alpha;
     Anim2DCollection *m_collection;
     Anim2D *m_collectionSystemNext;

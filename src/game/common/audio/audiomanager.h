@@ -86,7 +86,7 @@ public:
     virtual void Pause_Ambient(AudioAffect affect) = 0;
     virtual void Lose_Focus();
     virtual void Regain_Focus();
-    virtual int Add_Audio_Event(const AudioEventRTS *event);
+    virtual int32_t Add_Audio_Event(const AudioEventRTS *event);
     virtual void Remove_Audio_Event(unsigned event);
     virtual void Remove_Audio_Event(Utf8String event);
     virtual void Kill_Event_Immediately(uintptr_t event) = 0;
@@ -95,7 +95,7 @@ public:
     virtual void Next_Music_Track() = 0;
     virtual void Prev_Music_Track() = 0;
     virtual bool Is_Music_Playing() = 0;
-    virtual bool Has_Music_Track_Completed(const Utf8String &name, int loops) = 0;
+    virtual bool Has_Music_Track_Completed(const Utf8String &name, int32_t loops) = 0;
     virtual Utf8String Music_Track_Name() = 0;
     virtual void Set_Audio_Event_Enabled(Utf8String event, bool vol_override);
     virtual void Set_Audio_Event_Volume_Override(Utf8String event, float vol_override);
@@ -106,7 +106,7 @@ public:
     virtual void Close_Device() = 0;
     virtual void *Get_Device() = 0;
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) = 0;
-    virtual int Get_Provider_Count() = 0;
+    virtual int32_t Get_Provider_Count() = 0;
     virtual Utf8String Get_Provider_Name(unsigned provider) const = 0;
     virtual unsigned Get_Provider_Index(Utf8String name) = 0;
     virtual void Select_Provider(unsigned provider) = 0;
@@ -116,9 +116,9 @@ public:
     virtual unsigned Get_Speaker_Type() = 0;
     virtual unsigned Translate_From_Speaker_Type(const Utf8String &type);
     virtual Utf8String Translate_To_Speaker_Type(unsigned type);
-    virtual int Get_Num_2D_Samples() const = 0;
-    virtual int Get_Num_3D_Samples() const = 0;
-    virtual int Get_Num_Streams() const = 0;
+    virtual int32_t Get_Num_2D_Samples() const = 0;
+    virtual int32_t Get_Num_3D_Samples() const = 0;
+    virtual int32_t Get_Num_Streams() const = 0;
     virtual bool Does_Violate_Limit(AudioEventRTS *event) const = 0;
     virtual bool Is_Playing_Lower_Priority(AudioEventRTS *event) const = 0;
     virtual bool Is_Playing_Already(AudioEventRTS *event) const = 0;
@@ -163,7 +163,7 @@ public:
     virtual bool Is_Current_Speaker_Type_Surround();
     virtual bool Should_Play_Locally(const AudioEventRTS *event);
     virtual void Set_Device_Listener_Position() = 0;
-    virtual int Allocate_New_Handle();
+    virtual int32_t Allocate_New_Handle();
     virtual void Remove_Level_Specific_Audio_Event_Infos();
     virtual PlayingAudio *Find_Playing_Audio_From(uintptr_t handle, unsigned type) = 0;
     virtual void Process_Playing_List() = 0;
@@ -188,7 +188,7 @@ protected:
     std::list<AudioRequest *> m_audioRequestList;
     std::vector<Utf8String> m_trackList;
     audioinfomap_t m_audioInfoHashMap;
-    int m_audioHandleCounter;
+    int32_t m_audioHandleCounter;
     std::list<std::pair<Utf8String, float>>
         m_eventVolumeList; // TODO workout what list this actually is, some kind of volume list
     float m_musicVolume;

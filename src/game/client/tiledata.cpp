@@ -14,14 +14,14 @@
  */
 #include "tiledata.h"
 
-void TileData::Do_Mip(unsigned char *hi_res, int hi_row, unsigned char *lo_res)
+void TileData::Do_Mip(unsigned char *hi_res, int32_t hi_row, unsigned char *lo_res)
 {
-    for (int i = 0; i < hi_row; i += 2) {
-        for (int j = 0; j < hi_row; j += 2) {
-            int i1 = 4 * (i + hi_row * j);
-            int i2 = 4 * (i / 2 + hi_row / 2 * (j / 2));
+    for (int32_t i = 0; i < hi_row; i += 2) {
+        for (int32_t j = 0; j < hi_row; j += 2) {
+            int32_t i1 = 4 * (i + hi_row * j);
+            int32_t i2 = 4 * (i / 2 + hi_row / 2 * (j / 2));
 
-            for (int k = 0; k < 4; k++) {
+            for (int32_t k = 0; k < 4; k++) {
                 lo_res[i2] = (hi_res[4 * hi_row + i1] + hi_res[i1 + 4] + hi_res[i1] + hi_res[4 * hi_row + 4 + i1] + 2) / 4;
                 ++i1;
                 ++i2;
@@ -40,7 +40,7 @@ void TileData::Update_Mips()
     Do_Mip(m_tileDataMip2, 2, m_tileDataMip1);
 }
 
-bool TileData::Has_RGB_Data_For_Width(int width)
+bool TileData::Has_RGB_Data_For_Width(int32_t width)
 {
     switch (width) {
         case 64:
@@ -59,7 +59,7 @@ bool TileData::Has_RGB_Data_For_Width(int width)
     return width == 1;
 }
 
-unsigned char *TileData::Get_RGB_Data_For_Width(int width)
+unsigned char *TileData::Get_RGB_Data_For_Width(int32_t width)
 {
     switch (width) {
         case 32:

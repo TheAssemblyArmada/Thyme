@@ -275,9 +275,9 @@ void CameraClass::Update_Frustum() const
 
 void CameraClass::Device_To_View_Space(const Vector2 &device_coord, Vector3 *set_view)
 {
-    int res_width;
-    int res_height;
-    int res_bits;
+    int32_t res_width;
+    int32_t res_height;
+    int32_t res_bits;
     bool windowed;
 
     W3D::Get_Render_Target_Resolution(res_width, res_height, res_bits, windowed);
@@ -306,7 +306,7 @@ void CameraClass::Apply()
 {
     Update_Frustum();
 
-    int width, height, bits;
+    int32_t width, height, bits;
     bool windowed;
     W3D::Get_Render_Target_Resolution(width, height, bits, windowed);
 

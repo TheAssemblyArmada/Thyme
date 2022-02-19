@@ -52,12 +52,12 @@ struct OBBTCollisionStruct
 
     bool start_bad;
     float max_frac;
-    int axis_id;
-    int point;
-    int side;
-    int test_side;
-    int test_axis_id;
-    int test_point;
+    int32_t axis_id;
+    int32_t point;
+    int32_t side;
+    int32_t test_side;
+    int32_t test_axis_id;
+    int32_t test_point;
     Vector3 test_axis;
     Vector3 d;
     Vector3 move;
@@ -169,7 +169,7 @@ static bool OBBTri_Check_Collision_Basis_Axis(OBBTCollisionStruct &context, floa
     return OBBTri_Collision_Separation_Test(context, f1 + unk3, unk1, f2 + unk1);
 }
 
-static bool OBBTri_Check_Collision_Cross_Axis(OBBTCollisionStruct &context, float unk1, int unk2, float unk3)
+static bool OBBTri_Check_Collision_Cross_Axis(OBBTCollisionStruct &context, float unk1, int32_t unk2, float unk3)
 {
     float f1 = Vector3::Dot_Product(context.d, context.test_axis);
     float f2 = Vector3::Dot_Product(context.move, context.test_axis);
@@ -323,7 +323,7 @@ static void OBBTri_Compute_Contact_Normal(const OBBTCollisionStruct &context, Ve
     captainslog_assert(result->Length2() > 0.0f);
 }
 
-static float Eval_Side(float val, int side)
+static float Eval_Side(float val, int32_t side)
 {
     if (val > 0.0f) {
         return (float)(side);
@@ -334,7 +334,7 @@ static float Eval_Side(float val, int side)
     }
 }
 
-static void Eval_A0_Point(const OBBTCollisionStruct &context, float *x, int edge)
+static void Eval_A0_Point(const OBBTCollisionStruct &context, float *x, int32_t edge)
 {
     float f1 = Eval_Side(context.ae[2][edge], context.side);
 
@@ -371,7 +371,7 @@ static void Eval_A0_Point(const OBBTCollisionStruct &context, float *x, int edge
     }
 }
 
-static void Eval_A1_Point(const OBBTCollisionStruct &context, float *x, int edge)
+static void Eval_A1_Point(const OBBTCollisionStruct &context, float *x, int32_t edge)
 {
     float f1 = Eval_Side(context.ae[2][edge], context.side);
 
@@ -408,7 +408,7 @@ static void Eval_A1_Point(const OBBTCollisionStruct &context, float *x, int edge
     }
 }
 
-static void Eval_A2_Point(const OBBTCollisionStruct &context, float *x, int edge)
+static void Eval_A2_Point(const OBBTCollisionStruct &context, float *x, int32_t edge)
 {
     float f1 = Eval_Side(context.ae[1][edge], context.side);
 
@@ -459,7 +459,7 @@ static void OBBTri_Compute_Contact_Point(OBBTCollisionStruct &context, CastResul
             captainslog_assert(0);
             return;
         case 1:
-            for (int i = 0; i < 3; i++) {
+            for (int32_t i = 0; i < 3; i++) {
                 x[i] = Eval_Side(context.an[i], context.side) * context.box.m_extent[i];
             }
 

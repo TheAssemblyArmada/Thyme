@@ -37,8 +37,8 @@ public:
     virtual void Set_Width(uint32_t width) override;
     virtual void Set_Height(uint32_t height) override;
     virtual bool Set_Display_Mode(uint32_t width, uint32_t height, uint32_t bits, bool windowed) override;
-    virtual int Get_Display_Mode_Count() override;
-    virtual void Get_Display_Mode_Description(int id, int *width, int *height, int *bit_depth) override;
+    virtual int32_t Get_Display_Mode_Count() override;
+    virtual void Get_Display_Mode_Description(int32_t id, int32_t *width, int32_t *height, int32_t *bit_depth) override;
     virtual void Set_Gamma(float gamma, float bright, float contrast, bool calibrate) override;
     virtual void Do_Smart_Asset_Purge_And_Preload(const char *) override;
 #ifdef GAME_DEBUG_STRUCTS
@@ -62,13 +62,13 @@ public:
         int32_t x, int32_t y, int32_t width, int32_t height, float border_width, uint32_t color) override;
     virtual void Draw_Fill_Rect(int32_t x, int32_t y, int32_t width, int32_t height, uint32_t color) override;
     virtual void Draw_Rect_Clock(
-        int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
+        int32_t x, int32_t y, int32_t width, int32_t height, int32_t percentage, uint32_t color) override;
     virtual void Draw_Remaining_Rect_Clock(
-        int32_t x, int32_t y, int32_t width, int32_t height, int percentage, uint32_t color) override;
+        int32_t x, int32_t y, int32_t width, int32_t height, int32_t percentage, uint32_t color) override;
     virtual void Draw_Image(
         Image *image, int32_t left, int32_t top, int32_t right, int32_t bottom, uint32_t color, DrawImageMode mode) override;
     virtual void Draw_VideoBuffer(VideoBuffer *vb, int32_t x1, int32_t y1, int32_t x2, int32_t y2) override;
-    virtual void Set_Shroud_Level(int, int, CellShroudStatus) override;
+    virtual void Set_Shroud_Level(int32_t, int32_t, CellShroudStatus) override;
     virtual void Clear_Shroud() override{};
     virtual void Set_Border_Shroud_Level(uint8_t level) override;
 #ifdef GAME_DEBUG_STRUCTS
@@ -83,7 +83,7 @@ public:
     virtual bool Is_LetterBox_Fading() override;
     virtual bool Is_LetterBoxed() override { return m_letterBoxEnabled; }
     virtual float Get_Average_FPS() override { return m_averageFps; }
-    virtual int Get_Last_Frame_Draw_Calls() override;
+    virtual int32_t Get_Last_Frame_Draw_Calls() override;
     void Init_Assets() {}
     void Init_2D_Scene() {}
     void Init_3D_Scene() {}
@@ -93,7 +93,7 @@ public:
     void Draw_Benchmark();
     void Draw_Current_Debug_Display();
     void Calculate_Terrain_LOD();
-    void Render_LetterBox(unsigned int current_time);
+    void Render_LetterBox(uint32_t current_time);
 
 #ifdef GAME_DLL
     static GameAssetManager *&s_assetManager;

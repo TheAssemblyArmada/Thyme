@@ -55,7 +55,7 @@ void RankInfoStore::Reset()
  *
  * 0x004894E0
  */
-RankInfo *RankInfoStore::Get_Rank_Info(int level)
+RankInfo *RankInfoStore::Get_Rank_Info(int32_t level)
 {
     if (level < 1 || (unsigned)level > m_infoStore.size() || m_infoStore[level - 1] == nullptr) {
         return nullptr;
@@ -69,7 +69,7 @@ RankInfo *RankInfoStore::Get_Rank_Info(int level)
  *
  * 0x004894D0
  */
-int RankInfoStore::Get_Rank_Level_Count() const
+int32_t RankInfoStore::Get_Rank_Level_Count() const
 {
     return m_infoStore.size();
 }
@@ -97,7 +97,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         return;
     }
 
-    int rank_level = INI::Scan_Int(ini->Get_Next_Token());
+    int32_t rank_level = INI::Scan_Int(ini->Get_Next_Token());
 
     if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
         captainslog_relassert(rank_level >= 1 && (unsigned)rank_level <= g_theRankInfoStore->m_infoStore.size(),

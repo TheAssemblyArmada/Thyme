@@ -68,7 +68,7 @@ bool CollisionMath::Intersection_Test(const AABoxClass &box, const AABoxClass &b
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const AABoxClass &box, const LineSegClass &line)
 {
-    int count = 0;
+    int32_t count = 0;
 
     if (Overlap_Test(box, line.Get_P0()) == NEG) {
         count++;
@@ -184,15 +184,15 @@ struct AABCollisionStruct
 
     bool start_bad;
     float max_frac;
-    int axis_id;
-    int side;
+    int32_t axis_id;
+    int32_t side;
     Vector3 c;
     Vector3 m;
     const AABoxClass &box0;
     const AABoxClass &box1;
 };
 
-static bool AAB_Separation_Test(AABCollisionStruct &context, int axis)
+static bool AAB_Separation_Test(AABCollisionStruct &context, int32_t axis)
 {
     float u1 = context.c[axis];
     float u0 = u1 + context.m[axis];

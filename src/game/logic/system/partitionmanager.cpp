@@ -227,34 +227,34 @@ void PartitionManager::Unregister_Ghost_Object(GhostObject *object)
 }
 
 // zh: 0x0053C320 wb: 0x0081EF6E
-void PartitionManager::Reveal_Map_For_Player(int playerIndex)
+void PartitionManager::Reveal_Map_For_Player(int32_t playerIndex)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int>(PICK_ADDRESS(0x0053C320, 0x0081EF6E), this, playerIndex);
+    Call_Method<void, PartitionManager, int32_t>(PICK_ADDRESS(0x0053C320, 0x0081EF6E), this, playerIndex);
 #endif
 }
 
 // zh: 0x0053C360 wb: 0x0081EFD0
-void PartitionManager::Reveal_Map_For_Player_Permanently(int playerIndex)
+void PartitionManager::Reveal_Map_For_Player_Permanently(int32_t playerIndex)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int>(PICK_ADDRESS(0x0053C360, 0x0081EFD0), this, playerIndex);
+    Call_Method<void, PartitionManager, int32_t>(PICK_ADDRESS(0x0053C360, 0x0081EFD0), this, playerIndex);
 #endif
 }
 
 // zh: 0x0053C3A0 wb: 0x0081F018
-void PartitionManager::Undo_Reveal_Map_For_Player_Permanently(int playerIndex)
+void PartitionManager::Undo_Reveal_Map_For_Player_Permanently(int32_t playerIndex)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int>(PICK_ADDRESS(0x0053C3A0, 0x0081F018), this, playerIndex);
+    Call_Method<void, PartitionManager, int32_t>(PICK_ADDRESS(0x0053C3A0, 0x0081F018), this, playerIndex);
 #endif
 }
 
 // zh: 0x0053C490 wb: 0x0081F068
-void PartitionManager::Shroud_Map_For_Player(int playerIndex)
+void PartitionManager::Shroud_Map_For_Player(int32_t playerIndex)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int>(PICK_ADDRESS(0x0053C490, 0x0081F068), this, playerIndex);
+    Call_Method<void, PartitionManager, int32_t>(PICK_ADDRESS(0x0053C490, 0x0081F068), this, playerIndex);
 #endif
 }
 
@@ -267,10 +267,10 @@ void PartitionManager::Refresh_Shroud_For_Local_Player()
 }
 
 // zh: 0x0053C670 wb: 0x0081F1E2
-CellShroudStatus PartitionManager::Get_Shroud_Status_For_Player(int playerIndex, int x, int y) const
+CellShroudStatus PartitionManager::Get_Shroud_Status_For_Player(int32_t playerIndex, int32_t x, int32_t y) const
 {
 #ifdef GAME_DLL
-    return Call_Method<CellShroudStatus, const PartitionManager, int, int, int>(
+    return Call_Method<CellShroudStatus, const PartitionManager, int32_t, int32_t, int32_t>(
         PICK_ADDRESS(0x0053C670, 0x0081F1E2), this, playerIndex, x, y);
 #else
     return CellShroudStatus(0);
@@ -278,7 +278,7 @@ CellShroudStatus PartitionManager::Get_Shroud_Status_For_Player(int playerIndex,
 }
 
 // zh: 0x0053C6E0 wb: 0x0081F232
-CellShroudStatus PartitionManager::Get_Shroud_Status_For_Player(int playerIndex, Coord3D const *loc) const
+CellShroudStatus PartitionManager::Get_Shroud_Status_For_Player(int32_t playerIndex, Coord3D const *loc) const
 {
     int32_t x = 0;
     int32_t y = 0;
@@ -563,20 +563,20 @@ float PartitionManager::Get_Ground_Or_Structure_Height(float x, float y)
 }
 
 // zh: 0x005401E0 wb: 0x008222C7
-void PartitionManager::Get_Most_Valuable_Location(int unk1, unsigned int unk2, ValueOrThreat unk3, Coord3D *loc)
+void PartitionManager::Get_Most_Valuable_Location(int32_t unk1, uint32_t unk2, ValueOrThreat unk3, Coord3D *loc)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int, unsigned int, ValueOrThreat, Coord3D *>(
+    Call_Method<void, PartitionManager, int32_t, uint32_t, ValueOrThreat, Coord3D *>(
         PICK_ADDRESS(0x005401E0, 0x008222C7), this, unk1, unk2, unk3, loc);
 #endif
 }
 
 // zh: 0x00540380 wb: 0x008224F1
 void PartitionManager::Get_Nearest_Group_With_Value(
-    int unk1, unsigned int unk2, ValueOrThreat unk3, Coord3D const *unk4, int unk5, bool unk6, Coord3D *unk7)
+    int32_t unk1, uint32_t unk2, ValueOrThreat unk3, Coord3D const *unk4, int32_t unk5, bool unk6, Coord3D *unk7)
 {
 #ifdef GAME_DLL
-    Call_Method<void, PartitionManager, int, unsigned int, ValueOrThreat, Coord3D const *, int, bool, Coord3D *>(
+    Call_Method<void, PartitionManager, int32_t, uint32_t, ValueOrThreat, Coord3D const *, int32_t, bool, Coord3D *>(
         PICK_ADDRESS(0x00540380, 0x008224F1), this, unk1, unk2, unk3, unk4, unk5, unk6, unk7);
 #endif
 }
@@ -683,7 +683,7 @@ Object *PartitionManager::Get_Closest_Objects(Object const *obj,
 }
 
 // wb: 0x008146F0
-void PartitionManager::World_To_Cell(float x, float y, int *xx, int *yy) const
+void PartitionManager::World_To_Cell(float x, float y, int32_t *xx, int32_t *yy) const
 {
     *xx = GameMath::Fast_To_Int_Floor((x - m_worldExtents.lo.x) * m_cellSizeInv);
     *yy = GameMath::Fast_To_Int_Floor((y - m_worldExtents.lo.y) * m_cellSizeInv);
@@ -708,11 +708,11 @@ bool PartitionManager::Try_Position(
 }
 
 // zh: 0x0053EF40 wb: 0x008216D8
-int PartitionManager::Iterate_Cells_Along_Line(
-    Coord3D const &pos, Coord3D const &posOther, int (*proc)(PartitionCell *, void *), void *userData)
+int32_t PartitionManager::Iterate_Cells_Along_Line(
+    Coord3D const &pos, Coord3D const &posOther, int32_t (*proc)(PartitionCell *, void *), void *userData)
 {
 #ifdef GAME_DLL
-    return Call_Method<int, PartitionManager, Coord3D const &, Coord3D const &, int (*)(PartitionCell *, void *), void *>(
+    return Call_Method<int32_t, PartitionManager, Coord3D const &, Coord3D const &, int32_t (*)(PartitionCell *, void *), void *>(
         PICK_ADDRESS(0x0053EF40, 0x008216D8), this, pos, posOther, proc, userData);
 #else
     return 0;
@@ -720,10 +720,10 @@ int PartitionManager::Iterate_Cells_Along_Line(
 }
 
 // zh: 0x0053F190 wb: 0x008218DE
-int PartitionManager::Iterate_Cells_Breadth_First(Coord3D const *pos, int (*proc)(PartitionCell *, void *), void *userData)
+int32_t PartitionManager::Iterate_Cells_Breadth_First(Coord3D const *pos, int32_t (*proc)(PartitionCell *, void *), void *userData)
 {
 #ifdef GAME_DLL
-    return Call_Method<int, PartitionManager, Coord3D const *, int (*)(PartitionCell *, void *), void *>(
+    return Call_Method<int32_t, PartitionManager, Coord3D const *, int32_t (*)(PartitionCell *, void *), void *>(
         PICK_ADDRESS(0x0053F190, 0x008218DE), this, pos, proc, userData);
 #else
     return 0;

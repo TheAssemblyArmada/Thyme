@@ -60,12 +60,12 @@ GameMessageArgument *GameMessage::Allocate_Arg()
     return arg;
 }
 
-ArgumentType *GameMessage::Get_Argument(int arg)
+ArgumentType *GameMessage::Get_Argument(int32_t arg)
 {
     static ArgumentType junkconst;
 
     GameMessageArgument *argobj = m_argList;
-    int i = 0;
+    int32_t i = 0;
 
     while (argobj != nullptr) {
         if (i == arg) {
@@ -79,7 +79,7 @@ ArgumentType *GameMessage::Get_Argument(int arg)
     return &junkconst;
 }
 
-ArgumentDataType GameMessage::Get_Argument_Type(int arg)
+ArgumentDataType GameMessage::Get_Argument_Type(int32_t arg)
 {
     if (arg >= m_argCount) {
         return ARGUMENTDATATYPE_UNKNOWN;
@@ -87,7 +87,7 @@ ArgumentDataType GameMessage::Get_Argument_Type(int arg)
 
     GameMessageArgument *argobj = m_argList;
 
-    for (int i = 0; i < arg; ++i) {
+    for (int32_t i = 0; i < arg; ++i) {
         if (argobj == nullptr) {
             return ARGUMENTDATATYPE_UNKNOWN;
         }
@@ -648,7 +648,7 @@ Utf8String GameMessage::Get_Command_As_Ascii(MessageType command)
     }
 }
 
-void GameMessage::Append_Int_Arg(int arg)
+void GameMessage::Append_Int_Arg(int32_t arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.integer = arg;
@@ -669,21 +669,21 @@ void GameMessage::Append_Bool_Arg(bool arg)
     argobj->m_type = ARGUMENTDATATYPE_BOOLEAN;
 }
 
-void GameMessage::Append_ObjectID_Arg(unsigned int arg)
+void GameMessage::Append_ObjectID_Arg(uint32_t arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.objectID = arg;
     argobj->m_type = ARGUMENTDATATYPE_OBJECTID;
 }
 
-void GameMessage::Append_DrawableID_Arg(unsigned int arg)
+void GameMessage::Append_DrawableID_Arg(uint32_t arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.drawableID = arg;
     argobj->m_type = ARGUMENTDATATYPE_DRAWABLEID;
 }
 
-void GameMessage::Append_TeamID_Arg(unsigned int arg)
+void GameMessage::Append_TeamID_Arg(uint32_t arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.teamID = arg;
@@ -711,7 +711,7 @@ void GameMessage::Append_Region_Arg(IRegion2D const &arg)
     argobj->m_type = ARGUMENTDATATYPE_PIXELREGION;
 }
 
-void GameMessage::Append_Time_Stamp_Arg(unsigned int arg)
+void GameMessage::Append_Time_Stamp_Arg(uint32_t arg)
 {
     GameMessageArgument *argobj = Allocate_Arg();
     argobj->m_data.timestamp = arg;

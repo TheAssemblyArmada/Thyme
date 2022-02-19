@@ -67,7 +67,7 @@ public:
     bool Is_In_List(MultiListObjectClass *obj) const { return Contains(obj); };
     bool Is_Empty() const { return (m_head.m_next == &m_head); };
     bool Contains(MultiListObjectClass *obj) const;
-    int Count() const;
+    int32_t Count() const;
 
 protected:
     bool Internal_Add(MultiListObjectClass *obj, bool onlyonce = true);
@@ -325,9 +325,9 @@ inline MultiListObjectClass::~MultiListObjectClass()
     };
 }
 
-inline int GenericMultiListClass::Count() const
+inline int32_t GenericMultiListClass::Count() const
 {
-    int counter = 0;
+    int32_t counter = 0;
     GenericMultiListIterator it(this);
 
     for (it.First(); !it.Is_Done(); it.Next()) {

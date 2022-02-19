@@ -129,8 +129,8 @@ public:
     static void Begin_Scene();
     static void End_Scene(bool flip_frames = true);
     static void Clear(
-        bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z = 1.0f, unsigned int stencil = 0);
-    static void Set_Vertex_Buffer(const VertexBufferClass *vb, int number);
+        bool clear_color, bool clear_z_stencil, const Vector3 &color, float alpha, float z = 1.0f, uint32_t stencil = 0);
+    static void Set_Vertex_Buffer(const VertexBufferClass *vb, int32_t number);
     static void Set_Vertex_Buffer(const DynamicVBAccessClass &vba);
     static void Set_Index_Buffer(const IndexBufferClass *ib, unsigned short index_base_offset);
     static void Set_Index_Buffer(const DynamicIBAccessClass &iba, unsigned short index_base_offset);
@@ -140,7 +140,7 @@ public:
     static void Set_Light(unsigned index, const LightClass &light);
     static void Set_Light_Environment(LightEnvironmentClass *light_env);
     static void Apply_Render_State_Changes();
-    static void Draw_Triangles(unsigned int buffer_type,
+    static void Draw_Triangles(uint32_t buffer_type,
         unsigned short start_index,
         unsigned short polygon_count,
         unsigned short min_vertex_index,
@@ -158,10 +158,10 @@ public:
     static w3dtexture_t Create_Texture(w3dsurface_t surface, MipCountType mip_level_count);
     static w3dsurface_t Create_Surface(unsigned width, unsigned height, WW3DFormat format);
     static w3dsurface_t Create_Surface(const char *name);
-    static SurfaceClass *Get_DX8_Back_Buffer(unsigned int num = 0);
+    static SurfaceClass *Get_DX8_Back_Buffer(uint32_t num = 0);
     static void Begin_Statistics();
     static void End_Statistics();
-    static TextureClass *Create_Render_Target(int width, int height, WW3DFormat format);
+    static TextureClass *Create_Render_Target(int32_t width, int32_t height, WW3DFormat format);
     static void Set_Render_Target(w3dsurface_t render_target, bool use_default_depth_buffer = false);
     static void Set_Render_Target_With_Z(TextureClass *texture, ZTextureClass *z_texture);
     static void Set_Texture(unsigned stage, TextureClass *texture);
@@ -192,11 +192,11 @@ public:
         IDirect3DSurface8 *pDestinationSurface,
         CONST POINT *pDestPointsArray);
     static Vector4 Convert_Color(unsigned color);
-    static unsigned int Convert_Color(const Vector4 &color);
-    static unsigned int Convert_Color(const Vector3 &color, const float alpha);
+    static uint32_t Convert_Color(const Vector4 &color);
+    static uint32_t Convert_Color(const Vector3 &color, const float alpha);
     static void Clamp_Color(Vector4 &color);
-    static unsigned int Convert_Color_Clamp(const Vector4 &color);
-    static void Set_DX8_Light(int index, D3DLIGHT8 *light);
+    static uint32_t Convert_Color_Clamp(const Vector4 &color);
+    static void Set_DX8_Light(int32_t index, D3DLIGHT8 *light);
     static void Get_DX8_Transform(D3DTRANSFORMSTATETYPE transform, Matrix4 &m);
     static void Set_DX8_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix4 &m);
     static void Set_Projection_Transform_With_Z_Bias(const Matrix4 &matrix, float znear, float zfar);
@@ -225,7 +225,7 @@ public:
     static void Log_DX8_ErrorCode(unsigned error);
     static void Handle_DX8_ErrorCode(unsigned error);
 
-    static int Get_Main_Thread_ID() { return s_mainThreadID; }
+    static int32_t Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Current_Caps()
     {
         captainslog_assert(s_currentCaps != nullptr);
@@ -239,19 +239,19 @@ public:
     static void Enable_Triangle_Draw(bool enable) { s_EnableTriangleDraw = enable; }
     static bool Is_Triangle_Draw_Enabled() { return s_EnableTriangleDraw; }
     static bool Is_Initted() { return s_isInitialised; }
-    static void Set_Texture_Bitdepth(int depth)
+    static void Set_Texture_Bitdepth(int32_t depth)
     {
         captainslog_assert(depth == 16 || depth == 32);
         s_textureBitDepth = depth;
     }
 
 private:
-    static void Draw_Sorting_IB_VB(unsigned int primitive_type,
+    static void Draw_Sorting_IB_VB(uint32_t primitive_type,
         unsigned short start_index,
         unsigned short polygon_count,
         unsigned short min_vertex_index,
         unsigned short vertex_count);
-    static void Draw(unsigned int primitive_type,
+    static void Draw(uint32_t primitive_type,
         unsigned short start_index,
         unsigned short polygon_count,
         unsigned short min_vertex_index = 0,
@@ -263,28 +263,28 @@ protected:
     static void Reset_Statistics();
     static void Enumerate_Devices();
     static void Set_Default_Global_Render_States();
-    static int Get_Render_Device();
-    static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
+    static int32_t Get_Render_Device();
+    static const RenderDeviceDescClass &Get_Render_Device_Desc(int32_t deviceidx);
     static bool Set_Device_Resolution(
-        int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);
-    static void Get_Device_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static bool Set_Render_Device(int dev = -1,
-        int resx = -1,
-        int resy = -1,
-        int bits = -1,
-        int windowed = -1,
+        int32_t width = -1, int32_t height = -1, int32_t bits = -1, int32_t windowed = -1, bool resize_window = false);
+    static void Get_Device_Resolution(int32_t &set_w, int32_t &set_h, int32_t &set_bits, bool &set_windowed);
+    static void Get_Render_Target_Resolution(int32_t &set_w, int32_t &set_h, int32_t &set_bits, bool &set_windowed);
+    static bool Set_Render_Device(int32_t dev = -1,
+        int32_t resx = -1,
+        int32_t resy = -1,
+        int32_t bits = -1,
+        int32_t windowed = -1,
         bool resize_window = false,
         bool reset_device = false,
         bool restore_assets = true);
 #ifdef BUILD_WITH_D3D8
     static bool Find_Color_And_Z_Mode(
-        int resx, int resy, int bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
-    static bool Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode);
+        int32_t resx, int32_t resy, int32_t bitdepth, D3DFORMAT *set_colorbuffer, D3DFORMAT *set_backbuffer, D3DFORMAT *set_zmode);
+    static bool Find_Color_Mode(D3DFORMAT colorbuffer, int32_t resx, int32_t resy, UINT *mode);
     static bool Find_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT *zmode);
     static bool Test_Z_Mode(D3DFORMAT colorbuffer, D3DFORMAT backbuffer, D3DFORMAT zmode);
     static void Compute_Caps(WW3DFormat display_format);
-    static void Get_Format_Name(unsigned int format, StringClass *format_name);
+    static void Get_Format_Name(uint32_t format, StringClass *format_name);
 #endif
 
 #ifdef GAME_DLL
@@ -317,13 +317,13 @@ protected:
     static float &s_zNear;
     static float &s_zFar;
     static Matrix4 &s_projectionMatrix;
-    static int &s_mainThreadID;
-    static int &s_currentRenderDevice;
+    static int32_t &s_mainThreadID;
+    static int32_t &s_currentRenderDevice;
     static DX8Caps *&s_currentCaps;
-    static int &s_resolutionWidth;
-    static int &s_resolutionHeight;
-    static int &s_bitDepth;
-    static int &s_textureBitDepth;
+    static int32_t &s_resolutionWidth;
+    static int32_t &s_resolutionHeight;
+    static int32_t &s_bitDepth;
+    static int32_t &s_textureBitDepth;
     static ARRAY_DEC(bool, s_currentLightEnables, GFX_LIGHT_COUNT);
     static unsigned &s_matrixChanges;
     static unsigned &s_materialChanges;
@@ -350,10 +350,10 @@ protected:
     static w3dadapterid_t &s_currentAdapterIdentifier;
     static ARRAY_DEC(Matrix4, s_DX8Transforms, 257);
     static bool &s_EnableTriangleDraw;
-    static int &s_ZBias;
+    static int32_t &s_ZBias;
     static Vector3 &s_ambientColor;
     static bool &s_isDeviceLost;
-    static int &s_FPUPreserve;
+    static int32_t &s_FPUPreserve;
     static unsigned long &s_vertexShader;
     static unsigned long &s_pixelShader;
     static LightEnvironmentClass *&s_lightEnvironment;
@@ -364,7 +364,7 @@ protected:
     static w3dsurface_t &s_defaultRenderTarget;
     static w3dsurface_t &s_defaultDepthBuffer;
     static bool &s_isRenderToTexture;
-    static unsigned int &s_drawPolygonLowBoundLimit;
+    static uint32_t &s_drawPolygonLowBoundLimit;
     static unsigned long &s_frameCount;
     static bool &s_DX8SingleThreaded;
     static DX8_CleanupHook *&s_cleanupHook;
@@ -398,13 +398,13 @@ protected:
     static float s_zNear;
     static float s_zFar;
     static Matrix4 s_projectionMatrix;
-    static int s_mainThreadID;
-    static int s_currentRenderDevice;
+    static int32_t s_mainThreadID;
+    static int32_t s_currentRenderDevice;
     static DX8Caps *s_currentCaps;
-    static int s_resolutionWidth;
-    static int s_resolutionHeight;
-    static int s_bitDepth;
-    static int s_textureBitDepth;
+    static int32_t s_resolutionWidth;
+    static int32_t s_resolutionHeight;
+    static int32_t s_bitDepth;
+    static int32_t s_textureBitDepth;
     static bool s_currentLightEnables[GFX_LIGHT_COUNT];
     static unsigned s_matrixChanges;
     static unsigned s_materialChanges;
@@ -431,10 +431,10 @@ protected:
     static w3dadapterid_t s_currentAdapterIdentifier;
     static Matrix4 s_DX8Transforms[257];
     static bool s_EnableTriangleDraw;
-    static int s_ZBias;
+    static int32_t s_ZBias;
     static Vector3 s_ambientColor;
     static bool s_isDeviceLost;
-    static int s_FPUPreserve;
+    static int32_t s_FPUPreserve;
     static unsigned long s_vertexShader;
     static unsigned long s_pixelShader;
     static LightEnvironmentClass *s_lightEnvironment;
@@ -445,7 +445,7 @@ protected:
     static w3dsurface_t s_defaultRenderTarget;
     static w3dsurface_t s_defaultDepthBuffer;
     static bool s_isRenderToTexture;
-    static unsigned int s_drawPolygonLowBoundLimit;
+    static uint32_t s_drawPolygonLowBoundLimit;
     static unsigned long s_frameCount;
     static bool s_DX8SingleThreaded;
     static DX8_CleanupHook *s_cleanupHook;
@@ -459,7 +459,7 @@ inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)
 {
     for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i)
         Textures[i] = nullptr;
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         vertex_buffers[i] = nullptr;
     }
 }
@@ -467,7 +467,7 @@ inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)
 inline RenderStateStruct::~RenderStateStruct()
 {
     Ref_Ptr_Release(material);
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         Ref_Ptr_Release(vertex_buffers[i]);
     }
     Ref_Ptr_Release(index_buffer);
@@ -480,7 +480,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
 {
     auto *mb = const_cast<VertexMaterialClass *>(src.material);
     Ref_Ptr_Set(material, mb);
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         auto *vb = const_cast<VertexBufferClass *>(src.vertex_buffers[i]);
         Ref_Ptr_Set(vertex_buffers[i], vb);
     }
@@ -517,7 +517,7 @@ inline RenderStateStruct &RenderStateStruct::operator=(const RenderStateStruct &
     world = src.world;
     view = src.view;
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         vertex_buffer_types[i] = src.vertex_buffer_types[i];
     }
 
@@ -611,7 +611,7 @@ inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Mat
 inline void DX8Wrapper::Set_Transform(D3DTRANSFORMSTATETYPE transform, const Matrix3D &m)
 {
     Matrix4 m2(m);
-    switch ((int)transform) {
+    switch ((int32_t)transform) {
         case D3DTS_WORLD:
             s_renderState.world = m2.Transpose();
             s_renderStateChanged |= (unsigned)WORLD_CHANGED;
@@ -714,12 +714,12 @@ inline Vector4 DX8Wrapper::Convert_Color(unsigned color)
     return col;
 }
 
-inline unsigned int DX8Wrapper::Convert_Color(const Vector3 &color, const float alpha)
+inline uint32_t DX8Wrapper::Convert_Color(const Vector3 &color, const float alpha)
 {
     return D3DCOLOR_COLORVALUE(color.X, color.Y, color.Z, alpha);
 }
 
-inline unsigned int DX8Wrapper::Convert_Color(const Vector4 &color)
+inline uint32_t DX8Wrapper::Convert_Color(const Vector4 &color)
 {
     return D3DCOLOR_COLORVALUE(color.X, color.Y, color.Z, color.W);
 }
@@ -732,7 +732,7 @@ inline void DX8Wrapper::Clamp_Color(Vector4 &color)
     color.W = std::clamp(color.W, 0.f, 1.f);
 }
 
-inline unsigned int DX8Wrapper::Convert_Color_Clamp(const Vector4 &color)
+inline uint32_t DX8Wrapper::Convert_Color_Clamp(const Vector4 &color)
 {
     Vector4 clamped_color = color;
     DX8Wrapper::Clamp_Color(clamped_color);
@@ -750,7 +750,7 @@ inline void DX8Wrapper::Set_Light(unsigned index, const D3DLIGHT8 *light)
     s_renderStateChanged |= (LIGHT0_CHANGED << index);
 }
 
-inline void DX8Wrapper::Set_DX8_Light(int index, D3DLIGHT8 *light)
+inline void DX8Wrapper::Set_DX8_Light(int32_t index, D3DLIGHT8 *light)
 {
     if (light) {
         s_lightChanges++;
@@ -849,7 +849,7 @@ inline void DX8Wrapper::Set_Render_State(const RenderStateStruct &state)
         s_renderState.index_buffer->Release_Engine_Ref();
     }
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
         }
@@ -862,7 +862,7 @@ inline void DX8Wrapper::Set_Render_State(const RenderStateStruct &state)
         s_renderState.index_buffer->Add_Engine_Ref();
     }
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Add_Engine_Ref();
         }
@@ -875,13 +875,13 @@ inline void DX8Wrapper::Release_Render_State()
         s_renderState.index_buffer->Release_Engine_Ref();
     }
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             s_renderState.vertex_buffers[i]->Release_Engine_Ref();
         }
     }
 
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    for (int32_t i = 0; i < VERTEX_BUFFERS; i++) {
         if (s_renderState.vertex_buffers[i]) {
             Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
         }

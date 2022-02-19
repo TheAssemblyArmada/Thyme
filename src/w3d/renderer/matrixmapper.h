@@ -47,10 +47,10 @@ protected:
 public:
     virtual ~MatrixMapperClass() override {}
     TextureMapperClass *Clone() const override;
-    void Apply(int uv_array_index) override;
+    void Apply(int32_t uv_array_index) override;
     virtual void Calculate_Texture_Matrix(Matrix4 &matrix) override;
 
-    MatrixMapperClass(int stage = 0);
+    MatrixMapperClass(int32_t stage = 0);
     void Update_View_To_Pixel_Transform(float texsize);
     void Set_Texture_Transform(const Matrix4 &view_to_texture, float texsize);
     void Compute_Texture_Coordinate(const Vector3 &point, Vector3 *set_stq);

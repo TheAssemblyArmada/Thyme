@@ -17,7 +17,7 @@
 
 using std::toupper;
 
-template<typename T, int N> inline constexpr Array<T, N> calculateCRC()
+template<typename T, int32_t N> inline constexpr Array<T, N> calculateCRC()
 {
     Array<T, N> lookup;
     const unsigned long POLYNOMIAL = 0xEDB88320;
@@ -45,7 +45,7 @@ void CRC::Add_CRC(uint8_t byte)
     m_crc = byte + (m_crc >> 31) + 2 * m_crc;
 }
 
-void CRC::Compute_CRC(void const *data, int bytes)
+void CRC::Compute_CRC(void const *data, int32_t bytes)
 {
     if (data == nullptr) {
         return;
@@ -53,7 +53,7 @@ void CRC::Compute_CRC(void const *data, int bytes)
 
     uint8_t const *buff = static_cast<uint8_t const *>(data);
 
-    for (int i = 0; i < bytes; ++i) {
+    for (int32_t i = 0; i < bytes; ++i) {
         Add_CRC(buff[i]);
     }
 }
@@ -63,7 +63,7 @@ uint32_t CRC::Memory(void const *data, size_t bytes, uint32_t crc)
     uint8_t const *buf = static_cast<uint8_t const *>(data);
     crc = ~crc;
 
-    for (unsigned int i = 0; i < bytes; ++i) {
+    for (uint32_t i = 0; i < bytes; ++i) {
         crc = m_table[buf[i] ^ (uint8_t)crc] ^ (crc >> 8);
     }
 

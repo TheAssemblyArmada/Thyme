@@ -159,12 +159,12 @@ public:
 
 private:
     ConditionType m_conditionType;
-    int m_numParams;
+    int32_t m_numParams;
     Parameter *m_params[MAX_CONDITION_PARAMETERS];
     Condition *m_nextAndCondition;
-    int m_hasWarnings;
-    int m_customData;
-    int m_unkInt1;
+    int32_t m_hasWarnings;
+    int32_t m_customData;
+    int32_t m_unkInt1;
 };
 
 class OrCondition : public MemoryPoolObject

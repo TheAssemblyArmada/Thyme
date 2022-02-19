@@ -709,111 +709,111 @@ inline void W3d_Shader_Reset(W3dShaderStruct *s)
     s->pad[0] = 0;
 }
 
-inline int W3d_Shader_Get_Depth_Compare(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Depth_Compare(const W3dShaderStruct *s)
 {
     return s->DepthCompare;
 }
 
-inline int W3d_Shader_Get_Depth_Mask(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Depth_Mask(const W3dShaderStruct *s)
 {
     return s->DepthMask;
 }
 
-inline int W3d_Shader_Get_Dest_Blend_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Dest_Blend_Func(const W3dShaderStruct *s)
 {
     return s->DestBlend;
 }
 
-inline int W3d_Shader_Get_Pri_Gradient(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Pri_Gradient(const W3dShaderStruct *s)
 {
     return s->PriGradient;
 }
 
-inline int W3d_Shader_Get_Sec_Gradient(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Sec_Gradient(const W3dShaderStruct *s)
 {
     return s->SecGradient;
 }
 
-inline int W3d_Shader_Get_Src_Blend_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Src_Blend_Func(const W3dShaderStruct *s)
 {
     return s->SrcBlend;
 }
 
-inline int W3d_Shader_Get_Texturing(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Texturing(const W3dShaderStruct *s)
 {
     return s->Texturing;
 }
 
-inline int W3d_Shader_Get_Detail_Color_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Detail_Color_Func(const W3dShaderStruct *s)
 {
     return s->DetailColorFunc;
 }
 
-inline int W3d_Shader_Get_Detail_Alpha_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Detail_Alpha_Func(const W3dShaderStruct *s)
 {
     return s->DetailAlphaFunc;
 }
 
-inline int W3d_Shader_Get_Alpha_Test(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Alpha_Test(const W3dShaderStruct *s)
 {
     return s->AlphaTest;
 }
 
-inline int W3d_Shader_Get_Post_Detail_Color_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Post_Detail_Color_Func(const W3dShaderStruct *s)
 {
     return s->PostDetailColorFunc;
 }
 
-inline int W3d_Shader_Get_Post_Detail_Alpha_Func(const W3dShaderStruct *s)
+inline int32_t W3d_Shader_Get_Post_Detail_Alpha_Func(const W3dShaderStruct *s)
 {
     return s->PostDetailAlphaFunc;
 }
 
-inline void W3d_Shader_Set_Depth_Compare(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Depth_Compare(W3dShaderStruct *s, int32_t val)
 {
     s->DepthCompare = val;
 }
-inline void W3d_Shader_Set_Depth_Mask(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Depth_Mask(W3dShaderStruct *s, int32_t val)
 {
     s->DepthMask = val;
 }
-inline void W3d_Shader_Set_Dest_Blend_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Dest_Blend_Func(W3dShaderStruct *s, int32_t val)
 {
     s->DestBlend = val;
 }
-inline void W3d_Shader_Set_Pri_Gradient(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Pri_Gradient(W3dShaderStruct *s, int32_t val)
 {
     s->PriGradient = val;
 }
-inline void W3d_Shader_Set_Sec_Gradient(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Sec_Gradient(W3dShaderStruct *s, int32_t val)
 {
     s->SecGradient = val;
 }
-inline void W3d_Shader_Set_Src_Blend_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Src_Blend_Func(W3dShaderStruct *s, int32_t val)
 {
     s->SrcBlend = val;
 }
-inline void W3d_Shader_Set_Texturing(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Texturing(W3dShaderStruct *s, int32_t val)
 {
     s->Texturing = val;
 }
-inline void W3d_Shader_Set_Detail_Color_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Detail_Color_Func(W3dShaderStruct *s, int32_t val)
 {
     s->DetailColorFunc = val;
 }
-inline void W3d_Shader_Set_Detail_Alpha_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Detail_Alpha_Func(W3dShaderStruct *s, int32_t val)
 {
     s->DetailAlphaFunc = val;
 }
-inline void W3d_Shader_Set_Alpha_Test(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Alpha_Test(W3dShaderStruct *s, int32_t val)
 {
     s->AlphaTest = val;
 }
-inline void W3d_Shader_Set_Post_Detail_Color_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Post_Detail_Color_Func(W3dShaderStruct *s, int32_t val)
 {
     s->PostDetailColorFunc = val;
 }
-inline void W3d_Shader_Set_Post_Detail_Alpha_Func(W3dShaderStruct *s, int val)
+inline void W3d_Shader_Set_Post_Detail_Alpha_Func(W3dShaderStruct *s, int32_t val)
 {
     s->PostDetailAlphaFunc = val;
 }

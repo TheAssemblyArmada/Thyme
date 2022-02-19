@@ -48,34 +48,34 @@ void SegmentedLineClass::Reset_Line()
     m_lineRenderer.Reset_Line();
 }
 
-void SegmentedLineClass::Set_Points(unsigned int num_points, Vector3 *locs)
+void SegmentedLineClass::Set_Points(uint32_t num_points, Vector3 *locs)
 {
     m_pointLocations.Delete_All();
     Invalidate_Cached_Bounding_Volumes();
     if (num_points != 0 && locs != nullptr) {
-        for (unsigned int i = 0; i < num_points; ++i) {
+        for (uint32_t i = 0; i < num_points; ++i) {
             m_pointLocations.Add(locs[i]);
         }
     }
 }
 
-int SegmentedLineClass::Get_Num_Points()
+int32_t SegmentedLineClass::Get_Num_Points()
 {
     return m_pointLocations.Count();
 }
 
-void SegmentedLineClass::Set_Point_Location(unsigned int point_idx, const Vector3 &location)
+void SegmentedLineClass::Set_Point_Location(uint32_t point_idx, const Vector3 &location)
 {
-    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
+    if (point_idx < static_cast<uint32_t>(m_pointLocations.Count())) {
         m_pointLocations[point_idx] = location;
     }
 
     Invalidate_Cached_Bounding_Volumes();
 }
 
-void SegmentedLineClass::Get_Point_Location(unsigned int point_idx, Vector3 &loc)
+void SegmentedLineClass::Get_Point_Location(uint32_t point_idx, Vector3 &loc)
 {
-    if (point_idx < static_cast<unsigned int>(m_pointLocations.Count())) {
+    if (point_idx < static_cast<uint32_t>(m_pointLocations.Count())) {
         loc = m_pointLocations[point_idx];
     } else {
         loc = Vector3(0, 0, 0);
@@ -87,7 +87,7 @@ void SegmentedLineClass::Add_Point(const Vector3 &location)
     m_pointLocations.Add(location);
 }
 
-void SegmentedLineClass::Delete_Point(unsigned int point_idx)
+void SegmentedLineClass::Delete_Point(uint32_t point_idx)
 {
     m_pointLocations.Delete(point_idx);
 }
@@ -147,22 +147,22 @@ Vector2 SegmentedLineClass::Get_UV_Offset_Rate() const
     return m_lineRenderer.Get_UV_Offset_Rate();
 }
 
-int SegmentedLineClass::Is_Merge_Intersections() const
+int32_t SegmentedLineClass::Is_Merge_Intersections() const
 {
     return m_lineRenderer.Is_Merge_Intersections();
 }
 
-int SegmentedLineClass::Is_Freeze_Random() const
+int32_t SegmentedLineClass::Is_Freeze_Random() const
 {
     return m_lineRenderer.Is_Freeze_Random();
 }
 
-int SegmentedLineClass::Is_Sorting_Disabled() const
+int32_t SegmentedLineClass::Is_Sorting_Disabled() const
 {
     return m_lineRenderer.Is_Sorting_Disabled();
 }
 
-int SegmentedLineClass::Are_End_Caps_Enabled() const
+int32_t SegmentedLineClass::Are_End_Caps_Enabled() const
 {
     return m_lineRenderer.Are_End_Caps_Enabled();
 }
@@ -209,9 +209,9 @@ void SegmentedLineClass::Set_Merge_Abort_Factor(float factor)
     m_lineRenderer.Set_Merge_Abort_Factor(factor);
 }
 
-void SegmentedLineClass::Set_Subdivision_Levels(unsigned int levels)
+void SegmentedLineClass::Set_Subdivision_Levels(uint32_t levels)
 {
-    m_maxSubdivisionLevels = std::min<unsigned int>(levels, 7);
+    m_maxSubdivisionLevels = std::min<uint32_t>(levels, 7);
     Invalidate_Cached_Bounding_Volumes();
 }
 
@@ -230,22 +230,22 @@ void SegmentedLineClass::Set_UV_Offset_Rate(const Vector2 &rate)
     m_lineRenderer.Set_UV_Offset_Rate(rate);
 }
 
-void SegmentedLineClass::Set_Merge_Intersections(int onoff)
+void SegmentedLineClass::Set_Merge_Intersections(int32_t onoff)
 {
     m_lineRenderer.Set_Merge_Intersections(onoff);
 }
 
-void SegmentedLineClass::Set_Freeze_Random(int onoff)
+void SegmentedLineClass::Set_Freeze_Random(int32_t onoff)
 {
     m_lineRenderer.Set_Freeze_Random(onoff);
 }
 
-void SegmentedLineClass::Set_Disable_Sorting(int onoff)
+void SegmentedLineClass::Set_Disable_Sorting(int32_t onoff)
 {
     m_lineRenderer.Set_Disable_Sorting(onoff);
 }
 
-void SegmentedLineClass::Set_End_Caps(int onoff)
+void SegmentedLineClass::Set_End_Caps(int32_t onoff)
 {
     m_lineRenderer.Set_End_Caps(onoff);
 }
@@ -255,7 +255,7 @@ RenderObjClass *SegmentedLineClass::Clone() const
     return new SegmentedLineClass(*this);
 }
 
-int SegmentedLineClass::Get_Num_Polys() const
+int32_t SegmentedLineClass::Get_Num_Polys() const
 {
     return 2 * (m_pointLocations.Count() - 1) * (2 * m_lineRenderer.Get_Current_Subdivision_Level());
 }
@@ -263,7 +263,7 @@ int SegmentedLineClass::Get_Num_Polys() const
 void SegmentedLineClass::Render(RenderInfoClass &rinfo)
 {
     if (Is_Not_Hidden_At_All()) {
-        int sort = 0;
+        int32_t sort = 0;
         if (!W3D::Is_Sorting_Enabled()) {
             sort = Get_Shader().Guess_Sort_Level();
         }
@@ -285,12 +285,12 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) cons
 void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 {
 
-    int count = m_pointLocations.Count();
+    int32_t count = m_pointLocations.Count();
     if (count >= 2) {
         Vector3 max_pos = m_pointLocations[0];
         Vector3 min_pos = m_pointLocations[0];
 
-        for (int i = 1; i < count; ++i) {
+        for (int32_t i = 1; i < count; ++i) {
             max_pos.Update_Max(m_pointLocations[i]);
             min_pos.Update_Min(m_pointLocations[i]);
         }
@@ -306,7 +306,7 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
             Vector3 max_pos_2 = midpoint;
             Vector3 min_pos_2 = midpoint;
 
-            for (int i = 1; i < count - 1; ++i) {
+            for (int32_t i = 1; i < count - 1; ++i) {
                 midpoint = (m_pointLocations[i] + m_pointLocations[i + 1]) * 0.5f;
                 max_pos_2.Update_Max(midpoint);
                 min_pos_2.Update_Min(midpoint);
@@ -332,7 +332,7 @@ void SegmentedLineClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 void SegmentedLineClass::Prepare_LOD(CameraClass &camera)
 {
     m_normalizedScreenArea = Get_Screen_Size(camera);
-    unsigned int level = m_lineRenderer.Get_Current_Subdivision_Level();
+    uint32_t level = m_lineRenderer.Get_Current_Subdivision_Level();
 
     if (level >= m_maxSubdivisionLevels) {
         level = m_maxSubdivisionLevels;
@@ -349,7 +349,7 @@ void SegmentedLineClass::Prepare_LOD(CameraClass &camera)
 
 void SegmentedLineClass::Increment_LOD()
 {
-    unsigned int level = m_lineRenderer.Get_Current_Subdivision_Level();
+    uint32_t level = m_lineRenderer.Get_Current_Subdivision_Level();
 
     level = std::min(level + 1, m_maxSubdivisionLevels);
 
@@ -358,7 +358,7 @@ void SegmentedLineClass::Increment_LOD()
 
 void SegmentedLineClass::Decrement_LOD()
 {
-    unsigned int level = m_lineRenderer.Get_Current_Subdivision_Level();
+    uint32_t level = m_lineRenderer.Get_Current_Subdivision_Level();
     if (level) {
         m_lineRenderer.Set_Current_Subdivision_Level(level - 1);
     }
@@ -392,21 +392,21 @@ float SegmentedLineClass::Get_Post_Increment_Value() const
     return p * m_normalizedScreenArea / poly2;
 }
 
-void SegmentedLineClass::Set_LOD_Level(int lod)
+void SegmentedLineClass::Set_LOD_Level(int32_t lod)
 {
     lod = lod < 0 ? 0 : lod;
-    if (lod >= (int)m_maxSubdivisionLevels) {
-        lod = (int)m_maxSubdivisionLevels;
+    if (lod >= (int32_t)m_maxSubdivisionLevels) {
+        lod = (int32_t)m_maxSubdivisionLevels;
     }
     m_lineRenderer.Set_Current_Subdivision_Level(lod);
 }
 
-int SegmentedLineClass::Get_LOD_Level() const
+int32_t SegmentedLineClass::Get_LOD_Level() const
 {
     return m_lineRenderer.Get_Current_Subdivision_Level();
 }
 
-int SegmentedLineClass::Get_LOD_Count() const
+int32_t SegmentedLineClass::Get_LOD_Count() const
 {
     return m_maxSubdivisionLevels;
 }
@@ -418,7 +418,7 @@ bool SegmentedLineClass::Cast_Ray(RayCollisionTestClass &raytest)
         bool retval = false;
         float fraction = 1.0f;
 
-        for (int i = 1; i < m_pointLocations.Count(); ++i) {
+        for (int32_t i = 1; i < m_pointLocations.Count(); ++i) {
             Vector3 curr[2];
             Matrix3D::Transform_Vector(m_transform, m_pointLocations[i - 1], &curr[0]);
             Matrix3D::Transform_Vector(m_transform, m_pointLocations[i], &curr[1]);

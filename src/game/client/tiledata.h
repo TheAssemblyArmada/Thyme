@@ -21,11 +21,11 @@
 class TileData : public RefCountClass
 {
 public:
-    static void Do_Mip(unsigned char *hi_res, int hi_row, unsigned char *lo_res);
+    static void Do_Mip(unsigned char *hi_res, int32_t hi_row, unsigned char *lo_res);
     unsigned char *Get_Data_Ptr() { return m_tileData; }
     void Update_Mips();
-    bool Has_RGB_Data_For_Width(int width);
-    unsigned char *Get_RGB_Data_For_Width(int width);
+    bool Has_RGB_Data_For_Width(int32_t width);
+    unsigned char *Get_RGB_Data_For_Width(int32_t width);
 
 protected:
     unsigned char m_tileData[16384];

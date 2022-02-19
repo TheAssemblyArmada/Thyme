@@ -71,7 +71,7 @@ public:
 
     const W3DTreeDrawModuleData *Get_W3D_Tree_Draw_Module_Data() const
     {
-        return (W3DTreeDrawModuleData *)Module::Get_Module_Data();
+        return static_cast<const W3DTreeDrawModuleData *>(Module::Get_Module_Data());
     }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);

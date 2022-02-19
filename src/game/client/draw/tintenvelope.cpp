@@ -145,5 +145,7 @@ void TintEnvelope::Xfer_Snapshot(Xfer *xfer)
 
     xfer->xferBool(&m_isTinted);
 
-    xfer->xferByte((int8_t *)&m_state);
+    static_assert(sizeof(TintState) == sizeof(int8_t));
+
+    xfer->xferByte(reinterpret_cast<int8_t *>(&m_state));
 }

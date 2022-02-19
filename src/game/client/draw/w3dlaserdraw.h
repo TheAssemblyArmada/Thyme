@@ -85,7 +85,7 @@ public:
 
     const W3DLaserDrawModuleData *Get_W3D_Laser_Draw_Module_Data() const
     {
-        return (W3DLaserDrawModuleData *)Module::Get_Module_Data();
+        return static_cast<const W3DLaserDrawModuleData *>(Module::Get_Module_Data());
     }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);

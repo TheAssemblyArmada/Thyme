@@ -90,7 +90,7 @@ void ModelConditionInfo::WeaponBarrelInfo::Set_Muzzle_Flash_Hidden(RenderObjClas
     }
 }
 
-void ModelConditionInfo::Preload_Assets(TimeOfDayType time_of_day, float scale)
+void ModelConditionInfo::Preload_Assets(TimeOfDayType time_of_day, float scale) const
 {
     if (!m_modelName.Is_Empty()) {
         g_theDisplay->Preload_Model_Assets(m_modelName);
@@ -678,7 +678,7 @@ void W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather(Drawable const 
     }
 }
 
-void W3DModelDrawModuleData::Preload_Assets(TimeOfDayType time_of_day, float scale)
+void W3DModelDrawModuleData::Preload_Assets(TimeOfDayType time_of_day, float scale) const
 {
     for (auto &model_condition : m_conditionStates) {
         model_condition.Preload_Assets(time_of_day, scale);
@@ -770,7 +770,7 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&ver, 1);
 
     for (auto &model_condition : m_conditionStates) {
-        xfer->xferByte((int8_t *)&model_condition.m_validStuff);
+        xfer->xferByte(&model_condition.m_validStuff);
 #ifdef GAME_DEBUG_STRUCTS
         xfer->xferAsciiString(&model_condition.m_description);
 #endif
@@ -778,7 +778,7 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
         if (model_condition.m_validStuff) {
             for (auto &bone_pair : model_condition.m_boneMap) {
                 xfer->xferInt(&bone_pair.second.index);
-                xfer->xferUser((void *)&bone_pair.second.transform, sizeof(bone_pair.second.transform));
+                xfer->xferUser(static_cast<void *>(&bone_pair.second.transform), sizeof(bone_pair.second.transform));
             }
 
             for (int j = 0; j < MAX_TURRETS; j++) {
@@ -788,7 +788,7 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
 
             for (int j = 0; j < WEAPONSLOT_COUNT; j++) {
                 for (auto &weapon_barrel : model_condition.m_weaponBarrelInfoVec[j]) {
-                    xfer->xferUser((void *)&weapon_barrel.m_weaponLaunchBoneTransform,
+                    xfer->xferUser(static_cast<void *>(&weapon_barrel.m_weaponLaunchBoneTransform),
                         sizeof(weapon_barrel.m_weaponLaunchBoneTransform));
                 }
             }
@@ -1731,7 +1731,7 @@ void W3DModelDraw::Handle_Client_Turret_Positioning()
 
 void W3DModelDraw::Handle_Client_Recoil()
 {
-    W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+    const W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
 
     if ((m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
         for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
@@ -2333,7 +2333,7 @@ bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> c
     const ModelConditionInfo *info = Find_Best_Info(flags);
 
     if (info) {
-        W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+        const W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
         info->Validate_Stuff(nullptr, Get_Drawable()->Get_Scale(), data->m_extraPublicBone);
         captainslog_dbgassert(info->m_transition == 0,
             "It is never legal to Get_Projectile_Launch_Offset from a Transition state (they vary on a per-client basis)... "
@@ -2791,7 +2791,7 @@ void W3DModelDraw::Rebuild_Weapon_RecoilInfo(ModelConditionInfo const *state)
 
 void W3DModelDraw::Preload_Assets(TimeOfDayType time_of_day)
 {
-    W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
+    const W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
 
     if (data) {
         data->Preload_Assets(time_of_day, Get_Drawable()->Get_Scale());

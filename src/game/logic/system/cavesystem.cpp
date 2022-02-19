@@ -123,7 +123,7 @@ bool CaveSystem::Can_Switch_Index_to_Index(size_t unk1, size_t unk2)
 }
 
 // zh: 0x004D5790 wb: 0x0076E766
-TunnelTracker *CaveSystem::Register_New_Cave(int index)
+TunnelTracker *CaveSystem::Register_New_Cave(int32_t index)
 {
     if (static_cast<uint32_t>(index) >= m_tunnelTrackerVector.size()) {
         m_tunnelTrackerVector.resize(index + 1, nullptr);

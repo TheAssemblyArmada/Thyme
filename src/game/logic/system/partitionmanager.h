@@ -175,13 +175,13 @@ public:
     void Unregister_Object(Object *object);
     void Register_Ghost_Object(GhostObject *object);
     void Unregister_Ghost_Object(GhostObject *object);
-    void Reveal_Map_For_Player(int playerIndex);
-    void Reveal_Map_For_Player_Permanently(int playerIndex);
-    void Undo_Reveal_Map_For_Player_Permanently(int playerIndex);
-    void Shroud_Map_For_Player(int playerIndex);
+    void Reveal_Map_For_Player(int32_t playerIndex);
+    void Reveal_Map_For_Player_Permanently(int32_t playerIndex);
+    void Undo_Reveal_Map_For_Player_Permanently(int32_t playerIndex);
+    void Shroud_Map_For_Player(int32_t playerIndex);
     void Refresh_Shroud_For_Local_Player();
-    CellShroudStatus Get_Shroud_Status_For_Player(int playerIndex, int x, int y) const;
-    CellShroudStatus Get_Shroud_Status_For_Player(int playerIndex, Coord3D const *loc) const;
+    CellShroudStatus Get_Shroud_Status_For_Player(int32_t playerIndex, int32_t x, int32_t y) const;
+    CellShroudStatus Get_Shroud_Status_For_Player(int32_t playerIndex, Coord3D const *loc) const;
 
     Object *Get_Closest_Object(Object const *obj,
         float maxDist,
@@ -221,13 +221,13 @@ public:
         Coord3D const &unk1, Coord3D const &unk2, float *unk3, float *unk4, Coord2D *unk5, Coord2D *unk6);
     bool Is_Clear_Line_Of_Sight_Terrain(Object const *unk1, Coord3D const &unk2, Object const *unk3, Coord3D const &unk4);
     float Get_Ground_Or_Structure_Height(float x, float y);
-    void Get_Most_Valuable_Location(int unk1, unsigned int unk2, ValueOrThreat unk3, Coord3D *loc);
+    void Get_Most_Valuable_Location(int32_t unk1, uint32_t unk2, ValueOrThreat unk3, Coord3D *loc);
     void Get_Nearest_Group_With_Value(
-        int unk1, unsigned int unk2, ValueOrThreat unk3, Coord3D const *unk4, int unk5, bool unk6, Coord3D *unk7);
+        int32_t unk1, uint32_t unk2, ValueOrThreat unk3, Coord3D const *unk4, int32_t unk5, bool unk6, Coord3D *unk7);
     void Store_Fogged_Cells(ShroudStatusStoreRestore &unk1, bool unk2) const;
     void Restore_Fogged_Cells(ShroudStatusStoreRestore const &unk1, bool unk2);
 
-    void World_To_Cell(float x, float y, int *xx, int *yy) const;
+    void World_To_Cell(float x, float y, int32_t *xx, int32_t *yy) const;
     int32_t World_To_Cell_Dist(float dist) const;
     void Get_Cell_Center_Pos(int32_t x, int32_t y, float &xx, float &yy) const;
     float Get_Cell_Size() const { return m_cellSize; }
@@ -249,9 +249,9 @@ protected:
         float *closestDistArg,
         Coord3D *closestDistVecArg);
     bool Try_Position(Coord3D const *center, float dist, float angle, FindPositionOptions const *options, Coord3D *result);
-    int Iterate_Cells_Along_Line(
-        Coord3D const &pos, Coord3D const &posOther, int (*proc)(PartitionCell *, void *), void *userData);
-    int Iterate_Cells_Breadth_First(Coord3D const *pos, int (*proc)(PartitionCell *, void *), void *userData);
+    int32_t Iterate_Cells_Along_Line(
+        Coord3D const &pos, Coord3D const &posOther, int32_t (*proc)(PartitionCell *, void *), void *userData);
+    int32_t Iterate_Cells_Breadth_First(Coord3D const *pos, int32_t (*proc)(PartitionCell *, void *), void *userData);
     void Remove_All_Dirty_Modules();
     void Remove_From_Dirty_Modules(PartitionData *data);
     void Shutdown();

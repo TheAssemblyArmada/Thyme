@@ -25,19 +25,19 @@
 
 Random4Class rand4;
 
-TextureMapperClass::TextureMapperClass(unsigned int stage) : m_stage(stage)
+TextureMapperClass::TextureMapperClass(uint32_t stage) : m_stage(stage)
 {
     if (m_stage >= MeshMatDescClass::MAX_TEX_STAGES) {
         m_stage = MeshMatDescClass::MAX_TEX_STAGES - 1;
     }
 }
 
-ScaleTextureMapperClass::ScaleTextureMapperClass(const Vector2 &scale, unsigned int stage) :
+ScaleTextureMapperClass::ScaleTextureMapperClass(const Vector2 &scale, uint32_t stage) :
     TextureMapperClass(stage), m_scale(scale)
 {
 }
 
-ScaleTextureMapperClass::ScaleTextureMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+ScaleTextureMapperClass::ScaleTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     TextureMapperClass(stage)
 {
     m_scale.U = ini.Get_Float(section, "UScale", 1.0f);
@@ -74,7 +74,7 @@ void ScaleTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &m)
 }
 
 LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(
-    const Vector2 &offset_per_sec, const Vector2 &initial_offset, bool clamp_fix, const Vector2 &scale, unsigned int stage) :
+    const Vector2 &offset_per_sec, const Vector2 &initial_offset, bool clamp_fix, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_lastUsedSyncTime(W3D::Get_Sync_Time()),
     m_initialUVOffset(initial_offset),
@@ -84,8 +84,7 @@ LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(
     m_uvOffsetDeltaPerMS = offset_per_sec * -0.001f;
 }
 
-LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(
-    const INIClass &ini, const char *section, unsigned int stage) :
+LinearOffsetTextureMapperClass::LinearOffsetTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
 
     ScaleTextureMapperClass(ini, section, stage), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {
@@ -143,17 +142,17 @@ void LinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &matrix)
 }
 
 GridTextureMapperClass::GridTextureMapperClass(
-    float fps, unsigned int gridwidth_log2, unsigned int last_frame, unsigned int frame_offset, unsigned int stage) :
+    float fps, uint32_t gridwidth_log2, uint32_t last_frame, uint32_t frame_offset, uint32_t stage) :
     TextureMapperClass(stage), m_lastFrame(last_frame), m_frameOffset(frame_offset)
 {
     Initialize(fps, gridwidth_log2);
 }
 
-GridTextureMapperClass::GridTextureMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+GridTextureMapperClass::GridTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     TextureMapperClass(stage)
 {
     float fps = ini.Get_Float(section, "FPS", 1.0f);
-    unsigned int gridwidth_log2 = ini.Get_Int(section, "Log2Width", 1);
+    uint32_t gridwidth_log2 = ini.Get_Int(section, "Log2Width", 1);
     m_lastFrame = ini.Get_Int(section, "Last", 0);
     m_frameOffset = ini.Get_Int(section, "Offset", 0);
     Initialize(fps, gridwidth_log2);
@@ -183,7 +182,7 @@ void GridTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     mat[1].Z = v_offset;
 }
 
-void GridTextureMapperClass::Apply(int uv_array_index)
+void GridTextureMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -206,15 +205,15 @@ void GridTextureMapperClass::Set_Frame_Per_Second(float fps)
     Initialize(fps, m_gridWidthLog2);
 }
 
-void GridTextureMapperClass::Initialize(float fps, unsigned int gridwidth_log2)
+void GridTextureMapperClass::Initialize(float fps, uint32_t gridwidth_log2)
 {
-    unsigned int grid_width = (1 << gridwidth_log2);
+    uint32_t grid_width = (1 << gridwidth_log2);
 
     if (m_lastFrame == 0) {
         m_lastFrame = (grid_width * grid_width);
     }
 
-    unsigned int offset = m_frameOffset % m_lastFrame;
+    uint32_t offset = m_frameOffset % m_lastFrame;
     m_frameOffset = offset;
     m_lastUsedSyncTime = W3D::Get_Sync_Time();
     m_gridWidthLog2 = gridwidth_log2;
@@ -226,11 +225,11 @@ void GridTextureMapperClass::Initialize(float fps, unsigned int gridwidth_log2)
         m_msPerFrame = 1;
     } else if (fps < 0.0f) {
         m_sign = -1;
-        m_msPerFrame = (unsigned int)(1000.0f / GameMath::Fabs(fps));
+        m_msPerFrame = (uint32_t)(1000.0f / GameMath::Fabs(fps));
         m_currentFrame = m_lastFrame - offset - 1;
     } else {
         m_sign = 1;
-        m_msPerFrame = (unsigned int)(1000.0f / GameMath::Fabs(fps));
+        m_msPerFrame = (uint32_t)(1000.0f / GameMath::Fabs(fps));
         m_currentFrame = offset;
     }
 
@@ -239,18 +238,18 @@ void GridTextureMapperClass::Initialize(float fps, unsigned int gridwidth_log2)
 
 void GridTextureMapperClass::Update_Temporal_State()
 {
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_remainder += delta;
     m_lastUsedSyncTime = now;
 
-    int new_frame = (int)m_currentFrame + ((int)(m_remainder / m_msPerFrame) * m_sign);
+    int32_t new_frame = (int32_t)m_currentFrame + ((int32_t)(m_remainder / m_msPerFrame) * m_sign);
     new_frame = new_frame % m_lastFrame;
 
     if (new_frame < 0) {
         m_currentFrame = m_lastFrame + new_frame;
     } else {
-        m_currentFrame = (unsigned int)new_frame;
+        m_currentFrame = (uint32_t)new_frame;
     }
 
     m_remainder = m_remainder % m_msPerFrame;
@@ -258,16 +257,16 @@ void GridTextureMapperClass::Update_Temporal_State()
 
 void GridTextureMapperClass::Calculate_UV_Offset(float *u_offset, float *v_offset)
 {
-    unsigned int row_mask = ~(0xFFFFFFFF << m_gridWidthLog2);
-    unsigned int col_mask = row_mask << m_gridWidthLog2;
-    unsigned int x = m_currentFrame & row_mask;
-    unsigned int y = (m_currentFrame & col_mask) >> m_gridWidthLog2;
+    uint32_t row_mask = ~(0xFFFFFFFF << m_gridWidthLog2);
+    uint32_t col_mask = row_mask << m_gridWidthLog2;
+    uint32_t x = m_currentFrame & row_mask;
+    uint32_t y = (m_currentFrame & col_mask) >> m_gridWidthLog2;
     *u_offset = x * m_ooGridWidth;
     *v_offset = y * m_ooGridWidth;
 }
 
 RotateTextureMapperClass::RotateTextureMapperClass(
-    float rad_per_sec, const Vector2 &center, const Vector2 &scale, unsigned int stage) :
+    float rad_per_sec, const Vector2 &center, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_currentAngle(0.0f),
     m_radiansPerMilliSec(rad_per_sec / 1000.0f),
@@ -276,7 +275,7 @@ RotateTextureMapperClass::RotateTextureMapperClass(
 {
 }
 
-RotateTextureMapperClass::RotateTextureMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+RotateTextureMapperClass::RotateTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     ScaleTextureMapperClass(ini, section, stage), m_currentAngle(0.0f), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {
     m_radiansPerMilliSec = 2 * GAMEMATH_PI * ini.Get_Float(section, "Speed", 0.1f) / 1000.0f;
@@ -295,8 +294,8 @@ RotateTextureMapperClass::RotateTextureMapperClass(const RotateTextureMapperClas
 
 void RotateTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
 
     m_currentAngle += m_radiansPerMilliSec * delta;
@@ -315,7 +314,7 @@ void RotateTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 }
 
 SineLinearOffsetTextureMapperClass::SineLinearOffsetTextureMapperClass(
-    const Vector3 &uafp, const Vector3 &vafp, const Vector2 &scale, unsigned int stage) :
+    const Vector3 &uafp, const Vector3 &vafp, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_uafp(uafp),
     m_vafp(vafp),
@@ -325,7 +324,7 @@ SineLinearOffsetTextureMapperClass::SineLinearOffsetTextureMapperClass(
 }
 
 SineLinearOffsetTextureMapperClass::SineLinearOffsetTextureMapperClass(
-    const INIClass &ini, const char *section, unsigned int stage) :
+    const INIClass &ini, const char *section, uint32_t stage) :
     ScaleTextureMapperClass(ini, section, stage), m_currentAngle(0.0f), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {
     m_uafp.X = ini.Get_Float(section, "UAmp", 1.0f);
@@ -348,8 +347,8 @@ SineLinearOffsetTextureMapperClass::SineLinearOffsetTextureMapperClass(const Sin
 
 void SineLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
 
     const float ms_to_radians = 2 * GAMEMATH_PI / 1000.0f;
@@ -367,7 +366,7 @@ void SineLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 }
 
 StepLinearOffsetTextureMapperClass::StepLinearOffsetTextureMapperClass(
-    const Vector2 &step, float steps_per_sec, bool clamp_fix, const Vector2 &scale, unsigned int stage) :
+    const Vector2 &step, float steps_per_sec, bool clamp_fix, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_step(step),
     m_stepsPerMilliSec(steps_per_sec / 1000.0f),
@@ -379,7 +378,7 @@ StepLinearOffsetTextureMapperClass::StepLinearOffsetTextureMapperClass(
 }
 
 StepLinearOffsetTextureMapperClass::StepLinearOffsetTextureMapperClass(
-    const INIClass &ini, const char *section, unsigned int stage) :
+    const INIClass &ini, const char *section, uint32_t stage) :
     ScaleTextureMapperClass(ini, section, stage),
     m_currentStep(0.0f, 0.0f),
     m_remainder(0),
@@ -404,12 +403,12 @@ StepLinearOffsetTextureMapperClass::StepLinearOffsetTextureMapperClass(const Ste
 
 void StepLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
 
     m_remainder += delta;
-    int num_steps = (int)(m_stepsPerMilliSec * m_remainder);
+    int32_t num_steps = (int32_t)(m_stepsPerMilliSec * m_remainder);
 
     if (num_steps != 0) {
         m_currentStep += m_step * (float)num_steps;
@@ -439,7 +438,7 @@ void StepLinearOffsetTextureMapperClass::Reset()
 }
 
 ZigZagLinearOffsetTextureMapperClass::ZigZagLinearOffsetTextureMapperClass(
-    const Vector2 &speed, float period, const Vector2 &scale, unsigned int stage) :
+    const Vector2 &speed, float period, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_speed(speed / 1000.0f),
     m_period(period * 1000.0f),
@@ -454,7 +453,7 @@ ZigZagLinearOffsetTextureMapperClass::ZigZagLinearOffsetTextureMapperClass(
 }
 
 ZigZagLinearOffsetTextureMapperClass::ZigZagLinearOffsetTextureMapperClass(
-    const INIClass &ini, const char *section, unsigned int stage) :
+    const INIClass &ini, const char *section, uint32_t stage) :
     ScaleTextureMapperClass(ini, section, stage), m_remainder(0), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {
     m_speed.U = ini.Get_Float(section, "UPerSec", 0.0f) / 1000.0f;
@@ -480,8 +479,8 @@ ZigZagLinearOffsetTextureMapperClass::ZigZagLinearOffsetTextureMapperClass(const
 
 void ZigZagLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
     m_remainder += delta;
 
@@ -489,7 +488,7 @@ void ZigZagLinearOffsetTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat
     float offset_v = 0.0f;
 
     if (m_period > 0.0f) {
-        int num_periods = (int)(m_remainder / m_period);
+        int32_t num_periods = (int32_t)(m_remainder / m_period);
         m_remainder -= num_periods * m_period;
 
         float time;
@@ -522,7 +521,7 @@ void ClassicEnvironmentMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     mat = Matrix4(0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void ClassicEnvironmentMapperClass::Apply(int uv_array_index)
+void ClassicEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -538,7 +537,7 @@ void EnvironmentMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     mat = Matrix4(0.5f, 0.0f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void EnvironmentMapperClass::Apply(int uv_array_index)
+void EnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -549,12 +548,12 @@ void EnvironmentMapperClass::Apply(int uv_array_index)
 #endif
 }
 
-EdgeMapperClass::EdgeMapperClass(unsigned int stage) :
+EdgeMapperClass::EdgeMapperClass(uint32_t stage) :
     TextureMapperClass(stage), m_lastUsedSyncTime(W3D::Get_Sync_Time()), m_vSpeed(0.0f), m_vOffset(0.0f), m_useReflect(false)
 {
 }
 
-EdgeMapperClass::EdgeMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+EdgeMapperClass::EdgeMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     TextureMapperClass(stage), m_lastUsedSyncTime(W3D::Get_Sync_Time()), m_vSpeed(0.0f), m_vOffset(0.0f), m_useReflect(false)
 {
     m_vSpeed = ini.Get_Float(section, "VPerSec", 0.0f);
@@ -573,7 +572,7 @@ EdgeMapperClass::EdgeMapperClass(const EdgeMapperClass &src) :
 
 void EdgeMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int now = W3D::Get_Sync_Time();
+    uint32_t now = W3D::Get_Sync_Time();
 
     float delta = (now - m_lastUsedSyncTime) * 0.001f;
     m_lastUsedSyncTime = now;
@@ -584,7 +583,7 @@ void EdgeMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     mat = Matrix4(0.0f, 0.0f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f, m_vOffset, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void EdgeMapperClass::Apply(int uv_array_index)
+void EdgeMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -605,7 +604,7 @@ void EdgeMapperClass::Reset()
     m_vOffset = 0.0f;
 }
 
-WSEnvMapperClass::WSEnvMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+WSEnvMapperClass::WSEnvMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     TextureMapperClass(stage), m_axis(AXIS_Z)
 {
     char axis[2];
@@ -663,7 +662,7 @@ void WSEnvMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 #endif
 }
 
-void WSClassicEnvironmentMapperClass::Apply(int uv_array_index)
+void WSClassicEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -674,7 +673,7 @@ void WSClassicEnvironmentMapperClass::Apply(int uv_array_index)
 #endif
 }
 
-void WSEnvironmentMapperClass::Apply(int uv_array_index)
+void WSEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -696,7 +695,7 @@ void GridClassicEnvironmentMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         del, 0.0f, 0.0f, u_offset + del, 0.0f, del, 0.0f, v_offset + del, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void GridClassicEnvironmentMapperClass::Apply(int uv_array_index)
+void GridClassicEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -718,7 +717,7 @@ void GridEnvironmentMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
         del, 0.0f, 0.0f, u_offset + del, 0.0f, del, 0.0f, v_offset + del, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void GridEnvironmentMapperClass::Apply(int uv_array_index)
+void GridEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -731,7 +730,7 @@ void GridEnvironmentMapperClass::Apply(int uv_array_index)
 
 void ScreenMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
-    unsigned int delta = W3D::Get_Sync_Time() - m_lastUsedSyncTime;
+    uint32_t delta = W3D::Get_Sync_Time() - m_lastUsedSyncTime;
     float del = (float)delta;
     float offset_u = m_currentUVOffset.X + m_uvOffsetDeltaPerMS.X * del;
     float offset_v = m_currentUVOffset.Y + m_uvOffsetDeltaPerMS.Y * del;
@@ -763,7 +762,7 @@ void ScreenMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
     m_lastUsedSyncTime = W3D::Get_Sync_Time();
 }
 
-void ScreenMapperClass::Apply(int uv_array_index)
+void ScreenMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -774,7 +773,7 @@ void ScreenMapperClass::Apply(int uv_array_index)
 #endif
 }
 
-RandomTextureMapperClass::RandomTextureMapperClass(float fps, const Vector2 &scale, unsigned int stage) :
+RandomTextureMapperClass::RandomTextureMapperClass(float fps, const Vector2 &scale, uint32_t stage) :
     ScaleTextureMapperClass(scale, stage),
     m_fpms(fps / 1000.0f),
     m_remainder(0),
@@ -784,7 +783,7 @@ RandomTextureMapperClass::RandomTextureMapperClass(float fps, const Vector2 &sca
     Randomize();
 }
 
-RandomTextureMapperClass::RandomTextureMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+RandomTextureMapperClass::RandomTextureMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     ScaleTextureMapperClass(ini, section, stage), m_remainder(0), m_lastUsedSyncTime(W3D::Get_Sync_Time())
 {
     m_fpms = ini.Get_Float(section, "FPS", 0.0f) / 1000.0f;
@@ -813,13 +812,13 @@ void RandomTextureMapperClass::Randomize()
 void RandomTextureMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
 {
 
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
     m_remainder += delta;
 
     if (m_fpms != 0.0f) {
-        int num_frames = (int)(m_remainder * m_fpms);
+        int32_t num_frames = (int32_t)(m_remainder * m_fpms);
 
         if (num_frames != 0) {
             Randomize();
@@ -855,7 +854,7 @@ BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(float rad_per_sec,
     const Vector2 &initial_offset,
     bool clamp_fix,
     const Vector2 &scale,
-    unsigned int stage) :
+    uint32_t stage) :
     LinearOffsetTextureMapperClass(offset_per_sec, initial_offset, clamp_fix, scale, stage),
     m_lastUsedSyncTime(W3D::Get_Sync_Time()),
     m_currentAngle(0.0f),
@@ -864,7 +863,7 @@ BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(float rad_per_sec,
 {
 }
 
-BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(INIClass &ini, const char *section, unsigned int stage) :
+BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(INIClass &ini, const char *section, uint32_t stage) :
     LinearOffsetTextureMapperClass(ini, section, stage), m_lastUsedSyncTime(W3D::Get_Sync_Time()), m_currentAngle(0.0f)
 {
     m_radiansPerSecond = 2 * GAMEMATH_PI * ini.Get_Float(section, "BumpRotation", 0.0f);
@@ -885,12 +884,12 @@ inline unsigned long F2DW(float f)
     return *((unsigned *)&f);
 }
 
-void BumpEnvTextureMapperClass::Apply(int uv_array_index)
+void BumpEnvTextureMapperClass::Apply(int32_t uv_array_index)
 {
     LinearOffsetTextureMapperClass::Apply(uv_array_index);
 
-    unsigned int now = W3D::Get_Sync_Time();
-    unsigned int delta = now - m_lastUsedSyncTime;
+    uint32_t now = W3D::Get_Sync_Time();
+    uint32_t delta = now - m_lastUsedSyncTime;
     m_lastUsedSyncTime = now;
 
     m_currentAngle += m_radiansPerSecond * delta * 0.001f;
@@ -907,7 +906,7 @@ void BumpEnvTextureMapperClass::Apply(int uv_array_index)
 #endif
 }
 
-GridWSEnvMapperClass::GridWSEnvMapperClass(const INIClass &ini, const char *section, unsigned int stage) :
+GridWSEnvMapperClass::GridWSEnvMapperClass(const INIClass &ini, const char *section, uint32_t stage) :
     GridTextureMapperClass(ini, section, stage), m_axis(AXIS_Z)
 {
     char axis[2];
@@ -1033,7 +1032,7 @@ void GridWSEnvMapperClass::Calculate_Texture_Matrix(Matrix4 &mat)
             1.0f);
 }
 
-void GridWSClassicEnvironmentMapperClass::Apply(int uv_array_index)
+void GridWSClassicEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);
@@ -1044,7 +1043,7 @@ void GridWSClassicEnvironmentMapperClass::Apply(int uv_array_index)
 #endif
 }
 
-void GridWSEnvironmentMapperClass::Apply(int uv_array_index)
+void GridWSEnvironmentMapperClass::Apply(int32_t uv_array_index)
 {
     Matrix4 mat(true);
     Calculate_Texture_Matrix(mat);

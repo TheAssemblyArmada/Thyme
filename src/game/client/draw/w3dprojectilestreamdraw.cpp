@@ -48,7 +48,7 @@ W3DProjectileStreamDraw::W3DProjectileStreamDraw(Thing *thing, ModuleData const 
 {
     m_texture = W3DAssetManager::Get_Instance()->Get_Texture(Get_W3D_Projectile_Stream_Draw_Module_Data()->m_texture);
 
-    for (int i = 0; i < MAX_SEGMENT_COUNT; i++) {
+    for (int32_t i = 0; i < MAX_SEGMENT_COUNT; i++) {
         m_allLines[i] = nullptr;
     }
 
@@ -57,7 +57,7 @@ W3DProjectileStreamDraw::W3DProjectileStreamDraw(Thing *thing, ModuleData const 
 
 W3DProjectileStreamDraw::~W3DProjectileStreamDraw()
 {
-    for (int i = 0; i < m_linesValid; i++) {
+    for (int32_t i = 0; i < m_linesValid; i++) {
         SegmentedLineClass *line = m_allLines[i];
 
         if (line != nullptr) {
@@ -87,13 +87,13 @@ void W3DProjectileStreamDraw::Do_Draw_Module(const Matrix3D *transform)
         const W3DProjectileStreamDrawModuleData *data = Get_W3D_Projectile_Stream_Draw_Module_Data();
 
         Vector3 all_points[MAX_SEGMENT_COUNT];
-        int points_used;
+        int32_t points_used;
         update->Get_All_Points(all_points, &points_used);
 
         Vector3 staging_points[MAX_SEGMENT_COUNT];
-        int lines_made = 0;
-        int num = 0;
-        unsigned int point_count = 0;
+        int32_t lines_made = 0;
+        int32_t num = 0;
+        uint32_t point_count = 0;
         Vector3 zero(0.0f, 0.0f, 0.0f);
 
         if (data->m_maxSegments != 0) {
@@ -113,9 +113,9 @@ void W3DProjectileStreamDraw::Do_Draw_Module(const Matrix3D *transform)
             point_count = 0;
         }
 
-        int lines = m_linesValid;
+        int32_t lines = m_linesValid;
 
-        for (int i = lines_made; i < lines; i++) {
+        for (int32_t i = lines_made; i < lines; i++) {
             if (m_allLines[i]->Peek_Scene() != nullptr) {
                 W3DDisplay::s_3DScene->Remove_Render_Object(m_allLines[i]);
             }
@@ -129,7 +129,7 @@ void W3DProjectileStreamDraw::Do_Draw_Module(const Matrix3D *transform)
 void W3DProjectileStreamDraw::Set_Fully_Obscured_By_Shroud(bool obscured)
 {
     if (obscured) {
-        for (int i = 0; i < m_linesValid; i++) {
+        for (int32_t i = 0; i < m_linesValid; i++) {
             SegmentedLineClass *line = m_allLines[i];
 
             if (line != nullptr) {
@@ -139,7 +139,7 @@ void W3DProjectileStreamDraw::Set_Fully_Obscured_By_Shroud(bool obscured)
             }
         }
     } else {
-        for (int i = 0; i < m_linesValid; i++) {
+        for (int32_t i = 0; i < m_linesValid; i++) {
             SegmentedLineClass *line = m_allLines[i];
 
             if (line != nullptr && line->Peek_Scene() == nullptr) {
@@ -166,7 +166,7 @@ void W3DProjectileStreamDraw::Load_Post_Process()
     DrawModule::Load_Post_Process();
 }
 
-void W3DProjectileStreamDraw::Make_Or_Update_Line(Vector3 *points, unsigned int point_count, int line_index)
+void W3DProjectileStreamDraw::Make_Or_Update_Line(Vector3 *points, uint32_t point_count, int32_t line_index)
 {
     bool new_line = false;
 

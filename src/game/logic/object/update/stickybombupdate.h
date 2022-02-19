@@ -42,12 +42,12 @@ public:
     virtual void Load_Post_Process() override;
     virtual UpdateSleepTime Update() override;
 
-    unsigned int Get_Die_Frame() const { return m_dieFrame; }
+    uint32_t Get_Die_Frame() const { return m_dieFrame; }
     bool Has_Die_Frame() const { return m_dieFrame != 0; }
     Object *Get_Target_Object() const { return g_theGameLogic->Find_Object_By_ID(m_targetID); }
 
 private:
     ObjectID m_targetID;
-    unsigned int m_dieFrame;
-    unsigned int m_unk;
+    uint32_t m_dieFrame;
+    uint32_t m_unk;
 };

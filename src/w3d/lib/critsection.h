@@ -177,7 +177,7 @@ private:
     CRITICAL_SECTION *m_handle;
 #endif
 
-    unsigned int m_locked;
+    uint32_t m_locked;
 };
 
 /**

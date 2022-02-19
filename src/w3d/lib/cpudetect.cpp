@@ -174,7 +174,7 @@ void Get_OS_Info(OSInfoStruct &os_info,
 
     switch (OSVersionPlatformId) {
         case VER_PLATFORM_WIN32_WINDOWS: {
-            for (int i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i) {
+            for (int32_t i = 0; i < sizeof(WindowsVersionTable) / sizeof(os_info); ++i) {
                 if (WindowsVersionTable[i].VersionMajor == OSVersionNumberMajor
                     && WindowsVersionTable[i].VersionMinor == OSVersionNumberMinor
                     && WindowsVersionTable[i].BuildMajor == build_major && WindowsVersionTable[i].BuildMinor == build_minor
@@ -391,7 +391,7 @@ void CPUDetectClass::Init_Processor_Speed()
     uint32_t speed1 = Calculate_Processor_Speed(ProcessorTicksPerSecond);
     uint32_t total_speed = speed1;
 
-    for (int i = 0; i < 5; ++i) {
+    for (int32_t i = 0; i < 5; ++i) {
         uint32_t speed2 = Calculate_Processor_Speed(ProcessorTicksPerSecond);
         float rel = float(speed1) / float(speed2);
 
@@ -1346,10 +1346,10 @@ void CPUDetectClass::Init_OS()
 #elif defined PLATFORM_OSX
     char str[256];
     size_t size = sizeof(str);
-    int ret = sysctlbyname("kern.osrelease", str, &size, NULL, 0);
-    int major;
-    int minor;
-    int build;
+    int32_t ret = sysctlbyname("kern.osrelease", str, &size, NULL, 0);
+    int32_t major;
+    int32_t minor;
+    int32_t build;
 
     sscanf(str, "%d.%d.%d", &major, &minor, &build);
 
@@ -1361,9 +1361,9 @@ void CPUDetectClass::Init_OS()
     struct utsname uts;
     uname(&uts);
 
-    int major;
-    int minor;
-    int build;
+    int32_t major;
+    int32_t minor;
+    int32_t build;
 
     sscanf(uts.release, "%d.%d.%d", &major, &minor, &build);
 

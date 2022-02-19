@@ -115,7 +115,7 @@ public:
     virtual void Set_Zoom_Limited(bool b);
     virtual bool Is_Zoom_Limited();
     virtual Drawable *Pick_Drawable(const ICoord2D *o, bool b, PickType type) = 0;
-    virtual int Iterate_Drawables_In_Region(IRegion2D *r, bool (*func)(Drawable *, void *), void *) = 0;
+    virtual int32_t Iterate_Drawables_In_Region(IRegion2D *r, bool (*func)(Drawable *, void *), void *) = 0;
     virtual void Get_Screen_Corner_World_Points_At_Z(
         Coord3D *top_left, Coord3D *top_right, Coord3D *bottom_left, Coord3D *bottom_right, float z);
     virtual void Set_Width(int32_t width) { m_width = width; }
@@ -128,12 +128,12 @@ public:
     virtual void Look_At(const Coord3D *pos);
     virtual void Init_Height_For_Map();
     virtual void Scroll_By(Coord2D *pos);
-    virtual void Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2);
-    virtual void Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2);
+    virtual void Move_Camera_To(const Coord3D *o, int32_t i1, int32_t i2, bool b, float f1, float f2);
+    virtual void Move_Camera_Along_Waypoint_Path(Waypoint *w, int32_t i1, int32_t i2, bool b, float f1, float f2);
     virtual bool Is_Camera_Movement_Finished();
     virtual void Camera_Mod_Final_Zoom(float f1, float f2, float f3);
-    virtual void Camera_Mod_Rolling_Average(int i);
-    virtual void Camera_Mod_Final_Time_Multiplier(int i);
+    virtual void Camera_Mod_Rolling_Average(int32_t i);
+    virtual void Camera_Mod_Final_Time_Multiplier(int32_t i);
     virtual void Camera_Mod_Final_Pitch(float f1, float f2, float f3);
     virtual void Camera_Mod_Freeze_Time();
     virtual void Camera_Mod_Freeze_Angle();
@@ -148,18 +148,18 @@ public:
     virtual bool Set_View_Filter_Mode(FilterModes mode);
     virtual void Set_View_Filter_Pos(const Coord3D *pos);
     virtual bool Set_View_Filter(FilterTypes filter);
-    virtual void Set_Fade_Parameters(int frames, int direction);
+    virtual void Set_Fade_Parameters(int32_t frames, int32_t direction);
     virtual void Set_3D_Wireframe_Mode(bool on);
-    virtual void Reset_Camera(const Coord3D *o, int i, float f1, float f2);
-    virtual void Rotate_Camera(float f1, int i, float f2, float f3);
-    virtual void Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2);
-    virtual void Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b);
+    virtual void Reset_Camera(const Coord3D *o, int32_t i, float f1, float f2);
+    virtual void Rotate_Camera(float f1, int32_t i, float f2, float f3);
+    virtual void Rotate_Camera_Toward_Object(ObjectID id, int32_t i1, int32_t i2, float f1, float f2);
+    virtual void Rotate_Camera_Toward_Position(const Coord3D *o, int32_t i, float f1, float f2, bool b);
     virtual bool Is_Time_Frozen();
-    virtual int Get_Time_Multiplier();
-    virtual void Set_Time_Multiplier(int multiplier);
+    virtual int32_t Get_Time_Multiplier();
+    virtual void Set_Time_Multiplier(int32_t multiplier);
     virtual void Set_Default_View(float f1, float f2, float f3);
-    virtual void Zoom_Camera(float f1, int i, float f2, float f3);
-    virtual void Pitch_Camera(float f1, int i, float f2, float f3);
+    virtual void Zoom_Camera(float f1, int32_t i, float f2, float f3);
+    virtual void Pitch_Camera(float f1, int32_t i, float f2, float f3);
     virtual void Set_Angle(float angle);
     virtual float Get_Angle();
     virtual void Set_Pitch(float pitch);
@@ -182,7 +182,7 @@ public:
     virtual void Set_Current_Height_Above_Ground(float height) { m_currentHeightAboveGround = height; }
     virtual void Set_Field_Of_View(float fov) { m_FOV = fov; }
     virtual float Get_Field_Of_View() { return m_FOV; }
-    virtual int World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
+    virtual int32_t World_To_Screen_Tri_Return(const Coord3D *o1, ICoord2D *o2) = 0;
     virtual void Screen_To_World(const ICoord2D *o1, Coord3D *o2) = 0;
     virtual void Screen_To_Terrain(const ICoord2D *o1, Coord3D *o2) = 0;
     virtual void Screen_To_World_At_Z(const ICoord2D *o1, Coord3D *o2, float f) = 0;

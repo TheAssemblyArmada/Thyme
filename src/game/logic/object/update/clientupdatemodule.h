@@ -29,5 +29,5 @@ public:
     virtual void Client_Update() = 0;
 
     static ModuleType Get_Module_Type() { return MODULE_CLIENT_UPDATE; }
-    static int Get_Interface_Mask() { return MODULEINTERFACE_CLIENT_UPDATE; }
+    static int32_t Get_Interface_Mask() { return MODULEINTERFACE_CLIENT_UPDATE; }
 };

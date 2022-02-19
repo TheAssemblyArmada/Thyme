@@ -77,14 +77,14 @@ private:
     Utf8String m_purchaseCommandSetRankEight;
     Utf8String m_specialPowerShortcutCommandSet;
     Utf8String m_specialPowerShortcutWinName;
-    int m_specialPowerShortcutButtonCount;
+    int32_t m_specialPowerShortcutButtonCount;
     Utf8String m_loadScreenMusic;
     Utf8String m_scoreScreenMusic;
     Utf8String m_armyTooltip;
     bool m_isObserver;
     bool m_isPlayableSide;
     bool m_oldFaction;
-    int m_intrinsicSciencePurchasePoints;
+    int32_t m_intrinsicSciencePurchasePoints;
     Utf8String m_scoreScreenImage;
     Utf8String m_loadScreenImage;
     Utf8String m_headWaterMark;
@@ -109,9 +109,9 @@ public:
     virtual void Reset() override {}
     virtual void Update() override {}
 
-    int Get_Template_Number_By_Name(Utf8String name);
+    int32_t Get_Template_Number_By_Name(Utf8String name);
     PlayerTemplate *Find_Player_Template(NameKeyType key);
-    PlayerTemplate *Get_Nth_Player_Template(int index);
+    PlayerTemplate *Get_Nth_Player_Template(int32_t index);
     void Get_All_Side_Strings(std::list<Utf8String> *list);
 
     static void Parse_Player_Template_Definition(INI *ini);

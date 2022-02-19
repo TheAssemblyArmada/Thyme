@@ -15,7 +15,7 @@
 #pragma once
 
 #if defined BUILD_WITH_CRASHPAD && defined _WIN32
-void __cdecl Crashpad_Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info);
+void __cdecl Crashpad_Dump_Exception_Info(uint32_t u, struct _EXCEPTION_POINTERS *e_info);
 #endif
 
 bool Setup_Crash_Handler();

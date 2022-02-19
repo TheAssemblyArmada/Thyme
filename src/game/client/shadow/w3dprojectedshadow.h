@@ -41,7 +41,7 @@ public:
     virtual ~W3DShadowTexture() override;
 
     virtual char const *Get_Key() override { return m_name; }
-    int Init(RenderObjClass *robj);
+    int32_t Init(RenderObjClass *robj);
     void Update_Bounds(Vector3 &light_pos, RenderObjClass *robj);
 
     const char *Get_Name() const { return m_name; }
@@ -91,9 +91,9 @@ public:
     W3DShadowTexture *Get_Texture(char const *name);
     bool Add_Texture(W3DShadowTexture *new_texture);
     void Invalidate_Cached_Light_Positions();
-    int Is_Missing(char const *name);
+    int32_t Is_Missing(char const *name);
     void Register_Missing(char const *name);
-    int Create_Texture(RenderObjClass *robj, char const *name);
+    int32_t Create_Texture(RenderObjClass *robj, char const *name);
 
 private:
     HashTableClass *m_texturePtrTable;
@@ -126,12 +126,12 @@ public:
     void Update_Projection_Parameters(Matrix3D const &camera_xform);
     void Update_Texture(Vector3 &light_pos);
 
-    W3DShadowTexture *Get_Texture(int index) { return m_shadowTexture[index]; }
+    W3DShadowTexture *Get_Texture(int32_t index) { return m_shadowTexture[index]; }
     TexProjectClass *Get_Shadow_Projector() { return m_shadowProjector; }
 
     void Set_Render_Object(RenderObjClass *robj) { m_robj = robj; }
     void Set_Obj_Pos_History(const Vector3 &pos) { m_lastObjPosition = pos; }
-    void Set_Texture(int i, W3DShadowTexture *texture) { m_shadowTexture[i] = texture; }
+    void Set_Texture(int32_t i, W3DShadowTexture *texture) { m_shadowTexture[i] = texture; }
 
 #ifdef GAME_DLL
     void Hook_Dtor() { W3DProjectedShadow::~W3DProjectedShadow(); }
@@ -146,7 +146,7 @@ private:
     bool m_allowWorldAlign;
     float m_offsetX;
     float m_offsetY;
-    int m_flags;
+    int32_t m_flags;
     friend class W3DProjectedShadowManager;
 };
 
@@ -176,8 +176,8 @@ public:
     void Remove_Shadow(W3DProjectedShadow *shadow);
     void Remove_All_Shadows();
 
-    int Render_Shadows(RenderInfoClass &rinfo);
-    int Render_Projected_Terrain_Shadow(W3DProjectedShadow *shadow, AABoxClass &box);
+    int32_t Render_Shadows(RenderInfoClass &rinfo);
+    int32_t Render_Projected_Terrain_Shadow(W3DProjectedShadow *shadow, AABoxClass &box);
 
     W3DProjectedShadow *Create_Decal_Shadow(Shadow::ShadowTypeInfo *shadow_info);
     void Queue_Decal(W3DProjectedShadow *shadow);
@@ -202,8 +202,8 @@ private:
     LightEnvironmentClass m_shadowLightEnv;
     SpecialRenderInfoClass *m_shadowContext;
     W3DShadowTextureManager *m_W3DShadowTextureManager;
-    int m_numDecalShadows;
-    int m_numProjectionShadows;
+    int32_t m_numDecalShadows;
+    int32_t m_numProjectionShadows;
 };
 
 #ifdef GAME_DLL

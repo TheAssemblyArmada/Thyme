@@ -173,7 +173,7 @@ void LaserUpdate::Init_Laser(Object const *source_obj,
     Coord3D const *start_pos,
     Coord3D const *end_pos,
     Utf8String master_bone,
-    int width)
+    int32_t width)
 {
     const LaserUpdateModuleData *data = Get_Laser_Update_Module_Data();
 
@@ -359,7 +359,7 @@ void LaserUpdate::Update_End_Pos()
     }
 }
 
-void LaserUpdate::Set_Decay_Frames(unsigned int frames)
+void LaserUpdate::Set_Decay_Frames(uint32_t frames)
 {
     if (frames != 0) {
         m_shrink = true;

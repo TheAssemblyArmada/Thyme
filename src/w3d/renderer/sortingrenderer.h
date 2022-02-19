@@ -34,6 +34,6 @@ public:
         unsigned short vertex_count);
     static void Flush();
     static void Deinit();
-    static void Set_Min_Vertex_Buffer_Size(unsigned int val);
+    static void Set_Min_Vertex_Buffer_Size(uint32_t val);
     static bool s_EnableTriangleDraw;
 };

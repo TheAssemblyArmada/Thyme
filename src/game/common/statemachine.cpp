@@ -18,9 +18,9 @@
 
 #ifdef GAME_DEBUG_STRUCTS
 #ifdef GAME_DLL
-extern unsigned int &s_theObjectIDToDebug;
+extern uint32_t &s_theObjectIDToDebug;
 #else
-extern unsigned int s_theObjectIDToDebug;
+extern uint32_t s_theObjectIDToDebug;
 #endif
 #endif
 
@@ -58,15 +58,15 @@ StateMachine *State::Get_Machine()
 }
 
 void State::Friend_On_Condition(
-    bool (*test)(State *, void *), unsigned int to_state_id, void *user_data, char const *description)
+    bool (*test)(State *, void *), uint32_t to_state_id, void *user_data, char const *description)
 {
     TransitionInfo info(test, to_state_id, user_data, description);
     m_transitions.push_back(info);
 }
 
-std::vector<unsigned int> *State::Get_ID_Vector() const
+std::vector<uint32_t> *State::Get_ID_Vector() const
 {
-    std::vector<unsigned int> *vector = new std::vector<unsigned int>;
+    std::vector<uint32_t> *vector = new std::vector<uint32_t>;
     vector->push_back(m_successStateID);
     vector->push_back(m_failureStateID);
 
@@ -79,14 +79,14 @@ std::vector<unsigned int> *State::Get_ID_Vector() const
 
 struct StIncrementer
 {
-    int *value;
-    StIncrementer(int *v) : value(v) { (*value)++; }
+    int32_t *value;
+    StIncrementer(int32_t *v) : value(v) { (*value)++; }
     ~StIncrementer() { (*value)--; }
 };
 
 StateReturnType State::Friend_Check_For_Sleep_Transitions(StateReturnType status)
 {
-    static int checkfortransitionsnum;
+    static int32_t checkfortransitionsnum;
     StIncrementer incrementer(&checkfortransitionsnum);
 
     if (checkfortransitionsnum >= 20) {
@@ -131,7 +131,7 @@ StateReturnType State::Friend_Check_For_Sleep_Transitions(StateReturnType status
 
 StateReturnType State::Friend_Check_For_Transitions(StateReturnType status)
 {
-    static int checkfortransitionsnum;
+    static int32_t checkfortransitionsnum;
     StIncrementer incrementer(&checkfortransitionsnum);
 
     if (checkfortransitionsnum >= 20) {
@@ -333,7 +333,7 @@ StateReturnType StateMachine::Reset_To_Default_State()
 
 StateReturnType StateMachine::Update_State_Machine()
 {
-    unsigned int frame = g_theGameLogic->Get_Frame();
+    uint32_t frame = g_theGameLogic->Get_Frame();
 
     if (m_updateFrame != 0 && frame < m_updateFrame) {
         if (m_currentState != nullptr) {
@@ -369,12 +369,12 @@ StateReturnType StateMachine::Update_State_Machine()
 }
 
 void StateMachine::Define_State(
-    unsigned int id, State *state, unsigned int success_id, unsigned int failure_id, StateConditionInfo const *conditions)
+    uint32_t id, State *state, uint32_t success_id, uint32_t failure_id, StateConditionInfo const *conditions)
 {
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_dbgassert(m_stateMap.find(id) == m_stateMap.end(), "duplicate state ID in statemachine %s", m_name.Str());
 #endif
-    m_stateMap.insert(std::pair<unsigned int, State *>(id, state));
+    m_stateMap.insert(std::pair<uint32_t, State *>(id, state));
     state->Friend_Set_ID(id);
     state->Friend_On_Success(success_id);
     state->Friend_On_Failure(failure_id);
@@ -389,7 +389,7 @@ void StateMachine::Define_State(
     }
 }
 
-State *StateMachine::Internal_Get_State(unsigned int id)
+State *StateMachine::Internal_Get_State(uint32_t id)
 {
     auto iter = m_stateMap.find(id);
     if (iter == m_stateMap.end()) {
@@ -407,7 +407,7 @@ State *StateMachine::Internal_Get_State(unsigned int id)
     return iter->second;
 }
 
-StateReturnType StateMachine::Set_State(unsigned int new_state_id)
+StateReturnType StateMachine::Set_State(uint32_t new_state_id)
 {
     if (!m_locked) {
         return Internal_Set_State(new_state_id);
@@ -425,7 +425,7 @@ StateReturnType StateMachine::Set_State(unsigned int new_state_id)
     }
 }
 
-StateReturnType StateMachine::Internal_Set_State(unsigned int new_state_id)
+StateReturnType StateMachine::Internal_Set_State(uint32_t new_state_id)
 {
     State *new_state = nullptr;
     m_updateFrame = 0;
@@ -443,7 +443,7 @@ StateReturnType StateMachine::Internal_Set_State(unsigned int new_state_id)
         new_state = Internal_Get_State(new_state_id);
 #ifdef GAME_DEBUG_STRUCTS
         if (Get_Wants_Debug_Output()) {
-            unsigned int id = INVALID_STATE_ID;
+            uint32_t id = INVALID_STATE_ID;
 
             if (m_currentState != nullptr) {
                 id = m_currentState->Get_ID();
@@ -492,7 +492,7 @@ StateReturnType StateMachine::Internal_Set_State(unsigned int new_state_id)
         return m_currentState->Friend_Check_For_Transitions(state);
     }
 
-    unsigned int frame = g_theGameLogic->Get_Frame();
+    uint32_t frame = g_theGameLogic->Get_Frame();
     m_updateFrame = state + frame;
     return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_updateFrame - frame));
 }
@@ -502,8 +502,8 @@ StateReturnType StateMachine::Init_Default_State()
 #ifdef GAME_DEBUG_STRUCTS
     for (auto &iter : m_stateMap) {
         State *state = iter.second;
-        unsigned int state_id = state->Get_ID();
-        std::vector<unsigned int> *vector = state->Get_ID_Vector();
+        uint32_t state_id = state->Get_ID();
+        std::vector<uint32_t> *vector = state->Get_ID_Vector();
 
         for (auto &sid : *vector) {
             if (sid != INVALID_STATE_ID && sid != EXIT_MACHINE_WITH_SUCCESS && sid != EXIT_MACHINE_WITH_FAILURE) {
@@ -601,7 +601,7 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     xfer->xferUnsignedInt(&m_updateFrame);
     xfer->xferUnsignedInt(&m_defaultStateID);
-    unsigned int id = Get_Current_State_ID();
+    uint32_t id = Get_Current_State_ID();
     xfer->xferUnsignedInt(&id);
 
     if (xfer->Get_Mode() == XFER_LOAD) {
@@ -612,19 +612,19 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
     xfer->xferBool(&has_state);
 
     if (has_state) {
-        int count = 0;
+        int32_t count = 0;
 
         for (auto &iter : m_stateMap) {
             count++;
         }
 
-        int count2 = count;
+        int32_t count2 = count;
         xfer->xferInt(&count2);
         captainslog_dbgassert(count2 == count, "State count mismatch - %d expected, %d read", count, count2);
 
         for (auto &iter : m_stateMap) {
             State *state = iter.second;
-            unsigned int state_id = state->Get_ID();
+            uint32_t state_id = state->Get_ID();
             xfer->xferUnsignedInt(&state_id);
 
             captainslog_dbgassert(
@@ -652,7 +652,7 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
     xfer->xferBool(&m_defaultStateInited);
 }
 
-unsigned int StateMachine::Get_Current_State_ID() const
+uint32_t StateMachine::Get_Current_State_ID() const
 {
     if (m_currentState != nullptr) {
         return m_currentState->Get_ID();

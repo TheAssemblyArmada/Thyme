@@ -13,8 +13,9 @@
  *            LICENSE
  */
 #pragma once
+#include <cstdint>
 
-template<int> class BitFlags;
+template<int32_t> class BitFlags;
 
 enum DisabledType
 {

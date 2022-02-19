@@ -220,7 +220,7 @@ void Xfer::xferSTLObjectIDVector(std::vector<ObjectID> *thing)
 
         ObjectID val;
 
-        for (int i = 0; i < count; ++i) {
+        for (int32_t i = 0; i < count; ++i) {
             xferObjectID(&val);
             thing->insert(thing->end(), val);
         }
@@ -245,7 +245,7 @@ void Xfer::xferSTLObjectIDList(std::list<ObjectID> *thing)
 
         ObjectID val;
 
-        for (int i = 0; i < count; ++i) {
+        for (int32_t i = 0; i < count; ++i) {
             xferObjectID(&val);
             thing->insert(thing->end(), val);
         }
@@ -274,7 +274,7 @@ void Xfer::xferSTLIntList(std::list<int32_t> *thing)
 
         int32_t val;
 
-        for (int i = 0; i < count; ++i) {
+        for (int32_t i = 0; i < count; ++i) {
             xferInt(&val);
             thing->insert(thing->end(), val);
         }
@@ -318,7 +318,7 @@ void Xfer::xferKindOf(KindOfType *thing)
             xferAsciiString(&kind);
             kindc = kind.Str();
 
-            int i = BitFlags<KINDOF_COUNT>::Get_Single_Bit_From_Name(kindc);
+            int32_t i = BitFlags<KINDOF_COUNT>::Get_Single_Bit_From_Name(kindc);
 
             if (i != -1) {
                 *thing = (KindOfType)i;
@@ -343,7 +343,7 @@ void Xfer::xferUpgradeMask(BitFlags<128> *thing)
 #endif
 }
 
-void Xfer::xferUser(void *thing, int size)
+void Xfer::xferUser(void *thing, int32_t size)
 {
     xferImplementation(thing, size);
 }

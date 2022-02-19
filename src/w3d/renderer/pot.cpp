@@ -14,12 +14,12 @@
  */
 #include "pot.h"
 
-int Find_POT(int i)
+int32_t Find_POT(int32_t i)
 {
     unsigned val = i;
-    int shift_bits = 0;
-    int total_sig_bits = 0;
-    int set_bits = 0;
+    int32_t shift_bits = 0;
+    int32_t total_sig_bits = 0;
+    int32_t set_bits = 0;
 
     while (val != 0) {
         if (val & 1) {

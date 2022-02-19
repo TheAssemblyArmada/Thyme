@@ -32,19 +32,19 @@ BufferedFileClass::~BufferedFileClass()
     Reset_Buffer();
 }
 
-int BufferedFileClass::Write(void const *buffer, int size)
+int32_t BufferedFileClass::Write(void const *buffer, int32_t size)
 {
     // DEBUG_ASSERT(m_bufferSize > 0);
 
     return RawFileClass::Write(buffer, size);
 }
 
-int BufferedFileClass::Read(void *buffer, int size)
+int32_t BufferedFileClass::Read(void *buffer, int32_t size)
 {
-    int read = 0;
+    int32_t read = 0;
 
     if (m_bufferAvailable > 0) {
-        int nsize = std::min(m_bufferAvailable, size);
+        int32_t nsize = std::min(m_bufferAvailable, size);
 
         memmove(buffer, m_buffer + m_bufferOffset, nsize);
         m_bufferAvailable -= nsize;
@@ -55,7 +55,7 @@ int BufferedFileClass::Read(void *buffer, int size)
     }
 
     if (size > 0) {
-        int bsize = m_bufferSize;
+        int32_t bsize = m_bufferSize;
 
         if (bsize == 0) {
             bsize = m_desiredBufferSize;
@@ -78,7 +78,7 @@ int BufferedFileClass::Read(void *buffer, int size)
         }
 
         if (m_bufferAvailable > 0) {
-            int nsize = std::min(m_bufferAvailable, size);
+            int32_t nsize = std::min(m_bufferAvailable, size);
             memcpy(buffer, m_buffer + m_bufferOffset, nsize);
             m_bufferAvailable -= nsize;
             m_bufferOffset += nsize;
@@ -89,14 +89,14 @@ int BufferedFileClass::Read(void *buffer, int size)
     return read;
 }
 
-off_t BufferedFileClass::Seek(off_t offset, int whence)
+off_t BufferedFileClass::Seek(off_t offset, int32_t whence)
 {
     if (whence != FS_SEEK_CURRENT || offset < 0) {
         Reset_Buffer();
     }
 
     if (m_bufferAvailable != 0) {
-        int left = m_bufferAvailable;
+        int32_t left = m_bufferAvailable;
 
         if (left > offset) {
             left = offset;

@@ -14,4 +14,4 @@
  */
 #include "refcount.h"
 
-int RefCountClass::m_totalRefs = 0;
+int32_t RefCountClass::m_totalRefs = 0;

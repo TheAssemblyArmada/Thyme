@@ -27,8 +27,8 @@ public:
 private:
     Utf8String m_modelName;
     Utf8String m_textureName;
-    int m_moveOutwardTime;
-    unsigned int m_moveInwardTime;
+    int32_t m_moveOutwardTime;
+    uint32_t m_moveInwardTime;
     float m_moveOutwardDistanceFactor;
     float m_darkeningFactor;
     FXList *m_toppleFX;
@@ -40,7 +40,7 @@ private:
     float m_minimumToppleSpeed;
     bool m_killWhenFinishedToppling;
     bool m_doTopple;
-    unsigned int m_sinkTime;
+    uint32_t m_sinkTime;
     float m_sinkDistance;
     bool m_doShadow;
 };

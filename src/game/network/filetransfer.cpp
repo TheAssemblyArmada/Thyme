@@ -137,7 +137,7 @@ bool Do_Any_File_Transfers(GameInfo *gameinfo)
     return false;
 }
 
-bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int unkbool)
+bool Do_File_Transfer(Utf8String filename, MapTransferLoadScreen *screen, int32_t unkbool)
 {
     // TODO needs MapTransferLoadScreen
     return false;

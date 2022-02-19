@@ -57,7 +57,7 @@ DrawGroupInfo::DrawGroupInfo() :
 }
 
 /**
- * Custom int parser for DrawGroupInfo entries.
+ * Custom int32_t parser for DrawGroupInfo entries.
  * Was originally parseInt
  */
 void DrawGroupInfo::Parse_Int(INI *ini, void *formal, void *store, const void *user_data)

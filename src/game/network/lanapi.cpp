@@ -425,7 +425,7 @@ void LANAPI::On_Game_Start()
  *
  * 0x005F7D70
  */
-void LANAPI::On_Game_Start_Timer(int time)
+void LANAPI::On_Game_Start_Timer(int32_t time)
 {
     Utf16String format;
     Utf16String msg;
@@ -440,11 +440,11 @@ void LANAPI::On_Game_Start_Timer(int time)
     On_Chat(U_CHAR("SYSTEM"), m_localIP, msg, LANCHAT_SYSTEM);
 }
 
-void LANAPI::On_Game_Options(uint32_t player_addr, int player_slot, Utf8String options)
+void LANAPI::On_Game_Options(uint32_t player_addr, int32_t player_slot, Utf8String options)
 {
     // TODO Requires LANGameInfo, LANGameSlot, GameInfoToAsciiString
 #ifdef GAME_DLL
-    Call_Method<void, LANAPI, uint32_t, int, Utf8String>(
+    Call_Method<void, LANAPI, uint32_t, int32_t, Utf8String>(
         PICK_ADDRESS(0x005F84D0, 0), this, player_addr, player_slot, options);
 #endif
 }
@@ -477,11 +477,11 @@ LANGameInfo *LANAPI::Lookup_Game(Utf16String name)
 #endif
 }
 
-LANGameInfo *LANAPI::Lookup_Game_By_Offset(int offset)
+LANGameInfo *LANAPI::Lookup_Game_By_Offset(int32_t offset)
 {
     // TODO Requires LANGameInfo
 #ifdef GAME_DLL
-    return Call_Method<LANGameInfo *, LANAPI, int>(PICK_ADDRESS(0x0072B4C0, 0), this, offset);
+    return Call_Method<LANGameInfo *, LANAPI, int32_t>(PICK_ADDRESS(0x0072B4C0, 0), this, offset);
 #else
     return nullptr;
 #endif

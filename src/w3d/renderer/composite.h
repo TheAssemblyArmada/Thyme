@@ -37,7 +37,7 @@ public:
     virtual void Set_Name(const char *name) override;
     virtual const char *Get_Base_Model_Name() const override;
     virtual void Set_Base_Model_Name(const char *name) override;
-    virtual int Get_Num_Polys() const override;
+    virtual int32_t Get_Num_Polys() const override;
 
     virtual void Notify_Added(SceneClass *scene) override;
     virtual void Notify_Removed(SceneClass *scene) override;

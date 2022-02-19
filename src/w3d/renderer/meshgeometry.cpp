@@ -70,7 +70,7 @@ void MeshGeometryClass::Scale(const Vector3 &sc)
     captainslog_assert(m_vertex);
     Vector3 *vert = m_vertex->Get_Array();
 
-    for (int i = 0; i < m_vertexCount; i++) {
+    for (int32_t i = 0; i < m_vertexCount; i++) {
         vert[i].X *= sc.X;
         vert[i].Y *= sc.Y;
         vert[i].Z *= sc.Z;
@@ -220,7 +220,7 @@ MeshGeometryClass::~MeshGeometryClass()
     Reset_Geometry(0, 0);
 }
 
-void MeshGeometryClass::Reset_Geometry(int polycount, int vertcount)
+void MeshGeometryClass::Reset_Geometry(int32_t polycount, int32_t vertcount)
 {
     m_flags = 0;
     m_polyCount = 0;
@@ -309,7 +309,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const Vector3 &view_dir, SimpleDynVec
     const TriIndex *polys = Get_Polygon_Array();
     TriClass tri;
 
-    for (int poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
+    for (int32_t poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
         tri.V[0] = &(loc[polys[poly_counter][0]]);
         tri.V[1] = &(loc[polys[poly_counter][1]]);
         tri.V[2] = &(loc[polys[poly_counter][2]]);
@@ -331,7 +331,7 @@ void MeshGeometryClass::Generate_Rigid_APT(const OBBoxClass &local_box, SimpleDy
         const TriIndex *polys = Get_Polygon_Array();
         TriClass tri;
 
-        for (int poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
+        for (int32_t poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
             tri.V[0] = &(loc[polys[poly_counter][0]]);
             tri.V[1] = &(loc[polys[poly_counter][1]]);
             tri.V[2] = &(loc[polys[poly_counter][2]]);
@@ -355,7 +355,7 @@ void MeshGeometryClass::Generate_Rigid_APT(
         const TriIndex *polys = Get_Polygon_Array();
         TriClass tri;
 
-        for (int poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
+        for (int32_t poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
             tri.V[0] = &(loc[polys[poly_counter][0]]);
             tri.V[1] = &(loc[polys[poly_counter][1]]);
             tri.V[2] = &(loc[polys[poly_counter][2]]);
@@ -377,7 +377,7 @@ void MeshGeometryClass::Generate_Skin_APT(
     const TriIndex *polys = Get_Polygon_Array();
     TriClass tri;
 
-    for (int poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
+    for (int32_t poly_counter = 0; poly_counter < m_polyCount; poly_counter++) {
 
         tri.V[0] = &(world_vertex_locs[polys[poly_counter][0]]);
         tri.V[1] = &(world_vertex_locs[polys[poly_counter][1]]);
@@ -397,9 +397,9 @@ bool MeshGeometryClass::Contains(const Vector3 &point)
     float yes = 0.0f;
     float no = 0.0f;
 
-    for (int axis_dir = 0; axis_dir < 6; axis_dir++) {
+    for (int32_t axis_dir = 0; axis_dir < 6; axis_dir++) {
         unsigned char flags = TRI_RAYCAST_FLAG_NONE;
-        int intersections = Cast_Semi_Infinite_Axis_Aligned_Ray(point, axis_dir, flags);
+        int32_t intersections = Cast_Semi_Infinite_Axis_Aligned_Ray(point, axis_dir, flags);
 
         if (flags & TRI_RAYCAST_FLAG_START_IN_TRI) {
             return true;
@@ -503,9 +503,10 @@ bool MeshGeometryClass::Cast_World_Space_AABox(AABoxCollisionTestClass &boxtest,
     return hit;
 }
 
-int MeshGeometryClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_point, int axis_dir, unsigned char &flags)
+int32_t MeshGeometryClass::Cast_Semi_Infinite_Axis_Aligned_Ray(
+    const Vector3 &start_point, int32_t axis_dir, unsigned char &flags)
 {
-    int count = 0;
+    int32_t count = 0;
 
     if (m_cullTree) {
         count = m_cullTree->Cast_Semi_Infinite_Axis_Aligned_Ray(start_point, axis_dir, flags);
@@ -514,23 +515,23 @@ int MeshGeometryClass::Cast_Semi_Infinite_Axis_Aligned_Ray(const Vector3 &start_
         const Vector4 *plane = Get_Plane_Array();
         const TriIndex *polyverts = Get_Polygon_Array();
 
-        static const int axis_r[6] = { 0, 0, 1, 1, 2, 2 };
-        static const int axis_1[6] = { 1, 1, 2, 2, 0, 0 };
-        static const int axis_2[6] = { 2, 2, 0, 0, 1, 1 };
-        static const int direction[6] = { 1, 0, 1, 0, 1, 0 };
+        static const int32_t axis_r[6] = { 0, 0, 1, 1, 2, 2 };
+        static const int32_t axis_1[6] = { 1, 1, 2, 2, 0, 0 };
+        static const int32_t axis_2[6] = { 2, 2, 0, 0, 1, 1 };
+        static const int32_t direction[6] = { 1, 0, 1, 0, 1, 0 };
         captainslog_assert(axis_dir >= 0);
         captainslog_assert(axis_dir < 6);
 
         flags = TRI_RAYCAST_FLAG_NONE;
-        int poly_count = Get_Polygon_Count();
+        int32_t poly_count = Get_Polygon_Count();
 
-        for (int poly_counter = 0; poly_counter < poly_count; poly_counter++) {
+        for (int32_t poly_counter = 0; poly_counter < poly_count; poly_counter++) {
             const Vector3 &v0 = loc[polyverts[poly_counter][0]];
             const Vector3 &v1 = loc[polyverts[poly_counter][1]];
             const Vector3 &v2 = loc[polyverts[poly_counter][2]];
             const Vector4 &tri_plane = plane[poly_counter];
 
-            count += (unsigned int)Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(v0,
+            count += (uint32_t)Cast_Semi_Infinite_Axis_Aligned_Ray_To_Triangle(v0,
                 v1,
                 v2,
                 tri_plane,
@@ -630,7 +631,7 @@ bool MeshGeometryClass::Intersect_OBBox_Brute_Force(OBBoxIntersectionTestClass &
     const TriIndex *polyverts = Get_Polygon_Array();
     const Vector4 *norms = Get_Plane_Array();
 
-    for (int i = 0; i < Get_Polygon_Count(); i++) {
+    for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
@@ -645,7 +646,7 @@ bool MeshGeometryClass::Intersect_OBBox_Brute_Force(OBBoxIntersectionTestClass &
 
 bool MeshGeometryClass::Cast_Ray_Brute_Force(RayCollisionTestClass &raytest)
 {
-    int i;
+    int32_t i;
     TriClass tri;
     const Vector3 *loc = Get_Vertex_Array();
     const TriIndex *polyverts = Get_Polygon_Array();
@@ -672,13 +673,13 @@ bool MeshGeometryClass::Cast_Ray_Brute_Force(RayCollisionTestClass &raytest)
 bool MeshGeometryClass::Cast_AABox_Brute_Force(AABoxCollisionTestClass &boxtest)
 {
     TriClass tri;
-    int polyhit = -1;
+    int32_t polyhit = -1;
 
     const Vector3 *loc = Get_Vertex_Array();
     const TriIndex *polyverts = Get_Polygon_Array();
     const Vector4 *norms = Get_Plane_Array();
 
-    for (int i = 0; i < Get_Polygon_Count(); i++) {
+    for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
@@ -702,13 +703,13 @@ bool MeshGeometryClass::Cast_AABox_Brute_Force(AABoxCollisionTestClass &boxtest)
 bool MeshGeometryClass::Cast_OBBox_Brute_Force(OBBoxCollisionTestClass &boxtest)
 {
     TriClass tri;
-    int polyhit = -1;
+    int32_t polyhit = -1;
 
     const Vector3 *loc = Get_Vertex_Array();
     const TriIndex *polyverts = Get_Polygon_Array();
     const Vector4 *norms = Get_Plane_Array();
 
-    for (int i = 0; i < Get_Polygon_Count(); i++) {
+    for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
         tri.V[0] = &(loc[polyverts[i][0]]);
         tri.V[1] = &(loc[polyverts[i][1]]);
         tri.V[2] = &(loc[polyverts[i][2]]);
@@ -736,7 +737,7 @@ void MeshGeometryClass::Compute_Plane_Equations(Vector4 *peq)
     TriIndex *poly = m_poly->Get_Array();
     Vector3 *vert = m_vertex->Get_Array();
 
-    for (int pidx = 0; pidx < m_polyCount; pidx++) {
+    for (int32_t pidx = 0; pidx < m_polyCount; pidx++) {
         Vector3 a, b, normal;
         const Vector3 &p0 = vert[poly[pidx][0]];
 
@@ -765,7 +766,7 @@ void MeshGeometryClass::Compute_Vertex_Normals(Vector3 *vnorm)
     if (!shadeIx) {
         VectorProcessorClass::Clear(vnorm, m_vertexCount);
 
-        for (int pidx = 0; pidx < m_polyCount; pidx++) {
+        for (int32_t pidx = 0; pidx < m_polyCount; pidx++) {
             vnorm[poly[pidx].I].X += peq[pidx].X;
             vnorm[poly[pidx].I].Y += peq[pidx].Y;
             vnorm[poly[pidx].I].Z += peq[pidx].Z;
@@ -782,7 +783,7 @@ void MeshGeometryClass::Compute_Vertex_Normals(Vector3 *vnorm)
     } else {
         VectorProcessorClass::Clear(vnorm, m_vertexCount);
 
-        for (int pidx = 0; pidx < m_polyCount; pidx++) {
+        for (int32_t pidx = 0; pidx < m_polyCount; pidx++) {
             vnorm[shadeIx[poly[pidx].I]].X += peq[pidx].X;
             vnorm[shadeIx[poly[pidx].I]].Y += peq[pidx].Y;
             vnorm[shadeIx[poly[pidx].I]].Z += peq[pidx].Z;
@@ -796,7 +797,7 @@ void MeshGeometryClass::Compute_Vertex_Normals(Vector3 *vnorm)
             vnorm[shadeIx[poly[pidx].K]].Z += peq[pidx].Z;
         }
 
-        for (unsigned int vidx = 0; vidx < (unsigned int)m_vertexCount; vidx++) {
+        for (uint32_t vidx = 0; vidx < (uint32_t)m_vertexCount; vidx++) {
             if (shadeIx[vidx] == vidx) {
                 vnorm[vidx].Normalize();
             } else {
@@ -838,7 +839,7 @@ Vector3 *MeshGeometryClass::Get_Vert_Normals()
     return m_vertexNorm->Get_Array();
 }
 
-void MeshGeometryClass::Compute_Plane(int pidx, PlaneClass *set_plane) const
+void MeshGeometryClass::Compute_Plane(int32_t pidx, PlaneClass *set_plane) const
 {
     captainslog_assert(pidx >= 0);
     captainslog_assert(pidx < m_polyCount);
@@ -865,7 +866,7 @@ W3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass &cload)
 
     cload.Close_Chunk();
     char *tmpname;
-    int namelen;
+    int32_t namelen;
 
     Reset_Geometry(header.NumTris, header.NumVertices);
 
@@ -894,7 +895,7 @@ W3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass &cload)
     m_boundSphereRadius = header.SphRadius;
 
     if (header.Version >= 0x40001) {
-        int geometry_type = header.Attributes & W3D_MESH_FLAG_GEOMETRY_TYPE_MASK;
+        int32_t geometry_type = header.Attributes & W3D_MESH_FLAG_GEOMETRY_TYPE_MASK;
         switch (geometry_type) {
             case W3D_MESH_FLAG_GEOMETRY_TYPE_NORMAL:
                 break;
@@ -924,7 +925,7 @@ W3DErrorType MeshGeometryClass::Load_W3D(ChunkLoadClass &cload)
         uint16_t *links = Get_Bone_Links();
         captainslog_assert(links);
 
-        for (int bi = 0; bi < Get_Vertex_Count(); bi++) {
+        for (int32_t bi = 0; bi < Get_Vertex_Count(); bi++) {
             links[bi] += 1;
         }
     }
@@ -989,7 +990,7 @@ W3DErrorType MeshGeometryClass::Read_Vertices(ChunkLoadClass &cload)
     Vector3 *loc = m_vertex->Get_Array();
     captainslog_assert(loc);
 
-    for (int i = 0; i < Get_Vertex_Count(); i++) {
+    for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
 
         if (cload.Read(&vert, sizeof(W3dVectorStruct)) != sizeof(W3dVectorStruct)) {
             return W3D_ERROR_LOAD_FAILED;
@@ -1009,7 +1010,7 @@ W3DErrorType MeshGeometryClass::Read_Vertex_Normals(ChunkLoadClass &cload)
     Vector3 *mdlnorms = Get_Vert_Normals();
     captainslog_assert(mdlnorms);
 
-    for (int i = 0; i < m_vertexCount; i++) {
+    for (int32_t i = 0; i < m_vertexCount; i++) {
         if (cload.Read(&norm, sizeof(W3dVectorStruct)) != sizeof(W3dVectorStruct)) {
             return W3D_ERROR_LOAD_FAILED;
         }
@@ -1029,7 +1030,7 @@ W3DErrorType MeshGeometryClass::Read_Triangles(ChunkLoadClass &cload)
     Vector4 *peq = Get_Planes();
     uint8_t *surface_types = Get_Poly_Surface_Type_Array();
 
-    for (int i = 0; i < Get_Polygon_Count(); i++) {
+    for (int32_t i = 0; i < Get_Polygon_Count(); i++) {
 
         if (cload.Read(&tri, sizeof(W3dTriStruct)) != sizeof(W3dTriStruct)) {
             return W3D_ERROR_LOAD_FAILED;
@@ -1053,7 +1054,7 @@ W3DErrorType MeshGeometryClass::Read_Triangles(ChunkLoadClass &cload)
 
 W3DErrorType MeshGeometryClass::Read_User_Text(ChunkLoadClass &cload)
 {
-    unsigned int textlen = cload.Cur_Chunk_Length();
+    uint32_t textlen = cload.Cur_Chunk_Length();
 
     if (m_userText != nullptr) {
         return W3D_ERROR_OK;
@@ -1074,7 +1075,7 @@ W3DErrorType MeshGeometryClass::Read_Vertex_Influences(ChunkLoadClass &cload)
     uint16_t *links = Get_Bone_Links(true);
     captainslog_assert(links);
 
-    for (int i = 0; i < Get_Vertex_Count(); i++) {
+    for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
         if (cload.Read(&vinf, sizeof(W3dVertInfStruct)) != sizeof(W3dVertInfStruct)) {
             return W3D_ERROR_LOAD_FAILED;
         }
@@ -1091,7 +1092,7 @@ W3DErrorType MeshGeometryClass::Read_Vertex_Shade_Indices(ChunkLoadClass &cload)
     uint32_t *shade_index = Get_Shade_Indices(true);
     uint32_t si;
 
-    for (int i = 0; i < Get_Vertex_Count(); i++) {
+    for (int32_t i = 0; i < Get_Vertex_Count(); i++) {
         if (cload.Read(&si, sizeof(uint32_t)) != sizeof(uint32_t)) {
             return W3D_ERROR_LOAD_FAILED;
         }
@@ -1102,17 +1103,17 @@ W3DErrorType MeshGeometryClass::Read_Vertex_Shade_Indices(ChunkLoadClass &cload)
 
 void MeshGeometryClass::Get_Deformed_Vertices(Vector3 *dst_vert, Vector3 *dst_norm, const HTreeClass *htree)
 {
-    int vertex_count = Get_Vertex_Count();
+    int32_t vertex_count = Get_Vertex_Count();
     Vector3 *src_vert = m_vertex->Get_Array();
     Vector3 *src_norm = m_vertexNorm->Get_Array();
     uint16_t *bonelink = m_vertexBoneLink->Get_Array();
 
-    for (int vi = 0; vi < vertex_count;) {
+    for (int32_t vi = 0; vi < vertex_count;) {
         const Matrix3D &tm = htree->Get_Transform(bonelink[vi]);
         Matrix3D mytm = tm;
 
-        int idx = bonelink[vi];
-        int cnt;
+        int32_t idx = bonelink[vi];
+        int32_t cnt;
 
         for (cnt = vi; cnt < vertex_count; cnt++) {
             if (idx != bonelink[cnt]) {
@@ -1132,7 +1133,7 @@ void MeshGeometryClass::Get_Deformed_Vertices(Vector3 *dst_vert, const HTreeClas
     Vector3 *src_vert = m_vertex->Get_Array();
     uint16_t *bonelink = m_vertexBoneLink->Get_Array();
 
-    for (int vi = 0; vi < Get_Vertex_Count(); vi++) {
+    for (int32_t vi = 0; vi < Get_Vertex_Count(); vi++) {
         const Matrix3D &tm = htree->Get_Transform(bonelink[vi]);
         Matrix3D::Transform_Vector(tm, src_vert[vi], &(dst_vert[vi]));
     }
@@ -1144,15 +1145,15 @@ void MeshGeometryClass::Get_Deformed_Screenspace_Vertices(
     Matrix4 prj = rinfo.m_camera.Get_Projection_Matrix() * rinfo.m_camera.Get_View_Matrix() * mesh_tm;
 
     Vector3 *src_vert = m_vertex->Get_Array();
-    int vertex_count = Get_Vertex_Count();
+    int32_t vertex_count = Get_Vertex_Count();
 
     if (Get_Flag(SKIN) && m_vertexBoneLink && htree) {
         uint16_t *bonelink = m_vertexBoneLink->Get_Array();
 
-        for (int vi = 0; vi < vertex_count;) {
-            int idx = bonelink[vi];
+        for (int32_t vi = 0; vi < vertex_count;) {
+            int32_t idx = bonelink[vi];
             Matrix4 tm = prj * htree->Get_Transform(idx);
-            int cnt;
+            int32_t cnt;
 
             for (cnt = vi; cnt < vertex_count; cnt++) {
                 if (idx != bonelink[cnt]) {

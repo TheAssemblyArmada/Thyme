@@ -60,7 +60,7 @@ ModuleType Module::Get_Module_Type()
     return MODULE_DEFAULT;
 }
 
-int Module::Get_Interface_Mask()
+int32_t Module::Get_Interface_Mask()
 {
     return 0;
 }

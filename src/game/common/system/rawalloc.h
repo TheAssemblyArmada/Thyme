@@ -26,7 +26,7 @@
 /**
  * @brief Allocates a block of memory, contents will be zeroed.
  */
-inline void *Raw_Allocate(int bytes)
+inline void *Raw_Allocate(int32_t bytes)
 {
     void *r = GlobalAlloc(GMEM_ZEROINIT | GMEM_FIXED, bytes);
 
@@ -42,7 +42,7 @@ inline void *Raw_Allocate(int bytes)
 /**
  * @brief Allocates a block of memory, contents will be random.
  */
-inline void *Raw_Allocate_No_Zero(int bytes)
+inline void *Raw_Allocate_No_Zero(int32_t bytes)
 {
     void *r = GlobalAlloc(GMEM_FIXED, bytes);
 
@@ -69,7 +69,7 @@ inline void Raw_Free(void *memory)
 /**
  * @brief Allocates a block of memory, contents will be zeroed.
  */
-inline void *Raw_Allocate(int bytes)
+inline void *Raw_Allocate(int32_t bytes)
 {
     void *r = calloc(1, bytes);
 
@@ -85,7 +85,7 @@ inline void *Raw_Allocate(int bytes)
 /**
  * @brief Allocates a block of memory, contents will be random.
  */
-inline void *Raw_Allocate_No_Zero(int bytes)
+inline void *Raw_Allocate_No_Zero(int32_t bytes)
 {
     void *r = malloc(bytes);
 
@@ -108,18 +108,18 @@ inline void Raw_Free(void *memory)
 }
 #endif
 
-inline int Round_Up_4(int number)
+inline int32_t Round_Up_4(int32_t number)
 {
     return (number + 3) & (~3);
 } // For 4byte alignment
-inline int Round_Up_8(int number)
+inline int32_t Round_Up_8(int32_t number)
 {
     return (number + 7) & (~7);
 } // For 8bytes alignment
 /**
  * @brief Rounds a number up to a multiple of the architecture word size.
  */
-inline int Round_Up_Word_Size(int number)
+inline int32_t Round_Up_Word_Size(int32_t number)
 {
     return (number + sizeof(void *) - 1) & (~(sizeof(void *) - 1));
 } // For machine wordsize alignment

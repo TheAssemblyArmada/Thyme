@@ -25,8 +25,8 @@ extern bool &g_creatingWindow;
 extern HGDIOBJ &g_splashImage;
 extern HINSTANCE &g_applicationHInstance;
 
-// This will eventually be replaced by a standard int main(int arc, char *argv[]) function
-int __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
+// This will eventually be replaced by a standard int32_t main(int32_t arc, char *argv[]) function
+int32_t __stdcall Main_Func(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int32_t nCmdShow);
 
 #else
 #ifdef PLATFORM_WINDOWS
@@ -40,4 +40,4 @@ extern bool g_gameNotFullscreen;
 extern bool g_creatingWindow;
 #endif
 
-int main(int argc, char *argv[]);
+int32_t main(int32_t argc, char *argv[]);

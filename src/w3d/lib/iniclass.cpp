@@ -71,7 +71,7 @@ INISection::~INISection()
 
 INIEntry *INISection::Find_Entry(const char *entry) const
 {
-    int crc;
+    int32_t crc;
 
     if (entry != nullptr && (crc = CRC(entry), m_entryIndex.Is_Present(crc))) {
         // captainslog_trace("Fetching entry %s with CRC %08x", entry, crc);
@@ -143,7 +143,7 @@ bool INIClass::Clear(const char *section, const char *entry)
     return true;
 }
 
-int INIClass::Load(FileClass &file)
+int32_t INIClass::Load(FileClass &file)
 {
     delete[] m_fileName;
     m_fileName = nstrdup(file.File_Name());
@@ -152,7 +152,7 @@ int INIClass::Load(FileClass &file)
     return Load(fstraw);
 }
 
-int INIClass::Load(Straw &straw)
+int32_t INIClass::Load(Straw &straw)
 {
     char buffer[MAX_LINE_LENGTH];
     // char section[64];
@@ -194,7 +194,7 @@ int INIClass::Load(Straw &straw)
         }
 
         while (!end_of_file) {
-            int count = Read_Line(straw, buffer, sizeof(buffer), end_of_file);
+            int32_t count = Read_Line(straw, buffer, sizeof(buffer), end_of_file);
             // Check we don't have another section.
             if (buffer[0] == '[' && strchr(buffer, ']')) {
                 break;
@@ -260,7 +260,7 @@ INISection *INIClass::Find_Section(const char *section) const
 {
     captainslog_assert(section != nullptr);
 
-    int crc;
+    int32_t crc;
 
     if (section != nullptr && (crc = CRC(section)) != 0 && m_sectionIndex->Is_Present(crc)) {
         return m_sectionIndex->Fetch_Index(crc);
@@ -283,7 +283,7 @@ INIEntry *INIClass::Find_Entry(const char *section, const char *entry) const
     return nullptr;
 }
 
-int INIClass::Entry_Count(const char *section) const
+int32_t INIClass::Entry_Count(const char *section) const
 {
     captainslog_assert(section != nullptr);
 
@@ -296,14 +296,14 @@ int INIClass::Entry_Count(const char *section) const
     return 0;
 }
 
-const char *INIClass::Get_Entry(const char *section, int index) const
+const char *INIClass::Get_Entry(const char *section, int32_t index) const
 {
     captainslog_assert(section != nullptr);
 
     INISection *sectionptr = Find_Section(section);
 
     if (sectionptr != nullptr) {
-        int count = index;
+        int32_t count = index;
 
         if (index < sectionptr->Get_Entry_Count()) {
             for (INIEntry *entryptr = sectionptr->m_entryList.First(); entryptr != nullptr; entryptr = entryptr->Next()) {
@@ -323,7 +323,8 @@ const char *INIClass::Get_Entry(const char *section, int index) const
     return nullptr;
 }
 
-int INIClass::Enumerate_Entries(const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number)
+int32_t INIClass::Enumerate_Entries(
+    const char *section, const char *entry_prefix, uint32_t start_number, uint32_t end_number)
 {
     char buffer[256];
     uint32_t i = start_number;
@@ -342,7 +343,7 @@ int INIClass::Enumerate_Entries(const char *section, const char *entry_prefix, u
     return i - start_number;
 }
 
-bool INIClass::Put_Int(const char *section, const char *entry, int value, int format)
+bool INIClass::Put_Int(const char *section, const char *entry, int32_t value, int32_t format)
 {
     char buffer[512];
 
@@ -357,7 +358,7 @@ bool INIClass::Put_Int(const char *section, const char *entry, int value, int fo
     return Put_String(section, entry, buffer);
 }
 
-int INIClass::Get_Int(const char *section, const char *entry, int defvalue) const
+int32_t INIClass::Get_Int(const char *section, const char *entry, int32_t defvalue) const
 {
     INIEntry *entryptr;
     const char *value;
@@ -381,7 +382,7 @@ int INIClass::Get_Int(const char *section, const char *entry, int defvalue) cons
     return defvalue;
 }
 
-bool INIClass::Put_Hex(const char *section, const char *entry, int value)
+bool INIClass::Put_Hex(const char *section, const char *entry, int32_t value)
 {
     char buffer[32];
 
@@ -390,7 +391,7 @@ bool INIClass::Put_Hex(const char *section, const char *entry, int value)
     return Put_String(section, entry, buffer);
 }
 
-int INIClass::Get_Hex(const char *section, const char *entry, int defvalue) const
+int32_t INIClass::Get_Hex(const char *section, const char *entry, int32_t defvalue) const
 {
     INIEntry *entryptr;
 
@@ -505,7 +506,8 @@ bool INIClass::Put_String(const char *section, const char *entry, const char *st
     return false;
 }
 
-int INIClass::Get_String(const char *section, const char *entry, const char *defvalue, char *buffer, int length) const
+int32_t INIClass::Get_String(
+    const char *section, const char *entry, const char *defvalue, char *buffer, int32_t length) const
 {
     INIEntry *entryptr;
     const char *value = defvalue;

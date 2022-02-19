@@ -35,7 +35,7 @@ void TeamsInfoRec::Add_Team(const Dict *team)
         TeamsInfo *ti = new TeamsInfo[m_numTeamsAllocated + TEAMINFO_GROWTH_STEP];
 
         // Copy existing data across to new array.
-        int i;
+        int32_t i;
         for (i = 0; i < m_numTeams; ++i) {
             ti[i] = m_teams[i];
         }
@@ -65,7 +65,7 @@ void TeamsInfoRec::Add_Team(const Dict *team)
 /**
  * @brief Removes a team by id.
  */
-void TeamsInfoRec::Remove_Team(int id)
+void TeamsInfoRec::Remove_Team(int32_t id)
 {
     // Check if ID is actually within our array.
     if (id < 0 || id >= m_numTeams || m_numTeams <= 0) {
@@ -88,13 +88,13 @@ void TeamsInfoRec::Remove_Team(int id)
 /**
  * @brief Finds team info by name.
  */
-TeamsInfo *TeamsInfoRec::Find_Team(Utf8String name, int *id)
+TeamsInfo *TeamsInfoRec::Find_Team(Utf8String name, int32_t *id)
 {
     if (m_numTeams <= 0) {
         return nullptr;
     }
 
-    for (int i = 0; i < m_numTeams; ++i) {
+    for (int32_t i = 0; i < m_numTeams; ++i) {
         NameKeyType key = g_teamNameKey.Key();
         Utf8String string = m_teams[i].Get_Dict()->Get_AsciiString(key);
 
@@ -116,7 +116,7 @@ TeamsInfo *TeamsInfoRec::Find_Team(Utf8String name, int *id)
 void TeamsInfoRec::Clear()
 {
     // Clear all the dicts
-    for (int i = 0; i < m_numTeamsAllocated; ++i) {
+    for (int32_t i = 0; i < m_numTeamsAllocated; ++i) {
         m_teams[i].Clear();
     }
 

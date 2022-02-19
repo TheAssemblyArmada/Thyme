@@ -55,7 +55,7 @@ public:
 
 private:
     DLListClass<Smudge> m_smudgeList;
-    int m_smudgeCount;
+    int32_t m_smudgeCount;
     static DLListClass<Smudge> s_freeSmudgeList;
     friend class SmudgeManager;
     friend class W3DSmudgeManager;
@@ -82,13 +82,13 @@ public:
     SmudgeSet *Add_Smudge_Set();
     void Remove_Smudge_Set(SmudgeSet &set);
 
-    int Get_Heat_Haze_Count() { return m_heatHazeCount; }
-    void Set_Heat_Haze_Count(int count) { m_heatHazeCount = count; }
+    int32_t Get_Heat_Haze_Count() { return m_heatHazeCount; }
+    void Set_Heat_Haze_Count(int32_t count) { m_heatHazeCount = count; }
     HardwareTestResult Get_Hardware_Test_Result() { return m_hardwareTestResult; }
 
 protected:
     HardwareTestResult m_hardwareTestResult;
     DLListClass<SmudgeSet> m_smudgeList;
     DLListClass<SmudgeSet> m_freeSmudgeList;
-    int m_heatHazeCount;
+    int32_t m_heatHazeCount;
 };

@@ -268,7 +268,7 @@ void Mouse::Create_Stream_Messages()
             m_displayTooltip = true;
         }
 
-        for (int i = 0; i < m_eventCount; ++i) {
+        for (int32_t i = 0; i < m_eventCount; ++i) {
             Process_Mouse_Event(i);
 
             // If the mouse has moved, set m_stillTime to be the time we got at function start to time elapsed time since
@@ -381,7 +381,7 @@ void Mouse::Create_Stream_Messages()
  *
  * 0x00403B40
  */
-void Mouse::Set_Position(int x, int y)
+void Mouse::Set_Position(int32_t x, int32_t y)
 {
     m_currMouse.pos.x = x;
     m_currMouse.pos.y = y;
@@ -417,7 +417,7 @@ void Mouse::Notify_Resolution_Change()
     m_tooltipDisplayString = g_theDisplayStringManager->New_Display_String();
 
     Utf8String font_name;
-    int font_size;
+    int32_t font_size;
     bool font_bold;
 
     if (g_theGlobalLanguage != nullptr && g_theGlobalLanguage->Tooltip().Name().Is_Not_Empty()) {
@@ -462,7 +462,7 @@ void Mouse::Update_Mouse_Data()
 {
     static bool _busy = false;
 
-    int events = 0;
+    int32_t events = 0;
 
     if (!_busy) {
         _busy = true;
@@ -495,7 +495,7 @@ void Mouse::Update_Mouse_Data()
  *
  * 0x004024E0
  */
-void Mouse::Process_Mouse_Event(int event_num)
+void Mouse::Process_Mouse_Event(int32_t event_num)
 {
     m_currMouse.left_event = 0;
     m_currMouse.right_event = 0;
@@ -599,7 +599,7 @@ void Mouse::Process_Mouse_Event(int event_num)
  *
  * 0x00402450
  */
-void Mouse::Move_Mouse(int x, int y, int absolute)
+void Mouse::Move_Mouse(int32_t x, int32_t y, int32_t absolute)
 {
     if (absolute) {
         m_currMouse.pos.x = x;
@@ -767,8 +767,8 @@ void Mouse::Draw_Cursor_Text() const
         uint32_t dcolor = Make_Color(
             m_cursorTextDropColor.red, m_cursorTextDropColor.green, m_cursorTextDropColor.blue, m_cursorTextDropColor.alpha);
 
-        int width;
-        int height;
+        int32_t width;
+        int32_t height;
         m_cursorTextDisplayString->Get_Size(&width, &height);
         m_cursorTextDisplayString->Draw(m_currMouse.pos.x - width / 2, m_currMouse.pos.y - height / 2, tcolor, dcolor);
     }

@@ -25,7 +25,7 @@ RayEffectSystem::RayEffectSystem()
 
 void RayEffectSystem::Init()
 {
-    for (int i = 0; i < MAX_RAY_EFFECTS; ++i) {
+    for (int32_t i = 0; i < MAX_RAY_EFFECTS; ++i) {
         m_effectData[i].draw = nullptr;
         m_effectData[i].startLoc.Zero();
         m_effectData[i].endLoc.Zero();
@@ -42,7 +42,7 @@ void RayEffectSystem::Add_Ray_Effect(Drawable const *drawable, Coord3D const *st
     RayEffectData *fx = nullptr;
 
     if (drawable != nullptr && start_loc != nullptr && end_loc != nullptr) {
-        for (int i = 0; i < MAX_RAY_EFFECTS; ++i) {
+        for (int32_t i = 0; i < MAX_RAY_EFFECTS; ++i) {
             if (m_effectData[i].draw == nullptr) {
                 fx = &m_effectData[i];
                 break;
@@ -81,7 +81,7 @@ RayEffectData *RayEffectSystem::Find_Entry(Drawable const *drawable)
 {
     RayEffectData *fx = nullptr;
 
-    for (int i = 0; i < MAX_RAY_EFFECTS; ++i) {
+    for (int32_t i = 0; i < MAX_RAY_EFFECTS; ++i) {
         if (m_effectData[i].draw == drawable) {
             fx = &m_effectData[i];
             break;

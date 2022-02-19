@@ -54,10 +54,9 @@ enum
 struct StateConditionInfo
 {
     bool (*test)(State *, void *);
-    unsigned int to_state_id;
+    uint32_t to_state_id;
     void *user_data;
-    StateConditionInfo(bool (*func)(State *, void *), unsigned int id, void *data) :
-        test(func), to_state_id(id), user_data(data)
+    StateConditionInfo(bool (*func)(State *, void *), uint32_t id, void *data) : test(func), to_state_id(id), user_data(data)
     {
     }
 };
@@ -70,12 +69,12 @@ public:
     struct TransitionInfo
     {
         bool (*test)(State *, void *);
-        unsigned int to_state_id;
+        uint32_t to_state_id;
         void *user_data;
 #ifdef GAME_DEBUG_STRUCTS
         const char *description;
 #endif
-        TransitionInfo(bool (*func)(State *, void *), unsigned int id, void *data, const char *desc) :
+        TransitionInfo(bool (*func)(State *, void *), uint32_t id, void *data, const char *desc) :
             test(func), to_state_id(id), user_data(data)
         {
 #ifdef GAME_DEBUG_STRUCTS
@@ -100,23 +99,22 @@ public:
 
     StateReturnType Friend_Check_For_Sleep_Transitions(StateReturnType status);
     StateReturnType Friend_Check_For_Transitions(StateReturnType status);
-    void Friend_On_Condition(
-        bool (*test)(State *, void *), unsigned int to_state_id, void *user_data, char const *description);
+    void Friend_On_Condition(bool (*test)(State *, void *), uint32_t to_state_id, void *user_data, char const *description);
     Object *Get_Machine_Owner();
     const Object *Get_Machine_Owner() const;
-    void Friend_On_Failure(unsigned int id) { m_failureStateID = id; }
-    void Friend_On_Success(unsigned int id) { m_successStateID = id; }
-    void Friend_Set_ID(unsigned int id) { m_ID = id; }
-    unsigned int Get_ID() const { return m_ID; }
-    std::vector<unsigned int> *Get_ID_Vector() const;
+    void Friend_On_Failure(uint32_t id) { m_failureStateID = id; }
+    void Friend_On_Success(uint32_t id) { m_successStateID = id; }
+    void Friend_Set_ID(uint32_t id) { m_ID = id; }
+    uint32_t Get_ID() const { return m_ID; }
+    std::vector<uint32_t> *Get_ID_Vector() const;
     Object *Get_Machine_Goal_Object();
     const Object *Get_Machine_Goal_Object() const;
     StateMachine *Get_Machine();
 
 private:
-    unsigned int m_ID;
-    unsigned int m_successStateID;
-    unsigned int m_failureStateID;
+    uint32_t m_ID;
+    uint32_t m_successStateID;
+    uint32_t m_failureStateID;
     std::vector<TransitionInfo> m_transitions;
     StateMachine *m_machine;
 #ifdef GAME_DEBUG_STRUCTS
@@ -140,29 +138,26 @@ public:
     virtual void Clear();
     virtual StateReturnType Reset_To_Default_State();
     virtual StateReturnType Init_Default_State();
-    virtual StateReturnType Set_State(unsigned int new_state_id);
+    virtual StateReturnType Set_State(uint32_t new_state_id);
     virtual void Halt();
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    void Define_State(unsigned int id,
-        State *state,
-        unsigned int success_id,
-        unsigned int failure_id,
-        StateConditionInfo const *conditions);
+    void Define_State(
+        uint32_t id, State *state, uint32_t success_id, uint32_t failure_id, StateConditionInfo const *conditions);
     Object *Get_Goal_Object();
     Object const *Get_Goal_Object() const;
     void Internal_Clear();
-    State *Internal_Get_State(unsigned int id);
+    State *Internal_Get_State(uint32_t id);
     void Internal_Set_Goal_Object(Object const *obj);
     void Internal_Set_Goal_Position(Coord3D const *pos);
-    StateReturnType Internal_Set_State(unsigned int new_state_id);
+    StateReturnType Internal_Set_State(uint32_t new_state_id);
     bool Is_Goal_Object_Destroyed() const;
     void Set_Goal_Object(Object const *obj);
     void Set_Goal_Position(Coord3D const *pos);
-    unsigned int Get_Current_State_ID() const;
+    uint32_t Get_Current_State_ID() const;
     const Coord3D *Get_Goal_Position() const;
     Object *Get_Owner();
     Object const *Get_Owner() const;
@@ -178,10 +173,10 @@ public:
 #endif
 
 private:
-    std::map<unsigned int, State *> m_stateMap;
+    std::map<uint32_t, State *> m_stateMap;
     Object *m_owner;
-    unsigned int m_updateFrame;
-    unsigned int m_defaultStateID;
+    uint32_t m_updateFrame;
+    uint32_t m_defaultStateID;
     State *m_currentState;
     ObjectID m_goalObjectID;
     Coord3D m_goalPosition;

@@ -14,7 +14,7 @@
  */
 #pragma once
 
-extern int MAX_FRAMES_AHEAD;
-extern int MIN_RUNAHEAD;
-extern int FRAMES_TO_KEEP;
-extern int FRAME_DATA_LENGTH;
+extern int32_t MAX_FRAMES_AHEAD;
+extern int32_t MIN_RUNAHEAD;
+extern int32_t FRAMES_TO_KEEP;
+extern int32_t FRAME_DATA_LENGTH;

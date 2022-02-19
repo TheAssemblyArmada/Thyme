@@ -39,7 +39,7 @@ public:
     virtual float Get_Max_Health() const = 0;
     virtual float Get_Initial_Health() const = 0;
     virtual float Get_Previous_Health() const = 0;
-    virtual unsigned int Get_Subdual_Damage_Heal_Rate() const = 0;
+    virtual uint32_t Get_Subdual_Damage_Heal_Rate() const = 0;
     virtual float Get_Subdual_Damage_Heal_Amount() const = 0;
 
     virtual bool Has_Any_Subdual_Damage() const = 0;
@@ -53,14 +53,14 @@ public:
     virtual void Clear_Armor_Set_Flag(ArmorSetType ast) = 0;
     virtual bool Test_Armor_Set_Flag(ArmorSetType ast) = 0;
     virtual DamageInfo const *Get_Last_Damage_Info() const = 0;
-    virtual unsigned int Get_Last_Damage_Timestamp() const = 0;
-    virtual unsigned int Get_Last_Healing_Timestamp() const = 0;
+    virtual uint32_t Get_Last_Damage_Timestamp() const = 0;
+    virtual uint32_t Get_Last_Healing_Timestamp() const = 0;
     virtual ObjectID Get_Clearable_Last_Attacker() const = 0;
     virtual void Clear_Last_Attacker() = 0;
 
     virtual bool Get_Front_Crushed() const = 0;
     virtual bool Get_Back_Crushed() const = 0;
-    virtual void Set_Initial_Health(int initial_percent) = 0;
+    virtual void Set_Initial_Health(int32_t initial_percent) = 0;
     virtual void Set_Max_Health(float max_health, MaxHealthChangeType) = 0;
     virtual void Set_Front_Crushed(bool v) = 0;
     virtual void Set_Back_Crushed(bool v) = 0;

@@ -21,7 +21,7 @@ class BezFwdIterator
 public:
     BezFwdIterator();
 
-    BezFwdIterator(int count, const BezierSegment *segment);
+    BezFwdIterator(int32_t count, const BezierSegment *segment);
 
     void Start();
 
@@ -32,8 +32,8 @@ public:
     void Next();
 
 private:
-    int m_index;
-    int m_count;
+    int32_t m_index;
+    int32_t m_count;
     BezierSegment m_segment;
     Coord3D m_point;
     Coord3D m_add0;

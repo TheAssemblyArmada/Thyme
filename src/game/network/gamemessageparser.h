@@ -23,18 +23,18 @@ class GameMessageParserArgumentType : public MemoryPoolObject
     IMPLEMENT_POOL(GameMessageParserArgumentType);
 
 public:
-    GameMessageParserArgumentType(ArgumentDataType type, int arg_count);
+    GameMessageParserArgumentType(ArgumentDataType type, int32_t arg_count);
     virtual ~GameMessageParserArgumentType() {}
 
     GameMessageParserArgumentType *Get_Next() { return m_next; }
     void Set_Next(GameMessageParserArgumentType *next) { m_next = next; }
-    int Get_Arg_Count() { return m_argCount; }
+    int32_t Get_Arg_Count() { return m_argCount; }
     ArgumentDataType Get_Type() { return m_type; }
 
 private:
     GameMessageParserArgumentType *m_next;
     ArgumentDataType m_type;
-    int m_argCount;
+    int32_t m_argCount;
 };
 
 class GameMessageParser : public MemoryPoolObject
@@ -49,8 +49,8 @@ public:
     GameMessageParser(GameMessage *msg);
 
     GameMessageParserArgumentType *Get_First_Arg_Type() { return m_first; }
-    void Add_Arg_Type(ArgumentDataType type, int arg_count);
-    int Get_Num_Types() { return m_argTypeCount; }
+    void Add_Arg_Type(ArgumentDataType type, int32_t arg_count);
+    int32_t Get_Num_Types() { return m_argTypeCount; }
 
 #ifdef GAME_DLL
     GameMessageParser *Hook_Ctor(GameMessage *msg) { return new (this) GameMessageParser(msg); }
@@ -60,5 +60,5 @@ public:
 private:
     GameMessageParserArgumentType *m_first;
     GameMessageParserArgumentType *m_last;
-    int m_argTypeCount;
+    int32_t m_argTypeCount;
 };

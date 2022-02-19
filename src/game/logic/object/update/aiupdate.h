@@ -79,14 +79,15 @@ public:
         std::vector<Coord3D> const *path, Object *ignore_object, CommandSourceType cmd_source, bool exit_production);
     virtual void Private_Follow_Path_Append(Coord3D const *pos, CommandSourceType cmd_source);
 
-    virtual void Private_Attack_Object(Object *victim, int max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Force_Attack_Object(Object *victim, int max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Guard_Retaliate(Coord3D const *pos, int max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Attack_Team(Team const *team, int max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Attack_Position(Coord3D const *pos, int max_shots_to_fire, CommandSourceType cmd_source);
-    virtual void Private_Attack_Move_To_Position(Coord3D const *pos, int max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Attack_Object(Object *victim, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Force_Attack_Object(Object *victim, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Guard_Retaliate(Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Attack_Team(Team const *team, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Attack_Position(Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
+    virtual void Private_Attack_Move_To_Position(
+        Coord3D const *pos, int32_t max_shots_to_fire, CommandSourceType cmd_source);
     virtual void Private_Attack_Follow_Waypoint_Path(
-        Waypoint const *way, int max_shots_to_fire, bool as_team, CommandSourceType cmd_source);
+        Waypoint const *way, int32_t max_shots_to_fire, bool as_team, CommandSourceType cmd_source);
 
     virtual void Private_Hunt(CommandSourceType cmd_source);
     virtual void Private_Repair(Object *obj, CommandSourceType cmd_source);
@@ -98,8 +99,8 @@ public:
     virtual void Private_Exit(Object *object_to_exit, CommandSourceType cmd_source);
     virtual void Private_Exit_Instantly(Object *object_to_exit, CommandSourceType cmd_source);
 
-    virtual void Private_Evacuate(int expose_stealth_units, CommandSourceType cmd_source);
-    virtual void Private_EvacuateInstantly(int expose_stealth_units, CommandSourceType cmd_source);
+    virtual void Private_Evacuate(int32_t expose_stealth_units, CommandSourceType cmd_source);
+    virtual void Private_EvacuateInstantly(int32_t expose_stealth_units, CommandSourceType cmd_source);
     virtual void Private_Execute_Railed_Transport(CommandSourceType cmd_source);
     virtual void Private_Go_Prone(DamageInfo const *damage_info, CommandSourceType cmd_source);
     virtual void Private_Guard_Tunnel_Network(GuardMode mode, CommandSourceType cmd_source);

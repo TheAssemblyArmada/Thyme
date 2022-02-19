@@ -125,7 +125,7 @@ void DynamicAudioEventInfo::Override_Loop_Flag(bool loop)
     }
 }
 
-void DynamicAudioEventInfo::Override_Loop_Count(int loop_count)
+void DynamicAudioEventInfo::Override_Loop_Count(int32_t loop_count)
 {
     m_overrideFlags.Set(OVERRIDE_LOOP_COUNT, 1);
     m_loopCount = loop_count;
@@ -155,7 +155,7 @@ void DynamicAudioEventInfo::Override_Min_Range(float range)
     m_minRange = range;
 }
 
-void DynamicAudioEventInfo::Override_Priority(int priority)
+void DynamicAudioEventInfo::Override_Priority(int32_t priority)
 {
     m_overrideFlags.Set(OVERRIDE_PRIORITY, 1);
     m_priority = priority;
@@ -170,13 +170,13 @@ void DynamicAudioEventInfo::Xfer_No_Name(Xfer *xfer)
         unsigned char flags;
         xfer->xferUnsignedByte(&flags);
 
-        for (int i = 0; i < OVERRIDE_COUNT; i++) {
+        for (int32_t i = 0; i < OVERRIDE_COUNT; i++) {
             m_overrideFlags.Set(i, ((1 << i) & flags) != 0);
         }
     } else {
 
         unsigned char flags = 0;
-        for (int i = 0; i < OVERRIDE_COUNT; i++) {
+        for (int32_t i = 0; i < OVERRIDE_COUNT; i++) {
             if (m_overrideFlags.Test(i)) {
                 flags |= 1 << i;
             }

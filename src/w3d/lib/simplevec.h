@@ -22,7 +22,7 @@
 template<typename T> class SimpleVecClass
 {
 public:
-    SimpleVecClass(int size = 0) : m_vector(nullptr), m_vectorMax(0)
+    SimpleVecClass(int32_t size = 0) : m_vector(nullptr), m_vectorMax(0)
     {
         if (size > 0) {
             Resize(size);
@@ -36,18 +36,18 @@ public:
             m_vectorMax = 0;
         }
     }
-    T &operator[](int index)
+    T &operator[](int32_t index)
     {
         captainslog_assert(index < m_vectorMax);
         return m_vector[index];
     }
-    T const &operator[](int index) const
+    T const &operator[](int32_t index) const
     {
         captainslog_assert(index < m_vectorMax);
         return m_vector[index];
     }
-    int Length() const { return m_vectorMax; }
-    virtual bool Resize(int newsize)
+    int32_t Length() const { return m_vectorMax; }
+    virtual bool Resize(int32_t newsize)
     {
         if (newsize == m_vectorMax) {
             return true;
@@ -55,7 +55,7 @@ public:
         if (newsize > 0) {
             T *newptr = new T[newsize];
             if (m_vector != nullptr) {
-                int copycount = (newsize < m_vectorMax) ? newsize : m_vectorMax;
+                int32_t copycount = (newsize < m_vectorMax) ? newsize : m_vectorMax;
                 std::memcpy(newptr, m_vector, copycount * sizeof(T));
                 delete[] m_vector;
                 m_vector = nullptr;
@@ -71,7 +71,7 @@ public:
         }
         return true;
     }
-    virtual bool Uninitialised_Grow(int newsize)
+    virtual bool Uninitialised_Grow(int32_t newsize)
     {
         if (newsize <= m_vectorMax) {
             return true;
@@ -92,7 +92,7 @@ public:
 
 protected:
     T *m_vector;
-    int m_vectorMax;
+    int32_t m_vectorMax;
 };
 
 template<typename T> class SimpleDynVecClass : public SimpleVecClass<T>
@@ -101,7 +101,7 @@ template<typename T> class SimpleDynVecClass : public SimpleVecClass<T>
     using SimpleVecClass<T>::m_vectorMax;
 
 public:
-    SimpleDynVecClass(int size = 0) : SimpleVecClass<T>(size), m_activeCount(0) {}
+    SimpleDynVecClass(int32_t size = 0) : SimpleVecClass<T>(size), m_activeCount(0) {}
     virtual ~SimpleDynVecClass(void)
     {
         if (m_vector != nullptr) {
@@ -109,18 +109,18 @@ public:
             m_vector = nullptr;
         }
     }
-    int Count(void) const { return m_activeCount; }
-    T &operator[](int index)
+    int32_t Count(void) const { return m_activeCount; }
+    T &operator[](int32_t index)
     {
         captainslog_assert(index < m_activeCount);
         return m_vector[index];
     }
-    T const &operator[](int index) const
+    T const &operator[](int32_t index) const
     {
         captainslog_assert(index < m_activeCount);
         return m_vector[index];
     }
-    virtual bool Resize(int newsize)
+    virtual bool Resize(int32_t newsize)
     {
         if (SimpleVecClass<T>::Resize(newsize)) {
             if (m_vectorMax < m_activeCount)
@@ -129,7 +129,7 @@ public:
         }
         return false;
     }
-    bool Add(T const &object, int new_size_hint = 0)
+    bool Add(T const &object, int32_t new_size_hint = 0)
     {
         if (m_activeCount >= m_vectorMax) {
             if (!Grow(new_size_hint)) {
@@ -139,16 +139,16 @@ public:
         (*this)[m_activeCount++] = object;
         return true;
     }
-    T *Add_Multiple(int number_to_add)
+    T *Add_Multiple(int32_t number_to_add)
     {
-        int index = m_activeCount;
+        int32_t index = m_activeCount;
         m_activeCount += number_to_add;
         if (m_activeCount >= m_vectorMax) {
             Grow(m_activeCount);
         }
         return &m_vector[index];
     }
-    bool Delete(int index, bool allow_shrink = true)
+    bool Delete(int32_t index, bool allow_shrink = true)
     {
         captainslog_assert(index < m_activeCount);
         if (index < m_activeCount - 1) {
@@ -162,13 +162,13 @@ public:
     }
     bool Delete(T const &object, bool allow_shrink = true)
     {
-        int id = Find_Index(object);
+        int32_t id = Find_Index(object);
         if (id != -1) {
             return Delete(id, allow_shrink);
         }
         return false;
     }
-    bool Delete_Range(int start, int count, bool allow_shrink = true)
+    bool Delete_Range(int32_t start, int32_t count, bool allow_shrink = true)
     {
         captainslog_assert(start >= 0);
         captainslog_assert(start <= m_activeCount - count);
@@ -197,9 +197,9 @@ public:
     const T *cend() const { return &(*this)[Count()]; }
 
 protected:
-    bool Grow(int new_size_hint)
+    bool Grow(int32_t new_size_hint)
     {
-        int new_size = std::max(m_vectorMax + m_vectorMax / 4, m_vectorMax + 4);
+        int32_t new_size = std::max(m_vectorMax + m_vectorMax / 4, m_vectorMax + 4);
         new_size = std::max(new_size, new_size_hint);
         return Resize(new_size);
     }
@@ -210,13 +210,13 @@ protected:
         }
         return true;
     }
-    int Find_Index(T const &object)
+    int32_t Find_Index(T const &object)
     {
-        for (int index = 0; index < Count(); index++) {
+        for (int32_t index = 0; index < Count(); index++) {
             if ((*this)[index] == object)
                 return index;
         }
         return -1;
     }
-    int m_activeCount;
+    int32_t m_activeCount;
 };

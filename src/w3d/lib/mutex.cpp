@@ -45,7 +45,7 @@ MutexClass::~MutexClass()
 /**
  * Performs the lock when entering a critical section of code. Private and is only called from the Lock object.
  */
-bool MutexClass::Lock(int time)
+bool MutexClass::Lock(int32_t time)
 {
 #ifdef PLATFORM_WINDOWS
     if (WaitForSingleObject(m_handle, time == WAIT_INFINITE ? INFINITE : time) != WAIT_OBJECT_0) {
@@ -56,7 +56,7 @@ bool MutexClass::Lock(int time)
 
     return true;
 #else
-    int err;
+    int32_t err;
 
     if (time == WAIT_INFINITE) {
         err = pthread_mutex_lock(&m_handle);

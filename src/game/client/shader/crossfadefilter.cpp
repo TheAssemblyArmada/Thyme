@@ -19,14 +19,14 @@
 #include <d3dx8.h>
 #endif
 
-int ScreenCrossFadeFilter::s_fadeFrames;
-int ScreenCrossFadeFilter::s_curFadeFrame;
-int ScreenCrossFadeFilter::s_fadeDirection;
+int32_t ScreenCrossFadeFilter::s_fadeFrames;
+int32_t ScreenCrossFadeFilter::s_curFadeFrame;
+int32_t ScreenCrossFadeFilter::s_fadeDirection;
 float ScreenCrossFadeFilter::s_curFadeValue;
 TextureClass *ScreenCrossFadeFilter::s_fadePatternTexture;
 bool ScreenCrossFadeFilter::s_skipRender;
 
-int ScreenCrossFadeFilter::Init()
+int32_t ScreenCrossFadeFilter::Init()
 {
     if (!g_theDisplay) {
         return 0;
@@ -51,7 +51,7 @@ int ScreenCrossFadeFilter::Init()
     return 1;
 }
 
-int ScreenCrossFadeFilter::Shutdown()
+int32_t ScreenCrossFadeFilter::Shutdown()
 {
     Ref_Ptr_Release(s_fadePatternTexture);
     return 1;
@@ -154,7 +154,7 @@ bool ScreenCrossFadeFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &
 #endif
 }
 
-int ScreenCrossFadeFilter::Set(FilterModes mode)
+int32_t ScreenCrossFadeFilter::Set(FilterModes mode)
 {
 #ifdef BUILD_WITH_D3D8
     if (mode <= 0) {

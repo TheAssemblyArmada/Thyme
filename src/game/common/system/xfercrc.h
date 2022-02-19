@@ -24,12 +24,12 @@ public:
 
     virtual void Open(Utf8String filename);
     virtual void Close() {}
-    virtual int Begin_Block() { return 0; }
+    virtual int32_t Begin_Block() { return 0; }
     virtual void End_Block() {}
-    virtual void Skip(int offset) {}
+    virtual void Skip(int32_t offset) {}
 
     virtual void xferSnapshot(SnapShot *thing);
-    virtual void xferImplementation(void *thing, int size);
+    virtual void xferImplementation(void *thing, int32_t size);
     virtual uint32_t Get_CRC() { return m_crc; }
 
 protected:

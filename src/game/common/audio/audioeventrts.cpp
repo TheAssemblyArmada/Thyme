@@ -311,7 +311,7 @@ void AudioEventRTS::Generate_Play_Info()
         m_nextPlayPortion = 1;
     } else {
         m_filenameAttack = Generate_Filename_Prefix(m_eventInfo->Get_Event_Type(), false);
-        int index = m_isLogical ? Get_Logic_Random_Value(0, count - 1) : Get_Audio_Random_Value(0, count - 1);
+        int32_t index = m_isLogical ? Get_Logic_Random_Value(0, count - 1) : Get_Audio_Random_Value(0, count - 1);
         m_filenameAttack += m_eventInfo->Get_Attack(index);
         m_filenameAttack += Generate_Filename_Extension(m_eventInfo->Get_Event_Type());
         Adjust_For_Localization(m_filenameAttack);
@@ -321,7 +321,7 @@ void AudioEventRTS::Generate_Play_Info()
 
     if (count > 0) {
         m_filenameDecay = Generate_Filename_Prefix(m_eventInfo->Get_Event_Type(), false);
-        int index = m_isLogical ? Get_Logic_Random_Value(0, count - 1) : Get_Audio_Random_Value(0, count - 1);
+        int32_t index = m_isLogical ? Get_Logic_Random_Value(0, count - 1) : Get_Audio_Random_Value(0, count - 1);
         m_filenameDecay += m_eventInfo->Get_Decay(index);
         m_filenameDecay += Generate_Filename_Extension(m_eventInfo->Get_Event_Type());
         Adjust_For_Localization(m_filenameDecay);

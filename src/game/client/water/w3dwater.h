@@ -61,7 +61,7 @@ public:
     {
         TextureClass *sky_texture;
         TextureClass *water_texture;
-        int water_repeat_count;
+        int32_t water_repeat_count;
         float sky_texels_per_unit;
         unsigned long vertex00_diffuse;
         unsigned long vertex10_diffuse;
@@ -78,7 +78,7 @@ public:
         float x;
         float y;
         float z;
-        unsigned int c;
+        uint32_t c;
         float tu;
         float tv;
     };
@@ -91,12 +91,12 @@ public:
 
     virtual ~WaterRenderObjClass() override;
     virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
+    virtual int32_t Class_ID() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
-    virtual int Get_Sort_Level() const override;
-    virtual void Set_Sort_Level(int level) override;
+    virtual int32_t Get_Sort_Level() const override;
+    virtual void Set_Sort_Level(int32_t level) override;
 
     void Re_Acquire_Resources();
     void Release_Resources();
@@ -106,7 +106,7 @@ public:
     void Get_Grid_Resolution(float *grid_cells_x, float *grid_cells_y, float *cell_size);
     void Get_Grid_Transform(Matrix3D *transform);
     float Get_Water_Height(float x, float y);
-    int Init(float water_level, float dx, float dy, SceneClass *parent_scene, WaterType type);
+    int32_t Init(float water_level, float dx, float dy, SceneClass *parent_scene, WaterType type);
     void Load();
     void Render_Water();
     void Replace_Skybox_Texture(Utf8String const &oldname, Utf8String const &newname);
@@ -129,8 +129,8 @@ protected:
     void Draw_Sea(RenderInfoClass &rinfo);
     void Draw_Trapezoid_Water(Vector3 *const points);
 #ifdef BUILD_WITH_D3D8
-    HRESULT Generate_Index_Buffer(int size_x, int size_y);
-    HRESULT Generate_Vertex_Buffer(int size_x, int size_y, int vertex_size, bool do_static);
+    HRESULT Generate_Index_Buffer(int32_t size_x, int32_t size_y);
+    HRESULT Generate_Vertex_Buffer(int32_t size_x, int32_t size_y, int32_t vertex_size, bool do_static);
 #endif
     bool Get_Clipped_Water_Plane(CameraClass *cam, AABoxClass *box);
     long Init_Bump_Map(IDirect3DTexture8 **tex, TextureClass *bump_source);
@@ -159,27 +159,27 @@ protected:
     float m_vOffset;
     float m_uScrollPerMs;
     float m_vScrollPerMs;
-    int m_lastUpdateTime;
+    int32_t m_lastUpdateTime;
     bool m_useCloudLayer;
     WaterType m_waterType;
-    int m_sortLevel;
+    int32_t m_sortLevel;
     IDirect3DDevice8 *m_pDev;
     IDirect3DVertexBuffer8 *m_vertexBufferD3D;
     IDirect3DIndexBuffer8 *m_indexBufferD3D;
-    int m_vertexBufferD3DOffset;
+    int32_t m_vertexBufferD3DOffset;
     unsigned long m_dwWavePixelShader;
     unsigned long m_dwWaveVertexShader;
-    int m_numVertices;
-    int m_numIndices;
+    int32_t m_numVertices;
+    int32_t m_numIndices;
     IDirect3DTexture8 *m_pBumpTexture[32];
     IDirect3DTexture8 *m_pBumpTexture2[32];
-    int m_iBumpFrame;
+    int32_t m_iBumpFrame;
     float m_fBumpScale;
     TextureClass *m_pReflectionTexture;
     RenderObjClass *m_skyBox;
     WaterTracksRenderSystem *m_waterTrackSystem;
     WaterMeshData *m_meshData;
-    int m_meshDataCount;
+    int32_t m_meshDataCount;
     bool m_meshInMotion;
     bool m_doWaterGrid;
     Vector2 m_gridDirectionX;
@@ -187,15 +187,15 @@ protected:
     Vector2 m_gridOrigin;
     float m_gridWidth;
     float m_gridHeight;
-    int m_minGridHeight;
-    int m_maxGridHeight;
+    int32_t m_minGridHeight;
+    int32_t m_maxGridHeight;
     float m_gridChangeMaxRange;
-    int m_gridChangeAtt0;
-    int m_gridChangeAtt1;
-    int m_gridChangeAtt2;
+    int32_t m_gridChangeAtt0;
+    int32_t m_gridChangeAtt1;
+    int32_t m_gridChangeAtt2;
     float m_gridCellSize;
-    int m_gridCellsX;
-    int m_gridCellsY;
+    int32_t m_gridCellsX;
+    int32_t m_gridCellsY;
     float m_riverVOrigin;
     TextureClass *m_riverTexture;
     TextureClass *m_unkTexture;

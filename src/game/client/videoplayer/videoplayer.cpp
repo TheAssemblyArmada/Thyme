@@ -120,7 +120,7 @@ void VideoPlayer::Remove_Video(Video *video)
  *
  * 0x0051B070
  */
-int VideoPlayer::Get_Video_Count()
+int32_t VideoPlayer::Get_Video_Count()
 {
     return m_videosAvailableToPlay.size();
 }
@@ -130,7 +130,7 @@ int VideoPlayer::Get_Video_Count()
  *
  * 0x0051B170
  */
-Video *VideoPlayer::Get_Video(int index)
+Video *VideoPlayer::Get_Video(int32_t index)
 {
     return &m_videosAvailableToPlay[index];
 }

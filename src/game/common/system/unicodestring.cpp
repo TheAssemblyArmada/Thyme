@@ -102,11 +102,11 @@ void Utf16String::Ensure_Unique_Buffer_Of_Size(
 #ifdef GAME_DLL
         static_assert(sizeof(UnicodeStringData) == 4);
 #endif
-        const int required_size = sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData);
+        const int32_t required_size = sizeof(unichar_t) * chars_needed + sizeof(UnicodeStringData);
 
         captainslog_relassert(required_size <= MAX_LEN, CODE_02, "Size exceeds max len");
 
-        const int alloc_size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(required_size);
+        const int32_t alloc_size = g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(required_size);
         UnicodeStringData *new_data =
             reinterpret_cast<UnicodeStringData *>(g_dynamicMemoryAllocator->Allocate_Bytes_No_Zero(alloc_size));
 

@@ -20,6 +20,6 @@
 class DazzleLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_DAZZLE; }
+    virtual int32_t Chunk_Type() override { return W3D_CHUNK_DAZZLE; }
     virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

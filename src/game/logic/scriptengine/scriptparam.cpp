@@ -439,7 +439,7 @@ Parameter *Parameter::Read_Parameter(DataChunkInput &input)
         if (param->m_string.Is_Not_Empty()) {
             bool found = false; // For assertion check.
 
-            for (int i = 0; list[i] != nullptr; ++i) {
+            for (int32_t i = 0; list[i] != nullptr; ++i) {
                 if (param->m_string.Compare_No_Case(list[i]) == 0) {
                     param->m_int = i;
 

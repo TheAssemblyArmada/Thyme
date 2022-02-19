@@ -33,7 +33,7 @@ using std::strcpy;
 VertexMaterialClass *g_boxMaterial;
 ShaderClass g_boxShader;
 bool BoxRenderObjClass::s_isInitted;
-int BoxRenderObjClass::s_displayMask;
+int32_t BoxRenderObjClass::s_displayMask;
 
 static Vector3i16 g_boxFaces[12] = {
     Vector3i16(0, 1, 2),
@@ -96,7 +96,7 @@ void BoxRenderObjClass::Shutdown()
     s_isInitted = false;
 }
 
-void BoxRenderObjClass::Set_Box_Display_Mask(int mask)
+void BoxRenderObjClass::Set_Box_Display_Mask(int32_t mask)
 {
     s_displayMask = mask;
 }
@@ -144,20 +144,20 @@ void BoxRenderObjClass::Render_Box(RenderInfoClass &rinfo, const Vector3 &center
 #ifdef BUILD_WITH_D3D8
     if (s_isInitted && s_displayMask & Get_Collision_Type()) {
         static Vector3 verts[8];
-        for (int i = 0; i < 8; i++) {
+        for (int32_t i = 0; i < 8; i++) {
             verts[i].X = g_boxVerts[i].X * extent.X + center.X;
             verts[i].Y = g_boxVerts[i].Y * extent.Y + center.Y;
             verts[i].Z = g_boxVerts[i].Z * extent.Z + center.Z;
         }
 
-        unsigned int color = DX8Wrapper::Convert_Color(m_color, m_opacity);
+        uint32_t color = DX8Wrapper::Convert_Color(m_color, m_opacity);
 
         DynamicVBAccessClass vb_access(2, D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2, 8);
         {
             DynamicVBAccessClass::WriteLockClass lock(&vb_access);
             VertexFormatXYZNDUV2 *v = lock.Get_Formatted_Vertex_Array();
 
-            for (int i = 0; i < 8; ++i) {
+            for (int32_t i = 0; i < 8; ++i) {
                 v[i].x = verts[i].X;
                 v[i].y = verts[i].Y;
                 v[i].z = verts[i].Z;
@@ -174,7 +174,7 @@ void BoxRenderObjClass::Render_Box(RenderInfoClass &rinfo, const Vector3 &center
             DynamicIBAccessClass::WriteLockClass lock(&ib_access);
             unsigned short *indexes = lock.Get_Index_Array();
 
-            for (int i = 0; i < 12; i++) {
+            for (int32_t i = 0; i < 12; i++) {
                 indexes[i] = g_boxFaces[i].I;
                 indexes[i + 1] = g_boxFaces[i].J;
                 indexes[i + 2] = g_boxFaces[i].K;
@@ -237,7 +237,7 @@ RenderObjClass *OBBoxRenderObjClass::Clone() const
     return new OBBoxRenderObjClass(*this);
 }
 
-int OBBoxRenderObjClass::Class_ID() const
+int32_t OBBoxRenderObjClass::Class_ID() const
 {
     return CLASSID_OBBOX;
 }
@@ -391,7 +391,7 @@ RenderObjClass *AABoxRenderObjClass::Clone() const
     return new AABoxRenderObjClass(*this);
 }
 
-int AABoxRenderObjClass::Class_ID() const
+int32_t AABoxRenderObjClass::Class_ID() const
 {
     return CLASSID_AABOX;
 }

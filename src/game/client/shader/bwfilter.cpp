@@ -18,12 +18,12 @@
 #include <d3dx8.h>
 #endif
 
-int ScreenBWFilter::s_fadeFrames;
-int ScreenBWFilter::s_fadeDirection;
-int ScreenBWFilter::s_curFadeFrame;
+int32_t ScreenBWFilter::s_fadeFrames;
+int32_t ScreenBWFilter::s_fadeDirection;
+int32_t ScreenBWFilter::s_curFadeFrame;
 float ScreenBWFilter::s_curFadeValue;
 
-int ScreenBWFilter::Init()
+int32_t ScreenBWFilter::Init()
 {
 #ifdef BUILD_WITH_D3D8
     m_dwBWPixelShader = 0;
@@ -43,7 +43,7 @@ int ScreenBWFilter::Init()
         D3DVSD_REG(2, D3DVSDT_FLOAT2),
         D3DVSD_END() };
 
-    int i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\monochrome.pso", decl, 0, false, &m_dwBWPixelShader);
+    int32_t i = W3DShaderManager::Load_And_Create_D3D_Shader("shaders\\monochrome.pso", decl, 0, false, &m_dwBWPixelShader);
 
     if (i < 0) {
         return 0;
@@ -54,7 +54,7 @@ int ScreenBWFilter::Init()
     return 1;
 }
 
-int ScreenBWFilter::Shutdown()
+int32_t ScreenBWFilter::Shutdown()
 {
 #ifdef BUILD_WITH_D3D8
     if (m_dwBWPixelShader) {
@@ -129,7 +129,7 @@ bool ScreenBWFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 #endif
 }
 
-int ScreenBWFilter::Set(FilterModes mode)
+int32_t ScreenBWFilter::Set(FilterModes mode)
 {
 #ifdef BUILD_WITH_D3D8
     if (mode <= 0) {
@@ -138,7 +138,7 @@ int ScreenBWFilter::Set(FilterModes mode)
 
     if (s_fadeDirection <= 0) {
         if (s_fadeDirection < 0) {
-            int i = ++s_curFadeFrame;
+            int32_t i = ++s_curFadeFrame;
 
             if (s_curFadeFrame >= s_fadeFrames) {
                 s_curFadeValue = 0.0f;
@@ -151,7 +151,7 @@ int ScreenBWFilter::Set(FilterModes mode)
             }
         }
     } else {
-        int i = ++s_curFadeFrame;
+        int32_t i = ++s_curFadeFrame;
 
         if (s_curFadeFrame >= s_fadeFrames) {
             s_curFadeFrame = 0;
@@ -214,7 +214,7 @@ void ScreenBWFilter::Reset()
 #endif
 }
 
-int ScreenBWFilterDOT3::Init()
+int32_t ScreenBWFilterDOT3::Init()
 {
     ScreenBWFilter::s_curFadeFrame = 0;
 
@@ -230,7 +230,7 @@ int ScreenBWFilterDOT3::Init()
     return 1;
 }
 
-int ScreenBWFilterDOT3::Shutdown()
+int32_t ScreenBWFilterDOT3::Shutdown()
 {
     return 1;
 }
@@ -284,7 +284,7 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
     vertex[3].p = D3DXVECTOR4((float)x - 0.5f, (float)y - 0.5f, 0.0f, 1.0f);
     vertex[3].u = (float)x / (float)w2;
     vertex[3].v = (float)y / (float)h2;
-    unsigned int color = (unsigned int)((1.0f - ScreenBWFilter::s_curFadeValue) * 255.0f);
+    uint32_t color = (uint32_t)((1.0f - ScreenBWFilter::s_curFadeValue) * 255.0f);
     vertex[0].color = (color << 24) | 0xFFFFFF;
     vertex[1].color = (color << 24) | 0xFFFFFF;
     vertex[2].color = (color << 24) | 0xFFFFFF;
@@ -323,7 +323,7 @@ bool ScreenBWFilterDOT3::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 #endif
 }
 
-int ScreenBWFilterDOT3::Set(FilterModes mode)
+int32_t ScreenBWFilterDOT3::Set(FilterModes mode)
 {
 #ifdef BUILD_WITH_D3D8
     if (mode <= 0) {

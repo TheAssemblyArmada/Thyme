@@ -193,14 +193,14 @@ FieldParse ThingTemplate::s_objectReskinFieldParseTable[] =
 
 AudioArray::AudioArray()
 {
-    for (int i = 0; i < THING_SOUNDCOUNT; i++) {
+    for (int32_t i = 0; i < THING_SOUNDCOUNT; i++) {
         sound[i] = nullptr;
     }
 }
 
 AudioArray::~AudioArray()
 {
-    for (int i = 0; i < THING_SOUNDCOUNT; i++) {
+    for (int32_t i = 0; i < THING_SOUNDCOUNT; i++) {
         sound[i]->Delete_Instance();
     }
 }
@@ -208,7 +208,7 @@ AudioArray::~AudioArray()
 AudioArray &AudioArray::operator=(const AudioArray &that)
 {
     if (this != &that) {
-        for (int i = 0; i < THING_SOUNDCOUNT; i++) {
+        for (int32_t i = 0; i < THING_SOUNDCOUNT; i++) {
             if (that.sound[i] == nullptr) {
                 sound[i] = nullptr;
             } else if (sound[i] != nullptr) {
@@ -254,7 +254,7 @@ ThingTemplate::ThingTemplate() :
     m_energyProduction = 0;
     m_energyBonus = 0;
     m_buildCompletion = BC_APPEARS_AT_RALLY_POINT;
-    for (int i = 0; i < RANK_LEVEL_COUNT; ++i) {
+    for (int32_t i = 0; i < RANK_LEVEL_COUNT; ++i) {
         m_experienceValues[i] = 0;
         m_experienceRequired[i] = 0;
         m_skillPointValues[i] = -999;
@@ -320,7 +320,7 @@ ThingTemplate &ThingTemplate::operator=(const ThingTemplate &that)
     m_selectedPortraitImageName = that.m_selectedPortraitImageName;
     m_buttonImageName = that.m_buttonImageName;
 
-    for (int i = 0; i < 5; i++) {
+    for (int32_t i = 0; i < 5; i++) {
         m_upgradeCameoNames[i] = that.m_upgradeCameoNames[i];
     }
 
@@ -335,15 +335,15 @@ ThingTemplate &ThingTemplate::operator=(const ThingTemplate &that)
     m_draws = that.m_draws;
     m_clientUpdates = that.m_clientUpdates;
 
-    for (int i = 0; i < 4; i++) {
+    for (int32_t i = 0; i < 4; i++) {
         m_skillPointValues[i] = that.m_skillPointValues[i];
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int32_t i = 0; i < 4; i++) {
         m_experienceValues[i] = that.m_experienceValues[i];
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int32_t i = 0; i < 4; i++) {
         m_experienceRequired[i] = that.m_experienceRequired[i];
     }
 
@@ -427,9 +427,9 @@ unsigned short ThingTemplate::Get_Max_Simultaneous_Of_Type() const
     }
 }
 
-int ThingTemplate::Get_Skill_Point_Value(int level) const
+int32_t ThingTemplate::Get_Skill_Point_Value(int32_t level) const
 {
-    int points = m_skillPointValues[level];
+    int32_t points = m_skillPointValues[level];
 
     if (points == -999) {
         points = Get_Experience_Value(level);
@@ -464,13 +464,13 @@ bool ThingTemplate::Is_Equivalent_To(const ThingTemplate *reskin) const
         return true;
     }
 
-    for (unsigned int i = 0; i < m_buildVariations.size(); i++) {
+    for (uint32_t i = 0; i < m_buildVariations.size(); i++) {
         if (!m_buildVariations[i].Compare_No_Case(reskin->Get_Name())) {
             return true;
         }
     }
 
-    for (unsigned int i = 0; i < reskin->m_buildVariations.size(); i++) {
+    for (uint32_t i = 0; i < reskin->m_buildVariations.size(); i++) {
         if (!reskin->m_buildVariations[i].Compare_No_Case(Get_Name())) {
             return true;
         }
@@ -501,7 +501,7 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
     m_nameString = name;
     char buffer[1024];
     strncpy(buffer, name, ARRAY_SIZE(buffer));
-    int i;
+    int32_t i;
 
     for (i = 0; buffer[i]; ++i) {
         if (buffer[i] == '/') {
@@ -618,8 +618,8 @@ void ThingTemplate::Parse_Inheritable_Module(INI *ini, void *instance, void *sto
 
 void ThingTemplate::Parse_Int_List(INI *ini, void *formal, void *store, const void *user_data)
 {
-    for (int i = 0; i < reinterpret_cast<intptr_t>(user_data); i++) {
-        static_cast<int *>(store)[i] = INI::Scan_Int(ini->Get_Next_Token());
+    for (int32_t i = 0; i < reinterpret_cast<intptr_t>(user_data); i++) {
+        static_cast<int32_t *>(store)[i] = INI::Scan_Int(ini->Get_Next_Token());
     }
 }
 
@@ -637,7 +637,7 @@ void ThingTemplate::Parse_Max_Simultaneous(INI *ini, void *instance, void *store
         tmplate->m_determinedBySuperweaponRestriction = true;
         *static_cast<uint16_t *>(store) = 0;
     } else {
-        int tmp = ini->Scan_Int(str2);
+        int32_t tmp = ini->Scan_Int(str2);
 
         captainslog_relassert(tmp >= 0 && tmp < 65535, 0xDEAD0001, "Value parsed outside range of a short.");
 
@@ -671,7 +671,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 {
     ThingTemplate *tmplate = (ThingTemplate *)instance;
     ModuleInfo *info = (ModuleInfo *)store;
-    int data = reinterpret_cast<intptr_t>(user_data);
+    int32_t data = reinterpret_cast<intptr_t>(user_data);
     Utf8String name = ini->Get_Next_Token();
     Utf8String tag_name = ini->Get_Next_Token();
 
@@ -684,7 +684,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         name.Str(),
         tmplate->Get_Name().Str());
 
-    int mask;
+    int32_t mask;
 
     if (data == 999) {
         data = 0;
@@ -870,9 +870,9 @@ bool ThingTemplate::Can_Possibly_Have_Any_Weapon() const
 
 AIUpdateModuleData *ThingTemplate::Friend_Get_AI_Module_Info() const
 {
-    int count = m_body.Get_Count();
+    int32_t count = m_body.Get_Count();
 
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         if (m_body.Get_Nth_Data(i)) {
             const ModuleData *data = m_body.Get_Nth_Data(i);
             if (data->Is_AI_Module_Data()) {

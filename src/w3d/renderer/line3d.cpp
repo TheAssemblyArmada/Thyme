@@ -17,7 +17,7 @@
 #include "dx8vertexbuffer.h"
 #include "dx8wrapper.h"
 
-unsigned int s_indices[36] = {
+uint32_t s_indices[36] = {
     3, 5, 1, 7, 5, 3, 1, 5, 0, 5, 4, 0, 4, 2, 0, 4, 6, 2, 7, 3, 2, 6, 7, 2, 7, 6, 5, 5, 6, 4, 2, 3, 1, 2, 1, 0
 };
 
@@ -33,7 +33,7 @@ void Line3DClass::Render(RenderInfoClass &rinfo)
     } else {
         DX8Wrapper::Set_Shader(m_shader);
 
-        for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+        for (int32_t i = 0; i < MAX_TEXTURE_STAGES; ++i) {
             DX8Wrapper::Set_Texture(i, nullptr);
         }
 
@@ -46,10 +46,10 @@ void Line3DClass::Render(RenderInfoClass &rinfo)
         DynamicVBAccessClass vb(2, D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2, 8);
         {
             DynamicVBAccessClass::WriteLockClass lock(&vb);
-            unsigned int color = DX8Wrapper::Convert_Color(m_color);
+            uint32_t color = DX8Wrapper::Convert_Color(m_color);
             VertexFormatXYZNDUV2 *vertices = lock.Get_Formatted_Vertex_Array();
 
-            for (int i = 0; i < 8; ++i) {
+            for (int32_t i = 0; i < 8; ++i) {
                 vertices[i].x = m_vertices[i].X;
                 vertices[i].y = m_vertices[i].Y;
                 vertices[i].z = m_vertices[i].Z;
@@ -62,7 +62,7 @@ void Line3DClass::Render(RenderInfoClass &rinfo)
             DynamicIBAccessClass::WriteLockClass lock(&ib);
             unsigned short *indices = lock.Get_Index_Array();
 
-            for (int i = 0; i < 36; ++i) {
+            for (int32_t i = 0; i < 36; ++i) {
                 indices[i] = s_indices[i];
             }
         }
@@ -86,7 +86,7 @@ void Line3DClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 
 void Line3DClass::Scale(float scale)
 {
-    for (int i = 0; i < 8; ++i) {
+    for (int32_t i = 0; i < 8; ++i) {
         m_vertices[i] *= scale;
     }
 
@@ -103,7 +103,7 @@ void Line3DClass::Scale(float scale)
 
 void Line3DClass::Scale(float scaleX, float scaleY, float scaleZ)
 {
-    for (int i = 0; i < 8; ++i) {
+    for (int32_t i = 0; i < 8; ++i) {
         m_vertices[i].X *= scaleX;
         m_vertices[i].Y *= scaleY;
         m_vertices[i].Z *= scaleZ;
@@ -148,7 +148,7 @@ Line3DClass::Line3DClass(const Vector3 &start, const Vector3 &end, float width, 
 Line3DClass::Line3DClass(const Line3DClass &src) :
     RenderObjClass(src), m_length(src.m_length), m_thickness(src.m_thickness), m_shader(src.m_shader), m_color(src.m_color)
 {
-    for (int i = 0; i < 8; i++) {
+    for (int32_t i = 0; i < 8; i++) {
         m_vertices[i] = src.m_vertices[i];
     }
 }

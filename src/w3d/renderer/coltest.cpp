@@ -24,7 +24,7 @@ AABoxCollisionTestClass::AABoxCollisionTestClass(const AABoxCollisionTestClass &
 }
 
 AABoxCollisionTestClass::AABoxCollisionTestClass(
-    const AABoxClass &aabox, const Vector3 &move, CastResultStruct *res, int collision_type) :
+    const AABoxClass &aabox, const Vector3 &move, CastResultStruct *res, int32_t collision_type) :
     CollisionTestClass(res, collision_type), m_box(aabox), m_move(move)
 {
     m_sweepMin = m_box.m_center - m_box.m_extent;
@@ -163,14 +163,14 @@ void AABoxCollisionTestClass::Transform(const Matrix3D &tm)
     pts[6].Set(max.X, max.Y, max.Z);
     pts[7].Set(max.X, min.Y, max.Z);
 
-    for (int i = 0; i < ARRAY_SIZE(pts); ++i) {
+    for (int32_t i = 0; i < ARRAY_SIZE(pts); ++i) {
         pts[i] = tm * pts[i];
     }
 
     Vector3 real_min = pts[0];
     Vector3 real_max = pts[0];
 
-    for (int i = 1; i < ARRAY_SIZE(pts); ++i) {
+    for (int32_t i = 1; i < ARRAY_SIZE(pts); ++i) {
         if (real_min.X >= pts[i].X)
             real_min.X = pts[i].X;
         if (real_min.Y >= pts[i].Y)
@@ -191,7 +191,7 @@ void AABoxCollisionTestClass::Transform(const Matrix3D &tm)
 }
 
 OBBoxCollisionTestClass::OBBoxCollisionTestClass(
-    const OBBoxClass &obbox, const Vector3 &move, CastResultStruct *res, int type) :
+    const OBBoxClass &obbox, const Vector3 &move, CastResultStruct *res, int32_t type) :
     CollisionTestClass(res, type), m_box(obbox), m_move(move)
 {
     Vector3 extent;

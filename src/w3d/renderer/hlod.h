@@ -32,7 +32,7 @@ public:
 class ProxyRecordClass
 {
 private:
-    int m_boneIndex;
+    int32_t m_boneIndex;
     char m_name[32];
 
 public:
@@ -48,7 +48,7 @@ public:
         m_name[31] = 0;
     }
 
-    int Get_Bone_Index() { return m_boneIndex; }
+    int32_t Get_Bone_Index() { return m_boneIndex; }
     const char *Get_Name() { return m_name; }
 };
 
@@ -57,7 +57,7 @@ class ProxyArrayClass : public W3DMPO, public VectorClass<ProxyRecordClass>, pub
     IMPLEMENT_W3D_POOL(ProxyArrayClass);
 
 public:
-    ProxyArrayClass(int size) : VectorClass(size) {}
+    ProxyArrayClass(int32_t size) : VectorClass(size) {}
     virtual ~ProxyArrayClass() override {}
 };
 
@@ -89,9 +89,9 @@ public:
     {
     private:
         float m_maxScreenSize;
-        int m_modelCount;
+        int32_t m_modelCount;
         char **m_modelName;
-        int *m_boneIndex;
+        int32_t *m_boneIndex;
 
     public:
         SubObjectArrayClass() : m_maxScreenSize(NO_MAX_SCREEN_SIZE), m_modelCount(0), m_modelName(0), m_boneIndex(0) {}
@@ -101,7 +101,7 @@ public:
         {
             m_maxScreenSize = NO_MAX_SCREEN_SIZE;
             if (m_modelName) {
-                for (int i = 0; i < m_modelCount; i++) {
+                for (int32_t i = 0; i < m_modelCount; i++) {
                     free(m_modelName[i]);
                 }
                 delete[] m_modelName;
@@ -121,7 +121,7 @@ public:
 private:
     char *m_name;
     char *m_hierarchyTreeName;
-    int m_lodCount;
+    int32_t m_lodCount;
     SubObjectArrayClass *m_lod;
     SubObjectArrayClass m_aggregates;
     ProxyArrayClass *m_proxyArray;
@@ -202,7 +202,7 @@ private:
     {
     public:
         RenderObjClass *m_model;
-        int m_boneIndex;
+        int32_t m_boneIndex;
 
         bool operator==(const ModelNodeClass &src) { return m_model == src.m_model && m_boneIndex == src.m_boneIndex; }
         bool operator!=(const ModelNodeClass &src) { return m_model != src.m_model || m_boneIndex != src.m_boneIndex; }
@@ -220,10 +220,10 @@ private:
         virtual ~ModelArrayClass() override {}
     };
 
-    int m_lodCount;
-    int m_curLod;
+    int32_t m_lodCount;
+    int32_t m_curLod;
     ModelArrayClass *m_lod;
-    int m_boundingBoxIndex;
+    int32_t m_boundingBoxIndex;
     float *m_cost;
     float *m_value;
     ModelArrayClass m_additionalModels;
@@ -240,8 +240,8 @@ public:
     virtual ~HLodClass() override;
 
     virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override;
-    virtual int Get_Num_Polys() const override;
+    virtual int32_t Class_ID() const override;
+    virtual int32_t Get_Num_Polys() const override;
 
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
@@ -251,19 +251,19 @@ public:
     virtual void Notify_Added(SceneClass *scene) override;
     virtual void Notify_Removed(SceneClass *scene) override;
 
-    virtual int Get_Num_Sub_Objects() const override;
-    virtual RenderObjClass *Get_Sub_Object(int index) const override;
-    virtual int Add_Sub_Object(RenderObjClass *subobj) override;
-    virtual int Remove_Sub_Object(RenderObjClass *subobj) override;
-    virtual int Get_Num_Sub_Objects_On_Bone(int bone_index) const override;
-    virtual RenderObjClass *Get_Sub_Object_On_Bone(int index, int bone_index) const override;
-    virtual int Get_Sub_Object_Bone_Index(RenderObjClass *object) const override;
-    virtual int Get_Sub_Object_Bone_Index(int lodindex, int modelindex) const override;
-    virtual int Add_Sub_Object_To_Bone(RenderObjClass *subobj, int bone_index) override;
+    virtual int32_t Get_Num_Sub_Objects() const override;
+    virtual RenderObjClass *Get_Sub_Object(int32_t index) const override;
+    virtual int32_t Add_Sub_Object(RenderObjClass *subobj) override;
+    virtual int32_t Remove_Sub_Object(RenderObjClass *subobj) override;
+    virtual int32_t Get_Num_Sub_Objects_On_Bone(int32_t bone_index) const override;
+    virtual RenderObjClass *Get_Sub_Object_On_Bone(int32_t index, int32_t bone_index) const override;
+    virtual int32_t Get_Sub_Object_Bone_Index(RenderObjClass *object) const override;
+    virtual int32_t Get_Sub_Object_Bone_Index(int32_t lodindex, int32_t modelindex) const override;
+    virtual int32_t Add_Sub_Object_To_Bone(RenderObjClass *subobj, int32_t bone_index) override;
     virtual void Update_Sub_Object_Transforms() override;
 
     virtual void Set_Animation() override;
-    virtual void Set_Animation(HAnimClass *motion, float frame, int anim_mode) override;
+    virtual void Set_Animation(HAnimClass *motion, float frame, int32_t anim_mode) override;
     virtual void Set_Animation(
         HAnimClass *motion0, float frame0, HAnimClass *motion1, float frame1, float percentage) override;
     virtual void Set_Animation(HAnimComboClass *combo) override;
@@ -287,44 +287,44 @@ public:
     virtual float Get_Cost() const override;
     virtual float Get_Value() const override;
     virtual float Get_Post_Increment_Value() const override;
-    virtual void Set_LOD_Level(int lod) override;
-    virtual int Get_LOD_Level() const override;
-    virtual int Get_LOD_Count() const override;
+    virtual void Set_LOD_Level(int32_t lod) override;
+    virtual int32_t Get_LOD_Level() const override;
+    virtual int32_t Get_LOD_Count() const override;
     virtual void Set_LOD_Bias(float bias) override;
-    virtual int Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const override;
+    virtual int32_t Calculate_Cost_Value_Arrays(float screen_area, float *values, float *costs) const override;
     virtual RenderObjClass *Get_Current_LOD() override;
 
     virtual void Create_Decal(DecalGeneratorClass *generator) override;
     virtual void Delete_Decal(unsigned long decal_id) override;
 
-    virtual int Get_Num_Snap_Points() override;
-    virtual void Get_Snap_Point(int index, Vector3 *set) override;
+    virtual int32_t Get_Num_Snap_Points() override;
+    virtual void Get_Snap_Point(int32_t index, Vector3 *set) override;
 
     virtual void Scale(float scale) override;
     virtual void Scale(float scalex, float scaley, float scalez) override;
 
-    virtual void Set_Hidden(int hidden) override;
+    virtual void Set_Hidden(int32_t hidden) override;
     virtual void Set_HTree(HTreeClass *htree) override;
-    virtual void Set_Max_Screen_Size(int lod_index, float size);
-    virtual float Get_Max_Screen_Size(int lod_index);
+    virtual void Set_Max_Screen_Size(int32_t lod_index, float size);
+    virtual float Get_Max_Screen_Size(int32_t lod_index);
 
-    virtual int Get_Lod_Count();
-    virtual int Get_Lod_Model_Count(int lod_index);
-    virtual RenderObjClass *Peek_Lod_Model(int lod_index, int model_index);
-    virtual RenderObjClass *Get_Lod_Model(int lod_index, int model_index);
-    virtual int Get_Lod_Model_Bone(int lod_index, int model_index);
+    virtual int32_t Get_Lod_Count();
+    virtual int32_t Get_Lod_Model_Count(int32_t lod_index);
+    virtual RenderObjClass *Peek_Lod_Model(int32_t lod_index, int32_t model_index);
+    virtual RenderObjClass *Get_Lod_Model(int32_t lod_index, int32_t model_index);
+    virtual int32_t Get_Lod_Model_Bone(int32_t lod_index, int32_t model_index);
 
-    virtual int Get_Additional_Model_Count();
-    virtual RenderObjClass *Peek_Additional_Model(int model_index);
-    virtual RenderObjClass *Get_Additional_Model(int model_index);
-    virtual int Get_Additional_Model_Bone(int model_index);
+    virtual int32_t Get_Additional_Model_Count();
+    virtual RenderObjClass *Peek_Additional_Model(int32_t model_index);
+    virtual RenderObjClass *Get_Additional_Model(int32_t model_index);
+    virtual int32_t Get_Additional_Model_Bone(int32_t model_index);
 
     virtual bool Is_NULL_Lod_Included();
     virtual void Include_NULL_Lod(bool include);
 
-    virtual int Get_Proxy_Count();
-    virtual bool Get_Proxy(int index, ProxyClass &proxy);
+    virtual int32_t Get_Proxy_Count();
+    virtual bool Get_Proxy(int32_t index, ProxyClass &proxy);
 
     void Free();
-    void Add_Lod_Model(int lod, RenderObjClass *robj, int bone_index);
+    void Add_Lod_Model(int32_t lod, RenderObjClass *robj, int32_t bone_index);
 };

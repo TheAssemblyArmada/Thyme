@@ -32,7 +32,7 @@ struct DataChunkInfo
     Utf8String label;
     Utf8String parent_label;
     uint16_t version;
-    int data_size;
+    int32_t data_size;
 };
 
 class DataChunkInput
@@ -87,25 +87,25 @@ public:
     void Reset();
     Utf8String Get_Chunk_Label();
     uint16_t Get_Chunk_Version() { return m_chunkStack != nullptr ? m_chunkStack->version : 0; }
-    int Get_Chunk_Data_Size() { return m_chunkStack != nullptr ? m_chunkStack->data_size : 0; }
-    int Get_Chunk_Data_Left() { return m_chunkStack != nullptr ? m_chunkStack->data_left : 0; }
+    int32_t Get_Chunk_Data_Size() { return m_chunkStack != nullptr ? m_chunkStack->data_size : 0; }
+    int32_t Get_Chunk_Data_Left() { return m_chunkStack != nullptr ? m_chunkStack->data_left : 0; }
     float Read_Real32();
     int32_t Read_Int32();
     uint8_t Read_Byte();
     Utf8String Read_AsciiString();
     Utf16String Read_UnicodeString();
     Dict Read_Dict();
-    void Read_Byte_Array(uint8_t *ptr, int length);
+    void Read_Byte_Array(uint8_t *ptr, int32_t length);
     NameKeyType Read_Name_Key();
 
 private:
-    void Decrement_Data_Left(int size);
+    void Decrement_Data_Left(int32_t size);
     void Clear_Chunk_Stack();
 
 private:
     ChunkInputStream *m_file;
     DataChunkTableOfContents m_contents;
-    int m_fileposOfFirstChunk;
+    int32_t m_fileposOfFirstChunk;
     UserParser *m_parserList;
     InputChunk *m_chunkStack;
     void *m_currentObject;

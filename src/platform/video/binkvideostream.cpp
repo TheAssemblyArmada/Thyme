@@ -69,7 +69,7 @@ void BinkVideoStream::Render_Frame(VideoBuffer *buffer)
     }
 
     void *dst = buffer->Lock();
-    int bink_format;
+    int32_t bink_format;
 
     switch (buffer->Get_Format()) {
         case VideoBuffer::TYPE_R8G8B8:
@@ -122,7 +122,7 @@ bool BinkVideoStream::Is_Done()
  *
  * 0x007AAAE0
  */
-int BinkVideoStream::Frame_Index()
+int32_t BinkVideoStream::Frame_Index()
 {
     return m_binkHandle->frame_num - 1;
 }
@@ -132,7 +132,7 @@ int BinkVideoStream::Frame_Index()
  *
  * 0x007AAAF0
  */
-int BinkVideoStream::Frame_Count()
+int32_t BinkVideoStream::Frame_Count()
 {
     return m_binkHandle->frames;
 }
@@ -142,7 +142,7 @@ int BinkVideoStream::Frame_Count()
  *
  * 0x007AAB00
  */
-void BinkVideoStream::Goto_Frame(int frame)
+void BinkVideoStream::Goto_Frame(int32_t frame)
 {
     BinkGoto(m_binkHandle, frame, 0);
 }
@@ -152,7 +152,7 @@ void BinkVideoStream::Goto_Frame(int frame)
  *
  * 0x007AAB20
  */
-int BinkVideoStream::Height()
+int32_t BinkVideoStream::Height()
 {
     return m_binkHandle->height;
 }
@@ -162,7 +162,7 @@ int BinkVideoStream::Height()
  *
  * 0x007AAB30
  */
-int BinkVideoStream::Width()
+int32_t BinkVideoStream::Width()
 {
     return m_binkHandle->width;
 }

@@ -19,7 +19,7 @@
 #include <d3dx8.h>
 #endif
 
-int ScreenDefaultFilter::Init()
+int32_t ScreenDefaultFilter::Init()
 {
     if (!W3DShaderManager::Render_Surfaces_Valid()) {
         return 0;
@@ -95,7 +95,7 @@ bool ScreenDefaultFilter::Post_Render(FilterModes mode, Coord2D &delta, bool &b)
 #endif
 }
 
-int ScreenDefaultFilter::Set(FilterModes mode)
+int32_t ScreenDefaultFilter::Set(FilterModes mode)
 {
 #ifdef BUILD_WITH_D3D8
     VertexMaterialClass *m = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);

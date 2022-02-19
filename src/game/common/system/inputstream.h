@@ -19,5 +19,5 @@
 class InputStream
 {
 public:
-    virtual int Read(void *dst, int size) = 0;
+    virtual int32_t Read(void *dst, int32_t size) = 0;
 };

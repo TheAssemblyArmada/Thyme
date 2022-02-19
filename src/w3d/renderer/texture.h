@@ -103,7 +103,7 @@ public:
     TextureClass(w3dbasetexture_t d3d_texture);
     virtual ~TextureClass() {}
 
-    virtual int Get_Asset_Type() override { return 0; }
+    virtual int32_t Get_Asset_Type() override { return 0; }
     virtual unsigned Get_Texture_Memory_Usage() override;
     virtual void Init() override;
     virtual void Apply_New_Surface(w3dbasetexture_t base, bool initialized, bool reset) override;
@@ -112,7 +112,7 @@ public:
 
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);
-    void Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, unsigned int level);
+    void Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, uint32_t level);
     WW3DFormat Texture_Format() const { return m_textureFormat; }
     TextureFilterClass *Get_Texture_Filter() { return &m_textureFilter; }
 

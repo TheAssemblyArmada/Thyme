@@ -241,7 +241,7 @@ bool TextureLoadTaskClass::Begin_Compressed_Load()
             reduced_height >>= m_reduction;
         }
     } else {
-        mip_level_count = max((int)(levels - reduction), 1);
+        mip_level_count = max((int32_t)(levels - reduction), 1);
         reduced_width = m_width >> m_reduction;
         reduced_height = m_height >> m_reduction;
     }
@@ -385,7 +385,7 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
     tga.Toggle_Flip_Y();
     WW3DFormat dst_format;
     WW3DFormat src_format;
-    unsigned int dest_bpp = 0;
+    uint32_t dest_bpp = 0;
     char palette[1024];
     Get_WW3D_Format(dst_format, src_format, dest_bpp, tga);
 
@@ -396,10 +396,10 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
     dst_format = m_format;
     tga.Set_Palette(palette);
     tga.Load(*name, 1, 0);
-    int srcwidth = tga.Get_Header().width;
-    int srcheight = tga.Get_Header().height;
-    int width = m_width;
-    int height = m_height;
+    int32_t srcwidth = tga.Get_Header().width;
+    int32_t srcheight = tga.Get_Header().height;
+    int32_t width = m_width;
+    int32_t height = m_height;
     uint8_t *dst_surface = 0;
     uint8_t *src_surface = (uint8_t *)tga.Get_Image();
 
@@ -428,7 +428,7 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
         dest_bpp = Get_Bytes_Per_Pixel(WW3D_FORMAT_A8R8G8B8);
     }
 
-    int pitch = dest_bpp * srcwidth;
+    int32_t pitch = dest_bpp * srcwidth;
 
     if (m_reduction != 0) {
         uint8_t *reduction_surface = new uint8_t[4 * width * height];

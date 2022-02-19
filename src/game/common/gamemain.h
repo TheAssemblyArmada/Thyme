@@ -16,7 +16,7 @@
 
 #include "always.h"
 
-void Game_Main(int argc, char *argv[]);
+void Game_Main(int32_t argc, char *argv[]);
 
 #ifdef GAME_DLL
 #include "hooker.h"

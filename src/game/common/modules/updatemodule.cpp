@@ -73,17 +73,17 @@ DisabledBitFlags UpdateModule::Get_Disabled_Types_To_Process() const
     return DISABLEDMASK_NONE;
 }
 
-void UpdateModule::Set_Index_In_Logic(int index)
+void UpdateModule::Set_Index_In_Logic(int32_t index)
 {
     m_indexInLogic = index;
 }
 
-int UpdateModule::Get_Index_In_Logic()
+int32_t UpdateModule::Get_Index_In_Logic()
 {
     return m_indexInLogic;
 }
 
-void UpdateModule::Encode_Frame(unsigned int frame)
+void UpdateModule::Encode_Frame(uint32_t frame)
 {
     if (frame > UPDATE_SLEEP_TIME_MAX) {
         frame = UPDATE_SLEEP_TIME_MAX;
@@ -92,15 +92,15 @@ void UpdateModule::Encode_Frame(unsigned int frame)
     m_updatePhase |= (frame << SLEEPY_UPDATE_PHASE_2);
 }
 
-unsigned int UpdateModule::Decode_Frame() const
+uint32_t UpdateModule::Decode_Frame() const
 {
     return m_updatePhase >> SLEEPY_UPDATE_PHASE_2;
 }
 
 UpdateSleepTime UpdateModule::Get_Wake_Frame() const
 {
-    unsigned int cur_frame = g_theGameLogic->Get_Frame();
-    unsigned int wake_frame = Decode_Frame();
+    uint32_t cur_frame = g_theGameLogic->Get_Frame();
+    uint32_t wake_frame = Decode_Frame();
 
     if (cur_frame < wake_frame) {
         return UpdateSleepTime(wake_frame - cur_frame);
@@ -111,12 +111,11 @@ UpdateSleepTime UpdateModule::Get_Wake_Frame() const
 
 void UpdateModule::Set_Wake_Frame(Object *object, UpdateSleepTime frame)
 {
-    unsigned int cur_frame = g_theGameLogic->Get_Frame();
+    uint32_t cur_frame = g_theGameLogic->Get_Frame();
     g_theGameLogic->Friend_Awaken_Update_Module(object, this, frame + cur_frame);
 }
 
-UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(
-    unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4)
+UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(uint32_t frame1, uint32_t frame2, uint32_t frame3, uint32_t frame4)
 {
     captainslog_dbgassert(
         frame1 != 0 && frame2 != 0 && frame3 != 0 && frame4 != 0, "Frame_To_Sleep_Time: Should not pass zero frames");
@@ -133,7 +132,7 @@ UpdateSleepTime UpdateModule::Frame_To_Sleep_Time(
         frame1 = frame4;
     }
 
-    unsigned int cur_frame = g_theGameLogic->Get_Frame();
+    uint32_t cur_frame = g_theGameLogic->Get_Frame();
 
     if (frame1 > cur_frame) {
         return static_cast<UpdateSleepTime>(frame1 - cur_frame);
@@ -158,7 +157,7 @@ ModuleData *UpdateModule::Friend_New_Module_Data(INI *ini)
     return data;
 }
 
-int UpdateModule::Get_Interface_Mask()
+int32_t UpdateModule::Get_Interface_Mask()
 {
     return MODULEINTERFACE_UPDATE;
 }
@@ -170,7 +169,7 @@ bool UpdateModule::Compare_Update_Modules(UpdateModule *a, UpdateModule *b)
     return b->Get_Raw_Update_Value() < a->Get_Raw_Update_Value();
 }
 
-unsigned int UpdateModule::Get_Raw_Update_Value() const
+uint32_t UpdateModule::Get_Raw_Update_Value() const
 {
     return m_updatePhase;
 }

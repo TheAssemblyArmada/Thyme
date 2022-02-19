@@ -69,12 +69,12 @@ public:
     virtual void On_Has_Map(uint32_t player_ip, bool status) override;
     virtual void On_Chat(Utf16String player, uint32_t ip, Utf16String message, ChatType format) override;
     virtual void On_Game_Start() override;
-    virtual void On_Game_Start_Timer(int time) override;
-    virtual void On_Game_Options(uint32_t player_addr, int player_slot, Utf8String options) override;
+    virtual void On_Game_Start_Timer(int32_t time) override;
+    virtual void On_Game_Options(uint32_t player_addr, int32_t player_slot, Utf8String options) override;
     virtual void On_Game_Create(ReturnType type) override;
     virtual void On_Name_Change(uint32_t ip, Utf16String name) override;
     virtual LANGameInfo *Lookup_Game(Utf16String name) override;
-    virtual LANGameInfo *Lookup_Game_By_Offset(int offset) override;
+    virtual LANGameInfo *Lookup_Game_By_Offset(int32_t offset) override;
     virtual void Set_Local_IP(uint32_t address) override;
     virtual void Set_Local_IP(Utf8String address) override;
     virtual bool Am_I_Host() override;

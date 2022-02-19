@@ -17,9 +17,9 @@
 #include "dx8wrapper.h"
 #include "w3d.h"
 
-unsigned int g_indexBufferCount;
-unsigned int g_indexBufferTotalIndices;
-unsigned int g_indexBufferTotalSize;
+uint32_t g_indexBufferCount;
+uint32_t g_indexBufferTotalIndices;
+uint32_t g_indexBufferTotalSize;
 bool g_dynamicSortingIndexArrayInUse;
 SortingIndexBufferClass *g_dynamicSortingIndexArray;
 unsigned short g_dynamicSortingIndexArraySize;
@@ -29,7 +29,7 @@ DX8IndexBufferClass *g_dynamicDX8IndexBuffer;
 unsigned short g_dynamicDX8IndexBufferSize = 5000;
 unsigned short g_dynamicDX8IndexBufferOffset;
 
-IndexBufferClass::IndexBufferClass(unsigned int type_, unsigned short index_count_) :
+IndexBufferClass::IndexBufferClass(uint32_t type_, unsigned short index_count_) :
     m_indexCount(index_count_), m_engineRefs(0), m_type(type_)
 {
     captainslog_assert(m_type == BUFFER_TYPE_DX8 || m_type == BUFFER_TYPE_SORTING);
@@ -57,22 +57,22 @@ void IndexBufferClass::Release_Engine_Ref()
     captainslog_assert(m_engineRefs >= 0);
 }
 
-unsigned int IndexBufferClass::Get_Total_Buffer_Count()
+uint32_t IndexBufferClass::Get_Total_Buffer_Count()
 {
     return g_indexBufferCount;
 }
 
-unsigned int IndexBufferClass::Get_Total_Allocated_Indices()
+uint32_t IndexBufferClass::Get_Total_Allocated_Indices()
 {
     return g_indexBufferTotalIndices;
 }
 
-unsigned int IndexBufferClass::Get_Total_Allocated_Memory()
+uint32_t IndexBufferClass::Get_Total_Allocated_Memory()
 {
     return g_indexBufferTotalSize;
 }
 
-IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_, unsigned int flags) :
+IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_, uint32_t flags) :
     m_indexBuffer(index_buffer_)
 {
     captainslog_assert(m_indexBuffer);
@@ -118,7 +118,7 @@ IndexBufferClass::WriteLockClass::~WriteLockClass()
 }
 
 IndexBufferClass::AppendLockClass::AppendLockClass(
-    IndexBufferClass *index_buffer_, unsigned int start_index, unsigned int index_range) :
+    IndexBufferClass *index_buffer_, uint32_t start_index, uint32_t index_range) :
     m_indexBuffer(index_buffer_)
 {
     captainslog_assert(start_index + index_range <= m_indexBuffer->Get_Index_Count());
@@ -169,7 +169,7 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
 {
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(m_indexCount);
-    int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
+    int32_t d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
     if (!DX8Wrapper::Get_Current_Caps()->Use_TnL()) {
@@ -244,7 +244,7 @@ void DynamicIBAccessClass::Allocate_Sorting_Dynamic_Buffer()
 {
     captainslog_assert(!g_dynamicSortingIndexArrayInUse);
     g_dynamicSortingIndexArrayInUse = true;
-    int new_index_count = g_dynamicSortingIndexArrayOffset + m_indexCount;
+    int32_t new_index_count = g_dynamicSortingIndexArrayOffset + m_indexCount;
     captainslog_assert(new_index_count < 65536);
 
     if (new_index_count > g_dynamicSortingIndexArraySize) {
@@ -375,5 +375,5 @@ unsigned short DynamicIBAccessClass::Get_Next_Index()
 }
 
 // unimplemented, not used
-// void IndexBufferClass::Copy(unsigned short *indices, unsigned int first_index, unsigned int count)
-// void IndexBufferClass::Copy(unsigned int *indices, unsigned int first_index, unsigned int count)
+// void IndexBufferClass::Copy(unsigned short *indices, uint32_t first_index, uint32_t count)
+// void IndexBufferClass::Copy(uint32_t *indices, uint32_t first_index, uint32_t count)

@@ -44,10 +44,10 @@ public:
     virtual void Update();
 
     // GameEngine interface
-    virtual void Init(int argc, char *argv[]);
+    virtual void Init(int32_t argc, char *argv[]);
     virtual void Execute();
-    virtual void Set_FPS_Limit(int limit) { m_maxFPS = limit; }
-    virtual int Get_FPS_Limit() { return m_maxFPS; }
+    virtual void Set_FPS_Limit(int32_t limit) { m_maxFPS = limit; }
+    virtual int32_t Get_FPS_Limit() { return m_maxFPS; }
     virtual void Set_Quitting(bool quitting) { m_isQuitting = quitting; }
     virtual bool Get_Quitting() { return m_isQuitting; }
     virtual bool Is_Multiplayer_Session();
@@ -70,7 +70,7 @@ public:
     virtual Network *Create_Network() = 0;
 
 protected:
-    int m_maxFPS;
+    int32_t m_maxFPS;
     bool m_isQuitting;
     bool m_isActive;
 };

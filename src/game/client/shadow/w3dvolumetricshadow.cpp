@@ -51,7 +51,7 @@ W3DShadowGeometryMesh::~W3DShadowGeometryMesh()
     }
 }
 
-PolyNeighbor *W3DShadowGeometryMesh::Get_Poly_Neighbor(int index)
+PolyNeighbor *W3DShadowGeometryMesh::Get_Poly_Neighbor(int32_t index)
 {
     if (m_polyNeighbors == nullptr) {
         Build_Polygon_Neighbors();
@@ -69,7 +69,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
 {
     Build_Polygon_Normals();
 
-    const int num = Get_Num_Polygon();
+    const int32_t num = Get_Num_Polygon();
 
     if (num == 0) {
         if (m_numPolyNeighbors != 0) {
@@ -86,36 +86,36 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
         }
     }
 
-    for (int i = 0; i < m_numPolyNeighbors; ++i) {
+    for (int32_t i = 0; i < m_numPolyNeighbors; ++i) {
 
         m_polyNeighbors[i].myIndex = (short)i;
 
-        for (int j = 0; j < 3; ++j) {
+        for (int32_t j = 0; j < 3; ++j) {
             m_polyNeighbors[i].neighbor[j].neighborIndex = -1;
         }
     }
 
-    for (int i = 0; i < m_numPolyNeighbors; ++i) {
+    for (int32_t i = 0; i < m_numPolyNeighbors; ++i) {
 
         short poly[3];
         Get_Polygon_Index(i, poly);
         Vector3 *normal = Get_Polygon_Normal(i);
 
-        for (int j = 0; j < m_numPolyNeighbors; ++j) {
+        for (int32_t j = 0; j < m_numPolyNeighbors; ++j) {
 
             if (i != j) {
 
                 short other_poly[3];
                 Get_Polygon_Index(j, other_poly);
 
-                int index1_pos[2];
+                int32_t index1_pos[2];
 
-                int index1 = -1;
-                int index2 = -1;
+                int32_t index1 = -1;
+                int32_t index2 = -1;
 
-                for (int k = 0; k < 3; ++k) {
+                for (int32_t k = 0; k < 3; ++k) {
 
-                    for (int l = 0; l < 3; ++l) {
+                    for (int32_t l = 0; l < 3; ++l) {
 
                         if (poly[k] == other_poly[l]) {
 
@@ -126,12 +126,12 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
 
                             } else if (index2 == -1) {
 
-                                int p0_dist = k - index1_pos[0];
-                                int p1_dist = l - index1_pos[1];
+                                int32_t p0_dist = k - index1_pos[0];
+                                int32_t p1_dist = l - index1_pos[1];
 
                                 // TODO what is this
-                                unsigned int p0 = (p0_dist & 0x80000000) ^ (abs(p0_dist) & 2) << 30;
-                                unsigned int p1 = (p1_dist & 0x80000000) ^ (abs(p1_dist) & 2) << 30;
+                                uint32_t p0 = (p0_dist & 0x80000000) ^ (abs(p0_dist) & 2) << 30;
+                                uint32_t p1 = (p1_dist & 0x80000000) ^ (abs(p1_dist) & 2) << 30;
 
                                 if (p0 != p1) {
 
@@ -154,7 +154,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
 
                 if (index1 != -1 && index2 != -1) {
                     // found a shared edge
-                    for (int edge = 0; edge < 3; ++edge) {
+                    for (int32_t edge = 0; edge < 3; ++edge) {
                         if (m_polyNeighbors[i].neighbor[edge].neighborIndex == -1) {
                             m_polyNeighbors[i].neighbor[edge].neighborIndex = (short)j;
                             m_polyNeighbors[i].neighbor[edge].neighborEdgeIndex[0] = (short)index1;
@@ -168,7 +168,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Neighbors()
     }
 }
 
-bool W3DShadowGeometryMesh::Allocate_Neighbors(int num_polys)
+bool W3DShadowGeometryMesh::Allocate_Neighbors(int32_t num_polys)
 {
     captainslog_assert(m_numPolyNeighbors == 0);
     captainslog_assert(m_polyNeighbors == nullptr);
@@ -193,7 +193,7 @@ void W3DShadowGeometryMesh::Delete_Neighbors()
     }
 }
 
-Vector3 *W3DShadowGeometryMesh::Get_Polygon_Normal(int index) const
+Vector3 *W3DShadowGeometryMesh::Get_Polygon_Normal(int32_t index) const
 {
     captainslog_assert(m_polygonNormals != nullptr);
 
@@ -205,7 +205,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Normals()
     if (m_polygonNormals == nullptr) {
         Vector3 *normals = new Vector3[m_numPolygons];
 
-        for (int i = 0; i < m_numPolygons; ++i) {
+        for (int32_t i = 0; i < m_numPolygons; ++i) {
             Get_Polygon_Normal(i, &normals[i]);
         }
 
@@ -213,7 +213,7 @@ void W3DShadowGeometryMesh::Build_Polygon_Normals()
     }
 }
 
-void W3DShadowGeometryMesh::Get_Polygon_Normal(int index, Vector3 *normal) const
+void W3DShadowGeometryMesh::Get_Polygon_Normal(int32_t index, Vector3 *normal) const
 {
 
     if (m_polygonNormals != nullptr) {
@@ -234,7 +234,7 @@ void W3DShadowGeometryMesh::Get_Polygon_Normal(int index, Vector3 *normal) const
     Vector3::Normalized_Cross_Product(a, b, normal);
 }
 
-void W3DShadowGeometryMesh::Get_Polygon_Index(int polygon_index, short *index_list) const
+void W3DShadowGeometryMesh::Get_Polygon_Index(int32_t polygon_index, short *index_list) const
 {
     const TriIndex *v = &m_polygons[polygon_index];
     index_list[0] = m_parentVerts[v->I];
@@ -249,25 +249,25 @@ void W3DShadowGeometry::Set_Name(const char *name)
     strlcpy(m_name, name, sizeof(m_name));
 }
 
-int W3DShadowGeometry::Init(RenderObjClass *robj)
+int32_t W3DShadowGeometry::Init(RenderObjClass *robj)
 {
     return 1;
 }
 
-int W3DShadowGeometry::Init_From_HLOD(RenderObjClass *robj)
+int32_t W3DShadowGeometry::Init_From_HLOD(RenderObjClass *robj)
 {
     // TODO deduplicate Init_From_HLOD Init_From_Mesh code
 
     HLodClass *hlod = static_cast<HLodClass *>(robj);
 
-    int lod_index = hlod->Get_LOD_Count() - 1;
+    int32_t lod_index = hlod->Get_LOD_Count() - 1;
 
     captainslog_dbgassert(m_meshCount < MAX_SHADOW_CASTER_MESHES, "Too many shadow sub-meshes");
 
     W3DShadowGeometryMesh *geo_mesh = &m_meshList[m_meshCount];
 
     m_numTotalsVerts = 0;
-    for (int model_index = 0; model_index < hlod->Get_Lod_Model_Count(lod_index); ++model_index) {
+    for (int32_t model_index = 0; model_index < hlod->Get_Lod_Model_Count(lod_index); ++model_index) {
 
         RenderObjClass *lod_model = hlod->Peek_Lod_Model(lod_index, model_index);
 
@@ -308,12 +308,12 @@ int W3DShadowGeometry::Init_From_HLOD(RenderObjClass *robj)
                 unsigned short verts[16384];
                 memset(verts, -1, sizeof(verts));
 
-                int num = geo_mesh->m_numVerts;
+                int32_t num = geo_mesh->m_numVerts;
 
-                for (int i = 0; i < geo_mesh->m_numVerts; ++i) {
+                for (int32_t i = 0; i < geo_mesh->m_numVerts; ++i) {
                     if (verts[i] == 0xFFFF) {
 
-                        for (int j = i + 1; j < geo_mesh->m_numVerts; ++j) {
+                        for (int32_t j = i + 1; j < geo_mesh->m_numVerts; ++j) {
 
                             Vector3 d = geo_mesh->m_verts[i] - geo_mesh->m_verts[j];
 
@@ -348,7 +348,7 @@ int W3DShadowGeometry::Init_From_HLOD(RenderObjClass *robj)
     return m_meshCount != 0;
 }
 
-int W3DShadowGeometry::Init_From_Mesh(RenderObjClass *robj)
+int32_t W3DShadowGeometry::Init_From_Mesh(RenderObjClass *robj)
 {
     // TODO deduplicate Init_From_HLOD Init_From_Mesh code
 
@@ -382,12 +382,12 @@ int W3DShadowGeometry::Init_From_Mesh(RenderObjClass *robj)
     unsigned short verts[16384];
     memset(verts, -1, sizeof(verts));
 
-    int num = geo_mesh->m_numVerts;
+    int32_t num = geo_mesh->m_numVerts;
 
-    for (int i = 0; i < geo_mesh->m_numVerts; ++i) {
+    for (int32_t i = 0; i < geo_mesh->m_numVerts; ++i) {
         if (verts[i] == 0xFFFF) {
 
-            for (int j = i + 1; j < geo_mesh->m_numVerts; ++j) {
+            for (int32_t j = i + 1; j < geo_mesh->m_numVerts; ++j) {
 
                 Vector3 d = geo_mesh->m_verts[i] - geo_mesh->m_verts[j];
 
@@ -480,7 +480,7 @@ bool W3DShadowGeometryManager::Is_Missing(const char *name) const
     return m_missingGeomTable->Find(name) != nullptr;
 }
 
-int W3DShadowGeometryManager::Load_Geom(RenderObjClass *robj, const char *name)
+int32_t W3DShadowGeometryManager::Load_Geom(RenderObjClass *robj, const char *name)
 {
     bool state = false;
 

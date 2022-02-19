@@ -43,8 +43,8 @@ public:
     ArmorTemplateSet() { Clear(); }
     void Clear();
     void Parse_Armor_Template_Set(INI *ini);
-    const BitFlags<ARMORSET_COUNT> &Get_Conditions_Yes(int condition_idx) const { return m_conditions; }
-    int Get_Conditions_Count() const { return 1; }
+    const BitFlags<ARMORSET_COUNT> &Get_Conditions_Yes(int32_t condition_idx) const { return m_conditions; }
+    int32_t Get_Conditions_Count() const { return 1; }
     Utf8String Get_Definition() const { return "ArmorTemplateSet"; }
 
 private:

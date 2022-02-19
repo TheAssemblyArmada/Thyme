@@ -45,8 +45,8 @@ void Handicap::Read_From_Dict(const Dict *dict)
     static const char *_tt_names[] = { "GENERIC", "BUILDINGS" };
     bool exists = false;
 
-    for (int i = 0; i < HANDICAP_TYPE_COUNT; ++i) {
-        for (int j = 0; j < THING_TYPE_COUNT; ++j) {
+    for (int32_t i = 0; i < HANDICAP_TYPE_COUNT; ++i) {
+        for (int32_t j = 0; j < THING_TYPE_COUNT; ++j) {
             Utf8String key_name = "HANDICAP_";
             key_name += _ht_names[i];
             key_name += "_";

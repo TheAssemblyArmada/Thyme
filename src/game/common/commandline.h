@@ -16,4 +16,4 @@
 
 #include "always.h"
 
-void Parse_Command_Line(int argc, char *argv[]);
+void Parse_Command_Line(int32_t argc, char *argv[]);

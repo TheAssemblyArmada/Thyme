@@ -53,7 +53,7 @@ struct BreezeInfo
 
 struct TCounter
 {
-    int value;
+    int32_t value;
     Utf8String name;
     bool is_countdown_timer;
 };
@@ -88,8 +88,8 @@ public:
 
 private:
     Utf8String m_name;
-    int m_defaultPriority;
-    std::map<const ThingTemplate *, int> *m_priorityMap;
+    int32_t m_defaultPriority;
+    std::map<const ThingTemplate *, int32_t> *m_priorityMap;
 };
 
 class ScriptEngine : public SubsystemInterface, public SnapShot
@@ -128,8 +128,8 @@ public:
 
     // ScriptEngine virtuals.
     virtual void New_Map();
-    virtual ActionTemplate *Get_Action_Template(int index);
-    virtual ConditionTemplate *Get_Condition_Template(int index);
+    virtual ActionTemplate *Get_Action_Template(int32_t index);
+    virtual ConditionTemplate *Get_Condition_Template(int32_t index);
     virtual void Start_End_Game_Timer();
     virtual void Start_Quick_End_Game_Timer();
     virtual void Start_Close_Window_Timer();
@@ -151,23 +151,24 @@ public:
     virtual void Transfer_Object_Name(const Utf8String &obj_name, Object *obj);
     virtual void Notify_Of_Object_Destruction(Object *obj);
     virtual void Notify_Of_Completed_Video(const Utf8String &video_name);
-    virtual void Notify_Of_Triggered_Special_Power(int player_idx, const Utf8String &power_name, ObjectID source);
-    virtual void Notify_Of_Midway_Special_Power(int player_idx, const Utf8String &power_name, ObjectID source);
-    virtual void Notify_Of_Completed_Special_Power(int player_idx, const Utf8String &power_name, ObjectID source);
-    virtual void Notify_Of_Completed_Upgrade(int player_idx, const Utf8String &upgrade_name, ObjectID source);
-    virtual void Notify_Of_Acquired_Science(int player_idx, ScienceType science);
+    virtual void Notify_Of_Triggered_Special_Power(int32_t player_idx, const Utf8String &power_name, ObjectID source);
+    virtual void Notify_Of_Midway_Special_Power(int32_t player_idx, const Utf8String &power_name, ObjectID source);
+    virtual void Notify_Of_Completed_Special_Power(int32_t player_idx, const Utf8String &power_name, ObjectID source);
+    virtual void Notify_Of_Completed_Upgrade(int32_t player_idx, const Utf8String &upgrade_name, ObjectID source);
+    virtual void Notify_Of_Acquired_Science(int32_t player_idx, ScienceType science);
     virtual void Signal_UI_Interact(const Utf8String &hook_name);
     virtual bool Is_Video_Complete(const Utf8String &video_name, bool remove_from_list);
     virtual bool Is_Speech_Complete(const Utf8String &speech_name, bool remove_from_list);
     virtual bool Is_Audio_Complete(const Utf8String &audio_name, bool remove_from_list);
     virtual bool Is_Special_Power_Triggered(
-        int player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
+        int32_t player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
     virtual bool Is_Special_Power_Midway(
-        int player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
+        int32_t player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
     virtual bool Is_Special_Power_Complete(
-        int player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
-    virtual bool Is_Upgrade_Complete(int player_idx, const Utf8String &upgrade_name, bool remove_from_list, ObjectID source);
-    virtual bool Is_Science_Acquired(int player_idx, ScienceType science, bool remove_from_list);
+        int32_t player_idx, const Utf8String &power_name, bool remove_from_list, ObjectID source);
+    virtual bool Is_Upgrade_Complete(
+        int32_t player_idx, const Utf8String &upgrade_name, bool remove_from_list, ObjectID source);
+    virtual bool Is_Science_Acquired(int32_t player_idx, ScienceType science, bool remove_from_list);
     virtual void Adjust_Topple_Direction(Object *obj, Coord2D *direction);
     virtual void Adjust_Topple_Direction(Object *obj, Coord3D *direction);
     virtual Script *Find_Script_By_Name(const Utf8String &script_name);
@@ -196,13 +197,13 @@ private:
     ActionTemplate m_actionTemplates[ScriptAction::ACTION_COUNT];
     ConditionTemplate m_conditionTemplates[Condition::CONDITION_COUNT];
     TCounter m_counters[MAX_COUNTERS];
-    int m_numCounters;
+    int32_t m_numCounters;
     TFlag m_flags[MAX_FLAGS];
-    int m_numFlags;
+    int32_t m_numFlags;
     AttackPriorityInfo m_attackPriorityInfo[MAX_ATTACK_PRIORITIES];
-    int m_numAttackInfo;
-    int m_endGameTimer;
-    int m_closeWindowTimer;
+    int32_t m_numAttackInfo;
+    int32_t m_endGameTimer;
+    int32_t m_closeWindowTimer;
     Team *m_callingTeam;
     Object *m_callingObject;
     Team *m_conditionTeam;
@@ -210,17 +211,17 @@ private:
     std::vector<std::pair<Utf8String, Object *>> m_namedObjects;
     bool m_firstUpdate;
     Player *m_currentPlayer;
-    int m_unkInt1;
+    int32_t m_unkInt1;
     Utf8String m_currentTrackName;
     TFade m_fade;
     float m_minFade;
     float m_maxFade;
     float m_curFadeValue;
-    int m_curFadeFrame;
-    int m_fadeFramesIncrease;
-    int m_fadeFramesHold;
-    int m_fadeFramesDecrease;
-    int m_objectCreationDestructionFrame;
+    int32_t m_curFadeFrame;
+    int32_t m_fadeFramesIncrease;
+    int32_t m_fadeFramesHold;
+    int32_t m_fadeFramesDecrease;
+    int32_t m_objectCreationDestructionFrame;
     std::map<Utf8String, unsigned> m_playerObjectCounts[16];
     std::list<Utf8String> m_completedVideo;
     std::list<std::pair<Utf8String, unsigned>> m_completedSpeech;
@@ -249,14 +250,14 @@ private:
 
 #ifdef GAME_DLL
     static bool &s_canAppContinue;
-    static int &s_currentFrame;
-    static int &s_lastFrame;
+    static int32_t &s_currentFrame;
+    static int32_t &s_lastFrame;
     static void *&s_debugDll;
     static void *&s_particleDll;
 #else
     static bool s_canAppContinue;
-    static int s_currentFrame;
-    static int s_lastFrame;
+    static int32_t s_currentFrame;
+    static int32_t s_lastFrame;
     static void *s_debugDll;
     static void *s_particleDll;
 #endif

@@ -32,7 +32,7 @@ GlobalData *g_theWriteableGlobalData = nullptr;
 #endif
 
 GlobalData *GlobalData::s_theOriginal = nullptr;
-const int CRC_BUFFER_SIZE = 0x10000;
+const int32_t CRC_BUFFER_SIZE = 0x10000;
 
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
@@ -446,7 +446,7 @@ GlobalData::GlobalData()
     m_showMetrics = false;
 
     // Set defaults for water effects.
-    for (int i = 0; i < 4; ++i) {
+    for (int32_t i = 0; i < 4; ++i) {
         m_vertexWaterAvailableMaps[i].Clear();
         m_vertexWaterHeightClampLow[i] = 0.0f;
         m_vertexWaterHeightClampHigh[i] = 0.0f;
@@ -492,7 +492,7 @@ GlobalData::GlobalData()
     m_containerPipScreenOffset.y = 0.0f;
 
     // Set defaults for the lighting
-    for (int i = 0; i < 3; ++i) {
+    for (int32_t i = 0; i < 3; ++i) {
         m_terrainAmbient[i].red = 0.0f;
         m_terrainAmbient[i].green = 0.0f;
         m_terrainAmbient[i].blue = 0.0f;
@@ -503,7 +503,7 @@ GlobalData::GlobalData()
         m_terrainLightPos[i].y = 0.0f;
         m_terrainLightPos[i].z = -1.0f;
 
-        for (int j = 0; j < TIME_OF_DAY_COUNT; ++j) {
+        for (int32_t j = 0; j < TIME_OF_DAY_COUNT; ++j) {
             m_terrainPlaneLighting[j][i].ambient.red = 0.0f;
             m_terrainPlaneLighting[j][i].ambient.green = 0.0f;
             m_terrainPlaneLighting[j][i].ambient.blue = 0.0f;
@@ -673,7 +673,7 @@ GlobalData::GlobalData()
     m_unkBool26 = false;
 
     if (m_timeOfDay > TIME_OF_DAY_INVALID && m_timeOfDay < TIME_OF_DAY_COUNT) {
-        for (int i = 0; i < LIGHT_COUNT; ++i) {
+        for (int32_t i = 0; i < LIGHT_COUNT; ++i) {
             m_terrainAmbient[i] = m_terrainPlaneLighting[m_timeOfDay][i].ambient;
             m_terrainDiffuse[i] = m_terrainPlaneLighting[m_timeOfDay][i].diffuse;
             m_terrainLightPos[i] = m_terrainPlaneLighting[m_timeOfDay][i].lightPos;
@@ -728,7 +728,7 @@ GlobalData::GlobalData()
     }
 
     // crc the skirmish and multiplayer scripts.
-    int read = 0;
+    int32_t read = 0;
     uint8_t buffer[CRC_BUFFER_SIZE];
     File *scriptfile = g_theFileSystem->Open("Data/Scripts/SkirmishScripts.scb", File::BINARY | File::READ);
     if (scriptfile) {
@@ -794,7 +794,7 @@ bool GlobalData::Set_Time_Of_Day(TimeOfDayType time)
 
     m_timeOfDay = time;
 
-    for (int i = 0; i < LIGHT_COUNT; ++i) {
+    for (int32_t i = 0; i < LIGHT_COUNT; ++i) {
         m_terrainAmbient[i] = m_terrainPlaneLighting[time][i].ambient;
         m_terrainDiffuse[i] = m_terrainPlaneLighting[time][i].diffuse;
         m_terrainLightPos[i] = m_terrainPlaneLighting[time][i].lightPos;
@@ -830,7 +830,7 @@ void GlobalData::Parse_Game_Data_Definition(INI *ini)
     g_theWriteableGlobalData->m_firewallPortOverrides = opts.Get_Firewall_Port_Override();
     g_theWriteableGlobalData->m_saveCameraInReplays = opts.Save_Camera_In_Replays();
     g_theWriteableGlobalData->m_useCameraInReplays = opts.Use_Camera_In_Replays();
-    int gamma = opts.Get_Gamma_Value();
+    int32_t gamma = opts.Get_Gamma_Value();
 
     if (gamma >= 50) {
         if (gamma > 50) {
@@ -842,8 +842,8 @@ void GlobalData::Parse_Game_Data_Definition(INI *ini)
         g_theWriteableGlobalData->m_gammaValue = (((50 - gamma) * 0.4f) / -50.0f) + 1.0f;
     }
 
-    int x;
-    int y;
+    int32_t x;
+    int32_t y;
     opts.Get_Resolution(&x, &y);
     g_theWriteableGlobalData->m_xResolution = x;
     g_theWriteableGlobalData->m_yResolution = y;

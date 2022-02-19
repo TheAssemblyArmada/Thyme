@@ -17,7 +17,7 @@
 #include "scriptlist.h"
 #include "xfer.h"
 
-int ScriptGroup::s_curID = 0;
+int32_t ScriptGroup::s_curID = 0;
 
 ScriptGroup::ScriptGroup() :
     m_firstScript(nullptr),
@@ -149,13 +149,13 @@ ScriptGroup *ScriptGroup::Duplicate_And_Qualify(const Utf8String &str1, const Ut
 /**
  * @brief Adds a script at the requested point in the list, or at the end if the index is larger than the script count.
  */
-void ScriptGroup::Add_Script(Script *script, int index)
+void ScriptGroup::Add_Script(Script *script, int32_t index)
 {
     Script *position = nullptr;
     Script *script_list = m_firstScript;
     captainslog_dbgassert(script->Get_Next() == nullptr, "Adding already linked group.");
 
-    for (int i = index; i > 0; --i) {
+    for (int32_t i = index; i > 0; --i) {
         if (script_list == nullptr) {
             break;
         }

@@ -67,13 +67,13 @@ Particle::Particle(ParticleSystem *system, const ParticleInfo &info) :
     m_windRandomness = info.m_windRandomness;
     m_particleUpTowardsEmitter = info.m_particleUpTowardsEmitter;
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         m_alphaKey[i] = info.m_alphaKey[i];
     }
 
     Compute_Alpha_Rate();
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         m_colorKey[i] = info.m_colorKey[i];
     }
 
@@ -155,7 +155,7 @@ void Particle::Compute_Alpha_Rate()
 {
     if (m_alphaKey[m_alphaTargetKey].frame != 0) {
         float val_diff = m_alphaKey[m_alphaTargetKey].value - m_alphaKey[m_alphaTargetKey - 1].value;
-        float frame_diff = float(int(m_alphaKey[m_alphaTargetKey].frame - m_alphaKey[m_alphaTargetKey - 1].frame));
+        float frame_diff = float(int32_t(m_alphaKey[m_alphaTargetKey].frame - m_alphaKey[m_alphaTargetKey - 1].frame));
         m_alphaRate = val_diff / frame_diff;
     } else {
         m_alphaRate = 0.0f;
@@ -170,7 +170,7 @@ void Particle::Compute_Alpha_Rate()
 void Particle::Compute_Color_Rate()
 {
     if (m_colorKey[m_colorTargetKey].frame != 0) {
-        float frame_diff = float(int(m_colorKey[m_colorTargetKey].frame - m_colorKey[m_colorTargetKey - 1].frame));
+        float frame_diff = float(int32_t(m_colorKey[m_colorTargetKey].frame - m_colorKey[m_colorTargetKey - 1].frame));
         m_colorRate.red =
             float(m_colorKey[m_colorTargetKey].color.red - m_colorKey[m_colorTargetKey - 1].color.red) / frame_diff;
         m_colorRate.green =

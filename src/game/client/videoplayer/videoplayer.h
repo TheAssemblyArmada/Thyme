@@ -48,8 +48,8 @@ public:
     virtual void Close_All_Streams();
     virtual void Add_Video(Video *video);
     virtual void Remove_Video(Video *video);
-    virtual int Get_Video_Count();
-    virtual Video *Get_Video(int index);
+    virtual int32_t Get_Video_Count();
+    virtual Video *Get_Video(int32_t index);
     virtual Video *Get_Video(Utf8String name);
     virtual FieldParse *Get_Field_Parse() { return s_videoFieldParseTable; }
     virtual void Notify_Player_Of_New_Provider(bool unk) {}

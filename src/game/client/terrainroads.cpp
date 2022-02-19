@@ -71,7 +71,7 @@ FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
-int TerrainRoadCollection::s_idCounter;
+int32_t TerrainRoadCollection::s_idCounter;
 
 TerrainRoadType::TerrainRoadType() :
     m_name(),
@@ -114,8 +114,8 @@ void TerrainRoadType::Parse_Transition_To_OCL(INI *ini, void *formal, void *stor
         is_damage = false;
     }
 
-    int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
-    int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
+    int32_t dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
+    int32_t effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
     captainslog_relassert(effect >= 0 && effect < 3,
         0xDEAD0006,
@@ -149,8 +149,8 @@ void TerrainRoadType::Parse_Transition_To_FX(INI *ini, void *formal, void *store
         is_damage = false;
     }
 
-    int dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
-    int effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
+    int32_t dmg = INI::Scan_IndexList(ini->Get_Next_Sub_Token("ToState"), g_bodyDamageNames);
+    int32_t effect = INI::Scan_Int(ini->Get_Next_Sub_Token("EffectNum")) - 1; // Effect is 1 based, we need 0 based.
 
     captainslog_relassert(effect >= 0 && effect < 3,
         0xDEAD0006,
@@ -230,15 +230,15 @@ TerrainRoadType *TerrainRoadCollection::New_Bridge(Utf8String name)
         retval->m_bridgeModelNameBroken = def->m_bridgeModelNameBroken;
         retval->m_textureBroken = def->m_textureBroken;
 
-        for (int i = 0; i < BRIDGE_MAX_TOWERS; ++i) {
+        for (int32_t i = 0; i < BRIDGE_MAX_TOWERS; ++i) {
             retval->m_towerObjectName[i] = def->m_towerObjectName[i];
         }
 
-        for (int i = 0; i < BODY_COUNT; ++i) {
+        for (int32_t i = 0; i < BODY_COUNT; ++i) {
             retval->m_damagedToSounds[i] = def->m_damagedToSounds[i];
             retval->m_repairedToSounds[i] = def->m_repairedToSounds[i];
 
-            for (int j = 0; j < 3; ++j) {
+            for (int32_t j = 0; j < 3; ++j) {
                 retval->m_damagedTransitionOCL[i][j] = def->m_damagedTransitionOCL[i][j];
                 retval->m_damagedTransitionFX[i][j] = def->m_damagedTransitionFX[i][j];
                 retval->m_repairedTransitionOCL[i][j] = def->m_repairedTransitionOCL[i][j];

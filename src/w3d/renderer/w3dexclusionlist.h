@@ -34,5 +34,5 @@ public:
 
 private:
     const DynamicVectorClass<StringClass> *m_list;
-    HashTemplateClass<StringClass, int> m_hash;
+    HashTemplateClass<StringClass, int32_t> m_hash;
 };

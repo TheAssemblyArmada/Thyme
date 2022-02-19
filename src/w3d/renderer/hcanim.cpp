@@ -104,7 +104,7 @@ W3DErrorType HCompressedAnimClass::Load_W3D(ChunkLoadClass &cload)
         return W3D_ERROR_GENERIC;
     }
 
-    for (int i = 0; i < m_numNodes; i++) {
+    for (int32_t i = 0; i < m_numNodes; i++) {
         m_nodeMotion[i].Set_Flavor(m_flavor);
     }
 
@@ -245,7 +245,7 @@ void HCompressedAnimClass::add_bit_channel(TimeCodedBitChannelClass *newchan)
     }
 }
 
-void HCompressedAnimClass::Get_Translation(Vector3 &trans, int pividx, float frame) const
+void HCompressedAnimClass::Get_Translation(Vector3 &trans, int32_t pividx, float frame) const
 {
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     trans.Set(0, 0, 0);
@@ -279,7 +279,7 @@ void HCompressedAnimClass::Get_Translation(Vector3 &trans, int pividx, float fra
     }
 }
 
-void HCompressedAnimClass::Get_Orientation(Quaternion &q, int pividx, float frame) const
+void HCompressedAnimClass::Get_Orientation(Quaternion &q, int32_t pividx, float frame) const
 {
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     q.Set();
@@ -297,7 +297,7 @@ void HCompressedAnimClass::Get_Orientation(Quaternion &q, int pividx, float fram
     }
 }
 
-void HCompressedAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame) const
+void HCompressedAnimClass::Get_Transform(Matrix3D &mtx, int32_t pividx, float frame) const
 {
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     mtx.Make_Identity();
@@ -339,7 +339,7 @@ void HCompressedAnimClass::Get_Transform(Matrix3D &mtx, int pividx, float frame)
     }
 }
 
-bool HCompressedAnimClass::Get_Visibility(int pividx, float frame)
+bool HCompressedAnimClass::Get_Visibility(int32_t pividx, float frame)
 {
     if (m_nodeMotion[pividx].Vis) {
         return m_nodeMotion[pividx].Vis->Get_Bit(frame) == 1;
@@ -347,7 +347,7 @@ bool HCompressedAnimClass::Get_Visibility(int pividx, float frame)
     return true;
 }
 
-bool HCompressedAnimClass::Is_Node_Motion_Present(int pividx)
+bool HCompressedAnimClass::Is_Node_Motion_Present(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
@@ -371,35 +371,35 @@ bool HCompressedAnimClass::Is_Node_Motion_Present(int pividx)
     return mot->Vis != nullptr;
 }
 
-bool HCompressedAnimClass::Has_X_Translation(int pividx)
+bool HCompressedAnimClass::Has_X_Translation(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     return mot->vd.X != nullptr;
 }
 
-bool HCompressedAnimClass::Has_Y_Translation(int pividx)
+bool HCompressedAnimClass::Has_Y_Translation(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     return mot->vd.Y != nullptr;
 }
 
-bool HCompressedAnimClass::Has_Z_Translation(int pividx)
+bool HCompressedAnimClass::Has_Z_Translation(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     return mot->vd.Z != nullptr;
 }
 
-bool HCompressedAnimClass::Has_Rotation(int pividx)
+bool HCompressedAnimClass::Has_Rotation(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];
     return mot->vd.Q != nullptr;
 }
 
-bool HCompressedAnimClass::Has_Visibility(int pividx)
+bool HCompressedAnimClass::Has_Visibility(int32_t pividx)
 {
     captainslog_assert((pividx >= 0) && (pividx < m_numNodes));
     NodeCompressedMotionStruct *mot = &m_nodeMotion[pividx];

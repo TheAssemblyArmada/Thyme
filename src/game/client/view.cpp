@@ -171,12 +171,12 @@ void View::Scroll_By(Coord2D *pos)
     m_pos.y += pos->y;
 }
 
-void View::Move_Camera_To(const Coord3D *o, int i1, int i2, bool b, float f1, float f2)
+void View::Move_Camera_To(const Coord3D *o, int32_t i1, int32_t i2, bool b, float f1, float f2)
 {
     Look_At(o);
 }
 
-void View::Move_Camera_Along_Waypoint_Path(Waypoint *w, int i1, int i2, bool b, float f1, float f2) {}
+void View::Move_Camera_Along_Waypoint_Path(Waypoint *w, int32_t i1, int32_t i2, bool b, float f1, float f2) {}
 
 bool View::Is_Camera_Movement_Finished()
 {
@@ -185,9 +185,9 @@ bool View::Is_Camera_Movement_Finished()
 
 void View::Camera_Mod_Final_Zoom(float f1, float f2, float f3) {}
 
-void View::Camera_Mod_Rolling_Average(int i) {}
+void View::Camera_Mod_Rolling_Average(int32_t i) {}
 
-void View::Camera_Mod_Final_Time_Multiplier(int i) {}
+void View::Camera_Mod_Final_Time_Multiplier(int32_t i) {}
 
 void View::Camera_Mod_Final_Pitch(float f1, float f2, float f3) {}
 
@@ -229,35 +229,35 @@ bool View::Set_View_Filter(FilterTypes filter)
     return false;
 }
 
-void View::Set_Fade_Parameters(int i1, int i2) {}
+void View::Set_Fade_Parameters(int32_t i1, int32_t i2) {}
 
 void View::Set_3D_Wireframe_Mode(bool on) {}
 
-void View::Reset_Camera(const Coord3D *o, int i, float f1, float f2) {}
+void View::Reset_Camera(const Coord3D *o, int32_t i, float f1, float f2) {}
 
-void View::Rotate_Camera(float f1, int i, float f2, float f3) {}
+void View::Rotate_Camera(float f1, int32_t i, float f2, float f3) {}
 
-void View::Rotate_Camera_Toward_Object(ObjectID id, int i1, int i2, float f1, float f2) {}
+void View::Rotate_Camera_Toward_Object(ObjectID id, int32_t i1, int32_t i2, float f1, float f2) {}
 
-void View::Rotate_Camera_Toward_Position(const Coord3D *o, int i, float f1, float f2, bool b) {}
+void View::Rotate_Camera_Toward_Position(const Coord3D *o, int32_t i, float f1, float f2, bool b) {}
 
 bool View::Is_Time_Frozen()
 {
     return false;
 }
 
-int View::Get_Time_Multiplier()
+int32_t View::Get_Time_Multiplier()
 {
     return 1;
 }
 
-void View::Set_Time_Multiplier(int multiplier) {}
+void View::Set_Time_Multiplier(int32_t multiplier) {}
 
 void View::Set_Default_View(float f1, float f2, float f3) {}
 
-void View::Zoom_Camera(float f1, int i, float f2, float f3) {}
+void View::Zoom_Camera(float f1, int32_t i, float f2, float f3) {}
 
-void View::Pitch_Camera(float f1, int i, float f2, float f3) {}
+void View::Pitch_Camera(float f1, int32_t i, float f2, float f3) {}
 
 void View::Set_Angle(float angle)
 {

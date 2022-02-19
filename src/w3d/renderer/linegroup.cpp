@@ -56,10 +56,10 @@ void LineGroupClass::Set_Arrays(ShareBufferClass<Vector3> *start_locs,
     ShareBufferClass<Vector3> *end_locs,
     ShareBufferClass<Vector4> *diffuse,
     ShareBufferClass<Vector4> *tail_diffuse,
-    ShareBufferClass<unsigned int> *alt,
+    ShareBufferClass<uint32_t> *alt,
     ShareBufferClass<float> *sizes,
     ShareBufferClass<float> *u_coords,
-    int count)
+    int32_t count)
 {
     captainslog_assert(start_locs != nullptr);
     captainslog_assert(end_locs != nullptr);
@@ -162,16 +162,16 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
         model_view.Set_Translation(Vector3(0, 0, 0));
         model_view.Get_Orthogonal_Inverse(model_view);
 
-        for (int i = 0; i < 3; ++i) {
+        for (int32_t i = 0; i < 3; ++i) {
             Matrix3D::Transform_Vector(model_view, _offset[i], &_offset[i]);
         }
     } else {
         DX8Wrapper::Set_Transform(D3DTS_VIEW, identity);
     }
 
-    int polygon_count = 0;
-    int index_count = 0;
-    int vertex_count = 0;
+    int32_t polygon_count = 0;
+    int32_t index_count = 0;
+    int32_t vertex_count = 0;
 
     if (m_mode == TETRAHEDRON) {
         polygon_count = TETRAHEADRON_NUM_POLYGONS * m_lineCount;
@@ -193,7 +193,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
         uint16_t *index = index_lock.Get_Index_Array();
 
         if (m_mode == TETRAHEDRON) {
-            for (int i = 0; i < m_lineCount; ++i) {
+            for (int32_t i = 0; i < m_lineCount; ++i) {
                 *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 0);
                 *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 2);
                 *index++ = uint16_t(TETRAHEADRON_NUM_VERTEXES * i + 1);
@@ -212,7 +212,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
             }
 
         } else if (m_mode == PRISM) {
-            for (int i = 0; i < m_lineCount; ++i) {
+            for (int32_t i = 0; i < m_lineCount; ++i) {
                 *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 0);
                 *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 1);
                 *index++ = uint16_t(PRISM_NUM_VERTEXES * i + 2);
@@ -267,9 +267,9 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
         float u_coord = m_defaultUCoord;
         Vector4 tail_diffuse(m_defaultTailDiffuse);
 
-        for (int i = 0; i < m_lineCount; ++i) {
+        for (int32_t i = 0; i < m_lineCount; ++i) {
 
-            int idx = i;
+            int32_t idx = i;
 
             if (m_altBuffer != nullptr) {
                 idx = m_altBuffer->Get_Element(i);
@@ -304,7 +304,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
                 vertex->v1 = 1.0f;
                 ++vertex;
 
-                for (int k = 0; k < 3; ++k) {
+                for (int32_t k = 0; k < 3; ++k) {
                     vtx.Set(start_vtx + (size * _offset[k]));
                     vertex->x = vtx.X;
                     vertex->y = vtx.Y;
@@ -316,7 +316,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
                 }
             } else if (m_mode == PRISM) {
 
-                for (int k = 0; k < 3; ++k) {
+                for (int32_t k = 0; k < 3; ++k) {
                     vtx.Set(start_vtx + (size * _offset[k]));
                     vertex->x = vtx.X;
                     vertex->y = vtx.Y;
@@ -327,7 +327,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
                     ++vertex;
                 }
 
-                for (int k = 0; k < 3; ++k) {
+                for (int32_t k = 0; k < 3; ++k) {
                     vtx.Set(end_vtx + (size * _offset[k]));
                     vertex->x = vtx.X;
                     vertex->y = vtx.Y;
@@ -356,7 +356,7 @@ void LineGroupClass::Render(RenderInfoClass &rinfo)
 #endif
 }
 
-int LineGroupClass::Get_Polygon_Count() const
+int32_t LineGroupClass::Get_Polygon_Count() const
 {
     switch (m_mode) {
         case TETRAHEDRON:

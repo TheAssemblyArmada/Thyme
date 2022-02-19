@@ -266,13 +266,13 @@ unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(PICK_ADDRESS(
 float &DX8Wrapper::s_zNear = Make_Global<float>(PICK_ADDRESS(0x00A47E38, 0x00DEE670));
 float &DX8Wrapper::s_zFar = Make_Global<float>(PICK_ADDRESS(0x00A47EB8, 0x00DEE6F0));
 Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(PICK_ADDRESS(0x00A47DF8, 0x00DEE630));
-int &DX8Wrapper::s_mainThreadID = Make_Global<int>(PICK_ADDRESS(0x00A47F2C, 0x00DEE764));
-int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(PICK_ADDRESS(0x00A15CDC, 0x00CC36BC));
+int32_t &DX8Wrapper::s_mainThreadID = Make_Global<int32_t>(PICK_ADDRESS(0x00A47F2C, 0x00DEE764));
+int32_t &DX8Wrapper::s_currentRenderDevice = Make_Global<int32_t>(PICK_ADDRESS(0x00A15CDC, 0x00CC36BC));
 DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(PICK_ADDRESS(0x00A47F30, 0x00DEE768));
-int &DX8Wrapper::s_resolutionWidth = Make_Global<int>(PICK_ADDRESS(0x00A15CE0, 0x00CC36C0));
-int &DX8Wrapper::s_resolutionHeight = Make_Global<int>(PICK_ADDRESS(0x00A15CE4, 0x00CC36C4));
-int &DX8Wrapper::s_bitDepth = Make_Global<int>(PICK_ADDRESS(0x00A15CE8, 0x00CC36C8));
-int &DX8Wrapper::s_textureBitDepth = Make_Global<int>(PICK_ADDRESS(0x00A15CEC, 0x00CC36CC));
+int32_t &DX8Wrapper::s_resolutionWidth = Make_Global<int32_t>(PICK_ADDRESS(0x00A15CE0, 0x00CC36C0));
+int32_t &DX8Wrapper::s_resolutionHeight = Make_Global<int32_t>(PICK_ADDRESS(0x00A15CE4, 0x00CC36C4));
+int32_t &DX8Wrapper::s_bitDepth = Make_Global<int32_t>(PICK_ADDRESS(0x00A15CE8, 0x00CC36C8));
+int32_t &DX8Wrapper::s_textureBitDepth = Make_Global<int32_t>(PICK_ADDRESS(0x00A15CEC, 0x00CC36CC));
 ARRAY_DEF(PICK_ADDRESS(0x00A4277C, 0x00DE8FB4), bool, DX8Wrapper::s_currentLightEnables, 4);
 unsigned &DX8Wrapper::s_matrixChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F08, 0x00DEE740));
 unsigned &DX8Wrapper::s_materialChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F0C, 0x00DEE744));
@@ -309,10 +309,10 @@ D3DPRESENT_PARAMETERS &DX8Wrapper::s_presentParameters =
     Make_Global<D3DPRESENT_PARAMETERS>(PICK_ADDRESS(0x00A47E40, 0x00DEE678));
 D3DCOLOR &DX8Wrapper::s_fogColor = Make_Global<D3DCOLOR>(PICK_ADDRESS(0x00A47EE8, 0x00DEE720));
 bool &DX8Wrapper::s_EnableTriangleDraw = Make_Global<bool>(PICK_ADDRESS(0x00A15CD9, 0x00CC36B9));
-int &DX8Wrapper::s_ZBias = Make_Global<int>(PICK_ADDRESS(0x00A427A4, 0x00DE8FDC));
+int32_t &DX8Wrapper::s_ZBias = Make_Global<int32_t>(PICK_ADDRESS(0x00A427A4, 0x00DE8FDC));
 Vector3 &DX8Wrapper::s_ambientColor = Make_Global<Vector3>(PICK_ADDRESS(0x00A47DB8, 0x00DEE5F0));
 bool &DX8Wrapper::s_isDeviceLost = Make_Global<bool>(PICK_ADDRESS(0x00A47E74, 0x00DEE6AC));
-int &DX8Wrapper::s_FPUPreserve = Make_Global<int>(PICK_ADDRESS(0x00A47EC0, 0x00DEE6F8));
+int32_t &DX8Wrapper::s_FPUPreserve = Make_Global<int32_t>(PICK_ADDRESS(0x00A47EC0, 0x00DEE6F8));
 unsigned long &DX8Wrapper::s_vertexShader = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47ED0, 0x00DEE708));
 unsigned long &DX8Wrapper::s_pixelShader = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47ED4, 0x00DEE70C));
 LightEnvironmentClass *&DX8Wrapper::s_lightEnvironment =
@@ -324,7 +324,7 @@ w3dsurface_t &DX8Wrapper::s_currentDepthBuffer = Make_Global<w3dsurface_t>(PICK_
 w3dsurface_t &DX8Wrapper::s_defaultRenderTarget = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47EFC, 0x00DEE734));
 w3dsurface_t &DX8Wrapper::s_defaultDepthBuffer = Make_Global<w3dsurface_t>(PICK_ADDRESS(0x00A47F00, 0x00DEE738));
 bool &DX8Wrapper::s_isRenderToTexture = Make_Global<bool>(PICK_ADDRESS(0x00A47F04, 0x00DEE73C));
-unsigned int &DX8Wrapper::s_drawPolygonLowBoundLimit = Make_Global<unsigned int>(PICK_ADDRESS(0x00A47F34, 0x00DEE76C));
+uint32_t &DX8Wrapper::s_drawPolygonLowBoundLimit = Make_Global<uint32_t>(PICK_ADDRESS(0x00A47F34, 0x00DEE76C));
 unsigned long &DX8Wrapper::s_frameCount = Make_Global<unsigned long>(PICK_ADDRESS(0x00A47F38, 0x00DEE770));
 bool &DX8Wrapper::s_DX8SingleThreaded = Make_Global<bool>(PICK_ADDRESS(0x00A47F3C, 0x00DEE774));
 DX8_CleanupHook *&DX8Wrapper::s_cleanupHook = Make_Global<DX8_CleanupHook *>(PICK_ADDRESS(0x00A47F74, 0x00DEE7AC));
@@ -385,7 +385,7 @@ bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(PICK_ADDRESS(0x00A47
 bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0x00DEE80F));
 bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00CC58B8));
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
-int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
+int32_t &W3D::s_textureFilter = Make_Global<int32_t>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
 float &W3D::s_defaultNativeScreenSize = Make_Global<float>(PICK_ADDRESS(0x00A16984, 0x00CC58A4));
 bool &W3D::s_isSortingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1697C, 0x00CC589C));
 bool &W3D::s_isColoringEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47FDC, 0x00DEE83C));
@@ -397,7 +397,7 @@ bool &W3D::s_areStaticSortListsEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47F
 bool &W3D::s_isInited = Make_Global<bool>(PICK_ADDRESS(0x00A47FAC, 0x00DEE80C));
 bool &W3D::s_isRendering = Make_Global<bool>(PICK_ADDRESS(0x00A47FAD, 0x00DEE80D));
 bool &W3D::s_lite = Make_Global<bool>(PICK_ADDRESS(0x00A47FF0, 0x00DEE850));
-int &W3D::s_frameCount = Make_Global<int>(PICK_ADDRESS(0x00A47FB8, 0x00DEE818));
+int32_t &W3D::s_frameCount = Make_Global<int32_t>(PICK_ADDRESS(0x00A47FB8, 0x00DEE818));
 StaticSortListClass *&W3D::s_defaultStaticSortLists =
     Make_Global<StaticSortListClass *>(PICK_ADDRESS(0x00A47FC8, 0x00DEE828));
 StaticSortListClass *&W3D::s_currentStaticSortLists =
@@ -584,16 +584,16 @@ FrustumClass *&g_shadowCameraFrustum = Make_Global<FrustumClass *>(PICK_ADDRESS(
 IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D = Make_Global<IDirect3DVertexBuffer8 *>(0x00A3ACE8);
 IDirect3DIndexBuffer8 *&g_shadowDecalIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(0x00A3ACEC);
 #endif
-int &g_nShadowDecalVertsInBuf = Make_Global<int>(0x00A3ACF0);
-int &g_nShadowDecalStartBatchVertex = Make_Global<int>(0x00A3ACF4);
-int &g_nShadowDecalIndicesInBuf = Make_Global<int>(0x00A3ACF8);
-int &g_nShadowDecalStartBatchIndex = Make_Global<int>(0x00A3ACFC);
-int &g_nShadowDecalPolysInBatch = Make_Global<int>(0x00A3AD00);
-int &g_nShadowDecalVertsInBatch = Make_Global<int>(0x00A3AD04);
-int &g_drawStartX = Make_Global<int>(0x00A3ACE0);
-int &g_drawEdgeX = Make_Global<int>(0x00A3ACD8);
-int &g_drawStartY = Make_Global<int>(0x00A3ACE4);
-int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);
+int32_t &g_nShadowDecalVertsInBuf = Make_Global<int32_t>(0x00A3ACF0);
+int32_t &g_nShadowDecalStartBatchVertex = Make_Global<int32_t>(0x00A3ACF4);
+int32_t &g_nShadowDecalIndicesInBuf = Make_Global<int32_t>(0x00A3ACF8);
+int32_t &g_nShadowDecalStartBatchIndex = Make_Global<int32_t>(0x00A3ACFC);
+int32_t &g_nShadowDecalPolysInBatch = Make_Global<int32_t>(0x00A3AD00);
+int32_t &g_nShadowDecalVertsInBatch = Make_Global<int32_t>(0x00A3AD04);
+int32_t &g_drawStartX = Make_Global<int32_t>(0x00A3ACE0);
+int32_t &g_drawEdgeX = Make_Global<int32_t>(0x00A3ACD8);
+int32_t &g_drawStartY = Make_Global<int32_t>(0x00A3ACE4);
+int32_t &g_drawEdgeY = Make_Global<int32_t>(0x00A3ACDC);
 
 // worldheightmap.cpp
 #include "worldheightmap.h"
@@ -637,4 +637,4 @@ AudioEventRTS &ThingTemplate::s_audioEventNoSound = Make_Global<AudioEventRTS>(P
 
 // drawable.cpp
 #include "drawable.h"
-int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00E25D70));
+int32_t &Drawable::s_modelLockCount = Make_Global<int32_t>(PICK_ADDRESS(0x00A2B920, 0x00E25D70));

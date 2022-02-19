@@ -19,7 +19,7 @@
 #include "critsection.h"
 #include <captainslog.h>
 
-template<typename T, int BLOCK_SIZE> class ObjectPoolClass
+template<typename T, int32_t BLOCK_SIZE> class ObjectPoolClass
 {
 public:
     ObjectPoolClass() : m_freeListHead(nullptr), m_blockListHead(nullptr), m_freeObjectCount(0), m_totalObjectCount(0) {}
@@ -53,7 +53,7 @@ public:
             m_freeListHead = (T *)((intptr_t)m_blockListHead + sizeof(void *));
 
             // Shuffle the free block pointers down the list
-            for (int i = 0; i < BLOCK_SIZE; i++) {
+            for (int32_t i = 0; i < BLOCK_SIZE; i++) {
                 (T *&)m_freeListHead[i] = &m_freeListHead[i + 1];
             }
 
@@ -82,8 +82,8 @@ public:
 private:
     T *m_freeListHead;
     void *m_blockListHead;
-    int m_freeObjectCount;
-    int m_totalObjectCount;
+    int32_t m_freeObjectCount;
+    int32_t m_totalObjectCount;
     FastCriticalSectionClass m_poolCS;
 };
 

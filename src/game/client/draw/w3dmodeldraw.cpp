@@ -50,11 +50,11 @@ using std::tolower;
 #ifdef GAME_DLL
 extern Utf8String &s_theThingTemplateBeingParsedName;
 float &s_skateDistanceOverride = Make_Global<float>(0x00E260C8);
-unsigned int &s_theObjectIDToDebug = Make_Global<unsigned int>(0x00E25EF0);
+uint32_t &s_theObjectIDToDebug = Make_Global<uint32_t>(0x00E25EF0);
 #else
 extern Utf8String s_theThingTemplateBeingParsedName;
 float s_skateDistanceOverride;
-unsigned int s_theObjectIDToDebug;
+uint32_t s_theObjectIDToDebug;
 #endif
 #endif
 
@@ -143,12 +143,12 @@ void ModelConditionInfo::Validate_Stuff(RenderObjClass *robj, float scale, std::
     Validate_Weapon_Barrel_Info();
 }
 
-bool Test_Animation_Flag(int flags, char flag)
+bool Test_Animation_Flag(int32_t flags, char flag)
 {
     return ((1 << flag) & flags) != 0;
 }
 
-bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &transform, int &index)
+bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &transform, int32_t &index)
 {
     if (bone.Is_None() || bone.Is_Empty()) {
         return false;
@@ -164,7 +164,7 @@ bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &trans
     return true;
 }
 
-bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matrix3D &transform, int &index)
+bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matrix3D &transform, int32_t &index)
 {
     if (sub_obj_name.Is_None() || sub_obj_name.Is_Empty()) {
         return false;
@@ -178,7 +178,7 @@ bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matr
 
     transform = r->Get_Bone_Transform(index);
 
-    for (int i = 0; i < r->Get_Num_Sub_Objects(); i++) {
+    for (int32_t i = 0; i < r->Get_Num_Sub_Objects(); i++) {
         RenderObjClass *robj = r->Get_Sub_Object(i);
 
         if (robj == subobj) {
@@ -212,7 +212,7 @@ bool Do_Single_Bone_Name(RenderObjClass *robj, Utf8String const &bone, std::map<
         bone_found = true;
     }
 
-    for (int i = 1; i <= 99; i++) {
+    for (int32_t i = 1; i <= 99; i++) {
         bone_id.Format("%s%02d", bone_lower.Str(), i);
 
         if (!Find_Single_Bone(robj, bone_id, info.transform, info.index)) {
@@ -229,7 +229,7 @@ bool Do_Single_Bone_Name(RenderObjClass *robj, Utf8String const &bone, std::map<
             sub_obj_found = true;
         }
 
-        for (int i = 1; i <= 99; i++) {
+        for (int32_t i = 1; i <= 99; i++) {
             bone_id.Format("%s%02d", bone_lower.Str(), i);
 
             if (!Find_Single_Sub_Obj(robj, bone_id, info.transform, info.index)) {
@@ -277,9 +277,9 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
         Matrix3D m(robj->Get_Transform());
         HLodClass *hlod = nullptr;
         HAnimClass *anim = nullptr;
-        int frames = 0;
+        int32_t frames = 0;
         float frame = 0.0f;
-        int mode = 0;
+        int32_t mode = 0;
         float multiplier = 1.0f;
         HAnimClass *first_anim;
 
@@ -299,7 +299,7 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
         }
 
         if (first_anim != nullptr) {
-            int fr;
+            int32_t fr;
 
             if (Test_Animation_Flag(m_flags, PRISTINE_BONE_POS_IN_FINAL_FRAME)) {
                 fr = first_anim->Get_Num_Frames() - 1;
@@ -348,7 +348,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
     if ((m_validStuff & WEAPON_BARREL_INFO_VALID) == 0 && Should_Validate()) {
         Set_FP_Mode();
 
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
             m_weaponBarrelInfoVec[i].clear();
             m_hasWeaponBone[i] = false;
             const Utf8String &weaponfirefxbonename = m_weaponFireFXBoneName[i];
@@ -358,9 +358,9 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
 
             if (weaponfirefxbonename.Is_Not_Empty() || weaponrecoilbonename.Is_Not_Empty()
                 || weaponmuzzleflashbonename.Is_Not_Empty() || weaponlaunchbonename.Is_Not_Empty()) {
-                int weaponfirefxbone = 0;
+                int32_t weaponfirefxbone = 0;
 
-                for (int j = 1; j <= 99; j++) {
+                for (int32_t j = 1; j <= 99; j++) {
                     ModelConditionInfo::WeaponBarrelInfo info;
                     info.m_weaponLaunchBoneTransform.Make_Identity();
 
@@ -394,7 +394,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                         }
                     }
 
-                    int weaponlaunchbone = 0;
+                    int32_t weaponlaunchbone = 0;
 
                     if (!weaponlaunchbonename.Is_Empty()) {
                         char bone_id[256];
@@ -488,7 +488,7 @@ void ModelConditionInfo::Validate_Turret_Info() const
     if ((m_validStuff & TURRET_VALID) == 0) {
         Set_FP_Mode();
 
-        for (int i = 0; i < MAX_TURRETS; i++) {
+        for (int32_t i = 0; i < MAX_TURRETS; i++) {
             TurretInfo *info = &m_turretInfo[i];
 
             if (!Should_Validate() || m_modelName.Is_Empty()) {
@@ -525,7 +525,7 @@ void ModelConditionInfo::Validate_Turret_Info() const
     }
 }
 
-Matrix3D const *ModelConditionInfo::Find_Pristine_Bone(NameKeyType key, int *index) const
+Matrix3D const *ModelConditionInfo::Find_Pristine_Bone(NameKeyType key, int32_t *index) const
 {
     captainslog_dbgassert((m_validStuff & PRISTINE_BONES_VALID) != 0, "*** ASSET ERROR: bones are not valid");
 
@@ -574,13 +574,13 @@ void ModelConditionInfo::Clear()
     m_conditionsYesVec.clear();
     m_modelName.Clear();
 
-    for (int i = 0; i < MAX_TURRETS; i++) {
+    for (int32_t i = 0; i < MAX_TURRETS; i++) {
         m_turretInfo[i].Clear();
     }
 
     m_hideShowVec.clear();
 
-    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
         m_weaponFireFXBoneName[i].Clear();
         m_weaponRecoilBoneName[i].Clear();
         m_weaponMuzzleFlashName[i].Clear();
@@ -626,21 +626,21 @@ W3DModelDrawModuleData::~W3DModelDrawModuleData()
     m_conditionStateMap.Clear();
 }
 
-unsigned int Get_Old_State_From_Transition(uint64_t transition)
+uint32_t Get_Old_State_From_Transition(uint64_t transition)
 {
-    return (unsigned int)(transition >> 32);
+    return (uint32_t)(transition >> 32);
 }
 
-unsigned int Get_New_State_From_Transition(uint64_t transition)
+uint32_t Get_New_State_From_Transition(uint64_t transition)
 {
-    return (unsigned int)transition;
+    return (uint32_t)transition;
 }
 
 void W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather(Drawable const *drawable, bool night, bool snow) const
 {
     if (Should_Validate()) {
-        int flags = night ? (snow ? TIMEANDWEATHER_NIGHTSNOW : TIMEANDWEATHER_NIGHT) :
-                            (snow ? TIMEANDWEATHER_SNOW : TIMEANDWEATHER_DAY);
+        int32_t flags = night ? (snow ? TIMEANDWEATHER_NIGHTSNOW : TIMEANDWEATHER_NIGHT) :
+                                (snow ? TIMEANDWEATHER_SNOW : TIMEANDWEATHER_DAY);
 
         if ((flags & m_timeAndWeatherFlags) == 0) {
             m_timeAndWeatherFlags |= flags;
@@ -652,8 +652,8 @@ void W3DModelDrawModuleData::Validate_Stuff_For_Time_And_Weather(Drawable const 
             }
 
             for (auto &transition_pair : m_transitionMap) {
-                int oldstate = Get_Old_State_From_Transition(transition_pair.first);
-                int newstate = Get_New_State_From_Transition(transition_pair.first);
+                int32_t oldstate = Get_Old_State_From_Transition(transition_pair.first);
+                int32_t newstate = Get_New_State_From_Transition(transition_pair.first);
                 bool foundoldstate = false;
                 bool foundnewstate = false;
 
@@ -781,12 +781,12 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
                 xfer->xferUser((void *)&bone_pair.second.transform, sizeof(bone_pair.second.transform));
             }
 
-            for (int j = 0; j < MAX_TURRETS; j++) {
+            for (int32_t j = 0; j < MAX_TURRETS; j++) {
                 xfer->xferInt(&model_condition.m_turretInfo[j].m_turretAngleBone);
                 xfer->xferInt(&model_condition.m_turretInfo[j].m_turretPitchBone);
             }
 
-            for (int j = 0; j < WEAPONSLOT_COUNT; j++) {
+            for (int32_t j = 0; j < WEAPONSLOT_COUNT; j++) {
                 for (auto &weapon_barrel : model_condition.m_weaponBarrelInfoVec[j]) {
                     xfer->xferUser((void *)&weapon_barrel.m_weaponLaunchBoneTransform,
                         sizeof(weapon_barrel.m_weaponLaunchBoneTransform));
@@ -799,7 +799,7 @@ void W3DModelDrawModuleData::Xfer_Snapshot(Xfer *xfer)
 bool Does_State_Exist(std::vector<ModelConditionInfo> const &v, BitFlags<MODELCONDITION_COUNT> const &flags)
 {
     for (auto &model_condition : v) {
-        for (int count = model_condition.Get_Conditions_Count() - 1; count >= 0; count--) {
+        for (int32_t count = model_condition.Get_Conditions_Count() - 1; count >= 0; count--) {
             if (flags == model_condition.Get_Conditions_Yes(count)) {
                 return true;
             }
@@ -809,7 +809,7 @@ bool Does_State_Exist(std::vector<ModelConditionInfo> const &v, BitFlags<MODELCO
     return false;
 }
 
-uint64_t Make_Transition(int old_state, int new_state)
+uint64_t Make_Transition(int32_t old_state, int32_t new_state)
 {
     return new_state | (uint64_t)((int64_t)old_state << 32);
 }
@@ -865,7 +865,7 @@ void Parse_Show_Hide_Sub_Object(INI *ini, void *instance, void *store, void cons
 void Parse_Weapon_Bone_Name(INI *ini, void *instance, void *store, void const *user_data)
 {
     Utf8String *str = (Utf8String *)store;
-    int index = ini->Scan_IndexList(ini->Get_Next_Token(), s_theWeaponSlotTypeNames);
+    int32_t index = ini->Scan_IndexList(ini->Get_Next_Token(), s_theWeaponSlotTypeNames);
     str[index] = ini->Get_Next_Ascii_String();
     str[index].To_Lower();
 
@@ -896,7 +896,7 @@ void Parse_Animation(INI *ini, void *instance, void *store, void const *user_dat
         "You should not specify nonzero DistanceCovered values for Idle Anims");
 
     str = ini->Get_Next_Token_Or_Null();
-    int count = std::min(str ? ini->Scan_Int(str) : 1, 1);
+    int32_t count = std::min(str ? ini->Scan_Int(str) : 1, 1);
     W3DAnimationInfo info(name, (uintptr_t)user_data == 1, distance);
 
     if ((minfo->m_iniReadFlags & INIREAD_CONDITION_STATE) != 0) {
@@ -1154,7 +1154,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
 
     info.m_validStuff &= ~LAUNCH_BONES_VALID;
 
-    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
         if (info.m_weaponLaunchBoneName[i].Is_Not_Empty()) {
             info.m_validStuff |= LAUNCH_BONES_VALID;
             break;
@@ -1199,7 +1199,7 @@ W3DModelDraw::W3DModelDraw(Thing *thing, ModuleData const *module_data) :
     m_recalcBones(false),
     m_fullyObscuredByShroud(false)
 {
-    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
         m_weaponRecoilInfoVec[i].clear();
     }
 
@@ -1421,7 +1421,7 @@ void W3DModelDraw::Do_Draw_Module(const Matrix3D *transform)
         if (m_curState != nullptr) {
             if (m_nextState != nullptr) {
                 const ModelConditionInfo *info = m_nextState;
-                int loop = m_loopDuration;
+                int32_t loop = m_loopDuration;
                 m_nextState = nullptr;
                 m_loopDuration = -1;
                 Set_Model_State(info);
@@ -1473,12 +1473,12 @@ const ModelConditionInfo *W3DModelDraw::Find_Transition_For_Sig(uint64_t sig) co
     }
 }
 
-bool Maintain_Frame_Across_States(int flags)
+bool Maintain_Frame_Across_States(int32_t flags)
 {
     return (flags & 0x3A0) != 0;
 }
 
-bool Maintain_Frame_Across_States_2(int flags, int flags2)
+bool Maintain_Frame_Across_States_2(int32_t flags, int32_t flags2)
 {
     return (flags2 & 0x3A0 & flags & 0x3A0) != 0;
 }
@@ -1493,8 +1493,8 @@ float W3DModelDraw::Get_Current_Anim_Fraction() const
     HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
 
     float frame;
-    int frames;
-    int mode;
+    int32_t frames;
+    int32_t mode;
     float multiplier;
     hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
 
@@ -1512,13 +1512,13 @@ float W3DModelDraw::Get_Current_Anim_Fraction() const
 void W3DModelDraw::Adjust_Animation(ModelConditionInfo const *prev_state, float f)
 {
     if (m_curState != nullptr) {
-        int count = m_curState->m_animations.size();
+        int32_t count = m_curState->m_animations.size();
 
         if (count > 0) {
             if (count == 1) {
                 m_whichAnimInCurState = 0;
             } else if (prev_state == m_curState) {
-                int which = m_whichAnimInCurState;
+                int32_t which = m_whichAnimInCurState;
 
                 while (m_whichAnimInCurState == which) {
                     m_whichAnimInCurState = Get_Client_Random_Value(0, count - 1);
@@ -1531,7 +1531,7 @@ void W3DModelDraw::Adjust_Animation(ModelConditionInfo const *prev_state, float 
             HAnimClass *anim = m_curState->m_animations[m_whichAnimInCurState].Get_Anim_Handle();
 
             if (m_renderObject != nullptr && anim != nullptr) {
-                int frame = 0;
+                int32_t frame = 0;
 
                 if (m_curState->m_mode == RenderObjClass::ANIM_MODE_ONCE_BACKWARDS
                     || m_curState->m_mode == RenderObjClass::ANIM_MODE_LOOP_BACKWARDS) {
@@ -1606,11 +1606,11 @@ float W3DModelDraw::Get_Cur_Anim_Distance_Covered() const
 }
 
 void Do_Hide_Show_Bone_Sub_Objs(
-    bool state, int num_sub_objects, int bone_idx, RenderObjClass *full_object, HTreeClass const *htree)
+    bool state, int32_t num_sub_objects, int32_t bone_idx, RenderObjClass *full_object, HTreeClass const *htree)
 {
-    for (int i = 0; i < num_sub_objects; i++) {
+    for (int32_t i = 0; i < num_sub_objects; i++) {
         bool found = false;
-        int index = full_object->Get_Sub_Object_Bone_Index(0, i);
+        int32_t index = full_object->Get_Sub_Object_Bone_Index(0, i);
 
         while (index != 0) {
             index = htree->Get_Parent_Index(index);
@@ -1634,7 +1634,7 @@ void W3DModelDraw::Do_Hide_Show_Sub_Objs(std::vector<ModelConditionInfo::HideSho
     if (m_renderObject != nullptr) {
         if (!vec->empty()) {
             for (auto &info : *vec) {
-                int index;
+                int32_t index;
                 RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
 
                 if (robj != nullptr) {
@@ -1681,7 +1681,7 @@ void W3DModelDraw::Stop_Client_Particle_Systems()
 void W3DModelDraw::Handle_Client_Turret_Positioning()
 {
     if (m_curState != nullptr && (m_curState->m_validStuff & TURRET_VALID) != 0) {
-        for (int i = 0; i < MAX_TURRETS; i++) {
+        for (int32_t i = 0; i < MAX_TURRETS; i++) {
             ModelConditionInfo::TurretInfo *info = &m_curState->m_turretInfo[i];
             float turret_angle = 0.0f;
             float turret_pitch = 0.0f;
@@ -1734,19 +1734,19 @@ void W3DModelDraw::Handle_Client_Recoil()
     W3DModelDrawModuleData *data = Get_W3D_Model_Draw_Module_Data();
 
     if ((m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
             if (m_curState->m_hasWeaponBone[i]) {
                 std::vector<ModelConditionInfo::WeaponBarrelInfo> &barrel_vec = m_curState->m_weaponBarrelInfoVec[i];
                 std::vector<RecoilInfo> &recoil_vec = m_weaponRecoilInfoVec[i];
-                int barrel_count = barrel_vec.size();
-                int recoil_count = recoil_vec.size();
+                int32_t barrel_count = barrel_vec.size();
+                int32_t recoil_count = recoil_vec.size();
                 captainslog_dbgassert(barrel_count == recoil_count, "Barrel count != recoil count!");
 
                 if (barrel_count > recoil_count) {
                     barrel_count = recoil_count;
                 }
 
-                for (int j = 0; j < barrel_count; j++) {
+                for (int32_t j = 0; j < barrel_count; j++) {
                     if (barrel_vec[j].m_weaponMuzzleFlashBone) {
                         barrel_vec[j].Set_Muzzle_Flash_Hidden(
                             m_renderObject, recoil_vec[j].m_state != RecoilInfo::RECOIL_START);
@@ -1755,7 +1755,7 @@ void W3DModelDraw::Handle_Client_Recoil()
                     float f = 0.01f;
 
                     if (barrel_vec[j].m_weaponRecoilBone) {
-                        int state = recoil_vec[j].m_state;
+                        int32_t state = recoil_vec[j].m_state;
                         if (state > RecoilInfo::IDLE) {
                             if (state <= RecoilInfo::RECOIL) {
                                 recoil_vec[j].m_shift += recoil_vec[j].m_recoilRate;
@@ -1809,7 +1809,7 @@ void W3DModelDraw::Recalc_Bones_For_Client_Particle_Systems()
                     Coord3D pos;
                     pos.Zero();
                     float rot = 0.0f;
-                    int index;
+                    int32_t index;
 
                     if (m_renderObject != nullptr) {
                         index = m_renderObject->Get_Bone_Index(bone.bone_name);
@@ -1857,7 +1857,7 @@ bool W3DModelDraw::Update_Bones_For_Client_Particle_Systems()
     if (Get_Drawable() && m_curState != nullptr && m_renderObject != nullptr) {
         for (auto &tracker : m_particleSystemIDs) {
             ParticleSystem *psys = g_theParticleSystemManager->Find_Particle_System(tracker.id);
-            int index = tracker.index;
+            int32_t index = tracker.index;
 
             if (psys != nullptr) {
                 if (index != 0) {
@@ -1936,7 +1936,7 @@ void W3DModelDraw::Set_Terrain_Decal_Size(float width, float height)
 void W3DModelDraw::Set_Terrain_Decal_Opacity(float opacity)
 {
     if (m_decalShadow != nullptr) {
-        m_decalShadow->Set_Opacity((int)(255.0f * opacity));
+        m_decalShadow->Set_Opacity((int32_t)(255.0f * opacity));
     }
 }
 
@@ -1969,7 +1969,7 @@ void W3DModelDraw::Nuke_Current_Render(Matrix3D *xform)
 void W3DModelDraw::Hide_All_Garrison_Flags(bool hide)
 {
     if (m_renderObject != nullptr) {
-        int index;
+        int32_t index;
         RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name("POLE", &index);
 
         if (robj != nullptr) {
@@ -1992,7 +1992,7 @@ void W3DModelDraw::Hide_All_Garrison_Flags(bool hide)
 void W3DModelDraw::Hide_All_Headlights(bool hide)
 {
     if (m_renderObject != nullptr) {
-        for (int i = 0; i < m_renderObject->Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 0; i < m_renderObject->Get_Num_Sub_Objects(); i++) {
             RenderObjClass *robj = m_renderObject->Get_Sub_Object(i);
 
             if (strstr(robj->Get_Name(), "HEADLIGHT") != nullptr) {
@@ -2007,7 +2007,7 @@ void W3DModelDraw::Hide_All_Headlights(bool hide)
 void W3DModelDraw::Hide_All_Muzzle_Flashes(ModelConditionInfo const *condition, RenderObjClass *robj)
 {
     if (condition != nullptr && robj != nullptr && (condition->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
             if (condition->m_hasWeaponBone[i]) {
                 for (auto &barrel : condition->m_weaponBarrelInfoVec[i]) {
                     if (barrel.m_weaponMuzzleFlashBone != 0) {
@@ -2025,7 +2025,7 @@ bool Turret_Names_Differ(ModelConditionInfo const *state1, ModelConditionInfo co
         return true;
     }
 
-    for (int i = 0; i < MAX_TURRETS; i++) {
+    for (int32_t i = 0; i < MAX_TURRETS; i++) {
         if (state1->m_turretInfo[i].m_turretAngleName != state2->m_turretInfo[i].m_turretAngleName
             || state1->m_turretInfo[i].m_turretPitchName != state2->m_turretInfo[i].m_turretPitchName) {
             return true;
@@ -2285,10 +2285,10 @@ void W3DModelDraw::Set_Selectable(bool selectable)
     }
 }
 
-void W3DModelDraw::Replace_Indicator_Color(int color)
+void W3DModelDraw::Replace_Indicator_Color(int32_t color)
 {
     if (Get_W3D_Model_Draw_Module_Data()->m_okToChangeModelColor && Get_Render_Object()) {
-        int new_color;
+        int32_t new_color;
 
         if (color) {
             new_color = color | 0xFF000000;
@@ -2324,7 +2324,7 @@ bool W3DModelDraw::Client_Only_Get_Render_Obj_Info(Coord3D *pos, float *radius, 
 
 bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> const &flags,
     WeaponSlotType wslot,
-    int specific_barrel_to_use,
+    int32_t specific_barrel_to_use,
     Matrix3D *launch_pos,
     WhichTurretType tur,
     Coord3D *turret_rot_pos,
@@ -2344,7 +2344,7 @@ bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> c
         if (barrel_vec.empty()) {
             launch_pos = nullptr;
         } else {
-            if (specific_barrel_to_use < 0 || specific_barrel_to_use >= (int)barrel_vec.size()) {
+            if (specific_barrel_to_use < 0 || specific_barrel_to_use >= (int32_t)barrel_vec.size()) {
                 specific_barrel_to_use = 0;
             }
 
@@ -2403,12 +2403,12 @@ bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> c
     }
 }
 
-int W3DModelDraw::Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
+int32_t W3DModelDraw::Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags,
     char const *bone_name,
-    int start_index,
+    int32_t start_index,
     Coord3D *positions,
     Matrix3D *transforms,
-    int max_bones) const
+    int32_t max_bones) const
 {
     const ModelConditionInfo *info = Find_Best_Info(flags);
 
@@ -2435,10 +2435,10 @@ int W3DModelDraw::Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODEL
         transforms = t;
     }
 
-    int current = 0;
-    int count = start_index != 0 ? 99 : 0;
+    int32_t current = 0;
+    int32_t count = start_index != 0 ? 99 : 0;
 
-    for (int i = start_index; i <= count; i++) {
+    for (int32_t i = start_index; i <= count; i++) {
         char bone_id[256];
 
         if (i) {
@@ -2474,7 +2474,7 @@ int W3DModelDraw::Get_Pristine_Bone_Positions_For_Condition_State(BitFlags<MODEL
     }
 
     if (positions != nullptr && transforms != nullptr) {
-        for (int i = 0; i < current; i++) {
+        for (int32_t i = 0; i < current; i++) {
             Vector3 v = transforms[i].Get_Translation();
             positions[i].x = v.X;
             positions[i].y = v.Y;
@@ -2505,7 +2505,7 @@ bool W3DModelDraw::Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &b
         return false;
     }
 
-    int index = m_renderObject->Get_Bone_Index(bone);
+    int32_t index = m_renderObject->Get_Bone_Index(bone);
 
     if (index == 0) {
         transform->Make_Identity();
@@ -2522,7 +2522,7 @@ bool W3DModelDraw::Get_Current_Worldspace_Client_Bone_Positions(char const *bone
         return false;
     }
 
-    int index = m_renderObject->Get_Bone_Index(bone_name_prefix);
+    int32_t index = m_renderObject->Get_Bone_Index(bone_name_prefix);
 
     if (!index) {
         return false;
@@ -2532,8 +2532,8 @@ bool W3DModelDraw::Get_Current_Worldspace_Client_Bone_Positions(char const *bone
     return true;
 }
 
-int W3DModelDraw::Get_Current_Bone_Positions(
-    char const *bone_name_prefix, int start_index, Coord3D *positions, Matrix3D *transforms, int max_bones) const
+int32_t W3DModelDraw::Get_Current_Bone_Positions(
+    char const *bone_name_prefix, int32_t start_index, Coord3D *positions, Matrix3D *transforms, int32_t max_bones) const
 {
     Matrix3D t[64];
 
@@ -2554,10 +2554,10 @@ int W3DModelDraw::Get_Current_Bone_Positions(
     m.Get_Orthogonal_Inverse(m2);
     m2.Scale(Get_Drawable()->Get_Scale());
 
-    int current = 0;
-    int count = start_index != 0 ? 99 : 0;
+    int32_t current = 0;
+    int32_t count = start_index != 0 ? 99 : 0;
 
-    for (int i = start_index; i <= count; i++) {
+    for (int32_t i = start_index; i <= count; i++) {
         char bone_id[256];
 
         if (i) {
@@ -2566,7 +2566,7 @@ int W3DModelDraw::Get_Current_Bone_Positions(
             strcpy(bone_id, bone_name_prefix);
         }
 
-        int index = m_renderObject->Get_Bone_Index(bone_id);
+        int32_t index = m_renderObject->Get_Bone_Index(bone_id);
 
         if (!index) {
             break;
@@ -2582,7 +2582,7 @@ int W3DModelDraw::Get_Current_Bone_Positions(
     }
 
     if (positions && transforms) {
-        for (int i = 0; i < current; i++) {
+        for (int32_t i = 0; i < current; i++) {
             Vector3 v = transforms[i].Get_Translation();
             positions[i].x = v.X;
             positions[i].y = v.Y;
@@ -2625,7 +2625,7 @@ const ModelConditionInfo *W3DModelDraw::Find_Best_Info(BitFlags<MODELCONDITION_C
     return Get_W3D_Model_Draw_Module_Data()->Find_Best_Info(flags);
 }
 
-int W3DModelDraw::Get_Barrel_Count(WeaponSlotType wslot) const
+int32_t W3DModelDraw::Get_Barrel_Count(WeaponSlotType wslot) const
 {
     if (m_curState != nullptr && (m_curState->m_validStuff & WEAPON_BARREL_INFO_VALID) != 0) {
         return m_curState->m_weaponBarrelInfoVec[wslot].size();
@@ -2647,7 +2647,7 @@ void Do_FX_Pos(FXList const *list,
 }
 
 bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
-    int specific_barrel_to_use,
+    int32_t specific_barrel_to_use,
     FXList const *fxl,
     float weapon_speed,
     Coord3D const *victim_pos,
@@ -2667,7 +2667,7 @@ bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
 
     bool ret = false;
 
-    if (specific_barrel_to_use < 0 || specific_barrel_to_use > (int)barrel_vec.size()) {
+    if (specific_barrel_to_use < 0 || specific_barrel_to_use > (int32_t)barrel_vec.size()) {
         specific_barrel_to_use = 0;
     }
 
@@ -2707,19 +2707,19 @@ bool W3DModelDraw::Handle_Weapon_Fire_FX(WeaponSlotType wslot,
     return ret;
 }
 
-void W3DModelDraw::Set_Animation_Loop_Duration(unsigned int num_frames)
+void W3DModelDraw::Set_Animation_Loop_Duration(uint32_t num_frames)
 {
     m_loopDuration = -1;
     Set_Cur_Anim_Duration_In_Msec(GameMath::Ceil(num_frames * MSEC_PER_LOGICFRAME_REAL));
 }
 
-void W3DModelDraw::Set_Animation_Completion_Time(unsigned int num_frames)
+void W3DModelDraw::Set_Animation_Completion_Time(uint32_t num_frames)
 {
     if (m_curState != nullptr && m_curState->m_transition && m_curState->m_animations.size() && m_nextState != nullptr
         && m_nextState->m_transition && m_nextState->m_animations.size()) {
         float cur_fps = m_curState->m_animations.front().Get_Frames_Per_Second();
         float next_fps = m_nextState->m_animations.front().Get_Frames_Per_Second();
-        int duration = GameMath::Fast_To_Int_Floor(num_frames * cur_fps / (cur_fps + next_fps));
+        int32_t duration = GameMath::Fast_To_Int_Floor(num_frames * cur_fps / (cur_fps + next_fps));
         Set_Animation_Loop_Duration(duration);
         m_loopDuration = num_frames - duration;
     } else {
@@ -2727,7 +2727,7 @@ void W3DModelDraw::Set_Animation_Completion_Time(unsigned int num_frames)
     }
 }
 
-void W3DModelDraw::Set_Animation_Frame(int frame)
+void W3DModelDraw::Set_Animation_Frame(int32_t frame)
 {
     if (m_renderObject != nullptr && m_whichAnimInCurState >= 0) {
         HAnimClass *anim = m_curState->m_animations[m_whichAnimInCurState].Get_Anim_Handle();
@@ -2748,8 +2748,8 @@ void W3DModelDraw::Set_Pause_Animation(bool pause)
             if (m_renderObject->Class_ID() == RenderObjClass::CLASSID_HLOD) {
                 HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
                 float frame;
-                int frames;
-                int mode;
+                int32_t frames;
+                int32_t mode;
                 float multiplier;
                 HAnimClass *anim = hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
 
@@ -2769,9 +2769,9 @@ void W3DModelDraw::Set_Pause_Animation(bool pause)
 void W3DModelDraw::Rebuild_Weapon_RecoilInfo(ModelConditionInfo const *state)
 {
     if (state != nullptr) {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
-            unsigned int barrel_size = state->m_weaponBarrelInfoVec[i].size();
-            unsigned int recoil_size = m_weaponRecoilInfoVec[i].size();
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
+            uint32_t barrel_size = state->m_weaponBarrelInfoVec[i].size();
+            uint32_t recoil_size = m_weaponRecoilInfoVec[i].size();
 
             if (recoil_size != barrel_size) {
                 RecoilInfo info;
@@ -2783,7 +2783,7 @@ void W3DModelDraw::Rebuild_Weapon_RecoilInfo(ModelConditionInfo const *state)
             }
         }
     } else {
-        for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+        for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
             m_weaponRecoilInfoVec[i].clear();
         }
     }
@@ -2803,14 +2803,14 @@ bool W3DModelDraw::Is_Visible() const
     return m_renderObject != nullptr && m_renderObject->Is_Really_Visible();
 }
 
-void W3DModelDraw::Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot)
+void W3DModelDraw::Update_Projectile_Clip_Status(uint32_t show, uint32_t count, WeaponSlotType wslot)
 {
     if (((1 << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
         Do_Hide_Show_Projectile_Objects(show, count, wslot);
     }
 }
 
-void W3DModelDraw::Update_Draw_Module_Supply_Status(int status1, int status2)
+void W3DModelDraw::Update_Draw_Module_Supply_Status(int32_t status1, int32_t status2)
 {
     if (status2 > 0) {
         Get_Drawable()->Set_Model_Condition_State(MODELCONDITION_CARRYING);
@@ -2819,19 +2819,19 @@ void W3DModelDraw::Update_Draw_Module_Supply_Status(int status1, int status2)
     }
 }
 
-void W3DModelDraw::Do_Hide_Show_Projectile_Objects(unsigned int show, unsigned int count, WeaponSlotType wslot)
+void W3DModelDraw::Do_Hide_Show_Projectile_Objects(uint32_t show, uint32_t count, WeaponSlotType wslot)
 {
     if (count < show) {
         captainslog_dbgassert(count >= show, "Someone is trying to show more projectiles than they have.");
     } else {
-        int val = count - show;
+        int32_t val = count - show;
         std::vector<ModelConditionInfo::HideShowSubObjInfo> vector;
         ModelConditionInfo::HideShowSubObjInfo info;
 
         if (m_curState->m_weaponHideShowBoneName[wslot].Is_Empty()) {
-            for (unsigned int i = 0; i < count; i++) {
+            for (uint32_t i = 0; i < count; i++) {
                 info.sub_obj_name.Format("%s%02d", m_curState->m_weaponLaunchBoneName[wslot], i + 1);
-                info.hide = (int)(i + 1) <= val;
+                info.hide = (int32_t)(i + 1) <= val;
                 vector.push_back(info);
             }
         } else {
@@ -2848,7 +2848,7 @@ void W3DModelDraw::Update_Sub_Objects()
 {
     if (m_renderObject != nullptr && !m_subObjects.empty()) {
         for (auto &info : m_subObjects) {
-            int index;
+            int32_t index;
             RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
 
             if (robj) {
@@ -2886,7 +2886,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&ver, 2);
     DrawModule::Xfer_Snapshot(xfer);
     RecoilInfo recoilinfo;
-    for (int i = 0; i < WEAPONSLOT_COUNT; i++) {
+    for (int32_t i = 0; i < WEAPONSLOT_COUNT; i++) {
         unsigned char size = (unsigned char)m_weaponRecoilInfoVec[i].size();
         xfer->xferUnsignedByte(&size);
 
@@ -2901,7 +2901,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
             }
         } else {
             m_weaponRecoilInfoVec[i].clear();
-            for (int j = 0; j < size; j++) {
+            for (int32_t j = 0; j < size; j++) {
                 xfer->xferUser(&recoilinfo.m_state, sizeof(recoilinfo.m_state));
                 xfer->xferReal(&recoilinfo.m_shift);
                 xfer->xferReal(&recoilinfo.m_recoilRate);
@@ -2923,7 +2923,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
         }
     } else {
         m_subObjects.clear();
-        for (int j = 0; j < size; j++) {
+        for (int32_t j = 0; j < size; j++) {
             xfer->xferAsciiString(&subobj.sub_obj_name);
             xfer->xferBool(&subobj.hide);
             m_subObjects.push_back(subobj);
@@ -2936,8 +2936,8 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
                 && m_curState != nullptr && m_curState->m_transition) {
                 HLodClass *hlod = static_cast<HLodClass *>(m_renderObject);
                 float frame;
-                int frames;
-                int mode;
+                int32_t frames;
+                int32_t mode;
                 float multiplier;
                 HAnimClass *anim = hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
                 bool b = anim != nullptr;
@@ -2957,7 +2957,7 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
             xfer->xferBool(&b);
 
             if (b) {
-                int mode;
+                int32_t mode;
                 float newframe;
                 xfer->xferInt(&mode);
                 xfer->xferReal(&newframe);
@@ -2969,8 +2969,8 @@ void W3DModelDraw::Xfer_Snapshot(Xfer *xfer)
 
                         if (anim) {
                             float frame;
-                            int frames;
-                            int mode;
+                            int32_t frames;
+                            int32_t mode;
                             float multiplier;
                             hlod->Peek_Animation_And_Info(frame, frames, mode, multiplier);
                             hlod->Set_Animation(anim, (anim->Get_Num_Frames() - 1) / newframe, mode);
@@ -3049,7 +3049,7 @@ void W3DModelDraw::On_Render_Obj_Recreated() {}
 void W3DModelDraw::Gather_Draw_Stats_For_Render_Object(DebugDrawStats *stats, RenderObjClass *robj)
 {
     if (robj != nullptr) {
-        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
             RenderObjClass *subobj = robj->Get_Sub_Object(i);
             Gather_Draw_Stats_For_Render_Object(stats, subobj);
 

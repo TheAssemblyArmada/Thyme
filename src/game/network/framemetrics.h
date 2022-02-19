@@ -25,15 +25,15 @@ public:
     void Init();
     void Reset();
 
-    void Do_Per_Frame_Metrics(unsigned int frame);
+    void Do_Per_Frame_Metrics(uint32_t frame);
 
-    void Process_Latency_Response(unsigned int frame);
+    void Process_Latency_Response(uint32_t frame);
 
-    void Add_Cushion(int cushion);
+    void Add_Cushion(int32_t cushion);
 
-    int Get_Average_FPS() const { return (int)m_averageFps; }
+    int32_t Get_Average_FPS() const { return (int32_t)m_averageFps; }
     float Get_Average_Latency() const { return m_averageLatency; }
-    int Get_Minimum_Cushion() const { return m_minimumCushion; }
+    int32_t Get_Minimum_Cushion() const { return m_minimumCushion; }
 
 #ifdef GAME_DLL
     FrameMetrics *Hook_Ctor() { return new (this) FrameMetrics; }
@@ -43,12 +43,12 @@ public:
 
 private:
     float *m_fpsList;
-    int m_lastFpsTime;
-    int m_fpsListIndex;
+    int32_t m_lastFpsTime;
+    int32_t m_fpsListIndex;
     float m_averageFps;
     float *m_latencyList;
-    int *m_pendingLatencies;
+    int32_t *m_pendingLatencies;
     float m_averageLatency;
-    unsigned int m_cushionIndex;
-    int m_minimumCushion;
+    uint32_t m_cushionIndex;
+    int32_t m_minimumCushion;
 };

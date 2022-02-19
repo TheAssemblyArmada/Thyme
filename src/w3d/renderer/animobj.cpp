@@ -146,7 +146,7 @@ void Animatable3DObjClass::Set_Position(const Vector3 &v)
     Set_Hierarchy_Valid(false);
 }
 
-int Animatable3DObjClass::Get_Num_Bones()
+int32_t Animatable3DObjClass::Get_Num_Bones()
 {
     if (m_htree) {
         return m_htree->Num_Pivots();
@@ -155,7 +155,7 @@ int Animatable3DObjClass::Get_Num_Bones()
     }
 }
 
-const char *Animatable3DObjClass::Get_Bone_Name(int bone_index)
+const char *Animatable3DObjClass::Get_Bone_Name(int32_t bone_index)
 {
     if (m_htree) {
         return m_htree->Get_Bone_Name(bone_index);
@@ -164,7 +164,7 @@ const char *Animatable3DObjClass::Get_Bone_Name(int bone_index)
     return "RootTransform";
 }
 
-int Animatable3DObjClass::Get_Bone_Index(const char *bonename)
+int32_t Animatable3DObjClass::Get_Bone_Index(const char *bonename)
 {
     if (m_htree) {
         return m_htree->Get_Bone_Index(bonename);
@@ -180,7 +180,7 @@ void Animatable3DObjClass::Set_Animation()
     Set_Hierarchy_Valid(false);
 }
 
-void Animatable3DObjClass::Set_Animation(HAnimClass *motion, float frame, int anim_mode)
+void Animatable3DObjClass::Set_Animation(HAnimClass *motion, float frame, int32_t anim_mode)
 {
     if (motion) {
         motion->Add_Ref();
@@ -255,7 +255,7 @@ const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(const char *bonename)
     return Get_Transform();
 }
 
-const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(int boneindex)
+const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(int32_t boneindex)
 {
     Validate_Transform();
 
@@ -270,21 +270,21 @@ const Matrix3D &Animatable3DObjClass::Get_Bone_Transform(int boneindex)
     return m_transform;
 }
 
-void Animatable3DObjClass::Capture_Bone(int boneindex)
+void Animatable3DObjClass::Capture_Bone(int32_t boneindex)
 {
     if (m_htree) {
         m_htree->Capture_Bone(boneindex);
     }
 }
 
-void Animatable3DObjClass::Release_Bone(int boneindex)
+void Animatable3DObjClass::Release_Bone(int32_t boneindex)
 {
     if (m_htree) {
         m_htree->Release_Bone(boneindex);
     }
 }
 
-bool Animatable3DObjClass::Is_Bone_Captured(int boneindex) const
+bool Animatable3DObjClass::Is_Bone_Captured(int32_t boneindex) const
 {
     if (m_htree) {
         return m_htree->Is_Bone_Captured(boneindex);
@@ -293,7 +293,7 @@ bool Animatable3DObjClass::Is_Bone_Captured(int boneindex) const
     return false;
 }
 
-void Animatable3DObjClass::Control_Bone(int bindex, const Matrix3D &objtm, bool world_space_translation)
+void Animatable3DObjClass::Control_Bone(int32_t bindex, const Matrix3D &objtm, bool world_space_translation)
 {
     if (m_htree) {
         m_htree->Control_Bone(bindex, objtm, world_space_translation);
@@ -335,7 +335,7 @@ void Animatable3DObjClass::Update_Sub_Object_Transforms()
     Set_Hierarchy_Valid(true);
 }
 
-bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, Matrix3D *tm) const
+bool Animatable3DObjClass::Simple_Evaluate_Bone(int32_t boneindex, Matrix3D *tm) const
 {
     if (m_curMotionMode != NONE && m_curMotionMode != BASE_POSE && m_curMotionMode != SINGLE_ANIM) {
         ((Animatable3DObjClass *)this)->Update_Sub_Object_Transforms();
@@ -346,7 +346,7 @@ bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, Matrix3D *tm) con
     return Simple_Evaluate_Bone(boneindex, Compute_Current_Frame(nullptr), tm);
 }
 
-bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, float frame, Matrix3D *tm) const
+bool Animatable3DObjClass::Simple_Evaluate_Bone(int32_t boneindex, float frame, Matrix3D *tm) const
 {
     if (m_htree) {
         if (m_curMotionMode == SINGLE_ANIM) {
@@ -485,7 +485,7 @@ void Animatable3DObjClass::Set_HTree(HTreeClass *new_htree)
     m_htree = new HTreeClass(*new_htree);
 }
 
-HAnimClass *Animatable3DObjClass::Peek_Animation_And_Info(float &frame, int &frames, int &mode, float &multiplier)
+HAnimClass *Animatable3DObjClass::Peek_Animation_And_Info(float &frame, int32_t &frames, int32_t &mode, float &multiplier)
 {
     if (m_curMotionMode == SINGLE_ANIM) {
         frame = m_modeAnim.m_frame;

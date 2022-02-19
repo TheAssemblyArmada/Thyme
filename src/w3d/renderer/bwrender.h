@@ -25,18 +25,18 @@ public:
     class Buffer
     {
     public:
-        Buffer(unsigned char *buffer, int scale);
+        Buffer(unsigned char *buffer, int32_t scale);
         ~Buffer() {}
 
-        void Set_H_Line(int start_x, int end_x, int y);
+        void Set_H_Line(int32_t start_x, int32_t end_x, int32_t y);
         void Fill(unsigned char color);
-        int Scale() const { return m_scale; }
+        int32_t Scale() const { return m_scale; }
 
     private:
         unsigned char *m_buffer;
-        int m_scale;
-        int m_minv;
-        int m_maxv;
+        int32_t m_scale;
+        int32_t m_minv;
+        int32_t m_maxv;
     };
 
     enum
@@ -44,16 +44,16 @@ public:
         TRI_COLOR = 0,
     };
 
-    BWRenderClass(unsigned char *buffer, int scale);
+    BWRenderClass(unsigned char *buffer, int32_t scale);
     ~BWRenderClass();
 
     void Fill(unsigned char color);
 
-    void Set_Vertex_Locations(Vector2 *vertices, int count);
+    void Set_Vertex_Locations(Vector2 *vertices, int32_t count);
 
     void Render_Triangle(const Vector2 &c1, const Vector2 &c2, const Vector2 &c3);
-    void Render_Triangles(const unsigned int *indices, int index_count);
-    void Render_Triangle_Strip(const unsigned int *indices, int index_count);
+    void Render_Triangles(const uint32_t *indices, int32_t index_count);
+    void Render_Triangle_Strip(const uint32_t *indices, int32_t index_count);
     void Render_Preprocessed_Triangle(Vector3 &x_corners, Vector3i &y_corners);
 
 protected:

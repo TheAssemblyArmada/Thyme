@@ -62,11 +62,11 @@ bool GameLogic::Is_Intro_Movie_Playing()
     return m_startNewGame && g_theDisplay->Is_Movie_Playing();
 }
 
-int GameLogic::Rebalance_Parent_Sleepy_Update(int index)
+int32_t GameLogic::Rebalance_Parent_Sleepy_Update(int32_t index)
 {
     captainslog_dbgassert(index >= 0 && (size_t)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
-    for (int i = ((index + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
+    for (int32_t i = ((index + 1) >> 1) - 1; i >= 0; i = ((i + 1) >> 1) - 1) {
 
         captainslog_dbgassert((size_t)i < m_sleepingUpdateModules.size(), "bad idx");
 
@@ -87,13 +87,13 @@ int GameLogic::Rebalance_Parent_Sleepy_Update(int index)
     return index;
 }
 
-int GameLogic::Rebalance_Child_Sleepy_Update(int index)
+int32_t GameLogic::Rebalance_Child_Sleepy_Update(int32_t index)
 {
     captainslog_assert(!m_sleepingUpdateModules.empty());
 
     captainslog_dbgassert(index >= 0 && (size_t)index < m_sleepingUpdateModules.size(), "bad sleepy idx");
 
-    int next_index = 2 * index + 1;
+    int32_t next_index = 2 * index + 1;
 
     // #BUGFIX Original dereferenced elements past end, which is undefined behavior.
     // Here we calculate pointers which are safe to go past the end and beyond.
@@ -124,9 +124,9 @@ int GameLogic::Rebalance_Child_Sleepy_Update(int index)
     return index;
 }
 
-void GameLogic::Rebalance_Sleepy_Update(int index)
+void GameLogic::Rebalance_Sleepy_Update(int32_t index)
 {
-    int parent_index = Rebalance_Parent_Sleepy_Update(index);
+    int32_t parent_index = Rebalance_Parent_Sleepy_Update(index);
     Rebalance_Child_Sleepy_Update(parent_index);
 }
 
@@ -147,9 +147,9 @@ UpdateModule *GameLogic::Peek_Sleepy_Update()
     return module;
 }
 
-void GameLogic::Friend_Awaken_Update_Module(Object *object, UpdateModule *module, unsigned int wakeup_frame)
+void GameLogic::Friend_Awaken_Update_Module(Object *object, UpdateModule *module, uint32_t wakeup_frame)
 {
-    unsigned int cur_frame = g_theGameLogic->Get_Frame();
+    uint32_t cur_frame = g_theGameLogic->Get_Frame();
 
     captainslog_dbgassert(wakeup_frame >= cur_frame, "Set_Wake_Frame frame is in the past");
 
@@ -161,7 +161,7 @@ void GameLogic::Friend_Awaken_Update_Module(Object *object, UpdateModule *module
     } else if (wakeup_frame != module->Decode_Frame()
         && (0 == cur_frame || module->Decode_Frame() != cur_frame || wakeup_frame != cur_frame + 1)) {
 
-        int index = module->Get_Index_In_Logic();
+        int32_t index = module->Get_Index_In_Logic();
 
         if (object->Is_In_List(&m_objList)) {
             if (index < 0 || static_cast<size_t>(index) >= m_sleepingUpdateModules.size()) {
@@ -199,7 +199,7 @@ bool GameLogic::Is_Game_Paused()
     return m_gamePaused;
 }
 
-void GameLogic::Process_Progress_Complete(int player_id)
+void GameLogic::Process_Progress_Complete(int32_t player_id)
 {
     if (player_id >= 0 && player_id < 8) {
         if (m_progressComplete[player_id]) {
@@ -216,7 +216,7 @@ void GameLogic::Process_Progress_Complete(int player_id)
     }
 }
 
-void GameLogic::Last_Heard_From(int player_id)
+void GameLogic::Last_Heard_From(int32_t player_id)
 {
     if (player_id >= 0 && player_id < 8) {
         m_progressCompleteTimeout[player_id] = rts::Get_Time();
@@ -252,7 +252,7 @@ bool GameLogic::Find_Buildable_Status_Override(ThingTemplate const *thing, Build
     return false;
 }
 
-void GameLogic::Set_Control_Bar_Override(Utf8String const &s, int i, CommandButton const *button)
+void GameLogic::Set_Control_Bar_Override(Utf8String const &s, int32_t i, CommandButton const *button)
 {
     char str[256];
     str[0] = i + '0';
@@ -260,7 +260,7 @@ void GameLogic::Set_Control_Bar_Override(Utf8String const &s, int i, CommandButt
     m_controlBarOverrides[str] = button;
 }
 
-bool GameLogic::Find_Control_Bar_Override(Utf8String const &s, int i, CommandButton const *&button) const
+bool GameLogic::Find_Control_Bar_Override(Utf8String const &s, int32_t i, CommandButton const *&button) const
 {
     char str[256];
     str[0] = i + '0';
@@ -285,9 +285,9 @@ void GameLogic::Add_TOC_Entry(Utf8String name, unsigned short id)
     m_objectTOCEntries.push_back(entry);
 }
 
-unsigned int GameLogic::Get_Object_Count()
+uint32_t GameLogic::Get_Object_Count()
 {
-    int count = 0;
+    int32_t count = 0;
 
     for (Object *o = Get_First_Object(); o != nullptr; o = o->Get_Next_Object()) {
         count++;

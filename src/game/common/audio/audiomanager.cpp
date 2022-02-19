@@ -345,7 +345,7 @@ const audioinfomap_t *AudioManager::Get_All_Audio_Events() const
 bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
     // Search preferred providers list against current provider.
-    for (int i = 0; i < 5; ++i) {
+    for (int32_t i = 0; i < 5; ++i) {
         if (strcmp(m_audioSettings->Get_Preferred_Driver(i), Get_Provider_Name(Get_Selected_Provider())) == 0) {
             return true;
         }
@@ -384,7 +384,7 @@ bool AudioManager::Should_Play_Locally(const AudioEventRTS *event)
  *
  * 0x00406F00
  */
-int AudioManager::Allocate_New_Handle()
+int32_t AudioManager::Allocate_New_Handle()
 {
     return m_audioHandleCounter++;
 }
@@ -524,7 +524,7 @@ void AudioManager::Regain_Focus()
  *
  * 0x00405390
  */
-int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
+int32_t AudioManager::Add_Audio_Event(const AudioEventRTS *event)
 {
     if (event->Get_Event_Name().Is_Empty()) {
         return 1;

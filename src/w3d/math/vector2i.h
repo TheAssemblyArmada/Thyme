@@ -23,13 +23,13 @@ class Vector2i
 {
 public:
     __forceinline Vector2i();
-    __forceinline Vector2i(int i, int j);
-    __forceinline void Set(int i, int j);
+    __forceinline Vector2i(int32_t i, int32_t j);
+    __forceinline void Set(int32_t i, int32_t j);
     __forceinline void Swap(Vector2i &other);
     __forceinline bool operator==(const Vector2i &v) const;
     __forceinline bool operator!=(const Vector2i &v) const;
-    __forceinline const int &operator[](int n) const;
-    __forceinline int &operator[](int n);
+    __forceinline const int32_t &operator[](int32_t n) const;
+    __forceinline int32_t &operator[](int32_t n);
 
 public:
     int32_t I;
@@ -38,7 +38,7 @@ public:
 
 __forceinline Vector2i::Vector2i() {}
 
-__forceinline Vector2i::Vector2i(int i, int j)
+__forceinline Vector2i::Vector2i(int32_t i, int32_t j)
 {
     I = i;
     J = j;
@@ -54,17 +54,17 @@ __forceinline bool Vector2i::operator!=(const Vector2i &v) const
     return !(I == v.I && J == v.J);
 }
 
-__forceinline const int &Vector2i::operator[](int n) const
+__forceinline const int32_t &Vector2i::operator[](int32_t n) const
 {
-    return ((int *)this)[n];
+    return ((int32_t *)this)[n];
 }
 
-__forceinline int &Vector2i::operator[](int n)
+__forceinline int32_t &Vector2i::operator[](int32_t n)
 {
-    return ((int *)this)[n];
+    return ((int32_t *)this)[n];
 }
 
-__forceinline void Vector2i::Set(int i, int j)
+__forceinline void Vector2i::Set(int32_t i, int32_t j)
 {
     I = i;
     J = j;

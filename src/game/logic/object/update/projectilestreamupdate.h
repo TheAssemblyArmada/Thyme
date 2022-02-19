@@ -42,13 +42,13 @@ public:
     void Add_Projectile(ObjectID source_id, ObjectID projectile_id, ObjectID target_id, const Coord3D *target_pos);
     void Cull_Front_Of_List();
     bool Consider_Dying();
-    void Get_All_Points(Vector3 *points, int *count);
+    void Get_All_Points(Vector3 *points, int32_t *count);
     void Set_Position(Coord3D *new_position);
 
 private:
     ObjectID m_projectileIDs[MAX_SEGMENT_COUNT];
-    int m_nextFreeIndex;
-    int m_firstValidIndex;
+    int32_t m_nextFreeIndex;
+    int32_t m_firstValidIndex;
     ObjectID m_owningObject;
     ObjectID m_targetID;
     Coord3D m_targetPos;

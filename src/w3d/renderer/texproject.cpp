@@ -66,7 +66,7 @@ TexProjectClass::~TexProjectClass()
     captainslog_assert(!m_zRenderTarget);
 }
 
-void TexProjectClass::Set_Texture_Size(int size)
+void TexProjectClass::Set_Texture_Size(int32_t size)
 {
     captainslog_assert(size > 0);
     captainslog_assert(size <= 512);
@@ -74,7 +74,7 @@ void TexProjectClass::Set_Texture_Size(int size)
     m_flags |= (size << SIZE_SHIFT);
 }
 
-int TexProjectClass::Get_Texture_Size()
+int32_t TexProjectClass::Get_Texture_Size()
 {
     return (m_flags & SIZE_MASK) >> SIZE_SHIFT;
 }

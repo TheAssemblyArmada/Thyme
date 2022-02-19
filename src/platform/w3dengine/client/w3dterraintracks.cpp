@@ -66,7 +66,7 @@ void TerrainTracksRenderObjClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) co
     box = m_boundingBox;
 }
 
-int TerrainTracksRenderObjClass::Free_Terrain_Tracks_Resources()
+int32_t TerrainTracksRenderObjClass::Free_Terrain_Tracks_Resources()
 {
     Ref_Ptr_Release(m_stageZeroTexture);
     m_haveAnchor = false;
@@ -105,10 +105,10 @@ void TerrainTracksRenderObjClass::Add_Cap_Edge_To_Track(float x, float y)
             anchor.Y = y;
             anchor.Z = z;
             Vector3 dist = Vector3(x, y, z) - m_lastAnchor;
-            int maxedges = g_theTerrainTracksRenderObjClassSystem->m_maxTankTrackEdges;
+            int32_t maxedges = g_theTerrainTracksRenderObjClassSystem->m_maxTankTrackEdges;
 
             if (GameMath::Square(m_length) > dist.Length2()) {
-                int e = m_topIndex - 1;
+                int32_t e = m_topIndex - 1;
 
                 if (e < 0) {
                     e = maxedges - 1;
@@ -213,7 +213,7 @@ void TerrainTracksRenderObjClass::Add_Edge_To_Track(float x, float y)
         Vector3 dist = Vector3(x, y, z) - m_lastAnchor;
 
         if (GameMath::Square(m_length) <= dist.Length2()) {
-            int maxedges = g_theTerrainTracksRenderObjClassSystem->m_maxTankTrackEdges;
+            int32_t maxedges = g_theTerrainTracksRenderObjClassSystem->m_maxTankTrackEdges;
 
             if (m_activeEdgeCount >= maxedges) {
                 m_bottomIndex++;
@@ -312,7 +312,7 @@ void TerrainTracksRenderObjClassSystem::Release_Resources()
 
 void TerrainTracksRenderObjClassSystem::Re_Acquire_Resources()
 {
-    int num_modules = g_theWriteableGlobalData->m_maxTerrainTracks;
+    int32_t num_modules = g_theWriteableGlobalData->m_maxTerrainTracks;
     Ref_Ptr_Release(m_indexBuffer);
     Ref_Ptr_Release(m_vertexBuffer);
     m_indexBuffer = new DX8IndexBufferClass(6 * (m_maxTankTrackEdges - 1), DX8IndexBufferClass::USAGE_DEFAULT);
@@ -320,7 +320,7 @@ void TerrainTracksRenderObjClassSystem::Re_Acquire_Resources()
     {
         IndexBufferClass::WriteLockClass lock(m_indexBuffer, 0);
         unsigned short *indices = lock.Get_Index_Array();
-        for (int i = 0; i < m_maxTankTrackEdges - 1; i++) {
+        for (int32_t i = 0; i < m_maxTankTrackEdges - 1; i++) {
             indices[0] = 2 * i;
             indices[3] = 2 * i;
             indices[1] = 2 * i + 1;
@@ -359,7 +359,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
             g = g * 255.0f;
             b = b * 255.0f;
 
-            int color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
+            int32_t color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
                 | GameMath::Fast_To_Int_Truncate(b);
 
             float edges = (float)(m_maxTankTrackEdges - m_maxTankTrackOpaqueEdges);
@@ -371,7 +371,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
                 for (mod = m_usedModules; mod != nullptr; mod = mod->m_nextSystem) {
                     if (mod->m_activeEdgeCount >= 2 && mod->Is_Really_Visible()) {
 
-                        for (int i = 0, j = mod->m_bottomIndex; i < mod->m_activeEdgeCount; i++, j++) {
+                        for (int32_t i = 0, j = mod->m_bottomIndex; i < mod->m_activeEdgeCount; i++, j++) {
 
                             if (j >= m_maxTankTrackEdges) {
                                 j = 0;
@@ -417,7 +417,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
                 DX8Wrapper::Set_Shader(m_shaderClass);
                 DX8Wrapper::Set_Index_Buffer(m_indexBuffer, 0);
                 DX8Wrapper::Set_Vertex_Buffer(m_vertexBuffer, 0);
-                int index_offset = 0;
+                int32_t index_offset = 0;
                 mod = m_usedModules;
                 Matrix3D m = mod->Get_Transform_No_Validity_Check();
                 DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
@@ -442,7 +442,7 @@ void TerrainTracksRenderObjClassSystem::Flush()
 
 void TerrainTracksRenderObjClassSystem::Update()
 {
-    int time = W3D::Get_Sync_Time();
+    int32_t time = W3D::Get_Sync_Time();
     TerrainTracksRenderObjClass *next;
 
     for (TerrainTracksRenderObjClass *mod = m_usedModules; mod != nullptr; mod = next) {
@@ -452,7 +452,7 @@ void TerrainTracksRenderObjClassSystem::Update()
             mod->m_haveAnchor = false;
         }
 
-        for (int i = 0, j = mod->m_bottomIndex; i < mod->m_activeEdgeCount; i++, j++) {
+        for (int32_t i = 0, j = mod->m_bottomIndex; i < mod->m_activeEdgeCount; i++, j++) {
             if (j >= m_maxTankTrackEdges) {
                 j = 0;
             }
@@ -485,14 +485,14 @@ void TerrainTracksRenderObjClassSystem::Update()
 
 void TerrainTracksRenderObjClassSystem::Init(SceneClass *terrain_tracks_scene)
 {
-    int max = g_theWriteableGlobalData->m_maxTerrainTracks;
+    int32_t max = g_theWriteableGlobalData->m_maxTerrainTracks;
     m_TerrainTracksScene = terrain_tracks_scene;
     Re_Acquire_Resources();
     m_vertexMaterialClass = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
     m_shaderClass = ShaderClass::s_presetAlphaShader;
 
     if (!m_freeModules && !m_usedModules) {
-        for (int i = 0; i < max; i++) {
+        for (int32_t i = 0; i < max; i++) {
             TerrainTracksRenderObjClass *mod = new TerrainTracksRenderObjClass();
 
             if (mod == nullptr) {
@@ -556,10 +556,10 @@ void TerrainTracksRenderObjClassSystem::Reset()
 float Compute_Track_Spacing(RenderObjClass *robj)
 {
     float spacing = 14.0f;
-    int bone1 = robj->Get_Bone_Index("TREADFX01");
+    int32_t bone1 = robj->Get_Bone_Index("TREADFX01");
 
     if (bone1) {
-        int bone2 = robj->Get_Bone_Index("TREADFX02");
+        int32_t bone2 = robj->Get_Bone_Index("TREADFX02");
 
         if (bone2) {
             Vector3 bonet1 = robj->Get_Bone_Transform(bone1).Get_Translation();

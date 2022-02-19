@@ -27,45 +27,45 @@ class NoInitClass;
 template<typename T> class VectorClass
 {
 public:
-    VectorClass(int size = 0, const T *array = nullptr);
+    VectorClass(int32_t size = 0, const T *array = nullptr);
     VectorClass(const NoInitClass &noinit) {}
     VectorClass(const VectorClass<T> &that);
     virtual ~VectorClass();
 
-    T &operator[](int index);
-    const T &operator[](int index) const;
+    T &operator[](int32_t index);
+    const T &operator[](int32_t index) const;
 
     VectorClass<T> &operator=(VectorClass<T> const &that);
     virtual bool operator==(const VectorClass<T> &that) const;
 
-    virtual bool Resize(int newsize, const T *array = nullptr);
+    virtual bool Resize(int32_t newsize, const T *array = nullptr);
     virtual void Clear();
-    virtual int ID(const T *ptr);
-    virtual int ID(const T &ptr);
+    virtual int32_t ID(const T *ptr);
+    virtual int32_t ID(const T &ptr);
 
-    int Length() const { return m_vectorMax; }
+    int32_t Length() const { return m_vectorMax; }
 
 protected:
     T *m_vector;
-    int m_vectorMax;
+    int32_t m_vectorMax;
     bool m_isValid;
     bool m_isAllocated;
 };
 
-template<typename T> T &VectorClass<T>::operator[](int index)
+template<typename T> T &VectorClass<T>::operator[](int32_t index)
 {
     captainslog_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 
-template<typename T> const T &VectorClass<T>::operator[](int index) const
+template<typename T> const T &VectorClass<T>::operator[](int32_t index) const
 {
     captainslog_assert(unsigned(index) < unsigned(m_vectorMax));
     return m_vector[index];
 }
 
 template<typename T>
-VectorClass<T>::VectorClass(int size, const T *array) :
+VectorClass<T>::VectorClass(int32_t size, const T *array) :
     m_vector(nullptr), m_vectorMax(size), m_isValid(true), m_isAllocated(false)
 {
     //    Allocate the vector. The default constructor will be called for every
@@ -103,7 +103,7 @@ template<typename T> VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> co
             if (m_vector) {
                 m_isAllocated = true;
 
-                for (int index = 0; index < m_vectorMax; index++) {
+                for (int32_t index = 0; index < m_vectorMax; index++) {
                     m_vector[index] = vector[index];
                 }
             }
@@ -119,7 +119,7 @@ template<typename T> VectorClass<T> &VectorClass<T>::operator=(VectorClass<T> co
 template<typename T> bool VectorClass<T>::operator==(VectorClass<T> const &vector) const
 {
     if (m_vectorMax == vector.Length()) {
-        for (int index = 0; index < m_vectorMax; index++) {
+        for (int32_t index = 0; index < m_vectorMax; index++) {
             if (m_vector[index] != vector[index]) {
                 return false;
             }
@@ -131,7 +131,7 @@ template<typename T> bool VectorClass<T>::operator==(VectorClass<T> const &vecto
     return false;
 }
 
-template<typename T> inline int VectorClass<T>::ID(const T *ptr)
+template<typename T> inline int32_t VectorClass<T>::ID(const T *ptr)
 {
     if (!m_isValid) {
         return 0;
@@ -140,13 +140,13 @@ template<typename T> inline int VectorClass<T>::ID(const T *ptr)
     return ((uintptr_t)ptr - (uintptr_t)m_vector) / sizeof(T);
 }
 
-template<typename T> int VectorClass<T>::ID(const T &object)
+template<typename T> int32_t VectorClass<T>::ID(const T &object)
 {
     if (!m_isValid) {
         return 0;
     }
 
-    for (int index = 0; index < m_vectorMax; index++) {
+    for (int32_t index = 0; index < m_vectorMax; index++) {
         if ((*this)[index] == object) {
             return index;
         }
@@ -166,7 +166,7 @@ template<typename T> void VectorClass<T>::Clear()
     m_vectorMax = 0;
 }
 
-template<typename T> bool VectorClass<T>::Resize(int newsize, const T *array)
+template<typename T> bool VectorClass<T>::Resize(int32_t newsize, const T *array)
 {
     if (newsize != 0) {
         T *newptr;
@@ -185,9 +185,9 @@ template<typename T> bool VectorClass<T>::Resize(int newsize, const T *array)
         }
 
         if (m_vector != nullptr) {
-            int copy_count = (newsize < m_vectorMax) ? newsize : m_vectorMax;
+            int32_t copy_count = (newsize < m_vectorMax) ? newsize : m_vectorMax;
 
-            for (int i = 0; i < copy_count; ++i) {
+            for (int32_t i = 0; i < copy_count; ++i) {
                 newptr[i] = m_vector[i];
             }
 
@@ -221,23 +221,23 @@ public:
     bool operator!=(const DynamicVectorClass &src) { return true; }
     DynamicVectorClass<T> &operator=(DynamicVectorClass<T> const &rvalue);
 
-    virtual bool Resize(int newsize, const T *array = nullptr) override;
+    virtual bool Resize(int32_t newsize, const T *array = nullptr) override;
     virtual void Clear() override;
-    virtual int ID(const T *ptr) override { return VectorClass<T>::ID(ptr); };
-    virtual int ID(const T &ptr) override;
+    virtual int32_t ID(const T *ptr) override { return VectorClass<T>::ID(ptr); };
+    virtual int32_t ID(const T &ptr) override;
 
     void Reset_Active() { m_activeCount = 0; }
-    void Set_Active(int count) { m_activeCount = count; }
-    int Count() const { return (m_activeCount); }
+    void Set_Active(int32_t count) { m_activeCount = count; }
+    int32_t Count() const { return (m_activeCount); }
     bool Add(const T &object);
     bool Add_Head(const T &object);
     const T &Fetch_Head() const { return (*this)[0]; }
-    bool Insert(int index, const T &object);
+    bool Insert(int32_t index, const T &object);
     bool Delete(const T &object);
-    bool Delete(int index);
+    bool Delete(int32_t index);
     void Delete_All();
-    int Set_Growth_Step(int step) { return m_growthStep = step; }
-    int Growth_Step() { return m_growthStep; }
+    int32_t Set_Growth_Step(int32_t step) { return m_growthStep = step; }
+    int32_t Growth_Step() { return m_growthStep; }
     T *Uninitialized_Add();
 
     T *begin() { return &(*this)[0]; }
@@ -248,8 +248,8 @@ public:
     const T *cend() const { return &(*this)[Count()]; }
 
 protected:
-    int m_activeCount;
-    int m_growthStep;
+    int32_t m_activeCount;
+    int32_t m_growthStep;
 };
 
 template<typename T> void DynamicVectorClass<T>::Clear()
@@ -273,7 +273,7 @@ template<typename T> DynamicVectorClass<T>::DynamicVectorClass(unsigned size, co
     m_activeCount = 0;
 }
 
-template<typename T> bool DynamicVectorClass<T>::Resize(int newsize, const T *array)
+template<typename T> bool DynamicVectorClass<T>::Resize(int32_t newsize, const T *array)
 {
     if (VectorClass<T>::Resize(newsize, array)) {
         if (m_vectorMax < m_activeCount) {
@@ -286,9 +286,9 @@ template<typename T> bool DynamicVectorClass<T>::Resize(int newsize, const T *ar
     return false;
 }
 
-template<typename T> int DynamicVectorClass<T>::ID(const T &object)
+template<typename T> int32_t DynamicVectorClass<T>::ID(const T &object)
 {
-    for (int index = 0; index < Count(); ++index) {
+    for (int32_t index = 0; index < Count(); ++index) {
         if ((*this)[index] == object)
             return index;
     }
@@ -335,7 +335,7 @@ template<typename T> bool DynamicVectorClass<T>::Add_Head(const T &object)
     return true;
 }
 
-template<typename T> bool DynamicVectorClass<T>::Insert(int index, const T &object)
+template<typename T> bool DynamicVectorClass<T>::Insert(int32_t index, const T &object)
 {
     if (index < 0 || index > m_activeCount) {
         return false;
@@ -363,7 +363,7 @@ template<typename T> bool DynamicVectorClass<T>::Insert(int index, const T &obje
 
 template<typename T> bool DynamicVectorClass<T>::Delete(const T &object)
 {
-    int id = ID(object);
+    int32_t id = ID(object);
 
     if (id != -1) {
         return Delete(id);
@@ -372,12 +372,12 @@ template<typename T> bool DynamicVectorClass<T>::Delete(const T &object)
     return false;
 }
 
-template<typename T> bool DynamicVectorClass<T>::Delete(int index)
+template<typename T> bool DynamicVectorClass<T>::Delete(int32_t index)
 {
     if (index < m_activeCount) {
         m_activeCount--;
 
-        for (int i = index; i < m_activeCount; ++i) {
+        for (int32_t i = index; i < m_activeCount; ++i) {
             (*this)[i] = (*this)[i + 1];
         }
 
@@ -389,7 +389,7 @@ template<typename T> bool DynamicVectorClass<T>::Delete(int index)
 
 template<typename T> void DynamicVectorClass<T>::Delete_All()
 {
-    int len = m_vectorMax;
+    int32_t len = m_vectorMax;
     Clear();
     Resize(len);
 }

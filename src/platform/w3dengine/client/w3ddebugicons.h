@@ -27,7 +27,7 @@ struct DebugIcon
     Coord3D position;
     float width;
     RGBColor color;
-    int endFrame;
+    int32_t endFrame;
 };
 
 class W3DDebugIcons : public RenderObjClass
@@ -41,7 +41,7 @@ public:
 
     virtual ~W3DDebugIcons();
 
-    int Class_ID() const override { return -1; }
+    int32_t Class_ID() const override { return -1; }
 
     bool Cast_Ray(RayCollisionTestClass &raytest) override { return false; }
 
@@ -51,7 +51,7 @@ public:
     RenderObjClass *Clone() const override;
     void Render(RenderInfoClass &rinfo) override;
 
-    static void Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color);
+    static void Add_Icon(Coord3D *pos, float width, int32_t num_frames_duration, RGBColor color);
 
     enum
     {
@@ -67,8 +67,8 @@ private:
 
 protected:
     static DebugIcon *s_debugIcons;
-    static int s_numDebugIcons;
-    static int s_numUnknown;
+    static int32_t s_numDebugIcons;
+    static int32_t s_numUnknown;
 };
 
-static void Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color);
+static void Add_Icon(Coord3D *pos, float width, int32_t num_frames_duration, RGBColor color);

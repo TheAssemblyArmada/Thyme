@@ -29,7 +29,7 @@ public:
     virtual void Update() override {}
     virtual DisplayString *New_Display_String() = 0;
     virtual void Free_Display_String(DisplayString *string) = 0;
-    virtual DisplayString *Get_Group_Numeral_String(int num) = 0;
+    virtual DisplayString *Get_Group_Numeral_String(int32_t num) = 0;
     virtual DisplayString *Get_Formation_Letter_String() = 0;
 
 protected:

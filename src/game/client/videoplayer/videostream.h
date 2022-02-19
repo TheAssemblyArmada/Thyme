@@ -35,11 +35,11 @@ public:
     virtual void Render_Frame(VideoBuffer *buffer) {}
     virtual void Next_Frame() {}
     bool Is_Done() { return true; } // Virtual in Mac build, optimised out perhaps?
-    virtual int Frame_Index() { return 0; }
-    virtual int Frame_Count() { return 0; }
-    virtual void Goto_Frame(int frame) {}
-    virtual int Height() { return 0; }
-    virtual int Width() { return 0; }
+    virtual int32_t Frame_Index() { return 0; }
+    virtual int32_t Frame_Count() { return 0; }
+    virtual void Goto_Frame(int32_t frame) {}
+    virtual int32_t Height() { return 0; }
+    virtual int32_t Width() { return 0; }
 
 protected:
     VideoPlayer *m_player;

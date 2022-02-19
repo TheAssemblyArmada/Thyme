@@ -19,7 +19,7 @@
 
 W3DExclusionListClass::W3DExclusionListClass(DynamicVectorClass<StringClass> const &list) : m_list(&list)
 {
-    for (int i = 0; i < list.Count(); i++) {
+    for (int32_t i = 0; i < list.Count(); i++) {
         m_hash.Insert(list[i], i);
     }
 }

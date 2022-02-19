@@ -38,10 +38,10 @@ enum CompressionType : int32_t
 class CompressionManager
 {
 public:
-    static bool Is_Data_Compressed(const void *data, int size);
-    static CompressionType Get_Compression_Type(const void *data, int size);
-    static int Get_Uncompressed_Size(const void *data, int size);
-    static int Decompress_Data(void *src, int src_size, void *dst, int dst_size);
+    static bool Is_Data_Compressed(const void *data, int32_t size);
+    static CompressionType Get_Compression_Type(const void *data, int32_t size);
+    static int32_t Get_Uncompressed_Size(const void *data, int32_t size);
+    static int32_t Decompress_Data(void *src, int32_t src_size, void *dst, int32_t dst_size);
     static const char *Get_Compression_Name(CompressionType type) { return s_compressionNames[type]; }
 
 private:

@@ -115,12 +115,12 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
     xfer->Xfer_Client_Random_Var(&m_sizeRate);
     xfer->Xfer_Client_Random_Var(&m_sizeRateDamping);
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         xfer->Xfer_Client_Random_Var(&m_alphaKey[i].var);
         xfer->xferUnsignedInt(&m_alphaKey[i].frame);
     }
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         xfer->xferRGBColor(&m_colorKey[i].color);
         xfer->xferUnsignedInt(&m_colorKey[i].frame);
     }
@@ -206,9 +206,9 @@ void ParticleSystemInfo::Xfer_Snapshot(Xfer *xfer)
  *
  * 0x004CD540;
  */
-void ParticleSystemInfo::Tint_All_Colors(int tint)
+void ParticleSystemInfo::Tint_All_Colors(int32_t tint)
 {
-    for (int i = 1; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 1; i < KEYFRAME_COUNT; ++i) {
         m_colorKey[i].color.red *= float(float((tint >> 16) & 0xFF) / 256.0f);
         m_colorKey[i].color.green *= float(float((tint >> 8) & 0xFF) / 256.0f);
         m_colorKey[i].color.blue *= float(float(tint & 0xFF) / 256.0f);

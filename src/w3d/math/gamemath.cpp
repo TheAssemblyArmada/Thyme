@@ -19,10 +19,10 @@
 #include "hooker.h"
 #endif
 
-template<typename T, int N> inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
+template<typename T, int32_t N> inline constexpr Array<T, N> calculateFastTable(T (*func)(T), bool arc)
 {
     Array<T, N> table;
-    for (int a = 0; a < N; ++a) {
+    for (int32_t a = 0; a < N; ++a) {
         float cv = arc ? (a - N / T(2)) * (T(1) / (N / T(2))) : T(a) * 2.0f * GAMEMATH_PI / SIN_TABLE_SIZE;
 
         table[a] = func(cv);
@@ -42,22 +42,22 @@ void GameMath::Init()
 #ifdef GAME_DLL
     // This is here to initialize the game version of the fast tables since we don't yet own everything that uses them.
     float *table = (float *)PICK_ADDRESS(0x00A41500, 0x00E10BA8);
-    for (int i = 0; i < _FastAcosTable.Size(); i++) {
+    for (int32_t i = 0; i < _FastAcosTable.Size(); i++) {
         table[i] = _FastAcosTable[i];
     }
 
     table = (float *)PICK_ADDRESS(0x00A3F500, 0x00E0EBA8);
-    for (int i = 0; i < _FastAsinTable.Size(); i++) {
+    for (int32_t i = 0; i < _FastAsinTable.Size(); i++) {
         table[i] = _FastAsinTable[i];
     }
 
     table = (float *)PICK_ADDRESS(0x00A3E500, 0x00E0DBA8);
-    for (int i = 0; i < _FastSinTable.Size(); i++) {
+    for (int32_t i = 0; i < _FastSinTable.Size(); i++) {
         table[i] = _FastSinTable[i];
     }
 
     table = (float *)PICK_ADDRESS(0x00A40500, 0x00E0FBA8);
-    for (int i = 0; i < _FastInvSinTable.Size(); i++) {
+    for (int32_t i = 0; i < _FastInvSinTable.Size(); i++) {
         table[i] = _FastInvSinTable[i];
     }
 

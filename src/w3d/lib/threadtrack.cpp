@@ -24,13 +24,13 @@ DynamicVectorClass<ThreadTracker *> g_threadTracker;
 /**
  * Registers a thread in the tracker.
  */
-void Register_Thread_ID(int id, const char *name, bool is_main)
+void Register_Thread_ID(int32_t id, const char *name, bool is_main)
 {
     if (name == nullptr) {
         return;
     }
 
-    for (int i = 0; i < g_threadTracker.Count(); ++i) {
+    for (int32_t i = 0; i < g_threadTracker.Count(); ++i) {
         if (strcmp(name, g_threadTracker[i]->name) == 0) {
             g_threadTracker[i]->id = id;
 
@@ -49,9 +49,9 @@ void Register_Thread_ID(int id, const char *name, bool is_main)
 /**
  * Removes a thread from the tracker.
  */
-void Unregister_Thread_ID(int id, const char *name)
+void Unregister_Thread_ID(int32_t id, const char *name)
 {
-    for (int i = 0; i < g_threadTracker.Count(); ++i) {
+    for (int32_t i = 0; i < g_threadTracker.Count(); ++i) {
         if (strcmp(name, g_threadTracker[i]->name) == 0) {
             delete g_threadTracker[i];
             g_threadTracker.Delete(i);
@@ -64,9 +64,9 @@ void Unregister_Thread_ID(int id, const char *name)
 /**
  * Gets the id of the first thread flagged as main or the first id in array if none flagged.
  */
-int Get_Main_Thread_ID()
+int32_t Get_Main_Thread_ID()
 {
-    for (int i = 0; i < g_threadTracker.Count(); ++i) {
+    for (int32_t i = 0; i < g_threadTracker.Count(); ++i) {
         if (g_threadTracker[i]->is_main) {
             return g_threadTracker[i]->id;
         }

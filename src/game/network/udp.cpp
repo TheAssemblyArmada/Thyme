@@ -31,7 +31,7 @@ UDP::~UDP()
  *
  * 0x00733A30
  */
-int UDP::Bind(uint32_t address, uint16_t port)
+int32_t UDP::Bind(uint32_t address, uint16_t port)
 {
     m_addr.sin_family = AF_INET;
     m_addr.sin_port = htobe16(port);
@@ -65,14 +65,14 @@ int UDP::Bind(uint32_t address, uint16_t port)
  *
  * 0x00733A30
  */
-int UDP::Write(const uint8_t *buffer, int length, uint32_t address, uint16_t port)
+int32_t UDP::Write(const uint8_t *buffer, int32_t length, uint32_t address, uint16_t port)
 {
     sockaddr_in to;
     to.sin_family = AF_INET;
     to.sin_port = htobe16(port);
     to.sin_addr.s_addr = htobe32(address);
     Clear_Status();
-    int result = sendto(m_fd, (char *)buffer, length, 0, (sockaddr *)&to, sizeof(to));
+    int32_t result = sendto(m_fd, (char *)buffer, length, 0, (sockaddr *)&to, sizeof(to));
 
     if (result == SOCKET_ERROR) {
         m_status = LastSocketError;
@@ -86,9 +86,9 @@ int UDP::Write(const uint8_t *buffer, int length, uint32_t address, uint16_t por
  *
  * 0x00733BA0
  */
-int UDP::Read(const uint8_t *buffer, int length, sockaddr_in *from)
+int32_t UDP::Read(const uint8_t *buffer, int32_t length, sockaddr_in *from)
 {
-    int result = SOCKET_ERROR;
+    int32_t result = SOCKET_ERROR;
 
     if (from != nullptr) {
         socklen_t addr_len = sizeof(*from);
@@ -125,7 +125,7 @@ int UDP::Read(const uint8_t *buffer, int length, sockaddr_in *from)
  *
  * 0x00733C30
  */
-int UDP::Get_Status()
+int32_t UDP::Get_Status()
 {
     switch (m_status) {
         case SOCKEISCONN:
@@ -178,7 +178,7 @@ bool UDP::Allow_Broadcasts(bool allow)
 /**
  * Set whether the socket will block on IO operations or not.
  */
-int UDP::Set_Blocking(bool block)
+int32_t UDP::Set_Blocking(bool block)
 {
     unsigned long mode = block == false;
 
@@ -232,7 +232,7 @@ uint32_t UDP::Get_Output_Buffer()
 /**
  * Query the currently bound IP address and port.
  */
-int UDP::Get_Local_Addr(uint32_t &address, uint16_t &port)
+int32_t UDP::Get_Local_Addr(uint32_t &address, uint16_t &port)
 {
     port = m_myPort;
     address = m_myIP;

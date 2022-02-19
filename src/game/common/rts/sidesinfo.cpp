@@ -42,12 +42,12 @@ void SidesInfo::Init(const Dict *dict)
 /**
  * @brief Inserts a build list info object into the list at the specified position.
  */
-void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
+void SidesInfo::Add_To_BuildList(BuildListInfo *list, int32_t pos)
 {
     BuildListInfo *position = nullptr;
     BuildListInfo *build_list = m_buildList;
 
-    for (int i = pos; i > 0; --i) {
+    for (int32_t i = pos; i > 0; --i) {
         if (build_list == nullptr) {
             break;
         }
@@ -68,7 +68,7 @@ void SidesInfo::Add_To_BuildList(BuildListInfo *list, int pos)
 /**
  * @brief Removes a build list info object from the list.
  */
-int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
+int32_t SidesInfo::Remove_From_BuildList(BuildListInfo *list)
 {
     if (list == nullptr) {
         return 0;
@@ -81,7 +81,7 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
         return 0;
     }
 
-    int pos = 1;
+    int32_t pos = 1;
 
     for (BuildListInfo *next = m_buildList; next != nullptr; next = next->Get_Next()) {
         if (list == next->Get_Next()) {
@@ -101,7 +101,7 @@ int SidesInfo::Remove_From_BuildList(BuildListInfo *list)
 /**
  * @brief Moves a build list info object in the list to the specified position.
  */
-void SidesInfo::Reorder_In_BuildList(BuildListInfo *list, int pos)
+void SidesInfo::Reorder_In_BuildList(BuildListInfo *list, int32_t pos)
 {
     Remove_From_BuildList(list);
     Add_To_BuildList(list, pos);

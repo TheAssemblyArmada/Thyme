@@ -15,7 +15,7 @@
 #include "datachunk.h"
 #include "endiantype.h"
 
-void DataChunkInput::Decrement_Data_Left(int size)
+void DataChunkInput::Decrement_Data_Left(int32_t size)
 {
     for (InputChunk *chunk = m_chunkStack; chunk != nullptr; chunk = chunk->next) {
         chunk->data_left -= size;
@@ -211,7 +211,7 @@ Utf8String DataChunkInput::Get_Chunk_Label()
  */
 float DataChunkInput::Read_Real32()
 {
-    // Read as 32bit int so we can byteswap easily and then type pun for the return.
+    // Read as 32bit int32_t so we can byteswap easily and then type pun for the return.
     uint32_t tmp;
 
     captainslog_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading a float.");
@@ -231,7 +231,7 @@ int32_t DataChunkInput::Read_Int32()
 {
     int32_t tmp;
 
-    captainslog_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading an int.");
+    captainslog_dbgassert(m_chunkStack->data_left >= sizeof(tmp), "Read past end of chunk reading an int32_t.");
 
     m_file->Read(&tmp, sizeof(tmp));
     Decrement_Data_Left(sizeof(tmp));
@@ -294,7 +294,7 @@ Utf16String DataChunkInput::Read_UnicodeString()
     size = le16toh(size);
 
     captainslog_dbgassert(
-        m_chunkStack->data_left >= int(sizeof(ch) * size), "Read past end of chunk reading Utf16String string.");
+        m_chunkStack->data_left >= int32_t(sizeof(ch) * size), "Read past end of chunk reading Utf16String string.");
 
     // Data is stored as LE UCS-16, so only BMP unicode chars can be stored.
     // TODO revamp unicode handling for none windows systems using libicu or libiconv.
@@ -327,7 +327,7 @@ Dict DataChunkInput::Read_Dict()
 
     Dict dict(size);
 
-    for (int i = 0; i < size; ++i) {
+    for (int32_t i = 0; i < size; ++i) {
         uint32_t key = Read_Int32();
         // Generate a new name key based on the one that was stored in the file.
         NameKeyType nk = g_theNameKeyGenerator->Name_To_Key(m_contents.Get_Name(key >> Dict::DICT_KEY_SHIFT));
@@ -360,7 +360,7 @@ Dict DataChunkInput::Read_Dict()
 /**
  * @brief Reads an array of bytes from the chunk.
  */
-void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int length)
+void DataChunkInput::Read_Byte_Array(uint8_t *ptr, int32_t length)
 {
     captainslog_dbgassert(m_chunkStack->data_left >= length, "Read past end of chunk reading Utf8String string.");
 

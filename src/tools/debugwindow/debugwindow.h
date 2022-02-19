@@ -29,7 +29,7 @@ void CreateDebugDialog();
 void DestroyDebugDialog();
 void ForceAppContinue();
 bool RunAppFast();
-void SetFrameNumber(int frame);
+void SetFrameNumber(int32_t frame);
 
 #ifdef __cplusplus
 } // extern "C"

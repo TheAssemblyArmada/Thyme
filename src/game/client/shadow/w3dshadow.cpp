@@ -24,10 +24,10 @@ void Do_Shadows(RenderInfoClass &rinfo, bool stencil_pass)
 #endif
 }
 
-Vector3 &W3DShadowManager::Get_Light_Pos_World(int light_index)
+Vector3 &W3DShadowManager::Get_Light_Pos_World(int32_t light_index)
 {
 #ifdef GAME_DLL
-    return Call_Method<Vector3 &, W3DShadowManager, int>(PICK_ADDRESS(0x007822A0, 0x00605AA4), this, light_index);
+    return Call_Method<Vector3 &, W3DShadowManager, int32_t>(PICK_ADDRESS(0x007822A0, 0x00605AA4), this, light_index);
 #else
     static Vector3 v(0.0f, 0.0f, 0.0f);
     return v;

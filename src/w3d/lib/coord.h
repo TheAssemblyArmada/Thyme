@@ -314,8 +314,8 @@ public:
 class IRegion2D
 {
 public:
-    int Height() const { return hi.y - lo.y; }
-    int Width() const { return hi.x - lo.x; }
+    int32_t Height() const { return hi.y - lo.y; }
+    int32_t Width() const { return hi.x - lo.x; }
 
     ICoord2D lo;
     ICoord2D hi;

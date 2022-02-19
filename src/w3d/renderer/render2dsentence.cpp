@@ -53,7 +53,7 @@ FontCharsClass::FontCharsClass() :
 
 FontCharsClass::~FontCharsClass()
 {
-    for (int i = 0; i < m_bufferList.Count(); ++i) {
+    for (int32_t i = 0; i < m_bufferList.Count(); ++i) {
         delete m_bufferList[i];
     }
 
@@ -88,7 +88,7 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Get_Char_Data(unichar_t ch
     return retval;
 }
 
-int FontCharsClass::Get_Char_Width(unichar_t ch)
+int32_t FontCharsClass::Get_Char_Width(unichar_t ch)
 {
     const CharDataStruct *data = Get_Char_Data(ch);
 
@@ -99,7 +99,7 @@ int FontCharsClass::Get_Char_Width(unichar_t ch)
     return 0;
 }
 
-int FontCharsClass::Get_Char_Spacing(unichar_t ch)
+int32_t FontCharsClass::Get_Char_Spacing(unichar_t ch)
 {
     const CharDataStruct *data = Get_Char_Data(ch);
 
@@ -110,16 +110,16 @@ int FontCharsClass::Get_Char_Spacing(unichar_t ch)
     return 0;
 }
 
-void FontCharsClass::Blit_Char(unichar_t ch, uint16_t *dest_ptr, int dest_stride, int x, int y)
+void FontCharsClass::Blit_Char(unichar_t ch, uint16_t *dest_ptr, int32_t dest_stride, int32_t x, int32_t y)
 {
     const CharDataStruct *data = Get_Char_Data(ch);
     if (data != nullptr && data->width != 0) {
-        int dest_inc = (dest_stride >> 1);
+        int32_t dest_inc = (dest_stride >> 1);
         uint16_t *src_ptr = data->buffer;
         dest_ptr += (dest_inc * y) + x;
 
-        for (int row = 0; row < m_charHeight; ++row) {
-            for (int col = 0; col < data->width; ++col) {
+        for (int32_t row = 0; row < m_charHeight; ++row) {
+            for (int32_t col = 0; col < data->width; ++col) {
                 uint16_t tmp = *src_ptr++;
 
                 if (col < m_widthReduction) {
@@ -136,9 +136,9 @@ void FontCharsClass::Blit_Char(unichar_t ch, uint16_t *dest_ptr, int dest_stride
 
 const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t ch)
 {
-    int width = m_pointSize * 2;
-    int height = m_pointSize * 2;
-    int x_pos = 0;
+    int32_t width = m_pointSize * 2;
+    int32_t height = m_pointSize * 2;
+    int32_t x_pos = 0;
 #ifdef PLATFORM_WINDOWS
     RECT rect = { 0, 0, width, height };
 
@@ -153,12 +153,12 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t c
     Update_Current_Buffer(char_size.cx);
     uint16_t *curr_buffer = m_bufferList[m_bufferList.Count() - 1]->buffer;
     curr_buffer += m_currPixelOffset;
-    int stride = ((width * 3 + 3) & ~3);
+    int32_t stride = ((width * 3 + 3) & ~3);
 
-    for (int row = 0; row < char_size.cy; row++) {
-        int index = (row * stride);
+    for (int32_t row = 0; row < char_size.cy; row++) {
+        int32_t index = (row * stride);
 
-        for (int col = 0; col < char_size.cx; col++) {
+        for (int32_t col = 0; col < char_size.cx; col++) {
             uint8_t pixel_value = m_gdiBitmapBits[index];
             index += 3;
 
@@ -190,7 +190,7 @@ const FontCharsClass::CharDataStruct *FontCharsClass::Store_GDI_Char(unichar_t c
 #endif
 }
 
-void FontCharsClass::Update_Current_Buffer(int char_width)
+void FontCharsClass::Update_Current_Buffer(int32_t char_width)
 {
     bool needs_new_buffer = (m_bufferList.Count() == 0);
 
@@ -211,8 +211,8 @@ void FontCharsClass::Create_GDI_Font(const char *font_name)
 {
 #ifdef PLATFORM_WINDOWS
     HDC screen_dc = GetDC(W3D::Get_Window());
-    int font_height = -MulDiv(m_pointSize, 96, 72);
-    int font_width = 0;
+    int32_t font_height = -MulDiv(m_pointSize, 96, 72);
+    int32_t font_width = 0;
     DWORD bold = m_isBold ? FW_BOLD : FW_NORMAL;
     constexpr DWORD italic = 0;
     constexpr DWORD underline = 0;
@@ -301,7 +301,7 @@ void FontCharsClass::Free_GDI_Font()
 #endif
 }
 
-void FontCharsClass::Initialize_GDI_Font(const char *font_name, int point_size, bool is_bold)
+void FontCharsClass::Initialize_GDI_Font(const char *font_name, int32_t point_size, bool is_bold)
 {
 #ifdef PLATFORM_WINDOWS
     m_name.Format("%s%d", font_name, point_size);
@@ -312,7 +312,7 @@ void FontCharsClass::Initialize_GDI_Font(const char *font_name, int point_size, 
 #endif
 }
 
-bool FontCharsClass::Is_Font(const char *font_name, int point_size, bool is_bold)
+bool FontCharsClass::Is_Font(const char *font_name, int32_t point_size, bool is_bold)
 {
     if ((m_gdiFontName.Compare_No_Case(font_name) == 0) && (point_size == m_pointSize) && (is_bold == m_isBold)) {
         return true;
@@ -338,8 +338,8 @@ void FontCharsClass::Grow_Unicode_Array(unichar_t ch)
     std::memset(new_array, 0, sizeof(CharDataStruct *) * count);
 
     if (m_unicodeCharArray != nullptr) {
-        int start_offset = (m_firstUnicodeChar - first_index);
-        int old_count = (m_lastUnicodeChar - m_firstUnicodeChar) + 1;
+        int32_t start_offset = (m_firstUnicodeChar - first_index);
+        int32_t old_count = (m_lastUnicodeChar - m_firstUnicodeChar) + 1;
         std::memcpy(&new_array[start_offset], m_unicodeCharArray, sizeof(CharDataStruct *) * old_count);
         delete[] m_unicodeCharArray;
         m_unicodeCharArray = nullptr;
@@ -353,9 +353,9 @@ void FontCharsClass::Grow_Unicode_Array(unichar_t ch)
 void FontCharsClass::Free_Character_Arrays()
 {
     if (m_unicodeCharArray != nullptr) {
-        int count = (m_lastUnicodeChar - m_firstUnicodeChar) + 1;
+        int32_t count = (m_lastUnicodeChar - m_firstUnicodeChar) + 1;
 
-        for (int index = 0; index < count; index++) {
+        for (int32_t index = 0; index < count; index++) {
             if (m_unicodeCharArray[index] != nullptr) {
                 delete m_unicodeCharArray[index];
                 m_unicodeCharArray[index] = nullptr;
@@ -366,7 +366,7 @@ void FontCharsClass::Free_Character_Arrays()
         m_unicodeCharArray = nullptr;
     }
 
-    for (int index = 0; index < 256; index++) {
+    for (int32_t index = 0; index < 256; index++) {
         if (m_asciiCharArray[index] != nullptr) {
             delete m_asciiCharArray[index];
             m_asciiCharArray[index] = nullptr;
@@ -409,7 +409,7 @@ void Render2DSentenceClass::Render()
 {
     Build_Textures();
 
-    for (int i = 0; i < m_renderers.Count(); ++i) {
+    for (int32_t i = 0; i < m_renderers.Count(); ++i) {
         m_renderers[i].renderer->Render();
     }
 }
@@ -436,7 +436,7 @@ void Render2DSentenceClass::Reset()
 
 void Render2DSentenceClass::Reset_Polys()
 {
-    for (int index = 0; index < m_renderers.Count(); index++) {
+    for (int32_t index = 0; index < m_renderers.Count(); index++) {
         m_renderers[index].renderer->Reset();
     }
 }
@@ -456,7 +456,7 @@ void Render2DSentenceClass::Set_Base_Location(const Vector2 &loc)
 {
     Vector2 dif = loc - m_baseLocation;
     m_baseLocation = loc;
-    for (int i = 0; i < m_renderers.Count(); i++) {
+    for (int32_t i = 0; i < m_renderers.Count(); i++) {
         m_renderers[i].renderer->Move(dif);
     }
 }
@@ -474,7 +474,7 @@ void Render2DSentenceClass::Make_Additive()
 void Render2DSentenceClass::Set_Shader(ShaderClass shader)
 {
     m_shader = shader;
-    for (int i = 0; i < m_renderers.Count(); i++) {
+    for (int32_t i = 0; i < m_renderers.Count(); i++) {
         ShaderClass *curr_shader = m_renderers[i].renderer->Get_Shader();
         (*curr_shader) = m_shader;
     }
@@ -500,7 +500,7 @@ Vector2 Render2DSentenceClass::Get_Formatted_Text_Extents(const unichar_t *text)
     return Build_Sentence_Not_Centered(text, nullptr, nullptr, true);
 }
 
-void Render2DSentenceClass::Build_Sentence(const unichar_t *text, int *x, int *y)
+void Render2DSentenceClass::Build_Sentence(const unichar_t *text, int32_t *x, int32_t *y)
 {
     if (text == nullptr) {
         return;
@@ -519,13 +519,13 @@ void Render2DSentenceClass::Draw_Sentence(uint32_t color)
     SurfaceClass *curr_surface = nullptr;
 
     m_drawExtents.Set(0, 0, 0, 0);
-    for (int index = 0; index < m_sentenceData.Count(); index++) {
+    for (int32_t index = 0; index < m_sentenceData.Count(); index++) {
         SentenceDataStruct &data = m_sentenceData[index];
 
         if (data.surface != curr_surface) {
             curr_surface = data.surface;
             bool found = false;
-            for (int renderer_index = 0; renderer_index < m_renderers.Count(); renderer_index++) {
+            for (int32_t renderer_index = 0; renderer_index < m_renderers.Count(); renderer_index++) {
                 if (m_renderers[renderer_index].surface == curr_surface) {
                     found = true;
                     curr_renderer = m_renderers[renderer_index].renderer;
@@ -541,7 +541,7 @@ void Render2DSentenceClass::Draw_Sentence(uint32_t color)
                 render_info.renderer = curr_renderer;
                 render_info.surface = curr_surface;
                 m_renderers.Add(render_info);
-                for (int surface_index = 0; surface_index < m_pendingSurfaces.Count(); surface_index++) {
+                for (int32_t surface_index = 0; surface_index < m_pendingSurfaces.Count(); surface_index++) {
                     PendingSurfaceStruct &surface_info = m_pendingSurfaces[surface_index];
                     if (surface_info.surface == curr_surface) {
                         surface_info.renderers.Add(curr_renderer);
@@ -601,7 +601,7 @@ void Render2DSentenceClass::Draw_Sentence(uint32_t color)
 
 void Render2DSentenceClass::Reset_Sentence_Data()
 {
-    for (int index = 0; index < m_sentenceData.Count(); index++) {
+    for (int32_t index = 0; index < m_sentenceData.Count(); index++) {
         Ref_Ptr_Release(m_sentenceData[index].surface);
     }
 
@@ -621,7 +621,7 @@ void Render2DSentenceClass::Build_Textures()
     m_textureOffset.Set(0, 0);
     m_textureStartX = 0;
 
-    for (int index = 0; index < m_pendingSurfaces.Count(); index++) {
+    for (int32_t index = 0; index < m_pendingSurfaces.Count(); index++) {
         PendingSurfaceStruct &surface_info = m_pendingSurfaces[index];
         SurfaceClass *curr_surface = surface_info.surface;
         SurfaceClass::SurfaceDescription desc;
@@ -640,7 +640,7 @@ void Render2DSentenceClass::Build_Textures()
 #endif
         Ref_Ptr_Release(texture_surface);
 
-        for (int renderer_index = 0; renderer_index < surface_info.renderers.Count(); renderer_index++) {
+        for (int32_t renderer_index = 0; renderer_index < surface_info.renderers.Count(); renderer_index++) {
             Render2DClass *renderer = surface_info.renderers[renderer_index];
             renderer->Set_Texture(new_texture);
         }
@@ -654,7 +654,7 @@ void Render2DSentenceClass::Build_Textures()
 
 void Render2DSentenceClass::Record_Sentence_Chunk()
 {
-    int width = m_textureOffset.I - m_textureStartX;
+    int32_t width = m_textureOffset.I - m_textureStartX;
 
     if (width > 0) {
         float char_height = (float)m_font->Get_Char_Height();
@@ -680,26 +680,26 @@ void Render2DSentenceClass::Allocate_New_Surface(const unichar_t *text, bool reu
         m_lockedPtr = nullptr;
     }
 
-    int text_width = 0;
+    int32_t text_width = 0;
 
-    for (int index = 0; text[index] != U_CHAR('\0'); index++) {
+    for (int32_t index = 0; text[index] != U_CHAR('\0'); index++) {
         text_width += m_font->Get_Char_Spacing(text[index]);
     }
 
-    const int char_height = m_font->Get_Char_Height() + 1;
+    const int32_t char_height = m_font->Get_Char_Height() + 1;
 
     m_currTextureSize = 256;
-    int best_tex_mem_usage = 999999999;
+    int32_t best_tex_mem_usage = 999999999;
 
-    for (int pow2 = 6; pow2 <= 8; pow2++) {
-        int size = 1 << pow2;
-        int row_count = (text_width / size) + 1;
-        int rows_per_texture = size / char_height;
+    for (int32_t pow2 = 6; pow2 <= 8; pow2++) {
+        int32_t size = 1 << pow2;
+        int32_t row_count = (text_width / size) + 1;
+        int32_t rows_per_texture = size / char_height;
 
         if (rows_per_texture > 0) {
-            int texture_count = row_count / rows_per_texture;
+            int32_t texture_count = row_count / rows_per_texture;
             texture_count = std::max(texture_count, 1);
-            int texture_mem_usage = (texture_count * size * size);
+            int32_t texture_mem_usage = (texture_count * size * size);
 
             if (texture_mem_usage < best_tex_mem_usage) {
                 m_currTextureSize = size;
@@ -725,7 +725,7 @@ void Render2DSentenceClass::Allocate_New_Surface(const unichar_t *text, bool reu
 
 void Render2DSentenceClass::Release_Pending_Surfaces()
 {
-    for (int index = 0; index < m_pendingSurfaces.Count(); index++) {
+    for (int32_t index = 0; index < m_pendingSurfaces.Count(); index++) {
         SurfaceClass *curr_surface = m_pendingSurfaces[index].surface;
         Ref_Ptr_Release(curr_surface);
     }
@@ -735,13 +735,13 @@ void Render2DSentenceClass::Release_Pending_Surfaces()
     }
 }
 
-void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *x, int *y)
+void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int32_t *x, int32_t *y)
 {
-    int x_pos = 0;
-    int y_pos = 0;
-    int word_count = 0;
-    int final_x_pos = 0;
-    int tracked_width = 0;
+    int32_t x_pos = 0;
+    int32_t y_pos = 0;
+    int32_t word_count = 0;
+    int32_t final_x_pos = 0;
+    int32_t tracked_width = 0;
     const unichar_t *cur_text = text;
     float char_height = m_font->Get_Char_Height();
     Vector2 position = Build_Sentence_Not_Centered(text, &x_pos, &y_pos, true);
@@ -756,10 +756,10 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
     bool ampersand_handled = false;
 
     while (true) {
-        int word_width = 0;
-        int sentence_width = 0;
-        int word_count_tracker = 0;
-        int spacing;
+        int32_t word_width = 0;
+        int32_t sentence_width = 0;
+        int32_t word_count_tracker = 0;
+        int32_t spacing;
 
         // Calculate various parameters about the sentence we are going to render.
         while (true) {
@@ -832,7 +832,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
             sentence_width += word_width;
         }
 
-        m_cursor.X = (int)std::max((position.X - sentence_width) * 0.5f, 0.0f);
+        m_cursor.X = (int32_t)std::max((position.X - sentence_width) * 0.5f, 0.0f);
 
         if (ampersand_handled) {
             ampersand_handled = false;
@@ -840,7 +840,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
         }
 
         // Blit the prepared line to the current texture.
-        for (int i = 0; i <= word_count_tracker; ++i) {
+        for (int32_t i = 0; i <= word_count_tracker; ++i) {
             unichar_t cur_ch = *text++;
             bool ampersand_processed = false;
 
@@ -923,7 +923,7 @@ void Render2DSentenceClass::Build_Sentence_Centered(const unichar_t *text, int *
     }
 }
 
-Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text, int *x, int *y, bool reuse_surface)
+Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text, int32_t *x, int32_t *y, bool reuse_surface)
 {
     if (!reuse_surface) {
         Reset_Sentence_Data();
@@ -938,10 +938,10 @@ Vector2 Render2DSentenceClass::Build_Sentence_Not_Centered(const unichar_t *text
     }
 
     bool wrapped = false;
-    int y_pos = 0;
-    int x_pos = 0;
-    int initial_tex_i = m_textureOffset.I;
-    int initial_tex_j = m_textureOffset.J;
+    int32_t y_pos = 0;
+    int32_t x_pos = 0;
+    int32_t initial_tex_i = m_textureOffset.I;
+    int32_t initial_tex_j = m_textureOffset.J;
     m_textureOffset.Set(2, 0);
     m_textureStartX = 2;
     float char_height = (float)m_font->Get_Char_Height();

@@ -43,8 +43,8 @@ public:
     Utf8String Get_Name() { return m_name; }
     void Set_Name(Utf8String str) { m_name = str; }
     Region2D Get_UV_Region() const { return m_UVCoords; }
-    int Get_Image_Width() const { return m_imageSize.x; }
-    int Get_Image_Height() const { return m_imageSize.y; }
+    int32_t Get_Image_Width() const { return m_imageSize.x; }
+    int32_t Get_Image_Height() const { return m_imageSize.y; }
     const ICoord2D *Get_Image_Size() const { return &m_imageSize; }
 
     // initFromINIMulti variants for Field Parsing Functions.
@@ -86,7 +86,7 @@ public:
     virtual void Update() override {}
 
     void Add_Image(Image *image);
-    void Load(int texture_size);
+    void Load(int32_t texture_size);
     Image *Find_Image_By_Name(const Utf8String &name);
     static void Parse_Mapped_Image_Definition(INI *ini);
     static void Parse_Mapped_Image(INI *ini, void *formal, void *store, const void *user_data);
@@ -96,7 +96,7 @@ public:
 #endif
 
 private:
-    std::map<unsigned int, Image *> m_imageMap;
+    std::map<uint32_t, Image *> m_imageMap;
 };
 
 #ifdef GAME_DLL

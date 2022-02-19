@@ -27,7 +27,7 @@ GameEngine *Create_Game_Engine()
 #endif
 }
 
-void Game_Main(int argc, char *argv[])
+void Game_Main(int32_t argc, char *argv[])
 {
     g_theGameEngine = Create_Game_Engine();
     g_theGameEngine->Init(argc, argv);

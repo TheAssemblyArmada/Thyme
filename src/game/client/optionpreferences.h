@@ -25,8 +25,8 @@ public:
     OptionPreferences();
     virtual ~OptionPreferences() {}
 
-    int Get_Campaign_Difficulty();
-    void Set_Campaign_Difficulty(int difficulty);
+    int32_t Get_Campaign_Difficulty();
+    void Set_Campaign_Difficulty(int32_t difficulty);
     bool Get_Alternate_Mouse_Mode_Enabled();
     bool Get_Retaliation_Mode_Enabled();
     bool Get_Double_Click_Attack_Move_Enabled();
@@ -34,10 +34,10 @@ public:
     bool Uses_System_Map_Dir();
     bool Save_Camera_In_Replays();
     bool Use_Camera_In_Replays();
-    int Get_Ideal_Static_Game_Detail();
-    int Get_Static_Game_Detail();
-    void Set_Ideal_Static_Game_Detail(int level) { (*this)["IdealStaticGameLOD"] = g_staticGameLODNames[level]; }
-    void Set_Static_Game_Detail(int level) { (*this)["StaticGameLOD"] = g_staticGameLODNames[level]; }
+    int32_t Get_Ideal_Static_Game_Detail();
+    int32_t Get_Static_Game_Detail();
+    void Set_Ideal_Static_Game_Detail(int32_t level) { (*this)["IdealStaticGameLOD"] = g_staticGameLODNames[level]; }
+    void Set_Static_Game_Detail(int32_t level) { (*this)["StaticGameLOD"] = g_staticGameLODNames[level]; }
     Utf8String Get_Preferred_3D_Provider();
     Utf8String Get_Speaker_Type();
     float Get_Sound_Volume();
@@ -55,12 +55,12 @@ public:
     bool Get_3DShadows_Enabled();
     bool Get_2DShadows_Enabled();
     bool Get_Building_Occlusion_Enabled();
-    int Get_Particle_Cap();
-    int Get_Texture_Reduction();
+    int32_t Get_Particle_Cap();
+    int32_t Get_Texture_Reduction();
     float Get_Gamma_Value();
-    void Get_Resolution(int *x, int *y);
+    void Get_Resolution(int32_t *x, int32_t *y);
     bool Get_Send_Delay();
-    int Get_Firewall_Behavior();
+    int32_t Get_Firewall_Behavior();
     int16_t Get_Firewall_Port_Allocation_Delta();
     uint16_t Get_Firewall_Port_Override();
     bool Get_Firewall_Need_Refresh();

@@ -36,7 +36,7 @@ template<typename Key, typename Value> class HashTemplateClass
 
     struct Entry
     {
-        int next;
+        int32_t next;
         Key key;
         Value value;
     };
@@ -67,9 +67,9 @@ public:
 
     void Insert(const Key &key, const Value &value)
     {
-        int index = Alloc_Entry();
+        int32_t index = Alloc_Entry();
 
-        unsigned int hash = Get_Hash_Val(key);
+        uint32_t hash = Get_Hash_Val(key);
         m_table[index].key = key;
         m_table[index].value = value;
         m_table[index].next = m_hash[hash];
@@ -78,11 +78,11 @@ public:
 
     void Remove(const Key &key)
     {
-        unsigned int hash = Get_Hash_Val(key);
-        unsigned int index2 = -1;
+        uint32_t hash = Get_Hash_Val(key);
+        uint32_t index2 = -1;
 
         if (m_hash != nullptr) {
-            for (unsigned int index = m_hash[hash]; index != -1; index = m_table[index].next) {
+            for (uint32_t index = m_hash[hash]; index != -1; index = m_table[index].next) {
 
                 if (m_table[index].key == key) {
                     if (index2 == -1) {
@@ -102,13 +102,13 @@ public:
 
     void Remove_All()
     {
-        for (unsigned int hash = 0; hash < m_size; hash++) {
-            unsigned int index = m_hash[hash];
+        for (uint32_t hash = 0; hash < m_size; hash++) {
+            uint32_t index = m_hash[hash];
 
             if (index != -1) {
-                int new_index = m_hash[hash];
+                int32_t new_index = m_hash[hash];
 
-                for (int j = m_table[index].next; j != -1; j = m_table[j].next) {
+                for (int32_t j = m_table[index].next; j != -1; j = m_table[j].next) {
                     new_index = j;
                 }
 
@@ -120,31 +120,31 @@ public:
     }
 
 private:
-    static unsigned int Get_Hash_Val(const Key &key, unsigned int max_size)
+    static uint32_t Get_Hash_Val(const Key &key, uint32_t max_size)
     {
         // Make sure max_size is a power of two, or the fast modulo code below will not work
         captainslog_assert((max_size % 2) == 0);
         return HashTemplateKeyClass<Key>::Get_Hash_Value(key) & (max_size - 1);
     }
 
-    unsigned int Get_Hash_Val(const Key &key) const { return Get_Hash_Val(key, m_size); }
+    uint32_t Get_Hash_Val(const Key &key) const { return Get_Hash_Val(key, m_size); }
 
     void Re_Hash()
     {
         unsigned new_size = max(m_size * 2, 4u); // Increase the size and make sure there are at least 4 entries.
 
         Entry *new_table = new Entry[new_size];
-        int *new_index = new int[new_size];
-        unsigned int new_first = 0;
+        int32_t *new_index = new int32_t[new_size];
+        uint32_t new_first = 0;
 
         for (unsigned index = 0; index < new_size; ++index) {
             new_table[index].next = -1;
             new_index[index] = -1;
         }
 
-        for (unsigned int hash = 0; hash < m_size; ++hash) {
-            for (int index = m_hash[hash]; index != -1; index = m_table[index].next) {
-                unsigned int hash2 = Get_Hash_Val(m_table[index].key, new_size);
+        for (uint32_t hash = 0; hash < m_size; ++hash) {
+            for (int32_t index = m_hash[hash]; index != -1; index = m_table[index].next) {
+                uint32_t hash2 = Get_Hash_Val(m_table[index].key, new_size);
 
                 new_table[new_first].next = new_index[hash2];
                 new_table[new_first].key = m_table[index].key;
@@ -158,7 +158,7 @@ private:
         delete[] m_hash;
         delete[] m_table;
 
-        for (unsigned int i = new_first; i < new_size - 1; ++i) {
+        for (uint32_t i = new_first; i < new_size - 1; ++i) {
             new_table[i].next = i + 1;
         }
 
@@ -170,21 +170,21 @@ private:
         m_table = new_table;
     }
 
-    int Alloc_Entry()
+    int32_t Alloc_Entry()
     {
         if (m_first == -1) {
             Re_Hash();
         }
 
-        int ret = m_first;
+        int32_t ret = m_first;
         m_first = m_table[ret].next;
         return ret;
     }
 
-    int *m_hash;
+    int32_t *m_hash;
     Entry *m_table;
-    int m_first;
-    unsigned int m_size;
+    int32_t m_first;
+    uint32_t m_size;
 };
 
 template<typename Key, typename Value> class HashTemplateIterator
@@ -199,7 +199,7 @@ public:
     void First()
     {
         m_handle = -1;
-        int size = m_hashTable->m_size;
+        int32_t size = m_hashTable->m_size;
 
         for (m_hashIndex = 0; m_hashIndex < size; m_hashIndex++) {
             m_handle = m_hashTable->m_hash[m_hashIndex];
@@ -213,7 +213,7 @@ public:
     void Next()
     {
         m_handle = m_hashTable->m_table[m_handle].next;
-        int size = m_hashTable->m_size;
+        int32_t size = m_hashTable->m_size;
 
         for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
             m_handle = m_hashTable->m_hash[m_hashIndex];
@@ -229,7 +229,7 @@ public:
     Value &Peek_Value() { return m_hashTable->m_table[m_handle].value; }
 
 private:
-    int m_hashIndex;
-    int m_handle;
+    int32_t m_hashIndex;
+    int32_t m_handle;
     HashTemplateClass<Key, Value> *m_hashTable;
 };

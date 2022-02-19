@@ -158,8 +158,8 @@ public:
         Row[3][3] = 0.0f;
     }
 
-    __forceinline Vector4 &operator[](int i) { return Row[i]; }
-    __forceinline const Vector4 &operator[](int i) const { return Row[i]; }
+    __forceinline Vector4 &operator[](int32_t i) { return Row[i]; }
+    __forceinline const Vector4 &operator[](int32_t i) const { return Row[i]; }
 
     __forceinline Matrix4 Transpose() const
     {
@@ -323,8 +323,8 @@ public:
     friend Matrix4 Multiply(const Matrix4 &a, const Matrix4 &b);
     friend Matrix4 operator*(const Matrix4 &a, const Matrix3D &b);
     friend Matrix4 operator*(const Matrix3D &a, const Matrix4 &b);
-    friend int operator==(const Matrix4 &a, const Matrix4 &b);
-    friend int operator!=(const Matrix4 &a, const Matrix4 &b);
+    friend int32_t operator==(const Matrix4 &a, const Matrix4 &b);
+    friend int32_t operator!=(const Matrix4 &a, const Matrix4 &b);
     friend void Swap(Matrix4 &a, Matrix4 &b);
     friend Vector4 operator*(const Matrix4 &a, const Vector4 &v);
     friend Vector4 operator*(const Matrix4 &a, const Vector3 &v);

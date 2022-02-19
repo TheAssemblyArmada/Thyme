@@ -40,7 +40,7 @@ struct VertexFormatXYZNDUV1
     float nx;
     float ny;
     float nz;
-    unsigned int diffuse;
+    uint32_t diffuse;
     float u1;
     float v1;
 };
@@ -61,12 +61,12 @@ public:
     void Get_Bridge_Info(BridgeInfo *info);
     void Get_Indices_And_Vertices(unsigned short *destination_ib,
         VertexFormatXYZNDUV1 *destination_vb,
-        int *cur_index,
-        int *cur_vertex,
+        int32_t *cur_index,
+        int32_t *cur_vertex,
         RefMultiListIterator<RenderObjClass> *lights);
-    int Get_Model_Indices(unsigned short *destination_ib, int cur_index, int vertex_offset, MeshClass *mesh);
-    int Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
-        int cur_vertex,
+    int32_t Get_Model_Indices(unsigned short *destination_ib, int32_t cur_index, int32_t vertex_offset, MeshClass *mesh);
+    int32_t Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
+        int32_t cur_vertex,
         float x_offset,
         Vector3 &vec,
         Vector3 &vec_normal,
@@ -75,8 +75,8 @@ public:
         Matrix3D const &mtx,
         MeshClass *mesh,
         RefMultiListIterator<RenderObjClass> *lights);
-    int Get_Model_Vertices_Fixed(VertexFormatXYZNDUV1 *destination_vb,
-        int cur_vertex,
+    int32_t Get_Model_Vertices_Fixed(VertexFormatXYZNDUV1 *destination_vb,
+        int32_t cur_vertex,
         Matrix3D const &mtx,
         MeshClass *mesh,
         RefMultiListIterator<RenderObjClass> *lights);
@@ -114,10 +114,10 @@ private:
     Matrix3D m_rightMtx;
     float m_rightMinX;
     float m_rightMaxX;
-    int m_firstIndex;
-    int m_numVertex;
-    int m_firstVertex;
-    int m_numPolygons;
+    int32_t m_firstIndex;
+    int32_t m_numVertex;
+    int32_t m_firstVertex;
+    int32_t m_numPolygons;
     bool m_visible;
     Utf8String m_template;
     BodyDamageType m_curDamageState;
@@ -156,10 +156,10 @@ private:
     DX8IndexBufferClass *m_indexBridge;
     VertexMaterialClass *m_vertexMaterial;
     TextureClass *m_bridgeTexture;
-    int m_curNumBridgeVertices;
-    int m_curNumBridgeIndices;
+    int32_t m_curNumBridgeVertices;
+    int32_t m_curNumBridgeIndices;
     W3DBridge m_bridges[MAX_BRIDGES];
-    int m_numBridges;
+    int32_t m_numBridges;
     bool m_initialized;
     bool m_updateVis;
     bool m_anythingChanged;

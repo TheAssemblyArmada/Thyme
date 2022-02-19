@@ -77,26 +77,26 @@ public:
     //~UpdateModuleInterface
 
     // Indexing is currently used by GameLogic class.
-    void Set_Index_In_Logic(int index);
-    int Get_Index_In_Logic();
+    void Set_Index_In_Logic(int32_t index);
+    int32_t Get_Index_In_Logic();
 
-    void Encode_Frame(unsigned int frame);
-    unsigned int Decode_Frame() const;
+    void Encode_Frame(uint32_t frame);
+    uint32_t Decode_Frame() const;
 
     // #TODO Uses enum here for some reason. Could probably just be primitive type.
     UpdateSleepTime Get_Wake_Frame() const;
     void Set_Wake_Frame(Object *object, UpdateSleepTime frame);
 
-    UpdateSleepTime Frame_To_Sleep_Time(unsigned int frame1, unsigned int frame2, unsigned int frame3, unsigned int frame4);
+    UpdateSleepTime Frame_To_Sleep_Time(uint32_t frame1, uint32_t frame2, uint32_t frame3, uint32_t frame4);
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
-    static int Get_Interface_Mask();
+    static int32_t Get_Interface_Mask();
     static bool Compare_Update_Modules(UpdateModule *a, UpdateModule *b);
 
 private:
-    unsigned int Get_Raw_Update_Value() const;
+    uint32_t Get_Raw_Update_Value() const;
 
 private:
-    unsigned int m_updatePhase;
-    int m_indexInLogic;
+    uint32_t m_updatePhase;
+    int32_t m_indexInLogic;
 };

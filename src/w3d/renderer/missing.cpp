@@ -33,8 +33,8 @@ w3dtexture_t MissingTexture::Get_Missing_Texture()
 
 void MissingTexture::Init()
 {
-    static const int _missing_width = 256;
-    static const int _missing_height = 256;
+    static const int32_t _missing_width = 256;
+    static const int32_t _missing_height = 256;
 
 #ifdef BUILD_WITH_D3D8
     captainslog_assert(s_missingTexture == W3D_TYPE_INVALID_TEXTURE);
@@ -49,8 +49,8 @@ void MissingTexture::Init()
     uint32_t *pixels = static_cast<uint32_t *>(locked_rect.pBits);
 
     // Builds the texture, jut pink for now as original had.
-    for (int h = 0; h < _missing_height; ++h) {
-        for (int w = 0; w < _missing_width; ++w) {
+    for (int32_t h = 0; h < _missing_height; ++h) {
+        for (int32_t w = 0; w < _missing_width; ++w) {
             pixels[h * (locked_rect.Pitch / 4) + w] = 0x7FFF00FF;
         }
     }

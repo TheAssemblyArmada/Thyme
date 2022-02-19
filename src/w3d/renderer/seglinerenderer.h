@@ -52,14 +52,14 @@ public:
     float Get_Opacity() const { return m_opacity; }
     float Get_Noise_Amplitude() const { return m_noiseAmplitude; }
     float Get_Merge_Abort_Factor() const { return m_mergeAbortFactor; }
-    unsigned int Get_Current_Subdivision_Level() const { return m_subdivisionLevel; }
+    uint32_t Get_Current_Subdivision_Level() const { return m_subdivisionLevel; }
     TextureMapMode Get_Texture_Mapping_Mode() const;
     float Get_Texture_Tile_Factor() const { return m_textureTileFactor; }
     Vector2 Get_UV_Offset_Rate() const;
-    int Is_Merge_Intersections() const { return m_bits & MERGE_INTERSECTIONS; }
-    int Is_Freeze_Random() const { return m_bits & FREEZE_RANDOM; }
-    int Is_Sorting_Disabled() const { return m_bits & DISABLE_SORTING; }
-    int Are_End_Caps_Enabled() const { return m_bits & END_CAPS; }
+    int32_t Is_Merge_Intersections() const { return m_bits & MERGE_INTERSECTIONS; }
+    int32_t Is_Freeze_Random() const { return m_bits & FREEZE_RANDOM; }
+    int32_t Is_Sorting_Disabled() const { return m_bits & DISABLE_SORTING; }
+    int32_t Are_End_Caps_Enabled() const { return m_bits & END_CAPS; }
 
     void Set_Texture(TextureClass *texture);
     void Set_Shader(ShaderClass shader) { m_shader = shader; }
@@ -68,12 +68,12 @@ public:
     void Set_Opacity(float opacity) { m_opacity = opacity; }
     void Set_Noise_Amplitude(float amplitude) { m_noiseAmplitude = amplitude; }
     void Set_Merge_Abort_Factor(float factor) { m_mergeAbortFactor = factor; }
-    void Set_Current_Subdivision_Level(unsigned int lv) { m_subdivisionLevel = lv; }
+    void Set_Current_Subdivision_Level(uint32_t lv) { m_subdivisionLevel = lv; }
     void Set_Texture_Mapping_Mode(TextureMapMode mode);
     void Set_Texture_Tile_Factor(float factor);
     void Set_Current_UV_Offset(const Vector2 &offset);
     void Set_UV_Offset_Rate(const Vector2 &rate);
-    void Set_Merge_Intersections(int onoff)
+    void Set_Merge_Intersections(int32_t onoff)
     {
         if (onoff) {
             m_bits |= MERGE_INTERSECTIONS;
@@ -81,7 +81,7 @@ public:
             m_bits &= ~MERGE_INTERSECTIONS;
         };
     }
-    void Set_Freeze_Random(int onoff)
+    void Set_Freeze_Random(int32_t onoff)
     {
         if (onoff) {
             m_bits |= FREEZE_RANDOM;
@@ -89,7 +89,7 @@ public:
             m_bits &= ~FREEZE_RANDOM;
         };
     }
-    void Set_Disable_Sorting(int onoff)
+    void Set_Disable_Sorting(int32_t onoff)
     {
         if (onoff) {
             m_bits |= DISABLE_SORTING;
@@ -97,7 +97,7 @@ public:
             m_bits &= ~DISABLE_SORTING;
         };
     }
-    void Set_End_Caps(int onoff)
+    void Set_End_Caps(int32_t onoff)
     {
         if (onoff) {
             m_bits |= END_CAPS;
@@ -108,7 +108,7 @@ public:
 
     void Render(RenderInfoClass &rinfo,
         const Matrix3D &transform,
-        unsigned int point_count,
+        uint32_t point_count,
         Vector3 *points,
         const SphereClass &obj_sphere,
         Vector4 *colors);
@@ -132,30 +132,30 @@ private:
         DEFAULT_BITS = MERGE_INTERSECTIONS | (UNIFORM_WIDTH_TEXTURE_MAP << TEXTURE_MAP_MODE_OFFSET)
     };
 
-    void Subdivision_Util(unsigned int point_cnt,
+    void Subdivision_Util(uint32_t point_cnt,
         const Vector3 *xformed_pts,
         const float *base_tex_v,
-        unsigned int *p_sub_point_cnt,
+        uint32_t *p_sub_point_cnt,
         Vector3 *xformed_subdiv_pts,
         float *subdiv_tex_v,
         Vector4 *base_color_v,
         Vector4 *subdiv_color_v);
-    VertexFormatXYZDUV1 *Get_Vertex_Buffer(int count);
+    VertexFormatXYZDUV1 *Get_Vertex_Buffer(int32_t count);
 
     TextureClass *m_texture;
     ShaderClass m_shader;
     float m_width;
     Vector3 m_color;
     float m_opacity;
-    unsigned int m_subdivisionLevel;
+    uint32_t m_subdivisionLevel;
     float m_noiseAmplitude;
     float m_mergeAbortFactor;
     float m_textureTileFactor;
-    unsigned int m_lastUsedSyncTime;
+    uint32_t m_lastUsedSyncTime;
     Vector2 m_currentUVOffset;
     Vector2 m_UVOffsetDeltaPerMS;
-    unsigned int m_bits;
-    int m_vertexCount;
+    uint32_t m_bits;
+    int32_t m_vertexCount;
     VertexFormatXYZDUV1 *m_vertexBuffer;
 
     friend class SegmentedLineClass;

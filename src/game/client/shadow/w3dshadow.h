@@ -94,7 +94,7 @@ public:
         }
     }
 
-    void Set_Opacity(int opacity)
+    void Set_Opacity(int32_t opacity)
     {
         m_opacity = opacity;
 
@@ -111,10 +111,10 @@ public:
 protected:
     bool m_isEnabled;
     bool m_isInvisibleEnabled;
-    int m_opacity;
-    int m_color1;
+    int32_t m_opacity;
+    int32_t m_color1;
     ShadowType m_type;
-    int m_color2;
+    int32_t m_color2;
     Coord3D m_position;
     float m_sizeX;
     float m_sizeY;
@@ -128,16 +128,16 @@ class W3DShadowManager
 public:
     Shadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
     void Remove_Shadow(Shadow *shadow);
-    void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
+    void Set_Shadow_Color(uint32_t color) { m_shadowColor = color; }
     void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
-    unsigned int Get_Stencil_Mask() { return m_stencilMask; }
-    void Set_Stencil_Mask(unsigned int mask) { m_stencilMask = mask; }
-    Vector3 &Get_Light_Pos_World(int light_index);
+    uint32_t Get_Stencil_Mask() { return m_stencilMask; }
+    void Set_Stencil_Mask(uint32_t mask) { m_stencilMask = mask; }
+    Vector3 &Get_Light_Pos_World(int32_t light_index);
 
 protected:
     bool m_isShadowScene;
-    unsigned int m_shadowColor;
-    unsigned int m_stencilMask;
+    uint32_t m_shadowColor;
+    uint32_t m_stencilMask;
 };
 
 #ifdef GAME_DLL

@@ -26,9 +26,9 @@ template<class T> class ShareBufferClass : public W3DMPO, public RefCountClass
 
 public:
 #ifndef BUILD_EDITOR
-    ShareBufferClass(int count) : m_count(count)
+    ShareBufferClass(int32_t count) : m_count(count)
 #else
-    ShareBufferClass(int count, const char *name) : m_name(name), m_count(count)
+    ShareBufferClass(int32_t count, const char *name) : m_name(name), m_count(count)
 #endif
     {
         m_array = new T[m_count];
@@ -38,7 +38,7 @@ public:
     {
         m_array = new T[m_count];
 
-        for (int i = 0; i < m_count; i++) {
+        for (int32_t i = 0; i < m_count; i++) {
             m_array[i] = that.m_array[i];
         }
     }
@@ -52,11 +52,11 @@ public:
     }
 
     T *Get_Array() { return m_array; }
-    int Get_Count() { return m_count; }
-    const T &Get_Element(int index) const { return m_array[index]; }
-    T &Get_Element(int index) { return m_array[index]; }
+    int32_t Get_Count() { return m_count; }
+    const T &Get_Element(int32_t index) const { return m_array[index]; }
+    T &Get_Element(int32_t index) { return m_array[index]; }
 
-    void Set_Element(int index, const T &thing) { m_array[index] = thing; }
+    void Set_Element(int32_t index, const T &thing) { m_array[index] = thing; }
     void Clear() { memset(m_array, 0, m_count * sizeof(T)); }
 
 protected:
@@ -64,5 +64,5 @@ protected:
     const char *m_name;
 #endif
     T *m_array;
-    int m_count;
+    int32_t m_count;
 };

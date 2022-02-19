@@ -158,7 +158,7 @@ void SegLineRendererClass::Reset_Line()
 
 void SegLineRendererClass::Render(RenderInfoClass &rinfo,
     const Matrix3D &transform,
-    unsigned int point_count,
+    uint32_t point_count,
     Vector3 *points,
     const SphereClass &obj_sphere,
     Vector4 *colors)
@@ -166,8 +166,8 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
 #ifdef BUILD_WITH_D3D8
     struct LineSegmentIntersection
     {
-        int point_count;
-        int next_segment_id;
+        int32_t point_count;
+        int32_t next_segment_id;
         Vector3 direction;
         Vector3 point;
         float texv;
@@ -192,15 +192,15 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
     uv_offset.Y = uv_offset.Y - GameMath::Floor(uv_offset.Y);
     m_currentUVOffset.Set(uv_offset);
     m_lastUsedSyncTime = W3D::Get_Sync_Time();
-    unsigned int chunk_size = (1 << MAX_SEGLINE_SUBDIV_LEVELS >> m_subdivisionLevel) + 1;
+    uint32_t chunk_size = (1 << MAX_SEGLINE_SUBDIV_LEVELS >> m_subdivisionLevel) + 1;
 
     if (chunk_size > point_count) {
         chunk_size = point_count;
     }
 
     float u_values[2];
-    for (unsigned int start_point = 0; start_point < point_count - 1; start_point += chunk_size - 1) {
-        unsigned int point_cnt = std::min(chunk_size, point_count - start_point);
+    for (uint32_t start_point = 0; start_point < point_count - 1; start_point += chunk_size - 1) {
+        uint32_t point_cnt = std::min(chunk_size, point_count - start_point);
         Matrix3D modelview(view[0].X,
             view[0].Y,
             view[0].Z,
@@ -221,7 +221,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
 
         switch (Get_Texture_Mapping_Mode()) {
             case UNIFORM_WIDTH_TEXTURE_MAP:
-                for (unsigned int i = 0; i < point_cnt; i++) {
+                for (uint32_t i = 0; i < point_cnt; i++) {
                     base_tex_v[i] = 0;
                 }
 
@@ -229,7 +229,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
                 u_values[1] = 1;
                 break;
             case UNIFORM_LENGTH_TEXTURE_MAP:
-                for (unsigned int i = 0; i < point_cnt; i++) {
+                for (uint32_t i = 0; i < point_cnt; i++) {
                     base_tex_v[i] = (float)(start_point + i) * m_textureTileFactor;
                 }
 
@@ -237,7 +237,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
                 u_values[1] = 0;
                 break;
             case TILED_TEXTURE_MAP:
-                for (unsigned int i = 0; i < point_cnt; i++) {
+                for (uint32_t i = 0; i < point_cnt; i++) {
                     base_tex_v[i] = (float)(start_point + i) * m_textureTileFactor;
                 }
 
@@ -246,7 +246,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
                 break;
         }
 
-        unsigned int sub_point_cnt;
+        uint32_t sub_point_cnt;
         Vector3 xformed_subdiv_pts[129];
         float subdiv_tex_v[130];
         Vector4 subdiv_color_v[129];
@@ -270,7 +270,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         float radius = m_width * 0.5f;
         bool switch_edges = false;
 
-        for (unsigned int sub_point = 1; sub_point < sub_point_cnt; sub_point++) {
+        for (uint32_t sub_point = 1; sub_point < sub_point_cnt; sub_point++) {
             Vector3 prev_point = xformed_subdiv_pts[sub_point - 1];
             Vector3 curr_point = xformed_subdiv_pts[sub_point];
 
@@ -315,7 +315,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             MAX_EDGE = 1,
             NUM_EDGES = 2,
         };
-        unsigned int num_intersections[NUM_EDGES];
+        uint32_t num_intersections[NUM_EDGES];
         num_intersections[TOP_EDGE] = sub_point_cnt;
         num_intersections[BOTTOM_EDGE] = sub_point_cnt;
 
@@ -407,7 +407,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         segment[sub_point_cnt].edge_plane[0] = start_pl;
         segment[sub_point_cnt].edge_plane[1] = start_pl;
 
-        for (unsigned int sub_point = 2; sub_point < sub_point_cnt; sub_point++) {
+        for (uint32_t sub_point = 2; sub_point < sub_point_cnt; sub_point++) {
             intersection[sub_point][0].point_count = 1;
             intersection[sub_point][0].next_segment_id = sub_point;
             intersection[sub_point][0].point = xformed_subdiv_pts[sub_point - 1];
@@ -482,10 +482,10 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             while (merged) {
                 merged = false;
 
-                for (unsigned int edge_type = 0; edge_type < NUM_EDGES; edge_type++) {
-                    unsigned int num_isects = num_intersections[edge_type];
-                    unsigned int iidx_r = 1;
-                    unsigned int iidx_w = 1;
+                for (uint32_t edge_type = 0; edge_type < NUM_EDGES; edge_type++) {
+                    uint32_t num_isects = num_intersections[edge_type];
+                    uint32_t iidx_r = 1;
+                    uint32_t iidx_w = 1;
 
                     while (iidx_r < num_isects) {
                         auto &edge3 = intersection[iidx_r][edge_type];
@@ -504,7 +504,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
                                 }
                             }
 
-                            unsigned int new_count = edge2.point_count + edge3.point_count;
+                            uint32_t new_count = edge2.point_count + edge3.point_count;
                             float curr_factor = 1.f / (float)new_count * (float)edge3.point_count;
                             Vector3 new_point = (curr_factor * edge2.point) + (curr_factor * edge3.point);
                             float new_tex_v = curr_factor * edge3.texv + curr_factor * edge2.texv;
@@ -597,11 +597,11 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             }
         }
 
-        unsigned int vnum = num_intersections[BOTTOM_EDGE] + num_intersections[TOP_EDGE];
+        uint32_t vnum = num_intersections[BOTTOM_EDGE] + num_intersections[TOP_EDGE];
         VertexFormatXYZDUV1 *v_vertex_array = Get_Vertex_Buffer(vnum);
         Vector3i16 v_index_array[256];
         unsigned short vertex_count = 0;
-        unsigned int tri_count = 0;
+        uint32_t tri_count = 0;
 
         top = Vector3::Dot_Product(xformed_subdiv_pts[0], intersection[1][0].direction) * intersection[1][0].direction;
         v_vertex_array[vertex_count].x = top.X;
@@ -623,12 +623,12 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
 
         unsigned short last_top_vidx = 0;
         unsigned short last_bottom_vidx = 1;
-        unsigned int top_int_idx = 1;
-        unsigned int bottom_int_idx = 1;
-        unsigned int pidx = std::min(intersection[1][0].point_count, intersection[1][1].point_count) - 1;
-        unsigned int residual_top_points = intersection[1][0].point_count - pidx;
-        unsigned int residual_bottom_points = intersection[1][1].point_count - pidx;
-        unsigned int i = pidx;
+        uint32_t top_int_idx = 1;
+        uint32_t bottom_int_idx = 1;
+        uint32_t pidx = std::min(intersection[1][0].point_count, intersection[1][1].point_count) - 1;
+        uint32_t residual_top_points = intersection[1][0].point_count - pidx;
+        uint32_t residual_bottom_points = intersection[1][1].point_count - pidx;
+        uint32_t i = pidx;
 
         do {
             if (residual_top_points == 1 && residual_bottom_points == 1) {
@@ -714,7 +714,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
                 vertex_count++;
             }
 
-            int residual_points;
+            int32_t residual_points;
 
             if (residual_top_points >= residual_bottom_points) {
                 residual_points = residual_bottom_points;
@@ -728,7 +728,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         } while ((top_int_idx < num_intersections[TOP_EDGE] || residual_top_points != 1)
             && (bottom_int_idx < num_intersections[BOTTOM_EDGE] || residual_bottom_points != 1));
 
-        unsigned int color = DX8Wrapper::Convert_Color(m_color, m_opacity);
+        uint32_t color = DX8Wrapper::Convert_Color(m_color, m_opacity);
         bool b = color == 0xFFFFFFFF;
         bool sorting = !Is_Sorting_Disabled() && m_shader.Get_Dst_Blend_Func() != ShaderClass::DSTBLEND_ZERO
             && m_shader.Get_Alpha_Test() == ShaderClass::ALPHATEST_DISABLE;
@@ -756,7 +756,7 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
             DynamicVBAccessClass::WriteLockClass lock(&vb);
             VertexFormatXYZNDUV2 *vertex_array = lock.Get_Formatted_Vertex_Array();
 
-            for (unsigned int vertex = 0; vertex < vnum; vertex++) {
+            for (uint32_t vertex = 0; vertex < vnum; vertex++) {
                 vertex_array[vertex].x = v_vertex_array[vertex].x;
                 vertex_array[vertex].y = v_vertex_array[vertex].y;
                 vertex_array[vertex].z = v_vertex_array[vertex].z;
@@ -803,10 +803,10 @@ void SegLineRendererClass::Scale(float scale)
     m_noiseAmplitude *= scale;
 }
 
-void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
+void SegLineRendererClass::Subdivision_Util(uint32_t point_cnt,
     const Vector3 *xformed_pts,
     const float *base_tex_v,
-    unsigned int *p_sub_point_cnt,
+    uint32_t *p_sub_point_cnt,
     Vector3 *xformed_subdiv_pts,
     float *subdiv_tex_v,
     Vector4 *base_color_v,
@@ -821,17 +821,17 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
         Vector4 start_color;
         Vector4 end_color;
         float rand;
-        unsigned int level;
+        uint32_t level;
     };
 
-    int freeze_random = Is_Freeze_Random();
+    int32_t freeze_random = Is_Freeze_Random();
     Random3Class randomize;
     Vector3SolidBoxRandomizer randomizer(Vector3(1, 1, 1));
     Vector3 randvec(0, 0, 0);
     SegLineSubdivision stack[MAX_SEGLINE_SUBDIV_LEVELS * 2];
-    unsigned int output_index = 0;
+    uint32_t output_index = 0;
 
-    for (unsigned int input_index = 0; input_index < point_cnt - 1; input_index++) {
+    for (uint32_t input_index = 0; input_index < point_cnt - 1; input_index++) {
         stack[0].start_pos = xformed_pts[input_index];
         stack[0].end_pos = xformed_pts[input_index + 1];
         stack[0].start_texv = base_tex_v[input_index];
@@ -848,7 +848,7 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
         stack[0].rand = m_noiseAmplitude;
         stack[0].level = 0;
 
-        for (int i = 0; i >= 0;) {
+        for (int32_t i = 0; i >= 0;) {
             if (stack[i].level == m_subdivisionLevel) {
                 xformed_subdiv_pts[output_index] = stack[i].start_pos;
                 subdiv_tex_v[output_index] = stack[i].start_texv;
@@ -890,11 +890,11 @@ void SegLineRendererClass::Subdivision_Util(unsigned int point_cnt,
     *p_sub_point_cnt = output_index + 1;
 }
 
-VertexFormatXYZDUV1 *SegLineRendererClass::Get_Vertex_Buffer(int count)
+VertexFormatXYZDUV1 *SegLineRendererClass::Get_Vertex_Buffer(int32_t count)
 {
     if (count > m_vertexCount) {
         delete[] m_vertexBuffer;
-        int c = count + (count >> 1);
+        int32_t c = count + (count >> 1);
         m_vertexCount = c;
         m_vertexBuffer = new VertexFormatXYZDUV1[c];
     }

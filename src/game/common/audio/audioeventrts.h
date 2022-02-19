@@ -39,13 +39,13 @@ public:
     void Advance_Next_Play_Portion();
 
     void Set_Event_Name(Utf8String name);
-    void Set_Playing_Handle(int handle) { m_playingHandle = handle; }
-    void Set_Current_Sound_Index(int index) const { m_currentSoundIndex = index; }
+    void Set_Playing_Handle(int32_t handle) { m_playingHandle = handle; }
+    void Set_Current_Sound_Index(int32_t index) const { m_currentSoundIndex = index; }
     void Set_Volume(float volume) { m_volumeAdjustFactor = volume; }
     void Set_Event_Info(AudioEventInfo *info) const { m_eventInfo = info; }
-    void Set_Player_Index(int index) { m_playerIndex = index; }
-    void Set_Next_Play_Portion(int portion) { m_nextPlayPortion = portion; }
-    void Set_Handle_To_Kill(int handle) { m_handleToKill = handle; }
+    void Set_Player_Index(int32_t index) { m_playerIndex = index; }
+    void Set_Next_Play_Portion(int32_t portion) { m_nextPlayPortion = portion; }
+    void Set_Handle_To_Kill(int32_t handle) { m_handleToKill = handle; }
     void Set_Time_Of_Day(TimeOfDayType tod) { m_timeOfDay = tod; }
     void Set_Position(Coord3D const *position)
     {
@@ -74,7 +74,7 @@ public:
     uintptr_t Get_Handle_To_Kill() const { return m_handleToKill; }
     Coord3D *Get_Current_Pos();
     AudioType Get_Event_Type() const { return m_eventType; }
-    int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
+    int32_t Get_Current_Sound_Index() const { return m_currentSoundIndex; }
     bool Should_Play_Locally() const { return m_shouldPlayLocally; }
     bool Is_Positional_Audio();
     float Get_Volume() const;
@@ -82,7 +82,7 @@ public:
     float Get_Volume_Shift() const { return m_volumeShift; }
     float Get_Delay() const { return m_delay; }
     uintptr_t Get_Playing_Handle() const { return m_playingHandle; }
-    int Get_Next_Play_Portion() const { return m_nextPlayPortion; }
+    int32_t Get_Next_Play_Portion() const { return m_nextPlayPortion; }
     bool Has_More_Loops() const { return m_loopCount >= 0; }
     ObjectID Get_Object_ID() const
     {
@@ -134,11 +134,11 @@ private:
     float m_pitchShift;
     float m_volumeShift;
     float m_delay;
-    int m_loopCount;
-    mutable int m_currentSoundIndex;
+    int32_t m_loopCount;
+    mutable int32_t m_currentSoundIndex;
     unsigned m_soundListPos;
-    int m_playerIndex;
-    int m_nextPlayPortion;
+    int32_t m_playerIndex;
+    int32_t m_nextPlayPortion;
 };
 
 class DynamicAudioEventRTS : public MemoryPoolObject

@@ -26,8 +26,8 @@
 #endif
 
 DebugIcon *W3DDebugIcons::s_debugIcons = nullptr;
-int W3DDebugIcons::s_numDebugIcons = 0;
-int W3DDebugIcons::s_numUnknown = 0;
+int32_t W3DDebugIcons::s_numDebugIcons = 0;
+int32_t W3DDebugIcons::s_numUnknown = 0;
 
 W3DDebugIcons::W3DDebugIcons() : m_vertexMaterial(VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE))
 {
@@ -87,13 +87,13 @@ void W3DDebugIcons::Render(RenderInfoClass &rinfo)
             Matrix3D m(m_transform);
             DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
 
-            int num_icons = std::min(s_numDebugIcons, 5000);
+            int32_t num_icons = std::min(s_numDebugIcons, 5000);
 
-            int index = 0;
+            int32_t index = 0;
 
             while (index < s_numDebugIcons) {
-                int index_count = 0;
-                int vertex_count = 0;
+                int32_t index_count = 0;
+                int32_t vertex_count = 0;
 
                 DynamicVBAccessClass vb_access(VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8, DX8_FVF_XYZNDUV2, 4 * num_icons);
 
@@ -121,26 +121,26 @@ void W3DDebugIcons::Render(RenderInfoClass &rinfo)
 
                         DebugIcon *icon = &s_debugIcons[index];
 
-                        int alpha = 64;
+                        int32_t alpha = 64;
 
-                        int fade_start = 100;
+                        int32_t fade_start = 100;
 
-                        int frame = (int)g_theGameLogic->Get_Frame();
-                        int frame_delta = icon->endFrame - frame;
+                        int32_t frame = (int32_t)g_theGameLogic->Get_Frame();
+                        int32_t frame_delta = icon->endFrame - frame;
 
                         if (frame_delta < 1) {
                             any_ended = true;
                         } else {
 
                             if (frame_delta < fade_start) {
-                                alpha = (int)((float)frame_delta / (float)fade_start * (float)alpha);
+                                alpha = (int32_t)((float)frame_delta / (float)fade_start * (float)alpha);
                             }
 
                             RGBColor color = icon->color;
 
                             float offset = icon->width / 2.0f;
 
-                            int diffuse = (alpha << 24) | color.Get_As_Int();
+                            int32_t diffuse = (alpha << 24) | color.Get_As_Int();
 
                             float x = icon->position.x;
                             float y = icon->position.y;
@@ -215,7 +215,7 @@ void W3DDebugIcons::Render(RenderInfoClass &rinfo)
 #endif
 }
 
-void W3DDebugIcons::Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color)
+void W3DDebugIcons::Add_Icon(Coord3D *pos, float width, int32_t num_frames_duration, RGBColor color)
 {
     if (pos == nullptr) {
         if (s_numDebugIcons > s_numUnknown) {
@@ -247,9 +247,9 @@ void W3DDebugIcons::Compress_Icons_Array()
     if (s_debugIcons != nullptr) {
         if (s_numDebugIcons > 0) {
 
-            int j = 0;
+            int32_t j = 0;
 
-            for (int i = 0; i < s_numDebugIcons; ++i) {
+            for (int32_t i = 0; i < s_numDebugIcons; ++i) {
 
                 if (s_debugIcons[i].endFrame >= g_theGameLogic->Get_Frame() && i > j) {
                     s_debugIcons[j++] = s_debugIcons[i];
@@ -261,7 +261,7 @@ void W3DDebugIcons::Compress_Icons_Array()
     }
 }
 
-void Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color)
+void Add_Icon(Coord3D *pos, float width, int32_t num_frames_duration, RGBColor color)
 {
     W3DDebugIcons::Add_Icon(pos, width, num_frames_duration, color);
 }

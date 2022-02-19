@@ -68,7 +68,7 @@ void WaterTracksObj::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
     box = m_boundingBox;
 }
 
-int WaterTracksObj::Free_Water_Tracks_Resources()
+int32_t WaterTracksObj::Free_Water_Tracks_Resources()
 {
     Ref_Ptr_Release(m_stageZeroTexture);
     return 0;
@@ -98,7 +98,7 @@ void WaterTracksObj::Init(float width, Vector2 const &start, Vector2 const &end,
 }
 
 void WaterTracksObj::Init(
-    float width, float length, Vector2 const &start, Vector2 const &end, const char *texture, int time_offset)
+    float width, float length, Vector2 const &start, Vector2 const &end, const char *texture, int32_t time_offset)
 {
     Free_Water_Tracks_Resources();
     m_initialStart = start;
@@ -122,7 +122,7 @@ void WaterTracksObj::Init(
     m_waveDir *= m_distanceFromShore;
     m_startPos -= m_waveDir;
     m_velocity = s_waveTypeInfo[m_type].initial_velocity;
-    m_totalMs = (int)(m_distanceFromShore / m_velocity);
+    m_totalMs = (int32_t)(m_distanceFromShore / m_velocity);
     m_fadeMs = s_waveTypeInfo[m_type].time_to_fade;
     m_widthFraction = length * s_waveTypeInfo[m_type].initial_width_fraction;
     m_heightFraction = m_widthFraction * s_waveTypeInfo[m_type].initial_height_fraction;
@@ -133,13 +133,13 @@ void WaterTracksObj::Init(
     m_velocityUnk = -(m_velocity * m_velocity) / (2.0f * m_width);
     m_timingUnk2 = -m_velocity / m_velocityUnk;
     m_timingUnk3 = GameMath::Sqrt(GameMath::Fabs(2.0f * m_width / m_velocityUnk));
-    m_totalMs = (int)(m_timeUntilBreak + m_timingUnk2 + m_timingUnk3);
+    m_totalMs = (int32_t)(m_timeUntilBreak + m_timingUnk2 + m_timingUnk3);
     m_scaleUnk = 2.0f * m_heightFraction / (m_timingUnk2 * m_timingUnk2);
     m_timeToCompress = s_waveTypeInfo[m_type].time_to_compress;
 
     if (m_type == WAVE_TYPE_UNK) {
         m_timingUnk3 = 1000.0f;
-        m_totalMs = (int)(m_timeUntilBreak + m_timingUnk2 + (float)m_fadeMs + m_timingUnk3);
+        m_totalMs = (int32_t)(m_timeUntilBreak + m_timingUnk2 + (float)m_fadeMs + m_timingUnk3);
         m_startPos = start;
         m_fadeMs = 1000;
     }
@@ -147,7 +147,7 @@ void WaterTracksObj::Init(
     m_stageZeroTexture = W3DAssetManager::Get_Instance()->Get_Texture(texture);
 }
 
-int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
+int32_t WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int32_t batch_start)
 {
 #ifdef BUILD_WITH_D3D8
     Vector2 v1;
@@ -321,7 +321,7 @@ int WaterTracksObj::Render(DX8VertexBufferClass *vertex_buffer, int batch_start)
     return m_y * m_x + batch_start;
 }
 
-int WaterTracksObj::Update(int ms_elapsed)
+int32_t WaterTracksObj::Update(int32_t ms_elapsed)
 {
     m_elapsedMs += ms_elapsed;
     return 1;
@@ -524,8 +524,8 @@ void Test_Water_Update()
             coord.x = point.x;
             coord.y = point.y;
             g_theTacticalView->Screen_To_Terrain(&coord, &terrain_point_end);
-            int x = terrain_point_end.x - terrain_point_start.x;
-            int y = terrain_point_end.y - terrain_point_start.y;
+            int32_t x = terrain_point_end.x - terrain_point_start.x;
+            int32_t y = terrain_point_end.y - terrain_point_start.y;
 
             if (s_waveTypeInfo[current_wave_type].final_width >= GameMath::Sqrt(x * x + y * y)) {
                 g_theDisplay->Draw_Line(mouse_anchor.x, mouse_anchor.y, point.x, point.y, 1.0f, 0xFFCCCCFF);
@@ -562,15 +562,15 @@ void WaterTracksRenderSystem::Re_Acquire_Resources()
 {
     Ref_Ptr_Release(m_indexBuffer);
     Ref_Ptr_Release(m_vertexBuffer);
-    int size = (2 * m_stripSizeX + 2) * (m_stripSizeY - 1) - 2;
+    int32_t size = (2 * m_stripSizeX + 2) * (m_stripSizeY - 1) - 2;
     m_indexBuffer = new DX8IndexBufferClass(size, DX8IndexBufferClass::USAGE_DEFAULT);
 
     {
         IndexBufferClass::WriteLockClass lock(m_indexBuffer, 0);
         unsigned short *indices = lock.Get_Index_Array();
-        int i1 = 0;
-        int i2 = 0;
-        int i3 = 0;
+        int32_t i1 = 0;
+        int32_t i2 = 0;
+        int32_t i3 = 0;
 
         while (i1 < size) {
             while (i3 < (i2 + 1) * m_stripSizeX) {
@@ -614,7 +614,7 @@ void WaterTracksRenderSystem::Init()
     m_shaderClass.Set_Cull_Mode(ShaderClass::CULL_MODE_DISABLE);
 
     if (!m_freeModules && !m_usedModules) {
-        for (int i = 0; i < 2000; i++) {
+        for (int32_t i = 0; i < 2000; i++) {
             WaterTracksObj *obj = new WaterTracksObj();
 
             if (!obj) {
@@ -669,7 +669,7 @@ void WaterTracksRenderSystem::Shutdown()
 
 void WaterTracksRenderSystem::Update()
 {
-    static unsigned int iLastTime = rts::Get_Time();
+    static uint32_t iLastTime = rts::Get_Time();
     iLastTime = rts::Get_Time();
     WaterTracksObj *obj = m_usedModules;
 
@@ -708,7 +708,7 @@ void WaterTracksRenderSystem::Flush(RenderInfoClass &rinfo)
                 g = g * 255.0f;
                 b = b * 255.0f;
                 // TODO investigate this, seems that color is leftover code
-                int color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
+                int32_t color = (GameMath::Fast_To_Int_Truncate(r) << 16) | (GameMath::Fast_To_Int_Truncate(g) << 8)
                     | GameMath::Fast_To_Int_Truncate(b);
                 Matrix3D m(true);
                 DX8Wrapper::Set_Transform(D3DTS_WORLD, m);
@@ -766,7 +766,7 @@ void WaterTracksRenderSystem::Save_Tracks()
         strcpy(fname, filename.Str());
         strcpy(&fname[strlen(fname) - 4], ".wak");
         FILE *f = fopen(fname, "wb");
-        int count = 0;
+        int32_t count = 0;
         if (f) {
             for (WaterTracksObj *i = m_usedModules; i; i = i->m_nextSystem) {
                 if (!i->m_timeOffsetSecondWave) {
@@ -791,8 +791,8 @@ void WaterTracksRenderSystem::Load_Tracks()
         strcpy(fname, filename.Str());
         strcpy(&fname[strlen(fname) - 4], ".wak");
         File *f = g_theFileSystem->Open(fname, File::BINARY | File::READ);
-        int count = 0;
-        int flip = 0;
+        int32_t count = 0;
+        int32_t flip = 0;
         Vector2 start;
         Vector2 end;
         WaveType type;
@@ -802,7 +802,7 @@ void WaterTracksRenderSystem::Load_Tracks()
             f->Read(&count, sizeof(count));
             f->Seek(0, File::START);
 
-            for (int i = 0; i < count; i++) {
+            for (int32_t i = 0; i < count; i++) {
                 for (;;) {
                     f->Read(&start, sizeof(start));
                     f->Read(&end, sizeof(end));

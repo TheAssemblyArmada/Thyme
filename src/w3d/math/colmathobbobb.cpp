@@ -50,7 +50,7 @@ struct ObbIntersectionStruct
     }
 };
 
-static bool OBB_Intersect_Box0_Basis(ObbIntersectionStruct &context, int axis)
+static bool OBB_Intersect_Box0_Basis(ObbIntersectionStruct &context, int32_t axis)
 {
     float f1 = GameMath::Fabs(context.box1.m_extent.X * context.ab[axis][0])
         + GameMath::Fabs(context.box1.m_extent.Y * context.ab[axis][1])
@@ -61,7 +61,7 @@ static bool OBB_Intersect_Box0_Basis(ObbIntersectionStruct &context, int axis)
     return f2 > f1 || -f1 > f2;
 }
 
-static bool OBB_Intersect_Box1_Basis(ObbIntersectionStruct &context, int axis)
+static bool OBB_Intersect_Box1_Basis(ObbIntersectionStruct &context, int32_t axis)
 {
     float f1 = GameMath::Fabs(context.box0.m_extent.X * context.ab[0][axis])
         + GameMath::Fabs(context.box0.m_extent.Y * context.ab[1][axis])
@@ -261,9 +261,9 @@ struct ObbCollisionStruct
 {
     bool start_bad;
     float max_frac;
-    int axis_id;
-    int side;
-    int test_axis_id;
+    int32_t axis_id;
+    int32_t side;
+    int32_t test_axis_id;
     Vector3 test_axis;
     Vector3 c;
     Vector3 m;
@@ -359,7 +359,7 @@ static bool OBB_Separation_Test(ObbCollisionStruct &context, float ra, float rb,
     }
 }
 
-static bool OBB_Check_Box0_Basis(ObbCollisionStruct &context, int axis)
+static bool OBB_Check_Box0_Basis(ObbCollisionStruct &context, int32_t axis)
 {
     float rb = GameMath::Fabs(context.box1.m_extent.X * context.ab[axis][0])
         + GameMath::Fabs(context.box1.m_extent.Y * context.ab[axis][1])
@@ -371,7 +371,7 @@ static bool OBB_Check_Box0_Basis(ObbCollisionStruct &context, int axis)
     return OBB_Separation_Test(context, context.box0.m_extent[axis], rb, u0, u1);
 }
 
-static bool OBB_Check_Box1_Basis(ObbCollisionStruct &context, int axis)
+static bool OBB_Check_Box1_Basis(ObbCollisionStruct &context, int32_t axis)
 {
     float ra = GameMath::Fabs(context.box0.m_extent.X * context.ab[0][axis])
         + GameMath::Fabs(context.box0.m_extent.Y * context.ab[1][axis])
@@ -506,7 +506,7 @@ static void Compute_Contact_Point(ObbCollisionStruct &context, CastResultStruct 
         case 2:
         case 3: {
             float y[3];
-            for (int i = 0; i < 3; i++) {
+            for (int32_t i = 0; i < 3; i++) {
                 y[i] = Eval_Side(context.ab[context.axis_id - 1][i], (float)context.side);
             }
             context.box1.Compute_Point(y, &result->contact_point);
@@ -518,7 +518,7 @@ static void Compute_Contact_Point(ObbCollisionStruct &context, CastResultStruct 
         case 5:
         case 6: {
             float x[3];
-            for (int i = 0; i < 3; i++) {
+            for (int32_t i = 0; i < 3; i++) {
                 x[i] = Eval_Side(context.ab[context.axis_id - 4][i], (float)context.side);
             }
 

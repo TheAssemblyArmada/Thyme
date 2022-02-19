@@ -34,14 +34,14 @@ public:
     virtual void Install_Materials();
     virtual void UnInstall_Materials() {}
 
-    void Set_Texture(TextureClass *texture, int stage = 0);
+    void Set_Texture(TextureClass *texture, int32_t stage = 0);
     void Set_Shader(ShaderClass shader);
     void Set_Material(VertexMaterialClass *material);
 
-    TextureClass *Get_Texture(int stage = 0);
+    TextureClass *Get_Texture(int32_t stage = 0);
     VertexMaterialClass *Get_Material();
 
-    TextureClass *Peek_Texture(int stage = 0);
+    TextureClass *Peek_Texture(int32_t stage = 0);
     ShaderClass Peek_Shader() { return m_shader; }
     VertexMaterialClass *Peek_Material() { return m_material; }
 

@@ -34,7 +34,7 @@ DynamicMemoryAllocator::DynamicMemoryAllocator() :
     memset(m_pools, 0, sizeof(m_pools));
 }
 
-void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, PoolInitRec const *const params)
+void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int32_t subpools, PoolInitRec const *const params)
 {
     PoolInitRec const defaults[7] = {
         { "dmaPool_16", 16, 64, 64 },
@@ -62,7 +62,7 @@ void DynamicMemoryAllocator::Init(MemoryPoolFactory *factory, int subpools, Pool
         m_poolCount = 8;
     }
 
-    for (int i = 0; i < m_poolCount; ++i) {
+    for (int32_t i = 0; i < m_poolCount; ++i) {
         m_pools[i] = m_factory->Create_Memory_Pool(&init_list[i]);
     }
 }
@@ -71,7 +71,7 @@ DynamicMemoryAllocator::~DynamicMemoryAllocator()
 {
     captainslog_dbgassert(m_usedBlocksInDma, "Destroying none empty DMA.");
 
-    for (int i = 0; i < m_poolCount; ++i) {
+    for (int32_t i = 0; i < m_poolCount; ++i) {
         m_factory->Destroy_Memory_Pool(m_pools[i]);
         m_pools[i] = nullptr;
     }
@@ -81,13 +81,13 @@ DynamicMemoryAllocator::~DynamicMemoryAllocator()
     }
 }
 
-MemoryPool *DynamicMemoryAllocator::Find_Pool_For_Size(int size)
+MemoryPool *DynamicMemoryAllocator::Find_Pool_For_Size(int32_t size)
 {
     if (m_poolCount <= 0) {
         return nullptr;
     }
 
-    for (int i = 0; i < m_poolCount; ++i) {
+    for (int32_t i = 0; i < m_poolCount; ++i) {
         if (size <= m_pools[i]->m_allocationSize) {
             return m_pools[i];
         }
@@ -127,7 +127,7 @@ void DynamicMemoryAllocator::Remove_From_List(DynamicMemoryAllocator **head)
     }
 }
 
-void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
+void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int32_t bytes)
 {
     ScopedCriticalSectionClass cs(g_dmaCriticalSection);
 
@@ -145,7 +145,7 @@ void *DynamicMemoryAllocator::Allocate_Bytes_No_Zero(int bytes)
     return block;
 }
 
-void *DynamicMemoryAllocator::Allocate_Bytes(int bytes)
+void *DynamicMemoryAllocator::Allocate_Bytes(int32_t bytes)
 {
     void *block = Allocate_Bytes_No_Zero(bytes);
     memset(block, 0, bytes);
@@ -173,7 +173,7 @@ void DynamicMemoryAllocator::Free_Bytes(void *block)
     --m_usedBlocksInDma;
 }
 
-int DynamicMemoryAllocator::Get_Actual_Allocation_Size(int bytes)
+int32_t DynamicMemoryAllocator::Get_Actual_Allocation_Size(int32_t bytes)
 {
     MemoryPool *mp = Find_Pool_For_Size(bytes);
 
@@ -186,7 +186,7 @@ int DynamicMemoryAllocator::Get_Actual_Allocation_Size(int bytes)
 
 void DynamicMemoryAllocator::Reset()
 {
-    for (int i = 0; i < m_poolCount; ++i) {
+    for (int32_t i = 0; i < m_poolCount; ++i) {
         if (m_pools[i] != nullptr) {
             m_pools[i]->Reset();
         }

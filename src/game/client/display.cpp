@@ -101,7 +101,7 @@ void Display::Update()
                 m_unkDisplayString->Set_Text(g_theGameText->Fetch("GUI:EACopyright"));
 
                 Utf8String font_name;
-                int point_size = 0;
+                int32_t point_size = 0;
                 bool bold = false;
 
                 if (g_theGlobalLanguage && g_theGlobalLanguage->Copyright_Font().Name().Is_Not_Empty()) {
@@ -115,7 +115,7 @@ void Display::Update()
                     bold = true;
                 }
 
-                int size = g_theGlobalLanguage->Adjust_Font_Size(point_size);
+                int32_t size = g_theGlobalLanguage->Adjust_Font_Size(point_size);
                 GameFont *font = g_theFontLibrary->Get_Font(font_name, size, bold);
                 m_unkDisplayString->Set_Font(font);
 
@@ -163,14 +163,14 @@ void Display::Set_Height(unsigned height)
  */
 bool Display::Set_Display_Mode(unsigned width, unsigned height, unsigned bits, bool windowed)
 {
-    int old_width = Get_Width();
-    int old_height = Get_Height();
+    int32_t old_width = Get_Width();
+    int32_t old_height = Get_Height();
 
-    int tactical_width = g_theTacticalView->Get_Width();
-    int tactical_height = g_theTacticalView->Get_Height();
+    int32_t tactical_width = g_theTacticalView->Get_Width();
+    int32_t tactical_height = g_theTacticalView->Get_Height();
 
-    int origin_x;
-    int origin_y;
+    int32_t origin_x;
+    int32_t origin_y;
     g_theTacticalView->Get_Origin(&origin_x, &origin_y);
 
     Set_Width(width);
@@ -232,7 +232,7 @@ void Display::Update_Views()
 /**
  * 0x00421500
  */
-void Display::Play_Logo_Movie(Utf8String name, int a3, int a4)
+void Display::Play_Logo_Movie(Utf8String name, int32_t a3, int32_t a4)
 {
     Stop_Movie();
     m_videoStream = g_theVideoPlayer->Open(name);

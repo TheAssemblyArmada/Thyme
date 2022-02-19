@@ -27,11 +27,11 @@ public:
     virtual bool Write();
 
     Utf8String Get_AsciiString(Utf8String key, Utf8String def_arg = Utf8String::s_emptyString);
-    int Get_Int(Utf8String key, int def_arg);
+    int32_t Get_Int(Utf8String key, int32_t def_arg);
     float Get_Real(Utf8String key, float def_arg);
     bool Get_Bool(Utf8String key, bool def_arg);
     void Set_AsciiString(Utf8String key, Utf8String value);
-    void Set_Int(Utf8String key, int value);
+    void Set_Int(Utf8String key, int32_t value);
     void Set_Real(Utf8String key, float value);
     void Set_Bool(Utf8String key, bool value);
 

@@ -34,7 +34,7 @@ void XferCRC::xferSnapshot(SnapShot *thing)
     }
 }
 
-void XferCRC::xferImplementation(void *thing, int size)
+void XferCRC::xferImplementation(void *thing, int32_t size)
 {
     uint32_a *data = static_cast<uint32_a *>(thing);
 
@@ -43,7 +43,7 @@ void XferCRC::xferImplementation(void *thing, int size)
     }
 
     // Use up all the multiples of 4 data.
-    for (int i = size / 4; i > 0; --i) {
+    for (int32_t i = size / 4; i > 0; --i) {
         Add_CRC(*data++);
     }
 
@@ -51,9 +51,9 @@ void XferCRC::xferImplementation(void *thing, int size)
     if (size % 4 > 0) {
         uint32_t tmp = 0;
         uint8_t *cdata = reinterpret_cast<uint8_t *>(data);
-        int shift = 0;
+        int32_t shift = 0;
 
-        for (int i = 0; i < size % 4; ++i) {
+        for (int32_t i = 0; i < size % 4; ++i) {
             tmp |= cdata[i] << shift;
             shift += 8;
         }

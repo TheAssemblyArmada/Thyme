@@ -27,12 +27,12 @@
 #include <eh.h>
 // clang-format on
 
-void __cdecl Dump_Exception_Info(unsigned int u, struct _EXCEPTION_POINTERS *e_info);
+void __cdecl Dump_Exception_Info(uint32_t u, struct _EXCEPTION_POINTERS *e_info);
 BOOL Init_Symbol_Info();
 void Uninit_Symbol_Info();
 void __cdecl Stack_Dump_Handler(const char *data);
 void Make_Stack_Trace(
-    uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int skipFrames, void(__cdecl *callback)(char const *));
+    uintptr_t myeip, uintptr_t myesp, uintptr_t myebp, int32_t skipFrames, void(__cdecl *callback)(char const *));
 #endif
 
 #ifdef GAME_DLL

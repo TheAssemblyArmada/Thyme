@@ -27,7 +27,7 @@ BezFwdIterator::BezFwdIterator()
     m_add2.Zero();
 }
 
-BezFwdIterator::BezFwdIterator(int count, const BezierSegment *segment)
+BezFwdIterator::BezFwdIterator(int32_t count, const BezierSegment *segment)
 {
     m_point.Zero();
     m_add0.Zero();
@@ -61,7 +61,7 @@ void BezFwdIterator::Start()
         float *f1;
         float *f2;
         float *f3;
-        int idx = 3;
+        int32_t idx = 3;
 
         while (--idx >= 0) {
             const float x = vectors[idx].X;

@@ -124,10 +124,10 @@ bool ProjectileStreamUpdate::Consider_Dying()
         && !g_theGameLogic->Find_Object_By_ID(m_owningObject);
 }
 
-void ProjectileStreamUpdate::Get_All_Points(Vector3 *points, int *count)
+void ProjectileStreamUpdate::Get_All_Points(Vector3 *points, int32_t *count)
 {
-    int num = 0;
-    int index = m_firstValidIndex;
+    int32_t num = 0;
+    int32_t index = m_firstValidIndex;
     Object *object = g_theGameLogic->Find_Object_By_ID(m_owningObject);
 
     while (index != m_nextFreeIndex) {

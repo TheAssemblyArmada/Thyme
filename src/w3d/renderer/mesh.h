@@ -40,12 +40,12 @@ public:
 
     virtual RenderObjClass *Clone() const override;
 
-    virtual int Class_ID() const override { return CLASSID_MESH; }
+    virtual int32_t Class_ID() const override { return CLASSID_MESH; }
 
     virtual const char *Get_Name() const override;
     virtual void Set_Name(const char *name) override;
 
-    virtual int Get_Num_Polys() const override;
+    virtual int32_t Get_Num_Polys() const override;
 
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual void Special_Render(SpecialRenderInfoClass &rinfo) override;
@@ -64,8 +64,8 @@ public:
 
     virtual MaterialInfoClass *Get_Material_Info() override;
 
-    virtual int Get_Sort_Level() const override;
-    virtual void Set_Sort_Level(int level) override;
+    virtual int32_t Get_Sort_Level() const override;
+    virtual void Set_Sort_Level(int32_t level) override;
 
     virtual void Create_Decal(DecalGeneratorClass *generator) override;
     virtual void Delete_Decal(unsigned long decal_id) override;
@@ -90,7 +90,7 @@ public:
     void Get_Deformed_Vertices(Vector3 *dst_vert);
     LightEnvironmentClass *Get_Lighting_Environment() { return m_lightEnvironment; }
     float Get_Alpha_Override() { return m_alphaOverride; }
-    int Get_Base_Vertex_Offset() { return m_baseVertexOffset; }
+    int32_t Get_Base_Vertex_Offset() { return m_baseVertexOffset; }
 
     MeshModelClass *Peek_Model() { return m_model; }
     MeshClass *Peek_Next_Visible_Skin() { return m_nextVisibleSkin; }
@@ -104,16 +104,16 @@ public:
             m_lightEnvironment = &m_localLightEnv;
         }
     }
-    int Get_Draw_Call_Count();
+    int32_t Get_Draw_Call_Count();
     void Set_Next_Visible_Skin(MeshClass *next_visible) { m_nextVisibleSkin = next_visible; }
-    void Set_Base_Vertex_Offset(int base) { m_baseVertexOffset = base; }
+    void Set_Base_Vertex_Offset(int32_t base) { m_baseVertexOffset = base; }
 
 protected:
     unsigned Get_Debug_Id() const { return m_meshDebugId; }
     virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false) override;
     virtual void Update_Cached_Bounding_Volumes() const override;
     void Free();
-    int Get_Draw_Call_Count() const;
+    int32_t Get_Draw_Call_Count() const;
     void Set_Debugger_Disable(bool b) { m_isDisabledByDebugger = b; }
     bool Is_Disabled_By_Debugger() const { return m_isDisabledByDebugger; }
 
@@ -124,9 +124,9 @@ protected:
     float m_alphaOverride;
     float m_emissiveScale;
     float m_opacityOverride;
-    int m_baseVertexOffset;
+    int32_t m_baseVertexOffset;
     MeshClass *m_nextVisibleSkin;
-    unsigned int m_meshDebugId;
+    uint32_t m_meshDebugId;
     bool m_isDisabledByDebugger;
 };
 
@@ -143,7 +143,7 @@ public:
 
     virtual ~PrimitivePrototypeClass() override { m_proto->Release_Ref(); }
     virtual const char *Get_Name() const override { return m_proto->Get_Name(); }
-    virtual int Get_Class_ID() const override { return m_proto->Class_ID(); }
+    virtual int32_t Get_Class_ID() const override { return m_proto->Class_ID(); }
     virtual RenderObjClass *Create() override { return m_proto->Clone(); }
     virtual void Delete_Self() override { delete this; };
 
@@ -154,6 +154,6 @@ private:
 class MeshLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_MESH; }
+    virtual int32_t Chunk_Type() override { return W3D_CHUNK_MESH; }
     virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

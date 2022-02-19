@@ -62,7 +62,7 @@ public:
 
 private:
     Utf8String m_name;
-    int m_surfaces;
+    int32_t m_surfaces;
     float m_maxSpeed;
     float m_maxSpeedDamaged;
     float m_minSpeed;
@@ -101,7 +101,7 @@ private:
     float m_lateralAccelCoef;
     float m_uniformAxialDamping;
     float m_turnPivotOffset;
-    int m_airborneTargetingHeight;
+    int32_t m_airborneTargetingHeight;
     float m_closeEnoughDist;
     bool m_closeEnoughDist3D;
     float m_slideIntoPlaceTime;
@@ -173,10 +173,10 @@ private:
     float m_brakingFactor;
     float m_maxTurnRate;
     float m_closeEnoughDist;
-    unsigned int m_flags;
+    uint32_t m_flags;
     float m_preferredHeight;
     float m_preferredHeightDamping;
     float m_unk2;
     float m_unk3;
-    unsigned int m_unk4;
+    uint32_t m_unk4;
 };

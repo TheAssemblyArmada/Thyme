@@ -50,7 +50,7 @@ public:
 
     void Evaluate_Bez_Segment_At_T(float t, Coord3D *point);
 
-    void Get_Segment_Points(int segment, std::vector<Coord3D> *points);
+    void Get_Segment_Points(int32_t segment, std::vector<Coord3D> *points);
 
     float Get_Approximate_Length(float t);
 

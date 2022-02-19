@@ -39,9 +39,9 @@ public:
 private:
     Utf8String m_tooltipName;
     RGBColor m_rgbValue;
-    int m_color;
+    int32_t m_color;
     RGBColor m_rgbNightValue;
-    int m_nightColor;
+    int32_t m_nightColor;
 
     static FieldParse s_colorFieldParsetable[];
 };
@@ -78,16 +78,16 @@ public:
     MultiplayerColorDefinition *New_Color_Definition(Utf8String name);
 
 private:
-    int m_initialCreditsMin;
-    int m_initialCreditsMax;
-    int m_startCountdownTimer;
-    int m_maxBeaconsPerPlayer;
+    int32_t m_initialCreditsMin;
+    int32_t m_initialCreditsMax;
+    int32_t m_startCountdownTimer;
+    int32_t m_maxBeaconsPerPlayer;
     bool m_useShroud;
     bool m_showRandomPlayerTemplate;
     bool m_showRandomStartPos;
     bool m_showRandomColor;
     std::map<Utf8String, MultiplayerColorDefinition> m_colorList;
-    int m_numColors;
+    int32_t m_numColors;
     MultiplayerColorDefinition m_colorDef1;
     MultiplayerColorDefinition m_colorDef2;
     std::vector<Money> m_moneyVec;

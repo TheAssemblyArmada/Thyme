@@ -23,7 +23,7 @@ void DebugDisplay::Printf(const char *format, ...)
 
     va_list va;
     va_start(va, format);
-    int length = vsnprintf(_text, sizeof(_text), format, va);
+    int32_t length = vsnprintf(_text, sizeof(_text), format, va);
     va_end(va);
 
     if (length >= 0) {
@@ -35,7 +35,7 @@ void DebugDisplay::Printf(const char *format, ...)
 void DebugDisplay::Print(char *string)
 {
     char *line = string;
-    int line_length = 0;
+    int32_t line_length = 0;
 
     while (true) {
         // Get the next character to evaluate.

@@ -19,5 +19,5 @@
 class OutputStream
 {
 public:
-    virtual int Write(const void *src, int size) = 0;
+    virtual int32_t Write(const void *src, int32_t size) = 0;
 };

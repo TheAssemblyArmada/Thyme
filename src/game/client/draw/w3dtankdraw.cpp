@@ -61,7 +61,7 @@ W3DTankDraw::W3DTankDraw(Thing *thing, ModuleData const *module_data) :
     m_prevRenderObj(nullptr),
     m_treadCount(0)
 {
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
+    for (int32_t i = 0; i < MAX_TREADS_PER_TANK; i++) {
         m_treads[i].m_robj = nullptr;
     }
 
@@ -76,7 +76,7 @@ W3DTankDraw::~W3DTankDraw()
     // BUGFIX: Free emitters to avoid a leak
     Toss_Emitters();
 
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
+    for (int32_t i = 0; i < MAX_TREADS_PER_TANK; i++) {
         Ref_Ptr_Release(m_treads[i].m_robj);
     }
 }
@@ -104,7 +104,7 @@ void W3DTankDraw::Do_Draw_Module(const Matrix3D *transform)
 
             if (physics) {
                 const Coord3D &velocity = physics->Get_Velocity();
-                int len = velocity.x * velocity.x + velocity.y * velocity.y;
+                int32_t len = velocity.x * velocity.x + velocity.y * velocity.y;
 
                 if (len > 0.00001f && !Get_Drawable()->Is_Hidden() && !Get_Fully_Obscured_By_Shroud()) {
                     Start_Move_Debris();
@@ -155,7 +155,7 @@ void W3DTankDraw::Do_Draw_Module(const Matrix3D *transform)
                     } else if (physics->Is_Motive()) {
                         if (physics->Get_Velocity_Magnitude() / speed
                             >= Get_W3D_Tank_Draw_Module_Data()->m_treadDriveSpeedFraction) {
-                            for (int i = 0; i < m_treadCount; i++) {
+                            for (int32_t i = 0; i < m_treadCount; i++) {
                                 float offset = m_treads[i].m_materialSettings.m_customUVOffset.X - rate;
                                 offset -= GameMath::Floor(offset);
                                 m_treads[i].m_materialSettings.m_customUVOffset.Set(offset, 0.0f);
@@ -280,7 +280,7 @@ void W3DTankDraw::Stop_Move_Debris()
 
 void W3DTankDraw::Update_Tread_Positions(float uv_delta)
 {
-    for (int i = 0; i < m_treadCount; i++) {
+    for (int32_t i = 0; i < m_treadCount; i++) {
         float offset = 0;
 
         if (m_treads[i].m_type == TREAD_LEFT) {
@@ -298,7 +298,7 @@ void W3DTankDraw::Update_Tread_Objects()
 {
     RenderObjClass *robj = Get_Render_Object();
 
-    for (int i = 0; i < m_treadCount; i++) {
+    for (int32_t i = 0; i < m_treadCount; i++) {
         Ref_Ptr_Release(m_treads[i].m_robj);
     }
 
@@ -306,7 +306,7 @@ void W3DTankDraw::Update_Tread_Objects()
 
     if (Get_W3D_Tank_Draw_Module_Data() != nullptr && Get_W3D_Tank_Draw_Module_Data()->m_treadAnimationRate != 0.0f
         && robj != nullptr) {
-        for (int j = 0; j < robj->Get_Num_Sub_Objects() && m_treadCount < MAX_TREADS_PER_TANK; j++) {
+        for (int32_t j = 0; j < robj->Get_Num_Sub_Objects() && m_treadCount < MAX_TREADS_PER_TANK; j++) {
             RenderObjClass *subobj = robj->Get_Sub_Object(j);
 
             if (subobj != nullptr) {
@@ -317,7 +317,7 @@ void W3DTankDraw::Update_Tread_Objects()
                             MaterialInfoClass *matinfo = subobj->Get_Material_Info();
 
                             if (matinfo) {
-                                for (int index = 0; index < matinfo->Vertex_Material_Count(); index++) {
+                                for (int32_t index = 0; index < matinfo->Vertex_Material_Count(); index++) {
                                     TextureMapperClass *mapper = matinfo->Get_Vertex_Material(index)->Get_Mapper(0);
 
                                     if (mapper != nullptr

@@ -127,7 +127,7 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
             break;
     };
 
-    for (int i = 0; i < MAX_TEXTURE_STAGES - 1; ++i) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES - 1; ++i) {
         g_magTextureFilters[i + 1][FILTER_TYPE_NONE] = g_magTextureFilters[i][FILTER_TYPE_NONE];
         g_minTextureFilters[i + 1][FILTER_TYPE_NONE] = g_minTextureFilters[i][FILTER_TYPE_NONE];
         g_mipMapFilters[i + 1][FILTER_TYPE_NONE] = g_mipMapFilters[i][FILTER_TYPE_NONE];
@@ -150,7 +150,7 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
         g_mipMapFilters[i + 1][FILTER_TYPE_BEST] = g_mipMapFilters[i][FILTER_TYPE_BEST];
     }
 
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         g_magTextureFilters[i][FILTER_TYPE_DEFAULT] = g_magTextureFilters[i][FILTER_TYPE_BEST];
         g_minTextureFilters[i][FILTER_TYPE_DEFAULT] = g_minTextureFilters[i][FILTER_TYPE_BEST];
         g_mipMapFilters[i][FILTER_TYPE_DEFAULT] = g_mipMapFilters[i][FILTER_TYPE_BEST];
@@ -161,21 +161,21 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
 
 void TextureFilterClass::Set_Default_Min_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         g_minTextureFilters[i][FILTER_TYPE_DEFAULT] = g_minTextureFilters[i][type];
     }
 }
 
 void TextureFilterClass::Set_Default_Mag_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         g_magTextureFilters[i][FILTER_TYPE_DEFAULT] = g_magTextureFilters[i][type];
     }
 }
 
 void TextureFilterClass::Set_Default_Mip_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
+    for (int32_t i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         g_mipMapFilters[i][FILTER_TYPE_DEFAULT] = g_mipMapFilters[i][type];
     }
 }
@@ -444,9 +444,9 @@ unsigned TextureClass::Get_Texture_Memory_Usage()
     }
 
 #ifdef BUILD_WITH_D3D8
-    int count = reinterpret_cast<w3dtexture_t>(Peek_Platform_Base_Texture())->GetLevelCount();
+    int32_t count = reinterpret_cast<w3dtexture_t>(Peek_Platform_Base_Texture())->GetLevelCount();
 
-    for (int i = 0; i < count; ++i) {
+    for (int32_t i = 0; i < count; ++i) {
         D3DSURFACE_DESC desc;
         DX8Wrapper::Handle_DX8_ErrorCode(
             reinterpret_cast<w3dtexture_t>(Peek_Platform_Base_Texture())->GetLevelDesc(i, &desc));
@@ -457,7 +457,7 @@ unsigned TextureClass::Get_Texture_Memory_Usage()
     return usage;
 }
 
-void TextureClass::Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, unsigned int level)
+void TextureClass::Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, uint32_t level)
 {
     SurfaceClass *surface = Get_Surface_Level(level);
 

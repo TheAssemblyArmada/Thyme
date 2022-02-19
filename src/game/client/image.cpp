@@ -64,13 +64,13 @@ void Image::Parse_Image_Coords(INI *ini, void *formal, void *store, const void *
 {
     Image *image = static_cast<Image *>(formal);
     const char *token = ini->Get_Next_Sub_Token("Left");
-    int left = ini->Scan_Int(token);
+    int32_t left = ini->Scan_Int(token);
     token = ini->Get_Next_Sub_Token("Top");
-    int top = ini->Scan_Int(token);
+    int32_t top = ini->Scan_Int(token);
     token = ini->Get_Next_Sub_Token("Right");
-    int right = ini->Scan_Int(token);
+    int32_t right = ini->Scan_Int(token);
     token = ini->Get_Next_Sub_Token("Bottom");
-    int bottom = ini->Scan_Int(token);
+    int32_t bottom = ini->Scan_Int(token);
     float lowX = left;
     float lowY = top;
     float highX = right;
@@ -102,7 +102,7 @@ void Image::Parse_Image_Status(INI *ini, void *instance, void *store, const void
     ini->Parse_Bitstring32(ini, instance, store, _imageStatusNames);
     uint8_t *byte = static_cast<uint8_t *>(store);
     if (*byte & IMAGE_STATUS_ROTATED_90_CLOCKWISE) {
-        int oldx = image->m_imageSize.x;
+        int32_t oldx = image->m_imageSize.x;
         image->m_imageSize.x = image->m_imageSize.y;
         image->m_imageSize.y = oldx;
     }
@@ -131,7 +131,7 @@ Image *ImageCollection::Find_Image_By_Name(const Utf8String &name)
     }
 }
 
-void ImageCollection::Load(int texture_size)
+void ImageCollection::Load(int32_t texture_size)
 {
 #ifdef PLATFORM_WINDOWS
     INI ini;

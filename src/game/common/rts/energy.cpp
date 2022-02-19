@@ -30,7 +30,7 @@ void Energy::Init(Player *player)
     // TODO investigate, should this also clear m_frame?
 }
 
-int Energy::Get_Production() const
+int32_t Energy::Get_Production() const
 {
     if (g_theGameLogic->Get_Frame() < m_frame) {
         return 0;
@@ -62,7 +62,7 @@ bool Energy::Has_Sufficient_Power() const
     return m_energyProduction >= m_energyConsumption;
 }
 
-void Energy::Adjust_Power(int amount, bool positive)
+void Energy::Adjust_Power(int32_t amount, bool positive)
 {
     if (amount != 0) {
 
@@ -89,7 +89,7 @@ void Energy::Object_Entering_Influence(Object *obj)
 {
     if (obj != nullptr) {
 
-        int amount = obj->Get_Template()->Get_Energy_Production();
+        int32_t amount = obj->Get_Template()->Get_Energy_Production();
 
         if (amount < 0) {
             Add_Consumption(-amount);
@@ -108,7 +108,7 @@ void Energy::Object_Leaving_Influence(Object *obj)
 {
     if (obj != nullptr) {
 
-        int amount = obj->Get_Template()->Get_Energy_Production();
+        int32_t amount = obj->Get_Template()->Get_Energy_Production();
 
         if (amount < 0) {
             Add_Consumption(amount);
@@ -127,7 +127,7 @@ void Energy::Add_Power_Bonus(Object *obj)
 {
     if (obj != nullptr) {
 
-        int bonus = obj->Get_Template()->Get_Energy_Bonus();
+        int32_t bonus = obj->Get_Template()->Get_Energy_Bonus();
 
         Add_Production(bonus);
 
@@ -142,7 +142,7 @@ void Energy::Remove_Power_Bonus(Object *obj)
 {
     if (obj != nullptr) {
 
-        int bonus = obj->Get_Template()->Get_Energy_Bonus();
+        int32_t bonus = obj->Get_Template()->Get_Energy_Bonus();
 
         Add_Production(-bonus);
 
@@ -153,7 +153,7 @@ void Energy::Remove_Power_Bonus(Object *obj)
     }
 }
 
-void Energy::Add_Production(int amount)
+void Energy::Add_Production(int32_t amount)
 {
     m_energyProduction += amount;
 
@@ -162,7 +162,7 @@ void Energy::Add_Production(int amount)
     }
 }
 
-void Energy::Add_Consumption(int amount)
+void Energy::Add_Consumption(int32_t amount)
 {
     m_energyConsumption += amount;
 
@@ -181,7 +181,7 @@ void Energy::Xfer_Snapshot(Xfer *xfer)
         xfer->xferInt(&m_energyConsumption);
     }
 
-    int index;
+    int32_t index;
 
     if (xfer->Get_Mode() == XFER_SAVE) {
         index = m_player->Get_Player_Index();

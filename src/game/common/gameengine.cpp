@@ -68,7 +68,7 @@ void GameEngine::Reset() {}
 
 void GameEngine::Update() {}
 
-void GameEngine::Init(int argc, char *argv[])
+void GameEngine::Init(int32_t argc, char *argv[])
 {
     INI ini;
 

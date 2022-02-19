@@ -80,7 +80,7 @@ template<> struct hash<Utf8String>
     }
 };
 
-template<int a, int b, int c, int d> struct FourCC
+template<int32_t a, int32_t b, int32_t c, int32_t d> struct FourCC
 {
 #ifdef SYSTEM_LITTLE_ENDIAN
     static const uint32_t value = (((((d << 8) | c) << 8) | b) << 8) | a;
@@ -100,7 +100,7 @@ inline unsigned Get_Time()
 #endif
 }
 
-inline void Sleep_Ms(int interval)
+inline void Sleep_Ms(int32_t interval)
 {
 #if defined PLATFORM_WINDOWS
     ::Sleep(interval);

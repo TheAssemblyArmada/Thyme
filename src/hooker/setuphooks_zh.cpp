@@ -258,7 +258,7 @@ void Setup_Hooks()
 
     // Replace MemoryPoolFactory functions
     Hook_Method(0x00414180,
-        static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const *, int, int, int)>(
+        static_cast<MemoryPool *(MemoryPoolFactory::*const)(char const *, int32_t, int32_t, int32_t)>(
             &MemoryPoolFactory::Create_Memory_Pool));
 
     // Replace File functions
@@ -406,7 +406,7 @@ void Setup_Hooks()
     Hook_Method(0x008A1480, static_cast<unsigned (ChunkLoadClass::*)(void *, unsigned)>(&ChunkLoadClass::Read));
 
     // targa.h
-    Hook_Method(0x008A43F0, static_cast<int (TargaImage::*)(char const *, int, bool)>(&TargaImage::Load));
+    Hook_Method(0x008A43F0, static_cast<int32_t (TargaImage::*)(char const *, int32_t, bool)>(&TargaImage::Load));
     Hook_Method(0x008A3E60, &TargaImage::Open);
     Hook_Method(0x008A45F0, &TargaImage::Set_Palette);
     Hook_Function(0x008A4780, &TargaImage::Error_Handler);
@@ -974,24 +974,24 @@ void Setup_Hooks()
     Hook_Method(0x00802840, &DX8Wrapper::End_Scene);
     Hook_Method(0x00802A00, &DX8Wrapper::Clear);
     Hook_Method(0x00802B50, &DX8Wrapper::Set_Viewport);
-    Hook_Method(0x00802B70, static_cast<void (*)(const VertexBufferClass *, int)>(&DX8Wrapper::Set_Vertex_Buffer));
+    Hook_Method(0x00802B70, static_cast<void (*)(const VertexBufferClass *, int32_t)>(&DX8Wrapper::Set_Vertex_Buffer));
     Hook_Method(0x00802C10, static_cast<void (*)(const IndexBufferClass *, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
     Hook_Method(0x00802CB0, static_cast<void (*)(const DynamicVBAccessClass &)>(&DX8Wrapper::Set_Vertex_Buffer));
     Hook_Method(
         0x00802D40, static_cast<void (*)(const DynamicIBAccessClass &, unsigned short)>(&DX8Wrapper::Set_Index_Buffer));
     Hook_Method(0x008031B0,
-        static_cast<void (*)(unsigned int, unsigned short, unsigned short, unsigned short, unsigned short)>(
+        static_cast<void (*)(uint32_t, unsigned short, unsigned short, unsigned short, unsigned short)>(
             &DX8Wrapper::Draw_Triangles));
     Hook_Method(0x00803200,
         static_cast<void (*)(unsigned short, unsigned short, unsigned short, unsigned short)>(&DX8Wrapper::Draw_Triangles));
     Hook_Method(0x00803220, &DX8Wrapper::Draw_Strip);
     Hook_Method(0x00803240, &DX8Wrapper::Apply_Render_State_Changes);
     Hook_Method(0x008036F0,
-        static_cast<w3dtexture_t (*)(unsigned int, unsigned int, WW3DFormat, MipCountType, w3dpool_t, bool)>(
+        static_cast<w3dtexture_t (*)(uint32_t, uint32_t, WW3DFormat, MipCountType, w3dpool_t, bool)>(
             &DX8Wrapper::Create_Texture));
     Hook_Method(0x00803990, static_cast<w3dtexture_t (*)(w3dsurface_t, MipCountType)>(&DX8Wrapper::Create_Texture));
     Hook_Method(
-        0x00803E90, static_cast<w3dsurface_t (*)(unsigned int, unsigned int, WW3DFormat)>(&DX8Wrapper::Create_Surface));
+        0x00803E90, static_cast<w3dsurface_t (*)(uint32_t, uint32_t, WW3DFormat)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x00803EE0, static_cast<w3dsurface_t (*)(const char *)>(&DX8Wrapper::Create_Surface));
     Hook_Method(0x008041B0, static_cast<void (*)(unsigned, const D3DLIGHT8 *)>(&DX8Wrapper::Set_Light));
     Hook_Method(0x008044B0, &DX8Wrapper::Get_DX8_Front_Buffer);
@@ -1032,7 +1032,7 @@ void Setup_Hooks()
     Hook_Method(0x0081D8D0, &SurfaceClass::FindBB);
     Hook_Method(0x0081DBA0, &SurfaceClass::Is_Transparent_Column);
     Hook_Method(0x0081D550, &SurfaceClass::Get_Description);
-    Hook_Method(0x0081D5B0, static_cast<void *(SurfaceClass::*)(int *)>(&SurfaceClass::Lock));
+    Hook_Method(0x0081D5B0, static_cast<void *(SurfaceClass::*)(int32_t *)>(&SurfaceClass::Lock));
     Hook_Method(0x0081D610, &SurfaceClass::Unlock);
     Hook_Method(0x0081D630, &SurfaceClass::Clear);
     Hook_Method(0x0081D740,
@@ -1453,10 +1453,10 @@ void Setup_Hooks()
     Hook_Any(0x0083E7C0, HTreeClass::Load_W3D);
     Hook_Any(0x0083E9A0, HTreeClass::Read_Pivots);
     Hook_Method(0x0083ECF0,
-        static_cast<bool (HTreeClass::*)(HAnimClass *, int, float, Matrix3D const &, Matrix3D *)>(
+        static_cast<bool (HTreeClass::*)(HAnimClass *, int32_t, float, Matrix3D const &, Matrix3D *)>(
             &HTreeClass::Simple_Evaluate_Pivot));
     Hook_Method(0x0083EF40,
-        static_cast<bool (HTreeClass::*)(int, Matrix3D const &, Matrix3D *)>(&HTreeClass::Simple_Evaluate_Pivot));
+        static_cast<bool (HTreeClass::*)(int32_t, Matrix3D const &, Matrix3D *)>(&HTreeClass::Simple_Evaluate_Pivot));
     Hook_Any(0x0083F060, HTreeClass::Base_Update);
     Hook_Method(
         0x0083F120, static_cast<void (HTreeClass::*)(Matrix3D const &, HAnimClass *, float)>(&HTreeClass::Anim_Update));
@@ -1910,7 +1910,7 @@ void Setup_Hooks()
     Hook_Any(0x007D5A70, W3DBufferManager::Hook_IB_Allocate_Slot_Storage);
 
     // for messing with buffer sizes
-    int *w3dbm_size = (int *)(0x007A762D + 1);
+    int32_t *w3dbm_size = (int32_t *)(0x007A762D + 1);
     *w3dbm_size = sizeof(W3DBufferManager);
 
     // static_assert(sizeof(W3DBufferManager) == 0x3AC5C, "Size of W3DBufferManager is wrong");

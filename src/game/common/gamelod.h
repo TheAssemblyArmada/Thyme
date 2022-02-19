@@ -71,25 +71,25 @@ enum GPUType : int32_t
 
 struct StaticGameLOD
 {
-    int minimum_fps;
-    int minimum_cpu_fps;
-    int sample_count_2D;
-    int sample_count_3D;
-    int stream_count;
-    int max_particle_count;
+    int32_t minimum_fps;
+    int32_t minimum_cpu_fps;
+    int32_t sample_count_2D;
+    int32_t sample_count_3D;
+    int32_t stream_count;
+    int32_t max_particle_count;
     bool use_shadow_volumes;
     bool use_shadow_decals;
     bool use_cloud_map;
     bool use_light_map;
     bool show_soft_water_edges;
-    int max_tank_track_edges;
-    int max_tank_track_opaque_edges;
-    int max_tank_track_fade_delay;
+    int32_t max_tank_track_edges;
+    int32_t max_tank_track_opaque_edges;
+    int32_t max_tank_track_fade_delay;
     bool use_buildup_scaffolds;
     bool use_tree_sway;
     bool use_emissive_night_materials;
     bool use_heat_effects;
-    int texture_reduction_factor;
+    int32_t texture_reduction_factor;
     bool use_fps_limit;
     bool use_dynamic_lod;
     bool use_trees;
@@ -97,9 +97,9 @@ struct StaticGameLOD
 
 struct DynamicGameLOD
 {
-    int minimum_fps;
-    int particle_skip_mask;
-    int debris_skip_mask;
+    int32_t minimum_fps;
+    int32_t particle_skip_mask;
+    int32_t debris_skip_mask;
     float slow_death_scale;
     ParticlePriorityType min_particle_priority;
     ParticlePriorityType min_particle_skip_priority;
@@ -108,16 +108,16 @@ struct DynamicGameLOD
 struct LODPreset
 {
     CPUType cpu_type;
-    int mhz;
+    int32_t mhz;
     float score; // Not actually sure what this is, some kind of benchmark score?
     GPUType video_type;
-    int video_mem;
+    int32_t video_mem;
 };
 
 struct BenchProfile
 {
     CPUType cpu_type;
-    int mhz;
+    int32_t mhz;
     float integer_score;
     float floating_point_score;
     float memory_score;
@@ -133,24 +133,24 @@ public:
 
     void Init();
     void Refresh_Custom_Static_LOD();
-    int Get_Static_LOD_Index(Utf8String name);
+    int32_t Get_Static_LOD_Index(Utf8String name);
     const char *Get_Static_LOD_Name(StaticGameLODLevel level);
     StaticGameLODLevel Find_Static_LOD_Level();
     bool Set_Static_LOD_Level(StaticGameLODLevel level);
     void Apply_Static_LOD_Level(StaticGameLODLevel level);
     StaticGameLODLevel Get_Static_LOD_Level() { return m_staticLODLevel; }
-    int Get_Dynamic_LOD_Index(Utf8String name);
+    int32_t Get_Dynamic_LOD_Index(Utf8String name);
     const char *Get_Dynamic_LOD_Name(DynamicGameLODLevel level);
     DynamicGameLODLevel Find_Dynamic_LOD_Level(float fps);
     bool Set_Dynamic_LOD_Level(DynamicGameLODLevel level);
     void Apply_Dynamic_LOD_Level(DynamicGameLODLevel level);
-    int Get_Recommended_Texture_Reduction();
+    int32_t Get_Recommended_Texture_Reduction();
     bool Did_Mem_Pass() { return m_didMemPass; }
-    void Set_Texture_Reduction_Factor(int factor) { m_textureReductionFactor = factor; }
+    void Set_Texture_Reduction_Factor(int32_t factor) { m_textureReductionFactor = factor; }
 
     void Increment_Particle_Skip_Count() { ++m_particleSkipCount; }
-    int Particle_Count() const { return m_particleSkipCount; }
-    int Particle_Skip_Mask() const { return m_particleSkipMask; }
+    int32_t Particle_Count() const { return m_particleSkipCount; }
+    int32_t Particle_Skip_Mask() const { return m_particleSkipMask; }
     bool Skip_Particle() { return m_particleSkipMask != (m_particleSkipMask & (++m_particleSkipCount)); }
     ParticlePriorityType Min_Particle_Priority() const { return m_minParticlePriority; }
     ParticlePriorityType Min_Particle_Skip_Priority() const { return m_minParticleSkipPriority; }
@@ -175,36 +175,36 @@ private:
     BenchProfile m_benchProfiles[MAX_PROFILES];
     StaticGameLODLevel m_staticLODLevel;
     DynamicGameLODLevel m_dynamicLODLevel;
-    int m_particleSkipCount;
-    int m_particleSkipMask;
-    int m_unkInt2;
-    int m_debrisSkipMask;
+    int32_t m_particleSkipCount;
+    int32_t m_particleSkipMask;
+    int32_t m_unkInt2;
+    int32_t m_debrisSkipMask;
     float m_slowDeathScale;
     ParticlePriorityType m_minParticlePriority;
     ParticlePriorityType m_minParticleSkipPriority;
     bool m_unkBool1;
     bool m_unkBool2;
     bool m_didMemPass;
-    int m_staticLODPresetCount[STATLOD_COUNT - 1];
-    int m_benchProfileCount;
+    int32_t m_staticLODPresetCount[STATLOD_COUNT - 1];
+    int32_t m_benchProfileCount;
     StaticGameLODLevel m_idealStaticGameDetail;
     GPUType m_gpuType;
     CPUType m_cpuType;
-    int m_physicalMem;
-    int m_cpuMHz;
+    int32_t m_physicalMem;
+    int32_t m_cpuMHz;
     float m_integerScore;
     float m_floatingPointScore;
     float m_memoryScore;
     float m_overallScore;
-    int m_textureReductionFactor;
-    int m_reallyLowMHz;
+    int32_t m_textureReductionFactor;
+    int32_t m_reallyLowMHz;
 
     static const char *s_cpuNames[];
     static const char *s_gpuNames[];
 };
 
 void Test_Minimum_Requirements(
-    GPUType *gpu, CPUType *cpu, int *cpu_speed, int *memory, float *int_score, float *float_score, float *mem_score);
+    GPUType *gpu, CPUType *cpu, int32_t *cpu_speed, int32_t *memory, float *int_score, float *float_score, float *mem_score);
 
 #ifdef GAME_DLL
 #include "hooker.h"

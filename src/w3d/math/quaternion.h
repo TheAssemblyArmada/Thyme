@@ -58,8 +58,8 @@ public:
 
     void Normalize();
 
-    float &operator[](int i) { return (&X)[i]; }
-    const float &operator[](int i) const { return (&X)[i]; }
+    float &operator[](int32_t i) { return (&X)[i]; }
+    const float &operator[](int32_t i) const { return (&X)[i]; }
 
     void Scale(float s)
     {

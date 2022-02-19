@@ -84,7 +84,7 @@ Utf8String GameState::Portable_To_Real_Map_Path(const Utf8String &path)
 // Returns file and last two containing directories from path in the form "path/to/file"
 Utf8String Get_Leaf_And_Dir_Name(const Utf8String &path)
 {
-    int len = path.Get_Length();
+    int32_t len = path.Get_Length();
     const char *str = path.Str();
     const char *leaf = &str[len - 1];
 

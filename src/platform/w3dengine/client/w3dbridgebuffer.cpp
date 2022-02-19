@@ -176,7 +176,7 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
     if (obj == nullptr) {
         return false;
     } else {
-        for (int i = 0; i < obj->Get_Num_Sub_Objects(); i++) {
+        for (int32_t i = 0; i < obj->Get_Num_Sub_Objects(); i++) {
             RenderObjClass *subobj = obj->Get_Sub_Object(i);
             Matrix3D m = subobj->Get_Transform();
 
@@ -214,7 +214,7 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
                 m_bridgeType = FIXED_BRIDGE;
             }
 
-            int count = m_leftMesh->Peek_Model()->Get_Vertex_Count();
+            int32_t count = m_leftMesh->Peek_Model()->Get_Vertex_Count();
             Vector3 *verts = m_leftMesh->Peek_Model()->Get_Vertex_Array();
 
             m_leftMinX = GAMEMATH_FLOAT_MAX;
@@ -222,7 +222,7 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
             m_minY = GAMEMATH_FLOAT_MAX;
             m_maxY = -GAMEMATH_FLOAT_MAX;
 
-            for (int i = 0; i < count; ++i) {
+            for (int32_t i = 0; i < count; ++i) {
                 Vector3 out;
                 Matrix3D::Transform_Vector(m_leftMtx, verts[i], &out);
 
@@ -249,7 +249,7 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
                 m_sectionMinX = GAMEMATH_FLOAT_MAX;
                 m_sectionMaxX = -GAMEMATH_FLOAT_MAX;
 
-                for (int i = 0; i < count; ++i) {
+                for (int32_t i = 0; i < count; ++i) {
                     Vector3 out;
                     Matrix3D::Transform_Vector(m_sectionMtx, verts[i], &out);
                     if (m_sectionMinX > (double)out.X) {
@@ -265,7 +265,7 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
                 m_rightMinX = GAMEMATH_FLOAT_MAX;
                 m_rightMaxX = -GAMEMATH_FLOAT_MAX;
 
-                for (int i = 0; i < count; ++i) {
+                for (int32_t i = 0; i < count; ++i) {
                     Vector3 out;
                     Matrix3D::Transform_Vector(m_rightMtx, verts[i], &out);
                     if (m_rightMinX > (double)out.X) {
@@ -305,8 +305,8 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
     }
 }
 
-int W3DBridge::Get_Model_Vertices_Fixed(VertexFormatXYZNDUV1 *destination_vb,
-    int cur_vertex,
+int32_t W3DBridge::Get_Model_Vertices_Fixed(VertexFormatXYZNDUV1 *destination_vb,
+    int32_t cur_vertex,
     Matrix3D const &mtx,
     MeshClass *mesh,
     RefMultiListIterator<RenderObjClass> *lights)
@@ -346,13 +346,14 @@ void W3DBridge::Render_Bridge(bool wireframe)
     }
 }
 
-int W3DBridge::Get_Model_Indices(unsigned short *destination_ib, int cur_index, int vertex_offset, MeshClass *mesh)
+int32_t W3DBridge::Get_Model_Indices(
+    unsigned short *destination_ib, int32_t cur_index, int32_t vertex_offset, MeshClass *mesh)
 {
     if (mesh == nullptr) {
         return 0;
     }
 
-    int count = mesh->Peek_Model()->Get_Polygon_Count();
+    int32_t count = mesh->Peek_Model()->Get_Polygon_Count();
     const TriIndex *polys = mesh->Peek_Model()->Get_Polygon_Array();
 
     if (cur_index + 3 * count + 6 >= W3DBridgeBuffer::MAX_BRIDGE_INDEX) {
@@ -361,7 +362,7 @@ int W3DBridge::Get_Model_Indices(unsigned short *destination_ib, int cur_index, 
 
     unsigned short *index = &destination_ib[cur_index];
 
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         *index = polys[i].I + vertex_offset;
         index++;
         *index = polys[i].J + vertex_offset;
@@ -373,8 +374,8 @@ int W3DBridge::Get_Model_Indices(unsigned short *destination_ib, int cur_index, 
     return 3 * count;
 }
 
-int W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
-    int cur_vertex,
+int32_t W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
+    int32_t cur_vertex,
     float x_offset,
     Vector3 &vec,
     Vector3 &vec_normal,
@@ -388,7 +389,7 @@ int W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
         return 0;
     }
 
-    int count = mesh->Peek_Model()->Get_Vertex_Count();
+    int32_t count = mesh->Peek_Model()->Get_Vertex_Count();
     Vector3 *verts = mesh->Peek_Model()->Get_Vertex_Array();
     const Vector3 *normals = mesh->Peek_Model()->Get_Vertex_Normal_Array();
 
@@ -398,7 +399,7 @@ int W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
 
     Vector3 light[LIGHT_COUNT];
 
-    for (int i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
+    for (int32_t i = 0; i < g_theWriteableGlobalData->m_numberGlobalLights; i++) {
         light[i].Set(-g_theWriteableGlobalData->m_terrainLightPos[i].x,
             -g_theWriteableGlobalData->m_terrainLightPos[i].y,
             -g_theWriteableGlobalData->m_terrainLightPos[i].z);
@@ -408,7 +409,7 @@ int W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
     const Vector2 *uvs = mesh->Peek_Model()->Get_UV_Array_By_Index(0);
     VertexFormatXYZNDUV1 *vertex = &destination_vb[cur_vertex];
 
-    for (int i = 0; i < count; i++) {
+    for (int32_t i = 0; i < count; i++) {
         Vector3 pos;
         Vector3 out;
         Matrix3D::Transform_Vector(mtx, verts[i], &out);
@@ -445,8 +446,8 @@ int W3DBridge::Get_Model_Vertices(VertexFormatXYZNDUV1 *destination_vb,
 
 void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
     VertexFormatXYZNDUV1 *destination_vb,
-    int *cur_index,
-    int *cur_vertex,
+    int32_t *cur_index,
+    int32_t *cur_vertex,
     RefMultiListIterator<RenderObjClass> *lights)
 {
     m_firstVertex = *cur_vertex;
@@ -455,14 +456,14 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
     m_numPolygons = 0;
 
     if (m_sectionMesh == nullptr) {
-        int vcount = Get_Model_Vertices_Fixed(destination_vb, *cur_vertex, m_leftMtx, m_leftMesh, lights);
+        int32_t vcount = Get_Model_Vertices_Fixed(destination_vb, *cur_vertex, m_leftMtx, m_leftMesh, lights);
 
         if (!vcount) {
             captainslog_dbgassert(vcount, "W3DBridge::GetIndicesNVertices(). Vertex overflow.");
             return;
         }
 
-        int icount = Get_Model_Indices(destination_ib, *cur_index, *cur_vertex, m_leftMesh);
+        int32_t icount = Get_Model_Indices(destination_ib, *cur_index, *cur_vertex, m_leftMesh);
 
         if (!icount) {
             captainslog_dbgassert(icount, "W3DBridge::GetIndicesNVertices(). Index overflow.");
@@ -488,7 +489,7 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
         Vector3 vec_z(-f, 0.0f, GameMath::Sqrt(1.0f - f * f));
         vec_z *= m_scale;
         float section_span_length = m_rightMinX - m_leftMaxX;
-        int section_span_count = 1;
+        int32_t section_span_count = 1;
 
         if (m_bridgeType == SECTIONAL_BRIDGE) {
             float f3 = vec.Length() - (m_length - section_span_length);
@@ -497,7 +498,7 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
 
         vec /= (float)(section_span_count - 1) * section_span_length + m_length;
         float x_offset = -m_leftMinX;
-        int vcount = Get_Model_Vertices(
+        int32_t vcount = Get_Model_Vertices(
             destination_vb, *cur_vertex, x_offset, vec, vec_normal, vec_z, m_start, m_leftMtx, m_leftMesh, lights);
 
         if (!vcount) {
@@ -505,7 +506,7 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
             return;
         }
 
-        int icount = Get_Model_Indices(destination_ib, *cur_index, *cur_vertex, m_leftMesh);
+        int32_t icount = Get_Model_Indices(destination_ib, *cur_index, *cur_vertex, m_leftMesh);
 
         if (!icount) {
             captainslog_dbgassert(icount, "W3DBridge::GetIndicesNVertices(). Index overflow.");
@@ -517,7 +518,7 @@ void W3DBridge::Get_Indices_And_Vertices(unsigned short *destination_ib,
         m_numVertex += vcount;
         m_numPolygons += icount / 3;
 
-        for (int i = 0; i < section_span_count; i++) {
+        for (int32_t i = 0; i < section_span_count; i++) {
             vcount = Get_Model_Vertices(destination_vb,
                 *cur_vertex,
                 (float)i * section_span_length + x_offset,
@@ -581,7 +582,7 @@ void W3DBridgeBuffer::Cull(CameraClass *camera)
 {
     m_anythingChanged = m_updateVis;
 
-    for (int i = 0; i < m_numBridges; i++) {
+    for (int32_t i = 0; i < m_numBridges; i++) {
         if (m_bridges[i].Cull_Bridge(camera)) {
             m_anythingChanged = true;
         }
@@ -601,7 +602,7 @@ void W3DBridgeBuffer::Load_Bridges_In_Vertex_And_Index_Buffers(RefMultiListItera
             VertexFormatXYZNDUV1 *destination_vb = (VertexFormatXYZNDUV1 *)vb_lock.Get_Vertex_Array();
             unsigned short *destination_ib = ib_lock.Get_Index_Array();
 
-            for (int i = 0; i < m_numBridges; i++) {
+            for (int32_t i = 0; i < m_numBridges; i++) {
                 m_bridges[i].Get_Indices_And_Vertices(
                     destination_ib, destination_vb, &m_curNumBridgeIndices, &m_curNumBridgeVertices, lights);
             }
@@ -648,7 +649,7 @@ void W3DBridgeBuffer::Allocate_Bridge_Buffers()
 
 void W3DBridgeBuffer::Clear_All_Bridges()
 {
-    for (int i = 0; i < m_numBridges; i++) {
+    for (int32_t i = 0; i < m_numBridges; i++) {
         m_bridges[i].Clear_Bridge();
     }
     m_curNumBridgeIndices = 0;
@@ -722,7 +723,7 @@ void W3DBridgeBuffer::Update_Center(CameraClass *camera, RefMultiListIterator<Re
 void W3DBridgeBuffer::Draw_Bridges(CameraClass *camera, bool wireframe, TextureClass *cloud_texture)
 {
     if (g_theTerrainLogic != nullptr) {
-        for (int i = 0; i < m_numBridges; i++) {
+        for (int32_t i = 0; i < m_numBridges; i++) {
             m_bridges[i].Set_Enabled(false);
         }
 
@@ -752,7 +753,7 @@ void W3DBridgeBuffer::Draw_Bridges(CameraClass *camera, bool wireframe, TextureC
             Load_Bridges_In_Vertex_And_Index_Buffers(nullptr);
         }
     } else {
-        for (int i = 0; i < m_numBridges; i++) {
+        for (int32_t i = 0; i < m_numBridges; i++) {
             m_bridges[i].Set_Enabled(true);
         }
     }
@@ -771,7 +772,7 @@ void W3DBridgeBuffer::Draw_Bridges(CameraClass *camera, bool wireframe, TextureC
             }
         }
 
-        for (int i = 0; i < m_numBridges; i++) {
+        for (int32_t i = 0; i < m_numBridges; i++) {
             if (m_bridges[i].Is_Enabled()) {
                 if (m_bridges[i].Is_Visible()) {
                     m_bridges[i].Render_Bridge(wireframe);
@@ -796,7 +797,7 @@ void W3DBridgeBuffer::Draw_Bridges(CameraClass *camera, bool wireframe, TextureC
                 W3DShaderManager::Set_Texture(0, g_theTerrainRenderObject->Get_Shroud()->Get_Shroud_Texture());
                 W3DShaderManager::Set_Shader(W3DShaderManager::ST_SHROUD_TEXTURE, 0);
 
-                for (int i = 0; i < m_numBridges; i++) {
+                for (int32_t i = 0; i < m_numBridges; i++) {
                     if (m_bridges[i].Is_Enabled()) {
                         if (m_bridges[i].Is_Visible()) {
                             m_bridges[i].Render_Bridge(true);

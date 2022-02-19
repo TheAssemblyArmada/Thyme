@@ -82,7 +82,7 @@ Dict::Dict(const Dict &src) : m_data(src.m_data)
     }
 }
 
-Dict::Dict(int pair_pre_alloc) : m_data(nullptr)
+Dict::Dict(int32_t pair_pre_alloc) : m_data(nullptr)
 {
     if (pair_pre_alloc > 0) {
         Ensure_Unique(pair_pre_alloc);
@@ -108,7 +108,7 @@ Dict &Dict::operator=(const Dict &src)
     return *this;
 }
 
-NameKeyType Dict::Get_Nth_Key(int n) const
+NameKeyType Dict::Get_Nth_Key(int32_t n) const
 {
     return m_data->Get_Pairs()[n - 1].Get_Key();
 }
@@ -124,7 +124,7 @@ Dict::DataType Dict::Get_Type(NameKeyType key) const
     return pair->Get_Type();
 }
 
-Dict::DataType Dict::Get_Nth_Type(int n) const
+Dict::DataType Dict::Get_Nth_Type(int32_t n) const
 {
     return m_data->Get_Pairs()[n - 1].Get_Type();
 }
@@ -150,7 +150,7 @@ bool Dict::Get_Bool(NameKeyType key, bool *exists) const
     return false;
 }
 
-int Dict::Get_Int(NameKeyType key, bool *exists) const
+int32_t Dict::Get_Int(NameKeyType key, bool *exists) const
 {
     DictPair *pair = Find_Pair_By_Key(key);
 
@@ -234,7 +234,7 @@ Utf16String Dict::Get_UnicodeString(NameKeyType key, bool *exists) const
     return Utf16String();
 }
 
-bool Dict::Get_Nth_Bool(int n) const
+bool Dict::Get_Nth_Bool(int32_t n) const
 {
     captainslog_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
@@ -247,7 +247,7 @@ bool Dict::Get_Nth_Bool(int n) const
     return false;
 }
 
-int Dict::Get_Nth_Int(int n) const
+int32_t Dict::Get_Nth_Int(int32_t n) const
 {
     captainslog_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
@@ -260,7 +260,7 @@ int Dict::Get_Nth_Int(int n) const
     return 0;
 }
 
-float Dict::Get_Nth_Real(int n) const
+float Dict::Get_Nth_Real(int32_t n) const
 {
     captainslog_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
@@ -273,7 +273,7 @@ float Dict::Get_Nth_Real(int n) const
     return 0.0f;
 }
 
-Utf8String Dict::Get_Nth_AsciiString(int n) const
+Utf8String Dict::Get_Nth_AsciiString(int32_t n) const
 {
     captainslog_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
@@ -286,7 +286,7 @@ Utf8String Dict::Get_Nth_AsciiString(int n) const
     return Utf8String();
 }
 
-Utf16String Dict::Get_Nth_UnicodeString(int n) const
+Utf16String Dict::Get_Nth_UnicodeString(int32_t n) const
 {
     captainslog_dbgassert(n > 0 && m_data != nullptr && n < m_data->m_numPairsUsed, "n out of range.");
 
@@ -306,7 +306,7 @@ void Dict::Set_Bool(NameKeyType key, bool value)
     Sort_Pairs();
 }
 
-void Dict::Set_Int(NameKeyType key, int value)
+void Dict::Set_Int(NameKeyType key, int32_t value)
 {
     DictPair *pair = Set_Prep(key, DICT_INT);
     pair->Set_Value(value);
@@ -374,7 +374,7 @@ void Dict::Sort_Pairs()
 #if 0
     for (unsigned j = m_data->m_numPairsUsed / 2; j > 0; j /= 2) {
         for (unsigned i = j; i < m_data->m_numPairsUsed; ++i) {
-            for (int k = i - j; k >= 0; k -= j) {
+            for (int32_t k = i - j; k >= 0; k -= j) {
                 if (m_data->Get_Pairs()[k].Get_Key() <= m_data->Get_Pairs()[k + j].Get_Key()) {
                     break;
                 }
@@ -391,7 +391,7 @@ void Dict::Sort_Pairs()
     qsort(m_data->Get_Pairs(), m_data->m_numPairsUsed, sizeof(DictPair), Pair_Compare);
 }
 
-int Dict::Pair_Compare(const void *l, const void *r)
+int32_t Dict::Pair_Compare(const void *l, const void *r)
 {
     if (static_cast<const DictPair *>(l)->Get_Key() > static_cast<const DictPair *>(r)->Get_Key()) {
         return 1;
@@ -407,7 +407,7 @@ int Dict::Pair_Compare(const void *l, const void *r)
 Dict::DictPair *Dict::Set_Prep(NameKeyType key, DataType type)
 {
     DictPair *pair = Find_Pair_By_Key(key);
-    int needed = m_data != nullptr ? m_data->m_numPairsUsed : 0;
+    int32_t needed = m_data != nullptr ? m_data->m_numPairsUsed : 0;
 
     if (pair == nullptr) {
         ++needed;
@@ -460,7 +460,7 @@ void Dict::Release_Data()
     --m_data->m_refCount;
 
     if (m_data->m_refCount == 0) {
-        for (int i = 0; i < m_data->m_numPairsUsed; ++i) {
+        for (int32_t i = 0; i < m_data->m_numPairsUsed; ++i) {
             m_data->Get_Pairs()[i].Clear();
         }
 
@@ -470,7 +470,7 @@ void Dict::Release_Data()
     m_data = nullptr;
 }
 
-Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPair *to_translate)
+Dict::DictPair *Dict::Ensure_Unique(int32_t pairs_needed, bool preserve_data, DictPair *to_translate)
 {
     if (m_data != nullptr && m_data->m_refCount == 1 && m_data->m_numPairsAllocated >= pairs_needed) {
         return to_translate;
@@ -483,21 +483,21 @@ Dict::DictPair *Dict::Ensure_Unique(int pairs_needed, bool preserve_data, DictPa
 
     if (pairs_needed > 0) {
         // captainslog_trace("Allocating for %d Dict pairs.", pairs_needed);
-        int size =
+        int32_t size =
             g_dynamicMemoryAllocator->Get_Actual_Allocation_Size(sizeof(DictPair) * pairs_needed + sizeof(DictPairData));
         new_data = reinterpret_cast<DictPairData *>(g_dynamicMemoryAllocator->Allocate_Bytes(size));
 
         new_data->m_refCount = 1;
         new_data->m_numPairsAllocated = (size - sizeof(DictPairData)) / sizeof(DictPair);
         new_data->m_numPairsUsed = 0;
-        // captainslog_trace("  Allocated for %d Dict pairs.", (int)new_data->m_numPairsAllocated);
+        // captainslog_trace("  Allocated for %d Dict pairs.", (int32_t)new_data->m_numPairsAllocated);
 
         if (preserve_data && m_data != nullptr) {
-            // captainslog_trace("  Preserving %d Dict pairs.", (int)m_data->m_numPairsUsed);
+            // captainslog_trace("  Preserving %d Dict pairs.", (int32_t)m_data->m_numPairsUsed);
             DictPair *newpair = new_data->Get_Pairs();
             DictPair *oldpair = m_data->Get_Pairs();
 
-            for (int i = 0; i < m_data->m_numPairsUsed; ++i) {
+            for (int32_t i = 0; i < m_data->m_numPairsUsed; ++i) {
                 newpair[i].Copy_From(oldpair[i]);
             }
 

@@ -27,9 +27,9 @@ private:
     // these members seem to be leftovers (possibly a mistaken copy+paste from W3DTankDraw) and are unused.
     Utf8String m_unk1;
     Utf8String m_unk2;
-    int m_unk3;
-    int m_unk4;
-    int m_unk5;
+    int32_t m_unk3;
+    int32_t m_unk4;
+    int32_t m_unk5;
 };
 
 class W3DOverlordTankDraw : public W3DTankDraw

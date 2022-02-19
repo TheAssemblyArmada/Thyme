@@ -121,7 +121,7 @@ public:
     bool Is_Out_Of_Ammo() const;
     const Weapon *Find_Ammo_Pip_Showing_Weapon() const;
     Weapon *Find_Waypoint_Following_Capable_Weapon();
-    unsigned int Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
+    uint32_t Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
     CanAttackResult Get_Able_To_Attack_Specific_Object(
         AbleToAttackType type, const Object *obj, const Object *obj2, CommandSourceType source, WeaponSlotType slot) const;
     CanAttackResult Get_Able_To_Use_Weapon_Against_Target(AbleToAttackType type,
@@ -147,9 +147,9 @@ private:
     WeaponTemplateSet *m_curWeaponTemplateSet;
     Weapon *m_weapons[WEAPONSLOT_COUNT];
     WeaponSlotType m_curWeapon;
-    int m_curWeaponLocked;
-    unsigned int m_filledWeaponSlotMask;
-    int m_totalAntiMask;
+    int32_t m_curWeaponLocked;
+    uint32_t m_filledWeaponSlotMask;
+    int32_t m_totalAntiMask;
     BitFlags<DAMAGE_NUM_TYPES> m_damageTypes;
     bool m_pitchLimited;
     bool m_damageWeapon;

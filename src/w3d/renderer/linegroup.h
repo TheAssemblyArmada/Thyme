@@ -44,10 +44,10 @@ public:
         ShareBufferClass<Vector3> *end_locs,
         ShareBufferClass<Vector4> *diffuse,
         ShareBufferClass<Vector4> *tail_diffuse,
-        ShareBufferClass<unsigned int> *alt,
+        ShareBufferClass<uint32_t> *alt,
         ShareBufferClass<float> *sizes,
         ShareBufferClass<float> *u_coords,
-        int count);
+        int32_t count);
 
     enum FlagsType
     {
@@ -97,23 +97,23 @@ public:
 
     void Render(RenderInfoClass &rinfo);
 
-    int Get_Polygon_Count() const;
+    int32_t Get_Polygon_Count() const;
 
 protected:
     ShareBufferClass<Vector3> *m_startLoc;
     ShareBufferClass<Vector3> *m_endLoc;
     ShareBufferClass<Vector4> *m_diffuseBuffer;
     ShareBufferClass<Vector4> *m_tailDiffuseBuffer;
-    ShareBufferClass<unsigned int> *m_altBuffer;
+    ShareBufferClass<uint32_t> *m_altBuffer;
     ShareBufferClass<float> *m_sizeBuffer;
     ShareBufferClass<float> *m_UCoordsBuffer;
 
-    int m_lineCount;
+    int32_t m_lineCount;
 
     TextureClass *m_texture;
     ShaderClass m_shader;
 
-    unsigned int m_flags;
+    uint32_t m_flags;
 
     float m_defaultSize;
     Vector3 m_defaultColor;

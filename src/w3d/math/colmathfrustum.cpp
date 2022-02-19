@@ -21,9 +21,9 @@
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frustum, const Vector3 &point)
 {
-    int flags = 0;
+    int32_t flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
+    for (int32_t i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], point);
 
         if (res == OUTSIDE) {
@@ -42,9 +42,9 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frustum, const TriClass &tri)
 {
-    int flags = 0;
+    int32_t flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
+    for (int32_t i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], tri);
 
         if (res == OUTSIDE) {
@@ -63,9 +63,9 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frustum, const SphereClass &sphere)
 {
-    int flags = 0;
+    int32_t flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
+    for (int32_t i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], sphere);
 
         if (res == OUTSIDE) {
@@ -84,9 +84,9 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frustum, const AABoxClass &box)
 {
-    int flags = 0;
+    int32_t flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
+    for (int32_t i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
         OverlapType res = Overlap_Test(frustum.m_planes[i], box);
 
         if (res == OUTSIDE) {
@@ -104,12 +104,12 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 }
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(
-    const FrustumClass &frustum, const AABoxClass &box, int &planes_passed)
+    const FrustumClass &frustum, const AABoxClass &box, int32_t &planes_passed)
 {
-    int flags = 0;
+    int32_t flags = 0;
 
-    for (int i = 0; i < 6; i++) {
-        int plane_bit = (1 << i);
+    for (int32_t i = 0; i < 6; i++) {
+        int32_t plane_bit = (1 << i);
 
         if ((planes_passed & plane_bit) == 0) {
             OverlapType res = CollisionMath::Overlap_Test(frustum.m_planes[i], box);

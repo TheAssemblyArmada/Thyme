@@ -58,14 +58,14 @@ public:
     virtual void Next_Music_Track() override;
     virtual void Prev_Music_Track() override;
     virtual bool Is_Music_Playing() override;
-    virtual bool Has_Music_Track_Completed(const Utf8String &name, int loops) override;
+    virtual bool Has_Music_Track_Completed(const Utf8String &name, int32_t loops) override;
     virtual Utf8String Music_Track_Name() override;
     virtual bool Is_Currently_Playing(uintptr_t event) override;
     virtual void Open_Device() override;
     virtual void Close_Device() override;
     virtual void *Get_Device() override { return m_milesDigitalDriver; }
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) override;
-    virtual int Get_Provider_Count() override { return m_milesMaxProviderIndex; }
+    virtual int32_t Get_Provider_Count() override { return m_milesMaxProviderIndex; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
     virtual unsigned Get_Provider_Index(Utf8String name) override;
     virtual void Select_Provider(unsigned provider) override;
@@ -73,9 +73,9 @@ public:
     virtual unsigned Get_Selected_Provider() override { return m_milesCurrentProvider; }
     virtual void Set_Speaker_Type(unsigned type) override;
     virtual unsigned Get_Speaker_Type() override;
-    virtual int Get_Num_2D_Samples() const override { return m_2dSampleCount; }
-    virtual int Get_Num_3D_Samples() const override { return m_3dSampleCount; }
-    virtual int Get_Num_Streams() const override { return m_streamCount; }
+    virtual int32_t Get_Num_2D_Samples() const override { return m_2dSampleCount; }
+    virtual int32_t Get_Num_3D_Samples() const override { return m_3dSampleCount; }
+    virtual int32_t Get_Num_Streams() const override { return m_streamCount; }
     virtual bool Does_Violate_Limit(AudioEventRTS *event) const override;
     virtual bool Is_Playing_Lower_Priority(AudioEventRTS *event) const override;
     virtual bool Is_Playing_Already(AudioEventRTS *event) const override;
@@ -139,7 +139,7 @@ private:
     bool Check_For_Sample(AudioRequest *request);
 
     // Callbacks for file access
-    static int __stdcall Streaming_File_Open(const char *name, uintptr_t *handle);
+    static int32_t __stdcall Streaming_File_Open(const char *name, uintptr_t *handle);
     static void __stdcall Streaming_File_Close(uintptr_t handle);
     static int32_t __stdcall Streaming_File_Seek(uintptr_t handle, int32_t pos, uint32_t whence);
     static uint32_t __stdcall Streaming_File_Read(uintptr_t handle, void *dst, uint32_t size);
@@ -151,15 +151,15 @@ private:
 
 private:
     MilesProviderStruct m_milesProviderList[MILES_PROVIDER_COUNT];
-    int m_milesMaxProviderIndex;
-    int m_milesCurrentProvider;
-    int m_milesLastProvider;
+    int32_t m_milesMaxProviderIndex;
+    int32_t m_milesCurrentProvider;
+    int32_t m_milesLastProvider;
     unsigned m_speakerType;
     Utf8String m_preferredProvider;
     Utf8String m_preferredSpeaker;
     HDIGDRIVER m_milesDigitalDriver;
     H3DPOBJECT m_miles3DPositionObject;
-    int m_milesMonoDelayFilter;
+    int32_t m_milesMonoDelayFilter;
     std::list<HAUDIO> m_quickAudioList; // Possibly stream audio list?
     std::list<HSAMPLE> m_sampleHandleList;
     std::list<H3DSAMPLE> m_3dSampleHandleList;
@@ -170,7 +170,7 @@ private:
     std::list<PlayingAudio *> m_stoppedList;
     MilesAudioFileCache *m_audioFileCache;
     PlayingAudio *m_binkPlayingAudio;
-    int m_2dSampleCount;
-    int m_3dSampleCount;
-    int m_streamCount;
+    int32_t m_2dSampleCount;
+    int32_t m_3dSampleCount;
+    int32_t m_streamCount;
 };

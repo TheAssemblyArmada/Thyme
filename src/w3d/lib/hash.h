@@ -34,7 +34,7 @@ class HashTableClass
     friend class HashTableIteratorClass;
 
 public:
-    HashTableClass(int size);
+    HashTableClass(int32_t size);
     ~HashTableClass();
     void Reset();
     void Add(HashableClass *entry);
@@ -42,10 +42,10 @@ public:
     HashableClass *Find(char const *key);
 
 private:
-    int Hash(const char *key);
+    int32_t Hash(const char *key);
 
 private:
-    int m_hashTableSize;
+    int32_t m_hashTableSize;
     HashableClass **m_hashTable;
 };
 
@@ -68,7 +68,7 @@ private:
 
 private:
     HashTableClass &m_table;
-    int m_index;
+    int32_t m_index;
     HashableClass *m_currentEntry;
     HashableClass *m_nextEntry;
 };

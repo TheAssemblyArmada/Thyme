@@ -50,7 +50,7 @@ Utf8String NameKeyGenerator::Key_To_Name(NameKeyType key)
     // Find the bucket that matches the provided key if it exists.
     Bucket *bucket;
 
-    for (int i = 0; i < SOCKET_COUNT; ++i) {
+    for (int32_t i = 0; i < SOCKET_COUNT; ++i) {
         bucket = m_sockets[i];
 
         while (bucket != nullptr) {
@@ -68,7 +68,7 @@ Utf8String NameKeyGenerator::Key_To_Name(NameKeyType key)
 NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
 {
     // Calculate a simple hash of the name
-    unsigned int socket_hash = 0;
+    uint32_t socket_hash = 0;
 
     for (const char *c = name; *c != '\0'; ++c) {
         socket_hash = (33 * socket_hash) + tolower(*c);
@@ -101,7 +101,7 @@ NameKeyType NameKeyGenerator::Name_To_Lower_Case_Key(const char *name)
 NameKeyType NameKeyGenerator::Name_To_Key(const char *name)
 {
     // Calculate a simple hash of the name
-    unsigned int socket_hash = 0;
+    uint32_t socket_hash = 0;
 
     for (const char *c = name; *c != '\0'; ++c) {
         socket_hash = (33 * socket_hash) + *c;
@@ -139,7 +139,7 @@ void NameKeyGenerator::Parse_String_As_NameKeyType(INI *ini, void *formal, void 
 void NameKeyGenerator::Free_Sockets()
 {
     // Go over sockets and free them.
-    for (int i = 0; i < SOCKET_COUNT; ++i) {
+    for (int32_t i = 0; i < SOCKET_COUNT; ++i) {
         // Delete linked list of entries under given key.
         if (m_sockets[i] != nullptr) {
             Bucket *bucket = m_sockets[i];

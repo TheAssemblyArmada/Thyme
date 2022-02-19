@@ -35,7 +35,7 @@ HTreeManagerClass::~HTreeManagerClass()
 }
 
 // 0x00851C30
-int HTreeManagerClass::Load_Tree(ChunkLoadClass &cload)
+int32_t HTreeManagerClass::Load_Tree(ChunkLoadClass &cload)
 {
     HTreeClass *tree = new HTreeClass();
 
@@ -64,7 +64,7 @@ void HTreeManagerClass::Free_All_Trees()
 }
 
 // 0x00852000
-HTreeClass *HTreeManagerClass::Get_Tree(int id)
+HTreeClass *HTreeManagerClass::Get_Tree(int32_t id)
 {
     // Not used
     if (id < 0) {
@@ -84,7 +84,7 @@ HTreeClass *HTreeManagerClass::Get_Tree(const char *name)
     return m_hashTable.Get(key);
 }
 
-int HTreeManagerClass::Get_Tree_ID(const char *name)
+int32_t HTreeManagerClass::Get_Tree_ID(const char *name)
 {
     for (auto i = 0; i < m_numTrees; ++i) {
         auto &tree = m_treePtr[i];
@@ -97,7 +97,7 @@ int HTreeManagerClass::Get_Tree_ID(const char *name)
 
 void HTreeManagerClass::Free_All_Trees_With_Exclusion_List(const W3DExclusionListClass &list)
 {
-    int count = 0;
+    int32_t count = 0;
 
     for (auto i = 0; i < m_numTrees; ++i) {
         auto &tree = m_treePtr[i];

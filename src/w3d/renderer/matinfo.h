@@ -37,28 +37,28 @@ public:
     MaterialInfoClass *Clone() const;
     void Free();
 
-    int Add_Vertex_Material(VertexMaterialClass *vmat);
-    int Add_Texture(TextureClass *tex);
+    int32_t Add_Vertex_Material(VertexMaterialClass *vmat);
+    int32_t Add_Texture(TextureClass *tex);
 
-    int Get_Vertex_Material_Index(const char *name);
-    int Get_Texture_Index(const char *name);
+    int32_t Get_Vertex_Material_Index(const char *name);
+    int32_t Get_Texture_Index(const char *name);
 
-    VertexMaterialClass *Get_Vertex_Material(int index);
+    VertexMaterialClass *Get_Vertex_Material(int32_t index);
     VertexMaterialClass *Get_Vertex_Material(const char *name);
 
-    TextureClass *Get_Texture(int index);
+    TextureClass *Get_Texture(int32_t index);
     TextureClass *Get_Texture(const char *name);
 
-    int Vertex_Material_Count() const { return m_vertexMaterials.Count(); }
-    int Texture_Count() const { return m_textures.Count(); }
+    int32_t Vertex_Material_Count() const { return m_vertexMaterials.Count(); }
+    int32_t Texture_Count() const { return m_textures.Count(); }
 
-    VertexMaterialClass *Peek_Vertex_Material(int index);
+    VertexMaterialClass *Peek_Vertex_Material(int32_t index);
     VertexMaterialClass *Peek_Vertex_Material(const char *name);
 
-    TextureClass *Peek_Texture(int index);
+    TextureClass *Peek_Texture(int32_t index);
 
-    void Replace_Material(int index, VertexMaterialClass *newMaterial);
-    void Replace_Texture(int index, TextureClass *newTexture);
+    void Replace_Material(int32_t index, VertexMaterialClass *newMaterial);
+    void Replace_Texture(int32_t index, TextureClass *newTexture);
 
     void Reset_Texture_Mappers();
     void Make_Vertex_Materials_Unique();
@@ -94,9 +94,9 @@ private:
 
     MaterialInfoClass *m_srcMatInfo;
     MaterialInfoClass *m_destMatInfo;
-    int m_textureCount;
+    int32_t m_textureCount;
     TextureRemapStruct *m_textureRemaps;
-    int m_vertexMaterialCount;
+    int32_t m_vertexMaterialCount;
     VmatRemapStruct *m_vertexMaterialRemaps;
     VertexMaterialClass *m_lastSrcVmat;
     VertexMaterialClass *m_lastDestVmat;
@@ -104,7 +104,7 @@ private:
     TextureClass *m_lastDestTex;
 };
 
-inline VertexMaterialClass *MaterialInfoClass::Peek_Vertex_Material(int index)
+inline VertexMaterialClass *MaterialInfoClass::Peek_Vertex_Material(int32_t index)
 {
     captainslog_assert(index >= 0);
     captainslog_assert(index < m_vertexMaterials.Count());
@@ -112,7 +112,7 @@ inline VertexMaterialClass *MaterialInfoClass::Peek_Vertex_Material(int index)
     return m_vertexMaterials[index];
 }
 
-inline TextureClass *MaterialInfoClass::Peek_Texture(int index)
+inline TextureClass *MaterialInfoClass::Peek_Texture(int32_t index)
 {
     captainslog_assert(index >= 0);
     captainslog_assert(index < m_textures.Count());
@@ -120,20 +120,20 @@ inline TextureClass *MaterialInfoClass::Peek_Texture(int index)
     return m_textures[index];
 }
 
-inline int MaterialInfoClass::Add_Vertex_Material(VertexMaterialClass *vmat)
+inline int32_t MaterialInfoClass::Add_Vertex_Material(VertexMaterialClass *vmat)
 {
     if (vmat != nullptr) {
         vmat->Add_Ref();
     }
 
-    int index = m_vertexMaterials.Count();
+    int32_t index = m_vertexMaterials.Count();
     m_vertexMaterials.Add(vmat);
     return index;
 }
 
-inline int MaterialInfoClass::Get_Vertex_Material_Index(const char *name)
+inline int32_t MaterialInfoClass::Get_Vertex_Material_Index(const char *name)
 {
-    for (int i = 0; i < m_vertexMaterials.Count(); i++) {
+    for (int32_t i = 0; i < m_vertexMaterials.Count(); i++) {
         if (strcasecmp(name, m_vertexMaterials[i]->Get_Name()) == 0) {
             return i;
         }
@@ -142,7 +142,7 @@ inline int MaterialInfoClass::Get_Vertex_Material_Index(const char *name)
     return -1;
 }
 
-inline VertexMaterialClass *MaterialInfoClass::Get_Vertex_Material(int index)
+inline VertexMaterialClass *MaterialInfoClass::Get_Vertex_Material(int32_t index)
 {
     captainslog_assert(index >= 0);
     captainslog_assert(index < m_vertexMaterials.Count());
@@ -156,7 +156,7 @@ inline VertexMaterialClass *MaterialInfoClass::Get_Vertex_Material(int index)
 
 inline VertexMaterialClass *MaterialInfoClass::Get_Vertex_Material(const char *name)
 {
-    int index = Get_Vertex_Material_Index(name);
+    int32_t index = Get_Vertex_Material_Index(name);
     if (index == -1) {
         return nullptr;
     } else {
@@ -166,7 +166,7 @@ inline VertexMaterialClass *MaterialInfoClass::Get_Vertex_Material(const char *n
 
 inline VertexMaterialClass *MaterialInfoClass::Peek_Vertex_Material(const char *name)
 {
-    int index = Get_Vertex_Material_Index(name);
+    int32_t index = Get_Vertex_Material_Index(name);
     if (index == -1) {
         return nullptr;
     } else {
@@ -174,23 +174,23 @@ inline VertexMaterialClass *MaterialInfoClass::Peek_Vertex_Material(const char *
     }
 }
 
-inline void MaterialInfoClass::Replace_Material(int index, VertexMaterialClass *newMaterial)
+inline void MaterialInfoClass::Replace_Material(int32_t index, VertexMaterialClass *newMaterial)
 {
     Ref_Ptr_Set(m_vertexMaterials[index], newMaterial);
 }
 
 inline void MaterialInfoClass::Reset_Texture_Mappers(void)
 {
-    int vmat_count = m_vertexMaterials.Count();
-    for (int i = 0; i < vmat_count; i++) {
+    int32_t vmat_count = m_vertexMaterials.Count();
+    for (int32_t i = 0; i < vmat_count; i++) {
         m_vertexMaterials[i]->Reset_Mappers();
     }
 }
 
 inline bool MaterialInfoClass::Has_Time_Variant_Texture_Mappers(void)
 {
-    int vmat_count = m_vertexMaterials.Count();
-    for (int i = 0; i < vmat_count; i++) {
+    int32_t vmat_count = m_vertexMaterials.Count();
+    for (int32_t i = 0; i < vmat_count; i++) {
         if (m_vertexMaterials[i]->Are_Mappers_Time_Variant())
             return true;
     }
@@ -199,15 +199,15 @@ inline bool MaterialInfoClass::Has_Time_Variant_Texture_Mappers(void)
 
 inline void MaterialInfoClass::Make_Vertex_Materials_Unique(void)
 {
-    int vmat_count = m_vertexMaterials.Count();
-    for (int i = 0; i < vmat_count; i++) {
+    int32_t vmat_count = m_vertexMaterials.Count();
+    for (int32_t i = 0; i < vmat_count; i++) {
         m_vertexMaterials[i]->Make_Unique();
     }
 }
 
 inline TextureClass *MaterialInfoClass::Get_Texture(const char *name)
 {
-    int index = Get_Texture_Index(name);
+    int32_t index = Get_Texture_Index(name);
     if (index == -1) {
         return nullptr;
     } else {
@@ -215,7 +215,7 @@ inline TextureClass *MaterialInfoClass::Get_Texture(const char *name)
     }
 }
 
-inline void MaterialInfoClass::Replace_Texture(int index, TextureClass *newTexture)
+inline void MaterialInfoClass::Replace_Texture(int32_t index, TextureClass *newTexture)
 {
     Ref_Ptr_Set(m_textures[index], newTexture);
 }

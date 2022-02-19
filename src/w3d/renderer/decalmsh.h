@@ -43,8 +43,8 @@ public:
         SimpleDynVecClass<uint32_t> &apt,
         const DynamicVectorClass<Vector3> *world_positions) = 0;
     virtual bool Delete_Decal(unsigned long decal_id) = 0;
-    virtual int Decal_Count() = 0;
-    virtual unsigned long Get_Decal_ID(int index) = 0;
+    virtual int32_t Decal_Count() = 0;
+    virtual unsigned long Get_Decal_ID(int32_t index) = 0;
 
 protected:
     MeshClass *m_parent;

@@ -45,7 +45,7 @@ public:
 
     virtual RenderObjClass *Clone() const override;
 
-    virtual int Class_ID() const override { return CLASSID_LIGHT; }
+    virtual int32_t Class_ID() const override { return CLASSID_LIGHT; }
 
     // Rendering
     virtual void Render(RenderInfoClass &rinfo) override {}
@@ -120,7 +120,7 @@ public:
             m_flags &= ~flag;
         }
     }
-    int Get_Flag(FlagsType flag) const { return ((m_flags & flag) != 0); }
+    int32_t Get_Flag(FlagsType flag) const { return ((m_flags & flag) != 0); }
     void Enable_Shadows(bool state) { m_castShadows = state; }
     bool Are_Shadows_Enabled() const { return m_castShadows; }
     LightType Get_Type() const { return m_type; }
@@ -150,7 +150,7 @@ public:
 
 protected:
     LightType m_type;
-    unsigned int m_flags;
+    uint32_t m_flags;
     bool m_castShadows;
 
     float m_intensity;

@@ -34,19 +34,19 @@ class RoadType
 public:
     RoadType();
     ~RoadType();
-    void Load_Texture(Utf8String path, int ID);
+    void Load_Texture(Utf8String path, int32_t ID);
     void Apply_Texture();
-    int Get_Stacking() { return m_stackingOrder; }
-    void Set_Stacking(int stacking) { m_stackingOrder = stacking; }
-    int Get_Unique_ID() { return m_uniqueID; }
+    int32_t Get_Stacking() { return m_stackingOrder; }
+    void Set_Stacking(int32_t stacking) { m_stackingOrder = stacking; }
+    int32_t Get_Unique_ID() { return m_uniqueID; }
     DX8VertexBufferClass *Get_VB() { return m_vertexRoad; }
     DX8IndexBufferClass *Get_IB() { return m_indexRoad; }
-    int Get_Num_Vertices() { return m_numRoadVertices; }
-    void Set_Num_Indices(int indices) { m_numRoadIndices = indices; }
-    void Set_Num_Vertices(int vertices) { m_numRoadVertices = vertices; }
-    int Get_Num_Indices() { return m_numRoadIndices; }
+    int32_t Get_Num_Vertices() { return m_numRoadVertices; }
+    void Set_Num_Indices(int32_t indices) { m_numRoadIndices = indices; }
+    void Set_Num_Vertices(int32_t vertices) { m_numRoadVertices = vertices; }
+    int32_t Get_Num_Indices() { return m_numRoadIndices; }
     void Set_Auto_Loaded() { m_isAutoLoaded = true; }
-    int Is_Auto_Loaded() { return m_isAutoLoaded; }
+    int32_t Is_Auto_Loaded() { return m_isAutoLoaded; }
     Utf8String Get_Path() { return m_texturePath; }
     void Load_Test_Texture();
 
@@ -54,11 +54,11 @@ protected:
     TextureClass *m_roadTexture;
     DX8VertexBufferClass *m_vertexRoad;
     DX8IndexBufferClass *m_indexRoad;
-    int m_numRoadVertices;
-    int m_numRoadIndices;
-    int m_uniqueID;
+    int32_t m_numRoadVertices;
+    int32_t m_numRoadIndices;
+    int32_t m_uniqueID;
     bool m_isAutoLoaded;
-    int m_stackingOrder;
+    int32_t m_stackingOrder;
     Utf8String m_texturePath;
 };
 
@@ -67,7 +67,7 @@ struct TRoadPt
     Vector2 loc;
     Vector2 top;
     Vector2 bottom;
-    int count;
+    int32_t count;
     bool last;
     bool multi;
     bool is_angled;
@@ -105,15 +105,15 @@ class RoadSegment
 public:
     RoadSegment();
     ~RoadSegment();
-    void Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int num_vertex);
-    void Set_Index_Buffer(unsigned short *ib, int num_index);
+    void Set_Vertex_Buffer(VertexFormatXYZDUV1 *vb, int32_t num_vertex);
+    void Set_Index_Buffer(unsigned short *ib, int32_t num_index);
     void Set_Road_Seg_Info(TRoadSegInfo *info) { m_info = *info; }
     void Get_Road_Seg_Info(TRoadSegInfo *info) { *info = m_info; }
     SphereClass &Get_Bounds() { return m_bounds; }
-    int Get_Num_Vertex() { return m_numVertex; }
-    int Get_Num_Index() { return m_numIndex; }
-    int Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int num_to_copy);
-    int Get_Indices(unsigned short *destination_ib, int num_to_copy, int offset);
+    int32_t Get_Num_Vertex() { return m_numVertex; }
+    int32_t Get_Num_Index() { return m_numIndex; }
+    int32_t Get_Vertices(VertexFormatXYZDUV1 *destination_vb, int32_t num_to_copy);
+    int32_t Get_Indices(unsigned short *destination_ib, int32_t num_to_copy, int32_t offset);
     void Update_Seg_Lighting();
 
     TRoadPt m_pt1;
@@ -122,13 +122,13 @@ public:
     TCorner m_type;
     float m_scale;
     float m_widthInTexture;
-    int m_uniqueID;
+    int32_t m_uniqueID;
     bool m_isVisible;
 
 protected:
-    int m_numVertex;
+    int32_t m_numVertex;
     VertexFormatXYZDUV1 *m_vb;
-    int m_numIndex;
+    int32_t m_numIndex;
     unsigned short *m_ib;
     TRoadSegInfo m_info;
     SphereClass m_bounds;
@@ -147,10 +147,10 @@ public:
         TextureClass *cloud_texture,
         TextureClass *noise_texture,
         bool wireframe,
-        int minx,
-        int maxx,
-        int miny,
-        int maxy,
+        int32_t minx,
+        int32_t maxx,
+        int32_t miny,
+        int32_t maxy,
         RefMultiListIterator<RenderObjClass> *dynamic_lights_iterator);
     void Set_Map(WorldHeightMap *map);
     void Update_Lighting();
@@ -158,21 +158,21 @@ public:
 protected:
     void Add_Map_Objects();
     void Add_Map_Object(RoadSegment *road, bool update_the_counts);
-    void Adjust_Stacking(int top_unique_id, int bottom_unique_id);
-    int Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector, int unique_id);
-    void Insert_Curve_Segment_At(int ndx1, int ndx2);
+    void Adjust_Stacking(int32_t top_unique_id, int32_t bottom_unique_id);
+    int32_t Find_Cross_Type_Join_Vector(Vector2 loc, Vector2 *join_vector, int32_t unique_id);
+    void Insert_Curve_Segment_At(int32_t ndx1, int32_t ndx2);
     void Insert_Cross_Type_Joins();
-    void Miter(int ndx1, int ndx2);
-    void Move_Road_Seg_To(int fromndx, int tondx);
-    void Check_Link_After(int ndx);
-    void Check_Link_Before(int ndx);
+    void Miter(int32_t ndx1, int32_t ndx2);
+    void Move_Road_Seg_To(int32_t fromndx, int32_t tondx);
+    void Check_Link_After(int32_t ndx);
+    void Check_Link_Before(int32_t ndx);
     void Update_Counts(RoadSegment *road);
     void Update_Counts_And_Flags();
     void Insert_Curve_Segments();
     void Insert_Tee_Intersections();
-    void Insert_Tee(Vector2 loc, int index1, float scale);
-    bool Insert_Y(Vector2 loc, int index1, float scale);
-    void Insert_4Way(Vector2 loc, int index1, float scale);
+    void Insert_Tee(Vector2 loc, int32_t index1, float scale);
+    bool Insert_Y(Vector2 loc, int32_t index1, float scale);
+    void Insert_4Way(Vector2 loc, int32_t index1, float scale);
     void Offset_4Way(TRoadPt *pc1,
         TRoadPt *pc2,
         TRoadPt *pc3,
@@ -245,20 +245,20 @@ protected:
 
     RoadType *m_roadTypes;
     RoadSegment *m_roads;
-    int m_numRoads;
+    int32_t m_numRoads;
     bool m_initialized;
     WorldHeightMap *m_map;
     RefMultiListIterator<RenderObjClass> *m_lightsIterator;
-    int m_curUniqueID;
-    int m_curRoadType;
-    int m_maxUID;
-    int m_curOpenRoad;
-    int m_maxRoadSegments;
-    int m_maxRoadVertex;
-    int m_maxRoadIndex;
-    int m_maxRoadTypes;
-    int m_curNumRoadVertices;
-    int m_curNumRoadIndices;
+    int32_t m_curUniqueID;
+    int32_t m_curRoadType;
+    int32_t m_maxUID;
+    int32_t m_curOpenRoad;
+    int32_t m_maxRoadSegments;
+    int32_t m_maxRoadVertex;
+    int32_t m_maxRoadIndex;
+    int32_t m_maxRoadTypes;
+    int32_t m_curNumRoadVertices;
+    int32_t m_curNumRoadIndices;
     bool m_dirty;
 #ifdef GAME_DLL
     W3DRoadBuffer *Hook_Ctor() { return new (this) W3DRoadBuffer(); }

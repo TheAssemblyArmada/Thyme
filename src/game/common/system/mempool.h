@@ -36,18 +36,18 @@ class MemoryPool
 public:
     MemoryPool();
     ~MemoryPool();
-    void Init(MemoryPoolFactory *factory, const char *name, int size, int count, int overflow);
-    MemoryPoolBlob *Create_Blob(int count);
-    int Free_Blob(MemoryPoolBlob *blob);
+    void Init(MemoryPoolFactory *factory, const char *name, int32_t size, int32_t count, int32_t overflow);
+    MemoryPoolBlob *Create_Blob(int32_t count);
+    int32_t Free_Blob(MemoryPoolBlob *blob);
     void *Allocate_Block_No_Zero();
     void *Allocate_Block();
     void Free_Block(void *block);
-    int Count_Blobs();
-    int Release_Empties();
+    int32_t Count_Blobs();
+    int32_t Release_Empties();
     void Reset();
     void Add_To_List(MemoryPool **head);
     void Remove_From_List(MemoryPool **head);
-    int Get_Alloc_Size() { return m_allocationSize; }
+    int32_t Get_Alloc_Size() { return m_allocationSize; }
 
     void *operator new(size_t size) throw() { return Raw_Allocate(size); }
     void operator delete(void *obj) { Raw_Free(obj); }
@@ -56,12 +56,12 @@ private:
     MemoryPoolFactory *m_factory;
     MemoryPool *m_nextPoolInFactory;
     const char *m_poolName;
-    int m_allocationSize;
-    int m_initialAllocationCount;
-    int m_overflowAllocationCount;
-    int m_usedBlocksInPool;
-    int m_totalBlocksInPool;
-    int m_peakUsedBlocksInPool;
+    int32_t m_allocationSize;
+    int32_t m_initialAllocationCount;
+    int32_t m_overflowAllocationCount;
+    int32_t m_usedBlocksInPool;
+    int32_t m_totalBlocksInPool;
+    int32_t m_peakUsedBlocksInPool;
     MemoryPoolBlob *m_firstBlob;
     MemoryPoolBlob *m_lastBlob;
     MemoryPoolBlob *m_firstBlobWithFreeBlocks;

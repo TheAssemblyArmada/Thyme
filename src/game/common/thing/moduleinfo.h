@@ -44,11 +44,11 @@ class ModuleInfo
         Utf8String name;
         Utf8String tag_name;
         ModuleData *data;
-        int interface_mask;
+        int32_t interface_mask;
         bool copied_from_default;
         bool inherited;
         bool like_kind_override;
-        Nugget(const Utf8String &n, const Utf8String &tag, ModuleData *d, int mask, bool inherit, bool kind) :
+        Nugget(const Utf8String &n, const Utf8String &tag, ModuleData *d, int32_t mask, bool inherit, bool kind) :
             name(n),
             tag_name(tag),
             data(d),
@@ -68,34 +68,34 @@ public:
 
     void Set_Copied_From_Default(bool b)
     {
-        for (unsigned int i = 0; i < m_info.size(); i++) {
+        for (uint32_t i = 0; i < m_info.size(); i++) {
             m_info[i].copied_from_default = b;
         }
     }
 
-    unsigned int Get_Count() const { return m_info.size(); }
+    uint32_t Get_Count() const { return m_info.size(); }
 
-    Utf8String Get_Nth_Name(int i) const
+    Utf8String Get_Nth_Name(int32_t i) const
     {
-        if (i < 0 || i >= (int)m_info.size()) {
+        if (i < 0 || i >= (int32_t)m_info.size()) {
             return Utf8String::s_emptyString;
         } else {
             return m_info[i].name;
         }
     }
 
-    ModuleData *Friend_Get_Nth_Data(int i) const
+    ModuleData *Friend_Get_Nth_Data(int32_t i) const
     {
-        if (i < 0 || i >= (int)m_info.size()) {
+        if (i < 0 || i >= (int32_t)m_info.size()) {
             return nullptr;
         } else {
             return m_info[i].data;
         }
     }
 
-    const ModuleData *Get_Nth_Data(int i) const
+    const ModuleData *Get_Nth_Data(int32_t i) const
     {
-        if (i < 0 || i >= (int)m_info.size()) {
+        if (i < 0 || i >= (int32_t)m_info.size()) {
             return nullptr;
         } else {
             return m_info[i].data;
@@ -106,11 +106,11 @@ public:
         const Utf8String &module_name,
         const Utf8String &tag_name,
         ModuleData *mod_data,
-        int interface_mask,
+        int32_t interface_mask,
         bool inherited,
         bool like_kind_override);
     bool Clear_Module_Data_With_Tag(const Utf8String &tag, Utf8String &name);
-    bool Clear_Copied_From_Default_Entries(int interface_mask, Utf8String const &name, ThingTemplate *tmplate);
+    bool Clear_Copied_From_Default_Entries(int32_t interface_mask, Utf8String const &name, ThingTemplate *tmplate);
     bool Clear_Ai_Module_Info();
     Nugget *Try_Find_Nugget(Utf8String const &name);
 

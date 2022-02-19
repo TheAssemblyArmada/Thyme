@@ -89,7 +89,7 @@ public:
     virtual void Load_Procedural_Textures();
     virtual MetalMapManagerClass *Peek_Metal_Map_Manager();
     virtual Font3DInstanceClass *Get_Font3DInstance(const char *name);
-    virtual FontCharsClass *Get_FontChars(const char *name, int point_size, bool is_bold = false);
+    virtual FontCharsClass *Get_FontChars(const char *name, int32_t point_size, bool is_bold = false);
     virtual AssetIterator *Create_HTree_Iterator();
     virtual HTreeClass *Get_HTree(const char *name);
     // 0x00816550
@@ -138,7 +138,7 @@ protected:
     int32_t Prototype_Hash_Table_Hash(char const *key);
 
     void Add_Prototype(PrototypeClass *proto);
-    PrototypeLoaderClass *Find_Prototype_Loader(int chunk_id);
+    PrototypeLoaderClass *Find_Prototype_Loader(int32_t chunk_id);
     bool Load_Prototype(ChunkLoadClass &cload);
 
 protected:
@@ -194,10 +194,10 @@ private:
     bool Replace_HLOD_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     bool Replace_Mesh_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
     bool Replace_Asset_Texture(RenderObjClass *robj, TextureClass *old_texture, TextureClass *new_texture);
-    TextureClass *Recolor_Texture(TextureClass *texture, int color);
-    TextureClass *Find_Texture(const char *name, int color);
-    TextureClass *Recolor_Texture_One_Time(TextureClass *texture, int color);
-    void Remap_Palette(SurfaceClass *surface, int color, bool do_palette_only, bool use_alpha);
+    TextureClass *Recolor_Texture(TextureClass *texture, int32_t color);
+    TextureClass *Find_Texture(const char *name, int32_t color);
+    TextureClass *Recolor_Texture_One_Time(TextureClass *texture, int32_t color);
+    void Remap_Palette(SurfaceClass *surface, int32_t color, bool do_palette_only, bool use_alpha);
 
     uint32_t m_grannyAnimManager; // Not used, only here to match original size
 };

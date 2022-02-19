@@ -38,7 +38,7 @@ const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = { "No co
 /**
  * @brief Detect if the data is compressed.
  */
-bool CompressionManager::Is_Data_Compressed(const void *data, int size)
+bool CompressionManager::Is_Data_Compressed(const void *data, int32_t size)
 {
     return Get_Compression_Type(data, size) != COMPRESSION_NONE;
 }
@@ -46,7 +46,7 @@ bool CompressionManager::Is_Data_Compressed(const void *data, int size)
 /**
  * @brief Get type of compression used based on a small header.
  */
-CompressionType CompressionManager::Get_Compression_Type(const void *data, int size)
+CompressionType CompressionManager::Get_Compression_Type(const void *data, int32_t size)
 {
     if (size <= 7) {
         return COMPRESSION_NONE;
@@ -112,7 +112,7 @@ CompressionType CompressionManager::Get_Compression_Type(const void *data, int s
 /**
  * @brief Get uncompressed size based on a small header.
  */
-int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
+int32_t CompressionManager::Get_Uncompressed_Size(const void *data, int32_t size)
 {
     if (size < 8) {
         return size;
@@ -130,7 +130,7 @@ int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
 /**
  * @brief Decompress possibly compressed data. Only handles RefPack compression.
  */
-int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int dst_size)
+int32_t CompressionManager::Decompress_Data(void *src, int32_t src_size, void *dst, int32_t dst_size)
 {
     if (src_size <= 7) {
         return 0;

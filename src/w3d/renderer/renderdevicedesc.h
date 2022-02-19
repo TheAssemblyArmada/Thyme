@@ -27,19 +27,19 @@ class ResolutionDescClass
 {
 public:
     ResolutionDescClass() {}
-    ResolutionDescClass(int w, int h, int d) : m_width(w), m_height(h), m_bitDepth(d) {}
-    int Get_Width() const { return m_width; }
-    int Get_Height() const { return m_height; }
-    int Get_Depth() const { return m_bitDepth; }
+    ResolutionDescClass(int32_t w, int32_t h, int32_t d) : m_width(w), m_height(h), m_bitDepth(d) {}
+    int32_t Get_Width() const { return m_width; }
+    int32_t Get_Height() const { return m_height; }
+    int32_t Get_Depth() const { return m_bitDepth; }
 
     bool operator==(const ResolutionDescClass &that) { return this == &that; }
     bool operator!=(const ResolutionDescClass &that) { return this != &that; }
 
 private:
-    int m_width;
-    int m_height;
-    int m_bitDepth;
-    int m_refreshRate;
+    int32_t m_width;
+    int32_t m_height;
+    int32_t m_bitDepth;
+    int32_t m_refreshRate;
 };
 
 class RenderDeviceDescClass
@@ -51,11 +51,11 @@ public:
     bool operator==(const RenderDeviceDescClass &that) { return this == &that; }
     bool operator!=(const RenderDeviceDescClass &that) { return this != &that; }
 
-    void Add_Resolution(int w, int h, int b)
+    void Add_Resolution(int32_t w, int32_t h, int32_t b)
     {
         bool found = false;
 
-        for (int i = 0; i < m_resArray.Count(); ++i) {
+        for (int32_t i = 0; i < m_resArray.Count(); ++i) {
             if (m_resArray[i].Get_Width() == w && m_resArray[i].Get_Height() == h && m_resArray[i].Get_Depth() == b) {
                 found = true;
             }

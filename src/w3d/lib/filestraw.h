@@ -27,7 +27,7 @@ public:
     FileStraw(FileClass *file) : m_file(file), m_hasOpened(false) {}
     virtual ~FileStraw();
 
-    virtual int Get(void *buffer, int length) override;
+    virtual int32_t Get(void *buffer, int32_t length) override;
 
 private:
     bool Valid_File() { return m_file != nullptr; }

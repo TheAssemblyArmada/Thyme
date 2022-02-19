@@ -44,13 +44,13 @@ public:
     virtual bool Delete() = 0;
     virtual bool Is_Available(bool forced = false) = 0;
     virtual bool Is_Open() = 0;
-    virtual bool Open(const char *filename, int rights = FM_READ) = 0;
-    virtual bool Open(int rights = FM_READ) = 0;
-    virtual int Read(void *buffer, int length) = 0;
-    virtual off_t Seek(off_t offset, int whence = FS_SEEK_CURRENT) = 0;
+    virtual bool Open(const char *filename, int32_t rights = FM_READ) = 0;
+    virtual bool Open(int32_t rights = FM_READ) = 0;
+    virtual int32_t Read(void *buffer, int32_t length) = 0;
+    virtual off_t Seek(off_t offset, int32_t whence = FS_SEEK_CURRENT) = 0;
     virtual off_t Tell();
     virtual off_t Size() = 0;
-    virtual int Write(void const *buffer, int size) = 0;
+    virtual int32_t Write(void const *buffer, int32_t size) = 0;
     virtual void Close() = 0;
     virtual time_t Get_Date_Time();
     virtual bool Set_Date_Time(time_t date_time);

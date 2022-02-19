@@ -23,14 +23,14 @@ class PolygonTrigger : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(PolygonTrigger);
 
 public:
-    PolygonTrigger(int initial_allocation);
+    PolygonTrigger(int32_t initial_allocation);
     virtual ~PolygonTrigger() override;
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    int Get_Num_Points() const { return m_numPoints; }
-    int Get_River_Start() const { return m_riverStart; }
+    int32_t Get_Num_Points() const { return m_numPoints; }
+    int32_t Get_River_Start() const { return m_riverStart; }
     const PolygonTrigger *Get_Next() const { return m_nextPolygonTrigger; }
     PolygonTrigger *Get_Next() { return m_nextPolygonTrigger; }
     bool Is_Water_Area() const { return m_isWaterArea; }
@@ -43,15 +43,15 @@ public:
     bool Is_Selected() { return m_isSelected; }
     void Set_Selected(bool selected) { m_isSelected = selected; }
     void Set_Trigger_Name(Utf8String name) { m_triggerName = name; }
-    int Get_ID() { return m_triggerID; }
+    int32_t Get_ID() { return m_triggerID; }
     void Set_Do_Export_With_Scripts(bool do_export) { m_exportWithScripts = do_export; }
     void Set_Next(PolygonTrigger *next) { m_nextPolygonTrigger = next; }
     void Set_Water_Area(bool water) { m_isWaterArea = water; }
     void Set_River(bool river) { m_isRiver = river; }
-    void Set_River_Start(int start) { m_riverStart = start; }
+    void Set_River_Start(int32_t start) { m_riverStart = start; }
     bool Do_Export_With_Scripts() { return m_exportWithScripts; }
 
-    ICoord3D *Get_Point(int ndx) const
+    ICoord3D *Get_Point(int32_t ndx) const
     {
         if (ndx < 0) {
             ndx = 0;
@@ -77,9 +77,9 @@ public:
     void Reallocate();
     void Update_Bounds() const;
     void Add_Point(ICoord3D const &point);
-    void Set_Point(ICoord3D const &point, int ndx);
-    void Insert_Point(ICoord3D const &point, int ndx);
-    void Delete_Point(int ndx);
+    void Set_Point(ICoord3D const &point, int32_t ndx);
+    void Insert_Point(ICoord3D const &point, int32_t ndx);
+    void Delete_Point(int32_t ndx);
     void Get_Center_Point(Coord3D *pOutCoord) const;
     float Get_Radius() const;
     bool Is_Valid() const;
@@ -91,7 +91,7 @@ public:
     static void Write_Polygon_Triggers_Data_Chunk(DataChunkOutput &chunk_writer); // needs DataChunkOutput
     static void Add_Polygon_Trigger(PolygonTrigger *trigger);
     static void Remove_Polygon_Trigger(PolygonTrigger *trigger);
-    static PolygonTrigger *Get_Polygon_Trigger_By_ID(int id);
+    static PolygonTrigger *Get_Polygon_Trigger_By_ID(int32_t id);
     static void Clear_Selected();
 
 private:
@@ -100,18 +100,18 @@ private:
 #else
     static PolygonTrigger *s_thePolygonTriggerListPtr;
 #endif
-    static int s_currentID;
+    static int32_t s_currentID;
 
     PolygonTrigger *m_nextPolygonTrigger;
     Utf8String m_triggerName;
-    int m_triggerID;
+    int32_t m_triggerID;
     WaterHandle m_waterHandle;
     ICoord3D *m_points;
-    int m_numPoints;
-    int m_sizePoints;
+    int32_t m_numPoints;
+    int32_t m_sizePoints;
     mutable IRegion2D m_bounds;
     mutable float m_radius;
-    int m_riverStart;
+    int32_t m_riverStart;
     mutable bool m_boundsNeedsUpdate;
     bool m_exportWithScripts;
     bool m_isWaterArea;

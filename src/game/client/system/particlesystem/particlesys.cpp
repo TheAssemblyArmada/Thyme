@@ -79,7 +79,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_sizeRate = temp->m_sizeRate;
     m_sizeRateDamping = temp->m_sizeRateDamping;
 
-    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+    for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
         m_alphaKey[i] = temp->m_alphaKey[i];
         m_colorKey[i] = temp->m_colorKey[i];
     }
@@ -170,11 +170,11 @@ ParticleSystem::~ParticleSystem()
  *
  * 0x004CFB80
  */
-void ParticleSystem::Update(int unk)
+void ParticleSystem::Update(int32_t unk)
 {
     // Needs Drawable, GameClient, GameLogic
 #ifdef GAME_DLL
-    Call_Method<void, ParticleSystem, int>(0x004CFB80, this, unk);
+    Call_Method<void, ParticleSystem, int32_t>(0x004CFB80, this, unk);
 #endif
 }
 
@@ -499,7 +499,7 @@ Coord3D *ParticleSystem::Compute_Particle_Position()
         case EMISSION_VOLUME_BOX:
             // If its hollow, final value must be on a surface.
             if (m_isEmissionVolumeHollow) {
-                int random_val = Get_Client_Random_Value(0, 6);
+                int32_t random_val = Get_Client_Random_Value(0, 6);
 
                 switch (random_val % 3) {
                     case 0:
@@ -616,7 +616,7 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
         return NEW_POOL_OBJ(Particle, this, info);
     }
 
-    int excess = g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
+    int32_t excess = g_theParticleSystemManager->Particle_Count() - g_theWriteableGlobalData->m_maxParticleCount;
 
     if (excess > 0 && g_theParticleSystemManager->Remove_Oldest_Particles(excess, priority) != unsigned(excess)) {
         return nullptr;
@@ -634,7 +634,7 @@ Particle *ParticleSystem::Create_Particle(const ParticleInfo &info, ParticlePrio
  *
  * 0x004CF750
  */
-ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
+ParticleInfo *ParticleSystem::Generate_Particle_Info(int32_t id, int32_t count)
 {
     static ParticleInfo _info;
 
@@ -693,7 +693,7 @@ ParticleInfo *ParticleSystem::Generate_Particle_Info(int id, int count)
             m_accumulatedSizeBonus = std::min(m_accumulatedSizeBonus, 50.0f);
         }
 
-        for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
             _info.m_alphaKey[i].value = m_alphaKey[i].var.Get_Value();
             _info.m_alphaKey[i].frame = m_alphaKey[i].frame;
             _info.m_colorKey[i].color = m_colorKey[i].color;
@@ -927,7 +927,7 @@ ParticleInfo ParticleSystem::Merge_Related_Systems(ParticleSystem *master, Parti
         tmp.m_angularRateZ = slave_info->m_angularRateZ;
         tmp.m_angularDamping = slave_info->m_angularDamping;
 
-        for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        for (int32_t i = 0; i < KEYFRAME_COUNT; ++i) {
             tmp.m_alphaKey[i] = slave_info->m_alphaKey[i];
             tmp.m_colorKey[i] = slave_info->m_colorKey[i];
         }

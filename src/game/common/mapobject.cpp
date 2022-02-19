@@ -26,7 +26,8 @@ MapObject *MapObject::s_theMapObjectListPtr;
 Dict MapObject::s_theWorldDict;
 #endif
 
-MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing) :
+MapObject::MapObject(
+    Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing) :
     m_properties(0),
     m_objectName(name),
     m_thingTemplate(thing),
@@ -51,7 +52,7 @@ MapObject::MapObject(Coord3D loc, Utf8String name, float angle, int flags, const
         m_properties.Set_Bool(g_objectTargetableKey, false);
     }
 
-    for (int i = 0; i < BRIDGE_MAX_TOWERS; i++) {
+    for (int32_t i = 0; i < BRIDGE_MAX_TOWERS; i++) {
         Set_Bridge_Render_Object((BridgeTowerType)i, nullptr);
     }
 }
@@ -71,7 +72,7 @@ MapObject::~MapObject()
         }
     }
 
-    for (int i = 0; i < BRIDGE_MAX_TOWERS; i++) {
+    for (int32_t i = 0; i < BRIDGE_MAX_TOWERS; i++) {
         Set_Bridge_Render_Object((BridgeTowerType)i, nullptr);
     }
 }
@@ -122,7 +123,7 @@ void MapObject::Verify_Valid_Team()
     if (exists) {
         bool match = false;
 
-        for (int i = 0; i < g_theSidesList->Get_Num_Teams(); i++) {
+        for (int32_t i = 0; i < g_theSidesList->Get_Num_Teams(); i++) {
 
             TeamsInfo *info = g_theSidesList->Get_Team_Info(i);
 
@@ -145,14 +146,14 @@ void MapObject::Verify_Valid_Team()
 void MapObject::Verify_Valid_Unique_ID()
 {
     MapObject *o = Get_First_Map_Object();
-    int id = -1;
+    int32_t id = -1;
 
     while (o) {
         if (o != this && !o->Is_Waypoint()) {
             bool exists;
             Utf8String id2 = o->Get_Properties()->Get_AsciiString(g_uniqueIDKey, &exists);
             const char *str = id2.Reverse_Find(' ');
-            int newid = -1;
+            int32_t newid = -1;
 
             if (str) {
                 newid = atoi(str);
@@ -202,7 +203,7 @@ void MapObject::Fast_Assign_All_Unique_IDs()
 {
     MapObject *o = Get_First_Map_Object();
     std::deque<MapObject *> objs;
-    int count = 0;
+    int32_t count = 0;
 
     while (o) {
         count++;
@@ -210,7 +211,7 @@ void MapObject::Fast_Assign_All_Unique_IDs()
         o = o->Get_Next();
     }
 
-    int id = 0;
+    int32_t id = 0;
 
     while (count) {
         MapObject *m = objs.back();
@@ -260,7 +261,7 @@ void MapObject::Set_Name(Utf8String name)
     m_objectName = name;
 }
 
-int MapObject::Get_Waypoint_ID()
+int32_t MapObject::Get_Waypoint_ID()
 {
     return Get_Properties()->Get_Int(g_waypointIDKey);
 }
@@ -270,7 +271,7 @@ Utf8String MapObject::Get_Waypoint_Name()
     return Get_Properties()->Get_AsciiString(g_waypointNameKey);
 }
 
-void MapObject::Set_Waypoint_ID(int i)
+void MapObject::Set_Waypoint_ID(int32_t i)
 {
     Get_Properties()->Set_Int(g_waypointIDKey, i);
 }
@@ -281,9 +282,9 @@ void MapObject::Set_Waypoint_Name(Utf8String n)
 }
 
 // untested, worldbuilder only
-int MapObject::Count_Map_Objects_With_Owner(const Utf8String &n)
+int32_t MapObject::Count_Map_Objects_With_Owner(const Utf8String &n)
 {
-    int count = 0;
+    int32_t count = 0;
 
     for (MapObject *m = Get_First_Map_Object(); m; m = m->Get_Next()) {
         if (m->Get_Properties()->Get_AsciiString(g_originalOwnerKey) == n) {

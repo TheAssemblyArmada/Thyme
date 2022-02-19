@@ -235,7 +235,7 @@ void TextureBaseClass::Set_Platform_Base_Texture(w3dbasetexture_t tex)
 void TextureBaseClass::Invalidate_Old_Unused_Textures(unsigned age)
 {
     if (W3D::Is_Thumbnail_Enabled()) {
-        unsigned int syncTime = W3D::Get_Sync_Time();
+        uint32_t syncTime = W3D::Get_Sync_Time();
 
         for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
              !textureIter.Is_Done();

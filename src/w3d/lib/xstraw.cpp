@@ -15,15 +15,15 @@
 #include "xstraw.h"
 #include <cstring>
 
-int BufferStraw::Get(void *source, int slen)
+int32_t BufferStraw::Get(void *source, int32_t slen)
 {
-    int total = 0;
+    int32_t total = 0;
 
     if (Is_Valid() && source != NULL && slen > 0) {
-        int len = slen;
+        int32_t len = slen;
 
         if (m_bufferPtr.Get_Size() != 0) {
-            int theoretical_max = m_bufferPtr.Get_Size() - m_index;
+            int32_t theoretical_max = m_bufferPtr.Get_Size() - m_index;
             len = (slen < theoretical_max) ? slen : theoretical_max;
         }
 

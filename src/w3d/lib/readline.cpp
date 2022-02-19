@@ -19,16 +19,16 @@
 
 using std::strlen;
 
-int Read_Line(FileClass &file, char *line, int length, bool &eof)
+int32_t Read_Line(FileClass &file, char *line, int32_t length, bool &eof)
 {
     FileStraw fstraw(&file);
     return Read_Line(fstraw, line, length, eof);
 }
 
-int Read_Line(Straw &straw, char *buffer, int length, bool &eof)
+int32_t Read_Line(Straw &straw, char *buffer, int32_t length, bool &eof)
 {
     if (buffer && length > 0) {
-        int i = 0;
+        int32_t i = 0;
         char c;
 
         while (true) {

@@ -43,7 +43,7 @@ RTS3DScene::RTS3DScene() : m_drawTerrainOnly(false), m_numGlobalLights(0)
 {
     Set_Name("RTS3DScene");
 
-    for (int i = 0; i < LightEnvironmentClass::MAX_LIGHTS; i++) {
+    for (int32_t i = 0; i < LightEnvironmentClass::MAX_LIGHTS; i++) {
         m_globalLight[i] = nullptr;
         m_infantryLight[i] = new LightClass(LightClass::DIRECTIONAL);
     }
@@ -100,14 +100,14 @@ RTS3DScene::RTS3DScene() : m_drawTerrainOnly(false), m_numGlobalLights(0)
     m_occludedObjectsBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedObjects];
     m_occludedOthersBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedOthers];
 
-    for (int i = 0; i < 16; i++) {
+    for (int32_t i = 0; i < 16; i++) {
         m_occludedMatPassesPerPlayer[i] = nullptr;
     }
 }
 
 RTS3DScene::~RTS3DScene()
 {
-    for (int i = 0; i < LightEnvironmentClass::MAX_LIGHTS; i++) {
+    for (int32_t i = 0; i < LightEnvironmentClass::MAX_LIGHTS; i++) {
         Ref_Ptr_Release(m_globalLight[i]);
         Ref_Ptr_Release(m_infantryLight[i]);
     }
@@ -134,12 +134,12 @@ RTS3DScene::~RTS3DScene()
         delete[] m_occludedBuildingsBuffer;
     }
 
-    for (int i = 0; i < 16; i++) {
+    for (int32_t i = 0; i < 16; i++) {
         Ref_Ptr_Release(m_occludedMatPassesPerPlayer[i]);
     }
 }
 
-void RTS3DScene::Set_Global_Light(LightClass *light, int light_index)
+void RTS3DScene::Set_Global_Light(LightClass *light, int32_t light_index)
 {
     if (m_numGlobalLights < light_index + 1) {
         m_numGlobalLights = light_index + 1;
@@ -161,11 +161,11 @@ void RTS3DScene::Flag_Occluded_Objects(CameraClass *camera)
     m_flaggedOccludedCount = 0;
     RenderObjClass **objects = m_occludedObjectsBuffer;
 
-    for (int i = 0; i < m_occludedObjectsCount; i++) {
+    for (int32_t i = 0; i < m_occludedObjectsCount; i++) {
         tempRayTest.m_ray.Set(pos, (*objects)->Get_Position());
         RenderObjClass **buildings = m_occludedBuildingsBuffer;
 
-        for (int j = 0; j < m_occludedBuildingsCount; j++) {
+        for (int32_t j = 0; j < m_occludedBuildingsCount; j++) {
             RenderObjClass *building = *buildings;
             const SphereClass &sphere = building->Get_Bounding_Sphere();
             PlaneClass p;
@@ -193,7 +193,7 @@ void RTS3DScene::Flag_Occluded_Objects(CameraClass *camera)
     }
 }
 
-bool RTS3DScene::Cast_Ray(RayCollisionTestClass &ray_test, bool test_all, int collision_type)
+bool RTS3DScene::Cast_Ray(RayCollisionTestClass &ray_test, bool test_all, int32_t collision_type)
 {
     CastResultStruct result;
     RayCollisionTestClass tempRayTest(ray_test.m_ray, &result);
@@ -238,7 +238,7 @@ void RTS3DScene::Visibility_Check(CameraClass *camera)
     m_occludedObjectsCount = 0;
     m_translucentObjectsCount = 0;
     m_occludedOthersCount = 0;
-    unsigned int frame = 0;
+    uint32_t frame = 0;
 
     if (g_theGameLogic) {
         frame = g_theGameLogic->Get_Frame();
@@ -343,7 +343,7 @@ void RTS3DScene::Visibility_Check(CameraClass *camera)
                 if (robj->Is_Force_Visible()) {
                     robj->Set_Visible(true);
                 } else {
-                    int visible = 0;
+                    int32_t visible = 0;
 
                     if (drawable->Get_Draws_In_Mirror()) {
                         if (!camera->Cull_Sphere(robj->Get_Bounding_Sphere())) {
@@ -365,10 +365,10 @@ void RTS3DScene::Visibility_Check(CameraClass *camera)
     Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration();
 }
 
-void RTS3DScene::Render_Specific_Drawables(RenderInfoClass &rinfo, int num_drawables, Drawable **drawables)
+void RTS3DScene::Render_Specific_Drawables(RenderInfoClass &rinfo, int32_t num_drawables, Drawable **drawables)
 {
     Drawable::Friend_Lock_Dirty_Stuff_For_Iteration();
-    int index;
+    int32_t index;
 
     if (g_thePlayerList) {
         index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
@@ -390,7 +390,7 @@ void RTS3DScene::Render_Specific_Drawables(RenderInfoClass &rinfo, int num_drawa
         if (drawable) {
             bool render = false;
 
-            for (int i = 0; i < num_drawables; i++) {
+            for (int32_t i = 0; i < num_drawables; i++) {
                 if (drawables[i] == drawable) {
                     render = 1;
                     break;
@@ -406,7 +406,7 @@ void RTS3DScene::Render_Specific_Drawables(RenderInfoClass &rinfo, int num_drawa
     Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration();
 }
 
-void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj, int local_player_index)
+void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj, int32_t local_player_index)
 {
     Drawable *drawable = nullptr;
     DrawableInfo *info = nullptr;
@@ -449,7 +449,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
 
         lenv.Reset(sphere.Center, ambient);
 
-        for (int i = 0; i < m_numGlobalLights; i++) {
+        for (int32_t i = 0; i < m_numGlobalLights; i++) {
             lenv.Add_Light(*m_globalLight[i]);
         }
     } else {
@@ -462,7 +462,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
                 drawable->Set_Remain_Visible_Frames(g_theGameLogic->Get_Frame());
             } else if (shrouded >= SHROUDED_UNK3) {
                 if (drawable->Get_Remain_Visible_Frames()) {
-                    unsigned int frames = 60;
+                    uint32_t frames = 60;
 
                     if (object->Is_Effectively_Dead()) {
                         frames += 90;
@@ -512,7 +512,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
                 Vector3::Add(v1, *selection, &v1);
             }
 
-            for (int i = 0; i < m_numGlobalLights; i++) {
+            for (int32_t i = 0; i < m_numGlobalLights; i++) {
                 light[i]->Get_Diffuse(&v2);
                 v3 = v2;
                 v2 = v1 + v2;
@@ -525,7 +525,7 @@ void RTS3DScene::Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj,
             Vector3::Add(v1, v2, &v2);
             lenv.Set_Equivalent_Ambient(v2);
         } else {
-            for (int i = 0; i < m_numGlobalLights; i++) {
+            for (int32_t i = 0; i < m_numGlobalLights; i++) {
                 lenv.Add_Light(*light[i]);
             }
         }
@@ -665,7 +665,7 @@ void RTS3DScene::Update_Fixed_Light_Environments(RenderInfoClass &rinfo)
     Vector3 diffuse;
     Vector3 ambient;
 
-    for (int i = 0; i < m_numGlobalLights; i++) {
+    for (int32_t i = 0; i < m_numGlobalLights; i++) {
 
         m_globalLightEnv.Add_Light(*m_globalLight[i]);
 
@@ -797,7 +797,7 @@ void RTS3DScene::Customized_Render(RenderInfoClass &rinfo)
     RenderObjClass *robj = nullptr;
     m_translucentObjectsCount = 0;
     m_flaggedOccludedCount = 0;
-    int index;
+    int32_t index;
 
     if (g_thePlayerList) {
         index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
@@ -886,13 +886,13 @@ void RTS3DScene::Customized_Render(RenderInfoClass &rinfo)
     Drawable::Friend_Unlock_Dirty_Stuff_For_Iteration();
 }
 
-int Player_Index_To_Color_Index(int player_index)
+int32_t Player_Index_To_Color_Index(int32_t player_index)
 {
-    int index = 0;
+    int32_t index = 0;
 
-    for (int i = 0; i < 4; i++) {
-        int i1 = 3 - i;
-        int i2;
+    for (int32_t i = 0; i < 4; i++) {
+        int32_t i1 = 3 - i;
+        int32_t i2;
 
         if (3 - i <= i) {
             i2 = ((1 << i) & player_index) >> (i - i1);
@@ -906,21 +906,21 @@ int Player_Index_To_Color_Index(int player_index)
     return index;
 }
 
-void Render_Stenciled_Player_Color(unsigned int color, unsigned int reference, bool b)
+void Render_Stenciled_Player_Color(uint32_t color, uint32_t reference, bool b)
 {
 #ifdef BUILD_WITH_D3D8
     struct StencilVertex
     {
         Vector4 vert;
-        int color;
+        int32_t color;
     };
 
     StencilVertex vertices[4];
-    int x;
-    int y;
+    int32_t x;
+    int32_t y;
     g_theTacticalView->Get_Origin(&x, &y);
-    int width = g_theTacticalView->Get_Width();
-    int height = g_theTacticalView->Get_Height();
+    int32_t width = g_theTacticalView->Get_Width();
+    int32_t height = g_theTacticalView->Get_Height();
 
     vertices[0].vert.Set((float)(width + x), (float)(height + y), 0.0f, 1.0f);
     vertices[1].vert.Set((float)(width + x), 0.0f, 0.0f, 1.0f);
@@ -942,7 +942,7 @@ void Render_Stenciled_Player_Color(unsigned int color, unsigned int reference, b
         device->SetVertexShader(D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILENABLE, TRUE);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_ZENABLE, TRUE);
-        unsigned int colorwrite = 0x12345678;
+        uint32_t colorwrite = 0x12345678;
 
         if (b) {
             DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILREF, 0x80808080);
@@ -997,20 +997,20 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
 #ifdef BUILD_WITH_D3D8
     Vector3 hsv;
     Vector3 rgb;
-    int i1 = 1;
-    int i2 = 0;
+    int32_t i1 = 1;
+    int32_t i2 = 0;
     RenderObjClass *objects[16][512];
     RenderObjClass **objectptrs[16];
-    unsigned int references[16];
-    int colors[16];
+    uint32_t references[16];
+    int32_t colors[16];
 
-    for (int i = 0; i < 16; i++) {
+    for (int32_t i = 0; i < 16; i++) {
         objectptrs[i] = objects[i];
         references[i] = 0xFFFFFFFF;
     }
 
     g_theW3DShadowManager->Set_Stencil_Mask(0);
-    int index;
+    int32_t index;
 
     if (g_thePlayerList) {
         index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
@@ -1019,12 +1019,12 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
     }
 
     if (m_occludedObjectsCount && m_occludedBuildingsCount) {
-        for (int i = 0; i < m_occludedObjectsCount; i++) {
+        for (int32_t i = 0; i < m_occludedObjectsCount; i++) {
             RenderObjClass *robj = m_occludedObjectsBuffer[i];
-            int playerindex = ((DrawableInfo *)robj->Get_User_Data())
-                                  ->drawable->Get_Object()
-                                  ->Get_Controlling_Player()
-                                  ->Get_Player_Index();
+            int32_t playerindex = ((DrawableInfo *)robj->Get_User_Data())
+                                      ->drawable->Get_Object()
+                                      ->Get_Controlling_Player()
+                                      ->Get_Player_Index();
 
             if (objectptrs[playerindex] - objects[playerindex] < 512) {
                 *objectptrs[playerindex]++ = robj;
@@ -1042,16 +1042,16 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
         DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILFAIL, D3DSTENCILOP_KEEP);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);
 
-        for (int i = 0; i < 16; i++) {
-            int count = objectptrs[i] - objects[i];
+        for (int32_t i = 0; i < 16; i++) {
+            int32_t count = objectptrs[i] - objects[i];
 
             if (count) {
                 if (references[i] == 0xFFFFFFFF) {
                     references[i] = Player_Index_To_Color_Index(i1++);
-                    int color = ((DrawableInfo *)objects[i][0]->Get_User_Data())
-                                    ->drawable->Get_Object()
-                                    ->Get_Controlling_Player()
-                                    ->Get_Color();
+                    int32_t color = ((DrawableInfo *)objects[i][0]->Get_User_Data())
+                                        ->drawable->Get_Object()
+                                        ->Get_Controlling_Player()
+                                        ->Get_Color();
                     float blue = (color & 0xFF) / 255.0f;
                     float green = ((color >> 8) & 0xFF) / 255.0f;
                     float red = ((color >> 16) & 0xFF) / 255.0f;
@@ -1064,7 +1064,7 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
                 DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILREF, 8 * references[i]);
                 RenderObjClass **o = objects[i];
 
-                for (int j = 0; j < count; j++) {
+                for (int32_t j = 0; j < count; j++) {
                     if ((((DrawableInfo *)(*o)->Get_User_Data())->flags & 8) != 0) {
                         g_theDX8MeshRenderer.Flush();
                         DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILFUNC, D3DCMP_NEVER);
@@ -1088,7 +1088,7 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
 
         RenderObjClass **o = m_occludedOthersBuffer;
 
-        for (int i = 0; i < m_occludedOthersCount; i++) {
+        for (int32_t i = 0; i < m_occludedOthersCount; i++) {
             Render_One_Object(rinfo, *o, index);
             o++;
         }
@@ -1105,17 +1105,17 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
         DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILPASS, D3DSTENCILOP_REPLACE);
         o = m_occludedBuildingsBuffer;
 
-        for (int i = 0; i < m_occludedBuildingsCount; i++) {
+        for (int32_t i = 0; i < m_occludedBuildingsCount; i++) {
             Render_One_Object(rinfo, *o, index);
             o++;
         }
 
         g_theDX8MeshRenderer.Flush();
-        int mask = 0;
+        int32_t mask = 0;
 
-        for (int i = 0; i < i2; i++) {
-            int color = colors[i];
-            int reference = (8 * Player_Index_To_Color_Index(i + 1)) | 0x80;
+        for (int32_t i = 0; i < i2; i++) {
+            int32_t color = colors[i];
+            int32_t reference = (8 * Player_Index_To_Color_Index(i + 1)) | 0x80;
             Render_Stenciled_Player_Color(color, reference, false);
             mask |= reference;
         }
@@ -1131,21 +1131,21 @@ void RTS3DScene::Flush_Occluded_Objects_Into_Stencil(RenderInfoClass &rinfo)
     } else if (m_occludedOthersCount || m_occludedBuildingsCount || m_occludedObjectsCount) {
         RenderObjClass **o = m_occludedObjectsBuffer;
 
-        for (int i = 0; i < m_occludedObjectsCount; i++) {
+        for (int32_t i = 0; i < m_occludedObjectsCount; i++) {
             Render_One_Object(rinfo, *o, index);
             o++;
         }
 
         o = m_occludedBuildingsBuffer;
 
-        for (int i = 0; i < m_occludedBuildingsCount; i++) {
+        for (int32_t i = 0; i < m_occludedBuildingsCount; i++) {
             Render_One_Object(rinfo, *o, index);
             o++;
         }
 
         o = m_occludedOthersBuffer;
 
-        for (int i = 0; i < m_occludedOthersCount; i++) {
+        for (int32_t i = 0; i < m_occludedOthersCount; i++) {
             Render_One_Object(rinfo, *o, index);
             o++;
         }
@@ -1163,7 +1163,7 @@ void RTS3DScene::Flush_Occluded_Objects(RenderInfoClass &rinfo)
     g_theW3DShadowManager->Set_Stencil_Mask(0);
 
     if (m_flaggedOccludedCount) {
-        int index;
+        int32_t index;
 
         if (g_thePlayerList) {
             index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
@@ -1185,7 +1185,7 @@ void RTS3DScene::Flush_Occluded_Objects(RenderInfoClass &rinfo)
 
         rinfo.Push_Override_Flags(RenderInfoClass::RINFO_OVERRIDE_ADDITIONAL_PASSES_ONLY);
 
-        for (int i = 0; i < m_flaggedOccludedCount; i++) {
+        for (int32_t i = 0; i < m_flaggedOccludedCount; i++) {
             RenderObjClass *robj = m_occludedObjectsBuffer[i];
             rinfo.Push_Material_Pass(m_occludedMatPassesPerPlayer[((DrawableInfo *)robj->Get_User_Data())
                                                                       ->drawable->Get_Object()
@@ -1202,7 +1202,7 @@ void RTS3DScene::Flush_Occluded_Objects(RenderInfoClass &rinfo)
             DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILREF, 0);
         }
 
-        for (int i = 0; i < m_flaggedOccludedCount; i++) {
+        for (int32_t i = 0; i < m_flaggedOccludedCount; i++) {
             Render_One_Object(rinfo, m_occludedObjectsBuffer[i], index);
         }
 
@@ -1220,7 +1220,7 @@ void RTS3DScene::flush_Translucent_Objects(RenderInfoClass &rinfo)
 {
 #ifdef BUILD_WITH_D3D8
     if (m_translucentObjectsCount) {
-        int index;
+        int32_t index;
 
         if (g_thePlayerList) {
             index = g_thePlayerList->Get_Local_Player()->Get_Player_Index();
@@ -1228,7 +1228,7 @@ void RTS3DScene::flush_Translucent_Objects(RenderInfoClass &rinfo)
             index = 0;
         }
 
-        for (int i = 0; i < m_translucentObjectsCount; i++) {
+        for (int32_t i = 0; i < m_translucentObjectsCount; i++) {
             RenderObjClass *robj = m_translucentObjectsBuffer[i];
             rinfo.m_alphaOverride = ((DrawableInfo *)robj->Get_User_Data())->drawable->Get_Alpha_Override();
             Render_One_Object(rinfo, robj, index);

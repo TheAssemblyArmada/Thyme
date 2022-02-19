@@ -22,7 +22,7 @@
 #include "globaldata.h"
 #endif
 
-int ShroudTextureShader::Set(int pass)
+int32_t ShroudTextureShader::Set(int32_t pass)
 {
 #ifdef BUILD_WITH_D3D8
     VertexMaterialClass *m = VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
@@ -93,7 +93,7 @@ void ShroudTextureShader::Reset()
 #endif
 }
 
-int ShroudTextureShader::Init()
+int32_t ShroudTextureShader::Init()
 {
     g_w3dShaders[W3DShaderManager::ST_SHROUD_TEXTURE] = &g_shroudTextureShader;
     g_w3dShadersPassCount[W3DShaderManager::ST_SHROUD_TEXTURE] = 1;

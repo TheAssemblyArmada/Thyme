@@ -18,10 +18,10 @@
 #include "module.h"
 #include "playerlist.h"
 
-ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
+ObjectShroudStatus Object::Get_Shrouded_Status(int32_t index) const
 {
 #ifdef GAME_DLL
-    return Call_Method<ObjectShroudStatus, const Object, int>(PICK_ADDRESS(0x00547D60, 0x007D12FB), this, index);
+    return Call_Method<ObjectShroudStatus, const Object, int32_t>(PICK_ADDRESS(0x00547D60, 0x007D12FB), this, index);
 #endif
     return ObjectShroudStatus(0);
 }
@@ -57,19 +57,19 @@ void Object::On_Veterancy_Level_Changed(VeterancyLevel v1, VeterancyLevel v2, bo
 #endif
 }
 
-int Object::Get_Night_Indicator_Color() const
+int32_t Object::Get_Night_Indicator_Color() const
 {
 #ifdef GAME_DLL
-    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AF0, 0x007D0FEC), this);
+    return Call_Method<int32_t, const Object>(PICK_ADDRESS(0x00547AF0, 0x007D0FEC), this);
 #else
     return 0;
 #endif
 }
 
-int Object::Get_Indicator_Color() const
+int32_t Object::Get_Indicator_Color() const
 {
 #ifdef GAME_DLL
-    return Call_Method<int, const Object>(PICK_ADDRESS(0x00547AC0, 0x007D0F89), this);
+    return Call_Method<int32_t, const Object>(PICK_ADDRESS(0x00547AC0, 0x007D0F89), this);
 #else
     return 0;
 #endif
@@ -120,10 +120,10 @@ bool Object::Get_Health_Box_Dimensions(float &width, float &height) const
     return true;
 }
 
-bool Object::Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const
+bool Object::Get_Ammo_Pip_Showing_Info(int32_t &clip_size, int32_t &ammo_in_clip) const
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, const Object, int &, int &>(
+    return Call_Method<bool, const Object, int32_t &, int32_t &>(
         PICK_ADDRESS(0x00547760, 0x007D0A7F), this, clip_size, ammo_in_clip);
 #else
     return false;

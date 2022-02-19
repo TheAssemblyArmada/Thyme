@@ -28,7 +28,7 @@ using std::sscanf;
 using std::strchr;
 using std::strlen;
 
-typedef int (*cmdparse_t)(char **, int);
+typedef int32_t (*cmdparse_t)(char **, int32_t);
 
 struct CmdParseStruct
 {
@@ -36,7 +36,7 @@ struct CmdParseStruct
     cmdparse_t handler;
 };
 
-int Parse_Win(char **argv, int argc)
+int32_t Parse_Win(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_windowed = true;
@@ -45,7 +45,7 @@ int Parse_Win(char **argv, int argc)
     return 1;
 }
 
-int Parse_Full_Screen(char **argv, int argc)
+int32_t Parse_Full_Screen(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_windowed = false;
@@ -54,7 +54,7 @@ int Parse_Full_Screen(char **argv, int argc)
     return 1;
 }
 
-int Parse_Full_Version(char **argv, int argc)
+int32_t Parse_Full_Version(char **argv, int32_t argc)
 {
     if (g_theVersion != nullptr && argc > 1) {
         g_theVersion->Set_Use_Full_Version(atoi(argv[1]) != 0);
@@ -65,7 +65,7 @@ int Parse_Full_Version(char **argv, int argc)
     return 1;
 }
 
-int Parse_XRes(char **argv, int argc)
+int32_t Parse_XRes(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         g_theWriteableGlobalData->m_xResolution = atoi(argv[1]);
@@ -76,7 +76,7 @@ int Parse_XRes(char **argv, int argc)
     return 1;
 }
 
-int Parse_YRes(char **argv, int argc)
+int32_t Parse_YRes(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         g_theWriteableGlobalData->m_yResolution = atoi(argv[1]);
@@ -87,7 +87,7 @@ int Parse_YRes(char **argv, int argc)
     return 1;
 }
 
-int Parse_Script_Debug(char **argv, int argc)
+int32_t Parse_Script_Debug(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_scriptDebug = true;
@@ -97,7 +97,7 @@ int Parse_Script_Debug(char **argv, int argc)
     return 1;
 }
 
-int Parse_Particle_Edit(char **argv, int argc)
+int32_t Parse_Particle_Edit(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_particleEdit = true;
@@ -108,7 +108,7 @@ int Parse_Particle_Edit(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Shell_Map(char **argv, int argc)
+int32_t Parse_No_Shell_Map(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_shellMapOn = false;
@@ -117,7 +117,7 @@ int Parse_No_Shell_Map(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Shaders(char **argv, int argc)
+int32_t Parse_No_Shaders(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_chipsetType = 1;
@@ -126,7 +126,7 @@ int Parse_No_Shaders(char **argv, int argc)
     return 1;
 }
 
-int Parse_Quick_Start(char **argv, int argc)
+int32_t Parse_Quick_Start(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_playIntro = false;
@@ -139,7 +139,7 @@ int Parse_Quick_Start(char **argv, int argc)
     return 1;
 }
 
-int Parse_Play_Stats(char **argv, int argc)
+int32_t Parse_Play_Stats(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         int32_t tmp;
@@ -150,7 +150,7 @@ int Parse_Play_Stats(char **argv, int argc)
     return 2;
 }
 
-int Parse_Mod(char **argv, int argc)
+int32_t Parse_Mod(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         Utf8String path = argv[1];
@@ -184,7 +184,7 @@ int Parse_Mod(char **argv, int argc)
     return 1;
 }
 
-int Parse_Use_Wave_Editor(char **argv, int argc)
+int32_t Parse_Use_Wave_Editor(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_useWaveEditor = true;
@@ -193,7 +193,7 @@ int Parse_Use_Wave_Editor(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Music(char **argv, int argc)
+int32_t Parse_No_Music(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_musicOn = false;
@@ -202,7 +202,7 @@ int Parse_No_Music(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Video(char **argv, int argc)
+int32_t Parse_No_Video(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_videoOn = false;
@@ -211,14 +211,14 @@ int Parse_No_Video(char **argv, int argc)
     return 1;
 }
 
-int Parse_Use_CSF(char **argv, int argc)
+int32_t Parse_Use_CSF(char **argv, int32_t argc)
 {
     // TODO
 
     return 1;
 }
 
-int Parse_No_Input_Disable(char **argv, int argc)
+int32_t Parse_No_Input_Disable(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -228,7 +228,7 @@ int Parse_No_Input_Disable(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Fade(char **argv, int argc)
+int32_t Parse_No_Fade(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -238,7 +238,7 @@ int Parse_No_Fade(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Military_Caption(char **argv, int argc)
+int32_t Parse_No_Military_Caption(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -248,7 +248,7 @@ int Parse_No_Military_Caption(char **argv, int argc)
     return 1;
 }
 
-int Parse_Debug_CRC_From_Frame(char **argv, int argc)
+int32_t Parse_Debug_CRC_From_Frame(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -256,7 +256,7 @@ int Parse_Debug_CRC_From_Frame(char **argv, int argc)
     return 2;
 }
 
-int Parse_Debug_CRC_Until_Frame(char **argv, int argc)
+int32_t Parse_Debug_CRC_Until_Frame(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -264,7 +264,7 @@ int Parse_Debug_CRC_Until_Frame(char **argv, int argc)
     return 2;
 }
 
-int Parse_Keep_CRC_Saves(char **argv, int argc)
+int32_t Parse_Keep_CRC_Saves(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -272,7 +272,7 @@ int Parse_Keep_CRC_Saves(char **argv, int argc)
     return 1;
 }
 
-int Parse_CRC_Logic_Module_Data(char **argv, int argc)
+int32_t Parse_CRC_Logic_Module_Data(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -280,7 +280,7 @@ int Parse_CRC_Logic_Module_Data(char **argv, int argc)
     return 1;
 }
 
-int Parse_CRC_Client_Module_Data(char **argv, int argc)
+int32_t Parse_CRC_Client_Module_Data(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -288,7 +288,7 @@ int Parse_CRC_Client_Module_Data(char **argv, int argc)
     return 1;
 }
 
-int Parse_Client_Deep_CRC(char **argv, int argc)
+int32_t Parse_Client_Deep_CRC(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -296,7 +296,7 @@ int Parse_Client_Deep_CRC(char **argv, int argc)
     return 1;
 }
 
-int Parse_Verify_Client_CRC(char **argv, int argc)
+int32_t Parse_Verify_Client_CRC(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -304,7 +304,7 @@ int Parse_Verify_Client_CRC(char **argv, int argc)
     return 1;
 }
 
-int Parse_Log_Object_CRC(char **argv, int argc)
+int32_t Parse_Log_Object_CRC(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -312,7 +312,7 @@ int Parse_Log_Object_CRC(char **argv, int argc)
     return 1;
 }
 
-int Parse_Net_CRC_Interval(char **argv, int argc)
+int32_t Parse_Net_CRC_Interval(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -320,7 +320,7 @@ int Parse_Net_CRC_Interval(char **argv, int argc)
     return 2;
 }
 
-int Parse_Replay_CRC_Interval(char **argv, int argc)
+int32_t Parse_Replay_CRC_Interval(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -328,7 +328,7 @@ int Parse_Replay_CRC_Interval(char **argv, int argc)
     return 2;
 }
 
-int Parse_Sync(char **argv, int argc)
+int32_t Parse_Sync(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -336,7 +336,7 @@ int Parse_Sync(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Draw(char **argv, int argc)
+int32_t Parse_No_Draw(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_frameToJumpTo = 1;
@@ -345,14 +345,14 @@ int Parse_No_Draw(char **argv, int argc)
     return 1;
 }
 
-int Parse_Log_To_Console(char **argv, int argc)
+int32_t Parse_Log_To_Console(char **argv, int32_t argc)
 {
     // Needs refactoring of the logging module.
 
     return 1;
 }
 
-int Parse_No_Audio(char **argv, int argc)
+int32_t Parse_No_Audio(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_audioOn = false;
@@ -364,7 +364,7 @@ int Parse_No_Audio(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Shadows(char **argv, int argc)
+int32_t Parse_No_Shadows(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_shadowVolumes = false;
@@ -379,7 +379,7 @@ void Parse_Map_Name(Utf8String &name)
     // TODO
 }
 
-int Parse_Map(char **argv, int argc)
+int32_t Parse_Map(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         g_theWriteableGlobalData->m_mapName = argv[1];
@@ -389,7 +389,7 @@ int Parse_Map(char **argv, int argc)
     return 2;
 }
 
-int Parse_File(char **argv, int argc)
+int32_t Parse_File(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         g_theWriteableGlobalData->m_initialFile = argv[1];
@@ -399,7 +399,7 @@ int Parse_File(char **argv, int argc)
     return 2;
 }
 
-int Parse_Latency_Average(char **argv, int argc)
+int32_t Parse_Latency_Average(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -411,7 +411,7 @@ int Parse_Latency_Average(char **argv, int argc)
     return 2;
 }
 
-int Parse_Latency_Amplitude(char **argv, int argc)
+int32_t Parse_Latency_Amplitude(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -423,7 +423,7 @@ int Parse_Latency_Amplitude(char **argv, int argc)
     return 2;
 }
 
-int Parse_Latency_Period(char **argv, int argc)
+int32_t Parse_Latency_Period(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -435,7 +435,7 @@ int Parse_Latency_Period(char **argv, int argc)
     return 2;
 }
 
-int Parse_Latency_Noise(char **argv, int argc)
+int32_t Parse_Latency_Noise(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -447,7 +447,7 @@ int Parse_Latency_Noise(char **argv, int argc)
     return 2;
 }
 
-int Parse_Packet_Loss(char **argv, int argc)
+int32_t Parse_Packet_Loss(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -459,7 +459,7 @@ int Parse_Packet_Loss(char **argv, int argc)
     return 2;
 }
 
-int Parse_Low_Detail(char **argv, int argc)
+int32_t Parse_Low_Detail(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_terrainLOD = TERRAIN_LOD_MIN;
@@ -468,7 +468,7 @@ int Parse_Low_Detail(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Dynamic_LOD(char **argv, int argc)
+int32_t Parse_No_Dynamic_LOD(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_dynamicLOD = false;
@@ -477,7 +477,7 @@ int Parse_No_Dynamic_LOD(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Static_LOD(char **argv, int argc)
+int32_t Parse_No_Static_LOD(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_useStaticLODLevels = false;
@@ -486,7 +486,7 @@ int Parse_No_Static_LOD(char **argv, int argc)
     return 1;
 }
 
-int Parse_FPS(char **argv, int argc)
+int32_t Parse_FPS(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
@@ -497,7 +497,7 @@ int Parse_FPS(char **argv, int argc)
     return 2;
 }
 
-int Parse_No_View_Limit(char **argv, int argc)
+int32_t Parse_No_View_Limit(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -507,7 +507,7 @@ int Parse_No_View_Limit(char **argv, int argc)
     return 1;
 }
 
-int Parse_Wire_Frame(char **argv, int argc)
+int32_t Parse_Wire_Frame(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -517,7 +517,7 @@ int Parse_Wire_Frame(char **argv, int argc)
     return 1;
 }
 
-int Parse_Show_Collision(char **argv, int argc)
+int32_t Parse_Show_Collision(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -527,7 +527,7 @@ int Parse_Show_Collision(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Show_Client_Physics(char **argv, int argc)
+int32_t Parse_No_Show_Client_Physics(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_showClientPhysics = false;
@@ -536,7 +536,7 @@ int Parse_No_Show_Client_Physics(char **argv, int argc)
     return 1;
 }
 
-int Parse_Show_Terrain_Normals(char **argv, int argc)
+int32_t Parse_Show_Terrain_Normals(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_showTerrainNormals = true;
@@ -545,7 +545,7 @@ int Parse_Show_Terrain_Normals(char **argv, int argc)
     return 1;
 }
 
-int Parse_State_Machine_Debug(char **argv, int argc)
+int32_t Parse_State_Machine_Debug(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -555,7 +555,7 @@ int Parse_State_Machine_Debug(char **argv, int argc)
     return 1;
 }
 
-int Parse_Jabber(char **argv, int argc)
+int32_t Parse_Jabber(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -565,7 +565,7 @@ int Parse_Jabber(char **argv, int argc)
     return 1;
 }
 
-int Parse_Munkee(char **argv, int argc)
+int32_t Parse_Munkee(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -575,7 +575,7 @@ int Parse_Munkee(char **argv, int argc)
     return 1;
 }
 
-int Parse_Build_Map_Cache(char **argv, int argc)
+int32_t Parse_Build_Map_Cache(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_buildMapCache = true;
@@ -584,7 +584,7 @@ int Parse_Build_Map_Cache(char **argv, int argc)
     return 1;
 }
 
-int Parse_Preload(char **argv, int argc)
+int32_t Parse_Preload(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_preloadAssets = true;
@@ -593,7 +593,7 @@ int Parse_Preload(char **argv, int argc)
     return 1;
 }
 
-int Parse_Display_Debug(char **argv, int argc)
+int32_t Parse_Display_Debug(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_displayDebug = true;
@@ -602,7 +602,7 @@ int Parse_Display_Debug(char **argv, int argc)
     return 1;
 }
 
-int Parse_Preload_Everything(char **argv, int argc)
+int32_t Parse_Preload_Everything(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_preloadAssets = true;
@@ -612,7 +612,7 @@ int Parse_Preload_Everything(char **argv, int argc)
     return 1;
 }
 
-int Parse_Log_Assets(char **argv, int argc)
+int32_t Parse_Log_Assets(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         // Precreate the file? Needs access to working directory to work?
@@ -628,7 +628,7 @@ int Parse_Log_Assets(char **argv, int argc)
     return 1;
 }
 
-int Parse_VTune(char **argv, int argc)
+int32_t Parse_VTune(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -638,7 +638,7 @@ int Parse_VTune(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_FX(char **argv, int argc)
+int32_t Parse_No_FX(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_useFX = false;
@@ -647,7 +647,7 @@ int Parse_No_FX(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Shroud(char **argv, int argc)
+int32_t Parse_No_Shroud(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -657,7 +657,7 @@ int Parse_No_Shroud(char **argv, int argc)
     return 1;
 }
 
-int Parse_Force_Benchmark(char **argv, int argc)
+int32_t Parse_Force_Benchmark(char **argv, int32_t argc)
 {
     // Probably remove this at some point as the benchmark code is removed in Thyme.
     if (g_theWriteableGlobalData != nullptr) {
@@ -667,7 +667,7 @@ int Parse_Force_Benchmark(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Cinematics(char **argv, int argc)
+int32_t Parse_No_Cinematics(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -680,7 +680,7 @@ int Parse_No_Cinematics(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Move_Camera(char **argv, int argc)
+int32_t Parse_No_Move_Camera(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_disableCameraMovements = true;
@@ -689,7 +689,7 @@ int Parse_No_Move_Camera(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_Logo(char **argv, int argc)
+int32_t Parse_No_Logo(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_playIntro = false;
@@ -700,7 +700,7 @@ int Parse_No_Logo(char **argv, int argc)
     return 1;
 }
 
-int Parse_Shell_Map(char **argv, int argc)
+int32_t Parse_Shell_Map(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         g_theWriteableGlobalData->m_shellMapName = argv[1];
@@ -709,7 +709,7 @@ int Parse_Shell_Map(char **argv, int argc)
     return 2;
 }
 
-int Parse_No_Window_Animation(char **argv, int argc)
+int32_t Parse_No_Window_Animation(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_animateWindows = false;
@@ -718,7 +718,7 @@ int Parse_No_Window_Animation(char **argv, int argc)
     return 1;
 }
 
-int Parse_Win_Cursors(char **argv, int argc)
+int32_t Parse_Win_Cursors(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_winCursors = true;
@@ -727,7 +727,7 @@ int Parse_Win_Cursors(char **argv, int argc)
     return 1;
 }
 
-int Parse_Constant_Debug(char **argv, int argc)
+int32_t Parse_Constant_Debug(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_constantDebugUpdate = false;
@@ -736,7 +736,7 @@ int Parse_Constant_Debug(char **argv, int argc)
     return 1;
 }
 
-int Parse_Extra_Logging(char **argv, int argc)
+int32_t Parse_Extra_Logging(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -746,7 +746,7 @@ int Parse_Extra_Logging(char **argv, int argc)
     return 1;
 }
 
-int Parse_Do_Team_Dot(char **argv, int argc)
+int32_t Parse_Do_Team_Dot(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -756,7 +756,7 @@ int Parse_Do_Team_Dot(char **argv, int argc)
     return 1;
 }
 
-int Parse_Select_Unselectable(char **argv, int argc)
+int32_t Parse_Select_Unselectable(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -766,7 +766,7 @@ int Parse_Select_Unselectable(char **argv, int argc)
     return 1;
 }
 
-int Parse_Run_Ahead(char **argv, int argc)
+int32_t Parse_Run_Ahead(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     // TODO
@@ -775,7 +775,7 @@ int Parse_Run_Ahead(char **argv, int argc)
     return 1;
 }
 
-int Parse_Seed(char **argv, int argc)
+int32_t Parse_Seed(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
@@ -786,7 +786,7 @@ int Parse_Seed(char **argv, int argc)
     return 2;
 }
 
-int Parse_Incr_AGP_Buf(char **argv, int argc)
+int32_t Parse_Incr_AGP_Buf(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_setMinVertexBufferSize = true;
@@ -795,7 +795,7 @@ int Parse_Incr_AGP_Buf(char **argv, int argc)
     return 1;
 }
 
-int Parse_Net_Min_Players(char **argv, int argc)
+int32_t Parse_Net_Min_Players(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
@@ -806,7 +806,7 @@ int Parse_Net_Min_Players(char **argv, int argc)
     return 2;
 }
 
-int Parse_Demo_Load_Screen(char **argv, int argc)
+int32_t Parse_Demo_Load_Screen(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_loadScreenDemo = true;
@@ -815,7 +815,7 @@ int Parse_Demo_Load_Screen(char **argv, int argc)
     return 1;
 }
 
-int Parse_Save_Stats(char **argv, int argc)
+int32_t Parse_Save_Stats(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -826,7 +826,7 @@ int Parse_Save_Stats(char **argv, int argc)
     return 2;
 }
 
-int Parse_Save_All_Stats(char **argv, int argc)
+int32_t Parse_Save_All_Stats(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -838,7 +838,7 @@ int Parse_Save_All_Stats(char **argv, int argc)
     return 2;
 }
 
-int Parse_Local_MOTD(char **argv, int argc)
+int32_t Parse_Local_MOTD(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -849,7 +849,7 @@ int Parse_Local_MOTD(char **argv, int argc)
     return 2;
 }
 
-int Parse_Camera_Debug(char **argv, int argc)
+int32_t Parse_Camera_Debug(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -859,7 +859,7 @@ int Parse_Camera_Debug(char **argv, int argc)
     return 1;
 }
 
-int Parse_Benchmark(char **argv, int argc)
+int32_t Parse_Benchmark(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -873,7 +873,7 @@ int Parse_Benchmark(char **argv, int argc)
     return 3;
 }
 
-int Parse_Stats(char **argv, int argc)
+int32_t Parse_Stats(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && argc > 1) {
@@ -886,7 +886,7 @@ int Parse_Stats(char **argv, int argc)
     return 2;
 }
 
-int Parse_Ignore_Asserts(char **argv, int argc)
+int32_t Parse_Ignore_Asserts(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -896,7 +896,7 @@ int Parse_Ignore_Asserts(char **argv, int argc)
     return 1;
 }
 
-int Parse_Ignore_Stack_Trace(char **argv, int argc)
+int32_t Parse_Ignore_Stack_Trace(char **argv, int32_t argc)
 {
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData != nullptr) {
@@ -906,7 +906,7 @@ int Parse_Ignore_Stack_Trace(char **argv, int argc)
     return 1;
 }
 
-int Parse_No_FPS_Limit(char **argv, int argc)
+int32_t Parse_No_FPS_Limit(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_useFPSLimit = true;
@@ -916,7 +916,7 @@ int Parse_No_FPS_Limit(char **argv, int argc)
     return 1;
 }
 
-int Parse_Dump_Asset_Usage(char **argv, int argc)
+int32_t Parse_Dump_Asset_Usage(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_dumpAssetUsage = true;
@@ -925,7 +925,7 @@ int Parse_Dump_Asset_Usage(char **argv, int argc)
     return 1;
 }
 
-int Parse_Jump_To_Frame(char **argv, int argc)
+int32_t Parse_Jump_To_Frame(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_useFPSLimit = true;
@@ -938,7 +938,7 @@ int Parse_Jump_To_Frame(char **argv, int argc)
     return 2;
 }
 
-int Parse_Update_Images(char **argv, int argc)
+int32_t Parse_Update_Images(char **argv, int32_t argc)
 {
     if (g_theWriteableGlobalData != nullptr) {
         g_theWriteableGlobalData->m_updateTGAtoDDS = true;
@@ -948,7 +948,7 @@ int Parse_Update_Images(char **argv, int argc)
 }
 
 // Parses the command line passed to the executable via argc and argv.
-void Parse_Command_Line(int argc, char *argv[])
+void Parse_Command_Line(int32_t argc, char *argv[])
 {
     // Arguments we support and the functions to parse them.
     CmdParseStruct _params[] = { { "-noshellmap", &Parse_No_Shell_Map },
@@ -1045,12 +1045,12 @@ void Parse_Command_Line(int argc, char *argv[])
     // Starting with argument 1 (0 being the name of the binary in most cases)
     // compare the argument against the list of argument handlers and call
     // it if a match is found.
-    int arg = 1;
+    int32_t arg = 1;
 
     while (arg < argc) {
         bool parsed = false;
 
-        for (unsigned int i = 0; i < ARRAY_SIZE(_params); ++i) {
+        for (uint32_t i = 0; i < ARRAY_SIZE(_params); ++i) {
             if (strlen(_params[i].argument) == strlen(argv[arg])
                 && strncasecmp(argv[arg], _params[i].argument, strlen(_params[i].argument)) == 0) {
                 arg += _params[i].handler(&argv[arg], argc - arg);

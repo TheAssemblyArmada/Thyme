@@ -48,24 +48,24 @@ public:
     static MapObject *Get_First_Map_Object() { return s_theMapObjectListPtr; }
     static Dict *Get_World_Dict() { return &s_theWorldDict; }
     MapObject *Get_Next() { return m_nextMapObject; }
-    bool Get_Flag(int flag) { return (m_flags & flag) != 0; }
+    bool Get_Flag(int32_t flag) { return (m_flags & flag) != 0; }
     const Coord3D *Get_Location() { return &m_location; }
     Utf8String Get_Name() { return m_objectName; }
     Dict *Get_Properties() { return &m_properties; }
     void Set_Next_Map(MapObject *obj) { m_nextMapObject = obj; }
-    int Get_Flags() { return m_flags; }
+    int32_t Get_Flags() { return m_flags; }
     bool Is_Selected() { return (m_runtimeFlags & MO_SELECTED) != 0; }
     bool Is_Light() { return (m_runtimeFlags & MO_LIGHT) != 0; }
     bool Is_Waypoint() { return (m_runtimeFlags & MO_WAYPOINT) != 0; }
     bool Is_Scorch() { return (m_runtimeFlags & MO_SCORCH) != 0; }
-    void Set_Flag(int flag) { m_flags |= flag; }
+    void Set_Flag(int32_t flag) { m_flags |= flag; }
     void Set_Shadow_Obj(Shadow *shadow) { m_shadowObj = shadow; }
     float Get_Angle() { return m_angle; }
-    int Get_Color() { return m_color; }
-    void Set_Color(int color) { m_color = color; }
+    int32_t Get_Color() { return m_color; }
+    void Set_Color(int32_t color) { m_color = color; }
     void Set_Angle(float angle) { m_angle = angle; }
     void Set_Location(Coord3D *loc) { m_location = *loc; }
-    void Clear_Flag(int flag) { m_flags &= ~flag; }
+    void Clear_Flag(int32_t flag) { m_flags &= ~flag; }
     void Set_Selected(bool selected)
     {
         if (selected) {
@@ -78,7 +78,7 @@ public:
     void Set_Is_Waypoint() { m_runtimeFlags |= MO_WAYPOINT; }
     void Set_Is_Scorch() { m_runtimeFlags |= MO_SCORCH; }
     RenderObjClass *Get_Render_Obj() { return m_renderObj; }
-    MapObject(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing);
+    MapObject(Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing);
     MapObject *Duplicate();
     void Set_Render_Obj(RenderObjClass *obj);
     void Set_Bridge_Render_Object(BridgeTowerType type, RenderObjClass *obj);
@@ -89,15 +89,16 @@ public:
     static void Fast_Assign_All_Unique_IDs();
     void Set_Thing_Template(const ThingTemplate *thing);
     void Set_Name(Utf8String name);
-    int Get_Waypoint_ID();
+    int32_t Get_Waypoint_ID();
     Utf8String Get_Waypoint_Name();
-    void Set_Waypoint_ID(int i);
+    void Set_Waypoint_ID(int32_t i);
     void Set_Waypoint_Name(Utf8String n);
-    static int Count_Map_Objects_With_Owner(const Utf8String &n);
+    static int32_t Count_Map_Objects_With_Owner(const Utf8String &n);
     const ThingTemplate *Get_Thing_Template();
 
 #ifdef GAME_DLL
-    MapObject *Hook_Ctor(Coord3D loc, Utf8String name, float angle, int flags, const Dict *props, const ThingTemplate *thing)
+    MapObject *Hook_Ctor(
+        Coord3D loc, Utf8String name, float angle, int32_t flags, const Dict *props, const ThingTemplate *thing)
     {
         return new (this) MapObject(loc, name, angle, flags, props, thing);
     }
@@ -117,13 +118,13 @@ private:
     const ThingTemplate *m_thingTemplate;
     float m_angle;
     MapObject *m_nextMapObject;
-    int m_flags;
+    int32_t m_flags;
     Dict m_properties;
-    int m_color;
+    int32_t m_color;
     RenderObjClass *m_renderObj;
     Shadow *m_shadowObj;
     RenderObjClass *m_bridgeRenderObj[BRIDGE_MAX_TOWERS];
-    int m_runtimeFlags;
+    int32_t m_runtimeFlags;
 #ifdef GAME_DLL
     static MapObject *&s_theMapObjectListPtr;
     static Dict &s_theWorldDict;

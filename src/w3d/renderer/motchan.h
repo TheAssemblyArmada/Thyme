@@ -28,23 +28,23 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Type() const { return m_type; }
-    int Get_Pivot() const { return m_pivotIdx; }
+    int32_t Get_Type() const { return m_type; }
+    int32_t Get_Pivot() const { return m_pivotIdx; }
 
-    void Get_Vector(int frame, float *vector) const
+    void Get_Vector(int32_t frame, float *vector) const
     {
         if (!m_data || frame < m_firstFrame || frame > m_lastFrame) {
             Set_Identity(vector);
         } else if (m_data) {
             frame -= m_firstFrame;
 
-            for (int i = 0; i < m_vectorLen; ++i) {
+            for (int32_t i = 0; i < m_vectorLen; ++i) {
                 vector[i] = m_data[i + m_vectorLen * frame];
             }
         }
     }
 
-    void Get_Vector_As_Quat(int frame, Quaternion &quat) const
+    void Get_Vector_As_Quat(int32_t frame, Quaternion &quat) const
     {
         if (frame >= m_firstFrame && frame <= m_lastFrame) {
             float *f = &m_data[m_vectorLen * (frame - m_firstFrame)];
@@ -62,22 +62,22 @@ public:
             setvec[2] = 0.0f;
             setvec[3] = 1.0f;
         } else {
-            for (int i = 0; i < m_vectorLen; ++i) {
+            for (int32_t i = 0; i < m_vectorLen; ++i) {
                 setvec[i] = 0.0f;
             }
         }
     }
 
 private:
-    unsigned int m_pivotIdx; // Could be signed, but original uses unsigned, so we do same for now.
-    unsigned int m_type; // Could be signed, but original uses unsigned, so we do same for now.
-    int m_vectorLen;
-    int m_unusedFloat1;
-    int m_unusedFloat2;
+    uint32_t m_pivotIdx; // Could be signed, but original uses unsigned, so we do same for now.
+    uint32_t m_type; // Could be signed, but original uses unsigned, so we do same for now.
+    int32_t m_vectorLen;
+    int32_t m_unusedFloat1;
+    int32_t m_unusedFloat2;
     short *m_unusedBuffer;
     float *m_data;
-    int m_firstFrame;
-    int m_lastFrame;
+    int32_t m_firstFrame;
+    int32_t m_lastFrame;
     friend class HRawAnimClass;
 };
 
@@ -90,10 +90,10 @@ public:
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
 
-    int Get_Type() const { return m_type; }
-    int Get_Pivot() const { return m_pivotIdx; }
+    int32_t Get_Type() const { return m_type; }
+    int32_t Get_Pivot() const { return m_pivotIdx; }
 
-    int Get_Bit(int frame) const
+    int32_t Get_Bit(int32_t frame) const
     {
         if (frame < m_firstFrame || frame > m_lastFrame) {
             return m_defaultVal != 0;
@@ -104,11 +104,11 @@ public:
     }
 
 private:
-    unsigned int m_pivotIdx;
-    unsigned int m_type;
-    int m_defaultVal;
-    int m_firstFrame;
-    int m_lastFrame;
+    uint32_t m_pivotIdx;
+    uint32_t m_type;
+    int32_t m_defaultVal;
+    int32_t m_firstFrame;
+    int32_t m_lastFrame;
     unsigned char *m_bits;
     friend class HRawAnimClass;
 };
@@ -121,23 +121,23 @@ public:
     virtual ~TimeCodedMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() const { return m_type; }
-    int Get_Pivot() const { return m_pivotIdx; }
+    int32_t Get_Type() const { return m_type; }
+    int32_t Get_Pivot() const { return m_pivotIdx; }
     void Get_Vector(float frame, float *setvec);
     Quaternion Get_Quat_Vector(float frame_idx);
     void Set_Identity(float *setvec) const;
-    unsigned int Get_Index(unsigned int timecode);
-    unsigned int Binary_Search_Index(unsigned int timecode) const;
+    uint32_t Get_Index(uint32_t timecode);
+    uint32_t Binary_Search_Index(uint32_t timecode) const;
 
 private:
-    unsigned int m_pivotIdx;
-    unsigned int m_type;
-    int m_vectorLen;
-    unsigned int m_packetSize;
-    unsigned int m_numTimeCodes;
-    unsigned int m_lastTimeCodeIdx;
-    unsigned int m_cachedIdx;
-    unsigned int *m_data;
+    uint32_t m_pivotIdx;
+    uint32_t m_type;
+    int32_t m_vectorLen;
+    uint32_t m_packetSize;
+    uint32_t m_numTimeCodes;
+    uint32_t m_lastTimeCodeIdx;
+    uint32_t m_cachedIdx;
+    uint32_t *m_data;
 };
 
 class TimeCodedBitChannelClass : W3DMPO
@@ -148,17 +148,17 @@ public:
     virtual ~TimeCodedBitChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() const { return m_type; }
-    int Get_Pivot() const { return m_pivotIdx; }
-    int Get_Bit(int frame);
+    int32_t Get_Type() const { return m_type; }
+    int32_t Get_Pivot() const { return m_pivotIdx; }
+    int32_t Get_Bit(int32_t frame);
 
 private:
-    unsigned int m_pivotIdx;
-    unsigned int m_type;
-    int m_defaultVal;
-    unsigned int m_numTimeCodes;
-    unsigned int m_cachedIdx;
-    unsigned int *m_bits;
+    uint32_t m_pivotIdx;
+    uint32_t m_type;
+    int32_t m_defaultVal;
+    uint32_t m_numTimeCodes;
+    uint32_t m_cachedIdx;
+    uint32_t *m_bits;
 };
 
 class AdaptiveDeltaMotionChannelClass : W3DMPO
@@ -169,21 +169,21 @@ public:
     virtual ~AdaptiveDeltaMotionChannelClass() override;
     void Free();
     bool Load_W3D(ChunkLoadClass &cload);
-    int Get_Type() const { return m_type; }
-    int Get_Pivot() const { return m_pivotIdx; }
+    int32_t Get_Type() const { return m_type; }
+    int32_t Get_Pivot() const { return m_pivotIdx; }
     void Get_Vector(float frame, float *setvec);
     Quaternion Get_Quat_Vector(float frame_idx);
-    float Get_Frame(unsigned int frame_idx, unsigned int vector_idx);
-    void Decompress(unsigned int src_idx, float *srcdata, unsigned int frame_idx, float *outdata);
-    void Decompress(unsigned int frame_idx, float *outdata);
+    float Get_Frame(uint32_t frame_idx, uint32_t vector_idx);
+    void Decompress(uint32_t src_idx, float *srcdata, uint32_t frame_idx, float *outdata);
+    void Decompress(uint32_t frame_idx, float *outdata);
 
 private:
-    unsigned int m_pivotIdx;
-    unsigned int m_type;
-    int m_vectorLen;
-    unsigned int m_numFrames;
+    uint32_t m_pivotIdx;
+    uint32_t m_type;
+    int32_t m_vectorLen;
+    uint32_t m_numFrames;
     float m_scale;
-    unsigned int *m_data;
-    unsigned int m_cacheFrame;
+    uint32_t *m_data;
+    uint32_t m_cacheFrame;
     float *m_cacheData;
 };

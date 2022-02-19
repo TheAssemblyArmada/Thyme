@@ -25,13 +25,13 @@ public:
     void Update();
 
 public:
-    int m_numStartSpots;
+    int32_t m_numStartSpots;
 };
 
 struct WinTimeStamp
 {
-    unsigned int m_lowTimeStamp;
-    unsigned int m_highTimeStamp;
+    uint32_t m_lowTimeStamp;
+    uint32_t m_highTimeStamp;
 };
 
 struct MapMetaData
@@ -39,11 +39,11 @@ struct MapMetaData
     Utf8String m_displayName;
     Utf8String m_lookupTag;
     Region3D m_extent;
-    int m_numPlayers;
+    int32_t m_numPlayers;
     bool m_isMultiplayer;
     bool m_isOfficial;
-    unsigned int m_filesize;
-    unsigned int m_CRC;
+    uint32_t m_filesize;
+    uint32_t m_CRC;
     WinTimeStamp m_timestamp;
     WaypointMap m_waypoints;
     std::list<Coord3D> m_supplyPositions;
@@ -69,7 +69,7 @@ private:
     static const char *const s_mapExtension;
     static const char *const s_mapCacheName;
 
-    std::map<Utf8String, int> m_seen;
+    std::map<Utf8String, int32_t> m_seen;
 };
 
 #ifdef GAME_DLL

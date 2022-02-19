@@ -29,5 +29,5 @@ public:
     virtual File *Convert_To_RAM() override;
 
 protected:
-    static int s_totalOpen;
+    static int32_t s_totalOpen;
 };

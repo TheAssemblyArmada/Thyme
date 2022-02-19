@@ -28,9 +28,9 @@ FrameMetrics::FrameMetrics() :
     m_pendingLatencies(nullptr),
     m_fpsList(nullptr)
 {
-    m_pendingLatencies = new int[MAX_FRAMES_AHEAD];
+    m_pendingLatencies = new int32_t[MAX_FRAMES_AHEAD];
 
-    for (int i = 0; i < MAX_FRAMES_AHEAD; ++i) {
+    for (int32_t i = 0; i < MAX_FRAMES_AHEAD; ++i) {
         m_pendingLatencies[i] = 0;
     }
 
@@ -56,13 +56,13 @@ void FrameMetrics::Init()
     // TODO these arrays likely should be a scaleable container
     // if the lengths change at any point this will crash
 
-    for (int i = 0; i < g_theWriteableGlobalData->m_networkFPSHistoryLength; ++i) {
+    for (int32_t i = 0; i < g_theWriteableGlobalData->m_networkFPSHistoryLength; ++i) {
         m_fpsList[i] = 30.0f;
     }
 
     m_fpsListIndex = 0;
 
-    for (int i = 0; i < g_theWriteableGlobalData->m_networkLatencyHistoryLength; ++i) {
+    for (int32_t i = 0; i < g_theWriteableGlobalData->m_networkLatencyHistoryLength; ++i) {
         m_latencyList[i] = 0.2f;
     }
 
@@ -77,14 +77,14 @@ void FrameMetrics::Reset()
     // TODO make sure this doesn't have adverse conciquences
     m_lastFpsTime = 0;
 
-    for (int i = 0; i < MAX_FRAMES_AHEAD; ++i) {
+    for (int32_t i = 0; i < MAX_FRAMES_AHEAD; ++i) {
         m_pendingLatencies[i] = 0;
     }
 }
 
-void FrameMetrics::Do_Per_Frame_Metrics(unsigned int frame)
+void FrameMetrics::Do_Per_Frame_Metrics(uint32_t frame)
 {
-    int time = (int)rts::Get_Time();
+    int32_t time = (int32_t)rts::Get_Time();
 
     if (time - m_lastFpsTime >= 1000) {
         m_averageFps -= m_fpsList[m_fpsListIndex] / (float)g_theWriteableGlobalData->m_networkFPSHistoryLength;
@@ -93,7 +93,7 @@ void FrameMetrics::Do_Per_Frame_Metrics(unsigned int frame)
 
         m_averageFps += m_fpsList[m_fpsListIndex++] / (float)g_theWriteableGlobalData->m_networkFPSHistoryLength;
 
-        m_fpsListIndex %= (unsigned int)g_theWriteableGlobalData->m_networkFPSHistoryLength;
+        m_fpsListIndex %= (uint32_t)g_theWriteableGlobalData->m_networkFPSHistoryLength;
 
         m_lastFpsTime = time;
     }
@@ -101,19 +101,19 @@ void FrameMetrics::Do_Per_Frame_Metrics(unsigned int frame)
     m_pendingLatencies[frame % MAX_FRAMES_AHEAD] = time;
 }
 
-void FrameMetrics::Process_Latency_Response(unsigned int frame)
+void FrameMetrics::Process_Latency_Response(uint32_t frame)
 {
-    int time_diff = (int)rts::Get_Time() - m_pendingLatencies[frame % MAX_FRAMES_AHEAD];
-    unsigned int index = frame % g_theWriteableGlobalData->m_networkLatencyHistoryLength;
+    int32_t time_diff = (int32_t)rts::Get_Time() - m_pendingLatencies[frame % MAX_FRAMES_AHEAD];
+    uint32_t index = frame % g_theWriteableGlobalData->m_networkLatencyHistoryLength;
 
-    m_averageLatency -= m_latencyList[index] / (float)(unsigned int)g_theWriteableGlobalData->m_networkLatencyHistoryLength;
+    m_averageLatency -= m_latencyList[index] / (float)(uint32_t)g_theWriteableGlobalData->m_networkLatencyHistoryLength;
 
     m_latencyList[index] = (float)time_diff / 1000.0f;
 
-    m_averageLatency += m_latencyList[index] / (float)(unsigned int)g_theWriteableGlobalData->m_networkLatencyHistoryLength;
+    m_averageLatency += m_latencyList[index] / (float)(uint32_t)g_theWriteableGlobalData->m_networkLatencyHistoryLength;
 }
 
-void FrameMetrics::Add_Cushion(int cushion)
+void FrameMetrics::Add_Cushion(int32_t cushion)
 {
     ++m_cushionIndex;
 

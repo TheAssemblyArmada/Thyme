@@ -25,17 +25,17 @@ enum
     TERRAIN_TEXTURE_WIDTH = 2048
 };
 
-TerrainTextureClass::TerrainTextureClass(int height) :
+TerrainTextureClass::TerrainTextureClass(int32_t height) :
     TextureClass(TERRAIN_TEXTURE_WIDTH, height, WW3D_FORMAT_A1R5G5B5, MIP_LEVELS_3, POOL_MANAGED, false, true)
 {
 }
 
-TerrainTextureClass::TerrainTextureClass(int width, int height) :
+TerrainTextureClass::TerrainTextureClass(int32_t width, int32_t height) :
     TextureClass(width, height, WW3D_FORMAT_A1R5G5B5, MIP_LEVELS_ALL, POOL_MANAGED, false, true)
 {
 }
 
-int TerrainTextureClass::Update(WorldHeightMap *ht_map)
+int32_t TerrainTextureClass::Update(WorldHeightMap *ht_map)
 {
 #ifdef BUILD_WITH_D3D8
     w3dsurface_t surf = nullptr;
@@ -51,10 +51,10 @@ int TerrainTextureClass::Update(WorldHeightMap *ht_map)
 
     D3DLOCKED_RECT rect;
     DX8Wrapper::Handle_DX8_ErrorCode(surf->LockRect(&rect, nullptr, 0));
-    int width = 64;
+    int32_t width = 64;
 
     if (desc.Format == D3DFMT_A1R5G5B5) {
-        for (int i = 0; i < ht_map->m_numBitmapTiles; i++) {
+        for (int32_t i = 0; i < ht_map->m_numBitmapTiles; i++) {
             TileData *tile = ht_map->Get_Source_Tile(i);
 
             if (tile) {
@@ -62,13 +62,14 @@ int TerrainTextureClass::Update(WorldHeightMap *ht_map)
                 int32_t y = tile->m_tileLocationInTexture.y;
 
                 if (x > 0) {
-                    for (int j = 0; j < width; j++) {
+                    for (int32_t j = 0; j < width; j++) {
                         unsigned char *data = tile->Get_RGB_Data_For_Width(width);
                         unsigned char *data2 = &data[width * 4 * (width - 1 - j)];
                         unsigned short *data3 = (unsigned short *)((char *)rect.pBits + 2 * desc.Width * (j + y) + 2 * x);
 
-                        for (int k = 0; k < width; k++) {
-                            *data3 = ((int)*data2 >> 3) + ((int)data2[2] >> 3 << 10) + 0x20 * ((int)data2[1] >> 3) + 0x8000;
+                        for (int32_t k = 0; k < width; k++) {
+                            *data3 = ((int32_t)*data2 >> 3) + ((int32_t)data2[2] >> 3 << 10)
+                                + 0x20 * ((int32_t)data2[1] >> 3) + 0x8000;
                             data3++;
                             data2 += 4;
                         }
@@ -77,20 +78,20 @@ int TerrainTextureClass::Update(WorldHeightMap *ht_map)
             }
         }
 
-        for (int i = 0; i < ht_map->m_numTextureClasses; i++) {
-            int x = ht_map->m_textureClasses[i].position_in_texture.x;
-            int y = ht_map->m_textureClasses[i].position_in_texture.y;
+        for (int32_t i = 0; i < ht_map->m_numTextureClasses; i++) {
+            int32_t x = ht_map->m_textureClasses[i].position_in_texture.x;
+            int32_t y = ht_map->m_textureClasses[i].position_in_texture.y;
 
             if (x > 0) {
-                int w = ht_map->m_textureClasses[i].width << 6;
+                int32_t w = ht_map->m_textureClasses[i].width << 6;
 
-                for (int j = 0; j < w; j++) {
+                for (int32_t j = 0; j < w; j++) {
                     unsigned char *data = (unsigned char *)rect.pBits + 2 * desc.Width * (j + y) + 2 * x;
                     memcpy(data - 8, &data[2 * w - 8], 8);
                     memcpy(&data[2 * w], data, 8);
                 }
 
-                for (int j = 0; j < 4; j++) {
+                for (int32_t j = 0; j < 4; j++) {
                     memcpy((char *)rect.pBits + 2 * desc.Width * (y - j - 1) + 2 * x - 8,
                         (char *)rect.pBits + 2 * desc.Width * (y - j - 1) + 2 * x + 2 * desc.Width * w - 8,
                         2 * (w + 8));
@@ -118,7 +119,8 @@ int TerrainTextureClass::Update(WorldHeightMap *ht_map)
 #endif
 }
 
-bool TerrainTextureClass::Update_Flat(WorldHeightMap *ht_map, int x, int y, int pixels_per_cell, unsigned int cell_width)
+bool TerrainTextureClass::Update_Flat(
+    WorldHeightMap *ht_map, int32_t x, int32_t y, int32_t pixels_per_cell, uint32_t cell_width)
 {
 #ifdef BUILD_WITH_D3D8
     w3dsurface_t surf = nullptr;
@@ -136,19 +138,19 @@ bool TerrainTextureClass::Update_Flat(WorldHeightMap *ht_map, int x, int y, int 
         DX8Wrapper::Handle_DX8_ErrorCode(surf->LockRect(&rect, nullptr, 0));
 
         if (desc.Format == D3DFMT_A1R5G5B5) {
-            for (int i = 0; i < pixels_per_cell; i++) {
-                for (int j = 0; j < pixels_per_cell; j++) {
+            for (int32_t i = 0; i < pixels_per_cell; i++) {
+                for (int32_t j = 0; j < pixels_per_cell; j++) {
                     unsigned char *data = ht_map->Get_Pointer_To_Tile_Data(i + x, j + y, cell_width);
 
                     if (data) {
-                        for (int k = cell_width - 1; k >= 0; k--) {
+                        for (int32_t k = cell_width - 1; k >= 0; k--) {
                             unsigned char *data3 = (unsigned char *)rect.pBits;
                             short *data2 = (short *)&data3[2 * desc.Width * (k + (pixels_per_cell - j - 1) * cell_width)
                                 + 2 * cell_width * i];
 
-                            for (int l = 0; l < (int)cell_width; l++) {
-                                *data2 =
-                                    ((int)*data >> 3) + ((int)data[2] >> 3 << 0xA) + 0x20 * ((int)data[1] >> 3) + 0x8000;
+                            for (int32_t l = 0; l < (int32_t)cell_width; l++) {
+                                *data2 = ((int32_t)*data >> 3) + ((int32_t)data[2] >> 3 << 0xA)
+                                    + 0x20 * ((int32_t)data[1] >> 3) + 0x8000;
                                 data2++;
                                 data += 4;
                             }
@@ -168,7 +170,7 @@ bool TerrainTextureClass::Update_Flat(WorldHeightMap *ht_map, int x, int y, int 
     return false;
 }
 
-void TerrainTextureClass::Set_LOD(int lod)
+void TerrainTextureClass::Set_LOD(int32_t lod)
 {
 #ifdef BUILD_WITH_D3D8
     if (Peek_Platform_Base_Texture()) {
@@ -322,7 +324,7 @@ void LightMapTerrainTextureClass::Apply(unsigned stage)
     TextureClass::Apply(stage);
 }
 
-AlphaEdgeTextureClass::AlphaEdgeTextureClass(int height, MipCountType mips) :
+AlphaEdgeTextureClass::AlphaEdgeTextureClass(int32_t height, MipCountType mips) :
     TextureClass(TERRAIN_TEXTURE_WIDTH, height, WW3D_FORMAT_A8R8G8B8, mips, POOL_MANAGED, false, true)
 {
 }
@@ -332,7 +334,7 @@ void AlphaEdgeTextureClass::Apply(unsigned stage)
     TextureClass::Apply(stage);
 }
 
-int AlphaEdgeTextureClass::Update(WorldHeightMap *ht_map)
+int32_t AlphaEdgeTextureClass::Update(WorldHeightMap *ht_map)
 {
 #ifdef BUILD_WITH_D3D8
     w3dsurface_t surf = nullptr;
@@ -343,33 +345,33 @@ int AlphaEdgeTextureClass::Update(WorldHeightMap *ht_map)
     DX8Wrapper::Handle_DX8_ErrorCode(surf->GetDesc(&desc));
     D3DLOCKED_RECT rect;
     DX8Wrapper::Handle_DX8_ErrorCode(surf->LockRect(&rect, nullptr, 0));
-    int width = 64;
+    int32_t width = 64;
 
     if (desc.Format == D3DFMT_A8R8G8B8) {
-        for (unsigned int i = 0; i < desc.Width; i++) {
-            for (unsigned int j = 0; j < desc.Height; j++) {
+        for (uint32_t i = 0; i < desc.Width; i++) {
+            for (uint32_t j = 0; j < desc.Height; j++) {
                 unsigned char *data = (unsigned char *)rect.pBits + 4 * (i + desc.Width * j);
-                *((unsigned char *)rect.pBits + 4 * (i + desc.Width * j) + 2) = 0xFF - (int)j / 2;
+                *((unsigned char *)rect.pBits + 4 * (i + desc.Width * j) + 2) = 0xFF - (int32_t)j / 2;
                 *data = i / 2;
                 data[3] = i / 2;
                 data[3] = 128;
             }
 
-            for (int i = 0; i < ht_map->m_numEdgeTiles; i++) {
+            for (int32_t i = 0; i < ht_map->m_numEdgeTiles; i++) {
                 TileData *tile = ht_map->Get_Edge_Tile(i);
 
                 if (tile) {
-                    int x = tile->m_tileLocationInTexture.x;
-                    int y = tile->m_tileLocationInTexture.y;
+                    int32_t x = tile->m_tileLocationInTexture.x;
+                    int32_t y = tile->m_tileLocationInTexture.y;
 
                     if (x > 0) {
-                        for (int j = 0; j < width; j++) {
+                        for (int32_t j = 0; j < width; j++) {
                             TileData *tile2 = ht_map->Get_Edge_Tile(i);
                             unsigned char *data = tile2->Get_RGB_Data_For_Width(width);
                             unsigned char *data2 = &data[width * 4 * (width - 1 - j)];
                             unsigned char *data3 = (unsigned char *)rect.pBits + 4 * desc.Width * (j + y) + 4 * x;
 
-                            for (int k = 0; k < width; k++) {
+                            for (int32_t k = 0; k < width; k++) {
                                 *data3 = *data2;
                                 data3[1] = data2[1];
                                 data3[2] = data2[2];
@@ -445,7 +447,7 @@ void CloudMapTerrainTextureClass::Restore()
 
     if (g_theWriteableGlobalData) {
         if (!g_theWriteableGlobalData->m_multiPassTerrain) {
-            for (int i = 0; i < MAX_TEXTURE_STAGES; i++) {
+            for (int32_t i = 0; i < MAX_TEXTURE_STAGES; i++) {
                 DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_COLOROP, D3DTOP_DISABLE);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_TEXCOORDINDEX, i);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(i, D3DTSS_COLORARG1, D3DTA_TEXTURE);

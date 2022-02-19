@@ -23,7 +23,7 @@
 #define crt_free (Make_Global<void(__cdecl *const)(void *)>(0x00939364))
 #define crt_malloc (Make_Global<void *(__cdecl *const)(size_t)>(0x0093932C))
 #define crt_set_se_translator \
-    (Make_Global<void(__cdecl *const)(void(__cdecl *)(unsigned int, struct _EXCEPTION_POINTERS *))>(0x009393A0))
+    (Make_Global<void(__cdecl *const)(void(__cdecl *)(uint32_t, struct _EXCEPTION_POINTERS *))>(0x009393A0))
 
 #ifdef malloc
 #undef malloc

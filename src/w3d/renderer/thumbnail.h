@@ -41,9 +41,9 @@ public:
 
     const StringClass &Get_Name() const { return m_filename; }
     uint8_t *Get_Bitmap() const { return m_bitmap; }
-    int Get_Max_Width() const { return m_width; }
-    int Get_Max_Height() const { return m_height; }
-    int Get_Mip_Levels() const { return m_mipLevels; }
+    int32_t Get_Max_Width() const { return m_width; }
+    int32_t Get_Max_Height() const { return m_height; }
+    int32_t Get_Mip_Levels() const { return m_mipLevels; }
     WW3DFormat Get_Format() const { return m_format; }
 
 #ifdef GAME_DLL
@@ -56,11 +56,11 @@ public:
 private:
     StringClass m_filename;
     uint8_t *m_bitmap;
-    int m_width;
-    int m_height;
-    int m_maxWidth;
-    int m_maxHeight;
-    int m_mipLevels;
+    int32_t m_width;
+    int32_t m_height;
+    int32_t m_maxWidth;
+    int32_t m_maxHeight;
+    int32_t m_mipLevels;
     WW3DFormat m_format;
     unsigned m_time;
     bool m_isAllocated;

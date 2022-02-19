@@ -29,7 +29,7 @@ class StringClass
 {
 public:
     StringClass(bool hint_temporary);
-    StringClass(int initial_len = 0, bool hint_temporary = false);
+    StringClass(int32_t initial_len = 0, bool hint_temporary = false);
     StringClass(const StringClass &string, bool hint_temporary = false);
     StringClass(const char *string, bool hint_temporary = false);
     StringClass(char ch, bool hint_temporary = false);
@@ -52,23 +52,23 @@ public:
     bool operator<=(const char *string) const { return (strcmp(m_buffer, string) <= 0); }
     bool operator>(const char *string) const { return (strcmp(m_buffer, string) > 0); }
     bool operator>=(const char *string) const { return (strcmp(m_buffer, string) >= 0); }
-    const char &operator[](int index) const { return m_buffer[index]; }
-    char &operator[](int index) { return m_buffer[index]; }
+    const char &operator[](int32_t index) const { return m_buffer[index]; }
+    char &operator[](int32_t index) { return m_buffer[index]; }
     operator const char *() const { return m_buffer; }
 
-    int Compare(const char *string) const { return strcmp(m_buffer, string); }
-    int Compare_No_Case(const char *string) const { return strcasecmp(m_buffer, string); }
-    int Get_Length() const;
+    int32_t Compare(const char *string) const { return strcmp(m_buffer, string); }
+    int32_t Compare_No_Case(const char *string) const { return strcasecmp(m_buffer, string); }
+    int32_t Get_Length() const;
     bool Is_Empty() const { return (m_buffer[0] == m_nullChar); }
-    void Erase(int start_index, int char_count);
-    int Format(const char *format, ...);
-    int Format_Args(const char *format, va_list &arg_list);
+    void Erase(int32_t start_index, int32_t char_count);
+    int32_t Format(const char *format, ...);
+    int32_t Format_Args(const char *format, va_list &arg_list);
     void Truncate_Left(unsigned truncateLength);
     void Truncate_Right(unsigned truncateLength);
     void Trim_Left();
     void Trim_Right();
     void Trim();
-    char *Get_Buffer(int new_length);
+    char *Get_Buffer(int32_t new_length);
     char *Peek_Buffer() { return m_buffer; }
     const char *Peek_Buffer() const { return m_buffer; }
     bool Copy_Wide(const unichar_t *source);
@@ -79,8 +79,8 @@ public:
 private:
     struct HEADER
     {
-        int allocated_length;
-        int length;
+        int32_t allocated_length;
+        int32_t length;
     };
 
     enum
@@ -93,13 +93,13 @@ private:
 
     void Get_String(size_t length, bool is_temp);
     char *Allocate_Buffer(size_t length);
-    void Resize(int size);
+    void Resize(int32_t size);
     void Uninitialised_Grow(size_t length);
     void Free_String();
-    void Store_Length(int length);
-    void Store_Allocated_Length(int allocated_length);
+    void Store_Length(int32_t length);
+    void Store_Allocated_Length(int32_t allocated_length);
     HEADER *Get_Header() const;
-    int Get_Allocated_Length() const;
+    int32_t Get_Allocated_Length() const;
     void Set_Buffer_And_Allocated_Length(char *buffer, size_t length);
 
     char *m_buffer;
@@ -124,7 +124,7 @@ inline StringClass::StringClass(bool hint_temporary) : m_buffer(m_emptyString)
     m_buffer[0] = m_nullChar;
 }
 
-inline StringClass::StringClass(int initial_len, bool hint_temporary) : m_buffer(m_emptyString)
+inline StringClass::StringClass(int32_t initial_len, bool hint_temporary) : m_buffer(m_emptyString)
 {
     Get_String(initial_len, hint_temporary);
     m_buffer[0] = m_nullChar;
@@ -174,7 +174,7 @@ inline StringClass::~StringClass()
 
 inline const StringClass &StringClass::operator=(const StringClass &string)
 {
-    int len = string.Get_Length();
+    int32_t len = string.Get_Length();
     Uninitialised_Grow(len + 1);
     Store_Length(len);
 
@@ -216,9 +216,9 @@ inline const StringClass &StringClass::operator=(char ch)
     return *this;
 }
 
-inline void StringClass::Erase(int start_index, int char_count)
+inline void StringClass::Erase(int32_t start_index, int32_t char_count)
 {
-    int len = Get_Length();
+    int32_t len = Get_Length();
 
     if (start_index < len) {
         if (start_index + char_count > len) {
@@ -240,7 +240,7 @@ inline void StringClass::Truncate_Left(unsigned truncateLength)
     if (length <= truncateLength) {
         Free_String();
     } else {
-        int newLength = length - truncateLength;
+        int32_t newLength = length - truncateLength;
         memmove(m_buffer, m_buffer + truncateLength, newLength + 1);
         Store_Length(newLength);
     }
@@ -252,7 +252,7 @@ inline void StringClass::Truncate_Right(unsigned truncateLength)
     if (length <= truncateLength) {
         Free_String();
     } else {
-        int newLength = length - truncateLength;
+        int32_t newLength = length - truncateLength;
         m_buffer[newLength] = '\0';
         Store_Length(newLength);
     }
@@ -264,7 +264,7 @@ inline void StringClass::Trim_Left()
     for (; *iter != '\0' && *iter <= ' '; ++iter)
         ;
 
-    Truncate_Left((int)(iter - m_buffer));
+    Truncate_Left((int32_t)(iter - m_buffer));
 }
 
 inline void StringClass::Trim_Right()
@@ -273,7 +273,7 @@ inline void StringClass::Trim_Right()
     for (; *iter != '\0' && *iter <= ' '; --iter)
         ;
 
-    Truncate_Right((int)(m_buffer + Get_Length() - 1 - iter));
+    Truncate_Right((int32_t)(m_buffer + Get_Length() - 1 - iter));
 }
 
 inline void StringClass::Trim()
@@ -284,9 +284,9 @@ inline void StringClass::Trim()
 
 inline const StringClass &StringClass::operator+=(const char *string)
 {
-    int cur_len = Get_Length();
+    int32_t cur_len = Get_Length();
     size_t src_len = strlen(string);
-    int new_len = cur_len + src_len;
+    int32_t new_len = cur_len + src_len;
 
     Resize(new_len + 1);
     Store_Length(new_len);
@@ -297,7 +297,7 @@ inline const StringClass &StringClass::operator+=(const char *string)
 
 inline const StringClass &StringClass::operator+=(char ch)
 {
-    int cur_len = Get_Length();
+    int32_t cur_len = Get_Length();
     Resize(cur_len + 2);
 
     m_buffer[cur_len] = ch;
@@ -310,7 +310,7 @@ inline const StringClass &StringClass::operator+=(char ch)
     return *this;
 }
 
-inline char *StringClass::Get_Buffer(int new_length)
+inline char *StringClass::Get_Buffer(int32_t new_length)
 {
     Uninitialised_Grow(new_length);
 
@@ -319,10 +319,10 @@ inline char *StringClass::Get_Buffer(int new_length)
 
 inline const StringClass &StringClass::operator+=(const StringClass &string)
 {
-    int src_len = string.Get_Length();
+    int32_t src_len = string.Get_Length();
     if (src_len > 0) {
-        int cur_len = Get_Length();
-        int new_len = cur_len + src_len;
+        int32_t cur_len = Get_Length();
+        int32_t new_len = cur_len + src_len;
 
         Resize(new_len + 1);
         Store_Length(new_len);
@@ -356,9 +356,9 @@ inline StringClass operator+(const StringClass &string1, const char *string2)
     return new_string;
 }
 
-inline int StringClass::Get_Allocated_Length() const
+inline int32_t StringClass::Get_Allocated_Length() const
 {
-    int allocated_length = 0;
+    int32_t allocated_length = 0;
 
     if (m_buffer != m_emptyString) {
         HEADER *header = Get_Header();
@@ -368,7 +368,7 @@ inline int StringClass::Get_Allocated_Length() const
     return allocated_length;
 }
 
-inline int StringClass::Get_Length() const
+inline int32_t StringClass::Get_Length() const
 {
     size_t length = 0;
 
@@ -412,7 +412,7 @@ inline StringClass::HEADER *StringClass::Get_Header() const
     return reinterpret_cast<HEADER *>(((char *)m_buffer) - sizeof(StringClass::HEADER));
 }
 
-inline void StringClass::Store_Allocated_Length(int allocated_length)
+inline void StringClass::Store_Allocated_Length(int32_t allocated_length)
 {
     if (m_buffer != m_emptyString) {
         HEADER *header = Get_Header();
@@ -420,7 +420,7 @@ inline void StringClass::Store_Allocated_Length(int allocated_length)
     }
 }
 
-inline void StringClass::Store_Length(int length)
+inline void StringClass::Store_Length(int32_t length)
 {
     if (m_buffer != m_emptyString) {
         HEADER *header = Get_Header();
@@ -433,7 +433,7 @@ inline void StringClass::Store_Length(int length)
  */
 inline unsigned StringClass::Get_Hash() const
 {
-    int length = Get_Length();
+    int32_t length = Get_Length();
 
     if (length >= 8) {
         uint32_t value = *reinterpret_cast<uint32_t *>(&m_buffer[length - 8]);
@@ -443,7 +443,7 @@ inline unsigned StringClass::Get_Hash() const
     unsigned result = 0;
 
     if (length != 0) {
-        for (int i = 0; i < length; ++i) {
+        for (int32_t i = 0; i < length; ++i) {
             unsigned val = (uint8_t)m_buffer[i];
             result = val + 38 * result;
         }

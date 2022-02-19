@@ -133,7 +133,7 @@ void PlayerTemplate::Parse_Start_Money(INI *ini, void *formal, void *store, cons
  *
  * 0x004D3170
  */
-int PlayerTemplateStore::Get_Template_Number_By_Name(Utf8String name)
+int32_t PlayerTemplateStore::Get_Template_Number_By_Name(Utf8String name)
 {
     for (unsigned i = 0; i < m_playerTemplates.size(); ++i) {
         if (m_playerTemplates[i].Get_Name().Compare_No_Case(name) == 0) {
@@ -190,7 +190,7 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
  *
  * 0x004D35E0
  */
-PlayerTemplate *PlayerTemplateStore::Get_Nth_Player_Template(int index)
+PlayerTemplate *PlayerTemplateStore::Get_Nth_Player_Template(int32_t index)
 {
     if (index < 0 || unsigned(index) > m_playerTemplates.size()) {
         return nullptr;

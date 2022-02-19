@@ -28,15 +28,15 @@ public:
     SysTimeClass();
     ~SysTimeClass();
 
-    int Get();
+    int32_t Get();
     bool Is_Getting_Late();
 
 private:
     void Reset();
     static unsigned Time_Func();
 
-    int m_startTime;
-    int m_negTime;
+    int32_t m_startTime;
+    int32_t m_negTime;
 };
 
 inline SysTimeClass::SysTimeClass()

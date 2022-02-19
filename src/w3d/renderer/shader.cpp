@@ -144,7 +144,7 @@ ShaderClass::StaticSortCategoryType ShaderClass::Get_Static_Sort_Category() cons
  *
  * 0x00814010
  */
-int ShaderClass::Guess_Sort_Level() const
+int32_t ShaderClass::Guess_Sort_Level() const
 {
     switch (Get_Static_Sort_Category()) {
         case SSCAT_OPAQUE: // Fallthrough.

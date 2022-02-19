@@ -21,7 +21,7 @@
 
 struct NodeCompressedMotionStruct
 {
-    int Flavor;
+    int32_t Flavor;
     union
     {
         struct
@@ -57,7 +57,7 @@ struct NodeCompressedMotionStruct
         vd.Q = nullptr;
     }
     ~NodeCompressedMotionStruct();
-    void Set_Flavor(int flavor) { Flavor = flavor; }
+    void Set_Flavor(int32_t flavor) { Flavor = flavor; }
 };
 
 class HCompressedAnimClass : public HAnimClass
@@ -66,20 +66,20 @@ public:
     virtual ~HCompressedAnimClass() override;
     virtual const char *Get_Name() const override { return m_name; }
     virtual const char *Get_HName() const override { return m_hierarchyName; }
-    virtual int Get_Num_Frames() override { return m_numFrames; }
+    virtual int32_t Get_Num_Frames() override { return m_numFrames; }
     virtual float Get_Frame_Rate() override { return m_frameRate; }
     virtual float Get_Total_Time() override { return (float)m_numFrames / m_frameRate; }
-    virtual void Get_Translation(Vector3 &trans, int pividx, float frame) const override;
-    virtual void Get_Orientation(Quaternion &q, int pividx, float frame) const override;
-    virtual void Get_Transform(Matrix3D &mtx, int pividx, float frame) const override;
-    virtual bool Get_Visibility(int pividx, float frame) override;
-    virtual int Get_Num_Pivots() const override { return m_numNodes; }
-    virtual bool Is_Node_Motion_Present(int pividx) override;
-    virtual bool Has_X_Translation(int pividx) override;
-    virtual bool Has_Y_Translation(int pividx) override;
-    virtual bool Has_Z_Translation(int pividx) override;
-    virtual bool Has_Rotation(int pividx) override;
-    virtual bool Has_Visibility(int pividx) override;
+    virtual void Get_Translation(Vector3 &trans, int32_t pividx, float frame) const override;
+    virtual void Get_Orientation(Quaternion &q, int32_t pividx, float frame) const override;
+    virtual void Get_Transform(Matrix3D &mtx, int32_t pividx, float frame) const override;
+    virtual bool Get_Visibility(int32_t pividx, float frame) override;
+    virtual int32_t Get_Num_Pivots() const override { return m_numNodes; }
+    virtual bool Is_Node_Motion_Present(int32_t pividx) override;
+    virtual bool Has_X_Translation(int32_t pividx) override;
+    virtual bool Has_Y_Translation(int32_t pividx) override;
+    virtual bool Has_Z_Translation(int32_t pividx) override;
+    virtual bool Has_Rotation(int32_t pividx) override;
+    virtual bool Has_Visibility(int32_t pividx) override;
 
     HCompressedAnimClass();
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
@@ -91,14 +91,14 @@ public:
     bool read_bit_channel(ChunkLoadClass &cload, TimeCodedBitChannelClass **newchan);
     void add_bit_channel(TimeCodedBitChannelClass *newchan);
 
-    int Get_Flavor() { return m_flavor; }
+    int32_t Get_Flavor() { return m_flavor; }
 
 private:
     char m_name[32];
     char m_hierarchyName[16];
-    int m_numFrames;
-    int m_numNodes;
-    int m_flavor;
+    int32_t m_numFrames;
+    int32_t m_numNodes;
+    int32_t m_flavor;
     float m_frameRate;
     NodeCompressedMotionStruct *m_nodeMotion;
 };

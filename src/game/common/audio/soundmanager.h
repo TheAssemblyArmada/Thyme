@@ -47,16 +47,16 @@ public:
             --m_3dSamplesPlaying;
         }
     }
-    virtual int Get_Available_Samples() { return m_2dSampleSlotCount - m_2dSamplesPlaying; }
-    virtual int Get_Available_3D_Samples() { return m_3dSampleSlotCount - m_3dSamplesPlaying; }
+    virtual int32_t Get_Available_Samples() { return m_2dSampleSlotCount - m_2dSamplesPlaying; }
+    virtual int32_t Get_Available_3D_Samples() { return m_3dSampleSlotCount - m_3dSamplesPlaying; }
     virtual Utf8String Get_Filename_For_Play_From_Audio_Event() { return Utf8String(); }
     virtual bool Can_Play_Now(AudioEventRTS *event);
     virtual bool Violates_Voice(AudioEventRTS *event);
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
 private:
-    int m_2dSampleSlotCount;
-    int m_3dSampleSlotCount;
-    int m_2dSamplesPlaying;
-    int m_3dSamplesPlaying;
+    int32_t m_2dSampleSlotCount;
+    int32_t m_3dSampleSlotCount;
+    int32_t m_2dSamplesPlaying;
+    int32_t m_3dSamplesPlaying;
 };

@@ -33,7 +33,7 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane, const LineSegClass &line)
 {
-    int mask = 0;
+    int32_t mask = 0;
     mask |= CollisionMath::Overlap_Test(plane, line.Get_P0());
     mask |= CollisionMath::Overlap_Test(plane, line.Get_P1());
     return Eval_Overlap_Mask(mask);
@@ -41,7 +41,7 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane, const TriClass &tri)
 {
-    int mask = 0;
+    int32_t mask = 0;
     mask |= CollisionMath::Overlap_Test(plane, *tri.V[0]);
     mask |= CollisionMath::Overlap_Test(plane, *tri.V[1]);
     mask |= CollisionMath::Overlap_Test(plane, *tri.V[2]);
@@ -64,7 +64,7 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane
 
 CollisionMath::OverlapType CollisionMath::Overlap_Test(const AAPlaneClass &plane, const AABoxClass &box)
 {
-    int mask = 0;
+    int32_t mask = 0;
 
     float delta = box.m_center[plane.m_normal] - box.m_extent[plane.m_normal] - plane.m_dist;
 

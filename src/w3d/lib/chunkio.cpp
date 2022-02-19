@@ -66,7 +66,7 @@ bool ChunkSaveClass::Begin_Chunk(unsigned id)
  */
 bool ChunkSaveClass::End_Chunk()
 {
-    int startpos = m_file->Seek(0);
+    int32_t startpos = m_file->Seek(0);
     --m_stackIndex;
 
     ChunkHeader chunkh = m_headerStack[m_stackIndex];
@@ -116,7 +116,7 @@ bool ChunkSaveClass::End_Micro_Chunk()
 {
     captainslog_dbgassert(m_inMicroChunk, "Not in a micro chunk.");
 
-    int current_pos = m_file->Seek(0);
+    int32_t current_pos = m_file->Seek(0);
     m_file->Seek(m_microChunkPos, FS_SEEK_START);
 
     if (Write(&m_microChunkHeader, sizeof(m_microChunkHeader)) == sizeof(m_microChunkHeader)) {
@@ -237,8 +237,8 @@ bool ChunkLoadClass::Close_Chunk()
     captainslog_dbgassert(!m_inMicroChunk, "Currently in a micro chunk.");
     captainslog_dbgassert(m_stackIndex > 0, "Stack index less than 1.");
 
-    int chunksize = m_headerStack[m_stackIndex - 1].Get_Size();
-    int position = m_positionStack[m_stackIndex - 1];
+    int32_t chunksize = m_headerStack[m_stackIndex - 1].Get_Size();
+    int32_t position = m_positionStack[m_stackIndex - 1];
 
     if (position < chunksize) {
         m_file->Seek(chunksize - position);
@@ -279,7 +279,7 @@ unsigned ChunkLoadClass::Cur_Chunk_Length()
  * @brief Returns if the current chunk itself contains chunks.
  * @return Int containing value of the flag indicating if it contains other chunks.
  */
-int ChunkLoadClass::Contains_Chunks()
+int32_t ChunkLoadClass::Contains_Chunks()
 {
     return m_headerStack[m_stackIndex - 1].Get_Sub_Chunk_Flag();
 }
@@ -363,7 +363,7 @@ unsigned ChunkLoadClass::Seek(unsigned bytes)
         return 0;
     }
 
-    int current = m_file->Tell();
+    int32_t current = m_file->Tell();
 
     if (m_file->Seek(bytes) - current == bytes) {
         m_positionStack[m_stackIndex - 1] += bytes;

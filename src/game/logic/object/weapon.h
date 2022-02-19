@@ -68,7 +68,7 @@ public:
     WeaponBonus() { Clear(); }
     void Clear()
     {
-        for (int i = 0; i < COUNT; i++) {
+        for (int32_t i = 0; i < COUNT; i++) {
             m_field[i] = 1.0f;
         }
     }
@@ -76,7 +76,7 @@ public:
     void Set_Field(Field f, float bonus) { m_field[f] = bonus; }
     void Append_Bonuses(WeaponBonus &bonus)
     {
-        for (int i = 0; i < COUNT; i++) {
+        for (int32_t i = 0; i < COUNT; i++) {
             bonus.m_field[i] = m_field[i] - 1.0f + bonus.m_field[i];
         }
     }
@@ -98,10 +98,10 @@ public:
     static void Parse_Weapon_Bonus_Set(INI *ini, void *formal, void *store, void const *user_data);
     void Parse_Weapon_Bonus_Set(INI *ini);
     WeaponBonusSet() {}
-    void Append_Bonuses(unsigned int flags, WeaponBonus &bonus)
+    void Append_Bonuses(uint32_t flags, WeaponBonus &bonus)
     {
         if (flags) {
-            for (int i = 0; i < WEAPONBONUSCONDITION_COUNT; i++) {
+            for (int32_t i = 0; i < WEAPONBONUSCONDITION_COUNT; i++) {
                 if ((1 << i & flags) != 0) {
                     m_bonus[i].Append_Bonuses(bonus);
                 }

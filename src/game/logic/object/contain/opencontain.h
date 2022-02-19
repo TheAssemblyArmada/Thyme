@@ -53,7 +53,7 @@ public:
     virtual void On_Capture(Player *old_owner, Player *new_owner) = 0;
     virtual void On_Selling() = 0;
 
-    virtual int Get_Contain_Max() const = 0;
+    virtual int32_t Get_Contain_Max() const = 0;
     virtual ExitInterface *Get_Contain_Exit_Interface() = 0;
     virtual void Order_All_Passengers_To_Exit(CommandSourceType type, bool b) = 0;
     virtual void Order_All_Passengers_To_Idle(CommandSourceType type) = 0;
@@ -73,15 +73,15 @@ public:
     virtual void Set_Passenger_Allowed_To_Fire(bool fire) = 0;
     virtual void Set_Override_Destination(Coord3D const *pos) = 0;
     virtual bool Is_Displayed_On_Control_Bar() const = 0;
-    virtual int Get_Extra_Slots_In_Use() = 0;
+    virtual int32_t Get_Extra_Slots_In_Use() = 0;
     virtual bool Is_Kick_Out_On_Capture() = 0;
 
     virtual void Iterate_Contained(void (*func)(Object *, void *), void *user_data, bool reverse) = 0;
-    virtual unsigned int Get_Contain_Count() const = 0;
+    virtual uint32_t Get_Contain_Count() const = 0;
     virtual std::list<Object *> const *Get_Contained_Items_List() const = 0;
     virtual Object const *Friend_Get_Rider() const = 0;
     virtual float Get_Contained_Items_Mass() const = 0;
-    virtual unsigned int Get_Stealth_Units_Contained() const = 0;
+    virtual uint32_t Get_Stealth_Units_Contained() const = 0;
     virtual bool Calc_Best_Garrison_Position(Coord3D *pos, Coord3D const *garrison) = 0;
 
     virtual bool Attempt_Best_Fire_Point_Position(Object *obj, Weapon *weapon, Coord3D const *pos) = 0;
@@ -93,6 +93,6 @@ public:
 
     virtual void Set_Evac_Disposition(EvacDisposition evac) = 0;
     virtual bool Is_Weapon_Bonus_Passed_To_Passengers() const = 0;
-    virtual unsigned int Get_Weapon_Bonus_Passed_To_Passengers() const = 0;
-    virtual bool Get_Container_Pips_To_Show(int &max, int &count);
+    virtual uint32_t Get_Weapon_Bonus_Passed_To_Passengers() const = 0;
+    virtual bool Get_Container_Pips_To_Show(int32_t &max, int32_t &count);
 };

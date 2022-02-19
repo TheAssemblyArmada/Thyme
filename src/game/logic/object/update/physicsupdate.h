@@ -59,10 +59,10 @@ public:
     virtual bool Is_Railroad() override;
     virtual bool Is_Salvage_Crate_Collide() override;
     PhysicsTurningType Get_Turning() const { return m_turning; }
-    static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
+    static int32_t Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
     const Coord3D &Get_Prev_Accel() const { return m_prevAccel; }
     const Coord3D &Get_Velocity() const { return m_vel; }
-    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < (unsigned int)m_motiveForceApplied; }
+    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < (uint32_t)m_motiveForceApplied; }
     ObjectID Get_Current_Overlap() const { return m_currentOverlap; }
     ObjectID Get_Previous_Overlap() const { return m_previousOverlap; }
 
@@ -117,13 +117,13 @@ private:
     Coord3D m_prevAccel; // not 100% identified yet
     Coord3D m_vel;
     PhysicsTurningType m_turning;
-    int m_ignoreCollisionsWith;
+    int32_t m_ignoreCollisionsWith;
     PhysicsFlagsType m_flags;
     float m_mass;
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;
     ObjectID m_collided; // not 100% identified yet
-    int m_motiveForceApplied;
+    int32_t m_motiveForceApplied;
     float m_extraBounciness; // not 100% identified yet
     float m_extraFriction;
     ProjectileUpdateInterface *m_projectileUpdateInterface; // not 100% identified yet

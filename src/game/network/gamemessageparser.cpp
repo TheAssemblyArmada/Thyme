@@ -14,7 +14,7 @@
  */
 #include "gamemessageparser.h"
 
-GameMessageParserArgumentType::GameMessageParserArgumentType(ArgumentDataType type, int arg_count) :
+GameMessageParserArgumentType::GameMessageParserArgumentType(ArgumentDataType type, int32_t arg_count) :
     m_next(nullptr), m_type(type), m_argCount(arg_count)
 {
 }
@@ -24,9 +24,9 @@ GameMessageParser::GameMessageParser() : m_first(nullptr), m_last(nullptr), m_ar
 GameMessageParser::GameMessageParser(GameMessage *msg) : m_first(nullptr), m_last(nullptr), m_argTypeCount(0)
 {
     ArgumentDataType type = ARGUMENTDATATYPE_UNKNOWN;
-    int count = 0;
+    int32_t count = 0;
 
-    for (int i = 0; i < msg->Get_Argument_Count(); ++i) {
+    for (int32_t i = 0; i < msg->Get_Argument_Count(); ++i) {
         ArgumentDataType data_type = msg->Get_Argument_Type(i);
         if (data_type != type) {
             if (count > 0) {
@@ -54,7 +54,7 @@ GameMessageParser::~GameMessageParser()
     }
 }
 
-void GameMessageParser::Add_Arg_Type(ArgumentDataType type, int arg_count)
+void GameMessageParser::Add_Arg_Type(ArgumentDataType type, int32_t arg_count)
 {
     if (m_first == nullptr) {
         m_first = NEW_POOL_OBJ(GameMessageParserArgumentType, type, arg_count);

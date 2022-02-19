@@ -67,7 +67,7 @@ private:
     Utf16String m_description;
     std::vector<ScienceType> m_unkVec1;
     std::vector<ScienceType> m_prerequisites;
-    int m_purchaseCost;
+    int32_t m_purchaseCost;
     bool m_isGrantable;
 
     static FieldParse s_scienceFieldParseTable[];

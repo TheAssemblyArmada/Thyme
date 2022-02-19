@@ -26,20 +26,20 @@ static_assert(File::FileMode::LASTMODE <= 0x10000, "Not enough room to encode bu
 // The encoded value itself is scaled up/down by 64 (6 bit shift),
 // therefore giving an effective range of 1 * 64 to 0xFFFF * 64.
 
-constexpr unsigned int LOCATOR = 16;
-constexpr unsigned int SCALER = 6;
+constexpr uint32_t LOCATOR = 16;
+constexpr uint32_t SCALER = 6;
 
-int Encode_Buffered_File_Mode(int mode, int buffer_size)
+int32_t Encode_Buffered_File_Mode(int32_t mode, int32_t buffer_size)
 {
     buffer_size = std::clamp(buffer_size, (1 << SCALER), (0xFFFF << SCALER));
 
-    return mode | File::FileMode::BUFFERED | (static_cast<unsigned int>(buffer_size) >> SCALER << LOCATOR);
+    return mode | File::FileMode::BUFFERED | (static_cast<uint32_t>(buffer_size) >> SCALER << LOCATOR);
 }
 
-bool Decode_Buffered_File_Mode(int mode, int &buffer_size)
+bool Decode_Buffered_File_Mode(int32_t mode, int32_t &buffer_size)
 {
     if (mode & File::FileMode::BUFFERED) {
-        buffer_size = static_cast<unsigned int>(mode) >> LOCATOR << SCALER;
+        buffer_size = static_cast<uint32_t>(mode) >> LOCATOR << SCALER;
         return true;
     }
     return false;
@@ -51,7 +51,7 @@ File::~File()
     File::Close();
 }
 
-bool File::Open(const char *filename, int mode)
+bool File::Open(const char *filename, int32_t mode)
 {
     if (m_access) {
         return false;
@@ -69,7 +69,7 @@ bool File::Open(const char *filename, int mode)
         return false;
     }
 
-    int open_mode = mode;
+    int32_t open_mode = mode;
 
     // If read/write mode not specified assume read.
     if ((mode & (READ | WRITE)) == 0) {
@@ -117,7 +117,7 @@ bool File::Print(const char *format, ...)
 
     if ((m_openMode & TEXT) != 0) {
         // Format our message to be written out
-        int length = vsnprintf(buffer, sizeof(buffer), format, va);
+        int32_t length = vsnprintf(buffer, sizeof(buffer), format, va);
 
         // Only write if we didn't truncate due to buffer overrun.
         if (length < sizeof(buffer)) {
@@ -130,16 +130,16 @@ bool File::Print(const char *format, ...)
     return success;
 }
 
-int File::Size()
+int32_t File::Size()
 {
-    int current = Seek(0, CURRENT);
-    int end = Seek(0, END);
+    int32_t current = Seek(0, CURRENT);
+    int32_t end = Seek(0, END);
     Seek(current, START);
 
     return end < 0 ? 0 : end;
 }
 
-int File::Position()
+int32_t File::Position()
 {
     return Seek(0, CURRENT);
 }

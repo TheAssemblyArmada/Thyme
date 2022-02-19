@@ -323,9 +323,9 @@ WW3DFormat Get_Valid_Texture_Format(WW3DFormat format, bool allow_compression)
         }
     }
 
-    int width;
-    int height;
-    int bit_depth;
+    int32_t width;
+    int32_t height;
+    int32_t bit_depth;
     bool windowed;
 
     W3D::Get_Device_Resolution(width, height, bit_depth, windowed);

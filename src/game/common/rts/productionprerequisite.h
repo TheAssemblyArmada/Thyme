@@ -29,7 +29,7 @@ class ProductionPrerequisite
     struct PrereqUnitRec
     {
         ThingTemplate *unit;
-        int flags;
+        int32_t flags;
         Utf8String name;
     };
 

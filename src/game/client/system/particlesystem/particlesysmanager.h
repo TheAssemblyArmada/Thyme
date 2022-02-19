@@ -63,15 +63,15 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    virtual int Get_On_Screen_Particle_Count() = 0;
-    virtual void Set_On_Screen_Particle_Count(int count) { m_onScreenParticleCount = count; };
+    virtual int32_t Get_On_Screen_Particle_Count() = 0;
+    virtual void Set_On_Screen_Particle_Count(int32_t count) { m_onScreenParticleCount = count; };
     virtual void Do_Particles(RenderInfoClass &rinfo) = 0;
     virtual void Queue_Particle_Render() = 0;
     virtual void Preload_Assets(TimeOfDayType time);
 
     ParticleSystemTemplate *Find_Template(const Utf8String &name);
     ParticleSystemTemplate *New_Template(const Utf8String &name);
-    ParticleSystemTemplate *Find_Parent_Template(const Utf8String &name, int parent);
+    ParticleSystemTemplate *Find_Parent_Template(const Utf8String &name, int32_t parent);
     ParticleSystem *Create_Particle_System(const ParticleSystemTemplate *temp, bool create_slaves);
     ParticleSystem *Find_Particle_System(ParticleSystemID id) const;
     void Destroy_Particle_System_By_ID(ParticleSystemID id);
@@ -80,8 +80,8 @@ public:
     void Add_Particle_System(ParticleSystem *system);
     void Remove_Particle(Particle *particle);
     void Remove_Particle_System(ParticleSystem *system);
-    int Particle_Count() const { return m_particleCount; }
-    int Field_Particle_Count() const { return m_fieldParticleCount; }
+    int32_t Particle_Count() const { return m_particleCount; }
+    int32_t Field_Particle_Count() const { return m_fieldParticleCount; }
     Particle *Get_Particle_Head(ParticlePriorityType priority) { return m_allParticlesHead[priority]; }
     unsigned Remove_Oldest_Particles(unsigned count, ParticlePriorityType priority_cap);
 
@@ -94,12 +94,12 @@ private:
     Particle *m_allParticlesTail[PARTICLE_PRIORITY_COUNT];
     ParticleSystemID m_uniqueSystemID;
     std::list<ParticleSystem *> m_allParticleSystemList;
-    int m_particleCount;
-    int m_fieldParticleCount;
+    int32_t m_particleCount;
+    int32_t m_fieldParticleCount;
     unsigned m_particleSystemCount;
-    int m_onScreenParticleCount;
-    int m_someGameLogicValue;
-    int m_unkInt2;
+    int32_t m_onScreenParticleCount;
+    int32_t m_someGameLogicValue;
+    int32_t m_unkInt2;
     partsystempmap_t m_templateStore;
 };
 

@@ -28,7 +28,7 @@ BridgeInfo::BridgeInfo() :
     to_left.Zero();
     to_right.Zero();
 
-    for (int i = 0; i < BRIDGE_MAX_TOWERS; i++) {
+    for (int32_t i = 0; i < BRIDGE_MAX_TOWERS; i++) {
         tower_object_id[i] = OBJECT_UNK;
     }
 }

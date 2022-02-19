@@ -43,8 +43,8 @@ using std::strncpy;
 
 float g_heightMapScale = 0.645f;
 
-int g_shadowDecalVertexSize = 32768;
-int g_shadowDecalIndexSize = 65536;
+int32_t g_shadowDecalVertexSize = 32768;
+int32_t g_shadowDecalIndexSize = 65536;
 
 #ifndef GAME_DLL
 #ifdef BUILD_WITH_D3D8
@@ -53,31 +53,31 @@ IDirect3DIndexBuffer8 *g_shadowDecalIndexBufferD3D;
 #endif
 W3DProjectedShadowManager *g_theW3DProjectedShadowManager = nullptr;
 FrustumClass *g_shadowCameraFrustum;
-int g_nShadowDecalVertsInBuf;
-int g_nShadowDecalStartBatchVertex;
-int g_nShadowDecalIndicesInBuf;
-int g_nShadowDecalStartBatchIndex;
-int g_nShadowDecalPolysInBatch;
-int g_nShadowDecalVertsInBatch;
-int g_drawStartX;
-int g_drawEdgeX;
-int g_drawStartY;
-int g_drawEdgeY;
+int32_t g_nShadowDecalVertsInBuf;
+int32_t g_nShadowDecalStartBatchVertex;
+int32_t g_nShadowDecalIndicesInBuf;
+int32_t g_nShadowDecalStartBatchIndex;
+int32_t g_nShadowDecalPolysInBatch;
+int32_t g_nShadowDecalVertsInBatch;
+int32_t g_drawStartX;
+int32_t g_drawEdgeX;
+int32_t g_drawStartY;
+int32_t g_drawEdgeY;
 #else
 #ifdef BUILD_WITH_D3D8
 extern IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D;
 extern IDirect3DIndexBuffer8 *&g_shadowDecalIndexBufferD3D;
 #endif
-extern int &g_nShadowDecalVertsInBuf;
-extern int &g_nShadowDecalStartBatchVertex;
-extern int &g_nShadowDecalIndicesInBuf;
-extern int &g_nShadowDecalStartBatchIndex;
-extern int &g_nShadowDecalPolysInBatch;
-extern int &g_nShadowDecalVertsInBatch;
-extern int &g_drawStartX;
-extern int &g_drawEdgeX;
-extern int &g_drawStartY;
-extern int &g_drawEdgeY;
+extern int32_t &g_nShadowDecalVertsInBuf;
+extern int32_t &g_nShadowDecalStartBatchVertex;
+extern int32_t &g_nShadowDecalIndicesInBuf;
+extern int32_t &g_nShadowDecalStartBatchIndex;
+extern int32_t &g_nShadowDecalPolysInBatch;
+extern int32_t &g_nShadowDecalVertsInBatch;
+extern int32_t &g_drawStartX;
+extern int32_t &g_drawEdgeX;
+extern int32_t &g_drawStartY;
+extern int32_t &g_drawEdgeY;
 #endif
 
 // BUGFIX init all members
@@ -89,7 +89,7 @@ W3DShadowTexture::W3DShadowTexture() : m_texture(nullptr), m_name{}
     m_shadowUV[1].Set(0.0f, -1.0f, 0.0f);
 }
 
-int W3DShadowTexture::Init(RenderObjClass *robj)
+int32_t W3DShadowTexture::Init(RenderObjClass *robj)
 {
     TextureClass *tex = g_theW3DProjectedShadowManager->Get_Render_Target();
     SurfaceClass::SurfaceDescription surface_desc;
@@ -239,12 +239,12 @@ void W3DShadowTextureManager::Register_Missing(char const *name)
     m_missingTextureTable->Add(new MissingTextureClass(name));
 }
 
-int W3DShadowTextureManager::Is_Missing(char const *name)
+int32_t W3DShadowTextureManager::Is_Missing(char const *name)
 {
     return m_missingTextureTable->Find(name) != nullptr;
 }
 
-int W3DShadowTextureManager::Create_Texture(RenderObjClass *robj, char const *name)
+int32_t W3DShadowTextureManager::Create_Texture(RenderObjClass *robj, char const *name)
 {
     W3DShadowTexture *tex = new W3DShadowTexture();
 
@@ -280,7 +280,7 @@ W3DProjectedShadow::W3DProjectedShadow()
     m_next = nullptr;
     m_flags = 0;
 
-    for (int i = 0; i < 1; i++) {
+    for (int32_t i = 0; i < 1; i++) {
         m_shadowTexture[i] = nullptr;
     }
 }
@@ -399,7 +399,7 @@ W3DProjectedShadow::~W3DProjectedShadow()
 {
     Ref_Ptr_Release(m_shadowProjector);
 
-    for (int i = 0; i < 1; i++) {
+    for (int32_t i = 0; i < 1; i++) {
         Ref_Ptr_Release(m_shadowTexture[i]);
     }
 }
@@ -535,10 +535,10 @@ void W3DProjectedShadowManager::Update_Render_Target_Textures()
     }
 }
 
-int W3DProjectedShadowManager::Render_Projected_Terrain_Shadow(W3DProjectedShadow *shadow, AABoxClass &box)
+int32_t W3DProjectedShadowManager::Render_Projected_Terrain_Shadow(W3DProjectedShadow *shadow, AABoxClass &box)
 {
 #ifdef GAME_DLL
-    return Call_Method<int, W3DProjectedShadowManager, W3DProjectedShadow *, AABoxClass &>(
+    return Call_Method<int32_t, W3DProjectedShadowManager, W3DProjectedShadow *, AABoxClass &>(
         PICK_ADDRESS(0x0075F1D0, 0x0067D4FB), this, shadow, box);
 #else
     return 0;
@@ -604,7 +604,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
         float x;
         float y;
         float z;
-        int c;
+        int32_t c;
         float u;
         float v;
     };
@@ -623,7 +623,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
     if (g_theTerrainRenderObject) {
         if (DX8Wrapper::Get_D3D_Device8() != nullptr) {
             WorldHeightMap *hmap = g_theTerrainRenderObject->Get_Map();
-            int size = hmap->Border_Size();
+            int32_t size = hmap->Border_Size();
 
             if (robj) {
                 objPos = robj->Get_Position();
@@ -685,7 +685,7 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
             float min_y = boxCorners[0].Y;
             float max_y = boxCorners[0].Y;
 
-            for (int i = 1; i < 4; i++) {
+            for (int32_t i = 1; i < 4; i++) {
                 if (boxCorners[i].X >= max_x) {
                     max_x = boxCorners[i].X;
                 }
@@ -707,10 +707,10 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
             vVector *= shadow->m_sizeY;
             float uOffset = shadow->m_offsetX + 0.5f;
             float vOffset = shadow->m_offsetY + 0.5f;
-            int startX = size + GameMath::Fast_To_Int_Floor((objPos.X + min_x) * f1);
-            int endX = size + GameMath::Fast_To_Int_Ceil((objPos.X + max_x) * f1);
-            int startY = size + GameMath::Fast_To_Int_Floor((objPos.Y + min_y) * f1);
-            int endY = size + GameMath::Fast_To_Int_Ceil((objPos.Y + max_y) * f1);
+            int32_t startX = size + GameMath::Fast_To_Int_Floor((objPos.X + min_x) * f1);
+            int32_t endX = size + GameMath::Fast_To_Int_Ceil((objPos.X + max_x) * f1);
+            int32_t startY = size + GameMath::Fast_To_Int_Floor((objPos.Y + min_y) * f1);
+            int32_t endY = size + GameMath::Fast_To_Int_Ceil((objPos.Y + max_y) * f1);
 
             if (startX <= g_drawStartX) {
                 startX = g_drawStartX;
@@ -744,28 +744,28 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 endY = g_drawEdgeY;
             }
 
-            int i5 = endX - startX - 103;
+            int32_t i5 = endX - startX - 103;
 
             if (i5 > 0) {
-                int i6 = GameMath::Fast_To_Int_Floor((float)i5 / 2.0f);
+                int32_t i6 = GameMath::Fast_To_Int_Floor((float)i5 / 2.0f);
                 startX += i6;
                 endX -= i5 - i6;
             }
 
-            int i7 = endY - startY - 103;
+            int32_t i7 = endY - startY - 103;
 
             if (i7 > 0) {
-                int i8 = GameMath::Fast_To_Int_Floor((float)i7 / 2.0f);
+                int32_t i8 = GameMath::Fast_To_Int_Floor((float)i7 / 2.0f);
                 startY += i8;
                 endY -= i7 - i8;
             }
 
-            int i9 = endX - startX + 1;
-            int i10 = endY - startY + 1;
+            int32_t i9 = endX - startX + 1;
+            int32_t i10 = endY - startY + 1;
 
             if (i9 > 1 && i10 > 1) {
-                int numVerts = i10 * i9;
-                int numIndex = 6 * (endY - startY) * (endX - startX);
+                int32_t numVerts = i10 * i9;
+                int32_t numIndex = 6 * (endY - startY) * (endX - startX);
                 SHADOW_DECAL_VERTEX *pvVertices;
 
                 if (g_nShadowDecalVertsInBuf <= g_shadowDecalVertexSize - i10 * i9) {
@@ -793,10 +793,10 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
 
                 if (pvVertices) {
                     if (f2 == 0.0f) {
-                        for (int i = startY; i <= endY; i++) {
+                        for (int32_t i = startY; i <= endY; i++) {
                             hmapVertex.Y = (float)(i - size) * 10.0f;
 
-                            for (int j = startX; j <= endX; j++) {
+                            for (int32_t j = startX; j <= endX; j++) {
                                 hmapVertex.X = (float)(j - size) * 10.0f;
                                 hmapVertex.Z = (float)hmap->Get_Height(j, i) * g_heightMapScale + 0.1f;
                                 pvVertices->x = hmapVertex.X;
@@ -809,10 +809,10 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                             }
                         }
                     } else {
-                        for (int i = startY; i <= endY; i++) {
+                        for (int32_t i = startY; i <= endY; i++) {
                             hmapVertex.Y = (float)(i - size) * 10.0f;
 
-                            for (int j = startX; j <= endX; j++) {
+                            for (int32_t j = startX; j <= endX; j++) {
                                 hmapVertex.X = (float)(j - size) * 10.0f;
                                 char height = (float)hmap->Get_Height(j, i);
 
@@ -857,12 +857,12 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 }
 
                 if (pvIndices) {
-                    int i13 = 0;
+                    int32_t i13 = 0;
 
-                    for (int i = startY; i < endY; i++) {
-                        int i14 = i13;
+                    for (int32_t i = startY; i < endY; i++) {
+                        int32_t i14 = i13;
 
-                        for (int j = startX; j < endX; j++) {
+                        for (int32_t j = startX; j < endX; j++) {
                             if (hmap->Get_Flip_State(j, i)) {
                                 pvIndices[0] = i14 + g_nShadowDecalVertsInBatch + 1;
                                 pvIndices[1] = g_nShadowDecalVertsInBatch + i9 + i14;
@@ -898,12 +898,12 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
 #endif
 }
 
-int W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
+int32_t W3DProjectedShadowManager::Render_Shadows(RenderInfoClass &rinfo)
 {
     static AABoxClass aaBox;
     static SphereClass sphere;
 
-    int count = 0;
+    int32_t count = 0;
 
     if (!m_shadowList && !m_decalList) {
         return count;
@@ -1078,7 +1078,7 @@ Shadow *W3DProjectedShadowManager::Add_Decal(Shadow::ShadowTypeInfo *shadow_info
     }
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int32_t len = strlen(shadow_info->m_shadowName);
     strncpy(fname, shadow_info->m_shadowName, len);
     strcpy(&fname[len], ".tga");
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
@@ -1171,7 +1171,7 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
     }
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int32_t len = strlen(shadow_info->m_shadowName);
     strncpy(fname, shadow_info->m_shadowName, len);
     strcpy(&fname[len], ".tga");
     tex = m_W3DShadowTextureManager->Get_Texture(fname);
@@ -1195,7 +1195,7 @@ Shadow *W3DProjectedShadowManager::Add_Decal(RenderObjClass *robj, Shadow::Shado
 
     type = shadow_info->m_type;
     bool align = shadow_info->m_allowWorldAlign;
-    int flags = (type & SHADOW_DIRECTIONAL_PROJECTION) != 0;
+    int32_t flags = (type & SHADOW_DIRECTIONAL_PROJECTION) != 0;
     x = shadow_info->m_sizeX;
     y = shadow_info->m_sizeY;
     float offsetx = shadow_info->m_offsetX;
@@ -1285,7 +1285,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
     float y = 0.0f;
     float offsetx = 0.0f;
     float offsety = 0.0f;
-    int flags = 0;
+    int32_t flags = 0;
     if (!m_dynamicRenderTarget || !robj || !g_theWriteableGlobalData->m_shadowDecals) {
         return nullptr;
     }
@@ -1293,7 +1293,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
     if (shadow_info) {
         if (shadow_info->m_type == SHADOW_DECAL) {
             char fname[64];
-            int len = strlen(shadow_info->m_shadowName);
+            int32_t len = strlen(shadow_info->m_shadowName);
 
             if (len > 1) {
                 strncpy(fname, shadow_info->m_shadowName, len);
@@ -1450,7 +1450,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Create_Decal_Shadow(Shadow::Shado
     float f1 = 10.0f;
 
     char fname[64];
-    int len = strlen(shadow_info->m_shadowName);
+    int32_t len = strlen(shadow_info->m_shadowName);
 
     if (len > 1) {
         strncpy(fname, shadow_info->m_shadowName, len);

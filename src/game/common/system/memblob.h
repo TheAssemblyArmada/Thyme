@@ -27,7 +27,7 @@ class MemoryPoolBlob
 public:
     MemoryPoolBlob();
     ~MemoryPoolBlob();
-    void Init_Blob(MemoryPool *owning_pool, int count);
+    void Init_Blob(MemoryPool *owning_pool, int32_t count);
     void Add_Blob_To_List(MemoryPoolBlob **head, MemoryPoolBlob **tail);
     void Remove_Blob_From_List(MemoryPoolBlob **head, MemoryPoolBlob **tail);
     MemoryPoolSingleBlock *Allocate_Single_Block();
@@ -41,8 +41,8 @@ private:
     MemoryPoolBlob *m_nextBlob;
     MemoryPoolBlob *m_prevBlob;
     MemoryPoolSingleBlock *m_firstFreeBlock;
-    int m_usedBlocksInBlob;
-    int m_totalBlocksInBlob;
+    int32_t m_usedBlocksInBlob;
+    int32_t m_totalBlocksInBlob;
     char *m_blockData;
 };
 

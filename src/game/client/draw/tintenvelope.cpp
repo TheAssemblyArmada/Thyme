@@ -27,8 +27,7 @@ TintEnvelope::TintEnvelope() :
 {
 }
 
-void TintEnvelope::Play(
-    RGBColor const *peak_color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames)
+void TintEnvelope::Play(RGBColor const *peak_color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames)
 {
     Set_Peak_Color(peak_color);
 
@@ -48,7 +47,7 @@ void TintEnvelope::Play(
     }
 }
 
-void TintEnvelope::Set_Attack_Frames(unsigned int attack_frames)
+void TintEnvelope::Set_Attack_Frames(uint32_t attack_frames)
 {
     if (attack_frames < 1) {
         attack_frames = 1;
@@ -63,7 +62,7 @@ void TintEnvelope::Set_Attack_Frames(unsigned int attack_frames)
     m_attackColor.Scale(Vector3(f1, f1, f1));
 }
 
-void TintEnvelope::Set_Decay_Frames(unsigned int decay_frames)
+void TintEnvelope::Set_Decay_Frames(uint32_t decay_frames)
 {
     if (decay_frames < 1) {
         decay_frames = 1;

@@ -39,7 +39,7 @@ public:
 
     void Flush(RenderInfoClass &rinfo);
     void Add_Dynamic_Light(W3DDynamicLight *obj);
-    bool Cast_Ray(RayCollisionTestClass &ray_test, bool test_all, int collision_type);
+    bool Cast_Ray(RayCollisionTestClass &ray_test, bool test_all, int32_t collision_type);
     RefMultiListIterator<RenderObjClass> *Create_Lights_Iterator();
     void Destroy_Lights_Iterator(RefMultiListIterator<RenderObjClass> *it);
     void Do_Render(CameraClass *camera);
@@ -49,9 +49,9 @@ public:
     void flush_Translucent_Objects(RenderInfoClass &rinfo);
     W3DDynamicLight *Get_A_Dynamic_Light();
     void Remove_Dynamic_Light(W3DDynamicLight *obj);
-    void Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj, int local_player_index);
-    void Render_Specific_Drawables(RenderInfoClass &rinfo, int num_drawables, Drawable **drawables);
-    void Set_Global_Light(LightClass *light, int light_index);
+    void Render_One_Object(RenderInfoClass &rinfo, RenderObjClass *robj, int32_t local_player_index);
+    void Render_Specific_Drawables(RenderInfoClass &rinfo, int32_t num_drawables, Drawable **drawables);
+    void Set_Global_Light(LightClass *light, int32_t light_index);
     void Update_Fixed_Light_Environments(RenderInfoClass &rinfo);
     void Update_Player_Color_Passes();
 
@@ -71,25 +71,25 @@ protected:
     LightClass *m_sceneLight;
     Vector3 m_ambient;
     LightClass *m_infantryLight[LightEnvironmentClass::MAX_LIGHTS];
-    int m_numGlobalLights;
+    int32_t m_numGlobalLights;
     LightEnvironmentClass m_globalLightEnv;
     LightEnvironmentClass m_sceneLightEnv;
     W3DShroudMaterialPassClass *m_shroudMaterialPass;
     W3DMaskMaterialPassClass *m_maskMaterialPass;
     MaterialPassClass *m_normalMatPass;
     MaterialPassClass *m_stealthDetectedMatPass;
-    int m_unk;
+    int32_t m_unk;
     MaterialPassClass *m_occludedMatPassesPerPlayer[16];
     CustomScenePassModes m_customScenePassMode;
-    int m_translucentObjectsCount;
+    int32_t m_translucentObjectsCount;
     RenderObjClass **m_translucentObjectsBuffer;
-    int m_flaggedOccludedCount;
+    int32_t m_flaggedOccludedCount;
     RenderObjClass **m_occludedBuildingsBuffer;
     RenderObjClass **m_occludedObjectsBuffer;
     RenderObjClass **m_occludedOthersBuffer;
-    int m_occludedBuildingsCount;
-    int m_occludedObjectsCount;
-    int m_occludedOthersCount;
+    int32_t m_occludedBuildingsCount;
+    int32_t m_occludedObjectsCount;
+    int32_t m_occludedOthersCount;
     CameraClass *m_camera;
 };
 

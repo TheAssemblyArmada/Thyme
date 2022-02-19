@@ -81,16 +81,16 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
 #ifdef BUILD_WITH_D3D8
     captainslog_dbgassert(!m_pSrcTexture, "ReAcquire of existing shroud textures");
     captainslog_dbgassert(map, "Shroud init with NULL WorldHeightMap");
-    unsigned int width = 0;
-    unsigned int height = 0;
+    uint32_t width = 0;
+    uint32_t height = 0;
     m_cellWidth = world_cell_size_x;
     m_cellHeight = world_cell_size_y;
 
     if (map != nullptr) {
         m_numCellsX = GameMath::Fast_To_Int_Ceil(
-            (float)(int)((map->Get_X_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellWidth);
+            (float)(int32_t)((map->Get_X_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellWidth);
         m_numCellsY = GameMath::Fast_To_Int_Ceil(
-            (float)(int)((map->Get_Y_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellHeight);
+            (float)(int32_t)((map->Get_Y_Extent() - 1) - 2 * map->Border_Size()) * 10.0f / m_cellHeight);
         m_numMaxVisibleCellsX = GameMath::Fast_To_Int_Floor((float)(map->Get_Draw_Width() - 1) * 10.0f / m_cellWidth) + 1;
         width = m_numMaxVisibleCellsX;
         m_numMaxVisibleCellsY = GameMath::Fast_To_Int_Floor((float)(map->Get_Draw_Height() - 1) * 10.0f / m_cellHeight) + 1;
@@ -98,13 +98,13 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
         width = m_numCellsX;
         height = m_numCellsY;
         width += 2;
-        unsigned int volume = 1;
+        uint32_t volume = 1;
         height += 2;
         TextureLoader::Validate_Texture_Size(width, height, volume);
     }
 
-    int x = m_numCellsX;
-    int y = m_numCellsY;
+    int32_t x = m_numCellsX;
+    int32_t y = m_numCellsY;
     y++;
 
 #ifdef GAME_DEBUG_STRUCTS
@@ -212,7 +212,7 @@ bool W3DShroud::Re_Acquire_Resources()
     return false;
 }
 
-unsigned char W3DShroud::Get_Shroud_Level(int x, int y)
+unsigned char W3DShroud::Get_Shroud_Level(int32_t x, int32_t y)
 {
     captainslog_dbgassert(m_pSrcTexture, "Reading empty shroud");
 
@@ -220,41 +220,43 @@ unsigned char W3DShroud::Get_Shroud_Level(int x, int y)
         unsigned short s = *(unsigned short *)&m_srcTextureData[2 * x + m_srcTexturePitch * y];
 #ifdef GAME_DEBUG_STRUCTS
         if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-            return (int)((1.0f - (float)((int)s >> 12) / 15.0f) * 255.0f);
+            return (int32_t)((1.0f - (float)((int32_t)s >> 12) / 15.0f) * 255.0f);
         } else {
-            return (int)((float)(((int)s >> 5) & 0x3F) / 63.0f * 255.0f);
+            return (int32_t)((float)(((int32_t)s >> 5) & 0x3F) / 63.0f * 255.0f);
         }
 #else
-        return (int)((float)(((int)s >> 5) & 0x3F) / 63.0f * 255.0f);
+        return (int32_t)((float)(((int32_t)s >> 5) & 0x3F) / 63.0f * 255.0f);
 #endif
     }
 
     return 0;
 }
 
-void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
+void W3DShroud::Set_Shroud_Level(int32_t x, int32_t y, unsigned char level, bool unk)
 {
     captainslog_dbgassert(m_pSrcTexture, "Writing empty shroud.  Usually means that map failed to load.");
 
     if (m_pSrcTexture) {
         if (x < m_numCellsX && y < m_numCellsY) {
 
-            if (level < (int)g_theWriteableGlobalData->m_shroudAlpha) {
+            if (level < (int32_t)g_theWriteableGlobalData->m_shroudAlpha) {
                 level = g_theWriteableGlobalData->m_shroudAlpha;
             }
 
 #ifdef GAME_DEBUG_STRUCTS
             if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
                 *(unsigned short *)&m_srcTextureData[2 * x + m_srcTexturePitch * y] = ((((0xFF - level) >> 4) & 0xF) << 12)
-                    | ((((int)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
-                    | (16 * (((int)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
-                    | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
+                    | ((((int32_t)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
+                    | (16 * (((int32_t)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
+                    | ((int32_t)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
             } else {
                 float c = (float)level;
-                int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-                int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-                int b =
-                    (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+                int32_t r =
+                    (int32_t)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+                int32_t g =
+                    (int32_t)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+                int32_t b = (int32_t)(
+                    (float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
                 if (level == 0xFF) {
                     b = 0xFF;
@@ -267,9 +269,11 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
             }
 #else
             float c = (float)level;
-            int r = (int)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-            int g = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-            int b = (int)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+            int32_t r = (int32_t)((float)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+            int32_t g =
+                (int32_t)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+            int32_t b =
+                (int32_t)((float)((g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
             if (level == 0xFF) {
                 b = 0xFF;
@@ -286,7 +290,7 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
 
 void W3DShroud::Fill_Shroud_Data(unsigned char level)
 {
-    if (level < (int)g_theWriteableGlobalData->m_shroudAlpha) {
+    if (level < (int32_t)g_theWriteableGlobalData->m_shroudAlpha) {
         level = g_theWriteableGlobalData->m_shroudAlpha;
     }
 
@@ -294,14 +298,17 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
 
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-        data = ((((0xFF - level) >> 4) & 0xF) << 12) | ((((int)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
-            | (0x10 * (((int)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
-            | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
+        data = ((((0xFF - level) >> 4) & 0xF) << 12)
+            | ((((int32_t)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
+            | (0x10 * (((int32_t)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
+            | ((int32_t)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
     } else {
         float c = (float)level;
-        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+        int32_t r = (int32_t)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+        int32_t g =
+            (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+        int32_t b = (int32_t)(
+            (double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
         if (level == 0xFF) {
             b = 0xFF;
@@ -313,9 +320,11 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
     }
 #else
     float c = (float)level;
-    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+    int32_t r = (int32_t)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+    int32_t g =
+        (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+    int32_t b =
+        (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
     if (level == 0xFF) {
         b = 0xFF;
@@ -327,10 +336,10 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
 #endif
 
     unsigned char *src = m_srcTextureData;
-    int pitch = m_srcTexturePitch >> 1;
+    int32_t pitch = m_srcTexturePitch >> 1;
 
-    for (int i = 0; i < m_numCellsY; i++) {
-        for (int j = 0; j < m_numCellsX; j++) {
+    for (int32_t i = 0; i < m_numCellsY; i++) {
+        for (int32_t j = 0; j < m_numCellsX; j++) {
             *(unsigned short *)&src[2 * j] = data;
         }
 
@@ -341,7 +350,7 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
 void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surface)
 {
 #ifdef BUILD_WITH_D3D8
-    if (level < (int)g_theWriteableGlobalData->m_shroudAlpha) {
+    if (level < (int32_t)g_theWriteableGlobalData->m_shroudAlpha) {
         level = g_theWriteableGlobalData->m_shroudAlpha;
     }
 
@@ -349,14 +358,17 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
 
 #ifdef GAME_DEBUG_STRUCTS
     if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-        data = ((((0xFF - level) >> 4) & 0xF) << 12) | ((((int)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
-            | (0x10 * (((int)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
-            | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
+        data = ((((0xFF - level) >> 4) & 0xF) << 12)
+            | ((((int32_t)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
+            | (0x10 * (((int32_t)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
+            | ((int32_t)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
     } else {
         float c = (float)level;
-        int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-        int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-        int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+        int32_t r = (int32_t)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+        int32_t g =
+            (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+        int32_t b = (int32_t)(
+            (double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
         if (level == 0xFF) {
             b = 0xFF;
@@ -368,9 +380,11 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
     }
 #else
     float c = (float)level;
-    int r = (int)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
-    int g = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
-    int b = (int)((double)((int)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
+    int32_t r = (int32_t)((double)(unsigned char)g_theWriteableGlobalData->m_shroudColor.Get_As_Int() / 255.0f * c);
+    int32_t g =
+        (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF00) >> 8) / 255.0f * c);
+    int32_t b =
+        (int32_t)((double)((int32_t)(g_theWriteableGlobalData->m_shroudColor.Get_As_Int() & 0xFF0000) >> 0x10) / 255.0f * c);
 
     if (level == 0xFF) {
         b = 0xFF;
@@ -382,7 +396,7 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
 #endif
     unsigned char *src = &m_srcTextureData[2 * (m_srcTexturePitch >> 1) * m_numCellsY];
 
-    for (int i = 0; i < m_numCellsX; i++) {
+    for (int32_t i = 0; i < m_numCellsX; i++) {
         *(unsigned short *)&src[2 * i] = data;
     }
 
@@ -395,20 +409,20 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
     POINT point;
     point.x = 0;
     point.y = 0;
-    unsigned int i1 = this->m_dstTextureWidth / src_rect.right;
-    unsigned int i2 = this->m_dstTextureWidth % src_rect.right;
+    uint32_t i1 = this->m_dstTextureWidth / src_rect.right;
+    uint32_t i2 = this->m_dstTextureWidth % src_rect.right;
 
-    for (unsigned int j = 0; j < m_dstTextureHeight; j++) {
+    for (uint32_t j = 0; j < m_dstTextureHeight; j++) {
         point.y = j;
         point.x = 0;
 
-        for (int i = 0; i < (int)i1; i++) {
+        for (int32_t i = 0; i < (int32_t)i1; i++) {
             point.x = src_rect.right * i;
             DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Get_D3D_Surface(), &point);
         }
 
         if (i2) {
-            unsigned int right = src_rect.right;
+            uint32_t right = src_rect.right;
             point.x = src_rect.right * i1;
             src_rect.right = i2;
             DX8Wrapper::Copy_DX8_Rects(m_pSrcTexture, &src_rect, 1, surface->Get_D3D_Surface(), &point);
@@ -443,13 +457,13 @@ void W3DShroud::Render(CameraClass *cam)
 
             // TODO investigate dead code
 
-            int visible_start_x = 0;
-            int visible_start_y = 0;
+            int32_t visible_start_x = 0;
+            int32_t visible_start_y = 0;
 
             // TODO investigate dead code
 
-            int visible_end_x = m_numCellsX;
-            int visible_end_y = m_numCellsY;
+            int32_t visible_end_x = m_numCellsX;
+            int32_t visible_end_y = m_numCellsY;
             m_drawOriginX = (float)visible_start_x * m_cellWidth;
             m_drawOriginY = (float)visible_start_y * m_cellHeight;
 

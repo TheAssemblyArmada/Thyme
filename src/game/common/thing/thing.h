@@ -90,5 +90,5 @@ private:
     mutable Coord3D m_cachedDirVector;
     mutable float m_cachedAltitudeAboveTerrain;
     mutable float m_cachedAltitudeAboveTerrainOrWater;
-    mutable int m_cacheFlags;
+    mutable int32_t m_cacheFlags;
 };

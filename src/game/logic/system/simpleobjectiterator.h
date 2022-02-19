@@ -45,5 +45,5 @@ private:
 
     Clump *m_firstClump;
     Clump *m_curClump;
-    int m_clumpCount;
+    int32_t m_clumpCount;
 };

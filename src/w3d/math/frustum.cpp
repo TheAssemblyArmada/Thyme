@@ -41,7 +41,7 @@ void FrustumClass::Init(const Matrix3D &camera, const Vector2 &vpmin, const Vect
     m_corners[3] *= znear;
     m_corners[7] *= zfar;
 
-    for (int i = 0; i < 8; i++) {
+    for (int32_t i = 0; i < 8; i++) {
         Matrix3D::Transform_Vector(m_cameraTransform, m_corners[i], &(m_corners[i]));
     }
 
@@ -55,7 +55,7 @@ void FrustumClass::Init(const Matrix3D &camera, const Vector2 &vpmin, const Vect
 
     m_boundMin = m_boundMax = m_corners[0];
 
-    for (int i = 1; i < 8; i++) {
+    for (int32_t i = 1; i < 8; i++) {
         if (m_corners[i].X < m_boundMin.X) {
             m_boundMin.X = m_corners[i].X;
         }

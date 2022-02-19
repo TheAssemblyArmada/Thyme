@@ -163,8 +163,8 @@ public:
     static void Parse_Weapon_Template_Set(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data);
 
-    int Calc_Cost_To_Build(const Player *player) const;
-    int Calc_Time_To_Build(const Player *player) const;
+    int32_t Calc_Cost_To_Build(const Player *player) const;
+    int32_t Calc_Time_To_Build(const Player *player) const;
     bool Can_Possibly_Have_Any_Weapon() const;
     void Copy_From(const ThingTemplate *that);
     const ArmorTemplateSet *Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const;
@@ -176,7 +176,7 @@ public:
     unsigned short Get_Max_Simultaneous_Of_Type() const;
     const FXList *Get_Per_Unit_FX(const Utf8String &fxname) const;
     const AudioEventRTS *Get_Per_Unit_Sound(const Utf8String &soundname) const;
-    int Get_Skill_Point_Value(int level) const;
+    int32_t Get_Skill_Point_Value(int32_t level) const;
     void Init_For_LTA(const Utf8String &name);
     bool Is_Equivalent_To(const ThingTemplate *reskin) const;
     bool Remove_Module_Info(const Utf8String &tag, Utf8String &name);
@@ -255,7 +255,7 @@ public:
     bool Has_Sound_Ambient() const { return Has_Audio(THING_SOUNDAMBIENT); }
     bool Has_Audio(ThingTemplateAudioType type) const { return m_audio.sound[type] != nullptr; }
 
-    int Get_Energy_Production() const { return m_energyProduction; }
+    int32_t Get_Energy_Production() const { return m_energyProduction; }
     EditorSortingType Get_Editor_Sorting() const { return (EditorSortingType)m_editorSorting; }
     const GeometryInfo &Get_Template_Geometry_Info() const { return m_geometryInfo; }
     float Get_Vision_Range() const { return m_visionRange; }
@@ -264,13 +264,13 @@ public:
     const Utf8String &Get_Command_Set_String() const { return m_commandSetString; }
     float Get_Fence_Width() const { return m_fenceWidth; }
     float Get_Fence_X_Offset() { return m_fenceXOffset; }
-    unsigned int Get_Display_Color() const { return m_displayColor; }
+    uint32_t Get_Display_Color() const { return m_displayColor; }
     const Utf16String &Get_Display_Name() const { return m_displayName; }
     const ModuleInfo *Get_Body_Modules() const { return &m_body; }
     float Get_Asset_Scale() const { return m_assetScale; }
     float Get_Placement_View_Angle() const { return m_placementViewAngle; }
     const ModuleInfo *Get_Draw_Modules() const { return &m_draws; }
-    unsigned int Get_Shadow_Type() const { return m_shadowType; }
+    uint32_t Get_Shadow_Type() const { return m_shadowType; }
     float Get_Shadow_Size_X() const { return m_shadowSizeX; }
     float Get_Shadow_Size_Y() const { return m_shadowSizeY; }
     float Get_Shadow_Offset_X() const { return m_shadowOffsetX; }
@@ -279,32 +279,32 @@ public:
     unsigned short Get_Template_ID() const { return m_templateID; }
     const std::vector<Utf8String> &Get_Build_Variations() const { return m_buildVariations; }
     const ModuleInfo *Get_Client_Update_Modules() const { return &m_clientUpdates; }
-    int Get_Prereq_Count() const { return m_prerequisites.size(); }
-    int Get_Build_Cost() const { return m_buildCost; }
+    int32_t Get_Prereq_Count() const { return m_prerequisites.size(); }
+    int32_t Get_Build_Cost() const { return m_buildCost; }
     BuildCompletionType Get_Build_Completion() const { return (BuildCompletionType)m_buildCompletion; }
     float Get_Build_Time() const { return m_buildTime; }
     float Get_Shroud_Clearing_Range() const { return m_shroudClearingRange; }
-    unsigned int Get_Occlusion_Delay() const { return m_occlusionDelay; }
+    uint32_t Get_Occlusion_Delay() const { return m_occlusionDelay; }
     unsigned char Get_Crusher_Level() const { return m_crusherLevel; }
-    int Get_Energy_Bonus() const { return m_energyBonus; }
+    int32_t Get_Energy_Bonus() const { return m_energyBonus; }
     RadarPriorityType Get_Radar_Priority() const { return (RadarPriorityType)m_radarPriority; }
-    int Get_Raw_Transport_Slot_Count() const { return m_transportSlotCount; }
+    int32_t Get_Raw_Transport_Slot_Count() const { return m_transportSlotCount; }
     Image *Get_Selected_Portrait_Image() const { return m_selectedPortraitImage; }
     float Get_Instance_Scale_Fuzziness() const { return m_instanceScaleFuzziness; }
     float Get_Shroud_Reveal_To_All_Range() const { return m_shroudRevealToAllRange; }
     unsigned char Get_Crushable_Level() const { return m_crushableLevel; }
-    int Get_Threat_Value() const { return m_threatValue; }
+    int32_t Get_Threat_Value() const { return m_threatValue; }
     const Utf8String &Get_Default_Owning_Side() const { return m_defaultOwningSide; }
-    int Get_Experience_Value(int level) const { return m_experienceValues[level]; }
+    int32_t Get_Experience_Value(int32_t level) const { return m_experienceValues[level]; }
     NameKeyType Get_Max_Simultaneous_Link_Key() const { return m_maxSimultaneousLinkKey; }
-    int Get_Experience_Required(int level) const { return m_experienceRequired[level]; }
+    int32_t Get_Experience_Required(int32_t level) const { return m_experienceRequired[level]; }
     Image *Get_Button_Image() const { return m_buttonImage; }
-    Utf8String Get_Upgrade_Cameo_Name(int i) const { return m_upgradeCameoNames[i]; }
+    Utf8String Get_Upgrade_Cameo_Name(int32_t i) const { return m_upgradeCameoNames[i]; }
     float Get_Structure_Rubble_Height() const { return m_structureRubbleHeight; }
-    int Get_Refund_Value() const { return m_refundValue; }
+    int32_t Get_Refund_Value() const { return m_refundValue; }
     float Get_Factory_Exit_Width() const { return m_factoryExitWidth; }
     float Get_Factory_Extra_Bib_Width() const { return m_factoryExtraBibWidth; }
-    Utf8String Get_Upgrade_Cameo_Name(int cameo) { return m_upgradeCameoNames[cameo]; }
+    Utf8String Get_Upgrade_Cameo_Name(int32_t cameo) { return m_upgradeCameoNames[cameo]; }
 
     bool Is_Trainable() const { return m_isTrainable; }
     bool Is_Build_Facility() const { return m_isBuildFacility; }
@@ -313,7 +313,7 @@ public:
     bool Is_Hijack_Guard() const { return m_hijackGuard; }
     bool Is_KindOf(KindOfType t) const { return m_kindOf.Test(t); }
     bool Is_Bridge() const { return m_isBridge; }
-    int Is_Buildable_Item() const { return m_buildCost != 0; }
+    int32_t Is_Buildable_Item() const { return m_buildCost != 0; }
 
     ThingTemplate *Friend_Get_Next_Template() const { return m_nextThingTemplate; }
     void Friend_Set_Next_Template(ThingTemplate *tmplate) { m_nextThingTemplate = tmplate; }
@@ -343,9 +343,9 @@ private:
     ModuleInfo m_body;
     ModuleInfo m_draws;
     ModuleInfo m_clientUpdates;
-    int m_skillPointValues[RANK_LEVEL_COUNT];
-    int m_experienceValues[RANK_LEVEL_COUNT];
-    int m_experienceRequired[RANK_LEVEL_COUNT];
+    int32_t m_skillPointValues[RANK_LEVEL_COUNT];
+    int32_t m_experienceValues[RANK_LEVEL_COUNT];
+    int32_t m_experienceRequired[RANK_LEVEL_COUNT];
     std::vector<ProductionPrerequisite> m_prerequisites;
     std::vector<Utf8String> m_buildVariations;
     std::vector<WeaponTemplateSet> m_weaponTemplateSets;
@@ -373,10 +373,10 @@ private:
     float m_shadowSizeY;
     float m_shadowOffsetX;
     float m_shadowOffsetY;
-    int m_energyProduction;
-    int m_energyBonus;
-    unsigned int m_displayColor;
-    unsigned int m_occlusionDelay;
+    int32_t m_energyProduction;
+    int32_t m_energyBonus;
+    uint32_t m_displayColor;
+    uint32_t m_occlusionDelay;
     NameKeyType m_maxSimultaneousLinkKey;
     unsigned short m_templateID;
     unsigned short m_buildCost;

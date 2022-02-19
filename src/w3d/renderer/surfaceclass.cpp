@@ -69,7 +69,7 @@ void SurfaceClass::Get_Description(SurfaceDescription &surface_desc)
  * @param pitch A pointer to an integer to get the pitch of the locked surface.
  * @return Returns a pointer to the surfaces data.
  */
-void *SurfaceClass::Lock(int *pitch)
+void *SurfaceClass::Lock(int32_t *pitch)
 {
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
@@ -95,7 +95,7 @@ void *SurfaceClass::Lock(int *pitch)
  * @param discard Should the discard option be passed to the underlying representation?
  * @return Returns a pointer to the surfaces data.
  */
-void *SurfaceClass::Lock(int *pitch, bool discard)
+void *SurfaceClass::Lock(int32_t *pitch, bool discard)
 {
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
@@ -120,7 +120,7 @@ void *SurfaceClass::Lock(int *pitch, bool discard)
  * @param pitch A pointer to an integer to get the pitch of the locked surface.
  * @return Returns a pointer to the surfaces data.
  */
-void *SurfaceClass::Lock_Rect(int *pitch, int left, int top, int right, int bottom)
+void *SurfaceClass::Lock_Rect(int32_t *pitch, int32_t left, int32_t top, int32_t right, int32_t bottom)
 {
 #ifdef BUILD_WITH_D3D8
     RECT rect;
@@ -164,7 +164,7 @@ void SurfaceClass::Unlock()
  * @param pitch A pointer to an integer to get the pitch of the locked surface.
  * @return Returns a pointer to the surfaces data.
  */
-void *SurfaceClass::Lock_ReadOnly(int *pitch)
+void *SurfaceClass::Lock_ReadOnly(int32_t *pitch)
 {
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
@@ -190,8 +190,8 @@ void SurfaceClass::Clear()
 {
     SurfaceDescription desc;
     Get_Description(desc);
-    int px_size = Pixel_Size(desc);
-    int pitch;
+    int32_t px_size = Pixel_Size(desc);
+    int32_t pitch;
     uint8_t *bytes = static_cast<uint8_t *>(Lock(&pitch));
 
     for (unsigned i = 0; i < desc.height; ++i) {
@@ -209,12 +209,12 @@ void SurfaceClass::Copy(Vector2i &min, Vector2i &max, unsigned char *other)
 {
     SurfaceDescription sd;
     Get_Description(sd);
-    int size = Pixel_Size(sd);
-    int pitch;
+    int32_t size = Pixel_Size(sd);
+    int32_t pitch;
     uint8_t *bytes = static_cast<uint8_t *>(Lock_Rect(&pitch, min.I, max.I, min.J, max.J));
-    int diff = max.I - min.I;
+    int32_t diff = max.I - min.I;
 
-    for (int i = min.J; i < max.J; ++i) {
+    for (int32_t i = min.J; i < max.J; ++i) {
         memcpy(bytes, &other[size * (min.I + sd.width * i)], diff * size);
         bytes += pitch;
     }
@@ -272,8 +272,8 @@ void SurfaceClass::Draw_Pixel(unsigned x, unsigned y, unsigned color)
 {
     SurfaceDescription desc;
     Get_Description(desc);
-    int px_size = Pixel_Size(desc);
-    int pitch;
+    int32_t px_size = Pixel_Size(desc);
+    int32_t pitch;
     void *bytes = Lock_Rect(&pitch, x, y, x + 1, y + 1);
 
     switch (px_size) {
@@ -300,8 +300,8 @@ void SurfaceClass::Draw_Horizonal_Line(unsigned y, unsigned x1, unsigned x2, uns
 {
     SurfaceDescription desc;
     Get_Description(desc);
-    int px_size = Pixel_Size(desc);
-    int pitch;
+    int32_t px_size = Pixel_Size(desc);
+    int32_t pitch;
     uint8_t *bytes = static_cast<uint8_t *>(Lock_Rect(&pitch, x1, y, x2 + 1, y + 1));
 
     for (unsigned i = x1; i <= x2; ++i) {
@@ -364,7 +364,7 @@ void SurfaceClass::Detach()
 /**
  * Gets the pixel size for a given SurfaceDescription in bytes.
  */
-int SurfaceClass::Pixel_Size(const SurfaceDescription &desc)
+int32_t SurfaceClass::Pixel_Size(const SurfaceDescription &desc)
 {
     switch (desc.format) {
         case WW3D_FORMAT_R8G8B8:
@@ -420,15 +420,15 @@ void SurfaceClass::FindBB(Vector2i *min, Vector2i *max)
             break;
     }
 
-    int pitch;
+    int32_t pitch;
     uint8_t *bytes = static_cast<uint8_t *>(Lock_Rect(&pitch, min->I, min->J, max->I, max->J));
 
-    int px_size = Pixel_Size(desc);
+    int32_t px_size = Pixel_Size(desc);
     Vector2i real_min = *max;
     Vector2i real_max = *min;
 
-    for (int i = min->J; i < max->J; ++i) {
-        for (int j = min->I; j < max->I; ++j) {
+    for (int32_t i = min->J; i < max->J; ++i) {
+        for (int32_t j = min->I; j < max->I; ++j) {
             if ((bytes[pitch * (i - min->J) + px_size * (j - min->I) + px_size - 1] >> (8 - alpha)) & mask) {
                 real_min.I = std::min(real_min.I, j);
                 real_max.I = std::max(real_max.I, j);
@@ -455,8 +455,8 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
     Get_Description(desc);
     captainslog_assert(column < desc.width);
     captainslog_assert(Has_Alpha(desc.format));
-    int alpha = Alpha_Bits(desc.format);
-    int mask = 0;
+    int32_t alpha = Alpha_Bits(desc.format);
+    int32_t mask = 0;
 
     switch (alpha) {
         case 1:
@@ -472,7 +472,7 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
             break;
     }
 
-    int px_size = Pixel_Size(desc);
+    int32_t px_size = Pixel_Size(desc);
     _D3DLOCKED_RECT lock_rect;
     RECT rect;
     lock_rect.Pitch = 0;

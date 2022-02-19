@@ -19,18 +19,18 @@
 struct PoolInitRec
 {
     const char *pool_name;
-    int allocation_size;
-    int initial_allocation_count;
-    int overflow_allocation_count;
+    int32_t allocation_size;
+    int32_t initial_allocation_count;
+    int32_t overflow_allocation_count;
 };
 
 struct PoolSizeRec
 {
     const char *pool_name;
-    int initial_allocation_count;
-    int overflow_allocation_count;
+    int32_t initial_allocation_count;
+    int32_t overflow_allocation_count;
 };
 
-void User_Memory_Adjust_Pool_Size(const char *name, int &initial_alloc, int &overflow_alloc);
-void User_Memory_Get_DMA_Params(int *count, PoolInitRec const **params);
+void User_Memory_Adjust_Pool_Size(const char *name, int32_t &initial_alloc, int32_t &overflow_alloc);
+void User_Memory_Get_DMA_Params(int32_t *count, PoolInitRec const **params);
 void User_Memory_Init_Pools();

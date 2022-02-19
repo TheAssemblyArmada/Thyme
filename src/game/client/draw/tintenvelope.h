@@ -40,7 +40,7 @@ public:
     void Xfer_Snapshot(Xfer *xfer) override;
     void Load_Post_Process() override {}
 
-    void Play(RGBColor const *peak_color, unsigned int attack_frames, unsigned int decay_frames, unsigned int peak_frames);
+    void Play(RGBColor const *peak_color, uint32_t attack_frames, uint32_t decay_frames, uint32_t peak_frames);
 
     void Update();
 
@@ -50,8 +50,8 @@ public:
     Vector3 *Get_Tint_Color() { return &m_tintColor; }
 
 private:
-    void Set_Attack_Frames(unsigned int attack_frames);
-    void Set_Decay_Frames(unsigned int decay_frames);
+    void Set_Attack_Frames(uint32_t attack_frames);
+    void Set_Decay_Frames(uint32_t decay_frames);
     void Set_Peak_Color(RGBColor const *color);
 
 private:
@@ -59,7 +59,7 @@ private:
     Vector3 m_decayColor;
     Vector3 m_peakColor;
     Vector3 m_tintColor;
-    unsigned int m_peakWaitFrames;
+    uint32_t m_peakWaitFrames;
     TintState m_state;
     bool m_isTinted;
 };

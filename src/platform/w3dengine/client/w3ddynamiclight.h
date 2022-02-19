@@ -23,7 +23,7 @@ public:
     virtual ~W3DDynamicLight() override {}
     virtual void On_Frame_Update() override;
 
-    void Set_Frame_Fade(unsigned int frame_increase_time, unsigned int decay_frame_time);
+    void Set_Frame_Fade(uint32_t frame_increase_time, uint32_t decay_frame_time);
 
     bool Is_Enabled() { return m_enabled; }
     void Set_Enabled(bool enabled)
@@ -41,21 +41,21 @@ public:
 private:
     bool m_priorEnable;
     bool m_processMe;
-    int m_prevMinX;
-    int m_prevMinY;
-    int m_prevMaxX;
-    int m_prevMaxY;
-    int m_minX;
-    int m_minY;
-    int m_maxX;
-    int m_maxY;
+    int32_t m_prevMinX;
+    int32_t m_prevMinY;
+    int32_t m_prevMaxX;
+    int32_t m_prevMaxY;
+    int32_t m_minX;
+    int32_t m_minY;
+    int32_t m_maxX;
+    int32_t m_maxY;
     bool m_enabled;
     bool m_decayRange;
     bool m_decayColor;
-    int m_curDecayFrameCount;
-    int m_curIncreaseFrameCount;
-    int m_decayFrameCount;
-    int m_increaseFrameCount;
+    int32_t m_curDecayFrameCount;
+    int32_t m_curIncreaseFrameCount;
+    int32_t m_decayFrameCount;
+    int32_t m_increaseFrameCount;
     float m_targetRange;
     Vector3 m_targetAmbient;
     Vector3 m_targetDiffuse;

@@ -29,23 +29,23 @@ public:
     W3DStatusCircle &operator=(const W3DStatusCircle &that);
 
     virtual ~W3DStatusCircle() override;
-    virtual int Class_ID() const override;
+    virtual int32_t Class_ID() const override;
     virtual RenderObjClass *Clone() const override;
     virtual void Render(RenderInfoClass &rinfo) override;
     virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
     virtual void Get_Obj_Space_Bounding_Sphere(SphereClass &sphere) const override;
     virtual void Get_Obj_Space_Bounding_Box(AABoxClass &box) const override;
 
-    int Free_Map_Resources();
-    int Init_Data();
-    int Update_Circle_VB();
-    int Update_Screen_VB(int diffuse);
+    int32_t Free_Map_Resources();
+    int32_t Init_Data();
+    int32_t Update_Circle_VB();
+    int32_t Update_Screen_VB(int32_t diffuse);
 
-    static int g_diffuse;
+    static int32_t g_diffuse;
     static bool g_needUpdate;
 
 private:
-    int m_numTriangles;
+    int32_t m_numTriangles;
     DX8IndexBufferClass *m_indexBuffer;
     ShaderClass m_shaderClass;
     VertexMaterialClass *m_vertexMaterialClass;

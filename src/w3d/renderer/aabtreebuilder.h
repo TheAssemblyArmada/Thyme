@@ -32,12 +32,12 @@ public:
     AABTreeBuilderClass();
     ~AABTreeBuilderClass();
 
-    void Build_AABTree(int polycount, TriIndex *polys, int vertcount, Vector3 *verts);
-    void Build_AABTree(int polycount, Vector3i *polys, int vertcount, Vector3 *verts);
+    void Build_AABTree(int32_t polycount, TriIndex *polys, int32_t vertcount, Vector3 *verts);
+    void Build_AABTree(int32_t polycount, Vector3i *polys, int32_t vertcount, Vector3 *verts);
     void Export(ChunkSaveClass &csave);
 
-    int Node_Count();
-    int Poly_Count();
+    int32_t Node_Count();
+    int32_t Poly_Count();
 
     enum
     {
@@ -74,13 +74,13 @@ private:
             }
         }
 
-        int m_index;
+        int32_t m_index;
         Vector3 m_min;
         Vector3 m_max;
         CullNodeStruct *m_front;
         CullNodeStruct *m_back;
-        int m_polyCount;
-        int *m_polyIndices;
+        int32_t m_polyCount;
+        int32_t *m_polyIndices;
     };
 
     struct SplitChoiceStruct
@@ -98,8 +98,8 @@ private:
         }
 
         float m_cost;
-        int m_frontCount;
-        int m_backCount;
+        int32_t m_frontCount;
+        int32_t m_backCount;
         Vector3 m_bMin;
         Vector3 m_bMax;
         Vector3 m_fMin;
@@ -111,10 +111,10 @@ private:
     {
         SplitArraysStruct() : m_frontCount(0), m_backCount(0), m_frontPolys(nullptr), m_backPolys(nullptr) {}
 
-        int m_frontCount;
-        int m_backCount;
-        int *m_frontPolys;
-        int *m_backPolys;
+        int32_t m_frontCount;
+        int32_t m_backCount;
+        int32_t *m_frontPolys;
+        int32_t *m_backPolys;
     };
 
     enum OverlapType
@@ -131,26 +131,26 @@ private:
     };
 
     void Reset();
-    void Build_Tree(CullNodeStruct *node, int polycount, int *polyindices);
-    SplitChoiceStruct Select_Splitting_Plane(int polycount, int *polyindices);
-    SplitChoiceStruct Compute_Plane_Score(int polycont, int *polyindices, const AAPlaneClass &plane);
-    void Split_Polys(int polycount, int *polyindices, const SplitChoiceStruct &sc, SplitArraysStruct *arrays);
-    OverlapType Which_Side(const AAPlaneClass &plane, int poly_index);
+    void Build_Tree(CullNodeStruct *node, int32_t polycount, int32_t *polyindices);
+    SplitChoiceStruct Select_Splitting_Plane(int32_t polycount, int32_t *polyindices);
+    SplitChoiceStruct Compute_Plane_Score(int32_t polycont, int32_t *polyindices, const AAPlaneClass &plane);
+    void Split_Polys(int32_t polycount, int32_t *polyindices, const SplitChoiceStruct &sc, SplitArraysStruct *arrays);
+    OverlapType Which_Side(const AAPlaneClass &plane, int32_t poly_index);
     void Compute_Bounding_Box(CullNodeStruct *node);
-    int Assign_Index(CullNodeStruct *node, int index);
-    int Node_Count_Recursive(CullNodeStruct *node, int curcount);
-    void Update_Min(int poly_index, Vector3 &set_min);
-    void Update_Max(int poly_index, Vector3 &set_max);
-    void Update_Min_Max(int poly_index, Vector3 &set_min, Vector3 &set_max);
+    int32_t Assign_Index(CullNodeStruct *node, int32_t index);
+    int32_t Node_Count_Recursive(CullNodeStruct *node, int32_t curcount);
+    void Update_Min(int32_t poly_index, Vector3 &set_min);
+    void Update_Max(int32_t poly_index, Vector3 &set_max);
+    void Update_Min_Max(int32_t poly_index, Vector3 &set_min, Vector3 &set_max);
 
     void Build_W3D_AABTree_Recursive(
-        CullNodeStruct *node, W3dMeshAABTreeNode *w3dnodes, uint32_t *poly_indices, int &cur_node, int &cur_poly);
+        CullNodeStruct *node, W3dMeshAABTreeNode *w3dnodes, uint32_t *poly_indices, int32_t &cur_node, int32_t &cur_poly);
     CullNodeStruct *m_root;
-    int m_curPolyIndex;
+    int32_t m_curPolyIndex;
 
-    int m_polyCount;
+    int32_t m_polyCount;
     TriIndex *m_polys;
-    int m_vertCount;
+    int32_t m_vertCount;
     Vector3 *m_verts;
 
     friend class AABTreeClass;

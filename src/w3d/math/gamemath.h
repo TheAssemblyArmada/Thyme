@@ -58,8 +58,8 @@
 #define DEG_TO_RADF(x) (((float)x) * GAMEMATH_PI / 180.0f)
 #endif
 
-const int ARC_TABLE_SIZE = 1024;
-const int SIN_TABLE_SIZE = 1024;
+const int32_t ARC_TABLE_SIZE = 1024;
+const int32_t SIN_TABLE_SIZE = 1024;
 
 extern const Array<float, ARC_TABLE_SIZE> _FastAcosTable;
 extern const Array<float, ARC_TABLE_SIZE> _FastAsinTable;
@@ -129,7 +129,7 @@ inline float Fabs(float val)
     return float(*reinterpret_cast<float_a *>(&value));
 }
 
-inline int Float_To_Int_Chop(const float &f)
+inline int32_t Float_To_Int_Chop(const float &f)
 {
     int32_t a = *reinterpret_cast<const int32_a *>(&f);
     int32_t sign = (a >> 31);
@@ -140,7 +140,7 @@ inline int Float_To_Int_Chop(const float &f)
     return ((r ^ (sign)) - sign) & ~(exponent >> 31);
 }
 
-inline int Float_To_Int_Floor(const float &f)
+inline int32_t Float_To_Int_Floor(const float &f)
 {
     int32_t a = *reinterpret_cast<const int32_a *>(&f);
     int32_t sign = (a >> 31);
@@ -240,8 +240,8 @@ inline float Tan(float val)
 inline float Fast_Sin(float val)
 {
     val *= float(SIN_TABLE_SIZE) / (2.0f * GAMEMATH_PI);
-    int idx0 = Float_To_Int_Floor(val);
-    int idx1 = idx0 + 1;
+    int32_t idx0 = Float_To_Int_Floor(val);
+    int32_t idx1 = idx0 + 1;
     float frac = val - float(idx0);
     idx0 = (unsigned(idx0)) & (SIN_TABLE_SIZE - 1);
     idx1 = (unsigned(idx1)) & (SIN_TABLE_SIZE - 1);
@@ -258,8 +258,8 @@ inline float Fast_Cos(float val)
 {
     val += (GAMEMATH_PI * 0.5f);
     val *= float(SIN_TABLE_SIZE) / (2.0f * GAMEMATH_PI);
-    int idx0 = Float_To_Int_Floor(val);
-    int idx1 = idx0 + 1;
+    int32_t idx0 = Float_To_Int_Floor(val);
+    int32_t idx1 = idx0 + 1;
     float frac = val - float(idx0);
     idx0 = (unsigned(idx0)) & (SIN_TABLE_SIZE - 1);
     idx1 = (unsigned(idx1)) & (SIN_TABLE_SIZE - 1);
@@ -280,8 +280,8 @@ inline float Fast_Acos(float val)
     }
 
     val *= float(ARC_TABLE_SIZE / 2);
-    int idx0 = Float_To_Int_Floor(val);
-    int idx1 = idx0 + 1;
+    int32_t idx0 = Float_To_Int_Floor(val);
+    int32_t idx1 = idx0 + 1;
     float frac = val - float(idx0);
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
@@ -300,8 +300,8 @@ inline float Fast_Asin(float val)
     }
 
     val *= float(ARC_TABLE_SIZE / 2);
-    int idx0 = Float_To_Int_Floor(val);
-    int idx1 = idx0 + 1;
+    int32_t idx0 = Float_To_Int_Floor(val);
+    int32_t idx1 = idx0 + 1;
     float frac = val - float(idx0);
     idx0 += ARC_TABLE_SIZE / 2;
     idx1 += ARC_TABLE_SIZE / 2;
@@ -348,7 +348,7 @@ inline bool Fast_Is_Float_Positive(const float &val)
     return ((*reinterpret_cast<uint32_a const *>(&val)) & 0x80000000) == 0;
 }
 
-inline int Fast_To_Int_Floor(float val)
+inline int32_t Fast_To_Int_Floor(float val)
 {
     static const float _almost_one = 0.99999994f;
 
@@ -363,7 +363,7 @@ inline int Fast_To_Int_Floor(float val)
 #endif
 }
 
-inline int Fast_To_Int_Ceil(float val)
+inline int32_t Fast_To_Int_Ceil(float val)
 {
     static const float _almost_one = 0.99999994f;
 
@@ -378,7 +378,7 @@ inline int Fast_To_Int_Ceil(float val)
 #endif
 }
 
-inline int Fast_To_Int_Truncate(float val)
+inline int32_t Fast_To_Int_Truncate(float val)
 {
 #ifdef BUILD_WITH_GAMEMATH
     return gm_lrintf(gm_truncf(val));
@@ -450,17 +450,17 @@ inline float Lerp(float a, float b, float lerp)
 //    return (a + (b - a) * lerp);
 //}
 
-inline int Lerp(int a, int b, float lerp)
+inline int32_t Lerp(int32_t a, int32_t b, float lerp)
 {
-    return (a + int((b - a) * lerp));
+    return (a + int32_t((b - a) * lerp));
 }
 
-inline int Float_To_Long(float f)
+inline int32_t Float_To_Long(float f)
 {
 #ifdef PROCESSOR_X86
     return _mm_cvtt_ss2si(_mm_load_ss(&f));
 #else
-    return int(f);
+    return int32_t(f);
 #endif
 }
 
@@ -470,7 +470,7 @@ inline int Float_To_Long(float f)
 //#ifdef PROCESSOR_X86
 //    return _mm_cvttsd_si32(_mm_load_pd(&f));
 //#else
-//    return (int)(f);
+//    return (int32_t)(f);
 //#endif
 //}
 

@@ -31,12 +31,12 @@ public:
 
     void Reset_Line();
 
-    void Set_Points(unsigned int num_points, Vector3 *locs);
-    int Get_Num_Points();
-    void Set_Point_Location(unsigned int point_idx, const Vector3 &location);
-    void Get_Point_Location(unsigned int point_idx, Vector3 &loc);
+    void Set_Points(uint32_t num_points, Vector3 *locs);
+    int32_t Get_Num_Points();
+    void Set_Point_Location(uint32_t point_idx, const Vector3 &location);
+    void Get_Point_Location(uint32_t point_idx, Vector3 &loc);
     void Add_Point(const Vector3 &location);
-    void Delete_Point(unsigned int point_idx);
+    void Delete_Point(uint32_t point_idx);
 
     TextureClass *Get_Texture();
     ShaderClass Get_Shader() const;
@@ -45,14 +45,14 @@ public:
     float Get_Opacity() const;
     float Get_Noise_Amplitude() const;
     float Get_Merge_Abort_Factor() const;
-    unsigned int Get_Subdivision_Levels() const;
+    uint32_t Get_Subdivision_Levels() const;
     SegLineRendererClass::TextureMapMode Get_Texture_Mapping_Mode() const;
     float Get_Texture_Tile_Factor() const;
     Vector2 Get_UV_Offset_Rate() const;
-    int Is_Merge_Intersections() const;
-    int Is_Freeze_Random() const;
-    int Is_Sorting_Disabled() const;
-    int Are_End_Caps_Enabled() const;
+    int32_t Is_Merge_Intersections() const;
+    int32_t Is_Freeze_Random() const;
+    int32_t Is_Sorting_Disabled() const;
+    int32_t Are_End_Caps_Enabled() const;
 
     void Set_Texture(TextureClass *texture);
     void Set_Shader(ShaderClass shader);
@@ -61,18 +61,18 @@ public:
     void Set_Opacity(float opacity);
     void Set_Noise_Amplitude(float amplitude);
     void Set_Merge_Abort_Factor(float factor);
-    void Set_Subdivision_Levels(unsigned int levels);
+    void Set_Subdivision_Levels(uint32_t levels);
     void Set_Texture_Mapping_Mode(SegLineRendererClass::TextureMapMode mode);
     void Set_Texture_Tile_Factor(float factor);
     void Set_UV_Offset_Rate(const Vector2 &rate);
-    void Set_Merge_Intersections(int onoff);
-    void Set_Freeze_Random(int onoff);
-    void Set_Disable_Sorting(int onoff);
-    void Set_End_Caps(int onoff);
+    void Set_Merge_Intersections(int32_t onoff);
+    void Set_Freeze_Random(int32_t onoff);
+    void Set_Disable_Sorting(int32_t onoff);
+    void Set_End_Caps(int32_t onoff);
 
     virtual RenderObjClass *Clone() const override;
-    virtual int Class_ID() const override { return CLASSID_SEGLINE; }
-    virtual int Get_Num_Polys() const override;
+    virtual int32_t Class_ID() const override { return CLASSID_SEGLINE; }
+    virtual int32_t Get_Num_Polys() const override;
 
     virtual void Render(RenderInfoClass &rinfo) override;
 
@@ -85,9 +85,9 @@ public:
     virtual float Get_Cost() const override;
     virtual float Get_Value() const override;
     virtual float Get_Post_Increment_Value() const override;
-    virtual void Set_LOD_Level(int lod) override;
-    virtual int Get_LOD_Level() const override;
-    virtual int Get_LOD_Count() const override;
+    virtual void Set_LOD_Level(int32_t lod) override;
+    virtual int32_t Get_LOD_Level() const override;
+    virtual int32_t Get_LOD_Count() const override;
 
     virtual bool Cast_Ray(RayCollisionTestClass &raytest) override;
 
@@ -100,7 +100,7 @@ protected:
     void Render_Seg_Line(RenderInfoClass &rinfo);
 
 private:
-    unsigned int m_maxSubdivisionLevels;
+    uint32_t m_maxSubdivisionLevels;
     float m_normalizedScreenArea;
     SimpleDynVecClass<Vector3> m_pointLocations;
     SegLineRendererClass m_lineRenderer;

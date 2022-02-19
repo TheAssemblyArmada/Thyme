@@ -20,10 +20,10 @@
 
 struct FileInfo
 {
-    int file_size_high;
-    int file_size_low;
-    int write_time_high;
-    int write_time_low;
+    int32_t file_size_high;
+    int32_t file_size_low;
+    int32_t write_time_high;
+    int32_t write_time_low;
 };
 
 namespace Thyme
@@ -32,10 +32,10 @@ namespace Thyme
 
 // Returns integer of given mode and BUFFERED flag and encoded buffer size.
 // Buffer size min: 0, max: 4194240, in 64 byte increments.
-int Encode_Buffered_File_Mode(int mode, int buffer_size);
+int32_t Encode_Buffered_File_Mode(int32_t mode, int32_t buffer_size);
 
 // Decodes buffer size from given mode.
-bool Decode_Buffered_File_Mode(int mode, int &buffer_size);
+bool Decode_Buffered_File_Mode(int32_t mode, int32_t &buffer_size);
 } // namespace Thyme
 
 class File : public MemoryPoolObject
@@ -71,24 +71,24 @@ protected:
     virtual ~File() override;
 
 public:
-    virtual bool Open(const char *filename, int mode);
+    virtual bool Open(const char *filename, int32_t mode);
     virtual void Close();
-    virtual int Read(void *dst, int bytes) = 0;
-    virtual int Write(void const *src, int bytes) = 0;
-    virtual int Seek(int offset, File::SeekMode mode) = 0;
-    virtual void Next_Line(char *dst, int bytes) = 0;
-    virtual bool Scan_Int(int &integer) = 0;
+    virtual int32_t Read(void *dst, int32_t bytes) = 0;
+    virtual int32_t Write(void const *src, int32_t bytes) = 0;
+    virtual int32_t Seek(int32_t offset, File::SeekMode mode) = 0;
+    virtual void Next_Line(char *dst, int32_t bytes) = 0;
+    virtual bool Scan_Int(int32_t &integer) = 0;
     virtual bool Scan_Real(float &real) = 0;
     virtual bool Scan_String(Utf8String &string) = 0;
     virtual bool Print(const char *format, ...);
-    virtual int Size();
-    virtual int Position();
+    virtual int32_t Size();
+    virtual int32_t Position();
 
     virtual void *Read_All_And_Close() = 0;
     virtual File *Convert_To_RAM() = 0;
 
     Utf8String &Get_File_Name() { return m_filename; }
-    int Get_File_Mode() { return m_openMode; }
+    int32_t Get_File_Mode() { return m_openMode; }
     void Set_Del_On_Close(bool del) { m_deleteOnClose = del; }
 
 protected:
@@ -96,7 +96,7 @@ protected:
 
 protected:
     Utf8String m_filename;
-    int m_openMode;
+    int32_t m_openMode;
     bool m_access;
     bool m_deleteOnClose;
 };

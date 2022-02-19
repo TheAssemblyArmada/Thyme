@@ -39,7 +39,7 @@ public:
     virtual ArchiveFile *Open_Archive_File(const char *filename) = 0;
     virtual void Close_Archive_File(const char *filename) = 0;
     virtual void Close_All_Archives() = 0;
-    virtual File *Open_File(const char *filename, int mode);
+    virtual File *Open_File(const char *filename, int32_t mode);
     virtual void Close_All_Files() = 0;
     virtual bool Does_File_Exist(const char *filename);
     virtual void Load_Archives_From_Dir(Utf8String dir, Utf8String filter, bool read_subdirs) = 0;

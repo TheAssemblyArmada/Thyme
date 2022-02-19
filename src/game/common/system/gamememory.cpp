@@ -29,13 +29,13 @@ bool g_theMainInitFlag = false;
 #endif
 
 #ifdef GAME_DEBUG
-int g_theLinkChecker = 0;
+int32_t g_theLinkChecker = 0;
 #endif
 
 #ifdef GAME_DLL
 void *New_New(size_t bytes)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++(Make_Global<int32_t>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
     Init_Memory_Manager_Pre_Main();
 
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
@@ -43,7 +43,7 @@ void *New_New(size_t bytes)
 
 void New_Delete(void *ptr)
 {
-    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    ++(Make_Global<int32_t>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
@@ -51,7 +51,7 @@ void New_Delete(void *ptr)
 
 void Init_Memory_Manager()
 {
-    int param_count;
+    int32_t param_count;
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
@@ -88,7 +88,7 @@ void Init_Memory_Manager()
 
 void Init_Memory_Manager_Pre_Main()
 {
-    int param_count;
+    int32_t param_count;
     PoolInitRec const *params;
 
     if (g_memoryPoolFactory == nullptr) {
@@ -120,7 +120,7 @@ void Shutdown_Memory_Manager()
     g_theMainInitFlag = false;
 }
 
-MemoryPool *Create_Named_Pool(const char *name, int size)
+MemoryPool *Create_Named_Pool(const char *name, int32_t size)
 {
 #ifdef GAME_DEBUG
     ++g_theLinkChecker;
@@ -129,7 +129,7 @@ MemoryPool *Create_Named_Pool(const char *name, int size)
     return g_memoryPoolFactory->Create_Memory_Pool(name, size, 0, 0);
 }
 
-void *Allocate_From_Pool(MemoryPool *pool, int size)
+void *Allocate_From_Pool(MemoryPool *pool, int32_t size)
 {
     return pool->Allocate_Block();
 }

@@ -120,15 +120,15 @@ public:
     unsigned Write(const IOVector4Struct &vect);
     unsigned Write(const IOQuaternionStruct &quat);
 
-    int Cur_Chunk_Depth() { return m_stackIndex; }
+    int32_t Cur_Chunk_Depth() { return m_stackIndex; }
 
 private:
     FileClass *m_file;
-    int m_stackIndex;
-    int m_positionStack[MAX_STACK_DEPTH];
+    int32_t m_stackIndex;
+    int32_t m_positionStack[MAX_STACK_DEPTH];
     ChunkHeader m_headerStack[MAX_STACK_DEPTH];
     bool m_inMicroChunk;
-    int m_microChunkPos;
+    int32_t m_microChunkPos;
     MicroChunkHeader m_microChunkHeader;
 };
 
@@ -156,7 +156,7 @@ public:
     unsigned Cur_Chunk_ID();
     unsigned Cur_Chunk_Length();
 
-    int Contains_Chunks();
+    int32_t Contains_Chunks();
 
     bool Open_Micro_Chunk();
     bool Close_Micro_Chunk();
@@ -172,14 +172,14 @@ public:
     unsigned Read(IOVector4Struct *vect);
     unsigned Read(IOQuaternionStruct *quat);
 
-    int Cur_Chunk_Depth() { return m_stackIndex; }
+    int32_t Cur_Chunk_Depth() { return m_stackIndex; }
 
 private:
     FileClass *m_file;
-    int m_stackIndex;
-    int m_positionStack[MAX_STACK_DEPTH];
+    int32_t m_stackIndex;
+    int32_t m_positionStack[MAX_STACK_DEPTH];
     ChunkHeader m_headerStack[MAX_STACK_DEPTH];
     bool m_inMicroChunk;
-    int m_microChunkPos;
+    int32_t m_microChunkPos;
     MicroChunkHeader m_microChunkHeader;
 };

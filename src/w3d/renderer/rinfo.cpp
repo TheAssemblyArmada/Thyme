@@ -30,11 +30,11 @@ RenderInfoClass::RenderInfoClass(CameraClass &camera) :
     field_A8(0),
     m_overrideFlagLevel(0)
 {
-    for (int i = 0; i < ADDITIONAL_MATERIAL_PASSES; ++i) {
+    for (int32_t i = 0; i < ADDITIONAL_MATERIAL_PASSES; ++i) {
         m_additionalMaterialPassArray[i] = nullptr;
     }
 
-    for (int i = 0; i < MAX_OVERRIDE_FLAG_LEVEL; ++i) {
+    for (int32_t i = 0; i < MAX_OVERRIDE_FLAG_LEVEL; ++i) {
         m_overrideFlag[i] = RINFO_OVERRIDE_DEFAULT;
     }
 }
@@ -71,7 +71,7 @@ void RenderInfoClass::Pop_Material_Pass()
     }
 }
 
-MaterialPassClass *RenderInfoClass::Peek_Additional_Pass(int i) const
+MaterialPassClass *RenderInfoClass::Peek_Additional_Pass(int32_t i) const
 {
     captainslog_assert(i < ADDITIONAL_MATERIAL_PASSES);
     return m_additionalMaterialPassArray[i];

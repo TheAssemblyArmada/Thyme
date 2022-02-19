@@ -68,24 +68,24 @@ public:
 
     const Utf8String &Get_Event_Name() const { return m_eventName; }
     const Utf8String &Get_File_Name() const { return m_filename; }
-    int Get_Visibility() const { return m_visibility; }
+    int32_t Get_Visibility() const { return m_visibility; }
     AudioType Get_Event_Type() const { return m_eventType; }
     float Get_Volume() const { return m_volume; }
-    int Get_Loop_Count() const { return m_loopCount; }
-    int Get_Control() const { return m_control; }
-    int Get_Priority() const { return m_priority; }
-    int Get_Limit() const { return m_limit; }
+    int32_t Get_Loop_Count() const { return m_loopCount; }
+    int32_t Get_Control() const { return m_control; }
+    int32_t Get_Priority() const { return m_priority; }
+    int32_t Get_Limit() const { return m_limit; }
     float Get_Pitch_Shift() const { return Get_Audio_Random_Value_Real(m_pitchShiftLow, m_pitchShiftHigh); }
     float Get_Volume_Shift() const { return Get_Audio_Random_Value_Real(m_volumeShift + 1.0f, 1.0f); }
     float Get_Delay() const { return Get_Audio_Random_Value_Real(m_delayLow, m_delayHigh); }
     bool Is_Looping() const { return (m_control & CONTROL_LOOP) != 0 && m_loopCount == 0; }
 
     size_t Sound_Count() const { return m_sounds.size(); }
-    const Utf8String &Get_Sound(int index) const { return m_sounds[index]; }
+    const Utf8String &Get_Sound(int32_t index) const { return m_sounds[index]; }
     size_t Attack_Count() const { return m_attack.size(); }
-    const Utf8String &Get_Attack(int index) const { return m_attack[index]; }
+    const Utf8String &Get_Attack(int32_t index) const { return m_attack[index]; }
     size_t Decay_Count() const { return m_decay.size(); }
-    const Utf8String &Get_Decay(int index) const { return m_decay[index]; }
+    const Utf8String &Get_Decay(int32_t index) const { return m_decay[index]; }
     float Min_Range() const { return m_minRange; }
     float Max_Range() const { return m_maxRange; }
 
@@ -103,11 +103,11 @@ protected:
     float m_minVolume;
     float m_pitchShiftLow;
     float m_pitchShiftHigh;
-    int m_delayLow;
-    int m_delayHigh;
-    int m_limit;
-    int m_loopCount;
-    int m_priority;
+    int32_t m_delayLow;
+    int32_t m_delayHigh;
+    int32_t m_limit;
+    int32_t m_loopCount;
+    int32_t m_priority;
     int32_t m_visibility;
     int32_t m_control;
     std::vector<Utf8String> m_soundsMorning;
@@ -178,12 +178,12 @@ public:
 
     void Override_Audio_Name(const Utf8String &name);
     void Override_Loop_Flag(bool loop);
-    void Override_Loop_Count(int loop_count);
+    void Override_Loop_Count(int32_t loop_count);
     void Override_Volume(float volume);
     void Override_Min_Volume(float volume);
     void Override_Max_Range(float range);
     void Override_Min_Range(float range);
-    void Override_Priority(int priority);
+    void Override_Priority(int32_t priority);
     void Xfer_No_Name(Xfer *xfer);
 
 private:

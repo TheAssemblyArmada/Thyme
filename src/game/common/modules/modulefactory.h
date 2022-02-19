@@ -38,7 +38,7 @@ class ModuleFactory : public SubsystemInterface, public SnapShot
     {
         modcreateproc_t create_proc;
         moddatacreateproc_t create_data_proc;
-        int which_interfaces;
+        int32_t which_interfaces;
     };
 
 public:
@@ -52,14 +52,14 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-    int Find_Module_Interface_Mask(const Utf8String &name, ModuleType type);
+    int32_t Find_Module_Interface_Mask(const Utf8String &name, ModuleType type);
     Module *New_Module(Thing *thing, const Utf8String &name, const ModuleData *data, ModuleType type);
     ModuleData *New_Module_Data_From_INI(INI *ini, const Utf8String &name, ModuleType type, const Utf8String &tag);
 
 protected:
     static NameKeyType Make_Decorated_Name_Key(const Utf8String &name, ModuleType type);
     void Add_Module_Internal(
-        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int iface);
+        modcreateproc_t proc, moddatacreateproc_t data_proc, ModuleType type, const Utf8String &name, int32_t iface);
     const ModuleTemplate *Find_Module_Template(const Utf8String &name, ModuleType type) const;
 
 protected:

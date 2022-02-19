@@ -24,7 +24,7 @@ bool ScreenMotionBlurFilter::s_zoomToValid;
 
 ScreenMotionBlurFilter::ScreenMotionBlurFilter() : m_maxCount(0), m_lastFrame(0), m_decrement(0), m_skipRender(false) {}
 
-int ScreenMotionBlurFilter::Init()
+int32_t ScreenMotionBlurFilter::Init()
 {
     if (!W3DShaderManager::Render_Surfaces_Valid()) {
         return 0;
@@ -34,7 +34,7 @@ int ScreenMotionBlurFilter::Init()
     return 1;
 }
 
-int ScreenMotionBlurFilter::Shutdown()
+int32_t ScreenMotionBlurFilter::Shutdown()
 {
     return 1;
 }
@@ -172,7 +172,7 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     }
 
     if (!b1) {
-        for (int i = 0; i < 4; i++) {
+        for (int32_t i = 0; i < 4; i++) {
             float f3 = 1.0f - m_maxCount / 60.0f * 0.89999998f;
             f3 = GameMath::Sqrt(f3);
             vertex[i].u = (vertex[i].u - f1) * f3 + f1;
@@ -186,21 +186,21 @@ bool ScreenMotionBlurFilter::Post_Render(FilterModes mode, Coord2D &delta, bool 
     DX8Wrapper::Get_D3D_Device8()->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertex, sizeof(_TRANS_LIT_TEX_VERTEX));
     DX8Wrapper::Set_DX8_Render_State(D3DRS_ALPHABLENDENABLE, TRUE);
     DX8Wrapper::Apply_Render_State_Changes();
-    int count = m_maxCount;
+    int32_t count = m_maxCount;
 
     if (m_maxCount > 30) {
         count = 30;
     }
 
-    for (int i = 0; i < count; i++) {
-        for (int j = 0; j < 4; j++) {
+    for (int32_t i = 0; i < count; i++) {
+        for (int32_t j = 0; j < 4; j++) {
             float f3 = 0.99000001f;
 
             if (m_additive) {
                 f3 = 0.98000002f;
             }
 
-            int color = 21;
+            int32_t color = 21;
 
             if (m_additive) {
                 color = 9;
@@ -283,7 +283,7 @@ bool ScreenMotionBlurFilter::Setup(FilterModes mode)
     return 1;
 }
 
-int ScreenMotionBlurFilter::Set(FilterModes mode)
+int32_t ScreenMotionBlurFilter::Set(FilterModes mode)
 {
 #ifdef BUILD_WITH_D3D8
     if (mode > 0) {

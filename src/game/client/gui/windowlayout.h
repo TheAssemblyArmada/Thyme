@@ -41,7 +41,7 @@ public:
     void Remove_Window(GameWindow *window);
     void Destroy_Windows();
 
-    int Load(Utf8String filename);
+    int32_t Load(Utf8String filename);
 
     void Bring_Forward();
 
@@ -57,7 +57,7 @@ protected:
     Utf8String m_filenameString;
     GameWindow *m_windowList;
     GameWindow *m_windowTail;
-    int m_windowCount;
+    int32_t m_windowCount;
     bool m_hidden;
     WindowLayoutCallbackFunc m_initFunc;
     WindowLayoutCallbackFunc m_updateFunc;
@@ -71,7 +71,7 @@ public:
     ~WindowLayoutInfo() {}
 
 public:
-    unsigned int m_version;
+    uint32_t m_version;
     WindowLayoutCallbackFunc m_initFunc;
     WindowLayoutCallbackFunc m_updateFunc;
     WindowLayoutCallbackFunc m_shutdownFunc;

@@ -29,7 +29,7 @@ class MemoryPoolSingleBlock
 
 public:
     MemoryPoolSingleBlock() : m_owningBlob(nullptr), m_nextBlock(nullptr), m_prevBlock(nullptr) {}
-    void Init_Block(int size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact);
+    void Init_Block(int32_t size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact);
     void Remove_Block_From_List(MemoryPoolSingleBlock **list_head);
     void Add_Block_To_List(MemoryPoolSingleBlock *list_head);
     void Set_Next_Free(MemoryPoolSingleBlock *next);
@@ -37,7 +37,7 @@ public:
     void *Get_User_Data() { return reinterpret_cast<void *>(&this[1]); }
     static MemoryPoolSingleBlock *Recover_Block_From_User_Data(void *data);
     static MemoryPoolSingleBlock *Raw_Allocate_Single_Block(
-        MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact);
+        MemoryPoolSingleBlock **list_head, int32_t size, MemoryPoolFactory *owning_fact);
 
 private:
     MemoryPoolBlob *m_owningBlob;
@@ -45,7 +45,7 @@ private:
     MemoryPoolSingleBlock *m_prevBlock;
 };
 
-inline void MemoryPoolSingleBlock::Init_Block(int size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact)
+inline void MemoryPoolSingleBlock::Init_Block(int32_t size, MemoryPoolBlob *owning_blob, MemoryPoolFactory *owning_fact)
 {
     captainslog_relassert(owning_fact != nullptr, 0xDEAD0002, "Owning factory is nullptr.");
     m_nextBlock = 0;
@@ -104,7 +104,7 @@ inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Recover_Block_From_User_Dat
 }
 
 inline MemoryPoolSingleBlock *MemoryPoolSingleBlock::Raw_Allocate_Single_Block(
-    MemoryPoolSingleBlock **list_head, int size, MemoryPoolFactory *owning_fact)
+    MemoryPoolSingleBlock **list_head, int32_t size, MemoryPoolFactory *owning_fact)
 {
     MemoryPoolSingleBlock *block =
         static_cast<MemoryPoolSingleBlock *>(Raw_Allocate_No_Zero(Round_Up_Word_Size(size) + sizeof(MemoryPoolSingleBlock)));

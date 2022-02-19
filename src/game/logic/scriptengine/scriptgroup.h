@@ -39,7 +39,7 @@ public:
 
     ScriptGroup *Duplicate();
     ScriptGroup *Duplicate_And_Qualify(const Utf8String &str1, const Utf8String &str2, const Utf8String &str3);
-    void Add_Script(Script *script, int index);
+    void Add_Script(Script *script, int32_t index);
     ScriptGroup *Get_Next() { return m_nextGroup; }
     Script *Get_Scripts() { return m_firstScript; }
     void Set_Next(ScriptGroup *next) { m_nextGroup = next; }
@@ -54,5 +54,5 @@ private:
     ScriptGroup *m_nextGroup;
     bool m_hasWarnings;
 
-    static int s_curID;
+    static int32_t s_curID;
 };

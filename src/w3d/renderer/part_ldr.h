@@ -20,6 +20,6 @@
 class ParticleEmitterLoaderClass : public PrototypeLoaderClass
 {
 public:
-    virtual int Chunk_Type() override { return W3D_CHUNK_EMITTER; }
+    virtual int32_t Chunk_Type() override { return W3D_CHUNK_EMITTER; }
     virtual PrototypeClass *Load_W3D(ChunkLoadClass &cload) override;
 };

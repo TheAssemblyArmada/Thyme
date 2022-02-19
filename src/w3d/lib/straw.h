@@ -37,7 +37,7 @@ public:
     Straw &operator=(Straw &that);
 
     virtual void Get_From(Straw *straw);
-    virtual int Get(void *source, int length);
+    virtual int32_t Get(void *source, int32_t length);
 
 protected:
     Straw *m_chainTo;

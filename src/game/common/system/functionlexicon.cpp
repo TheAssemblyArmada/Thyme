@@ -51,9 +51,9 @@ bool FunctionLexicon::Validate()
     bool valid = true;
 
     // Iterate over all the tables looking for function duplicates, log if found and fail validate
-    for (int i = 0; i < MAX_FUNCTION_TABLES; ++i) {
+    for (int32_t i = 0; i < MAX_FUNCTION_TABLES; ++i) {
         for (TableEntry *i_ent = m_tables[i]; i_ent != nullptr && i_ent->key != NAMEKEY_INVALID; ++i_ent) {
-            for (int j = 0; j < MAX_FUNCTION_TABLES; ++j) {
+            for (int32_t j = 0; j < MAX_FUNCTION_TABLES; ++j) {
                 for (TableEntry *j_ent = m_tables[j]; j_ent != nullptr && j_ent->key != NAMEKEY_INVALID; ++j_ent) {
                     if (i_ent != j_ent && i_ent->func == j_ent->func) {
                         captainslog_warn(
@@ -113,7 +113,7 @@ void *FunctionLexicon::Find_Function(NameKeyType key, TableIndex index)
     }
 
     // Otherwise iterate through all tables to find a match.
-    for (int i = 0; i < MAX_FUNCTION_TABLES; ++i) {
+    for (int32_t i = 0; i < MAX_FUNCTION_TABLES; ++i) {
         void *tmp = Key_To_Func(key, m_tables[i]);
 
         if (tmp != nullptr) {

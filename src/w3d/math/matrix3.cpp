@@ -160,7 +160,7 @@ void Matrix3::Multiply(const Matrix3 &A, const Matrix3 &B, Matrix3 *set_res)
     (*set_res)[2][2] = (*Aptr)[2][0] * tmp1 + (*Aptr)[2][1] * tmp2 + (*Aptr)[2][2] * tmp3;
 }
 
-int Matrix3::Is_Orthogonal() const
+int32_t Matrix3::Is_Orthogonal() const
 {
     Vector3 x(Row[0].X, Row[0].Y, Row[0].Z);
     Vector3 y(Row[1].X, Row[1].Y, Row[1].Z);

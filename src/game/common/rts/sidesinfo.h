@@ -27,9 +27,9 @@ public:
     ~SidesInfo();
 
     void Init(const Dict *dict = nullptr);
-    void Add_To_BuildList(BuildListInfo *list, int pos);
-    int Remove_From_BuildList(BuildListInfo *list);
-    void Reorder_In_BuildList(BuildListInfo *list, int pos);
+    void Add_To_BuildList(BuildListInfo *list, int32_t pos);
+    int32_t Remove_From_BuildList(BuildListInfo *list);
+    void Reorder_In_BuildList(BuildListInfo *list, int32_t pos);
     void Set_ScriptList(ScriptList *list) { m_scripts = list; }
     ScriptList *Get_ScriptList() const { return m_scripts; }
     Dict &Get_Dict() { return m_dict; }

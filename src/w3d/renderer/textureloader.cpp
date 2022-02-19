@@ -210,7 +210,7 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
     targa.Toggle_Flip_Y();
     WW3DFormat dest_format;
     WW3DFormat src_format;
-    unsigned int src_bpp = 0;
+    uint32_t src_bpp = 0;
     Get_WW3D_Format(dest_format, src_format, src_bpp, targa);
 
     if (format != WW3D_FORMAT_UNKNOWN) {
@@ -220,8 +220,8 @@ w3dsurface_t TextureLoader::Load_Surface_Immediate(const StringClass &texture, W
     char palette[1024];
     targa.Set_Palette(palette);
     targa.Load(texture.Peek_Buffer(), 1, 0);
-    int width = targa.Get_Header().width;
-    int height = targa.Get_Header().height;
+    int32_t width = targa.Get_Header().width;
+    int32_t height = targa.Get_Header().height;
     uint8_t *dest_surface = 0;
     uint8_t *src_surface = (uint8_t *)targa.Get_Image();
 
@@ -425,12 +425,12 @@ void TextureLoader::Update(void (*update)(void))
 {
     if (!s_textureLoadSuspended) {
         FastCriticalSectionClass::LockClass lock(g_foregroundCritSec);
-        int time = rts::Get_Time();
+        int32_t time = rts::Get_Time();
         TextureLoadTaskClass *task;
 
         while ((task = g_foregroundQueue.Pop_Front()) != nullptr) {
             if (update != nullptr) {
-                int time2 = rts::Get_Time();
+                int32_t time2 = rts::Get_Time();
 
                 if ((time2 - time) > 20) {
                     update();

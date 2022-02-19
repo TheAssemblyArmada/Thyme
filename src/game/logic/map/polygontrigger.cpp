@@ -24,10 +24,10 @@
 PolygonTrigger *PolygonTrigger::s_thePolygonTriggerListPtr = nullptr;
 #endif
 
-int PolygonTrigger::s_currentID = 1;
+int32_t PolygonTrigger::s_currentID = 1;
 
 // BUGFIX initalize all variables
-PolygonTrigger::PolygonTrigger(int initial_allocation) :
+PolygonTrigger::PolygonTrigger(int32_t initial_allocation) :
     m_nextPolygonTrigger(nullptr),
     m_points(nullptr),
     m_numPoints(0),
@@ -76,7 +76,7 @@ void PolygonTrigger::Xfer_Snapshot(Xfer *xfer)
     xfer->xferVersion(&version, 1);
     xfer->xferInt(&m_numPoints);
 
-    for (int i = 0; i < m_numPoints; i++) {
+    for (int32_t i = 0; i < m_numPoints; i++) {
         xfer->xferICoord3D(&m_points[i]);
     }
 
@@ -93,7 +93,7 @@ void PolygonTrigger::Reallocate()
         m_sizePoints *= 2;
         ICoord3D *points = new ICoord3D[m_sizePoints];
 
-        for (int i = 0; i < m_numPoints; i++) {
+        for (int32_t i = 0; i < m_numPoints; i++) {
             points[i] = m_points[i];
         }
 
@@ -109,7 +109,7 @@ void PolygonTrigger::Update_Bounds() const
     m_bounds.hi.y = -8388592;
     m_bounds.hi.x = -8388592;
 
-    for (int i = 0; i < m_numPoints; i++) {
+    for (int32_t i = 0; i < m_numPoints; i++) {
         if (m_points[i].x < m_bounds.lo.x) {
             m_bounds.lo.x = m_points[i].x;
         }
@@ -146,7 +146,7 @@ void PolygonTrigger::Add_Point(ICoord3D const &point)
     m_boundsNeedsUpdate = true;
 }
 
-void PolygonTrigger::Set_Point(ICoord3D const &point, int ndx)
+void PolygonTrigger::Set_Point(ICoord3D const &point, int32_t ndx)
 {
     captainslog_dbgassert(ndx >= 0 && ndx <= m_numPoints, "Invalid ndx.");
 
@@ -160,7 +160,7 @@ void PolygonTrigger::Set_Point(ICoord3D const &point, int ndx)
     }
 }
 
-void PolygonTrigger::Insert_Point(ICoord3D const &point, int ndx)
+void PolygonTrigger::Insert_Point(ICoord3D const &point, int32_t ndx)
 {
     captainslog_dbgassert(ndx >= 0 && ndx <= m_numPoints, "Invalid ndx.");
 
@@ -172,7 +172,7 @@ void PolygonTrigger::Insert_Point(ICoord3D const &point, int ndx)
                 Reallocate();
             }
 
-            for (int i = m_numPoints; i > ndx; --i) {
+            for (int32_t i = m_numPoints; i > ndx; --i) {
                 m_points[i] = m_points[i - 1];
             }
 
@@ -183,12 +183,12 @@ void PolygonTrigger::Insert_Point(ICoord3D const &point, int ndx)
     }
 }
 
-void PolygonTrigger::Delete_Point(int ndx)
+void PolygonTrigger::Delete_Point(int32_t ndx)
 {
     captainslog_dbgassert(ndx >= 0 && ndx < m_numPoints, "Invalid ndx.");
 
     if (ndx >= 0 && ndx < m_numPoints) {
-        for (int i = ndx; i < m_numPoints - 1; i++) {
+        for (int32_t i = ndx; i < m_numPoints - 1; i++) {
             m_points[i] = m_points[i + 1];
         }
 
@@ -264,7 +264,7 @@ void PolygonTrigger::Remove_Polygon_Trigger(PolygonTrigger *trigger)
     trigger->m_nextPolygonTrigger = nullptr;
 }
 
-PolygonTrigger *PolygonTrigger::Get_Polygon_Trigger_By_ID(int id)
+PolygonTrigger *PolygonTrigger::Get_Polygon_Trigger_By_ID(int32_t id)
 {
     for (PolygonTrigger *p = Get_First_Polygon_Trigger(); p != nullptr; p = p->Get_Next()) {
         if (p->Get_ID() == id) {
@@ -286,12 +286,12 @@ void PolygonTrigger::Clear_Selected()
 // ID.
 bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, DataChunkInfo *info, void *user_data)
 {
-    int maxTriggerId = 0;
+    int32_t maxTriggerId = 0;
     Utf8String triggerName;
     Utf8String layerName;
     Delete_Triggers();
     PolygonTrigger *pPrevTrig = nullptr;
-    int count = file.Read_Int32();
+    int32_t count = file.Read_Int32();
 
     while (count > 0) {
         count--;
@@ -301,7 +301,7 @@ bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, Dat
             layerName = file.Read_AsciiString();
         }
 
-        int id = file.Read_Int32();
+        int32_t id = file.Read_Int32();
         bool isWaterArea = false;
 
         if (info->version >= 2) {
@@ -309,14 +309,14 @@ bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, Dat
         }
 
         bool isRiver = false;
-        int riverStart = 0;
+        int32_t riverStart = 0;
 
         if (info->version >= 3) {
             isRiver = file.Read_Byte() != 0;
             riverStart = file.Read_Int32();
         }
 
-        int numPoints = file.Read_Int32();
+        int32_t numPoints = file.Read_Int32();
 
         PolygonTrigger *trigger = NEW_POOL_OBJ(PolygonTrigger, numPoints + 1);
         trigger->Set_Trigger_Name(triggerName);
@@ -334,7 +334,7 @@ bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, Dat
             maxTriggerId = id;
         }
 
-        for (int i = 0; i < numPoints; i++) {
+        for (int32_t i = 0; i < numPoints; i++) {
             ICoord3D loc;
             loc.x = file.Read_Int32();
             loc.y = file.Read_Int32();
@@ -368,10 +368,10 @@ bool PolygonTrigger::Parse_Polygon_Triggers_Data_Chunk(DataChunkInput &file, Dat
         loc.z = 7;
         trigger->Add_Point(loc);
 
-        loc.x = (int)(g_theWriteableGlobalData->m_waterExtentX + 300.0f);
+        loc.x = (int32_t)(g_theWriteableGlobalData->m_waterExtentX + 300.0f);
         trigger->Add_Point(loc);
 
-        loc.y = (int)(g_theWriteableGlobalData->m_waterExtentY + 300.0f);
+        loc.y = (int32_t)(g_theWriteableGlobalData->m_waterExtentY + 300.0f);
         trigger->Add_Point(loc);
 
         loc.x = -300;
@@ -423,11 +423,11 @@ bool PolygonTrigger::Point_In_Trigger(ICoord3D &point) const
 
     bool inside = false;
 
-    for (int i = 0; i < m_numPoints; i++) {
-        int x1 = m_points[i].x;
-        int y1 = m_points[i].y;
-        int x2;
-        int y2;
+    for (int32_t i = 0; i < m_numPoints; i++) {
+        int32_t x1 = m_points[i].x;
+        int32_t y1 = m_points[i].y;
+        int32_t x2;
+        int32_t y2;
         if (i == m_numPoints - 1) {
             x2 = m_points[0].x;
             y2 = m_points[0].y;

@@ -27,15 +27,15 @@ class HTreeManagerClass
 public:
     HTreeManagerClass();
     ~HTreeManagerClass();
-    int Load_Tree(ChunkLoadClass &cload);
+    int32_t Load_Tree(ChunkLoadClass &cload);
     void Free_All_Trees();
-    HTreeClass *Get_Tree(int id);
+    HTreeClass *Get_Tree(int32_t id);
     HTreeClass *Get_Tree(const char *name);
-    int Get_Tree_ID(const char *name);
+    int32_t Get_Tree_ID(const char *name);
     void Free_All_Trees_With_Exclusion_List(const W3DExclusionListClass &list);
 
 private:
-    int m_numTrees;
+    int32_t m_numTrees;
     HTreeClass *m_treePtr[16000];
     HashTemplateClass<StringClass, HTreeClass *> m_hashTable;
 };

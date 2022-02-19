@@ -46,7 +46,7 @@ public:
     void On_Thumb_Release(wxScrollWinEvent &event);
 
     // C API Handlers
-    void Set_Frame_Number(int frame);
+    void Set_Frame_Number(int32_t frame);
     void Append_Variable(const char *var, const char *val);
     void Append_Message(const char *msg);
     bool Paused();
@@ -54,9 +54,9 @@ public:
     void Set_Paused(bool paused);
 
 private:
-    std::map<wxString, int> m_variablesCache;
+    std::map<wxString, int32_t> m_variablesCache;
     std::atomic<unsigned> m_nextVarIndex;
-    std::atomic<int> m_currentFrame;
-    std::atomic<int> m_pauseFrame;
+    std::atomic<int32_t> m_currentFrame;
+    std::atomic<int32_t> m_pauseFrame;
     std::atomic<bool> m_blockVariableUpdate;
 };

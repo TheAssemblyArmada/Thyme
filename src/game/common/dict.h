@@ -53,7 +53,7 @@ private:
         ~DictPairValue() {}
         bool boolean;
         float real;
-        int integer;
+        int32_t integer;
         Utf8String ascii;
         Utf16String unicode;
     };
@@ -76,7 +76,7 @@ private:
         void Clear();
         void Set_Name_And_Type(NameKeyType key, DataType type);
 
-        void Set_Value(int val) { m_value.integer = val; }
+        void Set_Value(int32_t val) { m_value.integer = val; }
         void Set_Value(float val) { m_value.real = val; }
         void Set_Value(bool val) { m_value.boolean = val; }
         void Set_Value(const Utf8String &val) { m_value.ascii = val; }
@@ -106,7 +106,7 @@ private:
 
 public:
     Dict(const Dict &src);
-    Dict(int pair_pre_alloc = 0);
+    Dict(int32_t pair_pre_alloc = 0);
     ~Dict();
 
     Dict &operator=(const Dict &src);
@@ -117,22 +117,22 @@ public:
         Release_Data();
         m_data = nullptr;
     }
-    int Get_PairCount() const { return m_data->m_numPairsUsed; }
-    NameKeyType Get_Nth_Key(int n) const;
+    int32_t Get_PairCount() const { return m_data->m_numPairsUsed; }
+    NameKeyType Get_Nth_Key(int32_t n) const;
     DataType Get_Type(NameKeyType key) const;
-    DataType Get_Nth_Type(int n) const;
+    DataType Get_Nth_Type(int32_t n) const;
     bool Get_Bool(NameKeyType key, bool *exists = nullptr) const;
-    int Get_Int(NameKeyType key, bool *exists = nullptr) const;
+    int32_t Get_Int(NameKeyType key, bool *exists = nullptr) const;
     float Get_Real(NameKeyType key, bool *exists = nullptr) const;
     Utf8String Get_AsciiString(NameKeyType key, bool *exists = nullptr) const;
     Utf16String Get_UnicodeString(NameKeyType key, bool *exists = nullptr) const;
-    bool Get_Nth_Bool(int n) const;
-    int Get_Nth_Int(int n) const;
-    float Get_Nth_Real(int n) const;
-    Utf8String Get_Nth_AsciiString(int n) const;
-    Utf16String Get_Nth_UnicodeString(int n) const;
+    bool Get_Nth_Bool(int32_t n) const;
+    int32_t Get_Nth_Int(int32_t n) const;
+    float Get_Nth_Real(int32_t n) const;
+    Utf8String Get_Nth_AsciiString(int32_t n) const;
+    Utf16String Get_Nth_UnicodeString(int32_t n) const;
     void Set_Bool(NameKeyType key, bool value);
-    void Set_Int(NameKeyType key, int value);
+    void Set_Int(NameKeyType key, int32_t value);
     void Set_Real(NameKeyType key, float value);
     void Set_AsciiString(NameKeyType key, const Utf8String &value);
     void Set_UnicodeString(NameKeyType key, const Utf16String &value);
@@ -141,11 +141,11 @@ public:
     void Release_Data();
 
 private:
-    DictPair *Ensure_Unique(int pairs_needed, bool preserve_data = false, DictPair *to_translate = nullptr);
+    DictPair *Ensure_Unique(int32_t pairs_needed, bool preserve_data = false, DictPair *to_translate = nullptr);
     DictPair *Set_Prep(NameKeyType key, DataType type);
     DictPair *Find_Pair_By_Key(NameKeyType key) const;
     void Sort_Pairs();
-    static int Pair_Compare(const void *l, const void *r);
+    static int32_t Pair_Compare(const void *l, const void *r);
 
 private:
     DictPairData *m_data;

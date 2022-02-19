@@ -22,11 +22,12 @@ public:
     float red;
     float green;
     float blue;
-    int Get_As_Int()
+    int32_t Get_As_Int()
     {
-        return ((unsigned int)(int)(green * 255.0f) << 8) | ((unsigned int)(int)(red * 255.0f) << 16) | (int)(blue * 255.0f);
+        return ((uint32_t)(int32_t)(green * 255.0f) << 8) | ((uint32_t)(int32_t)(red * 255.0f) << 16)
+            | (int32_t)(blue * 255.0f);
     }
-    void Set_From_Int(int color)
+    void Set_From_Int(int32_t color)
     {
         red = (float)((color & 0xFF0000) >> 16) / 255.0f;
         green = (float)((color & 0xFF00) >> 8) / 255.0f;

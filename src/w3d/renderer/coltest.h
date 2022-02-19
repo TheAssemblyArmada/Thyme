@@ -27,16 +27,16 @@ class RenderObjClass;
 class CollisionTestClass
 {
 public:
-    CollisionTestClass(CastResultStruct *res, int collision_type);
+    CollisionTestClass(CastResultStruct *res, int32_t collision_type);
     CollisionTestClass(const CollisionTestClass &that);
 
 public:
     CastResultStruct *m_result;
-    int m_collisionType;
+    int32_t m_collisionType;
     RenderObjClass *m_collidedRenderObj;
 };
 
-inline CollisionTestClass::CollisionTestClass(CastResultStruct *res, int collision_type) :
+inline CollisionTestClass::CollisionTestClass(CastResultStruct *res, int32_t collision_type) :
     m_result(res), m_collisionType(collision_type), m_collidedRenderObj(nullptr)
 {
 }
@@ -51,7 +51,7 @@ class RayCollisionTestClass : public CollisionTestClass
 public:
     RayCollisionTestClass(const LineSegClass &ray,
         CastResultStruct *res,
-        int collision_type = COLLISION_TYPE_0,
+        int32_t collision_type = COLLISION_TYPE_0,
         bool check_alpha = false,
         bool allow_hidden = false);
     RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm);
@@ -72,7 +72,7 @@ private:
 };
 
 inline RayCollisionTestClass::RayCollisionTestClass(
-    const LineSegClass &ray, CastResultStruct *res, int collision_type, bool check_alpha, bool allow_hidden) :
+    const LineSegClass &ray, CastResultStruct *res, int32_t collision_type, bool check_alpha, bool allow_hidden) :
     CollisionTestClass(res, collision_type), m_ray(ray), m_checkAlpha(check_alpha), m_allowHidden(allow_hidden)
 {
 }
@@ -101,7 +101,7 @@ class AABoxCollisionTestClass : public CollisionTestClass
 {
 public:
     AABoxCollisionTestClass(
-        const AABoxClass &aabox, const Vector3 &move, CastResultStruct *res, int collision_type = COLLISION_TYPE_0);
+        const AABoxClass &aabox, const Vector3 &move, CastResultStruct *res, int32_t collision_type = COLLISION_TYPE_0);
     AABoxCollisionTestClass(const AABoxCollisionTestClass &that);
 
     enum ROTATION_TYPE
@@ -163,7 +163,7 @@ class OBBoxCollisionTestClass : public CollisionTestClass
 {
 public:
     OBBoxCollisionTestClass(
-        const OBBoxClass &obbox, const Vector3 &move, CastResultStruct *res, int type = COLLISION_TYPE_0);
+        const OBBoxClass &obbox, const Vector3 &move, CastResultStruct *res, int32_t type = COLLISION_TYPE_0);
     OBBoxCollisionTestClass(const OBBoxCollisionTestClass &that);
     OBBoxCollisionTestClass(const OBBoxCollisionTestClass &that, const Matrix3D &tm);
     OBBoxCollisionTestClass(const AABoxCollisionTestClass &that, const Matrix3D &tm);

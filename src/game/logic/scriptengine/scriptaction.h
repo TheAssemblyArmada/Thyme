@@ -398,7 +398,7 @@ private:
 
 private:
     ScriptActionType m_actionType;
-    int m_numParams;
+    int32_t m_numParams;
     Parameter *m_params[MAX_ACTION_PARAMETERS];
     ScriptAction *m_nextAction;
     bool m_hasWarnings;

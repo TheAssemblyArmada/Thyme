@@ -23,12 +23,12 @@ void Init_Random(uint32_t initial);
 void Init_Game_Logic_Random(uint32_t initial);
 uint32_t Get_Logic_Random_Seed();
 uint32_t Get_Logic_Random_Seed_CRC();
-int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int line = 0);
-int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int line = 0);
-int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int line = 0);
-float Get_Client_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
-float Get_Audio_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
-float Get_Logic_Random_Value_Real(float lo, float hi, const char *file = nullptr, int line = 0);
+int32_t Get_Client_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int32_t line = 0);
+int32_t Get_Audio_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int32_t line = 0);
+int32_t Get_Logic_Random_Value(int32_t lo, int32_t hi, const char *file = nullptr, int32_t line = 0);
+float Get_Client_Random_Value_Real(float lo, float hi, const char *file = nullptr, int32_t line = 0);
+float Get_Audio_Random_Value_Real(float lo, float hi, const char *file = nullptr, int32_t line = 0);
+float Get_Logic_Random_Value_Real(float lo, float hi, const char *file = nullptr, int32_t line = 0);
 
 class GameLogicRandomVariable
 {

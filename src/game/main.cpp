@@ -527,8 +527,10 @@ bool Create_Window_SDL2()
     SDL_GetWindowWMInfo(window, &wmInfo);
     g_applicationHWnd = wmInfo.info.win.window;
 #endif
-#endif
     return true;
+#else
+    return false;
+#endif
 }
 
 /**

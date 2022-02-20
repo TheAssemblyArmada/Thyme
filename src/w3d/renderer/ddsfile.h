@@ -185,10 +185,11 @@ inline uint32_t DDSFileClass::Decode_Line_Code(uint8_t *packed)
 
 namespace Thyme
 {
-void Change_Texture_File_Extension(char *str, size_t str_capacity, const char *new_ext);
+void Change_Texture_File_Extension(char *str, size_t str_len, size_t str_capacity, const char *new_ext);
 
-template<size_t StrCapacity> inline void Change_Texture_File_Extension(char (&str)[StrCapacity], const char *new_ext)
+template<size_t StrCapacity>
+inline void Change_Texture_File_Extension(char (&str)[StrCapacity], size_t str_len, const char *new_ext)
 {
-    Change_Texture_File_Extension(str, StrCapacity, new_ext);
+    Change_Texture_File_Extension(str, str_len, StrCapacity, new_ext);
 }
 } // namespace Thyme

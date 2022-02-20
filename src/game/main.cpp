@@ -88,6 +88,9 @@ HWND g_applicationHWnd;
 HGDIOBJ g_splashImage;
 HINSTANCE g_applicationHInstance;
 #endif
+#ifdef BUILD_WITH_SDL2
+SDL_Window *g_applicationWindow;
+#endif
 unsigned g_theMessageTime = 0;
 HGDIOBJ g_splashImage;
 HINSTANCE g_applicationHInstance;
@@ -496,7 +499,7 @@ void Create_Window()
 bool Create_Window_SDL2()
 {
 #ifdef BUILD_WITH_SDL2
-    SDL_Window *window = NULL;
+    g_applicationWindow = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         captainslog_error("SDL could not initialize!");
@@ -506,15 +509,15 @@ bool Create_Window_SDL2()
     g_creatingWindow = true;
 
     bool is_windowed = g_gameIsWindowed;
-    window = SDL_CreateWindow(WIN_TITLE,
+    g_applicationWindow = SDL_CreateWindow(WIN_TITLE,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         WIN_WIDTH,
         WIN_HEIGHT,
         is_windowed ? 0 : SDL_WINDOW_FULLSCREEN);
 
-    SDL_RaiseWindow(window);
-    SDL_ShowWindow(window);
+    SDL_RaiseWindow(g_applicationWindow);
+    SDL_ShowWindow(g_applicationWindow);
 
     g_creatingWindow = false;
 #ifdef PLATFORM_WINDOWS
@@ -524,7 +527,7 @@ bool Create_Window_SDL2()
     // Get native window handle
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);
-    SDL_GetWindowWMInfo(window, &wmInfo);
+    SDL_GetWindowWMInfo(g_applicationWindow, &wmInfo);
     g_applicationHWnd = wmInfo.info.win.window;
 #endif
     return true;

@@ -1040,7 +1040,8 @@ GlobalData::GlobalData()
 #ifdef PLATFORM_WINDOWS
     m_doubleClickTime = GetDoubleClickTime();
 #else
-// TODO, probably based on whatever crossplatform event framework we use.
+    // TODO, probably based on whatever crossplatform event framework we use. For now use a constant (1000ms)
+    m_doubleClickTime = 1000;
 #endif
     m_keyboardCameraRotateSpeed = 0.1f;
 #ifdef PLATFORM_WINDOWS

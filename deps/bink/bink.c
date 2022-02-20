@@ -15,7 +15,7 @@
 #include "bink.h"
 
 /*
- * All of these function definitions are empty, they are just hear to generate a dummy dll that
+ * All of these function definitions are empty, they are just here to generate a dummy dll that
  * exports the same symbols as the real binkw32.dll so we can link against it without the commercial
  * SDK.
  */

@@ -25,6 +25,10 @@
 #include <winuser.h>
 #endif
 
+#ifdef BUILD_WITH_SDL2
+#include <SDL.h>
+#endif
+
 #ifdef HAVE_STRINGS_H
 #include <strings.h>
 #endif
@@ -767,7 +771,11 @@ void GameTextManager::Init()
 
     ntitle.Translate(wtitle);
 
-#ifdef PLATFORM_WINDOWS
+#ifdef BUILD_WITH_SDL2
+    if (g_applicationWindow != NULL) {
+        SDL_SetWindowTitle(g_applicationWindow, ntitle.Str());
+    }
+#elif defined PLATFORM_WINDOWS
     if (g_applicationHWnd != 0) {
         SetWindowTextA(g_applicationHWnd, ntitle.Str());
         SetWindowTextW(g_applicationHWnd, wtitle.Str());

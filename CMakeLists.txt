@@ -80,11 +80,13 @@ endif()
 # This doesn't really work yet, work ongoing to make it usable
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
-option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
+
+include(CMakeDependentOption)
+cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS} "STANDALONE" OFF)
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)

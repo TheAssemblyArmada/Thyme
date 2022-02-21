@@ -25,10 +25,7 @@ SDL2Mouse::SDL2Mouse() : m_nextFreeIndex(0), m_nextGetIndex(0)
 {
     std::memset(m_eventBuffer, 0, sizeof(m_eventBuffer));
     std::memset(s_loadedCursors, 0, sizeof(s_loadedCursors));
-
-    std::memset(&m_lastLeft, 0, sizeof(m_lastLeft));
-    std::memset(&m_lastRight, 0, sizeof(m_lastRight));
-    std::memset(&m_lastMiddle, 0, sizeof(m_lastMiddle));
+    std::memset(&m_lastClick, 0, sizeof(m_lastClick));
 }
 
 void SDL2Mouse::Init()
@@ -162,34 +159,32 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
-            state = event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
-                                                        MouseIO::MouseState::MOUSE_STATE_UP;
+            doubleClick = event.button.button == m_lastClick.button.button
+                && (event.button.timestamp - m_lastClick.button.timestamp) < Get_Double_Click_Time();
+            state = doubleClick                   ? MouseIO::MouseState::MOUSE_STATE_DBLCLICK :
+                event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
+                                                    MouseIO::MouseState::MOUSE_STATE_UP;
             io->pos.x = event.button.x;
             io->pos.y = event.button.y;
             switch (event.button.button) {
                 case SDL_BUTTON_LEFT:
-                    doubleClick = (event.button.timestamp - m_lastLeft.button.timestamp) < Get_Double_Click_Time();
-                    io->left_state = doubleClick ? MouseIO::MouseState::MOUSE_STATE_DBLCLICK : state;
+                    io->left_state = state;
                     io->left_frame = frame_num;
-                    m_lastLeft = event;
                     break;
                 case SDL_BUTTON_RIGHT:
-                    doubleClick = (event.button.timestamp - m_lastRight.button.timestamp) < Get_Double_Click_Time();
-                    io->right_state = doubleClick ? MouseIO::MouseState::MOUSE_STATE_DBLCLICK : state;
+                    io->right_state = state;
                     io->right_frame = frame_num;
-                    m_lastRight = event;
                     break;
                 case SDL_BUTTON_MIDDLE:
-                    doubleClick = (event.button.timestamp - m_lastRight.button.timestamp) < Get_Double_Click_Time();
-                    io->middle_state = doubleClick ? MouseIO::MouseState::MOUSE_STATE_DBLCLICK : state;
+                    io->middle_state = state;
                     io->middle_frame = frame_num;
-                    m_lastRight = event;
                     break;
                 default:
                     captainslog_debug(
                         "Translate_Event: Unknown SDL mouse button event [%d,%d]", event.type, event.button.button);
                     break;
             }
+            m_lastClick = event;
             break;
         // TODO: mousewheel handling is a bit difficult - how to calculate a delta similar to win32mouse?
         case SDL_MOUSEWHEEL:

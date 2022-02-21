@@ -47,7 +47,7 @@ private:
 protected:
     static SDL_Cursor *s_loadedCursors[CURSOR_COUNT][8];
     SDL_Event m_eventBuffer[MAX_EVENTS];
-    SDL_Event m_lastClick;
     uint32_t m_nextFreeIndex;
     uint32_t m_nextGetIndex;
+    SDL_Event m_lastClick;
 };

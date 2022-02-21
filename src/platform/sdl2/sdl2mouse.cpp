@@ -159,11 +159,16 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             break;
         case SDL_MOUSEBUTTONDOWN:
         case SDL_MOUSEBUTTONUP:
+            state = event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
+                                                        MouseIO::MouseState::MOUSE_STATE_UP;
+            // Check if this is a double click
             doubleClick = event.button.button == m_lastClick.button.button
                 && (event.button.timestamp - m_lastClick.button.timestamp) < Get_Double_Click_Time();
-            state = doubleClick                   ? MouseIO::MouseState::MOUSE_STATE_DBLCLICK :
-                event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
-                                                    MouseIO::MouseState::MOUSE_STATE_UP;
+            if (doubleClick) {
+                // It would be useful if we could just OR this flag
+                state = MouseIO::MouseState::MOUSE_STATE_DBLCLICK;
+            }
+
             io->pos.x = event.button.x;
             io->pos.y = event.button.y;
             switch (event.button.button) {

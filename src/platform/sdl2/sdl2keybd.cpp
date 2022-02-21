@@ -14,7 +14,6 @@
  */
 #include "sdl2keybd.h"
 #include "main.h"
-#include <SDL.h>
 #include <captainslog.h>
 
 SDL2InputKeyboard::SDL2InputKeyboard() {}
@@ -38,14 +37,38 @@ bool SDL2InputKeyboard::Get_Caps_State()
     return mod & KMOD_CAPS;
 }
 
+void SDL2InputKeyboard::Add_SDL2_Event(SDL_Event *ev)
+{
+    auto &event = m_eventBuffer[m_nextFreeIndex];
+
+    // If no space (0 type == empty) for more events throw away event
+    if (event.type != 0) {
+        return;
+    }
+
+    event = *ev;
+
+    m_nextFreeIndex++;
+    if (m_nextFreeIndex >= MAX_EVENTS) {
+        m_nextFreeIndex = 0;
+    }
+}
+
 /**
  * Gets key state.
  */
 void SDL2InputKeyboard::Get_Key(KeyboardIO *io)
 {
-    io->key = 0;
-    io->sequence = 0;
+    if (m_eventBuffer[m_nextGetIndex].type == 0) {
+        return;
+    }
 
-    // TODO: use an event query
-    const uint8_t *state = SDL_GetKeyboardState(NULL);
+    // Translate_Event(m_nextGetIndex, io);
+
+    // Clear the current event - can be overwritten
+    m_eventBuffer[m_nextGetIndex].type = 0;
+    m_nextGetIndex++;
+    if (m_nextGetIndex >= MAX_EVENTS) {
+        m_nextGetIndex = 0;
+    }
 }

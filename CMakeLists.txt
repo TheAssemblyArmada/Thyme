@@ -66,7 +66,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DEFAULT_STDFS OFF)
 else()
     set(DEFAULT_STANDALONE ON)
-    set(DEFAULT_STDFS ON)
+    include(CheckIncludeFileCXX)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

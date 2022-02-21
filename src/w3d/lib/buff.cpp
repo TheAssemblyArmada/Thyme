@@ -17,8 +17,6 @@ Buffer::Buffer(void *buffer, long size) : m_bufferPtr(buffer), m_size(size), m_i
 
 Buffer::Buffer(char *buffer, long size) : m_bufferPtr(buffer), m_size(size), m_isAllocated(false) {}
 
-Buffer::Buffer(void const *buffer, long size) : m_bufferPtr((void *)buffer), m_size(size), m_isAllocated(false) {}
-
 Buffer::Buffer(long size) : m_bufferPtr(NULL), m_size(size), m_isAllocated(false)
 {
     if (size > 0) {

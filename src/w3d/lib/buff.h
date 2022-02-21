@@ -17,16 +17,15 @@
 class Buffer
 {
 public:
+    Buffer(void *ptr = nullptr, long size = 0);
     Buffer(char *ptr, long size = 0);
-    Buffer(void *ptr = 0, long size = 0);
-    Buffer(void const *ptr, long size = 0);
     Buffer(long size);
     Buffer(Buffer const &buffer);
     ~Buffer();
 
     Buffer &operator=(Buffer const &buffer);
     operator void *() const { return m_bufferPtr; }
-    operator char *() const { return (char *)m_bufferPtr; }
+    operator char *() const { return static_cast<char *>(m_bufferPtr); }
 
     void Reset();
     void *Get_Buffer() const { return m_bufferPtr; }

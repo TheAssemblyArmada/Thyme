@@ -22,8 +22,15 @@
 #include "keyboard.h"
 #include <new>
 
+#include <SDL.h>
+
 class SDL2InputKeyboard : public Keyboard
 {
+    enum
+    {
+        MAX_EVENTS = 256,
+    };
+
 public:
     SDL2InputKeyboard();
     virtual ~SDL2InputKeyboard();
@@ -33,5 +40,10 @@ public:
     virtual bool Get_Caps_State() override;
     virtual void Get_Key(KeyboardIO *io) override;
 
+    void Add_SDL2_Event(SDL_Event *ev);
+
 private:
+    SDL_Event m_eventBuffer[MAX_EVENTS];
+    uint32_t m_nextFreeIndex;
+    uint32_t m_nextGetIndex;
 };

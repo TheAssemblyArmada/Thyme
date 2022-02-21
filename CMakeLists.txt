@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19.0)
+cmake_minimum_required(VERSION 3.18.0)
 
 set(FETCHCONTENT_QUIET off)
 
@@ -67,8 +67,12 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 else()
     set(DEFAULT_STANDALONE ON)
     include(CheckIncludeFileCXX)
-    CHECK_INCLUDE_FILE_CXX(filesystem HAS_FS_HEADER)
-    set(DEFAULT_STDFS ${HAS_FS_HEADER})
+    CHECK_INCLUDE_FILE_CXX(filesystem FS_HEADER_FOUND)
+    if(FS_HEADER_FOUND)
+        set(DEFAULT_STDFS ON)
+    else()
+        set(DEFAULT_STDFS OFF)
+    endif()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

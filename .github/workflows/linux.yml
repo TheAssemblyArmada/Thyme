@@ -8,50 +8,45 @@ jobs:
   create_release:
     runs-on: ubuntu-20.04
     steps:
-    - name: Create Development release
-      if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
-        title: "Development Build"
+      - name: Create Development release
+        if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' }}
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          prerelease: true
+          title: "Development Build"
 
-  build_thyme_ubuntu_gcc:
-    runs-on: ubuntu-20.04
+  build_thyme_ubuntu:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        platform: [clang, gcc]
+        os: [ubuntu-18.04, ubuntu-20.04]
+
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
 
-    - name: Install dependencies
-      run: |
-        sudo apt-get install -y libgtk-3-dev ninja-build clang-format-10 libwxgtk3.0-gtk3-dev
+      - name: Set variables
+        id: vars
+        run: |
+          if [ "${{ matrix.platform }}" = "clang" ]
+          then
+            echo "::set-output name=cc::clang"
+            echo "::set-output name=cxx::clang++"
+          else
+            echo "::set-output name=cc::gcc"
+            echo "::set-output name=cxx::g++"
+          fi
 
-    - name: Build thyme
-      run: |
-        cmake -DBUILD_TOOLS=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CRASHPAD=ON -B build -G Ninja
-        cmake --build build --target format
-        git diff --exit-code
-        cmake --build build
-
-  build_thyme_ubuntu_clang:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-
-    - name: Set up Clang
-      uses: egor-tensin/setup-clang@v1
-
-    - name: Install dependencies
-      run: |
-        sudo apt-get install -y libgtk-3-dev ninja-build clang-format-10 libwxgtk3.0-gtk3-dev
-
-    - name: Build thyme
-      run: |
-        cmake -DBUILD_TOOLS=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CRASHPAD=ON -B build -G Ninja
-        cmake --build build --target format
-        git diff --exit-code
-        cmake --build build
+      - name: Build Thyme
+        env:
+          CC: ${{ steps.vars.outputs.cc }}
+          CXX: ${{ steps.vars.outputs.cxx }}
+        run: |
+          cmake -DBUILD_TOOLS=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DUSE_CRASHPAD=ON -B build -G Ninja
+          cmake --build build --target format
+          git diff --exit-code
+          cmake --build build

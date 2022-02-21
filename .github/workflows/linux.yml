@@ -41,6 +41,10 @@ jobs:
             echo "::set-output name=cxx::g++"
           fi
 
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libgtk-3-dev ninja-build clang-format-10 libwxgtk3.0-gtk3-dev
+
       - name: Build Thyme
         env:
           CC: ${{ steps.vars.outputs.cc }}

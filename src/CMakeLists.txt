@@ -552,7 +552,7 @@ if(USE_SDL2)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_SDL2)
 
     list(APPEND GAMEENGINE_SRC
-        platform/input/sdl2mouse.cpp
+        platform/sdl2/sdl2mouse.cpp
     )
 endif()
 

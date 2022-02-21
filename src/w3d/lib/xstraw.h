@@ -21,7 +21,7 @@ class BufferStraw : public Straw
 {
 public:
     BufferStraw(Buffer const &buffer) : m_bufferPtr(buffer), m_index(0) {}
-    BufferStraw(void const *buffer, int length) : m_bufferPtr((void *)buffer, length), m_index(0) {}
+    BufferStraw(void *buffer, int length) : m_bufferPtr(buffer, length), m_index(0) {}
     virtual int Get(void *source, int slen);
 
 private:
@@ -29,6 +29,7 @@ private:
     int m_index;
 
     bool Is_Valid() { return (m_bufferPtr.Is_Valid()); }
-    BufferStraw(BufferStraw &rvalue);
-    BufferStraw &operator=(BufferStraw const &pipe);
+
+    BufferStraw(BufferStraw &) = delete;
+    BufferStraw &operator=(BufferStraw const &) = delete;
 };

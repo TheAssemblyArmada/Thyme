@@ -427,7 +427,7 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
 // Was originally INI::parseStaticGameLODDefinition
 void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
 {
-    static FieldParse _static_lod_parsers[] = {
+    static const FieldParse _static_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
         { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_cpu_fps) },
         { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, sample_count_2D) },
@@ -480,7 +480,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
         "ALWAYS_RENDER",
         nullptr };
 
-    static FieldParse _dynamic_lod_parsers[] = {
+    static const FieldParse _dynamic_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
         { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
         { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, debris_skip_mask) },

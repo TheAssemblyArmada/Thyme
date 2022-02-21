@@ -42,7 +42,7 @@ private:
     float m_uScrollPerMs;
     float m_vScrollPerMs;
 
-    static FieldParse m_waterSettingFieldParseTable[];
+    static const FieldParse m_waterSettingFieldParseTable[];
     friend class WaterRenderObjClass;
 };
 
@@ -71,7 +71,7 @@ private:
     Utf8String m_skyboxTextureW;
     Utf8String m_skyboxTextureT;
 
-    static FieldParse m_waterTransparencySettingFieldParseTable[];
+    static const FieldParse m_waterTransparencySettingFieldParseTable[];
     friend class W3DShaderManager;
     friend class WaterRenderObjClass;
     friend class WaterTracksRenderSystem;

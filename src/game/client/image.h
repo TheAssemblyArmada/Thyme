@@ -63,7 +63,7 @@ public:
         IMAGE_STATUS_RAW_TEXTURE = (1 << 1),
     };
 
-    static FieldParse *Get_Field_Parse() { return s_imageFieldParseTable; }
+    static const FieldParse *Get_Field_Parse() { return s_imageFieldParseTable; }
 
 private:
     Utf8String m_name;
@@ -73,7 +73,7 @@ private:
     ICoord2D m_imageSize;
     TextureClass *m_rawTextureData;
     uint32_t m_status;
-    static FieldParse s_imageFieldParseTable[];
+    static const FieldParse s_imageFieldParseTable[];
 };
 
 class ImageCollection : public SubsystemInterface

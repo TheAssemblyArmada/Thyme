@@ -683,7 +683,7 @@ void Mouse::Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, co
  */
 void Mouse::Parse_Mouse_Definition(INI *ini)
 {
-    static FieldParse _static_mouse_parsers[] = {
+    static const FieldParse _static_mouse_parsers[] = {
         { "TooltipFontName", &INI::Parse_AsciiString, nullptr, offsetof(Mouse, m_tooltipFontName) },
         { "TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize) },
         { "TooltipFontIsBold", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipFontIsBold) },
@@ -722,7 +722,7 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
  */
 void Mouse::Parse_Cursor_Definition(INI *ini)
 {
-    static FieldParse _cursor_parsers[] = {
+    static const FieldParse _cursor_parsers[] = {
         { "CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text) },
         { "CursorTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_color) },
         { "CursorTextDropColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_drop_color) },

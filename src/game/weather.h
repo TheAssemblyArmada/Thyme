@@ -46,7 +46,7 @@ private:
     bool m_snowPointSprites;
     bool m_snowEnabled;
 
-    static FieldParse s_weatherSettingParseTable[];
+    static const FieldParse s_weatherSettingParseTable[];
 };
 
 #ifdef GAME_DLL

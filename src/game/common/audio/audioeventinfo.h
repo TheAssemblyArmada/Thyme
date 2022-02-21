@@ -122,7 +122,7 @@ protected:
     AudioType m_eventType;
 
 private:
-    static FieldParse s_audioEventParseTable[];
+    static const FieldParse s_audioEventParseTable[];
     friend class AudioEventRTS;
     friend class Drawable;
 };

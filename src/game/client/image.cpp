@@ -23,12 +23,14 @@
 ImageCollection *g_theMappedImageCollection = nullptr;
 #endif
 
-FieldParse Image::s_imageFieldParseTable[] = { { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(Image, m_filename) },
+const FieldParse Image::s_imageFieldParseTable[] = {
+    { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(Image, m_filename) },
     { "TextureWidth", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.x) },
     { "TextureHeight", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.y) },
     { "Coords", &Parse_Image_Coords, nullptr, offsetof(Image, m_UVCoords) },
     { "Status", &Parse_Image_Status, nullptr, offsetof(Image, m_status) },
-    { nullptr, nullptr, nullptr, 0 } };
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 Image::Image() : m_name(), m_filename(), m_textureSize(), m_imageSize(), m_rawTextureData(), m_status(0)
 {

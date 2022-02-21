@@ -103,7 +103,7 @@ public:
 private:
     TerrainType *m_terrainList;
 
-    static FieldParse s_terrainTypeParseTable[];
+    static const FieldParse s_terrainTypeParseTable[];
 };
 
 #ifdef GAME_DLL

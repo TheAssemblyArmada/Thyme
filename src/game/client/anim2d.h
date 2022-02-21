@@ -46,7 +46,7 @@ public:
     static void Parse_Image_Sequence(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Num_Images(INI *ini, void *instance, void *store, const void *user_data);
 
-    static FieldParse *Get_Field_Parse() { return s_anim2dFieldParseTable; }
+    static const FieldParse *Get_Field_Parse() { return s_anim2dFieldParseTable; }
 
     unsigned short Get_Anim_Delay() const { return m_animDelay; }
     Anim2DMode Get_Anim_Mode() const { return m_animMode; }
@@ -65,7 +65,7 @@ private:
     Anim2DMode m_animMode;
     bool m_randomizeStartFrame;
 
-    static FieldParse s_anim2dFieldParseTable[];
+    static const FieldParse s_anim2dFieldParseTable[];
 };
 
 class Anim2D : public MemoryPoolObject, public SnapShot

@@ -737,7 +737,7 @@ void Parse_Ascii_String_LC(INI *ini, void *formal, void *store, void const *user
 void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { "InitialRecoilSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_initialRecoil) },
         { "MaxRecoilDistance", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_maxRecoil) },
         { "RecoilDamping", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilDamping) },
@@ -1102,7 +1102,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     }
 
     // clang-format off
-    static FieldParse myFieldParse[] = {
+    static const FieldParse myFieldParse[] = {
         { "Model", &Parse_Ascii_String_LC, nullptr, offsetof(ModelConditionInfo, m_modelName) },
         { "Turret", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretAngleName) },
         { "TurretArtAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[0].m_turretArtAngle) },

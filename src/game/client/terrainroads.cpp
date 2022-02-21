@@ -20,14 +20,14 @@
 TerrainRoadCollection *g_theTerrainRoads = nullptr;
 #endif
 
-FieldParse TerrainRoadCollection::s_terrainRoadFieldParseTable[] = {
+const FieldParse TerrainRoadCollection::s_terrainRoadFieldParseTable[] = {
     { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_texture) },
     { "RoadWidth", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidth) },
     { "RoadWidthInTexture", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidthInTexture) },
     { nullptr, nullptr, nullptr, 0 }
 };
 
-FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
+const FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
     { "BridgeScale", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_bridgeScale) },
     { "ScaffoldObjectName", &INI::Parse_AsciiString, nullptr, offsetof(TerrainRoadType, m_scaffoldObjectName) },
     { "ScaffoldSupportObjectName",

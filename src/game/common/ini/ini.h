@@ -61,7 +61,7 @@ struct MultiIniFieldParse
 {
     MultiIniFieldParse() : count(0) { memset(extra_offsets, 0, sizeof(extra_offsets)); }
 
-    void Add(FieldParse *field_parse, unsigned int extra_offset)
+    void Add(const FieldParse *field_parse, unsigned int extra_offset)
     {
         captainslog_relassert(count < MAX_MULTI_FIELDS, 0xDEAD0001, "Cannot add additional field parsers, max exceeded.");
 
@@ -75,7 +75,7 @@ struct MultiIniFieldParse
         MAX_MULTI_FIELDS = 16
     };
 
-    FieldParse *field_parsers[MAX_MULTI_FIELDS];
+    const FieldParse *field_parsers[MAX_MULTI_FIELDS];
     unsigned int extra_offsets[MAX_MULTI_FIELDS];
     int count;
 };

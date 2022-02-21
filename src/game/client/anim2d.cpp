@@ -27,7 +27,7 @@ static const char *s_Anim2DModeNames[] = {
     "NONE", "ONCE", "ONCE_BACKWARDS", "LOOP", "LOOP_BACKWARDS", "PING_PONG", "PING_PONG_BACKWARDS", nullptr
 };
 
-FieldParse Anim2DTemplate::s_anim2dFieldParseTable[] = { { "NumberImages", &Parse_Num_Images, nullptr, 0 },
+const FieldParse Anim2DTemplate::s_anim2dFieldParseTable[] = { { "NumberImages", &Parse_Num_Images, nullptr, 0 },
     { "Image", &Parse_Image, nullptr, 0 },
     { "Image_Sequence", &Parse_Image_Sequence, nullptr, 0 },
     { "AnimationMode", &INI::Parse_Index_List, s_Anim2DModeNames, offsetof(Anim2DTemplate, m_animMode) },

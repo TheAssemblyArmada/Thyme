@@ -28,7 +28,7 @@ LaserUpdateModuleData::~LaserUpdateModuleData() {}
 
 void LaserUpdateModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { "MuzzleParticleSystem",
             &INI::Parse_AsciiString,
             nullptr,

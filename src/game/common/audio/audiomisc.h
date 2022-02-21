@@ -62,5 +62,5 @@ private:
     AudioEventRTS m_sabotageResetTimeBuilding;
     AudioEventRTS m_aircraftWheelScreech;
 
-    static FieldParse s_fieldParseTable[];
+    static const FieldParse s_fieldParseTable[];
 };

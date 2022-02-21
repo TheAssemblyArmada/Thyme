@@ -235,7 +235,7 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
 void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
 {
     // clang-format off
-    static FieldParse _parse_table[] = { 
+    static const FieldParse _parse_table[] = { 
         { "Side",                           &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_side) },
         { "BaseSide",                       &INI::Parse_AsciiString,                            nullptr, offsetof(PlayerTemplate, m_baseSide) },
         { "PlayableSide",                   &INI::Parse_Bool,                                   nullptr, offsetof(PlayerTemplate, m_isPlayableSide) },

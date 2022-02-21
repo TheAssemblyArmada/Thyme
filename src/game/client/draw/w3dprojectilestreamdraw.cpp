@@ -29,7 +29,7 @@ W3DProjectileStreamDrawModuleData::W3DProjectileStreamDrawModuleData() :
 void W3DProjectileStreamDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_texture) },
         { "Width", &INI::Parse_Real, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_width) },
         { "TileFactor", &INI::Parse_Real, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_tileFactor) },

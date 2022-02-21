@@ -25,7 +25,7 @@ class DrawGroupInfo
 public:
     DrawGroupInfo();
 
-    static FieldParse *Get_Parse_Table() { return s_parseTable; }
+    static const FieldParse *Get_Parse_Table() { return s_parseTable; }
 
 private:
     static void Parse_Int(INI *ini, void *formal, void *store, const void *user_data);
@@ -53,7 +53,7 @@ private:
     } m_drawPositionY;
     bool m_drawPositionYAbsolute;
 
-    static FieldParse s_parseTable[];
+    static const FieldParse s_parseTable[];
     friend class Drawable;
 };
 

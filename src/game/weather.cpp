@@ -19,7 +19,7 @@
 Override<WeatherSetting> g_theWeatherSetting;
 #endif
 
-FieldParse WeatherSetting::s_weatherSettingParseTable[] = { { "SnowTexture", &INI::Parse_AsciiString, nullptr, 12 },
+const FieldParse WeatherSetting::s_weatherSettingParseTable[] = { { "SnowTexture", &INI::Parse_AsciiString, nullptr, 12 },
     { "SnowFrequencyScaleX", &INI::Parse_Real, nullptr, 16 },
     { "SnowFrequencyScaleY", &INI::Parse_Real, nullptr, 20 },
     { "SnowAmplitude", &INI::Parse_Real, nullptr, 24 },

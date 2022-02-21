@@ -67,6 +67,8 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
 else()
     set(DEFAULT_STANDALONE ON)
     include(CheckIncludeFileCXX)
+    CHECK_INCLUDE_FILE_CXX(filesystem HAS_FS_HEADER)
+    set(DEFAULT_STDFS ${HAS_FS_HEADER})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")

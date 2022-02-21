@@ -34,13 +34,25 @@ GlobalData *g_theWriteableGlobalData = nullptr;
 GlobalData *GlobalData::s_theOriginal = nullptr;
 const int CRC_BUFFER_SIZE = 0x10000;
 
+static const char *_terrain_lod_names[] = { "NONE",
+    "MIN",
+    "STRETCH_NO_CLOUDS",
+    "HALF_CLOUDS",
+    "NO_CLOUDS",
+    "STRETCH_CLOUDS",
+    "NO_WATER",
+    "MAX",
+    "AUTOMATIC",
+    "DISABLE",
+    nullptr };
+
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
 // controlled.
-const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool, nullptr, 32 }, //
-    { "XResolution", &INI::Parse_Int, nullptr, 36 }, //
-    { "YResolution", &INI::Parse_Int, nullptr, 40 }, //
-    { "MapName", &INI::Parse_AsciiString, nullptr, 8 }, //
+FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool, nullptr, 32 }, //
+    { "XResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_xResolution) }, //
+    { "YResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_yResolution) }, //
+    { "MapName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_mapName) }, //
     { "MoveHintName", &INI::Parse_AsciiString, nullptr, 12 }, //
     { "UseTrees", &INI::Parse_Bool, nullptr, 16 }, //
     { "UseFPSLimit", &INI::Parse_Bool, nullptr, 20 }, //
@@ -59,7 +71,7 @@ const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Pars
     { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, 62 }, //
     { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, 63 }, //
     //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
-    { "TerrainLOD", &INI::Parse_Index_List, reinterpret_cast<void const *>(0x9C6D18), 64 }, //
+    { "TerrainLOD", &INI::Parse_Index_List, _terrain_lod_names, offsetof(GlobalData, m_terrainLOD) }, //
     { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, 72 }, //
     { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, 79 }, //
     { "UseWaterPlane", &INI::Parse_Bool, nullptr, 80 }, //
@@ -77,62 +89,62 @@ const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Pars
     { "WaterType", &INI::Parse_Int, nullptr, 112 }, //
     { "FeatherWater", &INI::Parse_Int, nullptr, 120 }, //
     { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, 116 }, //
-    { "VertexWaterAvailableMaps1", &INI::Parse_AsciiString, nullptr, 124 }, //
-    { "VertexWaterHeightClampLow1", &INI::Parse_Real, nullptr, 140 }, //
-    { "VertexWaterHeightClampHi1", &INI::Parse_Real, nullptr, 156 }, //
-    { "VertexWaterAngle1", &INI::Parse_Angle_Real, nullptr, 172 }, //
-    { "VertexWaterXPosition1", &INI::Parse_Real, nullptr, 188 }, //
-    { "VertexWaterYPosition1", &INI::Parse_Real, nullptr, 204 }, //
-    { "VertexWaterZPosition1", &INI::Parse_Real, nullptr, 220 }, //
-    { "VertexWaterXGridCells1", &INI::Parse_Int, nullptr, 236 },
-    { "VertexWaterYGridCells1", &INI::Parse_Int, nullptr, 252 },
-    { "VertexWaterGridSize1", &INI::Parse_Real, nullptr, 268 }, //
-    { "VertexWaterAttenuationA1", &INI::Parse_Real, nullptr, 284 },
-    { "VertexWaterAttenuationB1", &INI::Parse_Real, nullptr, 300 },
-    { "VertexWaterAttenuationC1", &INI::Parse_Real, nullptr, 316 },
-    { "VertexWaterAttenuationRange1", &INI::Parse_Real, nullptr, 332 },
-    { "VertexWaterAvailableMaps2", &INI::Parse_AsciiString, nullptr, 128 },
-    { "VertexWaterHeightClampLow2", &INI::Parse_Real, nullptr, 144 },
-    { "VertexWaterHeightClampHi2", &INI::Parse_Real, nullptr, 160 },
-    { "VertexWaterAngle2", &INI::Parse_Angle_Real, nullptr, 176 },
-    { "VertexWaterXPosition2", &INI::Parse_Real, nullptr, 192 },
-    { "VertexWaterYPosition2", &INI::Parse_Real, nullptr, 208 },
-    { "VertexWaterZPosition2", &INI::Parse_Real, nullptr, 224 },
-    { "VertexWaterXGridCells2", &INI::Parse_Int, nullptr, 240 },
-    { "VertexWaterYGridCells2", &INI::Parse_Int, nullptr, 256 },
-    { "VertexWaterGridSize2", &INI::Parse_Real, nullptr, 272 },
-    { "VertexWaterAttenuationA2", &INI::Parse_Real, nullptr, 288 },
-    { "VertexWaterAttenuationB2", &INI::Parse_Real, nullptr, 304 },
-    { "VertexWaterAttenuationC2", &INI::Parse_Real, nullptr, 320 },
-    { "VertexWaterAttenuationRange2", &INI::Parse_Real, nullptr, 336 },
-    { "VertexWaterAvailableMaps3", &INI::Parse_AsciiString, nullptr, 132 },
-    { "VertexWaterHeightClampLow3", &INI::Parse_Real, nullptr, 148 },
-    { "VertexWaterHeightClampHi3", &INI::Parse_Real, nullptr, 164 },
-    { "VertexWaterAngle3", &INI::Parse_Angle_Real, nullptr, 180 },
-    { "VertexWaterXPosition3", &INI::Parse_Real, nullptr, 196 },
-    { "VertexWaterYPosition3", &INI::Parse_Real, nullptr, 212 },
-    { "VertexWaterZPosition3", &INI::Parse_Real, nullptr, 228 },
-    { "VertexWaterXGridCells3", &INI::Parse_Int, nullptr, 244 },
-    { "VertexWaterYGridCells3", &INI::Parse_Int, nullptr, 260 },
-    { "VertexWaterGridSize3", &INI::Parse_Real, nullptr, 276 },
-    { "VertexWaterAttenuationA3", &INI::Parse_Real, nullptr, 292 },
-    { "VertexWaterAttenuationB3", &INI::Parse_Real, nullptr, 308 },
-    { "VertexWaterAttenuationC3", &INI::Parse_Real, nullptr, 324 },
-    { "VertexWaterAttenuationRange3", &INI::Parse_Real, nullptr, 340 },
-    { "VertexWaterAvailableMaps4", &INI::Parse_AsciiString, nullptr, 136 },
-    { "VertexWaterHeightClampLow4", &INI::Parse_Real, nullptr, 152 },
-    { "VertexWaterHeightClampHi4", &INI::Parse_Real, nullptr, 168 },
-    { "VertexWaterAngle4", &INI::Parse_Angle_Real, nullptr, 184 },
-    { "VertexWaterXPosition4", &INI::Parse_Real, nullptr, 200 },
-    { "VertexWaterYPosition4", &INI::Parse_Real, nullptr, 216 },
-    { "VertexWaterZPosition4", &INI::Parse_Real, nullptr, 232 },
-    { "VertexWaterXGridCells4", &INI::Parse_Int, nullptr, 248 },
-    { "VertexWaterYGridCells4", &INI::Parse_Int, nullptr, 264 },
-    { "VertexWaterGridSize4", &INI::Parse_Real, nullptr, 280 },
-    { "VertexWaterAttenuationA4", &INI::Parse_Real, nullptr, 296 },
-    { "VertexWaterAttenuationB4", &INI::Parse_Real, nullptr, 312 },
-    { "VertexWaterAttenuationC4", &INI::Parse_Real, nullptr, 328 },
-    { "VertexWaterAttenuationRange4", &INI::Parse_Real, nullptr, 344 }, //
+    { "VertexWaterAvailableMaps1", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[0]) }, //
+    { "VertexWaterHeightClampLow1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[0]) }, //
+    { "VertexWaterHeightClampHi1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[0]) }, //
+    { "VertexWaterAngle1", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[0]) }, //
+    { "VertexWaterXPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[0]) }, //
+    { "VertexWaterYPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[0]) }, //
+    { "VertexWaterZPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[0]) }, //
+    { "VertexWaterXGridCells1", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[0]) },
+    { "VertexWaterYGridCells1", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[0]) },
+    { "VertexWaterGridSize1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[0]) }, //
+    { "VertexWaterAttenuationA1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[0]) },
+    { "VertexWaterAttenuationB1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[0]) },
+    { "VertexWaterAttenuationC1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[0]) },
+    { "VertexWaterAttenuationRange1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[0]) },
+    { "VertexWaterAvailableMaps2", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[1]) }, //
+    { "VertexWaterHeightClampLow2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[1]) }, //
+    { "VertexWaterHeightClampHi2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[1]) }, //
+    { "VertexWaterAngle2", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[1]) }, //
+    { "VertexWaterXPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[1]) }, //
+    { "VertexWaterYPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[1]) }, //
+    { "VertexWaterZPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[1]) }, //
+    { "VertexWaterXGridCells2", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[1]) },
+    { "VertexWaterYGridCells2", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[1]) },
+    { "VertexWaterGridSize2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[1]) }, //
+    { "VertexWaterAttenuationA2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[1]) },
+    { "VertexWaterAttenuationB2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[1]) },
+    { "VertexWaterAttenuationC2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[1]) },
+    { "VertexWaterAttenuationRange2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[1]) },
+    { "VertexWaterAvailableMaps3", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[2]) }, //
+    { "VertexWaterHeightClampLow3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[2]) }, //
+    { "VertexWaterHeightClampHi3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[2]) }, //
+    { "VertexWaterAngle3", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[2]) }, //
+    { "VertexWaterXPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[2]) }, //
+    { "VertexWaterYPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[2]) }, //
+    { "VertexWaterZPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[2]) }, //
+    { "VertexWaterXGridCells3", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[2]) },
+    { "VertexWaterYGridCells3", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[2]) },
+    { "VertexWaterGridSize3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[2]) }, //
+    { "VertexWaterAttenuationA3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[2]) },
+    { "VertexWaterAttenuationB3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[2]) },
+    { "VertexWaterAttenuationC3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[2]) },
+    { "VertexWaterAttenuationRange3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[2]) },
+    { "VertexWaterAvailableMaps4", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[3]) }, //
+    { "VertexWaterHeightClampLow4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[3]) }, //
+    { "VertexWaterHeightClampHi4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[3]) }, //
+    { "VertexWaterAngle4", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[3]) }, //
+    { "VertexWaterXPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[3]) }, //
+    { "VertexWaterYPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[3]) }, //
+    { "VertexWaterZPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[3]) }, //
+    { "VertexWaterXGridCells4", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[3]) },
+    { "VertexWaterYGridCells4", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[3]) },
+    { "VertexWaterGridSize4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[3]) }, //
+    { "VertexWaterAttenuationA4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[3]) },
+    { "VertexWaterAttenuationB4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[3]) },
+    { "VertexWaterAttenuationC4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[3]) },
+    { "VertexWaterAttenuationRange4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[3]) },
     { "SkyBoxPositionZ", &INI::Parse_Real, nullptr, 352 }, //
     { "SkyBoxScale", &INI::Parse_Real, nullptr, 360 }, //
     { "DrawSkyBox", &INI::Parse_Bool, nullptr, 356 }, //
@@ -328,7 +340,7 @@ const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Pars
     { "WeaponBonus", &WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr, nullptr, 2044 }, //
     { "DefaultStructureRubbleHeight", &INI::Parse_Real, nullptr, 2064 }, //
     { "FixedSeed", &INI::Parse_Int, nullptr, 1836 }, //
-    { "ShellMapName", &INI::Parse_AsciiString, nullptr, 2068 }, //
+    { "ShellMapName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_shellMapName) }, //
     { "ShellMapOn", &INI::Parse_Bool, nullptr, 2072 }, //
     { "PlayIntro", &INI::Parse_Bool, nullptr, 2073 }, //
     { "FirewallBehavior", &INI::Parse_Int, nullptr, 1936 }, //

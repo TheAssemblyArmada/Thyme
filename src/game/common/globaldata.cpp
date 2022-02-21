@@ -89,7 +89,10 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "WaterType", &INI::Parse_Int, nullptr, 112 }, //
     { "FeatherWater", &INI::Parse_Int, nullptr, 120 }, //
     { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, 116 }, //
-    { "VertexWaterAvailableMaps1", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[0]) }, //
+    { "VertexWaterAvailableMaps1",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_vertexWaterAvailableMaps[0]) }, //
     { "VertexWaterHeightClampLow1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[0]) }, //
     { "VertexWaterHeightClampHi1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[0]) }, //
     { "VertexWaterAngle1", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[0]) }, //
@@ -103,7 +106,10 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "VertexWaterAttenuationB1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[0]) },
     { "VertexWaterAttenuationC1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[0]) },
     { "VertexWaterAttenuationRange1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[0]) },
-    { "VertexWaterAvailableMaps2", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[1]) }, //
+    { "VertexWaterAvailableMaps2",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_vertexWaterAvailableMaps[1]) }, //
     { "VertexWaterHeightClampLow2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[1]) }, //
     { "VertexWaterHeightClampHi2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[1]) }, //
     { "VertexWaterAngle2", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[1]) }, //
@@ -117,7 +123,10 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "VertexWaterAttenuationB2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[1]) },
     { "VertexWaterAttenuationC2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[1]) },
     { "VertexWaterAttenuationRange2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[1]) },
-    { "VertexWaterAvailableMaps3", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[2]) }, //
+    { "VertexWaterAvailableMaps3",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_vertexWaterAvailableMaps[2]) }, //
     { "VertexWaterHeightClampLow3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[2]) }, //
     { "VertexWaterHeightClampHi3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[2]) }, //
     { "VertexWaterAngle3", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[2]) }, //
@@ -131,7 +140,10 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "VertexWaterAttenuationB3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[2]) },
     { "VertexWaterAttenuationC3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[2]) },
     { "VertexWaterAttenuationRange3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[2]) },
-    { "VertexWaterAvailableMaps4", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[3]) }, //
+    { "VertexWaterAvailableMaps4",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_vertexWaterAvailableMaps[3]) }, //
     { "VertexWaterHeightClampLow4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[3]) }, //
     { "VertexWaterHeightClampHi4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[3]) }, //
     { "VertexWaterAngle4", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[3]) }, //
@@ -281,27 +293,51 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "ShowTerrainNormals", &INI::Parse_Bool, nullptr, 1813 }, //
     { "ShowObjectHealth", &INI::Parse_Bool, nullptr, 1826 }, //
     { "ParticleScale", &INI::Parse_Real, nullptr, 1840 }, //
-    { "AutoFireParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, 1844 }, //
-    { "AutoFireParticleSmallSystem", &INI::Parse_AsciiString, nullptr, 1848 }, //
-    { "AutoFireParticleSmallMax", &INI::Parse_Int, nullptr, 1852 }, //
-    { "AutoFireParticleMediumPrefix", &INI::Parse_AsciiString, nullptr, 1856 }, //
-    { "AutoFireParticleMediumSystem", &INI::Parse_AsciiString, nullptr, 1860 }, //
-    { "AutoFireParticleMediumMax", &INI::Parse_Int, nullptr, 1864 }, //
-    { "AutoFireParticleLargePrefix", &INI::Parse_AsciiString, nullptr, 1868 }, //
-    { "AutoFireParticleLargeSystem", &INI::Parse_AsciiString, nullptr, 1872 }, //
-    { "AutoFireParticleLargeMax", &INI::Parse_Int, nullptr, 1876 }, //
-    { "AutoSmokeParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, 1880 }, //
-    { "AutoSmokeParticleSmallSystem", &INI::Parse_AsciiString, nullptr, 1884 }, //
-    { "AutoSmokeParticleSmallMax", &INI::Parse_Int, nullptr, 1888 }, //
-    { "AutoSmokeParticleMediumPrefix", &INI::Parse_AsciiString, nullptr, 1892 }, //
-    { "AutoSmokeParticleMediumSystem", &INI::Parse_AsciiString, nullptr, 1896 }, //
-    { "AutoSmokeParticleMediumMax", &INI::Parse_Int, nullptr, 1900 }, //
-    { "AutoSmokeParticleLargePrefix", &INI::Parse_AsciiString, nullptr, 1904 }, //
-    { "AutoSmokeParticleLargeSystem", &INI::Parse_AsciiString, nullptr, 1908 }, //
-    { "AutoSmokeParticleLargeMax", &INI::Parse_Int, nullptr, 1912 }, //
-    { "AutoAflameParticlePrefix", &INI::Parse_AsciiString, nullptr, 1916 }, //
-    { "AutoAflameParticleSystem", &INI::Parse_AsciiString, nullptr, 1920 }, //
-    { "AutoAflameParticleMax", &INI::Parse_Int, nullptr, 1924 }, //
+    { "AutoFireParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallPrefix) },
+    { "AutoFireParticleSmallSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallSystem) },
+    { "AutoFireParticleSmallMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleSmallMax) }, //
+    { "AutoFireParticleMediumPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoFireParticleMediumPrefix) },
+    { "AutoFireParticleMediumSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoFireParticleMediumSystem) },
+    { "AutoFireParticleMediumMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleMediumMax) }, //
+    { "AutoFireParticleLargePrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleLargePrefix) },
+    { "AutoFireParticleLargeSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleLargeSystem) },
+    { "AutoFireParticleLargeMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleLargeMax) }, //
+    { "AutoSmokeParticleSmallPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleSmallPrefix) },
+    { "AutoSmokeParticleSmallSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleSmallSystem) },
+    { "AutoSmokeParticleSmallMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleSmallMax) }, //
+    { "AutoSmokeParticleMediumPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleMediumPrefix) },
+    { "AutoSmokeParticleMediumSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleMediumSystem) },
+    { "AutoSmokeParticleMediumMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleMediumMax) },
+    { "AutoSmokeParticleLargePrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleLargePrefix) },
+    { "AutoSmokeParticleLargeSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleLargeSystem) },
+    { "AutoSmokeParticleLargeMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleLargeMax) },
+    { "AutoAflameParticlePrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoAFlameParticlePrefix) },
+    { "AutoAflameParticleSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoAFlameParticleSystem) },
+    { "AutoAflameParticleMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoAFlameParticleMax) },
     { "BuildSpeed", &INI::Parse_Real, nullptr, 1956 }, //
     { "MinDistFromEdgeOfMapForBuild", &INI::Parse_Real, nullptr, 1960 }, //
     { "SupplyBuildBorder", &INI::Parse_Real, nullptr, 1964 }, //

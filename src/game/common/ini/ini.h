@@ -96,18 +96,18 @@ public:
     void Load(Utf8String filename, INILoadType type, Xfer *xfer);
     void Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, Xfer *xfer);
 
-    void Init_From_INI(void *what, FieldParse *parse_table);
+    void Init_From_INI(void *what, const FieldParse *parse_table);
     void Init_From_INI_Multi(void *what, const MultiIniFieldParse &parse_table_list);
     void Init_From_INI_Multi_Proc(void *what, void (*proc)(MultiIniFieldParse &));
 
-    const char *Get_Next_Token_Or_Null(const char *seps = nullptr);
-    const char *Get_Next_Token(const char *seps = nullptr);
-    const char *Get_Next_Sub_Token(const char *expected);
-    Utf8String Get_Next_Ascii_String();
-    Utf8String Get_Next_Quoted_Ascii_String();
-    Utf8String Get_Filename() { return m_fileName; }
-    INILoadType Get_Load_Type() { return m_loadType; }
-    int Get_Line_Number() { return m_lineNumber; }
+    const char *Get_Next_Token_Or_Null(const char *seps = nullptr) const;
+    const char *Get_Next_Token(const char *seps = nullptr) const;
+    const char *Get_Next_Sub_Token(const char *expected) const;
+    Utf8String Get_Next_Ascii_String() const;
+    Utf8String Get_Next_Quoted_Ascii_String() const;
+    Utf8String Get_Filename() const { return m_fileName; }
+    INILoadType Get_Load_Type() const { return m_loadType; }
+    int Get_Line_Number() const { return m_lineNumber; }
 
     // Scan functions
     static int Scan_Science(const char *token);
@@ -195,12 +195,12 @@ extern Xfer *g_sXfer;
 #endif
 
 // Functions for inlining, neater than including in class declaration
-inline const char *INI::Get_Next_Token_Or_Null(const char *seps)
+inline const char *INI::Get_Next_Token_Or_Null(const char *seps) const
 {
     return strtok(0, seps != nullptr ? seps : m_seps);
 }
 
-inline const char *INI::Get_Next_Token(const char *seps)
+inline const char *INI::Get_Next_Token(const char *seps) const
 {
     char *ret = strtok(0, seps != nullptr ? seps : m_seps);
     captainslog_relassert(
@@ -209,14 +209,14 @@ inline const char *INI::Get_Next_Token(const char *seps)
     return ret;
 }
 
-inline const char *INI::Get_Next_Sub_Token(const char *expected)
+inline const char *INI::Get_Next_Sub_Token(const char *expected) const
 {
     const char *next = Get_Next_Token(m_sepsColon);
     captainslog_dbgassert(strcasecmp(next, expected) == 0, "Did not get expected token");
     return Get_Next_Token(m_sepsColon);
 }
 
-inline Utf8String INI::Get_Next_Ascii_String()
+inline Utf8String INI::Get_Next_Ascii_String() const
 {
     static char _buffer[INI_MAX_CHARS_PER_LINE];
     Utf8String next;

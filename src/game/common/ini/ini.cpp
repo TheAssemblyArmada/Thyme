@@ -291,7 +291,7 @@ void INI::Unprep_File()
     g_sXfer = nullptr;
 }
 
-void INI::Init_From_INI(void *what, FieldParse *parse_table)
+void INI::Init_From_INI(void *what, const FieldParse *parse_table)
 {
     MultiIniFieldParse p;
 
@@ -413,7 +413,7 @@ void INI::Read_Line()
     }
 }
 
-Utf8String INI::Get_Next_Quoted_Ascii_String()
+Utf8String INI::Get_Next_Quoted_Ascii_String() const
 {
     const char *token = Get_Next_Token_Or_Null();
     Utf8String next;

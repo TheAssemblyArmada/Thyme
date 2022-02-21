@@ -16,6 +16,7 @@ unsigned &g_theMessageTime = Make_Global<unsigned>(PICK_ADDRESS(0x00A27B14, 0));
 bool &g_gameIsWindowed = Make_Global<bool>(PICK_ADDRESS(0x00A27B0C, 0));
 bool &g_gameNotFullscreen = Make_Global<bool>(PICK_ADDRESS(0x009C0ACC, 0));
 bool &g_creatingWindow = Make_Global<bool>(PICK_ADDRESS(0x00A27B1C, 0));
+bool &g_gameActive = Make_Global<bool>(PICK_ADDRESS(0x00A27B1D, 0));
 HGDIOBJ &g_splashImage = Make_Global<HGDIOBJ>(PICK_ADDRESS(0x00A27B20, 0));
 HINSTANCE &g_applicationHInstance = Make_Global<HINSTANCE>(PICK_ADDRESS(0x00A27B04, 0));
 

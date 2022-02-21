@@ -46,13 +46,13 @@ void SDL2Mouse::Load_Cursor(const char *file_location, uint32_t load_index, uint
     SDL_Surface *surface = SDL_LoadBMP(file_location);
     if (!surface) {
         // Failed to load surface
-        captainslog_error("Load_Cursor: Failed to load ANI cursor [%s]\n", file_location);
+        captainslog_error("Load_Cursor: Failed to load ANI cursor [%s]", file_location);
         return;
     }
     SDL_Cursor *cursor = SDL_CreateColorCursor(surface, 0, 0);
     if (!cursor) {
         // Failed to create cursor
-        captainslog_error("Load_Cursor: Failed to create SDL2 color cursor [%s]\n", file_location);
+        captainslog_error("Load_Cursor: Failed to create SDL2 color cursor [%s]", file_location);
         return;
     }
     s_loadedCursors[load_index][load_direction] = cursor;
@@ -187,7 +187,7 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
                     break;
                 default:
                     captainslog_debug(
-                        "Translate_Event: Unknown SDL mouse button event [%d,%d]\n", event.type, event.button.button);
+                        "Translate_Event: Unknown SDL mouse button event [%d,%d]", event.type, event.button.button);
                     break;
             }
             break;
@@ -197,7 +197,7 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             // TODO: fill x & y
             break;
         default:
-            captainslog_debug("Translate_Event: Unknown SDL mouse event [%d]\n", event.type);
+            captainslog_debug("Translate_Event: Unknown SDL mouse event [%d]", event.type);
             break;
     }
 }

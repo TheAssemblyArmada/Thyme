@@ -31,11 +31,17 @@ enum AudioRequestType
     AR_STOP,
 };
 
+namespace Thyme
+{
+class ALAudioManager;
+}
+
 class AudioRequest : public MemoryPoolObject
 {
     IMPLEMENT_POOL(AudioRequest);
     friend class AudioManager;
     friend class MilesAudioManager;
+    friend class Thyme::ALAudioManager;
 
 protected:
     virtual ~AudioRequest() override {}

@@ -15,9 +15,7 @@
 #pragma once
 
 #include "always.h"
-
-#ifdef BUILD_WITH_MILES
-#include <miles.h>
+#include "audioeventinfo.h"
 
 enum PlayingAudioType : int32_t
 {
@@ -26,6 +24,9 @@ enum PlayingAudioType : int32_t
     PAT_STREAM,
     PAT_NONE,
 };
+
+#ifdef BUILD_WITH_MILES
+#include <miles.h>
 
 struct MilesPlayingAudio
 {
@@ -43,6 +44,22 @@ struct MilesPlayingAudio
 
 #endif
 
+#ifdef BUILD_WITH_ALSOFT
+#include <AL/al.h>
+
+struct OpenALPlayingAudio
+{
+    ALuint source;
+    PlayingAudioType playing_type;
+    int stopped;
+    AudioEventRTS *audio_event;
+    AudioDataHandle file_handle;
+    bool disable_loops;
+    bool release_event;
+    int time_fading;
+};
+#endif
+
 struct PlayingAudio
 {
     union
@@ -51,5 +68,8 @@ struct PlayingAudio
         MilesPlayingAudio miles;
 #endif
         int unused;
+#ifdef BUILD_WITH_ALSOFT
+        OpenALPlayingAudio openal;
+#endif
     };
 };

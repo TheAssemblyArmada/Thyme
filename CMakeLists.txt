@@ -66,6 +66,7 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     set(DEFAULT_STDFS OFF)
     set(DEFAULT_FFMPEG OFF)
     set(DEFAULT_SDL2 OFF)
+    set(DEFAULT_ALSOFT OFF)
 else()
     set(DEFAULT_STANDALONE ON)
     include(CheckIncludeFileCXX)
@@ -77,6 +78,7 @@ else()
     endif()
     set(DEFAULT_FFMPEG ON)
     set(DEFAULT_SDL2 ON)
+    set(DEFAULT_ALSOFT ON)
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -93,6 +95,7 @@ option(USE_GAMEMATH "Use own maths library rather than libc version for this pla
 option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
 option(USE_ZLIB "Use zlib to support deflate compression." ON)
 option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2})
+option(USE_ALSOFT "Use OpenAL soft audio library" ${DEFAULT_ALSOFT})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -100,6 +103,8 @@ option(BUILD_TESTS "Builds the unit tests." OFF)
 option(USE_SANITIZER "Builds with address sanitizer" OFF)
 option(BUILD_COVERAGE "Instruments the code with coverage." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
+
+option(FETCHCONTENT_QUIET "" OFF)
 
 include(CMakeDependentOption)
 cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS} "STANDALONE" OFF)
@@ -262,6 +267,7 @@ endif()
 if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
 endif()
+
 if(USE_SDL2)
     find_package(SDL2)
     if(NOT SDL2_FOUND)
@@ -284,6 +290,24 @@ if(USE_SDL2)
     else()
         message(STATUS "Found system SDL2")
     endif()
+endif()
+
+if(USE_ALSOFT)
+    include(FetchContent)
+
+    set(ALSOFT_UTILS OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_EXAMPLES OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_CONFIG OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE INTERNAL "Turn off subsystem")
+    FetchContent_Declare(
+        ALSoft
+        GIT_REPOSITORY https://github.com/kcat/openal-soft.git
+        GIT_TAG        1.21.1
+    )
+
+    FetchContent_MakeAvailable(ALSoft)
 endif()
 
 if(USE_ZLIB)

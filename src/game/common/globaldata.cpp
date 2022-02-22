@@ -53,29 +53,29 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "XResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_xResolution) }, //
     { "YResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_yResolution) }, //
     { "MapName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_mapName) }, //
-    { "MoveHintName", &INI::Parse_AsciiString, nullptr, 12 }, //
-    { "UseTrees", &INI::Parse_Bool, nullptr, 16 }, //
-    { "UseFPSLimit", &INI::Parse_Bool, nullptr, 20 }, //
-    { "DumpAssetUsage", &INI::Parse_Bool, nullptr, 21 }, //
-    { "FramesPerSecondLimit", &INI::Parse_Int, nullptr, 24 }, //
-    { "ChipsetType", &INI::Parse_Int, nullptr, 28 }, //
-    { "MaxShellScreens", &INI::Parse_Int, nullptr, 44 }, //
-    { "UseCloudMap", &INI::Parse_Bool, nullptr, 48 }, //
-    { "UseLightMap", &INI::Parse_Bool, nullptr, 56 }, //
-    { "BilinearTerrainTex", &INI::Parse_Bool, nullptr, 57 }, //
-    { "TrilinearTerrainTex", &INI::Parse_Bool, nullptr, 58 }, //
-    { "MultiPassTerrain", &INI::Parse_Bool, nullptr, 59 }, //
-    { "AdjustCliffTextures", &INI::Parse_Bool, nullptr, 60 }, //
-    { "Use3WayTerrainBlends", &INI::Parse_Int, nullptr, 52 }, //
-    { "StretchTerrain", &INI::Parse_Bool, nullptr, 61 }, //
-    { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, 62 }, //
-    { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, 63 }, //
+    { "MoveHintName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_moveHintName) }, //
+    { "UseTrees", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useTrees) }, //
+    { "UseFPSLimit", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useFPSLimit) }, //
+    { "DumpAssetUsage", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_dumpAssetUsage) }, //
+    { "FramesPerSecondLimit", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_framesPerSecondLimit) }, //
+    { "ChipsetType", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_chipsetType) }, //
+    { "MaxShellScreens", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxShellScreens) }, //
+    { "UseCloudMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useCloudMap) }, //
+    { "UseLightMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useLightMap) }, //
+    { "BilinearTerrainTex", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_bilinearTerrainTexture) }, //
+    { "TrilinearTerrainTex", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_trilinearTerrainTexture) }, //
+    { "MultiPassTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_multiPassTerrain) }, //
+    { "AdjustCliffTextures", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_adjustCliffTextures) }, //
+    { "Use3WayTerrainBlends", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_use3WayTerrainBlends) }, //
+    { "StretchTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_stretchTerrain) }, //
+    { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useHalfHeightMap) }, //
+    { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_drawEntireTerrain) }, //
     //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
     { "TerrainLOD", &INI::Parse_Index_List, _terrain_lod_names, offsetof(GlobalData, m_terrainLOD) }, //
-    { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, 72 }, //
-    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, 79 }, //
-    { "UseWaterPlane", &INI::Parse_Bool, nullptr, 80 }, //
-    { "UseCloudPlane", &INI::Parse_Bool, nullptr, 81 }, //
+    { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_terrainLODTargetTimeMS) }, //
+    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_rightMouseAlwaysScrolls)  }, //
+    { "UseWaterPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useWaterPlane) }, //
+    { "UseCloudPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useCloudPlane) }, //
     { "DownwindAngle", &INI::Parse_Real, nullptr, 348 }, //
     { "UseShadowVolumes", &INI::Parse_Bool, nullptr, 82 }, //
     { "UseShadowDecals", &INI::Parse_Bool, nullptr, 83 }, //
@@ -353,11 +353,11 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     { "StandardMinefieldDistance", &INI::Parse_Real, nullptr, 2228 }, //
     { "MaxLineBuildObjects", &INI::Parse_Int, nullptr, 2000 }, //
     { "MaxTunnelCapacity", &INI::Parse_Int, nullptr, 2004 }, //
-    { "MaxParticleCount", &INI::Parse_Int, nullptr, 2036 }, //
-    { "MaxFieldParticleCount", &INI::Parse_Int, nullptr, 2040 }, //
-    { "HorizontalScrollSpeedFactor", &INI::Parse_Real, nullptr, 2008 }, //
-    { "VerticalScrollSpeedFactor", &INI::Parse_Real, nullptr, 2012 }, //
-    { "ScrollAmountCutoff", &INI::Parse_Real, nullptr, 2016 }, //
+    { "MaxParticleCount", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxParticleCount) }, //
+    { "MaxFieldParticleCount", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxFieldParticleCount) }, //
+    { "HorizontalScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_horizontalScrollSpeedFactor) }, //
+    { "VerticalScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_verticalScrollSpeedFactor) }, //
+    { "ScrollAmountCutoff", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_scrollAmountCutoff) }, //
     { "CameraAdjustSpeed", &INI::Parse_Real, nullptr, 2020 }, //
     { "EnforceMaxCameraHeight", &INI::Parse_Bool, nullptr, 2024 }, //
     { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, 2080 }, //

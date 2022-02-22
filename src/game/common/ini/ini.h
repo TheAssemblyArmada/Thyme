@@ -121,6 +121,7 @@ public:
     static int Scan_LookupList(const char *token, const LookupListRec *list);
 
     // Field parsing functions
+    // #NOTE Make sure to pass null-terminated parse lists where applicable.
     static void Parse_Bool(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Unsigned_Byte(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Int(INI *ini, void *formal, void *store, const void *user_data);

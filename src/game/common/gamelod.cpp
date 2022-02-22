@@ -27,9 +27,9 @@ GameLODManager *g_theGameLODManager = nullptr;
 // The names and number of strings here correlates to the enums in gamelod.h
 const char *g_staticGameLODNames[] = { "Low", "Medium", "High", "Custom" };
 const char *g_dynamicGameLODNames[] = { "Low", "Medium", "High", "VeryHigh" };
-const char *GameLODManager::s_cpuNames[] = { "XX", "P3", "P4", "K7" };
+const char *GameLODManager::s_cpuNames[] = { "XX", "P3", "P4", "K7", nullptr };
 const char *GameLODManager::s_gpuNames[] = {
-    "XX", "V2", "V3", "V4", "V5", "TNT", "TNT2", "GF2", "R100", "PS11", "GF3", "GF4", "PS14", "R200", "PS20", "R300"
+    "XX", "V2", "V3", "V4", "V5", "TNT", "TNT2", "GF2", "R100", "PS11", "GF3", "GF4", "PS14", "R200", "PS20", "R300", nullptr
 };
 
 void Test_Minimum_Requirements(

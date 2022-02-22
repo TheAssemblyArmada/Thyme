@@ -103,6 +103,7 @@ option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)
 cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file handling." ${DEFAULT_STDFS} "STANDALONE" OFF)
+cmake_dependent_option(USE_SDL2 "Use SDL2 for crossplatform window handling." ${DEFAULT_SDL2} "STANDALONE" OFF)
 
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -262,22 +263,28 @@ if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
 endif()
 if(USE_SDL2)
-    include(FetchContent)
+    find_package(SDL2 REQUIRED)
+    if(NOT SDL2_FOUND)
+        message(WARNING "Found no system SDL2 - fetching & building")
+        include(FetchContent)
 
-    set(SDL_ATOMIC OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_AUDIO OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_RENDER OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_HAPTIC OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_FILE OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_FILESYSTEM OFF CACHE INTERNAL "Turn off subsystem")
-    set(SDL_THREADS OFF CACHE INTERNAL "Turn off subsystem")
-    FetchContent_Declare(
-        SDL2
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG        release-2.0.20
-    )
+        set(SDL_ATOMIC OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_AUDIO OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_RENDER OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_HAPTIC OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_FILE OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_FILESYSTEM OFF CACHE INTERNAL "Turn off subsystem")
+        set(SDL_THREADS OFF CACHE INTERNAL "Turn off subsystem")
+        FetchContent_Declare(
+            SDL2
+            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+            GIT_TAG        release-2.0.20
+        )
 
-    FetchContent_MakeAvailable(SDL2)
+        FetchContent_MakeAvailable(SDL2)
+    else()
+        message(STATUS "Found system SDL2")
+    endif()
 endif()
 
 if(USE_ZLIB)

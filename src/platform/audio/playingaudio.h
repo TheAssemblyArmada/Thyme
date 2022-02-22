@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "audioeventinfo.h"
 
 #ifdef BUILD_WITH_MILES
 #include <miles.h>
@@ -43,6 +44,20 @@ struct MilesPlayingAudio
 
 #endif
 
+#ifdef BUILD_WITH_ALSOFT
+struct OpenALPlayingAudio
+{
+    int source;
+    int playing_type;
+    int stopped;
+    AudioEventRTS *audio_event;
+    AudioDataHandle file_handle;
+    bool disable_loops;
+    bool release_event;
+    int time_fading;
+};
+#endif
+
 struct PlayingAudio
 {
     union
@@ -51,5 +66,8 @@ struct PlayingAudio
         MilesPlayingAudio miles;
 #endif
         int unused;
+#ifdef BUILD_WITH_ALSOFT
+        OpenALPlayingAudio openal;
+#endif
     };
 };

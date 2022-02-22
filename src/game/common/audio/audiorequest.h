@@ -36,7 +36,8 @@ class AudioRequest : public MemoryPoolObject
     IMPLEMENT_POOL(AudioRequest);
     friend class AudioManager;
     friend class MilesAudioManager;
-
+    friend class ALAudioManager;
+    
 protected:
     virtual ~AudioRequest() override {}
 

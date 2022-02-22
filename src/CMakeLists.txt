@@ -626,6 +626,14 @@ if(USE_SDL2)
     )
 endif()
 
+if(USE_ALSOFT)
+    list(APPEND GAME_LINK_LIBRARIES OpenAL)
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_ALSOFT)
+
+    list(APPEND GAMEENGINE_SRC 
+        platform/audio/alaudiomanager.cpp)
+endif()
+
 if(USE_GAMEMATH)
     list(APPEND GAME_LINK_LIBRARIES gamemath::gamemath)
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_GAMEMATH)

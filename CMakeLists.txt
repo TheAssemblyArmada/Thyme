@@ -298,6 +298,9 @@ if(USE_ALSOFT)
     set(ALSOFT_UTILS OFF CACHE INTERNAL "Turn off subsystem")
     set(ALSOFT_EXAMPLES OFF CACHE INTERNAL "Turn off subsystem")
     set(ALSOFT_INSTALL OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_CONFIG OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE INTERNAL "Turn off subsystem")
+    set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE INTERNAL "Turn off subsystem")
     FetchContent_Declare(
         ALSoft
         GIT_REPOSITORY https://github.com/kcat/openal-soft.git

@@ -113,4 +113,6 @@ private:
     int m_2dSampleCount;
     int m_3dSampleCount;
     int m_streamCount;
+
+    ALCdevice *m_alcDevice = nullptr;
 };

@@ -23,6 +23,10 @@
 #include "win32bigfilesystem.h"
 #include "win32localfilesystem.h"
 
+#ifdef BUILD_WITH_ALSOFT
+#include "alaudiomanager.h"
+#endif
+
 #ifdef BUILD_WITH_MILES
 #include "milesaudiomanager.h"
 #endif
@@ -177,7 +181,9 @@ ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 
 AudioManager *Win32GameEngine::Create_Audio_Manager()
 {
-#ifdef BUILD_WITH_MILES
+#ifdef BUILD_WITH_ALSOFT
+    return new ALAudioManager;
+#elif defined BUILD_WITH_MILES
     return new MilesAudioManager;
 #else
     return nullptr;

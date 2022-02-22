@@ -275,18 +275,15 @@ void ALAudioManager::Open_Device()
     }
 
     m_speakerType = Translate_From_Speaker_Type(m_preferredSpeaker);
-    // bool quick_start = (bool)AIL_quick_startup(m_audioSettings->Use_Digital(),
-    //     m_audioSettings->Use_Midi(),
-    //     m_audioSettings->Output_Rate(),
-    //     m_audioSettings->Output_Bits(),
-    //     m_audioSettings->Output_Channels());
-    // AIL_quick_handles(&m_milesDigitalDriver, nullptr, nullptr);
 
-    // if (quick_start) {
-    //     Build_Provider_List();
-    // } else {
-    //     Set_On(false, AUDIOAFFECT_MUSIC | AUDIOAFFECT_SOUND | AUDIOAFFECT_3DSOUND | AUDIOAFFECT_SPEECH);
-    // }
+    // TODO: build devices list & set settings
+
+
+    m_alcDevice = alcOpenDevice(NULL);
+    if (!m_alcDevice) {
+        captainslog_error("Failed to open ALC device");
+        return;
+    }
 
     Select_Provider(Get_Provider_Index(m_preferredProvider));
 }
@@ -297,6 +294,8 @@ void ALAudioManager::Open_Device()
 void ALAudioManager::Close_Device()
 {
     Unselect_Provider();
+    if (m_alcDevice)
+        alcCloseDevice(m_alcDevice);
 }
 
 /**

@@ -444,7 +444,7 @@ public:
     GlobalData *m_next;
 
 private:
-    static FieldParse s_fieldParseTable[337];
+    static const FieldParse s_fieldParseTable[337];
     static GlobalData *s_theOriginal;
 };
 

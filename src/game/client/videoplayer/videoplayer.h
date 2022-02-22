@@ -51,7 +51,7 @@ public:
     virtual int Get_Video_Count();
     virtual Video *Get_Video(int index);
     virtual Video *Get_Video(Utf8String name);
-    virtual FieldParse *Get_Field_Parse() { return s_videoFieldParseTable; }
+    virtual const FieldParse *Get_Field_Parse() { return s_videoFieldParseTable; }
     virtual void Notify_Player_Of_New_Provider(bool unk) {}
 
     void Remove_Stream(VideoStream *stream);
@@ -60,7 +60,7 @@ protected:
     std::vector<Video> m_videosAvailableToPlay;
     VideoStream *m_firstStream;
 
-    static FieldParse s_videoFieldParseTable[3];
+    static const FieldParse s_videoFieldParseTable[];
 };
 
 #ifdef GAME_DLL

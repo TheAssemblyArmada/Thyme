@@ -82,7 +82,7 @@ constexpr const char *WindMotionTypeNames[] = {
 };
 
 // clang-format off
-FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
+const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "Priority", &INI::Parse_Index_List,  ParticlePriorityNames,  offsetof(ParticleSystemTemplate, m_priority) },
      { "IsOneShot", &INI::Parse_Bool,  nullptr,  offsetof(ParticleSystemTemplate, m_isOneShot) },
      { "Shader", &INI::Parse_Index_List,  ParticleShaderTypeNames,  offsetof(ParticleSystemTemplate, m_shaderType) },

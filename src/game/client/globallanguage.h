@@ -86,7 +86,7 @@ private:
     float m_resolutionFontAdjustment;
     std::list<Utf8String> m_localFontFiles;
 
-    static FieldParse s_languageParseTable[];
+    static const FieldParse s_languageParseTable[];
 };
 
 #ifdef GAME_DLL

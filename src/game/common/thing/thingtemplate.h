@@ -186,8 +186,8 @@ public:
     void Validate();
     void Validate_Audio();
 
-    static FieldParse *Get_Field_Parse();
-    static FieldParse *Get_Reskin_Field_Parse();
+    static const FieldParse *Get_Field_Parse();
+    static const FieldParse *Get_Reskin_Field_Parse();
 
     bool Is_Any_KindOf(const BitFlags<KINDOF_COUNT> &any_kind_of) const
     {
@@ -409,8 +409,8 @@ private:
 #else
     static AudioEventRTS s_audioEventNoSound;
 #endif
-    static FieldParse s_objectFieldParseTable[];
-    static FieldParse s_objectReskinFieldParseTable[];
+    static const FieldParse s_objectFieldParseTable[];
+    static const FieldParse s_objectReskinFieldParseTable[];
 };
 
 #endif // THINGTEMPLATE_H

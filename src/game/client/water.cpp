@@ -22,7 +22,7 @@ WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 Override<WaterTransparencySetting> g_theWaterTransparency;
 #endif
 
-FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
+const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
     { "SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile) },
     { "WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile) },
     { "Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse) },
@@ -38,7 +38,7 @@ FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
-FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
+const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
     { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
     { "TransparentWaterMinOpacity",
         &INI::Parse_Real,

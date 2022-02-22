@@ -20,7 +20,7 @@
 VideoPlayer *g_theVideoPlayer = nullptr;
 #endif
 
-FieldParse VideoPlayer::s_videoFieldParseTable[3] = {
+const FieldParse VideoPlayer::s_videoFieldParseTable[] = {
     { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(Video, file_name) },
     { "Comment", &INI::Parse_AsciiString, nullptr, offsetof(Video, world_builder_comment) },
     { nullptr, nullptr, nullptr, 0 }

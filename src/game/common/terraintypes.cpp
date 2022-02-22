@@ -64,7 +64,7 @@ const char *s_terrainTypeNames[] = { "NONE",
 
 } // namespace
 
-FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
+const FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
     { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainType, m_texture) },
     { "BlendEdges", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_blendEdgeTexture) },
     { "Class", &INI::Parse_Index_List, s_terrainTypeNames, offsetof(TerrainType, m_class) },

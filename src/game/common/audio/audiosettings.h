@@ -107,5 +107,5 @@ private:
     float m_zoomMaxDistance;
     float m_zoomSoundVolumePercentAmount;
 
-    static FieldParse s_audioSettingsParseTable[];
+    static const FieldParse s_audioSettingsParseTable[];
 };

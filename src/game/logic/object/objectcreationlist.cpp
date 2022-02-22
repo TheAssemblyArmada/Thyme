@@ -52,7 +52,7 @@ void ObjectCreationListStore::Add_Object_Creation_Nugget(ObjectCreationNugget *n
 }
 
 // clang-format off
-static FieldParse s_theObjectCreationListFieldParse[] = {
+static const FieldParse s_theObjectCreationListFieldParse[] = {
 #ifdef GAME_DLL
     { "CreateObject",       reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004BF350, 0x00759470)) /*&GenericObjectCreationNugget::Parse_Object */,    nullptr,  0 },
     { "CreateDebris",       reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004BF730, 0x00759B60)) /*&GenericObjectCreationNugget::Parse_Debris */,    nullptr,  0 },

@@ -37,7 +37,7 @@ const int CRC_BUFFER_SIZE = 0x10000;
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
 // controlled.
-FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool, nullptr, 32 }, //
+const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool, nullptr, 32 }, //
     { "XResolution", &INI::Parse_Int, nullptr, 36 }, //
     { "YResolution", &INI::Parse_Int, nullptr, 40 }, //
     { "MapName", &INI::Parse_AsciiString, nullptr, 8 }, //

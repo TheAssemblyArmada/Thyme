@@ -70,7 +70,7 @@ private:
     int m_purchaseCost;
     bool m_isGrantable;
 
-    static FieldParse s_scienceFieldParseTable[];
+    static const FieldParse s_scienceFieldParseTable[];
 };
 
 #ifdef GAME_DLL

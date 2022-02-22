@@ -43,7 +43,7 @@ private:
     RGBColor m_rgbNightValue;
     int m_nightColor;
 
-    static FieldParse s_colorFieldParsetable[];
+    static const FieldParse s_colorFieldParsetable[];
 };
 
 inline MultiplayerColorDefinition::MultiplayerColorDefinition() :

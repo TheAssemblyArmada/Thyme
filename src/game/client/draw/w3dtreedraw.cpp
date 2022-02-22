@@ -39,7 +39,7 @@ W3DTreeDrawModuleData::W3DTreeDrawModuleData() :
 void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { "ModelName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_modelName) },
         { "TextureName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_textureName) },
         { "MoveOutwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveOutwardTime) },

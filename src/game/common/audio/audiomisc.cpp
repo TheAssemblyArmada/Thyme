@@ -16,18 +16,11 @@
 #include "audiomanager.h"
 #include <cstddef>
 
-FieldParse MiscAudio::s_fieldParseTable[] = { { "RadarNotifyUnitUnderAttackSound",
-                                                  &INI::Parse_Audio_Event_RTS,
-                                                  nullptr,
-                                                  offsetof(MiscAudio, m_radarNotifyUnitUnderAttack) },
-    { "RadarNotifyHarvesterUnderAttackSound",
-        &INI::Parse_Audio_Event_RTS,
-        nullptr,
-        offsetof(MiscAudio, m_radarNotifyHarvesterUnderAttack) },
-    { "RadarNotifyStructureUnderAttackSound",
-        &INI::Parse_Audio_Event_RTS,
-        nullptr,
-        offsetof(MiscAudio, m_radarNotifyStructureUnderAttack) },
+// clang-format off
+const FieldParse MiscAudio::s_fieldParseTable[] = {
+    { "RadarNotifyUnitUnderAttackSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyUnitUnderAttack) },
+    { "RadarNotifyHarvesterUnderAttackSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyHarvesterUnderAttack) },
+    { "RadarNotifyStructureUnderAttackSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyStructureUnderAttack) },
     { "RadarNotifyUnderAttackSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyUnderAttack) },
     { "RadarNotifyInfiltrationSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyInfiltration) },
     { "RadarNotifyOnlineSound", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_radarNotifyOnline) },
@@ -47,10 +40,7 @@ FieldParse MiscAudio::s_fieldParseTable[] = { { "RadarNotifyUnitUnderAttackSound
     { "BuildingReenabled", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_buildingReenabled) },
     { "VehicleDisabled", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_vehicleDisabled) },
     { "VehicleReenabled", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_vehicleReenabled) },
-    { "SplatterVehiclePilotsBrain",
-        &INI::Parse_Audio_Event_RTS,
-        nullptr,
-        offsetof(MiscAudio, m_splatterVehiclePilotsBrain) },
+    { "SplatterVehiclePilotsBrain", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_splatterVehiclePilotsBrain) },
     { "TerroristInCarMoveVoice", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_terroristInCarMove) },
     { "TerroristInCarAttackVoice", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_terroristInCarAttackMove) },
     { "TerroristInCarSelectVoice", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_terroristInCarSelect) },
@@ -65,6 +55,7 @@ FieldParse MiscAudio::s_fieldParseTable[] = { { "RadarNotifyUnitUnderAttackSound
     { "SabotageResetTimeBuilding", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_sabotageResetTimeBuilding) },
     { "AircraftWheelScreech", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_aircraftWheelScreech) },
     { nullptr, nullptr, nullptr, 0 } };
+// clang-format on
 
 // Was originally INI::parseMiscAudio
 void MiscAudio::Parse_Misc_Audio(INI *ini)

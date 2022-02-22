@@ -86,7 +86,7 @@ bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set)
  */
 void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type)
 {
-    static FieldParse _parse_table[] = {
+    static const FieldParse _parse_table[] = {
         { "Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_From_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions) },
         { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
         { "AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0 },

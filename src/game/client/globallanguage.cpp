@@ -23,7 +23,7 @@
 GlobalLanguage *g_theGlobalLanguage;
 #endif
 
-FieldParse GlobalLanguage::s_languageParseTable[] = {
+const FieldParse GlobalLanguage::s_languageParseTable[] = {
     { "UnicodeFontName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalLanguage, m_unicodeFontName) },
     { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
     { "MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed) },

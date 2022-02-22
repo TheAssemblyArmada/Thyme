@@ -60,8 +60,8 @@ const float _DURATION_MULT = 0.029999999f;
 
 // Replace original function addresses as thyme implementations are written.
 // clang-format off
-BlockParse TheTypeTable[] = {
-	{"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
+const BlockParse TheTypeTable[] = {
+    {"AIData", (iniblockparse_t)(0x00518F00) /*&INI::parseAIDataDefinition*/},
     {"Animation", &Anim2DCollection::Parse_Anim2D_Definition /*&INI::parseAnim2DDefinition*/},
     {"Armor", (iniblockparse_t)(0x004B60A0) /*&INI::parseArmorDefinition*/},
     //{"AudioEvent", (iniblockparse_t)(0x0044ED70) /*&INI::parseAudioEventDefinition*/},
@@ -139,7 +139,7 @@ BlockParse TheTypeTable[] = {
 inline iniblockparse_t Find_Block_Parse(const char *token)
 {
     // Iterate over the TypeTable to identify correct parsing function.
-    for (BlockParse *block = TheTypeTable; block->token != nullptr; ++block) {
+    for (const BlockParse *block = TheTypeTable; block->token != nullptr; ++block) {
         if (strcmp(block->token, token) == 0) {
             return block->parse_func;
         }
@@ -149,9 +149,9 @@ inline iniblockparse_t Find_Block_Parse(const char *token)
 }
 
 // Helper function for Init_From_INI_Multi
-inline inifieldparse_t Find_Field_Parse(FieldParse *table, const char *token, int &offset, const void *&data)
+inline inifieldparse_t Find_Field_Parse(const FieldParse *table, const char *token, int &offset, const void *&data)
 {
-    FieldParse *tblptr;
+    const FieldParse *tblptr;
 
     // Search the list for a matching FieldParse struct.
     for (tblptr = table; tblptr->token != nullptr; ++tblptr) {
@@ -291,7 +291,7 @@ void INI::Unprep_File()
     g_sXfer = nullptr;
 }
 
-void INI::Init_From_INI(void *what, FieldParse *parse_table)
+void INI::Init_From_INI(void *what, const FieldParse *parse_table)
 {
     MultiIniFieldParse p;
 
@@ -413,7 +413,7 @@ void INI::Read_Line()
     }
 }
 
-Utf8String INI::Get_Next_Quoted_Ascii_String()
+Utf8String INI::Get_Next_Quoted_Ascii_String() const
 {
     const char *token = Get_Next_Token_Or_Null();
     Utf8String next;

@@ -20,7 +20,7 @@
 void W3DOverlordTankDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { nullptr, nullptr, nullptr, 0 },
     };
     // clang-format on

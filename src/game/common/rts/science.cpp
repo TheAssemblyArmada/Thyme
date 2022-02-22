@@ -20,7 +20,7 @@
 ScienceStore *g_theScienceStore = nullptr;
 #endif
 
-FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
+const FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
     { "PrerequisiteSciences", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
     { "SciencePurchasePointCost", &INI::Parse_Int, nullptr, offsetof(ScienceInfo, m_purchaseCost) },
     { "IsGrantable", &INI::Parse_Bool, nullptr, offsetof(ScienceInfo, m_isGrantable) },

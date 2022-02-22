@@ -129,8 +129,8 @@ private:
     TerrainRoadType *m_bridgeList;
 
     static int s_idCounter;
-    static FieldParse s_terrainRoadFieldParseTable[];
-    static FieldParse s_terrainBridgeFieldParseTable[];
+    static const FieldParse s_terrainRoadFieldParseTable[];
+    static const FieldParse s_terrainBridgeFieldParseTable[];
 };
 
 #ifdef GAME_DLL

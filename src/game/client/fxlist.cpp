@@ -37,7 +37,7 @@ FXList *FXListStore::Find_FXList(const char *name)
 }
 
 // clang-format off
-static FieldParse s_theFXListFieldParse[] = {
+static const FieldParse s_theFXListFieldParse[] = {
     { "Sound",              &SoundFXNugget::Parse,             nullptr, 0 },
 #ifdef GAME_DLL
     { "RayEffect",          reinterpret_cast<inifieldparse_t>(PICK_ADDRESS(0x004CA610, 0x007600D0)) /*&RayEffectFXNugget::Parse */,         nullptr, 0 },
@@ -123,7 +123,7 @@ void SoundFXNugget::Do_FX_Obj(const Object *primary, const Object *secondary) co
 // zh: 0x004C9E50 wb: 0x0075F410
 void SoundFXNugget::Parse(INI *ini, void *formal, void *, const void *)
 {
-    static FieldParse _fieldParse[] = {
+    static const FieldParse _fieldParse[] = {
         { "Name", INI::Parse_AsciiString, nullptr, offsetof(SoundFXNugget, m_soundName) },
         { nullptr, nullptr, nullptr, 0 },
     };

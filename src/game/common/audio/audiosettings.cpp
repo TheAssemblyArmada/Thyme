@@ -17,7 +17,7 @@
 #include "optionpreferences.h"
 #include <cstddef>
 
-FieldParse AudioSettings::s_audioSettingsParseTable[] = {
+const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { "AudioRoot", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_audioRoot) },
     { "SoundsFolder", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_soundsFolder) },
     { "MusicFolder", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_musicFolder) },

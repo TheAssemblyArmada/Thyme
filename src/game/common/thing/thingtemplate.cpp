@@ -61,7 +61,7 @@ AudioEventRTS ThingTemplate::s_audioEventNoSound;
 #endif
 
 // clang-format off
-FieldParse ThingTemplate::s_objectFieldParseTable[] = {
+const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},
     {"RadarPriority", &INI::Parse_Byte_Sized_Index_List, &s_radarPriorityNames, offsetof(ThingTemplate, m_radarPriority)},
     {"TransportSlotCount", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_transportSlotCount)},
@@ -175,7 +175,7 @@ FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {nullptr, nullptr, nullptr, 0}
 };
 
-FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
+const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
 {
     {"Draw", &ThingTemplate::Parse_Module_Name, (void *)1, offsetof(ThingTemplate, m_draws)},
     {"Geometry", &GeometryInfo::Parse_Geometry_Type, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
@@ -554,12 +554,12 @@ void ThingTemplate::Init_For_LTA(const Utf8String &name)
     m_geometryInfo.Set(GEOMETRY_SPHERE, false, 10.0f, 10.0f, 10.0f);
 }
 
-FieldParse *ThingTemplate::Get_Field_Parse()
+const FieldParse *ThingTemplate::Get_Field_Parse()
 {
     return s_objectFieldParseTable;
 }
 
-FieldParse *ThingTemplate::Get_Reskin_Field_Parse()
+const FieldParse *ThingTemplate::Get_Reskin_Field_Parse()
 {
     return s_objectReskinFieldParseTable;
 }

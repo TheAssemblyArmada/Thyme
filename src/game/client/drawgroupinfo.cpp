@@ -23,8 +23,8 @@ DrawGroupInfo *g_theDrawGroupInfo;
 #endif
 
 // clang-format off
-FieldParse DrawGroupInfo::s_parseTable[] = {
-	{"UsePlayerColor", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_usePlayerColor)},
+const FieldParse DrawGroupInfo::s_parseTable[] = {
+    {"UsePlayerColor", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_usePlayerColor)},
     {"ColorForText", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForText)},
     {"ColorForTextDropShadow", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForTextDropShadow)},
     {"FontName", &INI::Parse_Quoted_AsciiString, nullptr, offsetof(DrawGroupInfo, m_fontName)},

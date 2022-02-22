@@ -51,7 +51,7 @@ W3DLaserDrawModuleData::W3DLaserDrawModuleData() :
 
 void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
-    static FieldParse dataFieldParse[] = {
+    static const FieldParse dataFieldParse[] = {
         { "NumBeams", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_numBeams) },
         { "InnerBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_innerBeamWidth) },
         { "OuterBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_outerBeamWidth) },

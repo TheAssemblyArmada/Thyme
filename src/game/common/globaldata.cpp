@@ -158,142 +158,372 @@ FieldParse GlobalData::s_fieldParseTable[] = {
     { "VertexWaterAttenuationB4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[3]) },
     { "VertexWaterAttenuationC4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[3]) },
     { "VertexWaterAttenuationRange4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[3]) },
-    { "SkyBoxPositionZ", &INI::Parse_Real, nullptr, 352 }, //
-    { "SkyBoxScale", &INI::Parse_Real, nullptr, 360 }, //
-    { "DrawSkyBox", &INI::Parse_Bool, nullptr, 356 }, //
-    { "CameraPitch", &INI::Parse_Real, nullptr, 364 }, //
-    { "CameraYaw", &INI::Parse_Real, nullptr, 368 }, //
-    { "CameraHeight", &INI::Parse_Real, nullptr, 372 }, //
-    { "MaxCameraHeight", &INI::Parse_Real, nullptr, 376 }, //
-    { "MinCameraHeight", &INI::Parse_Real, nullptr, 380 }, //
-    { "TerrainHeightAtEdgeOfMap", &INI::Parse_Real, nullptr, 384 }, //
-    { "UnitDamagedThreshold", &INI::Parse_Real, nullptr, 388 }, //
-    { "UnitReallyDamagedThreshold", &INI::Parse_Real, nullptr, 392 }, //
-    { "GroundStiffness", &INI::Parse_Real, nullptr, 396 }, //
-    { "StructureStiffness", &INI::Parse_Real, nullptr, 400 }, //
-    { "Gravity", &INI::Parse_Acceleration_Real, nullptr, 404 }, //
-    { "StealthFriendlyOpacity", &INI::Parse_Percent_To_Real, nullptr, 408 }, //
-    { "DefaultOcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, 412 }, //
-    { "PartitionCellSize", &INI::Parse_Real, nullptr, 420 }, //
-    { "AmmoPipScaleFactor", &INI::Parse_Real, nullptr, 464 }, //
-    { "ContainerPipScaleFactor", &INI::Parse_Real, nullptr, 468 }, //
-    { "AmmoPipWorldOffset", &INI::Parse_Coord3D, nullptr, 424 }, //
-    { "ContainerPipWorldOffset", &INI::Parse_Coord3D, nullptr, 436 }, //
-    { "AmmoPipScreenOffset", &INI::Parse_Coord2D, nullptr, 448 }, //
-    { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, 456 }, //
-    { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, 472 }, //
-    { "MaxTerrainTracks", &INI::Parse_Int, nullptr, 476 }, //
-    //{ "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
-    //{ "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
+    { "SkyBoxPositionZ", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_skyBoxPositionZ) }, //
+    { "SkyBoxScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_skyBoxScale) }, //
+    { "DrawSkyBox", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_drawSkyBox) }, //
+    { "CameraPitch", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraPitch) }, //
+    { "CameraYaw", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraYaw) }, //
+    { "CameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraHeight) }, //
+    { "MaxCameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_maxCameraHeight) }, //
+    { "MinCameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_minCameraHeight) }, //
+    { "TerrainHeightAtEdgeOfMap", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_terrainHeightAtMapEdge) }, //
+    { "UnitDamagedThreshold", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_unitDamagedThreshold) }, //
+    { "UnitReallyDamagedThreshold", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_unitReallyDamagedThreshold) }, //
+    { "GroundStiffness", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_groundStiffness) }, //
+    { "StructureStiffness", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_structureStiffness) }, //
+    { "Gravity", &INI::Parse_Acceleration_Real, nullptr, offsetof(GlobalData, m_gravity) }, //
+    { "StealthFriendlyOpacity", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_stealthFriendlyOpacity) }, //
+    { "DefaultOcclusionDelay",
+        &INI::Parse_Duration_Unsigned_Int,
+        nullptr,
+        offsetof(GlobalData, m_defaultOcclusionDelay) }, //
+    { "PartitionCellSize", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_partitionCellSize) }, //
+    { "AmmoPipScaleFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_ammoPipScaleFactor) }, //
+    { "ContainerPipScaleFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_containerPipScaleFactor) }, //
+    { "AmmoPipWorldOffset", &INI::Parse_Coord3D, nullptr, offsetof(GlobalData, m_ammoPipWorldOffset) }, //
+    { "ContainerPipWorldOffset", &INI::Parse_Coord3D, nullptr, offsetof(GlobalData, m_containerPipWorldOffset) }, //
+    { "AmmoPipScreenOffset", &INI::Parse_Coord2D, nullptr, offsetof(GlobalData, m_ammoPipScreenOffset) }, //
+    { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, offsetof(GlobalData, m_containerPipScreenOffset) }, //
+    { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_historicDamageLimit) }, //
+    { "MaxTerrainTracks", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTerrainTracks) }, //
     { "TimeOfDay", &INI::Parse_Index_List, g_timeOfDayNames, offsetof(GlobalData, m_timeOfDay) }, //
     { "Weather", &INI::Parse_Index_List, g_weatherNames, offsetof(GlobalData, m_weather) }, //
-    { "MakeTrackMarks", &INI::Parse_Bool, nullptr, 524 }, //
-    { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, 525 }, //
-    { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, 526 }, //
-    { "ForceModelsToFollowWeather", &INI::Parse_Bool, nullptr, 527 }, //
-    { "LevelGainAnimationName", &INI::Parse_AsciiString, nullptr, 492 }, //
-    { "LevelGainAnimationTime", &INI::Parse_Real, nullptr, 496 }, //
-    { "LevelGainAnimationZRise", &INI::Parse_Real, nullptr, 500 }, //
-    { "GetHealedAnimationName", &INI::Parse_AsciiString, nullptr, 504 }, //
-    { "GetHealedAnimationTime", &INI::Parse_Real, nullptr, 508 }, //
-    { "GetHealedAnimationZRise", &INI::Parse_Real, nullptr, 512 }, //
-    { "TerrainLightingMorningAmbient", &INI::Parse_RGB_Color, nullptr, 636 },
-    { "TerrainLightingMorningDiffuse", &INI::Parse_RGB_Color, nullptr, 648 },
-    { "TerrainLightingMorningLightPos", &INI::Parse_Coord3D, nullptr, 660 },
-    { "TerrainLightingAfternoonAmbient", &INI::Parse_RGB_Color, nullptr, 744 },
-    { "TerrainLightingAfternoonDiffuse", &INI::Parse_RGB_Color, nullptr, 756 },
-    { "TerrainLightingAfternoonLightPos", &INI::Parse_Coord3D, nullptr, 768 },
-    { "TerrainLightingEveningAmbient", &INI::Parse_RGB_Color, nullptr, 852 },
-    { "TerrainLightingEveningDiffuse", &INI::Parse_RGB_Color, nullptr, 864 },
-    { "TerrainLightingEveningLightPos", &INI::Parse_Coord3D, nullptr, 876 },
-    { "TerrainLightingNightAmbient", &INI::Parse_RGB_Color, nullptr, 960 },
-    { "TerrainLightingNightDiffuse", &INI::Parse_RGB_Color, nullptr, 972 },
-    { "TerrainLightingNightLightPos", &INI::Parse_Coord3D, nullptr, 984 },
-    { "TerrainObjectsLightingMorningAmbient", &INI::Parse_RGB_Color, nullptr, 1176 },
-    { "TerrainObjectsLightingMorningDiffuse", &INI::Parse_RGB_Color, nullptr, 1188 },
-    { "TerrainObjectsLightingMorningLightPos", &INI::Parse_Coord3D, nullptr, 1200 },
-    { "TerrainObjectsLightingAfternoonAmbient", &INI::Parse_RGB_Color, nullptr, 1284 },
-    { "TerrainObjectsLightingAfternoonDiffuse", &INI::Parse_RGB_Color, nullptr, 1296 },
-    { "TerrainObjectsLightingAfternoonLightPos", &INI::Parse_Coord3D, nullptr, 1308 },
-    { "TerrainObjectsLightingEveningAmbient", &INI::Parse_RGB_Color, nullptr, 1392 },
-    { "TerrainObjectsLightingEveningDiffuse", &INI::Parse_RGB_Color, nullptr, 1404 },
-    { "TerrainObjectsLightingEveningLightPos", &INI::Parse_Coord3D, nullptr, 1416 },
-    { "TerrainObjectsLightingNightAmbient", &INI::Parse_RGB_Color, nullptr, 1500 },
-    { "TerrainObjectsLightingNightDiffuse", &INI::Parse_RGB_Color, nullptr, 1512 },
-    { "TerrainObjectsLightingNightLightPos", &INI::Parse_Coord3D, nullptr, 1524 },
-    { "TerrainLightingMorningAmbient2", &INI::Parse_RGB_Color, nullptr, 672 },
-    { "TerrainLightingMorningDiffuse2", &INI::Parse_RGB_Color, nullptr, 684 },
-    { "TerrainLightingMorningLightPos2", &INI::Parse_Coord3D, nullptr, 696 },
-    { "TerrainLightingAfternoonAmbient2", &INI::Parse_RGB_Color, nullptr, 780 },
-    { "TerrainLightingAfternoonDiffuse2", &INI::Parse_RGB_Color, nullptr, 792 },
-    { "TerrainLightingAfternoonLightPos2", &INI::Parse_Coord3D, nullptr, 804 },
-    { "TerrainLightingEveningAmbient2", &INI::Parse_RGB_Color, nullptr, 888 },
-    { "TerrainLightingEveningDiffuse2", &INI::Parse_RGB_Color, nullptr, 900 },
-    { "TerrainLightingEveningLightPos2", &INI::Parse_Coord3D, nullptr, 912 },
-    { "TerrainLightingNightAmbient2", &INI::Parse_RGB_Color, nullptr, 996 },
-    { "TerrainLightingNightDiffuse2", &INI::Parse_RGB_Color, nullptr, 1008 },
-    { "TerrainLightingNightLightPos2", &INI::Parse_Coord3D, nullptr, 1020 },
-    { "TerrainObjectsLightingMorningAmbient2", &INI::Parse_RGB_Color, nullptr, 1212 },
-    { "TerrainObjectsLightingMorningDiffuse2", &INI::Parse_RGB_Color, nullptr, 1224 },
-    { "TerrainObjectsLightingMorningLightPos2", &INI::Parse_Coord3D, nullptr, 1236 },
-    { "TerrainObjectsLightingAfternoonAmbient2", &INI::Parse_RGB_Color, nullptr, 1320 },
-    { "TerrainObjectsLightingAfternoonDiffuse2", &INI::Parse_RGB_Color, nullptr, 1332 },
-    { "TerrainObjectsLightingAfternoonLightPos2", &INI::Parse_Coord3D, nullptr, 1344 },
-    { "TerrainObjectsLightingEveningAmbient2", &INI::Parse_RGB_Color, nullptr, 1428 },
-    { "TerrainObjectsLightingEveningDiffuse2", &INI::Parse_RGB_Color, nullptr, 1440 },
-    { "TerrainObjectsLightingEveningLightPos2", &INI::Parse_Coord3D, nullptr, 1452 },
-    { "TerrainObjectsLightingNightAmbient2", &INI::Parse_RGB_Color, nullptr, 1536 },
-    { "TerrainObjectsLightingNightDiffuse2", &INI::Parse_RGB_Color, nullptr, 1548 },
-    { "TerrainObjectsLightingNightLightPos2", &INI::Parse_Coord3D, nullptr, 1560 },
-    { "TerrainLightingMorningAmbient3", &INI::Parse_RGB_Color, nullptr, 708 },
-    { "TerrainLightingMorningDiffuse3", &INI::Parse_RGB_Color, nullptr, 720 },
-    { "TerrainLightingMorningLightPos3", &INI::Parse_Coord3D, nullptr, 732 },
-    { "TerrainLightingAfternoonAmbient3", &INI::Parse_RGB_Color, nullptr, 816 },
-    { "TerrainLightingAfternoonDiffuse3", &INI::Parse_RGB_Color, nullptr, 828 },
-    { "TerrainLightingAfternoonLightPos3", &INI::Parse_Coord3D, nullptr, 840 },
-    { "TerrainLightingEveningAmbient3", &INI::Parse_RGB_Color, nullptr, 924 },
-    { "TerrainLightingEveningDiffuse3", &INI::Parse_RGB_Color, nullptr, 936 },
-    { "TerrainLightingEveningLightPos3", &INI::Parse_Coord3D, nullptr, 948 },
-    { "TerrainLightingNightAmbient3", &INI::Parse_RGB_Color, nullptr, 1032 },
-    { "TerrainLightingNightDiffuse3", &INI::Parse_RGB_Color, nullptr, 1044 },
-    { "TerrainLightingNightLightPos3", &INI::Parse_Coord3D, nullptr, 1056 },
-    { "TerrainObjectsLightingMorningAmbient3", &INI::Parse_RGB_Color, nullptr, 1248 },
-    { "TerrainObjectsLightingMorningDiffuse3", &INI::Parse_RGB_Color, nullptr, 1260 },
-    { "TerrainObjectsLightingMorningLightPos3", &INI::Parse_Coord3D, nullptr, 1272 },
-    { "TerrainObjectsLightingAfternoonAmbient3", &INI::Parse_RGB_Color, nullptr, 1356 },
-    { "TerrainObjectsLightingAfternoonDiffuse3", &INI::Parse_RGB_Color, nullptr, 1368 },
-    { "TerrainObjectsLightingAfternoonLightPos3", &INI::Parse_Coord3D, nullptr, 1380 },
-    { "TerrainObjectsLightingEveningAmbient3", &INI::Parse_RGB_Color, nullptr, 1464 },
-    { "TerrainObjectsLightingEveningDiffuse3", &INI::Parse_RGB_Color, nullptr, 1476 },
-    { "TerrainObjectsLightingEveningLightPos3", &INI::Parse_Coord3D, nullptr, 1488 },
-    { "TerrainObjectsLightingNightAmbient3", &INI::Parse_RGB_Color, nullptr, 1572 },
-    { "TerrainObjectsLightingNightDiffuse3", &INI::Parse_RGB_Color, nullptr, 1584 },
-    { "TerrainObjectsLightingNightLightPos3", &INI::Parse_Coord3D, nullptr, 1596 },
-    { "NumberGlobalLights", &INI::Parse_Int, nullptr, 1784 }, //
-    { "InfantryLightMorningScale", &INI::Parse_Real, nullptr, 1720 }, //
-    { "InfantryLightAfternoonScale", &INI::Parse_Real, nullptr, 1724 }, //
-    { "InfantryLightEveningScale", &INI::Parse_Real, nullptr, 1728 }, //
-    { "InfantryLightNightScale", &INI::Parse_Real, nullptr, 1732 }, //
-    { "MaxTranslucentObjects", &INI::Parse_Int, nullptr, 1764 }, //
-    { "OccludedColorLuminanceScale", &INI::Parse_Real, nullptr, 1780 }, //
-    { "MaxRoadSegments", &INI::Parse_Int, nullptr, 1788 }, //
-    { "MaxRoadVertex", &INI::Parse_Int, nullptr, 1792 }, //
-    { "MaxRoadIndex", &INI::Parse_Int, nullptr, 1796 }, //
-    { "MaxRoadTypes", &INI::Parse_Int, nullptr, 1800 }, //
-    { "ValuePerSupplyBox", &INI::Parse_Int, nullptr, 1952 }, //
-    { "AudioOn", &INI::Parse_Bool, nullptr, 1804 }, //
-    { "MusicOn", &INI::Parse_Bool, nullptr, 1805 }, //
-    { "SoundsOn", &INI::Parse_Bool, nullptr, 1806 }, //
-    { "Sounds3DOn", &INI::Parse_Bool, nullptr, 1807 }, //
-    { "SpeechOn", &INI::Parse_Bool, nullptr, 1808 }, //
-    { "VideoOn", &INI::Parse_Bool, nullptr, 1809 }, //
-    { "DisableCameraMovements", &INI::Parse_Bool, nullptr, 1810 }, //
-    { "DebugAI", &INI::Parse_Bool, nullptr, 1820 }, //
-    { "DebugAIObstacles", &INI::Parse_Bool, nullptr, 1825 }, //
-    { "ShowClientPhysics", &INI::Parse_Bool, nullptr, 1812 }, //
-    { "ShowTerrainNormals", &INI::Parse_Bool, nullptr, 1813 }, //
-    { "ShowObjectHealth", &INI::Parse_Bool, nullptr, 1826 }, //
-    { "ParticleScale", &INI::Parse_Real, nullptr, 1840 }, //
+    { "MakeTrackMarks", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_makeTrackMarks) }, //
+    { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_hideGarrisonFlags) }, //
+    { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_forceModelsFollowTimeOfDay) }, //
+    { "ForceModelsToFollowWeather", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_forceModelsFollowWeather) }, //
+    { "LevelGainAnimationName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_levelGainAnimName) }, //
+    { "LevelGainAnimationTime", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_levelGainAnimTime) }, //
+    { "LevelGainAnimationZRise", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_levelGainAnimZRise) }, //
+    { "GetHealedAnimationName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_getHealedAnimName) }, //
+    { "GetHealedAnimationTime", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_getHealedAnimTime) }, //
+    { "GetHealedAnimationZRise", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_getHealedAnimZRise) }, //
+    // Light 1
+    { "TerrainLightingMorningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].ambient) },
+    { "TerrainLightingMorningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].diffuse) },
+    { "TerrainLightingMorningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].lightPos) },
+    { "TerrainLightingAfternoonAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].ambient) },
+    { "TerrainLightingAfternoonDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].diffuse) },
+    { "TerrainLightingAfternoonLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].lightPos) },
+    { "TerrainLightingEveningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].ambient) },
+    { "TerrainLightingEveningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].diffuse) },
+    { "TerrainLightingEveningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].lightPos) },
+    { "TerrainLightingNightAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].ambient) },
+    { "TerrainLightingNightDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].diffuse) },
+    { "TerrainLightingNightLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].lightPos) },
+    { "TerrainObjectsLightingNightAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].ambient) },
+    { "TerrainObjectsLightingNightDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].diffuse) },
+    { "TerrainObjectsLightingNightLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].lightPos) },
+    // Light 2
+    { "TerrainLightingMorningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].ambient) },
+    { "TerrainLightingMorningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].diffuse) },
+    { "TerrainLightingMorningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].lightPos) },
+    { "TerrainLightingAfternoonAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].ambient) },
+    { "TerrainLightingAfternoonDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].diffuse) },
+    { "TerrainLightingAfternoonLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].lightPos) },
+    { "TerrainLightingEveningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].ambient) },
+    { "TerrainLightingEveningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].diffuse) },
+    { "TerrainLightingEveningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].lightPos) },
+    { "TerrainLightingNightAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].ambient) },
+    { "TerrainLightingNightDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].diffuse) },
+    { "TerrainLightingNightLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].lightPos) },
+    { "TerrainObjectsLightingNightAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].ambient) },
+    { "TerrainObjectsLightingNightDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].diffuse) },
+    { "TerrainObjectsLightingNightLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].lightPos) },
+    // Light 3
+    { "TerrainLightingMorningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].ambient) },
+    { "TerrainLightingMorningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].diffuse) },
+    { "TerrainLightingMorningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].lightPos) },
+    { "TerrainLightingAfternoonAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].ambient) },
+    { "TerrainLightingAfternoonDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].diffuse) },
+    { "TerrainLightingAfternoonLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].lightPos) },
+    { "TerrainLightingEveningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].ambient) },
+    { "TerrainLightingEveningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].diffuse) },
+    { "TerrainLightingEveningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].lightPos) },
+    { "TerrainLightingNightAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].ambient) },
+    { "TerrainLightingNightDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].diffuse) },
+    { "TerrainLightingNightLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].lightPos) },
+    { "TerrainObjectsLightingNightAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].ambient) },
+    { "TerrainObjectsLightingNightDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].diffuse) },
+    { "TerrainObjectsLightingNightLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].lightPos) },
+    // End of terrain lights
+    { "NumberGlobalLights", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_numberGlobalLights) }, //
+    { "InfantryLightMorningScale",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_MORNING]) }, //
+    { "InfantryLightAfternoonScale",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_AFTERNOON]) }, //
+    { "InfantryLightEveningScale",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_EVENING]) }, //
+    { "InfantryLightNightScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_NIGHT]) }, //
+    { "MaxTranslucentObjects", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTranslucencyObjects) }, //
+    { "OccludedColorLuminanceScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_occludedColorLuminanceScale) }, //
+    { "MaxRoadSegments", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadSegments) }, //
+    { "MaxRoadVertex", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadVertex) }, //
+    { "MaxRoadIndex", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadIndex) }, //
+    { "MaxRoadTypes", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadTypes) }, //
+    { "ValuePerSupplyBox", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_valuesPerSupplyBox) }, //
+    { "AudioOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_audioOn) }, //
+    { "MusicOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_musicOn) }, //
+    { "SoundsOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_soundsOn) }, //
+    { "Sounds3DOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_sounds3DOn) }, //
+    { "SpeechOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_speechOn) }, //
+    { "VideoOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_videoOn) }, //
+    { "DisableCameraMovements", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_disableCameraMovements) }, //
+    { "DebugAI", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_debugAI) }, //
+    { "DebugAIObstacles", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_debugObstacleAI) }, //
+    { "ShowClientPhysics", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showClientPhysics) }, //
+    { "ShowTerrainNormals", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showTerrainNormals) }, //
+    { "ShowObjectHealth", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showObjectHealth) }, //
+    { "ParticleScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_particleScale) }, //
     { "AutoFireParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallPrefix) },
     { "AutoFireParticleSmallSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallSystem) },
     { "AutoFireParticleSmallMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleSmallMax) }, //
@@ -467,7 +697,7 @@ FieldParse GlobalData::s_fieldParseTable[] = {
         offsetof(GlobalData, m_networkDisconnectScreenNotifyTime) },
     { "KeyboardCameraRotateSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardCameraRotateSpeed) },
     { "PlayStats", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_playerStats) },
-    { "UserDataLeafName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_userDataLeafName) },
+    // { "UserDataLeafName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_userDataLeafName) },
     { nullptr, nullptr, nullptr, 0 }
 };
 

@@ -379,7 +379,6 @@ public:
     int32_t m_networkDisconnectScreenNotifyTime;
     float m_keyboardCameraRotateSpeed;
     int32_t m_playerStats;
-    Utf8String m_userDataLeafName;
     bool m_demoToggleSpecialPowerDelays;
 #ifdef GAME_DEBUG_STRUCTS
     bool m_TiVOFastMode;

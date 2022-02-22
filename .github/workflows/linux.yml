@@ -20,6 +20,7 @@ jobs:
   build_thyme_ubuntu:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         platform: [clang, gcc]
         os: [ubuntu-18.04, ubuntu-20.04]

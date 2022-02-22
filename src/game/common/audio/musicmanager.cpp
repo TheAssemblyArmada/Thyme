@@ -29,13 +29,13 @@ void MusicManager::Remove_Audio_Event(unsigned int handle)
 void MusicManager::Play_Track(AudioEventRTS *event)
 {
     AudioRequest *request = g_theAudio->Allocate_Audio_Request(true);
-    request->Set_Music_Event_Object(event);
+    request->Request_Play(event);
     g_theAudio->Append_Audio_Request(request);
 }
 
 void MusicManager::Stop_Track(unsigned int handle)
 {
     AudioRequest *request = g_theAudio->Allocate_Audio_Request(false);
-    request->Set_Event_Handle(handle);
+    request->Request_Stop(handle);
     g_theAudio->Append_Audio_Request(request);
 }

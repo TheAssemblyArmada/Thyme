@@ -87,7 +87,7 @@ public:
     virtual void Lose_Focus();
     virtual void Regain_Focus();
     virtual int Add_Audio_Event(const AudioEventRTS *event);
-    virtual void Remove_Audio_Event(unsigned event);
+    virtual void Remove_Audio_Event(unsigned handle);
     virtual void Remove_Audio_Event(Utf8String event);
     virtual void Kill_Event_Immediately(uintptr_t event) = 0;
     virtual bool Is_Valid_Audio_Event(const AudioEventRTS *event) const;
@@ -105,7 +105,7 @@ public:
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
     virtual void *Get_Device() = 0;
-    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) = 0;
+    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned type) = 0;
     virtual int Get_Provider_Count() = 0;
     virtual Utf8String Get_Provider_Name(unsigned provider) const = 0;
     virtual unsigned Get_Provider_Index(Utf8String name) = 0;
@@ -160,7 +160,7 @@ public:
     virtual void Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list);
     virtual const audioinfomap_t *Get_All_Audio_Events() const;
     virtual bool Is_Current_Provider_Hardware_Accelerated();
-    virtual bool Is_Current_Speaker_Type_Surround();
+    virtual bool Is_Current_Speaker_Type_Surround_Sound();
     virtual bool Should_Play_Locally(const AudioEventRTS *event);
     virtual void Set_Device_Listener_Position() = 0;
     virtual int Allocate_New_Handle();
@@ -187,7 +187,7 @@ protected:
     Coord3D m_listenerFacing;
     std::list<AudioRequest *> m_audioRequestList;
     std::vector<Utf8String> m_trackList;
-    audioinfomap_t m_audioInfoHashMap;
+    audioinfomap_t m_allAudioEventInfo;
     int m_audioHandleCounter;
     std::list<std::pair<Utf8String, float>>
         m_eventVolumeList; // TODO workout what list this actually is, some kind of volume list

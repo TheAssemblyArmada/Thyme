@@ -64,7 +64,7 @@ public:
     virtual void Open_Device() override;
     virtual void Close_Device() override;
     virtual void *Get_Device() override { return m_milesDigitalDriver; }
-    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2) override;
+    virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned type) override;
     virtual int Get_Provider_Count() override { return m_milesMaxProviderIndex; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
     virtual unsigned Get_Provider_Index(Utf8String name) override;
@@ -115,9 +115,10 @@ private:
     void *Play_Sample(AudioEventRTS *event, HSAMPLE stream);
     bool Start_Next_Loop(PlayingAudio *audio);
     void Init_Filters(HSAMPLE sample, AudioEventRTS *event);
-    void Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event);
+    void Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event, Coord3D *coord);
     void Init_Sample_Pools();
     void Play_Audio_Event(AudioEventRTS *event);
+    void Pause_Audio_Event(uintptr_t handle);
     void Stop_Audio_Event(uintptr_t handle);
     void Process_Request(AudioRequest *request);
     void Stop_All_Speech();
@@ -132,11 +133,12 @@ private:
     void Close_File(void *handle) { m_audioFileCache->Close_File(handle); }
     bool Provider_Is_Valid() const { return m_milesCurrentProvider < m_milesMaxProviderIndex; }
     void Build_Provider_List();
-    void Init_Delay_Filters();
+    void Init_Delay_Filter();
     void Create_Listener();
     bool Process_Request_This_Frame(AudioRequest *request);
     void Adjust_Request(AudioRequest *request);
     bool Check_For_Sample(AudioRequest *request);
+    bool Is_On_Screen(const Coord3D *coord) const;
 
     // Callbacks for file access
     static int __stdcall Streaming_File_Open(const char *name, uintptr_t *handle);
@@ -159,7 +161,7 @@ private:
     Utf8String m_preferredSpeaker;
     HDIGDRIVER m_milesDigitalDriver;
     H3DPOBJECT m_miles3DPositionObject;
-    int m_milesMonoDelayFilter;
+    int m_milesDelayFilter;
     std::list<HAUDIO> m_quickAudioList; // Possibly stream audio list?
     std::list<HSAMPLE> m_sampleHandleList;
     std::list<H3DSAMPLE> m_3dSampleHandleList;

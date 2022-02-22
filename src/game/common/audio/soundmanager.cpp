@@ -45,8 +45,7 @@ void SoundManager::Add_Audio_Event(AudioEventRTS *event)
     }
 
     AudioRequest *request = g_theAudio->Allocate_Audio_Request(true);
-    request->Set_Music_Event_Object(event);
-    request->Set_Type(REQUEST_MUSIC_ADD);
+    request->Request_Play(event);
     g_theAudio->Append_Audio_Request(request);
 }
 

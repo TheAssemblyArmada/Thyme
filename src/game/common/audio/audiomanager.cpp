@@ -174,7 +174,9 @@ AudioRequest *AudioManager::Allocate_Audio_Request(bool is_add_request)
  */
 void AudioManager::Release_Audio_Request(AudioRequest *request)
 {
-    request->Delete_Instance();
+    if (request != nullptr) {
+        request->Delete_Instance();
+    }
 }
 
 /**
@@ -199,7 +201,7 @@ AudioEventInfo *AudioManager::New_Audio_Event_Info(Utf8String name)
     if (info == nullptr) {
         info = NEW_POOL_OBJ(AudioEventInfo);
 
-        m_audioInfoHashMap[name] = info;
+        m_allAudioEventInfo[name] = info;
     }
 
     return info;
@@ -217,7 +219,7 @@ void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
     if (found != nullptr) {
         *found = *info;
     } else {
-        m_audioInfoHashMap[info->Get_Event_Name()] = info;
+        m_allAudioEventInfo[info->Get_Event_Name()] = info;
     }
 }
 
@@ -228,9 +230,9 @@ void AudioManager::Add_Audio_Event_Info(AudioEventInfo *info)
  */
 AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
 {
-    auto it = m_audioInfoHashMap.find(name);
+    auto it = m_allAudioEventInfo.find(name);
 
-    if (it != m_audioInfoHashMap.end()) {
+    if (it != m_allAudioEventInfo.end()) {
         return it->second;
     }
 
@@ -245,7 +247,7 @@ AudioEventInfo *AudioManager::Find_Audio_Event_Info(Utf8String name) const
 void AudioManager::Refresh_Cached_Variables()
 {
     AudioManager::Set_Hardware_Accelerated(Is_Current_Provider_Hardware_Accelerated());
-    AudioManager::Set_Speaker_Surround(Is_Current_Speaker_Type_Surround());
+    AudioManager::Set_Speaker_Surround(Is_Current_Speaker_Type_Surround_Sound());
 }
 
 /**
@@ -283,7 +285,7 @@ bool AudioManager::Is_Music_Already_Loaded()
 {
     AudioEventInfo *event_info = nullptr;
 
-    for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
+    for (auto it = m_allAudioEventInfo.begin(); it != m_allAudioEventInfo.end(); ++it) {
         if (it->second != nullptr && it->second->Get_Event_Type() == EVENT_MUSIC) {
             event_info = it->second;
         }
@@ -307,11 +309,11 @@ bool AudioManager::Is_Music_Already_Loaded()
  */
 void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list)
 {
-    for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end(); ++it) {
+    for (auto it = m_allAudioEventInfo.begin(); it != m_allAudioEventInfo.end(); ++it) {
         auto find_it = it;
 
         // From current position, find if an entry matches the type.
-        for (; find_it != m_audioInfoHashMap.end(); ++find_it) {
+        for (; find_it != m_allAudioEventInfo.end(); ++find_it) {
             if (find_it->second->Get_Event_Type() == type) {
                 break;
             }
@@ -319,7 +321,7 @@ void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<Aud
 
         it = find_it;
 
-        if (it != m_audioInfoHashMap.end()) {
+        if (it != m_allAudioEventInfo.end()) {
             list.push_back(it->second);
         } else {
             return;
@@ -334,7 +336,7 @@ void AudioManager::Find_All_Audio_Events_Of_Type(AudioType type, std::vector<Aud
  */
 const audioinfomap_t *AudioManager::Get_All_Audio_Events() const
 {
-    return &m_audioInfoHashMap;
+    return &m_allAudioEventInfo;
 }
 
 /**
@@ -345,7 +347,7 @@ const audioinfomap_t *AudioManager::Get_All_Audio_Events() const
 bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
 {
     // Search preferred providers list against current provider.
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < DRIVER_SOFTWARE; ++i) {
         if (strcmp(m_audioSettings->Get_Preferred_Driver(i), Get_Provider_Name(Get_Selected_Provider())) == 0) {
             return true;
         }
@@ -359,7 +361,7 @@ bool AudioManager::Is_Current_Provider_Hardware_Accelerated()
  *
  * 0x00406DE0
  */
-bool AudioManager::Is_Current_Speaker_Type_Surround()
+bool AudioManager::Is_Current_Speaker_Type_Surround_Sound()
 {
     return Get_Speaker_Type() == m_audioSettings->Get_Default_3D_Speaker_Type();
 }
@@ -396,13 +398,13 @@ int AudioManager::Allocate_New_Handle()
  */
 void AudioManager::Remove_Level_Specific_Audio_Event_Infos()
 {
-    for (auto it = m_audioInfoHashMap.begin(); it != m_audioInfoHashMap.end();) {
+    for (auto it = m_allAudioEventInfo.begin(); it != m_allAudioEventInfo.end();) {
         auto delete_it = it;
         ++it;
 
         if (delete_it->second->Is_Level_Specific()) {
             delete_it->second->Delete_Instance();
-            m_audioInfoHashMap.erase(delete_it);
+            m_allAudioEventInfo.erase(delete_it);
         }
     }
 }
@@ -494,6 +496,13 @@ Utf8String AudioManager::Prev_Track_Name(Utf8String track) const
  */
 void AudioManager::Lose_Focus()
 {
+    // BUGFIX clean up the memory leak
+    // WB debug printed when it occured but didn't clean up
+    if (m_savedVolumes != nullptr) {
+        captainslog_warn("deleting m_savedVolumes to prevent leaking memory!");
+        delete[] m_savedVolumes;
+    }
+
     m_savedVolumes = new float[4];
     m_savedVolumes[0] = m_initialMusicVolume;
     m_savedVolumes[1] = m_initialSoundVolume;
@@ -538,6 +547,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
         Get_Info_For_Audio_Event(event);
 
         if (event->Get_Event_Info() == nullptr) {
+            captainslog_debug("No info for requested audio event '%s'", event->Get_Event_Name());
             return 0;
         }
     }
@@ -586,30 +596,29 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
         }
     }
 
-    if (new_event->Should_Play_Locally() || Should_Play_Locally(new_event)) {
-        if (new_event->Get_Volume() >= m_audioSettings->Get_Min_Sample_Vol()) {
-            if (event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
-                m_soundManager->Add_Audio_Event(new_event);
-            } else {
-                m_musicManager->Add_Audio_Event(new_event);
-            }
+    if (!new_event->Should_Play_Locally() && !Should_Play_Locally(new_event)) {
+        Release_Audio_Event_RTS(new_event);
 
-            // Is this even possible to reach?
-            if (new_event == nullptr) {
-                return 1;
-            }
-
-            return new_event->Get_Playing_Handle();
-        } else {
-            Release_Audio_Event_RTS(new_event);
-
-            return 2; // Volume too low?
-        }
+        return 3; // Don't play locally?
     }
 
-    Release_Audio_Event_RTS(new_event);
+    if (new_event->Get_Volume() < m_audioSettings->Get_Min_Sample_Vol()) {
+        Release_Audio_Event_RTS(new_event);
 
-    return 3; // Don't play locally?
+        return 2; // Volume too low?
+    }
+
+    if (event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+        m_musicManager->Add_Audio_Event(new_event);
+    } else {
+        m_soundManager->Add_Audio_Event(new_event);
+    }
+
+    if (new_event != nullptr) {
+        return new_event->Get_Playing_Handle();
+    }
+
+    return 1;
 }
 
 /**
@@ -617,13 +626,13 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
  *
  * 0x004058A0
  */
-void AudioManager::Remove_Audio_Event(unsigned event)
+void AudioManager::Remove_Audio_Event(unsigned handle)
 {
-    if (event == 4 || event == 5) {
-        m_musicManager->Remove_Audio_Event(event);
-    } else if (event > 6) {
+    if (handle == 4 || handle == 5) {
+        m_musicManager->Remove_Audio_Event(handle);
+    } else if (handle >= 6) {
         AudioRequest *request = Allocate_Audio_Request(false);
-        request->Set_Event_Handle(event);
+        request->Request_Stop(handle);
         Append_Audio_Request(request);
     }
 }

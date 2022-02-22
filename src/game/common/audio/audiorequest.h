@@ -24,11 +24,11 @@ union reqevent_t
     AudioEventRTS *object;
 };
 
-enum RequestType
+enum AudioRequestType
 {
-    REQUEST_MUSIC_ADD,
-    REQUEST_SOUND_ADD,
-    REQUEST_REMOVE,
+    AR_PLAY,
+    AR_PAUSE,
+    AR_STOP,
 };
 
 class AudioRequest : public MemoryPoolObject
@@ -41,18 +41,18 @@ protected:
     virtual ~AudioRequest() override {}
 
 public:
-    void Set_Music_Event_Object(AudioEventRTS *object)
+    void Request_Play(AudioEventRTS *object)
     {
         m_event.object = object;
-        m_requestType = REQUEST_MUSIC_ADD;
+        m_requestType = AR_PLAY;
     }
-    void Set_Event_Handle(uintptr_t handle)
+    void Request_Stop(uintptr_t handle)
     {
         m_event.handle = handle;
-        m_requestType = REQUEST_REMOVE;
+        m_requestType = AR_STOP;
     }
-    void Set_Type(RequestType type) { m_requestType = type; }
-    RequestType Request_Type() const { return m_requestType; }
+    void Set_Type(AudioRequestType type) { m_requestType = type; }
+    AudioRequestType Request_Type() const { return m_requestType; }
     uintptr_t Event_Handle() const { return m_event.handle; }
     AudioEventRTS *Event_Object() const { return m_event.object; }
     bool Is_Adding() const { return m_isAdding; }
@@ -61,7 +61,7 @@ private:
     AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false) {}
 
 private:
-    RequestType m_requestType;
+    AudioRequestType m_requestType;
     reqevent_t m_event;
     bool m_isAdding;
     bool m_isProcessed;

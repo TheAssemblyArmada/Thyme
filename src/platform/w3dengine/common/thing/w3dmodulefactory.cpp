@@ -20,6 +20,7 @@
 #include "w3dmodeldraw.h"
 #include "w3doverlordtankdraw.h"
 #include "w3dprojectilestreamdraw.h"
+#include "w3dtanktruckdraw.h"
 #include "w3dtreedraw.h"
 /**
  * @brief Initialises W3D specific modules on top of those handled by the base factory class.
@@ -109,8 +110,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DTracerDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776F20,
-        (moddatacreateproc_t)0x00777010,
+    Add_Module_Internal(W3DTankTruckDraw::Friend_New_Module_Instance,
+        W3DTankTruckDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DTankTruckDraw",
         DrawModule::Get_Interface_Mask());

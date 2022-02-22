@@ -318,7 +318,7 @@ void W3DTankDraw::Update_Tread_Objects()
 
                             if (matinfo) {
                                 for (int index = 0; index < matinfo->Vertex_Material_Count(); index++) {
-                                    TextureMapperClass *mapper = matinfo->Get_Vertex_Material(index)->Get_Mapper(0);
+                                    TextureMapperClass *mapper = matinfo->Get_Vertex_Material(index)->Peek_Mapper(0);
 
                                     if (mapper != nullptr
                                         && mapper->Mapper_ID() == TextureMapperClass::MAPPER_ID_LINEAR_OFFSET) {

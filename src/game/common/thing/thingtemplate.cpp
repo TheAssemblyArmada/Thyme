@@ -901,3 +901,19 @@ const WeaponTemplateSet *ThingTemplate::Find_Weapon_Template_Set(const BitFlags<
 {
     return m_weaponTemplateSetFinder.Find_Best_Info(m_weaponTemplateSets, t);
 }
+
+const AudioEventRTS *ThingTemplate::Get_Per_Unit_Sound(const Utf8String &soundname) const
+{
+    if (soundname.Is_Empty()) {
+        return &s_audioEventNoSound;
+    }
+
+    auto iter = m_perUnitSounds.find(soundname);
+
+    if (iter != m_perUnitSounds.end()) {
+        return &iter->second;
+    }
+
+    captainslog_debug("Unknown Audio name (%s) asked for in ThingTemplate (%s).", soundname.Str(), m_nameString.Str());
+    return &s_audioEventNoSound;
+}

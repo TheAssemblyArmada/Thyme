@@ -73,7 +73,7 @@ FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool
     //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
     { "TerrainLOD", &INI::Parse_Index_List, _terrain_lod_names, offsetof(GlobalData, m_terrainLOD) }, //
     { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_terrainLODTargetTimeMS) }, //
-    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_rightMouseAlwaysScrolls)  }, //
+    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_rightMouseAlwaysScrolls) }, //
     { "UseWaterPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useWaterPlane) }, //
     { "UseCloudPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useCloudPlane) }, //
     { "DownwindAngle", &INI::Parse_Real, nullptr, 348 }, //

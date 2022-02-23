@@ -47,10 +47,10 @@ public:
     ScienceType Get_Science_From_Internal_Name(const Utf8String &name) const;
     Utf8String Get_Internal_Name_From_Science(ScienceType science) const;
     const ScienceInfo *Get_Science_Info(ScienceType science) const;
-    std::vector<Utf8String> Get_All_Science() const;
+    std::vector<Utf8String> Get_All_Sciences() const;
     int32_t Get_Science_Purchase_Cost(ScienceType science) const;
     bool Is_Science_Grantable(ScienceType science) const;
-    void Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description);
+    bool Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description);
     bool Player_Has_Prereqs_For_Science(Player *player, ScienceType science);
     bool Player_Has_Root_Prereqs_For_Science(Player *player, ScienceType science);
 

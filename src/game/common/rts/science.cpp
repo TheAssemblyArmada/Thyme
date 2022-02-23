@@ -99,8 +99,8 @@ Utf8String ScienceStore::Get_Internal_Name_From_Science(ScienceType science) con
     return g_theNameKeyGenerator->Key_To_Name(static_cast<NameKeyType>(science));
 }
 
-// wb 0x0072731A
-std::vector<Utf8String> ScienceStore::Get_All_Science() const
+// wb: 0x0072731A
+std::vector<Utf8String> ScienceStore::Get_All_Sciences() const
 {
     std::vector<Utf8String> all_science;
     for (const auto *science : m_infoVec) {
@@ -125,14 +125,15 @@ bool ScienceStore::Is_Science_Grantable(ScienceType science) const
 }
 
 // zh: 0x00488CE0 wb: 0x007277AF
-void ScienceStore::Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description)
+bool ScienceStore::Get_Name_And_Description(ScienceType science, Utf16String &name, Utf16String &description)
 {
     const auto *info = Get_Science_Info(science);
     if (info == nullptr) {
-        return;
+        return false;
     }
     name = info->Get_Name();
     description = info->Get_Description();
+    return true;
 }
 
 // zh: 0x00488D50 wb: 0x007277F7
@@ -178,20 +179,20 @@ void ScienceStore::Parse_Science_Definition(INI *ini)
     }
 
     if (ini->Get_Load_Type() == INILoadType::INI_LOAD_CREATE_OVERRIDES) {
-        auto *override_info = NEW_POOL_OBJ(ScienceInfo);
+        auto *new_info = new ScienceInfo;
         if (found_info == nullptr) {
-            override_info->Set_Is_Allocated();
+            new_info->Set_Is_Allocated();
             g_theScienceStore->m_infoVec.push_back(found_info);
         } else {
             found_info = static_cast<ScienceInfo *>(found_info->Friend_Get_Final_Override());
-            *override_info = *found_info;
-            found_info->Set_Next(override_info);
-            override_info->Set_Is_Allocated();
+            *new_info = *found_info;
+            found_info->Set_Next(new_info);
+            new_info->Set_Is_Allocated();
         }
-        found_info = override_info;
+        found_info = new_info;
     } else {
         captainslog_dbgassert(found_info == nullptr, "Duplicate Science %s!", name);
-        found_info = NEW_POOL_OBJ(ScienceInfo);
+        found_info = new ScienceInfo;
         g_theScienceStore->m_infoVec.push_back(found_info);
     }
 

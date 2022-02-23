@@ -106,6 +106,7 @@ private:
     void Stop_Audio_Event(uintptr_t handle);
     void Process_Request(AudioRequest *request);
     void Stop_All_Speech();
+    Coord3D *Get_Current_Position_From_Event(AudioEventRTS *event);
     // TODO: Open_File & Close_File
     void *Open_File(AudioEventRTS *event) { return nullptr; }
     void Close_File(void *handle) {}

@@ -1287,20 +1287,6 @@ void ALAudioManager::Stop_All_Audio_Immediately()
             Release_Playing_Audio(*it);
         }
     }
-
-    for (auto it = m_fadingList.begin(); it != m_fadingList.end(); it = m_fadingList.erase(it)) {
-        if (*it != nullptr) {
-            Release_Playing_Audio(*it);
-        }
-    }
-
-    for (auto it = m_quickAudioList.begin(); it != m_quickAudioList.end(); ++it) {
-        if (*it != nullptr) {
-            AIL_quick_unload(*it);
-        }
-    }
-
-    m_quickAudioList.clear();
 }
 
 /**
@@ -1411,6 +1397,18 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
  * Adjusts the volume of a playing audio object at the Miles audio level.
  */
 void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio) {}
+
+/**
+ * Gets the position the event is supposed to play at currently.
+ */
+Coord3D *ALAudioManager::Get_Current_Position_From_Event(AudioEventRTS *event)
+{
+    if (!event->Is_Positional_Audio()) {
+        return nullptr;
+    }
+
+    return event->Get_Current_Pos();
+}
 
 /**
  * Helper function to clear a PlayingAudio object.

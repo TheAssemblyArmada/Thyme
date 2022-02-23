@@ -98,6 +98,8 @@ set(GAMEENGINE_SRC
     game/client/gui/gamefont.cpp
     game/client/gui/gamewindow.cpp
     game/client/gui/gamewindowtransitions.cpp
+    game/client/gui/imemanagerinterface.cpp
+    game/client/gui/imemanager.cpp
     game/client/gui/loadscreen.cpp
     game/client/gui/wininstancedata.cpp
     game/client/gui/windowlayout.cpp

@@ -638,3 +638,7 @@ AudioEventRTS &ThingTemplate::s_audioEventNoSound = Make_Global<AudioEventRTS>(P
 // drawable.cpp
 #include "drawable.h"
 int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00E25D70));
+
+// imemanagerinterface.cpp
+class IMEManagerInterface;
+IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_ADDRESS(0x00A29B8C, 0));

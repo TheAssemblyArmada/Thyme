@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "gametype.h"
 #include <captainslog.h>
 
 class File;
@@ -110,7 +111,7 @@ public:
     int Get_Line_Number() const { return m_lineNumber; }
 
     // Scan functions
-    static int Scan_Science(const char *token);
+    static ScienceType Scan_Science(const char *token);
     static float Scan_PercentToReal(const char *token);
     static float Scan_Real(const char *token);
     static unsigned int Scan_UnsignedInt(const char *token);

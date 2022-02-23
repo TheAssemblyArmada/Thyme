@@ -15,8 +15,11 @@
 #include "thingtemplate.h"
 #include "aiupdate.h"
 #include "audioeventrts.h"
+#include "audiomanager.h"
+#include "fxlist.h"
 #include "gamelogic.h"
 #include "globaldata.h"
+#include "image.h"
 #include "module.h"
 #include "modulefactory.h"
 #include "productionprerequisite.h"
@@ -490,10 +493,44 @@ void ThingTemplate::Set_Copied_From_Default()
 
 void ThingTemplate::Resolve_Names()
 {
-    // todo needs more of ProductionPrerequisite and ImageCollection
-#ifdef GAME_DLL
-    Call_Method<void, ThingTemplate>(PICK_ADDRESS(0x0058B870, 0x006ECF80), this);
-#endif
+    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
+        m_prerequisites[i].Resolve_Names();
+    }
+
+    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
+        ThingTemplate *tmpls[32];
+        int count = m_prerequisites[i].Get_All_Possible_Build_Facility_Templates(tmpls, 32);
+
+        for (int j = 0; j < count; j++) {
+            if (tmpls[j] != nullptr) {
+                tmpls[j]->m_isBuildFacility = true;
+            }
+        }
+    }
+
+    if (Is_KindOf(KINDOF_COMMANDCENTER)) {
+        m_isBuildFacility = true;
+    }
+
+    if (g_theMappedImageCollection != nullptr) {
+        if (m_selectedPortraitImageName.Is_Not_Empty()) {
+            m_selectedPortraitImage = g_theMappedImageCollection->Find_Image_By_Name(m_selectedPortraitImageName);
+            captainslog_dbgassert(m_selectedPortraitImage != nullptr,
+                "%s is looking for Portrait %s but can't find it. Skipping...",
+                Get_Name().Str(),
+                m_selectedPortraitImageName.Str());
+            m_selectedPortraitImageName.Clear();
+        }
+
+        if (m_buttonImageName.Is_Not_Empty()) {
+            m_buttonImage = g_theMappedImageCollection->Find_Image_By_Name(m_buttonImageName);
+            captainslog_dbgassert(m_selectedPortraitImage != nullptr,
+                "%s is looking for Portrait %s but can't find it. Skipping...",
+                Get_Name().Str(),
+                m_buttonImageName.Str());
+            m_buttonImageName.Clear();
+        }
+    }
 }
 
 void ThingTemplate::Init_For_LTA(const Utf8String &name)
@@ -746,27 +783,99 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 
 void ThingTemplate::Parse_Per_Unit_FX(INI *ini, void *instance, void *store, const void *user_data)
 {
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x00589FD0, 0x006EA1D0), ini, instance, store, user_data);
-#endif
+    std::map<Utf8String, FXList *> *map = static_cast<std::map<Utf8String, FXList *> *>(store);
+    map->clear();
+
+    // clang-format off
+    static const FieldParse myFieldParse[] = {
+        { nullptr, &Parse_Arbitrary_FX_Into_Map, nullptr, 0},
+        { nullptr, nullptr, nullptr, 0 },
+    };
+    // clang-format on
+
+    ini->Init_From_INI(map, myFieldParse);
+}
+
+void ThingTemplate::Parse_Arbitrary_FX_Into_Map(INI *ini, void *instance, void *store, const void *user_data)
+{
+    std::map<Utf8String, FXList *> *map = static_cast<std::map<Utf8String, FXList *> *>(instance);
+    const char *str = ini->Get_Next_Token();
+    FXList *list = g_theFXListStore->Find_FXList(str);
+    captainslog_dbgassert(list != nullptr || strcasecmp(str, "None"), "FXList %s not found!", str);
+    Utf8String s(static_cast<const char *>(user_data));
+    std::pair<Utf8String, FXList *> pair(s, list);
+    map->insert(pair);
 }
 
 void ThingTemplate::Parse_Per_Unit_Sounds(INI *ini, void *instance, void *store, const void *user_data)
 {
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x0058A2A0, 0x006EA32B), ini, instance, store, user_data);
-#endif
+    std::map<Utf8String, AudioEventRTS> *map = static_cast<std::map<Utf8String, AudioEventRTS> *>(store);
+    map->clear();
+
+    // clang-format off
+    static const FieldParse myFieldParse[] = {
+        { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0},
+        { nullptr, nullptr, nullptr, 0 },
+    };
+    // clang-format on
+
+    ini->Init_From_INI(map, myFieldParse);
+}
+
+void ThingTemplate::Parse_Arbitrary_Sounds_Into_Map(INI *ini, void *instance, void *store, const void *user_data)
+{
+    std::map<Utf8String, AudioEventRTS> *map = static_cast<std::map<Utf8String, AudioEventRTS> *>(instance);
+    AudioEventRTS sound;
+    const char *str = ini->Get_Next_Token();
+
+    if (str != nullptr) {
+        sound.Set_Event_Name(str);
+    }
+
+    Utf8String s(static_cast<const char *>(user_data));
+    std::pair<Utf8String, AudioEventRTS> pair(s, sound);
+    map->insert(pair);
 }
 
 void ThingTemplate::Parse_Prerequisites(INI *ini, void *instance, void *store, const void *user_data)
 {
-    // todo needs more of ProductionPrerequisite
-#ifdef GAME_DLL
-    Call_Function<void, INI *, void *, void *, const void *>(
-        PICK_ADDRESS(0x00589DD0, 0x006E9F46), ini, instance, store, user_data);
-#endif
+    ThingTemplate *thing = static_cast<ThingTemplate *>(instance);
+
+    if (ini->Get_Load_Type() == INI_LOAD_CREATE_OVERRIDES) {
+        thing->m_prerequisites.clear();
+    }
+
+    // clang-format off
+    static const FieldParse myFieldParse[] = {
+        { "Object", &Parse_Prerequisite_Unit, nullptr, 0},
+        { "Science", &Parse_Prerequisite_Science, nullptr, 0},
+        { nullptr, nullptr, nullptr, 0 },
+    };
+    // clang-format on
+
+    ini->Init_From_INI(&thing->m_prerequisites, myFieldParse);
+}
+
+void ThingTemplate::Parse_Prerequisite_Unit(INI *ini, void *instance, void *store, const void *user_data)
+{
+    std::vector<ProductionPrerequisite> *vec = static_cast<std::vector<ProductionPrerequisite> *>(instance);
+    ProductionPrerequisite prereq;
+    bool or_with_previous = false;
+
+    for (const char *str = ini->Get_Next_Token(); str != nullptr; str = ini->Get_Next_Token_Or_Null()) {
+        prereq.Add_Unit_Prereq(str, or_with_previous);
+        or_with_previous = true;
+    }
+    vec->push_back(prereq);
+}
+
+void ThingTemplate::Parse_Prerequisite_Science(INI *ini, void *instance, void *store, const void *user_data)
+{
+    std::vector<ProductionPrerequisite> *vec = static_cast<std::vector<ProductionPrerequisite> *>(instance);
+    ProductionPrerequisite prereq;
+    ScienceType science = ini->Scan_Science(ini->Get_Next_Token());
+    prereq.Add_Science_Prereq(science);
+    vec->push_back(prereq);
 }
 
 void ThingTemplate::Parse_Remove_Module(INI *ini, void *instance, void *store, const void *user_data)
@@ -886,10 +995,52 @@ AIUpdateModuleData *ThingTemplate::Friend_Get_AI_Module_Info() const
 
 void ThingTemplate::Validate()
 {
-    // todo needs more SparseMatchFinder and some other stuff
-#ifdef GAME_DLL
-    Call_Method<void, ThingTemplate>(PICK_ADDRESS(0x0058B2F0, 0x006EC951), this);
-#endif
+    if (m_shadowTextureName.Is_Empty()) {
+        GeometryType type = Get_Template_Geometry_Info().Get_Type();
+
+        if (type >= GEOMETRY_SPHERE) {
+            if (type <= GEOMETRY_CYLINDER) {
+                m_shadowTextureName = "shadow";
+            } else if (type == GEOMETRY_BOX) {
+                m_shadowTextureName = "shadows";
+            }
+        }
+    }
+
+    Validate_Audio();
+
+    if (Get_Name() != "DefaultThingTemplate") {
+        if (Get_Name() != "NeutronMissile") {
+            if (Get_Name() != "FlamethrowerProjectileStream" && !Is_KindOf(KINDOF_DRAWABLE_ONLY)
+                && m_buildVariations.empty()) {
+                bool immobile = Is_KindOf(KINDOF_IMMOBILE);
+                captainslog_dbgassert(
+                    !Is_KindOf(KINDOF_SHRUBBERY) || immobile, "SHRUBBERY %s must be marked IMMOBILE!", Get_Name().Str());
+                captainslog_dbgassert(!Is_KindOf(KINDOF_STRUCTURE) || immobile,
+                    "Structure %s is not marked immobile, but probably should be -- please fix it. (If we ever add mobile "
+                    "structures, this debug sniffer will need to be revised.)",
+                    Get_Name().Str());
+                captainslog_dbgassert(!Is_KindOf(KINDOF_STICK_TO_TERRAIN_SLOPE) || immobile,
+                    "item %s is marked STICK_TO_TERRAIN_SLOPE but not IMMOBILE -- please fix it.",
+                    Get_Name().Str());
+
+                if (Is_KindOf(KINDOF_STRUCTURE)) {
+                    if (m_armorTemplateSets.empty()
+                        || (m_armorTemplateSets.size() == 1 && m_armorTemplateSets[0].Get_Armor_Template() == nullptr)) {
+                        captainslog_debug(
+                            "Structure %s has no armor, but probably should (StructureArmor) -- please fix it.)",
+                            Get_Name().Str());
+                    }
+
+                    for (auto set : m_armorTemplateSets) {
+                        captainslog_dbgassert(set.Get_Damage_FX() != nullptr,
+                            "Structure %s has no ArmorDamageFX, and really should.",
+                            Get_Name().Str());
+                    }
+                }
+            }
+        }
+    }
 }
 
 const ArmorTemplateSet *ThingTemplate::Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const
@@ -916,4 +1067,79 @@ const AudioEventRTS *ThingTemplate::Get_Per_Unit_Sound(const Utf8String &soundna
 
     captainslog_debug("Unknown Audio name (%s) asked for in ThingTemplate (%s).", soundname.Str(), m_nameString.Str());
     return &s_audioEventNoSound;
+}
+
+const FXList *ThingTemplate::Get_Per_Unit_FX(const Utf8String &fxname) const
+{
+    if (fxname.Is_Empty()) {
+        return nullptr;
+    }
+
+    auto iter = m_perUnitEffects.find(fxname);
+
+    if (iter != m_perUnitEffects.end()) {
+        return iter->second;
+    }
+
+    captainslog_debug("Unknown FX name (%s) asked for in ThingTemplate (%s). ", m_nameString.Str(), fxname.Str());
+    return nullptr;
+}
+
+void ThingTemplate::Validate_Sound(const AudioEventRTS *event, const char *name)
+{
+    if (!event->Get_Event_Name().Is_Empty()) {
+        if (event->Get_Event_Name().Compare_No_Case("NoSound")) {
+            if (!g_theAudio->Is_Valid_Audio_Event(event)) {
+                captainslog_debug(
+                    "Invalid Sound '%s' in Object '%s'. (%s?)", name, Get_Name().Str(), event->Get_Event_Name().Str());
+            }
+        }
+    }
+}
+
+void ThingTemplate::Validate_Audio()
+{
+    Validate_Sound(Get_Voice_Select(), "VoiceSelect");
+    Validate_Sound(Get_Voice_Group_Select(), "VoiceGroupSelect");
+    Validate_Sound(Get_Voice_Move(), "VoiceMove");
+    Validate_Sound(Get_Voice_Attack(), "VoiceAttack");
+    Validate_Sound(Get_Voice_Enter(), "VoiceEnter");
+    Validate_Sound(Get_Voice_Fear(), "VoiceFear");
+    Validate_Sound(Get_Voice_Select_Elite(), "VoiceSelectElite");
+    Validate_Sound(Get_Voice_Created(), "VoiceCreated");
+    Validate_Sound(Get_Voice_Near_Enemy(), "VoiceNearEnemy");
+    Validate_Sound(Get_Voice_Task_Unable(), "VoiceTaskUnable");
+    Validate_Sound(Get_Voice_Task_Complete(), "VoiceTaskComplete");
+    Validate_Sound(Get_Voice_Meet_Enemy(), "VoiceMeetEnemy");
+    Validate_Sound(Get_Voice_Garrison(), "VoiceGarrison");
+    Validate_Sound(Get_Voice_Defect(), "VoiceDefect");
+    Validate_Sound(Get_Voice_Attack_Special(), "VoiceAttackSpecial");
+    Validate_Sound(Get_Voice_Attack_Air(), "VoiceAttackAir");
+    Validate_Sound(Get_Sound_Move_Start(), "SoundMoveStart");
+    Validate_Sound(Get_Sound_Move_Start_Damaged(), "SoundMoveStartDamaged");
+    Validate_Sound(Get_Sound_Move_Loop(), "SoundMoveLoop");
+    Validate_Sound(Get_Sound_Ambient(), "SoundAmbient");
+    Validate_Sound(Get_Sound_Ambient_Damaged(), "SoundAmbientDamaged");
+    Validate_Sound(Get_Sound_Ambient_Really_Damaged(), "SoundAmbientReallyDamaged");
+    Validate_Sound(Get_Sound_Ambient_Rubble(), "SoundAmbientRubble");
+    Validate_Sound(Get_Sound_Stealth_On(), "SoundStealthOn");
+    Validate_Sound(Get_Sound_Stealth_Off(), "SoundStealthOff");
+    Validate_Sound(Get_Sound_Created(), "SoundCreated");
+    Validate_Sound(Get_Sound_On_Damaged(), "SoundOnDamaged");
+    Validate_Sound(Get_Sound_On_Really_Damaged(), "SoundOnReallyDamaged");
+    Validate_Sound(Get_Sound_Enter(), "SoundEnter");
+    Validate_Sound(Get_Sound_Exit(), "SoundExit");
+    Validate_Sound(Get_Sound_Promoted_Veteran(), "SoundPromotedVeteran");
+    Validate_Sound(Get_Sound_Promoted_Elite(), "SoundPromotedElite");
+    Validate_Sound(Get_Sound_Promoted_Hero(), "SoundPromotedHero");
+
+    const std::
+        map<Utf8String, AudioEventRTS, std::less<Utf8String>, std::allocator<std::pair<Utf8String const, AudioEventRTS>>>
+            *sounds = Get_All_Per_Unit_Sounds();
+
+    if (sounds != nullptr) {
+        for (auto sound : *sounds) {
+            Validate_Sound(&sound.second, sound.first);
+        }
+    }
 }

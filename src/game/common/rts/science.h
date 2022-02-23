@@ -15,6 +15,8 @@
 #pragma once
 
 #include "always.h"
+#include "gametype.h"
+#include "ini.h"
 #include "mempoolobj.h"
 #include "overridable.h"
 #include "subsysteminterface.h"
@@ -24,13 +26,6 @@
 class Player;
 class INI;
 struct FieldParse;
-
-// This is an alias of NameKey
-enum ScienceType : int32_t
-{
-    SCIENCE_INVALID = -1,
-    SCIENCE_BOGUS = 0,
-};
 
 class ScienceInfo;
 

@@ -223,6 +223,7 @@ set(GAMEENGINE_SRC
     game/common/thing/thingfactory.cpp
     game/common/thing/thingtemplate.cpp
     game/logic/ai/ai.cpp
+    game/logic/ai/aipathfind.cpp
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp

@@ -64,6 +64,7 @@ public:
     float Get_Minor_Radius() const { return m_minorRadius; }
     float Get_Bounding_Circle_Radius() const { return m_boundingCircleRadius; }
     float Get_Bounding_Sphere_Radius() const { return m_boundingSphereRadius; }
+    GeometryType Get_Type() const { return m_type; }
 
 private:
     GeometryType m_type;

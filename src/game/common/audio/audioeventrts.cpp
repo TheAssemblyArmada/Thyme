@@ -75,11 +75,11 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
     m_playerIndex(that.m_playerIndex),
     m_nextPlayPortion(that.m_nextPlayPortion)
 {
-    if (m_eventType == EVENT_MUSIC || m_eventType == EVENT_UNKVAL3) {
+    if (m_eventType == EVENT_3D || m_eventType == EVENT_3D_DEAD) {
         m_positionOfAudio.Set(&that.m_positionOfAudio);
-    } else if (m_eventType == EVENT_SPEECH) {
+    } else if (m_eventType == EVENT_3D_DRAWABLE) {
         m_drawableID = that.m_drawableID;
-    } else if (m_eventType == EVENT_SOUND) {
+    } else if (m_eventType == EVENT_3D_OBJECT) {
         m_objectID = that.m_objectID;
     }
 }
@@ -143,7 +143,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     m_nextPlayPortion()
 {
     if (m_objectID != OBJECT_UNK) {
-        m_eventType = EVENT_SOUND;
+        m_eventType = EVENT_3D_OBJECT;
     }
 }
 
@@ -173,7 +173,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
     m_nextPlayPortion()
 {
     if (m_drawableID != DRAWABLE_UNK) {
-        m_eventType = EVENT_SPEECH;
+        m_eventType = EVENT_3D_DRAWABLE;
     }
 }
 
@@ -191,7 +191,7 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_priority(PRIORITY_NORMAL),
     m_volumeAdjustFactor(-1.0f),
     m_timeOfDay(TIME_OF_DAY_AFTERNOON),
-    m_eventType(EVENT_MUSIC),
+    m_eventType(EVENT_3D),
     m_shouldFade(false),
     m_isLogical(false),
     m_shouldPlayLocally(false),
@@ -236,11 +236,11 @@ AudioEventRTS &AudioEventRTS::operator=(const AudioEventRTS &that)
         m_playerIndex = that.m_playerIndex;
         m_nextPlayPortion = that.m_nextPlayPortion;
 
-        if (m_eventType == EVENT_MUSIC || m_eventType == EVENT_UNKVAL3) {
+        if (m_eventType == EVENT_3D || m_eventType == EVENT_3D_DEAD) {
             m_positionOfAudio.Set(&that.m_positionOfAudio);
-        } else if (m_eventType == EVENT_SPEECH) {
+        } else if (m_eventType == EVENT_3D_DRAWABLE) {
             m_drawableID = that.m_drawableID;
-        } else if (m_eventType == EVENT_SOUND) {
+        } else if (m_eventType == EVENT_3D_OBJECT) {
             m_objectID = that.m_objectID;
         }
     }
@@ -261,7 +261,10 @@ void AudioEventRTS::Generate_Filename()
 
     m_filename = Generate_Filename_Prefix(m_eventInfo->Get_Event_Type(), false);
 
-    if (m_eventInfo->Get_Event_Type() != EVENT_MUSIC && m_eventInfo->Get_Event_Type() != EVENT_SPEECH) {
+    if (m_eventInfo->Get_Event_Type() == EVENT_MUSIC || m_eventInfo->Get_Event_Type() == EVENT_SPEECH) {
+        m_filename += m_eventInfo->Get_File_Name();
+        Adjust_For_Localization(m_filename);
+    } else {
         unsigned count = m_eventInfo->Sound_Count();
 
         if (count > 0) {
@@ -287,9 +290,6 @@ void AudioEventRTS::Generate_Filename()
         } else {
             m_filename = "";
         }
-    } else {
-        m_filename += m_eventInfo->Get_File_Name();
-        Adjust_For_Localization(m_filename);
     }
 }
 
@@ -490,7 +490,7 @@ bool AudioEventRTS::Is_Positional_Audio()
         return false;
     }
 
-    return m_eventType != EVENT_UNKVAL4 && (m_objectID != OBJECT_UNK || m_eventType == EVENT_MUSIC);
+    return m_eventType != EVENT_UNKVAL4 && (m_objectID != OBJECT_UNK || m_eventType == EVENT_3D);
 }
 
 /**
@@ -518,16 +518,16 @@ bool AudioEventRTS::Is_Currently_Playing()
 
 void AudioEventRTS::Set_Object_ID(ObjectID id)
 {
-    if (m_eventType == EVENT_SOUND || m_eventType == EVENT_UNKVAL4) {
+    if (m_eventType == EVENT_3D_OBJECT || m_eventType == EVENT_UNKVAL4) {
         m_objectID = id;
-        m_eventType = EVENT_SOUND;
+        m_eventType = EVENT_3D_OBJECT;
     }
 }
 
 void AudioEventRTS::Set_Drawable_ID(DrawableID id)
 {
-    if (m_eventType == EVENT_SPEECH || m_eventType == EVENT_UNKVAL4) {
+    if (m_eventType == EVENT_3D_DRAWABLE || m_eventType == EVENT_UNKVAL4) {
         m_drawableID = id;
-        m_eventType = EVENT_SPEECH;
+        m_eventType = EVENT_3D_DRAWABLE;
     }
 }

@@ -19,12 +19,12 @@
 #ifdef BUILD_WITH_MILES
 #include <miles.h>
 
-enum MilesTypes
+enum PlayingAudioType : int32_t
 {
-    MILESTYPE_SAMPLE,
-    MILESTYPE_3DSAMPLE,
-    MILESTYPE_STREAM,
-    MILESTYPE_NONE,
+    PAT_2DSAMPLE,
+    PAT_3DSAMPLE,
+    PAT_STREAM,
+    PAT_NONE,
 };
 
 struct MilesPlayingAudio
@@ -32,7 +32,7 @@ struct MilesPlayingAudio
     HSAMPLE sample;
     H3DSAMPLE sample_3d;
     HSTREAM stream;
-    int playing_type;
+    PlayingAudioType playing_type;
     int stopped;
     AudioEventRTS *audio_event;
     void *file_handle;

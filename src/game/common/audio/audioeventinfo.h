@@ -23,11 +23,19 @@
 
 enum AudioType : int32_t
 {
+    // the member seems to be abused to store two kind of types
     EVENT_MUSIC,
     EVENT_SPEECH,
     EVENT_SOUND,
     EVENT_UNKVAL3,
     EVENT_UNKVAL4,
+
+    // this is for game world 3d events
+    EVENT_3D = 0,
+    EVENT_3D_DRAWABLE,
+    EVENT_3D_OBJECT,
+    EVENT_3D_DEAD,
+    EVENT_3D_UNKVAL4
 };
 
 enum AudioControlType : int32_t
@@ -86,6 +94,7 @@ public:
     const Utf8String &Get_Attack(int index) const { return m_attack[index]; }
     size_t Decay_Count() const { return m_decay.size(); }
     const Utf8String &Get_Decay(int index) const { return m_decay[index]; }
+    float Low_Pass_Cutoff() const { return m_lowPassCutoff; }
     float Min_Range() const { return m_minRange; }
     float Max_Range() const { return m_maxRange; }
 

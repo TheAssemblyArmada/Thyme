@@ -49,9 +49,9 @@ public:
     void Set_Time_Of_Day(TimeOfDayType tod) { m_timeOfDay = tod; }
     void Set_Position(Coord3D const *position)
     {
-        if (position != nullptr && (m_eventType == AudioType::EVENT_MUSIC || m_eventType == AudioType::EVENT_UNKVAL4)) {
+        if (position != nullptr && (m_eventType == AudioType::EVENT_3D || m_eventType == AudioType::EVENT_UNKVAL4)) {
             m_positionOfAudio = *position;
-            m_eventType = AudioType::EVENT_MUSIC;
+            m_eventType = AudioType::EVENT_3D;
         }
     }
 
@@ -86,7 +86,7 @@ public:
     bool Has_More_Loops() const { return m_loopCount >= 0; }
     ObjectID Get_Object_ID() const
     {
-        if (m_eventType == EVENT_SOUND) {
+        if (m_eventType == EVENT_3D_OBJECT) {
             return m_objectID;
         } else {
             return OBJECT_UNK;
@@ -94,7 +94,7 @@ public:
     }
     DrawableID Get_Drawable_ID() const
     {
-        if (m_eventType == EVENT_SPEECH) {
+        if (m_eventType == EVENT_3D_DRAWABLE) {
             return m_drawableID;
         } else {
             return DRAWABLE_UNK;

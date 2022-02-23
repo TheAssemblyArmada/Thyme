@@ -19,6 +19,7 @@
 #include "playingaudio.h"
 #include "soundmanager.h"
 #include "videoplayer.h"
+#include "view.h"
 
 using GameMath::Fast_To_Int_Truncate;
 
@@ -32,7 +33,7 @@ MilesAudioManager::MilesAudioManager() :
     m_speakerType(0),
     m_milesDigitalDriver(nullptr),
     m_miles3DPositionObject(0),
-    m_milesMonoDelayFilter(0),
+    m_milesDelayFilter(0),
     m_audioFileCache(new MilesAudioFileCache),
     m_binkPlayingAudio(nullptr),
     m_2dSampleCount(0),
@@ -177,7 +178,7 @@ void MilesAudioManager::Pause_Audio(AudioAffect affect)
     }
 
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end();) {
-        if (*it != nullptr && (*it)->m_requestType == REQUEST_MUSIC_ADD) {
+        if (*it != nullptr && (*it)->m_requestType == AR_PLAY) {
             (*it)->Delete_Instance();
             it = m_audioRequestList.erase(it);
         } else {
@@ -231,7 +232,7 @@ void MilesAudioManager::Kill_Event_Immediately(uintptr_t event)
 {
     // Iterate the various lists until a matching handle is found.
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
-        if (*it != nullptr && (*it)->Request_Type() == REQUEST_MUSIC_ADD && (*it)->Event_Handle() == event) {
+        if (*it != nullptr && (*it)->Request_Type() == AR_PLAY && (*it)->Event_Handle() == event) {
             (*it)->Delete_Instance();
             m_audioRequestList.erase(it);
 
@@ -357,7 +358,7 @@ bool MilesAudioManager::Has_Music_Track_Completed(const Utf8String &name, int lo
 Utf8String MilesAudioManager::Music_Track_Name()
 {
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
-        if ((*it)->Request_Type() == REQUEST_MUSIC_ADD && (*it)->Is_Adding()
+        if ((*it)->Request_Type() == AR_PLAY && (*it)->Is_Adding()
             && (*it)->Event_Object()->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
             return (*it)->Event_Object()->Get_Event_Name();
         }
@@ -439,7 +440,7 @@ void MilesAudioManager::Open_Device()
     Refresh_Cached_Variables();
 
     if (Provider_Is_Valid()) {
-        Init_Delay_Filters();
+        Init_Delay_Filter();
     }
 }
 
@@ -460,9 +461,9 @@ void MilesAudioManager::Close_Device()
  *
  * 0x0077E6C0
  */
-void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
+void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned type)
 {
-    PlayingAudio *playing = Find_Playing_Audio_From(handle, unk2);
+    PlayingAudio *playing = Find_Playing_Audio_From(handle, type);
 
     if (playing == nullptr) {
         return;
@@ -485,7 +486,7 @@ void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned un
 
         if (playing->miles.audio_event->Get_Next_Play_Portion() != 3) {
             switch (playing->miles.playing_type) {
-                case MILESTYPE_SAMPLE:
+                case PAT_2DSAMPLE:
                     Close_File(playing->miles.file_handle);
                     playing->miles.file_handle = Play_Sample(playing->miles.audio_event, playing->miles.sample);
 
@@ -493,7 +494,7 @@ void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned un
                         return;
                     }
                     break;
-                case MILESTYPE_3DSAMPLE:
+                case PAT_3DSAMPLE:
                     Close_File(playing->miles.file_handle);
                     playing->miles.file_handle = Play_Sample3D(playing->miles.audio_event, playing->miles.sample_3d);
 
@@ -506,11 +507,11 @@ void MilesAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned un
             }
         }
 
-        if (playing->miles.playing_type != MILESTYPE_STREAM
-            || playing->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
-            playing->miles.stopped = 1;
-        } else {
+        if (playing->miles.playing_type == PAT_STREAM
+            && playing->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
             Play_Stream(playing->miles.audio_event, playing->miles.stream);
+        } else {
+            playing->miles.stopped = 1;
         }
     }
 }
@@ -622,12 +623,10 @@ void MilesAudioManager::Unselect_Provider()
  */
 void MilesAudioManager::Set_Speaker_Type(unsigned type)
 {
-    if (!Provider_Is_Valid()) {
-        return;
+    if (Provider_Is_Valid()) {
+        AIL_set_3D_speaker_type(m_milesProviderList[m_milesCurrentProvider].provider, type);
+        m_speakerType = type;
     }
-
-    AIL_set_3D_speaker_type(m_milesProviderList[m_milesCurrentProvider].provider, type);
-    m_speakerType = type;
 }
 
 /**
@@ -907,6 +906,10 @@ void MilesAudioManager::Remove_All_Disabled_Audio()
  */
 bool MilesAudioManager::Has_3D_Sensitive_Streams_Playing()
 {
+    if (m_streamList.empty()) {
+        return false;
+    }
+
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
         if (*it != nullptr
             && ((*it)->miles.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
@@ -938,7 +941,7 @@ void *MilesAudioManager::Get_Bink_Handle()
             m_sampleHandleList.pop_front();
         }
 
-        pap->miles.playing_type = 0;
+        pap->miles.playing_type = PAT_2DSAMPLE;
 
         if (pap->miles.sample == 0) {
             Release_Playing_Audio(pap);
@@ -1186,7 +1189,7 @@ void MilesAudioManager::Set_Device_Listener_Position()
 PlayingAudio *MilesAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned type)
 {
     switch (type) {
-        case 0:
+        case PAT_2DSAMPLE:
             for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->miles.sample == (HSAMPLE)handle) {
                     return *it;
@@ -1194,7 +1197,7 @@ PlayingAudio *MilesAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsig
             }
 
             break;
-        case 1:
+        case PAT_3DSAMPLE:
             for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->miles.sample_3d == (H3DSAMPLE)handle) {
                     return *it;
@@ -1202,7 +1205,7 @@ PlayingAudio *MilesAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsig
             }
 
             break;
-        case 2:
+        case PAT_STREAM:
             for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
                 if (*it != nullptr && (*it)->miles.stream == (HSTREAM)handle) {
                     return *it;
@@ -1326,13 +1329,13 @@ void MilesAudioManager::Process_Fading_List()
             float effective_vol = (float)(1.0f - adjustment) * Get_Effective_Volume((*it)->miles.audio_event);
 
             switch ((*it)->miles.playing_type) {
-                case 0:
+                case PAT_2DSAMPLE:
                     AIL_set_sample_volume_pan((*it)->miles.sample, effective_vol, 0.5f);
                     break;
-                case 1:
+                case PAT_3DSAMPLE:
                     AIL_set_3D_sample_volume((*it)->miles.sample_3d, effective_vol);
                     break;
-                case 2:
+                case PAT_STREAM:
                     AIL_set_stream_volume_pan((*it)->miles.stream, effective_vol, 0.5f);
                     break;
                 default:
@@ -1371,12 +1374,20 @@ void MilesAudioManager::Process_Stopped_List()
 void MilesAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 {
     if (audio->miles.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SOUND) {
-        if (audio->miles.playing_type != 0) {
-            if (audio->miles.sample_3d != nullptr) {
-                m_soundManager->Notify_Of_3D_Sample_Completion();
-            }
-        } else if (audio->miles.sample != nullptr) {
-            m_soundManager->Notify_Of_2D_Sample_Completion();
+
+        switch (audio->miles.playing_type) {
+            case PAT_2DSAMPLE:
+                if (audio->miles.sample != nullptr) {
+                    m_soundManager->Notify_Of_2D_Sample_Completion();
+                }
+                break;
+            case PAT_3DSAMPLE:
+                if (audio->miles.sample_3d != nullptr) {
+                    m_soundManager->Notify_Of_3D_Sample_Completion();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -1398,7 +1409,7 @@ void MilesAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
 {
     switch (audio->miles.playing_type) {
-        case MILESTYPE_SAMPLE:
+        case PAT_2DSAMPLE:
             if (audio->miles.sample != nullptr) {
                 AIL_register_EOS_callback(audio->miles.sample, nullptr);
                 AIL_stop_sample(audio->miles.sample);
@@ -1406,7 +1417,7 @@ void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
             }
 
             break;
-        case MILESTYPE_3DSAMPLE:
+        case PAT_3DSAMPLE:
             if (audio->miles.sample_3d != nullptr) {
                 AIL_register_3D_EOS_callback(audio->miles.sample_3d, nullptr);
                 AIL_stop_3D_sample(audio->miles.sample_3d);
@@ -1414,7 +1425,7 @@ void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
             }
 
             break;
-        case MILESTYPE_STREAM:
+        case PAT_STREAM:
             if (audio->miles.stream != nullptr) {
                 AIL_register_stream_callback(audio->miles.stream, nullptr);
                 AIL_close_stream(audio->miles.stream);
@@ -1425,7 +1436,7 @@ void MilesAudioManager::Release_Miles_Handles(PlayingAudio *audio)
             break;
     }
 
-    audio->miles.playing_type = MILESTYPE_NONE;
+    audio->miles.playing_type = PAT_NONE;
 }
 
 /**
@@ -1533,7 +1544,7 @@ void *MilesAudioManager::Play_Sample3D(AudioEventRTS *event, H3DSAMPLE sample)
         }
 
         AIL_set_3D_position(sample, pos->x, pos->y, pos->z);
-        Init_Filters3D(sample, event);
+        Init_Filters3D(sample, event, pos);
         AIL_start_3D_sample(sample);
     }
 
@@ -1576,7 +1587,7 @@ bool MilesAudioManager::Start_Next_Loop(PlayingAudio *audio)
 
     audio->miles.audio_event->Generate_Filename();
 
-    if (audio->miles.audio_event->Get_Delay() > 33.333333f) {
+    if (audio->miles.audio_event->Get_Delay() > MSEC_PER_LOGICFRAME_REAL) {
         audio->miles.release_event = false;
         audio->miles.disable_loops = true;
         audio->miles.stopped = 1;
@@ -1588,7 +1599,7 @@ bool MilesAudioManager::Start_Next_Loop(PlayingAudio *audio)
         return true;
     }
 
-    if (audio->miles.playing_type == MILESTYPE_3DSAMPLE) {
+    if (audio->miles.playing_type == PAT_3DSAMPLE) {
         audio->miles.file_handle = Play_Sample3D(audio->miles.audio_event, audio->miles.sample_3d);
     } else {
         audio->miles.file_handle = Play_Sample(audio->miles.audio_event, audio->miles.sample);
@@ -1616,7 +1627,7 @@ void MilesAudioManager::Init_Filters(HSAMPLE sample, AudioEventRTS *event)
 
     if (event->Get_Delay() > 0.0f) {
         float delay = event->Get_Delay();
-        AIL_set_sample_processor(sample, 1, m_milesMonoDelayFilter);
+        AIL_set_sample_processor(sample, 1, m_milesDelayFilter);
         AIL_set_filter_sample_preference(sample, "Mono Delay Time", &delay);
         // In macOS release, these next two are not set.
         delay = 0.0f;
@@ -1630,7 +1641,7 @@ void MilesAudioManager::Init_Filters(HSAMPLE sample, AudioEventRTS *event)
  *
  * Inlined
  */
-void MilesAudioManager::Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event)
+void MilesAudioManager::Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event, Coord3D *coord)
 {
     AIL_set_3D_sample_volume(sample, event->Get_Volume() * event->Get_Volume_Shift() * m_3dSoundVolume);
 
@@ -1642,8 +1653,9 @@ void MilesAudioManager::Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event)
             sample, Fast_To_Int_Truncate(AIL_3D_sample_playback_rate(sample) * event->Get_Pitch_Shift()));
     }
 
-    // TODO Win build has AIL_set_3D_sample_occlusion here, mac build doesn't.
-    // requires g_theTacticalView
+    if (event->Get_Event_Info()->Low_Pass_Cutoff() > 0.0f && !Is_On_Screen(coord)) {
+        AIL_set_3D_sample_occlusion(sample, 1.0f - event->Get_Event_Info()->Low_Pass_Cutoff());
+    }
 }
 
 /**
@@ -1741,7 +1753,7 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
             pa->miles.audio_event = event;
             pa->miles.stream = stream_handle;
-            pa->miles.playing_type = 2;
+            pa->miles.playing_type = PAT_STREAM;
 
             if (stream_handle != nullptr) {
                 if (aud_info->Get_Event_Type() == EVENT_SPEECH && event->Should_Play_Locally()) {
@@ -1783,7 +1795,7 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
                 pa->miles.audio_event = event;
                 pa->miles.sample_3d = sample_handle;
-                pa->miles.playing_type = 1;
+                pa->miles.playing_type = PAT_3DSAMPLE;
                 pa->miles.file_handle = nullptr;
                 m_positionalAudioList.push_back(pa);
 
@@ -1824,7 +1836,7 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
                 pa->miles.audio_event = event;
                 pa->miles.sample = sample_handle;
-                pa->miles.playing_type = 0;
+                pa->miles.playing_type = PAT_2DSAMPLE;
                 pa->miles.file_handle = nullptr;
                 m_globalAudioList.push_back(pa);
 
@@ -1847,6 +1859,11 @@ void MilesAudioManager::Play_Audio_Event(AudioEventRTS *event)
     if (pa != nullptr) {
         Release_Playing_Audio(pa);
     }
+}
+
+void MilesAudioManager::Pause_Audio_Event(uintptr_t handle)
+{
+    // Unimplemented
 }
 
 /**
@@ -1903,10 +1920,13 @@ void MilesAudioManager::Stop_Audio_Event(uintptr_t handle)
 void MilesAudioManager::Process_Request(AudioRequest *request)
 {
     switch (request->m_requestType) {
-        case REQUEST_MUSIC_ADD:
+        case AR_PLAY:
             Play_Audio_Event(request->m_event.object);
             break;
-        case REQUEST_REMOVE:
+        case AR_PAUSE:
+            Pause_Audio_Event(request->m_event.handle);
+            break;
+        case AR_STOP:
             Stop_Audio_Event(request->m_event.handle);
             break;
         default:
@@ -1945,15 +1965,15 @@ void MilesAudioManager::Adjust_Playing_Volume(PlayingAudio *audio)
     float adjusted_vol = audio->miles.audio_event->Get_Volume() * audio->miles.audio_event->Get_Volume_Shift();
 
     switch (audio->miles.playing_type) {
-        case 0: {
+        case PAT_2DSAMPLE: {
             float pan;
             AIL_sample_volume_pan(audio->miles.sample, nullptr, &pan);
             AIL_set_sample_volume_pan(audio->miles.sample, adjusted_vol * m_soundVolume, pan);
         } break;
-        case 1:
+        case PAT_3DSAMPLE:
             AIL_set_3D_sample_volume(audio->miles.sample_3d, adjusted_vol * m_3dSoundVolume);
             break;
-        case 2: {
+        case PAT_STREAM: {
             float pan;
             float vol;
             AIL_stream_volume_pan(audio->miles.stream, nullptr, &pan);
@@ -2172,7 +2192,7 @@ void MilesAudioManager::Init_Playing_Audio(PlayingAudio *audio)
         audio->miles.sample = 0;
         audio->miles.sample_3d = 0;
         audio->miles.stream = 0;
-        audio->miles.playing_type = 3;
+        audio->miles.playing_type = PAT_NONE;
         audio->miles.audio_event = nullptr;
         audio->miles.disable_loops = false;
         audio->miles.release_event = true;
@@ -2231,6 +2251,17 @@ bool MilesAudioManager::Check_For_Sample(AudioRequest *request)
 }
 
 /**
+ *
+ *
+ * Inlined.
+ */
+bool MilesAudioManager::Is_On_Screen(const Coord3D *coord) const
+{
+    static ICoord2D _dummy;
+    return g_theTacticalView->World_To_Screen_Tri(coord, &_dummy);
+}
+
+/**
  * Builds the 3D provider list by enumerating over the available providers.
  *
  * Inlined.
@@ -2254,13 +2285,13 @@ void MilesAudioManager::Build_Provider_List()
 }
 
 /**
- * Initialises the delay filters, empty in the original macOS port.
+ * Initialises the delay filter, empty in the original macOS port.
  *
  * Inlined.
  */
-void MilesAudioManager::Init_Delay_Filters()
+void MilesAudioManager::Init_Delay_Filter()
 {
-    if (m_milesMonoDelayFilter == 0) {
+    if (m_milesDelayFilter == 0) {
         uint32_t next = 0;
         uint32_t filter;
         char *name;
@@ -2271,7 +2302,7 @@ void MilesAudioManager::Init_Delay_Filters()
             }
         } while (strcmp(name, "Mono Delay Filter") != 0);
 
-        m_milesMonoDelayFilter = filter;
+        m_milesDelayFilter = filter;
     }
 }
 
@@ -2336,7 +2367,7 @@ uint32_t __stdcall MilesAudioManager::Streaming_File_Read(uintptr_t handle, void
  */
 void __stdcall MilesAudioManager::Set_Stream_Complete(void *info)
 {
-    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, 2);
+    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, PAT_STREAM);
 }
 
 /**
@@ -2346,7 +2377,7 @@ void __stdcall MilesAudioManager::Set_Stream_Complete(void *info)
  */
 void __stdcall MilesAudioManager::Set_Sample_Complete(void *info)
 {
-    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, 0);
+    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, PAT_2DSAMPLE);
 }
 
 /**
@@ -2356,5 +2387,5 @@ void __stdcall MilesAudioManager::Set_Sample_Complete(void *info)
  */
 void __stdcall MilesAudioManager::Set_3DSample_Complete(void *info)
 {
-    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, 1);
+    g_theAudio->Notify_Of_Audio_Completion((uintptr_t)info, PAT_3DSAMPLE);
 }

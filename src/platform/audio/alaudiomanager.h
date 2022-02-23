@@ -18,8 +18,8 @@
 #include "audiomanager.h"
 #include <new>
 
-#include <AL/alc.h>
 #include <AL/al.h>
+#include <AL/alc.h>
 #include <AL/alext.h>
 
 #define MSEC_PER_LOGICFRAME_REAL (1000.0f / 30.0f)
@@ -96,7 +96,24 @@ public:
 
 private:
     void Release_Playing_Audio(PlayingAudio *audio);
+    void Stop_All_Audio_Immediately();
+    void Play_Stream(AudioEventRTS *event, ALuint source);
+    void *Play_Sample3D(AudioEventRTS *event, ALuint source);
+    void *Play_Sample(AudioEventRTS *event, ALuint source);
     void Adjust_Playing_Volume(PlayingAudio *audio);
+    bool Start_Next_Loop(PlayingAudio *audio);
+    void Play_Audio_Event(AudioEventRTS *event);
+    void Stop_Audio_Event(uintptr_t handle);
+    void Process_Request(AudioRequest *request);
+    void Stop_All_Speech();
+    // TODO: Open_File & Close_File
+    void *Open_File(AudioEventRTS *event) { return nullptr; }
+    void Close_File(void *handle) {}
+    bool Process_Request_This_Frame(AudioRequest *request);
+    void Adjust_Request(AudioRequest *request);
+    bool Check_For_Sample(AudioRequest *request);
+
+    static void Init_Playing_Audio(PlayingAudio *audio);
 
 private:
     Utf8String m_alDevicesList[AL_MAX_PLAYBACK_DEVICES];
@@ -115,4 +132,5 @@ private:
     int m_streamCount;
 
     ALCdevice *m_alcDevice = nullptr;
+    ALCcontext *m_alcContext = nullptr;
 };

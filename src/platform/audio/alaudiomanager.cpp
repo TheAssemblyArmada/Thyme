@@ -45,7 +45,7 @@ void ALAudioManager::Reset()
 {
     // Worldbuilder is a debug build and has code to dump a list of audio assets here.
     AudioManager::Reset();
-    // Stop_All_Audio_Immediately();
+    Stop_All_Audio_Immediately();
     Remove_All_Audio_Requests();
     Remove_Level_Specific_Audio_Event_Infos();
 }
@@ -60,7 +60,39 @@ void ALAudioManager::Update()
     Process_Stopped_List();
 }
 
-void ALAudioManager::Stop_Audio(AudioAffect affect) {}
+void ALAudioManager::Stop_Audio(AudioAffect affect)
+{
+    if (affect & AUDIOAFFECT_SOUND) {
+        for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+            if (*it != nullptr) {
+                alSourceStop((*it)->openal.source);
+                (*it)->openal.stopped = 1;
+            }
+        }
+    }
+
+    if (affect & AUDIOAFFECT_3DSOUND) {
+        for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+            if (*it != nullptr) {
+                alSourceStop((*it)->openal.source);
+                (*it)->openal.stopped = 1;
+            }
+        }
+    }
+
+    if (affect & (AUDIOAFFECT_MUSIC | AUDIOAFFECT_SPEECH)) {
+        for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+            if (*it != nullptr) {
+                if ((affect & AUDIOAFFECT_MUSIC)
+                    || ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC
+                        && (affect & AUDIOAFFECT_SPEECH))) {
+                    alSourceStop((*it)->openal.source);
+                    (*it)->openal.stopped = 1;
+                }
+            }
+        }
+    }
+}
 
 /**
  * Iterates playing audio lists and pauses the streams for the specified affects.
@@ -70,6 +102,7 @@ void ALAudioManager::Pause_Audio(AudioAffect affect)
     if (affect & AUDIOAFFECT_SOUND) {
         for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
             if (*it != nullptr) {
+                alSourcePause((*it)->openal.source);
             }
         }
     }
@@ -77,6 +110,7 @@ void ALAudioManager::Pause_Audio(AudioAffect affect)
     if (affect & AUDIOAFFECT_3DSOUND) {
         for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
             if (*it != nullptr) {
+                alSourcePause((*it)->openal.source);
             }
         }
     }
@@ -85,6 +119,7 @@ void ALAudioManager::Pause_Audio(AudioAffect affect)
         for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
             if (*it != nullptr) {
                 if (affect & AUDIOAFFECT_MUSIC) {
+                    alSourcePause((*it)->openal.source);
                 }
             }
         }
@@ -108,6 +143,7 @@ void ALAudioManager::Resume_Audio(AudioAffect affect)
     if (affect & AUDIOAFFECT_SOUND) {
         for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
             if (*it != nullptr) {
+                alSourcePlay((*it)->openal.source);
             }
         }
     }
@@ -115,6 +151,7 @@ void ALAudioManager::Resume_Audio(AudioAffect affect)
     if (affect & AUDIOAFFECT_3DSOUND) {
         for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
             if (*it != nullptr) {
+                alSourcePlay((*it)->openal.source);
             }
         }
     }
@@ -122,6 +159,7 @@ void ALAudioManager::Resume_Audio(AudioAffect affect)
     if (affect & (AUDIOAFFECT_MUSIC | AUDIOAFFECT_SPEECH)) {
         for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
             if (*it != nullptr) {
+                alSourcePlay((*it)->openal.source);
             }
         }
     }
@@ -134,15 +172,39 @@ void ALAudioManager::Kill_Event_Immediately(uintptr_t event)
 {
     // Iterate the various lists until a matching handle is found.
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
+        if (*it != nullptr && (*it)->Request_Type() == REQUEST_MUSIC_ADD && (*it)->Event_Handle() == event) {
+            (*it)->Delete_Instance();
+            m_audioRequestList.erase(it);
+
+            return;
+        }
     }
 
     for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == event) {
+            Release_Playing_Audio(*it);
+            m_positionalAudioList.erase(it);
+
+            return;
+        }
     }
 
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == event) {
+            Release_Playing_Audio(*it);
+            m_globalAudioList.erase(it);
+
+            return;
+        }
     }
 
     for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == event) {
+            Release_Playing_Audio(*it);
+            m_streamList.erase(it);
+
+            return;
+        }
     }
 }
 
@@ -278,10 +340,21 @@ void ALAudioManager::Open_Device()
 
     // TODO: build devices list & set settings
 
-
     m_alcDevice = alcOpenDevice(NULL);
     if (!m_alcDevice) {
         captainslog_error("Failed to open ALC device");
+        return;
+    }
+
+    ALCint attributes[] = { ALC_FREQUENCY, m_audioSettings->Output_Rate(), 0 /* end-of-list */ };
+    m_alcContext = alcCreateContext(m_alcDevice, attributes);
+    if (!m_alcContext) {
+        captainslog_error("Failed to create ALC context");
+        return;
+    }
+
+    if (!alcMakeContextCurrent(m_alcContext)) {
+        captainslog_error("Failed to make ALC context current");
         return;
     }
 
@@ -294,6 +367,12 @@ void ALAudioManager::Open_Device()
 void ALAudioManager::Close_Device()
 {
     Unselect_Provider();
+
+    alcMakeContextCurrent(NULL);
+
+    if (m_alcContext)
+        alcDestroyContext(m_alcContext);
+
     if (m_alcDevice)
         alcCloseDevice(m_alcDevice);
 }
@@ -309,7 +388,51 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
         return;
     }
 
-    // TODO:
+    if (m_unkSpeech && playing->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
+        m_unkSpeech = false;
+    }
+
+    if (playing->openal.audio_event->Get_Event_Info()->Get_Control() & CONTROL_LOOP) {
+        if (playing->openal.audio_event->Get_Next_Play_Portion() == 0) {
+            playing->openal.audio_event->Set_Next_Play_Portion(1);
+        }
+    }
+
+    if (!(playing->openal.audio_event->Get_Event_Info()->Get_Control() & CONTROL_LOOP)
+        || playing->openal.audio_event->Get_Next_Play_Portion() != 1
+        || !(playing->openal.audio_event->Decrease_Loop_Count(), Start_Next_Loop(playing))) {
+        playing->openal.audio_event->Advance_Next_Play_Portion();
+
+        if (playing->openal.audio_event->Get_Next_Play_Portion() != 3) {
+            switch (playing->openal.playing_type) {
+                case MILESTYPE_SAMPLE:
+                    Close_File(playing->openal.file_handle);
+                    playing->openal.file_handle = Play_Sample(playing->openal.audio_event, playing->openal.source);
+
+                    if (playing->openal.file_handle != nullptr) {
+                        return;
+                    }
+                    break;
+                case MILESTYPE_3DSAMPLE:
+                    Close_File(playing->openal.file_handle);
+                    playing->openal.file_handle = Play_Sample3D(playing->openal.audio_event, playing->openal.source);
+
+                    if (playing->openal.file_handle != nullptr) {
+                        return;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if (playing->openal.playing_type != MILESTYPE_STREAM
+            || playing->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
+            playing->openal.stopped = 1;
+        } else {
+            Play_Stream(playing->openal.audio_event, playing->openal.source);
+        }
+    }
 }
 
 /**
@@ -514,6 +637,7 @@ void ALAudioManager::Adjust_Volume_Of_Playing_Audio(Utf8String name, float adjus
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
         if (*it != nullptr && (*it)->openal.audio_event->Get_Event_Name() == name) {
             (*it)->openal.audio_event->Set_Volume(adjust);
+            float volume = (*it)->openal.audio_event->Get_Volume() * (*it)->openal.audio_event->Get_Volume_Shift();
         }
     }
 
@@ -620,10 +744,16 @@ void *ALAudioManager::Get_Bink_Handle()
     // If we don't already have a playing audio for bink, make one.
     if (m_binkPlayingAudio == nullptr) {
         PlayingAudio *pap = new PlayingAudio;
+        Init_Playing_Audio(pap);
         pap->openal.stopped = false;
         pap->openal.audio_event = new AudioEventRTS("BinkHandle");
         Get_Info_For_Audio_Event(pap->openal.audio_event);
-        pap->openal.playing_type = 0;
+        pap->openal.playing_type = MILESTYPE_SAMPLE;
+
+        if (pap->openal.source == 0) {
+            Release_Playing_Audio(pap);
+            return nullptr;
+        }
 
         m_binkPlayingAudio = pap;
     }
@@ -663,7 +793,277 @@ void ALAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
  */
 void ALAudioManager::Process_Request_List()
 {
-    // TODO
+    for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end();) {
+        if (*it != nullptr) {
+            if (Process_Request_This_Frame(*it)) {
+                if (!(*it)->m_isProcessed || Check_For_Sample(*it)) {
+                    Process_Request(*it);
+                }
+
+                (*it)->Delete_Instance();
+                it = m_audioRequestList.erase(it);
+            } else {
+                Adjust_Request(*it);
+                ++it;
+            }
+        }
+    }
+}
+
+/**
+ * Check if a request should be processed this frame.
+ *
+ * Inlined.
+ */
+bool ALAudioManager::Process_Request_This_Frame(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        return request->m_event.object->Get_Delay() < MSEC_PER_LOGICFRAME_REAL;
+    }
+
+    return true;
+}
+
+/**
+ * Reduced the delay until this request should be played by one frame.
+ *
+ * Inlined.
+ */
+void ALAudioManager::Adjust_Request(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        request->m_event.object->Decrement_Delay(MSEC_PER_LOGICFRAME_REAL);
+        request->m_isProcessed = true;
+    }
+}
+
+/**
+ * Checks the status of a request to determine if it should be processed.
+ *
+ * Inlined.
+ */
+bool ALAudioManager::Check_For_Sample(AudioRequest *request)
+{
+    if (request->m_isAdding) {
+        return true;
+    }
+
+    // If the object doesn't have info, try and retrieve it.
+    if (request->m_event.object->Get_Event_Info() == nullptr) {
+        Get_Info_For_Audio_Event(request->m_event.object);
+    }
+
+    if (request->m_event.object->Get_Event_Info()->Get_Visibility() == VISIBILITY_WORLD) {
+        return m_soundManager->Can_Play_Now(request->m_event.object);
+    }
+
+    return true;
+}
+
+/**
+ * Plays an audio event.
+ */
+void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
+{
+    const AudioEventInfo *aud_info = event->Get_Event_Info();
+
+    if (aud_info == nullptr) {
+        return;
+    }
+
+    uintptr_t kill_handle = event->Get_Handle_To_Kill();
+    ALuint source_handle = 0;
+    Utf8String name = event->Get_File_Name();
+    PlayingAudio *pa = new PlayingAudio;
+    Init_Playing_Audio(pa);
+    pa->openal.stopped = false;
+
+    switch (aud_info->Get_Event_Type()) {
+        case EVENT_SPEECH:
+            if (event->Should_Play_Locally()) {
+                Stop_All_Speech();
+            }
+            // Fallthrough
+        case EVENT_MUSIC: {
+            float volume = 1.0f;
+
+            if (aud_info->Get_Event_Type() == EVENT_SPEECH) {
+                volume = m_speechVolume;
+            } else {
+                volume = m_musicVolume;
+            }
+
+            volume *= event->Get_Volume();
+            bool killed = false;
+
+            if (kill_handle != 0) {
+                for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+                    if (*it != nullptr && (*it)->openal.audio_event != nullptr
+                        && (*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                        Release_Playing_Audio(*it);
+                        m_streamList.erase(it);
+                        killed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (kill_handle != 0 && !killed) {
+                source_handle = 0;
+            } else {
+                alGenSources(1, &source_handle);
+            }
+
+            pa->openal.audio_event = event;
+            pa->openal.source = source_handle;
+            pa->openal.playing_type = MILESTYPE_STREAM;
+            break;
+        }
+        case EVENT_SOUND:
+            if (event->Is_Positional_Audio()) {
+                bool killed = false;
+
+                if (kill_handle != 0) {
+                    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                            Release_Playing_Audio(*it);
+                            m_positionalAudioList.erase(it);
+                            killed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (kill_handle != 0 && !killed) {
+                    source_handle = 0;
+                } else {
+                    alGenSources(1, &source_handle);
+                }
+
+                pa->openal.audio_event = event;
+                pa->openal.source = source_handle;
+                pa->openal.playing_type = MILESTYPE_3DSAMPLE;
+                pa->openal.file_handle = nullptr;
+                m_positionalAudioList.push_back(pa);
+
+                if (source_handle != 0) {
+                    // TODO:
+                    // pa->openal.file_handle = Play_Sample3D(event, source_handle);
+                    m_soundManager->Notify_Of_3D_Sample_Start();
+                }
+
+                if (pa->openal.file_handle == nullptr) {
+                    m_positionalAudioList.pop_back();
+                } else {
+                    pa = nullptr;
+                }
+            } else {
+                bool killed = false;
+
+                if (kill_handle != 0) {
+                    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+                        if ((*it)->openal.audio_event->Get_Playing_Handle() == kill_handle) {
+                            Release_Playing_Audio(*it);
+                            m_globalAudioList.erase(it);
+                            killed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (kill_handle != 0 && !killed) {
+                    source_handle = 0;
+                } else {
+                    alGenSources(1, &source_handle);
+                }
+
+                pa->openal.audio_event = event;
+                pa->openal.source = source_handle;
+                pa->openal.playing_type = MILESTYPE_SAMPLE;
+                pa->openal.file_handle = nullptr;
+                m_globalAudioList.push_back(pa);
+
+                if (source_handle != 0) {
+                    // TODO:
+                    // pa->openal.file_handle = Play_Sample(event, sample_handle);
+                    m_soundManager->Notify_Of_2D_Sample_Start();
+                }
+
+                if (pa->openal.file_handle == nullptr) {
+                    m_globalAudioList.pop_back();
+                } else {
+                    pa = nullptr;
+                }
+            }
+            break;
+        default:
+            break;
+    }
+
+    if (pa != nullptr) {
+        Release_Playing_Audio(pa);
+    }
+}
+
+/**
+ * Stops an audio event from a handle.
+ */
+void ALAudioManager::Stop_Audio_Event(uintptr_t handle)
+{
+    if (handle == 4 || handle == 5) {
+        for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+                if (handle == 5) {
+                    // TODO:
+                    // m_fadingList.push_back(*it);
+                } else {
+                    Release_Playing_Audio(*it);
+                }
+
+                m_streamList.erase(it);
+                break;
+            }
+        }
+    }
+
+    for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            Notify_Of_Audio_Completion((uintptr_t)(*it)->openal.source, 2);
+            break;
+        }
+    }
+
+    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            break;
+        }
+    }
+
+    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
+        if (*it != nullptr && (*it)->openal.audio_event->Get_Playing_Handle() == handle) {
+            (*it)->openal.disable_loops = true;
+            break;
+        }
+    }
+}
+
+/**
+ * Process an audio request.
+ */
+void ALAudioManager::Process_Request(AudioRequest *request)
+{
+    switch (request->m_requestType) {
+        case REQUEST_MUSIC_ADD:
+            Play_Audio_Event(request->m_event.object);
+            break;
+        case REQUEST_REMOVE:
+            Stop_Audio_Event(request->m_event.handle);
+            break;
+        default:
+            break;
+    }
 }
 
 /**
@@ -750,7 +1150,12 @@ void ALAudioManager::Close_Any_Sample_Using_File(const AudioDataHandle handle)
 /**
  * Sets the position of the listener for 3D sounds.
  */
-void ALAudioManager::Set_Device_Listener_Position() {}
+void ALAudioManager::Set_Device_Listener_Position()
+{
+    ALfloat listenerOri[] = { m_listenerFacing.x, m_listenerFacing.y, m_listenerFacing.z, 0.0f, 0.0f, -1.0f };
+    alListener3f(AL_POSITION, m_listenerPosition.x, m_listenerPosition.y, m_listenerPosition.z);
+    alListenerfv(AL_ORIENTATION, listenerOri);
+}
 
 /**
  * Finds a playing audio that uses a given handle and is a given type.
@@ -758,7 +1163,7 @@ void ALAudioManager::Set_Device_Listener_Position() {}
 PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned type)
 {
     switch (type) {
-        case 0:
+        case MILESTYPE_SAMPLE:
             for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -766,7 +1171,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             }
 
             break;
-        case 1:
+        case MILESTYPE_3DSAMPLE:
             for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -774,7 +1179,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             }
 
             break;
-        case 2:
+        case MILESTYPE_STREAM:
             for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -849,7 +1254,9 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
         }
     }
 
-    // TODO: free source
+    // TODO: free file
+    alDeleteSources(1, &audio->openal.source);
+    // Close_File(audio->openal.file_handle);
 
     if (audio->openal.release_event) {
         Release_Audio_Event_RTS(audio->openal.audio_event);
@@ -859,6 +1266,163 @@ void ALAudioManager::Release_Playing_Audio(PlayingAudio *audio)
 }
 
 /**
+ * Releases all playing audio samples.
+ */
+void ALAudioManager::Stop_All_Audio_Immediately()
+{
+    for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); it = m_globalAudioList.erase(it)) {
+        if (*it != nullptr) {
+            Release_Playing_Audio(*it);
+        }
+    }
+
+    for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); it = m_positionalAudioList.erase(it)) {
+        if (*it != nullptr) {
+            Release_Playing_Audio(*it);
+        }
+    }
+
+    for (auto it = m_streamList.begin(); it != m_streamList.end(); it = m_streamList.erase(it)) {
+        if (*it != nullptr) {
+            Release_Playing_Audio(*it);
+        }
+    }
+
+    for (auto it = m_fadingList.begin(); it != m_fadingList.end(); it = m_fadingList.erase(it)) {
+        if (*it != nullptr) {
+            Release_Playing_Audio(*it);
+        }
+    }
+
+    for (auto it = m_quickAudioList.begin(); it != m_quickAudioList.end(); ++it) {
+        if (*it != nullptr) {
+            AIL_quick_unload(*it);
+        }
+    }
+
+    m_quickAudioList.clear();
+}
+
+/**
+ * Loads a miles stream for an audio event.
+ */
+void ALAudioManager::Play_Stream(AudioEventRTS *event, ALuint source)
+{
+    if (event->Get_Event_Info()->Get_Event_Type() == EVENT_MUSIC) {
+        alSourcei(source, AL_LOOPING, AL_TRUE);
+    }
+
+    // TODO: stream file
+    alSourcePlay(source);
+}
+
+/**
+ * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
+ */
+void *ALAudioManager::Play_Sample3D(AudioEventRTS *event, ALuint source)
+{
+    Coord3D *pos = Get_Current_Position_From_Event(event);
+
+    if (pos == nullptr) {
+        return nullptr;
+    }
+
+    void *handle = Open_File(event);
+
+    if (handle != nullptr) {
+        // TODO: query data
+        alSource3f(source, AL_POSITION, pos->x, pos->y, pos->z);
+    }
+
+    return handle;
+}
+
+/**
+ * Loads a file an attached it to an OpenAL source. Returns a pointer to the file data.
+ */
+void *ALAudioManager::Play_Sample(AudioEventRTS *event, ALuint source)
+{
+    void *handle = Open_File(event);
+
+    if (handle != nullptr) {
+        // TODO: query data
+        alSourcePlay(source);
+    }
+
+    return handle;
+}
+
+/**
+ * Stops all speech playing audio.
+ */
+void ALAudioManager::Stop_All_Speech()
+{
+    auto it = m_streamList.begin();
+
+    while (it != m_streamList.end()) {
+        if (*it != nullptr) {
+            if ((*it)->openal.audio_event->Get_Event_Info()->Get_Event_Type() == EVENT_SPEECH) {
+                Release_Playing_Audio(*it);
+                it = m_streamList.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
+}
+
+/**
+ * Attempts to start another loop of a playing audio file, return indicates success.
+ */
+bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
+{
+    // Close_File(audio->openal.file_handle);
+    audio->openal.file_handle = nullptr;
+
+    if (audio->openal.disable_loops || !audio->openal.audio_event->Has_More_Loops()) {
+        return false;
+    }
+
+    audio->openal.audio_event->Generate_Filename();
+
+    if (audio->openal.audio_event->Get_Delay() > 33.333333f) {
+        audio->openal.release_event = false;
+        audio->openal.disable_loops = true;
+        audio->openal.stopped = 1;
+        AudioRequest *request = Allocate_Audio_Request(true);
+        request->m_event.object = audio->openal.audio_event;
+        request->m_isProcessed = true;
+        Append_Audio_Request(request);
+
+        return true;
+    }
+
+    // TODO:
+    // if (audio->openal.playing_type == MILESTYPE_3DSAMPLE) {
+    //     audio->openal.file_handle = Play_Sample3D(audio->openal.audio_event, audio->openal.sample_3d);
+    // } else {
+    //     audio->openal.file_handle = Play_Sample(audio->openal.audio_event, audio->openal.sample);
+    // }
+
+    return audio->openal.file_handle != nullptr;
+}
+
+/**
  * Adjusts the volume of a playing audio object at the Miles audio level.
  */
 void ALAudioManager::Adjust_Playing_Volume(PlayingAudio *audio) {}
+
+/**
+ * Helper function to clear a PlayingAudio object.
+ */
+void ALAudioManager::Init_Playing_Audio(PlayingAudio *audio)
+{
+    if (audio != nullptr) {
+        audio->openal.source = 0;
+        audio->openal.playing_type = MILESTYPE_NONE;
+        audio->openal.audio_event = nullptr;
+        audio->openal.disable_loops = false;
+        audio->openal.release_event = true;
+        audio->openal.time_fading = 0;
+    }
+}

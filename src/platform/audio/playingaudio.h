@@ -17,9 +17,6 @@
 #include "always.h"
 #include "audioeventinfo.h"
 
-#ifdef BUILD_WITH_MILES
-#include <miles.h>
-
 enum PlayingAudioType : int32_t
 {
     PAT_2DSAMPLE,
@@ -27,6 +24,9 @@ enum PlayingAudioType : int32_t
     PAT_STREAM,
     PAT_NONE,
 };
+
+#ifdef BUILD_WITH_MILES
+#include <miles.h>
 
 struct MilesPlayingAudio
 {
@@ -45,10 +45,12 @@ struct MilesPlayingAudio
 #endif
 
 #ifdef BUILD_WITH_ALSOFT
+#include <AL/al.h>
+
 struct OpenALPlayingAudio
 {
-    int source;
-    int playing_type;
+    ALuint source;
+    MilesTypes playing_type;
     int stopped;
     AudioEventRTS *audio_event;
     AudioDataHandle file_handle;

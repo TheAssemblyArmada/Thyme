@@ -442,6 +442,13 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
+if(USE_FFMPEG)
+    list(APPEND GAMEENGINE_SRC 
+        platform/audio/ffmpegaudiofilecache.cpp)
+    list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
+    list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FFMPEG ${FFMPEG_DEFINITIONS})
+endif()
+
 if(DINPUT8_FOUND)
     list(APPEND GAMEENGINE_GAME_SRC
         platform/directx/dinputkeybd.cpp

@@ -66,6 +66,7 @@
 #include "randomvalue.h"
 #include "rankinfo.h"
 #include "render2d.h"
+#include "science.h"
 #include "script.h"
 #include "scriptaction.h"
 #include "scriptcondition.h"
@@ -888,4 +889,11 @@ void Setup_Hooks()
     Hook_Any(0x008A37E4, ExperienceTracker::Can_Gain_Exp_For_Level);
     Hook_Any(0x008A381C, ExperienceTracker::Add_Experience_Points);
     Hook_Any(0x008A3934, ExperienceTracker::Set_Experience_And_Level);
+
+    // science.h
+    Hook_Any(0x0072727E, ScienceStore::Get_Science_From_Internal_Name);
+    Hook_Any(0x007272BE, ScienceStore::Get_Internal_Name_From_Science);
+    Hook_Any(0x00727753, ScienceStore::Get_Science_Purchase_Cost);
+    Hook_Any(0x00727781, ScienceStore::Is_Science_Grantable);
+    Hook_Any(0x007277AF, ScienceStore::Get_Name_And_Description);
 }

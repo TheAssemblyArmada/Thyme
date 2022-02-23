@@ -39,6 +39,8 @@ class Image;
 class AIUpdateModuleData;
 class Player;
 
+enum NameKeyType : int32_t;
+
 enum RadarPriorityType
 {
     RADAR_PRIORITY_NOT_ON_RADAR,

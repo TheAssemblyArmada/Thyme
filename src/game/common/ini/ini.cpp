@@ -453,7 +453,7 @@ Utf8String INI::Get_Next_Quoted_Ascii_String() const
     return next;
 }
 
-int INI::Scan_Science(const char *token)
+ScienceType INI::Scan_Science(const char *token)
 {
     return g_theScienceStore->Lookup_Science(token);
 }

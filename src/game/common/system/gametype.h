@@ -64,6 +64,12 @@ enum PriorityType : int32_t
     PRIORITY_COUNT,
 };
 
+enum ScienceType : int32_t
+{
+    SCIENCE_INVALID = -1,
+    SCIENCE_BOGUS = 0,
+};
+
 // Placeholder
 enum ObjectID : uint32_t
 {

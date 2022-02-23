@@ -34,8 +34,19 @@ class ProductionPrerequisite
     };
 
 public:
-    ProductionPrerequisite() {}
+    ProductionPrerequisite() { Init(); }
     ~ProductionPrerequisite() {}
+
+    void Init()
+    {
+        m_prereqUnit.clear();
+        m_prereqScience.clear();
+    }
+
+    void Add_Science_Prereq(ScienceType science) { m_prereqScience.push_back(science); }
+    void Add_Unit_Prereq(Utf8String name, bool or_with_previous);
+    void Resolve_Names();
+    int Get_All_Possible_Build_Facility_Templates(ThingTemplate **tmpls, int max_tmpls);
 
     // TODO member functions.
 private:

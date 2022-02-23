@@ -1720,6 +1720,7 @@ void Setup_Hooks()
     Hook_Any(0x0058C470, ThingTemplate::Is_Equivalent_To);
     Hook_Any(0x0058BEF0, ThingTemplate::Find_Armor_Template_Set);
     Hook_Any(0x0058C060, ThingTemplate::Find_Weapon_Template_Set);
+    Hook_Any(0x0058C260, ThingTemplate::Get_Per_Unit_FX);
 
     // w3dwater.h
     void Do_Sky_Box_Set(bool b);

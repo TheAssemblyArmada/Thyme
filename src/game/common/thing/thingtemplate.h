@@ -158,21 +158,25 @@ public:
     static void Parse_Max_Simultaneous(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Module_Name(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Per_Unit_FX(INI *ini, void *instance, void *store, const void *user_data);
+    static void Parse_Arbitrary_FX_Into_Map(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Per_Unit_Sounds(INI *ini, void *instance, void *store, const void *user_data);
+    static void Parse_Arbitrary_Sounds_Into_Map(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Prerequisites(INI *ini, void *instance, void *store, const void *user_data);
+    static void Parse_Prerequisite_Unit(INI *ini, void *instance, void *store, const void *user_data);
+    static void Parse_Prerequisite_Science(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Remove_Module(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Replace_Module(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Weapon_Template_Set(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data);
 
-    int Calc_Cost_To_Build(const Player *player) const;
-    int Calc_Time_To_Build(const Player *player) const;
+    int Calc_Cost_To_Build(const Player *player) const; // needs more of Player
+    int Calc_Time_To_Build(const Player *player) const; // needs more of Player
     bool Can_Possibly_Have_Any_Weapon() const;
     void Copy_From(const ThingTemplate *that);
     const ArmorTemplateSet *Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const;
     const WeaponTemplateSet *Find_Weapon_Template_Set(const BitFlags<WEAPONSET_COUNT> &t) const;
     AIUpdateModuleData *Friend_Get_AI_Module_Info() const;
-    ThingTemplate *Get_Build_Facility_Template(const Player *player) const;
+    ThingTemplate *Get_Build_Facility_Template(const Player *player) const; // needs more of Player
     BuildableStatus Get_Buildable() const;
     Utf8String Get_LTA_Name() const { return m_LTAName; }
     unsigned short Get_Max_Simultaneous_Of_Type() const;
@@ -187,6 +191,7 @@ public:
 
     void Validate();
     void Validate_Audio();
+    void Validate_Sound(const AudioEventRTS *event, const char *name);
 
     static const FieldParse *Get_Field_Parse();
     static const FieldParse *Get_Reskin_Field_Parse();
@@ -282,6 +287,7 @@ public:
     const std::vector<Utf8String> &Get_Build_Variations() const { return m_buildVariations; }
     const ModuleInfo *Get_Client_Update_Modules() const { return &m_clientUpdates; }
     int Get_Prereq_Count() const { return m_prerequisites.size(); }
+    const ProductionPrerequisite *Get_Nth_Prereq(int i) const { return &m_prerequisites[i]; }
     int Get_Build_Cost() const { return m_buildCost; }
     BuildCompletionType Get_Build_Completion() const { return (BuildCompletionType)m_buildCompletion; }
     float Get_Build_Time() const { return m_buildTime; }

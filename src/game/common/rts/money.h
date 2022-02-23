@@ -22,7 +22,7 @@ class Money : public SnapShot
 {
 public:
     Money() : m_money(0), m_playerIndex(0) {}
-    virtual ~Money() {}
+    ~Money() {}
 
     // SnapShot interface
     virtual void CRC_Snapshot(Xfer *xfer) {}

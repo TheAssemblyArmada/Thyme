@@ -46,6 +46,8 @@ public:
     const BitFlags<ARMORSET_COUNT> &Get_Conditions_Yes(int condition_idx) const { return m_conditions; }
     int Get_Conditions_Count() const { return 1; }
     Utf8String Get_Definition() const { return "ArmorTemplateSet"; }
+    const ArmorTemplate *Get_Armor_Template() const { return m_template; }
+    const DamageFX *Get_Damage_FX() const { return m_fx; }
 
 private:
     BitFlags<ARMORSET_COUNT> m_conditions;

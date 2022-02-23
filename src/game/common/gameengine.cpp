@@ -112,14 +112,14 @@ void GameEngine::Init(int argc, char *argv[])
 
     // Text manager isn't controlled by ini files, it uses either a csf or str file.
     Init_Subsystem(g_theGameText, "TheGameText", GameTextManager::Create_Game_Text_Interface());
-// These don't work for standalone yet
-#ifdef GAME_DLL
     Init_Subsystem(g_theScienceStore,
         "TheScienceStore",
         new ScienceStore,
         &xfer,
         "Data/INI/Default/Science.ini",
         "Data/INI/Science.ini");
+// These don't work for standalone yet
+#ifdef GAME_DLL
     Init_Subsystem(g_theMultiplayerSettings,
         "TheMultiplayerSettings",
         new MultiplayerSettings,

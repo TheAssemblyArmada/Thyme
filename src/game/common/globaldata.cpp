@@ -49,7 +49,7 @@ static const char *_terrain_lod_names[] = { "NONE",
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
 // controlled.
-FieldParse GlobalData::s_fieldParseTable[] = {
+const FieldParse GlobalData::s_fieldParseTable[] = {
     { "Windowed", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_windowed) }, //
     { "XResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_xResolution) }, //
     { "YResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_yResolution) }, //

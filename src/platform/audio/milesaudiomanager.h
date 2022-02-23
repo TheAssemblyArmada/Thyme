@@ -20,6 +20,10 @@
 #include <miles.h>
 #include <new>
 
+#ifdef BUILD_WITH_FFMPEG
+#include "ffmpegaudiofilecache.h"
+#endif
+
 #define MSEC_PER_LOGICFRAME_REAL (1000.0f / 30.0f)
 
 class MilesAudioFileCache;
@@ -170,7 +174,11 @@ private:
     std::list<PlayingAudio *> m_streamList;
     std::list<PlayingAudio *> m_fadingList;
     std::list<PlayingAudio *> m_stoppedList;
+#ifdef BUILD_WITH_FFMPEG
+    FFmpegAudioFileCache *m_audioFileCache;
+#else
     MilesAudioFileCache *m_audioFileCache;
+#endif
     PlayingAudio *m_binkPlayingAudio;
     int m_2dSampleCount;
     int m_3dSampleCount;

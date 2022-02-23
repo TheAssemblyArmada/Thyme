@@ -43,10 +43,10 @@ endif ()
 #
 macro(set_component_found _component )
   if (${_component}_LIBRARIES AND ${_component}_INCLUDE_DIRS)
-    # message(STATUS "  - ${_component} found.")
+    message(STATUS "  - ${_component} found.")
     set(${_component}_FOUND TRUE)
   else ()
-    # message(STATUS "  - ${_component} not found.")
+    message(STATUS "  - ${_component} not found.")
   endif ()
 endmacro()
 
@@ -69,6 +69,7 @@ macro(find_component _component _pkgconfig _library _header)
 
   find_path(${_component}_INCLUDE_DIRS ${_header}
     HINTS
+      ${FFmpeg_ROOT}/include
       ${PC_${_component}_INCLUDEDIR}
       ${PC_${_component}_INCLUDE_DIRS}
     PATH_SUFFIXES
@@ -77,6 +78,8 @@ macro(find_component _component _pkgconfig _library _header)
 
   find_library(${_component}_LIBRARIES NAMES ${_library}
       HINTS
+      ${FFmpeg_ROOT}/lib
+      ${FFmpeg_ROOT}/bin
       ${PC_${_component}_LIBDIR}
       ${PC_${_component}_LIBRARY_DIRS}
   )
@@ -111,12 +114,12 @@ if (NOT FFMPEG_LIBRARIES)
   # Check if the required components were found and add their stuff to the FFMPEG_* vars.
   foreach (_component ${FFmpeg_FIND_COMPONENTS})
     if (${_component}_FOUND)
-      # message(STATUS "Required component ${_component} present.")
+      message(STATUS "Required component ${_component} present.")
       set(FFMPEG_LIBRARIES   ${FFMPEG_LIBRARIES}   ${${_component}_LIBRARIES})
       set(FFMPEG_DEFINITIONS ${FFMPEG_DEFINITIONS} ${${_component}_DEFINITIONS})
       list(APPEND FFMPEG_INCLUDE_DIRS ${${_component}_INCLUDE_DIRS})
     else ()
-      # message(STATUS "Required component ${_component} missing.")
+      message(STATUS "Required component ${_component} missing.")
     endif ()
   endforeach ()
 

@@ -239,7 +239,7 @@ if(USE_GAMEMATH)
 endif()
 
 if(USE_FFMPEG)
-    find_package(FFMPEG REQUIRED COMPONENTS avformat avcodec)
+    find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
 endif()
 
 if(USE_CRASHPAD)

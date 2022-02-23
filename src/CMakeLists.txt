@@ -433,7 +433,7 @@ set(GAMEENGINE_WB_SRC
 
 # Don't try and build the miles sound system when not building to link to the original game.
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND)
         list(APPEND GAMEENGINE_SRC 
         platform/audio/milesaudiofilecache.cpp
         platform/audio/milesaudiomanager.cpp
@@ -445,6 +445,7 @@ endif()
 if(USE_FFMPEG)
     list(APPEND GAMEENGINE_SRC 
         platform/audio/ffmpegaudiofilecache.cpp)
+    list(APPEND GAMEENGINE_INCLUDES ${FFMPEG_INCLUDE_DIRS})
     list(APPEND GAME_LINK_LIBRARIES ${FFMPEG_LIBRARIES})
     list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_FFMPEG ${FFMPEG_DEFINITIONS})
 endif()
@@ -508,7 +509,7 @@ endif()
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     list(APPEND GAME_LINK_LIBRARIES winmm)
 
-    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND)
         list(APPEND GAME_LINK_LIBRARIES binkstub milesstub)
         list(APPEND GAME_COMPILE_OPTIONS -DBUILD_WITH_BINK -DBUILD_WITH_MILES)
     endif()

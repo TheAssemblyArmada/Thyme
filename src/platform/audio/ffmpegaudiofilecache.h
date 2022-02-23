@@ -18,10 +18,6 @@
 #include "asciistring.h"
 #include "mutex.h"
 #include "rtsutils.h"
-extern "C" {
-#include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
-}
 
 #ifdef THYME_USE_STLPORT
 #include <hash_map>
@@ -32,7 +28,11 @@ extern "C" {
 class AudioEventInfo;
 class AudioEventRTS;
 
-struct OpenAudioFile
+struct AVFormatContext;
+struct AVIOContext;
+struct AVCodecContext;
+
+struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
     AVFormatContext *fmt_ctx = nullptr;
@@ -46,10 +46,11 @@ struct OpenAudioFile
 };
 
 #ifdef THYME_USE_STLPORT
-typedef std::hash_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>> audiocachemap_t;
+typedef std::hash_map<const Utf8String, FFmpegOpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>>
+    ffmpegaudiocachemap_t;
 #else
-typedef std::unordered_map<const Utf8String, OpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>>
-    audiocachemap_t;
+typedef std::unordered_map<const Utf8String, FFmpegOpenAudioFile, rts::hash<Utf8String>, std::equal_to<Utf8String>>
+    ffmpegaudiocachemap_t;
 #endif
 
 class FFmpegAudioFileCache
@@ -62,12 +63,12 @@ public:
     void Set_Max_Size(unsigned size);
 
 private:
-    bool Free_Space_For_Sample(const OpenAudioFile &file);
-    void Release_Open_Audio(OpenAudioFile *file);
-    bool Open_FFmpeg_Contexts(OpenAudioFile *file, unsigned char *file_data, uint32_t file_size);
+    bool Free_Space_For_Sample(const FFmpegOpenAudioFile &file);
+    void Release_Open_Audio(FFmpegOpenAudioFile *file);
+    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size);
 
 private:
-    audiocachemap_t m_cacheMap;
+    ffmpegaudiocachemap_t m_cacheMap;
     unsigned m_currentSize;
     unsigned m_maxSize;
     SimpleMutexClass m_mutex;

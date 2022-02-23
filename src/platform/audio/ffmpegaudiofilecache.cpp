@@ -12,6 +12,12 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+
 #include "ffmpegaudiofilecache.h"
 #include "audioeventrts.h"
 #include "audiomanager.h"
@@ -31,7 +37,7 @@ FFmpegAudioFileCache::~FFmpegAudioFileCache()
 /**
  * Open all the required FFmpeg handles for a required file.
  */
-bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(OpenAudioFile *file, unsigned char *file_data, uint32_t file_size)
+bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size)
 {
     // FFmpeg setup
     int ret = 0;
@@ -73,7 +79,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(OpenAudioFile *file, unsigned ch
 
     AVCodec *input_codec = avcodec_find_decoder(file->fmt_ctx->streams[0]->codecpar->codec_id);
     if (!input_codec) {
-        captainslog_error("Audio codec not supported: '%s'", file->fmt_ctx->streams[0]->codec->codec_descriptor->name);
+        captainslog_error("Audio codec not supported: '%u'", file->fmt_ctx->streams[0]->codecpar->codec_tag);
         avformat_close_input(&file->fmt_ctx);
         av_freep(&avio_ctx);
         return false;
@@ -139,7 +145,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     uint32_t file_size = file->Size();
     uint8_t *file_data = static_cast<uint8_t *>(file->Read_All_And_Close());
 
-    OpenAudioFile open_audio;
+    FFmpegOpenAudioFile open_audio;
     open_audio.audio_event_info = audio_event->Get_Event_Info();
 
     if (!Open_FFmpeg_Contexts(&open_audio, (unsigned char *)file_data, file_size)) {
@@ -205,7 +211,7 @@ void FFmpegAudioFileCache::Set_Max_Size(unsigned size)
 /**
  * Attempts to free space for a file by releasing files with no references and lower priority sounds.
  */
-bool FFmpegAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
+bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file)
 {
     captainslog_assert(m_currentSize >= m_maxSize); // Assumed to be called only when we need more than allowed.
     std::list<Utf8String> to_free;
@@ -260,7 +266,7 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
 /**
  * Closes any playing instances of an audio file and then frees the memory for it.
  */
-void FFmpegAudioFileCache::Release_Open_Audio(OpenAudioFile *file)
+void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *file)
 {
     // Close any playing samples that use this data.
     if (file->ref_count) {

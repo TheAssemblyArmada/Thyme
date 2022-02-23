@@ -34,7 +34,11 @@ MilesAudioManager::MilesAudioManager() :
     m_milesDigitalDriver(nullptr),
     m_miles3DPositionObject(0),
     m_milesDelayFilter(0),
+#ifdef BUILD_WITH_FFMPEG
+    m_audioFileCache(new FFmpegAudioFileCache),
+#else
     m_audioFileCache(new MilesAudioFileCache),
+#endif
     m_binkPlayingAudio(nullptr),
     m_2dSampleCount(0),
     m_3dSampleCount(0),

@@ -496,6 +496,8 @@ void Create_Window()
 #endif
 }
 
+namespace Thyme
+{
 bool Create_Window_SDL2()
 {
 #ifdef BUILD_WITH_SDL2
@@ -516,6 +518,10 @@ bool Create_Window_SDL2()
         WIN_HEIGHT,
         is_windowed ? 0 : SDL_WINDOW_FULLSCREEN);
 
+    if (g_applicationWindow == nullptr) {
+        captainslog_error("SDL could not create window!");
+        return false;
+    }
     SDL_RaiseWindow(g_applicationWindow);
     SDL_ShowWindow(g_applicationWindow);
 
@@ -535,6 +541,7 @@ bool Create_Window_SDL2()
     return false;
 #endif
 }
+} // namespace Thyme
 
 /**
  * @brief Entry point for the game engine.
@@ -622,7 +629,7 @@ int main(int argc, char **argv)
     // Create the window
     captainslog_info("Creating window");
 #ifdef BUILD_WITH_SDL2
-    if (!Create_Window_SDL2())
+    if (!Thyme::Create_Window_SDL2())
         return 1;
 #else
     Create_Window();

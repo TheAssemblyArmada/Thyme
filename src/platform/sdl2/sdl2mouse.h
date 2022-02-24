@@ -22,6 +22,9 @@
 
 #include <SDL.h>
 
+namespace Thyme
+{
+
 class SDL2Mouse : public Mouse
 {
 public:
@@ -51,3 +54,4 @@ protected:
     uint32_t m_nextGetIndex;
     SDL_Event m_lastClick;
 };
+} // namespace Thyme

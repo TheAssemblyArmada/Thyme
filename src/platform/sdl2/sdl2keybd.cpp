@@ -16,6 +16,9 @@
 #include "main.h"
 #include <captainslog.h>
 
+namespace Thyme
+{
+
 SDL2InputKeyboard::SDL2InputKeyboard() {}
 
 SDL2InputKeyboard::~SDL2InputKeyboard() {}
@@ -42,7 +45,7 @@ void SDL2InputKeyboard::Add_SDL2_Event(SDL_Event *ev)
     auto &event = m_eventBuffer[m_nextFreeIndex];
 
     // If no space (0 type == empty) for more events throw away event
-    if (event.type != 0) {
+    if (event.type != SDL_NOEVENT) {
         return;
     }
 
@@ -66,9 +69,10 @@ void SDL2InputKeyboard::Get_Key(KeyboardIO *io)
     // Translate_Event(m_nextGetIndex, io);
 
     // Clear the current event - can be overwritten
-    m_eventBuffer[m_nextGetIndex].type = 0;
+    m_eventBuffer[m_nextGetIndex].type = SDL_NOEVENT;
     m_nextGetIndex++;
     if (m_nextGetIndex >= MAX_EVENTS) {
         m_nextGetIndex = 0;
     }
 }
+} // namespace Thyme

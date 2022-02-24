@@ -24,6 +24,8 @@
 
 #include <SDL.h>
 
+namespace Thyme
+{
 class SDL2InputKeyboard : public Keyboard
 {
     enum
@@ -47,3 +49,4 @@ private:
     uint32_t m_nextFreeIndex;
     uint32_t m_nextGetIndex;
 };
+} // namespace Thyme

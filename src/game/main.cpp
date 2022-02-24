@@ -331,14 +331,18 @@ static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_par
         }
         case WM_MOUSEWHEEL: {
             RECT window_rect{};
+            // Note that this is different to MOUSEMOVE in that its the WindowRect
             GetWindowRect(g_applicationHWnd, &window_rect);
             POINT mouse_position{ GET_X_LPARAM(l_param), GET_Y_LPARAM(l_param) };
             if (mouse_position.x < window_rect.left || mouse_position.x > window_rect.right
                 || mouse_position.y < window_rect.top || mouse_position.y > window_rect.bottom) {
                 return 0;
             }
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Add_Win32_Event(message, w_param, l_param, g_theMessageTime);
+            }
+            return 0;
         }
-            //[[fallthrough]]
         case WM_LBUTTONDOWN:
         case WM_LBUTTONDBLCLK:
         case WM_LBUTTONUP:

@@ -69,9 +69,11 @@ public:
             if (dynamic_cast<Win32LocalFileSystem *>(filesystem) != nullptr) {
                 return "Win32LocalFileSystem";
             }
+#ifdef BUILD_WITH_STDFS
             if (dynamic_cast<Thyme::StdLocalFileSystem *>(filesystem) != nullptr) {
                 return "StdLocalFileSystem";
             }
+#endif
             return "Unknown";
         }
     };

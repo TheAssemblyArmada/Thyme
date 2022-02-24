@@ -118,12 +118,15 @@ void GameEngine::Init(int argc, char *argv[])
         &xfer,
         "Data/INI/Default/Science.ini",
         "Data/INI/Science.ini");
+// These don't work for standalone yet
+#ifdef GAME_DLL
     Init_Subsystem(g_theMultiplayerSettings,
         "TheMultiplayerSettings",
         new MultiplayerSettings,
         &xfer,
         "Data/INI/Default/Multiplayer.ini",
         "Data/INI/Multiplayer.ini");
+#endif
     Init_Subsystem(g_theTerrainTypes,
         "TheTerrainTypes",
         new TerrainTypeCollection,

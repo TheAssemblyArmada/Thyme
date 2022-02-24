@@ -267,14 +267,14 @@ void Get_OS_Info(OSInfoStruct &os_info,
             break;
 
         default:
-            os_info = OSInfoStruct {};
+            os_info = OSInfoStruct{};
             os_info.Code = "UNKNOWN";
             os_info.SubCode = "UNKNOWN";
             os_info.VersionString = "UNKNOWN";
             break;
     }
 #else
-    os_info = OSInfoStruct {};
+    os_info = OSInfoStruct{};
     os_info.Code = "UNKNOWN";
     os_info.SubCode = "UNKNOWN";
     os_info.VersionString = "UNKNOWN";

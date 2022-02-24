@@ -493,13 +493,13 @@ void ThingTemplate::Set_Copied_From_Default()
 
 void ThingTemplate::Resolve_Names()
 {
-    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
-        m_prerequisites[i].Resolve_Names();
+    for (ProductionPrerequisite &prerequisite : m_prerequisites) {
+        prerequisite.Resolve_Names();
     }
 
-    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
+    for (ProductionPrerequisite &prerequisite : m_prerequisites) {
         ThingTemplate *tmpls[32];
-        int count = m_prerequisites[i].Get_All_Possible_Build_Facility_Templates(tmpls, 32);
+        int count = prerequisite.Get_All_Possible_Build_Facility_Templates(tmpls, 32);
 
         for (int j = 0; j < count; j++) {
             if (tmpls[j] != nullptr) {

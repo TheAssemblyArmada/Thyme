@@ -7,7 +7,7 @@
             <Item Name="[data]">((_Node*)_M_node)-&gt;_M_data</Item>
         </Expand>
     </Type>
-    <Type Name="_STL::list&lt;*&gt;">
+    <Type Name="_STL::_List_base&lt;*&gt;">
         <DisplayString Condition="_M_node._M_data-&gt;_M_next == _M_node._M_data">{{ Empty List }}</DisplayString>
         <DisplayString Condition="_M_node._M_data-&gt;_M_next != _M_node._M_data">{{ List }}</DisplayString>
         <Expand>

@@ -268,6 +268,7 @@ endif()
 if (MSVC_IDE)
     add_library(resources INTERFACE
         resources/visualstudio/stllist.natvis
+        resources/visualstudio/stlvector.natvis
         resources/visualstudio/utf8string.natvis
         resources/visualstudio/utf16string.natvis
     )

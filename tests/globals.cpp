@@ -1,4 +1,7 @@
+#include <always.h>
+
 #ifdef PLATFORM_WINDOWS
+#include <windows.h>
 HWND g_applicationHWnd;
 unsigned g_theMessageTime = 0;
 bool g_gameIsWindowed;

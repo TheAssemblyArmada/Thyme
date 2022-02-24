@@ -65,7 +65,10 @@ public:
 private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &file);
     void Release_Open_Audio(FFmpegOpenAudioFile *file);
+
     bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size);
+    bool Decode_FFmpeg(FFmpegOpenAudioFile *file);
+    void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file);
 
 private:
     ffmpegaudiocachemap_t m_cacheMap;

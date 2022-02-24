@@ -25,6 +25,27 @@ extern "C" {
 #include <captainslog.h>
 #include <list>
 
+struct WavHeader
+{
+    /* RIFF Chunk Descriptor */
+    uint8_t RIFF[4] = { 'R', 'I', 'F', 'F' }; // RIFF Header Magic header
+    uint32_t ChunkSize; // RIFF Chunk Size
+    uint8_t WAVE[4] = { 'W', 'A', 'V', 'E' }; // WAVE Header
+    /* "fmt" sub-chunk */
+    uint8_t fmt[4] = { 'f', 'm', 't', ' ' }; // FMT header
+    uint32_t Subchunk1Size = 16; // Size of the fmt chunk
+    uint16_t AudioFormat = 1; // Audio format 1=PCM,6=mulaw,7=alaw,     257=IBM
+                              // Mu-Law, 258=IBM A-Law, 259=ADPCM
+    uint16_t NumOfChan = 1; // Number of channels 1=Mono 2=Sterio
+    uint32_t SamplesPerSec = 16000; // Sampling Frequency in Hz
+    uint32_t bytesPerSec = 16000 * 2; // bytes per second
+    uint16_t blockAlign = 2; // 2=16-bit mono, 4=16-bit stereo
+    uint16_t bitsPerSample = 16; // Number of bits per sample
+    /* "data" sub-chunk */
+    uint8_t Subchunk2ID[4] = { 'd', 'a', 't', 'a' }; // "data"  string
+    uint32_t Subchunk2Size; // Sampled data length
+};
+
 FFmpegAudioFileCache::~FFmpegAudioFileCache()
 {
     ScopedMutexClass lock(&m_mutex);
@@ -46,50 +67,45 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
         captainslog_error("Failed to alloc AVFormatContext");
         return false;
     }
-    AVIOContext *avio_ctx = avio_alloc_context((unsigned char *)file_data, file_size, 0, nullptr, nullptr, nullptr, nullptr);
-    if (!avio_ctx) {
+    file->avio_ctx = avio_alloc_context((unsigned char *)file_data, file_size, 0, nullptr, nullptr, nullptr, nullptr);
+    if (!file->avio_ctx) {
         captainslog_error("Failed to alloc AVIOContext");
-        avformat_close_input(&file->fmt_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
-    file->fmt_ctx->pb = avio_ctx;
+    file->fmt_ctx->pb = file->avio_ctx;
     ret = avformat_open_input(&file->fmt_ctx, NULL, NULL, NULL);
     if (ret < 0) {
         captainslog_error("Failed to open audiofile with FFmpeg");
-        avformat_close_input(&file->fmt_ctx);
-        av_freep(&avio_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
     ret = avformat_find_stream_info(file->fmt_ctx, NULL);
     if (ret < 0) {
         captainslog_error("Failed to find stream info");
-        avformat_close_input(&file->fmt_ctx);
-        av_freep(&avio_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
     if (file->fmt_ctx->nb_streams != 1) {
         captainslog_error("Expected exactly one audio stream per file");
-        avformat_close_input(&file->fmt_ctx);
-        av_freep(&avio_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
     AVCodec *input_codec = avcodec_find_decoder(file->fmt_ctx->streams[0]->codecpar->codec_id);
     if (!input_codec) {
         captainslog_error("Audio codec not supported: '%u'", file->fmt_ctx->streams[0]->codecpar->codec_tag);
-        avformat_close_input(&file->fmt_ctx);
-        av_freep(&avio_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
     ret = avcodec_open2(file->fmt_ctx->streams[0]->codec, input_codec, NULL);
     if (ret < 0) {
         captainslog_error("Failed to open input codec");
-        avformat_close_input(&file->fmt_ctx);
-        av_freep(&avio_ctx);
+        Close_FFmpeg_Contexts(file);
         return false;
     }
 
@@ -97,26 +113,49 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
     return true;
 }
 
-struct WavHeader
+/**
+ * Decode the input data and append it to our wave data stream
+ */
+bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
 {
-    /* RIFF Chunk Descriptor */
-    uint8_t RIFF[4] = { 'R', 'I', 'F', 'F' }; // RIFF Header Magic header
-    uint32_t ChunkSize; // RIFF Chunk Size
-    uint8_t WAVE[4] = { 'W', 'A', 'V', 'E' }; // WAVE Header
-    /* "fmt" sub-chunk */
-    uint8_t fmt[4] = { 'f', 'm', 't', ' ' }; // FMT header
-    uint32_t Subchunk1Size = 16; // Size of the fmt chunk
-    uint16_t AudioFormat = 1; // Audio format 1=PCM,6=mulaw,7=alaw,     257=IBM
-                              // Mu-Law, 258=IBM A-Law, 259=ADPCM
-    uint16_t NumOfChan = 1; // Number of channels 1=Mono 2=Sterio
-    uint32_t SamplesPerSec = 16000; // Sampling Frequency in Hz
-    uint32_t bytesPerSec = 16000 * 2; // bytes per second
-    uint16_t blockAlign = 2; // 2=16-bit mono, 4=16-bit stereo
-    uint16_t bitsPerSample = 16; // Number of bits per sample
-    /* "data" sub-chunk */
-    uint8_t Subchunk2ID[4] = { 'd', 'a', 't', 'a' }; // "data"  string
-    uint32_t Subchunk2Size; // Sampled data length
-};
+    AVPacket packet;
+    AVFrame frame;
+
+    int result = 0;
+    while (av_read_frame(file->fmt_ctx, &packet) >= 0) {
+        result = avcodec_send_packet(file->codec_ctx, &packet);
+        if (result < 0) {
+            captainslog_error("Failed to send audio packet to decoder.");
+            break;
+        }
+        result = avcodec_receive_frame(file->codec_ctx, &frame);
+        av_packet_unref(&packet);
+        // Check if this was a real error or we just need more data
+        if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+            captainslog_error("Failed to receive audio frame from decoder.");
+        } else if (result >= 0) {
+            int frame_data_size = av_samples_get_buffer_size(
+                NULL, file->codec_ctx->channels, frame.nb_samples, file->codec_ctx->sample_fmt, 1);
+            av_realloc(file->wave_data, file->data_size + frame_data_size);
+            memcpy(file->wave_data + file->data_size, frame.data[0], frame_data_size);
+            file->data_size += frame_data_size;
+        }
+    }
+}
+
+/**
+ * Close all the open FFmpeg handles for an open file.
+ */
+void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file)
+{
+    if (file->fmt_ctx) {
+        avformat_close_input(&file->fmt_ctx);
+    }
+
+    if (file->avio_ctx) {
+        av_freep(&file->avio_ctx);
+    }
+}
 
 /**
  * Opens an audio file for an event. Reads from the cache if available or loads from file if not.
@@ -183,28 +222,19 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         return nullptr;
     }
 
-    AVPacket packet;
-    AVFrame frame;
-
-    int got_frame = 0;
-    while (av_read_frame(open_audio.fmt_ctx, &packet) >= 0) {
-        int len = avcodec_decode_audio4(open_audio.codec_ctx, &frame, &got_frame, &packet);
-
-        if (got_frame) {
-            int frame_data_size = av_samples_get_buffer_size(
-                NULL, open_audio.codec_ctx->channels, frame.nb_samples, open_audio.codec_ctx->sample_fmt, 1);
-            av_realloc(open_audio.wave_data, open_audio.data_size + frame_data_size);
-            memcpy(open_audio.wave_data + open_audio.data_size, frame.data[0], frame_data_size);
-            open_audio.data_size += frame_data_size;
-        }
-    }
-
-    av_free_packet(&packet);
+    Decode_FFmpeg(&open_audio);
 
     WavHeader wav;
     wav.ChunkSize = open_audio.data_size - 8;
     wav.Subchunk2Size = open_audio.data_size - 44;
+    wav.NumOfChan = open_audio.codec_ctx->channels;
+    wav.bitsPerSample = av_get_bits_per_sample(open_audio.codec_ctx->codec_id);
+    wav.SamplesPerSec = open_audio.codec_ctx->sample_rate;
+    wav.bytesPerSec = open_audio.codec_ctx->sample_rate * open_audio.codec_ctx->channels * (wav.bitsPerSample / 8);
+    wav.blockAlign = open_audio.codec_ctx->channels * (wav.bitsPerSample / 8);
     memcpy(open_audio.wave_data, &wav, sizeof(WavHeader));
+
+    Close_FFmpeg_Contexts(&open_audio);
 
     open_audio.ref_count = 1;
     m_currentSize += open_audio.data_size;

@@ -13,18 +13,26 @@
  *            LICENSE
  */
 #include "main.h"
+#include "audiomanager.h"
+#include "copyprotect.h"
 #include "cpudetect.h"
 #include "crashhandler.h"
 #include "critsection.h"
+#include "gameengine.h"
 #include "gamemain.h"
 #include "gamememory.h"
 #include "gitverinfo.h"
+#include "imemanager.h"
+#include "keyboard.h"
 #include "memdynalloc.h"
 #include "mempool.h"
+#include "messagestream.h"
 #include "stackdump.h"
 #include "unicodestring.h"
 #include "version.h"
+#include "w3ddisplay.h"
 #include "win32compat.h"
+#include "win32mouse.h"
 #include <algorithm>
 #include <captainslog.h>
 #include <cstdio>
@@ -51,6 +59,7 @@ using std::rename;
 #ifdef PLATFORM_WINDOWS
 #include <direct.h>
 #include <shellapi.h>
+#include <windowsx.h>
 #include <wingdi.h>
 #include <winuser.h>
 
@@ -65,6 +74,7 @@ using std::rename;
 // Some globals, replace exe versions with own once all code that uses them is implemented.
 extern bool &g_gameIsWindowed;
 extern bool &g_gameNotFullscreen;
+extern bool &g_gameActive;
 extern bool &g_creatingWindow;
 extern HGDIOBJ &g_splashImage;
 extern HINSTANCE &g_applicationHInstance;
@@ -74,6 +84,7 @@ HWND g_applicationHWnd;
 unsigned g_theMessageTime = 0;
 bool g_gameIsWindowed;
 bool g_gameNotFullscreen;
+bool g_gameActive;
 bool g_creatingWindow;
 HGDIOBJ g_splashImage;
 HINSTANCE g_applicationHInstance;
@@ -162,6 +173,205 @@ void Check_Windowed(int argc, char *argv[])
 #endif
 }
 
+#if defined PLATFORM_WINDOWS && defined GAME_DLL
+// zh: 0x00401000
+static LRESULT __stdcall Wnd_Proc(HWND window_handle, UINT message, WPARAM w_param, LPARAM l_param)
+{
+    if (g_theIMEManager != nullptr && g_theIMEManager->Service_IME_Message(window_handle, message, w_param, l_param)) {
+        return g_theIMEManager->Result();
+    }
+
+    CopyProtect::checkForMessage(message, l_param);
+
+    switch (message) {
+        case WM_SETCURSOR:
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Set_Cursor(g_theWin32Mouse->Get_Mouse_Cursor());
+            }
+            return TRUE;
+
+        case WM_SIZE:
+            if (!g_creatingWindow) {
+                g_gameNotFullscreen = false;
+            }
+            break;
+
+        case WM_ACTIVATE:
+            switch (LOWORD(w_param)) {
+                case WA_INACTIVE:
+                    ClipCursor(nullptr);
+                    if (g_theAudio != nullptr) {
+                        g_theAudio->Lose_Focus();
+                    }
+                    break;
+                default:
+                case WA_ACTIVE:
+                case WA_CLICKACTIVE:
+                    if (g_theMouse != nullptr) {
+                        g_theMouse->Set_Mouse_Limits();
+                    }
+                    if (g_theAudio != nullptr) {
+                        g_theAudio->Regain_Focus();
+                    }
+                    break;
+            }
+            break;
+
+        case WM_SETFOCUS:
+            if (g_theKeyboard != nullptr) {
+                g_theKeyboard->Reset_Keys();
+            }
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Set_Ignore_Events(false);
+            }
+            break;
+
+        case WM_KILLFOCUS:
+            if (g_theKeyboard != nullptr) {
+                g_theKeyboard->Reset_Keys();
+            }
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Set_Ignore_Events(true);
+            }
+            break;
+
+        case WM_PAINT:
+            if (g_gameNotFullscreen) {
+                PAINTSTRUCT ps{};
+                auto hDC = BeginPaint(window_handle, &ps);
+                if (g_splashImage != nullptr) {
+                    const auto old_dc = SaveDC(hDC);
+                    auto compat_dc = CreateCompatibleDC(hDC);
+                    auto ha = SelectObject(compat_dc, g_splashImage);
+                    BitBlt(hDC, 0, 0, 800, 600, compat_dc, 0, 0, SRCCOPY);
+                    SelectObject(compat_dc, ha);
+                    DeleteDC(compat_dc);
+                    RestoreDC(hDC, old_dc);
+                }
+                EndPaint(window_handle, &ps);
+                return 0; // BUGFIX: vanilla returned 1 WinAPI says return 0
+            }
+            break;
+
+        case WM_CLOSE:
+            if (g_theGameEngine->Get_Quitting()) {
+                if (g_theKeyboard != nullptr) {
+                    g_theKeyboard->Reset_Keys();
+                }
+                if (g_theWin32Mouse != nullptr) {
+                    g_theWin32Mouse->Set_Ignore_Events(false);
+                }
+                break;
+            }
+            g_theMessageStream->Append_Message(GameMessage::MessageType::MSG_META_DEMO_INSTANT_QUIT);
+            return 0;
+
+        case WM_QUERYENDSESSION:
+            g_theMessageStream->Append_Message(GameMessage::MessageType::MSG_META_DEMO_INSTANT_QUIT);
+            return 0;
+
+        case WM_ERASEBKGND:
+            if (!g_gameNotFullscreen) {
+                return 1;
+            }
+            break;
+
+        case WM_ACTIVATEAPP: {
+            const bool activate_state = w_param == TRUE;
+            if (activate_state == g_gameActive) {
+                return 0;
+            }
+            g_gameActive = activate_state;
+            if (g_theGameEngine != nullptr) {
+                g_theGameEngine->Set_Is_Active(activate_state);
+            }
+            Reset_D3D_Device(activate_state);
+            if (activate_state && g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Set_Cursor(g_theWin32Mouse->Get_Mouse_Cursor());
+            }
+            return 0;
+        }
+        case WM_NCHITTEST:
+            if (!g_gameIsWindowed) {
+                return HTCLIENT;
+            }
+            break;
+
+        case WM_KEYDOWN:
+            if (w_param == VK_ESCAPE) {
+                PostQuitMessage(EXIT_SUCCESS);
+            }
+            return 0;
+
+        case WM_SYSCOMMAND:
+            switch (w_param) {
+                case SC_MAXIMIZE:
+                case SC_SIZE:
+                case SC_MOVE:
+                case SC_KEYMENU:
+                case SC_MONITORPOWER:
+                    if (!g_gameIsWindowed) {
+                        return 0; // BUGFIX: vanilla returned 1 WinAPI says return 0
+                    }
+            }
+            break;
+
+        case WM_MOUSEMOVE: {
+            RECT window_rect{};
+            GetClientRect(g_applicationHWnd, &window_rect);
+            POINT mouse_position{ GET_X_LPARAM(l_param), GET_Y_LPARAM(l_param) };
+            if (mouse_position.x < window_rect.left || mouse_position.x > window_rect.right
+                || mouse_position.y < window_rect.top || mouse_position.y > window_rect.bottom) {
+                return 0;
+            }
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Add_Win32_Event(WM_MOUSEMOVE, w_param, l_param, g_theMessageTime);
+            }
+            return 0;
+        }
+        case WM_MOUSEWHEEL: {
+            RECT window_rect{};
+            // Note that this is different to MOUSEMOVE in that its the WindowRect
+            GetWindowRect(g_applicationHWnd, &window_rect);
+            POINT mouse_position{ GET_X_LPARAM(l_param), GET_Y_LPARAM(l_param) };
+            if (mouse_position.x < window_rect.left || mouse_position.x > window_rect.right
+                || mouse_position.y < window_rect.top || mouse_position.y > window_rect.bottom) {
+                return 0;
+            }
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Add_Win32_Event(message, w_param, l_param, g_theMessageTime);
+            }
+            return 0;
+        }
+        case WM_LBUTTONDOWN:
+        case WM_LBUTTONDBLCLK:
+        case WM_LBUTTONUP:
+        case WM_RBUTTONDOWN:
+        case WM_RBUTTONUP:
+        case WM_RBUTTONDBLCLK:
+        case WM_MBUTTONDOWN:
+        case WM_MBUTTONUP:
+        case WM_MBUTTONDBLCLK:
+            if (g_theWin32Mouse != nullptr) {
+                g_theWin32Mouse->Add_Win32_Event(message, w_param, l_param, g_theMessageTime);
+            }
+            return 0;
+
+        case WM_POWERBROADCAST:
+            switch (w_param) {
+                case PBT_APMQUERYSUSPEND:
+                    return TRUE;
+                case PBT_APMRESUMESUSPEND:
+                    return TRUE;
+                default:
+                    break;
+            }
+            break;
+    }
+    return DefWindowProcA(window_handle, message, w_param, l_param);
+}
+#endif
+
 void Create_Window()
 {
 #if defined PLATFORM_WINDOWS && defined GAME_DLL
@@ -184,7 +394,7 @@ void Create_Window()
     bool is_windowed = g_gameIsWindowed;
 
     WndClass.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
-    WndClass.lpfnWndProc = Make_StdCall_Ptr<LRESULT, HWND, UINT, WPARAM, LPARAM>(0x00401000); // original WinProc
+    WndClass.lpfnWndProc = &Wnd_Proc;
     WndClass.cbClsExtra = 0;
     WndClass.cbWndExtra = 0;
     WndClass.hInstance = app_hinstance;

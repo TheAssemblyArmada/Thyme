@@ -21,6 +21,7 @@ extern HWND &g_applicationHWnd;
 extern unsigned &g_theMessageTime;
 extern bool &g_gameIsWindowed;
 extern bool &g_gameNotFullscreen;
+extern bool &g_gameActive;
 extern bool &g_creatingWindow;
 extern HGDIOBJ &g_splashImage;
 extern HINSTANCE &g_applicationHInstance;
@@ -37,6 +38,7 @@ extern HINSTANCE g_applicationHInstance;
 #endif
 extern bool g_gameIsWindowed;
 extern bool g_gameNotFullscreen;
+extern bool g_gameActive;
 extern bool g_creatingWindow;
 #endif
 

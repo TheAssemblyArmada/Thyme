@@ -38,7 +38,7 @@ struct FFmpegOpenAudioFile
     AVFormatContext *fmt_ctx = nullptr;
     AVIOContext *avio_ctx = nullptr;
     AVCodecContext *codec_ctx = nullptr;
-    uint8_t *wave_data;
+    uint8_t *wave_data = nullptr;
     int ref_count;
     int data_size;
     bool ffmpeg_allocated;

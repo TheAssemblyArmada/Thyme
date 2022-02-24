@@ -1803,10 +1803,14 @@ void DX8Wrapper::Set_Light(unsigned index, const LightClass &light)
     dlight.Ambient.a = 1.0f;
 
     temp = light.Get_Position();
-    dlight.Position = *(D3DVECTOR *)&temp;
+    dlight.Position.x = temp.X;
+    dlight.Position.y = temp.Y;
+    dlight.Position.z = temp.Z;
 
     light.Get_Spot_Direction(temp);
-    dlight.Direction = *(D3DVECTOR *)&temp;
+    dlight.Direction.x = temp.X;
+    dlight.Direction.y = temp.Y;
+    dlight.Direction.z = temp.Z;
 
     dlight.Range = light.Get_Attenuation_Range();
     dlight.Falloff = light.Get_Spot_Exponent();

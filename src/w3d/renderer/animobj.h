@@ -67,11 +67,11 @@ protected:
     void Combo_Update(const Matrix3D &root, HAnimComboClass *anim);
 
     bool Is_Hierarchy_Valid() const { return m_isTreeValid; }
-    void Set_Hierarchy_Valid(bool onoff) const { m_isTreeValid = onoff; }
+    void Set_Hierarchy_Valid(bool onoff) { m_isTreeValid = onoff; }
     void Single_Anim_Progress();
     void Release();
 
-    mutable bool m_isTreeValid;
+    bool m_isTreeValid;
     HTreeClass *m_htree;
 
     enum

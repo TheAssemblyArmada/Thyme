@@ -26,24 +26,27 @@ void ProductionPrerequisite::Add_Unit_Prereq(Utf8String name, bool or_with_previ
 
 void ProductionPrerequisite::Resolve_Names()
 {
-    for (unsigned int i = 0; i < m_prereqUnit.size(); i++) {
-        if (m_prereqUnit[i].name.Is_Not_Empty()) {
-            m_prereqUnit[i].unit = g_theThingFactory->Find_Template(m_prereqUnit[i].name, true);
-            captainslog_dbgassert(m_prereqUnit[i].unit != nullptr, "could not find prereq %s", m_prereqUnit[i].name.Str());
+    for (PrereqUnitRec &prereqUnit : m_prereqUnit) {
+        if (prereqUnit.name.Is_Not_Empty()) {
+            prereqUnit.unit = g_theThingFactory->Find_Template(prereqUnit.name, true);
+            captainslog_dbgassert(prereqUnit.unit != nullptr, "could not find prereq %s", prereqUnit.name.Str());
         }
 
-        m_prereqUnit[i].name.Clear();
+        prereqUnit.name.Clear();
     }
 }
 
 int ProductionPrerequisite::Get_All_Possible_Build_Facility_Templates(ThingTemplate **tmpls, int max_tmpls)
 {
-    int count = 0;
-
-    for (unsigned int i = 0; i < m_prereqUnit.size() && (i <= 0 || (m_prereqUnit[i].flags & 1) != 0) && count < max_tmpls;
-         i++) {
-        tmpls[count++] = m_prereqUnit[i].unit;
+    int i = 0;
+    for (PrereqUnitRec &prereq_unit : m_prereqUnit) {
+        if (i > 0 && (prereq_unit.flags & 1)) {
+            break;
+        }
+        if (i >= max_tmpls) {
+            break;
+        }
+        tmpls[i++] = prereq_unit.unit;
     }
-
-    return count;
+    return i;
 }

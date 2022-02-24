@@ -660,6 +660,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
         offsetof(GlobalData, m_networkDisconnectScreenNotifyTime) },
     { "KeyboardCameraRotateSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardCameraRotateSpeed) },
     { "PlayStats", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_playerStats) },
+    // C&C Generals contains a setting "UserDataLeafName" - to avoid crashes we need this line below
     // { "UserDataLeafName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_userDataLeafName) },
     { nullptr, nullptr, nullptr, 0 }
 };

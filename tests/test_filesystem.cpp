@@ -13,10 +13,12 @@
  *            LICENSE
  */
 #include <gtest/gtest.h>
-#include <stdlocalfilesystem.h>
 #include <win32bigfile.h>
 #include <win32bigfilesystem.h>
 #include <win32localfilesystem.h>
+#ifdef BUILD_WITH_STDFS
+#include <stdlocalfilesystem.h>
+#endif
 
 extern LocalFileSystem *g_theLocalFileSystem;
 
@@ -55,7 +57,7 @@ TEST(filesystem, win32bigfile)
 class FileSystemTest : public ::testing::TestWithParam<LocalFileSystem *>
 {
     void SetUp() override { m_filesystem = GetParam(); }
-    void TearDown() override { }
+    void TearDown() override {}
 
 protected:
     LocalFileSystem *m_filesystem;
@@ -80,9 +82,11 @@ TEST_P(FileSystemTest, file_info)
     EXPECT_EQ(file_info.file_size_low, 84);
 }
 
-std::array<LocalFileSystem *, 2> filesystem_list = {
+LocalFileSystem* filesystem_list[] = {
     new Win32LocalFileSystem,
+#ifdef BUILD_WITH_STDFS
     new Thyme::StdLocalFileSystem,
+#endif
 };
 
 // TODO: enable pretty printing

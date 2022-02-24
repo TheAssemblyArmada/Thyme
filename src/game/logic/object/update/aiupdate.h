@@ -26,6 +26,7 @@ class AssaultTransportAIInterface;
 class JetAIUpdate;
 class AIStateMachine;
 class Locomotor;
+class Path;
 
 enum GuardTargetType
 {
@@ -190,8 +191,11 @@ public:
     bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
 
     const Locomotor *Get_Locomotor() const { return m_curLocomotor; }
+    const Path *Get_Path() const { return m_path; }
 
 private:
-    unsigned char unk[0x194];
+    unsigned char unk[0x10C];
+    Path *m_path;
+    unsigned char unk2[0x84];
     Locomotor *m_curLocomotor;
 };

@@ -19,6 +19,8 @@
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
 #include "w3doverlordtankdraw.h"
+#include "w3doverlordtruckdraw.h"
+#include "w3dpolicecardraw.h"
 #include "w3dprojectilestreamdraw.h"
 #include "w3dtanktruckdraw.h"
 #include "w3dtreedraw.h"
@@ -55,8 +57,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DOverlordTankDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776680,
-        (moddatacreateproc_t)0x00776770,
+    Add_Module_Internal(W3DOverlordTruckDraw::Friend_New_Module_Instance,
+        W3DOverlordTruckDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DOverlordTruckDraw",
         DrawModule::Get_Interface_Mask());
@@ -70,8 +72,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DProjectileStreamDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776940,
-        (moddatacreateproc_t)0x00776610,
+    Add_Module_Internal(W3DPoliceCarDraw::Friend_New_Module_Instance,
+        W3DPoliceCarDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DPoliceCarDraw",
         DrawModule::Get_Interface_Mask());
@@ -100,8 +102,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DTankDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776520,
-        (moddatacreateproc_t)0x00776610,
+    Add_Module_Internal(W3DTruckDraw::Friend_New_Module_Instance,
+        W3DTruckDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DTruckDraw",
         DrawModule::Get_Interface_Mask());

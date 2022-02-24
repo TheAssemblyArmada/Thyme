@@ -27,23 +27,21 @@ extern "C" {
 
 struct WavHeader
 {
-    /* RIFF Chunk Descriptor */
-    uint8_t RIFF[4] = { 'R', 'I', 'F', 'F' }; // RIFF Header Magic header
-    uint32_t ChunkSize; // RIFF Chunk Size
-    uint8_t WAVE[4] = { 'W', 'A', 'V', 'E' }; // WAVE Header
+    uint8_t riff_id[4] = { 'R', 'I', 'F', 'F' };
+    uint32_t chunk_size;
+    uint8_t wave_id[4] = { 'W', 'A', 'V', 'E' };
     /* "fmt" sub-chunk */
-    uint8_t fmt[4] = { 'f', 'm', 't', ' ' }; // FMT header
-    uint32_t Subchunk1Size = 16; // Size of the fmt chunk
-    uint16_t AudioFormat = 1; // Audio format 1=PCM,6=mulaw,7=alaw,     257=IBM
-                              // Mu-Law, 258=IBM A-Law, 259=ADPCM
-    uint16_t NumOfChan = 1; // Number of channels 1=Mono 2=Sterio
-    uint32_t SamplesPerSec = 16000; // Sampling Frequency in Hz
-    uint32_t bytesPerSec = 16000 * 2; // bytes per second
-    uint16_t blockAlign = 2; // 2=16-bit mono, 4=16-bit stereo
-    uint16_t bitsPerSample = 16; // Number of bits per sample
+    uint8_t fmt_id[4] = { 'f', 'm', 't', ' ' }; // FMT header
+    uint32_t subchunk1_size = 16; // Size of the fmt chunk
+    uint16_t audio_format = 1; // Audio format 1=PCM
+    uint16_t channels = 1; // Number of channels 1=Mono 2=Sterio
+    uint32_t samples_per_sec = 16000; // Sampling Frequency in Hz
+    uint32_t bytes_per_sec = 16000 * 2; // bytes per second
+    uint16_t block_align = 2; // 2=16-bit mono, 4=16-bit stereo
+    uint16_t bits_per_sample = 16; // Number of bits per sample
     /* "data" sub-chunk */
-    uint8_t Subchunk2ID[4] = { 'd', 'a', 't', 'a' }; // "data"  string
-    uint32_t Subchunk2Size; // Sampled data length
+    uint8_t subchunk2_id[4] = { 'd', 'a', 't', 'a' }; // "data"  string
+    uint32_t subchunk2_size; // Sampled data length
 };
 
 FFmpegAudioFileCache::~FFmpegAudioFileCache()
@@ -225,13 +223,13 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     Decode_FFmpeg(&open_audio);
 
     WavHeader wav;
-    wav.ChunkSize = open_audio.data_size - 8;
-    wav.Subchunk2Size = open_audio.data_size - 44;
-    wav.NumOfChan = open_audio.codec_ctx->channels;
-    wav.bitsPerSample = av_get_bits_per_sample(open_audio.codec_ctx->codec_id);
-    wav.SamplesPerSec = open_audio.codec_ctx->sample_rate;
-    wav.bytesPerSec = open_audio.codec_ctx->sample_rate * open_audio.codec_ctx->channels * (wav.bitsPerSample / 8);
-    wav.blockAlign = open_audio.codec_ctx->channels * (wav.bitsPerSample / 8);
+    wav.chunk_size = open_audio.data_size - 8;
+    wav.subchunk2_size = open_audio.data_size - 44;
+    wav.channels = open_audio.codec_ctx->channels;
+    wav.bits_per_sample = av_get_bits_per_sample(open_audio.codec_ctx->codec_id);
+    wav.samples_per_sec = open_audio.codec_ctx->sample_rate;
+    wav.bytes_per_sec = open_audio.codec_ctx->sample_rate * open_audio.codec_ctx->channels * (wav.bits_per_sample / 8);
+    wav.block_align = open_audio.codec_ctx->channels * (wav.bits_per_sample / 8);
     memcpy(open_audio.wave_data, &wav, sizeof(WavHeader));
 
     Close_FFmpeg_Contexts(&open_audio);

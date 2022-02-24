@@ -56,8 +56,25 @@ TEST(filesystem, win32bigfile)
 
 class FileSystemTest : public ::testing::TestWithParam<LocalFileSystem *>
 {
+public:
     void SetUp() override { m_filesystem = GetParam(); }
     void TearDown() override {}
+
+    struct PrintToStringParamName
+    {
+        template<class ParamType> std::string operator()(const testing::TestParamInfo<ParamType> &info) const
+        {
+            auto filesystem = static_cast<LocalFileSystem *>(info.param);
+
+            if (dynamic_cast<Win32LocalFileSystem *>(filesystem) != nullptr) {
+                return "Win32LocalFileSystem";
+            }
+            if (dynamic_cast<Thyme::StdLocalFileSystem *>(filesystem) != nullptr) {
+                return "StdLocalFileSystem";
+            }
+            return "Unknown";
+        }
+    };
 
 protected:
     LocalFileSystem *m_filesystem;
@@ -82,7 +99,14 @@ TEST_P(FileSystemTest, file_info)
     EXPECT_EQ(file_info.file_size_low, 84);
 }
 
-LocalFileSystem* filesystem_list[] = {
+TEST_P(FileSystemTest, list_dir)
+{
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
+    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH), "", "*.big", files, false);
+    EXPECT_EQ(files.size(), 1);
+}
+
+LocalFileSystem *filesystem_list[] = {
     new Win32LocalFileSystem,
 #ifdef BUILD_WITH_STDFS
     new Thyme::StdLocalFileSystem,
@@ -90,4 +114,5 @@ LocalFileSystem* filesystem_list[] = {
 };
 
 // TODO: enable pretty printing
-INSTANTIATE_TEST_CASE_P(filesystem, FileSystemTest, ::testing::ValuesIn(filesystem_list));
+INSTANTIATE_TEST_CASE_P(
+    filesystem, FileSystemTest, testing::ValuesIn(filesystem_list), FileSystemTest::PrintToStringParamName());

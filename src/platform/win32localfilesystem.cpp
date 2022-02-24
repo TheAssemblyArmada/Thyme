@@ -77,6 +77,32 @@ bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
     return access(filename, 0) == 0;
 }
 
+#ifndef PLATFORM_WINDOWS
+void Posix_List_Dir(const char *name, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
+{
+    struct dirent *entry = nullptr;
+    DIR *dp = nullptr;
+
+    dp = opendir(name);
+    if (dp != nullptr) {
+        while ((entry = readdir(dp)) != nullptr) {
+            char path[1024];
+            if (search_subdirs && entry->d_type == DT_DIR) {
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                    continue;
+                snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
+                Posix_List_Dir(path, filelist, search_subdirs);
+            } else if (entry->d_type == DT_REG) {
+                snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
+                filelist.insert(path);
+            }
+        }
+    }
+
+    closedir(dp);
+}
+#endif
+
 void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,
@@ -85,9 +111,9 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 {
     Utf8String search_path = dirpath;
     search_path += subdir;
-    search_path += filter;
 
 #ifdef PLATFORM_WINDOWS
+    search_path += filter;
     WIN32_FIND_DATAW data;
     HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path()), &data);
 
@@ -141,7 +167,30 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
         }
     }
 #else
-    // TODO Some combo of dirent and fnmatch to get same functionality for posix?
+    struct dirent *entry = nullptr;
+    DIR *dp = nullptr;
+
+    dp = opendir(search_path);
+    if (dp != nullptr) {
+        while ((entry = readdir(dp)) != nullptr) {
+            if (search_subdirs && entry->d_type == DT_DIR) {
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                    continue;
+
+                Utf8String subdir = search_path;
+                subdir += '/';
+                Get_File_List_From_Dir(subdir, entry->d_name, filter, filelist, search_subdirs);
+            } else if (entry->d_type == DT_REG) {
+                // TODO: apply filter:
+                Utf8String filepath = search_path;
+                filepath += '/';
+                filepath += entry->d_name;
+                filelist.insert(filepath);
+            }
+        }
+    }
+
+    closedir(dp);
 #endif
 }
 

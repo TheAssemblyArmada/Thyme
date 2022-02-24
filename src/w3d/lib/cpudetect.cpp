@@ -267,14 +267,14 @@ void Get_OS_Info(OSInfoStruct &os_info,
             break;
 
         default:
-            memset(&os_info, 0, sizeof(os_info));
+            os_info = OSInfoStruct {};
             os_info.Code = "UNKNOWN";
             os_info.SubCode = "UNKNOWN";
             os_info.VersionString = "UNKNOWN";
             break;
     }
 #else
-    memset(&os_info, 0, sizeof(os_info));
+    os_info = OSInfoStruct {};
     os_info.Code = "UNKNOWN";
     os_info.SubCode = "UNKNOWN";
     os_info.VersionString = "UNKNOWN";

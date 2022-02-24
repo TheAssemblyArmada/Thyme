@@ -103,6 +103,7 @@ private:
     void Adjust_Playing_Volume(PlayingAudio *audio);
     bool Start_Next_Loop(PlayingAudio *audio);
     void Play_Audio_Event(AudioEventRTS *event);
+    void Pause_Audio_Event(uintptr_t handle);
     void Stop_Audio_Event(uintptr_t handle);
     void Process_Request(AudioRequest *request);
     void Stop_All_Speech();

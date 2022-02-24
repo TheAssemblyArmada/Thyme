@@ -172,7 +172,7 @@ void ALAudioManager::Kill_Event_Immediately(uintptr_t event)
 {
     // Iterate the various lists until a matching handle is found.
     for (auto it = m_audioRequestList.begin(); it != m_audioRequestList.end(); ++it) {
-        if (*it != nullptr && (*it)->Request_Type() == REQUEST_MUSIC_ADD && (*it)->Event_Handle() == event) {
+        if (*it != nullptr && (*it)->Request_Type() == AR_PLAY && (*it)->Event_Handle() == event) {
             (*it)->Delete_Instance();
             m_audioRequestList.erase(it);
 
@@ -405,7 +405,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
 
         if (playing->openal.audio_event->Get_Next_Play_Portion() != 3) {
             switch (playing->openal.playing_type) {
-                case MILESTYPE_SAMPLE:
+                case PAT_2DSAMPLE:
                     Close_File(playing->openal.file_handle);
                     playing->openal.file_handle = Play_Sample(playing->openal.audio_event, playing->openal.source);
 
@@ -413,7 +413,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
                         return;
                     }
                     break;
-                case MILESTYPE_3DSAMPLE:
+                case PAT_3DSAMPLE:
                     Close_File(playing->openal.file_handle);
                     playing->openal.file_handle = Play_Sample3D(playing->openal.audio_event, playing->openal.source);
 
@@ -426,7 +426,7 @@ void ALAudioManager::Notify_Of_Audio_Completion(uintptr_t handle, unsigned unk2)
             }
         }
 
-        if (playing->openal.playing_type != MILESTYPE_STREAM
+        if (playing->openal.playing_type != PAT_STREAM
             || playing->openal.audio_event->Get_Event_Info()->Get_Event_Type() != EVENT_MUSIC) {
             playing->openal.stopped = 1;
         } else {
@@ -748,7 +748,7 @@ void *ALAudioManager::Get_Bink_Handle()
         pap->openal.stopped = false;
         pap->openal.audio_event = new AudioEventRTS("BinkHandle");
         Get_Info_For_Audio_Event(pap->openal.audio_event);
-        pap->openal.playing_type = MILESTYPE_SAMPLE;
+        pap->openal.playing_type = PAT_2DSAMPLE;
 
         if (pap->openal.source == 0) {
             Release_Playing_Audio(pap);
@@ -916,7 +916,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
             pa->openal.audio_event = event;
             pa->openal.source = source_handle;
-            pa->openal.playing_type = MILESTYPE_STREAM;
+            pa->openal.playing_type = PAT_STREAM;
             break;
         }
         case EVENT_SOUND:
@@ -942,7 +942,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
                 pa->openal.audio_event = event;
                 pa->openal.source = source_handle;
-                pa->openal.playing_type = MILESTYPE_3DSAMPLE;
+                pa->openal.playing_type = PAT_3DSAMPLE;
                 pa->openal.file_handle = nullptr;
                 m_positionalAudioList.push_back(pa);
 
@@ -979,7 +979,7 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
 
                 pa->openal.audio_event = event;
                 pa->openal.source = source_handle;
-                pa->openal.playing_type = MILESTYPE_SAMPLE;
+                pa->openal.playing_type = PAT_2DSAMPLE;
                 pa->openal.file_handle = nullptr;
                 m_globalAudioList.push_back(pa);
 
@@ -1003,6 +1003,14 @@ void ALAudioManager::Play_Audio_Event(AudioEventRTS *event)
     if (pa != nullptr) {
         Release_Playing_Audio(pa);
     }
+}
+
+/**
+ * Pauses an audio event from a handle.
+ */
+void ALAudioManager::Pause_Audio_Event(uintptr_t handle)
+{
+    // Unimplemented
 }
 
 /**
@@ -1055,10 +1063,13 @@ void ALAudioManager::Stop_Audio_Event(uintptr_t handle)
 void ALAudioManager::Process_Request(AudioRequest *request)
 {
     switch (request->m_requestType) {
-        case REQUEST_MUSIC_ADD:
+        case AR_PLAY:
             Play_Audio_Event(request->m_event.object);
             break;
-        case REQUEST_REMOVE:
+        case AR_PAUSE:
+            Pause_Audio_Event(request->m_event.handle);
+            break;
+        case AR_STOP:
             Stop_Audio_Event(request->m_event.handle);
             break;
         default:
@@ -1163,7 +1174,7 @@ void ALAudioManager::Set_Device_Listener_Position()
 PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned type)
 {
     switch (type) {
-        case MILESTYPE_SAMPLE:
+        case PAT_2DSAMPLE:
             for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -1171,7 +1182,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             }
 
             break;
-        case MILESTYPE_3DSAMPLE:
+        case PAT_3DSAMPLE:
             for (auto it = m_positionalAudioList.begin(); it != m_positionalAudioList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -1179,7 +1190,7 @@ PlayingAudio *ALAudioManager::Find_Playing_Audio_From(uintptr_t handle, unsigned
             }
 
             break;
-        case MILESTYPE_STREAM:
+        case PAT_STREAM:
             for (auto it = m_streamList.begin(); it != m_streamList.end(); ++it) {
                 if (*it != nullptr && (*it)->openal.source == (int)handle) {
                     return *it;
@@ -1384,7 +1395,7 @@ bool ALAudioManager::Start_Next_Loop(PlayingAudio *audio)
     }
 
     // TODO:
-    // if (audio->openal.playing_type == MILESTYPE_3DSAMPLE) {
+    // if (audio->openal.playing_type == PAT_3DSAMPLE) {
     //     audio->openal.file_handle = Play_Sample3D(audio->openal.audio_event, audio->openal.sample_3d);
     // } else {
     //     audio->openal.file_handle = Play_Sample(audio->openal.audio_event, audio->openal.sample);
@@ -1417,7 +1428,7 @@ void ALAudioManager::Init_Playing_Audio(PlayingAudio *audio)
 {
     if (audio != nullptr) {
         audio->openal.source = 0;
-        audio->openal.playing_type = MILESTYPE_NONE;
+        audio->openal.playing_type = PAT_NONE;
         audio->openal.audio_event = nullptr;
         audio->openal.disable_loops = false;
         audio->openal.release_event = true;

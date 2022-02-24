@@ -25,6 +25,8 @@ extern "C" {
 #include <captainslog.h>
 #include <list>
 
+namespace Thyme
+{
 struct WavHeader
 {
     uint8_t riff_id[4] = { 'R', 'I', 'F', 'F' };
@@ -124,13 +126,14 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
         result = avcodec_send_packet(file->codec_ctx, &packet);
         if (result < 0) {
             captainslog_error("Failed to send audio packet to decoder.");
-            break;
+            return false;
         }
         result = avcodec_receive_frame(file->codec_ctx, &frame);
         av_packet_unref(&packet);
         // Check if this was a real error or we just need more data
         if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
             captainslog_error("Failed to receive audio frame from decoder.");
+            return false;
         } else if (result >= 0) {
             int frame_data_size = av_samples_get_buffer_size(
                 NULL, file->codec_ctx->channels, frame.nb_samples, file->codec_ctx->sample_fmt, 1);
@@ -139,6 +142,8 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             file->data_size += frame_data_size;
         }
     }
+
+    return true;
 }
 
 /**
@@ -220,7 +225,11 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         return nullptr;
     }
 
-    Decode_FFmpeg(&open_audio);
+    if (!Decode_FFmpeg(&open_audio)) {
+        captainslog_warn("Failed to decode audio file '%s', could not cache.", filename.Str());
+        Close_FFmpeg_Contexts(&open_audio);
+        return nullptr;
+    }
 
     WavHeader wav;
     wav.chunk_size = open_audio.data_size - 8;
@@ -352,3 +361,4 @@ void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *file)
         file->audio_event_info = nullptr;
     }
 }
+} // namespace Thyme

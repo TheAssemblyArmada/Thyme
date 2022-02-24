@@ -32,6 +32,8 @@ struct AVFormatContext;
 struct AVIOContext;
 struct AVCodecContext;
 
+namespace Thyme
+{
 struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
@@ -76,3 +78,4 @@ private:
     unsigned m_maxSize;
     SimpleMutexClass m_mutex;
 };
+} // namespace Thyme

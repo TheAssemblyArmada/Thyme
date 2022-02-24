@@ -175,7 +175,7 @@ private:
     std::list<PlayingAudio *> m_fadingList;
     std::list<PlayingAudio *> m_stoppedList;
 #ifdef BUILD_WITH_FFMPEG
-    FFmpegAudioFileCache *m_audioFileCache;
+    Thyme::FFmpegAudioFileCache *m_audioFileCache;
 #else
     MilesAudioFileCache *m_audioFileCache;
 #endif

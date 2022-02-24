@@ -35,7 +35,7 @@ MilesAudioManager::MilesAudioManager() :
     m_miles3DPositionObject(0),
     m_milesDelayFilter(0),
 #ifdef BUILD_WITH_FFMPEG
-    m_audioFileCache(new FFmpegAudioFileCache),
+    m_audioFileCache(new Thyme::FFmpegAudioFileCache),
 #else
     m_audioFileCache(new MilesAudioFileCache),
 #endif

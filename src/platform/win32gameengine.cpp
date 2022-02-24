@@ -182,7 +182,7 @@ ParticleSystemManager *Win32GameEngine::Create_Particle_System_Manager()
 AudioManager *Win32GameEngine::Create_Audio_Manager()
 {
 #ifdef BUILD_WITH_ALSOFT
-    return new ALAudioManager;
+    return new Thyme::ALAudioManager;
 #elif defined BUILD_WITH_MILES
     return new MilesAudioManager;
 #else

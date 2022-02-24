@@ -22,6 +22,8 @@
 
 using GameMath::Fast_To_Int_Truncate;
 
+namespace Thyme
+{
 ALAudioManager::ALAudioManager() : m_binkPlayingAudio(nullptr), m_2dSampleCount(0), m_3dSampleCount(0), m_streamCount(0) {}
 
 ALAudioManager::~ALAudioManager()
@@ -1435,3 +1437,4 @@ void ALAudioManager::Init_Playing_Audio(PlayingAudio *audio)
         audio->openal.time_fading = 0;
     }
 }
+} // namespace Thyme

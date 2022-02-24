@@ -27,6 +27,8 @@
 
 struct PlayingAudio;
 
+namespace Thyme
+{
 class ALAudioManager final : public AudioManager
 {
     enum
@@ -136,3 +138,4 @@ private:
     ALCdevice *m_alcDevice = nullptr;
     ALCcontext *m_alcContext = nullptr;
 };
+} // namespace Thyme

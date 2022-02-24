@@ -59,4 +59,4 @@ jobs:
       - name: Test Thyme
         run: |
           cd build
-          ctest .
+          ctest . --output-on-failure

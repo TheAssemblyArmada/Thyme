@@ -32,10 +32,10 @@ const FieldParse DrawGroupInfo::s_parseTable[] = {
     {"FontIsBold", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_fontIsBold)},
     {"DropShadowOffsetX", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetX)},
     {"DropShadowOffsetY", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetY)},
-    {"DrawPositionXPixel", &Parse_Int, (const void *)0, 0},
-    {"DrawPositionXPercent", &Parse_Percent_To_Real, (const void *)0, 0},
-    {"DrawPositionYPixel", &Parse_Int, (const void *)1, 0},
-    {"DrawPositionYPercent", &Parse_Percent_To_Real, (const void *)1, 0},
+    {"DrawPositionXPixel", &Parse_Int, reinterpret_cast<const void *>(0), 0},
+    {"DrawPositionXPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(0), 0},
+    {"DrawPositionYPixel", &Parse_Int, reinterpret_cast<const void *>(1), 0},
+    {"DrawPositionYPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(1), 0},
     {nullptr, nullptr, nullptr, 0}
 };
 // clang-format on

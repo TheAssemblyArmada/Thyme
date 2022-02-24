@@ -93,7 +93,7 @@ VertexBufferClass::WriteLockClass::WriteLockClass(VertexBufferClass *vertex_buff
 #ifdef BUILD_WITH_D3D8
             static_cast<DX8VertexBufferClass *>(vertex_buffer)
                 ->Get_DX8_Vertex_Buffer()
-                ->Lock(0, 0, (BYTE **)&m_vertices, flags);
+                ->Lock(0, 0, reinterpret_cast<BYTE **>(&m_vertices), flags);
 #endif
             break;
         }
@@ -142,7 +142,7 @@ VertexBufferClass::AppendLockClass::AppendLockClass(
                 ->Get_DX8_Vertex_Buffer()
                 ->Lock(vertex_buffer->FVF_Info().Get_FVF_Size() * start_index,
                     vertex_buffer->FVF_Info().Get_FVF_Size() * index_range,
-                    (BYTE **)&m_vertices,
+                    reinterpret_cast<BYTE **>(&m_vertices),
                     0);
 #endif
             break;
@@ -356,7 +356,7 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
         buffer->Get_DX8_Vertex_Buffer()->Lock(
             g_dynamicDX8VertexBuffer->FVF_Info().Get_FVF_Size() * m_dynamicVBAccess->m_vertexBufferOffset,
             buffer->FVF_Info().Get_FVF_Size() * m_dynamicVBAccess->m_vertexCount,
-            (BYTE **)&m_vertices,
+            reinterpret_cast<BYTE **>(&m_vertices),
             (m_dynamicVBAccess->m_vertexBufferOffset != 0 ? D3DLOCK_NOOVERWRITE : D3DLOCK_DISCARD) | D3DLOCK_NOSYSLOCK);
 #endif
     } else if (m_dynamicVBAccess->m_type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_SORTING) {

@@ -882,7 +882,7 @@ BumpEnvTextureMapperClass::BumpEnvTextureMapperClass(const BumpEnvTextureMapperC
 
 inline unsigned long F2DW(float f)
 {
-    return *((unsigned *)&f);
+    return *reinterpret_cast<unsigned long *>(&f);
 }
 
 void BumpEnvTextureMapperClass::Apply(int uv_array_index)

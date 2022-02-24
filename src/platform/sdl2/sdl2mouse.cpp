@@ -19,6 +19,8 @@
 #include "globaldata.h"
 #include <cstdio>
 
+namespace Thyme
+{
 SDL_Cursor *SDL2Mouse::s_loadedCursors[CURSOR_COUNT][8];
 
 SDL2Mouse::SDL2Mouse() : m_nextFreeIndex(0), m_nextGetIndex(0)
@@ -109,14 +111,14 @@ void SDL2Mouse::Add_SDL2_Event(SDL_Event *ev)
 
 uint8_t SDL2Mouse::Get_Mouse_Event(MouseIO *io, int8_t unk)
 {
-    if (m_eventBuffer[m_nextGetIndex].type == 0) {
+    if (m_eventBuffer[m_nextGetIndex].type == SDL_NOEVENT) {
         return false;
     }
 
     Translate_Event(m_nextGetIndex, io);
 
     // Clear the current event - can be overwritten
-    m_eventBuffer[m_nextGetIndex].type = 0;
+    m_eventBuffer[m_nextGetIndex].type = SDL_NOEVENT;
     m_nextGetIndex++;
     if (m_nextGetIndex >= MAX_EVENTS) {
         m_nextGetIndex = 0;
@@ -158,12 +160,13 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             io->pos.y = event.motion.y;
             break;
         case SDL_MOUSEBUTTONDOWN:
-        case SDL_MOUSEBUTTONUP:
-            state = event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
-                                                        MouseIO::MouseState::MOUSE_STATE_UP;
             // Check if this is a double click
             doubleClick = event.button.button == m_lastClick.button.button
                 && (event.button.timestamp - m_lastClick.button.timestamp) < Get_Double_Click_Time();
+            m_lastClick = event;
+        case SDL_MOUSEBUTTONUP:
+            state = event.type == SDL_MOUSEBUTTONDOWN ? MouseIO::MouseState::MOUSE_STATE_DOWN :
+                                                        MouseIO::MouseState::MOUSE_STATE_UP;
             if (doubleClick) {
                 // It would be useful if we could just OR this flag
                 state = MouseIO::MouseState::MOUSE_STATE_DBLCLICK;
@@ -189,7 +192,6 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
                         "Translate_Event: Unknown SDL mouse button event [%d,%d]", event.type, event.button.button);
                     break;
             }
-            m_lastClick = event;
             break;
         // TODO: mousewheel handling is a bit difficult - how to calculate a delta similar to win32mouse?
         case SDL_MOUSEWHEEL:
@@ -201,3 +203,4 @@ void SDL2Mouse::Translate_Event(uint32_t message_num, MouseIO *io)
             break;
     }
 }
+} // namespace Thyme

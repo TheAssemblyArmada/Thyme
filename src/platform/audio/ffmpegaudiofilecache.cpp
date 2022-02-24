@@ -97,6 +97,27 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
     return true;
 }
 
+struct WavHeader
+{
+    /* RIFF Chunk Descriptor */
+    uint8_t RIFF[4] = { 'R', 'I', 'F', 'F' }; // RIFF Header Magic header
+    uint32_t ChunkSize; // RIFF Chunk Size
+    uint8_t WAVE[4] = { 'W', 'A', 'V', 'E' }; // WAVE Header
+    /* "fmt" sub-chunk */
+    uint8_t fmt[4] = { 'f', 'm', 't', ' ' }; // FMT header
+    uint32_t Subchunk1Size = 16; // Size of the fmt chunk
+    uint16_t AudioFormat = 1; // Audio format 1=PCM,6=mulaw,7=alaw,     257=IBM
+                              // Mu-Law, 258=IBM A-Law, 259=ADPCM
+    uint16_t NumOfChan = 1; // Number of channels 1=Mono 2=Sterio
+    uint32_t SamplesPerSec = 16000; // Sampling Frequency in Hz
+    uint32_t bytesPerSec = 16000 * 2; // bytes per second
+    uint16_t blockAlign = 2; // 2=16-bit mono, 4=16-bit stereo
+    uint16_t bitsPerSample = 16; // Number of bits per sample
+    /* "data" sub-chunk */
+    uint8_t Subchunk2ID[4] = { 'd', 'a', 't', 'a' }; // "data"  string
+    uint32_t Subchunk2Size; // Sampled data length
+};
+
 /**
  * Opens an audio file for an event. Reads from the cache if available or loads from file if not.
  */
@@ -146,7 +167,8 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     uint8_t *file_data = static_cast<uint8_t *>(file->Read_All_And_Close());
 
     FFmpegOpenAudioFile open_audio;
-    open_audio.data_size = 0;
+    open_audio.wave_data = (uint8_t *)av_malloc(sizeof(WavHeader));
+    open_audio.data_size = sizeof(WavHeader);
     open_audio.audio_event_info = audio_event->Get_Event_Info();
 
     if (!Open_FFmpeg_Contexts(&open_audio, (unsigned char *)file_data, file_size)) {
@@ -179,7 +201,11 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     av_free_packet(&packet);
 
-    open_audio.data_size = file_size;
+    WavHeader wav;
+    wav.ChunkSize = open_audio.data_size - 8;
+    wav.Subchunk2Size = open_audio.data_size - 44;
+    memcpy(open_audio.wave_data, &wav, sizeof(WavHeader));
+
     open_audio.ref_count = 1;
     m_currentSize += open_audio.data_size;
 

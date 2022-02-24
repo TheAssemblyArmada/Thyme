@@ -29,7 +29,7 @@ class StandardFile : public LocalFile
     IMPLEMENT_POOL(StandardFile);
 
     friend class ::Win32LocalFileSystem;
-    friend class ::StdLocalFileSystem;
+    friend class StdLocalFileSystem;
 
 protected:
     virtual ~StandardFile() override;

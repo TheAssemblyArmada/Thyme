@@ -18,6 +18,8 @@
 #include "win32localfile.h"
 #include <captainslog.h>
 
+namespace Thyme
+{
 class StdLocalFileSystem : public LocalFileSystem
 {
 public:
@@ -40,3 +42,4 @@ public:
     virtual bool Get_File_Info(Utf8String const &filename, FileInfo *info) override;
     virtual bool Create_Directory(Utf8String dir_path) override;
 };
+} // namespace Thyme

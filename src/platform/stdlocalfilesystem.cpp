@@ -19,6 +19,9 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+namespace Thyme
+{
+
 File *StdLocalFileSystem::Open_File(const char *filename, int mode)
 {
     if (filename == nullptr || *filename == '\0') {
@@ -129,3 +132,4 @@ bool StdLocalFileSystem::Create_Directory(Utf8String dir_path)
     bool result = fs::create_directory(dir_path.Str(), ec);
     return result && !ec;
 }
+} // namespace Thyme

@@ -122,7 +122,6 @@ TEST_P(FileSystemTest, list_dir_unfiltered)
     EXPECT_EQ(files.size(), 2);
 }
 
-
 LocalFileSystem *filesystem_list[] = {
     new Win32LocalFileSystem,
 #ifdef BUILD_WITH_STDFS
@@ -130,6 +129,5 @@ LocalFileSystem *filesystem_list[] = {
 #endif
 };
 
-// TODO: enable pretty printing
 INSTANTIATE_TEST_CASE_P(
     filesystem, FileSystemTest, testing::ValuesIn(filesystem_list), FileSystemTest::PrintToStringParamName());

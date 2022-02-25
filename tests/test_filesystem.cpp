@@ -108,12 +108,20 @@ TEST_P(FileSystemTest, list_dir_filtered)
     EXPECT_EQ(files.size(), 1);
 }
 
-TEST_P(FileSystemTest, list_dir_unfiltered)
+TEST_P(FileSystemTest, list_dir_empty_filter)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
     m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/", "", "", files, true);
+    EXPECT_EQ(files.size(), 0);
+}
+
+TEST_P(FileSystemTest, list_dir_unfiltered)
+{
+    std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
+    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/", "", "*", files, true);
     EXPECT_EQ(files.size(), 2);
 }
+
 
 LocalFileSystem *filesystem_list[] = {
     new Win32LocalFileSystem,

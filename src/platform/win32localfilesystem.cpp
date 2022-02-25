@@ -144,6 +144,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     struct dirent *entry = nullptr;
     DIR *dp = nullptr;
 
+    // TODO: Should match files without an extension
+    if (filter.Is_Empty())
+        return;
+
     dp = opendir(search_path);
     if (dp != nullptr) {
         while ((entry = readdir(dp)) != nullptr) {

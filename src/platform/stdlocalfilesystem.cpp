@@ -88,13 +88,13 @@ void StdLocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 
     if (search_subdirs) {
         for (auto iter : fs::recursive_directory_iterator(search_path.Str())) {
-            if (!ext.empty() && iter.path().extension() != ext)
+            if (filter != "*" && iter.path().extension() != ext)
                 continue;
             filelist.insert(iter.path().c_str());
         }
     } else {
         for (auto iter : fs::directory_iterator(search_path.Str())) {
-            if (!ext.empty() && iter.path().extension() != ext)
+            if (filter != "*" && iter.path().extension() != ext)
                 continue;
             filelist.insert(iter.path().c_str());
         }

@@ -46,61 +46,6 @@ void Player::Xfer_Snapshot(Xfer *xfer)
 #endif
 }
 
-// zh: 0x00452E40, wb: 0x0085C643
-void Player::Compute_Superweapon_Target(const SpecialPowerTemplate *sp_template, Coord3D *loc, int32_t unk1, float unk2)
-{
-#ifdef GAME_DLL
-    Call_Method<void, Player, const SpecialPowerTemplate *, Coord3D *, int32_t, float>(
-        PICK_ADDRESS(0x00452E40, 0x0085C643), this, sp_template, loc, unk1, unk2);
-#endif
-}
-
-// zh: 0x004532F0, wb: 0x0085CE36
-bool Player::Check_Bridges(Object *obj, Waypoint *waypoint)
-{
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, Object *, Waypoint *>(PICK_ADDRESS(0x004532F0, 0x0085CE36), this, obj, waypoint);
-#else
-    return false;
-#endif
-}
-
-// zh: 0x00453320, wb: 0x0085CE7C
-bool Player::Get_Ai_Base_Center(Coord3D *center)
-{
-#ifdef GAME_DLL
-    return Call_Method<bool, Player, Coord3D *>(PICK_ADDRESS(0x00453320, 0x0085CE7C), this, center);
-#else
-    return false;
-#endif
-}
-
-// zh: 0x00453350, wb: 0x0085CEB5
-void Player::Repair_Structure(ObjectID obj_id)
-{
-#ifdef GAME_DLL
-    Call_Method<void, Player, ObjectID>(PICK_ADDRESS(0x00453350, 0x0085CEB5), this, obj_id);
-#endif
-}
-
-// zh: 0x00450870, wb: 0x0085A4AA
-Relationship Player::Get_Relationship(Team *team)
-{
-#ifdef GAME_DLL
-    return Call_Method<Relationship, Player, Team *>(PICK_ADDRESS(0x00450870, 0x0085A4AA), this, team);
-#else
-    return Relationship();
-#endif
-}
-
-// zh: 0x00456820, wb: 0x0086048D
-void Player::On_Power_Brown_Out_Change(bool b)
-{
-#ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, b);
-#endif
-}
-
 // zh: 0x0044FDD0, wb: 0x00859AC9
 void Player::Init(const PlayerTemplate *player_template)
 {
@@ -125,13 +70,97 @@ void Player::New_Map()
 #endif
 }
 
-// zh: 0x00450AA0, wb: 0x0085A70A
-bool Player::Remove_Team_Relationship(Team *team)
+// zh: 0x00452E40, wb: 0x0085C643
+bool Player::Compute_Superweapon_Target(const SpecialPowerTemplate *sp_template, Coord3D *loc, int32_t unk1, float unk2)
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, Player, Team *>(PICK_ADDRESS(0x00450AA0, 0x0085A70A), this, team);
+    return Call_Method<bool, Player, const SpecialPowerTemplate *, Coord3D *, int32_t, float>(
+        PICK_ADDRESS(0x00452E40, 0x0085C643), this, sp_template, loc, unk1, unk2);
 #else
     return false;
+#endif
+}
+
+// zh: 0x004532F0, wb: 0x0085CE36
+bool Player::Check_Bridges(Object *obj, Waypoint *waypoint)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Player, Object *, Waypoint *>(PICK_ADDRESS(0x004532F0, 0x0085CE36), this, obj, waypoint);
+#else
+    return false;
+#endif
+}
+
+// zh: 0x00453320, wb: 0x0085CE7C
+bool Player::Get_AI_Base_Center(Coord3D *center)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Player, Coord3D *>(PICK_ADDRESS(0x00453320, 0x0085CE7C), this, center);
+#else
+    return false;
+#endif
+}
+
+// zh: 0x00453350, wb: 0x0085CEB5
+void Player::Repair_Structure(ObjectID obj_id)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, ObjectID>(PICK_ADDRESS(0x00453350, 0x0085CEB5), this, obj_id);
+#endif
+}
+
+NameKeyType Player::Get_Player_NameKey() const
+{
+    return m_playerNameKey;
+}
+
+int Player::Get_Player_Index() const
+{
+    return m_playerIndex;
+}
+
+uint16_t Player::Get_Player_Mask() const
+{
+    return 1ULL << m_playerIndex;
+}
+
+int Player::Get_Color() const
+{
+    return m_playerColor;
+}
+
+// wb: 0x006DA8F0
+Team *Player::Get_Default_Team() const
+{
+    captainslog_dbgassert(m_defaultTeam != nullptr, "Default team is null.");
+    return m_defaultTeam;
+}
+
+// zh: 0x00456820, wb: 0x0086048D
+void Player::On_Power_Brown_Out_Change(bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00456820, 0x0086048D), this, b);
+#endif
+}
+
+// zh: 0x00450AA0, wb: 0x0085A70A
+bool Player::Remove_Team_Relationship(const Team *team)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Player, const Team *>(PICK_ADDRESS(0x00450AA0, 0x0085A70A), this, team);
+#else
+    return false;
+#endif
+}
+
+// zh: 0x00450870, wb: 0x0085A4AA
+Relationship Player::Get_Relationship(const Team *team) const
+{
+#ifdef GAME_DLL
+    return Call_Method<Relationship, const Player, const Team *>(PICK_ADDRESS(0x00450870, 0x0085A4AA), this, team);
+#else
+    return Relationship();
 #endif
 }
 
@@ -143,19 +172,19 @@ void Player::Update_Team_States()
 #endif
 }
 
-// zh: 0x00452BA0, wb: 0x0085C3AA
-void Player::Becoming_Local_Player(bool b)
-{
-#ifdef GAME_DLL
-    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, b);
-#endif
-}
-
 int Player::Get_Squad_Number_For_Object(const Object *obj) const
 {
 #ifdef GAME_DLL
     return Call_Method<int, const Player, const Object *>(PICK_ADDRESS(0x00457650, 0x008616BA), this, obj);
 #else
-    return false;
+    return 0;
+#endif
+}
+
+// zh: 0x00452BA0, wb: 0x0085C3AA
+void Player::Becoming_Local_Player(bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, b);
 #endif
 }

@@ -116,9 +116,6 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(
         }
 
     } else {
-#ifdef GAME_DLL
-        static_assert(sizeof(AsciiStringData) == 4);
-#endif
         const int required_size = chars_needed + sizeof(AsciiStringData);
 
         captainslog_relassert(required_size <= MAX_LEN, CODE_02, "Size exceeds max len");

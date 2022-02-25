@@ -186,6 +186,18 @@
 #include <windows.h>
 #include <winsock2.h>
 
+static_assert(sizeof(AcademyStats) == 0xB4);
+static_assert(sizeof(Energy) == 0x14);
+static_assert(sizeof(Handicap) == 0x10);
+static_assert(sizeof(MissionStats) == 0x8C);
+static_assert(sizeof(Money) == 0xC);
+static_assert(sizeof(Object) == 0x27C);
+static_assert(sizeof(Player) == 0x44C);
+static_assert(sizeof(PolyNeighbor) == 0x16);
+static_assert(sizeof(ScoreKeeper) == 0x190);
+static_assert(sizeof(Utf8String::AsciiStringData) == 4);
+static_assert(sizeof(Utf16String::UnicodeStringData) == 4);
+
 struct hostent *__stdcall cnconline_hook(const char *name)
 {
     if (strcmp(name, "gamestats.gamespy.com") == 0) {
@@ -1422,8 +1434,6 @@ void Setup_Hooks()
     // w3dview.h
     Hook_Any(0x0076E2F0, W3DView::Set_Fade_Parameters);
     Hook_Any(0x0076E330, W3DView::Set_View_Filter_Pos);
-
-    static_assert(sizeof(Object) == 636, "Size of Object is wrong");
 
     // scene.h
     Hook_Any(0x00832550, SceneClass::Render);

@@ -18,6 +18,7 @@
 #include "handicap.h"
 #include "missionstats.h"
 #include "money.h"
+#include "scorekeeper.h"
 #include "snapshot.h"
 #include "unicodestring.h"
 #include <list>
@@ -28,6 +29,7 @@ class SpecialPowerTemplate;
 class UpgradeTemplate;
 class Object;
 class Waypoint;
+class AIPlayer;
 class AIGroup;
 class Squad;
 class Team;
@@ -38,22 +40,26 @@ class BattlePlanBonuses;
 class ResourceGatheringManager;
 class PlayerRelationMap;
 class TeamRelationMap;
+class TunnelTracker;
+class KindOfPercentProductionChange;
 
-class AcademyStats
+struct SpecialPowerReadyTimerType // #TODO Implement and move elsewhere
+{
+    int m_unk1; // possibly m_id
+    unsigned int m_unk2; // possibly m_frame
+};
+
+class AcademyStats // #TODO Implement and move elsewhere
 {
     int members[45];
 };
 
-class ScoreKeeper
-{
-    int members[100];
-};
-
 enum KindOfType : int32_t;
 enum NameKeyType : int32_t;
+enum ScienceType : int32_t;
 enum VeterancyLevel;
 enum Relationship;
-enum ScienceType;
+// enum GameDifficulty;
 // enum SpecialPowerType;
 // enum ScienceAvailabilityType;
 // enum BattlePlanStatus;
@@ -93,8 +99,8 @@ public:
     uint16_t Get_Player_Mask() const;
     int Get_Color() const;
     Team *Get_Default_Team() const;
-    // int Get_Current_Enemy() const;
-    // int Get_Player_Difficulty() const;
+    // Player *Get_Current_Enemy();
+    // GameDifficulty Get_Player_Difficulty() const;
 
     // bool Is_Player_Active() const;
     // bool Is_Skirmish_AI_Player() const;
@@ -104,7 +110,7 @@ public:
     // bool Is_Local_Player() const;
     // bool Has_Any_Shortcut_Special_Power() const;
     // bool Has_Any_Buildings() const;
-    // bool Has_Any_Buildings(BitFlags<116ul>) const;
+    // bool Has_Any_Buildings(BitFlags<KINDOF_COUNT>) const;
     // bool Has_Any_Units() const;
     // bool Has_Any_Objects() const;
     // bool Has_Any_Build_Facility() const;
@@ -112,14 +118,14 @@ public:
     // void On_Unit_Created(Object *, Object *);
     // void On_Structure_Created(Object *, Object *);
     // void On_Structure_Undone(Object *);
-    // void On_Structure_Construction_Complete(Object *, Object *, char);
+    // void On_Structure_Construction_Complete(Object *, Object *, bool);
     // void On_Upgrade_Completed(const UpgradeTemplate *);
     void On_Power_Brown_Out_Change(bool b);
 
     // bool Is_Supply_Source_Safe(int) const;
     // bool Is_Supply_Source_Attacked() const;
     // void Guard_Supply_Center(Team *, int);
-    // int Get_Supply_Box_Value() const;
+    // unsigned int Get_Supply_Box_Value() const;
 
     // void Set_Team_Delay_Seconds(int);
     // void Pre_Team_Destroy(const Team *);
@@ -127,9 +133,9 @@ public:
     // void Add_Team_To_List(TeamPrototype *);
     // void Remove_Team_From_List(TeamPrototype *);
     // void Set_Default_Team();
-    // void Becoming_Team_Member(Object *, char);
+    // void Becoming_Team_Member(Object *, bool);
     // void Set_Player_Relationship(const Player *, Relationship);
-    // void Remove_Player_Relationship(const Player *);
+    // bool Remove_Player_Relationship(const Player *);
     // void Set_Team_Relationship(const Team *, Relationship);
     bool Remove_Team_Relationship(const Team *team);
     Relationship Get_Relationship(const Team *team) const;
@@ -145,8 +151,8 @@ public:
     // bool Can_Build_More_Of_Type(const ThingTemplate *) const;
     // void Build_Specific_Team(TeamPrototype *);
     // void Recruit_Specific_Team(TeamPrototype *, float);
-    // void Build_Base_Defense(char);
-    // void Build_Base_Defense_Structure(const Utf8String &, char);
+    // void Build_Base_Defense(bool);
+    // void Build_Base_Defense_Structure(const Utf8String &, bool);
     // void Build_Specific_Building(const Utf8String &);
     // void Build_By_Supplies(const Utf8String &);
     // void Build_Specific_Building_Nearest_Team(const Utf8String &, const Team *);
@@ -155,29 +161,29 @@ public:
     // void Add_ToPriority_Build_List(Utf8String, Coord3D *, float);
     // void Add_To_Build_List(Object *);
 
-    // void Add_Upgrade(UpgradeTemplate const *, UpgradeStatusType);
+    // Upgrade *Add_Upgrade(UpgradeTemplate const *, UpgradeStatusType);
     // void Remove_Upgrade(UpgradeTemplate const *);
     // void Delete_Upgrade_List();
     // void Build_Upgrade(const Utf8String &);
-    // int Find_Upgrade(const UpgradeTemplate *) const;
+    // Upgrade *Find_Upgrade(const UpgradeTemplate *);
     // bool Has_Upgrade_In_Production(UpgradeTemplate const *) const;
-    // bool Has_Upgrade_Complete(BitFlags<128ul>) const;
+    // bool Has_Upgrade_Complete(BitFlags<128>) const;
     // bool Has_Upgrade_Complete(const UpgradeTemplate *) const;
 
-    // void Add_Kind_Of_Production_Cost_Change(BitFlags<116ul>, float);
-    // void Remove_Kind_Of_Production_Cost_Change(BitFlags<116ul>, float);
-    // int Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<116ul>) const;
-    // int Get_Production_Veterancy_Level(Utf8String) const;
-    // int Get_Production_Cost_Change_Percent(Utf8String) const;
-    // int Get_Production_Time_Change_Percent(Utf8String) const;
+    // void Add_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT>, float);
+    // void Remove_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT>, float);
+    // float Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT>) const;
+    // VeterancyLevel Get_Production_Veterancy_Level(Utf8String) const;
+    // float Get_Production_Cost_Change_Percent(Utf8String) const;
+    // float Get_Production_Time_Change_Percent(Utf8String) const;
 
     // bool Calc_Closest_Construction_Zone_Location(ThingTemplate const *, Coord3D *) const;
 
-    // void Set_List_In_Score_Screen(char);
-    // char Get_List_In_Score_Screen() const;
+    // void Set_List_In_Score_Screen(bool);
+    // bool Get_List_In_Score_Screen() const;
 
-    // void Add_Radar(char);
-    // void Remove_Radar(char);
+    // void Add_Radar(bool);
+    // void Remove_Radar(bool);
     // void Enable_Radar();
     // void Disable_Radar();
     // bool Has_Radar() const;
@@ -185,32 +191,32 @@ public:
 
     // void Add_AIGroup_To_Current_Selection(AIGroup *);
     // void Set_Currently_Selected_AIGroup(AIGroup *);
-    // int Get_Current_Selection_As_AI_Group(AIGroup *) const;
+    // void Get_Current_Selection_As_AI_Group(AIGroup *) const;
 
-    // int Get_Hotkey_Squad(int) const;
+    // Squad *Get_Hotkey_Squad(int);
     int Get_Squad_Number_For_Object(const Object *obj) const;
     // void Remove_Object_From_Hotkey_Squad(Object *);
 
     // int Count_Buildings() const;
-    // int Count_Objects(BitFlags<116ul>, BitFlags<116ul>) const;
+    // int Count_Objects(BitFlags<KINDOF_COUNT>, BitFlags<KINDOF_COUNT>) const;
     // int Count_Ready_Shortcut_SpecialPowers_Of_Type(SpecialPowerType) const;
-    // int Count_Objects_By_ThingTemplate(int, ThingTemplate const *const *, char, int *, char) const;
+    // void Count_Objects_By_ThingTemplate(int, ThingTemplate const *const *, bool, int *, bool) const;
     // void Iterate_Objects(void (*)(Object *, void *), void *) const;
 
-    // int Find_Any_Existing_Object_With_ThingTemplate(ThingTemplate const *) const;
-    // int Find_Most_Ready_Shortcut_SpecialPower_For_Thing(ThingTemplate const *, unsigned int &) const;
-    // int Find_Most_Ready_Shortcut_Weapon_For_Thing(ThingTemplate const *, unsigned int &) const;
-    // int Find_Most_Ready_Shortcut_SpecialPower_Of_Type(SpecialPowerType) const;
-    // int Find_Natural_CommandCenter() const;
-    // int Find_Closest_By_Kind_Of(Object *, BitFlags<116ul>, BitFlags<116ul>) const;
+    // Object *Find_Any_Existing_Object_With_ThingTemplate(ThingTemplate const *);
+    // Object *Find_Most_Ready_Shortcut_SpecialPower_For_Thing(ThingTemplate const *, unsigned int &);
+    // Object *Find_Most_Ready_Shortcut_Weapon_For_Thing(ThingTemplate const *, unsigned int &);
+    // Object *Find_Most_Ready_Shortcut_SpecialPower_Of_Type(SpecialPowerType);
+    // Object *Find_Natural_CommandCenter();
+    // Object *Find_Closest_By_Kind_Of(Object *, BitFlags<KINDOF_COUNT>, BitFlags<KINDOF_COUNT>);
 
-    // void Set_Player_Type(PlayerType, char);
+    // void Set_Player_Type(PlayerType, bool);
     // void Set_Attacked_By(int);
-    // int Get_Attacked_By(int) const;
-    // void Set_Objects_Enabled(Utf8String, char);
-    // void Set_Units_Should_Idle_Or_Resume(char);
-    // void Set_Units_Vision_Spied(char, BitFlags<116ul>, int);
-    // void Set_Units_Should_Hunt(char, CommandSourceType);
+    // bool Get_Attacked_By(int) const;
+    // void Set_Objects_Enabled(Utf8String, bool);
+    // void Set_Units_Should_Idle_Or_Resume(bool);
+    // void Set_Units_Vision_Spied(bool, BitFlags<KINDOF_COUNT>, int);
+    // void Set_Units_Should_Hunt(bool, CommandSourceType);
     // void Garrison_All_Units(CommandSourceType);
     // void Ungarrison_All_Units(CommandSourceType);
     // void Do_Bounty_For_Kill(Object const *, Object const *);
@@ -222,8 +228,8 @@ public:
     // void Kill_Player();
 
     // void Add_New_Shared_SpecialPower_Timer(const SpecialPowerTemplate *, unsigned int);
-    // int Get_Or_Start_SpecialPower_Ready_Frame(const SpecialPowerTemplate *) const;
-    // int Express_SpecialPower_Ready_Frame(const SpecialPowerTemplate *, unsigned int);
+    // unsigned int Get_Or_Start_SpecialPower_Ready_Frame(const SpecialPowerTemplate *) const;
+    // void Express_SpecialPower_Ready_Frame(const SpecialPowerTemplate *, unsigned int);
     // void Reset_Or_Start_SpecialPower_Ready_Frame(const SpecialPowerTemplate *);
 
     // bool Does_Object_Qualify_For_Battle_Plan(Object *) const;
@@ -233,7 +239,7 @@ public:
     // void Change_Battle_Plan(BattlePlanStatus, int, BattlePlanBonuses *);
     // void Remove_Battle_Plan_Bonuses_For_Object(Object *);
 
-    // void Friend_Apply_Difficulty_Bonuses_For_Object(Object *, char);
+    // void Friend_Apply_Difficulty_Bonuses_For_Object(Object *, bool);
 
     // bool Has_Science(ScienceType) const;
     // bool Has_Prereqs_For_Science(ScienceType) const;
@@ -241,21 +247,21 @@ public:
     // bool Is_Science_Hidden(ScienceType) const;
     // bool Is_Science_Disabled(ScienceType) const;
     // void Add_Science_Purchase_Points(int);
-    // void Add_Science(ScienceType);
-    // void Grant_Science(ScienceType);
-    // void Attempt_To_Purchase_Science(ScienceType);
+    // bool Add_Science(ScienceType);
+    // bool Grant_Science(ScienceType);
+    // bool Attempt_To_Purchase_Science(ScienceType);
     // void Set_Science_Availability(ScienceType, ScienceAvailabilityType);
-    // int Get_Science_Availability_Type_From_String(const Utf8String &) const;
+    // ScienceAvailabilityType Get_Science_Availability_Type_From_String(const Utf8String &) const;
     // void Reset_Sciences();
 
     // void Reset_Rank();
-    // void Set_Rank_Level(int);
+    // bool Set_Rank_Level(int);
 
     // void Friend_Set_Skillset(int);
-    // void Add_Skill_Points(int);
-    // void Add_Skill_Points_For_Kill(const Object *, const Object *);
+    // bool Add_Skill_Points(int);
+    // bool Add_Skill_Points_For_Kill(const Object *, const Object *);
 
-public:
+private:
     PlayerTemplate *m_playerTemplate;
     Utf16String m_playerDisplayName;
     Handicap m_handicap;
@@ -268,48 +274,34 @@ public:
     Money m_money;
     int m_upgradeList;
     int m_radarCount;
-    int m_unk_0x0048; // int m_radarCount2;
-    int m_unk_0x004C; // bool m_hasRadar;
-    int m_unk_0x0050; // int m_activeBattlePlans[3];
-    int m_unk_0x0054;
-    int m_unk_0x0058;
+    int m_disableProofRadarCount;
+    bool m_radarDisabled;
+    int m_activeBattlePlans[3];
     BattlePlanBonuses *m_battlePlanBonuses;
-    int m_unk_0x0060; // int m_upgradesInProgress[4];
-    int m_unk_0x0064;
-    int m_unk_0x0068;
-    int m_unk_0x006C;
-    int m_unk_0x0070; // int m_upgradesCompleted[4];
-    int m_unk_0x0074;
-    int m_unk_0x0078;
-    int m_unk_0x007C;
+    BitFlags<128> m_upgradesInProgress;
+    BitFlags<128> m_upgradesCompleted;
     Energy m_energy;
     MissionStats m_missionStats;
     BuildListInfo *m_buildListInfo;
     int m_playerColor;
-    int m_unk_0x0128; // int m_playerNightColor;
+    int m_playerNightColor;
     std::map<NameKeyType, float> m_productionCostChanges;
     std::map<NameKeyType, float> m_productionTimeChanges;
     std::map<NameKeyType, VeterancyLevel> m_productionVeterancyLevels;
-    void *m_ai; // 4 byte type unknown
+    AIPlayer *m_ai;
     int m_multiplayerStartIndex;
     ResourceGatheringManager *m_resourceGatheringManager;
-    void *m_tunnelSystem; // 4 byte type unknown
+    TunnelTracker *m_tunnelSystem;
     Team *m_defaultTeam;
-    int m_unk_0x0164; // std::vector<int> m_sciences;
-    int m_unk_0x0168;
-    int m_unk_0x016C;
-    int m_unk_0x0170; // std::vector<int> m_disabledSciences;
-    int m_unk_0x0174;
-    int m_unk_0x0178;
-    int m_unk_0x017C; // std::vector<int> m_hiddenSciences;
-    int m_unk_0x0180;
-    int m_unk_0x0184;
-    int m_unk_0x0188; // int m_rankLevel;
-    int m_unk_0x018C; // int m_skillPoints1;
-    int m_unk_0x0190; // int m_sciencePurchasePoints;
-    int m_unk_0x0194; // int m_skillPoints2;
+    std::vector<ScienceType> m_sciences;
+    std::vector<ScienceType> m_disabledSciences;
+    std::vector<ScienceType> m_hiddenSciences;
+    int m_rankLevel;
+    int m_currentSkillPoints;
+    int m_sciencePurchasePoints;
+    int m_skillPointsNeededForNextRank;
     int m_unk_0x0198; // int m_rankProgress;
-    int m_unk_0x019C; // Utf16String scienceGeneralName;
+    Utf16String m_unk_0x019C; // Utf16String m_scienceGeneralName;
     std::list<TeamPrototype *> m_playerTeamPrototypes;
     PlayerRelationMap *m_playerRelations;
     TeamRelationMap *m_teamRelations;
@@ -321,19 +313,19 @@ public:
     float m_skillPointsModifier;
     bool m_listInScoreScreen;
     bool m_unitsShouldHunt;
-    char m_unk_0x026A[18]; // char m_attackedBy[16];
-    int m_unk_0x027C; // int m_whenWasAttackedBySet;
-    int m_unk_0x0280; // float m_bountyCostToBuild;
+    bool m_attackedByPlayer[MAX_PLAYER_COUNT];
+    int m_lastAttackedByFrame;
+    int m_unk_0x0280; // float m_bountyCostToBuild; set by CashBountyPower::onObjectCreated
 #if GAME_DEBUG_STRUCTS
     bool m_ignorePrereqs;
     bool m_freeBuild;
     bool m_instantBuild;
 #endif
     ScoreKeeper m_scoreKeeper;
-    void *m_kindOfPercentProductionChangeList; // 4 byte type unknown
-    void *m_specialPowerReadyTimerList; // 4 byte type unknown
+    std::list<KindOfPercentProductionChange *> m_kindOfPercentProductionChangeList;
+    std::list<SpecialPowerReadyTimerType> m_specialPowerReadyTimerList;
     Squad *m_squads[10];
     Squad *m_aiSquad;
-    int m_unk_0x044C; // bool m_playerIsDead;
-                      // bool m_retaliationModeEnabled;
+    bool m_playerIsDead;
+    bool m_unk_0x044D; // bool m_retaliationModeEnabled;
 };

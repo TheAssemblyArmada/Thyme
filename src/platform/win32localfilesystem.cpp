@@ -155,10 +155,13 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                 subdir += '/';
                 Get_File_List_From_Dir(subdir, entry->d_name, filter, filelist, search_subdirs);
             } else if (entry->d_type == DT_REG) {
-                // TODO: apply filter:
                 Utf8String filepath = search_path;
                 filepath += '/';
                 filepath += entry->d_name;
+                // TODO: make this more bulletproof
+                if (filter.Get_Length() > 1 && !filepath.Ends_With_No_Case(filter.Str() + 1)) {
+                    continue;
+                }
                 filelist.insert(filepath);
             }
         }

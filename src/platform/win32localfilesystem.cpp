@@ -77,32 +77,6 @@ bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
     return access(filename, 0) == 0;
 }
 
-#ifndef PLATFORM_WINDOWS
-void Posix_List_Dir(const char *name, std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist, bool search_subdirs)
-{
-    struct dirent *entry = nullptr;
-    DIR *dp = nullptr;
-
-    dp = opendir(name);
-    if (dp != nullptr) {
-        while ((entry = readdir(dp)) != nullptr) {
-            char path[1024];
-            if (search_subdirs && entry->d_type == DT_DIR) {
-                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
-                    continue;
-                snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
-                Posix_List_Dir(path, filelist, search_subdirs);
-            } else if (entry->d_type == DT_REG) {
-                snprintf(path, sizeof(path), "%s/%s", name, entry->d_name);
-                filelist.insert(path);
-            }
-        }
-    }
-
-    closedir(dp);
-}
-#endif
-
 void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,

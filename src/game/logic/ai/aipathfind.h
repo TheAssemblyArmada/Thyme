@@ -32,14 +32,15 @@ class Path : public MemoryPoolObject, public SnapShot
 {
     IMPLEMENT_POOL(Path);
 
-public:
+protected:
     virtual ~Path() override;
 
+public:
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    void Get_Point_Pos(Coord3D *pos) { *pos = m_closestPoint.m_pos; }
+    void Get_Point_Pos(Coord3D *pos) const { *pos = m_closestPoint.m_pos; }
 
 private:
     PathNode *m_path;

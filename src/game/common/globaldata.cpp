@@ -34,350 +34,636 @@ GlobalData *g_theWriteableGlobalData = nullptr;
 GlobalData *GlobalData::s_theOriginal = nullptr;
 const int CRC_BUFFER_SIZE = 0x10000;
 
+static const char *const _terrain_lod_names[] = { "NONE",
+    "MIN",
+    "STRETCH_NO_CLOUDS",
+    "HALF_CLOUDS",
+    "NO_CLOUDS",
+    "STRETCH_CLOUDS",
+    "NO_WATER",
+    "MAX",
+    "AUTOMATIC",
+    "DISABLE",
+    nullptr };
+
 // List of keys handled in the ini
 // Class contains some variables that don't appear to be user
 // controlled.
-const FieldParse GlobalData::s_fieldParseTable[337] = { { "Windowed", &INI::Parse_Bool, nullptr, 32 }, //
-    { "XResolution", &INI::Parse_Int, nullptr, 36 }, //
-    { "YResolution", &INI::Parse_Int, nullptr, 40 }, //
-    { "MapName", &INI::Parse_AsciiString, nullptr, 8 }, //
-    { "MoveHintName", &INI::Parse_AsciiString, nullptr, 12 }, //
-    { "UseTrees", &INI::Parse_Bool, nullptr, 16 }, //
-    { "UseFPSLimit", &INI::Parse_Bool, nullptr, 20 }, //
-    { "DumpAssetUsage", &INI::Parse_Bool, nullptr, 21 }, //
-    { "FramesPerSecondLimit", &INI::Parse_Int, nullptr, 24 }, //
-    { "ChipsetType", &INI::Parse_Int, nullptr, 28 }, //
-    { "MaxShellScreens", &INI::Parse_Int, nullptr, 44 }, //
-    { "UseCloudMap", &INI::Parse_Bool, nullptr, 48 }, //
-    { "UseLightMap", &INI::Parse_Bool, nullptr, 56 }, //
-    { "BilinearTerrainTex", &INI::Parse_Bool, nullptr, 57 }, //
-    { "TrilinearTerrainTex", &INI::Parse_Bool, nullptr, 58 }, //
-    { "MultiPassTerrain", &INI::Parse_Bool, nullptr, 59 }, //
-    { "AdjustCliffTextures", &INI::Parse_Bool, nullptr, 60 }, //
-    { "Use3WayTerrainBlends", &INI::Parse_Int, nullptr, 52 }, //
-    { "StretchTerrain", &INI::Parse_Bool, nullptr, 61 }, //
-    { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, 62 }, //
-    { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, 63 }, //
-    //{ "TerrainLOD", &INI::Parse_Index_List, &TerrainLODNames, 64 },//
-    { "TerrainLOD", &INI::Parse_Index_List, reinterpret_cast<void const *>(0x9C6D18), 64 }, //
-    { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, 72 }, //
-    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, 79 }, //
-    { "UseWaterPlane", &INI::Parse_Bool, nullptr, 80 }, //
-    { "UseCloudPlane", &INI::Parse_Bool, nullptr, 81 }, //
-    { "DownwindAngle", &INI::Parse_Real, nullptr, 348 }, //
-    { "UseShadowVolumes", &INI::Parse_Bool, nullptr, 82 }, //
-    { "UseShadowDecals", &INI::Parse_Bool, nullptr, 83 }, //
-    { "TextureReductionFactor", &INI::Parse_Int, nullptr, 84 }, //
-    { "UseBehindBuildingMarker", &INI::Parse_Bool, nullptr, 88 }, //
-    { "WaterPositionX", &INI::Parse_Real, nullptr, 92 }, //
-    { "WaterPositionY", &INI::Parse_Real, nullptr, 96 }, //
-    { "WaterPositionZ", &INI::Parse_Real, nullptr, 100 }, //
-    { "WaterExtentX", &INI::Parse_Real, nullptr, 104 }, //
-    { "WaterExtentY", &INI::Parse_Real, nullptr, 108 }, //
-    { "WaterType", &INI::Parse_Int, nullptr, 112 }, //
-    { "FeatherWater", &INI::Parse_Int, nullptr, 120 }, //
-    { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, 116 }, //
-    { "VertexWaterAvailableMaps1", &INI::Parse_AsciiString, nullptr, 124 }, //
-    { "VertexWaterHeightClampLow1", &INI::Parse_Real, nullptr, 140 }, //
-    { "VertexWaterHeightClampHi1", &INI::Parse_Real, nullptr, 156 }, //
-    { "VertexWaterAngle1", &INI::Parse_Angle_Real, nullptr, 172 }, //
-    { "VertexWaterXPosition1", &INI::Parse_Real, nullptr, 188 }, //
-    { "VertexWaterYPosition1", &INI::Parse_Real, nullptr, 204 }, //
-    { "VertexWaterZPosition1", &INI::Parse_Real, nullptr, 220 }, //
-    { "VertexWaterXGridCells1", &INI::Parse_Int, nullptr, 236 },
-    { "VertexWaterYGridCells1", &INI::Parse_Int, nullptr, 252 },
-    { "VertexWaterGridSize1", &INI::Parse_Real, nullptr, 268 }, //
-    { "VertexWaterAttenuationA1", &INI::Parse_Real, nullptr, 284 },
-    { "VertexWaterAttenuationB1", &INI::Parse_Real, nullptr, 300 },
-    { "VertexWaterAttenuationC1", &INI::Parse_Real, nullptr, 316 },
-    { "VertexWaterAttenuationRange1", &INI::Parse_Real, nullptr, 332 },
-    { "VertexWaterAvailableMaps2", &INI::Parse_AsciiString, nullptr, 128 },
-    { "VertexWaterHeightClampLow2", &INI::Parse_Real, nullptr, 144 },
-    { "VertexWaterHeightClampHi2", &INI::Parse_Real, nullptr, 160 },
-    { "VertexWaterAngle2", &INI::Parse_Angle_Real, nullptr, 176 },
-    { "VertexWaterXPosition2", &INI::Parse_Real, nullptr, 192 },
-    { "VertexWaterYPosition2", &INI::Parse_Real, nullptr, 208 },
-    { "VertexWaterZPosition2", &INI::Parse_Real, nullptr, 224 },
-    { "VertexWaterXGridCells2", &INI::Parse_Int, nullptr, 240 },
-    { "VertexWaterYGridCells2", &INI::Parse_Int, nullptr, 256 },
-    { "VertexWaterGridSize2", &INI::Parse_Real, nullptr, 272 },
-    { "VertexWaterAttenuationA2", &INI::Parse_Real, nullptr, 288 },
-    { "VertexWaterAttenuationB2", &INI::Parse_Real, nullptr, 304 },
-    { "VertexWaterAttenuationC2", &INI::Parse_Real, nullptr, 320 },
-    { "VertexWaterAttenuationRange2", &INI::Parse_Real, nullptr, 336 },
-    { "VertexWaterAvailableMaps3", &INI::Parse_AsciiString, nullptr, 132 },
-    { "VertexWaterHeightClampLow3", &INI::Parse_Real, nullptr, 148 },
-    { "VertexWaterHeightClampHi3", &INI::Parse_Real, nullptr, 164 },
-    { "VertexWaterAngle3", &INI::Parse_Angle_Real, nullptr, 180 },
-    { "VertexWaterXPosition3", &INI::Parse_Real, nullptr, 196 },
-    { "VertexWaterYPosition3", &INI::Parse_Real, nullptr, 212 },
-    { "VertexWaterZPosition3", &INI::Parse_Real, nullptr, 228 },
-    { "VertexWaterXGridCells3", &INI::Parse_Int, nullptr, 244 },
-    { "VertexWaterYGridCells3", &INI::Parse_Int, nullptr, 260 },
-    { "VertexWaterGridSize3", &INI::Parse_Real, nullptr, 276 },
-    { "VertexWaterAttenuationA3", &INI::Parse_Real, nullptr, 292 },
-    { "VertexWaterAttenuationB3", &INI::Parse_Real, nullptr, 308 },
-    { "VertexWaterAttenuationC3", &INI::Parse_Real, nullptr, 324 },
-    { "VertexWaterAttenuationRange3", &INI::Parse_Real, nullptr, 340 },
-    { "VertexWaterAvailableMaps4", &INI::Parse_AsciiString, nullptr, 136 },
-    { "VertexWaterHeightClampLow4", &INI::Parse_Real, nullptr, 152 },
-    { "VertexWaterHeightClampHi4", &INI::Parse_Real, nullptr, 168 },
-    { "VertexWaterAngle4", &INI::Parse_Angle_Real, nullptr, 184 },
-    { "VertexWaterXPosition4", &INI::Parse_Real, nullptr, 200 },
-    { "VertexWaterYPosition4", &INI::Parse_Real, nullptr, 216 },
-    { "VertexWaterZPosition4", &INI::Parse_Real, nullptr, 232 },
-    { "VertexWaterXGridCells4", &INI::Parse_Int, nullptr, 248 },
-    { "VertexWaterYGridCells4", &INI::Parse_Int, nullptr, 264 },
-    { "VertexWaterGridSize4", &INI::Parse_Real, nullptr, 280 },
-    { "VertexWaterAttenuationA4", &INI::Parse_Real, nullptr, 296 },
-    { "VertexWaterAttenuationB4", &INI::Parse_Real, nullptr, 312 },
-    { "VertexWaterAttenuationC4", &INI::Parse_Real, nullptr, 328 },
-    { "VertexWaterAttenuationRange4", &INI::Parse_Real, nullptr, 344 }, //
-    { "SkyBoxPositionZ", &INI::Parse_Real, nullptr, 352 }, //
-    { "SkyBoxScale", &INI::Parse_Real, nullptr, 360 }, //
-    { "DrawSkyBox", &INI::Parse_Bool, nullptr, 356 }, //
-    { "CameraPitch", &INI::Parse_Real, nullptr, 364 }, //
-    { "CameraYaw", &INI::Parse_Real, nullptr, 368 }, //
-    { "CameraHeight", &INI::Parse_Real, nullptr, 372 }, //
-    { "MaxCameraHeight", &INI::Parse_Real, nullptr, 376 }, //
-    { "MinCameraHeight", &INI::Parse_Real, nullptr, 380 }, //
-    { "TerrainHeightAtEdgeOfMap", &INI::Parse_Real, nullptr, 384 }, //
-    { "UnitDamagedThreshold", &INI::Parse_Real, nullptr, 388 }, //
-    { "UnitReallyDamagedThreshold", &INI::Parse_Real, nullptr, 392 }, //
-    { "GroundStiffness", &INI::Parse_Real, nullptr, 396 }, //
-    { "StructureStiffness", &INI::Parse_Real, nullptr, 400 }, //
-    { "Gravity", &INI::Parse_Acceleration_Real, nullptr, 404 }, //
-    { "StealthFriendlyOpacity", &INI::Parse_Percent_To_Real, nullptr, 408 }, //
-    { "DefaultOcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, 412 }, //
-    { "PartitionCellSize", &INI::Parse_Real, nullptr, 420 }, //
-    { "AmmoPipScaleFactor", &INI::Parse_Real, nullptr, 464 }, //
-    { "ContainerPipScaleFactor", &INI::Parse_Real, nullptr, 468 }, //
-    { "AmmoPipWorldOffset", &INI::Parse_Coord3D, nullptr, 424 }, //
-    { "ContainerPipWorldOffset", &INI::Parse_Coord3D, nullptr, 436 }, //
-    { "AmmoPipScreenOffset", &INI::Parse_Coord2D, nullptr, 448 }, //
-    { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, 456 }, //
-    { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, 472 }, //
-    { "MaxTerrainTracks", &INI::Parse_Int, nullptr, 476 }, //
-    //{ "TimeOfDay", &INI::Parse_Index_List, &TimeOfDayNames, 516 },//
-    //{ "Weather", &INI::Parse_Index_List, &WeatherNames, 520 },//
-    { "TimeOfDay", &INI::Parse_Index_List, reinterpret_cast<void const *>(0x9E6028), 516 }, //
-    { "Weather", &INI::Parse_Index_List, reinterpret_cast<void const *>(0x9E6040), 520 }, //
-    { "MakeTrackMarks", &INI::Parse_Bool, nullptr, 524 }, //
-    { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, 525 }, //
-    { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, 526 }, //
-    { "ForceModelsToFollowWeather", &INI::Parse_Bool, nullptr, 527 }, //
-    { "LevelGainAnimationName", &INI::Parse_AsciiString, nullptr, 492 }, //
-    { "LevelGainAnimationTime", &INI::Parse_Real, nullptr, 496 }, //
-    { "LevelGainAnimationZRise", &INI::Parse_Real, nullptr, 500 }, //
-    { "GetHealedAnimationName", &INI::Parse_AsciiString, nullptr, 504 }, //
-    { "GetHealedAnimationTime", &INI::Parse_Real, nullptr, 508 }, //
-    { "GetHealedAnimationZRise", &INI::Parse_Real, nullptr, 512 }, //
-    { "TerrainLightingMorningAmbient", &INI::Parse_RGB_Color, nullptr, 636 },
-    { "TerrainLightingMorningDiffuse", &INI::Parse_RGB_Color, nullptr, 648 },
-    { "TerrainLightingMorningLightPos", &INI::Parse_Coord3D, nullptr, 660 },
-    { "TerrainLightingAfternoonAmbient", &INI::Parse_RGB_Color, nullptr, 744 },
-    { "TerrainLightingAfternoonDiffuse", &INI::Parse_RGB_Color, nullptr, 756 },
-    { "TerrainLightingAfternoonLightPos", &INI::Parse_Coord3D, nullptr, 768 },
-    { "TerrainLightingEveningAmbient", &INI::Parse_RGB_Color, nullptr, 852 },
-    { "TerrainLightingEveningDiffuse", &INI::Parse_RGB_Color, nullptr, 864 },
-    { "TerrainLightingEveningLightPos", &INI::Parse_Coord3D, nullptr, 876 },
-    { "TerrainLightingNightAmbient", &INI::Parse_RGB_Color, nullptr, 960 },
-    { "TerrainLightingNightDiffuse", &INI::Parse_RGB_Color, nullptr, 972 },
-    { "TerrainLightingNightLightPos", &INI::Parse_Coord3D, nullptr, 984 },
-    { "TerrainObjectsLightingMorningAmbient", &INI::Parse_RGB_Color, nullptr, 1176 },
-    { "TerrainObjectsLightingMorningDiffuse", &INI::Parse_RGB_Color, nullptr, 1188 },
-    { "TerrainObjectsLightingMorningLightPos", &INI::Parse_Coord3D, nullptr, 1200 },
-    { "TerrainObjectsLightingAfternoonAmbient", &INI::Parse_RGB_Color, nullptr, 1284 },
-    { "TerrainObjectsLightingAfternoonDiffuse", &INI::Parse_RGB_Color, nullptr, 1296 },
-    { "TerrainObjectsLightingAfternoonLightPos", &INI::Parse_Coord3D, nullptr, 1308 },
-    { "TerrainObjectsLightingEveningAmbient", &INI::Parse_RGB_Color, nullptr, 1392 },
-    { "TerrainObjectsLightingEveningDiffuse", &INI::Parse_RGB_Color, nullptr, 1404 },
-    { "TerrainObjectsLightingEveningLightPos", &INI::Parse_Coord3D, nullptr, 1416 },
-    { "TerrainObjectsLightingNightAmbient", &INI::Parse_RGB_Color, nullptr, 1500 },
-    { "TerrainObjectsLightingNightDiffuse", &INI::Parse_RGB_Color, nullptr, 1512 },
-    { "TerrainObjectsLightingNightLightPos", &INI::Parse_Coord3D, nullptr, 1524 },
-    { "TerrainLightingMorningAmbient2", &INI::Parse_RGB_Color, nullptr, 672 },
-    { "TerrainLightingMorningDiffuse2", &INI::Parse_RGB_Color, nullptr, 684 },
-    { "TerrainLightingMorningLightPos2", &INI::Parse_Coord3D, nullptr, 696 },
-    { "TerrainLightingAfternoonAmbient2", &INI::Parse_RGB_Color, nullptr, 780 },
-    { "TerrainLightingAfternoonDiffuse2", &INI::Parse_RGB_Color, nullptr, 792 },
-    { "TerrainLightingAfternoonLightPos2", &INI::Parse_Coord3D, nullptr, 804 },
-    { "TerrainLightingEveningAmbient2", &INI::Parse_RGB_Color, nullptr, 888 },
-    { "TerrainLightingEveningDiffuse2", &INI::Parse_RGB_Color, nullptr, 900 },
-    { "TerrainLightingEveningLightPos2", &INI::Parse_Coord3D, nullptr, 912 },
-    { "TerrainLightingNightAmbient2", &INI::Parse_RGB_Color, nullptr, 996 },
-    { "TerrainLightingNightDiffuse2", &INI::Parse_RGB_Color, nullptr, 1008 },
-    { "TerrainLightingNightLightPos2", &INI::Parse_Coord3D, nullptr, 1020 },
-    { "TerrainObjectsLightingMorningAmbient2", &INI::Parse_RGB_Color, nullptr, 1212 },
-    { "TerrainObjectsLightingMorningDiffuse2", &INI::Parse_RGB_Color, nullptr, 1224 },
-    { "TerrainObjectsLightingMorningLightPos2", &INI::Parse_Coord3D, nullptr, 1236 },
-    { "TerrainObjectsLightingAfternoonAmbient2", &INI::Parse_RGB_Color, nullptr, 1320 },
-    { "TerrainObjectsLightingAfternoonDiffuse2", &INI::Parse_RGB_Color, nullptr, 1332 },
-    { "TerrainObjectsLightingAfternoonLightPos2", &INI::Parse_Coord3D, nullptr, 1344 },
-    { "TerrainObjectsLightingEveningAmbient2", &INI::Parse_RGB_Color, nullptr, 1428 },
-    { "TerrainObjectsLightingEveningDiffuse2", &INI::Parse_RGB_Color, nullptr, 1440 },
-    { "TerrainObjectsLightingEveningLightPos2", &INI::Parse_Coord3D, nullptr, 1452 },
-    { "TerrainObjectsLightingNightAmbient2", &INI::Parse_RGB_Color, nullptr, 1536 },
-    { "TerrainObjectsLightingNightDiffuse2", &INI::Parse_RGB_Color, nullptr, 1548 },
-    { "TerrainObjectsLightingNightLightPos2", &INI::Parse_Coord3D, nullptr, 1560 },
-    { "TerrainLightingMorningAmbient3", &INI::Parse_RGB_Color, nullptr, 708 },
-    { "TerrainLightingMorningDiffuse3", &INI::Parse_RGB_Color, nullptr, 720 },
-    { "TerrainLightingMorningLightPos3", &INI::Parse_Coord3D, nullptr, 732 },
-    { "TerrainLightingAfternoonAmbient3", &INI::Parse_RGB_Color, nullptr, 816 },
-    { "TerrainLightingAfternoonDiffuse3", &INI::Parse_RGB_Color, nullptr, 828 },
-    { "TerrainLightingAfternoonLightPos3", &INI::Parse_Coord3D, nullptr, 840 },
-    { "TerrainLightingEveningAmbient3", &INI::Parse_RGB_Color, nullptr, 924 },
-    { "TerrainLightingEveningDiffuse3", &INI::Parse_RGB_Color, nullptr, 936 },
-    { "TerrainLightingEveningLightPos3", &INI::Parse_Coord3D, nullptr, 948 },
-    { "TerrainLightingNightAmbient3", &INI::Parse_RGB_Color, nullptr, 1032 },
-    { "TerrainLightingNightDiffuse3", &INI::Parse_RGB_Color, nullptr, 1044 },
-    { "TerrainLightingNightLightPos3", &INI::Parse_Coord3D, nullptr, 1056 },
-    { "TerrainObjectsLightingMorningAmbient3", &INI::Parse_RGB_Color, nullptr, 1248 },
-    { "TerrainObjectsLightingMorningDiffuse3", &INI::Parse_RGB_Color, nullptr, 1260 },
-    { "TerrainObjectsLightingMorningLightPos3", &INI::Parse_Coord3D, nullptr, 1272 },
-    { "TerrainObjectsLightingAfternoonAmbient3", &INI::Parse_RGB_Color, nullptr, 1356 },
-    { "TerrainObjectsLightingAfternoonDiffuse3", &INI::Parse_RGB_Color, nullptr, 1368 },
-    { "TerrainObjectsLightingAfternoonLightPos3", &INI::Parse_Coord3D, nullptr, 1380 },
-    { "TerrainObjectsLightingEveningAmbient3", &INI::Parse_RGB_Color, nullptr, 1464 },
-    { "TerrainObjectsLightingEveningDiffuse3", &INI::Parse_RGB_Color, nullptr, 1476 },
-    { "TerrainObjectsLightingEveningLightPos3", &INI::Parse_Coord3D, nullptr, 1488 },
-    { "TerrainObjectsLightingNightAmbient3", &INI::Parse_RGB_Color, nullptr, 1572 },
-    { "TerrainObjectsLightingNightDiffuse3", &INI::Parse_RGB_Color, nullptr, 1584 },
-    { "TerrainObjectsLightingNightLightPos3", &INI::Parse_Coord3D, nullptr, 1596 },
-    { "NumberGlobalLights", &INI::Parse_Int, nullptr, 1784 }, //
-    { "InfantryLightMorningScale", &INI::Parse_Real, nullptr, 1720 }, //
-    { "InfantryLightAfternoonScale", &INI::Parse_Real, nullptr, 1724 }, //
-    { "InfantryLightEveningScale", &INI::Parse_Real, nullptr, 1728 }, //
-    { "InfantryLightNightScale", &INI::Parse_Real, nullptr, 1732 }, //
-    { "MaxTranslucentObjects", &INI::Parse_Int, nullptr, 1764 }, //
-    { "OccludedColorLuminanceScale", &INI::Parse_Real, nullptr, 1780 }, //
-    { "MaxRoadSegments", &INI::Parse_Int, nullptr, 1788 }, //
-    { "MaxRoadVertex", &INI::Parse_Int, nullptr, 1792 }, //
-    { "MaxRoadIndex", &INI::Parse_Int, nullptr, 1796 }, //
-    { "MaxRoadTypes", &INI::Parse_Int, nullptr, 1800 }, //
-    { "ValuePerSupplyBox", &INI::Parse_Int, nullptr, 1952 }, //
-    { "AudioOn", &INI::Parse_Bool, nullptr, 1804 }, //
-    { "MusicOn", &INI::Parse_Bool, nullptr, 1805 }, //
-    { "SoundsOn", &INI::Parse_Bool, nullptr, 1806 }, //
-    { "Sounds3DOn", &INI::Parse_Bool, nullptr, 1807 }, //
-    { "SpeechOn", &INI::Parse_Bool, nullptr, 1808 }, //
-    { "VideoOn", &INI::Parse_Bool, nullptr, 1809 }, //
-    { "DisableCameraMovements", &INI::Parse_Bool, nullptr, 1810 }, //
-    { "DebugAI", &INI::Parse_Bool, nullptr, 1820 }, //
-    { "DebugAIObstacles", &INI::Parse_Bool, nullptr, 1825 }, //
-    { "ShowClientPhysics", &INI::Parse_Bool, nullptr, 1812 }, //
-    { "ShowTerrainNormals", &INI::Parse_Bool, nullptr, 1813 }, //
-    { "ShowObjectHealth", &INI::Parse_Bool, nullptr, 1826 }, //
-    { "ParticleScale", &INI::Parse_Real, nullptr, 1840 }, //
-    { "AutoFireParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, 1844 }, //
-    { "AutoFireParticleSmallSystem", &INI::Parse_AsciiString, nullptr, 1848 }, //
-    { "AutoFireParticleSmallMax", &INI::Parse_Int, nullptr, 1852 }, //
-    { "AutoFireParticleMediumPrefix", &INI::Parse_AsciiString, nullptr, 1856 }, //
-    { "AutoFireParticleMediumSystem", &INI::Parse_AsciiString, nullptr, 1860 }, //
-    { "AutoFireParticleMediumMax", &INI::Parse_Int, nullptr, 1864 }, //
-    { "AutoFireParticleLargePrefix", &INI::Parse_AsciiString, nullptr, 1868 }, //
-    { "AutoFireParticleLargeSystem", &INI::Parse_AsciiString, nullptr, 1872 }, //
-    { "AutoFireParticleLargeMax", &INI::Parse_Int, nullptr, 1876 }, //
-    { "AutoSmokeParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, 1880 }, //
-    { "AutoSmokeParticleSmallSystem", &INI::Parse_AsciiString, nullptr, 1884 }, //
-    { "AutoSmokeParticleSmallMax", &INI::Parse_Int, nullptr, 1888 }, //
-    { "AutoSmokeParticleMediumPrefix", &INI::Parse_AsciiString, nullptr, 1892 }, //
-    { "AutoSmokeParticleMediumSystem", &INI::Parse_AsciiString, nullptr, 1896 }, //
-    { "AutoSmokeParticleMediumMax", &INI::Parse_Int, nullptr, 1900 }, //
-    { "AutoSmokeParticleLargePrefix", &INI::Parse_AsciiString, nullptr, 1904 }, //
-    { "AutoSmokeParticleLargeSystem", &INI::Parse_AsciiString, nullptr, 1908 }, //
-    { "AutoSmokeParticleLargeMax", &INI::Parse_Int, nullptr, 1912 }, //
-    { "AutoAflameParticlePrefix", &INI::Parse_AsciiString, nullptr, 1916 }, //
-    { "AutoAflameParticleSystem", &INI::Parse_AsciiString, nullptr, 1920 }, //
-    { "AutoAflameParticleMax", &INI::Parse_Int, nullptr, 1924 }, //
-    { "BuildSpeed", &INI::Parse_Real, nullptr, 1956 }, //
-    { "MinDistFromEdgeOfMapForBuild", &INI::Parse_Real, nullptr, 1960 }, //
-    { "SupplyBuildBorder", &INI::Parse_Real, nullptr, 1964 }, //
-    { "AllowedHeightVariationForBuilding", &INI::Parse_Real, nullptr, 1968 }, //
-    { "MinLowEnergyProductionSpeed", &INI::Parse_Real, nullptr, 1972 }, //
-    { "MaxLowEnergyProductionSpeed", &INI::Parse_Real, nullptr, 1976 }, //
-    { "LowEnergyPenaltyModifier", &INI::Parse_Real, nullptr, 1980 }, //
-    { "MultipleFactory", &INI::Parse_Real, nullptr, 1984 }, //
-    { "RefundPercent", &INI::Parse_Percent_To_Real, nullptr, 1988 }, //
-    { "CommandCenterHealRange", &INI::Parse_Real, nullptr, 1992 }, //
-    { "CommandCenterHealAmount", &INI::Parse_Real, nullptr, 1996 }, //
-    { "StandardMinefieldDensity", &INI::Parse_Real, nullptr, 2224 }, //
-    { "StandardMinefieldDistance", &INI::Parse_Real, nullptr, 2228 }, //
-    { "MaxLineBuildObjects", &INI::Parse_Int, nullptr, 2000 }, //
-    { "MaxTunnelCapacity", &INI::Parse_Int, nullptr, 2004 }, //
-    { "MaxParticleCount", &INI::Parse_Int, nullptr, 2036 }, //
-    { "MaxFieldParticleCount", &INI::Parse_Int, nullptr, 2040 }, //
-    { "HorizontalScrollSpeedFactor", &INI::Parse_Real, nullptr, 2008 }, //
-    { "VerticalScrollSpeedFactor", &INI::Parse_Real, nullptr, 2012 }, //
-    { "ScrollAmountCutoff", &INI::Parse_Real, nullptr, 2016 }, //
-    { "CameraAdjustSpeed", &INI::Parse_Real, nullptr, 2020 }, //
-    { "EnforceMaxCameraHeight", &INI::Parse_Bool, nullptr, 2024 }, //
-    { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, 2080 }, //
-    { "KeyboardDefaultScrollSpeedFactor", &INI::Parse_Real, nullptr, 2084 }, //
-    //{ "MovementPenaltyDamageState", &INI::Parse_Index_List, &TheBodyDamageTypeNames, 2112 },//
-    { "MovementPenaltyDamageState", &INI::Parse_Index_List, reinterpret_cast<void const *>(0x9C6D04), 2112 }, //
-    { "HealthBonus_Veteran", &INI::Parse_Percent_To_Real, nullptr, 2052 }, //
-    { "HealthBonus_Elite", &INI::Parse_Percent_To_Real, nullptr, 2056 }, //
-    { "HealthBonus_Heroic", &INI::Parse_Percent_To_Real, nullptr, 2060 }, //
-    { "HumanSoloPlayerHealthBonus_Easy", &INI::Parse_Percent_To_Real, nullptr, 1740 }, //
-    { "HumanSoloPlayerHealthBonus_Normal", &INI::Parse_Percent_To_Real, nullptr, 1744 }, //
-    { "HumanSoloPlayerHealthBonus_Hard", &INI::Parse_Percent_To_Real, nullptr, 1748 }, //
-    { "AISoloPlayerHealthBonus_Easy", &INI::Parse_Percent_To_Real, nullptr, 1752 }, //
-    { "AISoloPlayerHealthBonus_Normal", &INI::Parse_Percent_To_Real, nullptr, 1756 }, //
-    { "AISoloPlayerHealthBonus_Hard", &INI::Parse_Percent_To_Real, nullptr, 1760 }, //
-    { "WeaponBonus", &WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr, nullptr, 2044 }, //
-    { "DefaultStructureRubbleHeight", &INI::Parse_Real, nullptr, 2064 }, //
-    { "FixedSeed", &INI::Parse_Int, nullptr, 1836 }, //
-    { "ShellMapName", &INI::Parse_AsciiString, nullptr, 2068 }, //
-    { "ShellMapOn", &INI::Parse_Bool, nullptr, 2072 }, //
-    { "PlayIntro", &INI::Parse_Bool, nullptr, 2073 }, //
-    { "FirewallBehavior", &INI::Parse_Int, nullptr, 1936 }, //
-    { "FirewallPortOverride", &INI::Parse_Int, nullptr, 1944 }, //
-    { "FirewallPortAllocationDelta", &INI::Parse_Int, nullptr, 1948 }, //
-    { "GroupSelectMinSelectSize", &INI::Parse_Int, nullptr, 2116 }, //
-    { "GroupSelectVolumeBase", &INI::Parse_Real, nullptr, 2120 }, //
-    { "GroupSelectVolumeIncrement", &INI::Parse_Real, nullptr, 2124 }, //
-    { "MaxUnitSelectSounds", &INI::Parse_Int, nullptr, 2128 }, //
-    { "SelectionFlashSaturationFactor", &INI::Parse_Real, nullptr, 2132 }, //
-    { "SelectionFlashHouseColor", &INI::Parse_Bool, nullptr, 2136 }, //
-    { "CameraAudibleRadius", &INI::Parse_Real, nullptr, 2140 }, //
-    { "GroupMoveClickToGatherAreaFactor", &INI::Parse_Real, nullptr, 2144 }, //
-    { "ShakeSubtleIntensity", &INI::Parse_Real, nullptr, 2160 }, //
-    { "ShakeNormalIntensity", &INI::Parse_Real, nullptr, 2164 }, //
-    { "ShakeStrongIntensity", &INI::Parse_Real, nullptr, 2168 }, //
-    { "ShakeSevereIntensity", &INI::Parse_Real, nullptr, 2172 }, //
-    { "ShakeCineExtremeIntensity", &INI::Parse_Real, nullptr, 2176 }, //
-    { "ShakeCineInsaneIntensity", &INI::Parse_Real, nullptr, 2180 }, //
-    { "MaxShakeIntensity", &INI::Parse_Real, nullptr, 2184 }, //
-    { "MaxShakeRange", &INI::Parse_Real, nullptr, 2188 }, //
-    { "SellPercentage", &INI::Parse_Percent_To_Real, nullptr, 2192 }, //
-    { "BaseRegenHealthPercentPerSecond", &INI::Parse_Percent_To_Real, nullptr, 2196 }, //
-    { "BaseRegenDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, 2200 }, //
-    { "SpecialPowerViewObject", &INI::Parse_AsciiString, nullptr, 2208 }, //
-    { "StandardPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, 2212 }, //
-    { "ShowMetrics", &INI::Parse_Bool, nullptr, 2232 }, //
-    { "DefaultStartingCash", &Money::Parse_Money_Amount, nullptr, 2236 }, //
-    { "ShroudColor", &INI::Parse_RGB_Color, nullptr, 2280 }, //
-    { "ClearAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2292 }, //
-    { "FogAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2293 }, //
-    { "ShroudAlpha", &INI::Parse_Unsigned_Byte, nullptr, 2294 }, //
-    { "HotKeyTextColor", &INI::Parse_Color_Int, nullptr, 2204 }, //
-    { "PowerBarBase", &INI::Parse_Int, nullptr, 2252 }, //
-    { "PowerBarIntervals", &INI::Parse_Real, nullptr, 2256 }, //
-    { "PowerBarYellowRange", &INI::Parse_Int, nullptr, 2260 }, //
-    { "UnlookPersistDuration", &INI::Parse_Duration_Unsigned_Int, nullptr, 2268 }, //
-    { "NetworkFPSHistoryLength", &INI::Parse_Int, nullptr, 2296 }, //
-    { "NetworkLatencyHistoryLength", &INI::Parse_Int, nullptr, 2300 }, //
-    { "NetworkRunAheadMetricsTime", &INI::Parse_Int, nullptr, 2308 }, //
-    { "NetworkCushionHistoryLength", &INI::Parse_Int, nullptr, 2304 }, //
-    { "NetworkRunAheadSlack", &INI::Parse_Int, nullptr, 2316 }, //
-    { "NetworkKeepAliveDelay", &INI::Parse_Int, nullptr, 2312 }, //
-    { "NetworkDisconnectTime", &INI::Parse_Int, nullptr, 2320 }, //
-    { "NetworkPlayerTimeoutTime", &INI::Parse_Int, nullptr, 2324 }, //
-    { "NetworkDisconnectScreenNotifyTime", &INI::Parse_Int, nullptr, 2328 },
-    { "KeyboardCameraRotateSpeed", &INI::Parse_Real, nullptr, 2332 },
-    { "PlayStats", &INI::Parse_Int, nullptr, 2336 },
-    { nullptr, nullptr, nullptr, 0 } };
+const FieldParse GlobalData::s_fieldParseTable[] = {
+    { "Windowed", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_windowed) },
+    { "XResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_xResolution) },
+    { "YResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_yResolution) },
+    { "MapName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_mapName) },
+    { "MoveHintName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_moveHintName) },
+    { "UseTrees", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useTrees) },
+    { "UseFPSLimit", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useFPSLimit) },
+    { "DumpAssetUsage", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_dumpAssetUsage) },
+    { "FramesPerSecondLimit", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_framesPerSecondLimit) },
+    { "ChipsetType", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_chipsetType) },
+    { "MaxShellScreens", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxShellScreens) },
+    { "UseCloudMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useCloudMap) },
+    { "UseLightMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useLightMap) },
+    { "BilinearTerrainTex", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_bilinearTerrainTexture) },
+    { "TrilinearTerrainTex", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_trilinearTerrainTexture) },
+    { "MultiPassTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_multiPassTerrain) },
+    { "AdjustCliffTextures", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_adjustCliffTextures) },
+    { "Use3WayTerrainBlends", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_use3WayTerrainBlends) },
+    { "StretchTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_stretchTerrain) },
+    { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useHalfHeightMap) },
+    { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_drawEntireTerrain) },
+    { "TerrainLOD", &INI::Parse_Index_List, _terrain_lod_names, offsetof(GlobalData, m_terrainLOD) },
+    { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_terrainLODTargetTimeMS) },
+    { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_rightMouseAlwaysScrolls) },
+    { "UseWaterPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useWaterPlane) },
+    { "UseCloudPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useCloudPlane) },
+    { "DownwindAngle", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_downWindAngle) },
+    { "UseShadowVolumes", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_shadowVolumes) },
+    { "UseShadowDecals", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_shadowDecals) },
+    { "TextureReductionFactor", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_textureReductionFactor) },
+    { "UseBehindBuildingMarker", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useBehindBuildingMarker) },
+    { "WaterPositionX", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_waterPositionX) },
+    { "WaterPositionY", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_waterPositionY) },
+    { "WaterPositionZ", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_waterPositionZ) },
+    { "WaterExtentX", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_waterExtentX) },
+    { "WaterExtentY", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_waterExtentY) },
+    { "WaterType", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_waterType) },
+    { "FeatherWater", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_featherWater) },
+    { "ShowSoftWaterEdge", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showSoftWaterEdge) },
+    { "VertexWaterAvailableMaps1", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[0]) },
+    { "VertexWaterHeightClampLow1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[0]) },
+    { "VertexWaterHeightClampHi1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[0]) },
+    { "VertexWaterAngle1", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[0]) },
+    { "VertexWaterXPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[0]) },
+    { "VertexWaterYPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[0]) },
+    { "VertexWaterZPosition1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[0]) },
+    { "VertexWaterXGridCells1", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[0]) },
+    { "VertexWaterYGridCells1", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[0]) },
+    { "VertexWaterGridSize1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[0]) },
+    { "VertexWaterAttenuationA1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[0]) },
+    { "VertexWaterAttenuationB1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[0]) },
+    { "VertexWaterAttenuationC1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[0]) },
+    { "VertexWaterAttenuationRange1", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[0]) },
+    { "VertexWaterAvailableMaps2", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[1]) },
+    { "VertexWaterHeightClampLow2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[1]) },
+    { "VertexWaterHeightClampHi2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[1]) },
+    { "VertexWaterAngle2", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[1]) },
+    { "VertexWaterXPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[1]) },
+    { "VertexWaterYPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[1]) },
+    { "VertexWaterZPosition2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[1]) },
+    { "VertexWaterXGridCells2", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[1]) },
+    { "VertexWaterYGridCells2", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[1]) },
+    { "VertexWaterGridSize2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[1]) },
+    { "VertexWaterAttenuationA2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[1]) },
+    { "VertexWaterAttenuationB2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[1]) },
+    { "VertexWaterAttenuationC2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[1]) },
+    { "VertexWaterAttenuationRange2", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[1]) },
+    { "VertexWaterAvailableMaps3", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[2]) },
+    { "VertexWaterHeightClampLow3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[2]) },
+    { "VertexWaterHeightClampHi3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[2]) },
+    { "VertexWaterAngle3", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[2]) },
+    { "VertexWaterXPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[2]) },
+    { "VertexWaterYPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[2]) },
+    { "VertexWaterZPosition3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[2]) },
+    { "VertexWaterXGridCells3", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[2]) },
+    { "VertexWaterYGridCells3", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[2]) },
+    { "VertexWaterGridSize3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[2]) },
+    { "VertexWaterAttenuationA3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[2]) },
+    { "VertexWaterAttenuationB3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[2]) },
+    { "VertexWaterAttenuationC3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[2]) },
+    { "VertexWaterAttenuationRange3", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[2]) },
+    { "VertexWaterAvailableMaps4", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_vertexWaterAvailableMaps[3]) },
+    { "VertexWaterHeightClampLow4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampLow[3]) },
+    { "VertexWaterHeightClampHi4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterHeightClampHigh[3]) },
+    { "VertexWaterAngle4", &INI::Parse_Angle_Real, nullptr, offsetof(GlobalData, m_vertexWaterAngle[3]) },
+    { "VertexWaterXPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterXPos[3]) },
+    { "VertexWaterYPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterYPos[3]) },
+    { "VertexWaterZPosition4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterZPos[3]) },
+    { "VertexWaterXGridCells4", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterXGridCells[3]) },
+    { "VertexWaterYGridCells4", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_vertexWaterYGridCells[3]) },
+    { "VertexWaterGridSize4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterGridSize[3]) },
+    { "VertexWaterAttenuationA4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationA[3]) },
+    { "VertexWaterAttenuationB4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationB[3]) },
+    { "VertexWaterAttenuationC4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationC[3]) },
+    { "VertexWaterAttenuationRange4", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_vertexWaterAttenuationRange[3]) },
+    { "SkyBoxPositionZ", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_skyBoxPositionZ) },
+    { "SkyBoxScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_skyBoxScale) },
+    { "DrawSkyBox", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_drawSkyBox) },
+    { "CameraPitch", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraPitch) },
+    { "CameraYaw", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraYaw) },
+    { "CameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraHeight) },
+    { "MaxCameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_maxCameraHeight) },
+    { "MinCameraHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_minCameraHeight) },
+    { "TerrainHeightAtEdgeOfMap", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_terrainHeightAtMapEdge) },
+    { "UnitDamagedThreshold", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_unitDamagedThreshold) },
+    { "UnitReallyDamagedThreshold", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_unitReallyDamagedThreshold) },
+    { "GroundStiffness", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_groundStiffness) },
+    { "StructureStiffness", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_structureStiffness) },
+    { "Gravity", &INI::Parse_Acceleration_Real, nullptr, offsetof(GlobalData, m_gravity) },
+    { "StealthFriendlyOpacity", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_stealthFriendlyOpacity) },
+    { "DefaultOcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_defaultOcclusionDelay) },
+    { "PartitionCellSize", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_partitionCellSize) },
+    { "AmmoPipScaleFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_ammoPipScaleFactor) },
+    { "ContainerPipScaleFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_containerPipScaleFactor) },
+    { "AmmoPipWorldOffset", &INI::Parse_Coord3D, nullptr, offsetof(GlobalData, m_ammoPipWorldOffset) },
+    { "ContainerPipWorldOffset", &INI::Parse_Coord3D, nullptr, offsetof(GlobalData, m_containerPipWorldOffset) },
+    { "AmmoPipScreenOffset", &INI::Parse_Coord2D, nullptr, offsetof(GlobalData, m_ammoPipScreenOffset) },
+    { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, offsetof(GlobalData, m_containerPipScreenOffset) },
+    { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_historicDamageLimit) },
+    { "MaxTerrainTracks", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTerrainTracks) },
+    { "TimeOfDay", &INI::Parse_Index_List, g_timeOfDayNames, offsetof(GlobalData, m_timeOfDay) },
+    { "Weather", &INI::Parse_Index_List, g_weatherNames, offsetof(GlobalData, m_weather) },
+    { "MakeTrackMarks", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_makeTrackMarks) },
+    { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_hideGarrisonFlags) },
+    { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_forceModelsFollowTimeOfDay) },
+    { "ForceModelsToFollowWeather", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_forceModelsFollowWeather) },
+    { "LevelGainAnimationName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_levelGainAnimName) },
+    { "LevelGainAnimationTime", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_levelGainAnimTime) },
+    { "LevelGainAnimationZRise", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_levelGainAnimZRise) },
+    { "GetHealedAnimationName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_getHealedAnimName) },
+    { "GetHealedAnimationTime", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_getHealedAnimTime) },
+    { "GetHealedAnimationZRise", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_getHealedAnimZRise) },
+    // Light 1
+    { "TerrainLightingMorningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].ambient) },
+    { "TerrainLightingMorningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].diffuse) },
+    { "TerrainLightingMorningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][0].lightPos) },
+    { "TerrainLightingAfternoonAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].ambient) },
+    { "TerrainLightingAfternoonDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].diffuse) },
+    { "TerrainLightingAfternoonLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][0].lightPos) },
+    { "TerrainLightingEveningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].ambient) },
+    { "TerrainLightingEveningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].diffuse) },
+    { "TerrainLightingEveningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][0].lightPos) },
+    { "TerrainLightingNightAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].ambient) },
+    { "TerrainLightingNightDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].diffuse) },
+    { "TerrainLightingNightLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][0].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][0].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][0].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][0].lightPos) },
+    { "TerrainObjectsLightingNightAmbient",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].ambient) },
+    { "TerrainObjectsLightingNightDiffuse",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].diffuse) },
+    { "TerrainObjectsLightingNightLightPos",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][0].lightPos) },
+    // Light 2
+    { "TerrainLightingMorningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].ambient) },
+    { "TerrainLightingMorningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].diffuse) },
+    { "TerrainLightingMorningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][1].lightPos) },
+    { "TerrainLightingAfternoonAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].ambient) },
+    { "TerrainLightingAfternoonDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].diffuse) },
+    { "TerrainLightingAfternoonLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][1].lightPos) },
+    { "TerrainLightingEveningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].ambient) },
+    { "TerrainLightingEveningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].diffuse) },
+    { "TerrainLightingEveningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][1].lightPos) },
+    { "TerrainLightingNightAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].ambient) },
+    { "TerrainLightingNightDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].diffuse) },
+    { "TerrainLightingNightLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][1].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][1].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][1].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][1].lightPos) },
+    { "TerrainObjectsLightingNightAmbient2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].ambient) },
+    { "TerrainObjectsLightingNightDiffuse2",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].diffuse) },
+    { "TerrainObjectsLightingNightLightPos2",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][1].lightPos) },
+    // Light 3
+    { "TerrainLightingMorningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].ambient) },
+    { "TerrainLightingMorningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].diffuse) },
+    { "TerrainLightingMorningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_MORNING][2].lightPos) },
+    { "TerrainLightingAfternoonAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].ambient) },
+    { "TerrainLightingAfternoonDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].diffuse) },
+    { "TerrainLightingAfternoonLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_AFTERNOON][2].lightPos) },
+    { "TerrainLightingEveningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].ambient) },
+    { "TerrainLightingEveningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].diffuse) },
+    { "TerrainLightingEveningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_EVENING][2].lightPos) },
+    { "TerrainLightingNightAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].ambient) },
+    { "TerrainLightingNightDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].diffuse) },
+    { "TerrainLightingNightLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainPlaneLighting[TIME_OF_DAY_NIGHT][2].lightPos) },
+    { "TerrainObjectsLightingMorningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].ambient) },
+    { "TerrainObjectsLightingMorningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].diffuse) },
+    { "TerrainObjectsLightingMorningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_MORNING][2].lightPos) },
+    { "TerrainObjectsLightingAfternoonAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].ambient) },
+    { "TerrainObjectsLightingAfternoonDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].diffuse) },
+    { "TerrainObjectsLightingAfternoonLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_AFTERNOON][2].lightPos) },
+    { "TerrainObjectsLightingEveningAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].ambient) },
+    { "TerrainObjectsLightingEveningDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].diffuse) },
+    { "TerrainObjectsLightingEveningLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_EVENING][2].lightPos) },
+    { "TerrainObjectsLightingNightAmbient3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].ambient) },
+    { "TerrainObjectsLightingNightDiffuse3",
+        &INI::Parse_RGB_Color,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].diffuse) },
+    { "TerrainObjectsLightingNightLightPos3",
+        &INI::Parse_Coord3D,
+        nullptr,
+        offsetof(GlobalData, m_terrainObjectLighting[TIME_OF_DAY_NIGHT][2].lightPos) },
+    // End of terrain lights
+    { "NumberGlobalLights", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_numberGlobalLights) },
+    { "InfantryLightMorningScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_MORNING]) },
+    { "InfantryLightAfternoonScale",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_AFTERNOON]) },
+    { "InfantryLightEveningScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_EVENING]) },
+    { "InfantryLightNightScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_infantryLight[TIME_OF_DAY_NIGHT]) },
+    { "MaxTranslucentObjects", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTranslucencyObjects) },
+    { "OccludedColorLuminanceScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_occludedColorLuminanceScale) },
+    { "MaxRoadSegments", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadSegments) },
+    { "MaxRoadVertex", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadVertex) },
+    { "MaxRoadIndex", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadIndex) },
+    { "MaxRoadTypes", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxRoadTypes) },
+    { "ValuePerSupplyBox", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_valuesPerSupplyBox) },
+    { "AudioOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_audioOn) },
+    { "MusicOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_musicOn) },
+    { "SoundsOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_soundsOn) },
+    { "Sounds3DOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_sounds3DOn) },
+    { "SpeechOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_speechOn) },
+    { "VideoOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_videoOn) },
+    { "DisableCameraMovements", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_disableCameraMovements) },
+    { "DebugAI", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_debugAI) },
+    { "DebugAIObstacles", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_debugObstacleAI) },
+    { "ShowClientPhysics", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showClientPhysics) },
+    { "ShowTerrainNormals", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showTerrainNormals) },
+    { "ShowObjectHealth", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showObjectHealth) },
+    { "ParticleScale", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_particleScale) },
+    { "AutoFireParticleSmallPrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallPrefix) },
+    { "AutoFireParticleSmallSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleSmallSystem) },
+    { "AutoFireParticleSmallMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleSmallMax) },
+    { "AutoFireParticleMediumPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoFireParticleMediumPrefix) },
+    { "AutoFireParticleMediumSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoFireParticleMediumSystem) },
+    { "AutoFireParticleMediumMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleMediumMax) },
+    { "AutoFireParticleLargePrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleLargePrefix) },
+    { "AutoFireParticleLargeSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoFireParticleLargeSystem) },
+    { "AutoFireParticleLargeMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoFireParticleLargeMax) },
+    { "AutoSmokeParticleSmallPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleSmallPrefix) },
+    { "AutoSmokeParticleSmallSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleSmallSystem) },
+    { "AutoSmokeParticleSmallMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleSmallMax) },
+    { "AutoSmokeParticleMediumPrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleMediumPrefix) },
+    { "AutoSmokeParticleMediumSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleMediumSystem) },
+    { "AutoSmokeParticleMediumMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleMediumMax) },
+    { "AutoSmokeParticleLargePrefix",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleLargePrefix) },
+    { "AutoSmokeParticleLargeSystem",
+        &INI::Parse_AsciiString,
+        nullptr,
+        offsetof(GlobalData, m_autoSmokeParticleLargeSystem) },
+    { "AutoSmokeParticleLargeMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoSmokeParticleLargeMax) },
+    { "AutoAflameParticlePrefix", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoAFlameParticlePrefix) },
+    { "AutoAflameParticleSystem", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_autoAFlameParticleSystem) },
+    { "AutoAflameParticleMax", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_autoAFlameParticleMax) },
+    { "BuildSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_buildSpeed) },
+    { "MinDistFromEdgeOfMapForBuild", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_minDistanceFromMapEdgeForBuild) },
+    { "SupplyBuildBorder", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_supplyBuildOrder) },
+    { "AllowedHeightVariationForBuilding",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_allowedHeightVariationForBuildings) },
+    { "MinLowEnergyProductionSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_minLowEnergyProductionSpeed) },
+    { "MaxLowEnergyProductionSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_maxLowEnergyProductionSpeed) },
+    { "LowEnergyPenaltyModifier", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_lowEnergyPenaltyModifier) },
+    { "MultipleFactory", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_multipleFactory) },
+    { "RefundPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_refundPercent) },
+    { "CommandCenterHealRange", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_commandCenterHealRange) },
+    { "CommandCenterHealAmount", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_commandCenterHealAmmount) },
+    { "StandardMinefieldDensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_standardMinefieldDensity) },
+    { "StandardMinefieldDistance", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_standardMinefieldDistance) },
+    { "MaxLineBuildObjects", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxLineBuildObjects) },
+    { "MaxTunnelCapacity", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTunnelCapacity) },
+    { "MaxParticleCount", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxParticleCount) },
+    { "MaxFieldParticleCount", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxFieldParticleCount) },
+    { "HorizontalScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_horizontalScrollSpeedFactor) },
+    { "VerticalScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_verticalScrollSpeedFactor) },
+    { "ScrollAmountCutoff", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_scrollAmountCutoff) },
+    { "CameraAdjustSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraAdjustSpeed) },
+    { "EnforceMaxCameraHeight", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_enforceMaxCameraHeight) },
+    { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardScrollFactor) },
+    { "KeyboardDefaultScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardDefaultScrollFactor) },
+    { "MovementPenaltyDamageState",
+        &INI::Parse_Index_List,
+        g_bodyDamageNames,
+        offsetof(GlobalData, m_movementPenaltyDamageState) },
+    { "HealthBonus_Veteran", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_veteranHealthBonus) },
+    { "HealthBonus_Elite", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_eliteHealthBonus) },
+    { "HealthBonus_Heroic", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_heroicHealthBonus) },
+    { "HumanSoloPlayerHealthBonus_Easy",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_easySoloHumanHealthBonus) },
+    { "HumanSoloPlayerHealthBonus_Normal",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_normalSoloHumanHealthBonus) },
+    { "HumanSoloPlayerHealthBonus_Hard",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_hardSoloHumanHealthBonus) },
+    { "AISoloPlayerHealthBonus_Easy", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_easySoloAIHealthBonus) },
+    { "AISoloPlayerHealthBonus_Normal",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_normalSoloAIHealthBonus) },
+    { "AISoloPlayerHealthBonus_Hard", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_hardSoloAIHealthBonus) },
+    { "WeaponBonus", &WeaponBonusSet::Parse_Weapon_Bonus_Set_Ptr, nullptr, offsetof(GlobalData, m_weaponBonusSet) },
+    { "DefaultStructureRubbleHeight", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_defaultStructureRubbleHeight) },
+    { "FixedSeed", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_fixedSeed) },
+    { "ShellMapName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_shellMapName) },
+    { "ShellMapOn", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_shellMapOn) },
+    { "PlayIntro", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_playIntro) },
+    { "FirewallBehavior", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_firewallBehaviour) },
+    { "FirewallPortOverride", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_firewallPortOverrides) },
+    { "FirewallPortAllocationDelta", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_firewallPortAllocationDelta) },
+    { "GroupSelectMinSelectSize", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_groupSelectMinSelectSize) },
+    { "GroupSelectVolumeBase", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_groupSelectVolumeBase) },
+    { "GroupSelectVolumeIncrement", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_groupSelectVolumeIncrement) },
+    { "MaxUnitSelectSounds", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxUnitSelectSounds) },
+    { "SelectionFlashSaturationFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_selectionFlashSaturationFactor) },
+    { "SelectionFlashHouseColor", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_selectionFlashHouseColor) },
+    { "CameraAudibleRadius", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_cameraAudibleRadius) },
+    { "GroupMoveClickToGatherAreaFactor",
+        &INI::Parse_Real,
+        nullptr,
+        offsetof(GlobalData, m_groupMoveClickToGatherAreaFactor) },
+    { "ShakeSubtleIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeSubtleIntensity) },
+    { "ShakeNormalIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeNormalIntensity) },
+    { "ShakeStrongIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeStrongIntensity) },
+    { "ShakeSevereIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeSevereIntensity) },
+    { "ShakeCineExtremeIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeCineExtremeIntensity) },
+    { "ShakeCineInsaneIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_shakeCineInsaneIntensity) },
+    { "MaxShakeIntensity", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_maxShakeIntensity) },
+    { "MaxShakeRange", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_maxShakeRange) },
+    { "SellPercentage", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_sellPercentage) },
+    { "BaseRegenHealthPercentPerSecond",
+        &INI::Parse_Percent_To_Real,
+        nullptr,
+        offsetof(GlobalData, m_baseRegenHealthPercentPerSecond) },
+    { "BaseRegenDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_baseRegenDelay) },
+    { "SpecialPowerViewObject", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_specialPowerViewObject) },
+    { "StandardPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, offsetof(GlobalData, m_standardPublicBones) },
+    { "ShowMetrics", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_showMetrics) },
+    { "DefaultStartingCash", &Money::Parse_Money_Amount, nullptr, offsetof(GlobalData, m_defaultStartingCash) },
+    { "ShroudColor", &INI::Parse_RGB_Color, nullptr, offsetof(GlobalData, m_shroudColor) },
+    { "ClearAlpha", &INI::Parse_Unsigned_Byte, nullptr, offsetof(GlobalData, m_clearAlpha) },
+    { "FogAlpha", &INI::Parse_Unsigned_Byte, nullptr, offsetof(GlobalData, m_fogAlpha) },
+    { "ShroudAlpha", &INI::Parse_Unsigned_Byte, nullptr, offsetof(GlobalData, m_shroudAlpha) },
+    { "HotKeyTextColor", &INI::Parse_Color_Int, nullptr, offsetof(GlobalData, m_hotKeytextColor) },
+    { "PowerBarBase", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_powerBarBase) },
+    { "PowerBarIntervals", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_powerBarIntervals) },
+    { "PowerBarYellowRange", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_powerBarYellowRange) },
+    { "UnlookPersistDuration", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_unlookPersistDuration) },
+    { "NetworkFPSHistoryLength", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkFPSHistoryLength) },
+    { "NetworkLatencyHistoryLength", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkLatencyHistoryLength) },
+    { "NetworkRunAheadMetricsTime", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkRunAheadMetricsTime) },
+    { "NetworkCushionHistoryLength", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkCushionHistoryLength) },
+    { "NetworkRunAheadSlack", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkRunAheadSlack) },
+    { "NetworkKeepAliveDelay", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkKeepAliveDelay) },
+    { "NetworkDisconnectTime", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkDisconnecTime) },
+    { "NetworkPlayerTimeoutTime", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_networkPlayerTimeOut) },
+    { "NetworkDisconnectScreenNotifyTime",
+        &INI::Parse_Int,
+        nullptr,
+        offsetof(GlobalData, m_networkDisconnectScreenNotifyTime) },
+    { "KeyboardCameraRotateSpeed", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardCameraRotateSpeed) },
+    { "PlayStats", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_playerStats) },
+    // C&C Generals contains a setting "UserDataLeafName" - to avoid crashes we need this line below
+    // { "UserDataLeafName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalData, m_userDataLeafName) },
+    { nullptr, nullptr, nullptr, 0 }
+};
 
 GlobalData::GlobalData()
 {

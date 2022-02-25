@@ -147,7 +147,7 @@ int IMEManager::Get_Candidate_Page_Start() const
     return m_pageStart;
 }
 
-int IMEManager::Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param)
+bool IMEManager::Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param)
 {
     // TODO
     return 0;

@@ -338,7 +338,9 @@ void Animatable3DObjClass::Update_Sub_Object_Transforms()
 bool Animatable3DObjClass::Simple_Evaluate_Bone(int boneindex, Matrix3D *tm) const
 {
     if (m_curMotionMode != NONE && m_curMotionMode != BASE_POSE && m_curMotionMode != SINGLE_ANIM) {
-        ((Animatable3DObjClass *)this)->Update_Sub_Object_Transforms();
+        // #TODO This const_cast cannot be get rid of easily. Likely call to non-const function needs to be moved outside to
+        // caller, which can only be done if Thyme is standalone.
+        const_cast<Animatable3DObjClass *>(this)->Update_Sub_Object_Transforms();
         *tm = m_htree->Get_Transform(boneindex);
         return false;
     }
@@ -508,7 +510,7 @@ void Animatable3DObjClass::Anim_Update(const Matrix3D &root, HAnimClass *motion,
 {
     if (motion && m_htree) {
         if (motion->Class_ID() == CLASSID_MESH) {
-            m_htree->Anim_Update(root, (HRawAnimClass *)motion, frame);
+            m_htree->Anim_Update(root, static_cast<HRawAnimClass *>(motion), frame);
         } else {
             m_htree->Anim_Update(root, motion, frame);
         }

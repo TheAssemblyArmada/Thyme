@@ -48,7 +48,7 @@ public:
     virtual int Get_Candidate_Page_Size() const = 0;
     virtual int Get_Candidate_Page_Start() const = 0;
 
-    virtual int Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) = 0;
+    virtual bool Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) = 0;
 
     virtual int Result() const = 0;
 };

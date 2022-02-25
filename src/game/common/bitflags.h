@@ -486,7 +486,7 @@ template<int bits> void BitFlags<bits>::Parse(INI *ini, Utf8String *string)
 
 template<int bits> void BitFlags<bits>::Parse_Single_Bit_From_INI(INI *ini, void *formal, void *store, const void *user_data)
 {
-    *(int *)store = INI::Scan_IndexList(ini->Get_Next_Token(), s_bitNamesList);
+    *static_cast<int *>(store) = INI::Scan_IndexList(ini->Get_Next_Token(), s_bitNamesList);
 }
 
 template<int bits> int BitFlags<bits>::Get_Single_Bit_From_Name(const char *name)

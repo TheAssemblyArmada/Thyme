@@ -54,7 +54,7 @@ public:
     virtual int Get_Candidate_Page_Size() const override;
     virtual int Get_Candidate_Page_Start() const override;
 
-    virtual int Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) override;
+    virtual bool Service_IME_Message(void *window_handle, unsigned int message, int w_param, int l_param) override;
 
     virtual int Result() const override;
 

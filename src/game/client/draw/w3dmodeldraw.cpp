@@ -730,8 +730,9 @@ static const char *s_theWeaponSlotTypeNames[] = { "PRIMARY", "SECONDARY", "TERTI
 
 void Parse_Ascii_String_LC(INI *ini, void *formal, void *store, void const *user_data)
 {
-    *((Utf8String *)store) = ini->Get_Next_Ascii_String();
-    (*((Utf8String *)store)).To_Lower();
+    Utf8String *store_str = static_cast<Utf8String *>(store);
+    *store_str = ini->Get_Next_Ascii_String();
+    store_str->To_Lower();
 }
 
 void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
@@ -747,10 +748,10 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "ParticlesAttachedToAnimatedBones", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones) },
         { "MinLODRequired", &GameLODManager::Parse_Static_Game_LOD_Level, nullptr, offsetof(W3DModelDrawModuleData, m_minLodRequired) },
         { "ProjectileBoneFeedbackEnabledSlots", &INI::Parse_Bitstring32, s_theWeaponSlotTypeNames, offsetof(W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
-        { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, (void *)PARSE_DEFAULT, 0 },
-        { "ConditionState", &W3DModelDrawModuleData::Parse_Condition_State, (void *)PARSE_NORMAL, 0 },
-        { "AliasConditionState", &W3DModelDrawModuleData::Parse_Condition_State, (void *)PARSE_ALIAS, 0 },
-        { "TransitionState", &W3DModelDrawModuleData::Parse_Condition_State, (void *)PARSE_TRANSITION, 0 },
+        { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_DEFAULT), 0 },
+        { "ConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_NORMAL), 0 },
+        { "AliasConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_ALIAS), 0 },
+        { "TransitionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_TRANSITION), 0 },
         { "TrackMarks", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_trackFile) },
         { "ExtraPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, offsetof(W3DModelDrawModuleData, m_extraPublicBone) },
         { "AttachToBoneInAnotherModule", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_attachToBoneInAnotherModule) },
@@ -820,19 +821,19 @@ void Parse_Bone_Name_Key(INI *ini, void *instance, void *store, void const *user
     str.To_Lower();
 
     if (instance != nullptr) {
-        ((ModelConditionInfo *)instance)->Add_Public_Bone(str);
+        static_cast<ModelConditionInfo *>(instance)->Add_Public_Bone(str);
     }
 
     if (str.Is_Empty() || str.Is_None()) {
-        *(NameKeyType *)store = NAMEKEY_INVALID;
+        *static_cast<NameKeyType *>(store) = NAMEKEY_INVALID;
     } else {
-        *(NameKeyType *)store = g_theNameKeyGenerator->Name_To_Key(str);
+        *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str);
     }
 }
 
 void Parse_Show_Hide_Sub_Object(INI *ini, void *instance, void *store, void const *user_data)
 {
-    std::vector<ModelConditionInfo::HideShowSubObjInfo> *v = (std::vector<ModelConditionInfo::HideShowSubObjInfo> *)store;
+    auto *v = static_cast<std::vector<ModelConditionInfo::HideShowSubObjInfo> *>(store);
     Utf8String str = ini->Get_Next_Ascii_String();
     str.To_Lower();
 
@@ -864,7 +865,7 @@ void Parse_Show_Hide_Sub_Object(INI *ini, void *instance, void *store, void cons
 
 void Parse_Weapon_Bone_Name(INI *ini, void *instance, void *store, void const *user_data)
 {
-    Utf8String *str = (Utf8String *)store;
+    Utf8String *str = static_cast<Utf8String *>(store);
     int index = ini->Scan_IndexList(ini->Get_Next_Token(), s_theWeaponSlotTypeNames);
     str[index] = ini->Get_Next_Ascii_String();
     str[index].To_Lower();
@@ -874,13 +875,13 @@ void Parse_Weapon_Bone_Name(INI *ini, void *instance, void *store, void const *u
     }
 
     if (instance != nullptr) {
-        ((ModelConditionInfo *)instance)->Add_Public_Bone(str[index]);
+        static_cast<ModelConditionInfo *>(instance)->Add_Public_Bone(str[index]);
     }
 }
 
 void Parse_Animation(INI *ini, void *instance, void *store, void const *user_data)
 {
-    ModelConditionInfo *minfo = (ModelConditionInfo *)instance;
+    ModelConditionInfo *minfo = static_cast<ModelConditionInfo *>(instance);
     Utf8String name = ini->Get_Next_Ascii_String();
     name.To_Lower();
     const char *str = ini->Get_Next_Token_Or_Null();
@@ -921,7 +922,7 @@ void Parse_Lowercase_Name_Key(INI *ini, void *formal, void *store, void const *u
 {
     Utf8String str(ini->Get_Next_Token());
     str.To_Lower();
-    *(NameKeyType *)store = g_theNameKeyGenerator->Name_To_Key(str);
+    *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str);
 }
 
 void Parse_Particle_Sys_Bone(INI *ini, void *instance, void *store, void const *user_data)
@@ -930,12 +931,12 @@ void Parse_Particle_Sys_Bone(INI *ini, void *instance, void *store, void const *
     info.bone_name = ini->Get_Next_Ascii_String();
     info.bone_name.To_Lower();
     ParticleSystemTemplate::Parse(ini, instance, &info.particle_system_template, user_data);
-    ((ModelConditionInfo *)instance)->m_ParticleSysBones.push_back(info);
+    static_cast<ModelConditionInfo *>(instance)->m_ParticleSysBones.push_back(info);
 }
 
 void Parse_Real_Range(INI *ini, void *instance, void *store, void const *user_data)
 {
-    ModelConditionInfo *info = (ModelConditionInfo *)instance;
+    ModelConditionInfo *info = static_cast<ModelConditionInfo *>(instance);
     info->m_animationSpeedFactorMin = ini->Scan_Real(ini->Get_Next_Token());
     info->m_animationSpeedFactorMax = ini->Scan_Real(ini->Get_Next_Token());
 }
@@ -959,7 +960,7 @@ static const char *s_ACBitsNames[] = { "RANDOMSTART",
 void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, void *store, void const *user_data)
 {
     ModelConditionInfo info;
-    W3DModelDrawModuleData *data = (W3DModelDrawModuleData *)instance;
+    W3DModelDrawModuleData *data = static_cast<W3DModelDrawModuleData *>(instance);
 
     switch ((uintptr_t)user_data) {
         case PARSE_NORMAL: {
@@ -1112,15 +1113,15 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
         { "AltTurretArtAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretArtAngle) },
         { "AltTurretPitch", &Parse_Bone_Name_Key, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretPitchName) },
         { "AltTurretArtPitch", &INI::Parse_Angle_Real, nullptr, offsetof(ModelConditionInfo, m_turretInfo[1].m_turretArtPitch) },
-        { "ShowSubObject", &Parse_Show_Hide_Sub_Object, (void *)0, offsetof(ModelConditionInfo, m_hideShowVec) },
-        { "HideSubObject", &Parse_Show_Hide_Sub_Object, (void *)1, offsetof(ModelConditionInfo, m_hideShowVec) },
+        { "ShowSubObject", &Parse_Show_Hide_Sub_Object, reinterpret_cast<const void *>(0), offsetof(ModelConditionInfo, m_hideShowVec) },
+        { "HideSubObject", &Parse_Show_Hide_Sub_Object, reinterpret_cast<const void *>(1), offsetof(ModelConditionInfo, m_hideShowVec) },
         { "WeaponFireFXBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponFireFXBoneName) },
         { "WeaponRecoilBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponRecoilBoneName) },
         { "WeaponMuzzleFlash", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponMuzzleFlashName) },
         { "WeaponLaunchBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponLaunchBoneName) },
         { "WeaponHideShowBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponHideShowBoneName) },
-        { "Animation", &Parse_Animation, (void *)0, offsetof(ModelConditionInfo, m_animations) },
-        { "IdleAnimation", &Parse_Animation, (void *)1, offsetof(ModelConditionInfo, m_animations) },
+        { "Animation", &Parse_Animation, reinterpret_cast<const void *>(0), offsetof(ModelConditionInfo, m_animations) },
+        { "IdleAnimation", &Parse_Animation, reinterpret_cast<const void *>(1), offsetof(ModelConditionInfo, m_animations) },
         { "AnimationMode", &INI::Parse_Index_List, s_theAnimModeNames, offsetof(ModelConditionInfo, m_mode) },
         { "TransitionKey", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_transitionKey) },
         { "WaitForStateToFinishIfPossible", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_allowToFinishKey) },
@@ -1131,7 +1132,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
     };
     // clang-format on
 
-    ini->Init_From_INI((void *)&info, myFieldParse);
+    ini->Init_From_INI(&info, myFieldParse);
 
     captainslog_relassert(!info.m_modelName.Is_Empty(), CODE_06, "*** ASSET ERROR: you must specify a model name");
 

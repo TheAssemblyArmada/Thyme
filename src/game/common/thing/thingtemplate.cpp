@@ -79,9 +79,9 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"PlacementViewAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ThingTemplate, m_placementViewAngle)},
     {"FactoryExitWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_factoryExitWidth)},
     {"FactoryExtraBibWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_factoryExtraBibWidth)},
-    {"SkillPointValue", &ThingTemplate::Parse_Int_List, (void *)4, offsetof(ThingTemplate, m_skillPointValues)},
-    {"ExperienceValue", &ThingTemplate::Parse_Int_List, (void *)4, offsetof(ThingTemplate, m_experienceValues)},
-    {"ExperienceRequired", &ThingTemplate::Parse_Int_List, (void *)4, offsetof(ThingTemplate, m_experienceRequired)},
+    {"SkillPointValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_skillPointValues)},
+    {"ExperienceValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceValues)},
+    {"ExperienceRequired", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceRequired)},
     {"IsTrainable", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_isTrainable)},
     {"EnterGuard", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_enterGuard)},
     {"HijackGuard", &INI::Parse_Bool, nullptr, offsetof(ThingTemplate, m_hijackGuard)},
@@ -101,10 +101,10 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"KindOf", &BitFlags<KINDOF_COUNT>::Parse_From_INI, nullptr, offsetof(ThingTemplate, m_kindOf)},
     {"CommandSet", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_commandSetString)},
     {"BuildVariations", &INI::Parse_AsciiString_Vector, nullptr, offsetof(ThingTemplate, m_buildVariations)},
-    {"Behavior", &ThingTemplate::Parse_Module_Name, (void *)0, offsetof(ThingTemplate, m_body)},
-    {"Body", &ThingTemplate::Parse_Module_Name, (void *)999, offsetof(ThingTemplate, m_body)},
-    {"Draw", &ThingTemplate::Parse_Module_Name, (void *)1, offsetof(ThingTemplate, m_draws)},
-    {"ClientUpdate", &ThingTemplate::Parse_Module_Name, (void *)2, offsetof(ThingTemplate, m_clientUpdates)},
+    {"Behavior", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(0), offsetof(ThingTemplate, m_body)},
+    {"Body", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(999), offsetof(ThingTemplate, m_body)},
+    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
+    {"ClientUpdate", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(2), offsetof(ThingTemplate, m_clientUpdates)},
     {"SelectPortrait", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_selectedPortraitImageName)},
     {"ButtonImage", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_buttonImageName)},
     {"UpgradeCameo1", &INI::Parse_AsciiString, nullptr, offsetof(ThingTemplate, m_upgradeCameoNames[0])},
@@ -180,7 +180,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
 
 const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
 {
-    {"Draw", &ThingTemplate::Parse_Module_Name, (void *)1, offsetof(ThingTemplate, m_draws)},
+    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
     {"Geometry", &GeometryInfo::Parse_Geometry_Type, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
     {"GeometryMajorRadius", &GeometryInfo::Parse_Geometry_MajorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
     {"GeometryMinorRadius", &GeometryInfo::Parse_Geometry_MinorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
@@ -493,13 +493,13 @@ void ThingTemplate::Set_Copied_From_Default()
 
 void ThingTemplate::Resolve_Names()
 {
-    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
-        m_prerequisites[i].Resolve_Names();
+    for (ProductionPrerequisite &prerequisite : m_prerequisites) {
+        prerequisite.Resolve_Names();
     }
 
-    for (unsigned int i = 0; i < m_prerequisites.size(); i++) {
+    for (ProductionPrerequisite &prerequisite : m_prerequisites) {
         ThingTemplate *tmpls[32];
-        int count = m_prerequisites[i].Get_All_Possible_Build_Facility_Templates(tmpls, 32);
+        int count = prerequisite.Get_All_Possible_Build_Facility_Templates(tmpls, 32);
 
         for (int j = 0; j < count; j++) {
             if (tmpls[j] != nullptr) {
@@ -603,7 +603,7 @@ const FieldParse *ThingTemplate::Get_Reskin_Field_Parse()
 
 void ThingTemplate::Parse_Add_Module(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     unsigned char oldState = tmplate->m_moduleParseState;
 
     if (oldState != MODULEPARSE_NORMAL) {
@@ -641,7 +641,7 @@ void ThingTemplate::Parse_Armor_Template_Set(INI *ini, void *instance, void *sto
 
 void ThingTemplate::Parse_Inheritable_Module(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     unsigned char oldState = tmplate->m_moduleParseState;
 
     if (oldState != MODULEPARSE_NORMAL) {
@@ -664,7 +664,7 @@ void ThingTemplate::Parse_Max_Simultaneous(INI *ini, void *instance, void *store
 {
     char str[36];
     strcpy(str, "DeterminedBySuperweaponRestriction");
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
 
     captainslog_dbgassert(&tmplate->m_maxSimultaneousOfType == store, "Bad store passed to parseMaxSimultaneous");
 
@@ -706,8 +706,8 @@ bool ThingTemplate::Remove_Module_Info(const Utf8String &tag, Utf8String &name)
 
 void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
-    ModuleInfo *info = (ModuleInfo *)store;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
+    ModuleInfo *info = static_cast<ModuleInfo *>(store);
     int data = reinterpret_cast<intptr_t>(user_data);
     Utf8String name = ini->Get_Next_Token();
     Utf8String tag_name = ini->Get_Next_Token();
@@ -880,7 +880,7 @@ void ThingTemplate::Parse_Prerequisite_Science(INI *ini, void *instance, void *s
 
 void ThingTemplate::Parse_Remove_Module(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     unsigned char oldState = tmplate->m_moduleParseState;
 
     if (oldState != MODULEPARSE_NORMAL) {
@@ -900,7 +900,7 @@ void ThingTemplate::Parse_Remove_Module(INI *ini, void *instance, void *store, c
 
 void ThingTemplate::Parse_Replace_Module(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     unsigned char oldState = tmplate->m_moduleParseState;
 
     if (oldState != MODULEPARSE_NORMAL) {
@@ -954,7 +954,7 @@ void ThingTemplate::Parse_Weapon_Template_Set(INI *ini, void *instance, void *st
 
 void ThingTemplate::Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data)
 {
-    ThingTemplate *tmplate = (ThingTemplate *)instance;
+    ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     unsigned char oldState = tmplate->m_moduleParseState;
 
     if (oldState != MODULEPARSE_NORMAL) {

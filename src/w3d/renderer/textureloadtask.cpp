@@ -401,7 +401,7 @@ bool TextureLoadTaskClass::Load_Uncompressed_Mipmap()
     int width = m_width;
     int height = m_height;
     uint8_t *dst_surface = 0;
-    uint8_t *src_surface = (uint8_t *)tga.Get_Image();
+    uint8_t *src_surface = reinterpret_cast<uint8_t *>(tga.Get_Image());
 
     if (src_format == WW3D_FORMAT_A1R5G5B5 || src_format == WW3D_FORMAT_R5G6B5 || src_format == WW3D_FORMAT_A4R4G4B4
         || src_format == WW3D_FORMAT_P8 || src_format == WW3D_FORMAT_L8 || srcwidth != width || srcheight != height) {

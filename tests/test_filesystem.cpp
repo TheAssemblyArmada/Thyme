@@ -104,7 +104,7 @@ TEST_P(FileSystemTest, file_info)
 TEST_P(FileSystemTest, list_dir)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH), "", "*.big", files, true);
+    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/", "", "*.big", files, true);
     EXPECT_EQ(files.size(), 1);
 }
 

@@ -28,7 +28,8 @@ protected:
     virtual ~GameFont() override {}
 
 public:
-    GameFont() {}
+    // #BUGFIX Initialize important members
+    GameFont() : m_next(nullptr), m_fontData(nullptr) {}
 
     GameFont *m_next;
     Utf8String m_nameString;

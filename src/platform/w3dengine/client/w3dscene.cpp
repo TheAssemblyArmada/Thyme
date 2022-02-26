@@ -111,6 +111,10 @@ RTS3DScene::RTS3DScene() : m_drawTerrainOnly(false), m_numGlobalLights(0)
     for (int i = 0; i < 16; i++) {
         m_occludedMatPassesPerPlayer[i] = nullptr;
     }
+
+    // #BUGFIX Initialize all members
+    m_unk = 0;
+    m_camera = nullptr;
 }
 
 RTS3DScene::~RTS3DScene()
@@ -1315,6 +1319,8 @@ RTS2DScene::RTS2DScene()
     Set_Name("RTS2DScene");
     m_status = new W3DStatusCircle();
     Add_Render_Object(m_status);
+    // #BUGFIX Initialize all members
+    m_camera = nullptr;
 }
 
 RTS2DScene::~RTS2DScene()

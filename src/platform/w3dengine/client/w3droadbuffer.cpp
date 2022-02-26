@@ -39,6 +39,10 @@ enum
 RoadType::RoadType() :
     m_roadTexture(nullptr), m_vertexRoad(nullptr), m_indexRoad(nullptr), m_uniqueID(-1), m_stackingOrder(0)
 {
+    // #BUGFIX Initialize all members
+    m_numRoadVertices = 0;
+    m_numRoadIndices = 0;
+    m_isAutoLoaded = false;
 }
 
 RoadType::~RoadType()

@@ -19,7 +19,26 @@
 class W3DDynamicLight : public LightClass
 {
 public:
-    W3DDynamicLight() : LightClass(LightClass::POINT), m_priorEnable(false), m_enabled(true) {}
+    W3DDynamicLight() : LightClass(LightClass::POINT), m_priorEnable(false), m_enabled(true)
+    {
+        // #BUGFIX Initialize all members
+        m_processMe = false;
+        m_prevMinX = 0;
+        m_prevMinY = 0;
+        m_prevMaxX = 0;
+        m_prevMaxY = 0;
+        m_minX = 0;
+        m_minY = 0;
+        m_maxX = 0;
+        m_maxY = 0;
+        m_decayRange = false;
+        m_decayColor = false;
+        m_curDecayFrameCount = 0;
+        m_curIncreaseFrameCount = 0;
+        m_decayFrameCount = 0;
+        m_increaseFrameCount = 0;
+        m_targetRange = 0.0f;
+    }
     virtual ~W3DDynamicLight() override {}
     virtual void On_Frame_Update() override;
 

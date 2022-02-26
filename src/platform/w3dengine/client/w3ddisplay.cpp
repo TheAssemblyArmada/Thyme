@@ -106,6 +106,12 @@ W3DDisplay::W3DDisplay() :
     for (auto &light : m_myLight) {
         light = nullptr;
     }
+
+    // #BUGFIX Initialize all members
+    for (auto &str : m_benchmarkDisplayString) {
+        str = nullptr;
+    }
+    m_nativeDebugDisplay = nullptr;
 }
 
 // 0x0073C453

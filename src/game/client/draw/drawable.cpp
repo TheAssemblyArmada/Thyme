@@ -599,8 +599,8 @@ void Drawable::Draw_Contained(IRegion2D const *region)
                             + screen.y;
 
                         for (int i = 0; i < max; i++) {
-                            int infantry = Make_Color(0, 255, 0, 255);
-                            int vehicle = Make_Color(0, 0, 255, 255);
+                            constexpr uint32_t infantry = Make_Color(0, 255, 0, 255);
+                            constexpr uint32_t vehicle = Make_Color(0, 0, 255, 255);
 
                             if (i < count) {
                                 if (i < infantry_count) {
@@ -2130,9 +2130,7 @@ void Drawable::Set_Stealth_Look(StealthLookType look)
                     } else {
                         m_stealthEmissiveScale = 0.0f;
                     }
-                }
-
-                if (update->Has_Disguised_Template()) {
+                } else if (update->Has_Disguised_Template()) {
                     m_stealthInvisible = false;
                 } else {
                     if (update->Get_Friendly_Opacity() != -1.0f) {

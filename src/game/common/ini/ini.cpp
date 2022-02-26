@@ -511,14 +511,17 @@ int INI::Scan_IndexList(const char *token, const char *const *list)
     captainslog_relassert(
         list != nullptr && *list != nullptr, 0xDEAD0006, "Error, invalid list provided for Scan_IndexList");
 
-    int list_count = 0;
+    auto *pstr = list;
 
-    while (strcasecmp(list[list_count], token) != 0) {
-        ++list_count;
-        captainslog_relassert(list[list_count] != nullptr, 0xDEAD0006, "Token %s not found in list", token);
+    while (*pstr != nullptr) {
+        if (strcasecmp(*pstr, token) == 0) {
+            return pstr - list;
+        }
+        ++pstr;
     }
 
-    return list_count;
+    captainslog_relassert(0, 0xDEAD0006, "Token %s not found in list", token);
+    return pstr - list;
 }
 
 int INI::Scan_LookupList(const char *token, const LookupListRec *list)

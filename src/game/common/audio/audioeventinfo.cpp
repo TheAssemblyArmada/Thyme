@@ -19,11 +19,11 @@
 
 namespace
 {
-const char *g_audio_priority_names[] = { "LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL" };
+const char *g_audio_priority_names[] = { "LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL", nullptr };
 const char *g_sound_type_names[] = {
-    "UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE"
+    "UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE", nullptr
 };
-const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT" };
+const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT", nullptr };
 } // namespace
 
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {

@@ -418,7 +418,10 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
     }
 
     if (m_didMemPass) {
-        return m_staticLOD[m_idealStaticGameDetail].texture_reduction_factor;
+        // #BUGFIX Test to avoid invalid indexing
+        if (m_idealStaticGameDetail > STATLOD_INVALID && m_idealStaticGameDetail < STATLOD_COUNT) {
+            return m_staticLOD[m_idealStaticGameDetail].texture_reduction_factor;
+        }
     }
 
     return m_staticLOD[STATLOD_LOW].texture_reduction_factor;

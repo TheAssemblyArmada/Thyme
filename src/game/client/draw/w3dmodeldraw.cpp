@@ -2385,7 +2385,8 @@ bool W3DModelDraw::Get_Projectile_Launch_Offset(BitFlags<MODELCONDITION_COUNT> c
             }
 
             if (turret_pitch_pos) {
-                bool b = tinfo.m_turretPitchName && !info->Find_Pristine_Bone_Pos(tinfo.m_turretPitchName, *turret_rot_pos);
+                bool b =
+                    tinfo.m_turretPitchName && !info->Find_Pristine_Bone_Pos(tinfo.m_turretPitchName, *turret_pitch_pos);
                 captainslog_dbgassert(!b,
                     "*** ASSET ERROR: TurretBone %s not found!",
                     g_theNameKeyGenerator->Key_To_Name(tinfo.m_turretPitchName).Str());

@@ -772,7 +772,8 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 SHADOW_DECAL_VERTEX *pvVertices;
 
                 if (g_nShadowDecalVertsInBuf <= g_shadowDecalVertexSize - i10 * i9) {
-                    if (g_shadowDecalVertexBufferD3D->Lock(sizeof(SHADOW_DECAL_VERTEX) * g_nShadowDecalVertsInBuf,
+                    if (D3D_OK
+                        != g_shadowDecalVertexBufferD3D->Lock(sizeof(SHADOW_DECAL_VERTEX) * g_nShadowDecalVertsInBuf,
                             sizeof(SHADOW_DECAL_VERTEX) * numVerts,
                             reinterpret_cast<BYTE **>(&pvVertices),
                             D3DLOCK_NOOVERWRITE)) {
@@ -781,7 +782,8 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 } else {
                     Flush_Decals(shadow->m_shadowTexture[0], shadow->m_type);
 
-                    if (g_shadowDecalVertexBufferD3D->Lock(0,
+                    if (D3D_OK
+                        != g_shadowDecalVertexBufferD3D->Lock(0,
                             sizeof(SHADOW_DECAL_VERTEX) * numVerts,
                             reinterpret_cast<BYTE **>(&pvVertices),
                             D3DLOCK_DISCARD)) {
@@ -844,7 +846,8 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 unsigned short *pvIndices;
 
                 if (g_nShadowDecalIndicesInBuf <= g_shadowDecalIndexSize - numIndex) {
-                    if (g_shadowDecalIndexBufferD3D->Lock(2 * g_nShadowDecalIndicesInBuf,
+                    if (D3D_OK
+                        != g_shadowDecalIndexBufferD3D->Lock(2 * g_nShadowDecalIndicesInBuf,
                             2 * numIndex,
                             reinterpret_cast<BYTE **>(&pvIndices),
                             D3DLOCK_NOOVERWRITE)) {
@@ -853,7 +856,8 @@ void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
                 } else {
                     Flush_Decals(shadow->m_shadowTexture[0], shadow->m_type);
 
-                    if (g_shadowDecalIndexBufferD3D->Lock(
+                    if (D3D_OK
+                        != g_shadowDecalIndexBufferD3D->Lock(
                             0, 2 * numIndex, reinterpret_cast<BYTE **>(&pvIndices), D3DLOCK_DISCARD)) {
                         return;
                     }

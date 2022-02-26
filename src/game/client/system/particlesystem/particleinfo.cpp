@@ -42,6 +42,12 @@ ParticleInfo::ParticleInfo() :
     m_emitterPos.Zero();
     m_pos.Zero();
     m_vel.Zero();
+
+    // #BUGFIX Initialize all members
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        m_alphaKey[i] = Keyframe{};
+        m_colorKey[i] = RGBColorKeyframe{};
+    }
 }
 
 void ParticleInfo::Xfer_Snapshot(Xfer *xfer)

@@ -48,6 +48,8 @@ class RankInfo : public Overridable
     friend void RankInfoStore::Parse_Rank_Definition(INI *);
 
 protected:
+    // #BUGFIX Initialize all members
+    RankInfo() : m_rankName(), m_skillPointsNeeded{}, m_sciencePurchasePointsGranted{}, m_sciencesGranted() {}
     virtual ~RankInfo() override {}
 
 private:

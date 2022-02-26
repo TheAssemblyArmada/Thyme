@@ -24,6 +24,11 @@ ProjectileStreamUpdate::ProjectileStreamUpdate(Thing *thing, ModuleData const *m
     m_targetID(OBJECT_UNK)
 {
     m_targetPos.Zero();
+
+    // #BUGFIX Initialize all members
+    for (int i = 0; i < MAX_SEGMENT_COUNT; ++i) {
+        m_projectileIDs[i] = OBJECT_UNK;
+    }
 }
 
 NameKeyType ProjectileStreamUpdate::Get_Module_Name_Key() const

@@ -14,6 +14,7 @@
  */
 #include "unicodestring.h"
 #include "asciistring.h"
+#include "errorcodes.h"
 #include "memdynalloc.h"
 #include <captainslog.h>
 #include <stdio.h>

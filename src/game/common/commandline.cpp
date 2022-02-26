@@ -143,8 +143,10 @@ int Parse_Play_Stats(char **argv, int argc)
 {
     if (g_theWriteableGlobalData != nullptr && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], "%" PRId32, &tmp);
-        g_theWriteableGlobalData->m_playerStats = tmp;
+        // #BUGFIX Check return value
+        if (sscanf(argv[1], "%" PRId32, &tmp) == 1) {
+            g_theWriteableGlobalData->m_playerStats = tmp;
+        }
     }
 
     return 2;
@@ -490,8 +492,10 @@ int Parse_FPS(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], "%" PRId32, &tmp);
-        g_theWriteableGlobalData->m_framesPerSecondLimit = tmp;
+        // #BUGFIX Check return value
+        if (sscanf(argv[1], "%" PRId32, &tmp) == 1) {
+            g_theWriteableGlobalData->m_framesPerSecondLimit = tmp;
+        }
     }
 
     return 2;
@@ -779,8 +783,10 @@ int Parse_Seed(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], "%" PRId32, &tmp);
-        g_theWriteableGlobalData->m_fixedSeed = tmp;
+        // #BUGFIX Test return value
+        if (sscanf(argv[1], "%" PRId32, &tmp) == 1) {
+            g_theWriteableGlobalData->m_fixedSeed = tmp;
+        }
     }
 
     return 2;
@@ -799,8 +805,10 @@ int Parse_Net_Min_Players(char **argv, int argc)
 {
     if (g_theWriteableGlobalData && argc > 1) {
         int32_t tmp;
-        sscanf(argv[1], "%" PRId32, &tmp);
-        g_theWriteableGlobalData->m_netMinPlayers = tmp;
+        // #BUGFIX Check return value
+        if (sscanf(argv[1], "%" PRId32, &tmp) == 1) {
+            g_theWriteableGlobalData->m_netMinPlayers = tmp;
+        }
     }
 
     return 2;
@@ -931,8 +939,10 @@ int Parse_Jump_To_Frame(char **argv, int argc)
         g_theWriteableGlobalData->m_useFPSLimit = true;
         g_theWriteableGlobalData->m_framesPerSecondLimit = 30000;
         int32_t tmp;
-        sscanf(argv[1], "%" PRId32, &tmp);
-        g_theWriteableGlobalData->m_frameToJumpTo = tmp;
+        // #BUGFIX Check return value
+        if (sscanf(argv[1], "%" PRId32, &tmp) == 1) {
+            g_theWriteableGlobalData->m_frameToJumpTo = tmp;
+        }
     }
 
     return 2;

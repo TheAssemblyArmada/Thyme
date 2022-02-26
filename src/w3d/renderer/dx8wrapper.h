@@ -455,13 +455,31 @@ protected:
     friend class DX8VertexBufferClass;
 };
 
-inline RenderStateStruct::RenderStateStruct() : material(0), index_buffer(0)
+inline RenderStateStruct::RenderStateStruct() : shader(), material(nullptr), index_buffer(nullptr)
 {
-    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i)
+    for (unsigned i = 0; i < MAX_TEXTURE_STAGES; ++i) {
         Textures[i] = nullptr;
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
+    }
+    for (unsigned i = 0; i < VERTEX_BUFFERS; ++i) {
         vertex_buffers[i] = nullptr;
     }
+    // #BUGFIX Initialize all members
+    for (unsigned i = 0; i < GFX_LIGHT_COUNT; ++i) {
+#ifdef BUILD_WITH_D3D8
+        Lights[i] = D3DLIGHT8{};
+#endif
+        LightEnable[i] = false;
+    }
+    world.Make_Identity();
+    view.Make_Identity();
+    for (unsigned i = 0; i < VERTEX_BUFFERS; ++i) {
+        vertex_buffer_types[i] = 0;
+    }
+    index_buffer_type = 0;
+    vba_offset = 0;
+    vba_count = 0;
+    iba_offset = 0;
+    index_base_offset = 0;
 }
 
 inline RenderStateStruct::~RenderStateStruct()

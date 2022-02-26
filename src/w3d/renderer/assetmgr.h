@@ -199,7 +199,7 @@ private:
     TextureClass *Recolor_Texture_One_Time(TextureClass *texture, int color);
     void Remap_Palette(SurfaceClass *surface, int color, bool do_palette_only, bool use_alpha);
 
-    uint32_t m_grannyAnimManager; // Not used, only here to match original size
+    uint32_t m_grannyAnimManager = 0; // Not used, only here to match original size
 };
 
 class W3DPrototypeClass final : public MemoryPoolObject, public PrototypeClass

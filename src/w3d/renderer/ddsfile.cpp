@@ -59,6 +59,8 @@ DDSFileClass::DDSFileClass(const char *filename, unsigned reduction_factor) :
     m_time = fp->Get_Date_Time();
     uint32_t header_fourcc;
 
+    m_fileHeader = DDSHeader{}; // #BUGFIX Initialize all members
+
     if (fp->Read(&header_fourcc, sizeof(header_fourcc)) != sizeof(header_fourcc)) {
         return;
     }

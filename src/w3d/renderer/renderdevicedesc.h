@@ -26,8 +26,19 @@
 class ResolutionDescClass
 {
 public:
-    ResolutionDescClass() {}
-    ResolutionDescClass(int w, int h, int d) : m_width(w), m_height(h), m_bitDepth(d) {}
+    ResolutionDescClass()
+    {
+        // #BUGFIX Initialize all members
+        m_width = 0;
+        m_height = 0;
+        m_bitDepth = 0;
+        m_refreshRate = 0;
+    }
+    ResolutionDescClass(int w, int h, int d) : m_width(w), m_height(h), m_bitDepth(d)
+    {
+        // #BUGFIX Initialize all members
+        m_refreshRate = 0;
+    }
     int Get_Width() const { return m_width; }
     int Get_Height() const { return m_height; }
     int Get_Depth() const { return m_bitDepth; }

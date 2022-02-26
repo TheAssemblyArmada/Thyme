@@ -154,6 +154,8 @@ public:
     SimpleSceneIterator(RefMultiListClass<RenderObjClass> *list, bool onlyvisible) :
         m_robjIterator(list), m_onlyVisible(onlyvisible)
     {
+        // #BUGFIX Initialize all members
+        m_scene = nullptr;
     }
     virtual ~SimpleSceneIterator() {}
     virtual void First() { m_robjIterator.First(); }

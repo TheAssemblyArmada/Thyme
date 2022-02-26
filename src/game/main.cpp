@@ -509,8 +509,11 @@ int main(int argc, char **argv)
         GetModuleFileNameA(0, dirbuf, sizeof(dirbuf));
 
         // Get the path to the executable minus the actual filename.
-        for (char *i = &dirbuf[strlen(dirbuf)]; i >= dirbuf && (*i != '\\' || *i != '/'); --i) {
-            *i = '\0';
+        for (char *i = &dirbuf[strlen(dirbuf)]; i != dirbuf; --i) {
+            if (*i == '\\' || *i == '/') {
+                *i = '\0';
+                break;
+            }
         }
     }
 #else

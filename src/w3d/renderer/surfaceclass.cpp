@@ -489,26 +489,25 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
 
     if (desc.height <= 0) {
         Unlock();
-
         return true;
     }
+    // #BUGFIX Test bits
+    if (lock_rect.pBits) {
+        uint8_t *pos = static_cast<uint8_t *>(lock_rect.pBits) + px_size - 1;
+        unsigned row = 0;
 
-    uint8_t *pos = static_cast<uint8_t *>(lock_rect.pBits) + px_size - 1;
-    unsigned row = 0;
+        while (!(mask & (*pos >> (8 - alpha)))) {
+            ++row;
+            pos += lock_rect.Pitch;
 
-    while (!(mask & (*pos >> (8 - alpha)))) {
-        ++row;
-        pos += lock_rect.Pitch;
-
-        if (row >= desc.height) {
-            Unlock();
-
-            return true;
+            if (row >= desc.height) {
+                Unlock();
+                return true;
+            }
         }
     }
 
     Unlock();
-
     return false;
 #else
     return false;

@@ -81,6 +81,7 @@ IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_
 
     switch (m_indexBuffer->Type()) {
         case BUFFER_TYPE_DX8: {
+            m_indices = nullptr;
 #ifdef BUILD_WITH_D3D8
             static_cast<DX8IndexBufferClass *>(m_indexBuffer)
                 ->Get_DX8_Index_Buffer()
@@ -94,6 +95,7 @@ IndexBufferClass::WriteLockClass::WriteLockClass(IndexBufferClass *index_buffer_
         }
         default:
             captainslog_assert(0);
+            m_indices = nullptr;
             break;
     }
 }
@@ -128,6 +130,7 @@ IndexBufferClass::AppendLockClass::AppendLockClass(
 
     switch (m_indexBuffer->Type()) {
         case BUFFER_TYPE_DX8: {
+            m_indices = nullptr;
 #ifdef BUILD_WITH_D3D8
             static_cast<DX8IndexBufferClass *>(m_indexBuffer)
                 ->Get_DX8_Index_Buffer()
@@ -141,6 +144,7 @@ IndexBufferClass::AppendLockClass::AppendLockClass(
         }
         default:
             captainslog_assert(0);
+            m_indices = nullptr;
             break;
     }
 }
@@ -302,9 +306,9 @@ DynamicIBAccessClass::WriteLockClass::WriteLockClass(DynamicIBAccessClass *ib_ac
     m_dynamicIBAccess->m_indexBuffer->Add_Ref();
 
     if (m_dynamicIBAccess->m_type == IndexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
-#ifdef BUILD_WITH_D3D8
         captainslog_assert(m_dynamicIBAccess != nullptr);
-
+        m_indices = nullptr;
+#ifdef BUILD_WITH_D3D8
         DX8IndexBufferClass *buffer = static_cast<DX8IndexBufferClass *>(m_dynamicIBAccess->m_indexBuffer);
         buffer->Get_DX8_Index_Buffer()->Lock(2 * m_dynamicIBAccess->m_indexBufferOffset,
             2 * m_dynamicIBAccess->m_indexCount,
@@ -316,6 +320,7 @@ DynamicIBAccessClass::WriteLockClass::WriteLockClass(DynamicIBAccessClass *ib_ac
         m_indices = buffer->Get_Sorting_Index_Buffer() + m_dynamicIBAccess->m_indexBufferOffset;
     } else {
         captainslog_assert(0);
+        m_indices = nullptr;
     }
 }
 

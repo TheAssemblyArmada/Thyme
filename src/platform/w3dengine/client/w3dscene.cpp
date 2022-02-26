@@ -96,9 +96,17 @@ RTS3DScene::RTS3DScene() : m_drawTerrainOnly(false), m_numGlobalLights(0)
     ShaderClass shader2(g_playerColorShader);
     shader2.Set_Src_Blend_Func(ShaderClass::SRCBLEND_SRC_ALPHA);
     shader2.Set_Dst_Blend_Func(ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA);
-    m_occludedBuildingsBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedBuildings];
-    m_occludedObjectsBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedObjects];
-    m_occludedOthersBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedOthers];
+
+    // #BUGFIX Test pointer
+    if (g_theWriteableGlobalData) {
+        m_occludedBuildingsBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedBuildings];
+        m_occludedObjectsBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedObjects];
+        m_occludedOthersBuffer = new RenderObjClass *[g_theWriteableGlobalData->m_maxOccludedOthers];
+    } else {
+        m_occludedBuildingsBuffer = new RenderObjClass *[512];
+        m_occludedObjectsBuffer = new RenderObjClass *[512];
+        m_occludedOthersBuffer = new RenderObjClass *[512];
+    }
 
     for (int i = 0; i < 16; i++) {
         m_occludedMatPassesPerPlayer[i] = nullptr;

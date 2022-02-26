@@ -69,6 +69,48 @@ const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
+// wb: 0x006E5C20
+AudioSettings::AudioSettings() :
+    // #BUGFIX Initialize all members
+    m_audioRoot(),
+    m_soundsFolder(),
+    m_musicFolder(),
+    m_streamingFolder(),
+    m_soundExtension(),
+    m_useDigital{},
+    m_useMidi{},
+    m_outputRate{},
+    m_outputBits{},
+    m_outputChannels{},
+    m_sampleCount2D{},
+    m_sampleCount3D{},
+    m_streamCount{},
+    m_globalMinRange{},
+    m_globalMaxRange{},
+    m_timeBetweenDrawableSounds{},
+    m_timeToFadeAudio{},
+    m_audioFootprintInBytes{},
+    m_minSampleVolume{},
+    m_preferredDrivers(),
+    m_relative2DVolume{},
+    m_defaultSoundVolume{},
+    m_default3DSoundVolume{},
+    m_defaultSpeechVolume{},
+    m_defaultMusicVolume{},
+    m_default2DSpeakerType{},
+    m_default3DSpeakerType{},
+    m_soundVolume{},
+    m_3dSoundVolume{},
+    m_speechVolume{},
+    m_musicVolume{},
+    m_microphoneDesiredHeightAboveTerrain{},
+    m_microphoneMaxPercentBetweenGroundAndCamera{},
+    m_zoomMinDistance{},
+    m_zoomMaxDistance{},
+    m_zoomSoundVolumePercentAmount{}
+{
+}
+
 // was originally INI::parseAudioSettingsDefinition
 void AudioSettings::Parse_Audio_Settings_Definition(INI *ini)
 {

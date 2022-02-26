@@ -50,6 +50,36 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { nullptr, nullptr, nullptr, 0 }
 };
 
+// wb: 0x006E6800
+AudioEventInfo::AudioEventInfo() :
+    // #BUGFIX Initialize all members
+    m_eventName(),
+    m_filename(),
+    m_volume{},
+    m_volumeShift{},
+    m_minVolume{},
+    m_pitchShiftLow{},
+    m_pitchShiftHigh{},
+    m_delayLow{},
+    m_delayHigh{},
+    m_limit{},
+    m_loopCount{},
+    m_priority{},
+    m_visibility{},
+    m_control{},
+    m_soundsMorning(),
+    m_sounds(),
+    m_soundsNight(),
+    m_soundsEvening(),
+    m_attack{},
+    m_decay{},
+    m_lowPassCutoff{},
+    m_minRange{},
+    m_maxRange{},
+    m_eventType{}
+{
+}
+
 /**
  * Parses audio event definition information from an INI instance.
  *

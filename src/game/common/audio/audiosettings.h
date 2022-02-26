@@ -32,7 +32,7 @@ enum PreferredDrivers
 class AudioSettings
 {
 public:
-    AudioSettings() {}
+    AudioSettings();
     ~AudioSettings() {}
 
     const Utf8String &Get_Audio_Root() const { return m_audioRoot; }

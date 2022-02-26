@@ -70,6 +70,8 @@ protected:
     virtual ~AudioEventInfo() override {}
 
 public:
+    AudioEventInfo();
+
     virtual bool Is_Level_Specific() const { return false; }
     virtual DynamicAudioEventInfo *Get_Dynamic_Event_Info() { return nullptr; }
     virtual const DynamicAudioEventInfo *Get_Dynamic_Event_Info() const { return nullptr; }

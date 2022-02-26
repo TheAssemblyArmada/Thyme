@@ -14,20 +14,11 @@
  */
 #pragma once
 
+#include "errorcodes.h"
 #include "mempool.h"
 #include "mempoolfact.h"
 #include <captainslog.h>
 #include <new>
-
-enum ErrorCode
-{
-    CODE_01 = 0xDEAD0001,
-    CODE_02 = 0xDEAD0002,
-    CODE_03 = 0xDEAD0003,
-    CODE_05 = 0xDEAD0005,
-    CODE_06 = 0xDEAD0006,
-    CODE_07 = 0xDEAD0007,
-};
 
 //
 // Base class for any object requiring efficient memory handling ?

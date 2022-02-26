@@ -272,6 +272,7 @@ inline unsigned *MeshMatDescClass::Get_DIG_Array(int pass)
             if (m_colorArray[0]) {
                 return m_colorArray[0]->Get_Array();
             }
+            break;
         case VertexMaterialClass::COLOR2:
             if (m_colorArray[1]) {
                 return m_colorArray[1]->Get_Array();

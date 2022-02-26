@@ -422,20 +422,20 @@ W3DErrorType MeshModelClass::Load_W3D(ChunkLoadClass &cload)
                 if (context->m_header.Attributes & W3D_MESH_FLAG_PRELIT_LIGHTMAP_MULTI_TEXTURE) {
                     context->m_prelitChunkID = W3D_CHUNK_PRELIT_LIGHTMAP_MULTI_TEXTURE;
                     Set_Flag(PRELIT_LIGHTMAP_MULTI_TEXTURE, true);
-                    break;
                 }
+                break;
             case W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS:
                 if (context->m_header.Attributes & W3D_MESH_FLAG_PRELIT_LIGHTMAP_MULTI_PASS) {
                     context->m_prelitChunkID = W3D_CHUNK_PRELIT_LIGHTMAP_MULTI_PASS;
                     Set_Flag(PRELIT_LIGHTMAP_MULTI_PASS, true);
-                    break;
                 }
+                break;
             case W3D::PRELIT_MODE_VERTEX:
                 if (context->m_header.Attributes & W3D_MESH_FLAG_PRELIT_VERTEX) {
                     context->m_prelitChunkID = W3D_CHUNK_PRELIT_VERTEX;
                     Set_Flag(PRELIT_VERTEX, true);
-                    break;
                 }
+                break;
             default:
                 captainslog_assert(context->m_header.Attributes & W3D_MESH_FLAG_PRELIT_UNLIT);
                 context->m_prelitChunkID = W3D_CHUNK_PRELIT_UNLIT;

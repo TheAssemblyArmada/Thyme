@@ -837,6 +837,7 @@ void CPUDetectClass::Init_Intel_Processor_Type()
                     IntelProcessor = INTEL_PROCESSOR_PENTIUM_MMX;
                     break;
             }
+            break;
         case 6:
             switch (ProcessorModel) {
                 default:
@@ -977,6 +978,7 @@ void CPUDetectClass::Init_AMD_Processor_Type()
                 default:
                     AMDProcessor = AMD_PROCESSOR_K6;
             }
+            break;
         case 6:
             switch (ProcessorModel) {
                 case 1:
@@ -995,6 +997,7 @@ void CPUDetectClass::Init_AMD_Processor_Type()
                     AMDProcessor = AMD_PROCESSOR_ATHLON;
                     break;
             }
+            break;
         default:
             break;
     }
@@ -1017,6 +1020,7 @@ void CPUDetectClass::Init_VIA_Processor_Type()
                 default:
                     break;
             }
+            break;
         case 6:
             switch (ProcessorModel) {
                 case 4:
@@ -1025,6 +1029,7 @@ void CPUDetectClass::Init_VIA_Processor_Type()
                 default:
                     break;
             }
+            break;
         default:
             break;
     }
@@ -1050,6 +1055,7 @@ void CPUDetectClass::Init_Rise_Processor_Type()
                 default:
                     break;
             }
+            break;
         default:
             break;
     }

@@ -24,7 +24,7 @@ class BinkVideoStream final : public VideoStream
     friend class BinkVideoPlayer;
 
 public:
-    BinkVideoStream() : m_binkHandle(nullptr) {}
+    BinkVideoStream() : m_binkHandle(nullptr), m_unk(0) {}
     virtual ~BinkVideoStream();
 
     virtual void Update() override;

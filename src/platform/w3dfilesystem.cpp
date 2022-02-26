@@ -74,8 +74,8 @@ const char *GameFileClass::Set_Name(const char *filename)
         Close();
     }
 
-    char buff[PATH_MAX];
-    char ext[32];
+    char buff[PATH_MAX] = {};
+    char ext[32] = {};
 
     strlcpy_tpl(m_filename, filename);
     strlcpy_tpl(buff, filename);

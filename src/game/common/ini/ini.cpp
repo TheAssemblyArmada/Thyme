@@ -195,6 +195,8 @@ INI::INI() :
 #ifdef GAME_DEBUG_STRUCTS
     m_curBlockStart[0] = '\0';
 #endif
+    // #BUGFIX Initialize all members
+    m_buffer[0] = '\0';
 }
 
 INI::~INI() {}

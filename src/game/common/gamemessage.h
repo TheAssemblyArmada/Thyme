@@ -61,7 +61,8 @@ protected:
     virtual ~GameMessageArgument() override {}
 
 public:
-    GameMessageArgument() {}
+    // #BUGFIX Initialize important members
+    GameMessageArgument() : m_next(nullptr) {}
 
 public:
     GameMessageArgument *m_next;

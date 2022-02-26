@@ -22,23 +22,25 @@ using GameMath::Cos;
 using GameMath::Inv_Sqrt;
 using GameMath::Sin;
 
-Thing::Thing(const ThingTemplate *thing_template) : m_template()
+Thing::Thing(const ThingTemplate *thing_template)
 {
     if (thing_template != nullptr) {
         m_template = const_cast<ThingTemplate *>(thing_template);
 #ifdef GAME_DEBUG_STRUCTS
         m_templateName = thing_template->Get_Name();
 #endif
-        m_transform.Make_Identity();
-        m_cachedPos.Zero();
-        m_cachedAngle = 0.0f;
-        m_cachedDirVector.Zero();
-        m_cachedAltitudeAboveTerrain = 0.0f;
-        m_cachedAltitudeAboveTerrainOrWater = 0.0f;
-        m_cacheFlags = 0;
     } else {
         captainslog_debug("no template");
+        m_template = nullptr;
     }
+    // #BUGFIX Initialize all members always
+    m_transform.Make_Identity();
+    m_cachedPos.Zero();
+    m_cachedAngle = 0.0f;
+    m_cachedDirVector.Zero();
+    m_cachedAltitudeAboveTerrain = 0.0f;
+    m_cachedAltitudeAboveTerrainOrWater = 0.0f;
+    m_cacheFlags = 0;
 }
 
 const ThingTemplate *Thing::Get_Template() const

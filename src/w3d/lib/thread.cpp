@@ -65,6 +65,8 @@ ThreadClass::ThreadClass(const char *thread_name, except_t exception_handler) :
     }
 
     m_exceptionHandler = exception_handler;
+    // #BUGFIX Initialize all members
+    m_threadID = 0;
 }
 
 ThreadClass::~ThreadClass()

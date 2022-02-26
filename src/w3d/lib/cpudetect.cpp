@@ -361,6 +361,7 @@ static uint32_t Calculate_Processor_Speed(int64_t &ticks_per_second)
     uint64_t timer1;
 
     timer0 = __rdtsc();
+    timer1 = timer0; // #BUGFIX Initialize to something
 
     uint32_t start = g_theSysTimer.Get();
     uint32_t elapsed;

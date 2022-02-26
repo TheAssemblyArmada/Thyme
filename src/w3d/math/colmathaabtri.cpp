@@ -36,10 +36,12 @@ struct AABTCollisionStruct
     Vector3 e[3];
     Vector3 n;
     Vector3 final_d;
-    const AABoxClass *box;
-    const TriClass *tri;
-    const Vector3 *box_move;
-    const Vector3 *tri_move;
+    // #BUGFIX Initialize important members
+    const AABoxClass *box = nullptr;
+    const TriClass *tri = nullptr;
+    const Vector3 *box_move = nullptr;
+    const Vector3 *tri_move = nullptr;
+
     void Init(const AABoxClass &b, const Vector3 &move1, const TriClass &t, const Vector3 &move2)
     {
         start_bad = true;

@@ -1985,7 +1985,7 @@ void MilesAudioManager::Adjust_Playing_Volume(PlayingAudio *audio)
             }
 
             AIL_set_stream_volume_pan(audio->miles.stream, vol, pan);
-        }
+        } break;
         default:
             break;
     }

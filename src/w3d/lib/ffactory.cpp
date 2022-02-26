@@ -50,7 +50,7 @@ SimpleFileFactoryClass::SimpleFileFactoryClass() : m_isStripPath(false) {}
 
 bool Is_Full_Path(const char *path)
 {
-    if (path != nullptr) {
+    if (path == nullptr) {
         return false;
     }
 

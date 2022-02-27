@@ -56,7 +56,13 @@ public:
         m_table(that.m_table), m_index(that.m_index), m_currentEntry(that.m_currentEntry), m_nextEntry(that.m_nextEntry)
     {
     }
-    HashTableIteratorClass(HashTableClass &table) : m_table(table) {}
+    HashTableIteratorClass(HashTableClass &table) : m_table(table)
+    {
+        // #BUGFIX Initialize all members
+        m_index = 0;
+        m_currentEntry = nullptr;
+        m_nextEntry = nullptr;
+    }
     virtual ~HashTableIteratorClass() {}
     void First();
     void Next();

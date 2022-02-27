@@ -95,7 +95,7 @@ const Matrix3D *Drawable::Get_Transform_Matrix() const
 // zh: 0x0046EB10 wb: 0x007C0CBA
 bool Drawable::Is_Visible() const
 {
-    for (const DrawModule **draw_modules = Get_Draw_Modules(); draw_modules != nullptr; ++draw_modules) {
+    for (const DrawModule **draw_modules = Get_Draw_Modules(); *draw_modules != nullptr; ++draw_modules) {
         if ((*draw_modules)->Is_Visible()) {
             return true;
         }

@@ -624,6 +624,7 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
 
         for (auto &iter : m_stateMap) {
             State *state = iter.second;
+            captainslog_assert(state != nullptr);
             unsigned int state_id = state->Get_ID();
             xfer->xferUnsignedInt(&state_id);
 

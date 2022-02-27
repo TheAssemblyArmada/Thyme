@@ -351,6 +351,7 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
 {
     if (m_dynamicVBAccess->m_type == VertexBufferClass::BUFFER_TYPE_DYNAMIC_DX8) {
         captainslog_assert(g_dynamicDX8VertexBuffer);
+        m_vertices = nullptr;
 #ifdef BUILD_WITH_D3D8
         DX8VertexBufferClass *buffer = static_cast<DX8VertexBufferClass *>(m_dynamicVBAccess->m_vertexBuffer);
         buffer->Get_DX8_Vertex_Buffer()->Lock(
@@ -364,6 +365,7 @@ DynamicVBAccessClass::WriteLockClass::WriteLockClass(DynamicVBAccessClass *dynam
         m_vertices = buffer->Get_Sorting_Vertex_Buffer() + m_dynamicVBAccess->m_vertexBufferOffset;
     } else {
         captainslog_assert(0);
+        m_vertices = nullptr;
     }
 }
 

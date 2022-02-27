@@ -73,10 +73,11 @@ void *SurfaceClass::Lock(int *pitch)
 {
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
-    memset(&lock_rect, 0, sizeof(lock_rect));
+    lock_rect.Pitch = 0;
+    lock_rect.pBits = nullptr;
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, 0);
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
@@ -99,10 +100,11 @@ void *SurfaceClass::Lock(int *pitch, bool discard)
 {
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
-    memset(&lock_rect, 0, sizeof(lock_rect));
+    lock_rect.Pitch = 0;
+    lock_rect.pBits = nullptr;
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, (discard ? D3DLOCK_DISCARD : 0) | D3DLOCK_NOSYSLOCK);
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
@@ -129,10 +131,11 @@ void *SurfaceClass::Lock_Rect(int *pitch, int left, int top, int right, int bott
     rect.right = right;
     rect.bottom = bottom;
     D3DLOCKED_RECT lock_rect;
-    memset(&lock_rect, 0, sizeof(lock_rect));
+    lock_rect.Pitch = 0;
+    lock_rect.pBits = nullptr;
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, &rect, 0); // BFME has D3DLOCK_NOSYSLOCK
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
@@ -152,7 +155,7 @@ void SurfaceClass::Unlock()
 #ifdef BUILD_WITH_D3D8
     HRESULT res = m_d3dSurface->UnlockRect();
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to unlock surface with error %l.", res);
     }
 #endif
@@ -169,10 +172,10 @@ void *SurfaceClass::Lock_ReadOnly(int *pitch)
 #ifdef BUILD_WITH_D3D8
     D3DLOCKED_RECT lock_rect;
     lock_rect.Pitch = 0;
-    lock_rect.pBits = 0;
+    lock_rect.pBits = nullptr;
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, nullptr, D3DLOCK_READONLY);
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to lock surface with error %l.", res);
     }
 
@@ -453,6 +456,11 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
 #ifdef BUILD_WITH_D3D8
     SurfaceDescription desc;
     Get_Description(desc);
+
+    if (desc.height <= 0) {
+        return true;
+    }
+
     captainslog_assert(column < desc.width);
     captainslog_assert(Has_Alpha(desc.format));
     int alpha = Alpha_Bits(desc.format);
@@ -463,47 +471,44 @@ bool SurfaceClass::Is_Transparent_Column(unsigned column)
             mask = 1;
             break;
         case 4:
-            mask = 15;
+            mask = 0xF;
             break;
         case 8:
-            mask = 255;
+            mask = 0xFF;
             break;
         default:
             break;
     }
 
-    int px_size = Pixel_Size(desc);
-    _D3DLOCKED_RECT lock_rect;
+    D3DLOCKED_RECT lock_rect;
     RECT rect;
     lock_rect.Pitch = 0;
-    lock_rect.pBits = 0;
+    lock_rect.pBits = nullptr;
     rect.bottom = desc.height;
     rect.top = 0;
     rect.left = column;
     rect.right = column + 1;
+
     HRESULT res = m_d3dSurface->LockRect(&lock_rect, &rect, D3DLOCK_READONLY);
-
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         captainslog_warn("Failed to lock surface with error %l.", res);
+        // #BUGFIX Return early to avoid null pointer access.
+        return false;
     }
 
-    if (desc.height <= 0) {
-        Unlock();
-        return true;
-    }
-    // #BUGFIX Test bits
-    if (lock_rect.pBits) {
-        uint8_t *pos = static_cast<uint8_t *>(lock_rect.pBits) + px_size - 1;
-        unsigned row = 0;
+    captainslog_assert(lock_rect.pBits != nullptr);
 
-        while (!(mask & (*pos >> (8 - alpha)))) {
-            ++row;
-            pos += lock_rect.Pitch;
+    const int px_size = Pixel_Size(desc);
+    uint8_t *pos = static_cast<uint8_t *>(lock_rect.pBits) + px_size - 1;
+    unsigned row = 0;
 
-            if (row >= desc.height) {
-                Unlock();
-                return true;
-            }
+    while (!(mask & (*pos >> (8 - alpha)))) {
+        ++row;
+        pos += lock_rect.Pitch;
+
+        if (row >= desc.height) {
+            Unlock();
+            return true;
         }
     }
 

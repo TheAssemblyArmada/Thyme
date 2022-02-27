@@ -22,6 +22,10 @@
  */
 #pragma once
 
+#ifndef GAME_DLL
+#error This file must not be compiled into standalone binary
+#endif
+
 #include "always.h"
 #include <memoryapi.h>
 #include <processthreadsapi.h>
@@ -87,31 +91,19 @@ template<typename T> __forceinline T *Make_Pointer(const uintptr_t address)
 template<typename ReturnType, typename... Arguments>
 __forceinline ReturnType Call_Function(const uintptr_t address, Arguments... args)
 {
-#ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__cdecl *)(Arguments...)>(address)(args...);
-#else
-    return T();
-#endif
 }
 
 template<typename ReturnType, typename... Arguments>
 __forceinline ReturnType Call__StdCall_Function(const uintptr_t address, Arguments... args)
 {
-#ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__stdcall *)(Arguments...)>(address)(args...);
-#else
-    return T();
-#endif
 }
 
 template<typename ReturnType, typename ThisType, typename... Arguments>
 __forceinline ReturnType Call_Method(const uintptr_t address, ThisType *const self, Arguments... args)
 {
-#ifdef GAME_DLL
     return reinterpret_cast<ReturnType(__thiscall *)(ThisType *, Arguments...)>(address)(self, args...);
-#else
-    return T();
-#endif
 }
 
 // These create pointers to various types of function where the return,

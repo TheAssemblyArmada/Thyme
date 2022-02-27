@@ -517,7 +517,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\tadd r0.rgb, r0, r1\n";
         HRESULT res = D3DXAssembleShader(ps1, strlen(ps1), 0, nullptr, &shader, nullptr);
 
-        if (res == D3D_OK) {
+        if (SUCCEEDED(res)) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
                 static_cast<DWORD *>(shader->GetBufferPointer()), &m_riverWaterPixelShader);
             shader->Release();
@@ -532,7 +532,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\tadd r0.rgb, r0, r1";
         res = D3DXAssembleShader(ps2, strlen(ps2), 0, nullptr, &shader, nullptr);
 
-        if (res == D3D_OK) {
+        if (SUCCEEDED(res)) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
                 static_cast<DWORD *>(shader->GetBufferPointer()), &m_waterPixelShader);
             shader->Release();
@@ -549,7 +549,7 @@ void WaterRenderObjClass::Re_Acquire_Resources()
                           "\t\t\t;\n";
         res = D3DXAssembleShader(ps3, strlen(ps3), 0, nullptr, &shader, nullptr);
 
-        if (res == D3D_OK) {
+        if (SUCCEEDED(res)) {
             res = DX8Wrapper::Get_D3D_Device8()->CreatePixelShader(
                 static_cast<DWORD *>(shader->GetBufferPointer()), &m_trapezoidWaterPixelShader);
             shader->Release();
@@ -1443,13 +1443,12 @@ void WaterRenderObjClass::Render_Water_Mesh()
         VertexFormatXYZDUV2 *verts;
 
         if (m_vertexBufferD3DOffset > m_numVertices) {
-            if (D3D_OK != m_vertexBufferD3D->Lock(0, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_DISCARD)) {
+            if (FAILED(m_vertexBufferD3D->Lock(0, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_DISCARD))) {
                 return;
             }
             m_vertexBufferD3DOffset = 0;
-        } else if (D3D_OK
-            != m_vertexBufferD3D->Lock(
-                32 * m_vertexBufferD3DOffset, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_NOOVERWRITE)) {
+        } else if (FAILED(m_vertexBufferD3D->Lock(
+                       32 * m_vertexBufferD3DOffset, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_NOOVERWRITE))) {
             return;
         }
 

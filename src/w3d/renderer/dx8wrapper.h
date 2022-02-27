@@ -222,8 +222,10 @@ public:
     static const char *Get_DX8_Patch_Edge_Style_Name(unsigned value);
     static const char *Get_DX8_Debug_Monitor_Token_Name(unsigned value);
     static const char *Get_DX8_Blend_Op_Name(unsigned value);
-    static void Log_DX8_ErrorCode(unsigned error);
-    static void Handle_DX8_ErrorCode(unsigned error);
+#ifdef BUILD_WITH_D3D8
+    static void Log_DX8_ErrorCode(HRESULT error);
+    static void Handle_DX8_ErrorCode(HRESULT error);
+#endif
 
     static int Get_Main_Thread_ID() { return s_mainThreadID; }
     static const DX8Caps *Get_Current_Caps()
@@ -684,14 +686,14 @@ inline void DX8Wrapper::Set_World_Identity()
     s_renderStateChanged |= (unsigned)WORLD_CHANGED | (unsigned)WORLD_IDENTITY;
 }
 
-inline void DX8Wrapper::Handle_DX8_ErrorCode(unsigned error)
-{
 #ifdef BUILD_WITH_D3D8
-    if (error != D3D_OK) {
+inline void DX8Wrapper::Handle_DX8_ErrorCode(HRESULT error)
+{
+    if (FAILED(error)) {
         DX8Wrapper::Log_DX8_ErrorCode(error);
     }
-#endif
 }
+#endif
 
 inline void DX8Wrapper::Set_Texture(unsigned stage, TextureClass *texture)
 {

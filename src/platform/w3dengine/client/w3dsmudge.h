@@ -30,7 +30,12 @@ public:
         SMUDGE_POLY_COUNT = 4,
     };
 
-    W3DSmudgeManager() {}
+    W3DSmudgeManager()
+        // #BUGFIX Initialize all members
+        :
+        unk1{}, unk2{}, unk3{}, unk4{}, m_indexBuffer(nullptr), m_surfaceWidth{}, m_surfaceHeight{}
+    {
+    }
     virtual ~W3DSmudgeManager() override;
     virtual void Init() override;
     virtual void Reset() override;

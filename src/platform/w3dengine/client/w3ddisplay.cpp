@@ -1488,9 +1488,9 @@ void W3DDisplay::Take_ScreenShot()
         for (unsigned int j = 0; j < x; j++) {
             int i1 = 3 * (x * i + j);
             int i2 = locked_rect.Pitch * i + 4 * j;
-            data[i1] = *((char *)locked_rect.pBits + i2);
-            data[i1 + 1] = *((char *)locked_rect.pBits + i2 + 1);
-            data[i1 + 2] = *((char *)locked_rect.pBits + i2 + 2);
+            data[i1 + 0] = *(static_cast<char *>(locked_rect.pBits) + i2 + 0);
+            data[i1 + 1] = *(static_cast<char *>(locked_rect.pBits) + i2 + 1);
+            data[i1 + 2] = *(static_cast<char *>(locked_rect.pBits) + i2 + 2);
         }
     }
 
@@ -2257,9 +2257,9 @@ void Write_Subobject_Model_And_Texture_Usage(HLodClass *hlod)
             RenderObjClass *robj = hlod->Get_Sub_Object(i);
 
             if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
-                Write_Subobject_Model_And_Texture_Usage((HLodClass *)robj);
+                Write_Subobject_Model_And_Texture_Usage(static_cast<HLodClass *>(robj));
             } else if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
-                Write_Mesh_Model_And_Texture_Usage((MeshClass *)robj);
+                Write_Mesh_Model_And_Texture_Usage(static_cast<MeshClass *>(robj));
             }
         }
     }
@@ -2279,10 +2279,10 @@ void W3DDisplay::Write_Model_And_Texture_Usage(const char *filename)
                 RenderObjClass *robj = iter->Current_Item();
 
                 if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
-                    Write_Subobject_Model_And_Texture_Usage((HLodClass *)robj);
+                    Write_Subobject_Model_And_Texture_Usage(static_cast<HLodClass *>(robj));
                 } else if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
                     fprintf(s_modelUsageFile, "%s.W3D:\n", robj->Get_Name());
-                    Write_Mesh_Model_And_Texture_Usage((MeshClass *)robj);
+                    Write_Mesh_Model_And_Texture_Usage(static_cast<MeshClass *>(robj));
                 }
 
                 iter->Next();

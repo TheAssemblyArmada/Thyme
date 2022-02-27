@@ -924,7 +924,7 @@ void W3DRoadBuffer::Load_Roads_In_Vertex_And_Index_Buffers()
                 m_roadTypes[m_curRoadType].Get_IB(), g_dynamic != 0 ? D3DLOCK_DISCARD : 0);
             VertexBufferClass::WriteLockClass vblock(
                 m_roadTypes[m_curRoadType].Get_VB(), g_dynamic != 0 ? D3DLOCK_DISCARD : 0);
-            VertexFormatXYZDUV1 *vb = (VertexFormatXYZDUV1 *)vblock.Get_Vertex_Array();
+            VertexFormatXYZDUV1 *vb = static_cast<VertexFormatXYZDUV1 *>(vblock.Get_Vertex_Array());
             unsigned short *ib = iblock.Get_Index_Array();
 
             for (int i = 0; i < 8; i++) {

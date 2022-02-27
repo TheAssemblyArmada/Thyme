@@ -598,7 +598,7 @@ void W3DBridgeBuffer::Load_Bridges_In_Vertex_And_Index_Buffers(RefMultiListItera
 
             IndexBufferClass::WriteLockClass ib_lock(m_indexBridge, D3DLOCK_DISCARD);
             VertexBufferClass::WriteLockClass vb_lock(m_vertexBridge, D3DLOCK_DISCARD);
-            VertexFormatXYZNDUV1 *destination_vb = (VertexFormatXYZNDUV1 *)vb_lock.Get_Vertex_Array();
+            VertexFormatXYZNDUV1 *destination_vb = static_cast<VertexFormatXYZNDUV1 *>(vb_lock.Get_Vertex_Array());
             unsigned short *destination_ib = ib_lock.Get_Index_Array();
 
             for (int i = 0; i < m_numBridges; i++) {

@@ -122,7 +122,7 @@ void W3DShroud::Init(WorldHeightMap *map, float world_cell_size_x, float world_c
     HRESULT res = m_pSrcTexture->LockRect(&r, nullptr, D3DLOCK_NO_DIRTY_UPDATE);
     m_pSrcTexture->UnlockRect();
     captainslog_dbgassert(SUCCEEDED(res), "Failed to lock shroud src surface");
-    m_srcTextureData = (unsigned char *)r.pBits;
+    m_srcTextureData = static_cast<unsigned char *>(r.pBits);
     m_srcTexturePitch = r.Pitch;
     memset(m_srcTextureData, 0, y * m_srcTexturePitch);
 
@@ -217,7 +217,7 @@ unsigned char W3DShroud::Get_Shroud_Level(int x, int y)
     captainslog_dbgassert(m_pSrcTexture, "Reading empty shroud");
 
     if (x < m_numCellsX && y < m_numCellsY) {
-        unsigned short s = *(unsigned short *)&m_srcTextureData[2 * x + m_srcTexturePitch * y];
+        unsigned short s = *reinterpret_cast<unsigned short *>(&m_srcTextureData[2 * x + m_srcTexturePitch * y]);
 #ifdef GAME_DEBUG_STRUCTS
         if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
             return (int)((1.0f - (float)((int)s >> 12) / 15.0f) * 255.0f);
@@ -245,7 +245,8 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
 
 #ifdef GAME_DEBUG_STRUCTS
             if (g_theWriteableGlobalData && g_theWriteableGlobalData->m_fogOfWarOn) {
-                *(unsigned short *)&m_srcTextureData[2 * x + m_srcTexturePitch * y] = ((((0xFF - level) >> 4) & 0xF) << 12)
+                *reinterpret_cast<unsigned short *>(&m_srcTextureData[2 * x + m_srcTexturePitch * y]) =
+                    ((((0xFF - level) >> 4) & 0xF) << 12)
                     | ((((int)g_theWriteableGlobalData->m_shroudColor.red >> 4) & 0xF) << 8)
                     | (16 * (((int)g_theWriteableGlobalData->m_shroudColor.green >> 4) & 0xF))
                     | ((int)g_theWriteableGlobalData->m_shroudColor.blue >> 4) & 0xF;
@@ -262,7 +263,7 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
                     r = 0xFF;
                 }
 
-                *(unsigned short *)&this->m_srcTextureData[2 * x + m_srcTexturePitch * y] =
+                *reinterpret_cast<unsigned short *>(&m_srcTextureData[2 * x + m_srcTexturePitch * y]) =
                     ((b & 0xF8) << 8) | (8 * (g & 0xFC)) | ((unsigned char)(r & 0xF8) >> 3);
             }
 #else
@@ -277,7 +278,7 @@ void W3DShroud::Set_Shroud_Level(int x, int y, unsigned char level, bool unk)
                 r = 0xFF;
             }
 
-            *(unsigned short *)&this->m_srcTextureData[2 * x + m_srcTexturePitch * y] =
+            *reinterpret_cast<unsigned short *>(&m_srcTextureData[2 * x + m_srcTexturePitch * y]) =
                 ((b & 0xF8) << 8) | (8 * (g & 0xFC)) | ((unsigned char)(r & 0xF8) >> 3);
 #endif
         }
@@ -331,7 +332,7 @@ void W3DShroud::Fill_Shroud_Data(unsigned char level)
 
     for (int i = 0; i < m_numCellsY; i++) {
         for (int j = 0; j < m_numCellsX; j++) {
-            *(unsigned short *)&src[2 * j] = data;
+            *reinterpret_cast<unsigned short *>(&src[2 * j]) = data;
         }
 
         src += 2 * pitch;
@@ -383,7 +384,7 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
     unsigned char *src = &m_srcTextureData[2 * (m_srcTexturePitch >> 1) * m_numCellsY];
 
     for (int i = 0; i < m_numCellsX; i++) {
-        *(unsigned short *)&src[2 * i] = data;
+        *reinterpret_cast<unsigned short *>(&src[2 * i]) = data;
     }
 
     RECT src_rect;

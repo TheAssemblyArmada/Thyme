@@ -205,7 +205,7 @@ bool W3DSmudgeManager::Test_Hardware_Support()
 
         IDirect3DDevice8 *device = DX8Wrapper::Get_D3D_Device8();
         device->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZRHW);
-        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (char *)vertices, sizeof(HardwareTestVertex));
+        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(HardwareTestVertex));
         unsigned char dest[256];
         memset(dest, 0, sizeof(dest));
         unsigned int size = Copy_Rect(dest, 256, 0, 0, 8, 8);
@@ -222,7 +222,7 @@ bool W3DSmudgeManager::Test_Hardware_Support()
         vertices[1].color = 0xFFFFFFFF;
         vertices[2].color = 0xFFFFFFFF;
         vertices[3].color = 0xFFFFFFFF;
-        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (char *)vertices, sizeof(HardwareTestVertex));
+        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(HardwareTestVertex));
         size = Copy_Rect(dest2, 256, 0, 0, 8, 8);
 
         if (!size) {

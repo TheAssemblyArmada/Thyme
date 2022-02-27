@@ -122,22 +122,21 @@ void W3DShaderManager::Init()
         D3DSURFACE_DESC desc;
         s_oldRenderSurface->GetDesc(&desc);
 
-        if (DX8Wrapper::Get_D3D_Device8()->CreateTexture(
-                desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &s_renderTexture)
-            != D3D_OK) {
+        if (FAILED(DX8Wrapper::Get_D3D_Device8()->CreateTexture(
+                desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET, desc.Format, D3DPOOL_DEFAULT, &s_renderTexture))) {
             if (s_oldRenderSurface) {
                 s_oldRenderSurface->Release();
             }
             s_oldRenderSurface = nullptr;
             s_renderTexture = nullptr;
-        } else if (s_renderTexture->GetSurfaceLevel(0, &s_newRenderSurface) != D3D_OK) {
+        } else if (FAILED(s_renderTexture->GetSurfaceLevel(0, &s_newRenderSurface))) {
             if (s_renderTexture) {
                 s_renderTexture->Release();
             }
             s_renderTexture = nullptr;
             s_newRenderSurface = nullptr;
         } else {
-            if (DX8Wrapper::Get_D3D_Device8()->GetDepthStencilSurface(&s_oldDepthSurface) != D3D_OK) {
+            if (FAILED(DX8Wrapper::Get_D3D_Device8()->GetDepthStencilSurface(&s_oldDepthSurface))) {
                 if (s_newRenderSurface) {
                     s_newRenderSurface->Release();
                 }

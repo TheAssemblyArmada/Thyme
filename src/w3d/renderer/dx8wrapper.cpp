@@ -443,7 +443,7 @@ bool DX8Wrapper::Reset_Device(bool reacquire)
     HRESULT res;
     DX8CALL_HRES(Reset(&s_presentParameters), res);
 
-    if (res != D3D_OK) {
+    if (FAILED(res)) {
         return false;
     }
 
@@ -503,7 +503,7 @@ void DX8Wrapper::Enumerate_Devices()
         memset(&id, 0, sizeof(id));
         HRESULT res = s_d3dInterface->GetAdapterIdentifier(i, D3DENUM_NO_WHQL_LEVEL, &id);
 
-        if (res == D3D_OK) {
+        if (SUCCEEDED(res)) {
             RenderDeviceDescClass desc;
             desc.m_deviceName = id.Description;
             desc.m_driverName = id.Driver;
@@ -529,7 +529,7 @@ void DX8Wrapper::Enumerate_Devices()
                 memset(&d3dmode, 0, sizeof(d3dmode));
                 res = s_d3dInterface->EnumAdapterModes(i, j, &d3dmode);
 
-                if (res == D3D_OK) {
+                if (SUCCEEDED(res)) {
                     int bits = 0;
 
                     switch (d3dmode.Format) {
@@ -774,7 +774,7 @@ bool DX8Wrapper::Set_Render_Device(
             case D3DFMT_A8R8G8B8:
             case D3DFMT_R8G8B8:
                 s_bitDepth = 32;
-                if (s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, mode.Format, D3DFMT_A8R8G8B8, true) == D3D_OK) {
+                if (SUCCEEDED(s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, mode.Format, D3DFMT_A8R8G8B8, true))) {
                     s_presentParameters.BackBufferFormat = D3DFMT_A8R8G8B8;
                 }
                 break;
@@ -983,7 +983,7 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(
         *set_colorbuffer = format_table[format_index];
         *set_backbuffer = format_table[format_index];
         if (bitdepth == 32 && *set_colorbuffer == D3DFMT_X8R8G8B8
-            && s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1) == D3D_OK) {
+            && SUCCEEDED(s_d3dInterface->CheckDeviceType(0, D3DDEVTYPE_HAL, D3DFMT_X8R8G8B8, D3DFMT_A8R8G8B8, 1))) {
             *set_backbuffer = D3DFMT_A8R8G8B8;
         }
     }
@@ -2521,15 +2521,13 @@ void DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name(StringClass &name, D3DTE
             break;
     }
 }
-#endif
 
-void DX8Wrapper::Log_DX8_ErrorCode(unsigned error)
+void DX8Wrapper::Log_DX8_ErrorCode(HRESULT error)
 {
     // This made use the d3d8x part of the sdk found in the DirectX 8.1 SDK which is hard to find.
     captainslog_error("Direct3D8 generated error %x.", error);
 }
 
-#ifdef BUILD_WITH_D3D8
 // Inlined in DX8Wrapper::Get_DX8_Texture_Stage_State_Value_Name in ZH
 const char *DX8Wrapper::Get_DX8_Texture_Op_Name(unsigned value)
 {

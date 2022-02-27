@@ -40,7 +40,14 @@ public:
     };
 
 public:
-    UDP() : m_fd(0) {}
+    UDP() : m_fd(0)
+    {
+        // #BUGFIX Initialize all members
+        m_myIP = 0;
+        m_myPort = 0;
+        m_addr = sockaddr_in{};
+        m_status = 0;
+    }
     ~UDP();
 
     int Bind(uint32_t address, uint16_t port);

@@ -1443,12 +1443,13 @@ void WaterRenderObjClass::Render_Water_Mesh()
         VertexFormatXYZDUV2 *verts;
 
         if (m_vertexBufferD3DOffset > m_numVertices) {
-            if (m_vertexBufferD3D->Lock(0, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_DISCARD)) {
+            if (D3D_OK != m_vertexBufferD3D->Lock(0, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_DISCARD)) {
                 return;
             }
             m_vertexBufferD3DOffset = 0;
-        } else if (m_vertexBufferD3D->Lock(
-                       32 * m_vertexBufferD3DOffset, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_NOOVERWRITE)) {
+        } else if (D3D_OK
+            != m_vertexBufferD3D->Lock(
+                32 * m_vertexBufferD3DOffset, 32 * y * x, reinterpret_cast<BYTE **>(&verts), D3DLOCK_NOOVERWRITE)) {
             return;
         }
 

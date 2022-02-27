@@ -73,6 +73,12 @@ ParticleSystemInfo::ParticleSystemInfo() :
 {
     m_driftVelocity.Zero();
     m_slavePosOffset.Zero();
+
+    // #BUGFIX Initialize all members
+    for (int i = 0; i < KEYFRAME_COUNT; ++i) {
+        m_alphaKey[i] = RandomKeyframe{};
+        m_colorKey[i] = RGBColorKeyframe{};
+    }
 }
 
 /**

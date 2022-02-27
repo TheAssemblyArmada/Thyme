@@ -369,6 +369,8 @@ void SegLineRendererClass::Render(RenderInfoClass &rinfo,
         segment[0].edge_plane[1] = start_pl;
         segment[1].start_plane = start_pl;
 
+        captainslog_dbgassert(sub_point_cnt >= 2, "It is not clear if that is always the case. Investigate if hit.");
+
         intersection[sub_point_cnt][0].point_count = 1;
         intersection[sub_point_cnt][0].next_segment_id = sub_point_cnt;
         intersection[sub_point_cnt][0].point = xformed_subdiv_pts[sub_point_cnt - 1];

@@ -27,6 +27,9 @@ public:
 class PrototypeClass
 {
 public:
+    // #BUGFIX Initialize all members
+    PrototypeClass() : m_nextHash(nullptr) {}
+
     virtual const char *Get_Name() const = 0;
     virtual int32_t Get_Class_ID() const = 0;
     virtual RenderObjClass *Create() = 0;

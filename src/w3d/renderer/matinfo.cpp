@@ -111,7 +111,7 @@ MaterialRemapperClass::MaterialRemapperClass(MaterialInfoClass *src, MaterialInf
         m_vertexMaterialCount = src->Vertex_Material_Count();
         m_vertexMaterialRemaps = new VmatRemapStruct[m_vertexMaterialCount];
 
-        for (int i = 0; i < src->Vertex_Material_Count(); ++i) {
+        for (int i = 0; i < m_vertexMaterialCount; ++i) {
             m_vertexMaterialRemaps[i].m_src = src->Peek_Vertex_Material(i);
             m_vertexMaterialRemaps[i].m_dest = dest->Peek_Vertex_Material(i);
         }
@@ -121,7 +121,7 @@ MaterialRemapperClass::MaterialRemapperClass(MaterialInfoClass *src, MaterialInf
         m_textureCount = src->Texture_Count();
         m_textureRemaps = new TextureRemapStruct[m_textureCount];
 
-        for (int i = 0; i < src->Texture_Count(); ++i) {
+        for (int i = 0; i < m_textureCount; ++i) {
             m_textureRemaps[i].m_src = src->Peek_Texture(i);
             m_textureRemaps[i].m_dest = dest->Peek_Texture(i);
         }

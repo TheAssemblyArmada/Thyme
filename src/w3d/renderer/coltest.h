@@ -80,6 +80,8 @@ inline RayCollisionTestClass::RayCollisionTestClass(
 inline RayCollisionTestClass::RayCollisionTestClass(const RayCollisionTestClass &raytest, const Matrix3D &tm) :
     CollisionTestClass(raytest), m_ray(raytest.m_ray, tm), m_checkAlpha(raytest.m_checkAlpha)
 {
+    // #BUGFIX Initialize all members
+    m_allowHidden = false;
 }
 
 inline bool RayCollisionTestClass::Cull(const Vector3 &min, const Vector3 &max)

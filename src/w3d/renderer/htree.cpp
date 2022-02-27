@@ -23,7 +23,11 @@
 using std::memcpy;
 using std::strcpy;
 
-HTreeClass::HTreeClass() : m_numPivots(0), m_pivot(nullptr), m_scaleFactor(1.0f) {}
+HTreeClass::HTreeClass() : m_numPivots(0), m_pivot(nullptr), m_scaleFactor(1.0f)
+{
+    // #BUGFIX Initialize all members
+    m_name[0] = '\0';
+}
 
 void HTreeClass::Init_Default()
 {

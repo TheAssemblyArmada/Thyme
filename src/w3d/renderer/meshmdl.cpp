@@ -37,6 +37,9 @@ MeshModelClass::MeshModelClass() :
     m_curMatDesc = m_defMatDesc;
 
     m_matInfo = new MaterialInfoClass();
+
+    // #BUGFIX Initialize all members
+    m_hasBeenInUse = false;
 }
 
 MeshModelClass::MeshModelClass(const MeshModelClass &that) :

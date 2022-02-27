@@ -65,6 +65,8 @@ public:
         m_rudder(0.0f),
         m_elevator(0.0f)
     {
+        // #BUGFIX Initialize all members
+        m_wheelInfo = TWheelInfo{};
     }
     virtual ~DrawableLocoInfo() override {}
     float m_pitch;

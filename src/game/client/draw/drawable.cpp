@@ -1211,6 +1211,26 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         if (g_theGameLogic && !g_theGameLogic->Get_Prepare_New_Game() && g_theGameState && !g_theGameState->Is_Loading()) {
             Start_Ambient_Sound(false);
         }
+    } else {
+        // #BUGFIX Initialize all members always
+        m_captionText = nullptr;
+        m_drawBits = 0;
+        m_drawableIconInfo = nullptr;
+        m_drawableInfo = DrawableInfo{};
+        m_fullyObscuredByShroud = false;
+        m_groupString = nullptr;
+        m_hidden = false;
+        m_id = DRAWABLE_UNK;
+        m_instanceIsIdentity = false;
+        m_instanceScale = 1.0f;
+        m_isModelDirty = false;
+        m_object = nullptr;
+        m_previousDrawBits = 0;
+        m_receivesDynamicLights = false;
+        m_selectionColorEnvelope = nullptr;
+        m_stealthEmissiveScale = 1.0f;
+        m_stealthInvisible = false;
+        m_tintColorEnvelope = nullptr;
     }
 }
 

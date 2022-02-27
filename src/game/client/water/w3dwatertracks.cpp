@@ -49,7 +49,12 @@ static WaveInfo s_waveTypeInfo[6] = { { 28.0f, 18.0f, 25.0f, 0.018f, 900, 0.01f,
     { 55.0f, 27.0f, 80.0f, 0.015f, 2000, 0.01f, 8.0f, 2000, 5367, "wave256.tga", "Radial" },
     { 0.0f, 0.0f, 0.0f, 0.0f, 0, 0.0f, 0.0f, 0, 0, nullptr, nullptr } };
 
-WaterTracksObj::WaterTracksObj() : m_stageZeroTexture(nullptr), m_bound(false), m_timeOffsetSecondWave(0) {}
+WaterTracksObj::WaterTracksObj() : m_stageZeroTexture(nullptr), m_bound(false), m_timeOffsetSecondWave(0)
+{
+    // #BUGFIX Initialize important members
+    m_nextSystem = nullptr;
+    m_prevSystem = nullptr;
+}
 
 WaterTracksObj ::~WaterTracksObj()
 {
@@ -552,6 +557,8 @@ WaterTracksRenderSystem::WaterTracksRenderSystem() :
     m_batchStart(0)
 {
     g_theWaterTracksRenderSystem = this;
+    // #BUGFIX Initialize all members
+    m_level = 0.0f;
 }
 
 WaterTracksRenderSystem::~WaterTracksRenderSystem()

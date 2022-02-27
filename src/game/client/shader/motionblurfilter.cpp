@@ -22,7 +22,14 @@
 Coord3D ScreenMotionBlurFilter::s_zoomToPos;
 bool ScreenMotionBlurFilter::s_zoomToValid;
 
-ScreenMotionBlurFilter::ScreenMotionBlurFilter() : m_maxCount(0), m_lastFrame(0), m_decrement(0), m_skipRender(false) {}
+ScreenMotionBlurFilter::ScreenMotionBlurFilter() : m_maxCount(0), m_lastFrame(0), m_decrement(0), m_skipRender(false)
+{
+    // #BUGFIX Initialize all members
+    m_additive = false;
+    m_doZoomTo = false;
+    m_priorDelta = Coord2D{};
+    m_panFactor = 0;
+}
 
 int ScreenMotionBlurFilter::Init()
 {

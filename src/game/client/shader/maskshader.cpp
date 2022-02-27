@@ -50,7 +50,7 @@ int MaskTextureShader::Set(int pass)
     D3DXMATRIX m3;
     D3DXMATRIX m4;
     D3DXMATRIX m5;
-    Coord3D c;
+    Coord3D c{}; // #BUGFIX Default initialize
 
     if (g_theTacticalView) {
         ICoord2D c2;

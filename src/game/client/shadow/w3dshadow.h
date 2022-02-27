@@ -52,6 +52,8 @@ public:
         m_sizeY(0.0f),
         m_type(SHADOW_NONE)
     {
+        // #BUGFIX Initialize all members
+        m_position = Coord3D{};
     }
 
     virtual void Release() = 0;

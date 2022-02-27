@@ -327,7 +327,7 @@ inline const StringClass &StringClass::operator+=(const StringClass &string)
         Resize(new_len + 1);
         Store_Length(new_len);
 
-        memcpy(&m_buffer[cur_len], (const char *)string, (src_len + 1) * sizeof(char));
+        memcpy(&m_buffer[cur_len], string.Peek_Buffer(), (src_len + 1) * sizeof(char));
     }
 
     return *this;
@@ -378,7 +378,7 @@ inline int StringClass::Get_Length() const
 
         if (length == 0) {
             length = strlen(m_buffer);
-            ((StringClass *)this)->Store_Length(length);
+            const_cast<StringClass *>(this)->Store_Length(length);
         }
     }
 
@@ -409,7 +409,7 @@ inline char *StringClass::Allocate_Buffer(size_t length)
 
 inline StringClass::HEADER *StringClass::Get_Header() const
 {
-    return reinterpret_cast<HEADER *>(((char *)m_buffer) - sizeof(StringClass::HEADER));
+    return reinterpret_cast<HEADER *>(m_buffer - sizeof(StringClass::HEADER));
 }
 
 inline void StringClass::Store_Allocated_Length(int allocated_length)

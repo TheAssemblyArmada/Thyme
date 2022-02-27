@@ -132,35 +132,33 @@ Random4Class::Random4Class(unsigned int seed)
 
 int Random4Class::operator()()
 {
-    unsigned int y;
+    unsigned int x;
     static unsigned int mag01[2] = { 0x0, MATRIX_A };
 
     if (m_mti >= N) {
         int kk;
 
         for (kk = 0; kk < N - M; kk++) {
-            y = (m_mt[kk] & UPPER_MASK) | (m_mt[kk + 1] & LOWER_MASK);
-            m_mt[kk] = m_mt[kk + M] ^ (y >> 1) ^ mag01[y & 0x1];
+            x = (m_mt[kk] & UPPER_MASK) | (m_mt[kk + 1] & LOWER_MASK);
+            m_mt[kk] = m_mt[kk + M] ^ (x >> 1) ^ mag01[x & 0x1];
         }
         for (; kk < N - 1; kk++) {
-            y = (m_mt[kk] & UPPER_MASK) | (m_mt[kk + 1] & LOWER_MASK);
-            m_mt[kk] = m_mt[kk + (M - N)] ^ (y >> 1) ^ mag01[y & 0x1];
+            x = (m_mt[kk] & UPPER_MASK) | (m_mt[kk + 1] & LOWER_MASK);
+            m_mt[kk] = m_mt[kk + (M - N)] ^ (x >> 1) ^ mag01[x & 0x1];
         }
-        y = (m_mt[N - 1] & UPPER_MASK) | (m_mt[0] & LOWER_MASK);
-        m_mt[N - 1] = m_mt[M - 1] ^ (y >> 1) ^ mag01[y & 0x1];
+        x = (m_mt[N - 1] & UPPER_MASK) | (m_mt[0] & LOWER_MASK);
+        m_mt[N - 1] = m_mt[M - 1] ^ (x >> 1) ^ mag01[x & 0x1];
 
         m_mti = 0;
     }
 
-    y = m_mt[m_mti++];
-    y ^= TEMPERING_SHIFT_U(y);
-    y ^= TEMPERING_SHIFT_S(y) & TEMPERING_MASK_B;
-    y ^= TEMPERING_SHIFT_T(y) & TEMPERING_MASK_C;
-    y ^= TEMPERING_SHIFT_L(y);
+    x = m_mt[m_mti++];
+    x ^= TEMPERING_SHIFT_U(x);
+    x ^= TEMPERING_SHIFT_S(x) & TEMPERING_MASK_B;
+    x ^= TEMPERING_SHIFT_T(x) & TEMPERING_MASK_C;
+    x ^= TEMPERING_SHIFT_L(x);
 
-    int *x = (int *)&y;
-
-    return *x;
+    return static_cast<int>(x);
 }
 
 int Random4Class::operator()(int minval, int maxval)
@@ -171,7 +169,5 @@ int Random4Class::operator()(int minval, int maxval)
 float Random4Class::Get_Float()
 {
     int x = (*this)();
-    unsigned int *y = (unsigned int *)&x;
-
-    return (*y) * 2.3283064370807973754314699618685e-10f;
+    return static_cast<unsigned int>(x) * 2.3283064370807973754314699618685e-10f;
 }

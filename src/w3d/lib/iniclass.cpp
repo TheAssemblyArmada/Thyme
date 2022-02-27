@@ -395,7 +395,7 @@ int INIClass::Get_Hex(const char *section, const char *entry, int defvalue) cons
     INIEntry *entryptr;
 
     if (section && entry && (entryptr = Find_Entry(section, entry)) != nullptr && *(entryptr->Get_Value())) {
-        return sscanf(entryptr->Get_Name(), "%x", (unsigned *)&defvalue);
+        return sscanf(entryptr->Get_Name(), "%x", reinterpret_cast<unsigned *>(&defvalue));
     }
 
     return defvalue;

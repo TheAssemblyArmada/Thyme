@@ -931,7 +931,8 @@ TextureClass *GameAssetManager::Recolor_Texture_One_Time(TextureClass *texture, 
 {
     const char *name = texture->Get_Name();
 
-    if (name && name[0] == '!') {
+    // #BUGFIX Return if name is null too
+    if (name == nullptr || name[0] == '!') {
         return nullptr;
     }
 

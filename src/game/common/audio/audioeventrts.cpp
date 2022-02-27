@@ -46,6 +46,8 @@ AudioEventRTS::AudioEventRTS() :
     m_nextPlayPortion()
 {
     m_positionOfAudio.Zero();
+    // #BUGFIX Initialize all members
+    m_objectID = OBJECT_UNK;
 }
 
 /**
@@ -77,10 +79,13 @@ AudioEventRTS::AudioEventRTS(const AudioEventRTS &that) :
 {
     if (m_eventType == EVENT_3D || m_eventType == EVENT_3D_DEAD) {
         m_positionOfAudio.Set(&that.m_positionOfAudio);
+        m_objectID = OBJECT_UNK; // #BUGFIX Initialize all members
     } else if (m_eventType == EVENT_3D_DRAWABLE) {
         m_drawableID = that.m_drawableID;
+        m_positionOfAudio.Zero(); // #BUGFIX Initialize all members
     } else if (m_eventType == EVENT_3D_OBJECT) {
         m_objectID = that.m_objectID;
+        m_positionOfAudio.Zero(); // #BUGFIX Initialize all members
     }
 }
 
@@ -112,6 +117,8 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name) :
     m_nextPlayPortion()
 {
     m_positionOfAudio.Zero();
+    // #BUGFIX Initialize all members
+    m_objectID = OBJECT_UNK;
 }
 
 /**
@@ -145,6 +152,9 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, ObjectID id) :
     if (m_objectID != OBJECT_UNK) {
         m_eventType = EVENT_3D_OBJECT;
     }
+
+    // #BUGFIX Initialize all members
+    m_positionOfAudio.Zero();
 }
 
 AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
@@ -175,6 +185,8 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, DrawableID id) :
     if (m_drawableID != DRAWABLE_UNK) {
         m_eventType = EVENT_3D_DRAWABLE;
     }
+    // #BUGFIX Initialize all members
+    m_positionOfAudio.Zero();
 }
 
 /**
@@ -205,6 +217,8 @@ AudioEventRTS::AudioEventRTS(const Utf8String &name, const Coord3D *pos) :
     m_nextPlayPortion()
 {
     m_positionOfAudio.Set(pos);
+    // #BUGFIX Initialize all members
+    m_objectID = OBJECT_UNK;
 }
 
 /**

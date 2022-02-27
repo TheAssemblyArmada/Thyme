@@ -55,8 +55,9 @@ public:
     virtual bool Is_Interrupting(AudioEventRTS *event);
 
 private:
-    int m_2dSampleSlotCount;
-    int m_3dSampleSlotCount;
-    int m_2dSamplesPlaying;
-    int m_3dSamplesPlaying;
+    // #BUGFIX Initialize all members
+    int m_2dSampleSlotCount = 0;
+    int m_3dSampleSlotCount = 0;
+    int m_2dSamplesPlaying = 0;
+    int m_3dSamplesPlaying = 0;
 };

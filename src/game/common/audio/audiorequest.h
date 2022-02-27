@@ -58,7 +58,12 @@ public:
     bool Is_Adding() const { return m_isAdding; }
 
 private:
-    AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false) {}
+    AudioRequest(bool is_add) : m_isAdding(is_add), m_isProcessed(false)
+    {
+        // #BUGFIX Initialize all members
+        m_requestType = AR_PLAY;
+        m_event.handle = 0;
+    }
 
 private:
     AudioRequestType m_requestType;

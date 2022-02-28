@@ -111,14 +111,14 @@ void SDL2Mouse::Add_SDL2_Event(SDL_Event *ev)
 
 uint8_t SDL2Mouse::Get_Mouse_Event(MouseIO *io, int8_t unk)
 {
-    if (m_eventBuffer[m_nextGetIndex].type == SDL_NOEVENT) {
+    if (m_eventBuffer[m_nextGetIndex].type == SDL_FIRSTEVENT) {
         return false;
     }
 
     Translate_Event(m_nextGetIndex, io);
 
     // Clear the current event - can be overwritten
-    m_eventBuffer[m_nextGetIndex].type = SDL_NOEVENT;
+    m_eventBuffer[m_nextGetIndex].type = SDL_FIRSTEVENT;
     m_nextGetIndex++;
     if (m_nextGetIndex >= MAX_EVENTS) {
         m_nextGetIndex = 0;

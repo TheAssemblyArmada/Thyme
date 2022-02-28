@@ -16,7 +16,7 @@
 #include "ini.h"
 #include "particlesysmanager.h"
 
-constexpr const char *ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
+constexpr const char *const ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
     "NONE",
     "WEAPON_EXPLOSION",
     "SCORCHMARK",
@@ -34,7 +34,7 @@ constexpr const char *ParticlePriorityNames[PARTICLE_PRIORITY_COUNT + 1] = {
     nullptr,
 };
 
-constexpr const char *ParticleShaderTypeNames[] = {
+constexpr const char *const ParticleShaderTypeNames[] = {
     "NONE",
     "ADDITIVE",
     "ALPHA",
@@ -43,7 +43,7 @@ constexpr const char *ParticleShaderTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *ParticleTypeNames[] = {
+constexpr const char *const ParticleTypeNames[] = {
     "NONE",
     "PARTICLE",
     "DRAWABLE",
@@ -53,7 +53,7 @@ constexpr const char *ParticleTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *EmissionVelocityTypeNames[] = {
+constexpr const char *const EmissionVelocityTypeNames[] = {
     "NONE",
     "ORTHO",
     "SPHERICAL",
@@ -63,7 +63,7 @@ constexpr const char *EmissionVelocityTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *EmssionVolumeTypeNames[] = {
+constexpr const char *const EmssionVolumeTypeNames[] = {
     "NONE",
     "POINT",
     "LINE",
@@ -73,7 +73,7 @@ constexpr const char *EmssionVolumeTypeNames[] = {
     nullptr,
 };
 
-constexpr const char *WindMotionTypeNames[] = {
+constexpr const char *const WindMotionTypeNames[] = {
     "NONE",
     "Unused",
     "PingPong",
@@ -83,10 +83,10 @@ constexpr const char *WindMotionTypeNames[] = {
 
 // clang-format off
 const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
-     { "Priority", &INI::Parse_Index_List, ParticlePriorityNames, offsetof(ParticleSystemTemplate, m_priority) },
+     FIELD_PARSE_INDEX_LIST("Priority", ParticlePriorityNames, ParticleSystemTemplate, m_priority),
      { "IsOneShot", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isOneShot) },
-     { "Shader", &INI::Parse_Index_List, ParticleShaderTypeNames, offsetof(ParticleSystemTemplate, m_shaderType) },
-     { "Type", &INI::Parse_Index_List, ParticleTypeNames, offsetof(ParticleSystemTemplate, m_particleType) },
+     FIELD_PARSE_INDEX_LIST("Shader", ParticleShaderTypeNames, ParticleSystemTemplate, m_shaderType),
+     FIELD_PARSE_INDEX_LIST("Type", ParticleTypeNames, ParticleSystemTemplate, m_particleType),
      FIELD_PARSE_ASCIISTRING("ParticleName", ParticleSystemTemplate, m_particleTypeName),
 #ifndef GAME_DLL
      { "AngleX", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_angleX) },
@@ -131,7 +131,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "BurstCount", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_burstCount) },
      { "InitialDelay", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_initialDelay) },
      { "DriftVelocity", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemTemplate, m_driftVelocity) },
-     { "VelocityType", &INI::Parse_Index_List, EmissionVelocityTypeNames, offsetof(ParticleSystemTemplate, m_emissionVelocityType) },
+     FIELD_PARSE_INDEX_LIST("VelocityType", EmissionVelocityTypeNames, ParticleSystemTemplate, m_emissionVelocityType),
      { "VelOrthoX", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.x) },
      { "VelOrthoY", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.y) },
      { "VelOrthoZ", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.ortho.z) },
@@ -141,7 +141,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "VelCylindricalNormal", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.cylindrical.normal) },
      { "VelOutward", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.outward.outward) },
      { "VelOutwardOther", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_emissionVelocity.outward.other) },
-     { "VolumeType", &INI::Parse_Index_List, EmssionVolumeTypeNames, offsetof(ParticleSystemTemplate, m_emissionVolumeType) },
+     FIELD_PARSE_INDEX_LIST("VolumeType", EmssionVolumeTypeNames, ParticleSystemTemplate, m_emissionVolumeType),
      { "VolLineStart", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.line.start) },
      { "VolLineEnd", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.line.end) },
      { "VolBoxHalfSize", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.box) },
@@ -152,7 +152,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "IsGroundAligned", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isGroundAligned) },
      { "IsEmitAboveGroundOnly", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isEmitAboveGroundOnly) },
      { "IsParticleUpTowardsEmitter", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isParticleUpTowardsEmitter) },
-     { "WindMotion", &INI::Parse_Index_List, WindMotionTypeNames, offsetof(ParticleSystemTemplate, m_windMotion) },
+     FIELD_PARSE_INDEX_LIST("WindMotion", WindMotionTypeNames, ParticleSystemTemplate, m_windMotion),
      { "WindAngleChangeMin", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windAngleChangeMin) },
      { "WindAngleChangeMax", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windAngleChangeMax) },
      { "WindPingPongStartAngleMin", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windMotionStartAngleMin) },

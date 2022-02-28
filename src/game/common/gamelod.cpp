@@ -466,39 +466,40 @@ void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
     }
 }
 
+namespace
+{
+// clang-format off
+constexpr const char *const s_particle_prioritiy_names[] = {
+    "NONE",
+    "WEAPON_EXPLOSION",
+    "SCORCHMARK",
+    "DUST_TRAIL",
+    "BUILDUP",
+    "DEBRIS_TRAIL",
+    "UNIT_DAMAGE_FX",
+    "DEATH_EXPLOSION",
+    "SEMI_CONSTANT",
+    "CONSTANT",
+    "WEAPON_TRAIL",
+    "AREA_EFFECT",
+    "CRITICAL",
+    "ALWAYS_RENDER",
+    nullptr
+};
+// clang-format on
+} // namespace
+
 // Was originally INI::parseDynamicGameLODDefinition
 void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
 {
-    static const char *_particle_prioritiy_names[] = { "NONE",
-        "WEAPON_EXPLOSION",
-        "SCORCHMARK",
-        "DUST_TRAIL",
-        "BUILDUP",
-        "DEBRIS_TRAIL",
-        "UNIT_DAMAGE_FX",
-        "DEATH_EXPLOSION",
-        "SEMI_CONSTANT",
-        "CONSTANT",
-        "WEAPON_TRAIL",
-        "AREA_EFFECT",
-        "CRITICAL",
-        "ALWAYS_RENDER",
-        nullptr };
-
     // clang-format off
     static const FieldParse _dynamic_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
         { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
         { "DebrisSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, debris_skip_mask) },
         { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLOD, slow_death_scale) },
-        { "MinParticlePriority",
-            &INI::Parse_Index_List,
-            _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_priority) },
-        { "MinParticleSkipPriority",
-            &INI::Parse_Index_List,
-            _particle_prioritiy_names,
-            offsetof(DynamicGameLOD, min_particle_skip_priority) },
+        FIELD_PARSE_INDEX_LIST("MinParticlePriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_priority),
+        FIELD_PARSE_INDEX_LIST("MinParticleSkipPriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_skip_priority),
         FIELD_PARSE_LAST
     };
     // clang-format on

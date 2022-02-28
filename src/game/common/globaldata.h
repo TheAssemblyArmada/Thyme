@@ -28,7 +28,7 @@ class WeaponBonusSet;
 #define LIGHT_COUNT 3
 
 // These enums need moving when we work out where they should go.
-enum TerrainLOD
+enum TerrainLOD : int32_t // Is INI parsed type
 {
     TERRAIN_LOD_INVALID = 0,
     TERRAIN_LOD_MIN,

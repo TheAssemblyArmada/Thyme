@@ -939,11 +939,19 @@ void Parse_Real_Range(INI *ini, void *instance, void *store, void const *user_da
     info->m_animationSpeedFactorMax = ini->Scan_Real(ini->Get_Next_Token());
 }
 
-static const char *s_theAnimModeNames[] = {
-    "MANUAL", "LOOP", "ONCE", "LOOP_PINGPONG", "LOOP_BACKWARDS", "ONCE_BACKWARDS", nullptr
+// clang-format off
+constexpr const char *const s_theAnimModeNames[] = {
+    "MANUAL",
+    "LOOP",
+    "ONCE",
+    "LOOP_PINGPONG",
+    "LOOP_BACKWARDS",
+    "ONCE_BACKWARDS",
+    nullptr
 };
 
-static const char *s_ACBitsNames[] = { "RANDOMSTART",
+constexpr const char *const s_ACBitsNames[] = {
+    "RANDOMSTART",
     "START_FRAME_FIRST",
     "START_FRAME_LAST",
     "ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT",
@@ -953,7 +961,9 @@ static const char *s_ACBitsNames[] = { "RANDOMSTART",
     "MAINTAIN_FRAME_ACROSS_STATES2",
     "MAINTAIN_FRAME_ACROSS_STATES3",
     "MAINTAIN_FRAME_ACROSS_STATES4",
-    nullptr };
+    nullptr
+};
+// clang-format on
 
 void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, void *store, void const *user_data)
 {
@@ -1120,7 +1130,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
         { "WeaponHideShowBone", &Parse_Weapon_Bone_Name, nullptr, offsetof(ModelConditionInfo, m_weaponHideShowBoneName) },
         { "Animation", &Parse_Animation, reinterpret_cast<const void *>(0), offsetof(ModelConditionInfo, m_animations) },
         { "IdleAnimation", &Parse_Animation, reinterpret_cast<const void *>(1), offsetof(ModelConditionInfo, m_animations) },
-        { "AnimationMode", &INI::Parse_Index_List, s_theAnimModeNames, offsetof(ModelConditionInfo, m_mode) },
+        FIELD_PARSE_INDEX_LIST("AnimationMode", s_theAnimModeNames, ModelConditionInfo, m_mode),
         { "TransitionKey", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_transitionKey) },
         { "WaitForStateToFinishIfPossible", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_allowToFinishKey) },
         { "Flags", &INI::Parse_Bitstring32, &s_ACBitsNames, offsetof(ModelConditionInfo, m_flags) },

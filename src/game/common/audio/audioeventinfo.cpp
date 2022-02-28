@@ -17,16 +17,41 @@
 #include <captainslog.h>
 #include <cstddef>
 
+// clang-format off
 namespace
 {
-const char *g_audio_priority_names[] = { "LOWEST", "LOW", "NORMAL", "HIGH", "CRITICAL", nullptr };
-const char *g_sound_type_names[] = {
-    "UI", "WORLD", "SHROUDED", "GLOBAL", "VOICE", "PLAYER", "ALLIES", "ENEMIES", "EVERYONE", nullptr
+constexpr const char *const g_audio_priority_names[] = {
+    "LOWEST",
+    "LOW",
+    "NORMAL",
+    "HIGH",
+    "CRITICAL",
+    nullptr
 };
-const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT", nullptr };
+
+constexpr const char *const g_sound_type_names[] = {
+    "UI",
+    "WORLD",
+    "SHROUDED",
+    "GLOBAL",
+    "VOICE",
+    "PLAYER",
+    "ALLIES",
+    "ENEMIES",
+    "EVERYONE",
+    nullptr
+};
+
+constexpr const char *const g_audio_control_names[] = {
+    "LOOP",
+    "RANDOM",
+    "ALL",
+    "POSTDELAY",
+    "INTERRUPT",
+    nullptr
+};
 } // namespace
 
-// clang-format off
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Filename", AudioEventInfo, m_filename),
     { "Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume) },
@@ -36,7 +61,7 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "Delay", &AudioEventInfo::Parse_Delay, nullptr, 0 },
     { "Limit", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_limit) },
     { "LoopCount", &INI::Parse_Int, nullptr, offsetof(AudioEventInfo, m_loopCount) },
-    { "Priority", &INI::Parse_Index_List, g_audio_priority_names, offsetof(AudioEventInfo, m_priority) },
+    FIELD_PARSE_INDEX_LIST("Priority", g_audio_priority_names, AudioEventInfo, m_priority),
     { "Type", &INI::Parse_Bitstring32, g_sound_type_names, offsetof(AudioEventInfo, m_visibility) },
     { "Control", &INI::Parse_Bitstring32, g_audio_control_names, offsetof(AudioEventInfo, m_control) },
     { "Sounds", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_sounds) },

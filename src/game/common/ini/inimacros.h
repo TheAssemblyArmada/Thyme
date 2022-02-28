@@ -51,6 +51,24 @@ constexpr ValueType ReturnWithEquivalentCheck(ValueType value)
     return value;
 }
 
+template<
+    typename ExpectedType,
+    typename ElemType,
+    size_t Size,
+    typename Pred>
+constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
+{
+#ifndef THYME_USE_STLPORT
+    static_assert(std::is_convertible<decltype(list), ExpectedType>::value,
+        "Wrong type passed to parse function!");
+    static_assert(Size > 0,
+        "List with invalid size passed to parse function!");
+    static_assert(pred()[Size - 1] == nullptr,
+        "List without null terminator passed to parse function!");
+#endif
+    return static_cast<ExpectedType>(list);
+}
+
 } // namespace Thyme
 
 #define FIELD_PARSE_LAST \
@@ -66,5 +84,12 @@ constexpr ValueType ReturnWithEquivalentCheck(ValueType value)
             &INI::Parse_AsciiString, \
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Utf8String>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_INDEX_LIST(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Index_List, \
+            Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
+            Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
 // clang-format on

@@ -34,7 +34,9 @@ GlobalData *g_theWriteableGlobalData = nullptr;
 GlobalData *GlobalData::s_theOriginal = nullptr;
 const int CRC_BUFFER_SIZE = 0x10000;
 
-static const char *const _terrain_lod_names[] = { "NONE",
+// clang-format off
+constexpr const char *const s_terrain_lod_names[] = {
+    "NONE",
     "MIN",
     "STRETCH_NO_CLOUDS",
     "HALF_CLOUDS",
@@ -44,11 +46,11 @@ static const char *const _terrain_lod_names[] = { "NONE",
     "MAX",
     "AUTOMATIC",
     "DISABLE",
-    nullptr };
+    nullptr
+};
 
 // List of keys handled in the ini. Class contains some variables that don't appear to be user controlled.
 
-// clang-format off
 const FieldParse GlobalData::s_fieldParseTable[] = {
     { "Windowed", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_windowed) },
     { "XResolution", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_xResolution) },
@@ -71,7 +73,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     { "StretchTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_stretchTerrain) },
     { "UseHalfHeightMap", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useHalfHeightMap) },
     { "DrawEntireTerrain", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_drawEntireTerrain) },
-    { "TerrainLOD", &INI::Parse_Index_List, _terrain_lod_names, offsetof(GlobalData, m_terrainLOD) },
+    FIELD_PARSE_INDEX_LIST("TerrainLOD", s_terrain_lod_names, GlobalData, m_terrainLOD),
     { "TerrainLODTargetTimeMS", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_terrainLODTargetTimeMS) },
     { "RightMouseAlwaysScrolls", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_rightMouseAlwaysScrolls) },
     { "UseWaterPlane", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_useWaterPlane) },
@@ -170,8 +172,8 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     { "ContainerPipScreenOffset", &INI::Parse_Coord2D, nullptr, offsetof(GlobalData, m_containerPipScreenOffset) },
     { "HistoricDamageLimit", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_historicDamageLimit) },
     { "MaxTerrainTracks", &INI::Parse_Int, nullptr, offsetof(GlobalData, m_maxTerrainTracks) },
-    { "TimeOfDay", &INI::Parse_Index_List, g_timeOfDayNames, offsetof(GlobalData, m_timeOfDay) },
-    { "Weather", &INI::Parse_Index_List, g_weatherNames, offsetof(GlobalData, m_weather) },
+    FIELD_PARSE_INDEX_LIST("TimeOfDay", g_timeOfDayNames, GlobalData, m_timeOfDay),
+    FIELD_PARSE_INDEX_LIST("Weather", g_weatherNames, GlobalData, m_weather),
     { "MakeTrackMarks", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_makeTrackMarks) },
     { "HideGarrisonFlags", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_hideGarrisonFlags) },
     { "ForceModelsToFollowTimeOfDay", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_forceModelsFollowTimeOfDay) },
@@ -550,10 +552,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     { "EnforceMaxCameraHeight", &INI::Parse_Bool, nullptr, offsetof(GlobalData, m_enforceMaxCameraHeight) },
     { "KeyboardScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardScrollFactor) },
     { "KeyboardDefaultScrollSpeedFactor", &INI::Parse_Real, nullptr, offsetof(GlobalData, m_keyboardDefaultScrollFactor) },
-    { "MovementPenaltyDamageState",
-        &INI::Parse_Index_List,
-        g_bodyDamageNames,
-        offsetof(GlobalData, m_movementPenaltyDamageState) },
+    FIELD_PARSE_INDEX_LIST("MovementPenaltyDamageState", g_bodyDamageNames, GlobalData, m_movementPenaltyDamageState),
     { "HealthBonus_Veteran", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_veteranHealthBonus) },
     { "HealthBonus_Elite", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_eliteHealthBonus) },
     { "HealthBonus_Heroic", &INI::Parse_Percent_To_Real, nullptr, offsetof(GlobalData, m_heroicHealthBonus) },

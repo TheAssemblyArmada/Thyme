@@ -23,7 +23,7 @@
 Anim2DCollection *g_theAnim2DCollection = nullptr;
 #endif
 
-static const char *s_Anim2DModeNames[] = {
+constexpr const char *const s_Anim2DModeNames[] = {
     "NONE", "ONCE", "ONCE_BACKWARDS", "LOOP", "LOOP_BACKWARDS", "PING_PONG", "PING_PONG_BACKWARDS", nullptr
 };
 
@@ -32,7 +32,7 @@ const FieldParse Anim2DTemplate::s_anim2dFieldParseTable[] = {
     { "NumberImages", &Parse_Num_Images, nullptr, 0 },
     { "Image", &Parse_Image, nullptr, 0 },
     { "Image_Sequence", &Parse_Image_Sequence, nullptr, 0 },
-    { "AnimationMode", &INI::Parse_Index_List, s_Anim2DModeNames, offsetof(Anim2DTemplate, m_animMode) },
+    FIELD_PARSE_INDEX_LIST("AnimationMode", s_Anim2DModeNames, Anim2DTemplate, m_animMode),
     { "AnimationDelay", &INI::Parse_Duration_Unsigned_Short, nullptr, offsetof(Anim2DTemplate, m_animDelay) },
     { "RandomizeStartFrame", &INI::Parse_Bool, nullptr, offsetof(Anim2DTemplate, m_randomizeStartFrame) },
     FIELD_PARSE_LAST

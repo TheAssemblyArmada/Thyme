@@ -36,7 +36,7 @@ const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
     { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
     { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
     { "WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 
 const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
@@ -54,7 +54,7 @@ const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseT
     FIELD_PARSE_ASCIISTRING("SkyboxTextureS", WaterTransparencySetting, m_skyboxTextureS),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureW", WaterTransparencySetting, m_skyboxTextureW),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureT", WaterTransparencySetting, m_skyboxTextureT),
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

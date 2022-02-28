@@ -89,7 +89,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
         { "SkillPointsNeeded", &INI::Parse_Int, nullptr, offsetof(RankInfo, m_skillPointsNeeded) },
         { "SciencesGranted", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
         { "SciencePurchasePointsGranted", &INI::Parse_Unsigned_Int, nullptr, offsetof(RankInfo, m_sciencePurchasePointsGranted) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

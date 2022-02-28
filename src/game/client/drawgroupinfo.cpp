@@ -36,7 +36,7 @@ const FieldParse DrawGroupInfo::s_parseTable[] = {
     {"DrawPositionXPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(0), 0},
     {"DrawPositionYPixel", &Parse_Int, reinterpret_cast<const void *>(1), 0},
     {"DrawPositionYPercent", &Parse_Percent_To_Real, reinterpret_cast<const void *>(1), 0},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

@@ -24,7 +24,7 @@ VideoPlayer *g_theVideoPlayer = nullptr;
 const FieldParse VideoPlayer::s_videoFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Filename", Video, file_name),
     FIELD_PARSE_ASCIISTRING("Comment", Video, world_builder_comment),
-    { nullptr, nullptr, nullptr, 0 },
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

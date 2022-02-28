@@ -70,7 +70,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "ArcHeight", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_arcHeight) },
         { "SegmentOverlapRatio", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_segmentOverlapRatio) },
         { "TilingScalar", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_tilingScalar) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

@@ -281,7 +281,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
         FIELD_PARSE_ASCIISTRING("MedallionRegular", PlayerTemplate, m_medallionRegular),
         FIELD_PARSE_ASCIISTRING("MedallionHilite", PlayerTemplate, m_medallionHilite),
         FIELD_PARSE_ASCIISTRING("MedallionSelect", PlayerTemplate, m_medallionSelect),
-        { nullptr, nullptr, nullptr, 0 }, 
+        FIELD_PARSE_LAST 
     };
     // clang-format on
     NameKeyType key = g_theNameKeyGenerator->Name_To_Key(ini->Get_Next_Token());

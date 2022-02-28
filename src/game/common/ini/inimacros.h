@@ -53,6 +53,13 @@ constexpr ValueType ReturnWithEquivalentCheck(ValueType value)
 
 } // namespace Thyme
 
+#define FIELD_PARSE_LAST \
+        FieldParse { \
+            nullptr, \
+            nullptr, \
+            nullptr, \
+            0 \
+        }
 #define FIELD_PARSE_ASCIISTRING(token, classtype, classmember) \
         FieldParse { \
             token, \

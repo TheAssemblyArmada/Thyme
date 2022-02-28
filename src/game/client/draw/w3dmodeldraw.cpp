@@ -755,7 +755,7 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "AttachToBoneInAnotherModule", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_attachToBoneInAnotherModule) },
         { "IgnoreConditionStates", &BitFlags<117ul>::Parse_From_INI, nullptr, offsetof(W3DModelDrawModuleData, m_ignoreConditionStates) },
         { "ReceivesDynamicLights", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_recievesDynamicLights) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -1126,7 +1126,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
         { "Flags", &INI::Parse_Bitstring32, &s_ACBitsNames, offsetof(ModelConditionInfo, m_flags) },
         { "ParticleSysBone", &Parse_Particle_Sys_Bone, nullptr, 0 },
         { "AnimationSpeedFactorRange", &Parse_Real_Range, nullptr, 0 },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

@@ -126,7 +126,7 @@ void SoundFXNugget::Parse(INI *ini, void *formal, void *, const void *)
     // clang-format off
     static const FieldParse _fieldParse[] = {
         FIELD_PARSE_ASCIISTRING("Name", SoundFXNugget, m_soundName),
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

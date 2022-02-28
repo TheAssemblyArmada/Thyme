@@ -430,6 +430,7 @@ int GameLODManager::Get_Recommended_Texture_Reduction()
 // Was originally INI::parseStaticGameLODDefinition
 void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
 {
+    // clang-format off
     static const FieldParse _static_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_fps) },
         { "MinimumProcessorFps", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, minimum_cpu_fps) },
@@ -450,8 +451,9 @@ void GameLODManager::Parse_Static_LOD_Definition(INI *ini)
         { "UseEmissiveNightMaterials", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_emissive_night_materials) },
         { "UseHeatEffects", &INI::Parse_Bool, nullptr, offsetof(StaticGameLOD, use_heat_effects) },
         { "TextureReductionFactor", &INI::Parse_Int, nullptr, offsetof(StaticGameLOD, texture_reduction_factor) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     Utf8String token = ini->Get_Next_Token();
 
@@ -483,6 +485,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
         "ALWAYS_RENDER",
         nullptr };
 
+    // clang-format off
     static const FieldParse _dynamic_lod_parsers[] = {
         { "MinimumFPS", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, minimum_fps) },
         { "ParticleSkipMask", &INI::Parse_Int, nullptr, offsetof(DynamicGameLOD, particle_skip_mask) },
@@ -496,8 +499,9 @@ void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
             &INI::Parse_Index_List,
             _particle_prioritiy_names,
             offsetof(DynamicGameLOD, min_particle_skip_priority) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     Utf8String token = ini->Get_Next_Token();
 

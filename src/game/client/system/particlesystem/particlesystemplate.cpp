@@ -159,7 +159,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "WindPingPongStartAngleMax", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windMotionStartAngleMax) },
      { "WindPingPongEndAngleMin", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windMotionEndAngleMin) },
      { "WindPingPongEndAngleMax", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windMotionEndAngleMax) },
-     { nullptr, nullptr, nullptr, 0 },
+     FIELD_PARSE_LAST
 };
 // clang-format on
 

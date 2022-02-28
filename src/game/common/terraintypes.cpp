@@ -70,7 +70,7 @@ const FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
     { "BlendEdges", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_blendEdgeTexture) },
     { "Class", &INI::Parse_Index_List, s_terrainTypeNames, offsetof(TerrainType, m_class) },
     { "RestrictConstruction", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_restrictConstruction) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

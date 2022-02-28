@@ -34,7 +34,8 @@ const FieldParse WeatherSetting::s_weatherSettingParseTable[] = {
     { "SnowVelocity", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowVelocity) },
     { "SnowPointSprites", &INI::Parse_Bool, nullptr, offsetof(WeatherSetting, m_snowPointSprites) },
     { "SnowEnabled", &INI::Parse_Bool, nullptr, offsetof(WeatherSetting, m_snowEnabled) },
-    { nullptr, nullptr, nullptr, 0 } };
+    FIELD_PARSE_LAST
+};
 // clang-format on
 
 WeatherSetting::WeatherSetting() :

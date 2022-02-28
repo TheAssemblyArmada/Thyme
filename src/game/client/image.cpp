@@ -30,7 +30,7 @@ const FieldParse Image::s_imageFieldParseTable[] = {
     { "TextureHeight", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.y) },
     { "Coords", &Parse_Image_Coords, nullptr, offsetof(Image, m_UVCoords) },
     { "Status", &Parse_Image_Status, nullptr, offsetof(Image, m_status) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

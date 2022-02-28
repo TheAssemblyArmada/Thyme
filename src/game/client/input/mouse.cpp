@@ -706,7 +706,7 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
         { "DragTolerance", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance) },
         { "DragTolerance3D", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance3D) },
         { "DragToleranceMS", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragToleranceMS) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -739,7 +739,7 @@ void Mouse::Parse_Cursor_Definition(INI *ini)
         { "Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames) },
         { "FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps) },
         { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

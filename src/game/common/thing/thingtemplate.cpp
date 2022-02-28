@@ -176,7 +176,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
     {"CrusherLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crusherLevel)},
     {"CrushableLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crushableLevel)},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_LAST
 };
 
 const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
@@ -191,7 +191,7 @@ const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] =
     {"FenceXOffset", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceXOffset)},
     {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
     {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
-    {nullptr, nullptr, nullptr, 0}
+    FIELD_PARSE_LAST
 };
 // clang-format on
 
@@ -790,7 +790,7 @@ void ThingTemplate::Parse_Per_Unit_FX(INI *ini, void *instance, void *store, con
     // clang-format off
     static const FieldParse myFieldParse[] = {
         { nullptr, &Parse_Arbitrary_FX_Into_Map, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -816,7 +816,7 @@ void ThingTemplate::Parse_Per_Unit_Sounds(INI *ini, void *instance, void *store,
     // clang-format off
     static const FieldParse myFieldParse[] = {
         { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 
@@ -850,7 +850,7 @@ void ThingTemplate::Parse_Prerequisites(INI *ini, void *instance, void *store, c
     static const FieldParse myFieldParse[] = {
         { "Object", &Parse_Prerequisite_Unit, nullptr, 0},
         { "Science", &Parse_Prerequisite_Science, nullptr, 0},
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

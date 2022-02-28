@@ -86,6 +86,7 @@ bool WeaponTemplateSet::Test_Weapon_Set_Flag(WeaponSetType set)
  */
 void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate *type)
 {
+    // clang-format off
     static const FieldParse _parse_table[] = {
         { "Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_From_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions) },
         { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
@@ -96,8 +97,9 @@ void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate 
             &INI::Parse_Bool,
             nullptr,
             offsetof(WeaponTemplateSet, m_weaponLockSharedAcrossSets) },
-        { nullptr, nullptr, nullptr, 0 }
+        FIELD_PARSE_LAST
     };
+    // clang-format on
 
     ini->Init_From_INI(this, _parse_table);
     m_type = type;

@@ -54,7 +54,8 @@ const FieldParse MiscAudio::s_fieldParseTable[] = {
     { "SabotageShutDownBuilding", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_sabotageShutdownBuilding) },
     { "SabotageResetTimeBuilding", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_sabotageResetTimeBuilding) },
     { "AircraftWheelScreech", &INI::Parse_Audio_Event_RTS, nullptr, offsetof(MiscAudio, m_aircraftWheelScreech) },
-    { nullptr, nullptr, nullptr, 0 } };
+    FIELD_PARSE_LAST
+};
 // clang-format on
 
 // Was originally INI::parseMiscAudio

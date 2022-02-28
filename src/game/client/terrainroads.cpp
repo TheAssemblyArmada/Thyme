@@ -25,7 +25,7 @@ const FieldParse TerrainRoadCollection::s_terrainRoadFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Texture", TerrainRoadType, m_texture),
     { "RoadWidth", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidth) },
     { "RoadWidthInTexture", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidthInTexture) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 
 const FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
@@ -51,7 +51,7 @@ const FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("RepairedToSound", TerrainRoadType, m_repairedToSounds[BODY_DAMAGED]),
     { "TransitionToOCL", &TerrainRoadType::Parse_Transition_To_OCL, nullptr, 0 },
     { "TransitionToFX", &TerrainRoadType::Parse_Transition_To_FX, nullptr, 0 },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

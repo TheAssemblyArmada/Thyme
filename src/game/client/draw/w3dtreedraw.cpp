@@ -58,7 +58,7 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "SinkDistance", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkDistance) },
         { "SinkTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkTime) },
         { "DoShadow", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_doShadow) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

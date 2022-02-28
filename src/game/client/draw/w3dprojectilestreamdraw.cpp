@@ -35,7 +35,7 @@ void W3DProjectileStreamDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "TileFactor", &INI::Parse_Real, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_tileFactor) },
         { "ScrollRate", &INI::Parse_Real, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_scrollRate) },
         { "MaxSegments", &INI::Parse_Int, nullptr, offsetof(W3DProjectileStreamDrawModuleData, m_maxSegments) },
-        { nullptr, nullptr, nullptr, 0 },
+        FIELD_PARSE_LAST
     };
     // clang-format on
 

@@ -67,7 +67,7 @@ const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
         &INI::Parse_Percent_To_Real,
         nullptr,
         offsetof(AudioSettings, m_zoomSoundVolumePercentAmount) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

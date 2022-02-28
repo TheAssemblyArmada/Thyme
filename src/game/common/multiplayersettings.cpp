@@ -27,7 +27,7 @@ const FieldParse MultiplayerColorDefinition::s_colorFieldParsetable[] = {
     FIELD_PARSE_ASCIISTRING("TooltipName", MultiplayerColorDefinition, m_tooltipName),
     { "RGBColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbValue) },
     { "RGBNightColor", &INI::Parse_RGB_Color, nullptr, offsetof(MultiplayerColorDefinition, m_rgbNightValue) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

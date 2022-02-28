@@ -23,14 +23,16 @@
 ScienceStore *g_theScienceStore = nullptr;
 #endif
 
+// clang-format off
 const FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
     { "PrerequisiteSciences", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
     { "SciencePurchasePointCost", &INI::Parse_Int, nullptr, offsetof(ScienceInfo, m_purchaseCost) },
     { "IsGrantable", &INI::Parse_Bool, nullptr, offsetof(ScienceInfo, m_isGrantable) },
     { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_displayName) },
     { "Description", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_description) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
+// clang-format on
 
 ScienceInfo::ScienceInfo() :
     m_scienceType(ScienceType::SCIENCE_INVALID),

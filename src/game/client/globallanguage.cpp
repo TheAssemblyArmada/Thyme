@@ -66,7 +66,7 @@ const FieldParse GlobalLanguage::s_languageParseTable[] = {
     { "CreditsTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsTitleFont) },
     { "CreditsMinorTitleFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsMinorTitleFont) },
     { "CreditsNormalFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsNormalFont) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

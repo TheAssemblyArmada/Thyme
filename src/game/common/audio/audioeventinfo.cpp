@@ -48,7 +48,7 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange) },
     { "MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange) },
     { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_LAST
 };
 // clang-format on
 

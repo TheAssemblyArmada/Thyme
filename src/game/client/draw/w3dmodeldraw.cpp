@@ -741,9 +741,9 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "MaxRecoilDistance", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_maxRecoil) },
         { "RecoilDamping", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilDamping) },
         { "RecoilSettleSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilSettle) },
-        { "OkToChangeModelColor", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_okToChangeModelColor) },
-        { "AnimationsRequirePower", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_animationsRequirePower) },
-        { "ParticlesAttachedToAnimatedBones", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones) },
+        FIELD_PARSE_BOOL("OkToChangeModelColor", W3DModelDrawModuleData, m_okToChangeModelColor),
+        FIELD_PARSE_BOOL("AnimationsRequirePower", W3DModelDrawModuleData, m_animationsRequirePower),
+        FIELD_PARSE_BOOL("ParticlesAttachedToAnimatedBones", W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones),
         { "MinLODRequired", &GameLODManager::Parse_Static_Game_LOD_Level, nullptr, offsetof(W3DModelDrawModuleData, m_minLodRequired) },
         { "ProjectileBoneFeedbackEnabledSlots", &INI::Parse_Bitstring32, s_theWeaponSlotTypeNames, offsetof(W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
         { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_DEFAULT), 0 },
@@ -754,7 +754,7 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "ExtraPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, offsetof(W3DModelDrawModuleData, m_extraPublicBone) },
         { "AttachToBoneInAnotherModule", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_attachToBoneInAnotherModule) },
         { "IgnoreConditionStates", &BitFlags<117ul>::Parse_From_INI, nullptr, offsetof(W3DModelDrawModuleData, m_ignoreConditionStates) },
-        { "ReceivesDynamicLights", &INI::Parse_Bool, nullptr, offsetof(W3DModelDrawModuleData, m_recievesDynamicLights) },
+        FIELD_PARSE_BOOL("ReceivesDynamicLights", W3DModelDrawModuleData, m_recievesDynamicLights),
         FIELD_PARSE_LAST
     };
     // clang-format on

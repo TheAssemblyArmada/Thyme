@@ -47,7 +47,7 @@ const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseT
         offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
     { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
     FIELD_PARSE_ASCIISTRING("StandingWaterTexture", WaterTransparencySetting, m_standingWaterTexture),
-    { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
+    FIELD_PARSE_BOOL("AdditiveBlending", WaterTransparencySetting, m_additiveBlending),
     { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
     FIELD_PARSE_ASCIISTRING("SkyboxTextureN", WaterTransparencySetting, m_skyboxTextureN),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureE", WaterTransparencySetting, m_skyboxTextureE),

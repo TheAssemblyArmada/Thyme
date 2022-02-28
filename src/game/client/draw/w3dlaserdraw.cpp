@@ -65,7 +65,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "FadeLifetime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_fadeFrames) },
         FIELD_PARSE_ASCIISTRING("Texture", W3DLaserDrawModuleData, m_textureName),
         { "ScrollRate", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_scrollRate) },
-        { "Tile", &INI::Parse_Bool, nullptr, offsetof(W3DLaserDrawModuleData, m_tile) },
+        FIELD_PARSE_BOOL("Tile", W3DLaserDrawModuleData, m_tile),
         { "Segments", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_segments) },
         { "ArcHeight", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_arcHeight) },
         { "SegmentOverlapRatio", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_segmentOverlapRatio) },

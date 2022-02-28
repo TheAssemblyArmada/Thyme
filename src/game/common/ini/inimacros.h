@@ -78,6 +78,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             0 \
         }
+#define FIELD_PARSE_BOOL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Bool, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), bool>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_ASCIISTRING(token, classtype, classmember) \
         FieldParse { \
             token, \

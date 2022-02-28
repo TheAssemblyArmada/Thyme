@@ -67,9 +67,9 @@ constexpr const char *const s_terrainTypeNames[] = {
 
 const FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Texture", TerrainType, m_texture),
-    { "BlendEdges", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_blendEdgeTexture) },
+    FIELD_PARSE_BOOL("BlendEdges", TerrainType, m_blendEdgeTexture),
     FIELD_PARSE_INDEX_LIST("Class", s_terrainTypeNames, TerrainType, m_class),
-    { "RestrictConstruction", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_restrictConstruction) },
+    FIELD_PARSE_BOOL("RestrictConstruction", TerrainType, m_restrictConstruction),
     FIELD_PARSE_LAST
 };
 // clang-format on

@@ -49,15 +49,15 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "ToppleFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_toppleFX) },
         { "BounceFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceFX) },
         FIELD_PARSE_ASCIISTRING("StumpName", W3DTreeDrawModuleData, m_stumpName),
-        { "KillWhenFinishedToppling", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_killWhenFinishedToppling) },
-        { "DoTopple", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_doTopple) },
+        FIELD_PARSE_BOOL("KillWhenFinishedToppling", W3DTreeDrawModuleData, m_killWhenFinishedToppling),
+        FIELD_PARSE_BOOL("DoTopple", W3DTreeDrawModuleData, m_doTopple),
         { "InitialVelocityPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_initialVelocityPercent) },
         { "InitialAccelPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_initialAccelPercent) },
         { "BounceVelocityPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceVelocityPercent) },
         { "MinimumToppleSpeed", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_minimumToppleSpeed) },
         { "SinkDistance", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkDistance) },
         { "SinkTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkTime) },
-        { "DoShadow", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_doShadow) },
+        FIELD_PARSE_BOOL("DoShadow", W3DTreeDrawModuleData, m_doShadow),
         FIELD_PARSE_LAST
     };
     // clang-format on

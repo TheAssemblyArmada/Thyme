@@ -84,7 +84,7 @@ constexpr const char *const WindMotionTypeNames[] = {
 // clang-format off
 const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      FIELD_PARSE_INDEX_LIST("Priority", ParticlePriorityNames, ParticleSystemTemplate, m_priority),
-     { "IsOneShot", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isOneShot) },
+     FIELD_PARSE_BOOL("IsOneShot", ParticleSystemTemplate, m_isOneShot),
      FIELD_PARSE_INDEX_LIST("Shader", ParticleShaderTypeNames, ParticleSystemTemplate, m_shaderType),
      FIELD_PARSE_INDEX_LIST("Type", ParticleTypeNames, ParticleSystemTemplate, m_particleType),
      FIELD_PARSE_ASCIISTRING("ParticleName", ParticleSystemTemplate, m_particleTypeName),
@@ -148,10 +148,10 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "VolSphereRadius", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.sphere) },
      { "VolCylinderRadius", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.cylinder.radius) },
      { "VolCylinderLength", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_emissionVolume.cylinder.length) },
-     { "IsHollow", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isEmissionVolumeHollow) },
-     { "IsGroundAligned", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isGroundAligned) },
-     { "IsEmitAboveGroundOnly", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isEmitAboveGroundOnly) },
-     { "IsParticleUpTowardsEmitter", &INI::Parse_Bool, nullptr, offsetof(ParticleSystemTemplate, m_isParticleUpTowardsEmitter) },
+     FIELD_PARSE_BOOL("IsHollow", ParticleSystemTemplate, m_isEmissionVolumeHollow),
+     FIELD_PARSE_BOOL("IsGroundAligned", ParticleSystemTemplate, m_isGroundAligned),
+     FIELD_PARSE_BOOL("IsEmitAboveGroundOnly", ParticleSystemTemplate, m_isEmitAboveGroundOnly),
+     FIELD_PARSE_BOOL("IsParticleUpTowardsEmitter", ParticleSystemTemplate, m_isParticleUpTowardsEmitter),
      FIELD_PARSE_INDEX_LIST("WindMotion", WindMotionTypeNames, ParticleSystemTemplate, m_windMotion),
      { "WindAngleChangeMin", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windAngleChangeMin) },
      { "WindAngleChangeMax", &INI::Parse_Real, nullptr, offsetof(ParticleSystemTemplate, m_windAngleChangeMax) },

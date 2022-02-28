@@ -34,7 +34,7 @@ const FieldParse Anim2DTemplate::s_anim2dFieldParseTable[] = {
     { "Image_Sequence", &Parse_Image_Sequence, nullptr, 0 },
     FIELD_PARSE_INDEX_LIST("AnimationMode", s_Anim2DModeNames, Anim2DTemplate, m_animMode),
     { "AnimationDelay", &INI::Parse_Duration_Unsigned_Short, nullptr, offsetof(Anim2DTemplate, m_animDelay) },
-    { "RandomizeStartFrame", &INI::Parse_Bool, nullptr, offsetof(Anim2DTemplate, m_randomizeStartFrame) },
+    FIELD_PARSE_BOOL("RandomizeStartFrame", Anim2DTemplate, m_randomizeStartFrame),
     FIELD_PARSE_LAST
 };
 // clang-format on

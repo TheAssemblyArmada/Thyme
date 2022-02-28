@@ -24,12 +24,12 @@ DrawGroupInfo *g_theDrawGroupInfo;
 
 // clang-format off
 const FieldParse DrawGroupInfo::s_parseTable[] = {
-    {"UsePlayerColor", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_usePlayerColor)},
+    FIELD_PARSE_BOOL("UsePlayerColor", DrawGroupInfo, m_usePlayerColor),
     {"ColorForText", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForText)},
     {"ColorForTextDropShadow", &INI::Parse_Color_Int, nullptr, offsetof(DrawGroupInfo, m_colorForTextDropShadow)},
     {"FontName", &INI::Parse_Quoted_AsciiString, nullptr, offsetof(DrawGroupInfo, m_fontName)},
     {"FontSize", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_fontSize)},
-    {"FontIsBold", &INI::Parse_Bool, nullptr, offsetof(DrawGroupInfo, m_fontIsBold)},
+    FIELD_PARSE_BOOL("FontIsBold", DrawGroupInfo, m_fontIsBold),
     {"DropShadowOffsetX", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetX)},
     {"DropShadowOffsetY", &INI::Parse_Int, nullptr, offsetof(DrawGroupInfo, m_dropShadowOffsetY)},
     {"DrawPositionXPixel", &Parse_Int, reinterpret_cast<const void *>(0), 0},

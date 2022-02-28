@@ -28,7 +28,7 @@ const FieldParse GlobalLanguage::s_languageParseTable[] = {
     FIELD_PARSE_ASCIISTRING("UnicodeFontName", GlobalLanguage, m_unicodeFontName),
     { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
     { "MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed) },
-    { "UseHardWordWrap", &INI::Parse_Bool, nullptr, offsetof(GlobalLanguage, m_useHardWordWrap) },
+    FIELD_PARSE_BOOL("UseHardWordWrap", GlobalLanguage, m_useHardWordWrap),
     { "ResolutionFontAdjustment", &INI::Parse_Real, nullptr, offsetof(GlobalLanguage, m_resolutionFontAdjustment) },
     { "CopyrightFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_copyrightFont) },
     { "MessageFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_messageFont) },

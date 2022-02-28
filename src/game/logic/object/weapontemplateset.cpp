@@ -92,11 +92,8 @@ void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate 
         { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
         { "AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0 },
         { "PreferredAgainst", &WeaponTemplateSet::Parse_Preferred_Against, nullptr, 0 },
-        { "ShareWeaponReloadTime", &INI::Parse_Bool, nullptr, offsetof(WeaponTemplateSet, m_shareWeaponReloadTime) },
-        { "WeaponLockSharedAcrossSets",
-            &INI::Parse_Bool,
-            nullptr,
-            offsetof(WeaponTemplateSet, m_weaponLockSharedAcrossSets) },
+        FIELD_PARSE_BOOL("ShareWeaponReloadTime", WeaponTemplateSet, m_shareWeaponReloadTime),
+        FIELD_PARSE_BOOL("WeaponLockSharedAcrossSets", WeaponTemplateSet, m_weaponLockSharedAcrossSets),
         FIELD_PARSE_LAST
     };
     // clang-format on

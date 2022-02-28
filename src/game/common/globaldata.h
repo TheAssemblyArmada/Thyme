@@ -219,7 +219,7 @@ public:
     bool m_showTerrainNormals;
     // char pad[2]
     int32_t m_frameToJumpTo; // Perhaps not a float, set to frame number in worldbuilder as an int.
-    int32_t m_debugAI; // Possibly old BOOL typedef for int?, keep int for ABI compat until sure
+    int32_t m_debugAI; // #TODO parse type is int, but parse function is for bool
     bool m_logSupplyCenterPlacement;
     bool m_debugObstacleAI;
     bool m_showObjectHealth;

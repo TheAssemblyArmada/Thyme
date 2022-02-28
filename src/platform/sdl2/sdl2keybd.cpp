@@ -45,7 +45,7 @@ void SDL2InputKeyboard::Add_SDL2_Event(SDL_Event *ev)
     auto &event = m_eventBuffer[m_nextFreeIndex];
 
     // If no space (0 type == empty) for more events throw away event
-    if (event.type != SDL_NOEVENT) {
+    if (event.type != SDL_FIRSTEVENT) {
         return;
     }
 
@@ -69,7 +69,7 @@ void SDL2InputKeyboard::Get_Key(KeyboardIO *io)
     // Translate_Event(m_nextGetIndex, io);
 
     // Clear the current event - can be overwritten
-    m_eventBuffer[m_nextGetIndex].type = SDL_NOEVENT;
+    m_eventBuffer[m_nextGetIndex].type = SDL_FIRSTEVENT;
     m_nextGetIndex++;
     if (m_nextGetIndex >= MAX_EVENTS) {
         m_nextGetIndex = 0;

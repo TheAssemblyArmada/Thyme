@@ -40,15 +40,15 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { "ModelName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_modelName) },
-        { "TextureName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_textureName) },
+        FIELD_PARSE_ASCIISTRING("ModelName", W3DTreeDrawModuleData, m_modelName),
+        FIELD_PARSE_ASCIISTRING("TextureName", W3DTreeDrawModuleData, m_textureName),
         { "MoveOutwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveOutwardTime) },
         { "MoveInwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveInwardTime) },
         { "MoveOutwardDistanceFactor", &INI::Parse_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_moveOutwardDistanceFactor) },
         { "DarkeningFactor", &INI::Parse_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_darkeningFactor) },
         { "ToppleFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_toppleFX) },
         { "BounceFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceFX) },
-        { "StumpName", &INI::Parse_AsciiString, nullptr, offsetof(W3DTreeDrawModuleData, m_stumpName) },
+        FIELD_PARSE_ASCIISTRING("StumpName", W3DTreeDrawModuleData, m_stumpName),
         { "KillWhenFinishedToppling", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_killWhenFinishedToppling) },
         { "DoTopple", &INI::Parse_Bool, nullptr, offsetof(W3DTreeDrawModuleData, m_doTopple) },
         { "InitialVelocityPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_initialVelocityPercent) },

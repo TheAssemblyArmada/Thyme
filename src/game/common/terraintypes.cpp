@@ -64,13 +64,15 @@ const char *s_terrainTypeNames[] = { "NONE",
 
 } // namespace
 
+// clang-format off
 const FieldParse TerrainTypeCollection::s_terrainTypeParseTable[] = {
-    { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(TerrainType, m_texture) },
+    FIELD_PARSE_ASCIISTRING("Texture", TerrainType, m_texture),
     { "BlendEdges", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_blendEdgeTexture) },
     { "Class", &INI::Parse_Index_List, s_terrainTypeNames, offsetof(TerrainType, m_class) },
     { "RestrictConstruction", &INI::Parse_Bool, nullptr, offsetof(TerrainType, m_restrictConstruction) },
     { nullptr, nullptr, nullptr, 0 }
 };
+// clang-format on
 
 TerrainType::TerrainType() :
     m_name(), m_texture(), m_blendEdgeTexture(false), m_class(TERRAIN_NONE), m_restrictConstruction(false), m_next(nullptr)

@@ -683,8 +683,9 @@ void Mouse::Set_Mouse_Text(const Utf16String text, const RGBAColorInt *color, co
  */
 void Mouse::Parse_Mouse_Definition(INI *ini)
 {
+    // clang-format off
     static const FieldParse _static_mouse_parsers[] = {
-        { "TooltipFontName", &INI::Parse_AsciiString, nullptr, offsetof(Mouse, m_tooltipFontName) },
+        FIELD_PARSE_ASCIISTRING("TooltipFontName", Mouse, m_tooltipFontName),
         { "TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize) },
         { "TooltipFontIsBold", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipFontIsBold) },
         { "TooltipAnimateBackground", &INI::Parse_Bool, nullptr, offsetof(Mouse, m_tooltipAnimateBackground) },
@@ -707,6 +708,7 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
         { "DragToleranceMS", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragToleranceMS) },
         { nullptr, nullptr, nullptr, 0 },
     };
+    // clang-format on
 
     if (g_theMouse != nullptr) {
         ini->Init_From_INI(g_theMouse, _static_mouse_parsers);
@@ -722,22 +724,24 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
  */
 void Mouse::Parse_Cursor_Definition(INI *ini)
 {
+    // clang-format off
     static const FieldParse _cursor_parsers[] = {
-        { "CursorText", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, cursor_text) },
+        FIELD_PARSE_ASCIISTRING("CursorText", CursorInfo, cursor_text),
         { "CursorTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_color) },
         { "CursorTextDropColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(CursorInfo, cursor_text_drop_color) },
-        { "W3DModel", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_model_name) },
-        { "W3DAnim", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, w3d_anim_name) },
+        FIELD_PARSE_ASCIISTRING("W3DModel", CursorInfo, w3d_model_name),
+        FIELD_PARSE_ASCIISTRING("W3DAnim", CursorInfo, w3d_anim_name),
         { "W3DScale", &INI::Parse_Real, nullptr, offsetof(CursorInfo, w3d_scale) },
         { "Loop", &INI::Parse_Bool, nullptr, offsetof(CursorInfo, loop) },
-        { "Image", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, image_name) },
-        { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(CursorInfo, texture_name) },
+        FIELD_PARSE_ASCIISTRING("Image", CursorInfo, image_name),
+        FIELD_PARSE_ASCIISTRING("Texture", CursorInfo, texture_name),
         { "HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot) },
         { "Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames) },
         { "FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps) },
         { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) },
         { nullptr, nullptr, nullptr, 0 },
     };
+    // clang-format on
 
     Utf8String tok = ini->Get_Next_Token();
 

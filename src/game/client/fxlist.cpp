@@ -123,10 +123,12 @@ void SoundFXNugget::Do_FX_Obj(const Object *primary, const Object *secondary) co
 // zh: 0x004C9E50 wb: 0x0075F410
 void SoundFXNugget::Parse(INI *ini, void *formal, void *, const void *)
 {
+    // clang-format off
     static const FieldParse _fieldParse[] = {
-        { "Name", INI::Parse_AsciiString, nullptr, offsetof(SoundFXNugget, m_soundName) },
+        FIELD_PARSE_ASCIISTRING("Name", SoundFXNugget, m_soundName),
         { nullptr, nullptr, nullptr, 0 },
     };
+    // clang-format on
 
     SoundFXNugget *nugget = new SoundFXNugget{};
     ini->Init_From_INI(nugget, _fieldParse);

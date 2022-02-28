@@ -21,7 +21,7 @@ void W3DDependencyModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { "AttachToBoneInContainer", &INI::Parse_AsciiString, nullptr, offsetof(W3DDependencyModelDrawModuleData, m_attachToDrawableBoneInContainer) },
+        FIELD_PARSE_ASCIISTRING("AttachToBoneInContainer", W3DDependencyModelDrawModuleData, m_attachToDrawableBoneInContainer),
         { nullptr, nullptr, nullptr, 0 },
     };
     // clang-format on

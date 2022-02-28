@@ -26,8 +26,9 @@ const char *g_sound_type_names[] = {
 const char *g_audio_control_names[] = { "LOOP", "RANDOM", "ALL", "POSTDELAY", "INTERRUPT", nullptr };
 } // namespace
 
+// clang-format off
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
-    { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(AudioEventInfo, m_filename) },
+    FIELD_PARSE_ASCIISTRING("Filename", AudioEventInfo, m_filename),
     { "Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume) },
     { "VolumeShift", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volumeShift) },
     { "MinVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_minVolume) },
@@ -49,6 +50,7 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
     { nullptr, nullptr, nullptr, 0 }
 };
+// clang-format on
 
 // wb: 0x006E6800
 AudioEventInfo::AudioEventInfo() :

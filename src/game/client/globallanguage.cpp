@@ -23,8 +23,9 @@
 GlobalLanguage *g_theGlobalLanguage;
 #endif
 
+// clang-format off
 const FieldParse GlobalLanguage::s_languageParseTable[] = {
-    { "UnicodeFontName", &INI::Parse_AsciiString, nullptr, offsetof(GlobalLanguage, m_unicodeFontName) },
+    FIELD_PARSE_ASCIISTRING("UnicodeFontName", GlobalLanguage, m_unicodeFontName),
     { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
     { "MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed) },
     { "UseHardWordWrap", &INI::Parse_Bool, nullptr, offsetof(GlobalLanguage, m_useHardWordWrap) },
@@ -67,6 +68,7 @@ const FieldParse GlobalLanguage::s_languageParseTable[] = {
     { "CreditsNormalFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_creditsNormalFont) },
     { nullptr, nullptr, nullptr, 0 }
 };
+// clang-format on
 
 GlobalLanguage::GlobalLanguage() :
     m_unicodeFontName(),

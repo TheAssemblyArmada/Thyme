@@ -20,11 +20,13 @@
 VideoPlayer *g_theVideoPlayer = nullptr;
 #endif
 
+// clang-format off
 const FieldParse VideoPlayer::s_videoFieldParseTable[] = {
-    { "Filename", &INI::Parse_AsciiString, nullptr, offsetof(Video, file_name) },
-    { "Comment", &INI::Parse_AsciiString, nullptr, offsetof(Video, world_builder_comment) },
-    { nullptr, nullptr, nullptr, 0 }
+    FIELD_PARSE_ASCIISTRING("Filename", Video, file_name),
+    FIELD_PARSE_ASCIISTRING("Comment", Video, world_builder_comment),
+    { nullptr, nullptr, nullptr, 0 },
 };
+// clang-format on
 
 /**
  * 0x0051AC00

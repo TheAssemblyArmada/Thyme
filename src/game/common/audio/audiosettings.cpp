@@ -17,12 +17,13 @@
 #include "optionpreferences.h"
 #include <cstddef>
 
+// clang-format off
 const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
-    { "AudioRoot", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_audioRoot) },
-    { "SoundsFolder", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_soundsFolder) },
-    { "MusicFolder", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_musicFolder) },
-    { "StreamingFolder", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_streamingFolder) },
-    { "SoundsExtension", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_soundExtension) },
+    FIELD_PARSE_ASCIISTRING("AudioRoot", AudioSettings, m_audioRoot),
+    FIELD_PARSE_ASCIISTRING("SoundsFolder", AudioSettings, m_soundsFolder),
+    FIELD_PARSE_ASCIISTRING("MusicFolder", AudioSettings, m_musicFolder),
+    FIELD_PARSE_ASCIISTRING("StreamingFolder", AudioSettings, m_streamingFolder),
+    FIELD_PARSE_ASCIISTRING("SoundsExtension", AudioSettings, m_soundExtension),
     { "UseDigital", &INI::Parse_Bool, nullptr, offsetof(AudioSettings, m_useDigital) },
     { "UseMidi", &INI::Parse_Bool, nullptr, offsetof(AudioSettings, m_useMidi) },
     { "OutputRate", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_outputRate) },
@@ -31,11 +32,11 @@ const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
     { "SampleCount2D", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_sampleCount2D) },
     { "SampleCount3D", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_sampleCount3D) },
     { "StreamCount", &INI::Parse_Int, nullptr, offsetof(AudioSettings, m_streamCount) },
-    { "Preferred3DHW1", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_preferredDrivers[0]) },
-    { "Preferred3DHW2", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_preferredDrivers[1]) },
-    { "Preferred3DHW3", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_preferredDrivers[2]) },
-    { "Preferred3DHW4", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_preferredDrivers[3]) },
-    { "Preferred3DSW", &INI::Parse_AsciiString, nullptr, offsetof(AudioSettings, m_preferredDrivers[4]) },
+    FIELD_PARSE_ASCIISTRING("Preferred3DHW1", AudioSettings, m_preferredDrivers[0]),
+    FIELD_PARSE_ASCIISTRING("Preferred3DHW2", AudioSettings, m_preferredDrivers[1]),
+    FIELD_PARSE_ASCIISTRING("Preferred3DHW3", AudioSettings, m_preferredDrivers[2]),
+    FIELD_PARSE_ASCIISTRING("Preferred3DHW4", AudioSettings, m_preferredDrivers[3]),
+    FIELD_PARSE_ASCIISTRING("Preferred3DSW", AudioSettings, m_preferredDrivers[4]),
     { "Default2DSpeakerType", &INI::Parse_Speaker_Type, nullptr, offsetof(AudioSettings, m_default2DSpeakerType) },
     { "Default3DSpeakerType", &INI::Parse_Speaker_Type, nullptr, offsetof(AudioSettings, m_default3DSpeakerType) },
     { "MinSampleVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioSettings, m_minSampleVolume) },
@@ -68,6 +69,7 @@ const FieldParse AudioSettings::s_audioSettingsParseTable[] = {
         offsetof(AudioSettings, m_zoomSoundVolumePercentAmount) },
     { nullptr, nullptr, nullptr, 0 }
 };
+// clang-format on
 
 // wb: 0x006E5C20
 AudioSettings::AudioSettings() :

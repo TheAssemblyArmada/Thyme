@@ -35,8 +35,8 @@ enum INILoadType
 };
 
 // Function pointer type for the field parser functions
-typedef void (*inifieldparse_t)(INI *, void *, void *, const void *);
-typedef void (*iniblockparse_t)(INI *);
+typedef void (*inifieldparse_t)(INI *ini, void *formal, void *store, const void *user_data);
+typedef void (*iniblockparse_t)(INI *ini);
 
 struct LookupListRec
 {
@@ -257,3 +257,5 @@ inline Utf8String INI::Get_Next_Ascii_String() const
 
     return next;
 }
+
+#include "inimacros.h"

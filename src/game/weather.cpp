@@ -19,20 +19,23 @@
 Override<WeatherSetting> g_theWeatherSetting;
 #endif
 
-const FieldParse WeatherSetting::s_weatherSettingParseTable[] = { { "SnowTexture", &INI::Parse_AsciiString, nullptr, 12 },
-    { "SnowFrequencyScaleX", &INI::Parse_Real, nullptr, 16 },
-    { "SnowFrequencyScaleY", &INI::Parse_Real, nullptr, 20 },
-    { "SnowAmplitude", &INI::Parse_Real, nullptr, 24 },
-    { "SnowPointSize", &INI::Parse_Real, nullptr, 28 },
-    { "SnowMaxPointSize", &INI::Parse_Real, nullptr, 32 },
-    { "SnowMinPointSize", &INI::Parse_Real, nullptr, 36 },
-    { "SnowQuadSize", &INI::Parse_Real, nullptr, 40 },
-    { "SnowBoxDimensions", &INI::Parse_Real, nullptr, 44 },
-    { "SnowBoxDensity", &INI::Parse_Real, nullptr, 48 },
-    { "SnowVelocity", &INI::Parse_Real, nullptr, 52 },
-    { "SnowPointSprites", &INI::Parse_Bool, nullptr, 56 },
-    { "SnowEnabled", &INI::Parse_Bool, nullptr, 57 },
+// clang-format off
+const FieldParse WeatherSetting::s_weatherSettingParseTable[] = {
+    FIELD_PARSE_ASCIISTRING("SnowTexture", WeatherSetting, m_snowTexture),
+    { "SnowFrequencyScaleX", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowFreqScaleX) },
+    { "SnowFrequencyScaleY", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowFreqScaleY) },
+    { "SnowAmplitude", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowAmplitude) },
+    { "SnowPointSize", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowPointSize) },
+    { "SnowMaxPointSize", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowMaxPointSize) },
+    { "SnowMinPointSize", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowMinPointSize) },
+    { "SnowQuadSize", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowQuadSize) },
+    { "SnowBoxDimensions", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowBoxDimensions) },
+    { "SnowBoxDensity", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowBoxDensity) },
+    { "SnowVelocity", &INI::Parse_Real, nullptr, offsetof(WeatherSetting, m_snowVelocity) },
+    { "SnowPointSprites", &INI::Parse_Bool, nullptr, offsetof(WeatherSetting, m_snowPointSprites) },
+    { "SnowEnabled", &INI::Parse_Bool, nullptr, offsetof(WeatherSetting, m_snowEnabled) },
     { nullptr, nullptr, nullptr, 0 } };
+// clang-format on
 
 WeatherSetting::WeatherSetting() :
     m_snowTexture("EXSnowFlake.tga"),

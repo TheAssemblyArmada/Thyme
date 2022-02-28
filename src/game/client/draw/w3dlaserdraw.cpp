@@ -51,6 +51,7 @@ W3DLaserDrawModuleData::W3DLaserDrawModuleData() :
 
 void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
+    // clang-format off
     static const FieldParse dataFieldParse[] = {
         { "NumBeams", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_numBeams) },
         { "InnerBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_innerBeamWidth) },
@@ -62,7 +63,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
             nullptr,
             offsetof(W3DLaserDrawModuleData, m_maxIntensityFrames) },
         { "FadeLifetime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_fadeFrames) },
-        { "Texture", &INI::Parse_AsciiString, nullptr, offsetof(W3DLaserDrawModuleData, m_textureName) },
+        FIELD_PARSE_ASCIISTRING("Texture", W3DLaserDrawModuleData, m_textureName),
         { "ScrollRate", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_scrollRate) },
         { "Tile", &INI::Parse_Bool, nullptr, offsetof(W3DLaserDrawModuleData, m_tile) },
         { "Segments", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_segments) },
@@ -71,6 +72,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "TilingScalar", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_tilingScalar) },
         { nullptr, nullptr, nullptr, 0 },
     };
+    // clang-format on
 
     ModuleData::Build_Field_Parse(p);
     p.Add(dataFieldParse, 0);

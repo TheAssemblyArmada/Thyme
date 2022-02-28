@@ -22,9 +22,10 @@ WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];
 Override<WaterTransparencySetting> g_theWaterTransparency;
 #endif
 
+// clang-format off
 const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
-    { "SkyTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_skyTextureFile) },
-    { "WaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterSetting, m_waterTextureFile) },
+    FIELD_PARSE_ASCIISTRING("SkyTexture", WaterSetting, m_skyTextureFile),
+    FIELD_PARSE_ASCIISTRING("WaterTexture", WaterSetting, m_waterTextureFile),
     { "Vertex00Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex00Diffuse) },
     { "Vertex10Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex10Diffuse) },
     { "Vertex01Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex01Diffuse) },
@@ -45,16 +46,17 @@ const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseT
         nullptr,
         offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
     { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
-    { "StandingWaterTexture", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_standingWaterTexture) },
+    FIELD_PARSE_ASCIISTRING("StandingWaterTexture", WaterTransparencySetting, m_standingWaterTexture),
     { "AdditiveBlending", &INI::Parse_Bool, nullptr, offsetof(WaterTransparencySetting, m_additiveBlending) },
     { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
-    { "SkyboxTextureN", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureN) },
-    { "SkyboxTextureE", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureE) },
-    { "SkyboxTextureS", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureS) },
-    { "SkyboxTextureW", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureW) },
-    { "SkyboxTextureT", &INI::Parse_AsciiString, nullptr, offsetof(WaterTransparencySetting, m_skyboxTextureT) },
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureN", WaterTransparencySetting, m_skyboxTextureN),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureE", WaterTransparencySetting, m_skyboxTextureE),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureS", WaterTransparencySetting, m_skyboxTextureS),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureW", WaterTransparencySetting, m_skyboxTextureW),
+    FIELD_PARSE_ASCIISTRING("SkyboxTextureT", WaterTransparencySetting, m_skyboxTextureT),
     { nullptr, nullptr, nullptr, 0 }
 };
+// clang-format on
 
 // Was originally INI::parseWaterSettingDefinition
 void WaterSetting::Parse_Water_Setting_Definition(INI *ini)

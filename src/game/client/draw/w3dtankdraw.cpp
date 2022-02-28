@@ -41,8 +41,8 @@ void W3DTankDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { "TreadDebrisLeft", &INI::Parse_AsciiString, nullptr, offsetof(W3DTankDrawModuleData, m_treadDebrisNameLeft) },
-        { "TreadDebrisRight", &INI::Parse_AsciiString, nullptr, offsetof(W3DTankDrawModuleData, m_treadDebrisNameRight) },
+        FIELD_PARSE_ASCIISTRING("TreadDebrisLeft", W3DTankDrawModuleData, m_treadDebrisNameLeft),
+        FIELD_PARSE_ASCIISTRING("TreadDebrisRight", W3DTankDrawModuleData, m_treadDebrisNameRight),
         { "TreadAnimationRate", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadAnimationRate) },
         { "TreadPivotSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadPivotSpeedFraction) },
         { "TreadDriveSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadDriveSpeedFraction) },

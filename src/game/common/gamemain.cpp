@@ -17,11 +17,18 @@
 #include "disabledtypes.h"
 #include "main.h"
 #include "win32gameengine.h"
+#ifdef BUILD_WITH_SDL2
+#include "sdl2gameengine.h"
+#endif
 
 GameEngine *Create_Game_Engine()
 {
+#ifdef BUILD_WITH_SDL2
+    GameEngine *engine = new Thyme::SDL2GameEngine;
+#else
     GameEngine *engine = new Win32GameEngine;
-    engine->Set_Is_Active(g_gameActive);
+#endif
+    engine->Set_Is_Active(true);
     return engine;
 }
 

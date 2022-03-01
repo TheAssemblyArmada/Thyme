@@ -25,6 +25,14 @@
 namespace Thyme
 {
 
+class SDL2Mouse;
+
+#ifdef GAME_DLL
+extern SDL2Mouse *&g_theSDL2Mouse;
+#else
+extern SDL2Mouse *g_theSDL2Mouse;
+#endif
+
 class SDL2Mouse : public Mouse
 {
 public:

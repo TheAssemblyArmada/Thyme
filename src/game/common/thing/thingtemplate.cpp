@@ -68,7 +68,7 @@ AudioEventRTS ThingTemplate::s_audioEventNoSound;
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},
     {"RadarPriority", &INI::Parse_Byte_Sized_Index_List, &s_radarPriorityNames, offsetof(ThingTemplate, m_radarPriority)},
-    {"TransportSlotCount", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_transportSlotCount)},
+    FIELD_PARSE_UNSIGNED_BYTE("TransportSlotCount", ThingTemplate, m_transportSlotCount),
     {"FenceWidth", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceWidth)},
     {"FenceXOffset", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_fenceXOffset)},
     FIELD_PARSE_BOOL("IsBridge", ThingTemplate, m_isBridge),
@@ -170,12 +170,12 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"OverrideableByLikeKind", &ThingTemplate::Parse_Overrideable_By_Like_Kind, nullptr, 0},
     {"Locomotor", &AIUpdateModuleData::Parse_Locomotor_Set, nullptr, 0},
     {"InstanceScaleFuzziness", &INI::Parse_Real, nullptr, offsetof(ThingTemplate, m_instanceScaleFuzziness)},
-    {"StructureRubbleHeight", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_structureRubbleHeight)},
+    FIELD_PARSE_UNSIGNED_BYTE("StructureRubbleHeight", ThingTemplate, m_structureRubbleHeight),
     {"ThreatValue", &INI::Parse_Unsigned_Short, nullptr, offsetof(ThingTemplate, m_threatValue)},
     {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
     {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
-    {"CrusherLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crusherLevel)},
-    {"CrushableLevel", &INI::Parse_Unsigned_Byte, nullptr, offsetof(ThingTemplate, m_crushableLevel)},
+    FIELD_PARSE_UNSIGNED_BYTE("CrusherLevel", ThingTemplate, m_crusherLevel),
+    FIELD_PARSE_UNSIGNED_BYTE("CrushableLevel", ThingTemplate, m_crushableLevel),
     FIELD_PARSE_LAST
 };
 

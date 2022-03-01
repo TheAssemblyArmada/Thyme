@@ -696,7 +696,7 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
         { "TooltipShadowColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorShadow) },
         { "TooltipBackgroundColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBackground) },
         { "TooltipBorderColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBorder) },
-        { "TooltipWidth", &INI::Parse_Percent_To_Real, nullptr, offsetof(Mouse, m_tooltipWidth) },
+        FIELD_PARSE_PERCENT_TO_REAL("TooltipWidth", Mouse, m_tooltipWidth),
         FIELD_PARSE_INT("CursorMode", Mouse, m_currentRedrawMode),
         FIELD_PARSE_BOOL("UseTooltipAltTextColor", Mouse, m_useTooltipAltTextColor),
         FIELD_PARSE_BOOL("UseTooltipAltBackColor", Mouse, m_useTooltipAltBackColor),

@@ -54,9 +54,9 @@ constexpr const char *const g_audio_control_names[] = {
 
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Filename", AudioEventInfo, m_filename),
-    { "Volume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volume) },
-    { "VolumeShift", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_volumeShift) },
-    { "MinVolume", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_minVolume) },
+    FIELD_PARSE_PERCENT_TO_REAL("Volume", AudioEventInfo, m_volume),
+    FIELD_PARSE_PERCENT_TO_REAL("VolumeShift", AudioEventInfo, m_volumeShift),
+    FIELD_PARSE_PERCENT_TO_REAL("MinVolume", AudioEventInfo, m_minVolume),
     { "PitchShift", &AudioEventInfo::Parse_Pitch_Shift, nullptr, 0 },
     { "Delay", &AudioEventInfo::Parse_Delay, nullptr, 0 },
     FIELD_PARSE_INT("Limit", AudioEventInfo, m_limit),
@@ -72,7 +72,7 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "Decay", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_decay) },
     FIELD_PARSE_REAL("MinRange", AudioEventInfo, m_minRange),
     FIELD_PARSE_REAL("MaxRange", AudioEventInfo, m_maxRange),
-    { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
+    FIELD_PARSE_PERCENT_TO_REAL("LowPassCutoff", AudioEventInfo, m_lowPassCutoff),
     FIELD_PARSE_LAST
 };
 // clang-format on

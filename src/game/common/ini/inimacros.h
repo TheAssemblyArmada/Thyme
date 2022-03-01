@@ -183,6 +183,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), RGBColor>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_RGBA_COLOR_INT(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_RGBA_Color_Int, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), RGBAColorInt>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_INDEX_LIST(token, user_data, classtype, classmember) \
         FieldParse { \
             token, \

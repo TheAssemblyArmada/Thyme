@@ -77,7 +77,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_REAL("VisionRange", ThingTemplate, m_visionRange),
     FIELD_PARSE_REAL("ShroudClearingRange", ThingTemplate, m_shroudClearingRange),
     FIELD_PARSE_REAL("ShroudRevealToAllRange", ThingTemplate, m_shroudRevealToAllRange),
-    {"PlacementViewAngle", &INI::Parse_Angle_Real, nullptr, offsetof(ThingTemplate, m_placementViewAngle)},
+    FIELD_PARSE_ANGLE_REAL("PlacementViewAngle", ThingTemplate, m_placementViewAngle),
     FIELD_PARSE_REAL("FactoryExitWidth", ThingTemplate, m_factoryExitWidth),
     FIELD_PARSE_REAL("FactoryExtraBibWidth", ThingTemplate, m_factoryExtraBibWidth),
     {"SkillPointValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_skillPointValues)},

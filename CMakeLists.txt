@@ -98,6 +98,7 @@ cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file h
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         option(BUILD_DLL "Build an injectable dll version." ON)
+	set(BUILD_TESTS OFF)
     endif()
 endif()
 

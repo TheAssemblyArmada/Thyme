@@ -53,7 +53,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 {
     // clang-format off
     static const FieldParse dataFieldParse[] = {
-        { "NumBeams", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_numBeams) },
+        FIELD_PARSE_UNSIGNED_INT("NumBeams", W3DLaserDrawModuleData, m_numBeams),
         { "InnerBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_innerBeamWidth) },
         { "OuterBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_outerBeamWidth) },
         { "InnerColor", &INI::Parse_Color_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_innerColor) },
@@ -66,7 +66,7 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_ASCIISTRING("Texture", W3DLaserDrawModuleData, m_textureName),
         { "ScrollRate", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_scrollRate) },
         FIELD_PARSE_BOOL("Tile", W3DLaserDrawModuleData, m_tile),
-        { "Segments", &INI::Parse_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_segments) },
+        FIELD_PARSE_UNSIGNED_INT("Segments", W3DLaserDrawModuleData, m_segments),
         { "ArcHeight", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_arcHeight) },
         { "SegmentOverlapRatio", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_segmentOverlapRatio) },
         { "TilingScalar", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_tilingScalar) },

@@ -105,7 +105,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "SlavePosOffset", &INI::Parse_Coord3D, nullptr, offsetof(ParticleSystemTemplate, m_slavePosOffset) },
      FIELD_PARSE_ASCIISTRING("PerParticleAttachedSystem", ParticleSystemTemplate, m_attachedSystemName),
      { "Lifetime", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_lifetime) },
-     { "SystemLifetime", &INI::Parse_Unsigned_Int, nullptr, offsetof(ParticleSystemTemplate, m_systemLifetime) },
+     FIELD_PARSE_UNSIGNED_INT("SystemLifetime", ParticleSystemTemplate, m_systemLifetime),
      { "Size", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_startSize) },
      { "StartSizeRate", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_startSizeRate) },
      { "SizeRate", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_sizeRate) },

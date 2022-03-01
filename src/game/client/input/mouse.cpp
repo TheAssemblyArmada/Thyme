@@ -703,9 +703,9 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
         FIELD_PARSE_BOOL("AdjustTooltipAltColor", Mouse, m_adjustTooltipAltColor),
         FIELD_PARSE_BOOL("OrthoCamera", Mouse, m_orthoCamera),
         { "OrthoZoom", &INI::Parse_Real, nullptr, offsetof(Mouse, m_orthoZoom) },
-        { "DragTolerance", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance) },
-        { "DragTolerance3D", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragTolerance3D) },
-        { "DragToleranceMS", &INI::Parse_Unsigned_Int, nullptr, offsetof(Mouse, m_dragToleranceMS) },
+        FIELD_PARSE_UNSIGNED_INT("DragTolerance", Mouse, m_dragTolerance),
+        FIELD_PARSE_UNSIGNED_INT("DragTolerance3D", Mouse, m_dragTolerance3D),
+        FIELD_PARSE_UNSIGNED_INT("DragToleranceMS", Mouse, m_dragToleranceMS),
         FIELD_PARSE_LAST
     };
     // clang-format on

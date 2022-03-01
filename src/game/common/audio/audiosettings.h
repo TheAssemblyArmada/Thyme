@@ -87,7 +87,7 @@ private:
     int m_globalMaxRange;
     int m_timeBetweenDrawableSounds;
     int m_timeToFadeAudio;
-    int m_audioFootprintInBytes;
+    int m_audioFootprintInBytes; // #TODO parse type is int, but parse function is for unsigned int
     float m_minSampleVolume;
     Utf8String m_preferredDrivers[DRIVER_COUNT];
     float m_relative2DVolume;

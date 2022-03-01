@@ -19,6 +19,9 @@
 #include <filesystem>
 namespace fs = std::filesystem;
 
+namespace Thyme
+{
+
 File *StdLocalFileSystem::Open_File(const char *filename, int mode)
 {
     if (filename == nullptr || *filename == '\0') {
@@ -85,13 +88,15 @@ void StdLocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 
     if (search_subdirs) {
         for (auto iter : fs::recursive_directory_iterator(search_path.Str())) {
-            if (iter.path().extension() == ext)
-                filelist.insert(iter.path().c_str());
+            if (filter != "*" && iter.path().extension() != ext)
+                continue;
+            filelist.insert(iter.path().c_str());
         }
     } else {
         for (auto iter : fs::directory_iterator(search_path.Str())) {
-            if (iter.path().extension() == ext)
-                filelist.insert(iter.path().c_str());
+            if (filter != "*" && iter.path().extension() != ext)
+                continue;
+            filelist.insert(iter.path().c_str());
         }
     }
 }
@@ -129,3 +134,4 @@ bool StdLocalFileSystem::Create_Directory(Utf8String dir_path)
     bool result = fs::create_directory(dir_path.Str(), ec);
     return result && !ec;
 }
+} // namespace Thyme

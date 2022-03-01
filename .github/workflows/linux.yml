@@ -55,3 +55,8 @@ jobs:
           cmake --build build --target format
           git diff --exit-code
           cmake --build build
+
+      - name: Test Thyme
+        run: |
+          cd build
+          ctest . --output-on-failure

@@ -89,6 +89,7 @@ option(USE_GAMEMATH "Use own maths library rather than libc version for this pla
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
+option(BUILD_TESTS "Builds the unit tests." ON)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)
@@ -282,4 +283,10 @@ if(DLL_INSTALL_PREFIX AND ${CMAKE_VERSION} VERSION_GREATER "3.13.0")
     foreach(target IN LISTS INSTALL_TARGETS)
         install(FILES $<TARGET_PDB_FILE:${target}> DESTINATION "${DLL_INSTALL_PREFIX}" OPTIONAL)
     endforeach()
+endif()
+
+# Build tests
+if(BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()

@@ -85,9 +85,9 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 {
     Utf8String search_path = dirpath;
     search_path += subdir;
-    search_path += filter;
 
 #ifdef PLATFORM_WINDOWS
+    search_path += filter;
     WIN32_FIND_DATAW data;
     HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path()), &data);
 
@@ -141,7 +141,37 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
         }
     }
 #else
-    // TODO Some combo of dirent and fnmatch to get same functionality for posix?
+    struct dirent *entry = nullptr;
+    DIR *dp = nullptr;
+
+    // TODO: Should match files without an extension
+    if (filter.Is_Empty())
+        return;
+
+    dp = opendir(search_path);
+    if (dp != nullptr) {
+        while ((entry = readdir(dp)) != nullptr) {
+            if (search_subdirs && entry->d_type == DT_DIR) {
+                if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+                    continue;
+
+                Utf8String subdir = search_path;
+                subdir += '/';
+                Get_File_List_From_Dir(subdir, entry->d_name, filter, filelist, search_subdirs);
+            } else if (entry->d_type == DT_REG) {
+                Utf8String filepath = search_path;
+                filepath += '/';
+                filepath += entry->d_name;
+                // TODO: make this more bulletproof
+                if (filter.Get_Length() > 1 && !filepath.Ends_With_No_Case(filter.Str() + 1)) {
+                    continue;
+                }
+                filelist.insert(filepath);
+            }
+        }
+    }
+
+    closedir(dp);
 #endif
 }
 

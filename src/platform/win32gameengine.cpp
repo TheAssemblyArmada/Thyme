@@ -65,7 +65,7 @@ void Win32GameEngine::Service_Windows_OS()
 LocalFileSystem *Win32GameEngine::Create_Local_File_System()
 {
 #ifdef BUILD_WITH_STDFS
-    return new StdLocalFileSystem;
+    return new Thyme::StdLocalFileSystem;
 #else
     return new Win32LocalFileSystem;
 #endif

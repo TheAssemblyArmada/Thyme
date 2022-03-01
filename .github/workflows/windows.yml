@@ -58,6 +58,11 @@ jobs:
         cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TOOLS=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
         cmake --build build --config RelWithDebInfo
 
+    - name: Test Thyme
+      run: |
+        cd build
+        ctest . --output-on-failure
+        
     - name: Create archives
       shell: bash
       id: mkarc

@@ -120,6 +120,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_POSITIVE_NON_ZERO_REAL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Positive_Non_Zero_Real, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_ASCIISTRING(token, classtype, classmember) \
         FieldParse { \
             token, \

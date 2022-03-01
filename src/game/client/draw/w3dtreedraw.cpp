@@ -54,8 +54,8 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "InitialVelocityPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_initialVelocityPercent) },
         { "InitialAccelPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_initialAccelPercent) },
         { "BounceVelocityPercent", &INI::Parse_Percent_To_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_bounceVelocityPercent) },
-        { "MinimumToppleSpeed", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_minimumToppleSpeed) },
-        { "SinkDistance", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkDistance) },
+        FIELD_PARSE_POSITIVE_NON_ZERO_REAL("MinimumToppleSpeed", W3DTreeDrawModuleData, m_minimumToppleSpeed),
+        FIELD_PARSE_POSITIVE_NON_ZERO_REAL("SinkDistance", W3DTreeDrawModuleData, m_sinkDistance),
         { "SinkTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkTime) },
         FIELD_PARSE_BOOL("DoShadow", W3DTreeDrawModuleData, m_doShadow),
         FIELD_PARSE_LAST

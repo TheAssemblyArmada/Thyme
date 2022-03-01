@@ -42,10 +42,10 @@ const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
 const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
     FIELD_PARSE_REAL("TransparentWaterDepth", WaterTransparencySetting, m_transparentWaterDepth),
     FIELD_PARSE_REAL("TransparentWaterMinOpacity", WaterTransparencySetting, m_transparentWaterMinOpacity),
-    { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
+    FIELD_PARSE_RGB_COLOR("StandingWaterColor", WaterTransparencySetting, m_standingWaterColor),
     FIELD_PARSE_ASCIISTRING("StandingWaterTexture", WaterTransparencySetting, m_standingWaterTexture),
     FIELD_PARSE_BOOL("AdditiveBlending", WaterTransparencySetting, m_additiveBlending),
-    { "RadarWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_radarWaterColor) },
+    FIELD_PARSE_RGB_COLOR("RadarWaterColor", WaterTransparencySetting, m_radarWaterColor),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureN", WaterTransparencySetting, m_skyboxTextureN),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureE", WaterTransparencySetting, m_skyboxTextureE),
     FIELD_PARSE_ASCIISTRING("SkyboxTextureS", WaterTransparencySetting, m_skyboxTextureS),

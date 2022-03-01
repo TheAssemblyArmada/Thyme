@@ -176,6 +176,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<Utf8String>>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_RGB_COLOR(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_RGB_Color, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), RGBColor>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_INDEX_LIST(token, user_data, classtype, classmember) \
         FieldParse { \
             token, \

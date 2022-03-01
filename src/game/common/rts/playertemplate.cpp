@@ -241,7 +241,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
         FIELD_PARSE_BOOL("PlayableSide", PlayerTemplate, m_isPlayableSide),
         { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(PlayerTemplate, m_displayName) },
         { "StartMoney", &PlayerTemplate::Parse_Start_Money, nullptr, offsetof(PlayerTemplate, m_money) },
-        { "PreferredColor", &INI::Parse_RGB_Color, nullptr, offsetof(PlayerTemplate, m_preferredColor) },
+        FIELD_PARSE_RGB_COLOR("PreferredColor", PlayerTemplate, m_preferredColor),
         FIELD_PARSE_ASCIISTRING("StartingBuilding", PlayerTemplate, m_startingBuilding),
         FIELD_PARSE_ASCIISTRING("StartingUnit0", PlayerTemplate, m_startingUnits[0]),
         FIELD_PARSE_ASCIISTRING("StartingUnit1", PlayerTemplate, m_startingUnits[1]),

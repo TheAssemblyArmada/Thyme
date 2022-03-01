@@ -585,7 +585,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     FIELD_PARSE_PERCENT_TO_REAL("BaseRegenHealthPercentPerSecond", GlobalData, m_baseRegenHealthPercentPerSecond),
     { "BaseRegenDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(GlobalData, m_baseRegenDelay) },
     FIELD_PARSE_ASCIISTRING("SpecialPowerViewObject", GlobalData, m_specialPowerViewObject),
-    { "StandardPublicBone", &INI::Parse_AsciiString_Vector_Append, nullptr, offsetof(GlobalData, m_standardPublicBones) },
+    FIELD_PARSE_ASCIISTRING_VECTOR_APPEND("StandardPublicBone", GlobalData, m_standardPublicBones),
     FIELD_PARSE_BOOL("ShowMetrics", GlobalData, m_showMetrics),
     { "DefaultStartingCash", &Money::Parse_Money_Amount, nullptr, offsetof(GlobalData, m_defaultStartingCash) },
     { "ShroudColor", &INI::Parse_RGB_Color, nullptr, offsetof(GlobalData, m_shroudColor) },

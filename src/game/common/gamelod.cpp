@@ -497,7 +497,7 @@ void GameLODManager::Parse_Dynamic_LOD_Definition(INI *ini)
         FIELD_PARSE_INT("MinimumFPS", DynamicGameLOD, minimum_fps),
         FIELD_PARSE_INT("ParticleSkipMask", DynamicGameLOD, particle_skip_mask),
         FIELD_PARSE_INT("DebrisSkipMask", DynamicGameLOD, debris_skip_mask),
-        { "SlowDeathScale", &INI::Parse_Real, nullptr, offsetof(DynamicGameLOD, slow_death_scale) },
+        FIELD_PARSE_REAL("SlowDeathScale", DynamicGameLOD, slow_death_scale),
         FIELD_PARSE_INDEX_LIST("MinParticlePriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_priority),
         FIELD_PARSE_INDEX_LIST("MinParticleSkipPriority", s_particle_prioritiy_names, DynamicGameLOD, min_particle_skip_priority),
         FIELD_PARSE_LAST

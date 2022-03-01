@@ -70,8 +70,8 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     { "SoundsMorning", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
     { "Attack", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_attack) },
     { "Decay", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_decay) },
-    { "MinRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_minRange) },
-    { "MaxRange", &INI::Parse_Real, nullptr, offsetof(AudioEventInfo, m_maxRange) },
+    FIELD_PARSE_REAL("MinRange", AudioEventInfo, m_minRange),
+    FIELD_PARSE_REAL("MaxRange", AudioEventInfo, m_maxRange),
     { "LowPassCutoff", &INI::Parse_Percent_To_Real, nullptr, offsetof(AudioEventInfo, m_lowPassCutoff) },
     FIELD_PARSE_LAST
 };

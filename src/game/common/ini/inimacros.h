@@ -113,6 +113,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), uint32_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_REAL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Real, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_ASCIISTRING(token, classtype, classmember) \
         FieldParse { \
             token, \

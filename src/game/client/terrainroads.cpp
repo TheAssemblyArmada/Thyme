@@ -23,17 +23,17 @@ TerrainRoadCollection *g_theTerrainRoads = nullptr;
 // clang-format off
 const FieldParse TerrainRoadCollection::s_terrainRoadFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Texture", TerrainRoadType, m_texture),
-    { "RoadWidth", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidth) },
-    { "RoadWidthInTexture", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_roadWidthInTexture) },
+    FIELD_PARSE_REAL("RoadWidth", TerrainRoadType, m_roadWidth),
+    FIELD_PARSE_REAL("RoadWidthInTexture", TerrainRoadType, m_roadWidthInTexture),
     FIELD_PARSE_LAST
 };
 
 const FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
-    { "BridgeScale", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_bridgeScale) },
+    FIELD_PARSE_REAL("BridgeScale", TerrainRoadType, m_bridgeScale),
     FIELD_PARSE_ASCIISTRING("ScaffoldObjectName", TerrainRoadType, m_scaffoldObjectName),
     FIELD_PARSE_ASCIISTRING("ScaffoldSupportObjectName", TerrainRoadType, m_scaffoldSupportObjectName),
     { "RadarColor", &INI::Parse_RGB_Color, nullptr, offsetof(TerrainRoadType, m_radarColor) },
-    { "TransitionEffectsHeight", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_transitionEffectsHeight) },
+    FIELD_PARSE_REAL("TransitionEffectsHeight", TerrainRoadType, m_transitionEffectsHeight),
     FIELD_PARSE_INT("NumFXPerType", TerrainRoadType, m_numFXPerType),
     FIELD_PARSE_ASCIISTRING("BridgeModelName", TerrainRoadType, m_bridgeModelName),
     FIELD_PARSE_ASCIISTRING("Texture", TerrainRoadType, m_texture),

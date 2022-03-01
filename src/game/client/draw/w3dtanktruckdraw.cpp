@@ -51,13 +51,13 @@ void W3DTankTruckDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_ASCIISTRING("MidRightFrontTireBone", W3DTankTruckDrawModuleData, m_midFrontRightTireBoneName),
         FIELD_PARSE_ASCIISTRING("MidLeftRearTireBone", W3DTankTruckDrawModuleData, m_midRearLeftTireBoneName),
         FIELD_PARSE_ASCIISTRING("MidRightRearTireBone", W3DTankTruckDrawModuleData, m_midRearRightTireBoneName),
-        { "TireRotationMultiplier", &INI::Parse_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_rotationSpeedMultiplier) },
-        { "PowerslideRotationAddition", &INI::Parse_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_powerslideRotationAddition) },
+        FIELD_PARSE_REAL("TireRotationMultiplier", W3DTankTruckDrawModuleData, m_rotationSpeedMultiplier),
+        FIELD_PARSE_REAL("PowerslideRotationAddition", W3DTankTruckDrawModuleData, m_powerslideRotationAddition),
         FIELD_PARSE_ASCIISTRING("TreadDebrisLeft", W3DTankTruckDrawModuleData, m_treadDebrisNameLeft),
         FIELD_PARSE_ASCIISTRING("TreadDebrisRight", W3DTankTruckDrawModuleData, m_treadDebrisNameRight),
         { "TreadAnimationRate", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_treadAnimationRate) },
-        { "TreadPivotSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_treadPivotSpeedFraction) },
-        { "TreadDriveSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_treadDriveSpeedFraction) },
+        FIELD_PARSE_REAL("TreadPivotSpeedFraction", W3DTankTruckDrawModuleData, m_treadPivotSpeedFraction),
+        FIELD_PARSE_REAL("TreadDriveSpeedFraction", W3DTankTruckDrawModuleData, m_treadDriveSpeedFraction),
         FIELD_PARSE_LAST
     };
     // clang-format on

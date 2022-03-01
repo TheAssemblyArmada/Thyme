@@ -44,8 +44,8 @@ void W3DTankDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_ASCIISTRING("TreadDebrisLeft", W3DTankDrawModuleData, m_treadDebrisNameLeft),
         FIELD_PARSE_ASCIISTRING("TreadDebrisRight", W3DTankDrawModuleData, m_treadDebrisNameRight),
         { "TreadAnimationRate", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadAnimationRate) },
-        { "TreadPivotSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadPivotSpeedFraction) },
-        { "TreadDriveSpeedFraction", &INI::Parse_Real, nullptr, offsetof(W3DTankDrawModuleData, m_treadDriveSpeedFraction) },
+        FIELD_PARSE_REAL("TreadPivotSpeedFraction", W3DTankDrawModuleData, m_treadPivotSpeedFraction),
+        FIELD_PARSE_REAL("TreadDriveSpeedFraction", W3DTankDrawModuleData, m_treadDriveSpeedFraction),
         FIELD_PARSE_LAST
     };
     // clang-format on

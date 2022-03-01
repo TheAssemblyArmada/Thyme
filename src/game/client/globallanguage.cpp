@@ -29,7 +29,7 @@ const FieldParse GlobalLanguage::s_languageParseTable[] = {
     { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
     FIELD_PARSE_INT("MilitaryCaptionSpeed", GlobalLanguage, m_militaryCaptionSpeed),
     FIELD_PARSE_BOOL("UseHardWordWrap", GlobalLanguage, m_useHardWordWrap),
-    { "ResolutionFontAdjustment", &INI::Parse_Real, nullptr, offsetof(GlobalLanguage, m_resolutionFontAdjustment) },
+    FIELD_PARSE_REAL("ResolutionFontAdjustment", GlobalLanguage, m_resolutionFontAdjustment),
     { "CopyrightFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_copyrightFont) },
     { "MessageFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_messageFont) },
     { "MilitaryCaptionTitleFont",

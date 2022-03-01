@@ -54,8 +54,8 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
     // clang-format off
     static const FieldParse dataFieldParse[] = {
         FIELD_PARSE_UNSIGNED_INT("NumBeams", W3DLaserDrawModuleData, m_numBeams),
-        { "InnerBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_innerBeamWidth) },
-        { "OuterBeamWidth", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_outerBeamWidth) },
+        FIELD_PARSE_REAL("InnerBeamWidth", W3DLaserDrawModuleData, m_innerBeamWidth),
+        FIELD_PARSE_REAL("OuterBeamWidth", W3DLaserDrawModuleData, m_outerBeamWidth),
         { "InnerColor", &INI::Parse_Color_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_innerColor) },
         { "OuterColor", &INI::Parse_Color_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_outerColor) },
         { "MaxIntensityLifetime",
@@ -64,12 +64,12 @@ void W3DLaserDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
             offsetof(W3DLaserDrawModuleData, m_maxIntensityFrames) },
         { "FadeLifetime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DLaserDrawModuleData, m_fadeFrames) },
         FIELD_PARSE_ASCIISTRING("Texture", W3DLaserDrawModuleData, m_textureName),
-        { "ScrollRate", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_scrollRate) },
+        FIELD_PARSE_REAL("ScrollRate", W3DLaserDrawModuleData, m_scrollRate),
         FIELD_PARSE_BOOL("Tile", W3DLaserDrawModuleData, m_tile),
         FIELD_PARSE_UNSIGNED_INT("Segments", W3DLaserDrawModuleData, m_segments),
-        { "ArcHeight", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_arcHeight) },
-        { "SegmentOverlapRatio", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_segmentOverlapRatio) },
-        { "TilingScalar", &INI::Parse_Real, nullptr, offsetof(W3DLaserDrawModuleData, m_tilingScalar) },
+        FIELD_PARSE_REAL("ArcHeight", W3DLaserDrawModuleData, m_arcHeight),
+        FIELD_PARSE_REAL("SegmentOverlapRatio", W3DLaserDrawModuleData, m_segmentOverlapRatio),
+        FIELD_PARSE_REAL("TilingScalar", W3DLaserDrawModuleData, m_tilingScalar),
         FIELD_PARSE_LAST
     };
     // clang-format on

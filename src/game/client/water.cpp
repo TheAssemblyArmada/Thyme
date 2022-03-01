@@ -32,19 +32,16 @@ const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
     { "Vertex11Color", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_vertex11Diffuse) },
     { "DiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_waterDiffuseColor) },
     { "TransparentDiffuseColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(WaterSetting, m_transparentWaterDiffuse) },
-    { "UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs) },
-    { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
-    { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
+    FIELD_PARSE_REAL("UScrollPerMS", WaterSetting, m_uScrollPerMs),
+    FIELD_PARSE_REAL("VScrollPerMS", WaterSetting, m_vScrollPerMs),
+    FIELD_PARSE_REAL("SkyTexelsPerUnit", WaterSetting, m_skyTexelsPerUnit),
     FIELD_PARSE_INT("WaterRepeatCount", WaterSetting, m_waterRepeatCount),
     FIELD_PARSE_LAST
 };
 
 const FieldParse WaterTransparencySetting::m_waterTransparencySettingFieldParseTable[] = {
-    { "TransparentWaterDepth", &INI::Parse_Real, nullptr, offsetof(WaterTransparencySetting, m_transparentWaterDepth) },
-    { "TransparentWaterMinOpacity",
-        &INI::Parse_Real,
-        nullptr,
-        offsetof(WaterTransparencySetting, m_transparentWaterMinOpacity) },
+    FIELD_PARSE_REAL("TransparentWaterDepth", WaterTransparencySetting, m_transparentWaterDepth),
+    FIELD_PARSE_REAL("TransparentWaterMinOpacity", WaterTransparencySetting, m_transparentWaterMinOpacity),
     { "StandingWaterColor", &INI::Parse_RGB_Color, nullptr, offsetof(WaterTransparencySetting, m_standingWaterColor) },
     FIELD_PARSE_ASCIISTRING("StandingWaterTexture", WaterTransparencySetting, m_standingWaterTexture),
     FIELD_PARSE_BOOL("AdditiveBlending", WaterTransparencySetting, m_additiveBlending),

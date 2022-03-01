@@ -738,8 +738,8 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
     // clang-format off
     static const FieldParse dataFieldParse[] = {
         { "InitialRecoilSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_initialRecoil) },
-        { "MaxRecoilDistance", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_maxRecoil) },
-        { "RecoilDamping", &INI::Parse_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilDamping) },
+        FIELD_PARSE_REAL("MaxRecoilDistance", W3DModelDrawModuleData, m_maxRecoil),
+        FIELD_PARSE_REAL("RecoilDamping", W3DModelDrawModuleData, m_recoilDamping),
         { "RecoilSettleSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DModelDrawModuleData, m_recoilSettle) },
         FIELD_PARSE_BOOL("OkToChangeModelColor", W3DModelDrawModuleData, m_okToChangeModelColor),
         FIELD_PARSE_BOOL("AnimationsRequirePower", W3DModelDrawModuleData, m_animationsRequirePower),

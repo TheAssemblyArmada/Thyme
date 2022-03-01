@@ -32,7 +32,7 @@ void LaserUpdateModuleData::Build_Field_Parse(MultiIniFieldParse &p)
     static const FieldParse dataFieldParse[] = {
         FIELD_PARSE_ASCIISTRING("MuzzleParticleSystem", LaserUpdateModuleData, m_muzzleParticleSystem),
         FIELD_PARSE_ASCIISTRING("TargetParticleSystem", LaserUpdateModuleData, m_targetParticleSystem),
-        { "PunchThroughScalar", &INI::Parse_Real, nullptr, offsetof(LaserUpdateModuleData, m_punchThroughScalar) },
+        FIELD_PARSE_REAL("PunchThroughScalar", LaserUpdateModuleData, m_punchThroughScalar),
         FIELD_PARSE_LAST
     };
     // clang-format on

@@ -270,7 +270,7 @@ public:
     int32_t m_valuesPerSupplyBox;
     float m_buildSpeed;
     float m_minDistanceFromMapEdgeForBuild;
-    int32_t m_supplyBuildOrder;
+    int32_t m_supplyBuildOrder; // #TODO parse type is int, but parse function is for float
     float m_allowedHeightVariationForBuildings;
     float m_minLowEnergyProductionSpeed;
     float m_maxLowEnergyProductionSpeed;

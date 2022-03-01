@@ -27,7 +27,7 @@ GlobalLanguage *g_theGlobalLanguage;
 const FieldParse GlobalLanguage::s_languageParseTable[] = {
     FIELD_PARSE_ASCIISTRING("UnicodeFontName", GlobalLanguage, m_unicodeFontName),
     { "LocalFontFile", &GlobalLanguage::Parse_Font_Filename, nullptr, 0 },
-    { "MilitaryCaptionSpeed", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionSpeed) },
+    FIELD_PARSE_INT("MilitaryCaptionSpeed", GlobalLanguage, m_militaryCaptionSpeed),
     FIELD_PARSE_BOOL("UseHardWordWrap", GlobalLanguage, m_useHardWordWrap),
     { "ResolutionFontAdjustment", &INI::Parse_Real, nullptr, offsetof(GlobalLanguage, m_resolutionFontAdjustment) },
     { "CopyrightFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_copyrightFont) },
@@ -36,7 +36,7 @@ const FieldParse GlobalLanguage::s_languageParseTable[] = {
         &GlobalLanguage::Parse_FontDesc,
         nullptr,
         offsetof(GlobalLanguage, m_militaryCaptionTitleFont) },
-    { "MilitaryCaptionDelayMS", &INI::Parse_Int, nullptr, offsetof(GlobalLanguage, m_militaryCaptionDelayMs) },
+    FIELD_PARSE_INT("MilitaryCaptionDelayMS", GlobalLanguage, m_militaryCaptionDelayMs),
     { "MilitaryCaptionFont", &GlobalLanguage::Parse_FontDesc, nullptr, offsetof(GlobalLanguage, m_militaryCaptionFont) },
     { "SuperweaponCountdownNormalFont",
         &GlobalLanguage::Parse_FontDesc,

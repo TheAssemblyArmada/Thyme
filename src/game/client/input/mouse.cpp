@@ -686,18 +686,18 @@ void Mouse::Parse_Mouse_Definition(INI *ini)
     // clang-format off
     static const FieldParse _static_mouse_parsers[] = {
         FIELD_PARSE_ASCIISTRING("TooltipFontName", Mouse, m_tooltipFontName),
-        { "TooltipFontSize", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFontSize) },
+        FIELD_PARSE_INT("TooltipFontSize", Mouse, m_tooltipFontSize),
         FIELD_PARSE_BOOL("TooltipFontIsBold", Mouse, m_tooltipFontIsBold),
         FIELD_PARSE_BOOL("TooltipAnimateBackground", Mouse, m_tooltipAnimateBackground),
-        { "TooltipFillTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipFillTime) },
-        { "TooltipDelayTime", &INI::Parse_Int, nullptr, offsetof(Mouse, m_tooltipDelayTime) },
+        FIELD_PARSE_INT("TooltipFillTime", Mouse, m_tooltipFillTime),
+        FIELD_PARSE_INT("TooltipDelayTime", Mouse, m_tooltipDelayTime),
         { "TooltipTextColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorText) },
         { "TooltipHighlightColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorHighlight) },
         { "TooltipShadowColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorShadow) },
         { "TooltipBackgroundColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBackground) },
         { "TooltipBorderColor", &INI::Parse_RGBA_Color_Int, nullptr, offsetof(Mouse, m_tooltipColorBorder) },
         { "TooltipWidth", &INI::Parse_Percent_To_Real, nullptr, offsetof(Mouse, m_tooltipWidth) },
-        { "CursorMode", &INI::Parse_Int, nullptr, offsetof(Mouse, m_currentRedrawMode) },
+        FIELD_PARSE_INT("CursorMode", Mouse, m_currentRedrawMode),
         FIELD_PARSE_BOOL("UseTooltipAltTextColor", Mouse, m_useTooltipAltTextColor),
         FIELD_PARSE_BOOL("UseTooltipAltBackColor", Mouse, m_useTooltipAltBackColor),
         FIELD_PARSE_BOOL("AdjustTooltipAltColor", Mouse, m_adjustTooltipAltColor),
@@ -736,9 +736,9 @@ void Mouse::Parse_Cursor_Definition(INI *ini)
         FIELD_PARSE_ASCIISTRING("Image", CursorInfo, image_name),
         FIELD_PARSE_ASCIISTRING("Texture", CursorInfo, texture_name),
         { "HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot) },
-        { "Frames", &INI::Parse_Int, nullptr, offsetof(CursorInfo, frames) },
+        FIELD_PARSE_INT("Frames", CursorInfo, frames),
         { "FPS", &INI::Parse_Real, nullptr, offsetof(CursorInfo, fps) },
-        { "Directions", &INI::Parse_Int, nullptr, offsetof(CursorInfo, directions) },
+        FIELD_PARSE_INT("Directions", CursorInfo, directions),
         FIELD_PARSE_LAST
     };
     // clang-format on

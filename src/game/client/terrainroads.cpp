@@ -34,7 +34,7 @@ const FieldParse TerrainRoadCollection::s_terrainBridgeFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("ScaffoldSupportObjectName", TerrainRoadType, m_scaffoldSupportObjectName),
     { "RadarColor", &INI::Parse_RGB_Color, nullptr, offsetof(TerrainRoadType, m_radarColor) },
     { "TransitionEffectsHeight", &INI::Parse_Real, nullptr, offsetof(TerrainRoadType, m_transitionEffectsHeight) },
-    { "NumFXPerType", &INI::Parse_Int, nullptr, offsetof(TerrainRoadType, m_numFXPerType) },
+    FIELD_PARSE_INT("NumFXPerType", TerrainRoadType, m_numFXPerType),
     FIELD_PARSE_ASCIISTRING("BridgeModelName", TerrainRoadType, m_bridgeModelName),
     FIELD_PARSE_ASCIISTRING("Texture", TerrainRoadType, m_texture),
     FIELD_PARSE_ASCIISTRING("BridgeModelNameDamaged", TerrainRoadType, m_bridgeModelNameDamaged),

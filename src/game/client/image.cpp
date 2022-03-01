@@ -26,8 +26,8 @@ ImageCollection *g_theMappedImageCollection = nullptr;
 // clang-format off
 const FieldParse Image::s_imageFieldParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Texture", Image, m_filename),
-    { "TextureWidth", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.x) },
-    { "TextureHeight", &INI::Parse_Int, nullptr, offsetof(Image, m_textureSize.y) },
+    FIELD_PARSE_INT("TextureWidth", Image, m_textureSize.x),
+    FIELD_PARSE_INT("TextureHeight", Image, m_textureSize.y),
     { "Coords", &Parse_Image_Coords, nullptr, offsetof(Image, m_UVCoords) },
     { "Status", &Parse_Image_Status, nullptr, offsetof(Image, m_status) },
     FIELD_PARSE_LAST

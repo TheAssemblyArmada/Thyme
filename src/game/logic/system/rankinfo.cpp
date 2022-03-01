@@ -86,7 +86,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
     // clang-format off
     static const FieldParse _parse_table[] = {
         { "RankName", &INI::Parse_And_Translate_Label, nullptr, offsetof(RankInfo, m_rankName) },
-        { "SkillPointsNeeded", &INI::Parse_Int, nullptr, offsetof(RankInfo, m_skillPointsNeeded) },
+        FIELD_PARSE_INT("SkillPointsNeeded", RankInfo, m_skillPointsNeeded),
         { "SciencesGranted", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
         { "SciencePurchasePointsGranted", &INI::Parse_Unsigned_Int, nullptr, offsetof(RankInfo, m_sciencePurchasePointsGranted) },
         FIELD_PARSE_LAST

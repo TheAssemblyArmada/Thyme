@@ -35,7 +35,7 @@ const FieldParse WaterSetting::m_waterSettingFieldParseTable[] = {
     { "UScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_uScrollPerMs) },
     { "VScrollPerMS", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_vScrollPerMs) },
     { "SkyTexelsPerUnit", &INI::Parse_Real, nullptr, offsetof(WaterSetting, m_skyTexelsPerUnit) },
-    { "WaterRepeatCount", &INI::Parse_Int, nullptr, offsetof(WaterSetting, m_waterRepeatCount) },
+    FIELD_PARSE_INT("WaterRepeatCount", WaterSetting, m_waterRepeatCount),
     FIELD_PARSE_LAST
 };
 

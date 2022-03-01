@@ -141,7 +141,7 @@ public:
     float m_vertexWaterAttenuationRange[4];
     float m_downWindAngle;
     float m_skyBoxPositionZ;
-    float m_drawSkyBox; // is used as a bool and appears to be defined wrong
+    float m_drawSkyBox; // #TODO parse type is float, but parse function is for bool
     float m_skyBoxScale;
     float m_cameraPitch;
     float m_cameraYaw;
@@ -265,7 +265,7 @@ public:
     bool m_sendDelay;
     // char pad[3]
     int32_t m_firewallPortOverrides;
-    int16_t m_firewallPortAllocationDelta;
+    int16_t m_firewallPortAllocationDelta; // #TODO parse type is short, but parse function is for int
     // char pad[2]
     int32_t m_valuesPerSupplyBox;
     float m_buildSpeed;

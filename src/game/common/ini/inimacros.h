@@ -162,6 +162,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Utf8String>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_ASCIISTRING_VECTOR(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_AsciiString_Vector, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<Utf8String>>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_INDEX_LIST(token, user_data, classtype, classmember) \
         FieldParse { \
             token, \

@@ -89,7 +89,7 @@ HGDIOBJ g_splashImage;
 HINSTANCE g_applicationHInstance;
 #endif
 #ifdef BUILD_WITH_SDL2
-SDL_Window *g_applicationWindow;
+// SDL_Window *g_applicationWindow;
 #endif
 unsigned g_theMessageTime = 0;
 HGDIOBJ g_splashImage;
@@ -151,6 +151,7 @@ inline void Set_Working_Directory()
 constexpr int WIN_WIDTH = 800;
 constexpr int WIN_HEIGHT = 600;
 constexpr const char *WIN_TITLE = "Thyme RTS Engine";
+constexpr const char *WIN_SPLASH = "Install_Final.bmp";
 
 /**
  * @brief Check the command line for early startup related flags.
@@ -407,7 +408,7 @@ void Create_Window()
         show_cmd = SW_SHOWDEFAULT;
     }
 
-    g_splashImage = LoadImageA(app_hinstance, "Install_Final.bmp", 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);
+    g_splashImage = LoadImageA(app_hinstance, WIN_SPLASH, 0, 0, 0, LR_LOADFROMFILE | LR_SHARED);
     bool is_windowed = g_gameIsWindowed;
 
     WndClass.style = CS_VREDRAW | CS_HREDRAW | CS_DBLCLKS;
@@ -423,8 +424,8 @@ void Create_Window()
 
     RegisterClassA(&WndClass);
 
-    Rect.right = 800;
-    Rect.bottom = 600;
+    Rect.right = WIN_WIDTH;
+    Rect.bottom = WIN_HEIGHT;
     Rect.left = 0;
     Rect.top = 0;
 
@@ -458,7 +459,7 @@ void Create_Window()
 
     HWND app_hwnd = CreateWindowExA(0,
         "Game Window",
-        "Thyme RTS Engine",
+        WIN_TITLE,
         style,
         g_xPos,
         g_yPos,
@@ -496,11 +497,11 @@ void Create_Window()
 #endif
 }
 
+#ifdef BUILD_WITH_SDL2
 namespace Thyme
 {
 bool Create_Window_SDL2()
 {
-#ifdef BUILD_WITH_SDL2
     g_applicationWindow = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -522,6 +523,40 @@ bool Create_Window_SDL2()
         captainslog_error("SDL could not create window!");
         return false;
     }
+
+    // Load the splashscreen
+    SDL_Surface *splashSurface = SDL_LoadBMP(WIN_SPLASH);
+    if (splashSurface == nullptr) {
+        captainslog_error("SDL could not load splashscreen image!");
+        return false;
+    }
+
+    SDL_Renderer *renderer = SDL_CreateRenderer(g_applicationWindow, -1, 0);
+    if (renderer == nullptr) {
+        SDL_FreeSurface(splashSurface);
+        captainslog_error("SDL could not create splashscreen renderer!");
+        return false;
+    }
+
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, splashSurface);
+    if (texture == nullptr) {
+        SDL_FreeSurface(splashSurface);
+        SDL_DestroyRenderer(renderer);
+        captainslog_error("SDL could not load splashscreen texture!");
+        return false;
+    }
+
+    // Draw the splashscreen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+
+    // Free resources
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_FreeSurface(splashSurface);
+
     SDL_RaiseWindow(g_applicationWindow);
     SDL_ShowWindow(g_applicationWindow);
 
@@ -537,11 +572,17 @@ bool Create_Window_SDL2()
     g_applicationHWnd = wmInfo.info.win.window;
 #endif
     return true;
-#else
-    return false;
-#endif
+}
+
+void Destroy_Window_SDL2()
+{
+    if (g_applicationWindow)
+        SDL_DestroyWindow(g_applicationWindow);
+
+    SDL_Quit();
 }
 } // namespace Thyme
+#endif
 
 /**
  * @brief Entry point for the game engine.
@@ -674,6 +715,10 @@ int main(int argc, char **argv)
     g_theVersion = nullptr;
 
     Shutdown_Memory_Manager();
+
+#ifdef BUILD_WITH_SDL2
+    Thyme::Destroy_Window_SDL2();
+#endif
 
     g_unicodeStringCriticalSection = nullptr;
     g_dmaCriticalSection = nullptr;

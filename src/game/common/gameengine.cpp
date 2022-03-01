@@ -340,15 +340,18 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
+#ifdef GAME_DLL
     Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 
     if (!g_theAudio->Is_Music_Already_Loaded()) {
         Set_Quitting(true);
     }
+
 #ifdef GAME_DEBUG_STRUCTS
     captainslog_debug(
         "----------------------------------------------------------------------------After TheAudio = %f seconds ",
         0.0f); // TODO processor frequency stuff
+#endif
 #endif
 
     Init_Subsystem(g_theFunctionLexicon, "TheFunctionLexicon", Create_Function_Lexicon());

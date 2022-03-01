@@ -26,6 +26,14 @@
 
 namespace Thyme
 {
+
+class SDL2InputKeyboard;
+#ifdef GAME_DLL
+extern SDL2InputKeyboard *&g_theSDL2Keyboard;
+#else
+extern SDL2InputKeyboard *g_theSDL2Keyboard;
+#endif
+
 class SDL2InputKeyboard : public Keyboard
 {
     enum

@@ -36,10 +36,10 @@ extern HWND g_applicationHWnd;
 extern HGDIOBJ g_splashImage;
 extern HINSTANCE g_applicationHInstance;
 #endif
-#ifdef BUILD_WITH_SDL2
+// #ifdef BUILD_WITH_SDL2
 struct SDL_Window;
 extern SDL_Window *g_applicationWindow;
-#endif
+//#endif
 extern bool g_gameIsWindowed;
 extern bool g_gameNotFullscreen;
 extern bool g_gameActive;

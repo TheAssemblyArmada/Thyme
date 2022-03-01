@@ -18,6 +18,9 @@
 
 namespace Thyme
 {
+#ifndef GAME_DLL
+SDL2InputKeyboard *g_theSDL2Keyboard = nullptr;
+#endif
 
 SDL2InputKeyboard::SDL2InputKeyboard() {}
 

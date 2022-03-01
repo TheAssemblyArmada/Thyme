@@ -23,6 +23,10 @@ namespace Thyme
 {
 SDL_Cursor *SDL2Mouse::s_loadedCursors[CURSOR_COUNT][8];
 
+#ifndef GAME_DLL
+SDL2Mouse *g_theSDL2Mouse = nullptr;
+#endif
+
 SDL2Mouse::SDL2Mouse() : m_nextFreeIndex(0), m_nextGetIndex(0)
 {
     std::memset(m_eventBuffer, 0, sizeof(m_eventBuffer));

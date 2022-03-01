@@ -554,6 +554,11 @@ if(USE_SDL2)
     list(APPEND GAMEENGINE_SRC
         platform/sdl2/sdl2keybd.cpp
         platform/sdl2/sdl2mouse.cpp
+        platform/sdl2/sdl2gameengine.cpp
+    )
+
+    list(APPEND GAMEENGINE_INCLUDES
+        platform/sdl2/
     )
 endif()
 

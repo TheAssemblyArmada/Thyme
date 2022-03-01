@@ -99,6 +99,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_UNSIGNED_SHORT(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Unsigned_Short, \
+            nullptr, \
+            Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), uint16_t>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_ASCIISTRING(token, classtype, classmember) \
         FieldParse { \
             token, \

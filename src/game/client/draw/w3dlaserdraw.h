@@ -35,8 +35,8 @@ public:
     static void Build_Field_Parse(MultiIniFieldParse &p);
 
 private:
-    int m_innerColor;
-    int m_outerColor;
+    int32_t m_innerColor;
+    int32_t m_outerColor;
     float m_innerBeamWidth;
     float m_outerBeamWidth;
     float m_scrollRate;

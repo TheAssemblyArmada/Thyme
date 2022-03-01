@@ -448,7 +448,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     FIELD_PARSE_UNSIGNED_BYTE("ClearAlpha", GlobalData, m_clearAlpha),
     FIELD_PARSE_UNSIGNED_BYTE("FogAlpha", GlobalData, m_fogAlpha),
     FIELD_PARSE_UNSIGNED_BYTE("ShroudAlpha", GlobalData, m_shroudAlpha),
-    { "HotKeyTextColor", &INI::Parse_Color_Int, nullptr, offsetof(GlobalData, m_hotKeytextColor) },
+    FIELD_PARSE_COLOR_INT("HotKeyTextColor", GlobalData, m_hotKeytextColor),
     FIELD_PARSE_INT("PowerBarBase", GlobalData, m_powerBarBase),
     FIELD_PARSE_REAL("PowerBarIntervals", GlobalData, m_powerBarIntervals),
     FIELD_PARSE_INT("PowerBarYellowRange", GlobalData, m_powerBarYellowRange),

@@ -97,7 +97,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_INT("EnergyBonus", ThingTemplate, m_energyBonus),
     FIELD_PARSE_BOOL("IsForbidden", ThingTemplate, m_isForbidden),
     FIELD_PARSE_BOOL("IsPrerequisite", ThingTemplate, m_isPrerequisite),
-    {"DisplayColor", &INI::Parse_Color_Int, nullptr, offsetof(ThingTemplate, m_displayColor)},
+    FIELD_PARSE_COLOR_INT("DisplayColor", ThingTemplate, m_displayColor),
     {"EditorSorting", &INI::Parse_Byte_Sized_Index_List, s_editorSortingNames, offsetof(ThingTemplate, m_editorSorting)},
     {"KindOf", &BitFlags<KINDOF_COUNT>::Parse_From_INI, nullptr, offsetof(ThingTemplate, m_kindOf)},
     FIELD_PARSE_ASCIISTRING("CommandSet", ThingTemplate, m_commandSetString),

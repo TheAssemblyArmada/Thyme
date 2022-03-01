@@ -40,8 +40,8 @@ public:
     virtual GameFont *Get_Font() { return m_font; }
     virtual void Set_Word_Wrap(int length) = 0;
     virtual void Set_Word_Wrap_Centered(bool on) = 0;
-    virtual void Draw(int x, int y, int w, int h) = 0;
-    virtual void Draw(int x, int y, int w, int h, int unk1, int unk2) = 0;
+    virtual void Draw(int x, int y, int font_color, int shadow_color) = 0;
+    virtual void Draw(int x, int y, int font_color, int shadow_color, int shadow_offset_x, int shadow_offset_y) = 0;
     virtual void Get_Size(int *x, int *y) = 0;
     virtual int Get_Width(int char_count) = 0;
     virtual void Set_Use_Hotkey(bool state, int val) = 0;

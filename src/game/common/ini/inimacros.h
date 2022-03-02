@@ -303,4 +303,11 @@ constexpr const void *IntToUserdata(ValueType value)
             Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), uint8_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_BITSTRING32(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Bitstring32, \
+            Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
+            Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), uint32_t>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

@@ -187,7 +187,7 @@ struct ModelConditionInfo
     std::vector<W3DAnimationInfo> m_animations;
     NameKeyType m_transitionKey;
     NameKeyType m_allowToFinishKey;
-    int m_flags;
+    uint32_t m_flags;
     int m_iniReadFlags;
     int m_mode;
     std::vector<ParticleSysBoneInfo> m_ParticleSysBones;
@@ -241,7 +241,7 @@ private:
     Utf8String m_attachToBoneInAnotherModule;
     mutable Vector3 m_attachToDrawableBoneOffset;
     int m_stateCount;
-    int m_projectileBoneFeedbackEnabledSlots;
+    uint32_t m_projectileBoneFeedbackEnabledSlots;
     float m_initialRecoil;
     float m_maxRecoil;
     float m_recoilDamping;

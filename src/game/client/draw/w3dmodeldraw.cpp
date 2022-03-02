@@ -144,9 +144,9 @@ void ModelConditionInfo::Validate_Stuff(RenderObjClass *robj, float scale, std::
     Validate_Weapon_Barrel_Info();
 }
 
-bool Test_Animation_Flag(int flags, AnimationStateFlag flag)
+bool Test_Animation_Flag(uint32_t flags, AnimationStateFlag flag)
 {
-    return ((1 << flag) & flags) != 0;
+    return ((1u << flag) & flags) != 0;
 }
 
 bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &transform, int &index)
@@ -610,7 +610,7 @@ W3DModelDrawModuleData::W3DModelDrawModuleData() :
     m_attachToDrawableBoneOffsetSet(false),
     m_timeAndWeatherFlags(false),
     m_particlesAttachedToAnimatedBones(false),
-    m_projectileBoneFeedbackEnabledSlots(false),
+    m_projectileBoneFeedbackEnabledSlots(0),
     m_initialRecoil(2.0f),
     m_maxRecoil(3.0f),
     m_recoilDamping(0.4f),
@@ -724,7 +724,14 @@ const ModelConditionInfo *W3DModelDrawModuleData::Find_Best_Info(BitFlags<MODELC
     return m_conditionStateMap.Find_Best_Info(m_conditionStates, set_flags);
 }
 
-static const char *s_theWeaponSlotTypeNames[] = { "PRIMARY", "SECONDARY", "TERTIARY", nullptr };
+// clang-format off
+constexpr const char *const s_theWeaponSlotTypeNames[WEAPONSLOT_COUNT + 1] = {
+    "PRIMARY",
+    "SECONDARY",
+    "TERTIARY",
+    nullptr
+};
+// clang-format on
 
 void Parse_Ascii_String_LC(INI *ini, void *formal, void *store, void const *user_data)
 {
@@ -745,7 +752,7 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_BOOL("AnimationsRequirePower", W3DModelDrawModuleData, m_animationsRequirePower),
         FIELD_PARSE_BOOL("ParticlesAttachedToAnimatedBones", W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones),
         { "MinLODRequired", &GameLODManager::Parse_Static_Game_LOD_Level, nullptr, offsetof(W3DModelDrawModuleData, m_minLodRequired) },
-        { "ProjectileBoneFeedbackEnabledSlots", &INI::Parse_Bitstring32, s_theWeaponSlotTypeNames, offsetof(W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots) },
+        FIELD_PARSE_BITSTRING32("ProjectileBoneFeedbackEnabledSlots", s_theWeaponSlotTypeNames, W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots),
         { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_DEFAULT), 0 },
         { "ConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_NORMAL), 0 },
         { "AliasConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_ALIAS), 0 },
@@ -1133,7 +1140,7 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
         FIELD_PARSE_INDEX_LIST("AnimationMode", s_theAnimModeNames, ModelConditionInfo, m_mode),
         { "TransitionKey", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_transitionKey) },
         { "WaitForStateToFinishIfPossible", &Parse_Lowercase_Name_Key, nullptr, offsetof(ModelConditionInfo, m_allowToFinishKey) },
-        { "Flags", &INI::Parse_Bitstring32, &s_ACBitsNames, offsetof(ModelConditionInfo, m_flags) },
+        FIELD_PARSE_BITSTRING32("Flags", s_ACBitsNames, ModelConditionInfo, m_flags),
         { "ParticleSysBone", &Parse_Particle_Sys_Bone, nullptr, 0 },
         { "AnimationSpeedFactorRange", &Parse_Real_Range, nullptr, 0 },
         FIELD_PARSE_LAST
@@ -1484,17 +1491,17 @@ const ModelConditionInfo *W3DModelDraw::Find_Transition_For_Sig(uint64_t sig) co
 
 namespace
 {
-constexpr int g_maintain_frame_across_states_flags = (1 << MAINTAIN_FRAME_ACROSS_STATES)
-    | (1 << MAINTAIN_FRAME_ACROSS_STATES2) | (1 << MAINTAIN_FRAME_ACROSS_STATES3)
-    | (1 << MAINTAIN_FRAME_ACROSS_STATES4); // 0x3A0
+constexpr uint32_t g_maintain_frame_across_states_flags = (1u << MAINTAIN_FRAME_ACROSS_STATES)
+    | (1u << MAINTAIN_FRAME_ACROSS_STATES2) | (1u << MAINTAIN_FRAME_ACROSS_STATES3)
+    | (1u << MAINTAIN_FRAME_ACROSS_STATES4); // 0x3A0
 }
 
-bool Maintain_Frame_Across_States(int flags)
+bool Maintain_Frame_Across_States(uint32_t flags)
 {
     return (flags & g_maintain_frame_across_states_flags) != 0;
 }
 
-bool Maintain_Frame_Across_States_2(int flags, int flags2)
+bool Maintain_Frame_Across_States_2(uint32_t flags, uint32_t flags2)
 {
     return (flags2 & flags & g_maintain_frame_across_states_flags) != 0;
 }
@@ -2823,7 +2830,7 @@ bool W3DModelDraw::Is_Visible() const
 
 void W3DModelDraw::Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot)
 {
-    if (((1 << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
+    if (((1u << wslot) & Get_W3D_Model_Draw_Module_Data()->m_projectileBoneFeedbackEnabledSlots) != 0) {
         Do_Hide_Show_Projectile_Objects(show, count, wslot);
     }
 }

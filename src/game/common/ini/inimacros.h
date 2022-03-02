@@ -69,6 +69,14 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
     return static_cast<ExpectedType>(list);
 }
 
+template<typename ExpectedType, typename ValueType>
+constexpr const void *IntToUserdata(ValueType value)
+{
+    static_assert(sizeof(void *) == sizeof(uintptr_t));
+    return reinterpret_cast<const void *>(static_cast<uintptr_t>(
+        ReturnWithSameCheck<ValueType, ExpectedType>(value)));
+}
+
 } // namespace Thyme
 
 #define FIELD_PARSE_LAST \
@@ -273,5 +281,12 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             &INI::Parse_Acceleration_Real, \
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_BIT_IN_INT32(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Bit_In_Int32, \
+            Thyme::IntToUserdata<uint32_t>(user_data) \
+            Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
 // clang-format on

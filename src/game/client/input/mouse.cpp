@@ -735,7 +735,7 @@ void Mouse::Parse_Cursor_Definition(INI *ini)
         FIELD_PARSE_BOOL("Loop", CursorInfo, loop),
         FIELD_PARSE_ASCIISTRING("Image", CursorInfo, image_name),
         FIELD_PARSE_ASCIISTRING("Texture", CursorInfo, texture_name),
-        { "HotSpot", &INI::Parse_ICoord2D, nullptr, offsetof(CursorInfo, hot_spot) },
+        FIELD_PARSE_ICOORD2D("HotSpot", CursorInfo, hot_spot),
         FIELD_PARSE_INT("Frames", CursorInfo, frames),
         FIELD_PARSE_REAL("FPS", CursorInfo, fps),
         FIELD_PARSE_INT("Directions", CursorInfo, directions),

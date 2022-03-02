@@ -55,7 +55,7 @@ void W3DTankTruckDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_REAL("PowerslideRotationAddition", W3DTankTruckDrawModuleData, m_powerslideRotationAddition),
         FIELD_PARSE_ASCIISTRING("TreadDebrisLeft", W3DTankTruckDrawModuleData, m_treadDebrisNameLeft),
         FIELD_PARSE_ASCIISTRING("TreadDebrisRight", W3DTankTruckDrawModuleData, m_treadDebrisNameRight),
-        { "TreadAnimationRate", &INI::Parse_Velocity_Real, nullptr, offsetof(W3DTankTruckDrawModuleData, m_treadAnimationRate) },
+        FIELD_PARSE_VELOCITY_REAL("TreadAnimationRate", W3DTankTruckDrawModuleData, m_treadAnimationRate),
         FIELD_PARSE_REAL("TreadPivotSpeedFraction", W3DTankTruckDrawModuleData, m_treadPivotSpeedFraction),
         FIELD_PARSE_REAL("TreadDriveSpeedFraction", W3DTankTruckDrawModuleData, m_treadDriveSpeedFraction),
         FIELD_PARSE_LAST

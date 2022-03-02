@@ -267,4 +267,11 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_ACCELERATION_REAL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Acceleration_Real, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

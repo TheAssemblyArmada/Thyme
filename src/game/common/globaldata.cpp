@@ -160,7 +160,7 @@ const FieldParse GlobalData::s_fieldParseTable[] = {
     FIELD_PARSE_REAL("UnitReallyDamagedThreshold", GlobalData, m_unitReallyDamagedThreshold),
     FIELD_PARSE_REAL("GroundStiffness", GlobalData, m_groundStiffness),
     FIELD_PARSE_REAL("StructureStiffness", GlobalData, m_structureStiffness),
-    { "Gravity", &INI::Parse_Acceleration_Real, nullptr, offsetof(GlobalData, m_gravity) },
+    FIELD_PARSE_ACCELERATION_REAL("Gravity", GlobalData, m_gravity),
     FIELD_PARSE_PERCENT_TO_REAL("StealthFriendlyOpacity", GlobalData, m_stealthFriendlyOpacity),
     FIELD_PARSE_DURATION_UNSIGNED_INT("DefaultOcclusionDelay", GlobalData, m_defaultOcclusionDelay),
     FIELD_PARSE_REAL("PartitionCellSize", GlobalData, m_partitionCellSize),

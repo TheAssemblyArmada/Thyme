@@ -239,4 +239,11 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), unsigned char>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_DURATION_REAL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Duration_Real, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

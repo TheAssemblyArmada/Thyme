@@ -29,13 +29,33 @@
 using std::strcpy;
 using std::strncpy;
 
-static const char *s_radarPriorityNames[] = { "INVALID", "NOT_ON_RADAR", "STRUCTURE", "UNIT", "LOCAL_UNIT_ONLY", nullptr };
+constexpr const char *const s_radarPriorityNames[] =
+{
+    "INVALID",
+    "NOT_ON_RADAR",
+    "STRUCTURE",
+    "UNIT",
+    "LOCAL_UNIT_ONLY",
+    nullptr
+};
 
-static const char *s_buildableStatusNames[] = { "Yes", "Ignore_Prerequisites", "No", "Only_By_AI", nullptr };
+constexpr const char *const s_buildableStatusNames[] = {
+    "Yes",
+    "Ignore_Prerequisites",
+    "No",
+    "Only_By_AI",
+    nullptr
+};
 
-static const char *s_buildCompletionNames[] = { "INVALID", "APPEARS_AT_RALLY_POINT", "PLACED_BY_PLAYER", nullptr };
+constexpr const char *const s_buildCompletionNames[] = {
+    "INVALID",
+    "APPEARS_AT_RALLY_POINT",
+    "PLACED_BY_PLAYER",
+    nullptr
+};
 
-static const char *s_editorSortingNames[] = { "NONE",
+constexpr const char *const s_editorSortingNames[] = {
+    "NONE",
     "STRUCTURE",
     "INFANTRY",
     "VEHICLE",
@@ -49,7 +69,8 @@ static const char *s_editorSortingNames[] = { "NONE",
     "FOR_REVIEW",
     "ROAD",
     "WAYPOINT",
-    nullptr };
+    nullptr
+};
 
 static const char *s_theShadowNames[] = { "SHADOW_DECAL",
     "SHADOW_VOLUME",
@@ -67,7 +88,7 @@ AudioEventRTS ThingTemplate::s_audioEventNoSound;
 // clang-format off
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},
-    {"RadarPriority", &INI::Parse_Byte_Sized_Index_List, &s_radarPriorityNames, offsetof(ThingTemplate, m_radarPriority)},
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("RadarPriority", s_radarPriorityNames, ThingTemplate, m_radarPriority),
     FIELD_PARSE_UNSIGNED_BYTE("TransportSlotCount", ThingTemplate, m_transportSlotCount),
     FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
     FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
@@ -88,17 +109,17 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_BOOL("HijackGuard", ThingTemplate, m_hijackGuard),
     FIELD_PARSE_ASCIISTRING("Side", ThingTemplate, m_defaultOwningSide),
     {"Prerequisites", &ThingTemplate::Parse_Prerequisites, nullptr, 0},
-    {"Buildable", &INI::Parse_Byte_Sized_Index_List, s_buildableStatusNames, offsetof(ThingTemplate, m_buildable)},
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("Buildable", s_buildableStatusNames, ThingTemplate, m_buildable),
     FIELD_PARSE_UNSIGNED_SHORT("BuildCost", ThingTemplate, m_buildCost),
     FIELD_PARSE_REAL("BuildTime", ThingTemplate, m_buildTime),
     FIELD_PARSE_UNSIGNED_SHORT("RefundValue", ThingTemplate, m_refundValue),
-    {"BuildCompletion", &INI::Parse_Byte_Sized_Index_List, s_buildCompletionNames, offsetof(ThingTemplate, m_buildCompletion)},
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("BuildCompletion", s_buildCompletionNames, ThingTemplate, m_buildCompletion),
     FIELD_PARSE_INT("EnergyProduction", ThingTemplate, m_energyProduction),
     FIELD_PARSE_INT("EnergyBonus", ThingTemplate, m_energyBonus),
     FIELD_PARSE_BOOL("IsForbidden", ThingTemplate, m_isForbidden),
     FIELD_PARSE_BOOL("IsPrerequisite", ThingTemplate, m_isPrerequisite),
     FIELD_PARSE_COLOR_INT("DisplayColor", ThingTemplate, m_displayColor),
-    {"EditorSorting", &INI::Parse_Byte_Sized_Index_List, s_editorSortingNames, offsetof(ThingTemplate, m_editorSorting)},
+    FIELD_PARSE_BYTE_SIZED_INDEX_LIST("EditorSorting", s_editorSortingNames, ThingTemplate, m_editorSorting),
     {"KindOf", &BitFlags<KINDOF_COUNT>::Parse_From_INI, nullptr, offsetof(ThingTemplate, m_kindOf)},
     FIELD_PARSE_ASCIISTRING("CommandSet", ThingTemplate, m_commandSetString),
     FIELD_PARSE_ASCIISTRING_VECTOR("BuildVariations", ThingTemplate, m_buildVariations),

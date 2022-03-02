@@ -225,4 +225,11 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_BYTE_SIZED_INDEX_LIST(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Byte_Sized_Index_List, \
+            Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
+            Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), unsigned char>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

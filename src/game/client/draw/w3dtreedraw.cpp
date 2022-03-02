@@ -42,8 +42,8 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
     static const FieldParse dataFieldParse[] = {
         FIELD_PARSE_ASCIISTRING("ModelName", W3DTreeDrawModuleData, m_modelName),
         FIELD_PARSE_ASCIISTRING("TextureName", W3DTreeDrawModuleData, m_textureName),
-        { "MoveOutwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveOutwardTime) },
-        { "MoveInwardTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_moveInwardTime) },
+        FIELD_PARSE_DURATION_UNSIGNED_INT("MoveOutwardTime", W3DTreeDrawModuleData, m_moveOutwardTime),
+        FIELD_PARSE_DURATION_UNSIGNED_INT("MoveInwardTime", W3DTreeDrawModuleData, m_moveInwardTime),
         FIELD_PARSE_REAL("MoveOutwardDistanceFactor", W3DTreeDrawModuleData, m_moveOutwardDistanceFactor),
         FIELD_PARSE_REAL("DarkeningFactor", W3DTreeDrawModuleData, m_darkeningFactor),
         { "ToppleFX", &FXList::Parse, nullptr, offsetof(W3DTreeDrawModuleData, m_toppleFX) },
@@ -56,7 +56,7 @@ void W3DTreeDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_PERCENT_TO_REAL("BounceVelocityPercent", W3DTreeDrawModuleData, m_bounceVelocityPercent),
         FIELD_PARSE_POSITIVE_NON_ZERO_REAL("MinimumToppleSpeed", W3DTreeDrawModuleData, m_minimumToppleSpeed),
         FIELD_PARSE_POSITIVE_NON_ZERO_REAL("SinkDistance", W3DTreeDrawModuleData, m_sinkDistance),
-        { "SinkTime", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(W3DTreeDrawModuleData, m_sinkTime) },
+        FIELD_PARSE_DURATION_UNSIGNED_INT("SinkTime", W3DTreeDrawModuleData, m_sinkTime),
         FIELD_PARSE_BOOL("DoShadow", W3DTreeDrawModuleData, m_doShadow),
         FIELD_PARSE_LAST
     };

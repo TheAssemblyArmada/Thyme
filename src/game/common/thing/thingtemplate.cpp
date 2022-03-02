@@ -183,7 +183,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_REAL("ShadowOffsetX", ThingTemplate, m_shadowOffsetX),
     FIELD_PARSE_REAL("ShadowOffsetY", ThingTemplate, m_shadowOffsetY),
     FIELD_PARSE_ASCIISTRING("ShadowTexture", ThingTemplate, m_shadowTextureName),
-    {"OcclusionDelay", &INI::Parse_Duration_Unsigned_Int, nullptr, offsetof(ThingTemplate, m_occlusionDelay)},
+    FIELD_PARSE_DURATION_UNSIGNED_INT("OcclusionDelay", ThingTemplate, m_occlusionDelay),
     {"AddModule", &ThingTemplate::Parse_Add_Module, nullptr, 0},
     {"RemoveModule", &ThingTemplate::Parse_Remove_Module, nullptr, 0},
     {"ReplaceModule", &ThingTemplate::Parse_Replace_Module, nullptr, 0},

@@ -246,4 +246,11 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), float>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_DURATION_UNSIGNED_INT(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Duration_Unsigned_Int, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), uint32_t>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

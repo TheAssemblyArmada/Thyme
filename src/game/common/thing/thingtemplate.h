@@ -384,7 +384,7 @@ private:
     int m_energyProduction;
     int m_energyBonus;
     int32_t m_displayColor;
-    unsigned int m_occlusionDelay;
+    uint32_t m_occlusionDelay;
     NameKeyType m_maxSimultaneousLinkKey;
     unsigned short m_templateID;
     unsigned short m_buildCost;

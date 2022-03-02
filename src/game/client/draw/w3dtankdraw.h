@@ -63,7 +63,7 @@ public:
     virtual NameKeyType Get_Module_Name_Key() const override;
     virtual void Do_Draw_Module(const Matrix3D *transform) override;
     virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
-    virtual void On_Render_Obj_Recreated();
+    virtual void On_Render_Obj_Recreated() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;

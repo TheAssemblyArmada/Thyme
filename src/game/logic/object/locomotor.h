@@ -129,6 +129,22 @@ class Locomotor : public MemoryPoolObject, public SnapShot
     IMPLEMENT_POOL(Locomotor);
 
 public:
+    enum LocoFlag // not 100% confirmed
+    {
+        IS_BRAKING,
+        ALLOW_INVALID_POSITION,
+        MAINTAIN_POS_IS_VALID,
+        PRECISE_Z_POS,
+        NO_SLOW_DOWN_AS_APPROACHING_DEST,
+        OVER_WATER,
+        ULTRA_ACCURATE,
+        MOVING_BACKWARDS,
+        FLAG_8,
+        FLAG_9,
+        CLOSE_ENOUGH_DIST_3D,
+        WANDER_DIRECTION,
+    };
+
     virtual ~Locomotor() override;
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;
@@ -163,20 +179,23 @@ public:
     float Get_Max_Wheel_Extension() const { return m_template->m_maximumWheelExtension; }
     float Get_Wheel_Turn_Angle() const { return m_template->m_wheelTurnAngle; }
 
+    bool Get_Flag(char flag) const { return ((1 << flag) & m_flags) != 0; }
+    bool Is_Moving_Backwards() const { return Get_Flag(MOVING_BACKWARDS); }
+
 private:
     Override<LocomotorTemplate> m_template;
     Coord3D m_maintainPos;
-    float m_unk1;
+    float m_brakingFactor;
     float m_maxLift;
     float m_maxSpeed;
     float m_maxAccel;
-    float m_brakingFactor;
+    float m_maxBreaking;
     float m_maxTurnRate;
     float m_closeEnoughDist;
     unsigned int m_flags;
     float m_preferredHeight;
     float m_preferredHeightDamping;
-    float m_unk2;
-    float m_unk3;
-    unsigned int m_unk4;
+    float m_wanderAngle; // not 100% confirmed
+    float m_wanderLength; // not 100% confirmed
+    unsigned int m_moveFrame; // not 100% confirmed
 };

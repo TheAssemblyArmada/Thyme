@@ -208,7 +208,7 @@ public:
         return m_status & DRAWABLE_STATUS_DRAWS_IN_MIRROR || Is_KindOf(KINDOF_CAN_CAST_REFLECTIONS);
     }
 
-    TWheelInfo *Get_Wheel_Info() const
+    const TWheelInfo *Get_Wheel_Info() const
     {
         if (m_drawableLocoInfo) {
             return &m_drawableLocoInfo->m_wheelInfo;

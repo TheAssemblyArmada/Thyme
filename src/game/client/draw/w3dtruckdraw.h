@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D Tank Truck Draw Module
+ * @brief W3D Truck Draw Module
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -14,11 +14,23 @@
  */
 #pragma once
 #include "always.h"
-#include "rendobj.h"
 #include "w3dmodeldraw.h"
 
-class W3DTankTruckDrawModuleData : public W3DModelDrawModuleData
+class W3DTruckDrawModuleData : public W3DModelDrawModuleData
 {
+public:
+    W3DTruckDrawModuleData() :
+        // BUGFIX: init all members
+        m_cabRotationMultiplier(0.0f),
+        m_trailerRotationMultiplier(0.0f),
+        m_rotationDamping(0.0f),
+        m_rotationSpeedMultiplier(0.0f),
+        m_powerslideRotationAddition(0.0f)
+    {
+    }
+    virtual ~W3DTruckDrawModuleData() {}
+    static void Build_Field_Parse(MultiIniFieldParse &p);
+
 private:
     Utf8String m_dustEffectName;
     Utf8String m_dirtEffectName;
@@ -31,51 +43,30 @@ private:
     Utf8String m_midFrontRightTireBoneName;
     Utf8String m_midRearLeftTireBoneName;
     Utf8String m_midRearRightTireBoneName;
+    Utf8String m_midMidLeftTireBoneName;
+    Utf8String m_midMidRightTireBoneName;
+    Utf8String m_cabBoneName;
+    Utf8String m_trailerBoneName;
+    float m_cabRotationMultiplier;
+    float m_trailerRotationMultiplier;
+    float m_rotationDamping;
     float m_rotationSpeedMultiplier;
     float m_powerslideRotationAddition;
-    Utf8String m_treadDebrisNameLeft;
-    Utf8String m_treadDebrisNameRight;
-    float m_treadAnimationRate;
-    float m_treadPivotSpeedFraction;
-    float m_treadDriveSpeedFraction;
-
-public:
-    W3DTankTruckDrawModuleData();
-    virtual ~W3DTankTruckDrawModuleData() {}
-    static void Build_Field_Parse(MultiIniFieldParse &p);
-    friend class W3DTankTruckDraw;
+    friend class W3DTruckDraw;
 };
 
-class W3DTankTruckDraw : public W3DModelDraw
+class W3DTruckDraw : public W3DModelDraw
 {
-    IMPLEMENT_POOL(W3DTankTruckDraw);
+    IMPLEMENT_POOL(W3DTruckDraw)
 
 public:
-    enum
-    {
-        MAX_TREADS_PER_TANK = 4,
-    };
+    W3DTruckDraw(Thing *thing, ModuleData const *module_data);
 
-    enum TreadType
-    {
-        TREAD_LEFT,
-        TREAD_RIGHT,
-        TREAD_MIDDLE,
-    };
-
-    struct TreadObjectInfo
-    {
-        RenderObjClass *m_robj;
-        TreadType m_type;
-        RenderObjClass::Material_Override m_materialSettings;
-    };
-
-    W3DTankTruckDraw(Thing *thing, ModuleData const *module_data);
-
-    virtual ~W3DTankTruckDraw() override;
+    virtual ~W3DTruckDraw() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
     virtual void Do_Draw_Module(const Matrix3D *transform) override;
     virtual void Set_Fully_Obscured_By_Shroud(bool obscured) override;
+    virtual void React_To_Geometry_Change() override {}
     virtual void On_Render_Obj_Recreated() override;
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
@@ -88,14 +79,10 @@ public:
     void Create_Emitters();
     void Enable_Emitters(bool enable);
     void Update_Bones();
-    void Start_Move_Debris();
-    void Stop_Move_Debris();
-    void Update_Tread_Positions(float uv_delta);
-    void Update_Tread_Objects();
 
-    const W3DTankTruckDrawModuleData *Get_W3D_Tank_Truck_Draw_Module_Data() const
+    const W3DTruckDrawModuleData *Get_W3D_Truck_Draw_Module_Data() const
     {
-        return static_cast<const W3DTankTruckDrawModuleData *>(Module::Get_Module_Data());
+        return static_cast<const W3DTruckDrawModuleData *>(Module::Get_Module_Data());
     }
 
     static ModuleData *Friend_New_Module_Data(INI *ini);
@@ -120,11 +107,14 @@ private:
     int m_midFrontRightTireBone;
     int m_midRearLeftTireBone;
     int m_midRearRightTireBone;
+    int m_midMidLeftTireBone;
+    int m_midMidRightTireBone;
+    int m_cabBone;
+    float m_cabRotation;
+    int m_trailerBone;
+    float m_trailerRotation;
+    int m_numBones;
     AudioEventRTS m_powerslideSound;
     AudioEventRTS m_landingSound;
-    ParticleSystem *m_treadDebrisLeft;
-    ParticleSystem *m_treadDebrisRight;
-    TreadObjectInfo m_treads[MAX_TREADS_PER_TANK];
-    int m_treadCount;
     RenderObjClass *m_prevRenderObj;
 };

@@ -110,7 +110,7 @@ W3DTankTruckDraw::~W3DTankTruckDraw()
 
 NameKeyType W3DTankTruckDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DTankTruck Draw");
+    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DTankTruckDraw");
     return nk;
 }
 
@@ -137,7 +137,7 @@ void W3DTankTruckDraw::Do_Draw_Module(const Matrix3D *transform)
                     if (physics != nullptr) {
                         const Coord3D &velocity = physics->Get_Velocity();
                         float magnitude = physics->Get_Velocity_Magnitude();
-                        TWheelInfo *info = Get_Drawable()->Get_Wheel_Info();
+                        const TWheelInfo *info = Get_Drawable()->Get_Wheel_Info();
 
                         if (info && (m_frontLeftTireBone != 0 || m_rearLeftTireBone != 0)) {
                             float rotation = Get_W3D_Tank_Truck_Draw_Module_Data()->m_rotationSpeedMultiplier;
@@ -389,7 +389,7 @@ void W3DTankTruckDraw::Create_Emitters()
 
             if (tmplate != nullptr) {
                 m_dustEffect = g_theParticleSystemManager->Create_Particle_System(tmplate, true);
-                m_dustEffect->Attach_To_Drawable(Get_Drawable());
+                m_dustEffect->Attach_To_Object(Get_Drawable()->Get_Object());
                 m_dustEffect->Set_Saveable(false);
                 m_dustEffect->Stop();
             } else {
@@ -406,7 +406,7 @@ void W3DTankTruckDraw::Create_Emitters()
 
             if (tmplate != nullptr) {
                 m_dirtEffect = g_theParticleSystemManager->Create_Particle_System(tmplate, true);
-                m_dirtEffect->Attach_To_Drawable(Get_Drawable());
+                m_dirtEffect->Attach_To_Object(Get_Drawable()->Get_Object());
                 m_dirtEffect->Set_Saveable(false);
                 m_dirtEffect->Stop();
             } else {
@@ -423,7 +423,7 @@ void W3DTankTruckDraw::Create_Emitters()
 
             if (tmplate != nullptr) {
                 m_powerslideEffect = g_theParticleSystemManager->Create_Particle_System(tmplate, true);
-                m_powerslideEffect->Attach_To_Drawable(Get_Drawable());
+                m_powerslideEffect->Attach_To_Object(Get_Drawable()->Get_Object());
                 m_powerslideEffect->Set_Saveable(false);
                 m_powerslideEffect->Stop();
             } else {

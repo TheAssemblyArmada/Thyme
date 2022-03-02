@@ -197,6 +197,13 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_COORD2D(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Coord2D, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Coord2D>(offsetof(classtype, classmember)) \
+        }
 #define FIELD_PARSE_INDEX_LIST(token, user_data, classtype, classmember) \
         FieldParse { \
             token, \

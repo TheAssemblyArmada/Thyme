@@ -89,7 +89,7 @@ option(USE_GAMEMATH "Use own maths library rather than libc version for this pla
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
-option(BUILD_TESTS "Builds the unit tests." ON)
+option(BUILD_TESTS "Builds the unit tests." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)

@@ -28,8 +28,8 @@ const FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
     { "PrerequisiteSciences", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
     FIELD_PARSE_INT("SciencePurchasePointCost", ScienceInfo, m_purchaseCost),
     FIELD_PARSE_BOOL("IsGrantable", ScienceInfo, m_isGrantable),
-    { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_displayName) },
-    { "Description", &INI::Parse_And_Translate_Label, nullptr, offsetof(ScienceInfo, m_description) },
+    FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ScienceInfo, m_displayName),
+    FIELD_PARSE_AND_TRANSLATE_LABEL("Description", ScienceInfo, m_description),
     FIELD_PARSE_LAST
 };
 // clang-format on

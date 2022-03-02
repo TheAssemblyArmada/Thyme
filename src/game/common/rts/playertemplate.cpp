@@ -239,7 +239,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
         FIELD_PARSE_ASCIISTRING("Side", PlayerTemplate, m_side),
         FIELD_PARSE_ASCIISTRING("BaseSide", PlayerTemplate, m_baseSide),
         FIELD_PARSE_BOOL("PlayableSide", PlayerTemplate, m_isPlayableSide),
-        { "DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(PlayerTemplate, m_displayName) },
+        FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", PlayerTemplate, m_displayName),
         { "StartMoney", &PlayerTemplate::Parse_Start_Money, nullptr, offsetof(PlayerTemplate, m_money) },
         FIELD_PARSE_RGB_COLOR("PreferredColor", PlayerTemplate, m_preferredColor),
         FIELD_PARSE_ASCIISTRING("StartingBuilding", PlayerTemplate, m_startingBuilding),

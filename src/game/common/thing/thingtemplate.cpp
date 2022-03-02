@@ -87,7 +87,7 @@ AudioEventRTS ThingTemplate::s_audioEventNoSound;
 
 // clang-format off
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
-    {"DisplayName", &INI::Parse_And_Translate_Label, nullptr, offsetof(ThingTemplate, m_displayName)},
+    FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ThingTemplate, m_displayName),
     FIELD_PARSE_BYTE_SIZED_INDEX_LIST("RadarPriority", s_radarPriorityNames, ThingTemplate, m_radarPriority),
     FIELD_PARSE_UNSIGNED_BYTE("TransportSlotCount", ThingTemplate, m_transportSlotCount),
     FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),

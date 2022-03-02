@@ -289,4 +289,11 @@ constexpr const void *IntToUserdata(ValueType value)
             Thyme::IntToUserdata<uint32_t>(user_data) \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), int32_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_AND_TRANSLATE_LABEL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_And_Translate_Label, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Utf16String>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

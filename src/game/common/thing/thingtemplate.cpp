@@ -26,9 +26,11 @@
 #include "productionprerequisite.h"
 #include "w3dshadow.h"
 #include <cstring>
+
 using std::strcpy;
 using std::strncpy;
 
+// clang-format off
 constexpr const char *const s_radarPriorityNames[] =
 {
     "INVALID",
@@ -72,20 +74,21 @@ constexpr const char *const s_editorSortingNames[] = {
     nullptr
 };
 
-static const char *s_theShadowNames[] = { "SHADOW_DECAL",
+constexpr const char *const s_theShadowNames[] = {
+    "SHADOW_DECAL",
     "SHADOW_VOLUME",
     "SHADOW_PROJECTION",
     "SHADOW_DYNAMIC_PROJECTION",
     "SHADOW_DIRECTIONAL_PROJECTION",
     "SHADOW_ALPHA_DECAL",
     "SHADOW_ADDITIVE_DECAL",
-    nullptr };
+    nullptr
+};
 
 #ifndef GAME_DLL
 AudioEventRTS ThingTemplate::s_audioEventNoSound;
 #endif
 
-// clang-format off
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ThingTemplate, m_displayName),
     FIELD_PARSE_BYTE_SIZED_INDEX_LIST("RadarPriority", s_radarPriorityNames, ThingTemplate, m_radarPriority),
@@ -177,7 +180,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     {"GeometryMinorRadius", &GeometryInfo::Parse_Geometry_MinorRadius, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
     {"GeometryHeight", &GeometryInfo::Parse_Geometry_Height, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
     {"GeometryIsSmall", &GeometryInfo::Parse_Geometry_IsSmall, nullptr, offsetof(ThingTemplate, m_geometryInfo)},
-    {"Shadow", &INI::Parse_Bitstring8, s_theShadowNames, offsetof(ThingTemplate, m_shadowType)},
+    FIELD_PARSE_BITSTRING8("Shadow", s_theShadowNames, ThingTemplate, m_shadowType),
     FIELD_PARSE_REAL("ShadowSizeX", ThingTemplate, m_shadowSizeX),
     FIELD_PARSE_REAL("ShadowSizeY", ThingTemplate, m_shadowSizeY),
     FIELD_PARSE_REAL("ShadowOffsetX", ThingTemplate, m_shadowOffsetX),

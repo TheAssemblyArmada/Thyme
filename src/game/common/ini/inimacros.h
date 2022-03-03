@@ -386,4 +386,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<ScienceType>>(offsetof(classtype, classmember)) \
         }
+
+// [ Anim2DCollection ]
+
+#define FIELD_PARSE_ANIM2D_TEMPLATE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Anim2DCollection::Parse_Anim2D_Template, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Anim2DTemplate *>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

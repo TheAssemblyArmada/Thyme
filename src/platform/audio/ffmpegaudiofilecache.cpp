@@ -56,10 +56,24 @@ FFmpegAudioFileCache::~FFmpegAudioFileCache()
 }
 
 /**
+ * Read an FFmpeg packet from file
+ */
+int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size)
+{
+    File *file = (File *)opaque;
+    return file->Read(buf, buf_size);
+}
+
+/**
  * Open all the required FFmpeg handles for a required file.
  */
-bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size)
+bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, File *f)
 {
+#ifndef NDEBUG
+    av_log_set_level(AV_LOG_TRACE);
+#endif
+    av_register_all();
+
     // FFmpeg setup
     int ret = 0;
     file->fmt_ctx = avformat_alloc_context();
@@ -67,7 +81,17 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
         captainslog_error("Failed to alloc AVFormatContext");
         return false;
     }
-    file->avio_ctx = avio_alloc_context((unsigned char *)file_data, file_size, 0, nullptr, nullptr, nullptr, nullptr);
+
+    size_t avio_ctx_buffer_size = 0x2000;
+    file->avio_ctx_buffer = (uint8_t *)av_malloc(avio_ctx_buffer_size);
+    if (!file->avio_ctx_buffer) {
+        captainslog_error("Failed to alloc AVIOContextBuffer");
+        Close_FFmpeg_Contexts(file);
+        return false;
+    }
+
+    file->avio_ctx =
+        avio_alloc_context(file->avio_ctx_buffer, avio_ctx_buffer_size, 0, f, &Read_FFmpeg_Packet, nullptr, nullptr);
     if (!file->avio_ctx) {
         captainslog_error("Failed to alloc AVIOContext");
         Close_FFmpeg_Contexts(file);
@@ -77,7 +101,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
     file->fmt_ctx->pb = file->avio_ctx;
     file->fmt_ctx->flags |= AVFMT_FLAG_CUSTOM_IO;
 
-    ret = avformat_open_input(&file->fmt_ctx, NULL, NULL, NULL);
+    ret = avformat_open_input(&file->fmt_ctx, nullptr, nullptr, nullptr);
     if (ret < 0) {
         captainslog_error("Failed to open audiofile with FFmpeg");
         Close_FFmpeg_Contexts(file);
@@ -121,7 +145,8 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
 bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
 {
     AVPacket packet;
-    AVFrame frame;
+    av_init_packet(&packet);
+    AVFrame *frame = av_frame_alloc();
 
     int result = 0;
     while (av_read_frame(file->fmt_ctx, &packet) >= 0) {
@@ -130,20 +155,22 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             captainslog_error("Failed to send audio packet to decoder.");
             return false;
         }
-        result = avcodec_receive_frame(file->codec_ctx, &frame);
-        av_packet_unref(&packet);
+        result = avcodec_receive_frame(file->codec_ctx, frame);
         // Check if this was a real error or we just need more data
         if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
             captainslog_error("Failed to receive audio frame from decoder.");
             return false;
         } else if (result >= 0) {
             int frame_data_size = av_samples_get_buffer_size(
-                NULL, file->codec_ctx->channels, frame.nb_samples, file->codec_ctx->sample_fmt, 1);
+                NULL, file->codec_ctx->channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
             av_realloc(file->wave_data, file->data_size + frame_data_size);
-            memcpy(file->wave_data + file->data_size, frame.data[0], frame_data_size);
+            memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
             file->data_size += frame_data_size;
         }
+        av_packet_unref(&packet);
     }
+
+    av_frame_free(&frame);
 
     return true;
 }
@@ -193,14 +220,11 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
         return nullptr;
     }
 
-    uint32_t file_size = file->Size();
-    uint8_t *file_data = static_cast<uint8_t *>(file->Read_All_And_Close());
-
     FFmpegOpenAudioFile open_audio;
     open_audio.wave_data = (uint8_t *)av_malloc(sizeof(WavHeader));
     open_audio.data_size = sizeof(WavHeader);
 
-    if (!Open_FFmpeg_Contexts(&open_audio, (unsigned char *)file_data, file_size)) {
+    if (!Open_FFmpeg_Contexts(&open_audio, file)) {
         captainslog_warn("Failed to load audio file '%s', could not cache.", filename.Str());
         return nullptr;
     }
@@ -282,7 +306,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     open_audio.data_size = sizeof(WavHeader);
     open_audio.audio_event_info = audio_event->Get_Event_Info();
 
-    if (!Open_FFmpeg_Contexts(&open_audio, (unsigned char *)file_data, file_size)) {
+    if (!Open_FFmpeg_Contexts(&open_audio, file)) {
         captainslog_warn("Failed to load audio file '%s', could not cache.", filename.Str());
         return nullptr;
     }

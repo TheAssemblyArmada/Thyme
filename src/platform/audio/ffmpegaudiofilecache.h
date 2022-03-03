@@ -38,6 +38,7 @@ struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
     AVFormatContext *fmt_ctx = nullptr;
+    uint8_t *avio_ctx_buffer = nullptr;
     AVIOContext *avio_ctx = nullptr;
     AVCodecContext *codec_ctx = nullptr;
     uint8_t *wave_data = nullptr;
@@ -72,9 +73,10 @@ private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &file);
     void Release_Open_Audio(FFmpegOpenAudioFile *file);
 
-    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size);
+    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, File *f);
     bool Decode_FFmpeg(FFmpegOpenAudioFile *file);
     void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file);
+    static int Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size);
 
     void Fill_Wave_Data(FFmpegOpenAudioFile *file);
 

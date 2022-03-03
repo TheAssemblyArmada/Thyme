@@ -345,4 +345,35 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), DynamicAudioEventRTS *>(offsetof(classtype, classmember)) \
         }
+
+// [ PlayerTemplate ]
+
+#define FIELD_PARSE_PRODUCTION_COST_CHANGE(token) \
+        FieldParse { \
+            token, \
+            &PlayerTemplate::Parse_Production_Cost_Change, \
+            nullptr, \
+            0 \
+        }
+#define FIELD_PARSE_PRODUCTION_TIME_CHANGE(token) \
+        FieldParse { \
+            token, \
+            &PlayerTemplate::Parse_Production_Time_Change, \
+            nullptr, \
+            0 \
+        }
+#define FIELD_PARSE_PRODUCTION_VETERANCY_LEVEL(token) \
+        FieldParse { \
+            token, \
+            &PlayerTemplate::Parse_Production_Veterancy_Level, \
+            nullptr, \
+            0 \
+        }
+#define FIELD_PARSE_START_MONEY(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &PlayerTemplate::Parse_Start_Money, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Money>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

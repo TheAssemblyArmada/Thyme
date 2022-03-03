@@ -60,9 +60,13 @@ class FFmpegAudioFileCache
 public:
     FFmpegAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~FFmpegAudioFileCache();
-    void *Open_File(AudioEventRTS *file);
-    void Close_File(void *file);
+    uint8_t *Open_File(AudioEventRTS *file);
+    uint8_t *Open_File(const Utf8String &filename);
+
+    void Close_File(uint8_t *file);
     void Set_Max_Size(unsigned size);
+    inline unsigned Get_Max_Size() const { return m_maxSize; }
+    inline unsigned Get_Current_Size() const { return m_currentSize; }
 
 private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &file);
@@ -71,6 +75,8 @@ private:
     bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsigned char *file_data, uint32_t file_size);
     bool Decode_FFmpeg(FFmpegOpenAudioFile *file);
     void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file);
+
+    void Fill_Wave_Data(FFmpegOpenAudioFile *file);
 
 private:
     ffmpegaudiocachemap_t m_cacheMap;

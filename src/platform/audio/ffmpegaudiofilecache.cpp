@@ -75,6 +75,8 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, unsig
     }
 
     file->fmt_ctx->pb = file->avio_ctx;
+    file->fmt_ctx->flags |= AVFMT_FLAG_CUSTOM_IO;
+
     ret = avformat_open_input(&file->fmt_ctx, NULL, NULL, NULL);
     if (ret < 0) {
         captainslog_error("Failed to open audiofile with FFmpeg");
@@ -160,10 +162,77 @@ void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file)
     }
 }
 
+void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *file)
+{
+    WavHeader wav;
+    wav.chunk_size = file->data_size - 8;
+    wav.subchunk2_size = file->data_size - 44;
+    wav.channels = file->codec_ctx->channels;
+    wav.bits_per_sample = av_get_bits_per_sample(file->codec_ctx->codec_id);
+    wav.samples_per_sec = file->codec_ctx->sample_rate;
+    wav.bytes_per_sec = file->codec_ctx->sample_rate * file->codec_ctx->channels * (wav.bits_per_sample / 8);
+    wav.block_align = file->codec_ctx->channels * (wav.bits_per_sample / 8);
+    memcpy(file->wave_data, &wav, sizeof(WavHeader));
+}
+
+/**
+ * Opens an audio file. Reads from the cache if available or loads from file if not.
+ */
+uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
+{
+    ScopedMutexClass lock(&m_mutex);
+
+    // Load the file from disk
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
+
+    if (file == nullptr) {
+        if (filename.Is_Not_Empty()) {
+            captainslog_warn("Missing audio file '%s', could not cache.", filename.Str());
+        }
+
+        return nullptr;
+    }
+
+    uint32_t file_size = file->Size();
+    uint8_t *file_data = static_cast<uint8_t *>(file->Read_All_And_Close());
+
+    FFmpegOpenAudioFile open_audio;
+    open_audio.wave_data = (uint8_t *)av_malloc(sizeof(WavHeader));
+    open_audio.data_size = sizeof(WavHeader);
+
+    if (!Open_FFmpeg_Contexts(&open_audio, (unsigned char *)file_data, file_size)) {
+        captainslog_warn("Failed to load audio file '%s', could not cache.", filename.Str());
+        return nullptr;
+    }
+
+    if (!Decode_FFmpeg(&open_audio)) {
+        captainslog_warn("Failed to decode audio file '%s', could not cache.", filename.Str());
+        Close_FFmpeg_Contexts(&open_audio);
+        return nullptr;
+    }
+
+    Fill_Wave_Data(&open_audio);
+    Close_FFmpeg_Contexts(&open_audio);
+
+    open_audio.ref_count = 1;
+    m_currentSize += open_audio.data_size;
+
+    // m_maxSize prevents using overly large amounts of memory, so if we are over it, unload some other samples.
+    if (m_currentSize > m_maxSize && !Free_Space_For_Sample(open_audio)) {
+        m_currentSize -= open_audio.data_size;
+        Release_Open_Audio(&open_audio);
+
+        return nullptr;
+    }
+
+    m_cacheMap[filename] = open_audio;
+
+    return open_audio.wave_data;
+}
 /**
  * Opens an audio file for an event. Reads from the cache if available or loads from file if not.
  */
-void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
+uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 {
     ScopedMutexClass lock(&m_mutex);
     Utf8String filename;
@@ -231,16 +300,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         return nullptr;
     }
 
-    WavHeader wav;
-    wav.chunk_size = open_audio.data_size - 8;
-    wav.subchunk2_size = open_audio.data_size - 44;
-    wav.channels = open_audio.codec_ctx->channels;
-    wav.bits_per_sample = av_get_bits_per_sample(open_audio.codec_ctx->codec_id);
-    wav.samples_per_sec = open_audio.codec_ctx->sample_rate;
-    wav.bytes_per_sec = open_audio.codec_ctx->sample_rate * open_audio.codec_ctx->channels * (wav.bits_per_sample / 8);
-    wav.block_align = open_audio.codec_ctx->channels * (wav.bits_per_sample / 8);
-    memcpy(open_audio.wave_data, &wav, sizeof(WavHeader));
-
+    Fill_Wave_Data(&open_audio);
     Close_FFmpeg_Contexts(&open_audio);
 
     open_audio.ref_count = 1;
@@ -262,7 +322,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 /**
  * Closes a file, reducing the references to it. Does not actually free the cache.
  */
-void FFmpegAudioFileCache::Close_File(void *file)
+void FFmpegAudioFileCache::Close_File(uint8_t *file)
 {
     if (file == nullptr) {
         return;

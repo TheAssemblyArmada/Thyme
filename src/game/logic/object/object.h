@@ -32,6 +32,7 @@
 
 class AIGroup;
 class AIUpdateInterface;
+class BehaviorModule;
 class BodyModuleInterface;
 class CommandButton;
 class ContainModuleInterface;
@@ -242,7 +243,7 @@ public:
     ContainModuleInterface *Get_Contain() const { return m_contain; }
     const Object *Get_Contained_By() const { return m_containedBy; }
     Object *Get_Contained_By() { return m_containedBy; }
-    Module **Get_All_Modules() { return m_allModules; }
+    BehaviorModule **Get_All_Modules() { return m_allModules; }
     ObjectID Get_Producer_ID() const { return m_producerID; }
     unsigned int Get_Weapon_Bonus_Condition() const { return m_weaponBonusCondition; }
     const Weapon *Get_Weapon_In_Weapon_Slot(WeaponSlotType type) const
@@ -274,7 +275,7 @@ public:
     void Clear_Status(BitFlags<OBJECT_STATUS_COUNT> bits) { return Set_Status(bits, false); }
     bool Clear_Script_Status(ObjectScriptStatusBit bit) { return Set_Script_Status(bit, false); }
 
-    Module *Find_Module(NameKeyType type) const;
+    BehaviorModule *Find_Module(NameKeyType type) const;
     DamageModule *Find_Damage_Module(NameKeyType type) const { return (DamageModule *)Find_Module(type); }
     UpdateModule *Find_Update_Module(NameKeyType type) const { return (UpdateModule *)Find_Module(type); }
 
@@ -564,7 +565,7 @@ private:
     SubdualDamageHelper *m_subdualDamageHelper;
     TempWeaponBonusHelper *m_tempWeaponBonusHelper;
     FiringTracker *m_firingTracker;
-    Module **m_allModules;
+    BehaviorModule **m_allModules;
     ContainModuleInterface *m_contain;
     BodyModuleInterface *m_body;
     StealthUpdate *m_stealth;

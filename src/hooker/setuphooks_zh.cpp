@@ -1701,6 +1701,7 @@ void Setup_Hooks()
     Hook_Any(0x004B0B20, ThingFactory::Find_Template_By_ID);
     Hook_Any(0x004B0B50, ThingFactory::Find_Template_Internal);
     Hook_Any(0x004B0EE0, ThingFactory::New_Drawable);
+    Hook_Any(0x004B0E10, ThingFactory::New_Object);
 
     // thing.h
     Hook_Any(0x00543470, Thing::Get_Template);
@@ -1732,6 +1733,8 @@ void Setup_Hooks()
     Hook_Any(0x0058BEF0, ThingTemplate::Find_Armor_Template_Set);
     Hook_Any(0x0058C060, ThingTemplate::Find_Weapon_Template_Set);
     Hook_Any(0x0058C260, ThingTemplate::Get_Per_Unit_FX);
+    Hook_Any(0x0058C5B0, ThingTemplate::Calc_Cost_To_Build);
+    Hook_Any(0x0058C650, ThingTemplate::Calc_Time_To_Build);
 
     // w3dwater.h
     void Do_Sky_Box_Set(bool b);

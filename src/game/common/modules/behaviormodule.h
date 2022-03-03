@@ -26,7 +26,6 @@ class CaveInterface;
 class CollideModuleInterface;
 class ContainModuleInterface;
 class CountermeasuresBehaviorInterface;
-class CreateModuleInterface;
 class DamageModuleInterface;
 class DestroyModuleInterface;
 class DieModuleInterface;
@@ -51,6 +50,14 @@ class StealthUpdate;
 class TransportPassengerInterface;
 class UpdateModuleInterface;
 class UpgradeModuleInterface;
+
+class CreateModuleInterface
+{
+public:
+    virtual void On_Create() = 0;
+    virtual void On_Build_Complete() = 0;
+    virtual bool Should_Do_On_Build_Complete() = 0;
+};
 
 class BehaviorModuleData : public ModuleData
 {
@@ -102,6 +109,7 @@ public:
 
 class CollideModuleInterface
 {
+public:
     virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) = 0;
     virtual bool Would_Like_To_Collide_With(Object const *other) = 0;
     virtual bool Is_Hijacked_Vehicle_Crate_Collide() = 0;

@@ -302,3 +302,13 @@ void GameLogic::Destroy_Object(Object *obj)
     Call_Method<void, GameLogic, Object *>(PICK_ADDRESS(0x004A7370, 0x007B30B7), this, obj);
 #endif
 }
+
+Object *GameLogic::Friend_Create_Object(ThingTemplate const *thing, BitFlags<OBJECT_STATUS_COUNT> &status_bits, Team *team)
+{
+#ifdef GAME_DLL
+    return Call_Method<Object *, GameLogic, ThingTemplate const *, BitFlags<OBJECT_STATUS_COUNT> &, Team *>(
+        PICK_ADDRESS(0x004A7280, 0x007B3034), this, thing, status_bits, team);
+#else
+    return nullptr;
+#endif
+}

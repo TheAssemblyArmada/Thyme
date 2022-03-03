@@ -99,6 +99,10 @@ public:
     uint16_t Get_Player_Mask() const;
     int Get_Color() const;
     Team *Get_Default_Team() const;
+
+    const Handicap *Get_Handicap() const { return &m_handicap; }
+    const Energy *Get_Energy() const { return &m_energy; }
+
     // Player *Get_Current_Enemy();
     // GameDifficulty Get_Player_Difficulty() const;
 
@@ -172,10 +176,10 @@ public:
 
     // void Add_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT>, float);
     // void Remove_Kind_Of_Production_Cost_Change(BitFlags<KINDOF_COUNT>, float);
-    // float Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT>) const;
+    float Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT> flags) const;
     // VeterancyLevel Get_Production_Veterancy_Level(Utf8String) const;
-    // float Get_Production_Cost_Change_Percent(Utf8String) const;
-    // float Get_Production_Time_Change_Percent(Utf8String) const;
+    float Get_Production_Cost_Change_Percent(Utf8String build_template_name) const;
+    float Get_Production_Time_Change_Percent(Utf8String build_template_name) const;
 
     // bool Calc_Closest_Construction_Zone_Location(ThingTemplate const *, Coord3D *) const;
 
@@ -200,7 +204,8 @@ public:
     // int Count_Buildings() const;
     // int Count_Objects(BitFlags<KINDOF_COUNT>, BitFlags<KINDOF_COUNT>) const;
     // int Count_Ready_Shortcut_SpecialPowers_Of_Type(SpecialPowerType) const;
-    // void Count_Objects_By_ThingTemplate(int, ThingTemplate const *const *, bool, int *, bool) const;
+    void Count_Objects_By_ThingTemplate(
+        int num_tmplates, ThingTemplate const *const *things, bool b1, int *counts, bool b2) const;
     // void Iterate_Objects(void (*)(Object *, void *), void *) const;
 
     // Object *Find_Any_Existing_Object_With_ThingTemplate(ThingTemplate const *);
@@ -241,7 +246,7 @@ public:
 
     // void Friend_Apply_Difficulty_Bonuses_For_Object(Object *, bool);
 
-    // bool Has_Science(ScienceType) const;
+    bool Has_Science(ScienceType t) const;
     // bool Has_Prereqs_For_Science(ScienceType) const;
     // bool Is_Capable_Of_Purchasing_Science(ScienceType) const;
     // bool Is_Science_Hidden(ScienceType) const;
@@ -260,6 +265,10 @@ public:
     // void Friend_Set_Skillset(int);
     // bool Add_Skill_Points(int);
     // bool Add_Skill_Points_For_Kill(const Object *, const Object *);
+
+#ifdef GAME_DEBUG_STRUCTS
+    bool Is_Instant_Build() const { return m_instantBuild; }
+#endif
 
 private:
     PlayerTemplate *m_playerTemplate;

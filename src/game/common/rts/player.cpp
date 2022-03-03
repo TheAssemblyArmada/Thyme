@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "player.h"
+#include "namekeygenerator.h"
+#include <algorithm>
 
 // zh: 0x0044F7B0, wb: 0x0085960A
 Player::Player(int32_t player_index)
@@ -186,5 +188,50 @@ void Player::Becoming_Local_Player(bool b)
 {
 #ifdef GAME_DLL
     Call_Method<void, Player, bool>(PICK_ADDRESS(0x00452BA0, 0x0085C3AA), this, b);
+#endif
+}
+
+void Player::Count_Objects_By_ThingTemplate(
+    int num_tmplates, ThingTemplate const *const *things, bool b1, int *counts, bool b2) const
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player const, int, ThingTemplate const *const *, bool, int *, bool>(
+        PICK_ADDRESS(0x00453710, 0x0085D45D), this, num_tmplates, things, b1, counts, b2);
+#endif
+}
+
+bool Player::Has_Science(ScienceType t) const
+{
+    return std::find(m_sciences.begin(), m_sciences.end(), t) != m_sciences.end();
+}
+
+float Player::Get_Production_Cost_Change_Percent(Utf8String build_template_name) const
+{
+    auto iter = m_productionCostChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name));
+
+    if (iter != m_productionCostChanges.end()) {
+        return iter->second;
+    }
+
+    return 0.0f;
+}
+
+float Player::Get_Production_Time_Change_Percent(Utf8String build_template_name) const
+{
+    auto iter = m_productionTimeChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name));
+
+    if (iter != m_productionTimeChanges.end()) {
+        return iter->second;
+    }
+
+    return 0.0f;
+}
+
+float Player::Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT> flags) const
+{
+#ifdef GAME_DLL
+    return Call_Method<float, const Player, BitFlags<KINDOF_COUNT>>(PICK_ADDRESS(0x00457A50, 0x00861AC7), this, flags);
+#else
+    return 0.0f;
 #endif
 }

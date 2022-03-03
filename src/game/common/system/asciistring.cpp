@@ -109,7 +109,9 @@ void Utf8String::Ensure_Unique_Buffer_Of_Size(
 
     if (m_data != nullptr && m_data->ref_count == 1 && m_data->num_chars_allocated >= chars_needed) {
         if (str_to_cpy != nullptr) {
-            strcpy(Peek(), str_to_cpy);
+            // #BUGFIX Originally uses strcpy here. Use memmove to support overlaps gracefully.
+            captainslog_dbgassert(strlen(str_to_cpy) == chars_needed - 1, "Length does not match");
+            memmove(Peek(), str_to_cpy, chars_needed * sizeof(value_type));
         }
 
         if (str_to_cat != nullptr) {
@@ -201,7 +203,7 @@ const char *Utf8String::Str() const
  */
 char *Utf8String::Get_Buffer_For_Read(size_type len)
 {
-    Ensure_Unique_Buffer_Of_Size(len + 1, 0, 0, 0);
+    Ensure_Unique_Buffer_Of_Size(len + 1, false, nullptr, nullptr);
     return Peek();
 }
 
@@ -324,7 +326,7 @@ void Utf8String::Concat(const char *s)
     if (add_len > 0) {
         if (m_data != nullptr) {
             const size_type cur_len = strlen(Peek());
-            Ensure_Unique_Buffer_Of_Size(cur_len + add_len + 1, true, 0, s);
+            Ensure_Unique_Buffer_Of_Size(cur_len + add_len + 1, true, nullptr, s);
         } else {
             Set(s);
         }

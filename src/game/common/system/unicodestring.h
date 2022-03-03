@@ -122,10 +122,6 @@ public:
     const unichar_t *Peek() const;
     unichar_t *Peek();
     void Release_Buffer();
-    void Ensure_Unique_Buffer_Of_Size(size_type chars_needed,
-        bool keep_data = false,
-        const unichar_t *str_to_cpy = nullptr,
-        const unichar_t *str_to_cat = nullptr);
     size_type Get_Length() const;
     void Clear();
     unichar_t Get_Char(size_type index) const;
@@ -191,6 +187,11 @@ public:
 
 private:
     void Translate_Internal(const char *utf8_string, const size_type utf8_len);
+
+    void Ensure_Unique_Buffer_Of_Size(size_type chars_needed,
+        bool keep_data = false,
+        const unichar_t *str_to_cpy = nullptr,
+        const unichar_t *str_to_cat = nullptr);
 
     UnicodeStringData *m_data;
 };

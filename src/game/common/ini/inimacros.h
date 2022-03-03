@@ -331,4 +331,11 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), AudioEventRTS>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_SOUNDS_LIST(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Sounds_List, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<Utf8String>>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

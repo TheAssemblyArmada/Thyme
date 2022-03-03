@@ -52,6 +52,7 @@ constexpr const char *const g_audio_control_names[] = {
 };
 } // namespace
 
+// wb: 0x00C25790
 const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     FIELD_PARSE_ASCIISTRING("Filename", AudioEventInfo, m_filename),
     FIELD_PARSE_PERCENT_TO_REAL("Volume", AudioEventInfo, m_volume),
@@ -64,12 +65,12 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     FIELD_PARSE_INDEX_LIST("Priority", g_audio_priority_names, AudioEventInfo, m_priority),
     FIELD_PARSE_BITSTRING32("Type", g_sound_type_names, AudioEventInfo, m_visibility),
     FIELD_PARSE_BITSTRING32("Control", g_audio_control_names, AudioEventInfo, m_control),
-    { "Sounds", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_sounds) },
-    { "SoundsNight", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsNight) },
-    { "SoundsEvening", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsEvening) },
-    { "SoundsMorning", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_soundsMorning) },
-    { "Attack", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_attack) },
-    { "Decay", &INI::Parse_Sounds_List, nullptr, offsetof(AudioEventInfo, m_decay) },
+    FIELD_PARSE_SOUNDS_LIST("Sounds", AudioEventInfo, m_sounds),
+    FIELD_PARSE_SOUNDS_LIST("SoundsNight", AudioEventInfo, m_soundsNight),
+    FIELD_PARSE_SOUNDS_LIST("SoundsEvening", AudioEventInfo, m_soundsEvening),
+    FIELD_PARSE_SOUNDS_LIST("SoundsMorning", AudioEventInfo, m_soundsMorning),
+    FIELD_PARSE_SOUNDS_LIST("Attack", AudioEventInfo, m_attack),
+    FIELD_PARSE_SOUNDS_LIST("Decay", AudioEventInfo, m_decay),
     FIELD_PARSE_REAL("MinRange", AudioEventInfo, m_minRange),
     FIELD_PARSE_REAL("MaxRange", AudioEventInfo, m_maxRange),
     FIELD_PARSE_PERCENT_TO_REAL("LowPassCutoff", AudioEventInfo, m_lowPassCutoff),
@@ -110,7 +111,7 @@ AudioEventInfo::AudioEventInfo() :
 /**
  * Parses audio event definition information from an INI instance.
  *
- * 0x0044ED70
+ * zh: 0x0044ED70 wb: 0x00738DB7
  * Was originally INI::parseAudioEventDefintion
  */
 void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
@@ -134,7 +135,7 @@ void AudioEventInfo::Parse_Audio_Event_Definition(INI *ini)
  * Parses a pitch shift field from an INI file instance.
  *
  * Was originally parsePitchShift
- * 0x0044F290
+ * zh: 0x0044F290
  */
 void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -151,7 +152,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
  * Parses a delay field from an INI file instance.
  *
  * Was originally parseDelay
- * 0x0044F250
+ * zh: 0x0044F250
  */
 void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void *user_data)
 {

@@ -31,12 +31,22 @@ public:
 
     bool operator==(const Vector3i &v) const { return I == v.I && J == v.J && K == v.K; }
     bool operator!=(const Vector3i &v) const { return !(I == v.I && J == v.J && K == v.K); }
-    const int &operator[](int n) const { return ((int *)this)[n]; }
-    int &operator[](int n) { return ((int *)this)[n]; }
+    const int &operator[](int n) const { return Data[n]; }
+    int &operator[](int n) { return Data[n]; }
 
-    int32_t I;
-    int32_t J;
-    int32_t K;
+    union
+    {
+        struct
+        {
+            int I;
+            int J;
+            int K;
+        };
+        struct
+        {
+            int Data[3];
+        };
+    };
 };
 
 class Vector3i16
@@ -53,10 +63,20 @@ public:
 
     bool operator==(const Vector3i16 &v) const { return I == v.I && J == v.J && K == v.K; }
     bool operator!=(const Vector3i16 &v) const { return !(I == v.I && J == v.J && K == v.K); }
-    const unsigned short &operator[](int n) const { return ((unsigned short *)this)[n]; }
-    unsigned short &operator[](int n) { return ((unsigned short *)this)[n]; }
+    const unsigned short &operator[](int n) const { return Data[n]; }
+    unsigned short &operator[](int n) { return Data[n]; }
 
-    uint16_t I;
-    uint16_t J;
-    uint16_t K;
+    union
+    {
+        struct
+        {
+            unsigned short I;
+            unsigned short J;
+            unsigned short K;
+        };
+        struct
+        {
+            unsigned short Data[3];
+        };
+    };
 };

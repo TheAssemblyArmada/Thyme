@@ -31,9 +31,18 @@ public:
     __forceinline const int &operator[](int n) const;
     __forceinline int &operator[](int n);
 
-public:
-    int32_t I;
-    int32_t J;
+    union
+    {
+        struct
+        {
+            int I;
+            int J;
+        };
+        struct
+        {
+            int Data[2];
+        };
+    };
 };
 
 __forceinline Vector2i::Vector2i() {}
@@ -56,12 +65,12 @@ __forceinline bool Vector2i::operator!=(const Vector2i &v) const
 
 __forceinline const int &Vector2i::operator[](int n) const
 {
-    return ((int *)this)[n];
+    return Data[n];
 }
 
 __forceinline int &Vector2i::operator[](int n)
 {
-    return ((int *)this)[n];
+    return Data[n];
 }
 
 __forceinline void Vector2i::Set(int i, int j)

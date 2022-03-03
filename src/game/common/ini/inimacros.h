@@ -376,4 +376,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Money>(offsetof(classtype, classmember)) \
         }
+
+// [ ScienceStore ]
+
+#define FIELD_PARSE_SCIENCE_VECTOR(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ScienceStore::Parse_Science_Vector, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<ScienceType>>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

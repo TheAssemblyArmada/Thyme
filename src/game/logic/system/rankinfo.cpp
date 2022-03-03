@@ -87,7 +87,7 @@ void RankInfoStore::Parse_Rank_Definition(INI *ini)
     static const FieldParse _parse_table[] = {
         FIELD_PARSE_AND_TRANSLATE_LABEL("RankName", RankInfo, m_rankName),
         FIELD_PARSE_INT("SkillPointsNeeded", RankInfo, m_skillPointsNeeded),
-        { "SciencesGranted", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(RankInfo, m_sciencesGranted) },
+        FIELD_PARSE_SCIENCE_VECTOR("SciencesGranted", RankInfo, m_sciencesGranted),
         FIELD_PARSE_UNSIGNED_INT("SciencePurchasePointsGranted", RankInfo, m_sciencePurchasePointsGranted),
         FIELD_PARSE_LAST
     };

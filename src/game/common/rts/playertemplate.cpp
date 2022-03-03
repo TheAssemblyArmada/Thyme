@@ -256,7 +256,7 @@ void PlayerTemplateStore::Parse_Player_Template_Definition(INI *ini)
         FIELD_PARSE_PRODUCTION_COST_CHANGE("ProductionCostChange"),
         FIELD_PARSE_PRODUCTION_TIME_CHANGE("ProductionTimeChange"),
         FIELD_PARSE_PRODUCTION_VETERANCY_LEVEL("ProductionVeterancyLevel"),
-        { "IntrinsicSciences", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(PlayerTemplate, m_intrinsicSciences) },
+        FIELD_PARSE_SCIENCE_VECTOR("IntrinsicSciences", PlayerTemplate, m_intrinsicSciences),
         FIELD_PARSE_ASCIISTRING("PurchaseScienceCommandSetRank1", PlayerTemplate, m_purchaseCommandSetRankOne),
         FIELD_PARSE_ASCIISTRING("PurchaseScienceCommandSetRank3", PlayerTemplate, m_purchaseCommandSetRankThree),
         FIELD_PARSE_ASCIISTRING("PurchaseScienceCommandSetRank8", PlayerTemplate, m_purchaseCommandSetRankEight),

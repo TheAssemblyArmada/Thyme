@@ -25,7 +25,7 @@ ScienceStore *g_theScienceStore = nullptr;
 
 // clang-format off
 const FieldParse ScienceInfo::s_scienceFieldParseTable[] = {
-    { "PrerequisiteSciences", &ScienceStore::Parse_Science_Vector, nullptr, offsetof(ScienceInfo, m_prerequisites) },
+    FIELD_PARSE_SCIENCE_VECTOR("PrerequisiteSciences", ScienceInfo, m_prerequisites),
     FIELD_PARSE_INT("SciencePurchasePointCost", ScienceInfo, m_purchaseCost),
     FIELD_PARSE_BOOL("IsGrantable", ScienceInfo, m_isGrantable),
     FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ScienceInfo, m_displayName),
@@ -216,7 +216,7 @@ const ScienceInfo *ScienceStore::Get_Science_Info(ScienceType science) const
 
 // zh: 0x0041B2C0 wb: 0x007A28ED
 // Previously INI::Parse_Science_Vector
-void ScienceStore::Parse_Science_Vector(INI *ini, void *, void *store, const void *)
+void ScienceStore::Parse_Science_Vector(INI *ini, void *formal, void *store, const void *user_data)
 {
     std::vector<ScienceType> *sci_vec = static_cast<std::vector<ScienceType> *>(store);
     sci_vec->clear();

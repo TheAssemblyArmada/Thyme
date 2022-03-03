@@ -317,4 +317,11 @@ constexpr const void *IntToUserdata(ValueType value)
             Thyme::ReturnWithListCheck<const char *const *>(user_data, []() constexpr { return user_data; }), \
             Thyme::ReturnWithEquivalentCheck<decltype(classtype::classmember), uint64_t>(offsetof(classtype, classmember)) \
         }
+#define FIELD_PARSE_SPEAKER_TYPE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &INI::Parse_Speaker_Type, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), SpeakerType>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

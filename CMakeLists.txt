@@ -93,6 +93,7 @@ option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
 option(BUILD_TESTS "Builds the unit tests." OFF)
+option(USE_SANITIZER "Builds with address sanitizer" OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
 include(CMakeDependentOption)
@@ -101,6 +102,14 @@ cmake_dependent_option(USE_STDFS "Use C++ 17 filesystem for crossplatform file h
 if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     if(CMAKE_SIZEOF_VOID_P EQUAL 4)
         option(BUILD_DLL "Build an injectable dll version." ON)
+    endif()
+endif()
+
+if(USE_SANITIZER)
+    if(MSVC)
+    else()
+        set(CMAKE_C_FLAGS "-fsanitize=address -g")
+        set(CMAKE_CXX_FLAGS "-fsanitize=address -g")
     endif()
 endif()
 

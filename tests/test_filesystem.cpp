@@ -54,23 +54,23 @@ TEST(filesystem, win32bigfile)
     delete g_theLocalFileSystem;
 }
 
-class FileSystemTest : public ::testing::TestWithParam<LocalFileSystem *>
+class FileSystemTest : public ::testing::TestWithParam<std::shared_ptr<LocalFileSystem>>
 {
 public:
-    void SetUp() override { m_filesystem = GetParam(); }
+    void SetUp() override { m_filesystem = GetParam().get(); }
     void TearDown() override {}
 
     struct PrintToStringParamName
     {
         template<class ParamType> std::string operator()(const testing::TestParamInfo<ParamType> &info) const
         {
-            auto filesystem = static_cast<LocalFileSystem *>(info.param);
+            auto filesystem = std::dynamic_pointer_cast<LocalFileSystem>(info.param);
 
-            if (dynamic_cast<Win32LocalFileSystem *>(filesystem) != nullptr) {
+            if (std::dynamic_pointer_cast<Win32LocalFileSystem>(filesystem) != nullptr) {
                 return "Win32LocalFileSystem";
             }
 #ifdef BUILD_WITH_STDFS
-            if (dynamic_cast<Thyme::StdLocalFileSystem *>(filesystem) != nullptr) {
+            if (std::dynamic_pointer_cast<Thyme::StdLocalFileSystem>(filesystem) != nullptr) {
                 return "StdLocalFileSystem";
             }
 #endif
@@ -122,10 +122,10 @@ TEST_P(FileSystemTest, list_dir_unfiltered)
     EXPECT_EQ(files.size(), 2);
 }
 
-LocalFileSystem *filesystem_list[] = {
-    new Win32LocalFileSystem,
+std::shared_ptr<LocalFileSystem> filesystem_list[] = {
+    std::make_shared<Win32LocalFileSystem>(),
 #ifdef BUILD_WITH_STDFS
-    new Thyme::StdLocalFileSystem,
+    std::make_shared<Thyme::StdLocalFileSystem>(),
 #endif
 };
 

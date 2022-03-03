@@ -79,7 +79,8 @@ void Init_Memory_Manager()
         g_thePreMainInitFlag = false;
     }
 
-#ifdef GAME_DEBUG
+#if defined GAME_DEBUG && !defined __SANITIZE_ADDRESS__
+
     // Check that new and delete both use our custom implementation.
     g_theLinkChecker = 0;
 
@@ -155,6 +156,7 @@ void Free_From_Pool(MemoryPool *pool, void *memory)
 }
 
 // These all override the global news and deletes just by being linked.
+#ifndef __SANITIZE_ADDRESS__
 void *operator new(size_t bytes)
 {
 #ifdef GAME_DEBUG
@@ -192,3 +194,4 @@ void operator delete[](void *ptr)
     Init_Memory_Manager_Pre_Main();
     g_dynamicMemoryAllocator->Free_Bytes(ptr);
 }
+#endif

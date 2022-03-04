@@ -504,4 +504,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), ParticleSystemTemplate *>(offsetof(classtype, classmember)) \
         }
+
+// [GameClientRandomVariable]
+
+#define FIELD_PARSE_RANDOM_VARIABLE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GameClientRandomVariable::Parse, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GameClientRandomVariable>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

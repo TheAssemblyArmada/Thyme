@@ -74,7 +74,7 @@ public:
     float Get_Max() const { return m_high; }
     DistributionType Get_Type() const { return m_type; }
 
-    static void Parse(INI *ini, void *, void *store, const void *);
+    static void Parse(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     DistributionType m_type;

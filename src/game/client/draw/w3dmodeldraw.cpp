@@ -751,7 +751,7 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         FIELD_PARSE_BOOL("OkToChangeModelColor", W3DModelDrawModuleData, m_okToChangeModelColor),
         FIELD_PARSE_BOOL("AnimationsRequirePower", W3DModelDrawModuleData, m_animationsRequirePower),
         FIELD_PARSE_BOOL("ParticlesAttachedToAnimatedBones", W3DModelDrawModuleData, m_particlesAttachedToAnimatedBones),
-        { "MinLODRequired", &GameLODManager::Parse_Static_Game_LOD_Level, nullptr, offsetof(W3DModelDrawModuleData, m_minLodRequired) },
+        FIELD_PARSE_STATIC_GAME_LOD_LEVEL("MinLODRequired", W3DModelDrawModuleData, m_minLodRequired),
         FIELD_PARSE_BITSTRING32("ProjectileBoneFeedbackEnabledSlots", s_theWeaponSlotTypeNames, W3DModelDrawModuleData, m_projectileBoneFeedbackEnabledSlots),
         { "DefaultConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_DEFAULT), 0 },
         { "ConditionState", &W3DModelDrawModuleData::Parse_Condition_State, reinterpret_cast<const void *>(PARSE_NORMAL), 0 },

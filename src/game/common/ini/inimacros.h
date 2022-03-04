@@ -514,4 +514,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GameClientRandomVariable>(offsetof(classtype, classmember)) \
         }
+
+// [GameLODManager]
+
+#define FIELD_PARSE_STATIC_GAME_LOD_LEVEL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GameLODManager::Parse_Static_Game_LOD_Level, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), StaticGameLODLevel>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

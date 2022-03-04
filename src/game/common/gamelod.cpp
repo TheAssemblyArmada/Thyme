@@ -575,9 +575,9 @@ void GameLODManager::Parse_Static_Game_LOD_Level(INI *ini, void *formal, void *s
 {
     const char *str = ini->Get_Next_Token();
 
-    for (unsigned int i = 0; i < ARRAY_SIZE(g_staticGameLODNames); i++) {
+    for (StaticGameLODLevel i = StaticGameLODLevel(0); i < ARRAY_SIZE(g_staticGameLODNames); ++i) {
         if (!strcasecmp(str, g_staticGameLODNames[i])) {
-            *static_cast<unsigned int *>(store) = i;
+            *static_cast<StaticGameLODLevel *>(store) = i;
             return;
         }
     }

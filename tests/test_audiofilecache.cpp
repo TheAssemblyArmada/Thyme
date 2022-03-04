@@ -31,7 +31,14 @@ TEST(audio, ffmpegaudiofilecache)
     EXPECT_EQ(cache.Get_Max_Size(), 0);
     EXPECT_EQ(cache.Get_Current_Size(), 0);
 
-    uint8_t *data = cache.Open_File(Utf8String(TESTDATA_PATH) + "/audio/pcm1644m.wav");
+    auto filepath = Utf8String(TESTDATA_PATH) + "/audio/pcm1644m.wav";
+    uint8_t *data = cache.Open_File(filepath);
+    // We expect this to fail since our cache size is 0
+    EXPECT_EQ(data, nullptr);
+
+    // Use something that can hold our file
+    cache.Set_Max_Size(0xFFFFF);
+    data = cache.Open_File(filepath);
     EXPECT_NE(data, nullptr);
 }
 #endif

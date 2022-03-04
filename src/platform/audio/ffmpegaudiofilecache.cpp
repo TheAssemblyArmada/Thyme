@@ -70,8 +70,8 @@ int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf
  */
 bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file)
 {
-#ifndef NDEBUG
-    av_log_set_level(AV_LOG_TRACE);
+#ifdef GAME_DEBUG
+    // av_log_set_level(AV_LOG_TRACE);
 #endif
 
     // FFmpeg setup
@@ -175,10 +175,12 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
         } else if (result >= 0) {
             int frame_data_size = av_samples_get_buffer_size(
                 NULL, file->codec_ctx->channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
-            av_realloc(file->wave_data, file->data_size + frame_data_size);
+            file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
             memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
             file->data_size += frame_data_size;
         }
+
+        av_packet_unref(packet);
     }
 
     av_packet_free(&packet);
@@ -241,12 +243,13 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     }
 
     FFmpegOpenAudioFile open_audio;
-    open_audio.wave_data = (uint8_t *)av_malloc(sizeof(WavHeader));
+    open_audio.wave_data = static_cast<uint8_t *>(av_malloc(sizeof(WavHeader)));
     open_audio.data_size = sizeof(WavHeader);
 
     if (!Open_FFmpeg_Contexts(&open_audio, file)) {
         captainslog_warn("Failed to load audio file '%s', could not cache.", filename.Str());
         Release_Open_Audio(&open_audio);
+        file->Close();
         return nullptr;
     }
 
@@ -254,11 +257,13 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
         captainslog_warn("Failed to decode audio file '%s', could not cache.", filename.Str());
         Close_FFmpeg_Contexts(&open_audio);
         Release_Open_Audio(&open_audio);
+        file->Close();
         return nullptr;
     }
 
     Fill_Wave_Data(&open_audio);
     Close_FFmpeg_Contexts(&open_audio);
+    file->Close();
 
     open_audio.ref_count = 1;
     m_currentSize += open_audio.data_size;
@@ -450,15 +455,14 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
 void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *open_audio)
 {
     // Close any playing samples that use this data.
-    if (open_audio->ref_count) {
+    if (open_audio->ref_count && g_theAudio) {
         g_theAudio->Close_Any_Sample_Using_File(open_audio);
     }
 
     // Deallocate the data buffer depending on how it was allocated.
     if (open_audio->wave_data) {
-        av_free(open_audio->wave_data);
-
-        open_audio->wave_data = nullptr;
+        av_freep(&open_audio->wave_data);
+        open_audio->data_size = 0;
         open_audio->audio_event_info = nullptr;
     }
 }

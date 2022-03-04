@@ -480,4 +480,28 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), uint32_t>(offsetof(classtype, classmember)) \
         }
+
+// [ParticleSystemTemplate]
+
+#define FIELD_PARSE_RANDOM_KEYFRAME(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ParticleSystemTemplate::Parse_Random_Keyframe, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), RandomKeyframe>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_RGB_COLOR_KEYFRAME(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), RGBColorKeyframe>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_PARTICLE_SYSTEM_TEMPLATE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ParticleSystemTemplate::Parse, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), ParticleSystemTemplate *>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

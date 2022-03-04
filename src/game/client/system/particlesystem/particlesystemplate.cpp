@@ -110,22 +110,22 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
      { "StartSizeRate", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_startSizeRate) },
      { "SizeRate", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_sizeRate) },
      { "SizeRateDamping", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_sizeRateDamping) },
-     { "Alpha1", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[0]) },
-     { "Alpha2", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[1]) },
-     { "Alpha3", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[2]) },
-     { "Alpha4", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[3]) },
-     { "Alpha5", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[4]) },
-     { "Alpha6", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[5]) },
-     { "Alpha7", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[6]) },
-     { "Alpha8", &ParticleSystemTemplate::Parse_Random_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_alphaKey[7]) },
-     { "Color1", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[0]) },
-     { "Color2", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[1]) },
-     { "Color3", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[2]) },
-     { "Color4", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[3]) },
-     { "Color5", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[4]) },
-     { "Color6", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[5]) },
-     { "Color7", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[6]) },
-     { "Color8", &ParticleSystemTemplate::Parse_RGB_Color_Keyframe, nullptr, offsetof(ParticleSystemTemplate, m_colorKey[7]) },
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha1", ParticleSystemTemplate, m_alphaKey[0]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha2", ParticleSystemTemplate, m_alphaKey[1]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha3", ParticleSystemTemplate, m_alphaKey[2]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha4", ParticleSystemTemplate, m_alphaKey[3]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha5", ParticleSystemTemplate, m_alphaKey[4]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha6", ParticleSystemTemplate, m_alphaKey[5]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha7", ParticleSystemTemplate, m_alphaKey[6]),
+     FIELD_PARSE_RANDOM_KEYFRAME("Alpha8", ParticleSystemTemplate, m_alphaKey[7]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color1", ParticleSystemTemplate, m_colorKey[0]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color2", ParticleSystemTemplate, m_colorKey[1]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color3", ParticleSystemTemplate, m_colorKey[2]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color4", ParticleSystemTemplate, m_colorKey[3]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color5", ParticleSystemTemplate, m_colorKey[4]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color6", ParticleSystemTemplate, m_colorKey[5]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color7", ParticleSystemTemplate, m_colorKey[6]),
+     FIELD_PARSE_RGB_COLOR_KEYFRAME("Color8", ParticleSystemTemplate, m_colorKey[7]),
      { "ColorScale", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_colorScale) },
      { "BurstDelay", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_burstDelay) },
      { "BurstCount", &GameClientRandomVariable::Parse, nullptr, offsetof(ParticleSystemTemplate, m_burstCount) },
@@ -166,7 +166,7 @@ const FieldParse ParticleSystemTemplate::s_fieldParseTable[] = {
 /**
  * @brief Parses random keyframe data.
  *
- * 0x004D1540;
+ * zh: 0x004D1540;
  */
 void ParticleSystemTemplate::Parse_Random_Keyframe(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -183,7 +183,7 @@ void ParticleSystemTemplate::Parse_Random_Keyframe(INI *ini, void *formal, void 
 /**
  * @brief Parses RGB key frame data.
  *
- * 0x004D15A0;
+ * zh: 0x004D15A0;
  */
 void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -193,7 +193,7 @@ void ParticleSystemTemplate::Parse_RGB_Color_Keyframe(INI *ini, void *formal, vo
 }
 
 // zh: 0x0041CD00 wb: 0x007A3AE0
-void ParticleSystemTemplate::Parse(INI *ini, void *, void *store, const void *)
+void ParticleSystemTemplate::Parse(INI *ini, void *formal, void *store, const void *user_data)
 {
     Utf8String template_name = ini->Get_Next_Token();
 

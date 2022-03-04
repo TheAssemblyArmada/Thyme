@@ -396,4 +396,42 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Anim2DTemplate *>(offsetof(classtype, classmember)) \
         }
+
+// [ GeometryInfo ]
+
+#define FIELD_PARSE_GEOMETRY_MINOR_RADIUS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GeometryInfo::Parse_Geometry_MinorRadius, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_GEOMETRY_MAJOR_RADIUS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GeometryInfo::Parse_Geometry_MajorRadius, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_GEOMETRY_HEIGHT(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GeometryInfo::Parse_Geometry_Height, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_GEOMETRY_IS_SMALL(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GeometryInfo::Parse_Geometry_IsSmall, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_GEOMETRY_TYPE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GeometryInfo::Parse_Geometry_Type, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

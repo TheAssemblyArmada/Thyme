@@ -524,4 +524,72 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), StaticGameLODLevel>(offsetof(classtype, classmember)) \
         }
+
+// [ThingTemplate]
+
+#define FIELD_PARSE_THING_ADD_MODULE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Add_Module, nullptr, 0 \
+}
+#define FIELD_PARSE_THING_REMOVE_MODULE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Remove_Module, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_REPLACE_MODULE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Replace_Module, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_INHERITABLE_MODULE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Inheritable_Module, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_ARMOR_TEMPLATE_SET(token) \
+        FieldParse { token, &ThingTemplate::Parse_Armor_Template_Set, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_WEAPON_TEMPLATE_SET(token) \
+        FieldParse { token, &ThingTemplate::Parse_Weapon_Template_Set, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_PREREQUISITE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Prerequisites, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_PREREQUISITE_UNIT(token) \
+        FieldParse { token, &ThingTemplate::Parse_Prerequisite_Unit, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_PREREQUISITE_SCIENCE(token) \
+        FieldParse { token, &ThingTemplate::Parse_Prerequisite_Science, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_OVERRIDEABLE_BY_LIKE_KIND(token) \
+        FieldParse { token, &ThingTemplate::Parse_Overrideable_By_Like_Kind, nullptr, 0 \
+        }
+#define FIELD_PARSE_THING_INT_LIST(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ThingTemplate::Parse_Int_List, \
+            Thyme::IntToUserdata<uintptr_t>((uintptr_t)ARRAY_SIZE(classtype::classmember)), \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), int32_t[ARRAY_SIZE(classtype::classmember)]>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_THING_MAX_SIMULTANEOUS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ThingTemplate::Parse_Max_Simultaneous, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), uint16_t>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_THING_MODULE_NAME(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ThingTemplate::Parse_Module_Name, \
+            Thyme::IntToUserdata<ModuleType>(user_data), \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), ModuleInfo>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_THING_PER_UNIT_FX(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ThingTemplate::Parse_Per_Unit_FX, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::map<Utf8String, FXList *>>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_THING_PER_UNIT_SOUNDS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &ThingTemplate::Parse_Per_Unit_Sounds, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::map<Utf8String, AudioEventRTS>>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

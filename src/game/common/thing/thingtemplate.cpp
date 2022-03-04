@@ -89,6 +89,7 @@ constexpr const char *const s_theShadowNames[] = {
 AudioEventRTS ThingTemplate::s_audioEventNoSound;
 #endif
 
+// wb: 0x00C24648
 const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_AND_TRANSLATE_LABEL("DisplayName", ThingTemplate, m_displayName),
     FIELD_PARSE_BYTE_SIZED_INDEX_LIST("RadarPriority", s_radarPriorityNames, ThingTemplate, m_radarPriority),
@@ -96,22 +97,22 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
     FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
     FIELD_PARSE_BOOL("IsBridge", ThingTemplate, m_isBridge),
-    {"ArmorSet", &ThingTemplate::Parse_Armor_Template_Set, nullptr, 0},
-    {"WeaponSet", &ThingTemplate::Parse_Weapon_Template_Set, nullptr, 0},
+    FIELD_PARSE_THING_ARMOR_TEMPLATE_SET("ArmorSet"),
+    FIELD_PARSE_THING_WEAPON_TEMPLATE_SET("WeaponSet"),
     FIELD_PARSE_REAL("VisionRange", ThingTemplate, m_visionRange),
     FIELD_PARSE_REAL("ShroudClearingRange", ThingTemplate, m_shroudClearingRange),
     FIELD_PARSE_REAL("ShroudRevealToAllRange", ThingTemplate, m_shroudRevealToAllRange),
     FIELD_PARSE_ANGLE_REAL("PlacementViewAngle", ThingTemplate, m_placementViewAngle),
     FIELD_PARSE_REAL("FactoryExitWidth", ThingTemplate, m_factoryExitWidth),
     FIELD_PARSE_REAL("FactoryExtraBibWidth", ThingTemplate, m_factoryExtraBibWidth),
-    {"SkillPointValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_skillPointValues)},
-    {"ExperienceValue", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceValues)},
-    {"ExperienceRequired", &ThingTemplate::Parse_Int_List, reinterpret_cast<const void *>(4), offsetof(ThingTemplate, m_experienceRequired)},
+    FIELD_PARSE_THING_INT_LIST("SkillPointValue", ThingTemplate, m_skillPointValues),
+    FIELD_PARSE_THING_INT_LIST("ExperienceValue", ThingTemplate, m_experienceValues),
+    FIELD_PARSE_THING_INT_LIST("ExperienceRequired", ThingTemplate, m_experienceRequired),
     FIELD_PARSE_BOOL("IsTrainable", ThingTemplate, m_isTrainable),
     FIELD_PARSE_BOOL("EnterGuard", ThingTemplate, m_enterGuard),
     FIELD_PARSE_BOOL("HijackGuard", ThingTemplate, m_hijackGuard),
     FIELD_PARSE_ASCIISTRING("Side", ThingTemplate, m_defaultOwningSide),
-    {"Prerequisites", &ThingTemplate::Parse_Prerequisites, nullptr, 0},
+    FIELD_PARSE_THING_PREREQUISITE("Prerequisites"),
     FIELD_PARSE_BYTE_SIZED_INDEX_LIST("Buildable", s_buildableStatusNames, ThingTemplate, m_buildable),
     FIELD_PARSE_UNSIGNED_SHORT("BuildCost", ThingTemplate, m_buildCost),
     FIELD_PARSE_REAL("BuildTime", ThingTemplate, m_buildTime),
@@ -126,10 +127,10 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_BITFLAGS_FROM_INI("KindOf", ThingTemplate, m_kindOf),
     FIELD_PARSE_ASCIISTRING("CommandSet", ThingTemplate, m_commandSetString),
     FIELD_PARSE_ASCIISTRING_VECTOR("BuildVariations", ThingTemplate, m_buildVariations),
-    {"Behavior", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(0), offsetof(ThingTemplate, m_body)},
-    {"Body", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(999), offsetof(ThingTemplate, m_body)},
-    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
-    {"ClientUpdate", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(2), offsetof(ThingTemplate, m_clientUpdates)},
+    FIELD_PARSE_THING_MODULE_NAME("Behavior", ModuleType::MODULE_DEFAULT, ThingTemplate, m_body),
+    FIELD_PARSE_THING_MODULE_NAME("Body", ModuleType(999), ThingTemplate, m_body), /* Reuses member */
+    FIELD_PARSE_THING_MODULE_NAME("Draw", ModuleType::MODULE_DRAW, ThingTemplate, m_draws),
+    FIELD_PARSE_THING_MODULE_NAME("ClientUpdate", ModuleType::MODULE_CLIENT_UPDATE, ThingTemplate, m_clientUpdates),
     FIELD_PARSE_ASCIISTRING("SelectPortrait", ThingTemplate, m_selectedPortraitImageName),
     FIELD_PARSE_ASCIISTRING("ButtonImage", ThingTemplate, m_buttonImageName),
     FIELD_PARSE_ASCIISTRING("UpgradeCameo1", ThingTemplate, m_upgradeCameoNames[0]),
@@ -172,8 +173,8 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundPromotedElite", ThingTemplate, m_audio.sound[28]),
     FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundPromotedHero", ThingTemplate, m_audio.sound[29]),
     FIELD_PARSE_DYNAMIC_AUDIO_EVENT_RTS("SoundFallingFromPlane", ThingTemplate, m_audio.sound[31]),
-    {"UnitSpecificSounds", &ThingTemplate::Parse_Per_Unit_Sounds, nullptr, offsetof(ThingTemplate, m_perUnitSounds)},
-    {"UnitSpecificFX", &ThingTemplate::Parse_Per_Unit_FX, nullptr, offsetof(ThingTemplate, m_perUnitEffects)},
+    FIELD_PARSE_THING_PER_UNIT_SOUNDS("UnitSpecificSounds", ThingTemplate, m_perUnitSounds),
+    FIELD_PARSE_THING_PER_UNIT_FX("UnitSpecificFX", ThingTemplate, m_perUnitEffects),
     FIELD_PARSE_REAL("Scale", ThingTemplate, m_assetScale),
     FIELD_PARSE_GEOMETRY_TYPE("Geometry", ThingTemplate, m_geometryInfo),
     FIELD_PARSE_GEOMETRY_MAJOR_RADIUS("GeometryMajorRadius", ThingTemplate, m_geometryInfo),
@@ -187,16 +188,16 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_REAL("ShadowOffsetY", ThingTemplate, m_shadowOffsetY),
     FIELD_PARSE_ASCIISTRING("ShadowTexture", ThingTemplate, m_shadowTextureName),
     FIELD_PARSE_DURATION_UNSIGNED_INT("OcclusionDelay", ThingTemplate, m_occlusionDelay),
-    {"AddModule", &ThingTemplate::Parse_Add_Module, nullptr, 0},
-    {"RemoveModule", &ThingTemplate::Parse_Remove_Module, nullptr, 0},
-    {"ReplaceModule", &ThingTemplate::Parse_Replace_Module, nullptr, 0},
-    {"InheritableModule", &ThingTemplate::Parse_Inheritable_Module, nullptr, 0},
-    {"OverrideableByLikeKind", &ThingTemplate::Parse_Overrideable_By_Like_Kind, nullptr, 0},
+    FIELD_PARSE_THING_ADD_MODULE("AddModule"),
+    FIELD_PARSE_THING_REMOVE_MODULE("RemoveModule"),
+    FIELD_PARSE_THING_REPLACE_MODULE("ReplaceModule"),
+    FIELD_PARSE_THING_INHERITABLE_MODULE("InheritableModule"),
+    FIELD_PARSE_THING_OVERRIDEABLE_BY_LIKE_KIND("OverrideableByLikeKind"),
     {"Locomotor", &AIUpdateModuleData::Parse_Locomotor_Set, nullptr, 0},
     FIELD_PARSE_REAL("InstanceScaleFuzziness", ThingTemplate, m_instanceScaleFuzziness),
     FIELD_PARSE_UNSIGNED_BYTE("StructureRubbleHeight", ThingTemplate, m_structureRubbleHeight),
     FIELD_PARSE_UNSIGNED_SHORT("ThreatValue", ThingTemplate, m_threatValue),
-    {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
+    FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
     {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
     FIELD_PARSE_UNSIGNED_BYTE("CrusherLevel", ThingTemplate, m_crusherLevel),
     FIELD_PARSE_UNSIGNED_BYTE("CrushableLevel", ThingTemplate, m_crushableLevel),
@@ -205,7 +206,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
 
 const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] = 
 {
-    {"Draw", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(1), offsetof(ThingTemplate, m_draws)},
+    FIELD_PARSE_THING_MODULE_NAME("Draw", ModuleType::MODULE_DRAW, ThingTemplate, m_draws),
     FIELD_PARSE_GEOMETRY_TYPE("Geometry", ThingTemplate, m_geometryInfo),
     FIELD_PARSE_GEOMETRY_MAJOR_RADIUS("GeometryMajorRadius", ThingTemplate, m_geometryInfo),
     FIELD_PARSE_GEOMETRY_MINOR_RADIUS("GeometryMinorRadius", ThingTemplate, m_geometryInfo),
@@ -213,7 +214,7 @@ const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] =
     FIELD_PARSE_GEOMETRY_IS_SMALL("GeometryIsSmall", ThingTemplate, m_geometryInfo),
     FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
     FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
-    {"MaxSimultaneousOfType", &ThingTemplate::Parse_Max_Simultaneous, nullptr, offsetof(ThingTemplate, m_maxSimultaneousOfType)},
+    FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
     {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
     FIELD_PARSE_LAST
 };
@@ -733,7 +734,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 {
     ThingTemplate *tmplate = static_cast<ThingTemplate *>(instance);
     ModuleInfo *info = static_cast<ModuleInfo *>(store);
-    int data = reinterpret_cast<intptr_t>(user_data);
+    ModuleType data = static_cast<ModuleType>(reinterpret_cast<intptr_t>(user_data));
     Utf8String name = ini->Get_Next_Token();
     Utf8String tag_name = ini->Get_Next_Token();
 
@@ -748,12 +749,12 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
 
     int mask;
 
-    if (data == 999) {
-        data = 0;
+    if (data == ModuleType(999)) {
+        data = MODULE_DEFAULT;
         mask = g_theModuleFactory->Find_Module_Interface_Mask(name, MODULE_DEFAULT);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) != 0, CODE_06, "Only Body allowed here");
     } else {
-        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, (ModuleType)data);
+        mask = g_theModuleFactory->Find_Module_Interface_Mask(name, data);
         captainslog_relassert((mask & MODULEINTERFACE_BODY) == 0, CODE_06, "No Body allowed here");
     }
 
@@ -791,7 +792,7 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         name.Str(),
         tmplate->Get_Name().Str());
 
-    ModuleData *m = g_theModuleFactory->New_Module_Data_From_INI(ini, name, (ModuleType)data, tag_name);
+    ModuleData *m = g_theModuleFactory->New_Module_Data_From_INI(ini, name, data, tag_name);
 
     if (m->Is_AI_Module_Data()) {
         info->Clear_Ai_Module_Info();
@@ -806,12 +807,14 @@ void ThingTemplate::Parse_Module_Name(INI *ini, void *instance, void *store, con
         tmplate->m_moduleParseState == MODULEPARSE_REPLACE_BY_LIKE_KIND);
 }
 
+// wb: 0x006EA1D0
 void ThingTemplate::Parse_Per_Unit_FX(INI *ini, void *instance, void *store, const void *user_data)
 {
     std::map<Utf8String, FXList *> *map = static_cast<std::map<Utf8String, FXList *> *>(store);
     map->clear();
 
     // clang-format off
+    // wb: 0x00C24DE8
     static const FieldParse myFieldParse[] = {
         { nullptr, &Parse_Arbitrary_FX_Into_Map, nullptr, 0},
         FIELD_PARSE_LAST
@@ -839,7 +842,7 @@ void ThingTemplate::Parse_Per_Unit_Sounds(INI *ini, void *instance, void *store,
 
     // clang-format off
     static const FieldParse myFieldParse[] = {
-        { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0},
+        { nullptr, &Parse_Arbitrary_Sounds_Into_Map, nullptr, 0 },
         FIELD_PARSE_LAST
     };
     // clang-format on
@@ -872,8 +875,8 @@ void ThingTemplate::Parse_Prerequisites(INI *ini, void *instance, void *store, c
 
     // clang-format off
     static const FieldParse myFieldParse[] = {
-        { "Object", &Parse_Prerequisite_Unit, nullptr, 0},
-        { "Science", &Parse_Prerequisite_Science, nullptr, 0},
+        FIELD_PARSE_THING_PREREQUISITE_UNIT("Object"),
+        FIELD_PARSE_THING_PREREQUISITE_SCIENCE("Science"),
         FIELD_PARSE_LAST
     };
     // clang-format on

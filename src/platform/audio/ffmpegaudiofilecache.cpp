@@ -61,7 +61,8 @@ FFmpegAudioFileCache::~FFmpegAudioFileCache()
 int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size)
 {
     File *file = (File *)opaque;
-    return file->Read(buf, buf_size);
+    int read = file->Read(buf, buf_size);
+    return read;
 }
 
 /**
@@ -144,13 +145,12 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, File 
  */
 bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
 {
-    AVPacket packet;
-    av_init_packet(&packet);
+    AVPacket *packet = av_packet_alloc();
     AVFrame *frame = av_frame_alloc();
 
     int result = 0;
-    while (av_read_frame(file->fmt_ctx, &packet) >= 0) {
-        result = avcodec_send_packet(file->codec_ctx, &packet);
+    while (av_read_frame(file->fmt_ctx, packet) >= 0) {
+        result = avcodec_send_packet(file->codec_ctx, packet);
         if (result < 0) {
             captainslog_error("Failed to send audio packet to decoder.");
             return false;
@@ -167,9 +167,10 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
             file->data_size += frame_data_size;
         }
-        av_packet_unref(&packet);
+        av_packet_unref(packet);
     }
 
+    av_packet_free(&packet);
     av_frame_free(&frame);
 
     return true;

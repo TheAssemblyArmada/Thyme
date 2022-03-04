@@ -463,4 +463,21 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithBitFlagsCheck<decltype(classtype::classmember)>(offsetof(classtype, classmember)) \
         }
+
+// [Image]
+
+#define FIELD_PARSE_IMAGE_COORDS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Image::Parse_Image_Coords, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Region2D>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_IMAGE_STATUS(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Image::Parse_Image_Status, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), uint32_t>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

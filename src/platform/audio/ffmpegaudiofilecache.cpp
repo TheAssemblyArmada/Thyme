@@ -73,7 +73,6 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 #ifndef NDEBUG
     av_log_set_level(AV_LOG_TRACE);
 #endif
-    av_register_all();
 
     // FFmpeg setup
     int ret = 0;
@@ -83,7 +82,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
         return false;
     }
 
-    size_t avio_ctx_buffer_size = 0x2000;
+    size_t avio_ctx_buffer_size = 0x10000;
     open_audio->avio_ctx_buffer = static_cast<uint8_t *>(av_malloc(avio_ctx_buffer_size));
     if (!open_audio->avio_ctx_buffer) {
         captainslog_error("Failed to alloc AVIOContextBuffer");
@@ -129,14 +128,27 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
         return false;
     }
 
-    ret = avcodec_open2(open_audio->fmt_ctx->streams[0]->codec, input_codec, NULL);
+    open_audio->codec_ctx = avcodec_alloc_context3(input_codec);
+    if (!open_audio->codec_ctx) {
+        captainslog_error("Could not allocate codec context");
+        Close_FFmpeg_Contexts(open_audio);
+        return false;
+    }
+
+    ret = avcodec_parameters_to_context(open_audio->codec_ctx, open_audio->fmt_ctx->streams[0]->codecpar);
+    if (ret < 0) {
+        captainslog_error("Failed to set parameters");
+        Close_FFmpeg_Contexts(open_audio);
+        return false;
+    }
+
+    ret = avcodec_open2(open_audio->codec_ctx, input_codec, NULL);
     if (ret < 0) {
         captainslog_error("Failed to open input codec");
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
-    open_audio->codec_ctx = open_audio->fmt_ctx->streams[0]->codec;
     return true;
 }
 
@@ -167,7 +179,6 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
             file->data_size += frame_data_size;
         }
-        av_packet_unref(packet);
     }
 
     av_packet_free(&packet);
@@ -183,6 +194,10 @@ void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio
 {
     if (open_audio->fmt_ctx) {
         avformat_close_input(&open_audio->fmt_ctx);
+    }
+
+    if (open_audio->codec_ctx) {
+        avcodec_free_context(&open_audio->codec_ctx);
     }
 
     if (open_audio->avio_ctx) {
@@ -215,7 +230,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     ScopedMutexClass lock(&m_mutex);
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
 
     if (file == nullptr) {
         if (filename.Is_Not_Empty()) {
@@ -305,9 +320,6 @@ uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         return nullptr;
     }
 
-    uint32_t file_size = file->Size();
-    uint8_t *file_data = static_cast<uint8_t *>(file->Read_All_And_Close());
-
     FFmpegOpenAudioFile open_audio;
     open_audio.wave_data = static_cast<uint8_t *>(av_malloc(sizeof(WavHeader)));
     open_audio.data_size = sizeof(WavHeader);
@@ -320,8 +332,6 @@ uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     if (audio_event->Is_Positional_Audio() && open_audio.codec_ctx->channels > 1) {
         captainslog_error("Audio marked as positional audio cannot have more than one channel.");
-        delete[] file_data;
-
         return nullptr;
     }
 

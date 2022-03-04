@@ -88,7 +88,7 @@ void WeaponTemplateSet::Parse_Weapon_Template_Set(INI *ini, const ThingTemplate 
 {
     // clang-format off
     static const FieldParse _parse_table[] = {
-        { "Conditions", &BitFlags<WEAPONSET_COUNT>::Parse_From_INI, nullptr, offsetof(WeaponTemplateSet, m_conditions) },
+        FIELD_PARSE_BITFLAGS_FROM_INI("Conditions", WeaponTemplateSet, m_conditions),
         { "Weapon", &WeaponTemplateSet::Parse_Weapon, nullptr, 0 },
         { "AutoChooseSources", &WeaponTemplateSet::Parse_Auto_Choose, nullptr, 0 },
         { "PreferredAgainst", &WeaponTemplateSet::Parse_Preferred_Against, nullptr, 0 },

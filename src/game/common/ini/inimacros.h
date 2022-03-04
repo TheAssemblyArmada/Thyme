@@ -16,6 +16,7 @@
 
 #ifndef THYME_USE_STLPORT
 #include <type_traits>
+template<int bits> class BitFlags;
 #endif
 
 // clang-format off
@@ -67,6 +68,17 @@ constexpr ExpectedType ReturnWithListCheck(ElemType (&list)[Size], Pred pred)
         "List without null terminator passed to parse function!");
 #endif
     return static_cast<ExpectedType>(list);
+}
+
+template<typename CheckedType, typename ValueType>
+constexpr ValueType ReturnWithBitFlagsCheck(ValueType value)
+{
+#ifndef THYME_USE_STLPORT
+    using CheckedTypeNoRef = std::remove_reference_t<CheckedType>;
+    static_assert(std::is_same<CheckedTypeNoRef, BitFlags<CheckedType::kBits>>::value,
+        "Wrong type passed to parse function!");
+#endif
+    return value;
 }
 
 template<typename ExpectedType, typename ValueType>
@@ -433,5 +445,22 @@ constexpr const void *IntToUserdata(ValueType value)
             &GeometryInfo::Parse_Geometry_Type, \
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), GeometryInfo>(offsetof(classtype, classmember)) \
+        }
+
+// [BitFlags]
+
+#define FIELD_PARSE_BITFLAGS_FROM_INI(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &decltype(classtype::classmember)::Parse_From_INI, \
+            nullptr, \
+            Thyme::ReturnWithBitFlagsCheck<decltype(classtype::classmember)>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_BITFLAGS_SINGLE_BIT_FROM_INI(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &decltype(classtype::classmember)::Parse_Single_Bit_From_INI, \
+            nullptr, \
+            Thyme::ReturnWithBitFlagsCheck<decltype(classtype::classmember)>(offsetof(classtype, classmember)) \
         }
 // clang-format on

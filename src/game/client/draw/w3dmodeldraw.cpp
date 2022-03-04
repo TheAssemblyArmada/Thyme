@@ -760,7 +760,7 @@ void W3DModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
         { "TrackMarks", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_trackFile) },
         FIELD_PARSE_ASCIISTRING_VECTOR_APPEND("ExtraPublicBone", W3DModelDrawModuleData, m_extraPublicBone),
         { "AttachToBoneInAnotherModule", &Parse_Ascii_String_LC, nullptr, offsetof(W3DModelDrawModuleData, m_attachToBoneInAnotherModule) },
-        { "IgnoreConditionStates", &BitFlags<117ul>::Parse_From_INI, nullptr, offsetof(W3DModelDrawModuleData, m_ignoreConditionStates) },
+        FIELD_PARSE_BITFLAGS_FROM_INI("IgnoreConditionStates", W3DModelDrawModuleData, m_ignoreConditionStates),
         FIELD_PARSE_BOOL("ReceivesDynamicLights", W3DModelDrawModuleData, m_recievesDynamicLights),
         FIELD_PARSE_LAST
     };

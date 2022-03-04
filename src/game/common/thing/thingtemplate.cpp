@@ -123,7 +123,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_BOOL("IsPrerequisite", ThingTemplate, m_isPrerequisite),
     FIELD_PARSE_COLOR_INT("DisplayColor", ThingTemplate, m_displayColor),
     FIELD_PARSE_BYTE_SIZED_INDEX_LIST("EditorSorting", s_editorSortingNames, ThingTemplate, m_editorSorting),
-    {"KindOf", &BitFlags<KINDOF_COUNT>::Parse_From_INI, nullptr, offsetof(ThingTemplate, m_kindOf)},
+    FIELD_PARSE_BITFLAGS_FROM_INI("KindOf", ThingTemplate, m_kindOf),
     FIELD_PARSE_ASCIISTRING("CommandSet", ThingTemplate, m_commandSetString),
     FIELD_PARSE_ASCIISTRING_VECTOR("BuildVariations", ThingTemplate, m_buildVariations),
     {"Behavior", &ThingTemplate::Parse_Module_Name, reinterpret_cast<const void *>(0), offsetof(ThingTemplate, m_body)},

@@ -212,6 +212,11 @@ public:
         kInit = 0,
     };
 
+    enum : int
+    {
+        kBits = bits
+    };
+
     BitFlags() {}
     BitFlags(BogusInitType type, int flag) { m_bits.set(flag); }
     BitFlags(BogusInitType type, int flag1, int flag2)

@@ -592,4 +592,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::map<Utf8String, AudioEventRTS>>(offsetof(classtype, classmember)) \
         }
+
+// [NameKeyGenerator]
+
+#define FIELD_PARSE_STRING_AS_NAMEKEYTYPE(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &NameKeyGenerator::Parse_String_As_NameKeyType, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), NameKeyType>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

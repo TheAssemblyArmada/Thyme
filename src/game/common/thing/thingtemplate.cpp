@@ -198,7 +198,7 @@ const FieldParse ThingTemplate::s_objectFieldParseTable[] = {
     FIELD_PARSE_UNSIGNED_BYTE("StructureRubbleHeight", ThingTemplate, m_structureRubbleHeight),
     FIELD_PARSE_UNSIGNED_SHORT("ThreatValue", ThingTemplate, m_threatValue),
     FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
-    {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
+    FIELD_PARSE_STRING_AS_NAMEKEYTYPE("MaxSimultaneousLinkKey", ThingTemplate, m_maxSimultaneousLinkKey),
     FIELD_PARSE_UNSIGNED_BYTE("CrusherLevel", ThingTemplate, m_crusherLevel),
     FIELD_PARSE_UNSIGNED_BYTE("CrushableLevel", ThingTemplate, m_crushableLevel),
     FIELD_PARSE_LAST
@@ -215,7 +215,7 @@ const FieldParse ThingTemplate::s_objectReskinFieldParseTable[] =
     FIELD_PARSE_REAL("FenceWidth", ThingTemplate, m_fenceWidth),
     FIELD_PARSE_REAL("FenceXOffset", ThingTemplate, m_fenceXOffset),
     FIELD_PARSE_THING_MAX_SIMULTANEOUS("MaxSimultaneousOfType", ThingTemplate, m_maxSimultaneousOfType),
-    {"MaxSimultaneousLinkKey", &NameKeyGenerator::Parse_String_As_NameKeyType, nullptr, offsetof(ThingTemplate, m_maxSimultaneousLinkKey)},
+    FIELD_PARSE_STRING_AS_NAMEKEYTYPE("MaxSimultaneousLinkKey", ThingTemplate, m_maxSimultaneousLinkKey),
     FIELD_PARSE_LAST
 };
 // clang-format on

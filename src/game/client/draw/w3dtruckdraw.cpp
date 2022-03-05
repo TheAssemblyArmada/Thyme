@@ -522,51 +522,59 @@ void W3DTruckDraw::Update_Bones()
 {
     const W3DTruckDrawModuleData *data = Get_W3D_Truck_Draw_Module_Data();
 
+    // Thyme specific: All original asserts have been demoted to log messages because they are data issues.
+
     if (data != nullptr) {
         if (!data->m_frontLeftTireBoneName.Is_Empty()) {
             m_frontLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_frontLeftTireBoneName);
-            captainslog_dbgassert(m_frontLeftTireBone != 0,
-                "Missing front-left tire bone %s in model %s",
-                data->m_frontLeftTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_frontLeftTireBone == 0) {
+                captainslog_error("Missing front-left tire bone %s in model %s",
+                    data->m_frontLeftTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
         }
 
         if (!data->m_frontRightTireBoneName.Is_Empty()) {
             m_frontRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_frontRightTireBoneName);
-            captainslog_dbgassert(m_frontRightTireBone != 0,
-                "Missing front-right tire bone %s in model %s",
-                data->m_frontRightTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_frontRightTireBone == 0) {
+                captainslog_error("Missing front-right tire bone %s in model %s",
+                    data->m_frontRightTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
         }
 
         if (!data->m_rearLeftTireBoneName.Is_Empty()) {
             m_rearLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_rearLeftTireBoneName);
-            captainslog_dbgassert(m_rearLeftTireBone != 0,
-                "Missing rear-left tire bone %s in model %s",
-                data->m_rearLeftTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_rearLeftTireBone == 0) {
+                captainslog_error("Missing rear-left tire bone %s in model %s",
+                    data->m_rearLeftTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
         }
 
         if (!data->m_rearRightTireBoneName.Is_Empty()) {
             m_rearRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_rearRightTireBoneName);
-            captainslog_dbgassert(m_rearRightTireBone != 0,
-                "Missing rear-right tire bone %s in model %s",
-                data->m_rearRightTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_rearRightTireBone == 0) {
+                captainslog_error("Missing rear-right tire bone %s in model %s",
+                    data->m_rearRightTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
         }
 
         if (!data->m_midFrontLeftTireBoneName.Is_Empty()) {
             m_midFrontLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midFrontLeftTireBoneName);
-            captainslog_dbgassert(m_midFrontLeftTireBone != 0,
-                "Missing mid-front-left tire bone %s in model %s",
-                data->m_midFrontLeftTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midFrontLeftTireBone == 0) {
+                captainslog_error("Missing mid-front-left tire bone %s in model %s",
+                    data->m_midFrontLeftTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             m_midFrontRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midFrontRightTireBoneName);
-            captainslog_dbgassert(m_midFrontRightTireBone != 0,
-                "Missing mid-front-right tire bone %s in model %s",
-                data->m_midFrontRightTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midFrontRightTireBone == 0) {
+                captainslog_error("Missing mid-front-right tire bone %s in model %s",
+                    data->m_midFrontRightTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             if (m_midFrontRightTireBone == 0) {
                 m_midFrontLeftTireBone = 0;
@@ -575,16 +583,18 @@ void W3DTruckDraw::Update_Bones()
 
         if (!data->m_midRearLeftTireBoneName.Is_Empty()) {
             m_midRearLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midRearLeftTireBoneName);
-            captainslog_dbgassert(m_midRearLeftTireBone != 0,
-                "Missing mid-rear-left tire bone %s in model %s",
-                data->m_midRearLeftTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midRearLeftTireBone == 0) {
+                captainslog_error("Missing mid-rear-left tire bone %s in model %s",
+                    data->m_midRearLeftTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             m_midRearRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midRearRightTireBoneName);
-            captainslog_dbgassert(m_midRearRightTireBone != 0,
-                "Missing mid-rear-right tire bone %s in model %s",
-                data->m_midRearRightTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midRearRightTireBone == 0) {
+                captainslog_error("Missing mid-rear-right tire bone %s in model %s",
+                    data->m_midRearRightTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             if (m_midRearRightTireBone == 0) {
                 m_midRearLeftTireBone = 0;
@@ -593,16 +603,18 @@ void W3DTruckDraw::Update_Bones()
 
         if (!data->m_midMidLeftTireBoneName.Is_Empty()) {
             m_midMidLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midMidLeftTireBoneName);
-            captainslog_dbgassert(m_midMidLeftTireBone != 0,
-                "Missing mid-mid-left tire bone %s in model %s",
-                data->m_midMidLeftTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midMidLeftTireBone == 0) {
+                captainslog_error("Missing mid-mid-left tire bone %s in model %s",
+                    data->m_midMidLeftTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             m_midMidRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midMidRightTireBoneName);
-            captainslog_dbgassert(m_midMidRightTireBone != 0,
-                "Missing mid-mid-right tire bone %s in model %s",
-                data->m_midMidRightTireBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_midMidRightTireBone == 0) {
+                captainslog_error("Missing mid-mid-right tire bone %s in model %s",
+                    data->m_midMidRightTireBoneName.Str(),
+                    Get_Render_Object()->Get_Name());
+            }
 
             if (m_midMidRightTireBone == 0) {
                 m_midMidLeftTireBone = 0;
@@ -611,10 +623,10 @@ void W3DTruckDraw::Update_Bones()
 
         if (!data->m_cabBoneName.Is_Empty()) {
             m_cabBone = Get_Render_Object()->Get_Bone_Index(data->m_cabBoneName);
-            captainslog_dbgassert(m_cabBone != 0,
-                "Missing cab bone %s in model %s",
-                data->m_cabBoneName.Str(),
-                Get_Render_Object()->Get_Name());
+            if (m_cabBone == 0) {
+                captainslog_error(
+                    "Missing cab bone %s in model %s", data->m_cabBoneName.Str(), Get_Render_Object()->Get_Name());
+            }
 
             m_trailerBone = Get_Render_Object()->Get_Bone_Index(data->m_trailerBoneName);
         }

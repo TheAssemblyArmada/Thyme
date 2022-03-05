@@ -602,4 +602,70 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), NameKeyType>(offsetof(classtype, classmember)) \
         }
+
+// [W3DModelDraw]
+
+#define FIELD_PARSE_W3D_CONDITION_STATE(token, user_data) \
+        FieldParse { \
+            token, \
+            &W3DModelDrawModuleData::Parse_Condition_State, \
+            Thyme::IntToUserdata<ParseCondStateType>(user_data), \
+            0 \
+        }
+#define FIELD_PARSE_W3D_LOWER_ASCIISTRING(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Ascii_String_LC, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Utf8String>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_LOWER_NAME_KEY(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Lowercase_Name_Key, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), NameKeyType>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_BONE_NAME_KEY(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Bone_Name_Key, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), NameKeyType>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_WEAPON_BONE_NAME(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Weapon_Bone_Name, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), Utf8String[WeaponSlotType::WEAPONSLOT_COUNT]>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_ANIMATION(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Animation, \
+            Thyme::IntToUserdata<int32_t>(user_data), \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<W3DAnimationInfo>>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_SHOW_HIDE_SUB_OBJECT(token, user_data, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &Parse_Show_Hide_Sub_Object, \
+            Thyme::IntToUserdata<bool>(user_data), \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), std::vector<ModelConditionInfo::HideShowSubObjInfo>>(offsetof(classtype, classmember)) \
+        }
+#define FIELD_PARSE_W3D_REAL_RANGE(token) \
+        FieldParse { \
+            token, \
+            &Parse_Real_Range, \
+            nullptr, \
+            0 \
+        }
+#define FIELD_PARSE_W3D_PARTICLE_SYS_BONE(token) \
+        FieldParse { \
+            token, \
+            &Parse_Particle_Sys_Bone, \
+            nullptr, \
+            0 \
+        }
 // clang-format on

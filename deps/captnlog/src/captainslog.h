@@ -68,8 +68,12 @@ extern "C" {
 
 #if LOGLEVEL_FATAL <= LOGGING_LEVEL
 #define captainslog_fatal(x, ...) captainslog_log(LOGLEVEL_FATAL, __FILE__, __LINE__, x, ##__VA_ARGS__)
+#define captainslog_fatal_alloc_varg_str(x, ...) captainslog_alloc_varg_str(LOGLEVEL_FATAL, x, ##__VA_ARGS__)
+#define captainslog_fatal_free_varg_str(x) captainslog_free_varg_str(x)
 #else
 #define captainslog_fatal(x, ...) ((void)0)
+#define captainslog_fatal_alloc_varg_str(x, ...) ((char *)NULL)
+#define captainslog_fatal_free_varg_str(x, ...) ((void)0)
 #endif
 
 /**
@@ -100,11 +104,15 @@ typedef struct captains_settings_s
 #define captainslog_log(level, file, line, format, ...) ((void)0)
 #define captainslog_line(fmt, ...) ((void)0)
 #define captainslog_deinit() ((void)0)
+#define captainslog_alloc_varg_str(level, format, ...) ((char *)NULL)
+#define captainslog_free_varg_str(str) ((void)0)
 #else
 void captainslog_init(const captains_settings_t *settings);
 void captainslog_log(int level, const char *file, int line, const char *fmt, ...);
 void captainslog_line(const char *fmt, ...);
 void captainslog_deinit();
+char *captainslog_alloc_varg_str(int level, const char *fmt, ...);
+void captainslog_free_varg_str(char *str);
 #endif
 
 /**
@@ -171,10 +179,15 @@ void captainslog_debugtrap(void);
             static volatile bool _ignore_assert = false; \
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
+                char *vamsg = captainslog_fatal_alloc_varg_str(msg, ##__VA_ARGS__); \
                 captainslog_fatal("ASSERTION FAILED!\n" \
-                                  "  Function:%s\n  Expression:%s\n\n", \
+                                  "  Function:%s\n" \
+                                  "  Expression:%s\n" \
+                                  "  Message:%s\n\n", \
                     __CURRENT_FUNCTION__, \
-                    #exp); \
+                    #exp, \
+                    vamsg ? vamsg : ""); \
+                captainslog_fatal_free_varg_str(vamsg); \
                 captainslog_assertfail( \
                     #exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, &_ignore_assert, &_break, msg, ##__VA_ARGS__); \
             } \
@@ -190,10 +203,15 @@ void captainslog_debugtrap(void);
             static volatile bool _ignore_assert = false; \
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
+                char *vamsg = captainslog_fatal_alloc_varg_str(msg, ##__VA_ARGS__); \
                 captainslog_fatal("ASSERTION FAILED!\n" \
-                                  "  Function:%s\n  Expression:%s\n\n", \
+                                  "  Function:%s\n" \
+                                  "  Expression:%s\n" \
+                                  "  Message:%s\n\n", \
                     __CURRENT_FUNCTION__, \
-                    #exp); \
+                    #exp, \
+                    vamsg ? vamsg : ""); \
+                captainslog_fatal_free_varg_str(vamsg); \
                 captainslog_assertfail( \
                     #exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, &_ignore_assert, &_break, msg, ##__VA_ARGS__); \
             } \
@@ -209,7 +227,8 @@ void captainslog_debugtrap(void);
             static volatile bool _break = false; \
             if (!_ignore_assert) { \
                 captainslog_fatal("ASSERTION FAILED!\n" \
-                                  "  Function:%s\n  Expression:%s\n\n", \
+                                  "  Function:%s\n" \
+                                  "  Expression:%s\n\n", \
                     __CURRENT_FUNCTION__, \
                     #exp); \
                 captainslog_assertfail(#exp, __FILE__, __LINE__, __CURRENT_FUNCTION__, &_ignore_assert, &_break, NULL); \

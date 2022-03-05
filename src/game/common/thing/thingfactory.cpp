@@ -160,15 +160,13 @@ ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool
         m_templateMap[name] = tmplate;
         return Find_Template_Internal(name, true);
     } else {
-// Disabled cause the game throws this all the time whenever this function gets called by Evaluate_Built_By_Player
-// appears to be a bug in the scripts or game itself.
-#if 0
+
+        // Thyme specific: Original assert has been demoted to log message because it is a data issue.
         if (b && name.Is_Not_Empty()) {
-            captainslog_dbgassert(0,
+            captainslog_error(
                 "Failed to find thing template %s (case sensitive) This issue has a chance of crashing after you ignore it!",
                 name.Str());
         }
-#endif
         return nullptr;
     }
 }

@@ -145,7 +145,10 @@ DrawModule **Drawable::Get_Draw_Modules()
 
     if (m_isModelDirty) {
         if (s_modelLockCount > 0) {
+#if 0
+            // Thyme specific: Disabled, because it is printed each frame.
             captainslog_debug("Should not need to update dirty stuff while locked-for-iteration. Ignoring.");
+#endif
             return modules;
         }
 

@@ -678,4 +678,21 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), FXList *>(offsetof(classtype, classmember)) \
         }
+
+// [GlobalLanguage]
+
+#define FIELD_PARSE_FONT_FILENAME(token) \
+        FieldParse { \
+            token, \
+            &GlobalLanguage::Parse_Font_Filename, \
+            nullptr, \
+            0 \
+        }
+#define FIELD_PARSE_FONT_DESC(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &GlobalLanguage::Parse_FontDesc, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), FontDesc>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

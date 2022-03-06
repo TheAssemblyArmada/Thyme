@@ -36,7 +36,7 @@ MilesAudioFileCache::~MilesAudioFileCache()
  *
  * 0x00780F80
  */
-void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
+void *MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
 {
     ScopedMutexClass lock(&m_mutex);
     Utf8String filename;
@@ -62,7 +62,7 @@ void *MilesAudioFileCache::Open_File(AudioEventRTS *audio_event)
     auto it = m_cacheMap.find(filename);
 
     if (it != m_cacheMap.end()) {
-        ++it->second.ref_count;
+        ++(it->second.ref_count);
 
         return it->second.wave_data;
     }

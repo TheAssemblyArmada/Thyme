@@ -76,7 +76,7 @@ public:
     AudioType Get_Event_Type() const { return m_eventType; }
     int Get_Current_Sound_Index() const { return m_currentSoundIndex; }
     bool Should_Play_Locally() const { return m_shouldPlayLocally; }
-    bool Is_Positional_Audio();
+    bool Is_Positional_Audio() const;
     float Get_Volume() const;
     float Get_Pitch_Shift() const { return m_pitchShift; }
     float Get_Volume_Shift() const { return m_volumeShift; }

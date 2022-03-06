@@ -695,4 +695,21 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             Thyme::ReturnWithSameCheck<decltype(classtype::classmember), FontDesc>(offsetof(classtype, classmember)) \
         }
+
+// [AudioEventInfo]
+
+#define FIELD_PARSE_AUDIO_PITCH_SHIFT(token, classtype) \
+        FieldParse { \
+            token, \
+            &AudioEventInfo::Parse_Pitch_Shift, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<classtype, AudioEventInfo>(0) \
+        }
+#define FIELD_PARSE_AUDIO_DELAY(token, classtype) \
+        FieldParse { \
+            token, \
+            &AudioEventInfo::Parse_Delay, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<classtype, AudioEventInfo>(0) \
+        }
 // clang-format on

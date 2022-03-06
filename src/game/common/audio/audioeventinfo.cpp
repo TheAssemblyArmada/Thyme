@@ -58,8 +58,8 @@ const FieldParse AudioEventInfo::s_audioEventParseTable[] = {
     FIELD_PARSE_PERCENT_TO_REAL("Volume", AudioEventInfo, m_volume),
     FIELD_PARSE_PERCENT_TO_REAL("VolumeShift", AudioEventInfo, m_volumeShift),
     FIELD_PARSE_PERCENT_TO_REAL("MinVolume", AudioEventInfo, m_minVolume),
-    { "PitchShift", &AudioEventInfo::Parse_Pitch_Shift, nullptr, 0 },
-    { "Delay", &AudioEventInfo::Parse_Delay, nullptr, 0 },
+    FIELD_PARSE_AUDIO_PITCH_SHIFT("PitchShift", AudioEventInfo),
+    FIELD_PARSE_AUDIO_DELAY("Delay", AudioEventInfo),
     FIELD_PARSE_INT("Limit", AudioEventInfo, m_limit),
     FIELD_PARSE_INT("LoopCount", AudioEventInfo, m_loopCount),
     FIELD_PARSE_INDEX_LIST("Priority", g_audio_priority_names, AudioEventInfo, m_priority),
@@ -143,7 +143,7 @@ void AudioEventInfo::Parse_Pitch_Shift(INI *ini, void *formal, void *store, cons
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captainslog_assert(lo > -100.0f && hi >= lo);
+    captainslog_dbgassert(lo > -100.0f && hi >= lo, "Bad pitch shift values for audio event %s", info->m_eventName.Str());
     info->m_pitchShiftLow = float(lo / 100.0f) + 1.0f;
     info->m_pitchShiftHigh = float(hi / 100.0f) + 1.0f;
 }
@@ -160,7 +160,7 @@ void AudioEventInfo::Parse_Delay(INI *ini, void *formal, void *store, const void
     float lo = INI::Scan_Real(ini->Get_Next_Token());
     float hi = INI::Scan_Real(ini->Get_Next_Token());
 
-    captainslog_assert(lo >= 0.0f && hi >= lo);
+    captainslog_dbgassert(lo >= 0.0f && hi >= lo, "Bad delay values for audio event %s", info->m_eventName.Str());
     info->m_delayLow = lo;
     info->m_delayHigh = hi;
 }

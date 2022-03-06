@@ -38,7 +38,6 @@ struct FFmpegOpenAudioFile
 {
     // FFmpeg handles
     AVFormatContext *fmt_ctx = nullptr;
-    uint8_t *avio_ctx_buffer = nullptr;
     AVIOContext *avio_ctx = nullptr;
     AVCodecContext *codec_ctx = nullptr;
     uint8_t *wave_data = nullptr;

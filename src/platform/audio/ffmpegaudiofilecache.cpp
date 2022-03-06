@@ -83,15 +83,14 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     }
 
     size_t avio_ctx_buffer_size = 0x10000;
-    open_audio->avio_ctx_buffer = static_cast<uint8_t *>(av_malloc(avio_ctx_buffer_size));
-    if (!open_audio->avio_ctx_buffer) {
+    uint8_t *buffer = static_cast<uint8_t *>(av_malloc(avio_ctx_buffer_size));
+    if (!buffer) {
         captainslog_error("Failed to alloc AVIOContextBuffer");
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
-    open_audio->avio_ctx = avio_alloc_context(
-        open_audio->avio_ctx_buffer, avio_ctx_buffer_size, 0, file, &Read_FFmpeg_Packet, nullptr, nullptr);
+    open_audio->avio_ctx = avio_alloc_context(buffer, avio_ctx_buffer_size, 0, file, &Read_FFmpeg_Packet, nullptr, nullptr);
     if (!open_audio->avio_ctx) {
         captainslog_error("Failed to alloc AVIOContext");
         Close_FFmpeg_Contexts(open_audio);
@@ -202,12 +201,12 @@ void FFmpegAudioFileCache::Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio
         avcodec_free_context(&open_audio->codec_ctx);
     }
 
-    if (open_audio->avio_ctx) {
-        av_freep(&open_audio->avio_ctx);
+    if (open_audio->avio_ctx->buffer) {
+        av_freep(&open_audio->avio_ctx->buffer);
     }
 
-    if (open_audio->avio_ctx_buffer) {
-        av_freep(&open_audio->avio_ctx_buffer);
+    if (open_audio->avio_ctx) {
+        avio_context_free(&open_audio->avio_ctx);
     }
 }
 

@@ -668,4 +668,14 @@ constexpr const void *IntToUserdata(ValueType value)
             nullptr, \
             0 \
         }
+
+// [FXList]
+
+#define FIELD_PARSE_FXLIST(token, classtype, classmember) \
+        FieldParse { \
+            token, \
+            &FXList::Parse, \
+            nullptr, \
+            Thyme::ReturnWithSameCheck<decltype(classtype::classmember), FXList *>(offsetof(classtype, classmember)) \
+        }
 // clang-format on

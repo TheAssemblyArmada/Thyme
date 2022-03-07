@@ -71,7 +71,7 @@ int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf
 bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file)
 {
 #ifdef GAME_DEBUG
-    // av_log_set_level(AV_LOG_TRACE);
+    av_log_set_level(AV_LOG_TRACE);
 #endif
 
     // FFmpeg setup
@@ -229,6 +229,8 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
 uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 {
     ScopedMutexClass lock(&m_mutex);
+
+    captainslog_debug("FFmpegAudioFileCache: opening file %s", filename.Str());
 
     // Load the file from disk
     File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);

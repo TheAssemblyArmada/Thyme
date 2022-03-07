@@ -68,15 +68,15 @@ public:
     inline unsigned Get_Current_Size() const { return m_currentSize; }
 
 private:
-    bool Free_Space_For_Sample(const FFmpegOpenAudioFile &file);
-    void Release_Open_Audio(FFmpegOpenAudioFile *file);
+    bool Free_Space_For_Sample(const FFmpegOpenAudioFile &open_audio);
+    void Release_Open_Audio(FFmpegOpenAudioFile *open_audio);
 
-    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *file, File *f);
-    bool Decode_FFmpeg(FFmpegOpenAudioFile *file);
-    void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *file);
+    bool Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file);
+    bool Decode_FFmpeg(FFmpegOpenAudioFile *open_audio);
+    void Close_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio);
     static int Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf_size);
 
-    void Fill_Wave_Data(FFmpegOpenAudioFile *file);
+    void Fill_Wave_Data(FFmpegOpenAudioFile *open_audio);
 
 private:
     ffmpegaudiocachemap_t m_cacheMap;

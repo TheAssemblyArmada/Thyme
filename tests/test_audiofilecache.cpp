@@ -34,11 +34,11 @@ TEST(audio, ffmpegaudiofilecache)
     auto filepath = Utf8String(TESTDATA_PATH) + "/audio/pcm1644m.wav";
     uint8_t *data = cache.Open_File(filepath);
     // We expect this to fail since our cache size is 0
-    EXPECT_TRUE(data == nullptr);
+    EXPECT_EQ(data, static_cast<uint8_t *>(nullptr));
 
     // Use something that can hold our file
     cache.Set_Max_Size(0xFFFFF);
     data = cache.Open_File(filepath);
-    EXPECT_TRUE(data != nullptr);
+    EXPECT_NE(data, static_cast<uint8_t *>(nullptr));
 }
 #endif

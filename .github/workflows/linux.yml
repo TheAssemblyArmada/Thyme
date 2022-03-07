@@ -51,7 +51,7 @@ jobs:
           CC: ${{ steps.vars.outputs.cc }}
           CXX: ${{ steps.vars.outputs.cxx }}
         run: |
-          cmake -DBUILD_TOOLS=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DUSE_CRASHPAD=ON -B build -G Ninja
+          cmake -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DUSE_CRASHPAD=ON -B build -G Ninja
           cmake --build build --target format
           git diff --exit-code
           cmake --build build

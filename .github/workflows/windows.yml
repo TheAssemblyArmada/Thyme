@@ -55,7 +55,7 @@ jobs:
         
     - name: Build Thyme
       run: |
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DBUILD_TOOLS=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DUSE_CRASHPAD=ON -DwxWidgets_wxrc_EXECUTABLE=D:\${{ steps.vars.outputs.wx_ver }}\utils\wxrc\${{ steps.vars.outputs.wxrc_path }}\wxrc.exe -DwxWidgets_ROOT_DIR=D:\${{ steps.vars.outputs.wx_ver }} -DwxWidgets_LIB_DIR=D:\${{ steps.vars.outputs.wx_ver }}\libs\vc_x64_lib -DwxWidgets_CONFIGURATION=mswu -B build
         cmake --build build --config RelWithDebInfo
 
     - name: Test Thyme
@@ -91,7 +91,7 @@ jobs:
     - name: Upload tagged release
       if: ${{ startsWith(github.ref, 'refs/tags/') }}
       uses: softprops/action-gh-release@v1
-      with:
+      with:so
         files: |
           artifact\*
       env:

@@ -43,7 +43,7 @@ struct FFmpegOpenAudioFile
     uint8_t *wave_data = nullptr;
     int ref_count = 0;
     int data_size = 0;
-    const AudioEventInfo *audio_event_info;
+    const AudioEventInfo *audio_event_info = nullptr;
 };
 
 #ifdef THYME_USE_STLPORT

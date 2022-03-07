@@ -233,7 +233,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     captainslog_debug("FFmpegAudioFileCache: opening file %s", filename.Str());
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
 
     if (file == nullptr) {
         if (filename.Is_Not_Empty()) {
@@ -316,7 +316,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {

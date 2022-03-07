@@ -122,16 +122,33 @@ inline void Sleep_Ms(int interval)
 #endif
 }
 
-// Moves all elements, where predicate is true, to the end of the container and returns iterator from where these moved
-// elements start.
-template<class ForwardIterator, class UnaryPredicate>
-ForwardIterator remove_if(ForwardIterator first, ForwardIterator last, UnaryPredicate pred)
+template<class T> struct remove_reference
 {
-    ForwardIterator result = first;
+    typedef T type;
+};
+template<class T> struct remove_reference<T &>
+{
+    typedef T type;
+};
+template<class T> struct remove_reference<T &&>
+{
+    typedef T type;
+};
+template<class T> using remove_reference_t = typename remove_reference<T>::type;
+
+template<class T> constexpr remove_reference_t<T> &&move(T &&t) noexcept
+{
+    return static_cast<typename remove_reference<T>::type &&>(t);
+}
+
+// Removes all elements for which predicate p returns true. Allows mutable reference in predicate.
+template<class ForwardIt, class UnaryPredicate> ForwardIt remove_if(ForwardIt first, ForwardIt last, UnaryPredicate p)
+{
+    ForwardIt result = first;
     while (first != last) {
-        if (!pred(*first)) {
+        if (!p(*first)) {
             if (result != first)
-                *result = *first;
+                *result = ::rts::move(*first);
             ++result;
         }
         ++first;
@@ -139,20 +156,20 @@ ForwardIterator remove_if(ForwardIterator first, ForwardIterator last, UnaryPred
     return result;
 }
 
-// Erases all elements from container where predicate is true.
+// Erases all elements that satisfy the predicate p from the container.
 template<class Container, class UnaryPredicate>
-typename Container::size_type erase_if(Container &container, UnaryPredicate pred)
+typename Container::size_type erase_if(Container &container, UnaryPredicate p)
 {
-    typename Container::iterator remove_at = ::rts::remove_if(container.begin(), container.end(), pred);
-    typename Container::size_type count = std::distance(remove_at, container.end());
+    typename Container::iterator remove_at = ::rts::remove_if(container.begin(), container.end(), p);
+    typename Container::size_type count = ::std::distance(remove_at, container.end());
     container.erase(remove_at, container.end());
     return count;
 }
 
-// Fills whole array with a value.
-template<typename T, size_t Size> void fill(T (&array)[Size], const T &val)
+// Fills entire array with value.
+template<typename T, size_t Size> void fill(T (&array)[Size], const T &value)
 {
-    std::fill_n(array, Size, val);
+    ::std::fill_n(array, Size, value);
 }
 
 } // namespace rts

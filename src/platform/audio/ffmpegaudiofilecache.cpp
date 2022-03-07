@@ -76,6 +76,8 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     // FFmpeg setup
     int ret = 0;
+    char error_buffer[1024];
+
     open_audio->fmt_ctx = avformat_alloc_context();
     if (!open_audio->fmt_ctx) {
         captainslog_error("Failed to alloc AVFormatContext");
@@ -102,14 +104,16 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     ret = avformat_open_input(&open_audio->fmt_ctx, nullptr, nullptr, nullptr);
     if (ret < 0) {
-        captainslog_error("Failed to open audiofile with FFmpeg");
+        av_strerror(ret, error_buffer, sizeof(error_buffer));
+        captainslog_error("Failed 'avformat_open_input': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
     ret = avformat_find_stream_info(open_audio->fmt_ctx, NULL);
     if (ret < 0) {
-        captainslog_error("Failed to find stream info");
+        av_strerror(ret, error_buffer, sizeof(error_buffer));
+        captainslog_error("Failed 'avformat_find_stream_info': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
@@ -136,14 +140,16 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     ret = avcodec_parameters_to_context(open_audio->codec_ctx, open_audio->fmt_ctx->streams[0]->codecpar);
     if (ret < 0) {
-        captainslog_error("Failed to set parameters");
+        av_strerror(ret, error_buffer, sizeof(error_buffer));
+        captainslog_error("Failed 'avcodec_parameters_to_context': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
     ret = avcodec_open2(open_audio->codec_ctx, input_codec, NULL);
     if (ret < 0) {
-        captainslog_error("Failed to open input codec");
+        av_strerror(ret, error_buffer, sizeof(error_buffer));
+        captainslog_error("Failed 'avcodec_open2': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }

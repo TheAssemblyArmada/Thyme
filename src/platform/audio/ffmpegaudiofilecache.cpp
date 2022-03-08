@@ -73,7 +73,7 @@ int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf
  */
 bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio, File *file)
 {
-#if 0 && defined GAME_DEBUG
+#if LOGGING_LEVEL != LOGLEVEL_NONE
     av_log_set_level(AV_LOG_TRACE);
 #endif
 

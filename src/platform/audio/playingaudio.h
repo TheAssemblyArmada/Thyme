@@ -35,7 +35,7 @@ struct MilesPlayingAudio
     PlayingAudioType playing_type;
     int stopped;
     AudioEventRTS *audio_event;
-    void *file_handle;
+    AudioDataHandle file_handle;
     bool disable_loops;
     bool release_event;
     int time_fading;

@@ -36,7 +36,7 @@ MilesAudioFileCache::~MilesAudioFileCache()
  *
  * 0x00780F80
  */
-void *MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
+AudioDataHandle MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
 {
     ScopedMutexClass lock(&m_mutex);
     Utf8String filename;
@@ -79,7 +79,7 @@ void *MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
     }
 
     uint32_t file_size = file->Size();
-    void *file_data = file->Read_All_And_Close();
+    AudioDataHandle file_data = static_cast<AudioDataHandle>(file->Read_All_And_Close());
 
     OpenAudioFile open_audio;
     open_audio.audio_event_info = audio_event->Get_Event_Info();
@@ -95,7 +95,7 @@ void *MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
     }
 
     if (sound_info.format == 17) { // ADPCM, need to decompress.
-        void *decomp_data;
+        AudioDataHandle decomp_data;
         uint32_t decomp_size;
         AIL_decompress_ADPCM(&sound_info, &decomp_data, &decomp_size);
         file_size = decomp_size;
@@ -138,7 +138,7 @@ void *MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
  *
  * 0x007813D0
  */
-void MilesAudioFileCache::Close_File(void *file)
+void MilesAudioFileCache::Close_File(AudioDataHandle file)
 {
     if (file == nullptr) {
         return;

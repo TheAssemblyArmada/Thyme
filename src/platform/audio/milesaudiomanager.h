@@ -63,7 +63,7 @@ public:
     virtual bool Is_Currently_Playing(uintptr_t event) override;
     virtual void Open_Device() override;
     virtual void Close_Device() override;
-    virtual void *Get_Device() override { return m_milesDigitalDriver; }
+    virtual AudioDevice Get_Device() override { return m_milesDigitalDriver; }
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned type) override;
     virtual int Get_Provider_Count() override { return m_milesMaxProviderIndex; }
     virtual Utf8String Get_Provider_Name(unsigned provider) const override;
@@ -84,7 +84,7 @@ public:
     virtual void Remove_Playing_Audio(Utf8String name) override;
     virtual void Remove_All_Disabled_Audio() override;
     virtual bool Has_3D_Sensitive_Streams_Playing() override;
-    virtual void *Get_Bink_Handle() override;
+    virtual BinkHandle Get_Bink_Handle() override;
     virtual void Release_Bink_Handle() override;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) override;
     virtual void Process_Request_List() override;
@@ -93,7 +93,7 @@ public:
     virtual void Set_Preferred_3D_Provider(Utf8String provider) override;
     virtual void Set_Preferred_Speaker(Utf8String speaker) override;
     virtual float Get_File_Length_MS(Utf8String file_name) override;
-    virtual void Close_Any_Sample_Using_File(const void *handle) override;
+    virtual void Close_Any_Sample_Using_File(const AudioDataHandle handle) override;
     virtual void Set_Device_Listener_Position() override;
     virtual PlayingAudio *Find_Playing_Audio_From(uintptr_t handle, unsigned type) override;
     virtual void Process_Playing_List() override;
@@ -111,8 +111,8 @@ private:
     void Free_All_Miles_Handles();
     void Stop_All_Audio_Immediately();
     void Play_Stream(AudioEventRTS *event, HSAMPLE stream);
-    void *Play_Sample3D(AudioEventRTS *event, H3DSAMPLE stream);
-    void *Play_Sample(AudioEventRTS *event, HSAMPLE stream);
+    AudioDataHandle Play_Sample3D(AudioEventRTS *event, H3DSAMPLE stream);
+    AudioDataHandle Play_Sample(AudioEventRTS *event, HSAMPLE stream);
     bool Start_Next_Loop(PlayingAudio *audio);
     void Init_Filters(HSAMPLE sample, AudioEventRTS *event);
     void Init_Filters3D(H3DSAMPLE sample, AudioEventRTS *event, Coord3D *coord);
@@ -129,8 +129,8 @@ private:
     bool Kill_Lowest_Priority_Sound_Immediately(AudioEventRTS *event);
     AudioEventRTS *Find_Lowest_Priority_Sound(AudioEventRTS *event);
     Coord3D *Get_Current_Position_From_Event(AudioEventRTS *event);
-    void *Open_File(AudioEventRTS *event) { return m_audioFileCache->Open_File(event); }
-    void Close_File(void *handle) { m_audioFileCache->Close_File(handle); }
+    AudioDataHandle Open_File(AudioEventRTS *event) { return m_audioFileCache->Open_File(event); }
+    void Close_File(AudioDataHandle handle) { m_audioFileCache->Close_File(handle); }
     bool Provider_Is_Valid() const { return m_milesCurrentProvider < m_milesMaxProviderIndex; }
     void Build_Provider_List();
     void Init_Delay_Filter();

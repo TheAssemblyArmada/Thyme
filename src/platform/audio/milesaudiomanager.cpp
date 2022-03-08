@@ -926,7 +926,7 @@ bool MilesAudioManager::Has_3D_Sensitive_Streams_Playing()
  *
  * 0x00780820
  */
-void *MilesAudioManager::Get_Bink_Handle()
+BinkHandle MilesAudioManager::Get_Bink_Handle()
 {
     // If we don't already have a playing audio for bink, make one.
     if (m_binkPlayingAudio == nullptr) {
@@ -954,7 +954,7 @@ void *MilesAudioManager::Get_Bink_Handle()
     AILLPDIRECTSOUND info;
     AIL_get_DirectSound_info(m_binkPlayingAudio->miles.sample, &info, nullptr);
 
-    return info;
+    return static_cast<BinkHandle>(info);
 }
 
 /**
@@ -1146,7 +1146,7 @@ float MilesAudioManager::Get_File_Length_MS(Utf8String file_name)
  *
  * 0x00780190
  */
-void MilesAudioManager::Close_Any_Sample_Using_File(const void *handle)
+void MilesAudioManager::Close_Any_Sample_Using_File(const AudioDataHandle handle)
 {
     for (auto it = m_globalAudioList.begin(); it != m_globalAudioList.end();) {
         if ((*it)->miles.file_handle == handle) {
@@ -1523,7 +1523,7 @@ void MilesAudioManager::Play_Stream(AudioEventRTS *event, HSAMPLE stream)
  *
  * 0x00780520
  */
-void *MilesAudioManager::Play_Sample3D(AudioEventRTS *event, H3DSAMPLE sample)
+AudioDataHandle MilesAudioManager::Play_Sample3D(AudioEventRTS *event, H3DSAMPLE sample)
 {
     Coord3D *pos = Get_Current_Position_From_Event(event);
 
@@ -1531,7 +1531,7 @@ void *MilesAudioManager::Play_Sample3D(AudioEventRTS *event, H3DSAMPLE sample)
         return nullptr;
     }
 
-    void *handle = Open_File(event);
+    AudioDataHandle handle = Open_File(event);
 
     if (handle != nullptr) {
         AIL_set_3D_sample_file(sample, handle);
@@ -1556,12 +1556,12 @@ void *MilesAudioManager::Play_Sample3D(AudioEventRTS *event, H3DSAMPLE sample)
  *
  * Inlined
  */
-void *MilesAudioManager::Play_Sample(AudioEventRTS *event, HSAMPLE sample)
+AudioDataHandle MilesAudioManager::Play_Sample(AudioEventRTS *event, HSAMPLE sample)
 {
     AIL_init_sample(sample);
     AIL_register_EOS_callback(sample, Set_Sample_Complete);
     Init_Filters(sample, event);
-    void *handle = Open_File(event);
+    AudioDataHandle handle = Open_File(event);
 
     if (handle != nullptr) {
         AIL_set_sample_file(sample, handle, 0);

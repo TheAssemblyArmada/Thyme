@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "audiomanager.h"
 #include "mutex.h"
 #include "rtsutils.h"
 #include <miles.h>
@@ -32,7 +33,7 @@ class AudioEventRTS;
 struct OpenAudioFile
 {
     AILSOUNDINFO info;
-    void *wave_data;
+    AudioDataHandle wave_data;
     int ref_count;
     int data_size;
     bool miles_allocated;
@@ -52,8 +53,8 @@ class MilesAudioFileCache
 public:
     MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~MilesAudioFileCache();
-    void *Open_File(const AudioEventRTS *file);
-    void Close_File(void *file);
+    AudioDataHandle Open_File(const AudioEventRTS *file);
+    void Close_File(AudioDataHandle file);
     void Set_Max_Size(unsigned size);
 
 private:

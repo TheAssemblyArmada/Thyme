@@ -123,7 +123,7 @@ void BinkVideoPlayer::Notify_Player_Of_New_Provider(bool initialise)
  */
 void BinkVideoPlayer::Initialise_Bink_With_Miles()
 {
-    void *handle = g_theAudio->Get_Bink_Handle();
+    BinkHandle handle = g_theAudio->Get_Bink_Handle();
 
     // If we don't have a miles handle or we fail to set the sound system from it, set to have no audio tracks.
     if (handle == nullptr || BinkSetSoundSystem(BinkOpenDirectSound, (uintptr_t)handle) == 0) {

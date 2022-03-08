@@ -56,6 +56,10 @@ enum CachedVarsType
     CACHED_UNK8 = 1 << 8, // Speech related.
 };
 
+using AudioDataHandle = void *;
+using AudioDevice = void *;
+using BinkHandle = void *;
+
 class AudioEventRTS;
 struct PlayingAudio;
 class MusicManager;
@@ -104,7 +108,7 @@ public:
     virtual bool Is_Currently_Playing(uintptr_t event) = 0;
     virtual void Open_Device() = 0;
     virtual void Close_Device() = 0;
-    virtual void *Get_Device() = 0;
+    virtual AudioDevice Get_Device() = 0;
     virtual void Notify_Of_Audio_Completion(uintptr_t handle, unsigned type) = 0;
     virtual int Get_Provider_Count() = 0;
     virtual Utf8String Get_Provider_Name(unsigned provider) const = 0;
@@ -132,7 +136,7 @@ public:
     virtual float Get_Volume(AudioAffect affect);
     virtual void Set_3D_Volume_Adjustment(float adj);
     virtual bool Has_3D_Sensitive_Streams_Playing() = 0;
-    virtual void *Get_Bink_Handle() = 0;
+    virtual BinkHandle Get_Bink_Handle() = 0;
     virtual void Release_Bink_Handle() = 0;
     virtual void friend_Force_Play_Audio_Event(AudioEventRTS *event) = 0;
     virtual void Set_Listener_Position(const Coord3D *position, const Coord3D *direction);
@@ -154,7 +158,7 @@ public:
     virtual void Set_Preferred_Speaker(Utf8String speaker) = 0;
     virtual float Get_Audio_Length_MS(const AudioEventRTS *event);
     virtual float Get_File_Length_MS(Utf8String file_name) = 0;
-    virtual void Close_Any_Sample_Using_File(const void *handle) = 0;
+    virtual void Close_Any_Sample_Using_File(const AudioDataHandle handle) = 0;
     virtual bool Is_Music_Already_Loaded();
     virtual bool Is_Music_Playing_From_CD() { return m_fromCD; }
     virtual void Find_All_Audio_Events_Of_Type(AudioType type, std::vector<AudioEventInfo *> &list);

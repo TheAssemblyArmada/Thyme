@@ -52,7 +52,7 @@ class MilesAudioFileCache
 public:
     MilesAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~MilesAudioFileCache();
-    void *Open_File(AudioEventRTS *file);
+    void *Open_File(const AudioEventRTS *file);
     void Close_File(void *file);
     void Set_Max_Size(unsigned size);
 

@@ -498,7 +498,7 @@ Coord3D *AudioEventRTS::Get_Current_Pos()
  *
  * 0x00445900
  */
-bool AudioEventRTS::Is_Positional_Audio()
+bool AudioEventRTS::Is_Positional_Audio() const
 {
     if (m_eventInfo != nullptr && !(m_eventInfo->Get_Visibility() & VISIBILITY_WORLD)) {
         return false;

@@ -227,12 +227,12 @@ bool MilesAudioFileCache::Free_Space_For_Sample(const OpenAudioFile &file)
 void MilesAudioFileCache::Release_Open_Audio(OpenAudioFile *file)
 {
     // Close any playing samples that use this data.
-    if (file->ref_count) {
-        g_theAudio->Close_Any_Sample_Using_File(file);
+    if (file->ref_count != 0) {
+        g_theAudio->Close_Any_Sample_Using_File(file->wave_data);
     }
 
     // Deallocate the data buffer depending on how it was allocated.
-    if (file->wave_data) {
+    if (file->wave_data != nullptr) {
         if (file->miles_allocated) {
             AIL_mem_free_lock(file->wave_data);
         } else {

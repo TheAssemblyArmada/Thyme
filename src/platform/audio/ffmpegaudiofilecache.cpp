@@ -239,7 +239,7 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
 /**
  * Opens an audio file. Reads from the cache if available or loads from file if not.
  */
-uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
+void *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 {
     ScopedMutexClass lock(&m_mutex);
 
@@ -297,7 +297,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 /**
  * Opens an audio file for an event. Reads from the cache if available or loads from file if not.
  */
-uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
+void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 {
     ScopedMutexClass lock(&m_mutex);
     Utf8String filename;
@@ -382,7 +382,7 @@ uint8_t *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 /**
  * Closes a file, reducing the references to it. Does not actually free the cache.
  */
-void FFmpegAudioFileCache::Close_File(uint8_t *file)
+void FFmpegAudioFileCache::Close_File(void *file)
 {
     if (file == nullptr) {
         return;

@@ -62,6 +62,9 @@ int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf
 {
     File *file = static_cast<File *>(opaque);
     int read = file->Read(buf, buf_size);
+    if (read < 0)
+        return 0;
+
     return read;
 }
 
@@ -75,7 +78,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 #endif
 
     // FFmpeg setup
-    int ret = 0;
+    int result = 0;
     char error_buffer[1024];
 
     open_audio->fmt_ctx = avformat_alloc_context();
@@ -102,17 +105,17 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     open_audio->fmt_ctx->pb = open_audio->avio_ctx;
     open_audio->fmt_ctx->flags |= AVFMT_FLAG_CUSTOM_IO;
 
-    ret = avformat_open_input(&open_audio->fmt_ctx, nullptr, nullptr, nullptr);
-    if (ret < 0) {
-        av_strerror(ret, error_buffer, sizeof(error_buffer));
+    result = avformat_open_input(&open_audio->fmt_ctx, nullptr, nullptr, nullptr);
+    if (result < 0) {
+        av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avformat_open_input': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
-    ret = avformat_find_stream_info(open_audio->fmt_ctx, NULL);
-    if (ret < 0) {
-        av_strerror(ret, error_buffer, sizeof(error_buffer));
+    result = avformat_find_stream_info(open_audio->fmt_ctx, NULL);
+    if (result < 0) {
+        av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avformat_find_stream_info': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
@@ -138,17 +141,17 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
         return false;
     }
 
-    ret = avcodec_parameters_to_context(open_audio->codec_ctx, open_audio->fmt_ctx->streams[0]->codecpar);
-    if (ret < 0) {
-        av_strerror(ret, error_buffer, sizeof(error_buffer));
+    result = avcodec_parameters_to_context(open_audio->codec_ctx, open_audio->fmt_ctx->streams[0]->codecpar);
+    if (result < 0) {
+        av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avcodec_parameters_to_context': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
     }
 
-    ret = avcodec_open2(open_audio->codec_ctx, input_codec, NULL);
-    if (ret < 0) {
-        av_strerror(ret, error_buffer, sizeof(error_buffer));
+    result = avcodec_open2(open_audio->codec_ctx, input_codec, NULL);
+    if (result < 0) {
+        av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avcodec_open2': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
         return false;
@@ -166,16 +169,20 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
     AVFrame *frame = av_frame_alloc();
 
     int result = 0;
+    char error_buffer[1024];
+
     while (av_read_frame(file->fmt_ctx, packet) >= 0) {
         result = avcodec_send_packet(file->codec_ctx, packet);
         if (result < 0) {
-            captainslog_error("Failed to send audio packet to decoder.");
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'avcodec_send_packet': %s", error_buffer);
             return false;
         }
         result = avcodec_receive_frame(file->codec_ctx, frame);
         // Check if this was a real error or we just need more data
         if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
-            captainslog_error("Failed to receive audio frame from decoder.");
+            av_strerror(result, error_buffer, sizeof(error_buffer));
+            captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
             return false;
         } else if (result >= 0) {
             int frame_data_size = av_samples_get_buffer_size(

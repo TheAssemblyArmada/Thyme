@@ -77,6 +77,8 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     av_log_set_level(AV_LOG_TRACE);
 #endif
 
+    av_register_all();
+
     // FFmpeg setup
     int result = 0;
     char error_buffer[1024];

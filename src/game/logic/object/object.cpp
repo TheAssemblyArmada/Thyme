@@ -14,16 +14,17 @@
  *            LICENSE
  */
 #include "object.h"
+#include "behaviormodule.h"
 #include "experiencetracker.h"
-#include "module.h"
 #include "playerlist.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
 #ifdef GAME_DLL
     return Call_Method<ObjectShroudStatus, const Object, int>(PICK_ADDRESS(0x00547D60, 0x007D12FB), this, index);
-#endif
+#else
     return ObjectShroudStatus(0);
+#endif
 }
 
 // zh: 0x005479B0 wb: 0x007D0E3D
@@ -130,9 +131,9 @@ bool Object::Get_Ammo_Pip_Showing_Info(int &clip_size, int &ammo_in_clip) const
 #endif
 }
 
-Module *Object::Find_Module(NameKeyType type) const
+BehaviorModule *Object::Find_Module(NameKeyType type) const
 {
-    for (Module **module = m_allModules; *module != nullptr; module++) {
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
         if ((*module)->Get_Module_Name_Key() == type) {
             return *module;
         }
@@ -162,4 +163,11 @@ bool Object::Is_Selectable() const
 bool Object::Is_Mass_Selectable() const
 {
     return Is_Selectable() && !Is_KindOf(KINDOF_STRUCTURE);
+}
+
+void Object::Init_Object()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object>(PICK_ADDRESS(0x00545D90, 0x007CF205), this);
+#endif
 }

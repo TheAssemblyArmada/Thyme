@@ -13,7 +13,10 @@
  *            LICENSE
  */
 #include "thingfactory.h"
+#include "behaviormodule.h"
 #include "gameclient.h"
+#include "gamelogic.h"
+#include "object.h"
 #include <cstring>
 
 #ifdef GAME_DLL
@@ -172,13 +175,38 @@ ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool
 
 Object *ThingFactory::New_Object(const ThingTemplate *tmplate, Team *team, BitFlags<OBJECT_STATUS_COUNT> status_bits)
 {
-    // todo needs more of Object.
-#ifdef GAME_DLL
-    return Call_Method<Object *, ThingFactory, const ThingTemplate *, Team *, BitFlags<OBJECT_STATUS_COUNT>>(
-        PICK_ADDRESS(0x004B0E10, 0x006C7B15), this, tmplate, team, status_bits);
-#else
-    return nullptr;
-#endif
+    if (tmplate == nullptr) {
+        throw CODE_03;
+    }
+
+    const std::vector<Utf8String> &variations = tmplate->Get_Build_Variations();
+
+    if (!variations.empty()) {
+        int random = Get_Logic_Random_Value(0, variations.size() - 1);
+        ThingTemplate *variation = Find_Template(variations[random], true);
+
+        if (variation != nullptr) {
+            tmplate = variation;
+        }
+    }
+
+    captainslog_dbgassert(!tmplate->Is_KindOf(KINDOF_DRAWABLE_ONLY),
+        "You may not create Objects with the template %s, only Drawables",
+        tmplate->Get_Name().Str());
+
+    Object *object = g_theGameLogic->Friend_Create_Object(tmplate, status_bits, team);
+
+    for (BehaviorModule **i = object->Get_All_Modules(); *i != nullptr; i++) {
+        CreateModuleInterface *create = (*i)->Get_Create();
+
+        if (create != nullptr) {
+            create->On_Create();
+        }
+    }
+
+    g_thePartitionManager->Register_Object(object);
+    object->Init_Object();
+    return object;
 }
 
 Drawable *ThingFactory::New_Drawable(const ThingTemplate *tmplate, DrawableStatus status_bits)

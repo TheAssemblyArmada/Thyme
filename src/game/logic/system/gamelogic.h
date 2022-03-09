@@ -180,7 +180,7 @@ public:
     void Add_Object_To_Lookup_Table(Object *obj);
     void Remove_Object_From_Lookup_Table(Object *obj);
     void Register_Object(Object *obj);
-    Object *Friend_Create_Object(ThingTemplate const *thing, BitFlags<OBJECT_STATUS_COUNT> status_bits, Team *team);
+    Object *Friend_Create_Object(ThingTemplate const *thing, BitFlags<OBJECT_STATUS_COUNT> &status_bits, Team *team);
     void Destroy_Object(Object *obj);
     void Send_Object_Created(Object *obj);
     void Bind_Object_And_Drawable(Object *obj, Drawable *d);

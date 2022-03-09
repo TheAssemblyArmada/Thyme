@@ -22,6 +22,7 @@
 #include "image.h"
 #include "module.h"
 #include "modulefactory.h"
+#include "player.h"
 #include "productionprerequisite.h"
 #include "w3dshadow.h"
 #include <cstring>
@@ -1142,4 +1143,77 @@ void ThingTemplate::Validate_Audio()
             Validate_Sound(&sound.second, sound.first);
         }
     }
+}
+
+int ThingTemplate::Calc_Cost_To_Build(const Player *player) const
+{
+    if (player != nullptr) {
+        float cost = player->Get_Production_Cost_Change_Percent(Get_Name()) + 1.0f;
+        cost *= player->Get_Production_Cost_Change_Based_On_Kind_Of(m_kindOf);
+        cost *= Get_Build_Cost();
+        return player->Get_Handicap()->Get_Handicap(Handicap::BUILDCOST, this) * cost;
+    } else {
+        return 0;
+    }
+}
+
+int ThingTemplate::Calc_Time_To_Build(const Player *player) const
+{
+    int frame_build_time = Get_Build_Time() * 30.0f;
+    int time = player->Get_Handicap()->Get_Handicap(Handicap::BUILDTIME, this) * frame_build_time;
+    time *= player->Get_Production_Time_Change_Percent(Get_Name()) + 1.0f;
+
+#ifdef GAME_DEBUG_STRUCTS
+    if (player->Is_Instant_Build()) {
+        time2 = 1;
+    }
+#endif
+
+    float ratio = player->Get_Energy()->Get_Energy_Supply_Ratio();
+
+    if (ratio > 1.0f) {
+        ratio = 1.0f;
+    }
+
+    float speed = 1.0f - ratio;
+    speed *= g_theWriteableGlobalData->m_lowEnergyPenaltyModifier;
+    speed = 1.0f - speed;
+    speed = std::max(speed, g_theWriteableGlobalData->m_minLowEnergyProductionSpeed);
+
+    if (ratio < 1.0f) {
+        speed = std::min(speed, g_theWriteableGlobalData->m_maxLowEnergyProductionSpeed);
+    }
+
+    if (speed <= 0.0f) {
+        speed = 0.01f;
+    }
+
+    time /= speed;
+
+    if (Get_Build_Completion() == BC_APPEARS_AT_RALLY_POINT) {
+        ThingTemplate *facility = Get_Build_Facility_Template(player);
+        int count = 0;
+
+        if (facility != nullptr) {
+            player->Count_Objects_By_ThingTemplate(1, &facility, false, &count, true);
+            float mult = g_theWriteableGlobalData->m_multipleFactory;
+
+            if (mult > 0.0f) {
+                for (int i = 0; i < count - 1; i++) {
+                    time *= mult;
+                }
+            }
+        }
+    }
+
+    return time;
+}
+
+ThingTemplate *ThingTemplate::Get_Build_Facility_Template(const Player *player) const
+{
+    if (Get_Prereq_Count() <= 0) {
+        return nullptr;
+    }
+
+    return m_prerequisites[0].Get_Existing_Build_Facility_Template(player);
 }

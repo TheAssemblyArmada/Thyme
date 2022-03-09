@@ -23,6 +23,7 @@
 #include <vector>
 
 class ThingTemplate;
+class Player;
 
 class ProductionPrerequisite
 {
@@ -46,7 +47,11 @@ public:
     void Add_Science_Prereq(ScienceType science) { m_prereqScience.push_back(science); }
     void Add_Unit_Prereq(Utf8String name, bool or_with_previous);
     void Resolve_Names();
-    int Get_All_Possible_Build_Facility_Templates(ThingTemplate **tmpls, int max_tmpls);
+    int Get_All_Possible_Build_Facility_Templates(ThingTemplate **tmpls, int max_tmpls) const;
+    int Calc_Num_Prereq_Units_Owned(const Player *player, int *counts) const;
+    bool Is_Satisifed(const Player *player) const;
+    Utf16String Get_Requires_List(const Player *player) const;
+    ThingTemplate *Get_Existing_Build_Facility_Template(const Player *player) const;
 
     // TODO member functions.
 private:

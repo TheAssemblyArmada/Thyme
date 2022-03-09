@@ -169,14 +169,14 @@ public:
     static void Parse_Weapon_Template_Set(INI *ini, void *instance, void *store, const void *user_data);
     static void Parse_Overrideable_By_Like_Kind(INI *ini, void *instance, void *store, const void *user_data);
 
-    int Calc_Cost_To_Build(const Player *player) const; // needs more of Player
-    int Calc_Time_To_Build(const Player *player) const; // needs more of Player
+    int Calc_Cost_To_Build(const Player *player) const;
+    int Calc_Time_To_Build(const Player *player) const;
     bool Can_Possibly_Have_Any_Weapon() const;
     void Copy_From(const ThingTemplate *that);
     const ArmorTemplateSet *Find_Armor_Template_Set(const BitFlags<ARMORSET_COUNT> &t) const;
     const WeaponTemplateSet *Find_Weapon_Template_Set(const BitFlags<WEAPONSET_COUNT> &t) const;
     AIUpdateModuleData *Friend_Get_AI_Module_Info() const;
-    ThingTemplate *Get_Build_Facility_Template(const Player *player) const; // needs more of Player
+    ThingTemplate *Get_Build_Facility_Template(const Player *player) const;
     BuildableStatus Get_Buildable() const;
     Utf8String Get_LTA_Name() const { return m_LTAName; }
     unsigned short Get_Max_Simultaneous_Of_Type() const;

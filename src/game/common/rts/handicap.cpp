@@ -66,7 +66,7 @@ void Handicap::Read_From_Dict(const Dict *dict)
  *
  * 0x00577640
  */
-float Handicap::Get_Handicap(HandicapType ht, const ThingTemplate *thing)
+float Handicap::Get_Handicap(HandicapType ht, const ThingTemplate *thing) const
 {
     return m_handicaps[ht][Get_Best_Thing_Type(thing)];
 }

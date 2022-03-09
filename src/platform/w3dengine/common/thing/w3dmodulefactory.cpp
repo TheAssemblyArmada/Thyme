@@ -18,6 +18,7 @@
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
 #include "w3dmodeldraw.h"
+#include "w3doverlordaircraftdraw.h"
 #include "w3doverlordtankdraw.h"
 #include "w3doverlordtruckdraw.h"
 #include "w3dpolicecardraw.h"
@@ -62,8 +63,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DOverlordTruckDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x007767E0,
-        (moddatacreateproc_t)0x007768D0,
+    Add_Module_Internal(W3DOverlordAircraftDraw::Friend_New_Module_Instance,
+        W3DOverlordAircraftDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DOverlordAircraftDraw",
         DrawModule::Get_Interface_Mask());

@@ -190,9 +190,10 @@ Object *ThingFactory::New_Object(const ThingTemplate *tmplate, Team *team, BitFl
         }
     }
 
-    captainslog_dbgassert(!tmplate->Is_KindOf(KINDOF_DRAWABLE_ONLY),
-        "You may not create Objects with the template %s, only Drawables",
-        tmplate->Get_Name().Str());
+    // Thyme specific: Original assert has been demoted to log message because it is a data issue.
+    if (tmplate->Is_KindOf(KINDOF_DRAWABLE_ONLY)) {
+        captainslog_error("You may not create Objects with the template %s, only Drawables", tmplate->Get_Name().Str());
+    }
 
     Object *object = g_theGameLogic->Friend_Create_Object(tmplate, status_bits, team);
 

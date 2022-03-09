@@ -237,7 +237,7 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
     wav.chunk_size = open_audio->data_size - (offsetof(WavHeader, chunk_size) + sizeof(uint32_t));
     wav.subchunk2_size = open_audio->data_size - (offsetof(WavHeader, subchunk2_size) + sizeof(uint32_t));
     wav.channels = open_audio->codec_ctx->channels;
-    wav.bits_per_sample = av_get_bits_per_sample(open_audio->codec_ctx->codec_id);
+    wav.bits_per_sample = av_get_bytes_per_sample(open_audio->codec_ctx->sample_fmt) * 8;
     wav.samples_per_sec = open_audio->codec_ctx->sample_rate;
     wav.bytes_per_sec = open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->channels * (wav.bits_per_sample / 8);
     wav.block_align = open_audio->codec_ctx->channels * (wav.bits_per_sample / 8);

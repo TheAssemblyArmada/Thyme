@@ -17,6 +17,9 @@
 #include <vector3.h>
 #include <vector4.h>
 
+#include <vector2i.h>
+#include <vector3i.h>
+
 template<class V> inline void TestLength(const V &v)
 {
     EXPECT_FLOAT_EQ(v.Length(), 2.0f);
@@ -57,6 +60,10 @@ TEST(w3d_math, vector2)
 
     // Test distance
     TestDistance(a, b);
+
+    // Test equality operator
+    EXPECT_EQ(a, a);
+    EXPECT_NE(a, b);
 }
 
 TEST(w3d_math, vector3)
@@ -76,6 +83,10 @@ TEST(w3d_math, vector3)
 
     // Test distance
     TestDistance(a, b);
+
+    // Test equality operator
+    EXPECT_EQ(a, a);
+    EXPECT_NE(a, b);
 }
 
 TEST(w3d_math, vector4)
@@ -92,4 +103,26 @@ TEST(w3d_math, vector4)
 
     // Test dot product
     TestDotProduct(a, b);
+
+    // Test equality operator
+    EXPECT_EQ(a, a);
+    EXPECT_NE(a, b);
+}
+
+TEST(w3d_math, vector2i)
+{
+    Vector2i a(2, 0);
+
+    // Test equality operator
+    EXPECT_EQ(a, a);
+    EXPECT_NE(a, Vector2i(0, 2));
+}
+
+TEST(w3d_math, vector3i)
+{
+    Vector3i a(2, 0, 0);
+
+    // Test equality operator
+    EXPECT_EQ(a, a);
+    EXPECT_NE(a, Vector3i(0, 2, 0));
 }

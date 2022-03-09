@@ -62,6 +62,8 @@ int FFmpegAudioFileCache::Read_FFmpeg_Packet(void *opaque, uint8_t *buf, int buf
 {
     File *file = static_cast<File *>(opaque);
     int read = file->Read(buf, buf_size);
+
+    // Streaming protocol requires us to return real errors - when we read less equal 0 we're at EOF
     if (read <= 0)
         return AVERROR_EOF;
 
@@ -77,6 +79,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     av_log_set_level(AV_LOG_INFO);
 #endif
 
+    // REMOVE: this is required for FFmpeg older than 4.0 -> deprecated afterwards though
     av_register_all();
 
     // FFmpeg setup
@@ -491,12 +494,12 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
 void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *open_audio)
 {
     // Close any playing samples that use this data.
-    if (open_audio->ref_count && g_theAudio) {
+    if (open_audio->ref_count != 0 && g_theAudio) {
         g_theAudio->Close_Any_Sample_Using_File(open_audio->wave_data);
     }
 
     // Deallocate the data buffer depending on how it was allocated.
-    if (open_audio->wave_data) {
+    if (open_audio->wave_data != nullptr) {
         av_freep(&open_audio->wave_data);
         open_audio->data_size = 0;
         open_audio->audio_event_info = nullptr;

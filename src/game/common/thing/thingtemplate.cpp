@@ -1165,7 +1165,7 @@ int ThingTemplate::Calc_Time_To_Build(const Player *player) const
 
 #ifdef GAME_DEBUG_STRUCTS
     if (player->Is_Instant_Build()) {
-        time2 = 1;
+        time = 1;
     }
 #endif
 

@@ -6,7 +6,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(thyme_tests globals.cpp test_audiofilecache.cpp test_crc.cpp test_filesystem.cpp)
+add_executable(thyme_tests globals.cpp test_audiofilecache.cpp test_crc.cpp test_filesystem.cpp test_w3d_math.cpp)
 target_link_libraries(thyme_tests gtest gtest_main)
 target_compile_definitions(thyme_tests PRIVATE -DTESTDATA_PATH="${CMAKE_CURRENT_SOURCE_DIR}/data")
 

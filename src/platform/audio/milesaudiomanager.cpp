@@ -1013,7 +1013,7 @@ void MilesAudioManager::friend_Force_Play_Audio_Event(AudioEventRTS *event)
     tmp_event.Generate_Play_Info();
 
     for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
-        if (it->first == tmp_event.Get_File_Name()) {
+        if (it->first == tmp_event.Get_Event_Name()) {
             tmp_event.Set_Volume(it->second);
             break;
         }

@@ -590,7 +590,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
     new_event->Generate_Play_Info();
 
     for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
-        if (it->first == new_event->Get_File_Name()) {
+        if (it->first == new_event->Get_Event_Name()) {
             new_event->Set_Volume(it->second);
             break;
         }
@@ -654,7 +654,7 @@ void AudioManager::Remove_Audio_Event(Utf8String event)
  */
 bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 {
-    if (event->Get_File_Name().Is_Empty()) {
+    if (event->Get_Event_Name().Is_Empty()) {
         return false;
     }
 
@@ -671,7 +671,7 @@ bool AudioManager::Is_Valid_Audio_Event(const AudioEventRTS *event) const
 // Windows calls same function for both locations in vtable.
 bool AudioManager::Is_Valid_Audio_Event(AudioEventRTS *event) const
 {
-    if (event->Get_File_Name().Is_Empty()) {
+    if (event->Get_Event_Name().Is_Empty()) {
         return false;
     }
 
@@ -709,16 +709,20 @@ void AudioManager::Set_Audio_Event_Volume_Override(Utf8String event, float vol_o
         Adjust_Volume_Of_Playing_Audio(event, vol_override);
     }
 
-    if (m_eventVolumeList.empty() && vol_override != -1.0f) {
-        m_eventVolumeList.push_back(std::pair<Utf8String, float>(event, vol_override));
-    } else {
-        for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
-            if (event == it->first && vol_override != -1.0f) {
-                it->second = vol_override;
+    for (auto it = m_eventVolumeList.begin(); it != m_eventVolumeList.end(); ++it) {
+        if (event == it->first) {
 
-                break;
+            if (vol_override == -1.0f) {
+                m_eventVolumeList.erase(it);
+            } else {
+                it->second = vol_override;
             }
+            return;
         }
+    }
+
+    if (vol_override != -1.0f) {
+        m_eventVolumeList.push_front(std::pair<Utf8String, float>(event, vol_override));
     }
 }
 

@@ -20,6 +20,9 @@
 #include <vector2i.h>
 #include <vector3i.h>
 
+#include <matrix3.h>
+#include <matrix4.h>
+
 template<class V> inline void TestLength(const V &v)
 {
     EXPECT_FLOAT_EQ(v.Length(), 2.0f);
@@ -39,8 +42,12 @@ template<class V> inline void TestDistance(const V &a, const V &b)
 
 template<class V> inline void TestDotProduct(const V &a, const V &b)
 {
+    // Two notations for dot product
     EXPECT_FLOAT_EQ(a.Dot_Product(a, a), 4.0f);
+    EXPECT_FLOAT_EQ(a * a, 4.0f);
+
     EXPECT_FLOAT_EQ(a.Dot_Product(a, b), 0.0f);
+    EXPECT_FLOAT_EQ(a * b, 0.0f);
 }
 
 TEST(w3d_math, vector2)
@@ -64,6 +71,12 @@ TEST(w3d_math, vector2)
     // Test equality operator
     EXPECT_EQ(a, a);
     EXPECT_NE(a, b);
+
+    // Test arithmetic
+    EXPECT_EQ(Vector2(1.0f, 0.0f) + Vector2(0.0f, 1.0f), Vector2(1.0f, 1.0f));
+    EXPECT_EQ(Vector2(1.0f, 0.0f) - Vector2(0.0f, 1.0f), Vector2(1.0f, -1.0f));
+    EXPECT_EQ(Vector2(1.0f, 0.0f) * 2, Vector2(2.0f, 0.0f));
+    EXPECT_EQ(Vector2(1.0f, 0.0f) / 2, Vector2(0.5f, 0.0f));
 }
 
 TEST(w3d_math, vector3)
@@ -87,6 +100,12 @@ TEST(w3d_math, vector3)
     // Test equality operator
     EXPECT_EQ(a, a);
     EXPECT_NE(a, b);
+
+    // Test arithmetic
+    EXPECT_EQ(Vector3(1.0f, 0.0f, 0.0f) + Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 0.0f));
+    EXPECT_EQ(Vector3(1.0f, 0.0f, 0.0f) - Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, -1.0f, 0.0f));
+    EXPECT_EQ(Vector3(1.0f, 0.0f, 0.0f) * 2, Vector3(2.0f, 0.0f, 0.0f));
+    EXPECT_EQ(Vector3(1.0f, 0.0f, 0.0f) / 2, Vector3(0.5f, 0.0f, 0.0f));
 }
 
 TEST(w3d_math, vector4)
@@ -107,6 +126,12 @@ TEST(w3d_math, vector4)
     // Test equality operator
     EXPECT_EQ(a, a);
     EXPECT_NE(a, b);
+
+    // Test arithmetic
+    EXPECT_EQ(Vector4(1.0f, 0.0f, 0.0f, 0.0f) + Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 0.0f));
+    EXPECT_EQ(Vector4(1.0f, 0.0f, 0.0f, 0.0f) - Vector4(0.0f, 1.0f, 0.0f, 0.0f), Vector4(1.0f, -1.0f, 0.0f, 0.0f));
+    EXPECT_EQ(Vector4(1.0f, 0.0f, 0.0f, 0.0f) * 2, Vector4(2.0f, 0.0f, 0.0f, 0.0f));
+    EXPECT_EQ(Vector4(1.0f, 0.0f, 0.0f, 0.0f) / 2, Vector4(0.5f, 0.0f, 0.0f, 0.0f));
 }
 
 TEST(w3d_math, vector2i)
@@ -125,4 +150,40 @@ TEST(w3d_math, vector3i)
     // Test equality operator
     EXPECT_EQ(a, a);
     EXPECT_NE(a, Vector3i(0, 2, 0));
+}
+
+TEST(w3d_math, matrix3)
+{
+    Matrix3 mat(true);
+    mat[0][0] = 2.0f;
+    EXPECT_FLOAT_EQ(mat.Determinant(), 2.0f);
+    EXPECT_EQ(mat.Get_X_Vector(), Vector3(2.0f, 0.0f, 0.0f));
+    EXPECT_EQ(mat[0], Vector3(2.0f, 0.0f, 0.0f));
+
+    EXPECT_EQ(mat.Get_Y_Vector(), Vector3(0.0f, 1.0f, 0.0f));
+    EXPECT_EQ(mat[1], Vector3(0.0f, 1.0f, 0.0f));
+
+    EXPECT_EQ(mat.Get_Z_Vector(), Vector3(0.0f, 0.0f, 1.0f));
+    EXPECT_EQ(mat[2], Vector3(0.0f, 0.0f, 1.0f));
+
+    Matrix3 trans = mat.Transpose();
+    EXPECT_EQ(trans, mat);
+    Matrix3 inv = mat.Inverse();
+    EXPECT_FLOAT_EQ(inv[0][0], 0.5f);
+}
+
+TEST(w3d_math, matrix4)
+{
+    Matrix4 mat(true);
+    mat[0][0] = 2.0f;
+    EXPECT_FLOAT_EQ(mat.Determinant(), 2.0f);
+    EXPECT_EQ(mat[0], Vector4(2.0f, 0.0f, 0.0f, 0.0f));
+    EXPECT_EQ(mat[1], Vector4(0.0f, 1.0f, 0.0f, 0.0f));
+    EXPECT_EQ(mat[2], Vector4(0.0f, 0.0f, 1.0f, 0.0f));
+    EXPECT_EQ(mat[3], Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+
+    Matrix4 trans = mat.Transpose();
+    EXPECT_EQ(trans, mat);
+    Matrix4 inv = mat.Inverse();
+    EXPECT_FLOAT_EQ(inv[0][0], 0.5f);
 }

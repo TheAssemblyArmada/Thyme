@@ -477,6 +477,16 @@ __forceinline Vector4 operator*(const Matrix4 &a, const Vector4 &v)
         a[3][0] * v[0] + a[3][1] * v[1] + a[3][2] * v[2] + a[3][3] * v[3]);
 }
 
+__forceinline int operator==(const Matrix4 &a, const Matrix4 &b)
+{
+    return ((a[0] == b[0]) && (a[1] == b[1]) && (a[2] == b[2]) && (a[3] == b[3]));
+}
+
+__forceinline int operator!=(const Matrix4 &a, const Matrix4 &b)
+{
+    return (!(a == b));
+}
+
 #ifdef BUILD_WITH_D3D8
 struct _D3DMATRIX;
 

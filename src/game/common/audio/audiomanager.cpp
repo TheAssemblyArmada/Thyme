@@ -547,7 +547,7 @@ int AudioManager::Add_Audio_Event(const AudioEventRTS *event)
         Get_Info_For_Audio_Event(event);
 
         if (event->Get_Event_Info() == nullptr) {
-            captainslog_debug("No info for requested audio event '%s'", event->Get_Event_Name());
+            captainslog_debug("No info for requested audio event '%s'", event->Get_Event_Name().Str());
             return 0;
         }
     }

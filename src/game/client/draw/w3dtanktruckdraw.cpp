@@ -474,13 +474,13 @@ void W3DTankTruckDraw::Update_Bones()
             m_frontLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_frontLeftTireBoneName);
             captainslog_dbgassert(m_frontLeftTireBone != 0,
                 "Missing front-left tire bone %s in model %s",
-                data->m_frontLeftTireBoneName,
+                data->m_frontLeftTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             m_frontRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_frontRightTireBoneName);
             captainslog_dbgassert(m_frontRightTireBone != 0,
                 "Missing front-right tire bone %s in model %s",
-                data->m_frontRightTireBoneName,
+                data->m_frontRightTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             if (m_frontRightTireBone == 0) {
@@ -492,13 +492,13 @@ void W3DTankTruckDraw::Update_Bones()
             m_rearLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_rearLeftTireBoneName);
             captainslog_dbgassert(m_rearLeftTireBone != 0,
                 "Missing rear-left tire bone %s in model %s",
-                data->m_rearLeftTireBoneName,
+                data->m_rearLeftTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             m_rearRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_rearRightTireBoneName);
             captainslog_dbgassert(m_rearRightTireBone != 0,
                 "Missing rear-right tire bone %s in model %s",
-                data->m_rearRightTireBoneName,
+                data->m_rearRightTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             if (m_rearRightTireBone == 0) {
@@ -510,13 +510,13 @@ void W3DTankTruckDraw::Update_Bones()
             m_midFrontLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midFrontLeftTireBoneName);
             captainslog_dbgassert(m_midFrontLeftTireBone != 0,
                 "Missing mid-front-left tire bone %s in model %s",
-                data->m_midFrontLeftTireBoneName,
+                data->m_midFrontLeftTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             m_midFrontRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midFrontRightTireBoneName);
             captainslog_dbgassert(m_midFrontRightTireBone != 0,
                 "Missing mid-front-right tire bone %s in model %s",
-                data->m_midFrontRightTireBoneName,
+                data->m_midFrontRightTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             if (m_midFrontRightTireBone == 0) {
@@ -528,13 +528,13 @@ void W3DTankTruckDraw::Update_Bones()
             m_midRearLeftTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midRearLeftTireBoneName);
             captainslog_dbgassert(m_midRearLeftTireBone != 0,
                 "Missing mid-rear-left tire bone %s in model %s",
-                data->m_midRearLeftTireBoneName,
+                data->m_midRearLeftTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             m_midRearRightTireBone = Get_Render_Object()->Get_Bone_Index(data->m_midRearRightTireBoneName);
             captainslog_dbgassert(m_midRearRightTireBone != 0,
                 "Missing mid-rear-right tire bone %s in model %s",
-                data->m_midRearRightTireBoneName,
+                data->m_midRearRightTireBoneName.Str(),
                 Get_Render_Object()->Get_Name());
 
             if (m_midRearRightTireBone == 0) {

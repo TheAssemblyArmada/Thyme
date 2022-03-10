@@ -239,8 +239,8 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
     wav.channels = open_audio->codec_ctx->channels;
     wav.bits_per_sample = av_get_bytes_per_sample(open_audio->codec_ctx->sample_fmt) * 8;
     wav.samples_per_sec = open_audio->codec_ctx->sample_rate;
-    wav.bytes_per_sec = open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->channels * (wav.bits_per_sample / 8);
-    wav.block_align = open_audio->codec_ctx->channels * (wav.bits_per_sample / 8);
+    wav.bytes_per_sec = open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
+    wav.block_align = open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
     memcpy(open_audio->wave_data, &wav, sizeof(WavHeader));
 }
 
@@ -251,7 +251,16 @@ void *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 {
     ScopedMutexClass lock(&m_mutex);
 
-    captainslog_debug("FFmpegAudioFileCache: opening file %s", filename.Str());
+    captainslog_trace("FFmpegAudioFileCache: opening file %s", filename.Str());
+
+    // Try to find existing data for this file to avoid loading it if unneeded.
+    auto it = m_cacheMap.find(filename);
+
+    if (it != m_cacheMap.end()) {
+        ++it->second.ref_count;
+
+        return it->second.wave_data;
+    }
 
     // Load the file from disk
     File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
@@ -292,6 +301,7 @@ void *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 
     // m_maxSize prevents using overly large amounts of memory, so if we are over it, unload some other samples.
     if (m_currentSize > m_maxSize && !Free_Space_For_Sample(open_audio)) {
+        captainslog_warn("Cannot play audio file since cache is full: %s", filename.Str());
         m_currentSize -= open_audio.data_size;
         Release_Open_Audio(&open_audio);
 
@@ -324,8 +334,10 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         case 3:
             return nullptr;
         default:
-            break;
+            return nullptr;
     }
+
+    captainslog_trace("FFmpegAudioFileCache: opening file %s", filename.Str());
 
     // Try to find existing data for this file to avoid loading it if unneeded.
     auto it = m_cacheMap.find(filename);
@@ -337,7 +349,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {
@@ -376,6 +388,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     // m_maxSize prevents using overly large amounts of memory, so if we are over it, unload some other samples.
     if (m_currentSize > m_maxSize && !Free_Space_For_Sample(open_audio)) {
+        captainslog_warn("Cannot play audio file since cache is full: %s", filename.Str());
         m_currentSize -= open_audio.data_size;
         Release_Open_Audio(&open_audio);
 
@@ -413,7 +426,8 @@ void FFmpegAudioFileCache::Close_File(void *file)
 void FFmpegAudioFileCache::Set_Max_Size(unsigned size)
 {
     ScopedMutexClass lock(&m_mutex);
-    m_maxSize = size;
+    // TODO: why are our generated WAV files so large?
+    m_maxSize = size * 4;
 }
 
 /**
@@ -478,7 +492,7 @@ void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *open_audio)
 {
     // Close any playing samples that use this data.
     if (open_audio->ref_count && g_theAudio) {
-        g_theAudio->Close_Any_Sample_Using_File(open_audio);
+        g_theAudio->Close_Any_Sample_Using_File(open_audio->wave_data);
     }
 
     // Deallocate the data buffer depending on how it was allocated.

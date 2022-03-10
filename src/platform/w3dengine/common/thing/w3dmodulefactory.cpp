@@ -23,6 +23,7 @@
 #include "w3doverlordtruckdraw.h"
 #include "w3dpolicecardraw.h"
 #include "w3dprojectilestreamdraw.h"
+#include "w3dsciencemodeldraw.h"
 #include "w3dtanktruckdraw.h"
 #include "w3dtreedraw.h"
 /**
@@ -83,8 +84,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DRopeDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00776DC0,
-        (moddatacreateproc_t)0x00776EB0,
+    Add_Module_Internal(W3DScienceModelDraw::Friend_New_Module_Instance,
+        W3DScienceModelDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DScienceModelDraw",
         DrawModule::Get_Interface_Mask());

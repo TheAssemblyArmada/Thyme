@@ -116,8 +116,8 @@ SortingNodeStruct *Get_Sorting_Struct()
 
 void Release_Refs(SortingNodeStruct *state)
 {
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        Ref_Ptr_Release(state->sorting_state.vertex_buffers[i]);
+    for (auto &vertex_buffer : state->sorting_state.vertex_buffers) {
+        Ref_Ptr_Release(vertex_buffer);
     }
 
     Ref_Ptr_Release(state->sorting_state.index_buffer);

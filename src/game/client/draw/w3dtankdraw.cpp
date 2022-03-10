@@ -61,8 +61,8 @@ W3DTankDraw::W3DTankDraw(Thing *thing, ModuleData const *module_data) :
     m_prevRenderObj(nullptr),
     m_treadCount(0)
 {
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
-        m_treads[i].m_robj = nullptr;
+    for (auto &tread : m_treads) {
+        tread.m_robj = nullptr;
     }
 
     m_treadDirection.x = 1.0f;
@@ -76,8 +76,8 @@ W3DTankDraw::~W3DTankDraw()
     // BUGFIX: Free emitters to avoid a leak
     Toss_Emitters();
 
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
-        Ref_Ptr_Release(m_treads[i].m_robj);
+    for (auto &tread : m_treads) {
+        Ref_Ptr_Release(tread.m_robj);
     }
 }
 

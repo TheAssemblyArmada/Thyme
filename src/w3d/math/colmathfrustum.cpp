@@ -23,8 +23,8 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 {
     int flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
-        OverlapType res = Overlap_Test(frustum.m_planes[i], point);
+    for (const auto &plane : frustum.m_planes) {
+        OverlapType res = Overlap_Test(plane, point);
 
         if (res == OUTSIDE) {
             return OUTSIDE;
@@ -44,8 +44,8 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 {
     int flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
-        OverlapType res = Overlap_Test(frustum.m_planes[i], tri);
+    for (const auto &plane : frustum.m_planes) {
+        OverlapType res = Overlap_Test(plane, tri);
 
         if (res == OUTSIDE) {
             return OUTSIDE;
@@ -65,8 +65,8 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 {
     int flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
-        OverlapType res = Overlap_Test(frustum.m_planes[i], sphere);
+    for (const auto &plane : frustum.m_planes) {
+        OverlapType res = Overlap_Test(plane, sphere);
 
         if (res == OUTSIDE) {
             return OUTSIDE;
@@ -86,8 +86,8 @@ CollisionMath::OverlapType CollisionMath::Overlap_Test(const FrustumClass &frust
 {
     int flags = 0;
 
-    for (int i = 0; i < ARRAY_SIZE(frustum.m_planes); ++i) {
-        OverlapType res = Overlap_Test(frustum.m_planes[i], box);
+    for (const auto &plane : frustum.m_planes) {
+        OverlapType res = Overlap_Test(plane, box);
 
         if (res == OUTSIDE) {
             return OUTSIDE;

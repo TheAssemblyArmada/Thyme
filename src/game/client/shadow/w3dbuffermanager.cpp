@@ -63,58 +63,58 @@ W3DBufferManager::W3DBufferManager()
     m_numEmptyIndexSlotsAllocated = 0;
     m_numEmptyIndexBuffersAllocated = 0;
 
-    for (int i = 0; i < MAX_FVF; ++i) {
-        m_W3DVertexBuffers[i] = nullptr;
+    for (auto &vertexBuffer : m_W3DVertexBuffers) {
+        vertexBuffer = nullptr;
     }
 
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (auto &vertexBufferSlot : m_W3DVertexBufferSlots) {
         for (int j = 0; j < MAX_VB_SIZES; ++j) {
-            m_W3DVertexBufferSlots[i][j] = nullptr;
+            vertexBufferSlot[j] = nullptr;
         }
     }
 
     // bugfix from BFME2, clear the buffers
-    for (int i = 0; i < MAX_NUMBER_SLOTS; ++i) {
-        m_W3DVertexBufferEmptySlots[i].m_size = 0;
-        m_W3DVertexBufferEmptySlots[i].m_start = 0;
-        m_W3DVertexBufferEmptySlots[i].m_VB = nullptr;
-        m_W3DVertexBufferEmptySlots[i].m_prevSameSize = nullptr;
-        m_W3DVertexBufferEmptySlots[i].m_nextSameSize = nullptr;
-        m_W3DVertexBufferEmptySlots[i].m_prevSameVB = nullptr;
-        m_W3DVertexBufferEmptySlots[i].m_nextSameVB = nullptr;
+    for (auto &vertexBufferSlot : m_W3DVertexBufferEmptySlots) {
+        vertexBufferSlot.m_size = 0;
+        vertexBufferSlot.m_start = 0;
+        vertexBufferSlot.m_VB = nullptr;
+        vertexBufferSlot.m_prevSameSize = nullptr;
+        vertexBufferSlot.m_nextSameSize = nullptr;
+        vertexBufferSlot.m_prevSameVB = nullptr;
+        vertexBufferSlot.m_nextSameVB = nullptr;
     }
 
-    for (int i = 0; i < MAX_VERTEX_BUFFERS_CREATED; ++i) {
-        m_W3DEmptyVertexBuffers[i].m_format = VBM_FVF_XYZ;
-        m_W3DEmptyVertexBuffers[i].m_usedSlots = nullptr;
-        m_W3DEmptyVertexBuffers[i].m_startFreeIndex = 0;
-        m_W3DEmptyVertexBuffers[i].m_size = 0;
-        m_W3DEmptyVertexBuffers[i].m_nextVB = nullptr;
-        m_W3DEmptyVertexBuffers[i].m_DX8VertexBuffer = nullptr;
-        m_W3DEmptyVertexBuffers[i].m_renderTaskList = nullptr;
+    for (auto &vertexBuffer : m_W3DEmptyVertexBuffers) {
+        vertexBuffer.m_format = VBM_FVF_XYZ;
+        vertexBuffer.m_usedSlots = nullptr;
+        vertexBuffer.m_startFreeIndex = 0;
+        vertexBuffer.m_size = 0;
+        vertexBuffer.m_nextVB = nullptr;
+        vertexBuffer.m_DX8VertexBuffer = nullptr;
+        vertexBuffer.m_renderTaskList = nullptr;
     }
 
-    for (int i = 0; i < MAX_IB_SIZES; ++i) {
-        m_W3DIndexBufferSlots[i] = nullptr;
+    for (auto &indexBufferSlot : m_W3DIndexBufferSlots) {
+        indexBufferSlot = nullptr;
     }
 
     // bugfix from BFME2, clear the buffers
-    for (int i = 0; i < MAX_NUMBER_SLOTS; ++i) {
-        m_W3DIndexBufferEmptySlots[i].m_size = 0;
-        m_W3DIndexBufferEmptySlots[i].m_start = 0;
-        m_W3DIndexBufferEmptySlots[i].m_IB = nullptr;
-        m_W3DIndexBufferEmptySlots[i].m_prevSameSize = nullptr;
-        m_W3DIndexBufferEmptySlots[i].m_nextSameSize = nullptr;
-        m_W3DIndexBufferEmptySlots[i].m_prevSameIB = nullptr;
-        m_W3DIndexBufferEmptySlots[i].m_nextSameIB = nullptr;
+    for (auto &indexBufferSlot : m_W3DIndexBufferEmptySlots) {
+        indexBufferSlot.m_size = 0;
+        indexBufferSlot.m_start = 0;
+        indexBufferSlot.m_IB = nullptr;
+        indexBufferSlot.m_prevSameSize = nullptr;
+        indexBufferSlot.m_nextSameSize = nullptr;
+        indexBufferSlot.m_prevSameIB = nullptr;
+        indexBufferSlot.m_nextSameIB = nullptr;
     }
 
-    for (int i = 0; i < MAX_INDEX_BUFFERS_CREATED; ++i) {
-        m_W3DEmptyIndexBuffers[i].m_usedSlots = nullptr;
-        m_W3DEmptyIndexBuffers[i].m_startFreeIndex = 0;
-        m_W3DEmptyIndexBuffers[i].m_size = 0;
-        m_W3DEmptyIndexBuffers[i].m_nextIB = nullptr;
-        m_W3DEmptyIndexBuffers[i].m_DX8IndexBuffer = nullptr;
+    for (auto &indexBuffer : m_W3DEmptyIndexBuffers) {
+        indexBuffer.m_usedSlots = nullptr;
+        indexBuffer.m_startFreeIndex = 0;
+        indexBuffer.m_size = 0;
+        indexBuffer.m_nextIB = nullptr;
+        indexBuffer.m_DX8IndexBuffer = nullptr;
     }
 }
 
@@ -126,10 +126,10 @@ W3DBufferManager::~W3DBufferManager()
 
 void W3DBufferManager::Free_All_Slots()
 {
-    for (int i = 0; i < MAX_FVF; ++i) {
+    for (auto &vertexBufferSlot : m_W3DVertexBufferSlots) {
 
         for (int j = 0; j < MAX_VB_SIZES; ++j) {
-            W3DVertexBufferSlot *vb_slot = m_W3DVertexBufferSlots[i][j];
+            W3DVertexBufferSlot *vb_slot = vertexBufferSlot[j];
             while (vb_slot != nullptr) {
                 if (vb_slot->m_prevSameVB != nullptr) {
                     vb_slot->m_prevSameVB->m_nextSameVB = vb_slot->m_nextSameVB;
@@ -145,11 +145,11 @@ void W3DBufferManager::Free_All_Slots()
                 --m_numEmptyVertexSlotsAllocated;
             }
 
-            m_W3DVertexBufferSlots[i][j] = nullptr;
+            vertexBufferSlot[j] = nullptr;
         }
     }
-    for (int k = 0; k < MAX_IB_SIZES; ++k) {
-        W3DIndexBufferSlot *ib_slot = m_W3DIndexBufferSlots[k];
+    for (auto &indexBufferSlot : m_W3DIndexBufferSlots) {
+        W3DIndexBufferSlot *ib_slot = indexBufferSlot;
         while (ib_slot != nullptr) {
             if (ib_slot->m_prevSameIB != nullptr) {
                 ib_slot->m_prevSameIB->m_nextSameIB = ib_slot->m_nextSameIB;
@@ -165,7 +165,7 @@ void W3DBufferManager::Free_All_Slots()
             --m_numEmptyIndexSlotsAllocated;
         }
 
-        m_W3DIndexBufferSlots[k] = nullptr;
+        indexBufferSlot = nullptr;
     }
 
     captainslog_dbgassert(m_numEmptyVertexSlotsAllocated == 0, "Failed to free all empty vertex buffer slots");
@@ -176,8 +176,8 @@ void W3DBufferManager::Free_All_Buffers()
 {
     Free_All_Slots();
 
-    for (int i = 0; i < MAX_FVF; ++i) {
-        for (W3DVertexBuffer *vb = m_W3DVertexBuffers[i]; vb != nullptr; vb = vb->m_nextVB) {
+    for (auto &m_W3DVertexBuffer : m_W3DVertexBuffers) {
+        for (W3DVertexBuffer *vb = m_W3DVertexBuffer; vb != nullptr; vb = vb->m_nextVB) {
             captainslog_dbgassert(vb->m_usedSlots == nullptr, "Freeing Non-Empty Vertex Buffer");
 
             Ref_Ptr_Release(vb->m_DX8VertexBuffer);
@@ -185,7 +185,7 @@ void W3DBufferManager::Free_All_Buffers()
             --m_numEmptyVertexBuffersAllocated;
         }
 
-        m_W3DVertexBuffers[i] = nullptr;
+        m_W3DVertexBuffer = nullptr;
     }
 
     for (W3DIndexBuffer *ib = m_W3DIndexBuffers; ib != nullptr; ib = ib->m_nextIB) {

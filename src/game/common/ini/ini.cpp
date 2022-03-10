@@ -250,22 +250,22 @@ void INI::Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, 
     g_theFileSystem->Get_File_List_From_Dir(dir, "*.ini", files, true);
 
     // Load everything from the top level directory first.
-    for (auto it = files.begin(); it != files.end(); ++it) {
+    for (const auto &file : files) {
         // Create path string with initial dir stripped off.
-        Utf8String path_check = &it->Str()[strlen(dir.Str())];
+        Utf8String path_check = &file.Str()[strlen(dir.Str())];
 
         if (strchr(path_check.Str(), '\\') == nullptr && strchr(path_check.Str(), '/') == nullptr) {
-            Load(*it, type, xfer);
+            Load(file, type, xfer);
         }
     }
 
     // Now process everything from sub directories.
-    for (auto it = files.begin(); it != files.end(); ++it) {
+    for (const auto &file : files) {
         // Create path string with initial dir stripped off.
-        Utf8String path_check = &it->Str()[dir.Get_Length()];
+        Utf8String path_check = &file.Str()[dir.Get_Length()];
 
         if (strchr(path_check.Str(), '\\') != nullptr || strchr(path_check.Str(), '/') != nullptr) {
-            Load(*it, type, xfer);
+            Load(file, type, xfer);
         }
     }
 }

@@ -69,8 +69,8 @@ void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys,
 
 void SubsystemInterfaceList::Post_Process_Load_All()
 {
-    for (auto it = m_subsystems.begin(); it != m_subsystems.end(); ++it) {
-        (*it)->PostProcessLoad();
+    for (auto &subsystem : m_subsystems) {
+        subsystem->PostProcessLoad();
     }
 }
 

@@ -228,8 +228,8 @@ WorldHeightMap::~WorldHeightMap()
         Ref_Ptr_Release(m_edgeTiles[i]);
     }
 
-    for (int i = 0; i < 12; i++) {
-        Ref_Ptr_Release(s_alphaTiles[i]);
+    for (auto &alphaTile : s_alphaTiles) {
+        Ref_Ptr_Release(alphaTile);
     }
 
     Ref_Ptr_Release(m_terrainTex);

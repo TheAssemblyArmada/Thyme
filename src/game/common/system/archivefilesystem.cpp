@@ -77,8 +77,7 @@ void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, Utf8String c
     // Retrieve a list of files in the archive
     file->Get_File_List_From_Dir("", "", "*", file_list, true);
 
-    for (auto it = file_list.begin(); it != file_list.end(); ++it) {
-        Utf8String path = *it;
+    for (auto path : file_list) {
         Utf8String token;
         // Utf8String fullname;
         ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
@@ -164,8 +163,8 @@ void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     bool search_subdirs)
 {
     // Get files from all archive files.
-    for (auto it = m_archiveFiles.begin(); it != m_archiveFiles.end(); ++it) {
-        it->second->Get_File_List_From_Dir(subdir, dirpath, filter, filelist, search_subdirs);
+    for (auto &archiveFile : m_archiveFiles) {
+        archiveFile.second->Get_File_List_From_Dir(subdir, dirpath, filter, filelist, search_subdirs);
     }
 }
 

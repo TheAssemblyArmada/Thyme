@@ -176,9 +176,9 @@ PlayerTemplate *PlayerTemplateStore::Find_Player_Template(NameKeyType key)
         key = _gla;
     }
 
-    for (auto it = m_playerTemplates.begin(); it != m_playerTemplates.end(); ++it) {
-        if (it->Check_Name_Key(key)) {
-            return &(*it);
+    for (auto &playerTemplate : m_playerTemplates) {
+        if (playerTemplate.Check_Name_Key(key)) {
+            return &playerTemplate;
         }
     }
 
@@ -213,8 +213,8 @@ void PlayerTemplateStore::Get_All_Side_Strings(std::list<Utf8String> *list)
     std::list<Utf8String> tmp;
 
     // Go through the template vector and add all the sides present in it to the list.
-    for (unsigned i = 0; i < m_playerTemplates.size(); ++i) {
-        Utf8String side_name = m_playerTemplates[i].Get_Side_Name();
+    for (auto &playerTemplate : m_playerTemplates) {
+        Utf8String side_name = playerTemplate.Get_Side_Name();
         auto found = std::find(tmp.begin(), tmp.end(), side_name);
 
         // If a matching entry isn't found already, add this side name to the list.

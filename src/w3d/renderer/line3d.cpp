@@ -86,8 +86,8 @@ void Line3DClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 
 void Line3DClass::Scale(float scale)
 {
-    for (int i = 0; i < 8; ++i) {
-        m_vertices[i] *= scale;
+    for (auto &vertex : m_vertices) {
+        vertex *= scale;
     }
 
     m_length *= scale;
@@ -103,10 +103,10 @@ void Line3DClass::Scale(float scale)
 
 void Line3DClass::Scale(float scaleX, float scaleY, float scaleZ)
 {
-    for (int i = 0; i < 8; ++i) {
-        m_vertices[i].X *= scaleX;
-        m_vertices[i].Y *= scaleY;
-        m_vertices[i].Z *= scaleZ;
+    for (auto &vertex : m_vertices) {
+        vertex.X *= scaleX;
+        vertex.Y *= scaleY;
+        vertex.Z *= scaleZ;
     }
 
     m_length *= scaleX;

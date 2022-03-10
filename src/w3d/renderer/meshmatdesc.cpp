@@ -268,12 +268,12 @@ ShaderClass *MeshMatDescClass::Get_Shader_Array(int pass, bool create)
 
 MeshMatDescClass::MeshMatDescClass(void) : m_passCount(1), m_vertexCount(0), m_polyCount(0)
 {
-    for (int array = 0; array < MAX_COLOR_ARRAYS; array++) {
-        m_colorArray[array] = nullptr;
+    for (auto &array : m_colorArray) {
+        array = nullptr;
     }
 
-    for (int uvarray = 0; uvarray < MAX_UV_ARRAYS; uvarray++) {
-        m_UV[uvarray] = nullptr;
+    for (auto &uvarray : m_UV) {
+        uvarray = nullptr;
     }
 
     for (int pass = 0; pass < MAX_PASSES; pass++) {
@@ -391,12 +391,12 @@ void MeshMatDescClass::Reset(int polycount, int vertcount, int passcount)
     m_vertexCount = vertcount;
     m_passCount = passcount;
 
-    for (int array = 0; array < MAX_COLOR_ARRAYS; array++) {
-        Ref_Ptr_Release(m_colorArray[array]);
+    for (auto &array : m_colorArray) {
+        Ref_Ptr_Release(array);
     }
 
-    for (int uvarray = 0; uvarray < MAX_UV_ARRAYS; uvarray++) {
-        Ref_Ptr_Release(m_UV[uvarray]);
+    for (auto &uvarray : m_UV) {
+        Ref_Ptr_Release(uvarray);
     }
 
     for (int pass = 0; pass < MAX_PASSES; pass++) {
@@ -501,14 +501,14 @@ void MeshMatDescClass::Init_Alternate(MeshMatDescClass &default_materials, MeshM
 
 bool MeshMatDescClass::Is_Empty(void)
 {
-    for (int array = 0; array < MAX_COLOR_ARRAYS; array++) {
-        if (m_colorArray[array] != nullptr) {
+    for (auto &array : m_colorArray) {
+        if (array != nullptr) {
             return false;
         }
     }
 
-    for (int uvarray = 0; uvarray < MAX_UV_ARRAYS; uvarray++) {
-        if (m_UV[uvarray] != nullptr) {
+    for (auto &uvarray : m_UV) {
+        if (uvarray != nullptr) {
             return false;
         }
     }

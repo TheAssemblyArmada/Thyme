@@ -86,56 +86,56 @@ GameLODManager::GameLODManager() :
     m_textureReductionFactor(0),
     m_reallyLowMHz(400)
 {
-    for (int i = 0; i < STATLOD_COUNT; ++i) {
-        m_staticLOD[i].minimum_fps = 0;
-        m_staticLOD[i].minimum_cpu_fps = 0;
-        m_staticLOD[i].sample_count_2D = 6;
-        m_staticLOD[i].sample_count_3D = 24;
-        m_staticLOD[i].stream_count = 2;
-        m_staticLOD[i].max_particle_count = 2500;
-        m_staticLOD[i].use_shadow_volumes = true;
-        m_staticLOD[i].use_shadow_decals = true;
-        m_staticLOD[i].use_cloud_map = true;
-        m_staticLOD[i].use_light_map = true;
-        m_staticLOD[i].show_soft_water_edges = true;
-        m_staticLOD[i].max_tank_track_edges = 100;
-        m_staticLOD[i].max_tank_track_opaque_edges = 25;
-        m_staticLOD[i].max_tank_track_fade_delay = 300000;
-        m_staticLOD[i].use_buildup_scaffolds = true;
-        m_staticLOD[i].use_tree_sway = true;
-        m_staticLOD[i].use_emissive_night_materials = true;
-        m_staticLOD[i].use_heat_effects = true;
-        m_staticLOD[i].texture_reduction_factor = 0;
-        m_staticLOD[i].use_fps_limit = true;
-        m_staticLOD[i].use_dynamic_lod = true;
-        m_staticLOD[i].use_trees = true;
+    for (auto &staticLOD : m_staticLOD) {
+        staticLOD.minimum_fps = 0;
+        staticLOD.minimum_cpu_fps = 0;
+        staticLOD.sample_count_2D = 6;
+        staticLOD.sample_count_3D = 24;
+        staticLOD.stream_count = 2;
+        staticLOD.max_particle_count = 2500;
+        staticLOD.use_shadow_volumes = true;
+        staticLOD.use_shadow_decals = true;
+        staticLOD.use_cloud_map = true;
+        staticLOD.use_light_map = true;
+        staticLOD.show_soft_water_edges = true;
+        staticLOD.max_tank_track_edges = 100;
+        staticLOD.max_tank_track_opaque_edges = 25;
+        staticLOD.max_tank_track_fade_delay = 300000;
+        staticLOD.use_buildup_scaffolds = true;
+        staticLOD.use_tree_sway = true;
+        staticLOD.use_emissive_night_materials = true;
+        staticLOD.use_heat_effects = true;
+        staticLOD.texture_reduction_factor = 0;
+        staticLOD.use_fps_limit = true;
+        staticLOD.use_dynamic_lod = true;
+        staticLOD.use_trees = true;
     }
 
-    for (int i = 0; i < DYNLOD_COUNT; ++i) {
-        m_dynamicLOD[i].minimum_fps = 0;
-        m_dynamicLOD[i].particle_skip_mask = 0;
-        m_dynamicLOD[i].debris_skip_mask = 0;
-        m_dynamicLOD[i].slow_death_scale = 1.0f;
-        m_dynamicLOD[i].min_particle_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
-        m_dynamicLOD[i].min_particle_skip_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
+    for (auto &dynamicLOD : m_dynamicLOD) {
+        dynamicLOD.minimum_fps = 0;
+        dynamicLOD.particle_skip_mask = 0;
+        dynamicLOD.debris_skip_mask = 0;
+        dynamicLOD.slow_death_scale = 1.0f;
+        dynamicLOD.min_particle_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
+        dynamicLOD.min_particle_skip_priority = PARTICLE_PRIORITY_WEAPON_EXPLOSION;
     }
 
-    for (int i = 0; i < STATLOD_COUNT - 1; ++i) {
+    for (auto &LODPreset : m_LODPresets) {
         for (int j = 0; j < 32; ++j) {
-            m_LODPresets[i][j].cpu_type = CPU_UNKNOWN;
-            m_LODPresets[i][j].mhz = 1;
-            m_LODPresets[i][j].score = 1.0f;
-            m_LODPresets[i][j].video_type = GPU_UNKNOWN;
-            m_LODPresets[i][j].video_mem = 1;
+            LODPreset[j].cpu_type = CPU_UNKNOWN;
+            LODPreset[j].mhz = 1;
+            LODPreset[j].score = 1.0f;
+            LODPreset[j].video_type = GPU_UNKNOWN;
+            LODPreset[j].video_mem = 1;
         }
     }
 
-    for (int i = 0; i < 16; ++i) {
-        m_benchProfiles[i].cpu_type = CPU_UNKNOWN;
-        m_benchProfiles[i].mhz = 1;
-        m_benchProfiles[i].integer_score = 1.0f;
-        m_benchProfiles[i].floating_point_score = 1.0f;
-        m_benchProfiles[i].memory_score = 1.0f;
+    for (auto &benchProfile : m_benchProfiles) {
+        benchProfile.cpu_type = CPU_UNKNOWN;
+        benchProfile.mhz = 1;
+        benchProfile.integer_score = 1.0f;
+        benchProfile.floating_point_score = 1.0f;
+        benchProfile.memory_score = 1.0f;
     }
 
     for (int i = 0; i < STATLOD_COUNT - 1; ++i) {

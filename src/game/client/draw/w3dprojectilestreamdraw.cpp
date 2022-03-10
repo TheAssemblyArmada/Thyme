@@ -48,8 +48,8 @@ W3DProjectileStreamDraw::W3DProjectileStreamDraw(Thing *thing, ModuleData const 
 {
     m_texture = W3DAssetManager::Get_Instance()->Get_Texture(Get_W3D_Projectile_Stream_Draw_Module_Data()->m_texture);
 
-    for (int i = 0; i < MAX_SEGMENT_COUNT; i++) {
-        m_allLines[i] = nullptr;
+    for (auto &line : m_allLines) {
+        line = nullptr;
     }
 
     m_linesValid = 0;

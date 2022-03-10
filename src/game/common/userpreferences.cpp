@@ -61,8 +61,8 @@ bool UserPreferences::Write()
     FILE *fp = fopen(m_filename.Str(), "w");
 
     if (fp != nullptr) {
-        for (auto it = begin(); it != end(); ++it) {
-            fprintf(fp, "%s = %s\n", it->first.Str(), it->second.Str());
+        for (auto &it : *this) {
+            fprintf(fp, "%s = %s\n", it.first.Str(), it.second.Str());
         }
 
         fclose(fp);

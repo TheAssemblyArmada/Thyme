@@ -26,8 +26,8 @@ ProjectileStreamUpdate::ProjectileStreamUpdate(Thing *thing, ModuleData const *m
     m_targetPos.Zero();
 
     // #BUGFIX Initialize all members
-    for (int i = 0; i < MAX_SEGMENT_COUNT; ++i) {
-        m_projectileIDs[i] = OBJECT_UNK;
+    for (auto &projectileID : m_projectileIDs) {
+        projectileID = OBJECT_UNK;
     }
 }
 

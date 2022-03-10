@@ -77,8 +77,8 @@ bool ProductionPrerequisite::Is_Satisifed(const Player *player) const
         return false;
     }
 
-    for (size_t i = 0; i < m_prereqScience.size(); i++) {
-        if (!player->Has_Science(m_prereqScience[i])) {
+    for (auto reqScience : m_prereqScience) {
+        if (!player->Has_Science(reqScience)) {
             return false;
         }
     }
@@ -110,8 +110,8 @@ Utf16String ProductionPrerequisite::Get_Requires_List(const Player *player) cons
         int num = Calc_Num_Prereq_Units_Owned(player, counts);
         bool required[32];
 
-        for (int i = 0; i < 32; i++) {
-            required[i] = false;
+        for (bool &i : required) {
+            i = false;
         }
 
         for (int i = 1; i < num; i++) {
@@ -149,8 +149,8 @@ Utf16String ProductionPrerequisite::Get_Requires_List(const Player *player) cons
 
         bool has_sciences = true;
 
-        for (size_t i = 0; i < m_prereqScience.size(); i++) {
-            if (!player->Has_Science(m_prereqScience[i])) {
+        for (auto reqScience : m_prereqScience) {
+            if (!player->Has_Science(reqScience)) {
                 has_sciences = false;
             }
         }

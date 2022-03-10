@@ -1060,10 +1060,10 @@ void Parse_Command_Line(int argc, char *argv[])
     while (arg < argc) {
         bool parsed = false;
 
-        for (unsigned int i = 0; i < ARRAY_SIZE(_params); ++i) {
-            if (strlen(_params[i].argument) == strlen(argv[arg])
-                && strncasecmp(argv[arg], _params[i].argument, strlen(_params[i].argument)) == 0) {
-                arg += _params[i].handler(&argv[arg], argc - arg);
+        for (auto &param : _params) {
+            if (strlen(param.argument) == strlen(argv[arg])
+                && strncasecmp(argv[arg], param.argument, strlen(param.argument)) == 0) {
+                arg += param.handler(&argv[arg], argc - arg);
                 parsed = true;
                 break;
             }

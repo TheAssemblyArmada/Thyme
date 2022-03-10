@@ -572,8 +572,8 @@ void ModelConditionInfo::Clear()
     m_conditionsYesVec.clear();
     m_modelName.Clear();
 
-    for (int i = 0; i < MAX_TURRETS; i++) {
-        m_turretInfo[i].Clear();
+    for (auto &turretInfo : m_turretInfo) {
+        turretInfo.Clear();
     }
 
     m_hideShowVec.clear();

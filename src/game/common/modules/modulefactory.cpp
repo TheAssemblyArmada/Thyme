@@ -48,10 +48,10 @@ void ModuleFactory::Init()
  */
 void ModuleFactory::CRC_Snapshot(Xfer *xfer)
 {
-    for (auto it = m_moduleDataList.begin(); it != m_moduleDataList.end(); ++it) {
+    for (auto &it : m_moduleDataList) {
         // TODO Snapshot methods are not const, so need to cast here.
         // Really the ModuleData vector should be none const I guess, but symbols suggest it was const.
-        const_cast<ModuleData *>(*it)->CRC_Snapshot(xfer);
+        const_cast<ModuleData *>(it)->CRC_Snapshot(xfer);
     }
 }
 
@@ -62,9 +62,9 @@ void ModuleFactory::CRC_Snapshot(Xfer *xfer)
  */
 void ModuleFactory::Xfer_Snapshot(Xfer *xfer)
 {
-    for (auto it = m_moduleDataList.begin(); it != m_moduleDataList.end(); ++it) {
+    for (auto &it : m_moduleDataList) {
         // TODO Snapshot methods are not const, so need to cast here.
-        const_cast<ModuleData *>(*it)->Xfer_Snapshot(xfer);
+        const_cast<ModuleData *>(it)->Xfer_Snapshot(xfer);
     }
 }
 

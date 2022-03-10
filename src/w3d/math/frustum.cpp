@@ -41,8 +41,8 @@ void FrustumClass::Init(const Matrix3D &camera, const Vector2 &vpmin, const Vect
     m_corners[3] *= znear;
     m_corners[7] *= zfar;
 
-    for (int i = 0; i < 8; i++) {
-        Matrix3D::Transform_Vector(m_cameraTransform, m_corners[i], &(m_corners[i]));
+    for (auto &corner : m_corners) {
+        Matrix3D::Transform_Vector(m_cameraTransform, corner, &corner);
     }
 
     PlaneClass frustum_planes[6];

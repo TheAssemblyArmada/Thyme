@@ -115,27 +115,27 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
     bool search_subdir) const
 {
     // Add the files from any subdirectories, recursive call.
-    for (auto it = dir_info->directories.begin(); it != dir_info->directories.end(); ++it) {
+    for (auto &directory : dir_info->directories) {
         Utf8String path = dirpath;
 
         if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
             path += "/";
         }
 
-        path += it->second.name;
-        Get_File_List_From_Dir(&(it->second), path, filter, filelist, search_subdir);
+        path += directory.second.name;
+        Get_File_List_From_Dir(&(directory.second), path, filter, filelist, search_subdir);
     }
 
     // Add all the files that match the search pattern.
-    for (auto it = dir_info->files.begin(); it != dir_info->files.end(); ++it) {
-        if (Search_String_Matches(it->second.file_name, filter)) {
+    for (const auto &file : dir_info->files) {
+        if (Search_String_Matches(file.second.file_name, filter)) {
             Utf8String path = dirpath;
 
             if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
                 path += "/";
             }
 
-            path += it->second.file_name;
+            path += file.second.file_name;
             filelist.insert(path);
         }
     }

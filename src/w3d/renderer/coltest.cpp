@@ -163,8 +163,8 @@ void AABoxCollisionTestClass::Transform(const Matrix3D &tm)
     pts[6].Set(max.X, max.Y, max.Z);
     pts[7].Set(max.X, min.Y, max.Z);
 
-    for (int i = 0; i < ARRAY_SIZE(pts); ++i) {
-        pts[i] = tm * pts[i];
+    for (auto &pt : pts) {
+        pt = tm * pt;
     }
 
     Vector3 real_min = pts[0];

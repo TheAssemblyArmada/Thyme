@@ -114,9 +114,9 @@ WaterRenderObjClass::~WaterRenderObjClass()
     Ref_Ptr_Release(m_riverAlphaEdge);
     Ref_Ptr_Release(m_waterSparklesTexture);
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT; i++) {
-        Ref_Ptr_Release(m_settings[i].sky_texture);
-        Ref_Ptr_Release(m_settings[i].water_texture);
+    for (auto &setting : m_settings) {
+        Ref_Ptr_Release(setting.sky_texture);
+        Ref_Ptr_Release(setting.water_texture);
     }
 
 #ifdef BUILD_WITH_D3D8
@@ -140,9 +140,9 @@ WaterRenderObjClass::~WaterRenderObjClass()
     m_meshData = nullptr;
     m_meshDataCount = 0;
 
-    for (int i = 0; i < TIME_OF_DAY_COUNT; i++) {
-        g_waterSettings[i].m_skyTextureFile.Clear();
-        g_waterSettings[i].m_waterTextureFile.Clear();
+    for (auto &waterSetting : g_waterSettings) {
+        waterSetting.m_skyTextureFile.Clear();
+        waterSetting.m_waterTextureFile.Clear();
     }
 
     WaterTransparencySetting *w = g_theWaterTransparency;

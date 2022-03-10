@@ -1142,8 +1142,8 @@ Drawable::Drawable(ThingTemplate const *thing_template, DrawableStatus status) :
         g_theGlobalLanguage->Adjust_Font_Size(g_theInGameUI->Get_Drawable_Caption_Size()),
         g_theInGameUI->Get_Drawable_Caption_Bold()));
 
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
-        m_modules[i] = nullptr;
+    for (auto &module : m_modules) {
+        module = nullptr;
     }
 
     if (g_theGameClient != nullptr && thing_template != nullptr) {
@@ -1440,14 +1440,14 @@ Drawable::~Drawable()
 
     m_groupString = nullptr;
 
-    for (int i = 0; i < NUM_DRAWABLE_MODULE_TYPES; i++) {
-        for (Module **j = m_modules[i]; j != nullptr && *j != nullptr; j++) {
+    for (auto &module : m_modules) {
+        for (Module **j = module; j != nullptr && *j != nullptr; j++) {
             (*j)->Delete_Instance();
             *j = nullptr;
         }
 
-        delete[] m_modules[i];
-        m_modules[i] = nullptr;
+        delete[] module;
+        module = nullptr;
     }
 
     Stop_Ambient_Sound();
@@ -1663,8 +1663,8 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
     unsigned char count = 0;
 
     if (Has_Drawable_Icon_Info()) {
-        for (int i = 0; i < MAX_ICONS; i++) {
-            if (Get_Icon_Info()->anims[i] != nullptr) {
+        for (auto &anim : Get_Icon_Info()->anims) {
+            if (anim != nullptr) {
                 count++;
             }
         }

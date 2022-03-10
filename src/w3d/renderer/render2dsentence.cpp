@@ -368,10 +368,10 @@ void FontCharsClass::Free_Character_Arrays()
         m_unicodeCharArray = nullptr;
     }
 
-    for (int index = 0; index < 256; index++) {
-        if (m_asciiCharArray[index] != nullptr) {
-            delete m_asciiCharArray[index];
-            m_asciiCharArray[index] = nullptr;
+    for (auto &charData : m_asciiCharArray) {
+        if (charData != nullptr) {
+            delete charData;
+            charData = nullptr;
         }
     }
 }

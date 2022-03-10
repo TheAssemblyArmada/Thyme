@@ -180,13 +180,13 @@ void Win32BIGFileSystem::Load_Archives_From_Dir(Utf8String dir, Utf8String filte
 
     g_theLocalFileSystem->Get_File_List_From_Dir(dir, "", filter, file_list, read_subdirs);
 
-    for (auto it = file_list.begin(); it != file_list.end(); ++it) {
+    for (const auto &file : file_list) {
         captainslog_trace("Win32BIGFileSystem::Load_Archives_From_Dir - loading %s into the directory tree.", (*it).Str());
-        ArchiveFile *arch = Open_Archive_File((*it).Str());
+        ArchiveFile *arch = Open_Archive_File(file.Str());
 
         if (arch != nullptr) {
-            Load_Into_Dir_Tree(arch, *it, read_subdirs);
-            m_archiveFiles[*it] = arch;
+            Load_Into_Dir_Tree(arch, file, read_subdirs);
+            m_archiveFiles[file] = arch;
 
             captainslog_trace(
                 "Win32BIGFileSystem::Load_Archives_From_Dir - %s inserted into the archive file map.", (*it).Str());

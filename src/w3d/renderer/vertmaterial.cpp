@@ -27,8 +27,8 @@ VertexMaterialClass *VertexMaterialClass::s_presets[VertexMaterialClass::PRESET_
 
 void VertexMaterialClass::Init()
 {
-    for (int i = 0; i < PRESET_COUNT; i++) {
-        s_presets[i] = new VertexMaterialClass();
+    for (auto &preset : s_presets) {
+        preset = new VertexMaterialClass();
     }
 
     s_presets[0]->Set_Diffuse_Color_Source(COLOR1);
@@ -38,8 +38,8 @@ void VertexMaterialClass::Init()
 
 void VertexMaterialClass::Shutdown()
 {
-    for (int i = 0; i < PRESET_COUNT; i++) {
-        delete s_presets[i];
+    for (auto &preset : s_presets) {
+        delete preset;
     }
 }
 
@@ -123,8 +123,8 @@ unsigned long VertexMaterialClass::Compute_CRC() const
     crc = CRC::Memory(&m_UVSource, sizeof(m_UVSource), crc);
     crc = CRC::Memory(&m_useLighting, sizeof(m_useLighting), crc);
     crc = CRC::Memory(&m_uniqueID, sizeof(m_uniqueID), crc);
-    for (int i = 0; i < MAX_STAGES; i++) {
-        crc = CRC::Memory(&m_mapper[i], sizeof(*m_mapper[i]), crc);
+    for (const auto &stage : m_mapper) {
+        crc = CRC::Memory(&stage, sizeof(*stage), crc);
     }
     return crc;
 }
@@ -394,8 +394,8 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass &src) :
 
 VertexMaterialClass::~VertexMaterialClass()
 {
-    for (int i = 0; i < MAX_STAGES; i++) {
-        Ref_Ptr_Release(m_mapper[i]);
+    for (auto &stage : m_mapper) {
+        Ref_Ptr_Release(stage);
     }
 
 #ifdef BUILD_WITH_D3D8

@@ -492,8 +492,8 @@ DX8TextureCategoryClass::~DX8TextureCategoryClass()
         g_theDX8MeshRenderer.Unregister_Mesh_Type(r->Get_Mesh_Model_Class());
     }
 
-    for (int i = 0; i < 2; i++) {
-        Ref_Ptr_Release(m_textures[i]);
+    for (auto &texture : m_textures) {
+        Ref_Ptr_Release(texture);
     }
 
     Ref_Ptr_Release(m_material);

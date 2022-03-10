@@ -161,22 +161,22 @@ void TextureFilterClass::Init_Filters(TextureFilterMode mode)
 
 void TextureFilterClass::Set_Default_Min_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
-        g_minTextureFilters[i][FILTER_TYPE_DEFAULT] = g_minTextureFilters[i][type];
+    for (auto &minTextureFilter : g_minTextureFilters) {
+        minTextureFilter[FILTER_TYPE_DEFAULT] = minTextureFilter[type];
     }
 }
 
 void TextureFilterClass::Set_Default_Mag_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
-        g_magTextureFilters[i][FILTER_TYPE_DEFAULT] = g_magTextureFilters[i][type];
+    for (auto &magTextureFilter : g_magTextureFilters) {
+        magTextureFilter[FILTER_TYPE_DEFAULT] = magTextureFilter[type];
     }
 }
 
 void TextureFilterClass::Set_Default_Mip_Filter(FilterType type)
 {
-    for (int i = 0; i < MAX_TEXTURE_STAGES; ++i) {
-        g_mipMapFilters[i][FILTER_TYPE_DEFAULT] = g_mipMapFilters[i][type];
+    for (auto &mipMapFilter : g_mipMapFilters) {
+        mipMapFilter[FILTER_TYPE_DEFAULT] = mipMapFilter[type];
     }
 }
 

@@ -94,8 +94,8 @@ W3DTankTruckDraw::W3DTankTruckDraw(Thing *thing, ModuleData const *module_data) 
     m_landingSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckLandingSound");
     m_powerslideSound = *thing->Get_Template()->Get_Per_Unit_Sound("TruckPowerslideSound");
 
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
-        m_treads[i].m_robj = nullptr;
+    for (auto &tread : m_treads) {
+        tread.m_robj = nullptr;
     }
 }
 
@@ -103,8 +103,8 @@ W3DTankTruckDraw::~W3DTankTruckDraw()
 {
     Toss_Emitters();
 
-    for (int i = 0; i < MAX_TREADS_PER_TANK; i++) {
-        Ref_Ptr_Release(m_treads[i].m_robj);
+    for (auto &tread : m_treads) {
+        Ref_Ptr_Release(tread.m_robj);
     }
 }
 

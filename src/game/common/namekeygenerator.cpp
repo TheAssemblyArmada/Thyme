@@ -50,8 +50,8 @@ Utf8String NameKeyGenerator::Key_To_Name(NameKeyType key)
     // Find the bucket that matches the provided key if it exists.
     Bucket *bucket;
 
-    for (int i = 0; i < SOCKET_COUNT; ++i) {
-        bucket = m_sockets[i];
+    for (auto &socket : m_sockets) {
+        bucket = socket;
 
         while (bucket != nullptr) {
             if (bucket->m_key == key) {
@@ -139,10 +139,10 @@ void NameKeyGenerator::Parse_String_As_NameKeyType(INI *ini, void *formal, void 
 void NameKeyGenerator::Free_Sockets()
 {
     // Go over sockets and free them.
-    for (int i = 0; i < SOCKET_COUNT; ++i) {
+    for (auto &socket : m_sockets) {
         // Delete linked list of entries under given key.
-        if (m_sockets[i] != nullptr) {
-            Bucket *bucket = m_sockets[i];
+        if (socket != nullptr) {
+            Bucket *bucket = socket;
             Bucket *next;
 
             do {
@@ -152,7 +152,7 @@ void NameKeyGenerator::Free_Sockets()
             } while (next != nullptr);
         }
 
-        m_sockets[i] = nullptr;
+        socket = nullptr;
     }
 }
 

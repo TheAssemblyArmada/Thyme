@@ -22,15 +22,15 @@ bool MaterialPassClass::m_enablePerPolygonCulling = true;
 MaterialPassClass::MaterialPassClass() :
     m_shader(0), m_material(nullptr), m_enableOnTranslucentMeshes(true), m_cullVolume(nullptr)
 {
-    for (int i = 0; i < MAX_TEX_STAGES; ++i) {
-        m_texture[i] = nullptr;
+    for (auto &texture : m_texture) {
+        texture = nullptr;
     }
 }
 
 MaterialPassClass::~MaterialPassClass()
 {
-    for (int i = 0; i < MAX_TEX_STAGES; ++i) {
-        Ref_Ptr_Release(m_texture[i]);
+    for (auto &texture : m_texture) {
+        Ref_Ptr_Release(texture);
     }
 
     Ref_Ptr_Release(m_material);

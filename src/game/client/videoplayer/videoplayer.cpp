@@ -89,9 +89,9 @@ void VideoPlayer::Close_All_Streams()
  */
 void VideoPlayer::Add_Video(Video *video)
 {
-    for (auto it = m_videosAvailableToPlay.begin(); it != m_videosAvailableToPlay.end(); ++it) {
-        if (it->internal_name == video->internal_name) {
-            *it = *video;
+    for (auto &avail_video : m_videosAvailableToPlay) {
+        if (avail_video.internal_name == video->internal_name) {
+            avail_video = *video;
 
             return;
         }
@@ -142,9 +142,9 @@ Video *VideoPlayer::Get_Video(int index)
  */
 Video *VideoPlayer::Get_Video(Utf8String name)
 {
-    for (auto it = m_videosAvailableToPlay.begin(); it != m_videosAvailableToPlay.end(); ++it) {
-        if (it->internal_name == name) {
-            return &(*it);
+    for (auto &avail_video : m_videosAvailableToPlay) {
+        if (avail_video.internal_name == name) {
+            return &avail_video;
         }
     }
 

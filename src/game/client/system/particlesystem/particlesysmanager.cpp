@@ -125,11 +125,11 @@ void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
     Utf8String name;
 
     if (xfer->Get_Mode() == XFER_SAVE) {
-        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
-            if (!(*it)->m_isDestroyed && (*it)->m_saveable) {
-                name = (*it)->m_template->Get_Name();
+        for (auto &ps : m_allParticleSystemList) {
+            if (!ps->m_isDestroyed && ps->m_saveable) {
+                name = ps->m_template->Get_Name();
                 xfer->xferAsciiString(&name);
-                xfer->xferSnapshot(*it);
+                xfer->xferSnapshot(ps);
             } else {
                 Utf8String empty = "";
                 xfer->xferAsciiString(&empty);
@@ -198,9 +198,9 @@ ParticleSystemTemplate *ParticleSystemManager::New_Template(const Utf8String &na
 ParticleSystemTemplate *ParticleSystemManager::Find_Parent_Template(const Utf8String &name, int parent)
 {
     if (name.Is_Not_Empty()) {
-        for (auto it = m_templateStore.begin(); it != m_templateStore.end(); ++it) {
-            if (strcmp(it->second->m_slaveSystemName.Str(), name.Str()) == 0 && parent-- == 0) {
-                return it->second;
+        for (auto &ts : m_templateStore) {
+            if (strcmp(ts.second->m_slaveSystemName.Str(), name.Str()) == 0 && parent-- == 0) {
+                return ts.second;
             }
         }
     }
@@ -230,9 +230,9 @@ ParticleSystem *ParticleSystemManager::Create_Particle_System(const ParticleSyst
 ParticleSystem *ParticleSystemManager::Find_Particle_System(ParticleSystemID id) const
 {
     if (id != PARTSYS_ID_NONE) {
-        for (auto it = m_allParticleSystemList.begin(); it != m_allParticleSystemList.end(); ++it) {
-            if ((*it)->Get_System_ID() == id) {
-                return *it;
+        for (auto ps : m_allParticleSystemList) {
+            if (ps->Get_System_ID() == id) {
+                return ps;
             }
         }
     }

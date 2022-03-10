@@ -31,8 +31,8 @@ void GameLogic::Set_Defaults(bool keep_obj_id)
     m_height = 64;
     m_objList = nullptr;
 
-    for (auto i = m_sleepingUpdateModules.begin(); i != m_sleepingUpdateModules.end(); i++) {
-        (*i)->Set_Index_In_Logic(-1);
+    for (auto &sleepingUpdateModule : m_sleepingUpdateModules) {
+        sleepingUpdateModule->Set_Index_In_Logic(-1);
     }
 
     m_sleepingUpdateModules.clear();

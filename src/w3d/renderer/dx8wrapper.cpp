@@ -321,11 +321,11 @@ void DX8Wrapper::Invalidate_Cached_Render_States()
 
 void DX8Wrapper::Do_Onetime_Device_Dependent_Shutdowns()
 {
-    for (int i = 0; i < VERTEX_BUFFERS; i++) {
-        if (s_renderState.vertex_buffers[i]) {
-            s_renderState.vertex_buffers[i]->Release_Engine_Ref();
+    for (auto &vertex_buffer : s_renderState.vertex_buffers) {
+        if (vertex_buffer) {
+            vertex_buffer->Release_Engine_Ref();
         }
-        Ref_Ptr_Release(s_renderState.vertex_buffers[i]);
+        Ref_Ptr_Release(vertex_buffer);
     }
 
     if (s_renderState.index_buffer) {

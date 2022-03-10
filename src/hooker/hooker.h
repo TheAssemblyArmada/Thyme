@@ -182,8 +182,8 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
 __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();
 
-#define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
-#define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);
+#define ARRAY_DEC(type, var, size) type(&var)[size]
+#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]> (address);
 #define ARRAY2D_DEC(type, var, x, y) ArrayHelper2D<type, x, y> &var
 #define ARRAY2D_DEF(address, type, var, x, y) \
     ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);

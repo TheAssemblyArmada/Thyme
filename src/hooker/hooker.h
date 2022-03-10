@@ -183,7 +183,6 @@ __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();
 
 #define ARRAY_DEC(type, var, size) type(&var)[size]
-#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]> (address);
-#define ARRAY2D_DEC(type, var, x, y) ArrayHelper2D<type, x, y> &var
-#define ARRAY2D_DEF(address, type, var, x, y) \
-    ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);
+#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]>(address);
+#define ARRAY2D_DEC(type, var, x, y) type(&var)[x][y]
+#define ARRAY2D_DEF(address, type, var, x, y) type(&var)[x][y] = Make_Global<type[x][y]>(address);

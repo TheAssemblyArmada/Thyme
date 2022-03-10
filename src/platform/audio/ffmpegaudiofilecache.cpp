@@ -337,7 +337,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         case 3:
             return nullptr;
         default:
-            return nullptr;
+            break;
     }
 
     captainslog_trace("FFmpegAudioFileCache: opening file %s", filename.Str());
@@ -352,7 +352,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY);
+    File *file = g_theFileSystem->Open(filename, File::READ | File::BINARY | File::BUFFERED);
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {
@@ -429,8 +429,36 @@ void FFmpegAudioFileCache::Close_File(void *file)
 void FFmpegAudioFileCache::Set_Max_Size(unsigned size)
 {
     ScopedMutexClass lock(&m_mutex);
-    // TODO: why are our generated WAV files so large?
-    m_maxSize = size * 4;
+    m_maxSize = size;
+}
+
+/**
+ * Attempts to free space by releasing files with no references
+ */
+unsigned FFmpegAudioFileCache::Free_Space()
+{
+    std::list<Utf8String> to_free;
+    unsigned freed = 0;
+
+    // First check for samples that don't have any references.
+    for (const auto &cached : m_cacheMap) {
+        if (cached.second.ref_count == 0) {
+            to_free.push_back(cached.first);
+            freed += cached.second.data_size;
+        }
+    }
+
+    for (const auto &file : to_free) {
+        auto to_remove = m_cacheMap.find(file);
+
+        if (to_remove != m_cacheMap.end()) {
+            Release_Open_Audio(&to_remove->second);
+            m_currentSize -= to_remove->second.data_size;
+            m_cacheMap.erase(to_remove);
+        }
+    }
+
+    return freed;
 }
 
 /**
@@ -444,10 +472,10 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
     unsigned freed = 0;
 
     // First check for samples that don't have any references.
-    for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
-        if (it->second.ref_count == 0) {
-            to_free.push_back(it->first);
-            freed += it->second.data_size;
+    for (const auto &cached : m_cacheMap) {
+        if (cached.second.ref_count == 0) {
+            to_free.push_back(cached.first);
+            freed += cached.second.data_size;
 
             if (freed >= required) {
                 break;
@@ -457,11 +485,11 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
 
     // If we still don't have enough potential space freed up, look for lower priority sounds to remove.
     if (freed < required) {
-        for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
-            if (it->second.ref_count != 0
-                && it->second.audio_event_info->Get_Priority() < file.audio_event_info->Get_Priority()) {
-                to_free.push_back(it->first);
-                freed += it->second.data_size;
+        for (const auto &cached : m_cacheMap) {
+            if (cached.second.ref_count != 0
+                && cached.second.audio_event_info->Get_Priority() < file.audio_event_info->Get_Priority()) {
+                to_free.push_back(cached.first);
+                freed += cached.second.data_size;
 
                 if (freed >= required) {
                     break;
@@ -475,8 +503,8 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
         return false;
     }
 
-    for (auto it = to_free.begin(); it != to_free.end(); ++it) {
-        auto to_remove = m_cacheMap.find(*it);
+    for (const auto &file : to_free) {
+        auto to_remove = m_cacheMap.find(file);
 
         if (to_remove != m_cacheMap.end()) {
             Release_Open_Audio(&to_remove->second);
@@ -501,7 +529,6 @@ void FFmpegAudioFileCache::Release_Open_Audio(FFmpegOpenAudioFile *open_audio)
     // Deallocate the data buffer depending on how it was allocated.
     if (open_audio->wave_data != nullptr) {
         av_freep(&open_audio->wave_data);
-        open_audio->data_size = 0;
         open_audio->audio_event_info = nullptr;
     }
 }

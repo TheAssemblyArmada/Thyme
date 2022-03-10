@@ -40,5 +40,18 @@ TEST(audio, ffmpegaudiofilecache)
     cache.Set_Max_Size(0xFFFFF);
     data = cache.Open_File(filepath);
     EXPECT_NE(data, nullptr);
+    auto cache_size = cache.Get_Current_Size();
+    EXPECT_NE(cache_size, 0);
+
+    // Opening the same file a second time shouldn't increase cachesize
+    data = cache.Open_File(filepath);
+    EXPECT_EQ(cache_size, cache.Get_Current_Size());
+
+    // Close the file twice, since we opened it twice
+    cache.Close_File(data);
+    cache.Close_File(data);
+
+    EXPECT_EQ(cache.Free_Space(), cache_size);
+    EXPECT_EQ(cache.Get_Current_Size(), 0);
 }
 #endif

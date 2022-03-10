@@ -67,6 +67,10 @@ public:
     inline unsigned Get_Max_Size() const { return m_maxSize; }
     inline unsigned Get_Current_Size() const { return m_currentSize; }
 
+    // #FEATURE: We can maybe call this during loading to free any old sounds we won't need ingame and decrease computation
+    // ingame
+    unsigned Free_Space();
+
 private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &open_audio);
     void Release_Open_Audio(FFmpegOpenAudioFile *open_audio);

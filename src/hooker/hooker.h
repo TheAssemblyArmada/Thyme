@@ -38,34 +38,6 @@
 #define PICK_ADDRESS(a, b) (a)
 #endif
 
-template<typename T, const int size> class ArrayHelper
-{
-public:
-    operator T *() { return (T *)this; };
-    operator const T *() const { return (T *)this; };
-    T *operator&() { return (T *)this; };
-    const T *operator&() const { return (T *)this; };
-    T &operator[](int index) { return ((T *)this)[index]; }
-    const T &operator[](int index) const { return ((T *)this)[index]; }
-
-protected:
-    char _dummy[size * sizeof(T)];
-};
-
-template<typename T, const int y, const int x> class ArrayHelper2D
-{
-public:
-    operator ArrayHelper<T, x> *() { return (ArrayHelper<T, x> *)this; };
-    operator const ArrayHelper<T, x> *() const { return (ArrayHelper<T, x> *)this; };
-    ArrayHelper<T, x> *operator&() { return (ArrayHelper<T, x> *)this; };
-    const ArrayHelper<T, x> *operator&() const { return (ArrayHelper<T, x> *)this; };
-    ArrayHelper<T, x> &operator[](int index) { return _dummy[index]; }
-    const ArrayHelper<T, x> &operator[](int index) const { return _dummy[index]; }
-
-protected:
-    ArrayHelper<T, x> _dummy[y];
-};
-
 // Helper Functions based on those from OpenMC2
 
 // Use Make_Global to access global variables in the original exe once you know
@@ -182,8 +154,7 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
 __declspec(dllexport) void StartHooking();
 __declspec(dllexport) void StopHooking();
 
-#define ARRAY_DEC(type, var, size) ArrayHelper<type, size> &var
-#define ARRAY_DEF(address, type, var, size) ArrayHelper<type, size> &var = Make_Global<ArrayHelper<type, size>>(address);
-#define ARRAY2D_DEC(type, var, x, y) ArrayHelper2D<type, x, y> &var
-#define ARRAY2D_DEF(address, type, var, x, y) \
-    ArrayHelper2D<type, x, y> &var = Make_Global<ArrayHelper2D<type, x, y>>(address);
+#define ARRAY_DEC(type, var, size) type(&var)[size]
+#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]>(address);
+#define ARRAY2D_DEC(type, var, x, y) type(&var)[x][y]
+#define ARRAY2D_DEF(address, type, var, x, y) type(&var)[x][y] = Make_Global<type[x][y]>(address);

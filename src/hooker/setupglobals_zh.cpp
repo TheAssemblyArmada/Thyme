@@ -55,7 +55,7 @@ uint32_t &View::s_idNext = Make_Global<uint32_t>(PICK_ADDRESS(0x009D4178, 0));
 
 // water.cpp
 #include "water.h"
-WaterSetting *g_waterSettings = Make_Pointer<WaterSetting>(PICK_ADDRESS(0x00A2F0B8, 0x00A2F0B8));
+ARRAY_DEF(PICK_ADDRESS(0x00A2F0B8, 0x00A2F0B8), WaterSetting, g_waterSettings, TIME_OF_DAY_COUNT);
 Override<WaterTransparencySetting> &g_theWaterTransparency =
     Make_Global<Override<WaterTransparencySetting>>(PICK_ADDRESS(0x00A2F0B0, 0x00A2F0B0));
 

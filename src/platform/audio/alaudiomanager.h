@@ -31,11 +31,6 @@ namespace Thyme
 {
 class ALAudioManager final : public AudioManager
 {
-    enum
-    {
-        MILES_PROVIDER_COUNT = 64,
-    };
-
 public:
     ALAudioManager();
     virtual ~ALAudioManager();

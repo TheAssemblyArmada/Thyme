@@ -79,8 +79,10 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     av_log_set_level(AV_LOG_INFO);
 #endif
 
-    // REMOVE: this is required for FFmpeg older than 4.0 -> deprecated afterwards though
+// This is required for FFmpeg older than 4.0 -> deprecated afterwards though
+#if LIBAVFORMAT_VERSION_MAJOR < 58
     av_register_all();
+#endif
 
     // FFmpeg setup
     int result = 0;

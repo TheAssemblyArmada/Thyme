@@ -44,10 +44,12 @@
 // the correct type and address. This should not change from run to run if the
 // exe loads at a standard base address.
 
-// Typical use will be to use define to create a friendly name, e.g:
-// #define SomeGlobalVar (Make_Global<bool>(0x00FF00FF))
+// Typical use will:
+// bool &SomeGlobalVar = Make_Global<bool>(0x00FF00FF);
+// bool (&SomeGlobalVar2)[32] = Make_Global<bool[32]>(0x00FF00FF);
 // allows you to use SomeGlobalVar as though it was a bool you declared, though
 // it will reflect the value the original exe sees at address 0x00FF00FF
+// Likewise for SomeGlobalVar2 when it is an array.
 template<typename T> __forceinline T &Make_Global(const uintptr_t address)
 {
     return *reinterpret_cast<T *>(address);

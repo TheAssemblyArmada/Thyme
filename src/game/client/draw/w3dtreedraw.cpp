@@ -88,8 +88,8 @@ Module *W3DTreeDraw::Friend_New_Module_Instance(Thing *thing, ModuleData const *
 
 NameKeyType W3DTreeDraw::Get_Module_Name_Key() const
 {
-    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DTreeDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DTreeDraw");
+    return _key;
 }
 
 void W3DTreeDraw::React_To_Transform_Change(const Matrix3D *matrix, const Coord3D *pos, float angle)

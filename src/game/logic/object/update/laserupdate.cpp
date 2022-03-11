@@ -77,8 +77,8 @@ LaserUpdate::~LaserUpdate()
 
 NameKeyType LaserUpdate::Get_Module_Name_Key() const
 {
-    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("LaserUpdate");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("LaserUpdate");
+    return _key;
 }
 
 void LaserUpdate::Client_Update()

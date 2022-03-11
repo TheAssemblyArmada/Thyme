@@ -33,8 +33,8 @@ ProjectileStreamUpdate::ProjectileStreamUpdate(Thing *thing, ModuleData const *m
 
 NameKeyType ProjectileStreamUpdate::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("ProjectileStreamUpdate");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("ProjectileStreamUpdate");
+    return _key;
 }
 
 void ProjectileStreamUpdate::CRC_Snapshot(Xfer *xfer)

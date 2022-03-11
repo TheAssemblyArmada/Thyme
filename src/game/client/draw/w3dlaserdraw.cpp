@@ -189,8 +189,8 @@ Module *W3DLaserDraw::Friend_New_Module_Instance(Thing *thing, ModuleData const 
 
 NameKeyType W3DLaserDraw::Get_Module_Name_Key() const
 {
-    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DLaserDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DLaserDraw");
+    return _key;
 }
 
 void W3DLaserDraw::Do_Draw_Module(const Matrix3D *transform)

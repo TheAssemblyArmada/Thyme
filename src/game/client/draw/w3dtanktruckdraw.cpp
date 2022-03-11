@@ -110,8 +110,8 @@ W3DTankTruckDraw::~W3DTankTruckDraw()
 
 NameKeyType W3DTankTruckDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DTankTruckDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DTankTruckDraw");
+    return _key;
 }
 
 void W3DTankTruckDraw::Do_Draw_Module(const Matrix3D *transform)

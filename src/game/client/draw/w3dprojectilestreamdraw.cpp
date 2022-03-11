@@ -74,16 +74,16 @@ W3DProjectileStreamDraw::~W3DProjectileStreamDraw()
 
 NameKeyType W3DProjectileStreamDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DProjectileStreamDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DProjectileStreamDraw");
+    return _key;
 }
 
 void W3DProjectileStreamDraw::Do_Draw_Module(const Matrix3D *transform)
 {
     Object *object = Get_Drawable()->Get_Object();
     if (object != nullptr) {
-        static const NameKeyType key_ProjectileStreamUpdate = g_theNameKeyGenerator->Name_To_Key("ProjectileStreamUpdate");
-        ProjectileStreamUpdate *update = (ProjectileStreamUpdate *)object->Find_Update_Module(key_ProjectileStreamUpdate);
+        static const NameKeyType _projectileStreamUpdateKey = g_theNameKeyGenerator->Name_To_Key("ProjectileStreamUpdate");
+        ProjectileStreamUpdate *update = (ProjectileStreamUpdate *)object->Find_Update_Module(_projectileStreamUpdateKey);
         const W3DProjectileStreamDrawModuleData *data = Get_W3D_Projectile_Stream_Draw_Module_Data();
 
         Vector3 all_points[MAX_SEGMENT_COUNT];

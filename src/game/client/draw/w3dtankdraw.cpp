@@ -83,8 +83,8 @@ W3DTankDraw::~W3DTankDraw()
 
 NameKeyType W3DTankDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DTankDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DTankDraw");
+    return _key;
 }
 
 void W3DTankDraw::Do_Draw_Module(const Matrix3D *transform)

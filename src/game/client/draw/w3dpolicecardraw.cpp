@@ -39,8 +39,8 @@ W3DPoliceCarDraw::~W3DPoliceCarDraw()
 
 NameKeyType W3DPoliceCarDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DPoliceCarDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DPoliceCarDraw");
+    return _key;
 }
 
 void W3DPoliceCarDraw::Do_Draw_Module(const Matrix3D *transform)

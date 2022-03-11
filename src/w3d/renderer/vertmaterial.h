@@ -202,7 +202,7 @@ private:
     unsigned long Compute_CRC() const;
 
 #ifdef GAME_DLL
-    static ARRAY_DEC(VertexMaterialClass *, s_presets, PRESET_COUNT);
+    static VertexMaterialClass *(&s_presets)[PRESET_COUNT];
 #else
     static VertexMaterialClass *s_presets[PRESET_COUNT];
 #endif

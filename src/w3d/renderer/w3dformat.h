@@ -192,8 +192,8 @@ inline bool Is_Compressed(WW3DFormat format)
 
 #ifdef GAME_DLL
 #include "hooker.h"
-extern ARRAY_DEC(WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
-extern ARRAY_DEC(WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);
+extern WW3DFormat (&g_D3DFormatToWW3DFormatConversionArray)[63];
+extern WW3DZFormat (&g_D3DFormatToWW3DZFormatConversionArray)[80];
 #else
 extern WW3DFormat g_D3DFormatToWW3DFormatConversionArray[63];
 extern WW3DZFormat g_D3DFormatToWW3DZFormatConversionArray[80];

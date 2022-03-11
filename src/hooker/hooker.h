@@ -150,8 +150,3 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
       __asm push in                         \
       __asm call Hook_Func     \
       __asm add esp, 8 }
-
-#define ARRAY_DEC(type, var, size) type(&var)[size]
-#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]>(address);
-#define ARRAY2D_DEC(type, var, x, y) type(&var)[x][y]
-#define ARRAY2D_DEF(address, type, var, x, y) type(&var)[x][y] = Make_Global<type[x][y]>(address);

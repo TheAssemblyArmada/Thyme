@@ -111,7 +111,7 @@ private:
     static w3dsurface_t s_newRenderSurface;
     static w3dsurface_t s_oldDepthSurface;
 #ifdef GAME_DLL
-    static ARRAY_DEC(TextureClass *, s_textures, MAX_TEXTURE_STAGES);
+    static TextureClass *(&s_textures)[MAX_TEXTURE_STAGES];
     static bool &s_renderingToTexture;
     static ShaderTypes &s_currentShader;
 #else

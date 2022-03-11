@@ -306,15 +306,15 @@ protected:
     static D3DCOLOR &s_fogColor;
     static D3DFORMAT &s_displayFormat;
 #endif
-    static ARRAY_DEC(w3dbasetexture_t, s_textures, MAX_TEXTURE_STAGES);
+    static w3dbasetexture_t (&s_textures)[MAX_TEXTURE_STAGES];
 #ifdef PLATFORM_WINDOWS
     static HWND &s_hwnd;
 #endif
     static void *&s_shadowMap;
-    static ARRAY_DEC(unsigned, s_renderStates, 256);
-    static ARRAY2D_DEC(unsigned, s_textureStageStates, MAX_TEXTURE_STAGES, 32);
-    static ARRAY_DEC(Vector4, s_vertexShaderConstants, 96);
-    static ARRAY_DEC(unsigned, s_pixelShaderConstants, 32);
+    static unsigned (&s_renderStates)[256];
+    static unsigned (&s_textureStageStates)[MAX_TEXTURE_STAGES][32];
+    static Vector4 (&s_vertexShaderConstants)[96];
+    static unsigned (&s_pixelShaderConstants)[32];
     static bool &s_isInitialised;
     static bool &s_isWindowed;
     static bool &s_debugIsWindowed;
@@ -330,7 +330,7 @@ protected:
     static int &s_resolutionHeight;
     static int &s_bitDepth;
     static int &s_textureBitDepth;
-    static ARRAY_DEC(bool, s_currentLightEnables, GFX_LIGHT_COUNT);
+    static bool (&s_currentLightEnables)[GFX_LIGHT_COUNT];
     static unsigned &s_matrixChanges;
     static unsigned &s_materialChanges;
     static unsigned &s_vertexBufferChanges;
@@ -354,7 +354,7 @@ protected:
     static DynamicVectorClass<StringClass> &s_renderDeviceShortNameTable;
     static DynamicVectorClass<RenderDeviceDescClass> &s_renderDeviceDescriptionTable;
     static w3dadapterid_t &s_currentAdapterIdentifier;
-    static ARRAY_DEC(Matrix4, s_DX8Transforms, 257);
+    static Matrix4 (&s_DX8Transforms)[257];
     static bool &s_EnableTriangleDraw;
     static int &s_ZBias;
     static Vector3 &s_ambientColor;

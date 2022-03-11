@@ -72,10 +72,10 @@ private:
 #ifdef GAME_DLL
     static MouseThreadClass &s_mouseThread;
     static bool &s_mouseThreadIsDrawing;
-    static ARRAY_DEC(HAnimClass *, s_W3DMouseAssets1, CURSOR_COUNT);
-    static ARRAY_DEC(RenderObjClass *, s_W3DMouseAssets2, CURSOR_COUNT);
-    static ARRAY2D_DEC(TextureBaseClass *, s_D3DMouseAssets, CURSOR_COUNT, MAX_FRAMES); // TODO unsure on type
-    static ARRAY_DEC(uint32_t, s_PolyMouseAssets, CURSOR_COUNT);
+    static HAnimClass *(&s_W3DMouseAssets1)[CURSOR_COUNT];
+    static RenderObjClass *(&s_W3DMouseAssets2)[CURSOR_COUNT];
+    static TextureBaseClass *(&s_D3DMouseAssets)[CURSOR_COUNT][MAX_FRAMES]; // TODO unsure on type
+    static uint32_t (&s_PolyMouseAssets)[CURSOR_COUNT];
 #else
     static MouseThreadClass s_mouseThread;
     static bool s_mouseThreadIsDrawing;

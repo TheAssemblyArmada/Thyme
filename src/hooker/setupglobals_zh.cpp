@@ -647,3 +647,7 @@ int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00
 // imemanagerinterface.cpp
 class IMEManagerInterface;
 IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_ADDRESS(0x00A29B8C, 0));
+
+// systimer.cpp
+#include "systimer.h"
+SysTimeClass &g_theSysTimer = Make_Global<SysTimeClass>(0x00A66B30);

@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "systimer.h"
+#include "hooker.h"
 #include "rtsutils.h"
 
 #ifndef GAME_DLL
@@ -28,7 +29,7 @@ void SysTimeClass::Reset()
 int SysTimeClass::Get()
 {
 #ifdef GAME_DLL
-#define _is_init (Make_Global<bool>(0x00A66B30))
+    bool &_is_init = Make_Global<bool>(0x00A66B30);
 #else
     static bool _is_init;
 #endif

@@ -116,7 +116,7 @@ struct x86_jump
 #pragma pack(pop)
 
 // Use these to hook existing functions and replace them with newly written ones
-// to either replace them permenantly or just to test correctness of a newly
+// to either replace them permanently or just to test correctness of a newly
 // written one.
 
 // Base hooking function to apply the actual hook.
@@ -144,15 +144,15 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
     Hook_Func(in, reinterpret_cast<uintptr_t>((void *&)out));
 }
 
-// Virtuals are even trickier so resort to inline asm for those curtesy of the TTScripts guys.
+// Virtuals are even trickier so resort to inline assembler for those courtesy of the TTScripts guys.
 #define Hook_Any(in, out) __asm { \
       __asm push out                  \
       __asm push in                         \
       __asm call Hook_Func     \
       __asm add esp, 8 }
 
-__declspec(dllexport) void StartHooking();
-__declspec(dllexport) void StopHooking();
+__declspec(dllexport) bool StartHooking();
+__declspec(dllexport) bool StopHooking();
 
 #define ARRAY_DEC(type, var, size) type(&var)[size]
 #define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]>(address);

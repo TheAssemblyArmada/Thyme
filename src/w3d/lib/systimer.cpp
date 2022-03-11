@@ -13,8 +13,10 @@
  *            LICENSE
  */
 #include "systimer.h"
-#include "hooker.h"
 #include "rtsutils.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 SysTimeClass g_theSysTimer;

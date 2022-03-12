@@ -85,9 +85,6 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 #endif
 
     // FFmpeg setup
-    int result = 0;
-    char error_buffer[1024];
-
     open_audio->fmt_ctx = avformat_alloc_context();
     if (!open_audio->fmt_ctx) {
         captainslog_error("Failed to alloc AVFormatContext");
@@ -112,8 +109,10 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
     open_audio->fmt_ctx->pb = open_audio->avio_ctx;
     open_audio->fmt_ctx->flags |= AVFMT_FLAG_CUSTOM_IO;
 
+    int result = 0;
     result = avformat_open_input(&open_audio->fmt_ctx, nullptr, nullptr, nullptr);
     if (result < 0) {
+        char error_buffer[1024];
         av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avformat_open_input': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
@@ -122,6 +121,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     result = avformat_find_stream_info(open_audio->fmt_ctx, NULL);
     if (result < 0) {
+        char error_buffer[1024];
         av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avformat_find_stream_info': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
@@ -150,6 +150,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     result = avcodec_parameters_to_context(open_audio->codec_ctx, open_audio->fmt_ctx->streams[0]->codecpar);
     if (result < 0) {
+        char error_buffer[1024];
         av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avcodec_parameters_to_context': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
@@ -158,6 +159,7 @@ bool FFmpegAudioFileCache::Open_FFmpeg_Contexts(FFmpegOpenAudioFile *open_audio,
 
     result = avcodec_open2(open_audio->codec_ctx, input_codec, NULL);
     if (result < 0) {
+        char error_buffer[1024];
         av_strerror(result, error_buffer, sizeof(error_buffer));
         captainslog_error("Failed 'avcodec_open2': %s", error_buffer);
         Close_FFmpeg_Contexts(open_audio);
@@ -437,7 +439,7 @@ void FFmpegAudioFileCache::Set_Max_Size(unsigned size)
 /**
  * Attempts to free space by releasing files with no references
  */
-unsigned FFmpegAudioFileCache::Free_Space()
+unsigned FFmpegAudioFileCache::Free_Space(unsigned required)
 {
     std::list<Utf8String> to_free;
     unsigned freed = 0;
@@ -447,6 +449,11 @@ unsigned FFmpegAudioFileCache::Free_Space()
         if (cached.second.ref_count == 0) {
             to_free.push_back(cached.first);
             freed += cached.second.data_size;
+
+            // If required is "0" we free as much as possible
+            if (required && freed >= required) {
+                break;
+            }
         }
     }
 
@@ -474,16 +481,7 @@ bool FFmpegAudioFileCache::Free_Space_For_Sample(const FFmpegOpenAudioFile &file
     unsigned freed = 0;
 
     // First check for samples that don't have any references.
-    for (const auto &cached : m_cacheMap) {
-        if (cached.second.ref_count == 0) {
-            to_free.push_back(cached.first);
-            freed += cached.second.data_size;
-
-            if (freed >= required) {
-                break;
-            }
-        }
-    }
+    freed = Free_Space(required);
 
     // If we still don't have enough potential space freed up, look for lower priority sounds to remove.
     if (freed < required) {

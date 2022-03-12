@@ -69,7 +69,7 @@ public:
 
     // #FEATURE: We can maybe call this during loading to free any old sounds we won't need ingame and decrease computation
     // ingame
-    unsigned Free_Space();
+    unsigned Free_Space(unsigned required = 0);
 
 private:
     bool Free_Space_For_Sample(const FFmpegOpenAudioFile &open_audio);

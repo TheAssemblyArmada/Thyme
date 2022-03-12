@@ -39,14 +39,14 @@ TEST(w3d_math, vector2)
     Vector2 b(0.0f, 2.0f);
 
     // Two notations for dot product
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, a), 5.0f);
+    EXPECT_FLOAT_EQ(Vector2::Dot_Product(a, a), 5.0f);
     EXPECT_FLOAT_EQ(a * a, 5.0f);
 
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, b), 2.0f);
+    EXPECT_FLOAT_EQ(Vector2::Dot_Product(a, b), 2.0f);
     EXPECT_FLOAT_EQ(a * b, 2.0f);
 
     // Test distance
-    EXPECT_FLOAT_EQ(a.Distance(a, b), GameMath::Sqrt(5.0f));
+    EXPECT_FLOAT_EQ(Vector2::Distance(a, b), GameMath::Sqrt(5.0f));
 
     // Test equality operator
     EXPECT_EQ(a, a);
@@ -75,14 +75,14 @@ TEST(w3d_math, vector3)
     Vector3 b(0.0f, 2.0f, 0.0f);
 
     // Two notations for dot product
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, a), 6.0f);
+    EXPECT_FLOAT_EQ(Vector3::Dot_Product(a, a), 6.0f);
     EXPECT_FLOAT_EQ(a * a, 6.0f);
 
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, b), 2.0f);
+    EXPECT_FLOAT_EQ(Vector3::Dot_Product(a, b), 2.0f);
     EXPECT_FLOAT_EQ(a * b, 2.0f);
 
     // Test distance
-    EXPECT_FLOAT_EQ(a.Distance(a, b), GameMath::Sqrt(6.0f));
+    EXPECT_FLOAT_EQ(Vector3::Distance(a, b), GameMath::Sqrt(6.0f));
 
     // Test equality operator
     EXPECT_EQ(a, a);
@@ -111,10 +111,10 @@ TEST(w3d_math, vector4)
     Vector4 b(0.0f, 2.0f, 0.0f, 0.0f);
 
     // Two notations for dot product
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, a), 7.0f);
+    EXPECT_FLOAT_EQ(Vector4::Dot_Product(a, a), 7.0f);
     EXPECT_FLOAT_EQ(a * a, 7.0f);
 
-    EXPECT_FLOAT_EQ(a.Dot_Product(a, b), 2.0f);
+    EXPECT_FLOAT_EQ(Vector4::Dot_Product(a, b), 2.0f);
     EXPECT_FLOAT_EQ(a * b, 2.0f);
 
     // Test equality operator

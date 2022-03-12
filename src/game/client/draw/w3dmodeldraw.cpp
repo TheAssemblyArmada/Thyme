@@ -61,13 +61,14 @@ unsigned int s_theObjectIDToDebug;
 HAnimClass *W3DAnimationInfo::Get_Anim_Handle() const
 {
     HAnimClass *anim = W3DDisplay::s_assetManager->Get_HAnim(m_name);
-// assert disabled, the game tries to load cbnretal04_dg.cbnretal04_dg which doesn't exist and therefore triggers the assert
-#if 0
-    captainslog_dbgassert(anim, "*** ASSET ERROR: animation %s not found", m_name.Str());
-#endif
 
-    if (anim != nullptr && m_framesPerSecond < 0.0f) {
-        m_framesPerSecond = (anim->Get_Num_Frames() * 1000.0f) / anim->Get_Frame_Rate();
+    if (anim != nullptr) {
+        if (m_framesPerSecond < 0.0f) {
+            m_framesPerSecond = (anim->Get_Num_Frames() * 1000.0f) / anim->Get_Frame_Rate();
+        }
+    } else {
+        // Thyme specific: Original assert has been demoted to log message because it is a data issue.
+        captainslog_error("*** ASSET ERROR: animation %s not found", m_name.Str());
     }
 
     return anim;
@@ -263,13 +264,12 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
 
     if (robj == nullptr && !m_modelName.Is_Empty()) {
         robj = W3DDisplay::s_assetManager->Create_Render_Obj(m_modelName, scale, 0, nullptr, nullptr);
-        // assert disabled, the game tries to load pmlitpol01_d which doesn't exist and therefore triggers the assert
-#if 0
-        captainslog_dbgassert(robj, "*** ASSET ERROR: Model %s not found!", m_modelName.Str());
-#endif
 
         if (robj != nullptr) {
             ref = true;
+        } else {
+            // Thyme specific: Original assert has been demoted to log message because it is a data issue.
+            captainslog_error("*** ASSET ERROR: Model %s not found!", m_modelName.Str());
         }
     }
 
@@ -468,14 +468,12 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                     }
                 }
 
-                // assert disabled, the game references bones on the avlazertnk_d1 model that the model does't have triggers
-                // the assert
-#if 0
-                captainslog_dbgassert(!m_modelName.Is_Not_Empty() || !m_weaponBarrelInfoVec[i].empty(),
-                    "*** ASSET ERROR: No fx bone named '%s' found in model %s!",
-                    weaponfirefxbonename.Str(),
-                    m_modelName.Str());
-#endif
+                // Thyme specific: Original assert has been demoted to log message because it is a data issue.
+                if (m_modelName.Is_Not_Empty() && m_weaponBarrelInfoVec[i].empty()) {
+                    captainslog_error("*** ASSET ERROR: No fx bone named '%s' found in model %s!",
+                        weaponfirefxbonename.Str(),
+                        m_modelName.Str());
+                }
             }
         }
 
@@ -2142,10 +2140,11 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
         } else {
             m_renderObject = W3DDisplay::s_assetManager->Create_Render_Obj(
                 new_state->m_modelName, drawable->Get_Scale(), m_hexColor, nullptr, nullptr);
-            // assert disabled, the game tries to load pscarrapt_d1b which doesn't exist and therefore triggers the assert
-#if 0
-            captainslog_dbgassert(m_renderObject, "*** ASSET ERROR: Model %s not found!", new_state->m_modelName.Str());
-#endif
+
+            // Thyme specific: Original assert has been demoted to log message because it is a data issue.
+            if (m_renderObject == nullptr) {
+                captainslog_error("*** ASSET ERROR: Model %s not found!", new_state->m_modelName.Str());
+            }
         }
 
         new_state->Validate_Stuff(

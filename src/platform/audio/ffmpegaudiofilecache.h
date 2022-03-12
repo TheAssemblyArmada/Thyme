@@ -16,6 +16,7 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "audiomanager.h"
 #include "mutex.h"
 #include "rtsutils.h"
 
@@ -59,10 +60,10 @@ class FFmpegAudioFileCache
 public:
     FFmpegAudioFileCache() : m_maxSize(0), m_currentSize(0), m_mutex("AudioFileCacheMutex") {}
     virtual ~FFmpegAudioFileCache();
-    void *Open_File(AudioEventRTS *file);
-    void *Open_File(const Utf8String &filename);
+    AudioDataHandle Open_File(AudioEventRTS *file);
+    AudioDataHandle Open_File(const Utf8String &filename);
 
-    void Close_File(void *file);
+    void Close_File(AudioDataHandle file);
     void Set_Max_Size(unsigned size);
     inline unsigned Get_Max_Size() const { return m_maxSize; }
     inline unsigned Get_Current_Size() const { return m_currentSize; }

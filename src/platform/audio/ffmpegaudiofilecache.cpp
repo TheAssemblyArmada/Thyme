@@ -264,7 +264,7 @@ void *FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     auto it = m_cacheMap.find(filename);
 
     if (it != m_cacheMap.end()) {
-        ++it->second.ref_count;
+        ++(it->second.ref_count);
 
         return it->second.wave_data;
     }
@@ -350,7 +350,7 @@ void *FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     auto it = m_cacheMap.find(filename);
 
     if (it != m_cacheMap.end()) {
-        ++it->second.ref_count;
+        ++(it->second.ref_count);
 
         return it->second.wave_data;
     }
@@ -420,7 +420,7 @@ void FFmpegAudioFileCache::Close_File(void *file)
 
     for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
         if (it->second.wave_data == file) {
-            --it->second.ref_count;
+            --(it->second.ref_count);
 
             break;
         }

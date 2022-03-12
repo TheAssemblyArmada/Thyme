@@ -754,8 +754,8 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
         Kill_Icon(ICON_CARBOMB);
     }
 
-    static const NameKeyType key_StickyBombUpdate = g_theNameKeyGenerator->Name_To_Key("StickyBombUpdate");
-    StickyBombUpdate *update = static_cast<StickyBombUpdate *>(object->Find_Update_Module(key_StickyBombUpdate));
+    static const NameKeyType _stickyBombUpdateKey = g_theNameKeyGenerator->Name_To_Key("StickyBombUpdate");
+    StickyBombUpdate *update = static_cast<StickyBombUpdate *>(object->Find_Update_Module(_stickyBombUpdateKey));
 
     if (update != nullptr && update->Get_Target_Object() != nullptr) {
         if (update->Has_Die_Frame()) {

@@ -64,8 +64,8 @@ void SwayClientUpdate::Load_Post_Process()
 
 NameKeyType SwayClientUpdate::Get_Module_Name_Key() const
 {
-    static NameKeyType s_swayClientUpdateKey = Name_To_Key("SwayClientUpdate");
-    return s_swayClientUpdateKey;
+    static const NameKeyType _key = Name_To_Key("SwayClientUpdate");
+    return _key;
 }
 
 void SwayClientUpdate::Client_Update()

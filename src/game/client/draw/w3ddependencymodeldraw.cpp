@@ -32,8 +32,8 @@ void W3DDependencyModelDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 NameKeyType W3DDependencyModelDraw::Get_Module_Name_Key() const
 {
-    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DDependencyModelDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DDependencyModelDraw");
+    return _key;
 }
 
 void W3DDependencyModelDraw::Do_Draw_Module(const Matrix3D *transform)

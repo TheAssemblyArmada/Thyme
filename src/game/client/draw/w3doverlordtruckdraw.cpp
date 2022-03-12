@@ -31,8 +31,8 @@ void W3DOverlordTruckDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 
 NameKeyType W3DOverlordTruckDraw::Get_Module_Name_Key() const
 {
-    static const NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DOverlordTruckDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DOverlordTruckDraw");
+    return _key;
 }
 
 void W3DOverlordTruckDraw::Do_Draw_Module(const Matrix3D *transform)

@@ -2994,8 +2994,8 @@ void W3DModelDraw::Load_Post_Process()
 
 NameKeyType W3DModelDraw::Get_Module_Name_Key() const
 {
-    static NameKeyType nk = g_theNameKeyGenerator->Name_To_Key("W3DModelDraw");
-    return nk;
+    static const NameKeyType _key = g_theNameKeyGenerator->Name_To_Key("W3DModelDraw");
+    return _key;
 }
 
 void W3DModelDraw::Show_Sub_Object(Utf8String const &sub_obj_name, bool visible)

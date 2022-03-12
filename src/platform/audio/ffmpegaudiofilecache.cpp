@@ -178,12 +178,12 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
     AVFrame *frame = av_frame_alloc();
 
     int result = 0;
-    char error_buffer[1024];
 
     // Read all packets inside the file
     while (av_read_frame(file->fmt_ctx, packet) >= 0) {
         result = avcodec_send_packet(file->codec_ctx, packet);
         if (result < 0) {
+            char error_buffer[1024];
             av_strerror(result, error_buffer, sizeof(error_buffer));
             captainslog_error("Failed 'avcodec_send_packet': %s", error_buffer);
             return false;
@@ -195,6 +195,7 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF)
                 break;
             else if (result < 0) {
+                char error_buffer[1024];
                 av_strerror(result, error_buffer, sizeof(error_buffer));
                 captainslog_error("Failed 'avcodec_receive_frame': %s", error_buffer);
                 return false;
@@ -266,7 +267,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(const Utf8String &filename)
     if (it != m_cacheMap.end()) {
         ++(it->second.ref_count);
 
-        return it->second.wave_data;
+        return static_cast<AudioDataHandle>(it->second.wave_data);
     }
 
     // Load the file from disk
@@ -317,7 +318,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(const Utf8String &filename)
 
     m_cacheMap[filename] = open_audio;
 
-    return open_audio.wave_data;
+    return static_cast<AudioDataHandle>(open_audio.wave_data);
 }
 /**
  * Opens an audio file for an event. Reads from the cache if available or loads from file if not.
@@ -352,7 +353,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
     if (it != m_cacheMap.end()) {
         ++(it->second.ref_count);
 
-        return it->second.wave_data;
+        return static_cast<AudioDataHandle>(it->second.wave_data);
     }
 
     // Load the file from disk
@@ -404,7 +405,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
 
     m_cacheMap[filename] = open_audio;
 
-    return open_audio.wave_data;
+    return static_cast<AudioDataHandle>(open_audio.wave_data);
 }
 
 /**
@@ -419,7 +420,7 @@ void FFmpegAudioFileCache::Close_File(AudioDataHandle file)
     ScopedMutexClass lock(&m_mutex);
 
     for (auto it = m_cacheMap.begin(); it != m_cacheMap.end(); ++it) {
-        if (it->second.wave_data == file) {
+        if (static_cast<AudioDataHandle>(it->second.wave_data) == file) {
             --(it->second.ref_count);
 
             break;

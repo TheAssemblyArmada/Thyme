@@ -46,7 +46,9 @@ void W3DOverlordTankDraw::Do_Draw_Module(const Matrix3D *transform)
         if (rider != nullptr) {
             if (rider->Get_Drawable() != nullptr) {
                 Drawable *drawable = rider->Get_Drawable();
-                drawable->Set_Tint_Color_Envelope(Get_Drawable()->Get_Tint_Color_Envelope());
+                if (const TintEnvelope *envelope = Get_Drawable()->Get_Tint_Color_Envelope()) {
+                    drawable->Set_Tint_Color_Envelope(envelope);
+                }
                 drawable->Notify_Drawable_Dependency_Cleared();
                 drawable->Draw(nullptr);
             }

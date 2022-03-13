@@ -106,7 +106,7 @@ public:
     // Player *Get_Current_Enemy();
     // GameDifficulty Get_Player_Difficulty() const;
 
-    // bool Is_Player_Active() const;
+    bool Is_Player_Active() const { return !m_playerIsObserver && !m_playerIsDead; }
     // bool Is_Skirmish_AI_Player() const;
     // bool Is_Player_Observer() const;
     // bool Is_Player_Dead() const;

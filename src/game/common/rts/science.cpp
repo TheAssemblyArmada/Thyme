@@ -229,3 +229,10 @@ void ScienceStore::Parse_Science_Vector(INI *ini, void *, void *store, const voi
         sci_vec->push_back(g_theScienceStore->Lookup_Science(token));
     }
 }
+
+void ScienceStore::Parse_Science(INI *ini, void *, void *store, const void *)
+{
+    const char *str = ini->Get_Next_Token();
+    captainslog_relassert(g_theScienceStore != nullptr, CODE_01, "TheScienceStore not inited yet");
+    *static_cast<ScienceType *>(store) = INI::Scan_Science(str);
+}

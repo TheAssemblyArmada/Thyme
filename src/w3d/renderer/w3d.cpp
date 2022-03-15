@@ -46,7 +46,7 @@ bool W3D::s_largeTextureExtraReduction;
 bool W3D::s_isScreenUVBiased;
 bool W3D::s_texturingEnabled = true;
 bool W3D::s_thumbnailEnabled = true;
-int W3D::s_textureFilter;
+TextureFilterClass::TextureFilterMode W3D::s_textureFilter;
 float W3D::s_defaultNativeScreenSize = 1;
 bool W3D::s_isSortingEnabled = true;
 bool W3D::s_isColoringEnabled;
@@ -140,6 +140,16 @@ void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bo
 const RenderDeviceDescClass W3D::Get_Render_Device_Desc(int deviceidx)
 {
     return DX8Wrapper::Get_Render_Device_Desc(deviceidx);
+}
+
+int W3D::Get_Render_Device_Count()
+{
+    return DX8Wrapper::Get_Render_Device_Count();
+}
+
+const char *W3D::Get_Render_Device_Name(int device_index)
+{
+    return DX8Wrapper::Get_Render_Device_Name(device_index);
 }
 
 int W3D::Get_Texture_Bit_Depth()
@@ -401,6 +411,12 @@ void W3D::Set_Texture_Reduction(int value, int min_dim)
 void W3D::Enable_Coloring(unsigned int enable)
 {
     s_isColoringEnabled = enable != 0;
+}
+
+void W3D::Enable_Sorting(bool onoff)
+{
+    s_isSortingEnabled = onoff;
+    g_theDX8MeshRenderer.Invalidate(false);
 }
 
 void W3D::Allocate_Debug_Resources() {}

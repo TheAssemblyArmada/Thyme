@@ -66,8 +66,8 @@ public:
     virtual ~HashTableIteratorClass() {}
     void First();
     void Next();
-    bool Is_Done() { return m_currentEntry == nullptr; } // i think, based on enb..
-    HashableClass *Get_Current() { return m_currentEntry; }
+    bool Is_Done() const { return m_currentEntry == nullptr; } // i think, based on enb..
+    HashableClass *Get_Current() const { return m_currentEntry; }
 
 private:
     void Advance_Next();

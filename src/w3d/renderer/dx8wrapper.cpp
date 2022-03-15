@@ -230,7 +230,7 @@ void DX8Wrapper::Do_Onetime_Device_Dependent_Inits()
 #ifdef BUILD_WITH_D3D8
     Compute_Caps(D3DFormat_To_WW3DFormat(s_displayFormat));
     MissingTexture::Init();
-    TextureFilterClass::Init_Filters((TextureFilterClass::TextureFilterMode)W3D::Get_Texture_Filter());
+    TextureFilterClass::Init_Filters(W3D::Get_Texture_Filter());
     g_theDX8MeshRenderer.Init();
     BoxRenderObjClass::Init();
     VertexMaterialClass::Init();
@@ -853,6 +853,17 @@ bool DX8Wrapper::Has_Stencil()
 int DX8Wrapper::Get_Render_Device()
 {
     return s_currentRenderDevice;
+}
+
+int DX8Wrapper::Get_Render_Device_Count()
+{
+    return s_renderDeviceNameTable.Count();
+}
+
+const char *DX8Wrapper::Get_Render_Device_Name(int device_index)
+{
+    device_index = device_index % s_renderDeviceShortNameTable.Count();
+    return s_renderDeviceShortNameTable[device_index];
 }
 
 const RenderDeviceDescClass &DX8Wrapper::Get_Render_Device_Desc(int deviceidx)

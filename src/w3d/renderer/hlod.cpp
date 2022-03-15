@@ -144,6 +144,88 @@ W3DErrorType HLodDefClass::Load_W3D(ChunkLoadClass &cload)
     return W3D_ERROR_OK;
 }
 
+bool HLodDefClass::SubObjectArrayClass::Save_W3D(ChunkSaveClass &csave)
+{
+    bool b = false;
+
+    if (csave.Begin_Chunk(W3D_CHUNK_HLOD_LOD_ARRAY)) {
+        if (csave.Begin_Chunk(W3D_CHUNK_HLOD_SUB_OBJECT_ARRAY_HEADER)) {
+            W3dHLodArrayHeaderStruct header;
+            header.ModelCount = m_modelCount;
+            header.MaxScreenSize = m_maxScreenSize;
+            b = csave.Write(&header, sizeof(W3dHLodArrayHeaderStruct)) == sizeof(W3dHLodArrayHeaderStruct);
+            csave.End_Chunk();
+
+            if (b) {
+                for (int i = 0; i < m_modelCount; i++) {
+
+                    if (!b) {
+                        break;
+                    }
+
+                    b &= csave.Begin_Chunk(W3D_CHUNK_HLOD_SUB_OBJECT);
+
+                    if (b) {
+                        W3dHLodSubObjectStruct subobjheader;
+                        memset(&subobjheader, 0, sizeof(subobjheader));
+                        subobjheader.BoneIndex = m_boneIndex[i];
+                        strncpy(subobjheader.Name, m_modelName[i], 32);
+                        subobjheader.Name[31] = 0;
+                        b = csave.Write(&subobjheader, sizeof(W3dHLodSubObjectStruct)) == sizeof(W3dHLodSubObjectStruct);
+                        csave.End_Chunk();
+                    }
+                }
+            }
+        }
+
+        csave.End_Chunk();
+    }
+
+    return b;
+}
+
+HLodDefClass::HLodDefClass(HLodClass &hlod) :
+    m_name(nullptr), m_hierarchyTreeName(nullptr), m_lodCount(0), m_lod(nullptr), m_proxyArray(nullptr)
+{
+    Initialize(hlod);
+}
+
+void HLodDefClass::Initialize(HLodClass &hlod)
+{
+    Free();
+    m_name = strdup(hlod.Get_Name());
+    const HTreeClass *tree = hlod.Get_HTree();
+
+    if (tree) {
+        m_hierarchyTreeName = strdup(tree->Get_Name());
+    }
+
+    m_lodCount = hlod.Get_LOD_Count();
+
+    if (m_lodCount > 0) {
+        m_lod = new SubObjectArrayClass[m_lodCount];
+        int curlod = 0;
+
+        for (int i = 0; i < m_lodCount; i++) {
+            m_lod[curlod].m_maxScreenSize = hlod.Get_Max_Screen_Size(i);
+            m_lod[curlod].m_modelCount = hlod.Get_Lod_Model_Count(i);
+            m_lod[curlod].m_modelName = new char *[m_lod[curlod].m_modelCount];
+            m_lod[curlod].m_boneIndex = new int[m_lod[curlod].m_modelCount];
+
+            for (int j = 0; j < m_lod[curlod].m_modelCount; j++) {
+                RenderObjClass *robj = hlod.Peek_Lod_Model(i, j);
+
+                if (robj) {
+                    m_lod[curlod].m_modelName[j] = strdup(robj->Get_Name());
+                    m_lod[curlod].m_boneIndex[j] = hlod.Get_Lod_Model_Bone(i, j);
+                }
+            }
+
+            curlod++;
+        }
+    }
+}
+
 bool HLodDefClass::Read_Header(ChunkLoadClass &cload)
 {
     if (cload.Open_Chunk()) {
@@ -228,6 +310,72 @@ PrototypeClass *HLodLoaderClass::Load_W3D(ChunkLoadClass &cload)
     }
 
     return nullptr;
+}
+
+W3DErrorType HLodDefClass::Save(ChunkSaveClass &csave)
+{
+    W3DErrorType error = W3D_ERROR_SAVE_FAILED;
+
+    if (csave.Begin_Chunk(W3D_CHUNK_HLOD) == 1) {
+        if (Save_Header(csave) == W3D_ERROR_OK && Save_Lod_Array(csave) == 0) {
+            error = W3D_ERROR_OK;
+        }
+
+        csave.End_Chunk();
+    }
+
+    return error;
+}
+
+W3DErrorType HLodDefClass::Save_Header(ChunkSaveClass &csave)
+{
+    if (!csave.Begin_Chunk(W3D_CHUNK_HLOD_HEADER)) {
+        return W3D_ERROR_SAVE_FAILED;
+    }
+
+    W3dHLodHeaderStruct header;
+    memset(&header, 0, sizeof(header));
+    header.Version = 0x10000;
+    header.LodCount = m_lodCount;
+    strncpy(header.Name, m_name, 16);
+    header.Name[15] = 0;
+    strncpy(header.HierarchyName, m_hierarchyTreeName, 16);
+    header.HierarchyName[15] = 0;
+
+    W3DErrorType error = W3D_ERROR_OK;
+
+    if (csave.Write(&header, sizeof(W3dHLodHeaderStruct)) != sizeof(W3dHLodHeaderStruct)) {
+        error = W3D_ERROR_SAVE_FAILED;
+    }
+
+    csave.End_Chunk();
+    return error;
+}
+
+W3DErrorType HLodDefClass::Save_Lod_Array(ChunkSaveClass &csave)
+{
+    bool b = true;
+
+    for (int i = 0; i < m_lodCount; i++) {
+        if (!b) {
+            break;
+        }
+
+        b = m_lod[i].Save_W3D(csave);
+    }
+
+    return b ? W3D_ERROR_OK : W3D_ERROR_SAVE_FAILED;
+}
+
+W3DErrorType HLodDefClass::Save_Aggregate_Array(ChunkSaveClass &csave)
+{
+    if (m_aggregates.m_modelCount > 0) {
+        csave.Begin_Chunk(W3D_CHUNK_HLOD_AGGREGATE_ARRAY);
+        m_aggregates.Save_W3D(csave);
+        csave.End_Chunk();
+    }
+
+    return W3D_ERROR_OK;
 }
 
 RenderObjClass *HLodPrototypeClass::Create()
@@ -324,6 +472,74 @@ HLodClass::HLodClass(const HLodDefClass &src) :
 
     if (m_curLod < cost) {
         Set_LOD_Level(cost);
+    }
+
+    Set_Sub_Object_Transforms_Dirty(true);
+    Update_Sub_Object_Bits();
+    Update_Obj_Space_Bounding_Volumes();
+}
+
+HLodClass::HLodClass(const char *name, RenderObjClass **lods, int count) :
+    Animatable3DObjClass(nullptr),
+    m_lodCount(0),
+    m_curLod(0),
+    m_lod(nullptr),
+    m_boundingBoxIndex(-1),
+    m_cost(nullptr),
+    m_value(nullptr),
+    m_snapPoints(nullptr),
+    m_proxyArray(nullptr),
+    m_lodBias(1.0f)
+{
+    captainslog_assert(name != nullptr);
+    captainslog_assert(lods != nullptr);
+    captainslog_assert((count > 0) && (count < 256));
+
+    Set_Name(name);
+    m_lodCount = count;
+    captainslog_assert(m_lodCount >= 1);
+
+    m_lod = new HLodClass::ModelArrayClass[m_lodCount];
+    captainslog_assert(m_lod);
+
+    m_cost = new float[m_lodCount];
+    captainslog_assert(m_cost);
+
+    m_value = new float[m_lodCount];
+    captainslog_assert(m_value);
+
+    const HTreeClass *tree = lods[count - 1]->Get_HTree();
+
+    if (tree != nullptr) {
+        Set_HTree(new HTreeClass(*tree));
+    } else {
+        Set_HTree(new HTreeClass());
+        m_htree->Init_Default();
+    }
+
+    for (int i = 0; i < m_lodCount; i++) {
+        RenderObjClass *lod_obj = lods[i];
+        captainslog_assert(lod_obj != nullptr);
+
+        if (lod_obj->Class_ID() == CLASSID_HMODEL || lod_obj->Class_ID() == CLASSID_HLOD
+            || lod_obj->Get_Num_Sub_Objects() > 1) {
+            while (lod_obj->Get_Num_Sub_Objects() > 0) {
+                RenderObjClass *o2 = lod_obj->Get_Sub_Object(0);
+                int bone = lod_obj->Get_Sub_Object_Bone_Index(o2);
+                lod_obj->Remove_Sub_Object(o2);
+                Add_Lod_Model(i, o2, bone);
+                o2->Release_Ref();
+            }
+        } else {
+            Add_Lod_Model(i, lod_obj, 0);
+        }
+    }
+
+    Recalculate_Static_LOD_Factors();
+    int lod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
+
+    if (m_curLod < lod) {
+        Set_LOD_Level(lod);
     }
 
     Set_Sub_Object_Transforms_Dirty(true);

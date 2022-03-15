@@ -22,6 +22,8 @@
 #include "w3d_file.h"
 #include "w3derr.h"
 
+class HLodClass;
+
 class SnapPointsClass : public DynamicVectorClass<Vector3>, public RefCountClass
 {
 public:
@@ -115,7 +117,9 @@ public:
         }
 
         bool Load_W3D(ChunkLoadClass &cload);
+        bool Save_W3D(ChunkSaveClass &csave);
         friend class HLodClass;
+        friend class HLodDefClass;
     };
 
 private:
@@ -128,6 +132,8 @@ private:
 
 public:
     HLodDefClass() : m_name(nullptr), m_hierarchyTreeName(nullptr), m_lodCount(0), m_lod(nullptr), m_proxyArray(nullptr) {}
+    HLodDefClass(HLodClass &hlod);
+    void Initialize(HLodClass &hlod);
     ~HLodDefClass() { Free(); }
 
     void Free();
@@ -136,6 +142,10 @@ public:
     W3DErrorType Load_W3D(ChunkLoadClass &cload);
     bool Read_Header(ChunkLoadClass &cload);
     bool Read_Proxy_Array(ChunkLoadClass &cload);
+    W3DErrorType Save(ChunkSaveClass &csave);
+    W3DErrorType Save_Header(ChunkSaveClass &csave);
+    W3DErrorType Save_Lod_Array(ChunkSaveClass &csave);
+    W3DErrorType Save_Aggregate_Array(ChunkSaveClass &csave);
     friend class HLodClass;
 };
 
@@ -234,6 +244,7 @@ private:
 public:
     HLodClass(const HLodClass &src);
     HLodClass(const HLodDefClass &src);
+    HLodClass(const char *name, RenderObjClass **lods, int count);
 
     HLodClass &operator=(const HLodClass &that);
 

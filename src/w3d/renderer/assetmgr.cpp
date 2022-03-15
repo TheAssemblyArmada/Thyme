@@ -21,6 +21,7 @@
 #include "dx8renderer.h"
 #include "ffactory.h"
 #include "fileclass.h"
+#include "hanim.h"
 #include "hlod.h"
 #include "loaders.h"
 #include "matinfo.h"
@@ -38,7 +39,7 @@
 #include <stdio.h>
 
 #ifndef GAME_DLL
-W3DAssetManager * ::W3DAssetManager::s_theInstance;
+W3DAssetManager *W3DAssetManager::s_theInstance;
 NullPrototypeClass s_nullPrototype;
 #endif
 
@@ -54,6 +55,47 @@ static HLodLoaderClass s_hLODLoader;
 static CollectionLoaderClass s_collectionLoader;
 static MeshLoaderClass s_meshLoader;
 static HModelLoaderClass s_hmodelLoader;
+
+class HAnimIterator : public AssetIterator
+{
+public:
+    HAnimIterator() : m_iterator(W3DAssetManager::Get_Instance()->m_hAnimManager) {}
+    virtual ~HAnimIterator() override {}
+    virtual void First() override { m_iterator.First(); }
+    virtual void Next() override { m_iterator.Next(); }
+    virtual bool Is_Done() const override { return m_iterator.Is_Done(); }
+    virtual const char *Current_Item_Name() const override
+    {
+        return static_cast<HAnimClass *>(m_iterator.Get_Current())->Get_Name();
+    }
+
+private:
+    HAnimManagerIterator m_iterator;
+};
+
+class RObjIterator : public RenderObjIterator
+{
+    virtual ~RObjIterator() override {}
+    virtual bool Is_Done() const override { return m_index >= W3DAssetManager::Get_Instance()->m_prototypes.Count(); }
+
+    virtual const char *Current_Item_Name() const override
+    {
+        if (Is_Done()) {
+            return nullptr;
+        }
+
+        return W3DAssetManager::Get_Instance()->m_prototypes[m_index]->Get_Name();
+    }
+
+    virtual int Current_Item_Class_ID() override
+    {
+        if (Is_Done()) {
+            return RenderObjClass::CLASSID_UNKNOWN;
+        }
+
+        return W3DAssetManager::Get_Instance()->m_prototypes[m_index]->Get_Class_ID();
+    }
+};
 
 // 0x00814090
 W3DAssetManager::W3DAssetManager() :
@@ -247,21 +289,19 @@ bool W3DAssetManager::Render_Obj_Exists(const char *name)
 // 0x00815340
 RenderObjIterator *W3DAssetManager::Create_Render_Obj_Iterator()
 {
-    captainslog_dbgassert(false, "RenderObjIterator class is not used");
-    return nullptr;
+    return new RObjIterator;
 }
 
 // 0x00815370
 void W3DAssetManager::Release_Render_Obj_Iterator(RenderObjIterator *it)
 {
-    captainslog_dbgassert(false, "RenderObjIterator class is not used");
+    delete it;
 }
 
 // 0x00815390
 AssetIterator *W3DAssetManager::Create_HAnim_Iterator(void)
 {
-    captainslog_dbgassert(false, "HAnim Iterator class is not used");
-    return nullptr;
+    return new HAnimIterator();
 }
 
 // 0x008154F0
@@ -562,6 +602,53 @@ void W3DAssetManager::Add_Prototype(PrototypeClass *proto)
     captainslog_assert(proto != nullptr);
     Prototype_Hash_Table_Add(proto);
     m_prototypes.Add(proto);
+}
+
+void W3DAssetManager::Remove_Prototype(PrototypeClass *proto)
+{
+    PrototypeClass *p = nullptr;
+
+    if (proto != nullptr) {
+        const char *name = proto->Get_Name();
+        bool found = false;
+        int32_t hash = Prototype_Hash_Table_Hash(name);
+
+        for (PrototypeClass *i = m_prototypeHashTable[hash]; i; i = i->Get_Next_Hash()) {
+            if (found) {
+                break;
+            }
+
+            if (!strcasecmp(i->Get_Name(), name)) {
+                if (p != nullptr) {
+                    p->Set_Next_Hash(i->Get_Next_Hash());
+                } else {
+                    m_prototypeHashTable[hash] = i->Get_Next_Hash();
+                }
+
+                found = true;
+            }
+
+            p = i;
+        }
+
+        m_prototypes.Delete(proto);
+    } else {
+        captainslog_debug("proto != nullptr");
+    }
+}
+
+void W3DAssetManager::Remove_Prototype(const char *name)
+{
+    if (name != nullptr) {
+        PrototypeClass *proto = Find_Prototype(name);
+
+        if (proto != nullptr) {
+            Remove_Prototype(proto);
+            proto->Delete_Self();
+        }
+    } else {
+        captainslog_debug("name != nullptr");
+    }
 }
 
 PrototypeLoaderClass *W3DAssetManager::Find_Prototype_Loader(int chunk_id)

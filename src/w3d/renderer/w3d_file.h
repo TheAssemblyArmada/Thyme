@@ -439,7 +439,7 @@ struct W3dHLodArrayHeaderStruct
 struct W3dHLodSubObjectStruct
 {
     uint32_t BoneIndex;
-    char Name[31];
+    char Name[32];
 };
 
 // clang-format off

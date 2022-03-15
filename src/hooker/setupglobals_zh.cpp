@@ -386,7 +386,8 @@ bool &W3D::s_largeTextureExtraReduction = Make_Global<bool>(PICK_ADDRESS(0x00A47
 bool &W3D::s_isScreenUVBiased = Make_Global<bool>(PICK_ADDRESS(0x00A47FAF, 0x00DEE80F));
 bool &W3D::s_texturingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A16998, 0x00CC58B8));
 bool &W3D::s_thumbnailEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1698C, 0x00CC58AC));
-int &W3D::s_textureFilter = Make_Global<int>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
+TextureFilterClass::TextureFilterMode &W3D::s_textureFilter =
+    Make_Global<TextureFilterClass::TextureFilterMode>(PICK_ADDRESS(0x00A47FEC, 0x00DEE84C));
 float &W3D::s_defaultNativeScreenSize = Make_Global<float>(PICK_ADDRESS(0x00A16984, 0x00CC58A4));
 bool &W3D::s_isSortingEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A1697C, 0x00CC589C));
 bool &W3D::s_isColoringEnabled = Make_Global<bool>(PICK_ADDRESS(0x00A47FDC, 0x00DEE83C));

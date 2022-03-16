@@ -23,19 +23,26 @@
 #include "vector.h"
 
 class RenderObjClass;
-class RenderObjIterator;
 
 class AssetIterator
 {
 protected:
-    uint32_t m_index;
+    int32_t m_index;
 
 public:
+    AssetIterator() { m_index = 0; }
+
     virtual ~AssetIterator(){};
     virtual void First() { m_index = 0; }
     virtual void Next() { ++m_index; }
     virtual bool Is_Done() const = 0;
     virtual const char *Current_Item_Name() const = 0;
+};
+
+class RenderObjIterator : public AssetIterator
+{
+public:
+    virtual int Current_Item_Class_ID() = 0;
 };
 
 class MetalMapManagerClass;
@@ -100,6 +107,10 @@ public:
         }
     }
     static W3DAssetManager *Get_Instance(void) { return s_theInstance; }
+    void Add_Prototype(PrototypeClass *proto);
+    PrototypeClass *Find_Prototype(const char *name);
+    void Remove_Prototype(PrototypeClass *proto);
+    void Remove_Prototype(const char *name);
 
     bool Get_W3D_Load_On_Demand() const { return m_loadOnDemand; }
     void Set_W3D_Load_On_Demand(bool state) { m_loadOnDemand = state; }
@@ -131,13 +142,10 @@ protected:
     virtual void Release_Unused_Font3DDatas();
     virtual void Release_All_FontChars();
 
-    PrototypeClass *Find_Prototype(const char *name);
-
     void Prototype_Hash_Table_Add(PrototypeClass *entry);
     PrototypeClass *Prototype_Hash_Table_Find(char const *key);
     int32_t Prototype_Hash_Table_Hash(char const *key);
 
-    void Add_Prototype(PrototypeClass *proto);
     PrototypeLoaderClass *Find_Prototype_Loader(int chunk_id);
     bool Load_Prototype(ChunkLoadClass &cload);
 
@@ -159,6 +167,8 @@ protected:
 #else
     static W3DAssetManager *s_theInstance;
 #endif
+    friend class RObjIterator;
+    friend class HAnimIterator;
 };
 
 // GameAssetManager is the renamed W3DAssetManager

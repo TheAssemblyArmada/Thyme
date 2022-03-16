@@ -268,6 +268,8 @@ protected:
     static void Enumerate_Devices();
     static void Set_Default_Global_Render_States();
     static int Get_Render_Device();
+    static int Get_Render_Device_Count();
+    static const char *Get_Render_Device_Name(int device_index);
     static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
     static bool Set_Device_Resolution(
         int width = -1, int height = -1, int bits = -1, int windowed = -1, bool resize_window = false);

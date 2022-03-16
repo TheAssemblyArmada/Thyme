@@ -46,9 +46,9 @@ public:
     virtual bool Set_Date_Time(time_t date_time) override;
     virtual void Error(int error, bool can_retry = false, const char *filename = nullptr);
 #ifdef PLATFORM_WINDOWS
-    virtual HANDLE Get_File_Handle() { return m_handle; }
+    virtual HANDLE Get_File_Handle() override { return m_handle; }
 #else
-    virtual int Get_File_Handle() { return m_handle; }
+    virtual int Get_File_Handle() override { return m_handle; }
 #endif
     virtual void Bias(int start, int length = -1);
 #ifdef PLATFORM_WINDOWS

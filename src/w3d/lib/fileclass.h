@@ -16,6 +16,9 @@
 #pragma once
 
 #include "always.h"
+#ifdef PLATFORM_WINDOWS
+#include <Windows.h>
+#endif
 
 enum FileOpenType
 {
@@ -54,4 +57,9 @@ public:
     virtual void Close() = 0;
     virtual time_t Get_Date_Time();
     virtual bool Set_Date_Time(time_t date_time);
+#ifdef PLATFORM_WINDOWS
+    virtual HANDLE Get_File_Handle() { return INVALID_HANDLE_VALUE; }
+#else
+    virtual int Get_File_Handle() { return -1; }
+#endif
 };

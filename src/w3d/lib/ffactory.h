@@ -57,6 +57,7 @@ public:
     virtual ~SimpleFileFactoryClass(){};
     virtual FileClass *Get_File(const char *filename);
     virtual void Return_File(FileClass *file);
+    void Append_Sub_Directory(const char *sub_directory);
     void Set_Strip_Path(bool strip) { m_isStripPath = strip; }
     bool Get_Strip_Path() const { return m_isStripPath; }
 
@@ -74,3 +75,4 @@ extern FileFactoryClass *&g_theFileFactory;
 extern RawFileFactoryClass *g_theWritingFileFactory;
 extern FileFactoryClass *g_theFileFactory;
 #endif
+extern FileFactoryClass *g_theSimpleFileFactory;

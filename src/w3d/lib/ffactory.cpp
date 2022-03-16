@@ -27,6 +27,8 @@ RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
 FileFactoryClass *g_theFileFactory = &defaultFileFactory;
 #endif
 
+FileFactoryClass *g_theSimpleFileFactory = &defaultFileFactory;
+
 auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) : m_file(nullptr), m_factory(fact)
 {
     m_file = m_factory->Get_File(filename);
@@ -108,4 +110,26 @@ void SimpleFileFactoryClass::Return_File(FileClass *file)
 {
     captainslog_assert(file);
     delete file;
+}
+
+void SimpleFileFactoryClass::Append_Sub_Directory(const char *sub_directory)
+{
+    char temp_sub_dir[1024];
+
+    if (strlen(sub_directory) <= 1022 && strlen(sub_directory) >= 1) {
+        strcpy(temp_sub_dir, sub_directory);
+
+        if (temp_sub_dir[strlen(sub_directory)] != '\\') {
+            temp_sub_dir[strlen(sub_directory)] = '\\';
+            temp_sub_dir[strlen(sub_directory) + 1] = 0;
+        }
+
+        CriticalSectionClass::LockClass lock(m_mutex);
+
+        if (m_subDirectory.Get_Length() && m_subDirectory[m_subDirectory.Get_Length() - 1] != ';') {
+            m_subDirectory += ';';
+        }
+
+        m_subDirectory += temp_sub_dir;
+    }
 }

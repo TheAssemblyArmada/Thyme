@@ -16,6 +16,7 @@
 #pragma once
 
 #include "always.h"
+#include "texture.h"
 #include "vector3.h"
 #include "w3derr.h"
 
@@ -49,7 +50,7 @@ public:
     static bool Is_Texturing_Enabled() { return s_texturingEnabled; }
     static bool Is_Thumbnail_Enabled() { return s_thumbnailEnabled; }
     static void Set_Thumbnail_Enabled(bool enable) { s_thumbnailEnabled = enable; }
-    static int Get_Texture_Filter() { return s_textureFilter; }
+    static TextureFilterClass::TextureFilterMode Get_Texture_Filter() { return s_textureFilter; }
     static float Get_Default_Native_Screen_Size() { return s_defaultNativeScreenSize; }
     static bool Is_Sorting_Enabled() { return s_isSortingEnabled; }
     static bool Is_Coloring_Enabled() { return s_isColoringEnabled; }
@@ -57,6 +58,8 @@ public:
     static bool Is_Overbright_Modify_On_Load_Enabled() { return s_overbrightModifyOnLoad; }
     static bool Are_Static_Sort_Lists_Enabled() { return s_areStaticSortListsEnabled; }
     static void Enable_Static_Sort_Lists(bool enable) { s_areStaticSortListsEnabled = enable; }
+    static void Enable_Munge_Sort_On_Load(bool onoff) { s_mungeSortOnLoad = onoff; }
+    static void Enable_Sorting(bool onoff);
 
     static void Enable_Texturing(bool b) { s_texturingEnabled = b; }
 
@@ -66,6 +69,8 @@ public:
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
     static const RenderDeviceDescClass Get_Render_Device_Desc(int deviceidx);
+    static int Get_Render_Device_Count();
+    static const char *Get_Render_Device_Name(int device_index);
     static int Get_Texture_Bit_Depth();
     static void Invalidate_Mesh_Cache();
     static void Invalidate_Textures();
@@ -118,7 +123,7 @@ private:
     static bool &s_isScreenUVBiased;
     static bool &s_texturingEnabled;
     static bool &s_thumbnailEnabled;
-    static int &s_textureFilter;
+    static TextureFilterClass::TextureFilterMode &s_textureFilter;
     static float &s_defaultNativeScreenSize;
     static bool &s_isSortingEnabled;
     static bool &s_isColoringEnabled;
@@ -144,7 +149,7 @@ private:
     static bool s_isScreenUVBiased;
     static bool s_texturingEnabled;
     static bool s_thumbnailEnabled;
-    static int s_textureFilter;
+    static TextureFilterClass::TextureFilterMode s_textureFilter;
     static float s_defaultNativeScreenSize;
     static bool s_isSortingEnabled;
     static bool s_isColoringEnabled;

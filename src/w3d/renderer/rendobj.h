@@ -349,6 +349,7 @@ public:
     RenderObjUnk *Get_Unknown() const { return m_unknown; }
     bool Is_Unk_15() const { return (m_bits & IS_UNK_15) != 0; }
     bool Bounding_Volumes_Valid(void) const { return (m_bits & BOUNDING_VOLUMES_VALID) != 0; }
+    int Is_Sub_Objects_Match_LOD_Enabled() { return (m_bits & SUBOBJS_MATCH_LOD) != 0; }
 
 protected:
     virtual void Add_Dependencies_To_List(DynamicVectorClass<StringClass> &file_list, bool textures_only = false);
@@ -365,8 +366,6 @@ protected:
             m_bits &= ~SUBOBJS_MATCH_LOD;
         }
     }
-
-    int Is_Sub_Objects_Match_LOD_Enabled() { return m_bits & SUBOBJS_MATCH_LOD; }
 
     enum
     {

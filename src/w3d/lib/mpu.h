@@ -1,9 +1,9 @@
 /**
  * @file
  *
- * @author OmniBlade
+ * @author Jonathan Wilson
  *
- * @brief
+ * @brief CPU clock measurement
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,8 +12,6 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-
-int main(int argc, char **argv)
-{
-    return 0;
-}
+#pragma once
+#include "always.h"
+unsigned long Get_CPU_Clock(unsigned long &high);

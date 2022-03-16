@@ -303,11 +303,13 @@ set(GAMEENGINE_SRC
     w3d/lib/filestraw.cpp
     w3d/lib/gcd_lcm.cpp
     w3d/lib/iniclass.cpp
+    w3d/lib/mpu.cpp
     w3d/lib/multilist.cpp
-    w3d/lib/nstrdup.cpp
     w3d/lib/mutex.cpp
+    w3d/lib/nstrdup.cpp
     w3d/lib/random.cpp
     w3d/lib/rawfileclass.cpp
+    w3d/lib/rcfile.cpp
     w3d/lib/readline.cpp
     w3d/lib/refcount.cpp
     w3d/lib/straw.cpp

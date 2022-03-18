@@ -143,7 +143,7 @@ public:
     }
 };
 
-class BoxPrototypeClass : public PrototypeClass
+class BoxPrototypeClass : public W3DMPO, public PrototypeClass
 {
     IMPLEMENT_W3D_POOL(BoxPrototypeClass)
 public:

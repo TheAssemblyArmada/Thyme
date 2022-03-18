@@ -32,7 +32,7 @@ class TextureClass;
 
 constexpr unsigned CHAR_BUFFER_LEN = 0x8000;
 
-struct FontCharsBuffer
+struct FontCharsBuffer : public W3DMPO
 {
     uint16_t buffer[CHAR_BUFFER_LEN];
     IMPLEMENT_W3D_POOL(FontCharsBuffer)

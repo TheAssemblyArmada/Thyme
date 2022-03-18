@@ -347,6 +347,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/aabtreebuilder.cpp
     w3d/renderer/assetmgr.cpp
     w3d/renderer/bitmaphandler.cpp
+    w3d/renderer/bmp2d.cpp
     w3d/renderer/boxrobj.cpp
     w3d/renderer/bwrender.cpp
     w3d/renderer/camera.cpp
@@ -363,6 +364,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/dx8texman.cpp
     w3d/renderer/dx8vertexbuffer.cpp
     w3d/renderer/dx8wrapper.cpp
+    w3d/renderer/dynamesh.cpp
     w3d/renderer/hanimmgr.cpp
     w3d/renderer/hcanim.cpp
     w3d/renderer/hlod.cpp

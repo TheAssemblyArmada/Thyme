@@ -81,7 +81,7 @@ private:
     TxtAddrMode m_vAddressMode;
 };
 
-class TextureClass : public TextureBaseClass
+class TextureClass : public TextureBaseClass, public W3DMPO
 {
     IMPLEMENT_W3D_POOL(TextureClass);
 

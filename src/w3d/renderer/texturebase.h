@@ -100,6 +100,7 @@ public:
     bool Is_Initialized() const { return m_initialized; }
     void Set_Dirty(bool dirty) { m_dirty = dirty; }
     unsigned Get_Width() const { return m_width; }
+    unsigned Get_Height() const { return m_height; }
     MipCountType Get_Mip_Level_Count() const { return m_mipLevelCount; }
 
     static void Invalidate_Old_Unused_Textures(unsigned age);

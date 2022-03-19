@@ -26,9 +26,9 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved
 {
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
-            if (StartHooking()) {
+            if (StartHooks()) {
                 Setup_Hooks();
-                StopHooking();
+                StopHooks();
             }
             break;
 

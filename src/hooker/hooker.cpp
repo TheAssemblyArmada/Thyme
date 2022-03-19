@@ -20,7 +20,6 @@
  * OpenMC2. Provides methods for accessing data and functions in an existing binary and replacing functions with new
  * implementations from an injected DLL.
  */
-
 #include "hooker.h"
 #include "captainslog.h"
 #include "mapview.h"
@@ -28,7 +27,10 @@
 DWORD s_oldProtect1 = 0;
 DWORD s_oldProtect2 = 0;
 
-bool StartHooking()
+void StartHooking() {}
+void StopHooking() {}
+
+bool StartHooks()
 {
     bool success = false;
     ImageSectionInfo info;
@@ -46,7 +48,7 @@ bool StartHooking()
     return success;
 }
 
-bool StopHooking()
+bool StopHooks()
 {
     bool success = false;
     DWORD old_protect;

@@ -27,8 +27,14 @@
 DWORD s_oldProtect1 = 0;
 DWORD s_oldProtect2 = 0;
 
-void StartHooking() {}
-void StopHooking() {}
+void StartHooking()
+{
+    StartHooks();
+}
+void StopHooking()
+{
+    StopHooks();
+}
 
 bool StartHooks()
 {

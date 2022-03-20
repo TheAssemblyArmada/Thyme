@@ -1,4 +1,3 @@
-include(CheckCXXSourceCompiles)
 include(CheckSymbolExists)
 include(CheckIncludeFile)
 include(CheckFunctionExists)
@@ -61,12 +60,3 @@ else()
     endif()
 endif()
 
-check_cxx_source_compiles("
-    #include <algorithm>
-    int main(int argc, char **argv) {
-        return std::clamp(argc, 0, 50);
-    }" HAVE_STD_CLAMP)
-    
-if(NOT HAVE_STD_CLAMP)
-    message("std::clamp not found, standard lower than C++17? Will provide implementation, though this is technically undefined behavior.")
-endif()

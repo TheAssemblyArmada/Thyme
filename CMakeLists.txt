@@ -17,43 +17,6 @@ endif()
 
 project(thyme VERSION 1.04.0 LANGUAGES C CXX)
 
-if(MSVC)
-    string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_DEBUG})
-    set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DYNAMICBASE:NO /NXCOMPAT:NO /INCREMENTAL:NO ${replacementFlags}")
-    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/DYNAMICBASE:NO /NXCOMPAT:NO /INCREMENTAL:NO ${replacementFlags}")
-
-    string(REPLACE "INCREMENTAL" "INCREMENTAL:NO" replacementFlags ${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO})
-    set(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
-    set(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO ${replacementFlags}")
-
-    # Disable Run Time Checking.
-    foreach(flag_var
-        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-        CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-        CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-        #message("Processing flags ${flag_var}")
-        string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
-    endforeach(flag_var)
-    
-    # Use x87 floating point instructions
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:IA32")
-
-    # Set warning level 3
-    # disable C4244: conversion from 'double' to 'float', possible loss of data
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3 /wd4244")
-
-    if (MSVC_VERSION LESS 1920)
-        # MSVC lower than 19
-        # disable C4800: 'BOOL' : forcing value to bool 'true' or 'false' (performance warning)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800")
-    else()
-        # newer MSVC
-        # make C4800 error: Implicit conversion from 'type' to bool. Possible information loss
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /we4800")
-    endif()
-endif()
-
 set(CMAKE_CXX_STANDARD 17)
 
 # We don't support in tree builds, so help people make the right choice.
@@ -122,14 +85,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${thyme_SOURCE_DIR}/cmake/modules)
 find_package(ClangFormat)
 include(ClangFormat)
 
-include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
-
-check_cxx_compiler_flag(-Wno-invalid-offsetof HAVE_NO_INVALID_OFFSETOF)
-
-if(HAVE_NO_INVALID_OFFSETOF)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-invalid-offsetof")
-endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # Prevent lib prefix when built with MinGW to target windows and move to own dir.

@@ -1,0 +1,114 @@
+{
+    "version": 1,
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config",
+            "generator": "Ninja",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "STANDALONE": "ON",
+                "BUILD_TOOLS": "ON"
+            }
+        },
+        {
+            "name": "default-win",
+            "inherits": "default",
+            "displayName": "MSVC defaults",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_EXE_LINKER_FLAGS_DEBUG": "/debug /INCREMENTAL:NO /DYNAMICBASE:NO /NXCOMPAT:NO",
+                "CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO": "/debug /INCREMENTAL:NO",
+                "CMAKE_MODULE_LINKER_FLAGS_DEBUG": "/debug /INCREMENTAL:NO /DYNAMICBASE:NO /NXCOMPAT:NO",
+                "CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO": "/debug /INCREMENTAL:NO",
+                "CMAKE_SHARED_LINKER_FLAGS_DEBUG": "/debug /INCREMENTAL:NO /DYNAMICBASE:NO /NXCOMPAT:NO",
+                "CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFO": "/debug /INCREMENTAL:NO",
+                "CMAKE_C_FLAGS_DEBUG": "/MDd /Zi /Ob0 /Od",
+                "CMAKE_CXX_FLAGS_DEBUG": "/MDd /Zi /Ob0 /Od"
+            }
+        },
+        {
+            "name": "cl-2017",
+            "inherits": "default-win",
+            "displayName": "MSVC CL 2017 build",
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "/DWIN32 /D_WINDOWS /Zc:strictStrings /W3 /wd4244 /wd4800 /arch:IA32 /GR /EHsc"
+            }
+        },
+        {
+            "name": "cl-2019",
+            "inherits": "default-win",
+            "displayName": "MSVC CL 2019 build",
+            "cacheVariables": {
+                "CMAKE_CXX_FLAGS": "/DWIN32 /D_WINDOWS /Zc:strictStrings /W3 /wd4244 /we4800 /arch:IA32 /GR /EHsc"
+            }
+        },
+        {
+            "name": "msvc2017-i686",
+            "inherits": "cl-2017",
+            "displayName": "MSVC 2017 32bit build",
+            "generator": "Visual Studio 15 2017",
+            "cacheVariables": {
+                "BUILD_DLL": "ON"
+            }
+        },
+        {
+            "name": "msvc2017-x86-64",
+            "inherits": "cl-2017",
+            "displayName": "MSVC 2017 64bit build",
+            "generator": "Visual Studio 15 2017 Win64",
+            "cacheVariables": {
+                "BUILD_DLL": "OFF"
+            }
+        },
+        {
+            "name": "msvc2019-i686",
+            "inherits": "cl-2019",
+            "displayName": "MSVC 2019 32bit build",
+            "generator": "Visual Studio 16 2019",
+            "architecture": "Win32",
+            "cacheVariables": {
+                "BUILD_DLL": "ON"
+            }
+        },
+        {
+            "name": "msvc2019-x86-64",
+            "inherits": "cl-2019",
+            "displayName": "MSVC 2019 64bit build",
+            "generator": "Visual Studio 16 2019",
+            "architecture": "x64",
+            "cacheVariables": {
+                "BUILD_DLL": "OFF"
+            }
+        },
+        {
+            "name": "default-unix",
+            "inherits": "default",
+            "hidden": true,
+            "displayName": "UNIX defaults",
+            "cacheVariables": {
+                "BUILD_DLL": "OFF",
+                "CMAKE_CXX_FLAGS": "-Wno-invalid-offsetof"
+            }
+        },
+        {
+            "name": "gcc",
+            "inherits": "default-unix",
+            "displayName": "GCC build",
+            "environment": {
+                "CC": "gcc",
+                "CXX": "g++"
+            }
+        },
+        {
+            "name": "clang",
+            "inherits": "default-unix",
+            "displayName": "Clang build",
+            "environment": {
+                "CC": "clang",
+                "CXX": "clang++"
+            }
+        }
+    ]
+}

@@ -19,6 +19,7 @@
 #include <cstddef>
 #include <cstring>
 #include <new>
+#include <strings.h>
 
 // Using STLPort seems to screw up some of the C++11 header inclusions.
 #ifndef GAME_DLL

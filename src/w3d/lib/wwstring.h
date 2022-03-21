@@ -20,6 +20,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <cwchar>
+#include <strings.h>
 
 #ifdef BUILD_WITH_ICU
 #include <unicode/ustring.h>

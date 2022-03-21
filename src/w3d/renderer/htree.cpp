@@ -19,6 +19,7 @@
 #include "quaternion.h"
 #include "w3d_file.h"
 #include <cstring>
+#include <strings.h>
 
 using std::memcpy;
 using std::strcpy;

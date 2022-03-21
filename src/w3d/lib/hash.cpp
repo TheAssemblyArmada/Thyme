@@ -15,10 +15,7 @@
 #include "hash.h"
 #include "crc.h"
 #include <captainslog.h>
-
-#ifdef HAVE_STRINGS_H
 #include <strings.h>
-#endif
 
 /**
  * 0x008A0900

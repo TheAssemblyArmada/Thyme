@@ -148,6 +148,11 @@ if(WIN32 OR "${CMAKE_SYSTEM}" MATCHES "Windows")
     endif()
 endif()
 
+if(NOT HAVE_STRINGS_H)
+    target_sources(base PRIVATE src/strings/strings.h)
+    target_include_directories(base PUBLIC src/strings)
+endif()
+
 # We don't need to link anything if we have win32 threads. Affects MinGW builds primarily.
 if(CMAKE_USE_PTHREADS_INIT AND NOT CMAKE_USE_WIN32_THREADS_INIT)
     target_link_libraries(base Threads::Threads)

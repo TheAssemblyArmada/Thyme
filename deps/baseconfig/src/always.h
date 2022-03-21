@@ -45,14 +45,6 @@
 
 // Based on the build system generated config.h information we define some stuff here
 // for cross platform consistency.
-#if defined HAVE__STRICMP && !defined HAVE_STRCASECMP
-#define strcasecmp _stricmp
-#endif
-
-#if defined HAVE__STRNICMP && !defined HAVE_STRNCASECMP
-#define strncasecmp _strnicmp
-#endif
-
 #ifndef HAVE_STRLWR
 #define strlwr ex_strlwr
 #endif

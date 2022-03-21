@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <strings.h>
 
 #ifndef PLATFORM_WINDOWS
 #include <libgen.h>

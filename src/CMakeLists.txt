@@ -387,6 +387,8 @@ set(GAMEENGINE_SRC
     w3d/renderer/missing.cpp
     w3d/renderer/motchan.cpp
     w3d/renderer/nullrobj.cpp
+    w3d/renderer/part_buf.cpp
+    w3d/renderer/part_emt.cpp
     w3d/renderer/part_ldr.cpp
     w3d/renderer/pivot.cpp
     w3d/renderer/pointgr.cpp

@@ -137,6 +137,7 @@ enum {
         W3D_CHUNK_EMITTER_ROTATION_KEYFRAMES,                       // rotation keys for the particles
         W3D_CHUNK_EMITTER_FRAME_KEYFRAMES,                          // frame keys (u-v based frame animation)
         W3D_CHUNK_EMITTER_BLUR_TIME_KEYFRAMES,                      // length of tail for line groups
+        W3D_CHUNK_EMITTER_EXTRA_INFO,                               // extra info
 
     W3D_CHUNK_AGGREGATE                             = 0x00000600,    // description of an aggregate object
         W3D_CHUNK_AGGREGATE_HEADER,                                 // general information such as name and version
@@ -262,32 +263,6 @@ struct W3dVertexMaterialStruct
     float Shininess;
     float Opacity;
     float Translucency;
-};
-
-// clang-format off
-#define W3D_ELINE_MERGE_INTERSECTIONS        0x00000001
-#define W3D_ELINE_FREEZE_RANDOM              0x00000002
-#define W3D_ELINE_DISABLE_SORTING            0x00000004
-#define W3D_ELINE_END_CAPS                   0x00000008
-#define W3D_ELINE_TEXTURE_MAP_MODE_MASK      0xFF000000
-#define W3D_ELINE_TEXTURE_MAP_MODE_OFFSET    24
-#define W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP  0x00000000
-#define W3D_ELINE_UNIFORM_LENGTH_TEXTURE_MAP 0x00000001
-#define W3D_ELINE_TILED_TEXTURE_MAP          0x00000002
-#define W3D_ELINE_DEFAULT_BITS \
-    (W3D_ELINE_MERGE_INTERSECTIONS | (W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP << W3D_ELINE_TEXTURE_MAP_MODE_OFFSET))
-// clang-format on
-
-struct W3dEmitterLinePropertiesStruct
-{
-    uint32_t Flags;
-    uint32_t SubdivisionLevel;
-    float NoiseAmplitude;
-    float MergeAbortFactor;
-    float TextureTileFactor;
-    float UPerSec;
-    float VPerSec;
-    uint32_t Reserved[9];
 };
 
 struct W3dNullObjectStruct
@@ -858,10 +833,190 @@ struct W3dTextureInfoStruct
 #define W3DTEXTURE_ANIM_MANUAL                0x0003
 // clang-format on
 
+#define W3D_CURRENT_EMITTER_VERSION 0x00020000
+
+enum
+{
+    EMITTER_TYPEID_DEFAULT = 0,
+    EMITTER_TYPEID_COUNT
+};
+
+extern const char *s_emitterTypeNames[EMITTER_TYPEID_COUNT];
+
 struct W3dRGBAStruct
 {
     uint8_t R;
     uint8_t G;
     uint8_t B;
     uint8_t A;
+};
+
+struct W3dEmitterHeaderStruct
+{
+    uint32_t Version;
+    char Name[16];
+};
+
+struct W3dEmitterUserInfoStruct
+{
+    uint32_t Type;
+    uint32_t SizeofStringParam;
+    char StringParam[1];
+};
+
+struct W3dEmitterInfoStruct
+{
+    char TextureFilename[260];
+    float StartSize;
+    float EndSize;
+    float Lifetime;
+    float EmissionRate;
+    float MaxEmissions;
+    float VelocityRandom;
+    float PositionRandom;
+    float FadeTime;
+    float Gravity;
+    float Elasticity;
+    W3dVectorStruct Velocity;
+    W3dVectorStruct Acceleration;
+    W3dRGBAStruct StartColor;
+    W3dRGBAStruct EndColor;
+};
+
+struct W3dVolumeRandomizerStruct
+{
+    uint32_t ClassID;
+    float Value1;
+    float Value2;
+    float Value3;
+    uint32_t reserved[4];
+};
+
+struct W3dEmitterExtraInfoStruct
+{
+    float FutureStartTime;
+    uint8_t unk1;
+    uint32_t reserved[8];
+};
+
+// clang-format off
+#define W3D_EMITTER_RENDER_MODE_TRI_PARTICLES  0
+#define W3D_EMITTER_RENDER_MODE_QUAD_PARTICLES 1
+#define W3D_EMITTER_RENDER_MODE_LINE           2
+#define W3D_EMITTER_RENDER_MODE_LINEGRP_TETRA  3
+#define W3D_EMITTER_RENDER_MODE_LINEGRP_PRISM  4
+
+#define W3D_EMITTER_FRAME_MODE_1x1   0
+#define W3D_EMITTER_FRAME_MODE_2x2   1
+#define W3D_EMITTER_FRAME_MODE_4x4   2
+#define W3D_EMITTER_FRAME_MODE_8x8   3
+#define W3D_EMITTER_FRAME_MODE_16x16 4
+// clang-format on
+
+struct W3dEmitterInfoStructV2
+{
+    uint32_t BurstSize;
+    W3dVolumeRandomizerStruct CreationVolume;
+    W3dVolumeRandomizerStruct VelRandom;
+    float OutwardVel;
+    float VelInherit;
+    W3dShaderStruct Shader;
+    uint32_t RenderMode;
+    uint32_t FrameMode;
+    uint32_t reserved[6];
+};
+
+struct W3dEmitterPropertyStruct
+{
+    uint32_t ColorKeyframes;
+    uint32_t OpacityKeyframes;
+    uint32_t SizeKeyframes;
+    W3dRGBAStruct ColorRandom;
+    float OpacityRandom;
+    float SizeRandom;
+    uint32_t reserved[4];
+};
+
+struct W3dEmitterColorKeyframeStruct
+{
+    float Time;
+    W3dRGBAStruct Color;
+};
+
+struct W3dEmitterOpacityKeyframeStruct
+{
+    float Time;
+    float Opacity;
+};
+
+struct W3dEmitterSizeKeyframeStruct
+{
+    float Time;
+    float Size;
+};
+
+struct W3dEmitterRotationHeaderStruct
+{
+    uint32_t KeyframeCount;
+    float Random; // random initial rotational velocity (rotations/sec)
+    float OrientationRandom; // random initial orientation (rotations, 1.0=360deg)
+    uint32_t Reserved[1];
+};
+
+struct W3dEmitterRotationKeyframeStruct
+{
+    float Time;
+    float Rotation; // rotational velocity in rotations/sec
+};
+
+struct W3dEmitterFrameHeaderStruct
+{
+    uint32_t KeyframeCount;
+    float Random;
+    uint32_t Reserved[2];
+};
+
+struct W3dEmitterFrameKeyframeStruct
+{
+    float Time;
+    float Frame;
+};
+
+struct W3dEmitterBlurTimeHeaderStruct
+{
+    uint32_t KeyframeCount;
+    float Random;
+    uint32_t Reserved[1];
+};
+
+struct W3dEmitterBlurTimeKeyframeStruct
+{
+    float Time;
+    float BlurTime;
+};
+
+// clang-format off
+#define W3D_ELINE_MERGE_INTERSECTIONS        0x00000001
+#define W3D_ELINE_FREEZE_RANDOM              0x00000002
+#define W3D_ELINE_DISABLE_SORTING            0x00000004
+#define W3D_ELINE_END_CAPS                   0x00000008
+#define W3D_ELINE_TEXTURE_MAP_MODE_MASK      0xFF000000
+#define W3D_ELINE_TEXTURE_MAP_MODE_OFFSET    24
+#define W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP  0x00000000
+#define W3D_ELINE_UNIFORM_LENGTH_TEXTURE_MAP 0x00000001
+#define W3D_ELINE_TILED_TEXTURE_MAP          0x00000002
+#define W3D_ELINE_DEFAULT_BITS \
+    (W3D_ELINE_MERGE_INTERSECTIONS | (W3D_ELINE_UNIFORM_WIDTH_TEXTURE_MAP << W3D_ELINE_TEXTURE_MAP_MODE_OFFSET))
+// clang-format on
+
+struct W3dEmitterLinePropertiesStruct
+{
+    uint32_t Flags;
+    uint32_t SubdivisionLevel;
+    float NoiseAmplitude;
+    float MergeAbortFactor;
+    float TextureTileFactor;
+    float UPerSec;
+    float VPerSec;
+    uint32_t Reserved[9];
 };

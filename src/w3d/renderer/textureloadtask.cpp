@@ -109,7 +109,7 @@ void TextureLoadTaskClass::Init(TextureBaseClass *texture, TaskType type, Priori
     m_d3dTexture = W3D_TYPE_INVALID_TEXTURE;
 
     if (texture->As_Texture() != nullptr) {
-        m_format = texture->As_Texture()->Texture_Format();
+        m_format = texture->As_Texture()->Get_Texture_Format();
     } else {
         m_format = WW3D_FORMAT_UNKNOWN;
     }

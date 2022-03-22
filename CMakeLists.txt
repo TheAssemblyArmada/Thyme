@@ -254,6 +254,10 @@ if(USE_CRASHPAD)
     set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
 endif()
 
+if(BUILD_DLL)
+    add_subdirectory(src/hookproxy)
+endif()
+
 # Build Thyme
 add_subdirectory(src)
 

@@ -44,7 +44,6 @@ set(GAMEENGINE_INCLUDES
 
 set(HOOKER_SRC
     hooker/dllmain.cpp
-    hooker/hooker.cpp
     hooker/mapview.cpp
     hooker/setupglobals_zh.cpp
 )
@@ -553,6 +552,7 @@ if(STANDALONE)
 endif()
 
 if(BUILD_DLL)
+    include(TargetExports)
     add_library(thyme_dll SHARED ${HOOKER_SRC} ${HOOKER_GAME_SRC} ${GAMEENGINE_GAME_SRC} ${GAMEENGINE_SRC} ${GAMEENGINE_HEADERS})
     target_include_directories(thyme_dll BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/deps/stlport)
     target_include_directories(thyme_dll PRIVATE hooker ${GAMEENGINE_INCLUDES})
@@ -561,6 +561,9 @@ if(BUILD_DLL)
     target_compile_definitions(thyme_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
     target_compile_definitions(thyme_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
     set_target_properties(thyme_dll PROPERTIES OUTPUT_NAME thyme PDB_NAME thymedll)
+    target_exports(thyme_dll SYMBOLS 
+        Setup_Hooks
+    )
 endif()
 
 # Note that we don't care about which math lib we link against for worldbuilder.

@@ -7,7 +7,7 @@
  * @author OmniBlade
  * @author Saberhawk
  *
- * @brief Hooking system for interacting with original binary.
+ * @brief Hooking system to alter memory protection on binary in memory.
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -15,26 +15,12 @@
  *            2 of the License, or (at your option) any later version.
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
- *
- * Originally based on work by the Tiberian Technologies team to hook Renegade, rewritten based on work by LRFLEW for
- * OpenMC2. Provides methods for accessing data and functions in an existing binary and replacing functions with new
- * implementations from an injected DLL.
  */
 #include "hooker.h"
-#include "captainslog.h"
 #include "mapview.h"
 
 DWORD s_oldProtect1 = 0;
 DWORD s_oldProtect2 = 0;
-
-void StartHooking()
-{
-    StartHooks();
-}
-void StopHooking()
-{
-    StopHooks();
-}
 
 bool StartHooks()
 {
@@ -50,7 +36,6 @@ bool StartHooks()
             success = false;
     }
 
-    captainslog_dbgassert(success, "Unable to lift code page protection");
     return success;
 }
 
@@ -69,6 +54,5 @@ bool StopHooks()
             success = false;
     }
 
-    captainslog_dbgassert(success, "Unable to restore code page protection");
     return success;
 }

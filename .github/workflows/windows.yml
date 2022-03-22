@@ -69,7 +69,7 @@ jobs:
       run: |
         mkdir artifact
         7z a artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.exe ./build/thyme.pdb ./build/DebugWindow.dll ./build/DebugWindow.pdb ./build/thymecrashhandler.exe ./build/thymecrashhandler.pdb
-        if [ ${{ matrix.platform }} = "x86" ]; then 7z u artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.dll ./build/thymedll.pdb ./build/thymelauncher.exe ./build/thymelauncher.pdb ;fi
+        if [ ${{ matrix.platform }} = "x86" ]; then 7z u artifact/thyme_${{ steps.vars.outputs.arc_path }}.zip ./build/thyme.dll ./build/thymedll.pdb ./build/avifil32.dll ./build/proxydll.pdb ;fi
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:

@@ -205,12 +205,6 @@ endif()
 # Setup various included libraries
 add_subdirectory(deps/captnlog EXCLUDE_FROM_ALL)
 
-# Build launchers for the various binaries we support
-if(BUILD_DLL)
-    add_subdirectory(deps/launcher)
-    list(APPEND INSTALL_TARGETS thymelauncher)
-endif()
-
 # Build miles and bink stubs if we don't have an alternative.
 if(CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT OPENAL_FOUND AND NOT FFMPEG_FOUND)
     add_subdirectory(deps/bink EXCLUDE_FROM_ALL)
@@ -255,7 +249,8 @@ if(USE_CRASHPAD)
 endif()
 
 if(BUILD_DLL)
-    add_subdirectory(src/hookproxy)
+    add_subdirectory(src/hookproxy)  
+    list(APPEND INSTALL_TARGETS proxydll)
 endif()
 
 # Build Thyme

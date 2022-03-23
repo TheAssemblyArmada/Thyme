@@ -37,7 +37,7 @@ Bitmap2D::Bitmap2D(
         shader = ShaderClass::s_presetAdditive2DShader;
     } else if (opaque) {
         shader = ShaderClass::s_presetOpaque2DShader;
-    } else if (Has_Alpha(texture->Texture_Format())) {
+    } else if (Has_Alpha(texture->Get_Texture_Format())) {
         shader = ShaderClass::s_presetAlpha2DShader;
     } else {
         shader = ShaderClass::s_presetOpaque2DShader;

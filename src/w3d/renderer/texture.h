@@ -113,7 +113,7 @@ public:
     SurfaceClass *Get_Surface_Level(unsigned level);
     w3dsurface_t Get_D3D_Surface_Level(unsigned level);
     void Get_Level_Description(SurfaceClass::SurfaceDescription &surface_desc, unsigned int level);
-    WW3DFormat Texture_Format() const { return m_textureFormat; }
+    WW3DFormat Get_Texture_Format() const { return m_textureFormat; }
     TextureFilterClass *Get_Texture_Filter() { return &m_textureFilter; }
 
 #ifdef GAME_DLL

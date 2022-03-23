@@ -392,7 +392,6 @@ set(GAMEENGINE_SRC
     w3d/renderer/pivot.cpp
     w3d/renderer/pointgr.cpp
     w3d/renderer/pot.cpp
-    w3d/renderer/predlod.cpp
     w3d/renderer/projector.cpp
     w3d/renderer/render2d.cpp
     w3d/renderer/render2dsentence.cpp
@@ -403,6 +402,8 @@ set(GAMEENGINE_SRC
     w3d/renderer/seglinerenderer.cpp
     w3d/renderer/shader.cpp
     w3d/renderer/sortingrenderer.cpp
+    w3d/renderer/streak.cpp
+    w3d/renderer/streakrender.cpp
     w3d/renderer/surfaceclass.cpp
     w3d/renderer/synctextureloadtasklist.cpp
     w3d/renderer/texproject.cpp

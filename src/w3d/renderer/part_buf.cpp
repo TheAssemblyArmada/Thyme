@@ -17,7 +17,6 @@
 #include "dx8wrapper.h"
 #include "part_emt.h"
 #include "pot.h"
-#include "predlod.h"
 #include "rinfo.h"
 #include "scene.h"
 #include "simplevec.h"
@@ -1190,8 +1189,6 @@ void ParticleBufferClass::Prepare_LOD(CameraClass &camera)
     if (Get_LOD_Level() < minlod) {
         Set_LOD_Level(minlod);
     }
-
-    PredictiveLODOptimizerClass::Add_Object(this);
 }
 
 void ParticleBufferClass::Increment_LOD()

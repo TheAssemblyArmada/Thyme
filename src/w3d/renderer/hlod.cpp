@@ -16,7 +16,6 @@
 #include "assetmgr.h"
 #include "boxrobj.h"
 #include "nstrdup.h"
-#include "predlod.h"
 #include "rinfo.h"
 
 W3DErrorType SnapPointsClass::Load_W3D(ChunkLoadClass &cload)
@@ -1535,15 +1534,12 @@ void HLodClass::Prepare_LOD(CameraClass &camera)
     if (Is_Not_Hidden_At_All()) {
         float sz = Get_Screen_Size(camera);
 
-        if (m_lodCount <= 1) {
-            PredictiveLODOptimizerClass::Add_Cost(Get_Cost());
-        } else {
+        if (m_lodCount > 1) {
             int lod = Calculate_Cost_Value_Arrays(sz, m_value, m_cost);
+
             if (m_curLod < lod) {
                 Set_LOD_Level(lod);
             }
-
-            PredictiveLODOptimizerClass::Add_Object(this);
         }
 
         for (int i = 0; i < m_additionalModels.Count(); i++) {

@@ -135,6 +135,7 @@
 #include "sortingrenderer.h"
 #include "soundmanager.h"
 #include "statemachine.h"
+#include "streak.h"
 #include "surfaceclass.h"
 #include "swayclientupdate.h"
 #include "targa.h"
@@ -2279,4 +2280,7 @@ void Setup_Hooks()
     Hook_Any(0x00834FC0, PointGroupClass::Set_Frame_Row_Column_Count_Log2);
     Hook_Any(0x00835050, PointGroupClass::Render);
     Hook_Any(0x00838180, PointGroupClass::Render_Volume_Particle);
+
+    // streak.cpp
+    Hook_Any(0x00834010, StreakLineClass::Prepare_LOD);
 }

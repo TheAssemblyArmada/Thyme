@@ -41,7 +41,6 @@
 #include "network.h"
 #include "particlesysmanager.h"
 #include "physicsupdate.h"
-#include "predlod.h"
 #include "renderdevicedesc.h"
 #include "rtsutils.h"
 #include "scriptengine.h"
@@ -136,7 +135,6 @@ W3DDisplay::~W3DDisplay()
         Ref_Ptr_Release(m_myLight[i]);
     }
 
-    PredictiveLODOptimizerClass::Free();
     // Debug_Statistics::Shutdown_Statistics
     W3DShaderManager::Shutdown();
     s_assetManager->Free_Assets();

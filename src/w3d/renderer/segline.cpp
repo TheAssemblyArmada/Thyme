@@ -15,7 +15,6 @@
 #include "segline.h"
 
 #include "coltest.h"
-#include "predlod.h"
 #include "w3d.h"
 
 SegmentedLineClass::SegmentedLineClass() : m_maxSubdivisionLevels(0), m_normalizedScreenArea(0) {}
@@ -339,12 +338,6 @@ void SegmentedLineClass::Prepare_LOD(CameraClass &camera)
     }
 
     m_lineRenderer.Set_Current_Subdivision_Level(level);
-
-    if (m_maxSubdivisionLevels) {
-        PredictiveLODOptimizerClass::Add_Object(this);
-    } else {
-        PredictiveLODOptimizerClass::Add_Cost(Get_Cost());
-    }
 }
 
 void SegmentedLineClass::Increment_LOD()

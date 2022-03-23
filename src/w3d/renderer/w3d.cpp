@@ -25,7 +25,6 @@
 #include "ffactory.h"
 #include "hashtemplate.h"
 #include "iniclass.h"
-#include "predlod.h"
 #include "scene.h"
 #include "sortingrenderer.h"
 #include "textureloader.h"
@@ -221,7 +220,6 @@ W3DErrorType W3D::Shutdown()
 #ifdef PLATFORM_WINDOWS
     MMRESULT r = timeEndPeriod(1);
     captainslog_assert(r == TIMERR_NOERROR);
-    PredictiveLODOptimizerClass::Free();
 
     if (W3DAssetManager::Get_Instance()) {
         W3DAssetManager::Get_Instance()->Free_Assets();

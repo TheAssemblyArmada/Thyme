@@ -52,6 +52,15 @@ struct VertexFormatXYZDUV1
     float v1;
 };
 
+struct VertexFormatXYZUV1
+{
+    float x;
+    float y;
+    float z;
+    float u1;
+    float v1;
+};
+
 class VertexBufferLockClass
 {
 public:

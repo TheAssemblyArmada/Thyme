@@ -422,10 +422,6 @@ bool &DX8TextureCategoryClass::s_forceMultiply = Make_Global<bool>(PICK_ADDRESS(
 HOOK_AUTOPOOL(PolyRenderTaskClass, 256, PICK_ADDRESS(0x00A4C450, 0x00DEEB60));
 HOOK_AUTOPOOL(MatPassTaskClass, 256, PICK_ADDRESS(0x00A4C468, 0x00DEEB78));
 
-// predlod.cpp
-#include "predlod.h"
-float &PredictiveLODOptimizerClass::s_TotalCost = Make_Global<float>(PICK_ADDRESS(0x00A480AC, 0x00DEEB04));
-
 // w3dformat.cpp
 ARRAY_DEF(PICK_ADDRESS(0x00A5243C, 0x00DF6B20), WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
 ARRAY_DEF(PICK_ADDRESS(0x00A522FC, 0x00DF69E0), WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);

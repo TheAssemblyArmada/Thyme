@@ -18,7 +18,6 @@
 #include "coltest.h"
 #include "htree.h"
 #include "intersec.h"
-#include "predlod.h"
 #include "scene.h"
 #include "vector.h"
 #include "w3d.h"
@@ -258,10 +257,7 @@ int RenderObjClass::Remove_Sub_Objects_From_Bone(const char *bone_name)
     return Remove_Sub_Objects_From_Bone(bindex);
 }
 
-void RenderObjClass::Prepare_LOD(CameraClass &camera)
-{
-    PredictiveLODOptimizerClass::Add_Cost(Get_Cost());
-}
+void RenderObjClass::Prepare_LOD(CameraClass &camera) {}
 
 float RenderObjClass::Get_Cost() const
 {

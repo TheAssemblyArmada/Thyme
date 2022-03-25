@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D Viewer
+ * @brief W3D View
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License

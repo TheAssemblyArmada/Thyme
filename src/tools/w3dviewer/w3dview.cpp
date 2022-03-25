@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D Viewer
+ * @brief W3D View
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,7 +12,7 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "w3dviewer.h"
+#include "w3dview.h"
 
 int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

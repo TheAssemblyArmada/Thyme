@@ -13,4 +13,18 @@
  *            LICENSE
  */
 #pragma once
-#include "always.h"
+#include "w3dafx.h"
+
+class CW3DViewApp : public CWinApp
+{
+public:
+    virtual BOOL InitInstance();
+    virtual int ExitInstance();
+    DECLARE_MESSAGE_MAP()
+    afx_msg void OnAppAbout();
+
+private:
+    bool m_isInitialized;
+};
+
+extern CW3DViewApp theApp;

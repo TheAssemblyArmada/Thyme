@@ -106,7 +106,15 @@ public:
             m_prototypeLoaders.Add(loader);
         }
     }
-    static W3DAssetManager *Get_Instance(void) { return s_theInstance; }
+    static W3DAssetManager *Get_Instance() { return s_theInstance; }
+
+    static void Delete_This()
+    {
+        if (s_theInstance)
+            delete s_theInstance;
+        s_theInstance = NULL;
+    }
+
     void Add_Prototype(PrototypeClass *proto);
     PrototypeClass *Find_Prototype(const char *name);
     void Remove_Prototype(PrototypeClass *proto);

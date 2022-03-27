@@ -57,10 +57,10 @@ public:
     void Set_Bounding_Sphere(const SphereClass &sphere) { m_areaEffectSphere = sphere; }
     void Set_Bounding_Box(const AABoxClass &box) { m_areaEffectBox = box; }
 
-    void Set_Decal_UV_Axis(const Vector3 &u, const Vector3 &v)
+    void Set_Decal_UV_Axis(const Vector3 &uv0, const Vector3 &uv1)
     {
-        m_shadowUV[0] = u;
-        m_shadowUV[1] = v;
+        m_shadowUV[0] = uv0;
+        m_shadowUV[1] = uv1;
     }
 
     void Get_Decal_UV_Axis(Vector3 *u, Vector3 *v)

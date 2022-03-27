@@ -436,8 +436,8 @@ void W3DShadowGeometryManager::Free_All_Geoms()
     W3DShadowGeometryManagerIterator it(*this);
 
     for (it.First(); !it.Is_Done(); it.Next()) {
-        W3DShadowGeometry *v1 = it.Get_Current_Geom();
-        v1->Release_Ref();
+        W3DShadowGeometry *geo = it.Get_Current_Geom();
+        geo->Release_Ref();
     }
 
     m_geomPtrTable->Reset();

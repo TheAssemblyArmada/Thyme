@@ -130,10 +130,16 @@ class W3DShadowManager
 public:
     Shadow *Add_Shadow(RenderObjClass *robj, Shadow::ShadowTypeInfo *shadow_info, Drawable *drawable);
     void Remove_Shadow(Shadow *shadow);
+
+    unsigned int Get_Shadow_Color() const { return m_shadowColor; }
     void Set_Shadow_Color(unsigned int color) { m_shadowColor = color; }
+
+    bool Get_Is_Shadow_Scene() const { return m_isShadowScene; }
     void Set_Is_Shadow_Scene(bool set) { m_isShadowScene = set; }
-    unsigned int Get_Stencil_Mask() { return m_stencilMask; }
+
+    unsigned int Get_Stencil_Mask() const { return m_stencilMask; }
     void Set_Stencil_Mask(unsigned int mask) { m_stencilMask = mask; }
+
     Vector3 &Get_Light_Pos_World(int light_index);
 
 protected:

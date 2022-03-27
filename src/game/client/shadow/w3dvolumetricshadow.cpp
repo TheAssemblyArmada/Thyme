@@ -525,3 +525,78 @@ W3DShadowGeometry *W3DShadowGeometryManagerIterator::Get_Current_Geom()
 {
     return static_cast<W3DShadowGeometry *>(Get_Current());
 }
+
+Geometry::Geometry() :
+    m_verts(nullptr),
+    m_indices(nullptr),
+    m_numPolygon(0),
+    m_numVertex(0),
+    m_flags(0),
+    // BUGFIX original didn't init these
+    m_numActivePolygon(0),
+    m_numActiveVertex(0),
+    m_visibleState(STATE_UNKNOWN)
+{
+}
+
+Geometry::~Geometry()
+{
+    Release();
+}
+
+bool Geometry::Create(int num_vert, int num_poly)
+{
+    if (num_vert) {
+        // BUGFIX Geos can be reused so clean up to avoid memory leak
+        if (m_verts != nullptr) {
+            delete[] m_verts;
+        }
+
+        m_verts = new Vector3[num_vert];
+        if (m_verts == nullptr) {
+            return false;
+        }
+    }
+
+    if (num_poly) {
+        // BUGFIX Geos can be reused so clean up to avoid memory leak
+        if (m_indices != nullptr) {
+            delete[] m_indices;
+        }
+
+        m_indices = new short[3 * num_poly];
+
+        if (m_indices == nullptr) {
+            // BUGFIX clean up to avoid memory leak
+            if (m_verts != nullptr) {
+                delete[] m_verts;
+            }
+
+            return false;
+        }
+    }
+
+    m_numPolygon = num_poly;
+    m_numVertex = num_vert;
+    m_numActivePolygon = 0;
+    m_numActiveVertex = 0;
+
+    return true;
+}
+
+void Geometry::Release()
+{
+    if (m_verts != nullptr) {
+        delete[] m_verts;
+        m_verts = nullptr;
+    }
+    if (m_indices != nullptr) {
+        delete[] m_indices;
+        m_indices = nullptr;
+    }
+
+    m_numPolygon = 0;
+    m_numActivePolygon = 0;
+    m_numVertex = 0;
+    m_numActiveVertex = 0;
+}

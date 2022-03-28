@@ -80,6 +80,16 @@ extern int &g_drawStartY;
 extern int &g_drawEdgeY;
 #endif
 
+struct SHADOW_DECAL_VERTEX
+{
+    float x;
+    float y;
+    float z;
+    int c;
+    float u;
+    float v;
+};
+
 // BUGFIX init all members
 W3DShadowTexture::W3DShadowTexture() : m_texture(nullptr), m_name{}
 {
@@ -105,9 +115,12 @@ void W3DShadowTexture::Update_Bounds(Vector3 &light_pos, RenderObjClass *robj)
     Vector3 objPos;
     Vector3 Corners[8];
     Vector3 lightRay;
+
     objPos = robj->Get_Position();
     *box = robj->Get_Bounding_Box();
+
     float floorZ = objPos.Z - 2.0f;
+
     Corners[0] = box->m_center + box->m_extent;
     Corners[1] = Corners[0];
     Corners[1].X = Corners[1].X - 2.0f * box->m_extent.X;
@@ -115,17 +128,20 @@ void W3DShadowTexture::Update_Bounds(Vector3 &light_pos, RenderObjClass *robj)
     Corners[2].Y = Corners[2].Y - 2.0f * box->m_extent.Y;
     Corners[3] = Corners[2];
     Corners[3].X = 2.0f * box->m_extent.X + Corners[3].X;
+
     lightRay = Corners[0] - light_pos;
     float f1 = 1.0f / lightRay.Length();
     lightRay *= f1;
     float f2 = GameMath::Fabs((Corners[0].Z - floorZ) / lightRay.Z);
     Corners[4] = Corners[0] + (lightRay * f2);
     f2 *= f1;
+
     lightRay = Corners[1] - light_pos;
     f1 = 1.0f / lightRay.Length();
+    lightRay *= f1;
     float f3 = GameMath::Fabs((Corners[1].Z - floorZ) / lightRay.Z);
     Corners[5] = Corners[1] + (lightRay * f3);
-    f3 = f3 * f1;
+    f3 *= f1;
 
     if (f3 > f2) {
         f2 = f3;
@@ -136,13 +152,14 @@ void W3DShadowTexture::Update_Bounds(Vector3 &light_pos, RenderObjClass *robj)
     lightRay *= f1;
     f2 = GameMath::Fabs((Corners[2].Z - floorZ) / lightRay.Z);
     Corners[6] = Corners[2] + (lightRay * f2);
-    f2 = f2 * f1;
+    f2 *= f1;
+
     lightRay = Corners[3] - light_pos;
     f1 = 1.0f / lightRay.Length();
     lightRay *= f1;
     f3 = GameMath::Fabs((Corners[3].Z - floorZ) / lightRay.Z);
-    Corners[7] = Corners[3] + (lightRay * f2);
-    f3 = f3 * f1;
+    Corners[7] = Corners[3] + (lightRay * f3);
+    f3 *= f1;
 
     if (f3 > f2) {
         f2 = f3;
@@ -161,8 +178,7 @@ W3DShadowTexture::~W3DShadowTexture()
 
 void W3DShadowTexture::Set_Name(const char *source)
 {
-    memset(m_name, 0, sizeof(m_name));
-    strncpy(m_name, source, 31);
+    strlcpy_tpl(m_name, source);
 }
 
 W3DShadowTextureManager::W3DShadowTextureManager()
@@ -336,7 +352,7 @@ void W3DProjectedShadow::Update_Texture(Vector3 &light_pos)
             objectToLight.Set(1.0f, 0.0f, 0.0f);
         }
 
-        struct SurfaceClass::SurfaceDescription surface_desc;
+        SurfaceClass::SurfaceDescription surface_desc;
         m_shadowTexture[0]->Get_Texture()->Get_Level_Description(surface_desc, 0);
         Vector3 uVec = (objectToLight * 3.2f) / (float)surface_desc.width;
         objectToLight.Rotate_Z(-1.0f, 0.0f);
@@ -486,7 +502,7 @@ bool W3DProjectedShadowManager::Re_Acquire_Resources()
     }
 
     return g_shadowDecalVertexBufferD3D
-        || SUCCEEDED(dev->CreateVertexBuffer(24 * g_shadowDecalVertexSize,
+        || SUCCEEDED(dev->CreateVertexBuffer(sizeof(SHADOW_DECAL_VERTEX) * g_shadowDecalVertexSize,
             D3DUSAGE_WRITEONLY | D3DUSAGE_DYNAMIC,
             0,
             D3DPOOL_DEFAULT,
@@ -498,10 +514,10 @@ bool W3DProjectedShadowManager::Re_Acquire_Resources()
 
 void W3DProjectedShadowManager::Release_Resources()
 {
-#ifdef BUILD_WITH_D3D8
     Invalidate_Cached_Light_Positions();
     Ref_Ptr_Release(m_dynamicRenderTarget);
 
+#ifdef BUILD_WITH_D3D8
     if (g_shadowDecalIndexBufferD3D) {
         g_shadowDecalIndexBufferD3D->Release();
     }
@@ -574,7 +590,7 @@ void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowTy
             DX8Wrapper::Apply_Render_State_Changes();
             dev->SetIndices(g_shadowDecalIndexBufferD3D, g_nShadowDecalStartBatchVertex);
             dev->SetTransform(D3DTS_WORLD, (D3DMATRIX *)&mWorld);
-            dev->SetStreamSource(0, g_shadowDecalVertexBufferD3D, 24);
+            dev->SetStreamSource(0, g_shadowDecalVertexBufferD3D, sizeof(SHADOW_DECAL_VERTEX));
             dev->SetVertexShader(D3DFVF_TEX1 | D3DFVF_DIFFUSE | D3DFVF_XYZ);
 
             if (DX8Wrapper::Is_Triangle_Draw_Enabled()) {
@@ -599,16 +615,6 @@ void W3DProjectedShadowManager::Flush_Decals(W3DShadowTexture *texture, ShadowTy
 void W3DProjectedShadowManager::Queue_Decal(W3DProjectedShadow *shadow)
 {
 #ifdef BUILD_WITH_D3D8
-    struct SHADOW_DECAL_VERTEX
-    {
-        float x;
-        float y;
-        float z;
-        int c;
-        float u;
-        float v;
-    };
-
     Vector3 hmapVertex;
     Vector3 objPos;
     AABoxClass box;
@@ -1408,11 +1414,11 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
     }
 
     if (offsetx != 0.0f) {
-        offsetx = offsetx * shadow->m_sizeX;
+        offsetx = -offsetx * x;
     }
 
     if (offsety != 0.0f) {
-        offsety = offsety * shadow->m_sizeY;
+        offsety = -offsety * y;
     }
 
     shadow->m_sizeX = x;
@@ -1458,7 +1464,7 @@ W3DProjectedShadow *W3DProjectedShadowManager::Add_Shadow(
 
 W3DProjectedShadow *W3DProjectedShadowManager::Create_Decal_Shadow(Shadow::ShadowTypeInfo *shadow_info)
 {
-    W3DShadowTexture *tex = 0;
+    W3DShadowTexture *tex = nullptr;
     float x = 0.0f;
     float y = 0.0f;
     float f1 = 10.0f;
@@ -1575,7 +1581,7 @@ void W3DProjectedShadowManager::Remove_Shadow(W3DProjectedShadow *shadow)
             if (s) {
                 s->m_next = shadow->m_next;
             } else {
-                this->m_shadowList = shadow->m_next;
+                m_shadowList = shadow->m_next;
             }
 
             if (shadow->m_type == SHADOW_DECAL) {

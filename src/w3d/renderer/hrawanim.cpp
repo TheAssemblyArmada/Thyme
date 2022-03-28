@@ -142,25 +142,25 @@ void HRawAnimClass::Add_Channel(MotionChannelClass *newchan)
 
     switch (newchan->m_type) {
         case ANIM_CHANNEL_X:
-            this->m_nodeMotion[pivot].X = newchan;
+            m_nodeMotion[pivot].X = newchan;
             break;
         case ANIM_CHANNEL_Y:
-            this->m_nodeMotion[pivot].Y = newchan;
+            m_nodeMotion[pivot].Y = newchan;
             break;
         case ANIM_CHANNEL_Z:
-            this->m_nodeMotion[pivot].Z = newchan;
+            m_nodeMotion[pivot].Z = newchan;
             break;
         case ANIM_CHANNEL_XR:
-            this->m_nodeMotion[pivot].XR = newchan;
+            m_nodeMotion[pivot].XR = newchan;
             break;
         case ANIM_CHANNEL_YR:
-            this->m_nodeMotion[pivot].YR = newchan;
+            m_nodeMotion[pivot].YR = newchan;
             break;
         case ANIM_CHANNEL_ZR:
-            this->m_nodeMotion[pivot].ZR = newchan;
+            m_nodeMotion[pivot].ZR = newchan;
             break;
         case ANIM_CHANNEL_Q:
-            this->m_nodeMotion[pivot].Q = newchan;
+            m_nodeMotion[pivot].Q = newchan;
             break;
     }
 }

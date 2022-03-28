@@ -396,8 +396,8 @@ void W3DShroud::Fill_Border_Shroud_Data(unsigned char level, SurfaceClass *surfa
     POINT point;
     point.x = 0;
     point.y = 0;
-    unsigned int i1 = this->m_dstTextureWidth / src_rect.right;
-    unsigned int i2 = this->m_dstTextureWidth % src_rect.right;
+    unsigned int i1 = m_dstTextureWidth / src_rect.right;
+    unsigned int i2 = m_dstTextureWidth % src_rect.right;
 
     for (unsigned int j = 0; j < m_dstTextureHeight; j++) {
         point.y = j;

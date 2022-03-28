@@ -394,7 +394,7 @@ int HTreeClass::Get_Bone_Index(char const *name)
         return 0;
     } else {
         for (int i = 0; i < m_numPivots; i++) {
-            if (!strcasecmp(this->m_pivot[i].name, name)) {
+            if (!strcasecmp(m_pivot[i].name, name)) {
                 return i;
             }
         }

@@ -1094,7 +1094,7 @@ void HLodClass::Get_Obj_Space_Bounding_Box(AABoxClass &box) const
 
 void HLodClass::Update_Obj_Space_Bounding_Volumes()
 {
-    ModelArrayClass &lod = m_lod[this->m_lodCount - 1];
+    ModelArrayClass &lod = m_lod[m_lodCount - 1];
 
     if (m_boundingBoxIndex < 0 || m_boundingBoxIndex >= lod.Count()
         || lod[m_boundingBoxIndex].m_model->Class_ID() != CLASSID_OBBOX) {

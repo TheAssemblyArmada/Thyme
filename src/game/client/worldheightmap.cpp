@@ -1905,10 +1905,10 @@ bool WorldHeightMap::Set_Draw_Origin(int x_origin, int y_origin)
         return false;
     }
 
-    this->m_drawOriginX = x_origin;
-    this->m_drawOriginY = y_origin;
-    this->m_drawWidthX = width;
-    this->m_drawHeightY = height;
+    m_drawOriginX = x_origin;
+    m_drawOriginY = y_origin;
+    m_drawWidthX = width;
+    m_drawHeightY = height;
     return true;
 }
 

@@ -15,6 +15,7 @@
 #include "w3dview.h"
 #include "assetmgr.h"
 #include "gamemath.h"
+#include "mainfrm.h"
 #include "resource.h"
 
 CW3DViewApp theApp;
@@ -43,7 +44,7 @@ BOOL CW3DViewApp::InitInstance()
     }
 
     m_pMainWnd->ShowWindow(SW_SHOW);
-    UpdateWindow(*m_pMainWnd);
+    m_pMainWnd->UpdateWindow();
     m_pMainWnd->DragAcceptFiles(true);
     m_isInitialized = true;
 

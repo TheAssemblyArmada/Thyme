@@ -172,7 +172,7 @@ public:
 
     unsigned char Get_Height(int x, int y) const
     {
-        int i = x + this->m_width * y;
+        int i = x + m_width * y;
 
         if (i >= 0 && i < m_dataSize && m_data) {
             return m_data[i];

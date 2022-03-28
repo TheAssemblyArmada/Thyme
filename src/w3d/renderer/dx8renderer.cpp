@@ -802,19 +802,19 @@ DX8FVFCategoryContainer::DX8FVFCategoryContainer(unsigned int FVF, bool sorting)
         m_uvCoordinateChannels = 3;
     }
     if ((FVF & D3DFVF_TEX4) == D3DFVF_TEX4) {
-        this->m_uvCoordinateChannels = 4;
+        m_uvCoordinateChannels = 4;
     }
     if ((FVF & D3DFVF_TEX5) == D3DFVF_TEX5) {
-        this->m_uvCoordinateChannels = 5;
+        m_uvCoordinateChannels = 5;
     }
     if ((FVF & D3DFVF_TEX6) == D3DFVF_TEX6) {
-        this->m_uvCoordinateChannels = 6;
+        m_uvCoordinateChannels = 6;
     }
     if ((FVF & D3DFVF_TEX7) == D3DFVF_TEX7) {
-        this->m_uvCoordinateChannels = 7;
+        m_uvCoordinateChannels = 7;
     }
     if ((FVF & D3DFVF_TEX8) == D3DFVF_TEX8) {
-        this->m_uvCoordinateChannels = 8;
+        m_uvCoordinateChannels = 8;
     }
 #endif
 }

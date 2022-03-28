@@ -678,7 +678,7 @@ W3DErrorType VertexMaterialClass::Load_W3D(ChunkLoadClass &cload)
     }
 
     if ((hasname) && (name)) {
-        this->m_name = name;
+        m_name = name;
     }
 
     Parse_W3dVertexMaterialStruct(vmat);

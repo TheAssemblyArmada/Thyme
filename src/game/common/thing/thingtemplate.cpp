@@ -452,11 +452,11 @@ bool ThingTemplate::Is_Equivalent_To(const ThingTemplate *reskin) const
         return true;
     }
 
-    if (this->Get_Final_Override() == reskin->Get_Final_Override()) {
+    if (Get_Final_Override() == reskin->Get_Final_Override()) {
         return true;
     }
 
-    if (this->m_originalSkinTemplate == reskin) {
+    if (m_originalSkinTemplate == reskin) {
         return true;
     }
 

@@ -15,8 +15,11 @@
 #pragma once
 
 #include "always.h"
+#include "aabox.h"
+#include "colmath.h"
 #include "hash.h"
 #include "refcount.h"
+#include "sphere.h"
 #include "vector3.h"
 #include "vector3i.h"
 #include <new>
@@ -152,4 +155,92 @@ public:
     virtual ~W3DShadowGeometryManagerIterator() {}
 
     W3DShadowGeometry *Get_Current_Geom();
+};
+
+struct Geometry
+{
+public:
+    enum VisibleState
+    {
+        STATE_INVISIBLE = CollisionMath::OUTSIDE,
+        STATE_VISIBLE = CollisionMath::INSIDE,
+        STATE_UNKNOWN = CollisionMath::OVERLAPPED,
+    };
+
+    Geometry();
+    ~Geometry();
+
+    // not yet found
+    Geometry(Geometry &);
+    Geometry &operator=(Geometry &);
+
+    bool Create(int num_vert, int num_poly);
+
+    void Release();
+
+    int Get_Flags() const { return m_flags; }
+    void Set_Flags(int flags) { m_flags = flags; }
+
+    int Get_Num_Polygon() const { return m_numPolygon; }
+    int Get_Num_Vertex() const { return m_numVertex; }
+
+    int Get_Num_Active_Polygon() const { return m_numActivePolygon; }
+    int Set_Num_Active_Polygon(int num)
+    {
+        m_numActivePolygon = num;
+        return num;
+    }
+
+    int Get_Num_Active_Vertex() const { return m_numActiveVertex; }
+    int Set_Num_Active_Vertex(int num)
+    {
+        m_numActiveVertex = num;
+        return num;
+    }
+
+    void Get_Polygon_Index(int index, short *index_list) const
+    {
+        index_list[0] = m_indices[3 * index + 0];
+        index_list[1] = m_indices[3 * index + 1];
+        index_list[2] = m_indices[3 * index + 2];
+    }
+
+    int Set_Polygon_Index(int index, const short *index_list)
+    {
+        m_indices[3 * index + 0] = index_list[0];
+        m_indices[3 * index + 1] = index_list[1];
+        m_indices[3 * index + 2] = index_list[2];
+        return 3;
+    }
+
+    Vector3 *Get_Vertex(int index) const { return &m_verts[index]; }
+    void Set_Vertex(int index, Vector3 *vert) { m_verts[index] = *vert; }
+
+    // not yet found
+    int Find_Vertex_In_Range(int, int, Vector3 *);
+
+    AABoxClass &Get_Bounding_Box() { return m_boundingBox; }
+    void Set_Bounding_Box(AABoxClass &box) { m_boundingBox = box; }
+
+    SphereClass &Get_Bounding_Sphere() { return m_boundingSphere; }
+    void Set_Bounding_Sphere(SphereClass &sphere) { m_boundingSphere = sphere; }
+
+    VisibleState Get_Visible_State() const { return m_visibleState; }
+    void Set_Visible_State(VisibleState state) { m_visibleState = state; }
+
+private:
+    Vector3 *m_verts;
+    short *m_indices;
+
+    int m_numPolygon;
+    int m_numVertex;
+    int m_numActivePolygon;
+    int m_numActiveVertex;
+
+    int m_flags;
+
+    AABoxClass m_boundingBox;
+    SphereClass m_boundingSphere;
+
+    VisibleState m_visibleState;
 };

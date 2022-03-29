@@ -22,3 +22,6 @@
 #include <afxext.h> // MFC extensions
 #include <afxcmn.h>
 // clang-format on
+
+#define ID_OBJECT_TOOLBAR 101
+#define ID_ANIMATION_TOOLBAR 102

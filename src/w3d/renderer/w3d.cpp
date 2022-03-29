@@ -136,7 +136,7 @@ void W3D::Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bo
     DX8Wrapper::Get_Render_Target_Resolution(set_w, set_h, set_bits, set_windowed);
 }
 
-const RenderDeviceDescClass W3D::Get_Render_Device_Desc(int deviceidx)
+const RenderDeviceDescClass &W3D::Get_Render_Device_Desc(int deviceidx)
 {
     return DX8Wrapper::Get_Render_Device_Desc(deviceidx);
 }

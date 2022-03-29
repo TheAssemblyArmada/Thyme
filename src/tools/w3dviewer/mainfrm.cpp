@@ -13,9 +13,14 @@
  *            LICENSE
  */
 #include "mainfrm.h"
+#include "assetmgr.h"
+#include "deviceselectiondialog.h"
+#include "renderdevicedesc.h"
 #include "resource.h"
 #include "w3d.h"
 #include "w3dview.h"
+
+class CGraphicView;
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
@@ -188,6 +193,8 @@ END_MESSAGE_MAP()
 
 int DeviceWidth = 640;
 int DeviceHeight = 480;
+int Device = -1;
+int BPP = -1;
 
 CMainFrame::CMainFrame() : m_currentType(-1), m_animationToolbarVisible(true), m_initialized(false) {}
 
@@ -228,7 +235,7 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
         info.dwTypeData = (char *)&info.hbmpItem;
         info.cch = 200;
 
-        if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
+        if (m_subMenu->GetMenuItemInfo(LOWORD(wParam), &info)) {
             // TODO
             // EditorParticleEmitterDefClas *def = new EditorParticleEmitterDefClass();
             // GetCurrentDocument()->AddEmittersToDef(def, (const char *)&info.hbmpItem, nullptr);
@@ -301,7 +308,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
                 W3D::Enable_Static_Sort_Lists(true);
                 DeviceWidth = theApp.GetProfileInt("Config", "DeviceWidth", 640);
                 DeviceHeight = theApp.GetProfileInt("Config", "DeviceHeight", 480);
-                CreateDevice(false);
+                GetDevice(false);
                 W3D::Enable_Munge_Sort_On_Load(AfxGetApp()->GetProfileInt("Config", "MungeSortOnLoad", 0) == 1);
                 W3D::Enable_Sorting(AfxGetApp()->GetProfileInt("Config", "EnableSorting", 1) == 1);
             }
@@ -363,9 +370,25 @@ void CMainFrame::UpdateCameraDistance(float distance)
     // TODO
 }
 
-void CMainFrame::CreateDevice(bool doDeviceDlg)
+void CMainFrame::GetDevice(bool doDeviceDlg)
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        CDeviceSelectionDialog dlg(!doDeviceDlg, this);
+
+        if (dlg.DoModal() != IDOK) {
+            return;
+        }
+
+        Device = dlg.m_device;
+        BPP = dlg.m_bpp;
+
+        // TODO
+        // if (!view.Create()) {
+        //     return;
+        // }
+    }
 }
 
 void CMainFrame::UpdateEmitterMenu()
@@ -375,28 +398,93 @@ void CMainFrame::UpdateEmitterMenu()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-    // TODO
-    return 0;
+    static UINT indicators[] = { 0, 61210, 61218, 61211, 61212, 61219, 61222 };
+
+    theApp.m_pMainWnd = this;
+
+    if (CFrameWnd::OnCreate(lpCreateStruct) == -1 || !m_toolBar.Create(this) || !m_toolBar.LoadToolBar(IDR_MAINFRAME)
+        || !m_statusBar.Create(this) || !m_statusBar.SetIndicators(indicators, _countof(indicators))) {
+        return -1;
+    }
+
+    m_objectToolbar.Create("Object controls", this, ID_OBJECT_TOOLBAR);
+    m_objectToolbar.AddItem(IDB_XDIR, IDB_XDIRSEL, ID_CAMERA_ROTATEYONLY, TRUE);
+    m_objectToolbar.AddItem(IDB_YDIR, IDB_YDIRSEL, ID_CAMERA_ROTATEXONLY, TRUE);
+    m_objectToolbar.AddItem(IDB_ZDIR, IDB_ZDIRSEL, ID_CAMERA_ROTATEZONLY, TRUE);
+    m_objectToolbar.AddItem(IDB_ROTATEZ, IDB_ROTATEZSEL, ID_OBJECT_ROTATEZ, TRUE);
+
+    m_animationToolbar.Create("Animation controls", this, ID_ANIMATION_TOOLBAR);
+    m_animationToolbar.AddItem(IDB_PLAY, IDB_PLAYSEL, ID_ANIMATION_PLAY, TRUE);
+    m_animationToolbar.AddItem(IDB_STOP, IDB_STOPSEL, ID_ANIMATION_STOP, FALSE);
+    m_animationToolbar.AddItem(IDB_PAUSE, IDB_PAUSESEL, ID_ANIMATION_PAUSE, TRUE);
+    m_animationToolbar.AddItem(IDB_REVERSE, IDB_REVERSESEL, ID_ANIMATION_STEPBACK, FALSE);
+    m_animationToolbar.AddItem(IDB_FFWD, IDB_FFWDSEL, ID_ANIMATION_STEPFORWARD, FALSE);
+    m_animationToolbar.ShowWindow(SW_HIDE);
+
+    m_toolBar.SetBarStyle(m_toolBar.m_dwStyle | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC);
+    m_toolBar.ModifyStyle(0, CBRS_BORDER_BOTTOM);
+    m_toolBar.EnableDocking(CBRS_ALIGN_ANY);
+    EnableDocking(CBRS_ALIGN_ANY);
+    DockControlBar(&m_toolBar, nullptr);
+
+    RECT r;
+    GetWindowRect(&r);
+    FloatControlBar(&m_objectToolbar, CPoint(r.left + 10, r.bottom - 100), CBRS_ALIGN_LEFT);
+    FloatControlBar(&m_animationToolbar, CPoint(r.left + 210, r.bottom - 100), CBRS_ALIGN_LEFT);
+    ShowControlBar(&m_animationToolbar, FALSE, FALSE);
+
+    m_statusBar.SetPaneText(1, "");
+    m_statusBar.SetPaneText(2, "");
+    m_statusBar.SetPaneText(3, "");
+    m_statusBar.SetPaneText(4, "");
+    m_statusBar.SetPaneText(5, "");
+    m_statusBar.SetPaneText(6, "");
+
+    W3DAssetManager::Get_Instance()->Set_W3D_Load_On_Demand(true);
+    W3DAssetManager::Get_Instance()->Set_Activate_Fog_On_Load(true);
+    GetWindowRect(&m_windowRect);
+    CMenu *menu = GetMenu();
+    CMenu *SubMenu = menu->GetSubMenu(3);
+    m_subMenu = SubMenu;
+    m_subMenu = SubMenu->GetSubMenu(3);
+    RestoreWindowPos();
+    m_initialized = TRUE;
+    return (Device != -1) - 1;
 }
 
 void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 {
-    // TODO
+    // TODO xxxx
 }
 
 void CMainFrame::OnWindowPosChanging(LPWINDOWPOS lpWndPos)
 {
-    // TODO
+    CWnd::Default();
 }
 
 void CMainFrame::OnWindowPosChanged(WINDOWPOS FAR *lpwndpos)
 {
-    // TODO
+    CWnd::Default();
 }
 
 void CMainFrame::OnDestroy()
 {
+    WINDOWPLACEMENT placement;
+    memset(&placement, 0, sizeof(placement));
+    placement.length = sizeof(WINDOWPLACEMENT);
+    GetWindowPlacement(&placement);
+    RECT r;
+    GetWindowRect(&r);
+    theApp.WriteProfileInt("Window", "Left", r.left);
+    theApp.WriteProfileInt("Window", "Right", r.right);
+    theApp.WriteProfileInt("Window", "Top", r.top);
+    theApp.WriteProfileInt("Window", "Bottom", r.bottom);
+    theApp.WriteProfileInt("Window", "Maximized", placement.showCmd == SW_SHOWMAXIMIZED);
+
     // TODO
+    // theApp.WriteProfileInt("Config", "AnimateCamera", GetActiveDocument().m_animateCamera)
+    // theApp.WriteProfileInt("Config", "ResetCamera", GetActiveDocument().m_resetCamera)
+    CFrameWnd::OnDestroy();
 }
 
 void CMainFrame::OnProperties()

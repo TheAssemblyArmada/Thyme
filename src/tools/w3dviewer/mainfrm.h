@@ -40,7 +40,7 @@ protected:
     void UpdateParticleCount(int particles);
     void UpdateFrameCount(int frame, int framecount, float fps);
     void UpdateCameraDistance(float distance);
-    void CreateDevice(bool doDeviceDlg);
+    void GetDevice(bool doDeviceDlg);
     void UpdateEmitterMenu();
 
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -217,6 +217,6 @@ protected:
     CFancyToolbar m_animationToolbar;
     BOOL m_animationToolbarVisible;
     RECT m_windowRect;
-    HMENU m_subMenu;
+    CMenu *m_subMenu;
     BOOL m_initialized;
 };

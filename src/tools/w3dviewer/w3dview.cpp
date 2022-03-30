@@ -17,6 +17,8 @@
 #include "gamemath.h"
 #include "mainfrm.h"
 #include "resource.h"
+#include "w3dviewdoc.h"
+#include "w3dviewview.h"
 
 CW3DViewApp theApp;
 
@@ -28,9 +30,8 @@ BOOL CW3DViewApp::InitInstance()
     GameMath::Init();
     CWinApp::SetRegistryKey("Westwood Studios");
     CWinApp::LoadStdProfileSettings(9);
-    // TODO
-    //  CWinApp::AddDocTemplate(new CSingleDocTemplate(
-    //      IDR_MAINFRAME, CW3DViewDoc::GetRuntimeClass(), CMainFrame::GetRuntimeClass(), CW3DViewView::GetRuntimeClass()));
+    CWinApp::AddDocTemplate(new CSingleDocTemplate(
+        IDR_MAINFRAME, CW3DViewDoc::GetThisClass(), CMainFrame::GetThisClass(), CW3DViewView::GetThisClass()));
     CWinApp::EnableShellOpen();
     CWinApp::RegisterShellFileTypes(true);
 

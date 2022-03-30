@@ -4,7 +4,10 @@ target_sources(w3dview PRIVATE
     deviceselectiondialog.cpp
     mainfrm.cpp
     toolbar.cpp
+    viewerscene.cpp
     w3dview.cpp
+    w3dviewdoc.cpp
+    w3dviewview.cpp
     ${CMAKE_SOURCE_DIR}/resources/w3dviewer/w3dview.rc
 )
 add_definitions(-D_AFXDLL)

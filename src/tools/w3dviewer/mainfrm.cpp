@@ -19,6 +19,7 @@
 #include "resource.h"
 #include "w3d.h"
 #include "w3dview.h"
+#include "w3dviewdoc.h"
 
 class CGraphicView;
 
@@ -250,12 +251,11 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (message == WM_CLOSE) {
-        // TODO
-        // CW3DViewDoc *doc = GetActiveDocument();
-        //
-        // if (doc != nullptr) {
-        //     doc->Free();
-        // }
+        CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+        if (doc != nullptr) {
+            doc->Free();
+        }
     } else if (message == WM_COMMAND && LOWORD(wParam) >= ID_SETTINGS1 && LOWORD(wParam) <= ID_SETTINGS9) {
         char path[MAX_PATH];
         GetModuleFileName(nullptr, path, MAX_PATH);
@@ -270,12 +270,11 @@ LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
         wsprintf(fname, "%s%d.dat", path, LOWORD(wParam) - ID_SETTINGS1 - 1);
 
         if (GetFileAttributes(fname) != INVALID_FILE_ATTRIBUTES) {
-            // TODO
-            // CW3DViewDoc *doc = GetActiveDocument();
-            //
-            // if (doc != nullptr) {
-            //     doc->SaveSettings(fname);
-            // }
+            CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+            if (doc != nullptr) {
+                doc->SaveSettings(fname);
+            }
         }
     }
 
@@ -287,7 +286,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
     BOOL ret = m_splitter.CreateStatic(this, 1, 2);
 
     if (ret) {
-        // TODO
+        // TODO xxxx
         // ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetRuntimeClass(), SIZE{ 340, 10 }, pContext);
         // ret &= m_splitter.CreateView(0, 1, CGraphicView::GetRuntimeClass(), SIZE{ 120, 10 }, pContext);
 
@@ -384,7 +383,7 @@ void CMainFrame::GetDevice(bool doDeviceDlg)
         Device = dlg.m_device;
         BPP = dlg.m_bpp;
 
-        // TODO
+        // TODO xxxx
         // if (!view.Create()) {
         //     return;
         // }
@@ -480,10 +479,8 @@ void CMainFrame::OnDestroy()
     theApp.WriteProfileInt("Window", "Top", r.top);
     theApp.WriteProfileInt("Window", "Bottom", r.bottom);
     theApp.WriteProfileInt("Window", "Maximized", placement.showCmd == SW_SHOWMAXIMIZED);
-
-    // TODO
-    // theApp.WriteProfileInt("Config", "AnimateCamera", GetActiveDocument().m_animateCamera)
-    // theApp.WriteProfileInt("Config", "ResetCamera", GetActiveDocument().m_resetCamera)
+    theApp.WriteProfileInt("Config", "AnimateCamera", ((CW3DViewDoc *)GetActiveDocument())->m_animateCamera);
+    theApp.WriteProfileInt("Config", "ResetCamera", ((CW3DViewDoc *)GetActiveDocument())->m_resetCamera);
     CFrameWnd::OnDestroy();
 }
 

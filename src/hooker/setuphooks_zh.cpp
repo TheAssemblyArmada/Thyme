@@ -157,6 +157,7 @@
 #include "updatemodule.h"
 #include "vertmaterial.h"
 #include "w3d.h"
+#include "w3dbibbuffer.h"
 #include "w3dbridgebuffer.h"
 #include "w3dbuffermanager.h"
 #include "w3ddebugdisplay.h"
@@ -2283,4 +2284,17 @@ void Setup_Hooks()
 
     // streak.cpp
     Hook_Any(0x00834010, StreakLineClass::Prepare_LOD);
+
+    // w3dbibbuffer.cpp
+    Hook_Any(0x00796890, W3DBibBuffer::Load_Bibs_In_Vertex_And_Index_Buffers);
+    Hook_Any(0x00796C20, W3DBibBuffer::Hook_Dtor);
+    Hook_Any(0x00796C80, W3DBibBuffer::Hook_Ctor);
+    Hook_Any(0x00796EC0, W3DBibBuffer::Free_Bib_Buffers);
+    Hook_Any(0x00796F00, W3DBibBuffer::Allocate_Bib_Buffers);
+    Hook_Any(0x00797010, W3DBibBuffer::Clear_All_Bibs);
+    Hook_Any(0x00797060, W3DBibBuffer::Add_Bib_To_Object);
+    Hook_Any(0x00797140, W3DBibBuffer::Add_Bib_To_Drawable);
+    Hook_Any(0x00797220, W3DBibBuffer::Remove_Bib_From_Object);
+    Hook_Any(0x00797270, W3DBibBuffer::Remove_Bib_From_Drawable);
+    Hook_Any(0x007972C0, W3DBibBuffer::Render_Bibs);
 }

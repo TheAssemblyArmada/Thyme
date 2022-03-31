@@ -274,6 +274,7 @@ set(GAMEENGINE_SRC
     platform/win32gameengine.cpp
     platform/win32localfile.cpp
     platform/win32localfilesystem.cpp
+    platform/w3dengine/client/w3dbibbuffer.cpp
     platform/w3dengine/client/w3dbridgebuffer.cpp
     platform/w3dengine/client/w3ddebugdisplay.cpp
     platform/w3dengine/client/w3ddebugicons.cpp

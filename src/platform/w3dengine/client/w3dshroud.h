@@ -91,13 +91,13 @@ private:
 class W3DMaskMaterialPassClass : public MaterialPassClass
 {
 public:
-    W3DMaskMaterialPassClass() : m_unk(false), m_resetShader(true) {}
+    W3DMaskMaterialPassClass() : m_unk(0), m_resetShader(true) {}
     virtual ~W3DMaskMaterialPassClass() override {}
     virtual void Install_Materials() override;
     virtual void UnInstall_Materials() override;
     void Reset_Shader(bool b) { m_resetShader = b; }
 
 private:
-    bool m_unk;
+    int m_unk;
     bool m_resetShader;
 };

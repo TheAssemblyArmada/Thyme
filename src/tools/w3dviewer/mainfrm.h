@@ -22,6 +22,9 @@ public:
     virtual ~CMainFrame() override;
     virtual BOOL PreCreateWindow(CREATESTRUCT &cs) override;
     virtual BOOL OnCmdMsg(UINT nID, int nCode, void *pExtra, AFX_CMDHANDLERINFO *pHandlerInfo) override;
+    void UpdateStatusBar(unsigned int value);
+    void UpdatePolyCount(int polys);
+    void UpdateParticleCount(int particles);
 
 protected:
     CMainFrame();
@@ -35,9 +38,6 @@ protected:
     void RestoreWindowPos();
     void DoProperties();
     void UpdateMenus();
-    void UpdateStatusBar(unsigned int value);
-    void UpdatePolyCount(int polys);
-    void UpdateParticleCount(int particles);
     void UpdateFrameCount(int frame, int framecount, float fps);
     void UpdateCameraDistance(float distance);
     void GetDevice(bool doDeviceDlg);

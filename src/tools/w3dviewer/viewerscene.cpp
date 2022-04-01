@@ -25,18 +25,7 @@ void ViewerSceneClass::Add_Render_Object(RenderObjClass *obj)
         m_renderList.Add(obj);
     }
 
-    float start = 0.0f;
-    float end = 0.0f;
-    Get_Fog_Range(&start, &end);
-    SphereClass sphere;
-    Get_Bounding_Sphere(&sphere);
-    end = sphere.Radius * 8.0f;
-
-    if (end < start + 200.0f) {
-        end = start + 200.0f;
-    }
-
-    Set_Fog_Range(start, end);
+    Update_Fog_Range();
 }
 
 void ViewerSceneClass::Customized_Render(RenderInfoClass &rinfo)
@@ -159,4 +148,20 @@ SceneIterator *ViewerSceneClass::Get_LOD_Iterator()
 void ViewerSceneClass::Destroy_LOD_Iterator(SceneIterator *iterator)
 {
     delete iterator;
+}
+
+void ViewerSceneClass::Update_Fog_Range()
+{
+    float start = 0.0f;
+    float end = 0.0f;
+    Get_Fog_Range(&start, &end);
+    SphereClass sphere;
+    Get_Bounding_Sphere(&sphere);
+    end = sphere.Radius * 8.0f;
+
+    if (end < start + 200.0f) {
+        end = start + 200.0f;
+    }
+
+    Set_Fog_Range(start, end);
 }

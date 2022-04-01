@@ -4,6 +4,7 @@ target_sources(w3dview PRIVATE
     deviceselectiondialog.cpp
     mainfrm.cpp
     toolbar.cpp
+    utils.cpp
     viewerscene.cpp
     w3dview.cpp
     w3dviewdoc.cpp

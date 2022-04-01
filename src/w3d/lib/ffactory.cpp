@@ -27,7 +27,7 @@ RawFileFactoryClass *g_theWritingFileFactory = &defaultWritingFileFactory;
 FileFactoryClass *g_theFileFactory = &defaultFileFactory;
 #endif
 
-FileFactoryClass *g_theSimpleFileFactory = &defaultFileFactory;
+SimpleFileFactoryClass *g_theSimpleFileFactory = &defaultFileFactory;
 
 auto_file_ptr::auto_file_ptr(FileFactoryClass *fact, const char *filename) : m_file(nullptr), m_factory(fact)
 {

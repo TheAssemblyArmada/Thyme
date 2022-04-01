@@ -75,4 +75,4 @@ extern FileFactoryClass *&g_theFileFactory;
 extern RawFileFactoryClass *g_theWritingFileFactory;
 extern FileFactoryClass *g_theFileFactory;
 #endif
-extern FileFactoryClass *g_theSimpleFileFactory;
+extern SimpleFileFactoryClass *g_theSimpleFileFactory;

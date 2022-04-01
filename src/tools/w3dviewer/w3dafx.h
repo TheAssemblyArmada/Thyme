@@ -21,6 +21,7 @@
 #include <afxwin.h> // MFC core and standard components
 #include <afxext.h> // MFC extensions
 #include <afxcmn.h>
+#include <afxcview.h>
 // clang-format on
 
 #define ID_OBJECT_TOOLBAR 101

@@ -51,8 +51,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
      ON_COMMAND(ID_LIGHTING_SCENELIGHT, OnSceneLight)
      ON_COMMAND(ID_BACKGROUND_COLOR, OnBackgroundColor)
      ON_COMMAND(ID_BACKGROUND_BITMAP, OnBackgroundBitmap)
-     ON_COMMAND(ID_FILE_SAVESETTINGS, OnSaveSettings)
-     ON_COMMAND(ID_FILE_LOADSETTINGS, OnLoadSettings)
      ON_COMMAND(ID_EXPORT_LOD, OnExportLOD)
      ON_COMMAND(ID_BACKGROUND_OBJECT, OnBackgroundObject)
      ON_UPDATE_COMMAND_UI(ID_TOOLBARS_ANIMATION, OnUpdateAnimationToolbar)
@@ -255,26 +253,6 @@ LRESULT CMainFrame::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 
         if (doc != nullptr) {
             doc->Free();
-        }
-    } else if (message == WM_COMMAND && LOWORD(wParam) >= ID_SETTINGS1 && LOWORD(wParam) <= ID_SETTINGS9) {
-        char path[MAX_PATH];
-        GetModuleFileName(nullptr, path, MAX_PATH);
-        char *str = strrchr(path, '\\');
-
-        if (str != nullptr) {
-            *str = 0;
-        }
-
-        strcat(path, "\\settings");
-        char fname[MAX_PATH];
-        wsprintf(fname, "%s%d.dat", path, LOWORD(wParam) - ID_SETTINGS1 - 1);
-
-        if (GetFileAttributes(fname) != INVALID_FILE_ATTRIBUTES) {
-            CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
-
-            if (doc != nullptr) {
-                doc->SaveSettings(fname);
-            }
         }
     }
 
@@ -585,16 +563,6 @@ void CMainFrame::OnBackgroundColor()
 }
 
 void CMainFrame::OnBackgroundBitmap()
-{
-    // TODO
-}
-
-void CMainFrame::OnSaveSettings()
-{
-    // TODO
-}
-
-void CMainFrame::OnLoadSettings()
 {
     // TODO
 }

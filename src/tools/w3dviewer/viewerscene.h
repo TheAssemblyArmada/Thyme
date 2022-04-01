@@ -19,10 +19,7 @@
 class ViewerSceneIterator : public SceneIterator
 {
 public:
-    ViewerSceneIterator(RefMultiListClass<RenderObjClass> *list) :
-        m_robjIterator(list)
-    {
-    }
+    ViewerSceneIterator(RefMultiListClass<RenderObjClass> *list) : m_robjIterator(list) {}
     virtual ~ViewerSceneIterator() {}
     virtual void First() { m_robjIterator.First(); }
     virtual void Next() { m_robjIterator.Next(); };
@@ -49,6 +46,8 @@ public:
     virtual void Get_Bounding_Sphere(SphereClass *sphere);
     virtual SceneIterator *Get_LOD_Iterator();
     virtual void Destroy_LOD_Iterator(SceneIterator *iterator);
+
+    void Update_Fog_Range();
 
 private:
     bool m_autoSwitchLod;

@@ -18,6 +18,8 @@
 #include "vector3.h"
 
 class Bitmap2D;
+class CDataTreeView;
+class CGraphicView;
 class CameraClass;
 class DazzleLayerClass;
 class EditorParticleEmitterDefClass;
@@ -50,10 +52,10 @@ public:
     void SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2);
     void PlayAnimationSound();
     void UpdateAnimation(float tm);
+    CDataTreeView *GetDataTreeView();
+    CGraphicView *GetGraphicView();
     void GenerateLOD(const char *name, int type);
     void CreateBackgroundBitmap(const char *name);
-    void SaveSettings(const char *name);
-    void WriteSettingsFile(const char *name, int flags);
     bool ExportLOD();
     bool SaveLOD(const char *name);
     void SetBackgroundObject(const char *name);
@@ -92,7 +94,6 @@ protected:
 
     ViewerSceneClass *m_scene;
     SimpleSceneClass *m_textureScene;
-    SimpleSceneClass *m_cursorScene;
     SimpleSceneClass *m_backgroundScene;
     DazzleLayerClass *m_dazzleLayer;
     RenderObjClass *m_model;

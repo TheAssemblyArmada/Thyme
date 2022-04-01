@@ -20,7 +20,7 @@
 
 // clang-format off
 BEGIN_MESSAGE_MAP(CDeviceSelectionDialog, CDialog)
-	ON_COMMAND(IDC_DEVICECOMBO, OnComboChanged)
+    ON_COMMAND(IDC_DEVICECOMBO, OnComboChanged)
 END_MESSAGE_MAP()
 // clang-format on
 

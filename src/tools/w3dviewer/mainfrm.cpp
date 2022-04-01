@@ -15,13 +15,12 @@
 #include "mainfrm.h"
 #include "assetmgr.h"
 #include "deviceselectiondialog.h"
+#include "graphicview.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
 #include "w3d.h"
 #include "w3dview.h"
 #include "w3dviewdoc.h"
-
-class CGraphicView;
 
 IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
 
@@ -265,8 +264,8 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
 
     if (ret) {
         // TODO xxxx
-        // ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetRuntimeClass(), SIZE{ 340, 10 }, pContext);
-        // ret &= m_splitter.CreateView(0, 1, CGraphicView::GetRuntimeClass(), SIZE{ 120, 10 }, pContext);
+        // ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetThisClass(), SIZE{ 340, 10 }, pContext);
+        ret &= m_splitter.CreateView(0, 1, CGraphicView::GetThisClass(), SIZE{ 120, 10 }, pContext);
 
         if (ret) {
             CWnd *pane = m_splitter.GetPane(0, 1);
@@ -361,10 +360,9 @@ void CMainFrame::GetDevice(bool doDeviceDlg)
         Device = dlg.m_device;
         BPP = dlg.m_bpp;
 
-        // TODO xxxx
-        // if (!view.Create()) {
-        //     return;
-        // }
+        if (!view->Create()) {
+            return;
+        }
     }
 }
 
@@ -431,7 +429,23 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CMainFrame::OnActivateApp(BOOL bActive, DWORD dwThreadID)
 {
-    // TODO xxxx
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_isActive = bActive;
+
+        if (!bActive) {
+            SetProp(m_hWnd, "Inactive", (HANDLE)1);
+            CWnd::Default();
+            return;
+        }
+
+        RemoveProp(m_hWnd, "Inactive");
+        view->m_time = GetTickCount();
+    }
+
+    CWnd::Default();
+    CWnd::Default();
 }
 
 void CMainFrame::OnWindowPosChanging(LPWINDOWPOS lpWndPos)

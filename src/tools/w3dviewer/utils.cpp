@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "utils.h"
+#include "mainfrm.h"
+#include "w3dviewdoc.h"
 
 CString GetFilePath(const char *name)
 {
@@ -35,5 +37,20 @@ CString GetFilenameFromPath(const char *path)
         return c + 1;
     } else {
         return path;
+    }
+}
+
+CGraphicView *GetCurrentGraphicView()
+{
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        CW3DViewDoc *document = (CW3DViewDoc *)frame->GetActiveDocument();
+        
+        if (document != nullptr) {
+            return document->GetGraphicView();
+        } else {
+            return nullptr;
+        }
     }
 }

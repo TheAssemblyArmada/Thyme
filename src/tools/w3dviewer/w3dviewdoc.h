@@ -92,6 +92,7 @@ protected:
     DECLARE_DYNCREATE(CW3DViewDoc)
     DECLARE_MESSAGE_MAP()
 
+public:
     ViewerSceneClass *m_scene;
     SimpleSceneClass *m_textureScene;
     SimpleSceneClass *m_backgroundScene;
@@ -111,12 +112,8 @@ protected:
     float m_frameCount;
     float m_time;
     BOOL m_blendFrames;
-
-public:
     bool m_animateCamera;
     bool m_resetCamera;
-
-private:
     bool m_forceCameraReset;
     bool m_useManualFov;
     bool m_useManualClipPlanes;

@@ -14,6 +14,8 @@
  */
 #pragma once
 #include "w3dafx.h"
+class CGraphicView;
 
 CString GetFilePath(const char *name);
 CString GetFilenameFromPath(const char *path);
+CGraphicView *GetCurrentGraphicView();

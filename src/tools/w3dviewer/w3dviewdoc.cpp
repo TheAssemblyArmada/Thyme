@@ -17,6 +17,7 @@
 #include "bmp2d.h"
 #include "camera.h"
 #include "ffactory.h"
+#include "graphicview.h"
 #include "hanim.h"
 #include "light.h"
 #include "mainfrm.h"
@@ -114,12 +115,11 @@ BOOL CW3DViewDoc::OnOpenDocument(LPCTSTR lpszPathName)
 {
     BOOL result = CDocument::OnOpenDocument(lpszPathName);
     if (result) {
-        // TODO xxxx
-        // CGraphicView *view = GetCurrentGraphicView();
-        //
-        // if (view != nullptr) {
-        //     view->EnableRendering(false);
-        // }
+        CGraphicView *view = GetCurrentGraphicView();
+
+        if (view != nullptr) {
+            view->EnableRendering(false);
+        }
 
         LoadFile(lpszPathName);
 
@@ -128,15 +128,15 @@ BOOL CW3DViewDoc::OnOpenDocument(LPCTSTR lpszPathName)
         if (frame != nullptr) {
             CDataTreeView *tree = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
 
-            if (tree != nullptr) {
-                // TODO xxxx
-                // view->AddRenderObjects();
-            }
+            // TODO xxxx
+            // if (tree != nullptr) {
+            //     tree->AddRenderObjects();
+            // }
         }
 
-        // if (view != nullptr) {
-        //     view->EnableRendering(true);
-        // }
+        if (view != nullptr) {
+            view->EnableRendering(true);
+        }
 
         return TRUE;
     }
@@ -223,12 +223,11 @@ void CW3DViewDoc::LoadFile(CString pathName)
     m_filePath = GetFilePath(pathName);
     m_loadedFiles.Add(pathName);
 
-    // TODO xxxx
-    // CGraphicView *view = GetCurrentGraphicView();
-    //
-    // if (view != nullptr) {
-    //     view->EnableRendering(false);
-    // }
+    CGraphicView *view = GetCurrentGraphicView();
+
+    if (view != nullptr) {
+        view->EnableRendering(false);
+    }
 
     if (strrchr(filename, '\\')) {
         CString str = filename;
@@ -246,9 +245,9 @@ void CW3DViewDoc::LoadFile(CString pathName)
         Ref_Ptr_Release(texture);
     }
 
-    // if (view != nullptr) {
-    //     view->EnableRendering(true);
-    // }
+    if (view != nullptr) {
+        view->EnableRendering(true);
+    }
 }
 
 void CW3DViewDoc::Initialize()
@@ -337,9 +336,7 @@ void CW3DViewDoc::ReadSettings()
         CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
 
         if (view != nullptr) {
-            CameraClass *camera = nullptr;
-            // TODO xxxx
-            // CameraClass *camera = view->m_camera;
+            CameraClass *camera = view->m_camera;
 
             if (camera != nullptr) {
                 if (m_useManualFov) {
@@ -363,7 +360,7 @@ void CW3DViewDoc::ReadSettings()
     }
 }
 
-CDataTreeView *GetDataTreeView()
+CDataTreeView *CW3DViewDoc::GetDataTreeView()
 {
     CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
 
@@ -374,7 +371,7 @@ CDataTreeView *GetDataTreeView()
     }
 }
 
-CGraphicView *GetGraphicView()
+CGraphicView *CW3DViewDoc::GetGraphicView()
 {
     CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
 
@@ -385,9 +382,46 @@ CGraphicView *GetGraphicView()
     }
 }
 
+void CW3DViewDoc::UpdateParticleCount()
+{
+    int count = GetNumParticles(nullptr);
+
+    ((CMainFrame *)AfxGetMainWnd())->UpdateParticleCount(count);
+}
+
+int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
+{
+    int count = 0;
+
+    if (robj == nullptr) {
+        robj = m_model;
+    }
+
+    if (robj != nullptr) {
+        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+            RenderObjClass *o = robj->Get_Sub_Object(i);
+
+            if (o != nullptr) {
+                count += GetNumParticles(o);
+                o->Release_Ref();
+            }
+        }
+
+        if (robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
+
+            if (((ParticleEmitterClass *)robj)->Peek_Buffer() != nullptr) {
+                count += ((ParticleEmitterClass *)robj)->Peek_Buffer()->Get_Particle_Count();
+            }
+        }
+    }
+
+    return count;
+}
+
 #if 0
 void CW3DViewDoc::Deselect()
 {
+    // TODO
     // TODO
 }
 
@@ -507,16 +541,6 @@ void CW3DViewDoc::CaptureMovie()
 }
 
 void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj)
-{
-    // TODO
-}
-
-int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
-{
-    // TODO
-}
-
-void CW3DViewDoc::UpdateParticleCount()
 {
     // TODO
 }

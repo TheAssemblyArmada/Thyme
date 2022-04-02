@@ -49,23 +49,24 @@ AssetInfoClass::~AssetInfoClass()
 void AssetInfoClass::GetHeirarchyName()
 {
     if (m_type != 0) {
-        if (m_renderObj != nullptr) {
-            m_renderObj->Add_Ref();
+        RenderObjClass *robj = m_renderObj;
+        if (robj != nullptr) {
+            robj->Add_Ref();
         } else {
-            m_renderObj = W3DAssetManager::Get_Instance()->Create_Render_Obj(m_name);
+            robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(m_name);
 
-            if (m_renderObj == nullptr) {
+            if (robj == nullptr) {
                 return;
             }
         }
 
-        const HTreeClass *tree = m_renderObj->Get_HTree();
+        const HTreeClass *tree = robj->Get_HTree();
 
         if (tree != nullptr) {
             m_heirarchyName = tree->Get_Name();
         }
 
-        m_renderObj->Release_Ref();
+        robj->Release_Ref();
     }
 }
 
@@ -242,7 +243,7 @@ void CDataTreeView::AddRenderObjects()
                         item2 = item;
                     }
 
-                    item = GetTreeCtrl().GetNextItem(category, TVGN_NEXT);
+                    item = GetTreeCtrl().GetNextItem(item, TVGN_NEXT);
 
                     if (item == nullptr) {
                         if (item2 == nullptr) {
@@ -420,7 +421,7 @@ void CDataTreeView::Select(HTREEITEM item)
                     } else {
                         EnableMenuItem(GetSubMenu(::GetMenu(frame->m_hWnd), 3), 3, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
 
-                        while (frame->m_subMenu->RemoveMenu(0, MF_BYPOSITION)) {
+                        while (RemoveMenu(frame->m_subMenu, 0, MF_BYPOSITION)) {
                         }
                     }
                 }

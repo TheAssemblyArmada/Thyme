@@ -109,7 +109,7 @@ DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceShortNameTable;
 DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionTable;
 w3dadapterid_t DX8Wrapper::s_currentAdapterIdentifier;
 Matrix4 DX8Wrapper::s_DX8Transforms[257];
-bool DX8Wrapper::s_EnableTriangleDraw;
+bool DX8Wrapper::s_EnableTriangleDraw = true;
 int DX8Wrapper::s_ZBias;
 Vector3 DX8Wrapper::s_ambientColor;
 bool DX8Wrapper::s_isDeviceLost;

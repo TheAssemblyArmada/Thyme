@@ -18,6 +18,7 @@
 #include "light.h"
 #include "mainfrm.h"
 #include "mpu.h"
+#include "quaternion.h"
 #include "rcfile.h"
 #include "resource.h"
 #include "viewerscene.h"
@@ -29,6 +30,11 @@ extern int DeviceWidth;
 extern int DeviceHeight;
 extern int BPP;
 extern int Device;
+
+Vector3 Pos;
+float Zoom;
+Quaternion Rotation;
+float Lightradius = 1.0f;
 
 IMPLEMENT_DYNCREATE(CGraphicView, CView)
 
@@ -400,6 +406,8 @@ void CGraphicView::Render(BOOL update, unsigned int time)
 
             ((CMainFrame *)AfxGetMainWnd())->UpdateStatusBar(frametime);
         }
+
+        IsRendering = false;
     }
 }
 
@@ -423,9 +431,9 @@ void CGraphicView::UpdateCamera()
 
     if (height <= width) {
         hfov = 0.7853981852531433f;
-        vfov = height / width * 0.7853981852531433f;
+        vfov = (float)height / (float)width * 0.7853981852531433f;
     } else {
-        hfov = height / width * 0.7853981852531433f;
+        hfov = (float)height / (float)width * 0.7853981852531433f;
         vfov = 0.7853981852531433f;
     }
 
@@ -449,18 +457,101 @@ void CGraphicView::UpdateAnimation(int flag)
     // TODO
 }
 
-#if 0
-void CGraphicView::ResetParticleEmitterCamera(ParticleEmitterClass *emitter)
+void CGraphicView::ResetCamera(RenderObjClass *robj)
 {
-    // TODO
+    SphereClass sphere = robj->Get_Bounding_Sphere();
+    ResetCameraValues(sphere);
+    int index = robj->Get_Bone_Index("CAMERA");
+
+    if (index > 0) {
+        Matrix3D tm = robj->Get_Bone_Transform(index);
+
+        if (m_plusXCamera) {
+            Matrix3D m;
+            m[0].X = 0.0f;
+            m[0].Y = 0.0f;
+            m[0].Z = -1.0f;
+            m[0].W = 0.0f;
+            m[1].X = -1.0f;
+            m[1].Y = 0.0f;
+            m[1].Z = 0.0f;
+            m[1].W = 0.0f;
+            m[2].X = 0.0f;
+            m[2].Y = 1.0f;
+            m[2].Z = 0.0f;
+            m[2].W = 0.0f;
+            tm = tm * m;
+        }
+
+        m_camera->Set_Transform(tm);
+    }
+
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        frame->UpdatePolyCount(robj->Get_Num_Polys());
+    }
 }
 
 void CGraphicView::ResetCameraValues(SphereClass &sphere)
 {
-    // TODO
+    m_radius = sphere.Radius * 3.0f;
+
+    if (m_radius < 1.0f) {
+        m_radius = 1.0f;
+    }
+
+    Matrix3D tm;
+    tm.Look_At(Vector3(m_radius + sphere.Center.X, sphere.Center.Y, sphere.Center.Z), sphere.Center, 0.0f);
+    Pos = sphere.Center;
+    m_objCenter = Pos;
+    Zoom = m_radius * 0.0052631581f;
+    Rotation = Build_Quaternion(tm);
+    m_camera->Set_Transform(tm);
+    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+    LightClass *light = document->m_light;
+
+    if (m_light != nullptr && light != nullptr) {
+        tm.Make_Identity();
+        tm.Adjust_Translation(Pos);
+        tm[2].W += m_radius * 0.69999999f;
+        light->Set_Transform(tm);
+        m_light->Set_Transform(tm);
+        m_light->Scale(m_radius / Lightradius * 14.0f);
+        Lightradius = m_radius * 0.071428575f;
+    }
+
+    float zfar = m_radius * 60.0f;
+    float znear = Zoom * 0.5f;
+
+    if (znear < 0.2f) {
+        znear = 0.2f;
+    }
+
+    if (!document->m_useManualClipPlanes) {
+        m_camera->Set_Clip_Planes(znear, zfar);
+        float start;
+        float end;
+        document->m_scene->Get_Fog_Range(&start, &end);
+        document->m_scene->Set_Fog_Range(end, end);
+        document->m_scene->Update_Fog_Range();
+    }
+
+    document->m_docCamera->Set_Transform(tm);
+    document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        frame->UpdateCameraDistance(m_radius);
+        frame->UpdateFrameCount(0, 0, 0.0f);
+    }
+
+    m_objSphere = sphere;
 }
 
-void CGraphicView::ResetCamera(RenderObjClass *robj)
+#if 0
+void CGraphicView::ResetParticleEmitterCamera(ParticleEmitterClass *emitter)
 {
     // TODO
 }

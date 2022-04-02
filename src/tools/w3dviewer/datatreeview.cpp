@@ -132,7 +132,7 @@ void CDataTreeView::OnSelectTree(NMHDR *pNMHDR, LRESULT *pResult)
 void CDataTreeView::OnDeleteItem(NMHDR *pNMHDR, LRESULT *pResult)
 {
     NMTREEVIEW *nm = (NMTREEVIEW *)pNMHDR;
-    AssetInfoClass *info = (AssetInfoClass *)nm->itemNew.lParam;
+    AssetInfoClass *info = (AssetInfoClass *)nm->itemOld.lParam;
 
     if (info != nullptr) {
         if (info->m_type == 0) {

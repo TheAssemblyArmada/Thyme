@@ -25,6 +25,8 @@ public:
     void UpdateStatusBar(unsigned int value);
     void UpdatePolyCount(int polys);
     void UpdateParticleCount(int particles);
+    void UpdateMenus(int type);
+    void UpdateEmitterMenu();
 
 protected:
     CMainFrame();
@@ -37,11 +39,9 @@ protected:
 
     void RestoreWindowPos();
     void DoProperties();
-    void UpdateMenus();
     void UpdateFrameCount(int frame, int framecount, float fps);
     void UpdateCameraDistance(float distance);
     void GetDevice(bool doDeviceDlg);
-    void UpdateEmitterMenu();
 
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnActivateApp(BOOL bActive, DWORD dwThreadID);

@@ -14,6 +14,7 @@
  */
 #include "mainfrm.h"
 #include "assetmgr.h"
+#include "datatreeview.h"
 #include "deviceselectiondialog.h"
 #include "graphicview.h"
 #include "renderdevicedesc.h"
@@ -263,8 +264,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
     BOOL ret = m_splitter.CreateStatic(this, 1, 2);
 
     if (ret) {
-        // TODO xxxx
-        // ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetThisClass(), SIZE{ 340, 10 }, pContext);
+        ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetThisClass(), SIZE{ 340, 10 }, pContext);
         ret &= m_splitter.CreateView(0, 1, CGraphicView::GetThisClass(), SIZE{ 120, 10 }, pContext);
 
         if (ret) {
@@ -316,7 +316,7 @@ void CMainFrame::DoProperties()
     // TODO
 }
 
-void CMainFrame::UpdateMenus()
+void CMainFrame::UpdateMenus(int type)
 {
     // TODO
 }

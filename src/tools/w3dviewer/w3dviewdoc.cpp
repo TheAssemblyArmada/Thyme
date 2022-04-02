@@ -16,6 +16,7 @@
 #include "assetmgr.h"
 #include "bmp2d.h"
 #include "camera.h"
+#include "datatreeview.h"
 #include "ffactory.h"
 #include "graphicview.h"
 #include "hanim.h"
@@ -96,9 +97,8 @@ BOOL CW3DViewDoc::OnNewDocument()
             CDataTreeView *view = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
 
             if (view != nullptr) {
-                // TODO xxxx
-                // view->GetTreeCtrl()->DeleteItem(TVI_ROOT);
-                // view->AddCategories();
+                view->GetTreeCtrl().DeleteItem(TVI_ROOT);
+                view->AddCategories();
             }
         }
 
@@ -128,10 +128,9 @@ BOOL CW3DViewDoc::OnOpenDocument(LPCTSTR lpszPathName)
         if (frame != nullptr) {
             CDataTreeView *tree = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
 
-            // TODO xxxx
-            // if (tree != nullptr) {
-            //     tree->AddRenderObjects();
-            // }
+            if (tree != nullptr) {
+                tree->AddRenderObjects();
+            }
         }
 
         if (view != nullptr) {
@@ -418,10 +417,8 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
     return count;
 }
 
-#if 0
-void CW3DViewDoc::Deselect()
+void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3)
 {
-    // TODO
     // TODO
 }
 
@@ -430,7 +427,13 @@ void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, b
     // TODO
 }
 
-void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3)
+void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
+{
+    // TODO
+}
+
+#if 0
+void CW3DViewDoc::Deselect()
 {
     // TODO
 }
@@ -441,11 +444,6 @@ void CW3DViewDoc::UpdateFrameCount()
 }
 
 void CW3DViewDoc::OnStep(int step)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
 {
     // TODO
 }

@@ -22,7 +22,7 @@ public:
     virtual ~CMainFrame() override;
     virtual BOOL PreCreateWindow(CREATESTRUCT &cs) override;
     virtual BOOL OnCmdMsg(UINT nID, int nCode, void *pExtra, AFX_CMDHANDLERINFO *pHandlerInfo) override;
-    void UpdateStatusBar(unsigned int value);
+    void UpdateStatusBar(unsigned int time);
     void UpdatePolyCount(int polys);
     void UpdateParticleCount(int particles);
     void UpdateMenus(int type);
@@ -117,7 +117,6 @@ protected:
     afx_msg void OnCopyDeps();
     afx_msg void OnExposePrecalc();
     afx_msg void OnTexturePath();
-    afx_msg void OnChangeResolution();
     afx_msg void OnCreateSphere();
     afx_msg void OnCreateRing();
     afx_msg void OnEditPrimitive();

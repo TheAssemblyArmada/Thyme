@@ -19,6 +19,8 @@
 #include "graphicview.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
+#include "utils.h"
+#include "viewerscene.h"
 #include "w3d.h"
 #include "w3dview.h"
 #include "w3dviewdoc.h"
@@ -122,7 +124,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
      ON_COMMAND(ID_LIGHTING_EXPOSEPRECALCULATEDLIGHTING, OnExposePrecalc)
      ON_UPDATE_COMMAND_UI(ID_LIGHTING_EXPOSEPRECALCULATEDLIGHTING, OnUpdateExposePrecalc)
      ON_COMMAND(ID_FILE_TEXTUREPATH, OnTexturePath)
-     ON_COMMAND(ID_VIEW_CHANGERESOLUTION, OnChangeResolution)
      ON_COMMAND(ID_PRIMITIVES_CREATESPHERE, OnCreateSphere)
      ON_COMMAND(ID_PRIMITIVES_CREATERING, OnCreateRing)
      ON_UPDATE_COMMAND_UI(ID_PRIMITIVES_EDITPRIMITIVE, OnUpdateEditPrimitive)
@@ -300,29 +301,60 @@ void CMainFrame::UpdateMenus(int type)
     // do later
 }
 
-void CMainFrame::UpdateStatusBar(unsigned int value)
+void CMainFrame::UpdateStatusBar(unsigned int time)
 {
-    // TODO
+    static int Time = 0;
+    Time += time;
+    static int Frames = 0;
+    Frames++;
+    static int Ticks = 0;
+
+    if (GetTickCount() - Ticks >= 1000) {
+        CString str;
+        str.Format("Clocks: %.2f", (float)Time / (float)Frames);
+        m_statusBar.SetPaneText(5, str);
+        Frames = 0;
+        Time = 0;
+        Ticks = GetTickCount();
+    }
+
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        RECT r;
+        view->GetWindowRect(&r);
+        CString str;
+        str.Format(" %d x %d ", r.right - r.left, r.bottom - r.top);
+        m_statusBar.SetPaneText(6, str);
+    }
 }
 
 void CMainFrame::UpdatePolyCount(int polys)
 {
-    // TODO
+    CString str;
+    str.Format("Polys %d", polys);
+    m_statusBar.SetPaneText(1, str);
 }
 
 void CMainFrame::UpdateParticleCount(int particles)
 {
-    // TODO
+    CString str;
+    str.Format("Particles %d", particles);
+    m_statusBar.SetPaneText(2, str);
 }
 
 void CMainFrame::UpdateFrameCount(int frame, int framecount, float fps)
 {
-    // TODO
+    CString str;
+    str.Format("Frame %d/%d at %.2f fps", frame, framecount, fps);
+    m_statusBar.SetPaneText(4, str);
 }
 
 void CMainFrame::UpdateCameraDistance(float distance)
 {
-    // TODO
+    CString str;
+    str.Format("Camera %.3f", distance);
+    m_statusBar.SetPaneText(3, str);
 }
 
 void CMainFrame::GetDevice(bool doDeviceDlg)
@@ -523,67 +555,106 @@ void CMainFrame::OnAnimSettings()
 
 void CMainFrame::OnStopAnim()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->UpdateAnimation(1);
+        m_animationToolbar.SetStatus(ID_ANIMATION_PLAY, FALSE, TRUE);
+        m_animationToolbar.SetStatus(ID_ANIMATION_PAUSE, FALSE, TRUE);
+    }
 }
 
 void CMainFrame::OnPlayAnim()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->UpdateAnimation(0);
+        m_animationToolbar.SetStatus(ID_ANIMATION_PAUSE, FALSE, TRUE);
+        m_animationToolbar.SetStatus(ID_ANIMATION_PLAY, TRUE, TRUE);
+    }
 }
 
 void CMainFrame::OnPauseAnim()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        if (view->m_animationPlaying != 0) {
+            if (view->m_animationPlaying == 2) {
+                view->UpdateAnimation(0);
+            }
+
+            m_animationToolbar.SetStatus(ID_ANIMATION_PAUSE, FALSE, TRUE);
+        } else {
+            view->UpdateAnimation(2);
+            m_animationToolbar.SetStatus(ID_ANIMATION_PAUSE, TRUE, TRUE);
+        }
+    }
 }
 
 void CMainFrame::OnBack()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnBottom()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnFront()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnLeft()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnResetCamera()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+        if (doc != nullptr) {
+            if (doc->m_model != nullptr) {
+                if (doc->m_model->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
+                    view->ResetParticleEmitterCamera((ParticleEmitterClass *)doc->m_model);
+                } else {
+                    view->ResetCamera(doc->m_model);
+                }
+            }
+        }
+    }
 }
 
 void CMainFrame::OnRight()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnTop()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRotateZ()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRotateY()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRotateX()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAmbient()
@@ -623,42 +694,56 @@ void CMainFrame::OnBackgroundObject()
 
 void CMainFrame::OnAnimationToolbar()
 {
-    // TODO
+    if (m_animationToolbar.IsVisible()) {
+        ShowControlBar(&m_animationToolbar, FALSE, FALSE);
+        m_animationToolbarVisible = FALSE;
+    } else {
+        ShowControlBar(&m_animationToolbar, TRUE, FALSE);
+        m_animationToolbarVisible = TRUE;
+    }
 }
 
 void CMainFrame::OnObjectToolbar()
 {
-    // TODO
+    if (m_objectToolbar.IsVisible()) {
+        ShowControlBar(&m_objectToolbar, FALSE, FALSE);
+    } else {
+        ShowControlBar(&m_objectToolbar, TRUE, FALSE);
+    }
 }
 
 void CMainFrame::OnStepForward()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnStepBack()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnReset()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->ResetRenderObj();
+    }
 }
 
 void CMainFrame::OnCameraRotateX()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCameraRotateY()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCameraRotateZ()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCreateEmitter()
@@ -693,42 +778,44 @@ void CMainFrame::OnExportAggregate()
 
 void CMainFrame::OnAnimateCamera()
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+    doc->AnimateCamera(!doc->m_animateCamera);
 }
 
 void CMainFrame::OnResetOnDisplay()
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+    doc->m_resetCamera = !doc->m_resetCamera;
 }
 
 void CMainFrame::OnRotateYBackwards()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRotateZBackwards()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnLightingRotateY()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnLightingRotateYBackwards()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnLightingRotateZ()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnLightingRotateZBackwards()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnDecSceneLight()
@@ -743,435 +830,480 @@ void CMainFrame::OnIncSceneLight()
 
 void CMainFrame::OnDecAmbient()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnIncAmbient()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnMakeAggregate()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRenameAggregate()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRecordSceneCamera()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnIncludeNull()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnPrevLod()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnNextLod()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAutoSwitching()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnMovie()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnScreenshot()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnNext()
 {
-    // TODO
+    CDataTreeView *view = (CDataTreeView *)m_splitter.GetPane(0, 0);
+
+    if (view) {
+        view->SelectNext();
+    }
 }
 
 void CMainFrame::OnPrev()
 {
-    // TODO
+    CDataTreeView *view = (CDataTreeView *)m_splitter.GetPane(0, 0);
+
+    if (view) {
+        view->SelectPrev();
+    }
 }
 
 void CMainFrame::OnAnimAdvanced()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCameraSettings()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCopyScreenSize()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnMissingTextures()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCopyDeps()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExposePrecalc()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnTexturePath()
 {
-    // TODO
-}
-
-void CMainFrame::OnChangeResolution()
-{
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCreateSphere()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCreateRing()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnEditPrimitive()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExportPrimitive()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnKillSceneLight()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnMultiPassLighting()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnMultiTextureLighting()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnVertexLighting()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAddObject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnImportFacial()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnRestrictAnims()
 {
-    // TODO
+    CDataTreeView *view = (CDataTreeView *)m_splitter.GetPane(0, 0);
+
+    if (view) {
+        view->RestrictAnims(!view->m_restrictAnims);
+    }
 }
 
 void CMainFrame::OnBindSubobject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnSetDistance()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAlternateMaterials()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnCreateSoundObject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnEditSoundObject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExportSoundObject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnWireframeMode()
 {
-    // TODO
+    CW3DViewDoc *document = GetCurrentDocument();
+    document->m_scene->Set_Polygon_Mode((SceneClass::PolyRenderType)(2 - document->m_scene->Get_Polygon_Mode() - 1));
 }
 
 void CMainFrame::OnFog()
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+    if (doc != nullptr) {
+        doc->EnableFog(!doc->m_fogEnabled);
+    }
 }
 
 void CMainFrame::OnScaleEmitter()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnPolygonSorting()
 {
-    // TODO
+    bool enable = W3D::Is_Sorting_Enabled() == false;
+    W3D::Invalidate_Mesh_Cache();
+    W3D::Enable_Sorting(enable);
+
+    AfxGetApp()->WriteProfileInt("Config", "EnableSorting", enable);
 }
 
 void CMainFrame::OnPlusXCamera()
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_plusXCamera = !view->m_plusXCamera;
+    }
 }
 
 void CMainFrame::OnMungeSort()
 {
-    // TODO
+    W3D::Enable_Munge_Sort_On_Load(W3D::Is_Munge_Sort_On_Load_Enabled() == false);
+    AfxGetApp()->WriteProfileInt("Config", "MungeSortOnLoad", W3D::Is_Munge_Sort_On_Load_Enabled());
 }
 
 void CMainFrame::OnEnableGamma()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnSetGamma()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateProperties(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateAnimationToolbar(CCmdUI *pCmdUI)
 {
-    // TODO
+    pCmdUI->Enable(FALSE);
+    pCmdUI->SetCheck(FALSE);
 }
 
 void CMainFrame::OnUpdateObjectToolbar(CCmdUI *pCmdUI)
 {
-    // TODO
+    pCmdUI->Enable(TRUE);
+
+    if (m_objectToolbar.IsVisible()) {
+        pCmdUI->SetCheck(TRUE);
+    }
 }
 
 void CMainFrame::OnUpdateCameraRotateX(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateCameraRotateY(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateCameraRotateZ(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateRotateX(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateRotateY(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateRotateZ(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateEditEmitter(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateExportEmitter(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateAnimateCamera(CCmdUI *pCmdUI)
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+    pCmdUI->SetCheck(doc->m_animateCamera);
 }
 
 void CMainFrame::OnUpdateExportLod(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateExportAggregate(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateResetOnDisplay(CCmdUI *pCmdUI)
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+    pCmdUI->SetCheck(doc->m_resetCamera);
 }
 
 void CMainFrame::OnUpdateIncludeNull(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdatePrevLod(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateNextLod(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateAutoSwitching(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateMovie(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateAnimAdvanced(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateCopyDeps(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateExposePrecalc(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateEditPrimitive(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateExportPrimitive(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateMultiPassLighting(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateMultiTextureLighting(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateVertexLighting(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateAddObject(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateImportFacial(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateRestrictAnims(CCmdUI *pCmdUI)
 {
-    // TODO
+    bool restrict = true;
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+    CDataTreeView *view = doc->GetDataTreeView();
+
+    if (view != nullptr) {
+        restrict = view->m_restrictAnims;
+    }
+
+    pCmdUI->SetCheck(restrict);
 }
 
 void CMainFrame::OnUpdateBindSubobject(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateEditSoundObject(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateExportSoundObject(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdateWireframeMode(CCmdUI *pCmdUI)
 {
-    // TODO
+    CW3DViewDoc *document = GetCurrentDocument();
+    pCmdUI->SetCheck(document->m_scene->Get_Polygon_Mode() == SceneClass::LINE);
 }
 
 void CMainFrame::OnUpdateFog(CCmdUI *pCmdUI)
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+    if (doc != nullptr) {
+        pCmdUI->SetCheck(doc->m_fogEnabled);
+    }
 }
 
 void CMainFrame::OnUpdateScaleEmitter(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnUpdatePolygonSorting(CCmdUI *pCmdUI)
 {
-    // TODO
+    pCmdUI->SetCheck(W3D::Is_Sorting_Enabled() != 0);
 }
 
 void CMainFrame::OnUpdatePlusXCamera(CCmdUI *pCmdUI)
 {
-    // TODO
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_plusXCamera);
+    }
 }
 
 void CMainFrame::OnUpdateMungeSort(CCmdUI *pCmdUI)
 {
-    // TODO
+    pCmdUI->SetCheck(W3D::Is_Munge_Sort_On_Load_Enabled() != 0);
 }
 
 void CMainFrame::OnUpdateEnableGamma(CCmdUI *pCmdUI)
 {
-    // TODO
+    // do later
 }

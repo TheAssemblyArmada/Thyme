@@ -74,7 +74,7 @@ protected:
     afx_msg void OnDeleteItem(NMHDR *pNMHDR, LRESULT *pResult);
     afx_msg void OnDblClk(NMHDR *pNMHDR, LRESULT *pResult);
 
-    CTreeView base;
+public:
     HTREEITEM m_categoryTreeItems[9];
     int m_imageListIDs[11];
     bool m_restrictAnims;

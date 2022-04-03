@@ -664,6 +664,16 @@ void CDataTreeView::SelectPrev()
     }
 }
 
+void CDataTreeView::RestrictAnims(bool restrict)
+{
+    if (m_restrictAnims != restrict) {
+        m_restrictAnims = restrict;
+        GetTreeCtrl().DeleteItem(TVI_ROOT);
+        AddCategories();
+        AddRenderObjects();
+    }
+}
+
 #if 0
 void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
 {
@@ -696,11 +706,6 @@ void CDataTreeView::RenameItem(const char *oldname, const char *newname, int cat
 }
 
 void CDataTreeView::RefreshRenderObjects()
-{
-    // do later
-}
-
-void CDataTreeView::RestrictAnims(bool restrict)
 {
     // do later
 }

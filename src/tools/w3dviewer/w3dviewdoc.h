@@ -21,7 +21,6 @@ class Bitmap2D;
 class CDataTreeView;
 class CGraphicView;
 class CameraClass;
-class DazzleLayerClass;
 class EditorParticleEmitterDefClass;
 class HAnimClass;
 class HLodClass;
@@ -50,7 +49,6 @@ public:
     void UpdateFrameCount();
     void OnStep(int step);
     void SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2);
-    void PlayAnimationSound();
     void UpdateAnimation(float tm);
     CDataTreeView *GetDataTreeView();
     CGraphicView *GetGraphicView();
@@ -83,7 +81,6 @@ public:
     HTreeClass *GetCurrentHTree();
     void SaveCameraSettings();
     void ReadSettings();
-    void RenderDazzleLayer(CameraClass *camera);
     void SetFogColor(Vector3 &color);
     void EnableFog(bool enable);
 
@@ -96,7 +93,6 @@ public:
     ViewerSceneClass *m_scene;
     SimpleSceneClass *m_textureScene;
     SimpleSceneClass *m_backgroundScene;
-    DazzleLayerClass *m_dazzleLayer;
     RenderObjClass *m_model;
     RenderObjClass *m_backgroundObject;
     HAnimClass *m_animation;

@@ -81,8 +81,6 @@ protected:
     afx_msg void OnCameraRotateX();
     afx_msg void OnCameraRotateY();
     afx_msg void OnCameraRotateZ();
-    afx_msg void OnChangeDevice();
-    afx_msg void OnFullScreen();
     afx_msg void OnCreateEmitter();
     afx_msg void OnEditEmitter();
     afx_msg void OnExportEmitter();
@@ -142,15 +140,6 @@ protected:
     afx_msg void OnScaleEmitter();
     afx_msg void OnPolygonSorting();
     afx_msg void OnPlusXCamera();
-    afx_msg void OnNPatchesGap();
-    afx_msg void OnNPatches1();
-    afx_msg void OnNPatches2();
-    afx_msg void OnNPatches3();
-    afx_msg void OnNPatches4();
-    afx_msg void OnNPatches5();
-    afx_msg void OnNPatches6();
-    afx_msg void OnNPatches7();
-    afx_msg void OnNPatches8();
     afx_msg void OnMungeSort();
     afx_msg void OnEnableGamma();
     afx_msg void OnSetGamma();
@@ -164,7 +153,6 @@ protected:
     afx_msg void OnUpdateRotateX(CCmdUI *pCmdUI);
     afx_msg void OnUpdateRotateY(CCmdUI *pCmdUI);
     afx_msg void OnUpdateRotateZ(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateFullScreen(CCmdUI *pCmdUI);
     afx_msg void OnUpdateEditEmitter(CCmdUI *pCmdUI);
     afx_msg void OnUpdateExportEmitter(CCmdUI *pCmdUI);
     afx_msg void OnUpdateAnimateCamera(CCmdUI *pCmdUI);
@@ -195,15 +183,6 @@ protected:
     afx_msg void OnUpdateScaleEmitter(CCmdUI *pCmdUI);
     afx_msg void OnUpdatePolygonSorting(CCmdUI *pCmdUI);
     afx_msg void OnUpdatePlusXCamera(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatchesGap(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches1(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches2(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches3(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches4(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches5(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches6(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches7(CCmdUI *pCmdUI);
-    afx_msg void OnUpdateNPatches8(CCmdUI *pCmdUI);
     afx_msg void OnUpdateMungeSort(CCmdUI *pCmdUI);
     afx_msg void OnUpdateEnableGamma(CCmdUI *pCmdUI);
 

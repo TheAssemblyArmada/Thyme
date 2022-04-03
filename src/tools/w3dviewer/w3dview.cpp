@@ -24,7 +24,7 @@ CW3DViewApp theApp;
 
 BOOL CW3DViewApp::InitInstance()
 {
-    // TODO
+    // do later
     // ColorPickerClass::RegisterWndClass(AfxGetInstanceHandle());
     // ColorBarClass::RegisterWndClass(AfxGetInstanceHandle());
     GameMath::Init();
@@ -71,7 +71,7 @@ END_MESSAGE_MAP()
 
 void CW3DViewApp::OnAppAbout()
 {
-    // TODO
+    // do later
     // CAboutDialog dialog;
     // dialog.DoModal();
 }

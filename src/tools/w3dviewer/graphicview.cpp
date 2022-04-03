@@ -21,6 +21,7 @@
 #include "quaternion.h"
 #include "rcfile.h"
 #include "resource.h"
+#include "utils.h"
 #include "viewerscene.h"
 #include "w3d.h"
 #include "w3dview.h"
@@ -363,7 +364,7 @@ void CGraphicView::Render(BOOL update, unsigned int time)
             W3D::Sync(sync);
 
             if (m_animationPlaying == 0 && update) {
-                UpdateAnimation(tm * 0.001f * m_animationSpeed);
+                document->UpdateAnimation(tm * 0.001f * m_animationSpeed);
             }
 
             if (m_objectRotationFlags != 0 && update) {
@@ -454,7 +455,23 @@ void CGraphicView::UpdateLightTransform()
 
 void CGraphicView::UpdateAnimation(int flag)
 {
-    // TODO
+    if (m_animationPlaying == flag) {
+        return;
+    }
+
+    if (flag == 0) {
+        m_time = timeGetTime();
+        m_animationPlaying = flag;
+    } else if (flag != 1) {
+        m_animationPlaying = flag;
+    }
+
+    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    if (document->m_model != nullptr) {
+        if (document->m_animation != nullptr) {
+            document->m_model->Set_Animation(document->m_animation, 0.0f);
+        }
+    }
 }
 
 void CGraphicView::ResetCamera(RenderObjClass *robj)
@@ -550,34 +567,52 @@ void CGraphicView::ResetCameraValues(SphereClass &sphere)
     m_objSphere = sphere;
 }
 
-#if 0
 void CGraphicView::ResetParticleEmitterCamera(ParticleEmitterClass *emitter)
-{
-    // TODO
-}
-
-void CGraphicView::SetCameraDirection(int direction)
 {
     // TODO
 }
 
 void CGraphicView::SetRotationFlags(int flags)
 {
-    // TODO
+    if (m_objectRotationFlags != flags) {
+        m_objectRotationFlags = flags;
+    }
 }
 
 void CGraphicView::SetCameraRotateConstraints(int constraints)
 {
-    // TODO
+    m_cameraRotateConstraints = constraints;
 }
 
 void CGraphicView::ResetRenderObj()
 {
-    // TODO
+    CW3DViewDoc *document = GetCurrentDocument();
+
+    if (document != nullptr) {
+        if (document->m_model != nullptr) {
+            Matrix3D tm(true);
+            document->m_model->Set_Transform(tm);
+        }
+    }
 }
 
 void CGraphicView::UpdateCameraDistance(float distance)
 {
-    // TODO
+    m_radius = distance;
+    Matrix3D tm(true);
+    tm.Look_At(
+        Vector3(distance + m_objSphere.Center.X, m_objSphere.Center.Y, m_objSphere.Center.Z), m_objSphere.Center, 0.0f);
+    m_camera->Set_Transform(tm);
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        frame->UpdateCameraDistance(m_radius);
+    }
+}
+
+#if 0
+void CGraphicView::SetCameraDirection(int direction)
+{
+    // do later
 }
 #endif

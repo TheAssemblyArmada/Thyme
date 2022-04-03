@@ -15,6 +15,7 @@
 #include "datatreeview.h"
 #include "assetmgr.h"
 #include "bmp2d.h"
+#include "hanim.h"
 #include "mainfrm.h"
 #include "rendobj.h"
 #include "resource.h"
@@ -167,8 +168,6 @@ void CDataTreeView::AddRenderObjects()
                 HTREEITEM category;
                 int image;
                 int type;
-                HTREEITEM item2;
-                HTREEITEM item;
 
                 switch (iter->Current_Item_Class_ID()) {
                     case RenderObjClass::CLASSID_MESH:
@@ -182,11 +181,19 @@ void CDataTreeView::AddRenderObjects()
                             type = 3;
                         }
 
-                        item2 = 0;
-                        item = GetTreeCtrl().GetNextItem(category, TVGN_CHILD);
+                        if (FindItemByName(category, name) == 0) {
+                            HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                                name,
+                                image,
+                                image,
+                                0,
+                                0,
+                                0,
+                                category,
+                                TVI_SORT);
 
-                        if (item == nullptr) {
-                            goto l2;
+                            AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
+                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
                         }
 
                         break;
@@ -201,11 +208,19 @@ void CDataTreeView::AddRenderObjects()
                             type = 3;
                         }
 
-                        item2 = 0;
-                        item = GetTreeCtrl().GetNextItem(category, TVGN_CHILD);
+                        if (FindItemByName(category, name) == 0) {
+                            HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                                name,
+                                image,
+                                image,
+                                0,
+                                0,
+                                0,
+                                category,
+                                TVI_SORT);
 
-                        if (item == nullptr) {
-                            goto l2;
+                            AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
+                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
                         }
 
                         break;
@@ -226,28 +241,7 @@ void CDataTreeView::AddRenderObjects()
                             type = 3;
                         }
 
-                        item2 = 0;
-                        item = GetTreeCtrl().GetNextItem(category, TVGN_CHILD);
-
-                        if (item == nullptr) {
-                            goto l2;
-                        }
-
-                        break;
-                    default:
-                        goto l3;
-                }
-
-                while (item2 == nullptr) {
-                    if (lstrcmp(GetTreeCtrl().GetItemText(item), name) == 0) {
-                        item2 = item;
-                    }
-
-                    item = GetTreeCtrl().GetNextItem(item, TVGN_NEXT);
-
-                    if (item == nullptr) {
-                        if (item2 == nullptr) {
-                        l2:
+                        if (FindItemByName(category, name) == 0) {
                             HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                                 name,
                                 image,
@@ -263,11 +257,11 @@ void CDataTreeView::AddRenderObjects()
                         }
 
                         break;
-                    }
+                    default:
+                        break;
                 }
             }
 
-        l3:
             iter->Next();
         }
 
@@ -495,12 +489,179 @@ RenderObjClass *CDataTreeView::GetRenderObj(HTREEITEM item)
 
 void CDataTreeView::AddTextures()
 {
-    // TODO
+    for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
+         !textureIter.Is_Done();
+         textureIter.Next()) {
+        TextureClass *texture = textureIter.Peek_Value();
+
+        if (!FindItemByName(m_categoryTreeItems[0], texture->Get_Name())) {
+            HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                texture->Get_Name(),
+                m_imageListIDs[4],
+                m_imageListIDs[4],
+                0,
+                0,
+                0,
+                m_categoryTreeItems[0],
+                TVI_SORT);
+
+            AssetInfoClass *info = new AssetInfoClass(texture->Get_Name(), 0, nullptr, texture);
+            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+        }
+    }
 }
 
 void CDataTreeView::AddAnimations()
 {
-    // TODO
+    AssetIterator *iterator = W3DAssetManager::Get_Instance()->Create_HAnim_Iterator();
+
+    if (iterator != nullptr) {
+        for (iterator->First(); !iterator->Is_Done(); iterator->Next()) {
+            HAnimClass *anim = W3DAssetManager::Get_Instance()->Get_HAnim(iterator->Current_Item_Name());
+
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[7], anim->Get_HName()); i != 0;
+                 i = FindNextItem(i, anim->Get_HName())) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                    HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                        iterator->Current_Item_Name(),
+                        m_imageListIDs[0],
+                        m_imageListIDs[0],
+                        0,
+                        0,
+                        0,
+                        i,
+                        TVI_SORT);
+
+                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                }
+            }
+
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[2], anim->Get_HName()); i != 0;
+                 i = FindNextItem(i, anim->Get_HName())) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                    HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                        iterator->Current_Item_Name(),
+                        m_imageListIDs[0],
+                        m_imageListIDs[0],
+                        0,
+                        0,
+                        0,
+                        i,
+                        TVI_SORT);
+
+                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                }
+            }
+
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[3], anim->Get_HName()); i != 0;
+                 i = FindNextItem(i, anim->Get_HName())) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                    HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+                        iterator->Current_Item_Name(),
+                        m_imageListIDs[0],
+                        m_imageListIDs[0],
+                        0,
+                        0,
+                        0,
+                        i,
+                        TVI_SORT);
+
+                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                }
+            }
+        }
+    }
+}
+
+HTREEITEM CDataTreeView::FindItemByName(HTREEITEM item, const char *name)
+{
+    HTREEITEM item1 = 0;
+    HTREEITEM item2 = 0;
+    HTREEITEM item3 = GetTreeCtrl().GetChildItem(item);
+
+    if (item3 != 0) {
+        while (item1 == 0) {
+            if (lstrcmp(GetTreeCtrl().GetItemText(item3), name) == 0) {
+                item2 = item3;
+            }
+
+            item3 = GetTreeCtrl().GetNextSiblingItem(item3);
+
+            if (item3 == 0) {
+                return item2;
+            }
+
+            item1 = item2;
+        }
+    }
+
+    return item1;
+}
+
+HTREEITEM CDataTreeView::FindNextItem(HTREEITEM item, const char *name)
+{
+    HTREEITEM found = 0;
+
+    for (HTREEITEM i = GetTreeCtrl().GetNextSiblingItem(item); i != 0; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        if (found != 0) {
+            break;
+        }
+
+        AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(i);
+
+        if (!m_restrictAnims || info != 0 && !lstrcmpi(info->m_heirarchyName, name)) {
+            found = i;
+        }
+    }
+
+    return found;
+}
+
+HTREEITEM CDataTreeView::FindFirstItem(HTREEITEM item, const char *name)
+{
+    HTREEITEM found = 0;
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(item); i != 0; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        if (found != 0) {
+            break;
+        }
+
+        AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(i);
+
+        if (!m_restrictAnims || info != 0 && !lstrcmpi(info->m_heirarchyName, name)) {
+            found = i;
+        }
+    }
+
+    return found;
+}
+
+void CDataTreeView::SelectNext()
+{
+    HTREEITEM selected = GetTreeCtrl().GetSelectedItem();
+
+    if (selected != 0) {
+        HTREEITEM next = GetTreeCtrl().GetNextSiblingItem(selected);
+
+        if (next != 0) {
+            GetTreeCtrl().SelectItem(next);
+        }
+    }
+}
+
+void CDataTreeView::SelectPrev()
+{
+    HTREEITEM selected = GetTreeCtrl().GetSelectedItem();
+
+    if (selected != 0) {
+        HTREEITEM prev = GetTreeCtrl().GetPrevSiblingItem(selected);
+
+        if (prev != 0) {
+            GetTreeCtrl().SelectItem(prev);
+        }
+    }
 }
 
 #if 0
@@ -510,21 +671,6 @@ void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
 }
 
 void CDataTreeView::AddItem(const char *name, int category, bool select)
-{
-    // TODO
-}
-
-HTREEITEM CDataTreeView::FindItemByName(HTREEITEM item, const char *name)
-{
-    // TODO
-}
-
-HTREEITEM CDataTreeView::FindNextItem(HTREEITEM item, const char *name)
-{
-    // TODO
-}
-
-HTREEITEM CDataTreeView::FindFirstItem(HTREEITEM item, const char *name)
 {
     // TODO
 }
@@ -545,16 +691,6 @@ void CDataTreeView::GetRenderObjectList(DynamicVectorClass<CString> &vector, HTR
 }
 
 void CDataTreeView::RenameItem(const char *oldname, const char *newname, int category)
-{
-    // TODO
-}
-
-void CDataTreeView::SelectNext()
-{
-    // TODO
-}
-
-void CDataTreeView::SelectPrev()
 {
     // TODO
 }

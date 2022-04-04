@@ -27,8 +27,8 @@ Bitmap2D::Bitmap2D(
     float th = texture->Get_Height();
 
     if (adjust_xy) {
-        x = x - width * 0.5f;
-        y = y - height * 0.5f;
+        x = x - (tw / width) * 0.5f;
+        y = y - (th / height) * 0.5f;
     }
 
     ShaderClass shader;

@@ -607,7 +607,7 @@ void CMainFrame::OnOpen()
             OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
             "Westwood 3D Files (*.w3d)|*.w3d||",
             this);
-        char file[2600];
+        char file[2600] = {};
         dlg.GetOFN().lpstrFile = file;
         dlg.GetOFN().nMaxFile = 2600;
 

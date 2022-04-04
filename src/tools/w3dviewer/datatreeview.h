@@ -17,24 +17,6 @@
 #include "vector.h"
 
 class RenderObjClass;
-class TextureClass;
-
-class AssetInfoClass
-{
-public:
-    AssetInfoClass(const char *name, int type, RenderObjClass *robj, TextureClass *texture);
-    virtual ~AssetInfoClass();
-    void GetHeirarchyName();
-
-public:
-    CString m_name;
-    CString m_heirarchyName;
-    CString m_unk1;
-    CString m_unk2;
-    int m_type;
-    TextureClass *m_texture;
-    RenderObjClass *m_renderObj;
-};
 
 class CDataTreeView : public CTreeView
 {

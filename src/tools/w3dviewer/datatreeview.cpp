@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "datatreeview.h"
+#include "assetinfo.h"
 #include "assetmgr.h"
 #include "bmp2d.h"
 #include "hanim.h"
@@ -34,42 +35,6 @@ BEGIN_MESSAGE_MAP(CDataTreeView, CTreeView)
     ON_NOTIFY_REFLECT(NM_DBLCLK, &OnDblClk)
 END_MESSAGE_MAP()
 // clang-format on
-
-AssetInfoClass::AssetInfoClass(const char *name, int type, RenderObjClass *robj, TextureClass *texture) :
-    m_name(name), m_type(type), m_texture(texture), m_renderObj(nullptr)
-{
-    Ref_Ptr_Set(m_renderObj, robj);
-    GetHeirarchyName();
-}
-
-AssetInfoClass::~AssetInfoClass()
-{
-    Ref_Ptr_Release(m_renderObj);
-}
-
-void AssetInfoClass::GetHeirarchyName()
-{
-    if (m_type != 0) {
-        RenderObjClass *robj = m_renderObj;
-        if (robj != nullptr) {
-            robj->Add_Ref();
-        } else {
-            robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(m_name);
-
-            if (robj == nullptr) {
-                return;
-            }
-        }
-
-        const HTreeClass *tree = robj->Get_HTree();
-
-        if (tree != nullptr) {
-            m_heirarchyName = tree->Get_Name();
-        }
-
-        robj->Release_Ref();
-    }
-}
 
 CDataTreeView::CDataTreeView() : m_restrictAnims(true), m_categoryTreeItems{}
 {

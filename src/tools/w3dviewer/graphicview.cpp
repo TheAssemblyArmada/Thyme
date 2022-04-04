@@ -18,6 +18,8 @@
 #include "light.h"
 #include "mainfrm.h"
 #include "mpu.h"
+#include "part_buf.h"
+#include "part_emt.h"
 #include "quaternion.h"
 #include "rcfile.h"
 #include "resource.h"
@@ -211,7 +213,246 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 {
-    // TODO
+    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    float ydiff = m_mousePos.y - point.y;
+
+    if ((nFlags & MK_CONTROL) != 0 || !m_lightInScene) {
+        if ((nFlags & MK_CONTROL) != 0 && !m_lightInScene) {
+            m_light->Add(document->m_scene);
+            m_lightInScene = true;
+        }
+    } else {
+        m_light->Remove();
+        m_lightInScene = false;
+    }
+
+    if (m_leftButtonDown && m_rightButtonDown) {
+        Matrix3D tm = m_camera->Get_Transform();
+        RECT r;
+        GetClientRect(&r);
+
+        float x = (((float)point.x - (float)(r.right >> 1)) / (float)(r.right >> 1)
+                      - ((float)m_mousePos.x - (float)(r.right >> 1)) / (float)(r.right >> 1))
+            * m_radius * -1.0f;
+
+        float y = (((float)point.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1)
+                      - ((float)m_mousePos.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1))
+            * m_radius * -1.0f;
+
+        tm.Translate(x, y, 0.0f);
+        Matrix3 m = Build_Matrix3(Rotation);
+        Pos += x * m.Get_X_Vector() + m.Get_Y_Vector() * y;
+        m_camera->Set_Transform(tm);
+        m_mousePos = point;
+        CWnd::Default();
+        return;
+    }
+
+    if ((nFlags & MK_CONTROL) != 0) {
+        if (m_leftButtonDown) {
+            LightClass *light = document->m_light;
+
+            if (light != nullptr) {
+                if (m_light != nullptr) {
+                    RECT r;
+                    GetClientRect(&r);
+                    float x = r.right >> 1;
+                    float y = r.bottom >> 1;
+                    float x0 = (m_mousePos.x - x) / x;
+                    float y0 = (y - m_mousePos.y) / y;
+                    float y1 = (y - point.y) / y;
+                    float x1 = (point.x - x) / x;
+
+                    Quaternion q = Trackball(x0, y0, x1, y1, 0.8f);
+                    Quaternion q2;
+
+                    q2.X = -q.X;
+                    q2.Y = -q.Y;
+                    q2.Z = -q.Z;
+                    q2.W = q.W;
+
+                    Quaternion q3 = Build_Quaternion(m_camera->Get_Transform());
+                    Quaternion q4 = Build_Quaternion(light->Get_Transform());
+
+                    float f1 = q3.Y * q2.Z - q3.Z * q2.Y + q2.X * q3.W + q3.X * q2.W;
+                    float f2 = q3.Y * q2.W + q3.W * q2.Y - (q3.X * q2.Z - q2.X * q3.Z);
+                    float f3 = q3.X * q2.Y - q2.X * q3.Y + q3.Z * q2.W + q3.W * q2.Z;
+                    float f4 = q3.W * q2.W - (q2.X * q3.X + q3.Z * q2.Z + q3.Y * q2.Y);
+                    float f5 = -q3.X;
+                    float f6 = -q3.Y;
+                    float f7 = -q3.Z;
+
+                    q2.X = f7 * f2 - f6 * f3 + f1 * q3.W + f5 * f4;
+                    q2.Y = f6 * f4 + q3.W * f2 - (f1 * f7 - f5 * f3);
+                    q2.Z = f1 * f6 - f5 * f2 + f7 * f4 + q3.W * f3;
+                    q2.W = q3.W * f4 - (f7 * f3 + f6 * f2 + f5 * f1);
+
+                    Quaternion q5;
+                    q5.X = q4.Z * q2.Y - q4.Y * q2.Z + q2.X * q4.W + q4.X * q2.W;
+                    q5.Y = q4.Y * q2.W + q4.W * q2.Y - (q2.X * q4.Z - q4.X * q2.Z);
+                    q5.Z = q2.X * q4.Y - q4.X * q2.Y + q4.Z * q2.W + q4.W * q2.Z;
+                    q5.W = q4.W * q2.W - (q4.Z * q2.Z + q4.Y * q2.Y + q2.X * q4.X);
+                    q5.Normalize();
+
+                    Matrix3D tm = light->Get_Transform();
+                    float f8 = tm[0].X;
+                    float f9 = tm[0].Y;
+                    float f10 = Pos.X - tm[0].W;
+                    float f11 = tm[1].X;
+                    float f12 = tm[1].W;
+                    float f13 = tm[1].Y;
+                    float f14 = tm[0].Z;
+                    float f15 = Pos.Y - f12;
+                    float f16 = tm[2].X;
+                    float f17 = tm[2].W;
+                    float f18 = tm[2].Z;
+                    float f19 = tm[1].Z;
+                    float f20 = tm[2].Y;
+                    float f21 = Pos.Z - f17;
+
+                    float f22 = f16 * f21 + f11 * f15 + f10 * f8;
+                    float f23 = f20 * f21 + f13 * f15 + f10 * f9;
+                    float f24 = f18 * f21 + f19 * f15 + f10 * f14;
+
+                    Matrix3D tm2;
+                    tm2.Set(q5, Pos);
+                    tm2.Translate(-f22, -f23, -f24);
+                    m_light->Set_Transform(tm2);
+                    light->Set_Transform(tm2);
+                }
+            }
+
+            m_mousePos = point;
+            CWnd::Default();
+            return;
+        }
+
+        if (m_rightButtonDown) {
+            LightClass *light = document->m_light;
+            RenderObjClass *model = document->m_model;
+
+            if (light != nullptr) {
+                if (model != nullptr) {
+                    RECT r;
+                    GetClientRect(&r);
+                    float f25 = ydiff / (r.bottom - r.top) * (m_objSphere.Radius * 3.0f);
+                    Matrix3D tm = light->Get_Transform();
+                    tm.Translate_Z(f25);
+                    Vector3 v = tm.Get_Translation();
+                    Vector3 v2 = model->Get_Position();
+
+                    if ((v - v2).Length() > m_objSphere.Radius) {
+                        m_light->Set_Transform(tm);
+                        light->Set_Transform(tm);
+                    }
+                }
+            }
+
+            m_mousePos = point;
+            CWnd::Default();
+            return;
+        }
+    }
+
+    if (m_leftButtonDown) {
+        if (!m_isInitialized || document->m_scene == nullptr || document->m_model == nullptr) {
+            m_mousePos = point;
+            CWnd::Default();
+            return;
+        }
+
+        RECT r;
+        GetClientRect(&r);
+        float f26 = r.right >> 1;
+        float f27 = r.bottom >> 1;
+        float x0 = (m_mousePos.x - f26) / f26;
+        float y0 = (f27 - m_mousePos.y) / f27;
+        float y1 = (f27 - point.y) / f27;
+        float x1 = (point.x - f26) / f26;
+        Rotation = Trackball(x0, y0, x1, y1, 0.8f);
+
+        switch (m_cameraRotateConstraints) {
+            case 1: {
+                Matrix3D tm2 = Build_Matrix3D(Rotation);
+                Matrix3D tm(true);
+                tm.Rotate_X(tm2.Get_X_Rotation());
+                tm.Set_Translation(tm2.Get_Translation());
+                Rotation = Build_Quaternion(tm);
+            } break;
+            case 2: {
+                Matrix3D tm2 = Build_Matrix3D(Rotation);
+                Matrix3D tm(true);
+                tm.Rotate_Y(tm2.Get_Y_Rotation());
+                tm.Set_Translation(tm2.Get_Translation());
+                Rotation = Build_Quaternion(tm);
+            } break;
+            case 4: {
+                Matrix3D tm2 = Build_Matrix3D(Rotation);
+                Matrix3D tm(true);
+                tm.Rotate_Z(tm2.Get_Z_Rotation());
+                tm.Set_Translation(tm2.Get_Translation());
+                Rotation = Build_Quaternion(tm);
+            } break;
+        }
+
+        Matrix3D tm3 = m_camera->Get_Transform();
+        Matrix3D tm4;
+        tm3.Get_Orthogonal_Inverse(tm4);
+        Vector3 v;
+        Matrix3D::Transform_Vector(tm4, Pos, &v);
+        tm3.Translate(v);
+        tm3 = tm3 * Build_Matrix3D(Rotation);
+        tm3.Translate(-v);
+        m_camera->Set_Transform(tm3);
+        document->m_docCamera->Set_Transform(tm3);
+        document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+        m_mousePos = point;
+        CWnd::Default();
+        return;
+    }
+
+    if (m_rightButtonDown) {
+        m_mousePos = point;
+        Matrix3D tm = m_camera->Get_Transform();
+
+        if (ydiff != 0.0f) {
+            RECT r;
+            GetClientRect(&r);
+            float f28 = ydiff / (r.bottom - r.top) * m_radius * 3.0f;
+
+            if (f28 < Zoom && f28 >= 0.0f) {
+                f28 = Zoom;
+            }
+
+            if (f28 > -Zoom && f28 <= 0.0f) {
+                f28 = -Zoom;
+            }
+
+            float f29 = f28 + m_radius;
+
+            if (f29 > 0.0f) {
+                m_radius = f29;
+                tm.Translate_Z(f28);
+                m_camera->Set_Transform(tm);
+                CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+                if (frame != nullptr) {
+                    document->m_docCamera->Set_Transform(tm);
+                    document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+
+                    if (document->m_model != nullptr) {
+                        frame->UpdatePolyCount(document->m_model->Get_Num_Polys());
+                    }
+
+                    frame->UpdateCameraDistance(m_radius);
+                }
+            }
+        }
+
+        m_mousePos = point;
+    }
+
+    CWnd::Default();
 }
 
 void CGraphicView::OnRButtonUp(UINT nFlags, CPoint point)
@@ -445,12 +686,95 @@ void CGraphicView::UpdateCamera()
 
 void CGraphicView::UpdateObjectRotation()
 {
-    // TODO
+    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+
+    if (document->m_model == nullptr) {
+        return;
+    }
+
+    Matrix3D tm = document->m_model->Get_Transform();
+
+    if ((m_objectRotationFlags & 1) == 1) {
+        tm.Rotate_X(0.05f);
+    }
+
+    if ((m_objectRotationFlags & 8) == 8) {
+        tm.Rotate_X(-0.05f);
+    }
+
+    if ((m_objectRotationFlags & 2) == 2) {
+        tm.Rotate_Y(0.05f);
+    }
+
+    if ((m_objectRotationFlags & 16) == 16) {
+        tm.Rotate_Y(-0.05f);
+    }
+
+    if ((m_objectRotationFlags & 4) == 4) {
+        tm.Rotate_Z(0.05f);
+    }
+
+    if ((m_objectRotationFlags & 32) == 32) {
+        tm.Rotate_Z(-0.05f);
+    }
+
+    if (!tm.Is_Orthogonal()) {
+        tm.Re_Orthogonalize();
+    }
+
+    document->m_model->Set_Transform(tm);
 }
 
 void CGraphicView::UpdateLightTransform()
 {
-    // TODO
+    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+
+    if (document->m_model == nullptr || document->m_light == nullptr) {
+        return;
+    }
+
+    Matrix3D tm(true);
+
+    if ((m_lightRotationFlags & 1) == 1) {
+        tm.Rotate_X(0.05f);
+    }
+
+    if ((m_lightRotationFlags & 8) == 8) {
+        tm.Rotate_X(-0.05f);
+    }
+
+    if ((m_lightRotationFlags & 2) == 2) {
+        tm.Rotate_Y(0.05f);
+    }
+
+    if ((m_lightRotationFlags & 16) == 16) {
+        tm.Rotate_Y(-0.05f);
+    }
+
+    if ((m_lightRotationFlags & 4) == 4) {
+        tm.Rotate_Z(0.05f);
+    }
+
+    if ((m_lightRotationFlags & 32) == 32) {
+        tm.Rotate_Z(-0.05f);
+    }
+
+    Matrix3D tm2;
+    Matrix3D tm3;
+    Matrix3D tm4;
+    tm4 = document->m_model->Get_Transform();
+    tm4.Get_Orthogonal_Inverse(tm2);
+    Matrix3D tm5 = document->m_light->Get_Transform();
+    Matrix3D::Multiply(tm2, tm5, &tm3);
+    Matrix3D::Multiply(tm4, tm, &tm5);
+    Matrix3D::Multiply(tm5, tm3, &tm5);
+
+    if (!tm5.Is_Orthogonal()) {
+        tm5.Re_Orthogonalize();
+    }
+
+    m_light->Set_Transform(tm5);
+    document->m_light->Set_Transform(tm5);
 }
 
 void CGraphicView::UpdateAnimation(int flag)
@@ -462,8 +786,10 @@ void CGraphicView::UpdateAnimation(int flag)
     if (flag == 0) {
         m_time = timeGetTime();
         m_animationPlaying = flag;
+        return;
     } else if (flag != 1) {
         m_animationPlaying = flag;
+        return;
     }
 
     CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
@@ -472,6 +798,9 @@ void CGraphicView::UpdateAnimation(int flag)
             document->m_model->Set_Animation(document->m_animation, 0.0f);
         }
     }
+
+    document->UpdateFrameCount();
+    m_animationPlaying = 1;
 }
 
 void CGraphicView::ResetCamera(RenderObjClass *robj)
@@ -569,7 +898,127 @@ void CGraphicView::ResetCameraValues(SphereClass &sphere)
 
 void CGraphicView::ResetParticleEmitterCamera(ParticleEmitterClass *emitter)
 {
-    // TODO
+    ParticleBufferClass *buffer = emitter->Peek_Buffer();
+    SphereClass s;
+    s.Center = emitter->Get_Start_Velocity();
+    Vector3 acceleration = buffer->Get_Acceleration();
+    float lifetime = buffer->Get_Lifetime();
+    float f1 = lifetime * lifetime;
+    float f2 = acceleration.X * f1;
+    float f3 = acceleration.Y * f1;
+    float f4 = f2 * 0.5f;
+    float f5 = f3 * 0.5f;
+    float f6 = s.Center.Y * lifetime;
+    float f7 = s.Center.Z * lifetime;
+    float f8 = s.Center.X * lifetime + f4;
+    float f9 = 0.0f;
+    float f10 = 0.0f;
+    float f11 = f6 + f5;
+    float f12 = 0.0f;
+    float f13 = f1 * acceleration.Z * 0.5f + f7;
+    float f14;
+
+    if (acceleration.X == 0.0f) {
+        if (acceleration.Y == 0.0f && acceleration.Z == 0.0f) {
+            goto l1;
+        }
+
+        f14 = 0.0f;
+    } else {
+        f14 = -s.Center.X / acceleration.X;
+    }
+
+    float f15;
+
+    if (acceleration.Y == 0.0f) {
+        f15 = 0.0f;
+    } else {
+        f15 = -s.Center.Y / acceleration.Y;
+    }
+
+    float f16;
+
+    if (acceleration.Z == 0.0f) {
+        f16 = 0.0f;
+    } else {
+        f16 = -s.Center.Z / acceleration.Z;
+    }
+
+    if (f14 >= 0.0f && f14 < lifetime) {
+        f9 = GameMath::Fabs(f14 * f14 * acceleration.X * 0.5f + f14 * s.Center.X);
+    }
+
+    if (f15 >= 0.0f && f15 < lifetime) {
+        f12 = GameMath::Fabs(f15 * f15 * acceleration.Y * 0.5f + f15 * s.Center.Y);
+    }
+
+    if (f16 >= 0.0f && f16 < lifetime) {
+        f10 = GameMath::Fabs(f16 * f16 * acceleration.Z * 0.5f + f16 * s.Center.Z);
+    }
+
+l1:
+    float f17 = GameMath::Fabs(f8);
+    float f18 = GameMath::Fabs(f11);
+    float f19 = GameMath::Fabs(f13);
+    float f20;
+
+    if (f17 <= f18) {
+        f20 = f18;
+    } else {
+        f20 = f17;
+    }
+
+    if (f20 <= f19) {
+        f20 = f19;
+    }
+
+    if (f20 <= f9) {
+        f20 = f9;
+    }
+
+    if (f20 <= f12) {
+        f20 = f12;
+    }
+
+    if (f20 <= f10) {
+        f20 = f10;
+    }
+
+    float f21 = f17 * 0.5f;
+    s.Center.Y = f18 * 0.5f;
+    s.Center.Z = f19 * 0.5f;
+
+    float f24 = f9 * 0.5f;
+
+    if (f21 <= f24) {
+        f21 = f24;
+    }
+
+    float f25 = f12 * 0.5f;
+
+    if (s.Center.Y > f25) {
+        f25 = s.Center.Y;
+    }
+
+    float f26 = f10 * 0.5f;
+
+    if (s.Center.Z > f26) {
+        f26 = s.Center.Z;
+    }
+
+    s.Center.X = f21;
+    s.Center.Y = f25;
+    s.Center.Z = f26;
+    float f27 = f20 * 3.0f * 0.2f;
+    float f28 = buffer->Get_Particle_Size() * 5.0f;
+
+    if (f28 <= f27) {
+        s.Radius = f27;
+    } else {
+        s.Radius = f28;
+    }
+
+    ResetCameraValues(s);
 }
 
 void CGraphicView::SetRotationFlags(int flags)
@@ -610,9 +1059,71 @@ void CGraphicView::UpdateCameraDistance(float distance)
     }
 }
 
-#if 0
 void CGraphicView::SetCameraDirection(int direction)
 {
-    // do later
+    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+
+    if (document->m_model != nullptr) {
+        Vector3 center = m_objSphere.Center;
+        m_radius = m_objSphere.Radius * 3.0f;
+        m_radius = std::clamp(m_radius, 1.0f, 400.0f);
+        Matrix3D tm(true);
+        Vector3 v;
+
+        switch (direction) {
+            case -1:
+                v.X = m_radius + center.X;
+                v.Y = center.Y;
+                v.Z = center.Z;
+                tm.Look_At(v, center, 0.0f);
+                break;
+            case 0:
+                v.X = center.X - m_radius;
+                v.Y = center.Y;
+                v.Z = center.Z;
+                tm.Look_At(v, center, 0.0f);
+                break;
+            case 1:
+                v.X = center.X;
+                v.Y = center.Y;
+                v.Z = m_radius + center.Z;
+                tm.Look_At(v, center, 3.1415927f);
+                break;
+            case 2:
+                v.X = center.X;
+                v.Y = center.Y;
+                v.Z = center.Z - m_radius;
+                tm.Look_At(v, center, 3.1415927f);
+                break;
+            case 3:
+                v.X = center.X;
+                v.Y = center.Y - m_radius;
+                v.Z = center.Z;
+                tm.Look_At(v, center, 0.0f);
+                break;
+            case 4:
+                v.X = center.X;
+                v.Y = m_radius + center.Y;
+                v.Z = center.Z;
+                tm.Look_At(v, center, 0.0f);
+                break;
+            default:
+                break;
+        }
+
+        m_camera->Set_Transform(tm);
+        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+        if (frame != nullptr) {
+            CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+            tm = document->m_docCamera->Get_Transform();
+            document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+
+            if (document->m_model != nullptr) {
+                frame->UpdatePolyCount(document->m_model->Get_Num_Polys());
+            }
+
+            frame->UpdateCameraDistance(m_radius);
+        }
+    }
 }
-#endif

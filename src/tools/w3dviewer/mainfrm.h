@@ -70,7 +70,6 @@ protected:
     afx_msg void OnSceneLight();
     afx_msg void OnBackgroundColor();
     afx_msg void OnBackgroundBitmap();
-    afx_msg void OnEditLod();
     afx_msg void OnExportLOD();
     afx_msg void OnBackgroundObject();
     afx_msg void OnAnimationToolbar();

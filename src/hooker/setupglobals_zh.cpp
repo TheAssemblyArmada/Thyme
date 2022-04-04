@@ -689,3 +689,9 @@ UpgradeCenter *&g_theUpgradeCenter = Make_Global<UpgradeCenter *>(PICK_ADDRESS(0
 #include "aipathfind.h"
 PathfindCellInfo *&PathfindCellInfo::m_infoArray = Make_Global<PathfindCellInfo *>(PICK_ADDRESS(0x00A2C270, 0x00E28154));
 PathfindCellInfo *&PathfindCellInfo::m_firstFree = Make_Global<PathfindCellInfo *>(PICK_ADDRESS(0x00A2C274, 0x00E28158));
+
+// camerashakesystem.cpp
+#include "camerashakesystem.h"
+CameraShakeSystemClass &g_theCameraShakerSystem = Make_Global<CameraShakeSystemClass>(PICK_ADDRESS(0x00A3B138, 0x00E1B2F0));
+HOOK_AUTOPOOL(CameraShakeSystemClass::CameraShakerClass, 256, PICK_ADDRESS(0x00A3B150, 0x00E1B308));
+

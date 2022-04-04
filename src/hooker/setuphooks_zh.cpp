@@ -34,6 +34,7 @@
 #include "bitmaphandler.h"
 #include "buildassistant.h"
 #include "camera.h"
+#include "camerashakesystem.h"
 #include "cavesystem.h"
 #include "chunkio.h"
 #include "colmath.h"
@@ -2540,4 +2541,15 @@ void Setup_Hooks()
 
     // ai.h
     Hook_Any(0x004AA850, AI::Hook_Ctor);
+
+    // camerashakesystem.cpp
+    Hook_Any(0x007A8B50, CameraShakeSystemClass::CameraShakerClass::Hook_Ctor);
+    Hook_Any(0x007A8CF0, CameraShakeSystemClass::CameraShakerClass::Hook_Dtor);
+    Hook_Any(0x007A8D00, CameraShakeSystemClass::CameraShakerClass::Compute_Rotations);
+    Hook_Any(0x007A8E60, CameraShakeSystemClass::Hook_Ctor);
+    Hook_Any(0x007A8E90, CameraShakeSystemClass::Hook_Dtor);
+    Hook_Any(0x007A8F30, CameraShakeSystemClass::Add_Camera_Shake);
+    Hook_Any(0x007A9060, CameraShakeSystemClass::Is_Camera_Shaking);
+    Hook_Any(0x007A90D0, CameraShakeSystemClass::Timestep);
+    Hook_Any(0x007A91E0, CameraShakeSystemClass::Update_Camera_Shaker);
 }

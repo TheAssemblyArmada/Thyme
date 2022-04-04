@@ -23,12 +23,12 @@ Bitmap2D::Bitmap2D(
     int bit_depth;
     bool windowed;
     W3D::Get_Device_Resolution(width, height, bit_depth, windowed);
-    float tw = texture->Get_Width();
-    float th = texture->Get_Height();
+    float w = (float)texture->Get_Width() / (float)width;
+    float h = (float)texture->Get_Height() / (float)height;
 
     if (adjust_xy) {
-        x = x - (tw / width) * 0.5f;
-        y = y - (th / height) * 0.5f;
+        x = x - w * 0.5f;
+        y = y - h * 0.5f;
     }
 
     ShaderClass shader;
@@ -60,9 +60,9 @@ Bitmap2D::Bitmap2D(
     m_model->Set_Single_Texture(texture, 0, 0);
     Begin_Tri_Strip();
     Vertex(x, y, 0.0f, 0.0f, 0.0f);
-    Vertex(x + tw, y, 0.0f, 1.0f, 0.0f);
-    Vertex(x, y + th, 0.0f, 0.0f, 1.0f);
-    Vertex(x + tw, y + th, 0.0f, 1.0f, 1.0f);
+    Vertex(x + w, y, 0.0f, 1.0f, 0.0f);
+    Vertex(x, y + h, 0.0f, 0.0f, 1.0f);
+    Vertex(x + w, y + h, 0.0f, 1.0f, 1.0f);
     End_Tri_Strip();
     Reset_Flags();
 }

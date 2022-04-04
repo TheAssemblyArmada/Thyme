@@ -58,6 +58,11 @@ Bitmap2D::Bitmap2D(
 
     m_model->Set_Single_Shader(shader, 0);
     m_model->Set_Single_Texture(texture, 0, 0);
+
+    if (!texture->Is_Initialized()) {
+        texture->Init();
+    }
+
     Begin_Tri_Strip();
     Vertex(x, y, 0.0f, 0.0f, 0.0f);
     Vertex(x + w, y, 0.0f, 1.0f, 0.0f);

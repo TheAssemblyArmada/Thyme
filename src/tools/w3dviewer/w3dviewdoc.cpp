@@ -451,7 +451,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
             scene = m_scene;
         }
 
-        m_scene->Add_Render_Object(robj);
+        scene->Add_Render_Object(robj);
 
         if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
             robj->Set_LOD_Level(0);
@@ -497,7 +497,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
         scene = m_scene;
     }
 
-    m_scene->Add_Render_Object(robj);
+    scene->Add_Render_Object(robj);
 
     if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
         robj->Set_LOD_Level(0);

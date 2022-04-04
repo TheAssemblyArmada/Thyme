@@ -313,7 +313,7 @@ void CDataTreeView::AddCategories()
         TVI_LAST);
 
     m_categoryTreeItems[5] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
-        "Primatives",
+        "Primitives",
         m_imageListIDs[7],
         m_imageListIDs[7],
         0,

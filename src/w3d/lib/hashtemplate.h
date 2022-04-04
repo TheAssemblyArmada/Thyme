@@ -213,13 +213,16 @@ public:
     void Next()
     {
         m_handle = m_hashTable->m_table[m_handle].next;
-        int size = m_hashTable->m_size;
 
-        for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
-            m_handle = m_hashTable->m_hash[m_hashIndex];
+        if (m_handle == -1) {
+            int size = m_hashTable->m_size;
 
-            if (m_handle != -1) {
-                break;
+            for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
+                m_handle = m_hashTable->m_hash[m_hashIndex];
+
+                if (m_handle != -1) {
+                    break;
+                }
             }
         }
     }

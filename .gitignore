@@ -35,3 +35,4 @@ CPackSourceConfig.cmake
 *.tmp
 *.bak
 thumbs.db
+*.aps

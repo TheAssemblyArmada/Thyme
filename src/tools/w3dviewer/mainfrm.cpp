@@ -69,9 +69,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
      ON_UPDATE_COMMAND_UI(ID_OBJECT_ROTATEX, OnUpdateRotateX)
      ON_UPDATE_COMMAND_UI(ID_OBJECT_ROTATEY, OnUpdateRotateY)
      ON_UPDATE_COMMAND_UI(ID_OBJECT_ROTATEZ, OnUpdateRotateZ)
-     ON_COMMAND(ID_VIEW_CHANGEDEVICE, OnChangeDevice)
-     ON_COMMAND(ID_VIEW_VIEWFULLSCREEN, OnFullScreen)
-     ON_UPDATE_COMMAND_UI(ID_VIEW_VIEWFULLSCREEN, OnUpdateFullScreen)
      ON_WM_WINDOWPOSCHANGING()
      ON_WM_WINDOWPOSCHANGED()
      ON_COMMAND(ID_EMITTERS_CREATEEMITTER, OnCreateEmitter)
@@ -164,24 +161,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
      ON_COMMAND(ID_VIEW_POLYGONSORTING, OnPolygonSorting)
      ON_COMMAND(ID_CAMERA_XCAMERA, OnPlusXCamera)
      ON_UPDATE_COMMAND_UI(ID_CAMERA_XCAMERA, OnUpdatePlusXCamera)
-     ON_COMMAND(ID_VIEW_NPATCHESGAPFILLING, OnNPatchesGap)
-     ON_UPDATE_COMMAND_UI(ID_VIEW_NPATCHESGAPFILLING, OnUpdateNPatchesGap)
-     ON_COMMAND(ID_N_1, OnNPatches1)
-     ON_UPDATE_COMMAND_UI(ID_N_1, OnUpdateNPatches1)
-     ON_COMMAND(ID_N_2, OnNPatches2)
-     ON_UPDATE_COMMAND_UI(ID_N_2, OnUpdateNPatches2)
-     ON_COMMAND(ID_N_3, OnNPatches3)
-     ON_UPDATE_COMMAND_UI(ID_N_3, OnUpdateNPatches3)
-     ON_COMMAND(ID_N_4, OnNPatches4)
-     ON_UPDATE_COMMAND_UI(ID_N_4, OnUpdateNPatches4)
-     ON_COMMAND(ID_N_5, OnNPatches5)
-     ON_UPDATE_COMMAND_UI(ID_N_5, OnUpdateNPatches5)
-     ON_COMMAND(ID_N_6, OnNPatches6)
-     ON_UPDATE_COMMAND_UI(ID_N_6, OnUpdateNPatches6)
-     ON_COMMAND(ID_N_7, OnNPatches7)
-     ON_UPDATE_COMMAND_UI(ID_N_7, OnUpdateNPatches7)
-     ON_COMMAND(ID_N_8, OnNPatches8)
-     ON_UPDATE_COMMAND_UI(ID_N_8, OnUpdateNPatches8)
      ON_COMMAND(ID_FILE_MUNGESORTONLOAD, OnMungeSort)
      ON_UPDATE_COMMAND_UI(ID_FILE_MUNGESORTONLOAD, OnUpdateMungeSort)
      ON_COMMAND(ID_FILE_ENABLEGAMMACORRECTION, OnEnableGamma)
@@ -235,7 +214,7 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
         info.cch = 200;
 
         if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
-            // TODO
+            // do later
             // EditorParticleEmitterDefClas *def = new EditorParticleEmitterDefClass();
             // GetCurrentDocument()->AddEmittersToDef(def, (const char *)&info.hbmpItem, nullptr);
             // EmitterPropertySheetClass sheet(def, IDS_EMITTERPROPERTIES, this);
@@ -313,12 +292,12 @@ void CMainFrame::RestoreWindowPos()
 
 void CMainFrame::DoProperties()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::UpdateMenus(int type)
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::UpdateStatusBar(unsigned int value)
@@ -368,7 +347,7 @@ void CMainFrame::GetDevice(bool doDeviceDlg)
 
 void CMainFrame::UpdateEmitterMenu()
 {
-    // TODO
+    // do later
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -486,12 +465,12 @@ void CMainFrame::OnDestroy()
 
 void CMainFrame::OnProperties()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnGenerateLOD()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnOpen()
@@ -539,7 +518,7 @@ void CMainFrame::OnOpen()
 
 void CMainFrame::OnAnimSettings()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnStopAnim()
@@ -609,37 +588,37 @@ void CMainFrame::OnRotateX()
 
 void CMainFrame::OnAmbient()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnSceneLight()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnBackgroundColor()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnBackgroundBitmap()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnEditLod()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExportLOD()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnBackgroundObject()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAnimationToolbar()
@@ -682,44 +661,34 @@ void CMainFrame::OnCameraRotateZ()
     // TODO
 }
 
-void CMainFrame::OnChangeDevice()
-{
-    // TODO
-}
-
-void CMainFrame::OnFullScreen()
-{
-    // TODO
-}
-
 void CMainFrame::OnCreateEmitter()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnEditEmitter()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExportEmitter()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAutoAssignBone()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnBoneManagement()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnExportAggregate()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnAnimateCamera()
@@ -764,12 +733,12 @@ void CMainFrame::OnLightingRotateZBackwards()
 
 void CMainFrame::OnDecSceneLight()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnIncSceneLight()
 {
-    // TODO
+    // do later
 }
 
 void CMainFrame::OnDecAmbient()
@@ -987,51 +956,6 @@ void CMainFrame::OnPlusXCamera()
     // TODO
 }
 
-void CMainFrame::OnNPatchesGap()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches1()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches2()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches3()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches4()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches5()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches6()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches7()
-{
-    // TODO
-}
-
-void CMainFrame::OnNPatches8()
-{
-    // TODO
-}
-
 void CMainFrame::OnMungeSort()
 {
     // TODO
@@ -1088,11 +1012,6 @@ void CMainFrame::OnUpdateRotateY(CCmdUI *pCmdUI)
 }
 
 void CMainFrame::OnUpdateRotateZ(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateFullScreen(CCmdUI *pCmdUI)
 {
     // TODO
 }
@@ -1243,51 +1162,6 @@ void CMainFrame::OnUpdatePolygonSorting(CCmdUI *pCmdUI)
 }
 
 void CMainFrame::OnUpdatePlusXCamera(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatchesGap(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches1(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches2(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches3(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches4(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches5(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches6(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches7(CCmdUI *pCmdUI)
-{
-    // TODO
-}
-
-void CMainFrame::OnUpdateNPatches8(CCmdUI *pCmdUI)
 {
     // TODO
 }

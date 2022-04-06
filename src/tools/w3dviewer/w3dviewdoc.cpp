@@ -23,6 +23,7 @@
 #include "light.h"
 #include "mainfrm.h"
 #include "part_emt.h"
+#include "resource.h"
 #include "texture.h"
 #include "utils.h"
 #include "viewerscene.h"
@@ -39,7 +40,6 @@ CW3DViewDoc::CW3DViewDoc() :
     m_scene(nullptr),
     m_textureScene(nullptr),
     m_backgroundScene(nullptr),
-    m_dazzleLayer(nullptr),
     m_model(nullptr),
     m_backgroundObject(nullptr),
     m_animation(nullptr),
@@ -530,177 +530,343 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
 
 void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, bool unk2)
 {
-    // TODO
+    if (m_scene != nullptr) {
+        Ref_Ptr_Release(m_animation);
+
+        if (m_model != nullptr) {
+            RemoveRenderObject(m_model);
+            Ref_Ptr_Release(m_model);
+        }
+
+        m_scene->Remove_All_LOD_Objects();
+
+        if (emitter != nullptr) {
+            Matrix3D tm(true);
+            emitter->Set_Transform(tm);
+            RenderObjClass *robj = (RenderObjClass *)emitter;
+            Ref_Ptr_Set(m_model, robj);
+            m_scene->Add_Render_Object(emitter);
+            emitter->Restart();
+
+            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+            if (frame != nullptr) {
+                CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+                if (view != nullptr) {
+
+                    if (unk1) {
+                        if (!m_resetCamera) {
+                            if (!m_forceCameraReset) {
+                                return;
+                            }
+                        }
+                    } else if (unk2) {
+                        if (!m_forceCameraReset) {
+                            return;
+                        }
+                    }
+
+                    view->ResetParticleEmitterCamera(emitter);
+                    m_forceCameraReset = false;
+                }
+            }
+        }
+    }
+}
+
+bool GetCameraBoneTransform(RenderObjClass *robj, Matrix3D *tm)
+{
+    if (robj != nullptr) {
+        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+            RenderObjClass *o = robj->Get_Sub_Object(i);
+
+            if (GetCameraBoneTransform(o, tm)) {
+                o->Release_Ref();
+                return true;
+            }
+        }
+
+        int index = robj->Get_Bone_Index("CAMERA");
+
+        if (index > 0) {
+            *tm = robj->Get_Bone_Transform(index);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
 {
-    // TODO
+    if (m_scene == nullptr || robj == nullptr || name == nullptr) {
+        return;
+    }
+
+    SetRenderObject(robj, true, true, false);
+    Ref_Ptr_Release(m_animation);
+    m_animation = W3DAssetManager::Get_Instance()->Get_HAnim(name);
+    m_frameCount = 0.0f;
+    m_time = 0.0f;
+
+    if (m_model != nullptr) {
+        m_model->Set_Animation(m_animation, 0.0f, 0);
+        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+        if (frame != nullptr) {
+            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+            if (view != nullptr) {
+
+                if (unk1) {
+                    if (m_resetCamera) {
+                        goto l1;
+                    } else if (!unk2) {
+                        goto l1;
+                    }
+
+                    if (!m_forceCameraReset) {
+                    l2:
+                        (CMainFrame *)AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_ANIMATION_PLAY);
+                        goto l3;
+                    }
+
+                l1:
+                    view->ResetCamera(robj);
+                    m_forceCameraReset = false;
+                    goto l2;
+                }
+            }
+        }
+    }
+l3:
+    if (m_animateCamera) {
+        if (m_model != nullptr) {
+            Matrix3D tm(true);
+
+            if (GetCameraBoneTransform(m_model, &tm)) {
+                Matrix3D m;
+                m[0].X = 0.0f;
+                m[0].Y = 0.0f;
+                m[0].Z = -1.0f;
+                m[0].W = 0.0f;
+                m[1].X = -1.0f;
+                m[1].Y = 0.0f;
+                m[1].Z = 0.0f;
+                m[1].W = 0.0f;
+                m[2].X = 0.0f;
+                m[2].Y = 1.0f;
+                m[2].Z = 0.0f;
+                m[2].W = 0.0f;
+                tm = tm * m;
+                CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+                if (frame != nullptr) {
+                    CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+                    if (view != nullptr) {
+                        view->m_camera->Set_Transform(tm);
+                    }
+                }
+            }
+        }
+    }
 }
 
-#if 0
 void CW3DViewDoc::Deselect()
 {
-    // TODO
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        CDataTreeView *view = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
+
+        if (view != nullptr) {
+            view->Select(0);
+        }
+    }
 }
 
 void CW3DViewDoc::UpdateFrameCount()
 {
-    // TODO
-}
-
-void CW3DViewDoc::OnStep(int step)
-{
-    // TODO
-}
-
-void CW3DViewDoc::PlayAnimationSound()
-{
-    // TODO
+    if (m_animation != nullptr) {
+        m_frameCount = 0.0f;
+        m_time = 0.0f;
+        float rate = m_animation->Get_Frame_Rate();
+        float speed = GetCurrentGraphicView()->m_animationSpeed;
+        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        frame->UpdateFrameCount(0, m_animation->Get_Num_Frames() - 1, speed * rate);
+    }
 }
 
 void CW3DViewDoc::UpdateAnimation(float tm)
 {
-    // TODO
-}
+    if (m_model != nullptr) {
+        if (m_animation != nullptr) {
+            int frames = m_animation->Get_Num_Frames();
+            float rate = m_animation->Get_Frame_Rate();
+            float f1 = (frames - 1) / rate;
+            float f2 = tm + m_time;
+            m_time = f2;
 
-void CW3DViewDoc::GenerateLOD(const char *name, int type)
-{
-    // TODO
-}
+            if (f1 < f2) {
+                m_time = f2 - f1;
+            }
 
-void CW3DViewDoc::CreateBackgroundBitmap(const char *name)
-{
-    // TODO
-}
-
-bool CW3DViewDoc::ExportLOD()
-{
-    // TODO
-}
-
-bool CW3DViewDoc::SaveLOD(const char *name)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetBackgroundObject(const char *name)
-{
-    // TODO
-}
-
-bool CW3DViewDoc::ExportPrimitive()
-{
-    // TODO
-}
-
-bool CW3DViewDoc::ExportEmitter()
-{
-    // TODO
-}
-
-bool CW3DViewDoc::SavePrototype(const char *name)
-{
-    // TODO
-}
-
-bool CW3DViewDoc::ExportSound()
-{
-    // TODO
-}
-
-bool CW3DViewDoc::SaveSound(const char *name)
-{
-    // TODO
-}
-
-void CW3DViewDoc::AutoAssignBone()
-{
-    // TODO
-}
-
-bool CW3DViewDoc::ExportAggregate()
-{
-    // TODO
-}
-
-void CW3DViewDoc::CreateAggregatePrototype(RenderObjClass &robj)
-{
-    // TODO
-}
-
-void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
-{
-    // TODO
+            m_frameCount = rate * m_time;
+            float speed = GetCurrentGraphicView()->m_animationSpeed;
+            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+            frame->UpdateFrameCount(m_frameCount, frames - 1, speed * rate);
+        }
+    }
 }
 
 void CW3DViewDoc::AnimateCamera(bool animate)
 {
-    // TODO
-}
+    m_animateCamera = animate;
 
-void CW3DViewDoc::CaptureMovie()
-{
-    // TODO
-}
-
-void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
-{
-    // TODO
-}
-
-void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
-{
-    // TODO
-}
-
-void CW3DViewDoc::CopyDeps(CString directorty)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetTexturePath1(const char *path)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetTexturePath2(const char *path)
-{
-    // TODO
-}
-
-void CW3DViewDoc::ImportFacial(CString &hname, CString &fname)
-{
-    // TODO
-}
-
-HTreeClass *CW3DViewDoc::GetCurrentHTree()
-{
-    // TODO
-}
-
-void CW3DViewDoc::SaveCameraSettings()
-{
-    // TODO
-}
-
-void CW3DViewDoc::RenderDazzleLayer(CameraClass *camera)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetFogColor(Vector3 &color)
-{
-    // TODO
+    if (!animate) {
+        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        frame->SendMessage(WM_COMMAND, ID_CAMERA_RESET);
+    }
 }
 
 void CW3DViewDoc::EnableFog(bool enable)
 {
-    // TODO
+    if (m_scene != nullptr) {
+        m_scene->Set_Fog_Enable(enable);
+        m_fogEnabled = enable;
+    }
+}
+
+#if 0
+void CW3DViewDoc::OnStep(int step)
+{
+    // do later
+}
+
+void CW3DViewDoc::GenerateLOD(const char *name, int type)
+{
+    // do later
+}
+
+void CW3DViewDoc::CreateBackgroundBitmap(const char *name)
+{
+    // do later
+}
+
+bool CW3DViewDoc::ExportLOD()
+{
+    // do later
+}
+
+bool CW3DViewDoc::SaveLOD(const char *name)
+{
+    // do later
+}
+
+void CW3DViewDoc::SetBackgroundObject(const char *name)
+{
+    // do later
+}
+
+bool CW3DViewDoc::ExportPrimitive()
+{
+    // do later
+}
+
+bool CW3DViewDoc::ExportEmitter()
+{
+    // do later
+}
+
+bool CW3DViewDoc::SavePrototype(const char *name)
+{
+    // do later
+}
+
+bool CW3DViewDoc::ExportSound()
+{
+    // do later
+}
+
+bool CW3DViewDoc::SaveSound(const char *name)
+{
+    // do later
+}
+
+void CW3DViewDoc::AutoAssignBone()
+{
+    // do later
+}
+
+bool CW3DViewDoc::ExportAggregate()
+{
+    // do later
+}
+
+void CW3DViewDoc::CreateAggregatePrototype(RenderObjClass &robj)
+{
+    // do later
+}
+
+void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
+{
+    // do later
+}
+
+void CW3DViewDoc::CaptureMovie()
+{
+    // do later
+}
+
+void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj)
+{
+    // do later
+}
+
+void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
+{
+    // do later
+}
+
+void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
+{
+    // do later
+}
+
+void CW3DViewDoc::CopyDeps(CString directorty)
+{
+    // do later
+}
+
+void CW3DViewDoc::SetTexturePath1(const char *path)
+{
+    // do later
+}
+
+void CW3DViewDoc::SetTexturePath2(const char *path)
+{
+    // do later
+}
+
+void CW3DViewDoc::ImportFacial(CString &hname, CString &fname)
+{
+    // do later
+}
+
+HTreeClass *CW3DViewDoc::GetCurrentHTree()
+{
+    // do later
+}
+
+void CW3DViewDoc::SaveCameraSettings()
+{
+    // do later
+}
+
+void CW3DViewDoc::SetFogColor(Vector3 &color)
+{
+    // do later
 }
 #endif

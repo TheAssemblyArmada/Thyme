@@ -68,7 +68,7 @@ public:
     // Calls to the graphics wrapper.
     static void Get_Device_Resolution(int &width, int &height, int &bit_depth, bool &windowed);
     static void Get_Render_Target_Resolution(int &set_w, int &set_h, int &set_bits, bool &set_windowed);
-    static const RenderDeviceDescClass Get_Render_Device_Desc(int deviceidx);
+    static const RenderDeviceDescClass &Get_Render_Device_Desc(int deviceidx);
     static int Get_Render_Device_Count();
     static const char *Get_Render_Device_Name(int device_index);
     static int Get_Texture_Bit_Depth();

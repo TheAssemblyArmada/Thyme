@@ -78,6 +78,15 @@ public:
     }
 
     const DynamicVectorClass<ResolutionDescClass> &Get_Resolution_Array() const { return m_resArray; }
+    const char *Get_Device_Name() const { return m_deviceName; }
+    const char *Get_Device_Vendor() const { return m_deviceVendor; }
+    const char *Get_Device_Platform() const { return m_devicePlatform; }
+    const char *Get_Driver_Name() const { return m_driverName; }
+    const char *Get_Driver_Vendor() const { return m_driverVendor; }
+    const char *Get_Driver_Version() const { return m_driverVersion; }
+    const char *Get_Hardware_Name() const { return m_hardwareName; }
+    const char *Get_Hardware_Vendor() const { return m_hardwareVendor; }
+    const char *Get_Hardware_Chipset() const { return m_hardwareChipset; }
 
 private:
     StringClass m_deviceName;

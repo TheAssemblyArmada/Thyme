@@ -119,6 +119,9 @@ public:
         }
     }
 
+    Entry *Get_Table() { return m_table; }
+    unsigned int Get_Size() { return m_size; }
+
 private:
     static unsigned int Get_Hash_Val(const Key &key, unsigned int max_size)
     {
@@ -213,20 +216,23 @@ public:
     void Next()
     {
         m_handle = m_hashTable->m_table[m_handle].next;
-        int size = m_hashTable->m_size;
 
-        for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
-            m_handle = m_hashTable->m_hash[m_hashIndex];
+        if (m_handle == -1) {
+            int size = m_hashTable->m_size;
 
-            if (m_handle != -1) {
-                break;
+            for (m_hashIndex++; m_hashIndex < size; m_hashIndex++) {
+                m_handle = m_hashTable->m_hash[m_hashIndex];
+
+                if (m_handle != -1) {
+                    break;
+                }
             }
         }
     }
 
-    bool Is_Done() { return m_hashIndex == m_hashTable->m_size; }
+    bool Is_Done() { return m_hashIndex == m_hashTable->Get_Size(); }
 
-    Value &Peek_Value() { return m_hashTable->m_table[m_handle].value; }
+    Value &Peek_Value() { return m_hashTable->Get_Table()[m_handle].value; }
 
 private:
     int m_hashIndex;

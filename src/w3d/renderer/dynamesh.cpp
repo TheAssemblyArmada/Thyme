@@ -229,9 +229,9 @@ void DynamicMeshModel::Render(RenderInfoClass &rinfo)
         }
 
         if (texture1 != nullptr) {
-            DX8Wrapper::Set_Texture(0, texture1[0]);
+            DX8Wrapper::Set_Texture(1, texture1[0]);
         } else {
-            DX8Wrapper::Set_Texture(0, m_matDesc->Peek_Single_Texture(pass, 1));
+            DX8Wrapper::Set_Texture(1, m_matDesc->Peek_Single_Texture(pass, 1));
         }
 
         if (material != nullptr) {

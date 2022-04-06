@@ -289,7 +289,7 @@ void CW3DViewDoc::Initialize()
         m_textureCamera = new CameraClass();
 
         if (m_textureCamera != nullptr) {
-            m_textureCamera->Set_View_Plane(Vector2(1.0f, 1.0f), Vector2(-1.0f, -1.0f));
+            m_textureCamera->Set_View_Plane(Vector2(-1.0f, -1.0f), Vector2(1.0f, 1.0f));
             m_textureCamera->Set_Position(Vector3(0.0f, 0.0f, 1.0f));
             m_textureCamera->Set_Clip_Planes(0.1f, 10.0f);
         }

@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "utils.h"
+#include "assetmgr.h"
 #include "mainfrm.h"
 #include "w3dviewdoc.h"
 
@@ -46,11 +47,60 @@ CGraphicView *GetCurrentGraphicView()
 
     if (frame != nullptr) {
         CW3DViewDoc *document = (CW3DViewDoc *)frame->GetActiveDocument();
-        
+
         if (document != nullptr) {
             return document->GetGraphicView();
-        } else {
-            return nullptr;
         }
     }
+
+    return nullptr;
+}
+
+bool HasBaseModelName(const char *name)
+{
+    bool has = false;
+
+    RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(name);
+
+    if (robj != nullptr) {
+        if (robj->Get_Base_Model_Name() != nullptr) {
+            has = true;
+        }
+
+        robj->Release_Ref();
+    }
+
+    return has;
+}
+
+bool HasMultipleLODs(const char *name)
+{
+    bool has = false;
+
+    RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(name);
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD && robj->Get_LOD_Count() > 1) {
+            has = true;
+        }
+
+        robj->Release_Ref();
+    }
+
+    return has;
+}
+
+CW3DViewDoc *GetCurrentDocument()
+{
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame != nullptr) {
+        CW3DViewDoc *document = (CW3DViewDoc *)frame->GetActiveDocument();
+
+        if (document != nullptr) {
+            return document;
+        }
+    }
+
+    return nullptr;
 }

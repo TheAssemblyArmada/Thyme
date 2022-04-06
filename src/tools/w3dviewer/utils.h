@@ -15,7 +15,11 @@
 #pragma once
 #include "w3dafx.h"
 class CGraphicView;
+class CW3DViewDoc;
 
 CString GetFilePath(const char *name);
 CString GetFilenameFromPath(const char *path);
 CGraphicView *GetCurrentGraphicView();
+bool HasBaseModelName(const char *name);
+bool HasMultipleLODs(const char *name);
+CW3DViewDoc *GetCurrentDocument();

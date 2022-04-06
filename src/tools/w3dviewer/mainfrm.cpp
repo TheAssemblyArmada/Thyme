@@ -14,6 +14,7 @@
  */
 #include "mainfrm.h"
 #include "assetmgr.h"
+#include "datatreeview.h"
 #include "deviceselectiondialog.h"
 #include "graphicview.h"
 #include "renderdevicedesc.h"
@@ -233,7 +234,7 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
         info.dwTypeData = (char *)&info.hbmpItem;
         info.cch = 200;
 
-        if (m_subMenu->GetMenuItemInfo(LOWORD(wParam), &info)) {
+        if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
             // TODO
             // EditorParticleEmitterDefClas *def = new EditorParticleEmitterDefClass();
             // GetCurrentDocument()->AddEmittersToDef(def, (const char *)&info.hbmpItem, nullptr);
@@ -263,8 +264,7 @@ BOOL CMainFrame::OnCreateClient(LPCREATESTRUCT lpcs, CCreateContext *pContext)
     BOOL ret = m_splitter.CreateStatic(this, 1, 2);
 
     if (ret) {
-        // TODO xxxx
-        // ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetThisClass(), SIZE{ 340, 10 }, pContext);
+        ret &= m_splitter.CreateView(0, 0, CDataTreeView::GetThisClass(), SIZE{ 340, 10 }, pContext);
         ret &= m_splitter.CreateView(0, 1, CGraphicView::GetThisClass(), SIZE{ 120, 10 }, pContext);
 
         if (ret) {
@@ -316,7 +316,7 @@ void CMainFrame::DoProperties()
     // TODO
 }
 
-void CMainFrame::UpdateMenus()
+void CMainFrame::UpdateMenus(int type)
 {
     // TODO
 }
@@ -418,10 +418,18 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
     W3DAssetManager::Get_Instance()->Set_W3D_Load_On_Demand(true);
     W3DAssetManager::Get_Instance()->Set_Activate_Fog_On_Load(true);
     GetWindowRect(&m_windowRect);
-    CMenu *menu = GetMenu();
-    CMenu *SubMenu = menu->GetSubMenu(3);
+    HMENU menu = ::GetMenu(m_hWnd);
+    HMENU SubMenu = GetSubMenu(menu, 3);
     m_subMenu = SubMenu;
-    m_subMenu = SubMenu->GetSubMenu(3);
+    MENUITEMINFO info;
+    memset(&info, 0, sizeof(info));
+    info.cbSize = sizeof(info);
+    info.fMask = MIIM_STRING;
+    char buffer[200];
+    info.dwTypeData = buffer;
+    info.cch = 100;
+    GetMenuItemInfo(SubMenu, 4, TRUE, &info);
+    m_subMenu = GetSubMenu(SubMenu, 4);
     RestoreWindowPos();
     m_initialized = TRUE;
     return (Device != -1) - 1;
@@ -488,7 +496,45 @@ void CMainFrame::OnGenerateLOD()
 
 void CMainFrame::OnOpen()
 {
-    // TODO
+    CW3DViewDoc *doc = (CW3DViewDoc *)GetActiveDocument();
+
+    if (doc != nullptr) {
+        CFileDialog dlg(TRUE,
+            ".w3d",
+            nullptr,
+            OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+            "Westwood 3D Files (*.w3d)|*.w3d||",
+            this);
+        char file[2600];
+        dlg.GetOFN().lpstrFile = file;
+        dlg.GetOFN().nMaxFile = 2600;
+
+        if (doc->m_filePath.GetLength() > 0) {
+            dlg.GetOFN().lpstrInitialDir = doc->m_filePath;
+        } else {
+            dlg.GetOFN().lpstrInitialDir = 0;
+        }
+
+        if (dlg.DoModal() == IDOK) {
+            SetCursor(LoadCursor(nullptr, IDC_WAIT));
+
+            POSITION pos = dlg.GetStartPosition();
+
+            while (pos != nullptr) {
+                CString path = dlg.GetNextPathName(pos);
+                doc->LoadFile(path);
+                AfxGetApp()->AddToRecentFileList(path);
+            }
+
+            CDataTreeView *view = doc->GetDataTreeView();
+
+            if (view != nullptr) {
+                view->AddRenderObjects();
+            }
+
+            SetCursor(LoadCursor(nullptr, IDC_ARROW));
+        }
+    }
 }
 
 void CMainFrame::OnAnimSettings()

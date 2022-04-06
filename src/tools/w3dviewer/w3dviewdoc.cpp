@@ -16,6 +16,7 @@
 #include "assetmgr.h"
 #include "bmp2d.h"
 #include "camera.h"
+#include "datatreeview.h"
 #include "ffactory.h"
 #include "graphicview.h"
 #include "hanim.h"
@@ -96,9 +97,8 @@ BOOL CW3DViewDoc::OnNewDocument()
             CDataTreeView *view = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
 
             if (view != nullptr) {
-                // TODO xxxx
-                // view->GetTreeCtrl()->DeleteItem(TVI_ROOT);
-                // view->AddCategories();
+                view->GetTreeCtrl().DeleteItem(TVI_ROOT);
+                view->AddCategories();
             }
         }
 
@@ -128,10 +128,9 @@ BOOL CW3DViewDoc::OnOpenDocument(LPCTSTR lpszPathName)
         if (frame != nullptr) {
             CDataTreeView *tree = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
 
-            // TODO xxxx
-            // if (tree != nullptr) {
-            //     tree->AddRenderObjects();
-            // }
+            if (tree != nullptr) {
+                tree->AddRenderObjects();
+            }
         }
 
         if (view != nullptr) {
@@ -418,11 +417,115 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
     return count;
 }
 
-#if 0
-void CW3DViewDoc::Deselect()
+void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3)
 {
-    // TODO
-    // TODO
+    if (m_scene == nullptr) {
+        return;
+    }
+
+    Ref_Ptr_Release(m_animation);
+
+    if (!unk3 && m_model != nullptr) {
+        RemoveRenderObject(m_model);
+        Ref_Ptr_Release(m_model);
+    }
+
+    m_scene->Remove_All_LOD_Objects();
+
+    if (robj == nullptr) {
+        return;
+    }
+
+    if (unk3) {
+        robj->Set_Animation();
+        Matrix3D tm(true);
+        robj->Set_Transform(tm);
+        SceneClass *scene;
+
+        if (robj->Class_ID() == RenderObjClass::CLASSID_BITMAP2D) {
+            scene = m_textureScene;
+        } else {
+            m_scene->Remove_All_LOD_Objects();
+            scene = m_scene;
+        }
+
+        m_scene->Add_Render_Object(robj);
+
+        if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            robj->Set_LOD_Level(0);
+        }
+
+        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+        if (frame == nullptr) {
+            return;
+        }
+
+        CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+        if (view == nullptr) {
+            return;
+        }
+
+        if (unk1) {
+            if (!m_resetCamera) {
+            l1:
+                if (!m_forceCameraReset) {
+                    return;
+                }
+            }
+        } else if (!unk2) {
+            goto l1;
+        }
+
+        view->ResetCamera(robj);
+        m_forceCameraReset = false;
+        return;
+    }
+
+    robj->Set_Animation();
+    m_model = robj;
+    Matrix3D tm(true);
+    m_model->Set_Transform(tm);
+    SceneClass *scene;
+
+    if (robj->Class_ID() == RenderObjClass::CLASSID_BITMAP2D) {
+        scene = m_textureScene;
+    } else {
+        scene = m_scene;
+    }
+
+    m_scene->Add_Render_Object(robj);
+
+    if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+        robj->Set_LOD_Level(0);
+    }
+
+    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+    if (frame == nullptr) {
+        return;
+    }
+
+    CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+    if (view == nullptr) {
+        return;
+    }
+
+    if (unk1) {
+        if (!m_resetCamera) {
+        l2:
+            if (!m_forceCameraReset) {
+                return;
+            }
+        }
+    } else if (!unk2) {
+        goto l2;
+    }
+
+    view->ResetCamera(robj);
+    m_forceCameraReset = false;
 }
 
 void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, bool unk2)
@@ -430,7 +533,13 @@ void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, b
     // TODO
 }
 
-void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3)
+void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
+{
+    // TODO
+}
+
+#if 0
+void CW3DViewDoc::Deselect()
 {
     // TODO
 }
@@ -441,11 +550,6 @@ void CW3DViewDoc::UpdateFrameCount()
 }
 
 void CW3DViewDoc::OnStep(int step)
-{
-    // TODO
-}
-
-void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
 {
     // TODO
 }

@@ -209,7 +209,7 @@ void CFancyToolbar::OnLButtonUp(UINT nFlags, CPoint pt)
             HDC dc2 = CreateCompatibleDC(dc);
 
             if (dc2 != nullptr) {
-                HGDIOBJ obj = SelectObject(dc2, m_items[m_activeItem].m_activeBitmap);
+                HGDIOBJ obj = SelectObject(dc2, m_items[m_activeItem].m_inactiveBitmap);
                 BitBlt(dc, 42 * m_activeItem + 8, cx, 42, 36, dc2, 0, 0, SRCCOPY);
                 SelectObject(dc2, obj);
                 DeleteDC(dc2);

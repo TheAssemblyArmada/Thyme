@@ -17,6 +17,7 @@
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
 #include "graphicview.h"
+#include "light.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
 #include "utils.h"
@@ -298,7 +299,97 @@ void CMainFrame::DoProperties()
 
 void CMainFrame::UpdateMenus(int type)
 {
-    // do later
+    if (m_currentType != type) {
+        if (m_currentType >= 2 && (m_currentType <= 5 || m_currentType == 8)) {
+            CMenu *menu = GetMenu();
+
+            if (menu != nullptr) {
+                menu->RemoveMenu(6, MF_BYPOSITION | MF_DELETE);
+                DrawMenuBar();
+            }
+
+            if (m_currentType == 5 || m_currentType == 8) {
+                m_animationToolbarVisible = m_animationToolbar.IsWindowVisible();
+                ShowControlBar(&m_animationToolbar, FALSE, FALSE);
+            }
+        }
+
+        switch (type) {
+            case 2: {
+                CMenu *menu = GetMenu();
+
+                if (menu != nullptr) {
+                    MENUITEMINFO info;
+                    memset(&info, 0, sizeof(info));
+                    info.cbSize = sizeof(info);
+                    info.hSubMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_HEIRARCHYMENU)), 0);
+                    info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
+                    info.fType = MF_STRING;
+                    info.dwTypeData = "&Hierarchy";
+                    menu->InsertMenuItem(6, &info, TRUE);
+                    DrawMenuBar();
+                }
+            } break;
+            case 3: {
+                CMenu *menu = GetMenu();
+
+                if (menu != nullptr) {
+                    MENUITEMINFO info;
+                    memset(&info, 0, sizeof(info));
+                    info.cbSize = sizeof(info);
+                    info.hSubMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_AGGREGATEMENU)), 0);
+                    info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
+                    info.fType = MF_STRING;
+                    info.dwTypeData = "&Aggregate";
+                    menu->InsertMenuItem(6, &info, TRUE);
+                    DrawMenuBar();
+                }
+            } break;
+            case 4: {
+                CMenu *menu = GetMenu();
+
+                if (menu != nullptr) {
+                    MENUITEMINFO info;
+                    memset(&info, 0, sizeof(info));
+                    info.cbSize = sizeof(info);
+                    info.hSubMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_LODMENU)), 0);
+                    info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
+                    info.fType = MF_STRING;
+                    info.dwTypeData = "&LOD";
+                    menu->InsertMenuItem(6, &info, TRUE);
+                    DrawMenuBar();
+                }
+            } break;
+            case 5:
+            case 8: {
+                CMenu *menu = GetMenu();
+
+                if (menu != nullptr) {
+                    MENUITEMINFO info;
+                    memset(&info, 0, sizeof(info));
+                    info.cbSize = sizeof(info);
+                    info.hSubMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_ANIMATIONMENU)), 0);
+                    info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
+                    info.fType = MF_STRING;
+                    info.dwTypeData = "&Animation";
+                    menu->InsertMenuItem(6, &info, TRUE);
+                    DrawMenuBar();
+                }
+
+                if (m_animationToolbarVisible) {
+                    if (m_animationToolbar.IsWindowVisible()) {
+                        ShowControlBar(&m_animationToolbar, FALSE, FALSE);
+                        m_animationToolbarVisible = FALSE;
+                    } else {
+                        ShowControlBar(&m_animationToolbar, TRUE, FALSE);
+                        m_animationToolbarVisible = TRUE;
+                    }
+                }
+            } break;
+        }
+
+        m_currentType = type;
+    }
 }
 
 void CMainFrame::UpdateStatusBar(unsigned int time)
@@ -516,7 +607,7 @@ void CMainFrame::OnOpen()
             OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
             "Westwood 3D Files (*.w3d)|*.w3d||",
             this);
-        char file[2600];
+        char file[2600] = {};
         dlg.GetOFN().lpstrFile = file;
         dlg.GetOFN().nMaxFile = 2600;
 
@@ -595,22 +686,38 @@ void CMainFrame::OnPauseAnim()
 
 void CMainFrame::OnBack()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(0);
+    }
 }
 
 void CMainFrame::OnBottom()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(2);
+    }
 }
 
 void CMainFrame::OnFront()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(-1);
+    }
 }
 
 void CMainFrame::OnLeft()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(3);
+    }
 }
 
 void CMainFrame::OnResetCamera()
@@ -634,27 +741,56 @@ void CMainFrame::OnResetCamera()
 
 void CMainFrame::OnRight()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(4);
+    }
 }
 
 void CMainFrame::OnTop()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->SetCameraDirection(1);
+    }
 }
 
 void CMainFrame::OnRotateZ()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        int flags = (view->m_objectRotationFlags ^ 4) & ~32;
+        view->SetRotationFlags(flags);
+
+        if ((flags & 4) != 0) {
+            m_objectToolbar.SetStatus(ID_OBJECT_ROTATEZ, TRUE, TRUE);
+        } else {
+            m_objectToolbar.SetStatus(ID_OBJECT_ROTATEZ, FALSE, TRUE);
+        }
+    }
 }
 
 void CMainFrame::OnRotateY()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        int flags = (view->m_objectRotationFlags ^ 2) & ~16;
+        view->SetRotationFlags(flags);
+    }
 }
 
 void CMainFrame::OnRotateX()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        int flags = (view->m_objectRotationFlags ^ 1) & ~8;
+        view->SetRotationFlags(flags);
+    }
 }
 
 void CMainFrame::OnAmbient()
@@ -673,11 +809,6 @@ void CMainFrame::OnBackgroundColor()
 }
 
 void CMainFrame::OnBackgroundBitmap()
-{
-    // do later
-}
-
-void CMainFrame::OnEditLod()
 {
     // do later
 }
@@ -714,12 +845,14 @@ void CMainFrame::OnObjectToolbar()
 
 void CMainFrame::OnStepForward()
 {
-    // do later
+    CW3DViewDoc *document = GetCurrentDocument();
+    document->OnStep(1);
 }
 
 void CMainFrame::OnStepBack()
 {
-    // do later
+    CW3DViewDoc *document = GetCurrentDocument();
+    document->OnStep(-1);
 }
 
 void CMainFrame::OnReset()
@@ -733,17 +866,56 @@ void CMainFrame::OnReset()
 
 void CMainFrame::OnCameraRotateX()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        if (view->m_cameraRotateConstraints == 1) {
+            view->SetCameraRotateConstraints(0);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEXONLY, FALSE, TRUE);
+        } else {
+            view->SetCameraRotateConstraints(1);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEXONLY, TRUE, TRUE);
+        }
+
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEYONLY, FALSE, TRUE);
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEZONLY, FALSE, TRUE);
+    }
 }
 
 void CMainFrame::OnCameraRotateY()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        if (view->m_cameraRotateConstraints == 2) {
+            view->SetCameraRotateConstraints(0);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEYONLY, FALSE, TRUE);
+        } else {
+            view->SetCameraRotateConstraints(2);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEYONLY, TRUE, TRUE);
+        }
+
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEXONLY, FALSE, TRUE);
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEZONLY, FALSE, TRUE);
+    }
 }
 
 void CMainFrame::OnCameraRotateZ()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        if (view->m_cameraRotateConstraints == 4) {
+            view->SetCameraRotateConstraints(0);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEZONLY, FALSE, TRUE);
+        } else {
+            view->SetCameraRotateConstraints(4);
+            m_objectToolbar.SetStatus(ID_CAMERA_ROTATEZONLY, TRUE, TRUE);
+        }
+
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEXONLY, FALSE, TRUE);
+        m_objectToolbar.SetStatus(ID_CAMERA_ROTATEYONLY, FALSE, TRUE);
+    }
 }
 
 void CMainFrame::OnCreateEmitter()
@@ -790,52 +962,152 @@ void CMainFrame::OnResetOnDisplay()
 
 void CMainFrame::OnRotateYBackwards()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        int flags = view->m_objectRotationFlags & ~2 ^ 16;
+        view->SetRotationFlags(flags);
+    }
 }
 
 void CMainFrame::OnRotateZBackwards()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        int flags = view->m_objectRotationFlags & ~4 ^ 32;
+        view->SetRotationFlags(flags);
+    }
 }
 
 void CMainFrame::OnLightingRotateY()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_lightRotationFlags = (view->m_lightRotationFlags ^ 2) & ~16;
+    }
 }
 
 void CMainFrame::OnLightingRotateYBackwards()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_lightRotationFlags = view->m_lightRotationFlags & ~2 ^ 16;
+    }
 }
 
 void CMainFrame::OnLightingRotateZ()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_lightRotationFlags = (view->m_lightRotationFlags ^ 4) & ~32;
+    }
 }
 
 void CMainFrame::OnLightingRotateZBackwards()
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        view->m_lightRotationFlags = view->m_lightRotationFlags & ~4 ^ 32;
+    }
 }
 
 void CMainFrame::OnDecSceneLight()
 {
-    // do later
+    LightClass *light = GetCurrentDocument()->m_light;
+
+    if (light != nullptr) {
+        Vector3 diffuse;
+        light->Get_Diffuse(&diffuse);
+        Vector3 specular;
+        light->Get_Specular(&specular);
+
+        diffuse.X -= 0.05f;
+        diffuse.Y -= 0.05f;
+        diffuse.Z -= 0.05f;
+        diffuse.X = std::clamp(diffuse.X, 0.0f, 1.0f);
+        diffuse.Y = std::clamp(diffuse.Y, 0.0f, 1.0f);
+        diffuse.Z = std::clamp(diffuse.Z, 0.0f, 1.0f);
+
+        specular.X -= 0.05f;
+        specular.Y -= 0.05f;
+        specular.Z -= 0.05f;
+        specular.X = std::clamp(specular.X, 0.0f, 1.0f);
+        specular.Y = std::clamp(specular.Y, 0.0f, 1.0f);
+        specular.Z = std::clamp(specular.Z, 0.0f, 1.0f);
+
+        light->Set_Diffuse(diffuse);
+        light->Set_Specular(specular);
+    }
 }
 
 void CMainFrame::OnIncSceneLight()
 {
-    // do later
+    LightClass *light = GetCurrentDocument()->m_light;
+
+    if (light != nullptr) {
+        Vector3 diffuse;
+        light->Get_Diffuse(&diffuse);
+        Vector3 specular;
+        light->Get_Specular(&specular);
+
+        diffuse.X += 0.05f;
+        diffuse.Y += 0.05f;
+        diffuse.Z += 0.05f;
+        diffuse.X = std::clamp(diffuse.X, 0.0f, 1.0f);
+        diffuse.Y = std::clamp(diffuse.Y, 0.0f, 1.0f);
+        diffuse.Z = std::clamp(diffuse.Z, 0.0f, 1.0f);
+
+        specular.X += 0.05f;
+        specular.Y += 0.05f;
+        specular.Z += 0.05f;
+        specular.X = std::clamp(specular.X, 0.0f, 1.0f);
+        specular.Y = std::clamp(specular.Y, 0.0f, 1.0f);
+        specular.Z = std::clamp(specular.Z, 0.0f, 1.0f);
+
+        light->Set_Diffuse(diffuse);
+        light->Set_Specular(specular);
+    }
 }
 
 void CMainFrame::OnDecAmbient()
 {
-    // do later
+    ViewerSceneClass *scene = GetCurrentDocument()->m_scene;
+
+    if (scene != nullptr) {
+        Vector3 ambient = scene->Get_Ambient_Light();
+
+        ambient.X -= 0.05f;
+        ambient.Y -= 0.05f;
+        ambient.Z -= 0.05f;
+        ambient.X = std::clamp(ambient.X, 0.0f, 1.0f);
+        ambient.Y = std::clamp(ambient.Y, 0.0f, 1.0f);
+        ambient.Z = std::clamp(ambient.Z, 0.0f, 1.0f);
+
+        scene->Set_Ambient_Light(ambient);
+    }
 }
 
 void CMainFrame::OnIncAmbient()
 {
-    // do later
+    ViewerSceneClass *scene = GetCurrentDocument()->m_scene;
+
+    if (scene != nullptr) {
+        Vector3 ambient = scene->Get_Ambient_Light();
+
+        ambient.X += 0.05f;
+        ambient.Y += 0.05f;
+        ambient.Z += 0.05f;
+        ambient.X = std::clamp(ambient.X, 0.0f, 1.0f);
+        ambient.Y = std::clamp(ambient.Y, 0.0f, 1.0f);
+        ambient.Z = std::clamp(ambient.Z, 0.0f, 1.0f);
+
+        scene->Set_Ambient_Light(ambient);
+    }
 }
 
 void CMainFrame::OnMakeAggregate()
@@ -958,7 +1230,12 @@ void CMainFrame::OnExportPrimitive()
 
 void CMainFrame::OnKillSceneLight()
 {
-    // do later
+    LightClass *light = GetCurrentDocument()->m_light;
+
+    if (light != nullptr) {
+        light->Set_Diffuse(Vector3(0.0f, 0.0f, 0.0f));
+        light->Set_Specular(Vector3(0.0f, 0.0f, 0.0f));
+    }
 }
 
 void CMainFrame::OnMultiPassLighting()
@@ -1007,7 +1284,8 @@ void CMainFrame::OnSetDistance()
 
 void CMainFrame::OnAlternateMaterials()
 {
-    // do later
+    CW3DViewDoc *document = GetCurrentDocument();
+    document->ToggleAlternateMaterials(nullptr);
 }
 
 void CMainFrame::OnCreateSoundObject()
@@ -1028,7 +1306,7 @@ void CMainFrame::OnExportSoundObject()
 void CMainFrame::OnWireframeMode()
 {
     CW3DViewDoc *document = GetCurrentDocument();
-    document->m_scene->Set_Polygon_Mode((SceneClass::PolyRenderType)(2 - document->m_scene->Get_Polygon_Mode() - 1));
+    document->m_scene->Set_Polygon_Mode((SceneClass::PolyRenderType)(2 - (document->m_scene->Get_Polygon_Mode() != 1)));
 }
 
 void CMainFrame::OnFog()
@@ -1093,40 +1371,61 @@ void CMainFrame::OnUpdateAnimationToolbar(CCmdUI *pCmdUI)
 void CMainFrame::OnUpdateObjectToolbar(CCmdUI *pCmdUI)
 {
     pCmdUI->Enable(TRUE);
-
-    if (m_objectToolbar.IsVisible()) {
-        pCmdUI->SetCheck(TRUE);
-    }
+    pCmdUI->SetCheck(m_objectToolbar.IsVisible());
 }
 
 void CMainFrame::OnUpdateCameraRotateX(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_cameraRotateConstraints == 1);
+    }
 }
 
 void CMainFrame::OnUpdateCameraRotateY(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_cameraRotateConstraints == 2);
+    }
 }
 
 void CMainFrame::OnUpdateCameraRotateZ(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_cameraRotateConstraints == 4);
+    }
 }
 
 void CMainFrame::OnUpdateRotateX(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_objectRotationFlags & 1);
+    }
 }
 
 void CMainFrame::OnUpdateRotateY(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_objectRotationFlags & 2);
+    }
 }
 
 void CMainFrame::OnUpdateRotateZ(CCmdUI *pCmdUI)
 {
-    // do later
+    CGraphicView *view = (CGraphicView *)m_splitter.GetPane(0, 1);
+
+    if (view != nullptr) {
+        pCmdUI->SetCheck(view->m_objectRotationFlags & 4);
+    }
 }
 
 void CMainFrame::OnUpdateEditEmitter(CCmdUI *pCmdUI)

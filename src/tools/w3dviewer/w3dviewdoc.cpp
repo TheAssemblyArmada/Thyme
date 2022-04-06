@@ -22,6 +22,8 @@
 #include "hanim.h"
 #include "light.h"
 #include "mainfrm.h"
+#include "mesh.h"
+#include "meshmdl.h"
 #include "part_emt.h"
 #include "resource.h"
 #include "texture.h"
@@ -449,7 +451,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
             scene = m_scene;
         }
 
-        m_scene->Add_Render_Object(robj);
+        scene->Add_Render_Object(robj);
 
         if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
             robj->Set_LOD_Level(0);
@@ -495,7 +497,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
         scene = m_scene;
     }
 
-    m_scene->Add_Render_Object(robj);
+    scene->Add_Render_Object(robj);
 
     if (m_scene->Get_Auto_Switch_LOD() && robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
         robj->Set_LOD_Level(0);
@@ -717,6 +719,44 @@ void CW3DViewDoc::UpdateAnimation(float tm)
             float speed = GetCurrentGraphicView()->m_animationSpeed;
             CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
             frame->UpdateFrameCount(m_frameCount, frames - 1, speed * rate);
+
+            if (m_blendFrames) {
+                m_model->Set_Animation(m_animation, m_frameCount);
+            } else {
+                m_model->Set_Animation(m_animation, (int)m_frameCount);
+            }
+
+            if (m_animateCamera) {
+                if (m_model != nullptr) {
+                    Matrix3D tm(true);
+
+                    if (GetCameraBoneTransform(m_model, &tm)) {
+                        Matrix3D m;
+                        m[0].X = 0.0f;
+                        m[0].Y = 0.0f;
+                        m[0].Z = -1.0f;
+                        m[0].W = 0.0f;
+                        m[1].X = -1.0f;
+                        m[1].Y = 0.0f;
+                        m[1].Z = 0.0f;
+                        m[1].W = 0.0f;
+                        m[2].X = 0.0f;
+                        m[2].Y = 1.0f;
+                        m[2].Z = 0.0f;
+                        m[2].W = 0.0f;
+                        tm = tm * m;
+                        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+                        if (frame != nullptr) {
+                            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+                            if (view != nullptr) {
+                                view->m_camera->Set_Transform(tm);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -739,12 +779,86 @@ void CW3DViewDoc::EnableFog(bool enable)
     }
 }
 
-#if 0
 void CW3DViewDoc::OnStep(int step)
 {
-    // do later
+    if (m_model != nullptr) {
+        if (m_animation != nullptr) {
+            int frames = m_animation->Get_Num_Frames();
+            m_frameCount += step;
+
+            if (m_frameCount < frames) {
+                if (m_frameCount < 0.0f) {
+                    m_frameCount = frames - 1;
+                }
+            } else {
+                m_frameCount = 0.0f;
+                m_time = 0.0f;
+            }
+
+            float speed = GetCurrentGraphicView()->m_animationSpeed;
+            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+            float rate = m_animation->Get_Frame_Rate();
+            frame->UpdateFrameCount(m_frameCount, frames - 1, speed * rate);
+
+            if (m_blendFrames) {
+                m_model->Set_Animation(m_animation, m_frameCount);
+            } else {
+                m_model->Set_Animation(m_animation, (int)m_frameCount);
+            }
+
+            if (m_animateCamera) {
+                if (m_model != nullptr) {
+                    Matrix3D tm(true);
+
+                    if (GetCameraBoneTransform(m_model, &tm)) {
+                        Matrix3D m;
+                        m[0].X = 0.0f;
+                        m[0].Y = 0.0f;
+                        m[0].Z = -1.0f;
+                        m[0].W = 0.0f;
+                        m[1].X = -1.0f;
+                        m[1].Y = 0.0f;
+                        m[1].Z = 0.0f;
+                        m[1].W = 0.0f;
+                        m[2].X = 0.0f;
+                        m[2].Y = 1.0f;
+                        m[2].Z = 0.0f;
+                        m[2].W = 0.0f;
+                        tm = tm * m;
+                        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+
+                        if (frame != nullptr) {
+                            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+
+                            if (view != nullptr) {
+                                view->m_camera->Set_Transform(tm);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
+void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
+{
+    if (robj == nullptr) {
+        robj = m_model;
+    }
+
+    if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
+        MeshClass *mesh = (MeshClass *)robj;
+        MeshModelClass *model = mesh->Get_Model();
+        model->Enable_Alternate_Material_Description(!model->Is_Alternate_Material_Description_Enabled());
+    }
+
+    for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+        ToggleAlternateMaterials(robj->Get_Sub_Object(i));
+    }
+}
+
+#if 0
 void CW3DViewDoc::GenerateLOD(const char *name, int type)
 {
     // do later
@@ -826,11 +940,6 @@ void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const cha
 }
 
 void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
-{
-    // do later
-}
-
-void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
 {
     // do later
 }

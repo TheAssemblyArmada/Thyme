@@ -121,7 +121,7 @@ void CDeviceSelectionDialog::UpdateRenderDeviceDesc()
     const RenderDeviceDescClass &desc = W3D::Get_Render_Device_Desc(-1);
     CWnd::SetDlgItemTextA(IDC_DRIVERNAME, m_deviceName);
     CWnd::SetDlgItemTextA(IDC_DEVICENAME, desc.Get_Device_Name());
-    CWnd::SetDlgItemTextA(IDC_DEVICEVENDOR, desc.Get_Device_Name());
+    CWnd::SetDlgItemTextA(IDC_DEVICEVENDOR, desc.Get_Device_Vendor());
     CWnd::SetDlgItemTextA(IDC_DEVICEPLATFORM, desc.Get_Device_Platform());
     CWnd::SetDlgItemTextA(IDC_DRIVERFILE, desc.Get_Driver_Name());
     CWnd::SetDlgItemTextA(IDC_DRIVERVENDOR, desc.Get_Driver_Vendor());

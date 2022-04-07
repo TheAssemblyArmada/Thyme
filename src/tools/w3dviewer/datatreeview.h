@@ -31,7 +31,7 @@ public:
     void AddRenderObjects();
     void AddAnimations();
     void AddAnimationsForItem(HTREEITEM item);
-    void AddItem(const char *name, int category, bool select);
+    void AddItem(const char *name, int type, bool select);
     HTREEITEM FindItemByName(HTREEITEM item, const char *name);
     HTREEITEM FindNextItem(HTREEITEM item, const char *name);
     HTREEITEM FindFirstItem(HTREEITEM item, const char *name);
@@ -44,7 +44,7 @@ public:
     void SelectNext();
     void SelectPrev();
     void RefreshRenderObjects();
-    void RestrictAnims(bool restrict);
+    void RestrictAnims(bool enable);
 
 protected:
     CDataTreeView();
@@ -57,7 +57,37 @@ protected:
     afx_msg void OnDblClk(NMHDR *pNMHDR, LRESULT *pResult);
 
 public:
-    HTREEITEM m_categoryTreeItems[9];
-    int m_imageListIDs[11];
+    enum Categories
+    {
+        CATEGORY_MATERIAL,
+        CATEGORY_MESH,
+        CATEGORY_AGGREGATE,
+        CATEGORY_HLOD,
+        CATEGORY_COLLECTION,
+        CATEGORY_EMITTER,
+        CATEGORY_PRIMITIVES,
+        CATEGORY_HIERARCHY,
+        CATEGORY_SOUNDS,
+        CATEGORY_COUNT,
+    };
+
+    enum Icons
+    {
+        ICON_ANIMATION,
+        ICON_ANIMSPEED,
+        ICON_TEXTURE,
+        ICON_MESH,
+        ICON_MATERIAL,
+        ICON_HLOD,
+        ICON_EMITTER,
+        ICON_PRIMITIVE,
+        ICON_AGGREGATE,
+        ICON_HIERARCHY,
+        ICON_SOUND,
+        ICON_COUNT,
+    };
+
+    HTREEITEM m_categoryTreeItems[CATEGORY_COUNT];
+    int m_imageListIDs[ICON_COUNT];
     bool m_restrictAnims;
 };

@@ -15,11 +15,11 @@
 #include "assetinfo.h"
 #include "assetmgr.h"
 
-AssetInfoClass::AssetInfoClass(const char *name, int type, RenderObjClass *robj, TextureClass *texture) :
+AssetInfoClass::AssetInfoClass(const char *name, AssetType type, RenderObjClass *robj, TextureClass *texture) :
     m_name(name), m_type(type), m_texture(texture), m_renderObj(nullptr)
 {
     Ref_Ptr_Set(m_renderObj, robj);
-    GetHeirarchyName();
+    GetHierarchyName();
 }
 
 AssetInfoClass::~AssetInfoClass()
@@ -27,9 +27,9 @@ AssetInfoClass::~AssetInfoClass()
     Ref_Ptr_Release(m_renderObj);
 }
 
-void AssetInfoClass::GetHeirarchyName()
+void AssetInfoClass::GetHierarchyName()
 {
-    if (m_type != 0) {
+    if (m_type != ASSET_TYPE_TEXTURE) {
         RenderObjClass *robj = m_renderObj;
         if (robj != nullptr) {
             robj->Add_Ref();
@@ -44,7 +44,7 @@ void AssetInfoClass::GetHeirarchyName()
         const HTreeClass *tree = robj->Get_HTree();
 
         if (tree != nullptr) {
-            m_heirarchyName = tree->Get_Name();
+            m_hierarchyName = tree->Get_Name();
         }
 
         robj->Release_Ref();

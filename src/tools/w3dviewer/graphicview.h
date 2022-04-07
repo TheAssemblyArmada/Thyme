@@ -27,6 +27,42 @@ class RenderObjClass;
 class CGraphicView : public CView
 {
 public:
+    enum RotationFlags
+    {
+        ROTATE_PLUSX = 1,
+        ROTATE_PLUSY = 2,
+        ROTATE_PLUSZ = 4,
+        ROTATE_MINUSX = 8,
+        ROTATE_MINUSY = 16,
+        ROTATE_MINUSZ = 32,
+    };
+
+    enum AnimationState
+    {
+        ANIMATION_NONE = -1,
+        ANIMATION_PLAY = 0,
+        ANIMATION_STOP = 1,
+        ANIMATION_PAUSE = 2,
+    };
+
+    enum CameraRotateConstraint
+    {
+        ROTATE_NONE = 0,
+        ROTATE_X_ONLY = 1,
+        ROTATE_Y_ONLY = 2,
+        ROTATE_Z_ONLY = 4,
+    };
+
+    enum CameraDirection
+    {
+        DIRECTION_FRONT = -1,
+        DIRECTION_BACK = 0,
+        DIRECTION_TOP = 1,
+        DIRECTION_BOTTOM = 2,
+        DIRECTION_LEFT = 3,
+        DIRECTION_RIGHT = 4,
+    };
+
     virtual ~CGraphicView() override {}
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
     virtual void OnInitialUpdate() override;
@@ -38,10 +74,10 @@ public:
     void ResetParticleEmitterCamera(ParticleEmitterClass *emitter);
     void ResetCameraValues(SphereClass &sphere);
     void ResetCamera(RenderObjClass *robj);
-    void UpdateAnimation(int flag);
-    void SetCameraDirection(int direction);
+    void UpdateAnimation(AnimationState flag);
+    void SetCameraDirection(CameraDirection direction);
     void SetRotationFlags(int flags);
-    void SetCameraRotateConstraints(int constraints);
+    void SetCameraRotateConstraints(CameraRotateConstraint constraints);
     void ResetRenderObj();
     void UpdateObjectRotation();
     void UpdateLightTransform();
@@ -82,8 +118,8 @@ public:
     BOOL m_plusXCamera;
     unsigned int m_time;
     float m_animationSpeed;
-    int m_animationPlaying;
+    AnimationState m_animationState;
     int m_objectRotationFlags;
     int m_lightRotationFlags;
-    int m_cameraRotateConstraints;
+    CameraRotateConstraint m_cameraRotateConstraints;
 };

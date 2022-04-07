@@ -23,7 +23,7 @@ CString GetFilePath(const char *name)
     lstrcpy(path, name);
     char *c = strrchr(path, '\\');
 
-    if (c) {
+    if (c != nullptr) {
         *c = 0;
     }
 
@@ -34,7 +34,7 @@ CString GetFilenameFromPath(const char *path)
 {
     const char *c = strrchr(path, '\\');
 
-    if (c) {
+    if (c != nullptr) {
         return c + 1;
     } else {
         return path;
@@ -43,10 +43,10 @@ CString GetFilenameFromPath(const char *path)
 
 CGraphicView *GetCurrentGraphicView()
 {
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        CW3DViewDoc *document = (CW3DViewDoc *)frame->GetActiveDocument();
+        CW3DViewDoc *document = static_cast<CW3DViewDoc *>(frame->GetActiveDocument());
 
         if (document != nullptr) {
             return document->GetGraphicView();
@@ -92,10 +92,10 @@ bool HasMultipleLODs(const char *name)
 
 CW3DViewDoc *GetCurrentDocument()
 {
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        CW3DViewDoc *document = (CW3DViewDoc *)frame->GetActiveDocument();
+        CW3DViewDoc *document = static_cast<CW3DViewDoc *>(frame->GetActiveDocument());
 
         if (document != nullptr) {
             return document;

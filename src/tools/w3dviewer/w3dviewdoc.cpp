@@ -60,7 +60,8 @@ CW3DViewDoc::CW3DViewDoc() :
     m_useManualFov(false),
     m_useManualClipPlanes(false),
     m_initialized(false),
-    m_fogEnabled(false)
+    m_fogEnabled(false),
+    m_time(0.0f)
 {
     m_animateCamera = theApp.GetProfileInt("Config", "AnimateCamera", 0) == 1;
     m_resetCamera = theApp.GetProfileInt("Config", "ResetCamera", 1) == 1;
@@ -93,10 +94,10 @@ BOOL CW3DViewDoc::OnNewDocument()
             Ref_Ptr_Release(m_model);
         }
 
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            CDataTreeView *view = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
+            CDataTreeView *view = static_cast<CDataTreeView *>(frame->m_splitter.GetPane(0, 0));
 
             if (view != nullptr) {
                 view->GetTreeCtrl().DeleteItem(TVI_ROOT);
@@ -125,10 +126,10 @@ BOOL CW3DViewDoc::OnOpenDocument(LPCTSTR lpszPathName)
 
         LoadFile(lpszPathName);
 
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            CDataTreeView *tree = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
+            CDataTreeView *tree = static_cast<CDataTreeView *>(frame->m_splitter.GetPane(0, 0));
 
             if (tree != nullptr) {
                 tree->AddRenderObjects();
@@ -203,7 +204,7 @@ void CW3DViewDoc::RemoveRenderObject(RenderObjClass *robj)
     }
 
     if (robj != nullptr && robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
-        ParticleEmitterClass *emitter = (ParticleEmitterClass *)robj;
+        ParticleEmitterClass *emitter = static_cast<ParticleEmitterClass *>(robj);
         emitter->Stop();
         emitter->Remove_Buffer_From_Scene();
     }
@@ -230,7 +231,7 @@ void CW3DViewDoc::LoadFile(CString pathName)
         view->EnableRendering(false);
     }
 
-    if (strrchr(filename, '\\')) {
+    if (strrchr(filename, '\\') != nullptr) {
         CString str = filename;
         str = str.Left(strrchr(filename, '\\') - filename);
         SetCurrentDirectory(str);
@@ -239,7 +240,7 @@ void CW3DViewDoc::LoadFile(CString pathName)
 
     const char *c = strrchr(filename, '.');
 
-    if (lstrcmpi(c, ".tga") && lstrcmpi(c, ".dds")) {
+    if (lstrcmpi(c, ".tga") != 0 && lstrcmpi(c, ".dds") != 0) {
         W3DAssetManager::Get_Instance()->Load_3D_Assets(GetFilenameFromPath(filename));
     } else {
         TextureClass *texture = W3DAssetManager::Get_Instance()->Get_Texture(GetFilenameFromPath(filename));
@@ -331,10 +332,10 @@ void CW3DViewDoc::ReadSettings()
     m_useManualFov = theApp.GetProfileInt("Config", "UseManualFOV", 0) == 1;
     m_useManualClipPlanes = theApp.GetProfileInt("Config", "UseManualClipPlanes", 0) == 1;
 
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+        CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
         if (view != nullptr) {
             CameraClass *camera = view->m_camera;
@@ -363,10 +364,10 @@ void CW3DViewDoc::ReadSettings()
 
 CDataTreeView *CW3DViewDoc::GetDataTreeView()
 {
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        return (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
+        return static_cast<CDataTreeView *>(frame->m_splitter.GetPane(0, 0));
     } else {
         return nullptr;
     }
@@ -374,10 +375,10 @@ CDataTreeView *CW3DViewDoc::GetDataTreeView()
 
 CGraphicView *CW3DViewDoc::GetGraphicView()
 {
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        return (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+        return static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
     } else {
         return nullptr;
     }
@@ -387,7 +388,7 @@ void CW3DViewDoc::UpdateParticleCount()
 {
     int count = GetNumParticles(nullptr);
 
-    ((CMainFrame *)AfxGetMainWnd())->UpdateParticleCount(count);
+    static_cast<CMainFrame *>(AfxGetMainWnd())->UpdateParticleCount(count);
 }
 
 int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
@@ -410,8 +411,8 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
 
         if (robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
 
-            if (((ParticleEmitterClass *)robj)->Peek_Buffer() != nullptr) {
-                count += ((ParticleEmitterClass *)robj)->Peek_Buffer()->Get_Particle_Count();
+            if (static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer() != nullptr) {
+                count += static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer()->Get_Particle_Count();
             }
         }
     }
@@ -419,7 +420,7 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
     return count;
 }
 
-void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3)
+void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool useRegularCameraReset, bool resetCamera, bool preserveModel)
 {
     if (m_scene == nullptr) {
         return;
@@ -427,7 +428,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
 
     Ref_Ptr_Release(m_animation);
 
-    if (!unk3 && m_model != nullptr) {
+    if (!preserveModel && m_model != nullptr) {
         RemoveRenderObject(m_model);
         Ref_Ptr_Release(m_model);
     }
@@ -438,7 +439,7 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
         return;
     }
 
-    if (unk3) {
+    if (preserveModel) {
         robj->Set_Animation();
         Matrix3D tm(true);
         robj->Set_Transform(tm);
@@ -457,31 +458,25 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
             robj->Set_LOD_Level(0);
         }
 
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame == nullptr) {
             return;
         }
 
-        CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+        CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
         if (view == nullptr) {
             return;
         }
 
-        if (unk1) {
-            if (!m_resetCamera) {
-            l1:
-                if (!m_forceCameraReset) {
-                    return;
-                }
-            }
-        } else if (!unk2) {
-            goto l1;
+        bool b = useRegularCameraReset ? this->m_resetCamera : resetCamera;
+
+        if (b || this->m_forceCameraReset) {
+            view->ResetCamera(robj);
+            m_forceCameraReset = false;
         }
 
-        view->ResetCamera(robj);
-        m_forceCameraReset = false;
         return;
     }
 
@@ -503,34 +498,27 @@ void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bo
         robj->Set_LOD_Level(0);
     }
 
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame == nullptr) {
         return;
     }
 
-    CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+    CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
     if (view == nullptr) {
         return;
     }
 
-    if (unk1) {
-        if (!m_resetCamera) {
-        l2:
-            if (!m_forceCameraReset) {
-                return;
-            }
-        }
-    } else if (!unk2) {
-        goto l2;
-    }
+    bool b = useRegularCameraReset ? this->m_resetCamera : resetCamera;
 
-    view->ResetCamera(robj);
-    m_forceCameraReset = false;
+    if (b || this->m_forceCameraReset) {
+        view->ResetCamera(robj);
+        m_forceCameraReset = false;
+    }
 }
 
-void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, bool unk2)
+void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool useRegularCameraReset, bool resetCamera)
 {
     if (m_scene != nullptr) {
         Ref_Ptr_Release(m_animation);
@@ -545,32 +533,24 @@ void CW3DViewDoc::SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, b
         if (emitter != nullptr) {
             Matrix3D tm(true);
             emitter->Set_Transform(tm);
-            RenderObjClass *robj = (RenderObjClass *)emitter;
+            RenderObjClass *robj = emitter;
             Ref_Ptr_Set(m_model, robj);
             m_scene->Add_Render_Object(emitter);
             emitter->Restart();
 
-            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+            CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
             if (frame != nullptr) {
-                CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+                CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
                 if (view != nullptr) {
 
-                    if (unk1) {
-                        if (!m_resetCamera) {
-                            if (!m_forceCameraReset) {
-                                return;
-                            }
-                        }
-                    } else if (unk2) {
-                        if (!m_forceCameraReset) {
-                            return;
-                        }
-                    }
+                    bool b = useRegularCameraReset ? this->m_resetCamera : resetCamera;
 
-                    view->ResetParticleEmitterCamera(emitter);
-                    m_forceCameraReset = false;
+                    if (b || this->m_forceCameraReset) {
+                        view->ResetParticleEmitterCamera(emitter);
+                        m_forceCameraReset = false;
+                    }
                 }
             }
         }
@@ -600,7 +580,7 @@ bool GetCameraBoneTransform(RenderObjClass *robj, Matrix3D *tm)
     return false;
 }
 
-void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2)
+void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, bool useRegularCameraReset, bool resetCamera)
 {
     if (m_scene == nullptr || robj == nullptr || name == nullptr) {
         return;
@@ -614,35 +594,31 @@ void CW3DViewDoc::SetAnimationByName(RenderObjClass *robj, const char *name, boo
 
     if (m_model != nullptr) {
         m_model->Set_Animation(m_animation, 0.0f, 0);
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
             if (view != nullptr) {
 
-                if (unk1) {
-                    if (m_resetCamera) {
-                        goto l1;
-                    } else if (!unk2) {
-                        goto l1;
-                    }
+                bool b;
 
-                    if (!m_forceCameraReset) {
-                    l2:
-                        (CMainFrame *)AfxGetMainWnd()->PostMessage(WM_COMMAND, ID_ANIMATION_PLAY);
-                        goto l3;
-                    }
+                if (useRegularCameraReset) {
+                    b = m_resetCamera;
+                } else {
+                    b = resetCamera;
+                }
 
-                l1:
+                if (b || this->m_forceCameraReset) {
                     view->ResetCamera(robj);
                     m_forceCameraReset = false;
-                    goto l2;
                 }
+
+                static_cast<CMainFrame *>(AfxGetMainWnd())->PostMessage(WM_COMMAND, ID_ANIMATION_PLAY);
             }
         }
     }
-l3:
+
     if (m_animateCamera) {
         if (m_model != nullptr) {
             Matrix3D tm(true);
@@ -662,10 +638,10 @@ l3:
                 m[2].Z = 0.0f;
                 m[2].W = 0.0f;
                 tm = tm * m;
-                CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+                CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
                 if (frame != nullptr) {
-                    CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+                    CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
                     if (view != nullptr) {
                         view->m_camera->Set_Transform(tm);
@@ -678,10 +654,10 @@ l3:
 
 void CW3DViewDoc::Deselect()
 {
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
-        CDataTreeView *view = (CDataTreeView *)frame->m_splitter.GetPane(0, 0);
+        CDataTreeView *view = static_cast<CDataTreeView *>(frame->m_splitter.GetPane(0, 0));
 
         if (view != nullptr) {
             view->Select(0);
@@ -696,7 +672,7 @@ void CW3DViewDoc::UpdateFrameCount()
         m_time = 0.0f;
         float rate = m_animation->Get_Frame_Rate();
         float speed = GetCurrentGraphicView()->m_animationSpeed;
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
         frame->UpdateFrameCount(0, m_animation->Get_Num_Frames() - 1, speed * rate);
     }
 }
@@ -717,7 +693,7 @@ void CW3DViewDoc::UpdateAnimation(float tm)
 
             m_frameCount = rate * m_time;
             float speed = GetCurrentGraphicView()->m_animationSpeed;
-            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+            CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
             frame->UpdateFrameCount(m_frameCount, frames - 1, speed * rate);
 
             if (m_blendFrames) {
@@ -745,10 +721,10 @@ void CW3DViewDoc::UpdateAnimation(float tm)
                         m[2].Z = 0.0f;
                         m[2].W = 0.0f;
                         tm = tm * m;
-                        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+                        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
                         if (frame != nullptr) {
-                            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+                            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
                             if (view != nullptr) {
                                 view->m_camera->Set_Transform(tm);
@@ -766,7 +742,7 @@ void CW3DViewDoc::AnimateCamera(bool animate)
     m_animateCamera = animate;
 
     if (!animate) {
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
         frame->SendMessage(WM_COMMAND, ID_CAMERA_RESET);
     }
 }
@@ -796,7 +772,7 @@ void CW3DViewDoc::OnStep(int step)
             }
 
             float speed = GetCurrentGraphicView()->m_animationSpeed;
-            CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+            CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
             float rate = m_animation->Get_Frame_Rate();
             frame->UpdateFrameCount(m_frameCount, frames - 1, speed * rate);
 
@@ -825,10 +801,10 @@ void CW3DViewDoc::OnStep(int step)
                         m[2].Z = 0.0f;
                         m[2].W = 0.0f;
                         tm = tm * m;
-                        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+                        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
                         if (frame != nullptr) {
-                            CGraphicView *view = (CGraphicView *)frame->m_splitter.GetPane(0, 1);
+                            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
 
                             if (view != nullptr) {
                                 view->m_camera->Set_Transform(tm);
@@ -847,14 +823,16 @@ void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
         robj = m_model;
     }
 
-    if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
-        MeshClass *mesh = (MeshClass *)robj;
-        MeshModelClass *model = mesh->Get_Model();
-        model->Enable_Alternate_Material_Description(!model->Is_Alternate_Material_Description_Enabled());
-    }
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_MESH) {
+            MeshClass *mesh = static_cast<MeshClass *>(robj);
+            MeshModelClass *model = mesh->Get_Model();
+            model->Enable_Alternate_Material_Description(!model->Is_Alternate_Material_Description_Enabled());
+        }
 
-    for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
-        ToggleAlternateMaterials(robj->Get_Sub_Object(i));
+        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+            ToggleAlternateMaterials(robj->Get_Sub_Object(i));
+        }
     }
 }
 

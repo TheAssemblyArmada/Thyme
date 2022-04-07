@@ -71,10 +71,11 @@ CGraphicView::CGraphicView() :
     m_time(0),
     m_objectRotationFlags(0),
     m_lightRotationFlags(0),
-    m_cameraRotateConstraints(0),
+    m_cameraRotateConstraints(ROTATE_NONE),
     m_isWindowed(TRUE),
     m_animationSpeed(1.0f),
-    m_animationPlaying(-1)
+    m_animationState(ANIMATION_NONE),
+    m_radius(0.0f)
 {
     m_isWindowed = atoi(theApp.GetProfileString("Config", "Windowed", "1"));
 }
@@ -90,7 +91,7 @@ LRESULT CGraphicView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
     if (message != WM_PAINT) {
         if (message == WM_KEYDOWN) {
             if (wParam == VK_CONTROL && !m_lightInScene) {
-                m_light->Add(((CW3DViewDoc *)m_pDocument)->m_scene);
+                m_light->Add(static_cast<CW3DViewDoc *>(m_pDocument)->m_scene);
                 m_lightInScene = true;
             }
         } else if (message == WM_KEYUP && wParam == VK_CONTROL && m_lightInScene) {
@@ -120,7 +121,7 @@ LRESULT CGraphicView::WindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 void CGraphicView::OnInitialUpdate()
 {
     CView::OnInitialUpdate();
-    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
     if (document != nullptr) {
         document->Initialize();
@@ -170,7 +171,7 @@ void CGraphicView::OnDestroy()
     Ref_Ptr_Release(m_camera);
     Ref_Ptr_Release(m_light);
 
-    if (!m_timer) {
+    if (m_timer == 0) {
         timeKillEvent(0);
         m_timer = 0;
     }
@@ -213,7 +214,7 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 {
-    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
     float ydiff = m_mousePos.y - point.y;
 
     if ((nFlags & MK_CONTROL) != 0 || !m_lightInScene) {
@@ -231,17 +232,21 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
         RECT r;
         GetClientRect(&r);
 
-        float x = (((float)point.x - (float)(r.right >> 1)) / (float)(r.right >> 1)
-                      - ((float)m_mousePos.x - (float)(r.right >> 1)) / (float)(r.right >> 1))
+        Vector3 v;
+
+        v.X = (((float)point.x - (float)(r.right >> 1)) / (float)(r.right >> 1)
+                  - ((float)m_mousePos.x - (float)(r.right >> 1)) / (float)(r.right >> 1))
             * m_radius * -1.0f;
 
-        float y = (((float)point.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1)
-                      - ((float)m_mousePos.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1))
+        v.Y = (((float)point.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1)
+                  - ((float)m_mousePos.y - (float)(r.bottom >> 1)) / (float)(r.bottom >> 1))
             * m_radius * -1.0f;
 
-        tm.Translate(x, y, 0.0f);
+        v.Z = 0.0f;
+
+        tm.Translate(v);
         Matrix3 m = Build_Matrix3(Rotation);
-        Pos += x * m.Get_X_Vector() + m.Get_Y_Vector() * y;
+        Pos += m * v;
         m_camera->Set_Transform(tm);
         m_mousePos = point;
         CWnd::Default();
@@ -264,59 +269,19 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
                     float x1 = (point.x - x) / x;
 
                     Quaternion q = Trackball(x0, y0, x1, y1, 0.8f);
-                    Quaternion q2;
-
-                    q2.X = -q.X;
-                    q2.Y = -q.Y;
-                    q2.Z = -q.Z;
-                    q2.W = q.W;
-
-                    Quaternion q3 = Build_Quaternion(m_camera->Get_Transform());
-                    Quaternion q4 = Build_Quaternion(light->Get_Transform());
-
-                    float f1 = q3.Y * q2.Z - q3.Z * q2.Y + q2.X * q3.W + q3.X * q2.W;
-                    float f2 = q3.Y * q2.W + q3.W * q2.Y - (q3.X * q2.Z - q2.X * q3.Z);
-                    float f3 = q3.X * q2.Y - q2.X * q3.Y + q3.Z * q2.W + q3.W * q2.Z;
-                    float f4 = q3.W * q2.W - (q2.X * q3.X + q3.Z * q2.Z + q3.Y * q2.Y);
-                    float f5 = -q3.X;
-                    float f6 = -q3.Y;
-                    float f7 = -q3.Z;
-
-                    q2.X = f7 * f2 - f6 * f3 + f1 * q3.W + f5 * f4;
-                    q2.Y = f6 * f4 + q3.W * f2 - (f1 * f7 - f5 * f3);
-                    q2.Z = f1 * f6 - f5 * f2 + f7 * f4 + q3.W * f3;
-                    q2.W = q3.W * f4 - (f7 * f3 + f6 * f2 + f5 * f1);
-
-                    Quaternion q5;
-                    q5.X = q4.Z * q2.Y - q4.Y * q2.Z + q2.X * q4.W + q4.X * q2.W;
-                    q5.Y = q4.Y * q2.W + q4.W * q2.Y - (q2.X * q4.Z - q4.X * q2.Z);
-                    q5.Z = q2.X * q4.Y - q4.X * q2.Y + q4.Z * q2.W + q4.W * q2.Z;
-                    q5.W = q4.W * q2.W - (q4.Z * q2.Z + q4.Y * q2.Y + q2.X * q4.X);
-                    q5.Normalize();
+                    Quaternion q2 = Build_Quaternion(m_camera->Get_Transform());
+                    Quaternion q3 = Build_Quaternion(light->Get_Transform());
+                    Quaternion q4 = q2 / q;
+                    Quaternion q5 = q4 / q2;
+                    Quaternion q6 = q5 * q3;
+                    q6.Normalize();
 
                     Matrix3D tm = light->Get_Transform();
-                    float f8 = tm[0].X;
-                    float f9 = tm[0].Y;
-                    float f10 = Pos.X - tm[0].W;
-                    float f11 = tm[1].X;
-                    float f12 = tm[1].W;
-                    float f13 = tm[1].Y;
-                    float f14 = tm[0].Z;
-                    float f15 = Pos.Y - f12;
-                    float f16 = tm[2].X;
-                    float f17 = tm[2].W;
-                    float f18 = tm[2].Z;
-                    float f19 = tm[1].Z;
-                    float f20 = tm[2].Y;
-                    float f21 = Pos.Z - f17;
-
-                    float f22 = f16 * f21 + f11 * f15 + f10 * f8;
-                    float f23 = f20 * f21 + f13 * f15 + f10 * f9;
-                    float f24 = f18 * f21 + f19 * f15 + f10 * f14;
-
+                    Vector3 v;
+                    Matrix3D::Inverse_Transform_Vector(tm, Pos, &v);
                     Matrix3D tm2;
-                    tm2.Set(q5, Pos);
-                    tm2.Translate(-f22, -f23, -f24);
+                    tm2.Set(q6, Pos);
+                    tm2.Translate(-v);
                     m_light->Set_Transform(tm2);
                     light->Set_Transform(tm2);
                 }
@@ -335,13 +300,13 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
                 if (model != nullptr) {
                     RECT r;
                     GetClientRect(&r);
-                    float f25 = ydiff / (r.bottom - r.top) * (m_objSphere.Radius * 3.0f);
+                    Vector3 v(0.0f, 0.0f, ydiff / (r.bottom - r.top) * (m_objSphere.Radius * 3.0f));
                     Matrix3D tm = light->Get_Transform();
-                    tm.Translate_Z(f25);
-                    Vector3 v = tm.Get_Translation();
-                    Vector3 v2 = model->Get_Position();
+                    tm.Translate(v);
+                    Vector3 v2 = tm.Get_Translation();
+                    Vector3 v3 = model->Get_Position();
 
-                    if ((v - v2).Length() > m_objSphere.Radius) {
+                    if ((v2 - v3).Length() > m_objSphere.Radius) {
                         m_light->Set_Transform(tm);
                         light->Set_Transform(tm);
                     }
@@ -363,30 +328,30 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
 
         RECT r;
         GetClientRect(&r);
-        float f26 = r.right >> 1;
-        float f27 = r.bottom >> 1;
-        float x0 = (m_mousePos.x - f26) / f26;
-        float y0 = (f27 - m_mousePos.y) / f27;
-        float y1 = (f27 - point.y) / f27;
-        float x1 = (point.x - f26) / f26;
+        float f1 = r.right >> 1;
+        float f2 = r.bottom >> 1;
+        float x0 = (m_mousePos.x - f1) / f1;
+        float y0 = (f2 - m_mousePos.y) / f2;
+        float y1 = (f2 - point.y) / f2;
+        float x1 = (point.x - f1) / f1;
         Rotation = Trackball(x0, y0, x1, y1, 0.8f);
 
         switch (m_cameraRotateConstraints) {
-            case 1: {
+            case ROTATE_X_ONLY: {
                 Matrix3D tm2 = Build_Matrix3D(Rotation);
                 Matrix3D tm(true);
                 tm.Rotate_X(tm2.Get_X_Rotation());
                 tm.Set_Translation(tm2.Get_Translation());
                 Rotation = Build_Quaternion(tm);
             } break;
-            case 2: {
+            case ROTATE_Y_ONLY: {
                 Matrix3D tm2 = Build_Matrix3D(Rotation);
                 Matrix3D tm(true);
                 tm.Rotate_Y(tm2.Get_Y_Rotation());
                 tm.Set_Translation(tm2.Get_Translation());
                 Rotation = Build_Quaternion(tm);
             } break;
-            case 4: {
+            case ROTATE_Z_ONLY: {
                 Matrix3D tm2 = Build_Matrix3D(Rotation);
                 Matrix3D tm(true);
                 tm.Rotate_Z(tm2.Get_Z_Rotation());
@@ -418,23 +383,24 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
         if (ydiff != 0.0f) {
             RECT r;
             GetClientRect(&r);
-            float f28 = ydiff / (r.bottom - r.top) * m_radius * 3.0f;
+            float f3 = ydiff / (r.bottom - r.top) * m_radius * 3.0f;
 
-            if (f28 < Zoom && f28 >= 0.0f) {
-                f28 = Zoom;
+            if (f3 < Zoom && f3 >= 0.0f) {
+                f3 = Zoom;
             }
 
-            if (f28 > -Zoom && f28 <= 0.0f) {
-                f28 = -Zoom;
+            if (f3 > -Zoom && f3 <= 0.0f) {
+                f3 = -Zoom;
             }
 
-            float f29 = f28 + m_radius;
+            float f4 = f3 + m_radius;
 
-            if (f29 > 0.0f) {
-                m_radius = f29;
-                tm.Translate_Z(f28);
+            if (f4 > 0.0f) {
+                m_radius = f4;
+                Vector3 v(0.0f, 0.0f, f3);
+                tm.Translate(v);
                 m_camera->Set_Transform(tm);
-                CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+                CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
                 if (frame != nullptr) {
                     document->m_docCamera->Set_Transform(tm);
@@ -488,7 +454,7 @@ void CGraphicView::OnGetMinMaxInfo(MINMAXINFO FAR *lpMMI)
 
 static void CALLBACK TimerProc(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
-    if (dwUser && !GetProp((HWND)dwUser, "WaitingToProcess") && !GetProp((HWND)dwUser, "Inactive")) {
+    if (dwUser != 0 && !GetProp((HWND)dwUser, "WaitingToProcess") && !GetProp((HWND)dwUser, "Inactive")) {
         SetProp((HWND)dwUser, "WaitingToProcess", (HANDLE)1);
         PostMessage((HWND)dwUser, GVM_RENDER, 0, 0);
     }
@@ -587,25 +553,25 @@ void CGraphicView::Render(BOOL update, unsigned int time)
 
     if (!IsRendering) {
         IsRendering = true;
-        CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+        CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
         if (document->m_initialized && document->m_scene != nullptr && !m_renderingDisabled) {
             unsigned int newtime = timeGetTime();
-            unsigned int currenttime = m_time;
+            unsigned int previous_time = m_time;
             m_time = newtime;
-            int tm = newtime - currenttime;
+            int delta = newtime - previous_time;
             unsigned int sync;
 
             if (time != 0) {
                 sync = time + W3D::Get_Sync_Time();
             } else {
-                sync = tm * m_animationSpeed + W3D::Get_Sync_Time();
+                sync = delta * m_animationSpeed + W3D::Get_Sync_Time();
             }
 
             W3D::Sync(sync);
 
-            if (m_animationPlaying == 0 && update) {
-                document->UpdateAnimation(tm * 0.001f * m_animationSpeed);
+            if (m_animationState == ANIMATION_PLAY && update) {
+                document->UpdateAnimation(delta * 0.001f * m_animationSpeed);
             }
 
             if (m_objectRotationFlags != 0 && update) {
@@ -643,10 +609,10 @@ void CGraphicView::Render(BOOL update, unsigned int time)
                     polys = document->m_model->Get_Num_Polys();
                 }
 
-                ((CMainFrame *)AfxGetMainWnd())->UpdatePolyCount(polys);
+                static_cast<CMainFrame *>(AfxGetMainWnd())->UpdatePolyCount(polys);
             }
 
-            ((CMainFrame *)AfxGetMainWnd())->UpdateStatusBar(frametime);
+            static_cast<CMainFrame *>(AfxGetMainWnd())->UpdateStatusBar(frametime);
         }
 
         IsRendering = false;
@@ -672,21 +638,21 @@ void CGraphicView::UpdateCamera()
     float vfov;
 
     if (height <= width) {
-        hfov = 0.7853981852531433f;
-        vfov = (float)height / (float)width * 0.7853981852531433f;
+        hfov = DEG_TO_RADF(45.0f);
+        vfov = (float)height / (float)width * DEG_TO_RADF(45.0f);
     } else {
-        hfov = (float)height / (float)width * 0.7853981852531433f;
-        vfov = 0.7853981852531433f;
+        hfov = (float)width / (float)height * DEG_TO_RADF(45.0f);
+        vfov = DEG_TO_RADF(45.0f);
     }
 
-    if (!((CW3DViewDoc *)m_pDocument)->m_useManualFov) {
+    if (!static_cast<CW3DViewDoc *>(m_pDocument)->m_useManualFov) {
         m_camera->Set_View_Plane(hfov, vfov);
     }
 }
 
 void CGraphicView::UpdateObjectRotation()
 {
-    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
     if (document->m_model == nullptr) {
         return;
@@ -694,27 +660,27 @@ void CGraphicView::UpdateObjectRotation()
 
     Matrix3D tm = document->m_model->Get_Transform();
 
-    if ((m_objectRotationFlags & 1) == 1) {
+    if ((m_objectRotationFlags & ROTATE_PLUSX) == ROTATE_PLUSX) {
         tm.Rotate_X(0.05f);
     }
 
-    if ((m_objectRotationFlags & 8) == 8) {
+    if ((m_objectRotationFlags & ROTATE_MINUSX) == ROTATE_MINUSX) {
         tm.Rotate_X(-0.05f);
     }
 
-    if ((m_objectRotationFlags & 2) == 2) {
+    if ((m_objectRotationFlags & ROTATE_PLUSY) == ROTATE_PLUSY) {
         tm.Rotate_Y(0.05f);
     }
 
-    if ((m_objectRotationFlags & 16) == 16) {
+    if ((m_objectRotationFlags & ROTATE_MINUSY) == ROTATE_MINUSY) {
         tm.Rotate_Y(-0.05f);
     }
 
-    if ((m_objectRotationFlags & 4) == 4) {
+    if ((m_objectRotationFlags & ROTATE_PLUSZ) == ROTATE_PLUSZ) {
         tm.Rotate_Z(0.05f);
     }
 
-    if ((m_objectRotationFlags & 32) == 32) {
+    if ((m_objectRotationFlags & ROTATE_MINUSZ) == ROTATE_MINUSZ) {
         tm.Rotate_Z(-0.05f);
     }
 
@@ -727,7 +693,7 @@ void CGraphicView::UpdateObjectRotation()
 
 void CGraphicView::UpdateLightTransform()
 {
-    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
     if (document->m_model == nullptr || document->m_light == nullptr) {
         return;
@@ -735,27 +701,27 @@ void CGraphicView::UpdateLightTransform()
 
     Matrix3D tm(true);
 
-    if ((m_lightRotationFlags & 1) == 1) {
+    if ((m_lightRotationFlags & ROTATE_PLUSX) == ROTATE_PLUSX) {
         tm.Rotate_X(0.05f);
     }
 
-    if ((m_lightRotationFlags & 8) == 8) {
+    if ((m_lightRotationFlags & ROTATE_MINUSX) == ROTATE_MINUSX) {
         tm.Rotate_X(-0.05f);
     }
 
-    if ((m_lightRotationFlags & 2) == 2) {
+    if ((m_lightRotationFlags & ROTATE_PLUSY) == ROTATE_PLUSY) {
         tm.Rotate_Y(0.05f);
     }
 
-    if ((m_lightRotationFlags & 16) == 16) {
+    if ((m_lightRotationFlags & ROTATE_MINUSY) == ROTATE_MINUSY) {
         tm.Rotate_Y(-0.05f);
     }
 
-    if ((m_lightRotationFlags & 4) == 4) {
+    if ((m_lightRotationFlags & ROTATE_PLUSZ) == ROTATE_PLUSZ) {
         tm.Rotate_Z(0.05f);
     }
 
-    if ((m_lightRotationFlags & 32) == 32) {
+    if ((m_lightRotationFlags & ROTATE_MINUSZ) == ROTATE_MINUSZ) {
         tm.Rotate_Z(-0.05f);
     }
 
@@ -777,22 +743,22 @@ void CGraphicView::UpdateLightTransform()
     document->m_light->Set_Transform(tm5);
 }
 
-void CGraphicView::UpdateAnimation(int flag)
+void CGraphicView::UpdateAnimation(AnimationState flag)
 {
-    if (m_animationPlaying == flag) {
+    if (m_animationState == flag) {
         return;
     }
 
-    if (flag == 0) {
+    if (flag == ANIMATION_PLAY) {
         m_time = timeGetTime();
-        m_animationPlaying = flag;
+        m_animationState = flag;
         return;
-    } else if (flag != 1) {
-        m_animationPlaying = flag;
+    } else if (flag != ANIMATION_STOP) {
+        m_animationState = flag;
         return;
     }
 
-    CW3DViewDoc *document = (CW3DViewDoc *)m_pDocument;
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
     if (document->m_model != nullptr) {
         if (document->m_animation != nullptr) {
             document->m_model->Set_Animation(document->m_animation, 0.0f);
@@ -800,7 +766,7 @@ void CGraphicView::UpdateAnimation(int flag)
     }
 
     document->UpdateFrameCount();
-    m_animationPlaying = 1;
+    m_animationState = ANIMATION_STOP;
 }
 
 void CGraphicView::ResetCamera(RenderObjClass *robj)
@@ -832,7 +798,7 @@ void CGraphicView::ResetCamera(RenderObjClass *robj)
         m_camera->Set_Transform(tm);
     }
 
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
         frame->UpdatePolyCount(robj->Get_Num_Polys());
@@ -854,13 +820,13 @@ void CGraphicView::ResetCameraValues(SphereClass &sphere)
     Zoom = m_radius * 0.0052631581f;
     Rotation = Build_Quaternion(tm);
     m_camera->Set_Transform(tm);
-    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
     LightClass *light = document->m_light;
 
     if (m_light != nullptr && light != nullptr) {
         tm.Make_Identity();
         tm.Adjust_Translation(Pos);
-        tm[2].W += m_radius * 0.69999999f;
+        tm[2].W += m_radius * 0.7f;
         light->Set_Transform(tm);
         m_light->Set_Transform(tm);
         m_light->Scale(m_radius / Lightradius * 14.0f);
@@ -879,14 +845,14 @@ void CGraphicView::ResetCameraValues(SphereClass &sphere)
         float start;
         float end;
         document->m_scene->Get_Fog_Range(&start, &end);
-        document->m_scene->Set_Fog_Range(end, end);
+        document->m_scene->Set_Fog_Range(znear, end);
         document->m_scene->Update_Fog_Range();
     }
 
     document->m_docCamera->Set_Transform(tm);
     document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
 
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
         frame->UpdateCameraDistance(m_radius);
@@ -918,45 +884,42 @@ void CGraphicView::ResetParticleEmitterCamera(ParticleEmitterClass *emitter)
     float f13 = f1 * acceleration.Z * 0.5f + f7;
     float f14;
 
-    if (acceleration.X == 0.0f) {
-        if (acceleration.Y == 0.0f && acceleration.Z == 0.0f) {
-            goto l1;
+    if (acceleration.X != 0.0f || acceleration.Y != 0.0f || acceleration.Z != 0.0f) {
+        if (acceleration.X == 0.0f) {
+            f14 = 0.0f;
+        } else {
+            f14 = -s.Center.X / acceleration.X;
         }
 
-        f14 = 0.0f;
-    } else {
-        f14 = -s.Center.X / acceleration.X;
+        float f15;
+
+        if (acceleration.Y == 0.0f) {
+            f15 = 0.0f;
+        } else {
+            f15 = -s.Center.Y / acceleration.Y;
+        }
+
+        float f16;
+
+        if (acceleration.Z == 0.0f) {
+            f16 = 0.0f;
+        } else {
+            f16 = -s.Center.Z / acceleration.Z;
+        }
+
+        if (f14 >= 0.0f && f14 < lifetime) {
+            f9 = GameMath::Fabs(f14 * f14 * acceleration.X * 0.5f + f14 * s.Center.X);
+        }
+
+        if (f15 >= 0.0f && f15 < lifetime) {
+            f12 = GameMath::Fabs(f15 * f15 * acceleration.Y * 0.5f + f15 * s.Center.Y);
+        }
+
+        if (f16 >= 0.0f && f16 < lifetime) {
+            f10 = GameMath::Fabs(f16 * f16 * acceleration.Z * 0.5f + f16 * s.Center.Z);
+        }
     }
 
-    float f15;
-
-    if (acceleration.Y == 0.0f) {
-        f15 = 0.0f;
-    } else {
-        f15 = -s.Center.Y / acceleration.Y;
-    }
-
-    float f16;
-
-    if (acceleration.Z == 0.0f) {
-        f16 = 0.0f;
-    } else {
-        f16 = -s.Center.Z / acceleration.Z;
-    }
-
-    if (f14 >= 0.0f && f14 < lifetime) {
-        f9 = GameMath::Fabs(f14 * f14 * acceleration.X * 0.5f + f14 * s.Center.X);
-    }
-
-    if (f15 >= 0.0f && f15 < lifetime) {
-        f12 = GameMath::Fabs(f15 * f15 * acceleration.Y * 0.5f + f15 * s.Center.Y);
-    }
-
-    if (f16 >= 0.0f && f16 < lifetime) {
-        f10 = GameMath::Fabs(f16 * f16 * acceleration.Z * 0.5f + f16 * s.Center.Z);
-    }
-
-l1:
     float f17 = GameMath::Fabs(f8);
     float f18 = GameMath::Fabs(f11);
     float f19 = GameMath::Fabs(f13);
@@ -1028,7 +991,7 @@ void CGraphicView::SetRotationFlags(int flags)
     }
 }
 
-void CGraphicView::SetCameraRotateConstraints(int constraints)
+void CGraphicView::SetCameraRotateConstraints(CameraRotateConstraint constraints)
 {
     m_cameraRotateConstraints = constraints;
 }
@@ -1049,19 +1012,19 @@ void CGraphicView::UpdateCameraDistance(float distance)
 {
     m_radius = distance;
     Matrix3D tm(true);
-    tm.Look_At(
-        Vector3(distance + m_objSphere.Center.X, m_objSphere.Center.Y, m_objSphere.Center.Z), m_objSphere.Center, 0.0f);
+    Vector3 v(distance + m_objSphere.Center.X, m_objSphere.Center.Y, m_objSphere.Center.Z);
+    tm.Look_At(v, m_objSphere.Center, 0.0f);
     m_camera->Set_Transform(tm);
-    CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
     if (frame != nullptr) {
         frame->UpdateCameraDistance(m_radius);
     }
 }
 
-void CGraphicView::SetCameraDirection(int direction)
+void CGraphicView::SetCameraDirection(CameraDirection direction)
 {
-    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
     if (document->m_model != nullptr) {
         Vector3 center = m_objSphere.Center;
@@ -1071,39 +1034,39 @@ void CGraphicView::SetCameraDirection(int direction)
         Vector3 v;
 
         switch (direction) {
-            case -1:
-                v.X = m_radius + center.X;
+            case DIRECTION_FRONT:
+                v.X = center.X + m_radius;
                 v.Y = center.Y;
                 v.Z = center.Z;
                 tm.Look_At(v, center, 0.0f);
                 break;
-            case 0:
+            case DIRECTION_BACK:
                 v.X = center.X - m_radius;
                 v.Y = center.Y;
                 v.Z = center.Z;
                 tm.Look_At(v, center, 0.0f);
                 break;
-            case 1:
+            case DIRECTION_TOP:
                 v.X = center.X;
                 v.Y = center.Y;
-                v.Z = m_radius + center.Z;
-                tm.Look_At(v, center, 3.1415927f);
+                v.Z = center.Z + m_radius;
+                tm.Look_At(v, center, DEG_TO_RADF(180.0f));
                 break;
-            case 2:
+            case DIRECTION_BOTTOM:
                 v.X = center.X;
                 v.Y = center.Y;
                 v.Z = center.Z - m_radius;
-                tm.Look_At(v, center, 3.1415927f);
+                tm.Look_At(v, center, DEG_TO_RADF(180.0f));
                 break;
-            case 3:
+            case DIRECTION_LEFT:
                 v.X = center.X;
                 v.Y = center.Y - m_radius;
                 v.Z = center.Z;
                 tm.Look_At(v, center, 0.0f);
                 break;
-            case 4:
+            case DIRECTION_RIGHT:
                 v.X = center.X;
-                v.Y = m_radius + center.Y;
+                v.Y = center.Y + m_radius;
                 v.Z = center.Z;
                 tm.Look_At(v, center, 0.0f);
                 break;
@@ -1112,10 +1075,10 @@ void CGraphicView::SetCameraDirection(int direction)
         }
 
         m_camera->Set_Transform(tm);
-        CMainFrame *frame = (CMainFrame *)AfxGetMainWnd();
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+            CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
             tm = document->m_docCamera->Get_Transform();
             document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
 

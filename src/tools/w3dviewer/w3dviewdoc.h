@@ -31,7 +31,7 @@ class RenderObjClass;
 class SimpleSceneClass;
 class ViewerSceneClass;
 
-class CW3DViewDoc : CDocument
+class CW3DViewDoc : public CDocument
 {
 public:
     virtual ~CW3DViewDoc() override;
@@ -44,11 +44,11 @@ public:
     void Initialize();
     void LoadFile(CString pathName);
     void Deselect();
-    void SetParticleEmitter(ParticleEmitterClass *emitter, bool unk1, bool unk2);
-    void SetRenderObject(RenderObjClass *robj, bool unk1, bool unk2, bool unk3);
+    void SetParticleEmitter(ParticleEmitterClass *emitter, bool useRegularCameraReset, bool resetCamera);
+    void SetRenderObject(RenderObjClass *robj, bool useRegularCameraReset, bool resetCamera, bool preserveModel);
     void UpdateFrameCount();
     void OnStep(int step);
-    void SetAnimationByName(RenderObjClass *robj, const char *name, bool unk1, bool unk2);
+    void SetAnimationByName(RenderObjClass *robj, const char *name, bool useRegularCameraReset, bool resetCamera);
     void UpdateAnimation(float tm);
     CDataTreeView *GetDataTreeView();
     CGraphicView *GetGraphicView();

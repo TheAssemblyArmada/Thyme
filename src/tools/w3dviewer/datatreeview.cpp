@@ -18,6 +18,7 @@
 #include "bmp2d.h"
 #include "hanim.h"
 #include "mainfrm.h"
+#include "part_emt.h"
 #include "rendobj.h"
 #include "resource.h"
 #include "texture.h"
@@ -38,17 +39,17 @@ END_MESSAGE_MAP()
 
 CDataTreeView::CDataTreeView() : m_restrictAnims(true), m_categoryTreeItems{}
 {
-    m_imageListIDs[0] = -1;
-    m_imageListIDs[1] = -1;
-    m_imageListIDs[2] = -1;
-    m_imageListIDs[3] = -1;
-    m_imageListIDs[4] = -1;
-    m_imageListIDs[5] = -1;
-    m_imageListIDs[6] = -1;
-    m_imageListIDs[7] = -1;
-    m_imageListIDs[8] = -1;
-    m_imageListIDs[9] = -1;
-    m_imageListIDs[10] = -1;
+    m_imageListIDs[ICON_ANIMATION] = -1;
+    m_imageListIDs[ICON_ANIMSPEED] = -1;
+    m_imageListIDs[ICON_TEXTURE] = -1;
+    m_imageListIDs[ICON_MESH] = -1;
+    m_imageListIDs[ICON_MATERIAL] = -1;
+    m_imageListIDs[ICON_HLOD] = -1;
+    m_imageListIDs[ICON_EMITTER] = -1;
+    m_imageListIDs[ICON_PRIMITIVE] = -1;
+    m_imageListIDs[ICON_AGGREGATE] = -1;
+    m_imageListIDs[ICON_HIERARCHY] = -1;
+    m_imageListIDs[ICON_SOUND] = -1;
 }
 
 BOOL CDataTreeView::PreCreateWindow(CREATESTRUCT &cs)
@@ -69,17 +70,17 @@ int CDataTreeView::OnCreate(LPCREATESTRUCT lpCreateStruct)
     if (result != -1) {
         CImageList il;
         il.Create(16, 18, ILC_MASK, 5, 10);
-        m_imageListIDs[0] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_ANIMATION)));
-        m_imageListIDs[1] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_ANIMSPEED)));
-        m_imageListIDs[2] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_TEXTURE)));
-        m_imageListIDs[3] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_MESH)));
-        m_imageListIDs[4] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_MATERIAL)));
-        m_imageListIDs[5] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDD_HEIRARCHY)));
-        m_imageListIDs[8] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HEIRARCHY)));
-        m_imageListIDs[6] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HEIRARCHY)));
-        m_imageListIDs[9] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HEIRARCHY)));
-        m_imageListIDs[7] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_PRIMITIVE)));
-        m_imageListIDs[10] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_SOUND)));
+        m_imageListIDs[ICON_ANIMATION] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_ANIMATION)));
+        m_imageListIDs[ICON_ANIMSPEED] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_ANIMSPEED)));
+        m_imageListIDs[ICON_TEXTURE] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_TEXTURE)));
+        m_imageListIDs[ICON_MESH] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_MESH)));
+        m_imageListIDs[ICON_MATERIAL] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_MATERIAL)));
+        m_imageListIDs[ICON_HLOD] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HLOD)));
+        m_imageListIDs[ICON_AGGREGATE] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HIERARCHY)));
+        m_imageListIDs[ICON_EMITTER] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HIERARCHY)));
+        m_imageListIDs[ICON_HIERARCHY] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_HIERARCHY)));
+        m_imageListIDs[ICON_PRIMITIVE] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_PRIMITIVE)));
+        m_imageListIDs[ICON_SOUND] = il.Replace(-1, LoadIcon(AfxGetResourceHandle(), MAKEINTRESOURCE(IDI_SOUND)));
         GetTreeCtrl().SetImageList(&il, 0);
         il.Detach();
         AddCategories();
@@ -91,25 +92,25 @@ int CDataTreeView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CDataTreeView::OnSelectTree(NMHDR *pNMHDR, LRESULT *pResult)
 {
-    NMTREEVIEW *nm = (NMTREEVIEW *)pNMHDR;
+    NMTREEVIEW *nm = reinterpret_cast<NMTREEVIEW *>(pNMHDR);
     Select(nm->itemNew.hItem);
     *pResult = 0;
 }
 
 void CDataTreeView::OnDeleteItem(NMHDR *pNMHDR, LRESULT *pResult)
 {
-    NMTREEVIEW *nm = (NMTREEVIEW *)pNMHDR;
-    AssetInfoClass *info = (AssetInfoClass *)nm->itemOld.lParam;
+    NMTREEVIEW *nm = reinterpret_cast<NMTREEVIEW *>(pNMHDR);
+    AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(nm->itemOld.lParam);
 
     if (info != nullptr) {
-        if (info->m_type == 0) {
+        if (info->m_type == ASSET_TYPE_TEXTURE) {
             Ref_Ptr_Release(info->m_texture);
         }
 
         delete info;
     }
 
-    GetTreeCtrl().SetItem(nm->itemOld.hItem, TVIF_PARAM, 0, 0, 0, 0, 0, 0);
+    GetTreeCtrl().SetItem(nm->itemOld.hItem, TVIF_PARAM, nullptr, 0, 0, 0, 0, 0);
     *pResult = 0;
 }
 
@@ -124,29 +125,27 @@ void CDataTreeView::AddRenderObjects()
     RenderObjIterator *iter = W3DAssetManager::Get_Instance()->Create_Render_Obj_Iterator();
 
     if (iter != nullptr) {
-        iter->First();
-
-        while (!iter->Is_Done()) {
+        for (iter->First(); !iter->Is_Done(); iter->Next()) {
             const char *name = iter->Current_Item_Name();
 
             if (W3DAssetManager::Get_Instance()->Render_Obj_Exists(name)) {
                 HTREEITEM category;
                 int image;
-                int type;
+                AssetType type;
 
                 switch (iter->Current_Item_Class_ID()) {
                     case RenderObjClass::CLASSID_MESH:
-                        category = m_categoryTreeItems[1];
-                        image = m_imageListIDs[3];
-                        type = 1;
+                        category = m_categoryTreeItems[CATEGORY_MESH];
+                        image = m_imageListIDs[ICON_MESH];
+                        type = ASSET_TYPE_MESH;
 
                         if (HasBaseModelName(name)) {
-                            category = m_categoryTreeItems[2];
-                            image = m_imageListIDs[8];
-                            type = 3;
+                            category = m_categoryTreeItems[CATEGORY_AGGREGATE];
+                            image = m_imageListIDs[ICON_AGGREGATE];
+                            type = ASSET_TYPE_AGGREGATE;
                         }
 
-                        if (FindItemByName(category, name) == 0) {
+                        if (FindItemByName(category, name) == nullptr) {
                             HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                                 name,
                                 image,
@@ -158,22 +157,22 @@ void CDataTreeView::AddRenderObjects()
                                 TVI_SORT);
 
                             AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
-                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                         }
 
                         break;
                     case RenderObjClass::CLASSID_PARTICLEEMITTER:
-                        category = m_categoryTreeItems[5];
-                        image = m_imageListIDs[6];
-                        type = 7;
+                        category = m_categoryTreeItems[CATEGORY_EMITTER];
+                        image = m_imageListIDs[ICON_EMITTER];
+                        type = ASSET_TYPE_PARTICLEEMITTER;
 
                         if (HasBaseModelName(name)) {
-                            category = m_categoryTreeItems[2];
-                            image = m_imageListIDs[8];
-                            type = 3;
+                            category = m_categoryTreeItems[CATEGORY_AGGREGATE];
+                            image = m_imageListIDs[ICON_AGGREGATE];
+                            type = ASSET_TYPE_AGGREGATE;
                         }
 
-                        if (FindItemByName(category, name) == 0) {
+                        if (FindItemByName(category, name) == nullptr) {
                             HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                                 name,
                                 image,
@@ -185,28 +184,28 @@ void CDataTreeView::AddRenderObjects()
                                 TVI_SORT);
 
                             AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
-                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                         }
 
                         break;
                     case RenderObjClass::CLASSID_HLOD:
-                        category = m_categoryTreeItems[7];
-                        image = m_imageListIDs[9];
-                        type = 2;
+                        category = m_categoryTreeItems[CATEGORY_HIERARCHY];
+                        image = m_imageListIDs[ICON_HIERARCHY];
+                        type = ASSET_TYPE_HIERARCHY;
 
                         if (HasMultipleLODs(name)) {
-                            category = m_categoryTreeItems[3];
-                            image = m_imageListIDs[5];
-                            type = 4;
+                            category = m_categoryTreeItems[CATEGORY_HLOD];
+                            image = m_imageListIDs[ICON_HLOD];
+                            type = ASSET_TYPE_HLOD;
                         }
 
                         if (HasBaseModelName(name)) {
-                            category = m_categoryTreeItems[2];
-                            image = m_imageListIDs[8];
-                            type = 3;
+                            category = m_categoryTreeItems[CATEGORY_AGGREGATE];
+                            image = m_imageListIDs[ICON_AGGREGATE];
+                            type = ASSET_TYPE_AGGREGATE;
                         }
 
-                        if (FindItemByName(category, name) == 0) {
+                        if (FindItemByName(category, name) == nullptr) {
                             HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                                 name,
                                 image,
@@ -218,7 +217,7 @@ void CDataTreeView::AddRenderObjects()
                                 TVI_SORT);
 
                             AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
-                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                         }
 
                         break;
@@ -226,8 +225,6 @@ void CDataTreeView::AddRenderObjects()
                         break;
                 }
             }
-
-            iter->Next();
         }
 
         delete iter;
@@ -242,90 +239,90 @@ void CDataTreeView::AddRenderObjects()
 
 void CDataTreeView::AddCategories()
 {
-    m_categoryTreeItems[0] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_MATERIAL] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Materials",
-        m_imageListIDs[4],
-        m_imageListIDs[4],
+        m_imageListIDs[ICON_MATERIAL],
+        m_imageListIDs[ICON_MATERIAL],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[1] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_MESH] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Mesh",
-        m_imageListIDs[3],
-        m_imageListIDs[3],
+        m_imageListIDs[ICON_MESH],
+        m_imageListIDs[ICON_MESH],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[7] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_HIERARCHY] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Hierarchy",
-        m_imageListIDs[9],
-        m_imageListIDs[9],
+        m_imageListIDs[ICON_HIERARCHY],
+        m_imageListIDs[ICON_HIERARCHY],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[3] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_HLOD] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "H-LOD",
-        m_imageListIDs[5],
-        m_imageListIDs[5],
+        m_imageListIDs[ICON_HLOD],
+        m_imageListIDs[ICON_HLOD],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[4] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_COLLECTION] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Mesh Collection",
-        m_imageListIDs[3],
-        m_imageListIDs[3],
+        m_imageListIDs[ICON_MESH],
+        m_imageListIDs[ICON_MESH],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[2] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_AGGREGATE] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Aggregate",
-        m_imageListIDs[8],
-        m_imageListIDs[8],
+        m_imageListIDs[ICON_AGGREGATE],
+        m_imageListIDs[ICON_AGGREGATE],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[5] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_EMITTER] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Emitter",
-        m_imageListIDs[6],
-        m_imageListIDs[6],
+        m_imageListIDs[ICON_EMITTER],
+        m_imageListIDs[ICON_EMITTER],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[5] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_PRIMITIVES] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Primitives",
-        m_imageListIDs[7],
-        m_imageListIDs[7],
+        m_imageListIDs[ICON_PRIMITIVE],
+        m_imageListIDs[ICON_PRIMITIVE],
         0,
         0,
         0,
         TVI_ROOT,
         TVI_LAST);
 
-    m_categoryTreeItems[8] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
+    m_categoryTreeItems[CATEGORY_SOUNDS] = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
         "Sounds",
-        m_imageListIDs[10],
-        m_imageListIDs[10],
+        m_imageListIDs[ICON_SOUND],
+        m_imageListIDs[ICON_SOUND],
         0,
         0,
         0,
@@ -340,15 +337,15 @@ void CDataTreeView::Select(HTREEITEM item)
     }
 
     if (item != nullptr) {
-        AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(item);
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
 
         if (info != nullptr) {
-            CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+            CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
             if (document != nullptr) {
                 switch (info->m_type) {
-                    case 5:
-                    case 8: {
+                    case ASSET_TYPE_ANIMATION:
+                    case ASSET_TYPE_MORPH: {
                         HTREEITEM parent = GetTreeCtrl().GetParentItem(item);
 
                         if (parent != nullptr) {
@@ -358,9 +355,9 @@ void CDataTreeView::Select(HTREEITEM item)
                         }
 
                     } break;
-                    case 7: {
+                    case ASSET_TYPE_PARTICLEEMITTER: {
                         RenderObjClass *robj = GetRenderObj(item);
-                        document->SetParticleEmitter((ParticleEmitterClass *)robj, true, true);
+                        document->SetParticleEmitter(static_cast<ParticleEmitterClass *>(robj), true, true);
                         Ref_Ptr_Release(robj);
                     } break;
                     default: {
@@ -370,12 +367,12 @@ void CDataTreeView::Select(HTREEITEM item)
                     } break;
                 }
 
-                CMainFrame *frame = ((CMainFrame *)AfxGetMainWnd());
+                CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
                 if (frame != nullptr) {
                     frame->UpdateMenus(info->m_type);
 
-                    if (info->m_type == 3) {
+                    if (info->m_type == ASSET_TYPE_AGGREGATE) {
                         frame->UpdateEmitterMenu();
                     } else {
                         EnableMenuItem(GetSubMenu(::GetMenu(frame->m_hWnd), 3), 3, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
@@ -390,14 +387,14 @@ void CDataTreeView::Select(HTREEITEM item)
         return;
     }
 
-    CW3DViewDoc *document = ((CW3DViewDoc *)m_pDocument);
+    CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);
 
     if (document != nullptr) {
         document->SetRenderObject(nullptr, true, true, false);
-        CMainFrame *frame = ((CMainFrame *)AfxGetMainWnd());
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
 
         if (frame != nullptr) {
-            frame->UpdateMenus(-1);
+            frame->UpdateMenus(ASSET_TYPE_NONE);
         }
     }
 }
@@ -423,13 +420,13 @@ void SetLODLevel(RenderObjClass *robj)
 RenderObjClass *CDataTreeView::GetRenderObj(HTREEITEM item)
 {
     RenderObjClass *robj = nullptr;
-    AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(item);
+    AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
 
     if (info != nullptr) {
         Ref_Ptr_Set(robj, info->m_renderObj);
 
         if (robj == nullptr) {
-            if (info->m_type == 0) {
+            if (info->m_type == ASSET_TYPE_TEXTURE) {
                 if (info->m_texture != nullptr) {
                     robj = new Bitmap2D(info->m_texture, 0.5f, 0.5f, true, false, false, true);
                 }
@@ -454,24 +451,24 @@ RenderObjClass *CDataTreeView::GetRenderObj(HTREEITEM item)
 
 void CDataTreeView::AddTextures()
 {
-    for (HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
-         !textureIter.Is_Done();
-         textureIter.Next()) {
+    HashTemplateIterator<StringClass, TextureClass *> textureIter(W3DAssetManager::Get_Instance()->Texture_Hash());
+
+    for (textureIter.First(); !textureIter.Is_Done(); textureIter.Next()) {
         TextureClass *texture = textureIter.Peek_Value();
 
-        if (!FindItemByName(m_categoryTreeItems[0], texture->Get_Name())) {
+        if (FindItemByName(m_categoryTreeItems[CATEGORY_MATERIAL], texture->Get_Name()) == nullptr) {
             HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                 texture->Get_Name(),
-                m_imageListIDs[4],
-                m_imageListIDs[4],
+                m_imageListIDs[ICON_MATERIAL],
+                m_imageListIDs[ICON_MATERIAL],
                 0,
                 0,
                 0,
-                m_categoryTreeItems[0],
+                m_categoryTreeItems[CATEGORY_MATERIAL],
                 TVI_SORT);
 
-            AssetInfoClass *info = new AssetInfoClass(texture->Get_Name(), 0, nullptr, texture);
-            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+            AssetInfoClass *info = new AssetInfoClass(texture->Get_Name(), ASSET_TYPE_TEXTURE, nullptr, texture);
+            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
         }
     }
 }
@@ -484,57 +481,60 @@ void CDataTreeView::AddAnimations()
         for (iterator->First(); !iterator->Is_Done(); iterator->Next()) {
             HAnimClass *anim = W3DAssetManager::Get_Instance()->Get_HAnim(iterator->Current_Item_Name());
 
-            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[7], anim->Get_HName()); i != 0;
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[CATEGORY_HIERARCHY], anim->Get_HName()); i != nullptr;
                  i = FindNextItem(i, anim->Get_HName())) {
-                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == nullptr) {
                     HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                         iterator->Current_Item_Name(),
-                        m_imageListIDs[0],
-                        m_imageListIDs[0],
+                        m_imageListIDs[ICON_ANIMATION],
+                        m_imageListIDs[ICON_ANIMATION],
                         0,
                         0,
                         0,
                         i,
                         TVI_SORT);
 
-                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
-                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                    AssetInfoClass *info =
+                        new AssetInfoClass(iterator->Current_Item_Name(), ASSET_TYPE_ANIMATION, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                 }
             }
 
-            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[2], anim->Get_HName()); i != 0;
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[CATEGORY_AGGREGATE], anim->Get_HName()); i != nullptr;
                  i = FindNextItem(i, anim->Get_HName())) {
-                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == nullptr) {
                     HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                         iterator->Current_Item_Name(),
-                        m_imageListIDs[0],
-                        m_imageListIDs[0],
+                        m_imageListIDs[ICON_ANIMATION],
+                        m_imageListIDs[ICON_ANIMATION],
                         0,
                         0,
                         0,
                         i,
                         TVI_SORT);
 
-                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
-                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                    AssetInfoClass *info =
+                        new AssetInfoClass(iterator->Current_Item_Name(), ASSET_TYPE_ANIMATION, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                 }
             }
 
-            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[3], anim->Get_HName()); i != 0;
+            for (HTREEITEM i = FindFirstItem(m_categoryTreeItems[CATEGORY_HLOD], anim->Get_HName()); i != nullptr;
                  i = FindNextItem(i, anim->Get_HName())) {
-                if (FindItemByName(i, iterator->Current_Item_Name()) == 0) {
+                if (FindItemByName(i, iterator->Current_Item_Name()) == nullptr) {
                     HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_IMAGE,
                         iterator->Current_Item_Name(),
-                        m_imageListIDs[0],
-                        m_imageListIDs[0],
+                        m_imageListIDs[ICON_ANIMATION],
+                        m_imageListIDs[ICON_ANIMATION],
                         0,
                         0,
                         0,
                         i,
                         TVI_SORT);
 
-                    AssetInfoClass *info = new AssetInfoClass(iterator->Current_Item_Name(), 5, nullptr, nullptr);
-                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, (LPARAM)info);
+                    AssetInfoClass *info =
+                        new AssetInfoClass(iterator->Current_Item_Name(), ASSET_TYPE_ANIMATION, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, nullptr, 0, 0, 0, 0, (LPARAM)info);
                 }
             }
         }
@@ -543,19 +543,19 @@ void CDataTreeView::AddAnimations()
 
 HTREEITEM CDataTreeView::FindItemByName(HTREEITEM item, const char *name)
 {
-    HTREEITEM item1 = 0;
-    HTREEITEM item2 = 0;
+    HTREEITEM item1 = nullptr;
+    HTREEITEM item2 = nullptr;
     HTREEITEM item3 = GetTreeCtrl().GetChildItem(item);
 
-    if (item3 != 0) {
-        while (item1 == 0) {
+    if (item3 != nullptr) {
+        while (item1 == nullptr) {
             if (lstrcmp(GetTreeCtrl().GetItemText(item3), name) == 0) {
                 item2 = item3;
             }
 
             item3 = GetTreeCtrl().GetNextSiblingItem(item3);
 
-            if (item3 == 0) {
+            if (item3 == nullptr) {
                 return item2;
             }
 
@@ -568,16 +568,16 @@ HTREEITEM CDataTreeView::FindItemByName(HTREEITEM item, const char *name)
 
 HTREEITEM CDataTreeView::FindNextItem(HTREEITEM item, const char *name)
 {
-    HTREEITEM found = 0;
+    HTREEITEM found = nullptr;
 
-    for (HTREEITEM i = GetTreeCtrl().GetNextSiblingItem(item); i != 0; i = GetTreeCtrl().GetNextSiblingItem(i)) {
-        if (found != 0) {
+    for (HTREEITEM i = GetTreeCtrl().GetNextSiblingItem(item); i != nullptr; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        if (found != nullptr) {
             break;
         }
 
-        AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(i);
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
 
-        if (!m_restrictAnims || info != 0 && !lstrcmpi(info->m_heirarchyName, name)) {
+        if (!m_restrictAnims || info != nullptr && !lstrcmpi(info->m_hierarchyName, name)) {
             found = i;
         }
     }
@@ -587,15 +587,15 @@ HTREEITEM CDataTreeView::FindNextItem(HTREEITEM item, const char *name)
 
 HTREEITEM CDataTreeView::FindFirstItem(HTREEITEM item, const char *name)
 {
-    HTREEITEM found = 0;
-    for (HTREEITEM i = GetTreeCtrl().GetChildItem(item); i != 0; i = GetTreeCtrl().GetNextSiblingItem(i)) {
-        if (found != 0) {
+    HTREEITEM found = nullptr;
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(item); i != nullptr; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        if (found != nullptr) {
             break;
         }
 
-        AssetInfoClass *info = (AssetInfoClass *)GetTreeCtrl().GetItemData(i);
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
 
-        if (!m_restrictAnims || info != 0 && !lstrcmpi(info->m_heirarchyName, name)) {
+        if (!m_restrictAnims || info != nullptr && !lstrcmpi(info->m_hierarchyName, name)) {
             found = i;
         }
     }
@@ -607,10 +607,10 @@ void CDataTreeView::SelectNext()
 {
     HTREEITEM selected = GetTreeCtrl().GetSelectedItem();
 
-    if (selected != 0) {
+    if (selected != nullptr) {
         HTREEITEM next = GetTreeCtrl().GetNextSiblingItem(selected);
 
-        if (next != 0) {
+        if (next != nullptr) {
             GetTreeCtrl().SelectItem(next);
         }
     }
@@ -620,19 +620,19 @@ void CDataTreeView::SelectPrev()
 {
     HTREEITEM selected = GetTreeCtrl().GetSelectedItem();
 
-    if (selected != 0) {
+    if (selected != nullptr) {
         HTREEITEM prev = GetTreeCtrl().GetPrevSiblingItem(selected);
 
-        if (prev != 0) {
+        if (prev != nullptr) {
             GetTreeCtrl().SelectItem(prev);
         }
     }
 }
 
-void CDataTreeView::RestrictAnims(bool restrict)
+void CDataTreeView::RestrictAnims(bool enable)
 {
-    if (m_restrictAnims != restrict) {
-        m_restrictAnims = restrict;
+    if (m_restrictAnims != enable) {
+        m_restrictAnims = enable;
         GetTreeCtrl().DeleteItem(TVI_ROOT);
         AddCategories();
         AddRenderObjects();
@@ -645,7 +645,7 @@ void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
     // do later
 }
 
-void CDataTreeView::AddItem(const char *name, int category, bool select)
+void CDataTreeView::AddItem(const char *name, int type, bool select)
 {
     // do later
 }

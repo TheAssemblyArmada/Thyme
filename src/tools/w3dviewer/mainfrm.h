@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "w3dafx.h"
+#include "assettypes.h"
 #include "toolbar.h"
 
 class CMainFrame : public CFrameWnd
@@ -25,7 +26,7 @@ public:
     void UpdateStatusBar(unsigned int time);
     void UpdatePolyCount(int polys);
     void UpdateParticleCount(int particles);
-    void UpdateMenus(int type);
+    void UpdateMenus(AssetType type);
     void UpdateEmitterMenu();
     void UpdateCameraDistance(float distance);
     void UpdateFrameCount(int frame, int framecount, float fps);
@@ -188,7 +189,7 @@ public:
     CSplitterWnd m_splitter;
     CStatusBar m_statusBar;
     CToolBar m_toolBar;
-    int m_currentType;
+    AssetType m_currentType;
     CFancyToolbar m_objectToolbar;
     CFancyToolbar m_animationToolbar;
     BOOL m_animationToolbarVisible;

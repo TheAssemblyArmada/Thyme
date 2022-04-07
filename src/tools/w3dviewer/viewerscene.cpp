@@ -63,11 +63,12 @@ void ViewerSceneClass::Visibility_Check(CameraClass *camera)
 void ViewerSceneClass::Add_LOD_Object(RenderObjClass *obj)
 {
     if (obj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
-        AABoxClass box = obj->Get_Bounding_Box();
-        float f1 = box.m_extent.Y + box.m_extent.Y;
-        AABoxClass box2;
-        Get_Bounding_Box(&box2);
-        float f2 = box2.m_extent.Y + box.m_extent.Y;
+        AABoxClass lod_box;
+        obj->Get_Obj_Space_Bounding_Box(lod_box);
+        float f1 = lod_box.m_extent.Y + lod_box.m_extent.Y;
+        AABoxClass this_box;
+        Get_Bounding_Box(&this_box);
+        float f2 = this_box.m_extent.Y + this_box.m_extent.Y;
         float f3 = f1 * 1.3333334f;
         int count = 0;
         float f4 = f3 + f2;
@@ -90,7 +91,7 @@ void ViewerSceneClass::Add_LOD_Object(RenderObjClass *obj)
             Vector3 pos(0.0f, 0.0f, 0.0f);
             obj->Set_Position(pos);
         } else {
-            Vector3 pos(0.0f, f4 * 0.5f - box.m_extent.Y, 0.0f);
+            Vector3 pos(0.0f, f4 * 0.5f - lod_box.m_extent.Y, 0.0f);
             obj->Set_Position(pos);
         }
 
@@ -125,7 +126,7 @@ void ViewerSceneClass::Get_Bounding_Box(AABoxClass *box)
 
 void ViewerSceneClass::Get_Bounding_Sphere(SphereClass *sphere)
 {
-    SphereClass sphere2;
+    SphereClass sphere2(Vector3(0.0f, 0.0f, 0.0f), 0.0f);
     SceneIterator *i;
 
     for (i = Create_Iterator(false); !i->Is_Done(); i->Next()) {

@@ -7,7 +7,9 @@ target_compile_definitions(proxydll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
 target_exports(proxydll SYMBOLS 
     AVIStreamWrite=FakeAVIStreamWrite
     AVIFileInit=FakeAVIFileInit
+    AVIFileOpen=FakeAVIFileOpen
     AVIFileOpenA=FakeAVIFileOpenA
+    AVIFileReadData=FakeAVIFileReadData
     AVIFileRelease=FakeAVIFileRelease
     AVIFileExit=FakeAVIFileExit
     AVIFileCreateStreamA=FakeAVIFileCreateStreamA

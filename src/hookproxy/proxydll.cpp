@@ -32,7 +32,9 @@ void (*Setup_Hooks)();
  */
 FARPROC OriginalAVIStreamWrite;
 FARPROC OriginalAVIFileInit;
+FARPROC OriginalAVIFileOpen;
 FARPROC OriginalAVIFileOpenA;
+FARPROC OriginalAVIFileReadData;
 FARPROC OriginalAVIFileRelease;
 FARPROC OriginalAVIFileExit;
 FARPROC OriginalAVIFileCreateStreamA;
@@ -46,9 +48,17 @@ __declspec(naked) void FakeAVIFileInit()
 {
     _asm { jmp[OriginalAVIFileInit] }
 }
+__declspec(naked) void FakeAVIFileOpen()
+{
+    _asm { jmp[OriginalAVIFileOpen] }
+}
 __declspec(naked) void FakeAVIFileOpenA()
 {
     _asm { jmp[OriginalAVIFileOpenA] }
+}
+__declspec(naked) void FakeAVIFileReadData()
+{
+    _asm { jmp[OriginalAVIFileReadData] }
 }
 __declspec(naked) void FakeAVIFileRelease()
 {
@@ -147,7 +157,9 @@ void Load_Forwarded_Functions()
     } else {
         OriginalAVIStreamWrite = GetProcAddress(dll, "AVIStreamWrite");
         OriginalAVIFileInit = GetProcAddress(dll, "AVIFileInit");
+        OriginalAVIFileOpen = GetProcAddress(dll, "AVIFileOpen");
         OriginalAVIFileOpenA = GetProcAddress(dll, "AVIFileOpenA");
+        OriginalAVIFileReadData = GetProcAddress(dll, "AVIFileReadData");
         OriginalAVIFileRelease = GetProcAddress(dll, "AVIFileRelease");
         OriginalAVIFileExit = GetProcAddress(dll, "AVIFileExit");
         OriginalAVIFileCreateStreamA = GetProcAddress(dll, "AVIFileCreateStreamA");

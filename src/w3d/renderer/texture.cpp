@@ -270,10 +270,10 @@ TextureClass::TextureClass(SurfaceClass *surface, MipCountType mip_level_count) 
 
 TextureClass::TextureClass(w3dbasetexture_t d3d_texture) :
 #ifdef BUILD_WITH_D3D8
-    TextureBaseClass(0, 0, (MipCountType)d3d_texture->GetLevelCount(), POOL_DEFAULT, true, true),
+    TextureBaseClass(0, 0, (MipCountType)d3d_texture->GetLevelCount(), POOL_DEFAULT, false, true),
     m_textureFilter((MipCountType)d3d_texture->GetLevelCount())
 #else
-    TextureBaseClass(0, 0, MIP_LEVELS_ALL, POOL_DEFAULT, true, true), m_textureFilter(MIP_LEVELS_ALL)
+    TextureBaseClass(0, 0, MIP_LEVELS_ALL, POOL_DEFAULT, false, true), m_textureFilter(MIP_LEVELS_ALL)
 #endif
 {
     m_initialized = true;

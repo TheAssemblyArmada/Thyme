@@ -176,7 +176,7 @@ DX8IndexBufferClass::DX8IndexBufferClass(unsigned short index_count_, UsageType 
     int d3dusage = ((usage & USAGE_DYNAMIC) < 1 ? D3DUSAGE_WRITEONLY : D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY)
         | ((usage & USAGE_SOFTWAREPROCESSING) >= 1 ? D3DUSAGE_SOFTWAREPROCESSING : 0);
 
-    if (!DX8Wrapper::Get_Current_Caps()->Use_TnL()) {
+    if (!DX8Wrapper::Get_Current_Caps()->Use_Hardware_TnL()) {
         d3dusage |= D3DUSAGE_SOFTWAREPROCESSING;
     }
 

@@ -49,18 +49,19 @@ class DX8Caps
 public:
     DX8Caps(w3dhandle_t handle, const w3dcaps_t &caps, WW3DFormat format, const w3dadapterid_t &identifier);
     DX8Caps(w3dhandle_t handle, w3ddevice_t device, WW3DFormat format, const w3dadapterid_t &identifier);
+    ~DX8Caps() {}
 
     void Shutdown();
     void Init_Caps(w3ddevice_t device);
     void Compute_Caps(WW3DFormat format, const w3dadapterid_t &identifier);
     bool Is_Valid_Display_Format(int w, int h, WW3DFormat format);
 
-    bool Supports_Dot3_Blend() const { return m_supportDot3Blend; }
+    bool Supports_Dot3_Blend() const { return m_supportDot3; }
     bool Supports_DXTC() const { return m_supportDXTC; }
     bool Supports_ZBias() const { return m_supportZBias; }
     bool Supports_Texture_Format(WW3DFormat format) const { return m_supportTextureFormat[format]; }
     bool Supports_Render_To_Texture_Format(WW3DFormat format) const { return m_supportRenderToTextureFormat[format]; }
-    bool Use_TnL() const { return m_useTnL; }
+    bool Use_Hardware_TnL() const { return m_useHardwareTnL; }
     uint32_t Max_Textures_Per_Pass() const { return m_maxTexturesPerPass; }
     w3dcaps_t Get_DX8_Caps() const { return m_caps; }
     bool Support_Gamma() const { return m_supportGamma; }
@@ -123,7 +124,7 @@ private:
     int m_widthLimit;
     int m_heightLimit;
     w3dcaps_t m_caps;
-    bool m_useTnL;
+    bool m_useHardwareTnL;
     bool m_supportDXTC;
     bool m_supportGamma;
     bool m_supportNPatches;
@@ -135,7 +136,7 @@ private:
     bool m_supportZBias;
     bool m_supportAnisotropicFiltering;
     bool m_supportsModulateAlphaAddColor;
-    bool m_supportDot3Blend;
+    bool m_supportDot3;
     bool m_supportLargePointSize;
     bool m_supportsCubeMap;
     bool m_supportMultiTexture;
@@ -154,8 +155,8 @@ private:
     StringClass m_videoCardName;
 
 #ifdef GAME_DLL
-    static StringClass &s_videoCardDetails;
+    static StringClass &s_capsWorkStrings;
 #else
-    static StringClass s_videoCardDetails;
+    static StringClass s_capsWorkStrings;
 #endif
 };

@@ -34,7 +34,7 @@ public:
     HAnimClass *Get_Anim_Handle() const;
     float Get_Distance_Covered() const { return m_distanceCovered; }
     float Get_Frames_Per_Second() const { return m_framesPerSecond; }
-    float Is_Idle_Anim() const { return m_isIdleAnim; }
+    bool Is_Idle_Anim() const { return m_isIdleAnim; }
 
 private:
     Utf8String m_name;

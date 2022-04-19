@@ -238,7 +238,7 @@ FileFactoryClass *&g_theFileFactory = Make_Global<FileFactoryClass *>(PICK_ADDRE
 
 // dx8caps.cpp
 #include "dx8caps.h"
-StringClass &DX8Caps::s_videoCardDetails = Make_Global<StringClass>(PICK_ADDRESS(0x00A51ECC, 0x00DF0F90));
+StringClass &DX8Caps::s_capsWorkStrings = Make_Global<StringClass>(PICK_ADDRESS(0x00A51ECC, 0x00DF0F90));
 
 // multilist.cpp
 #include "multilist.h"

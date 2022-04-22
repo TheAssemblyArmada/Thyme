@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D Viewer
+ * @brief W3D View view
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -12,9 +12,18 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
-#include "w3dviewer.h"
+#pragma once
+#include "w3dafx.h"
 
-int __stdcall WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+class CW3DViewView : public CView
 {
-    return 0;
-}
+public:
+    virtual ~CW3DViewView() override {}
+    virtual BOOL PreCreateWindow(CREATESTRUCT &cs) override;
+    virtual void OnDraw(CDC *pDC) override {}
+
+protected:
+    CW3DViewView() {}
+    DECLARE_DYNCREATE(CW3DViewView)
+    DECLARE_MESSAGE_MAP()
+};

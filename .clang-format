@@ -49,7 +49,7 @@ DisableFormat: false
 ExperimentalAutoDetectBinPacking: false
 ForEachMacros:   [ foreach, Q_FOREACH, BOOST_FOREACH ]
 IncludeCategories:
-  - Regex:           'always.h'
+  - Regex:           'always.h|w3dafx.h'
     Priority:        -1
   - Regex:           '^<'
     Priority:        2

@@ -290,7 +290,7 @@ bool Drawable::Get_Should_Animate(bool when_powered) const
         return false;
     }
 
-    if (when_powered || object->Get_Disabled_State(DISABLED_TYPE_DISABLED_UNDERPOWERED)) {
+    if (when_powered && object->Get_Disabled_State(DISABLED_TYPE_DISABLED_UNDERPOWERED)) {
         return false;
     }
 

@@ -14,6 +14,8 @@
  */
 #include "w3dview.h"
 #include "assetmgr.h"
+#include "colorbar.h"
+#include "colorpicker.h"
 #include "gamemath.h"
 #include "mainfrm.h"
 #include "resource.h"
@@ -24,9 +26,8 @@ CW3DViewApp theApp;
 
 BOOL CW3DViewApp::InitInstance()
 {
-    // do later
-    // ColorPickerClass::RegisterWndClass(AfxGetInstanceHandle());
-    // ColorBarClass::RegisterWndClass(AfxGetInstanceHandle());
+    ColorPickerClass::RegisterWndClass(AfxGetInstanceHandle());
+    ColorBarClass::RegisterWndClass(AfxGetInstanceHandle());
     GameMath::Init();
     CWinApp::SetRegistryKey("Westwood Studios");
     CWinApp::LoadStdProfileSettings(9);

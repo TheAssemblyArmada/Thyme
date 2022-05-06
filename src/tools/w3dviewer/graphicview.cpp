@@ -142,7 +142,7 @@ int CGraphicView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CGraphicView::OnSize(UINT nType, int cx, int cy)
 {
-    CWnd::Default();
+    CView::OnSize(nType, cx, cy);
 
     if (m_isInitialized) {
         int width;
@@ -192,7 +192,7 @@ void CGraphicView::OnLButtonDown(UINT nFlags, CPoint point)
         SetCursor(LoadCursor(AfxGetResourceHandle(), MAKEINTRESOURCE(IDC_MOVE)));
     }
 
-    CWnd::Default();
+    CView::OnLButtonDown(nFlags, point);
 }
 
 void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
@@ -209,7 +209,7 @@ void CGraphicView::OnLButtonUp(UINT nFlags, CPoint point)
         SetCursor(LoadCursor(nullptr, IDC_ARROW));
     }
 
-    CWnd::Default();
+    CView::OnLButtonUp(nFlags, point);
 }
 
 void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
@@ -249,7 +249,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
         Pos += m * v;
         m_camera->Set_Transform(tm);
         m_mousePos = point;
-        CWnd::Default();
+        CView::OnMouseMove(nFlags, point);
         return;
     }
 
@@ -288,7 +288,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
             }
 
             m_mousePos = point;
-            CWnd::Default();
+            CView::OnMouseMove(nFlags, point);
             return;
         }
 
@@ -314,7 +314,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
             }
 
             m_mousePos = point;
-            CWnd::Default();
+            CView::OnMouseMove(nFlags, point);
             return;
         }
     }
@@ -322,7 +322,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
     if (m_leftButtonDown) {
         if (!m_isInitialized || document->m_scene == nullptr || document->m_model == nullptr) {
             m_mousePos = point;
-            CWnd::Default();
+            CView::OnMouseMove(nFlags, point);
             return;
         }
 
@@ -372,7 +372,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
         document->m_docCamera->Set_Transform(tm3);
         document->m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
         m_mousePos = point;
-        CWnd::Default();
+        CView::OnMouseMove(nFlags, point);
         return;
     }
 
@@ -418,7 +418,7 @@ void CGraphicView::OnMouseMove(UINT nFlags, CPoint point)
         m_mousePos = point;
     }
 
-    CWnd::Default();
+    CView::OnMouseMove(nFlags, point);
 }
 
 void CGraphicView::OnRButtonUp(UINT nFlags, CPoint point)
@@ -429,7 +429,7 @@ void CGraphicView::OnRButtonUp(UINT nFlags, CPoint point)
         SetCursor(LoadCursor(nullptr, IDC_ARROW));
     }
 
-    CWnd::Default();
+    CView::OnLButtonUp(nFlags, point);
 }
 
 void CGraphicView::OnRButtonDown(UINT nFlags, CPoint point)
@@ -444,12 +444,12 @@ void CGraphicView::OnRButtonDown(UINT nFlags, CPoint point)
         SetCursor(LoadCursor(AfxGetResourceHandle(), MAKEINTRESOURCE(IDC_ZOOM)));
     }
 
-    CWnd::Default();
+    CView::OnRButtonDown(nFlags, point);
 }
 
 void CGraphicView::OnGetMinMaxInfo(MINMAXINFO FAR *lpMMI)
 {
-    CWnd::Default();
+    CView::OnGetMinMaxInfo(lpMMI);
 }
 
 static void CALLBACK TimerProc(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)

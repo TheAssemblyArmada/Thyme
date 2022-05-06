@@ -220,7 +220,7 @@ void CFancyToolbar::OnLButtonUp(UINT nFlags, CPoint pt)
 
         ReleaseCapture();
     } else {
-        CWnd::Default();
+        CControlBar::OnLButtonUp(nFlags, pt);
     }
 }
 

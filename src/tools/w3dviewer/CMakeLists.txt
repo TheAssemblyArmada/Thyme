@@ -8,11 +8,29 @@ target_sources(w3dview PRIVATE
     colorutils.cpp
     datatreeview.cpp
     deviceselectiondialog.cpp
+    emittercolorproppage.cpp
+    emitterframeproppage.cpp
+    emittergeneralproppage.cpp
+    emitterinstancelist.cpp
+    emitterlinegroupproppage.cpp
+    emitterlineproppage.cpp
+    emitterparticleproppage.cpp
+    emitterphysicsproppage.cpp
+    emitterpropertysheet.cpp
+    emitterrotationproppage.cpp
+    emittersizeproppage.cpp
+    emitteruserproppage.cpp
     graphicview.cpp
     mainfrm.cpp
+    opacitysettingsdialog.cpp
+    particleblurtimekeydialog.cpp
+    particleframekeydialog.cpp
+    particlerotationkeydialog.cpp
+    particlesizedialog.cpp
     toolbar.cpp
     utils.cpp
     viewerscene.cpp
+    volumerandomdialog.cpp
     w3dview.cpp
     w3dviewdoc.cpp
     w3dviewview.cpp

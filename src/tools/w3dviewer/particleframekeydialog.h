@@ -18,7 +18,7 @@
 class ParticleFrameKeyDialog : public CDialog
 {
 public:
-    ParticleFrameKeyDialog();
+    ParticleFrameKeyDialog(float frame, CWnd *pParentWnd);
     virtual ~ParticleFrameKeyDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;

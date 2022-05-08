@@ -104,3 +104,67 @@ CW3DViewDoc *GetCurrentDocument()
 
     return nullptr;
 }
+
+void SetDlgItemFloat(HWND hDlg, int nIDDlgItem, float f)
+{
+    CString str;
+    str.Format("%.2f", f);
+    SetDlgItemText(hDlg, nIDDlgItem, str);
+}
+
+float GetDlgItemFloat(HWND hDlg, int nIDDlgItem)
+{
+    char str[20];
+    GetDlgItemText(hDlg, nIDDlgItem, str, sizeof(str));
+    return atof(str);
+}
+
+void InitializeSpinButton(CSpinButtonCtrl *spin, float value, float min, float max)
+{
+    spin->SetRange32(min * 100.0f, max * 100.0f);
+    spin->SetPos(value * 100.0f);
+    CWnd *wnd = spin->GetBuddy();
+
+    if (wnd != nullptr) {
+        SetWindowFloat(wnd->m_hWnd, value);
+    }
+}
+
+void UpdateEditCtrl(HWND hwnd, int delta)
+{
+    if ((GetWindowLong(hwnd, GWL_STYLE) & UDS_SETBUDDYINT) == 0) {
+        HWND edit = reinterpret_cast<HWND>(SendMessage(hwnd, UDM_GETBUDDY, 0, 0));
+
+        if (IsWindow(edit)) {
+            char str[20];
+            GetWindowText(edit, str, sizeof(str));
+            int min = 0;
+            int max = 0;
+            float f = atof(str) + delta * 0.01f;
+            SendMessage(hwnd, UDM_GETRANGE32, reinterpret_cast<WPARAM>(&min), reinterpret_cast<LPARAM>(&max));
+
+            f = std::clamp(f, min * 0.01f, max * 0.01f);
+            SetWindowFloat(edit, f);
+        }
+    }
+}
+
+void DisableWindows(HWND window, bool disable)
+{
+    char name[64];
+
+    for (HWND h = GetWindow(window, GW_CHILD); h != nullptr; h = GetWindow(h, GW_HWNDNEXT)) {
+        GetClassName(h, name, sizeof(name));
+
+        if (strcmpi(name, "STATIC") != 0) {
+            EnableWindow(h, disable);
+        }
+    }
+}
+
+void SetWindowFloat(HWND hWnd, float f)
+{
+    CString str;
+    str.Format("%.3f", f);
+    SetWindowText(hWnd, str);
+}

@@ -18,7 +18,7 @@
 class ParticleBlurTimeKeyDialog : public CDialog
 {
 public:
-    ParticleBlurTimeKeyDialog();
+    ParticleBlurTimeKeyDialog(float blurtime, CWnd *pParentWnd);
     virtual ~ParticleBlurTimeKeyDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;

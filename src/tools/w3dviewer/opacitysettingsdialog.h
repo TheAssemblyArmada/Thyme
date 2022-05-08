@@ -20,7 +20,7 @@ class ColorBarClass;
 class OpacitySettingsDialog : public CDialog
 {
 public:
-    OpacitySettingsDialog();
+    OpacitySettingsDialog(float opacity, CWnd *pParentWnd);
     virtual ~OpacitySettingsDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override {}
     virtual BOOL OnInitDialog() override;

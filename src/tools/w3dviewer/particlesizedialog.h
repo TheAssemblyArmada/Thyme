@@ -18,7 +18,7 @@
 class ParticleSizeDialog : public CDialog
 {
 public:
-    ParticleSizeDialog();
+    ParticleSizeDialog(float size, CWnd *pParentWnd);
     virtual ~ParticleSizeDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;

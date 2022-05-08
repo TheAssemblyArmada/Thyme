@@ -18,7 +18,7 @@
 class ParticleRotationKeyDialog : public CDialog
 {
 public:
-    ParticleRotationKeyDialog();
+    ParticleRotationKeyDialog(float rotation, CWnd *pParentWnd);
     virtual ~ParticleRotationKeyDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;

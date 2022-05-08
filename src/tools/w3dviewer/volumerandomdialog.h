@@ -20,7 +20,7 @@ class Vector3Randomizer;
 class VolumeRandomDialog : public CDialog
 {
 public:
-    VolumeRandomDialog();
+    VolumeRandomDialog(Vector3Randomizer *randomizer, CWnd *pParentWnd);
     virtual ~VolumeRandomDialog() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -39,8 +39,8 @@ private:
     CSpinButtonCtrl m_radiusSpin;
     CSpinButtonCtrl m_cylRadiusSpin;
     CSpinButtonCtrl m_cylHeightSpin;
-    CSpinButtonCtrl m_boxZspin;
-    CSpinButtonCtrl n_boxYspin;
-    CSpinButtonCtrl m_boxXspin;
+    CSpinButtonCtrl m_boxZSpin;
+    CSpinButtonCtrl m_boxYSpin;
+    CSpinButtonCtrl m_boxXSpin;
     Vector3Randomizer *m_randomizer;
 };

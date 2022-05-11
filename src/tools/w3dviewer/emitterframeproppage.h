@@ -37,6 +37,7 @@ private:
     DECLARE_MESSAGE_MAP()
 
     void Initialize();
+    void UpdateFrame();
 
     CComboBox m_textureGrid;
     CSpinButtonCtrl m_frameSpin;
@@ -45,6 +46,6 @@ private:
     ColorBarClass *m_frameBar;
     ParticlePropertyStruct<float> m_frameKeyFrames;
     float m_lifetime;
-    float m_frame2;
-    float m_frame1;
+    float m_minFrame;
+    float m_maxFrame;
 };

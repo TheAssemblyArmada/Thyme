@@ -25,6 +25,8 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
+    float GetFrame() { return m_frame; }
+
 private:
     DECLARE_MESSAGE_MAP();
 

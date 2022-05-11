@@ -912,7 +912,7 @@ void CW3DViewDoc::CaptureMovie()
     // do later
 }
 
-void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj)
+void CW3DViewDoc::AddEmittersToList(EmitterInstanceList *list, const char *name, RenderObjClass *robj)
 {
     // do later
 }

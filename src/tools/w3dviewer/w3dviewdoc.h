@@ -21,7 +21,7 @@ class Bitmap2D;
 class CDataTreeView;
 class CGraphicView;
 class CameraClass;
-class EditorParticleEmitterDefClass;
+class EmitterInstanceList;
 class HAnimClass;
 class HLodClass;
 class HTreeClass;
@@ -69,7 +69,7 @@ public:
     void CreateHLodPrototype(HLodClass &lod);
     void AnimateCamera(bool animate);
     void CaptureMovie();
-    void AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj);
+    void AddEmittersToDef(EmitterInstanceList *list, const char *name, RenderObjClass *robj);
     int GetNumParticles(RenderObjClass *robj);
     void UpdateParticleCount();
     void SetLODLevel(int lod, RenderObjClass *robj);

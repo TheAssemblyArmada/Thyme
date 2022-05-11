@@ -22,7 +22,7 @@ public:
     virtual ~EmitterInstanceList() override;
     virtual void Set_Velocity(const Vector3 &value) override;
     virtual void Set_Acceleration(const Vector3 &value) override;
-    virtual void Set_Burst_Size(unsigned int count) override;
+    virtual void Set_Burst_Size(unsigned int size) override;
     virtual void Set_Outward_Vel(float value) override;
     virtual void Set_Vel_Inherit(float value) override;
     virtual void Set_Velocity_Random(Vector3Randomizer *randomizer) override;

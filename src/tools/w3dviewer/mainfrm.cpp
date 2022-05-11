@@ -223,9 +223,9 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 
         if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
             // do later
-            // EditorParticleEmitterDefClas *def = new EditorParticleEmitterDefClass();
-            // GetCurrentDocument()->AddEmittersToDef(def, reinterpret_cast<const char *>(&info.hbmpItem), nullptr);
-            // EmitterPropertySheetClass sheet(def, IDS_EMITTERPROPERTIES, this);
+            // EmitterInstanceList *list = new EmitterInstanceList();
+            // GetCurrentDocument()->AddEmittersToList(list, reinterpret_cast<const char *>(&info.hbmpItem), nullptr);
+            // EmitterPropertySheetClass sheet(list, IDS_EMITTERPROPERTIES, this);
             // sheet.DoModal();
         }
     }

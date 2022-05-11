@@ -216,7 +216,7 @@ protected:
     virtual void Normalize_Filename();
     virtual void Free_Props();
 
-private:
+protected:
     char *m_pName;
     char *m_pUserString;
     int m_iUserType;

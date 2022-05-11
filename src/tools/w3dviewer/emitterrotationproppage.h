@@ -44,7 +44,7 @@ private:
     ColorBarClass *m_rotationBar;
     ParticlePropertyStruct<float> m_rotationKeyFrames;
     float m_lifetime;
-    float m_rotation2;
-    float m_rotation1;
+    float m_minRotation;
+    float m_maxRotation;
     float m_initialOrientation;
 };

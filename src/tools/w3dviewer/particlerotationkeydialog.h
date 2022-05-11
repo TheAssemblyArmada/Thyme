@@ -25,6 +25,8 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
+    float GetRotation() { return m_rotation; }
+
 private:
     DECLARE_MESSAGE_MAP();
 

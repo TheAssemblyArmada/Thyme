@@ -79,6 +79,7 @@ public:
     void EnableRedraw(bool redraw);
 
     int GetSliderPos() { return m_sliderPos; }
+    int GetKeyCount() { return m_keyCount; }
 
 private:
     DECLARE_MESSAGE_MAP()

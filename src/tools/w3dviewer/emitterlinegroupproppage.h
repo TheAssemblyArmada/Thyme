@@ -43,6 +43,6 @@ private:
     ColorBarClass *m_blurTimeBar;
     ParticlePropertyStruct<float> m_blurTimeKeyFrames;
     float m_lifetime;
-    float m_blurTime2;
-    float m_blurTime1;
+    float m_minBlurTime;
+    float m_maxBlurTime;
 };

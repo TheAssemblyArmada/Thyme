@@ -19,9 +19,10 @@ class EmitterInstanceList;
 class EmitterUserPropPageClass : public CPropertyPage
 {
 public:
-    virtual ~EmitterUserPropPageClass() override;
+    virtual ~EmitterUserPropPageClass() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnInitDialog() override;
+    virtual BOOL OnApply() override;
 
 private:
     EmitterUserPropPageClass();

@@ -27,6 +27,7 @@ target_sources(w3dview PRIVATE
     particleframekeydialog.cpp
     particlerotationkeydialog.cpp
     particlesizedialog.cpp
+    restrictedfiledialog.cpp
     toolbar.cpp
     utils.cpp
     viewerscene.cpp

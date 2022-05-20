@@ -60,7 +60,8 @@ public:
     void RemoveRenderObject(RenderObjClass *robj);
     bool ExportPrimitive();
     bool ExportEmitter();
-    bool SavePrototype(const char *name);
+    bool SaveEmitter(const char *name);
+    bool SaveAggregate(const char *name);
     bool ExportSound();
     bool SaveSound(const char *name);
     void AutoAssignBone();

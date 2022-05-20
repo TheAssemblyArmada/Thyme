@@ -787,12 +787,22 @@ void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
     }
 }
 
-#if 0
 const char *CDataTreeView::GetSelectedItemName()
 {
-    // do later
+    HTREEITEM item = GetTreeCtrl().GetSelectedItem();
+
+    if (item != nullptr) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
+
+        if (info != nullptr) {
+            return info->m_name;
+        }
+    }
+
+    return nullptr;
 }
 
+#if 0
 int CDataTreeView::GetSelectedItemType()
 {
     // do later

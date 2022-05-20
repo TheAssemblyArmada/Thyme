@@ -28,13 +28,13 @@
 class EmitterPropertySheetClass : public CPropertySheet
 {
 public:
-    EmitterPropertySheetClass(EmitterInstanceList *list = nullptr, UINT uID = 0, CWnd *pParentWnd = nullptr);
+    EmitterPropertySheetClass(EmitterInstanceList *list, UINT uID, CWnd *pParentWnd);
     virtual ~EmitterPropertySheetClass() override;
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
     void UpdateRenderingMode(int mode);
 
 private:
-    DECLARE_DYNCREATE(EmitterPropertySheetClass)
+    DECLARE_DYNAMIC(EmitterPropertySheetClass)
     DECLARE_MESSAGE_MAP()
 
     void UpdateEmitter();

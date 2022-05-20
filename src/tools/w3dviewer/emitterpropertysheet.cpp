@@ -20,7 +20,7 @@
 #include "utils.h"
 #include "w3dviewdoc.h"
 
-IMPLEMENT_DYNCREATE(EmitterPropertySheetClass, CPropertySheet)
+IMPLEMENT_DYNAMIC(EmitterPropertySheetClass, CPropertySheet)
 
 // clang-format off
 BEGIN_MESSAGE_MAP(EmitterPropertySheetClass, CPropertySheet)

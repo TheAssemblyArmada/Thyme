@@ -13,14 +13,13 @@
  *            LICENSE
  */
 #include "w3dafx.h"
-#include "seglinerenderer.h"
 
 class EmitterInstanceList;
 
 class EmitterLinePropPageClass : public CPropertyPage
 {
 public:
-    virtual ~EmitterLinePropPageClass() override;
+    virtual ~EmitterLinePropPageClass() override {}
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
     virtual void DoDataExchange(CDataExchange *pDX) override;
@@ -43,7 +42,7 @@ private:
     CSpinButtonCtrl m_subdivisionSpin;
     EmitterInstanceList *m_instanceList;
     bool m_isValid;
-    SegLineRendererClass::TextureMapMode m_textureMappingMode;
+    int m_textureMappingMode;
     bool m_mergeIntersections;
     bool m_endCaps;
     bool m_disableSorting;

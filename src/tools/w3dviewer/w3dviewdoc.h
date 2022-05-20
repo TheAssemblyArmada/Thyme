@@ -69,7 +69,7 @@ public:
     void CreateHLodPrototype(HLodClass &lod);
     void AnimateCamera(bool animate);
     void CaptureMovie();
-    void AddEmittersToDef(EmitterInstanceList *list, const char *name, RenderObjClass *robj);
+    void AddEmittersToList(EmitterInstanceList *list, const char *name, RenderObjClass *robj);
     int GetNumParticles(RenderObjClass *robj);
     void UpdateParticleCount();
     void SetLODLevel(int lod, RenderObjClass *robj);

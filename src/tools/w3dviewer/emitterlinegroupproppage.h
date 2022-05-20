@@ -21,20 +21,23 @@ class ColorBarClass;
 class EmitterLineGroupPropPageClass : public CPropertyPage
 {
 public:
+    EmitterLineGroupPropPageClass();
     virtual ~EmitterLineGroupPropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnInitDialog() override;
 
+    void Initialize();
     void UpdateLifetime(float lifetime);
 
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterLineGroupPropPageClass();
     DECLARE_DYNCREATE(EmitterLineGroupPropPageClass)
     DECLARE_MESSAGE_MAP()
 
-    void Initialize();
     void UpdateBlurTime();
 
     CSpinButtonCtrl m_blurTimeSpin;

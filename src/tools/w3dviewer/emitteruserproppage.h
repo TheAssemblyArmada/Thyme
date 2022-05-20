@@ -19,20 +19,23 @@ class EmitterInstanceList;
 class EmitterUserPropPageClass : public CPropertyPage
 {
 public:
+    EmitterUserPropPageClass();
     virtual ~EmitterUserPropPageClass() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
+
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterUserPropPageClass();
     DECLARE_DYNCREATE(EmitterUserPropPageClass)
     DECLARE_MESSAGE_MAP()
 
     afx_msg void OnUserStringChanged();
     afx_msg void OnUser();
-
-    void Initialize();
 
     CComboBox m_userCombo;
     EmitterInstanceList *m_instanceList;

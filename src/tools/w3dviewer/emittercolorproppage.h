@@ -22,6 +22,7 @@ class ColorBarClass;
 class EmitterColorPropPageClass : public CPropertyPage
 {
 public:
+    EmitterColorPropPageClass();
     virtual ~EmitterColorPropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -30,17 +31,19 @@ public:
     virtual void OnCancel() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
     void UpdateLifetime(float lifetime);
 
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterColorPropPageClass();
     DECLARE_DYNCREATE(EmitterColorPropPageClass)
     DECLARE_MESSAGE_MAP()
 
     afx_msg void OnDestroy();
     afx_msg void OnDeltaPos(NMHDR *pNMHDR, LRESULT *pResult);
 
-    void Initialize();
     void UpdateOpacity();
     void UpdateColor();
 

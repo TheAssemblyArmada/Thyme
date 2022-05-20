@@ -28,12 +28,12 @@
 class EmitterPropertySheetClass : public CPropertySheet
 {
 public:
+    EmitterPropertySheetClass(EmitterInstanceList *list = nullptr, UINT uID = 0, CWnd *pParentWnd = nullptr);
     virtual ~EmitterPropertySheetClass() override;
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
     void UpdateRenderingMode(int mode);
 
 private:
-    EmitterPropertySheetClass();
     DECLARE_DYNCREATE(EmitterPropertySheetClass)
     DECLARE_MESSAGE_MAP()
 

@@ -20,6 +20,7 @@ class Vector3Randomizer;
 class EmitterParticlePropPageClass : public CPropertyPage
 {
 public:
+    EmitterParticlePropPageClass();
     virtual ~EmitterParticlePropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -28,15 +29,17 @@ public:
     virtual BOOL OnApply() override;
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
 
+    void Initialize();
+
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterParticlePropPageClass();
     DECLARE_DYNCREATE(EmitterParticlePropPageClass)
     DECLARE_MESSAGE_MAP()
 
     afx_msg void OnSpecify();
     afx_msg void OnMaxParticles();
-
-    void Initialize();
 
     CSpinButtonCtrl m_particlesSpin;
     CSpinButtonCtrl m_rateSpin;

@@ -22,6 +22,7 @@ class ColorBarClass;
 class EmitterFramePropPageClass : public CPropertyPage
 {
 public:
+    EmitterFramePropPageClass();
     virtual ~EmitterFramePropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -29,14 +30,16 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
     void UpdateLifetime(float lifetime);
 
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterFramePropPageClass();
     DECLARE_DYNCREATE(EmitterFramePropPageClass)
     DECLARE_MESSAGE_MAP()
 
-    void Initialize();
     void UpdateFrame();
 
     CComboBox m_textureGrid;

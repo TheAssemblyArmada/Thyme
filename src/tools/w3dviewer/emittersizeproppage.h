@@ -21,6 +21,7 @@ class ColorBarClass;
 class EmitterSizePropPageClass : public CPropertyPage
 {
 public:
+    EmitterSizePropPageClass();
     virtual ~EmitterSizePropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -28,14 +29,16 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
     void UpdateLifetime(float lifetime);
 
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterSizePropPageClass();
     DECLARE_DYNCREATE(EmitterSizePropPageClass)
     DECLARE_MESSAGE_MAP()
 
-    void Initialize();
     void UpdateSize();
 
     CSpinButtonCtrl m_randomizerSpin;

@@ -17,6 +17,7 @@
 #include "bmp2d.h"
 #include "camera.h"
 #include "datatreeview.h"
+#include "emitterinstancelist.h"
 #include "ffactory.h"
 #include "graphicview.h"
 #include "hanim.h"
@@ -836,6 +837,28 @@ void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
     }
 }
 
+void CW3DViewDoc::AddEmittersToList(EmitterInstanceList *list, const char *name, RenderObjClass *robj)
+{
+    if (robj == nullptr) {
+        robj = m_model;
+    }
+
+    for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+        RenderObjClass *o = robj->Get_Sub_Object(i);
+
+        if (o != nullptr) {
+            AddEmittersToList(list, name, o);
+            o->Release_Ref();
+        }
+    }
+
+    if (robj != nullptr && robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
+        if (lstrcmpi(name, robj->Get_Name()) == 0) {
+            list->Add_Emitter(static_cast<ParticleEmitterClass *>(robj));
+        }
+    }
+}
+
 #if 0
 void CW3DViewDoc::GenerateLOD(const char *name, int type)
 {
@@ -908,11 +931,6 @@ void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
 }
 
 void CW3DViewDoc::CaptureMovie()
-{
-    // do later
-}
-
-void CW3DViewDoc::AddEmittersToList(EmitterInstanceList *list, const char *name, RenderObjClass *robj)
 {
     // do later
 }

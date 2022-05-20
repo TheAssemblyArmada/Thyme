@@ -23,6 +23,7 @@ class EmitterPropertySheetClass;
 class EmitterGeneralPropPageClass : public CPropertyPage
 {
 public:
+    EmitterGeneralPropPageClass();
     virtual ~EmitterGeneralPropPageClass() override {}
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -30,8 +31,14 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
+
+    bool IsValid() { return m_isValid; }
+    float GetLifetime() { return m_lifetime; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+    void SetPropertySheet(EmitterPropertySheetClass *sheet) { m_sheet = sheet; }
+
 private:
-    EmitterGeneralPropPageClass();
     DECLARE_DYNCREATE(EmitterGeneralPropPageClass)
     DECLARE_MESSAGE_MAP()
 
@@ -42,7 +49,6 @@ private:
     afx_msg void OnShaderChanged();
     afx_msg void OnLifetime();
 
-    void Initialize();
     void AddShader(ShaderClass *shader, const char *name);
 
     CComboBox m_renderMode;

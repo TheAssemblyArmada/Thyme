@@ -19,6 +19,7 @@ class EmitterInstanceList;
 class EmitterLinePropPageClass : public CPropertyPage
 {
 public:
+    EmitterLinePropPageClass();
     virtual ~EmitterLinePropPageClass() override {}
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -26,12 +27,14 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
+
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterLinePropPageClass();
     DECLARE_DYNCREATE(EmitterLinePropPageClass)
     DECLARE_MESSAGE_MAP()
-
-    void Initialize();
 
     CComboBox m_mapping;
     CSpinButtonCtrl m_mergeAbortSpin;

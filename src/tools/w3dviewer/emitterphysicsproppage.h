@@ -21,6 +21,7 @@ class Vector3Randomizer;
 class EmitterPhysicsPropPageClass : public CPropertyPage
 {
 public:
+    EmitterPhysicsPropPageClass();
     virtual ~EmitterPhysicsPropPageClass() override;
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
@@ -28,14 +29,17 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual BOOL OnApply() override;
 
+    void Initialize();
+
+    bool IsValid() { return m_isValid; }
+    void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
+
 private:
-    EmitterPhysicsPropPageClass();
     DECLARE_DYNCREATE(EmitterPhysicsPropPageClass)
     DECLARE_MESSAGE_MAP()
 
     afx_msg void OnRandomizer();
 
-    void Initialize();
     void OnUpdateEditCtrl(int id);
 
     CSpinButtonCtrl m_outwardSpin;

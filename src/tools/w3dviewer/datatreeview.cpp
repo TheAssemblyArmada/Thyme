@@ -639,17 +639,155 @@ void CDataTreeView::RestrictAnims(bool enable)
     }
 }
 
-#if 0
+void CDataTreeView::RenameItem(const char *oldname, const char *newname, AssetType type)
+{
+    if (newname != nullptr && oldname != nullptr) {
+        SetRedraw(false);
+        HTREEITEM item;
+
+        switch (type) {
+            case ASSET_TYPE_MESH:
+                item = this->m_categoryTreeItems[CATEGORY_MESH];
+                break;
+            case ASSET_TYPE_AGGREGATE:
+                item = this->m_categoryTreeItems[CATEGORY_AGGREGATE];
+                break;
+            case ASSET_TYPE_HLOD:
+                item = this->m_categoryTreeItems[CATEGORY_HLOD];
+                break;
+            case ASSET_TYPE_PARTICLEEMITTER:
+                item = this->m_categoryTreeItems[CATEGORY_EMITTER];
+                break;
+            case ASSET_TYPE_PRIMITIVE:
+                item = this->m_categoryTreeItems[CATEGORY_PRIMITIVES];
+                break;
+            case ASSET_TYPE_SOUND:
+                item = this->m_categoryTreeItems[CATEGORY_SOUNDS];
+                break;
+            default:
+                break;
+        }
+
+        HTREEITEM newitem = FindItemByName(item, oldname);
+
+        if (newitem != nullptr) {
+            GetTreeCtrl().SetItem(newitem, TVIF_TEXT, newname, 0, 0, 0, 0, 0);
+            AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
+
+            if (info != nullptr) {
+                info->m_name = newname;
+            }
+        } else {
+            AddItem(newname, type, true);
+        }
+
+        SetRedraw();
+        InvalidateRect(nullptr, FALSE);
+        UpdateWindow();
+    }
+}
+
+void CDataTreeView::AddItem(const char *name, AssetType type, bool select)
+{
+    if (name != nullptr) {
+        SetRedraw(false);
+        HTREEITEM item = nullptr;
+        int image = 0;
+
+        switch (type) {
+            case ASSET_TYPE_MESH:
+                item = this->m_categoryTreeItems[CATEGORY_MESH];
+                image = this->m_imageListIDs[ICON_MESH];
+                break;
+            case ASSET_TYPE_AGGREGATE:
+                item = this->m_categoryTreeItems[CATEGORY_AGGREGATE];
+                image = this->m_imageListIDs[ICON_AGGREGATE];
+            case ASSET_TYPE_HLOD:
+                item = this->m_categoryTreeItems[CATEGORY_HLOD];
+                image = this->m_imageListIDs[ICON_HLOD];
+                break;
+            case ASSET_TYPE_PARTICLEEMITTER:
+                item = this->m_categoryTreeItems[CATEGORY_EMITTER];
+                image = this->m_imageListIDs[ICON_EMITTER];
+                break;
+            case ASSET_TYPE_PRIMITIVE:
+                item = this->m_categoryTreeItems[CATEGORY_PRIMITIVES];
+                image = this->m_imageListIDs[ICON_PRIMITIVE];
+                break;
+            case ASSET_TYPE_SOUND:
+                item = this->m_categoryTreeItems[CATEGORY_SOUNDS];
+                image = this->m_imageListIDs[ICON_SOUND];
+                break;
+            default:
+                break;
+        }
+
+        HTREEITEM newitem = nullptr;
+
+        for (HTREEITEM i = GetTreeCtrl().GetChildItem(item); i != nullptr; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+            if (newitem) {
+                break;
+            }
+
+            if (lstrcmp(GetTreeCtrl().GetItemText(i), name) == 0) {
+                newitem = i;
+            }
+        }
+
+        if (newitem == nullptr) {
+            newitem = GetTreeCtrl().InsertItem(
+                TVIF_SELECTEDIMAGE | TVIF_IMAGE | TVIF_TEXT, name, image, image, 0, 0, 0, item, TVI_SORT);
+            AssetInfoClass *info = new AssetInfoClass(name, type, nullptr, nullptr);
+            GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, reinterpret_cast<LPARAM>(info));
+
+            if (info->m_hierarchyName.GetLength()) {
+                AddAnimationsForItem(item);
+            }
+        }
+
+        if (select) {
+            GetTreeCtrl().Select(newitem, TVGN_CARET);
+            GetTreeCtrl().EnsureVisible(newitem);
+        }
+
+        SetRedraw();
+        InvalidateRect(nullptr, FALSE);
+        UpdateWindow();
+    }
+}
+
 void CDataTreeView::AddAnimationsForItem(HTREEITEM item)
 {
-    // do later
+    AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
+    AssetIterator *iterator = W3DAssetManager::Get_Instance()->Create_HAnim_Iterator();
+
+    if (iterator != nullptr) {
+        for (iterator->First(); !iterator->Is_Done(); iterator->Next()) {
+            const char *name = iterator->Current_Item_Name();
+            HAnimClass *anim = W3DAssetManager::Get_Instance()->Get_HAnim(name);
+
+            if (anim != nullptr) {
+                if (lstrcmp(info->m_hierarchyName, anim->Get_HName()) == 0 && !FindItemByName(item, name)) {
+                    HTREEITEM newitem = GetTreeCtrl().InsertItem(TVIF_SELECTEDIMAGE | TVIF_IMAGE | TVIF_TEXT,
+                        name,
+                        m_imageListIDs[0],
+                        m_imageListIDs[0],
+                        0,
+                        0,
+                        0,
+                        item,
+                        TVI_SORT);
+                    AssetInfoClass *info = new AssetInfoClass(name, ASSET_TYPE_ANIMATION, nullptr, nullptr);
+                    GetTreeCtrl().SetItem(newitem, TVIF_PARAM, 0, 0, 0, 0, 0, reinterpret_cast<LPARAM>(info));
+                }
+
+                anim->Release_Ref();
+            }
+        }
+    }
 }
 
-void CDataTreeView::AddItem(const char *name, int type, bool select)
-{
-    // do later
-}
-
+#if 0
 const char *CDataTreeView::GetSelectedItemName()
 {
     // do later
@@ -661,11 +799,6 @@ int CDataTreeView::GetSelectedItemType()
 }
 
 void CDataTreeView::GetRenderObjectList(DynamicVectorClass<CString> &vector, HTREEITEM item)
-{
-    // do later
-}
-
-void CDataTreeView::RenameItem(const char *oldname, const char *newname, int category)
 {
     // do later
 }

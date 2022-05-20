@@ -23,7 +23,7 @@ class EmitterPropertySheetClass;
 class EmitterGeneralPropPageClass : public CPropertyPage
 {
 public:
-    virtual ~EmitterGeneralPropPageClass() override;
+    virtual ~EmitterGeneralPropPageClass() override {}
     virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam) override;
     virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
     virtual void DoDataExchange(CDataExchange *pDX) override;

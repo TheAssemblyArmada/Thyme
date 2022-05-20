@@ -30,6 +30,7 @@ class EmitterPropertySheetClass : public CPropertySheet
 public:
     virtual ~EmitterPropertySheetClass() override;
     virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
+    void UpdateRenderingMode(int mode);
 
 private:
     EmitterPropertySheetClass();
@@ -39,7 +40,6 @@ private:
     void UpdateEmitter();
     void Initialize();
     void CreateEmitter();
-    void UpdateRenderingMode(int mode);
 
     EmitterGeneralPropPageClass m_generalPage;
     EmitterParticlePropPageClass m_particlePage;

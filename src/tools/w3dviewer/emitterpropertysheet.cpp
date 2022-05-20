@@ -13,3 +13,9 @@
  *            LICENSE
  */
 #include "emitterpropertysheet.h"
+#include "utils.h"
+
+void EmitterPropertySheetClass::UpdateRenderingMode(int mode)
+{
+    DisableWindows(m_linePage.m_hWnd, mode == W3D_EMITTER_RENDER_MODE_LINE);
+}

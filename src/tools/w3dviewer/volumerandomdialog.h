@@ -27,6 +27,8 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
+    Vector3Randomizer *GetRandomizer() { return m_randomizer; }
+
 private:
     DECLARE_MESSAGE_MAP();
 

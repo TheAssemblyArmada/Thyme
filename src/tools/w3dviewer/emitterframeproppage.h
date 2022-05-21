@@ -33,7 +33,7 @@ public:
     void Initialize();
     void UpdateLifetime(float lifetime);
 
-    bool IsValid() { return m_isValid; }
+    bool IsValid() const { return m_isValid; }
     void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
 
 private:

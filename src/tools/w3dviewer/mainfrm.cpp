@@ -225,7 +225,7 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
 
         if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
             EmitterInstanceList *list = new EmitterInstanceList();
-            GetCurrentDocument()->AddEmittersToList(list, reinterpret_cast<const char *>(&info.hbmpItem), nullptr);
+            GetCurrentDocument()->AddEmittersToList(list, name, nullptr);
             EmitterPropertySheetClass sheet(list, IDS_EMITTERPROPERTIES, this);
             sheet.DoModal();
         }

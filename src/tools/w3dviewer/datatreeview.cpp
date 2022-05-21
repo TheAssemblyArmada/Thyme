@@ -639,30 +639,30 @@ void CDataTreeView::RestrictAnims(bool enable)
     }
 }
 
-void CDataTreeView::RenameItem(const char *oldname, const char *newname, AssetType type)
+void CDataTreeView::RenameItem(const char *newname, const char *oldname, AssetType type)
 {
     if (newname != nullptr && oldname != nullptr) {
         SetRedraw(false);
-        HTREEITEM item;
+        HTREEITEM item = nullptr;
 
         switch (type) {
             case ASSET_TYPE_MESH:
-                item = this->m_categoryTreeItems[CATEGORY_MESH];
+                item = m_categoryTreeItems[CATEGORY_MESH];
                 break;
             case ASSET_TYPE_AGGREGATE:
-                item = this->m_categoryTreeItems[CATEGORY_AGGREGATE];
+                item = m_categoryTreeItems[CATEGORY_AGGREGATE];
                 break;
             case ASSET_TYPE_HLOD:
-                item = this->m_categoryTreeItems[CATEGORY_HLOD];
+                item = m_categoryTreeItems[CATEGORY_HLOD];
                 break;
             case ASSET_TYPE_PARTICLEEMITTER:
-                item = this->m_categoryTreeItems[CATEGORY_EMITTER];
+                item = m_categoryTreeItems[CATEGORY_EMITTER];
                 break;
             case ASSET_TYPE_PRIMITIVE:
-                item = this->m_categoryTreeItems[CATEGORY_PRIMITIVES];
+                item = m_categoryTreeItems[CATEGORY_PRIMITIVES];
                 break;
             case ASSET_TYPE_SOUND:
-                item = this->m_categoryTreeItems[CATEGORY_SOUNDS];
+                item = m_categoryTreeItems[CATEGORY_SOUNDS];
                 break;
             default:
                 break;
@@ -672,7 +672,7 @@ void CDataTreeView::RenameItem(const char *oldname, const char *newname, AssetTy
 
         if (newitem != nullptr) {
             GetTreeCtrl().SetItem(newitem, TVIF_TEXT, newname, 0, 0, 0, 0, 0);
-            AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
+            AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(newitem));
 
             if (info != nullptr) {
                 info->m_name = newname;
@@ -696,27 +696,28 @@ void CDataTreeView::AddItem(const char *name, AssetType type, bool select)
 
         switch (type) {
             case ASSET_TYPE_MESH:
-                item = this->m_categoryTreeItems[CATEGORY_MESH];
-                image = this->m_imageListIDs[ICON_MESH];
+                item = m_categoryTreeItems[CATEGORY_MESH];
+                image = m_imageListIDs[ICON_MESH];
                 break;
             case ASSET_TYPE_AGGREGATE:
-                item = this->m_categoryTreeItems[CATEGORY_AGGREGATE];
-                image = this->m_imageListIDs[ICON_AGGREGATE];
+                item = m_categoryTreeItems[CATEGORY_AGGREGATE];
+                image = m_imageListIDs[ICON_AGGREGATE];
+                break;
             case ASSET_TYPE_HLOD:
-                item = this->m_categoryTreeItems[CATEGORY_HLOD];
-                image = this->m_imageListIDs[ICON_HLOD];
+                item = m_categoryTreeItems[CATEGORY_HLOD];
+                image = m_imageListIDs[ICON_HLOD];
                 break;
             case ASSET_TYPE_PARTICLEEMITTER:
-                item = this->m_categoryTreeItems[CATEGORY_EMITTER];
-                image = this->m_imageListIDs[ICON_EMITTER];
+                item = m_categoryTreeItems[CATEGORY_EMITTER];
+                image = m_imageListIDs[ICON_EMITTER];
                 break;
             case ASSET_TYPE_PRIMITIVE:
-                item = this->m_categoryTreeItems[CATEGORY_PRIMITIVES];
-                image = this->m_imageListIDs[ICON_PRIMITIVE];
+                item = m_categoryTreeItems[CATEGORY_PRIMITIVES];
+                image = m_imageListIDs[ICON_PRIMITIVE];
                 break;
             case ASSET_TYPE_SOUND:
-                item = this->m_categoryTreeItems[CATEGORY_SOUNDS];
-                image = this->m_imageListIDs[ICON_SOUND];
+                item = m_categoryTreeItems[CATEGORY_SOUNDS];
+                image = m_imageListIDs[ICON_SOUND];
                 break;
             default:
                 break;

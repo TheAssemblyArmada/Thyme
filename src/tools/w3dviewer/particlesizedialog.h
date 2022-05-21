@@ -25,7 +25,7 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
-    float GetSize() { return m_size; }
+    float GetSize() const { return m_size; }
 
 private:
     DECLARE_MESSAGE_MAP();

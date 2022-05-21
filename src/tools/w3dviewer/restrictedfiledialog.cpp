@@ -43,8 +43,8 @@ BOOL RestrictedFileDialogClass::OnFileNameOK()
     CString path = GetFilePath(m_ofn.lpstrFile);
     path += "\\";
     path += m_filename;
-    lstrcpy(m_ofn.lpstrFile, path);
-    lstrcpy(m_ofn.lpstrFileTitle, m_filename);
+    strcpy(m_ofn.lpstrFile, path);
+    strcpy(m_ofn.lpstrFileTitle, m_filename);
     return FALSE;
 }
 

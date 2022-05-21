@@ -43,7 +43,7 @@ EmitterParticlePropPageClass::EmitterParticlePropPageClass() :
 EmitterParticlePropPageClass::~EmitterParticlePropPageClass()
 {
     if (m_creationVolume != nullptr) {
-        delete[] m_creationVolume;
+        delete m_creationVolume;
         m_creationVolume = nullptr;
     }
 }
@@ -117,7 +117,7 @@ void EmitterParticlePropPageClass::OnSpecify()
 
     if (dlg.DoModal() == IDOK) {
         if (m_creationVolume != nullptr) {
-            delete[] m_creationVolume;
+            delete m_creationVolume;
             m_creationVolume = nullptr;
         }
 
@@ -137,7 +137,7 @@ void EmitterParticlePropPageClass::OnMaxParticles()
 void EmitterParticlePropPageClass::Initialize()
 {
     if (m_creationVolume != nullptr) {
-        delete[] m_creationVolume;
+        delete m_creationVolume;
         m_creationVolume = nullptr;
     }
 

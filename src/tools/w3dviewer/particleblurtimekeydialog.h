@@ -25,7 +25,7 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
-    float GetBlurTime() { return m_blurTime; }
+    float GetBlurTime() const { return m_blurTime; }
 
 private:
     DECLARE_MESSAGE_MAP();

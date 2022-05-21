@@ -191,8 +191,8 @@ void EmitterPropertySheetClass::CreateEmitter()
         0.0f,
         nullptr);
 
-    EmitterInstanceList *list = new EmitterInstanceList();
-    list->Add_Emitter(emitter);
+    m_instanceList = new EmitterInstanceList();
+    m_instanceList->Add_Emitter(emitter);
     GetCurrentDocument()->SetParticleEmitter(emitter, true, true);
     Ref_Ptr_Release(emitter);
 }

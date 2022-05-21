@@ -33,8 +33,8 @@ public:
 
     void Initialize();
 
-    bool IsValid() { return m_isValid; }
-    float GetLifetime() { return m_lifetime; }
+    bool IsValid() const { return m_isValid; }
+    float GetLifetime() const { return m_lifetime; }
     void SetInstanceList(EmitterInstanceList *list) { m_instanceList = list; }
     void SetPropertySheet(EmitterPropertySheetClass *sheet) { m_sheet = sheet; }
 

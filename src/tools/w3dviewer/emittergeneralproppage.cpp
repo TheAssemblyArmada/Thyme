@@ -188,7 +188,7 @@ void EmitterGeneralPropPageClass::OnLifetime()
     ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LIFETIME), lifetime);
     ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LIFETIMESPIN), lifetime);
 
-    if (lifetime) {
+    if (!lifetime) {
         m_lifetime = 0.0f;
         SetDlgItemFloat(m_hWnd, IDC_LIFETIME, 0.0f);
     }

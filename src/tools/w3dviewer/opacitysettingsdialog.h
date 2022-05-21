@@ -26,7 +26,7 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
-    float GetOpacity() { return m_opacity; }
+    float GetOpacity() const { return m_opacity; }
 
 private:
     DECLARE_MESSAGE_MAP();

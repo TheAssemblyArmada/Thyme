@@ -27,7 +27,12 @@ END_MESSAGE_MAP()
 // clang-format on
 
 EmitterSizePropPageClass::EmitterSizePropPageClass() :
-    CPropertyPage(IDD_EMITTERSIZE), m_isValid(true), m_instanceList(nullptr), m_sizeBar(nullptr), m_lifetime(0.0f)
+    CPropertyPage(IDD_EMITTERSIZE),
+    m_isValid(true),
+    m_instanceList(nullptr),
+    m_sizeBar(nullptr),
+    m_lifetime(0.0f),
+    m_scale(0.0f)
 {
     memset(&m_oldSizeKeyFrames, 0, sizeof(m_oldSizeKeyFrames));
     memset(&m_sizeKeyFrames, 0, sizeof(m_sizeKeyFrames));
@@ -87,7 +92,7 @@ BOOL EmitterSizePropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *p
         case IDC_SIZEBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 ParticleSizeDialog dlg(m_sizeBar->GetGradientValue(cbn->keyposition) * m_scale, this);
 
                 if (dlg.DoModal() == IDOK) {
@@ -188,18 +193,22 @@ void EmitterSizePropPageClass::Initialize()
 {
     if (m_oldSizeKeyFrames.KeyTimes != nullptr) {
         delete[] m_oldSizeKeyFrames.KeyTimes;
+        m_oldSizeKeyFrames.KeyTimes = nullptr;
     }
 
     if (m_oldSizeKeyFrames.Values != nullptr) {
         delete[] m_oldSizeKeyFrames.Values;
+        m_oldSizeKeyFrames.Values = nullptr;
     }
 
     if (m_sizeKeyFrames.KeyTimes != nullptr) {
         delete[] m_sizeKeyFrames.KeyTimes;
+        m_sizeKeyFrames.KeyTimes = nullptr;
     }
 
     if (m_sizeKeyFrames.Values != nullptr) {
         delete[] m_sizeKeyFrames.Values;
+        m_sizeKeyFrames.Values = nullptr;
     }
 
     if (m_instanceList != nullptr) {
@@ -227,10 +236,12 @@ void EmitterSizePropPageClass::UpdateSize()
 
     if (m_sizeKeyFrames.KeyTimes != nullptr) {
         delete[] m_sizeKeyFrames.KeyTimes;
+        m_sizeKeyFrames.KeyTimes = nullptr;
     }
 
     if (m_sizeKeyFrames.Values != nullptr) {
         delete[] m_sizeKeyFrames.Values;
+        m_sizeKeyFrames.Values = nullptr;
     }
 
     int count = m_sizeBar->GetKeyCount();

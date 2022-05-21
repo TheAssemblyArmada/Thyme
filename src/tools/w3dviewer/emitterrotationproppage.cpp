@@ -109,7 +109,7 @@ BOOL EmitterRotationPropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESUL
         case IDC_ROTATIONBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 float rot =
                     (m_maxRotation - m_minRotation) * m_rotationBar->GetGradientValue(cbn->keyposition) + m_minRotation;
                 ParticleRotationKeyDialog dlg(rot, this);

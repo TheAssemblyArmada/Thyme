@@ -150,7 +150,7 @@ BOOL EmitterColorPropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
         case IDC_COLORBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 int red = cbn->red;
                 int green = cbn->green;
                 int blue = cbn->blue;
@@ -172,7 +172,7 @@ BOOL EmitterColorPropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
         case IDC_OPACITYBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 int opacity = cbn->red / 255.0f;
 
                 OpacitySettingsDialog dialog(opacity, this);

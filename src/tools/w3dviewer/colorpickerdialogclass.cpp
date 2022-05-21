@@ -79,7 +79,7 @@ BOOL ColorPickerDialogClass::OnInitDialog()
     m_green->SetColor(0, 0.0f, m_currentRed, 0.0f, m_currentBlue, 3);
     m_green->SetColor(1, 255.0f, m_currentRed, 255.0f, m_currentBlue, 3);
 
-    m_blue->SetSliderPos(m_currentGreen);
+    m_blue->SetSliderPos(m_currentBlue);
     m_blue->SetColor(0, 0.0f, m_currentRed, m_currentGreen, 0.0f, 3);
     m_blue->SetColor(1, 255.0f, m_currentRed, m_currentGreen, 255.0f, 3);
 
@@ -158,13 +158,13 @@ BOOL ColorPickerDialogClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pRe
                 SetColor(cbn->red, m_currentGreen, m_currentBlue, SET_SLIDERS | SET_SATURATION | SET_COLOR);
             }
             break;
-        case IDC_GREEN:
+        case IDC_GREENBAR:
             if (hdr->code = CLBN_SLIDERCHANGE) {
                 ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
                 SetColor(m_currentRed, cbn->green, m_currentBlue, SET_SLIDERS | SET_SATURATION | SET_COLOR);
             }
             break;
-        case IDC_BLUE:
+        case IDC_BLUEBAR:
             if (hdr->code = CLBN_SLIDERCHANGE) {
                 ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
                 SetColor(m_currentRed, m_currentGreen, cbn->blue, SET_SLIDERS | SET_SATURATION | SET_COLOR);

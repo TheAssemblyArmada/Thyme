@@ -87,7 +87,7 @@ BOOL EmitterFramePropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
         case IDC_FRAMEBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 float frame = (m_maxFrame - m_minFrame) * m_frameBar->GetGradientValue(cbn->keyposition) + m_minFrame;
                 ParticleFrameKeyDialog dlg(frame, this);
 
@@ -145,7 +145,7 @@ BOOL EmitterFramePropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
 
             break;
         }
-        case IDC_FRAMESPIN: {
+        case IDC_PFRAMESPIN: {
             NMUPDOWN *nm = reinterpret_cast<NMUPDOWN *>(lParam);
 
             if (hdr->code == UDN_DELTAPOS) {
@@ -164,7 +164,7 @@ BOOL EmitterFramePropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
 void EmitterFramePropPageClass::DoDataExchange(CDataExchange *pDX)
 {
     DDX_Control(pDX, IDC_TEXTUREGRID, m_textureGrid);
-    DDX_Control(pDX, IDC_FRAMESPIN, m_frameSpin);
+    DDX_Control(pDX, IDC_PFRAMESPIN, m_frameSpin);
 }
 
 BOOL EmitterFramePropPageClass::OnInitDialog()

@@ -41,7 +41,7 @@ public:
     int GetSelectedItemType();
     void GetRenderObjectList(DynamicVectorClass<CString> &vector, HTREEITEM item);
     RenderObjClass *GetRenderObj(HTREEITEM item);
-    void RenameItem(const char *oldname, const char *newname, AssetType type);
+    void RenameItem(const char *newname, const char *oldname, AssetType type);
     void SelectNext();
     void SelectPrev();
     void RefreshRenderObjects();

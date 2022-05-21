@@ -86,7 +86,7 @@ BOOL EmitterLineGroupPropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESU
         case IDC_LINEBAR: {
             ColorBarNotify *cbn = reinterpret_cast<ColorBarNotify *>(lParam);
 
-            if (hdr->code == NM_DBLCLK) {
+            if (hdr->code == CLBN_DBLCLK) {
                 float blurtime =
                     (m_maxBlurTime - m_minBlurTime) * m_blurTimeBar->GetGradientValue(cbn->keyposition) + m_minBlurTime;
                 ParticleBlurTimeKeyDialog dlg(blurtime, this);
@@ -252,10 +252,12 @@ void EmitterLineGroupPropPageClass::UpdateBlurTime()
 
     if (m_blurTimeKeyFrames.KeyTimes != nullptr) {
         delete[] m_blurTimeKeyFrames.KeyTimes;
+        m_blurTimeKeyFrames.KeyTimes = nullptr;
     }
 
     if (m_blurTimeKeyFrames.Values != nullptr) {
         delete[] m_blurTimeKeyFrames.Values;
+        m_blurTimeKeyFrames.Values = nullptr;
     }
 
     int count = m_blurTimeBar->GetKeyCount();

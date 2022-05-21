@@ -14,6 +14,8 @@
  */
 #include "emitterinstancelist.h"
 
+#define KEYFRAME_EPSILON 0.000001f
+
 EmitterInstanceList::~EmitterInstanceList()
 {
     Clear_Emitters();
@@ -80,15 +82,15 @@ void EmitterInstanceList::Get_Color_Keyframes(ParticlePropertyStruct<Vector3> &k
     ParticleEmitterDefClass::Get_Color_Keyframes(keyframes);
 
     for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-        if (keyframes.Values[i].X < 0.000001f) {
+        if (keyframes.Values[i].X < KEYFRAME_EPSILON) {
             keyframes.Values[i].X = 0.0f;
         }
 
-        if (keyframes.Values[i].Y < 0.000001f) {
+        if (keyframes.Values[i].Y < KEYFRAME_EPSILON) {
             keyframes.Values[i].Y = 0.0f;
         }
 
-        if (keyframes.Values[i].Z < 0.000001f) {
+        if (keyframes.Values[i].Z < KEYFRAME_EPSILON) {
             keyframes.Values[i].Z = 0.0f;
         }
     }
@@ -99,7 +101,7 @@ void EmitterInstanceList::Get_Opacity_Keyframes(ParticlePropertyStruct<float> &k
     ParticleEmitterDefClass::Get_Opacity_Keyframes(keyframes);
 
     for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-        if (keyframes.Values[i] < 0.000001f) {
+        if (keyframes.Values[i] < KEYFRAME_EPSILON) {
             keyframes.Values[i] = 0.0f;
         }
     }
@@ -110,7 +112,7 @@ void EmitterInstanceList::Get_Size_Keyframes(ParticlePropertyStruct<float> &keyf
     ParticleEmitterDefClass::Get_Size_Keyframes(keyframes);
 
     for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-        if (keyframes.Values[i] < 0.000001f) {
+        if (keyframes.Values[i] < KEYFRAME_EPSILON) {
             keyframes.Values[i] = 0.0f;
         }
     }
@@ -120,8 +122,8 @@ void EmitterInstanceList::Set_Color_Keyframes(ParticlePropertyStruct<Vector3> &k
 {
     if (keyframes.Rand.X != 0.0f || keyframes.Rand.Y != 0.0f || keyframes.Rand.Z != 0.0f) {
         for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-            if (keyframes.Values[i].X < 0.000001f && keyframes.Values[i].Y < 0.000001f
-                && keyframes.Values[i].Z < 0.000001f) {
+            if (keyframes.Values[i].X < KEYFRAME_EPSILON && keyframes.Values[i].Y < KEYFRAME_EPSILON
+                && keyframes.Values[i].Z < KEYFRAME_EPSILON) {
                 keyframes.Values[i].X = -keyframes.Rand.X;
                 keyframes.Values[i].Y = -keyframes.Rand.Y;
                 keyframes.Values[i].Z = -keyframes.Rand.Z;
@@ -140,7 +142,7 @@ void EmitterInstanceList::Set_Opacity_Keyframes(ParticlePropertyStruct<float> &k
 {
     if (keyframes.Rand != 0.0f) {
         for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-            if (keyframes.Values[i] < 0.000001f) {
+            if (keyframes.Values[i] < KEYFRAME_EPSILON) {
                 keyframes.Values[i] = -keyframes.Rand;
             }
         }
@@ -157,7 +159,7 @@ void EmitterInstanceList::Set_Size_Keyframes(ParticlePropertyStruct<float> &keyf
 {
     if (keyframes.Rand != 0.0f) {
         for (unsigned int i = 0; i < keyframes.NumKeyFrames; i++) {
-            if (keyframes.Values[i] < 0.000001f) {
+            if (keyframes.Values[i] < KEYFRAME_EPSILON) {
                 keyframes.Values[i] = -keyframes.Rand;
             }
         }

@@ -333,6 +333,8 @@ enum
     ANIM_CHANNEL_ADAPTIVEDELTA_Y,
     ANIM_CHANNEL_ADAPTIVEDELTA_Z,
     ANIM_CHANNEL_ADAPTIVEDELTA_Q,
+
+    ANIM_CHANNEL_VIS,
 };
 
 enum
@@ -542,8 +544,8 @@ struct W3dTriStruct
 
 struct W3dVertInfStruct
 {
-    uint16_t BoneIdx;
-    uint8_t Pad[6];
+    uint16_t BoneIdx[2];
+    uint16_t Weight[2];
 };
 
 struct W3dTexCoordStruct

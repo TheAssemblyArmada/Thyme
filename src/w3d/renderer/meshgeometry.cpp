@@ -1079,7 +1079,7 @@ W3DErrorType MeshGeometryClass::Read_Vertex_Influences(ChunkLoadClass &cload)
             return W3D_ERROR_LOAD_FAILED;
         }
 
-        links[i] = vinf.BoneIdx;
+        links[i] = vinf.BoneIdx[0];
     }
 
     Set_Flag(SKIN, true);

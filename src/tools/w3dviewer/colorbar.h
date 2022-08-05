@@ -78,7 +78,8 @@ public:
     float GetGradientValue(int key);
     void EnableRedraw(bool redraw);
 
-    int GetSliderPos() { return m_sliderPos; }
+    int GetSliderPos() const { return m_sliderPos; }
+    int GetKeyCount() const { return m_keyCount; }
 
 private:
     DECLARE_MESSAGE_MAP()

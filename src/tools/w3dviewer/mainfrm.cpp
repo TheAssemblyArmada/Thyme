@@ -17,6 +17,8 @@
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
+#include "emitterinstancelist.h"
+#include "emitterpropertysheet.h"
 #include "graphicview.h"
 #include "light.h"
 #include "part_emt.h"
@@ -222,11 +224,10 @@ BOOL CMainFrame::OnCommand(WPARAM wParam, LPARAM lParam)
         info.cch = sizeof(name);
 
         if (GetMenuItemInfo(m_subMenu, LOWORD(wParam), FALSE, &info)) {
-            // do later
-            // EditorParticleEmitterDefClas *def = new EditorParticleEmitterDefClass();
-            // GetCurrentDocument()->AddEmittersToDef(def, reinterpret_cast<const char *>(&info.hbmpItem), nullptr);
-            // EmitterPropertySheetClass sheet(def, IDS_EMITTERPROPERTIES, this);
-            // sheet.DoModal();
+            EmitterInstanceList *list = new EmitterInstanceList();
+            GetCurrentDocument()->AddEmittersToList(list, name, nullptr);
+            EmitterPropertySheetClass sheet(list, IDS_EMITTERPROPERTIES, this);
+            sheet.DoModal();
         }
     }
 
@@ -918,17 +919,32 @@ void CMainFrame::OnCameraRotateZ()
 
 void CMainFrame::OnCreateEmitter()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        doc->SetRenderObject(nullptr, true, true, false);
+    }
+
+    EmitterPropertySheetClass sheet(nullptr, IDS_EMITTERPROPERTIES, this);
+    sheet.DoModal();
 }
 
 void CMainFrame::OnEditEmitter()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        EmitterInstanceList *list = new EmitterInstanceList();
+        list->Add_Emitter(static_cast<ParticleEmitterClass *>(doc->m_model));
+        EmitterPropertySheetClass sheet(list, IDS_EMITTERPROPERTIES, this);
+        sheet.DoModal();
+    }
 }
 
 void CMainFrame::OnExportEmitter()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+    doc->ExportEmitter();
 }
 
 void CMainFrame::OnAutoAssignBone()
@@ -1434,12 +1450,12 @@ void CMainFrame::OnUpdateRotateZ(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateEditEmitter(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->Enable(m_currentType == ASSET_TYPE_PARTICLEEMITTER);
 }
 
 void CMainFrame::OnUpdateExportEmitter(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->Enable(m_currentType == ASSET_TYPE_PARTICLEEMITTER);
 }
 
 void CMainFrame::OnUpdateAnimateCamera(CCmdUI *pCmdUI)

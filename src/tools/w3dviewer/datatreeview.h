@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "w3dafx.h"
+#include "assettypes.h"
 #include "vector.h"
 
 class RenderObjClass;
@@ -31,7 +32,7 @@ public:
     void AddRenderObjects();
     void AddAnimations();
     void AddAnimationsForItem(HTREEITEM item);
-    void AddItem(const char *name, int type, bool select);
+    void AddItem(const char *name, AssetType type, bool select);
     HTREEITEM FindItemByName(HTREEITEM item, const char *name);
     HTREEITEM FindNextItem(HTREEITEM item, const char *name);
     HTREEITEM FindFirstItem(HTREEITEM item, const char *name);
@@ -40,7 +41,7 @@ public:
     int GetSelectedItemType();
     void GetRenderObjectList(DynamicVectorClass<CString> &vector, HTREEITEM item);
     RenderObjClass *GetRenderObj(HTREEITEM item);
-    void RenameItem(const char *oldname, const char *newname, int category);
+    void RenameItem(const char *newname, const char *oldname, AssetType type);
     void SelectNext();
     void SelectPrev();
     void RefreshRenderObjects();

@@ -602,8 +602,7 @@ void ColorBarClass::DrawHorizontal(int left, int top, int w, int h, BYTE *bits)
             float red = m_keys[i].m_red;
             float green = m_keys[i].m_green;
             float blue = m_keys[i].m_blue;
-            int pos = 3 * left + top * m_stride;
-            BYTE *b = &bits[3 * left + top * m_stride];
+            BYTE *b = &bits[3 * j + top * m_stride];
 
             for (; j < m_keys[i].m_keyLength; j++) {
                 int b2 = 0;
@@ -628,7 +627,7 @@ void ColorBarClass::DrawHorizontal(int left, int top, int w, int h, BYTE *bits)
         int j = left;
 
         for (int i = 0; i < m_keyCount; i++) {
-            BYTE *b = &bits[3 * left + top * m_stride];
+            BYTE *b = &bits[3 * j + top * m_stride];
             float gradient = m_keys[i].m_gradientValue;
 
             for (; j < m_keys[i].m_keyLength; j++) {
@@ -648,7 +647,7 @@ void ColorBarClass::DrawHorizontal(int left, int top, int w, int h, BYTE *bits)
                             float val2 = 1.0f - val;
                             b[b2 + 0] = 255;
                             b[b2 + 1] = 128 - (int)(val2 * -128.0f);
-                            b[b2 + 2] = (int)(val2 * -128.0f);
+                            b[b2 + 2] = (int)(val2 * 255.0f);
                         } else {
                             b[b2 + 0] = 0;
                             b[b2 + 1] = 0;

@@ -17,6 +17,7 @@
 #include "bmp2d.h"
 #include "camera.h"
 #include "datatreeview.h"
+#include "emitterinstancelist.h"
 #include "ffactory.h"
 #include "graphicview.h"
 #include "hanim.h"
@@ -26,6 +27,7 @@
 #include "meshmdl.h"
 #include "part_emt.h"
 #include "resource.h"
+#include "restrictedfiledialog.h"
 #include "texture.h"
 #include "utils.h"
 #include "viewerscene.h"
@@ -836,7 +838,92 @@ void CW3DViewDoc::ToggleAlternateMaterials(RenderObjClass *robj)
     }
 }
 
+void CW3DViewDoc::AddEmittersToList(EmitterInstanceList *list, const char *name, RenderObjClass *robj)
+{
+    if (robj == nullptr) {
+        robj = m_model;
+    }
+
+    for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+        RenderObjClass *o = robj->Get_Sub_Object(i);
+
+        if (o != nullptr) {
+            AddEmittersToList(list, name, o);
+            o->Release_Ref();
+        }
+    }
+
+    if (robj != nullptr && robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
+        if (lstrcmpi(name, robj->Get_Name()) == 0) {
+            list->Add_Emitter(static_cast<ParticleEmitterClass *>(robj));
+        }
+    }
+}
+
+bool CW3DViewDoc::ExportEmitter()
+{
+    bool ret = false;
+
+    if (m_model == nullptr || m_model->Class_ID() != RenderObjClass::CLASSID_PARTICLEEMITTER) {
+        return false;
+    }
+
+    CDataTreeView *view = nullptr;
+    CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+
+    if (frame != nullptr) {
+        view = static_cast<CDataTreeView *>(frame->m_splitter.GetPane(0, 0));
+    }
+
+    CString str = view->GetSelectedItemName();
+    str += ".w3d";
+
+    RestrictedFileDialogClass dlg(FALSE,
+        ".w3d",
+        str,
+        OFN_EXPLORER | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+        "Westwood 3D Files (*.w3d)|*.~xyzabc||",
+        AfxGetMainWnd());
+
+    if (dlg.DoModal() == IDOK) {
+        ret = SaveEmitter(dlg.GetPathName());
+    }
+
+    return ret;
+}
+
+bool CW3DViewDoc::SaveEmitter(const char *name)
+{
+    bool ret = false;
+    ParticleEmitterPrototypeClass *proto =
+        static_cast<ParticleEmitterPrototypeClass *>(W3DAssetManager::Get_Instance()->Find_Prototype(m_model->Get_Name()));
+
+    if (proto != nullptr) {
+        ParticleEmitterDefClass *def = proto->Get_Definition();
+
+        if (def != nullptr) {
+            FileClass *file = g_theFileFactory->Get_File(name);
+
+            if (file != nullptr) {
+                file->Open(FM_WRITE);
+                ChunkSaveClass csave(file);
+                ret = def->Save_W3D(csave) == W3D_ERROR_OK;
+                file->Close();
+                g_theFileFactory->Return_File(file);
+            }
+        }
+    }
+
+    return ret;
+}
+
 #if 0
+
+bool CW3DViewDoc::SaveAggregtate(const char *name)
+{
+    // do later
+}
+
 void CW3DViewDoc::GenerateLOD(const char *name, int type)
 {
     // do later
@@ -863,16 +950,6 @@ void CW3DViewDoc::SetBackgroundObject(const char *name)
 }
 
 bool CW3DViewDoc::ExportPrimitive()
-{
-    // do later
-}
-
-bool CW3DViewDoc::ExportEmitter()
-{
-    // do later
-}
-
-bool CW3DViewDoc::SavePrototype(const char *name)
 {
     // do later
 }
@@ -908,11 +985,6 @@ void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
 }
 
 void CW3DViewDoc::CaptureMovie()
-{
-    // do later
-}
-
-void CW3DViewDoc::AddEmittersToDef(EditorParticleEmitterDefClass *def, const char *name, RenderObjClass *robj)
 {
     // do later
 }

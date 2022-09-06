@@ -49,6 +49,8 @@ public:
 
     void Update_Fog_Range();
 
+    bool Is_LOD(int id) { return id == RenderObjClass::CLASSID_HMODEL || id == RenderObjClass::CLASSID_HLOD; }
+
 private:
     bool m_autoSwitchLod;
     RefMultiListClass<RenderObjClass> m_lodObjectList;

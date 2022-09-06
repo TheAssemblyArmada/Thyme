@@ -1,6 +1,7 @@
 add_executable(w3dview WIN32)
 set(CMAKE_MFC_FLAG 2) #Enable MFC
 target_sources(w3dview PRIVATE
+    addtolineupdialog.cpp
     assetinfo.cpp
     colorbar.cpp
     colorpicker.cpp

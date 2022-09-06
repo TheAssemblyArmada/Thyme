@@ -27,4 +27,11 @@ private:
     bool m_isInitialized;
 };
 
+class CAboutDialog : public CDialog
+{
+public:
+    CAboutDialog();
+    DECLARE_MESSAGE_MAP()
+};
+
 extern CW3DViewApp theApp;

@@ -3,6 +3,7 @@ set(CMAKE_MFC_FLAG 2) #Enable MFC
 target_sources(w3dview PRIVATE
     addtolineupdialog.cpp
     assetinfo.cpp
+    backgroundbmpdialog.cpp
     colorbar.cpp
     colorpicker.cpp
     colorpickerdialogclass.cpp

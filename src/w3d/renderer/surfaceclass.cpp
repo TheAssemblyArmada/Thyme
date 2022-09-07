@@ -20,6 +20,10 @@
 #include <algorithm>
 #include <cstring>
 
+#ifdef BUILD_WITH_D3D8
+#include <d3dx8.h>
+#endif
+
 using std::memcpy;
 using std::memset;
 
@@ -253,17 +257,12 @@ void SurfaceClass::Copy(
         p.y = dst_y;
         DX8CALL(CopyRects(other->m_d3dSurface, &src_rect, 1, m_d3dSurface, &p));
     } else {
-        captainslog_relassert(false, -1, "Hit unimplemented code path.");
-        // It seems impractical to link the old d3dx8.lib file as it tries to link in old libs no longer part of the windows
-        // SDK.
-        /*
         RECT dst_rect;
         dst_rect.left = dst_x;
         dst_rect.top = dst_y;
         dst_rect.right = std::min(dst_x + width, dst_desc.width);
         dst_rect.bottom = std::min(dst_y + height, dst_desc.height);
         D3DXLoadSurfaceFromSurface(m_d3dSurface, nullptr, &dst_rect, other->m_d3dSurface, nullptr, &src_rect, 1, 0);
-        */
     }
 #endif
 }

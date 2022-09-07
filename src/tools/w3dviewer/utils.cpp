@@ -14,6 +14,7 @@
  */
 #include "utils.h"
 #include "assetmgr.h"
+#include "graphicview.h"
 #include "mainfrm.h"
 #include "w3dviewdoc.h"
 
@@ -167,4 +168,29 @@ void SetWindowFloat(HWND hWnd, float f)
     CString str;
     str.Format("%.3f", f);
     SetWindowText(hWnd, str);
+}
+
+void PositionWindow(HWND hWnd)
+{
+    if (IsWindow(hWnd)) {
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+
+        if (frame != nullptr) {
+            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
+
+            if (view != nullptr) {
+                RECT rect;
+                RECT rect2;
+                GetWindowRect(view->m_hWnd, &rect);
+                GetWindowRect(hWnd, &rect2);
+                SetWindowPos(hWnd,
+                    nullptr,
+                    rect.left + ((rect.right - rect.left) >> 1) - ((rect2.right - rect2.left) >> 1),
+                    rect.top + ((rect.bottom - rect.top) >> 1) - ((rect2.bottom - rect2.top) >> 1),
+                    0,
+                    0,
+                    SWP_NOSIZE | SWP_NOZORDER);
+            }
+        }
+    }
 }

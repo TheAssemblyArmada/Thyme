@@ -9,6 +9,7 @@ target_sources(w3dview PRIVATE
     colorutils.cpp
     datatreeview.cpp
     deviceselectiondialog.cpp
+    directorydialog.cpp
     emittercolorproppage.cpp
     emitterframeproppage.cpp
     emittergeneralproppage.cpp
@@ -29,6 +30,7 @@ target_sources(w3dview PRIVATE
     particlerotationkeydialog.cpp
     particlesizedialog.cpp
     restrictedfiledialog.cpp
+    texturepathdialog.cpp
     toolbar.cpp
     utils.cpp
     viewerscene.cpp

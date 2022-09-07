@@ -302,23 +302,8 @@ void CW3DViewDoc::Initialize()
         CString path1 = theApp.GetProfileString("Config", "TexturePath1", "");
         CString path2 = theApp.GetProfileString("Config", "TexturePath2", "");
 
-        if (m_texturePath1 != path1) {
-            if (lstrlen(path1) > 0) {
-                g_theSimpleFileFactory->Append_Sub_Directory(path1);
-            }
-
-            m_texturePath1 = path1;
-            theApp.WriteProfileString("Config", "TexturePath1", m_texturePath1);
-        }
-
-        if (m_texturePath2 != path2) {
-            if (lstrlen(path2) > 0) {
-                g_theSimpleFileFactory->Append_Sub_Directory(path2);
-            }
-
-            m_texturePath2 = path2;
-            theApp.WriteProfileString("Config", "TexturePath2", m_texturePath2);
-        }
+        SetTexturePath1(path1);
+        SetTexturePath2(path2);
 
         if (m_fogEnabled) {
             m_scene->Set_Fog_Enable(true);
@@ -917,8 +902,31 @@ bool CW3DViewDoc::SaveEmitter(const char *name)
     return ret;
 }
 
-#if 0
+void CW3DViewDoc::SetTexturePath1(const char *path)
+{
+    if (m_texturePath1 != path) {
+        if (lstrlen(path) > 0) {
+            g_theSimpleFileFactory->Append_Sub_Directory(path);
+        }
 
+        m_texturePath1 = path;
+        theApp.WriteProfileString("Config", "TexturePath1", m_texturePath1);
+    }
+}
+
+void CW3DViewDoc::SetTexturePath2(const char *path)
+{
+    if (m_texturePath2 != path) {
+        if (lstrlen(path) > 0) {
+            g_theSimpleFileFactory->Append_Sub_Directory(path);
+        }
+
+        m_texturePath2 = path;
+        theApp.WriteProfileString("Config", "TexturePath2", m_texturePath2);
+    }
+}
+
+#if 0
 bool CW3DViewDoc::SaveAggregtate(const char *name)
 {
     // do later
@@ -995,16 +1003,6 @@ void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
 }
 
 void CW3DViewDoc::CopyDeps(CString directorty)
-{
-    // do later
-}
-
-void CW3DViewDoc::SetTexturePath1(const char *path)
-{
-    // do later
-}
-
-void CW3DViewDoc::SetTexturePath2(const char *path)
 {
     // do later
 }

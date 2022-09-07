@@ -25,6 +25,7 @@
 #include "part_emt.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
+#include "texturepathdialog.h"
 #include "utils.h"
 #include "viewerscene.h"
 #include "w3d.h"
@@ -1224,7 +1225,8 @@ void CMainFrame::OnExposePrecalc()
 
 void CMainFrame::OnTexturePath()
 {
-    // do later
+    TexturePathDialogClass dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnCreateSphere()

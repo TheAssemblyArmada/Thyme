@@ -14,6 +14,7 @@
  */
 #include "utils.h"
 #include "assetmgr.h"
+#include "graphicview.h"
 #include "mainfrm.h"
 #include "w3dviewdoc.h"
 
@@ -167,4 +168,58 @@ void SetWindowFloat(HWND hWnd, float f)
     CString str;
     str.Format("%.3f", f);
     SetWindowText(hWnd, str);
+}
+
+void PositionWindow(HWND hWnd)
+{
+    if (IsWindow(hWnd)) {
+        CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+
+        if (frame != nullptr) {
+            CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
+
+            if (view != nullptr) {
+                RECT rect;
+                RECT rect2;
+                GetWindowRect(view->m_hWnd, &rect);
+                GetWindowRect(hWnd, &rect2);
+                SetWindowPos(hWnd,
+                    nullptr,
+                    rect.left + ((rect.right - rect.left) / 2) - ((rect2.right - rect2.left) / 2),
+                    rect.top + ((rect.bottom - rect.top) / 2) - ((rect2.bottom - rect2.top) / 2),
+                    0,
+                    0,
+                    SWP_NOSIZE | SWP_NOZORDER);
+            }
+        }
+    }
+}
+
+void PaintGradient(HWND hwnd, bool red, bool green, bool blue)
+{
+    RECT r;
+    GetClientRect(hwnd, &r);
+    int height = r.bottom - r.top;
+    float width = (float)(r.right - r.left) / 256.0f;
+    HDC hdc = GetDC(hwnd);
+    CDC dc;
+    dc.Attach(hdc);
+    float horiz = 0.0f;
+
+    for (int i = 0; i < 256; i++) {
+        int w;
+
+        if (width < 1.0f) {
+            w = 1;
+        } else {
+            w = width + 1;
+        }
+
+        dc.FillSolidRect(horiz, 0, w, height, RGB(red * i, green * i, blue * i));
+        horiz += width;
+    }
+
+    dc.Detach();
+    ReleaseDC(hwnd, hdc);
+    ValidateRect(hwnd, nullptr);
 }

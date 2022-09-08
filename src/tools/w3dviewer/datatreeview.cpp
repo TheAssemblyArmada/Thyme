@@ -803,19 +803,66 @@ const char *CDataTreeView::GetSelectedItemName()
     return nullptr;
 }
 
-#if 0
 int CDataTreeView::GetSelectedItemType()
 {
-    // do later
+    HTREEITEM item = GetTreeCtrl().GetSelectedItem();
+
+    if (item != nullptr) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(item));
+
+        if (info != nullptr) {
+            return info->m_type;
+        }
+    }
+
+    return -1;
 }
 
 void CDataTreeView::GetRenderObjectList(DynamicVectorClass<CString> &vector, HTREEITEM item)
 {
-    // do later
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(item); i != nullptr; i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
+
+        if (info != nullptr) {
+            if (info->m_type != ASSET_TYPE_ANIMATION && info->m_type != ASSET_TYPE_MORPH
+                && info->m_type != ASSET_TYPE_TEXTURE) {
+                CString str = GetTreeCtrl().GetItemText(i);
+                vector.Add(str);
+            }
+        }
+
+        if (GetTreeCtrl().ItemHasChildren(i)) {
+            GetRenderObjectList(vector, i);
+        }
+    }
 }
 
 void CDataTreeView::RefreshRenderObjects()
 {
-    // do later
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(m_categoryTreeItems[CATEGORY_COLLECTION]); i != nullptr;
+         i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
+
+        if (info != nullptr) {
+            W3DAssetManager::Get_Instance()->Remove_Prototype(info->m_name);
+        }
+    }
+
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(m_categoryTreeItems[CATEGORY_HIERARCHY]); i != nullptr;
+         i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
+
+        if (info != nullptr) {
+            W3DAssetManager::Get_Instance()->Remove_Prototype(info->m_name);
+        }
+    }
+
+    for (HTREEITEM i = GetTreeCtrl().GetChildItem(m_categoryTreeItems[CATEGORY_MESH]); i != nullptr;
+         i = GetTreeCtrl().GetNextSiblingItem(i)) {
+        AssetInfoClass *info = reinterpret_cast<AssetInfoClass *>(GetTreeCtrl().GetItemData(i));
+
+        if (info != nullptr) {
+            W3DAssetManager::Get_Instance()->Remove_Prototype(info->m_name);
+        }
+    }
 }
-#endif

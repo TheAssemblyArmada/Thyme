@@ -13,7 +13,11 @@
  *            LICENSE
  */
 #include "mainfrm.h"
+#include "addtolineupdialog.h"
 #include "assetmgr.h"
+#include "backgroundbmpdialog.h"
+#include "backgroundcolordialog.h"
+#include "backgroundobjectdialog.h"
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
@@ -24,6 +28,7 @@
 #include "part_emt.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
+#include "texturepathdialog.h"
 #include "utils.h"
 #include "viewerscene.h"
 #include "w3d.h"
@@ -804,12 +809,14 @@ void CMainFrame::OnSceneLight()
 
 void CMainFrame::OnBackgroundColor()
 {
-    // do later
+    CBackgroundColorDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnBackgroundBitmap()
 {
-    // do later
+    CBackgroundBMPDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnExportLOD()
@@ -819,7 +826,8 @@ void CMainFrame::OnExportLOD()
 
 void CMainFrame::OnBackgroundObject()
 {
-    // do later
+    CBackgroundObjectDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnAnimationToolbar()
@@ -1223,7 +1231,8 @@ void CMainFrame::OnExposePrecalc()
 
 void CMainFrame::OnTexturePath()
 {
-    // do later
+    TexturePathDialogClass dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnCreateSphere()
@@ -1273,7 +1282,28 @@ void CMainFrame::OnVertexLighting()
 
 void CMainFrame::OnAddObject()
 {
-    // do later
+    ViewerSceneClass *scene = nullptr;
+
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        scene = doc->m_scene;
+    }
+
+    CAddToLineupDialog dlg(scene, this);
+
+    if (dlg.DoModal() == IDOK) {
+        RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(dlg.Get_Name());
+
+        if (robj != nullptr && scene != nullptr) {
+            SetLODLevel(robj);
+            scene->Add_LOD_Object(robj);
+        } else {
+            CString str;
+            str.Format("Unable to create render object '%s'!", static_cast<LPCSTR>(dlg.Get_Name()));
+            AfxMessageBox(str, MB_ICONASTERISK, 0);
+        }
+    }
 }
 
 void CMainFrame::OnImportFacial()

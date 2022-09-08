@@ -29,3 +29,5 @@ void InitializeSpinButton(CSpinButtonCtrl *spin, float value, float min, float m
 void UpdateEditCtrl(HWND hwnd, int delta);
 void DisableWindows(HWND window, bool disable);
 void SetWindowFloat(HWND hWnd, float f);
+void PositionWindow(HWND hWnd);
+void PaintGradient(HWND hwnd, bool red, bool green, bool blue);

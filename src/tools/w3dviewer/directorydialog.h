@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D View
+ * @brief W3D View Directory Dialog
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -15,23 +15,4 @@
 #pragma once
 #include "w3dafx.h"
 
-class CW3DViewApp : public CWinApp
-{
-public:
-    virtual BOOL InitInstance();
-    virtual int ExitInstance();
-    DECLARE_MESSAGE_MAP()
-    afx_msg void OnAppAbout();
-
-private:
-    bool m_isInitialized;
-};
-
-class CAboutDialog : public CDialog
-{
-public:
-    CAboutDialog();
-    DECLARE_MESSAGE_MAP()
-};
-
-extern CW3DViewApp theApp;
+bool ChooseDirectory(HWND parent, const char *initialdir, CString &directory);

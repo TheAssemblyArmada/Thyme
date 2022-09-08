@@ -70,9 +70,13 @@ ON_COMMAND(ID_FILE_NEW, &CWinApp::OnFileNew)
 ON_COMMAND(ID_FILE_OPEN, &CWinApp::OnFileOpen)
 END_MESSAGE_MAP()
 
+BEGIN_MESSAGE_MAP(CAboutDialog, CDialog)
+END_MESSAGE_MAP()
+
+CAboutDialog::CAboutDialog() : CDialog(IDD_ABOUT) {}
+
 void CW3DViewApp::OnAppAbout()
 {
-    // do later
-    // CAboutDialog dialog;
-    // dialog.DoModal();
+    CAboutDialog dialog;
+    dialog.DoModal();
 }

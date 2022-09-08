@@ -1,13 +1,18 @@
 add_executable(w3dview WIN32)
 set(CMAKE_MFC_FLAG 2) #Enable MFC
 target_sources(w3dview PRIVATE
+    addtolineupdialog.cpp
     assetinfo.cpp
+    backgroundbmpdialog.cpp
+    backgroundcolordialog.cpp
+    backgroundobjectdialog.cpp
     colorbar.cpp
     colorpicker.cpp
     colorpickerdialogclass.cpp
     colorutils.cpp
     datatreeview.cpp
     deviceselectiondialog.cpp
+    directorydialog.cpp
     emittercolorproppage.cpp
     emitterframeproppage.cpp
     emittergeneralproppage.cpp
@@ -28,6 +33,7 @@ target_sources(w3dview PRIVATE
     particlerotationkeydialog.cpp
     particlesizedialog.cpp
     restrictedfiledialog.cpp
+    texturepathdialog.cpp
     toolbar.cpp
     utils.cpp
     viewerscene.cpp

@@ -92,3 +92,5 @@ public:
     int m_imageListIDs[ICON_COUNT];
     bool m_restrictAnims;
 };
+
+void SetLODLevel(RenderObjClass *robj);

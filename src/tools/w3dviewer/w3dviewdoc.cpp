@@ -302,23 +302,8 @@ void CW3DViewDoc::Initialize()
         CString path1 = theApp.GetProfileString("Config", "TexturePath1", "");
         CString path2 = theApp.GetProfileString("Config", "TexturePath2", "");
 
-        if (m_texturePath1 != path1) {
-            if (lstrlen(path1) > 0) {
-                g_theSimpleFileFactory->Append_Sub_Directory(path1);
-            }
-
-            m_texturePath1 = path1;
-            theApp.WriteProfileString("Config", "TexturePath1", m_texturePath1);
-        }
-
-        if (m_texturePath2 != path2) {
-            if (lstrlen(path2) > 0) {
-                g_theSimpleFileFactory->Append_Sub_Directory(path2);
-            }
-
-            m_texturePath2 = path2;
-            theApp.WriteProfileString("Config", "TexturePath2", m_texturePath2);
-        }
+        SetTexturePath1(path1);
+        SetTexturePath2(path2);
 
         if (m_fogEnabled) {
             m_scene->Set_Fog_Enable(true);
@@ -917,8 +902,123 @@ bool CW3DViewDoc::SaveEmitter(const char *name)
     return ret;
 }
 
-#if 0
+void CW3DViewDoc::SetTexturePath1(const char *path)
+{
+    if (m_texturePath1 != path) {
+        if (lstrlen(path) > 0) {
+            g_theSimpleFileFactory->Append_Sub_Directory(path);
+        }
 
+        m_texturePath1 = path;
+        theApp.WriteProfileString("Config", "TexturePath1", m_texturePath1);
+    }
+}
+
+void CW3DViewDoc::SetTexturePath2(const char *path)
+{
+    if (m_texturePath2 != path) {
+        if (lstrlen(path) > 0) {
+            g_theSimpleFileFactory->Append_Sub_Directory(path);
+        }
+
+        m_texturePath2 = path;
+        theApp.WriteProfileString("Config", "TexturePath2", m_texturePath2);
+    }
+}
+
+void CW3DViewDoc::CreateBackgroundBitmap(const char *name)
+{
+    if (m_backgroundScene != nullptr) {
+        if (m_backgroundBitmap != nullptr) {
+            m_backgroundBitmap->Remove();
+            Ref_Ptr_Release(m_backgroundBitmap);
+        }
+
+        if (name != nullptr && strcmpi(m_backgroundBitmapName, name) != 0) {
+            m_backgroundBitmap = new Bitmap2D(name, 0.5, 0.5, true, false, false, -1, -1, false);
+
+            if (m_backgroundBitmap != nullptr) {
+                m_textureScene->Add_Render_Object(m_backgroundBitmap);
+            }
+        }
+
+        m_backgroundBitmapName = name;
+    }
+}
+
+void CW3DViewDoc::SetBackgroundObject(const char *name)
+{
+    if (m_backgroundScene != nullptr && m_docCamera != nullptr) {
+        if (m_backgroundObject != nullptr) {
+            m_backgroundObject->Remove();
+            Ref_Ptr_Release(m_backgroundObject);
+        }
+
+        if (name != nullptr) {
+            m_backgroundObject = W3DAssetManager::Get_Instance()->Create_Render_Obj(name);
+
+            if (m_backgroundObject != nullptr) {
+                m_backgroundObject->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+                float plane = m_backgroundObject->Get_Bounding_Sphere().Radius * 4.0f;
+
+                CMainFrame *frame = static_cast<CMainFrame *>(AfxGetMainWnd());
+
+                if (frame != nullptr) {
+                    CGraphicView *view = static_cast<CGraphicView *>(frame->m_splitter.GetPane(0, 1));
+
+                    if (view != nullptr) {
+                        m_docCamera->Set_Transform(view->m_camera->Get_Transform());
+                    }
+                }
+
+                m_docCamera->Set_Position(Vector3(0.0f, 0.0f, 0.0f));
+                m_docCamera->Set_Clip_Planes(1.0f, plane);
+                m_backgroundScene->Add_Render_Object(m_backgroundObject);
+            }
+        }
+
+        m_backgroundObjectName = name;
+    }
+}
+
+void CW3DViewDoc::SaveCameraSettings()
+{
+    theApp.WriteProfileInt("Config", "UseManualFOV", m_useManualFov);
+    theApp.WriteProfileInt("Config", "UseManualClipPlanes", m_useManualClipPlanes);
+
+    CameraClass *camera = GetCurrentGraphicView()->m_camera;
+
+    if (camera != nullptr) {
+        float hfov = camera->Get_Horizontal_FOV();
+        float vfov = camera->Get_Vertical_FOV();
+        float zfar;
+        float znear;
+        camera->Get_Clip_Planes(znear, zfar);
+        CString shfov;
+        CString svfov;
+        CString sznear;
+        CString szfar;
+        shfov.Format("%f", hfov);
+        svfov.Format("%f", vfov);
+        sznear.Format("%f", znear);
+        szfar.Format("%f", zfar);
+        theApp.WriteProfileString("Config", "hfov", shfov);
+        theApp.WriteProfileString("Config", "vfov", svfov);
+        theApp.WriteProfileString("Config", "znear", sznear);
+        theApp.WriteProfileString("Config", "zfar", szfar);
+    }
+}
+
+void CW3DViewDoc::SetFogColor(Vector3 &color)
+{
+    m_fogColor = color;
+
+    if (m_scene != nullptr) {
+        m_scene->Set_Fog_Color(color);
+    }
+}
+
+#if 0
 bool CW3DViewDoc::SaveAggregtate(const char *name)
 {
     // do later
@@ -929,22 +1029,12 @@ void CW3DViewDoc::GenerateLOD(const char *name, int type)
     // do later
 }
 
-void CW3DViewDoc::CreateBackgroundBitmap(const char *name)
-{
-    // do later
-}
-
 bool CW3DViewDoc::ExportLOD()
 {
     // do later
 }
 
 bool CW3DViewDoc::SaveLOD(const char *name)
-{
-    // do later
-}
-
-void CW3DViewDoc::SetBackgroundObject(const char *name)
 {
     // do later
 }
@@ -999,32 +1089,12 @@ void CW3DViewDoc::CopyDeps(CString directorty)
     // do later
 }
 
-void CW3DViewDoc::SetTexturePath1(const char *path)
-{
-    // do later
-}
-
-void CW3DViewDoc::SetTexturePath2(const char *path)
-{
-    // do later
-}
-
 void CW3DViewDoc::ImportFacial(CString &hname, CString &fname)
 {
     // do later
 }
 
 HTreeClass *CW3DViewDoc::GetCurrentHTree()
-{
-    // do later
-}
-
-void CW3DViewDoc::SaveCameraSettings()
-{
-    // do later
-}
-
-void CW3DViewDoc::SetFogColor(Vector3 &color)
 {
     // do later
 }

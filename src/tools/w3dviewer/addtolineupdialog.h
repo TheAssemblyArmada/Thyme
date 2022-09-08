@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D View
+ * @brief W3D View Add to lineup dialog
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -15,23 +15,22 @@
 #pragma once
 #include "w3dafx.h"
 
-class CW3DViewApp : public CWinApp
+class ViewerSceneClass;
+
+class CAddToLineupDialog : public CDialog
 {
 public:
-    virtual BOOL InitInstance();
-    virtual int ExitInstance();
-    DECLARE_MESSAGE_MAP()
-    afx_msg void OnAppAbout();
+    CAddToLineupDialog(ViewerSceneClass *scene, CWnd *pParentWnd);
+    virtual ~CAddToLineupDialog() override {}
+    virtual void DoDataExchange(CDataExchange *pDX) override;
+    virtual BOOL OnInitDialog() override;
+    virtual void OnOK() override;
+
+    CString Get_Name() const { return m_objectName; }
 
 private:
-    bool m_isInitialized;
-};
+    DECLARE_MESSAGE_MAP();
 
-class CAboutDialog : public CDialog
-{
-public:
-    CAboutDialog();
-    DECLARE_MESSAGE_MAP()
+    CString m_objectName;
+    ViewerSceneClass *m_scene;
 };
-
-extern CW3DViewApp theApp;

@@ -30,6 +30,7 @@ class ParticleEmitterClass;
 class RenderObjClass;
 class SimpleSceneClass;
 class ViewerSceneClass;
+class PrototypeClass;
 
 class CW3DViewDoc : public CDocument
 {
@@ -52,7 +53,7 @@ public:
     void UpdateAnimation(float tm);
     CDataTreeView *GetDataTreeView();
     CGraphicView *GetGraphicView();
-    void GenerateLOD(const char *name, int type);
+    PrototypeClass *GenerateLOD(const char *name, int type);
     void CreateBackgroundBitmap(const char *name);
     bool ExportLOD();
     bool SaveLOD(const char *name);

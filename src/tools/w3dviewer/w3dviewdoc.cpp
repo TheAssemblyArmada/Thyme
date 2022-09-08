@@ -976,6 +976,8 @@ void CW3DViewDoc::SetBackgroundObject(const char *name)
                 m_backgroundScene->Add_Render_Object(m_backgroundObject);
             }
         }
+
+        m_backgroundObjectName = name;
     }
 }
 
@@ -992,18 +994,18 @@ void CW3DViewDoc::SaveCameraSettings()
         float zfar;
         float znear;
         camera->Get_Clip_Planes(znear, zfar);
-        CString s1;
-        CString s2;
-        CString s3;
-        CString s4;
-        s1.Format("%f", hfov);
-        s2.Format("%f", vfov);
-        s3.Format("%f", znear);
-        s4.Format("%f", zfar);
-        theApp.WriteProfileString("Config", "hfov", s1);
-        theApp.WriteProfileString("Config", "vfov", s2);
-        theApp.WriteProfileString("Config", "znear", s3);
-        theApp.WriteProfileString("Config", "zfar", s4);
+        CString shfov;
+        CString svfov;
+        CString sznear;
+        CString szfar;
+        shfov.Format("%f", hfov);
+        svfov.Format("%f", vfov);
+        sznear.Format("%f", znear);
+        szfar.Format("%f", zfar);
+        theApp.WriteProfileString("Config", "hfov", shfov);
+        theApp.WriteProfileString("Config", "vfov", svfov);
+        theApp.WriteProfileString("Config", "znear", sznear);
+        theApp.WriteProfileString("Config", "zfar", szfar);
     }
 }
 

@@ -1295,12 +1295,12 @@ void CMainFrame::OnAddObject()
     if (dlg.DoModal() == IDOK) {
         RenderObjClass *robj = W3DAssetManager::Get_Instance()->Create_Render_Obj(dlg.Get_Name());
 
-        if (robj != nullptr) {
+        if (robj != nullptr && scene != nullptr) {
             SetLODLevel(robj);
             scene->Add_LOD_Object(robj);
         } else {
             CString str;
-            str.Format("Unable to create render object '%s'!", (LPCSTR)dlg.Get_Name());
+            str.Format("Unable to create render object '%s'!", static_cast<LPCSTR>(dlg.Get_Name()));
             AfxMessageBox(str, MB_ICONASTERISK, 0);
         }
     }

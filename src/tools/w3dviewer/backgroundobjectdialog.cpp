@@ -57,8 +57,7 @@ BOOL CBackgroundObjectDialog::OnInitDialog()
 
     if (doc != nullptr) {
         CString str(doc->m_backgroundObjectName);
-        LVFINDINFO info;
-        memset(&info, 0, sizeof(info));
+        LVFINDINFO info = { 0 };
         info.flags = LVFI_STRING;
         info.psz = str;
         int index = m_objectList.FindItem(&info);

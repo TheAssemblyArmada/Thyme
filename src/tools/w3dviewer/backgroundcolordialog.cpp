@@ -60,9 +60,9 @@ BOOL CBackgroundColorDialog::OnInitDialog()
 
 void CBackgroundColorDialog::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar)
 {
-    HWND handle;
-
     if (SendDlgItemMessage(IDC_GREYSCALE, BM_GETCHECK) != 0) {
+        HWND handle;
+
         if (pScrollBar == GetDlgItem(IDC_REDSLIDER)) {
             handle = m_redSlider.m_hWnd;
         } else if (pScrollBar == GetDlgItem(IDC_GREENSLIDER)) {
@@ -77,13 +77,13 @@ void CBackgroundColorDialog::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScr
         m_blueSlider.SetPos(value);
     }
 
-    Vector3 color;
-    color.X = m_redSlider.GetPos() / 100.0f;
-    color.Y = m_greenSlider.GetPos() / 100.0f;
-    color.Z = m_blueSlider.GetPos() / 100.0f;
     CW3DViewDoc *doc = GetCurrentDocument();
 
     if (doc != nullptr) {
+        Vector3 color;
+        color.X = m_redSlider.GetPos() / 100.0f;
+        color.Y = m_greenSlider.GetPos() / 100.0f;
+        color.Z = m_blueSlider.GetPos() / 100.0f;
         doc->SetFogColor(color);
     }
 
@@ -97,26 +97,26 @@ void CBackgroundColorDialog::OnGreyscale()
         m_blueSlider.SetPos(m_redSlider.GetPos());
     }
 
-    Vector3 color;
-    color.X = m_redSlider.GetPos() / 100.0f;
-    color.Y = m_greenSlider.GetPos() / 100.0f;
-    color.Z = m_blueSlider.GetPos() / 100.0f;
     CW3DViewDoc *doc = GetCurrentDocument();
 
     if (doc != nullptr) {
+        Vector3 color;
+        color.X = m_redSlider.GetPos() / 100.0f;
+        color.Y = m_greenSlider.GetPos() / 100.0f;
+        color.Z = m_blueSlider.GetPos() / 100.0f;
         doc->SetFogColor(color);
     }
 }
 
 void CBackgroundColorDialog::OnCancel()
 {
-    Vector3 color;
-    color.X = m_currentRed / 100.0f;
-    color.Y = m_currentGreen / 100.0f;
-    color.Z = m_currentBlue / 100.0f;
     CW3DViewDoc *doc = GetCurrentDocument();
 
     if (doc != nullptr) {
+        Vector3 color;
+        color.X = m_currentRed / 100.0f;
+        color.Y = m_currentGreen / 100.0f;
+        color.Z = m_currentBlue / 100.0f;
         doc->SetFogColor(color);
     }
 

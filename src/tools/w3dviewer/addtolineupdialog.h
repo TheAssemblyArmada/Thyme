@@ -26,7 +26,7 @@ public:
     virtual BOOL OnInitDialog() override;
     virtual void OnOK() override;
 
-    CString Get_Name() { return m_objectName; }
+    CString Get_Name() const { return m_objectName; }
 
 private:
     DECLARE_MESSAGE_MAP();

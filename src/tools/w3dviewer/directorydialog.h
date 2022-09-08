@@ -15,4 +15,4 @@
 #pragma once
 #include "w3dafx.h"
 
-bool ChooseDirectory(HWND parent, const char *initialdir, CString *directory);
+bool ChooseDirectory(HWND parent, const char *initialdir, CString &directory);

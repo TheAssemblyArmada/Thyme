@@ -185,8 +185,8 @@ void PositionWindow(HWND hWnd)
                 GetWindowRect(hWnd, &rect2);
                 SetWindowPos(hWnd,
                     nullptr,
-                    rect.left + ((rect.right - rect.left) >> 1) - ((rect2.right - rect2.left) >> 1),
-                    rect.top + ((rect.bottom - rect.top) >> 1) - ((rect2.bottom - rect2.top) >> 1),
+                    rect.left + ((rect.right - rect.left) / 2) - ((rect2.right - rect2.left) / 2),
+                    rect.top + ((rect.bottom - rect.top) / 2) - ((rect2.bottom - rect2.top) / 2),
                     0,
                     0,
                     SWP_NOSIZE | SWP_NOZORDER);
@@ -200,7 +200,7 @@ void PaintGradient(HWND hwnd, bool red, bool green, bool blue)
     RECT r;
     GetClientRect(hwnd, &r);
     int height = r.bottom - r.top;
-    float width = (float)(r.right - r.left) * 0.00390625;
+    float width = (float)(r.right - r.left) / 256.0f;
     HDC hdc = GetDC(hwnd);
     CDC dc;
     dc.Attach(hdc);

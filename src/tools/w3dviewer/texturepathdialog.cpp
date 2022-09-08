@@ -53,7 +53,7 @@ void TexturePathDialogClass::OnBrowse1()
     CString oldpath;
     GetDlgItemText(IDC_PATH1, oldpath);
     CString newpath;
-    if (ChooseDirectory(m_hWnd, oldpath, &newpath)) {
+    if (ChooseDirectory(m_hWnd, oldpath, newpath)) {
         SetDlgItemText(IDC_PATH1, newpath);
     }
 }
@@ -63,7 +63,7 @@ void TexturePathDialogClass::OnBrowse2()
     CString oldpath;
     GetDlgItemText(IDC_PATH2, oldpath);
     CString newpath;
-    if (ChooseDirectory(m_hWnd, oldpath, &newpath)) {
+    if (ChooseDirectory(m_hWnd, oldpath, newpath)) {
         SetDlgItemText(IDC_PATH2, newpath);
     }
 }

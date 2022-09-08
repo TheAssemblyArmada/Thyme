@@ -26,13 +26,11 @@ UINT_PTR CALLBACK ChooseDirectoryHook(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
     return 0;
 }
 
-bool ChooseDirectory(HWND parent, const char *initialdir, CString *directory)
+bool ChooseDirectory(HWND parent, const char *initialdir, CString &directory)
 {
-    OPENFILENAME ofn;
-    memset(&ofn, 0, sizeof(OPENFILENAME));
+    OPENFILENAME ofn = { 0 };
     ofn.lStructSize = sizeof(OPENFILENAME);
-    char name[MAX_PATH];
-    memset(name, 0, sizeof(name));
+    char name[MAX_PATH] = { 0 };
     ofn.hwndOwner = parent;
     ofn.lpstrInitialDir = initialdir;
     ofn.hInstance = AfxGetModuleState()->m_hCurrentResourceHandle;
@@ -48,6 +46,6 @@ bool ChooseDirectory(HWND parent, const char *initialdir, CString *directory)
         return false;
     }
 
-    *directory = GetFilePath(name);
+    directory = GetFilePath(name);
     return true;
 }

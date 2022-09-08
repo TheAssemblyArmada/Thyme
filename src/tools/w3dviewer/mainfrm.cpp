@@ -17,6 +17,7 @@
 #include "assetmgr.h"
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
+#include "backgroundobjectdialog.h"
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
@@ -825,7 +826,8 @@ void CMainFrame::OnExportLOD()
 
 void CMainFrame::OnBackgroundObject()
 {
-    // do later
+    CBackgroundObjectDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnAnimationToolbar()

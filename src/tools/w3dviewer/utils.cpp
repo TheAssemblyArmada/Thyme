@@ -194,3 +194,32 @@ void PositionWindow(HWND hWnd)
         }
     }
 }
+
+void PaintGradient(HWND hwnd, bool red, bool green, bool blue)
+{
+    RECT r;
+    GetClientRect(hwnd, &r);
+    int height = r.bottom - r.top;
+    float width = (float)(r.right - r.left) * 0.00390625;
+    HDC hdc = GetDC(hwnd);
+    CDC dc;
+    dc.Attach(hdc);
+    float horiz = 0.0f;
+
+    for (int i = 0; i < 256; i++) {
+        int w;
+
+        if (width < 1.0f) {
+            w = 1;
+        } else {
+            w = width + 1;
+        }
+
+        dc.FillSolidRect(horiz, 0, w, height, RGB(red * i, green * i, blue * i));
+        horiz += width;
+    }
+
+    dc.Detach();
+    ReleaseDC(hwnd, hdc);
+    ValidateRect(hwnd, nullptr);
+}

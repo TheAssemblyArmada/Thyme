@@ -16,6 +16,7 @@
 #include "addtolineupdialog.h"
 #include "assetmgr.h"
 #include "backgroundbmpdialog.h"
+#include "backgroundcolordialog.h"
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
@@ -807,7 +808,8 @@ void CMainFrame::OnSceneLight()
 
 void CMainFrame::OnBackgroundColor()
 {
-    // do later
+    CBackgroundColorDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnBackgroundBitmap()

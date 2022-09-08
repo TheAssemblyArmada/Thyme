@@ -4,6 +4,7 @@ target_sources(w3dview PRIVATE
     addtolineupdialog.cpp
     assetinfo.cpp
     backgroundbmpdialog.cpp
+    backgroundcolordialog.cpp
     colorbar.cpp
     colorpicker.cpp
     colorpickerdialogclass.cpp

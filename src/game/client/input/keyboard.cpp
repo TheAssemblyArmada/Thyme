@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  *
  * @author OmniBlade
@@ -135,11 +135,11 @@ void Keyboard::Create_Stream_Messages()
         GameMessage *msg = nullptr;
 
         for (KeyboardIO *keyio = Get_First_Key(); keyio->key != 0; ++keyio) {
-            if (keyio->state & KEY_DOWN) {
+            if (keyio->state & KEY_STATE_DOWN) {
                 msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_KEY_DOWN);
                 captainslog_dbgassert(msg != nullptr, "Unable to append key down message to stream");
 
-            } else if (keyio->state & KEY_UP) {
+            } else if (keyio->state & KEY_STATE_UP) {
                 msg = g_theMessageStream->Append_Message(GameMessage::MSG_RAW_KEY_UP);
                 captainslog_dbgassert(msg != nullptr, "Unable to append key up message to stream");
 
@@ -262,13 +262,14 @@ void Keyboard::Update_Keys()
         m_keyStatus[m_keys[i].key].status = m_keys[i].status;
         m_keyStatus[m_keys[i].key].sequence = m_inputFrame;
 
-        if (m_keys[i].key == 15) {
-            if (m_keyStatus[56].state & KEY_DOWN || m_keyStatus[184].state & KEY_DOWN) {
+        if (m_keys[i].key == KEY_TAB) {
+            if (m_keyStatus[KEY_LALT].state & KEY_STATE_DOWN || m_keyStatus[KEY_RALT].state & KEY_STATE_DOWN) {
                 m_keys[i].status = KeyboardIO::STATUS_USED;
             }
         } else {
-            if (m_keys[i].key == 58 || m_keys[i].key == 29 || m_keys[i].key == 157 || m_keys[i].key == 42
-                || m_keys[i].key == 54 || m_keys[i].key == 56 || m_keys[i].key == 184) {
+            if (m_keys[i].key == KEY_CAPITAL || m_keys[i].key == KEY_LCONTROL || m_keys[i].key == KEY_RCONTROL
+                || m_keys[i].key == KEY_LSHIFT || m_keys[i].key == KEY_RSHIFT || m_keys[i].key == KEY_LALT
+                || m_keys[i].key == KEY_RALT) {
                 Translate_Key(m_keys[i].key);
             }
         }
@@ -295,9 +296,9 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
     }
 
     switch (key) {
-        case 58:
+        case KEY_CAPITAL:
             if (m_keyStatus[key].status == KeyboardIO::STATUS_UNUSED) {
-                if (m_keyStatus[key].state & KEY_DOWN) {
+                if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                     if (m_modifiers & MODIFIER_CAPS) {
                         m_modifiers &= ~MODIFIER_CAPS;
                     } else {
@@ -308,43 +309,43 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
                 m_keyStatus[key].status = KeyboardIO::STATUS_USED;
             }
             break;
-        case 42:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_LSHIFT:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_LSHIFT;
             } else {
                 m_modifiers &= ~MODIFIER_LSHIFT;
             }
             break;
-        case 54:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_RSHIFT:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_RSHIFT;
             } else {
                 m_modifiers &= ~MODIFIER_RSHIFT;
             }
             break;
-        case 29:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_LCONTROL:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_LCTRL;
             } else {
                 m_modifiers &= ~MODIFIER_LCTRL;
             }
             break;
-        case 157:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_RCONTROL:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_RCTRL;
             } else {
                 m_modifiers &= ~MODIFIER_RCTRL;
             }
             break;
-        case 56:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_LALT:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_LALT;
             } else {
                 m_modifiers &= ~MODIFIER_LALT;
             }
             break;
-        case 184:
-            if (m_keyStatus[key].state & KEY_DOWN) {
+        case KEY_RALT:
+            if (m_keyStatus[key].state & KEY_STATE_DOWN) {
                 m_modifiers |= MODIFIER_RALT;
             } else {
                 m_modifiers &= ~MODIFIER_RALT;
@@ -352,7 +353,7 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
             break;
         default:
             if (m_shiftExKey == key) {
-                if (m_keyStatus[m_shiftExKey].state & KEY_DOWN) {
+                if (m_keyStatus[m_shiftExKey].state & KEY_STATE_DOWN) {
                     m_modifiers |= MODIFIER_SHIFTEX;
                 } else {
                     m_modifiers &= ~MODIFIER_SHIFTEX;
@@ -360,11 +361,13 @@ wchar_t Keyboard::Translate_Key(wchar_t key)
             } else {
                 if (m_modifiers & MODIFIER_SHIFTEX) {
                     return m_keyNames[key].shifted_ex;
-                } else if (Is_Shift() || Get_Caps_State() && iswalpha(m_keyNames[key].std_key)) {
-                    return m_keyNames[key].shifted;
-                } else {
-                    return m_keyNames[key].std_key;
                 }
+
+                if (Is_Shift() || Get_Caps_State() && iswalpha(m_keyNames[key].std_key)) {
+                    return m_keyNames[key].shifted;
+                }
+
+                return m_keyNames[key].std_key;
             }
 
             break;
@@ -388,9 +391,9 @@ bool Keyboard::Check_Key_Repeat()
 
     // Check for repeat status.
     for (int j = 0; j < KEY_COUNT; ++j) {
-        if (m_keyStatus[j].state & KEY_DOWN && m_inputFrame - m_keyStatus[j].sequence > KEY_REPEAT_DELAY) {
+        if (m_keyStatus[j].state & KEY_STATE_DOWN && m_inputFrame - m_keyStatus[j].sequence > KEY_REPEAT_DELAY) {
             m_keys[i].key = j;
-            m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_DOWN;
+            m_keys[i].state = KEY_STATE_AUTOREPEAT | KEY_STATE_DOWN;
             m_keys[i].status = 0;
             m_keys[i + 1].key = 0;
 

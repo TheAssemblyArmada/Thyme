@@ -24,6 +24,7 @@
 #include "emitterinstancelist.h"
 #include "emitterpropertysheet.h"
 #include "graphicview.h"
+#include "hlod.h"
 #include "light.h"
 #include "part_emt.h"
 #include "renderdevicedesc.h"
@@ -597,7 +598,51 @@ void CMainFrame::OnProperties()
 
 void CMainFrame::OnGenerateLOD()
 {
-    // do later
+    CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+
+    if (view == nullptr || view->GetSelectedItemName() == nullptr) {
+        return;
+    }
+
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        const char *name = view->GetSelectedItemName();
+
+        int len = strlen(name);
+        char c = name[len - 2];
+        char c2 = name[len - 1];
+        bool format = false;
+        bool generate = false;
+
+        if ((c == 'L' || c == 'l') && c2 >= '0' && c2 <= '9') {
+            format = false;
+            generate = true;
+        }
+
+        else if ((c2 >= 'a' && c2 <= 'z') || (c2 >= 'A' && c2 <= 'Z')) {
+            format = true;
+            generate = true;
+        }
+
+        if (generate) {
+            CString namecopy = name;
+            CString nolod;
+
+            if (format) {
+                nolod = namecopy.Left(namecopy.GetLength() - 1);
+            } else {
+                nolod = namecopy.Left(namecopy.GetLength() - 2);
+            }
+
+            PrototypeClass *proto = doc->GenerateLOD(nolod, format);
+
+            if (proto != nullptr) {
+                W3DAssetManager::Get_Instance()->Add_Prototype(proto);
+                view->AddItem(proto->Get_Name(), ASSET_TYPE_HLOD, true);
+            }
+        }
+    }
 }
 
 void CMainFrame::OnOpen()
@@ -821,7 +866,11 @@ void CMainFrame::OnBackgroundBitmap()
 
 void CMainFrame::OnExportLOD()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        doc->ExportLOD();
+    }
 }
 
 void CMainFrame::OnBackgroundObject()
@@ -1148,27 +1197,46 @@ void CMainFrame::OnRenameAggregate()
 
 void CMainFrame::OnRecordSceneCamera()
 {
-    // do later
+    RenderObjClass *robj = GetCurrentDocument()->m_model;
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            HLodClass *lod = static_cast<HLodClass *>(robj);
+            CGraphicView *view = static_cast<CGraphicView *>(m_splitter.GetPane(0, 1));
+            float size = lod->Get_Screen_Size(*view->m_camera);
+            lod->Set_Max_Screen_Size(lod->Get_LOD_Level(), size);
+            GetCurrentDocument()->CreateHLodPrototype(*lod);
+        }
+    }
 }
 
 void CMainFrame::OnIncludeNull()
 {
-    // do later
+    RenderObjClass *robj = GetCurrentDocument()->m_model;
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            HLodClass *lod = static_cast<HLodClass *>(robj);
+            lod->Include_NULL_Lod(!lod->Is_NULL_Lod_Included());
+            GetCurrentDocument()->CreateHLodPrototype(*lod);
+        }
+    }
 }
 
 void CMainFrame::OnPrevLod()
 {
-    // do later
+    GetCurrentDocument()->SetLODLevel(-1, nullptr);
 }
 
 void CMainFrame::OnNextLod()
 {
-    // do later
+    GetCurrentDocument()->SetLODLevel(1, nullptr);
 }
 
 void CMainFrame::OnAutoSwitching()
 {
-    // do later
+    ViewerSceneClass *scene = GetCurrentDocument()->m_scene;
+    scene->Set_Auto_Switch_LOD(!scene->Get_Auto_Switch_LOD());
 }
 
 void CMainFrame::OnMovie()
@@ -1211,7 +1279,19 @@ void CMainFrame::OnCameraSettings()
 
 void CMainFrame::OnCopyScreenSize()
 {
-    // do later
+    CGraphicView *view = static_cast<CGraphicView *>(m_splitter.GetPane(0, 1));
+    CameraClass *camera = view->m_camera;
+    float size = GetCurrentDocument()->m_model->Get_Screen_Size(*camera);
+    CString str;
+    str.Format("MaxScreenSize=%f", size);
+    int len = str.GetLength() + 1;
+    HGLOBAL global = GlobalAlloc(GHND, len);
+    memcpy(GlobalLock(global), static_cast<const char *>(str), len);
+    GlobalUnlock(global);
+    OpenClipboard();
+    EmptyClipboard();
+    SetClipboardData(CF_TEXT, global);
+    CloseClipboard();
 }
 
 void CMainFrame::OnMissingTextures()
@@ -1496,7 +1576,7 @@ void CMainFrame::OnUpdateAnimateCamera(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateExportLod(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->Enable(m_currentType == ASSET_TYPE_HLOD);
 }
 
 void CMainFrame::OnUpdateExportAggregate(CCmdUI *pCmdUI)
@@ -1512,22 +1592,41 @@ void CMainFrame::OnUpdateResetOnDisplay(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateIncludeNull(CCmdUI *pCmdUI)
 {
-    // do later
+    RenderObjClass *robj = GetCurrentDocument()->m_model;
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            HLodClass *lod = static_cast<HLodClass *>(robj);
+            pCmdUI->SetCheck(lod->Is_NULL_Lod_Included());
+        }
+    }
 }
 
 void CMainFrame::OnUpdatePrevLod(CCmdUI *pCmdUI)
 {
-    // do later
+    RenderObjClass *robj = GetCurrentDocument()->m_model;
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            pCmdUI->Enable(robj->Get_LOD_Level() > 0);
+        }
+    }
 }
 
 void CMainFrame::OnUpdateNextLod(CCmdUI *pCmdUI)
 {
-    // do later
+    RenderObjClass *robj = GetCurrentDocument()->m_model;
+
+    if (robj != nullptr) {
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            pCmdUI->Enable(robj->Get_LOD_Level() + 1 < robj->Get_LOD_Count());
+        }
+    }
 }
 
 void CMainFrame::OnUpdateAutoSwitching(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetCheck(GetCurrentDocument()->m_scene->Get_Auto_Switch_LOD());
 }
 
 void CMainFrame::OnUpdateMovie(CCmdUI *pCmdUI)
@@ -1577,7 +1676,18 @@ void CMainFrame::OnUpdateVertexLighting(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateAddObject(CCmdUI *pCmdUI)
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+    bool enable = false;
+
+    if (doc != nullptr) {
+        if (doc->m_scene != nullptr) {
+            if (doc->m_model != nullptr && doc->m_scene->Is_LOD(doc->m_model->Class_ID())) {
+                enable = true;
+            }
+        }
+    }
+
+    pCmdUI->Enable(enable);
 }
 
 void CMainFrame::OnUpdateImportFacial(CCmdUI *pCmdUI)

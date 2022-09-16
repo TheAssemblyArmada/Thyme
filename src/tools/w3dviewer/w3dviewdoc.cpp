@@ -21,6 +21,7 @@
 #include "ffactory.h"
 #include "graphicview.h"
 #include "hanim.h"
+#include "hlod.h"
 #include "light.h"
 #include "mainfrm.h"
 #include "mesh.h"
@@ -380,7 +381,7 @@ void CW3DViewDoc::UpdateParticleCount()
 
 int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
 {
-    int count = 0;
+    int objcount = 0;
 
     if (robj == nullptr) {
         robj = m_model;
@@ -391,7 +392,7 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
             RenderObjClass *o = robj->Get_Sub_Object(i);
 
             if (o != nullptr) {
-                count += GetNumParticles(o);
+                objcount += GetNumParticles(o);
                 o->Release_Ref();
             }
         }
@@ -399,12 +400,12 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
         if (robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
 
             if (static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer() != nullptr) {
-                count += static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer()->Get_Particle_Count();
+                objcount += static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer()->Get_Particle_Count();
             }
         }
     }
 
-    return count;
+    return objcount;
 }
 
 void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool useRegularCameraReset, bool resetCamera, bool preserveModel)
@@ -870,6 +871,8 @@ bool CW3DViewDoc::ExportEmitter()
         "Westwood 3D Files (*.w3d)|*.~xyzabc||",
         AfxGetMainWnd());
 
+    dlg.m_ofn.lpstrTitle = "Export Emitter";
+
     if (dlg.DoModal() == IDOK) {
         ret = SaveEmitter(dlg.GetPathName());
     }
@@ -905,7 +908,7 @@ bool CW3DViewDoc::SaveEmitter(const char *name)
 void CW3DViewDoc::SetTexturePath1(const char *path)
 {
     if (m_texturePath1 != path) {
-        if (lstrlen(path) > 0) {
+        if (strlen(path) > 0) {
             g_theSimpleFileFactory->Append_Sub_Directory(path);
         }
 
@@ -917,7 +920,7 @@ void CW3DViewDoc::SetTexturePath1(const char *path)
 void CW3DViewDoc::SetTexturePath2(const char *path)
 {
     if (m_texturePath2 != path) {
-        if (lstrlen(path) > 0) {
+        if (strlen(path) > 0) {
             g_theSimpleFileFactory->Append_Sub_Directory(path);
         }
 
@@ -1018,23 +1021,181 @@ void CW3DViewDoc::SetFogColor(Vector3 &color)
     }
 }
 
-#if 0
-bool CW3DViewDoc::SaveAggregtate(const char *name)
+PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
 {
-    // do later
-}
+    RenderObjIterator *iter = W3DAssetManager::Get_Instance()->Create_Render_Obj_Iterator();
 
-void CW3DViewDoc::GenerateLOD(const char *name, int type)
-{
-    // do later
+    if (iter == nullptr) {
+        return nullptr;
+    }
+
+    int count = 0;
+    int index = 0xFFFF;
+    char c = 'Z';
+
+    for (iter->First(); !iter->Is_Done(); iter->Next()) {
+        const char *robjname = iter->Current_Item_Name();
+
+        if (W3DAssetManager::Get_Instance()->Render_Obj_Exists(robjname)
+            && iter->Current_Item_Class_ID() == RenderObjClass::CLASSID_HLOD && strstr(robjname, name) == robjname) {
+            const char *str = &robjname[strlen(name)];
+
+            if (type != 0) {
+                if (type == 1) {
+                    if (*str >= 'a' && *str <= 'z' || *str >= 'A' && *str <= 'Z') {
+                        char c1 = str[1];
+
+                        if (!c1) {
+                            count++;
+
+                            if (type != 0) {
+                                char c2 = toupper(robjname[strlen(robjname) - 1]);
+                                if (c >= c2) {
+                                    c = c2;
+                                }
+                            } else {
+                                int i2 = atoi(&robjname[strlen(robjname) - 1]);
+                                if (index >= i2) {
+                                    index = i2;
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if (*str == 'L' || *str == 'l') {
+                if (str[1] >= '0' && str[1] <= '9') {
+                    char c1 = str[2];
+
+                    if (!c1) {
+                        count++;
+
+                        if (type != 0) {
+                            char c2 = toupper(robjname[strlen(robjname) - 1]);
+                            if (c >= c2) {
+                                c = c2;
+                            }
+                        } else {
+                            int i2 = atoi(&robjname[strlen(robjname) - 1]);
+                            if (index >= i2) {
+                                index = i2;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    RenderObjClass **objs = new RenderObjClass *[count];
+    RenderObjClass **objs2 = &objs[count - 1];
+
+    for (int i = 0; i < count; i++) {
+        StringClass lodname;
+
+        if (type) {
+            lodname.Format("%s%c", name, c++);
+        } else {
+            lodname.Format("%sL%d", name, i + index);
+        }
+
+        *objs2 = W3DAssetManager::Get_Instance()->Create_Render_Obj(lodname);
+        objs2--;
+    }
+
+    HLodClass *hlod = new HLodClass(name, objs, count);
+    HLodDefClass *def = new HLodDefClass(*hlod);
+    HLodPrototypeClass *proto = new HLodPrototypeClass(def);
+    Ref_Ptr_Release(hlod);
+
+    for (int i = 0; i < count; i++) {
+        Ref_Ptr_Release(objs[i]);
+    }
+
+    delete[] objs;
+    W3DAssetManager::Get_Instance()->Release_Render_Obj_Iterator(iter);
+    return proto;
 }
 
 bool CW3DViewDoc::ExportLOD()
 {
-    // do later
+    if (m_model == nullptr || m_model->Class_ID() != RenderObjClass::CLASSID_HLOD) {
+        return false;
+    }
+
+    CString str = GetDataTreeView()->GetSelectedItemName();
+    str += ".w3d";
+
+    RestrictedFileDialogClass dlg(FALSE,
+        ".w3d",
+        str,
+        OFN_EXPLORER | OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+        "Westwood 3D Files (*.w3d)|*.~xyzabc||",
+        AfxGetMainWnd());
+
+    dlg.m_ofn.lpstrTitle = "Export LOD";
+
+    if (dlg.DoModal() == IDOK) {
+        return SaveLOD(dlg.GetPathName());
+    }
+
+    return false;
 }
 
 bool CW3DViewDoc::SaveLOD(const char *name)
+{
+    bool ret = false;
+    HLodPrototypeClass *proto =
+        static_cast<HLodPrototypeClass *>(W3DAssetManager::Get_Instance()->Find_Prototype(m_model->Get_Name()));
+
+    if (proto != nullptr) {
+        if (proto->Get_Definition() != nullptr) {
+            FileClass *f = g_theFileFactory->Get_File(name);
+
+            if (f != nullptr) {
+                f->Open(FM_WRITE);
+                ChunkSaveClass csave(f);
+                ret = proto->Get_Definition()->Save(csave) == W3D_ERROR_OK;
+                f->Close();
+                g_theFileFactory->Return_File(f);
+            }
+        }
+    }
+
+    return ret;
+}
+
+void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
+{
+    HLodDefClass *def = new HLodDefClass(lod);
+    HLodPrototypeClass *proto = new HLodPrototypeClass(def);
+    W3DAssetManager::Get_Instance()->Remove_Prototype(def->Get_Name());
+    W3DAssetManager::Get_Instance()->Add_Prototype(proto);
+}
+
+void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
+{
+    if (robj == nullptr) {
+        robj = m_model;
+    }
+
+    if (robj != nullptr) {
+        for (int i = 0; i < robj->Get_Num_Sub_Objects(); i++) {
+            RenderObjClass *o = robj->Get_Sub_Object(i);
+
+            if (o != nullptr) {
+                SetLODLevel(lod, o);
+                o->Release_Ref();
+            }
+        }
+
+        if (robj->Class_ID() == RenderObjClass::CLASSID_HLOD) {
+            robj->Set_LOD_Level(lod + robj->Get_LOD_Level());
+        }
+    }
+}
+
+#if 0
+bool CW3DViewDoc::SaveAggregtate(const char *name)
 {
     // do later
 }
@@ -1069,17 +1230,7 @@ void CW3DViewDoc::CreateAggregatePrototype(RenderObjClass &robj)
     // do later
 }
 
-void CW3DViewDoc::CreateHLodPrototype(HLodClass &lod)
-{
-    // do later
-}
-
 void CW3DViewDoc::CaptureMovie()
-{
-    // do later
-}
-
-void CW3DViewDoc::SetLODLevel(int lod, RenderObjClass *robj)
 {
     // do later
 }

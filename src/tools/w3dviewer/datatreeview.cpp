@@ -382,9 +382,9 @@ void CDataTreeView::Select(HTREEITEM item)
                     }
                 }
             }
-        }
 
-        return;
+            return;
+        }
     }
 
     CW3DViewDoc *document = static_cast<CW3DViewDoc *>(m_pDocument);

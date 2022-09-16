@@ -604,29 +604,40 @@ void CMainFrame::OnGenerateLOD()
         return;
     }
 
-    const char *name = view->GetSelectedItemName();
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
 
-    int len = lstrlen(name);
-    char c = name[len - 2];
-    bool b = false;
+    if (doc != nullptr) {
+        const char *name = view->GetSelectedItemName();
 
-    if ((c == 'L' || c == 'l' && name[len - 1] >= '0' && name[len - 1] <= '9')
-        || (b = true, name[len - 1] >= 'a' && name[len - 1] <= 'z' || name[len - 1] >= 'A' && name[len - 1] <= 'Z')) {
-        CString str = name;
-        CString str2;
+        int len = strlen(name);
+        char c = name[len - 2];
+        char c2 = name[len - 1];
+        bool format = false;
+        bool generate = false;
 
-        if (b) {
-            str2 = str.Left(str.GetLength() - 1);
-        } else {
-            str2 = str.Left(str.GetLength() - 2);
+        if ((c == 'L' || c == 'l') && c2 >= '0' && c2 <= '9') {
+            format = false;
+            generate = true;
         }
 
-        CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+        else if ((c2 >= 'a' && c2 <= 'z') || (c2 >= 'A' && c2 <= 'Z')) {
+            format = true;
+            generate = true;
+        }
 
-        if (doc != nullptr) {
-            PrototypeClass *proto = doc->GenerateLOD(str2, b);
+        if (generate) {
+            CString namecopy = name;
+            CString nolod;
 
-            if (proto) {
+            if (format) {
+                nolod = namecopy.Left(namecopy.GetLength() - 1);
+            } else {
+                nolod = namecopy.Left(namecopy.GetLength() - 2);
+            }
+
+            PrototypeClass *proto = doc->GenerateLOD(nolod, format);
+
+            if (proto != nullptr) {
                 W3DAssetManager::Get_Instance()->Add_Prototype(proto);
                 view->AddItem(proto->Get_Name(), ASSET_TYPE_HLOD, true);
             }

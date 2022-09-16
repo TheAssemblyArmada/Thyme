@@ -381,7 +381,7 @@ void CW3DViewDoc::UpdateParticleCount()
 
 int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
 {
-    int count = 0;
+    int objcount = 0;
 
     if (robj == nullptr) {
         robj = m_model;
@@ -392,7 +392,7 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
             RenderObjClass *o = robj->Get_Sub_Object(i);
 
             if (o != nullptr) {
-                count += GetNumParticles(o);
+                objcount += GetNumParticles(o);
                 o->Release_Ref();
             }
         }
@@ -400,12 +400,12 @@ int CW3DViewDoc::GetNumParticles(RenderObjClass *robj)
         if (robj->Class_ID() == RenderObjClass::CLASSID_PARTICLEEMITTER) {
 
             if (static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer() != nullptr) {
-                count += static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer()->Get_Particle_Count();
+                objcount += static_cast<ParticleEmitterClass *>(robj)->Peek_Buffer()->Get_Particle_Count();
             }
         }
     }
 
-    return count;
+    return objcount;
 }
 
 void CW3DViewDoc::SetRenderObject(RenderObjClass *robj, bool useRegularCameraReset, bool resetCamera, bool preserveModel)
@@ -908,7 +908,7 @@ bool CW3DViewDoc::SaveEmitter(const char *name)
 void CW3DViewDoc::SetTexturePath1(const char *path)
 {
     if (m_texturePath1 != path) {
-        if (lstrlen(path) > 0) {
+        if (strlen(path) > 0) {
             g_theSimpleFileFactory->Append_Sub_Directory(path);
         }
 
@@ -920,7 +920,7 @@ void CW3DViewDoc::SetTexturePath1(const char *path)
 void CW3DViewDoc::SetTexturePath2(const char *path)
 {
     if (m_texturePath2 != path) {
-        if (lstrlen(path) > 0) {
+        if (strlen(path) > 0) {
             g_theSimpleFileFactory->Append_Sub_Directory(path);
         }
 
@@ -1038,7 +1038,7 @@ PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
 
         if (W3DAssetManager::Get_Instance()->Render_Obj_Exists(robjname)
             && iter->Current_Item_Class_ID() == RenderObjClass::CLASSID_HLOD && strstr(robjname, name) == robjname) {
-            const char *str = &robjname[lstrlen(name)];
+            const char *str = &robjname[strlen(name)];
 
             if (type != 0) {
                 if (type == 1) {
@@ -1048,13 +1048,13 @@ PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
                         if (!c1) {
                             count++;
 
-                            if (type) {
-                                char c2 = toupper(robjname[lstrlen(robjname) - 1]);
+                            if (type != 0) {
+                                char c2 = toupper(robjname[strlen(robjname) - 1]);
                                 if (c >= c2) {
                                     c = c2;
                                 }
                             } else {
-                                int i2 = atoi(&robjname[lstrlen(robjname) - 1]);
+                                int i2 = atoi(&robjname[strlen(robjname) - 1]);
                                 if (index >= i2) {
                                     index = i2;
                                 }
@@ -1069,13 +1069,13 @@ PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
                     if (!c1) {
                         count++;
 
-                        if (type) {
-                            char c2 = toupper(robjname[lstrlen(robjname) - 1]);
+                        if (type != 0) {
+                            char c2 = toupper(robjname[strlen(robjname) - 1]);
                             if (c >= c2) {
                                 c = c2;
                             }
                         } else {
-                            int i2 = atoi(&robjname[lstrlen(robjname) - 1]);
+                            int i2 = atoi(&robjname[strlen(robjname) - 1]);
                             if (index >= i2) {
                                 index = i2;
                             }
@@ -1090,15 +1090,15 @@ PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
     RenderObjClass **objs2 = &objs[count - 1];
 
     for (int i = 0; i < count; i++) {
-        StringClass str;
+        StringClass lodname;
 
         if (type) {
-            str.Format("%s%c", name, c++);
+            lodname.Format("%s%c", name, c++);
         } else {
-            str.Format("%sL%d", name, i + index);
+            lodname.Format("%sL%d", name, i + index);
         }
 
-        *objs2 = W3DAssetManager::Get_Instance()->Create_Render_Obj(str);
+        *objs2 = W3DAssetManager::Get_Instance()->Create_Render_Obj(lodname);
         objs2--;
     }
 
@@ -1112,6 +1112,7 @@ PrototypeClass *CW3DViewDoc::GenerateLOD(const char *name, int type)
     }
 
     delete[] objs;
+    W3DAssetManager::Get_Instance()->Release_Render_Obj_Iterator(iter);
     return proto;
 }
 

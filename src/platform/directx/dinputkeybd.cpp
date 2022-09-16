@@ -61,23 +61,23 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
 
     HRESULT res = m_inputDevice->Acquire();
     DIDEVICEOBJECTDATA data;
-    DWORD data_fetched = 1; // Initial value is how many data objects we are filling.
+    DWORD count = 1; // Initial value is how many data objects we are filling.
 
-    if (res == DI_OK || res == S_FALSE) {
-        res = m_inputDevice->GetDeviceData(sizeof(data), &data, &data_fetched, 0);
+    if (res == DI_OK || res == DI_NOTATTACHED) {
+        res = m_inputDevice->GetDeviceData(sizeof(data), &data, &count, 0);
     }
 
     if (res == DIERR_INPUTLOST || res == DIERR_NOTACQUIRED) {
         res = m_inputDevice->Acquire();
 
-        if (res == DI_OK || res == S_FALSE) {
+        if (res == DI_OK || res == DI_NOTATTACHED) {
             io->key = 0xFF;
         }
-    } else if (res == DI_OK && data_fetched != 0) {
+    } else if (res == DI_OK && count != 0) {
         io->key = data.dwOfs;
         io->sequence = data.dwSequence;
         io->status = 0;
-        io->state = !((data.dwData & 0x80) == 0) + 1;
+        io->state = (data.dwData & 0x80) == 0 ? KEY_STATE_UP : KEY_STATE_DOWN;
     }
 }
 
@@ -86,30 +86,29 @@ void DirectInputKeyboard::Get_Key(KeyboardIO *io)
  */
 void DirectInputKeyboard::Open_Keyboard()
 {
-    if (DirectInput8Create(GetModuleHandleA(nullptr),
+    if (FAILED(DirectInput8Create(g_applicationHInstance,
             DIRECTINPUT_VERSION,
-            IID_IDirectInput8A,
+            IID_IDirectInput8,
             reinterpret_cast<LPVOID *>(&m_inputInterface),
-            0)
-        < 0) {
+            nullptr))) {
         captainslog_error("DirectInput8Create failed.");
         Close_Keyboard();
         return;
     }
 
-    if (m_inputInterface->CreateDevice(GUID_SysKeyboard, &m_inputDevice, 0) < 0) {
+    if (FAILED(m_inputInterface->CreateDevice(GUID_SysKeyboard, &m_inputDevice, nullptr))) {
         captainslog_error("CreateDevice failed.");
         Close_Keyboard();
         return;
     }
 
-    if (m_inputDevice->SetDataFormat(&c_dfDIKeyboard) < 0) {
+    if (FAILED(m_inputDevice->SetDataFormat(&c_dfDIKeyboard))) {
         captainslog_error("Failed to set the data format.");
         Close_Keyboard();
         return;
     }
 
-    if (m_inputDevice->SetCooperativeLevel(g_applicationHWnd, 6) < 0) {
+    if (FAILED(m_inputDevice->SetCooperativeLevel(g_applicationHWnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND))) {
         captainslog_error("Failed to set cooperative level.");
         Close_Keyboard();
         return;
@@ -122,17 +121,19 @@ void DirectInputKeyboard::Open_Keyboard()
     prop.diph.dwHow = DIPH_DEVICE;
     prop.dwData = 256;
 
-    if (m_inputDevice->SetProperty(DIPROP_BUFFERSIZE, (LPDIPROPHEADER)&prop) < 0) {
+    if (FAILED(m_inputDevice->SetProperty(DIPROP_BUFFERSIZE, (LPDIPROPHEADER)&prop))) {
         captainslog_error("Failed to set buffer size property.");
         Close_Keyboard();
         return;
     }
 
-    if (m_inputDevice->Acquire() < 0) {
+    if (FAILED(m_inputDevice->Acquire())) {
         captainslog_error("Failed to acquire device.");
-    } else {
-        captainslog_info("DirectInput keyboard device initialised successfully.");
+        Close_Keyboard(); // bugfix, close if fails
+        return;
     }
+
+    captainslog_info("DirectInput keyboard device initialised successfully.");
 }
 
 /**

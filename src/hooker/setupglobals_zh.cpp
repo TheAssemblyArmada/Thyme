@@ -656,3 +656,8 @@ WeaponStore *&g_theWeaponStore = Make_Global<WeaponStore *>(PICK_ADDRESS(0x00A2B
 // team.cpp
 class TeamFactory;
 TeamFactory *&g_theTeamFactory = Make_Global<TeamFactory *>(PICK_ADDRESS(0x00A2BBE8, 0x04CA864C));
+
+// challengegenerals.cpp
+class ChallengeGenerals;
+ChallengeGenerals *&g_theChallengeGenerals = Make_Global<ChallengeGenerals *>(PICK_ADDRESS(0x00A2C09C, 0x04CA9C78));
+

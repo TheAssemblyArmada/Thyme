@@ -14,6 +14,7 @@
  */
 #include "mainfrm.h"
 #include "addtolineupdialog.h"
+#include "ambientlightdialog.h"
 #include "assetmgr.h"
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
@@ -795,7 +796,8 @@ void CMainFrame::OnRotateX()
 
 void CMainFrame::OnAmbient()
 {
-    // do later
+    CAmbientLightDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnSceneLight()

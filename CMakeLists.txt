@@ -268,8 +268,11 @@ if(NOT wxWidgets_FOUND AND BUILD_TOOLS)
         GIT_SHALLOW     TRUE
     )
     
-    FetchContent_GetProperties(wxWidgets)
     FetchContent_MakeAvailable(wxWidgets)
+    if(IS_DIRECTORY "${wxWidgets_SOURCE_DIR}")
+        set_property(DIRECTORY ${wxWidgets_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL YES)
+    endif()
+
     set(wxWidgets_FOUND TRUE)
     set(wxWidgets_LIBRARIES wxcore wxbase wxxrc wxxml wxhtml wxadv)
 

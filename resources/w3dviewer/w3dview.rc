@@ -246,10 +246,6 @@ BEGIN
         MENUITEM "&Scale Emitter...",           ID_EMITTERS_SCALEEMITTER
         MENUITEM SEPARATOR
         MENUITEM "&Edit Emitter\tEnter",        ID_EMITTERS_EDITEMITTER
-        POPUP "E&dit"
-        BEGIN
-            MENUITEM SEPARATOR
-        END
     END
     POPUP "Ligh&ting"
     BEGIN

@@ -434,11 +434,6 @@ void CMainFrame::GetDevice(bool doDeviceDlg)
     }
 }
 
-void CMainFrame::UpdateEmitterMenu()
-{
-    // do later
-}
-
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
     static UINT indicators[] = { 0, IDS_POLYS, IDS_PARTICLES, IDS_CAMERADIST, IDS_FRAMES, IDS_FRAMETIME, IDS_WWW };

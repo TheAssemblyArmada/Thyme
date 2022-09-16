@@ -27,7 +27,6 @@ public:
     void UpdatePolyCount(int polys);
     void UpdateParticleCount(int particles);
     void UpdateMenus(AssetType type);
-    void UpdateEmitterMenu();
     void UpdateCameraDistance(float distance);
     void UpdateFrameCount(int frame, int framecount, float fps);
 

@@ -371,15 +371,6 @@ void CDataTreeView::Select(HTREEITEM item)
 
                 if (frame != nullptr) {
                     frame->UpdateMenus(info->m_type);
-
-                    if (info->m_type == ASSET_TYPE_AGGREGATE) {
-                        frame->UpdateEmitterMenu();
-                    } else {
-                        EnableMenuItem(GetSubMenu(::GetMenu(frame->m_hWnd), 3), 3, MF_BYPOSITION | MF_DISABLED | MF_GRAYED);
-
-                        while (RemoveMenu(frame->m_subMenu, 0, MF_BYPOSITION)) {
-                        }
-                    }
                 }
             }
 

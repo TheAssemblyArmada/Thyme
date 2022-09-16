@@ -1220,17 +1220,32 @@ void CMainFrame::OnKillSceneLight()
 
 void CMainFrame::OnMultiPassLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnMultiTextureLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnVertexLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_VERTEX) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_VERTEX);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnAddObject()
@@ -1464,17 +1479,17 @@ void CMainFrame::OnUpdateAutoSwitching(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateMultiPassLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS);
 }
 
 void CMainFrame::OnUpdateMultiTextureLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE);
 }
 
 void CMainFrame::OnUpdateVertexLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_VERTEX);
 }
 
 void CMainFrame::OnUpdateAddObject(CCmdUI *pCmdUI)

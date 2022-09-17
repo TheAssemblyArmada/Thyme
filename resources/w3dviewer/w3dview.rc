@@ -623,13 +623,13 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,81,66,50,14
 END
 
-IDD_KEYFRAME DIALOGEX 0, 0, 150, 87
+IDD_SCALE DIALOGEX 0, 0, 150, 87
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Scale"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_SIZE,IDC_STATIC,7,7,20,20
-    LTEXT           "Use the controls below to specify the scale at the current keyframe.",IDC_KEYFRAME,36,7,107,26
+    LTEXT           "Use the controls below to specify the scale at the current keyframe.",IDC_SCALELABEL,36,7,107,26
     LTEXT           "&Scale:",IDC_STATIC,36,40,21,8
     EDITTEXT        IDC_SCALE,62,38,38,14
     CONTROL         "Spin2",IDC_SCALESPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,118,38,11,14
@@ -1152,7 +1152,7 @@ BEGIN
         TOPMARGIN, 7
     END
 
-    IDD_KEYFRAME, DIALOG
+    IDD_SCALE, DIALOG
     BEGIN
         LEFTMARGIN, 7
         TOPMARGIN, 7

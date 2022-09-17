@@ -264,7 +264,7 @@
 #define IDC_EDITCTRL                    1152
 #define IDC_OBJECT                      1159
 #define IDC_BLURTIMELABEL               1160
-#define IDC_KEYFRAME                    1160
+#define IDC_SCALELABEL                  1160
 #define IDC_FRAMELABEL                  1160
 #define IDC_ROTLABEL                    1160
 #define IDC_MAPPING                     1161
@@ -293,7 +293,7 @@
 #define IDC_BLURTIMESPIN                1182
 #define IDC_COMPRESSQ                   1183
 #define IDD_SELECTDIR                   1536
-#define IDD_KEYFRAME                    20642
+#define IDD_SCALE                       20642
 #define IDD_EMITTERLINE                 20646
 #define IDD_EMITTERROT                  20647
 #define IDD_EMITTERFRAME                20648

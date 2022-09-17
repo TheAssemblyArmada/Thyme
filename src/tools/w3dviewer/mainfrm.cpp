@@ -30,6 +30,7 @@
 #include "part_emt.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
+#include "scaledialog.h"
 #include "texturepathdialog.h"
 #include "utils.h"
 #include "viewerscene.h"
@@ -1313,7 +1314,25 @@ void CMainFrame::OnFog()
 
 void CMainFrame::OnScaleEmitter()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        CScaleDialog dlg(1.0f, this, "Enter the scaling factor you want to apply to the current particle emitter");
+
+        if (dlg.DoModal() != IDCANCEL) {
+            ParticleEmitterClass *emitter = static_cast<ParticleEmitterClass *>(doc->m_model);
+            emitter->Scale(dlg.Get_Scale());
+
+            const char *name = emitter->Get_Name();
+            if (name != nullptr && *name != 0) {
+                W3DAssetManager::Get_Instance()->Remove_Prototype(name);
+            }
+
+            ParticleEmitterDefClass *def = emitter->Build_Definition();
+            ParticleEmitterPrototypeClass *proto = new ParticleEmitterPrototypeClass(def);
+            W3DAssetManager::Get_Instance()->Add_Prototype(proto);
+        }
+    }
 }
 
 void CMainFrame::OnPolygonSorting()

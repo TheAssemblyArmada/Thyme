@@ -34,6 +34,7 @@ target_sources(w3dview PRIVATE
     particlerotationkeydialog.cpp
     particlesizedialog.cpp
     restrictedfiledialog.cpp
+    scaledialog.cpp
     texturepathdialog.cpp
     toolbar.cpp
     utils.cpp

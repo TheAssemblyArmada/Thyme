@@ -15,6 +15,7 @@
 #pragma once
 
 #include "always.h"
+#include "coltype.h"
 #include "matrix3d.h"
 #include "sphere.h"
 #include "vector3.h"
@@ -62,6 +63,22 @@ public:
     float m_maxDistance;
     IntersectionResultClass m_result;
 
+    IntersectionClass() :
+        m_convexTest(false),
+        m_result(),
+        // bugfix, init all members
+        m_screenX(0),
+        m_screenY(0),
+        m_interpolateNormal(false),
+        m_maxDistance(GAMEMATH_FLOAT_MAX)
+    {
+        m_rayLocation = &s_rayLocation;
+        m_rayDirection = &s_rayDirection;
+        m_intersectionNormal = &s_intersectionNormal;
+
+        m_result.m_CollisionType = COLLISION_TYPE_ALL;
+    }
+
     virtual ~IntersectionClass() {}
 
     bool Intersect_Sphere_Quick(SphereClass &Sphere, IntersectionResultClass *FinalResult)
@@ -100,4 +117,8 @@ public:
 
         return true;
     }
+
+    static Vector3 s_rayLocation;
+    static Vector3 s_rayDirection;
+    static Vector3 s_intersectionNormal;
 };

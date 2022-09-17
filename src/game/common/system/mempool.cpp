@@ -167,6 +167,8 @@ int MemoryPool::Count_Blobs()
 
 int MemoryPool::Release_Empties()
 {
+    ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
+
     int count = 0;
 
     for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = i->m_nextBlob) {
@@ -180,6 +182,8 @@ int MemoryPool::Release_Empties()
 
 void MemoryPool::Reset()
 {
+    ScopedCriticalSectionClass scs(g_memoryPoolCriticalSection);
+
     for (MemoryPoolBlob *i = m_firstBlob; i != nullptr; i = m_firstBlob) {
         Free_Blob(i);
     }

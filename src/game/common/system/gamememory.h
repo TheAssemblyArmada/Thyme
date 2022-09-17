@@ -40,5 +40,7 @@ void Free_From_Pool(MemoryPool *pool, void *memory);
 
 #ifdef GAME_DLL
 void *New_New(size_t bytes);
+void *New_New_Dbg(size_t bytes, char const *file, int line);
 void New_Delete(void *ptr);
+void New_Delete_Dbg(void *ptr, char const *file, int line);
 #endif

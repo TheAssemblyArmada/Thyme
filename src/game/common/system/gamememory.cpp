@@ -41,7 +41,22 @@ void *New_New(size_t bytes)
     return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
 }
 
+void *New_New_Dbg(size_t bytes, char const *file, int line)
+{
+    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    Init_Memory_Manager_Pre_Main();
+
+    return g_dynamicMemoryAllocator->Allocate_Bytes(bytes);
+}
+
 void New_Delete(void *ptr)
+{
+    ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
+    Init_Memory_Manager_Pre_Main();
+    g_dynamicMemoryAllocator->Free_Bytes(ptr);
+}
+
+void New_Delete_Dbg(void *ptr, char const *file, int line)
 {
     ++(Make_Global<int>(PICK_ADDRESS(0x00A29B9C, 0x00E1B368)));
     Init_Memory_Manager_Pre_Main();

@@ -129,6 +129,7 @@ const char* Get_Payload_Name()
     
     static const ExePayloads Payloads[] = {
         { "5b805b4ecba79581fe8ec454b5acf7b7e13d4dd5", "thyme.dll" },
+        { "3c1a1d431eae665978c9406f05c427252bc4e768", "thymeedit.dll" },
     };
 
     const char *target_hash = Get_Hash();

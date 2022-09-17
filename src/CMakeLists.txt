@@ -594,6 +594,9 @@ if(BUILD_EDITOR)
         target_compile_definitions(thymeedit_dll PRIVATE ${GAME_COMPILE_OPTIONS} "ALLOW_HOOKING=friend void Setup_Hooks()\;")
         target_compile_definitions(thymeedit_dll PRIVATE $<$<CONFIG:DEBUG>:GAME_DEBUG>)
         set_target_properties(thymeedit_dll PROPERTIES OUTPUT_NAME thymeedit PDB_NAME thymeeditdll)
+        target_exports(thymeedit_dll SYMBOLS 
+            Setup_Hooks
+        )
     endif()
 endif()
 

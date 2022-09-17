@@ -215,7 +215,7 @@ ParticleBufferClass::ParticleBufferClass(ParticleEmitterClass *emitter,
             m_lineGroup->Set_Texture(tex);
             m_lineGroup->Set_Shader(shader);
             m_lineGroup->Set_Line_Mode(LineGroupClass::TETRAHEDRON);
-            m_tailPosition = new ShareBufferClass<Vector3>(m_maxNum);
+            m_tailPosition = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::TailPosition");
             Set_Force_Visible(1);
         } break;
         case W3D_EMITTER_RENDER_MODE_LINEGRP_PRISM: {
@@ -224,7 +224,7 @@ ParticleBufferClass::ParticleBufferClass(ParticleEmitterClass *emitter,
             m_lineGroup->Set_Texture(tex);
             m_lineGroup->Set_Shader(shader);
             m_lineGroup->Set_Line_Mode(LineGroupClass::PRISM);
-            m_tailPosition = new ShareBufferClass<Vector3>(m_maxNum);
+            m_tailPosition = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::TailPosition");
             Set_Force_Visible(1);
         } break;
         default:
@@ -232,14 +232,14 @@ ParticleBufferClass::ParticleBufferClass(ParticleEmitterClass *emitter,
             break;
     }
 
-    m_position[0] = new ShareBufferClass<Vector3>(m_maxNum);
+    m_position[0] = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Position");
 
     if (m_pingPongPosition) {
-        m_position[1] = new ShareBufferClass<Vector3>(m_maxNum);
+        m_position[1] = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Position");
     }
 
-    m_APT = new ShareBufferClass<unsigned int>(m_maxNum);
-    m_groupID = new ShareBufferClass<uint8_t>(m_maxNum);
+    m_APT = New_Share_Buffer<unsigned int>(m_maxNum, "ParticleBufferClass::APT");
+    m_groupID = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::GroupID");
     m_velocity = new Vector3[m_maxNum];
     m_timeStamp = new unsigned int[m_maxNum];
     int minlod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
@@ -357,7 +357,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
     m_numRandomColorEntriesMinus1 = src.m_numRandomColorEntriesMinus1;
 
     if (src.m_color != nullptr) {
-        m_color = new ShareBufferClass<Vector3>(m_maxNum);
+        m_color = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Color");
         m_colorKeyFrameTimes = new unsigned int[m_numColorKeyFrames];
         m_colorKeyFrameValues = new Vector3[m_numColorKeyFrames];
         m_colorKeyFrameDeltas = new Vector3[m_numColorKeyFrames];
@@ -382,7 +382,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
     m_numRandomAlphaEntriesMinus1 = src.m_numRandomAlphaEntriesMinus1;
 
     if (src.m_alpha != nullptr) {
-        m_alpha = new ShareBufferClass<float>(m_maxNum);
+        m_alpha = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::Alpha");
         m_alphaKeyFrameTimes = new unsigned int[m_numAlphaKeyFrames];
         m_alphaKeyFrameValues = new float[m_numAlphaKeyFrames];
         m_alphaKeyFrameDeltas = new float[m_numAlphaKeyFrames];
@@ -407,7 +407,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
     m_numRandomSizeEntriesMinus1 = src.m_numRandomSizeEntriesMinus1;
 
     if (src.m_size != nullptr) {
-        m_size = new ShareBufferClass<float>(m_maxNum);
+        m_size = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::Size");
         m_sizeKeyFrameTimes = new unsigned int[m_numSizeKeyFrames];
         m_sizeKeyFrameValues = new float[m_numSizeKeyFrames];
         m_sizeKeyFrameDeltas = new float[m_numSizeKeyFrames];
@@ -433,7 +433,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
     m_numRandomOrientationEntriesMinus1 = src.m_numRandomOrientationEntriesMinus1;
 
     if (src.m_orientation != nullptr) {
-        m_orientation = new ShareBufferClass<uint8_t>(m_maxNum);
+        m_orientation = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::Orientation");
         m_rotationKeyFrameTimes = new unsigned int[m_numRotationKeyFrames];
         m_rotationKeyFrameValues = new float[m_numRotationKeyFrames];
         m_halfRotationKeyFrameDeltas = new float[m_numRotationKeyFrames];
@@ -465,9 +465,9 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
 
     if (src.m_frame != nullptr || src.m_uCoord != nullptr) {
         if (src.m_frame != nullptr) {
-            m_frame = new ShareBufferClass<uint8_t>(m_maxNum);
+            m_frame = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::Frame");
         } else {
-            m_uCoord = new ShareBufferClass<float>(m_maxNum);
+            m_uCoord = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::UCoord");
         }
 
         m_frameKeyFrameTimes = new unsigned int[m_numFrameKeyFrames];
@@ -549,7 +549,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
             m_lineGroup->Set_Texture(src.m_lineGroup->Peek_Texture());
             m_lineGroup->Set_Shader(src.m_lineGroup->Get_Shader());
             m_lineGroup->Set_Line_Mode(LineGroupClass::TETRAHEDRON);
-            m_tailPosition = new ShareBufferClass<Vector3>(m_maxNum);
+            m_tailPosition = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::TailPosition");
             Set_Force_Visible(1);
         } break;
         case W3D_EMITTER_RENDER_MODE_LINEGRP_PRISM: {
@@ -559,7 +559,7 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
             m_lineGroup->Set_Texture(src.m_lineGroup->Peek_Texture());
             m_lineGroup->Set_Shader(src.m_lineGroup->Get_Shader());
             m_lineGroup->Set_Line_Mode(LineGroupClass::PRISM);
-            m_tailPosition = new ShareBufferClass<Vector3>(m_maxNum);
+            m_tailPosition = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::TailPosition");
             Set_Force_Visible(1);
         } break;
         default:
@@ -567,14 +567,14 @@ ParticleBufferClass::ParticleBufferClass(const ParticleBufferClass &src) :
             break;
     }
 
-    m_position[0] = new ShareBufferClass<Vector3>(m_maxNum);
+    m_position[0] = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Position");
 
     if (m_pingPongPosition) {
-        m_position[1] = new ShareBufferClass<Vector3>(m_maxNum);
+        m_position[1] = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Position");
     }
 
-    m_APT = new ShareBufferClass<unsigned int>(m_maxNum);
-    m_groupID = new ShareBufferClass<uint8_t>(m_maxNum);
+    m_APT = New_Share_Buffer<unsigned int>(m_maxNum, "ParticleBufferClass::APT");
+    m_groupID = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::GroupID");
     m_velocity = new Vector3[m_maxNum];
     m_timeStamp = new unsigned int[m_maxNum];
     int minlod = Calculate_Cost_Value_Arrays(1.0f, m_value, m_cost);
@@ -844,7 +844,7 @@ void ParticleBufferClass::Combine_Color_And_Alpha()
         unsigned cnt = m_maxNum;
 
         if (m_diffuse == nullptr) {
-            m_diffuse = new ShareBufferClass<Vector4>(m_maxNum);
+            m_diffuse = New_Share_Buffer<Vector4>(m_maxNum, "ParticleBufferClass::Diffuse");
         }
 
         if (m_color != nullptr && m_alpha != nullptr) {
@@ -1051,7 +1051,7 @@ void ParticleBufferClass::Render_Line_Group(RenderInfoClass &rinfo)
                     m_colorKeyFrameValues[0].X, m_colorKeyFrameValues[0].Y, m_colorKeyFrameValues[0].Z, 0);
             } else {
                 if (m_tailDiffuse == nullptr) {
-                    m_tailDiffuse = new ShareBufferClass<Vector4>(m_maxNum);
+                    m_tailDiffuse = New_Share_Buffer<Vector4>(m_maxNum, "ParticleBufferClass::TailDiffuse");
                 }
 
                 for (unsigned int i = 0; i < m_maxNum; i++) {
@@ -1070,7 +1070,7 @@ void ParticleBufferClass::Render_Line_Group(RenderInfoClass &rinfo)
                     m_alphaKeyFrameValues[0]);
             } else {
                 if (m_tailDiffuse == nullptr) {
-                    m_tailDiffuse = new ShareBufferClass<Vector4>(m_maxNum);
+                    m_tailDiffuse = New_Share_Buffer<Vector4>(m_maxNum, "ParticleBufferClass::TailDiffuse");
                 }
 
                 VectorProcessorClass::Copy(m_tailDiffuse->Get_Array(), m_diffuse->Get_Array(), m_maxNum);
@@ -1328,7 +1328,7 @@ void ParticleBufferClass::Reset_Colors(ParticlePropertyStruct<Vector3> &new_prop
 
     } else {
         if (m_color == nullptr) {
-            m_color = new ShareBufferClass<Vector3>(m_maxNum);
+            m_color = New_Share_Buffer<Vector3>(m_maxNum, "ParticleBufferClass::Color");
         }
 
         ui_previous_key_time = 0;
@@ -1471,7 +1471,7 @@ void ParticleBufferClass::Reset_Opacity(ParticlePropertyStruct<float> &new_props
 
     } else {
         if (m_alpha == nullptr) {
-            m_alpha = new ShareBufferClass<float>(m_maxNum);
+            m_alpha = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::Alpha");
         }
 
         ui_previous_key_time = 0;
@@ -1609,7 +1609,7 @@ void ParticleBufferClass::Reset_Size(ParticlePropertyStruct<float> &new_props)
         m_maxSize = m_sizeKeyFrameValues[0];
     } else {
         if (m_size == nullptr) {
-            m_size = new ShareBufferClass<float>(m_maxNum);
+            m_size = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::Size");
         }
 
         ui_previous_key_time = 0;
@@ -1762,7 +1762,7 @@ void ParticleBufferClass::Reset_Rotations(ParticlePropertyStruct<float> &new_pro
 
     } else {
         if (m_orientation == nullptr) {
-            m_orientation = new ShareBufferClass<uint8_t>(m_maxNum);
+            m_orientation = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::Orientation");
         }
 
         ui_previous_key_time = 0;
@@ -1948,11 +1948,11 @@ void ParticleBufferClass::Reset_Frames(ParticlePropertyStruct<float> &new_props)
         if ((m_renderMode == W3D_EMITTER_RENDER_MODE_LINEGRP_TETRA)
             || (m_renderMode == W3D_EMITTER_RENDER_MODE_LINEGRP_PRISM)) {
             if (m_uCoord == nullptr) {
-                m_uCoord = new ShareBufferClass<float>(m_maxNum);
+                m_uCoord = New_Share_Buffer<float>(m_maxNum, "ParticleBufferClass::UCoord");
             }
         } else {
             if (m_frame == nullptr) {
-                m_frame = new ShareBufferClass<uint8_t>(m_maxNum);
+                m_frame = New_Share_Buffer<uint8_t>(m_maxNum, "ParticleBufferClass::Frame");
             }
         }
 

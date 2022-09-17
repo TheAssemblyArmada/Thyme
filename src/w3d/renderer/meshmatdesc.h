@@ -29,10 +29,10 @@ class MatBufferClass : public ShareBufferClass<VertexMaterialClass *>
 
 public:
 public:
-#ifndef BUILD_EDITOR
-    MatBufferClass(int count) : ShareBufferClass<VertexMaterialClass *>(count) { Clear(); }
-#else
+#ifdef BUILD_EDITOR
     MatBufferClass(int count, const char *name) : ShareBufferClass<VertexMaterialClass *>(count, name) { Clear(); }
+#else
+    MatBufferClass(int count) : ShareBufferClass<VertexMaterialClass *>(count) { Clear(); }
 #endif
 
     MatBufferClass(const MatBufferClass &that);
@@ -46,16 +46,26 @@ private:
     MatBufferClass &operator=(const MatBufferClass &that);
 };
 
+inline MatBufferClass *New_Mat_Buffer(int count, const char *name = nullptr)
+{
+#ifdef BUILD_EDITOR
+    return new MatBufferClass(count, name);
+#else
+    return new MatBufferClass(count);
+#endif
+}
+
 class TexBufferClass : public ShareBufferClass<TextureClass *>
 {
     IMPLEMENT_W3D_POOL(TexBufferClass);
 
 public:
-#ifndef BUILD_EDITOR
-    TexBufferClass(int count) : ShareBufferClass<TextureClass *>(count) { Clear(); }
-#else
+#ifdef BUILD_EDITOR
     TexBufferClass(int count, const char *name) : ShareBufferClass<TextureClass *>(count, name) { Clear(); }
+#else
+    TexBufferClass(int count) : ShareBufferClass<TextureClass *>(count) { Clear(); }
 #endif
+
     TexBufferClass(const TexBufferClass &that);
     ~TexBufferClass();
 
@@ -67,16 +77,26 @@ private:
     TexBufferClass &operator=(const TexBufferClass &that);
 };
 
+inline TexBufferClass *New_Tex_Buffer(int count, const char *name = nullptr)
+{
+#ifdef BUILD_EDITOR
+    return new TexBufferClass(count, name);
+#else
+    return new TexBufferClass(count);
+#endif
+}
+
 class UVBufferClass : public ShareBufferClass<Vector2>
 {
     IMPLEMENT_W3D_POOL(UVBufferClass);
 
 public:
-#ifndef BUILD_EDITOR
-    UVBufferClass(int count) : ShareBufferClass<Vector2>(count), m_CRC(0xFFFFFFFF) {}
-#else
+#ifdef BUILD_EDITOR
     UVBufferClass(int count, const char *name) : ShareBufferClass<Vector2>(count, name), m_CRC(0xFFFFFFFF) {}
+#else
+    UVBufferClass(int count) : ShareBufferClass<Vector2>(count), m_CRC(0xFFFFFFFF) {}
 #endif
+
     UVBufferClass(const UVBufferClass &that);
 
     bool operator==(const UVBufferClass &that);
@@ -90,6 +110,15 @@ private:
 
     UVBufferClass &operator=(const UVBufferClass &that);
 };
+
+inline UVBufferClass *New_UV_Buffer(int count, const char *name = nullptr)
+{
+#ifdef BUILD_EDITOR
+    return new UVBufferClass(count, name);
+#else
+    return new UVBufferClass(count);
+#endif
+}
 
 class MeshMatDescClass : public W3DMPO
 {
@@ -227,11 +256,7 @@ inline int MeshMatDescClass::Get_UV_Array_Count()
 inline Vector2 *MeshMatDescClass::Get_UV_Array_By_Index(int index, bool create)
 {
     if (create && !m_UV[index]) {
-#ifndef BUILD_EDITOR
-        m_UV[index] = new UVBufferClass(m_vertexCount);
-#else
-        m_UV[index] = new UVBufferClass(m_vertexCount, "MeshMatDescClass::UV");
-#endif
+        m_UV[index] = New_UV_Buffer(m_vertexCount, "MeshMatDescClass::UV");
     }
 
     if (m_UV[index] != nullptr) {
@@ -288,11 +313,7 @@ inline unsigned *MeshMatDescClass::Get_DIG_Array(int pass)
 inline unsigned *MeshMatDescClass::Get_Color_Array(int index, bool create)
 {
     if (create && !m_colorArray[index]) {
-#ifndef BUILD_EDITOR
-        m_colorArray[index] = new ShareBufferClass<unsigned>(m_vertexCount);
-#else
-        m_colorArray[index] = new ShareBufferClass<unsigned>(m_vertexCount, "MeshMatDescClass::ColorArray");
-#endif
+        m_colorArray[index] = New_Share_Buffer<unsigned>(m_vertexCount, "MeshMatDescClass::ColorArray");
     }
 
     if (m_colorArray[index]) {

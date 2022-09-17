@@ -237,7 +237,7 @@ void MeshMatDescClass::Set_Texture(int pidx, TextureClass *tex, int pass, int st
 TexBufferClass *MeshMatDescClass::Get_Texture_Array(int pass, int stage, bool create)
 {
     if (create && m_textureArray[pass][stage] == nullptr) {
-        m_textureArray[pass][stage] = new TexBufferClass(m_polyCount);
+        m_textureArray[pass][stage] = New_Tex_Buffer(m_polyCount, "MeshMatDescClass::TextureArray");
     }
 
     return m_textureArray[pass][stage];
@@ -246,7 +246,7 @@ TexBufferClass *MeshMatDescClass::Get_Texture_Array(int pass, int stage, bool cr
 MatBufferClass *MeshMatDescClass::Get_Material_Array(int pass, bool create)
 {
     if (create && m_materialArray[pass] == nullptr) {
-        m_materialArray[pass] = new MatBufferClass(m_vertexCount);
+        m_materialArray[pass] = New_Mat_Buffer(m_vertexCount, "MeshMatDescClass::MaterialArray");
     }
 
     return m_materialArray[pass];
@@ -255,7 +255,7 @@ MatBufferClass *MeshMatDescClass::Get_Material_Array(int pass, bool create)
 ShaderClass *MeshMatDescClass::Get_Shader_Array(int pass, bool create)
 {
     if (create && m_shaderArray[pass] == nullptr) {
-        m_shaderArray[pass] = new ShareBufferClass<ShaderClass>(m_polyCount);
+        m_shaderArray[pass] = New_Share_Buffer<ShaderClass>(m_polyCount, "MeshMatDescClass::ShaderArray");
         m_shaderArray[pass]->Clear();
     }
 
@@ -579,7 +579,7 @@ void MeshMatDescClass::Install_UV_Array(int pass, int stage, Vector2 *uvs, int c
         if (new_index < MAX_UV_ARRAYS) {
 
             captainslog_assert(m_UV[new_index] == nullptr);
-            m_UV[new_index] = new UVBufferClass(count);
+            m_UV[new_index] = New_UV_Buffer(count, "MeshMatDescClass::UV");
             memcpy(m_UV[new_index]->Get_Array(), uvs, count * sizeof(Vector2));
             m_UV[new_index]->Update_CRC();
             Set_UV_Source(pass, stage, new_index);

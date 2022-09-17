@@ -1058,7 +1058,8 @@ void MeshModelClass::Post_Process_Fog()
 
                 if (m_defMatDesc->m_textureArray[1][0]) {
                     if (!m_defMatDesc->m_textureArray[0][0]) {
-                        m_defMatDesc->m_textureArray[0][0] = new TexBufferClass(m_polyCount);
+                        m_defMatDesc->m_textureArray[0][0] =
+                            New_Tex_Buffer(m_polyCount, "MeshModelClass::DefMatDesc::TextureArray");
 
                         for (int i = 0; i < m_polyCount; i++) {
                             m_defMatDesc->m_textureArray[0][0]->Set_Element(

@@ -242,15 +242,15 @@ void MeshGeometryClass::Reset_Geometry(int polycount, int vertcount)
     m_vertexCount = vertcount;
 
     if ((polycount != 0) && (vertcount != 0)) {
-        m_poly = new ShareBufferClass<TriIndex>(m_polyCount);
-        m_polySurfaceType = new ShareBufferClass<uint8_t>(m_polyCount);
-        m_vertex = new ShareBufferClass<Vector3>(m_vertexCount);
+        m_poly = New_Share_Buffer<TriIndex>(m_polyCount, "MeshGeometryClass::Poly");
+        m_polySurfaceType = New_Share_Buffer<uint8_t>(m_polyCount, "MeshGeometryClass::PolySurfaceType");
+        m_vertex = New_Share_Buffer<Vector3>(m_vertexCount, "MeshGeometryClass::Vertex");
 
         m_poly->Clear();
         m_polySurfaceType->Clear();
         m_vertex->Clear();
 
-        m_vertexNorm = new ShareBufferClass<Vector3>(m_vertexCount);
+        m_vertexNorm = New_Share_Buffer<Vector3>(m_vertexCount, "MeshGeometryClass::VertexNorm");
         m_vertexNorm->Clear();
     }
 }
@@ -262,7 +262,7 @@ void MeshGeometryClass::Set_Name(const char *newname)
     }
 
     if (newname) {
-        m_meshName = new ShareBufferClass<char>(strlen(newname) + 1);
+        m_meshName = New_Share_Buffer<char>(strlen(newname) + 1, "MeshGeometryClass::MeshName");
         strcpy(m_meshName->Get_Array(), newname);
     }
 }
@@ -283,7 +283,7 @@ void MeshGeometryClass::Set_User_Text(char *usertext)
     }
 
     if (usertext) {
-        m_userText = new ShareBufferClass<char>(strlen(usertext) + 1);
+        m_userText = New_Share_Buffer<char>(strlen(usertext) + 1, "MeshGeometryClass::UserText");
         strcpy(m_userText->Get_Array(), usertext);
     }
 }
@@ -1059,7 +1059,7 @@ W3DErrorType MeshGeometryClass::Read_User_Text(ChunkLoadClass &cload)
         return W3D_ERROR_OK;
     }
 
-    m_userText = new ShareBufferClass<char>(textlen);
+    m_userText = New_Share_Buffer<char>(textlen, "MeshGeometryClass::UserText");
 
     if (cload.Read(m_userText->Get_Array(), textlen) != textlen) {
         return W3D_ERROR_LOAD_FAILED;

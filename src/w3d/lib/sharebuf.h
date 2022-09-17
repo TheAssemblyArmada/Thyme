@@ -25,10 +25,10 @@ template<class T> class ShareBufferClass : public W3DMPO, public RefCountClass
     IMPLEMENT_W3D_POOL(ShareBufferClass);
 
 public:
-#ifndef BUILD_EDITOR
-    ShareBufferClass(int count) : m_count(count)
-#else
+#ifdef BUILD_EDITOR
     ShareBufferClass(int count, const char *name) : m_name(name), m_count(count)
+#else
+    ShareBufferClass(int count) : m_count(count)
 #endif
     {
         m_array = new T[m_count];
@@ -36,6 +36,9 @@ public:
 
     ShareBufferClass(const ShareBufferClass &that) : m_count(that.m_count)
     {
+#ifdef BUILD_EDITOR
+        m_name = that.m_name;
+#endif
         m_array = new T[m_count];
 
         for (int i = 0; i < m_count; i++) {
@@ -66,3 +69,12 @@ protected:
     T *m_array;
     int m_count;
 };
+
+template<class T> inline ShareBufferClass<T> *New_Share_Buffer(int count, const char *name = nullptr)
+{
+#ifdef BUILD_EDITOR
+    return new ShareBufferClass<T>(count, name);
+#else
+    return new ShareBufferClass<T>(count);
+#endif
+}

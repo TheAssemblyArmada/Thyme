@@ -2000,17 +2000,25 @@ void DX8Wrapper::Set_Render_Target(w3dsurface_t render_target, bool use_default_
             DX8CALL(SetRenderTarget(s_defaultRenderTarget, s_defaultDepthBuffer));
             s_defaultRenderTarget->Release();
             s_defaultRenderTarget = nullptr;
-            if (s_defaultDepthBuffer) {
+
+            if (s_defaultDepthBuffer != nullptr) {
                 s_defaultDepthBuffer->Release();
                 s_defaultDepthBuffer = nullptr;
             }
-            if (s_currentRenderTarget != nullptr) {
-                s_currentRenderTarget->Release();
-                s_currentRenderTarget = nullptr;
-            }
         }
+
+        if (s_currentRenderTarget != nullptr) {
+            s_currentRenderTarget->Release();
+            s_currentRenderTarget = nullptr;
+        }
+
+        if (s_currentDepthBuffer != nullptr) {
+            s_currentDepthBuffer->Release();
+            s_currentDepthBuffer = nullptr;
+        }
+
     } else if (render_target != s_currentRenderTarget) {
-        captainslog_assert(s_defaultRenderTarget != nullptr);
+        captainslog_assert(s_defaultRenderTarget == nullptr);
 
         if (s_defaultDepthBuffer == nullptr) {
             DX8CALL(GetDepthStencilSurface(&s_defaultDepthBuffer));
@@ -2023,6 +2031,11 @@ void DX8Wrapper::Set_Render_Target(w3dsurface_t render_target, bool use_default_
         if (s_currentRenderTarget != nullptr) {
             s_currentRenderTarget->Release();
             s_currentRenderTarget = nullptr;
+        }
+
+        if (s_currentDepthBuffer != nullptr) {
+            s_currentDepthBuffer->Release();
+            s_currentDepthBuffer = nullptr;
         }
 
         s_currentRenderTarget = render_target;

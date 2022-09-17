@@ -371,6 +371,7 @@ set(GAMEENGINE_SRC
     w3d/renderer/hrawanim.cpp
     w3d/renderer/htree.cpp
     w3d/renderer/htreemgr.cpp
+    w3d/renderer/intersec.cpp
     w3d/renderer/light.cpp
     w3d/renderer/linegroup.cpp
     w3d/renderer/lightenv.cpp

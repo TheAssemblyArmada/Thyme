@@ -31,6 +31,7 @@
 #include "renderdevicedesc.h"
 #include "resource.h"
 #include "scaledialog.h"
+#include "scenelightdialog.h"
 #include "texturepathdialog.h"
 #include "utils.h"
 #include "viewerscene.h"
@@ -798,7 +799,8 @@ void CMainFrame::OnAmbient()
 
 void CMainFrame::OnSceneLight()
 {
-    // do later
+    CSceneLightDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnBackgroundColor()
@@ -1557,7 +1559,7 @@ void CMainFrame::OnUpdateFog(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateScaleEmitter(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->Enable(m_currentType == ASSET_TYPE_PARTICLEEMITTER);
 }
 
 void CMainFrame::OnUpdatePolygonSorting(CCmdUI *pCmdUI)

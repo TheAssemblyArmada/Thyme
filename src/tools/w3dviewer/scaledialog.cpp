@@ -50,7 +50,7 @@ void CScaleDialog::OnOK()
     if ((scale & 0xFFFF0000) != 0) {
         MessageBox("Invalid scale value. Please enter a number between 1 and 10,000", "Invalid Scale", MB_ICONINFORMATION);
     } else {
-        m_scale = scale / 100;
+        m_scale = scale / 100.0f;
 
         if (m_scale > 0.0f) {
             CDialog::OnOK();

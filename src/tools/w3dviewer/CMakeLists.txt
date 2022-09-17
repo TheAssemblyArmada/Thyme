@@ -35,6 +35,7 @@ target_sources(w3dview PRIVATE
     particlesizedialog.cpp
     restrictedfiledialog.cpp
     scaledialog.cpp
+    scenelightdialog.cpp
     texturepathdialog.cpp
     toolbar.cpp
     utils.cpp

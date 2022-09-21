@@ -28,6 +28,12 @@ public:
 private:
     DECLARE_MESSAGE_MAP();
 
+    enum flags
+    {
+        LIGHTING_DIFFUSE = 2,
+        LIGHTING_SPECULAR = 4,
+    };
+
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     afx_msg void OnGreyscale();
     afx_msg void OnBoth();

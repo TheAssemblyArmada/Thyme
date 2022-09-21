@@ -25,7 +25,10 @@ BEGIN_MESSAGE_MAP(CAmbientLightDialog, CDialog)
 END_MESSAGE_MAP()
 // clang-format on
 
-CAmbientLightDialog::CAmbientLightDialog(CWnd *pParentWnd) : CDialog(IDD_AMBIENT, pParentWnd) {}
+CAmbientLightDialog::CAmbientLightDialog(CWnd *pParentWnd) :
+    CDialog(IDD_AMBIENT, pParentWnd), m_currentRed(0), m_currentGreen(0), m_currentBlue(0)
+{
+}
 
 void CAmbientLightDialog::DoDataExchange(CDataExchange *pDX)
 {

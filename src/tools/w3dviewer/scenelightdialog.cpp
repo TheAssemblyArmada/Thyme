@@ -31,12 +31,18 @@ END_MESSAGE_MAP()
 
 CSceneLightDialog::CSceneLightDialog(CWnd *pParentWnd) :
     CDialog(IDD_SCENELIGHT, pParentWnd),
-    m_flags(2),
+    m_flags(LIGHTING_DIFFUSE),
     m_farAttenStart(0.0f),
     m_farAttenEnd(0.0f),
     m_distance(0.0f),
     m_intensity(0.0f),
-    m_attenuation(1)
+    m_attenuation(1),
+    m_diffuseRed(0),
+    m_diffuseGreen(0),
+    m_diffuseBlue(0),
+    m_specularRed(0),
+    m_specularGreen(0),
+    m_specularBlue(0)
 {
 }
 
@@ -209,11 +215,11 @@ void CSceneLightDialog::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBa
             color.Y = m_greenSlider.GetPos() / 100.0f;
             color.Z = m_blueSlider.GetPos() / 100.0f;
 
-            if ((m_flags & 2) != 0) {
+            if ((m_flags & LIGHTING_DIFFUSE) != 0) {
                 doc->m_light->Set_Diffuse(color);
             }
 
-            if ((m_flags & 4) != 0) {
+            if ((m_flags & LIGHTING_SPECULAR) != 0) {
                 doc->m_light->Set_Specular(color);
             }
         }
@@ -237,11 +243,11 @@ void CSceneLightDialog::OnGreyscale()
         color.Y = m_greenSlider.GetPos() / 100.0f;
         color.Z = m_blueSlider.GetPos() / 100.0f;
 
-        if ((m_flags & 2) != 0) {
+        if ((m_flags & LIGHTING_DIFFUSE) != 0) {
             doc->m_light->Set_Diffuse(color);
         }
 
-        if ((m_flags & 4) != 0) {
+        if ((m_flags & LIGHTING_SPECULAR) != 0) {
             doc->m_light->Set_Specular(color);
         }
     }
@@ -249,7 +255,7 @@ void CSceneLightDialog::OnGreyscale()
 
 void CSceneLightDialog::OnBoth()
 {
-    m_flags = 6;
+    m_flags = LIGHTING_DIFFUSE | LIGHTING_SPECULAR;
 }
 
 void CSceneLightDialog::OnDiffuse()
@@ -264,7 +270,7 @@ void CSceneLightDialog::OnDiffuse()
     m_redSlider.SetPos(color.X * 100.0f);
     m_greenSlider.SetPos(color.Y * 100.0f);
     m_blueSlider.SetPos(color.Z * 100.0f);
-    m_flags = 2;
+    m_flags = LIGHTING_DIFFUSE;
 }
 
 void CSceneLightDialog::OnSpecular()
@@ -279,7 +285,7 @@ void CSceneLightDialog::OnSpecular()
     m_redSlider.SetPos(color.X * 100.0f);
     m_greenSlider.SetPos(color.Y * 100.0f);
     m_blueSlider.SetPos(color.Z * 100.0f);
-    m_flags = 4;
+    m_flags = LIGHTING_SPECULAR;
 }
 
 void CSceneLightDialog::OnAttenuation()

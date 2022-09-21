@@ -48,14 +48,14 @@ void CScaleDialog::OnOK()
     int scale = m_scaleSpin.GetPos();
 
     if ((scale & 0xFFFF0000) != 0) {
-        MessageBox("Invalid scale value. Please enter a number between 1 and 10,000", "Invalid Scale", MB_ICONINFORMATION);
+        MessageBoxA("Invalid scale value. Please enter a number between 1 and 10,000", "Invalid Scale", MB_ICONINFORMATION);
     } else {
         m_scale = scale / 100.0f;
 
         if (m_scale > 0.0f) {
             CDialog::OnOK();
         } else {
-            MessageBox("Scale must be a value greater than zero!", "Invalid Scale", MB_ICONINFORMATION);
+            MessageBoxA("Scale must be a value greater than zero!", "Invalid Scale", MB_ICONINFORMATION);
         }
     }
 }

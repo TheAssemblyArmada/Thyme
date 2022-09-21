@@ -141,7 +141,7 @@ BOOL EmitterGeneralPropPageClass::OnApply()
         m_isValid = TRUE;
         return CPropertyPage::OnApply();
     } else {
-        MessageBox("Invalid emitter name.  Please enter a new name.", "Invalid settings", MB_ICONWARNING);
+        MessageBoxA("Invalid emitter name.  Please enter a new name.", "Invalid settings", MB_ICONWARNING);
         m_isValid = FALSE;
         return FALSE;
     }

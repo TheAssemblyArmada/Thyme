@@ -15,8 +15,10 @@
 #include "mainfrm.h"
 #include "addtolineupdialog.h"
 #include "ambientlightdialog.h"
+#include "animationproppage.h"
 #include "animationspeed.h"
 #include "assetmgr.h"
+#include "assetpropertysheet.h"
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
 #include "backgroundobjectdialog.h"
@@ -26,8 +28,10 @@
 #include "emitterinstancelist.h"
 #include "emitterpropertysheet.h"
 #include "graphicview.h"
+#include "hierarchyproppage.h"
 #include "hlod.h"
 #include "light.h"
+#include "meshproppage.h"
 #include "part_emt.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
@@ -277,7 +281,44 @@ void CMainFrame::RestoreWindowPos()
 
 void CMainFrame::DoProperties()
 {
-    // do later
+    CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+
+    if (view != nullptr) {
+        switch (view->GetSelectedItemType()) {
+            case ASSET_TYPE_MESH: {
+                CString name(view->GetSelectedItemName());
+                CMeshPropPage page(&name);
+                CAssetPropertySheet sheet(IDS_MESHPROPERTIES, &page, this);
+                sheet.DoModal();
+                break;
+            }
+            case ASSET_TYPE_HIERARCHY: {
+                CString name(view->GetSelectedItemName());
+                CHierarchyPropPage page(&name);
+                CAssetPropertySheet sheet(IDS_HIERARCHYPROPERTIES, &page, this);
+                sheet.DoModal();
+                break;
+            }
+            case ASSET_TYPE_ANIMATION: {
+                CAnimationPropPage page;
+                CAssetPropertySheet sheet(IDS_ANIMATIONPROPERTIES, &page, this);
+                sheet.DoModal();
+                break;
+            }
+            case ASSET_TYPE_PARTICLEEMITTER: {
+                CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+                if (doc != nullptr) {
+                    EmitterInstanceList *list = new EmitterInstanceList();
+                    list->Add_Emitter(static_cast<ParticleEmitterClass *>(doc->m_model));
+                    EmitterPropertySheetClass sheet(list, IDS_EMITTERPROPERTIES, this);
+                    sheet.DoModal();
+                }
+
+                break;
+            }
+        }
+    }
 }
 
 void CMainFrame::UpdateMenus(AssetType type)
@@ -543,7 +584,7 @@ void CMainFrame::OnDestroy()
 
 void CMainFrame::OnProperties()
 {
-    // do later
+    DoProperties();
 }
 
 void CMainFrame::OnGenerateLOD()
@@ -1373,7 +1414,11 @@ void CMainFrame::OnMungeSort()
 
 void CMainFrame::OnUpdateProperties(CCmdUI *pCmdUI)
 {
-    // do later
+    CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+
+    if (view != nullptr) {
+        pCmdUI->Enable(view->GetSelectedItemName() != nullptr);
+    }
 }
 
 void CMainFrame::OnUpdateAnimationToolbar(CCmdUI *pCmdUI)

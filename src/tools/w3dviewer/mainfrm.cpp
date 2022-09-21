@@ -23,6 +23,7 @@
 #include "backgroundcolordialog.h"
 #include "backgroundobjectdialog.h"
 #include "cameradistancedialog.h"
+#include "camerasettingsdialog.h"
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
@@ -1237,7 +1238,8 @@ void CMainFrame::OnPrev()
 
 void CMainFrame::OnCameraSettings()
 {
-    // do later
+    CameraSettingsDialogClass dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnCopyScreenSize()

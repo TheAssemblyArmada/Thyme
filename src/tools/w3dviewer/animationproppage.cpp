@@ -13,3 +13,40 @@
  *            LICENSE
  */
 #include "animationproppage.h"
+#include "hanim.h"
+#include "resource.h"
+#include "utils.h"
+#include "w3dviewdoc.h"
+
+IMPLEMENT_DYNCREATE(CAnimationPropPage, CPropertyPage)
+
+// clang-format off
+BEGIN_MESSAGE_MAP(CAnimationPropPage, CPropertyPage)
+END_MESSAGE_MAP()
+// clang-format on
+
+CAnimationPropPage::CAnimationPropPage() : CPropertyPage(IDD_ANIMATION, 0) {}
+
+BOOL CAnimationPropPage::OnInitDialog()
+{
+    CDialog::OnInitDialog();
+    CW3DViewDoc *doc = GetCurrentDocument();
+
+    if (doc != nullptr) {
+        HAnimClass *anim = doc->m_animation;
+
+        if (anim != nullptr) {
+            CString str;
+            str.Format(IDS_ANIMATIONPROPERTYSTRING, anim->Get_Name());
+            SetDlgItemText(IDC_PROPERTIES, str);
+            SetDlgItemInt(IDC_FRAMES, anim->Get_Num_Frames());
+            str.Format("%.2f fps", anim->Get_Frame_Rate());
+            SetDlgItemText(IDC_FRAMERATE, str);
+            str.Format("%.3f seconds", anim->Get_Total_Time());
+            SetDlgItemText(IDC_TOTALTIME, str);
+            SetDlgItemText(IDC_HIERARCHY, anim->Get_HName());
+        }
+    }
+
+    return TRUE;
+}

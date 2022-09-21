@@ -18,11 +18,10 @@
 class CHierarchyPropPage : public CPropertyPage
 {
 public:
-    CHierarchyPropPage(CString &name);
+    CHierarchyPropPage(CString *name = nullptr);
     virtual ~CHierarchyPropPage() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnInitDialog() override;
-    virtual BOOL OnSetActive() override;
 
 private:
     DECLARE_DYNCREATE(CHierarchyPropPage)

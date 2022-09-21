@@ -27,9 +27,7 @@ BEGIN_MESSAGE_MAP(CHierarchyPropPage, CPropertyPage)
 END_MESSAGE_MAP()
 // clang-format on
 
-CHierarchyPropPage::CHierarchyPropPage(CString *name) : CPropertyPage(IDD_HIERARCHY), m_name(*name)
-{
-}
+CHierarchyPropPage::CHierarchyPropPage(CString *name) : CPropertyPage(IDD_HIERARCHY), m_name(*name) {}
 
 void CHierarchyPropPage::DoDataExchange(CDataExchange *pDX)
 {

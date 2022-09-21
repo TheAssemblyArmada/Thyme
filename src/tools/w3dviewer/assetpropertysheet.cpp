@@ -21,7 +21,8 @@ BEGIN_MESSAGE_MAP(CAssetPropertySheet, CPropertySheet)
 END_MESSAGE_MAP()
 // clang-format on
 
-CAssetPropertySheet::CAssetPropertySheet(UINT uID, CPropertyPage *page, CWnd *pParentWnd) : CPropertySheet(uID, pParentWnd), m_propertyPage(page)
+CAssetPropertySheet::CAssetPropertySheet(UINT uID, CPropertyPage *page, CWnd *pParentWnd) :
+    CPropertySheet(uID, pParentWnd), m_propertyPage(page)
 {
     m_psh.dwFlags |= PSH_NOAPPLYNOW;
     AddPage(page);

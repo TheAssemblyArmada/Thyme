@@ -3,7 +3,7 @@
  *
  * @author Jonathan Wilson
  *
- * @brief W3D View mesh property page
+ * @brief W3D View camera distance dialog
  *
  * @copyright Thyme is free software: you can redistribute it and/or
  *            modify it under the terms of the GNU General Public License
@@ -15,18 +15,18 @@
 #pragma once
 #include "w3dafx.h"
 
-class CMeshPropPage : public CPropertyPage
+class CameraDistanceDialogClass : public CDialog
 {
 public:
-    CMeshPropPage(CString *name = nullptr);
-    virtual ~CMeshPropPage() override {}
+    CameraDistanceDialogClass(CWnd *pParentWnd);
+    virtual ~CameraDistanceDialogClass() override {}
+    virtual void DoDataExchange(CDataExchange *pDX) override;
+    virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) override;
     virtual BOOL OnInitDialog() override;
+    virtual void OnOK() override;
 
 private:
-    DECLARE_DYNCREATE(CMeshPropPage)
-    DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP();
 
-    afx_msg void OnClose();
-
-    CString m_name;
+    CSpinButtonCtrl m_spin;
 };

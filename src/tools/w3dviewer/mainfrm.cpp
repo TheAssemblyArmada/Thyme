@@ -22,6 +22,7 @@
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
 #include "backgroundobjectdialog.h"
+#include "cameradistancedialog.h"
 #include "colorpickerdialogclass.h"
 #include "datatreeview.h"
 #include "deviceselectiondialog.h"
@@ -1339,7 +1340,8 @@ void CMainFrame::OnRestrictAnims()
 
 void CMainFrame::OnSetDistance()
 {
-    // do later
+    CameraDistanceDialogClass dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnAlternateMaterials()

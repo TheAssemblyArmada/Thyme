@@ -10,6 +10,7 @@ target_sources(w3dview PRIVATE
     backgroundbmpdialog.cpp
     backgroundcolordialog.cpp
     backgroundobjectdialog.cpp
+    cameradistancedialog.cpp
     colorbar.cpp
     colorpicker.cpp
     colorpickerdialogclass.cpp

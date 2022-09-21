@@ -29,6 +29,7 @@ BEGIN_MESSAGE_MAP(EmitterGeneralPropPageClass, CPropertyPage)
     ON_EN_CHANGE(IDC_LIFETIME, OnLifetimeChanged)
     ON_CBN_SELCHANGE(IDC_SHADER, OnShaderChanged)
     ON_COMMAND(IDC_LIFETIMECHECK, OnLifetime)
+    ON_EN_CHANGE(IDC_FUTURESTART, OnFutureStartTimeChanged)
 END_MESSAGE_MAP()
 // clang-format on
 
@@ -84,6 +85,7 @@ BOOL EmitterGeneralPropPageClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT
 
 void EmitterGeneralPropPageClass::DoDataExchange(CDataExchange *pDX)
 {
+    DDX_Control(pDX, IDC_FUTURESTARTSPIN, m_startTimeSpin);
     DDX_Control(pDX, IDC_RENDERMODE, m_renderMode);
     DDX_Control(pDX, IDC_LIFETIMESPIN, m_lifetimeSpin);
 }
@@ -107,6 +109,7 @@ BOOL EmitterGeneralPropPageClass::OnInitDialog()
     }
 
     InitializeSpinButton(&m_lifetimeSpin, m_lifetime, 0.0f, 1000.0f);
+    InitializeSpinButton(&m_startTimeSpin, m_futureStartTime, 0.0f, 1000.0f);
     OnLifetime();
     m_renderMode.SetCurSel(0);
     return TRUE;
@@ -122,6 +125,8 @@ BOOL EmitterGeneralPropPageClass::OnApply()
         m_lifetime = 5000000.0f;
     }
 
+    m_futureStartTime = GetDlgItemFloat(m_hWnd, IDC_FUTURESTART);
+
     int index = SendDlgItemMessage(IDC_SHADER, CB_GETCURSEL, 0, 0);
 
     if (index != -1) {
@@ -134,6 +139,7 @@ BOOL EmitterGeneralPropPageClass::OnApply()
 
     if (m_name.GetLength() != 0) {
         m_instanceList->Set_Lifetime(m_lifetime);
+        m_instanceList->Set_Future_Start_Time(m_futureStartTime);
         m_instanceList->Set_Texture_Filename(m_textureName);
         m_instanceList->Set_Name(m_name);
         m_instanceList->Set_Shader(m_shader);
@@ -177,6 +183,11 @@ void EmitterGeneralPropPageClass::OnLifetimeChanged()
     SetModified();
 }
 
+void EmitterGeneralPropPageClass::OnFutureStartTimeChanged()
+{
+    SetModified();
+}
+
 void EmitterGeneralPropPageClass::OnShaderChanged()
 {
     SetModified();
@@ -201,6 +212,7 @@ void EmitterGeneralPropPageClass::Initialize()
     if (m_instanceList != nullptr) {
         m_textureName = m_instanceList->Get_Texture_Filename();
         m_lifetime = m_instanceList->Get_Lifetime();
+        m_futureStartTime = m_instanceList->Get_Future_Start_Time();
         m_name = m_instanceList->Get_Name();
         m_instanceList->Get_Shader(m_shader);
     }

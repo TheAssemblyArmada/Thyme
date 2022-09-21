@@ -48,9 +48,11 @@ private:
     afx_msg void OnLifetimeChanged();
     afx_msg void OnShaderChanged();
     afx_msg void OnLifetime();
+    afx_msg void OnFutureStartTimeChanged();
 
     void AddShader(ShaderClass *shader, const char *name);
 
+    CSpinButtonCtrl m_startTimeSpin;
     CComboBox m_renderMode;
     CSpinButtonCtrl m_lifetimeSpin;
     EmitterInstanceList *m_instanceList;
@@ -59,5 +61,6 @@ private:
     CString m_textureName;
     ShaderClass m_shader;
     float m_lifetime;
+    float m_futureStartTime;
     bool m_isValid;
 };

@@ -209,8 +209,10 @@
 #define IDC_UVTILE                      1060
 #define IDC_UPERSEC                     1061
 #define IDC_ZACCEL                      1061
+#define IDC_FUTURESTART                 1061
 #define IDC_VPERSEC                     1062
 #define IDC_XVEL                        1062
+#define IDC_FUTURESTARTSPIN             1062
 #define IDC_YVEL                        1063
 #define IDC_ZVEL                        1064
 #define IDC_OUTWARD                     1068
@@ -393,7 +395,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        306
+#define _APS_NEXT_RESOURCE_VALUE        307
 #define _APS_NEXT_COMMAND_VALUE         40365
 #define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           101

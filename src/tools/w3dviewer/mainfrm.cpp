@@ -15,6 +15,7 @@
 #include "mainfrm.h"
 #include "addtolineupdialog.h"
 #include "ambientlightdialog.h"
+#include "animationspeed.h"
 #include "assetmgr.h"
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
@@ -639,7 +640,16 @@ void CMainFrame::OnOpen()
 
 void CMainFrame::OnAnimSettings()
 {
-    // do later
+    CGraphicView *view = static_cast<CGraphicView *>(m_splitter.GetPane(0, 1));
+
+    if (view != nullptr) {
+        float speed = view->m_animationSpeed;
+        CAnimationSpeed dlg(this);
+
+        if (dlg.DoModal() != IDOK) {
+            view->m_animationSpeed = speed;
+        }
+    }
 }
 
 void CMainFrame::OnStopAnim()

@@ -3,6 +3,7 @@ set(CMAKE_MFC_FLAG 2) #Enable MFC
 target_sources(w3dview PRIVATE
     addtolineupdialog.cpp
     ambientlightdialog.cpp
+    animationspeed.cpp
     assetinfo.cpp
     backgroundbmpdialog.cpp
     backgroundcolordialog.cpp

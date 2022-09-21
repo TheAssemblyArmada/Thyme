@@ -20,8 +20,6 @@ class CAssetPropertySheet : public CPropertySheet
 public:
     CAssetPropertySheet(UINT uID, CPropertyPage *page, CWnd *pParentWnd);
     virtual ~CAssetPropertySheet() override {}
-    virtual LRESULT WindowProc(UINT message, WPARAM wParam, LPARAM lParam) override;
-    void UpdateRenderingMode(int mode);
 
 private:
     DECLARE_DYNAMIC(CAssetPropertySheet)

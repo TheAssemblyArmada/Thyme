@@ -170,6 +170,13 @@ void SetWindowFloat(HWND hWnd, float f)
     SetWindowText(hWnd, str);
 }
 
+float GetWindowFloat(HWND hWnd)
+{
+    char str[20];
+    GetWindowText(hWnd, str, sizeof(str));
+    return atof(str);
+}
+
 void PositionWindow(HWND hWnd)
 {
     if (IsWindow(hWnd)) {

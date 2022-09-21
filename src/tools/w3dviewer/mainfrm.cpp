@@ -14,6 +14,7 @@
  */
 #include "mainfrm.h"
 #include "addtolineupdialog.h"
+#include "ambientlightdialog.h"
 #include "assetmgr.h"
 #include "backgroundbmpdialog.h"
 #include "backgroundcolordialog.h"
@@ -29,6 +30,8 @@
 #include "part_emt.h"
 #include "renderdevicedesc.h"
 #include "resource.h"
+#include "scaledialog.h"
+#include "scenelightdialog.h"
 #include "texturepathdialog.h"
 #include "utils.h"
 #include "viewerscene.h"
@@ -43,7 +46,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_WM_CREATE()
     ON_COMMAND(ID_OBJECT_PROPERTIES, OnProperties)
     ON_UPDATE_COMMAND_UI(ID_OBJECT_PROPERTIES, OnUpdateProperties)
-    ON_COMMAND(ID_AGGREGATE_GENERATELOD, OnGenerateLOD)
+    ON_COMMAND(ID_HIERARCHY_GENERATELOD, OnGenerateLOD)
     ON_WM_ACTIVATEAPP()
     ON_COMMAND(ID_FILE_OPEN, OnOpen)
     ON_COMMAND(ID_ANIMATION_SETTINGS, OnAnimSettings)
@@ -89,13 +92,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_EMITTERS_EDITEMITTER, OnUpdateEditEmitter)
     ON_COMMAND(ID_EXPORT_EMITTER, OnExportEmitter)
     ON_UPDATE_COMMAND_UI(ID_EXPORT_EMITTER, OnUpdateExportEmitter)
-    ON_COMMAND(ID_AGGREGATE_AUTOASSIGNBONEMODELS, OnAutoAssignBone)
-    ON_COMMAND(ID_AGGREGATE_BONEMANAGEMENT, OnBoneManagement)
-    ON_COMMAND(ID_EXPORT_AGGREGATE, OnExportAggregate)
     ON_COMMAND(ID_CAMERA_ANIMATECAMERA, OnAnimateCamera)
     ON_UPDATE_COMMAND_UI(ID_CAMERA_ANIMATECAMERA, OnUpdateAnimateCamera)
     ON_UPDATE_COMMAND_UI(ID_EXPORT_LOD, OnUpdateExportLod)
-    ON_UPDATE_COMMAND_UI(ID_EXPORT_AGGREGATE, OnUpdateExportAggregate)
     ON_COMMAND(ID_CAMERA_RESETONDISPLAY, OnResetOnDisplay)
     ON_UPDATE_COMMAND_UI(ID_CAMERA_RESETONDISPLAY, OnUpdateResetOnDisplay)
     ON_COMMAND(ID_OBJECT_ROTATEYBACKWARDS, OnRotateYBackwards)
@@ -109,8 +108,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_COMMAND(ID_LIGHTING_INCSCENELIGHTINTENSITY, OnIncSceneLight)
     ON_COMMAND(ID_LIGHTING_DECAMBIENTINTENSITY, OnDecAmbient)
     ON_COMMAND(ID_LIGHTING_INCAMBIENTINTENSITY, OnIncAmbient)
-    ON_COMMAND(ID_HIERARCHY_MAKEAGGREGATE, OnMakeAggregate)
-    ON_COMMAND(ID_AGGREGATE_RENAMEAGGREGATE, OnRenameAggregate)
     ON_COMMAND(ID_LOD_RECORDSCREENAREA, OnRecordSceneCamera)
     ON_COMMAND(ID_LOD_INCLUDENULLOBJECT, OnIncludeNull)
     ON_UPDATE_COMMAND_UI(ID_LOD_INCLUDENULLOBJECT, OnUpdateIncludeNull)
@@ -120,27 +117,11 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_LOD_NEXTLEVEL, OnUpdateNextLod)
     ON_COMMAND(ID_LOD_AUTOSWITCHING, OnAutoSwitching)
     ON_UPDATE_COMMAND_UI(ID_LOD_AUTOSWITCHING, OnUpdateAutoSwitching)
-    ON_UPDATE_COMMAND_UI(ID_MOVIE_MAKEMOVIE, OnUpdateMovie)
-    ON_COMMAND(ID_MOVIE_MAKEMOVIE, OnMovie)
-    ON_COMMAND(ID_MOVIE_CAPTURESCREENSHOT, OnScreenshot)
     ON_COMMAND(ID_VIEW_NEXT, OnNext)
     ON_COMMAND(ID_VIEW_PREV, OnPrev)
-    ON_COMMAND(ID_ANIMATION_ADVANCED, OnAnimAdvanced)
-    ON_UPDATE_COMMAND_UI(ID_ANIMATION_ADVANCED, OnUpdateAnimAdvanced)
     ON_COMMAND(ID_CAMERA_SETTINGS, OnCameraSettings)
     ON_COMMAND(ID_CAMERA_COPYSCREENSIZETOCLIPBOARD, OnCopyScreenSize)
-    ON_COMMAND(ID_MISSINGTEXTURES, OnMissingTextures)
-    ON_COMMAND(ID_COPYDEPENDENCIES, OnCopyDeps)
-    ON_UPDATE_COMMAND_UI(ID_COPYDEPENDENCIES, OnUpdateCopyDeps)
-    ON_COMMAND(ID_LIGHTING_EXPOSEPRECALCULATEDLIGHTING, OnExposePrecalc)
-    ON_UPDATE_COMMAND_UI(ID_LIGHTING_EXPOSEPRECALCULATEDLIGHTING, OnUpdateExposePrecalc)
     ON_COMMAND(ID_FILE_TEXTUREPATH, OnTexturePath)
-    ON_COMMAND(ID_PRIMITIVES_CREATESPHERE, OnCreateSphere)
-    ON_COMMAND(ID_PRIMITIVES_CREATERING, OnCreateRing)
-    ON_UPDATE_COMMAND_UI(ID_PRIMITIVES_EDITPRIMITIVE, OnUpdateEditPrimitive)
-    ON_COMMAND(ID_PRIMITIVES_EDITPRIMITIVE, OnEditPrimitive)
-    ON_COMMAND(ID_EXPORT_PRIMITIVE, OnExportPrimitive)
-    ON_UPDATE_COMMAND_UI(ID_EXPORT_PRIMITIVE, OnUpdateExportPrimitive)
     ON_COMMAND(ID_LIGHTING_KILLSCENELIGHT, OnKillSceneLight)
     ON_COMMAND(ID_LIGHTING_MULTIPASSLIGHTING, OnMultiPassLighting)
     ON_UPDATE_COMMAND_UI(ID_LIGHTING_MULTIPASSLIGHTING, OnUpdateMultiPassLighting)
@@ -150,19 +131,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_LIGHTING_VERTEXLIGHTING, OnUpdateVertexLighting)
     ON_COMMAND(ID_ADDOBJECT, OnAddObject)
     ON_UPDATE_COMMAND_UI(ID_ADDOBJECT, OnUpdateAddObject)
-    ON_COMMAND(ID_FILE_IMPORTFACIALANIMS, OnImportFacial)
-    ON_UPDATE_COMMAND_UI(ID_FILE_IMPORTFACIALANIMS, OnUpdateImportFacial)
     ON_COMMAND(ID_OBJECT_RESTRICTANIMS, OnRestrictAnims)
     ON_UPDATE_COMMAND_UI(ID_OBJECT_RESTRICTANIMS, OnUpdateRestrictAnims)
-    ON_COMMAND(ID_AGGREGATE_BINDSUBOBJECTLOD, OnBindSubobject)
-    ON_UPDATE_COMMAND_UI(ID_AGGREGATE_BINDSUBOBJECTLOD, OnUpdateBindSubobject)
     ON_COMMAND(ID_CAMERA_SETDISTANCE, OnSetDistance)
     ON_COMMAND(ID_OBJECT_TOGGLEALTERNATEMATERIALS, OnAlternateMaterials)
-    ON_COMMAND(ID_SOUND_CREATESOUNDOBJECT, OnCreateSoundObject)
-    ON_COMMAND(ID_SOUND_EDITSOUNDOBJECT, OnEditSoundObject)
-    ON_UPDATE_COMMAND_UI(ID_SOUND_EDITSOUNDOBJECT, OnUpdateEditSoundObject)
-    ON_COMMAND(ID_EXPORT_SOUNDOBJECT, OnExportSoundObject)
-    ON_UPDATE_COMMAND_UI(ID_EXPORT_SOUNDOBJECT, OnUpdateEditSoundObject)
     ON_COMMAND(ID_VIEW_WIREFRAMEMODE, OnWireframeMode)
     ON_UPDATE_COMMAND_UI(ID_VIEW_WIREFRAMEMODE, OnUpdateWireframeMode)
     ON_UPDATE_COMMAND_UI(ID_BACKGROUND_FOG, OnUpdateFog)
@@ -175,9 +147,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
     ON_UPDATE_COMMAND_UI(ID_CAMERA_XCAMERA, OnUpdatePlusXCamera)
     ON_COMMAND(ID_FILE_MUNGESORTONLOAD, OnMungeSort)
     ON_UPDATE_COMMAND_UI(ID_FILE_MUNGESORTONLOAD, OnUpdateMungeSort)
-    ON_COMMAND(ID_FILE_ENABLEGAMMACORRECTION, OnEnableGamma)
-    ON_UPDATE_COMMAND_UI(ID_FILE_ENABLEGAMMACORRECTION, OnUpdateEnableGamma)
-    ON_COMMAND(ID_VIEW_SETGAMMA, OnSetGamma)
 END_MESSAGE_MAP()
 // clang-format on
 
@@ -318,7 +287,7 @@ void CMainFrame::UpdateMenus(AssetType type)
             CMenu *menu = GetMenu();
 
             if (menu != nullptr) {
-                menu->RemoveMenu(6, MF_BYPOSITION | MF_DELETE);
+                menu->RemoveMenu(4, MF_BYPOSITION | MF_DELETE);
                 DrawMenuBar();
             }
 
@@ -340,22 +309,7 @@ void CMainFrame::UpdateMenus(AssetType type)
                     info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
                     info.fType = MF_STRING;
                     info.dwTypeData = const_cast<LPSTR>("&Hierarchy");
-                    menu->InsertMenuItem(6, &info, TRUE);
-                    DrawMenuBar();
-                }
-            } break;
-            case ASSET_TYPE_AGGREGATE: {
-                CMenu *menu = GetMenu();
-
-                if (menu != nullptr) {
-                    MENUITEMINFO info;
-                    memset(&info, 0, sizeof(info));
-                    info.cbSize = sizeof(info);
-                    info.hSubMenu = GetSubMenu(LoadMenu(AfxGetResourceHandle(), MAKEINTRESOURCE(IDR_AGGREGATEMENU)), 0);
-                    info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
-                    info.fType = MF_STRING;
-                    info.dwTypeData = const_cast<LPSTR>("&Aggregate");
-                    menu->InsertMenuItem(6, &info, TRUE);
+                    menu->InsertMenuItem(4, &info, TRUE);
                     DrawMenuBar();
                 }
             } break;
@@ -370,7 +324,7 @@ void CMainFrame::UpdateMenus(AssetType type)
                     info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
                     info.fType = MF_STRING;
                     info.dwTypeData = const_cast<LPSTR>("&LOD");
-                    menu->InsertMenuItem(6, &info, TRUE);
+                    menu->InsertMenuItem(4, &info, TRUE);
                     DrawMenuBar();
                 }
             } break;
@@ -386,7 +340,7 @@ void CMainFrame::UpdateMenus(AssetType type)
                     info.fMask = MIIM_TYPE | MIIM_DATA | MIIM_SUBMENU;
                     info.fType = MF_STRING;
                     info.dwTypeData = const_cast<LPSTR>("&Animation");
-                    menu->InsertMenuItem(6, &info, TRUE);
+                    menu->InsertMenuItem(4, &info, TRUE);
                     DrawMenuBar();
                 }
 
@@ -480,11 +434,6 @@ void CMainFrame::GetDevice(bool doDeviceDlg)
             return;
         }
     }
-}
-
-void CMainFrame::UpdateEmitterMenu()
-{
-    // do later
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -844,12 +793,14 @@ void CMainFrame::OnRotateX()
 
 void CMainFrame::OnAmbient()
 {
-    // do later
+    CAmbientLightDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnSceneLight()
 {
-    // do later
+    CSceneLightDialog dlg(this);
+    dlg.DoModal();
 }
 
 void CMainFrame::OnBackgroundColor()
@@ -1002,21 +953,6 @@ void CMainFrame::OnExportEmitter()
 {
     CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
     doc->ExportEmitter();
-}
-
-void CMainFrame::OnAutoAssignBone()
-{
-    // do later
-}
-
-void CMainFrame::OnBoneManagement()
-{
-    // do later
-}
-
-void CMainFrame::OnExportAggregate()
-{
-    // do later
 }
 
 void CMainFrame::OnAnimateCamera()
@@ -1185,16 +1121,6 @@ void CMainFrame::OnIncAmbient()
     }
 }
 
-void CMainFrame::OnMakeAggregate()
-{
-    // do later
-}
-
-void CMainFrame::OnRenameAggregate()
-{
-    // do later
-}
-
 void CMainFrame::OnRecordSceneCamera()
 {
     RenderObjClass *robj = GetCurrentDocument()->m_model;
@@ -1239,16 +1165,6 @@ void CMainFrame::OnAutoSwitching()
     scene->Set_Auto_Switch_LOD(!scene->Get_Auto_Switch_LOD());
 }
 
-void CMainFrame::OnMovie()
-{
-    // do later
-}
-
-void CMainFrame::OnScreenshot()
-{
-    // do later
-}
-
 void CMainFrame::OnNext()
 {
     CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
@@ -1265,11 +1181,6 @@ void CMainFrame::OnPrev()
     if (view != nullptr) {
         view->SelectPrev();
     }
-}
-
-void CMainFrame::OnAnimAdvanced()
-{
-    // do later
 }
 
 void CMainFrame::OnCameraSettings()
@@ -1294,45 +1205,10 @@ void CMainFrame::OnCopyScreenSize()
     CloseClipboard();
 }
 
-void CMainFrame::OnMissingTextures()
-{
-    // do later
-}
-
-void CMainFrame::OnCopyDeps()
-{
-    // do later
-}
-
-void CMainFrame::OnExposePrecalc()
-{
-    // do later
-}
-
 void CMainFrame::OnTexturePath()
 {
     TexturePathDialogClass dlg(this);
     dlg.DoModal();
-}
-
-void CMainFrame::OnCreateSphere()
-{
-    // do later
-}
-
-void CMainFrame::OnCreateRing()
-{
-    // do later
-}
-
-void CMainFrame::OnEditPrimitive()
-{
-    // do later
-}
-
-void CMainFrame::OnExportPrimitive()
-{
-    // do later
 }
 
 void CMainFrame::OnKillSceneLight()
@@ -1347,17 +1223,32 @@ void CMainFrame::OnKillSceneLight()
 
 void CMainFrame::OnMultiPassLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnMultiTextureLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnVertexLighting()
 {
-    // do later
+    if (W3D::Get_Prelit_Mode() != W3D::PRELIT_MODE_VERTEX) {
+        W3D::Set_Prelit_Mode(W3D::PRELIT_MODE_VERTEX);
+        CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
+        view->RefreshRenderObjects();
+        GetCurrentDocument()->Deselect();
+    }
 }
 
 void CMainFrame::OnAddObject()
@@ -1386,11 +1277,6 @@ void CMainFrame::OnAddObject()
     }
 }
 
-void CMainFrame::OnImportFacial()
-{
-    // do later
-}
-
 void CMainFrame::OnRestrictAnims()
 {
     CDataTreeView *view = static_cast<CDataTreeView *>(m_splitter.GetPane(0, 0));
@@ -1398,11 +1284,6 @@ void CMainFrame::OnRestrictAnims()
     if (view != nullptr) {
         view->RestrictAnims(!view->m_restrictAnims);
     }
-}
-
-void CMainFrame::OnBindSubobject()
-{
-    // do later
 }
 
 void CMainFrame::OnSetDistance()
@@ -1414,21 +1295,6 @@ void CMainFrame::OnAlternateMaterials()
 {
     CW3DViewDoc *document = GetCurrentDocument();
     document->ToggleAlternateMaterials(nullptr);
-}
-
-void CMainFrame::OnCreateSoundObject()
-{
-    // do later
-}
-
-void CMainFrame::OnEditSoundObject()
-{
-    // do later
-}
-
-void CMainFrame::OnExportSoundObject()
-{
-    // do later
 }
 
 void CMainFrame::OnWireframeMode()
@@ -1450,7 +1316,25 @@ void CMainFrame::OnFog()
 
 void CMainFrame::OnScaleEmitter()
 {
-    // do later
+    CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
+
+    if (doc != nullptr) {
+        CScaleDialog dlg(1.0f, this, "Enter the scaling factor you want to apply to the current particle emitter");
+
+        if (dlg.DoModal() != IDCANCEL) {
+            ParticleEmitterClass *emitter = static_cast<ParticleEmitterClass *>(doc->m_model);
+            emitter->Scale(dlg.Get_Scale());
+
+            const char *name = emitter->Get_Name();
+            if (name != nullptr && *name != 0) {
+                W3DAssetManager::Get_Instance()->Remove_Prototype(name);
+            }
+
+            ParticleEmitterDefClass *def = emitter->Build_Definition();
+            ParticleEmitterPrototypeClass *proto = new ParticleEmitterPrototypeClass(def);
+            W3DAssetManager::Get_Instance()->Add_Prototype(proto);
+        }
+    }
 }
 
 void CMainFrame::OnPolygonSorting()
@@ -1475,16 +1359,6 @@ void CMainFrame::OnMungeSort()
 {
     W3D::Enable_Munge_Sort_On_Load(W3D::Is_Munge_Sort_On_Load_Enabled() == false);
     AfxGetApp()->WriteProfileInt("Config", "MungeSortOnLoad", W3D::Is_Munge_Sort_On_Load_Enabled());
-}
-
-void CMainFrame::OnEnableGamma()
-{
-    // do later
-}
-
-void CMainFrame::OnSetGamma()
-{
-    // do later
 }
 
 void CMainFrame::OnUpdateProperties(CCmdUI *pCmdUI)
@@ -1579,11 +1453,6 @@ void CMainFrame::OnUpdateExportLod(CCmdUI *pCmdUI)
     pCmdUI->Enable(m_currentType == ASSET_TYPE_HLOD);
 }
 
-void CMainFrame::OnUpdateExportAggregate(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
 void CMainFrame::OnUpdateResetOnDisplay(CCmdUI *pCmdUI)
 {
     CW3DViewDoc *doc = static_cast<CW3DViewDoc *>(GetActiveDocument());
@@ -1629,49 +1498,19 @@ void CMainFrame::OnUpdateAutoSwitching(CCmdUI *pCmdUI)
     pCmdUI->SetCheck(GetCurrentDocument()->m_scene->Get_Auto_Switch_LOD());
 }
 
-void CMainFrame::OnUpdateMovie(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateAnimAdvanced(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateCopyDeps(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateExposePrecalc(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateEditPrimitive(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateExportPrimitive(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
 void CMainFrame::OnUpdateMultiPassLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_LIGHTMAP_MULTI_PASS);
 }
 
 void CMainFrame::OnUpdateMultiTextureLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_LIGHTMAP_MULTI_TEXTURE);
 }
 
 void CMainFrame::OnUpdateVertexLighting(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->SetRadio(W3D::Get_Prelit_Mode() == W3D::PRELIT_MODE_VERTEX);
 }
 
 void CMainFrame::OnUpdateAddObject(CCmdUI *pCmdUI)
@@ -1690,11 +1529,6 @@ void CMainFrame::OnUpdateAddObject(CCmdUI *pCmdUI)
     pCmdUI->Enable(enable);
 }
 
-void CMainFrame::OnUpdateImportFacial(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
 void CMainFrame::OnUpdateRestrictAnims(CCmdUI *pCmdUI)
 {
     bool b = true;
@@ -1706,21 +1540,6 @@ void CMainFrame::OnUpdateRestrictAnims(CCmdUI *pCmdUI)
     }
 
     pCmdUI->SetCheck(b);
-}
-
-void CMainFrame::OnUpdateBindSubobject(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateEditSoundObject(CCmdUI *pCmdUI)
-{
-    // do later
-}
-
-void CMainFrame::OnUpdateExportSoundObject(CCmdUI *pCmdUI)
-{
-    // do later
 }
 
 void CMainFrame::OnUpdateWireframeMode(CCmdUI *pCmdUI)
@@ -1740,7 +1559,7 @@ void CMainFrame::OnUpdateFog(CCmdUI *pCmdUI)
 
 void CMainFrame::OnUpdateScaleEmitter(CCmdUI *pCmdUI)
 {
-    // do later
+    pCmdUI->Enable(m_currentType == ASSET_TYPE_PARTICLEEMITTER);
 }
 
 void CMainFrame::OnUpdatePolygonSorting(CCmdUI *pCmdUI)
@@ -1760,9 +1579,4 @@ void CMainFrame::OnUpdatePlusXCamera(CCmdUI *pCmdUI)
 void CMainFrame::OnUpdateMungeSort(CCmdUI *pCmdUI)
 {
     pCmdUI->SetCheck(W3D::Is_Munge_Sort_On_Load_Enabled() != false);
-}
-
-void CMainFrame::OnUpdateEnableGamma(CCmdUI *pCmdUI)
-{
-    // do later
 }

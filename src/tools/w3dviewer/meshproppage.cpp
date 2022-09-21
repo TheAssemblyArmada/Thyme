@@ -13,3 +13,80 @@
  *            LICENSE
  */
 #include "meshproppage.h"
+#include "assetmgr.h"
+#include "mesh.h"
+#include "meshmdl.h"
+#include "resource.h"
+#include "utils.h"
+#include "w3d_file.h"
+#include "w3dviewdoc.h"
+
+IMPLEMENT_DYNCREATE(CMeshPropPage, CPropertyPage)
+
+// clang-format off
+BEGIN_MESSAGE_MAP(CMeshPropPage, CPropertyPage)
+    ON_WM_CLOSE()
+END_MESSAGE_MAP()
+// clang-format on
+
+CMeshPropPage::CMeshPropPage(CString *name) : CPropertyPage(IDD_MESH, 0), m_name(*name) {}
+
+BOOL CMeshPropPage::OnInitDialog()
+{
+    CDialog::OnInitDialog();
+
+    if (m_name.GetLength() > 0) {
+        MeshClass *mesh = static_cast<MeshClass *>(W3DAssetManager::Get_Instance()->Create_Render_Obj(m_name));
+
+        if (mesh != nullptr) {
+            CString str;
+            str.Format(IDS_MESHPROPERTYSTRING, m_name);
+            SetDlgItemText(IDC_PROPERTIES, str);
+            SetDlgItemInt(IDC_POLYGONS, mesh->Get_Num_Polys());
+            MeshModelClass *model = mesh->Get_Model();
+
+            if (model != nullptr) {
+                SetDlgItemInt(IDC_VERTICIES, model->Get_Vertex_Count());
+            }
+
+            SetDlgItemText(IDC_USERTEXT, mesh->Get_User_Text());
+            uint32_t flags = mesh->Get_W3D_Flags();
+            int id;
+
+            if ((flags & W3D_MESH_FLAG_COLLISION_BOX) == W3D_MESH_FLAG_COLLISION_BOX) {
+                id = IDC_COLBOX;
+            } else if ((flags & W3D_MESH_FLAG_SKIN) == W3D_MESH_FLAG_SKIN) {
+                id = IDC_SKIN;
+            } else if ((flags & W3D_MESH_FLAG_SHADOW) == W3D_MESH_FLAG_SHADOW) {
+                id = IDC_SHADOW;
+            } else {
+                id = IDC_NORMAL;
+            }
+
+            SendDlgItemMessage(id, BM_SETCHECK, 1, 0);
+
+            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL) == W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL) {
+                SendDlgItemMessage(IDC_PHYSICAL, BM_SETCHECK, 1, 0);
+            }
+
+            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE) == W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE) {
+                SendDlgItemMessage(IDC_PROJECTILE, BM_SETCHECK, 1, 0);
+            }
+
+            if ((flags & W3D_MESH_FLAG_HIDDEN) == W3D_MESH_FLAG_HIDDEN) {
+                SendDlgItemMessage(IDC_HIDDEN, BM_SETCHECK, 1, 0);
+            }
+
+            mesh->Release_Ref();
+        }
+    }
+
+    GetParent()->GetDlgItem(IDOK)->ShowWindow(SW_HIDE);
+    GetParent()->GetDlgItem(IDCANCEL)->SetWindowText("Close");
+    return TRUE;
+}
+
+void CMeshPropPage::OnClose()
+{
+    CPropertyPage::OnClose();
+}

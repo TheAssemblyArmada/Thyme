@@ -289,14 +289,14 @@ void CMainFrame::DoProperties()
         switch (view->GetSelectedItemType()) {
             case ASSET_TYPE_MESH: {
                 CString name(view->GetSelectedItemName());
-                CMeshPropPage page(&name);
+                CMeshPropPage page(name);
                 CAssetPropertySheet sheet(IDS_MESHPROPERTIES, &page, this);
                 sheet.DoModal();
                 break;
             }
             case ASSET_TYPE_HIERARCHY: {
                 CString name(view->GetSelectedItemName());
-                CHierarchyPropPage page(&name);
+                CHierarchyPropPage page(name);
                 CAssetPropertySheet sheet(IDS_HIERARCHYPROPERTIES, &page, this);
                 sheet.DoModal();
                 break;

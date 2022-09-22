@@ -18,7 +18,8 @@
 class CHierarchyPropPage : public CPropertyPage
 {
 public:
-    CHierarchyPropPage(CString *name = nullptr);
+    CHierarchyPropPage() {}
+    CHierarchyPropPage(const CString &name);
     virtual ~CHierarchyPropPage() override {}
     virtual void DoDataExchange(CDataExchange *pDX) override;
     virtual BOOL OnInitDialog() override;

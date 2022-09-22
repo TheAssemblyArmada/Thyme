@@ -18,7 +18,8 @@
 class CMeshPropPage : public CPropertyPage
 {
 public:
-    CMeshPropPage(CString *name = nullptr);
+    CMeshPropPage() {}
+    CMeshPropPage(const CString &name);
     virtual ~CMeshPropPage() override {}
     virtual BOOL OnInitDialog() override;
 

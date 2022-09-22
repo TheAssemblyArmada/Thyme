@@ -27,7 +27,7 @@ BEGIN_MESSAGE_MAP(CHierarchyPropPage, CPropertyPage)
 END_MESSAGE_MAP()
 // clang-format on
 
-CHierarchyPropPage::CHierarchyPropPage(CString *name) : CPropertyPage(IDD_HIERARCHY), m_name(*name) {}
+CHierarchyPropPage::CHierarchyPropPage(const CString &name) : CPropertyPage(IDD_HIERARCHY), m_name(name) {}
 
 void CHierarchyPropPage::DoDataExchange(CDataExchange *pDX)
 {
@@ -75,7 +75,7 @@ void CHierarchyPropPage::OnDblClk(NMHDR *pNMHDR, LRESULT *pResult)
 
     if (index != -1) {
         CString str = m_list.GetItemText(index, 0);
-        CMeshPropPage page(&str);
+        CMeshPropPage page(str);
         CAssetPropertySheet sheet(IDS_MESHPROPERTIES, &page, this);
         sheet.DoModal();
     }

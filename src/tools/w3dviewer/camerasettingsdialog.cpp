@@ -47,25 +47,25 @@ BOOL CameraSettingsDialogClass::OnCommand(WPARAM wParam, LPARAM lParam)
         if (LOWORD(wParam) == IDC_HORFOV) {
             if (HIWORD(wParam) == EN_UPDATE) {
                 m_isUpdating = true;
-                double d = GetDlgItemFloat(m_hWnd, IDC_HORFOV);
+                double hfov = GetDlgItemFloat(m_hWnd, IDC_HORFOV);
 
-                if (d > 0.0) {
-                    float f1 = 0.01799999922513962f / tan(d * 0.01745329300562541 * 0.5) * 1000.0f;
-                    SetDlgItemFloat(m_hWnd, IDC_LENSFOV, f1);
+                if (hfov > 0.0) {
+                    float lensfov = 0.018 / tan(hfov * 0.018 * 0.5) * 1000.0;
+                    SetDlgItemFloat(m_hWnd, IDC_LENSFOV, lensfov);
                 }
 
                 m_isUpdating = false;
             }
         } else if ((LOWORD(wParam) == IDC_LENSFOV) && (HIWORD(wParam) == EN_UPDATE)) {
             m_isUpdating = true;
-            double d = GetDlgItemFloat(m_hWnd, IDC_LENSFOV) * 0.001f;
+            double lensfov = GetDlgItemFloat(m_hWnd, IDC_LENSFOV) * 0.001f;
 
-            if (d > 0.0) {
-                float f1 = atan2(0.017999999 / d, 1.0) + atan2(0.017999999 / d, 1.0);
-                float f2 = f1 * 57.29577791868204f;
-                SetDlgItemFloat(m_hWnd, IDC_HORFOV, f2);
-                float f3 = f1 * 0.75f * 57.29577791868204f;
-                SetDlgItemFloat(m_hWnd, IDC_VERTFOV, f3);
+            if (lensfov > 0.0) {
+                float f1 = atan2(0.018 / lensfov, 1.0) + atan2(0.018 / lensfov, 1.0);
+                float hfov = f1 * 57.29577791868204f;
+                SetDlgItemFloat(m_hWnd, IDC_HORFOV, hfov);
+                float vfov = f1 * 0.75f * 57.29577791868204f;
+                SetDlgItemFloat(m_hWnd, IDC_VERTFOV, vfov);
             }
 
             m_isUpdating = false;
@@ -83,21 +83,21 @@ BOOL CameraSettingsDialogClass::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *
         UpdateEditCtrl(ud->hdr.hwndFrom, ud->iDelta);
 
         if (ud->hdr.idFrom == IDC_LENSFOVSPIN) {
-            double d = GetDlgItemFloat(m_hWnd, IDC_LENSFOV) * 0.001f;
+            double lensfov = GetDlgItemFloat(m_hWnd, IDC_LENSFOV) * 0.001f;
 
-            if (d > 0.0) {
-                float f1 = atan2(0.017999999 / d, 1.0) + atan2(0.017999999 / d, 1.0);
-                float f2 = f1 * 57.29577791868204f;
-                SetDlgItemFloat(m_hWnd, IDC_HORFOV, f2);
-                float f3 = f1 * 0.75f * 57.29577791868204f;
-                SetDlgItemFloat(m_hWnd, IDC_VERTFOV, f3);
+            if (lensfov > 0.0) {
+                float f1 = atan2(0.018 / lensfov, 1.0) + atan2(0.018 / lensfov, 1.0);
+                float hfov = f1 * 57.29577791868204f;
+                SetDlgItemFloat(m_hWnd, IDC_HORFOV, hfov);
+                float vfov = f1 * 0.75f * 57.29577791868204f;
+                SetDlgItemFloat(m_hWnd, IDC_VERTFOV, vfov);
             }
         } else if (ud->hdr.idFrom == IDC_HORFOVSPIN) {
-            double d = GetDlgItemFloat(m_hWnd, IDC_HORFOV);
+            double hfov = GetDlgItemFloat(m_hWnd, IDC_HORFOV);
 
-            if (d > 0.0) {
-                float f1 = 0.01799999922513962f / tan(d * 0.01745329300562541 * 0.5) * 1000.0f;
-                SetDlgItemFloat(m_hWnd, IDC_LENSFOV, f1);
+            if (hfov > 0.0) {
+                float lensfov = 0.018 / tan(hfov * 0.01745329300562541 * 0.5) * 1000.0;
+                SetDlgItemFloat(m_hWnd, IDC_LENSFOV, lensfov);
             }
         }
     }
@@ -124,22 +124,22 @@ BOOL CameraSettingsDialogClass::OnInitDialog()
     InitializeSpinButton(&m_horizFovSpin, hfov, 0.0f, 180.0f);
     InitializeSpinButton(&m_vertFovSpin, vfov, 0.0f, 180.0f);
 
-    float lens = 0.01799999922513962 / tan(camera->Get_Horizontal_FOV() * 0.5f) * 1000.0f;
+    float lens = 0.018 / tan(camera->Get_Horizontal_FOV() * 0.5f) * 1000.0f;
     InitializeSpinButton(&m_lensSpin, lens, 1.0f, 200.0f);
 
-    bool fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
-    m_vertFovSpin.EnableWindow(fov);
-    m_horizFovSpin.EnableWindow(fov);
-    m_lensSpin.EnableWindow(fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_VERTFOV), fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_HORFOV), fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LENSFOV), fov);
+    bool use_fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
+    m_vertFovSpin.EnableWindow(use_fov);
+    m_horizFovSpin.EnableWindow(use_fov);
+    m_lensSpin.EnableWindow(use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_VERTFOV), use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_HORFOV), use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LENSFOV), use_fov);
 
-    bool clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
-    m_nearClipSpin.EnableWindow(clip);
-    m_farClipSpin.EnableWindow(clip);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_NEARCLIP), clip);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_FARCLIP), clip);
+    bool use_clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
+    m_nearClipSpin.EnableWindow(use_clip);
+    m_farClipSpin.EnableWindow(use_clip);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_NEARCLIP), use_clip);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_FARCLIP), use_clip);
 
     return TRUE;
 }
@@ -149,12 +149,12 @@ void CameraSettingsDialogClass::OnOK()
     CDialog::OnInitDialog();
     CW3DViewDoc *doc = GetCurrentDocument();
     CameraClass *camera = doc->GetGraphicView()->m_camera;
-    bool fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
-    bool clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
-    doc->m_useManualFov = fov;
-    doc->m_useManualClipPlanes = clip;
+    bool use_fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
+    bool use_clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
+    doc->m_useManualFov = use_fov;
+    doc->m_useManualClipPlanes = use_clip;
 
-    if (fov) {
+    if (use_fov) {
         camera->Set_View_Plane(GetDlgItemFloat(m_hWnd, IDC_HORFOV) * 0.01745329300562541f,
             GetDlgItemFloat(m_hWnd, IDC_VERTFOV) * 0.01745329300562541f);
     } else {
@@ -181,22 +181,22 @@ void CameraSettingsDialogClass::OnOK()
 
 void CameraSettingsDialogClass::OnFieldOfView()
 {
-    bool fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
-    m_vertFovSpin.EnableWindow(fov);
-    m_horizFovSpin.EnableWindow(fov);
-    m_lensSpin.EnableWindow(fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_VERTFOV), fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_HORFOV), fov);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LENSFOV), fov);
+    bool use_fov = SendDlgItemMessage(IDC_FOV, BM_GETCHECK) == 1;
+    m_vertFovSpin.EnableWindow(use_fov);
+    m_horizFovSpin.EnableWindow(use_fov);
+    m_lensSpin.EnableWindow(use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_VERTFOV), use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_HORFOV), use_fov);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_LENSFOV), use_fov);
 }
 
 void CameraSettingsDialogClass::OnClipPlanes()
 {
-    bool clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
-    m_nearClipSpin.EnableWindow(clip);
-    m_farClipSpin.EnableWindow(clip);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_NEARCLIP), clip);
-    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_FARCLIP), clip);
+    bool use_clip = SendDlgItemMessage(IDC_CLIPPLANES, BM_GETCHECK) == 1;
+    m_nearClipSpin.EnableWindow(use_clip);
+    m_farClipSpin.EnableWindow(use_clip);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_NEARCLIP), use_clip);
+    ::EnableWindow(::GetDlgItem(m_hWnd, IDC_FARCLIP), use_clip);
 }
 
 void CameraSettingsDialogClass::OnReset()

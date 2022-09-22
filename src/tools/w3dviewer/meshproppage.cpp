@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CMeshPropPage, CPropertyPage)
 END_MESSAGE_MAP()
 // clang-format on
 
-CMeshPropPage::CMeshPropPage(CString *name) : CPropertyPage(IDD_MESH, 0), m_name(*name) {}
+CMeshPropPage::CMeshPropPage(const CString &name) : CPropertyPage(IDD_MESH, 0), m_name(name) {}
 
 BOOL CMeshPropPage::OnInitDialog()
 {
@@ -53,11 +53,11 @@ BOOL CMeshPropPage::OnInitDialog()
             uint32_t flags = mesh->Get_W3D_Flags();
             int id;
 
-            if ((flags & W3D_MESH_FLAG_COLLISION_BOX) == W3D_MESH_FLAG_COLLISION_BOX) {
+            if ((flags & W3D_MESH_FLAG_COLLISION_BOX) != 0) {
                 id = IDC_COLBOX;
-            } else if ((flags & W3D_MESH_FLAG_SKIN) == W3D_MESH_FLAG_SKIN) {
+            } else if ((flags & W3D_MESH_FLAG_SKIN) != 0) {
                 id = IDC_SKIN;
-            } else if ((flags & W3D_MESH_FLAG_SHADOW) == W3D_MESH_FLAG_SHADOW) {
+            } else if ((flags & W3D_MESH_FLAG_SHADOW) != 0) {
                 id = IDC_SHADOW;
             } else {
                 id = IDC_NORMAL;
@@ -65,15 +65,15 @@ BOOL CMeshPropPage::OnInitDialog()
 
             SendDlgItemMessage(id, BM_SETCHECK, 1, 0);
 
-            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL) == W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL) {
+            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PHYSICAL) != 0) {
                 SendDlgItemMessage(IDC_PHYSICAL, BM_SETCHECK, 1, 0);
             }
 
-            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE) == W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE) {
+            if ((flags & W3D_MESH_FLAG_COLLISION_TYPE_PROJECTILE) != 0) {
                 SendDlgItemMessage(IDC_PROJECTILE, BM_SETCHECK, 1, 0);
             }
 
-            if ((flags & W3D_MESH_FLAG_HIDDEN) == W3D_MESH_FLAG_HIDDEN) {
+            if ((flags & W3D_MESH_FLAG_HIDDEN) != 0) {
                 SendDlgItemMessage(IDC_HIDDEN, BM_SETCHECK, 1, 0);
             }
 

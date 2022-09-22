@@ -34,7 +34,12 @@ END_MESSAGE_MAP()
 // clang-format on
 
 EmitterGeneralPropPageClass::EmitterGeneralPropPageClass() :
-    CPropertyPage(IDD_EMITTER), m_instanceList(nullptr), m_sheet(nullptr), m_lifetime(0.0f), m_isValid(true)
+    CPropertyPage(IDD_EMITTER),
+    m_instanceList(nullptr),
+    m_sheet(nullptr),
+    m_lifetime(0.0f),
+    m_futureStartTime(0.0f),
+    m_isValid(true)
 {
     Initialize();
 }

@@ -3,10 +3,15 @@ set(CMAKE_MFC_FLAG 2) #Enable MFC
 target_sources(w3dview PRIVATE
     addtolineupdialog.cpp
     ambientlightdialog.cpp
+    animationproppage.cpp
+    animationspeed.cpp
     assetinfo.cpp
+    assetpropertysheet.cpp
     backgroundbmpdialog.cpp
     backgroundcolordialog.cpp
     backgroundobjectdialog.cpp
+    cameradistancedialog.cpp
+    camerasettingsdialog.cpp
     colorbar.cpp
     colorpicker.cpp
     colorpickerdialogclass.cpp
@@ -27,7 +32,9 @@ target_sources(w3dview PRIVATE
     emittersizeproppage.cpp
     emitteruserproppage.cpp
     graphicview.cpp
+    hierarchyproppage.cpp
     mainfrm.cpp
+    meshproppage.cpp
     opacitysettingsdialog.cpp
     particleblurtimekeydialog.cpp
     particleframekeydialog.cpp

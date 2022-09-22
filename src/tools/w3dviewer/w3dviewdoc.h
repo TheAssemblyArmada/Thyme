@@ -94,8 +94,6 @@ public:
     Vector3 m_fogColor;
     CString m_backgroundBitmapName;
     CString m_backgroundObjectName;
-    bool m_isQCompressed;
-    int m_compressType;
     float m_frameCount;
     float m_time;
     BOOL m_blendFrames;

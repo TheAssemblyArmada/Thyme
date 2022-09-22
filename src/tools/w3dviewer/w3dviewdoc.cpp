@@ -53,8 +53,6 @@ CW3DViewDoc::CW3DViewDoc() :
     m_textureCamera(nullptr),
     m_docCamera(nullptr),
     m_fogColor(0.5f, 0.5f, 0.5f),
-    m_isQCompressed(false),
-    m_compressType(2),
     m_frameCount(0.0f),
     m_blendFrames(TRUE),
     m_animateCamera(false),

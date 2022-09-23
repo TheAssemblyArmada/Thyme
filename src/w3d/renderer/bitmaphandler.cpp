@@ -565,7 +565,7 @@ void BitmapHandlerClass::Copy_Image(uint8_t *dest_surface,
                                     Recolor(dst[1], adjust);
                                 }
 
-                                *mip = ((src[src_quarter_pitch + 1] & 0xFCFCFCFCu) >> 2)
+                                mip[j] = ((src[src_quarter_pitch + 1] & 0xFCFCFCFCu) >> 2)
                                     + ((src[src_quarter_pitch] & 0xFCFCFCFC) >> 2) + ((src[1] & 0xFCFCFCFCu) >> 2)
                                     + ((src[0] & 0xFCFCFCFCu) >> 2);
                                 src += 2;

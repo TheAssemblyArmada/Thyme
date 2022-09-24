@@ -51,7 +51,7 @@ class TerrainRoadCollection;
 TerrainRoadCollection *&g_theTerrainRoads = Make_Global<TerrainRoadCollection *>(PICK_ADDRESS(0x00A2BE4C, 0x00E23A34));
 
 // view.cpp
-uint32_t &View::s_idNext = Make_Global<uint32_t>(PICK_ADDRESS(0x009D4178, 0));
+uint32_t &View::s_idNext = Make_Global<uint32_t>(PICK_ADDRESS(0x009D4178, 0x00D0DD7C));
 
 // water.cpp
 #include "water.h"
@@ -61,11 +61,11 @@ Override<WaterTransparencySetting> &g_theWaterTransparency =
 
 // keyboard.cpp
 class Keyboard;
-Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(PICK_ADDRESS(0x00A29B70, 0));
+Keyboard *&g_theKeyboard = Make_Global<Keyboard *>(PICK_ADDRESS(0x00A29B70, 0x00E26910));
 
 // mouse.cpp
 class Mouse;
-Mouse *&g_theMouse = Make_Global<Mouse *>(PICK_ADDRESS(0x00A29B60, 0));
+Mouse *&g_theMouse = Make_Global<Mouse *>(PICK_ADDRESS(0x00A29B60, 0x00E26904));
 
 // particlesysmanager.cpp
 class ParticleSystemManager;
@@ -106,30 +106,30 @@ NameKeyGenerator *&g_theNameKeyGenerator = Make_Global<NameKeyGenerator *>(PICK_
 
 // staticnamekey.cpp
 #include "staticnamekey.h"
-StaticNameKey &g_teamNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A830, 0));
-StaticNameKey &g_theInitialCameraPositionKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A880, 0));
-StaticNameKey &g_playerNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32580, 0));
-StaticNameKey &g_playerIsHumanKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8F0, 0));
-StaticNameKey &g_playerDisplayNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32588, 0));
-StaticNameKey &g_playerFactionKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A326B8, 0));
-StaticNameKey &g_playerAlliesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A36758, 0));
-StaticNameKey &g_playerEnemiesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32668, 0));
-StaticNameKey &g_teamOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32568, 0));
-StaticNameKey &g_teamIsSingletonKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A948, 0));
-StaticNameKey &g_objectInitialHealthKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A326A8, 0));
-StaticNameKey &g_objectEnabledKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8E0, 0));
-StaticNameKey &g_objectIndestructibleKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32598, 0));
-StaticNameKey &g_objectUnsellableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32650, 0));
-StaticNameKey &g_objectPoweredKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32628, 0));
-StaticNameKey &g_objectRecruitableAIKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A36720, 0));
-StaticNameKey &g_objectTargetableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32578, 0));
-StaticNameKey &g_originalOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32660, 0));
-StaticNameKey &g_uniqueIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A938, 0));
-StaticNameKey &g_waypointIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8B8, 0));
-StaticNameKey &g_waypointNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A960, 0));
-StaticNameKey &g_weatherKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A890, 0));
-StaticNameKey &g_lightHeightAboveTerrainKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A850, 0));
-StaticNameKey &g_scorchTypeKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A808, 0));
+StaticNameKey &g_teamNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A830, 0x00E1A450));
+StaticNameKey &g_theInitialCameraPositionKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A880, 0x00E1A4A0));
+StaticNameKey &g_playerNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32580, 0x00E121A0));
+StaticNameKey &g_playerIsHumanKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8F0, 0x00E1A510));
+StaticNameKey &g_playerDisplayNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32588, 0x00E121A8));
+StaticNameKey &g_playerFactionKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A326B8, 0x00E122D8));
+StaticNameKey &g_playerAlliesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A36758, 0x00E16378));
+StaticNameKey &g_playerEnemiesKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32668, 0x00E12288));
+StaticNameKey &g_teamOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32568, 0x00E12188));
+StaticNameKey &g_teamIsSingletonKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A948, 0x00E1A568));
+StaticNameKey &g_objectInitialHealthKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A326A8, 0x00E122C8));
+StaticNameKey &g_objectEnabledKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8E0, 0x00E1A500));
+StaticNameKey &g_objectIndestructibleKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32598, 0x00E121B8));
+StaticNameKey &g_objectUnsellableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32650, 0x00E12270));
+StaticNameKey &g_objectPoweredKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32628, 0x00E12248));
+StaticNameKey &g_objectRecruitableAIKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A36720, 0x00E16340));
+StaticNameKey &g_objectTargetableKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32578, 0x00E12198));
+StaticNameKey &g_originalOwnerKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A32660, 0x00E12280));
+StaticNameKey &g_uniqueIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A938, 0x00E1A558));
+StaticNameKey &g_waypointIDKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A8B8, 0x00E1A4D8));
+StaticNameKey &g_waypointNameKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A960, 0x00E1A580));
+StaticNameKey &g_weatherKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A890, 0x00E1A4B0));
+StaticNameKey &g_lightHeightAboveTerrainKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A850, 0x00E1A470));
+StaticNameKey &g_scorchTypeKey = Make_Global<StaticNameKey>(PICK_ADDRESS(0x00A3A808, 0x00E1A428));
 
 // terraintypes.cpp
 class TerrainTypeCollection;
@@ -228,7 +228,7 @@ RankInfoStore *&g_theRankInfoStore = Make_Global<RankInfoStore *>(PICK_ADDRESS(0
 
 // lanapiinterface.cpp
 class LANAPIInterface;
-LANAPIInterface *&g_theLAN = Make_Global<LANAPIInterface *>(PICK_ADDRESS(0x00A2E0EC, 0));
+LANAPIInterface *&g_theLAN = Make_Global<LANAPIInterface *>(PICK_ADDRESS(0x00A2E0EC, 0x04CAA100));
 
 // ffactory.cpp
 class RawFileFactoryClass;
@@ -441,7 +441,7 @@ DynamicVectorClass<ThreadTracker *> &g_threadTracker =
 
 // drawgroupinfo.cpp
 class DrawGroupInfo;
-DrawGroupInfo *&g_theDrawGroupInfo = Make_Global<DrawGroupInfo *>(PICK_ADDRESS(0x00A2C880, 0));
+DrawGroupInfo *&g_theDrawGroupInfo = Make_Global<DrawGroupInfo *>(PICK_ADDRESS(0x00A2C880, 0x04CAA52C));
 
 // shadermanager.cpp
 #include "shadermanager.h"
@@ -494,26 +494,27 @@ CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>
 
 // w3ddisplay.cpp
 #include "w3ddisplay.h"
-GameAssetManager *&W3DDisplay::s_assetManager = Make_Global<GameAssetManager *>(0x00A32518);
-RTS3DScene *&W3DDisplay::s_3DScene = Make_Global<RTS3DScene *>(0x00A3250C);
-RTS2DScene *&W3DDisplay::s_2DScene = Make_Global<RTS2DScene *>(0x00A32510);
-RTS3DInterfaceScene *&W3DDisplay::s_3DInterfaceScene = Make_Global<RTS3DInterfaceScene *>(0x00A32514);
+GameAssetManager *&W3DDisplay::s_assetManager = Make_Global<GameAssetManager *>(PICK_ADDRESS(0x00A32518, 0x00E1B13C));
+RTS3DScene *&W3DDisplay::s_3DScene = Make_Global<RTS3DScene *>(PICK_ADDRESS(0x00A3250C, 0x00E1B130));
+RTS2DScene *&W3DDisplay::s_2DScene = Make_Global<RTS2DScene *>(PICK_ADDRESS(0x00A32510, 0x00E1B134));
+RTS3DInterfaceScene *&W3DDisplay::s_3DInterfaceScene =
+    Make_Global<RTS3DInterfaceScene *>(PICK_ADDRESS(0x00A32514, 0x00E1B138));
 
 // w3dshadow.cpp
 #include "w3dshadow.h"
-W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_ADDRESS(0x00A3AE4C, 0));
+W3DShadowManager *&g_theW3DShadowManager = Make_Global<W3DShadowManager *>(PICK_ADDRESS(0x00A3AE4C, 0x00E1A614));
 
 // thingfactory.cpp
 #include "thingfactory.h"
-ThingFactory *&g_theThingFactory = Make_Global<ThingFactory *>(PICK_ADDRESS(0x00A2BC04, 0));
+ThingFactory *&g_theThingFactory = Make_Global<ThingFactory *>(PICK_ADDRESS(0x00A2BC04, 0x00E1D4F8));
 
 // gamelogic.cpp
 #include "gamelogic.h"
-GameLogic *&g_theGameLogic = Make_Global<GameLogic *>(PICK_ADDRESS(0x00A2BBEC, 0));
+GameLogic *&g_theGameLogic = Make_Global<GameLogic *>(PICK_ADDRESS(0x00A2BBEC, 0x00E25CA0));
 
 // display.cpp
 #include "display.h"
-Display *&g_theDisplay = Make_Global<Display *>(PICK_ADDRESS(0x00A2A6D0, 0));
+Display *&g_theDisplay = Make_Global<Display *>(PICK_ADDRESS(0x00A2A6D0, 0x00E25D1C));
 
 // vertmaterial.cpp
 #include "vertmaterial.h"
@@ -524,26 +525,26 @@ ARRAY_DEF(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38),
 
 // w3dsmudge.cpp
 #include "w3dsmudge.h"
-W3DSmudgeManager *&g_theSmudgeManager = Make_Global<W3DSmudgeManager *>(PICK_ADDRESS(0x00A3AE5C, 0));
+W3DSmudgeManager *&g_theSmudgeManager = Make_Global<W3DSmudgeManager *>(PICK_ADDRESS(0x00A3AE5C, 0x00E1ACB4));
 
 // ai.cpp
 #include "ai.h"
-AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0));
+AI *&g_theAI = Make_Global<AI *>(PICK_ADDRESS(0x00A2BBF4, 0x00E27E24));
 
 // terrainlogic.cpp
 #include "terrainlogic.h"
-TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00A2B680, 0));
+TerrainLogic *&g_theTerrainLogic = Make_Global<TerrainLogic *>(PICK_ADDRESS(0x00A2B680, 0x00E23AE8));
 
 // assetmgr.cpp
 #include "assetmgr.h"
-NullPrototypeClass &s_nullPrototype = Make_Global<NullPrototypeClass>(0x00A4C1B8);
+NullPrototypeClass &s_nullPrototype = Make_Global<NullPrototypeClass>(PICK_ADDRESS(0x00A4C1B8, 0x00DE8F4C));
 
 // meshmatdesc.cpp
 #include "meshmatdesc.h"
-ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(0x00A544C0);
+ShaderClass &MeshMatDescClass::s_NullShader = Make_Global<ShaderClass>(PICK_ADDRESS(0x00A544C0, 0x00DEF7E0));
 
 // meshgeometry.cpp
-SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(0x00A51E60);
+SimpleVecClass<Vector4> &g_planeEQArray = Make_Global<SimpleVecClass<Vector4>>(PICK_ADDRESS(0x00A51E60, 0x00DEF648));
 
 // objectcreationlist.cpp
 #include "objectcreationlist.h"
@@ -580,19 +581,21 @@ W3DProjectedShadowManager *&g_theW3DProjectedShadowManager =
 class FrustumClass;
 FrustumClass *&g_shadowCameraFrustum = Make_Global<FrustumClass *>(PICK_ADDRESS(0x00A3AE3C, 0x00E1A604));
 #ifdef BUILD_WITH_D3D8
-IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D = Make_Global<IDirect3DVertexBuffer8 *>(0x00A3ACE8);
-IDirect3DIndexBuffer8 *&g_shadowDecalIndexBufferD3D = Make_Global<IDirect3DIndexBuffer8 *>(0x00A3ACEC);
+IDirect3DVertexBuffer8 *&g_shadowDecalVertexBufferD3D =
+    Make_Global<IDirect3DVertexBuffer8 *>(PICK_ADDRESS(0x00A3ACE8, 0x00E1AFDC));
+IDirect3DIndexBuffer8 *&g_shadowDecalIndexBufferD3D =
+    Make_Global<IDirect3DIndexBuffer8 *>(PICK_ADDRESS(0x00A3ACEC, 0x00E1AFE0));
 #endif
-int &g_nShadowDecalVertsInBuf = Make_Global<int>(0x00A3ACF0);
-int &g_nShadowDecalStartBatchVertex = Make_Global<int>(0x00A3ACF4);
-int &g_nShadowDecalIndicesInBuf = Make_Global<int>(0x00A3ACF8);
-int &g_nShadowDecalStartBatchIndex = Make_Global<int>(0x00A3ACFC);
-int &g_nShadowDecalPolysInBatch = Make_Global<int>(0x00A3AD00);
-int &g_nShadowDecalVertsInBatch = Make_Global<int>(0x00A3AD04);
-int &g_drawStartX = Make_Global<int>(0x00A3ACE0);
-int &g_drawEdgeX = Make_Global<int>(0x00A3ACD8);
-int &g_drawStartY = Make_Global<int>(0x00A3ACE4);
-int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);
+int &g_nShadowDecalVertsInBuf = Make_Global<int>(PICK_ADDRESS(0x00A3ACF0, 0x00E1AFE4));
+int &g_nShadowDecalStartBatchVertex = Make_Global<int>(PICK_ADDRESS(0x00A3ACF4, 0x00E1AFE8));
+int &g_nShadowDecalIndicesInBuf = Make_Global<int>(PICK_ADDRESS(0x00A3ACF8, 0x00E1AFEC));
+int &g_nShadowDecalStartBatchIndex = Make_Global<int>(PICK_ADDRESS(0x00A3ACFC, 0x00E1AFF0));
+int &g_nShadowDecalPolysInBatch = Make_Global<int>(PICK_ADDRESS(0x00A3AD00, 0x00E1AFF4));
+int &g_nShadowDecalVertsInBatch = Make_Global<int>(PICK_ADDRESS(0x00A3AD04, 0x00E1AFF8));
+int &g_drawStartX = Make_Global<int>(PICK_ADDRESS(0x00A3ACE0, 0x00E1AFD4));
+int &g_drawEdgeX = Make_Global<int>(PICK_ADDRESS(0x00A3ACD8, 0x00E1AFCC));
+int &g_drawStartY = Make_Global<int>(PICK_ADDRESS(0x00A3ACE4, 0x00E1AFD8));
+int &g_drawEdgeY = Make_Global<int>(PICK_ADDRESS(0x00A3ACDC, 0x00E1AFD0));
 
 // worldheightmap.cpp
 #include "worldheightmap.h"
@@ -640,7 +643,7 @@ int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00
 
 // imemanagerinterface.cpp
 class IMEManagerInterface;
-IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_ADDRESS(0x00A29B8C, 0));
+IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_ADDRESS(0x00A29B8C, 0x04CAB63C));
 
 // locomotor.cpp
 class LocomotorStore;

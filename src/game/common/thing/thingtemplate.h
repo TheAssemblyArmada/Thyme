@@ -179,7 +179,7 @@ public:
     ThingTemplate *Get_Build_Facility_Template(const Player *player) const;
     BuildableStatus Get_Buildable() const;
     Utf8String Get_LTA_Name() const { return m_LTAName; }
-    unsigned short Get_Max_Simultaneous_Of_Type() const;
+    int Get_Max_Simultaneous_Of_Type() const;
     const FXList *Get_Per_Unit_FX(const Utf8String &fxname) const;
     const AudioEventRTS *Get_Per_Unit_Sound(const Utf8String &soundname) const;
     int Get_Skill_Point_Value(int level) const;

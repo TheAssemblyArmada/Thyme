@@ -422,7 +422,7 @@ BuildableStatus ThingTemplate::Get_Buildable() const
     }
 }
 
-unsigned short ThingTemplate::Get_Max_Simultaneous_Of_Type() const
+int ThingTemplate::Get_Max_Simultaneous_Of_Type() const
 {
     if (m_determinedBySuperweaponRestriction && g_theGameLogic != nullptr) {
         return g_theGameLogic->Get_Max_Simultaneous_Of_Type();

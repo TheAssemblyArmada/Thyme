@@ -93,7 +93,7 @@ W3DLaserDraw::W3DLaserDraw(Thing *thing, ModuleData const *module_data) :
 
         SurfaceClass::SurfaceDescription desc;
         m_texture->Get_Level_Description(desc, 0);
-        m_textureAspectRatio = desc.width / desc.height;
+        m_textureAspectRatio = (float)desc.width / (float)desc.height;
     }
 
     float innerred;

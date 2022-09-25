@@ -89,7 +89,7 @@ ParticleSystem::ParticleSystem(const ParticleSystemTemplate *temp, ParticleSyste
     m_burstDelay = temp->m_burstDelay;
     m_burstCount = temp->m_burstCount;
     m_isOneShot = temp->m_isOneShot;
-    m_delayLeft = m_initialDelay.Get_Value();
+    m_delayLeft = temp->m_initialDelay.Get_Value();
     m_systemLifetimeLeft = temp->m_systemLifetime;
     m_isForever = temp->m_systemLifetime == 0;
     m_velDamping = temp->m_velDamping;

@@ -182,7 +182,7 @@ public:
     }
 
 #ifdef GAME_DLL
-    static ARRAY_DEC(TileData *, s_alphaTiles, 12);
+    static TileData *(&s_alphaTiles)[12];
 #else
     static TileData *s_alphaTiles[12];
 #endif

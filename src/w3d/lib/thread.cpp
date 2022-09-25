@@ -28,7 +28,7 @@ using std::strcpy;
 #include <synchapi.h>
 #ifdef GAME_DLL
 #include "hooker.h"
-#define test_event (Make_Global<void *>(0x00A65178))
+void *&test_event = Make_Global<void *>(0x00A65178);
 #else
 void *test_event = CreateEventA(nullptr, FALSE, FALSE, "");
 #endif

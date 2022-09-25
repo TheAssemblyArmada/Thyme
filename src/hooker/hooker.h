@@ -44,10 +44,12 @@
 // the correct type and address. This should not change from run to run if the
 // exe loads at a standard base address.
 
-// Typical use will be to use define to create a friendly name, e.g:
-// #define SomeGlobalVar (Make_Global<bool>(0x00FF00FF))
+// Typical use will:
+// bool &SomeGlobalVar = Make_Global<bool>(0x00FF00FF);
+// bool (&SomeGlobalVar2)[32] = Make_Global<bool[32]>(0x00FF00FF);
 // allows you to use SomeGlobalVar as though it was a bool you declared, though
 // it will reflect the value the original exe sees at address 0x00FF00FF
+// Likewise for SomeGlobalVar2 when it is an array.
 template<typename T> __forceinline T &Make_Global(const uintptr_t address)
 {
     return *reinterpret_cast<T *>(address);
@@ -150,8 +152,3 @@ template<typename T> void Hook_Method(uintptr_t in, T out)
       __asm push in                         \
       __asm call Hook_Func     \
       __asm add esp, 8 }
-
-#define ARRAY_DEC(type, var, size) type(&var)[size]
-#define ARRAY_DEF(address, type, var, size) type(&var)[size] = Make_Global<type[size]>(address);
-#define ARRAY2D_DEC(type, var, x, y) type(&var)[x][y]
-#define ARRAY2D_DEF(address, type, var, x, y) type(&var)[x][y] = Make_Global<type[x][y]>(address);

@@ -55,7 +55,8 @@ uint32_t &View::s_idNext = Make_Global<uint32_t>(PICK_ADDRESS(0x009D4178, 0));
 
 // water.cpp
 #include "water.h"
-ARRAY_DEF(PICK_ADDRESS(0x00A2F0B8, 0x00A2F0B8), WaterSetting, g_waterSettings, TIME_OF_DAY_COUNT);
+WaterSetting (&g_waterSettings)[TIME_OF_DAY_COUNT] = Make_Global<WaterSetting[TIME_OF_DAY_COUNT]>(
+    PICK_ADDRESS(0x00A2F0B8, 0x00A2F0B8));
 Override<WaterTransparencySetting> &g_theWaterTransparency =
     Make_Global<Override<WaterTransparencySetting>>(PICK_ADDRESS(0x00A2F0B0, 0x00A2F0B0));
 
@@ -252,13 +253,15 @@ IDirect3D8 *(__stdcall *&DX8Wrapper::s_d3dCreateFunction)(unsigned) = Make_Globa
 HMODULE &DX8Wrapper::s_d3dLib = Make_Global<HMODULE>(PICK_ADDRESS(0x00A47F70, 0x00DEE7A8));
 IDirect3D8 *&DX8Wrapper::s_d3dInterface = Make_Global<IDirect3D8 *>(PICK_ADDRESS(0x00A47EEC, 0x00DEE724));
 IDirect3DDevice8 *&DX8Wrapper::s_d3dDevice = Make_Global<IDirect3DDevice8 *>(PICK_ADDRESS(0x00A47EF0, 0x00DEE728));
-ARRAY_DEF(PICK_ADDRESS(0x00A42784, 0x00DE8FBC), w3dbasetexture_t, DX8Wrapper::s_textures, MAX_TEXTURE_STAGES);
+w3dbasetexture_t (&DX8Wrapper::s_textures)[MAX_TEXTURE_STAGES] = Make_Global<w3dbasetexture_t[MAX_TEXTURE_STAGES]>(
+    PICK_ADDRESS(0x00A42784, 0x00DE8FBC));
 void *&DX8Wrapper::s_shadowMap = Make_Global<void *>(PICK_ADDRESS(0x00A47EBC, 0x00DEE6F4));
 HWND &DX8Wrapper::s_hwnd = Make_Global<HWND>(PICK_ADDRESS(0x00A47EC4, 0x00DEE6FC));
-ARRAY_DEF(PICK_ADDRESS(0x00A46CC0, 0x00DED4F8), unsigned, DX8Wrapper::s_renderStates, 256);
-ARRAY2D_DEF(PICK_ADDRESS(0x00A46880, 0x00DED0B8), unsigned, DX8Wrapper::s_textureStageStates, MAX_TEXTURE_STAGES, 32);
-ARRAY_DEF(PICK_ADDRESS(0x00A47778, 0x00DEDFB0), Vector4, DX8Wrapper::s_vertexShaderConstants, 96);
-ARRAY_DEF(PICK_ADDRESS(0x00A427C0, 0x00DE8FF8), unsigned, DX8Wrapper::s_pixelShaderConstants, 32);
+unsigned (&DX8Wrapper::s_renderStates)[256] = Make_Global<unsigned[256]>(PICK_ADDRESS(0x00A46CC0, 0x00DED4F8));
+unsigned (&DX8Wrapper::s_textureStageStates)[MAX_TEXTURE_STAGES][32] = Make_Global<unsigned[MAX_TEXTURE_STAGES][32]>(
+    PICK_ADDRESS(0x00A46880, 0x00DED0B8));
+Vector4 (&DX8Wrapper::s_vertexShaderConstants)[96] = Make_Global<Vector4[96]>(PICK_ADDRESS(0x00A47778, 0x00DEDFB0));
+unsigned (&DX8Wrapper::s_pixelShaderConstants)[32] = Make_Global<unsigned[32]>(PICK_ADDRESS(0x00A427C0, 0x00DE8FF8));
 bool &DX8Wrapper::s_isInitialised = Make_Global<bool>(PICK_ADDRESS(0x00A47EC8, 0x00DEE700));
 bool &DX8Wrapper::s_isWindowed = Make_Global<bool>(PICK_ADDRESS(0x00A47EC9, 0x00DEE701));
 bool &DX8Wrapper::s_debugIsWindowed = Make_Global<bool>(PICK_ADDRESS(0x00A15CD8, 0x00CC36B8));
@@ -274,7 +277,7 @@ int &DX8Wrapper::s_resolutionWidth = Make_Global<int>(PICK_ADDRESS(0x00A15CE0, 0
 int &DX8Wrapper::s_resolutionHeight = Make_Global<int>(PICK_ADDRESS(0x00A15CE4, 0x00CC36C4));
 int &DX8Wrapper::s_bitDepth = Make_Global<int>(PICK_ADDRESS(0x00A15CE8, 0x00CC36C8));
 int &DX8Wrapper::s_textureBitDepth = Make_Global<int>(PICK_ADDRESS(0x00A15CEC, 0x00CC36CC));
-ARRAY_DEF(PICK_ADDRESS(0x00A4277C, 0x00DE8FB4), bool, DX8Wrapper::s_currentLightEnables, 4);
+bool (&DX8Wrapper::s_currentLightEnables)[4] = Make_Global<bool[4]>(PICK_ADDRESS(0x00A4277C, 0x00DE8FB4));
 unsigned &DX8Wrapper::s_matrixChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F08, 0x00DEE740));
 unsigned &DX8Wrapper::s_materialChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F0C, 0x00DEE744));
 unsigned &DX8Wrapper::s_vertexBufferChanges = Make_Global<unsigned>(PICK_ADDRESS(0x00A47F10, 0x00DEE748));
@@ -302,7 +305,7 @@ DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceShortNameTable =
 DynamicVectorClass<RenderDeviceDescClass> &DX8Wrapper::s_renderDeviceDescriptionTable =
     Make_Global<DynamicVectorClass<RenderDeviceDescClass>>(PICK_ADDRESS(0x00A427A8, 0x00DE8FE0));
 w3dadapterid_t &DX8Wrapper::s_currentAdapterIdentifier = Make_Global<w3dadapterid_t>(PICK_ADDRESS(0x00A470C0, 0x00DED8F8));
-ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), Matrix4, DX8Wrapper::s_DX8Transforms, 257);
+Matrix4 (&DX8Wrapper::s_DX8Transforms)[257] = Make_Global<Matrix4[257]>(PICK_ADDRESS(0x00A42840, 0x00DE9078));
 D3DMATRIX &DX8Wrapper::s_oldPrj = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A46C80, 0x00DED4B8));
 D3DMATRIX &DX8Wrapper::s_oldView = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A47D78, 0x00DEE5B0));
 D3DMATRIX &DX8Wrapper::s_oldWorld = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A47E78, 0x00DEE6B0));
@@ -423,8 +426,9 @@ HOOK_AUTOPOOL(PolyRenderTaskClass, 256, PICK_ADDRESS(0x00A4C450, 0x00DEEB60));
 HOOK_AUTOPOOL(MatPassTaskClass, 256, PICK_ADDRESS(0x00A4C468, 0x00DEEB78));
 
 // w3dformat.cpp
-ARRAY_DEF(PICK_ADDRESS(0x00A5243C, 0x00DF6B20), WW3DFormat, g_D3DFormatToWW3DFormatConversionArray, 63);
-ARRAY_DEF(PICK_ADDRESS(0x00A522FC, 0x00DF69E0), WW3DZFormat, g_D3DFormatToWW3DZFormatConversionArray, 80);
+WW3DFormat (&g_D3DFormatToWW3DFormatConversionArray)[63] = Make_Global<WW3DFormat[63]>(PICK_ADDRESS(0x00A5243C, 0x00DF6B20));
+WW3DZFormat (&g_D3DFormatToWW3DZFormatConversionArray)[80] = Make_Global<WW3DZFormat[80]>(
+    PICK_ADDRESS(0x00A522FC, 0x00DF69E0));
 
 // wwstring.cpp
 #include "wwstring.h"
@@ -444,7 +448,8 @@ DrawGroupInfo *&g_theDrawGroupInfo = Make_Global<DrawGroupInfo *>(PICK_ADDRESS(0
 
 // shadermanager.cpp
 #include "shadermanager.h"
-ARRAY_DEF(PICK_ADDRESS(0x00A3AB20, 0x00E1A7C8), TextureClass *, W3DShaderManager::s_textures, MAX_TEXTURE_STAGES);
+TextureClass *(&W3DShaderManager::s_textures)[MAX_TEXTURE_STAGES] = Make_Global<TextureClass *[MAX_TEXTURE_STAGES]>(
+    PICK_ADDRESS(0x00A3AB20, 0x00E1A7C8));
 bool &W3DShaderManager::s_renderingToTexture = Make_Global<bool>(PICK_ADDRESS(0x00A3AB98, 0x00E1A840));
 W3DShaderManager::ShaderTypes &W3DShaderManager::s_currentShader =
     Make_Global<ShaderTypes>(PICK_ADDRESS(0x00A3AA80, 0x00E1A728));
@@ -470,7 +475,7 @@ RayEffectSystem *&g_theRayEffects = Make_Global<RayEffectSystem *>(PICK_ADDRESS(
 // win32mouse.cpp
 #include "win32mouse.h"
 Win32Mouse *&g_theWin32Mouse = Make_Global<Win32Mouse *>(PICK_ADDRESS(0x00A27B10, 0));
-ARRAY2D_DEF(PICK_ADDRESS(0x00A31F00, 0), HCURSOR, Win32Mouse::s_loadedCursors, CURSOR_COUNT, 8);
+HCURSOR (&Win32Mouse::s_loadedCursors)[CURSOR_COUNT][8] = Make_Global<HCURSOR[CURSOR_COUNT][8]>(PICK_ADDRESS(0x00A31F00, 0));
 
 // globallanguage.cpp
 class FontLibrary;
@@ -484,11 +489,11 @@ View *&g_theTacticalView = Make_Global<View *>(PICK_ADDRESS(0x00A2B684, 0x00E23A
 #include "w3dmouse.h"
 MouseThreadClass &W3DMouse::s_mouseThread = Make_Global<MouseThreadClass>(0x00A3B370);
 bool &W3DMouse::s_mouseThreadIsDrawing = Make_Global<bool>(0x00A3B3C8);
-ARRAY_DEF(0x00A3B18C, HAnimClass *, W3DMouse::s_W3DMouseAssets1, CURSOR_COUNT);
-ARRAY_DEF(0x00A3B22C, RenderObjClass *, W3DMouse::s_W3DMouseAssets2, CURSOR_COUNT);
-ARRAY2D_DEF(
-    0x00A3B3D8, TextureBaseClass *, W3DMouse::s_D3DMouseAssets, CURSOR_COUNT, W3DMouse::MAX_FRAMES); // TODO unsure on type
-ARRAY_DEF(0x00A3B2CC, uint32_t, W3DMouse::s_PolyMouseAssets, CURSOR_COUNT); // unsure on type
+HAnimClass *(&W3DMouse::s_W3DMouseAssets1)[CURSOR_COUNT] = Make_Global<HAnimClass *[CURSOR_COUNT]>(0x00A3B18C);
+RenderObjClass *(&W3DMouse::s_W3DMouseAssets2)[CURSOR_COUNT] = Make_Global<RenderObjClass *[CURSOR_COUNT]>(0x00A3B22C);
+TextureBaseClass *(&W3DMouse::s_D3DMouseAssets)[CURSOR_COUNT][W3DMouse::MAX_FRAMES] =
+    Make_Global<TextureBaseClass *[CURSOR_COUNT][W3DMouse::MAX_FRAMES]>(0x00A3B3D8); // TODO unsure on type
+uint32_t (&W3DMouse::s_PolyMouseAssets)[CURSOR_COUNT] = Make_Global<uint32_t[CURSOR_COUNT]>(0x00A3B2CC); // unsure on type
 CriticalSectionClass &g_mouseCriticalSection = Make_Global<CriticalSectionClass>(0x00A3B3D0);
 
 // w3ddisplay.cpp
@@ -516,10 +521,8 @@ Display *&g_theDisplay = Make_Global<Display *>(PICK_ADDRESS(0x00A2A6D0, 0));
 
 // vertmaterial.cpp
 #include "vertmaterial.h"
-ARRAY_DEF(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38),
-    VertexMaterialClass *,
-    VertexMaterialClass::s_presets,
-    VertexMaterialClass::PRESET_COUNT);
+VertexMaterialClass *(&VertexMaterialClass::s_presets)[VertexMaterialClass::PRESET_COUNT] =
+    Make_Global<VertexMaterialClass * [VertexMaterialClass::PRESET_COUNT]>(PICK_ADDRESS(0x00A4C1FC, 0x00DE8E38));
 
 // w3dsmudge.cpp
 #include "w3dsmudge.h"
@@ -595,7 +598,7 @@ int &g_drawEdgeY = Make_Global<int>(0x00A3ACDC);
 
 // worldheightmap.cpp
 #include "worldheightmap.h"
-ARRAY_DEF(0x00A3A96C, TileData *, WorldHeightMap::s_alphaTiles, 12);
+TileData *(&WorldHeightMap::s_alphaTiles)[12] = Make_Global<TileData *[12]>(0x00A3A96C);
 
 // w3dfilesystem.cpp
 class W3DFileSystem;
@@ -640,3 +643,7 @@ int &Drawable::s_modelLockCount = Make_Global<int>(PICK_ADDRESS(0x00A2B920, 0x00
 // imemanagerinterface.cpp
 class IMEManagerInterface;
 IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_ADDRESS(0x00A29B8C, 0));
+
+// systimer.cpp
+#include "systimer.h"
+SysTimeClass &g_theSysTimer = Make_Global<SysTimeClass>(0x00A66B30);

@@ -58,7 +58,7 @@ private:
     };
 #ifdef PLATFORM_WINDOWS
 #ifdef GAME_DLL
-    static ARRAY2D_DEC(HCURSOR, s_loadedCursors, CURSOR_COUNT, 8);
+    static HCURSOR (&s_loadedCursors)[CURSOR_COUNT][8];
 #else
     static HCURSOR s_loadedCursors[CURSOR_COUNT][8];
 #endif

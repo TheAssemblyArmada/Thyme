@@ -14,6 +14,9 @@
  */
 #include "systimer.h"
 #include "rtsutils.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
 
 #ifndef GAME_DLL
 SysTimeClass g_theSysTimer;
@@ -28,7 +31,7 @@ void SysTimeClass::Reset()
 int SysTimeClass::Get()
 {
 #ifdef GAME_DLL
-#define _is_init (Make_Global<bool>(0x00A66B30))
+    bool &_is_init = Make_Global<bool>(0x00A66B30);
 #else
     static bool _is_init;
 #endif

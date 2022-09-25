@@ -79,7 +79,7 @@ private:
 };
 
 #ifdef GAME_DLL
-extern ARRAY_DEC(WaterSetting, g_waterSettings, TIME_OF_DAY_COUNT);
+extern WaterSetting (&g_waterSettings)[TIME_OF_DAY_COUNT];
 extern Override<WaterTransparencySetting> &g_theWaterTransparency;
 #else
 extern WaterSetting g_waterSettings[TIME_OF_DAY_COUNT];

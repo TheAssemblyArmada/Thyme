@@ -54,10 +54,7 @@ inline SysTimeClass::~SysTimeClass()
 }
 
 #ifdef GAME_DLL
-#include "hooker.h"
-
-// This needs to stay here like this to avoid static init issues in cpudetect.
-#define g_theSysTimer (Make_Global<SysTimeClass>(0x00A66B30))
+extern SysTimeClass &g_theSysTimer;
 #else
 extern SysTimeClass g_theSysTimer;
 #endif

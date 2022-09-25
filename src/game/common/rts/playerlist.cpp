@@ -99,7 +99,7 @@ void PlayerList::Xfer_Snapshot(Xfer *xfer)
 {
     uint8_t version = 1;
     xfer->xferVersion(&version, 1);
-    auto player_count = m_playerCount;
+    int32_t player_count = m_playerCount;
     xfer->xferInt(&player_count);
     captainslog_dbgassert(
         player_count == m_playerCount, "Invalid player count \'%d\', should be \'%d\'", player_count, m_playerCount);

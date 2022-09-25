@@ -71,14 +71,14 @@ enum ScienceType : int32_t
 };
 
 // Placeholder
-enum ObjectID : uint32_t
+enum ObjectID : int32_t // Is Xfer serialized type.
 {
     OBJECT_UNK,
 };
 
-DEFINE_ENUMERATION_OPERATORS_T(ObjectID, uint32_t);
+DEFINE_ENUMERATION_OPERATORS_T(ObjectID, int32_t);
 
-enum DrawableID : uint32_t
+enum DrawableID : int32_t // Is Xfer serialized type.
 {
     DRAWABLE_UNK,
 };
@@ -173,7 +173,7 @@ enum VeterancyLevel
 };
 DEFINE_ENUMERATION_OPERATORS(VeterancyLevel);
 
-enum ParticlePriorityType : int32_t
+enum ParticlePriorityType : int32_t // Is Xfer serialized type.
 {
     PARTICLE_PRIORITY_NONE,
     PARTICLE_PRIORITY_LOWEST,

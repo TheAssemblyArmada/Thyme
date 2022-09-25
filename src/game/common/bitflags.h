@@ -321,7 +321,7 @@ public:
         xfer->xferVersion(&version, 1);
 
         if (xfer->Get_Mode() == XFER_SAVE) {
-            int count = Count();
+            int32_t count = Count();
             xfer->xferInt(&count);
 
             for (int i = 0; i < Size(); i++) {
@@ -334,7 +334,7 @@ public:
             }
         } else if (xfer->Get_Mode() == XFER_LOAD) {
             Clear();
-            int count;
+            int32_t count;
             xfer->xferInt(&count);
             Utf8String str;
 

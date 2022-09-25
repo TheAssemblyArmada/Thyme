@@ -40,8 +40,8 @@ struct TWheelInfo
     float m_rearLeftHeightOffset;
     float m_rearRightHeightOffset;
     float m_wheelAngle;
-    int m_framesAirborneCounter;
-    int m_framesAirborne;
+    int32_t m_framesAirborneCounter;
+    int32_t m_framesAirborne;
 };
 
 class DrawableLocoInfo : public MemoryPoolObject
@@ -178,7 +178,7 @@ public:
         DRAW_BIT_WEAPON_BONUS = 16,
     };
 
-    enum FadingMode
+    enum FadingMode : int32_t // Is Xfer serialized type.
     {
         FADING_MODE_OFF,
         FADING_MODE_OUT,
@@ -466,14 +466,14 @@ private:
 
     DynamicAudioEventInfo *m_customSoundAmbientInfo;
 
-    unsigned int m_status;
+    uint32_t m_status;
 
-    unsigned int m_drawBits;
-    unsigned int m_previousDrawBits;
+    uint32_t m_drawBits;
+    uint32_t m_previousDrawBits;
 
     FadingMode m_fadingMode;
-    unsigned int m_curFadeFrame;
-    unsigned int m_timeToFade;
+    uint32_t m_curFadeFrame;
+    uint32_t m_timeToFade;
 
     unsigned int m_remainVisibleFrames;
 
@@ -485,8 +485,8 @@ private:
 
     StealthLookType m_stealthLook;
 
-    int m_flashColor;
-    int m_flashTime;
+    int32_t m_flashColor;
+    int32_t m_flashTime;
 
     Matrix3D m_instance;
     float m_instanceScale;
@@ -501,7 +501,7 @@ private:
     DisplayString *m_captionText;
     DisplayString *m_groupString;
 
-    unsigned int m_expirationDate;
+    uint32_t m_expirationDate;
 
     DrawableIconInfo *m_drawableIconInfo;
 

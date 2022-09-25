@@ -53,8 +53,8 @@ public:
     {
         float height;
         float velocity;
-        unsigned char status;
-        unsigned char preferred_height;
+        uint8_t status;
+        uint8_t preferred_height;
     };
 
     struct Setting

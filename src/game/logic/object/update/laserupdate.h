@@ -77,10 +77,10 @@ private:
     ParticleSystemID m_targetParticleSystemID;
     bool m_grow;
     bool m_shrink;
-    unsigned int m_growStartFrame;
-    unsigned int m_growEndFrame;
+    uint32_t m_growStartFrame;
+    uint32_t m_growEndFrame;
     float m_width;
-    unsigned int m_shrinkStartFrame;
-    unsigned int m_shrinkEndFrame;
+    uint32_t m_shrinkStartFrame;
+    uint32_t m_shrinkEndFrame;
     Utf8String m_masterBone;
 };

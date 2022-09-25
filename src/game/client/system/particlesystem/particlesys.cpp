@@ -185,9 +185,8 @@ void ParticleSystem::Update(int unk)
  */
 void ParticleSystem::Xfer_Snapshot(Xfer *xfer)
 {
-#define PARTICLESYS_XFER_VERSION 1
-    uint8_t version = PARTICLESYS_XFER_VERSION;
-    xfer->xferVersion(&version, PARTICLESYS_XFER_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     ParticleSystemInfo::Xfer_Snapshot(xfer);
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_systemID)); // Was xferVoid
     xfer->xferDrawableID(&m_attachedToDrawableID);

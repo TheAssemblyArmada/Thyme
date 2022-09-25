@@ -62,8 +62,8 @@ public:
 #endif
 
 private:
-    int m_energyProduction;
-    int m_energyConsumption;
-    unsigned int m_frame;
+    int32_t m_energyProduction;
+    int32_t m_energyConsumption;
+    uint32_t m_frame;
     Player *m_player;
 };

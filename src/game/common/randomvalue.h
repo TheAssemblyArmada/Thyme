@@ -35,7 +35,7 @@ class GameLogicRandomVariable
     friend class Xfer;
 
 public:
-    enum DistributionType : int32_t
+    enum DistributionType : int32_t // Is Xfer serialized type.
     {
         CONSTANT = 0,
         UNIFORM,

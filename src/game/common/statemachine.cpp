@@ -597,11 +597,11 @@ void StateMachine::Internal_Set_Goal_Position(Coord3D const *pos)
 
 void StateMachine::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
     xfer->xferUnsignedInt(&m_updateFrame);
     xfer->xferUnsignedInt(&m_defaultStateID);
-    unsigned int id = Get_Current_State_ID();
+    uint32_t id = Get_Current_State_ID();
     xfer->xferUnsignedInt(&id);
 
     if (xfer->Get_Mode() == XFER_LOAD) {
@@ -612,20 +612,20 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
     xfer->xferBool(&has_state);
 
     if (has_state) {
-        int count = 0;
+        int32_t count = 0;
 
         for (auto &iter : m_stateMap) {
             count++;
         }
 
-        int count2 = count;
+        int32_t count2 = count;
         xfer->xferInt(&count2);
         captainslog_dbgassert(count2 == count, "State count mismatch - %d expected, %d read", count, count2);
 
         for (auto &iter : m_stateMap) {
             State *state = iter.second;
             captainslog_assert(state != nullptr);
-            unsigned int state_id = state->Get_ID();
+            uint32_t state_id = state->Get_ID();
             xfer->xferUnsignedInt(&state_id);
 
             captainslog_dbgassert(

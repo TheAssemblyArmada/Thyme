@@ -322,7 +322,7 @@ void Anim2D::Draw(int x, int y, int width, int height)
 
 void Anim2D::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
     xfer->xferUnsignedShort(&m_currentFrame);
     xfer->xferUnsignedInt(&m_gameFrame);

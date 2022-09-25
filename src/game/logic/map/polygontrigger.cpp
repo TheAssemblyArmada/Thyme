@@ -72,7 +72,7 @@ PolygonTrigger::~PolygonTrigger()
 
 void PolygonTrigger::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
     xfer->xferInt(&m_numPoints);
 

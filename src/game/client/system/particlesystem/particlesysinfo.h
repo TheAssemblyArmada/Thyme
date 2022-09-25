@@ -36,7 +36,7 @@ protected:
         KEYFRAME_COUNT = 8,
     };
 
-    enum EmissionVelocityType : int32_t
+    enum EmissionVelocityType : int32_t // Is Xfer serialized type.
     {
         EMISSION_VELOCITY_NONE,
         EMISSION_VELOCITY_ORTHO,
@@ -78,7 +78,7 @@ protected:
         } outward;
     };
 
-    enum EmissionVolumeType : int32_t
+    enum EmissionVolumeType : int32_t // Is Xfer serialized type.
     {
         EMISSION_VOLUME_NONE,
         EMISSION_VOLUME_POINT,
@@ -115,7 +115,7 @@ protected:
         } cylinder;
     };
 
-    enum WindMotion : int32_t
+    enum WindMotion : int32_t // Is Xfer serialized type.
     {
         WIND_MOTION_NONE,
         WIND_MOTION_UNUSED,
@@ -123,7 +123,7 @@ protected:
         WIND_MOTION_CIRCULAR,
     };
 
-    enum ParticleShaderType : int32_t
+    enum ParticleShaderType : int32_t // Is Xfer serialized type.
     {
         PARTICLE_SHADER_NONE,
         PARTICLE_SHADER_ADDITIVE,
@@ -132,7 +132,7 @@ protected:
         PARTICLE_SHADER_MULTIPLY,
     };
 
-    enum ParticleType : int32_t
+    enum ParticleType : int32_t // Is Xfer serialized type.
     {
         PARTICLE_TYPE_NONE,
         PARTICLE_TYPE_PARTICLE,

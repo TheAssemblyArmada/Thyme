@@ -63,8 +63,8 @@ void W3DOverlordTankDraw::CRC_Snapshot(Xfer *xfer)
 
 void W3DOverlordTankDraw::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char ver = 1;
-    xfer->xferVersion(&ver, 1);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     W3DTankDraw::Xfer_Snapshot(xfer);
 }
 

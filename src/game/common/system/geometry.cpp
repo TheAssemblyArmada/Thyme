@@ -20,8 +20,6 @@
 #include <algorithm>
 #include <captainslog.h>
 
-#define GEOMETRY_XFER_VERSION 1
-
 using GameMath::Atan2;
 using GameMath::Cos;
 using GameMath::Sin;
@@ -41,9 +39,8 @@ GeometryInfo::GeometryInfo(GeometryType type, bool little, float height, float m
  */
 void GeometryInfo::Xfer_Snapshot(Xfer *xfer)
 {
-    uint8_t version = GEOMETRY_XFER_VERSION;
-
-    xfer->xferVersion(&version, GEOMETRY_XFER_VERSION);
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     xfer->xferUser(&m_type, sizeof(m_type));
     xfer->xferBool(&m_isSmall);
     xfer->xferReal(&m_height);

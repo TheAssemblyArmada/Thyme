@@ -116,9 +116,10 @@ void ParticleSystemManager::Update()
  */
 void ParticleSystemManager::Xfer_Snapshot(Xfer *xfer)
 {
-#define PARTICLE_XFER_VERSION 1
-    uint8_t version = PARTICLE_XFER_VERSION;
-    xfer->xferVersion(&version, PARTICLE_XFER_VERSION);
+    static_assert(sizeof(ParticleSystemID) == sizeof(int32_t));
+
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
     xfer->xferInt(reinterpret_cast<int32_t *>(&m_uniqueSystemID));
     uint32_t count = m_particleSystemCount;
     xfer->xferUnsignedInt(&count);

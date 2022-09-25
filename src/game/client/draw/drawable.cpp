@@ -1501,7 +1501,7 @@ DrawableIconType Drawable_Icon_Name_To_Index(const char *name)
 
 void Drawable::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char version = 7;
+    uint8_t version = 7;
     xfer->xferVersion(&version, 7);
 
     if (xfer->Get_Mode() == XFER_LOAD && m_ambientSound != nullptr) {
@@ -1660,7 +1660,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
 
     xfer->xferUnsignedInt(&m_expirationDate);
 
-    unsigned char count = 0;
+    uint8_t count = 0;
 
     if (Has_Drawable_Icon_Info()) {
         for (int i = 0; i < MAX_ICONS; i++) {
@@ -1678,7 +1678,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
                 if (Get_Icon_Info()->anims[i] != nullptr) {
                     Utf8String str = Drawable_Icon_Index_To_Name((DrawableIconType)i);
                     xfer->xferAsciiString(&str);
-                    unsigned int timing = Get_Icon_Info()->timings[i];
+                    uint32_t timing = Get_Icon_Info()->timings[i];
                     xfer->xferUnsignedInt(&timing);
                     Utf8String name = Get_Icon_Info()->anims[i]->Get_Template()->Get_Name();
                     xfer->xferAsciiString(&name);
@@ -1695,7 +1695,7 @@ void Drawable::Xfer_Snapshot(Xfer *xfer)
             Utf8String str;
             xfer->xferAsciiString(&str);
             DrawableIconType index = Drawable_Icon_Name_To_Index(str);
-            unsigned int timing;
+            uint32_t timing;
             xfer->xferUnsignedInt(&timing);
             Get_Icon_Info()->timings[index] = timing;
             Utf8String name;
@@ -1873,19 +1873,19 @@ void Drawable::Update_Hidden_Status()
 
 void Drawable::Xfer_Drawable_Modules(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
 
     if (xfer->Get_Mode() == XFER_SAVE) {
         Get_Draw_Modules();
     }
 
-    unsigned short count = 2;
+    uint16_t count = 2;
     xfer->xferUnsignedShort(&count);
     Utf8String str;
 
     for (int i = 0; i < count; i++) {
-        unsigned short module_count = 0;
+        uint16_t module_count = 0;
 
         for (Module **j = m_modules[i]; j && *j; j++) {
             module_count++;

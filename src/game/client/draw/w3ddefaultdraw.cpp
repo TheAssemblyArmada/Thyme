@@ -110,7 +110,7 @@ void W3DDefaultDraw::CRC_Snapshot(Xfer *xfer)
 
 void W3DDefaultDraw::Xfer_Snapshot(Xfer *xfer)
 {
-    unsigned char ver = 1;
+    uint8_t ver = 1;
     xfer->xferVersion(&ver, 1);
     DrawModule::Xfer_Snapshot(xfer);
 }

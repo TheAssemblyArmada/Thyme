@@ -193,11 +193,11 @@ void DynamicAudioEventInfo::Override_Priority(int priority)
 
 void DynamicAudioEventInfo::Xfer_No_Name(Xfer *xfer)
 {
-    unsigned char version = 1;
+    uint8_t version = 1;
     xfer->xferVersion(&version, 1);
 
     if (xfer->Get_Mode() == XFER_LOAD) {
-        unsigned char flags;
+        uint8_t flags;
         xfer->xferUnsignedByte(&flags);
 
         for (int i = 0; i < OVERRIDE_COUNT; i++) {
@@ -205,7 +205,7 @@ void DynamicAudioEventInfo::Xfer_No_Name(Xfer *xfer)
         }
     } else {
 
-        unsigned char flags = 0;
+        uint8_t flags = 0;
         for (int i = 0; i < OVERRIDE_COUNT; i++) {
             if (m_overrideFlags.Test(i)) {
                 flags |= 1 << i;
@@ -247,7 +247,7 @@ void DynamicAudioEventInfo::Xfer_No_Name(Xfer *xfer)
     }
 
     if (Priority_Overridden()) {
-        unsigned char priority = m_priority;
+        uint8_t priority = m_priority;
         xfer->xferUnsignedByte(&priority);
         m_priority = priority;
     }

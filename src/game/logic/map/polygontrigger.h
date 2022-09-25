@@ -107,7 +107,7 @@ private:
     int m_triggerID;
     WaterHandle m_waterHandle;
     ICoord3D *m_points;
-    int m_numPoints;
+    int32_t m_numPoints;
     int m_sizePoints;
     mutable IRegion2D m_bounds;
     mutable float m_radius;

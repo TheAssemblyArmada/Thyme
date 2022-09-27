@@ -121,7 +121,7 @@ const BlockParse TheTypeTable[] = {
     {"Video", (iniblockparse_t)(0x005039D0) /*&INI::parseVideoDefinition*/},
     {"WaterSet", &WaterSetting::Parse_Water_Setting_Definition},
     {"WaterTransparency", &WaterTransparencySetting::Parse_Water_Transparency_Definition},
-    {"Weather", &WeatherSetting::Parse_Weather_Definition},
+    {"Weather", (iniblockparse_t)(0x00502DF0) /*&WeatherSetting::Parse_Weather_Definition*/},
     {"Weapon", (iniblockparse_t)(0x00502B30) /*&INI::parseWeaponTemplateDefinition*/},
     {"WebpageURL", (iniblockparse_t)(0x005028F0) /*&INI::parseWebpageURL*/},
     {"HeaderTemplate", (iniblockparse_t)(0x00501E50) /*&INI::parseHeaderTemplateDefinition*/},

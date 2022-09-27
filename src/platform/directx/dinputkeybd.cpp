@@ -127,12 +127,7 @@ void DirectInputKeyboard::Open_Keyboard()
         return;
     }
 
-    if (FAILED(m_inputDevice->Acquire())) {
-        captainslog_error("Failed to acquire device.");
-        Close_Keyboard(); // bugfix, close if fails
-        return;
-    }
-
+    m_inputDevice->Acquire();
     captainslog_info("DirectInput keyboard device initialised successfully.");
 }
 

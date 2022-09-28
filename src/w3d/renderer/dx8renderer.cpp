@@ -103,6 +103,7 @@ public:
         m_renderer(renderer), m_mesh(mesh), m_nextVisible(nullptr)
     {
         captainslog_assert(renderer != nullptr);
+        captainslog_assert(mesh != nullptr);
         m_mesh->Add_Ref();
     }
     ~PolyRenderTaskClass() { m_mesh->Release_Ref(); }
@@ -191,9 +192,7 @@ Vertex_Split_Table::Vertex_Split_Table(MeshModelClass *mmc) :
 Vertex_Split_Table::~Vertex_Split_Table()
 {
     if (m_allocatedPolygonArray) {
-        if (m_polygonArray) {
-            delete[] m_polygonArray;
-        }
+        delete[] m_polygonArray;
     }
 }
 
@@ -510,6 +509,9 @@ void DX8TextureCategoryClass::Render()
 
     DX8Wrapper::Set_Material(Peek_Material());
     ShaderClass shader = Get_Shader();
+    ShaderClass shader2 = shader;
+    shader2.Set_Src_Blend_Func(ShaderClass::SRCBLEND_SRC_ALPHA);
+    shader2.Set_Dst_Blend_Func(ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA);
     DX8Wrapper::Set_Shader(shader);
 
     if (s_forceMultiply) {
@@ -519,7 +521,7 @@ void DX8TextureCategoryClass::Render()
             DX8Wrapper::Set_Shader(shader);
             DX8Wrapper::Apply_Render_State_Changes();
 #ifdef BUILD_WITH_D3D8
-            DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR);
+            DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
 #endif
         }
     }
@@ -527,7 +529,7 @@ void DX8TextureCategoryClass::Render()
     bool b = false;
     PolyRenderTaskClass *task = m_renderTaskHead;
     PolyRenderTaskClass *task2 = nullptr;
-    while (task) {
+    while (task != nullptr) {
         DX8PolygonRendererClass *renderer = task->Peek_Polygon_Renderer();
         MeshClass *mesh = task->Peek_Mesh();
         captainslog_assert(mesh != nullptr);
@@ -611,14 +613,12 @@ void DX8TextureCategoryClass::Render()
                 if (mesh->Get_Alpha_Override() == 1.0f) {
                     renderer->Render(mesh->Get_Base_Vertex_Offset());
                 } else {
-                    ShaderClass shader2 = shader;
-                    shader2.Set_Src_Blend_Func(ShaderClass::SRCBLEND_SRC_ALPHA);
-                    shader2.Set_Dst_Blend_Func(ShaderClass::DSTBLEND_ONE_MINUS_SRC_ALPHA);
                     if (mesh->Is_Additive()) {
                         m_material->Set_Diffuse(
                             mesh->Get_Alpha_Override(), mesh->Get_Alpha_Override(), mesh->Get_Alpha_Override());
                         shader2 = shader;
                     }
+
                     m_material->Set_Opacity(mesh->Get_Alpha_Override());
                     DX8Wrapper::Set_Shader(shader2);
                     DX8Wrapper::Apply_Render_State_Changes();
@@ -669,6 +669,7 @@ void DX8TextureCategoryClass::Render()
     }
 
     if (!b) {
+        captainslog_assert(m_renderTaskHead == nullptr);
         Clear_Render_List();
     }
 }
@@ -695,7 +696,7 @@ unsigned int DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
         }
     }
 
-    if (polygons) {
+    if (polygons != 0) {
         index_count = 3 * polygons;
         TriIndex *polys = split_table.Get_Polygon_Array(pass);
         DX8PolygonRendererClass *renderer = new DX8PolygonRendererClass(
@@ -743,10 +744,9 @@ unsigned int DX8TextureCategoryClass::Add_Mesh(Vertex_Split_Table &split_table,
         captainslog_assert((vmax - vmin) < split_table.Get_Mesh_Model_Class()->Get_Vertex_Count());
         renderer->Set_Vertex_Index_Range(vmin, vmax - vmin + 1);
         captainslog_assert(index_count <= unsigned(split_table.Get_Polygon_Count() * 3));
-        return index_count;
     }
 
-    return 0;
+    return index_count;
 }
 
 void DX8TextureCategoryClass::Log(bool only_visible)
@@ -770,8 +770,9 @@ void DX8TextureCategoryClass::Add_Polygon_Renderer(
 {
     captainslog_assert(p_renderer != nullptr);
     captainslog_assert(!m_polygonRendererList.Contains(p_renderer));
-    if (add_after_this) {
-        m_polygonRendererList.Add_After(p_renderer, add_after_this);
+    if (add_after_this != nullptr) {
+        bool res = m_polygonRendererList.Add_After(p_renderer, add_after_this, false);
+        captainslog_assert(res);
     } else {
         m_polygonRendererList.Add(p_renderer);
     }

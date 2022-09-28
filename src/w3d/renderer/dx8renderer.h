@@ -107,7 +107,7 @@ public:
     void Remove_Polygon_Renderer(DX8PolygonRendererClass *p_renderer);
     void Add_Polygon_Renderer(DX8PolygonRendererClass *p_renderer, DX8PolygonRendererClass *add_after_this);
 
-    static void SetForceMultiply(bool multiply) { s_forceMultiply = multiply; }
+    static void Set_Force_Multiply(bool multiply) { s_forceMultiply = multiply; }
 
 private:
     int m_pass;

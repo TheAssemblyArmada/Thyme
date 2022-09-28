@@ -895,7 +895,7 @@ void Parse_Animation(INI *ini, void *instance, void *store, void const *user_dat
         "You should not specify nonzero DistanceCovered values for Idle Anims");
 
     str = ini->Get_Next_Token_Or_Null();
-    int count = std::min(str ? ini->Scan_Int(str) : 1, 1);
+    int count = std::min(1, str ? ini->Scan_Int(str) : 1);
     W3DAnimationInfo info(name, (uintptr_t)user_data == 1, distance);
 
     if ((minfo->m_iniReadFlags & INIREAD_CONDITION_STATE) != 0) {

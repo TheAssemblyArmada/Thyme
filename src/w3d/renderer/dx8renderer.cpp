@@ -164,7 +164,7 @@ public:
 
     const Vector3 *Get_Vertex_Array() { return m_mmc->Get_Vertex_Array(); }
     const Vector3 *Get_Vertex_Normal_Array() { return m_mmc->Get_Vertex_Normal_Array(); }
-    const unsigned int *Get_Color_Array(unsigned int array_index) { return m_mmc->Get_Color_Array(array_index); }
+    const unsigned int *Get_Color_Array(unsigned int array_index) { return m_mmc->Get_Color_Array(array_index, false); }
     const Vector2 *Get_UV_Array(unsigned int array_index) { return m_mmc->Get_UV_Array_By_Index(array_index); }
     unsigned int Get_Vertex_Count() { return m_mmc->Get_Vertex_Count(); }
     unsigned int Get_Polygon_Count() { return m_polygonCount; }

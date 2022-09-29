@@ -165,7 +165,7 @@ public:
     const Vector3 *Get_Vertex_Array() { return m_mmc->Get_Vertex_Array(); }
     const Vector3 *Get_Vertex_Normal_Array() { return m_mmc->Get_Vertex_Normal_Array(); }
     const unsigned int *Get_Color_Array(unsigned int array_index) { return m_mmc->Get_Color_Array(array_index); }
-    const Vector2 *Get_UV_Array(unsigned int array_index) { return m_mmc->Get_UV_Array(array_index); }
+    const Vector2 *Get_UV_Array(unsigned int array_index) { return m_mmc->Get_UV_Array_By_Index(array_index); }
     unsigned int Get_Vertex_Count() { return m_mmc->Get_Vertex_Count(); }
     unsigned int Get_Polygon_Count() { return m_polygonCount; }
     unsigned int Get_Pass_Count() { return m_mmc->Get_Pass_Count(); }
@@ -1321,12 +1321,16 @@ void DX8RigidFVFCategoryContainer::Add_Mesh(MeshModelClass *mmc)
         if (m_FVF & D3DFVF_DIFFUSE) {
             if (diffuse != nullptr) {
                 *reinterpret_cast<unsigned int *>(&outverts[f.Get_Diffuse_Offset()]) = diffuse[i];
+            } else {
+                *reinterpret_cast<unsigned int *>(&outverts[f.Get_Diffuse_Offset()]) = 0xFFFFFFFF;
             }
         }
 
         if (m_FVF & D3DFVF_SPECULAR) {
             if (specular != nullptr) {
                 *reinterpret_cast<unsigned int *>(&outverts[f.Get_Specular_Offset()]) = specular[i];
+            } else {
+                *reinterpret_cast<unsigned int *>(&outverts[f.Get_Specular_Offset()]) = 0xFFFFFFFF;
             }
         }
 

@@ -195,8 +195,8 @@ protected:
 
     void Generate_Texture_Categories(Vertex_Split_Table &split_table, unsigned int vertex_offset);
 
-    MultiListClass<DX8TextureCategoryClass> m_textureCategoryList[4];
-    MultiListClass<DX8TextureCategoryClass> m_visibleTextureCategoryList[4];
+    MultiListClass<DX8TextureCategoryClass> m_textureCategoryList[MAX_PASSES];
+    MultiListClass<DX8TextureCategoryClass> m_visibleTextureCategoryList[MAX_PASSES];
     MatPassTaskClass *m_visibleMatpassHead;
     MatPassTaskClass *m_visibleMatpassTail;
     IndexBufferClass *m_indexBuffer;

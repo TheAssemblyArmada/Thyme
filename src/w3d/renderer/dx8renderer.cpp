@@ -941,6 +941,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Texture(MultiListClass<DX8
                                 if (tmp_textures[0] == tc_it.Peek_Obj()->Peek_Texture(0)) {
                                     b = true;
                                     m_textureCategoryList[pass].Add_After(tc, tc_it.Peek_Obj());
+                                    break;
                                 }
 
                                 tc_it.Next();
@@ -987,7 +988,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
 {
     captainslog_assert(pass < m_passes);
     MultiListClass<PolyRemover> prl;
-    bool foundtexture = false;
+    bool foundmat = false;
 
     if (vmat == new_vmat) {
         return;
@@ -998,7 +999,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
             DX8TextureCategoryClass *texcat = src_it.Peek_Obj();
 
             if (texcat->Peek_Material() == vmat) {
-                foundtexture = true;
+                foundmat = true;
                 MultiListIterator<DX8PolygonRendererClass> poly_it(&polygon_renderer_list);
 
                 while (!poly_it.Is_Done()) {
@@ -1019,6 +1020,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
                                 if (tmp_textures[0] == tc_it.Peek_Obj()->Peek_Texture(0)) {
                                     b = true;
                                     m_textureCategoryList[pass].Add_After(tc, tc_it.Peek_Obj());
+                                    break;
                                 }
 
                                 tc_it.Next();
@@ -1038,7 +1040,7 @@ void DX8FVFCategoryContainer::Change_Polygon_Renderer_Material(
 
                     poly_it.Next();
                 }
-            } else if (foundtexture) {
+            } else if (foundmat) {
                 break;
             }
 
@@ -1194,6 +1196,7 @@ void DX8FVFCategoryContainer::Insert_To_Texture_Category(Vertex_Split_Table &spl
                     if (tc->Get_Shader() == shader) {
                         m_usedIndices += tc->Add_Mesh(split_table, vertex_offset, m_usedIndices, m_indexBuffer, pass);
                         b = true;
+                        break;
                     }
                 }
             }
@@ -1213,6 +1216,7 @@ void DX8FVFCategoryContainer::Insert_To_Texture_Category(Vertex_Split_Table &spl
             if (texs[0] == tc_it.Peek_Obj()->Peek_Texture(0)) {
                 b2 = true;
                 m_textureCategoryList[pass].Add_After(tc, tc_it.Peek_Obj());
+                break;
             }
 
             tc_it.Next();
@@ -1256,6 +1260,8 @@ void DX8FVFCategoryContainer::Generate_Texture_Categories(Vertex_Split_Table &sp
                 Insert_To_Texture_Category(split_table, texs, vmat, shader, i, vertex_offset);
             }
         }
+
+        captainslog_assert(m_usedIndices - old_used_indices <= polygon_count * 3);
     }
 }
 

@@ -14,10 +14,20 @@
  */
 #include "messagestream.h"
 #include "commandlist.h"
+#include "gamelogic.h"
 
 #ifndef GAME_DLL
 MessageStream *g_theMessageStream = nullptr;
 #endif
+
+bool Is_Invalid_Debug_Command(GameMessage::MessageType type)
+{
+#ifndef GAME_DEBUG_STRUCTS
+    // todo later
+#endif
+
+    return false;
+}
 
 MessageStream::~MessageStream()
 {
@@ -159,12 +169,17 @@ void MessageStream::Propagate_Messages()
     for (TranslatorData *tdata = m_firstTranslator; tdata != nullptr; tdata = tdata->m_next) {
         for (GameMessage *msg = m_firstMessage; msg != nullptr;) {
             GameMessageTranslator *translator = tdata->m_translator;
-            GameMessage *msg_next = msg->Get_Next();
+            GameMessage *msg_next = nullptr;
 
-            if (translator != nullptr) {
-                if (translator->Translate_Game_Message(msg) == DESTROY_MESSAGE) {
+            if (translator != nullptr && !Is_Invalid_Debug_Command(msg->Get_Type())) {
+                GameMessageDisposition disp = translator->Translate_Game_Message(msg);
+                // Translate can change the message so we need to get the next message after calling it.
+                msg_next = msg->Get_Next();
+                if (disp == DESTROY_MESSAGE) {
                     msg->Delete_Instance();
                 }
+            } else {
+                msg_next = msg->Get_Next();
             }
 
             msg = msg_next;

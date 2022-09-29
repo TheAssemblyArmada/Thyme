@@ -1533,7 +1533,7 @@ void DX8SkinFVFCategoryContainer::Render()
                                 Vector3 *normals = &g_tempNormalBuffer[0];
                                 const Vector2 *uv1 = mmc->Get_UV_Array_By_Index(0);
                                 const Vector2 *uv2 = mmc->Get_UV_Array_By_Index(1);
-                                unsigned int *colors = mmc->Get_Color_Array(0);
+                                unsigned int *colors = mmc->Get_Color_Array(0, false);
                                 mesh2->Get_Deformed_Vertices(verts, normals);
                                 int vertcount3 = mesh_vertex_count;
 

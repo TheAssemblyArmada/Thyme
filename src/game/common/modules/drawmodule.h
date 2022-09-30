@@ -72,7 +72,7 @@ public:
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const = 0;
     virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) = 0;
-    virtual void Update_Draw_Module_Supply_Status(int status1, int status2) = 0;
+    virtual void Update_Draw_Module_Supply_Status(int max, int current) = 0;
     virtual void Notify_Draw_Module_Dependency_Cleared() = 0;
     virtual void Set_Hidden(bool hidden) = 0;
     virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &c) = 0;

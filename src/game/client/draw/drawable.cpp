@@ -3813,13 +3813,13 @@ void Drawable::Update_Drawable_Clip_Status(unsigned int show, unsigned int count
     }
 }
 
-void Drawable::Update_Drawable_Supply_Status(int status1, int status2)
+void Drawable::Update_Drawable_Supply_Status(int max, int current)
 {
     for (DrawModule **i = Get_Draw_Modules(); *i != nullptr; i++) {
         ObjectDrawInterface *draw = (*i)->Get_Object_Draw_Interface();
 
         if (draw) {
-            draw->Update_Draw_Module_Supply_Status(status1, status2);
+            draw->Update_Draw_Module_Supply_Status(max, current);
         }
     }
 }

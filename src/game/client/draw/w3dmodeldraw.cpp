@@ -2811,9 +2811,9 @@ void W3DModelDraw::Update_Projectile_Clip_Status(unsigned int show, unsigned int
     }
 }
 
-void W3DModelDraw::Update_Draw_Module_Supply_Status(int status1, int status2)
+void W3DModelDraw::Update_Draw_Module_Supply_Status(int max, int current)
 {
-    if (status2 > 0) {
+    if (current > 0) {
         Get_Drawable()->Set_Model_Condition_State(MODELCONDITION_CARRYING);
     } else {
         Get_Drawable()->Clear_Model_Condition_State(MODELCONDITION_CARRYING);

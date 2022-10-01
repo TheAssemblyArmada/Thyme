@@ -352,7 +352,7 @@ public:
         Coord3D *turret_rot_pos,
         Coord3D *turret_pitch_pos) const override;
     virtual void Update_Projectile_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType wslot) override;
-    virtual void Update_Draw_Module_Supply_Status(int status1, int status2) override;
+    virtual void Update_Draw_Module_Supply_Status(int max, int current) override;
     virtual void Notify_Draw_Module_Dependency_Cleared() override;
     virtual void Set_Hidden(bool hidden) override;
     virtual void Replace_Model_Condition_State(BitFlags<MODELCONDITION_COUNT> const &flags) override;

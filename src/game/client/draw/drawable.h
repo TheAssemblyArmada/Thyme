@@ -435,7 +435,7 @@ public:
 
     void Update_Drawable();
     void Update_Drawable_Clip_Status(unsigned int show, unsigned int count, WeaponSlotType slot);
-    void Update_Drawable_Supply_Status(int status1, int status2);
+    void Update_Drawable_Supply_Status(int max, int current);
     void Update_Hidden_Status();
     void Update_Sub_Objects();
     void Xfer_Drawable_Modules(Xfer *xfer);

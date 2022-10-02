@@ -32,3 +32,13 @@ BridgeInfo::BridgeInfo() :
         tower_object_id[i] = OBJECT_UNK;
     }
 }
+
+PathfindLayerEnum TerrainLogic::Get_Highest_Layer_For_Destination(const Coord3D *pos, bool b)
+{
+#ifdef GAME_DLL
+    return Call_Method<PathfindLayerEnum, TerrainLogic, const Coord3D *, bool>(
+        PICK_ADDRESS(0x0044B6B0, 0x00744B8E), this, pos, b);
+#else
+    return LAYER_INVALID;
+#endif
+}

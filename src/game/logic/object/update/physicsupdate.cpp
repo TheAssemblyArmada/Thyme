@@ -25,7 +25,7 @@ void PhysicsBehavior::Apply_Motive_Force(const Coord3D *force)
 #endif
 }
 
-void PhysicsBehavior::Scrub_Velocity_2D(float desired_velocity) 
+void PhysicsBehavior::Scrub_Velocity_2D(float desired_velocity)
 {
     if (desired_velocity >= 0.001f) {
         float velocity = GameMath::Sqrt(m_vel.x * m_vel.x + m_vel.y * m_vel.y);
@@ -45,7 +45,7 @@ void PhysicsBehavior::Scrub_Velocity_2D(float desired_velocity)
     m_velMag = -1.0;
 }
 
-float PhysicsBehavior::Get_Mass() const 
+float PhysicsBehavior::Get_Mass() const
 {
     ContainModuleInterface *contain = Get_Object()->Get_Contain();
 

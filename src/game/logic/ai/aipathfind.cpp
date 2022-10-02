@@ -13,3 +13,16 @@
  *            LICENSE
  */
 #include "aipathfind.h"
+#ifdef GAME_DLL
+#include "hooker.h"
+#endif
+
+bool Pathfinder::Valid_Movement_Terrain(PathfindLayerEnum layer, const Locomotor *locomotor, const Coord3D *pos)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Pathfinder, PathfindLayerEnum, const Locomotor *, const Coord3D *>(
+        PICK_ADDRESS(0x00561100, 0x00892877), this, layer, locomotor, pos);
+#else
+    return false;
+#endif
+}

@@ -107,6 +107,16 @@ RenderObjClass &RenderObjClass::RenderObjClass::operator=(const RenderObjClass &
     return *this;
 }
 
+RenderObjClass::~RenderObjClass()
+{
+    if (m_unknown) {
+        delete m_unknown;
+    }
+
+    // BUGFIX Cleanup always to avoid dangling pointers.
+    RenderObjClass::Remove();
+}
+
 float RenderObjClass::Get_Screen_Size(CameraClass &camera)
 {
     Vector3 cam = camera.Get_Position();

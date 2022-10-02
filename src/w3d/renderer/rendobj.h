@@ -123,12 +123,7 @@ public:
     RenderObjClass(const RenderObjClass &src);
     RenderObjClass &operator=(const RenderObjClass &that);
 
-    virtual ~RenderObjClass()
-    {
-        if (m_unknown) {
-            delete m_unknown;
-        }
-    }
+    virtual ~RenderObjClass();
 
     virtual RenderObjClass *Clone() const = 0;
     virtual int Class_ID() const { return CLASSID_UNKNOWN; }

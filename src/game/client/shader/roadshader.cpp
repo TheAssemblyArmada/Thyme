@@ -31,7 +31,7 @@ int RoadShaderPixelShader::Set(int pass)
     DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
     DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
     D3DXMATRIX m;
-    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m);
+    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m);
     D3DXMATRIX m2;
     float f;
     D3DXMatrixInverse(&m2, &f, &m);
@@ -58,9 +58,9 @@ int RoadShaderPixelShader::Set(int pass)
     DX8Wrapper::Set_DX8_Texture_Stage_State(2, D3DTSS_MINFILTER, D3DTEXF_POINT);
     DX8Wrapper::Set_DX8_Texture_Stage_State(2, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
     g_terrainShader2Stage.Update_Noise_1(&m, &m2, false);
-    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, (Matrix4 &)m);
+    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, m);
     g_terrainShader2Stage.Update_Noise_2(&m, &m2, false);
-    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, (Matrix4 &)m);
+    DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE2, m);
     DX8Wrapper::Set_DX8_Texture_Stage_State(2, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEPOSITION);
     DX8Wrapper::Set_DX8_Texture_Stage_State(2, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
 #endif
@@ -144,7 +144,7 @@ int RoadShader2Stage::Set(int pass)
 
     if (pass) {
         D3DXMATRIX m;
-        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m);
         D3DXMATRIX m2;
         float f;
         D3DXMatrixInverse(&m2, &f, &m);
@@ -177,7 +177,7 @@ int RoadShader2Stage::Set(int pass)
         DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_ZERO);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLEND, D3DBLEND_SRCCOLOR);
-        DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE0, (Matrix4 &)m);
+        DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE0, m);
     } else {
         DX8Wrapper::Set_DX8_Render_State(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
         DX8Wrapper::Set_DX8_Render_State(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -187,7 +187,7 @@ int RoadShader2Stage::Set(int pass)
             DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
         } else {
             D3DXMATRIX m;
-            DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m);
+            DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m);
             D3DXMATRIX m2;
             float f;
             D3DXMatrixInverse(&m2, &f, &m);
@@ -214,7 +214,7 @@ int RoadShader2Stage::Set(int pass)
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
                 g_terrainShader2Stage.Update_Noise_1(&m, &m2, false);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, (Matrix4 &)m);
+                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, m);
             } else {
                 if (W3DShaderManager::Get_Current_Shader() == W3DShaderManager::ST_ROAD_NOISE1) {
                     DX8Wrapper::Set_Texture(1, W3DShaderManager::Get_Shader_Texture(1));
@@ -227,7 +227,7 @@ int RoadShader2Stage::Set(int pass)
                 }
 
                 DX8Wrapper::Set_DX8_Texture_Stage_State(1, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
-                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, (Matrix4 &)m);
+                DX8Wrapper::Set_DX8_Transform(D3DTS_TEXTURE1, m);
             }
         }
     }

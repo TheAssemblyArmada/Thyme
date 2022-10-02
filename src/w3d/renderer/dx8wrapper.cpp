@@ -76,7 +76,11 @@ RenderStateStruct DX8Wrapper::s_renderState;
 unsigned DX8Wrapper::s_renderStateChanged;
 float DX8Wrapper::s_zNear;
 float DX8Wrapper::s_zFar;
+#ifdef BUILD_WITH_D3D8
+D3DMATRIX DX8Wrapper::s_projectionMatrix;
+#else
 Matrix4 DX8Wrapper::s_projectionMatrix;
+#endif
 int DX8Wrapper::s_mainThreadID;
 int DX8Wrapper::s_currentRenderDevice = -1;
 DX8Caps *DX8Wrapper::s_currentCaps;
@@ -108,7 +112,11 @@ DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceNameTable;
 DynamicVectorClass<StringClass> DX8Wrapper::s_renderDeviceShortNameTable;
 DynamicVectorClass<RenderDeviceDescClass> DX8Wrapper::s_renderDeviceDescriptionTable;
 w3dadapterid_t DX8Wrapper::s_currentAdapterIdentifier;
+#ifdef BUILD_WITH_D3D8
+D3DMATRIX DX8Wrapper::s_DX8Transforms[D3DTS_WORLD1];
+#else
 Matrix4 DX8Wrapper::s_DX8Transforms[257];
+#endif
 bool DX8Wrapper::s_EnableTriangleDraw = true;
 int DX8Wrapper::s_ZBias;
 Vector3 DX8Wrapper::s_ambientColor;
@@ -1552,7 +1560,7 @@ void DX8Wrapper::Apply_Render_State_Changes()
 
         if (s_renderStateChanged & LIGHTS_CHANGED) {
             unsigned mask = LIGHT0_CHANGED;
-            for (unsigned index = 0; index < GFX_LIGHT_COUNT; ++index, mask <<= 1) {
+            for (int index = 0; index < GFX_LIGHT_COUNT; ++index, mask <<= 1) {
                 if (s_renderStateChanged & mask) {
                     if (s_renderState.LightEnable[index]) {
                         Set_DX8_Light(index, &s_renderState.Lights[index]);

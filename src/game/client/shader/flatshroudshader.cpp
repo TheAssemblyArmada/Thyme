@@ -41,7 +41,7 @@ int FlatShroudTextureShader::Set(int pass)
     if (shroud) {
         D3DXMATRIX m;
         D3DXMATRIX m2;
-        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m2);
+        DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m2);
         float f;
         D3DXMatrixInverse(&m, &f, &m2);
         D3DXMATRIX m3;
@@ -61,7 +61,7 @@ int FlatShroudTextureShader::Set(int pass)
         sy = 1.0f / ((float)shroud->Get_Texture_Height() * sy);
         D3DXMatrixScaling(&m3, sx, sy, 1.0f);
         m2 = m * m4 * m3;
-        DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(pass + D3DTS_TEXTURE0), (Matrix4 &)m2);
+        DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(pass + D3DTS_TEXTURE0), m2);
     }
 
     m_pass = pass;

@@ -90,3 +90,71 @@ void Matrix4::Multiply(const Matrix4 &a, const Matrix3D &b, Matrix4 *res)
 #undef ROWCOL
 #undef ROWCOL4
 }
+
+#ifdef BUILD_WITH_D3D8
+#include <d3d8types.h>
+
+namespace Thyme
+{
+void To_D3DMATRIX(_D3DMATRIX &dxm, const Matrix4 &m)
+{
+    dxm.m[0][0] = m[0][0];
+    dxm.m[0][1] = m[1][0];
+    dxm.m[0][2] = m[2][0];
+    dxm.m[0][3] = m[3][0];
+
+    dxm.m[1][0] = m[0][1];
+    dxm.m[1][1] = m[1][1];
+    dxm.m[1][2] = m[2][1];
+    dxm.m[1][3] = m[3][1];
+
+    dxm.m[2][0] = m[0][2];
+    dxm.m[2][1] = m[1][2];
+    dxm.m[2][2] = m[2][2];
+    dxm.m[2][3] = m[3][2];
+
+    dxm.m[3][0] = m[0][3];
+    dxm.m[3][1] = m[1][3];
+    dxm.m[3][2] = m[2][3];
+    dxm.m[3][3] = m[3][3];
+}
+
+_D3DMATRIX To_D3DMATRIX(const Matrix4 &m)
+{
+    _D3DMATRIX dxm;
+    To_D3DMATRIX(dxm, m);
+    return dxm;
+}
+
+void To_Matrix4(Matrix4 &m, const _D3DMATRIX &dxm)
+{
+    m[0][0] = dxm.m[0][0];
+    m[0][1] = dxm.m[1][0];
+    m[0][2] = dxm.m[2][0];
+    m[0][3] = dxm.m[3][0];
+
+    m[1][0] = dxm.m[0][1];
+    m[1][1] = dxm.m[1][1];
+    m[1][2] = dxm.m[2][1];
+    m[1][3] = dxm.m[3][1];
+
+    m[2][0] = dxm.m[0][2];
+    m[2][1] = dxm.m[1][2];
+    m[2][2] = dxm.m[2][2];
+    m[2][3] = dxm.m[3][2];
+
+    m[3][0] = dxm.m[0][3];
+    m[3][1] = dxm.m[1][3];
+    m[3][2] = dxm.m[2][3];
+    m[3][3] = dxm.m[3][3];
+}
+
+Matrix4 To_Matrix4(const _D3DMATRIX &dxm)
+{
+    Matrix4 m;
+    To_Matrix4(m, dxm);
+    return m;
+}
+} // namespace Thyme
+
+#endif

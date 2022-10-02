@@ -266,7 +266,7 @@ RenderStateStruct &DX8Wrapper::s_renderState = Make_Global<RenderStateStruct>(PI
 unsigned &DX8Wrapper::s_renderStateChanged = Make_Global<unsigned>(PICK_ADDRESS(0x00A42778, 0x00DE8FB0));
 float &DX8Wrapper::s_zNear = Make_Global<float>(PICK_ADDRESS(0x00A47E38, 0x00DEE670));
 float &DX8Wrapper::s_zFar = Make_Global<float>(PICK_ADDRESS(0x00A47EB8, 0x00DEE6F0));
-Matrix4 &DX8Wrapper::s_projectionMatrix = Make_Global<Matrix4>(PICK_ADDRESS(0x00A47DF8, 0x00DEE630));
+D3DMATRIX &DX8Wrapper::s_projectionMatrix = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A47DF8, 0x00DEE630));
 int &DX8Wrapper::s_mainThreadID = Make_Global<int>(PICK_ADDRESS(0x00A47F2C, 0x00DEE764));
 int &DX8Wrapper::s_currentRenderDevice = Make_Global<int>(PICK_ADDRESS(0x00A15CDC, 0x00CC36BC));
 DX8Caps *&DX8Wrapper::s_currentCaps = Make_Global<DX8Caps *>(PICK_ADDRESS(0x00A47F30, 0x00DEE768));
@@ -302,7 +302,8 @@ DynamicVectorClass<StringClass> &DX8Wrapper::s_renderDeviceShortNameTable =
 DynamicVectorClass<RenderDeviceDescClass> &DX8Wrapper::s_renderDeviceDescriptionTable =
     Make_Global<DynamicVectorClass<RenderDeviceDescClass>>(PICK_ADDRESS(0x00A427A8, 0x00DE8FE0));
 w3dadapterid_t &DX8Wrapper::s_currentAdapterIdentifier = Make_Global<w3dadapterid_t>(PICK_ADDRESS(0x00A470C0, 0x00DED8F8));
-ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), Matrix4, DX8Wrapper::s_DX8Transforms, 257);
+static_assert(D3DTS_WORLD1 == 257, "Expected match");
+ARRAY_DEF(PICK_ADDRESS(0x00A42840, 0x00DE9078), D3DMATRIX, DX8Wrapper::s_DX8Transforms, D3DTS_WORLD1);
 D3DMATRIX &DX8Wrapper::s_oldPrj = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A46C80, 0x00DED4B8));
 D3DMATRIX &DX8Wrapper::s_oldView = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A47D78, 0x00DEE5B0));
 D3DMATRIX &DX8Wrapper::s_oldWorld = Make_Global<D3DMATRIX>(PICK_ADDRESS(0x00A47E78, 0x00DEE6B0));

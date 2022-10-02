@@ -578,7 +578,9 @@ void DX8TextureCategoryClass::Render()
             }
 
             if (identity) {
+#ifdef BUILD_WITH_D3D8
                 DX8Wrapper::Set_World_Identity();
+#endif
             } else {
 #ifdef BUILD_WITH_D3D8
                 DX8Wrapper::Set_Transform(D3DTS_WORLD, tm);

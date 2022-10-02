@@ -21,14 +21,14 @@ int CloudTextureShader::Set(int pass)
 {
 #ifdef BUILD_WITH_D3D8
     D3DXMATRIX m;
-    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m);
+    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m);
     D3DXMATRIX m2;
     float f;
     D3DXMatrixInverse(&m2, &f, &m);
     g_terrainShader2Stage.Update_Noise_1(&m, &m2, false);
     DX8Wrapper::Set_DX8_Texture_Stage_State(pass, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEPOSITION);
     DX8Wrapper::Set_DX8_Texture_Stage_State(pass, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2);
-    DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(pass + D3DTS_TEXTURE0), (Matrix4 &)m);
+    DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(pass + D3DTS_TEXTURE0), m);
     DX8Wrapper::Set_DX8_Texture_Stage_State(pass, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
     DX8Wrapper::Set_DX8_Texture_Stage_State(pass, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
     DX8Wrapper::Set_DX8_Texture_Stage_State(pass, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);

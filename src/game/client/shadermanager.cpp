@@ -471,7 +471,7 @@ bool W3DShaderManager::Set_Shroud_Tex(int stage)
     DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
     D3DXMATRIX m2;
     D3DXMATRIX m;
-    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, (Matrix4 &)m);
+    DX8Wrapper::Get_DX8_Transform(D3DTS_VIEW, m);
     float f;
     D3DXMatrixInverse(&m2, &f, &m);
     D3DXMATRIX m3;
@@ -491,7 +491,7 @@ bool W3DShaderManager::Set_Shroud_Tex(int stage)
     sy = 1.0f / ((float)shroud->Get_Texture_Height() * sy);
     D3DXMatrixScaling(&m3, sx, sy, 1.0f);
     m = m2 * m4 * m3;
-    DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(stage + D3DTS_TEXTURE0), (Matrix4 &)m);
+    DX8Wrapper::Set_DX8_Transform((D3DTRANSFORMSTATETYPE)(stage + D3DTS_TEXTURE0), m);
 #endif
     return true;
 }

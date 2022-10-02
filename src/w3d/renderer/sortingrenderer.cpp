@@ -271,14 +271,17 @@ void SortingRendererClass::Insert_Triangles(const SphereClass &bounding_sphere,
         captainslog_assert(state->vertex_count <= vertex_buffer->Get_Vertex_Count());
 
         D3DXMATRIX mtx;
-        D3DXMatrixMultiply(
-            &mtx, (const D3DXMATRIX *)&state->sorting_state.world, (const D3DXMATRIX *)&state->sorting_state.view);
-        D3DXVECTOR3 vec;
-        D3DXVECTOR4 transformed_vec;
-        D3DXVec3Transform(&transformed_vec, &vec, &mtx);
-        state->transformed_center.X = transformed_vec.x;
-        state->transformed_center.Y = transformed_vec.y;
-        state->transformed_center.Z = transformed_vec.z;
+        D3DXMatrixMultiply(&mtx, &state->sorting_state.world, &state->sorting_state.view);
+        D3DXVECTOR3 bounding_sphere_center;
+        bounding_sphere_center.x = state->bounding_sphere.Center.X;
+        bounding_sphere_center.y = state->bounding_sphere.Center.Y;
+        bounding_sphere_center.z = state->bounding_sphere.Center.Z;
+        D3DXVECTOR4 transformed_center;
+        D3DXVec3Transform(&transformed_center, &bounding_sphere_center, &mtx);
+        state->transformed_center.X = transformed_center.x;
+        state->transformed_center.Y = transformed_center.y;
+        state->transformed_center.Z = transformed_center.z;
+
         SortingNodeStruct *i;
 
         for (i = g_sortedList.Head(); i; i = i->Succ()) {
@@ -351,7 +354,8 @@ void SortingRendererClass::Flush_Sorting_Pool()
             for (unsigned int node_id = 0; node_id < g_overlappingNodeCount; node_id++) {
                 SortingNodeStruct *state = g_overlappingNodes[node_id];
                 VertexFormatXYZNDUV2 *src_verts = nullptr;
-                SortingVertexBufferClass *vertex_buffer = (SortingVertexBufferClass *)state->sorting_state.vertex_buffers[0];
+                SortingVertexBufferClass *vertex_buffer =
+                    static_cast<SortingVertexBufferClass *>(state->sorting_state.vertex_buffers[0]);
 
                 captainslog_assert(vertex_buffer);
                 src_verts = vertex_buffer->Get_Sorting_Vertex_Buffer();
@@ -361,12 +365,12 @@ void SortingRendererClass::Flush_Sorting_Pool()
                     state->sorting_state.vba_offset + state->sorting_state.index_base_offset + state->min_vertex_index;
                 memcpy(dest_verts, src_verts, sizeof(VertexFormatXYZNDUV2) * state->vertex_count);
                 dest_verts += state->vertex_count;
-                D3DXMATRIX d3d_mtx;
-                D3DXMatrixMultiply(&d3d_mtx,
-                    (const D3DXMATRIX *)&state->sorting_state.world,
-                    (const D3DXMATRIX *)&state->sorting_state.view);
 
-                SortingIndexBufferClass *index_buffer = (SortingIndexBufferClass *)state->sorting_state.index_buffer;
+                D3DXMATRIX d3d_mtx;
+                D3DXMatrixMultiply(&d3d_mtx, &state->sorting_state.world, &state->sorting_state.view);
+
+                SortingIndexBufferClass *index_buffer =
+                    static_cast<SortingIndexBufferClass *>(state->sorting_state.index_buffer);
                 captainslog_assert(index_buffer);
                 unsigned short *indices = index_buffer->Get_Sorting_Index_Buffer();
                 captainslog_assert(indices);

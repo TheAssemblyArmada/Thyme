@@ -20,7 +20,7 @@ template<class T> class Override
 {
 public:
     Override(T *ptr = nullptr) : m_ptr(ptr) {}
-    Override(Override<T> &that) { m_ptr = that.m_ptr; }
+    Override(const Override<T> &that) { m_ptr = that.m_ptr; }
 
     void operator=(T *ptr) { m_ptr = ptr; }
     operator T *() { return m_ptr; }

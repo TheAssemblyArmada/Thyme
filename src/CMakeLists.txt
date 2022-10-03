@@ -235,6 +235,7 @@ set(GAMEENGINE_SRC
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/experiencetracker.cpp
+    game/logic/object/locomotor.cpp
     game/logic/object/object.cpp
     game/logic/object/objectcreationlist.cpp
     game/logic/object/objecttypes.cpp
@@ -242,6 +243,7 @@ set(GAMEENGINE_SRC
     game/logic/object/weapontemplateset.cpp
     game/logic/object/update/aiupdate.cpp
     game/logic/object/update/laserupdate.cpp
+    game/logic/object/update/physicsupdate.cpp
     game/logic/object/update/projectilestreamupdate.cpp
     game/logic/object/update/swayclientupdate.cpp
     game/logic/scriptengine/script.cpp

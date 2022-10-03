@@ -19,6 +19,7 @@
 #include "mempoolobj.h"
 #include "snapshot.h"
 
+class Locomotor;
 class PathNode;
 
 struct ClosestPointOnPathInfo
@@ -52,4 +53,10 @@ private:
     Coord3D m_unk4;
     ClosestPointOnPathInfo m_closestPoint;
     PathNode *m_unkNode;
+};
+
+class Pathfinder
+{
+public:
+    bool Valid_Movement_Terrain(PathfindLayerEnum layer, const Locomotor *locomotor, const Coord3D *pos);
 };

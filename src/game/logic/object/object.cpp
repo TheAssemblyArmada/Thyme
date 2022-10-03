@@ -15,6 +15,7 @@
  */
 #include "object.h"
 #include "behaviormodule.h"
+#include "drawable.h"
 #include "experiencetracker.h"
 #include "playerlist.h"
 
@@ -170,4 +171,34 @@ void Object::Init_Object()
 #ifdef GAME_DLL
     Call_Method<void, Object>(PICK_ADDRESS(0x00545D90, 0x007CF205), this);
 #endif
+}
+
+float Object::Get_Carrier_Deck_Height() const
+{
+#ifdef GAME_DLL
+    return Call_Method<float, const Object>(PICK_ADDRESS(0x0054F3D0, 0x007D96FE), this);
+#else
+    return 0.0f;
+#endif
+}
+
+void Object::Set_Status(BitFlags<OBJECT_STATUS_COUNT> bits, bool set)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, BitFlags<OBJECT_STATUS_COUNT>, bool>(PICK_ADDRESS(0x00546E20, 0x007D011C), this, bits, set);
+#endif
+}
+
+void Object::Set_Model_Condition_State(ModelConditionFlagType a)
+{
+    if (m_drawable != nullptr) {
+        m_drawable->Set_Model_Condition_State(a);
+    }
+}
+
+void Object::Clear_Model_Condition_State(ModelConditionFlagType a)
+{
+    if (m_drawable != nullptr) {
+        m_drawable->Clear_Model_Condition_State(a);
+    }
 }

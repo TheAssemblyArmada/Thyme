@@ -15,6 +15,8 @@
 #pragma once
 #include "always.h"
 #include "gamelogic.h"
+#include "object.h"
+#include "typeoperators.h"
 #include "updatemodule.h"
 
 class DynamicAudioEventRTS;
@@ -32,12 +34,18 @@ class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
 
     enum PhysicsFlagsType
     {
-        STICK_TO_GROUND,
-        ALLOW_BOUNCE,
-        APPLY_FRICTION2D_WHEN_AIRBORNE,
-        UPDATE_EVER_RUN,
-        WAS_AIRBORNE_LAST_FRAME,
-        ALLOW_COLLIDE_FORCE,
+        STICK_TO_GROUND = 1,
+        ALLOW_BOUNCE = 2,
+        APPLY_FRICTION2D_WHEN_AIRBORNE = 4,
+        UPDATE_EVER_RUN = 8,
+        WAS_AIRBORNE_LAST_FRAME = 16,
+        ALLOW_COLLIDE_FORCE = 32,
+        IS_AIRBORNE = 64,
+        MOVING = 128,
+        FLAG_UNK3 = 256,
+        FREEFALL = 512,
+        UPDATING = 1024,
+        STUNNED = 2048,
     };
 
 public:
@@ -58,6 +66,11 @@ public:
     virtual bool Is_Car_Bomb_Crate_Collide() override;
     virtual bool Is_Railroad() override;
     virtual bool Is_Salvage_Crate_Collide() override;
+
+    void Apply_Motive_Force(const Coord3D *force);
+    void Scrub_Velocity_2D(float desired_velocity);
+    float Get_Mass() const;
+
     PhysicsTurningType Get_Turning() const { return m_turning; }
     static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
     const Coord3D &Get_Prev_Accel() const { return m_prevAccel; }
@@ -65,6 +78,11 @@ public:
     bool Is_Motive() const { return g_theGameLogic->Get_Frame() < (unsigned int)m_motiveForceApplied; }
     ObjectID Get_Current_Overlap() const { return m_currentOverlap; }
     ObjectID Get_Previous_Overlap() const { return m_previousOverlap; }
+    bool Get_Stunned() const { return Get_Flag(STUNNED); }
+    void Set_Turning(PhysicsTurningType turning) { m_turning = turning; }
+    void Set_Extra_Friction(float friction) { m_extraFriction = friction; }
+    void Set_Allow_Airborne_Friction(bool set) { Set_Flag(APPLY_FRICTION2D_WHEN_AIRBORNE, set); }
+    void Set_Stick_To_Ground(bool set) { Set_Flag(STICK_TO_GROUND, set); }
 
     float Get_Velocity_Magnitude() const
     {
@@ -109,6 +127,17 @@ public:
     }
 
 private:
+    bool Get_Flag(PhysicsFlagsType flag) const { return (flag & m_flags) != 0; }
+
+    void Set_Flag(PhysicsFlagsType flag, bool set)
+    {
+        if (set) {
+            m_flags |= flag;
+        } else {
+            m_flags &= ~flag;
+        }
+    }
+
     float m_yawRate;
     float m_rollRate;
     float m_pitchRate;
@@ -118,7 +147,7 @@ private:
     Coord3D m_vel;
     PhysicsTurningType m_turning;
     int m_ignoreCollisionsWith;
-    PhysicsFlagsType m_flags;
+    int m_flags;
     float m_mass;
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;

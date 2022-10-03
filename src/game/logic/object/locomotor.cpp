@@ -443,74 +443,74 @@ void Locomotor::Xfer_Snapshot(Xfer *xfer)
 
 float Locomotor::Get_Max_Speed_For_Condition(BodyDamageType condition) const
 {
-    float speed;
+    float max_speed;
 
     if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        speed = m_template->m_maxSpeed;
+        max_speed = m_template->m_maxSpeed;
     } else {
-        speed = m_template->m_maxSpeedDamaged;
+        max_speed = m_template->m_maxSpeedDamaged;
     }
 
-    if (speed > m_maxSpeed) {
+    if (max_speed > m_maxSpeed) {
         return m_maxSpeed;
     }
 
-    return speed;
+    return max_speed;
 }
 
 float Locomotor::Get_Max_Turn_Rate(BodyDamageType condition) const
 {
-    float rate;
+    float max_turn;
 
     if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        rate = m_template->m_maxTurnRate;
+        max_turn = m_template->m_maxTurnRate;
     } else {
-        rate = m_template->m_maxTurnRateDamaged;
+        max_turn = m_template->m_maxTurnRateDamaged;
     }
 
-    if (rate > m_maxTurnRate) {
-        rate = m_maxTurnRate;
+    if (max_turn > m_maxTurnRate) {
+        max_turn = m_maxTurnRate;
     }
 
     if (Get_Flag(ULTRA_ACCURATE)) {
-        return rate * 2.0f;
+        return max_turn * 2.0f;
     }
 
-    return rate;
+    return max_turn;
 }
 
 float Locomotor::Get_Max_Acceleration(BodyDamageType condition) const
 {
-    float accel;
+    float max_accel;
 
     if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        accel = m_template->m_acceleration;
+        max_accel = m_template->m_acceleration;
     } else {
-        accel = m_template->m_accelerationDamaged;
+        max_accel = m_template->m_accelerationDamaged;
     }
 
-    if (accel > m_maxAccel) {
+    if (max_accel > m_maxAccel) {
         return m_maxAccel;
     }
 
-    return accel;
+    return max_accel;
 }
 
 float Locomotor::Get_Max_Lift(BodyDamageType condition) const
 {
-    float lift;
+    float max_lift;
 
     if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        lift = m_template->m_lift;
+        max_lift = m_template->m_lift;
     } else {
-        lift = m_template->m_liftDamaged;
+        max_lift = m_template->m_liftDamaged;
     }
 
-    if (lift > m_maxLift) {
+    if (max_lift > m_maxLift) {
         return m_maxLift;
     }
 
-    return lift;
+    return max_lift;
 }
 
 float Locomotor::Get_Surface_Ht_At_Pt(float x, float y)
@@ -541,13 +541,13 @@ void Locomotor::Loco_Update_Move_Towards_Position(
     Object *obj, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed, bool *blocked)
 {
     Set_Flag(MAINTAIN_POS_IS_VALID, false);
-    float maxspeed = Get_Max_Speed_For_Condition(obj->Get_Body_Module()->Get_Damage_State());
+    float max_speed = Get_Max_Speed_For_Condition(obj->Get_Body_Module()->Get_Damage_State());
 
-    if (desired_speed > maxspeed) {
-        desired_speed = maxspeed;
+    if (desired_speed > max_speed) {
+        desired_speed = max_speed;
     }
 
-    float speed = maxspeed / Get_Braking() * maxspeed / 2.0f;
+    float speed = max_speed / Get_Braking() * max_speed / 2.0f;
 
     if (on_path_dist_to_goal > 10.0f && on_path_dist_to_goal > speed) {
         Set_Flag(IS_BRAKING, false);
@@ -575,7 +575,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                 on_path_dist_to_goal = path_dist;
             }
 
-            bool isairbone = false;
+            bool is_airbone = false;
             Coord3D pos = *obj->Get_Position();
             float height = pos.z - g_theTerrainLogic->Get_Layer_Height(pos.x, pos.y, obj->Get_Layer(), nullptr, true);
 
@@ -584,19 +584,19 @@ void Locomotor::Loco_Update_Move_Towards_Position(
             }
 
             if (-9.0f * g_theWriteableGlobalData->m_gravity < height) {
-                isairbone = true;
+                is_airbone = true;
             }
 
-            Coord3D c;
-            c.Zero();
-            physics->Apply_Motive_Force(&c);
+            Coord3D force3d;
+            force3d.Zero();
+            physics->Apply_Motive_Force(&force3d);
 
             if (*blocked) {
                 if (physics->Get_Velocity_Magnitude() < desired_speed) {
                     *blocked = false;
                 }
 
-                if (isairbone && ((m_template->m_surfaces & LOCOMOTOR_SURFACE_AIR) != 0)) {
+                if (is_airbone && ((m_template->m_surfaces & LOCOMOTOR_SURFACE_AIR) != 0)) {
                     *blocked = false;
                 }
             }
@@ -618,7 +618,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                 bool braking = obj->Get_Status_Bits().Test(OBJECT_STATUS_IS_BRAKING);
                 physics->Set_Turning(TURN_NONE);
 
-                if (Get_Allow_Motive_Force_While_Airborne() || !isairbone) {
+                if (Get_Allow_Motive_Force_While_Airborne() || !is_airbone) {
                     switch (m_template->m_appearance) {
                         case LOCO_LEGS_TWO:
                             Move_Towards_Position_Legs(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
@@ -654,7 +654,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                     Get_Flag(IS_BRAKING));
 
                 if (braking) {
-                    Coord3D newpos = *obj->Get_Position();
+                    Coord3D new_pos = *obj->Get_Position();
 
                     if (obj->Is_KindOf(KINDOF_PROJECTILE)) {
                         obj->Set_Status(
@@ -676,60 +676,476 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                             x = x * path_dist;
                             y = y * path_dist;
                             z = z * path_dist;
-                            newpos.x = x * magnitude + newpos.x;
-                            newpos.y = y * magnitude + newpos.y;
-                            newpos.z = z * magnitude + newpos.z;
+                            new_pos.x = x * magnitude + new_pos.x;
+                            new_pos.y = y * magnitude + new_pos.y;
+                            new_pos.z = z * magnitude + new_pos.z;
                         }
                     } else if (path_dist > 0.001f) {
-                        float forwardspeed = GameMath::Fabs(physics->Get_Forward_Speed_2D());
+                        float cur_speed = GameMath::Fabs(physics->Get_Forward_Speed_2D());
 
-                        if (forwardspeed < 1.0f / 30.0f) {
-                            forwardspeed = 1.0f / 30.0f;
+                        if (cur_speed < 1.0f / 30.0f) {
+                            cur_speed = 1.0f / 30.0f;
                         }
 
-                        if (forwardspeed > path_dist) {
-                            forwardspeed = path_dist;
+                        if (cur_speed > path_dist) {
+                            cur_speed = path_dist;
                         }
 
                         path_dist = 1.0f / path_dist;
                         x = x * path_dist;
                         y = y * path_dist;
-                        newpos.x = x * forwardspeed + newpos.x;
-                        newpos.y = y * forwardspeed + newpos.y;
+                        new_pos.x = x * cur_speed + new_pos.x;
+                        new_pos.y = y * cur_speed + new_pos.y;
                     }
 
-                    obj->Set_Position(&newpos);
+                    obj->Set_Position(&new_pos);
                 }
             }
         }
     }
 }
 
+float Normalize_Angle(float angle1, float angle2)
+{
+    return Normalize_Angle(angle1 - angle2);
+}
+
+float Calc_Slow_Down_Dist(float cur_speed, float desired_speed, float max_breaking)
+{
+    float speed = cur_speed - desired_speed;
+
+    if (speed <= 0.0f) {
+        return 0.0f;
+    }
+
+    float distance = GameMath::Square(speed) / GameMath::Fabs(max_breaking) * 0.5f;
+    return distance * 1.05f;
+}
+
+void Locomotor::Loco_Update_Move_Towards_Angle(Object *obj, float goal_angle)
+{
+    Set_Flag(MAINTAIN_POS_IS_VALID, false);
+
+    if (obj != nullptr && *m_template != nullptr) {
+        PhysicsBehavior *physics = obj->Get_Physics();
+
+        if (physics == nullptr) {
+            captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
+        } else {
+            if (!physics->Get_Stunned()) {
+                float min_speed = Get_Min_Speed();
+
+                if (min_speed > 0.0f) {
+                    Coord3D pos = *obj->Get_Position();
+                    float c = GameMath::Cos(goal_angle);
+                    pos.x = c * min_speed + c * min_speed + pos.x;
+                    float s = GameMath::Sin(goal_angle);
+                    pos.y = s * min_speed + s * min_speed + pos.y;
+                    bool blocked = false;
+                    Loco_Update_Move_Towards_Position(obj, pos, 99999.0f, min_speed, &blocked);
+                } else {
+                    captainslog_dbgassert(m_template->m_appearance != LOCO_THRUST, "THRUST should always have minspeeds!");
+                    Coord3D pos = *obj->Get_Position();
+                    pos.x = GameMath::Cos(goal_angle) * 1000.0f + pos.x;
+                    pos.y = GameMath::Sin(goal_angle) * 1000.0f + pos.y;
+                    physics->Set_Turning(Rotate_Towards_Position(obj, pos, nullptr));
+                    Handle_Behavior_Z(obj, physics, *obj->Get_Position());
+                }
+            }
+        }
+    }
+}
+
+PhysicsTurningType Locomotor::Rotate_Towards_Position(Object *obj, const Coord3D &position, float *angle)
+{
+    return Rotate_Obj_Around_Loco_Pivot(obj, position, Get_Max_Turn_Rate(obj->Get_Body_Module()->Get_Damage_State()), angle);
+}
+
 void Locomotor::Move_Towards_Position_Legs(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004BA750, 0x00750C4E), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    if (!Get_Downhill_Only() || obj->Get_Position()->z >= goal_pos.z) {
+        float max_accel = Get_Max_Acceleration(obj->Get_Body_Module()->Get_Damage_State());
+        float max_speed = Get_Max_Speed_For_Condition(obj->Get_Body_Module()->Get_Damage_State());
+
+        if (desired_speed > max_speed) {
+            desired_speed = max_speed;
+        }
+
+        float cur_speed = physics->Get_Forward_Speed_2D();
+        float orientation = obj->Get_Orientation();
+        float goal_angle = GameMath::Atan2(goal_pos.y - obj->Get_Position()->y, goal_pos.x - obj->Get_Position()->x);
+
+        if (m_template->m_wanderWidthFactor != 0.0f) {
+            float wander_angle = DEG_TO_RADF(22.5f) * m_template->m_wanderWidthFactor;
+
+            if (Get_Flag(WANDER_DIRECTION)) {
+                m_wanderAngle = m_wanderAngle + cur_speed * m_wanderLength;
+
+                if (m_wanderAngle > wander_angle) {
+                    Set_Flag(WANDER_DIRECTION, false);
+                }
+            } else {
+                m_wanderAngle = m_wanderAngle - cur_speed * m_wanderLength;
+
+                if (-wander_angle > m_wanderAngle) {
+                    Set_Flag(WANDER_DIRECTION, true);
+                }
+            }
+
+            goal_angle = Normalize_Angle(goal_angle + m_wanderAngle);
+        }
+
+        float turn_angle = Normalize_Angle(goal_angle, orientation);
+        Loco_Update_Move_Towards_Angle(obj, goal_angle);
+
+        float acute_factor = GameMath::Fabs(turn_angle) / DEG_TO_RADF(45.0f);
+
+        if (acute_factor > 1.0f) {
+            acute_factor = 1.0f;
+        }
+
+        float acute_speed = (1.0f - acute_factor) * desired_speed;
+        float brake_dist = Calc_Slow_Down_Dist(cur_speed, m_template->m_minSpeed, Get_Braking());
+
+        if (on_path_dist_to_goal < brake_dist && !Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+            acute_speed = m_template->m_minSpeed;
+        }
+
+        float accute_accel = acute_speed - cur_speed;
+
+        if (accute_accel != 0.0f) {
+            float mass = physics->Get_Mass();
+            float accel;
+
+            if (accute_accel > 0.0f) {
+                accel = max_accel;
+            } else {
+                accel = -Get_Braking();
+            }
+
+            float force = mass * accel;
+            float accute_force = mass * accute_accel;
+
+            if (GameMath::Fabs(accute_force) < GameMath::Fabs(force)) {
+                force = accute_force;
+            }
+
+            Coord3D force3d;
+            const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+            force3d.x = force * dir->x;
+            force3d.y = force * dir->y;
+            force3d.z = 0.0f;
+            physics->Apply_Motive_Force(&force3d);
+        }
+    }
 }
 
 void Locomotor::Move_Towards_Position_Wheels(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004B9CD0, 0x0074FFC1), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+    float max_speed = Get_Max_Speed_For_Condition(damage);
+    float max_turn = Get_Max_Turn_Rate(damage);
+    float max_accel = Get_Max_Acceleration(damage);
+
+    if (desired_speed > max_speed) {
+        desired_speed = max_speed;
+    }
+
+    float turn_speed = m_template->m_minTurnSpeed;
+    float orientation = obj->Get_Orientation();
+    float goal_angle = GameMath::Atan2(goal_pos.y - obj->Get_Position()->y, goal_pos.x - obj->Get_Position()->x);
+
+    float turn_angle = Normalize_Angle(goal_angle, orientation);
+    bool backwards = false;
+
+    if (max_speed / 4.0f > turn_speed) {
+        turn_speed = max_speed / 4.0f;
+    }
+
+    float cur_speed = physics->Get_Forward_Speed_2D();
+    bool b = false;
+
+    if (cur_speed == 0.0f) {
+        Set_Flag(MOVING_BACKWARDS, false);
+
+        if (m_template->m_canMoveBackwards && GameMath::Fabs(turn_angle) > DEG_TO_RADF(90.0f)) {
+            Set_Flag(MOVING_BACKWARDS, true);
+            Set_Flag(FLAG_8, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
+        }
+    }
+
+    if (Get_Flag(MOVING_BACKWARDS)) {
+        if (GameMath::Fabs(turn_angle) < DEG_TO_RADF(90.0f)) {
+            backwards = false;
+            Set_Flag(MOVING_BACKWARDS, false);
+        } else {
+            backwards = true;
+            Set_Flag(FLAG_8, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
+            b = Get_Flag(FLAG_8);
+
+            if (!b) {
+                goal_angle = Normalize_Angle(goal_angle, DEG_TO_RADF(180.0f));
+                turn_angle = Normalize_Angle(goal_angle, orientation);
+            }
+        }
+    }
+
+    if (GameMath::Fabs(turn_angle) > DEG_TO_RADF(9.0f) && desired_speed > turn_speed) {
+        desired_speed = turn_speed;
+    }
+
+    if (backwards) {
+        cur_speed = -cur_speed;
+    }
+
+    float speed1 = cur_speed / Get_Braking() + 1.0f;
+    float speed2 = cur_speed / 1.5f * speed1 + cur_speed;
+    float speed3 = speed2;
+
+    if (speed2 < 10.0f) {
+        speed3 = 10.0f;
+    }
+
+    float speed4;
+    float orientation2;
+    float speed5;
+    float speed6;
+    float c;
+    float s;
+    Coord3D pos;
+    Coord3D pos2;
+
+    if (GameMath::Fabs(turn_angle) <= DEG_TO_RADF(15.0f)) {
+        goto l1;
+    }
+
+    speed4 = (desired_speed + cur_speed) * 15.0f / 2.0f;
+    orientation2 = obj->Get_Orientation();
+    speed5 = (desired_speed + cur_speed) / 2.0f / turn_speed;
+
+    if (speed5 > 1.0f) {
+        speed5 = 1.0f;
+    }
+
+    speed6 = 15.0f * speed5 * max_turn / 4.0f;
+    orientation2 = turn_angle >= 0.0f ? orientation2 + speed6 : orientation2 - speed6;
+    c = GameMath::Cos(orientation2) * speed4;
+    s = GameMath::Sin(orientation2) * speed4;
+
+    pos.x = c + obj->Get_Position()->x;
+    pos.y = s + obj->Get_Position()->y;
+    pos.z = obj->Get_Position()->z;
+
+    pos2.x = c / 2.0f + obj->Get_Position()->x;
+    pos2.y = s / 2.0f + obj->Get_Position()->y;
+    pos2.z = obj->Get_Position()->z;
+
+    if (!g_theAI->Get_Pathfinder()->Valid_Movement_Terrain(obj->Get_Layer(), this, &pos2)) {
+        goto l2;
+    }
+
+    if (!g_theAI->Get_Pathfinder()->Valid_Movement_Terrain(obj->Get_Layer(), this, &pos)) {
+    l2:
+        physics->Set_Turning(Rotate_Towards_Position(obj, goal_pos, nullptr));
+        Coord3D force3d;
+        force3d.Zero();
+        physics->Apply_Motive_Force(&force3d);
+    } else {
+    l1:
+        if (on_path_dist_to_goal < speed3 && !Get_Flag(IS_BRAKING) && !Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+            Set_Flag(IS_BRAKING, true);
+            m_brakingFactor = 1.1f;
+        }
+
+        if (on_path_dist_to_goal > 10.0f && speed2 + speed2 < on_path_dist_to_goal) {
+            Set_Flag(IS_BRAKING, false);
+        }
+
+        if (on_path_dist_to_goal > 40.0f) {
+            m_moveFrame = g_theGameLogic->Get_Frame() + 2.5f * 30.0f;
+        } else if (m_moveFrame < g_theGameLogic->Get_Frame()) {
+            Set_Flag(IS_BRAKING, true);
+        }
+
+        if (Get_Flag(IS_BRAKING)) {
+            m_brakingFactor = speed2 / on_path_dist_to_goal;
+            m_brakingFactor = m_brakingFactor * m_brakingFactor;
+
+            if (m_brakingFactor > 5.0f) {
+                m_brakingFactor = 5.0;
+            }
+
+            m_brakingFactor = 1.0;
+
+            if (speed2 > on_path_dist_to_goal) {
+                desired_speed = cur_speed - Get_Braking();
+
+                if (desired_speed < 0.0f) {
+                    desired_speed = 0.0f;
+                }
+            } else if (on_path_dist_to_goal * 0.75f < speed2) {
+                desired_speed = cur_speed - Get_Braking() / 2.0f;
+
+                if (desired_speed < 0.0f) {
+                    desired_speed = 0.0f;
+                }
+            } else {
+                desired_speed = cur_speed;
+            }
+        }
+
+        float speed7 = cur_speed / turn_speed;
+
+        if (speed7 < 0.0f) {
+            speed7 = -speed7;
+        }
+
+        if (speed7 > 1.0f) {
+            speed7 = 1.0f;
+        }
+
+        float speed8 = speed7 * max_turn;
+
+        if (backwards && !b) {
+            Coord3D pos3 = *obj->Get_Position();
+            pos3.x = pos3.x - (goal_pos.x - obj->Get_Position()->x);
+            pos3.y = pos3.y - (goal_pos.y - obj->Get_Position()->x);
+            physics->Set_Turning(Rotate_Obj_Around_Loco_Pivot(obj, pos3, speed8, nullptr));
+        } else {
+            physics->Set_Turning(Rotate_Obj_Around_Loco_Pivot(obj, goal_pos, speed8, nullptr));
+        }
+
+        float reduced_accel = desired_speed - cur_speed;
+
+        if (backwards) {
+            reduced_accel = cur_speed - desired_speed;
+        }
+
+        if (reduced_accel != 0.0f) {
+            float accel;
+            float mass = physics->Get_Mass();
+
+            if (backwards) {
+                if (reduced_accel < 0.0f) {
+                    accel = -max_accel;
+                } else {
+                    accel = Get_Braking() * m_brakingFactor;
+                }
+            } else if (reduced_accel > 0.0f) {
+                accel = max_accel;
+            } else {
+                accel = Get_Braking() * -m_brakingFactor;
+            }
+
+            float force = mass * accel;
+            float reduced_force = mass * reduced_accel;
+
+            if (GameMath::Fabs(reduced_force) < GameMath::Fabs(force)) {
+                force = reduced_force;
+            }
+
+            const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+            Coord3D force3d;
+            force3d.x = force * dir->x;
+            force3d.y = force * dir->y;
+            force3d.z = 0.0f;
+            physics->Apply_Motive_Force(&force3d);
+        }
+    }
 }
 
 void Locomotor::Move_Towards_Position_Treads(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004B9920, 0x0074FC3F), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+    float max_speed = Get_Max_Speed_For_Condition(damage);
+    float max_accel = Get_Max_Acceleration(damage);
+
+    if (desired_speed > max_speed) {
+        desired_speed = max_speed;
+    }
+
+    float goal_angle;
+    physics->Set_Turning(Rotate_Towards_Position(obj, goal_pos, &goal_angle));
+    float acute_factor = GameMath::Fabs(goal_angle) / DEG_TO_RADF(45.0f);
+
+    if (acute_factor > 1.0f) {
+        acute_factor = 1.0f;
+    }
+
+    float x = obj->Get_Position()->x - goal_pos.x;
+    float y = obj->Get_Position()->y - goal_pos.y;
+    float reduced_speed = (1.0f - acute_factor) * desired_speed;
+    float cur_speed = physics->Get_Forward_Speed_2D();
+    float speed3 = cur_speed / Get_Braking();
+    float brake_dist = cur_speed / 1.5f * speed3;
+
+    if (GameMath::Square(20.0f) > GameMath::Square(y) + GameMath::Square(x) && acute_factor > 0.05f) {
+        reduced_speed = cur_speed * 0.60000002f;
+    }
+
+    if (on_path_dist_to_goal < brake_dist && !Get_Flag(IS_BRAKING) && !Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+        Set_Flag(IS_BRAKING, true);
+        m_brakingFactor = 1.1f;
+    }
+
+    if (on_path_dist_to_goal > 10.0f && brake_dist + brake_dist < on_path_dist_to_goal) {
+        Set_Flag(IS_BRAKING, false);
+    }
+
+    if (Get_Flag(IS_BRAKING)) {
+        m_brakingFactor = brake_dist / on_path_dist_to_goal;
+        m_brakingFactor = m_brakingFactor * m_brakingFactor;
+
+        if (m_brakingFactor > 5.0f) {
+            m_brakingFactor = 5.0f;
+        }
+
+        if (brake_dist > on_path_dist_to_goal) {
+            reduced_speed = cur_speed - Get_Braking();
+
+            if (reduced_speed < 0.0f) {
+                reduced_speed = 0.0f;
+            }
+        } else if (on_path_dist_to_goal * 0.75f < brake_dist) {
+            reduced_speed = cur_speed - Get_Braking() / 2.0f;
+
+            if (reduced_speed < 0.0f) {
+                reduced_speed = 0.0f;
+            }
+        } else {
+            reduced_speed = cur_speed;
+        }
+    }
+
+    float reduced_accel = reduced_speed - cur_speed;
+
+    if (reduced_accel != 0.0f) {
+        float mass = physics->Get_Mass();
+        float accel;
+
+        if (reduced_accel > 0.0f) {
+            accel = max_accel;
+        } else {
+            accel = Get_Braking() * -m_brakingFactor;
+        }
+
+        float force = mass * accel;
+        float reduced_force = mass * reduced_accel;
+
+        if (GameMath::Fabs(reduced_force) < GameMath::Fabs(force)) {
+            force = reduced_force;
+        }
+
+        const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+        Coord3D force3d;
+        force3d.x = force * dir->x;
+        force3d.y = force * dir->y;
+        force3d.z = 0.0;
+        physics->Apply_Motive_Force(&force3d);
+    }
 }
 
 void Locomotor::Move_Towards_Position_Other(

@@ -235,6 +235,7 @@ set(GAMEENGINE_SRC
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp
     game/logic/object/experiencetracker.cpp
+    game/logic/object/locomotor.cpp
     game/logic/object/object.cpp
     game/logic/object/objectcreationlist.cpp
     game/logic/object/objecttypes.cpp

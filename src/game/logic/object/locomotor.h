@@ -16,6 +16,7 @@
 #include "always.h"
 #include "asciistring.h"
 #include "coord.h"
+#include "ini.h"
 #include "overridable.h"
 #include "snapshot.h"
 
@@ -58,7 +59,14 @@ class LocomotorTemplate : public Overridable
     IMPLEMENT_POOL(LocomotorTemplate);
 
 public:
-    virtual ~LocomotorTemplate() override;
+    LocomotorTemplate();
+    virtual ~LocomotorTemplate() override {}
+
+    void Validate();
+
+    void Set_Name(const Utf8String &newName) { m_name = newName; }
+
+    static FieldParse *Get_Field_Parse() { return s_fieldParseTable; }
 
 private:
     Utf8String m_name;
@@ -122,6 +130,8 @@ private:
     float m_rudderCorrectionRate;
     float m_elevatorCorrectionDegree;
     float m_elevatorCorrectionRate;
+
+    static FieldParse s_fieldParseTable[];
 };
 
 class Locomotor : public MemoryPoolObject, public SnapShot

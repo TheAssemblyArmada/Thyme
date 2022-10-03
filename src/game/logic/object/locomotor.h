@@ -155,7 +155,7 @@ public:
 
     LocomotorTemplate *Find_Locomotor_Template(NameKeyType namekey);
     const LocomotorTemplate *Find_Locomotor_Template(NameKeyType namekey) const;
-    Locomotor *New_Locomotor(LocomotorTemplate *tmpl);
+    Locomotor *New_Locomotor(const LocomotorTemplate *tmpl);
     LocomotorTemplate *New_Override(LocomotorTemplate *tmpl);
 
     static void Parse_Locomotor_Template_Definition(INI *ini);
@@ -185,14 +185,14 @@ public:
         WANDER_DIRECTION,
     };
 
-    Locomotor(const Locomotor &that);
     Locomotor(const LocomotorTemplate *tmpl);
+    Locomotor(const Locomotor &that);
     Locomotor &operator=(const Locomotor &that);
 
-    virtual ~Locomotor() override;
-    virtual void CRC_Snapshot(Xfer *xfer) override;
+    virtual ~Locomotor() override {}
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
-    virtual void Load_Post_Process() override;
+    virtual void Load_Post_Process() override {}
 
     float Get_Max_Speed_For_Condition(BodyDamageType condition) const;
     float Get_Max_Turn_Rate(BodyDamageType condition) const;
@@ -224,11 +224,23 @@ public:
     void Loco_Update_Maintain_Current_Position(Object *obj);
     void Maintain_Current_Position_Thrust(Object *obj, PhysicsBehavior *physics);
     void Maintain_Current_Position_Other(Object *obj, PhysicsBehavior *physics);
-    void Maintain_Current_Position_Legs(Object *obj, PhysicsBehavior *physics);
-    void Maintain_Current_Position_Wheels(Object *obj, PhysicsBehavior *physics);
-    void Maintain_Current_Position_Treads(Object *obj, PhysicsBehavior *physics);
     void Maintain_Current_Position_Hover(Object *obj, PhysicsBehavior *physics);
     void Maintain_Current_Position_Wings(Object *obj, PhysicsBehavior *physics);
+
+    void Maintain_Current_Position_Legs(Object *obj, PhysicsBehavior *physics)
+    {
+        Maintain_Current_Position_Other(obj, physics);
+    }
+
+    void Maintain_Current_Position_Wheels(Object *obj, PhysicsBehavior *physics)
+    {
+        Maintain_Current_Position_Other(obj, physics);
+    }
+
+    void Maintain_Current_Position_Treads(Object *obj, PhysicsBehavior *physics)
+    {
+        Maintain_Current_Position_Other(obj, physics);
+    }
 
     float Calc_Min_Turn_Radius(BodyDamageType condition, float *time_to_travel_that_dist) const;
     float Calc_Lift_To_Use_At_Pt(
@@ -291,9 +303,6 @@ public:
     bool Is_Close_Enough_Dist_3D() const { return Get_Flag(CLOSE_ENOUGH_DIST_3D); }
     bool Is_Allow_Invalid_Position() const { return Get_Flag(ALLOW_INVALID_POSITION); }
 
-    void Set_Close_Enough_Dist(float dist) { m_closeEnoughDist = dist; }
-    void Set_Use_Precise_Z_Pos(bool set) { Set_Flag(PRECISE_Z_POS, set); }
-
     void Set_Flag(LocoFlag f, bool b)
     {
         if (b) {
@@ -303,13 +312,15 @@ public:
         }
     }
 
+    void Set_Use_Precise_Z_Pos(bool set) { Set_Flag(PRECISE_Z_POS, set); }
     void Set_Allow_Invalid_Position(bool set) { Set_Flag(ALLOW_INVALID_POSITION, set); }
     void Set_No_Slow_Down_As_Approaching_Dest(bool set) { Set_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST, set); }
     void Set_Ultra_Accurate(bool set) { Set_Flag(ULTRA_ACCURATE, set); }
     void Set_Close_Enough_Dist_3D(bool b) { Set_Flag(CLOSE_ENOUGH_DIST_3D, b); }
+    void Set_Close_Enough_Dist(float dist) { m_closeEnoughDist = dist; }
 
 private:
-    Override<LocomotorTemplate> m_template;
+    Override<const LocomotorTemplate> m_template;
     Coord3D m_maintainPos;
     float m_brakingFactor;
     float m_maxLift;

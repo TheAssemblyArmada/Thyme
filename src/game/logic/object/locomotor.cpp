@@ -13,6 +13,8 @@
  *            LICENSE
  */
 #include "locomotor.h"
+#include "globaldata.h"
+#include "terrainlogic.h"
 
 LocomotorTemplate::LocomotorTemplate() :
     m_maxSpeedDamaged(-1.0f),
@@ -301,6 +303,11 @@ void LocomotorStore::Reset()
     }
 }
 
+Locomotor *LocomotorStore::New_Locomotor(const LocomotorTemplate *tmpl)
+{
+    return new Locomotor(tmpl);
+}
+
 LocomotorTemplate *LocomotorStore::New_Override(LocomotorTemplate *tmpl)
 {
     if (tmpl == nullptr) {
@@ -345,4 +352,180 @@ void LocomotorStore::Parse_Locomotor_Template_Definition(INI *ini)
     if (!found) {
         g_theLocomotorStore->m_locomotorTemplates[key] = t;
     }
+}
+
+Locomotor::Locomotor(const LocomotorTemplate *tmpl) :
+    m_brakingFactor(1.0f),
+    m_maxLift(99999.0f),
+    m_maxSpeed(99999.0f),
+    m_maxAccel(99999.0f),
+    m_maxBreaking(99999.0f),
+    m_maxTurnRate(99999.0f),
+    m_flags(0)
+{
+    m_template = tmpl;
+    m_closeEnoughDist = m_template->m_closeEnoughDist;
+    Set_Flag(CLOSE_ENOUGH_DIST_3D, m_template->m_closeEnoughDist3D);
+    m_preferredHeight = m_template->m_preferredHeight;
+    m_preferredHeightDamping = m_template->m_preferredHeightDamping;
+    m_wanderAngle = Get_Logic_Random_Value_Real(-0.52359879f, 0.52359879f);
+    m_wanderLength = Get_Logic_Random_Value_Real(0.80000001f, 1.2f);
+    Set_Flag(WANDER_DIRECTION, (Get_Logic_Random_Value(0, 1) != 0));
+    m_moveFrame = g_theGameLogic->Get_Frame() + 2.5f * 30.0f;
+}
+
+Locomotor::Locomotor(const Locomotor &that) :
+    m_brakingFactor(that.m_brakingFactor),
+    m_maxLift(that.m_maxLift),
+    m_maxSpeed(that.m_maxSpeed),
+    m_maxAccel(that.m_maxAccel),
+    m_maxBreaking(that.m_maxBreaking),
+    m_maxTurnRate(that.m_maxTurnRate),
+    m_flags(that.m_flags),
+    m_closeEnoughDist(that.m_closeEnoughDist),
+    m_preferredHeight(that.m_preferredHeight),
+    m_preferredHeightDamping(that.m_preferredHeightDamping),
+    m_wanderAngle(that.m_wanderAngle),
+    m_wanderLength(that.m_wanderLength)
+{
+    m_maintainPos.Zero();
+}
+
+Locomotor &Locomotor::operator=(const Locomotor &that)
+{
+    if (this != &that) {
+        m_template = that.m_template;
+        m_brakingFactor = that.m_brakingFactor;
+        m_maxLift = that.m_maxLift;
+        m_maxSpeed = that.m_maxSpeed;
+        m_maxAccel = that.m_maxAccel;
+        m_maxBreaking = that.m_maxBreaking;
+        m_maxTurnRate = that.m_maxTurnRate;
+        m_flags = that.m_flags;
+        m_closeEnoughDist = that.m_closeEnoughDist;
+        m_preferredHeight = that.m_preferredHeight;
+        m_preferredHeightDamping = that.m_preferredHeightDamping;
+    }
+
+    return *this;
+}
+
+void Locomotor::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 2;
+    xfer->xferVersion(&version, 2);
+
+    if (version >= 2) {
+        xfer->xferUnsignedInt(&m_moveFrame);
+    }
+
+    xfer->xferCoord3D(&m_maintainPos);
+    xfer->xferReal(&m_brakingFactor);
+    xfer->xferReal(&m_maxLift);
+    xfer->xferReal(&m_maxSpeed);
+    xfer->xferReal(&m_maxAccel);
+    xfer->xferReal(&m_maxBreaking);
+    xfer->xferReal(&m_maxTurnRate);
+    xfer->xferReal(&m_closeEnoughDist);
+    xfer->xferUnsignedInt(&m_flags);
+    xfer->xferReal(&m_preferredHeight);
+    xfer->xferReal(&m_preferredHeightDamping);
+    xfer->xferReal(&m_wanderAngle);
+    xfer->xferReal(&m_wanderLength);
+}
+
+float Locomotor::Get_Max_Speed_For_Condition(BodyDamageType condition) const
+{
+    float speed;
+
+    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
+        speed = m_template->m_maxSpeedDamaged;
+    } else {
+        speed = m_template->m_maxSpeed;
+    }
+
+    if (speed > m_maxSpeed) {
+        return m_maxSpeed;
+    }
+
+    return speed;
+}
+
+float Locomotor::Get_Max_Turn_Rate(BodyDamageType condition) const
+{
+    float rate;
+
+    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
+        rate = m_template->m_maxTurnRateDamaged;
+    } else {
+        rate = m_template->m_maxTurnRate;
+    }
+
+    if (rate > m_maxTurnRate) {
+        rate = m_maxTurnRate;
+    }
+
+    if (Get_Flag(ULTRA_ACCURATE)) {
+        return rate * 2.0f;
+    }
+
+    return rate;
+}
+
+float Locomotor::Get_Max_Acceleration(BodyDamageType condition) const
+{
+    float accel;
+
+    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
+        accel = m_template->m_accelerationDamaged;
+    } else {
+        accel = m_template->m_acceleration;
+    }
+
+    if (accel > m_maxAccel) {
+        return m_maxAccel;
+    }
+
+    return accel;
+}
+
+float Locomotor::Get_Max_Lift(BodyDamageType condition) const
+{
+    float lift;
+
+    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
+        lift = m_template->m_liftDamaged;
+    } else {
+        lift = m_template->m_lift;
+    }
+
+    if (lift > m_maxLift) {
+        return m_maxLift;
+    }
+
+    return lift;
+}
+
+float Locomotor::Get_Surface_Ht_At_Pt(float x, float y)
+{
+    float f = 0.0f;
+    float waterz;
+    float groundz;
+
+    if (g_theTerrainLogic->Is_Underwater(x, y, &waterz, &groundz)) {
+        return f + waterz;
+    } else {
+        return f + groundz;
+    }
+}
+
+float Locomotor::Get_Braking() const
+{
+    float braking = m_template->m_braking;
+
+    if (braking > m_maxBreaking) {
+        return m_maxBreaking;
+    }
+
+    return braking;
 }

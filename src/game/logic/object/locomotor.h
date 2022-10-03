@@ -17,8 +17,10 @@
 #include "asciistring.h"
 #include "coord.h"
 #include "ini.h"
+#include "namekeygenerator.h"
 #include "overridable.h"
 #include "snapshot.h"
+#include <map>
 
 enum LocomotorBehaviorZ
 {
@@ -64,7 +66,7 @@ public:
 
     void Validate();
 
-    void Set_Name(const Utf8String &newName) { m_name = newName; }
+    void Set_Name(const Utf8String &name) { m_name = name; }
 
     static FieldParse *Get_Field_Parse() { return s_fieldParseTable; }
 
@@ -132,6 +134,31 @@ private:
     float m_elevatorCorrectionRate;
 
     static FieldParse s_fieldParseTable[];
+};
+
+class LocomotorStore : public SubsystemInterface
+{
+public:
+    LocomotorStore() {}
+    virtual ~LocomotorStore() override;
+
+    virtual void Init() override {}
+    virtual void Reset() override;
+    virtual void Update() override {}
+
+#ifdef GAME_DLL
+    LocomotorStore *Hook_Ctor() { return new (this) LocomotorStore; }
+#endif
+
+    LocomotorTemplate *Find_Locomotor_Template(NameKeyType namekey);
+    const LocomotorTemplate *Find_Locomotor_Template(NameKeyType namekey) const;
+    Locomotor *New_Locomotor(LocomotorTemplate *tmpl);
+    LocomotorTemplate *New_Override(LocomotorTemplate *tmpl);
+
+    static void Parse_Locomotor_Template_Definition(INI *ini);
+
+private:
+    std::map<NameKeyType, LocomotorTemplate *> m_locomotorTemplates;
 };
 
 class Locomotor : public MemoryPoolObject, public SnapShot
@@ -209,3 +236,9 @@ private:
     float m_wanderLength; // not 100% confirmed
     unsigned int m_moveFrame; // not 100% confirmed
 };
+
+#ifdef GAME_DLL
+extern LocomotorStore *&g_theLocomotorStore;
+#else
+extern LocomotorStore *g_theLocomotorStore;
+#endif

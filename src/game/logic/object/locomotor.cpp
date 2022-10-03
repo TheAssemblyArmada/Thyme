@@ -131,7 +131,7 @@ void LocomotorTemplate::Validate()
     }
 }
 
-const char *g_theSurfaceBitNames[] = {
+const char *g_theLocomotorSurfaceTypeNames[] = {
     "GROUND",
     "WATER",
     "CLIFF",
@@ -140,7 +140,7 @@ const char *g_theSurfaceBitNames[] = {
     nullptr,
 };
 
-const char *g_theZAxisBehaviourNames[] = {
+const char *g_theLocomotorBehaviorZNames[] = {
     "NO_Z_MOTIVE_FORCE",
     "SEA_LEVEL",
     "SURFACE_RELATIVE_HEIGHT",
@@ -165,14 +165,13 @@ const char *g_theLocomotorAppearanceNames[] = {
     nullptr,
 };
 
-const char *g_theLocomotorGroupMovementNames[] = {
+const char *g_theLocomotorPriorityNames[] = {
     "MOVES_BACK",
     "MOVES_MIDDLE",
     "MOVES_FRONT",
     nullptr,
 };
 
-// zh: 0x004B8180 wb: 0x0074E5A7
 void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
 {
     constexpr float friction_update_rate = 1.0f / 30.0f;
@@ -182,7 +181,7 @@ void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
 
 // clang-format off
 FieldParse LocomotorTemplate::s_fieldParseTable[] = {
-    { "Surfaces", &INI::Parse_Bitstring32, g_theSurfaceBitNames, offsetof(LocomotorTemplate, m_surfaces) },
+    { "Surfaces", &INI::Parse_Bitstring32, g_theLocomotorSurfaceTypeNames, offsetof(LocomotorTemplate, m_surfaces) },
     { "Speed", &INI::Parse_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_maxSpeed) },
     { "SpeedDamaged", &INI::Parse_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_maxSpeedDamaged) },
     { "MinSpeed", &INI::Parse_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_minSpeed) },
@@ -200,9 +199,9 @@ FieldParse LocomotorTemplate::s_fieldParseTable[] = {
     { "SpeedLimitZ", &INI::Parse_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_speedLimitZ) },
     { "Extra2DFriction", &Parse_Friction_Per_Sec, nullptr, offsetof(LocomotorTemplate, m_extra2DFriction) },
     { "MaxThrustAngle", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_maxThrustAngle) },
-    { "ZAxisBehavior", &INI::Parse_Index_List, g_theZAxisBehaviourNames, offsetof(LocomotorTemplate, m_behaviorZ) },
+    { "ZAxisBehavior", &INI::Parse_Index_List, g_theLocomotorBehaviorZNames, offsetof(LocomotorTemplate, m_behaviorZ) },
     { "Appearance", &INI::Parse_Index_List, g_theLocomotorAppearanceNames, offsetof(LocomotorTemplate, m_appearance) },
-    { "GroupMovementPriority", &INI::Parse_Index_List, g_theLocomotorGroupMovementNames, offsetof(LocomotorTemplate, m_groupMovementPriority) },
+    { "GroupMovementPriority", &INI::Parse_Index_List, g_theLocomotorPriorityNames, offsetof(LocomotorTemplate, m_groupMovementPriority) },
     { "AccelerationPitchLimit", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_accelPitchLimit) },
     { "DecelerationPitchLimit", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_deaccelPitchLimit) },
     { "BounceAmount", &INI::Parse_Angular_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_bounceKick) },
@@ -245,3 +244,105 @@ FieldParse LocomotorTemplate::s_fieldParseTable[] = {
     { nullptr, nullptr, nullptr, 0 },
 };
 // clang-format on
+
+LocomotorStore::~LocomotorStore()
+{
+    for (auto it = m_locomotorTemplates.begin(); it != m_locomotorTemplates.end(); it++) {
+        it->second->Delete_Instance();
+    }
+
+    m_locomotorTemplates.clear();
+}
+
+LocomotorTemplate *LocomotorStore::Find_Locomotor_Template(NameKeyType namekey)
+{
+    if (namekey == NAMEKEY_INVALID) {
+        return nullptr;
+    }
+
+    auto t = m_locomotorTemplates.find(namekey);
+
+    if (t != m_locomotorTemplates.end()) {
+        return (*t).second;
+    } else {
+        return nullptr;
+    }
+}
+
+const LocomotorTemplate *LocomotorStore::Find_Locomotor_Template(NameKeyType namekey) const
+{
+    if (namekey == NAMEKEY_INVALID) {
+        return nullptr;
+    }
+
+    auto t = m_locomotorTemplates.find(namekey);
+
+    if (t != m_locomotorTemplates.end()) {
+        return (*t).second;
+    } else {
+        return nullptr;
+    }
+}
+
+void LocomotorStore::Reset()
+{
+    auto it = m_locomotorTemplates.begin();
+
+    for (;;) {
+        if (!(it != m_locomotorTemplates.end())) {
+            break;
+        }
+
+        if (it->second->Delete_Overrides() == nullptr) {
+            m_locomotorTemplates.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+LocomotorTemplate *LocomotorStore::New_Override(LocomotorTemplate *tmpl)
+{
+    if (tmpl == nullptr) {
+        return nullptr;
+    }
+
+    LocomotorTemplate *t = new LocomotorTemplate(*tmpl);
+    tmpl->Set_Next(t);
+    t->Set_Is_Allocated();
+    return t;
+}
+
+void LocomotorStore::Parse_Locomotor_Template_Definition(INI *ini)
+{
+    if (g_theLocomotorStore == nullptr) {
+        throw CODE_06;
+    }
+
+    bool found = false;
+    const char *name = ini->Get_Next_Token();
+    NameKeyType key = g_theNameKeyGenerator->Name_To_Key(name);
+
+    LocomotorTemplate *t = g_theLocomotorStore->Find_Locomotor_Template(key);
+    if (t != nullptr) {
+        if (ini->Get_Load_Type() == INILoadType::INI_LOAD_CREATE_OVERRIDES) {
+            t = g_theLocomotorStore->New_Override(static_cast<LocomotorTemplate *>(t->Friend_Get_Final_Override()));
+        }
+
+        found = true;
+    } else {
+        t = NEW_POOL_OBJ(LocomotorTemplate);
+
+        if (ini->Get_Load_Type() == INILoadType::INI_LOAD_CREATE_OVERRIDES) {
+            t->Set_Is_Allocated();
+        }
+    }
+
+    t->Set_Name(name);
+    ini->Init_From_INI(t, LocomotorTemplate::Get_Field_Parse());
+    t->Validate();
+
+    if (!found) {
+        g_theLocomotorStore->m_locomotorTemplates[key] = t;
+    }
+}

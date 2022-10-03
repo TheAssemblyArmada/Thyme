@@ -80,6 +80,7 @@
 #include "laserupdate.h"
 #include "lightenv.h"
 #include "line3d.h"
+#include "locomotor.h"
 #include "main.h"
 #include "mapobject.h"
 #include "matpass.h"
@@ -2297,4 +2298,8 @@ void Setup_Hooks()
     Hook_Any(0x00797220, W3DBibBuffer::Remove_Bib_From_Object);
     Hook_Any(0x00797270, W3DBibBuffer::Remove_Bib_From_Drawable);
     Hook_Any(0x007972C0, W3DBibBuffer::Render_Bibs);
+
+    // locomotor.h
+    Hook_Any(0x004B81B0, LocomotorStore::Hook_Ctor);
+    Hook_Method(0x004B8460, static_cast<LocomotorTemplate *(LocomotorStore::*)(NameKeyType)>(&LocomotorStore::Find_Locomotor_Template));
 }

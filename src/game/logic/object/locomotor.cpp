@@ -47,7 +47,7 @@ LocomotorTemplate::LocomotorTemplate() :
     m_speedLimitZ(999999.0f),
     m_extra2DFriction(0.0f),
     m_accelPitchLimit(0.0f),
-    m_deaccelPitchLimit(0.0f),
+    m_decelPitchLimit(0.0f),
     m_bounceKick(0.0f),
     m_pitchStiffness(0.1f),
     m_rollStiffness(0.1f),
@@ -118,7 +118,7 @@ void LocomotorTemplate::Validate()
             break;
         case LOCO_THRUST:
             captainslog_relassert(
-                m_behaviorZ != LocomotorBehaviorZ::Z_NO_Z_MOTIVE_FORCE || m_lift == 0.0f || m_liftDamaged == 0.0f,
+                m_behaviorZ == LocomotorBehaviorZ::Z_NO_Z_MOTIVE_FORCE && m_lift == 0.0f && m_liftDamaged == 0.0f,
                 0xDEAD0006,
                 "THRUST locos may not use ZAxisBehaviour or lift!");
 
@@ -184,9 +184,7 @@ const char *g_theLocomotorPriorityNames[] = {
 
 void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
 {
-    constexpr float friction_update_rate = 1.0f / 30.0f;
-    const auto friction_rate = ini->Scan_Real(ini->Get_Next_Token()) * friction_update_rate;
-    *static_cast<float *>(store) = friction_rate;
+    *static_cast<float *>(store) = ini->Scan_Real(ini->Get_Next_Token()) * 1.0f / 30.0f;
 }
 
 // clang-format off
@@ -213,7 +211,7 @@ FieldParse LocomotorTemplate::s_fieldParseTable[] = {
     { "Appearance", &INI::Parse_Index_List, g_theLocomotorAppearanceNames, offsetof(LocomotorTemplate, m_appearance) },
     { "GroupMovementPriority", &INI::Parse_Index_List, g_theLocomotorPriorityNames, offsetof(LocomotorTemplate, m_groupMovementPriority) },
     { "AccelerationPitchLimit", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_accelPitchLimit) },
-    { "DecelerationPitchLimit", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_deaccelPitchLimit) },
+    { "DecelerationPitchLimit", &INI::Parse_Angle_Real, nullptr, offsetof(LocomotorTemplate, m_decelPitchLimit) },
     { "BounceAmount", &INI::Parse_Angular_Velocity_Real, nullptr, offsetof(LocomotorTemplate, m_bounceKick) },
     { "PitchStiffness", &INI::Parse_Real, nullptr, offsetof(LocomotorTemplate, m_pitchStiffness) },
     { "RollStiffness", &INI::Parse_Real, nullptr, offsetof(LocomotorTemplate, m_rollStiffness) },
@@ -367,7 +365,7 @@ Locomotor::Locomotor(const LocomotorTemplate *tmpl) :
     m_maxLift(99999.0f),
     m_maxSpeed(99999.0f),
     m_maxAccel(99999.0f),
-    m_maxBreaking(99999.0f),
+    m_maxBraking(99999.0f),
     m_maxTurnRate(99999.0f),
     m_flags(0)
 {
@@ -376,18 +374,19 @@ Locomotor::Locomotor(const LocomotorTemplate *tmpl) :
     Set_Flag(CLOSE_ENOUGH_DIST_3D, m_template->m_closeEnoughDist3D);
     m_preferredHeight = m_template->m_preferredHeight;
     m_preferredHeightDamping = m_template->m_preferredHeightDamping;
-    m_wanderAngle = Get_Logic_Random_Value_Real(-0.52359879f, 0.52359879f);
+    m_wanderAngle = Get_Logic_Random_Value_Real(DEG_TO_RADF(-30), DEG_TO_RADF(30));
     m_wanderLength = Get_Logic_Random_Value_Real(0.80000001f, 1.2f);
     Set_Flag(WANDER_DIRECTION, (Get_Logic_Random_Value(0, 1) != 0));
     m_moveFrame = g_theGameLogic->Get_Frame() + 2.5f * 30.0f;
 }
 
 Locomotor::Locomotor(const Locomotor &that) :
+    m_template(that.m_template),
     m_brakingFactor(that.m_brakingFactor),
     m_maxLift(that.m_maxLift),
     m_maxSpeed(that.m_maxSpeed),
     m_maxAccel(that.m_maxAccel),
-    m_maxBreaking(that.m_maxBreaking),
+    m_maxBraking(that.m_maxBraking),
     m_maxTurnRate(that.m_maxTurnRate),
     m_flags(that.m_flags),
     m_closeEnoughDist(that.m_closeEnoughDist),
@@ -407,7 +406,7 @@ Locomotor &Locomotor::operator=(const Locomotor &that)
         m_maxLift = that.m_maxLift;
         m_maxSpeed = that.m_maxSpeed;
         m_maxAccel = that.m_maxAccel;
-        m_maxBreaking = that.m_maxBreaking;
+        m_maxBraking = that.m_maxBraking;
         m_maxTurnRate = that.m_maxTurnRate;
         m_flags = that.m_flags;
         m_closeEnoughDist = that.m_closeEnoughDist;
@@ -432,7 +431,7 @@ void Locomotor::Xfer_Snapshot(Xfer *xfer)
     xfer->xferReal(&m_maxLift);
     xfer->xferReal(&m_maxSpeed);
     xfer->xferReal(&m_maxAccel);
-    xfer->xferReal(&m_maxBreaking);
+    xfer->xferReal(&m_maxBraking);
     xfer->xferReal(&m_maxTurnRate);
     xfer->xferReal(&m_closeEnoughDist);
     xfer->xferUnsignedInt(&m_flags);
@@ -446,10 +445,10 @@ float Locomotor::Get_Max_Speed_For_Condition(BodyDamageType condition) const
 {
     float speed;
 
-    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        speed = m_template->m_maxSpeedDamaged;
-    } else {
+    if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
         speed = m_template->m_maxSpeed;
+    } else {
+        speed = m_template->m_maxSpeedDamaged;
     }
 
     if (speed > m_maxSpeed) {
@@ -463,10 +462,10 @@ float Locomotor::Get_Max_Turn_Rate(BodyDamageType condition) const
 {
     float rate;
 
-    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        rate = m_template->m_maxTurnRateDamaged;
-    } else {
+    if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
         rate = m_template->m_maxTurnRate;
+    } else {
+        rate = m_template->m_maxTurnRateDamaged;
     }
 
     if (rate > m_maxTurnRate) {
@@ -484,10 +483,10 @@ float Locomotor::Get_Max_Acceleration(BodyDamageType condition) const
 {
     float accel;
 
-    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        accel = m_template->m_accelerationDamaged;
-    } else {
+    if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
         accel = m_template->m_acceleration;
+    } else {
+        accel = m_template->m_accelerationDamaged;
     }
 
     if (accel > m_maxAccel) {
@@ -501,10 +500,10 @@ float Locomotor::Get_Max_Lift(BodyDamageType condition) const
 {
     float lift;
 
-    if (condition >= g_theWriteableGlobalData->m_movementPenaltyDamageState) {
-        lift = m_template->m_liftDamaged;
-    } else {
+    if (condition < g_theWriteableGlobalData->m_movementPenaltyDamageState) {
         lift = m_template->m_lift;
+    } else {
+        lift = m_template->m_liftDamaged;
     }
 
     if (lift > m_maxLift) {
@@ -531,8 +530,8 @@ float Locomotor::Get_Braking() const
 {
     float braking = m_template->m_braking;
 
-    if (braking > m_maxBreaking) {
-        return m_maxBreaking;
+    if (braking > m_maxBraking) {
+        return m_maxBraking;
     }
 
     return braking;
@@ -557,8 +556,10 @@ void Locomotor::Loco_Update_Move_Towards_Position(
 
     PhysicsBehavior *physics = obj->Get_Physics();
 
-    if (physics != nullptr) {
-        if ((m_template->m_surfaces & 8) != 0
+    if (physics == nullptr) {
+        captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
+    } else if (!physics->Get_Stunned()) {
+        if ((m_template->m_surfaces & LOCOMOTOR_SURFACE_AIR) != 0
             || g_theAI->Get_Pathfinder()->Valid_Movement_Terrain(obj->Get_Layer(), this, obj->Get_Position())
             || Get_Flag(ALLOW_INVALID_POSITION) || !Fix_Invalid_Position(obj, physics)) {
             float x = goal_pos.x - obj->Get_Position()->x;
@@ -574,7 +575,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                 on_path_dist_to_goal = path_dist;
             }
 
-            bool b = false;
+            bool isairbone = false;
             Coord3D pos = *obj->Get_Position();
             float height = pos.z - g_theTerrainLogic->Get_Layer_Height(pos.x, pos.y, obj->Get_Layer(), nullptr, true);
 
@@ -583,7 +584,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
             }
 
             if (-9.0f * g_theWriteableGlobalData->m_gravity < height) {
-                b = true;
+                isairbone = true;
             }
 
             Coord3D c;
@@ -595,7 +596,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                     *blocked = false;
                 }
 
-                if (b && ((m_template->m_surfaces & 8) != 0)) {
+                if (isairbone && ((m_template->m_surfaces & LOCOMOTOR_SURFACE_AIR) != 0)) {
                     *blocked = false;
                 }
             }
@@ -614,10 +615,10 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                     Set_Flag(IS_BRAKING, false);
                 }
 
-                bool breaking = obj->Get_Status_Bits().Test(OBJECT_STATUS_IS_BRAKING);
+                bool braking = obj->Get_Status_Bits().Test(OBJECT_STATUS_IS_BRAKING);
                 physics->Set_Turning(TURN_NONE);
 
-                if (Get_Allow_Motive_Force_While_Airborne() || !b) {
+                if (Get_Allow_Motive_Force_While_Airborne() || !isairbone) {
                     switch (m_template->m_appearance) {
                         case LOCO_LEGS_TWO:
                             Move_Towards_Position_Legs(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
@@ -652,7 +653,7 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                     BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_IS_BRAKING),
                     Get_Flag(IS_BRAKING));
 
-                if (breaking) {
+                if (braking) {
                     Coord3D newpos = *obj->Get_Position();
 
                     if (obj->Is_KindOf(KINDOF_PROJECTILE)) {
@@ -662,8 +663,8 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                         path_dist = GameMath::Sqrt(x * x + y * y + z * z);
                         float magnitude = physics->Get_Velocity_Magnitude();
 
-                        if (magnitude < 0.33333334f) {
-                            magnitude = 0.33333334f;
+                        if (magnitude < 1.0f / 30.0f) {
+                            magnitude = 1.0f / 30.0f;
                         }
 
                         if (magnitude > path_dist) {
@@ -680,10 +681,10 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                             newpos.z = z * magnitude + newpos.z;
                         }
                     } else if (path_dist > 0.001f) {
-                        float forwardspeed = physics->Get_Forward_Speed_2D();
+                        float forwardspeed = GameMath::Fabs(physics->Get_Forward_Speed_2D());
 
-                        if (forwardspeed < 0.33333334f) {
-                            forwardspeed = 0.33333334f;
+                        if (forwardspeed < 1.0f / 30.0f) {
+                            forwardspeed = 1.0f / 30.0f;
                         }
 
                         if (forwardspeed > path_dist) {
@@ -701,8 +702,6 @@ void Locomotor::Loco_Update_Move_Towards_Position(
                 }
             }
         }
-    } else {
-        captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
     }
 }
 

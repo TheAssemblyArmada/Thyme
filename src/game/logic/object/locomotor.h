@@ -58,6 +58,15 @@ enum LocomotorGroupMovementPriority
     PRIORITY_MOVES_FRONT,
 };
 
+enum LocomotorSurfaceType
+{
+    LOCOMOTOR_SURFACE_GROUND = 1,
+    LOCOMOTOR_SURFACE_WATER = 2,
+    LOCOMOTOR_SURFACE_CLIFF = 4,
+    LOCOMOTOR_SURFACE_AIR = 8,
+    LOCOMOTOR_SURFACE_RUBBLE = 16,
+};
+
 class LocomotorTemplate : public Overridable
 {
     friend class Locomotor;
@@ -98,7 +107,7 @@ private:
     LocomotorAppearance m_appearance;
     LocomotorGroupMovementPriority m_groupMovementPriority;
     float m_accelPitchLimit;
-    float m_deaccelPitchLimit;
+    float m_decelPitchLimit;
     float m_bounceKick;
     float m_pitchStiffness;
     float m_rollStiffness;
@@ -264,7 +273,7 @@ public:
     float Get_Thrust_Min_Wobble() const { return m_template->m_thrustMinWobble; }
 
     float Get_Accel_Pitch_Limit() const { return m_template->m_accelPitchLimit; }
-    float Get_Deaccel_Pitch_Limit() const { return m_template->m_deaccelPitchLimit; }
+    float Get_Deaccel_Pitch_Limit() const { return m_template->m_decelPitchLimit; }
     float Get_Pitch_Stiffness() const { return m_template->m_pitchStiffness; }
     float Get_Roll_Stiffness() const { return m_template->m_rollStiffness; }
     float Get_Pitch_Damping() const { return m_template->m_pitchDamping; }
@@ -286,7 +295,7 @@ public:
     float Get_Max_Wheel_Extension() const { return m_template->m_maximumWheelExtension; }
     float Get_Wheel_Turn_Angle() const { return m_template->m_wheelTurnAngle; }
 
-    float Get_Preferred_Height_Damping() { return m_preferredHeightDamping; }
+    float Get_Preferred_Height_Damping() const { return m_preferredHeightDamping; }
     int Get_Legal_Surfaces() const { return m_template->m_surfaces; }
     float Get_Min_Speed() const { return m_template->m_minSpeed; }
     float Get_Turn_Pivot_Offset() const { return m_template->m_turnPivotOffset; }
@@ -302,15 +311,15 @@ public:
     bool Get_Stick_To_Ground() const { return m_template->m_stickToGround; }
     bool Get_Downhill_Only() const { return m_template->m_downhillOnly; }
 
-    bool Get_Flag(char flag) const { return ((1 << flag) & m_flags) != 0; }
+    bool Get_Flag(LocoFlag flag) const { return ((1 << flag) & m_flags) != 0; }
     bool Is_Moving_Backwards() const { return Get_Flag(MOVING_BACKWARDS); }
     bool Is_Ultra_Accurate() const { return Get_Flag(ULTRA_ACCURATE); }
     bool Is_Close_Enough_Dist_3D() const { return Get_Flag(CLOSE_ENOUGH_DIST_3D); }
     bool Is_Allow_Invalid_Position() const { return Get_Flag(ALLOW_INVALID_POSITION); }
 
-    void Set_Flag(LocoFlag f, bool b)
+    void Set_Flag(LocoFlag f, bool set)
     {
-        if (b) {
+        if (set) {
             m_flags |= 1 << f;
         } else {
             m_flags &= ~(1 << f);
@@ -321,7 +330,7 @@ public:
     void Set_Allow_Invalid_Position(bool set) { Set_Flag(ALLOW_INVALID_POSITION, set); }
     void Set_No_Slow_Down_As_Approaching_Dest(bool set) { Set_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST, set); }
     void Set_Ultra_Accurate(bool set) { Set_Flag(ULTRA_ACCURATE, set); }
-    void Set_Close_Enough_Dist_3D(bool b) { Set_Flag(CLOSE_ENOUGH_DIST_3D, b); }
+    void Set_Close_Enough_Dist_3D(bool set) { Set_Flag(CLOSE_ENOUGH_DIST_3D, set); }
     void Set_Close_Enough_Dist(float dist) { m_closeEnoughDist = dist; }
 
 private:
@@ -331,7 +340,7 @@ private:
     float m_maxLift;
     float m_maxSpeed;
     float m_maxAccel;
-    float m_maxBreaking;
+    float m_maxBraking;
     float m_maxTurnRate;
     float m_closeEnoughDist;
     unsigned int m_flags;

@@ -27,7 +27,10 @@ void PhysicsBehavior::Apply_Motive_Force(const Coord3D *force)
 
 void PhysicsBehavior::Scrub_Velocity_2D(float desired_velocity)
 {
-    if (desired_velocity >= 0.001f) {
+    if (desired_velocity < 0.001f) {
+        m_vel.x = 0.0f;
+        m_vel.y = 0.0f;
+    } else {
         float velocity = GameMath::Sqrt(m_vel.x * m_vel.x + m_vel.y * m_vel.y);
 
         if (desired_velocity > velocity) {
@@ -37,9 +40,6 @@ void PhysicsBehavior::Scrub_Velocity_2D(float desired_velocity)
         float velocity_change = desired_velocity / velocity;
         m_vel.x = velocity_change * m_vel.x;
         m_vel.y = velocity_change * m_vel.y;
-    } else {
-        m_vel.x = 0.0f;
-        m_vel.y = 0.0f;
     }
 
     m_velMag = -1.0;

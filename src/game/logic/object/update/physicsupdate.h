@@ -28,28 +28,25 @@ enum PhysicsTurningType
     TURN_POSITIVE,
 };
 
-// This needed to be moved out of the class in order for DEFINE_ENUMERATION_BITWISE_OPERATORS to work
-enum PhysicsFlagsType
-{
-    STICK_TO_GROUND = 1,
-    ALLOW_BOUNCE = 2,
-    APPLY_FRICTION2D_WHEN_AIRBORNE = 4,
-    UPDATE_EVER_RUN = 8,
-    WAS_AIRBORNE_LAST_FRAME = 16,
-    ALLOW_COLLIDE_FORCE = 32,
-    IS_AIRBORNE = 64,
-    MOVING = 128,
-    FLAG_UNK3 = 256,
-    FREEFALL = 512,
-    UPDATING = 1024,
-    STUNNED = 2048,
-};
-
-DEFINE_ENUMERATION_BITWISE_OPERATORS(PhysicsFlagsType);
-
 class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
 {
     IMPLEMENT_POOL(PhysicsBehavior)
+
+    enum PhysicsFlagsType
+    {
+        STICK_TO_GROUND = 1,
+        ALLOW_BOUNCE = 2,
+        APPLY_FRICTION2D_WHEN_AIRBORNE = 4,
+        UPDATE_EVER_RUN = 8,
+        WAS_AIRBORNE_LAST_FRAME = 16,
+        ALLOW_COLLIDE_FORCE = 32,
+        IS_AIRBORNE = 64,
+        MOVING = 128,
+        FLAG_UNK3 = 256,
+        FREEFALL = 512,
+        UPDATING = 1024,
+        STUNNED = 2048,
+    };
 
 public:
     virtual ~PhysicsBehavior() override;
@@ -150,7 +147,7 @@ private:
     Coord3D m_vel;
     PhysicsTurningType m_turning;
     int m_ignoreCollisionsWith;
-    PhysicsFlagsType m_flags;
+    int m_flags;
     float m_mass;
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;

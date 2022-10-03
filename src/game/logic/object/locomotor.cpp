@@ -13,8 +13,16 @@
  *            LICENSE
  */
 #include "locomotor.h"
+#include "aipathfind.h"
+#include "bodymodule.h"
 #include "globaldata.h"
+#include "object.h"
+#include "physicsupdate.h"
 #include "terrainlogic.h"
+
+#ifndef GAME_DLL
+LocomotorStore *g_theLocomotorStore = nullptr;
+#endif
 
 LocomotorTemplate::LocomotorTemplate() :
     m_maxSpeedDamaged(-1.0f),
@@ -528,4 +536,277 @@ float Locomotor::Get_Braking() const
     }
 
     return braking;
+}
+
+void Locomotor::Loco_Update_Move_Towards_Position(
+    Object *obj, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed, bool *blocked)
+{
+    Set_Flag(MAINTAIN_POS_IS_VALID, false);
+    float maxspeed = Get_Max_Speed_For_Condition(obj->Get_Body_Module()->Get_Damage_State());
+
+    if (desired_speed > maxspeed) {
+        desired_speed = maxspeed;
+    }
+
+    float speed = maxspeed / Get_Braking() * maxspeed / 2.0f;
+
+    if (on_path_dist_to_goal > 10.0f && on_path_dist_to_goal > speed) {
+        Set_Flag(IS_BRAKING, false);
+        m_brakingFactor = 1.0f;
+    }
+
+    PhysicsBehavior *physics = obj->Get_Physics();
+
+    if (physics != nullptr) {
+        if ((m_template->m_surfaces & 8) != 0
+            || g_theAI->Get_Pathfinder()->Valid_Movement_Terrain(obj->Get_Layer(), this, obj->Get_Position())
+            || Get_Flag(ALLOW_INVALID_POSITION) || !Fix_Invalid_Position(obj, physics)) {
+            float x = goal_pos.x - obj->Get_Position()->x;
+            float y = goal_pos.y - obj->Get_Position()->y;
+            float z = goal_pos.z - obj->Get_Position()->z;
+            float path_dist = GameMath::Sqrt(x * x + y * y);
+
+            if (path_dist > on_path_dist_to_goal) {
+                if (!obj->Is_KindOf(KINDOF_PROJECTILE) && 2.0f * on_path_dist_to_goal < path_dist) {
+                    Set_Flag(IS_BRAKING, true);
+                }
+
+                on_path_dist_to_goal = path_dist;
+            }
+
+            bool b = false;
+            Coord3D pos = *obj->Get_Position();
+            float height = pos.z - g_theTerrainLogic->Get_Layer_Height(pos.x, pos.y, obj->Get_Layer(), nullptr, true);
+
+            if (obj->Get_Status_Bits().Test(OBJECT_STATUS_DECK_HEIGHT_OFFSET)) {
+                height -= obj->Get_Carrier_Deck_Height();
+            }
+
+            if (-9.0f * g_theWriteableGlobalData->m_gravity < height) {
+                b = true;
+            }
+
+            Coord3D c;
+            c.Zero();
+            physics->Apply_Motive_Force(&c);
+
+            if (*blocked) {
+                if (physics->Get_Velocity_Magnitude() < desired_speed) {
+                    *blocked = false;
+                }
+
+                if (b && ((m_template->m_surfaces & 8) != 0)) {
+                    *blocked = false;
+                }
+            }
+
+            if (*blocked) {
+                physics->Scrub_Velocity_2D(desired_speed);
+                float turn = Get_Max_Turn_Rate(obj->Get_Body_Module()->Get_Damage_State());
+
+                if (m_template->m_wanderWidthFactor == 0.0f) {
+                    *blocked = Rotate_Obj_Around_Loco_Pivot(obj, goal_pos, turn, nullptr) != TURN_NONE;
+                }
+
+                Handle_Behavior_Z(obj, physics, goal_pos);
+            } else {
+                if (m_template->m_appearance == LOCO_WINGS) {
+                    Set_Flag(IS_BRAKING, false);
+                }
+
+                bool breaking = obj->Get_Status_Bits().Test(OBJECT_STATUS_IS_BRAKING);
+                physics->Set_Turning(TURN_NONE);
+
+                if (Get_Allow_Motive_Force_While_Airborne() || !b) {
+                    switch (m_template->m_appearance) {
+                        case LOCO_LEGS_TWO:
+                            Move_Towards_Position_Legs(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_WHEELS_FOUR:
+                        case LOCO_MOTORCYCLE:
+                            Move_Towards_Position_Wheels(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_TREADS:
+                            Move_Towards_Position_Treads(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_HOVER:
+                            Move_Towards_Position_Hover(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_THRUST:
+                            Move_Towards_Position_Thrust(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_WINGS:
+                            Move_Towards_Position_Wings(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        case LOCO_CLIMBER:
+                            Move_Towards_Position_Climb(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                        default:
+                            Move_Towards_Position_Other(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+                            break;
+                    }
+                }
+
+                Handle_Behavior_Z(obj, physics, goal_pos);
+                obj->Set_Status(
+                    BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_IS_BRAKING),
+                    Get_Flag(IS_BRAKING));
+
+                if (breaking) {
+                    Coord3D newpos = *obj->Get_Position();
+
+                    if (obj->Is_KindOf(KINDOF_PROJECTILE)) {
+                        obj->Set_Status(
+                            BitFlags<OBJECT_STATUS_COUNT>(BitFlags<OBJECT_STATUS_COUNT>::kInit, OBJECT_STATUS_IS_BRAKING),
+                            true);
+                        path_dist = GameMath::Sqrt(x * x + y * y + z * z);
+                        float magnitude = physics->Get_Velocity_Magnitude();
+
+                        if (magnitude < 0.33333334f) {
+                            magnitude = 0.33333334f;
+                        }
+
+                        if (magnitude > path_dist) {
+                            magnitude = path_dist;
+                        }
+
+                        if (path_dist > 0.001f) {
+                            path_dist = 1.0f / path_dist;
+                            x = x * path_dist;
+                            y = y * path_dist;
+                            z = z * path_dist;
+                            newpos.x = x * magnitude + newpos.x;
+                            newpos.y = y * magnitude + newpos.y;
+                            newpos.z = z * magnitude + newpos.z;
+                        }
+                    } else if (path_dist > 0.001f) {
+                        float forwardspeed = physics->Get_Forward_Speed_2D();
+
+                        if (forwardspeed < 0.33333334f) {
+                            forwardspeed = 0.33333334f;
+                        }
+
+                        if (forwardspeed > path_dist) {
+                            forwardspeed = path_dist;
+                        }
+
+                        path_dist = 1.0f / path_dist;
+                        x = x * path_dist;
+                        y = y * path_dist;
+                        newpos.x = x * forwardspeed + newpos.x;
+                        newpos.y = y * forwardspeed + newpos.y;
+                    }
+
+                    obj->Set_Position(&newpos);
+                }
+            }
+        }
+    } else {
+        captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
+    }
+}
+
+void Locomotor::Move_Towards_Position_Legs(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004BA750, 0x00750C4E), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+void Locomotor::Move_Towards_Position_Wheels(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004B9CD0, 0x0074FFC1), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+void Locomotor::Move_Towards_Position_Treads(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004B9920, 0x0074FC3F), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+void Locomotor::Move_Towards_Position_Other(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004BC500, 0x00752932), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+void Locomotor::Move_Towards_Position_Hover(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+    Move_Towards_Position_Other(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+    const Coord3D *pos = obj->Get_Position();
+
+    if (g_theTerrainLogic->Is_Underwater(pos->x, pos->y, nullptr, nullptr)) {
+        if (!Get_Flag(OVER_WATER)) {
+            Set_Flag(OVER_WATER, true);
+            obj->Set_Model_Condition_State(MODELCONDITION_OVER_WATER);
+        }
+    } else if (Get_Flag(OVER_WATER)) {
+        Set_Flag(OVER_WATER, false);
+        obj->Clear_Model_Condition_State(MODELCONDITION_OVER_WATER);
+    }
+}
+
+void Locomotor::Move_Towards_Position_Thrust(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004BAF80, 0x00751571), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+void Locomotor::Move_Towards_Position_Wings(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+    Move_Towards_Position_Other(obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+}
+
+void Locomotor::Move_Towards_Position_Climb(
+    Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
+        PICK_ADDRESS(0x004BAAE0, 0x00750FF4), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
+#endif
+}
+
+bool Locomotor::Fix_Invalid_Position(Object *obj, PhysicsBehavior *physics)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Locomotor, Object *, PhysicsBehavior *>(
+        PICK_ADDRESS(0x004BA510, 0x007509AA), this, obj, physics);
+#else
+    return false;
+#endif
+}
+
+void Locomotor::Handle_Behavior_Z(Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &>(
+        PICK_ADDRESS(0x004BC0E0, 0x00752429), this, obj, physics, goal_pos);
+#endif
+}
+
+PhysicsTurningType Locomotor::Rotate_Obj_Around_Loco_Pivot(Object *obj, const Coord3D &position, float rate, float *angle)
+{
+#ifdef GAME_DLL
+    return Call_Method<PhysicsTurningType, Locomotor, Object *, const Coord3D &, float, float *>(
+        PICK_ADDRESS(0x004BBCF0, 0x00752114), this, obj, position, rate, angle);
+#else
+    return TURN_NONE;
+#endif
 }

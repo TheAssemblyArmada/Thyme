@@ -24,6 +24,7 @@
 #include <map>
 
 class Object;
+class Locomotor;
 
 enum LocomotorBehaviorZ
 {
@@ -185,6 +186,10 @@ public:
         WANDER_DIRECTION,
     };
 
+#ifdef GAME_DLL
+    Locomotor *Hook_Ctor(const LocomotorTemplate *tmpl) { return new (this) Locomotor(tmpl); }
+#endif
+
     Locomotor(const LocomotorTemplate *tmpl);
     Locomotor(const Locomotor &that);
     Locomotor &operator=(const Locomotor &that);
@@ -204,22 +209,22 @@ public:
     void Loco_Update_Move_Towards_Position(
         Object *obj, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed, bool *blocked);
     void Loco_Update_Move_Towards_Angle(Object *obj, float goal_angle);
-    void Nove_Towards_Position_Legs(
+    void Move_Towards_Position_Legs(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Wheels(
+    void Move_Towards_Position_Wheels(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Treads(
+    void Move_Towards_Position_Treads(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Other(
+    void Move_Towards_Position_Other(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Hover(
+    void Move_Towards_Position_Hover(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Thrust(
+    void Move_Towards_Position_Thrust(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Wings(
+    void Move_Towards_Position_Wings(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
-    void Nove_Towards_Position_Climb(
-        Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float);
+    void Move_Towards_Position_Climb(
+        Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
 
     void Loco_Update_Maintain_Current_Position(Object *obj);
     void Maintain_Current_Position_Thrust(Object *obj, PhysicsBehavior *physics);

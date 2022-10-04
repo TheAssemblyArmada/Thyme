@@ -200,11 +200,6 @@ void Player::Count_Objects_By_ThingTemplate(
 #endif
 }
 
-bool Player::Has_Science(ScienceType t) const
-{
-    return std::find(m_sciences.begin(), m_sciences.end(), t) != m_sciences.end();
-}
-
 float Player::Get_Production_Cost_Change_Percent(Utf8String build_template_name) const
 {
     auto iter = m_productionCostChanges.find(g_theNameKeyGenerator->Name_To_Key(build_template_name));
@@ -234,4 +229,9 @@ float Player::Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT>
 #else
     return 0.0f;
 #endif
+}
+
+bool Player::Has_Science(ScienceType science_type) const
+{
+    return std::find(m_sciences.begin(), m_sciences.end(), science_type) != m_sciences.end();
 }

@@ -135,6 +135,8 @@
 #include "smudge.h"
 #include "sortingrenderer.h"
 #include "soundmanager.h"
+#include "specialpowertemplate.h"
+#include "spectregunshipdeploymentupdate.h"
 #include "statemachine.h"
 #include "streak.h"
 #include "surfaceclass.h"
@@ -190,6 +192,7 @@
 #include <winsock2.h>
 
 static_assert(sizeof(AcademyStats) == 0xB4);
+static_assert(sizeof(BehaviorModule) == 0x14);
 static_assert(sizeof(Energy) == 0x14);
 static_assert(sizeof(Handicap) == 0x10);
 static_assert(sizeof(MissionStats) == 0x8C);
@@ -198,8 +201,32 @@ static_assert(sizeof(Object) == 0x27C);
 static_assert(sizeof(Player) == 0x44C);
 static_assert(sizeof(PolyNeighbor) == 0x16);
 static_assert(sizeof(ScoreKeeper) == 0x190);
+static_assert(sizeof(SpecialPowerTemplate) == 0x100);
+static_assert(sizeof(SpectreGunshipDeploymentUpdateModuleData) == 0x6C);
+//static_assert(sizeof(SpectreGunshipDeploymentUpdate) == 0x38);
 static_assert(sizeof(Utf8String::AsciiStringData) == 4);
 static_assert(sizeof(Utf16String::UnicodeStringData) == 4);
+static_assert(sizeof(W3DBufferManager) == 0x3AC5C);
+
+struct SpecialPowerTemplateCOPY : SpecialPowerTemplate
+{
+    SpecialPowerTemplateCOPY()
+    {
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_reloadTime) == 0x18);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_requiredScience) == 0x1C);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_initiateSound) == 0x20);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_initiateAtLocationSound) == 0x84);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_hasPublicTimer) == 0xFC);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_type) == 0x14);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_detectionTime) == 0xEC);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_hasSharedSyncedTimer) == 0xFD);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_viewObjectDuration) == 0xF0);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_viewObjectRange) == 0xF4);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_cursorRadius) == 0xF8);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_hasShortcutPower) == 0xFE);
+        static_assert(offsetof(SpecialPowerTemplateCOPY, m_academyClassType) == 0xE8);
+    }
+};
 
 struct hostent *__stdcall cnconline_hook(const char *name)
 {
@@ -1931,8 +1958,6 @@ void Setup_Hooks()
     // for messing with buffer sizes
     int *w3dbm_size = (int *)(0x007A762D + 1);
     *w3dbm_size = sizeof(W3DBufferManager);
-
-    // static_assert(sizeof(W3DBufferManager) == 0x3AC5C, "Size of W3DBufferManager is wrong");
 
     // polygontrigger.h
     Hook_Any(0x00570D40, PolygonTrigger::Get_Polygon_Trigger_By_ID);

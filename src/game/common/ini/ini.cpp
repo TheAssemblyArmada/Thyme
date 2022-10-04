@@ -38,6 +38,7 @@
 #include "playertemplate.h"
 #include "rankinfo.h"
 #include "science.h"
+#include "specialpowerstore.h"
 #include "terrainroads.h"
 #include "terraintypes.h"
 #include "thingfactory.h"
@@ -955,6 +956,14 @@ void INI::Parse_Audio_Event_RTS(INI *ini, void *formal, void *store, const void 
     g_theAudio->Get_Info_For_Audio_Event(ev);
 }
 
+void INI::Parse_Science(INI *ini, void *formal, void *store, const void *user_data)
+{
+    captainslog_relassert(g_theScienceStore != nullptr, CODE_01, "Science Store is not initialized yet");
+
+    const char *token = ini->Get_Next_Token();
+    *static_cast<ScienceType *>(store) = Scan_Science(token);
+}
+
 void INI::Parse_Sounds_List(INI *ini, void *formal, void *store, const void *user_data)
 {
     std::vector<Utf8String> *sound_vec = static_cast<std::vector<Utf8String> *>(store);
@@ -1000,4 +1009,19 @@ void INI::Parse_Object_Reskin_Definition(INI *ini)
     Utf8String name = ini->Get_Next_Token();
     Utf8String reskin = ini->Get_Next_Token();
     ThingFactory::Parse_Object_Definition(ini, name, reskin);
+}
+
+void INI::Parse_SpecialPowerTemplate(INI *ini, void *formal, void *store, const void *user_data)
+{
+    captainslog_relassert(TheSpecialPowerStore != nullptr, CODE_01, "TheSpecialPowerStore is not initialized yet");
+
+    const char *name = ini->Get_Next_Token();
+    const SpecialPowerTemplate *sptemplate = TheSpecialPowerStore->Find_SpecialPowerTemplate_By_Name(name);
+
+    if (sptemplate == nullptr && strcasecmp(name, "None") != 0) {
+        captainslog_dbgassert(
+            0, "[LINE: %d in '%s'] Specialpower %s not found!", ini->Get_Line_Number(), ini->Get_Filename(), name);
+    }
+
+    *static_cast<const SpecialPowerTemplate **>(store) = sptemplate;
 }

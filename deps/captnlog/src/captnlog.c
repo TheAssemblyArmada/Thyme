@@ -104,9 +104,6 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
         return;
     }
 
-    /* Lock the mutex to prevent multiple threads trying to write at the same time */
-    lock();
-
     /* Get current time */
     if (g_state.print_time) {
         time_t t = time(NULL);
@@ -122,6 +119,9 @@ void captainslog_log(int level, const char *file, int line, const char *fmt, ...
     } else {
         file_str[0] = '\0';
     }
+
+    /* Lock the mutex to prevent multiple threads trying to write at the same time */
+    lock();
 
     /* If we have a file pointer set we are logging to a file */
     if (g_state.fp != NULL) {
@@ -213,4 +213,28 @@ void captainslog_deinit()
         pthread_mutex_destroy(&g_state.mutex);
 #endif
     }
+}
+
+char *captainslog_alloc_varg_str(int level, const char *fmt, ...)
+{
+    char *str;
+
+    if (level > g_state.level || !g_state.initialized) {
+        return NULL;
+    }
+
+    str = malloc(512);
+
+    if (str != NULL) {
+        va_list args;
+        va_start(args, fmt);
+        vsnprintf(str, 512, fmt, args);
+        va_end(args);
+    }
+    return str;
+}
+
+void captainslog_free_varg_str(char *str)
+{
+    free(str);
 }

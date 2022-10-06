@@ -2308,4 +2308,5 @@ void Setup_Hooks()
     Hook_Any(0x004B8ED0, Locomotor::Get_Max_Turn_Rate);
     Hook_Any(0x004B8F40, Locomotor::Get_Max_Lift);
     Hook_Any(0x004B9220, Locomotor::Loco_Update_Move_Towards_Position);
+    Hook_Any(0x004B8FA0, Locomotor::Loco_Update_Move_Towards_Angle);
 }

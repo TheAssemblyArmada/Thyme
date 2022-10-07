@@ -23,6 +23,8 @@
 #include "terrainlogic.h"
 #include <algorithm>
 
+void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *);
+
 #ifndef GAME_DLL
 LocomotorStore *g_theLocomotorStore = nullptr;
 #endif
@@ -184,11 +186,6 @@ const char *g_theLocomotorPriorityNames[] = {
     "MOVES_FRONT",
     nullptr,
 };
-
-void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
-{
-    *static_cast<float *>(store) = ini->Scan_Real(ini->Get_Next_Token()) * 1.0f / 30.0f;
-}
 
 // clang-format off
 FieldParse LocomotorTemplate::s_fieldParseTable[] = {
@@ -875,7 +872,7 @@ void Locomotor::Move_Towards_Position_Wheels(
 
         if (m_template->m_canMoveBackwards && GameMath::Fabs(turn_angle) > DEG_TO_RADF(90.0f)) {
             Set_Flag(MOVING_BACKWARDS, true);
-            Set_Flag(FLAG_8, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
+            Set_Flag(TURN_AROUND, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
         }
     }
 
@@ -885,8 +882,8 @@ void Locomotor::Move_Towards_Position_Wheels(
             Set_Flag(MOVING_BACKWARDS, false);
         } else {
             backwards = true;
-            Set_Flag(FLAG_8, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
-            b = Get_Flag(FLAG_8);
+            Set_Flag(TURN_AROUND, obj->Get_Geometry_Info().Get_Major_Radius() * 5.0f < on_path_dist_to_goal);
+            b = Get_Flag(TURN_AROUND);
 
             if (!b) {
                 goal_angle = Normalize_Angle(goal_angle, DEG_TO_RADF(180.0f));
@@ -1437,14 +1434,14 @@ void Locomotor::Move_Towards_Position_Climb(
     float z = cur_pos.z - goal_pos.z;
 
     if (GameMath::Square(10.0f) < GameMath::Square(z)) {
-        Set_Flag(FLAG_9, true);
+        Set_Flag(CLIMB, true);
     }
 
     if (GameMath::Fabs(z) < 1.0f) {
-        Set_Flag(FLAG_9, false);
+        Set_Flag(CLIMB, false);
     }
 
-    if (Get_Flag(FLAG_9)) {
+    if (Get_Flag(CLIMB)) {
         Coord3D pos;
         pos.x = goal_pos.x;
         pos.y = goal_pos.y;
@@ -1793,12 +1790,70 @@ float Locomotor::Calc_Lift_To_Use_At_Pt(
 
 PhysicsTurningType Locomotor::Rotate_Obj_Around_Loco_Pivot(Object *obj, const Coord3D &position, float rate, float *angle)
 {
-#ifdef GAME_DLL
-    return Call_Method<PhysicsTurningType, Locomotor, Object *, const Coord3D &, float, float *>(
-        PICK_ADDRESS(0x004BBCF0, 0x00752114), this, obj, position, rate, angle);
-#else
-    return TURN_NONE;
-#endif
+    float orientation = obj->Get_Orientation();
+    float pivot = Get_Turn_Pivot_Offset();
+    PhysicsTurningType turn = TURN_NONE;
+
+    if (Get_Flag(IS_BRAKING)) {
+        pivot = 0.0f;
+    }
+
+    if (pivot != 0.0f) {
+        float f = pivot * obj->Get_Geometry_Info().Get_Bounding_Circle_Radius();
+        float x = f * obj->Get_Unit_Dir_Vector2D()->x + obj->Get_Position()->x;
+        float y = f * obj->Get_Unit_Dir_Vector2D()->y + obj->Get_Position()->y;
+        float x2 = position.x - x;
+        float y2 = position.y - y;
+
+        if (GameMath::Fabs(x2) < 0.1000000014901161f && GameMath::Fabs(y2) < 0.1000000014901161f) {
+            return TURN_NONE;
+        }
+
+        float angle2 = Normalize_Angle(GameMath::Atan2(y2, x2), orientation);
+
+        if (angle != nullptr) {
+            *angle = angle2;
+        }
+
+        if (angle2 > rate) {
+            angle2 = rate;
+            turn = TURN_POSITIVE;
+        } else if (-rate > angle2) {
+            angle2 = -rate;
+            turn = TURN_NEGATIVE;
+        } else {
+            turn = TURN_NONE;
+        }
+
+        Matrix3D tm;
+        Matrix3D m2(true);
+        m2.Translate(x, y, 0.0f);
+        m2.In_Place_Pre_Rotate_Z(angle2);
+        m2.Translate(-x, -y, 0.0f);
+        tm.Mul(m2, *obj->Get_Transform_Matrix());
+        obj->Set_Transform_Matrix(&tm);
+    } else {
+        float angle2 = Normalize_Angle(
+            GameMath::Atan2(position.y - obj->Get_Position()->y, position.x - obj->Get_Position()->x), orientation);
+
+        if (angle != nullptr) {
+            *angle = angle2;
+        }
+
+        if (angle2 > rate) {
+            angle2 = rate;
+            turn = TURN_POSITIVE;
+        } else if (-rate > angle2) {
+            angle2 = -rate;
+            turn = TURN_NEGATIVE;
+        } else {
+            turn = TURN_NONE;
+        }
+
+        obj->Set_Orientation(Normalize_Angle(orientation + angle2));
+    }
+
+    return turn;
 }
 
 float Locomotor::Calc_Min_Turn_Radius(BodyDamageType condition, float *time_to_travel_that_dist) const
@@ -1852,4 +1907,296 @@ void Locomotor::Set_Physics_Options(Object *obj)
 void Locomotor::Start_Move()
 {
     m_moveFrame = (g_theGameLogic->Get_Frame() + 2.5f * 30.0f);
+}
+
+bool Locomotor::Loco_Update_Maintain_Current_Position(Object *obj)
+{
+    if (!Get_Flag(MAINTAIN_POS_IS_VALID)) {
+        m_maintainPos = *obj->Get_Position();
+        Set_Flag(MAINTAIN_POS_IS_VALID, true);
+    }
+
+    m_moveFrame = g_theGameLogic->Get_Frame() + 2.5f * 30.0f;
+    Set_Flag(IS_BRAKING, false);
+    PhysicsBehavior *physics = obj->Get_Physics();
+
+    if (physics == nullptr) {
+        captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
+        return true;
+    }
+
+    bool ret;
+
+    switch (m_template->m_appearance) {
+        case LOCO_LEGS_TWO:
+        case LOCO_CLIMBER:
+            Maintain_Current_Position_Legs(obj, physics);
+            ret = false;
+            break;
+        case LOCO_WHEELS_FOUR:
+        case LOCO_MOTORCYCLE:
+            Maintain_Current_Position_Wheels(obj, physics);
+            ret = false;
+            break;
+        case LOCO_TREADS:
+            Maintain_Current_Position_Treads(obj, physics);
+            ret = false;
+            break;
+        case LOCO_HOVER:
+            Maintain_Current_Position_Hover(obj, physics);
+            ret = true;
+            break;
+        case LOCO_THRUST:
+            Maintain_Current_Position_Thrust(obj, physics);
+            ret = true;
+            break;
+        case LOCO_WINGS:
+            Maintain_Current_Position_Wings(obj, physics);
+            ret = true;
+            break;
+        default:
+            Maintain_Current_Position_Other(obj, physics);
+            ret = true;
+            break;
+    }
+
+    if (Handle_Behavior_Z(obj, physics, m_maintainPos)) {
+        return true;
+    }
+
+    return ret;
+}
+
+void Locomotor::Maintain_Current_Position_Thrust(Object *obj, PhysicsBehavior *physics)
+{
+    if (!Get_Flag(MAINTAIN_POS_IS_VALID)) {
+        captainslog_dbgassert(false, "invalid maintain pos");
+    }
+
+    Move_Towards_Position_Thrust(obj, physics, m_maintainPos, 0.0f, Get_Min_Speed());
+}
+
+void Locomotor::Maintain_Current_Position_Other(Object *obj, PhysicsBehavior *physics)
+{
+    physics->Set_Turning(TURN_NONE);
+
+    if (physics->Is_Motive()) {
+        physics->Scrub_Velocity_2D(0.0f);
+    }
+}
+
+void Locomotor::Maintain_Current_Position_Hover(Object *obj, PhysicsBehavior *physics)
+{
+    physics->Set_Turning(TURN_NONE);
+
+    if (physics->Is_Motive()) {
+        captainslog_dbgassert(
+            m_template->m_minSpeed == 0.0f, "HOVER should always have zero minSpeeds (otherwise, they WING)");
+        float max_accel = Get_Max_Acceleration(obj->Get_Body_Module()->Get_Damage_State());
+        float cur_speed = physics->Get_Forward_Speed_2D();
+        float min_speed = std::max(0.0000000001f, m_template->m_minSpeed);
+        float reduced_accel = min_speed - cur_speed;
+
+        if (min_speed < GameMath::Fabs(reduced_accel)) {
+            float mass = physics->Get_Mass();
+            float accel;
+
+            if (reduced_accel > 0.0f) {
+                accel = max_accel;
+            } else {
+                accel = -Get_Braking();
+            }
+
+            float force = mass * accel;
+            float reduced_force = mass * reduced_accel;
+
+            if (GameMath::Fabs(reduced_force) < GameMath::Fabs(force)) {
+                force = reduced_force;
+            }
+
+            const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+            Coord3D force3d;
+            force3d.x = force * dir->x;
+            force3d.y = force * dir->y;
+            force3d.z = 0.0f;
+            physics->Apply_Motive_Force(&force3d);
+        }
+    }
+}
+
+void Locomotor::Maintain_Current_Position_Wings(Object *obj, PhysicsBehavior *physics)
+{
+    if (!Get_Flag(MAINTAIN_POS_IS_VALID)) {
+        captainslog_dbgassert(false, "invalid maintain pos");
+    }
+
+    physics->Set_Turning(TURN_NONE);
+
+    if (physics->Is_Motive() && obj->Is_Above_Terrain()) {
+        BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+        float radius = m_template->m_circlingRadius;
+
+        if (radius == 0.0f) {
+            radius = Calc_Min_Turn_Radius(damage, nullptr);
+        }
+
+        float x = m_maintainPos.x - obj->Get_Position()->x;
+        float y = m_maintainPos.y - obj->Get_Position()->y;
+        float orientation;
+
+        if (Within_Epsilon(x) && Within_Epsilon(y)) {
+            orientation = obj->Get_Orientation();
+        } else {
+            orientation = GameMath::Atan2(y, x);
+        }
+
+        float angle = DEG_TO_RADF(157.5f);
+
+        if (radius < 0.0f) {
+            radius = -radius;
+            angle = -angle;
+        }
+
+        angle = orientation + angle;
+        Coord3D goal_pos = m_maintainPos;
+        goal_pos.x = GameMath::Cos(angle) * radius + goal_pos.x;
+        goal_pos.y = GameMath::Sin(angle) * radius + goal_pos.y;
+        Move_Towards_Position_Wings(obj, physics, goal_pos, 0.0f, m_template->m_minSpeed);
+    }
+}
+
+LocomotorSet::LocomotorSet() : m_validLocomotorSurfaces(0), m_downhillOnly(false) {}
+
+LocomotorSet::LocomotorSet(const LocomotorSet &that)
+{
+    captainslog_dbgassert(false, "unimplemented");
+}
+
+LocomotorSet::~LocomotorSet()
+{
+    Clear();
+}
+
+void LocomotorSet::Xfer_Snapshot(Xfer *xfer)
+{
+    uint8_t version = 1;
+    xfer->xferVersion(&version, 1);
+    uint16_t size = (uint16_t)m_locomotors.size();
+    xfer->xferUnsignedShort(&size);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto i = m_locomotors.begin(); i != m_locomotors.end(); i++) {
+            Locomotor *l = *i;
+            Utf8String name = l->Get_Template_Name();
+            xfer->xferAsciiString(&name);
+            xfer->xferSnapshot(l);
+        }
+    } else if (xfer->Get_Mode() == XFER_LOAD) {
+        if (!m_locomotors.empty()) {
+            captainslog_error("LocomotorSet::xfer - vector is not empty, but should be");
+            throw XFER_STATUS_NOT_EMPTY;
+        }
+
+        for (uint16_t j = 0; j < size; j++) {
+            Utf8String name;
+            xfer->xferAsciiString(&name);
+            LocomotorTemplate *lt = g_theLocomotorStore->Find_Locomotor_Template(Name_To_Key(name));
+
+            if (!lt) {
+                captainslog_debug("LocomotorSet::xfer - template %s not found", name.Str());
+                throw XFER_STATUS_NOT_FOUND;
+            }
+
+            Locomotor *l = g_theLocomotorStore->New_Locomotor(lt);
+            xfer->xferSnapshot(l);
+            m_locomotors.push_back(l);
+        }
+    }
+
+    xfer->xferInt(&m_validLocomotorSurfaces);
+    xfer->xferBool(&m_downhillOnly);
+}
+
+void LocomotorSet::Xfer_Self_And_Cur_Loco_Ptr(Xfer *xfer, Locomotor **loco)
+{
+    xfer->xferSnapshot(this);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        Utf8String name;
+
+        if (*loco == nullptr) {
+            name = (*loco)->Get_Template_Name();
+        }
+
+        xfer->xferAsciiString(&name);
+    } else if (xfer->Get_Mode() == XFER_LOAD) {
+        Utf8String name;
+        xfer->xferAsciiString(&name);
+
+        if (name.Is_Empty()) {
+            *loco = nullptr;
+        } else {
+            for (unsigned int i = 0; i < m_locomotors.size(); i++) {
+                if (m_locomotors[i]->Get_Template_Name() == name) {
+                    *loco = m_locomotors[i];
+                    return;
+                }
+            }
+
+            captainslog_debug("LocomotorSet::xfer - template %s not found", name.Str());
+            throw XFER_STATUS_NOT_FOUND;
+        }
+    }
+}
+
+LocomotorSet &LocomotorSet::operator=(const LocomotorSet &that)
+{
+    if (this != &that) {
+        captainslog_dbgassert(false, "unimplemented");
+    }
+
+    return *this;
+}
+
+void LocomotorSet::Add_Locomotor(const LocomotorTemplate *lt)
+{
+    Locomotor *l = g_theLocomotorStore->New_Locomotor(lt);
+
+    if (l != nullptr) {
+        m_locomotors.push_back(l);
+        m_validLocomotorSurfaces |= l->Get_Legal_Surfaces();
+
+        if (l->Get_Downhill_Only()) {
+            m_downhillOnly = true;
+        } else if (m_downhillOnly) {
+            captainslog_dbgassert(
+                false, "LocomotorSet, YOU CAN NOT MIX DOWNHILL-ONLY LOCOMOTORS WITH NON-DOWNHILL-ONLY ONES.");
+        }
+    }
+}
+
+void LocomotorSet::Clear()
+{
+    for (unsigned int i = 0; i < m_locomotors.size(); i++) {
+        if (m_locomotors[i] != nullptr) {
+            m_locomotors[i]->Delete_Instance();
+        }
+    }
+
+    m_locomotors.clear();
+    m_validLocomotorSurfaces = 0;
+    m_downhillOnly = false;
+}
+
+Locomotor *LocomotorSet::Find_Locomotor(int t)
+{
+    for (auto i = m_locomotors.begin(); i != m_locomotors.end(); i++) {
+        Locomotor *l = *i;
+
+        if (l != nullptr && (t & l->Get_Legal_Surfaces()) != 0) {
+            return l;
+        }
+    }
+
+    return nullptr;
 }

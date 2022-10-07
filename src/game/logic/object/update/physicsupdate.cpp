@@ -18,6 +18,11 @@
 #endif
 #include "opencontain.h"
 
+void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
+{
+    *static_cast<float *>(store) = ini->Scan_Real(ini->Get_Next_Token()) * 1.0f / 30.0f;
+}
+
 void PhysicsBehavior::Apply_Motive_Force(const Coord3D *force)
 {
 #ifdef GAME_DLL

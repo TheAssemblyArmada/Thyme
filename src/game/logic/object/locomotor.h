@@ -189,8 +189,8 @@ public:
         OVER_WATER,
         ULTRA_ACCURATE,
         MOVING_BACKWARDS,
-        FLAG_8,
-        FLAG_9,
+        TURN_AROUND,
+        CLIMB,
         CLOSE_ENOUGH_DIST_3D,
         WANDER_DIRECTION,
     };
@@ -235,7 +235,7 @@ public:
     void Move_Towards_Position_Climb(
         Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed);
 
-    void Loco_Update_Maintain_Current_Position(Object *obj);
+    bool Loco_Update_Maintain_Current_Position(Object *obj);
     void Maintain_Current_Position_Thrust(Object *obj, PhysicsBehavior *physics);
     void Maintain_Current_Position_Other(Object *obj, PhysicsBehavior *physics);
     void Maintain_Current_Position_Hover(Object *obj, PhysicsBehavior *physics);
@@ -349,6 +349,38 @@ private:
     float m_wanderAngle; // not 100% confirmed
     float m_wanderLength; // not 100% confirmed
     unsigned int m_moveFrame; // not 100% confirmed
+};
+
+class LocomotorSet : public SnapShot
+{
+public:
+    LocomotorSet();
+    LocomotorSet(const LocomotorSet &that);
+
+#ifdef GAME_DLL
+    LocomotorSet *Hook_Ctor() { return new (this) LocomotorSet; }
+    void Hook_Dtor() { LocomotorSet::~LocomotorSet(); }
+#endif
+
+    virtual ~LocomotorSet();
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override {}
+
+    void Xfer_Self_And_Cur_Loco_Ptr(Xfer *xfer, Locomotor **loco);
+
+    LocomotorSet &operator=(const LocomotorSet &that);
+    void Add_Locomotor(const LocomotorTemplate *lt);
+    void Clear();
+    Locomotor *Find_Locomotor(int t);
+
+    bool Get_Downhill_Only() { return m_downhillOnly; }
+    int Get_Valid_Surfaces() { return m_validLocomotorSurfaces; }
+
+private:
+    std::vector<Locomotor *> m_locomotors;
+    int m_validLocomotorSurfaces;
+    bool m_downhillOnly;
 };
 
 #ifdef GAME_DLL

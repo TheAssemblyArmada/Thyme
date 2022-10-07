@@ -16,9 +16,12 @@
 #include "aipathfind.h"
 #include "bodymodule.h"
 #include "globaldata.h"
+#include "matrix3d.h"
 #include "object.h"
+#include "partitionmanager.h"
 #include "physicsupdate.h"
 #include "terrainlogic.h"
+#include <algorithm>
 
 #ifndef GAME_DLL
 LocomotorStore *g_theLocomotorStore = nullptr;
@@ -1151,10 +1154,64 @@ void Locomotor::Move_Towards_Position_Treads(
 void Locomotor::Move_Towards_Position_Other(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004BC500, 0x00752932), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+    float max_accel = Get_Max_Acceleration(damage);
+    float max_speed = Get_Max_Speed_For_Condition(damage);
+
+    if (desired_speed > max_speed) {
+        desired_speed = max_speed;
+    }
+
+    float cur_speed = physics->Get_Forward_Speed_2D();
+    const Coord3D *cur_pos = obj->Get_Position();
+    Coord3D dir = *obj->Get_Unit_Dir_Vector2D();
+
+    if (Get_Flag(ULTRA_ACCURATE)
+        && desired_speed * m_template->m_slideIntoPlaceTime >= GameMath::Fabs(goal_pos.y - cur_pos->y)
+        && desired_speed * m_template->m_slideIntoPlaceTime >= GameMath::Fabs(goal_pos.x - cur_pos->x)) {
+        physics->Set_Turning(TURN_NONE);
+        dir.x = goal_pos.x - cur_pos->x;
+        dir.y = goal_pos.y - cur_pos->y;
+        dir.z = 0.0f;
+        dir.Normalize();
+    } else {
+        physics->Set_Turning(Rotate_Towards_Position(obj, goal_pos, nullptr));
+    }
+
+    if (!Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+        float brake_dist = Calc_Slow_Down_Dist(cur_speed, m_template->m_minSpeed, Get_Braking());
+
+        if (on_path_dist_to_goal < brake_dist) {
+            desired_speed = m_template->m_minSpeed;
+        }
+    }
+
+    float reduced_accel = desired_speed - cur_speed;
+
+    if (reduced_accel != 0.0f) {
+        float mass = physics->Get_Mass();
+        float accel;
+
+        if (reduced_accel > 0.0f) {
+            accel = max_accel;
+        } else {
+            accel = -Get_Braking();
+        }
+
+        float force = mass * accel;
+        float reduced_force = mass * reduced_accel;
+
+        if (GameMath::Fabs(reduced_force) < GameMath::Fabs(force)) {
+            force = reduced_force;
+        }
+
+        const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+        Coord3D force3d;
+        force3d.x = force * dir->x;
+        force3d.y = force * dir->y;
+        force3d.z = 0.0f;
+        physics->Apply_Motive_Force(&force3d);
+    }
 }
 
 void Locomotor::Move_Towards_Position_Hover(
@@ -1174,13 +1231,188 @@ void Locomotor::Move_Towards_Position_Hover(
     }
 }
 
+bool Within_Epsilon(float f)
+{
+    return GameMath::Fabs(f) < 0.001f;
+}
+
+float Try_To_Rotate_Vector_3D(float max_angle, const Vector3 &in_cur_dir, const Vector3 &in_goal_dir, Vector3 &actual_dir)
+{
+    if (Within_Epsilon(max_angle)) {
+        actual_dir = in_cur_dir;
+        return 0.0f;
+    }
+
+    Vector3 cur_dir(in_cur_dir);
+    cur_dir.Normalize();
+    Vector3 goal_dir(in_goal_dir);
+    goal_dir.Normalize();
+    float f = GameMath::Acos(std::clamp(cur_dir * goal_dir, -1.0f, 1.0f));
+
+    if (max_angle < 0.0f) {
+        max_angle = -max_angle * f;
+
+        if (Within_Epsilon(max_angle)) {
+            actual_dir = in_cur_dir;
+            return 0.0f;
+        }
+    }
+
+    if (max_angle >= GameMath::Fabs(f)) {
+        actual_dir = goal_dir;
+    } else {
+        Vector3 cross_prod;
+        Vector3::Normalized_Cross_Product(cur_dir, goal_dir, &cross_prod);
+        f = max_angle;
+        Matrix3D m(cross_prod, max_angle);
+        actual_dir = m.Rotate_Vector(cur_dir);
+    }
+
+    return f;
+}
+
+float Try_To_Orient_In_This_Direction_3D(Object *obj, float max_turn_rate, Vector3 &desired_dir)
+{
+    Vector3 dir;
+    Vector3 x = obj->Get_Transform_Matrix()->Get_X_Vector();
+    float f = Try_To_Rotate_Vector_3D(max_turn_rate, x, desired_dir, dir);
+
+    if (f != 0.0f) {
+        Vector3 pos(obj->Get_Position()->x, obj->Get_Position()->y, obj->Get_Position()->z);
+        Matrix3D m;
+        m.Build_Transform_Matrix(pos, dir);
+        obj->Set_Transform_Matrix(&m);
+    }
+
+    return f;
+}
+
+void Calc_Direction_To_Apply_Thrust(
+    Object *obj, PhysicsBehavior *physics, Coord3D &in_goal_pos, float max_accel, Vector3 &goal_dir)
+{
+    Vector3 obj_pos(obj->Get_Position()->x, obj->Get_Position()->y, obj->Get_Position()->z);
+    Vector3 goal_pos(in_goal_pos.x, in_goal_pos.y, in_goal_pos.z);
+    Vector3 to_goal = goal_pos - obj_pos;
+
+    if (Within_Epsilon(to_goal.Length2())) {
+        goal_dir = obj->Get_Transform_Matrix()->Get_X_Vector();
+    } else {
+        Vector3 cur_vel(physics->Get_Velocity().x, physics->Get_Velocity().y, physics->Get_Velocity().z);
+        cur_vel.Z += g_theWriteableGlobalData->m_gravity;
+        bool b = false;
+        float f1 = GameMath::Sqrt(to_goal.Length2());
+        float f2 = cur_vel.Length2();
+        float f3 = GameMath::Sqrt(f2);
+        float f4 = f2 - GameMath::Square(max_accel);
+
+        if (!Within_Epsilon(f4)) {
+            float f5 = (f3 + max_accel) * f1 / f4;
+            float f6 = (f3 - max_accel) * f1 / f4;
+
+            if (f5 >= 0.0f || f6 >= 0.0f) {
+                if (f5 < 0.0f || f6 >= 0.0f && f6 < f5) {
+                    f5 = f6;
+                }
+
+                if (!Within_Epsilon(f5)) {
+                    goal_dir.X = to_goal.X / f5 - cur_vel.X;
+                    goal_dir.Y = to_goal.Y / f5 - cur_vel.Y;
+                    goal_dir.Z = to_goal.Z / f5 - cur_vel.Z;
+                    goal_dir.Normalize();
+                    b = true;
+                }
+            }
+        }
+
+        if (!b) {
+            goal_dir = to_goal;
+            goal_dir.Normalize();
+        }
+    }
+}
+
 void Locomotor::Move_Towards_Position_Thrust(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004BAF80, 0x00751571), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+    float max_speed = Get_Max_Speed_For_Condition(damage);
+    desired_speed = std::clamp(desired_speed, m_template->m_minSpeed, max_speed);
+    float cur_speed = physics->Get_Forward_Speed_3D();
+
+    if (Get_Braking() > 0.0f) {
+        if (on_path_dist_to_goal < Calc_Slow_Down_Dist(cur_speed, m_template->m_minSpeed, Get_Braking())
+            && !Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+            desired_speed = m_template->m_minSpeed;
+        }
+    }
+
+    Coord3D pos = goal_pos;
+    Coord3D cur_pos = *obj->Get_Position();
+
+    if (m_preferredHeight != 0.0f && !Get_Flag(PRECISE_Z_POS)) {
+        float f = Get_Surface_Ht_At_Pt(cur_pos.x, cur_pos.y) + m_preferredHeight - cur_pos.z;
+        f *= Get_Preferred_Height_Damping();
+        pos.z = cur_pos.z + f;
+    }
+
+    Vector3 cur_dir = obj->Get_Transform_Matrix()->Get_X_Vector();
+    float reduced_accel = desired_speed - cur_speed;
+    float max_accel;
+
+    if (reduced_accel <= 0.0f && Get_Braking() != 0.0f) {
+        max_accel = Get_Braking();
+    } else {
+        max_accel = Get_Max_Acceleration(damage);
+    }
+
+    float max_turn = Get_Max_Turn_Rate(damage);
+    Vector3 dir;
+    Calc_Direction_To_Apply_Thrust(obj, physics, pos, max_accel, dir);
+    float max_thrust_angle;
+
+    if (max_turn > 0.0f) {
+        max_thrust_angle = m_template->m_maxThrustAngle;
+    } else {
+        max_thrust_angle = 0.0f;
+    }
+
+    Vector3 actual_dir;
+    float f2 = Try_To_Rotate_Vector_3D(max_thrust_angle, cur_dir, dir, actual_dir);
+
+    if (!Within_Epsilon(physics->Get_Velocity_Magnitude())) {
+        Vector3 cur_vel(physics->Get_Velocity().x, physics->Get_Velocity().y, physics->Get_Velocity().z);
+        bool b = true;
+
+        if (obj->Get_Status_Bits().Test(OBJECT_STATUS_IS_BRAKING)) {
+            cur_vel.Set(goal_pos.x - cur_pos.x, goal_pos.y - cur_pos.y, goal_pos.z - cur_pos.z);
+
+            if (Within_Epsilon(GameMath::Square(cur_vel.X) + GameMath::Square(cur_vel.Y) + GameMath::Square(cur_vel.Z))) {
+                b = false;
+            }
+
+            max_turn = 3.0f * max_turn;
+        }
+
+        if (b) {
+            Try_To_Orient_In_This_Direction_3D(obj, max_turn, cur_vel);
+        }
+    }
+
+    if (reduced_accel != 0.0f || f2 != 0.0f) {
+        if (max_speed <= 0.0f) {
+            max_speed = 0.01f;
+        }
+
+        float f3 = std::clamp(max_accel / max_speed, 0.0f, 1.0f);
+        Vector3 vel(physics->Get_Velocity().x, physics->Get_Velocity().y, physics->Get_Velocity().z);
+        Vector3 accel = actual_dir * max_accel - vel * f3;
+        float mass = physics->Get_Mass();
+        Coord3D force;
+        force.x = mass * accel.X;
+        force.y = mass * accel.Y;
+        force.z = mass * accel.Z;
+        physics->Apply_Motive_Force(&force);
+    }
 }
 
 void Locomotor::Move_Towards_Position_Wings(
@@ -1192,28 +1424,371 @@ void Locomotor::Move_Towards_Position_Wings(
 void Locomotor::Move_Towards_Position_Climb(
     Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos, float on_path_dist_to_goal, float desired_speed)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &, float, float>(
-        PICK_ADDRESS(0x004BAAE0, 0x00750FF4), this, obj, physics, goal_pos, on_path_dist_to_goal, desired_speed);
-#endif
+    BodyDamageType damage = obj->Get_Body_Module()->Get_Damage_State();
+    float max_accel = Get_Max_Acceleration(damage);
+    float max_speed = Get_Max_Speed_For_Condition(damage);
+
+    if (desired_speed > max_speed) {
+        desired_speed = max_speed;
+    }
+
+    bool backwards = false;
+    Coord3D cur_pos = *obj->Get_Position();
+    float z = cur_pos.z - goal_pos.z;
+
+    if (GameMath::Square(10.0f) < GameMath::Square(z)) {
+        Set_Flag(FLAG_9, true);
+    }
+
+    if (GameMath::Fabs(z) < 1.0f) {
+        Set_Flag(FLAG_9, false);
+    }
+
+    if (Get_Flag(FLAG_9)) {
+        Coord3D pos;
+        pos.x = goal_pos.x;
+        pos.y = goal_pos.y;
+        pos.x -= cur_pos.x;
+        pos.y -= cur_pos.y;
+        pos.z = 0.0f;
+        pos.Normalize();
+        pos.x += cur_pos.x;
+        pos.y += cur_pos.y;
+        pos.z = g_theTerrainLogic->Get_Ground_Height(pos.x, pos.y, nullptr);
+
+        if (cur_pos.z - 0.1f > pos.z) {
+            backwards = true;
+        }
+
+        float z_factor = GameMath::Fabs(pos.z - cur_pos.z);
+
+        if (z_factor < 1.0f) {
+            z_factor = 1.0f;
+        }
+
+        if (z_factor > 1.0f) {
+            desired_speed = desired_speed / (z_factor * 4.0f);
+        }
+    }
+
+    Set_Flag(MOVING_BACKWARDS, backwards);
+    float orientation = obj->Get_Orientation();
+    float goal_angle = GameMath::Atan2(goal_pos.y - obj->Get_Position()->y, goal_pos.x - obj->Get_Position()->x);
+    float angle = Normalize_Angle(goal_angle, orientation);
+
+    if (backwards) {
+        goal_angle = Normalize_Angle(goal_angle, DEG_TO_RADF(180.0f));
+        angle = Normalize_Angle(goal_angle, orientation);
+    }
+
+    Loco_Update_Move_Towards_Angle(obj, goal_angle);
+    float angle_factor = GameMath::Fabs(angle) / DEG_TO_RADF(45.0f);
+
+    if (angle_factor > 1.0f) {
+        angle_factor = 1.0;
+    }
+
+    desired_speed = (1.0 - angle_factor) * desired_speed;
+    float cur_speed = physics->Get_Forward_Speed_2D();
+
+    if (backwards) {
+        cur_speed = -cur_speed;
+    }
+
+    if (on_path_dist_to_goal < Calc_Slow_Down_Dist(cur_speed, m_template->m_minSpeed, Get_Braking())
+        && !Get_Flag(NO_SLOW_DOWN_AS_APPROACHING_DEST)) {
+        desired_speed = m_template->m_minSpeed;
+    }
+
+    float reduced_accel = desired_speed - cur_speed;
+
+    if (backwards) {
+        reduced_accel = cur_speed - desired_speed;
+    }
+
+    if (reduced_accel != 0.0f) {
+        float mass = physics->Get_Mass();
+        float accel;
+
+        if (backwards) {
+            if (reduced_accel < 0.0f) {
+                accel = -max_accel;
+            } else {
+                accel = Get_Braking();
+            }
+        } else if (reduced_accel > 0.0f) {
+            accel = max_accel;
+        } else {
+            accel = -Get_Braking();
+        }
+
+        float force = mass * accel;
+        float reduced_force = mass * reduced_accel;
+
+        if (GameMath::Fabs(reduced_force) < GameMath::Fabs(force)) {
+            force = reduced_force;
+        }
+
+        const Coord3D *dir = obj->Get_Unit_Dir_Vector2D();
+        Coord3D force3d;
+        force3d.x = force * dir->x;
+        force3d.y = force * dir->y;
+        force3d.z = 0.0f;
+        physics->Apply_Motive_Force(&force3d);
+    }
 }
 
 bool Locomotor::Fix_Invalid_Position(Object *obj, PhysicsBehavior *physics)
 {
-#ifdef GAME_DLL
-    return Call_Method<bool, Locomotor, Object *, PhysicsBehavior *>(
-        PICK_ADDRESS(0x004BA510, 0x007509AA), this, obj, physics);
-#else
-    return false;
-#endif
+    if (obj->Is_KindOf(KINDOF_DOZER)) {
+        return false;
+    }
+
+    int x = 0;
+    int y = 0;
+
+    for (int i = -1; i < 2; i++) {
+        for (int j = -1; j < 2; j++) {
+            Coord3D pos = *obj->Get_Position();
+            pos.x = j * 10.0f + pos.x;
+            pos.y = i * 10.0f + pos.y;
+
+            if (!g_theAI->Get_Pathfinder()->Valid_Movement_Terrain(obj->Get_Layer(), this, &pos)) {
+                if (j < 0) {
+                    ++x;
+                }
+
+                if (j > 0) {
+                    --x;
+                }
+
+                if (i < 0) {
+                    ++y;
+                }
+
+                if (i > 0) {
+                    --y;
+                }
+            }
+        }
+    }
+
+    if (!x && !y) {
+        return false;
+    }
+
+    Coord3D force1;
+    force1.x = physics->Get_Mass() * x / 5.0f;
+    force1.y = physics->Get_Mass() * y / 5.0f;
+    force1.z = 0.0f;
+
+    Coord3D force2;
+    force2.x = force1.x;
+    force2.y = force1.y;
+    force2.z = 0.0f;
+    force2.Normalize();
+    float f = physics->Get_Velocity().x * force2.x + physics->Get_Velocity().y * force2.y;
+
+    if (f > 0.25f) {
+        return false;
+    }
+
+    if (f < 0.0f) {
+        f = GameMath::Sqrt(-f);
+        force2.x = physics->Get_Mass() * f * force2.x;
+        force2.y = physics->Get_Mass() * f * force2.y;
+        physics->Apply_Motive_Force(&force2);
+    }
+
+    physics->Apply_Motive_Force(&force1);
+    return true;
 }
 
-void Locomotor::Handle_Behavior_Z(Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos)
+bool Locomotor::Handle_Behavior_Z(Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos)
 {
-#ifdef GAME_DLL
-    Call_Method<void, Locomotor, Object *, PhysicsBehavior *, const Coord3D &>(
-        PICK_ADDRESS(0x004BC0E0, 0x00752429), this, obj, physics, goal_pos);
-#endif
+    bool ret = true;
+
+    switch (m_template->m_behaviorZ) {
+        case Z_NO_Z_MOTIVE_FORCE: {
+            ret = false;
+            break;
+        }
+        case Z_SEA_LEVEL: {
+            ret = true;
+
+            if (!obj->Get_Disabled_State(DISABLED_TYPE_DISABLED_HELD)) {
+                Coord3D pos = *obj->Get_Position();
+                float waterz;
+
+                if (g_theTerrainLogic->Is_Underwater(pos.x, pos.y, &waterz, nullptr)) {
+                    pos.z = waterz;
+                } else {
+                    pos.z = g_theTerrainLogic->Get_Layer_Height(pos.x, pos.y, obj->Get_Layer(), nullptr, true);
+                }
+
+                obj->Set_Position(&pos);
+            }
+
+            break;
+        }
+        case Z_SURFACE_RELATIVE_HEIGHT:
+        case Z_ABSOLUTE_HEIGHT: {
+            ret = true;
+
+            if (m_preferredHeight != 0.0f || Get_Flag(PRECISE_Z_POS)) {
+                const Coord3D *pos = obj->Get_Position();
+                float x = pos->x;
+                float y = pos->y;
+                float z = pos->z;
+                bool relative = m_template->m_behaviorZ == Z_SURFACE_RELATIVE_HEIGHT;
+                float surface_at_pt;
+
+                if (relative) {
+                    surface_at_pt = Get_Surface_Ht_At_Pt(x, y);
+                } else {
+                    surface_at_pt = 0.0f;
+                }
+
+                float preferred_height = surface_at_pt + m_preferredHeight;
+
+                if (Get_Flag(PRECISE_Z_POS)) {
+                    preferred_height = goal_pos.z;
+                }
+
+                float f = preferred_height - z;
+                f = Get_Preferred_Height_Damping() * f;
+                preferred_height = z + f;
+                float lift = Calc_Lift_To_Use_At_Pt(obj, physics, z, surface_at_pt, preferred_height);
+
+                if (lift != 0.0f) {
+                    Coord3D force;
+                    force.x = 0.0f;
+                    force.y = 0.0f;
+                    force.z = physics->Get_Mass() * lift;
+                    physics->Apply_Motive_Force(&force);
+                }
+            }
+            break;
+        }
+        case Z_FIXED_SURFACE_RELATIVE_HEIGHT:
+        case Z_FIXED_ABSOLUTE_HEIGHT: {
+            ret = true;
+            Coord3D pos = *obj->Get_Position();
+            bool relative = m_template->m_behaviorZ == Z_FIXED_SURFACE_RELATIVE_HEIGHT;
+            float surface_at_pt;
+
+            if (relative) {
+                surface_at_pt = Get_Surface_Ht_At_Pt(pos.x, pos.y);
+            } else {
+                surface_at_pt = 0.0f;
+            }
+
+            pos.z = surface_at_pt + m_preferredHeight;
+            obj->Set_Position(&pos);
+            break;
+        }
+        case Z_FIXED_RELATIVE_TO_GROUND_AND_BUILDINGS: {
+            ret = true;
+            Coord3D pos = *obj->Get_Position();
+            pos.z = g_thePartitionManager->Get_Ground_Or_Structure_Height(pos.x, pos.y) + m_preferredHeight;
+            obj->Set_Position(&pos);
+            break;
+        }
+        case Z_RELATIVE_TO_HIGHEST_LAYER: {
+            ret = true;
+            if (m_preferredHeight != 0.0f || Get_Flag(PRECISE_Z_POS)) {
+                Coord3D pos = *obj->Get_Position();
+                PathfindLayerEnum layer = obj->Get_Layer();
+
+                if (layer == LAYER_GROUND) {
+                    layer = g_theTerrainLogic->Get_Highest_Layer_For_Destination(&pos, false);
+                }
+
+                Coord3D pos2;
+                float surface_at_pt = g_theTerrainLogic->Get_Layer_Height(pos.x, pos.y, layer, &pos2, false);
+                float preferred_height = surface_at_pt + m_preferredHeight;
+
+                if (Get_Flag(PRECISE_Z_POS)) {
+                    preferred_height = goal_pos.z;
+                }
+
+                float f = preferred_height - pos.z;
+                f = Get_Preferred_Height_Damping() * f;
+                preferred_height = pos.z + f;
+                float lift = Calc_Lift_To_Use_At_Pt(obj, physics, pos.z, surface_at_pt, preferred_height);
+
+                if (lift != 0.0f) {
+                    Coord3D force;
+                    force.x = 0.0f;
+                    force.y = 0.0f;
+                    force.z = physics->Get_Mass() * lift;
+                    physics->Apply_Motive_Force(&force);
+                }
+            }
+
+            break;
+        }
+    }
+
+    return ret;
+}
+
+float Locomotor::Calc_Lift_To_Use_At_Pt(
+    Object *obj, PhysicsBehavior *physics, float cur_z, float surface_at_pt, float preferred_height)
+{
+    float max_lift = Get_Max_Lift(obj->Get_Body_Module()->Get_Damage_State());
+    float lift = max_lift + g_theWriteableGlobalData->m_gravity;
+
+    if (lift < 0.0f) {
+        lift = 0.0f;
+    }
+
+    float z = physics->Get_Velocity().z;
+    float f1;
+
+    if (Get_Flag(ULTRA_ACCURATE)) {
+        if (z < 0.0f) {
+            f1 = 2.0f * lift;
+        } else {
+            f1 = -2.0f * lift;
+        }
+    } else if (z < 0.0f) {
+        f1 = lift;
+    } else {
+        f1 = g_theWriteableGlobalData->m_gravity;
+    }
+
+    float f3 = 0.0f;
+
+    if (GameMath::Fabs(f1) > 0.001f) {
+        float f2 = preferred_height - cur_z;
+
+        if (GameMath::Fabs(f2) < GameMath::Fabs(GameMath::Square(z) / GameMath::Fabs(f1))) {
+            f3 = f1;
+        } else {
+            if (m_template->m_speedLimitZ < GameMath::Fabs(z)) {
+                f3 = m_template->m_speedLimitZ - z;
+            } else {
+                f3 = f2 - z + f2 - z;
+            }
+        }
+    }
+
+    float f4 = f3 - g_theWriteableGlobalData->m_gravity;
+
+    if (Get_Flag(ULTRA_ACCURATE)) {
+        if (3.0f * max_lift < f4) {
+            return (3.0f * max_lift);
+        } else if (-max_lift > f4) {
+            return -max_lift;
+        }
+    } else if (f4 > max_lift) {
+        return max_lift;
+    } else if (f4 < 0.0) {
+        return 0.0f;
+    }
+
+    return f4;
 }
 
 PhysicsTurningType Locomotor::Rotate_Obj_Around_Loco_Pivot(Object *obj, const Coord3D &position, float rate, float *angle)
@@ -1224,4 +1799,57 @@ PhysicsTurningType Locomotor::Rotate_Obj_Around_Loco_Pivot(Object *obj, const Co
 #else
     return TURN_NONE;
 #endif
+}
+
+float Locomotor::Calc_Min_Turn_Radius(BodyDamageType condition, float *time_to_travel_that_dist) const
+{
+    float time;
+    float turn_radius;
+
+    float min_speed = Get_Min_Speed();
+    float max_turn_rate = Get_Max_Turn_Rate(condition);
+
+    if (max_turn_rate > 0.0) {
+        turn_radius = min_speed / max_turn_rate;
+    } else {
+        turn_radius = 99999.0f;
+    }
+
+    if (time_to_travel_that_dist != nullptr) {
+        if (min_speed > 0.0) {
+            time = turn_radius / min_speed;
+        } else {
+            time = 0.0;
+        }
+        *time_to_travel_that_dist = time;
+    }
+
+    return turn_radius;
+}
+
+void Locomotor::Set_Physics_Options(Object *obj)
+{
+    PhysicsBehavior *physics = obj->Get_Physics();
+
+    if (physics != nullptr) {
+        float friction;
+
+        if (Get_Flag(ULTRA_ACCURATE)) {
+            friction = 0.5f;
+        } else {
+            friction = 0.0f;
+        }
+
+        friction = friction + m_template->m_extra2DFriction;
+        physics->Set_Extra_Friction(friction);
+        physics->Set_Allow_Airborne_Friction(Get_Apply_2D_Friction_When_Airborne());
+        physics->Set_Stick_To_Ground(Get_Stick_To_Ground());
+    } else {
+        captainslog_dbgassert(false, "you can only apply Locomotors to objects with Physics");
+    }
+}
+
+void Locomotor::Start_Move()
+{
+    m_moveFrame = (g_theGameLogic->Get_Frame() + 2.5f * 30.0f);
 }

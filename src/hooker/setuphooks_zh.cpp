@@ -2309,4 +2309,9 @@ void Setup_Hooks()
     Hook_Any(0x004B8F40, Locomotor::Get_Max_Lift);
     Hook_Any(0x004B9220, Locomotor::Loco_Update_Move_Towards_Position);
     Hook_Any(0x004B8FA0, Locomotor::Loco_Update_Move_Towards_Angle);
+    Hook_Any(0x004BAF80, Locomotor::Move_Towards_Position_Thrust);
+    Hook_Any(0x004BC500, Locomotor::Move_Towards_Position_Other);
+    Hook_Any(0x004BC0E0, Locomotor::Handle_Behavior_Z);
+    Hook_Any(0x004B9170, Locomotor::Set_Physics_Options);
+    Hook_Any(0x004B8E30, Locomotor::Start_Move);
 }

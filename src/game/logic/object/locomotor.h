@@ -262,7 +262,7 @@ public:
     bool Fix_Invalid_Position(Object *obj, PhysicsBehavior *physics);
     void Set_Physics_Options(Object *obj);
     void Start_Move();
-    void Handle_Behavior_Z(Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos);
+    bool Handle_Behavior_Z(Object *obj, PhysicsBehavior *physics, const Coord3D &goal_pos);
     PhysicsTurningType Rotate_Obj_Around_Loco_Pivot(Object *obj, const Coord3D &position, float rate, float *angle);
     PhysicsTurningType Rotate_Towards_Position(Object *obj, const Coord3D &position, float *angle);
 

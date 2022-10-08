@@ -2314,4 +2314,10 @@ void Setup_Hooks()
     Hook_Any(0x004BC0E0, Locomotor::Handle_Behavior_Z);
     Hook_Any(0x004B9170, Locomotor::Set_Physics_Options);
     Hook_Any(0x004B8E30, Locomotor::Start_Move);
+    Hook_Any(0x004BC880, Locomotor::Loco_Update_Maintain_Current_Position);
+    Hook_Any(0x004BCD10, LocomotorSet::Hook_Ctor);
+    Hook_Any(0x004BCD60, LocomotorSet::Hook_Dtor);
+    Hook_Any(0x004BD3A0, LocomotorSet::Clear);
+    Hook_Any(0x004BD420, LocomotorSet::Add_Locomotor);
+    Hook_Any(0x004BD550, LocomotorSet::Find_Locomotor);
 }

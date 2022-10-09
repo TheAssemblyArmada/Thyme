@@ -29,6 +29,7 @@ ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 }
 
 // zh: 0x005479B0 wb: 0x007D0E3D
+
 Relationship Object::Get_Relationship(const Object *that) const
 {
 #ifdef GAME_DLL
@@ -200,5 +201,89 @@ void Object::Clear_Model_Condition_State(ModelConditionFlagType a)
 {
     if (m_drawable != nullptr) {
         m_drawable->Clear_Model_Condition_State(a);
+    }
+}
+
+void Object::Attempt_Damage(DamageInfo *info)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, DamageInfo *>(PICK_ADDRESS(0x00547DA0, 0x007D134E), this, info);
+#endif
+}
+
+void Object::Clear_Disabled(DisabledType type)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, DisabledType>(PICK_ADDRESS(0x005489F0, 0x007D1FE8), this, type);
+#endif
+}
+
+bool Object::Can_Crush_Or_Squish(Object *obj)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Object, Object *>(PICK_ADDRESS(0x005471D0, 0x007D0486), this, obj);
+#else
+    return false;
+#endif
+}
+
+void Object::Defect(Team *team, unsigned int i)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, Team *, unsigned int>(PICK_ADDRESS(0x0054EEC0, 0x007D924B), this, team, i);
+#endif
+}
+
+unsigned char Object::Get_Crushable_Level() const
+{
+    return Get_Template()->Get_Crushable_Level();
+}
+
+unsigned char Object::Get_Crusher_Level() const
+{
+    return Get_Template()->Get_Crusher_Level();
+}
+
+void Object::Kill(DamageType damage, DeathType death)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, DamageType, DeathType>(PICK_ADDRESS(0x00548300, 0x007D1733), this, damage, death);
+#endif
+}
+
+void Object::On_Collide(Object *other, const Coord3D *loc, const Coord3D *normal)
+{
+    for (BehaviorModule **module = m_allModules; *module != nullptr; module++) {
+        CollideModuleInterface *collide = (*module)->Get_Collide();
+
+        if (collide != nullptr) {
+            if (Get_Status_Bits().Test(OBJECT_STATUS_NO_COLLISIONS)) {
+                return;
+            }
+
+            collide->On_Collide(other, loc, normal);
+        }
+    }
+}
+
+void Object::Set_Disabled(DisabledType type)
+{
+    Set_Disabled_Until(type, 0x3FFFFFFF);
+}
+
+void Object::Set_Disabled_Until(DisabledType type, unsigned int i)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, DisabledType, unsigned int>(PICK_ADDRESS(0x005485C0, 0x007D1A3F), this, type, i);
+#endif
+}
+
+void Object::Set_Captured(bool captured)
+{
+    if (captured) {
+        m_privateStatus |= STATUS_CAPTURED;
+    } else {
+        captainslog_debug("Clearing Captured Status. This should never happen.");
+        m_privateStatus &= ~STATUS_CAPTURED;
     }
 }

@@ -44,3 +44,8 @@ float AIUpdateInterface::Get_Cur_Locomotor_Speed() const
     return 0.0f;
 #endif
 }
+
+bool AIUpdateInterface::Has_Locomotor_For_Surface(LocomotorSurfaceType t)
+{
+    return m_locomotorSet.Find_Locomotor(t) != nullptr;
+}

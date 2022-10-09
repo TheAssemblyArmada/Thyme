@@ -254,6 +254,7 @@ set(GAMEENGINE_SRC
     game/logic/scriptengine/scriptlist.cpp
     game/logic/scriptengine/scriptparam.cpp
     game/logic/scriptengine/sequentialscript.cpp
+    game/logic/system/damage.cpp
     game/logic/system/gamelogic.cpp
     game/logic/system/rankinfo.cpp
     game/logic/system/cavesystem.cpp

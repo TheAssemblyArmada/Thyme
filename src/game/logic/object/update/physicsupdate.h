@@ -30,7 +30,7 @@ enum PhysicsTurningType
 class PhysicsBehaviorModuleData : public UpdateModuleData
 {
 public:
-    PhysicsBehaviorModuleData() {}
+    PhysicsBehaviorModuleData();
     virtual ~PhysicsBehaviorModuleData() {}
     static void Build_Field_Parse(MultiIniFieldParse &p);
 

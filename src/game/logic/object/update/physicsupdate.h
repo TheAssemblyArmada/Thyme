@@ -14,7 +14,6 @@
  */
 #pragma once
 #include "always.h"
-#include "gamelogic.h"
 #include "object.h"
 #include "typeoperators.h"
 #include "updatemodule.h"
@@ -26,6 +25,36 @@ enum PhysicsTurningType
     TURN_NEGATIVE = -1,
     TURN_NONE,
     TURN_POSITIVE,
+};
+
+class PhysicsBehaviorModuleData : public UpdateModuleData
+{
+public:
+    PhysicsBehaviorModuleData() {}
+    virtual ~PhysicsBehaviorModuleData() {}
+    static void Build_Field_Parse(MultiIniFieldParse &p);
+
+private:
+    float m_mass;
+    int m_shockResitance;
+    float m_shockMaxYaw;
+    float m_shockMaxPitch;
+    float m_shockMaxRoll;
+    float m_forwardFriction;
+    float m_lateralFriction;
+    float m_zFriction;
+    float m_aerodynamicCoeff;
+    int m_centerOfMassOffset;
+    char m_killWhenRestingOnGround;
+    char m_allowBouncing;
+    char m_allowCollideForce;
+    float m_minFallHeightForDamage;
+    float m_fallHeightDamageFactor;
+    float m_pitchRollYawFactor;
+    WeaponTemplate *m_vehicleCrashesIntoBuildingWeapon;
+    WeaponTemplate *m_vehicleCrashesIntoNonBuildingWeapon;
+
+    friend class PhysicsBehavior;
 };
 
 class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
@@ -49,6 +78,8 @@ class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
     };
 
 public:
+    PhysicsBehavior(Thing *thing, const ModuleData *moduleData);
+
     virtual ~PhysicsBehavior() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
     virtual void On_Object_Created() override;
@@ -57,7 +88,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
     virtual CollideModuleInterface *Get_Collide() override;
-    virtual UpdateModuleInterface *Get_Update() override;
+    virtual UpdateSleepTime Update() override;
     virtual BitFlags<DISABLED_TYPE_COUNT> Get_Disabled_Types_To_Process() const override;
     virtual void On_Collide(Object *other, Coord3D const *loc, Coord3D const *normal) override;
     virtual bool Would_Like_To_Collide_With(Object const *other) override;
@@ -67,63 +98,82 @@ public:
     virtual bool Is_Railroad() override;
     virtual bool Is_Salvage_Crate_Collide() override;
 
-    void Apply_Motive_Force(const Coord3D *force);
+    void Add_Overlap(Object *obj);
+    void Add_Velocity_To(const Coord3D *velocity);
     void Scrub_Velocity_2D(float desired_velocity);
+    void Scrub_Velocity_Z(float desired_velocity);
+    bool Check_For_Overlap_Collision(Object *other);
+    void Do_Bounce_Sound(Coord3D const &pos);
+    bool Handle_Bounce(float oldz, float newz, float groundz, Coord3D *bounce_force);
+    void Reset_Dynamic_Physics();
+    void Test_Stunned_Unit_For_Destruction();
+    void Transfer_Velocity_To(PhysicsBehavior *that) const;
+    bool Was_Previously_Overlapped(Object *obj) const;
+    UpdateSleepTime Calc_Sleep_Time() const;
+
+    void Apply_Force(const Coord3D *force);
+    void Apply_Frictional_Forces();
+    void Apply_Gravitational_Forces();
+    void Apply_Random_Rotation();
+    void Apply_Shock(const Coord3D *shock);
+    void Apply_YPR_Damping(float damping);
+    void Apply_Motive_Force(const Coord3D *force);
+
     float Get_Mass() const;
+    float Get_Velocity_Magnitude() const;
+    float Get_Forward_Speed_2D() const;
+    float Get_Forward_Speed_3D() const;
+    float Get_Aerodynamic_Friction() const;
+    float Get_Forward_Friction() const;
+    float Get_Lateral_Friction() const;
+    float Get_Z_Friction() const;
+    const AudioEventRTS *Get_Bounce_Sound();
+
+    bool Is_Ignoring_Collisions_With(ObjectID id) const;
+    bool Is_Currently_Overlapped(Object *obj) const;
+    bool Is_Motive() const;
+
+    void Set_Ignore_Collisions_With(const Object *obj);
+    void Set_Angles(float yaw, float pitch, float roll);
+    void Set_Pitch_Rate(float rate);
+    void Set_Roll_Rate(float rate);
+    void Set_Yaw_Rate(float rate);
+    void Set_Bounce_Sound(const AudioEventRTS *sound);
+
+    static ModuleData *Friend_New_Module_Data(INI *ini);
+    static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);
+
+    static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
+
+    void Clear_Acceleration() { m_accel.Zero(); }
 
     PhysicsTurningType Get_Turning() const { return m_turning; }
-    static int Get_Interface_Mask() { return UpdateModule::Get_Interface_Mask() | MODULEINTERFACE_COLLIDE; }
     const Coord3D &Get_Prev_Accel() const { return m_prevAccel; }
     const Coord3D &Get_Velocity() const { return m_vel; }
-    bool Is_Motive() const { return g_theGameLogic->Get_Frame() < (unsigned int)m_motiveForceApplied; }
     ObjectID Get_Current_Overlap() const { return m_currentOverlap; }
     ObjectID Get_Previous_Overlap() const { return m_previousOverlap; }
+    float Get_Center_Of_Mass_Offset() const { return Get_Physics_Behavior_Module_Data()->m_centerOfMassOffset; }
+    ObjectID Get_Collided() const { return m_collided; }
+
     bool Get_Stunned() const { return Get_Flag(STUNNED); }
+    bool Get_Airborne() const { return Get_Flag(IS_AIRBORNE); }
+    bool Get_Allow_Collide_Force() const { return Get_Flag(ALLOW_COLLIDE_FORCE); }
+
     void Set_Turning(PhysicsTurningType turning) { m_turning = turning; }
     void Set_Extra_Friction(float friction) { m_extraFriction = friction; }
+    void Set_Extra_Bounciness(float bounciness) { m_extraBounciness = bounciness; }
+
     void Set_Allow_Airborne_Friction(bool set) { Set_Flag(APPLY_FRICTION2D_WHEN_AIRBORNE, set); }
     void Set_Stick_To_Ground(bool set) { Set_Flag(STICK_TO_GROUND, set); }
+    void Set_Airborne(bool airborne) { Set_Flag(IS_AIRBORNE, airborne); }
+    void Set_Allow_Bouncing(bool allow) { Set_Flag(ALLOW_BOUNCE, allow); }
+    void Set_Allow_Collide_Force(bool allow) { Set_Flag(ALLOW_COLLIDE_FORCE, allow); }
+    void Set_Freefall(bool freefall) { Set_Flag(FREEFALL, freefall); }
+    void Set_Stunned(bool stunned) { Set_Flag(STUNNED, stunned); }
 
-    float Get_Velocity_Magnitude() const
+    const PhysicsBehaviorModuleData *Get_Physics_Behavior_Module_Data() const
     {
-        if (m_velMag == -1.0f) {
-            m_velMag = GameMath::Sqrt(GameMath::Square(m_vel.x) + GameMath::Square(m_vel.y) + GameMath::Square(m_vel.z));
-        }
-
-        return m_velMag;
-    }
-
-    // TODO investigate doesn't account for diagonal movement
-    float Get_Forward_Speed_2D() const
-    {
-        const Coord3D *dir = Get_Object()->Get_Unit_Dir_Vector2D();
-        float x = m_vel.x * dir->x;
-        float y = m_vel.y * dir->y;
-        float xy = x + y;
-        float len = GameMath::Sqrt(x * x + y * y);
-
-        if (xy < 0.0f) {
-            return -len;
-        } else {
-            return len;
-        }
-    }
-
-    // TODO investigate doesn't account for diagonal movement
-    float Get_Forward_Speed_3D() const
-    {
-        Vector3 xv = Get_Object()->Get_Transform_Matrix()->Get_X_Vector();
-        float x = xv.X * m_vel.x;
-        float y = xv.Y * m_vel.y;
-        float z = xv.Z * m_vel.z;
-        float xyz = x + y + z;
-        float len = GameMath::Sqrt(x * x + y * y + z * z);
-
-        if (xyz < 0.0f) {
-            return -len;
-        } else {
-            return len;
-        }
+        return static_cast<const PhysicsBehaviorModuleData *>(Get_Module_Data());
     }
 
 private:

@@ -16,6 +16,7 @@
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
+#include "gamelogic.h"
 #include "opencontain.h"
 
 void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
@@ -59,4 +60,51 @@ float PhysicsBehavior::Get_Mass() const
     }
 
     return m_mass;
+}
+
+float PhysicsBehavior::Get_Velocity_Magnitude() const
+{
+    if (m_velMag == -1.0f) {
+        m_velMag = GameMath::Sqrt(GameMath::Square(m_vel.x) + GameMath::Square(m_vel.y) + GameMath::Square(m_vel.z));
+    }
+
+    return m_velMag;
+}
+
+// TODO investigate doesn't account for diagonal movement
+float PhysicsBehavior::Get_Forward_Speed_2D() const
+{
+    const Coord3D *dir = Get_Object()->Get_Unit_Dir_Vector2D();
+    float x = m_vel.x * dir->x;
+    float y = m_vel.y * dir->y;
+    float xy = x + y;
+    float len = GameMath::Sqrt(x * x + y * y);
+
+    if (xy < 0.0f) {
+        return -len;
+    } else {
+        return len;
+    }
+}
+
+// TODO investigate doesn't account for diagonal movement
+float PhysicsBehavior::Get_Forward_Speed_3D() const
+{
+    Vector3 xv = Get_Object()->Get_Transform_Matrix()->Get_X_Vector();
+    float x = xv.X * m_vel.x;
+    float y = xv.Y * m_vel.y;
+    float z = xv.Z * m_vel.z;
+    float xyz = x + y + z;
+    float len = GameMath::Sqrt(x * x + y * y + z * z);
+
+    if (xyz < 0.0f) {
+        return -len;
+    } else {
+        return len;
+    }
+}
+
+bool PhysicsBehavior::Is_Motive() const
+{
+    return g_theGameLogic->Get_Frame() < (unsigned int)m_motiveForceApplied;
 }

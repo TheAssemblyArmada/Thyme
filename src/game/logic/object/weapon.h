@@ -123,6 +123,7 @@ class WeaponStore
 public:
     const WeaponTemplate *Find_Weapon_Template(Utf8String name) const;
     void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const Object *obj, const Coord3D *pos);
+    static void Parse_Weapon_Template(INI *ini, void *, void *store, const void *);
 };
 
 #ifdef GAME_DLL

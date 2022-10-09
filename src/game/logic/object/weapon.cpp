@@ -95,3 +95,11 @@ void WeaponStore::Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const 
         PICK_ADDRESS(0x004C50A0, 0x006D6661), this, tmpl, obj, pos);
 #endif
 }
+
+void WeaponStore::Parse_Weapon_Template(INI *ini, void *, void *store, const void *)
+{
+    const char *name = ini->Get_Next_Token();
+    const WeaponTemplate *w = g_theWeaponStore->Find_Weapon_Template(name);
+    captainslog_dbgassert(w != nullptr && !strcasecmp(name, "None"), "WeaponTemplate %s not found!", name);
+    *static_cast<const WeaponTemplate **>(store) = w;
+}

@@ -45,14 +45,14 @@ private:
     float m_zFriction;
     float m_aerodynamicCoeff;
     int m_centerOfMassOffset;
-    char m_killWhenRestingOnGround;
-    char m_allowBouncing;
-    char m_allowCollideForce;
+    bool m_killWhenRestingOnGround;
+    bool m_allowBouncing;
+    bool m_allowCollideForce;
     float m_minFallHeightForDamage;
     float m_fallHeightDamageFactor;
     float m_pitchRollYawFactor;
-    WeaponTemplate *m_vehicleCrashesIntoBuildingWeapon;
-    WeaponTemplate *m_vehicleCrashesIntoNonBuildingWeapon;
+    const WeaponTemplate *m_vehicleCrashesIntoBuildingWeapon;
+    const WeaponTemplate *m_vehicleCrashesIntoNonBuildingWeapon;
 
     friend class PhysicsBehavior;
 };

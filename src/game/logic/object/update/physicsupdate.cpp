@@ -17,11 +17,92 @@
 #include "hooker.h"
 #endif
 #include "gamelogic.h"
+#include "globaldata.h"
 #include "opencontain.h"
+
+float Height_To_Speed(float height)
+{
+    return GameMath::Sqrt(GameMath::Fabs(2.0f * g_theWriteableGlobalData->m_gravity * height));
+}
+
+void Parse_Height_To_Speed(INI *ini, void *, void *store, const void *)
+{
+    *static_cast<float *>(store) = Height_To_Speed(ini->Scan_Real(ini->Get_Next_Token()));
+}
 
 void Parse_Friction_Per_Sec(INI *ini, void *, void *store, const void *)
 {
     *static_cast<float *>(store) = ini->Scan_Real(ini->Get_Next_Token()) * 1.0f / 30.0f;
+}
+
+PhysicsBehaviorModuleData::PhysicsBehaviorModuleData() :
+    m_mass(1.0f),
+    m_shockResitance(0),
+    m_shockMaxYaw(0.05f),
+    m_shockMaxPitch(0.025f),
+    m_shockMaxRoll(0.025f),
+    m_forwardFriction(0.15f),
+    m_lateralFriction(0.15f),
+    m_zFriction(0.8f),
+    m_aerodynamicCoeff(0.0f),
+    m_centerOfMassOffset(0),
+    m_allowBouncing(false),
+    m_allowCollideForce(true),
+    m_killWhenRestingOnGround(false),
+    m_minFallHeightForDamage(Height_To_Speed(40.0f)),
+    m_fallHeightDamageFactor(1.0f),
+    m_pitchRollYawFactor(2.0f),
+    m_vehicleCrashesIntoBuildingWeapon(g_theWeaponStore->Find_Weapon_Template("VehicleCrashesIntoBuildingWeapon")),
+    m_vehicleCrashesIntoNonBuildingWeapon(g_theWeaponStore->Find_Weapon_Template("VehicleCrashesIntoNonBuildingWeapon"))
+{
+}
+
+void PhysicsBehaviorModuleData::Build_Field_Parse(MultiIniFieldParse &p)
+{
+    static const FieldParse dataFieldParse[] = {
+        { "Mass", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(PhysicsBehaviorModuleData, m_mass) },
+        { "ShockResistance",
+            &INI::Parse_Positive_Non_Zero_Real,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_shockResitance) },
+        { "ShockMaxYaw", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(PhysicsBehaviorModuleData, m_shockMaxYaw) },
+        { "ShockMaxPitch",
+            &INI::Parse_Positive_Non_Zero_Real,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_shockMaxPitch) },
+        { "ShockMaxRoll", &INI::Parse_Positive_Non_Zero_Real, nullptr, offsetof(PhysicsBehaviorModuleData, m_shockMaxRoll) },
+        { "ForwardFriction", &Parse_Friction_Per_Sec, nullptr, offsetof(PhysicsBehaviorModuleData, m_forwardFriction) },
+        { "LateralFriction", &Parse_Friction_Per_Sec, nullptr, offsetof(PhysicsBehaviorModuleData, m_lateralFriction) },
+        { "ZFriction", &Parse_Friction_Per_Sec, nullptr, offsetof(PhysicsBehaviorModuleData, m_zFriction) },
+        { "AerodynamicFriction", &Parse_Friction_Per_Sec, nullptr, offsetof(PhysicsBehaviorModuleData, m_aerodynamicCoeff) },
+        { "CenterOfMassOffset", &INI::Parse_Real, nullptr, offsetof(PhysicsBehaviorModuleData, m_centerOfMassOffset) },
+        { "AllowBouncing", &INI::Parse_Bool, nullptr, offsetof(PhysicsBehaviorModuleData, m_allowBouncing) },
+        { "AllowCollideForce", &INI::Parse_Bool, nullptr, offsetof(PhysicsBehaviorModuleData, m_allowCollideForce) },
+        { "KillWhenRestingOnGround",
+            &INI::Parse_Bool,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_killWhenRestingOnGround) },
+        { "MinFallHeightForDamage",
+            &Parse_Height_To_Speed,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_minFallHeightForDamage) },
+        { "FallHeightDamageFactor",
+            &INI::Parse_Real,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_fallHeightDamageFactor) },
+        { "PitchRollYawFactor", &INI::Parse_Real, nullptr, offsetof(PhysicsBehaviorModuleData, m_pitchRollYawFactor) },
+        { "VehicleCrashesIntoBuildingWeaponTemplate",
+            &WeaponStore::Parse_Weapon_Template,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_vehicleCrashesIntoBuildingWeapon) },
+        { "VehicleCrashesIntoNonBuildingWeaponTemplate",
+            &WeaponStore::Parse_Weapon_Template,
+            nullptr,
+            offsetof(PhysicsBehaviorModuleData, m_vehicleCrashesIntoNonBuildingWeapon) },
+    };
+
+    UpdateModuleData::Build_Field_Parse(p);
+    p.Add(dataFieldParse, 0);
 }
 
 void PhysicsBehavior::Apply_Motive_Force(const Coord3D *force)

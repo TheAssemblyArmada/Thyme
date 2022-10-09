@@ -3069,7 +3069,7 @@ bool Drawable::Calc_Physics_Xform(PhysicsXformInfo &xform)
     bool did_calculate = false;
 
     if (update) {
-        const Locomotor *locomotor = update->Get_Locomotor();
+        const Locomotor *locomotor = update->Get_Cur_Locomotor();
 
         if (locomotor) {
             switch (locomotor->Get_Appearance()) {

@@ -302,8 +302,8 @@ public:
     }
 
     int Get_Transport_Slot_Count() const;
-    char Get_Crusher_Level() const;
-    char Get_Crushable_Level() const;
+    unsigned char Get_Crusher_Level() const;
+    unsigned char Get_Crushable_Level() const;
     unsigned int Get_Most_Percent_Ready_To_Fire_Any_Weapon() const;
     float Get_Largest_Weapon_Range() const;
     const Weapon *Get_Current_Weapon(WeaponSlotType *wslot) const;

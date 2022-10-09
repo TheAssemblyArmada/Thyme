@@ -15,6 +15,10 @@
 #include "weapon.h"
 #include "ini.h"
 
+#ifndef GAME_DLL
+WeaponStore *g_theWeaponStore = nullptr;
+#endif
+
 const char *TheWeaponBonusNames[] = {
     "GARRISONED",
     "HORDE",
@@ -72,4 +76,22 @@ void WeaponBonusSet::Parse_Weapon_Bonus_Set(INI *ini)
     int set = INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusNames);
     WeaponBonus::Field field = WeaponBonus::Field(INI::Scan_IndexList(ini->Get_Next_Token(), TheWeaponBonusFieldNames));
     m_bonus[set].Set_Field(field, INI::Scan_PercentToReal(ini->Get_Next_Token()));
+}
+
+const WeaponTemplate *WeaponStore::Find_Weapon_Template(Utf8String name) const
+{
+#ifdef GAME_DLL
+    return Call_Method<const WeaponTemplate *, const WeaponStore, Utf8String>(
+        PICK_ADDRESS(0x004C51B0, 0x006D6703), this, name);
+#else
+    return nullptr;
+#endif
+}
+
+void WeaponStore::Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const Object *obj, const Coord3D *pos)
+{
+#ifdef GAME_DLL
+    Call_Method<void, WeaponStore, const WeaponTemplate *, const Object *, const Coord3D *>(
+        PICK_ADDRESS(0x004C50A0, 0x006D6661), this, tmpl, obj, pos);
+#endif
 }

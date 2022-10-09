@@ -14,9 +14,12 @@
  */
 #pragma once
 
+#include "asciistring.h"
 #include "mempoolobj.h"
 
 class INI;
+class Coord3D;
+class Object;
 
 enum WeaponBonusConditionType
 {
@@ -112,3 +115,18 @@ public:
 private:
     WeaponBonus m_bonus[WEAPONBONUSCONDITION_COUNT];
 };
+
+class WeaponTemplate;
+
+class WeaponStore
+{
+public:
+    const WeaponTemplate *Find_Weapon_Template(Utf8String name) const;
+    void Create_And_Fire_Temp_Weapon(const WeaponTemplate *tmpl, const Object *obj, const Coord3D *pos);
+};
+
+#ifdef GAME_DLL
+extern WeaponStore *&g_theWeaponStore;
+#else
+extern WeaponStore *g_theWeaponStore;
+#endif

@@ -15,6 +15,7 @@
 #include "locomotor.h"
 #include "aipathfind.h"
 #include "bodymodule.h"
+#include "gamelogic.h"
 #include "globaldata.h"
 #include "matrix3d.h"
 #include "object.h"

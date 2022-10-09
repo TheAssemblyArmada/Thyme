@@ -645,3 +645,7 @@ IMEManagerInterface *&g_theIMEManager = Make_Global<IMEManagerInterface *>(PICK_
 // locomotor.cpp
 class LocomotorStore;
 LocomotorStore *&g_theLocomotorStore = Make_Global<LocomotorStore *>(PICK_ADDRESS(0x00A2BC28, 0x00E23DE0));
+
+// weapon.cpp
+class WeaponStore;
+WeaponStore *&g_theWeaponStore = Make_Global<WeaponStore *>(PICK_ADDRESS(0x00A2BC60, 0x00E1D59C));

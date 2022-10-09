@@ -37,7 +37,6 @@ class OverchargeBehaviorInterface;
 class ParkingPlaceBehaviorInterface;
 class PowerPlantUpdateInterface;
 class ProductionUpdateInterface;
-class ProjectileUpdateInterface;
 class RailedTransportDockUpdateInterface;
 class RebuildHoleBehaviorInterface;
 class SlavedUpdateInterface;
@@ -50,6 +49,8 @@ class StealthUpdate;
 class TransportPassengerInterface;
 class UpdateModuleInterface;
 class UpgradeModuleInterface;
+class WeaponTemplate;
+class ParticleSystemTemplate;
 
 class CreateModuleInterface
 {
@@ -66,6 +67,27 @@ public:
     virtual ~BehaviorModuleData() override {}
 
     static void Build_Field_Parse(MultiIniFieldParse &p) {}
+};
+
+class ProjectileUpdateInterface
+{
+public:
+    virtual void Projectile_Launch_At_Object_Or_Position(const Object *victim,
+        const Coord3D *victim_pos,
+        const Object *launcher,
+        WeaponSlotType slot,
+        int ammo_index,
+        const WeaponTemplate *det_weap,
+        const ParticleSystemTemplate *particle) = 0;
+    virtual void Projectile_Fire_At_Object_Or_Position(const Object *victim,
+        const Coord3D *victim_pos,
+        const WeaponTemplate *det_weap,
+        const ParticleSystemTemplate *particle) = 0;
+    virtual bool Projectile_Is_Armed() const = 0;
+    virtual ObjectID Projectile_Get_Launcher_ID() const = 0;
+    virtual bool Projectile_Handle_Collision(Object *obj) = 0;
+    virtual void Set_Frames_Till_Countermeasure_Diversion_Occurs(unsigned int frames) = 0;
+    virtual void Projectile_Now_Jammed() = 0;
 };
 
 class BehaviorModuleInterface

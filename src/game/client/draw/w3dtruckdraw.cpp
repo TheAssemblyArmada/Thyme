@@ -181,7 +181,7 @@ void W3DTruckDraw::Do_Draw_Module(const Matrix3D *transform)
                                 float addition = data->m_powerslideRotationAddition;
 
                                 if (update != nullptr) {
-                                    const Locomotor *locomotor = update->Get_Locomotor();
+                                    const Locomotor *locomotor = update->Get_Cur_Locomotor();
 
                                     if (locomotor != nullptr) {
                                         if (locomotor->Is_Moving_Backwards()) {

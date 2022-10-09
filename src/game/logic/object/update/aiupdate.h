@@ -14,8 +14,10 @@
  */
 #pragma once
 #include "always.h"
+#include "locomotor.h"
 #include "object.h"
 #include "updatemodule.h"
+
 class INI;
 class AICommandParms;
 class DozerAIInterface;
@@ -25,7 +27,6 @@ class HackInternetAIInterface;
 class AssaultTransportAIInterface;
 class JetAIUpdate;
 class AIStateMachine;
-class Locomotor;
 class Path;
 
 enum GuardTargetType
@@ -40,9 +41,19 @@ enum GuardMode
 {
     GUARD_MODE_UNK
 };
+
 enum LocomotorSetType
 {
-    LOCOMOTOR_SET_UNK
+    LOCOMOTORSET_INVALID = 0xff,
+    LOCOMOTORSET_NORMAL = 0,
+    LOCOMOTORSET_NORMAL_UPGRADED,
+    LOCOMOTORSET_FREEFALL,
+    LOCOMOTORSET_WANDER,
+    LOCOMOTORSET_PANIC,
+    LOCOMOTORSET_TAXIING,
+    LOCOMOTORSET_SUPERSONIC,
+    LOCOMOTORSET_SLUGGISH,
+    LOCOMOTORSET_COUNT,
 };
 
 class AICommandInterface
@@ -189,13 +200,21 @@ public:
 
     float Get_Cur_Locomotor_Speed() const;
     bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
+    bool Has_Locomotor_For_Surface(LocomotorSurfaceType t);
 
-    const Locomotor *Get_Locomotor() const { return m_curLocomotor; }
+    const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
+    Locomotor *Get_Cur_Locomotor() { return m_curLocomotor; }
+    LocomotorSetType Get_Cur_Locomotor_Set() { return m_curLocomotorSet; }
     const Path *Get_Path() const { return m_path; }
+    ObjectID Get_Ignored_Obstacle_ID() { return m_ignoreObstacleID; }
 
 private:
     unsigned char unk[0x10C];
     Path *m_path;
-    unsigned char unk2[0x84];
+    unsigned char unk2[0x20];
+    ObjectID m_ignoreObstacleID;
+    unsigned char unk3[0x48];
+    LocomotorSet m_locomotorSet;
     Locomotor *m_curLocomotor;
+    LocomotorSetType m_curLocomotorSet;
 };

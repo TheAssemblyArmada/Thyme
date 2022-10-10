@@ -45,14 +45,14 @@ private:
     float m_zFriction;
     float m_aerodynamicCoeff;
     int m_centerOfMassOffset;
-    char m_killWhenRestingOnGround;
-    char m_allowBouncing;
-    char m_allowCollideForce;
+    bool m_killWhenRestingOnGround;
+    bool m_allowBouncing;
+    bool m_allowCollideForce;
     float m_minFallHeightForDamage;
     float m_fallHeightDamageFactor;
     float m_pitchRollYawFactor;
-    WeaponTemplate *m_vehicleCrashesIntoBuildingWeapon;
-    WeaponTemplate *m_vehicleCrashesIntoNonBuildingWeapon;
+    const WeaponTemplate *m_vehicleCrashesIntoBuildingWeapon;
+    const WeaponTemplate *m_vehicleCrashesIntoNonBuildingWeapon;
 
     friend class PhysicsBehavior;
 };
@@ -78,7 +78,7 @@ class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
     };
 
 public:
-    PhysicsBehavior(Thing *thing, const ModuleData *moduleData);
+    PhysicsBehavior(Thing *thing, const ModuleData *module_data);
 
     virtual ~PhysicsBehavior() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
@@ -196,13 +196,13 @@ private:
     Coord3D m_prevAccel; // not 100% identified yet
     Coord3D m_vel;
     PhysicsTurningType m_turning;
-    int m_ignoreCollisionsWith;
+    ObjectID m_ignoreCollisionsWith;
     int m_flags;
     float m_mass;
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;
     ObjectID m_collided; // not 100% identified yet
-    int m_motiveForceApplied;
+    unsigned int m_motiveForceApplied;
     float m_extraBounciness; // not 100% identified yet
     float m_extraFriction;
     ProjectileUpdateInterface *m_projectileUpdateInterface; // not 100% identified yet

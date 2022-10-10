@@ -2147,6 +2147,14 @@ void Setup_Hooks()
     // physicsupdate.h
     Hook_Method(0x005CDB70, &PhysicsBehavior::Get_Forward_Speed_2D);
     Hook_Method(0x005CDBC0, &PhysicsBehavior::Get_Forward_Speed_3D);
+    Hook_Any(0x005CC070, PhysicsBehavior::Apply_Force);
+    Hook_Any(0x005CC2E0, PhysicsBehavior::Is_Motive);
+    Hook_Any(0x005CDB20, PhysicsBehavior::Get_Velocity_Magnitude);
+    Hook_Any(0x005CDCC0, PhysicsBehavior::Scrub_Velocity_2D);
+    Hook_Any(0x005CDDB0, PhysicsBehavior::Set_Angles);
+    Hook_Any(0x005CDFD0, PhysicsBehavior::Get_Mass);
+    Hook_Any(0x004E7CF0, PhysicsBehavior::Friend_New_Module_Instance);
+    Hook_Any(0x004E7DE0, PhysicsBehavior::Friend_New_Module_Data);
 
     // objecttypes.h
     Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);

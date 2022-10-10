@@ -58,6 +58,7 @@ public:
 
 class DamageInfoOutput : public SnapShot
 {
+public:
     DamageInfoOutput() : m_actualDamageDealt(0.0f), m_actualDamageClipped(0.0f), m_noEffect(false) {}
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}

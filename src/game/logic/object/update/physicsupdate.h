@@ -78,7 +78,7 @@ class PhysicsBehavior : public UpdateModule, public CollideModuleInterface
     };
 
 public:
-    PhysicsBehavior(Thing *thing, const ModuleData *moduleData);
+    PhysicsBehavior(Thing *thing, const ModuleData *module_data);
 
     virtual ~PhysicsBehavior() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
@@ -196,13 +196,13 @@ private:
     Coord3D m_prevAccel; // not 100% identified yet
     Coord3D m_vel;
     PhysicsTurningType m_turning;
-    int m_ignoreCollisionsWith;
+    ObjectID m_ignoreCollisionsWith;
     int m_flags;
     float m_mass;
     ObjectID m_currentOverlap;
     ObjectID m_previousOverlap;
     ObjectID m_collided; // not 100% identified yet
-    int m_motiveForceApplied;
+    unsigned int m_motiveForceApplied;
     float m_extraBounciness; // not 100% identified yet
     float m_extraFriction;
     ProjectileUpdateInterface *m_projectileUpdateInterface; // not 100% identified yet

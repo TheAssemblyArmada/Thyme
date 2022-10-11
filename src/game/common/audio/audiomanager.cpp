@@ -48,7 +48,7 @@ AudioManager::AudioManager() :
     m_initial3DSoundVolume(0.0f),
     m_initialSpeechVolume(0.0f),
     m_zoomVolume(),
-    m_unkAudioEventRTS(new AudioEventRTS),
+    m_emptyAudioEvent(new AudioEventRTS),
     m_savedVolumes(nullptr),
     m_cachedVariables(0xF)
 {
@@ -58,8 +58,8 @@ AudioManager::AudioManager() :
 
 AudioManager::~AudioManager()
 {
-    delete m_unkAudioEventRTS;
-    m_unkAudioEventRTS = nullptr;
+    delete m_emptyAudioEvent;
+    m_emptyAudioEvent = nullptr;
     delete m_musicManager;
     m_musicManager = nullptr;
     delete m_soundManager;

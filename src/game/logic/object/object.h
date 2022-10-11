@@ -203,6 +203,13 @@ enum SpecialPowerType
     SPECIAL_POWER_COUNT,
 };
 
+enum CrushSquishTestType
+{
+    TEST_TYPE_0 = 0,
+    TEST_TYPE_1,
+    TEST_TYPE_2,
+};
+
 class Object : public Thing, public SnapShot
 {
 public:
@@ -504,7 +511,7 @@ public:
     void Kill(DamageType damage, DeathType death);
     void Score_The_Kill(const Object *victim);
     void Notify_Subdual_Damage(float f);
-    bool Can_Crush_Or_Squish(Object *obj);
+    bool Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type);
     void Heal_Completely();
     void Go_Invulnerable(unsigned int i);
 

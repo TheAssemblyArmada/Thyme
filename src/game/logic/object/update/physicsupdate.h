@@ -162,6 +162,7 @@ public:
     void Set_Turning(PhysicsTurningType turning) { m_turning = turning; }
     void Set_Extra_Friction(float friction) { m_extraFriction = friction; }
     void Set_Extra_Bounciness(float bounciness) { m_extraBounciness = bounciness; }
+    void Set_Mass(float mass) { m_mass = mass; }
 
     void Set_Allow_Airborne_Friction(bool set) { Set_Flag(APPLY_FRICTION2D_WHEN_AIRBORNE, set); }
     void Set_Stick_To_Ground(bool set) { Set_Flag(STICK_TO_GROUND, set); }

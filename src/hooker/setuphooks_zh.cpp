@@ -2155,6 +2155,18 @@ void Setup_Hooks()
     Hook_Any(0x005CDFD0, PhysicsBehavior::Get_Mass);
     Hook_Any(0x004E7CF0, PhysicsBehavior::Friend_New_Module_Instance);
     Hook_Any(0x004E7DE0, PhysicsBehavior::Friend_New_Module_Data);
+    Hook_Any(0x005CC300, PhysicsBehavior::Apply_Motive_Force);
+    Hook_Any(0x005CDD80, PhysicsBehavior::Add_Velocity_To);
+    Hook_Any(0x005CDC30, PhysicsBehavior::Scrub_Velocity_Z);
+    Hook_Any(0x005CC330, PhysicsBehavior::Reset_Dynamic_Physics);
+    Hook_Any(0x005CDD30, PhysicsBehavior::Transfer_Velocity_To);
+    Hook_Any(0x005CC230, PhysicsBehavior::Apply_Random_Rotation);
+    Hook_Any(0x005CC190, PhysicsBehavior::Apply_Shock);
+    Hook_Any(0x005CC050, PhysicsBehavior::Set_Ignore_Collisions_With);
+    Hook_Any(0x005CCBC0, PhysicsBehavior::Set_Pitch_Rate);
+    Hook_Any(0x005CCC10, PhysicsBehavior::Set_Roll_Rate);
+    Hook_Any(0x005CCC60, PhysicsBehavior::Set_Yaw_Rate);
+    Hook_Any(0x005CCCB0, PhysicsBehavior::Set_Bounce_Sound);
 
     // objecttypes.h
     Hook_Any(0x005382E0, ObjectTypes::Xfer_Snapshot);

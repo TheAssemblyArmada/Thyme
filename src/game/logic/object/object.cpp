@@ -218,10 +218,10 @@ void Object::Clear_Disabled(DisabledType type)
 #endif
 }
 
-bool Object::Can_Crush_Or_Squish(Object *obj)
+bool Object::Can_Crush_Or_Squish(Object *obj, CrushSquishTestType type)
 {
 #ifdef GAME_DLL
-    return Call_Method<bool, Object, Object *>(PICK_ADDRESS(0x005471D0, 0x007D0486), this, obj);
+    return Call_Method<bool, Object, Object *, CrushSquishTestType>(PICK_ADDRESS(0x005471D0, 0x007D0486), this, obj, type);
 #else
     return false;
 #endif

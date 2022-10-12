@@ -176,6 +176,7 @@ public:
 
     AudioSettings *Get_Audio_Settings() const { return m_audioSettings; }
     MiscAudio *Get_Misc_Audio() const { return m_miscAudio; }
+    AudioEventRTS *Get_Empty_Audio_Event() const { return m_emptyAudioEvent; }
 
 protected:
     Utf8String Next_Track_Name(Utf8String track) const;
@@ -208,7 +209,7 @@ protected:
     float m_initial3DSoundVolume;
     float m_initialSpeechVolume;
     float m_zoomVolume;
-    AudioEventRTS *m_unkAudioEventRTS; // TODO work out use of this var
+    AudioEventRTS *m_emptyAudioEvent; // TODO work out use of this var
     float *m_savedVolumes; // Used during focus loss to preserve volume settings.
 
     // Use a bitfield union to make bit twiddling code simpler.

@@ -12,6 +12,10 @@
  *            A full copy of the GNU General Public License can be found in
  *            LICENSE
  */
+#ifndef GAME_DLL
+#error This file must not be compiled into standalone binary
+#endif
+
 #include "archivefile.h"
 #include "archivefilesystem.h"
 #include "asciistring.h"
@@ -97,10 +101,19 @@
 #include <windows.h>
 #include <winsock2.h>
 
+SimpleCriticalSectionClass critSec1;
+SimpleCriticalSectionClass critSec2;
+SimpleCriticalSectionClass critSec3;
+
 void Null_Func(){};
 
 void Setup_Hooks()
 {
+    // memory functions crash without this
+    g_unicodeStringCriticalSection = &critSec1;
+    g_dmaCriticalSection = &critSec2;
+    g_memoryPoolCriticalSection = &critSec3;
+
     // TODO, update with world builder addresses.
 #if 0
     // Code that checks the launcher is running, launcher does CD check.
@@ -118,12 +131,12 @@ void Setup_Hooks()
     // TODO, use linker check globals so no need to hook new.
     Hook_Function(0x006B8044, New_New); // operator new
     Hook_Function(0x006B80AB, New_New); // operator new[]
-    Hook_Function(0x006B81E0, New_New); // operator new
-    Hook_Function(0x006B82AE, New_New); // operator new[]
+    Hook_Function(0x006B81E0, New_New_Dbg); // debug operator new
+    Hook_Function(0x006B82AE, New_New_Dbg); // debug operator new[]
     Hook_Function(0x006B8112, New_Delete); // operator delete
     Hook_Function(0x006B8179, New_Delete); // operator delete[]
-    Hook_Function(0x006B8247, New_Delete); // operator delete
-    Hook_Function(0x006B8315, New_Delete); // operator delete[]
+    Hook_Function(0x006B8247, New_Delete_Dbg); // debug operator delete
+    Hook_Function(0x006B8315, New_Delete_Dbg); //  debug operator delete[]
     Hook_Function(0x006B8716, Create_Named_Pool); // createW3DMemoryPool in wb db.
 
     // Replace pool functions

@@ -287,3 +287,59 @@ void Object::Set_Captured(bool captured)
         m_privateStatus &= ~STATUS_CAPTURED;
     }
 }
+
+const Weapon *Object::Get_Current_Weapon(WeaponSlotType *wslot) const
+{
+    if (!m_weaponSet.Has_Any_Weapon()) {
+        return nullptr;
+    }
+
+    if (wslot) {
+        *wslot = m_weaponSet.Get_Cur_Weapon_Slot();
+    }
+
+    return m_weaponSet.Get_Cur_Weapon();
+}
+
+Weapon *Object::Get_Current_Weapon(WeaponSlotType *wslot)
+{
+    if (!m_weaponSet.Has_Any_Weapon()) {
+        return nullptr;
+    }
+
+    if (wslot) {
+        *wslot = m_weaponSet.Get_Cur_Weapon_Slot();
+    }
+
+    return m_weaponSet.Get_Cur_Weapon();
+}
+
+bool Object::Is_Able_To_Attack() const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Object>(PICK_ADDRESS(0x0054A0C0, 0x007D3B0D), this);
+#else
+    return false;
+#endif
+}
+
+bool Object::Choose_Best_Weapon_For_Target(const Object *target, WeaponChoiceCriteria criteria, CommandSourceType source)
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, Object, const Object *, WeaponChoiceCriteria, CommandSourceType>(
+        PICK_ADDRESS(0x00547810, 0x007D0B27), this, target, criteria, source);
+#else
+    return false;
+#endif
+}
+
+CanAttackResult Object::Get_Able_To_Attack_Specific_Object(
+    AbleToAttackType type, const Object *obj, CommandSourceType source, WeaponSlotType slot) const
+{
+#ifdef GAME_DLL
+    return Call_Method<CanAttackResult, const Object, AbleToAttackType, const Object *, CommandSourceType, WeaponSlotType>(
+        PICK_ADDRESS(0x005477B0, 0x007D0AC5), this, type, obj, source, slot);
+#else
+    return ATTACK_RESULT_0;
+#endif
+}

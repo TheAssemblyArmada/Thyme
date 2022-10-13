@@ -14,6 +14,7 @@
  */
 #pragma once
 #include "always.h"
+#include "aistates.h"
 #include "locomotor.h"
 #include "object.h"
 #include "updatemodule.h"
@@ -28,6 +29,8 @@ class AssaultTransportAIInterface;
 class JetAIUpdate;
 class AIStateMachine;
 class Path;
+class TurretAIData;
+class TurretAI;
 
 enum GuardTargetType
 {
@@ -40,6 +43,15 @@ enum AIFreeToExitType
 enum GuardMode
 {
     GUARD_MODE_UNK
+};
+enum AttitudeType
+{
+    AI_SLEEP = 0xfffffffe,
+    AI_PASSIVE = 0xffffffff,
+    AI_NORMAL = 0,
+    AI_ALERT = 1,
+    AI_AGGRESSIVE = 2,
+    AI_INVALID = 3,
 };
 
 enum LocomotorSetType
@@ -56,21 +68,51 @@ enum LocomotorSetType
     LOCOMOTORSET_COUNT,
 };
 
+enum MoodMatrixAction
+{
+    MM_ACTION_IDLE,
+    MM_ACTION_MOVE,
+    MM_ACTION_ATTACK,
+    MM_ACTION_ATTACKMOVE,
+};
+
 class AICommandInterface
 {
 public:
     virtual void AI_Do_Command(AICommandParms const *params) = 0;
 };
 
-class AIUpdateModuleData
+class AIUpdateModuleData : public UpdateModuleData
 {
 public:
+    virtual ~AIUpdateModuleData() override;
+    virtual bool Is_AI_Module_Data() const override;
+
     static void Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data);
+
+private:
+    std::map<LocomotorSetType, LocomotorTemplate const *> m_locomotorTemplates;
+    TurretAIData *m_turretData[MAX_TURRETS];
+    unsigned int m_moodAttackCheckRate;
+    bool m_forbidPlayerCommands;
+    bool m_turretsLinked;
+    int m_autoAcquireEnemiesWhenIdle;
+    friend class AIUpdateInterface;
 };
 
 class AIUpdateInterface : public UpdateModule, public AICommandInterface
 {
+    IMPLEMENT_POOL(AIUpdateInterface)
+
 public:
+    enum LocoGoalType
+    {
+        NONE,
+        POSITION_ON_PATH,
+        POSITION_EXPLICIT,
+        ANGLE,
+    };
+
     virtual ~AIUpdateInterface() override;
     virtual NameKeyType Get_Module_Name_Key() const override;
     virtual void On_Object_Created() override;
@@ -200,6 +242,10 @@ public:
 
     float Get_Cur_Locomotor_Speed() const;
     bool Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch);
+    unsigned int Get_Mood_Matrix_Action_Adjustment(MoodMatrixAction action) const;
+    Object *Get_Next_Mood_Target(bool called_by_ai, bool called_during_idle);
+    void Reset_Next_Mood_Check_Time();
+
     bool Has_Locomotor_For_Surface(LocomotorSurfaceType t);
 
     const Locomotor *Get_Cur_Locomotor() const { return m_curLocomotor; }
@@ -207,14 +253,36 @@ public:
     LocomotorSetType Get_Cur_Locomotor_Set() { return m_curLocomotorSet; }
     const Path *Get_Path() const { return m_path; }
     ObjectID Get_Ignored_Obstacle_ID() { return m_ignoreObstacleID; }
+    const AIStateMachine *Get_State_Machine() const { return m_stateMachine; }
+    AIStateMachine *Get_State_Machine() { return m_stateMachine; }
+    unsigned int Get_Next_Mood_Check_Time() const { return m_nextMoodCheckTime; }
+    WhichTurretType Get_Current_Turret() const { return m_currentTurret; }
+    Object *Get_Goal_Object() { return Get_State_Machine()->Get_Goal_Object(); }
+
+    const AIUpdateModuleData *Get_AI_Update_Module_Data() const
+    {
+        return static_cast<const AIUpdateModuleData *>(Get_Module_Data());
+    }
+
+    void Set_Current_Turret(WhichTurretType t) { m_currentTurret = t; }
+
+    bool Are_Turrets_Linked() const { return Get_AI_Update_Module_Data()->m_turretsLinked; }
 
 private:
-    unsigned char unk[0x10C];
+    unsigned char unk[0x8];
+    AIStateMachine *m_stateMachine;
+    unsigned char unk2[0x100];
     Path *m_path;
-    unsigned char unk2[0x20];
+    unsigned char unk3[0x20];
     ObjectID m_ignoreObstacleID;
-    unsigned char unk3[0x48];
+    unsigned char unk4[0x48];
     LocomotorSet m_locomotorSet;
     Locomotor *m_curLocomotor;
     LocomotorSetType m_curLocomotorSet;
+    LocoGoalType m_locomotorGoalType;
+    Coord3D m_locomotorGoalData;
+    TurretAI *m_turretAI[MAX_TURRETS];
+    WhichTurretType m_currentTurret;
+    AttitudeType m_attitude;
+    unsigned int m_nextMoodCheckTime;
 };

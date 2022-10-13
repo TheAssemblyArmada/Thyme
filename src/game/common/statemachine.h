@@ -141,6 +141,9 @@ public:
     virtual StateReturnType Init_Default_State();
     virtual StateReturnType Set_State(unsigned int new_state_id);
     virtual void Halt();
+#ifdef GAME_DEBUG_STRUCTS
+    virtual Utf8String Get_Current_State_Name();
+#endif
 
     virtual void CRC_Snapshot(Xfer *xfer) override {}
     virtual void Xfer_Snapshot(Xfer *xfer) override;
@@ -176,10 +179,10 @@ public:
     Utf8String Get_Name() const;
 #endif
 
-private:
+protected:
     std::map<unsigned int, State *> m_stateMap;
     Object *m_owner;
-    unsigned int m_updateFrame;
+    unsigned int m_sleepTill;
     unsigned int m_defaultStateID;
     State *m_currentState;
     ObjectID m_goalObjectID;

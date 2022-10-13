@@ -206,7 +206,7 @@ StateReturnType State::Friend_Check_For_Transitions(StateReturnType status)
 
 StateMachine::StateMachine(Object *owner, Utf8String name) :
     m_owner(owner),
-    m_updateFrame(0),
+    m_sleepTill(0),
     m_defaultStateID(INVALID_STATE_ID),
     m_defaultStateInited(false),
     m_currentState(nullptr),
@@ -335,14 +335,14 @@ StateReturnType StateMachine::Update_State_Machine()
 {
     unsigned int frame = g_theGameLogic->Get_Frame();
 
-    if (m_updateFrame != 0 && frame < m_updateFrame) {
+    if (m_sleepTill != 0 && frame < m_sleepTill) {
         if (m_currentState != nullptr) {
-            return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_updateFrame - frame));
+            return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_sleepTill - frame));
         } else {
             return STATE_FAILURE;
         }
     } else {
-        m_updateFrame = 0;
+        m_sleepTill = 0;
         if (m_currentState != nullptr) {
             State *old_state = m_currentState;
             StateReturnType state = old_state->Update();
@@ -355,8 +355,8 @@ StateReturnType StateMachine::Update_State_Machine()
                 if (state <= STATE_CONTINUE) {
                     return m_currentState->Friend_Check_For_Transitions(state);
                 } else {
-                    m_updateFrame = state + frame;
-                    return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_updateFrame - frame));
+                    m_sleepTill = state + frame;
+                    return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_sleepTill - frame));
                 }
             } else {
                 return STATE_FAILURE;
@@ -428,7 +428,7 @@ StateReturnType StateMachine::Set_State(unsigned int new_state_id)
 StateReturnType StateMachine::Internal_Set_State(unsigned int new_state_id)
 {
     State *new_state = nullptr;
-    m_updateFrame = 0;
+    m_sleepTill = 0;
 
     if (new_state_id != MACHINE_DONE_STATE_ID) {
         if (new_state_id == INVALID_STATE_ID) {
@@ -493,8 +493,8 @@ StateReturnType StateMachine::Internal_Set_State(unsigned int new_state_id)
     }
 
     unsigned int frame = g_theGameLogic->Get_Frame();
-    m_updateFrame = state + frame;
-    return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_updateFrame - frame));
+    m_sleepTill = state + frame;
+    return m_currentState->Friend_Check_For_Sleep_Transitions((StateReturnType)(m_sleepTill - frame));
 }
 
 StateReturnType StateMachine::Init_Default_State()
@@ -599,7 +599,7 @@ void StateMachine::Xfer_Snapshot(Xfer *xfer)
 {
     unsigned char version = 1;
     xfer->xferVersion(&version, 1);
-    xfer->xferUnsignedInt(&m_updateFrame);
+    xfer->xferUnsignedInt(&m_sleepTill);
     xfer->xferUnsignedInt(&m_defaultStateID);
     unsigned int id = Get_Current_State_ID();
     xfer->xferUnsignedInt(&id);
@@ -707,3 +707,14 @@ void StateMachine::Unlock()
     m_lockedString = nullptr;
 #endif
 }
+
+#ifdef GAME_DEBUG_STRUCTS
+Utf8String StateMachine::Get_Current_State_Name()
+{
+    if (m_currentState != nullptr) {
+        return m_currentState->Get_Name();
+    } else {
+        return Utf8String::s_emptyString;
+    }
+}
+#endif

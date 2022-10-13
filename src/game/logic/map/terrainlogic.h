@@ -29,9 +29,14 @@ class MapObject;
 class Matrix3D;
 class Object;
 class PolygonTrigger;
-class TBridgeAttackInfo;
 class ThingTemplate;
 class Vector3;
+
+struct TBridgeAttackInfo
+{
+    Coord3D m_attackPoint1;
+    Coord3D m_attackPoint2;
+};
 
 enum WaypointID : int32_t
 {

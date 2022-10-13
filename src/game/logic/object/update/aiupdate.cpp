@@ -49,3 +49,30 @@ bool AIUpdateInterface::Has_Locomotor_For_Surface(LocomotorSurfaceType t)
 {
     return m_locomotorSet.Find_Locomotor(t) != nullptr;
 }
+
+unsigned int AIUpdateInterface::Get_Mood_Matrix_Action_Adjustment(MoodMatrixAction action) const
+{
+#ifdef GAME_DLL
+    return Call_Method<unsigned int, AIUpdateInterface const, MoodMatrixAction>(
+        PICK_ADDRESS(0x005D5E80, 0x007FB7F1), this, action);
+#else
+    return 0;
+#endif
+}
+
+Object *AIUpdateInterface::Get_Next_Mood_Target(bool called_by_ai, bool called_during_idle)
+{
+#ifdef GAME_DLL
+    return Call_Method<Object *, AIUpdateInterface, bool, bool>(
+        PICK_ADDRESS(0x005D60B0, 0x007FBB78), this, called_by_ai, called_during_idle);
+#else
+    return nullptr;
+#endif
+}
+
+void AIUpdateInterface::Reset_Next_Mood_Check_Time()
+{
+#ifdef GAME_DLL
+    Call_Method<void, AIUpdateInterface>(PICK_ADDRESS(0x005D6030, 0x007FBAB5), this);
+#endif
+}

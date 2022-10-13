@@ -92,12 +92,19 @@ enum WeaponLockType
 
 enum CanAttackResult
 {
-    ATTACK_RESULT_UNK,
+    ATTACK_RESULT_0 = 0,
+    ATTACK_RESULT_1,
+    ATTACK_RESULT_2,
+    ATTACK_RESULT_3,
 };
 
 enum AbleToAttackType
 {
-    ATTACK_TYPE_UNK,
+    ATTACK_TYPE_0 = 0,
+    ATTACK_TYPE_1,
+    ATTACK_TYPE_2,
+    ATTACK_TYPE_3,
+    ATTACK_TYPE_4,
 };
 
 class WeaponSet : public SnapShot

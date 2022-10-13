@@ -13,6 +13,7 @@
  *            LICENSE
  */
 #include "terrainlogic.h"
+#include "object.h"
 
 #ifndef GAME_DLL
 TerrainLogic *g_theTerrainLogic = nullptr;
@@ -41,4 +42,25 @@ PathfindLayerEnum TerrainLogic::Get_Highest_Layer_For_Destination(const Coord3D 
 #else
     return LAYER_INVALID;
 #endif
+}
+
+void TerrainLogic::Get_Bridge_Attack_Points(const Object *bridge, TBridgeAttackInfo *attack_info)
+{
+    ObjectID id = bridge->Get_ID();
+
+    for (Bridge *b = Get_First_Bridge(); b != nullptr; b = b->Get_Next()) {
+        const BridgeInfo *info = b->Peek_Bridge_Info();
+
+        if (info->bridge_object_id == id) {
+            Coord3D distance = info->to - info->from;
+            distance.Normalize();
+            float f = (info->from_right - info->from_left).Length() / 2.0f;
+            attack_info->m_attackPoint1 = info->from + distance * f;
+            attack_info->m_attackPoint2 = info->to - distance * f;
+            return;
+        }
+    }
+
+    attack_info->m_attackPoint1 = *bridge->Get_Position();
+    attack_info->m_attackPoint2 = *bridge->Get_Position();
 }

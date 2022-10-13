@@ -118,6 +118,13 @@ private:
 
 class WeaponTemplate;
 
+class Weapon
+{
+public:
+    bool Is_Within_Attack_Range(const Object *source, const Object *target) const;
+    float Get_Attack_Range(const Object *source) const;
+};
+
 class WeaponStore
 {
 public:

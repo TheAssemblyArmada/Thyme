@@ -231,6 +231,8 @@ set(GAMEENGINE_SRC
     game/common/thing/thingtemplate.cpp
     game/logic/ai/ai.cpp
     game/logic/ai/aipathfind.cpp
+    game/logic/ai/aistates.cpp
+    game/logic/ai/turretai.cpp
     game/logic/map/polygontrigger.cpp
     game/logic/map/terrainlogic.cpp
     game/logic/object/armortemplateset.cpp

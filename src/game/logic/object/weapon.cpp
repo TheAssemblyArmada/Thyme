@@ -103,3 +103,22 @@ void WeaponStore::Parse_Weapon_Template(INI *ini, void *, void *store, const voi
     captainslog_dbgassert(w != nullptr && !strcasecmp(name, "None"), "WeaponTemplate %s not found!", name);
     *static_cast<const WeaponTemplate **>(store) = w;
 }
+
+bool Weapon::Is_Within_Attack_Range(const Object *source, const Object *target) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Weapon, const Object *, const Object *>(
+        PICK_ADDRESS(0x004C72A0, 0x006D7E7F), this, source, target);
+#else
+    return false;
+#endif
+}
+
+float Weapon::Get_Attack_Range(const Object *source) const
+{
+#ifdef GAME_DLL
+    return Call_Method<float, const Weapon, const Object *>(PICK_ADDRESS(0x004C77A0, 0x006D843A), this, source);
+#else
+    return 0;
+#endif
+}

@@ -122,6 +122,7 @@ class Weapon
 {
 public:
     bool Is_Within_Attack_Range(const Object *source, const Object *target) const;
+    bool Is_Within_Attack_Range(const Object *source, const Coord3D *target) const;
     float Get_Attack_Range(const Object *source) const;
 };
 

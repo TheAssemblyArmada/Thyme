@@ -44,7 +44,7 @@ class NotifyWeaponFiredInterface
 {
 public:
     virtual void Notify_Fired() = 0;
-    virtual void Notify_New_Victim_Chosen() = 0;
+    virtual void Notify_New_Victim_Chosen(Object *victim) = 0;
     virtual bool Is_Weapon_Slot_Ok_To_Fire(WeaponSlotType wslot) const = 0;
     virtual bool Is_Attacking_Object() const = 0;
     virtual const Coord3D *Get_Original_Victim_Pos() const = 0;
@@ -71,3 +71,5 @@ public:
 private:
     NotifyWeaponFiredInterface *m_att;
 };
+
+bool Out_Of_Weapon_Range_Object(State *state, void *user_data);

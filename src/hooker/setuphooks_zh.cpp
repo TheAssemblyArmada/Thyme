@@ -17,6 +17,7 @@
 #endif
 
 #include "aabtree.h"
+#include "aiupdate.h"
 #include "anim2d.h"
 #include "archivefile.h"
 #include "archivefilesystem.h"
@@ -155,6 +156,7 @@
 #include "thumbnailmanager.h"
 #include "tiledata.h"
 #include "tintenvelope.h"
+#include "turretai.h"
 #include "updatemodule.h"
 #include "vertmaterial.h"
 #include "w3d.h"
@@ -2340,4 +2342,20 @@ void Setup_Hooks()
     Hook_Any(0x004BD3A0, LocomotorSet::Clear);
     Hook_Any(0x004BD420, LocomotorSet::Add_Locomotor);
     Hook_Any(0x004BD550, LocomotorSet::Find_Locomotor);
+
+    // turretai.h
+    Hook_Any(0x00715670, TurretAI::Is_Owners_Cur_Weapon_On_Turret);
+    Hook_Any(0x007156B0, TurretAI::Is_Weapon_Slot_On_Turret);
+    Hook_Any(0x007156D0, TurretAI::Friend_Get_Turret_Target);
+    Hook_Any(0x00715780, TurretAI::Set_Turret_Target_Object);
+    Hook_Any(0x007159B0, TurretAI::Recenter_Turret);
+    Hook_Any(0x00714EB0, TurretAI::Hook_Ctor);
+    Hook_Any(0x00715620, TurretAI::Is_Trying_To_Aim_At_Target);
+    Hook_Any(0x007158A0, TurretAI::Set_Turret_Target_Position);
+    Hook_Any(0x007159C0, TurretAI::Is_Turret_In_Neutral_Position);
+    Hook_Any(0x00715A00, TurretAI::Update_Turret_AI);
+    Hook_Any(0x00715B40, TurretAI::Set_Turret_Enabled);
+
+    // aiupdate.h
+    Hook_Any(0x005CFDF0, AIUpdateModuleData::Parse_Turret);
 }

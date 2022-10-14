@@ -16,6 +16,7 @@
 #ifdef GAME_DLL
 #include "hooker.h"
 #endif
+#include "turretai.h"
 
 void AIUpdateModuleData::Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data)
 {
@@ -24,6 +25,15 @@ void AIUpdateModuleData::Parse_Locomotor_Set(INI *ini, void *formal, void *store
     Call_Function<void, INI *, void *, void *, const void *>(
         PICK_ADDRESS(0x005CFEF0, 0x007F35AD), ini, formal, store, user_data);
 #endif
+}
+
+void AIUpdateModuleData::Parse_Turret(INI *ini, void *formal, void *store, const void *user_data)
+{
+    TurretAIData **data = static_cast<TurretAIData **>(store);
+    captainslog_relassert(*data == nullptr, CODE_06, "Only one turret to a customer, for now");
+    TurretAIData *d = new TurretAIData();
+    ini->Init_From_INI_Multi_Proc(d, TurretAIData::Build_Field_Parse);
+    *data = d;
 }
 
 bool AIUpdateInterface::Get_Turret_Rot_And_Pitch(WhichTurretType tur, float *turret_angle, float *turret_pitch)

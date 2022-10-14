@@ -32,7 +32,7 @@ StateReturnType AIAttackFireWeaponState::On_Enter()
 void AIAttackFireWeaponState::On_Exit(StateExitType status)
 {
 #ifdef GAME_DLL
-    Call_Method<void, AIAttackFireWeaponState>(PICK_ADDRESS(0x0059C5F0, 0x00838D6F), this);
+    Call_Method<void, AIAttackFireWeaponState, StateExitType>(PICK_ADDRESS(0x0059C5F0, 0x00838D6F), this, status);
 #endif
 }
 
@@ -42,5 +42,14 @@ StateReturnType AIAttackFireWeaponState::Update()
     return Call_Method<StateReturnType, AIAttackFireWeaponState>(PICK_ADDRESS(0x0059C320, 0x00839107), this);
 #else
     return STATE_FAILURE;
+#endif
+}
+
+bool Out_Of_Weapon_Range_Object(State *state, void *user_data)
+{
+#ifdef GAME_DLL
+    return Call_Function<bool, State *, void *>(PICK_ADDRESS(0x00596560, 0x00831ABE), state, user_data);
+#else
+    return false;
 #endif
 }

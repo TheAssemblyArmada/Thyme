@@ -230,7 +230,7 @@ public:
     virtual const Object *As_Object_Meth() const override;
 
     virtual void React_To_Transform_Change(const Matrix3D *tm, const Coord3D *pos, float f) override;
-    virtual void React_To_Turret(WhichTurretType turret, float f1, float f2);
+    virtual void React_To_Turret(WhichTurretType turret, float angle, float pitch);
 
     virtual void CRC_Snapshot(Xfer *xfer) override;
     virtual void Xfer_Snapshot(Xfer *xfer) override;

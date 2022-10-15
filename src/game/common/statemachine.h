@@ -27,6 +27,7 @@ class Object;
 
 enum StateReturnType
 {
+    // Positive values are a frame number
     STATE_FAILURE = -2,
     STATE_SUCCESS = -1,
     STATE_CONTINUE = 0,

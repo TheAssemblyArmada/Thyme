@@ -14,6 +14,7 @@
  */
 #include "weapon.h"
 #include "ini.h"
+#include "weaponset.h"
 
 #ifndef GAME_DLL
 WeaponStore *g_theWeaponStore = nullptr;
@@ -114,6 +115,16 @@ bool Weapon::Is_Within_Attack_Range(const Object *source, const Object *target) 
 #endif
 }
 
+bool Weapon::Is_Within_Attack_Range(const Object *source, const Coord3D *target) const
+{
+#ifdef GAME_DLL
+    return Call_Method<bool, const Weapon, const Object *, const Coord3D *>(
+        PICK_ADDRESS(0x004C7170, 0x006D7DF0), this, source, target);
+#else
+    return false;
+#endif
+}
+
 float Weapon::Get_Attack_Range(const Object *source) const
 {
 #ifdef GAME_DLL
@@ -121,4 +132,9 @@ float Weapon::Get_Attack_Range(const Object *source) const
 #else
     return 0;
 #endif
+}
+
+Weapon *WeaponSet::Get_Weapon_In_Weapon_Slot(WeaponSlotType slot) const
+{
+    return m_weapons[slot];
 }

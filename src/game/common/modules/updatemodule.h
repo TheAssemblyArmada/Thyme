@@ -27,6 +27,7 @@ enum SleepyUpdatePhase : uint32_t
 
 enum UpdateSleepTime : uint32_t
 {
+    // this is a frame number
     UPDATE_SLEEP_TIME_MIN = 1u,
     UPDATE_SLEEP_TIME_MAX = (~0u >> SLEEPY_UPDATE_PHASE_2),
 };

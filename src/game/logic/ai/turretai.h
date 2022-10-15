@@ -27,13 +27,23 @@ enum TurretTargetType
     TARGET_TYPE_POSITION,
 };
 
+enum TurretStateType
+{
+    TURRET_IDLE,
+    TURRET_IDLE_SCAN,
+    TURRET_AIM_TURRET,
+    TURRET_ATTACK_FIRE,
+    TURRET_RECENTER_TURRET,
+    TURRET_HOLD_TURRET,
+};
+
 class TurretStateMachine : public StateMachine
 {
     IMPLEMENT_POOL(TurretStateMachine);
 
 public:
     TurretStateMachine(TurretAI *tai, Object *obj, Utf8String name);
-    ~TurretStateMachine() override;
+    ~TurretStateMachine() override {}
     virtual void Clear() override;
     virtual StateReturnType Reset_To_Default_State() override;
     virtual StateReturnType Set_State(unsigned int new_state_id) override;
@@ -88,6 +98,12 @@ class TurretAI : public MemoryPoolObject, public SnapShot, public NotifyWeaponFi
     IMPLEMENT_POOL(TurretAI)
 
 public:
+#ifdef GAME_DLL
+    TurretAI *Hook_Ctor(Object *owner, const TurretAIData *data, WhichTurretType tur)
+    {
+        return new (this) TurretAI(owner, data, tur);
+    }
+#endif
     TurretAI(Object *owner, const TurretAIData *data, WhichTurretType tur);
 
     virtual ~TurretAI() override;
@@ -97,18 +113,18 @@ public:
     virtual void Load_Post_Process() override;
 
     virtual void Notify_Fired() override;
-    virtual void Notify_New_Victim_Chosen() override;
+    virtual void Notify_New_Victim_Chosen(Object *victim) override;
     virtual bool Is_Weapon_Slot_Ok_To_Fire(WeaponSlotType wslot) const override;
     virtual bool Is_Attacking_Object() const override { return m_targetType == TARGET_TYPE_OBJECT; }
     virtual const Coord3D *Get_Original_Victim_Pos() const override { return nullptr; }
 
     bool Friend_Turn_Towards_Angle(float desired_angle, float rate_modifier, float unk);
     bool Friend_Turn_Towards_Pitch(float desired_pitch, float rate_modifier);
-    TurretTargetType Friend_Get_Target_Turret(Object *&victim_obj, Coord3D *&victim_pos, bool reset_if_dead) const;
+    TurretTargetType Friend_Get_Turret_Target(Object *&victim_obj, Coord3D &victim_pos, bool reset_if_dead) const;
     void Friend_Notify_State_Machine_Changed();
     bool Friend_Is_Any_Weapon_In_Range_Of(const Object *obj) const;
     bool Friend_Is_Sweep_Enabled() const;
-    int Friend_Get_Next_Idle_Mood_Target_Frame() const;
+    unsigned int Friend_Get_Next_Idle_Mood_Target_Frame() const;
     void Friend_Check_For_Idle_Mood_Target();
 
     float Get_Turret_Fire_Angle_Sweep_For_Weapon_Slot(WeaponSlotType wslot) const;
@@ -117,10 +133,10 @@ public:
     bool Is_Owners_Cur_Weapon_On_Turret() const;
     bool Is_Weapon_Slot_On_Turret(WeaponSlotType wslot) const;
     bool Is_Turret_In_Neutral_Position() const;
+    bool Is_Trying_To_Aim_At_Target(const Object *victim) const;
 
     void Remove_Self_As_Targeter();
     void Recenter_Turret();
-    bool Trying_To_Aim_At_Target(const Object *victim) const;
     UpdateSleepTime Update_Turret_AI();
     void Start_Rot_Or_Pitch_Sound();
     void Stop_Rot_Or_Pitch_Sound();
@@ -141,26 +157,22 @@ public:
     float Get_Fire_Pitch() const { return m_data->m_firePitch; }
     float Get_Ground_Unit_Pitch() const { return m_data->m_groundUnitPitch; }
     const Team *Get_Victim_Initial_Team() { return m_victimInitialTeam; }
-    float Get_Min_Idle_Scan_Interval() const { return m_data->m_minIdleScanInterval; }
-    float Get_Max_Idle_Scan_Interval() const { return m_data->m_maxIdleScanInterval; }
+    unsigned int Get_Min_Idle_Scan_Interval() const { return m_data->m_minIdleScanInterval; }
+    unsigned int Get_Max_Idle_Scan_Interval() const { return m_data->m_maxIdleScanInterval; }
     WhichTurretType Get_Which_Turret() const { return m_whichTurret; }
     float Get_Min_Idle_Scan_Angle() const { return m_data->m_minIdleScanAngle; }
     float Get_Max_Idle_Scan_Angle() const { return m_data->m_maxIdleScanAngle; }
-    float Get_Recenter_Time() const { return m_data->m_recenterTime; }
+    unsigned int Get_Recenter_Time() const { return m_data->m_recenterTime; }
 
     bool Is_Enabled() const { return m_enabled; }
     bool Is_Allows_Pitch() const { return m_data->m_isAllowsPitch; }
     bool Is_Attack_Forced() const { return m_attackForced; }
-    bool Is_Positive_Sweep() const { return m_positiveSweep; }
-    bool Is_Unk() const { return m_unk; }
+    bool Friend_Get_Positive_Sweep() const { return m_positiveSweep; }
+    bool Is_Has_Mood_Target() const { return m_hasMoodTarget; }
 
     void Set_Positive_Sweep(bool set) { m_positiveSweep = set; }
 
 private:
-    enum Flags
-    {
-    };
-
     const TurretAIData *m_data;
     WhichTurretType m_whichTurret;
     Object *m_owner;
@@ -169,8 +181,8 @@ private:
     float m_pitch;
     AudioEventRTS m_turretRotOrPitchSound;
     unsigned int m_unkFrame1;
-    Team *m_victimInitialTeam;
-    TurretTargetType m_targetType;
+    const Team *m_victimInitialTeam;
+    mutable TurretTargetType m_targetType;
     unsigned int m_unkFrame2;
     unsigned int m_sleepUntil;
     bool m_playRotSound : 1;
@@ -180,7 +192,7 @@ private:
     bool m_enabled : 1;
     bool m_firesWhileTurning : 1;
     bool m_attackForced : 1;
-    bool m_unk : 1;
+    mutable bool m_hasMoodTarget : 1;
 };
 
 class TurretState : public State
@@ -202,7 +214,7 @@ class TurretAIAimTurretState : public TurretState
 public:
     TurretAIAimTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIAimTurretState() override;
+    virtual ~TurretAIAimTurretState() override {}
     virtual StateReturnType On_Enter() override { return STATE_CONTINUE; }
     virtual void On_Exit(StateExitType status) override {}
     virtual StateReturnType Update() override;
@@ -219,7 +231,7 @@ class TurretAIRecenterTurretState : public TurretState
 public:
     TurretAIRecenterTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIRecenterTurretState() override;
+    virtual ~TurretAIRecenterTurretState() override {}
     virtual StateReturnType On_Enter() override { return STATE_CONTINUE; }
     virtual void On_Exit(StateExitType status) override {}
     virtual StateReturnType Update() override;
@@ -236,7 +248,7 @@ class TurretAIIdleState : public TurretState
 public:
     TurretAIIdleState(TurretStateMachine *machine);
 
-    virtual ~TurretAIIdleState() override;
+    virtual ~TurretAIIdleState() override {}
     virtual StateReturnType On_Enter() override;
     virtual StateReturnType Update() override;
 
@@ -257,7 +269,7 @@ class TurretAIIdleScanState : public TurretState
 public:
     TurretAIIdleScanState(TurretStateMachine *machine);
 
-    virtual ~TurretAIIdleScanState() override;
+    virtual ~TurretAIIdleScanState() override {}
     virtual StateReturnType On_Enter() override;
     virtual void On_Exit(StateExitType status) override {}
     virtual StateReturnType Update() override;
@@ -277,7 +289,7 @@ class TurretAIHoldTurretState : public TurretState
 public:
     TurretAIHoldTurretState(TurretStateMachine *machine);
 
-    virtual ~TurretAIHoldTurretState() override;
+    virtual ~TurretAIHoldTurretState() override {}
     virtual StateReturnType On_Enter() override;
     virtual void On_Exit(StateExitType status) override {}
     virtual StateReturnType Update() override;
@@ -287,5 +299,5 @@ public:
     virtual void Load_Post_Process() override {}
 
 private:
-    unsigned int m_frame;
+    unsigned int m_nextRecenterTime;
 };

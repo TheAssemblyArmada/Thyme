@@ -46,8 +46,8 @@ enum GuardMode
 };
 enum AttitudeType
 {
-    AI_SLEEP = 0xfffffffe,
-    AI_PASSIVE = 0xffffffff,
+    AI_SLEEP = -2,
+    AI_PASSIVE = -1,
     AI_NORMAL = 0,
     AI_ALERT = 1,
     AI_AGGRESSIVE = 2,
@@ -56,7 +56,7 @@ enum AttitudeType
 
 enum LocomotorSetType
 {
-    LOCOMOTORSET_INVALID = 0xff,
+    LOCOMOTORSET_INVALID = -1,
     LOCOMOTORSET_NORMAL = 0,
     LOCOMOTORSET_NORMAL_UPGRADED,
     LOCOMOTORSET_FREEFALL,
@@ -89,6 +89,7 @@ public:
     virtual bool Is_AI_Module_Data() const override;
 
     static void Parse_Locomotor_Set(INI *ini, void *formal, void *store, const void *user_data);
+    static void Parse_Turret(INI *ini, void *formal, void *store, const void *user_data);
 
 private:
     std::map<LocomotorSetType, LocomotorTemplate const *> m_locomotorTemplates;

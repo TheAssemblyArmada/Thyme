@@ -91,3 +91,12 @@ void BaseHeightMapRenderObjClass::Add_Tree(
         PICK_ADDRESS(0x00755240, 0x00601C53), this, drawable, location, scale, angle, random, module);
 #endif
 }
+
+void BaseHeightMapRenderObjClass::Add_Prop(
+    DrawableID drawable, Coord3D location, float orientation, float scale, const Utf8String &name)
+{
+#ifdef GAME_DLL
+    Call_Method<void, BaseHeightMapRenderObjClass, DrawableID, Coord3D, float, float, const Utf8String &>(
+        PICK_ADDRESS(0x00755290, 0x00601D3D), this, drawable, location, orientation, scale, name);
+#endif
+}

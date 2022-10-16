@@ -94,6 +94,7 @@ set(GAMEENGINE_SRC
     game/client/draw/w3doverlordtruckdraw.cpp
     game/client/draw/w3dpolicecardraw.cpp
     game/client/draw/w3dprojectilestreamdraw.cpp
+    game/client/draw/w3dpropdraw.cpp
     game/client/draw/w3dropedraw.cpp
     game/client/draw/w3dsciencemodeldraw.cpp
     game/client/draw/w3dsupplydraw.cpp

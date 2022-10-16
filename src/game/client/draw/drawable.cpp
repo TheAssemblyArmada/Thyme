@@ -748,7 +748,7 @@ void Drawable::Draw_Bombed(IRegion2D const *region)
             int x = GameMath::Fast_To_Int_Truncate(region->lo.x + (region->hi.x - region->lo.x) * 0.5f - width * 0.5f);
             int y = GameMath::Fast_To_Int_Truncate(region->lo.y + (region->hi.y - region->lo.y) * 0.5f) + 5;
             Get_Icon_Info()->anims[ICON_CARBOMB]->Draw(x, y, width, height);
-            Get_Icon_Info()->timings[ICON_CARBOMB] = 0x3FFFFFFF;
+            Get_Icon_Info()->timings[ICON_CARBOMB] = UPDATE_SLEEP_TIME_MAX;
         }
     } else {
         Kill_Icon(ICON_CARBOMB);
@@ -1027,7 +1027,7 @@ void Drawable::Set_Emoticon(Utf8String const &emoticon, int frames)
             Get_Icon_Info()->anims[ICON_EMOTICON] = new Anim2D(tmplate, g_theAnim2DCollection);
 
             if (frames < 0) {
-                Get_Icon_Info()->timings[ICON_EMOTICON] = 0x3FFFFFFF;
+                Get_Icon_Info()->timings[ICON_EMOTICON] = UPDATE_SLEEP_TIME_MAX;
             } else {
                 Get_Icon_Info()->timings[ICON_EMOTICON] = frames + g_theGameLogic->Get_Frame();
             }

@@ -14,6 +14,7 @@
  */
 #include "w3dmodulefactory.h"
 #include "moduleinfo.h"
+#include "w3ddebrisdraw.h"
 #include "w3ddefaultdraw.h"
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
@@ -42,18 +43,18 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DDefaultDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00775C90,
-        (moddatacreateproc_t)0x0061D5D0,
+    Add_Module_Internal(W3DDebrisDraw::Friend_New_Module_Instance,
+        W3DDebrisDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DDebrisDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal(&W3DModelDraw::Friend_New_Module_Instance,
-        &W3DModelDraw::Friend_New_Module_Data,
+    Add_Module_Internal(W3DModelDraw::Friend_New_Module_Instance,
+        W3DModelDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DModelDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal(&W3DLaserDraw::Friend_New_Module_Instance,
-        &W3DLaserDraw::Friend_New_Module_Data,
+    Add_Module_Internal(W3DLaserDraw::Friend_New_Module_Instance,
+        W3DLaserDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DLaserDraw",
         DrawModule::Get_Interface_Mask());

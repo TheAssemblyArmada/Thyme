@@ -865,7 +865,7 @@ UpdateSleepTime TurretAI::Update_Turret_AI()
         }
 
         if (type > 0) {
-            if (type < time) {
+            if (static_cast<UpdateSleepTime>(type) < time) {
                 time = static_cast<UpdateSleepTime>(type);
             }
         } else {

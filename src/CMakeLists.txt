@@ -101,6 +101,7 @@ set(GAMEENGINE_SRC
     game/client/draw/w3dsupplydraw.cpp
     game/client/draw/w3dtankdraw.cpp
     game/client/draw/w3dtanktruckdraw.cpp
+    game/client/draw/w3dtracerdraw.cpp
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/w3dtruckdraw.cpp
     game/client/draw/tintenvelope.cpp

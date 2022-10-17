@@ -46,7 +46,7 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override;
 
-    virtual void Set_Model_Name(Utf8String name, unsigned int color, ShadowType t) override;
+    virtual void Set_Model_Name(Utf8String name, unsigned int color, ShadowType type) override;
     virtual void Set_Anim_Names(Utf8String initial, Utf8String flying, Utf8String final, const FXList *final_fx) override;
 
     static Module *Friend_New_Module_Instance(Thing *thing, ModuleData const *module_data);

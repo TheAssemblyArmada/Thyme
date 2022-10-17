@@ -85,12 +85,12 @@ void W3DDebrisDraw::Do_Draw_Module(const Matrix3D *transform)
         int old_state = m_state;
         Object *object = drawable->Get_Object();
 
-        if (m_state == FINAL || object == nullptr || object->Is_Above_Terrain() || m_frames <= 3) {
+        if (m_state != FINAL && object != nullptr && !object->Is_Above_Terrain() && m_frames > 3) {
+            m_state = FINAL;
+        } else {
             if (m_state < FINAL && Is_Animation_Complete(m_renderObject)) {
                 m_state++;
             }
-        } else {
-            m_state = FINAL;
         }
 
         HAnimClass *anim = m_anims[m_state];
@@ -175,7 +175,7 @@ void W3DDebrisDraw::Load_Post_Process()
     DrawModule::Load_Post_Process();
 }
 
-void W3DDebrisDraw::Set_Model_Name(Utf8String name, unsigned int color, ShadowType t)
+void W3DDebrisDraw::Set_Model_Name(Utf8String name, unsigned int color, ShadowType type)
 {
     if (m_renderObject == nullptr && !name.Is_Empty()) {
         int col = 0;
@@ -196,9 +196,9 @@ void W3DDebrisDraw::Set_Model_Name(Utf8String name, unsigned int color, ShadowTy
             m_renderObject->Set_Transform(tm);
         }
 
-        if (t != SHADOW_NONE) {
+        if (type != SHADOW_NONE) {
             Shadow::ShadowTypeInfo info;
-            info.m_type = t;
+            info.m_type = type;
             info.m_sizeX = 0.0f;
             info.m_sizeY = 0.0f;
             m_shadow = g_theW3DShadowManager->Add_Shadow(m_renderObject, &info, nullptr);

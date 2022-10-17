@@ -1501,6 +1501,13 @@ float W3DModelDraw::Get_Current_Anim_Fraction() const
         return 0.0f;
     }
 
+    // #BUGFIX Fix animation jumping back one frame when crossing ConditionState using MAINTAIN_FRAME_ACROSS_STATES.
+    // Loop frame to beginning of animation if supported.
+    frame += 2.0f;
+    if (Test_Animation_Flag(m_curState->m_flags, RESTART_ANIM_WHEN_COMPLETE) && frame > frames) {
+        frame -= frames;
+    }
+
     if (frames > frame) {
         return frame / (frames - 1.0f);
     }

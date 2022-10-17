@@ -98,6 +98,7 @@ public:
     void Notify_Shroud_Changed();
     void Add_Tree(
         DrawableID drawable, Coord3D location, float scale, float angle, float random, W3DTreeDrawModuleData const *module);
+    void Add_Prop(DrawableID drawable, Coord3D location, float orientation, float scale, const Utf8String &name);
 
     W3DShroud *Get_Shroud() { return m_shroud; }
 

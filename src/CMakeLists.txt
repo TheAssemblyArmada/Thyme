@@ -85,6 +85,7 @@ set(GAMEENGINE_SRC
     game/client/water.cpp
     game/client/worldheightmap.cpp
     game/client/draw/drawable.cpp
+    game/client/draw/w3ddebrisdraw.cpp
     game/client/draw/w3ddefaultdraw.cpp
     game/client/draw/w3ddependencymodeldraw.cpp
     game/client/draw/w3dlaserdraw.cpp
@@ -94,11 +95,13 @@ set(GAMEENGINE_SRC
     game/client/draw/w3doverlordtruckdraw.cpp
     game/client/draw/w3dpolicecardraw.cpp
     game/client/draw/w3dprojectilestreamdraw.cpp
+    game/client/draw/w3dpropdraw.cpp
     game/client/draw/w3dropedraw.cpp
     game/client/draw/w3dsciencemodeldraw.cpp
     game/client/draw/w3dsupplydraw.cpp
     game/client/draw/w3dtankdraw.cpp
     game/client/draw/w3dtanktruckdraw.cpp
+    game/client/draw/w3dtracerdraw.cpp
     game/client/draw/w3dtreedraw.cpp
     game/client/draw/w3dtruckdraw.cpp
     game/client/draw/tintenvelope.cpp

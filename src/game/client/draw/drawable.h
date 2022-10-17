@@ -294,6 +294,7 @@ public:
     void Set_Flash_Time(int time) { m_flashTime = time; }
     void Set_Flash_Color(int color) { m_flashColor = color; }
     DrawableLocoInfo *Get_Loco_Info() { return m_drawableLocoInfo; }
+    unsigned int Get_Expiration_Date() { return m_expirationDate; }
 
     void Allocate_Shadows();
 

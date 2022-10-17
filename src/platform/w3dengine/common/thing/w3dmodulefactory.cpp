@@ -14,6 +14,7 @@
  */
 #include "w3dmodulefactory.h"
 #include "moduleinfo.h"
+#include "w3ddebrisdraw.h"
 #include "w3ddefaultdraw.h"
 #include "w3ddependencymodeldraw.h"
 #include "w3dlaserdraw.h"
@@ -23,10 +24,12 @@
 #include "w3doverlordtruckdraw.h"
 #include "w3dpolicecardraw.h"
 #include "w3dprojectilestreamdraw.h"
+#include "w3dpropdraw.h"
 #include "w3dropedraw.h"
 #include "w3dsciencemodeldraw.h"
 #include "w3dsupplydraw.h"
 #include "w3dtanktruckdraw.h"
+#include "w3dtracerdraw.h"
 #include "w3dtreedraw.h"
 /**
  * @brief Initialises W3D specific modules on top of those handled by the base factory class.
@@ -41,18 +44,18 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DDefaultDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00775C90,
-        (moddatacreateproc_t)0x0061D5D0,
+    Add_Module_Internal(W3DDebrisDraw::Friend_New_Module_Instance,
+        W3DDebrisDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DDebrisDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal(&W3DModelDraw::Friend_New_Module_Instance,
-        &W3DModelDraw::Friend_New_Module_Data,
+    Add_Module_Internal(W3DModelDraw::Friend_New_Module_Instance,
+        W3DModelDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DModelDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal(&W3DLaserDraw::Friend_New_Module_Instance,
-        &W3DLaserDraw::Friend_New_Module_Data,
+    Add_Module_Internal(W3DLaserDraw::Friend_New_Module_Instance,
+        W3DLaserDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DLaserDraw",
         DrawModule::Get_Interface_Mask());
@@ -111,8 +114,8 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DTruckDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x00777080,
-        (moddatacreateproc_t)0x0061D5D0,
+    Add_Module_Internal(W3DTracerDraw::Friend_New_Module_Instance,
+        W3DTracerDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DTracerDraw",
         DrawModule::Get_Interface_Mask());
@@ -121,13 +124,13 @@ void W3DModuleFactory::Init()
         DrawModule::Get_Module_Type(),
         "W3DTankTruckDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal(&W3DTreeDraw::Friend_New_Module_Instance,
-        &W3DTreeDraw::Friend_New_Module_Data,
+    Add_Module_Internal(W3DTreeDraw::Friend_New_Module_Instance,
+        W3DTreeDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DTreeDraw",
         DrawModule::Get_Interface_Mask());
-    Add_Module_Internal((modcreateproc_t)0x007772B0,
-        (moddatacreateproc_t)0x00777390,
+    Add_Module_Internal(W3DPropDraw::Friend_New_Module_Instance,
+        W3DPropDraw::Friend_New_Module_Data,
         DrawModule::Get_Module_Type(),
         "W3DPropDraw",
         DrawModule::Get_Interface_Mask());

@@ -235,3 +235,54 @@ float Player::Get_Production_Cost_Change_Based_On_Kind_Of(BitFlags<KINDOF_COUNT>
     return 0.0f;
 #endif
 }
+
+PlayerRelationMap::~PlayerRelationMap()
+{
+    m_relationships.clear();
+}
+
+void PlayerRelationMap::Xfer_Snapshot(Xfer *xfer)
+{
+    unsigned char version = 1;
+    xfer->xferVersion(&version, 1);
+    unsigned short size = static_cast<unsigned short>(m_relationships.size());
+    xfer->xferUnsignedShort(&size);
+
+    if (xfer->Get_Mode() == XFER_SAVE) {
+        for (auto it = m_relationships.begin(); it != m_relationships.end(); ++it) {
+            int id = (*it).first;
+            xfer->xferInt(&id);
+            Relationship r = (*it).second;
+            xfer->xferUser(&r, sizeof(r));
+        }
+    } else {
+        for (unsigned short i = 0; i < size; i++) {
+            int id;
+            xfer->xferInt(&id);
+            Relationship r;
+            xfer->xferUser(&r, sizeof(r));
+            m_relationships[id] = r;
+        }
+    }
+}
+
+void Player::Pre_Team_Destroy(const Team *team)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, const Team *>(PICK_ADDRESS(0x00453430, 0x0085CFF0), this, team);
+#endif
+}
+
+void Player::Add_Team_To_List(TeamPrototype *team)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, TeamPrototype *>(PICK_ADDRESS(0x00453620, 0x0085D291), this, team);
+#endif
+}
+
+void Player::Remove_Team_From_List(TeamPrototype *team)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Player, TeamPrototype *>(PICK_ADDRESS(0x00453660, 0x0085D30E), this, team);
+#endif
+}

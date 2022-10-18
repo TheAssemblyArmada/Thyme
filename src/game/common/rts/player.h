@@ -24,6 +24,12 @@
 #include <list>
 #include <map>
 
+#ifdef THYME_USE_STLPORT
+#include <hash_map>
+#else
+#include <unordered_map>
+#endif
+
 class PlayerTemplate;
 class SpecialPowerTemplate;
 class UpgradeTemplate;
@@ -132,10 +138,10 @@ public:
     // unsigned int Get_Supply_Box_Value() const;
 
     // void Set_Team_Delay_Seconds(int);
-    // void Pre_Team_Destroy(const Team *);
+    void Pre_Team_Destroy(const Team *team);
 
-    // void Add_Team_To_List(TeamPrototype *);
-    // void Remove_Team_From_List(TeamPrototype *);
+    void Add_Team_To_List(TeamPrototype *team);
+    void Remove_Team_From_List(TeamPrototype *team);
     // void Set_Default_Team();
     // void Becoming_Team_Member(Object *, bool);
     // void Set_Player_Relationship(const Player *, Relationship);
@@ -337,4 +343,24 @@ private:
     Squad *m_aiSquad;
     bool m_playerIsDead;
     bool m_unk_0x044D; // bool m_retaliationModeEnabled;
+};
+
+class PlayerRelationMap : public MemoryPoolObject, public SnapShot
+{
+    IMPLEMENT_NAMED_POOL(PlayerRelationMap, PlayerRelationMapPool);
+
+public:
+    PlayerRelationMap() {}
+
+    virtual ~PlayerRelationMap() override;
+    virtual void CRC_Snapshot(Xfer *xfer) override {}
+    virtual void Xfer_Snapshot(Xfer *xfer) override;
+    virtual void Load_Post_Process() override {}
+
+private:
+#ifdef THYME_USE_STLPORT
+    std::hash_map<int, Relationship> m_relationships;
+#else
+    std::unordered_map<int, Relationship> m_relationships;
+#endif
 };

@@ -652,3 +652,7 @@ LocomotorStore *&g_theLocomotorStore = Make_Global<LocomotorStore *>(PICK_ADDRES
 // weapon.cpp
 class WeaponStore;
 WeaponStore *&g_theWeaponStore = Make_Global<WeaponStore *>(PICK_ADDRESS(0x00A2BC60, 0x00E1D59C));
+
+// team.cpp
+class TeamFactory;
+TeamFactory *&g_theTeamFactory = Make_Global<TeamFactory *>(PICK_ADDRESS(0x00A2BBE8, 0x04CA864C));

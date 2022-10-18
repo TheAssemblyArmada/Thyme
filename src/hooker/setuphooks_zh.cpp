@@ -141,6 +141,7 @@
 #include "surfaceclass.h"
 #include "swayclientupdate.h"
 #include "targa.h"
+#include "team.h"
 #include "teamsinfo.h"
 #include "terraintex.h"
 #include "texproject.h"
@@ -2358,4 +2359,17 @@ void Setup_Hooks()
 
     // aiupdate.h
     Hook_Any(0x005CFDF0, AIUpdateModuleData::Parse_Turret);
+
+    // team.h
+    Hook_Any(0x0049C4F0, TeamRelationMap::Hook_Ctor);
+    Hook_Any(0x0049CA30, TeamFactory::Hook_Ctor);
+    Hook_Any(0x0049CE60, TeamFactory::Init_From_Sides);
+    Hook_Any(0x0049D120, TeamFactory::Find_Team_Prototype);
+    Hook_Any(0x0049D190, TeamFactory::Find_Team_Prototype_By_ID);
+    Hook_Any(0x0049D1F0, TeamFactory::Find_Team_By_ID);
+    Hook_Any(0x0049D280, TeamFactory::Create_Inactive_Team);
+    Hook_Any(0x0049D450, TeamFactory::Create_Team);
+    Hook_Any(0x0049D540, TeamFactory::Find_Team);
+    Hook_Any(0x0049FEF0, Team::Remove_Override_Team_Relationship);
+
 }

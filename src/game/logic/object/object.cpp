@@ -18,6 +18,7 @@
 #include "drawable.h"
 #include "experiencetracker.h"
 #include "playerlist.h"
+#include "team.h"
 #include "updatemodule.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
@@ -357,5 +358,12 @@ CanAttackResult Object::Get_Able_To_Attack_Specific_Object(
         PICK_ADDRESS(0x005477B0, 0x007D0AC5), this, type, obj, source, slot);
 #else
     return ATTACK_RESULT_0;
+#endif
+}
+
+void Object::Set_Team(Team *team)
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object, Team *>(PICK_ADDRESS(0x00546800, 0x007CFB7A), this, team);
 #endif
 }

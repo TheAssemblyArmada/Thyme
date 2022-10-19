@@ -24,7 +24,7 @@ public:
     virtual void Init_Rope_Params(
         float height, float width, const RGBColor &color, float wobble_len, float wobble_amplitude, float wobble_rate) = 0;
     virtual void Set_Rope_Cur_Len(float length) = 0;
-    virtual void Set_Rope_Speed(float speed1, float speed2, float speed3) = 0;
+    virtual void Set_Rope_Speed(float initial_speed, float max_speed, float gravity) = 0;
 };
 
 class W3DRopeDraw : public DrawModule, public RopeDrawInterface
@@ -57,7 +57,7 @@ public:
         float wobble_amplitude,
         float wobble_rate) override;
     virtual void Set_Rope_Cur_Len(float length) override;
-    virtual void Set_Rope_Speed(float unk_speed, float drop_speed, float gravity) override;
+    virtual void Set_Rope_Speed(float initial_speed, float max_speed, float gravity) override;
 
     void Build_Segments();
     void Toss_Segments();
@@ -78,12 +78,12 @@ private:
     float m_height;
     float m_width;
     RGBColor m_color;
-    float m_unkSpeed;
-    float m_dropSpeed;
+    float m_curDropSpeed;
+    float m_maxDropSpeed;
     float m_gravity;
     float m_wobbleLen;
     float m_wobbleAmplitude;
     float m_wobbleRate;
     float m_wobbleAngle;
-    float m_unk2;
+    float m_curDropHeight;
 };

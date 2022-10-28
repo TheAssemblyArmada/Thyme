@@ -164,14 +164,6 @@ unichar_t Utf16String::Get_Char(size_type index) const
     return U_CHAR('\0');
 }
 
-unichar_t &Utf16String::Get_Char(size_type index)
-{
-    captainslog_dbgassert(index >= 0, "Index must be equal or larger than 0.");
-    captainslog_dbgassert(index < Get_Length(), "Index must be smaller than length.");
-
-    return m_data->Peek()[index];
-}
-
 const unichar_t *Utf16String::Str() const
 {
     static const unichar_t *TheNullChr = U_CHAR("");

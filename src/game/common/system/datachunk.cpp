@@ -271,9 +271,10 @@ Utf8String DataChunkInput::Read_AsciiString()
 
     captainslog_dbgassert(m_chunkStack->data_left >= size, "Read past end of chunk reading Utf8String string.");
 
-    m_file->Read(string.Get_Buffer_For_Read(size), size);
+    char *buf = string.Get_Buffer_For_Read(size);
+    m_file->Read(buf, size);
     Decrement_Data_Left(size);
-    string.Peek()[size] = '\0';
+    buf[size] = '\0';
 
     return string;
 }
@@ -305,7 +306,6 @@ Utf16String DataChunkInput::Read_UnicodeString()
     }
 
     Decrement_Data_Left(sizeof(ch) * size);
-    string.Peek()[size] = L'\0';
 
     return string;
 }

@@ -116,16 +116,13 @@ public:
     operator const unichar_t *() const { return Str(); }
 
     unichar_t operator[](size_type index) const { return Get_Char(index); }
-    unichar_t &operator[](size_type index) { return Get_Char(index); }
 
     void Validate();
     const unichar_t *Peek() const;
-    unichar_t *Peek();
     void Release_Buffer();
     size_type Get_Length() const;
     void Clear();
     unichar_t Get_Char(size_type index) const;
-    unichar_t &Get_Char(size_type index);
     const unichar_t *Str() const;
     unichar_t *Get_Buffer_For_Read(size_type len);
     void Set(const unichar_t *s);
@@ -184,6 +181,9 @@ public:
 
 public:
     static Utf16String const s_emptyString;
+
+protected:
+    unichar_t *Peek();
 
 private:
     void Translate_Internal(const char *utf8_string, const size_type utf8_len);

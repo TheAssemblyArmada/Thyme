@@ -103,17 +103,14 @@ public:
     operator const char *() const { return Str(); }
 
     char operator[](size_type index) const { return Get_Char(index); }
-    char &operator[](size_type index) { return Get_Char(index); }
 
     void Validate();
     const char *Peek() const;
-    char *Peek();
     void Release_Buffer();
     size_type Get_Length() const;
 
     void Clear() { Release_Buffer(); }
     char Get_Char(size_type index) const;
-    char &Get_Char(size_type index);
     const char *Str() const;
     char *Get_Buffer_For_Read(size_type len);
     // These two should probably be private with the = operator being the preferred interface?
@@ -194,6 +191,9 @@ public:
     Utf8String *Hook_Ctor1(const char *s) { return new (this) Utf8String(s); }
     Utf8String *Hook_Ctor2(Utf8String const &string) { return new (this) Utf8String(string); }
 #endif
+
+protected:
+    char *Peek();
 
 private:
     void Translate_Internal(const unichar_t *utf16_string, const size_type utf16_len);

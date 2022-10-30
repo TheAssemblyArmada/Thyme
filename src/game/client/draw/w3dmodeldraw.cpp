@@ -144,7 +144,7 @@ void ModelConditionInfo::Validate_Stuff(RenderObjClass *robj, float scale, std::
     Validate_Weapon_Barrel_Info();
 }
 
-bool Test_Animation_Flag(int flags, char flag)
+bool Test_Animation_Flag(int flags, AnimationStateFlag flag)
 {
     return ((1 << flag) & flags) != 0;
 }
@@ -1378,7 +1378,7 @@ void W3DModelDraw::Adjust_Transform_Mtx(Matrix3D &transform) const
         transform.Adjust_Z_Translation(v.Z);
     }
 
-    if ((m_curState->m_flags & 1 << ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT) != 0) {
+    if (Test_Animation_Flag(m_curState->m_flags, ADJUST_HEIGHT_BY_CONSTRUCTION_PERCENT)) {
         const Object *object = Get_Drawable()->Get_Object();
 
         if (object != nullptr) {
@@ -1472,14 +1472,21 @@ const ModelConditionInfo *W3DModelDraw::Find_Transition_For_Sig(uint64_t sig) co
     }
 }
 
+namespace
+{
+constexpr int g_maintain_frame_across_states_flags = (1 << MAINTAIN_FRAME_ACROSS_STATES)
+    | (1 << MAINTAIN_FRAME_ACROSS_STATES2) | (1 << MAINTAIN_FRAME_ACROSS_STATES3)
+    | (1 << MAINTAIN_FRAME_ACROSS_STATES4); // 0x3A0
+}
+
 bool Maintain_Frame_Across_States(int flags)
 {
-    return (flags & 0x3A0) != 0;
+    return (flags & g_maintain_frame_across_states_flags) != 0;
 }
 
 bool Maintain_Frame_Across_States_2(int flags, int flags2)
 {
-    return (flags2 & 0x3A0 & flags & 0x3A0) != 0;
+    return (flags2 & flags & g_maintain_frame_across_states_flags) != 0;
 }
 
 float W3DModelDraw::Get_Current_Anim_Fraction() const

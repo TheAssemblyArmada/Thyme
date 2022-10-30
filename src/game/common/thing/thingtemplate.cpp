@@ -986,7 +986,7 @@ AIUpdateModuleData *ThingTemplate::Friend_Get_AI_Module_Info() const
         if (m_body.Get_Nth_Data(i)) {
             const ModuleData *data = m_body.Get_Nth_Data(i);
             if (data->Is_AI_Module_Data()) {
-                return (AIUpdateModuleData *)m_body.Friend_Get_Nth_Data(i);
+                return static_cast<AIUpdateModuleData *>(m_body.Friend_Get_Nth_Data(i));
             }
         }
     }

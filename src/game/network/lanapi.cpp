@@ -561,7 +561,7 @@ void LANAPI::Send_Message(LANMessage *msg, uint32_t addr)
  *
  * 0x005E1D20
  */
-uint32_t LANAPI::Resolve_IP(Utf8String addr)
+uint32_t LANAPI::Resolve_IP(const Utf8String &addr)
 {
     // No string, no IP.
     if (addr.Is_Empty()) {

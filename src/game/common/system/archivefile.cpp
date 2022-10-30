@@ -154,8 +154,8 @@ bool ArchiveFile::Search_String_Matches(Utf8String string, Utf8String search)
         return false;
     }
 
-    const char *cstring = string.Peek();
-    const char *csearch = search.Peek();
+    const char *cstring = string.Str();
+    const char *csearch = search.Str();
 
     // ? is wildcard for a single character.
     // * is wildcard for a run of characters.

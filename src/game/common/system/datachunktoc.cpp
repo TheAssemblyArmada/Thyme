@@ -111,8 +111,9 @@ void DataChunkTableOfContents::Read(ChunkInputStream &stream)
 
             // If we have a name length, read it and null terminate it.
             if (name_len > 0) {
-                stream.Read(map->m_name.Get_Buffer_For_Read(name_len), name_len);
-                map->m_name.Peek()[name_len] = '\0';
+                char *buf = map->m_name.Get_Buffer_For_Read(name_len);
+                stream.Read(buf, name_len);
+                buf[name_len] = '\0';
             }
 
             stream.Read(&map->m_id, sizeof(map->m_id));

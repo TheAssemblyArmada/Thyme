@@ -13,7 +13,9 @@
  *            LICENSE
  */
 #include "team.h"
+#include "damage.h"
 #include "gamelogic.h"
+#include "partitionmanager.h"
 #include "playerlist.h"
 #include "script.h"
 #include "scriptengine.h"
@@ -828,4 +830,665 @@ bool Team::Remove_Override_Team_Relationship(unsigned int id)
 
     m_teamRelations->m_relationships.erase(it);
     return true;
+}
+
+Player *TeamPrototype::Get_Controlling_Player() const
+{
+    return m_owningPlayer;
+}
+
+void TeamPrototype::Set_Controlling_Player(Player *new_controller)
+{
+    captainslog_dbgassert(new_controller != nullptr, "Attempted to set NULL player as team-owner, illegal.");
+
+    if (new_controller != nullptr) {
+        if (m_owningPlayer != nullptr) {
+            m_owningPlayer->Remove_Team_From_List(this);
+        }
+
+        m_owningPlayer = new_controller;
+        m_owningPlayer->Add_Team_To_List(this);
+    }
+}
+
+void TeamPrototype::Count_Objects_By_Thing_Template(int num_tmplates,
+    const ThingTemplate *const *things,
+    bool ignore_dead,
+    int *counts,
+    bool ignore_under_construction) const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        it.Cur()->Count_Objects_By_Thing_Template(num_tmplates, things, ignore_dead, counts, ignore_under_construction);
+        it.Advance();
+    }
+}
+
+Script *TeamPrototype::Get_Generic_Script(int script)
+{
+    if (!m_genericScriptsInitalized) {
+        m_genericScriptsInitalized = true;
+
+        for (int i = 0; i < ARRAY_SIZE(m_genericScripts); i++) {
+            Script *new_script = nullptr;
+
+            if (!m_teamTemplate.m_genericScripts[i].Is_Empty()) {
+                Script *found_script = g_theScriptEngine->Find_Script_By_Name(m_teamTemplate.m_genericScripts[i]);
+
+                if (found_script != nullptr) {
+                    new_script = found_script->Duplicate();
+                } else {
+                    captainslog_dbgassert(false,
+                        "We attempted to find a generic script, but couldn't. ('%s')",
+                        m_teamTemplate.m_genericScripts[i].Str());
+                }
+            }
+
+            m_genericScripts[i] = new_script;
+        }
+    }
+
+    return m_genericScripts[script];
+}
+
+void TeamPrototype::Increase_AI_Priority_For_Success()
+{
+    m_teamTemplate.m_productionPriority += m_teamTemplate.m_productionPrioritySuccessIncrease;
+}
+
+void TeamPrototype::Decrease_AI_Priority_For_Failure()
+{
+    m_teamTemplate.m_productionPriority -= m_teamTemplate.m_productionPriorityFailureDecrease;
+}
+
+int TeamPrototype::Count_Buildings()
+{
+    int count = 0;
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        count += it.Cur()->Count_Buildings();
+        it.Advance();
+    }
+
+    return count;
+}
+
+int TeamPrototype::Count_Objects(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    int count = 0;
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        count += it.Cur()->Count_Objects(must_be_set, must_be_clear);
+        it.Advance();
+    }
+
+    return count;
+}
+
+void TeamPrototype::Heal_All_Objects()
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        it.Cur()->Heal_All_Objects();
+        it.Advance();
+    }
+}
+
+void TeamPrototype::Iterate_Objects(void (*func)(Object *, void *), void *data)
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        it.Cur()->Iterate_Objects(func, data);
+        it.Advance();
+    }
+}
+
+int TeamPrototype::Count_Team_Instances()
+{
+    int count = 0;
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        count++;
+        it.Advance();
+    }
+
+    return count;
+}
+
+bool TeamPrototype::Has_Any_Buldings() const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        if (it.Cur()->Has_Any_Buildings()) {
+            return true;
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool TeamPrototype::Has_Any_Buildings(BitFlags<KINDOF_COUNT> must_be_set) const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        if (it.Cur()->Has_Any_Buildings(must_be_set)) {
+            return true;
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool TeamPrototype::Has_Any_Units() const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        if (it.Cur()->Has_Any_Units()) {
+            return true;
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool TeamPrototype::Has_Any_Objects() const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        if (it.Cur()->Has_Any_Objects()) {
+            return true;
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+void TeamPrototype::Update_State()
+{
+    DLINK_ITERATOR<Team> it1 = Iterate_Team_Instance_List();
+
+    while (!it1.Done()) {
+        it1.Cur()->Update_State();
+        it1.Advance();
+    }
+
+    bool done = false;
+
+    while (!done) {
+        done = true;
+        DLINK_ITERATOR<Team> it2 = Iterate_Team_Instance_List();
+
+        while (!it2.Done()) {
+            if (!it2.Cur()->Get_First_Item_In_Team_Member_List() && !Get_Singleton()) {
+                if (!it2.Cur()->Get_Controlling_Player()
+                    || it2.Cur()->Get_Controlling_Player()->Get_Default_Team() != it2.Cur()) {
+                    if (it2.Cur()->Get_Active()) {
+                        g_theTeamFactory->Team_About_To_Be_Deleted(it2.Cur());
+                        it2.Cur()->Delete_Instance();
+                        done = false;
+                        break;
+                    }
+                }
+            }
+
+            it2.Advance();
+        }
+    }
+}
+
+bool TeamPrototype::Has_Any_Build_Facility() const
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        if (it.Cur()->Has_Any_Build_Facility()) {
+            return true;
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+void TeamPrototype::Damage_Team_Members(float amount)
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        it.Cur()->Damage_Team_Members(amount);
+        it.Advance();
+    }
+}
+
+void TeamPrototype::Move_Team_To(Coord3D destination)
+{
+    DLINK_ITERATOR<Team> it = Iterate_Team_Instance_List();
+
+    while (!it.Done()) {
+        it.Cur()->Move_Team_To(destination);
+        it.Advance();
+    }
+}
+
+bool TeamPrototype::Evaluate_Production_Condition()
+{
+    if (m_productionConditionAlwaysFalse) {
+        return false;
+    }
+
+    if (m_productionConditionScript != nullptr) {
+        if (g_theGameLogic->Get_Frame() < m_productionConditionScript->Get_UnkInt2()) {
+            return false;
+        } else {
+            int interval = m_productionConditionScript->Get_Evaluation_Interval();
+
+            if (interval > 0) {
+                m_productionConditionScript->Set_UnkInt2(30 * interval + g_theGameLogic->Get_Frame());
+            }
+
+            return g_theScriptEngine->Evaluate_Conditions(m_productionConditionScript, nullptr, Get_Controlling_Player());
+        }
+    } else {
+        if (m_teamTemplate.m_productionCondition.Is_Empty()) {
+            m_productionConditionAlwaysFalse = true;
+            return false;
+        }
+
+        Script *script = g_theScriptEngine->Find_Script_By_Name(m_teamTemplate.m_productionCondition);
+
+        if (script != nullptr) {
+            GameDifficulty difficulty = Get_Controlling_Player()->Get_Player_Difficulty();
+
+            if (difficulty != DIFFICULTY_EASY) {
+                if (difficulty == DIFFICULTY_NORMAL) {
+                    if (!script->Is_Normal()) {
+                        m_productionConditionAlwaysFalse = true;
+                        return false;
+                    }
+                } else if (difficulty == DIFFICULTY_HARD && !script->Is_Hard()) {
+                    m_productionConditionAlwaysFalse = true;
+                    return false;
+                }
+            } else if (!script->Is_Easy()) {
+                m_productionConditionAlwaysFalse = true;
+                return false;
+            }
+
+            m_productionConditionScript = script->Duplicate();
+            return g_theScriptEngine->Evaluate_Conditions(m_productionConditionScript, nullptr, Get_Controlling_Player());
+        } else {
+            m_productionConditionAlwaysFalse = true;
+            return false;
+        }
+    }
+}
+
+void Team::Count_Objects_By_Thing_Template(int num_tmplates,
+    const ThingTemplate *const *things,
+    bool ignore_dead,
+    int *counts,
+    bool ignore_under_construction) const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        const ThingTemplate *t = it.Cur()->Get_Template();
+
+        for (int i = 0; i < num_tmplates; i++) {
+            if (t->Is_Equivalent_To(things[i])) {
+                if (!ignore_dead || !it.Cur()->Is_Effectively_Dead()) {
+                    if (!ignore_under_construction || !it.Cur()->Get_Status_Bits().Test(OBJECT_STATUS_UNDER_CONSTRUCTION)) {
+                        counts[i]++;
+                    }
+                }
+            }
+        }
+
+        it.Advance();
+    }
+}
+
+void Team::Iterate_Objects(void (*func)(Object *, void *), void *data)
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        func(it.Cur(), data);
+        it.Advance();
+    }
+}
+
+void Team::Heal_All_Objects()
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        it.Cur()->Heal_Completely();
+        it.Advance();
+    }
+}
+
+int Team::Count_Buildings()
+{
+    int count = 0;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        const ThingTemplate *t = it.Cur()->Get_Template();
+
+        if (t != nullptr) {
+            if (t->Is_KindOf(KINDOF_STRUCTURE)) {
+                count++;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return count;
+}
+
+int Team::Count_Objects(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear)
+{
+    int count = 0;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        const ThingTemplate *t = it.Cur()->Get_Template();
+
+        if (t != nullptr) {
+            if (t->Is_KindOf_Multi(must_be_set, must_be_clear)) {
+                count++;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return count;
+}
+
+bool Team::Has_Any_Buildings() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_Destroyed()) {
+                if (it.Cur()->Is_KindOf(KINDOF_STRUCTURE)) {
+                    return true;
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Has_Any_Buildings(BitFlags<KINDOF_COUNT> must_be_set) const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_Destroyed()) {
+                must_be_set.Set(KINDOF_STRUCTURE, true);
+
+                if (it.Cur()->Is_KindOf_Multi(must_be_set, KINDOFMASK_NONE)) {
+                    return true;
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Has_Any_Units() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_Destroyed()) {
+                if (!it.Cur()->Is_KindOf(KINDOF_STRUCTURE)) {
+                    if (!it.Cur()->Is_KindOf(KINDOF_PROJECTILE)) {
+                        if (!it.Cur()->Is_KindOf(KINDOF_MINE)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Has_Any_Objects() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_Destroyed()) {
+                if (!it.Cur()->Is_KindOf(KINDOF_PROJECTILE)) {
+                    if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                        if (!it.Cur()->Is_KindOf(KINDOF_MINE)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+void Team::Update_State()
+{
+    m_enteredOrExited = false;
+
+    if (m_active) {
+        const TeamTemplateInfo *info = m_proto->Get_Template_Info();
+
+        if (m_created) {
+            m_created = false;
+
+            if (!info->m_scriptOnCreate.Is_Empty()) {
+                g_theScriptEngine->Run_Script(info->m_scriptOnCreate, this);
+            }
+
+            if (!info->m_scriptOnDestroyed.Is_Empty()) {
+                DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+                while (!it.Done()) {
+                    m_curUnits++;
+                    it.Advance();
+                }
+
+                m_destroyThreshold = (m_curUnits - m_curUnits * info->m_destroyedThreshold);
+
+                if (m_destroyThreshold > m_curUnits - 1) {
+                    m_destroyThreshold = m_curUnits - 1;
+                }
+
+                if (m_destroyThreshold < 0) {
+                    m_destroyThreshold = 0;
+                }
+            }
+        }
+
+        if (m_checkEnemySighted) {
+            m_prevSeeEnemy = m_seeEnemy;
+            m_seeEnemy = false;
+            bool found_object = false;
+
+            DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+            while (!it.Done()) {
+                if (!it.Cur()->Is_Effectively_Dead()) {
+                    PartitionFilterRelationship r(it.Cur(), 1);
+                    PartitionFilterAlive a;
+                    PartitionFilterSameMapStatus s(it.Cur());
+                    PartitionFilter *filters[] = { &r, &a, &s, nullptr };
+                    found_object = true;
+
+                    if (g_thePartitionManager->Get_Closest_Object(
+                            it.Cur(), it.Cur()->Get_Vision_Range(), FROM_CENTER_2D, filters, nullptr, nullptr)) {
+                        m_seeEnemy = true;
+                        break;
+                    }
+                }
+
+                it.Advance();
+            }
+
+            if (found_object && m_prevSeeEnemy != m_seeEnemy) {
+                if (m_seeEnemy) {
+                    g_theScriptEngine->Run_Script(info->m_scriptOnEnemySighted, this);
+                } else {
+                    g_theScriptEngine->Run_Script(info->m_scriptOnAllClear, this);
+                }
+            }
+        }
+
+        if (!info->m_scriptOnDestroyed.Is_Empty()) {
+            int units = m_curUnits;
+            m_curUnits = 0;
+            DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+            while (!it.Done()) {
+                if (!it.Cur()->Is_Effectively_Dead()) {
+                    m_curUnits++;
+                }
+
+                it.Advance();
+            }
+
+            if (m_curUnits != units && m_curUnits <= m_destroyThreshold) {
+                g_theScriptEngine->Run_Script(info->m_scriptOnDestroyed, this);
+                m_destroyThreshold = -1;
+            }
+        }
+
+        if (!info->m_scriptOnIdle.Is_Empty()) {
+            bool is_idle = true;
+            bool found_update = false;
+            DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+            while (!it.Done()) {
+                if (!it.Cur()->Is_Effectively_Dead()) {
+                    AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+                    if (update != nullptr) {
+                        found_update = true;
+
+                        if (!update->Is_Idle()) {
+                            is_idle = false;
+                        }
+                    }
+                }
+
+                it.Advance();
+            }
+
+            if (found_update && is_idle && m_wasIdle) {
+                g_theScriptEngine->Run_Script(info->m_scriptOnIdle, this);
+            }
+
+            m_wasIdle = is_idle;
+        }
+    }
+}
+
+Player *Team::Get_Controlling_Player() const
+{
+    return m_proto->Get_Controlling_Player();
+}
+
+void Team::Move_Team_To(Coord3D destination)
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            it.Cur()->Is_Destroyed();
+        }
+
+        it.Advance();
+    }
+}
+
+bool Team::Has_Any_Build_Facility() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (it.Cur()->Get_Template()->Is_Build_Facility()) {
+                return true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Damage_Team_Members(float amount)
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_Destroyed()) {
+                if (amount < 0.0f) {
+                    it.Cur()->Kill(DAMAGE_UNRESISTABLE, DEATH_NORMAL);
+                } else {
+                    DamageInfo info;
+                    info.m_in.m_damageType = DAMAGE_UNRESISTABLE;
+                    info.m_in.m_deathType = DEATH_NORMAL;
+                    info.m_in.m_sourceID = OBJECT_UNK;
+                    info.m_in.m_amount = amount;
+                    it.Cur()->Attempt_Damage(&info);
+                }
+            }
+        }
+    }
+
+    return false;
 }

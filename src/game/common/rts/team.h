@@ -183,6 +183,7 @@ private:
     Utf8String m_genericScripts[16];
     friend class TeamFactory;
     friend class Team;
+    friend class TeamPrototype;
 };
 
 class Team : public MemoryPoolObject, public SnapShot
@@ -238,8 +239,11 @@ public:
     bool None_Inside(PolygonTrigger *poly, unsigned int surfaces) const;
     bool Some_Inside_Some_Outside(PolygonTrigger *poly, unsigned int surfaces) const;
 
-    void Count_Objects_By_Thing_Template(
-        int num_tmplates, const ThingTemplate *const *things, int *counts, bool ignore_under_construction) const;
+    void Count_Objects_By_Thing_Template(int num_tmplates,
+        const ThingTemplate *const *things,
+        bool ignore_dead,
+        int *counts,
+        bool ignore_under_construction) const;
     int Count_Buildings();
     int Count_Objects(BitFlags<KINDOF_COUNT> must_be_set, BitFlags<KINDOF_COUNT> must_be_clear);
 
@@ -317,7 +321,7 @@ public:
         }
     }
 
-    DLINK_ITERATOR<Object> Iterate_Team_Member_List()
+    DLINK_ITERATOR<Object> Iterate_Team_Member_List() const
     {
         captainslog_dbgassert(((uintptr_t)m_dlinkhead_TeamMemberList.m_head & 1) == 0, "bogus head ptr");
         return DLINK_ITERATOR<Object>(m_dlinkhead_TeamMemberList.m_head, &Object::Dlink_Next_Team_Member_List, 0);
@@ -416,8 +420,11 @@ public:
     Player *Get_Controlling_Player() const;
     Team *Find_Team_By_ID(unsigned int id);
     void Set_Controlling_Player(Player *new_controller);
-    void Count_Objects_By_Thing_Template(
-        int num_tmplates, const ThingTemplate *const *things, int *counts, bool ignore_under_construction) const;
+    void Count_Objects_By_Thing_Template(int num_tmplates,
+        const ThingTemplate *const *things,
+        bool ignore_dead,
+        int *counts,
+        bool ignore_under_construction) const;
     void Team_About_To_Be_Deleted(Team *team);
     Script *Get_Generic_Script(int script);
     void Increase_AI_Priority_For_Success();
@@ -443,7 +450,7 @@ public:
         return m_dlinkhead_TeamInstanceList.m_head;
     }
 
-    DLINK_ITERATOR<Team> Iterate_Team_Instance_List()
+    DLINK_ITERATOR<Team> Iterate_Team_Instance_List() const
     {
         captainslog_dbgassert(((uintptr_t)m_dlinkhead_TeamInstanceList.m_head & 1) == 0, "bogus head ptr");
         return DLINK_ITERATOR<Team>(m_dlinkhead_TeamInstanceList.m_head, &Team::Dlink_Next_Team_Instance_List, 0);

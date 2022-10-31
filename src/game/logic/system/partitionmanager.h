@@ -24,10 +24,52 @@ struct FindPositionOptions;
 struct ShroudStatusStoreRestore;
 class Object;
 class GhostObject;
-class PartitionFilter;
 class SimpleObjectIterator;
 class GeometryInfo;
 class CellAndObjectIntersection;
+
+class PartitionFilter
+{
+public:
+    virtual bool Allow(Object *obj) = 0;
+#ifdef GAME_DEBUG_STRUCTS
+    virtual const char *Get_Name() = 0;
+#endif
+};
+
+class PartitionFilterRelationship : public PartitionFilter
+{
+public:
+    PartitionFilterRelationship(Object *obj, int unk) : m_object(obj), m_unk(unk) {}
+    virtual bool Allow(Object *obj);
+#ifdef GAME_DEBUG_STRUCTS
+    virtual const char *Get_Name() { return "PartitionFilterRelationship"; }
+#endif
+private:
+    Object *m_object;
+    int m_unk;
+};
+
+class PartitionFilterAlive : public PartitionFilter
+{
+public:
+    virtual bool Allow(Object *obj);
+#ifdef GAME_DEBUG_STRUCTS
+    virtual const char *Get_Name() { return "PartitionFilterAlive"; }
+#endif
+};
+
+class PartitionFilterSameMapStatus : public PartitionFilter
+{
+public:
+    PartitionFilterSameMapStatus(Object *obj) : m_object(obj) {}
+    virtual bool Allow(Object *obj);
+#ifdef GAME_DEBUG_STRUCTS
+    virtual const char *Get_Name() { return "PartitionFilterSameMapStatus"; }
+#endif
+private:
+    Object *m_object;
+};
 
 enum DistanceCalculationType : int32_t
 {

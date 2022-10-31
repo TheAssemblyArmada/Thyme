@@ -2371,5 +2371,26 @@ void Setup_Hooks()
     Hook_Any(0x0049D450, TeamFactory::Create_Team);
     Hook_Any(0x0049D540, TeamFactory::Find_Team);
     Hook_Any(0x0049FEF0, Team::Remove_Override_Team_Relationship);
-
+    Hook_Any(0x0049EE50, TeamPrototype::Count_Objects_By_Thing_Template);
+    Hook_Any(0x0049EEA0, TeamPrototype::Increase_AI_Priority_For_Success);
+    Hook_Any(0x0049EEC0, TeamPrototype::Decrease_AI_Priority_For_Failure);
+    Hook_Any(0x0049EEE0, TeamPrototype::Count_Buildings);
+    Hook_Any(0x0049EF40, TeamPrototype::Count_Objects);
+    Hook_Any(0x0049F0A0, TeamPrototype::Heal_All_Objects);
+    Hook_Any(0x0049F0E0, TeamPrototype::Iterate_Objects);
+    Hook_Any(0x0049F130, TeamPrototype::Count_Team_Instances);
+    Hook_Any(0x0049F160, TeamPrototype::Has_Any_Buildings);
+    Hook_Any(0x0049F210, TeamPrototype::Has_Any_Units);
+    Hook_Any(0x0049F240, TeamPrototype::Has_Any_Objects);
+    Hook_Any(0x0049F270, TeamPrototype::Update_State);
+    Hook_Any(0x0049F390, TeamPrototype::Has_Any_Build_Facility);
+    Hook_Any(0x0049F3E0, TeamPrototype::Evaluate_Production_Condition);
+    Hook_Any(0x004A0180, Team::Count_Objects_By_Thing_Template);
+    Hook_Any(0x004A0220, Team::Count_Buildings);
+    Hook_Any(0x004A0250, Team::Has_Any_Units);
+    Hook_Any(0x004A02B0, Team::Has_Any_Build_Facility);
+    Hook_Any(0x004A0300, Team::Has_Any_Objects);
+    Hook_Any(0x004A0360, Team::Update_State);
+    Hook_Any(0x0049FBB0, Team::Get_Controlling_Player);
+    Hook_Any(0x004A10B0, Team::Damage_Team_Members);
 }

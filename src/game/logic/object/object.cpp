@@ -17,9 +17,11 @@
 #include "behaviormodule.h"
 #include "drawable.h"
 #include "experiencetracker.h"
+#include "globaldata.h"
 #include "playerlist.h"
 #include "team.h"
 #include "updatemodule.h"
+#include "w3ddebugicons.h"
 
 ObjectShroudStatus Object::Get_Shrouded_Status(int index) const
 {
@@ -366,4 +368,35 @@ void Object::Set_Team(Team *team)
 #ifdef GAME_DLL
     Call_Method<void, Object, Team *>(PICK_ADDRESS(0x00546800, 0x007CFB7A), this, team);
 #endif
+}
+
+void Object::Heal_Completely()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object>(PICK_ADDRESS(0x00548430, 0x007D1800), this);
+#endif
+}
+
+float Object::Get_Vision_Range() const
+{
+#ifdef GAME_DEBUG_STRUCTS
+    if (g_theWriteableGlobalData->m_debugVisibility) {
+        Vector3 v(m_visionRange, 0.0f, 0.0f);
+
+        for (int i = 0; i < g_theWriteableGlobalData->m_debugVisibilityTileCount; i++) {
+            float f1 = i * 1.0f / g_theWriteableGlobalData->m_debugVisibilityTileCount;
+            float angle = (f1 + f1) * GAMEMATH_PI;
+            v.Rotate_Z(angle);
+            Coord3D pos;
+            pos.x = v.X + Get_Position()->x;
+            pos.y = v.Y + Get_Position()->y;
+            pos.z = v.Z + Get_Position()->z;
+            Add_Icon(&pos,
+                g_theWriteableGlobalData->m_debugVisibilityTileWidth,
+                g_theWriteableGlobalData->m_debugVisibilityTileDuration,
+                g_theWriteableGlobalData->m_debugVisibilityTileTargettableColor);
+        }
+    }
+#endif
+    return m_visionRange;
 }

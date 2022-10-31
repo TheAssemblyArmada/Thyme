@@ -110,7 +110,7 @@ public:
     const Energy *Get_Energy() const { return &m_energy; }
 
     // Player *Get_Current_Enemy();
-    // GameDifficulty Get_Player_Difficulty() const;
+    GameDifficulty Get_Player_Difficulty() const;
 
     bool Is_Player_Active() const { return !m_playerIsObserver && !m_playerIsDead; }
     // bool Is_Skirmish_AI_Player() const;

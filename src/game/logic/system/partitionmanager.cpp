@@ -789,3 +789,18 @@ void SightingInfo::Reset()
     m_playerIndex = 0;
     m_frame = 0;
 }
+
+bool PartitionFilterRelationship::Allow(Object *obj)
+{
+    return ((1 << m_object->Get_Relationship(obj)) & m_unk) != 0;
+}
+
+bool PartitionFilterAlive::Allow(Object *obj)
+{
+    return !obj->Is_Effectively_Dead();
+}
+
+bool PartitionFilterSameMapStatus::Allow(Object *obj)
+{
+    return m_object->Is_Outside_Map() == obj->Is_Outside_Map();
+}

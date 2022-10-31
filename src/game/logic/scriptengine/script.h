@@ -50,6 +50,12 @@ public:
     void Set_Action(ScriptAction *action) { m_action = action; }
     void Set_False_Action(ScriptAction *action) { m_actionFalse = action; }
     void Update_Exec_Time(float passed_time) { m_totalExecTime += passed_time; }
+    int Get_UnkInt2() const { return m_unkInt2; }
+    int Get_Evaluation_Interval() const { return m_evaluationInterval; }
+    void Set_UnkInt2(int set) { m_unkInt2 = set; }
+    bool Is_Normal() const { return m_normal; }
+    bool Is_Hard() const { return m_hard; }
+    bool Is_Easy() const { return m_easy; }
 
     static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);

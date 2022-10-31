@@ -142,7 +142,7 @@ public:
     virtual ObjectTypes *Get_Object_Types(const Utf8String &list_name);
     virtual void Do_ObjectType_List_Maintenance(const Utf8String &list_name, const Utf8String &type_name, bool add_type);
     virtual PolygonTrigger *Get_Qualified_Trigger_Area_By_Name(Utf8String trigger_area);
-    virtual void Evaluate_Conditions(Script *script, Team *team, Player *player);
+    virtual bool Evaluate_Conditions(Script *script, Team *team, Player *player);
     virtual void Friend_Execute_Action(ScriptAction *action, Team *team);
     virtual Object *Get_Unit_Named(const Utf8String &unit_name);
     virtual bool Did_Unit_Exist(const Utf8String &unit_name);

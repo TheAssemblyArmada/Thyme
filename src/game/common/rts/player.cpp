@@ -286,3 +286,12 @@ void Player::Remove_Team_From_List(TeamPrototype *team)
     Call_Method<void, Player, TeamPrototype *>(PICK_ADDRESS(0x00453660, 0x0085D30E), this, team);
 #endif
 }
+
+GameDifficulty Player::Get_Player_Difficulty() const
+{
+#ifdef GAME_DLL
+    return Call_Method<GameDifficulty, const Player>(PICK_ADDRESS(0x004532D0, 0x0085CE04), this);
+#else
+    return DIFFICULTY_EASY;
+#endif
+}

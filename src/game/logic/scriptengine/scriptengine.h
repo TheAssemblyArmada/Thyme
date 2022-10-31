@@ -181,6 +181,7 @@ public:
     bool Is_Time_Frozen_Script() { return m_freezeByScript; }
     bool Is_Time_Frozen_Debug();
     bool Is_Time_Fast();
+    void Notify_Of_Team_Destruction(Team *team_destroyed);
 
 private:
     void Init_Action_Templates();

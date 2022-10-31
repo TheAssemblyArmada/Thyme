@@ -198,6 +198,7 @@ set(GAMEENGINE_SRC
     game/common/rts/scorekeeper.cpp
     game/common/rts/sidesinfo.cpp
     game/common/rts/sideslist.cpp
+    game/common/rts/team.cpp
     game/common/rts/teamsinfo.cpp
     game/common/system/archivefile.cpp
     game/common/system/archivefilesystem.cpp

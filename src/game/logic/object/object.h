@@ -529,6 +529,58 @@ public:
     void Update_Obj_Values_From_Map_Properties(Dict *properties);
     void Handle_Partition_Cell_Maintenance();
 
+    bool DLink_Is_In_List_Team_Member_List(Object *const *head) const
+    {
+        captainslog_dbgassert(((uintptr_t)head & 1) == 0 && ((uintptr_t)m_dlink_TeamMemberList.m_next & 1) == 0
+                && ((uintptr_t)m_dlink_TeamMemberList.m_prev & 1) == 0,
+            "bogus ptrs");
+        return *head == this || m_dlink_TeamMemberList.m_prev != nullptr || m_dlink_TeamMemberList.m_next != nullptr;
+    }
+
+    void DLink_Prepend_To_Team_Member_List(Object **head)
+    {
+        captainslog_dbgassert(!DLink_Is_In_List_Team_Member_List(head), "already in listTeamMemberList");
+        captainslog_dbgassert(((uintptr_t)head & 1) == 0 && ((uintptr_t)m_dlink_TeamMemberList.m_next & 1) == 0
+                && ((uintptr_t)m_dlink_TeamMemberList.m_prev & 1) == 0,
+            "bogus ptrs");
+        m_dlink_TeamMemberList.m_next = *head;
+
+        if (*head != nullptr) {
+            (*head)->m_dlink_TeamMemberList.m_prev = this;
+        }
+
+        *head = this;
+        captainslog_dbgassert(((uintptr_t)head & 1) == 0 && ((uintptr_t)m_dlink_TeamMemberList.m_next & 1) == 0
+                && ((uintptr_t)m_dlink_TeamMemberList.m_prev & 1) == 0,
+            "bogus ptrs");
+    }
+
+    void DLink_Remove_From_Team_Member_List(Object **head)
+    {
+        captainslog_dbgassert(DLink_Is_In_List_Team_Member_List(head), "not in listTeamMemberList");
+        captainslog_dbgassert(((uintptr_t)head & 1) == 0 && ((uintptr_t)m_dlink_TeamMemberList.m_next & 1) == 0
+                && ((uintptr_t)m_dlink_TeamMemberList.m_prev & 1) == 0,
+            "bogus ptrs");
+
+        if (m_dlink_TeamMemberList.m_next != nullptr) {
+            m_dlink_TeamMemberList.m_next->m_dlink_TeamMemberList.m_prev = m_dlink_TeamMemberList.m_prev;
+        }
+
+        if (m_dlink_TeamMemberList.m_prev != nullptr) {
+            m_dlink_TeamMemberList.m_prev->m_dlink_TeamMemberList.m_next = m_dlink_TeamMemberList.m_next;
+        } else {
+            *head = m_dlink_TeamMemberList.m_next;
+        }
+
+        m_dlink_TeamMemberList.m_prev = nullptr;
+        m_dlink_TeamMemberList.m_next = nullptr;
+        captainslog_dbgassert(((uintptr_t)head & 1) == 0 && ((uintptr_t)m_dlink_TeamMemberList.m_next & 1) == 0
+                && ((uintptr_t)m_dlink_TeamMemberList.m_prev & 1) == 0,
+            "bogus ptrs");
+    }
+
+    Object *Dlink_Next_Team_Member_List() const { return m_dlink_TeamMemberList.m_next; }
+
 private:
     struct DLINK_TeamMemberList
     {
@@ -590,7 +642,7 @@ private:
     Utf8String m_originalTeamName;
     unsigned int m_customIndicatorColor;
     Coord3D m_healthBoxOffset;
-    Object::DLINK_TeamMemberList m_dlink_TeamMemberList;
+    DLINK_TeamMemberList m_dlink_TeamMemberList;
     WeaponSet m_weaponSet;
     BitFlags<WEAPONSET_COUNT> m_curWeaponSetFlags;
     unsigned int m_weaponBonusCondition;

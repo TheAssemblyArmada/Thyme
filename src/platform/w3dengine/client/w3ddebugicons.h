@@ -71,4 +71,4 @@ protected:
     static int s_numUnknown;
 };
 
-static void Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color);
+void Add_Icon(Coord3D *pos, float width, int num_frames_duration, RGBColor color);

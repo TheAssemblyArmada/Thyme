@@ -13,15 +13,19 @@
  *            LICENSE
  */
 #include "team.h"
+#include "ai.h"
 #include "damage.h"
 #include "gamelogic.h"
+#include "opencontain.h"
 #include "partitionmanager.h"
 #include "playerlist.h"
+#include "playertemplate.h"
 #include "script.h"
 #include "scriptengine.h"
 #include "sideslist.h"
 #include "staticnamekey.h"
 #include "terrainlogic.h"
+#include "thingfactory.h"
 #include "xfer.h"
 
 #ifndef GAME_DLL
@@ -1491,4 +1495,722 @@ bool Team::Damage_Team_Members(float amount)
     }
 
     return false;
+}
+
+void Team::Set_Controlling_Player(Player *new_controller)
+{
+    m_proto->Set_Controlling_Player(new_controller);
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        Object *obj = it.Cur();
+
+        if (obj != nullptr) {
+            obj->Handle_Partition_Cell_Maintenance();
+        }
+
+        it.Advance();
+    }
+}
+
+void Team::Set_Attack_Priority_Name(Utf8String name)
+{
+    if (m_proto != nullptr) {
+        m_proto->Set_Attack_Priority_Name(name);
+    }
+}
+
+void Team::Get_Team_As_AI_Group(AIGroup *aigroup)
+{
+    if (aigroup != nullptr) {
+        DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+        while (!it.Done()) {
+            if (it.Cur() != nullptr) {
+                aigroup->Add(it.Cur());
+            }
+
+            it.Advance();
+        }
+    }
+}
+
+int Team::Get_Targetable_Count() const
+{
+    int count = 0;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        Object *obj = it.Cur();
+
+        if (obj != nullptr && !obj->Is_Effectively_Dead()
+            && (obj->Get_AI_Update_Interface() != nullptr || obj->Is_KindOf(KINDOF_STRUCTURE))) {
+            count++;
+        }
+
+        it.Advance();
+    }
+
+    return count;
+}
+
+Relationship Team::Get_Relationship(Team *that) const
+{
+    if (!m_teamRelations->m_relationships.empty()) {
+        if (that != nullptr) {
+            auto it = m_teamRelations->m_relationships.find(that->Get_Team_ID());
+
+            if (it != m_teamRelations->m_relationships.end()) {
+                return (*it).second;
+            }
+        }
+    }
+
+    if (!m_playerRelations->m_relationships.empty()) {
+        if (that != nullptr) {
+            Player *player = that->Get_Controlling_Player();
+
+            if (player != nullptr) {
+                auto it = m_playerRelations->m_relationships.find(player->Get_Player_Index());
+
+                if (it != m_playerRelations->m_relationships.end()) {
+                    return (*it).second;
+                }
+            }
+        }
+    }
+
+    return Get_Controlling_Player()->Get_Relationship(that);
+}
+
+void Team::Set_Team_Target_Object(const Object *obj)
+{
+    if (obj != nullptr) {
+        if (Get_Controlling_Player()->Get_Player_Type() == Player::PLAYER_COMPUTER) {
+            if (Get_Controlling_Player()->Get_Player_Difficulty() != DIFFICULTY_EASY) {
+                m_targetObjectID = obj->Get_ID();
+            }
+        }
+    } else {
+        m_targetObjectID = OBJECT_UNK;
+    }
+}
+
+Object *Team::Get_Team_Target_Object()
+{
+    if (m_targetObjectID == OBJECT_UNK) {
+        return nullptr;
+    }
+
+    Object *obj = g_theGameLogic->Find_Object_By_ID(m_targetObjectID);
+
+    if (obj != nullptr && obj->Get_Status(OBJECT_STATUS_STEALTHED) && !obj->Get_Status(OBJECT_STATUS_DETECTED)
+        && !obj->Get_Status(OBJECT_STATUS_DISGUISED)) {
+        obj = nullptr;
+    }
+
+    if (obj != nullptr && obj->Is_Effectively_Dead()) {
+        obj = nullptr;
+    }
+
+    if (obj != nullptr && obj->Get_Contained_By() != nullptr) {
+        obj = nullptr;
+    }
+
+    if (obj != nullptr && obj->Is_KindOf(KINDOF_AIRCRAFT)) {
+        obj = nullptr;
+    }
+
+    if (obj == nullptr) {
+        m_targetObjectID = OBJECT_UNK;
+    }
+
+    return obj;
+}
+
+void Team::Set_Override_Team_Relationship(unsigned int id, Relationship relationship)
+{
+    if (id != 0) {
+        m_teamRelations->m_relationships[id] = relationship;
+    }
+}
+
+void Team::Set_Override_Player_Relationship(int id, Relationship relationship)
+{
+    if (id != -1) {
+        m_playerRelations->m_relationships[id] = relationship;
+    }
+}
+
+bool Team::Remove_Override_Player_Relationship(int id)
+{
+    if (m_playerRelations->m_relationships.empty()) {
+        return false;
+    }
+
+    if (id == -1) {
+        m_playerRelations->m_relationships.clear();
+        return true;
+    }
+
+    auto it = m_playerRelations->m_relationships.find(id);
+
+    if (!(it != m_playerRelations->m_relationships.end())) {
+        return false;
+    }
+
+    m_playerRelations->m_relationships.erase(it);
+    return true;
+}
+
+bool Team::Is_Idle() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!it.Cur()->Is_Effectively_Dead() && !update->Is_Idle()) {
+                return false;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return true;
+}
+
+void Team::Notify_Team_Of_Object_Death()
+{
+    const TeamTemplateInfo *info = m_proto->Get_Template_Info();
+
+    if (info != nullptr) {
+        if (!info->m_scriptOnUnitDestroyed.Is_Empty()) {
+            g_theScriptEngine->Run_Script(info->m_scriptOnUnitDestroyed, this);
+        }
+    }
+}
+
+bool Loco_Set_Matches(int lstm, unsigned int surface_bit_flags)
+{
+    return static_cast<unsigned char>((lstm & ((4 * (surface_bit_flags & 2)) | surface_bit_flags & 1))) != 0;
+}
+
+bool Team::Did_All_Enter(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    bool can_move = false;
+    bool did_enter = false;
+    bool is_outside = false;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Did_Enter(poly)) {
+                    did_enter = true;
+                } else {
+                    if (!it.Cur()->Is_Inside(poly)) {
+                        is_outside = true;
+                    }
+                }
+
+                can_move = true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return did_enter && !is_outside;
+}
+
+bool Team::Did_Partial_Enter(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Did_Enter(poly)) {
+                    return true;
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Did_Partial_Exit(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Did_Exit(poly)) {
+                    return true;
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    return false;
+}
+
+bool Team::Did_All_Exit(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    bool can_move = false;
+    bool did_exit = false;
+    bool is_inside = false;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Did_Exit(poly)) {
+                    did_exit = true;
+                } else {
+                    if (it.Cur()->Is_Inside(poly)) {
+                        is_inside = true;
+                    }
+                }
+
+                can_move = true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return can_move && did_exit && !is_inside;
+}
+
+bool Team::All_Inside(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    bool can_move = false;
+    bool is_outside = false;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (!it.Cur()->Is_Inside(poly)) {
+                    is_outside = true;
+                }
+
+                can_move = true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return can_move && !is_outside;
+}
+
+bool Team::None_Inside(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    if (!m_enteredOrExited) {
+        return false;
+    }
+
+    bool can_move = false;
+    bool is_inside = false;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Is_Inside(poly)) {
+                    is_inside = true;
+                }
+
+                can_move = true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return can_move && !is_inside;
+}
+
+bool Team::Some_Inside_Some_Outside(PolygonTrigger *poly, unsigned int surfaces) const
+{
+    bool can_move = false;
+    bool is_inside = false;
+    bool is_outside = false;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        AIUpdateInterface *update = it.Cur()->Get_AI_Update_Interface();
+
+        if (update != nullptr) {
+            if (!Loco_Set_Matches(update->Get_Locomotor_Set()->Get_Valid_Surfaces(), surfaces)) {
+                it.Advance();
+                continue;
+            }
+        } else if (!Loco_Set_Matches(1, surfaces)) {
+            it.Advance();
+            continue;
+        }
+
+        if (!it.Cur()->Is_Effectively_Dead()) {
+            if (!it.Cur()->Is_KindOf(KINDOF_INERT)) {
+                if (it.Cur()->Is_Inside(poly)) {
+                    is_inside = true;
+                } else {
+                    is_outside = true;
+                }
+
+                can_move = true;
+            }
+        }
+
+        it.Advance();
+    }
+
+    return can_move && is_inside && is_outside;
+}
+
+const Coord3D *Team::Get_Estimate_Team_Position() const
+{
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    if (it.Cur() == nullptr) {
+        return nullptr;
+    }
+
+    const Coord3D *pos = it.Cur()->Get_Position();
+
+    if (pos == nullptr) {
+        return nullptr;
+    }
+
+    return pos;
+}
+
+void Team::Delete_Team(bool ignore_dead)
+{
+    if (this == this->Get_Controlling_Player()->Get_Default_Team()) {
+        std::list<Object *> list;
+        DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+        while (!it.Done()) {
+            Object *obj = it.Cur();
+
+            if (obj != nullptr && obj->Get_Contain() != nullptr) {
+                if (obj->Get_Contain()->Get_Contain_Count() != 0) {
+                    list.push_back(obj);
+                }
+            }
+
+            it.Advance();
+        }
+
+        for (auto it = list.begin(); it != list.end(); it++) {
+            if ((*it)->Get_Contain() != nullptr) {
+                (*it)->Get_Contain()->Remove_All_Contained(false);
+            }
+        }
+    }
+
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        Object *obj = it.Cur();
+
+        if (obj != nullptr && (!ignore_dead || !obj->Is_Effectively_Dead())) {
+            g_theGameLogic->Destroy_Object(obj);
+        }
+
+        it.Advance();
+    }
+}
+
+void Team::Transfer_Units_To(Team *team)
+{
+    if (this != team && team != nullptr) {
+        for (;;) {
+            Object *obj = Get_First_Item_In_Team_Member_List();
+
+            if (obj == nullptr) {
+                break;
+            }
+
+            obj->Set_Team(team);
+        }
+    }
+}
+
+bool Is_In_Build_Variations(const ThingTemplate *tmplate, const ThingTemplate *tmplate2)
+{
+    const std::vector<Utf8String> &variations = tmplate->Get_Build_Variations();
+
+    if (variations.empty()) {
+        return false;
+    }
+
+    for (auto it = variations.begin(); it != variations.end(); it++) {
+        if (tmplate2->Get_Name() == (*it)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Object *Team::Try_To_Recruit(const ThingTemplate *tmplate, const Coord3D *pos, float max_dist)
+{
+    Player *player = Get_Controlling_Player();
+    float dist_sqr = max_dist * max_dist;
+    Object *recruit = nullptr;
+
+    for (Object *obj = g_theGameLogic->Get_First_Object(); obj != nullptr; obj = obj->Get_Next_Object()) {
+        if (!obj->Get_Template()->Is_Equivalent_To(tmplate)) {
+            if (!Is_In_Build_Variations(tmplate, obj->Get_Template())) {
+                continue;
+            }
+        }
+
+        if (obj->Get_Controlling_Player() == player) {
+            Team *team = obj->Get_Team();
+            bool is_default = team == player->Get_Default_Team();
+
+            if (team->Get_Active()) {
+                if (team->Get_Prototype()->Get_Template_Info()->m_productionPriority
+                    < Get_Prototype()->Get_Template_Info()->m_productionPriority) {
+                    bool do_recruit = is_default;
+
+                    if (team->Get_Prototype()->Get_Template_Info()->m_isAIRecruitable) {
+                        do_recruit = true;
+                    }
+
+                    if (team->m_canRecruit) {
+                        do_recruit = team->m_availableForRecruitment;
+                    }
+
+                    if (do_recruit) {
+                        if (obj->Get_AI_Update_Interface() == nullptr || obj->Get_AI_Update_Interface()->Is_Recruitable()) {
+                            if (!obj->Get_Disabled_State(DISABLED_TYPE_DISABLED_HELD)) {
+                                float x = pos->x - obj->Get_Position()->x;
+                                float y = pos->y - obj->Get_Position()->y;
+
+                                if (is_default && recruit == nullptr) {
+                                    recruit = obj;
+                                    dist_sqr = x * x + y * y;
+                                }
+
+                                if (x * x + y * y <= dist_sqr) {
+                                    recruit = obj;
+                                    dist_sqr = x * x + y * y;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (recruit != nullptr) {
+        return recruit;
+    }
+
+    return nullptr;
+}
+
+void Team::Evacuate_Team()
+{
+    std::list<Object *> list;
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        Object *obj = it.Cur();
+
+        if (obj != nullptr && !obj->Is_Destroyed() && !obj->Is_Effectively_Dead()) {
+            ContainModuleInterface *contain = obj->Get_Contain();
+            int count = 0;
+
+            if (contain != nullptr) {
+                count = contain->Get_Contain_Count();
+            }
+
+            if (count != 0) {
+                list.push_back(obj);
+            }
+        }
+
+        it.Advance();
+    }
+
+    for (auto it = list.begin(); it != list.end(); it++) {
+        if ((*it)->Get_Contain() != nullptr) {
+            (*it)->Get_Contain()->Remove_All_Contained(false);
+        }
+    }
+
+    list.clear();
+}
+
+void Team::Kill_Team()
+{
+    std::list<Object *> list;
+    Evacuate_Team();
+    Utf8String name = Get_Controlling_Player()->Get_Player_Template()->Get_Beacon_Name();
+    ThingTemplate *tmplate = g_theThingFactory->Find_Template(name, true);
+    DLINK_ITERATOR<Object> it = Iterate_Team_Member_List();
+
+    while (!it.Done()) {
+        Object *obj = it.Cur();
+
+        if (obj != nullptr) {
+            if (!obj->Is_Destroyed()) {
+                if (!obj->Is_Effectively_Dead() || obj->Get_Template()->Is_Equivalent_To(tmplate)) {
+                    if (obj->Get_Team() == this) {
+                        list.push_back(obj);
+                    }
+                }
+            }
+        }
+
+        it.Advance();
+    }
+
+    for (auto it = list.begin(); it != list.end(); it++) {
+        Object *obj = (*it);
+
+        if (obj->Is_KindOf(KINDOF_TECH_BUILDING)) {
+            obj->Set_Team(g_thePlayerList->Get_Neutral_Player()->Get_Default_Team());
+        } else {
+            obj->Kill(DAMAGE_UNRESISTABLE, DEATH_NORMAL);
+        }
+    }
+
+    list.clear();
+}
+
+void Team::Update_Generic_Scripts()
+{
+    for (int i = 0; i < ARRAY_SIZE(m_genericScriptActive); i++) {
+        if (m_genericScriptActive[i]) {
+            Script *script = m_proto->Get_Generic_Script(i);
+
+            if (script != nullptr) {
+                if (g_theScriptEngine->Evaluate_Conditions(script, this, nullptr)) {
+                    if (script->Is_One_Shot()) {
+                        m_genericScriptActive[i] = false;
+                    }
+
+                    g_theScriptEngine->Friend_Execute_Action(script->Get_Action(), this);
+                    Utf8String str("Generic script '");
+                    str += script->Get_Name();
+                    str += "' run on team ";
+                    str += Get_Name();
+                    g_theScriptEngine->Append_Debug_Message(str, false);
+                }
+            } else {
+                m_genericScriptActive[i] = false;
+            }
+        }
+    }
 }

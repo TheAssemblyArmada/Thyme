@@ -18,13 +18,18 @@
 #include "subsysteminterface.h"
 #include <list>
 
-class AIGroup;
 class AttackPriorityInfo;
 class BuildListInfo;
 class INI;
 class Object;
 class PartitionFilter;
 class Pathfinder;
+
+class AIGroup
+{
+public:
+    void Add(Object *obj);
+};
 
 enum FormationID : int32_t
 {

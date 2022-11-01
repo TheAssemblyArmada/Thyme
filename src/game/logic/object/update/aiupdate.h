@@ -259,6 +259,8 @@ public:
     unsigned int Get_Next_Mood_Check_Time() const { return m_nextMoodCheckTime; }
     WhichTurretType Get_Current_Turret() const { return m_currentTurret; }
     Object *Get_Goal_Object() { return Get_State_Machine()->Get_Goal_Object(); }
+    const LocomotorSet *Get_Locomotor_Set() const { return &m_locomotorSet; }
+    bool Is_Recruitable() const { return m_isRecruitable; }
 
     const AIUpdateModuleData *Get_AI_Update_Module_Data() const
     {
@@ -286,4 +288,6 @@ private:
     WhichTurretType m_currentTurret;
     AttitudeType m_attitude;
     unsigned int m_nextMoodCheckTime;
+    unsigned char unk5[0x16];
+    bool m_isRecruitable;
 };

@@ -17,6 +17,7 @@
 #include "behaviormodule.h"
 #include "drawable.h"
 #include "experiencetracker.h"
+#include "gamelogic.h"
 #include "globaldata.h"
 #include "playerlist.h"
 #include "team.h"
@@ -399,4 +400,68 @@ float Object::Get_Vision_Range() const
     }
 #endif
     return m_visionRange;
+}
+
+void Object::Handle_Partition_Cell_Maintenance()
+{
+#ifdef GAME_DLL
+    Call_Method<void, Object>(PICK_ADDRESS(0x0054CD30, 0x007D6DFE), this);
+#endif
+}
+
+bool Object::Is_Inside(const PolygonTrigger *trigger) const
+{
+    captainslog_dbgassert(!Is_KindOf(KINDOF_INERT), "Asking whether an inert is inside a trigger area. This is invalid.");
+
+    for (int i = 0; i < m_numTriggerAreasActive; i++) {
+        if (m_triggerInfo[i].inside && m_triggerInfo[i].polygon_trigger == trigger) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Object::Did_Enter(const PolygonTrigger *trigger) const
+{
+    if (!Did_Enter_Or_Exit()) {
+        return false;
+    }
+
+    captainslog_dbgassert(!Is_KindOf(KINDOF_INERT), "Asking whether an inert object entered or exited. This is invalid.");
+
+    for (int i = 0; i < m_numTriggerAreasActive; i++) {
+        if (m_triggerInfo[i].entered && m_triggerInfo[i].polygon_trigger == trigger) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Object::Did_Enter_Or_Exit() const
+{
+    if (Is_KindOf(KINDOF_INERT)) {
+        return false;
+    }
+
+    unsigned int frame = g_theGameLogic->Get_Frame();
+    return m_enteredOrExited == frame || m_enteredOrExited == frame - 1;
+}
+
+bool Object::Did_Exit(const PolygonTrigger *trigger) const
+{
+    if (!Did_Enter_Or_Exit()) {
+        return false;
+    }
+
+    captainslog_dbgassert(!Is_KindOf(KINDOF_INERT), "Asking whether an inert object entered or exited. This is invalid.");
+
+    for (int i = 0; i < m_numTriggerAreasActive; i++) {
+        if (m_triggerInfo[i].exited && m_triggerInfo[i].polygon_trigger == trigger) {
+            return true;
+        }
+    }
+
+    return false;
 }

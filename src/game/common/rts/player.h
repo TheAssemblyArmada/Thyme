@@ -71,16 +71,17 @@ enum Relationship;
 // enum BattlePlanStatus;
 // enum UpgradeStatusType;
 
-enum PlayerType
-{
-    PLAYER_TYPE_UNK = 0,
-};
-
 // #TODO this is just a skeleton to support other objects at the moment.
 
 class Player : public SnapShot
 {
 public:
+    enum PlayerType
+    {
+        PLAYER_HUMAN = 0,
+        PLAYER_COMPUTER = 1,
+    };
+
     Player(int32_t player_index);
     virtual ~Player();
 
@@ -108,6 +109,8 @@ public:
 
     const Handicap *Get_Handicap() const { return &m_handicap; }
     const Energy *Get_Energy() const { return &m_energy; }
+    PlayerType Get_Player_Type() const { return m_playerType; }
+    const PlayerTemplate *Get_Player_Template() const { return m_playerTemplate; }
 
     // Player *Get_Current_Enemy();
     GameDifficulty Get_Player_Difficulty() const;
@@ -357,7 +360,6 @@ public:
     virtual void Xfer_Snapshot(Xfer *xfer) override;
     virtual void Load_Post_Process() override {}
 
-private:
 #ifdef THYME_USE_STLPORT
     std::hash_map<int, Relationship> m_relationships;
 #else

@@ -56,6 +56,7 @@ public:
     bool Is_Normal() const { return m_normal; }
     bool Is_Hard() const { return m_hard; }
     bool Is_Easy() const { return m_easy; }
+    bool Is_One_Shot() const { return m_isOneShot; }
 
     static bool Parse_Script_From_Group_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);
     static bool Parse_Script_From_List_Chunk(DataChunkInput &input, DataChunkInfo *info, void *data);

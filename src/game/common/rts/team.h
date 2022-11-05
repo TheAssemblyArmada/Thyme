@@ -198,12 +198,12 @@ public:
     virtual void Load_Post_Process() override;
 
     Player *Get_Controlling_Player() const;
-    AIGroup *Get_Team_As_AI_Group() const;
+    void Get_Team_As_AI_Group(AIGroup *aigroup);
     int Get_Targetable_Count() const;
     Relationship Get_Relationship(Team *that) const;
     Object *Get_Team_Target_Object();
     const Coord3D *Get_Estimate_Team_Position() const;
-    void Delete_Team();
+    void Delete_Team(bool ignore_dead);
     void Transfer_Units_To(Team *team);
     Object *Try_To_Recruit(const ThingTemplate *tmplate, const Coord3D *pos, float distance);
     void Evacuate_Team();
@@ -225,7 +225,7 @@ public:
     bool Has_Any_Objects() const;
 
     bool Remove_Override_Team_Relationship(unsigned int id);
-    void Remove_Override_Player_Relationship(int id);
+    bool Remove_Override_Player_Relationship(int id);
     void Heal_All_Objects();
     void Iterate_Objects(void (*func)(Object *, void *), void *data);
     bool Is_Idle() const;

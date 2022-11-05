@@ -375,7 +375,7 @@ public:
     Locomotor *Find_Locomotor(int t);
 
     bool Get_Downhill_Only() { return m_downhillOnly; }
-    int Get_Valid_Surfaces() { return m_validLocomotorSurfaces; }
+    int Get_Valid_Surfaces() const { return m_validLocomotorSurfaces; }
 
 private:
     std::vector<Locomotor *> m_locomotors;

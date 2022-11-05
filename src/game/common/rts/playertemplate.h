@@ -52,6 +52,7 @@ public:
     Utf8String Get_Name() { return g_theNameKeyGenerator->Key_To_Name(m_nameKey); }
     Utf8String Get_Side_Name() { return m_side; }
     bool Check_Name_Key(NameKeyType key) { return key == m_nameKey; }
+    Utf8String Get_Beacon_Name() const { return m_beaconName; }
 
     static void Parse_Production_Cost_Change(INI *ini, void *formal, void *store, const void *user_data);
     static void Parse_Production_Time_Change(INI *ini, void *formal, void *store, const void *user_data);

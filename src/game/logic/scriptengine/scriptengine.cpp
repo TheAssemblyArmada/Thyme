@@ -39,6 +39,13 @@ bool ScriptEngine::Is_Time_Fast()
 void ScriptEngine::Notify_Of_Team_Destruction(Team *team_destroyed)
 {
 #ifdef GAME_DLL
-    Call_Method<Team *>(PICK_ADDRESS(0x00436070, 0x00711E87), this, team_destroyed);
+    Call_Method<void, ScriptEngine, Team *>(PICK_ADDRESS(0x00436070, 0x00711E87), this, team_destroyed);
+#endif
+}
+
+void ScriptEngine::Append_Debug_Message(const Utf8String &message, bool b)
+{
+#ifdef GAME_DLL
+    Call_Method<void, ScriptEngine, const Utf8String &, bool>(PICK_ADDRESS(0x004370D0, 0x00712ED8), this, message, b);
 #endif
 }

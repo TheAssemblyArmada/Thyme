@@ -21,13 +21,33 @@ class LocalFile : public File
 {
     IMPLEMENT_ABSTRACT_POOL(LocalFile);
 
+public:
+    enum
+    {
+        INVALID_HANDLE = -1
+    };
+
 protected:
-    virtual ~LocalFile() override {}
+    virtual ~LocalFile() override;
+
+protected:
+    // Only the factory class, Win32LocalFileSystem can create file instances.
+    LocalFile();
 
 public:
+    virtual bool Open(const char *filename, int mode) override;
+    virtual int Read(void *dst, int bytes) override;
+    virtual int Write(void const *src, int bytes) override;
+    virtual int Seek(int offset, File::SeekMode mode) override;
+    virtual void Next_Line(char *dst, int bytes) override;
+    virtual bool Scan_Int(int &integer) override;
+    virtual bool Scan_Real(float &real) override;
+    virtual bool Scan_String(Utf8String &string) override;
     virtual void *Read_All_And_Close() override;
     virtual File *Convert_To_RAM() override;
 
 protected:
+    int m_fileHandle;
+
     static int s_totalOpen;
 };

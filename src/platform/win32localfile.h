@@ -28,29 +28,6 @@ class Win32LocalFile : public LocalFile
     friend class Win32LocalFileSystem;
     friend class Thyme::StdLocalFileSystem;
 
-public:
-    enum
-    {
-        INVALID_HANDLE = -1
-    };
-
 protected:
-    virtual ~Win32LocalFile() override;
-
-private:
-    // Only the factory class, Win32LocalFileSystem can create file instances.
-    Win32LocalFile();
-
-public:
-    virtual bool Open(const char *filename, int mode) override;
-    virtual int Read(void *dst, int bytes) override;
-    virtual int Write(void const *src, int bytes) override;
-    virtual int Seek(int offset, File::SeekMode mode) override;
-    virtual void Next_Line(char *dst, int bytes) override;
-    virtual bool Scan_Int(int &integer) override;
-    virtual bool Scan_Real(float &real) override;
-    virtual bool Scan_String(Utf8String &string) override;
-
-private:
-    int m_fileHandle;
+    virtual ~Win32LocalFile() override {}
 };

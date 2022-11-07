@@ -202,7 +202,7 @@ bool FFmpegAudioFileCache::Decode_FFmpeg(FFmpegOpenAudioFile *file)
             }
 
             int frame_data_size = av_samples_get_buffer_size(
-                NULL, file->codec_ctx->ch_layout.nb_channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
+                NULL, file->codec_ctx->channels, frame->nb_samples, file->codec_ctx->sample_fmt, 1);
             file->wave_data = static_cast<uint8_t *>(av_realloc(file->wave_data, file->data_size + frame_data_size));
             memcpy(file->wave_data + file->data_size, frame->data[0], frame_data_size);
             file->data_size += frame_data_size;
@@ -244,12 +244,11 @@ void FFmpegAudioFileCache::Fill_Wave_Data(FFmpegOpenAudioFile *open_audio)
     WavHeader wav;
     wav.chunk_size = open_audio->data_size - (offsetof(WavHeader, chunk_size) + sizeof(uint32_t));
     wav.subchunk2_size = open_audio->data_size - (offsetof(WavHeader, subchunk2_size) + sizeof(uint32_t));
-    wav.channels = open_audio->codec_ctx->ch_layout.nb_channels;
+    wav.channels = open_audio->codec_ctx->channels;
     wav.bits_per_sample = av_get_bytes_per_sample(open_audio->codec_ctx->sample_fmt) * 8;
     wav.samples_per_sec = open_audio->codec_ctx->sample_rate;
-    wav.bytes_per_sec =
-        open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->ch_layout.nb_channels * wav.bits_per_sample / 8;
-    wav.block_align = open_audio->codec_ctx->ch_layout.nb_channels * wav.bits_per_sample / 8;
+    wav.bytes_per_sec = open_audio->codec_ctx->sample_rate * open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
+    wav.block_align = open_audio->codec_ctx->channels * wav.bits_per_sample / 8;
     memcpy(open_audio->wave_data, &wav, sizeof(WavHeader));
 }
 
@@ -378,7 +377,7 @@ AudioDataHandle FFmpegAudioFileCache::Open_File(AudioEventRTS *audio_event)
         return nullptr;
     }
 
-    if (audio_event->Is_Positional_Audio() && open_audio.codec_ctx->ch_layout.nb_channels > 1) {
+    if (audio_event->Is_Positional_Audio() && open_audio.codec_ctx->channels > 1) {
         captainslog_error("Audio marked as positional audio cannot have more than one channel.");
         return nullptr;
     }

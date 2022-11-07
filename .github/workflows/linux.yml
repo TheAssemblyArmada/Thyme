@@ -44,16 +44,34 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y libgtk-3-dev ninja-build clang-format-10 libwxgtk3.0-gtk3-dev libavcodec-dev libavformat-dev
+          sudo apt-get update && sudo apt-get install -y libgtk-3-dev ninja-build libwxgtk3.0-gtk3-dev libavcodec-dev libavformat-dev
+
+      - name: Install formatter
+        if: matrix.os != 'ubuntu-22.04'
+        run: |
+          sudo apt-get install -y clang-format-10
+
+      - name: Configure Thyme
+        env:
+          CC: ${{ steps.vars.outputs.cc }}
+          CXX: ${{ steps.vars.outputs.cxx }}
+        run: |
+          cmake -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DUSE_CRASHPAD=ON -B build -G Ninja
+
+      - name: Formatting check
+        if: matrix.os != 'ubuntu-22.04'
+        env:
+          CC: ${{ steps.vars.outputs.cc }}
+          CXX: ${{ steps.vars.outputs.cxx }}
+        run: |
+          cmake --build build --target format
+          git diff --exit-code
 
       - name: Build Thyme
         env:
           CC: ${{ steps.vars.outputs.cc }}
           CXX: ${{ steps.vars.outputs.cxx }}
         run: |
-          cmake -DBUILD_TOOLS=ON -DLOGGING=ON -DSTANDALONE=ON -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_TESTS=ON -DUSE_CRASHPAD=ON -B build -G Ninja
-          cmake --build build --target format
-          git diff --exit-code
           cmake --build build
 
       - name: Test Thyme

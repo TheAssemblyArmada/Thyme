@@ -274,7 +274,6 @@ if(USE_SDL2)
         set(SDL_HAPTIC OFF CACHE INTERNAL "Turn off subsystem")
         set(SDL_FILE OFF CACHE INTERNAL "Turn off subsystem")
         set(SDL_FILESYSTEM OFF CACHE INTERNAL "Turn off subsystem")
-        set(SDL_THREADS OFF CACHE INTERNAL "Turn off subsystem")
         FetchContent_Declare(
             SDL2
             GIT_REPOSITORY https://github.com/libsdl-org/SDL.git

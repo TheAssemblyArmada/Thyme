@@ -15,6 +15,9 @@
 #include "subsysteminterface.h"
 #include "ini.h"
 #include "xfer.h"
+#if BUILD_WITH_OPTICK
+#include <optick.h>
+#endif
 
 #ifndef GAME_DLL
 SubsystemInterfaceList *g_theSubsystemList = nullptr;
@@ -47,6 +50,10 @@ void SubsystemInterfaceList::Init_Subsystem(SubsystemInterface *sys,
     Xfer *xfer,
     Utf8String sys_name)
 {
+#if BUILD_WITH_OPTICK
+    OPTICK_EVENT();
+#endif
+
     INI ini;
 
     sys->Set_Name(sys_name);

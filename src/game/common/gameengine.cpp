@@ -44,6 +44,10 @@
 #include <mmsystem.h>
 #endif
 
+#if BUILD_WITH_OPTICK
+#include <optick.h>
+#endif
+
 #ifndef GAME_DLL
 GameEngine *g_theGameEngine = nullptr;
 #endif
@@ -70,6 +74,9 @@ void GameEngine::Update() {}
 
 void GameEngine::Init(int argc, char *argv[])
 {
+#if BUILD_WITH_OPTICK
+    OPTICK_FRAME("Init");
+#endif
     INI ini;
 
     g_theSubsystemList = new SubsystemInterfaceList;

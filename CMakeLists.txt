@@ -92,6 +92,7 @@ option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
+option(USE_OPTICK "Enable the optick profiler." OFF)
 option(BUILD_TESTS "Builds the unit tests." OFF)
 option(BUILD_TOOLS "Builds the developer/debug tools." OFF)
 
@@ -252,6 +253,19 @@ if(USE_CRASHPAD)
     endif()
 
     set_target_properties(crashpad_handler PROPERTIES OUTPUT_NAME thymecrashhandler)
+endif()
+
+if(USE_OPTICK)
+    include(FetchContent)
+
+    FetchContent_Declare(
+        optick
+        GIT_REPOSITORY https://github.com/bombomby/optick.git
+        GIT_TAG        1.4.0.0
+    )
+
+    # We don't use FetchContent_MakeAvailable here because we don't want all crashpad targets including, just our dependencies.
+    FetchContent_MakeAvailable(optick)
 endif()
 
 if(NOT wxWidgets_FOUND AND BUILD_TOOLS)

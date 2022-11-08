@@ -15,6 +15,10 @@
 #include "gamemain.h"
 #include "win32gameengine.h"
 
+#if BUILD_WITH_OPTICK
+#include <optick.h>
+#endif
+
 GameEngine *Create_Game_Engine()
 {
 #ifdef GAME_DLL
@@ -29,6 +33,9 @@ GameEngine *Create_Game_Engine()
 
 void Game_Main(int argc, char *argv[])
 {
+#if BUILD_WITH_OPTICK
+    OPTICK_APP("Thyme");
+#endif
     g_theGameEngine = Create_Game_Engine();
     g_theGameEngine->Init(argc, argv);
     g_theGameEngine->Execute();
@@ -38,4 +45,8 @@ void Game_Main(int argc, char *argv[])
     }
 
     g_theGameEngine = nullptr;
+
+#if BUILD_WITH_OPTICK
+    OPTICK_SHUTDOWN();
+#endif
 }

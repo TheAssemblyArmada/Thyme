@@ -18,3 +18,8 @@ bool IsFirstCDPresent()
 {
     return true;
 }
+
+void CheckForCDAtGameStart(void (*func)())
+{
+    func();
+}

@@ -104,21 +104,21 @@ TEST_P(FileSystemTest, file_info)
 TEST_P(FileSystemTest, list_dir_filtered)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*.big", files, true);
+    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*.big", files, true);
     EXPECT_EQ(files.size(), 1);
 }
 
 TEST_P(FileSystemTest, list_dir_empty_filter)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "", files, true);
+    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "", files, true);
     EXPECT_EQ(files.size(), 0);
 }
 
 TEST_P(FileSystemTest, list_dir_unfiltered)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_From_Dir(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*", files, true);
+    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*", files, true);
     EXPECT_EQ(files.size(), 2);
 }
 

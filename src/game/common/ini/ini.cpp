@@ -247,7 +247,7 @@ void INI::Load_Directory(Utf8String dir, bool search_subdirs, INILoadType type, 
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
     dir += '/';
 
-    g_theFileSystem->Get_File_List_From_Dir(dir, "*.ini", files, true);
+    g_theFileSystem->Get_File_List_In_Directory(dir, "*.ini", files, true);
 
     // Load everything from the top level directory first.
     for (auto it = files.begin(); it != files.end(); ++it) {
@@ -274,7 +274,7 @@ void INI::Prep_File(Utf8String filename, INILoadType type)
 {
     captainslog_relassert(m_backingFile == nullptr, 0xDEAD0006, "Cannot open file %s, file already open.", filename.Str());
 
-    m_backingFile = g_theFileSystem->Open(filename.Str(), File::READ);
+    m_backingFile = g_theFileSystem->Open_File(filename.Str(), File::READ);
 
     captainslog_relassert(m_backingFile != nullptr, 0xDEAD0006, "Could not open file %s.", filename.Str());
 

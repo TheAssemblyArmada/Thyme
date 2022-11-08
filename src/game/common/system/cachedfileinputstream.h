@@ -30,15 +30,14 @@ public:
 
     virtual int Read(void *dst, int size) override;
     virtual unsigned Tell() override;
-    virtual bool Absolute_Seek(unsigned pos) override;
+    virtual bool Absolute_Seek(unsigned int pos) override;
     virtual bool Eof() override;
 
     bool Open(Utf8String filename);
-    void Rewind() { m_cachePos = 0; }
     void Close();
 
 private:
-    unsigned m_cachedSize;
+    unsigned int m_cachedSize;
     uint8_t *m_cachedData;
-    unsigned m_cachePos;
+    unsigned int m_cachePos;
 };

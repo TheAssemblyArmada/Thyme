@@ -21,26 +21,31 @@
 ArchiveFileSystem *g_theArchiveFileSystem = nullptr;
 #endif
 
+ArchiveFileSystem::~ArchiveFileSystem()
+{
+    for (auto it = m_archiveFiles.begin(); it != m_archiveFiles.end(); ++it) {
+        delete it->second;
+    }
+}
+
 File *ArchiveFileSystem::Open_File(const char *filename, int mode)
 {
     Utf8String archive = Get_Archive_Filename_For_File(filename);
 
-    if (archive.Is_Empty()) {
+    if (archive.Get_Length() == 0) {
         return nullptr;
     }
 
     ArchiveFile *file = m_archiveFiles[archive];
-
     captainslog_dbgassert(file != nullptr, "Did not find matching archive file.");
-
     return file->Open_File(filename, mode);
 }
 
-bool ArchiveFileSystem::Does_File_Exist(const char *filename)
+bool ArchiveFileSystem::Does_File_Exist(const char *filename) const
 {
     Utf8String path = filename;
     Utf8String token;
-    ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
+    const ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
     // Lower case for matching and get first item of the path.
     path.To_Lower();
@@ -49,13 +54,15 @@ bool ArchiveFileSystem::Does_File_Exist(const char *filename)
     // Consider existence of '.' to indicate file as all should have .ext format
     // checks the remaining path does not contain one to catch directories in path
     // that do.
-    while (strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr) {
+    while (token.Find('.') == nullptr || path.Find('.') != nullptr) {
         // If we ran out of directories, we don't have the directory that has the file.
-        if (dirp->directories.find(token) == dirp->directories.end()) {
+        auto it = dirp->directories.find(token);
+
+        if (it == dirp->directories.end()) {
             return false;
         }
 
-        dirp = &dirp->directories[token];
+        dirp = &it->second;
         path.Next_Token(&token, "\\/");
     }
 
@@ -70,17 +77,16 @@ bool ArchiveFileSystem::Does_File_Exist(const char *filename)
 
 // Loads an archive file into the virtual directory tree. The over write option allows it to use this archive to
 // replace the backing for a file name if it already has an entry in the tree.
-void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, Utf8String const &archive_path, bool overwrite)
+void ArchiveFileSystem::Load_Into_Directory_Tree(ArchiveFile const *file, Utf8String const &archive_path, bool overwrite)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> file_list;
 
     // Retrieve a list of files in the archive
-    file->Get_File_List_From_Dir("", "", "*", file_list, true);
+    file->Get_File_List_In_Directory("", "", "*", file_list, true);
 
     for (auto it = file_list.begin(); it != file_list.end(); ++it) {
         Utf8String path = *it;
         Utf8String token;
-        // Utf8String fullname;
         ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
         // Lower case for matching.
@@ -89,16 +95,14 @@ void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, Utf8String c
         // Consider existence of '.' to indicate file as all should have .ext format
         // checks the remaining path does not contain one to catch directories in path
         // that do.
-        while (
-            path.Next_Token(&token, "\\/") && (strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr)) {
+        while (path.Next_Token(&token, "\\/") && (token.Find('.') == nullptr || path.Find('.') != nullptr)) {
             // If we can't find the directory in our map, make it.
             if (dirp->directories.find(token) == dirp->directories.end()) {
+                dirp->directories[token].Clear();
                 dirp->directories[token].name = token;
             }
 
             dirp = &dirp->directories[token];
-            // fullname += token;
-            // fullname += "/";
         }
 
         if (dirp->files.find(token) == dirp->files.end() || overwrite) {
@@ -107,9 +111,13 @@ void ArchiveFileSystem::Load_Into_Dir_Tree(ArchiveFile const *file, Utf8String c
     }
 }
 
-bool ArchiveFileSystem::Get_File_Info(Utf8String const &name, FileInfo *info)
+bool ArchiveFileSystem::Get_File_Info(Utf8String const &name, FileInfo *info) const
 {
-    if (info == nullptr || name.Is_Empty()) {
+    if (info == nullptr) {
+        return false;
+    }
+
+    if (name.Get_Length() <= 0) {
         return false;
     }
 
@@ -117,19 +125,21 @@ bool ArchiveFileSystem::Get_File_Info(Utf8String const &name, FileInfo *info)
     Utf8String archive = Get_Archive_Filename_For_File(name);
 
     // Find the archive file pointer for the archive name we retrieved.
-    if (m_archiveFiles.find(archive) == m_archiveFiles.end()) {
-        return false;
+    auto it = m_archiveFiles.find(archive);
+
+    if (it != m_archiveFiles.end()) {
+        return it->second->Get_File_Info(name, info);
     }
 
-    return m_archiveFiles[archive]->Get_File_Info(name, info);
+    return false;
 }
 
 // Returns the filname of the archive file containing the passed in file name.
-Utf8String ArchiveFileSystem::Get_Archive_Filename_For_File(Utf8String const &filename)
+Utf8String ArchiveFileSystem::Get_Archive_Filename_For_File(Utf8String const &filename) const
 {
     Utf8String path = filename;
     Utf8String token;
-    ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
+    const ArchivedDirectoryInfo *dirp = &m_archiveDirInfo;
 
     // Lower case for matching and get first item of the path.
     path.To_Lower();
@@ -138,34 +148,38 @@ Utf8String ArchiveFileSystem::Get_Archive_Filename_For_File(Utf8String const &fi
     // Consider existence of '.' to indicate file as all should have .ext format
     // checks the remaining path does not contain one to catch directories in path
     // that do.
-    while (strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr) {
-        if (dirp->directories.find(token) == dirp->directories.end()) {
+    while (token.Find('.') == nullptr || path.Find('.') != nullptr) {
+        auto it = dirp->directories.find(token);
+
+        if (it == dirp->directories.end()) {
             return Utf8String();
         }
 
-        dirp = &dirp->directories[token];
+        dirp = &it->second;
         path.Next_Token(&token, "\\/");
     }
 
     // Assuming we didn't run out of directories to try, find the file
     // in the reached directory.
-    if (dirp->files.find(token) == dirp->files.end()) {
-        return Utf8String();
+    auto it = dirp->files.find(token);
+
+    if (it != dirp->files.end()) {
+        return it->second;
     }
 
-    return dirp->files[token];
+    return Utf8String();
 }
 
 // Populates a std::set of file paths based on the passed in filter and path to examine.
-void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
+void ArchiveFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
-    bool search_subdirs)
+    bool search_subdirs) const
 {
     // Get files from all archive files.
     for (auto it = m_archiveFiles.begin(); it != m_archiveFiles.end(); ++it) {
-        it->second->Get_File_List_From_Dir(subdir, dirpath, filter, filelist, search_subdirs);
+        it->second->Get_File_List_In_Directory(subdir, dirpath, filter, filelist, search_subdirs);
     }
 }
 
@@ -174,18 +188,23 @@ void ArchiveFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 // See GlobalData.h
 void ArchiveFileSystem::Load_Mods()
 {
-    if (!g_theWriteableGlobalData->m_userModFile.Is_Empty()) {
-        captainslog_info("Loading mod file '%s'.", g_theWriteableGlobalData->m_userModFile.Str());
-        ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile.Str());
+    if (g_theWriteableGlobalData->m_userModFile.Is_Not_Empty()) {
+        ArchiveFile *file = Open_Archive_File(g_theWriteableGlobalData->m_userModFile);
 
         if (file != nullptr) {
-            Load_Into_Dir_Tree(file, g_theWriteableGlobalData->m_userModFile, true);
+            captainslog_debug("ArchiveFileSystem::Load_Mods - loading %s into the directory tree.",
+                g_theWriteableGlobalData->m_userModFile.Str());
+            Load_Into_Directory_Tree(file, g_theWriteableGlobalData->m_userModFile, true);
             m_archiveFiles[g_theWriteableGlobalData->m_userModFile] = file;
+            captainslog_debug("ArchiveFileSystem::Load_Mods - %s inserted into the archive file map.",
+                g_theWriteableGlobalData->m_userModFile.Str());
         }
     }
 
-    if (!g_theWriteableGlobalData->m_userModDirectory.Is_Empty()) {
-        captainslog_info("Loading mod files from '%s'.", g_theWriteableGlobalData->m_userModDirectory.Str());
-        Load_Archives_From_Dir(g_theWriteableGlobalData->m_userModDirectory, "*.big", true);
+    if (g_theWriteableGlobalData->m_userModDirectory.Is_Not_Empty()) {
+        if (!Load_Big_Files_From_Directory(g_theWriteableGlobalData->m_userModDirectory, "*.big", true)) {
+            captainslog_debug(
+                "Load_Big_Files_From_Directory(%s) returned FALSE!", g_theWriteableGlobalData->m_userModDirectory.Str());
+        }
     }
 }

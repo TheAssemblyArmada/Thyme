@@ -343,7 +343,7 @@ void GameTextManager::Reverse_Word(char *start, char *end)
 // Get the count of strings in a str file.
 bool GameTextManager::Get_String_Count(const char *filename, int &count)
 {
-    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::TEXT | File::READ);
     count = 0;
 
     if (file == nullptr) {
@@ -375,7 +375,7 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
 {
     static_assert(sizeof(CSFHeader) == 24, "CSFHeader struct not expected size.");
     CSFHeader header;
-    File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::BINARY | File::READ);
 
     if (file == nullptr || file->Read(&header, sizeof(header)) != sizeof(header)
         || header.id != FourCC<' ', 'F', 'S', 'C'>::value) {
@@ -399,7 +399,7 @@ bool GameTextManager::Get_CSF_Info(const char *filename)
 bool GameTextManager::Parse_String_File(const char *filename)
 {
     captainslog_info("Parsing string file '%s'.", filename);
-    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::TEXT | File::READ);
 
     if (file == nullptr) {
         return false;
@@ -485,7 +485,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
 {
     captainslog_info("Parsing CSF file '%s'.", filename);
     CSFHeader header;
-    File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::BINARY | File::READ);
 
     if (file == nullptr || file->Read(&header, sizeof(header)) != sizeof(header)) {
         return false;
@@ -588,7 +588,7 @@ bool GameTextManager::Parse_CSF_File(const char *filename)
 bool GameTextManager::Parse_Map_String_File(const char *filename)
 {
     captainslog_info("Parsing map string file '%s'.", filename);
-    File *file = g_theFileSystem->Open(filename, File::TEXT | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::TEXT | File::READ);
 
     if (file == nullptr) {
         return false;

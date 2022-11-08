@@ -15,3 +15,4 @@
 #pragma once
 
 bool IsFirstCDPresent(); // 0x004469C0
+void CheckForCDAtGameStart(void (*func)()); // 0x005F1CC0

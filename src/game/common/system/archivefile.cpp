@@ -14,12 +14,13 @@
  */
 #include "archivefile.h"
 #include "file.h"
+bool Search_String_Matches(Utf8String string, Utf8String search);
 
-ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename)
+const ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename) const
 {
     Utf8String path = filename;
     Utf8String token;
-    DetailedArchiveDirectoryInfo *dirp = &m_archiveInfo;
+    const DetailedArchivedDirectoryInfo *dirp = &m_archiveInfo;
 
     // Lower case for matching and get first item of the path.
     path.To_Lower();
@@ -28,12 +29,14 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename
     // Consider existence of '.' to indicate file as all should have .ext format
     // checks the remaining path does not contain one to catch directories in path
     // that do.
-    while (strchr(token.Str(), '.') == nullptr || strchr(path.Str(), '.') != nullptr) {
-        if (dirp->directories.find(token) == dirp->directories.end()) {
+    while (token.Find('.') == nullptr || path.Find('.') != nullptr) {
+        auto it = dirp->directories.find(token);
+
+        if (!(it != dirp->directories.end())) {
             return nullptr;
         }
 
-        dirp = &dirp->directories[token];
+        dirp = &it->second;
         path.Next_Token(&token, "\\/");
     }
 
@@ -41,32 +44,29 @@ ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &filename
     // in the reached directory.
     auto file_it = dirp->files.find(token);
 
-    if (file_it == dirp->files.end()) {
-        return nullptr;
+    if (file_it != dirp->files.end()) {
+        return &file_it->second;
     }
 
-    return &file_it->second;
+    return nullptr;
 }
 
 void ArchiveFile::Add_File(Utf8String const &filepath, ArchivedFileInfo const *info)
 {
-    // DEBUG_LOG("Adding '%s' to interal archive for '%s'.\n", filepath.Str(), info->archive_name.Str());
     Utf8String path = filepath;
     Utf8String token;
-    DetailedArchiveDirectoryInfo *dirp = &m_archiveInfo;
-
-    // Lower case for matching and get first item of the path.
+    DetailedArchivedDirectoryInfo *dirp = &m_archiveInfo;
     path.To_Lower();
+    path.Next_Token(&token, "\\/");
 
-    for (path.Next_Token(&token, "\\/"); !token.Is_Empty(); path.Next_Token(&token, "\\/")) {
-        // If an element of the path doesn't have a directory node, add it.
-        // DEBUG_LOG("Searching for path element '%s'.\n", token.Str());
+    while (token.Get_Length() > 0) {
         if (dirp->directories.find(token) == dirp->directories.end()) {
-            // DEBUG_LOG("Adding path element '%s'.\n", token.Str());
+            dirp->directories[token].Clear();
             dirp->directories[token].name = token;
         }
 
         dirp = &dirp->directories[token];
+        path.Next_Token(&token, "\\/");
     }
 
     dirp->files[info->file_name] = *info;
@@ -74,41 +74,41 @@ void ArchiveFile::Add_File(Utf8String const &filepath, ArchivedFileInfo const *i
 
 void ArchiveFile::Attach_File(File *file)
 {
-    if (m_backingFile != nullptr) {
-        m_backingFile->Close();
-        m_backingFile = nullptr;
+    if (m_attachedFile != nullptr) {
+        m_attachedFile->Close();
+        m_attachedFile = nullptr;
     }
 
-    m_backingFile = file;
+    m_attachedFile = file;
 }
 
-void ArchiveFile::Get_File_List_From_Dir(Utf8String const &subdir,
+void ArchiveFile::Get_File_List_In_Directory(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
     bool search_subdir) const
 {
     Utf8String path = dirpath;
-    Utf8String token;
-    DetailedArchiveDirectoryInfo const *dirp = &m_archiveInfo;
-
-    // Lower case for matching and get first item of the path.
     path.To_Lower();
+    Utf8String token;
+    DetailedArchivedDirectoryInfo const *dirp = &m_archiveInfo;
+    path.Next_Token(&token, "\\/");
 
-    // Go to the last InfoNode in the path to extract file contents from.
-    for (path.Next_Token(&token, "\\/"); token.Is_Not_Empty(); path.Next_Token(&token, "\\/")) {
-        // If an element of the path doesn't have a node for our next directory, return.
-        if (dirp->directories.find(token) == dirp->directories.end()) {
+    while (token.Get_Length() > 0) {
+        auto it = dirp->directories.find(token);
+
+        if (!(it != dirp->directories.end())) {
             return;
         }
 
-        dirp = &dirp->directories[token];
+        dirp = &it->second;
+        path.Next_Token(&token, "\\/");
     }
 
-    Get_File_List_From_Dir(dirp, dirpath, filter, filelist, search_subdir);
+    Get_File_List_In_Directory(dirp, dirpath, filter, filelist, search_subdir);
 }
 
-void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info,
+void ArchiveFile::Get_File_List_In_Directory(DetailedArchivedDirectoryInfo const *dir_info,
     Utf8String const &dirpath,
     Utf8String const &filter,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
@@ -116,14 +116,15 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
 {
     // Add the files from any subdirectories, recursive call.
     for (auto it = dir_info->directories.begin(); it != dir_info->directories.end(); ++it) {
+        const DetailedArchivedDirectoryInfo *info = &it->second;
         Utf8String path = dirpath;
 
-        if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
-            path += "/";
+        if (path.Get_Length() > 0 && !path.Ends_With("\\") && !path.Ends_With("/")) {
+            path.Concat("/");
         }
 
-        path += it->second.name;
-        Get_File_List_From_Dir(&(it->second), path, filter, filelist, search_subdir);
+        path += info->name;
+        Get_File_List_In_Directory(info, path, filter, filelist, search_subdir);
     }
 
     // Add all the files that match the search pattern.
@@ -132,25 +133,30 @@ void ArchiveFile::Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir
             Utf8String path = dirpath;
 
             if (!path.Is_Empty() && !path.Ends_With("\\") && !path.Ends_With("/")) {
-                path += "/";
+                path.Concat("/");
             }
 
             path += it->second.file_name;
+
             filelist.insert(path);
         }
     }
 }
 
 // Helper funtion to check if a string matches the search string.
-bool ArchiveFile::Search_String_Matches(Utf8String string, Utf8String search)
+bool Search_String_Matches(Utf8String string, Utf8String search)
 {
     // Trivial case if first string is empty.
-    if (string.Is_Empty()) {
-        return search.Is_Empty();
+    if (string.Get_Length() == 0) {
+        if (search.Get_Length() == 0) {
+            return true;
+        }
+
+        return false;
     }
 
     // If there is no seach string, there cannot be a match.
-    if (search.Is_Empty()) {
+    if (search.Get_Length() == 0) {
         return false;
     }
 
@@ -195,5 +201,9 @@ bool ArchiveFile::Search_String_Matches(Utf8String string, Utf8String search)
         }
     }
 
-    return *csearch == '\0';
+    if (*csearch == '\0') {
+        return true;
+    } else {
+        return false;
+    }
 }

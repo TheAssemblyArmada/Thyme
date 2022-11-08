@@ -253,6 +253,7 @@ void Setup_Hooks()
 
     // Returns true for any CD checks
     Hook_Function(0x005F1CB0, IsFirstCDPresent);
+    Hook_Function(0x005F1CC0, CheckForCDAtGameStart);
 
     // Replace memory init functions.
     Hook_Function(0x00414510, Init_Memory_Manager);
@@ -283,9 +284,7 @@ void Setup_Hooks()
 
     // Replace File functions
     // virtuals for these are hooked by calls to Win32GameEngine which creates the objects with our vtables.
-    Hook_Function(0x004469C0, FileSystem::Are_Music_Files_On_CD); // This one is part of the CD Check.
-    Hook_Method(0x00446770, &FileSystem::Get_File_List_From_Dir);
-    Hook_Method(0x0048F410, &ArchiveFileSystem::Get_File_List_From_Dir);
+    Hook_Method(0x0048F410, &ArchiveFileSystem::Get_File_List_In_Directory);
     Hook_Method(0x0048F250, &ArchiveFileSystem::Get_Archive_Filename_For_File);
     Hook_Method(0x0048F160, &ArchiveFileSystem::Get_File_Info);
 
@@ -320,6 +319,7 @@ void Setup_Hooks()
     Hook_Any(0x00742150, Win32GameEngine::Create_Archive_File_System);
     Hook_Any(0x00741FA0, Win32GameEngine::Create_Module_Factory);
     Hook_Any(0x007424B0, Win32GameEngine::Create_Audio_Manager);
+    Hook_Any(0x0040FF60, GameEngine::Create_File_System);
 
     // Replace INI
     Hook_Method(0x0041D6E0, &INI::Get_Next_Token);
@@ -2416,4 +2416,14 @@ void Setup_Hooks()
     Hook_Any(0x004A0DC0, Team::Evacuate_Team);
     Hook_Any(0x004A0F00, Team::Kill_Team);
     Hook_Any(0x004A1230, Team::Update_Generic_Scripts);
+
+    // filesystem.h
+    Hook_Any(0x004465D0, FileSystem::Open_File);
+    Hook_Any(0x00446610, FileSystem::Does_File_Exist);
+    Hook_Any(0x00446770, FileSystem::Get_File_List_In_Directory);
+    Hook_Any(0x004468A0, FileSystem::Get_File_Info);
+    Hook_Any(0x004468F0, FileSystem::Create_Directory);
+    Hook_Any(0x004469C0, FileSystem::Are_Music_Files_On_CD); // This one is part of the CD Check.
+    Hook_Any(0x00446BF0, FileSystem::Load_Music_Files_From_CD);
+    Hook_Any(0x00446D50, FileSystem::Unload_Music_Files_From_CD);
 }

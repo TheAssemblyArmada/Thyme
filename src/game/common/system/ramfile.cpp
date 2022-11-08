@@ -24,11 +24,13 @@ RAMFile::~RAMFile()
     if (m_data != nullptr) {
         delete[] m_data;
     }
+
+    File::Close();
 }
 
 bool RAMFile::Open(const char *filename, int mode)
 {
-    File *basefile = g_theFileSystem->Open(filename, mode);
+    File *basefile = g_theFileSystem->Open_File(filename, mode);
 
     if (basefile == nullptr) {
         return false;
@@ -52,15 +54,18 @@ void RAMFile::Close()
 
 int RAMFile::Read(void *dst, int bytes)
 {
-    if (dst == nullptr) {
+    if (m_data == nullptr) {
         return -1;
     }
 
-    // Clip the amount to read to be within the data remaining.
-    bytes = std::min(bytes, m_size - m_pos);
+    if (bytes > m_size - m_pos) {
+        bytes = m_size - m_pos;
+    }
 
     if (bytes > 0) {
-        memcpy(dst, m_data + m_pos, bytes);
+        if (dst != nullptr) {
+            memcpy(dst, m_data + m_pos, bytes);
+        }
     }
 
     m_pos += bytes;
@@ -74,28 +79,35 @@ int RAMFile::Write(void const *src, int bytes)
     return -1;
 }
 
-int RAMFile::Seek(int offset, File::SeekMode mode)
+int RAMFile::Seek(int offset, SeekMode mode)
 {
+    int pos;
+
     switch (mode) {
         case START:
-            m_pos = offset;
+            pos = offset;
             break;
 
         case CURRENT:
-            m_pos += offset;
+            pos = offset + m_pos;
             break;
 
         case END:
-            m_pos = offset + m_size;
+            captainslog_dbgassert(offset <= 0, "RAMFile::Seek - position should be <= 0 for a seek starting from the end.");
+            pos = offset + m_size;
             break;
 
         default:
             return -1;
     }
 
-    // Don't seek to outside the file.
-    m_pos = std::clamp(m_pos, 0, m_size); // std::min(0, std::min(m_pos, m_size));
+    if (pos < 0) {
+        pos = 0;
+    } else if (pos > m_size) {
+        pos = m_size;
+    }
 
+    m_pos = pos;
     return m_pos;
 }
 
@@ -103,30 +115,24 @@ void RAMFile::Next_Line(char *dst, int bytes)
 {
     int i = 0;
 
-    // Copy data until newline.
-    for (; m_pos < m_size; ++m_pos) {
-        char tmp = m_data[m_pos];
-
-        if (tmp == '\n') {
-            break;
+    while (m_pos < m_size && m_data[m_pos] != '\n') {
+        if (dst != nullptr) {
+            if (i < bytes - 1) {
+                dst[i++] = m_data[m_pos];
+            }
         }
 
-        if (dst != nullptr && i < bytes - 1) {
-            dst[i++] = tmp;
-        }
+        m_pos++;
     }
 
-    // If we broke on newline, increment past it.
     if (m_pos < m_size) {
-        // Copy newline to destination if not full?
         if (dst != nullptr && i < bytes) {
             dst[i++] = m_data[m_pos];
         }
 
-        ++m_pos;
+        m_pos++;
     }
 
-    // If we have a data pointer to copy to, make sure its null terminiated
     if (dst != nullptr) {
         if (i >= bytes) {
             dst[bytes] = '\0';
@@ -134,138 +140,95 @@ void RAMFile::Next_Line(char *dst, int bytes)
             dst[i] = '\0';
         }
     }
-
-    // Make sure our position is still within data.
-    m_pos = std::min(m_pos, m_size);
+    if (m_pos >= m_size) {
+        m_pos = m_size;
+    }
 }
 
 bool RAMFile::Scan_Int(int &integer)
 {
-    char tmp;
+    integer = 0;
     Utf8String number;
 
-    integer = 0;
+    while (m_pos < m_size && (m_data[m_pos] < '0' || m_data[m_pos] > '9') && m_data[m_pos] != '-') {
+        m_pos++;
+    }
 
-    if (m_pos >= m_size) {
+    if (m_pos < m_size) {
+        do {
+            number.Concat(m_data[m_pos]);
+            m_pos++;
+        } while (m_pos < m_size && m_data[m_pos] >= '0' && m_data[m_pos] <= '9');
+
+        integer = atoi(number);
+        return true;
+    } else {
         m_pos = m_size;
-
         return false;
     }
-
-    // Find first digit or '-' symbol.
-    do {
-        tmp = m_data[m_pos];
-
-        if (isdigit(tmp) || tmp == '-') {
-            break;
-        }
-
-    } while (++m_pos < m_size);
-
-    if (m_pos >= m_size) {
-        m_pos = m_size;
-
-        return false;
-    }
-
-    for (tmp = m_data[m_pos]; m_pos < m_size && isdigit(tmp); tmp = m_data[++m_pos]) {
-        number.Concat(tmp);
-    }
-
-    integer = atoi(number.Str());
-
-    return true;
 }
 
 bool RAMFile::Scan_Real(float &real)
 {
-    char tmp;
-    Utf8String number;
-
     real = 0.0f;
+    Utf8String number;
+    bool has_point = false;
 
-    if (m_pos >= m_size) {
+    while (m_pos < m_size && (m_data[m_pos] < '0' || m_data[m_pos] > '9') && m_data[m_pos] != '-' && m_data[m_pos] != '.') {
+        m_pos++;
+    }
+
+    if (m_pos < m_size) {
+        do {
+            number.Concat(m_data[m_pos]);
+
+            if (m_data[m_pos] == '.') {
+                has_point = true;
+            }
+
+            m_pos++;
+        } while (m_pos < m_size && ((m_data[m_pos] >= '0' && m_data[m_pos] <= '9') || (m_data[m_pos] == '.' && !has_point)));
+
+        real = atof(number.Str());
+        return true;
+    } else {
         m_pos = m_size;
-
         return false;
     }
-
-    // Find first digit, '-' or '.' symbol.
-    do {
-        tmp = m_data[m_pos];
-
-        if (isdigit(tmp) || tmp == '-' || tmp == '.') {
-            break;
-        }
-
-    } while (++m_pos < m_size);
-
-    // Check we are still in bounds
-    if (m_pos >= m_size) {
-        m_pos = m_size;
-
-        return false;
-    }
-
-    bool have_point = false;
-
-    for (tmp = m_data[m_pos]; m_pos < m_size && (isdigit(tmp) || (tmp == '.' && !have_point)); tmp = m_data[++m_pos]) {
-        number.Concat(tmp);
-
-        if (tmp == '.') {
-            have_point = true;
-        }
-    }
-
-    real = atof(number.Str());
-
-    return true;
 }
 
 bool RAMFile::Scan_String(Utf8String &string)
 {
     string.Clear();
 
-    // Find first none space.
-    for (; m_pos < m_size; ++m_pos) {
-        if (!isspace(m_data[m_pos])) {
-            break;
-        }
+    while (m_pos < m_size && isspace(m_data[m_pos])) {
+        m_pos++;
     }
 
-    // Check we are still in bounds
-    if (m_pos >= m_size) {
-        m_pos = m_size;
+    if (m_pos < m_size) {
+        do {
+            string.Concat(m_data[m_pos]);
+            m_pos++;
+        } while (m_pos < m_size && !isspace(m_data[m_pos]));
 
+        return true;
+    } else {
+        m_pos = m_size;
         return false;
     }
-
-    // Read into Utf8String
-    for (; m_pos < m_size; ++m_pos) {
-        if (isspace(m_data[m_pos])) {
-            break;
-        }
-
-        string.Concat(m_data[m_pos]);
-    }
-
-    return true;
 }
 
-void *RAMFile::Read_All_And_Close()
+void *RAMFile::Read_Entire_And_Close()
 {
-    char *data;
-
     if (m_data != nullptr) {
-        data = m_data;
+        char *data = m_data;
         m_data = nullptr;
         Close();
+        return data;
     } else {
-        // Valid pointer return seems expected.
-        data = new char[1];
+        captainslog_dbgassert(false, "m_data is NULL in RAMFile::Read_Entire_And_Close -- should not happen!");
+        return new char[1];
     }
-
-    return data;
 }
 
 bool RAMFile::Open(File *file)
@@ -274,27 +237,30 @@ bool RAMFile::Open(File *file)
         return false;
     }
 
-    if (File::Open(file->Get_File_Name().Str(), file->Get_File_Mode())) {
-        m_size = file->Size();
-        m_data = new char[m_size];
-
-        if (m_data != nullptr) {
-            // Read the entire file into our buffer.
-            m_size = file->Read(m_data, m_size);
-
-            // If we didn't read any data into our buffer, abort.
-            if (m_size >= 0) {
-                m_pos = 0;
-
-                return true;
-            } else {
-                delete[] m_data;
-                m_data = nullptr;
-            }
-        }
+    if (!File::Open(file->Get_Name(), file->Get_Access())) {
+        return false;
     }
 
-    return false;
+    m_size = file->Size();
+    m_data = new char[m_size];
+
+    if (m_data == nullptr) {
+        return false;
+    }
+
+    // Read the entire file into our buffer.
+    m_size = file->Read(m_data, m_size);
+
+    // If we didn't read any data into our buffer, abort.
+    if (m_size >= 0) {
+        m_pos = 0;
+
+        return true;
+    } else {
+        delete[] m_data;
+        m_data = nullptr;
+        return false;
+    }
 }
 
 bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int size)
@@ -303,28 +269,31 @@ bool RAMFile::Open_From_Archive(File *file, Utf8String const &name, int pos, int
         return false;
     }
 
-    if (File::Open(name.Str(), READ | BINARY)) {
-        if (m_data != nullptr) {
-            delete[] m_data;
-            m_data = nullptr;
-        }
-
-        m_size = size;
-        m_data = new char[size];
-
-        if (file->Seek(pos, START) == pos) {
-            if (file->Read(m_data, m_size) == size) {
-                m_filename = file->Get_File_Name();
-
-                return true;
-            }
-        }
+    if (!File::Open(name.Str(), READ | BINARY)) {
+        return false;
     }
 
-    return false;
+    if (m_data != nullptr) {
+        delete[] m_data;
+        m_data = nullptr;
+    }
+
+    m_data = new char[size];
+    m_size = size;
+
+    if (file->Seek(pos, START) != pos) {
+        return false;
+    }
+
+    if (file->Read(m_data, m_size) != size) {
+        return false;
+    }
+
+    m_name = name;
+    return true;
 }
 
-bool RAMFile::Copy_To_File(File *file)
+bool RAMFile::Copy_Data_To_File(File *file)
 {
     return file != nullptr && file->Write(m_data, m_size) == m_size;
 }

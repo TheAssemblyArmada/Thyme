@@ -799,7 +799,7 @@ void WaterTracksRenderSystem::Load_Tracks()
         char fname[256];
         strcpy(fname, filename.Str());
         strcpy(&fname[strlen(fname) - 4], ".wak");
-        File *f = g_theFileSystem->Open(fname, File::BINARY | File::READ);
+        File *f = g_theFileSystem->Open_File(fname, File::BINARY | File::READ);
         int count = 0;
         int flip = 0;
         Vector2 start;

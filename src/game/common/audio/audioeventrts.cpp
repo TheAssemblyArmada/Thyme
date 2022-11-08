@@ -454,7 +454,7 @@ Utf8String AudioEventRTS::Generate_Filename_Extension(AudioType type)
 void AudioEventRTS::Adjust_For_Localization(Utf8String &filename)
 {
     // Search for both posix and windows path separator, original only searches windows.
-    char *tmp = filename.Reverse_Find('/');
+    const char *tmp = filename.Reverse_Find('/');
 
     if (tmp == nullptr) {
         tmp = filename.Reverse_Find('\\');

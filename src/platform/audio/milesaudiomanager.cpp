@@ -2329,7 +2329,7 @@ void MilesAudioManager::Create_Listener()
  */
 int __stdcall MilesAudioManager::Streaming_File_Open(const char *name, uintptr_t *handle)
 {
-    *handle = reinterpret_cast<uintptr_t>(g_theFileSystem->Open(name, File::READ | File::STREAMING));
+    *handle = reinterpret_cast<uintptr_t>(g_theFileSystem->Open_File(name, File::READ | File::STREAMING));
 
     return *handle != 0;
 }

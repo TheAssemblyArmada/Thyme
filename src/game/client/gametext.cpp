@@ -772,7 +772,7 @@ void GameTextManager::Init()
     ntitle.Translate(wtitle);
 
 #ifdef BUILD_WITH_SDL2
-    if (g_applicationWindow != NULL) {
+    if (g_applicationWindow != nullptr) {
         SDL_SetWindowTitle(g_applicationWindow, ntitle.Str());
     }
 #elif defined PLATFORM_WINDOWS

@@ -49,7 +49,7 @@ public:
     virtual WebBrowser *Create_Web_Browser() override;
     virtual ParticleSystemManager *Create_Particle_System_Manager() override;
     virtual AudioManager *Create_Audio_Manager() override;
-    virtual Network *Create_Network() override;
+    virtual NetworkInterface *Create_Network() override;
 
 private:
     void Handle_Window_Event(SDL_Event *ev);

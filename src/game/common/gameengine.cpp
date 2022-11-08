@@ -340,6 +340,7 @@ void GameEngine::Real_Init(int argc, char *argv[])
         0.0f); // TODO processor frequency stuff
 #endif
 
+    // We have no audio backend for standalone yet
 #ifdef GAME_DLL
     Init_Subsystem(g_theAudio, "TheAudio", Create_Audio_Manager());
 

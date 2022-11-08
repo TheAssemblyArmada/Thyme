@@ -88,13 +88,7 @@ HWND g_applicationHWnd;
 HGDIOBJ g_splashImage;
 HINSTANCE g_applicationHInstance;
 #endif
-#ifdef BUILD_WITH_SDL2
-// SDL_Window *g_applicationWindow;
-#endif
 unsigned g_theMessageTime = 0;
-HGDIOBJ g_splashImage;
-HINSTANCE g_applicationHInstance;
-#endif
 bool g_gameIsWindowed;
 bool g_gameNotFullscreen;
 bool g_gameActive;
@@ -502,7 +496,7 @@ namespace Thyme
 {
 bool Create_Window_SDL2()
 {
-    g_applicationWindow = NULL;
+    g_applicationWindow = nullptr;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         captainslog_error("SDL could not initialize!");
@@ -579,6 +573,7 @@ void Destroy_Window_SDL2()
     if (g_applicationWindow)
         SDL_DestroyWindow(g_applicationWindow);
 
+    g_applicationWindow = nullptr;
     SDL_Quit();
 }
 } // namespace Thyme

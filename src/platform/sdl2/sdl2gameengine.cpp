@@ -27,7 +27,7 @@
 #include "stdlocalfilesystem.h"
 #endif
 
-SDL_Window *g_applicationWindow;
+SDL_Window *g_applicationWindow = nullptr;
 
 namespace Thyme
 {
@@ -166,7 +166,7 @@ AudioManager *SDL2GameEngine::Create_Audio_Manager()
     return nullptr;
 }
 
-Network *SDL2GameEngine::Create_Network()
+NetworkInterface *SDL2GameEngine::Create_Network()
 {
     return nullptr;
 }

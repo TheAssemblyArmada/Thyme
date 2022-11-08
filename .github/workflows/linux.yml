@@ -78,3 +78,8 @@ jobs:
         run: |
           cd build
           ctest . --output-on-failure
+
+      - uses: codecov/codecov-action@v3
+        with:
+          verbose: true
+          gcov: true

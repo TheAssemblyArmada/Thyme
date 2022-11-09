@@ -828,7 +828,7 @@ bool Team::Remove_Override_Team_Relationship(unsigned int id)
 
     auto it = m_teamRelations->m_relationships.find(id);
 
-    if (!(it != m_teamRelations->m_relationships.end())) {
+    if (it == m_teamRelations->m_relationships.end()) {
         return false;
     }
 
@@ -1655,7 +1655,7 @@ bool Team::Remove_Override_Player_Relationship(int id)
 
     auto it = m_playerRelations->m_relationships.find(id);
 
-    if (!(it != m_playerRelations->m_relationships.end())) {
+    if (it == m_playerRelations->m_relationships.end()) {
         return false;
     }
 

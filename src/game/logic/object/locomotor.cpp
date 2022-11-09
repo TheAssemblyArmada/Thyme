@@ -298,7 +298,7 @@ void LocomotorStore::Reset()
     auto it = m_locomotorTemplates.begin();
 
     for (;;) {
-        if (!(it != m_locomotorTemplates.end())) {
+        if (it == m_locomotorTemplates.end()) {
             break;
         }
 

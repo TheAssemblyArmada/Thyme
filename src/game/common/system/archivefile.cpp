@@ -32,7 +32,7 @@ const ArchivedFileInfo *ArchiveFile::Get_Archived_File_Info(Utf8String const &fi
     while (token.Find('.') == nullptr || path.Find('.') != nullptr) {
         auto it = dirp->directories.find(token);
 
-        if (!(it != dirp->directories.end())) {
+        if (it == dirp->directories.end()) {
             return nullptr;
         }
 
@@ -97,7 +97,7 @@ void ArchiveFile::Get_File_List_In_Directory(Utf8String const &subdir,
     while (token.Get_Length() > 0) {
         auto it = dirp->directories.find(token);
 
-        if (!(it != dirp->directories.end())) {
+        if (it == dirp->directories.end()) {
             return;
         }
 

@@ -150,7 +150,7 @@ void Win32BIGFileSystem::Close_Archive_File(const char *filename)
 {
     auto it = m_archiveFiles.find(filename);
 
-    if (!(it == m_archiveFiles.end())) {
+    if (it != m_archiveFiles.end()) {
         // If we are removing the music big file, set audio engine accordingly
         if (strcasecmp(filename, "Music.Big") == 0) {
             // Do something with audio engine

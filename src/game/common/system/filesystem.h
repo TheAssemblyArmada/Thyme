@@ -23,7 +23,6 @@
 class FileSystem : public SubsystemInterface
 {
 public:
-    FileSystem() : m_availableFiles() {}
     virtual ~FileSystem() {}
 
     // SubsystemInterface implementations
@@ -32,21 +31,21 @@ public:
     virtual void Update();
 
     // Filesystem
-    File *Open(const char *filename, int mode);
-    bool Does_File_Exist(const char *filename);
-    void Get_File_List_From_Dir(Utf8String const &dir,
+    File *Open_File(const char *filename, int mode);
+    bool Does_File_Exist(const char *filename) const;
+    void Get_File_List_In_Directory(Utf8String const &dir,
         Utf8String const &filter,
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
-        bool a5);
-    bool Get_File_Info(const Utf8String &filename, FileInfo *info);
+        bool a5) const;
+    bool Get_File_Info(const Utf8String &filename, FileInfo *info) const;
 
-    static bool Create_Dir(Utf8String name);
-    static bool Are_Music_Files_On_CD();
-    static bool Load_Music_Files_From_CD();
-    static void Unload_Music_Files_From_CD();
+    bool Create_Directory(Utf8String name);
+    bool Are_Music_Files_On_CD();
+    void Load_Music_Files_From_CD();
+    void Unload_Music_Files_From_CD();
 
 private:
-    std::map<unsigned int, bool> m_availableFiles;
+    mutable std::map<unsigned int, bool> m_availableFiles;
 };
 
 #ifdef GAME_DLL

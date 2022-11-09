@@ -55,30 +55,30 @@ bool StandardFile::Open(const char *filename, int mode)
 
     Utf8String modestr;
 
-    if ((m_openMode & FileMode::APPEND) != 0) {
+    if ((m_access & FileMode::APPEND) != 0) {
         modestr.Concat('a');
-        if ((m_openMode & FileMode::READ) != 0) {
+        if ((m_access & FileMode::READ) != 0) {
             modestr.Concat('+');
         }
-    } else if ((m_openMode & FileMode::CREATE) != 0) {
-        if ((m_openMode & FileMode::READ) != 0) {
+    } else if ((m_access & FileMode::CREATE) != 0) {
+        if ((m_access & FileMode::READ) != 0) {
             modestr.Concat("w+");
         } else {
             modestr.Concat('w');
         }
-    } else if ((m_openMode & FileMode::WRITE) != 0) {
-        if ((m_openMode & FileMode::READ) != 0) {
+    } else if ((m_access & FileMode::WRITE) != 0) {
+        if ((m_access & FileMode::READ) != 0) {
             modestr.Concat("r+");
         } else {
             modestr.Concat('w');
         }
-    } else if ((m_openMode & FileMode::READ) != 0) {
+    } else if ((m_access & FileMode::READ) != 0) {
         modestr.Concat('r');
     } else {
         return false;
     }
 
-    if ((m_openMode & FileMode::BINARY) != 0) {
+    if ((m_access & FileMode::BINARY) != 0) {
         modestr.Concat('b');
     }
 
@@ -92,7 +92,7 @@ bool StandardFile::Open(const char *filename, int mode)
 
     ++s_totalOpen;
 
-    if ((m_openMode & FileMode::APPEND) != 0 && Seek(0, SeekMode::END) < 0) {
+    if ((m_access & FileMode::APPEND) != 0 && Seek(0, SeekMode::END) < 0) {
         Close();
         return false;
     }
@@ -110,7 +110,7 @@ bool StandardFile::Open(const char *filename, int mode)
 
 int StandardFile::Read(void *dst, int bytes)
 {
-    if (!m_access) {
+    if (!m_open) {
         return -1;
     }
 
@@ -125,7 +125,7 @@ int StandardFile::Read(void *dst, int bytes)
 
 int StandardFile::Write(void const *src, int bytes)
 {
-    if (!m_access || src == nullptr) {
+    if (!m_open || src == nullptr) {
         return -1;
     }
 
@@ -154,7 +154,7 @@ int StandardFile::Seek(int offset, File::SeekMode mode)
 
 void StandardFile::Next_Line(char *dst, int bytes)
 {
-    captainslog_trace("Seeking getting next line from StandardFile %s.", m_filename.Str());
+    captainslog_trace("Seeking getting next line from StandardFile %s.", m_name.Str());
 
     int i;
 
@@ -178,7 +178,7 @@ void StandardFile::Next_Line(char *dst, int bytes)
 
 bool StandardFile::Scan_Int(int &integer)
 {
-    captainslog_trace("Scanning Int from StandardFile %s.", m_filename.Str());
+    captainslog_trace("Scanning Int from StandardFile %s.", m_name.Str());
     char tmp;
     Utf8String number;
 
@@ -215,7 +215,7 @@ bool StandardFile::Scan_Int(int &integer)
 
 bool StandardFile::Scan_Real(float &real)
 {
-    captainslog_trace("Scanning Real from StandardFile %s.", m_filename.Str());
+    captainslog_trace("Scanning Real from StandardFile %s.", m_name.Str());
     char tmp;
     Utf8String number;
 
@@ -258,7 +258,7 @@ bool StandardFile::Scan_Real(float &real)
 
 bool StandardFile::Scan_String(Utf8String &string)
 {
-    captainslog_trace("Scanning String from StandardFile %s.", m_filename.Str());
+    captainslog_trace("Scanning String from StandardFile %s.", m_name.Str());
     char tmp;
     string.Clear();
 

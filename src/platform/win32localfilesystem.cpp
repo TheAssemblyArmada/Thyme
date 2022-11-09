@@ -53,35 +53,35 @@ File *Win32LocalFileSystem::Open_File(const char *filename, int mode)
         path = token;
 
         // Iterate over the path and create them as needed for entire path.
-        while (strchr(token.Str(), '.') == nullptr || strchr(name.Str(), '.') != nullptr) {
+        while (token.Find('.') == nullptr || name.Find('.') != nullptr) {
             Create_Directory(path);
-            path.Concat('/');
             name.Next_Token(&token, "\\/");
-            path.Concat(token.Str());
+            path.Concat('/');
+            path += token;
         }
     }
 
     // Try and open the file, if not, delete instance and return null.
-    if (file->Open(filename, mode)) {
-        file->Set_Del_On_Close(true);
-    } else {
+    if (!file->Open(filename, mode)) {
         file->Delete_Instance();
-        file = nullptr;
+        return nullptr;
+    } else {
+        file->Delete_On_Close();
     }
 
     return file;
 }
 
-bool Win32LocalFileSystem::Does_File_Exist(const char *filename)
+bool Win32LocalFileSystem::Does_File_Exist(const char *filename) const
 {
     return access(filename, 0) == 0;
 }
 
-void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
+void Win32LocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
-    bool search_subdirs)
+    bool search_subdirs) const
 {
     Utf8String search_path = dirpath;
     search_path += subdir;
@@ -100,7 +100,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                 if (name != "." && name != "..") {
                     Utf8String filepath = dirpath;
                     filepath += subdir;
-                    filepath += name;
+                    filepath.Concat(name);
                     // filelist.insert(filepath.Posix_Path()); // TODO 0x006C8400 relies on '\' as path sep.
                     filelist.insert(filepath);
                 }
@@ -115,7 +115,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     if (search_subdirs) {
         Utf8String sub_path = dirpath;
         sub_path += subdir;
-        sub_path += "*.";
+        sub_path.Concat("*.");
 
         hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path()), &data);
 
@@ -128,10 +128,10 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
                     if (name != "." && name != "..") {
                         Utf8String filepath;
                         filepath += subdir;
-                        filepath += name;
-                        filepath += '\\';
+                        filepath.Concat(name);
+                        filepath.Concat('\\');
 
-                        Get_File_List_From_Dir(filepath, dirpath, filter, filelist, search_subdirs);
+                        Get_File_List_In_Directory(filepath, dirpath, filter, filelist, search_subdirs);
                     }
                 }
             } while (FindNextFileW(hndl, &data) != FALSE);
@@ -157,7 +157,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 
                 Utf8String subdir = search_path;
                 subdir += '/';
-                Get_File_List_From_Dir(subdir, entry->d_name, filter, filelist, search_subdirs);
+                Get_File_List_In_Directory(subdir, entry->d_name, filter, filelist, search_subdirs);
             } else if (entry->d_type == DT_REG) {
                 Utf8String filepath = search_path;
                 filepath += '/';
@@ -175,7 +175,7 @@ void Win32LocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
 #endif
 }
 
-bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *info)
+bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *info) const
 {
     // TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
@@ -216,7 +216,7 @@ bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *i
 
 bool Win32LocalFileSystem::Create_Directory(Utf8String dir_path)
 {
-    if (dir_path.Is_Empty() || dir_path.Get_Length() > PATH_MAX) {
+    if (dir_path.Get_Length() <= 0 || dir_path.Get_Length() > PATH_MAX) {
         return false;
     }
 

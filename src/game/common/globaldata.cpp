@@ -1016,7 +1016,7 @@ GlobalData::GlobalData()
     // crc the skirmish and multiplayer scripts.
     int read = 0;
     uint8_t buffer[CRC_BUFFER_SIZE];
-    File *scriptfile = g_theFileSystem->Open("Data/Scripts/SkirmishScripts.scb", File::BINARY | File::READ);
+    File *scriptfile = g_theFileSystem->Open_File("Data/Scripts/SkirmishScripts.scb", File::BINARY | File::READ);
     if (scriptfile) {
         while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
             crc.Compute_CRC(buffer, read);
@@ -1024,7 +1024,7 @@ GlobalData::GlobalData()
 
         scriptfile->Close();
     }
-    scriptfile = g_theFileSystem->Open("Data/Scripts/MultiplayerScripts.scb", File::BINARY | File::READ);
+    scriptfile = g_theFileSystem->Open_File("Data/Scripts/MultiplayerScripts.scb", File::BINARY | File::READ);
     if (scriptfile) {
         while ((read = scriptfile->Read(buffer, sizeof(buffer))) != 0) {
             crc.Compute_CRC(buffer, read);
@@ -1050,7 +1050,7 @@ GlobalData::GlobalData()
 #elif PLATFORM_OSX
 // TODO
 #endif // PLATFORM_WINDOWS
-    g_theFileSystem->Create_Dir(m_userDataDirectory);
+    g_theFileSystem->Create_Directory(m_userDataDirectory);
     m_retaliationModeEnabled = true;
     captainslog_info("User data directory is set to '%s'.", m_userDataDirectory.Str());
 }

@@ -409,7 +409,7 @@ long W3DShaderManager::Load_And_Create_D3D_Shader(
     if (W3DShaderManager::Get_Chipset() < GPU_PS11) {
         return E_FAIL;
     }
-    File *file = g_theFileSystem->Open(path, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open_File(path, File::BINARY | File::READ);
 
     if (file == nullptr) {
         captainslog_debug("Could not find file \n");

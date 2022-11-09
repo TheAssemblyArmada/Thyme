@@ -57,10 +57,7 @@ GameFileClass::GameFileClass(const char *filename) : m_theFile(nullptr), m_fileE
 
 GameFileClass::~GameFileClass()
 {
-    if (m_theFile != nullptr) {
-        m_theFile->Close();
-        m_theFile = nullptr;
-    }
+    Close();
 }
 
 const char *GameFileClass::File_Name()
@@ -238,7 +235,7 @@ bool GameFileClass::Open(int rights)
         return false;
     }
 
-    m_theFile = g_theFileSystem->Open(m_filePath, File::READ | File::BINARY);
+    m_theFile = g_theFileSystem->Open_File(m_filePath, File::READ | File::BINARY);
 
     return m_theFile != nullptr;
 }

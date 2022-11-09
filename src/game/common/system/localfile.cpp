@@ -69,261 +69,228 @@ bool LocalFile::Open(const char *filename, int mode)
 
     int openmode = O_RDONLY;
 
-    if ((m_openMode & FileMode::CREATE) != 0) {
+    if ((m_access & CREATE) != 0) {
         openmode |= O_CREAT;
     }
 
-    if ((m_openMode & FileMode::TRUNCATE) != 0) {
+    if ((m_access & TRUNCATE) != 0) {
         openmode |= O_TRUNC;
     }
 
-    if ((m_openMode & FileMode::APPEND) != 0) {
+    if ((m_access & APPEND) != 0) {
         openmode |= O_APPEND;
     }
 
-    if ((m_openMode & FileMode::TEXT) != 0) {
+    if ((m_access & TEXT) != 0) {
         openmode |= O_TEXT;
     }
 
-    if ((m_openMode & FileMode::BINARY) != 0) {
+    if ((m_access & BINARY) != 0) {
         openmode |= O_BINARY;
     }
 
-    if ((m_openMode & (FileMode::READ | FileMode::WRITE)) == (FileMode::READ | FileMode::WRITE)) {
+    if ((m_access & (READ | WRITE)) == (READ | WRITE)) {
         openmode |= O_RDWR;
-    } else if ((m_openMode & FileMode::WRITE) != 0) {
+    } else if ((m_access & WRITE) != 0) {
         openmode |= O_WRONLY | O_CREAT;
     }
 
     m_fileHandle = open(filename, openmode, S_IREAD | S_IWRITE);
 
-    if (m_fileHandle == INVALID_HANDLE) {
-        return false;
+    if (m_fileHandle != INVALID_HANDLE) {
+        ++s_totalOpen;
+        if ((m_access & APPEND) == 0 || Seek(0, END) >= 0) {
+            return true;
+        }
     }
 
-    ++s_totalOpen;
-
-    if ((m_openMode & FileMode::APPEND) != 0 && Seek(0, SeekMode::END) < 0) {
-        Close();
-
-        return false;
-    }
-
-    return true;
+    Close();
+    return false;
 }
 
 int LocalFile::Read(void *dst, int bytes)
 {
-    if (!m_access) {
+    if (!m_open) {
         return -1;
     }
 
     if (dst != nullptr) {
         return read(m_fileHandle, dst, bytes);
-    } else {
-        lseek(m_fileHandle, bytes, SeekMode::CURRENT);
     }
 
+    lseek(m_fileHandle, bytes, CURRENT);
     return bytes;
 }
 
 int LocalFile::Write(void const *src, int bytes)
 {
-    if (!m_access || src == nullptr) {
+    if (!m_open || src == nullptr) {
         return -1;
     }
 
     return write(m_fileHandle, src, bytes);
 }
 
-int LocalFile::Seek(int offset, File::SeekMode mode)
+int LocalFile::Seek(int offset, SeekMode mode)
 {
     switch (mode) {
-        case SeekMode::START:
-        case SeekMode::CURRENT:
-        case SeekMode::END:
-            break;
+        case START:
+            return lseek(m_fileHandle, offset, START);
+        case CURRENT:
+            return lseek(m_fileHandle, offset, CURRENT);
+        case END:
+            captainslog_dbgassert(
+                offset <= 0, "LocalFile::Seek - pos should be <= 0 for a seek starting at the end of the file");
+            return lseek(m_fileHandle, offset, END);
         default:
             return -1;
     }
-
-    return lseek(m_fileHandle, offset, mode);
 }
 
 void LocalFile::Next_Line(char *dst, int bytes)
 {
-    captainslog_trace("Seeking getting next line from LocalFile %s.", m_filename.Str());
+    char tmp = '\0';
+    int pos = 0;
+    int count;
 
-    int i;
-
-    for (i = 0; i < bytes - 1; ++i) {
-        char tmp;
-        int ret = read(m_fileHandle, &tmp, sizeof(tmp));
-
-        if (ret <= 0 || tmp == '\n') {
-            break;
+    do {
+        if (dst == nullptr || pos >= bytes - 1) {
+            count = read(m_fileHandle, &tmp, sizeof(tmp));
+        } else {
+            count = read(m_fileHandle, &dst[pos], sizeof(tmp));
+            tmp = dst[pos];
         }
 
-        if (dst != nullptr) {
-            dst[i] = tmp;
-        }
-    }
+        pos++;
+    } while (count != 0 && tmp != '\n');
 
     if (dst != nullptr) {
-        dst[i] = '\0';
+        if (pos < bytes) {
+            dst[pos] = '\0';
+        } else {
+            dst[bytes] = '\0';
+        }
     }
 }
 
 bool LocalFile::Scan_Int(int &integer)
 {
-    captainslog_trace("Scanning Int from LocalFile %s.", m_filename.Str());
-    char tmp;
-    Utf8String number;
-
     integer = 0;
+    Utf8String number;
+    int count;
+    char tmp;
 
-    // Loop to find the first numeric character.
     do {
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            return false;
+        count = read(m_fileHandle, &tmp, sizeof(tmp));
+    } while (count != 0 && (tmp < '0' || tmp > '9') && tmp != '-');
+
+    if (count == 0) {
+        return false;
+    } else {
+        do {
+            number.Concat(tmp);
+            count = read(m_fileHandle, &tmp, sizeof(tmp));
+        } while (count != 0 && tmp >= '0' && tmp <= '9');
+
+        if (count != 0) {
+            lseek(m_fileHandle, -1, CURRENT);
         }
-    } while (!isdigit(tmp) && tmp != '-');
 
-    // Build up our string of numeric characters
-    while (true) {
-        number.Concat(tmp);
-
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            break;
-        }
-
-        if (!isdigit(tmp)) {
-            // If we read a byte, seek back that byte for the next read
-            // as we are done with the current number.
-            lseek(m_fileHandle, -1, SeekMode::CURRENT);
-
-            break;
-        }
+        integer = atoi(number);
+        return true;
     }
-
-    integer = atoi(number.Str());
-
-    return true;
 }
 
 bool LocalFile::Scan_Real(float &real)
 {
-    captainslog_trace("Scanning Real from LocalFile %s.", m_filename.Str());
-    char tmp;
-    Utf8String number;
-
     real = 0.0f;
+    Utf8String number;
+    int count;
+    char tmp;
+    bool has_point = false;
 
-    // Loop to find the first numeric character.
     do {
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            return false;
+        count = read(m_fileHandle, &tmp, sizeof(tmp));
+    } while (count != 0 && (tmp < '0' || tmp > '9') && tmp != '-' && tmp != '.');
+
+    if (count == 0) {
+        return false;
+    } else {
+        do {
+            number.Concat(tmp);
+
+            if (tmp == '.') {
+                has_point = true;
+            }
+
+            count = read(m_fileHandle, &tmp, sizeof(tmp));
+        } while (count != 0 && tmp >= '0' && tmp <= '9' || tmp == '.' && !has_point);
+
+        if (count != 0) {
+            lseek(m_fileHandle, -1, CURRENT);
         }
-    } while (!isdigit(tmp) && tmp != '-' && tmp != '.');
 
-    // Build up our string of numeric characters
-    bool have_point = false;
-
-    while (true) {
-        number.Concat(tmp);
-
-        if (tmp == '.') {
-            have_point = true;
-        }
-
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            break;
-        }
-
-        if (!isdigit(tmp) && (tmp != '.' || have_point)) {
-            // If we read a byte, seek back that byte for the next read
-            // as we are done with the current number.
-            lseek(m_fileHandle, -1, SeekMode::CURRENT);
-
-            break;
-        }
+        real = atof(number);
+        return true;
     }
-
-    real = atof(number.Str());
-
-    return true;
 }
 
 bool LocalFile::Scan_String(Utf8String &string)
 {
-    captainslog_trace("Scanning String from LocalFile %s.", m_filename.Str());
     char tmp;
+    int count;
     string.Clear();
 
-    // Loop to find the none space character.
     do {
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            return false;
-        }
-    } while (isspace(tmp));
+        count = read(m_fileHandle, &tmp, sizeof(tmp));
+    } while (count != 0 && isspace(tmp));
 
-    while (true) {
-        string.Concat(tmp);
+    if (count == 0) {
+        return false;
+    }
 
-        if (read(m_fileHandle, &tmp, sizeof(tmp)) == 0) {
-            break;
-        }
+    do {
+        count = read(m_fileHandle, &tmp, sizeof(tmp));
+    } while (count != 0 && !isspace(tmp));
 
-        if (isspace(tmp)) {
-            // If we read a byte, seek back that byte for the next read
-            // as we are done with the current number.
-            lseek(m_fileHandle, -1, SeekMode::CURRENT);
-
-            break;
-        }
+    if (count != 0) {
+        lseek(m_fileHandle, -1, CURRENT);
     }
 
     return true;
 }
 
-void *LocalFile::Read_All_And_Close()
+void *LocalFile::Read_Entire_And_Close()
 {
     int size = Size();
-    uint8_t *data;
-
-    if (size > 0) {
-        captainslog_trace("Reading %s and closing.", m_filename.Str());
-        data = new uint8_t[size];
-
-        Read(data, size);
-        Close();
-    } else {
-        // Calling function is responsible for delete so just alloc
-        // 1 byte and return if no data.
-        data = new uint8_t[1];
-    }
-
+    uint8_t *data = new uint8_t[size];
+    Read(data, size);
+    Close();
     return data;
 }
 
-File *LocalFile::Convert_To_RAM()
+File *LocalFile::Convert_To_RAM_File()
 {
-    captainslog_trace("Converting %s to RAMFile.", m_filename.Str());
-
     RAMFile *ramfile = NEW_POOL_OBJ(RAMFile);
 
     if (ramfile->Open(this)) {
         if (m_deleteOnClose) {
-            ramfile->Set_Del_On_Close(true);
+            ramfile->Delete_On_Close();
             Close();
         } else {
             Close();
             Delete_Instance();
         }
+
         return ramfile;
     } else {
         ramfile->Close();
         ramfile->Delete_Instance();
         return this;
     }
+}
+
+void LocalFile::Close()
+{
+    File::Close();
 }

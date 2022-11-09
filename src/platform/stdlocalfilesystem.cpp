@@ -57,7 +57,7 @@ File *StdLocalFileSystem::Open_File(const char *filename, int mode)
 
     // Try and open the file, if not, delete instance and return null.
     if (file->Open(filename, mode)) {
-        file->Set_Del_On_Close(true);
+        file->Delete_On_Close();
     } else {
         file->Delete_Instance();
         file = nullptr;
@@ -66,16 +66,16 @@ File *StdLocalFileSystem::Open_File(const char *filename, int mode)
     return file;
 }
 
-bool StdLocalFileSystem::Does_File_Exist(const char *filename)
+bool StdLocalFileSystem::Does_File_Exist(const char *filename) const
 {
     return fs::exists(filename);
 }
 
-void StdLocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
+void StdLocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
     Utf8String const &dirpath,
     Utf8String const &filter,
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
-    bool search_subdirs)
+    bool search_subdirs) const
 {
     Utf8String search_path = dirpath;
     search_path += subdir;
@@ -101,7 +101,7 @@ void StdLocalFileSystem::Get_File_List_From_Dir(Utf8String const &subdir,
     }
 }
 
-bool StdLocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *info)
+bool StdLocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *info) const
 {
     std::error_code ec;
     auto file_size = fs::file_size(filename.Str(), ec);

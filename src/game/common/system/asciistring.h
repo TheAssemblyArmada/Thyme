@@ -141,8 +141,8 @@ public:
     size_type Compare_No_Case(Utf8String const &string) const { return strcasecmp(Str(), string.Str()); }
 
     // I assume these do this, though have no examples in binaries.
-    char *Find(char c) { return strchr(Peek(), c); }
-    char *Reverse_Find(char c) { return strrchr(Peek(), c); }
+    const char *Find(char c) const { return strchr(Str(), c); }
+    const char *Reverse_Find(char c) const { return strrchr(Str(), c); }
 
     bool Starts_With(const char *p) const;
     bool Ends_With(const char *p) const;

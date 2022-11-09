@@ -29,20 +29,20 @@ CachedFileInputStream::~CachedFileInputStream()
  */
 int CachedFileInputStream::Read(void *dst, int size)
 {
-    if (m_cachedData != nullptr) {
-        if (m_cachePos + size > m_cachedSize) {
-            size = m_cachedSize - m_cachePos;
-        }
-
-        if (size > 0) {
-            memcpy(dst, &m_cachedData[m_cachePos], size);
-            m_cachePos += size;
-        }
-
-        return size;
+    if (m_cachedData == nullptr) {
+        return 0;
     }
 
-    return 0;
+    if (m_cachePos + size > m_cachedSize) {
+        size = m_cachedSize - m_cachePos;
+    }
+
+    if (size != 0) {
+        memcpy(dst, &m_cachedData[m_cachePos], size);
+        m_cachePos += size;
+    }
+
+    return size;
 }
 
 /**
@@ -56,14 +56,13 @@ unsigned CachedFileInputStream::Tell()
 /**
  * @brief Seek to an absolute position in the stream.
  */
-bool CachedFileInputStream::Absolute_Seek(unsigned pos)
+bool CachedFileInputStream::Absolute_Seek(unsigned int pos)
 {
-    if (pos < m_cachedSize) {
-        m_cachePos = pos;
-    } else {
-        m_cachePos = m_cachedSize;
+    if (pos > m_cachedSize) {
+        pos = m_cachedSize;
     }
 
+    m_cachePos = pos;
     return true;
 }
 
@@ -80,14 +79,14 @@ bool CachedFileInputStream::Eof()
  */
 bool CachedFileInputStream::Open(Utf8String filename)
 {
-    File *file = g_theFileSystem->Open(filename, File::BINARY | File::READ);
+    File *file = g_theFileSystem->Open_File(filename, File::BINARY | File::READ);
     m_cachedSize = 0;
 
     if (file != nullptr) {
         m_cachedSize = file->Size();
 
         if (m_cachedSize > 0) {
-            m_cachedData = static_cast<uint8_t *>(file->Read_All_And_Close());
+            m_cachedData = static_cast<uint8_t *>(file->Read_Entire_And_Close());
             file = nullptr;
         }
 
@@ -96,7 +95,7 @@ bool CachedFileInputStream::Open(Utf8String filename)
 
     // Handle compressed data.
     if (CompressionManager::Is_Data_Compressed(m_cachedData, m_cachedSize)) {
-        int decomp_size = CompressionManager::Get_Uncompressed_Size(m_cachedData, m_cachedSize);
+        unsigned int decomp_size = CompressionManager::Get_Uncompressed_Size(m_cachedData, m_cachedSize);
         uint8_t *decomp_data = new uint8_t[decomp_size];
 
         if (CompressionManager::Decompress_Data(m_cachedData, m_cachedSize, decomp_data, decomp_size) == decomp_size) {
@@ -112,7 +111,7 @@ bool CachedFileInputStream::Open(Utf8String filename)
         file->Close();
     }
 
-    return m_cachedSize > 0;
+    return m_cachedSize != 0;
 }
 
 /**

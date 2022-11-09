@@ -75,7 +75,7 @@ public:
     virtual void Close();
     virtual int Read(void *dst, int bytes) = 0;
     virtual int Write(void const *src, int bytes) = 0;
-    virtual int Seek(int offset, File::SeekMode mode) = 0;
+    virtual int Seek(int offset, SeekMode mode) = 0;
     virtual void Next_Line(char *dst, int bytes) = 0;
     virtual bool Scan_Int(int &integer) = 0;
     virtual bool Scan_Real(float &real) = 0;
@@ -84,19 +84,22 @@ public:
     virtual int Size();
     virtual int Position();
 
-    virtual void *Read_All_And_Close() = 0;
-    virtual File *Convert_To_RAM() = 0;
+    virtual void *Read_Entire_And_Close() = 0;
+    virtual File *Convert_To_RAM_File() = 0;
 
-    Utf8String &Get_File_Name() { return m_filename; }
-    int Get_File_Mode() { return m_openMode; }
-    void Set_Del_On_Close(bool del) { m_deleteOnClose = del; }
+    bool Eof();
+
+    const char *Get_Name() { return m_name; }
+    void Set_Name(const char *name) { m_name = name; }
+    int Get_Access() { return m_access; }
+    void Delete_On_Close() { m_deleteOnClose = true; }
 
 protected:
-    File() : m_filename("<no file>"), m_openMode(0), m_access(false), m_deleteOnClose(false) {}
+    File() : m_access(0), m_open(false), m_deleteOnClose(false) { Set_Name("<no file>"); }
 
 protected:
-    Utf8String m_filename;
-    int m_openMode;
-    bool m_access;
+    Utf8String m_name;
+    int m_access;
+    bool m_open;
     bool m_deleteOnClose;
 };

@@ -699,7 +699,7 @@ void W3DDisplay::Do_Smart_Asset_Purge_And_Preload(const char *asset)
     }
 
     DynamicVectorClass<StringClass> assets_list(8000);
-    auto *file = g_theFileSystem->Open(asset, File::TEXT | File::READ);
+    auto *file = g_theFileSystem->Open_File(asset, File::TEXT | File::READ);
     if (file != nullptr) {
         Utf8String file_content;
         while (file->Scan_String(file_content)) {

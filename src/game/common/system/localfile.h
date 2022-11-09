@@ -36,15 +36,16 @@ protected:
 
 public:
     virtual bool Open(const char *filename, int mode) override;
+    virtual void Close() override;
     virtual int Read(void *dst, int bytes) override;
     virtual int Write(void const *src, int bytes) override;
-    virtual int Seek(int offset, File::SeekMode mode) override;
+    virtual int Seek(int offset, SeekMode mode) override;
     virtual void Next_Line(char *dst, int bytes) override;
     virtual bool Scan_Int(int &integer) override;
     virtual bool Scan_Real(float &real) override;
     virtual bool Scan_String(Utf8String &string) override;
-    virtual void *Read_All_And_Close() override;
-    virtual File *Convert_To_RAM() override;
+    virtual void *Read_Entire_And_Close() override;
+    virtual File *Convert_To_RAM_File() override;
 
 protected:
     int m_fileHandle;

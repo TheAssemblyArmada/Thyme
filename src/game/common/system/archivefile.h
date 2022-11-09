@@ -24,28 +24,53 @@
 struct FileInfo;
 class File;
 
-struct ArchivedFileInfo
+class ArchivedFileInfo
 {
+public:
+    ArchivedFileInfo() { Clear(); }
+    void Clear()
+    {
+        file_name.Clear();
+        archive_name.Clear();
+        position = 0;
+        size = 0;
+    }
+
     Utf8String file_name;
     Utf8String archive_name;
     int position;
     int size;
 };
 
-struct DetailedArchiveDirectoryInfo
+class DetailedArchivedDirectoryInfo
 {
+public:
+    void Clear()
+    {
+        name.Clear();
+        directories.clear();
+        files.clear();
+    }
+
     Utf8String name;
-    mutable std::map<Utf8String, DetailedArchiveDirectoryInfo> directories; // Mutable to use operator[] in const functions
+    std::map<Utf8String, DetailedArchivedDirectoryInfo> directories;
     std::map<Utf8String, ArchivedFileInfo> files;
 };
 
 class ArchiveFile
 {
 public:
-    ArchiveFile() : m_backingFile(nullptr), m_archiveInfo() {}
-    virtual ~ArchiveFile() {}
+    ArchiveFile() : m_attachedFile(nullptr) { m_archiveInfo.Clear(); }
 
-    virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) = 0;
+    virtual ~ArchiveFile()
+    {
+        if (m_attachedFile != nullptr) {
+            m_attachedFile->Close();
+            m_attachedFile = nullptr;
+        }
+    }
+
+    virtual bool Get_File_Info(Utf8String const &name, FileInfo *info) const = 0;
     virtual File *Open_File(const char *filename, int mode) = 0;
     virtual void Close_All_Files() = 0;
     virtual Utf8String Get_Name() = 0;
@@ -53,23 +78,22 @@ public:
     virtual void Set_Search_Priority(int priority) = 0;
     virtual void Close() = 0;
 
-    ArchivedFileInfo *Get_Archived_File_Info(Utf8String const &filename);
+    const ArchivedFileInfo *Get_Archived_File_Info(Utf8String const &filename) const;
     void Add_File(Utf8String const &filename, ArchivedFileInfo const *info);
     void Attach_File(File *file);
-    void Get_File_List_From_Dir(Utf8String const &subdir,
+    void Get_File_List_In_Directory(Utf8String const &subdir,
         Utf8String const &dirpath,
         Utf8String const &filter,
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
         bool search_subdir) const;
 
 protected:
-    static bool Search_String_Matches(Utf8String string, Utf8String search);
-    void Get_File_List_From_Dir(DetailedArchiveDirectoryInfo const *dir_info,
+    void Get_File_List_In_Directory(DetailedArchivedDirectoryInfo const *dir_info,
         Utf8String const &dirpath,
         Utf8String const &filter,
         std::set<Utf8String, rts::less_than_nocase<Utf8String>> &filelist,
         bool search_subdir) const;
 
-    File *m_backingFile;
-    DetailedArchiveDirectoryInfo m_archiveInfo;
+    File *m_attachedFile;
+    DetailedArchivedDirectoryInfo m_archiveInfo;
 };

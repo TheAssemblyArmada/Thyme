@@ -17,9 +17,11 @@
 
 #include "always.h"
 #include "asciistring.h"
+#include "assetmgr.h"
 #include "bufffileclass.h"
 #include "chunkio.h"
 #include "w3d_file.h"
+#include "meshmdl.h"
 
 struct Chunk
 {
@@ -81,7 +83,7 @@ void validate_chunk(ChunkLoadClass &cload, const Chunk &chunk, int depth = 1)
     }
 }
 
-TEST(w3d_model, load_mesh)
+TEST(w3d_model, validate_chunk_loader)
 {
     auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
 
@@ -91,4 +93,31 @@ TEST(w3d_model, load_mesh)
 
     // Traverse through the model to validate chunks
     validate_chunk(cload, cubemodel);
+}
+
+void load_mesh(ChunkLoadClass &cload)
+{
+    MeshModelClass mesh;
+    EXPECT_EQ(mesh.Load_W3D(cload), W3D_ERROR_OK);
+    EXPECT_EQ(mesh.Get_Polygon_Count(), 12);
+    EXPECT_EQ(mesh.Get_Vertex_Count(), 36);
+    EXPECT_STREQ(mesh.Get_Name(), "cube");
+}
+
+TEST(w3d_model, load_model)
+{
+    // We need to have an instance of this
+    W3DAssetManager assetmngr;
+    auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
+
+    BufferedFileClass file(filepath);
+    ASSERT_TRUE(file.Open(1));
+    ChunkLoadClass cload(&file);
+    EXPECT_TRUE(cload.Open_Chunk());
+    EXPECT_EQ(cload.Cur_Chunk_ID(), W3D_CHUNK_MESH);
+
+    // Traverse through the model to validate chunks
+    load_mesh(cload);
+
+    cload.Close_Chunk();
 }

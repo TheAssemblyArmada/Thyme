@@ -20,8 +20,8 @@
 #include "assetmgr.h"
 #include "bufffileclass.h"
 #include "chunkio.h"
-#include "w3d_file.h"
 #include "meshmdl.h"
+#include "w3d_file.h"
 
 struct Chunk
 {
@@ -72,7 +72,7 @@ void validate_chunk(ChunkLoadClass &cload, const Chunk &chunk, int depth = 1)
         // Read the data and check we get all bytes
         std::vector<uint8_t> data;
         data.resize(cload.Cur_Chunk_Length());
-        EXPECT_EQ(cload.Read(data.data(),data.size()), ref.size);
+        EXPECT_EQ(cload.Read(data.data(), data.size()), ref.size);
 
         if (cload.Contains_Chunks()) {
             validate_chunk(cload, ref, depth + 1);
@@ -88,20 +88,11 @@ TEST(w3d_model, validate_chunk_loader)
     auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
 
     BufferedFileClass file(filepath);
-    ASSERT_TRUE(file.Open(1));
+    ASSERT_TRUE(file.Open(FM_READ));
     ChunkLoadClass cload(&file);
 
     // Traverse through the model to validate chunks
     validate_chunk(cload, cubemodel);
-}
-
-void load_mesh(ChunkLoadClass &cload)
-{
-    MeshModelClass mesh;
-    EXPECT_EQ(mesh.Load_W3D(cload), W3D_ERROR_OK);
-    EXPECT_EQ(mesh.Get_Polygon_Count(), 12);
-    EXPECT_EQ(mesh.Get_Vertex_Count(), 36);
-    EXPECT_STREQ(mesh.Get_Name(), "cube");
 }
 
 TEST(w3d_model, load_model)
@@ -111,13 +102,16 @@ TEST(w3d_model, load_model)
     auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
 
     BufferedFileClass file(filepath);
-    ASSERT_TRUE(file.Open(1));
+    ASSERT_TRUE(file.Open(FM_READ));
     ChunkLoadClass cload(&file);
     EXPECT_TRUE(cload.Open_Chunk());
     EXPECT_EQ(cload.Cur_Chunk_ID(), W3D_CHUNK_MESH);
 
-    // Traverse through the model to validate chunks
-    load_mesh(cload);
+    MeshModelClass mesh;
+    EXPECT_EQ(mesh.Load_W3D(cload), W3D_ERROR_OK);
+    EXPECT_EQ(mesh.Get_Polygon_Count(), 12);
+    EXPECT_EQ(mesh.Get_Vertex_Count(), 36);
+    EXPECT_STREQ(mesh.Get_Name(), "cube");
 
     cload.Close_Chunk();
 }

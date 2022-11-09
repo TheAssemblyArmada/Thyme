@@ -3959,7 +3959,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
                         TreeView_SetItemState(g_treewnd, TreeView_GetSelection(g_treewnd), 0, TVIS_SELECTED);
                         TreeView_DeleteAllItems(g_treewnd);
                         BufferedFileClass file(fname);
-                        file.Open(1);
+                        file.Open(FM_READ);
                         ChunkLoadClass cload(&file);
 
                         if (g_main) {
@@ -4030,7 +4030,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     if (__argc > 1) {
         BufferedFileClass file(__argv[1]);
-        file.Open(1);
+        file.Open(FM_READ);
         ChunkLoadClass cload(&file);
         g_main = new ChunkData;
         ParseSubchunks(cload, g_main);

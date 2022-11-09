@@ -64,6 +64,7 @@ set(GAMEENGINE_SRC
     game/weather.cpp
     game/client/baseheightmap.cpp
     game/client/line2d.cpp
+    game/client/challengegenerals.cpp
     game/client/crashpreferences.cpp
     game/client/display.cpp
     game/client/displaystring.cpp

@@ -67,6 +67,11 @@ void validate_chunk(ChunkLoadClass &cload, const Chunk &chunk, int depth = 1)
         EXPECT_EQ(cload.Cur_Chunk_Depth(), depth);
         EXPECT_EQ(cload.Cur_Chunk_Length(), ref.size);
 
+        // Read the data and check we get all bytes
+        std::vector<uint8_t> data;
+        data.resize(cload.Cur_Chunk_Length());
+        EXPECT_EQ(cload.Read(data.data(),data.size()), ref.size);
+
         if (cload.Contains_Chunks()) {
             validate_chunk(cload, ref, depth + 1);
         }

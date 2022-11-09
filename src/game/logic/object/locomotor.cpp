@@ -2101,7 +2101,7 @@ void LocomotorSet::Xfer_Snapshot(Xfer *xfer)
         for (uint16_t j = 0; j < size; j++) {
             Utf8String name;
             xfer->xferAsciiString(&name);
-            LocomotorTemplate *lt = g_theLocomotorStore->Find_Locomotor_Template(Name_To_Key(name));
+            LocomotorTemplate *lt = g_theLocomotorStore->Find_Locomotor_Template(Name_To_Key(name.Str()));
 
             if (!lt) {
                 captainslog_debug("LocomotorSet::xfer - template %s not found", name.Str());

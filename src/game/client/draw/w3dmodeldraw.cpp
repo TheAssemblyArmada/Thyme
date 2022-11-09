@@ -60,7 +60,7 @@ unsigned int s_theObjectIDToDebug;
 
 HAnimClass *W3DAnimationInfo::Get_Anim_Handle() const
 {
-    HAnimClass *anim = W3DDisplay::s_assetManager->Get_HAnim(m_name);
+    HAnimClass *anim = W3DDisplay::s_assetManager->Get_HAnim(m_name.Str());
 
     if (anim != nullptr) {
         if (m_framesPerSecond < 0.0f) {
@@ -155,7 +155,7 @@ bool Find_Single_Bone(RenderObjClass *r, Utf8String const &bone, Matrix3D &trans
         return false;
     }
 
-    index = r->Get_Bone_Index(bone);
+    index = r->Get_Bone_Index(bone.Str());
 
     if (index == 0) {
         return false;
@@ -171,7 +171,7 @@ bool Find_Single_Sub_Obj(RenderObjClass *r, Utf8String const &sub_obj_name, Matr
         return false;
     }
 
-    RenderObjClass *subobj = r->Get_Sub_Object_By_Name(sub_obj_name, nullptr);
+    RenderObjClass *subobj = r->Get_Sub_Object_By_Name(sub_obj_name.Str(), nullptr);
 
     if (subobj == nullptr) {
         return false;
@@ -209,7 +209,7 @@ bool Do_Single_Bone_Name(RenderObjClass *robj, Utf8String const &bone, std::map<
     Set_FP_Mode();
 
     if (Find_Single_Bone(robj, bone_lower, info.transform, info.index)) {
-        map[g_theNameKeyGenerator->Name_To_Key(bone_lower)] = info;
+        map[g_theNameKeyGenerator->Name_To_Key(bone_lower.Str())] = info;
         bone_found = true;
     }
 
@@ -220,13 +220,13 @@ bool Do_Single_Bone_Name(RenderObjClass *robj, Utf8String const &bone, std::map<
             break;
         }
 
-        map[g_theNameKeyGenerator->Name_To_Key(bone_id)] = info;
+        map[g_theNameKeyGenerator->Name_To_Key(bone_id.Str())] = info;
         bone_found = true;
     }
 
     if (!bone_found) {
         if (Find_Single_Sub_Obj(robj, bone_lower, info.transform, info.index)) {
-            map[g_theNameKeyGenerator->Name_To_Key(bone_lower)] = info;
+            map[g_theNameKeyGenerator->Name_To_Key(bone_lower.Str())] = info;
             sub_obj_found = true;
         }
 
@@ -237,7 +237,7 @@ bool Do_Single_Bone_Name(RenderObjClass *robj, Utf8String const &bone, std::map<
                 break;
             }
 
-            map[g_theNameKeyGenerator->Name_To_Key(bone_id)] = info;
+            map[g_theNameKeyGenerator->Name_To_Key(bone_id.Str())] = info;
             sub_obj_found = true;
         }
     }
@@ -263,7 +263,7 @@ void ModelConditionInfo::Validate_Cached_Bones(RenderObjClass *robj, float scale
     bool ref = false;
 
     if (robj == nullptr && !m_modelName.Is_Empty()) {
-        robj = W3DDisplay::s_assetManager->Create_Render_Obj(m_modelName, scale, 0, nullptr, nullptr);
+        robj = W3DDisplay::s_assetManager->Create_Render_Obj(m_modelName.Str(), scale, 0, nullptr, nullptr);
 
         if (robj != nullptr) {
             ref = true;
@@ -426,12 +426,12 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
 
                     if (!weaponrecoilbonename.Is_Empty()) {
                         Find_Pristine_Bone(
-                            g_theNameKeyGenerator->Name_To_Key(weaponrecoilbonename), &info.m_weaponRecoilBone);
+                            g_theNameKeyGenerator->Name_To_Key(weaponrecoilbonename.Str()), &info.m_weaponRecoilBone);
                     }
 
                     if (!weaponmuzzleflashbonename.Is_Empty()) {
-                        Find_Pristine_Bone(
-                            g_theNameKeyGenerator->Name_To_Key(weaponmuzzleflashbonename), &info.m_weaponMuzzleFlashBone);
+                        Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(weaponmuzzleflashbonename.Str()),
+                            &info.m_weaponMuzzleFlashBone);
                     }
 
 #ifdef GAME_DEBUG_STRUCTS
@@ -445,7 +445,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
                     if (weaponlaunchbonename.Is_Empty()) {
                         m = nullptr;
                     } else {
-                        m = Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(weaponlaunchbonename), nullptr);
+                        m = Find_Pristine_Bone(g_theNameKeyGenerator->Name_To_Key(weaponlaunchbonename.Str()), nullptr);
                     }
 
                     if (m != nullptr) {
@@ -456,7 +456,7 @@ void ModelConditionInfo::Validate_Weapon_Barrel_Info() const
 
                     if (!weaponfirefxbonename.Is_Empty()) {
                         Find_Pristine_Bone(
-                            g_theNameKeyGenerator->Name_To_Key(weaponfirefxbonename), &info.m_weaponFireFXBone);
+                            g_theNameKeyGenerator->Name_To_Key(weaponfirefxbonename.Str()), &info.m_weaponFireFXBone);
                     }
 
                     if (info.m_weaponFireFXBone || info.m_weaponRecoilBone || info.m_weaponMuzzleFlashBone || m != nullptr) {
@@ -703,7 +703,7 @@ Vector3 *W3DModelDrawModuleData::Get_Attach_To_Drawable_Bone_Offset(Drawable con
     if (!m_attachToDrawableBoneOffsetSet) {
         Matrix3D m;
 
-        if (drawable->Get_Pristine_Bone_Positions(m_attachToBoneInAnotherModule, 0, nullptr, &m, 1) == 1) {
+        if (drawable->Get_Pristine_Bone_Positions(m_attachToBoneInAnotherModule.Str(), 0, nullptr, &m, 1) == 1) {
             m_attachToDrawableBoneOffset = m.Get_Translation();
         } else {
             m_attachToDrawableBoneOffset.X = 0.0f;
@@ -825,7 +825,7 @@ void Parse_Bone_Name_Key(INI *ini, void *instance, void *store, void const *user
     if (str.Is_Empty() || str.Is_None()) {
         *static_cast<NameKeyType *>(store) = NAMEKEY_INVALID;
     } else {
-        *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str);
+        *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str.Str());
     }
 }
 
@@ -842,7 +842,7 @@ void Parse_Show_Hide_Sub_Object(INI *ini, void *instance, void *store, void cons
             bool found = false;
 
             for (auto &i : *v) {
-                if (!strcasecmp(i.sub_obj_name, str)) {
+                if (!strcasecmp(i.sub_obj_name.Str(), str.Str())) {
                     i.hide = (uintptr_t)user_data != 0;
                     found = true;
                 }
@@ -920,7 +920,7 @@ void Parse_Lowercase_Name_Key(INI *ini, void *formal, void *store, void const *u
 {
     Utf8String str(ini->Get_Next_Token());
     str.To_Lower();
-    *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str);
+    *static_cast<NameKeyType *>(store) = g_theNameKeyGenerator->Name_To_Key(str.Str());
 }
 
 void Parse_Particle_Sys_Bone(INI *ini, void *instance, void *store, void const *user_data)
@@ -1043,8 +1043,8 @@ void W3DModelDrawModuleData::Parse_Condition_State(INI *ini, void *instance, voi
             str.To_Lower();
             Utf8String str2(ini->Get_Next_Token());
             str2.To_Lower();
-            NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str);
-            NameKeyType key2 = g_theNameKeyGenerator->Name_To_Key(str2);
+            NameKeyType key = g_theNameKeyGenerator->Name_To_Key(str.Str());
+            NameKeyType key2 = g_theNameKeyGenerator->Name_To_Key(str2.Str());
             captainslog_relassert(
                 key != key2, CODE_06, "*** ASSET ERROR: You may not declare a transition between two identical states");
 
@@ -1307,7 +1307,7 @@ void W3DModelDraw::Allocate_Shadows()
     if (m_shadow == nullptr && m_renderObject != nullptr && g_theW3DShadowManager != nullptr
         && info.m_thing->Get_Shadow_Type() != SHADOW_NONE) {
 
-        strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name());
+        strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name().Str());
         captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
 
         info.m_allowUpdates = false;
@@ -1641,7 +1641,7 @@ void W3DModelDraw::Do_Hide_Show_Sub_Objs(std::vector<ModelConditionInfo::HideSho
         if (!vec->empty()) {
             for (auto &info : *vec) {
                 int index;
-                RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
+                RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name.Str(), &index);
 
                 if (robj != nullptr) {
                     robj->Set_Hidden(info.hide);
@@ -1818,7 +1818,7 @@ void W3DModelDraw::Recalc_Bones_For_Client_Particle_Systems()
                     int index;
 
                     if (m_renderObject != nullptr) {
-                        index = m_renderObject->Get_Bone_Index(bone.bone_name);
+                        index = m_renderObject->Get_Bone_Index(bone.bone_name.Str());
                     } else {
                         index = 0;
                     }
@@ -1911,7 +1911,7 @@ void W3DModelDraw::Set_Terrain_Decal(TerrainDecalType decal)
         info.m_type = SHADOW_ALPHA_DECAL;
 
         if (decal == TERRAIN_DECAL_9) {
-            strcpy(info.m_shadowName, tmplate->Get_Shadow_Texture_Name());
+            strcpy(info.m_shadowName, tmplate->Get_Shadow_Texture_Name().Str());
         } else {
             strcpy(info.m_shadowName, s_terrainDecalTextureName[decal]);
         }
@@ -2146,7 +2146,7 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
             m_renderObject = nullptr;
         } else {
             m_renderObject = W3DDisplay::s_assetManager->Create_Render_Obj(
-                new_state->m_modelName, drawable->Get_Scale(), m_hexColor, nullptr, nullptr);
+                new_state->m_modelName.Str(), drawable->Get_Scale(), m_hexColor, nullptr, nullptr);
 
             // Thyme specific: Original assert has been demoted to log message because it is a data issue.
             if (m_renderObject == nullptr) {
@@ -2173,7 +2173,7 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
                 if (g_theTerrainTracksRenderObjClassSystem != nullptr) {
                     if (!Get_W3D_Model_Draw_Module_Data()->m_trackFile.Is_Empty()) {
                         m_trackRenderObject = g_theTerrainTracksRenderObjClassSystem->Bind_Track(
-                            m_renderObject, 10.0f, Get_W3D_Model_Draw_Module_Data()->m_trackFile);
+                            m_renderObject, 10.0f, Get_W3D_Model_Draw_Module_Data()->m_trackFile.Str());
 
                         if (drawable != nullptr) {
                             if (m_trackRenderObject != nullptr) {
@@ -2186,7 +2186,7 @@ void W3DModelDraw::Set_Model_State(ModelConditionInfo const *new_state)
         }
 
         if (m_renderObject != nullptr && g_theW3DShadowManager != nullptr && info.m_thing->Get_Shadow_Type()) {
-            strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name());
+            strcpy(info.m_shadowName, info.m_thing->Get_Shadow_Texture_Name().Str());
             captainslog_dbgassert(info.m_shadowName[0], "this should be validated in ThingTemplate now");
             info.m_allowUpdates = false;
             info.m_allowWorldAlign = true;
@@ -2513,7 +2513,7 @@ bool W3DModelDraw::Client_Only_Get_Render_Obj_Bone_Transform(Utf8String const &b
         return false;
     }
 
-    int index = m_renderObject->Get_Bone_Index(bone);
+    int index = m_renderObject->Get_Bone_Index(bone.Str());
 
     if (index == 0) {
         transform->Make_Identity();
@@ -2857,7 +2857,7 @@ void W3DModelDraw::Update_Sub_Objects()
     if (m_renderObject != nullptr && !m_subObjects.empty()) {
         for (auto &info : m_subObjects) {
             int index;
-            RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name, &index);
+            RenderObjClass *robj = m_renderObject->Get_Sub_Object_By_Name(info.sub_obj_name.Str(), &index);
 
             if (robj) {
                 robj->Set_Hidden(info.hide);
@@ -3011,7 +3011,7 @@ void W3DModelDraw::Show_Sub_Object(Utf8String const &sub_obj_name, bool visible)
         bool found = false;
 
         for (auto &info : m_subObjects) {
-            if (!strcasecmp(sub_obj_name, info.sub_obj_name)) {
+            if (!strcasecmp(sub_obj_name.Str(), info.sub_obj_name.Str())) {
                 info.hide = visible == 0;
                 found = true;
             }

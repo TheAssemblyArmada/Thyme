@@ -100,8 +100,6 @@ public:
     Utf8String &operator+=(Utf8String const &s);
     // Utf8String &operator+=(Utf16String const &stringSrc);
 
-    operator const char *() const { return Str(); }
-
     char operator[](size_type index) const { return Get_Char(index); }
 
     void Validate();

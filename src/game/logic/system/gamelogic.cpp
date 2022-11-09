@@ -256,7 +256,7 @@ void GameLogic::Set_Control_Bar_Override(Utf8String const &s, int i, CommandButt
 {
     char str[256];
     str[0] = i + '0';
-    strcpy(&str[1], s);
+    strcpy(&str[1], s.Str());
     m_controlBarOverrides[str] = button;
 }
 
@@ -264,7 +264,7 @@ bool GameLogic::Find_Control_Bar_Override(Utf8String const &s, int i, CommandBut
 {
     char str[256];
     str[0] = i + '0';
-    strcpy(&str[1], s);
+    strcpy(&str[1], s.Str());
     auto j = m_controlBarOverrides.find(str);
 
     if (j != m_controlBarOverrides.end()) {

@@ -89,7 +89,7 @@ void Win32LocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
 #ifdef PLATFORM_WINDOWS
     search_path += filter;
     WIN32_FIND_DATAW data;
-    HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path()), &data);
+    HANDLE hndl = FindFirstFileW(UTF8To16(search_path.Windows_Path().Str()), &data);
 
     if (hndl != INVALID_HANDLE_VALUE) {
         // Loop over all files in the directory, ignoring other directories
@@ -117,7 +117,7 @@ void Win32LocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
         sub_path += subdir;
         sub_path.Concat("*.");
 
-        hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path()), &data);
+        hndl = FindFirstFileW(UTF8To16(sub_path.Windows_Path().Str()), &data);
 
         if (hndl != INVALID_HANDLE_VALUE) {
             // Loop over all files in the directory finding only directories.
@@ -148,7 +148,7 @@ void Win32LocalFileSystem::Get_File_List_In_Directory(Utf8String const &subdir,
     if (filter.Is_Empty())
         return;
 
-    dp = opendir(search_path);
+    dp = opendir(search_path.Str());
     if (dp != nullptr) {
         while ((entry = readdir(dp)) != nullptr) {
             if (search_subdirs && entry->d_type == DT_DIR) {
@@ -180,7 +180,7 @@ bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *i
     // TODO Make this cross platform.
 #ifdef PLATFORM_WINDOWS
     WIN32_FIND_DATAW data;
-    HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path()), &data);
+    HANDLE hndl = FindFirstFileW(UTF8To16(filename.Windows_Path().Str()), &data);
 
     if (hndl == INVALID_HANDLE_VALUE) {
         return false;
@@ -196,7 +196,7 @@ bool Win32LocalFileSystem::Get_File_Info(Utf8String const &filename, FileInfo *i
     return true;
 #else
     struct stat data;
-    int rc = stat(filename, &data);
+    int rc = stat(filename.Str(), &data);
 
     if (rc != 0) {
         return false;
@@ -222,8 +222,8 @@ bool Win32LocalFileSystem::Create_Directory(Utf8String dir_path)
 
     // So much for mkdir being more cross platform
 #ifdef PLATFORM_WINDOWS
-    return CreateDirectoryW(UTF8To16(dir_path), nullptr) != 0;
+    return CreateDirectoryW(UTF8To16(dir_path.Str()), nullptr) != 0;
 #else
-    return mkdir(dir_path, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+    return mkdir(dir_path.Str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
 #endif
 }

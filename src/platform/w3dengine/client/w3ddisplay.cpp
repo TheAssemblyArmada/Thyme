@@ -704,7 +704,7 @@ void W3DDisplay::Do_Smart_Asset_Purge_And_Preload(const char *asset)
         Utf8String file_content;
         while (file->Scan_String(file_content)) {
             if (file_content.Starts_With(";") == false) {
-                StringClass line{ file_content };
+                StringClass line{ file_content.Str() };
                 assets_list.Add(line);
             }
         }
@@ -1380,7 +1380,7 @@ void W3DDisplay::Preload_Model_Assets(Utf8String model)
     if (s_assetManager != nullptr) {
         Utf8String filename;
         filename.Format("%s.w3d", model.Str());
-        s_assetManager->Load_3D_Assets(filename);
+        s_assetManager->Load_3D_Assets(filename.Str());
     }
 }
 
@@ -1388,7 +1388,7 @@ void W3DDisplay::Preload_Model_Assets(Utf8String model)
 void W3DDisplay::Preload_Texture_Assets(Utf8String texture)
 {
     if (s_assetManager != nullptr) {
-        auto *tex = s_assetManager->Get_Texture(texture);
+        auto *tex = s_assetManager->Get_Texture(texture.Str());
         tex->Release_Ref();
     }
 }

@@ -84,7 +84,7 @@ W3DLaserDraw::W3DLaserDraw(Thing *thing, ModuleData const *module_data) :
     m_setLaserPosition(true)
 {
     const W3DLaserDrawModuleData *data = Get_W3D_Laser_Draw_Module_Data();
-    m_texture = W3DAssetManager::Get_Instance()->Get_Texture(data->m_textureName);
+    m_texture = W3DAssetManager::Get_Instance()->Get_Texture(data->m_textureName.Str());
 
     if (m_texture) {
         if (!m_texture->Is_Initialized()) {

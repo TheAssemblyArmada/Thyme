@@ -40,7 +40,7 @@ void W3DSupplyDraw::Update_Draw_Module_Supply_Status(int max, int current)
     const Utf8String &prefix = Get_W3D_Supply_Draw_Module_Data()->m_supplyBonePrefix;
 
     if (m_totalSupplyBoneCount == -1) {
-        m_totalSupplyBoneCount = Get_Drawable()->Get_Pristine_Bone_Positions(prefix, 1, nullptr, nullptr, INT_MAX);
+        m_totalSupplyBoneCount = Get_Drawable()->Get_Pristine_Bone_Positions(prefix.Str(), 1, nullptr, nullptr, INT_MAX);
         m_currentSupplyBoneCount = m_totalSupplyBoneCount;
     }
 

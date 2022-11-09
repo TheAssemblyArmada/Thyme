@@ -27,7 +27,7 @@ TEST(filesystem, win32bigfile)
     g_theLocalFileSystem = new Win32LocalFileSystem;
 
     Win32BIGFileSystem bigfilesystem;
-    ArchiveFile *bigfile = bigfilesystem.Open_Archive_File(Utf8String(TESTDATA_PATH) + "/filesystem/test.big");
+    ArchiveFile *bigfile = bigfilesystem.Open_Archive_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str());
     ASSERT_NE(bigfile, nullptr);
 
     char dst_buf[256];
@@ -84,41 +84,41 @@ protected:
 
 TEST_P(FileSystemTest, exists_file)
 {
-    EXPECT_TRUE(m_filesystem->Does_File_Exist(Utf8String(TESTDATA_PATH) + "/filesystem/test.big"));
-    EXPECT_FALSE(m_filesystem->Does_File_Exist(Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big"));
+    EXPECT_TRUE(m_filesystem->Does_File_Exist((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str()));
+    EXPECT_FALSE(m_filesystem->Does_File_Exist((Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big").Str()));
 }
 
 TEST_P(FileSystemTest, open_file)
 {
-    EXPECT_NE(m_filesystem->Open_File(Utf8String(TESTDATA_PATH) + "/filesystem/test.big", File::READ), nullptr);
-    EXPECT_EQ(m_filesystem->Open_File(Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big", File::READ), nullptr);
+    EXPECT_NE(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), File::READ), nullptr);
+    EXPECT_EQ(m_filesystem->Open_File((Utf8String(TESTDATA_PATH) + "/filesystem/non_existant.big").Str(), File::READ), nullptr);
 }
 
 TEST_P(FileSystemTest, file_info)
 {
     FileInfo file_info;
-    EXPECT_TRUE(m_filesystem->Get_File_Info(Utf8String(TESTDATA_PATH) + "/filesystem/test.big", &file_info));
+    EXPECT_TRUE(m_filesystem->Get_File_Info((Utf8String(TESTDATA_PATH) + "/filesystem/test.big").Str(), &file_info));
     EXPECT_EQ(file_info.file_size_low, 84);
 }
 
 TEST_P(FileSystemTest, list_dir_filtered)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*.big", files, true);
+    m_filesystem->Get_File_List_In_Directory((Utf8String(TESTDATA_PATH) + "/filesystem/").Str(), "", "*.big", files, true);
     EXPECT_EQ(files.size(), 1);
 }
 
 TEST_P(FileSystemTest, list_dir_empty_filter)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "", files, true);
+    m_filesystem->Get_File_List_In_Directory((Utf8String(TESTDATA_PATH) + "/filesystem/").Str(), "", "", files, true);
     EXPECT_EQ(files.size(), 0);
 }
 
 TEST_P(FileSystemTest, list_dir_unfiltered)
 {
     std::set<Utf8String, rts::less_than_nocase<Utf8String>> files;
-    m_filesystem->Get_File_List_In_Directory(Utf8String(TESTDATA_PATH) + "/filesystem/", "", "*", files, true);
+    m_filesystem->Get_File_List_In_Directory((Utf8String(TESTDATA_PATH) + "/filesystem/").Str(), "", "*", files, true);
     EXPECT_EQ(files.size(), 2);
 }
 

@@ -23,11 +23,11 @@
 static bool getStringFromReg(HKEY hkey, Utf8String subkey, Utf8String key, Utf8String &result)
 {
     HKEY phk_result;
-    if (RegOpenKeyExA(hkey, subkey, 0, KEY_READ, &phk_result) == ERROR_SUCCESS) {
+    if (RegOpenKeyExA(hkey, subkey.Str(), 0, KEY_READ, &phk_result) == ERROR_SUCCESS) {
         BYTE data[256];
         DWORD data_len = 256;
         DWORD type;
-        LSTATUS query_result = RegQueryValueExA(phk_result, key, 0, &type, data, &data_len);
+        LSTATUS query_result = RegQueryValueExA(phk_result, key.Str(), 0, &type, data, &data_len);
         RegCloseKey(phk_result);
 
         if (query_result == ERROR_SUCCESS) {

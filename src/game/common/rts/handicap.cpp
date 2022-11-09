@@ -52,7 +52,7 @@ void Handicap::Read_From_Dict(const Dict *dict)
             key_name += "_";
             key_name += _tt_names[j];
 
-            float value = dict->Get_Real(g_theNameKeyGenerator->Name_To_Key(key_name), &exists);
+            float value = dict->Get_Real(g_theNameKeyGenerator->Name_To_Key(key_name.Str()), &exists);
 
             if (exists) {
                 m_handicaps[i][j] = value;

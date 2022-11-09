@@ -330,7 +330,7 @@ Dict DataChunkInput::Read_Dict()
     for (int i = 0; i < size; ++i) {
         uint32_t key = Read_Int32();
         // Generate a new name key based on the one that was stored in the file.
-        NameKeyType nk = g_theNameKeyGenerator->Name_To_Key(m_contents.Get_Name(key >> Dict::DICT_KEY_SHIFT));
+        NameKeyType nk = g_theNameKeyGenerator->Name_To_Key(m_contents.Get_Name(key >> Dict::DICT_KEY_SHIFT).Str());
 
         switch (key & Dict::DICT_TYPE_MASK) {
             case Dict::DICT_BOOL:
@@ -375,5 +375,5 @@ NameKeyType DataChunkInput::Read_Name_Key()
 {
     uint32_t key = Read_Int32();
 
-    return g_theNameKeyGenerator->Name_To_Key(m_contents.Get_Name(key >> Dict::DICT_KEY_SHIFT));
+    return g_theNameKeyGenerator->Name_To_Key(m_contents.Get_Name(key >> Dict::DICT_KEY_SHIFT).Str());
 }

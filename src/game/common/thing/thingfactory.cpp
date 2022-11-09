@@ -153,7 +153,7 @@ ThingTemplate *ThingFactory::Find_Template_Internal(const Utf8String &name, bool
         return i->second;
     }
 
-    if (strncmp(name, "***TESTING", strlen("***TESTING")) == 0) {
+    if (strncmp(name.Str(), "***TESTING", strlen("***TESTING")) == 0) {
         ThingTemplate *tmplate = New_Template("Un-namedTemplate");
         tmplate->Init_For_LTA(name);
         m_templateMap.erase("Un-namedTemplate");

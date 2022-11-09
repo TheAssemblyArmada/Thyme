@@ -113,8 +113,6 @@ public:
     }
     // Utf16String &operator+=(Utf8String const &string);
 
-    operator const unichar_t *() const { return Str(); }
-
     unichar_t operator[](size_type index) const { return Get_Char(index); }
 
     void Validate();

@@ -46,7 +46,7 @@ void W3DProjectileStreamDrawModuleData::Build_Field_Parse(MultiIniFieldParse &p)
 W3DProjectileStreamDraw::W3DProjectileStreamDraw(Thing *thing, ModuleData const *module_data) :
     DrawModule(thing, module_data)
 {
-    m_texture = W3DAssetManager::Get_Instance()->Get_Texture(Get_W3D_Projectile_Stream_Draw_Module_Data()->m_texture);
+    m_texture = W3DAssetManager::Get_Instance()->Get_Texture(Get_W3D_Projectile_Stream_Draw_Module_Data()->m_texture.Str());
 
     for (int i = 0; i < MAX_SEGMENT_COUNT; i++) {
         m_allLines[i] = nullptr;

@@ -61,7 +61,7 @@ void RoadType::Apply_Texture()
 
 void RoadType::Load_Texture(Utf8String path, int ID)
 {
-    m_roadTexture = W3DAssetManager::Get_Instance()->Get_Texture(path, MIP_LEVELS_3);
+    m_roadTexture = W3DAssetManager::Get_Instance()->Get_Texture(path.Str(), MIP_LEVELS_3);
     m_roadTexture->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_BEST);
     m_roadTexture->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);
     m_roadTexture->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);
@@ -81,7 +81,8 @@ void RoadType::Load_Test_Texture()
 {
     if (m_isAutoLoaded) {
         if (m_uniqueID > 0 && !m_texturePath.Is_Empty()) {
-            m_roadTexture = new TextureClass(m_texturePath, m_texturePath, MIP_LEVELS_3, WW3D_FORMAT_UNKNOWN, true, true);
+            m_roadTexture =
+                new TextureClass(m_texturePath.Str(), m_texturePath.Str(), MIP_LEVELS_3, WW3D_FORMAT_UNKNOWN, true, true);
             m_roadTexture->Get_Texture_Filter()->Set_Mip_Mapping(TextureFilterClass::FILTER_TYPE_BEST);
             m_roadTexture->Get_Texture_Filter()->Set_U_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);
             m_roadTexture->Get_Texture_Filter()->Set_V_Address_Mode(TextureFilterClass::TEXTURE_ADDRESS_REPEAT);

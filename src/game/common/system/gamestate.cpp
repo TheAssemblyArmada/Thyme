@@ -35,7 +35,7 @@ Utf8String GameState::Real_To_Portable_Map_Path(const Utf8String &path)
     Utf8String ret;
     Utf8String ppath = path.Posix_Path();
 
-    if (ppath.Starts_With_No_Case(Get_Save_Dir().Posix_Path())) {
+    if (ppath.Starts_With_No_Case(Get_Save_Dir().Posix_Path().Str())) {
         ret = "Save/";
         ret += Get_File_From_Path(ppath);
     } else {

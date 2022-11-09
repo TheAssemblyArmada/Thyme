@@ -68,7 +68,7 @@ AudioDataHandle MilesAudioFileCache::Open_File(const AudioEventRTS *audio_event)
     }
 
     // Load the file from disk
-    File *file = g_theFileSystem->Open_File(filename, File::READ | File::BINARY);
+    File *file = g_theFileSystem->Open_File(filename.Str(), File::READ | File::BINARY);
 
     if (file == nullptr) {
         if (!filename.Is_Empty()) {

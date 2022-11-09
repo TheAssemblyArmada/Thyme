@@ -141,20 +141,20 @@ bool W3DBridge::Load(BodyDamageType cur_damage_state)
 
     switch (cur_damage_state) {
         case BODY_PRISTINE:
-            strcpy(texture, bridge->Get_Texture());
-            strcpy(model, bridge->Get_Bridge_Model());
+            strcpy(texture, bridge->Get_Texture().Str());
+            strcpy(model, bridge->Get_Bridge_Model().Str());
             break;
         case BODY_DAMAGED:
-            strcpy(texture, bridge->Get_Texture_Damaged());
-            strcpy(model, bridge->Get_Bridge_Model_Name_Damaged());
+            strcpy(texture, bridge->Get_Texture_Damaged().Str());
+            strcpy(model, bridge->Get_Bridge_Model_Name_Damaged().Str());
             break;
         case BODY_REALLYDAMAGED:
-            strcpy(texture, bridge->Get_Texture_Really_Damaged());
-            strcpy(model, bridge->Get_Bridge_Model_Name_Really_Damaged());
+            strcpy(texture, bridge->Get_Texture_Really_Damaged().Str());
+            strcpy(model, bridge->Get_Bridge_Model_Name_Really_Damaged().Str());
             break;
         case BODY_RUBBLE:
-            strcpy(texture, bridge->Get_Texture_Broken());
-            strcpy(model, bridge->Get_Bridge_Model_Name_Broken());
+            strcpy(texture, bridge->Get_Texture_Broken().Str());
+            strcpy(model, bridge->Get_Bridge_Model_Name_Broken().Str());
             break;
         default:
             return false;

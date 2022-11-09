@@ -660,7 +660,7 @@ int WaterRenderObjClass::Init(float water_level, float dx, float dy, SceneClass 
         Ref_Ptr_Release(matinfo);
     }
 
-    m_riverTexture = W3DAssetManager::Get_Instance()->Get_Texture(g_theWaterTransparency->m_standingWaterTexture);
+    m_riverTexture = W3DAssetManager::Get_Instance()->Get_Texture(g_theWaterTransparency->m_standingWaterTexture.Str());
 
     m_unkTexture = new TextureClass(1, 1, WW3D_FORMAT_A4R4G4B4, MIP_LEVELS_1, POOL_MANAGED, false, true);
     SurfaceClass *surface = m_unkTexture->Get_Surface_Level(0);
@@ -680,7 +680,8 @@ void WaterRenderObjClass::Update_Map_Overrides()
     if (m_riverTexture) {
         if (g_theWaterTransparency->m_standingWaterTexture.Compare_No_Case(m_riverTexture->Get_Name())) {
             Ref_Ptr_Release(m_riverTexture);
-            m_riverTexture = W3DAssetManager::Get_Instance()->Get_Texture(g_theWaterTransparency->m_standingWaterTexture);
+            m_riverTexture =
+                W3DAssetManager::Get_Instance()->Get_Texture(g_theWaterTransparency->m_standingWaterTexture.Str());
         }
     }
 }
@@ -820,7 +821,7 @@ void WaterRenderObjClass::Update()
 void WaterRenderObjClass::Replace_Skybox_Texture(Utf8String const &oldname, Utf8String const &newname)
 {
     GameAssetManager *manager = static_cast<GameAssetManager *>(W3DAssetManager::Get_Instance());
-    manager->Replace_Prototype_Texture(m_skyBox, oldname, newname);
+    manager->Replace_Prototype_Texture(m_skyBox, oldname.Str(), newname.Str());
 
     if (m_skyBox && m_skyBox->Class_ID() == RenderObjClass::CLASSID_MESH) {
         MeshClass *mesh = static_cast<MeshClass *>(m_skyBox);
@@ -852,8 +853,8 @@ void WaterRenderObjClass::Load_Setting(Setting *setting, TimeOfDayType tod)
 {
     captainslog_assert(setting);
 
-    setting->sky_texture = W3DAssetManager::Get_Instance()->Get_Texture(g_waterSettings[tod].m_skyTextureFile);
-    setting->water_texture = W3DAssetManager::Get_Instance()->Get_Texture(g_waterSettings[tod].m_waterTextureFile);
+    setting->sky_texture = W3DAssetManager::Get_Instance()->Get_Texture(g_waterSettings[tod].m_skyTextureFile.Str());
+    setting->water_texture = W3DAssetManager::Get_Instance()->Get_Texture(g_waterSettings[tod].m_waterTextureFile.Str());
     setting->sky_texels_per_unit = g_waterSettings[tod].m_skyTexelsPerUnit;
     SurfaceClass::SurfaceDescription surface_desc;
     setting->water_texture->Get_Level_Description(surface_desc, 0);

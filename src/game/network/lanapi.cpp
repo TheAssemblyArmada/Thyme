@@ -528,8 +528,8 @@ bool LANAPI::Am_I_Host()
 void LANAPI::Fill_In_Message(LANMessage *msg)
 {
     u_strlcpy_tpl(msg->name, m_name.Str());
-    strlcpy_tpl(msg->user_name, m_userName);
-    strlcpy_tpl(msg->host_name, m_hostName);
+    strlcpy_tpl(msg->user_name, m_userName.Str());
+    strlcpy_tpl(msg->host_name, m_hostName.Str());
 }
 
 LANPlayer *LANAPI::Lookup_Player(uint32_t ip)
@@ -572,9 +572,9 @@ uint32_t LANAPI::Resolve_IP(const Utf8String &addr)
 
     // If we have a number assume we need to process it as an IP address string.
     if (isdigit(addr.Get_Char(0))) {
-        ip = inet_addr(addr);
+        ip = inet_addr(addr.Str());
     } else { // Otherwise assume its a host name.
-        struct hostent *host = gethostbyname(addr);
+        struct hostent *host = gethostbyname(addr.Str());
         ip = *reinterpret_cast<uint32_t *>(host->h_addr_list[0]);
     }
 

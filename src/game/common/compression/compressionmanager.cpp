@@ -15,6 +15,9 @@
 #include "compressionmanager.h"
 #include "endiantype.h"
 #include "refpack.h"
+#if BUILD_WITH_ZLIB
+#include "zlibcompr.h"
+#endif
 #include <captainslog.h>
 #include <cstring>
 
@@ -142,8 +145,6 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
             return RefPack_Uncompress(dst, static_cast<const uint8_t *>(src) + 8, &src_size);
 
         // Original game handles all these formats, ZH only appears to use RefPack however.
-        case COMPRESSION_NONE:
-        case COMPRESSION_NOX:
         case COMPRESSION_ZL1:
         case COMPRESSION_ZL2:
         case COMPRESSION_ZL3:
@@ -153,6 +154,12 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_ZL7:
         case COMPRESSION_ZL8:
         case COMPRESSION_ZL9:
+#if BUILD_WITH_ZLIB
+            src_size -= 8;
+            return Zlib_Uncompress(dst, static_cast<const uint8_t *>(src) + 8, &src_size);
+#endif
+        case COMPRESSION_NONE:
+        case COMPRESSION_NOX:
         case COMPRESSION_EAB:
         case COMPRESSION_EAH:
         default:

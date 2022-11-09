@@ -89,6 +89,7 @@ endif()
 option(STANDALONE "Build a standalone version." ${DEFAULT_STANDALONE})
 option(USE_GAMEMATH "Use own maths library rather than libc version for this platform." ON)
 option(USE_FFMPEG "Use FFMPEG for codec handling." ${DEFAULT_FFMPEG})
+option(USE_ZLIB "Use zlib to support deflate compression." ON)
 option(LOGGING "Enable debug logging." ${DEFAULT_LOGGING})
 option(ASSERTIONS "Enable debug assertions." ${DEFAULT_ASSERTIONS})
 option(USE_CRASHPAD "Enable the use of the Crashpad library for crash handling and reporting." OFF)
@@ -256,6 +257,22 @@ endif()
 
 if(USE_FFMPEG)
     find_package(FFmpeg COMPONENTS AVFORMAT AVCODEC AVUTIL REQUIRED)
+endif()
+
+if(USE_ZLIB)
+    find_package(ZLIB)
+
+    if(NOT ZLIB_FOUND)
+        include(FetchContent)
+
+        FetchContent_Declare(
+            zlib 
+            GIT_REPOSITORY https://github.com/madler/zlib.git
+            GIT_TAG        v1.2.13
+        )
+        
+        FetchContent_MakeAvailable(zlib)
+    endif()
 endif()
 
 if(USE_CRASHPAD)

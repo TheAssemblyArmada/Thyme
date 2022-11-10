@@ -260,9 +260,9 @@ if(USE_FFMPEG)
 endif()
 
 if(USE_ZLIB)
-    #find_package(ZLIB)
+    find_package(ZLIB)
 
-    if(TRUE)
+    if(ZLIB_FOUND)
         include(FetchContent)
 
         # We define an empty test macro here, so zlib doesn't add it's tests to our global scope

@@ -87,7 +87,7 @@ TEST(w3d_model, validate_chunk_loader)
 {
     auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
 
-    BufferedFileClass file(filepath);
+    BufferedFileClass file(filepath.Str());
     ASSERT_TRUE(file.Open(FM_READ));
     ChunkLoadClass cload(&file);
 
@@ -101,7 +101,7 @@ TEST(w3d_model, load_model)
     W3DAssetManager assetmngr;
     auto filepath = Utf8String(TESTDATA_PATH) + "/models/cube.w3d";
 
-    BufferedFileClass file(filepath);
+    BufferedFileClass file(filepath.Str());
     ASSERT_TRUE(file.Open(FM_READ));
     ChunkLoadClass cload(&file);
     EXPECT_TRUE(cload.Open_Chunk());

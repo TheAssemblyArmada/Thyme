@@ -262,7 +262,7 @@ endif()
 if(USE_ZLIB)
     find_package(ZLIB)
 
-    if(ZLIB_FOUND)
+    if(NOT ZLIB_FOUND)
         include(FetchContent)
 
         # We define an empty test macro here, so zlib doesn't add it's tests to our global scope

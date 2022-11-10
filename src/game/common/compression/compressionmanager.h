@@ -35,13 +35,22 @@ enum CompressionType : int32_t
     COMPRESSION_COUNT,
 };
 
+struct ComprHeader
+{
+    CompressionType type;
+    uint32_t uncomp_size;
+};
+
 class CompressionManager
 {
 public:
     static bool Is_Data_Compressed(const void *data, int size);
+    static CompressionType Get_Prefered_Compression();
     static CompressionType Get_Compression_Type(const void *data, int size);
+    static int Get_Max_Compressed_Size(int size, CompressionType type);
     static const char *Get_Compression_FourCC(CompressionType type);
     static int Get_Uncompressed_Size(const void *data, int size);
+    static int Compress_Data(CompressionType type, void *src, int src_size, void *dst, int dst_size);
     static int Decompress_Data(void *src, int src_size, void *dst, int dst_size);
     static const char *Get_Compression_Name(CompressionType type) { return s_compressionNames[type]; }
 

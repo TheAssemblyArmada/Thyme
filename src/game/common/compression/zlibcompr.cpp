@@ -52,3 +52,11 @@ int Zlib_Compress(void *dst, const void *src, int size, int level)
 
     return dstSize;
 }
+
+/**
+ * Returns the max size for the specified amount of bytes.
+ */
+int Zlib_MaxSize(int size)
+{
+    return compressBound(size);
+}

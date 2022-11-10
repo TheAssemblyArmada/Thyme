@@ -26,15 +26,15 @@ using std::memcmp;
 const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = { "No compression",
     "RefPack",
     "LZH light (Nox, J2K)",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
-    "zlib compress",
+    "zlib compress 1",
+    "zlib compress 2",
+    "zlib compress 3",
+    "zlib compress 4",
+    "zlib compress 5",
+    "zlib compress 6",
+    "zlib compress 7",
+    "zlib compress 8",
+    "zlib compress 9",
     "B-Tree compression",
     "Huffman Tree compression" };
 
@@ -44,6 +44,14 @@ const char *CompressionManager::s_compressionNames[COMPRESSION_COUNT] = { "No co
 bool CompressionManager::Is_Data_Compressed(const void *data, int size)
 {
     return Get_Compression_Type(data, size) != COMPRESSION_NONE;
+}
+
+/**
+ * @brief Get prefered compression type.
+ */
+CompressionType CompressionManager::Get_Prefered_Compression()
+{
+    return COMPRESSION_EAR;
 }
 
 /**
@@ -84,7 +92,7 @@ const char *CompressionManager::Get_Compression_FourCC(CompressionType type)
  */
 CompressionType CompressionManager::Get_Compression_Type(const void *data, int size)
 {
-    if (size <= 7) {
+    if (size < sizeof(ComprHeader)) {
         return COMPRESSION_NONE;
     }
 
@@ -146,11 +154,36 @@ CompressionType CompressionManager::Get_Compression_Type(const void *data, int s
 }
 
 /**
+ * @brief Get the maximum size this uncompressed data will use up after compression
+ */
+int CompressionManager::Get_Max_Compressed_Size(int size, CompressionType type)
+{
+    switch (type) {
+        case COMPRESSION_EAR:
+            return size + sizeof(ComprHeader);
+        case COMPRESSION_ZL1:
+        case COMPRESSION_ZL2:
+        case COMPRESSION_ZL3:
+        case COMPRESSION_ZL4:
+        case COMPRESSION_ZL5:
+        case COMPRESSION_ZL6:
+        case COMPRESSION_ZL7:
+        case COMPRESSION_ZL8:
+        case COMPRESSION_ZL9:
+#if BUILD_WITH_ZLIB
+            return Zlib_MaxSize(size) + sizeof(ComprHeader);
+#endif
+        default:
+            return 0;
+    }
+}
+
+/**
  * @brief Get uncompressed size based on a small header.
  */
 int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
 {
-    if (size < 8) {
+    if (size < sizeof(ComprHeader)) {
         return size;
     }
 
@@ -160,21 +193,22 @@ int CompressionManager::Get_Uncompressed_Size(const void *data, int size)
         return size;
     }
 
-    return le32toh(static_cast<const int32_t *>(data)[1]);
+    const ComprHeader *header = static_cast<const ComprHeader *>(data);
+    return le32toh(header->uncomp_size);
 }
 
 /**
- * @brief Decompress possibly compressed data. Only handles RefPack compression.
+ * @brief Decompress possibly compressed data. Only handles RefPack and ZLib compression.
  */
 int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int dst_size)
 {
-    if (src_size <= 7) {
+    if (src_size < sizeof(ComprHeader)) {
         return 0;
     }
 
     switch (Get_Compression_Type(src, src_size)) {
         case COMPRESSION_EAR: // RefPack
-            src_size -= 8;
+            src_size -= sizeof(ComprHeader);
             return RefPack_Uncompress(dst, static_cast<const uint8_t *>(src) + 8, &src_size);
 
         // Original game handles all these formats, ZH only appears to use RefPack however.
@@ -188,7 +222,7 @@ int CompressionManager::Decompress_Data(void *src, int src_size, void *dst, int 
         case COMPRESSION_ZL8:
         case COMPRESSION_ZL9:
 #if BUILD_WITH_ZLIB
-            src_size -= 8;
+            src_size -= sizeof(ComprHeader);
             return Zlib_Uncompress(dst, dst_size, static_cast<const uint8_t *>(src) + 8, src_size);
 #endif
         case COMPRESSION_NONE:
